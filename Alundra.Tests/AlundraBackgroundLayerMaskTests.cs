@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Rendering.CellularLayers;
@@ -62,24 +61,24 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
             return Handles;
         }
 
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity => null;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
     }
 
     /// <summary>A context that does not override the member: the default interface implementation ("not handled").</summary>
     private sealed class PlainContext : IEntityWorldContext
     {
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity => null;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
     }
 
@@ -106,7 +105,7 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
                 kind = record.Kind;
             }
         };
-        runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);
+        runner.RunOneScriptCall(new EntityScriptProxy(), state);
         return (kind, state.CodeIndex);
     }
 
@@ -153,12 +152,12 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
             }
         };
 
-        runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);
+        runner.RunOneScriptCall(new EntityScriptProxy(), state);
         Assert.Equal(EventTraceKind.Degraded, kind);
         Assert.Equal(3, state.CodeIndex);
 
         state.CodeIndex = 0; // the same runner runs the opcode a second time.
-        runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);
+        runner.RunOneScriptCall(new EntityScriptProxy(), state);
 
         Assert.Single(capture.Messages.Where(message => message.Contains("0xa4", StringComparison.OrdinalIgnoreCase)));
     }
@@ -267,7 +266,7 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
     [Fact]
     public void WorldProxy_ImplementsTheMaskThroughItsBackdropStage()
     {
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         var (stage, scrolling, cellular) = NewStageLikeMap475();
         proxy._backdropStage.AttachService(scrolling);
         proxy._backdropStage.AttachCellularService(cellular);

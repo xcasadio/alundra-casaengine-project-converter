@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using CasaEngine.Core.Logging;
 using Alundra.Maps;
-using Alundra.Scripts;
 
 namespace Alundra.Entities;
 
@@ -13,7 +12,7 @@ namespace Alundra.Entities;
 /// The original fills a fixed global buffer (<c>g_matchingEntitiesBuffer</c>) and returns a count; this
 /// port returns the matches directly as a list, in the same iteration order.
 ///
-/// Operates over <see cref="AlundraEntityScriptProxy"/> instead of the original's <c>Entity</c>, and over
+/// Operates over <see cref="EntityScriptProxy"/> instead of the original's <c>Entity</c>, and over
 /// a plain list (<see cref="IEntityWorldContext.SpawnedEntities"/>, ultimately <c>AlundraWorldProxy</c>'s
 /// own <c>_spawnedEntities</c>) instead of the original's flat, index-addressed <c>g_entitySlots</c>
 /// array - both engine-facing seams already exist on the proxy (see the field-by-field doc below), which
@@ -22,7 +21,7 @@ namespace Alundra.Entities;
 /// <b>Search-type reference</b> (searchType's bit 0x80 selects the two halves):
 /// <list type="bullet">
 /// <item><description>0x80 clear: raw entity-record id search (GameEngine.cs:1940-1953) - matches every
-/// spawned entity whose <see cref="AlundraEntityScriptProxy.EntityRefId"/> equals <c>searchType</c>,
+/// spawned entity whose <see cref="EntityScriptProxy.EntityRefId"/> equals <c>searchType</c>,
 /// gated on <c>referenceEntity.IsLoadedNormalOrDeactivated</c>. The original also calls
 /// <c>CheckEntityRecord(searchType)</c> first purely to validate the id and log "Illegal InitData
 /// Number!!" on failure (GameEngine.cs:2113-2123) - its result is discarded and it has no effect on the
@@ -33,7 +32,7 @@ namespace Alundra.Entities;
 /// <item><description>0 - the reference entity itself (the logic entity of the program).</description></item>
 /// <item><description>1 - the player entity (GameEngine.cs:1962-1964:
 /// <c>g_matchingEntitiesBuffer[0] = StaticVariables.PlayerEntity</c>). Since E1 the player IS a real
-/// spawned entity (<see cref="AlundraWorldProxy.PlayerEntity"/>, also present in
+/// spawned entity (<see cref="WorldProxy.PlayerEntity"/>, also present in
 /// <see cref="IEntityWorldContext.SpawnedEntities"/>) - ported by returning
 /// <paramref name="playerEntity"/> when non-null (the caller's own <c>IEntityWorldContext.PlayerEntity</c>),
 /// no matches when null (no player spawned this session, degraded mode, same shape as every other
@@ -42,15 +41,15 @@ namespace Alundra.Entities;
 /// loop starts at slot index 0, the player's own slot).</description></item>
 /// <item><description>3 - every loaded/normal/deactivated entity EXCEPT the player (GameEngine.cs:1978-1988:
 /// loop starts at slot index 1, skipping the player's own slot 0). Ported here by excluding whichever
-/// candidate has <see cref="AlundraEntityScriptProxy.IsPlayer"/> set - this runtime has no fixed
+/// candidate has <see cref="EntityScriptProxy.IsPlayer"/> set - this runtime has no fixed
 /// slot-0 layout to index around, but the player is always exactly one entity, so filtering on its own
 /// flag reproduces the same set.</description></item>
 /// <item><description>4 - every entity on the ground: <see cref="EntityFlags.Collidable"/> set, the
 /// per-animation "no entity collision" bit (<c>EntityAnimFlags.NoEntityCollision</c> = 0x80, ported here
 /// as a local constant - see that class's own doc for why it is not pulled in as a whole file) clear, and
-/// no <see cref="AlundraEntityScriptProxy.PlatformEntity"/>.</description></item>
+/// no <see cref="EntityScriptProxy.PlatformEntity"/>.</description></item>
 /// <item><description>5 - entities the reference entity is riding on (<c>referenceEntity.RidingEntity</c> matches the
-/// candidate's own backing <see cref="AlundraEntityScriptProxy.LogicContextEntity"/>), EXCLUDING the
+/// candidate's own backing <see cref="EntityScriptProxy.LogicContextEntity"/>), EXCLUDING the
 /// player (E4.f, GameEngine.cs:2010-2091 loops from slot 1, never slot 0).</description></item>
 /// <item><description>6 - entities riding on the reference entity (candidate's <c>RidingEntity</c> matches
 /// the reference entity's <c>LogicContextEntity</c>), EXCLUDING the player.</description></item>
@@ -67,7 +66,7 @@ namespace Alundra.Entities;
 /// </list>
 /// Cases 5-10 compare against a proxy's <c>Entity?</c>-typed relationship fields (which point at the
 /// original engine <c>Entity</c>), so the comparison is done through each candidate's own
-/// <see cref="AlundraEntityScriptProxy.LogicContextEntity"/> - the one field every spawned proxy carries
+/// <see cref="EntityScriptProxy.LogicContextEntity"/> - the one field every spawned proxy carries
 /// back to its own owning <c>Entity</c> (see <c>AlundraWorldProxy.ApplySpawnInitialization</c>).
 /// Any other <c>functionId</c> (12-127) is the original's "Illegal Destination!" breakpoint trap
 /// (GameEngine.cs:2101-2103) - logged once here instead, no matches.</description></item>
@@ -89,19 +88,19 @@ public static class EntitySearchService
     /// Runs one search, in the original's own iteration order. <paramref name="referenceEntity"/> is the
     /// REFERENCE of the search: the logic entity of the program that issued it (<c>logicEntity</c>, the
     /// handler's a0 in the original): the entity whose program runs, until opcode 0x42/0x43 retargets it
-    /// (E19.a T1, <see cref="AlundraEntityScriptProxy.LogicEntity"/>) - not always the entity itself.
+    /// (E19.a T1, <see cref="EntityScriptProxy.LogicEntity"/>) - not always the entity itself.
     /// <paramref name="playerEntity"/> backs function id 1 ("get player") - passed explicitly (the
     /// caller's own <see cref="IEntityWorldContext.PlayerEntity"/>) rather than found by scanning
-    /// <paramref name="spawnedEntities"/> for <see cref="AlundraEntityScriptProxy.IsPlayer"/>, since every
+    /// <paramref name="spawnedEntities"/> for <see cref="EntityScriptProxy.IsPlayer"/>, since every
     /// call site already has it at hand and a linear scan for a single, already-known reference would be
     /// wasted work on this hot-ish path. Optional (defaults to null - no match, same as no player spawned)
     /// so existing tests/call sites that never exercise function id 1 do not need to pass it.
     /// </summary>
-    public static List<AlundraEntityScriptProxy> GetMatchingEntitiesBySearchType(
-        AlundraEntityScriptProxy referenceEntity, int searchType, IReadOnlyList<AlundraEntityScriptProxy> spawnedEntities,
-        AlundraEntityScriptProxy? playerEntity = null)
+    public static List<EntityScriptProxy> GetMatchingEntitiesBySearchType(
+        EntityScriptProxy referenceEntity, int searchType, IReadOnlyList<EntityScriptProxy> spawnedEntities,
+        EntityScriptProxy? playerEntity = null)
     {
-        var matches = new List<AlundraEntityScriptProxy>();
+        var matches = new List<EntityScriptProxy>();
 
         if ((searchType & 0x80) == 0)
         {

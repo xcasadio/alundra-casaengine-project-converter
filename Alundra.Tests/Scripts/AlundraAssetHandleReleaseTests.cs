@@ -1,10 +1,10 @@
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.UI.MGUI;
 using Xunit;
 using Alundra.UI.Hud;
+using Alundra.Maps;
 
 namespace Alundra.Tests.Scripts;
 
@@ -71,7 +71,7 @@ public sealed class AlundraAssetHandleReleaseTests
         tileMapData.TileSetDataAssetIds.Add(SecondTileSetId);
 
         // No navigation layer in this map: the grid is not built, and the tilesets must be given back anyway.
-        var grid = AlundraWorldProxy.TryBuildNavigationGrid("TestWorld", assets, tileMapData);
+        var grid = WorldProxy.TryBuildNavigationGrid("TestWorld", assets, tileMapData);
 
         Assert.Null(grid);
         Assert.Equal(2, loader.Loads);
@@ -86,7 +86,7 @@ public sealed class AlundraAssetHandleReleaseTests
         var tileMapData = new TileMapData();
         tileMapData.TileSetDataAssetIds.Add(FirstTileSetId);
 
-        AlundraWorldProxy.TryBuildNavigationGrid("TestWorld", assets, tileMapData);
+        WorldProxy.TryBuildNavigationGrid("TestWorld", assets, tileMapData);
 
         Assert.Equal(0, assets.CollectUnreferenced());
     }
@@ -96,7 +96,7 @@ public sealed class AlundraAssetHandleReleaseTests
     {
         var assets = NewAssets(out _);
         var screen = new HudScreen(HudDirector.Instance, assets);
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.AttachHudScreenForTests(screen);
 
         proxy.OnEndPlay(null!);

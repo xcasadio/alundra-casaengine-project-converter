@@ -11,19 +11,19 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
-using Alundra.Scripts;
+using Alundra.Entities;
 
 namespace Alundra.Physics;
 
 /// <summary>
-/// Owns the four static per-corner terrain samplers formerly on <see cref="AlundraEntityScriptProxy"/>:
+/// Owns the four static per-corner terrain samplers formerly on <see cref="EntityScriptProxy"/>:
 /// <c>SampleTerrainHeightCorner</c>, <c>ProbeSlopeCorner</c>, <c>SampleRawTileHeightCorner</c> and
 /// <c>SampleGroundCorner</c>. Pure `static`, stateless, moved by slice R4 of
 /// docs/plan-decoupage-proxies.md - a behaviour-preserving relocation only, see that plan's §3 for the
 /// exact delta rule (call qualification and the private-to-internal widening this move used on all
 /// four methods, per §1 constraint 4). The instance terrain methods that call these
 /// (<c>ComputeTerrainHeight</c>, <c>UpdateGroundSlope</c>, <c>GetTileHeightAtOffset</c>) stay on
-/// <see cref="AlundraEntityScriptProxy"/>, per R-1: they read <c>Owner</c> (`protected` on
+/// <see cref="EntityScriptProxy"/>, per R-1: they read <c>Owner</c> (`protected` on
 /// `GameplayProxy`) and form a call cycle with the controller bridge, which is out of scope for this
 /// plan.
 /// </summary>
@@ -66,12 +66,12 @@ internal static class TerrainProbe
 
     /// <summary>
     /// T3 (docs/plan-transitions-carte.md D-T-10/§1.6): per-corner half of
-    /// <see cref="AlundraEntityScriptProxy.UpdateVramFlags"/> - port of the SAME qualification
+    /// <see cref="EntityScriptProxy.UpdateVramFlags"/> - port of the SAME qualification
     /// <see cref="ProbeSlopeCorner"/> already uses (<c>PhysicsEngine.cs:1740-1768</c>'s gravity-branch
-    /// corner loop computes <see cref="AlundraEntityScriptProxy.Slope_18c"/> and
-    /// <see cref="AlundraEntityScriptProxy.CombinedVramFlagsOR"/>/<see cref="AlundraEntityScriptProxy.CombinedVramFlagsAND"/>
+    /// corner loop computes <see cref="EntityScriptProxy.Slope_18c"/> and
+    /// <see cref="EntityScriptProxy.CombinedVramFlagsOR"/>/<see cref="EntityScriptProxy.CombinedVramFlagsAND"/>
     /// from the exact same four corners and the exact same per-corner qualification test in one pass -
-    /// see <see cref="AlundraEntityScriptProxy.UpdateVramFlags"/>'s own doc for why this port keeps them as
+    /// see <see cref="EntityScriptProxy.UpdateVramFlags"/>'s own doc for why this port keeps them as
     /// two separate probes instead of one combined method).
     ///
     /// A qualifying corner contributes the FULL reconstituted <c>MapTile.Flags</c>

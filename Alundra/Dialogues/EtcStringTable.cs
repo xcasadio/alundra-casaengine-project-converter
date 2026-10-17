@@ -6,8 +6,9 @@ using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Yarn;
 using Alundra.Dialogues.Yarn;
-using Alundra.Scripts;
 using Alundra.UI.Shared;
+using Alundra.Hero;
+using Alundra.Maps;
 
 namespace Alundra.Dialogues;
 
@@ -25,9 +26,9 @@ namespace Alundra.Dialogues;
 /// compiling unchanged.
 ///
 /// <b>Loading (contract item 5)</b>: <see cref="EnsureLoaded"/> is this table's ONE production entry
-/// point - called once per game from <see cref="AlundraWorldProxy.InitializeWithWorld"/>, the same
+/// point - called once per game from <see cref="WorldProxy.InitializeWithWorld"/>, the same
 /// "idempotent, called every world load" shape as
-/// <see cref="AlundraPlayerController.EnsureInputMappingsRegistered"/> - and resolves the catalogued
+/// <see cref="HeroController.EnsureInputMappingsRegistered"/> - and resolves the catalogued
 /// <c>dialogue_etc</c> asset through <see cref="AssetCatalog.Get"/> and
 /// <see cref="AssetContentManager.LoadCopy{T}"/> (ADR-0037's own "read once to derive an instance"
 /// shape: this table has no per-world owner to give a counted handle back to - the ETC texts are read
@@ -77,11 +78,11 @@ public static class EtcStringTable
     /// This table's one production entry point (contract item 5): loads <c>dialogue_etc</c> from the
     /// catalog through <paramref name="assetContentManager"/> the first time it is called with a
     /// non-null one, and does nothing on every later call (idempotent, same shape as
-    /// <see cref="AlundraPlayerController.EnsureInputMappingsRegistered"/>) - so a per-world caller such
-    /// as <see cref="AlundraWorldProxy.InitializeWithWorld"/> can call it unconditionally on every world
+    /// <see cref="HeroController.EnsureInputMappingsRegistered"/>) - so a per-world caller such
+    /// as <see cref="WorldProxy.InitializeWithWorld"/> can call it unconditionally on every world
     /// load. A null <paramref name="assetContentManager"/> (headless/editor-preview, no
     /// <see cref="CasaEngine.Framework.Application.CasaEngineGame"/>) is a no-op, exactly like
-    /// <see cref="AlundraPlayerController.EnsureInputMappingsRegistered"/>'s own null-game gate: every
+    /// <see cref="HeroController.EnsureInputMappingsRegistered"/>'s own null-game gate: every
     /// <c>TryResolve*</c> call then degrades (one warning, <see langword="false"/>) until a later call
     /// with a real game succeeds.
     /// </summary>

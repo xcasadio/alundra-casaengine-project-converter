@@ -1,7 +1,6 @@
 #nullable enable
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
 using Xunit;
@@ -11,6 +10,7 @@ using Alundra.Entities;
 using Alundra.Rng;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -62,7 +62,7 @@ public sealed class AlundraWorldProxyCellularRandomWiringTests : System.IDisposa
         var world = new World { Name = "TestWorld" };
         AlundraWorldProxyGlobalFreezeTests.SetProperty(world, nameof(World.Game), game);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // no "tileMap" entity -> early return AFTER the wiring above.
 
         var savedLibcState = LibcRandom.State;

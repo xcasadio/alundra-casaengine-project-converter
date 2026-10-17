@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Microsoft.Xna.Framework;
 using Xunit;
@@ -9,6 +8,7 @@ using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
@@ -118,7 +118,7 @@ public sealed class AlundraCollidedWithEntityZTests
         foreach (var gravity in new[] { true, false })
         {
             var world = HeroWorldFixture.BuildWorld(FlatCells.Create());
-            var controller = new AlundraPlayerController { PadStateProviderForTests = () => default };
+            var controller = new HeroController { PadStateProviderForTests = () => default };
             var host = new ContactHost(null, GameState.PlayerControlBits.ControlLocked, controller);
             var settings = HeroWorldFixture.LoadHeroControllerSettings(projectRoot!);
             settings.Gravity = 1250f;

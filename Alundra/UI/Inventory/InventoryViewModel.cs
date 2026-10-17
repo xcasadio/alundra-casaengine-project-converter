@@ -7,7 +7,7 @@ using Alundra.Entities;
 using Alundra.Dialogues;
 using Alundra.UI.Inventory;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Inventory;
 
 /// <summary>
 /// The inventory screen's view model (parent ADR-0002, engine ADR-0038): what <c>UI/Screens/InventoryScreen.xaml</c>
@@ -19,7 +19,7 @@ namespace Alundra.Scripts;
 /// take theirs from here. The cursor is the <c>ui_inventory_cursor</c> animation, which carries the original's
 /// per-phase pixel offset itself: its position here is the composer's base position.
 /// </summary>
-public sealed class AlundraInventoryViewModel : ViewModelBase
+public sealed class InventoryViewModel : ViewModelBase
 {
     // wind_000/002/009/016/023/030/037/045/055/065, the digit glyphs 0-9 (the same ids AlundraHudScreen resolves).
     // Internal (not private): AlundraSubInventoryViewModel reuses this table as-is for its own money/falcon/key
@@ -41,14 +41,14 @@ public sealed class AlundraInventoryViewModel : ViewModelBase
     private Visibility _rootVisibility = Visibility.Collapsed;
 
     /// <summary>A view model with no icon sizes: the editor's design-time data, which gives every position itself.</summary>
-    public AlundraInventoryViewModel()
+    public InventoryViewModel()
         : this(null)
     {
     }
 
     /// <param name="iconSize">The native size of an icon sprite, or null when it cannot be read: an icon is centred
     /// in its cell from its size (D-E13D-10), and stays hidden without one.</param>
-    public AlundraInventoryViewModel(Func<Guid, Point?>? iconSize)
+    public InventoryViewModel(Func<Guid, Point?>? iconSize)
     {
         _iconSize = iconSize;
         for (var i = 0; i < _iconSlots.Length; i++)

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Maps;
@@ -57,7 +56,7 @@ public sealed class AlundraEntityContactArcTests
         using var arc = new ArcRun(A19Spec);
         var s = new ArcSamples(arc, new[] { 6, 7 }, new uint[] { 10, 30, 40, 50, 60, 70 },
             (B, 48, 95), (C, 452, 458), (C, 452, 463), (C, 452, 506), (B, 112, 120), (B, 112, 125));
-        AlundraEntityScriptProxy? rec7First = null;
+        EntityScriptProxy? rec7First = null;
         int destroyFrame = -1;
         var rec7InList = new Dictionary<int, bool>();
         var previousOnInstruction = arc.OnInstruction;
@@ -271,7 +270,7 @@ public sealed class AlundraEntityContactArcTests
         using var arc = new ArcRun(B9Spec(4361)); // E19.f2a: 3200 before; the simulated end is 3634 (annex V-125)
         var s = new ArcSamples(arc, new[] { 39, 41 }, new uint[] { 510, 511, 512, 514, 515 },
             (C, 3636, 3670), (B, 1132, 1212), (C, 3636, 3673), (B, 1132, 1215), (C, 3636, 3693), (C, 3636, 3725), (C, 3636, 3731), (C, 3636, 3734));
-        AlundraEntityScriptProxy? rec41 = null;
+        EntityScriptProxy? rec41 = null;
         int destroyFrame = -1;
         var inList = new Dictionary<int, bool>();
         var previousOnInstruction = arc.OnInstruction;

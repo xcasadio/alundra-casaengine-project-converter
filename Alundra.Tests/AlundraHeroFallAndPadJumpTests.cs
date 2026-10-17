@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -13,6 +12,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -697,9 +697,9 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         // The same re-adoption as UJ-7 (the pending arrival consumed by AdoptPlayerPawn of the world).
         WarpDirector.Instance.ResetForTests();
         WarpDirector.Instance.SetPendingArrivalForTests(179, (17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0);
-        var tileMapData = (CasaEngine.Framework.Assets.TileMap.TileMapData)typeof(AlundraWorldProxy)
+        var tileMapData = (CasaEngine.Framework.Assets.TileMap.TileMapData)typeof(WorldProxy)
             .GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!;
-        typeof(AlundraWorldProxy).GetMethod("AdoptPlayerPawn", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(arc.Proxy, new object[] { arc.RealWorld!, tileMapData });
+        typeof(WorldProxy).GetMethod("AdoptPlayerPawn", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(arc.Proxy, new object[] { arc.RealWorld!, tileMapData });
         WarpDirector.Instance.ResetForTests();
 
         Assert.False(hero.HeroAirborne);

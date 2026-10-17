@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using Xunit;
 using Alundra.Maps;
@@ -44,7 +43,7 @@ public class Map389LoadProgramsTests
     /// TargetAnimationId, mirroring what AlundraWorldProxy's pick phase does on the frame it spawns.</summary>
     private static uint RunLoad(EventProgramRunner runner, int loadIndex)
     {
-        var entity = new AlundraEntityScriptProxy();
+        var entity = new EntityScriptProxy();
         entity.ProgramIndexes[ScriptHelper.ProgramALoad] = loadIndex;
         runner.RunScript(entity, ScriptHelper.ProgramALoad);
         return entity.TargetAnimationId;
@@ -84,16 +83,16 @@ public class Map389LoadProgramsTests
     /// without a live World.</summary>
     private sealed class RecordingWorldContext : IEntityWorldContext
     {
-        public List<AlundraEntityScriptProxy> SpawnedEntitiesList { get; } = new();
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => SpawnedEntitiesList;
-        public AlundraEntityScriptProxy? PlayerEntity => null;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public List<EntityScriptProxy> SpawnedEntitiesList { get; } = new();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => SpawnedEntitiesList;
+        public EntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public readonly List<AlundraEntityScriptProxy> DestroyedEntities = new();
+        public readonly List<EntityScriptProxy> DestroyedEntities = new();
 
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity) => DestroyedEntities.Add(entity);
+        public void DestroyEntity(EntityScriptProxy entity) => DestroyedEntities.Add(entity);
 
         public NavigationGrid2D? NavigationGrid => null;
     }
@@ -119,7 +118,7 @@ public class Map389LoadProgramsTests
         var context = new RecordingWorldContext();
         var runner = new EventProgramRunner(document, new GameState(), context);
 
-        var e11 = new AlundraEntityScriptProxy { PosX = 111, PosY = 222, PosZ = 333 };
+        var e11 = new EntityScriptProxy { PosX = 111, PosY = 222, PosZ = 333 };
         e11.ProgramIndexes[ScriptHelper.ProgramALoad] = 139;
         runner.RunScript(e11, ScriptHelper.ProgramALoad);
 
@@ -153,7 +152,7 @@ public class Map389LoadProgramsTests
         var runner = new EventProgramRunner(document, gameState, context);
 
         // Load 139 (E11): SetAnim(0); flag on -> 0x64 SetEntitiesPosition(owner) then SetAnim(1).
-        var e11 = new AlundraEntityScriptProxy();
+        var e11 = new EntityScriptProxy();
         e11.ProgramIndexes[ScriptHelper.ProgramALoad] = 139;
         runner.RunScript(e11, ScriptHelper.ProgramALoad);
 
@@ -163,7 +162,7 @@ public class Map389LoadProgramsTests
         Assert.Equal(0xa0 << 16, e11.PosZ);
 
         // Load 140 (E12): SetAnim(0); flag on -> 0x64 SetEntitiesPosition(owner) then SetDirection(0).
-        var e12 = new AlundraEntityScriptProxy { TargetDirection = 3 };
+        var e12 = new EntityScriptProxy { TargetDirection = 3 };
         e12.ProgramIndexes[ScriptHelper.ProgramALoad] = 140;
         runner.RunScript(e12, ScriptHelper.ProgramALoad);
 
@@ -174,7 +173,7 @@ public class Map389LoadProgramsTests
         Assert.Equal(0u, e12.TargetDirection);
 
         // Load 143 (E15): SetAnim(5); flag on -> 0x2E DestroyEntity(owner).
-        var e15 = new AlundraEntityScriptProxy();
+        var e15 = new EntityScriptProxy();
         e15.ProgramIndexes[ScriptHelper.ProgramALoad] = 143;
         runner.RunScript(e15, ScriptHelper.ProgramALoad);
 

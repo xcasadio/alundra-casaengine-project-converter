@@ -8,12 +8,12 @@ using System.Text.Json.Serialization;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using Alundra.Session;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Entities;
 
 /// <summary>
-/// Seam over <see cref="SpriteRecordCatalog"/> so spawn-time code (<see cref="AlundraWorldProxy"/>) and
+/// Seam over <see cref="SpriteRecordCatalog"/> so spawn-time code (<see cref="WorldProxy"/>) and
 /// its tests can swap the real file-backed catalog for an in-memory fake, the same way
 /// <c>AlundraWorldProxy.CreateEntityFromRecord</c>'s <c>prefabLoader</c> parameter is swapped in tests.
 /// </summary>

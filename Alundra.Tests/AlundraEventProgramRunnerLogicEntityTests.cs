@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using Xunit;
 using Alundra.Maps;
@@ -32,26 +31,26 @@ public class AlundraEventProgramRunnerLogicEntityTests
     /// <summary>A world with a settable list of spawned entities and a player - just what the searches read.</summary>
     private sealed class FakeWorld : IEntityWorldContext
     {
-        public List<AlundraEntityScriptProxy> Spawned { get; } = new();
+        public List<EntityScriptProxy> Spawned { get; } = new();
 
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Spawned;
 
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? PlayerEntity { get; set; }
 
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
 
         public void SetForcedCameraLookAt(int x, int y, int z)
         {
         }
 
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
+        public void DestroyEntity(EntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
 
         public NavigationGrid2D? NavigationGrid => null;
     }
 
-    private static AlundraEntityScriptProxy Entity(int record, EntityStatus status = EntityStatus.Normal)
+    private static EntityScriptProxy Entity(int record, EntityStatus status = EntityStatus.Normal)
         => new() { EntityRefId = record, Status = status };
 
     private static EventProgramState StateFor(EventProgramDocument document) => new() { Codes = document.CodesAsBytes() };
@@ -170,11 +169,11 @@ public class AlundraEventProgramRunnerLogicEntityTests
             Codes = new[] { 0x1A, 7, 0x00, 0x1A, 8, 0xFF },
         };
         var runner = NewRunner(document);
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
+        var hero = new EntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
         var npc = Entity(2);
         var mapEvent = new MapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 10, Y2 = 10, ProgramBMap = 129, OriginalProgramBMap = 129, Entity = npc };
 
-        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
 
         // The first frame ran up to the Break on the event's own entity, not on the hero.
         Assert.Equal(7u, npc.TargetAnimationId);
@@ -182,7 +181,7 @@ public class AlundraEventProgramRunnerLogicEntityTests
         Assert.Same(npc, mapEvent.Entity);
         Assert.Same(npc, hero.LogicEntity); // the hero's own word keeps the last event's value, as hero+0x230 does.
 
-        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
 
         Assert.Equal(8u, npc.TargetAnimationId);
         Assert.Equal(0u, hero.TargetAnimationId);
@@ -266,7 +265,7 @@ public class AlundraEventProgramRunnerLogicEntityTests
         // The owner retargeted itself on an NPC, then 0x42 gives the context back to the hero.
         var document = NewDocument(0x42, 0x1A, 7, 0xFF);
         var world = new FakeWorld();
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal };
+        var hero = new EntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal };
         world.PlayerEntity = hero;
         var runner = NewRunner(document, world);
         var owner = Entity(1);
@@ -287,7 +286,7 @@ public class AlundraEventProgramRunnerLogicEntityTests
         // 0x8003CA38) with the logic entity as reference and writes the OWNER's word with the hero; the 0x1A [80] that follows acts on the hero, not on the owner.
         var document = NewDocument(0x43, 0x81, 0x1A, 80, 0xFF);
         var world = new FakeWorld();
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, EntityRefId = 99 };
+        var hero = new EntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, EntityRefId = 99 };
         world.PlayerEntity = hero;
         var runner = NewRunner(document, world);
         var owner = Entity(1);
@@ -320,7 +319,7 @@ public class AlundraEventProgramRunnerLogicEntityTests
         // E19.m6 M6-3: UO-1 runs 0x45/0x46 on an entity that is its own logic entity, so the handlers' operand (the logic entity) is never told apart from the owner.
         // Here the owner retargets the hero with 0x42: the bit 0x2000 lands on the hero's flags, the owner's are not written.
         var world = new FakeWorld();
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, Flags = 0x100 };
+        var hero = new EntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, Flags = 0x100 };
         world.PlayerEntity = hero;
         var owner = Entity(1);
         var ownerFlags = owner.Flags;
@@ -410,14 +409,14 @@ public class AlundraEventProgramRunnerLogicEntityTests
         var npc = Entity(5);
         world.Spawned.Add(npc);
         var runner = NewRunner(document, world);
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5, Status = EntityStatus.Normal };
+        var hero = new EntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5, Status = EntityStatus.Normal };
         world.PlayerEntity = hero;
         var mapEvent = new MapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 10, Y2 = 10, ProgramBMap = 129, OriginalProgramBMap = 129, Entity = hero };
 
-        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
         Assert.Same(npc, mapEvent.Entity);
 
-        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
         Assert.Equal(7u, npc.TargetAnimationId);
         Assert.Equal(0u, hero.TargetAnimationId);
     }
@@ -432,7 +431,7 @@ public class AlundraEventProgramRunnerLogicEntityTests
         // 0x59 [0x81, 3]; 0x1A [7]; end: the hero "at rest" idiom, then the next instruction at +3.
         var document = NewDocument(0x59, 0x81, 3, 0x1A, 7, 0xFF);
         var world = new FakeWorld();
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal };
+        var hero = new EntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal };
         world.PlayerEntity = hero;
         var runner = NewRunner(document, world);
         var owner = Entity(1);
@@ -648,7 +647,7 @@ public class AlundraEventProgramRunnerLogicEntityTests
         var owner = Entity(1);
         owner.LogicEntity = Entity(2);
 
-        var clone = Assert.IsType<AlundraEntityScriptProxy>(owner.Clone());
+        var clone = Assert.IsType<EntityScriptProxy>(owner.Clone());
 
         Assert.Null(clone.LogicEntity);
     }

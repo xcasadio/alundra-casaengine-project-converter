@@ -1,14 +1,15 @@
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps.Loop;
 using Alundra.Physics;
+using Alundra.Entities;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// Bug fix (user-reported runtime pacing bug - see <see cref="LogicClock"/>'s own class doc for the
 /// full diagnosis/log evidence): unit coverage for the shared 50 Hz logic clock in isolation, before any
-/// integration with <see cref="Alundra.Scripts.AlundraEntityScriptProxy"/>/<see cref="Alundra.Scripts.AlundraWorldProxy"/>
+/// integration with <see cref="Alundra.Entities.EntityScriptProxy"/>/<see cref="Alundra.Maps.WorldProxy"/>
 /// (see <see cref="AlundraWorldProxyLogicClockTests"/> for that half).
 /// </summary>
 public class AlundraLogicClockTests

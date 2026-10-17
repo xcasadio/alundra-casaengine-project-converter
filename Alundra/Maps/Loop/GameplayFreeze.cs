@@ -1,9 +1,9 @@
 #nullable enable
 using CasaEngine.Framework.Scene.Entities.Components;
-using Alundra.Scripts;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Physics;
+using Alundra.Entities;
 
 namespace Alundra.Maps.Loop;
 
@@ -43,7 +43,7 @@ namespace Alundra.Maps.Loop;
 /// it, and it ignores <see cref="AnimatedSpriteComponent.IsPlaybackPaused"/> (a stale pause must not eat the first tick
 /// after a thaw). A warp departure does not pause the drawing: only the clock stops.</para>
 ///
-/// <para>Applied from the END of <see cref="AlundraWorldProxy.Update"/>, to every spawned entity: the
+/// <para>Applied from the END of <see cref="WorldProxy.Update"/>, to every spawned entity: the
 /// engine updates the controllers and the sprites BEFORE the gameplay proxies each frame, and MenuOpen is
 /// posed and lifted during this frame's proxies, so freezing or thawing here takes effect from the very next
 /// engine update - a freeze applied from the entity's own proxy would let one more frame of fall through.
@@ -65,7 +65,7 @@ internal static class GameplayFreeze
 
     /// <summary>Freezes or thaws <paramref name="proxy"/> when <paramref name="gameplayBlocked"/> changed
     /// since the last call; does nothing otherwise.</summary>
-    internal static void Apply(AlundraEntityScriptProxy proxy, bool gameplayBlocked)
+    internal static void Apply(EntityScriptProxy proxy, bool gameplayBlocked)
     {
         if (gameplayBlocked && !proxy.FreezeState.IsFrozen)
         {
@@ -77,7 +77,7 @@ internal static class GameplayFreeze
         }
     }
 
-    internal static void Freeze(AlundraEntityScriptProxy proxy)
+    internal static void Freeze(EntityScriptProxy proxy)
     {
         var state = proxy.FreezeState;
 
@@ -96,7 +96,7 @@ internal static class GameplayFreeze
         state.IsFrozen = true;
     }
 
-    internal static void Thaw(AlundraEntityScriptProxy proxy)
+    internal static void Thaw(EntityScriptProxy proxy)
     {
         var state = proxy.FreezeState;
 
@@ -123,7 +123,7 @@ internal static class GameplayFreeze
     /// the climbing sentinel for a hero clinging to a ladder (AlundraScriptedMotion.cs:140-144) or the airborne sentinel for a hero in the air state (E19.d2c1 R6), this tick's
     /// resolved vertical force for a controller-driven NPC (AlundraEntityScriptProxy.Update's own trailing
     /// declaration), and 0 otherwise - the value <c>Stop()</c> itself leaves.</summary>
-    internal static float OwnerExternalVerticalDisplacement(AlundraEntityScriptProxy proxy)
+    internal static float OwnerExternalVerticalDisplacement(EntityScriptProxy proxy)
     {
         if (proxy.IsPlayer)
         {

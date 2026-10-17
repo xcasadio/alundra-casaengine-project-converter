@@ -6,7 +6,6 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
-using Alundra.Scripts;
 using Alundra.UI.Inventory;
 
 namespace Alundra.UI.SubInventory;
@@ -14,7 +13,7 @@ namespace Alundra.UI.SubInventory;
 /// <summary>
 /// The sub-inventory screen (E13.d SI4, parent ADR-0002): a project asset,
 /// <c>UI/Screens/SubInventoryScreen.uiscreen</c> and its XAML, versioned in <c>alundra-project</c>, loaded
-/// through the asset manager and bound to an <see cref="AlundraSubInventoryViewModel"/> that
+/// through the asset manager and bound to an <see cref="SubInventoryViewModel"/> that
 /// <see cref="SubInventoryPresenter"/> writes every logic tick. Same shape as
 /// <see cref="InventoryScreen"/> - only the sizes/scales/reads the window, XAML declares everything else.
 ///
@@ -48,7 +47,7 @@ public sealed class SubInventoryScreen : XamlUIScreenBase, IDisposable
         : base(assetContentManager, ScreenAssetId)
     {
         ArgumentNullException.ThrowIfNull(fonts);
-        ViewModel = new AlundraSubInventoryViewModel();
+        ViewModel = new SubInventoryViewModel();
 
         try
         {
@@ -64,7 +63,7 @@ public sealed class SubInventoryScreen : XamlUIScreenBase, IDisposable
     }
 
     /// <summary>What the XAML binds, and what <see cref="SubInventoryPresenter"/> writes.</summary>
-    public AlundraSubInventoryViewModel ViewModel { get; }
+    public SubInventoryViewModel ViewModel { get; }
 
     /// <summary>True once <see cref="Dispose"/> gave font3 back.</summary>
     internal bool IsDisposed => _font3 == null;

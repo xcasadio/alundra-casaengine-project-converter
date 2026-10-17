@@ -4,16 +4,16 @@ using System.Diagnostics;
 using Alundra.Maps;
 using Alundra.Events;
 using Alundra.Ai.Enemies;
-using Alundra.Scripts;
 using Alundra.Combat;
 using Alundra.Rng;
+using Alundra.Entities;
 
 namespace Alundra.Ai;
 
 /// <summary>
 /// E14.a0b T3 (docs/plan-e14-ia-native.md section 1.2): the helpers the native handlers of the enemies share (Beannoid C1, Muruta C10, and later E14.a1's), ported from <c>ALUN_CD.EXE</c> (France) and compared, state by state, with the real code run
 /// in the emulator on 10,000 random states each (<c>docs/plan-e14-annexe/e14a/oracle</c>, tests <c>AlundraEnemyHelpersTests</c>). E14.a1b registers the Beannoid handlers that use them (<see cref="BeannoideAi"/>, <see cref="NativeSpriteRegistry"/>); the Muruta's come with E14.a1c. Every field a helper reads is tied to its DLL field in the table of the plan (section 1.2, "Entrées des aides"): the fields that carry a direction or an animation take the value of the TICK
-/// (<see cref="AlundraEntityScriptProxy.BoxDirection"/>, never the end-of-frame <see cref="AlundraEntityScriptProxy.AnimationDirection"/>, D-E14-6); all heights are in the DLL's convention (the binary's minus 1: only differences are read).
+/// (<see cref="EntityScriptProxy.BoxDirection"/>, never the end-of-frame <see cref="EntityScriptProxy.AnimationDirection"/>, D-E14-6); all heights are in the DLL's convention (the binary's minus 1: only differences are read).
 /// </summary>
 internal static class EnemyHelpers
 {
@@ -38,11 +38,11 @@ internal static class EnemyHelpers
     /// <c>0x8007FE20</c>, the relative position of <paramref name="self"/> to the hero: <paramref name="output"/> = [|dx|, |dy|, |dz|, dx, dy, dz] with <c>dx = self.TileX - hero.TileX</c> (<c>lw +0x120</c> at <c>0x8007FE28</c> and <c>0x8007FE2C</c>),
     /// <c>dy</c> likewise on <c>TileY</c> (<c>+0x124</c>, <c>0x8007FE30</c>/<c>0x8007FE34</c>) and <c>dz = self.FloorHeight - hero.FloorHeight</c> (<c>+0x134</c>, <c>0x8007FE38</c>/<c>0x8007FE3C</c>); the absolute values wrap as <c>negu</c> does.
     /// </summary>
-    internal static void RelativePosition(AlundraEntityScriptProxy self, AlundraEntityScriptProxy hero, Span<int> output)
+    internal static void RelativePosition(EntityScriptProxy self, EntityScriptProxy hero, Span<int> output)
         => Fill(self.TileX - hero.TileX, self.TileY - hero.TileY, self.FloorHeight - hero.FloorHeight, output);
 
-    /// <summary><c>0x8007FE8C</c>: the same, but the Z of <paramref name="self"/> is its <see cref="AlundraEntityScriptProxy.PosZ"/> (<c>+0x11C</c>, <c>0x8007FEA4</c>) and not its floor; the hero's is his floor (<c>+0x134</c>, <c>0x8007FEA8</c>).</summary>
-    internal static void RelativePositionFromPosZ(AlundraEntityScriptProxy self, AlundraEntityScriptProxy hero, Span<int> output)
+    /// <summary><c>0x8007FE8C</c>: the same, but the Z of <paramref name="self"/> is its <see cref="EntityScriptProxy.PosZ"/> (<c>+0x11C</c>, <c>0x8007FEA4</c>) and not its floor; the hero's is his floor (<c>+0x134</c>, <c>0x8007FEA8</c>).</summary>
+    internal static void RelativePositionFromPosZ(EntityScriptProxy self, EntityScriptProxy hero, Span<int> output)
         => Fill(self.TileX - hero.TileX, self.TileY - hero.TileY, self.PosZ - hero.FloorHeight, output);
 
     private static void Fill(int dx, int dy, int dz, Span<int> output)
@@ -65,10 +65,10 @@ internal static class EnemyHelpers
     internal static bool TryAttackPlayer2(ReadOnlySpan<int> rel, int direction, int a3, int d2, int d3) => TryAttack(rel, direction & 0xFF, a3, d2, d3);
 
     /// <summary>
-    /// <c>0x800805C8</c>, TryAttackPlayerFront: the same window with the direction of the entity, the WORD <c>+0x98</c> (<c>lw 0x98</c> at <c>0x800805E0</c>), which is the value of the TICK: <see cref="AlundraEntityScriptProxy.BoxDirection"/>
-    /// (D-E14-6; never <see cref="AlundraEntityScriptProxy.AnimationDirection"/>, which is the value of the end of the frame), with <paramref name="a2"/> and <paramref name="a3"/> in the places of <see cref="TryAttackPlayer2"/>'s <c>a3</c> and <c>d2</c>.
+    /// <c>0x800805C8</c>, TryAttackPlayerFront: the same window with the direction of the entity, the WORD <c>+0x98</c> (<c>lw 0x98</c> at <c>0x800805E0</c>), which is the value of the TICK: <see cref="EntityScriptProxy.BoxDirection"/>
+    /// (D-E14-6; never <see cref="EntityScriptProxy.AnimationDirection"/>, which is the value of the end of the frame), with <paramref name="a2"/> and <paramref name="a3"/> in the places of <see cref="TryAttackPlayer2"/>'s <c>a3</c> and <c>d2</c>.
     /// </summary>
-    internal static bool TryAttackPlayerFront(AlundraEntityScriptProxy self, ReadOnlySpan<int> rel, int a2, int a3, int d3) => TryAttack(rel, self.BoxDirection, a2, a3, d3);
+    internal static bool TryAttackPlayerFront(EntityScriptProxy self, ReadOnlySpan<int> rel, int a2, int a3, int d3) => TryAttack(rel, self.BoxDirection, a2, a3, d3);
 
     private static bool TryAttack(ReadOnlySpan<int> rel, int direction, int a, int b, int d3)
     {
@@ -94,11 +94,11 @@ internal static class EnemyHelpers
 
     /// <summary>
     /// <c>0x80080144</c>, HandleAnimationDirection: with <c>thr = dist + 1</c> and <c>t[k] = FloorHeight - MapHeights[k]</c> (<c>+0x134</c> at <c>0x8008014C</c>, <c>+0x158</c>-<c>+0x164</c> at <c>0x80080150</c>-<c>0x80080164</c>), the four pairs of
-    /// neighbouring corners that are all higher than the threshold turn the entity (the decision tree of <c>0x80080170-0x80080258</c>, read against <see cref="AlundraEntityScriptProxy.TargetDirection"/>, <c>+0x8C</c>, <c>0x80080184</c>, <c>0x800801B0</c>,
+    /// neighbouring corners that are all higher than the threshold turn the entity (the decision tree of <c>0x80080170-0x80080258</c>, read against <see cref="EntityScriptProxy.TargetDirection"/>, <c>+0x8C</c>, <c>0x80080184</c>, <c>0x800801B0</c>,
     /// <c>0x800801DC</c>, <c>0x80080208</c>): it then takes the animation <paramref name="animation"/> (<c>+0x88</c>, <c>0x80080230</c>), zeroes the forces <c>+0xBC +0xC0 +0xC4 +0xC8 +0xD4 +0xD8</c> (<c>TargetForceX/Y</c>, <c>ForceX/Y</c>, <c>ForceStepX/Y</c>),
     /// and takes the quarter-turn direction <see cref="QuarterTurnTable"/> of its target direction (<c>+0x8C</c>, <c>0x8008024C</c>). Returns whether it turned. The target direction is a packed direction (0..31).
     /// </summary>
-    internal static bool HandleAnimationDirection(AlundraEntityScriptProxy self, uint animation, int dist)
+    internal static bool HandleAnimationDirection(EntityScriptProxy self, uint animation, int dist)
     {
         var threshold = unchecked(dist + 1);
         var floor = self.FloorHeight;
@@ -178,7 +178,7 @@ internal static class EnemyHelpers
     /// <summary><c>(direction - lo) &lt;u count</c>: the <c>addiu / sltiu</c> pair.</summary>
     private static bool InRange(int direction, int lo, int count) => unchecked((uint)(direction - lo)) < (uint)count;
 
-    private static bool Turn(AlundraEntityScriptProxy self, uint animation, int direction)
+    private static bool Turn(EntityScriptProxy self, uint animation, int direction)
     {
         Debug.Assert((uint)direction < (uint)QuarterTurnTable.Length, "a packed direction is 0..31");
         self.TargetAnimationId = animation & 0xFF;
@@ -188,7 +188,7 @@ internal static class EnemyHelpers
     }
 
     /// <summary>The six words every "stop" of the binary's enemies clears: <c>+0xBC +0xC0 +0xC4 +0xC8 +0xD4 +0xD8</c> (<c>TargetForceX/Y</c>, <c>ForceX/Y</c>, <c>ForceStepX/Y</c>), as <see cref="HandleAnimationDirection"/> and C1's walk stop write them.</summary>
-    internal static void ZeroForces(AlundraEntityScriptProxy self)
+    internal static void ZeroForces(EntityScriptProxy self)
     {
         self.TargetForceX = 0;
         self.TargetForceY = 0;
@@ -200,11 +200,11 @@ internal static class EnemyHelpers
 
     /// <summary>
     /// <c>0x8007FEF8</c>, StartWalk (<paramref name="self"/>, animation <paramref name="animation"/>, <paramref name="range"/>, <paramref name="chance"/>): one draw below 0x65 (the random word <c>0x80098708</c>, <see cref="GameRandom"/>); when it is below
-    /// <c>chance &amp; 0xFF</c> the entity aims at the hero (<see cref="ScriptHelper.GetDirectionToTarget"/> of hero minus entity, <c>0x8007FF6C-0x8007FF84</c> on <c>+0x114</c> and <c>+0x118</c>, i.e. <see cref="AlundraEntityScriptProxy.PosX"/> and
-    /// <see cref="AlundraEntityScriptProxy.PosY"/>), else a second draw below 0x20 is its direction; <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> (<c>+0x88</c>) takes <c>animation &amp; 0xFF</c>; when the low 16 bits of
-    /// <paramref name="range"/> are not zero, a draw below 16 plus <paramref name="range"/> is stored as 16 bits at <c>+0x282</c> (<see cref="AlundraEntityScriptProxy.AIValues"/>[1], <c>0x80080010</c>).
+    /// <c>chance &amp; 0xFF</c> the entity aims at the hero (<see cref="ScriptHelper.GetDirectionToTarget"/> of hero minus entity, <c>0x8007FF6C-0x8007FF84</c> on <c>+0x114</c> and <c>+0x118</c>, i.e. <see cref="EntityScriptProxy.PosX"/> and
+    /// <see cref="EntityScriptProxy.PosY"/>), else a second draw below 0x20 is its direction; <see cref="EntityScriptProxy.TargetAnimationId"/> (<c>+0x88</c>) takes <c>animation &amp; 0xFF</c>; when the low 16 bits of
+    /// <paramref name="range"/> are not zero, a draw below 16 plus <paramref name="range"/> is stored as 16 bits at <c>+0x282</c> (<see cref="EntityScriptProxy.AIValues"/>[1], <c>0x80080010</c>).
     /// </summary>
-    internal static void StartWalk(AlundraEntityScriptProxy self, AlundraEntityScriptProxy hero, uint animation, int range, int chance)
+    internal static void StartWalk(EntityScriptProxy self, EntityScriptProxy hero, uint animation, int range, int chance)
     {
         if (Below(0x65) < (chance & 0xFF))
         {
@@ -224,10 +224,10 @@ internal static class EnemyHelpers
 
     /// <summary>
     /// The skeleton of the hit handlers D1 (<c>0x8007D9A4</c>, Beannoid, animation 5) and D9 (<c>0x8007DE04</c>, Muruta, animation 2): <see cref="Damage.ComputeNewHp"/> of the entity (its touching entity's attack, its balance record, the equipment and
-    /// the hero's animation latch of <paramref name="context"/>), <see cref="AlundraEntityScriptProxy.Bytes"/>[3] = 1 when it returned true (<c>sb 0x277</c>, <c>0x8007D9C0</c>), the animation <paramref name="animation"/> (<c>+0x88</c>, <c>0x8007D9C8</c>), and the
+    /// the hero's animation latch of <paramref name="context"/>), <see cref="EntityScriptProxy.Bytes"/>[3] = 1 when it returned true (<c>sb 0x277</c>, <c>0x8007D9C0</c>), the animation <paramref name="animation"/> (<c>+0x88</c>, <c>0x8007D9C8</c>), and the
     /// direction away from the hero (<see cref="ScriptHelper.GetDirectionToTarget"/> of entity minus hero, <c>+0x114</c>/<c>+0x118</c> of both, <c>0x8007D9D4-0x8007D9E4</c>; written at <c>0x8007D9F0</c>). Without a hero in <paramref name="context"/> the direction is left alone.
     /// </summary>
-    internal static void HitReaction(AlundraEntityScriptProxy self, uint animation, IEntityWorldContext context)
+    internal static void HitReaction(EntityScriptProxy self, uint animation, IEntityWorldContext context)
     {
         if (Damage.ComputeNewHp(self, self.BalanceRecord, context.EquipmentRecords, context.HeroAnimationLatch))
         {

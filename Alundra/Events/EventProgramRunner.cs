@@ -12,7 +12,6 @@ using Microsoft.Xna.Framework;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
-using Alundra.Scripts;
 using Alundra.Ai;
 using Alundra.Ai.Enemies;
 using Alundra.Ai.Objects;
@@ -90,11 +89,11 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <summary>The (owner, slot, program index of that slot) triples whose loop guard already logged: the pc is
     /// not part of the key (a B or C loop resumes at a different pc every frame), and the program index
     /// separates the map events, which all have the hero as owner and slot B.</summary>
-    private readonly HashSet<(AlundraEntityScriptProxy Owner, int Slot, int ProgramIndex)> _loggedLoopGuards = new();
+    private readonly HashSet<(EntityScriptProxy Owner, int Slot, int ProgramIndex)> _loggedLoopGuards = new();
 
     /// <summary>
     /// E15.c T5 (docs/plan-e15-yarn.md, contract item 1): this world's own <c>dialogue_{mapId}</c> Yarn
-    /// asset (map table, text-id bit 0x80 set), held by <see cref="AlundraWorldProxy.InitializeWithWorld"/>
+    /// asset (map table, text-id bit 0x80 set), held by <see cref="WorldProxy.InitializeWithWorld"/>
     /// through <c>AssetCatalog</c>/the game's asset manager and handed here as a plain settable property
     /// (same "17 existing call sites keep compiling" reasoning as the pre-E15.c <c>LocalDialogueStrings</c>
     /// this supersedes) - null means "this world's map has no dialogue asset", the same degraded fallback
@@ -126,7 +125,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// E (Deactivate) and F (Interact) - the original never gives any of these their own per-entity state,
     /// they all run off the SAME <c>_gameEngine.StaticVariables.g_eventProgramState</c>
     /// (EntityEventHandlers.cs:234), one instance shared across every call to any of the four (only B/Map
-    /// and C/Tick resume the entity's own persisted <see cref="AlundraEntityScriptProxy.EventProgramState"/>
+    /// and C/Tick resume the entity's own persisted <see cref="EntityScriptProxy.EventProgramState"/>
     /// instead - see <see cref="RunScript"/>). Reused (not reconstructed) by every such call so that
     /// <see cref="EventProgramState.Result"/> - never cleared by <see cref="InitializeEventData"/> - carries
     /// across sequential calls exactly like the original: a Load program that starts with a conditional
@@ -161,7 +160,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <see cref="RunOneScriptCall"/> does all of it, so a direct call with an explicit state behaves like this method.
     /// Only 0x40 raises the flag in this port (the <c>FunctionTypeC</c> handler that also does is native AI, E14).
     /// </summary>
-    public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+    public void RunScript(EntityScriptProxy entity, int programSlot)
     {
         ScriptRunCount++;
 
@@ -262,7 +261,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// is counted in <see cref="SpriteEventRunCount"/>; every other native handler (the ~120 of E14) stays a
     /// counted no-op, as before E16.e.
     /// </summary>
-    public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+    public void RunSpriteEvent(EntityScriptProxy entity)
     {
         SpriteEventRunCount++;
 
@@ -333,7 +332,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// E19.m9 (O-E19-34): the binary writes only the program's start (+0, <c>Parameters[0]</c>) and the pc (+4,
     /// <c>CodeIndex</c>/<c>Sp</c>/<c>Codes</c>) - 0x80041F5C/0x80041F60; <c>Parameters[1..9]</c> (+8 to +0x28, the marker and the data
     /// of a pending wait) keep their values, so a program re-initialized while its first instruction waits goes on counting.</summary>
-    internal void InitializeEventData(AlundraEntityScriptProxy entity, int programSlot, EventProgramState state)
+    internal void InitializeEventData(EntityScriptProxy entity, int programSlot, EventProgramState state)
     {
         var programIndex = entity.ProgramIndexes[programSlot];
 
@@ -376,7 +375,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// reused <see cref="EventProgramState"/> across multiple calls (e.g. to exercise 0x37 Wait's
     /// multi-frame suspend/resume) independently of slot A's own always-fresh-state policy in
     /// <see cref="RunScript"/> above.</summary>
-    internal void RunOneScriptCall(AlundraEntityScriptProxy entity, EventProgramState state, int programSlot = -1)
+    internal void RunOneScriptCall(EntityScriptProxy entity, EventProgramState state, int programSlot = -1)
     {
         var iterations = 0;
         var clearRunningState = false; // g_clearProgramState raised by the owner's own logic: the state that runs is cleared at the end of the call.
@@ -484,7 +483,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <summary>One warning per (owner, slot, program index) when the loop guard cuts a call - the channel of
     /// <see cref="UnknownOpcode"/> (<see cref="Logs.WriteWarning"/>), one set beside
     /// <see cref="_loggedUnknownOpcodes"/>.</summary>
-    private void LogLoopGuardOnce(AlundraEntityScriptProxy owner, int programSlot, int codeIndex, int opcode)
+    private void LogLoopGuardOnce(EntityScriptProxy owner, int programSlot, int codeIndex, int opcode)
     {
         var programIndex = programSlot >= 0 && programSlot < owner.ProgramIndexes.Length ? owner.ProgramIndexes[programSlot] : -1;
         if (!_loggedLoopGuards.Add((owner, programSlot, programIndex)))
@@ -503,7 +502,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// port's own prior V1 shape: the decompiled <c>FillDataFromCommand</c> (EntityEventHandlers.cs:400-417)
     /// itself allocates its own local array every call too (the PSX C compiler just stack-allocates it, no
     /// GC pressure there), but the repo's own no-per-frame-allocation rule applies here regardless, since
-    /// every Tick now calls this at least once per dispatched opcode (see <see cref="AlundraEntityScriptProxy.Update"/>).
+    /// every Tick now calls this at least once per dispatched opcode (see <see cref="EntityScriptProxy.Update"/>).
     /// One instance per runner (not per <see cref="EventProgramState"/>): <see cref="RunOneScriptCall"/>
     /// always runs a single state to completion synchronously before this runner is free to fetch for any
     /// other state, so there is never more than one in-flight fetch to share a buffer across.
@@ -542,7 +541,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// The opcode switch, called as the original calls every handler (<c>h(logic, owner, &amp;pc, state)</c>,
     /// <c>RunScript</c> @ 0x8004205C): <paramref name="entity"/> is the LOGIC entity, the one every opcode acts on
     /// or takes as the reference of its searches (E19.a T1), and <paramref name="owner"/> the entity whose program
-    /// runs - the one <c>0x42</c>/<c>0x43</c> retarget (<see cref="AlundraEntityScriptProxy.LogicEntity"/>).
+    /// runs - the one <c>0x42</c>/<c>0x43</c> retarget (<see cref="EntityScriptProxy.LogicEntity"/>).
     /// <paramref name="state"/> is the running program's state, on the owner.
     /// </summary>
     private bool _loggedProgramIndexOutOfRange40;
@@ -561,7 +560,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
             + "array (E19.d D6, D-E19-22 correction; no such site in the corpus). Logged once per opcode.");
     }
 
-    private int Dispatch(int command, AlundraEntityScriptProxy entity, AlundraEntityScriptProxy owner, int[] v, EventProgramState state)
+    private int Dispatch(int command, EntityScriptProxy entity, EntityScriptProxy owner, int[] v, EventProgramState state)
     {
         switch (command)
         {
@@ -2117,7 +2116,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// suspend forever) - before advancing by <paramref name="instructionSize"/> regardless.
     /// </summary>
     private int OpenDialog(
-        int textIdParam, int controlMode, int instructionSize, int opcode, string opcodeName, AlundraEntityScriptProxy logicEntity, int? speakerSearch = null, int? nameOperand = null)
+        int textIdParam, int controlMode, int instructionSize, int opcode, string opcodeName, EntityScriptProxy logicEntity, int? speakerSearch = null, int? nameOperand = null)
     {
         var (asset, node) = ResolveDialogNode(textIdParam);
         var director = _worldContext.DialogueDirector;
@@ -2352,7 +2351,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <see cref="IEntityWorldContext.SpawnEntityByRecordId"/>; the original breakpoints (debug-only
     /// trap) when the spawn fails, this V1 port just logs once per failing record id instead.
     /// </summary>
-    private void ActivateEntity(AlundraEntityScriptProxy entity, int[] v)
+    private void ActivateEntity(EntityScriptProxy entity, int[] v)
     {
         var spawned = _worldContext.SpawnEntityByRecordId(entity, v[1]);
 
@@ -2371,12 +2370,12 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
     /// <summary>
     /// E20.e0a4 phase B (docs/plan-e20-heros.md section 1.16.4, D-E0A4-2, D-E0A4-3, ADR-0074): the three opcodes that make an entity from a record (<c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>) pose
-    /// <see cref="AlundraEntityScriptProxy.JoinsBirthTick"/> as the LAST write of the apparition, after the position they write and its push to the root: the binary (<c>0x8003A1B8</c>) gives the newborn the tick that sees it
+    /// <see cref="EntityScriptProxy.JoinsBirthTick"/> as the LAST write of the apparition, after the position they write and its push to the root: the binary (<c>0x8003A1B8</c>) gives the newborn the tick that sees it
     /// born (the tick of the map events that made it, or the next one of the programs of another entity), and writes no floor under the position of <c>0x8A</c>/<c>0x8B</c> (ADR-0026); posed earlier, the marker would
     /// make the push of the opcode raise the written position to the ground by the field of the host. No signature changes: <c>SpawnEntityByRecordId</c> itself never poses it (the map load and the callers that are not
     /// opcodes keep the exact behaviour they had).
     /// </summary>
-    private static void JoinTheBirthTick(AlundraEntityScriptProxy spawned) => spawned.JoinsBirthTick = true;
+    private static void JoinTheBirthTick(EntityScriptProxy spawned) => spawned.JoinsBirthTick = true;
 
     /// <summary>Script_138_08A (0x8A SpawnEntityAtPosition, <c>0x80040284</c>) - the same spawn as 0x2D (record v[1],
     /// <c>notCheckSpawnZone = 1</c>, the logic entity as parent), then the new entity is put at an ABSOLUTE position:
@@ -2384,7 +2383,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <c>PosZ = (v6 | v7 &lt;&lt; 8) &lt;&lt; 16</c> (the binary adds 1 on Z only; the DLL's convention is binary - 1, E19.h1b1, D-E19-59). A failed spawn is
     /// fatal in the original; the port logs a warning once per (opcode, record) and writes nothing, like 0x2D and 0x8B
     /// do for their own failure.</summary>
-    private void SpawnEntityAtPosition(AlundraEntityScriptProxy entity, int[] v)
+    private void SpawnEntityAtPosition(EntityScriptProxy entity, int[] v)
     {
         var spawned = _worldContext.SpawnEntityByRecordId(entity, v[1]);
 
@@ -2415,7 +2414,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// latent null-pointer bug it never hits in practice on real data) - this port null-checks
     /// instead and simply skips the position write when the spawn failed, logging once like 0x2D
     /// own ActivateEntity above (shares the same failed-activation log set).</summary>
-    private void SpawnEntityNextToEntity(AlundraEntityScriptProxy entity, int[] v)
+    private void SpawnEntityNextToEntity(EntityScriptProxy entity, int[] v)
     {
         var spawned = _worldContext.SpawnEntityByRecordId(entity, v[2]);
 
@@ -2450,7 +2449,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <summary>Script_46_02E (0x2E DestroyEntity) - destroys every entity matched by
     /// <c>variables[1]</c>'s search type, and sets <see cref="EventProgramState.Result"/> to 1 if at
     /// least one entity matched (0 otherwise) - read by a following conditional-goto opcode.</summary>
-    private void DestroyMatchingEntities(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    private void DestroyMatchingEntities(EntityScriptProxy entity, int[] v, EventProgramState state)
     {
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
         state.Result = matches.Count > 0 ? 1 : 0;
@@ -2462,13 +2461,13 @@ public sealed class EventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>Script_98_062 (0x62) - ORs the low-16-bit flag word <c>(v[3]&lt;&lt;8|v[2])</c> into every
-    /// matched entity's <see cref="AlundraEntityScriptProxy.Flags"/>. Bug fix (user-reported runtime timing
+    /// matched entity's <see cref="EntityScriptProxy.Flags"/>. Bug fix (user-reported runtime timing
     /// bug, gull entity 6): the original has no such bridge (physics reads <c>Flags</c> directly every
     /// tick, PhysicsEngine.cs:1460) - this engine's own controller caches Gravity/WalkabilityMask from
     /// Flags in its own Settings, so every match with a controller must be resynced here too (see
-    /// <see cref="AlundraEntityScriptProxy.ResyncControllerFromFlags"/>'s own doc), same as
+    /// <see cref="EntityScriptProxy.ResyncControllerFromFlags"/>'s own doc), same as
     /// <see cref="ClearEntitiesFlagsLow16"/> below and the 0x16/0x17 opcode handlers.</summary>
-    private void SetEntitiesFlagsLow16(AlundraEntityScriptProxy entity, int[] v)
+    private void SetEntitiesFlagsLow16(EntityScriptProxy entity, int[] v)
     {
         var flag = (uint)((v[3] << 8) | v[2]);
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
@@ -2481,15 +2480,15 @@ public sealed class EventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>Script_99_063 (0x63) - clears the low-16-bit flag word <c>(v[3]&lt;&lt;8|v[2])</c> out of
-    /// every matched entity's <see cref="AlundraEntityScriptProxy.Flags"/> (bits 16-31 always survive). Bug
+    /// every matched entity's <see cref="EntityScriptProxy.Flags"/> (bits 16-31 always survive). Bug
     /// fix (user-reported runtime timing bug): same controller resync requirement as
     /// <see cref="SetEntitiesFlagsLow16"/> above - see that method's own doc and
-    /// <see cref="AlundraEntityScriptProxy.ResyncControllerFromFlags"/>'s own doc. This is the exact site
+    /// <see cref="EntityScriptProxy.ResyncControllerFromFlags"/>'s own doc. This is the exact site
     /// the gull-6 bug traced to: Tick program 134's own 0x63 [128,0,1] (clear mask (1&lt;&lt;8)|0 = 0x100 =
     /// <see cref="EntityFlags.Gravity"/>) at its climb apex used to clear the Flags bit without ever telling
     /// the controller, so <c>Settings.Gravity</c> stayed at its spawn-time value and kept pulling the gull
     /// down through its own scripted hover.</summary>
-    private void ClearEntitiesFlagsLow16(AlundraEntityScriptProxy entity, int[] v)
+    private void ClearEntitiesFlagsLow16(EntityScriptProxy entity, int[] v)
     {
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
         var clearMask = (uint)((v[3] << 8) | v[2]);
@@ -2505,12 +2504,12 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <summary>Script_100_064 (0x64) - sets PosX/PosY/PosZ of every matched entity from the raw operand
     /// bytes, packed as 16.16 fixed-point (PosZ does not get the original's own <c>+1</c> bias: the DLL's convention is binary - 1, E19.h1b1, D-E19-59). Transform
     /// re-derivation onto the CasaEngine world position happens later, once per frame, in
-    /// <see cref="AlundraWorldProxy"/>'s own per-frame pass - this handler only ever touches the logical
-    /// fields, exactly like the original; E3.d's <see cref="AlundraEntityScriptProxy.PushLogicalPositionToRoot"/>
+    /// <see cref="WorldProxy"/>'s own per-frame pass - this handler only ever touches the logical
+    /// fields, exactly like the original; E3.d's <see cref="EntityScriptProxy.PushLogicalPositionToRoot"/>
     /// (docs/plan-e3-collisions.md "DLL - propriete de la racine par frame" item 4) pushes it onto the
     /// root immediately instead, but only for a controller-driven entity - a no-op for every other
     /// match, keeping this handler's own behaviour exactly as before E3.d for them.</summary>
-    private void SetEntitiesPosition(AlundraEntityScriptProxy entity, int[] v)
+    private void SetEntitiesPosition(EntityScriptProxy entity, int[] v)
     {
         var x = ((v[3] << 8) | v[2]) << 16;
         var y = ((v[5] << 8) | v[4]) << 16;
@@ -2529,7 +2528,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
     /// <summary>Script_94_05E (0x5E) - <c>ForceZ</c> of every entity matched by v1's search = int16(v2 | v3 &lt;&lt; 8)
     /// &lt;&lt; 8 (so 0x0060 is 0.375 px per tick upward). Nothing matched, nothing written.</summary>
-    private void SetEntitiesForceZ(AlundraEntityScriptProxy entity, int[] v)
+    private void SetEntitiesForceZ(EntityScriptProxy entity, int[] v)
     {
         var forceZ = ((short)(v[2] | (v[3] << 8))) << 8;
         foreach (var match in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
@@ -2546,7 +2545,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <c>ClampToGround</c> then <c>Teleport</c>), which the original does not have: the E3.d deviation already taken for
     /// those two. Each search allocates a list, like the probes of 0x07; an allocation-free search is E19.m.
     /// </summary>
-    private void SetEntitiesPositionFromReference(AlundraEntityScriptProxy entity, int[] v)
+    private void SetEntitiesPositionFromReference(EntityScriptProxy entity, int[] v)
     {
         var references = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
         if (references.Count == 0)
@@ -2572,7 +2571,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// matched entity (note the original's little-endian byte order here is the mirror image of 0x64's -
     /// <c>v[2]|(v[3]&lt;&lt;8)</c> vs 0x64's <c>(v[3]&lt;&lt;8)|v[2]</c>, same value either way but ported
     /// verbatim for fidelity). Same E3.d root-push as 0x64 above - see that handler's own doc.</summary>
-    private void AddEntitiesPositionOffset(AlundraEntityScriptProxy entity, int[] v)
+    private void AddEntitiesPositionOffset(EntityScriptProxy entity, int[] v)
     {
         var x = (v[2] | (v[3] << 8)) << 16;
         var y = (v[4] | (v[5] << 8)) << 16;
@@ -2590,11 +2589,11 @@ public sealed class EventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>Script_172_0AC (0xAC) - rewrites the shadow-size bits of the FIRST matched entity's
-    /// <see cref="AlundraEntityScriptProxy.Flags"/> only (the original reads
+    /// <see cref="EntityScriptProxy.Flags"/> only (the original reads
     /// <c>g_matchingEntitiesBuffer[0]</c> unconditionally when <c>count != 0</c>, every other match is
     /// ignored). Actual shadow drawing stays unported (no shadow renderer yet) - this only reproduces the
     /// flag write, which is all following searches/reads of the shadow-size bits can observe.</summary>
-    private void SetEntityShadowSize(AlundraEntityScriptProxy entity, int[] v)
+    private void SetEntityShadowSize(EntityScriptProxy entity, int[] v)
     {
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
 
@@ -2608,7 +2607,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// to the FIRST entity matched by <c>v[1]</c>'s search type, or <c>null</c> when nothing matched
     /// (faithful - the original reads <c>g_matchingEntitiesBuffer[0]</c> unconditionally, which is
     /// <c>null</c>/unset on an empty search; no fallback to the player or to the previous target).</summary>
-    private void CameraFollowEntity(AlundraEntityScriptProxy entity, int[] v)
+    private void CameraFollowEntity(EntityScriptProxy entity, int[] v)
     {
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
         _worldContext.EntityFollowedByCamera = matches.Count != 0 ? matches[0] : null;
@@ -2628,7 +2627,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>0x57/0x58 (E19.l1): the relative signed jump the binary reads at <c>v[1 + 2d]</c> (low then high byte),
-    /// <c>d</c> being an <see cref="AlundraEntityScriptProxy.AnimationDirection"/> (0 to 3). The delta is taken from the
+    /// <c>d</c> being an <see cref="EntityScriptProxy.AnimationDirection"/> (0 to 3). The delta is taken from the
     /// instruction's own start and there is never a fall-through to <c>pc + 9</c>. The <c>&amp; 3</c> is this port's bounds
     /// guard, absent from the binary; with <c>d</c> always 0 to 3 it never changes the result (E19.m8 M-26).</summary>
     private static int DirectionalJump(int[] v, int direction)
@@ -2639,7 +2638,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
     /// <summary>0x3F (E19.l1): whether <paramref name="candidate"/> is Normal or Deactivated, not blocked, and rides
     /// <paramref name="logicEntity"/> (the comparison 0x3E makes for the hero).</summary>
-    private static bool IsRidingTheLogicEntity(AlundraEntityScriptProxy? candidate, AlundraEntityScriptProxy logicEntity)
+    private static bool IsRidingTheLogicEntity(EntityScriptProxy? candidate, EntityScriptProxy logicEntity)
         => candidate != null
            && candidate.Status.IsActive()
            && candidate.BlockedByEntity == null
@@ -2702,11 +2701,11 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// shift - ported exactly) ends the walk (return 3), otherwise it keeps suspending (return 0).
     /// <paramref name="allowDetour"/> (true for 0x1E, false for 0x1F - D5) additionally drives
     /// <see cref="UpdateWalkDetour"/> while still suspended - see that method's own doc for the E4.d
-    /// navigation extension. <see cref="AlundraEntityScriptProxy.WalkDetourPath"/>/
-    /// <see cref="AlundraEntityScriptProxy.WalkDetourAttempted"/> are reset on every fresh occurrence
+    /// navigation extension. <see cref="EntityScriptProxy.WalkDetourPath"/>/
+    /// <see cref="EntityScriptProxy.WalkDetourAttempted"/> are reset on every fresh occurrence
     /// (signature change) AND on completion, so a LATER 0x1E/0x1F on the same entity always starts clean.
     /// </summary>
-    private int Walk(AlundraEntityScriptProxy entity, int[] v, EventProgramState state, bool allowDetour)
+    private int Walk(EntityScriptProxy entity, int[] v, EventProgramState state, bool allowDetour)
     {
         var signature = (v[2] << 16) | (v[1] << 8) | v[0];
 
@@ -2759,7 +2758,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// (<c>Parameters[2]</c>) and returns 0. Later calls return 3 once <c>|PosZ - memo| &gt;&gt; 16</c> reaches
     /// <c>v1 | v2 &lt;&lt; 8</c>, else 0. A difference, so no PosZ convention is involved. Reads nothing else.
     /// </summary>
-    private static int WaitZDistance(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    private static int WaitZDistance(EntityScriptProxy entity, int[] v, EventProgramState state)
     {
         if (state.Parameters[1] != state.CodeIndex)
         {
@@ -2789,7 +2788,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// waits for ever, as in the binary) and return 0. An entity with no record (the hero, a bare proxy of a test; no site in the corpus, the binary
     /// prints an error and reads a null record) logs one warning and ends the wait at once.
     /// </summary>
-    private int WaitHeightTarget(AlundraEntityScriptProxy entity, EventProgramState state)
+    private int WaitHeightTarget(EntityScriptProxy entity, EventProgramState state)
     {
         if (state.Parameters[1] != state.CodeIndex)
         {
@@ -2843,18 +2842,18 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <summary>
     /// Script_28_01C (0x1C, E19.c1 T4), exactly as <c>0x8003D7FC</c>: waits until the entity's animation ended v1 times. The
     /// first call at a pc (the key is <c>CodeIndex</c>, in <c>Parameters[1]</c>) memorises the pc, zeroes the count
-    /// (<c>Parameters[2]</c>) and <see cref="AlundraEntityScriptProxy.AnimCompleteCounter"/>, and suspends; it does NOT clear the
+    /// (<c>Parameters[2]</c>) and <see cref="EntityScriptProxy.AnimCompleteCounter"/>, and suspends; it does NOT clear the
     /// Hold flag. Later calls count one end per call: when the Hold flag
-    /// (<see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>) is set, <c>CurrentAnimationId</c> becomes
+    /// (<see cref="EntityScriptProxy.ForceResetAnimationFlag"/>) is set, <c>CurrentAnimationId</c> becomes
     /// <c>~TargetAnimationId</c> (the next sync restarts the animation, and clears the flag) and the count goes up by one;
     /// otherwise, when the counter is nonzero, the count goes up by one. In both cases the counter is zeroed (a counter of 3
     /// counts once, not three times). The call ends (size 2) once count &gt;= v1, so v1 = 0 ends on the second call. The
     /// handler never clears the Hold flag itself. E19.c2 adds a guard that changes nothing at 0 or 1 logic tick per frame: the
-    /// Hold flag is invisible while a switch tick is reserved (<see cref="AlundraEntityScriptProxy.AnimationSwitchTicksReserved"/>)
-    /// or while a Hold end already counted waits for its switch (<see cref="AlundraEntityScriptProxy.HoldCountedAwaitingSwitch"/>,
+    /// Hold flag is invisible while a switch tick is reserved (<see cref="EntityScriptProxy.AnimationSwitchTicksReserved"/>)
+    /// or while a Hold end already counted waits for its switch (<see cref="EntityScriptProxy.HoldCountedAwaitingSwitch"/>,
     /// set here, cleared by the switch), so a catch-up frame never counts one end twice.
     /// </summary>
-    private static int RepeatAnimation(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    private static int RepeatAnimation(EntityScriptProxy entity, int[] v, EventProgramState state)
     {
         if (state.Parameters[1] != state.CodeIndex)
         {
@@ -2899,7 +2898,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// else suspend. It never writes the direction, never reads <c>ForceAdjusted</c> and has no exit on a blocked walk: a
     /// block that never ends is fixed at the root (D-E19-6). The navigation detour of 0x1E (E4.d) is reused as is.
     /// </summary>
-    private int WalkUntilBeyondRadius(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    private int WalkUntilBeyondRadius(EntityScriptProxy entity, int[] v, EventProgramState state)
     {
         entity.TargetAnimationId = (uint)v[1];
 
@@ -2931,21 +2930,21 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <summary>
     /// E4.d navigation detour (decision D5, docs/plan-e4-deplacement-scripte.md): default is to do
     /// NOTHING (free walk continues, identical to the original) - only engages when this frame's
-    /// <see cref="AlundraEntityScriptProxy.ForceAdjusted"/> is nonzero (the last completed sub-step's own
+    /// <see cref="EntityScriptProxy.ForceAdjusted"/> is nonzero (the last completed sub-step's own
     /// movement was curtailed - see that field's own doc) AND a navigation grid is available
     /// (<see cref="IEntityWorldContext.NavigationGrid"/>, null in degraded mode - see
     /// <see cref="TryEngageDetour"/>'s own doc for what happens when <c>TryFindPath</c> itself fails).
     /// Once a detour path exists and has not finished, <see cref="AdvanceDetourWaypoint"/> re-derives
-    /// <see cref="AlundraEntityScriptProxy.TargetDirection"/> toward the CURRENT waypoint every tick, so
+    /// <see cref="EntityScriptProxy.TargetDirection"/> toward the CURRENT waypoint every tick, so
     /// the entity visibly walks around the obstacle instead of pushing into it - the 0x1E/0x1F walk
     /// itself still only ends via <see cref="Walk"/>'s own ORIGINAL distance test (this method never
     /// returns a "completed" signal of its own). Once <c>WalkDetourPath.IsFinished</c>,
     /// <see cref="TargetDirection"/> is simply left at its last derived value (documented écart, D5) -
     /// nothing here re-engages a SECOND detour for the same occurrence (see
-    /// <see cref="AlundraEntityScriptProxy.WalkDetourAttempted"/>'s own doc on why one attempt per
+    /// <see cref="EntityScriptProxy.WalkDetourAttempted"/>'s own doc on why one attempt per
     /// occurrence is deliberate, not merely an optimization).
     /// </summary>
-    private void UpdateWalkDetour(AlundraEntityScriptProxy entity, EventProgramState state, int thresholdPx)
+    private void UpdateWalkDetour(EntityScriptProxy entity, EventProgramState state, int thresholdPx)
     {
         var grid = _worldContext.NavigationGrid;
 
@@ -2964,7 +2963,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>
-    /// One-shot detour engagement (see <see cref="AlundraEntityScriptProxy.WalkDetourAttempted"/>'s own
+    /// One-shot detour engagement (see <see cref="EntityScriptProxy.WalkDetourAttempted"/>'s own
     /// doc on why this never runs twice for the same 0x1E occurrence): destination = the walk's own
     /// MEMORIZED start position (<c>state.Parameters[2..3]</c>, NOT the entity's current position) offset
     /// by <c>(sign(OffsetXList[TargetDirection]), sign(OffsetYList[TargetDirection])) *
@@ -2973,12 +2972,12 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// it cleanly. Both the entity's current position and that destination are converted px-&gt;cell the
     /// same clamped way <see cref="CellsCollisionField"/> does (24x16, clamped to the grid bounds -
     /// see that class' own doc), then <c>NavigationGrid2D.TryFindPath</c> runs ONCE, from cell-center to
-    /// cell-center. On failure (no path exists, e.g. a fully enclosed wall) <see cref="AlundraEntityScriptProxy.WalkDetourPath"/>
+    /// cell-center. On failure (no path exists, e.g. a fully enclosed wall) <see cref="EntityScriptProxy.WalkDetourPath"/>
     /// stays null - D5's own "no detour (keep pushing, original behavior)" - and
-    /// <see cref="AlundraEntityScriptProxy.WalkDetourAttempted"/> still latches true, so this occurrence
+    /// <see cref="EntityScriptProxy.WalkDetourAttempted"/> still latches true, so this occurrence
     /// never retries (matching "keep pushing" for its own remaining duration, not just this one tick).
     /// </summary>
-    private void TryEngageDetour(AlundraEntityScriptProxy entity, EventProgramState state, NavigationGrid2D grid, int thresholdPx)
+    private void TryEngageDetour(EntityScriptProxy entity, EventProgramState state, NavigationGrid2D grid, int thresholdPx)
     {
         entity.WalkDetourAttempted = true;
 
@@ -3011,7 +3010,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
         => (Math.Clamp(px / TileWidthPx, 0, grid.Width - 1), Math.Clamp(py / TileHeightPx, 0, grid.Height - 1));
 
     /// <summary>
-    /// Re-derives <see cref="AlundraEntityScriptProxy.TargetDirection"/> toward the CURRENT waypoint of an
+    /// Re-derives <see cref="EntityScriptProxy.TargetDirection"/> toward the CURRENT waypoint of an
     /// active detour (E4.d decision D5) every tick this is called, via the SAME
     /// <see cref="ScriptHelper.GetDirectionToTarget"/> 0x27 already uses (raw 16.16 deltas). The waypoint
     /// (a <see cref="NavigationGrid2D"/> "grid world" point, cell size 1 - <c>X = cellX + 0.5</c>,
@@ -3019,10 +3018,10 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// pixel position (<c>cx*24+12</c>, <c>cy*16+8</c>) before the delta is taken. Advances
     /// <see cref="NavigationPath.CurrentPointIndex"/> once the entity is within
     /// <see cref="WalkDetourArrivalRadiusPx"/> of the current waypoint; if that advance finishes the path,
-    /// this leaves <see cref="AlundraEntityScriptProxy.TargetDirection"/> at whatever it last resolved to
+    /// this leaves <see cref="EntityScriptProxy.TargetDirection"/> at whatever it last resolved to
     /// (documented écart, D5) rather than re-deriving toward a waypoint that no longer exists.
     /// </summary>
-    private static void AdvanceDetourWaypoint(AlundraEntityScriptProxy entity)
+    private static void AdvanceDetourWaypoint(EntityScriptProxy entity)
     {
         var path = entity.WalkDetourPath!;
         var waypoint = path.Points[path.CurrentPointIndex];
@@ -3256,11 +3255,11 @@ public sealed class EventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>Script_7_007 (0x07 CheckEntityInArea) - true if AT LEAST ONE entity matched by
-    /// <c>v[1]</c>'s search type has <see cref="AlundraEntityScriptProxy.TileX"/>/
-    /// <see cref="AlundraEntityScriptProxy.TileY"/>/<see cref="AlundraEntityScriptProxy.TileZ"/> inside
+    /// <c>v[1]</c>'s search type has <see cref="EntityScriptProxy.TileX"/>/
+    /// <see cref="EntityScriptProxy.TileY"/>/<see cref="EntityScriptProxy.TileZ"/> inside
     /// the inclusive box <c>v[2]..v[7]</c> (xmin,xmax,ymin,ymax,zmin,zmax). See the 0x07 case's own doc
     /// on <see cref="Dispatch"/> for the one order-of-iteration deviation from the original.</summary>
-    private bool EntityInArea(AlundraEntityScriptProxy entity, int[] v)
+    private bool EntityInArea(EntityScriptProxy entity, int[] v)
     {
         var xmin = v[2];
         var xmax = v[3];
@@ -3286,10 +3285,10 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
     /// <summary>Script_173_0AD (0xAD CheckEntityInAabb) - see the 0xAD case's own doc on
     /// <see cref="Dispatch"/> for the three binary-vs-decompilation disagreements this corrects
-    /// (D-E16-27). Both searches use raw fixed-point <see cref="AlundraEntityScriptProxy.PosX"/>/PosY/PosZ
+    /// (D-E16-27). Both searches use raw fixed-point <see cref="EntityScriptProxy.PosX"/>/PosY/PosZ
     /// (NOT the tile-quantized TileX/TileY/TileZ 0x07/0x3B use), matching the original's own field
     /// reads (AlundraEntityScriptProxy.cs:134-136).</summary>
-    private int CheckEntityInAabb(AlundraEntityScriptProxy entity, int[] v, EventProgramState state)
+    private int CheckEntityInAabb(EntityScriptProxy entity, int[] v, EventProgramState state)
     {
         state.Result = 0;
 
@@ -3369,16 +3368,16 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
     /// <summary>Shared shape of Script_90_05A (Turn entity) / Script_91_05B (Turn entity with anim) - for
     /// every entity matched by <paramref name="searchType"/>, resolves and writes
-    /// <see cref="AlundraEntityScriptProxy.TargetDirection"/> via <see cref="ResolveDirectionFromParam"/>,
+    /// <see cref="EntityScriptProxy.TargetDirection"/> via <see cref="ResolveDirectionFromParam"/>,
     /// and, when <paramref name="animationId"/> is non-null (0x5B only), also writes
-    /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> first (matching the original's own
+    /// <see cref="EntityScriptProxy.TargetAnimationId"/> first (matching the original's own
     /// assignment order, EntityEventHandlers.cs:1726-1729 - the anim id itself never influences direction
     /// resolution, so the order has no observable effect, but is kept faithful anyway). The entities found
     /// are walked from the LAST to the FIRST, like the binary (E19.m1, M-47): <c>0x8003EEF4</c> (0x5A) and
     /// <c>0x8003EF80</c> (0x5B) read the search buffer <c>0x8013D8D8</c> from index n-1 down to 0, which
     /// decides which entity takes which draw in modes 4 and 5 and, in mode 6, that the hero (found first)
     /// is processed last.</summary>
-    private void TurnMatchingEntities(AlundraEntityScriptProxy entity, int searchType, uint directionParam, uint? animationId)
+    private void TurnMatchingEntities(EntityScriptProxy entity, int searchType, uint directionParam, uint? animationId)
     {
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, searchType, _worldContext.SpawnedEntities, _worldContext.PlayerEntity);
 
@@ -3405,7 +3404,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// (0x8003D0BC) returns <c>new &gt;&gt; 27</c> (0..31); both store the new seed (0x8003D08C, 0x8003D0E8)
     /// and are reached through the jump table at 0x80023C60 from 0x8003CFC8.
     /// </summary>
-    internal uint ResolveDirectionFromParam(AlundraEntityScriptProxy entity, uint encodedDir)
+    internal uint ResolveDirectionFromParam(EntityScriptProxy entity, uint encodedDir)
     {
         var result = encodedDir & 0x1f;
 
@@ -3459,5 +3458,5 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// documented accepted deviation (mode 7 falls back to <c>ResolveDirectionFromParam</c>'s own "no
     /// facing direction" branch, exactly like the original does for every entity that ISN'T mid-warp).
     /// </summary>
-    private static int GetWarpFacingDirection(AlundraEntityScriptProxy entity) => -1;
+    private static int GetWarpFacingDirection(EntityScriptProxy entity) => -1;
 }

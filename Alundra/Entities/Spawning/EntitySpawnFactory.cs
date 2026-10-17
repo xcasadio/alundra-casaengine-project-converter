@@ -19,22 +19,22 @@ using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
 using Alundra.Maps.Loop;
-using Alundra.Scripts;
 using Alundra.Events;
 using Alundra.Physics;
+using Alundra.Maps;
 
 namespace Alundra.Entities.Spawning;
 
 /// <summary>
-/// Owns the record-to-entity spawn pipeline formerly on <see cref="AlundraWorldProxy"/>: the
+/// Owns the record-to-entity spawn pipeline formerly on <see cref="WorldProxy"/>: the
 /// spawn-time gates (<c>ShouldSpawnRecord</c>), the IDSV/animation-end lookup builders, the
 /// animation-finished bridge, the prefab-clone and bare-fallback entity builders, and their shared
 /// helpers (<c>ApplyRecord</c>/<c>ApplySpawnInitialization</c>/<c>SetEntityDimensions</c>/
 /// <c>BuildEntityName</c>/<c>ResolveLogicalPosition</c>). Pure `static`, stateless, moved from
-/// <see cref="AlundraWorldProxy"/> by slice R3 of docs/plan-decoupage-proxies.md - a
+/// <see cref="WorldProxy"/> by slice R3 of docs/plan-decoupage-proxies.md - a
 /// behaviour-preserving relocation only, see that plan's §3 for the exact delta rule (call
 /// qualification and the two documented private-to-internal widenings this move used, both of which
-/// stayed on <see cref="AlundraWorldProxy"/>: <c>TryGetRecordInt</c> and
+/// stayed on <see cref="WorldProxy"/>: <c>TryGetRecordInt</c> and
 /// <c>ResolveMapGravitySettings</c>). Broken `<see cref>` references left by this move are fixed in
 /// slice R5, not here (plan §4 R5) - this class's XML documentation is otherwise the ORIGINAL text,
 /// unmodified.
@@ -153,14 +153,14 @@ internal static class EntitySpawnFactory
     }
 
     /// <summary>
-    /// Stride used to pack (anim, direction) into <see cref="AlundraEntityScriptProxy.IdsvByAnimDirection"/>'s
+    /// Stride used to pack (anim, direction) into <see cref="EntityScriptProxy.IdsvByAnimDirection"/>'s
     /// single-int key: directions are always 0-3 (<c>AnimationTables.DirectionNames.Length</c>), so 4 is
     /// enough to keep every (anim, direction) pair distinct without a tuple key/comparer.
     /// </summary>
     internal const int IdsvDirectionStride = 4;
 
     /// <summary>
-    /// Builds the per-entity IDSV lookup <see cref="AlundraEntityScriptProxy.IdsvByAnimDirection"/> stashes
+    /// Builds the per-entity IDSV lookup <see cref="EntityScriptProxy.IdsvByAnimDirection"/> stashes
     /// at spawn (see <see cref="ApplySpawnInitialization"/>): one frame-0 value per (anim, direction) pair
     /// the catalog entry carries. Returns null when <paramref name="idsvAnimDirs"/> is empty (nothing to
     /// look up - callers treat a null table the same as "0 bias for every (anim, direction)").
@@ -183,7 +183,7 @@ internal static class EntitySpawnFactory
     }
 
     /// <summary>
-    /// Builds the per-entity Hold/Chain lookup <see cref="AlundraEntityScriptProxy.AnimationEndByAnimDirection"/>
+    /// Builds the per-entity Hold/Chain lookup <see cref="EntityScriptProxy.AnimationEndByAnimDirection"/>
     /// stashes at spawn - same key packing as <see cref="BuildIdsvByAnimDirection"/>, so both tables share
     /// the (anim, direction) -&gt; int key without a tuple key/comparer. Only entries whose End is Hold or
     /// Chain are worth keeping (a Loop entry has nothing to look up - <see cref="OnAnimationFinished"/>
@@ -236,8 +236,8 @@ internal static class EntitySpawnFactory
     /// The cached static delegates mean subscribing allocates nothing beyond the one-time delegate instances shared by every entity; the
     /// handlers resolve the proxy from <c>sender</c>/<c>Owner.GameplayProxy</c> rather than capturing anything per-entity.
     /// <para>
-    /// No unsubscribe on destroy: <see cref="AlundraWorldProxy.DestroyEntity(AlundraEntityScriptProxy)"/> only sets
-    /// <see cref="EntityStatus.FlagToDestroy"/>; the recycling of the tick (<see cref="AlundraWorldProxy.RecycleDestroyedEntities"/>, E19.r R3) hands
+    /// No unsubscribe on destroy: <see cref="WorldProxy.DestroyEntity(EntityScriptProxy)"/> only sets
+    /// <see cref="EntityStatus.FlagToDestroy"/>; the recycling of the tick (<see cref="WorldProxy.RecycleDestroyedEntities"/>, E19.r R3) hands
     /// the entity to the engine, which releases what its components hold. The subscription this method makes lives exactly as long as the entity
     /// object itself and needs no explicit teardown. A FlagToDestroy entity's clock does not step (<see cref="FrameSyncPasses.StepAnimationClock"/>),
     /// so its handlers never run again.
@@ -255,7 +255,7 @@ internal static class EntitySpawnFactory
         animatedSprite.AnimationFinished += AnimationFinishedHandler;
         animatedSprite.AnimationLooped += AnimationLoopedHandler;
 
-        if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+        if (entity.GameplayProxy is EntityScriptProxy proxy)
         {
             proxy.LogicalClockSprite = animatedSprite;
         }
@@ -270,12 +270,12 @@ internal static class EntitySpawnFactory
     /// E19.c2) to the original's <c>AnimCompleteCounter</c> + 1 per Loop turn (<c>0x80038D70</c>-<c>0x80038D7C</c>): the signal
     /// <c>0x1C</c>/<c>0x1D</c> count on a Loop. Table-free on purpose: the original counts the images that play whatever the
     /// sprite record says, and 99 of the 395 sprite records are all-Loop (no end table). A sender that is not a component with an
-    /// <see cref="AlundraEntityScriptProxy"/> is ignored.
+    /// <see cref="EntityScriptProxy"/> is ignored.
     /// </summary>
     internal static void OnAnimationLooped(object? sender, Animation2d loopedAnimation)
     {
         if (sender is AnimatedSpriteComponent component
-            && component.Owner?.GameplayProxy is AlundraEntityScriptProxy proxy)
+            && component.Owner?.GameplayProxy is EntityScriptProxy proxy)
         {
             proxy.AnimCompleteCounter++;
         }
@@ -287,28 +287,28 @@ internal static class EntitySpawnFactory
     /// <see cref="FrameSyncPasses.SyncAnimation"/>, E19.c2 - never by the real-time component pass any more, so an end is
     /// not bridged twice) back to the original's Hold/Chain semantics (EntityManager.cs:257-281):
     /// <list type="bullet">
-    /// <item><description>Hold: sets <see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/> = 1
-    /// (EntityManager.cs:273-275) - already read by <see cref="AlundraEntityScriptProxy.Update"/>'s pick
+    /// <item><description>Hold: sets <see cref="EntityScriptProxy.ForceResetAnimationFlag"/> = 1
+    /// (EntityManager.cs:273-275) - already read by <see cref="EntityScriptProxy.Update"/>'s pick
     /// phase for <c>DeactivateOnAnimationEnd</c>. The engine's own Once clamp already holds the last
     /// displayed frame's pose (the writer's terminal keyframe repeats it, see <c>SpriteWriter</c>'s
     /// class doc) - nothing else to do.</description></item>
-    /// <item><description>Chain: sets <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> to the
-    /// chain target (EntityManager.cs:277-279). <see cref="AlundraEntityScriptProxy.Update"/> calls
+    /// <item><description>Chain: sets <see cref="EntityScriptProxy.TargetAnimationId"/> to the
+    /// chain target (EntityManager.cs:277-279). <see cref="EntityScriptProxy.Update"/> calls
     /// <see cref="FrameSyncPasses.SyncAnimation"/> every frame regardless, so the end-of-frame call notices
     /// <c>TargetAnimationId</c> changed and switches animation (the switch tick is reserved by
-    /// <see cref="FrameSyncPasses.StepAnimationClock"/>, which sees <see cref="AlundraEntityScriptProxy.PendingChainRestartFlag"/>):
+    /// <see cref="FrameSyncPasses.StepAnimationClock"/>, which sees <see cref="EntityScriptProxy.PendingChainRestartFlag"/>):
     /// the same-tick effect the original gets from its own recursive <c>UpdateAnimation</c> call (EntityManager.cs:280), without this
     /// bridge needing to call <see cref="FrameSyncPasses.SyncAnimation"/> itself.</description></item>
     /// </list>
     /// A lookup miss (no entry for the just-finished (anim, direction), or a record with no end table) is a no-op. A Chain end also
-    /// increments <see cref="AlundraEntityScriptProxy.AnimCompleteCounter"/> (E19.c1 T4, <c>0x80038D64</c>), a self-chain
+    /// increments <see cref="EntityScriptProxy.AnimCompleteCounter"/> (E19.c1 T4, <c>0x80038D64</c>), a self-chain
     /// included: that is the signal opcodes 0x1C/0x1D count. A Hold end leaves it alone. The turns of a Loop are counted by
     /// <see cref="OnAnimationLooped"/> (E19.c2), not here.
     /// </summary>
     internal static void OnAnimationFinished(object? sender, Animation2d finishedAnimation)
     {
         if (sender is not AnimatedSpriteComponent component
-            || component.Owner?.GameplayProxy is not AlundraEntityScriptProxy proxy
+            || component.Owner?.GameplayProxy is not EntityScriptProxy proxy
             || proxy.AnimationEndByAnimDirection == null)
         {
             return;
@@ -348,7 +348,7 @@ internal static class EntitySpawnFactory
     /// sprite/collision components. Otherwise (missing/malformed link, no loader, loader throws or
     /// returns null) a single warning is logged and a bare entity is built instead (see
     /// <see cref="CreateBareEntityFromRecord"/>). Either way the result carries an
-    /// <see cref="AlundraEntityScriptProxy"/> filled by <see cref="EntityRecordMapper"/>, with
+    /// <see cref="EntityScriptProxy"/> filled by <see cref="EntityRecordMapper"/>, with
     /// <see cref="EntityStatus.Loaded"/>. Does not add the entity to any world; the caller does that.
     ///
     /// <paramref name="prefabLoader"/> is a seam for unit tests: the live path
@@ -392,13 +392,13 @@ internal static class EntitySpawnFactory
             }
 
             Logs.WriteWarning(
-                $"AlundraWorldProxy: record '{record.Name}': could not clone prefab '{prefabAssetId}' "
+                $"WorldProxy: record '{record.Name}': could not clone prefab '{prefabAssetId}' "
                 + $"({failureReason}); falling back to a bare entity.");
         }
         else
         {
             Logs.WriteWarning(
-                $"AlundraWorldProxy: record '{record.Name}' has no valid '{PrefabAssetIdPropertyKey}' link; "
+                $"WorldProxy: record '{record.Name}' has no valid '{PrefabAssetIdPropertyKey}' link; "
                 + "falling back to a bare entity.");
         }
 
@@ -426,7 +426,7 @@ internal static class EntitySpawnFactory
     /// Clones <paramref name="prefab"/> (a bank prefab loaded from <c>Entities/{Name}/{Name}.entity</c>,
     /// per <c>EntityBankPrefabWriter</c>) into a fresh, independent entity carrying that bank's
     /// sprite/collision components, renamed for this record and with its
-    /// <see cref="AlundraEntityScriptProxy"/> filled from <paramref name="record"/>.
+    /// <see cref="EntityScriptProxy"/> filled from <paramref name="record"/>.
     /// </summary>
     internal static Entity CreateEntityFromPrefab(
         TileMapObjectData record, Entity prefab, ISpriteRecordCatalog? spriteRecordCatalog = null,
@@ -439,14 +439,14 @@ internal static class EntitySpawnFactory
         {
             //The prefab is expected to carry AlundraEntityScriptProxy as its script class; fall back
             //explicitly rather than spawning an entity with no gameplay proxy at all.
-            entity.GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!;
+            entity.GameplayProxyClassName = typeof(EntityScriptProxy).FullName!;
         }
 
         //Creates/keeps the GameplayProxy (via ElementFactory, from GameplayProxyClassName) and calls its
         //Initialize(entity); InitializeWithWorld() runs later, when the engine integrates the entity.
         entity.Initialize();
 
-        if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+        if (entity.GameplayProxy is EntityScriptProxy proxy)
         {
             ApplyRecord(record, proxy);
             ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog, parentEntity, tileMapData, collisionField);
@@ -477,7 +477,7 @@ internal static class EntitySpawnFactory
     /// and by the record path (D-E0A-4: the decompilation names it <c>ChildEntity</c>; no reader is known).
     /// </summary>
     internal static Entity? ResolveRootEntity(Entity? parentEntity)
-        => parentEntity == null ? null : (parentEntity.GameplayProxy as AlundraEntityScriptProxy)?.ChildEntity ?? parentEntity;
+        => parentEntity == null ? null : (parentEntity.GameplayProxy as EntityScriptProxy)?.ChildEntity ?? parentEntity;
 
     /// <summary>The width and the height of a tile in pixels (<c>StaticVariables.MapTileWidth/MapTileHeight</c>, <see cref="EntityRecordMapper"/>), for the tile of a creation.</summary>
     private const int TileWidthPixels = 24;
@@ -492,14 +492,14 @@ internal static class EntitySpawnFactory
     /// <list type="bullet">
     /// <item><description><paramref name="x"/> and <paramref name="y"/> are the 16.16 position as the binary receives it; <paramref name="z"/> is the BINARY'S argument: the core subtracts <c>ModZ</c> and raises to the terrain,
     /// exactly as the record path does (<c>PosZ = z - ModZ</c>, the DLL's frame, one raw unit under the binary's <c>z - ModZ + 1</c>, ADR-0026). The raw unit of a Z read from a DLL entity is added by the CALLER
-    /// (<see cref="AlundraWorldProxy.SpawnEntityBySpriteIndex"/>), never here: the record path shares this code without it (D-E0A-1).</description></item>
+    /// (<see cref="WorldProxy.SpawnEntityBySpriteIndex"/>), never here: the record path shares this code without it (D-E0A-1).</description></item>
     /// <item><description><paramref name="direction"/> is the direction word (0, 8, 0x10, 0x18) the binary stores in <c>+0x8C</c> and complements in <c>+0x94</c>; the first switch of the animation 0 stays pending, as for a record.</description></item>
     /// <item><description>No record: <c>EntityRefId = -1</c> (<c>0x80039D84</c>; the field's default 0 would answer to <c>0x2C [0]</c> and <c>0x2E [0]</c>), <c>EventTrigger = -1</c> (the first tick is the next frame, until E20.e0a3), no
-    /// program codes, <see cref="AlundraEntityScriptProxy.RecordHeight"/> null. <see cref="AlundraEntityScriptProxy.SpriteTableIndex"/> is the raw index, <see cref="AlundraEntityScriptProxy.SpriteType"/> the identifier of the binary
+    /// program codes, <see cref="EntityScriptProxy.RecordHeight"/> null. <see cref="EntityScriptProxy.SpriteTableIndex"/> is the raw index, <see cref="EntityScriptProxy.SpriteType"/> the identifier of the binary
     /// (the index, plus <c>0x100</c> for the map page).</description></item>
     /// <item><description><paramref name="tileMapData"/> (E20.e0k1, null by default: nothing is read) is the tile data of the world's map: the entity then gets the map words, the walkability mask, the vertical ownership and the minimum move distance as a record does (<see cref="ApplyMapDependentState"/>).</description></item>
     /// <item><description>The parent (<c>+0x0C</c>) is <paramref name="parentEntity"/>, even null; the root (<c>+0x08</c>, written only when the parent is not null) is the parent's root, else the parent (<c>0x80039D48-0x80039D5C</c>).
-    /// It is kept in <see cref="AlundraEntityScriptProxy.ChildEntity"/>, the name the decompilation gives to that word (D-E0A-4); no reader of it is known.</description></item>
+    /// It is kept in <see cref="EntityScriptProxy.ChildEntity"/>, the name the decompilation gives to that word (D-E0A-4); no reader of it is known.</description></item>
     /// </list>
     /// </summary>
     internal static Entity CreateEntityFromSpriteIndex(
@@ -510,14 +510,14 @@ internal static class EntitySpawnFactory
 
         if (string.IsNullOrEmpty(entity.GameplayProxyClassName))
         {
-            entity.GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!;
+            entity.GameplayProxyClassName = typeof(EntityScriptProxy).FullName!;
         }
 
         //Creates/keeps the GameplayProxy (via ElementFactory, from GameplayProxyClassName) and calls its
         //Initialize(entity); InitializeWithWorld() runs later, when the engine integrates the entity.
         entity.Initialize();
 
-        if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy)
+        if (entity.GameplayProxy is not EntityScriptProxy proxy)
         {
             return entity;
         }
@@ -574,7 +574,7 @@ internal static class EntitySpawnFactory
 
     /// <summary>
     /// Builds one bare game entity from an "Entities" object-layer record: a deterministically named
-    /// entity carrying an <see cref="AlundraEntityScriptProxy"/> filled by <see cref="EntityRecordMapper"/>,
+    /// entity carrying an <see cref="EntityScriptProxy"/> filled by <see cref="EntityRecordMapper"/>,
     /// with <see cref="EntityStatus.Loaded"/>. Used as the fallback when the record has no usable prefab
     /// link (see <see cref="CreateEntityFromRecord"/>). Unlike <see cref="CreateEntityFromPrefab"/> this
     /// never sets a world transform: a bare entity has no <c>RootComponent</c> to place (it carries no
@@ -589,14 +589,14 @@ internal static class EntitySpawnFactory
         var entity = new Entity
         {
             Name = BuildEntityName(record),
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
 
         //Creates the GameplayProxy (via ElementFactory, from GameplayProxyClassName) and calls its
         //Initialize(entity); InitializeWithWorld() runs later, when the engine integrates the entity.
         entity.Initialize();
 
-        if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+        if (entity.GameplayProxy is EntityScriptProxy proxy)
         {
             ApplyRecord(record, proxy);
             ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog, parentEntity, tileMapData, collisionField);
@@ -606,7 +606,7 @@ internal static class EntitySpawnFactory
     }
 
     /// <summary>Maps <paramref name="record"/> onto <paramref name="proxy"/> and marks it loaded.</summary>
-    internal static void ApplyRecord(TileMapObjectData record, AlundraEntityScriptProxy proxy)
+    internal static void ApplyRecord(TileMapObjectData record, EntityScriptProxy proxy)
     {
         EntityRecordMapper.Map(record, proxy);
         proxy.Status = EntityStatus.Loaded;
@@ -647,7 +647,7 @@ internal static class EntitySpawnFactory
     /// </list>
     /// </summary>
     internal static void ApplySpawnInitialization(
-        TileMapObjectData record, Entity entity, AlundraEntityScriptProxy proxy, ISpriteRecordCatalog? spriteRecordCatalog,
+        TileMapObjectData record, Entity entity, EntityScriptProxy proxy, ISpriteRecordCatalog? spriteRecordCatalog,
         Entity? parentEntity = null, TileMapData? tileMapData = null, ICollisionField? collisionField = null)
     {
         proxy.LogicContextEntity = entity;
@@ -687,7 +687,7 @@ internal static class EntitySpawnFactory
     /// sprite index can run them too. Nothing happens when <paramref name="tileMapData"/> is null (a caller that never resolved one). Must run after <see cref="ApplyHeaderInitialization"/>: the walkability mask and the gravity
     /// bit of the controller need the header flags of <paramref name="proxy"/>.
     /// </summary>
-    internal static void ApplyMapDependentState(AlundraEntityScriptProxy proxy, TileMapData? tileMapData)
+    internal static void ApplyMapDependentState(EntityScriptProxy proxy, TileMapData? tileMapData)
     {
         // Overrides the converter-exported Gravity/MaxFallSpeed/WalkabilityMask - the only three
         // CharacterControllerSettings the converter cannot bake in (E4.a leaves them 0, see that
@@ -734,7 +734,7 @@ internal static class EntitySpawnFactory
     /// order, except the ones that read the map's tile data (they follow in <see cref="ApplySpawnInitialization"/>).
     /// </summary>
     internal static void ApplyHeaderInitialization(
-        SpriteRecordHeader header, Entity entity, AlundraEntityScriptProxy proxy, int spriteType, uint direction, ICollisionField? collisionField)
+        SpriteRecordHeader header, Entity entity, EntityScriptProxy proxy, int spriteType, uint direction, ICollisionField? collisionField)
     {
         // EntityManager.cs:92-93 (Entity.Flags packing documented by EntityFlags).
         proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
@@ -848,7 +848,7 @@ internal static class EntitySpawnFactory
     /// beyond their use as screen-clip bounds.
     /// </summary>
     internal static void SetEntityDimensions(
-        AlundraEntityScriptProxy proxy, int offsetX, int offsetY, int offsetZ, int sizeX, int sizeY, int sizeZ)
+        EntityScriptProxy proxy, int offsetX, int offsetY, int offsetZ, int sizeX, int sizeY, int sizeZ)
     {
         proxy.NegModX = -(offsetX << 16);
         proxy.NegModY = -(offsetY << 16);

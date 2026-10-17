@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -23,8 +22,8 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// T3 (docs/plan-transitions-carte.md §3) - DETECTION ONLY: the tile-flag probe
-/// (<see cref="AlundraEntityScriptProxy.UpdateVramFlags"/>, D-T-10), the portal record parse
-/// (<see cref="AlundraWorldProxy.BuildPortals"/>, §1.1), the slot scan
+/// (<see cref="EntityScriptProxy.UpdateVramFlags"/>, D-T-10), the portal record parse
+/// (<see cref="WorldProxy.BuildPortals"/>, §1.1), the slot scan
 /// (<see cref="PortalScanner.FindPortalAtTile"/>, §1.2.b), and the trigger predicate
 /// (<see cref="PortalTrigger.TryGetTrigger"/>, §1.2.a), including its exact
 /// <see cref="PlayerManager.MovePlayer"/> call site. No transition is ever started here - see
@@ -118,7 +117,7 @@ public class AlundraPortalDetectionTests : IDisposable
     // map data needed - CombinedVramFlagsAND/TileX/TileY/AnimationDirection are set directly).
     // ---------------------------------------------------------------------------------------
 
-    private static AlundraEntityScriptProxy Player(int tileX, int tileY, uint combinedVramFlagsAnd, int animationDirection, uint targetDirection = 0xFF)
+    private static EntityScriptProxy Player(int tileX, int tileY, uint combinedVramFlagsAnd, int animationDirection, uint targetDirection = 0xFF)
         => new()
         {
             IsPlayer = true,
@@ -323,7 +322,7 @@ public class AlundraPortalDetectionTests : IDisposable
     /// F4 footprint-derivation rationale. Duplicated rather than shared: each test file owns its own
     /// minimal fixture, matching this project's existing convention (AlundraFloorHeightTests/
     /// AlundraLadderClimbTests each keep their own copy too).</summary>
-    private static AlundraEntityScriptProxy BuildProbe(World world, int x1, int y1, int posZ, int tileX, int tileY)
+    private static EntityScriptProxy BuildProbe(World world, int x1, int y1, int posZ, int tileX, int tileY)
     {
         var settings = new CharacterControllerSettings();
         var (_, proxy) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(0f, 0f, 0f), new NoOpScriptHost());
@@ -346,11 +345,11 @@ public class AlundraPortalDetectionTests : IDisposable
     private sealed class NoOpScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner => throw new NotSupportedException();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) { }
+        public HeroController? PlayerController => null;
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
+        public void DestroyEntity(EntityScriptProxy entity, int effectId) { }
         public int LogicTicksThisFrame(float elapsedTime) => 0;
     }
 
@@ -517,7 +516,7 @@ public class AlundraPortalDetectionTests : IDisposable
         Assert.NotNull(portalsLayer);
         Assert.Equal(4, portalsLayer!.Objects.Count); // §1.1.c: map 389 has 4 portals.
 
-        var worldProxy = new AlundraWorldProxy();
+        var worldProxy = new WorldProxy();
         worldProxy.BuildPortals(portalsLayer);
 
         var portals = ((IScriptHost)worldProxy).Portals;
@@ -553,7 +552,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var portalsLayer = tileMapData.ObjectLayers.Find(layer => layer.Name == "Portals");
         Assert.NotNull(portalsLayer);
 
-        var worldProxy = new AlundraWorldProxy();
+        var worldProxy = new WorldProxy();
         worldProxy.BuildPortals(portalsLayer);
         worldProxy.BuildPortals(portalsLayer);
 
@@ -592,20 +591,20 @@ public class AlundraPortalDetectionTests : IDisposable
 
     private sealed class RecordingRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot) { }
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity) { }
+        public void RunScript(EntityScriptProxy entity, int programSlot) { }
+        public void RunSpriteEvent(EntityScriptProxy entity) { }
     }
 
     private sealed class RecordingPortalScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new RecordingRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController => null;
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
         public IReadOnlyList<PortalRecord> Portals { get; init; } = Array.Empty<PortalRecord>();
         public readonly List<(PortalRecord Portal, uint ArrivalDirectionId)> Triggered = new();
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) { }
+        public void DestroyEntity(EntityScriptProxy entity, int effectId) { }
         public int LogicTicksThisFrame(float elapsedTime) => 0;
 
         public void OnPortalTriggerDetected(PortalRecord portal, uint arrivalDirectionId)
@@ -622,7 +621,7 @@ public class AlundraPortalDetectionTests : IDisposable
         // must still fire, since the predicate is called BEFORE that gate (PlayerManager.cs:29).
         state.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked;
 
-        var player = new AlundraEntityScriptProxy
+        var player = new EntityScriptProxy
         {
             IsPlayer = true,
             TileX = 18,
@@ -646,7 +645,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var host = new RecordingPortalScriptHost { Portals = Array.Empty<PortalRecord>() };
         var state = host.GameState;
 
-        var player = new AlundraEntityScriptProxy
+        var player = new EntityScriptProxy
         {
             IsPlayer = true,
             TileX = 1,
@@ -667,7 +666,7 @@ public class AlundraPortalDetectionTests : IDisposable
         // Degraded mode (same convention as CheckEntityInteraction's own host==null skip) - the ~19
         // direct movement-only MovePlayer callers elsewhere in this test project pass host: null and
         // must keep working unchanged.
-        var player = new AlundraEntityScriptProxy
+        var player = new EntityScriptProxy
         {
             IsPlayer = true,
             TileX = 18,

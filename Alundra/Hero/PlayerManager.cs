@@ -6,7 +6,6 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Ai;
-using Alundra.Scripts;
 using Alundra.Combat;
 using Alundra.Items;
 using Alundra.Physics;
@@ -23,7 +22,7 @@ namespace Alundra.Hero;
 /// plus the LOGICAL (no <c>CharacterControllerComponent</c>, no gravity, no collision - user decision,
 /// 2026-08-23, <c>docs/plan-conversion-totale.md</c> §2 D4/E2) kinematic integration
 /// <c>PhysicsEngine.UpdateEntitiesPhysics</c>/<c>UpdateEntityPhysics</c> normally drives for the player.
-/// Called once per frame from <see cref="AlundraEntityScriptProxy.Update"/>'s own <c>IsPlayer</c> branch
+/// Called once per frame from <see cref="EntityScriptProxy.Update"/>'s own <c>IsPlayer</c> branch
 /// (the original calls <c>MovePlayer()</c> at the head of <c>EntityManager.UpdateEntitiesEvents</c>,
 /// EntityManager.cs:808/17 - now this proxy's own per-entity tick instead, decision D2).
 ///
@@ -61,17 +60,17 @@ namespace Alundra.Hero;
 /// see this method's own T3 comment at its call site; its TRANSFER half (<c>HandleWarpTransition</c>,
 /// PlayerManager.cs:3488-3541) is NOT ported (T4's own scope).</description></item>
 /// <item><description>HP==0 death branch - PlayerManager.cs:82-170 (no HP system wired to the player
-/// yet - <see cref="AlundraEntityScriptProxy.Hp"/> stays the C# default 0, which would otherwise
+/// yet - <see cref="EntityScriptProxy.Hp"/> stays the C# default 0, which would otherwise
 /// immediately hit this branch every frame; skipping it entirely is the deliberate V1 choice, not an
 /// oversight).</description></item>
 /// <item><description><c>TileAttributes &amp; 0x80</c> warp-tile branch - PlayerManager.cs:172-196 (no
-/// tile-attribute sampling yet, <see cref="AlundraEntityScriptProxy.TileAttributes"/> stays 0).</description></item>
+/// tile-attribute sampling yet, <see cref="EntityScriptProxy.TileAttributes"/> stays 0).</description></item>
 /// <item><description>Every slope-switch case other than 4 (the swim, E20.i) and 6 (including
 /// default) - PlayerManager.cs:207-353 - still NOT ported. Case 6 (climbing wall) IS now ported (É4,
 /// see <see cref="MovePlayer"/>'s own body) - the ONLY slope case that sets <c>TargetAnimationId</c>,
 /// unconditionally to <see cref="ClimbingAnimationId"/> whenever its own 5-conjunct gate holds, regardless
-/// of the current animation. <see cref="AlundraEntityScriptProxy.Slope_18c"/> itself has been alimented
-/// since E1 (<see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>) from the real map 389 cell data
+/// of the current animation. <see cref="EntityScriptProxy.Slope_18c"/> itself has been alimented
+/// since E1 (<see cref="EntityScriptProxy.UpdateGroundSlope"/>) from the real map 389 cell data
 /// every frame, reading 6 on the four ladder cells - see that method's own doc.</description></item>
 /// <item><description><c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (named stub: carrying is E20.g; <c>UpdatePlayerWeaponEffect</c> is ported by E20.f1a and E20.f1b, the aura included);
 /// <c>UpdateWeaponStepProgression</c> is ported without its projectile spawn (E20.b B4, the spawn is a named stub, E20.e0/E20.f).</description></item>
@@ -107,7 +106,7 @@ public static class PlayerManager
     /// <summary>PlayerAnimation 0x2D (E19.d2c2 S1): in the air without a direction.</summary>
     private const uint AirStillAnimationId = 0x2D;
 
-    /// <summary>The bit of <see cref="AlundraEntityScriptProxy.CombinedVramFlagsOR"/> (a ground property of 0x40) on which the Cross does not jump.</summary>
+    /// <summary>The bit of <see cref="EntityScriptProxy.CombinedVramFlagsOR"/> (a ground property of 0x40) on which the Cross does not jump.</summary>
     private const uint NoJumpVramFlag = 0x4000;
 
     /// <summary>PlayerAnimation 0x03 (E20.d1 T1): the run itself (the sprint), 258048 units of force per tick once the speed is up.</summary>
@@ -193,13 +192,13 @@ public static class PlayerManager
     internal static SwimHandler SwimHandlerOf(uint animationId) => animationId < SwimTable.Length ? SwimTable[animationId] : SwimHandler.Skip;
 
     /// <summary>
-    /// E20.d1 T1: the facing (<see cref="AlundraEntityScriptProxy.AnimationDirection"/>: 0 down, 1 up, 2 left, 3 right) the binary has when <c>MovePlayer</c> of this tick starts: <c>UpdateAnimation</c> (<c>0x80038AB4</c>) rewrites
+    /// E20.d1 T1: the facing (<see cref="EntityScriptProxy.AnimationDirection"/>: 0 down, 1 up, 2 left, 3 right) the binary has when <c>MovePlayer</c> of this tick starts: <c>UpdateAnimation</c> (<c>0x80038AB4</c>) rewrites
     /// <c>+0x98</c> at every tick from the previous facing and the direction (<c>+0x8C</c>) <c>MovePlayer</c> left, through the table <c>0x800237F4</c> (<c>0x80038AD8</c>). The DLL writes the field only when a frame ends
     /// (<see cref="FrameSyncPasses.SyncAnimation"/>), so in a frame of two ticks the second one would read the facing of the frame before. The value is the one the binary would have posed, the table lookup of
     /// <see cref="FrameSyncPasses.TryResolveAnimationTarget"/>; it is exact with one and two ticks per frame, and for any number of ticks in <c>0x03</c>, whose direction is a cardinal one (the table is idempotent on
     /// a cardinal direction). Computed once at the head of <see cref="MovePlayer"/>, before the tick writes anything; this is the binary's own value, not a deviation.
     /// </summary>
-    internal static int TickFacing(AlundraEntityScriptProxy player)
+    internal static int TickFacing(EntityScriptProxy player)
     {
         FrameSyncPasses.TryResolveAnimationTarget(player, out _, out var direction);
         return direction;
@@ -274,13 +273,13 @@ public static class PlayerManager
 
     /// <summary>
     /// Port of the documented subset of <c>PlayerManager.MovePlayer</c> - see this class' own doc for the
-    /// exact ported/not-ported line ranges. Only sets <see cref="AlundraEntityScriptProxy.TargetDirection"/>/
-    /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/>/<see cref="AlundraEntityScriptProxy.Flags"/>;
+    /// exact ported/not-ported line ranges. Only sets <see cref="EntityScriptProxy.TargetDirection"/>/
+    /// <see cref="EntityScriptProxy.TargetAnimationId"/>/<see cref="EntityScriptProxy.Flags"/>;
     /// the kinematic integration that turns a changed <c>TargetDirection</c>/animation into an actual
     /// position change is <see cref="Tick"/>, called separately (mirrors the original's own split between
     /// <c>PlayerManager.MovePlayer</c> and <c>PhysicsEngine.UpdateEntitiesPhysics</c>).
     /// </summary>
-    public static void MovePlayer(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
+    public static void MovePlayer(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
     {
         MovePlayerCallCountForTests++;
 
@@ -626,13 +625,13 @@ public static class PlayerManager
     }
 
     /// <summary>
-    /// E20.c2a T1: the END of <c>MovePlayer</c> (<c>0x80032914</c>), reached by every exit of the binary (the frozen branch <c>+0x20 != 0</c> = <see cref="AlundraEntityScriptProxy.BlockedByEntity"/>, the locked branch
+    /// E20.c2a T1: the END of <c>MovePlayer</c> (<c>0x80032914</c>), reached by every exit of the binary (the frozen branch <c>+0x20 != 0</c> = <see cref="EntityScriptProxy.BlockedByEntity"/>, the locked branch
     /// <c>&amp; 0x34</c>, the hurt path, the normal path): <c>UpdateItemEffectState</c>, then <c>SetPlayerHpMax(hero.HpMax)</c> and <c>SetPlayerHp(hero.Hp)</c> (<c>0x80032924</c>, <c>0x80032930</c>), so the stats are a mirror
-    /// of the life the entity carries. The mirror runs only for a hero that pulled its life from the stats (<see cref="AlundraEntityScriptProxy.LifePulledFromStats"/>, set by
-    /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>): the bare heroes of the unit tests keep the default life of 0, which would otherwise be written over the stats the test set up. This guard is the one
+    /// of the life the entity carries. The mirror runs only for a hero that pulled its life from the stats (<see cref="EntityScriptProxy.LifePulledFromStats"/>, set by
+    /// <see cref="WorldProxy.AdoptPlayerPawn"/>): the bare heroes of the unit tests keep the default life of 0, which would otherwise be written over the stats the test set up. This guard is the one
     /// documented deviation of the epilogue.
     /// </summary>
-    internal static void EndOfMovePlayer(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
+    internal static void EndOfMovePlayer(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
     {
         UpdateItemEffectState(player, in pad, state, host);
 
@@ -653,7 +652,7 @@ public static class PlayerManager
     /// weapon effects, the weapon steps, <c>PlayerTryAttack</c> or <c>PlayerTryAction</c>; the caller ends the tick. It reads no boots level: the wall of the deep water (O-E19-22) and the currents (O-E20-16) are not ported,
     /// so a hero without the swim boots swims where the original stops him; the splash, the wake and the ripple of the dive (the shadow pass <c>0x80038E84</c> and <c>CreatePlayerAnimationEffects</c>) are E20.e's.
     /// </summary>
-    private static void SwimTick(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host, uint nibble, uint dir)
+    private static void SwimTick(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host, uint nibble, uint dir)
     {
         player.WeaponChargeTimer = 0;
         player.WeaponRecordPointer = 0;
@@ -695,7 +694,7 @@ public static class PlayerManager
     /// <c>TryUseItem</c> at 0 ends the tick; <c>CheckEntityInteraction</c> 2 gives 0x1D, another non-zero value ends the tick; then an edge of the Triangle, the Cross or the Square (<see cref="SwimDiveButtons"/>) starts the
     /// burst (0x28), else any bit of the direction nibble (even a contradictory pair) swims (0x0F), else the hero floats (0x1D).
     /// </summary>
-    private static void SwimSteerTick(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host, uint nibble, uint dir)
+    private static void SwimSteerTick(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host, uint nibble, uint dir)
     {
         player.TargetDirection = dir;
         if (TryUseItem(player, in pad) == 0)
@@ -720,9 +719,9 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.i T2: the end of the hurt in deep water, state 0x3B (<c>0x800326FC</c>). <c>TryUseItem</c> at 0 turns the direction (+ 0x10) and ends the tick; otherwise the hero stays in 0x3B until the animation sets
-    /// <c>+0xAC</c> (<see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>, the hold of its last frame), then floats (0x1D) and turns back (+ 0x10). Nothing enters 0x3A or 0x3B yet: the hurt block of E20.c2b does.
+    /// <c>+0xAC</c> (<see cref="EntityScriptProxy.ForceResetAnimationFlag"/>, the hold of its last frame), then floats (0x1D) and turns back (+ 0x10). Nothing enters 0x3A or 0x3B yet: the hurt block of E20.c2b does.
     /// </summary>
-    private static void SwimHurtEndTick(AlundraEntityScriptProxy player, in PadState pad)
+    private static void SwimHurtEndTick(EntityScriptProxy player, in PadState pad)
     {
         if (TryUseItem(player, in pad) == 0)
         {
@@ -738,7 +737,7 @@ public static class PlayerManager
     }
 
     /// <summary>E20.i T1 stub of <c>0x800350C0</c>, the cancellation of the item mode the swim table's skip group performs (E20.h0): no item mode exists yet.</summary>
-    private static void CancelItemMode(AlundraEntityScriptProxy player)
+    private static void CancelItemMode(EntityScriptProxy player)
     {
     }
 
@@ -752,7 +751,7 @@ public static class PlayerManager
     /// in the air, 0x2D; Triangle released, Idle; the counter of animation ends (<c>+0xB0</c>, zeroed by the Triangle entry and counted by the loop of the animation) still 0 (the first 25 ticks), the tick ends;
     /// else the dash table: -1 ends the tick, otherwise the direction takes its value and the run (0x03) starts.
     /// </summary>
-    private static void PrepareSprintTick(AlundraEntityScriptProxy player, in PadState pad, uint nibble, uint dir)
+    private static void PrepareSprintTick(EntityScriptProxy player, in PadState pad, uint nibble, uint dir)
     {
         if (TryUseItem(player, in pad) == 0 || PlayerTryAction(player, in pad) != 0 || PlayerTryAttack(player, in pad) != 0)
         {
@@ -791,12 +790,12 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.d1 T2: the run, state 0x03 (<c>0x80031FF4</c>), in the binary's order; <c>TryUseItem</c> is NOT called. <c>PlayerTryAction</c> (non-zero ends the tick); in the air, 0x2D; the mover curtailed the run
-    /// (<see cref="AlundraEntityScriptProxy.ForceAdjusted"/>): the bounce, the effect 9 at the hero (<see cref="NativeEffects.CreateSprintBounce"/>), state 0x3E, direction + 0x10; no direction on the pad: the
+    /// (<see cref="EntityScriptProxy.ForceAdjusted"/>): the bounce, the effect 9 at the hero (<see cref="NativeEffects.CreateSprintBounce"/>), state 0x3E, direction + 0x10; no direction on the pad: the
     /// slide (0x2A) with the resume counter at 1; Triangle released, or the direction (the pad's, or the current one when the pad's combination is invalid) outside the cone of the facing of the tick
     /// (<see cref="AnimationTables.SprintConeRows"/>): the slide with the counter at 0; a Square, a Cross or a Circle held (<c>hold &amp; 0xE0</c>): the tackle (0x04). The direction of the hero is never written here
     /// except by the bounce.
     /// </summary>
-    private static void SprintTick(AlundraEntityScriptProxy player, in PadState pad, uint nibble, uint dir, int tickFacing)
+    private static void SprintTick(EntityScriptProxy player, in PadState pad, uint nibble, uint dir, int tickFacing)
     {
         if (PlayerTryAction(player, in pad) != 0)
         {
@@ -854,10 +853,10 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.d1 T2: the slide that ends the run, state 0x2A (<c>0x80032118</c>), in the binary's order. <c>TryUseItem</c> (0 ends the tick), <c>PlayerTryAction</c> (non-zero ends it); in the air, 0x2D; the resume counter
-    /// (<see cref="AlundraEntityScriptProxy.StopSprintCounter"/>) at 0: the tick ends; the mover curtailed the slide, or Triangle released: the counter goes to 0; else it counts up. Below 11 a direction bit on the pad clears
+    /// (<see cref="EntityScriptProxy.StopSprintCounter"/>) at 0: the tick ends; the mover curtailed the slide, or Triangle released: the counter goes to 0; else it counts up. Below 11 a direction bit on the pad clears
     /// it (a press too early is lost); from 11 on the dash table decides: -1 ends the tick and keeps the counter, otherwise the direction takes its value and the run (0x03) resumes with the force of the slide.
     /// </summary>
-    private static void StopSprintTick(AlundraEntityScriptProxy player, in PadState pad, uint nibble)
+    private static void StopSprintTick(EntityScriptProxy player, in PadState pad, uint nibble)
     {
         if (TryUseItem(player, in pad) == 0 || PlayerTryAction(player, in pad) != 0)
         {
@@ -908,10 +907,10 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.d1 T2: the bounce, states 0x3E and 0x1C (<c>0x80032558</c>). <c>TryUseItem</c> at 0 flips the direction (+ 0x10) and ends the tick (<c>0x8003270C</c>); otherwise nothing happens until the animation holds on its
-    /// last frame (<see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/>, the binary's <c>+0xAC</c>, raised by the Hold end); then the direction flips (+ 0x10, the hero faces the way he came from) and the state
+    /// last frame (<see cref="EntityScriptProxy.ForceResetAnimationFlag"/>, the binary's <c>+0xAC</c>, raised by the Hold end); then the direction flips (+ 0x10, the hero faces the way he came from) and the state
     /// is Idle on the ground, Moving (1) in the air.
     /// </summary>
-    private static void BounceTick(AlundraEntityScriptProxy player, in PadState pad)
+    private static void BounceTick(EntityScriptProxy player, in PadState pad)
     {
         if (TryUseItem(player, in pad) == 0)
         {
@@ -930,7 +929,7 @@ public static class PlayerManager
 
     /// <summary>E20.a A4 stub of <c>TryUseItem</c> (<c>0x8002ED64</c>): non-zero means "carry on this tick". The binary returns 1 whenever the Circle button has no rising edge
     /// (<c>0x8002EDA8</c>); a stub returning 0 would end the tick and kill every attack, jump and run (critique C10). The use of an item (the Circle) is E20.h.</summary>
-    private static int TryUseItem(AlundraEntityScriptProxy player, in PadState pad) => TryUseItemResultForTests ?? 1;
+    private static int TryUseItem(EntityScriptProxy player, in PadState pad) => TryUseItemResultForTests ?? 1;
 
     /// <summary>E20.d1 T4 test seam, per thread: the answer of the stub of <see cref="TryUseItem"/> (null: 1, "carry on"). The branches of the run that the binary takes when the item driver answers 0 (<c>0x80031F5C</c>,
     /// <c>0x80032120</c>, <c>0x80032560</c>) are unreachable while the stub answers 1; the tests of those branches pose 0 here.</summary>
@@ -938,9 +937,9 @@ public static class PlayerManager
     internal static int? TryUseItemResultForTests;
 
     /// <summary>E20.a A4 stub of <c>PlayerTryAction</c> (<c>0x8002EEAC</c>): 0 means "no action, carry on" (<c>0x8002EFC8</c>: nothing carried and nothing to lift). Lifting, carrying and throwing are E20.g.</summary>
-    private static int PlayerTryAction(AlundraEntityScriptProxy player, in PadState pad) => 0;
+    private static int PlayerTryAction(EntityScriptProxy player, in PadState pad) => 0;
 
-    /// <summary>The bit of <see cref="AlundraEntityScriptProxy.CombinedVramFlagsOR"/> (a ground property of 0x20 under a corner of the footprint) on which the Square does not strike (<c>0x8002EB24</c>).</summary>
+    /// <summary>The bit of <see cref="EntityScriptProxy.CombinedVramFlagsOR"/> (a ground property of 0x20 under a corner of the footprint) on which the Square does not strike (<c>0x8002EB24</c>).</summary>
     private const uint NoAttackVramFlag = 0x2000;
 
     /// <summary>The "no animation" answer of a weapon record: a press only plays the sound 3 (<c>0x8002ED30</c>).</summary>
@@ -959,7 +958,7 @@ public static class PlayerManager
     /// itself (E19.t).</description></item>
     /// </list>
     /// </summary>
-    private static int PlayerTryAttack(AlundraEntityScriptProxy player, in PadState pad)
+    private static int PlayerTryAttack(EntityScriptProxy player, in PadState pad)
     {
         if ((player.CombinedVramFlagsOR & NoAttackVramFlag) != 0)
         {
@@ -1000,7 +999,7 @@ public static class PlayerManager
     /// target animation on that byte; it returns 1 (the caller ends its tick). The charge counter itself is not touched: it falls to 0 at the next tick, because the charged animation does not count the charge.
     /// The counter is read AFTER <see cref="UpdatePlayerWeaponEffect"/> of the same tick, so a hold spark (counter 60, <c>+0x1C &amp; 3</c> zero) is created first, then the burst (oracle C10, C14, C16 at tick 101: 17 creations).
     /// </summary>
-    private static int ReleaseChargedAttack(AlundraEntityScriptProxy player)
+    private static int ReleaseChargedAttack(EntityScriptProxy player)
     {
         if (player.WeaponChargeTimer < FullChargeTimer || IsHeroInTheAir(player))
         {
@@ -1044,7 +1043,7 @@ public static class PlayerManager
     /// E20.f1a: port of <c>UpdatePlayerWeaponEffect</c> (<c>0x8002F49C</c>, called at <c>0x80031D68</c>, every tick on a terrain, before <c>UpdateWeaponStepProgression</c> and the switch of states, so BEFORE
     /// <see cref="PlayerTryAttack"/> of the same tick).
     /// <list type="number">
-    /// <item><description>The counter (<see cref="AlundraEntityScriptProxy.WeaponChargeTimer"/>, <c>0x80126FFC</c>): +1 up to 60 when the Square is held or released this tick, the weapon record of the equipped weapon is chargeable
+    /// <item><description>The counter (<see cref="EntityScriptProxy.WeaponChargeTimer"/>, <c>0x80126FFC</c>): +1 up to 60 when the Square is held or released this tick, the weapon record of the equipped weapon is chargeable
     /// (<c>byte[0x80028C78 + 13 w]</c> non-zero) and the animation the hero is in counts the charge (<see cref="WeaponTables.AnimationCountsCharge"/>); else 0.</description></item>
     /// <item><description>Below 11: the aura is released (<see cref="ReleaseAura"/>), the function ends. From 11: the aura is created or renewed (<see cref="CreateAuraIfNeeded"/>, E20.f1b), every tick.</description></item>
     /// <item><description>Only when <c>+0x1C &amp; 3</c> is 0 (the counter of frames BEFORE the counters pass of this tick): below 60 the sound 0x2A; at 60 the hold spark, queued on the stage
@@ -1052,7 +1051,7 @@ public static class PlayerManager
     /// </list>
     /// The stage is the host's (<see cref="IScriptHost.EffectStage"/>); a host without one creates no effect, and the sounds that do not depend on a creation still play.
     /// </summary>
-    internal static void UpdatePlayerWeaponEffect(AlundraEntityScriptProxy player, in PadState pad, IScriptHost? host)
+    internal static void UpdatePlayerWeaponEffect(EntityScriptProxy player, in PadState pad, IScriptHost? host)
     {
         if (((pad.ButtonsHold | pad.ButtonsReleased) & PadState.Square) != 0
             && WeaponTables.RecordByte(WeaponTables.RecordsAddress + (uint)(WeaponTables.RecordSize * player.CurrentWeaponRecord)) != 0
@@ -1117,13 +1116,13 @@ public static class PlayerManager
     /// The handle receives the result of the creation even when it is null (a full reservoir: the creation is retried at every tick). The effect is created AT ONCE and its slot read at the tick (D-E20-28, ADR-0057:
     /// the hero's exception to the queued model of ADR-0046; <see cref="EffectStage.CreateAttachedNow"/>).
     /// <para>
-    /// Written deviation from the binary (ADR-0059, proposed): the aura is also created again when its slot is no longer active or no longer carries the aura (<see cref="AlundraEntityScriptProxy.AuraGeneration"/>).
+    /// Written deviation from the binary (ADR-0059, proposed): the aura is also created again when its slot is no longer active or no longer carries the aura (<see cref="EntityScriptProxy.AuraGeneration"/>).
     /// At one tick per frame the binary never gets there; at three ticks per frame, at the renewal, the frame frees the old aura and then applies the spark of its last tick on the freed slot, which the handle would
     /// follow as if it were the aura. Other deviations of D-E20-28 for a frame of several ticks: a frame that holds both c + 96 and c + 97 shows one frame without aura; the spark's draws stay at the application
     /// of the stage (E20.f1a); the hero's slot index is taken before the queued operations of the frame.
     /// </para>
     /// </summary>
-    private static void CreateAuraIfNeeded(AlundraEntityScriptProxy player, IScriptHost? host)
+    private static void CreateAuraIfNeeded(EntityScriptProxy player, IScriptHost? host)
     {
         if (host?.EffectStage is not { } stage)
         {
@@ -1147,7 +1146,7 @@ public static class PlayerManager
     /// other test. Here the handle is cleared at once and the slot is released by an operation of the stage at the position of this tick (<see cref="EffectStage.FreeAtTick"/>, ADR-0059), and ONLY IF it still
     /// holds the aura (D-E20-30, the defect of the original corrected: when the aura expired during a lock and its slot was taken by another effect, the binary frees that other effect).
     /// </summary>
-    private static void ReleaseAura(AlundraEntityScriptProxy player, IScriptHost? host)
+    private static void ReleaseAura(EntityScriptProxy player, IScriptHost? host)
     {
         var slot = player.AuraSlot;
         if (slot == null)
@@ -1167,11 +1166,11 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.b B4: port of <c>UpdateWeaponStepProgression</c> (<c>0x8002F768</c>, called at <c>0x80031D70</c>, every tick before the state switch), without the spawn. With a pending pointer
-    /// (<see cref="AlundraEntityScriptProxy.WeaponRecordPointer"/>): a record whose type (<c>ptr[1]</c>) is 0, or whose current animation does not carry the "spawns after the delay" flag of
+    /// (<see cref="EntityScriptProxy.WeaponRecordPointer"/>): a record whose type (<c>ptr[1]</c>) is 0, or whose current animation does not carry the "spawns after the delay" flag of
     /// <see cref="WeaponTables.AnimationFlagsAddress"/>, clears the pointer (the melee swings: at the tick after the press); otherwise the counter counts up to the delay of the record
     /// (<c>ptr[2]</c>), then the projectile is spawned (<see cref="SpawnWeaponProjectile"/>) and the pointer cleared.
     /// </summary>
-    private static void UpdateWeaponStepProgression(AlundraEntityScriptProxy player, IScriptHost? host)
+    private static void UpdateWeaponStepProgression(EntityScriptProxy player, IScriptHost? host)
     {
         var pointer = player.WeaponRecordPointer;
         if (pointer == 0)
@@ -1196,8 +1195,8 @@ public static class PlayerManager
     }
 
     /// <summary>E20.b B4 seam of the spawn call <c>0x80039F58</c> of <c>UpdateWeaponStepProgression</c> (<c>0x8002F818</c>): the projectile of a bow or a wand, at the hero's X and Y, at his Z plus the
-    /// height <c>ptr[3]</c> of the record. Counted and journaled for the tests; since E20.f3a it calls the apparition of an entity by sprite index for the types of <see cref="WiredWeaponTypes"/> (empty until E20.f3c). The direction is the one of the tick (<see cref="AlundraEntityScriptProxy.BoxDirection"/>), read before the tick writes anything, as the binary reads <c>+0x98</c>.</summary>
-    internal static void SpawnWeaponProjectile(AlundraEntityScriptProxy player, uint recordPointer, IScriptHost? host)
+    /// height <c>ptr[3]</c> of the record. Counted and journaled for the tests; since E20.f3a it calls the apparition of an entity by sprite index for the types of <see cref="WiredWeaponTypes"/> (empty until E20.f3c). The direction is the one of the tick (<see cref="EntityScriptProxy.BoxDirection"/>), read before the tick writes anything, as the binary reads <c>+0x98</c>.</summary>
+    internal static void SpawnWeaponProjectile(EntityScriptProxy player, uint recordPointer, IScriptHost? host)
     {
         WeaponSpawnCallCountForTests++;
         var call = new WeaponSpawnCall(
@@ -1269,7 +1268,7 @@ public static class PlayerManager
     /// <summary>E20.e0a3b test seam, per thread (the motif of <see cref="WeaponSpawnCallsForTests"/>): called at the exact place of <c>MovePlayer</c> where the shot of the hero calls <c>0x80039F58</c>, with the hero and the arguments of the call.
     /// Null in production. E20.f3a: when posed, it REPLACES the call of the production seam (<see cref="WiredWeaponTypes"/>), so a test that spawns from here gets exactly one entity.</summary>
     [ThreadStatic]
-    internal static Action<AlundraEntityScriptProxy, WeaponSpawnCall>? WeaponSpawnBirthHookForTests;
+    internal static Action<EntityScriptProxy, WeaponSpawnCall>? WeaponSpawnBirthHookForTests;
 
     /// <summary>E20.f1a: the arguments of one call of the spawn stub, as the binary passes them to <c>0x80039F58</c> (<c>0x8002F7D4-0x8002F818</c>): the type is <c>ptr[1]</c> of the record, the position is the hero's X and Y and his Z
     /// plus <c>ptr[3]</c> pixels (the DLL's frame of Z: the oracle's is one raw unit more, ADR-0026), the direction is <c>CardinalDirectionTable[+0x98]</c> (<c>0x80023644</c>: down 0, up 0x10, left 8, right 0x18), indexed by <c>BoxDirection</c> (E20.f3a).</summary>
@@ -1279,11 +1278,11 @@ public static class PlayerManager
     [ThreadStatic]
     internal static System.Collections.Generic.List<WeaponSpawnCall>? WeaponSpawnCallsForTests;
 
-    /// <summary>The table <c>0x80023644</c>, indexed by the hero's direction of the sprite at the tick of the shot (<see cref="AlundraEntityScriptProxy.BoxDirection"/>, never the end-of-frame <see cref="AlundraEntityScriptProxy.AnimationDirection"/>, D-F3-2; the order of <see cref="AnimationTables.DirectionNames"/>).</summary>
+    /// <summary>The table <c>0x80023644</c>, indexed by the hero's direction of the sprite at the tick of the shot (<see cref="EntityScriptProxy.BoxDirection"/>, never the end-of-frame <see cref="EntityScriptProxy.AnimationDirection"/>, D-F3-2; the order of <see cref="AnimationTables.DirectionNames"/>).</summary>
     private static readonly int[] SpawnDirections = { 0, 0x10, 8, 0x18 };
 
     /// <summary>E20.a A4 stub of <c>UpdatePlayerCarriedEntity</c> (<c>0x8002F884</c>, called with 0 at <c>0x80031D78</c> and, E20.i, with 2 by the swim branch): nothing is carried yet (E20.g).</summary>
-    private static void UpdatePlayerCarriedEntity(AlundraEntityScriptProxy player, int mode)
+    private static void UpdatePlayerCarriedEntity(EntityScriptProxy player, int mode)
     {
     }
 
@@ -1297,7 +1296,7 @@ public static class PlayerManager
     /// </list>
     /// A host without the seam, tables or records does steps 1, 6 and 2-5 nothing (a bare test montage); the regeneration then finds no record and only keeps its counters at 0.
     /// </summary>
-    internal static void UpdateItemEffectState(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
+    internal static void UpdateItemEffectState(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
     {
         RefreshEquipmentAndSheet(player, state, host);
         RegenerateLife(player, in pad, state, host?.EquipmentRecords);
@@ -1305,10 +1304,10 @@ public static class PlayerManager
 
     /// <summary>
     /// Steps 1 to 6 of <c>UpdateItemEffectState</c>, the part that does not touch the hero's life: the boots level, the three records, the sheet. Also run once when the hero is adopted by a world
-    /// (<see cref="AlundraWorldProxy"/>, E20.c2a T2): the binary's sheet is a global that outlives the map load (the load only empties the record pointers), so a hit on the first tick of a map reads the sheet of the
+    /// (<see cref="WorldProxy"/>, E20.c2a T2): the binary's sheet is a global that outlives the map load (the load only empties the record pointers), so a hit on the first tick of a map reads the sheet of the
     /// end of the previous map; this port, which rebuilds the world's records at every map, computes it again at the adoption from the same inventory instead of reading an empty sheet.
     /// </summary>
-    internal static void RefreshEquipmentAndSheet(AlundraEntityScriptProxy player, GameState state, IScriptHost? host)
+    internal static void RefreshEquipmentAndSheet(EntityScriptProxy player, GameState state, IScriptHost? host)
     {
         if (host?.EquipmentRecords is not { } records)
         {
@@ -1344,11 +1343,11 @@ public static class PlayerManager
     }
 
     /// <summary>
-    /// Step 6 of <c>UpdateItemEffectState</c> (<c>0x800309A8-0x80030C18</c>): the hero's sheet is a copy of the record of the armour, or of the hero's own record (<c>+0x1C4</c>, <see cref="AlundraEntityScriptProxy.BalanceRecord"/>)
+    /// Step 6 of <c>UpdateItemEffectState</c> (<c>0x800309A8-0x80030C18</c>): the hero's sheet is a copy of the record of the armour, or of the hero's own record (<c>+0x1C4</c>, <see cref="EntityScriptProxy.BalanceRecord"/>)
     /// when no armour is owned, whose responses 1 to 11 (bytes 3 to 13) are then combined with those of the weapon record and of the accessory record by <see cref="CombineResponse"/>. A missing weapon or accessory record
     /// counts as <c>0x10</c>. Written into <see cref="EquipmentRecords.HeroSheet"/>, one reusable record.
     /// </summary>
-    internal static void ComputeHeroSheet(AlundraEntityScriptProxy hero, EquipmentRecords records)
+    internal static void ComputeHeroSheet(EntityScriptProxy hero, EquipmentRecords records)
     {
         var source = records[EquipmentRecords.Armour] ?? hero.BalanceRecord;
         if (source == null)
@@ -1413,12 +1412,12 @@ public static class PlayerManager
 
     /// <summary>
     /// Step 7 of <c>UpdateItemEffectState</c>, the regeneration (<c>0x80030C20-0x80030D3C</c>). Its gates, all of which must hold: no bit of <c>0x7C</c> in the control flags, the hero not frozen (<c>+0x20</c>,
-    /// <see cref="AlundraEntityScriptProxy.BlockedByEntity"/>), the hold word of the pad (<c>0x80126F28</c>, a halfword: every button and the D-pad) zero, the life not 0 and below the maximum. When a gate is closed
+    /// <see cref="EntityScriptProxy.BlockedByEntity"/>), the hold word of the pad (<c>0x80126F28</c>, a halfword: every button and the D-pad) zero, the life not 0 and below the maximum. When a gate is closed
     /// the three counters (<see cref="GameState.RegenerationCounters"/>) go back to 0 and the life is left alone. Otherwise, for each of the three records with a byte 2 (the period, <see cref="BalanceRecord.MaxHp"/>)
     /// other than 0, the counter grows by one and, when it passes the byte 2, goes back to 0 and the life gains 1 (so a period of byte 2 + 1 ticks; a record without a byte 2 zeroes its counter); the life is then
     /// capped at the maximum.
     /// </summary>
-    internal static void RegenerateLife(AlundraEntityScriptProxy hero, in PadState pad, GameState state, EquipmentRecords? records)
+    internal static void RegenerateLife(EntityScriptProxy hero, in PadState pad, GameState state, EquipmentRecords? records)
     {
         var counters = state.RegenerationCounters;
         if ((state.PlayerControlFlags & RegenerationClosedFlags) != 0
@@ -1505,19 +1504,19 @@ public static class PlayerManager
 
     /// <summary>E20.a A4 stub (D-E20-14) of the item-in-use driver <c>0x8003634C</c> at its second site (<c>0x80031CC4</c>, every normal tick): the binary returns 1 without doing anything
     /// when no item is in use. Ported in E20.c2.</summary>
-    private static void UpdateItemUseDriver(AlundraEntityScriptProxy player)
+    private static void UpdateItemUseDriver(EntityScriptProxy player)
     {
     }
 
     /// <summary>
     /// E19.d2c2 S1: the common tail of the Idle/Moving and jump states (binary <c>0x80031EA8</c>), in this order. In the air (the controller's ground contact
-    /// when the hero has a controller, <see cref="AlundraEntityScriptProxy.HeroAirborne"/> for a bare proxy of a test): 0x2C with a direction held, else 0x2D.
+    /// when the hero has a controller, <see cref="EntityScriptProxy.HeroAirborne"/> for a bare proxy of a test): 0x2C with a direction held, else 0x2D.
     /// On the ground: the edge of the Cross (<c>ButtonsJustPressed</c>) takes off - the walking jump (2) with a direction held, else the standing one (0x2B) -
     /// unless the cells forbid it (<c>VramOR &amp; 0x4000</c>: the case ends, nothing changes, not even the Moving); otherwise
     /// a held Triangle (E20.d1) starts the preparation of the run; otherwise Moving or Idle. <c>TryUseItem</c> and <c>PlayerTryAction</c> are the stubs of E20.a (the use of an item and lifting are not ported yet). The
     /// <c>LoadingMap</c> case reads the same predicate (E19.v, <see cref="IsHeroInTheAir"/>).
     /// </summary>
-    private static void ApplyGroundOrAirTail(AlundraEntityScriptProxy player, in PadState pad, uint buttonsHold)
+    private static void ApplyGroundOrAirTail(EntityScriptProxy player, in PadState pad, uint buttonsHold)
     {
         // E20.a A4, binary 0x80031EA8: PlayerTryAttack first (non-zero ends the tick, so the Square wins over the Cross); <see cref="PlayerTryAttack"/> starts the swing of the equipped weapon (E20.b).
         if (PlayerTryAttack(player, in pad) != 0)
@@ -1557,18 +1556,18 @@ public static class PlayerManager
 
     /// <summary>E19.v V-R2 (docs/plan-e19-opcodes.md section 1.2z): "in the air" for the two sites of the binary that read the hero's
     /// <c>IsOnGround</c> (+0x144), the <c>LoadingMap</c> case (0x800325E8) and the common tail (0x80031EBC): the controller's ground contact
-    /// when the hero has a controller, <see cref="AlundraEntityScriptProxy.HeroAirborne"/> for a bare proxy of a test.</summary>
-    private static bool IsHeroInTheAir(AlundraEntityScriptProxy player)
+    /// when the hero has a controller, <see cref="EntityScriptProxy.HeroAirborne"/> for a bare proxy of a test.</summary>
+    private static bool IsHeroInTheAir(EntityScriptProxy player)
         => player.Controller != null ? player.IsOnGround == 0 : player.HeroAirborne;
 
     /// <summary>E19.v2 (docs/plan-e19-opcodes.md section 1.2z, V-R4): the binary's <c>IsOnGround</c> is the floor rule (the hero is
-    /// on the ground when its Z is not above the floor, 0x800380F8). At map entry the DLL's <see cref="AlundraEntityScriptProxy.IsOnGround"/>
+    /// on the ground when its Z is not above the floor, 0x800380F8). At map entry the DLL's <see cref="EntityScriptProxy.IsOnGround"/>
     /// comes from the engine controller, which has not resolved the ground yet on the first frame of a freshly placed pawn: on a
     /// New Game the first <see cref="MovePlayer"/> runs before the intro's lock (the map events pass after the entities in the DLL)
     /// with <c>IsGrounded</c> false and the logical Z still under the 80 px deck, and the LoadingMap case wrongly took the jump pose,
     /// which the lock then froze. A hero at or under its terrain is not in the air. A bare proxy of a test (no controller) keeps
     /// <see cref="IsHeroInTheAir"/> alone.</summary>
-    private static bool IsAboveItsTerrain(AlundraEntityScriptProxy player)
+    private static bool IsAboveItsTerrain(EntityScriptProxy player)
         => player.Controller == null || player.PosZ > player.ComputeTerrainHeight();
 
     /// <summary>
@@ -1577,13 +1576,13 @@ public static class PlayerManager
     /// (<c>entity.Flags &amp; EntityFlags.Gravity</c>, read directly by <c>PhysicsEngine.ComputeZPosition</c>
     /// every original tick). THIS port's hero has no such bridge - the player's own vertical is owned by
     /// the ENGINE's continuous <c>CharacterControllerComponent.Settings.Gravity</c>/<c>MaxFallSpeed</c>
-    /// integrator instead (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>'s own override block, E3.d) -
+    /// integrator instead (<see cref="WorldProxy.AdoptPlayerPawn"/>'s own override block, E3.d) -
     /// so suspending gravity here means zeroing THOSE, exactly the same
-    /// zero-Gravity/zero-MaxFallSpeed shape <see cref="AlundraEntityScriptProxy.ApplyGravitySettingsToController"/>
+    /// zero-Gravity/zero-MaxFallSpeed shape <see cref="EntityScriptProxy.ApplyGravitySettingsToController"/>
     /// already uses for every controller-driven scripted NPC (proven pattern, not a new one - see that
     /// method's own doc). Idempotent (safe to call every frame the hero is actively on the ladder, same as
     /// the original's own per-frame "Flags &amp;= ~Gravity" re-application). A no-op without a
-    /// <see cref="AlundraEntityScriptProxy.Controller"/> (E2's own controller-free fallback player, which
+    /// <see cref="EntityScriptProxy.Controller"/> (E2's own controller-free fallback player, which
     /// has no engine-driven vertical to suspend in the first place).
     /// <para>
     /// CORRECTED (verifier F1/F2): zeroing Settings.Gravity/MaxFallSpeed alone is NOT enough - the
@@ -1596,17 +1595,17 @@ public static class PlayerManager
     /// <see cref="CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent.IsVerticalOwnedExternally"/>
     /// exists for (its own doc: "lets a scripted-motion owner ... declare vertical displacement without
     /// the controller's per-render-frame gravity fighting a per-logic-tick value") - already the exact
-    /// contract every scripted NPC uses (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>'s NPC sibling,
-    /// <c>ApplySpawnInitialization</c>, sets it permanently; <see cref="AlundraEntityScriptProxy.Update"/>
+    /// contract every scripted NPC uses (<see cref="WorldProxy.AdoptPlayerPawn"/>'s NPC sibling,
+    /// <c>ApplySpawnInitialization</c>, sets it permanently; <see cref="EntityScriptProxy.Update"/>
     /// declares <see cref="CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent.SetExternalVerticalDisplacement"/>
-    /// every tick). The hero's own controller (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>) never sets
+    /// every tick). The hero's own controller (<see cref="WorldProxy.AdoptPlayerPawn"/>) never sets
     /// this flag, so outside a climb the hero keeps its normal engine-driven gravity/ground-snap
     /// unchanged - this method only claims the flag for the DURATION of a climb, and
     /// <see cref="RestoreGravityAfterClimb"/> hands it back. No engine change: the mechanism already
     /// existed, unused by the hero.
     /// </para>
     /// </summary>
-    private static void SuspendGravityForClimb(AlundraEntityScriptProxy player)
+    private static void SuspendGravityForClimb(EntityScriptProxy player)
     {
         if (player.Controller == null)
         {
@@ -1634,8 +1633,8 @@ public static class PlayerManager
     /// (PlayerManager.cs:697-730 - both guard failures fall to the SAME ":729 TargetAnimationId = Idle",
     /// see <see cref="MovePlayer"/>'s own updated doc on that call site). Restores
     /// <c>Controller.Settings.Gravity</c>/<c>Controller.Settings.MaxFallSpeed</c> from
-    /// <see cref="AlundraEntityScriptProxy.MapGravity"/>/<see cref="AlundraEntityScriptProxy.MapMaxFallSpeed"/> -
-    /// the RESERVE this same slice's own <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> fix now populates
+    /// <see cref="EntityScriptProxy.MapGravity"/>/<see cref="EntityScriptProxy.MapMaxFallSpeed"/> -
+    /// the RESERVE this same slice's own <see cref="WorldProxy.AdoptPlayerPawn"/> fix now populates
     /// for the hero (previously left at the C# default 0f - see that method's own E4 comment; without that
     /// fix, "restoring" would have restored the hero's own gravity to zero forever, silently breaking
     /// every fall after the hero's first climb) - AND hands
@@ -1643,10 +1642,10 @@ public static class PlayerManager
     /// back to <c>false</c> (verifier F1/F2's own fix, see <see cref="SuspendGravityForClimb"/>'s own doc):
     /// without this, the hero would keep skipping the engine's own per-frame ground snap/gravity
     /// integration forever after its first climb, exactly like a climb that never actually ended. A no-op
-    /// without a <see cref="AlundraEntityScriptProxy.Controller"/>, same guard as
+    /// without a <see cref="EntityScriptProxy.Controller"/>, same guard as
     /// <see cref="SuspendGravityForClimb"/>.
     /// </summary>
-    private static void RestoreGravityAfterClimb(AlundraEntityScriptProxy player)
+    private static void RestoreGravityAfterClimb(EntityScriptProxy player)
     {
         if (player.Controller == null)
         {
@@ -1675,7 +1674,7 @@ public static class PlayerManager
     /// it to hand the flag back to.
     /// </summary>
     internal static (float Gravity, float MaxFallSpeed, bool VerticalOwnedExternally)? SuspendGravityForWarpDeparture(
-        AlundraEntityScriptProxy player)
+        EntityScriptProxy player)
     {
         if (player.Controller == null)
         {
@@ -1701,7 +1700,7 @@ public static class PlayerManager
     /// <c>AlundraWarpDirector</c>'s own abort guard). Without it the hero would keep walking on the
     /// departure map with gravity permanently at zero.</summary>
     internal static void RestoreGravityAfterAbortedWarpDeparture(
-        AlundraEntityScriptProxy player,
+        EntityScriptProxy player,
         (float Gravity, float MaxFallSpeed, bool VerticalOwnedExternally) previous)
     {
         if (player.Controller == null)
@@ -1730,8 +1729,8 @@ public static class PlayerManager
     /// <summary>
     /// Port of <c>CheckEntityInteraction</c> @ 0x8002e910 (decompilation PlayerManager.cs:1597-1669),
     /// E12.d (docs/plan-e12d-interaction-joueur.md). Reads the player's per-tick entity contact
-    /// (<see cref="AlundraEntityScriptProxy.XCollisionEntity"/>, written by the blocking report of his controller in
-    /// <see cref="AlundraEntityScriptProxy.MoveControllerAndPullPosition"/>, E19.d2b B4), maintains the interact latch on <paramref name="state"/> (see the latch fields'
+    /// (<see cref="EntityScriptProxy.XCollisionEntity"/>, written by the blocking report of his controller in
+    /// <see cref="EntityScriptProxy.MoveControllerAndPullPosition"/>, E19.d2b B4), maintains the interact latch on <paramref name="state"/> (see the latch fields'
     /// own doc there), and on success assigns <see cref="IScriptHost.ActiveCollisionEntity"/> -
     /// the one-shot signal the slot-F pick consumes (D-E12D-4). Returns the original's exact result
     /// codes: 0 = no interaction, 1 = auto-touch interact (no InteractRequiresButton flag),
@@ -1742,13 +1741,13 @@ public static class PlayerManager
     /// GameplayBlockedMask posed - skipped, the narrowest equivalent of the original's whole-pipeline
     /// gate at EntityManager.cs:377 (with a MenuOpen box up, neither MovePlayer nor the pick nor the
     /// physics ran at all there). CORRECTED (E13.d D4, docs/plan-e13d-inventaire.md §1.2): the port DOES
-    /// have a global gate for this since T2 - <see cref="AlundraEntityScriptProxy.Update"/>'s own
+    /// have a global gate for this since T2 - <see cref="EntityScriptProxy.Update"/>'s own
     /// <c>gameplayBlocked</c> computation (AlundraEntityScriptProxy.cs:828-867) only calls
     /// <c>RunGameplayBlockableUpdate</c> - where <see cref="MovePlayer"/> itself lives - when it is
     /// false; this method's own repeated check just carries the same gate one level deeper, narrowly,
     /// the way D-E12D-5 chose - not because the port lacked one.
     /// </summary>
-    internal static int CheckEntityInteraction(AlundraEntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
+    internal static int CheckEntityInteraction(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
     {
         if (host == null)
         {
@@ -1837,7 +1836,7 @@ public static class PlayerManager
         return res;
     }
 
-    public static void Tick(AlundraEntityScriptProxy player, int ticks)
+    public static void Tick(EntityScriptProxy player, int ticks)
         => ScriptedMotion.TickPlayer(player, ticks);
 
     // ---------------------------------------------------------------------------------------------
@@ -1868,12 +1867,12 @@ public static class PlayerManager
     }
 
     /// <summary>
-    /// The life side of <c>IncreaseHpMaxAndCreateEffect</c> (0x800333AC, E19.g G3d, ADR-0048 amended by ADR-0056). For a hero that carries its life (<see cref="AlundraEntityScriptProxy.LifePulledFromStats"/>, every hero of a
+    /// The life side of <c>IncreaseHpMaxAndCreateEffect</c> (0x800333AC, E19.g G3d, ADR-0048 amended by ADR-0056). For a hero that carries its life (<see cref="EntityScriptProxy.LifePulledFromStats"/>, every hero of a
     /// world), as the binary does (<c>0x800333D0-0x800333E4</c>): <c>HpMax += 1</c> with NO cap and <c>Hp = HpMax</c>, on the entity; the stats follow at the end of the next <see cref="MovePlayer"/> through the
     /// clamps of <see cref="SetPlayerHpMax"/> and <see cref="SetPlayerHp"/> (a vessel at 50/50 gives an entity of 51/51 and stats of 50/50). Without such a hero (no hero, or the bare proxy of a test montage, whose
     /// life is never mirrored) the stats are raised at once through the same setters, the former seam: the maximum + 1 capped at 50, the life filled to the raised value.
     /// </summary>
-    public static void IncreaseHpMaxAndFill(GameState state, AlundraEntityScriptProxy? hero = null)
+    public static void IncreaseHpMaxAndFill(GameState state, EntityScriptProxy? hero = null)
     {
         if (hero is { LifePulledFromStats: true })
         {
@@ -1891,7 +1890,7 @@ public static class PlayerManager
     /// Opcode <c>0xBC</c> (<c>Script_188_0BC</c>, <c>0x80041C00</c>): the hero's maximum life goes up by the operand byte, capped at <c>0x32</c> (<c>slti 0x33</c>); the life is not touched. Written on the entity of a
     /// hero that carries its life; otherwise (no hero, a bare test proxy) on the stats through <see cref="SetPlayerHpMax"/>, which has the same cap.
     /// </summary>
-    public static void IncreaseHpMax(GameState state, AlundraEntityScriptProxy? hero, int amount)
+    public static void IncreaseHpMax(GameState state, EntityScriptProxy? hero, int amount)
     {
         if (hero is { LifePulledFromStats: true })
         {
@@ -1908,7 +1907,7 @@ public static class PlayerManager
     /// (<c>0x8004B730</c>): the four displayed counters of the HUD (<see cref="HudDirector"/>) jump to the maxima of the stats, so the hearts and pips fill at once instead of rolling up. Without a hero that
     /// carries its life the stats are filled instead (<see cref="SetPlayerHp"/> to the stats' own maximum).
     /// </summary>
-    public static void RestoreLifeAndMagic(GameState state, AlundraEntityScriptProxy? hero)
+    public static void RestoreLifeAndMagic(GameState state, EntityScriptProxy? hero)
     {
         if (hero is { LifePulledFromStats: true })
         {
@@ -2041,7 +2040,7 @@ public static class PlayerManager
     /// (GameInitializer.cs:473-479), then the tail of <c>InitializeGameState</c>'s New Game branch
     /// (GameInitializer.cs:395-411) - every item whose drop record carries the unlock bit is given once
     /// (items 1, 17 and 25 in the shipped data), then the weapon is set to slot 1, the sword's.
-    /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> runs this once per session, at the New Game entry.
+    /// <see cref="WorldProxy.AdoptPlayerPawn"/> runs this once per session, at the New Game entry.
     /// </summary>
     public static void InitializeNewGameInventory(GameState state, ItemTables tables)
     {

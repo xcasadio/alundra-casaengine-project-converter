@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Events;
 using Alundra.Ai;
 using Alundra.Rng;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -45,8 +45,8 @@ public sealed class AlundraEnemyHelpersTests
     {
         ForEachRow("relpos", (row, where) =>
         {
-            var self = new AlundraEntityScriptProxy { TileX = row.In[0], TileY = row.In[1], FloorHeight = row.In[2] };
-            var hero = new AlundraEntityScriptProxy { TileX = row.In[3], TileY = row.In[4], FloorHeight = row.In[5] };
+            var self = new EntityScriptProxy { TileX = row.In[0], TileY = row.In[1], FloorHeight = row.In[2] };
+            var hero = new EntityScriptProxy { TileX = row.In[3], TileY = row.In[4], FloorHeight = row.In[5] };
             Span<int> output = stackalloc int[6];
 
             EnemyHelpers.RelativePosition(self, hero, output);
@@ -60,8 +60,8 @@ public sealed class AlundraEnemyHelpersTests
     {
         ForEachRow("relpos2", (row, where) =>
         {
-            var self = new AlundraEntityScriptProxy { TileX = row.In[0], TileY = row.In[1], PosZ = row.In[2] };
-            var hero = new AlundraEntityScriptProxy { TileX = row.In[3], TileY = row.In[4], FloorHeight = row.In[5] };
+            var self = new EntityScriptProxy { TileX = row.In[0], TileY = row.In[1], PosZ = row.In[2] };
+            var hero = new EntityScriptProxy { TileX = row.In[3], TileY = row.In[4], FloorHeight = row.In[5] };
             Span<int> output = stackalloc int[6];
 
             EnemyHelpers.RelativePositionFromPosZ(self, hero, output);
@@ -89,7 +89,7 @@ public sealed class AlundraEnemyHelpersTests
         ForEachRow("tapfront", (row, where) =>
         {
             // +0x9C (the DLL's AnimationDirection, an end-of-frame value) holds a decoy that differs from the direction of the tick in every state (the oracle writes the same decoy)
-            var self = new AlundraEntityScriptProxy { BoxDirection = row.In[0], AnimationDirection = (row.In[0] + 1) & 3 };
+            var self = new EntityScriptProxy { BoxDirection = row.In[0], AnimationDirection = (row.In[0] + 1) & 3 };
             var rel = row.In.AsSpan(1, 6);
 
             var result = EnemyHelpers.TryAttackPlayerFront(self, rel, row.In[7], row.In[8], row.In[9]);
@@ -104,8 +104,8 @@ public sealed class AlundraEnemyHelpersTests
     {
         // the target is east of the entity at the same height, in reach: only direction 3 (|dy| <= a, dx <= 0) accepts it
         int[] rel = { 10, 2, 0, -10, 2, 0 };
-        var east = new AlundraEntityScriptProxy { BoxDirection = 3, AnimationDirection = 0 };
-        var other = new AlundraEntityScriptProxy { BoxDirection = 0, AnimationDirection = 3 };
+        var east = new EntityScriptProxy { BoxDirection = 3, AnimationDirection = 0 };
+        var other = new EntityScriptProxy { BoxDirection = 0, AnimationDirection = 3 };
 
         Assert.True(EnemyHelpers.TryAttackPlayerFront(east, rel, 5, 12, 0));
         Assert.False(EnemyHelpers.TryAttackPlayerFront(other, rel, 5, 12, 0));
@@ -116,7 +116,7 @@ public sealed class AlundraEnemyHelpersTests
     {
         ForEachRow("had", (row, where) =>
         {
-            var self = new AlundraEntityScriptProxy { FloorHeight = row.In[0], TargetDirection = (uint)row.In[5], TargetAnimationId = MarkAnim };
+            var self = new EntityScriptProxy { FloorHeight = row.In[0], TargetDirection = (uint)row.In[5], TargetAnimationId = MarkAnim };
             for (var k = 0; k < 4; k++)
             {
                 self.MapHeights[k] = row.In[1 + k];
@@ -141,9 +141,9 @@ public sealed class AlundraEnemyHelpersTests
             ForEachRow("startwalk", (row, where) =>
             {
                 GameRandom.RandomSeed = (uint)row.In[0];
-                var self = new AlundraEntityScriptProxy { PosX = row.In[1], PosY = row.In[2], TargetDirection = MarkDir, TargetAnimationId = MarkAnim };
+                var self = new EntityScriptProxy { PosX = row.In[1], PosY = row.In[2], TargetDirection = MarkDir, TargetAnimationId = MarkAnim };
                 self.AIValues[1] = MarkHalf;
-                var hero = new AlundraEntityScriptProxy { PosX = row.In[3], PosY = row.In[4] };
+                var hero = new EntityScriptProxy { PosX = row.In[3], PosY = row.In[4] };
 
                 EnemyHelpers.StartWalk(self, hero, (uint)row.In[5], row.In[6], row.In[7]);
 

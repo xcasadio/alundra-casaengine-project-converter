@@ -1,14 +1,14 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
+using Alundra.Entities;
 
 namespace Alundra.Combat;
 
 /// <summary>
 /// The hit pass of the binary, <c>UpdateBalanceRecords</c> (<c>0x80039300</c>, the last pass of the entity block, E20.c1a C3, docs/plan-e20-heros.md section 1.5). Pure logic over a list of entity proxies, headless-testable:
 /// <list type="number">
-/// <item><description>The animation of the hero is latched first, even when the list is empty (<c>0x80039344/48</c>): <see cref="HeroAnimationLatch"/> is <c>+0x88</c> of the hero (<see cref="AlundraEntityScriptProxy.TargetAnimationId"/>, not
+/// <item><description>The animation of the hero is latched first, even when the list is empty (<c>0x80039344/48</c>): <see cref="HeroAnimationLatch"/> is <c>+0x88</c> of the hero (<see cref="EntityScriptProxy.TargetAnimationId"/>, not
 /// the current animation) as it is at this point of the tick, after the animation clock. The damage calculation of E20.c1b reads it one tick later (<c>0x80146DF8</c>).</description></item>
 /// <item><description>For each attacker of the list that has a frame box, a current attack with a non-zero attribute byte and a non-zero class mask (<c>0x8003936C-0x800393C0</c>), each other entity of the list (the target loop,
 /// <c>0x800393FC-0x80039758</c>) is tested in the order of the list. A target is skipped when its <c>+0x1D0</c> or <c>+0x1CC</c> counter is non-zero, when the animation byte <c>+0xB4</c> has the bit <c>0x40</c>, or when its
@@ -85,7 +85,7 @@ internal sealed class HitPass
     /// when <paramref name="list"/> is empty). <paramref name="emitSparks"/> is told the centre of the overlap of each hit (the world queues the three sparks on its effect stage). <paramref name="attachEffect"/> (E20.f3b, D-F3-9) is told
     /// the target and the effect (4 or 5) of a hit that is not immune, before the store of <c>TouchingEntity</c> and before the sparks.
     /// </summary>
-    public void Run(IReadOnlyList<AlundraEntityScriptProxy> list, AlundraEntityScriptProxy? hero, Action<int, int, int>? emitSparks, Action<AlundraEntityScriptProxy, int>? attachEffect = null)
+    public void Run(IReadOnlyList<EntityScriptProxy> list, EntityScriptProxy? hero, Action<int, int, int>? emitSparks, Action<EntityScriptProxy, int>? attachEffect = null)
     {
         if (hero != null)
         {

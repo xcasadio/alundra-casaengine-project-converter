@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Compiler.Dialogue;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Dialogue.Assets;
@@ -15,6 +14,7 @@ using Alundra.Session;
 using Alundra.Events;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -77,12 +77,12 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
 
     private sealed class FakeContext : IEntityWorldContext
     {
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity => null;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public IDialogueDirector? DialogueDirector { get; set; }
     }
@@ -110,7 +110,7 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
         EventTraceKind? kind = null;
         runner.TraceSink = record => kind ??= record.Opcode == opcode ? record.Kind : null;
 
-        runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);
+        runner.RunOneScriptCall(new EntityScriptProxy(), state);
 
         Assert.True(DialogueDirector.Instance.IsOpen);
         Assert.Equal("TARGET", DialogueDirector.Instance.CurrentLineForTests?.Text);
@@ -129,7 +129,7 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
         var serial = DialogueDirector.Instance.OpenSerial;
         var state = NewState(codes);
 
-        runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);
+        runner.RunOneScriptCall(new EntityScriptProxy(), state);
 
         Assert.Equal(0, state.CodeIndex); // returned 0: suspended AT the instruction, size never applied.
         Assert.NotEqual(size, state.CodeIndex);
@@ -148,7 +148,7 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
         var codes = Codes(opcode, mode);
         var (runner, gameState, _) = NewRealMontage(codes);
 
-        runner.RunOneScriptCall(new AlundraEntityScriptProxy(), NewState(codes));
+        runner.RunOneScriptCall(new EntityScriptProxy(), NewState(codes));
 
         var messageBoxBit = gameState.PlayerControlFlags & GameState.PlayerControlBits.MessageBox;
         var menuBit = gameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen;
@@ -170,7 +170,7 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
         EventTraceKind? kind = null;
         runner.TraceSink = record => kind ??= record.Opcode == opcode ? record.Kind : null;
 
-        runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);
+        runner.RunOneScriptCall(new EntityScriptProxy(), state);
 
         Assert.Equal(EventTraceKind.Degraded, kind);
         Assert.Equal(size, state.CodeIndex);

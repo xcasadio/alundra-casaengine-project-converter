@@ -6,14 +6,14 @@ using Alundra.Dialogues;
 using Alundra.UI.Inventory;
 using Alundra.UI.Messages;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Messages;
 
 /// <summary>
 /// E19.f2b1c F2B1C-R2 (docs/plan-e19-opcodes.md): what <c>UI/Screens/TextBoxScreen.xaml</c> binds - the frame, the clip canvas, the three rows (text and
 /// position relative to the clip canvas) and the cursor. <see cref="TextBoxPresenter"/> writes it after each pass of the dialogue box from the box's drawn
 /// state (<see cref="Apply"/>); only the values that change notify.
 /// </summary>
-public sealed class AlundraTextBoxViewModel : ViewModelBase
+public sealed class TextBoxViewModel : ViewModelBase
 {
     private readonly InventoryTextViewModel[] _rows = { new(), new(), new() };
     private Visibility _rootVisibility = Visibility.Collapsed;

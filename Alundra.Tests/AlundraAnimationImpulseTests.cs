@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -202,7 +201,7 @@ public sealed class AlundraAnimationImpulseTests
         /// <summary>The tick program starts when the test says (after the settling update of the montage).</summary>
         public bool Enabled { get; set; }
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             if (Enabled)
             {
@@ -210,7 +209,7 @@ public sealed class AlundraAnimationImpulseTests
             }
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }

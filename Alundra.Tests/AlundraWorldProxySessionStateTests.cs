@@ -1,12 +1,12 @@
 #nullable enable
 using System;
 using System.IO;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -23,7 +23,7 @@ namespace Alundra.Tests;
 /// never touch <c>GameState</c>. Two bare proxies are enough to close that gap - no world, no tileMap,
 /// none of the <c>InitializeWithWorld</c> montage T2 will build.
 ///
-/// This class constructs <see cref="AlundraWorldProxy"/>, so it falls under D-T-14's own "every test
+/// This class constructs <see cref="WorldProxy"/>, so it falls under D-T-14's own "every test
 /// class that builds a proxy" criterion and resets the three session carriers in constructor (the
 /// isolation-carrying half: xunit builds a fresh instance per test) and in Dispose (hygiene).
 /// </summary>
@@ -48,8 +48,8 @@ public sealed class AlundraWorldProxySessionStateTests : IDisposable
     [Fact]
     public void TwoConsecutiveProxies_ShareTheOneSessionGameState()
     {
-        var worldOneProxy = new AlundraWorldProxy();
-        var worldTwoProxy = new AlundraWorldProxy();
+        var worldOneProxy = new WorldProxy();
+        var worldTwoProxy = new WorldProxy();
 
         // D-T-3: the proxy is rebuilt per world by ElementFactory, but its game state is not.
         Assert.Same(worldOneProxy.GameState, worldTwoProxy.GameState);
@@ -59,14 +59,14 @@ public sealed class AlundraWorldProxySessionStateTests : IDisposable
     [Fact]
     public void AGameFlagSetThroughOneProxy_IsStillReadableThroughTheNextWorldsProxy()
     {
-        var worldOneProxy = new AlundraWorldProxy();
+        var worldOneProxy = new WorldProxy();
 
         // Flag 860 is the intro guard of map 389: block 18 sets it, and the intro's own B-129 program
         // only runs while it is clear. Losing it across a map change is exactly what would replay the
         // whole ship intro on the way back (§1.4.c), which is what T6's in-game acceptance checks.
         worldOneProxy.GameState.AddFlag(flag: 860, mask: 0x1);
 
-        var worldTwoProxy = new AlundraWorldProxy();
+        var worldTwoProxy = new WorldProxy();
 
         Assert.Equal(0x1u, worldTwoProxy.GameState.GetFlag(860));
     }

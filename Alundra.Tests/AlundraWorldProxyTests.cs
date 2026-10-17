@@ -1,5 +1,4 @@
 using System;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -7,21 +6,22 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers <see cref="AlundraWorldProxy"/>'s per-record entity creation, split into
+/// Covers <see cref="WorldProxy"/>'s per-record entity creation, split into
 /// <see cref="EntitySpawnFactory.BuildEntityName"/>, <see cref="EntitySpawnFactory.ApplyRecord"/>,
 /// <see cref="EntitySpawnFactory.TryGetPrefabAssetId"/> and the full
 /// <see cref="EntitySpawnFactory.CreateEntityFromRecord"/> (which additionally exercises
-/// <c>Entity.Initialize()</c> resolving <see cref="AlundraEntityScriptProxy"/> through <c>ElementFactory</c>
+/// <c>Entity.Initialize()</c> resolving <see cref="EntityScriptProxy"/> through <c>ElementFactory</c>
 /// - this needs Alundra.Tests to carry its own MonoGame.Framework.DesktopGL reference, since
 /// Alundra.csproj marks its own copy PrivateAssets="All" for game-folder deployment and it would
 /// otherwise never flow into this test host).
 ///
 /// Not covered: the live prefab loader (<c>World.Game.AssetContentManager.Load&lt;Entity&gt;</c>) wired in
-/// <see cref="AlundraWorldProxy.InitializeWithWorld"/> - it needs a running
+/// <see cref="WorldProxy.InitializeWithWorld"/> - it needs a running
 /// <see cref="CasaEngine.Framework.Application.CasaEngineGame"/> with a populated asset catalog, so tests
 /// exercise <see cref="EntitySpawnFactory.CreateEntityFromRecord"/> directly with a fake loader instead.
 /// Likewise not covered: the entity actually being added to and integrated by a live
@@ -73,7 +73,7 @@ public class AlundraWorldProxyTests
     public void ApplyRecord_MapsFieldsAndSetsLoadedStatus()
     {
         var record = BuildEntity0Record();
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
 
         EntitySpawnFactory.ApplyRecord(record, proxy);
 
@@ -119,11 +119,11 @@ public class AlundraWorldProxyTests
         var entity = EntitySpawnFactory.CreateEntityFromRecord(record, prefabLoader: null);
 
         Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", entity.Name);
-        Assert.Equal(typeof(AlundraEntityScriptProxy).FullName!, entity.GameplayProxyClassName);
+        Assert.Equal(typeof(EntityScriptProxy).FullName!, entity.GameplayProxyClassName);
         Assert.True(entity.IsInitialized);
         Assert.Null(entity.RootComponent);
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         Assert.Equal(EntityStatus.Loaded, proxy.Status);
         Assert.Equal(0, proxy.EntityRefId);
         Assert.Equal(25u, proxy.SpriteTableIndex);
@@ -139,11 +139,11 @@ public class AlundraWorldProxyTests
         var entity = EntitySpawnFactory.CreateEntityFromRecord(record, _ => null);
 
         Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", entity.Name);
-        Assert.Equal(typeof(AlundraEntityScriptProxy).FullName!, entity.GameplayProxyClassName);
+        Assert.Equal(typeof(EntityScriptProxy).FullName!, entity.GameplayProxyClassName);
         Assert.True(entity.IsInitialized);
         Assert.Null(entity.RootComponent);
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         Assert.Equal(EntityStatus.Loaded, proxy.Status);
         Assert.Equal(0, proxy.EntityRefId);
     }
@@ -156,8 +156,8 @@ public class AlundraWorldProxyTests
 
         var entity = EntitySpawnFactory.CreateEntityFromRecord(record, _ => throw new InvalidOperationException("asset not found"));
 
-        Assert.Equal(typeof(AlundraEntityScriptProxy).FullName!, entity.GameplayProxyClassName);
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        Assert.Equal(typeof(EntityScriptProxy).FullName!, entity.GameplayProxyClassName);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         Assert.Equal(EntityStatus.Loaded, proxy.Status);
     }
 
@@ -171,7 +171,7 @@ public class AlundraWorldProxyTests
         var prefab = new Entity
         {
             Name = "BankPrefab",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = new AnimatedSpriteComponent(),
         };
 
@@ -184,14 +184,14 @@ public class AlundraWorldProxyTests
 
         Assert.Equal(prefabAssetId, requestedId);
         Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", entity.Name);
-        Assert.Equal(typeof(AlundraEntityScriptProxy).FullName!, entity.GameplayProxyClassName);
+        Assert.Equal(typeof(EntityScriptProxy).FullName!, entity.GameplayProxyClassName);
         Assert.True(entity.IsInitialized);
 
         var clonedComponent = Assert.IsType<AnimatedSpriteComponent>(entity.RootComponent);
         Assert.NotSame(prefab.RootComponent, clonedComponent);
         Assert.NotSame(prefab, entity);
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         Assert.Equal(EntityStatus.Loaded, proxy.Status);
         Assert.Equal(0, proxy.EntityRefId);
         Assert.Equal(25u, proxy.SpriteTableIndex);
@@ -218,14 +218,14 @@ public class AlundraWorldProxyTests
         var prefab = new Entity
         {
             Name = "BankPrefab",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = null,
         };
 
         var entity = EntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab);
 
         Assert.Null(entity.RootComponent);
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         Assert.Equal(EntityStatus.Loaded, proxy.Status);
         Assert.Equal(420 * 0x10000, proxy.PosX);
     }

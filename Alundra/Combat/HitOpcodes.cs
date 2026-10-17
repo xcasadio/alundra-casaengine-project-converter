@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Alundra.Entities;
 using Alundra.Events;
-using Alundra.Scripts;
 
 namespace Alundra.Combat;
 
@@ -23,15 +22,15 @@ internal static class HitOpcodes
     public static int TypeNibble(int typeIndex) => (uint)typeIndex < (uint)TypeNibbles.Length ? TypeNibbles[typeIndex] : -1;
 
     /// <summary>The attack of <paramref name="attacker"/> when it counts for the opcodes: a frame box (<c>+0x1D4</c>) and an attack (<c>+0x1C8</c>) with a non-zero attribute byte whose low nibble is <paramref name="nibble"/>.</summary>
-    private static bool AttacksWithNibble(AlundraEntityScriptProxy attacker, int nibble)
+    private static bool AttacksWithNibble(EntityScriptProxy attacker, int nibble)
         => attacker.HasFrameBox && attacker.CurrentAttack is { Attribute: not 0 } attack && (attack.Attribute & 0xF) == nibble;
 
     /// <summary><c>0x87</c>: true when <paramref name="target"/> is touched (<c>+0x224</c>) by an entity that has a frame box and an attack of the type <paramref name="typeIndex"/>.</summary>
-    public static bool IsTouchedByAttackType(AlundraEntityScriptProxy target, int typeIndex)
-        => target.TouchingEntity?.GameplayProxy is AlundraEntityScriptProxy attacker && AttacksWithNibble(attacker, TypeNibble(typeIndex));
+    public static bool IsTouchedByAttackType(EntityScriptProxy target, int typeIndex)
+        => target.TouchingEntity?.GameplayProxy is EntityScriptProxy attacker && AttacksWithNibble(attacker, TypeNibble(typeIndex));
 
     /// <summary>
-    /// <c>0x95</c>: true when some attacker of the world has its STORED hit box (<c>+0x1FC</c>, <see cref="AlundraEntityScriptProxy.StoreHitBox"/>) inside the rectangle (<paramref name="originX"/>, <paramref name="originY"/>,
+    /// <c>0x95</c>: true when some attacker of the world has its STORED hit box (<c>+0x1FC</c>, <see cref="EntityScriptProxy.StoreHitBox"/>) inside the rectangle (<paramref name="originX"/>, <paramref name="originY"/>,
     /// <paramref name="originZ"/>, sizes <paramref name="sizeX"/> (also the Z size), <paramref name="sizeY"/>; raw 16.16, the Z in the binary's convention) and passes the filters: status Normal or Deactivated, not blocked,
     /// a frame box, an attack of the attribute nibble <paramref name="typeIndex"/> asks for, and <c>Flags &amp; mask != 0</c>. A zero mask answers false at once. The hero is slot 0, scanned first, then the others in order.
     /// <para>
@@ -40,7 +39,7 @@ internal static class HitOpcodes
     /// </para>
     /// </summary>
     public static bool AnyAttackerInRectangle(
-        IReadOnlyList<AlundraEntityScriptProxy> entities, AlundraEntityScriptProxy? hero, int mask, int typeIndex, int originX, int originY, int originZ, int sizeX, int sizeY)
+        IReadOnlyList<EntityScriptProxy> entities, EntityScriptProxy? hero, int mask, int typeIndex, int originX, int originY, int originZ, int sizeX, int sizeY)
     {
         if (mask == 0)
         {
@@ -65,7 +64,7 @@ internal static class HitOpcodes
         return false;
     }
 
-    private static bool Matches(AlundraEntityScriptProxy attacker, int mask, int nibble, int originX, int originY, int originZ, int sizeX, int sizeY)
+    private static bool Matches(EntityScriptProxy attacker, int mask, int nibble, int originX, int originY, int originZ, int sizeX, int sizeY)
     {
         if (!attacker.Status.IsActive() || attacker.BlockedByEntity != null || (attacker.Flags & (uint)mask) == 0 || !AttacksWithNibble(attacker, nibble))
         {

@@ -6,7 +6,6 @@ using CasaEngine.Framework.Scene.Entities;
 using Microsoft.Xna.Framework;
 using Alundra.Maps;
 using Alundra.Entities;
-using Alundra.Scripts;
 
 namespace Alundra.Physics;
 
@@ -14,13 +13,13 @@ namespace Alundra.Physics;
 /// E19.d2b B3 (docs/plan-e19-opcodes.md §1.2h.2, D-E19-27, D-E19-28, D-E19-34, ADR-0022): the movement obstacle probe the character
 /// controller consults in its field stage (<see cref="IMovementObstacleProbe"/>, ADR-0047 of the engine), installed on
 /// <c>World.MovementObstacleProbe</c> at each world load next to the cell field. It gives the controller the rule of the binary: a mobile
-/// stops at the first entity of the collidable list its box overlaps (<see cref="EntityCollision.FindEntityCollisionCandidate(AlundraEntityScriptProxy,int,int,int,System.Collections.Generic.IReadOnlyList{AlundraEntityScriptProxy},uint)"/>,
+/// stops at the first entity of the collidable list its box overlaps (<see cref="EntityCollision.FindEntityCollisionCandidate(EntityScriptProxy,int,int,int,System.Collections.Generic.IReadOnlyList{EntityScriptProxy},uint)"/>,
 /// <c>FindEntityCollisionCandidate</c> <c>0x80036FE0</c>, semi-open), the entity tested before the cell.
 /// <para>
-/// The candidate X and Y are the root the controller proposes, converted to 16.16 EXACTLY as <see cref="AlundraEntityScriptProxy.MoveControllerAndPullPosition"/>
+/// The candidate X and Y are the root the controller proposes, converted to 16.16 EXACTLY as <see cref="EntityScriptProxy.MoveControllerAndPullPosition"/>
 /// pulls the position back (<c>Math.Round((double)root * 65536.0)</c>): the contact the controller finds by bisection is then the contact
 /// of the fields, to the float resolution of the root (4 to 8 units of 16.16 between 512 and 1024 px, an accepted gap, O-E19-28). Z is the
-/// LOGICAL <see cref="AlundraEntityScriptProxy.PosZ"/> of the mover, never the float root: the one-unit margin of a supported entity
+/// LOGICAL <see cref="EntityScriptProxy.PosZ"/> of the mover, never the float root: the one-unit margin of a supported entity
 /// (E4.f) is below the float resolution at 400 px. The soulevables (<c>Flags &amp; 0x600</c>) are not obstacles (D-E19-28, until the
 /// grab and the blows exist, E14); every other collidable is, the iron-ball walls included (D-E19-34). A mover that already overlaps an
 /// entity stays blocked (D-E19-36): no exit rule, as in the binary.
@@ -41,7 +40,7 @@ public sealed class MovementObstacleProbe : IMovementObstacleProbe
     public bool TryFindObstacle(Entity mover, in Vector3 candidateRootPosition, out Entity obstacle)
     {
         obstacle = null!;
-        if (mover.GameplayProxy is not AlundraEntityScriptProxy proxy)
+        if (mover.GameplayProxy is not EntityScriptProxy proxy)
         {
             return false;
         }

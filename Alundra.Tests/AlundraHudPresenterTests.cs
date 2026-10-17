@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -17,6 +16,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.UI.Hud;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -367,13 +367,13 @@ public sealed class AlundraHudPresenterTests : IDisposable
     // presenter - so a regression that re-gates the presenter behind a screen-stack Update would be caught.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraWorldProxy BuildProxyWithHudPresenterAttached(IHudView view)
+    private static WorldProxy BuildProxyWithHudPresenterAttached(IHudView view)
     {
         var world = new World { Name = "TestWorld" };
         var camera = new Camera2dComponent();
         world.Entities.Add(new Entity { Name = "camera", RootComponent = camera });
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // "TestWorld" has no tileMap entity - early-returns before the
                                            // real install, same seam AlundraHudDirectorTests documents.
 

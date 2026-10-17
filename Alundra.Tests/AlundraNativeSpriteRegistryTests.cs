@@ -1,6 +1,5 @@
 #nullable enable
 using System;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Alundra.Session;
@@ -41,9 +40,9 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
 
     private static EventProgramRunner NewRunner() => new(null, GameState.Instance);
 
-    private static AlundraEntityScriptProxy Entity(int spriteType, int slot, int code)
+    private static EntityScriptProxy Entity(int spriteType, int slot, int code)
     {
-        var entity = new AlundraEntityScriptProxy { SpriteType = spriteType, Status = EntityStatus.Normal, EventTrigger = slot };
+        var entity = new EntityScriptProxy { SpriteType = spriteType, Status = EntityStatus.Normal, EventTrigger = slot };
         entity.SpriteProgramIndexes[slot] = code;
         return entity;
     }
@@ -102,7 +101,7 @@ public sealed class AlundraNativeSpriteRegistryTests : IDisposable
     {
         var runner = NewRunner();
         var calls = 0;
-        AlundraEntityScriptProxy? seen = null;
+        EntityScriptProxy? seen = null;
         using var registration = runner.NativeSprites.Register(ScriptHelper.ProgramCTick, 25, new[] { TypeA }, (e, _, _) =>
         {
             calls++;

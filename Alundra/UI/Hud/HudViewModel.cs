@@ -6,7 +6,7 @@ using MGUI.Core.UI;
 using MGUI.Shared.Helpers;
 using Alundra.UI.Hud;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Hud;
 
 /// <summary>
 /// The HUD's view model (parent ADR-0002, engine ADR-0038): what <c>UI/Screens/HudScreen.xaml</c> binds, one named
@@ -22,7 +22,7 @@ namespace Alundra.Scripts;
 /// whenever the pips change (a pip fills or empties, the maximum changes, the HUD reappears), so the four keep their
 /// 200 ms offsets from one another; the coin is restarted when it starts rolling.
 /// </summary>
-public sealed class AlundraHudViewModel : ViewModelBase, IHudView
+public sealed class HudViewModel : ViewModelBase, IHudView
 {
     private const double TickMilliseconds = 20.0;
     private const int PipTicksPerFrame = 10;
@@ -71,14 +71,14 @@ public sealed class AlundraHudViewModel : ViewModelBase, IHudView
     private bool _animationsNeedRestart = true;
 
     /// <summary>A view model with no icon sizes: the editor's design-time data, which gives every position itself.</summary>
-    public AlundraHudViewModel()
+    public HudViewModel()
         : this(null)
     {
     }
 
     /// <param name="iconSize">The native size of an equipment icon sprite, or null when it cannot be read: an icon is
     /// centred in its box from its size (D-E13D-10), and stays hidden without one.</param>
-    public AlundraHudViewModel(Func<Guid, Point?>? iconSize)
+    public HudViewModel(Func<Guid, Point?>? iconSize)
     {
         _iconSize = iconSize;
         Coin.IsAnimationPlaying = false;

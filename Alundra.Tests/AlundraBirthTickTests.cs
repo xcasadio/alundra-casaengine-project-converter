@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Xunit.Abstractions;
@@ -25,7 +24,7 @@ namespace Alundra.Tests;
 /// seam <see cref="PlayerManager.WeaponSpawnBirthHookForTests"/>) takes part in the tick that sees it born, as the rows <c>BT-M1</c> to <c>BT-M3</c> of the oracle V6 (<c>docs/plan-e20-annexe/e20-e0a/oracle/out/v6.json</c>);
 /// one born in the native program of another entity runs from the next tick (the gap of <c>BT-H1</c>, <c>BT-H4</c>, <c>BT-H6</c>, D-E20-34); the entities from a record are untouched by the interface (E20.e0a4 gave the marker to the opcodes
 /// <c>0x2D</c>, <c>0x8A</c> and <c>0x8B</c> too, see <see cref="AlundraRecordBirthTickTests"/>; the map load and the direct call of <c>SpawnEntityByRecordId</c> never pose it). The real world
-/// of map 14 (<see cref="ArcRun"/>, real prefabs), the passes of the tick named by <see cref="AlundraWorldProxy.TickTraceForTests"/> (the state seen at the head of a pass is the state after the pass before it).
+/// of map 14 (<see cref="ArcRun"/>, real prefabs), the passes of the tick named by <see cref="WorldProxy.TickTraceForTests"/> (the state seen at the head of a pass is the state after the pass before it).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraBirthTickTests : IDisposable
@@ -50,8 +49,8 @@ public sealed class AlundraBirthTickTests : IDisposable
     /// <summary>The state of the newborn at the head of a pass.</summary>
     private sealed record Snapshot(EntityStatus Status, int EventTrigger, int FrameCounter, bool InUpdateList, bool InHitList, bool ClockRan, int ClockTicks, int PosX, int Aruns, bool Integrated);
 
-    private static bool Contains(ArcRun arc, string field, AlundraEntityScriptProxy proxy)
-        => ((IEnumerable)typeof(AlundraWorldProxy).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!).Cast<object>().Any(o => ReferenceEquals(o, proxy));
+    private static bool Contains(ArcRun arc, string field, EntityScriptProxy proxy)
+        => ((IEnumerable)typeof(WorldProxy).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!).Cast<object>().Any(o => ReferenceEquals(o, proxy));
 
     /// <summary>The montage of a shot: a handler of the program A of the arrow counts its runs, the hook calls the interface from the exact place of <c>MovePlayer</c>, and the passes of every tick are sampled.</summary>
     private sealed class Shot
@@ -59,7 +58,7 @@ public sealed class AlundraBirthTickTests : IDisposable
         public readonly ArcRun Arc;
         public int ARuns;
         public int HookCalls;
-        public AlundraEntityScriptProxy? Born;
+        public EntityScriptProxy? Born;
         public readonly List<(int Tick, string Pass, Snapshot State)> Samples = new();
         public int Tick;
         public int ClockTicks;
@@ -114,17 +113,17 @@ public sealed class AlundraBirthTickTests : IDisposable
     private sealed class SpriteEventRunner : IEventProgramRunner
     {
         private readonly IEventProgramRunner _inner;
-        private readonly Action<AlundraEntityScriptProxy> _onProgramA;
+        private readonly Action<EntityScriptProxy> _onProgramA;
 
-        public SpriteEventRunner(IEventProgramRunner inner, Action<AlundraEntityScriptProxy> onProgramA)
+        public SpriteEventRunner(IEventProgramRunner inner, Action<EntityScriptProxy> onProgramA)
         {
             _inner = inner;
             _onProgramA = onProgramA;
         }
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot) => _inner.RunScript(entity, programSlot);
+        public void RunScript(EntityScriptProxy entity, int programSlot) => _inner.RunScript(entity, programSlot);
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
             if (entity.EventTrigger == ScriptHelper.ProgramALoad && entity.SpriteType < 0x100)
             {
@@ -135,7 +134,7 @@ public sealed class AlundraBirthTickTests : IDisposable
         }
     }
 
-    private static void WrapRunner(ArcRun arc, Action<AlundraEntityScriptProxy> onProgramA)
+    private static void WrapRunner(ArcRun arc, Action<EntityScriptProxy> onProgramA)
         => arc.Proxy.EventProgramRunner = new SpriteEventRunner(arc.Proxy.EventProgramRunner, onProgramA);
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -209,17 +208,17 @@ public sealed class AlundraBirthTickTests : IDisposable
 
     private sealed class Carrier
     {
-        public AlundraEntityScriptProxy? Child;
+        public EntityScriptProxy? Child;
         public int ChildRuns;
         public bool Spawned;
         public int CarrierTick;
     }
 
-    private static Carrier MountCarrier(ArcRun arc, out AlundraEntityScriptProxy carrier)
+    private static Carrier MountCarrier(ArcRun arc, out EntityScriptProxy carrier)
     {
         var c = new Carrier();
         const int childIndex = 7;
-        void Body(AlundraEntityScriptProxy entity)
+        void Body(EntityScriptProxy entity)
         {
             if (entity.SpriteType == Arrow)
             {
@@ -292,12 +291,12 @@ public sealed class AlundraBirthTickTests : IDisposable
     private sealed class SelfDrivenHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; set; } = null!;
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController => null;
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -310,9 +309,9 @@ public sealed class AlundraBirthTickTests : IDisposable
         IScriptHost host = new SelfDrivenHost();
         Assert.False(host.DrivesEntityTicks);
         Assert.Null(host.CollisionField);
-        var entity = new Entity { Name = "marked", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "marked", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.ScriptHost = host;
         proxy.JoinsBirthTick = true;
         Assert.Null(entity.World);
@@ -386,7 +385,7 @@ public sealed class AlundraBirthTickTests : IDisposable
     {
         using var arc = Arc("sound");
         var player = new RecordingSoundPlayer();
-        typeof(AlundraWorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, player);
+        typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, player);
         var shot = new Shot(arc, spriteIndex: 7); // the sprite 7 asks the sound 0x21 at its creation.
         arc.OneFrame();
         shot.Arm();
@@ -510,6 +509,6 @@ public sealed class AlundraBirthTickTests : IDisposable
         var born = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, Arrow, 150 << 16, 100 << 16, 0, Direction)!;
         Assert.True(born.JoinsBirthTick);
         var clone = ArcRun.EntityOf(born)!.Clone();
-        Assert.False(((AlundraEntityScriptProxy)clone.GameplayProxy!).JoinsBirthTick);
+        Assert.False(((EntityScriptProxy)clone.GameplayProxy!).JoinsBirthTick);
     }
 }

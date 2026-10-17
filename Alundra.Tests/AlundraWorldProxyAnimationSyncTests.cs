@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
 using Alundra.Maps.Loop;
 using Alundra.Entities.Spawning;
+using Alundra.Entities;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers the animation-sync port added to <see cref="AlundraWorldProxy"/>: the target-resolution part
+/// Covers the animation-sync port added to <see cref="WorldProxy"/>: the target-resolution part
 /// of <c>EntityManager.UpdateAnimation</c> @ 0x80038AB4
 /// (<see cref="FrameSyncPasses.TryResolveAnimationTarget"/>), the by-suffix animation lookup
 /// (<see cref="FrameSyncPasses.TrySelectAnimationByNameSuffix"/>) and the per-frame driver
@@ -30,7 +31,7 @@ public class AlundraWorldProxyAnimationSyncTests
     public void TryResolveAnimationTarget_FreshlySpawnedEntity_AlwaysFiresOnFirstCall()
     {
         // ApplySpawnInitialization leaves CurrentAnimationId = ~TargetAnimationId - guaranteed different.
-        var proxy = new AlundraEntityScriptProxy
+        var proxy = new EntityScriptProxy
         {
             CurrentAnimationId = ~0u,
             TargetAnimationId = 0,
@@ -48,7 +49,7 @@ public class AlundraWorldProxyAnimationSyncTests
     [Fact]
     public void TryResolveAnimationTarget_NoChange_ReturnsFalse()
     {
-        var proxy = new AlundraEntityScriptProxy
+        var proxy = new EntityScriptProxy
         {
             CurrentAnimationId = 0,
             TargetAnimationId = 0,
@@ -69,7 +70,7 @@ public class AlundraWorldProxyAnimationSyncTests
         // AnimationDirection=2 (left), TargetDirection=0x10 (facing index 1, "up"):
         // col = ((0x10+2)&0x1c)>>2 = 4; g_animationDirectionTable[2*8+4] = 1 ("up") - different from the
         // current row (2), proving this resolves through the table rather than the raw facing index.
-        var proxy = new AlundraEntityScriptProxy
+        var proxy = new EntityScriptProxy
         {
             CurrentAnimationId = 0,
             TargetAnimationId = 0,
@@ -136,11 +137,11 @@ public class AlundraWorldProxyAnimationSyncTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = ~0u; // as ApplySpawnInitialization leaves it: TargetAnimationId=0, CurrentAnimationId=~0.
 
         FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
@@ -203,7 +204,7 @@ public class AlundraWorldProxyAnimationSyncTests
 
     /// <summary>Spawns an entity and runs one sync pass, leaving it settled on animation 0 facing down -
     /// the shared starting point of the two chain-restart tests above.</summary>
-    private static (Entity Entity, AnimatedSpriteComponent Component, AlundraEntityScriptProxy Proxy)
+    private static (Entity Entity, AnimatedSpriteComponent Component, EntityScriptProxy Proxy)
         BuildSyncedEntityOnAnimationZero()
     {
         // Unlike BuildComponentWithAllDirections, these animations carry a Part: AnimatedSpriteComponent
@@ -223,11 +224,11 @@ public class AlundraWorldProxyAnimationSyncTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = ~0u;
 
         FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
@@ -243,11 +244,11 @@ public class AlundraWorldProxyAnimationSyncTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = 0;
         proxy.TargetAnimationId = 0;
         FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity }); // settle the initial spawn state
@@ -263,9 +264,9 @@ public class AlundraWorldProxyAnimationSyncTests
     [Fact]
     public void RunAnimationSyncPass_BareEntityWithNoAnimatedSpriteComponent_ResolvesStateButDoesNotThrow()
     {
-        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = ~0u;
 
         FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });

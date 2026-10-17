@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Engine.Physics;
 using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Maps.Loop;
 using Alundra.Cameras;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -16,14 +16,14 @@ namespace Alundra.Tests;
 /// and <see cref="CameraMath.ComputeSmoothedCameraTarget"/> (the snap-or-step-then-clamp state
 /// transition) - plus E5.c's own integer scroll port, <see cref="CameraMath.StepCameraScroll"/>
 /// and <see cref="CameraMath.AdvanceCameraSmoothing"/> (the per-frame seam
-/// <see cref="AlundraWorldProxy.UpdateCameraFollow"/> calls with that frame's LOGIC TICK count).
+/// <see cref="WorldProxy.UpdateCameraFollow"/> calls with that frame's LOGIC TICK count).
 ///
 /// Not covered here (headless-untestable, needs a live World/Camera2dComponent): the thin wiring around
-/// that state transition (<see cref="AlundraWorldProxy.UpdateCameraFollow"/>'s own null-guard/field
-/// writes, and <see cref="AlundraWorldProxy.ResolveDebugCameraOnce"/>) -
+/// that state transition (<see cref="WorldProxy.UpdateCameraFollow"/>'s own null-guard/field
+/// writes, and <see cref="WorldProxy.ResolveDebugCameraOnce"/>) -
 /// same shape as <see cref="AlundraWorldProxyDebugCameraPanTests"/>'s own doc on
-/// <see cref="AlundraWorldProxy.UpdateDebugCameraPan"/>. <see cref="AlundraEventProgramRunnerTests"/> covers
-/// opcodes 0x67/0x68/0x69 (the only way <see cref="AlundraWorldProxy.EntityFollowedByCamera"/> is written
+/// <see cref="WorldProxy.UpdateDebugCameraPan"/>. <see cref="AlundraEventProgramRunnerTests"/> covers
+/// opcodes 0x67/0x68/0x69 (the only way <see cref="WorldProxy.EntityFollowedByCamera"/> is written
 /// at runtime, besides pawn adoption).
 /// </summary>
 public class AlundraWorldProxyCameraFollowTests
@@ -208,7 +208,7 @@ public class AlundraWorldProxyCameraFollowTests
 
     /// <summary>
     /// Exercises <see cref="CameraMath.ComputeSmoothedCameraTarget"/> - the exact state-transition
-    /// <see cref="AlundraWorldProxy.UpdateCameraFollow"/> now calls every frame - across a short sequence
+    /// <see cref="WorldProxy.UpdateCameraFollow"/> now calls every frame - across a short sequence
     /// of frames: pin the camera at the map's bottom edge (an unclamped look-at of -936, the verifier's
     /// own measured hidden overshoot, 97px past the -839 lower bound) for several ticks, THEN move the
     /// look-at inward to -800 (safely inside <c>[-839, -120]</c>) and take one more tick.

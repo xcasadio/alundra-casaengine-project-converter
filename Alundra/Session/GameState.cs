@@ -2,13 +2,13 @@
 using System;
 using Alundra.Maps;
 using Alundra.Maps.Loop;
-using Alundra.Scripts;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.SaveGames;
+using Alundra.Entities;
 
 namespace Alundra.Session;
 
@@ -29,13 +29,13 @@ namespace Alundra.Session;
 /// </summary>
 public sealed class GameState
 {
-    /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-T-3,
+    /// <summary>The one session-scoped instance every <see cref="WorldProxy"/> shares (D-T-3,
     /// docs/plan-transitions-carte.md) - same shape as <see cref="BgmPlayer.Instance"/>/
     /// <see cref="ScreenFadeDirector.Instance"/>/<see cref="DialogueDirector.Instance"/>.
     /// Unlike those three, this class KEEPS its public parameterless constructor (two test harnesses -
     /// <see cref="AlundraEventProgramRunnerTests"/> and <see cref="IntroTraceHarnessTests"/> among others -
     /// build their own private instance directly, never through this session carrier) - so <see cref="Instance"/>
-    /// is just one more instance, reachable through the same public constructor, that <see cref="AlundraWorldProxy.GameState"/>
+    /// is just one more instance, reachable through the same public constructor, that <see cref="WorldProxy.GameState"/>
     /// happens to always resolve to.</summary>
     public static readonly GameState Instance = new();
 
@@ -106,7 +106,7 @@ public sealed class GameState
     /// <summary>Port of <c>StaticVariables.g_playerControlFlags</c> - zero at New Game (see
     /// docs/intro-roadmap.md §1.4: nothing explicitly zeroes it at boot, it is simply BSS-zero; E1's own
     /// port starts every world the same way, since only a New Game flow is covered so far). Read by
-    /// <see cref="AlundraWorldProxy.RunMapEventsPass"/>'s <see cref="PlayerControlBits.GameplayBlockedMask"/>
+    /// <see cref="WorldProxy.RunMapEventsPass"/>'s <see cref="PlayerControlBits.GameplayBlockedMask"/>
     /// gate and by <see cref="PlayerManager.MovePlayer"/>'s <see cref="PlayerControlBits.InputBlockedMask"/>
     /// gate; written by event opcodes 0x10/0x11 (E4.c, <see cref="EventProgramRunner"/>'s own
     /// <c>ControlLocked</c> bridge). E6 is closed (docs/plan-conversion-totale.md §4 E6) and its
@@ -131,11 +131,11 @@ public sealed class GameState
 
     /// <summary>
     /// D-E7-8 seam (docs/plan-e7-mutation-tuiles.md, slice E7.c): last pad snapshot published by
-    /// <see cref="AlundraEntityScriptProxy.Update"/>'s own player branch, just before it calls
+    /// <see cref="EntityScriptProxy.Update"/>'s own player branch, just before it calls
     /// <see cref="PlayerManager.MovePlayer"/> - the fidelity pendant of the original's global
     /// <c>g_padState1</c> (read by <c>Script_47_02F</c>/<see cref="EventProgramRunner"/>'s own case
     /// 0x2F). Chosen over widening <see cref="IEntityWorldContext"/> or the runner's own constructor:
-    /// this class is the one seam <see cref="AlundraEntityScriptProxy"/> (the writer) and
+    /// this class is the one seam <see cref="EntityScriptProxy"/> (the writer) and
     /// <see cref="EventProgramRunner"/> (the reader) already BOTH hold a reference to, so no other
     /// signature needs to change. Defaults to an all-zero <see cref="PadState"/> (nothing held) -
     /// the same safe no-op a 0x2F dispatched before this world's first player Update would see the
@@ -145,7 +145,7 @@ public sealed class GameState
 
     /// <summary>E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-9): the same pad advanced once per LOGIC
     /// tick, with the original's press edges and key repeat - see <see cref="Hero.TickPad"/>'s own doc.
-    /// Fed from <see cref="LastPadState"/> at the head of every logic tick of <see cref="AlundraWorldProxy.Update"/>'s
+    /// Fed from <see cref="LastPadState"/> at the head of every logic tick of <see cref="WorldProxy.Update"/>'s
     /// pass loop (E19.u U-R1, ADR-0050); read by the per-tick consumers that need the original's frame-exact edges:
     /// the inventory reads the current tick's, while the dialogue pass (Square), the choice box and the save screen
     /// get the words of the tick before, which the proxy captures tick by tick (D-E19-99).</summary>
@@ -174,7 +174,7 @@ public sealed class GameState
     /// guard in the latch test instead (E19.m12, M-33). Only <c>AlundraPlayerManager.CheckEntityInteraction</c>
     /// reads or writes these.
     /// </summary>
-    public AlundraEntityScriptProxy? InteractLatchEntity;
+    public EntityScriptProxy? InteractLatchEntity;
     public int InteractLatchFacing;       // g_lastWarpFacing  <- entity.Index2
     public int InteractLatchEntityX;      // g_lastWarpTargetX/Y/Z <- entity.Pos*
     public int InteractLatchEntityY;
@@ -205,7 +205,7 @@ public sealed class GameState
 
     /// <summary>
     /// E13.c S3: once-only session latch for <see cref="PlayerManager.InitializeNewGameInventory"/>,
-    /// run by <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> at the map entry it recognizes as a New Game.
+    /// run by <see cref="WorldProxy.AdoptPlayerPawn"/> at the map entry it recognizes as a New Game.
     /// A belt-and-suspenders latch: the real gate is "no pending warp arrival", which a session satisfies
     /// once; this latch keeps the unlock loop from running twice even if something ever produced a second
     /// such entry. The inventory is the game's own New Game state, so it is not gated on any debug switch.
@@ -292,7 +292,7 @@ public sealed class GameState
     /// <summary>
     /// E16.c C8 (docs/plan-e16-etat-partie.md, D-E16-23): advances <see cref="GameTime"/> by
     /// <paramref name="elapsedSeconds"/> real seconds, at <see cref="GameTimeUnitsPerSecond"/> units per second.
-    /// Called once per frame at the head of <see cref="AlundraWorldProxy.Update"/>. The DLL's logic clock runs
+    /// Called once per frame at the head of <see cref="WorldProxy.Update"/>. The DLL's logic clock runs
     /// at 50 Hz (F9, <see cref="LogicClock"/>), so the units are counted on elapsed time, not on ticks.
     /// A non-finite, zero or negative duration adds nothing. The whole units are passed on and the counter is
     /// capped at <see cref="GameTimeMax"/> in <see cref="double"/>, BEFORE the conversion to <see cref="uint"/>,
@@ -350,9 +350,9 @@ public sealed class GameState
 
     /// <summary>
     /// D-T-3/D-T-13 (docs/plan-transitions-carte.md, slice T1): applies this session carrier's own
-    /// map-entry disposition, called from <see cref="AlundraWorldProxy.InitializeWithWorld"/> at the
-    /// START of that method's own installation block (before <see cref="AlundraWorldProxy.InstallCellAndOverlaySystems"/>,
-    /// so before <see cref="AlundraWorldProxy.InstallDialogueSystems"/> goes on to clean up the
+    /// map-entry disposition, called from <see cref="WorldProxy.InitializeWithWorld"/> at the
+    /// START of that method's own installation block (before <see cref="WorldProxy.InstallCellAndOverlaySystems"/>,
+    /// so before <see cref="WorldProxy.InstallDialogueSystems"/> goes on to clean up the
     /// MessageBox/MenuOpen bits of <see cref="PlayerControlFlags"/> below). The table is EXHAUSTIVE
     /// (D-T-13) - only the two rows below move; every other field survives untouched across the map
     /// change, exactly like the original's own globals:
@@ -402,7 +402,7 @@ public sealed class GameState
     /// both are BSS outside <c>g_saveData</c>, zero in the fresh process the original loads from);</description></item>
     /// <item><description><see cref="NewGameInventoryInitialized"/> TRUE, unlike a New Game (SC7): a later map
     /// entry without a warp arrival must not run the New Game inventory over the loaded items
-    /// (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>).</description></item>
+    /// (<see cref="WorldProxy.AdoptPlayerPawn"/>).</description></item>
     /// </list>
     /// Nothing the save carries is touched here (flags, map table, item counters, stats, game time, death
     /// retries): <see cref="SaveGame.ApplyTo"/> writes them next. <see cref="TemporaryFlags"/> is already

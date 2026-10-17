@@ -7,13 +7,13 @@ using CasaEngine.Core.Logging;
 using CasaEngine.Framework.Rendering.EffectQuads;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Alundra.Cameras;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Rendering.Effects;
 
 /// <summary>
 /// The effect stage of a world (E19.g G3a, docs/plan-e19-opcodes.md section 1.2o.6, ADR-0045): the bank read from the exported companions, the reservoir, the load-time
-/// spawn, the queue of operations and the per-tick loop. Owned by <see cref="AlundraWorldProxy"/> as a FIELD INITIALIZER like <c>_backdropStage</c> (trap 9: <c>Clone()</c> returns a bare
+/// spawn, the queue of operations and the per-tick loop. Owned by <see cref="WorldProxy"/> as a FIELD INITIALIZER like <c>_backdropStage</c> (trap 9: <c>Clone()</c> returns a bare
 /// proxy); one world, one reservoir (the binary clears the pool at every map load, <c>0x8003C1A4</c>, and an effect is never saved). The opcodes are G3b; the draw is E19.g G3c (last paragraph).
 /// <para>
 /// <b>Load-time spawn</b> (<see cref="SpawnLoadEffects"/>): once, at the first <c>Update</c> of the proxy, before its tick loop and before any queued operation is applied, with the tile of
@@ -89,7 +89,7 @@ public sealed class EffectStage
 
     /// <summary>
     /// Pushes this frame's quads to the attached service (G3C-R5): the slots are walked by index, the buffers are reused, an empty frame is pushed when nothing is active. Called by
-    /// <see cref="AlundraWorldProxy.Update"/> at every rendered frame, whatever the number of ticks (a tick frozen by <c>0x48</c>, a warp departure and a frame without tick included).
+    /// <see cref="WorldProxy.Update"/> at every rendered frame, whatever the number of ticks (a tick frozen by <c>0x48</c>, a warp departure and a frame without tick included).
     /// <paramref name="camera"/> gives the original scroll for the elimination (<see cref="CameraMath.ToOriginalScrollSpace"/>); without a camera nothing is eliminated. A null service does nothing.
     /// </summary>
     public void PushFrame(Camera2dComponent? camera)

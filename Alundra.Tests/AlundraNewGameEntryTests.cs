@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
@@ -18,16 +17,18 @@ using Alundra.Entities;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.UI.Hud;
+using Alundra.Hero;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
-/// The New Game entry in <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> (no pending warp arrival): the
+/// The New Game entry in <see cref="WorldProxy.AdoptPlayerPawn"/> (no pending warp arrival): the
 /// original's New Game stats and inventory, and a HUD that stays hidden until a map script asks for it
 /// (docs/plan-e13-hud.md §1.6). This class used to test the <c>ALUNDRA_HUD_DEBUG</c> recipe too (E13 C5.a,
 /// D-E13-10), removed at the author's request on 2026-09-27; the tests of the game's own behaviour stay.
 ///
-/// Drives the real <see cref="AlundraWorldProxy.InitializeWithWorld"/> through its full installation
+/// Drives the real <see cref="WorldProxy.InitializeWithWorld"/> through its full installation
 /// block against map 389 (the New Game map) - same real-map/hand-built-pawn montage as
 /// <see cref="AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World"/> (reused directly, internal in
 /// the same assembly) and <see cref="AlundraWarpArrivalTests"/>'s own hero-pawn/player-controller
@@ -97,22 +98,22 @@ public sealed class AlundraNewGameEntryTests : IDisposable
         {
             Name = "AlundraHeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
         entity.Initialize();
         SetProperty(entity, nameof(Entity.World), world); // ClampToGround reads Owner.World.CollisionField.
 
-        Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         return entity;
     }
 
-    /// <summary>Possesses <paramref name="pawn"/> with a real <see cref="AlundraPlayerController"/> and
+    /// <summary>Possesses <paramref name="pawn"/> with a real <see cref="HeroController"/> and
     /// registers it into <paramref name="world"/>'s own private <c>World.PlayerControllers</c> backing
     /// list - same reflection precedent as <see cref="AlundraWarpArrivalTests.RegisterPlayerController"/>
     /// (private there).</summary>
     private static void RegisterPlayerController(World world, Entity pawn)
     {
-        var controller = new AlundraPlayerController();
+        var controller = new HeroController();
         controller.Possess(pawn);
 
         var field = typeof(World).GetField("_playerControllers", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -122,17 +123,17 @@ public sealed class AlundraNewGameEntryTests : IDisposable
     }
 
     /// <summary>Builds map 389 (the New Game map) with a real player
-    /// controller adopted, then runs <see cref="AlundraWorldProxy.InitializeWithWorld"/> end to end -
+    /// controller adopted, then runs <see cref="WorldProxy.InitializeWithWorld"/> end to end -
     /// <c>EngineEnvironment.ProjectPath</c> is set/restored around the call exactly like
     /// <see cref="AlundraWarpArrivalTests"/>'s own acceptance tests, since map events/dialogue strings load
     /// from it.</summary>
-    private static AlundraWorldProxy InitializeNewGameEntryOnMap389()
+    private static WorldProxy InitializeNewGameEntryOnMap389()
     {
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
         var hero = BuildHeroPawnEntity(world);
         RegisterPlayerController(world, hero);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         var previousProjectPath = EngineEnvironment.ProjectPath;
         EngineEnvironment.ProjectPath = AlundraWorldProxyGlobalFreezeTests.FindProjectRoot();
         try

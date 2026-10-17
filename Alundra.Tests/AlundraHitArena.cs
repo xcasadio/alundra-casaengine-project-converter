@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Events;
+using Alundra.Entities;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -19,7 +20,7 @@ internal sealed record HitTickSample(
 
 /// <summary>
 /// The arena of the hit-pass tests (E20.c1a C5, docs/plan-e20-heros.md section 1.5): the REAL world of map 14 (<c>Overworld 3,1-14</c>, the map the oracle's constants come from), built by the arcs' production path
-/// (<see cref="ArcRun"/>, real prefabs, the world's own <c>Update</c> and <see cref="AlundraWorldProxy"/>), in which the hero and real Beannoid prefabs (records 0 to 6 of the map, sprite 79) are carried to the flat free
+/// (<see cref="ArcRun"/>, real prefabs, the world's own <c>Update</c> and <see cref="WorldProxy"/>), in which the hero and real Beannoid prefabs (records 0 to 6 of the map, sprite 79) are carried to the flat free
 /// cells of the oracle (rows 2 to 7 of the map, height 0, on the ground), at the pixel positions of an oracle trace. Every tick of every frame is sampled after its hit pass (the <c>inventory</c> pass of the tick),
 /// whatever the number of ticks of the frame, with the programs the events pass ran (the Beannoid's C and D are native, counted no-ops, as the oracle's stubs).
 /// </summary>
@@ -35,9 +36,9 @@ internal sealed class HitArena : IDisposable
 
     public ArcRun Arc { get; }
 
-    public AlundraEntityScriptProxy Hero => Arc.Hero;
+    public EntityScriptProxy Hero => Arc.Hero;
 
-    public List<AlundraEntityScriptProxy> Targets { get; } = new();
+    public List<EntityScriptProxy> Targets { get; } = new();
 
     public List<HitTickSample> Samples { get; } = new();
 
@@ -122,7 +123,7 @@ internal sealed class HitArena : IDisposable
 
     public void Dispose() => Arc.Dispose();
 
-    private static void ResetHitState(AlundraEntityScriptProxy entity)
+    private static void ResetHitState(EntityScriptProxy entity)
     {
         entity.FrameCollisionTickCounter = 0;
         entity.DamagedTickCounter = 0;
@@ -131,7 +132,7 @@ internal sealed class HitArena : IDisposable
     }
 
     /// <summary>Carries an entity to a pixel of the arena, on the ground, as <see cref="ArcRun.PlaceHero"/> does the hero.</summary>
-    public static void Place(AlundraEntityScriptProxy entity, int pixelX, int pixelY)
+    public static void Place(EntityScriptProxy entity, int pixelX, int pixelY)
     {
         entity.PosX = pixelX << 16;
         entity.PosY = pixelY << 16;
@@ -203,7 +204,7 @@ internal sealed class HitArena : IDisposable
     }
 
     /// <summary>What an entity looks like now: the columns the hit oracle holds, read from the DLL (the frame box is evaluated for the tick, as the pass does for an attacker).</summary>
-    public HitEntitySample Snapshot(AlundraEntityScriptProxy entity)
+    public HitEntitySample Snapshot(EntityScriptProxy entity)
     {
         entity.EvaluateFrameBox();
         var touching = -1;
@@ -265,19 +266,19 @@ internal sealed class HitArena : IDisposable
             _arena = arena;
         }
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             Note(entity);
             _inner.RunScript(entity, programSlot);
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
             Note(entity);
             _inner.RunSpriteEvent(entity);
         }
 
-        private void Note(AlundraEntityScriptProxy entity)
+        private void Note(EntityScriptProxy entity)
         {
             var index = _arena.Targets.IndexOf(entity);
             if (_arena._recording && index >= 0)

@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
@@ -15,6 +14,7 @@ using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
+using Alundra.Maps;
 
 namespace Alundra.Tests.Scripts;
 
@@ -22,7 +22,7 @@ namespace Alundra.Tests.Scripts;
 /// E13.d SI4 (docs/plan-e13d-sous-inventaire.md): <see cref="SubInventoryScreen"/> is not
 /// constructible headless (same reason <see cref="AlundraInventoryPresenterTests"/> gives its own class
 /// doc), so this drives <see cref="SubInventoryPresenter"/> against a real
-/// <see cref="AlundraSubInventoryViewModel"/>, a recording <see cref="IUIScreen"/> stand-in and a recording
+/// <see cref="SubInventoryViewModel"/>, a recording <see cref="IUIScreen"/> stand-in and a recording
 /// <see cref="IUIViewRuntime"/> - the same pattern.
 /// </summary>
 public sealed class AlundraSubInventoryPresenterTests : IDisposable
@@ -94,7 +94,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
     }
 
     private static (GameState State, SubInventoryDirector Director, SubInventoryPresenter Presenter,
-        AlundraSubInventoryViewModel View, FakeSubInventoryScreen Screen, RecordingUIViewRuntime UiView) NewFixture()
+        SubInventoryViewModel View, FakeSubInventoryScreen Screen, RecordingUIViewRuntime UiView) NewFixture()
     {
         var state = GameState.Instance;
         var itemTables = ItemTablesFixture.LoadReal();
@@ -102,7 +102,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         director.AttachToWorld(state, itemTables, null);
 
         // Every icon 16x16: its size only centres it in its cell.
-        var view = new AlundraSubInventoryViewModel();
+        var view = new SubInventoryViewModel();
         var screen = new FakeSubInventoryScreen();
         var uiView = new RecordingUIViewRuntime();
         var presenter = new SubInventoryPresenter(director, state, itemTables, view, screen, uiView);
@@ -211,12 +211,12 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         mainDirector.AttachToWorld(state, itemTables, null);
         subDirector.AttachToWorld(state, itemTables, null);
 
-        var mainView = new AlundraInventoryViewModel(_ => new Point(16, 16));
+        var mainView = new InventoryViewModel(_ => new Point(16, 16));
         var mainScreen = new FakeSubInventoryScreenForMain();
         var mainUiView = new RecordingUIViewRuntime();
         var mainPresenter = new InventoryPresenter(mainDirector, state, itemTables, mainView, mainScreen, mainUiView);
 
-        var subView = new AlundraSubInventoryViewModel();
+        var subView = new SubInventoryViewModel();
         var subScreen = new FakeSubInventoryScreen();
         var subUiView = new RecordingUIViewRuntime();
         var subPresenter = new SubInventoryPresenter(subDirector, state, itemTables, subView, subScreen, subUiView);
@@ -265,7 +265,7 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
         Assert.False(subPresenter.IsPushedForTests);
     }
 
-    /// <summary>The production call site: the REAL <see cref="AlundraWorldProxy.Update(float)"/> ticks the
+    /// <summary>The production call site: the REAL <see cref="WorldProxy.Update(float)"/> ticks the
     /// sub-inventory's presenter inside the inventory block of its loop of the passes, so Start then R1 through the real loop end with the
     /// sub-inventory screen pushed and its view model written. Without the presenter's call in that loop the screen
     /// would never appear in game (a mutation removing it fails this test).</summary>
@@ -273,16 +273,16 @@ public sealed class AlundraSubInventoryPresenterTests : IDisposable
     public void WorldUpdate_StartThenR1_PushesTheSubInventoryScreenThroughTheRealLoop()
     {
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
-        var worldProxy = new AlundraWorldProxy();
+        var worldProxy = new WorldProxy();
         worldProxy.InitializeWithWorld(world);
-        worldProxy.PlayerEntity = new AlundraEntityScriptProxy();
+        worldProxy.PlayerEntity = new EntityScriptProxy();
 
         var tables = ItemTablesFixture.LoadReal();
         PlayerManager.InitializeNewGameInventory(worldProxy.GameState, tables);
         InventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
         SubInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
 
-        var view = new AlundraSubInventoryViewModel();
+        var view = new SubInventoryViewModel();
         var screen = new FakeSubInventoryScreen();
         var ui = new RecordingUIViewRuntime();
         worldProxy.AttachSubInventoryPresenterForTests(view, screen, ui);

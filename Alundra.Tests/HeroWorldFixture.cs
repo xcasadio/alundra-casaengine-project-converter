@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Application;
@@ -72,7 +71,7 @@ internal static class HeroWorldFixture
     /// <paramref name="world"/> (queued - the caller's first <see cref="World.Update"/> registers it with
     /// CharacterMotionSystem, which always runs before this same frame's GameplayProxy.Update - see
     /// AlundraEntityScriptProxy.Update's own E3.d doc).</summary>
-    internal static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildHeroPawn(
+    internal static (Entity Entity, EntityScriptProxy Proxy) BuildHeroPawn(
         World world, CharacterControllerSettings settings, Vector3 startPosition, IScriptHost scriptHost)
     {
         var root = new TransformComponent();
@@ -96,7 +95,7 @@ internal static class HeroWorldFixture
         {
             Name = "HeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
 
         var controllerComponent = new CharacterControllerComponent { Settings = settings };
@@ -104,7 +103,7 @@ internal static class HeroWorldFixture
 
         entity.Initialize();
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
         Assert.NotNull(proxy.Controller);
         proxy.IsPlayer = true;

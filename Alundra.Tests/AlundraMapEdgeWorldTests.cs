@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
@@ -17,7 +16,7 @@ using Alundra.Physics;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E20.e0k3 (docs/plan-e20-heros.md section 1.18.3, T2): the world tests (b1) to (b4) of the map edge for an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> (marked <see cref="AlundraEntityScriptProxy.HasLogicalZ"/>),
+/// E20.e0k3 (docs/plan-e20-heros.md section 1.18.3, T2): the world tests (b1) to (b4) of the map edge for an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> (marked <see cref="EntityScriptProxy.HasLogicalZ"/>),
 /// in the real world of map 14 (<see cref="ArcRun"/>, the real prefabs and controllers, a synthetic field of 52 x 60 cells whose cells go on past the bound: the edge is crossable, which (b3) proves in the same assertion), against the
 /// oracle of <c>docs/plan-e20-annexe/e20-e0k/oracle/out</c> read by key (never copied). Written before the phase B wiring and red until it: the phase A function <see cref="ScriptedMotion.ClampStepToMapEdge"/> exists but nothing calls it,
 /// so a marked entity goes past its bound and never raises the flag. Each case without effect is set next to a positive case in the same assertion.
@@ -45,12 +44,12 @@ public sealed class AlundraMapEdgeWorldTests
     private static void InstallFlatField(ArcRun arc)
     {
         var field = FlatCells.Create(width: 52, height: 60);
-        typeof(AlundraWorldProxy).GetProperty(nameof(AlundraWorldProxy.CollisionField))!.SetValue(arc.Proxy, field);
+        typeof(WorldProxy).GetProperty(nameof(WorldProxy.CollisionField))!.SetValue(arc.Proxy, field);
         arc.RealWorld!.CollisionField = field;
-        typeof(AlundraWorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, Map(128, 4096));
+        typeof(WorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, Map(128, 4096));
     }
 
-    private static AlundraEntityScriptProxy Born(ArcRun arc, int sprite, bool mapPage, int xPixels, int zRaw)
+    private static EntityScriptProxy Born(ArcRun arc, int sprite, bool mapPage, int xPixels, int zRaw)
         => ((IEntityWorldContext)arc.Proxy).SpawnEntityBySpriteIndex(arc.Hero, mapPage, sprite, xPixels << 16, 100 << 16, zRaw, 0x18)!;
 
     /// <summary>One frame of one logic tick (the clock hands out a tick per 20 ms; the small surplus keeps the float accumulator from losing one).</summary>
@@ -95,7 +94,7 @@ public sealed class AlundraMapEdgeWorldTests
     private static List<int> Column(IReadOnlyList<JsonElement> oracle, string field, int ticks) => oracle.Take(ticks).Select(s => s.GetProperty(field).GetInt32()).ToList();
 
     /// <summary>The walker of the oracle: the Beannoid of map 14 (the AI picks its animation 2 at the first tick, speed 0), the speed of the harness given to that animation, <paramref name="direction"/> as its target direction.</summary>
-    private static void GiveWalk(AlundraEntityScriptProxy walker, int speed, uint direction)
+    private static void GiveWalk(EntityScriptProxy walker, int speed, uint direction)
     {
         var original = walker.AnimSetsByAnim!;
         var entry = original[2];

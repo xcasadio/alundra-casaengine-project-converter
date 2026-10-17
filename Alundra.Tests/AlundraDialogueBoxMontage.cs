@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Dialogue.Presentation;
 using CasaEngine.Framework.Dialogue.Runtime;
@@ -16,6 +15,7 @@ using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -92,10 +92,10 @@ internal sealed class PrefixRecordingPresenter : IDialoguePresenter
 }
 
 /// <summary>
-/// E19.f2a F2A-3: the production order of a logic tick, at the proxy's own <see cref="AlundraWorldProxy.Update"/> (the same headless world as
+/// E19.f2a F2A-3: the production order of a logic tick, at the proxy's own <see cref="WorldProxy.Update"/> (the same headless world as
 /// <see cref="AlundraDialogueFramePassTests"/>), with the scripts as lambdas: the montage runs, each frame, <b>the scripts of the entities first</b> (the engine
 /// updates every entity, scripts included, BEFORE the world's own proxy, <c>World.Update</c>, which is why an entity script sees a box one tick early), under the
-/// gate the entities obey (<c>GameplayBlockedMask</c>), then <see cref="AlundraWorldProxy.Update"/> - at each tick the pad pass, the pass of the box, the gate
+/// gate the entities obey (<c>GameplayBlockedMask</c>), then <see cref="WorldProxy.Update"/> - at each tick the pad pass, the pass of the box, the gate
 /// read again, and the map events (each map-event script is called once per tick the gate lets the map events run: a record whose zone holds the player), and last the inventory block (E19.u).
 /// A test writes the square button of a frame with <see cref="PadForFrame"/>; <see cref="Frame"/> is the number of frames done, so inside a script it is the index of
 /// the frame being run.
@@ -108,7 +108,7 @@ internal sealed class DialogueBoxMontage : IDisposable
 
         public ScriptedRunner(DialogueBoxMontage montage) => _montage = montage;
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             if (programSlot == ScriptHelper.ProgramBMap)
             {
@@ -116,15 +116,15 @@ internal sealed class DialogueBoxMontage : IDisposable
             }
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity) { }
+        public void RunSpriteEvent(EntityScriptProxy entity) { }
     }
 
-    private readonly AlundraEntityScriptProxy _player;
+    private readonly EntityScriptProxy _player;
 
     public DialogueBoxMontage()
     {
         DialogueDirector.Instance.ResetForTests();
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
@@ -133,10 +133,10 @@ internal sealed class DialogueBoxMontage : IDisposable
         var world = new World { Name = "TestWorld" };
         world.Entities.Add(new Entity { Name = "camera", RootComponent = new Camera2dComponent() });
 
-        Proxy = new AlundraWorldProxy();
+        Proxy = new WorldProxy();
         Proxy.InitializeWithWorld(world); // no "tileMap" entity: the install returns early, PlayerEntity stays null (the montage seeds it below).
 
-        _player = new AlundraEntityScriptProxy { Status = EntityStatus.Normal, PosX = 1 << 16, PosY = 2 << 16, PosZ = 0, TileX = 0, TileY = 0 };
+        _player = new EntityScriptProxy { Status = EntityStatus.Normal, PosX = 1 << 16, PosY = 2 << 16, PosZ = 0, TileX = 0, TileY = 0 };
         Proxy.PlayerEntity = _player;
         Proxy.EntityFollowedByCamera = _player;
 
@@ -158,7 +158,7 @@ internal sealed class DialogueBoxMontage : IDisposable
         DialogueDirector.Instance.InstallForMapEntry();
     }
 
-    public AlundraWorldProxy Proxy { get; }
+    public WorldProxy Proxy { get; }
 
     public GameState State => Proxy.GameState;
 
@@ -220,7 +220,7 @@ internal sealed class DialogueBoxMontage : IDisposable
     public void Dispose()
     {
         DialogueDirector.Instance.ResetForTests();
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();

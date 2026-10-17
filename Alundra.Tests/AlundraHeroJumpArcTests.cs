@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Session;
@@ -32,7 +31,7 @@ public sealed class AlundraHeroJumpArcTests
 
     private sealed record Pose(int X, int Y, int Z, int IsOnGround, int CollidedWithEntityZ, int ForceZ, int ForceAdjusted, uint Animation);
 
-    private static Pose PoseOf(AlundraEntityScriptProxy e) =>
+    private static Pose PoseOf(EntityScriptProxy e) =>
         new(e.PosX, e.PosY, e.PosZ, e.IsOnGround, e.CollidedWithEntityZ, e.ForceZ, e.ForceAdjusted, e.TargetAnimationId);
 
     [Fact]
@@ -45,7 +44,7 @@ public sealed class AlundraHeroJumpArcTests
         var atInstruction = new Dictionary<(int Slot, int Pc, int Frame), Pose>();
         var afterImage = new Dictionary<int, Pose>();
         var giles = new Dictionary<int, (Pose Pose, EntityStatus Status)>();
-        AlundraEntityScriptProxy? gilesProxy = null;
+        EntityScriptProxy? gilesProxy = null;
         var gilesGoneAt = -1;
         arc.OnInstruction = t => atInstruction.TryAdd((t.Slot, t.Pc, t.Frame), PoseOf(arc.Hero));
         arc.OnFrame = () =>

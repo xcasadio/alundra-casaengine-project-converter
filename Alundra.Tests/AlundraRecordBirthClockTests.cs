@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -55,7 +54,7 @@ internal static class RecordBirthOracle
 /// E20.e0a4 phase A (T1, docs/plan-e20-heros.md section 1.16.4, D-E0A4-1, D-E0A4-2, D-E0A4-4): an entity born from a record by a script (the opcode <c>0x2D</c> through the real runner, <c>SpawnEntityByRecordId</c>) has, from its
 /// creation, the first switch of the animation 0 that the binary makes (<c>SwitchedAtCreation</c>: the first clock tick counts, the box exists before the engine integrated the entity) and the <c>AnimFlags</c> of that animation.
 /// The real world of map 14 (<see cref="ArcRun"/>, real prefabs). The subject is a test record of the global sprite 27 (the wave of the sword: no program, an animation of 25 ticks), added to the record table of the proxy; the
-/// births are made at the pass <c>programs</c> of <see cref="AlundraWorldProxy.TickTraceForTests"/> (inside the entity block: a birth in the programs of another entity, the loop 2 of the binary, at one tick per frame). Labels: [R] red on the HEAD
+/// births are made at the pass <c>programs</c> of <see cref="WorldProxy.TickTraceForTests"/> (inside the entity block: a birth in the programs of another entity, the loop 2 of the binary, at one tick per frame). Labels: [R] red on the HEAD
 /// (predicted), [V] green by construction, [C] control (its colour on the HEAD is recorded, no stop value; not part of any proof).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
@@ -83,11 +82,11 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
         record.CustomProperties["YPos"] = "10";   // (10 * 8 + 8) = 88 px
         record.CustomProperties["Height"] = "2";  // 2 << 19 = 16 px
         record.CustomProperties["PrefabAssetId"] = prefab.ToString();
-        ((Dictionary<int, TileMapObjectData>)typeof(AlundraWorldProxy).GetField("_entityRecordsByIndex", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!)[id] = record;
+        ((Dictionary<int, TileMapObjectData>)typeof(WorldProxy).GetField("_entityRecordsByIndex", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!)[id] = record;
     }
 
     /// <summary>Runs the real opcode <c>0x2D [record]</c> through the real runner of the world, the hero being the entity that runs the program; returns the entity it made (null when the spawn failed).</summary>
-    internal static AlundraEntityScriptProxy? Op2D(ArcRun arc, int record)
+    internal static EntityScriptProxy? Op2D(ArcRun arc, int record)
     {
         var document = new EventProgramDocument { MapIndex = 14, EventCodesATable = new[] { 0, 0 }, Codes = new[] { 0x2D, record, 0xFF } };
         var runner = new EventProgramRunner(document, ArcRun.State, (IEntityWorldContext)arc.Proxy);
@@ -96,7 +95,7 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
     }
 
     /// <summary>The box of the DLL as the oracle's offsets and sizes, or null when the entity has none.</summary>
-    internal static (long Dx, long Dy, long Dz, long W, long D, long H)? DllBox(AlundraEntityScriptProxy born)
+    internal static (long Dx, long Dy, long Dz, long W, long D, long H)? DllBox(EntityScriptProxy born)
         => born.HasFrameBox
             ? ((long)born.HitBoxX - born.PosX, (long)born.HitBoxY - born.PosY, (long)born.HitBoxZ - born.PosZ, born.CollisionWidth, born.CollisionDepth, born.CollisionHeight)
             : null;
@@ -108,16 +107,16 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
     {
         public readonly ArcRun Arc;
         public readonly string BirthPass;
-        public AlundraEntityScriptProxy? Born;
+        public EntityScriptProxy? Born;
         public int Tick;
         public int S = int.MaxValue;
         public readonly SortedDictionary<int, AlundraCreationSwitchClockTests.Sample> After = new();
 
         /// <summary>Told at the head of the lists pass of every tick from the birth on (before the clock), with the entity and the tick relative to S: the scripts that ask for another animation or direction.</summary>
-        public Action<AlundraEntityScriptProxy, int>? AtLists;
+        public Action<EntityScriptProxy, int>? AtLists;
 
         /// <summary>Told right after the birth, with the entity (the test lowers the flag there).</summary>
-        public Action<AlundraEntityScriptProxy>? AtBirth;
+        public Action<EntityScriptProxy>? AtBirth;
 
         public RecordBirth(string name, string birthPass = "programs", int sprite = 27)
         {
@@ -293,7 +292,7 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
             using var arc = AlundraCreationSwitchClockTests.Arc("rec-a4");
             RegisterRecord(arc, TestRecord, 27);
             var born = Op2D(arc, TestRecord)!;
-            return (born.AnimFlags, born.SwitchedAtCreation, ((AlundraEntityScriptProxy)born.Clone()).SwitchedAtCreation); // a clone is never a birth: it does not carry the flag.
+            return (born.AnimFlags, born.SwitchedAtCreation, ((EntityScriptProxy)born.Clone()).SwitchedAtCreation); // a clone is never a birth: it does not carry the flag.
         }
 
         int OfTheRealRecord()

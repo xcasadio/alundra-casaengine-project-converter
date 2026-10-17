@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -18,7 +17,7 @@ using Alundra.Probes;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E20.e0b2 (docs/plan-e20-heros.md section 1.17.2, T1): the loot roll of a creation in the REAL world (<see cref="AlundraWorldProxy"/>), against the oracle of the binary
+/// E20.e0b2 (docs/plan-e20-heros.md section 1.17.2, T1): the loot roll of a creation in the REAL world (<see cref="WorldProxy"/>), against the oracle of the binary
 /// (<c>docs/plan-e20-annexe/e20-e0b/oracle/out</c>). The tests (m1) to (m5) are written after the phase A code and are RED until phase B (the phase A helper only rolls on the virtual register of the measuring sink: no
 /// <c>ContentsItemId</c>, no <c>ContentsGameFlag</c>, no draw of the real stream): each of them expects at least one object written or one step of the real stream. Two tests are green from phase A on: the word of the stream
 /// right after a load that rolls nothing, and the inertness of the helper without the variable of the sink. Every expected value is a row of the oracle; nothing is derived from the DLL.
@@ -37,7 +36,7 @@ public sealed partial class AlundraLootRollWorldTests : IDisposable
 
     public void Dispose()
     {
-        AlundraWorldProxy.CreationFaultHookForTests = null;
+        WorldProxy.CreationFaultHookForTests = null;
         GameRandom.Reset();
     }
 
@@ -72,7 +71,7 @@ public sealed partial class AlundraLootRollWorldTests : IDisposable
 
     private static string Loot(IEnumerable<(int Record, uint Item, int Flag)> entities) => string.Join(",", entities.Select(e => $"{e.Record}:{e.Item}:{e.Flag}"));
 
-    private static void Recycle(ArcRun arc, AlundraEntityScriptProxy spawned)
+    private static void Recycle(ArcRun arc, EntityScriptProxy spawned)
     {
         spawned.Status = EntityStatus.FlagToDestroy;
         arc.Proxy.RecycleDestroyedEntities();

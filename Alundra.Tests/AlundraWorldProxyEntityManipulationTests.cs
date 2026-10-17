@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -19,14 +18,14 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Covers the structural pieces the entity search/manipulation opcodes need on
-/// <see cref="AlundraWorldProxy"/>: the <c>notCheckSpawnZone</c> overload of
+/// <see cref="WorldProxy"/>: the <c>notCheckSpawnZone</c> overload of
 /// <see cref="EntitySpawnFactory.ShouldSpawnRecord(TileMapObjectData,bool,out string)"/>, the single-argument
-/// <see cref="AlundraWorldProxy.DestroyEntity(AlundraEntityScriptProxy)"/> overload, the
+/// <see cref="WorldProxy.DestroyEntity(EntityScriptProxy)"/> overload, the
 /// <c>ParentEntity</c> threading through the shared spawn path, transform re-derivation
 /// (<see cref="FrameSyncPasses.RunTransformSyncPass"/>) and destroyed-entity visibility/skip in the
-/// per-frame passes. <see cref="AlundraWorldProxy.SpawnEntityByRecordId"/>'s live-<c>World</c> path is
+/// per-frame passes. <see cref="WorldProxy.SpawnEntityByRecordId"/>'s live-<c>World</c> path is
 /// intentionally not exercised here for the same reason <see cref="AlundraWorldProxyTests"/> does not
-/// cover <see cref="AlundraWorldProxy.InitializeWithWorld"/>'s live prefab loader - it needs a running
+/// cover <see cref="WorldProxy.InitializeWithWorld"/>'s live prefab loader - it needs a running
 /// <c>CasaEngineGame</c>; its build path is the exact same <see cref="EntitySpawnFactory.CreateEntityFromRecord"/>
 /// covered directly below and by <see cref="AlundraWorldProxyTests"/>.
 /// </summary>
@@ -119,7 +118,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
 
         var entity = EntitySpawnFactory.CreateEntityFromRecord(record, prefabLoader: null, parentEntity: parent);
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         Assert.Same(parent, proxy.ParentEntity);
     }
 
@@ -131,7 +130,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
 
         var entity = EntitySpawnFactory.CreateEntityFromRecord(record, prefabLoader: null);
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         Assert.Null(proxy.ParentEntity);
     }
 
@@ -142,8 +141,8 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void SpawnEntityByRecordId_BeforeInitializeWithWorld_ReturnsNull_DoesNotThrow()
     {
-        var worldProxy = new AlundraWorldProxy();
-        var logicEntity = new AlundraEntityScriptProxy();
+        var worldProxy = new WorldProxy();
+        var logicEntity = new EntityScriptProxy();
 
         var result = worldProxy.SpawnEntityByRecordId(logicEntity, 5);
 
@@ -157,8 +156,8 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void DestroyEntity_SingleArg_FlagsToDestroy_AndClearsEventTrigger()
     {
-        var worldProxy = new AlundraWorldProxy();
-        var entity = new AlundraEntityScriptProxy { Status = EntityStatus.Normal, EventTrigger = ScriptHelper.ProgramCTick };
+        var worldProxy = new WorldProxy();
+        var entity = new EntityScriptProxy { Status = EntityStatus.Normal, EventTrigger = ScriptHelper.ProgramCTick };
 
         worldProxy.DestroyEntity(entity);
 
@@ -173,8 +172,8 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void IEntityWorldContext_DestroyEntity_DelegatesToTheSameSingleArgMethod()
     {
-        IEntityWorldContext context = new AlundraWorldProxy();
-        var entity = new AlundraEntityScriptProxy { Status = EntityStatus.Normal };
+        IEntityWorldContext context = new WorldProxy();
+        var entity = new EntityScriptProxy { Status = EntityStatus.Normal };
 
         context.DestroyEntity(entity);
 
@@ -184,7 +183,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void IEntityWorldContext_SpawnedEntities_EmptyBeforeAnySpawn()
     {
-        IEntityWorldContext context = new AlundraWorldProxy();
+        IEntityWorldContext context = new WorldProxy();
 
         Assert.Empty(context.SpawnedEntities);
     }
@@ -195,9 +194,9 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
 
     private static Entity NewEntityWithProxy(EntityStatus status, int posX, int posY, int posZ)
     {
-        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = new AnimatedSpriteComponent() };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(EntityScriptProxy).FullName!, RootComponent = new AnimatedSpriteComponent() };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.Status = status;
         proxy.PosX = posX;
         proxy.PosY = posY;
@@ -222,7 +221,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     public void RunTransformSyncPass_PositionChangedSinceSpawn_FollowsTheNewPosition()
     {
         var entity = NewEntityWithProxy(EntityStatus.Normal, 0, 0, 0);
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
 
         // Simulates a 0x64 SetEntitiesPosition write happening between two frames.
         proxy.PosX = 100 * 0x10000;
@@ -249,7 +248,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void RunTransformSyncPass_BareEntityWithNoRootComponent_DoesNotThrow()
     {
-        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
 
         FrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
@@ -262,9 +261,9 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void RunAnimationSyncPass_FlagToDestroy_HidesEntity_AndSkipsSync()
     {
-        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = new AnimatedSpriteComponent() };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(EntityScriptProxy).FullName!, RootComponent = new AnimatedSpriteComponent() };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.Status = EntityStatus.FlagToDestroy;
         proxy.CurrentAnimationId = ~0u; // would normally fire a sync if not skipped
         Assert.True(entity.IsVisible);
@@ -278,11 +277,11 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void RunWallInterleaveSortKeyPass_FlagToDestroy_SkipsElevationWrite()
     {
-        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         var depthSortable = new DepthSortable2DComponent { Elevation = 123 };
         entity.AddComponent(depthSortable);
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.Status = EntityStatus.FlagToDestroy;
         proxy.PosY = 999 * 0x10000;
 
@@ -296,11 +295,11 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void RunWallInterleaveSortKeyPass_ARelaunchedAnimation_UsesTheBiasOfTheTarget()
     {
-        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         var depthSortable = new DepthSortable2DComponent { Elevation = 123 };
         entity.AddComponent(depthSortable);
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.PosY = 15 << 16;
         proxy.AnimationDirection = 0;
         proxy.TargetAnimationId = 6;

@@ -1,8 +1,8 @@
 #nullable enable
 using System.Collections.Generic;
 using CasaEngine.Framework.AI.Navigation;
-using Alundra.Scripts;
 using Alundra.Events;
+using Alundra.Entities;
 
 namespace Alundra.Maps;
 
@@ -15,17 +15,17 @@ public sealed class NoOpEntityWorldContext : IEntityWorldContext
 {
     public static readonly NoOpEntityWorldContext Instance = new();
 
-    public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = System.Array.Empty<AlundraEntityScriptProxy>();
+    public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = System.Array.Empty<EntityScriptProxy>();
 
-    public AlundraEntityScriptProxy? PlayerEntity => null;
+    public EntityScriptProxy? PlayerEntity => null;
 
-    public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+    public EntityScriptProxy? EntityFollowedByCamera { get; set; }
 
     public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
 
-    public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+    public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
-    public void DestroyEntity(AlundraEntityScriptProxy entity)
+    public void DestroyEntity(EntityScriptProxy entity)
     {
         // No-op: no world to mutate.
     }

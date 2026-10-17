@@ -1,4 +1,3 @@
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Entities;
 
@@ -9,7 +8,7 @@ public class AlundraEntityScriptProxyCloneTests
     [Fact]
     public void Clone_CopiesScalarFields()
     {
-        var original = new AlundraEntityScriptProxy
+        var original = new EntityScriptProxy
         {
             EntityRefId = 7,
             SpriteTableIndex = 25u,
@@ -20,7 +19,7 @@ public class AlundraEntityScriptProxyCloneTests
             PosZ = 300,
         };
 
-        var clone = (AlundraEntityScriptProxy)original.Clone();
+        var clone = (EntityScriptProxy)original.Clone();
 
         Assert.NotSame(original, clone);
         Assert.Equal(original.EntityRefId, clone.EntityRefId);
@@ -35,14 +34,14 @@ public class AlundraEntityScriptProxyCloneTests
     [Fact]
     public void Clone_CopiesArrayContentsButArraysAreNotReferenceEqual()
     {
-        var original = new AlundraEntityScriptProxy();
+        var original = new EntityScriptProxy();
         original.ProgramIndexes[3] = 99;
         original.SpriteProgramIndexes[1] = 12;
         original.MapHeights[2] = 5;
         original.Bytes[0] = 7;
         original.AIValues[4] = 3;
 
-        var clone = (AlundraEntityScriptProxy)original.Clone();
+        var clone = (EntityScriptProxy)original.Clone();
 
         Assert.Equal(original.ProgramIndexes, clone.ProgramIndexes);
         Assert.NotSame(original.ProgramIndexes, clone.ProgramIndexes);
@@ -63,10 +62,10 @@ public class AlundraEntityScriptProxyCloneTests
     [Fact]
     public void Clone_MutatingCloneArrayDoesNotAffectOriginal()
     {
-        var original = new AlundraEntityScriptProxy();
+        var original = new EntityScriptProxy();
         original.ProgramIndexes[0] = 1;
 
-        var clone = (AlundraEntityScriptProxy)original.Clone();
+        var clone = (EntityScriptProxy)original.Clone();
         clone.ProgramIndexes[0] = 999;
 
         Assert.Equal(1, original.ProgramIndexes[0]);

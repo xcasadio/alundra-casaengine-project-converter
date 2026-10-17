@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.UI;
@@ -25,7 +24,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E19.f2b1c T2 (docs/plan-e19-opcodes.md, F2B1C-R2): the view model of the text box screen, without any display. For each pass of the six scenarios of the annex
 /// (<c>docs/plan-e19-f2b1-annexe/values/S1.csv</c> to <c>S6.csv</c>, the same tables <see cref="AlundraTextBoxDrawnStateTests"/> pins the box to) the properties
-/// <see cref="AlundraTextBoxViewModel.Apply"/> writes are the ones the rule deduces from the table: <c>Frame.Top</c> the Y of the frame, <c>Clip</c> the clip of the
+/// <see cref="TextBoxViewModel.Apply"/> writes are the ones the rule deduces from the table: <c>Frame.Top</c> the Y of the frame, <c>Clip</c> the clip of the
 /// pass, <c>Row r</c> the text of the row with <c>Left = x - 32</c> and <c>Top = rowY - ClipTop</c> (relative to the clip canvas), the cursor by its sprite name. The
 /// pass that ends a scroll is read as F2B1B-1 pins it (the rows after the shift at offset 0, D-E19-83).
 /// </summary>
@@ -137,7 +136,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         Director.Open(DialogueTestAssets.BuildRaw("vm-" + name, "Start", Of(name).Pages), "Start", controlMode: 1);
     }
 
-    private static void AssertRowsAreSingleLines(AlundraTextBoxViewModel vm, string where)
+    private static void AssertRowsAreSingleLines(TextBoxViewModel vm, string where)
     {
         for (var r = 0; r < 3; r++)
         {
@@ -155,7 +154,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         var scenario = Of(name);
         var table = LoadTable(name);
         OpenTheBox(name);
-        var vm = new AlundraTextBoxViewModel();
+        var vm = new TextBoxViewModel();
 
         Assert.Equal(Visibility.Collapsed, vm.RootVisibility); // before the first pass, nothing is drawn
         vm.Apply(Director.Box);
@@ -226,7 +225,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     {
         OpenTheBox("S4");
         RunTo(100);
-        var vm = new AlundraTextBoxViewModel();
+        var vm = new TextBoxViewModel();
         vm.Apply(Director.Box);
 
         Assert.Equal(Visibility.Visible, vm.RootVisibility);
@@ -243,7 +242,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         try
         {
             RunTo(100);
-            var vm = new AlundraTextBoxViewModel();
+            var vm = new TextBoxViewModel();
             vm.Apply(Director.Box);
 
             Assert.Equal(("gypjq", 0, -15), (vm.Row0.Text, vm.Row0.Left, vm.Row0.Top));
@@ -262,7 +261,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     public void TheFourCursorSprites_AreNamedByTheirImage_AndTheCursorIsCollapsedWhenNoneIsPosed()
     {
         OpenTheBox("S6");
-        var vm = new AlundraTextBoxViewModel();
+        var vm = new TextBoxViewModel();
         var seen = new Dictionary<int, string?>();
         for (var pass = 1; pass <= 125; pass++)
         {
@@ -285,7 +284,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     {
         OpenTheBox("S3");
         RunTo(195);
-        var vm = new AlundraTextBoxViewModel();
+        var vm = new TextBoxViewModel();
         vm.Apply(Director.Box);
 
         // pixels.md "Centred lines (pass 195)": row 0 at x 104, row 1 at x 97 (the canvas is at x 32).
@@ -299,7 +298,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     public void TheRootIsVisibleExactlyWhileTheBoxIsDrawn_AndTheFirstSlideInPassIsDrawnUnderTheScreen()
     {
         OpenTheBox("S1");
-        var vm = new AlundraTextBoxViewModel();
+        var vm = new TextBoxViewModel();
         vm.Apply(Director.Box);
         Assert.False(Director.Box.Drawn);
         Assert.Equal(Visibility.Collapsed, vm.RootVisibility);
@@ -318,7 +317,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     {
         OpenTheBox("S2");
         RunTo(60);
-        var vm = new AlundraTextBoxViewModel();
+        var vm = new TextBoxViewModel();
         vm.Apply(Director.Box);
 
         var notifications = new List<string?>();
@@ -354,14 +353,14 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         public IEnumerable<MGWindow> GetWindows() => Array.Empty<MGWindow>();
     }
 
-    private sealed record Dlg(int Opcode, AlundraEntityScriptProxy Owner, int[] Codes);
+    private sealed record Dlg(int Opcode, EntityScriptProxy Owner, int[] Codes);
 
-    private sealed record Scene(string File, string Prefix, Dlg[] Dialogues, int Frames, Action<int>? Move, AlundraEntityScriptProxy Speaker);
+    private sealed record Scene(string File, string Prefix, Dlg[] Dialogues, int Frames, Action<int>? Move, EntityScriptProxy Speaker);
 
     private const string JessPortraitId = "56f5809a-a47b-564e-b7f7-a66be1f98b04";
     private const string MimingPortraitId = "bf75c68e-424f-57c9-8f6a-535f33d769d7";
 
-    private static AlundraEntityScriptProxy Spk(int spriteType, bool portrait, int height = 56, string? id = null)
+    private static EntityScriptProxy Spk(int spriteType, bool portrait, int height = 56, string? id = null)
     {
         var speaker = SpeakerRig.Speaker(spriteType, portrait, height);
         if (portrait)
@@ -372,7 +371,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         return speaker;
     }
 
-    private static Dlg D0D(AlundraEntityScriptProxy owner, int text = SpeakerRig.TextAb) => new(0x0D, owner, SpeakerRig.Codes0D(text));
+    private static Dlg D0D(EntityScriptProxy owner, int text = SpeakerRig.TextAb) => new(0x0D, owner, SpeakerRig.Codes0D(text));
 
     /// <summary>The scenes of the f4 annex; <paramref name="pinned"/>: the scenes as the f4c annex generated its states (S8 is Miming, name 0x17A).</summary>
     private static Scene SceneOf(string name, SpeakerRig rig, bool pinned = false)
@@ -482,7 +481,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         var scene = SceneOf(name, rig);
         var table = Table(scene.File, scene.Prefix);
         var names = SpeakerAnnex.Names();
-        var viewModel = new AlundraTextBoxViewModel();
+        var viewModel = new TextBoxViewModel();
         var presenter = new TextBoxPresenter(rig.Director, viewModel, new SpeakerScreen(), null);
         var portraitRef = scene.Speaker.DialoguePortrait;
         var diffs = new List<string>();
@@ -582,7 +581,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         {
             using var rig = new SpeakerRig();
             var scene = SceneOf(scenario, rig, pinned: true);
-            var viewModel = new AlundraTextBoxViewModel();
+            var viewModel = new TextBoxViewModel();
             var presenter = new TextBoxPresenter(rig.Director, viewModel, new SpeakerScreen(), null);
             var wanted = states.Where(s => s.State.GetProperty("scenario").GetString() == scenario).GroupBy(s => s.State.GetProperty("frame").GetInt32()).ToDictionary(g => g.Key, g => g.First());
 
@@ -598,7 +597,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         }
     }
 
-    private static void AssertState(AlundraTextBoxViewModel vm, JsonElement state, string where)
+    private static void AssertState(TextBoxViewModel vm, JsonElement state, string where)
     {
         Assert.True(vm.RootVisibility == (state.GetProperty("root").GetString() == "Visible" ? Visibility.Visible : Visibility.Collapsed), $"{where}: root {vm.RootVisibility}");
         if (state.GetProperty("root").GetString() != "Visible")
@@ -781,7 +780,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     public void ApplyWithASpeaker_ShowsTheRootAndFoldsTheTextBox_WhenOnlyTheSpeakerIsDrawn()
     {
         OpenTheBox("S1");
-        var vm = new AlundraTextBoxViewModel();
+        var vm = new TextBoxViewModel();
 
         vm.Apply(Director.Box, true); // the box is not drawn yet, the speaker is
         Assert.Equal(1, vm.AppliedCount);
@@ -805,7 +804,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
     {
         using var rig = new SpeakerRig();
         var scene = SceneOf("S1", rig);
-        var viewModel = new AlundraTextBoxViewModel();
+        var viewModel = new TextBoxViewModel();
         var presenter = new TextBoxPresenter(rig.Director, viewModel, new SpeakerScreen(), null);
 
         Drive(rig, presenter, scene, f =>

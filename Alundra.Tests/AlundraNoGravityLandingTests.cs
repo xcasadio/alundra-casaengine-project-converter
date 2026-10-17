@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Application;
@@ -18,11 +17,12 @@ using Alundra.Maps.Loop;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
 /// <summary>
-/// E19.d D2 (docs/plan-e19-opcodes.md §1.2g): the landing defect of <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>. An
+/// E19.d D2 (docs/plan-e19-opcodes.md §1.2g): the landing defect of <see cref="EntityScriptProxy.EvaluateEntitySupport"/>. An
 /// entity WITHOUT gravity that rests on the ground keeps its negative <c>ForceZ</c> (the binary's <c>ComputeZPosition</c> zeroes it only
 /// with gravity), and the landing branch used to take it for "not landed yet": every tick it pushed its position to the root, which
 /// truncates X and Y to whole pixels, so a walk of less than one pixel per tick never advanced (the camera block of map 391).
@@ -53,11 +53,11 @@ public sealed class AlundraNoGravityLandingTests
 
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -69,20 +69,20 @@ public sealed class AlundraNoGravityLandingTests
 
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
 
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
 
         public GameState GameState { get; } = new();
 
-        public AlundraPlayerController? PlayerController => null;
+        public HeroController? PlayerController => null;
 
-        public List<AlundraEntityScriptProxy> Collidables { get; } = new();
+        public List<EntityScriptProxy> Collidables { get; } = new();
 
-        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
+        IReadOnlyList<EntityScriptProxy> IScriptHost.Collidables => Collidables;
 
         /// <summary>Called after the head-of-frame pull of the root, before the tick (see the class doc).</summary>
         public Action? AfterPull { get; set; }
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -99,7 +99,7 @@ public sealed class AlundraNoGravityLandingTests
     {
         public required World World { get; init; }
 
-        public required AlundraEntityScriptProxy Proxy { get; init; }
+        public required EntityScriptProxy Proxy { get; init; }
 
         public required Host Host { get; init; }
 
@@ -144,7 +144,7 @@ public sealed class AlundraNoGravityLandingTests
         });
         root.AddChildComponent(collision);
 
-        var entity = new Entity { Name = "LandingWalker", RootComponent = root, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "LandingWalker", RootComponent = root, GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         var settings = new CharacterControllerSettings
         {
             Radius = 6f,
@@ -162,7 +162,7 @@ public sealed class AlundraNoGravityLandingTests
         entity.AddComponent(controller);
         entity.Initialize();
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
         proxy.IsPlayer = false;
         proxy.ScriptHost = host;

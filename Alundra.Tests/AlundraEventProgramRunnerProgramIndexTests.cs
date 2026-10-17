@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using Xunit;
 using Alundra.Maps;
@@ -31,21 +30,21 @@ public class AlundraEventProgramRunnerProgramIndexTests
 
     private sealed class FakeWorld : IEntityWorldContext
     {
-        public List<AlundraEntityScriptProxy> Spawned { get; } = new();
+        public List<EntityScriptProxy> Spawned { get; } = new();
 
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Spawned;
 
-        public AlundraEntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? PlayerEntity => null;
 
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
 
         public void SetForcedCameraLookAt(int x, int y, int z)
         {
         }
 
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
+        public void DestroyEntity(EntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
 
         public NavigationGrid2D? NavigationGrid => null;
     }
@@ -58,7 +57,7 @@ public class AlundraEventProgramRunnerProgramIndexTests
         return (runner, trace);
     }
 
-    private static AlundraEntityScriptProxy Entity(int record)
+    private static EntityScriptProxy Entity(int record)
         => new() { EntityRefId = record, Status = EntityStatus.Normal };
 
     private static EventProgramState StateFor(EventProgramDocument document) => new() { Codes = document.CodesAsBytes() };
@@ -66,7 +65,7 @@ public class AlundraEventProgramRunnerProgramIndexTests
     private static (int CodeIndex, int Opcode, int Size)[] Steps(IEnumerable<EventTraceRecord> trace)
         => trace.Select(r => (r.CodeIndex, r.Opcode, r.Size)).ToArray();
 
-    private static void GiveARunningState(AlundraEntityScriptProxy entity, EventProgramDocument document, int codeIndex)
+    private static void GiveARunningState(EntityScriptProxy entity, EventProgramDocument document, int codeIndex)
     {
         entity.EventProgramState.Codes = document.CodesAsBytes();
         entity.EventProgramState.CodeIndex = codeIndex;

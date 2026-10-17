@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -25,8 +24,8 @@ namespace Alundra.Tests;
 /// E14.a1c T1 (docs/plan-e14-ia-native.md section 1.3c): the Muruta's A0, C10 and D9 (registry, type 347) and E1 (<c>DestroyEntity(e, -1)</c>) against the REAL code of <c>ALUN_CD.EXE</c> (France) run in the E14.a1 oracle
 /// (<c>docs/plan-e14-annexe/e14a/oracle-a1/out</c>): the 4,913 single-call vectors (A0 6, C10 4,043, D9 720, E1 144) and the 3,675 calls of the scenarios MU-* (A0 16, C10 3,637, D9 15, E1 7), each replayed alone from its
 /// <c>before</c> to its <c>after</c>. For every call: the changed words, the generator's word, the sounds (the claw sound <c>0xCD</c> of C10 is compared, in order), the hero untouched. E1 is compared by the projection of the plan
-/// (section 1.3b). The montage is that of <see cref="AlundraBeannoideOracleTests"/> with the fields of the Muruta (<c>+0x98</c> <see cref="AlundraEntityScriptProxy.BoxDirection"/>, the four corner heights, <c>+0x274</c>, <c>+0x280</c>) and the
-/// hero's frame box (the FIELD <see cref="AlundraEntityScriptProxy.HasFrameBox"/>) and current attack. Shares the generator's collection (it sets the word).
+/// (section 1.3b). The montage is that of <see cref="AlundraBeannoideOracleTests"/> with the fields of the Muruta (<c>+0x98</c> <see cref="EntityScriptProxy.BoxDirection"/>, the four corner heights, <c>+0x274</c>, <c>+0x280</c>) and the
+/// hero's frame box (the FIELD <see cref="EntityScriptProxy.HasFrameBox"/>) and current attack. Shares the generator's collection (it sets the word).
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
 public sealed class AlundraMurutaOracleTests : IDisposable
@@ -43,7 +42,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     // The fields: the oracle's names tied to the DLL's (the table of the plan, sections 1.3b and 1.3c)
     // ---------------------------------------------------------------------------------------------------------------------
 
-    private sealed record Field(Func<AlundraEntityScriptProxy, long> Get, Action<AlundraEntityScriptProxy, long> Set, long Mask = 0xFFFFFFFFL, bool Pointer = false);
+    private sealed record Field(Func<EntityScriptProxy, long> Get, Action<EntityScriptProxy, long> Set, long Mask = 0xFFFFFFFFL, bool Pointer = false);
 
     // The binary's Z (and floor, corner heights) is the DLL's plus one raw unit (ADR-0026): H(v) = v - 1.
     private static int H(long v) => unchecked((int)v - 1);
@@ -87,7 +86,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     };
 
     /// <summary>The words of the entity that are not fields of the oracle's 27 and have a DLL member: marked on entry, compared unchanged.</summary>
-    private static readonly (string Name, Action<AlundraEntityScriptProxy, long> Set, Func<AlundraEntityScriptProxy, long> Get)[] UntouchedWords =
+    private static readonly (string Name, Action<EntityScriptProxy, long> Set, Func<EntityScriptProxy, long> Get)[] UntouchedWords =
     {
         ("forcez_B8", (e, v) => e.ForceZ = unchecked((int)v), e => e.ForceZ),
         ("prevadjx_CC", (e, v) => e.PreviousAdjustedForceX = unchecked((int)v), e => e.PreviousAdjustedForceX),
@@ -103,12 +102,12 @@ public sealed class AlundraMurutaOracleTests : IDisposable
 
     private sealed class OracleContext : IEntityWorldContext
     {
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public EquipmentRecords? EquipmentRecords { get; set; }
         public uint HeroAnimationLatch { get; set; }
@@ -156,11 +155,11 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     private static BalanceRecord Sheet() => BalanceTables.GetOrCreate(ProjectRootFinder.Find()).Select(MurutaAi.SpriteType, 0)!;
 
     /// <summary>The hero: position, tile and floor; the frame box FIELD (<paramref name="box"/>) and the current attack (<paramref name="attack"/>, null for a null pointer).</summary>
-    private static (Entity Entity, AlundraEntityScriptProxy Proxy) NewHero(IReadOnlyDictionary<string, long> words, long[]? attack, bool box)
+    private static (Entity Entity, EntityScriptProxy Proxy) NewHero(IReadOnlyDictionary<string, long> words, long[]? attack, bool box)
     {
-        var entity = new Entity { Name = "hero", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "hero", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
+        var proxy = (EntityScriptProxy)entity.GameplayProxy;
         proxy.PosX = unchecked((int)words["posx"]);
         proxy.PosY = unchecked((int)words["posy"]);
         proxy.TileX = unchecked((int)words["tilex_120"]);
@@ -190,11 +189,11 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         _ => throw new InvalidOperationException($"unknown hero attack pointer 0x{call.HeroAttackPointer:X}"),
     };
 
-    private static string HeroState(AlundraEntityScriptProxy hero) => $"{hero.PosX} {hero.PosY} {hero.TileX} {hero.TileY} {hero.FloorHeight} {hero.HasFrameBox} {hero.CurrentAttack?.Attribute} {hero.CurrentAttack?.Power}";
+    private static string HeroState(EntityScriptProxy hero) => $"{hero.PosX} {hero.PosY} {hero.TileX} {hero.TileY} {hero.FloorHeight} {hero.HasFrameBox} {hero.CurrentAttack?.Attribute} {hero.CurrentAttack?.Power}";
 
-    private static AlundraEntityScriptProxy NewMuruta(IReadOnlyDictionary<string, long> before, IReadOnlyDictionary<string, long> forceBefore, int letter, int code, Entity heroEntity, int status)
+    private static EntityScriptProxy NewMuruta(IReadOnlyDictionary<string, long> before, IReadOnlyDictionary<string, long> forceBefore, int letter, int code, Entity heroEntity, int status)
     {
-        var entity = new AlundraEntityScriptProxy { SpriteType = MurutaAi.SpriteType, Status = (EntityStatus)status, BreakEffect = 8 };
+        var entity = new EntityScriptProxy { SpriteType = MurutaAi.SpriteType, Status = (EntityStatus)status, BreakEffect = 8 };
         foreach (var (name, value) in before)
         {
             if (Fields.TryGetValue(name, out var field))
@@ -249,7 +248,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         return expected;
     }
 
-    private static void AssertFields(AlundraEntityScriptProxy entity, IReadOnlyDictionary<string, long> expected, string where)
+    private static void AssertFields(EntityScriptProxy entity, IReadOnlyDictionary<string, long> expected, string where)
     {
         foreach (var (name, value) in expected)
         {
@@ -406,7 +405,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     [InlineData(-1, 0)]
     public void A0_TakesTheHighHalfOfTheZOfTheBinary_ThatIsThePosZOfTheDllPlusOne(int posZ, int expected)
     {
-        var entity = new AlundraEntityScriptProxy { SpriteType = MurutaAi.SpriteType, PosZ = posZ };
+        var entity = new EntityScriptProxy { SpriteType = MurutaAi.SpriteType, PosZ = posZ };
 
         MurutaAi.Load(entity);
 
@@ -422,7 +421,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         long rngIn, long? fx, int occupied, int status)
     {
         var (heroEntity, hero) = NewHero(heroWords, null, false);
-        var world = new AlundraWorldProxy();
+        var world = new WorldProxy();
         world.EffectStage!.Load(Bank.Value);
         for (var i = 0; i < occupied; i++)
         {

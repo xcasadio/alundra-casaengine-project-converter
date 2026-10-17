@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Session;
@@ -25,22 +24,22 @@ public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
 
     public void Dispose() => GameRandom.RandomSeed = _seed;
 
-    private static AlundraWorldProxy World()
+    private static WorldProxy World()
     {
-        var world = new AlundraWorldProxy();
+        var world = new WorldProxy();
         world.EffectStage!.Load(EffectGolden.BankOf(Root, 14));
         return world;
     }
 
-    private static AlundraEntityScriptProxy Victim(int breakEffect = 8)
+    private static EntityScriptProxy Victim(int breakEffect = 8)
         => new()
         {
             PosX = 0x00A40000, PosY = 0x01E00000, PosZ = 0x00080000, Status = EntityStatus.Normal, EventTrigger = ScriptHelper.ProgramEDeactivate, BreakEffect = breakEffect,
         };
 
-    private static void RunFrame(AlundraWorldProxy world, int ticks) => world.EffectStage!.RunFrame(ticks, Enumerable.Repeat(false, ticks).ToList());
+    private static void RunFrame(WorldProxy world, int ticks) => world.EffectStage!.RunFrame(ticks, Enumerable.Repeat(false, ticks).ToList());
 
-    private static EffectSlot[] Slots(AlundraWorldProxy world) => world.EffectStage!.Reservoir.ActiveSlots.ToArray();
+    private static EffectSlot[] Slots(WorldProxy world) => world.EffectStage!.Reservoir.ActiveSlots.ToArray();
 
     [Fact]
     public void TheTwoArgumentOverload_WritesTheStatus4_AndTheLetterMinus1()

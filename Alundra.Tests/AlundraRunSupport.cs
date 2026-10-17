@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Assets.Animations;
 using Xunit;
@@ -215,7 +214,7 @@ internal sealed class RunMontage
     /// <summary>The effects the stage created on the last tick, as (id, X, Y, Z) in 16.16.</summary>
     public List<(int Id, int X, int Y, int Z)> Created { get; } = new();
 
-    public AlundraEntityScriptProxy Hero => Rig.Hero;
+    public EntityScriptProxy Hero => Rig.Hero;
 
     public int StartX { get; private set; }
 

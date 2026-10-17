@@ -1,6 +1,5 @@
 #nullable enable
 using System;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
@@ -10,6 +9,7 @@ using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -55,7 +55,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         state.LastPadState = new PadState { ButtonsHold = PadState.Start };
         state.TickPad.Update(PadState.Start);
         Assert.NotEqual(0u, state.TickPad.ButtonsHold);
-        state.InteractLatchEntity = new AlundraEntityScriptProxy();
+        state.InteractLatchEntity = new EntityScriptProxy();
         state.InteractLatchFacing = 1;
         state.InteractLatchEntityX = 2;
         state.InteractLatchEntityY = 3;
@@ -144,7 +144,7 @@ public sealed class AlundraSaveGameLoadResetTests : IDisposable
         state.PlayerStats.Mp = 3;
         var hud = HudDirector.Instance;
         hud.AttachToWorld(state);
-        var view = new AlundraHudViewModel();
+        var view = new HudViewModel();
         var presenter = new HudPresenter(hud, view);
 
         // Open the jauge and let the MP roll up to 3 out of 3.

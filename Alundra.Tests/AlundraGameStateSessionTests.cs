@@ -1,11 +1,12 @@
 ﻿#nullable enable
 using System;
 using System.IO;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Audio;
+using Alundra.Entities;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -15,12 +16,12 @@ namespace Alundra.Tests;
 /// sharing the same session carrier (<see cref="GameState.Instance"/>) - the "two worlds share the
 /// singleton" shape T7 already established (<see cref="AlundraScreenFadeDirectorTests"/>:370-412), driven
 /// here through <see cref="GameState.InstallForMapEntry"/> directly rather than a full
-/// <see cref="AlundraWorldProxy.InitializeWithWorld"/> montage - that method needs a live CasaEngineGame
+/// <see cref="WorldProxy.InitializeWithWorld"/> montage - that method needs a live CasaEngineGame
 /// asset catalog just to REACH this call (see <see cref="AlundraWorldProxyTests"/>' own class doc for why
 /// the whole method is never exercised end-to-end in this test host), and <see cref="GameState"/>'s
 /// own map-entry behaviour has no such dependency.
 ///
-/// This class does NOT construct an <see cref="AlundraWorldProxy"/>, so it falls outside D-T-14's own
+/// This class does NOT construct an <see cref="WorldProxy"/>, so it falls outside D-T-14's own
 /// "ten classes" criterion (docs/plan-transitions-carte.md, D-T-14) - it still resets
 /// <see cref="GameState.Instance"/>/<see cref="SfxBank"/>'s session cache in
 /// constructor/Dispose, for the same isolation reason every other session-singleton test class does.
@@ -121,7 +122,7 @@ public sealed class AlundraGameStateSessionTests : IDisposable
         var state = GameState.Instance;
 
         // "World 1" leaves the interact latch armed on one of its own entities.
-        var world1Entity = new AlundraEntityScriptProxy();
+        var world1Entity = new EntityScriptProxy();
         state.InteractLatchEntity = world1Entity;
         state.InteractLatchFacing = 1;
         state.InteractLatchEntityX = 2;

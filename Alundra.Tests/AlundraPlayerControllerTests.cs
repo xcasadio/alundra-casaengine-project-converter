@@ -1,22 +1,22 @@
 using System;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Engine.Input;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Input;
 using Xunit;
 using Alundra.Hero;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers <see cref="AlundraPlayerController"/>'s input-mapping registration
-/// (<see cref="AlundraPlayerController.RegisterMappings"/>) and pad-state building
-/// (<see cref="AlundraPlayerController.ComputePadState"/>) - the pure/testable cores
-/// <see cref="AlundraPlayerController.EnsureInputMappingsRegistered"/>/<see cref="AlundraPlayerController.BuildPadState"/>
+/// Covers <see cref="HeroController"/>'s input-mapping registration
+/// (<see cref="HeroController.RegisterMappings"/>) and pad-state building
+/// (<see cref="HeroController.ComputePadState"/>) - the pure/testable cores
+/// <see cref="HeroController.EnsureInputMappingsRegistered"/>/<see cref="HeroController.BuildPadState"/>
 /// wrap around a live <c>CasaEngineGame</c>, which this project's headless test process cannot construct
-/// (same constraint as <see cref="AlundraWorldProxy"/>'s own live-World tests).
+/// (same constraint as <see cref="WorldProxy"/>'s own live-World tests).
 /// </summary>
 public class AlundraPlayerControllerTests
 {
@@ -97,7 +97,7 @@ public class AlundraPlayerControllerTests
     {
         var manager = new InputMappingManager();
 
-        AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
+        HeroController.RegisterMappings(NewButtonsMapping(), manager);
 
         foreach (var name in ExpectedActionNames)
         {
@@ -122,8 +122,8 @@ public class AlundraPlayerControllerTests
     {
         var manager = new InputMappingManager();
 
-        AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
-        AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
+        HeroController.RegisterMappings(NewButtonsMapping(), manager);
+        HeroController.RegisterMappings(NewButtonsMapping(), manager);
 
         Assert.Equal(18, CountMappings(manager));
 
@@ -139,7 +139,7 @@ public class AlundraPlayerControllerTests
         var manager = new InputMappingManager();
         manager.AddInputMapping(new InputMapping { Name = "MoveUp" }); // pre-existing, e.g. a prior partial load
 
-        AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
+        HeroController.RegisterMappings(NewButtonsMapping(), manager);
 
         foreach (var name in ExpectedActionNames)
         {
@@ -155,9 +155,9 @@ public class AlundraPlayerControllerTests
     public void ComputePadState_AllMappingsRegisteredAndHeld_SetsEveryBit()
     {
         var manager = new InputMappingManager();
-        AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
+        HeroController.RegisterMappings(NewButtonsMapping(), manager);
 
-        var state = AlundraPlayerController.ComputePadState(manager, _ => new ButtonState { IsKeyPressed = true });
+        var state = HeroController.ComputePadState(manager, _ => new ButtonState { IsKeyPressed = true });
 
         Assert.Equal(
             PadState.Up | PadState.Down | PadState.Left | PadState.Right
@@ -178,9 +178,9 @@ public class AlundraPlayerControllerTests
     public void ComputePadState_EachShoulderButtonAndSelect_SetsTheOriginalsOwnBit(string action, uint expectedBit)
     {
         var manager = new InputMappingManager();
-        AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
+        HeroController.RegisterMappings(NewButtonsMapping(), manager);
 
-        var state = AlundraPlayerController.ComputePadState(
+        var state = HeroController.ComputePadState(
             manager, name => new ButtonState { IsKeyPressed = name == action, IsKeyJustPressed = name == action });
 
         Assert.Equal(expectedBit, state.ButtonsHold);
@@ -198,9 +198,9 @@ public class AlundraPlayerControllerTests
     public void ComputePadState_OnlyTheLeftStickHeld_StillSetsTheFourDirectionBits()
     {
         var manager = new InputMappingManager();
-        AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
+        HeroController.RegisterMappings(NewButtonsMapping(), manager);
 
-        var state = AlundraPlayerController.ComputePadState(
+        var state = HeroController.ComputePadState(
             manager, name => new ButtonState { IsKeyPressed = name.EndsWith("Stick", StringComparison.Ordinal) });
 
         Assert.Equal(
@@ -214,13 +214,13 @@ public class AlundraPlayerControllerTests
     public void ComputePadState_StickAndDPadAgreeing_ProducesTheSameBitsAsEitherAlone()
     {
         var manager = new InputMappingManager();
-        AlundraPlayerController.RegisterMappings(NewButtonsMapping(), manager);
+        HeroController.RegisterMappings(NewButtonsMapping(), manager);
 
-        var stickOnly = AlundraPlayerController.ComputePadState(
+        var stickOnly = HeroController.ComputePadState(
             manager, name => new ButtonState { IsKeyPressed = name == "MoveLeftStick" });
-        var dPadOnly = AlundraPlayerController.ComputePadState(
+        var dPadOnly = HeroController.ComputePadState(
             manager, name => new ButtonState { IsKeyPressed = name == "MoveLeft" });
-        var both = AlundraPlayerController.ComputePadState(
+        var both = HeroController.ComputePadState(
             manager, name => new ButtonState { IsKeyPressed = name is "MoveLeft" or "MoveLeftStick" });
 
         Assert.Equal(PadState.Left, stickOnly.ButtonsHold);
@@ -239,7 +239,7 @@ public class AlundraPlayerControllerTests
         var calledFor = new System.Collections.Generic.List<string>();
         var exception = Record.Exception(() =>
         {
-            var state = AlundraPlayerController.ComputePadState(manager, name =>
+            var state = HeroController.ComputePadState(manager, name =>
             {
                 calledFor.Add(name);
                 return new ButtonState { IsKeyPressed = true };
@@ -258,7 +258,7 @@ public class AlundraPlayerControllerTests
         var manager = new InputMappingManager();
         manager.AddInputMapping(new InputMapping { Name = "Attack" });
 
-        var state = AlundraPlayerController.ComputePadState(
+        var state = HeroController.ComputePadState(
             manager, _ => new ButtonState { IsKeyPressed = false, IsKeyJustPressed = true });
 
         Assert.Equal(0u, state.ButtonsHold);
@@ -272,7 +272,7 @@ public class AlundraPlayerControllerTests
 
         var exception = Record.Exception(() =>
         {
-            var state = AlundraPlayerController.ComputePadState(manager, _ => new ButtonState());
+            var state = HeroController.ComputePadState(manager, _ => new ButtonState());
             Assert.Equal(0u, state.ButtonsHold);
             Assert.Equal(0u, state.ButtonsJustPressed);
         });

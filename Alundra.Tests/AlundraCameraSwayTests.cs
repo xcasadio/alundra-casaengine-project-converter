@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -226,7 +225,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
         sway.ReachY = 1;
         sway.OffsetX = -3;
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(new World { Name = "TestWorld" });
 
         Assert.Equal(0, sway.Flag);
@@ -260,12 +259,12 @@ public sealed class AlundraCameraSwayTests : IDisposable
     {
         public CameraSway? Sway { get; set; }
         public CameraSway? CameraSway => Sway;
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity => null;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
     }
 
@@ -287,7 +286,7 @@ public sealed class AlundraCameraSwayTests : IDisposable
                 kind = record.Kind;
             }
         };
-        runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);
+        runner.RunOneScriptCall(new EntityScriptProxy(), state);
         return (kind, state.CodeIndex);
     }
 

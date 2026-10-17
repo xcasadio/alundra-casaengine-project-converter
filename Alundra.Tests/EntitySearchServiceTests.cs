@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Alundra.Entities;
@@ -13,10 +12,10 @@ namespace Alundra.Tests;
 /// </summary>
 public class EntitySearchServiceTests
 {
-    private static AlundraEntityScriptProxy NewSpawnedProxy(EntityStatus status = EntityStatus.Normal)
+    private static EntityScriptProxy NewSpawnedProxy(EntityStatus status = EntityStatus.Normal)
     {
         var entity = new Entity { Name = "e" };
-        var proxy = new AlundraEntityScriptProxy { Status = status };
+        var proxy = new EntityScriptProxy { Status = status };
         // Mirrors AlundraWorldProxy.ApplySpawnInitialization: every spawned proxy carries this back-link.
         proxy.LogicContextEntity = entity;
         return proxy;
@@ -193,7 +192,7 @@ public class EntitySearchServiceTests
         var player = NewSpawnedProxy();
         player.IsPlayer = true;
         var pointed = NewSpawnedProxy();
-        var bare = new AlundraEntityScriptProxy { Status = EntityStatus.Normal }; // LogicContextEntity null.
+        var bare = new EntityScriptProxy { Status = EntityStatus.Normal }; // LogicContextEntity null.
 
         player.XCollisionEntity = pointed;
         var matches = EntitySearchService.GetMatchingEntitiesBySearchType(player, 0x87, new[] { pointed, bare, NewSpawnedProxy() });
@@ -268,7 +267,7 @@ public class EntitySearchServiceTests
     {
         var owner = NewSpawnedProxy();
 
-        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(owner, 0x84, System.Array.Empty<AlundraEntityScriptProxy>());
+        var matches = EntitySearchService.GetMatchingEntitiesBySearchType(owner, 0x84, System.Array.Empty<EntityScriptProxy>());
 
         Assert.Empty(matches);
     }

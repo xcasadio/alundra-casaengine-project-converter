@@ -7,10 +7,10 @@ using Alundra.Ai.Objects;
 using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Dialogues;
-using Alundra.Scripts;
 using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.SaveGames;
+using Alundra.Maps;
 
 namespace Alundra.UI.Saving;
 
@@ -350,7 +350,7 @@ public sealed class SaveScreenDirector : ISaveBookScreen
     }
 
     /// <summary>
-    /// L5/SE3: the map entry, called by <see cref="AlundraWorldProxy.InitializeWithWorld"/> right after the dialogue
+    /// L5/SE3: the map entry, called by <see cref="WorldProxy.InitializeWithWorld"/> right after the dialogue
     /// director's own map entry (which already dropped any box and choice and rebuilt its runner). A book flow or a
     /// screen left running by a world change (a map event, another entity, a portal during the book's states 1 to 5)
     /// is ended here without writing: <c>ControlLocked</c> cleared, <c>MenuOpen</c> cleared when this screen posted
@@ -424,7 +424,7 @@ public sealed class SaveScreenDirector : ISaveBookScreen
     // ---- Tick --------------------------------------------------------------------------------------------------
 
     /// <summary>
-    /// One logic tick, from <see cref="AlundraWorldProxy.Update"/>'s loop of the passes: the state machine
+    /// One logic tick, from <see cref="WorldProxy.Update"/>'s loop of the passes: the state machine
     /// (<c>UpdateMemoryCardProcess</c>, <c>GraphicManager.cs:62</c>), then the active transition's render
     /// (<c>UpdateUserInterface</c>, which the original runs right after it in the same frame). A no-op at rest or
     /// without an attached game state. Never throws: the service calls are guarded. This overload reads the pad words of

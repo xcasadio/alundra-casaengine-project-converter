@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Dialogues;
 using Alundra.UI.Shared;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -23,7 +23,7 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed class AlundraDialogueSpeakerContractTests
 {
-    private sealed record Dlg(int Opcode, AlundraEntityScriptProxy Owner, int[] Codes);
+    private sealed record Dlg(int Opcode, EntityScriptProxy Owner, int[] Codes);
 
     private sealed record Row(int Frame, string Phase, NameBoxDrawnState? Name, (int X, int Y, int W, int H, int Rgb, string Phase)? Portrait, HashSet<string> Events);
 
@@ -162,7 +162,7 @@ public sealed class AlundraDialogueSpeakerContractTests
         Assert.True(diffs.Count == 0, $"{scenario}: {diffs.Count} images differ from the table; first ones:\n{string.Join("\n", diffs.Take(8))}");
     }
 
-    private static Dlg D0D(AlundraEntityScriptProxy owner, int text) => new(0x0D, owner, SpeakerRig.Codes0D(text));
+    private static Dlg D0D(EntityScriptProxy owner, int text) => new(0x0D, owner, SpeakerRig.Codes0D(text));
 
     [Fact]
     public void TheConstantsOfTheName_AreTheBinarys()

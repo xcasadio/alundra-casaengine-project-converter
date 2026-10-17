@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Dialogue.Runtime;
 using Xunit;
@@ -10,6 +9,7 @@ using Alundra.Session;
 using Alundra.Events;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -48,12 +48,12 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
 
     private sealed class FakeEntityWorldContext : IEntityWorldContext
     {
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity => null;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public IDialogueDirector? DialogueDirector { get; set; }
     }
@@ -197,7 +197,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
         var sharedAsset = DialogueTestAssets.SinglePage("Shared", "a shared phrase", node: "Shared_S005");
         var document = NewDocument(0x0D, 5, 1, 0xFF); // textId=5, bit 0x80 CLEAR -> shared table.
         var runner = new EventProgramRunner(document, gameState, worldContext) { SharedDialogueAsset = sharedAsset };
-        var entity = new AlundraEntityScriptProxy();
+        var entity = new EntityScriptProxy();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
         runner.RunOneScriptCall(entity, state);
@@ -219,7 +219,7 @@ public sealed class AlundraDialogueYarnRenderingTests : IDisposable
             "<<flag 10>>\npage zero", "<<flag 20>>\n<<falcon_update>>\npage one");
         var document = NewDocument(0x0D, 0x81, 1, 0xFF); // textId=0x81 -> bit 0x80 set, index 1 -> M1_S001.
         var runner = new EventProgramRunner(document, gameState, context) { MapDialogueAsset = mapAsset };
-        var entity = new AlundraEntityScriptProxy();
+        var entity = new EntityScriptProxy();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
         var kind = CaptureKindForOpcode(runner, 0x0D, () => runner.RunOneScriptCall(entity, state));

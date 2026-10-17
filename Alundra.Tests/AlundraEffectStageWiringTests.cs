@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
@@ -10,12 +9,13 @@ using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Session;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E19.g G3a (docs/plan-e19-opcodes.md, section 1.2o.6, G3A-R5 to R7): the effect stage - load-time spawn once the hero is on its arrival tile and before the first tick, the
-/// queue of operations, the per-tick loop and its gate - alone, then wired in <see cref="AlundraWorldProxy.Update"/>. The values come from <c>g3a-golden.tsv</c> (the binary) and were
+/// queue of operations, the per-tick loop and its gate - alone, then wired in <see cref="WorldProxy.Update"/>. The values come from <c>g3a-golden.tsv</c> (the binary) and were
 /// measured red on empty types first. Shares <see cref="AlundraMusicPlayerSingletonCollection"/>: the warp departure arms the real BGM fade director.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
@@ -307,11 +307,11 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
         Assert.Empty(RestrictedRecordsAfterTheFirstFrame(arc));
     }
 
-    private static (AlundraWorldProxy Proxy, World World) HeadlessProxy()
+    private static (WorldProxy Proxy, World World) HeadlessProxy()
     {
         var world = new World { Name = "TestWorld" };
         world.Entities.Add(new Entity { Name = "camera", RootComponent = new Camera2dComponent() });
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         return (proxy, world);
     }
@@ -368,7 +368,7 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
     public void Update_DuringAWarpDeparture_GivesTheEffectsNoTick_AndTheQueueIsStillApplied()
     {
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         BackdropWarpDepartureSupport.SetPrivateField(proxy._backdropStage, "_clearColorApplied", true); // the headless montage has no view for the clear colour.
         var stage = proxy._effectStage;

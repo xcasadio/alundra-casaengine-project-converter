@@ -1,13 +1,13 @@
 ﻿#nullable enable
 
 using Alundra.Entities;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Transitions;
 
 /// <summary>
 /// T3 (docs/plan-transitions-carte.md §1.1, §3 T3): one portal record parsed from the "Portals"
-/// object-layer of a map's exported .tileMap (see <see cref="AlundraWorldProxy.BuildPortals"/>) - the 9
+/// object-layer of a map's exported .tileMap (see <see cref="WorldProxy.BuildPortals"/>) - the 9
 /// raw fields plus <see cref="Index"/> the original's own <c>Portal</c> struct carries
 /// (alundra-datas-analyser/AlundraTools/AlundraEngine/DatasBin/Portal.cs:7-15), ALL exported as STRING
 /// custom properties (§1.1.b, <c>TiledMapExporter.cs:411-420</c>) - never the object's own
@@ -15,7 +15,7 @@ namespace Alundra.Transitions;
 /// (<c>y = (Y1 - cellHeight) * 16</c>) and would name the wrong tiles.
 ///
 /// A plain mutable class (not a record/struct): built once per world load by
-/// <see cref="AlundraWorldProxy.BuildPortals"/> and never mutated afterward - mutability here is just to
+/// <see cref="WorldProxy.BuildPortals"/> and never mutated afterward - mutability here is just to
 /// match the object-initializer style <see cref="MapEvent"/> already uses, not a design need.
 /// </summary>
 public sealed class PortalRecord

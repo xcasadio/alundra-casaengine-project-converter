@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Alundra.Scripts;
 using MGUI.Core.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
@@ -12,15 +11,15 @@ using Alundra.UI.Hud;
 namespace Alundra.Tests;
 
 /// <summary>
-/// The bound screens program (parent ADR-0002): <see cref="AlundraHudViewModel"/> places the composer's tiles by role
+/// The bound screens program (parent ADR-0002): <see cref="HudViewModel"/> places the composer's tiles by role
 /// instead of the pool <see cref="HudScreen"/> used to fill in paint order. These tests pin that it shows the
 /// same thing - every tile's sprite at its position, the full pips and the coin as their UI animations - and that it
 /// starts those animations in phase with the original's counters.
 /// </summary>
 public sealed class AlundraHudViewModelTests
 {
-    private static readonly string PipAnimation = AlundraHudViewModel.MagicPipAnimationId;
-    private static readonly string CoinAnimation = AlundraHudViewModel.CoinAnimationId;
+    private static readonly string PipAnimation = HudViewModel.MagicPipAnimationId;
+    private static readonly string CoinAnimation = HudViewModel.CoinAnimationId;
     private const string EmptyPipSprite = "ace49f58-4b1c-54c1-8a08-52ecec193305"; // wind_104
 
     private static IReadOnlyList<HudTile> Compose(int hp, int hpMax, int mp, int mpMax, int money, int coinFrame, int frameCounter)
@@ -30,7 +29,7 @@ public sealed class AlundraHudViewModelTests
         return HudComposer.Compose(true, hp, hpMax, hpMax, false, mp, mpMax, false, money, coinFrame, pipFrames);
     }
 
-    private static IEnumerable<HudImageViewModel> Tiles(AlundraHudViewModel viewModel) => new[]
+    private static IEnumerable<HudImageViewModel> Tiles(HudViewModel viewModel) => new[]
     {
         viewModel.HpMaxSlash, viewModel.HpMaxTens, viewModel.HpMaxUnits,
         viewModel.LifeBig0, viewModel.LifeBig1, viewModel.LifeBig2, viewModel.LifeBig3,
@@ -85,7 +84,7 @@ public sealed class AlundraHudViewModelTests
                 {
                     for (var mp = 0; mp <= mpMax; mp++)
                     {
-                        var viewModel = new AlundraHudViewModel();
+                        var viewModel = new HudViewModel();
                         IHudView view = viewModel;
                         var tiles = Compose(hp, hpMax, mp, mpMax, money: 1234, coinFrame: 2, frameCounter: 17);
                         view.SetAnimationClock(17, moneyRolling: true);
@@ -111,7 +110,7 @@ public sealed class AlundraHudViewModelTests
     [Fact]
     public void TheSameTilesAgain_NotifyNothing()
     {
-        var viewModel = new AlundraHudViewModel();
+        var viewModel = new HudViewModel();
         IHudView view = viewModel;
         view.SetVisible(true);
         view.SetAnimationClock(17, moneyRolling: true);
@@ -137,7 +136,7 @@ public sealed class AlundraHudViewModelTests
     [Fact]
     public void FullPips_StartInPhaseWithTheOriginal_AndRestartTogetherWhenThePipsChange()
     {
-        var viewModel = new AlundraHudViewModel();
+        var viewModel = new HudViewModel();
         IHudView view = viewModel;
         view.SetVisible(true);
         view.SetAnimationClock(37, moneyRolling: false);
@@ -167,7 +166,7 @@ public sealed class AlundraHudViewModelTests
     [Fact]
     public void Pips_RestartWhenTheJaugeReappears()
     {
-        var viewModel = new AlundraHudViewModel();
+        var viewModel = new HudViewModel();
         IHudView view = viewModel;
         view.SetVisible(true);
         view.SetAnimationClock(37, moneyRolling: false);
@@ -188,7 +187,7 @@ public sealed class AlundraHudViewModelTests
     [Fact]
     public void Coin_PlaysInPhaseWhileTheMoneyRolls_AndHoldsItsFirstFrameOnceSettled()
     {
-        var viewModel = new AlundraHudViewModel();
+        var viewModel = new HudViewModel();
         IHudView view = viewModel;
         view.SetVisible(true);
 
@@ -223,7 +222,7 @@ public sealed class AlundraHudViewModelTests
     public void EquipmentIcons_LandOnTheSameScreenPixel_AsTheScreenCentredThem(int scale)
     {
         var weapon = Guid.Parse("aeebd7a0-faa7-57b0-a844-34470272a4eb");
-        var viewModel = new AlundraHudViewModel(_ => new Point(23, 29)) { PixelScale = scale };
+        var viewModel = new HudViewModel(_ => new Point(23, 29)) { PixelScale = scale };
         IHudView view = viewModel;
 
         view.SetEquipmentIcons(HudComposer.ComposeEquipmentIcons(true, weapon, null));
@@ -241,7 +240,7 @@ public sealed class AlundraHudViewModelTests
     {
         var weapon = Guid.Parse("aeebd7a0-faa7-57b0-a844-34470272a4eb");
         var unreadable = Guid.Parse("11111111-2222-3333-4444-555555555555");
-        var viewModel = new AlundraHudViewModel(id => id == weapon ? new Point(16, 20) : null);
+        var viewModel = new HudViewModel(id => id == weapon ? new Point(16, 20) : null);
         IHudView view = viewModel;
 
         view.SetEquipmentIcons(HudComposer.ComposeEquipmentIcons(true, weapon, unreadable));

@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets.TileMap;
@@ -30,7 +29,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E7.b acceptance (docs/plan-e7-mutation-tuiles.md, slice E7.b): the visual + navigation applier
-/// (<see cref="CellVisualSync"/>) wired by <see cref="AlundraWorldProxy.InstallCellAndOverlaySystems"/>
+/// (<see cref="CellVisualSync"/>) wired by <see cref="WorldProxy.InstallCellAndOverlaySystems"/>
 /// (fact 17's extracted internal method), driven through the REAL map 389 export ("Ship Klark
 /// (beginning)"), a headless <see cref="TileMapComponent"/> (same no-graphics-device shape as
 /// <see cref="WallPlacementOverlayTests"/>'s own fixture, extended to the map's real 4 "Render_*" layers
@@ -137,11 +136,11 @@ public class AlundraCellVisualSyncTests : IDisposable
         return tileSetData;
     }
 
-    private sealed record Fixture(AlundraWorldProxy Proxy, World World, TileMapComponent Component, TileMapData TileMapData);
+    private sealed record Fixture(WorldProxy Proxy, World World, TileMapComponent Component, TileMapData TileMapData);
 
     /// <summary>
     /// Builds the real-data headless fixture and drives it through the SAME production wiring
-    /// (<see cref="AlundraWorldProxy.InstallCellAndOverlaySystems"/>) the acceptance tests must exercise
+    /// (<see cref="WorldProxy.InstallCellAndOverlaySystems"/>) the acceptance tests must exercise
     /// (plan fact 17) - not a hand-rolled store. No live <see cref="CasaEngineGame"/>/<c>AssetContentManager</c>:
     /// the navigation grid resolver degrades to null (its own documented behavior), which is exactly what
     /// acceptance item 7 needs in order to inject its own synthetic grid afterward.
@@ -188,7 +187,7 @@ public class AlundraCellVisualSyncTests : IDisposable
 
         world.Entities.Add(tileMapEntity);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InstallCellAndOverlaySystems(world, component, tileMapData);
 
         return new Fixture(proxy, world, component, tileMapData);

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Xunit.Abstractions;
 using Alundra.Entities;
@@ -48,11 +47,11 @@ public sealed class AlundraMurutaHallArcTests
         public List<(int Index, int Mode, int X, int Y)> BreakSlots = new();
     }
 
-    private static bool Hittable(AlundraEntityScriptProxy target)
+    private static bool Hittable(EntityScriptProxy target)
         => target.Status == EntityStatus.Normal && target.IsOnGround != 0 && target.FrameCollisionTickCounter == 0 && target.DamagedTickCounter == 0 && (target.HitAnimByte & HitPass.InvulnerableAnimationBit) == 0;
 
     /// <summary>The first place (40, 34, 28, 22 or 16 px west of the target) whose four footprint corners (offset (-10, -7), size (21, 15)) are walkable cells at the target's height, or -1.</summary>
-    private static int FindDx(CellStore store, AlundraEntityScriptProxy target)
+    private static int FindDx(CellStore store, EntityScriptProxy target)
     {
         var x = target.PosX >> 16;
         var y = target.PosY >> 16;
@@ -94,7 +93,7 @@ public sealed class AlundraMurutaHallArcTests
         arc.Equip(1);
         var store = LeverArcs.Store(arc);
         var samples = Records.ToDictionary(r => r, _ => new Dictionary<int, Sample>());
-        var bodies = new Dictionary<int, AlundraEntityScriptProxy>();
+        var bodies = new Dictionary<int, EntityScriptProxy>();
         var cNativeSince = new Dictionary<int, int>();
         var d9AtTick = new Dictionary<int, int>();
 

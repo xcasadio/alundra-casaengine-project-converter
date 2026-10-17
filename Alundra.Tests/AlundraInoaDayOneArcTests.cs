@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Maps;
@@ -357,7 +356,7 @@ public sealed class AlundraInoaDayOneArcTests
             var contact = arc.EntityByRecord(1)?.Controller?.LastContact;
             foreach (var obstacle in new[] { contact?.H1Obstacle, contact?.H2Obstacle })
             {
-                if (obstacle?.GameplayProxy is AlundraEntityScriptProxy proxy)
+                if (obstacle?.GameplayProxy is EntityScriptProxy proxy)
                 {
                     septimusContacts.Add(ReferenceEquals(proxy, arc.Hero) ? "hero" : $"rec{proxy.EntityRefId}");
                 }

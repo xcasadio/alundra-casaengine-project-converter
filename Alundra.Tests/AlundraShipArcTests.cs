@@ -1,13 +1,13 @@
 #nullable enable
 using System;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -178,13 +178,13 @@ public sealed class AlundraShipArcTests
     public void ArcRun_AConstructorThatFails_RestoresTheGlobalState()
     {
         var projectPathBefore = EngineEnvironment.ProjectPath;
-        var cameraOptionBefore = AlundraWorldProxy.DebugCameraPanEnabledForTests;
+        var cameraOptionBefore = WorldProxy.DebugCameraPanEnabledForTests;
         var missingMap = new ArcSpec("missing", Zone, "No such map-0", Array.Empty<int>(), 0, 0, 0, 10);
 
         Assert.ThrowsAny<Exception>(() => new ArcRun(missingMap));
 
         Assert.Equal(projectPathBefore, EngineEnvironment.ProjectPath);
-        Assert.Equal(cameraOptionBefore, AlundraWorldProxy.DebugCameraPanEnabledForTests); // the arc forces it on.
+        Assert.Equal(cameraOptionBefore, WorldProxy.DebugCameraPanEnabledForTests); // the arc forces it on.
     }
 
     /// <summary>

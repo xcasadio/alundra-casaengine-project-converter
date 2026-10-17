@@ -1,6 +1,6 @@
 #nullable enable
-using Alundra.Scripts;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Cameras;
 
@@ -21,7 +21,7 @@ namespace Alundra.Cameras;
 /// </summary>
 public sealed class CameraSway
 {
-    /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares - never
+    /// <summary>The one session-scoped instance every <see cref="WorldProxy"/> shares - never
     /// <see langword="new"/>'d per world.</summary>
     public static readonly CameraSway Instance = new();
 

@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using CasaEngine.Framework.Scene.Entities;
 using Alundra.Entities;
-using Alundra.Scripts;
 
 namespace Alundra.Physics;
 
 /// <summary>
 /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): the entity-vs-entity Z SUPPORT clamp - NOT
-/// <see cref="AlundraEntityScriptProxy.PlatformEntity"/> (the "carried/thrown" relation, sites
+/// <see cref="EntityScriptProxy.PlatformEntity"/> (the "carried/thrown" relation, sites
 /// <c>PlayerManager.cs:1117/:2027/:2224</c>, <c>FunctionTypeC.cs</c> - out of scope, never assigned by
 /// this runtime) - the generic "standing on" relation the original tracks as
-/// <see cref="AlundraEntityScriptProxy.RidingEntity"/>, fed by a per-frame, NO-LATCH re-evaluation of
+/// <see cref="EntityScriptProxy.RidingEntity"/>, fed by a per-frame, NO-LATCH re-evaluation of
 /// <c>CheckEntityCollisionDown</c>'s own entity-candidate branch (PhysicsEngine.cs:171-230 detection,
-/// <c>:123-139</c> consumption). Shared between <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>
+/// <c>:123-139</c> consumption). Shared between <see cref="EntityScriptProxy.EvaluateEntitySupport"/>
 /// (the DLL's own controller-driven per-frame hook) and the intro trace harness's own simulated
 /// kinematics (<c>Alundra.Tests/IntroTraceHarnessTests.cs</c>, no controller - it consumes
 /// <see cref="TryFindSupport"/> directly against <c>Pos*</c>) - "the same shared detection" per the plan's
@@ -34,7 +33,7 @@ internal static class EntitySupport
     /// Port of the collidable-entity list criteria (<c>EntityManager.cs:994</c>,
     /// <c>g_collideableEntities</c> population): <see cref="EntityFlags.Collidable"/> set, the
     /// per-animation <see cref="NoEntityCollisionAnimFlag"/> bit clear, and
-    /// <see cref="AlundraEntityScriptProxy.PlatformEntity"/> null (always true in this runtime's current
+    /// <see cref="EntityScriptProxy.PlatformEntity"/> null (always true in this runtime's current
     /// scope - see this class' own doc). Fills <paramref name="buffer"/> in place (<c>Clear</c> then
     /// re-add) so callers can reuse the SAME list instance every frame with no per-frame allocation,
     /// exactly like <c>IntroTraceHarnessTests</c>' own <c>entitiesThisFrame</c> snapshot pattern and
@@ -43,7 +42,7 @@ internal static class EntitySupport
     /// exact same test, since <c>CheckEntityCollisionDown</c> uses the identical criteria for both roles
     /// (PhysicsEngine.cs:189, :994).
     /// </summary>
-    internal static void BuildCollidables(IReadOnlyList<AlundraEntityScriptProxy> spawnedEntities, List<AlundraEntityScriptProxy> buffer)
+    internal static void BuildCollidables(IReadOnlyList<EntityScriptProxy> spawnedEntities, List<EntityScriptProxy> buffer)
     {
         buffer.Clear();
 
@@ -66,12 +65,12 @@ internal static class EntitySupport
     /// must apply BEFORE ever searching for a support - <c>CheckEntityCollisionDown</c> is only ever
     /// called (from <c>MoveEntity</c>) for an entity that itself passes
     /// <c>(entity.Flags &amp; Collidable) != 0 &amp;&amp; (entity.AnimFlags &amp; NoEntityCollision) == 0
-    /// &amp;&amp; entity.PlatformEntity == null</c>. <see cref="AlundraEntityScriptProxy.PlatformEntity"/>
+    /// &amp;&amp; entity.PlatformEntity == null</c>. <see cref="EntityScriptProxy.PlatformEntity"/>
     /// is always null in this runtime's current scope (the "carried/thrown" relation, out of scope - see
     /// this class' own doc), so this gate's third conjunct is checked anyway (faithfully, not assumed)
     /// rather than special-cased away.
     /// </summary>
-    internal static bool IsEligibleSubject(AlundraEntityScriptProxy entity)
+    internal static bool IsEligibleSubject(EntityScriptProxy entity)
         => (entity.Flags & EntityFlags.Collidable) != 0
             && (entity.AnimFlags & NoEntityCollisionAnimFlag) == 0
             && entity.PlatformEntity == null;
@@ -108,8 +107,8 @@ internal static class EntitySupport
     /// "Pourquoi" note on this exact edge).
     /// </summary>
     internal static bool TryFindSupport(
-        AlundraEntityScriptProxy entity, IReadOnlyList<AlundraEntityScriptProxy> collidables,
-        int platformTopZSeed, out AlundraEntityScriptProxy? support, out int supportTopZ)
+        EntityScriptProxy entity, IReadOnlyList<EntityScriptProxy> collidables,
+        int platformTopZSeed, out EntityScriptProxy? support, out int supportTopZ)
     {
         support = null;
         supportTopZ = 0;
@@ -199,7 +198,7 @@ internal static class EntitySupport
     /// Returns true on a contact (the caller sets <c>CollidedWithEntityZ</c> and, with gravity, clears <c>ForceZ</c>).
     /// </summary>
     internal static bool TryFindCeiling(
-        AlundraEntityScriptProxy entity, IReadOnlyList<AlundraEntityScriptProxy> collidables, int force, out int newPosZ)
+        EntityScriptProxy entity, IReadOnlyList<EntityScriptProxy> collidables, int force, out int newPosZ)
     {
         var top = entity.PosZ + entity.ModZ + entity.Depth;
         var targetTop = top + force;
@@ -266,7 +265,7 @@ internal static class EntitySupport
     /// <summary>
     /// Port of <c>CheckRidingEntities</c> (PhysicsEngine.cs:1288-1358) - a SEPARATE, EXACT-match test (not
     /// <see cref="TryFindSupport"/>'s own strict-below/highest-wins one) that only feeds
-    /// <see cref="AlundraEntityScriptProxy.RidingEntity"/> for <see cref="EntitySearchService"/>'s own
+    /// <see cref="EntityScriptProxy.RidingEntity"/> for <see cref="EntitySearchService"/>'s own
     /// search types 5/6 (who is riding whom) - completely independent of the actual Z clamp above. Runs
     /// over every <paramref name="collidables"/> entry that carries <see cref="EntityFlags.Gravity"/> and
     /// NOT <see cref="EntityFlags.NoRiders"/> (<c>(Flags &amp; (Gravity|NoRiders)) == Gravity</c>,
@@ -275,7 +274,7 @@ internal static class EntitySupport
     /// <see cref="TryFindSupport"/>. E19.d2c2 F1: the Y window of the rider is <c>entity.Height + 1</c> (<c>other.Height + 1</c> on the other side),
     /// as the binary compares it (<c>CheckRidingEntities</c>, <c>0x80036514</c>, <c>0x80036528</c>, <c>0x800365B0</c>); the decompilation read <c>Depth + 1</c> there.
     /// </summary>
-    internal static void UpdateRidingEntities(IReadOnlyList<AlundraEntityScriptProxy> collidables)
+    internal static void UpdateRidingEntities(IReadOnlyList<EntityScriptProxy> collidables)
     {
         for (var i = 0; i < collidables.Count; i++)
         {
@@ -291,11 +290,11 @@ internal static class EntitySupport
 
     /// <summary>
     /// E19.d2c2 S4 (binary <c>0x80038998</c> clears the field, <c>0x800364C8</c> sets it again at the head of the entity's tick): the hero's own recalculation, run at
-    /// the head of EVERY tick of the hero, never kept from the previous one. <see cref="AlundraEntityScriptProxy.RidingEntity"/> is the logic entity of what carries
+    /// the head of EVERY tick of the hero, never kept from the previous one. <see cref="EntityScriptProxy.RidingEntity"/> is the logic entity of what carries
     /// <paramref name="entity"/> by the exact rule of <see cref="UpdateRidingEntities"/> (<c>(Flags &amp; 0x4100) == 0x100</c>, the top plus one equal to
     /// <c>ModdedPosZ</c> as it is before this tick's movement, XY overlap), null when nothing does or the flags exclude it. Without a script host: unchanged.
     /// </summary>
-    internal static void UpdateRidingEntityOfHero(AlundraEntityScriptProxy entity)
+    internal static void UpdateRidingEntityOfHero(EntityScriptProxy entity)
     {
         var host = entity.ScriptHost;
         if (host == null)
@@ -309,7 +308,7 @@ internal static class EntitySupport
     }
 
     /// <summary>The search of <see cref="UpdateRidingEntities"/> for one entity: the logic entity of the first collidable (other than itself) it rests exactly on, or null.</summary>
-    private static Entity? FindRidingEntity(AlundraEntityScriptProxy entity, IReadOnlyList<AlundraEntityScriptProxy> collidables)
+    private static Entity? FindRidingEntity(EntityScriptProxy entity, IReadOnlyList<EntityScriptProxy> collidables)
     {
         var moddedPosX = entity.PosX + entity.ModX;
         var moddedPosY = entity.PosY + entity.ModY;

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Application;
 using Xunit;
@@ -26,7 +25,7 @@ namespace Alundra.Tests;
 /// E13.d D4 acceptance (docs/plan-e13d-inventaire.md) - drives <see cref="InventoryDirector"/> the
 /// way <see cref="AlundraHudDirectorTests"/> drives <see cref="HudDirector"/>: a tick is
 /// <c>state.TickPad.Update(hold)</c> then <c>director.Tick(player)</c>, isolated <see cref="GameState"/>
-/// instances for every test but the last (which drives the real <see cref="AlundraWorldProxy"/>).
+/// instances for every test but the last (which drives the real <see cref="WorldProxy"/>).
 /// </summary>
 public sealed class AlundraInventoryDirectorTests : IDisposable
 {
@@ -138,7 +137,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         return director;
     }
 
-    private static void Tick(GameState state, InventoryDirector director, uint hold, AlundraEntityScriptProxy? player = null)
+    private static void Tick(GameState state, InventoryDirector director, uint hold, EntityScriptProxy? player = null)
     {
         state.TickPad.Update(hold);
         director.Tick(player);
@@ -243,7 +242,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     {
         var state = NewState();
         var director = NewDirector(state);
-        var player = new AlundraEntityScriptProxy { BlockedByEntity = new CasaEngine.Framework.Scene.Entities.Entity() };
+        var player = new EntityScriptProxy { BlockedByEntity = new CasaEngine.Framework.Scene.Entities.Entity() };
 
         state.TickPad.Update(PadState.Start);
         director.Tick(player);
@@ -287,7 +286,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     {
         var state = NewState();
         var director = NewDirector(state);
-        var player = new AlundraEntityScriptProxy
+        var player = new EntityScriptProxy
         {
             IsPlayer = true,
             PosX = (18 * 24 + 12) << 16, // on portal 0's own source cell.
@@ -943,9 +942,9 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     public void WorldUpdate_TwoTickFrame_GivesExactlyOneCursorMove()
     {
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
-        var worldProxy = new AlundraWorldProxy();
+        var worldProxy = new WorldProxy();
         worldProxy.InitializeWithWorld(world);
-        worldProxy.PlayerEntity = new AlundraEntityScriptProxy();
+        worldProxy.PlayerEntity = new EntityScriptProxy();
 
         // InstallInventorySystems only runs from InitializeWithWorld's own tile-map-gated installation
         // block (same gate InstallHudSystems/InstallDialogueSystems share) - a bare headless world (no
@@ -993,9 +992,9 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         EngineEnvironment.ProjectPath = projectRoot;
 
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
-        var worldProxy = new AlundraWorldProxy();
+        var worldProxy = new WorldProxy();
         worldProxy.InitializeWithWorld(world); // no TileMap entity - same headless montage as the test above.
-        worldProxy.PlayerEntity = new AlundraEntityScriptProxy
+        worldProxy.PlayerEntity = new EntityScriptProxy
         {
             IsPlayer = true,
             PosX = (18 * 24 + 12) << 16, // on portal 0's own source cell.

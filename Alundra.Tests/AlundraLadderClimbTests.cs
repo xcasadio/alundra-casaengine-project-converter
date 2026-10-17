@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -17,6 +16,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Physics;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -29,7 +29,7 @@ namespace Alundra.Tests;
 /// (E1/E2/É3's own sibling slices): a real headless <see cref="World"/> with the real map 389
 /// <see cref="CellsCollisionField"/> installed as <c>World.CollisionField</c>, and a hand-built hero
 /// pawn from the shared <see cref="HeroWorldFixture"/> montage, driven through the SAME production call
-/// site (<see cref="AlundraEntityScriptProxy.Update"/>'s own <c>IsPlayer</c> branch) every other slice in
+/// site (<see cref="EntityScriptProxy.Update"/>'s own <c>IsPlayer</c> branch) every other slice in
 /// this plan uses (see <see cref="AlundraGroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix"/>'s
 /// own doc for why that matters - LESSON 2 of this ticket, "le vert inerte").
 /// </summary>
@@ -145,26 +145,26 @@ public class AlundraLadderClimbTests
 
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
 
-    /// <summary>Same minimal real-<see cref="AlundraPlayerController"/> script host as
+    /// <summary>Same minimal real-<see cref="HeroController"/> script host as
     /// <see cref="AlundraGroundSlopeTests"/>'s own sibling class (see that file's own doc) - one logic tick
     /// per rendered frame, exactly what these tests need to observe a single +-1px per-tick step.</summary>
     private sealed class PlayerScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController { get; init; }
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public HeroController? PlayerController { get; init; }
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -177,11 +177,11 @@ public class AlundraLadderClimbTests
 
     /// <summary>Builds a hero pawn seeded on the real ladder cell (18, 36), at its own real ground height,
     /// with a real <see cref="CharacterControllerComponent"/> whose <see cref="CharacterControllerSettings.Gravity"/>/
-    /// <see cref="CharacterControllerSettings.MaxFallSpeed"/> AND <see cref="AlundraEntityScriptProxy.MapGravity"/>/
-    /// <see cref="AlundraEntityScriptProxy.MapMaxFallSpeed"/> are pre-set to the SAME map-389 values
+    /// <see cref="CharacterControllerSettings.MaxFallSpeed"/> AND <see cref="EntityScriptProxy.MapGravity"/>/
+    /// <see cref="EntityScriptProxy.MapMaxFallSpeed"/> are pre-set to the SAME map-389 values
     /// (standing in for what AlundraWorldProxy.AdoptPlayerPawn's own E4 fix now does at real adoption
     /// time) - the RESERVE <see cref="PlayerManager.RestoreGravityAfterClimb"/> reads from.</summary>
-    private static (World World, Entity Entity, AlundraEntityScriptProxy Proxy, AlundraPlayerController Controller) BuildLadderHero(
+    private static (World World, Entity Entity, EntityScriptProxy Proxy, HeroController Controller) BuildLadderHero(
         Func<PadState> padProvider)
     {
         var projectRoot = FindProjectRoot();
@@ -190,7 +190,7 @@ public class AlundraLadderClimbTests
         Assert.NotNull(field);
 
         var world = HeroWorldFixture.BuildWorld(field!);
-        var controller = new AlundraPlayerController { PadStateProviderForTests = padProvider };
+        var controller = new HeroController { PadStateProviderForTests = padProvider };
         var host = new PlayerScriptHost { PlayerController = controller };
 
         var x1 = LadderCellX * CellWidthPx + 1;
@@ -274,15 +274,15 @@ public class AlundraLadderClimbTests
 
     }
 
-    /// <summary>Writes an elevated <see cref="AlundraEntityScriptProxy.PosZ"/> THROUGH to the real
+    /// <summary>Writes an elevated <see cref="EntityScriptProxy.PosZ"/> THROUGH to the real
     /// CasaEngine root transform too - a bare <c>proxy.PosZ = ...</c> assignment alone would be silently
-    /// overwritten by the very next <see cref="World.Update"/>'s own root-pull (<see cref="AlundraEntityScriptProxy.Update"/>'s
+    /// overwritten by the very next <see cref="World.Update"/>'s own root-pull (<see cref="EntityScriptProxy.Update"/>'s
     /// head, "PosZ = root.Z..." - see that method's own E3.d/E4.f doc) since nothing else moved the root
-    /// to match. Deliberately bypasses <see cref="AlundraEntityScriptProxy.PushLogicalPositionToRoot"/>
-    /// (which re-clamps onto the terrain via <see cref="AlundraEntityScriptProxy.ClampToGround"/> - not
+    /// to match. Deliberately bypasses <see cref="EntityScriptProxy.PushLogicalPositionToRoot"/>
+    /// (which re-clamps onto the terrain via <see cref="EntityScriptProxy.ClampToGround"/> - not
     /// what these tests want, they need the hero suspended ABOVE ground mid-climb) - same
     /// <see cref="EntitySpawnFactory.ResolveLogicalPosition"/> formula, applied directly to the root.</summary>
-    private static void SetElevatedPosZ(Entity entity, AlundraEntityScriptProxy proxy, int posZ)
+    private static void SetElevatedPosZ(Entity entity, EntityScriptProxy proxy, int posZ)
     {
         proxy.PosZ = posZ;
         entity.RootComponent!.LocalTransform.Position =
@@ -679,7 +679,7 @@ public class AlundraLadderClimbTests
     /// per-tick vertical step (that is <see cref="AlundraLadderClimbTests"/>'s own production-call-site
     /// tests' job). Each "CaseSixGate_*" test above takes a fresh copy and breaks exactly ONE of the five
     /// conjuncts (LESSON 2 - proving the targeted path alone gates entry).</summary>
-    private static AlundraEntityScriptProxy MakeQualifyingIdlePlayer() => new()
+    private static EntityScriptProxy MakeQualifyingIdlePlayer() => new()
     {
         TargetAnimationId = 0, // Idle
         TargetDirection = 0x10, // already facing up
@@ -691,11 +691,11 @@ public class AlundraLadderClimbTests
     /// <summary>Shared setup for the production-call-site tests above - self-skips (returns false) when
     /// <c>alundra-project/</c> is not present in this checkout, same convention as every sibling slice.</summary>
     private static bool TrySetUp(
-        out World world, out Entity entity, out AlundraEntityScriptProxy proxy, out AlundraPlayerController controller, uint padHeld)
+        out World world, out Entity entity, out EntityScriptProxy proxy, out HeroController controller, uint padHeld)
         => TrySetUp(out world, out entity, out proxy, out controller, () => new PadState { ButtonsHold = padHeld });
 
     private static bool TrySetUp(
-        out World world, out Entity entity, out AlundraEntityScriptProxy proxy, out AlundraPlayerController controller,
+        out World world, out Entity entity, out EntityScriptProxy proxy, out HeroController controller,
         Func<PadState> padProvider)
     {
         var projectRoot = FindProjectRoot();

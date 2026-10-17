@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -32,7 +31,7 @@ public class AlundraRepeatAnimationOpcodeTests
     private sealed class Harness
     {
         public readonly EventProgramRunner Runner;
-        public AlundraEntityScriptProxy Entity = new();
+        public EntityScriptProxy Entity = new();
         public readonly EventProgramState State;
         public readonly List<EventTraceRecord> Trace = new();
 
@@ -192,17 +191,17 @@ public class AlundraRepeatAnimationOpcodeTests
     // The bridge: a Chain end counts, a Hold end does not.
     // -----------------------------------------------------------------------------------------
 
-    private static (Entity Entity, AnimatedSpriteComponent Component, AlundraEntityScriptProxy Proxy) BuildSpawnedEntity()
+    private static (Entity Entity, AnimatedSpriteComponent Component, EntityScriptProxy Proxy) BuildSpawnedEntity()
     {
         var component = new AnimatedSpriteComponent();
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
-        return (entity, component, Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy));
+        return (entity, component, Assert.IsType<EntityScriptProxy>(entity.GameplayProxy));
     }
 
     [Fact]
@@ -258,12 +257,12 @@ public class AlundraRepeatAnimationOpcodeTests
     // SyncAnimation: every switch clears the Hold flag, none touches the counter.
     // -----------------------------------------------------------------------------------------
 
-    private static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildEntity(bool withSprite)
+    private static (Entity Entity, EntityScriptProxy Proxy) BuildEntity(bool withSprite)
     {
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
         if (withSprite)
         {
@@ -271,7 +270,7 @@ public class AlundraRepeatAnimationOpcodeTests
         }
 
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = 0;
         proxy.TargetAnimationId = 0;
         proxy.AnimationDirection = 0;
@@ -352,15 +351,15 @@ public class AlundraRepeatAnimationOpcodeTests
 
     /// <summary>An entity on its animation 0 (a Loop of 10 ticks) with the logical clock on; animation 5 is a Loop of 10 ticks, animation 6 a
     /// Once of 2 ticks that chains to 0. Everything the first sync owed is cleared.</summary>
-    private static (Entity Entity, AnimatedSpriteComponent Sprite, AlundraEntityScriptProxy Proxy) BuildClockedEntity()
+    private static (Entity Entity, AnimatedSpriteComponent Sprite, EntityScriptProxy Proxy) BuildClockedEntity()
     {
         var sprite = new AnimatedSpriteComponent();
         sprite.AddAnimation(MakeAnimation(0, AnimationType.Loop, 0.2f));
         sprite.AddAnimation(MakeAnimation(5, AnimationType.Loop, 0.2f));
         sprite.AddAnimation(MakeAnimation(6, AnimationType.Once, 0.04f));
-        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = sprite };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(EntityScriptProxy).FullName!, RootComponent = sprite };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.AnimationEndByAnimDirection = new Dictionary<int, AnimationEndInfo>
         {
             [6 * EntitySpawnFactory.IdsvDirectionStride] = new() { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = 0 },
@@ -438,9 +437,9 @@ public class AlundraRepeatAnimationOpcodeTests
     public void SyncAnimation_ASwitchOnASpriteWithoutAnyAnimation_DoesNotThrow()
     {
         var sprite = new AnimatedSpriteComponent();
-        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = sprite };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(EntityScriptProxy).FullName!, RootComponent = sprite };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
         proxy.TargetAnimationId = 3;
         proxy.CurrentAnimationId = ~3u;

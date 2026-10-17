@@ -1,4 +1,3 @@
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Animations;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -9,7 +8,7 @@ namespace Alundra.Tests.UI;
 /// <summary>
 /// The HUD's magic pips and coin as the screen plays them since the bound screens program (parent ADR-0002): the
 /// converter's <c>UI/Animations/ui_hud_magic_pip.anim2d</c> and <c>ui_hud_coin.anim2d</c>, started where
-/// <see cref="AlundraHudViewModel"/> says, then sampled on the UI clock at 60 frames per second. The original steps a
+/// <see cref="HudViewModel"/> says, then sampled on the UI clock at 60 frames per second. The original steps a
 /// pip every 10 ticks of 20 ms, pip <c>i</c> one frame ahead of pip 0 (<c>AlundraHudDirector.UpdateMagicPipPhase</c>),
 /// and the coin every 6 ticks while the money rolls (<c>AlundraHudDirector.UpdateMoneyRoll</c>). The program allows
 /// 20 ms of drift against those.
@@ -101,7 +100,7 @@ public sealed class AlundraHudAnimationTimingTests
     [InlineData(129)]
     public void FourFullPips_OverTwentyFiveCycles_FollowTheOriginalWithinTwentyMilliseconds(int frameCounter)
     {
-        var viewModel = new AlundraHudViewModel();
+        var viewModel = new HudViewModel();
         IHudView view = viewModel;
         var phase = (frameCounter / 10) % 4;
         view.SetVisible(true);
@@ -135,7 +134,7 @@ public sealed class AlundraHudAnimationTimingTests
     [InlineData(45, 0)]
     public void TheCoin_WhileTheMoneyRolls_FollowsTheOriginalWithinTwentyMilliseconds(int frameCounter, int coinFrame)
     {
-        var viewModel = new AlundraHudViewModel();
+        var viewModel = new HudViewModel();
         IHudView view = viewModel;
         view.SetVisible(true);
         view.SetAnimationClock(frameCounter, moneyRolling: true);

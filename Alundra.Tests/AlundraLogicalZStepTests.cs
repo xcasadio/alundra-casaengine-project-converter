@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
@@ -19,7 +18,7 @@ namespace Alundra.Tests;
 /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, T1, phase A): the logical Z of an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>. Nothing in the tick calls the step yet (phase B wires it): these tests
 /// call the two functions BY HAND on a real entity of a real world (<see cref="ArcRun"/>, map 14, the real prefabs and controllers), with the head-of-tick clears the tick would do, against the oracle of
 /// <c>docs/plan-e20-annexe/e20-e0k/oracle/out</c> read by key (never copied), in the DLL's frame (the oracle minus one raw unit, ADR-0026). Each case without effect is set next to a positive case in the same assertion.
-/// (a) the marker <see cref="AlundraEntityScriptProxy.HasLogicalZ"/> is posed by the interface and by it alone; (b) the step: the ball (<c>arrows-ball-fire</c>), the arrow (Z constant, <c>IsOnGround</c> with and without the
+/// (a) the marker <see cref="EntityScriptProxy.HasLogicalZ"/> is posed by the interface and by it alone; (b) the step: the ball (<c>arrows-ball-fire</c>), the arrow (Z constant, <c>IsOnGround</c> with and without the
 /// unit), the impulse of 1 024 (<c>crate-flat-state1</c>), the exact graze, the ceiling, the magnet of 3 px, the stop marker 0x8000, the sentinel and the root that follows.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
@@ -40,19 +39,19 @@ public sealed class AlundraLogicalZStepTests
 
     private static void Install(ArcRun arc, CellsCollisionField field)
     {
-        typeof(AlundraWorldProxy).GetProperty(nameof(AlundraWorldProxy.CollisionField))!.SetValue(arc.Proxy, field);
+        typeof(WorldProxy).GetProperty(nameof(WorldProxy.CollisionField))!.SetValue(arc.Proxy, field);
         arc.RealWorld!.CollisionField = field;
-        typeof(AlundraWorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, Map(128, 4096));
+        typeof(WorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, Map(128, 4096));
     }
 
     /// <summary>A field whose every cell has the height byte <paramref name="heightByte"/> (16 px each).</summary>
     private static CellsCollisionField Floor(int heightByte) => FlatCells.Create(cell: (x, y) => (0, heightByte));
 
-    private static AlundraEntityScriptProxy Born(ArcRun arc, int sprite, int zRaw)
+    private static EntityScriptProxy Born(ArcRun arc, int sprite, int zRaw)
         => ((IEntityWorldContext)arc.Proxy).SpawnEntityBySpriteIndex(arc.Hero, false, sprite, 100 << 16, 100 << 16, zRaw, 0x18)!;
 
     /// <summary>One tick of the logical step as the head of <c>RunOneMotionTick</c> and the two calls of phase B will make it: the clears, the first half, (no XY step), the second half.</summary>
-    private static void Tick(AlundraEntityScriptProxy entity, bool post = true)
+    private static void Tick(EntityScriptProxy entity, bool post = true)
     {
         entity.CollidedWithEntityZ = 0;
         entity.ZHeldByTick = false;
@@ -103,7 +102,7 @@ public sealed class AlundraLogicalZStepTests
         Install(arc, FlatCells.Create());
 
         var born = Born(arc, FireBall, 32 << 16);
-        var clone = Assert.IsType<AlundraEntityScriptProxy>(born.Clone());
+        var clone = Assert.IsType<EntityScriptProxy>(born.Clone());
         var fromRecord = arc.Entities.First(e => !ReferenceEquals(e, arc.Hero) && !ReferenceEquals(e, born));
         var recycled = arc.Entities.First(e => !ReferenceEquals(e, arc.Hero) && !ReferenceEquals(e, born) && !ReferenceEquals(e, fromRecord));
         recycled.Status = EntityStatus.FlagToDestroy;
@@ -300,7 +299,7 @@ public sealed class AlundraLogicalZStepTests
         var ball = Born(arc, FireBall, 20 << 16);
         var terrain = ball.ComputeTerrainHeight();
 
-        int Run(int posZ, Action<AlundraEntityScriptProxy>? setup = null)
+        int Run(int posZ, Action<EntityScriptProxy>? setup = null)
         {
             ball.PosZ = posZ;
             ball.ForceZ = 0;

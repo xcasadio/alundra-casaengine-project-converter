@@ -3,16 +3,16 @@ using System;
 using System.Collections.Generic;
 using CasaEngine.Framework.Scene.Entities;
 using Alundra.Session;
-using Alundra.Scripts;
 using Alundra.Combat;
 using Alundra.Physics;
+using Alundra.Entities;
 
 namespace Alundra.Hero;
 
 /// <summary>
 /// E20.f2 (docs/plan-e20-heros.md section 1.10): <c>CreatePlayerAnimationEffects(mode)</c> (<c>0x8002FB14</c>), entered as a skeleton at its two call sites of <c>MovePlayer</c>:
 /// mode 0 at <c>0x80031C3C</c> (after the gravity flag <c>0x80031C38</c>, before the entry of the damage <c>0x80031C44</c>) and mode 1 at <c>0x80031BDC</c> (the locked branch). The function is three dispatches on the
-/// state chosen at the previous tick (<c>+0x88</c>, <see cref="AlundraEntityScriptProxy.TargetAnimationId"/>) and a tail:
+/// state chosen at the previous tick (<c>+0x88</c>, <see cref="EntityScriptProxy.TargetAnimationId"/>) and a tail:
 /// <list type="number">
 /// <item><description>The first dispatch, on <c>state - 4</c> (table <c>0x800228AC</c>): the run (<c>0x29</c>, <c>0x8002FB6C</c>) and the attack states (<c>0x8002FDBC</c>, the call <c>0x8003A7B0</c> at <c>0x8002FDC0</c>, the grass cut).</description></item>
 /// <item><description>The second, on <c>state - 1</c> (table <c>0x800229CC</c>), only while the hero has a force on X or Y (<c>0x8002FDCC-0x8002FDE8</c>): the steps and the walk cycle (<c>0x8002FE24-0x800301D4</c>).</description></item>
@@ -53,7 +53,7 @@ internal static class PlayerAnimationEffects
     /// <summary>
     /// <c>CreatePlayerAnimationEffects(mode)</c>. <paramref name="mode"/> is <see cref="FreeMode"/> or <see cref="LockedMode"/>.
     /// </summary>
-    internal static void Create(AlundraEntityScriptProxy player, int mode)
+    internal static void Create(EntityScriptProxy player, int mode)
     {
         var state = player.TargetAnimationId;
 
@@ -100,10 +100,10 @@ internal static class PlayerAnimationEffects
 
     /// <summary>
     /// The flail bounce, <c>0x80030434-0x80030654</c> (mode 0 only): for the state <c>0x12</c> or <c>0x16</c> (the iron flail, index 0) or <c>0x40</c> or <c>0x42</c> (the steel flail, index 1), a hit registered by the
-    /// tick before (<see cref="AlundraEntityScriptProxy.HitCounter"/>), or, with a frame box, a wall under one of the four corners of the stored hit box, gives the state <c>byte[0x800228A4 + 2 * index + (air ? 1 : 0)]</c>.
+    /// tick before (<see cref="EntityScriptProxy.HitCounter"/>), or, with a frame box, a wall under one of the four corners of the stored hit box, gives the state <c>byte[0x800228A4 + 2 * index + (air ? 1 : 0)]</c>.
     /// No force is added.
     /// </summary>
-    private static void BounceFlail(AlundraEntityScriptProxy player)
+    private static void BounceFlail(EntityScriptProxy player)
     {
         int index;
         switch (player.TargetAnimationId)
@@ -141,7 +141,7 @@ internal static class PlayerAnimationEffects
     /// The four corners (<c>0x80030528-0x80030588</c>, then the loop <c>0x8003058C-0x80030650</c> in the order (X, Y), (X + width, Y), (X, Y + depth), (X + width, Y + depth)) of the stored hit box
     /// (<c>+0x1FC</c>, <c>+0x200</c>, size <c>+0x214</c>, <c>+0x218</c>): the first one on a wall decides. Z is the stored hit box's.
     /// </summary>
-    private static bool HasWallUnderACorner(AlundraEntityScriptProxy player)
+    private static bool HasWallUnderACorner(EntityScriptProxy player)
     {
         if (player.ReadCollisionField() is not CellsCollisionField cells)
         {
@@ -206,16 +206,16 @@ internal static class PlayerAnimationEffects
     // -----------------------------------------------------------------------------------------
 
     /// <summary>Stub (E20.e) of the run's steps and dust, <c>0x8002FB6C-0x8002FDC4</c> (state <c>0x29</c>): the sound of the slope every 8 ticks (<c>+0x1C</c> and 7) and the dust effects. Not ported.</summary>
-    private static void PlayerRunStepEffects(AlundraEntityScriptProxy player, int mode) => Record(mode, RunStepStubName, player);
+    private static void PlayerRunStepEffects(EntityScriptProxy player, int mode) => Record(mode, RunStepStubName, player);
 
     /// <summary>Stub (E20.e) of the steps and the walk cycle, <c>0x8002FE24-0x800301D4</c> (a force on X or Y, the states of <see cref="IsWalkStepState"/>): the sound of the slope, the dust, their phase gates on <c>+0x1C</c>. Called at every tick that reaches it; the gates are inside. Not ported.</summary>
-    private static void PlayerWalkStepEffects(AlundraEntityScriptProxy player, int mode) => Record(mode, WalkStepStubName, player);
+    private static void PlayerWalkStepEffects(EntityScriptProxy player, int mode) => Record(mode, WalkStepStubName, player);
 
     /// <summary>Stub (E20.e) of the landing, <c>0x80030224-0x800303CC</c>: the sound of the slope (11 on a flat ground) and the dust effect 7 (<c>0x8003BDD8</c>, which draws in the generator). Called only when the hero lands (the guards are ported in <see cref="Create"/>). Not ported.</summary>
-    private static void PlayerLandingEffects(AlundraEntityScriptProxy player, int mode) => Record(mode, LandingStubName, player);
+    private static void PlayerLandingEffects(EntityScriptProxy player, int mode) => Record(mode, LandingStubName, player);
 
     /// <summary>Stub (E20.e) of the grass cut, <c>0x8002FDC0</c> (the call <c>0x8003A7B0</c> with the hero), called at every tick of an attack state. Not ported.</summary>
-    private static void PlayerGrassCut(AlundraEntityScriptProxy player, int mode) => Record(mode, GrassCutStubName, player);
+    private static void PlayerGrassCut(EntityScriptProxy player, int mode) => Record(mode, GrassCutStubName, player);
 
     /// <summary>The sound of the alarm of the low life (<c>0x80030424</c>: <c>PlaySound(0x190)</c>).</summary>
     internal const int LowHpAlarmSfx = 0x190;
@@ -225,14 +225,14 @@ internal static class PlayerAnimationEffects
 
     /// <summary>
     /// The alarm of the low life, <c>0x800303DC-0x80030430</c> (E20.c2a T4; mode 0 only, the call is made from <see cref="Create"/> after the dispatches). Read again in the binary: the life of the HERO ENTITY
-    /// (<c>0x80127D30 +0x14</c>, <see cref="AlundraEntityScriptProxy.Hp"/>) must not be 0 (<c>beqz</c>, <c>0x800303EC</c>) and the maximum (<c>+0x18</c>) must not be below five times the life
+    /// (<c>0x80127D30 +0x14</c>, <see cref="EntityScriptProxy.Hp"/>) must not be 0 (<c>beqz</c>, <c>0x800303EC</c>) and the maximum (<c>+0x18</c>) must not be below five times the life
     /// (<c>sll 2; addu</c>, <c>slt</c>, <c>0x800303F0-0x80030400</c>, signed 32-bit). When both hold, the counter <c>[0x80098F2C]</c> (<see cref="GameState.LowHpAlarmCounter"/>; the address
     /// <c>0x800A8F2C</c> of the plan is a slip: <c>lui 0x800A</c> with <c>-0x70D4</c> is <c>0x80098F2C</c>) is decremented and stored (<c>0x80030414-0x8003041C</c>); when the new value is -1 the sound
     /// <see cref="LowHpAlarmSfx"/> plays and the counter is reloaded with <see cref="LowHpAlarmReload"/> (<c>0x80030420-0x8003042C</c>), so the sound repeats every 46 ticks. Otherwise (life 0, or the life above a fifth of the
     /// maximum) nothing is read or written: the counter keeps its value and resumes where it was. The counter is a global that starts at 0 and nothing else writes (a scan of the image finds three
     /// accesses, all here), so the first alarm tick sounds at once. A hero without a script host (a bare proxy) has no session state: no alarm.
     /// </summary>
-    private static void PlayerLowHpAlarm(AlundraEntityScriptProxy player)
+    private static void PlayerLowHpAlarm(EntityScriptProxy player)
     {
         Record(FreeMode, LowHpAlarmStubName, player); // the call is still recorded for the dispatch tests (the name keeps the word 'stub' of E20.f2).
 
@@ -259,5 +259,5 @@ internal static class PlayerAnimationEffects
         state.LowHpAlarmCounter = counter;
     }
 
-    private static void Record(int mode, string stub, AlundraEntityScriptProxy player) => StubCallsForTests?.Add((mode, stub, player.TargetAnimationId));
+    private static void Record(int mode, string stub, EntityScriptProxy player) => StubCallsForTests?.Add((mode, stub, player.TargetAnimationId));
 }

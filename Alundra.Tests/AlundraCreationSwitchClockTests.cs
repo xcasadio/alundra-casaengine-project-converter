@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using Xunit;
 using Xunit.Abstractions;
 using Alundra.Maps;
@@ -100,16 +99,16 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
         public readonly int Direction;
         public readonly bool Native;
         public readonly bool LowerFlag;
-        public AlundraEntityScriptProxy? Born;
+        public EntityScriptProxy? Born;
         public int Tick;
         public int S = int.MaxValue;
         public readonly SortedDictionary<int, Sample> After = new();
 
         /// <summary>Told at the head of the lists pass of every tick from the birth on (before the clock), with the entity and the tick relative to S: the scripts that ask for another animation or direction.</summary>
-        public Action<AlundraEntityScriptProxy, int>? AtLists;
+        public Action<EntityScriptProxy, int>? AtLists;
 
         /// <summary>E20.e0a5 phase B: told at the hit point of every tick from the birth on (after the clock and the physics), with the entity and the tick relative to S.</summary>
-        public Action<AlundraEntityScriptProxy, int>? AtHit;
+        public Action<EntityScriptProxy, int>? AtHit;
 
         public Birth(string name, int sprite, int direction, bool native = false, bool lowerFlag = false)
         {
@@ -162,7 +161,7 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
             };
         }
 
-        private AlundraEntityScriptProxy? Spawn(AlundraEntityScriptProxy hero, int x, int y, int z)
+        private EntityScriptProxy? Spawn(EntityScriptProxy hero, int x, int y, int z)
         {
             var born = ((IEntityWorldContext)Arc.Proxy).SpawnEntityBySpriteIndex(hero, false, Sprite, x, y, z, Direction);
             if (born != null && LowerFlag)
@@ -456,7 +455,7 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
     {
         using var run = new Birth("a6-sound", 27, 0x18);
         var player = new RecordingSoundPlayer();
-        typeof(AlundraWorldProxy).GetField("<SoundPlayer>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.SetValue(run.Arc.Proxy, player);
+        typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.SetValue(run.Arc.Proxy, player);
         run.RunAll(2, 1, 6);
         Assert.NotNull(run.Born);
         Assert.Equal((1, 0), (player.Ids.Count(id => id == 0x1E), run.After.Values.Take(6).Sum(s => Math.Abs(s.Impulse)))); // the other requests are the hero's own sounds.

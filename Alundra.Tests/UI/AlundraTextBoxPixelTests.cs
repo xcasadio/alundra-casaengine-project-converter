@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
@@ -18,7 +17,7 @@ namespace Alundra.Tests.UI;
 
 /// <summary>
 /// E19.f2b1c T5 (docs/plan-e19-opcodes.md, F2B1C-R3/R4): the pixels of the text box screen on a real GPU. The real <see cref="TextBoxScreen"/> (its versioned XAML, its
-/// view model written by <see cref="AlundraTextBoxViewModel.Apply"/> from the real dialogue box at the pass of each scenario) is drawn by an <c>MGDesktop</c> into a render target,
+/// view model written by <see cref="TextBoxViewModel.Apply"/> from the real dialogue box at the pass of each scenario) is drawn by an <c>MGDesktop</c> into a render target,
 /// read back, and compared texel for texel with the images composed from the binary's model (<c>docs/plan-e19-f2b1-annexe/pixels/*.png</c>, produced by
 /// <c>scripts/refcompose2.py</c>, which reads the binary outside the repository and is not rerun here) and with the points of <c>pixels.md</c>; the synthetic states (the cut
 /// at 255 pixels, the text over the cursor, the view offset of a window that is not 4:3) against a small independent compositor. At x1 and x2. Skipped without a GPU
@@ -134,7 +133,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
     }
 
     /// <summary>Builds the real screen on a fresh desktop at integer scale <paramref name="k"/>, writes the view model from the box as it stands, draws and reads back.</summary>
-    private static Color[] DrawTheBox(int k, Action<AlundraTextBoxViewModel>? setState = null, int ox = 0, int oy = 0)
+    private static Color[] DrawTheBox(int k, Action<TextBoxViewModel>? setState = null, int ox = 0, int oy = 0)
     {
         return Invoke(() =>
         {
@@ -297,7 +296,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
 
     // ---- the synthetic states -------------------------------------------------------------------------------------------------------------
 
-    private static Compositor Compose(AlundraTextBoxViewModel vm, bool cursorOverText = false)
+    private static Compositor Compose(TextBoxViewModel vm, bool cursorOverText = false)
     {
         var session = GetSession();
         var compositor = new Compositor(320, 240);
@@ -337,7 +336,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
     }
 
     /// <summary>The box at rest (Y 168, clip 172 / 50) with <paramref name="text"/> on row <paramref name="row"/> at <paramref name="rowLeft"/> (relative to the clip canvas).</summary>
-    private static void RestState(AlundraTextBoxViewModel vm, string text, int rowLeft, string? cursor, int row = 0)
+    private static void RestState(TextBoxViewModel vm, string text, int rowLeft, string? cursor, int row = 0)
     {
         vm.RootVisibility = MGUI.Core.UI.Visibility.Visible;
         vm.Frame.Top = 168;
@@ -366,7 +365,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
             AssertPoint(got, k, 286, 179, Ink, "band column 254, the last one the 255-wide band shows");
             AssertPoint(got, k, 287, 179, (168, 168, 136), "band column 255: ink in a 256-wide band, but the band is 255 wide: cut, the frame shows");
 
-            var vmForReference = new AlundraTextBoxViewModel();
+            var vmForReference = new TextBoxViewModel();
             RestState(vmForReference, row, 0, null);
             Assert.Equal("0", Differences(got, Invoke(() => Compose(vmForReference).Scaled(k)), 320 * k, 240 * k));
         }
@@ -378,7 +377,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
     public void TheTextIsDrawnOverTheCursor_AtX1AndX2()
     {
         var row = new string('K', 60);
-        var vmForReference = new AlundraTextBoxViewModel();
+        var vmForReference = new TextBoxViewModel();
         RestState(vmForReference, row, 7, "wind_201", row: 1);
 
         // The scene pins the order: the picture with the cursor drawn over the text differs from the one with the text over the cursor.

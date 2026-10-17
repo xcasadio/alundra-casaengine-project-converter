@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Animations;
 using Xunit;
 using Alundra.Entities;
@@ -181,7 +180,7 @@ public class AlundraHeroWaterIceTests
     [InlineData(0u, new[] { 79872, 159744 })]
     public void TRB_ABareProxyWithNoScriptHost_ReadsTheBootsLevelWithoutException(uint vramOr, int[] expected)
     {
-        var hero = new AlundraEntityScriptProxy
+        var hero = new EntityScriptProxy
         {
             IsPlayer = true,
             ScriptHost = null,

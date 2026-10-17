@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -14,12 +13,13 @@ using Alundra.Dialogues;
 using Alundra.UI.Saving;
 using Alundra.UI.Speech;
 using Alundra.SaveGames;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E19.f3c (docs/plan-e19-opcodes.md, D-E19-93; annex docs/plan-e19-save-order-annexe/): the order of the save screen inside
-/// <see cref="AlundraWorldProxy.Update"/>, through the REAL proxy. The binary's RenderScene runs the callback dispatcher (slot 3, the
+/// <see cref="WorldProxy.Update"/>, through the REAL proxy. The binary's RenderScene runs the callback dispatcher (slot 3, the
 /// choice box) then slot 10 (the file menu, the save screen's question) in the same frame: the screen ticks after the dialogue pass,
 /// in the second loop. D-E19-99: on the pad words of the tick BEFORE (the last tick of the previous frame at tick 0), like the pass: slots 0, 3 and 10
 /// and the memory-card process all run in RenderScene, before the pad sampler of the frame's Update(0), and read the previous frame's sample. The helpers of the
@@ -30,7 +30,7 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
 {
     private readonly AlundraSaveBookTests.RecordingUIViewRuntime _uiView = new();
     private readonly AlundraSaveScreenDirectorTests.SlotsBySlot _slots = new();
-    private readonly AlundraWorldProxy _proxy;
+    private readonly WorldProxy _proxy;
 
     public AlundraSaveScreenTickOrderTests()
     {
@@ -39,9 +39,9 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
         SaveBook.Instance.ResetForTests();
         SaveScreenDirector.Instance.ResetForTests();
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
-        _proxy = new AlundraWorldProxy();
+        _proxy = new WorldProxy();
         _proxy.InitializeWithWorld(world);
-        _proxy.PlayerEntity = new AlundraEntityScriptProxy();
+        _proxy.PlayerEntity = new EntityScriptProxy();
         EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));
         DialogueDirector.Instance.AttachToWorld(new DialoguePresenter(_uiView), _proxy.GameState);
@@ -279,9 +279,9 @@ public sealed class AlundraSaveScreenTickOrderTests : IDisposable
     {
         public int ScriptRuns;
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot) => ScriptRuns++;
+        public void RunScript(EntityScriptProxy entity, int programSlot) => ScriptRuns++;
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }

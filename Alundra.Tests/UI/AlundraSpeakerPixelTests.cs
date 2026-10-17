@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -67,7 +66,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
         File.ReadAllLines(F4cAnnex.File_("classes.tsv")).Skip(1).Where(l => l.Length > 0).Select(l => l.Split('\t'))
             .Select(c => new Pin(c[0], c[1], int.Parse(c[2]), int.Parse(c[3]), int.Parse(c[4]), int.Parse(c[5]), int.Parse(c[6]), c[7], c[8], c[9], c[10])).ToList();
 
-    private static AlundraEntityScriptProxy Spk(int spriteType, bool portrait, int height = 56, string? id = null)
+    private static EntityScriptProxy Spk(int spriteType, bool portrait, int height = 56, string? id = null)
     {
         var speaker = SpeakerRig.Speaker(spriteType, portrait, height);
         if (portrait)
@@ -79,7 +78,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
     }
 
     /// <summary>The dialogues of a scene of the f4c annex: S1 Jess (0x104, entity (200, 150, 0), camera (40, 20)), S2 portrait only (0xFF), S3 name only (Septimus 0x10C), S5 two in a row, S8 Miming (0x17A, 48 x 72).</summary>
-    private static (AlundraEntityScriptProxy Speaker, int[][] Codes) SceneOf(string scenario) => scenario switch
+    private static (EntityScriptProxy Speaker, int[][] Codes) SceneOf(string scenario) => scenario switch
     {
         "S1" => (Spk(0x104, true), new[] { SpeakerRig.Codes0D(SpeakerRig.TextAb) }),
         "S2" => (Spk(0xFF, true), new[] { SpeakerRig.Codes0D(SpeakerRig.TextAb) }),
@@ -91,7 +90,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
 
     /// <summary>The real screen at the scale k, its view model written by the real presenter after each pass of the real director up to image <paramref name="frame"/> (the montage of the f4 annex:
     /// the pass, the presenter's tick, then the script phase), drawn into a target (the view at (ox, oy)). <paramref name="adjust"/> may change the view model before the draw.</summary>
-    private static Color[] DrawImage(string scenario, int frame, int k, int ox = 0, int oy = 0, Action<AlundraTextBoxViewModel>? adjust = null)
+    private static Color[] DrawImage(string scenario, int frame, int k, int ox = 0, int oy = 0, Action<TextBoxViewModel>? adjust = null)
     {
         return Invoke(() =>
         {
@@ -123,7 +122,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
     }
 
     /// <summary>A hand-built state of the screen (nothing driven by the director): for the names and the portraits at rest.</summary>
-    private static Color[] DrawState(Action<AlundraTextBoxViewModel> setState)
+    private static Color[] DrawState(Action<TextBoxViewModel> setState)
     {
         return Invoke(() =>
         {

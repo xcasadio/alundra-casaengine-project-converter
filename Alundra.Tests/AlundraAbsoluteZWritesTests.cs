@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
@@ -10,6 +9,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Physics;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -136,12 +136,12 @@ public sealed class AlundraAbsoluteZWritesTests
         {
             MoreFlags = 128, OffsetX = -12, OffsetY = -8, OffsetZ = 0, SizeX = 24, SizeY = 16, SizeZ = 32,
         };
-        var proxy = new AlundraWorldProxy { SpriteRecordCatalog = new FakeSpriteRecordCatalog().Add(prefabId, header) };
+        var proxy = new WorldProxy { SpriteRecordCatalog = new FakeSpriteRecordCatalog().Add(prefabId, header) };
         SetPrivate(proxy, "_world", new World());
         ((Dictionary<int, TileMapObjectData>)GetPrivate(proxy, "_entityRecordsByIndex"))[0] = record;
-        typeof(AlundraWorldProxy).GetProperty(nameof(AlundraWorldProxy.CollisionField))!.SetValue(proxy, field);
+        typeof(WorldProxy).GetProperty(nameof(WorldProxy.CollisionField))!.SetValue(proxy, field);
 
-        var spawned = proxy.SpawnEntityByRecordId(new AlundraEntityScriptProxy(), 0);
+        var spawned = proxy.SpawnEntityByRecordId(new EntityScriptProxy(), 0);
 
         Assert.NotNull(spawned);
         Assert.Equal(0, spawned!.ModZ);

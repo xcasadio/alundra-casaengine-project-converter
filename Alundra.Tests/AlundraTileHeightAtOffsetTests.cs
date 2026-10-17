@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -12,11 +11,13 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Events;
 using Alundra.Physics;
+using Alundra.Entities;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers E3 (docs/plan-echelles-chiffrage.md E3): <see cref="AlundraEntityScriptProxy.GetTileHeightAtOffset"/>'s
+/// Covers E3 (docs/plan-echelles-chiffrage.md E3): <see cref="EntityScriptProxy.GetTileHeightAtOffset"/>'s
 /// port of <c>GetTileHeightAtOffset</c> (<c>EntityGameplayManager.cs:277-345</c>) against the REAL map 389
 /// ("Ship Klark (beginning)") cell data - same fixture/self-skip pattern as
 /// <see cref="AlundraGroundSlopeTests"/>/<see cref="AlundraFloorHeightTests"/> (E1/E2's own sibling
@@ -120,7 +121,7 @@ public class AlundraTileHeightAtOffsetTests
 
     /// <summary>The CORRECT oracle: four-corner max of the RAW per-cell <c>Height</c> (cell units, 1 unit
     /// = 16 px), converted to 16.16 px the same way the original does (<c>unit &lt;&lt; 20</c>) - see
-    /// <see cref="AlundraEntityScriptProxy.GetTileHeightAtOffset"/>'s own doc for the shift derivation.
+    /// <see cref="EntityScriptProxy.GetTileHeightAtOffset"/>'s own doc for the shift derivation.
     /// Never touches <c>Slope</c>, so it cannot be satisfied by an implementation that interpolates.</summary>
     private static int ExpectedRawCornerHeight16(
         CellsRecords records, int width, int height, int x1, int y1, int x2, int y2)
@@ -143,11 +144,11 @@ public class AlundraTileHeightAtOffsetTests
 
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -155,21 +156,21 @@ public class AlundraTileHeightAtOffsetTests
     private sealed class NoOpScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public System.Collections.Generic.IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) { }
+        public HeroController? PlayerController => null;
+        public System.Collections.Generic.IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
+        public void DestroyEntity(EntityScriptProxy entity, int effectId) { }
         public int LogicTicksThisFrame(float elapsedTime) => 0;
     }
 
     /// <summary>Same shape as <c>AlundraGroundSlopeTests.BuildProbe</c> - installs a real hero pawn with
     /// the production footprint, positioned so <c>(PosX + ModX) &gt;&gt; 16 == x1</c> and
     /// <c>(PosY + ModY) &gt;&gt; 16 == y1</c> hold, so callers can reason about the footprint's own
-    /// top-left pixel directly. <see cref="AlundraEntityScriptProxy.GetTileHeightAtOffset"/> reads no
-    /// other field (not <see cref="AlundraEntityScriptProxy.PosZ"/>, not <see cref="AlundraEntityScriptProxy.Flags"/>),
+    /// top-left pixel directly. <see cref="EntityScriptProxy.GetTileHeightAtOffset"/> reads no
+    /// other field (not <see cref="EntityScriptProxy.PosZ"/>, not <see cref="EntityScriptProxy.Flags"/>),
     /// so this probe leaves those at their defaults, unlike <c>AlundraGroundSlopeTests.BuildProbe</c>.</summary>
-    private static AlundraEntityScriptProxy BuildProbe(World world, int x1, int y1)
+    private static EntityScriptProxy BuildProbe(World world, int x1, int y1)
     {
         var settings = new CharacterControllerSettings();
         var (_, proxy) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(0f, 0f, 0f), new NoOpScriptHost());

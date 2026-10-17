@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using Alundra.Scripts;
 using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
@@ -20,7 +19,7 @@ namespace Alundra.Tests.UI;
 
 /// <summary>
 /// E19.f3b F3B-1 (docs/plan-e19-opcodes.md, F3B-R1 to R3): the pixels of the choice screen on a real GPU. The real <see cref="ChoiceScreen"/> (its versioned XAML, its view
-/// model written by <see cref="AlundraChoiceViewModel.Apply"/> from the real <see cref="ChoiceBox"/> at the pass of each scenario of
+/// model written by <see cref="ChoiceViewModel.Apply"/> from the real <see cref="ChoiceBox"/> at the pass of each scenario of
 /// <c>docs/plan-e19-f3-annexe/values.json</c>) is drawn by an <c>MGDesktop</c> into a render target, read back, and compared texel for texel with the 19 images of
 /// <c>docs/plan-e19-f3-annexe/view/pixels/</c> (composed by the independent <c>view/compositor/ref.py</c> from the exported PNGs and the binary's tables, not rerun here) and
 /// with the points of <c>view/points.md</c>, at x1 and x2; over the text box screen (its window first, the choice above it) at rest and with a full first row, with the control of the
@@ -84,7 +83,7 @@ public sealed class AlundraChoicePixelTests
 
     /// <summary>The text box view model at the state of <c>ref.py</c>'s <c>TEXTBOX_STATES</c>: <c>rest</c> (the design rest state) or <c>mrow</c> (a first row of 18 glyphs 0x1A, 14 pixels
     /// wide with ink on their first rows, so the text passes under the choice frame, and <c>NON OUI</c> on the second).</summary>
-    private static void TextBoxState(AlundraTextBoxViewModel vm, string name)
+    private static void TextBoxState(TextBoxViewModel vm, string name)
     {
         vm.RootVisibility = MGUI.Core.UI.Visibility.Visible;
         vm.Frame.Top = 168;

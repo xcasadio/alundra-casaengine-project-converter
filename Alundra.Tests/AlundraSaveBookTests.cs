@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
@@ -25,7 +24,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E16.e T2 (docs/plan-e16-etat-partie.md, L4, H1, H2, SE1, SE2, SE7, SE8): the save book, driven through the real
-/// dispatch (<see cref="AlundraEntityScriptProxy.RunPickedEvent"/>) on the REAL dialogue director, with a real
+/// dispatch (<see cref="EntityScriptProxy.RunPickedEvent"/>) on the REAL dialogue director, with a real
 /// <see cref="DialoguePresenter"/> over a recording UI view, the real export's <c>Dialogues/Etc.dialogue</c>
 /// and validation rules (K1), and a fake save screen (<see cref="ISaveBookScreen"/>). Every abandon and the
 /// normal end are followed by <see cref="AssertReleased"/>: the whole <c>PlayerControlFlags</c> at 0, no box, no
@@ -38,10 +37,10 @@ public sealed class AlundraSaveBookTests : IDisposable
 
     private readonly FakeScreen _screen = new();
     private readonly FakeSaveSlots _slots = new();
-    private readonly AlundraEntityScriptProxy _hero = HeroAt(tileX: 20, tileY: 30, tileZ: 1);
+    private readonly EntityScriptProxy _hero = HeroAt(tileX: 20, tileY: 30, tileZ: 1);
     private readonly FakeContext _context;
     private readonly EventProgramRunner _runner;
-    private readonly AlundraEntityScriptProxy _book;
+    private readonly EntityScriptProxy _book;
 
     public AlundraSaveBookTests()
     {
@@ -62,7 +61,7 @@ public sealed class AlundraSaveBookTests : IDisposable
         _hero.TargetAnimationId = 1;
         _context = new FakeContext(_hero, Map389WorldName);
         _runner = new EventProgramRunner(null, State, _context);
-        _book = new AlundraEntityScriptProxy { SpriteType = SaveBook.SpriteType, Status = EntityStatus.Normal };
+        _book = new EntityScriptProxy { SpriteType = SaveBook.SpriteType, Status = EntityStatus.Normal };
         _book.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = 254;
         _book.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = SaveBook.TickCode;
         _book.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = SaveBook.InteractCode;
@@ -540,7 +539,7 @@ public sealed class AlundraSaveBookTests : IDisposable
 
     private sealed class FakeContext : IEntityWorldContext
     {
-        public FakeContext(AlundraEntityScriptProxy hero, string? worldName)
+        public FakeContext(EntityScriptProxy hero, string? worldName)
         {
             PlayerEntity = hero;
             WorldNameValue = worldName;
@@ -548,19 +547,19 @@ public sealed class AlundraSaveBookTests : IDisposable
 
         public string? WorldNameValue;
 
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
 
-        public AlundraEntityScriptProxy? PlayerEntity { get; }
+        public EntityScriptProxy? PlayerEntity { get; }
 
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
 
         public void SetForcedCameraLookAt(int x, int y, int z)
         {
         }
 
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity)
+        public void DestroyEntity(EntityScriptProxy entity)
         {
         }
 

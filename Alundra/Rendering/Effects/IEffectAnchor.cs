@@ -1,12 +1,12 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
+using Alundra.Entities;
 
 namespace Alundra.Rendering.Effects;
 
 /// <summary>
-/// What an attached or detached native effect (modes 1 and 3) follows: the position, the depth key and the status of an entity of the binary (the key is <c>+0x1BC</c> of the entity). <see cref="AlundraEntityScriptProxy"/>
+/// What an attached or detached native effect (modes 1 and 3) follows: the position, the depth key and the status of an entity of the binary (the key is <c>+0x1BC</c> of the entity). <see cref="EntityScriptProxy"/>
 /// implements it (E20.f1b: the hero's charge aura follows its entity), and the break effect of a destroyed entity takes a frozen snapshot of it (<see cref="FrozenEffectAnchor"/>, E14.a1b); the other attached creators
 /// and the detached one are native sites of E13 and E14.
 /// </summary>

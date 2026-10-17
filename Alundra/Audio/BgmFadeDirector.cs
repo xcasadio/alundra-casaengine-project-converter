@@ -3,7 +3,6 @@ using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Audio.Mixing;
 using Alundra.Maps;
 using Alundra.Events;
-using Alundra.Scripts;
 using Alundra.Transitions;
 
 namespace Alundra.Audio;
@@ -61,7 +60,7 @@ namespace Alundra.Audio;
 /// </remarks>
 public sealed class BgmFadeDirector : IBgmFadeDirector
 {
-    /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-B-5) -
+    /// <summary>The one session-scoped instance every <see cref="WorldProxy"/> shares (D-B-5) -
     /// never <see langword="new"/>'d per world.</summary>
     public static readonly BgmFadeDirector Instance = new();
 
@@ -86,7 +85,7 @@ public sealed class BgmFadeDirector : IBgmFadeDirector
 
     /// <summary>Re-points this session-scoped instance at the current world's own
     /// <see cref="AudioService"/>/<see cref="ISoundPlayer"/> - called by
-    /// <see cref="AlundraWorldProxy.InstallAudioSystems"/> on every world install, even when
+    /// <see cref="WorldProxy.InstallAudioSystems"/> on every world install, even when
     /// <paramref name="audioService"/> is null (no <c>Game</c> for this world - tolerated, same shape as
     /// <see cref="ScreenFadeDirector.AttachToWorld"/>). Deliberately does NOT touch
     /// <see cref="IsArmed"/>'s own state (D-B-5, same "AttachToWorld never touches state" contract as

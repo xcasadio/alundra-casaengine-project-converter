@@ -18,7 +18,6 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
-using Alundra.Scripts;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Cells;
@@ -26,10 +25,10 @@ using Alundra.Cells;
 namespace Alundra.Maps.Loop;
 
 /// <summary>
-/// Owns the per-frame entity synchronisation passes formerly on <see cref="AlundraWorldProxy"/>:
+/// Owns the per-frame entity synchronisation passes formerly on <see cref="WorldProxy"/>:
 /// the animation-target sync pass, the transform re-derivation pass, and the wall/sprite depth
 /// interleave sort-key pass, plus the two helper methods those passes call. Pure `static`,
-/// stateless, moved from <see cref="AlundraWorldProxy"/> by slice R1 of
+/// stateless, moved from <see cref="WorldProxy"/> by slice R1 of
 /// docs/plan-decoupage-proxies.md - a behaviour-preserving relocation only, see that plan's §3 for
 /// the exact delta rule (call qualification and the one documented private-to-internal widening)
 /// this move used. Broken `<see cref>` references left by this move are fixed in slice R5, not here
@@ -41,7 +40,7 @@ internal static class FrameSyncPasses
     /// Loops <see cref="SyncAnimation"/> over <paramref name="entities"/> - kept as its own method (rather
     /// than inlined at its one remaining call site) since it is independently unit-tested
     /// (AlundraWorldProxyAnimationSyncTests). The world's own <see cref="Update"/> no longer calls this: as
-    /// of decision D2, each entity syncs itself from its own <see cref="AlundraEntityScriptProxy.Update"/>
+    /// of decision D2, each entity syncs itself from its own <see cref="EntityScriptProxy.Update"/>
     /// (via <see cref="SyncAnimation"/> directly) - see that method's own doc.
     /// </summary>
     internal static void RunAnimationSyncPass(IReadOnlyList<Entity> entities)
@@ -57,9 +56,9 @@ internal static class FrameSyncPasses
     /// (EntityManager.cs:209-224 only - see <see cref="TryResolveAnimationTarget"/>), then bridges a
     /// resolved change onto <paramref name="entity"/>'s own <see cref="AnimatedSpriteComponent"/> (see
     /// <see cref="TrySelectAnimationByNameSuffix"/>). Called once per frame for every spawned entity, from
-    /// <see cref="AlundraEntityScriptProxy.Update"/> (moved there from this world's own per-frame pass -
+    /// <see cref="EntityScriptProxy.Update"/> (moved there from this world's own per-frame pass -
     /// decision D2, docs/plan-conversion-totale.md §2) - a no-op for an entity with no
-    /// <see cref="AlundraEntityScriptProxy"/> (defensive only; every caller already knows it has one).
+    /// <see cref="EntityScriptProxy"/> (defensive only; every caller already knows it has one).
     ///
     /// By the time any entity's own first <c>Update</c> runs, the engine has already integrated it
     /// (<c>World.InternalAddEntities</c>, called before any entity's <c>GameplayProxy.Update</c> ever
@@ -74,7 +73,7 @@ internal static class FrameSyncPasses
     /// runs once per frame, at the end of the frame (the kept one-frame animation lag, D-E19-13), and keeps the clock aligned with
     /// the switch it makes:
     /// <list type="bullet">
-    /// <item><description>it reads and zeroes <see cref="AlundraEntityScriptProxy.AnimationSwitchTicksReserved"/>, the ticks of this
+    /// <item><description>it reads and zeroes <see cref="EntityScriptProxy.AnimationSwitchTicksReserved"/>, the ticks of this
     /// frame the clock spent on the switch (whatever it decides, so a frame never leaks its count into the next);</description></item>
     /// <item><description>E20.e0a5: when the switch it validates is the one of the creation (still current), the ticks reserved were counted ticks of the binary: it replays all of them (not all but one) and owes no tick, even when none was
     /// reserved (a frame without a tick between the birth and the validation);</description></item>
@@ -90,7 +89,7 @@ internal static class FrameSyncPasses
     /// </summary>
     internal static void SyncAnimation(Entity entity)
     {
-        if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy)
+        if (entity.GameplayProxy is not EntityScriptProxy proxy)
         {
             return;
         }
@@ -210,16 +209,16 @@ internal static class FrameSyncPasses
 
     /// <summary>
     /// E19.c2 (docs/plan-e19-opcodes.md §1.2f, ADR-0019): one step of the logical clock of the animation ends, called once per logic
-    /// tick by <see cref="AlundraEntityScriptProxy.Update"/>, inside the gameplay-blockable block (so never while the game is frozen
+    /// tick by <see cref="EntityScriptProxy.Update"/>, inside the gameplay-blockable block (so never while the game is frozen
     /// or a transition departs), after the entity's script and before its motion. It ports the tick of the binary's
     /// <c>UpdateAnimation</c> (<c>0x80038AB4</c>):
     /// <list type="bullet">
-    /// <item><description>a switch is pending (<see cref="AlundraEntityScriptProxy.PendingChainRestartFlag"/>, or
+    /// <item><description>a switch is pending (<see cref="EntityScriptProxy.PendingChainRestartFlag"/>, or
     /// <see cref="TryResolveAnimationTarget"/> would change the animation, a new target or a new direction): the tick belongs to the
     /// switch, the old animation neither advances nor ends on it. The tick is reserved for <see cref="SyncAnimation"/> and the tick
     /// owed is cleared (this switch spends it);</description></item>
-    /// <item><description>E20.e0a5 (D-E0A5-1, D-E0A5-2): an entity born by the interface (<see cref="AlundraEntityScriptProxy.SwitchedAtCreation"/>) has made its first switch inside the creation, as the binary does: while that switch is still the current one
-    /// (<see cref="AlundraEntityScriptProxy.IsCreationSwitchCurrent"/>) every tick the clock sees it is a COUNTED tick (reserved as any tick of an unvalidated switch, the box cursor reads 1, 2, ...), and the first other switch seen in the window
+    /// <item><description>E20.e0a5 (D-E0A5-1, D-E0A5-2): an entity born by the interface (<see cref="EntityScriptProxy.SwitchedAtCreation"/>) has made its first switch inside the creation, as the binary does: while that switch is still the current one
+    /// (<see cref="EntityScriptProxy.IsCreationSwitchCurrent"/>) every tick the clock sees it is a COUNTED tick (reserved as any tick of an unvalidated switch, the box cursor reads 1, 2, ...), and the first other switch seen in the window
     /// drops the ticks counted so far;</description></item>
     /// <item><description>otherwise, a tick owed to an earlier switch is consumed without advancing (the new animation shows its frame 0
     /// on the tick of its switch, uncounted);</description></item>
@@ -229,16 +228,16 @@ internal static class FrameSyncPasses
     /// Nothing of the clock for an entity flagged for destruction or without a sprite whose clock the bridge turned on. No allocation.
     /// <para>
     /// E19.d2c1 R1 (docs/plan-e19-opcodes.md §1.2h.3.1): this is also the per-tick home of the Z impulse of the animation
-    /// (<see cref="AlundraEntityScriptProxy.IsZForceApplied"/>, <c>+0xF8</c>). The binary's <c>UpdateAnimation</c> clears it at every call
+    /// (<see cref="EntityScriptProxy.IsZForceApplied"/>, <c>+0xF8</c>). The binary's <c>UpdateAnimation</c> clears it at every call
     /// (<c>0x80038AE4</c>) and writes the impulse of the animation in its switch block (<c>0x80038B5C</c>): a new target, a new direction row or the end
     /// of a chain. So, before any early return: cleared; an impulse owed by a switch the validation made on a frame without tick is taken (from
-    /// <see cref="AlundraEntityScriptProxy.CurrentAnimationId"/>); a switch pending whose impulse is not yet taken gives the impulse of its target
-    /// (not for the animation of an appearance or an arrival, R2) and raises <see cref="AlundraEntityScriptProxy.ZImpulseTaken"/>, which makes a
+    /// <see cref="EntityScriptProxy.CurrentAnimationId"/>); a switch pending whose impulse is not yet taken gives the impulse of its target
+    /// (not for the animation of an appearance or an arrival, R2) and raises <see cref="EntityScriptProxy.ZImpulseTaken"/>, which makes a
     /// catch-up frame give one impulse per switch; the end of a chain this tick's clock raises gives the impulse of the chained animation at this tick;
     /// a turn of a loop gives none. This holds for an entity without a sprite or a clock too.
     /// </para>
     /// </summary>
-    internal static void StepAnimationClock(AlundraEntityScriptProxy proxy)
+    internal static void StepAnimationClock(EntityScriptProxy proxy)
     {
         proxy.IsZForceApplied = 0;
         if (proxy.Status == EntityStatus.FlagToDestroy)
@@ -323,7 +322,7 @@ internal static class FrameSyncPasses
 
     /// <summary>E19.d2c1 R1/R2: gives the impulse of the target animation for the switch pending, and raises the lock; nothing for the animation of an
     /// appearance or an arrival (the lock then stays down, and the validation does not owe an impulse either).</summary>
-    private static void TakeZImpulse(AlundraEntityScriptProxy proxy)
+    private static void TakeZImpulse(EntityScriptProxy proxy)
     {
         if (proxy.SpawnAnimationActive && proxy.TargetAnimationId == proxy.SpawnAnimationId)
         {
@@ -337,10 +336,10 @@ internal static class FrameSyncPasses
 
     /// <summary>
     /// E19.d2c1 R1, E19.t T-R1 (D-E19-57): the one place a change of animation is acted on at its tick - posts the impulse of <paramref name="animationId"/> and
-    /// asks the world's sound player for its sound (<see cref="AlundraEntityScriptProxy.AnimationSoundOf"/>, for every entity, nothing when it is not positive).
+    /// asks the world's sound player for its sound (<see cref="EntityScriptProxy.AnimationSoundOf"/>, for every entity, nothing when it is not positive).
     /// The appearance's first switch never reaches it (R2, <see cref="TakeZImpulse"/>), a loop turn, a hold and the same animation asked again are no switch.
     /// </summary>
-    private static void GiveImpulse(AlundraEntityScriptProxy proxy, uint animationId)
+    private static void GiveImpulse(EntityScriptProxy proxy, uint animationId)
     {
         proxy.IsZForceApplied = proxy.ZImpulseOf(animationId);
         var sound = proxy.AnimationSoundOf(animationId);
@@ -360,7 +359,7 @@ internal static class FrameSyncPasses
     {
         for (var i = 0; i < entities.Count; i++)
         {
-            if (entities[i].GameplayProxy is not AlundraEntityScriptProxy proxy
+            if (entities[i].GameplayProxy is not EntityScriptProxy proxy
                 || proxy.Status == EntityStatus.FlagToDestroy
                 || proxy.ForceResetAnimationFlag == 0)
             {
@@ -378,8 +377,8 @@ internal static class FrameSyncPasses
     /// <summary>
     /// Transform re-derivation: re-applies <see cref="EntitySpawnFactory.ResolveLogicalPosition"/> to every spawned entity's
     /// <c>RootComponent.LocalTransform.Position</c> from its CURRENT logical
-    /// <see cref="AlundraEntityScriptProxy.PosX"/>/<see cref="AlundraEntityScriptProxy.PosY"/>/
-    /// <see cref="AlundraEntityScriptProxy.PosZ"/>, every frame, for every spawned entity - the original
+    /// <see cref="EntityScriptProxy.PosX"/>/<see cref="EntityScriptProxy.PosY"/>/
+    /// <see cref="EntityScriptProxy.PosZ"/>, every frame, for every spawned entity - the original
     /// recomputes screen position from the logical position every frame (there is no cached "world
     /// transform" struct in the PSX engine, the renderer projects PosX/PosY/PosZ straight from the entity
     /// struct each frame), it never trusts a stale, spawn-time-only placement. This supersedes
@@ -402,21 +401,21 @@ internal static class FrameSyncPasses
     }
 
     /// <summary>Per-entity half of <see cref="RunTransformSyncPass"/> - see that method's own doc, and
-    /// <see cref="AlundraEntityScriptProxy.Update"/>'s doc for why this is now called per-entity, once per
+    /// <see cref="EntityScriptProxy.Update"/>'s doc for why this is now called per-entity, once per
     /// frame, rather than looped from this world's own <see cref="Update"/> (decision D2).
     /// E3.a (docs/plan-e3-collisions.md): after writing the LOGICAL pose onto the root, also re-runs
     /// <see cref="RenderProjectionComponent.UpdateProjection"/> on the entity's cached
-    /// <see cref="AlundraEntityScriptProxy.RenderProjection"/> (resolved once at spawn/adoption, not
+    /// <see cref="EntityScriptProxy.RenderProjection"/> (resolved once at spawn/adoption, not
     /// looked up here) so the <c>AnimatedSpriteComponent</c> renders the projected pose of THIS frame,
     /// not the previous one: component <c>Update</c> (hence a natural, non-forced projection) runs
     /// BEFORE <c>GameplayProxy.Update</c> in <c>Entity.Update</c> (Entity.cs:473-504), and this method is
-    /// itself called from <see cref="AlundraEntityScriptProxy.Update"/>, i.e. from inside that same
+    /// itself called from <see cref="EntityScriptProxy.Update"/>, i.e. from inside that same
     /// GameplayProxy.Update - without the explicit call here the sprite would lag the logical pose by
     /// exactly one frame.
     /// <para>
     /// E3.d ("DLL - propriete de la racine par frame" item 3, docs/plan-e3-collisions.md): for a
-    /// controller-driven entity (<see cref="AlundraEntityScriptProxy.Controller"/> non-null) the ROOT
-    /// is this frame's source of truth - <see cref="AlundraEntityScriptProxy.Update"/> already pulled
+    /// controller-driven entity (<see cref="EntityScriptProxy.Controller"/> non-null) the ROOT
+    /// is this frame's source of truth - <see cref="EntityScriptProxy.Update"/> already pulled
     /// Pos*/IsOnGround FROM it - so this method must not write it back from Pos* (that would undo
     /// whatever the mover resolved this frame); it only re-projects the sprite. Every other entity (no
     /// controller, E4) keeps the E3.a behaviour above unchanged.
@@ -424,7 +423,7 @@ internal static class FrameSyncPasses
     /// </summary>
     internal static void SyncTransform(Entity entity)
     {
-        if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy || proxy.Status == EntityStatus.FlagToDestroy)
+        if (entity.GameplayProxy is not EntityScriptProxy proxy || proxy.Status == EntityStatus.FlagToDestroy)
         {
             return;
         }
@@ -443,8 +442,8 @@ internal static class FrameSyncPasses
     /// <summary>
     /// Per-frame half of the wall/sprite depth interleave (see <see cref="WallPlacementOverlay"/>'s class
     /// doc): aligns every spawned entity's <see cref="DepthSortable2DComponent.Elevation"/> with its
-    /// current logical <see cref="AlundraEntityScriptProxy.PosY"/> plus its current (anim, direction)'s
-    /// IDSV bias, looked up from <see cref="AlundraEntityScriptProxy.IdsvByAnimDirection"/> (already
+    /// current logical <see cref="EntityScriptProxy.PosY"/> plus its current (anim, direction)'s
+    /// IDSV bias, looked up from <see cref="EntityScriptProxy.IdsvByAnimDirection"/> (already
     /// resolved at spawn - no per-frame catalog dictionary lookup here) - field writes/one small-dictionary
     /// lookup only, the overlay tiles themselves are built once in <see cref="InitializeWithWorld"/> and
     /// never touched again. An entity without a <see cref="DepthSortable2DComponent"/> (the bare-fallback
@@ -460,7 +459,7 @@ internal static class FrameSyncPasses
         {
             var entity = entities[i];
 
-            if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy || proxy.Status == EntityStatus.FlagToDestroy)
+            if (entity.GameplayProxy is not EntityScriptProxy proxy || proxy.Status == EntityStatus.FlagToDestroy)
             {
                 continue;
             }
@@ -479,7 +478,7 @@ internal static class FrameSyncPasses
     /// The IDSV bias of the sprite an entity shows (the current (animation, direction) pair, see <see cref="RunWallInterleaveSortKeyPass"/>), shared by that pass and by the depth key of the entity as an effect
     /// anchor (<see cref="EntityDepthKey"/>, E20.f1b) so that the two cannot diverge. 0 when the entity has no table or no entry.
     /// </summary>
-    internal static int ResolveIdsv(AlundraEntityScriptProxy proxy)
+    internal static int ResolveIdsv(EntityScriptProxy proxy)
     {
         // E19.c2 (P4 of E19.c1): a 0x1C relaunch from a map event leaves CurrentAnimationId = ~TargetAnimationId until the
         // entity's next sync, while this pass runs right after the map events. The binary switches back to the target
@@ -493,15 +492,15 @@ internal static class FrameSyncPasses
 
     /// <summary>
     /// Port of the target-resolution part of <c>EntityManager.UpdateAnimation</c> @ 0x80038AB4
-    /// (EntityManager.cs:209-224 only): resolves <see cref="AlundraEntityScriptProxy.AnimationDirection"/>
-    /// from the entity's current facing and its <see cref="AlundraEntityScriptProxy.TargetDirection"/> via
+    /// (EntityManager.cs:209-224 only): resolves <see cref="EntityScriptProxy.AnimationDirection"/>
+    /// from the entity's current facing and its <see cref="EntityScriptProxy.TargetDirection"/> via
     /// <see cref="AnimationTables.AnimationDirectionTable"/>, and returns true (with the new
     /// <c>CurrentAnimationId</c>/<c>AnimationDirection</c> pair) exactly when the original would have
     /// entered its "animation or direction changed" branch. Pure and static so it can be unit tested
     /// without a <see cref="World"/> or a component.
     /// </summary>
     internal static bool TryResolveAnimationTarget(
-        AlundraEntityScriptProxy proxy, out uint newCurrentAnimationId, out int newAnimationDirection)
+        EntityScriptProxy proxy, out uint newCurrentAnimationId, out int newAnimationDirection)
     {
         var row = proxy.AnimationDirection;
         var col = (int)(((proxy.TargetDirection + 2) & 0x1c) >> 2);

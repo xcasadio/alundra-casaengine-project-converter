@@ -1,15 +1,15 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Events;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E19.d2c2 D4, test UJ-LOCK (docs/plan-e19-opcodes.md §1.2h.3.2, hygiene of E19.d2c1): the lock of the impulse taken
-/// (<see cref="AlundraEntityScriptProxy.ZImpulseTaken"/>) goes down when nothing is pending at the end of the frame, so a switch seen at a tick then
+/// (<see cref="EntityScriptProxy.ZImpulseTaken"/>) goes down when nothing is pending at the end of the frame, so a switch seen at a tick then
 /// cancelled by the entity's own script before the validation does not make the next switch lose its impulse (the binary gives one at every switch).
 /// </summary>
 public sealed class AlundraAnimationImpulseLockTests
@@ -17,13 +17,13 @@ public sealed class AlundraAnimationImpulseLockTests
     /// <summary>A tick program written by the test: it runs once per logic tick of the NPC and writes the target animation by the plan of the test.</summary>
     private sealed class ScriptedTargets : IEventProgramRunner
     {
-        public required Func<int, AlundraEntityScriptProxy, uint?> TargetOfCall { get; init; }
+        public required Func<int, EntityScriptProxy, uint?> TargetOfCall { get; init; }
 
         public bool Enabled { get; set; }
 
         public int Calls { get; private set; }
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             if (!Enabled)
             {
@@ -38,7 +38,7 @@ public sealed class AlundraAnimationImpulseLockTests
             }
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }

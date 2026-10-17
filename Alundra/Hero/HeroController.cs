@@ -8,8 +8,10 @@ using CasaEngine.Framework.Gameplay;
 using CasaEngine.Framework.Input;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Entities;
+using Alundra.Maps;
 
-namespace Alundra.Scripts;
+namespace Alundra.Hero;
 
 /// <summary>
 /// Local-player controller for the Alundra hero pawn (<c>Entities/Alundra/Alundra.entity</c>, catalog
@@ -22,14 +24,14 @@ namespace Alundra.Scripts;
 /// (CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:282-367) BEFORE that pawn's own
 /// <c>Entity.World</c> is set (<c>InternalAddEntities</c> only runs after the whole player-controller
 /// loop) - so unlike a typical <c>OnPossess</c> override, this controller cannot reach the world/game from
-/// there and does not try to. Instead <see cref="AlundraWorldProxy.InitializeWithWorld"/> (which DOES have
+/// there and does not try to. Instead <see cref="WorldProxy.InitializeWithWorld"/> (which DOES have
 /// the world) drives input-mapping registration once via <see cref="EnsureInputMappingsRegistered"/>, and
-/// each frame <see cref="AlundraEntityScriptProxy.Update"/>'s own player branch pulls a fresh
+/// each frame <see cref="EntityScriptProxy.Update"/>'s own player branch pulls a fresh
 /// <see cref="PadState"/> from this controller via <see cref="BuildPadState"/> - see that class's
 /// own doc for why nothing in the base engine ever calls <see cref="Controller"/>/<see cref="PlayerController"/>'s
 /// own <c>Update</c> automatically (there is none to call).
 /// </summary>
-public sealed class AlundraPlayerController : PlayerController
+public sealed class HeroController : PlayerController
 {
     /// <summary>Catalog name of the converted <c>Data/Alundra.buttonsMapping</c> asset (converter E2-A).</summary>
     private const string ButtonsMappingCatalogName = "AlundraButtons";
@@ -76,7 +78,7 @@ public sealed class AlundraPlayerController : PlayerController
 
     /// <summary>
     /// Registers every "AlundraButtons" <see cref="InputMapping"/> onto <paramref name="game"/>'s
-    /// <see cref="InputMappingManager"/>, once per game session - a fresh <see cref="AlundraPlayerController"/>
+    /// <see cref="InputMappingManager"/>, once per game session - a fresh <see cref="HeroController"/>
     /// is constructed on every world (re)load (<c>World.CreateLocalPlayerController</c>), but the
     /// underlying <see cref="InputComponent"/>/<see cref="InputMappingManager"/> lives on the game and
     /// survives across world reloads, so re-registering unconditionally would pile up duplicate mappings.
@@ -85,7 +87,7 @@ public sealed class AlundraPlayerController : PlayerController
     /// previously a gap this method had to route around) and registers each of its mappings
     /// individually, keyed by name, via <see cref="RegisterMappings"/> (which is what actually guards
     /// against duplicates, per-name - <see cref="InputMappingManager.Contains"/>, also added in fe19e1e6).
-    /// No-op (logged once by <see cref="AlundraWorldProxy"/>'s own caller pattern - see that class'
+    /// No-op (logged once by <see cref="WorldProxy"/>'s own caller pattern - see that class'
     /// <c>InitializeWithWorld</c>) when <paramref name="game"/>/its <see cref="CasaEngineGame.InputComponent"/>
     /// is null (headless/editor-preview) or the "AlundraButtons" asset is missing from the catalog. If the
     /// asset load itself throws (e.g. an older, unmerged engine checkout without the fe19e1e6 loader
@@ -105,7 +107,7 @@ public sealed class AlundraPlayerController : PlayerController
         if (assetInfo == null)
         {
             Logs.WriteWarning(
-                $"AlundraPlayerController: no '{ButtonsMappingCatalogName}' asset in the catalog; "
+                $"HeroController: no '{ButtonsMappingCatalogName}' asset in the catalog; "
                 + "player input stays unmapped.");
             return;
         }
@@ -120,7 +122,7 @@ public sealed class AlundraPlayerController : PlayerController
         catch (Exception ex)
         {
             Logs.WriteWarning(
-                $"AlundraPlayerController: failed to load '{ButtonsMappingCatalogName}' ({assetInfo.Id}) - "
+                $"HeroController: failed to load '{ButtonsMappingCatalogName}' ({assetInfo.Id}) - "
                 + $"{ex.GetType().Name}: {ex.Message}. The engine (CasaEngineMonogame submodule) must be "
                 + "rebuilt/merged to a version that registers AssetLoader<ButtonsMapping> (commit fe19e1e6 "
                 + "or later) - run the launcher from the standalone engine checkout. Player input stays "
@@ -131,7 +133,7 @@ public sealed class AlundraPlayerController : PlayerController
         if (buttonsMapping == null)
         {
             Logs.WriteWarning(
-                $"AlundraPlayerController: '{ButtonsMappingCatalogName}' loader returned null; "
+                $"HeroController: '{ButtonsMappingCatalogName}' loader returned null; "
                 + "player input stays unmapped.");
             return;
         }
@@ -164,7 +166,7 @@ public sealed class AlundraPlayerController : PlayerController
     /// returns this delegate's result instead of reading <see cref="PlayerController.Input"/>/
     /// <see cref="InputMappingManager"/> - the headless hero trace harness has no live
     /// <see cref="CasaEngineGame"/>/<see cref="Framework.Input.PlayerInput"/> to script a pad through, and
-    /// <see cref="AlundraPlayerController"/> is <c>sealed</c> (not fakeable via a test double implementing
+    /// <see cref="HeroController"/> is <c>sealed</c> (not fakeable via a test double implementing
     /// <see cref="PlayerController"/>). Instance-scoped field, default <c>null</c> - strictly no effect in
     /// production, same idiom as <see cref="PlayerManager.SetDebugIgnoreControlLockOverrideForTests"/>.
     /// Never read or written by any production code path.

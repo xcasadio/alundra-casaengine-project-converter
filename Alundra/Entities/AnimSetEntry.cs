@@ -8,7 +8,6 @@ using System.Text.Json.Serialization;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using Alundra.Session;
-using Alundra.Scripts;
 using Alundra.Hero;
 
 namespace Alundra.Entities;
@@ -20,7 +19,7 @@ namespace Alundra.Entities;
 /// </summary>
 public readonly struct AnimSetEntry
 {
-    /// <summary>The AnimSet index this entry describes (matches <see cref="AlundraEntityScriptProxy.TargetAnimationId"/>'s
+    /// <summary>The AnimSet index this entry describes (matches <see cref="EntityScriptProxy.TargetAnimationId"/>'s
     /// domain) - also the dictionary key in <see cref="SpriteRecordHeader.AnimSets"/>, duplicated here so
     /// a caller iterating the dictionary's values still has it.</summary>
     public int Anim { get; init; }

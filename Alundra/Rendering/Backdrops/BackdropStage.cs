@@ -23,12 +23,12 @@ using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
 using Alundra.Cameras;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Rendering.Backdrops;
 
 /// <summary>
-/// Rendering instance wiring extracted out of <see cref="AlundraWorldProxy"/>
+/// Rendering instance wiring extracted out of <see cref="WorldProxy"/>
 /// (docs/plan-update-caracterisation.md, slice S3), with NO behaviour change - see that plan's §3
 /// "S3" for the extraction rules this class follows (the "règle de preuve étendue" defined ahead of
 /// S2 and reused here) and AlundraWorldProxyUpdateCharacterizationTests for the oracle this move must
@@ -58,10 +58,10 @@ internal sealed class BackdropStage
 {
     /// <summary>Cached once <see cref="ApplyOriginalBackgroundClearColorOnce"/> has set the world's
     /// runtime view <see cref="CasaEngine.Framework.Rendering.RenderView.ClearColor"/> - the view does not
-    /// exist yet when <see cref="AlundraWorldProxy.InitializeWithWorld"/> runs (<c>GameManager.EndLoadContent</c>
+    /// exist yet when <see cref="WorldProxy.InitializeWithWorld"/> runs (<c>GameManager.EndLoadContent</c>
     /// calls <c>World.LoadContent</c>, which drives the proxy, strictly before
     /// <c>IRuntimeViewBootstrapper.BootstrapViews</c>), so the lookup is retried lazily from
-    /// <see cref="AlundraWorldProxy.Update"/>, mirroring <c>AlundraCameraDirector</c>'s own
+    /// <see cref="WorldProxy.Update"/>, mirroring <c>AlundraCameraDirector</c>'s own
     /// one-time-retry shape for the debug camera lookup.</summary>
     private bool _clearColorApplied;
 
@@ -149,8 +149,8 @@ internal sealed class BackdropStage
     /// default <c>Color.CornflowerBlue</c> (<see cref="CasaEngine.Framework.Application.DefaultRuntimeViewBootstrapper"/>):
     /// without this, every pixel no cell tile (or, now, no scrolling background layer) covers
     /// shows turquoise instead of the black the original always drew there. Retried lazily once per world
-    /// from <see cref="AlundraWorldProxy.Update"/> (see <see cref="_clearColorApplied"/>'s own doc for why
-    /// <see cref="AlundraWorldProxy.InitializeWithWorld"/> is too early to find the view).
+    /// from <see cref="WorldProxy.Update"/> (see <see cref="_clearColorApplied"/>'s own doc for why
+    /// <see cref="WorldProxy.InitializeWithWorld"/> is too early to find the view).
     ///
     /// <paramref name="world"/> is read at USE TIME only, never captured (extended proof rule delta (a)) -
     /// the caller passes <c>AlundraWorldProxy</c>'s own <c>_world</c> field, which this class never

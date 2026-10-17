@@ -6,7 +6,6 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
-using Alundra.Scripts;
 using Alundra.UI.Inventory;
 using Alundra.UI.Saving;
 
@@ -14,7 +13,7 @@ namespace Alundra.UI.Messages;
 
 /// <summary>
 /// E19.f2b1c F2B1C-R3/R4 (docs/plan-e19-opcodes.md): the screen of the dialogue box - a project asset, <c>UI/Screens/TextBoxScreen.uiscreen</c> and its XAML,
-/// versioned in <c>alundra-project</c> (parent ADR-0002) - bound to an <see cref="AlundraTextBoxViewModel"/> that <see cref="TextBoxPresenter"/> writes after
+/// versioned in <c>alundra-project</c> (parent ADR-0002) - bound to an <see cref="TextBoxViewModel"/> that <see cref="TextBoxPresenter"/> writes after
 /// each pass of the box. Same shape as <see cref="SaveScreen"/>: the code only sizes and scales the window, the XAML declares everything else.
 ///
 /// <para><b>Layer/modal</b>: <see cref="UILayer.Modal"/>, modal, like the engine's dialogue box it replaces (D-E19-80). The choice window of the engine, pushed after
@@ -40,7 +39,7 @@ public sealed class TextBoxScreen : XamlUIScreenBase, IDisposable
         : base(assetContentManager, ScreenAssetId)
     {
         ArgumentNullException.ThrowIfNull(fonts);
-        ViewModel = new AlundraTextBoxViewModel();
+        ViewModel = new TextBoxViewModel();
 
         try
         {
@@ -56,7 +55,7 @@ public sealed class TextBoxScreen : XamlUIScreenBase, IDisposable
     }
 
     /// <summary>What the XAML binds, and what <see cref="TextBoxPresenter"/> writes.</summary>
-    public AlundraTextBoxViewModel ViewModel { get; }
+    public TextBoxViewModel ViewModel { get; }
 
     /// <summary>Gives font3 back and the screen asset itself, when the world that built this screen ends. Idempotent.</summary>
     public override void Dispose()

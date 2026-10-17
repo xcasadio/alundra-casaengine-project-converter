@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using Xunit;
 using Alundra.Maps;
@@ -9,6 +8,8 @@ using Alundra.Session;
 using Alundra.Events;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Entities;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
@@ -36,24 +37,24 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
 
     private sealed class Context : IEntityWorldContext
     {
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
     }
 
     private sealed class PortalHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; set; } = null!;
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController => null;
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
         public IReadOnlyList<PortalRecord> Portals { get; init; } = Array.Empty<PortalRecord>();
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) { }
+        public void DestroyEntity(EntityScriptProxy entity, int effectId) { }
         public int LogicTicksThisFrame(float elapsedTime) => 0;
     }
 
@@ -71,7 +72,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
         Flags = 0x5001,
     };
 
-    private static AlundraEntityScriptProxy Hero(int tileX, int tileY) => new()
+    private static EntityScriptProxy Hero(int tileX, int tileY) => new()
     {
         IsPlayer = true,
         TileX = tileX,
@@ -83,7 +84,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
     };
 
     private static (EventProgramState State, EventProgramRunner Runner) Run(
-        AlundraEntityScriptProxy hero, IReadOnlyList<PortalRecord> portals, GameState gameState, int result, bool withHost = true)
+        EntityScriptProxy hero, IReadOnlyList<PortalRecord> portals, GameState gameState, int result, bool withHost = true)
     {
         var document = new EventProgramDocument
         {
@@ -98,7 +99,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
         }
 
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = result };
-        runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);
+        runner.RunOneScriptCall(new EntityScriptProxy(), state);
         return (state, runner);
     }
 

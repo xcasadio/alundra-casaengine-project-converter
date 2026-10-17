@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.AI.Navigation;
@@ -21,6 +20,7 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Physics;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
@@ -161,7 +161,7 @@ public sealed class AlundraSailor12EndOfIntroTests
         return tileSets;
     }
 
-    private static AlundraEntityScriptProxy BuildSailor(World world, CharacterControllerSettings settings, Vector3 startPosition)
+    private static EntityScriptProxy BuildSailor(World world, CharacterControllerSettings settings, Vector3 startPosition)
     {
         var rootComponent = new TransformComponent();
         rootComponent.LocalTransform.Position = startPosition;
@@ -173,13 +173,13 @@ public sealed class AlundraSailor12EndOfIntroTests
             LocalRotation = Quaternion.Identity,
         });
         rootComponent.AddChildComponent(collisionComponent);
-        var entity = new Entity { Name = "Sailor12", RootComponent = rootComponent, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "Sailor12", RootComponent = rootComponent, GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         var controllerComponent = new CharacterControllerComponent { Settings = settings };
         controllerComponent.SetControlMode(CharacterControlMode.Script);
         controllerComponent.IsVerticalOwnedExternally = true;
         entity.AddComponent(controllerComponent);
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
         proxy.IsPlayer = false;
         proxy.ScriptHost = new Host(new EventProgramRunner(new EventProgramDocument { MapIndex = 389, EventCodesCTable = new[] { 0, 0 }, Codes = new[] { 0xFF } }, new GameState(), null));
@@ -197,12 +197,12 @@ public sealed class AlundraSailor12EndOfIntroTests
         private readonly LogicClock _clock = new();
         public Host(IEventProgramRunner runner) => Runner = runner;
         public IEventProgramRunner Runner { get; }
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController => null;
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -217,13 +217,13 @@ public sealed class AlundraSailor12EndOfIntroTests
     private sealed class NavContext : IEntityWorldContext
     {
         public NavigationGrid2D? NavigationGrid { get; set; }
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity => null;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity)
+        public void DestroyEntity(EntityScriptProxy entity)
         {
         }
     }

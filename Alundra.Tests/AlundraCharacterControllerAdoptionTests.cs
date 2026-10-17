@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -16,6 +15,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Physics;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
@@ -127,7 +127,7 @@ public class AlundraCharacterControllerAdoptionTests
     /// unchanged, only the plumbing moved.</summary>
     private static World BuildWorld(CellsCollisionField field) => HeroWorldFixture.BuildWorld(field);
 
-    private static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildHeroPawn(
+    private static (Entity Entity, EntityScriptProxy Proxy) BuildHeroPawn(
         World world, CharacterControllerSettings settings, Vector3 startPosition, IScriptHost scriptHost)
         => HeroWorldFixture.BuildHeroPawn(world, settings, startPosition, scriptHost);
 
@@ -135,29 +135,29 @@ public class AlundraCharacterControllerAdoptionTests
     /// (<c>IsPlayer</c> excludes it, same as the real hero).</summary>
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
 
     /// <summary>Same shape as AlundraEntityLogicalRenderPoseTests own FakeScriptHost -
-    /// <see cref="PlayerController"/> null means <see cref="AlundraEntityScriptProxy.Update"/> own
+    /// <see cref="PlayerController"/> null means <see cref="EntityScriptProxy.Update"/> own
     /// player branch (MovePlayer/Tick) never runs, so a direct <see cref="CharacterControllerComponent.Move"/>
     /// call from the test is the only source of horizontal motion, matching how E3.c own acceptance
     /// tests drive the mover ("Move(...) puis exactement un Update(1/50)").</summary>
     private sealed class FakeScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController => null;
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 

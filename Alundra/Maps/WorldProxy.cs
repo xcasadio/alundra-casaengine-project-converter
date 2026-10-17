@@ -51,7 +51,7 @@ using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
 using Alundra.Probes;
 
-namespace Alundra.Scripts;
+namespace Alundra.Maps;
 
 /// <summary>
 /// World script every converted .world declares as its "script_class_name" (see
@@ -62,7 +62,7 @@ namespace Alundra.Scripts;
 /// per-bank prefab (<c>Entities/{Name}/{Name}.entity</c>); the normal path clones that prefab so
 /// the spawned entity carries the bank's sprite/collision components. When the link is missing,
 /// cannot be loaded, or the record has none, a bare entity is created instead (logged fallback).
-/// Either way, the resulting entity carries an <see cref="AlundraEntityScriptProxy"/> filled by
+/// Either way, the resulting entity carries an <see cref="EntityScriptProxy"/> filled by
 /// <see cref="EntityRecordMapper"/>, whose logical position fields (<c>PosX</c>/<c>PosY</c>/<c>PosZ</c>)
 /// this proxy then converts into the spawned entity's <c>RootComponent.LocalTransform.Position</c> - now
 /// the entity's LOGICAL pose (E3.a, docs/plan-e3-collisions.md decision E3-1), not a render pose - via
@@ -74,12 +74,12 @@ namespace Alundra.Scripts;
 /// <see cref="Update"/>), a faithful port of the two-phase pass of
 /// <c>EntityManager.UpdateEntitiesEvents</c> @ 0x800386D0: the original manager-level pass, not a
 /// per-entity one, which is why the driver lives here rather than on
-/// <see cref="AlundraEntityScriptProxy"/> (whose own <c>Update</c> stays a no-op by design - see its
+/// <see cref="EntityScriptProxy"/> (whose own <c>Update</c> stays a no-op by design - see its
 /// doc comment). Actual event-program execution goes through the <see cref="IEventProgramRunner"/> seam
 /// (<see cref="EventProgramRunner"/>); the bytecode interpreter itself is a later chantier. Transform
 /// re-derivation when the logical position changes at runtime is still a follow-up task.
 /// </summary>
-public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
+public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 {
     // EntityRecordMapper's own tile constants (StaticVariables.MapTileWidth/Height) - duplicated here
     // (rather than made public there) since only the player spawn (this class) and that pure mapper need
@@ -145,7 +145,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         if (disabled)
         {
             Logs.WriteWarning(
-                $"AlundraWorldProxy: {DebugCameraPanEnabledEnvVar}={raw} - debug camera pan stick input "
+                $"WorldProxy: {DebugCameraPanEnabledEnvVar}={raw} - debug camera pan stick input "
                 + "disabled (default is enabled).");
         }
 
@@ -184,7 +184,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         var highest = -1;
         foreach (var entity in _spawnedEntities)
         {
-            if (entity.GameplayProxy is AlundraEntityScriptProxy { Slot: var slot } && slot > highest)
+            if (entity.GameplayProxy is EntityScriptProxy { Slot: var slot } && slot > highest)
             {
                 highest = slot;
             }
@@ -194,10 +194,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     }
 
     /// <summary>
-    /// E20.e0a2 (ADR-0064): the slot just taken for <paramref name="proxy"/> becomes the entity's own, or is given back at once when the entity has no <see cref="AlundraEntityScriptProxy"/> (a bare entity cannot be recycled, so it
+    /// E20.e0a2 (ADR-0064): the slot just taken for <paramref name="proxy"/> becomes the entity's own, or is given back at once when the entity has no <see cref="EntityScriptProxy"/> (a bare entity cannot be recycled, so it
     /// would hold the slot for ever). Returns the slot the entity holds (-1 for none).
     /// </summary>
-    private int HoldSlot(AlundraEntityScriptProxy? proxy, int slot)
+    private int HoldSlot(EntityScriptProxy? proxy, int slot)
     {
         if (proxy == null)
         {
@@ -220,7 +220,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             for (var i = 0; i < _spawnedEntities.Count; i++)
             {
-                if (_spawnedEntities[i].GameplayProxy is AlundraEntityScriptProxy { Slot: var other } && other > slot)
+                if (_spawnedEntities[i].GameplayProxy is EntityScriptProxy { Slot: var other } && other > slot)
                 {
                     _spawnedEntities.Insert(i, entity);
                     return;
@@ -245,7 +245,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
                 _world?.RemoveEntity(entity);
             }
 
-            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+            if (entity.GameplayProxy is EntityScriptProxy proxy)
             {
                 proxy.Slot = -1;
             }
@@ -279,7 +279,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// Every "Entities" record of this world's own tilemap layer, keyed by its <c>Index</c> custom
-    /// property - i.e. the same id <see cref="AlundraEntityScriptProxy.EntityRefId"/> is filled from
+    /// property - i.e. the same id <see cref="EntityScriptProxy.EntityRefId"/> is filled from
     /// (<see cref="EntityRecordMapper"/>) and the id the dynamic-spawn opcode 0x2D
     /// (<c>GameEngine.SpawnEntity</c>'s <c>entityId</c> parameter) looks records up by
     /// (<c>GameEngine.GetEntityRecord</c>, GameEngine.cs:2125-2144). Populated once in
@@ -308,7 +308,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// path. Kept as a re-read of each entity's <c>GameplayProxy</c> (rather than a list frozen at
     /// spawn) so <see cref="_spawnedEntities"/> stays the single source of truth.
     /// </summary>
-    private readonly List<AlundraEntityScriptProxy> _updateProxies = new();
+    private readonly List<EntityScriptProxy> _updateProxies = new();
 
     /// <summary>
     /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): this frame's collidable-entity snapshot
@@ -316,7 +316,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// that list is refreshed (<see cref="RefreshUpdateProxiesAndCollidables"/>) - same no-per-frame-
     /// allocation shape as <see cref="_updateProxies"/> itself. Exposed as <see cref="IScriptHost.Collidables"/>.
     /// </summary>
-    private readonly List<AlundraEntityScriptProxy> _collidables = new();
+    private readonly List<EntityScriptProxy> _collidables = new();
 
     /// <summary>
     /// Seam over actual event-program execution (see <see cref="IEventProgramRunner"/>); defaults to a
@@ -356,9 +356,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// </summary>
     /// Setter widened to <c>internal</c> (C1, docs/plan-camera-ordre-frame.md §4): the map-event
     /// characterization test needs to seed this directly - <see cref="AdoptPlayerPawn"/> is not
-    /// headless-reachable (it needs a live <see cref="AlundraPlayerController"/>), same precedent as
+    /// headless-reachable (it needs a live <see cref="HeroController"/>), same precedent as
     /// <see cref="InstallCellAndOverlaySystems"/> being carved out of <see cref="InitializeWithWorld"/>.
-    internal AlundraEntityScriptProxy? PlayerEntity { get; set; }
+    internal EntityScriptProxy? PlayerEntity { get; set; }
 
     /// <summary>
     /// This world's MapEvents (port of <c>InitializeMapEvents</c>, GameEngine.cs:476-583): one entry per
@@ -386,12 +386,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// controller-free movement, exactly as before this chantier.</summary>
     private bool _loggedNoHeroController;
 
-    /// <summary>E2: this world's own <see cref="AlundraPlayerController"/>, resolved once in
+    /// <summary>E2: this world's own <see cref="HeroController"/>, resolved once in
     /// <see cref="InitializeWithWorld"/> (<c>World.PlayerControllers</c> is already populated by then -
     /// see <see cref="AdoptPlayerPawn"/>'s own doc). Null when no such controller exists (no
     /// <c>.gameMode</c>/PlayerStartupSettings wired for this world, or its <c>player_controller_class</c>
-    /// resolved to something other than <see cref="AlundraPlayerController"/>) - logged once.</summary>
-    private AlundraPlayerController? _playerController;
+    /// resolved to something other than <see cref="HeroController"/>) - logged once.</summary>
+    private HeroController? _playerController;
     private bool _loggedNoPlayerController;
 
     /// <summary>
@@ -429,7 +429,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E20.c1a C1 (docs/plan-e20-heros.md section 1.5): the 512 balance entries (<c>Data/balance.json</c>), loaded once per project like <see cref="ItemTables"/>. Internal and assignable so tests swap in their own.
-    /// An entity gets its record from them at its creation (<see cref="AlundraEntityScriptProxy.InitializeBalance"/>), at the threshold <see cref="BalanceThreshold"/> of the map.
+    /// An entity gets its record from them at its creation (<see cref="EntityScriptProxy.InitializeBalance"/>), at the threshold <see cref="BalanceThreshold"/> of the map.
     /// </summary>
     internal BalanceTables BalanceTables = BalanceTables.GetOrCreate(EngineEnvironment.ProjectPath);
 
@@ -456,7 +456,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// to an interact (slot F). Null in V1 (no collision system driving it yet); settable internally for
     /// tests.
     /// </summary>
-    internal AlundraEntityScriptProxy? ActiveCollisionEntity;
+    internal EntityScriptProxy? ActiveCollisionEntity;
 
     /// <summary>
     /// DEBUG ONLY (see <see cref="CameraMath.DebugCameraPanSpeedPixelsPerSecond"/>). Cached so <see cref="Update"/>,
@@ -582,7 +582,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// without re-threading a <see cref="TileMapData"/> parameter through every caller of this world's own
     /// per-frame passes. Null before <see cref="InitializeWithWorld"/> runs, or when this world has no
     /// loaded tilemap (see that method's own early-return) - every reader already treats a missing map
-    /// gracefully (see <see cref="AlundraEntityScriptProxy.ApplyGravitySettingsToController"/>'s own
+    /// gracefully (see <see cref="EntityScriptProxy.ApplyGravitySettingsToController"/>'s own
     /// no-controller no-op).
     /// </summary>
     private TileMapData? _tileMapData;
@@ -604,7 +604,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// pawn adoption (port of <c>GameEngine.cs:644</c>, <see cref="AdoptPlayerPawn"/>), then only ever
     /// written by opcodes 0x67/0x68/0x69 (<see cref="Events.EventProgramRunner"/>).
     /// </summary>
-    public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+    public EntityScriptProxy? EntityFollowedByCamera { get; set; }
 
     /// <summary>E5.a: <see cref="IEntityWorldContext.SetForcedCameraLookAt"/> - port of opcode 0x69
     /// (Script_105_069). Public (rather than explicit-interface) since nothing about it needs hiding from
@@ -781,7 +781,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     internal bool PendingTriggersGateForTests => _pendingTriggersGate;
 
     /// <summary>Bug fix (see <see cref="LogicClock"/>'s own class doc for the full diagnosis): this
-    /// world's ONE shared 50 Hz logic clock - every spawned entity's own <see cref="AlundraEntityScriptProxy.Update"/>
+    /// world's ONE shared 50 Hz logic clock - every spawned entity's own <see cref="EntityScriptProxy.Update"/>
     /// and this proxy's own <see cref="Update"/> read <see cref="LogicTicksThisFrame"/> off this SAME
     /// instance, so they always agree on how many logic ticks happened this rendered frame.</summary>
     private readonly LogicClock _logicClock = new();
@@ -944,7 +944,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         var tileMapEntity = world.Entities.FirstOrDefault(entity => entity.Name == TileMapEntityName);
         if (tileMapEntity == null)
         {
-            Logs.WriteWarning($"AlundraWorldProxy: no '{TileMapEntityName}' entity found in world '{world.Name}'; no entity spawned.");
+            Logs.WriteWarning($"WorldProxy: no '{TileMapEntityName}' entity found in world '{world.Name}'; no entity spawned.");
 
             // E16.d K8/SD9: a load pending on this departure can never be applied here - drop it now, so it is
             // not applied later at some other arrival.
@@ -956,7 +956,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         var tileMapData = tileMapComponent?.TileMapData;
         if (tileMapData == null)
         {
-            Logs.WriteWarning($"AlundraWorldProxy: entity '{TileMapEntityName}' has no loaded TileMapData in world '{world.Name}'; no entity spawned.");
+            Logs.WriteWarning($"WorldProxy: entity '{TileMapEntityName}' has no loaded TileMapData in world '{world.Name}'; no entity spawned.");
             SaveGameDirector.Instance.AbandonPendingLoad($"world '{world.Name}' has no loaded tile map"); // E16.d SD9.
             return;
         }
@@ -1002,7 +1002,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         var mapEventsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == MapEventsLayerName);
 
         Logs.WriteInfo(
-            $"AlundraWorldProxy: world '{world.Name}' object layers - "
+            $"WorldProxy: world '{world.Name}' object layers - "
             + $"{EntitiesLayerName}={entitiesLayer?.Objects.Count ?? 0}, "
             + $"{PortalsLayerName}={portalsLayer?.Objects.Count ?? 0}, "
             + $"{MapEventsLayerName}={mapEventsLayer?.Objects.Count ?? 0}.");
@@ -1010,7 +1010,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // E2: register the "AlundraButtons" input mappings once per game (idempotent across world
         // reloads - see AlundraPlayerController.EnsureInputMappingsRegistered's own doc), before any
         // entity's first Update ever reads them.
-        AlundraPlayerController.EnsureInputMappingsRegistered(world.Game);
+        HeroController.EnsureInputMappingsRegistered(world.Game);
 
         // E2: the engine itself already spawned and possessed the hero pawn (World.LoadContent ->
         // InitializePlayerControllers, strictly before this GameplayProxy's own InitializeWithWorld runs -
@@ -1066,7 +1066,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             if (!shouldSpawn)
             {
                 skippedCount++;
-                Logs.WriteDebug($"AlundraWorldProxy: record '{record.Name}' not spawned ({skipReason}).");
+                Logs.WriteDebug($"WorldProxy: record '{record.Name}' not spawned ({skipReason}).");
                 continue;
             }
 
@@ -1077,7 +1077,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
                 skippedCount++;
                 ReportSlot(-1);
                 Logs.WriteWarning(
-                    $"AlundraWorldProxy: record '{record.Name}' not spawned in world '{world.Name}': the table of the {EntitySlotTable.SlotCount} entity slots is full; skipping.");
+                    $"WorldProxy: record '{record.Name}' not spawned in world '{world.Name}': the table of the {EntitySlotTable.SlotCount} entity slots is full; skipping.");
                 continue;
             }
 
@@ -1089,7 +1089,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
                 entity = EntitySpawnFactory.CreateEntityFromRecord(
                     record, guid => world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
                     tileMapData: _tileMapData, collisionField: CollisionField);
-                var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
+                var spawnedProxy = entity.GameplayProxy as EntityScriptProxy;
                 if (spawnedProxy != null)
                 {
                     spawnedProxy.ScriptHost = this;
@@ -1128,7 +1128,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             {
                 AbortCreation(entity, added, slot);
                 Logs.WriteWarning(
-                    $"AlundraWorldProxy: failed to spawn entity for record '{record.Name}' in world '{world.Name}'; "
+                    $"WorldProxy: failed to spawn entity for record '{record.Name}' in world '{world.Name}'; "
                     + $"skipping. {ex.Message}");
             }
         }
@@ -1141,14 +1141,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         if (skippedCount > 0)
         {
             Logs.WriteInfo(
-                $"AlundraWorldProxy: world '{world.Name}' - {skippedCount} of {entitiesLayer.Objects.Count} "
+                $"WorldProxy: world '{world.Name}' - {skippedCount} of {entitiesLayer.Objects.Count} "
                 + "Entities records not spawned (see ShouldSpawnRecord).");
         }
     }
 
     /// <summary>
-    /// Converts an entity's logical spawn position (<see cref="AlundraEntityScriptProxy.PosX"/> /
-    /// <see cref="AlundraEntityScriptProxy.PosY"/> / <see cref="AlundraEntityScriptProxy.PosZ"/>, 16.16
+    /// Converts an entity's logical spawn position (<see cref="EntityScriptProxy.PosX"/> /
+    /// <see cref="EntityScriptProxy.PosY"/> / <see cref="EntityScriptProxy.PosZ"/>, 16.16
     /// fixed-point Alundra pixels - see <see cref="EntityRecordMapper"/>) into the LOGICAL pose written
     /// onto the entity root's <c>LocalTransform.Position</c> (E3.a, docs/plan-e3-collisions.md decision
     /// E3-1) - consistently with <c>WorldWriter.ResolveTileCentreSpawn</c> (the converter's own
@@ -1386,7 +1386,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         if (arrivalEffectId != 0)
         {
             Logs.WriteInfo(
-                $"AlundraWorldProxy: world '{world.Name}' arrival transition effect id {arrivalEffectId} "
+                $"WorldProxy: world '{world.Name}' arrival transition effect id {arrivalEffectId} "
                 + "transported by the departing portal, reduced to effect 0 (D-T-7).");
         }
     }
@@ -1450,7 +1450,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// E15.c T5 (docs/plan-e15-yarn.md, contract item 1): holds this world's own <c>dialogue_{mapId}</c>
     /// Yarn asset (by name, through <c>AssetCatalog</c> and the game's asset manager - the same route
-    /// <see cref="AlundraPlayerController.EnsureInputMappingsRegistered"/> already uses for a catalogued
+    /// <see cref="HeroController.EnsureInputMappingsRegistered"/> already uses for a catalogued
     /// asset) and the shared <c>dialogue_shared</c> asset, and hands both to <paramref name="runner"/>.
     /// Supersedes the old <c>AlundraDialogueStringsLoader</c> (removed in E15.d) for opcodes 0x0D/0x5C.
     /// A no-op (both stay null) when this world has no <see cref="World.Game"/> or asset manager yet -
@@ -1492,7 +1492,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         catch (Exception ex)
         {
             Logs.WriteWarning(
-                $"AlundraWorldProxy: dialogue asset '{catalogName}' ({assetInfo.Id}) failed to load "
+                $"WorldProxy: dialogue asset '{catalogName}' ({assetInfo.Id}) failed to load "
                 + $"({ex.GetType().Name}: {ex.Message}); its dialogues degrade to an empty box.");
             return null;
         }
@@ -1570,7 +1570,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _dialoguePresenter = new DialoguePresenter(uiView, _world?.Game?.UIFonts, _world?.Game?.AssetContentManager);
         Dialogues.DialogueDirector.Instance.AttachToWorld(_dialoguePresenter, GameState, SoundPlayer);
         _dialoguePresenterWired = true;
-        Logs.WriteInfo("AlundraWorldProxy: dialogue presenter wired to the active UI view (post-bootstrap retry).");
+        Logs.WriteInfo("WorldProxy: dialogue presenter wired to the active UI view (post-bootstrap retry).");
     }
 
     /// <summary>
@@ -1610,7 +1610,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _hudPresenter = new HudPresenter(
             HudDirector.Instance, hudScreen.ViewModel, ResolveHudEquipmentIcons);
         _hudScreenWired = true;
-        Logs.WriteInfo("AlundraWorldProxy: HUD screen wired to the active UI view (post-bootstrap retry).");
+        Logs.WriteInfo("WorldProxy: HUD screen wired to the active UI view (post-bootstrap retry).");
     }
 
     /// <summary>Test-only seam: attaches an <see cref="HudPresenter"/> over the SAME session-scoped
@@ -1655,17 +1655,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _inventoryPresenter = new InventoryPresenter(
             InventoryDirector.Instance, GameState, ItemTables, inventoryScreen.ViewModel, inventoryScreen, uiView);
         _inventoryScreenWired = true;
-        Logs.WriteInfo("AlundraWorldProxy: inventory screen wired to the active UI view (post-bootstrap retry).");
+        Logs.WriteInfo("WorldProxy: inventory screen wired to the active UI view (post-bootstrap retry).");
     }
 
     /// <summary>Test-only seam: attaches an <see cref="InventoryPresenter"/> over the SAME
     /// session-scoped <see cref="InventoryDirector.Instance"/> this proxy's own production wiring
-    /// (<see cref="TryWireInventoryScreenOnce"/>) would use, but against any <see cref="AlundraInventoryViewModel"/>/
+    /// (<see cref="TryWireInventoryScreenOnce"/>) would use, but against any <see cref="InventoryViewModel"/>/
     /// <see cref="IUIScreen"/>/<see cref="IUIViewRuntime"/> - typically recording test doubles, since a real
     /// <see cref="InventoryScreen"/>'s window is not buildable headless. Lets a test drive
     /// <see cref="Update(float)"/>'s real per-tick loop and observe push/remove/render timing without a live
     /// graphics stack - same shape as <see cref="AttachHudPresenterForTests"/>.</summary>
-    internal void AttachInventoryPresenterForTests(AlundraInventoryViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    internal void AttachInventoryPresenterForTests(InventoryViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
         _inventoryPresenter = new InventoryPresenter(
             InventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
@@ -1697,15 +1697,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _subInventoryPresenter = new SubInventoryPresenter(
             SubInventoryDirector.Instance, GameState, ItemTables, subInventoryScreen.ViewModel, subInventoryScreen, uiView);
         _subInventoryScreenWired = true;
-        Logs.WriteInfo("AlundraWorldProxy: sub-inventory screen wired to the active UI view (post-bootstrap retry).");
+        Logs.WriteInfo("WorldProxy: sub-inventory screen wired to the active UI view (post-bootstrap retry).");
     }
 
     /// <summary>Test-only seam: attaches an <see cref="SubInventoryPresenter"/> over the SAME
     /// session-scoped <see cref="SubInventoryDirector.Instance"/> this proxy's own production wiring
     /// (<see cref="TryWireSubInventoryScreenOnce"/>) would use, but against any
-    /// <see cref="AlundraSubInventoryViewModel"/>/<see cref="IUIScreen"/>/<see cref="IUIViewRuntime"/> -
+    /// <see cref="SubInventoryViewModel"/>/<see cref="IUIScreen"/>/<see cref="IUIViewRuntime"/> -
     /// same shape as <see cref="AttachInventoryPresenterForTests"/>.</summary>
-    internal void AttachSubInventoryPresenterForTests(AlundraSubInventoryViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    internal void AttachSubInventoryPresenterForTests(SubInventoryViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
         _subInventoryPresenter = new SubInventoryPresenter(
             SubInventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
@@ -1735,7 +1735,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _saveScreen = saveScreen;
         _saveScreenPresenter = new SaveScreenPresenter(SaveScreenDirector.Instance, saveScreen.ViewModel, saveScreen, uiView);
         _saveScreenWired = true;
-        Logs.WriteInfo("AlundraWorldProxy: save screen wired to the active UI view (post-bootstrap retry).");
+        Logs.WriteInfo("WorldProxy: save screen wired to the active UI view (post-bootstrap retry).");
     }
 
     /// <summary>
@@ -1765,11 +1765,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             var textBoxScreen = new TextBoxScreen(assetContentManager, fonts);
             _textBoxScreen = textBoxScreen;
             _textBoxPresenter = new TextBoxPresenter(Dialogues.DialogueDirector.Instance, textBoxScreen.ViewModel, textBoxScreen, uiView);
-            Logs.WriteInfo("AlundraWorldProxy: text box screen wired to the active UI view (post-bootstrap retry).");
+            Logs.WriteInfo("WorldProxy: text box screen wired to the active UI view (post-bootstrap retry).");
         }
         catch (Exception ex)
         {
-            Logs.WriteError($"AlundraWorldProxy: the text box screen could not be built, the dialogue box will not be drawn: {ex.Message}");
+            Logs.WriteError($"WorldProxy: the text box screen could not be built, the dialogue box will not be drawn: {ex.Message}");
         }
     }
 
@@ -1799,17 +1799,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             var choiceScreen = new ChoiceScreen(assetContentManager, fonts);
             _choiceScreen = choiceScreen;
             _choicePresenter = new ChoicePresenter(Dialogues.DialogueDirector.Instance, choiceScreen.ViewModel, choiceScreen, uiView);
-            Logs.WriteInfo("AlundraWorldProxy: choice screen wired to the active UI view (post-bootstrap retry).");
+            Logs.WriteInfo("WorldProxy: choice screen wired to the active UI view (post-bootstrap retry).");
         }
         catch (Exception ex)
         {
-            Logs.WriteError($"AlundraWorldProxy: the choice screen could not be built, the choice box will not be drawn: {ex.Message}");
+            Logs.WriteError($"WorldProxy: the choice screen could not be built, the choice box will not be drawn: {ex.Message}");
         }
     }
 
     /// <summary>Test-only seam: attaches an <see cref="ChoicePresenter"/> over the session's <see cref="DialogueDirector.Instance"/>, against any view model, screen and
     /// UI view - the shape of <see cref="AttachTextBoxPresenterForTests"/>.</summary>
-    internal void AttachChoicePresenterForTests(AlundraChoiceViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    internal void AttachChoicePresenterForTests(ChoiceViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
         _choicePresenter = new ChoicePresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
     }
@@ -1826,14 +1826,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>Test-only seam: attaches an <see cref="SaveScreenPresenter"/> over the session's
     /// <see cref="SaveScreenDirector.Instance"/>, against any view model, screen and UI view - the shape of
     /// <see cref="AttachSubInventoryPresenterForTests"/>.</summary>
-    internal void AttachSaveScreenPresenterForTests(AlundraSaveScreenViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    internal void AttachSaveScreenPresenterForTests(SaveScreenViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
         _saveScreenPresenter = new SaveScreenPresenter(SaveScreenDirector.Instance, viewModel, screen, uiView);
     }
 
     /// <summary>Test-only seam: attaches an <see cref="TextBoxPresenter"/> over the session's <see cref="DialogueDirector.Instance"/>, against any view
     /// model, screen and UI view - the shape of <see cref="AttachSaveScreenPresenterForTests"/>.</summary>
-    internal void AttachTextBoxPresenterForTests(AlundraTextBoxViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    internal void AttachTextBoxPresenterForTests(TextBoxViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
     {
         _textBoxPresenter = new TextBoxPresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
     }
@@ -1909,7 +1909,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// expect - E3.d's own formula (<c>AdoptPlayerPawn</c>'s original override block): <c>mapGravity*256/
     /// 65536*2500</c> / <c>mapZViscosity*256/65536*50</c> (1250/800 on map 389). Shared by
     /// <see cref="AdoptPlayerPawn"/> (hero, unconditional) and <see cref="EntitySpawnFactory.ApplySpawnInitialization"/> (NPC,
-    /// gated on the Gravity flag bit via <see cref="AlundraEntityScriptProxy.ApplyGravitySettingsToController"/>)
+    /// gated on the Gravity flag bit via <see cref="EntityScriptProxy.ApplyGravitySettingsToController"/>)
     /// so the formula itself lives in exactly one place. Float arithmetic throughout: an integer
     /// <c>128*256/65536</c> truncates to 0 before the final <c>*2500</c> ever runs.
     /// </summary>
@@ -1958,7 +1958,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             catch (Exception ex)
             {
                 Logs.WriteWarning(
-                    $"AlundraWorldProxy: world '{worldName}' - failed to resolve its tilesets for "
+                    $"WorldProxy: world '{worldName}' - failed to resolve its tilesets for "
                     + $"navigation grid construction ({ex.Message}); navigation disabled (degraded mode).");
                 return null;
             }
@@ -1977,7 +1977,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         }
 
         Logs.WriteWarning(
-            $"AlundraWorldProxy: world '{worldName}' has no navigation layer ('{NavigationGrid2D.NavigationRoleProperty}' "
+            $"WorldProxy: world '{worldName}' has no navigation layer ('{NavigationGrid2D.NavigationRoleProperty}' "
             + $"= '{NavigationGrid2D.NavigationRoleGrid}'); navigation disabled (degraded mode).");
         return null;
     }
@@ -1987,7 +1987,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// block <see cref="AdoptPlayerPawn"/> runs once the hero prefab's header resolves, kept in one method so a
     /// test can pin it without a loaded asset catalog (E16.e SE6).
     /// </summary>
-    internal static void ApplyHeroSpriteHeader(AlundraEntityScriptProxy proxy, SpriteRecordHeader header)
+    internal static void ApplyHeroSpriteHeader(EntityScriptProxy proxy, SpriteRecordHeader header)
     {
         proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
         // E16.e L1/SE6 (docs/plan-e16-etat-partie.md): ResetEntityState (0x80031974, GameEngine.cs:650-652)
@@ -2012,10 +2012,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E20.c2a T1: the life of a hero created from the player's stats, in the binary's order (<c>GetPlayerHpMax</c> then <c>GetPlayerHp</c>, <c>0x800319F8-0x80031A08</c>), which also marks it as carrying its life
-    /// (<see cref="AlundraEntityScriptProxy.LifePulledFromStats"/>). Called by <see cref="AdoptPlayerPawn"/> right after <c>InitializeBalance</c>; the headless arc montage, whose sprite header (and so the balance
+    /// (<see cref="EntityScriptProxy.LifePulledFromStats"/>). Called by <see cref="AdoptPlayerPawn"/> right after <c>InitializeBalance</c>; the headless arc montage, whose sprite header (and so the balance
     /// record) comes after the adoption, calls it again after its own <c>InitializeBalance</c>, in the same order as the game.
     /// </summary>
-    internal void PullHeroLifeFromStats(AlundraEntityScriptProxy hero)
+    internal void PullHeroLifeFromStats(EntityScriptProxy hero)
     {
         hero.HpMax = GameState.PlayerStats.HpMax;
         hero.Hp = GameState.PlayerStats.Hp;
@@ -2024,7 +2024,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E2 replacement for the old <c>SpawnPlayerEntity</c> (which used to clone a SECOND hero prefab
-    /// itself): the ENGINE now spawns the hero pawn and possesses it with an <see cref="AlundraPlayerController"/>
+    /// itself): the ENGINE now spawns the hero pawn and possesses it with an <see cref="HeroController"/>
     /// (<c>World.LoadContent</c> -&gt; <c>InitializePlayerControllers</c>, CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:221-252/282-297,
     /// strictly before <c>CreateGameplayProxy</c>/<c>InitializeWithWorld</c> run - so by the time this
     /// method runs, the pawn is already in <c>world.Entities</c>, already <c>Initialize</c>/
@@ -2067,14 +2067,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// animation id and direction id below come from <see cref="WarpDirector.ConsumeArrivalRecord"/>
     /// instead, which ALSO clears <see cref="WarpDirector.HasPendingArrival"/> ([R9]: the record is
     /// session-scoped and would otherwise still read as "pending" on the NEXT map entry, warp or not).
-    /// <see cref="AlundraEntityScriptProxy.ClampToGround"/> still runs unconditionally either way - an
+    /// <see cref="EntityScriptProxy.ClampToGround"/> still runs unconditionally either way - an
     /// arrival's <c>PosZ</c> is the portal's own <c>ZLevel &lt;&lt; 20</c> (frequently 0, §1.2.c), not yet
     /// the destination cell's real ground height, exactly like the New Game constants above were never
     /// ground-clamped by the original either (both are raw authored/computed values, §1.4.e).
     /// </summary>
     private void AdoptPlayerPawn(World world, TileMapData tileMapData)
     {
-        var playerController = world.PlayerControllers.OfType<AlundraPlayerController>().FirstOrDefault();
+        var playerController = world.PlayerControllers.OfType<HeroController>().FirstOrDefault();
         _playerController = playerController;
 
         if (playerController?.Pawn == null)
@@ -2083,7 +2083,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             {
                 _loggedNoPlayerController = true;
                 Logs.WriteWarning(
-                    $"AlundraWorldProxy: no {nameof(AlundraPlayerController)} possessing a pawn in world "
+                    $"WorldProxy: no {nameof(HeroController)} possessing a pawn in world "
                     + $"'{world.Name}' (missing/misconfigured player_startup_settings_asset_id, "
                     + "player_controller_class, or default_pawn_asset_id); no player entity adopted, no "
                     + "fallback spawn.");
@@ -2094,11 +2094,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         var entity = playerController.Pawn;
 
-        if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy)
+        if (entity.GameplayProxy is not EntityScriptProxy proxy)
         {
             Logs.WriteWarning(
-                $"AlundraWorldProxy: the engine-spawned pawn in world '{world.Name}' did not produce an "
-                + $"{nameof(AlundraEntityScriptProxy)} (GameplayProxyClassName on the pawn prefab); no "
+                $"WorldProxy: the engine-spawned pawn in world '{world.Name}' did not produce an "
+                + $"{nameof(EntityScriptProxy)} (GameplayProxyClassName on the pawn prefab); no "
                 + "player entity adopted.");
             return;
         }
@@ -2195,7 +2195,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             _loggedNoHeroHeader = true;
             Logs.WriteDebug(
-                $"AlundraWorldProxy: no sprite-records.json header found for the hero prefab in world "
+                $"WorldProxy: no sprite-records.json header found for the hero prefab in world "
                 + $"'{world.Name}'; Flags/SpriteProgramIndexes/AnimSetsByAnim left at their defaults.");
         }
 
@@ -2265,7 +2265,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             _loggedNoHeroController = true;
             Logs.WriteWarning(
-                $"AlundraWorldProxy: hero prefab in world '{world.Name}' has no "
+                $"WorldProxy: hero prefab in world '{world.Name}' has no "
                 + $"{nameof(CharacterControllerComponent)}; falling back to E2's controller-free player "
                 + "movement (no gravity, no field collision).");
         }
@@ -2412,7 +2412,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// World-level half of the frame (decision D2/D3, docs/plan-conversion-totale.md §2): every spawned
-    /// entity now picks/runs/syncs itself in its OWN <see cref="AlundraEntityScriptProxy.Update"/>, driven
+    /// entity now picks/runs/syncs itself in its OWN <see cref="EntityScriptProxy.Update"/>, driven
     /// by the ENGINE's own entity update loop - which always runs BEFORE this world's own
     /// <see cref="Update"/> (<c>World.Update</c>, CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:443-491).
     /// So by the time this method runs, every entity has already had its own pick/run/sync this frame; this
@@ -2420,7 +2420,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// (<see cref="RunMapEventsPass"/>, port of <c>RunMapEvents</c>) and the do/while catch-up re-scan
     /// (<see cref="RunPendingEventTriggers"/>, port of <c>UpdateEntitiesEvents</c>'s phase-2 loop, decision
     /// D3) for any entity another entity's script triggered DURING this same frame's entity pass.
-    /// <c>RunEntityEventsPass</c> et al are removed - see <see cref="AlundraEntityScriptProxy.Update"/>'s
+    /// <c>RunEntityEventsPass</c> et al are removed - see <see cref="EntityScriptProxy.Update"/>'s
     /// own doc for the accepted ordering deviation this implies.
     /// </summary>
     public override void Update(float elapsedTime)
@@ -2801,7 +2801,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         var worldFrozen = (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0;
         foreach (var spawnedEntity in _spawnedEntities)
         {
-            if (spawnedEntity.GameplayProxy is AlundraEntityScriptProxy spawnedProxy)
+            if (spawnedEntity.GameplayProxy is EntityScriptProxy spawnedProxy)
             {
                 GameplayFreeze.Apply(spawnedProxy, worldFrozen);
             }
@@ -2851,14 +2851,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     }
 
     /// <summary>The entities the entity block of the current tick drives (<see cref="CollectTickEntities"/>): the hero first, then the others in the order of <see cref="_spawnedEntities"/>.</summary>
-    private readonly List<AlundraEntityScriptProxy> _tickEntities = new();
+    private readonly List<EntityScriptProxy> _tickEntities = new();
 
     /// <summary>The proxies the pending-trigger re-scan of the current tick walks (rebuilt just before it, so an entity a script spawned this very tick is in it).</summary>
-    private readonly List<AlundraEntityScriptProxy> _pendingScan = new();
+    private readonly List<EntityScriptProxy> _pendingScan = new();
 
     /// <summary>
     /// E20.a A3 (docs/plan-e20-heros.md section 1.3): the membership of the entity block. The engine integrates a spawned entity at the head of the NEXT frame
-    /// (<c>World.AddEntity</c> only queues, <see cref="AlundraEntityScriptProxy.Update"/> then records <see cref="AlundraEntityScriptProxy.TookPartInFrame"/>), so an entity that appears during a
+    /// (<c>World.AddEntity</c> only queues, <see cref="EntityScriptProxy.Update"/> then records <see cref="EntityScriptProxy.TookPartInFrame"/>), so an entity that appears during a
     /// frame has its first tick in the next one; an entity recycled (<see cref="RecycleDestroyedEntities"/>) leaves <see cref="_spawnedEntities"/> and no longer ticks. The order is the one of the slots:
     /// the hero first (slot 0, <c>MovePlayer</c> first in <c>0x800386D0</c>), then <see cref="_spawnedEntities"/> in the order of the slots (E20.e0a2; the "first attacker" of the hit pass of E20.c1 depends on it).
     /// </summary>
@@ -2875,7 +2875,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             // E20.e0a3b (D-E0A-5): an entity born by the interface of the sprite index, not yet integrated by the engine, is in the block of the tick that sees it (in the order of its slot): the one
             // of MovePlayer, which re-collects, or the next one of the same frame. An entity of the map load never carries the marker; one made from a record by a script opcode (0x2D, 0x8A, 0x8B) does since E20.e0a4; one integrated by the engine is a TookPartInFrame entity as before.
-            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy
+            if (entity.GameplayProxy is EntityScriptProxy proxy
                 && !ReferenceEquals(proxy, hero)
                 && (proxy.TookPartInFrame || (proxy.JoinsBirthTick && entity.World == null)))
             {
@@ -2947,7 +2947,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _pendingScan.Clear();
         foreach (var entity in _spawnedEntities)
         {
-            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+            if (entity.GameplayProxy is EntityScriptProxy proxy)
             {
                 _pendingScan.Add(proxy);
             }
@@ -2989,9 +2989,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E20.a A5 (D-E20-13): the counters pass of the binary (<c>0x80038998</c>, once per tick after the programs, over the slots 0 to the highest, hero included, NO status filter):
-    /// <c>+0x1C</c> + 1 (<see cref="AlundraEntityScriptProxy.FrameCounter"/>), <c>+0x1CC</c> and <c>+0x1D0</c> (<see cref="AlundraEntityScriptProxy.DamagedTickCounter"/>,
-    /// <see cref="AlundraEntityScriptProxy.FrameCollisionTickCounter"/>) decremented when non-zero, <c>+0x224</c> (<see cref="AlundraEntityScriptProxy.TouchingEntity"/>) and
-    /// <c>+0x220</c> (<see cref="AlundraEntityScriptProxy.HitCounter"/>) cleared. <c>+0x12C</c> (<c>RidingEntity</c>) is NOT cleared: the DLL recomputes the carrier once per frame
+    /// <c>+0x1C</c> + 1 (<see cref="EntityScriptProxy.FrameCounter"/>), <c>+0x1CC</c> and <c>+0x1D0</c> (<see cref="EntityScriptProxy.DamagedTickCounter"/>,
+    /// <see cref="EntityScriptProxy.FrameCollisionTickCounter"/>) decremented when non-zero, <c>+0x224</c> (<see cref="EntityScriptProxy.TouchingEntity"/>) and
+    /// <c>+0x220</c> (<see cref="EntityScriptProxy.HitCounter"/>) cleared. <c>+0x12C</c> (<c>RidingEntity</c>) is NOT cleared: the DLL recomputes the carrier once per frame
     /// (<see cref="RefreshUpdateProxiesAndCollidables"/>), D-E20-13 (documented deviation until the riding is recomputed in the tick).
     /// Readers of these fields in the DLL (inventory of E20.a): <c>HitCounter</c> by opcodes 0x47/0x48 and by the pick of the Deactivate slot (<c>DeactivateOnHit</c>);
     /// <c>TouchingEntity</c> by the pick (slot D instead of C) and by the opcode 0x87; <c>DamagedTickCounter</c> is written by the opcode 0x86 (E20.c1b) and read by the hit pass, <c>HitCounter</c> is read by 0x71 too.
@@ -3001,7 +3001,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     {
         foreach (var entity in _spawnedEntities)
         {
-            if (entity.GameplayProxy is not AlundraEntityScriptProxy proxy)
+            if (entity.GameplayProxy is not EntityScriptProxy proxy)
             {
                 continue;
             }
@@ -3035,7 +3035,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     private static readonly Action AdvanceRandomPerTick = GameRandom.AdvanceFrame;
 
     /// <summary>The list of the hit pass (<c>0x800384F4</c>, <c>0x80127B28</c>), rebuilt at the lists step of each tick.</summary>
-    private readonly List<AlundraEntityScriptProxy> _hitList = new();
+    private readonly List<EntityScriptProxy> _hitList = new();
 
     /// <summary>E20.c1a C3: the hit pass of the binary (<c>UpdateBalanceRecords</c>), with the latch of the hero's animation (<c>0x80146DF8</c>) it keeps for the damage calculation of E20.c1b.</summary>
     private readonly HitPass _hitPass = new();
@@ -3066,7 +3066,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         foreach (var entity in _spawnedEntities)
         {
-            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy
+            if (entity.GameplayProxy is EntityScriptProxy proxy
                 && !ReferenceEquals(proxy, hero)
                 && proxy.Status.IsActive()
                 && proxy.BlockedByEntity == null)
@@ -3083,13 +3083,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _effectStage.Emit(reservoir => NativeEffects.CreateHitSparks(reservoir, centreX, centreY, centreZ));
     }
 
-    private Action<AlundraEntityScriptProxy, int>? _attachHitEffect;
+    private Action<EntityScriptProxy, int>? _attachHitEffect;
 
     /// <summary>
     /// E20.f3b (D-F3-9): the effect 4 or 5 of a hit that is not immune (<c>0x800395E8-0x80039668</c>), queued on the effect stage at rank 1 of the tick like the sparks, as an effect attached (mode 1) to the live target. No number is drawn.
     /// Documented gap: in a frame of several ticks the creation happens at the end of the frame; the effect follows its target afterwards, which has no visible consequence.
     /// </summary>
-    private void AttachHitEffect(AlundraEntityScriptProxy target, int effect)
+    private void AttachHitEffect(EntityScriptProxy target, int effect)
         => _effectStage.Emit(reservoir => NativeEffects.CreateHitAttachedEffect(reservoir, effect, target));
 
     /// <summary>E20.a A3 hook, E20.c1a C3: the hit pass of the binary (<c>0x80039300</c>, last of the entity block), over the list built at the lists step.</summary>
@@ -3110,14 +3110,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E20.a A2: the publication of the frame, after the last tick: for each entity the engine updated this frame, <see cref="FrameSyncPasses.SyncAnimation"/> (only if its gate was open as
-    /// the frame opened, T2 "dedans") then <see cref="FrameSyncPasses.SyncTransform"/> (unconditional). It used to run in <see cref="AlundraEntityScriptProxy.Update"/>, before the ticks of the
+    /// the frame opened, T2 "dedans") then <see cref="FrameSyncPasses.SyncTransform"/> (unconditional). It used to run in <see cref="EntityScriptProxy.Update"/>, before the ticks of the
     /// frame, which now belong to this proxy. Clears the per-frame records of the entities.
     /// </summary>
     private void PublishEntityFrame()
     {
         foreach (var entity in _spawnedEntities)
         {
-            if (entity.GameplayProxy is not AlundraEntityScriptProxy { TookPartInFrame: true } proxy)
+            if (entity.GameplayProxy is not EntityScriptProxy { TookPartInFrame: true } proxy)
             {
                 continue;
             }
@@ -3140,7 +3140,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// a hand-copied version of it. Static and allocation-free (no closure, straight parameter reads and
     /// two virtual calls), so a test can call it directly with the session singletons
     /// (<see cref="BgmPlayer.Instance"/>/<see cref="BgmFadeDirector.Instance"/>) with no
-    /// <see cref="AlundraWorldProxy"/> in scope, exactly like <see cref="Update"/> calls it with this
+    /// <see cref="WorldProxy"/> in scope, exactly like <see cref="Update"/> calls it with this
     /// instance's own <see cref="MusicPlayer"/>/<see cref="BgmFadeDirector"/>.
     /// </summary>
     internal static void ConsumeMusicResetSoundFlagOnFrameClose(IMusicPlayer? musicPlayer, IBgmFadeDirector bgmFadeDirector)
@@ -3156,11 +3156,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// Port of <c>RunMapEvents</c> (GameEngine.cs:1667-1718, 0x8003c67c). Always executes against
     /// <paramref name="player"/> - every MapEvent's own logic entity starts as the player
     /// (<see cref="BuildMapEvents"/>) and is retargeted by opcodes 0x42/0x43 (E19.a; 0x66 does not touch it - see
-    /// <see cref="AlundraEntityScriptProxy.LogicEntity"/>), which <see cref="Events.EventProgramRunner"/> reads
+    /// <see cref="EntityScriptProxy.LogicEntity"/>), which <see cref="Events.EventProgramRunner"/> reads
     /// before every instruction.
     /// </summary>
     internal static void RunMapEventsPass(
-        AlundraEntityScriptProxy player, IReadOnlyList<MapEvent> mapEvents, IEventProgramRunner runner,
+        EntityScriptProxy player, IReadOnlyList<MapEvent> mapEvents, IEventProgramRunner runner,
         uint playerControlFlags)
     {
         if ((playerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0)
@@ -3217,14 +3217,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// Decision D3 (docs/plan-conversion-totale.md §2): port of the do/while re-scan half of
     /// <c>EntityManager.UpdateEntitiesEvents</c> (EntityManager.cs:874-921), applied here to whatever
-    /// <see cref="AlundraEntityScriptProxy.EventTrigger"/> another entity's OWN <c>Update</c> set on it
-    /// earlier THIS SAME FRAME (<see cref="AlundraEntityScriptProxy.PickEventTrigger"/> having already run
+    /// <see cref="EntityScriptProxy.EventTrigger"/> another entity's OWN <c>Update</c> set on it
+    /// earlier THIS SAME FRAME (<see cref="EntityScriptProxy.PickEventTrigger"/> having already run
     /// for every entity, since the engine updates entities before this world - see this class's own
     /// <see cref="Update"/> doc). The player is excluded, same as the original's own loop starting at
     /// index 1 - its own trigger (set by <see cref="RunMapEventsPass"/>) is consumed directly by that
     /// method's own <c>RunScript</c> call, never by this re-scan.
     /// </summary>
-    internal static void RunPendingEventTriggers(IReadOnlyList<AlundraEntityScriptProxy> entities, IEventProgramRunner runner)
+    internal static void RunPendingEventTriggers(IReadOnlyList<EntityScriptProxy> entities, IEventProgramRunner runner)
     {
         bool keepGoing;
 
@@ -3254,7 +3254,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): port of <c>UpdateDestroyedEntities</c> (<c>0x80038634</c>), the first call of
     /// <c>UpdateEntities</c> (<c>0x8003B3A0</c>). The binary covers every slot in the state <see cref="EntityStatus.FlagToDestroy"/> with its template
     /// (<c>0x80134368</c>: state 0, <c>+0x48</c> = -1, written in <c>0x8003B21C</c>); the port puts each such proxy back to the same values
-    /// (<see cref="EntityStatus.Destroyed"/>, <see cref="AlundraEntityScriptProxy.EntityRefId"/> = -1), takes it out of <see cref="_spawnedEntities"/> (so out
+    /// (<see cref="EntityStatus.Destroyed"/>, <see cref="EntityScriptProxy.EntityRefId"/> = -1), takes it out of <see cref="_spawnedEntities"/> (so out
     /// of the update lists and the collidables rebuilt after) and hands its entity back to the engine (<see cref="World.RemoveEntity"/>, which releases what
     /// its components hold at the next engine update). A search by raw id (<c>0x2C</c>, <c>0x2E</c>...) does not test the state of the candidate: a corpse
     /// stays found until this pass. Nothing else is cleared: a reference kept on a recycled slot sees a slot in the state 0, as in the binary. The hero is never
@@ -3272,7 +3272,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         for (var i = _spawnedEntities.Count - 1; i >= 0; i--)
         {
             var entity = _spawnedEntities[i];
-            if (entity.GameplayProxy is not AlundraEntityScriptProxy { Status: EntityStatus.FlagToDestroy } proxy
+            if (entity.GameplayProxy is not EntityScriptProxy { Status: EntityStatus.FlagToDestroy } proxy
                 || ReferenceEquals(proxy, PlayerEntity))
             {
                 continue;
@@ -3284,21 +3284,21 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             _slots.Release(proxy.Slot); // E20.e0a2: the slot is free again from the pass that recycles it.
             proxy.Slot = -1;
             _world?.RemoveEntity(entity);
-            Logs.WriteDebug("AlundraWorldProxy: destroyed entity recycled.");
+            Logs.WriteDebug("WorldProxy: destroyed entity recycled.");
         }
     }
 
     /// <summary>
     /// E14.a1b (D-E14-9, ADR-0060): port of <c>GameEngine.DestroyEntity(Entity, int)</c> @ 0x8003A59C for ALL its callers (E0/E1, the pick phase's slope destruction <paramref name="effectId"/> 6 and VRAM-flag destruction -1), in the
     /// order of the binary: (1) the loot <c>0x80032B90</c> - NAMED STUB, E20.e0 (D-E14-3: a destroyed entity drops nothing until then); (2) the status 4 (<c>0x8003A5BC</c>), which the pick phase naturally skips from now on;
-    /// (3) the branch delay <c>+0x228 = -1</c> (<c>0x8003A5CC</c>, <see cref="AlundraEntityScriptProxy.EventTrigger"/>, so a same-frame re-scan does not run what the entity had queued); (4) the release of the active effect
+    /// (3) the branch delay <c>+0x228 = -1</c> (<c>0x8003A5CC</c>, <see cref="EntityScriptProxy.EventTrigger"/>, so a same-frame re-scan does not run what the entity had queued); (4) the release of the active effect
     /// attached to the entity (<c>+0x1B8</c>, <c>0x8003A5D0</c>) - NAMED STUB, E20.e (the passes of the active effects are empty in the DLL and it has no member for the pointer); (5) the break effect: <paramref name="effectId"/> -1 reads the
-    /// byte <c>+0x1E</c> of the sprite header (<see cref="AlundraEntityScriptProxy.BreakEffect"/>, <c>0x8003A5E0-0x8003A5E8</c>), and when the effect is not 0, <c>0x8003BE74(0, fx, 0, e ; 1, 0, 0, 0)</c> creates it
+    /// byte <c>+0x1E</c> of the sprite header (<see cref="EntityScriptProxy.BreakEffect"/>, <c>0x8003A5E0-0x8003A5E8</c>), and when the effect is not 0, <c>0x8003BE74(0, fx, 0, e ; 1, 0, 0, 0)</c> creates it
     /// (<see cref="NativeEffects.CreateBreakEffect"/>) - queued on the effect stage with the tick and the rank of the source in progress, on a FROZEN snapshot of the entity
     /// (<see cref="FrozenEffectAnchor"/>, taken after the status was written) because the stage applies its queue at the end of the frame; (6) the clearing of the carrier <c>[+0x28] + 0x2C = 0</c> (<c>0x8003A62C</c>) -
     /// NAMED STUB, E20.g. Does not remove the entity itself: the recycling comes later in the tick (<see cref="RecycleDestroyedEntities"/>, E19.r R3). A full reservoir creates no effect and the destruction goes on all the same.
     /// </summary>
-    internal void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+    internal void DestroyEntity(EntityScriptProxy entity, int effectId)
     {
         // (1) loot: E20.e0.
         entity.Status = EntityStatus.FlagToDestroy;
@@ -3313,7 +3313,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         }
 
         // (6) clearing of the carrier (the entity this one rests on): E20.g.
-        Logs.WriteDebug($"AlundraWorldProxy: entity[{entity.EntityRefId}] -> FlagToDestroy (effectId={effectId}, break effect {fx}).");
+        Logs.WriteDebug($"WorldProxy: entity[{entity.EntityRefId}] -> FlagToDestroy (effectId={effectId}, break effect {fx}).");
     }
 
     /// <summary>
@@ -3322,24 +3322,24 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// two-argument overload above (which the pick-phase status machine uses, and which also spawns
     /// break-effect contents). Same scope note as the two-argument overload: the entity leaves the CasaEngine world
     /// at the recycling pass (<see cref="RecycleDestroyedEntities"/>), not here, and this does not port <c>ActiveEffect</c>/<c>PlatformEntity.CarriedEntity</c> cleanup. Clears
-    /// <see cref="AlundraEntityScriptProxy.EventTrigger"/> like the original, so a same-frame re-scan
+    /// <see cref="EntityScriptProxy.EventTrigger"/> like the original, so a same-frame re-scan
     /// (<see cref="RunPendingEventTriggers"/>) does not also try to run whatever program slot this entity
     /// had queued before being destroyed.
     /// </summary>
-    internal void DestroyEntity(AlundraEntityScriptProxy entity)
+    internal void DestroyEntity(EntityScriptProxy entity)
     {
         entity.Status = EntityStatus.FlagToDestroy;
         entity.EventTrigger = ScriptHelper.ProgramUnknown;
-        Logs.WriteDebug($"AlundraWorldProxy: entity[{entity.EntityRefId}] -> FlagToDestroy (search-destroyed).");
+        Logs.WriteDebug($"WorldProxy: entity[{entity.EntityRefId}] -> FlagToDestroy (search-destroyed).");
     }
 
     /// <summary>
     /// E19.t T-R2 (D-E19-57): asks the world's sound player for the sound of <paramref name="spawned"/>'s animation of appearance (animation 0 for a record, the
     /// arrival animation for the hero), as <c>InitializeEntity</c> does when it makes its first switch (<c>Current = ~Target</c>, <c>0x80039DAC</c>). The DLL's
-    /// first switch is exempt (R2, <see cref="AlundraEntityScriptProxy.SpawnAnimationActive"/>), so this is the only request of the appearance. Nothing when
+    /// first switch is exempt (R2, <see cref="EntityScriptProxy.SpawnAnimationActive"/>), so this is the only request of the appearance. Nothing when
     /// the entity has no appearance animation, no sound or the world no player.
     /// </summary>
-    private void RequestAppearanceSound(AlundraEntityScriptProxy? spawned)
+    private void RequestAppearanceSound(EntityScriptProxy? spawned)
     {
         if (spawned == null || !spawned.SpawnAnimationActive)
         {
@@ -3365,24 +3365,24 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// passed down as the new entity's <c>ParentEntity</c> - exactly like <c>EntityManager.InitializeEntity</c>
     /// does for its <c>parentEntity</c> argument. The spawned entity joins <see cref="_spawnedEntities"/>
     /// immediately, so it is visible to any further search this same script call issues. E20.e0a4: the three opcodes pose
-    /// <see cref="AlundraEntityScriptProxy.JoinsBirthTick"/> on it as the last write of the apparition, so it takes part in the tick that sees it born: the tick of the map events that made it,
+    /// <see cref="EntityScriptProxy.JoinsBirthTick"/> on it as the last write of the apparition, so it takes part in the tick that sees it born: the tick of the map events that made it,
     /// the next tick when it was made by the program of another entity (the tick block is collected before the programs run). It enters as <see cref="EntityStatus.Loaded"/>, so its own Load
     /// program runs in its first tick, same as every map-load spawn; the engine integrates it at the head of the next frame.
     /// Unlike the original (a single global, size-limited entity-slot table with recycling), this always
     /// allocates a brand new CasaEngine <see cref="Entity"/>, which takes the lowest free slot of the table of 64 (E20.e0a2: a full table refuses, the opcode finds no entity); a recycled entity gives its slot back.
     /// </summary>
-    internal AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId)
+    internal EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId)
     {
         if (_world == null)
         {
-            Logs.WriteWarning("AlundraWorldProxy: SpawnEntityByRecordId called before InitializeWithWorld; ignored.");
+            Logs.WriteWarning("WorldProxy: SpawnEntityByRecordId called before InitializeWithWorld; ignored.");
             return null;
         }
 
         if (!_entityRecordsByIndex.TryGetValue(entityRecordId, out var record))
         {
             Logs.WriteDebug(
-                $"AlundraWorldProxy: SpawnEntityByRecordId({entityRecordId}) - no such entity record "
+                $"WorldProxy: SpawnEntityByRecordId({entityRecordId}) - no such entity record "
                 + "(GameEngine.GetEntityRecord would return null); spawn skipped.");
             return null;
         }
@@ -3390,7 +3390,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         if (!EntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: true, out var skipReason))
         {
             Logs.WriteDebug(
-                $"AlundraWorldProxy: SpawnEntityByRecordId({entityRecordId}) - record '{record.Name}' "
+                $"WorldProxy: SpawnEntityByRecordId({entityRecordId}) - record '{record.Name}' "
                 + $"not spawned ({skipReason}).");
             return null;
         }
@@ -3401,7 +3401,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             ReportSlot(-1);
             Logs.WriteWarning(
-                $"AlundraWorldProxy: SpawnEntityByRecordId({entityRecordId}) refused: the table of the {EntitySlotTable.SlotCount} entity slots is full; nothing spawned.");
+                $"WorldProxy: SpawnEntityByRecordId({entityRecordId}) refused: the table of the {EntitySlotTable.SlotCount} entity slots is full; nothing spawned.");
             return null;
         }
 
@@ -3413,7 +3413,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             entity = EntitySpawnFactory.CreateEntityFromRecord(
                 record, guid => _world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
                 parentEntity: logicEntity.LogicContextEntity, tileMapData: _tileMapData, collisionField: CollisionField);
-            var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
+            var spawnedProxy = entity.GameplayProxy as EntityScriptProxy;
             if (spawnedProxy != null)
             {
                 spawnedProxy.ScriptHost = this;
@@ -3450,7 +3450,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             AbortCreation(entity, added, slot);
             Logs.WriteWarning(
-                $"AlundraWorldProxy: SpawnEntityByRecordId({entityRecordId}) failed to spawn; skipping. "
+                $"WorldProxy: SpawnEntityByRecordId({entityRecordId}) failed to spawn; skipping. "
                 + $"{ex.Message}");
             return null;
         }
@@ -3463,10 +3463,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// E20.e0b2 (D-E0B-4, D-E0B-6, docs/plan-e20-heros.md section 1.17.2): the loot roll of a creation (<c>0x80032A40</c>, the last action of <c>InitializeEntity</c>), called ONCE per creation as the last statement of the <c>try</c> of each of the
     /// three creation sites, so that a creation that aborted never rolls. <paramref name="hasRecord"/> is whether an entity record made the entity (the map load and <c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>: yes; the interface: no).
-    /// PHASE B (this commit): the helper writes <see cref="AlundraEntityScriptProxy.ContentsItemId"/> and <see cref="AlundraEntityScriptProxy.ContentsGameFlag"/> and advances the REAL stream by the same roll (<see cref="GameRandom.Next"/>,
-    /// which the measuring sink sees as real draws, so that its virtual word follows: V = R). The header code comes from <see cref="AlundraEntityScriptProxy.HeaderContents"/>, the record code and flag from the record and the proxy. Nothing falls here (E20.e0c).
+    /// PHASE B (this commit): the helper writes <see cref="EntityScriptProxy.ContentsItemId"/> and <see cref="EntityScriptProxy.ContentsGameFlag"/> and advances the REAL stream by the same roll (<see cref="GameRandom.Next"/>,
+    /// which the measuring sink sees as real draws, so that its virtual word follows: V = R). The header code comes from <see cref="EntityScriptProxy.HeaderContents"/>, the record code and flag from the record and the proxy. Nothing falls here (E20.e0c).
     /// </summary>
-    private void RollLootAtCreation(AlundraEntityScriptProxy? proxy, bool hasRecord, int recordCode)
+    private void RollLootAtCreation(EntityScriptProxy? proxy, bool hasRecord, int recordCode)
     {
         if (proxy == null)
         {
@@ -3485,13 +3485,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// host, the balance sheet, the addition to the world and to <see cref="_spawnedEntities"/> at the place of its slot (E20.e0a2), the sound of the animation 0, the push to the root. The prefab is read fresh for every call
     /// (engine ADR-0037). The entity ticks from the frame after its creation, as every spawn does until E20.e0a3.
     /// </summary>
-    internal AlundraEntityScriptProxy? SpawnEntityBySpriteIndex(AlundraEntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction)
+    internal EntityScriptProxy? SpawnEntityBySpriteIndex(EntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction)
     {
         var page = isMapPage ? "map" : "global";
 
-        AlundraEntityScriptProxy? Refuse(string reason)
+        EntityScriptProxy? Refuse(string reason)
         {
-            Logs.WriteWarning($"AlundraWorldProxy: SpawnEntityBySpriteIndex({page} page, index {index}) refused: {reason}; nothing spawned.");
+            Logs.WriteWarning($"WorldProxy: SpawnEntityBySpriteIndex({page} page, index {index}) refused: {reason}; nothing spawned.");
             return null;
         }
 
@@ -3547,7 +3547,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             // D-E0A-1: the Z of a DLL entity is the binary's minus one raw unit (ADR-0026); the binary's argument has it, and the creation subtracts ModZ from the binary's argument.
             entity = EntitySpawnFactory.CreateEntityFromSpriteIndex(
                 prefab, header, isMapPage, index, parent?.LogicContextEntity, x, y, unchecked(z + 1), direction, CollisionField, _tileMapData);
-            var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
+            var spawnedProxy = entity.GameplayProxy as EntityScriptProxy;
             if (spawnedProxy != null)
             {
                 spawnedProxy.ScriptHost = this;
@@ -3591,35 +3591,35 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     // IEntityWorldContext - see that interface's own doc. Explicit implementation keeps these reachable
     // through the interpreter seam without adding public surface to this proxy.
-    IReadOnlyList<AlundraEntityScriptProxy> IEntityWorldContext.SpawnedEntities => GetSpawnedEntityProxies();
+    IReadOnlyList<EntityScriptProxy> IEntityWorldContext.SpawnedEntities => GetSpawnedEntityProxies();
 
-    AlundraEntityScriptProxy? IEntityWorldContext.PlayerEntity => PlayerEntity;
+    EntityScriptProxy? IEntityWorldContext.PlayerEntity => PlayerEntity;
 
-    AlundraEntityScriptProxy? IEntityWorldContext.SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId)
+    EntityScriptProxy? IEntityWorldContext.SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId)
         => SpawnEntityByRecordId(logicEntity, entityRecordId);
 
-    AlundraEntityScriptProxy? IEntityWorldContext.SpawnEntityBySpriteIndex(AlundraEntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction)
+    EntityScriptProxy? IEntityWorldContext.SpawnEntityBySpriteIndex(EntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction)
         => SpawnEntityBySpriteIndex(parent, isMapPage, index, x, y, z, direction);
 
-    void IEntityWorldContext.DestroyEntity(AlundraEntityScriptProxy entity) => DestroyEntity(entity);
+    void IEntityWorldContext.DestroyEntity(EntityScriptProxy entity) => DestroyEntity(entity);
 
     // IAlundraScriptHost - see that interface's own doc. Explicit implementation, same reasoning as
     // IEntityWorldContext above.
     IEventProgramRunner IScriptHost.Runner => EventProgramRunner;
 
-    AlundraEntityScriptProxy? IScriptHost.ActiveCollisionEntity
+    EntityScriptProxy? IScriptHost.ActiveCollisionEntity
     {
         get => ActiveCollisionEntity;
         set => ActiveCollisionEntity = value;
     }
 
-    void IScriptHost.DestroyEntity(AlundraEntityScriptProxy entity, int effectId) => DestroyEntity(entity, effectId);
+    void IScriptHost.DestroyEntity(EntityScriptProxy entity, int effectId) => DestroyEntity(entity, effectId);
 
     GameState IScriptHost.GameState => GameState;
 
-    AlundraPlayerController? IScriptHost.PlayerController => _playerController;
+    HeroController? IScriptHost.PlayerController => _playerController;
 
-    IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => _collidables;
+    IReadOnlyList<EntityScriptProxy> IScriptHost.Collidables => _collidables;
 
     // T3 (docs/plan-transitions-carte.md §3): production always exposes the real parsed list - the
     // interface's own default (empty) only covers hosts from OTHER slices/tests that never override it.
@@ -3639,7 +3639,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             // Cannot happen on the production call path (MovePlayer's own caller is always PlayerEntity
             // itself), but this interface member has no non-null guarantee of its own - degrade the same
             // way every other "should never happen without a player" site in this class does.
-            Logs.WriteWarning("AlundraWorldProxy: OnPortalTriggerDetected fired with no PlayerEntity adopted; departure ignored.");
+            Logs.WriteWarning("WorldProxy: OnPortalTriggerDetected fired with no PlayerEntity adopted; departure ignored.");
             return;
         }
 
@@ -3647,20 +3647,20 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     }
 
     /// <summary>
-    /// Snapshot of <see cref="_spawnedEntities"/>'s own <see cref="AlundraEntityScriptProxy"/> proxies, in
+    /// Snapshot of <see cref="_spawnedEntities"/>'s own <see cref="EntityScriptProxy"/> proxies, in
     /// the same order (the order of the slots) - built fresh on every call (not cached) so an entity dynamically spawned
     /// by 0x2D earlier in the same script call is visible to a search issued later in that call, exactly
     /// like the original's live <c>g_entitySlots</c> array (see <see cref="EntitySearchService"/>'s class
     /// doc). Not a per-frame hot path (only entity-manipulation opcodes call it), so the allocation here
     /// is fine - contrast with <see cref="_updateProxies"/>, the actual per-frame working list.
     /// </summary>
-    private List<AlundraEntityScriptProxy> GetSpawnedEntityProxies()
+    private List<EntityScriptProxy> GetSpawnedEntityProxies()
     {
-        var proxies = new List<AlundraEntityScriptProxy>(_spawnedEntities.Count);
+        var proxies = new List<EntityScriptProxy>(_spawnedEntities.Count);
 
         foreach (var entity in _spawnedEntities)
         {
-            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+            if (entity.GameplayProxy is EntityScriptProxy proxy)
             {
                 proxies.Add(proxy);
             }
@@ -3676,7 +3676,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// map-load spawn loop in <see cref="InitializeWithWorld"/> completes, so <see cref="_collidables"/>
     /// already reflects every load-time-spawned entity BEFORE the engine's very first
     /// <c>CharacterMotionSystem.UpdateControllers</c>/entity-<c>Update</c> pass ever runs - without that
-    /// second call, frame 1's <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/> would see an
+    /// second call, frame 1's <see cref="EntityScriptProxy.EvaluateEntitySupport"/> would see an
     /// empty <see cref="_collidables"/> and wrongly restore gravity on every supported entity for one
     /// frame (the exact "creux de première frame" decision E4-4 forbids) before <see cref="Update"/> ever
     /// gets to populate it. <see cref="_updateProxies"/>/<see cref="_collidables"/> are otherwise always
@@ -3689,7 +3689,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _updateProxies.Clear();
         foreach (var entity in _spawnedEntities)
         {
-            if (entity.GameplayProxy is AlundraEntityScriptProxy proxy)
+            if (entity.GameplayProxy is EntityScriptProxy proxy)
             {
                 _updateProxies.Add(proxy);
             }
@@ -3703,16 +3703,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// E4.f spawn-time support snapshot: a freshly-built (allocating - spawn is not a per-frame hot path,
     /// same policy as <see cref="GetSpawnedEntityProxies"/>) collidables list off whatever is in
     /// <see cref="_spawnedEntities"/> AT THIS EXACT MOMENT, for
-    /// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>'s own one-shot call right after a
+    /// <see cref="EntityScriptProxy.EvaluateEntitySupport"/>'s own one-shot call right after a
     /// record spawns (see the map-load spawn loop in <see cref="InitializeWithWorld"/> and
     /// <see cref="SpawnEntityByRecordId"/>). Map 389's platform records (0-5) spawn before their riders in
     /// record order (verified against the real export - see docs/plan-e4-deplacement-scripte.md E4.f's own
     /// "Pourquoi" note), so by the time a rider's own spawn reaches this call every platform it could land
     /// on is already present.
     /// </summary>
-    private List<AlundraEntityScriptProxy> BuildCollidablesSnapshot()
+    private List<EntityScriptProxy> BuildCollidablesSnapshot()
     {
-        var collidables = new List<AlundraEntityScriptProxy>();
+        var collidables = new List<EntityScriptProxy>();
         EntitySupport.BuildCollidables(GetSpawnedEntityProxies(), collidables);
         return collidables;
     }
@@ -3811,13 +3811,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         //Still returns a fresh instance: the spawned-entity list is runtime state rebuilt by
         //InitializeWithWorld (each world instance spawns and owns its own entities), not something a
         //clone should share or carry over.
-        return new AlundraWorldProxy();
+        return new WorldProxy();
     }
 }
 
 /// <summary>
 /// One <c>MapEvent</c> slot (GameEngine.cs's <c>MapEvent</c> struct) - see
-/// <see cref="AlundraWorldProxy.BuildMapEvents"/>/<see cref="AlundraWorldProxy.RunMapEventsPass"/> for how
+/// <see cref="WorldProxy.BuildMapEvents"/>/<see cref="WorldProxy.RunMapEventsPass"/> for how
 /// this is built and driven. A plain mutable class (not a struct): <see cref="RunMapEventsPass"/> mutates
 /// <see cref="Entity"/>/<see cref="ProgramBMap"/> in place across frames, exactly like the original's own
 /// persistent array slot.
@@ -3835,9 +3835,9 @@ internal sealed class MapEvent
     public required int OriginalProgramBMap;
 
     /// <summary>The map-event's own current "logic entity" (initially the player - see
-    /// <see cref="AlundraWorldProxy.BuildMapEvents"/>; retargeted by opcodes 0x42/0x43, E19.a, and kept from
+    /// <see cref="WorldProxy.BuildMapEvents"/>; retargeted by opcodes 0x42/0x43, E19.a, and kept from
     /// one frame to the next).</summary>
-    public AlundraEntityScriptProxy? Entity;
+    public EntityScriptProxy? Entity;
 
     public readonly EventProgramState EventData = new();
 }

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Assets.Animations;
@@ -25,7 +24,7 @@ public sealed class AlundraStoredHitBoxTests
     private const int Unset = 0x5A5A5A5A;
 
     /// <summary>A bare entity with a sprite whose animation 0 (down) carries one box keyframe (or none), at a position, as the hit-pass tests build them.</summary>
-    private static AlundraEntityScriptProxy Entity(int x, int y, int z, (int Ox, int Oy, int Oz, int W, int D, int H)? box)
+    private static EntityScriptProxy Entity(int x, int y, int z, (int Ox, int Oy, int Oz, int W, int D, int H)? box)
     {
         var sprite = new AnimatedSpriteComponent();
         var spriteId = Guid.Parse("bbbbbbbb-0000-0000-0000-000000000002");
@@ -48,9 +47,9 @@ public sealed class AlundraStoredHitBoxTests
         data.CollisionKeyframes.Add(keyframe);
         sprite.AddAnimation(new Animation2d(data));
 
-        var entity = new Entity { Name = "actor", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = sprite };
+        var entity = new Entity { Name = "actor", GameplayProxyClassName = typeof(EntityScriptProxy).FullName!, RootComponent = sprite };
         entity.Initialize();
-        var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
+        var proxy = (EntityScriptProxy)entity.GameplayProxy;
         proxy.LogicContextEntity = entity;
         proxy.Status = EntityStatus.Normal;
         proxy.PosX = x << 16;

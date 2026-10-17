@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using Alundra.Entities;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Audio;
 
@@ -179,7 +179,7 @@ public sealed class SfxBank
 
     /// <summary>
     /// Session-scoped cache keyed by project path (D-T-14, docs/plan-transitions-carte.md, slice T1) -
-    /// same shape and rationale as <see cref="SpriteRecordCatalog"/>'s own cache: <see cref="AlundraWorldProxy"/>'s
+    /// same shape and rationale as <see cref="SpriteRecordCatalog"/>'s own cache: <see cref="WorldProxy"/>'s
     /// field initializer resolves through here so two consecutive worlds over the SAME project read
     /// <c>Sounds/sfx-manifest.json</c> only once, while two DIFFERENT projects never share a cached bank.
     /// </summary>

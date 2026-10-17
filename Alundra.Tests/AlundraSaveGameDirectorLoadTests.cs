@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
@@ -17,6 +16,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Transitions;
 using Alundra.SaveGames;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -63,7 +63,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
 
     private static GameState State => GameState.Instance;
 
-    private void PressF9(AlundraEntityScriptProxy? hero)
+    private void PressF9(EntityScriptProxy? hero)
     {
         _keys.Held.Clear();
         Director.UpdateRecipeKeys(null, State, Map389WorldName, hero);
@@ -365,16 +365,16 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
     {
         public int ScriptRuns;
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot) => ScriptRuns++;
+        public void RunScript(EntityScriptProxy entity, int programSlot) => ScriptRuns++;
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
 
     /// <summary>
     /// SD3: F9 on a frame where a map event would run - the key is read at the head of
-    /// <see cref="AlundraWorldProxy.Update"/>, before the gameplay gate is computed, so the departure it arms
+    /// <see cref="WorldProxy.Update"/>, before the gameplay gate is computed, so the departure it arms
     /// freezes that same frame's map-event pass: the event does not run (it did on the frame before, proving it
     /// would have).
     /// </summary>
@@ -384,7 +384,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
         var world = new World { Name = "TestWorld" };
         var camera = new Camera2dComponent();
         world.Entities.Add(new Entity { Name = "camera", RootComponent = camera });
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // no tileMap: returns before the installs, the warp director stays attached.
 
         var hero = HeroAt();

@@ -6,7 +6,6 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
-using Alundra.Scripts;
 using Alundra.UI.Inventory;
 using Alundra.UI.SubInventory;
 
@@ -15,7 +14,7 @@ namespace Alundra.UI.Saving;
 /// <summary>
 /// E16.e T4 (docs/plan-e16-etat-partie.md, L5): the save screen - a project asset,
 /// <c>UI/Screens/SaveScreen.uiscreen</c> and its XAML, versioned in <c>alundra-project</c> (parent ADR-0002), loaded
-/// through the asset manager and bound to an <see cref="AlundraSaveScreenViewModel"/> that
+/// through the asset manager and bound to an <see cref="SaveScreenViewModel"/> that
 /// <see cref="SaveScreenPresenter"/> writes every logic tick. Same shape as <see cref="SubInventoryScreen"/>:
 /// the code only sizes and scales the window, the XAML declares everything else (the author's rule: screens are
 /// declared in XAML).
@@ -49,7 +48,7 @@ public sealed class SaveScreen : XamlUIScreenBase, IDisposable
         : base(assetContentManager, ScreenAssetId)
     {
         ArgumentNullException.ThrowIfNull(fonts);
-        ViewModel = new AlundraSaveScreenViewModel();
+        ViewModel = new SaveScreenViewModel();
 
         try
         {
@@ -65,7 +64,7 @@ public sealed class SaveScreen : XamlUIScreenBase, IDisposable
     }
 
     /// <summary>What the XAML binds, and what <see cref="SaveScreenPresenter"/> writes.</summary>
-    public AlundraSaveScreenViewModel ViewModel { get; }
+    public SaveScreenViewModel ViewModel { get; }
 
     /// <summary>Gives font3 back and the screen asset itself, when the world that built this screen ends. Idempotent.</summary>
     public override void Dispose()

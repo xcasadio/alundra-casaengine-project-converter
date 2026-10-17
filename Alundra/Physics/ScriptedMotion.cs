@@ -7,7 +7,6 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Hero;
-using Alundra.Scripts;
 
 namespace Alundra.Physics;
 
@@ -15,7 +14,7 @@ namespace Alundra.Physics;
 /// Shared fixed-step (50 Hz, matching the original PSX build's own physics tick rate) kinematic mover -
 /// extracted from <see cref="PlayerManager"/>'s own E2 hero tick (<c>RunOneTick</c>/<c>IncrementForce</c>,
 /// PhysicsEngine.cs:1445-1446/1490-1491/1551-1598) so E4.b's scripted-NPC mover
-/// (<see cref="AlundraEntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch) can reuse the exact same
+/// (<see cref="EntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch) can reuse the exact same
 /// generic pieces - <see cref="IncrementForce"/> and <see cref="AnimationTables"/>' own offset tables -
 /// without duplicating them, and WITHOUT changing the hero's own behaviour: <see cref="PlayerManager.Tick"/>
 /// now simply calls <see cref="TickPlayer"/>, running the same body <c>RunOneTick</c> used to run inline,
@@ -26,15 +25,15 @@ namespace Alundra.Physics;
 /// accumulator (<c>PhysicsTickAccumulator</c>, fed a raw <c>elapsedTime</c> every RENDERED frame),
 /// completely independent of <see cref="LogicClock"/>, the SAME clock that already gates the
 /// script (pick/run) pass. The two accumulators phase-drifted against each other (they only agree on the
-/// long-run RATE, not on which rendered frame carries a tick) - <see cref="AlundraEntityScriptProxy.ForceAdjusted"/>
+/// long-run RATE, not on which rendered frame carries a tick) - <see cref="EntityScriptProxy.ForceAdjusted"/>
 /// was cleared on a render frame that carried no motion sub-step and set only on a frame that did, so a
 /// 0x1F (Walk with collision)'s own script-side read of <c>ForceAdjusted</c> usually saw a stale 0 and
 /// never took its "movement was curtailed" exit - the entity walked into geometry and stalled forever.
 /// <see cref="TickPlayer"/>/<see cref="TickScriptedNpc"/> no longer accumulate time themselves: the
-/// caller (<see cref="AlundraEntityScriptProxy.Update"/>) passes the SAME <c>ticksThisFrame</c> count
+/// caller (<see cref="EntityScriptProxy.Update"/>) passes the SAME <c>ticksThisFrame</c> count
 /// <see cref="IScriptHost.LogicTicksThisFrame"/> already handed the script pass this frame, so one
 /// logic tick is always exactly one script pass followed by one motion sub-step (and, for an NPC, one
-/// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/> vertical step) - never more, never fewer,
+/// <see cref="EntityScriptProxy.EvaluateEntitySupport"/> vertical step) - never more, never fewer,
 /// never on a different frame.
 ///
 /// The ONE deliberate difference between the two callers is which field feeds the per-tick
@@ -42,7 +41,7 @@ namespace Alundra.Physics;
 /// this chantier's scope to change, and still the closest available equivalent for a hero with no
 /// <c>AnimationSet</c>-reassignment-site port of its own); <see cref="TickScriptedNpc"/> uses
 /// <c>CurrentAnimationId</c> instead, matching the original's own <c>entity.AnimationSet</c> read (see
-/// <see cref="AlundraEntityScriptProxy.Update"/>'s own E4.b doc for the full pre-read finding and the
+/// <see cref="EntityScriptProxy.Update"/>'s own E4.b doc for the full pre-read finding and the
 /// documented one-frame-latency deviation this implies). <see cref="RunOneKinematicTick"/> below takes the
 /// animation id as a parameter precisely so this one distinction stays a one-line difference at each call
 /// site rather than two near-duplicate tick bodies.
@@ -71,7 +70,7 @@ internal static class ScriptedMotion
     /// <summary>Fixed positive value <see cref="TickPlayer"/> latches through
     /// <see cref="CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent.SetExternalVerticalDisplacement"/>
     /// for EVERY tick the hero spends Climbing/ClimbStill, regardless of the real signed
-    /// <see cref="AlundraEntityScriptProxy.ForceZ"/> for that tick (verifier F1/F2 fix) - see that call
+    /// <see cref="EntityScriptProxy.ForceZ"/> for that tick (verifier F1/F2 fix) - see that call
     /// site's own doc for the full rationale (the engine's own `UpdateGround` only reads this latch's SIGN,
     /// never its magnitude). Not a physical distance; any positive value would do.</summary>
     internal const float ClimbingExternalDisplacementSentinel = 1f;
@@ -86,7 +85,7 @@ internal static class ScriptedMotion
     /// same <c>ticksThisFrame</c> the shared <see cref="LogicClock"/> already handed the script
     /// pass this same frame, never a separately-accumulated value. Called from
     /// <see cref="PlayerManager.Tick"/>.</summary>
-    internal static void TickPlayer(AlundraEntityScriptProxy player, int ticks)
+    internal static void TickPlayer(EntityScriptProxy player, int ticks)
     {
         for (var i = 0; i < ticks; i++)
         {
@@ -160,16 +159,16 @@ internal static class ScriptedMotion
 
     /// <summary>Runs ONE 50 Hz kinematic tick for a controller-driven, non-player entity (E4.b,
     /// docs/plan-e4-deplacement-scripte.md "Mover scripte par frame") - same shape as
-    /// <see cref="TickPlayer"/>, keyed off <see cref="AlundraEntityScriptProxy.CurrentAnimationId"/> instead
-    /// of <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> - see this class' own doc for why.
-    /// Called once per logic tick from <see cref="AlundraEntityScriptProxy.Update"/>'s own <c>!IsPlayer</c>
+    /// <see cref="TickPlayer"/>, keyed off <see cref="EntityScriptProxy.CurrentAnimationId"/> instead
+    /// of <see cref="EntityScriptProxy.TargetAnimationId"/> - see this class' own doc for why.
+    /// Called once per logic tick from <see cref="EntityScriptProxy.Update"/>'s own <c>!IsPlayer</c>
     /// branch, inside the SAME per-tick loop that runs this entity's script pass immediately before it and
-    /// its <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/> immediately after (this class' own
-    /// doc, ONE-CLOCK fix) - unconditionally (E4.e), not gated on <see cref="AlundraEntityScriptProxy.Controller"/>:
+    /// its <see cref="EntityScriptProxy.EvaluateEntitySupport"/> immediately after (this class' own
+    /// doc, ONE-CLOCK fix) - unconditionally (E4.e), not gated on <see cref="EntityScriptProxy.Controller"/>:
     /// <see cref="RunOneKinematicTick"/>'s own controller-null branch integrates <c>Pos*</c> directly, same
     /// as it always did for the pre-E3 hero, so this is safe to call for every non-player entity regardless
     /// of whether it carries a controller.</summary>
-    internal static void TickScriptedNpc(AlundraEntityScriptProxy entity)
+    internal static void TickScriptedNpc(EntityScriptProxy entity)
     {
         // E20.e0a3b (D-E0A-8, ADR-0065): an entity born by the interface of the sprite index (and, since E20.e0a4, by a script opcode from a record) whose first animation is not validated yet (CurrentAnimationId still ~0, as the creation leaves it) takes its
         // animation set from the target: the binary's creation has switched to it already (0x80038AB4). Guarded by the marker, so no entity of the map load ever sees this line; the entities from a record made by the script opcodes 0x2D, 0x8A and 0x8B do since E20.e0a4.
@@ -177,14 +176,14 @@ internal static class ScriptedMotion
     }
 
     /// <summary>One logic tick's worth of motion for either caller - PhysicsEngine.cs:17 (top of
-    /// UpdateEntitiesPhysics): <see cref="AlundraEntityScriptProxy.ForceAdjusted"/> is cleared exactly once
+    /// UpdateEntitiesPhysics): <see cref="EntityScriptProxy.ForceAdjusted"/> is cleared exactly once
     /// per TICK, immediately before that tick's own kinematic step - see that field's own doc. A curtailed
-    /// step (<see cref="AlundraEntityScriptProxy.MoveControllerAndPullPosition"/>) sets it back within this
+    /// step (<see cref="EntityScriptProxy.MoveControllerAndPullPosition"/>) sets it back within this
     /// SAME tick; it then stays set until the very next tick's own clear, which is exactly what makes it a
     /// reliable "last completed tick was curtailed" signal for the NEXT tick's script pass to read (see
-    /// <see cref="AlundraEntityScriptProxy.ForceAdjusted"/>'s own doc and this class' own doc, ONE-CLOCK
+    /// <see cref="EntityScriptProxy.ForceAdjusted"/>'s own doc and this class' own doc, ONE-CLOCK
     /// fix).</summary>
-    private static void RunOneMotionTick(AlundraEntityScriptProxy entity, uint animSetAnimationId)
+    private static void RunOneMotionTick(EntityScriptProxy entity, uint animSetAnimationId)
     {
         entity.ForceAdjusted = 0;
         // E19.d2c1 R5 (the binary clears +0x140 and +0x13C together at the head of the physics pass, 0x800383B4/0x800383B8).
@@ -238,18 +237,18 @@ internal static class ScriptedMotion
     /// of the hero <c>0x80036884</c>-<c>0x80036948</c>, the strict landing test <c>0x80036C20</c>-<c>0x80036C34</c> and <c>0x800376E0</c>/<c>0x80037700</c>). Returns
     /// true when the state ran this tick.
     /// <list type="bullet">
-    /// <item><description>Entry: the impulse of an animation taken at this tick (<see cref="AlundraEntityScriptProxy.IsZForceApplied"/>, R1) or the mark of
+    /// <item><description>Entry: the impulse of an animation taken at this tick (<see cref="EntityScriptProxy.IsZForceApplied"/>, R1) or the mark of
     /// <c>0x1B</c> on the hero. The live values of the engine (its gravity, <c>MaxFallSpeed</c>, vertical ownership) are captured, then gravity and fall speed
     /// go to 0 and the vertical becomes external; they are given back AS CAPTURED at the landing (a gravity already at 0 by a <c>0x17</c> stays 0).</description></item>
     /// <item><description>Force: impulse tick, <c>ForceZ = IZF &lt;&lt; 8</c> with no decay; otherwise, with <see cref="EntityFlags.Gravity"/>, the decay
     /// <c>ForceZ -= Gravity &lt;&lt; 8</c> bounded on both sides by <c>ZViscosity &lt;&lt; 8</c>; without Gravity, unchanged.</description></item>
     /// <item><description>Step: <c>F &gt; 0</c> rises (E19.h3: stopped under the bottom of a collidable above or at the absolute ceiling, <see cref="EntitySupport.TryFindCeiling"/>); otherwise the STRICT test <c>PosZ + F &lt; T</c> (<c>T</c>, the terrain under the box at the
-    /// position before the XY step): landed means <c>PosZ = T</c>, <c>ForceZ = 0</c> with gravity, <see cref="AlundraEntityScriptProxy.CollidedWithEntityZ"/> 1 and
-    /// the state ends; not landed, <c>PosZ += F</c>. The logical <see cref="AlundraEntityScriptProxy.PosZ"/> is the truth; the root follows by a vertical
+    /// position before the XY step): landed means <c>PosZ = T</c>, <c>ForceZ = 0</c> with gravity, <see cref="EntityScriptProxy.CollidedWithEntityZ"/> 1 and
+    /// the state ends; not landed, <c>PosZ += F</c>. The logical <see cref="EntityScriptProxy.PosZ"/> is the truth; the root follows by a vertical
     /// displacement of the controller (never a teleport: X and Y keep their fraction).</description></item>
     /// </list>
     /// </summary>
-    private static bool RunHeroVerticalTick(AlundraEntityScriptProxy hero)
+    private static bool RunHeroVerticalTick(EntityScriptProxy hero)
     {
         var impulse = hero.IsZForceApplied != 0;
 
@@ -315,7 +314,7 @@ internal static class ScriptedMotion
         // landing test. The platform is the entity whose logic entity the hero's RidingEntity holds (recalculated at the head of this tick). F2b: the force of the tick it
         // copies is the one the carrier had BEFORE its own landing (TickForceZ): the binary computes the forces of all the entities first, so a carrier with gravity at rest
         // gives -(Gravity << 8) and the hero lands on it at every tick, while ForceZ (zeroed by the landing, as in the binary) stays the carrier's.
-        if (!impulse && hero.RidingEntity?.GameplayProxy is AlundraEntityScriptProxy carrier)
+        if (!impulse && hero.RidingEntity?.GameplayProxy is EntityScriptProxy carrier)
         {
             hero.ForceZ = carrier.ForceZ;
             hero.FinalForceZ = carrier.TickForceZ;
@@ -358,7 +357,7 @@ internal static class ScriptedMotion
             // support is the terrain again.
             landed = !onEntity;
         }
-        else if (tickForce > 0 && EntitySupport.TryFindCeiling(hero, hero.ScriptHost?.Collidables ?? Array.Empty<AlundraEntityScriptProxy>(), tickForce, out var ceilingPosZ))
+        else if (tickForce > 0 && EntitySupport.TryFindCeiling(hero, hero.ScriptHost?.Collidables ?? Array.Empty<EntityScriptProxy>(), tickForce, out var ceilingPosZ))
         {
             // E19.h3 (H3-R2, binary 0x80036D94): a rise stops under the bottom of a collidable above (or at the absolute ceiling of 1920 px): contact, ForceZ 0 with gravity.
             hero.PosZ = ceilingPosZ;
@@ -411,7 +410,7 @@ internal static class ScriptedMotion
     /// attempt to the next): it reads the real displacement of the tick, <c>LastTickDeltaX/Y</c> (slide included); the gap is bounded and no case of the corpus tells them apart.
     /// Gate 1 is kept for fidelity although it is an equivalent mutant in this model (no force implies no displacement, so gate 2 already returns).
     /// </summary>
-    private static void SnapHeroAtApex(AlundraEntityScriptProxy hero)
+    private static void SnapHeroAtApex(EntityScriptProxy hero)
     {
         if ((hero.Flags & EntityFlags.Gravity) == 0 || hero.ForceZ != 0)
         {
@@ -449,21 +448,21 @@ internal static class ScriptedMotion
     /// <summary>
     /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, D-E0K-3 to D-E0K-5), the first half of the logical step of an entity that is not the hero: the vertical step the binary takes BEFORE the XY step
     /// (<c>MoveEntity</c> <c>0x80037E34</c>: <c>ComputeZ</c> <c>0x800375E0</c> then <c>ComputeXY</c> <c>0x80037730</c>), in the DLL's frame (the binary's minus one raw unit, ADR-0026). <see cref="RunOneMotionTick"/> calls it,
-    /// before the XY step, for an entity marked <see cref="AlundraEntityScriptProxy.HasLogicalZ"/> (phase B, W1). Returns false, and changes nothing, for the hero and for an entity without a
+    /// before the XY step, for an entity marked <see cref="EntityScriptProxy.HasLogicalZ"/> (phase B, W1). Returns false, and changes nothing, for the hero and for an entity without a
     /// controller or a root (the 12 prefabs without a controller keep <c>StepVerticalWithoutController</c>). The model is the hero's air state (<see cref="RunHeroVerticalTick"/>, which it does not touch):
     /// <list type="bullet">
-    /// <item><description>Force: the law of the binary, <see cref="AlundraEntityScriptProxy.ApplyVerticalForceLaw"/> (the ONE decay site, shared with the support block of the controller); the force of the tick is kept in
-    /// <see cref="AlundraEntityScriptProxy.TickForceZ"/> before any landing resets it.</description></item>
+    /// <item><description>Force: the law of the binary, <see cref="EntityScriptProxy.ApplyVerticalForceLaw"/> (the ONE decay site, shared with the support block of the controller); the force of the tick is kept in
+    /// <see cref="EntityScriptProxy.TickForceZ"/> before any landing resets it.</description></item>
     /// <item><description>Step: <c>F &gt; 0</c> rises and stops at the absolute ceiling of 1 920 px (<see cref="EntitySupport.TryFindCeiling"/> without the other entities: the ceilings they form are not ported, O-E0K-6; contact,
     /// <c>ForceZ</c> to 0 with gravity); otherwise the STRICT test <c>PosZ + ModZ + F &lt; T</c>, <c>T</c> being the terrain under the box at the position before the XY step, computed here (never the stale field), or the top
     /// of the entity under the box for a subject (the very call of the binary's support, <see cref="EntitySupport.TryFindSupport"/>): landed means <c>PosZ = T - ModZ</c>, <c>ForceZ</c> and the force of the tick to 0 with
-    /// gravity, <see cref="AlundraEntityScriptProxy.CollidedWithEntityZ"/> 1; not landed, <c>PosZ += F</c>. Reaching <c>T</c> exactly is not a landing: the contact comes one tick later.</description></item>
-    /// <item><description>The logical <see cref="AlundraEntityScriptProxy.PosZ"/> is the truth: the root follows by a vertical displacement of the controller (<see cref="AlundraEntityScriptProxy.FollowPosZOnRoot"/>, never a
-    /// teleport), <see cref="AlundraEntityScriptProxy.ZHeldByTick"/> is raised so the horizontal pull does not rewrite it, and the positive latch of the vertical is declared
+    /// gravity, <see cref="EntityScriptProxy.CollidedWithEntityZ"/> 1; not landed, <c>PosZ += F</c>. Reaching <c>T</c> exactly is not a landing: the contact comes one tick later.</description></item>
+    /// <item><description>The logical <see cref="EntityScriptProxy.PosZ"/> is the truth: the root follows by a vertical displacement of the controller (<see cref="EntityScriptProxy.FollowPosZOnRoot"/>, never a
+    /// teleport), <see cref="EntityScriptProxy.ZHeldByTick"/> is raised so the horizontal pull does not rewrite it, and the positive latch of the vertical is declared
     /// (<see cref="AirborneExternalDisplacementSentinel"/>) so the engine never anchors the root to the ground.</description></item>
     /// </list>
     /// </summary>
-    internal static bool RunLogicalZPreXyStep(AlundraEntityScriptProxy entity)
+    internal static bool RunLogicalZPreXyStep(EntityScriptProxy entity)
     {
         var controller = entity.Controller;
         if (entity.IsPlayer || controller == null || entity.OwnerEntity?.RootComponent == null)
@@ -502,7 +501,7 @@ internal static class ScriptedMotion
 
             entity.CollidedWithEntityZ = 1;
         }
-        else if (tickForce > 0 && EntitySupport.TryFindCeiling(entity, Array.Empty<AlundraEntityScriptProxy>(), tickForce, out var ceilingPosZ))
+        else if (tickForce > 0 && EntitySupport.TryFindCeiling(entity, Array.Empty<EntityScriptProxy>(), tickForce, out var ceilingPosZ))
         {
             entity.PosZ = ceilingPosZ;
             if (gravity)
@@ -534,11 +533,11 @@ internal static class ScriptedMotion
 
     /// <summary>
     /// E20.e0k2 (D-E0K-4), the second half of the logical step: after the XY step of the tick, the magnet of 3 px (<c>0x80037848</c>, the body of <see cref="SnapHeroAtApex"/>, which stays untouched), then
-    /// <see cref="AlundraEntityScriptProxy.IsOnGround"/> derived from the position after the step, not pulled from the engine: <c>PosZ + ModZ &lt;=</c> the floor (the binary's <c>!(FloorHeight &lt; PosZ)</c>,
-    /// <c>0x800380F8</c>, without its +1; the floor is the higher of the terrain and the top of an entity under the box, <see cref="AlundraEntityScriptProxy.ComputeFloorHeight"/>). Same applicability as
+    /// <see cref="EntityScriptProxy.IsOnGround"/> derived from the position after the step, not pulled from the engine: <c>PosZ + ModZ &lt;=</c> the floor (the binary's <c>!(FloorHeight &lt; PosZ)</c>,
+    /// <c>0x800380F8</c>, without its +1; the floor is the higher of the terrain and the top of an entity under the box, <see cref="EntityScriptProxy.ComputeFloorHeight"/>). Same applicability as
     /// <see cref="RunLogicalZPreXyStep"/>; <see cref="RunOneMotionTick"/> calls it after the XY step (W1).
     /// </summary>
-    internal static void RunLogicalZPostXyStep(AlundraEntityScriptProxy entity)
+    internal static void RunLogicalZPostXyStep(EntityScriptProxy entity)
     {
         if (entity.IsPlayer || entity.Controller == null || entity.OwnerEntity?.RootComponent == null)
         {
@@ -555,7 +554,7 @@ internal static class ScriptedMotion
     /// if the entity is at most 3 px above it (<c>PosZ - T' &lt;= 0x30000</c>) or at most 3 px + 1 unit under it (<c>T' - PosZ &lt;= 0x30001</c>, the window of the binary in the DLL's frame),
     /// <c>PosZ = T'</c> unless an entity occupies the box at <c>T'</c> (the snap is then undone).
     /// </summary>
-    private static void SnapAtApex(AlundraEntityScriptProxy entity)
+    private static void SnapAtApex(EntityScriptProxy entity)
     {
         if ((entity.Flags & EntityFlags.Gravity) == 0 || entity.ForceZ != 0)
         {
@@ -592,7 +591,7 @@ internal static class ScriptedMotion
     /// Gives the engine the values captured at the entry of the air state (its gravity, <c>MaxFallSpeed</c>, vertical ownership and, E19.d2c2 S6,
     /// <c>StepHeight</c>): the landing, and the adoption of a new pawn while the state is up (<c>AlundraWorldProxy.AdoptPlayerPawn</c>).
     /// </summary>
-    internal static void RestoreAirborneEngineValues(AlundraEntityScriptProxy hero, CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent controller)
+    internal static void RestoreAirborneEngineValues(EntityScriptProxy hero, CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent controller)
     {
         controller.Settings.Gravity = hero.AirborneSavedGravity;
         controller.Settings.MaxFallSpeed = hero.AirborneSavedMaxFallSpeed;
@@ -609,10 +608,10 @@ internal static class ScriptedMotion
     /// class' own doc for <see cref="TickPlayer"/> vs <see cref="TickScriptedNpc"/>'s own choice). Same V1
     /// scope as before this extraction: no riding-platform force feed (<c>PreviousAdjustedForceX/Y</c> stay 0), and the
     /// <c>ApplyEntityForces</c> NegModX/Y/ScreenClipX/Y clamp of the step is ported only for an entity marked
-    /// <see cref="AlundraEntityScriptProxy.HasLogicalZ"/> (E20.e0k3, <see cref="ClampStepToMapEdge"/>); the hero and the entities born
+    /// <see cref="EntityScriptProxy.HasLogicalZ"/> (E20.e0k3, <see cref="ClampStepToMapEdge"/>); the hero and the entities born
     /// from a record keep their unbounded step (O-E19-17, D-E19-25).
     /// </summary>
-    private static void RunOneKinematicTick(AlundraEntityScriptProxy entity, uint animSetAnimationId)
+    private static void RunOneKinematicTick(EntityScriptProxy entity, uint animSetAnimationId)
     {
         AnimSetEntry animSet = default;
         var hasAnimSet = entity.AnimSetsByAnim != null
@@ -675,7 +674,7 @@ internal static class ScriptedMotion
         entity.FinalForceZ = entity.ForceZ;
 
         // E19.d2c2 S4 (the binary, 0x80037364): the hero carried by an entity adds the displacement that entity realized at its last tick to its own XY step.
-        if (entity.IsPlayer && entity.RidingEntity?.GameplayProxy is AlundraEntityScriptProxy carrier)
+        if (entity.IsPlayer && entity.RidingEntity?.GameplayProxy is EntityScriptProxy carrier)
         {
             entity.FinalForceX += carrier.LastTickDeltaX;
             entity.FinalForceY += carrier.LastTickDeltaY;
@@ -733,13 +732,13 @@ internal static class ScriptedMotion
 
     /// <summary>
     /// E20.e0k3 (docs/plan-e20-heros.md section 1.18.3, D-E0K-7, phase A): the clamp of the step to the grid of the map (52 x 60 cells), ported from the forces pass of the binary (<c>0x800366FC</c>-<c>0x800367E0</c>). Pure: it reads
-    /// the position and the bounds the entity already carries (<see cref="AlundraEntityScriptProxy.NegModX"/>/<see cref="AlundraEntityScriptProxy.NegModY"/> = <c>+0x108</c>/<c>+0x10C</c>, <see cref="AlundraEntityScriptProxy.ScreenClipX"/>/
-    /// <see cref="AlundraEntityScriptProxy.ScreenClipY"/> = <c>+0xFC</c>/<c>+0x100</c>, set by <see cref="EntitySpawnFactory.SetEntityDimensions"/>) and moves nothing. Per axis the arrival <c>Pos + step</c> is compared
+    /// the position and the bounds the entity already carries (<see cref="EntityScriptProxy.NegModX"/>/<see cref="EntityScriptProxy.NegModY"/> = <c>+0x108</c>/<c>+0x10C</c>, <see cref="EntityScriptProxy.ScreenClipX"/>/
+    /// <see cref="EntityScriptProxy.ScreenClipY"/> = <c>+0xFC</c>/<c>+0x100</c>, set by <see cref="EntitySpawnFactory.SetEntityDimensions"/>) and moves nothing. Per axis the arrival <c>Pos + step</c> is compared
     /// STRICTLY (the two <c>slt</c> of the binary, <c>0x80036774</c>/<c>0x80036788</c> on X and <c>0x800367AC</c>/<c>0x800367C0</c> on Y): below the low bound it is brought back to it, else above the high bound it is brought back to it,
     /// and the flag is raised (<c>+0x13C</c>, the same tick); an arrival exactly ON a bound is neither bounded nor flagged. The two axes are independent (a diagonal step bounded on X keeps its Y). Phase B calls it before the mover for an
-    /// entity marked <see cref="AlundraEntityScriptProxy.HasLogicalZ"/> only (see <see cref="RunOneKinematicTick"/>).
+    /// entity marked <see cref="EntityScriptProxy.HasLogicalZ"/> only (see <see cref="RunOneKinematicTick"/>).
     /// </summary>
-    internal static MapEdgeClamp ClampStepToMapEdge(AlundraEntityScriptProxy entity, int stepX, int stepY)
+    internal static MapEdgeClamp ClampStepToMapEdge(EntityScriptProxy entity, int stepX, int stepY)
     {
         var x = ClampAxisToMapEdge(entity.PosX, stepX, entity.NegModX, entity.ScreenClipX);
         var y = ClampAxisToMapEdge(entity.PosY, stepY, entity.NegModY, entity.ScreenClipY);
@@ -766,12 +765,12 @@ internal static class ScriptedMotion
     /// E19.h4 H4-R2/H4-R4 (docs/plan-e19-opcodes.md §1.2n.4), step 1 of the slide along walls: what the binary's <c>ComputeXYPosition</c> (<c>0x80037730</c>) does once no half
     /// step of the tick is accepted. Run right after the controller's first step of the kinematic tick, and only when <c>TargetDirection</c> and the requested displacement
     /// agree (a cardinal direction asks its axis alone with its sign, an oblique one both axes with the signs of its quadrant; <c>TargetDirection &gt;= 32</c> never does):
-    /// then it replaces the <see cref="AlundraEntityScriptProxy.ForceAdjusted"/> the first step posted, which stays as it is otherwise (and for every direct call of
-    /// <see cref="AlundraEntityScriptProxy.MoveControllerAndPullPosition"/>).
+    /// then it replaces the <see cref="EntityScriptProxy.ForceAdjusted"/> the first step posted, which stays as it is otherwise (and for every direct call of
+    /// <see cref="EntityScriptProxy.MoveControllerAndPullPosition"/>).
     /// <list type="bullet">
     /// <item><description>Cardinal: when the first step made no progress on its axis, no entity touched it and the slide is not forbidden (<c>NoObstacleSlide</c>, bit <c>0x2000</c>),
     /// the four corners of the box, taken one 16.16 unit further in the walking direction, give the table of <c>0x80023734</c>: <c>ForceAdjusted</c>, or ONE second step along
-    /// the wall (a quarter pixel less than a pixel to the side for a step north or south, half a pixel for east or west; <see cref="AlundraEntityScriptProxy.SlideCount"/>
+    /// the wall (a quarter pixel less than a pixel to the side for a step north or south, half a pixel for east or west; <see cref="EntityScriptProxy.SlideCount"/>
     /// counts it). A tick that progressed leaves <c>ForceAdjusted</c> at 0.</description></item>
     /// <item><description>Oblique: no second step (the engine already advanced the free axis, O-E19-28 a); <c>ForceAdjusted</c> only when an axis made no progress AND (the slide is
     /// forbidden, or the table of the corners at the position reached says so, or no axis progressed).</description></item>
@@ -779,7 +778,7 @@ internal static class ScriptedMotion
     /// A corner is blocked like the engine blocks it (<c>IsHorizontalMoveBlocked</c>): its cell is not walkable for the entity's mask, or its ground is higher than the foot plus
     /// the step height of the controller.
     /// </summary>
-    private static void SlideAlongWall(AlundraEntityScriptProxy entity, Vector3 firstStep)
+    private static void SlideAlongWall(EntityScriptProxy entity, Vector3 firstStep)
     {
         var direction = entity.TargetDirection;
         var forceX = entity.FinalForceX;
@@ -815,8 +814,8 @@ internal static class ScriptedMotion
 
         var requestedX = forceX / 65536f;
         var requestedY = forceY / 65536f;
-        var noProgressX = AlundraEntityScriptProxy.AxisMadeNoProgress(requestedX, firstStep.X);
-        var noProgressY = AlundraEntityScriptProxy.AxisMadeNoProgress(requestedY, firstStep.Y);
+        var noProgressX = EntityScriptProxy.AxisMadeNoProgress(requestedX, firstStep.X);
+        var noProgressY = EntityScriptProxy.AxisMadeNoProgress(requestedY, firstStep.Y);
         var forbidden = entity.XCollisionEntity != null || (entity.Flags & EntityFlags.NoObstacleSlide) != 0;
 
         if (!cardinal)
@@ -889,7 +888,7 @@ internal static class ScriptedMotion
         entity.SlideCount++;
         var slidAlongX = slideX != 0;
         var slideRequested = (slidAlongX ? slideX : slideY) / 65536f;
-        entity.ForceAdjusted = AlundraEntityScriptProxy.AxisMadeNoProgress(slideRequested, slidAlongX ? slide.X : slide.Y) ? 1 : 0;
+        entity.ForceAdjusted = EntityScriptProxy.AxisMadeNoProgress(slideRequested, slidAlongX ? slide.X : slide.Y) ? 1 : 0;
     }
 
     private static bool Corner(int mask, int index) => (mask & (1 << index)) != 0;
@@ -898,7 +897,7 @@ internal static class ScriptedMotion
     /// The blocked corners (bit i of the result: corner [i], with [0] = (x1, y1), [1] = (x2, y1), [2] = (x1, y2), [3] = (x2, y2), as <c>ComputeEntityGroundHeight</c> <c>0x800370C4</c>
     /// takes them) of the box of <paramref name="entity"/> at its position moved by (<paramref name="advanceX"/>, <paramref name="advanceY"/>) 16.16 units; none without a cell field.
     /// </summary>
-    private static int BlockedCorners(AlundraEntityScriptProxy entity, int advanceX, int advanceY)
+    private static int BlockedCorners(EntityScriptProxy entity, int advanceX, int advanceY)
     {
         if (entity.ReadCollisionField() is not CellsCollisionField field || entity.Controller == null)
         {
@@ -928,7 +927,7 @@ internal static class ScriptedMotion
     /// E19.d2c1 R7: the boots level of the hero, 3, 2 or 1 when the object <c>0x1C</c>, <c>0x1B</c> or <c>0x1A</c> is owned (<see cref="PlayerManager.GetNumberOfItem"/>,
     /// <c>NumberOfItems[id * 2 + 1]</c>), else 0; 0 too without a script host (a bare proxy), without exception.
     /// </summary>
-    private static int BootsLevel(AlundraEntityScriptProxy hero)
+    private static int BootsLevel(EntityScriptProxy hero)
     {
         var state = hero.ScriptHost?.GameState;
         return state == null ? 0 : PlayerManager.BootsLevelOf(state); // E20.c2a T2: the step 1 of UpdateItemEffectState, shared.

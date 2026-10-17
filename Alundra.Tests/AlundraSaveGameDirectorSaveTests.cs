@@ -1,13 +1,13 @@
 #nullable enable
 using System;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.SaveGames;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Session;
 using Alundra.SaveGames;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -47,7 +47,7 @@ public sealed class AlundraSaveGameDirectorSaveTests : IDisposable
     private static GameState State => GameState.Instance;
 
     /// <summary>One press of <paramref name="key"/>: a frame with it released, then a frame with it held.</summary>
-    private void Press(Keys key, AlundraEntityScriptProxy? hero, string worldName = Map389WorldName)
+    private void Press(Keys key, EntityScriptProxy? hero, string worldName = Map389WorldName)
     {
         _keys.Held.Clear();
         Director.UpdateRecipeKeys(null, State, worldName, hero);

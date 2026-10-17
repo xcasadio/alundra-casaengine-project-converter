@@ -2,26 +2,26 @@
 using System;
 using CasaEngine.Framework.UI;
 using Alundra.Dialogues;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.UI.Choice;
 
 /// <summary>
 /// E19.f3b (docs/plan-e19-opcodes.md): reads the drawn state of the choice box after a pass (<see cref="DialogueDirector.ChoiceBox"/>) and writes it into the screen's
-/// <see cref="AlundraChoiceViewModel"/>, which <c>ChoiceScreen.xaml</c> binds - one <see cref="Tick"/> right after each pass of the director (which runs the choice pass last),
-/// from <see cref="AlundraWorldProxy.Update(float)"/>, after the text box presenter's.
+/// <see cref="ChoiceViewModel"/>, which <c>ChoiceScreen.xaml</c> binds - one <see cref="Tick"/> right after each pass of the director (which runs the choice pass last),
+/// from <see cref="WorldProxy.Update(float)"/>, after the text box presenter's.
 /// </summary>
 public sealed class ChoicePresenter
 {
     private readonly DialogueDirector _director;
-    private readonly AlundraChoiceViewModel _viewModel;
+    private readonly ChoiceViewModel _viewModel;
     private readonly IUIScreen _screen;
     private readonly IUIViewRuntime? _uiView;
     private bool _pushed;
 
     public ChoicePresenter(
         DialogueDirector director,
-        AlundraChoiceViewModel viewModel,
+        ChoiceViewModel viewModel,
         IUIScreen screen,
         IUIViewRuntime? uiView)
     {

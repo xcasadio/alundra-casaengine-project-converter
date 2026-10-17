@@ -8,11 +8,12 @@ using Alundra.Physics;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
-using Alundra.Scripts;
 using Alundra.UI.Hud;
 using Alundra.UI.Saving;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
+using Alundra.Entities;
+using Alundra.Maps;
 
 namespace Alundra.UI.Inventory;
 
@@ -35,7 +36,7 @@ namespace Alundra.UI.Inventory;
 /// original simply never runs the trigger during its transition loop; see <see cref="TryTrigger"/>.</para>
 ///
 /// <para><b>Where it sits in the tick</b> (E19.u, docs/plan-e19-opcodes.md section 1.2y, D-E19-103, ADR-0050):
-/// <see cref="AlundraWorldProxy.Update"/> calls <see cref="Tick"/> at the END of each logic tick, every tick,
+/// <see cref="WorldProxy.Update"/> calls <see cref="Tick"/> at the END of each logic tick, every tick,
 /// after the pass of the dialogue box, the save screen and the map events of that same tick. The binary's trigger
 /// sits in <c>Update(k)</c> after <c>UpdateWorld</c> (0x8002bc6c, after the map events 0x8003c67c, the entities
 /// and the effects), and the box released by the <c>RenderScene</c> before it (0x8004501c clears bits 0x18 of
@@ -362,7 +363,7 @@ public sealed class InventoryDirector
     /// (<c>FUN_80056598</c>) only starts on the next one. <paramref name="player"/> is the hero's own
     /// proxy (for the <c>BlockedByEntity</c> guard, GameEngine.cs:1568) - null is tolerated (no live
     /// session/player yet), same degraded shape as every other missing-system seam in this DLL.</summary>
-    public void Tick(AlundraEntityScriptProxy? player)
+    public void Tick(EntityScriptProxy? player)
     {
         if (_gameState == null)
         {
@@ -401,7 +402,7 @@ public sealed class InventoryDirector
     /// <summary>Port of the trigger (<c>GameEngine.cs:1567-1576</c>) - see this class' own doc for the
     /// two guards with no port equivalent, each declared absent/always-0 right where it is tested, and for
     /// the warp-transition guard this port adds.</summary>
-    private static bool TryTrigger(GameState state, AlundraEntityScriptProxy? player)
+    private static bool TryTrigger(GameState state, EntityScriptProxy? player)
     {
         // GameEngine.cs:1568 - StaticVariables.g_playerControlFlags == 0.
         if (state.PlayerControlFlags != 0)

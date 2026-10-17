@@ -1,8 +1,8 @@
 #nullable enable
 using System.Collections.Generic;
 using Alundra.Events;
-using Alundra.Scripts;
 using Alundra.Hero;
+using Alundra.Entities;
 
 namespace Alundra.Ai.Projectiles;
 
@@ -24,18 +24,18 @@ internal static class WaveSwordAi
 
     /// <summary>Test seam, per thread: when non-null, every call of the named stub <see cref="CheckAndTriggerTileEffect"/> appends the entity it was called for (the motif of <see cref="PlayerAnimationEffects.StubCallsForTests"/>).</summary>
     [System.ThreadStatic]
-    internal static List<AlundraEntityScriptProxy>? StubCallsForTests;
+    internal static List<EntityScriptProxy>? StubCallsForTests;
 
     /// <summary>Registers C61 for the types 27 to 29.</summary>
     internal static void Register(NativeSpriteRegistry registry)
         => registry.Register(ScriptHelper.ProgramCTick, TickCode, SpriteTypes, (entity, context, state) => Tick(entity));
 
     /// <summary>C61 (<c>0x8007A958</c>), one tick of the wave: the call of the cutting of the grass, a named stub until E20.e.</summary>
-    internal static void Tick(AlundraEntityScriptProxy entity) => CheckAndTriggerTileEffect(entity);
+    internal static void Tick(EntityScriptProxy entity) => CheckAndTriggerTileEffect(entity);
 
     /// <summary>
     /// <c>CheckAndTriggerTileEffect</c> (<c>0x8003A7B0</c>), named stub. The binary cuts the grass cells under the entity's box and draws at least one word of the generator per cell cut (it may drop an item); the cutting is E20.e
     /// (Q-F3-2). Until then the stub cuts nothing and draws nothing, so the generator drifts after any wave over grass (O-F3-1).
     /// </summary>
-    internal static void CheckAndTriggerTileEffect(AlundraEntityScriptProxy entity) => StubCallsForTests?.Add(entity);
+    internal static void CheckAndTriggerTileEffect(EntityScriptProxy entity) => StubCallsForTests?.Add(entity);
 }

@@ -2,8 +2,8 @@
 using System;
 using Alundra.Maps;
 using Alundra.Events;
-using Alundra.Scripts;
 using Alundra.Rng;
+using Alundra.Entities;
 
 namespace Alundra.Ai.Enemies;
 
@@ -20,7 +20,7 @@ namespace Alundra.Ai.Enemies;
 /// </summary>
 internal static class BeannoideAi
 {
-    /// <summary>The sprite type of the Beannoid (<see cref="AlundraEntityScriptProxy.SpriteType"/>).</summary>
+    /// <summary>The sprite type of the Beannoid (<see cref="EntityScriptProxy.SpriteType"/>).</summary>
     internal const int SpriteType = 335;
 
     /// <summary>The program code of A1, C1 and D1 in their slot.</summary>
@@ -36,14 +36,14 @@ internal static class BeannoideAi
     }
 
     /// <summary>A1 (<c>0x80061758</c>): the target animation 2 (dormant), written at <c>0x80061760</c>.</summary>
-    internal static void Load(AlundraEntityScriptProxy entity) => entity.TargetAnimationId = 2;
+    internal static void Load(EntityScriptProxy entity) => entity.TargetAnimationId = 2;
 
     /// <summary>D1 (<c>0x8007D9A4</c>): <see cref="EnemyHelpers.HitReaction"/> with the animation 5.</summary>
-    internal static void Hit(AlundraEntityScriptProxy entity, IEntityWorldContext context) => EnemyHelpers.HitReaction(entity, 5, context);
+    internal static void Hit(EntityScriptProxy entity, IEntityWorldContext context) => EnemyHelpers.HitReaction(entity, 5, context);
 
     /// <summary>
     /// C1 (<c>0x80065ED4</c>), one tick of the Beannoid, by its target animation (<c>+0x88</c>, an unsigned byte-like value: 20 and above do nothing). With <c>rel = |dTileX|, |dTileY|, |dFloor|</c> to the hero
-    /// (<see cref="EnemyHelpers.RelativePosition"/>) and <c>ai1</c> the 16-bit counter <c>+0x282</c> (<see cref="AlundraEntityScriptProxy.AIValues"/>[1]):
+    /// (<see cref="EnemyHelpers.RelativePosition"/>) and <c>ai1</c> the 16-bit counter <c>+0x282</c> (<see cref="EntityScriptProxy.AIValues"/>[1]):
     /// <list type="bullet">
     /// <item><description>0 (idle): the counter counts down to 0; then, within 3 tiles and 32 height units of the hero and with <c>+0x275</c> clear, it turns to the hero, takes the animation 3 (lunge) and sets <c>+0x275</c>;
     /// else it takes the animation 1 (walk) for <c>0x3C + Below(0x3D)</c> ticks, turning to the hero when within 4 tiles, and clears <c>+0x275</c>.</description></item>
@@ -54,7 +54,7 @@ internal static class BeannoideAi
     /// at 0 animation 0 for 0x1E ticks.</description></item>
     /// </list>
     /// </summary>
-    internal static void Tick(AlundraEntityScriptProxy entity, IEntityWorldContext context)
+    internal static void Tick(EntityScriptProxy entity, IEntityWorldContext context)
     {
         if (context.PlayerEntity is not { } hero)
         {
@@ -193,8 +193,8 @@ internal static class BeannoideAi
         }
     }
 
-    private static void SetCounter(AlundraEntityScriptProxy entity, int value) => entity.AIValues[1] = unchecked((short)value);
+    private static void SetCounter(EntityScriptProxy entity, int value) => entity.AIValues[1] = unchecked((short)value);
 
-    private static uint DirectionToHero(AlundraEntityScriptProxy entity, AlundraEntityScriptProxy hero)
+    private static uint DirectionToHero(EntityScriptProxy entity, EntityScriptProxy hero)
         => ScriptHelper.GetDirectionToTarget(unchecked(hero.PosX - entity.PosX), unchecked(hero.PosY - entity.PosY));
 }

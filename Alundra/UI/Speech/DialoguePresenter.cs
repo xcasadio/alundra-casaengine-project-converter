@@ -9,8 +9,8 @@ using CasaEngine.Framework.Dialogue.UI;
 using CasaEngine.Framework.UI;
 using Alundra.Events;
 using Alundra.Dialogues;
-using Alundra.Scripts;
 using Alundra.UI.Inventory;
+using Alundra.Maps;
 
 namespace Alundra.UI.Speech;
 
@@ -32,7 +32,7 @@ namespace Alundra.UI.Speech;
 /// recording test double of THIS interface (not of <c>ScreenStack</c>) is what proves the wiring without
 /// needing a live graphics device - see <c>AlundraDialoguePresenterWiringTests</c>.
 ///
-/// Constructed and wired ENTIRELY inside <see cref="AlundraWorldProxy.InstallDialogueSystems"/> (no
+/// Constructed and wired ENTIRELY inside <see cref="WorldProxy.InstallDialogueSystems"/> (no
 /// separable call site, the M16 lesson every install method in this DLL already follows) - never held
 /// directly by <see cref="EventProgramRunner"/>, which only ever sees it through the generic
 /// <see cref="IDialoguePresenter"/> reference <see cref="DialogueDirector"/> was attached to.

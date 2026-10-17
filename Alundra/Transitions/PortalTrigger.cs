@@ -4,7 +4,6 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Hero;
-using Alundra.Scripts;
 
 namespace Alundra.Transitions;
 
@@ -16,7 +15,7 @@ namespace Alundra.Transitions;
 /// retail build path this port targets, not ported).
 ///
 /// DETECTION ONLY (T3's whole scope, per the ticket): <see cref="TryGetTrigger"/> is pure - it reads
-/// <see cref="AlundraEntityScriptProxy"/>/<see cref="PadState"/>/<see cref="GameState"/>/the
+/// <see cref="EntityScriptProxy"/>/<see cref="PadState"/>/<see cref="GameState"/>/the
 /// portal list and writes nothing, starts no fade, requests no world change, and never calls
 /// <c>HandleWarpTransition</c>. It is the seam T4's <c>AlundraWarpDirector</c> will consume (via
 /// <see cref="PlayerManager.MovePlayer"/>'s own call site, wired through
@@ -25,11 +24,11 @@ namespace Alundra.Transitions;
 /// </summary>
 internal static class PortalTrigger
 {
-    /// <summary>Bit tested against <see cref="AlundraEntityScriptProxy.CombinedVramFlagsAND"/> - the
+    /// <summary>Bit tested against <see cref="EntityScriptProxy.CombinedVramFlagsAND"/> - the
     /// "hole" tile (§1.2.a, <c>PlayerManager.cs:3424</c>: <c>directionId &amp; 4U</c>).</summary>
     private const uint HoleBit = 0x4;
 
-    /// <summary>Bit tested against <see cref="AlundraEntityScriptProxy.CombinedVramFlagsAND"/> - the
+    /// <summary>Bit tested against <see cref="EntityScriptProxy.CombinedVramFlagsAND"/> - the
     /// "portal floor" tile (§1.2.a, <c>PlayerManager.cs:3428</c>: <c>directionId &amp; 0x8000U</c>).</summary>
     private const uint PortalFloorBit = 0x8000;
 
@@ -56,7 +55,7 @@ internal static class PortalTrigger
     /// need not re-check it once it does.
     /// </summary>
     internal static (PortalRecord Portal, uint ArrivalDirectionId)? TryGetTrigger(
-        AlundraEntityScriptProxy player,
+        EntityScriptProxy player,
         in PadState pad,
         GameState state,
         IReadOnlyList<PortalRecord> portals)

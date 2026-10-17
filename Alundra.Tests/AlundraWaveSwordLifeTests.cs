@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Xunit.Abstractions;
 using Alundra.Maps;
@@ -127,7 +126,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
         using (var run = new WaveRun("v2-on-" + ticksPerFrame, SteelItem, East))
         {
             run.Arena.Arc.Runner.NativeHandlersEnabled = true; // HitArena turns them off (E14.a0, D-E14-5): the positive case needs them ON, only the paired negative case keeps them off.
-            var journal = new List<AlundraEntityScriptProxy>();
+            var journal = new List<EntityScriptProxy>();
             WaveSwordAi.StubCallsForTests = journal;
             var previous = 0;
             run.Go(ticksPerFrame, useHook: true, afterTick: t =>
@@ -146,7 +145,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
         using (var run = new WaveRun("v2-off-" + ticksPerFrame, SteelItem, East))
         {
             run.Arena.Arc.Runner.NativeHandlersEnabled = false;
-            var journal = new List<AlundraEntityScriptProxy>();
+            var journal = new List<EntityScriptProxy>();
             WaveSwordAi.StubCallsForTests = journal;
             run.Go(ticksPerFrame, useHook: true);
             offCalls = journal.Count;

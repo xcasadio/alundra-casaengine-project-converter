@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps.Loop;
 using Alundra.Entities;
@@ -81,7 +80,7 @@ public class HeroAnimationExportTests
             return; // self-skip
         }
 
-        var proxy = new AlundraEntityScriptProxy
+        var proxy = new EntityScriptProxy
         {
             TargetAnimationId = 1,
             TargetDirection = targetDirection,

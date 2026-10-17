@@ -3,10 +3,10 @@ using CasaEngine.Core.Logging;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Events;
-using Alundra.Scripts;
 using Alundra.Dialogues;
 using Alundra.UI.Saving;
 using Alundra.SaveGames;
+using Alundra.Entities;
 
 namespace Alundra.Ai.Objects;
 
@@ -45,9 +45,9 @@ internal interface ISaveBookScreen
 /// 0x800C4F34, word 0x800C5054). Porting any other native handler is E14's, never this class's.
 ///
 /// <para><b>The book (L4, H1).</b> A port of <c>AI_ProcessWarpTransitionState</c> (0x8007B998-0x8007BB2C, jump table
-/// 0x80028204, <c>FunctionTypeC.cs:6823-6951</c>): its state is the four <see cref="AlundraEntityScriptProxy.Bytes"/>
+/// 0x80028204, <c>FunctionTypeC.cs:6823-6951</c>): its state is the four <see cref="EntityScriptProxy.Bytes"/>
 /// read as one little-endian int (entity <c>+0x274</c>), its wait counter
-/// <see cref="AlundraEntityScriptProxy.DelayOrAngleOrEntityId"/> (<c>+0x278</c>). State 1 shows ETC <c>0x40</c>
+/// <see cref="EntityScriptProxy.DelayOrAngleOrEntityId"/> (<c>+0x278</c>). State 1 shows ETC <c>0x40</c>
 /// « Enregistrer tes progrès? » in the ordinary box, closable by script only; state 2, 61 ticks later, asks OUI/NON
 /// (ETC <c>0x41</c>/<c>0x42</c>); state 4 takes the answer and closes the box; state 5, 61 ticks after OUI,
 /// captures and validates the save and starts the save screen; state 6 waits for the screen to end, then resets.</para>
@@ -77,7 +77,7 @@ public sealed class SaveBook
     {
     }
 
-    /// <summary>§2, Q4: the save book's sprite type (<see cref="AlundraEntityScriptProxy.SpriteType"/>), line 239 of
+    /// <summary>§2, Q4: the save book's sprite type (<see cref="EntityScriptProxy.SpriteType"/>), line 239 of
     /// the analyser's <c>EntityNames.csv</c> (index 237 once its header line is skipped).</summary>
     public const int SpriteType = 237;
 
@@ -134,13 +134,13 @@ public sealed class SaveBook
     private bool _choiceOpened;
 
     /// <summary>
-    /// L1: true when <paramref name="entity"/>'s picked event (<see cref="AlundraEntityScriptProxy.EventTrigger"/>) is
+    /// L1: true when <paramref name="entity"/>'s picked event (<see cref="EntityScriptProxy.EventTrigger"/>) is
     /// one of the save book's two native handlers - ALL of: sprite type <see cref="SpriteType"/>, a native slot
-    /// (<c>ProgramIndexes[slot] &amp; 0x7f == 0</c>, the test <see cref="AlundraEntityScriptProxy.RunPickedEvent"/>
+    /// (<c>ProgramIndexes[slot] &amp; 0x7f == 0</c>, the test <see cref="EntityScriptProxy.RunPickedEvent"/>
     /// already made), and (slot, <c>SpriteProgramIndexes[slot]</c>) either (F, <see cref="InteractCode"/>) or (C,
     /// <see cref="TickCode"/>). <paramref name="slot"/> is the matched slot.
     /// </summary>
-    internal static bool TryMatch(AlundraEntityScriptProxy entity, out int slot)
+    internal static bool TryMatch(EntityScriptProxy entity, out int slot)
     {
         slot = entity.EventTrigger;
         if (entity.SpriteType != SpriteType || slot < 0 || slot >= entity.ProgramIndexes.Length)
@@ -158,12 +158,12 @@ public sealed class SaveBook
             || (slot == ScriptHelper.ProgramCTick && code == TickCode);
     }
 
-    /// <summary>The book's state: the four <see cref="AlundraEntityScriptProxy.Bytes"/> as one little-endian int
+    /// <summary>The book's state: the four <see cref="EntityScriptProxy.Bytes"/> as one little-endian int
     /// (<c>ReadWarpState</c>, <c>FunctionTypeC.cs:6937-6941</c>).</summary>
-    internal static int ReadState(AlundraEntityScriptProxy book)
+    internal static int ReadState(EntityScriptProxy book)
         => book.Bytes[0] | (book.Bytes[1] << 8) | (book.Bytes[2] << 16) | (book.Bytes[3] << 24);
 
-    private static void WriteState(AlundraEntityScriptProxy book, int state)
+    private static void WriteState(EntityScriptProxy book, int state)
     {
         book.Bytes[0] = (byte)(state & 0xFF);
         book.Bytes[1] = (byte)((state >> 8) & 0xFF);
@@ -174,10 +174,10 @@ public sealed class SaveBook
     /// <summary>
     /// Slot F code 1: port of <c>Script_FInteract_FUN_8007fc64</c> (0x8007FC64, <c>SpriteEventHandlers.cs:270-277</c>)
     /// for the book only (J6: other entities of code 1 stay a no-op) - state 1, the HERO's
-    /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> to 0, <c>ControlLocked</c>, and the flow noted to the
+    /// <see cref="EntityScriptProxy.TargetAnimationId"/> to 0, <c>ControlLocked</c>, and the flow noted to the
     /// screen. SE7: ignored while the book is not at rest (the original restarts it at state 1 in mid-flow).
     /// </summary>
-    internal void RunInteract(AlundraEntityScriptProxy book, IEntityWorldContext context, GameState state)
+    internal void RunInteract(EntityScriptProxy book, IEntityWorldContext context, GameState state)
     {
         if (ReadState(book) != StateIdle)
         {
@@ -200,7 +200,7 @@ public sealed class SaveBook
     /// Slot C code 72: port of <c>AI_ProcessWarpTransitionState</c> (0x8007B998), states 1, 2, 4, 5 and 6, with the
     /// corrections of the class doc. Any other state does nothing, as in the original (state 0: at rest).
     /// </summary>
-    internal void RunTick(AlundraEntityScriptProxy book, IEntityWorldContext context, GameState state)
+    internal void RunTick(EntityScriptProxy book, IEntityWorldContext context, GameState state)
     {
         var dialogue = DialogueDirector.Instance;
 
@@ -237,7 +237,7 @@ public sealed class SaveBook
     /// <summary>State 1 (0x8007B9E4): the question text in a box closable by script only, then a 61-tick wait. SE2:
     /// abandon, opening nothing, without a presenter, while a box is open or a choice waits (the equivalent of the
     /// original's <c>0x80045004</c> test), or when ETC <c>0x40</c> does not resolve.</summary>
-    private void RunMessage(AlundraEntityScriptProxy book, GameState state, DialogueDirector dialogue)
+    private void RunMessage(EntityScriptProxy book, GameState state, DialogueDirector dialogue)
     {
         if (!dialogue.HasPresenter)
         {
@@ -268,7 +268,7 @@ public sealed class SaveBook
     /// <summary>State 2 (0x8007BA18): after the wait, OUI/NON. SE2/H2: without a presenter, or when ETC
     /// <c>0x41</c>/<c>0x42</c> do not resolve - the only observable failures of the question - abandon instead of the
     /// original's park in state 3.</summary>
-    private void RunQuestion(AlundraEntityScriptProxy book, GameState state, DialogueDirector dialogue)
+    private void RunQuestion(EntityScriptProxy book, GameState state, DialogueDirector dialogue)
     {
         book.DelayOrAngleOrEntityId--;
         if (book.DelayOrAngleOrEntityId != -1)
@@ -297,7 +297,7 @@ public sealed class SaveBook
     /// <summary>State 4 (0x8007BA80): the answer. The box of the book is closed first (<c>TryActivateTextHoldState</c>,
     /// <c>FunctionTypeC.cs:6893</c>, SE1); NON abandons, OUI waits 61 ticks. SE2: a choice another
     /// <see cref="DialogueDirector.Open"/> cleared (no result, nothing waiting) abandons.</summary>
-    private void RunAnswer(AlundraEntityScriptProxy book, GameState state, DialogueDirector dialogue)
+    private void RunAnswer(EntityScriptProxy book, GameState state, DialogueDirector dialogue)
     {
         var answer = dialogue.TakeChoiceResult();
         if (answer == null)
@@ -327,7 +327,7 @@ public sealed class SaveBook
     /// hero's map and tile, then the validation of the capture (E16.c C5). SE4/SE8: without rules, or a capture that
     /// does not validate, the screen starts on its failure message and nothing is written; SE7: a screen already
     /// active abandons.</summary>
-    private void RunCapture(AlundraEntityScriptProxy book, IEntityWorldContext context, GameState state, DialogueDirector dialogue)
+    private void RunCapture(EntityScriptProxy book, IEntityWorldContext context, GameState state, DialogueDirector dialogue)
     {
         book.DelayOrAngleOrEntityId--;
         if (book.DelayOrAngleOrEntityId != -1)
@@ -403,7 +403,7 @@ public sealed class SaveBook
     /// box the book owns, cancel the choice it opened, clear <c>ControlLocked</c>, state 0, and end the flow at the
     /// screen. <paramref name="reason"/> is logged when not null.
     /// </summary>
-    private void Reset(AlundraEntityScriptProxy book, GameState state, DialogueDirector dialogue, string? reason)
+    private void Reset(EntityScriptProxy book, GameState state, DialogueDirector dialogue, string? reason)
     {
         if (reason != null)
         {

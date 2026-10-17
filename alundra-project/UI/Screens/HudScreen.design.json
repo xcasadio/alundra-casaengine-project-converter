@@ -1,5 +1,5 @@
 {
-  "view_model_type": "Alundra.Scripts.AlundraHudViewModel",
+  "view_model_type": "Alundra.UI.Hud.HudViewModel",
   "values": {
     "RootVisibility": "Visible",
     "HpMaxSlash": {

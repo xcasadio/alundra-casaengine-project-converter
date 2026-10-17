@@ -9,14 +9,14 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.UI.Hud;
 
 /// <summary>
 /// E13 C2/C3 (docs/plan-e13-hud.md): the non-modal screen that draws the permanent jauge. Since the bound screens
 /// program (parent ADR-0002) it is a project asset, <c>UI/Screens/HudScreen.uiscreen</c> and its XAML, versioned in
-/// <c>alundra-project</c>, loaded through the asset manager and bound to an <see cref="AlundraHudViewModel"/> that
+/// <c>alundra-project</c>, loaded through the asset manager and bound to an <see cref="HudViewModel"/> that
 /// <see cref="HudPresenter"/> writes every LOGIC tick (D-E13-8: never from this screen's rendered-frame
 /// <see cref="Update"/>, which <see cref="CasaEngine.Framework.UI.ScreenStack"/> freezes below a modal screen). The
 /// XAML declares every element - the two equipment background quads, the two equipment icons and the 26 tiles by
@@ -73,11 +73,11 @@ public sealed class HudScreen : XamlUIScreenBase, IDisposable
         ArgumentNullException.ThrowIfNull(director);
         _director = director;
         _assetContentManager = assetContentManager;
-        ViewModel = new AlundraHudViewModel(ReadIconSize);
+        ViewModel = new HudViewModel(ReadIconSize);
     }
 
     /// <summary>What the XAML binds, and the view <see cref="HudPresenter"/> writes.</summary>
-    public AlundraHudViewModel ViewModel { get; }
+    public HudViewModel ViewModel { get; }
 
     /// <summary>Test-only seam: the host window, so a headless layout test can inspect it.</summary>
     internal MGWindow? WindowForTests => Window;
@@ -140,7 +140,7 @@ public sealed class HudScreen : XamlUIScreenBase, IDisposable
     // The jauge's slide and the icons' sub-pixel offsets go to render transforms, which MGUI's XAML cannot bind (G9).
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (_canvas != null && e.PropertyName == nameof(AlundraHudViewModel.Translation))
+        if (_canvas != null && e.PropertyName == nameof(HudViewModel.Translation))
         {
             _canvas.RenderTransform.Translation = ViewModel.Translation;
         }
@@ -163,7 +163,7 @@ public sealed class HudScreen : XamlUIScreenBase, IDisposable
     }
 
     /// <summary>E13 C3 (D-E13-8, mission item 2): deliberately EMPTY. <see cref="HudPresenter"/> owns every
-    /// refresh, ticked once per LOGIC tick from <see cref="AlundraWorldProxy.Update(float)"/> - never from this
+    /// refresh, ticked once per LOGIC tick from <see cref="WorldProxy.Update(float)"/> - never from this
     /// rendered-frame callback, which <see cref="CasaEngine.Framework.UI.ScreenStack"/> freezes for every screen
     /// below a modal one (<c>ScreenStack.cs:5-13</c>).</summary>
     public override void Update(GameTime gameTime)

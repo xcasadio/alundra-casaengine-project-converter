@@ -1,6 +1,5 @@
 #nullable enable
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Entities;
@@ -33,7 +32,7 @@ public class AlundraZWaitOpcodesTests
 
     private static EventProgramState StateFor(EventProgramDocument document) => new() { Codes = document.CodesAsBytes() };
 
-    private static AlundraEntityScriptProxy NewEntity() => new() { EntityRefId = 1, Status = EntityStatus.Normal };
+    private static EntityScriptProxy NewEntity() => new() { EntityRefId = 1, Status = EntityStatus.Normal };
 
     private static (int CodeIndex, int Opcode, int Size)[] Shape(System.Collections.Generic.List<EventTraceRecord> trace) =>
         trace.Select(r => (r.CodeIndex, r.Opcode, r.Size)).ToArray();
@@ -112,7 +111,7 @@ public class AlundraZWaitOpcodesTests
         var document = NewDocument(0x01, 0x21, 0x10, 0x00, 0xFF);
         var (runner, trace) = NewRunner(document);
         var owner = NewEntity();
-        var logic = new AlundraEntityScriptProxy { EntityRefId = 2, Status = EntityStatus.Normal, PosZ = 3145728 };
+        var logic = new EntityScriptProxy { EntityRefId = 2, Status = EntityStatus.Normal, PosZ = 3145728 };
         owner.LogicEntity = logic;
         var state = StateFor(document);
         runner.RunOneScriptCall(owner, state);

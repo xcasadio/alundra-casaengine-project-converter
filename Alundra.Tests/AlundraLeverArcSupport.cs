@@ -3,12 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Cells;
 using Alundra.Audio;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -44,7 +44,7 @@ internal sealed class LeverStampedSounds : ISoundPlayer
     public static LeverStampedSounds Inject(ArcRun arc)
     {
         var player = new LeverStampedSounds(() => arc.Frame);
-        typeof(AlundraWorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, player);
+        typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, player);
         return player;
     }
 }
@@ -142,7 +142,7 @@ internal static class LeverArcs
 
     public static bool Temp(uint n) => ArcChecks.IsTemporarySet(n);
 
-    public static bool ClassA(AlundraEntityScriptProxy e) => (e.Flags & EntityFlags.ClassA) != 0;
+    public static bool ClassA(EntityScriptProxy e) => (e.Flags & EntityFlags.ClassA) != 0;
 
     public static bool Locked() => (GameState.Instance.PlayerControlFlags & GameState.PlayerControlBits.ControlLocked) != 0;
 

@@ -12,7 +12,6 @@ using Microsoft.Xna.Framework;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
-using Alundra.Scripts;
 
 namespace Alundra.Events;
 
@@ -25,14 +24,14 @@ namespace Alundra.Events;
 /// handlers, SpriteEventHandlers.cs, is a later chantier - E14).
 ///
 /// Slots B (Map) and C (Tick) are the only two the original ever RESUMES across calls, off the entity's
-/// own persisted <see cref="AlundraEntityScriptProxy.EventProgramState"/> - every other slot (A/D/E/F)
+/// own persisted <see cref="EntityScriptProxy.EventProgramState"/> - every other slot (A/D/E/F)
 /// always falls into <see cref="InitializeEventData"/>, using a scratch state shared by all four
 /// (<see cref="_slotAScratchState"/>, mirroring the original's single <c>g_eventProgramState</c>). A slot
 /// A/D/E/F program that suspends (returns 0, e.g. via 0x37 Wait) therefore never resumes where it left
 /// off on a LATER call for a DIFFERENT entity/slot (they all share the one scratch state) - faithful to
 /// the original, not a V1 shortcut. Combined with the pick phase only ever offering slot A once per
 /// entity (the Loaded -&gt; Normal transition happens in the same pick pass that chose slot A - see
-/// <see cref="AlundraEntityScriptProxy.PickEventTrigger"/>), a Load program that suspends simply never
+/// <see cref="EntityScriptProxy.PickEventTrigger"/>), a Load program that suspends simply never
 /// resumes at all: it stops there for good. Map 389's own Load programs never hit a suspending opcode, so
 /// this never fires there in practice.
 ///

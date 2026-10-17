@@ -1,6 +1,6 @@
 #nullable enable
-using Alundra.Scripts;
 using Alundra.Items;
+using Alundra.Entities;
 
 namespace Alundra.Combat;
 
@@ -72,13 +72,13 @@ internal static class Damage
     }
 
     /// <summary>
-    /// <c>ComputeNewHp</c>: sets the life of <paramref name="target"/> from the attack of the entity that touches it (<c>TouchingEntity</c>, whose <see cref="AlundraEntityScriptProxy.CurrentAttack"/> is read; the binary
+    /// <c>ComputeNewHp</c>: sets the life of <paramref name="target"/> from the attack of the entity that touches it (<c>TouchingEntity</c>, whose <see cref="EntityScriptProxy.CurrentAttack"/> is read; the binary
     /// does not test it for null, a caller only asks after a hit; here an absent attacker leaves the life alone) against <paramref name="sheet"/>, the sheet of the target (<c>+0x1C4</c>, or <c>0x80127008</c> for the hero),
     /// and returns whether the life is now 0.
     /// </summary>
-    public static bool ComputeNewHp(AlundraEntityScriptProxy target, BalanceRecord? sheet, EquipmentRecords? equipment, uint animationLatch)
+    public static bool ComputeNewHp(EntityScriptProxy target, BalanceRecord? sheet, EquipmentRecords? equipment, uint animationLatch)
     {
-        var attack = (target.TouchingEntity?.GameplayProxy as AlundraEntityScriptProxy)?.CurrentAttack;
+        var attack = (target.TouchingEntity?.GameplayProxy as EntityScriptProxy)?.CurrentAttack;
         target.Hp = ResolveBalanceTarget(attack, sheet, target.Hp, equipment, animationLatch);
         return target.Hp == 0;
     }

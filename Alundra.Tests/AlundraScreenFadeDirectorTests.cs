@@ -2,7 +2,6 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
 using CasaEngine.Framework.Rendering.Depth;
@@ -13,6 +12,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -99,7 +99,7 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         var world = new World { Name = "TestWorld" };
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InstallScreenFadeSystems(world); // the real install path (D-E10-7), called by InitializeWithWorld too.
 
         var service = game.ScreenEffectComponent.Service;
@@ -151,7 +151,7 @@ public class AlundraScreenFadeDirectorTests : IDisposable
     public void T2_NoGame_InstallAndUpdate_NoServiceToPushTo_NoException()
     {
         var world = new World { Name = "TestWorld" }; // World.Game left null.
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
 
         var ex = Record.Exception(() =>
         {
@@ -392,7 +392,7 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         var world1 = new World { Name = "World1" };
         HeroWorldFixture.SetProperty(world1, nameof(World.Game), game1);
 
-        var proxy1 = new AlundraWorldProxy();
+        var proxy1 = new WorldProxy();
         proxy1.InstallScreenFadeSystems(world1);
 
         // World 1 poses its OWN persisted tint (persist != 0) - this is the state that must NOT leak
@@ -407,7 +407,7 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         var world2 = new World { Name = "World2" };
         HeroWorldFixture.SetProperty(world2, nameof(World.Game), game2);
 
-        var proxy2 = new AlundraWorldProxy();
+        var proxy2 = new WorldProxy();
         proxy2.InstallScreenFadeSystems(world2); // second install of the SAME session singleton.
 
         Assert.Same(proxy1.ScreenFadeDirector, proxy2.ScreenFadeDirector); // director instance preserved.
@@ -505,7 +505,7 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         var world = new World { Name = "TestWorld" };
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InstallScreenFadeSystems(world); // the real map-entry path, which arms effect 0.
         proxy.Update(0.02f);
 

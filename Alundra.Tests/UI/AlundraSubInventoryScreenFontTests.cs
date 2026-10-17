@@ -1,4 +1,3 @@
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Assets.Fonts;
@@ -10,6 +9,7 @@ using MGUI.Shared.Text;
 using Xunit;
 using Alundra.UI.Inventory;
 using Alundra.UI.SubInventory;
+using Alundra.Maps;
 
 namespace Alundra.Tests.UI;
 
@@ -144,7 +144,7 @@ public sealed class AlundraSubInventoryScreenFontTests
     {
         var fonts = NewFonts(out var assets, out _);
         var screen = new SubInventoryScreen(assets, fonts);
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.AttachSubInventoryScreenForTests(screen);
 
         proxy.OnEndPlay(null!);

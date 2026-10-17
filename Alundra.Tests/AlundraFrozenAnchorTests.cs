@@ -1,6 +1,5 @@
 #nullable enable
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Rendering.Effects;
@@ -15,9 +14,9 @@ public sealed class AlundraFrozenAnchorTests
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
 
-    private static AlundraEntityScriptProxy Destroyed()
+    private static EntityScriptProxy Destroyed()
     {
-        var entity = new AlundraEntityScriptProxy { PosX = 0x00A40000, PosY = 0x01E00000, PosZ = 0x00080000, Status = EntityStatus.Normal };
+        var entity = new EntityScriptProxy { PosX = 0x00A40000, PosY = 0x01E00000, PosZ = 0x00080000, Status = EntityStatus.Normal };
         entity.Status = EntityStatus.FlagToDestroy;
         return entity;
     }

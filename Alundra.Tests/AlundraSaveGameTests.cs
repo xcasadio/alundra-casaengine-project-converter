@@ -2,10 +2,10 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.SaveGames;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -308,7 +308,7 @@ public sealed class AlundraSaveGameTests
     public void TryCaptureFromWorld_RealHeroProxyOnMap389_CapturesTheMapAndTheHerosTile()
     {
         var state = BuildPopulatedState();
-        var hero = new AlundraEntityScriptProxy { TileX = 33, TileY = 59, TileZ = 2 };
+        var hero = new EntityScriptProxy { TileX = 33, TileY = 59, TileZ = 2 };
 
         var captured = SaveGame.TryCaptureFromWorld(state, Map389WorldName, hero, out var save);
 
@@ -330,7 +330,7 @@ public sealed class AlundraSaveGameTests
     [InlineData("Map-99999999999")]
     public void TryCaptureFromWorld_NameWithoutAnId_ReturnsFalseWithoutThrowing(string worldName)
     {
-        var hero = new AlundraEntityScriptProxy { TileX = 33, TileY = 59, TileZ = 0 };
+        var hero = new EntityScriptProxy { TileX = 33, TileY = 59, TileZ = 0 };
 
         var captured = SaveGame.TryCaptureFromWorld(new GameState(), worldName, hero, out var save);
 
@@ -341,7 +341,7 @@ public sealed class AlundraSaveGameTests
     [Fact]
     public void TryCaptureFromWorld_NullName_ReturnsFalseWithoutThrowing()
     {
-        var hero = new AlundraEntityScriptProxy();
+        var hero = new EntityScriptProxy();
 
         var captured = SaveGame.TryCaptureFromWorld(new GameState(), null!, hero, out var save);
 

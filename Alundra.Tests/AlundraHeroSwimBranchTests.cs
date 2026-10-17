@@ -2,16 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E20.i T4 (docs/plan-e20-heros.md section 1.14): the branches of the swim that the traces of the oracle cannot reach or that a bare hero shows best, on a bare hero (no controller: the air predicate reads
-/// <see cref="AlundraEntityScriptProxy.HeroAirborne"/>), one <see cref="PlayerManager.MovePlayer"/> call per case, in the order of the binary's handlers (<c>0x80032674</c>, <c>0x80032658</c>, <c>0x80032680</c>,
+/// <see cref="EntityScriptProxy.HeroAirborne"/>), one <see cref="PlayerManager.MovePlayer"/> call per case, in the order of the binary's handlers (<c>0x80032674</c>, <c>0x80032658</c>, <c>0x80032680</c>,
 /// <c>0x80032690</c>, <c>0x800326FC</c>, <c>0x80032758</c>, the land exits <c>0x80031DD0</c> and <c>0x80031DB4</c>). The 240 traces of the group W8 (80 states, three pads, three ticks) are replayed state by state: the state
 /// the oracle holds at the end of tick t-1 is posed, one <c>MovePlayer</c> runs with the pad of tick t, and what it writes (the target animation, the direction) is the oracle's of tick t.
 /// </summary>
@@ -38,14 +38,14 @@ public sealed class AlundraHeroSwimBranchTests : IDisposable
 
     public void Dispose() => PlayerManager.TryUseItemResultForTests = null;
 
-    private static AlundraEntityScriptProxy Hero(uint animation, uint direction = 0x18, bool air = false, int slope = 4)
+    private static EntityScriptProxy Hero(uint animation, uint direction = 0x18, bool air = false, int slope = 4)
     {
-        var hero = new AlundraEntityScriptProxy { TargetAnimationId = animation, TargetDirection = direction, AnimationDirection = 3, IsOnGround = air ? 0 : 1, Slope_18c = slope };
+        var hero = new EntityScriptProxy { TargetAnimationId = animation, TargetDirection = direction, AnimationDirection = 3, IsOnGround = air ? 0 : 1, Slope_18c = slope };
         hero.HeroAirborne = air;
         return hero;
     }
 
-    private static void Move(AlundraEntityScriptProxy hero, uint hold, uint pressed = 0)
+    private static void Move(EntityScriptProxy hero, uint hold, uint pressed = 0)
     {
         var pad = new PadState { ButtonsHold = hold, ButtonsJustPressed = pressed };
         PlayerManager.MovePlayer(hero, in pad, new GameState(), host: null);

@@ -4,9 +4,9 @@ using CasaEngine.Framework.UI;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Items;
-using Alundra.Scripts;
 using Alundra.UI.Shared;
 using Alundra.UI.Speech;
+using Alundra.Maps;
 
 namespace Alundra.UI.Inventory;
 
@@ -15,9 +15,9 @@ namespace Alundra.UI.Inventory;
 /// already-ticked state plus the item/stat lookups it does not own (<see cref="PlayerManager"/>,
 /// <see cref="ItemTables"/>, <see cref="PlayerStats"/>), composes an
 /// <see cref="InventoryDisplayModel"/> through the pure <see cref="InventoryComposer"/>, and writes
-/// it into the screen's <see cref="AlundraInventoryViewModel"/> (parent ADR-0002), which the screen's XAML binds -
+/// it into the screen's <see cref="InventoryViewModel"/> (parent ADR-0002), which the screen's XAML binds -
 /// one <see cref="Tick"/> call per LOGIC tick, made from
-/// <see cref="AlundraWorldProxy.Update(float)"/>'s own pad-tick loop, immediately after
+/// <see cref="WorldProxy.Update(float)"/>'s own pad-tick loop, immediately after
 /// <see cref="InventoryDirector.Tick"/> (same site the director itself already reads its pad edges
 /// from - <c>AlundraWorldProxy.cs</c>'s own comment on why a consumer of those edges must run inside that
 /// same per-tick loop).
@@ -40,7 +40,7 @@ public sealed class InventoryPresenter
     private readonly InventoryDirector _director;
     private readonly GameState _gameState;
     private readonly ItemTables _itemTables;
-    private readonly AlundraInventoryViewModel _viewModel;
+    private readonly InventoryViewModel _viewModel;
     private readonly IUIScreen _screen;
     private readonly IUIViewRuntime? _uiView;
 
@@ -52,7 +52,7 @@ public sealed class InventoryPresenter
         InventoryDirector director,
         GameState gameState,
         ItemTables itemTables,
-        AlundraInventoryViewModel viewModel,
+        InventoryViewModel viewModel,
         IUIScreen screen,
         IUIViewRuntime? uiView)
     {

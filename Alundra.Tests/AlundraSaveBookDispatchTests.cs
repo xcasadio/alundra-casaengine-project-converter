@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -12,6 +11,7 @@ using Alundra.Events;
 using Alundra.Ai.Objects;
 using Alundra.Dialogues;
 using Alundra.UI.Saving;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -104,9 +104,9 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     /// <summary>An entity as the spawn factory leaves a save book of the real export (header of prefab
     /// <c>1ab20de9-...</c>: ProgramLoad 254, ProgramTick 72, ProgramInteract 1), with <paramref name="slot"/>
     /// picked.</summary>
-    private static AlundraEntityScriptProxy Entity(int spriteType, int slot, int code)
+    private static EntityScriptProxy Entity(int spriteType, int slot, int code)
     {
-        var entity = new AlundraEntityScriptProxy { SpriteType = spriteType, Status = EntityStatus.Normal, EventTrigger = slot };
+        var entity = new EntityScriptProxy { SpriteType = spriteType, Status = EntityStatus.Normal, EventTrigger = slot };
         entity.SpriteProgramIndexes[slot] = code;
         return entity;
     }
@@ -227,7 +227,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     {
         var prefabAssetId = Guid.NewGuid();
         var record = Record(prefabAssetId, spriteTableIndex, spriteDirection);
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
         EntitySpawnFactory.ApplyRecord(record, proxy);
 
         EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefabAssetId, BookHeader()));
@@ -239,7 +239,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     public void SpawnFactory_NoHeader_LeavesTheSpriteTypeUnknown()
     {
         var record = Record(Guid.NewGuid(), "237", "0");
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
         EntitySpawnFactory.ApplyRecord(record, proxy);
 
         EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog());
@@ -250,9 +250,9 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     [Fact]
     public void HeroHeader_SetsSpriteTypeZero()
     {
-        var proxy = new AlundraEntityScriptProxy { IsPlayer = true };
+        var proxy = new EntityScriptProxy { IsPlayer = true };
 
-        AlundraWorldProxy.ApplyHeroSpriteHeader(proxy, BookHeader());
+        WorldProxy.ApplyHeroSpriteHeader(proxy, BookHeader());
 
         Assert.Equal(0, proxy.SpriteType);
         Assert.Equal(SaveBook.TickCode, proxy.SpriteProgramIndexes[ScriptHelper.ProgramCTick]);
@@ -264,7 +264,7 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     {
         var prefabAssetId = Guid.NewGuid();
         var record = Record(prefabAssetId, "237", "0");
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
         EntitySpawnFactory.ApplyRecord(record, proxy);
         EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefabAssetId, BookHeader()));
         proxy.EventTrigger = ScriptHelper.ProgramCTick;
@@ -278,9 +278,9 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     [Fact]
     public void Clone_CopiesTheSpriteType()
     {
-        var original = new AlundraEntityScriptProxy { SpriteType = SaveBook.SpriteType };
+        var original = new EntityScriptProxy { SpriteType = SaveBook.SpriteType };
 
-        var clone = (AlundraEntityScriptProxy)original.Clone();
+        var clone = (EntityScriptProxy)original.Clone();
 
         Assert.Equal(SaveBook.SpriteType, clone.SpriteType);
     }

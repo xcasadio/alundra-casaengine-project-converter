@@ -17,7 +17,8 @@ using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
-using Alundra.Scripts;
+using Alundra.Entities;
+using Alundra.Maps;
 
 namespace Alundra.SaveGames;
 
@@ -29,7 +30,7 @@ namespace Alundra.SaveGames;
 ///
 /// <para><b>The keys (K3, D-E16-11).</b> F5 saves in binary to <see cref="BinarySlotName"/>, F6 in JSON to
 /// <see cref="JsonSlotName"/>, F9 loads the most recent readable slot. They are read once per RENDERED frame, at
-/// the head of <see cref="AlundraWorldProxy.Update"/> (right after the game time, before the gameplay gate is
+/// the head of <see cref="WorldProxy.Update"/> (right after the game time, before the gameplay gate is
 /// computed, SD3), through <see cref="KeyboardManager.IsKeyPressed"/> with this director's own rising edge: the
 /// engine's keyboard advances once per rendered frame, so read inside the logic-tick loop a key would count once
 /// per tick (G9). One key is handled per frame, in the order F5, F6, F9. The edges live in this session
@@ -113,7 +114,7 @@ public sealed class SaveGameDirector
     /// K1 (the closing plan review of 2026-09-28): test-only seam over the validation rules - null (the default)
     /// builds the production rules, <c>new AlundraSaveGameRules(EngineEnvironment.ProjectPath, path =&gt;
     /// AssetCatalog.GetByFileName(path) != null, AlundraItemTables.GetOrCreate(EngineEnvironment.ProjectPath))</c>,
-    /// the session item tables behind <see cref="AlundraWorldProxy.ItemTables"/>. In the test process the asset
+    /// the session item tables behind <see cref="WorldProxy.ItemTables"/>. In the test process the asset
     /// catalog is empty, so every validation would refuse <c>initialMapId</c> without this seam. It replaces the
     /// rules only, never the validation itself; reachable only by code already in the process (SD14, SD15).
     /// </summary>
@@ -130,15 +131,15 @@ public sealed class SaveGameDirector
     public bool HasPendingLoad => _pendingLoad != null;
 
     /// <summary>
-    /// K3: the recipe keys, once per rendered frame, from the head of <see cref="AlundraWorldProxy.Update"/>.
+    /// K3: the recipe keys, once per rendered frame, from the head of <see cref="WorldProxy.Update"/>.
     /// Does nothing, and reads no key, while <see cref="RecipeKeysEnabled"/> is false.
     /// </summary>
     /// <param name="keyboard">The engine's keyboard (<c>world.Game.InputComponent.KeyboardManager</c>); null
     /// reads as "nothing held".</param>
     /// <param name="state">The session's game state.</param>
     /// <param name="worldName">The current world's name, whose "-{id}" suffix is the current map (F4).</param>
-    /// <param name="player">The hero (<see cref="AlundraWorldProxy.PlayerEntity"/>), or null.</param>
-    internal void UpdateRecipeKeys(KeyboardManager? keyboard, GameState state, string? worldName, AlundraEntityScriptProxy? player)
+    /// <param name="player">The hero (<see cref="WorldProxy.PlayerEntity"/>), or null.</param>
+    internal void UpdateRecipeKeys(KeyboardManager? keyboard, GameState state, string? worldName, EntityScriptProxy? player)
     {
         ArgumentNullException.ThrowIfNull(state);
 
@@ -191,7 +192,7 @@ public sealed class SaveGameDirector
 
     /// <summary>K6 (F5/F6): preconditions, capture, validate, then write - nothing is written at the first
     /// refusal.</summary>
-    private void SaveToSlot(string slot, SaveGameFormat format, GameState state, string? worldName, AlundraEntityScriptProxy? player)
+    private void SaveToSlot(string slot, SaveGameFormat format, GameState state, string? worldName, EntityScriptProxy? player)
     {
         var key = format == SaveGameFormat.Binary ? SaveBinaryKey : SaveJsonKey;
 
@@ -244,7 +245,7 @@ public sealed class SaveGameDirector
     /// the load made PENDING and the departure armed through the warp path. Nothing of the live state changes
     /// here: the load is applied on the arrival map (K8, <see cref="ApplyPendingLoad"/>).
     /// </summary>
-    private void LoadMostRecent(GameState state, AlundraEntityScriptProxy? player)
+    private void LoadMostRecent(GameState state, EntityScriptProxy? player)
     {
         // K7 step 1: the original never loads freely in the middle of a session (§0.2).
         if (player == null)
@@ -356,7 +357,7 @@ public sealed class SaveGameDirector
 
     /// <summary>
     /// K8 (docs/plan-e16-etat-partie.md, G5): applies the pending load on its arrival map. Called from
-    /// <see cref="AlundraWorldProxy.InitializeWithWorld"/> right after <see cref="GameState.InstallForMapEntry"/>,
+    /// <see cref="WorldProxy.InitializeWithWorld"/> right after <see cref="GameState.InstallForMapEntry"/>,
     /// so during the arrival world's installation and BEFORE its first tick, where the entities' programs (their
     /// load program, slot A) and the map events are the first readers of the loaded values. Nothing before
     /// <c>InstallForMapEntry</c> reads the session state, and nothing after it overwrites the loaded values.
@@ -473,7 +474,7 @@ public sealed class SaveGameDirector
     /// <see cref="FindSessionBlocker"/>. Each one is tested on its own (G7): none implies another. Null when the
     /// save may proceed, otherwise the reason of the refusal.
     /// </summary>
-    private static string? FindSaveBlocker(GameState state, AlundraEntityScriptProxy? player)
+    private static string? FindSaveBlocker(GameState state, EntityScriptProxy? player)
     {
         if (player == null)
         {

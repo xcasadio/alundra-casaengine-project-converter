@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Engine.Geometry;
@@ -33,6 +32,7 @@ using Alundra.UI.Saving;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -97,7 +97,7 @@ internal static class SaveGameDirectorTestSupport
     }
 
     /// <summary>A hero on the ground at a tile of map 389 (the New Game tile by default).</summary>
-    internal static AlundraEntityScriptProxy HeroAt(int tileX = GameState.CameraTileX, int tileY = GameState.CameraTileY, int tileZ = GameState.CameraTileZ)
+    internal static EntityScriptProxy HeroAt(int tileX = GameState.CameraTileX, int tileY = GameState.CameraTileY, int tileZ = GameState.CameraTileZ)
         => new() { IsPlayer = true, TileX = tileX, TileY = tileY, TileZ = tileZ, IsOnGround = 1 };
 
     /// <summary>A save that validates against <see cref="RealRules"/>: the New Game identity table, map 389 at
@@ -141,7 +141,7 @@ internal static class SaveGameDirectorTestSupport
     /// <summary>Poses one blocker and only that one, and returns the hero to pass and a fragment of the refusal's
     /// log line naming it. Inventories set <c>MenuOpen</c> as they open: the flags are cleared again, so the
     /// refusal can only come from the inventory itself.</summary>
-    internal static (AlundraEntityScriptProxy? Hero, string Reason) PoseBlocker(SaveGameBlocker blocker)
+    internal static (EntityScriptProxy? Hero, string Reason) PoseBlocker(SaveGameBlocker blocker)
     {
         var hero = HeroAt();
         switch (blocker)
@@ -267,9 +267,9 @@ internal static class SaveGameDirectorTestSupport
         return field.GetValue(BgmPlayer.Instance);
     }
 
-    /// <summary>Hand-built hero pawn possessed by a real <see cref="AlundraPlayerController"/> registered into the
+    /// <summary>Hand-built hero pawn possessed by a real <see cref="HeroController"/> registered into the
     /// world's private controller list - the fixture of <c>AlundraNewGameEntryTests</c>/<c>AlundraWarpArrivalTests</c>
-    /// (private there), so <see cref="AlundraWorldProxy.InitializeWithWorld"/> adopts it as the hero.</summary>
+    /// (private there), so <see cref="WorldProxy.InitializeWithWorld"/> adopts it as the hero.</summary>
     internal static Entity AddHeroPawn(World world)
     {
         var root = new TransformComponent();
@@ -286,22 +286,22 @@ internal static class SaveGameDirectorTestSupport
         {
             Name = "AlundraHeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
         entity.Initialize();
         var worldProperty = typeof(Entity).GetProperty(nameof(Entity.World), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)!;
         worldProperty.SetValue(entity, world);
 
-        var controller = new AlundraPlayerController();
+        var controller = new HeroController();
         controller.Possess(entity);
         var field = typeof(World).GetField("_playerControllers", BindingFlags.Instance | BindingFlags.NonPublic)!;
         ((List<PlayerController>)field.GetValue(world)!).Add(controller);
         return entity;
     }
 
-    /// <summary>Runs <see cref="AlundraWorldProxy.InitializeWithWorld"/> with <c>EngineEnvironment.ProjectPath</c>
+    /// <summary>Runs <see cref="WorldProxy.InitializeWithWorld"/> with <c>EngineEnvironment.ProjectPath</c>
     /// on the real export, restored afterwards (the convention of <c>AlundraNewGameEntryTests</c>).</summary>
-    internal static void InitializeWithRealProject(AlundraWorldProxy proxy, World world)
+    internal static void InitializeWithRealProject(WorldProxy proxy, World world)
     {
         var previousProjectPath = EngineEnvironment.ProjectPath;
         EngineEnvironment.ProjectPath = AlundraWorldProxyGlobalFreezeTests.FindProjectRoot();

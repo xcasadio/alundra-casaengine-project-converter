@@ -4,7 +4,6 @@ using CasaEngine.Framework.Rendering.ScreenEffects;
 using Alundra.Maps;
 using Alundra.Events;
 using Alundra.Audio;
-using Alundra.Scripts;
 
 namespace Alundra.Transitions;
 
@@ -42,7 +41,7 @@ namespace Alundra.Transitions;
 /// </remarks>
 public sealed class ScreenFadeDirector : IScreenFadeDirector
 {
-    /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-E10-6) -
+    /// <summary>The one session-scoped instance every <see cref="WorldProxy"/> shares (D-E10-6) -
     /// never <see langword="new"/>'d per world.</summary>
     public static readonly ScreenFadeDirector Instance = new();
 
@@ -110,7 +109,7 @@ public sealed class ScreenFadeDirector : IScreenFadeDirector
 
     /// <summary>Re-points this session-scoped instance at the current world's own
     /// <see cref="ScreenEffectService"/> (<c>world.Game?.ScreenEffectComponent?.Service</c>) - called by
-    /// <see cref="AlundraWorldProxy.InstallScreenFadeSystems"/> on every world install. Deliberately does
+    /// <see cref="WorldProxy.InstallScreenFadeSystems"/> on every world install. Deliberately does
     /// NOT touch any of the fade/warp state (D-E10-6, same shape as <see cref="BgmPlayer.AttachToWorld"/>)
     /// - only <see cref="InstallForMapEntry"/> does that. Null is a valid, tolerated value (T2 - a world
     /// with no <c>Game</c>): <see cref="PushToAttachedService"/> then bypasses with no exception.</summary>
@@ -118,13 +117,13 @@ public sealed class ScreenFadeDirector : IScreenFadeDirector
 
     /// <summary>
     /// Port of the map-entry preamble (GameEngine.cs:886-888) immediately followed by the effect-0 re-arm
-    /// (GameEngine.cs:895-905, §1.5) - called by <see cref="AlundraWorldProxy.InstallScreenFadeSystems"/>,
-    /// itself called from <see cref="AlundraWorldProxy.InitializeWithWorld"/> (D-E10-7: armed INSIDE the
+    /// (GameEngine.cs:895-905, §1.5) - called by <see cref="WorldProxy.InstallScreenFadeSystems"/>,
+    /// itself called from <see cref="WorldProxy.InitializeWithWorld"/> (D-E10-7: armed INSIDE the
     /// installation method, no second, independently deletable call site).
     ///
     /// <b>Pushes NOTHING to the attached service</b> (the boxed rule ahead of this plan's own tests):
     /// pushing the just-armed state here would submit 255 (a full black frame the original never draws,
-    /// §1.5) - the first push happens from <see cref="AlundraWorldProxy.Update"/>, AFTER
+    /// §1.5) - the first push happens from <see cref="WorldProxy.Update"/>, AFTER
     /// <see cref="Advance"/> has already consumed at least one tick (the first-frame tick floor,
     /// <c>AlundraWorldProxy._firstFrameStillOpen</c>), so the first value ever pushed is 239.
     /// </summary>
@@ -248,7 +247,7 @@ public sealed class ScreenFadeDirector : IScreenFadeDirector
     /// <summary>
     /// Advances both machines by <paramref name="ticks"/> LOGIC ticks (§1.6, D-E10-8: tick-driven, never
     /// frame-driven - the class of bug E5.c/the first-frame camera already found). Called by
-    /// <see cref="AlundraWorldProxy.Update"/> with <c>ticksThisFrame</c>, BEFORE <see cref="PushToAttachedService"/>
+    /// <see cref="WorldProxy.Update"/> with <c>ticksThisFrame</c>, BEFORE <see cref="PushToAttachedService"/>
     /// runs for that same frame - "advance, then draw" (§1.5), never the reverse.
     /// </summary>
     public void Advance(int ticks)

@@ -1,6 +1,5 @@
 #nullable enable
 using System;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -12,6 +11,7 @@ using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -22,9 +22,9 @@ namespace Alundra.Tests;
 /// inside 0x39's dispatch - so those boxes could never close: a permanent softlock (MenuOpen posed
 /// forever). The original runs the box's lifecycle EVERY main-loop frame, independent of scripts
 /// (<c>UIManager.ProcessEtcTextAdvance</c>, UI/UIManager.cs:855-880); the fix moved it to a per-logic-tick
-/// pass in <see cref="AlundraWorldProxy.Update"/>, next to the fade pass.
+/// pass in <see cref="WorldProxy.Update"/>, next to the fade pass.
 ///
-/// The first two tests below drive <see cref="AlundraWorldProxy.Update"/> ITSELF (the same headless
+/// The first two tests below drive <see cref="WorldProxy.Update"/> ITSELF (the same headless
 /// montage as <see cref="AlundraWorldProxyUpdateCharacterizationTests"/>: no <see cref="World.Game"/>, a
 /// name with no trailing map id, a camera entity added directly) so the pass is pinned at its production
 /// call site - the harness's own mirror tick in <c>HeadlessIntroSimulation.RunFramesForTest</c> cannot
@@ -40,7 +40,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         DialogueDirector.Instance.ResetForTests();
         // Same seam note as AlundraWorldProxyUpdateCharacterizationTests: inert here (world.Game is
         // always null below), set explicitly anyway rather than relying on the env-var-backed static.
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
@@ -54,7 +54,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
     public void Dispose()
     {
         DialogueDirector.Instance.ResetForTests();
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
 
         // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
         // isolation) - kept for symmetry with the existing session-singleton test classes.
@@ -67,16 +67,16 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
     /// <summary>Headless proxy whose <c>Update</c> is drivable - the exact montage
     /// <see cref="AlundraWorldProxyUpdateCharacterizationTests"/> documents line by line (its class doc
     /// owns the reasoning; not restated here). The director is then attached to THIS proxy's own
-    /// <see cref="AlundraWorldProxy.GameState"/>, production's wiring shape
+    /// <see cref="WorldProxy.GameState"/>, production's wiring shape
     /// (<c>InstallDialogueSystems</c> passes <c>GameState</c>) - "TestWorld" has no tileMap entity, so
     /// <c>InitializeWithWorld</c> early-returns before reaching the real install.</summary>
-    private static AlundraWorldProxy BuildProxyWithAttachedDirector()
+    private static WorldProxy BuildProxyWithAttachedDirector()
     {
         var world = new World { Name = "TestWorld" };
         var camera = new Camera2dComponent();
         world.Entities.Add(new Entity { Name = "camera", RootComponent = camera });
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
         DialogueDirector.Instance.AttachToWorld(new DialogueService(), proxy.GameState);
@@ -166,7 +166,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // F3: InstallForMapEntry's call lives INSIDE InstallDialogueSystems (the M16 no-separate-site
         // rule) - deleting that one line used to leave every suite green. This drives the real install
         // method (world.Game null -> presenter null branch, the reset must run regardless).
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         var director = DialogueDirector.Instance;
         director.AttachToWorld(new DialogueService(), proxy.GameState);
 

@@ -7,7 +7,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Rendering.Backdrops;
-using Alundra.Scripts;
+using Alundra.Entities;
 
 namespace Alundra.SaveGames;
 
@@ -236,17 +236,17 @@ public sealed class SaveGame : ISaveGameData
     /// C5: captures from the live world, reading <c>UpdateSavedData</c>'s own sources - the current map from
     /// the "-{id}" suffix of <paramref name="worldName"/> (<see cref="BackdropLoader.TryParseMapIndex"/>, F4:
     /// the id a warp loads through <see cref="WorldIndexTable.Resolve"/>), and the hero's tile from
-    /// <see cref="AlundraEntityScriptProxy.TileX"/>/<see cref="AlundraEntityScriptProxy.TileY"/>/
-    /// <see cref="AlundraEntityScriptProxy.TileZ"/> (F5). Returns <c>false</c>, without throwing, when the
+    /// <see cref="EntityScriptProxy.TileX"/>/<see cref="EntityScriptProxy.TileY"/>/
+    /// <see cref="EntityScriptProxy.TileZ"/> (F5). Returns <c>false</c>, without throwing, when the
     /// name carries no id or the hero is missing. Does not validate.
     /// <para>Contract for E16.d: the save key captures through this method with the current world's name and
-    /// <see cref="AlundraWorldProxy.PlayerEntity"/>, and writes the save only after the captured object
+    /// <see cref="WorldProxy.PlayerEntity"/>, and writes the save only after the captured object
     /// validates.</para>
     /// </summary>
     public static bool TryCaptureFromWorld(
         GameState state,
         string worldName,
-        AlundraEntityScriptProxy? player,
+        EntityScriptProxy? player,
         out SaveGame? save)
     {
         ArgumentNullException.ThrowIfNull(state);

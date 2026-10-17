@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -25,13 +24,13 @@ public sealed class AlundraClassAndBranchOpcodesTests
 
     private sealed class Context : IEntityWorldContext
     {
-        public List<AlundraEntityScriptProxy> Spawned { get; } = new();
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public List<EntityScriptProxy> Spawned { get; } = new();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Spawned;
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
     }
 
@@ -42,12 +41,12 @@ public sealed class AlundraClassAndBranchOpcodesTests
         Codes = codes,
     };
 
-    private static AlundraEntityScriptProxy NewEntity()
+    private static EntityScriptProxy NewEntity()
         => new() { Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" } };
 
     private static EventProgramState Run(
         int[] codes,
-        AlundraEntityScriptProxy entity,
+        EntityScriptProxy entity,
         IEntityWorldContext? context = null,
         int result = ResultBefore,
         int codeIndex = 0,
@@ -71,7 +70,7 @@ public sealed class AlundraClassAndBranchOpcodesTests
     // 0x28 / 0x29 / 0x2A / 0x2B - the class bits
     // ---------------------------------------------------------------------------------------
 
-    private static AlundraEntityScriptProxy EntityWithController(uint flags, uint mask)
+    private static EntityScriptProxy EntityWithController(uint flags, uint mask)
     {
         var entity = NewEntity();
         entity.Flags = flags;
@@ -144,7 +143,7 @@ public sealed class AlundraClassAndBranchOpcodesTests
     // 0x3F - is any entity riding me (hero included, Normal or Deactivated, not blocked)
     // ---------------------------------------------------------------------------------------
 
-    private static AlundraEntityScriptProxy Rider(AlundraEntityScriptProxy carried, EntityStatus status)
+    private static EntityScriptProxy Rider(EntityScriptProxy carried, EntityStatus status)
         => new() { Status = status, RidingEntity = carried.LogicContextEntity };
 
     [Fact]
@@ -215,7 +214,7 @@ public sealed class AlundraClassAndBranchOpcodesTests
     {
         var entity = NewEntity();
         var context = new Context();
-        context.Spawned.Add(new AlundraEntityScriptProxy { Status = EntityStatus.Normal, RidingEntity = new Entity { Name = "other" } });
+        context.Spawned.Add(new EntityScriptProxy { Status = EntityStatus.Normal, RidingEntity = new Entity { Name = "other" } });
 
         var state = Run(new[] { 0x3F, 0xFF }, entity, context, result: 1);
 
@@ -286,7 +285,7 @@ public sealed class AlundraClassAndBranchOpcodesTests
     {
         var entity = NewEntity();
         entity.AnimationDirection = 0;
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, AnimationDirection = 2 };
+        var hero = new EntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, AnimationDirection = 2 };
         var context = new Context { PlayerEntity = hero };
         var codes = (int[])DirectionalBranch.Clone();
         codes[0] = 0x57;
@@ -302,7 +301,7 @@ public sealed class AlundraClassAndBranchOpcodesTests
     {
         var entity = NewEntity();
         entity.AnimationDirection = 1;
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, AnimationDirection = 2 };
+        var hero = new EntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, AnimationDirection = 2 };
         var context = new Context { PlayerEntity = hero };
 
         var state = Run(DirectionalBranch, entity, context);
@@ -315,7 +314,7 @@ public sealed class AlundraClassAndBranchOpcodesTests
     // 0x5D - every match goes to state 3
     // ---------------------------------------------------------------------------------------
 
-    private static AlundraEntityScriptProxy Npc(int refId, EntityStatus status = EntityStatus.Normal)
+    private static EntityScriptProxy Npc(int refId, EntityStatus status = EntityStatus.Normal)
         => new() { EntityRefId = refId, Status = status };
 
     [Fact]

@@ -2,27 +2,27 @@
 using System;
 using CasaEngine.Framework.UI;
 using Alundra.Dialogues;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.UI.Messages;
 
 /// <summary>
 /// E19.f2b1c F2B1C-R4 (docs/plan-e19-opcodes.md): reads the drawn state of the dialogue box after a pass (<see cref="DialogueDirector.Box"/>) and, since E19.f4c2, of the
 /// speaker's name box and portrait (<see cref="DialogueDirector.NameBox"/>, <see cref="DialogueDirector.Portrait"/>), and writes it
-/// into the screen's <see cref="AlundraTextBoxViewModel"/>, which <c>TextBoxScreen.xaml</c> binds - one <see cref="Tick"/> right after each pass of the box, from
-/// <see cref="AlundraWorldProxy.Update(float)"/>.
+/// into the screen's <see cref="TextBoxViewModel"/>, which <c>TextBoxScreen.xaml</c> binds - one <see cref="Tick"/> right after each pass of the box, from
+/// <see cref="WorldProxy.Update(float)"/>.
 /// </summary>
 public sealed class TextBoxPresenter
 {
     private readonly DialogueDirector _director;
-    private readonly AlundraTextBoxViewModel _viewModel;
+    private readonly TextBoxViewModel _viewModel;
     private readonly IUIScreen _screen;
     private readonly IUIViewRuntime? _uiView;
     private bool _pushed;
 
     public TextBoxPresenter(
         DialogueDirector director,
-        AlundraTextBoxViewModel viewModel,
+        TextBoxViewModel viewModel,
         IUIScreen screen,
         IUIViewRuntime? uiView)
     {
@@ -69,7 +69,7 @@ public sealed class TextBoxPresenter
         }
     }
 
-    /// <summary>The speaker first (its two view models), then the box: one <see cref="AlundraTextBoxViewModel.Apply(DialogueBox, bool)"/> per tick.</summary>
+    /// <summary>The speaker first (its two view models), then the box: one <see cref="TextBoxViewModel.Apply(DialogueBox, bool)"/> per tick.</summary>
     private void Write(DialogueBox box, bool speakerDrawn)
     {
         _viewModel.NameBox.Apply(_director.NameBox);

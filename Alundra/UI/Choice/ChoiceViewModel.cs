@@ -5,15 +5,16 @@ using MGUI.Shared.Helpers;
 using Alundra.Dialogues;
 using Alundra.UI.Choice;
 using Alundra.UI.Inventory;
+using Alundra.UI.Messages;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Choice;
 
 /// <summary>
 /// E19.f3b (docs/plan-e19-opcodes.md): what <c>UI/Screens/ChoiceScreen.xaml</c> binds - the frame's x, the two labels (text and x) and the cursor (sprite and x); the rows
 /// (144, 152, 136) never move and are declared in the XAML. <see cref="ChoicePresenter"/> writes it after each pass of the choice box from the box's drawn state
 /// (<see cref="Apply"/>); only the values that change notify. <c>Top</c> of the two labels is not bound.
 /// </summary>
-public sealed class AlundraChoiceViewModel : ViewModelBase
+public sealed class ChoiceViewModel : ViewModelBase
 {
     private Visibility _rootVisibility = Visibility.Collapsed;
 
@@ -62,7 +63,7 @@ public sealed class AlundraChoiceViewModel : ViewModelBase
         Label0.Left = drawn.Label0X;
         Label1.Text = choice.Labels[1];
         Label1.Left = drawn.Label1X;
-        Cursor.SourceName = AlundraTextBoxViewModel.CursorSprites[drawn.CursorImage]; // image 0 to 3 of the box (u 176 + 16 i of the wind sheet): the text box's wait cursor sprites
+        Cursor.SourceName = TextBoxViewModel.CursorSprites[drawn.CursorImage]; // image 0 to 3 of the box (u 176 + 16 i of the wind sheet): the text box's wait cursor sprites
         Cursor.Left = drawn.CursorX;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps.Loop;
 using Alundra.Session;
@@ -48,7 +47,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void MovePlayer_InvalidDirectionCombination_FallsBackToCurrentTargetDirection()
     {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0x18 };
+        var player = new EntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0x18 };
         // ButtonsHold nibble 0 (no direction bits, other bits irrelevant to the >>0xc read) - actually we
         // need an INVALID combination: nibble 5 = Up+Down (0x1000|0x4000 -> nibble 0b0101 = 5) -> 0xFFFFFFFF.
         var pad = new PadState { ButtonsHold = PadState.Up | PadState.Down };
@@ -67,7 +66,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void MovePlayer_IdleNoPadHeld_StaysIdle()
     {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
+        var player = new EntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
 
         PlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
 
@@ -77,7 +76,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void MovePlayer_IdleWithRightHeld_BecomesMovingFacingRight()
     {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
+        var player = new EntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
         var pad = new PadState { ButtonsHold = PadState.Right };
 
         PlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
@@ -89,7 +88,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void MovePlayer_MovingPadReleased_BecomesIdle()
     {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 1, TargetDirection = 0x18 };
+        var player = new EntityScriptProxy { TargetAnimationId = 1, TargetDirection = 0x18 };
 
         PlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
 
@@ -102,14 +101,14 @@ public class AlundraPlayerManagerTests
     {
         // E19.d2c2 S1: 0x2D (in the air, no direction) IS a ported case now: on the ground (a bare proxy is never in the air) with Right held it goes back to
         // Moving, like the binary's tail. A case that is still not ported stays untouched.
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x2D /* air, still */, TargetDirection = 0 };
+        var player = new EntityScriptProxy { TargetAnimationId = 0x2D /* air, still */, TargetDirection = 0 };
         var pad = new PadState { ButtonsHold = PadState.Right };
 
         PlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
 
         Assert.Equal(1u, player.TargetAnimationId);
 
-        var unported = new AlundraEntityScriptProxy { TargetAnimationId = 0x20 /* not one of the ported cases */, TargetDirection = 0 };
+        var unported = new EntityScriptProxy { TargetAnimationId = 0x20 /* not one of the ported cases */, TargetDirection = 0 };
         PlayerManager.MovePlayer(unported, in pad, NewUnlockedState(), host: null);
         Assert.Equal(0x20u, unported.TargetAnimationId);
     }
@@ -121,7 +120,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void MovePlayer_InputBlocked_DoesNotChangeAnimationOrDirection()
     {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
+        var player = new EntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
         var pad = new PadState { ButtonsHold = PadState.Right };
         var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
@@ -134,7 +133,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void MovePlayer_BlockedByEntity_DoesNotChangeAnimationOrDirection()
     {
-        var player = new AlundraEntityScriptProxy
+        var player = new EntityScriptProxy
         {
             TargetAnimationId = 0,
             TargetDirection = 0,
@@ -151,7 +150,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void MovePlayer_UnlockedFreeBranch_SetsGravityFlag()
     {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0, Flags = 0 };
+        var player = new EntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0, Flags = 0 };
 
         PlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
 
@@ -170,7 +169,7 @@ public class AlundraPlayerManagerTests
     {
         // IsOnGround stub = 1 (AlundraWorldProxy.AdoptPlayerPawn's own documented stub until E3):
         // the original's "break" branch - stays LoadingMap.
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 1 };
+        var player = new EntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 1 };
         var pad = new PadState { ButtonsHold = PadState.Up };
 
         PlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
@@ -183,7 +182,7 @@ public class AlundraPlayerManagerTests
     {
         // E19.v: the binary reads IsOnGround (+0x144) and, at 0, sets 0x2D. A bare proxy is in the air through HeroAirborne, the
         // predicate of the common tail (ApplyGroundOrAirTail, which reads the same word at 0x80031EBC).
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, HeroAirborne = true };
+        var player = new EntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, HeroAirborne = true };
 
         PlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
 
@@ -195,7 +194,7 @@ public class AlundraPlayerManagerTests
     {
         // E19.v V-R1: after 0x2D the binary leaves the switch, so the jump states' case (the stick's direction, 0x2C with a
         // direction held) does not run in the same call.
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, HeroAirborne = true };
+        var player = new EntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, HeroAirborne = true };
         var pad = new PadState { ButtonsHold = PadState.Up };
 
         PlayerManager.MovePlayer(player, in pad, NewUnlockedState(), host: null);
@@ -208,7 +207,7 @@ public class AlundraPlayerManagerTests
     public void MovePlayer_LoadingMapBareProxyNotAirborne_StaysLoadingMap_ThePredicateIsTheTails()
     {
         // E19.v V-R2: without a controller the air predicate is HeroAirborne, not the IsOnGround a bare proxy leaves at 0.
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 0, HeroAirborne = false };
+        var player = new EntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 0, HeroAirborne = false };
 
         PlayerManager.MovePlayer(player, in NoInput, NewUnlockedState(), host: null);
 
@@ -218,7 +217,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void MovePlayer_LoadingMapWhileInputBlocked_StaysLoadingMap()
     {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 1 };
+        var player = new EntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 1 };
         var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
         PlayerManager.MovePlayer(player, in NoInput, state, host: null);
@@ -233,7 +232,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void Tick_SpeedByAcceleration1DirectionEast_ProducesHandComputedForceProgression()
     {
-        var player = new AlundraEntityScriptProxy
+        var player = new EntityScriptProxy
         {
             TargetAnimationId = 1, // Moving
             TargetDirection = 0x18, // east
@@ -270,7 +269,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void Tick_AccumulatesSubStepElapsedTime_RunsWholeTicksOnly()
     {
-        var player = new AlundraEntityScriptProxy
+        var player = new EntityScriptProxy
         {
             TargetAnimationId = 1,
             TargetDirection = 0x18,
@@ -295,7 +294,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void Tick_LongStall_CapsCatchUpAtFourTicksPerFrame()
     {
-        var player = new AlundraEntityScriptProxy
+        var player = new EntityScriptProxy
         {
             TargetAnimationId = 1,
             TargetDirection = 0x18,
@@ -316,7 +315,7 @@ public class AlundraPlayerManagerTests
     [Fact]
     public void Tick_NoAnimSetForCurrentAnimation_TreatsSpeedAsZero_NoMovement()
     {
-        var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0x18, AnimSetsByAnim = null };
+        var player = new EntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0x18, AnimSetsByAnim = null };
 
         PlayerManager.Tick(player, 1);
 
@@ -340,7 +339,7 @@ public class AlundraPlayerManagerTests
         PlayerManager.SetDebugIgnoreControlLockOverrideForTests(false);
         try
         {
-            var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
+            var player = new EntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
             var pad = new PadState { ButtonsHold = PadState.Right };
             var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
@@ -363,7 +362,7 @@ public class AlundraPlayerManagerTests
         PlayerManager.SetDebugIgnoreControlLockOverrideForTests(true);
         try
         {
-            var player = new AlundraEntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
+            var player = new EntityScriptProxy { TargetAnimationId = 0, TargetDirection = 0 };
             var pad = new PadState { ButtonsHold = PadState.Right };
             var state = new GameState { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 

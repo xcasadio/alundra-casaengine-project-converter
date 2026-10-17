@@ -3,14 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using CasaEngine.Framework.Assets.TileMap;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Entities.Spawning;
 
 /// <summary>
 /// Pure mapping from one record of the "Entities" object layer emitted for a converted map
 /// (see <c>AlundraDataExtractor.TiledMapExporter.CreateEntityProperties</c>, the authoritative source
-/// of the key list below) onto the fields of <see cref="AlundraEntityScriptProxy"/> that can be derived
+/// of the key list below) onto the fields of <see cref="EntityScriptProxy"/> that can be derived
 /// from the record alone, mirroring how the original <c>SiEntityRecord</c> was consumed by
 /// <c>EntityManager.InitializeEntity</c> / <c>InitializeCodePrograms</c> / <c>GameEngine.InitializeContents</c>.
 ///
@@ -18,38 +18,38 @@ namespace Alundra.Entities.Spawning;
 /// <c>TileX</c>/<c>TileY</c>/<c>TileZ</c>) from the record alone, with no dependency on world/save
 /// state. Converting that logical position into a CasaEngine world-space transform (placing the
 /// spawned entity's <c>RootComponent</c>) is a separate, engine-facing concern handled by
-/// <see cref="AlundraWorldProxy"/>, not this pure mapper.
+/// <see cref="WorldProxy"/>, not this pure mapper.
 ///
 /// Mapped keys:
 /// <list type="bullet">
-/// <item><description><c>Index</c> -&gt; <see cref="AlundraEntityScriptProxy.EntityRefId"/>: this is the
+/// <item><description><c>Index</c> -&gt; <see cref="EntityScriptProxy.EntityRefId"/>: this is the
 /// record's index inside the map's entity array, which is exactly the <c>entityId</c>
 /// <c>GameEngine.SpawnEntity</c> looks records up by and stores verbatim as
 /// <c>entity.EntityRefId</c> (<c>EntityManager.InitializeEntity</c>) when the record is present.</description></item>
-/// <item><description><c>SpriteTableIndex</c> -&gt; <see cref="AlundraEntityScriptProxy.SpriteTableIndex"/>:
+/// <item><description><c>SpriteTableIndex</c> -&gt; <see cref="EntityScriptProxy.SpriteTableIndex"/>:
 /// stored as-is (<c>entity.SpriteTableIndex = spriteTableIndex</c>).</description></item>
 /// <item><description><c>EventCodesA_LoadIndex</c> .. <c>EventCodesF_InteractIndex</c> -&gt;
-/// <see cref="AlundraEntityScriptProxy.ProgramIndexes"/>[0..5]: <c>EntityManager.InitializeCodePrograms</c>
+/// <see cref="EntityScriptProxy.ProgramIndexes"/>[0..5]: <c>EntityManager.InitializeCodePrograms</c>
 /// copies the six event-code slots verbatim into <c>ProgramIndexes</c> in A..F order, which is exactly
 /// <c>ScriptHelper.ProgramALoad</c>..<c>ProgramFInteract</c> (0..5).</description></item>
-/// <item><description><c>_10</c> -&gt; <see cref="AlundraEntityScriptProxy.ContentsGameFlag"/>: reproduces the
+/// <item><description><c>_10</c> -&gt; <see cref="EntityScriptProxy.ContentsGameFlag"/>: reproduces the
 /// deterministic part of <c>GameEngine.InitializeContents</c> - the raw save-flag index is masked to zero
 /// when <c>(_10 &amp; 0x7fff) &gt; 0x7ff</c>, otherwise stored as-is. The rest of that method (resolving
 /// <c>ContentsItemId</c> by consulting live save-game flags and rolling randomised item tables) needs
-/// runtime state this pure mapper does not have, so <see cref="AlundraEntityScriptProxy.ContentsItemId"/>
+/// runtime state this pure mapper does not have, so <see cref="EntityScriptProxy.ContentsItemId"/>
 /// is deliberately left unmapped - see below.</description></item>
-/// <item><description><c>XPos</c> -&gt; <see cref="AlundraEntityScriptProxy.PosX"/> /
-/// <see cref="AlundraEntityScriptProxy.TileX"/>; <c>YPos</c> -&gt;
-/// <see cref="AlundraEntityScriptProxy.PosY"/> / <see cref="AlundraEntityScriptProxy.TileY"/>;
-/// <c>Height</c> -&gt; <see cref="AlundraEntityScriptProxy.PosZ"/> /
-/// <see cref="AlundraEntityScriptProxy.TileZ"/>. Confirmed against the decompilation, not the Tiled
+/// <item><description><c>XPos</c> -&gt; <see cref="EntityScriptProxy.PosX"/> /
+/// <see cref="EntityScriptProxy.TileX"/>; <c>YPos</c> -&gt;
+/// <see cref="EntityScriptProxy.PosY"/> / <see cref="EntityScriptProxy.TileY"/>;
+/// <c>Height</c> -&gt; <see cref="EntityScriptProxy.PosZ"/> /
+/// <see cref="EntityScriptProxy.TileZ"/>. Confirmed against the decompilation, not the Tiled
 /// exporter's preview math (that one drops precision - see the caveat below):
 /// <c>GameEngine.SpawnEntity</c> (AlundraEngine/GameEngine.cs:743-751) passes
 /// <c>(entityRecord.XPos * 12 + 12) * 0x10000</c>, <c>(entityRecord.YPos * 8 + 8) * 0x10000</c> and
 /// <c>entityRecord.Height &lt;&lt; 0x13</c> as the raw <c>x</c>/<c>y</c>/<c>z</c> spawn position -
 /// i.e. <c>XPos</c>/<c>YPos</c>/<c>Height</c> are in half-tile units (12 px / 8 px / 8 px - half of
 /// <c>MapTileWidth</c>=24 and <c>MapTileHeight</c>=16), and the "+half-tile" term centres the point in
-/// the tile, all packed as 16.16 fixed-point pixels, exactly like <see cref="AlundraEntityScriptProxy.PosX"/>
+/// the tile, all packed as 16.16 fixed-point pixels, exactly like <see cref="EntityScriptProxy.PosX"/>
 /// et al. document at their declaration (offset 0x114). <c>PhysicsEngine.cs:1698-1700</c> (normally run
 /// every physics tick, <c>entity.TileX = (entity.PosX &gt;&gt; 16) / MapTileWidth</c> etc.) gives the pure
 /// formula this mapper reuses once, at spawn time, to seed <c>TileX</c>/<c>TileY</c>/<c>TileZ</c> from the
@@ -59,14 +59,14 @@ namespace Alundra.Entities.Spawning;
 /// collision box, via <c>SetEntityDimensions</c>) and then clamps it against
 /// <c>PhysicsEngine.ComputeEntityGroundHeight</c>'s live terrain probe. Both need runtime state (the
 /// resolved sprite, the map's collision cells) this pure mapper does not have, so
-/// <see cref="AlundraEntityScriptProxy.PosZ"/> here is the raw elevation input before that ground clamp,
+/// <see cref="EntityScriptProxy.PosZ"/> here is the raw elevation input before that ground clamp,
 /// not the entity's final resting height - reproducing the clamp is future physics/status-machine
 /// work.</para>
 /// <para>Also note the Tiled exporter's own <c>DisplayPixelX</c>/<c>DisplayPixelY</c> (see the
 /// "deliberately NOT mapped" list below) use a coarser, editor-preview-only conversion - integer-divide
 /// <c>XPos</c>/<c>YPos</c>/<c>Height</c> by 2 into whole tiles first (losing the half-tile bit) and skip
-/// the "+half-tile" centring term - which is why they do not numerically match <see cref="AlundraEntityScriptProxy.PosX"/>/
-/// <see cref="AlundraEntityScriptProxy.PosY"/> here; this mapper follows the decompiled runtime formula,
+/// the "+half-tile" centring term - which is why they do not numerically match <see cref="EntityScriptProxy.PosX"/>/
+/// <see cref="EntityScriptProxy.PosY"/> here; this mapper follows the decompiled runtime formula,
 /// not the exporter's preview math.</para></description></item>
 /// </list>
 ///
@@ -85,7 +85,7 @@ namespace Alundra.Entities.Spawning;
 /// spawner/world proxy.</description></item>
 /// <item><description><c>Contents</c>: raw item-content pool index, consumed only inside
 /// <c>GameEngine.InitializeContents</c> together with live save-flag state and RNG to resolve
-/// <see cref="AlundraEntityScriptProxy.ContentsItemId"/>; that resolution is stateful and non-deterministic,
+/// <see cref="EntityScriptProxy.ContentsItemId"/>; that resolution is stateful and non-deterministic,
 /// so it is left to the runtime content-initialization step (out of scope here).</description></item>
 /// <item><description><c>DisplayX</c>, <c>DisplayY</c>, <c>DisplayHeight</c>, <c>DisplayPixelX</c>,
 /// <c>DisplayPixelY</c>: Tiled-editor display helpers derived from <c>XPos</c>/<c>YPos</c>/<c>Height</c> for
@@ -96,7 +96,7 @@ namespace Alundra.Entities.Spawning;
 /// here to build error messages).</description></item>
 /// <item><description><c>PrefabAssetId</c>: the bank prefab's asset id (see
 /// <c>EntityBankPrefabWriter</c>/<c>Entities/{Name}/{Name}.entity</c>), injected by the converter so the
-/// spawner (<see cref="AlundraWorldProxy"/>) can clone the right prefab per record. It is consumed at
+/// spawner (<see cref="WorldProxy"/>) can clone the right prefab per record. It is consumed at
 /// spawn time, before this mapper runs, and has no corresponding proxy field - deliberately not mapped
 /// here.</description></item>
 /// </list>
@@ -122,7 +122,7 @@ public static class EntityRecordMapper
     /// <param name="recordName">The record's object name (e.g. "Entity_0"), used only for error messages.</param>
     /// <param name="customProperties">The record's custom_properties, as emitted by the converter.</param>
     /// <param name="proxy">The proxy instance to fill.</param>
-    public static void Map(string recordName, IReadOnlyDictionary<string, string> customProperties, AlundraEntityScriptProxy proxy)
+    public static void Map(string recordName, IReadOnlyDictionary<string, string> customProperties, EntityScriptProxy proxy)
     {
         ArgumentNullException.ThrowIfNull(recordName);
         ArgumentNullException.ThrowIfNull(customProperties);
@@ -209,7 +209,7 @@ public static class EntityRecordMapper
     /// Adapter overload for the engine's runtime object-layer record type, so the future world proxy can
     /// call this mapper directly against what <see cref="TileMapObjectLayerData"/> hands it at runtime.
     /// </summary>
-    public static void Map(TileMapObjectData record, AlundraEntityScriptProxy proxy)
+    public static void Map(TileMapObjectData record, EntityScriptProxy proxy)
     {
         ArgumentNullException.ThrowIfNull(record);
 
@@ -222,7 +222,7 @@ public static class EntityRecordMapper
     /// it in <c>entity.SpriteTableIndex</c> - <c>SpriteTableIndex</c>, with <c>0x100</c> added when the record
     /// is a map sprite (<c>SpriteDirection &amp; 0x80</c>). -1 when the record carries no
     /// <c>SpriteTableIndex</c>; a missing <c>SpriteDirection</c> reads as 0. Throws on a malformed value, like
-    /// <see cref="Map(string, IReadOnlyDictionary{string, string}, AlundraEntityScriptProxy)"/>.
+    /// <see cref="Map(string, IReadOnlyDictionary{string, string}, EntityScriptProxy)"/>.
     /// </summary>
     public static int ResolveSpriteType(TileMapObjectData record)
     {

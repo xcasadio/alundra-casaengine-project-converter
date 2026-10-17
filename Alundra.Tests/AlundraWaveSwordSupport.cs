@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Entities;
@@ -87,7 +86,7 @@ internal static class WaveOracle
     }
 
     /// <summary>The same line from the DLL's entity (the box offsets and sizes of the frame box evaluation, the oracle's hit box minus the position and its <c>+0x1D8</c> words), or "absent".</summary>
-    internal static string Describe(AlundraEntityScriptProxy? wave, AlundraEntityScriptProxy hero, bool present)
+    internal static string Describe(EntityScriptProxy? wave, EntityScriptProxy hero, bool present)
     {
         if (wave is null || !present)
         {
@@ -142,10 +141,10 @@ internal sealed class WaveRun : IDisposable
 
     internal readonly HitArena Arena;
     internal readonly Dictionary<int, string> Lines = new();
-    internal AlundraEntityScriptProxy? Born;
+    internal EntityScriptProxy? Born;
     internal int FirstTick;
     internal int LowestFreeSlotBeforeBirth = -1;
-    internal readonly List<(int Tick, AlundraEntityScriptProxy Wave)> Present = new();
+    internal readonly List<(int Tick, EntityScriptProxy Wave)> Present = new();
 
     /// <summary>The arena of the charge: the hero at (212, <paramref name="heroY"/>) facing <paramref name="direction"/> (the word of <c>TargetDirection</c>: 24 east, 8 west, 16 north, 0 south) with the sword of the item <paramref name="item"/>
     /// (2 steel, 3 demon, 4 holy) in the slot 1; the Beannoids at the pixels <paramref name="targets"/>.</summary>
@@ -157,7 +156,7 @@ internal sealed class WaveRun : IDisposable
     }
 
     /// <summary>The entity of the wave if one exists in the world now: a sprite 27 to 29 whose parent is the hero.</summary>
-    internal AlundraEntityScriptProxy? Find()
+    internal EntityScriptProxy? Find()
         => Arena.Arc.Entities.FirstOrDefault(e => WaveSwordAi.SpriteTypes.Contains(e.SpriteType) && ReferenceEquals(e.ParentEntity, Arena.Arc.HeroEntity));
 
     /// <summary>

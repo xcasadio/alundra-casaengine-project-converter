@@ -6,16 +6,16 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using MGUI.Core.UI;
 using Xunit;
 using Alundra.Hero;
 using Alundra.Dialogues;
+using Alundra.UI.Choice;
 
 namespace Alundra.Tests;
 
 /// <summary>
-/// E19.f3b F3B-1 (docs/plan-e19-opcodes.md, F3B-R2): <see cref="AlundraChoiceViewModel.Apply"/> against the real <see cref="ChoiceBox"/>, pass by pass, on V1 and V2 of
+/// E19.f3b F3B-1 (docs/plan-e19-opcodes.md, F3B-R2): <see cref="ChoiceViewModel.Apply"/> against the real <see cref="ChoiceBox"/>, pass by pass, on V1 and V2 of
 /// <c>docs/plan-e19-f3-annexe/values.json</c> (the model run on the pad words listed there): nothing shows while the box draws nothing (the init pass, the close pass); else
 /// the frame at the pass's x (311 ... 176 at the entry, 176, 185, ... 320 at the exit), the labels and the cursor (sprite by image, x by selection); and the view model
 /// notifies only what changes.
@@ -43,7 +43,7 @@ public sealed class AlundraChoiceViewModelTests
     }
 
     /// <summary>Every property change of the view model and of its parts.</summary>
-    private static List<string> Watch(AlundraChoiceViewModel viewModel)
+    private static List<string> Watch(ChoiceViewModel viewModel)
     {
         var events = new List<string>();
         void Hook(string owner, INotifyPropertyChanged source) => source.PropertyChanged += (_, e) => events.Add($"{owner}.{e.PropertyName}");
@@ -56,7 +56,7 @@ public sealed class AlundraChoiceViewModelTests
     }
 
     /// <summary>Runs the scenario's passes on the real box and applies the view model after each one (the presenter's job), checking every pass against the table.</summary>
-    private static void Run(int index, Action<int, JsonElement, ChoiceBox, AlundraChoiceViewModel, List<string>> afterEachPass)
+    private static void Run(int index, Action<int, JsonElement, ChoiceBox, ChoiceViewModel, List<string>> afterEachPass)
     {
         var scenario = Scenario(index);
         var raw = new Dictionary<int, uint>();
@@ -68,7 +68,7 @@ public sealed class AlundraChoiceViewModelTests
         var table = scenario.GetProperty("table").EnumerateArray().ToArray();
         var box = new ChoiceBox();
         box.SeedCursorTickForTests(scenario.GetProperty("anim0").GetInt32());
-        var viewModel = new AlundraChoiceViewModel();
+        var viewModel = new ChoiceViewModel();
         var events = Watch(viewModel);
         var pad = new TickPad();
         for (var t = 0; t < table.Length; t++)
@@ -171,7 +171,7 @@ public sealed class AlundraChoiceViewModelTests
     public void Apply_CountsItsRuns()
     {
         var box = new ChoiceBox();
-        var viewModel = new AlundraChoiceViewModel();
+        var viewModel = new ChoiceViewModel();
         Assert.Equal(Visibility.Collapsed, viewModel.RootVisibility);
         viewModel.Apply(box);
         viewModel.Apply(box);

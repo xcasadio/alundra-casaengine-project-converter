@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Gameplay;
@@ -18,6 +17,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
@@ -84,13 +84,13 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
     private sealed class Host : IEntityWorldContext
     {
         public EffectStage? Stage { get; set; }
-        public List<AlundraEntityScriptProxy> Spawned { get; } = new();
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public List<EntityScriptProxy> Spawned { get; } = new();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Spawned;
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public EffectStage? EffectStage => Stage;
     }
@@ -123,14 +123,14 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
     }
 
     /// <summary>Runs the instructions as one program on the host and proves the program reached its end (the <c>0x1A 9</c> after them ran in the same call: none of them suspends).</summary>
-    private static List<EventTraceRecord> Exec(IEntityWorldContext host, AlundraEntityScriptProxy? entity, params int[][] instructions)
+    private static List<EventTraceRecord> Exec(IEntityWorldContext host, EntityScriptProxy? entity, params int[][] instructions)
     {
         var codes = instructions.SelectMany(i => i).Concat(new[] { 0x1A, 9, 0xFF }).ToArray();
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new int[6], Codes = codes };
         var runner = new EventProgramRunner(document, new GameState(), host);
         var trace = new List<EventTraceRecord>();
         runner.TraceSink = trace.Add;
-        entity ??= new AlundraEntityScriptProxy { Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" } };
+        entity ??= new EntityScriptProxy { Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" } };
         entity.TargetAnimationId = 0;
         runner.RunOneScriptCall(entity, new EventProgramState { Codes = document.CodesAsBytes() });
         Assert.Equal(9u, entity.TargetAnimationId);
@@ -524,7 +524,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         var found = OpcodeGolden.One("S135a3", "found");
         var stage = StageOf(135);
         var host = new Host { Stage = stage };
-        var entity = new AlundraEntityScriptProxy
+        var entity = new EntityScriptProxy
         {
             Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" },
             PosX = (int)long.Parse(found[4]), PosY = (int)long.Parse(found[5]), PosZ = (int)long.Parse(found[6]),
@@ -604,7 +604,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         stage.RunFrame(0, Array.Empty<bool>());
         Assert.Equal(none[2], string.Join(",", stage.Reservoir.ActiveSlots.Where(s => s.RecordIndex == 0).SelectMany(s => new long[] { s.X, s.Y, s.Z })));
 
-        host.PlayerEntity = new AlundraEntityScriptProxy { Status = EntityStatus.Normal, PosX = (int)long.Parse(withEntity[2]), PosY = (int)long.Parse(withEntity[3]), PosZ = (int)long.Parse(withEntity[4]) };
+        host.PlayerEntity = new EntityScriptProxy { Status = EntityStatus.Normal, PosX = (int)long.Parse(withEntity[2]), PosY = (int)long.Parse(withEntity[3]), PosZ = (int)long.Parse(withEntity[4]) };
         Exec(host, op);
         stage.RunFrame(0, Array.Empty<bool>());
         Assert.Equal(withEntity[5], string.Join(",", stage.Reservoir.ActiveSlots.Where(s => s.RecordIndex == 0).SelectMany(s => new long[] { s.Index, s.X, s.Y, s.Z })));
@@ -711,7 +711,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
     public void A0x90_AtTheTickThatStartsAWarpDeparture_TheSlotExistsDuringTheDeparture_AndTheQueueIsEmptyAfterEachUpdate()
     {
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         BackdropWarpDepartureSupport.SetPrivateField(proxy._backdropStage, "_clearColorApplied", true); // the headless montage has no view for the clear colour.
         var stage = proxy._effectStage;
@@ -739,22 +739,22 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         public EffectStage? Stage { get; set; }
         public int Calls;
         public IEventProgramRunner Runner => this;
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) { }
+        public HeroController? PlayerController => null;
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
+        public void DestroyEntity(EntityScriptProxy entity, int effectId) { }
         public int LogicTicksThisFrame(float elapsedTime) => Ticks;
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity => null;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public EffectStage? EffectStage => Stage;
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             if (programSlot == ScriptHelper.ProgramCTick)
             {
@@ -763,7 +763,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
             }
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -780,10 +780,10 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         typeof(Microsoft.Xna.Framework.Game).GetField("_components", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
             .SetValue(game, new Microsoft.Xna.Framework.GameComponentCollection());
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
-        var owner = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = new AnimatedSpriteComponent() };
+        var owner = new Entity { Name = "e", GameplayProxyClassName = typeof(EntityScriptProxy).FullName!, RootComponent = new AnimatedSpriteComponent() };
         HeroWorldFixture.SetProperty(owner, nameof(Entity.World), world);
         owner.Initialize();
-        var entity = Assert.IsType<AlundraEntityScriptProxy>(owner.GameplayProxy);
+        var entity = Assert.IsType<EntityScriptProxy>(owner.GameplayProxy);
         entity.ScriptHost = host;
         entity.Status = EntityStatus.Normal;
         entity.ProgramIndexes[ScriptHelper.ProgramCTick] = 1;
@@ -803,16 +803,16 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
     /// <summary>The world proxy itself as the host of the interpreter: the runner reads its <see cref="IEntityWorldContext.EffectStage"/>.</summary>
     private sealed class HostOf : IEntityWorldContext
     {
-        private readonly AlundraWorldProxy _proxy;
+        private readonly WorldProxy _proxy;
 
-        public HostOf(AlundraWorldProxy proxy) => _proxy = proxy;
+        public HostOf(WorldProxy proxy) => _proxy = proxy;
 
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => ((IEntityWorldContext)_proxy).SpawnedEntities;
-        public AlundraEntityScriptProxy? PlayerEntity => ((IEntityWorldContext)_proxy).PlayerEntity;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => ((IEntityWorldContext)_proxy).SpawnedEntities;
+        public EntityScriptProxy? PlayerEntity => ((IEntityWorldContext)_proxy).PlayerEntity;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public EffectStage? EffectStage => ((IEntityWorldContext)_proxy).EffectStage;
     }

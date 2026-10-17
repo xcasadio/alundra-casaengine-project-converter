@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.SaveGames;
 using CasaEngine.Framework.UI;
@@ -767,7 +766,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         // The new world's install, in InitializeWithWorld's order: the dialogue systems, then the save screen.
         var newView = new AlundraSaveBookTests.RecordingUIViewRuntime();
         var world = SaveScreenTestWorlds.WorldWithUIView("NextWorld", newView);
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         using var logs = LogCapture.Install();
         proxy.InstallDialogueSystems(world);
         proxy.InstallSaveScreenSystems();
@@ -803,7 +802,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
 
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
         AddHeroPawn(world);
-        InitializeWithRealProject(new AlundraWorldProxy(), world);
+        InitializeWithRealProject(new WorldProxy(), world);
 
         Assert.Equal(0u, State.PlayerControlFlags);
         Assert.False(Director.IsActive);
@@ -906,9 +905,9 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.True(_slots.NothingCalled);
     }
 
-    private static AlundraEntityScriptProxy NewBook()
+    private static EntityScriptProxy NewBook()
     {
-        var book = new AlundraEntityScriptProxy { SpriteType = SaveBook.SpriteType, Status = EntityStatus.Normal };
+        var book = new EntityScriptProxy { SpriteType = SaveBook.SpriteType, Status = EntityStatus.Normal };
         book.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = 254;
         book.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = SaveBook.TickCode;
         book.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = SaveBook.InteractCode;
@@ -984,25 +983,25 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     {
         private readonly string? _worldName;
 
-        public BookContext(AlundraEntityScriptProxy hero, string? worldName)
+        public BookContext(EntityScriptProxy hero, string? worldName)
         {
             PlayerEntity = hero;
             _worldName = worldName;
         }
 
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
 
-        public AlundraEntityScriptProxy? PlayerEntity { get; }
+        public EntityScriptProxy? PlayerEntity { get; }
 
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
 
         public void SetForcedCameraLookAt(int x, int y, int z)
         {
         }
 
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity)
+        public void DestroyEntity(EntityScriptProxy entity)
         {
         }
 

@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Alundra.Scripts;
 using CasaEngine.Core.Logging;
 using CasaEngine.Framework.AI.Navigation;
 using Xunit;
@@ -116,13 +115,13 @@ public sealed class AlundraNativeEffectTests : IDisposable
     {
         public EffectStage? Stage { get; set; }
         public RecordingSound? Sound { get; set; }
-        public List<AlundraEntityScriptProxy> Spawned { get; } = new();
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public List<EntityScriptProxy> Spawned { get; } = new();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Spawned;
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public EffectStage? EffectStage => Stage;
         public ISoundPlayer? SoundPlayer => Sound;
@@ -138,7 +137,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         return stage;
     }
 
-    private static AlundraEntityScriptProxy HeroAt(int x, int y, int z) => new() { PosX = x, PosY = y, PosZ = z };
+    private static EntityScriptProxy HeroAt(int x, int y, int z) => new() { PosX = x, PosY = y, PosZ = z };
 
     private static EventProgramState Exec(Host host, GameState gameState, int[] code, List<EventTraceRecord>? trace = null)
     {
@@ -150,7 +149,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         }
 
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
-        var entity = new AlundraEntityScriptProxy { Status = EntityStatus.Normal, LogicContextEntity = new CasaEngine.Framework.Scene.Entities.Entity { Name = "logic" } };
+        var entity = new EntityScriptProxy { Status = EntityStatus.Normal, LogicContextEntity = new CasaEngine.Framework.Scene.Entities.Entity { Name = "logic" } };
         runner.RunOneScriptCall(entity, state);
         Assert.Equal(9u, entity.TargetAnimationId); // 0x1A 9 ran in the same call: the vessel did not suspend.
         return state;
@@ -324,7 +323,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     public static IEnumerable<object[]> LifeCases() => Golden.Where(r => r[0] == "P").Select(r => new object[] { int.Parse(r[1]), int.Parse(r[2]), int.Parse(r[3]), int.Parse(r[4]) });
 
     /// <summary>E20.c2a T3: a hero that carries its life as the binary's does (pulled from the stats at its creation), the stats as given.</summary>
-    private static AlundraEntityScriptProxy CarryingHero(GameState state, int hp, int hpMax)
+    private static EntityScriptProxy CarryingHero(GameState state, int hp, int hpMax)
     {
         state.PlayerStats.HpMax = (short)hpMax;
         state.PlayerStats.Hp = (short)hp;
@@ -336,7 +335,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     }
 
     /// <summary>The END of the hero's tick (<c>0x80032914</c>) through the locked branch of <c>MovePlayer</c> (the vessel runs in a locked script): <c>UpdateItemEffectState</c>, then the two stat setters.</summary>
-    private static void LockedTick(AlundraEntityScriptProxy hero, GameState state)
+    private static void LockedTick(EntityScriptProxy hero, GameState state)
     {
         state.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
         var pad = default(PadState);

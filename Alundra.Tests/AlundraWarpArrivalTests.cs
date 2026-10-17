@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Engine.Geometry;
@@ -24,6 +23,8 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Hero;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -33,18 +34,18 @@ namespace Alundra.Tests;
 /// Game constants, and <c>InstallScreenFadeSystems</c> transporting the arrival's own transition effect
 /// id into the log (D-T-7: reduced to effect 0 regardless).
 ///
-/// <c>AdoptPlayerPawn</c> is PRIVATE and only reached past <see cref="AlundraWorldProxy.InitializeWithWorld"/>'s
+/// <c>AdoptPlayerPawn</c> is PRIVATE and only reached past <see cref="WorldProxy.InitializeWithWorld"/>'s
 /// two early returns (a real "tileMap" entity with loaded <see cref="TileMapData"/>) - same montage as
 /// <see cref="AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World"/>, built independently here for the
 /// REAL map 390 export (this chantier's own arrival map, §1.1.d), plus a hand-built hero pawn possessed by
-/// a real <see cref="AlundraPlayerController"/> registered into <c>World.PlayerControllers</c> by
+/// a real <see cref="HeroController"/> registered into <c>World.PlayerControllers</c> by
 /// reflection (the engine's own <c>InitializePlayerControllers</c> needs a full asset-catalog pawn prefab
 /// this headless montage does not have - same reflection-into-a-private-field precedent already used by
 /// this project's own <c>AlundraWarpDepartureTests.GetPendingWorldToLoad</c>).
 ///
 /// Every test resets the FOUR session singletons this class' own montages touch (D-T-14).
 ///
-/// <para>F5 (docs/plan-bgm-demarrage-binaire.md): <see cref="AlundraWorldProxy.InitializeWithWorld"/>
+/// <para>F5 (docs/plan-bgm-demarrage-binaire.md): <see cref="WorldProxy.InitializeWithWorld"/>
 /// writes the SESSION-scoped <see cref="BgmPlayer.Instance"/> (map entry arms its reset flag,
 /// B7) - so this class shares <see cref="AlundraMusicPlayerSingletonCollection"/> with every other class
 /// touching that same shared instance, and resets <see cref="BgmFadeDirector.Instance"/> too
@@ -234,11 +235,11 @@ public sealed class AlundraWarpArrivalTests : IDisposable
     /// <summary>
     /// Hand-built hero pawn - root <see cref="TransformComponent"/> plus sibling <see cref="CollisionComponent"/>
     /// (Box 21x15x32, local_position (0.5,0.5,16), same fixture as <see cref="HeroWorldFixture.BuildHeroPawn"/>)
-    /// so <see cref="AlundraEntityScriptProxy.ClampToGround"/> has a real box fixture to sample the ground
+    /// so <see cref="EntityScriptProxy.ClampToGround"/> has a real box fixture to sample the ground
     /// under - no <see cref="CharacterControllerComponent"/> (not needed by ClampToGround itself, and
     /// AdoptPlayerPawn already tolerates a null Controller, logging instead of throwing).
     /// </summary>
-    private static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildHeroPawnEntity(World world)
+    private static (Entity Entity, EntityScriptProxy Proxy) BuildHeroPawnEntity(World world)
     {
         var root = new TransformComponent();
         var collisionComponent = new CollisionComponent();
@@ -254,16 +255,16 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         {
             Name = "AlundraHeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
         entity.Initialize();
         SetProperty(entity, nameof(Entity.World), world); // ClampToGround reads Owner.World.CollisionField.
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         return (entity, proxy);
     }
 
-    /// <summary>Possesses <paramref name="pawn"/> with a real <see cref="AlundraPlayerController"/> and
+    /// <summary>Possesses <paramref name="pawn"/> with a real <see cref="HeroController"/> and
     /// registers it into <paramref name="world"/>'s own <c>World.PlayerControllers</c> by reflection on
     /// the private backing list (<c>World.InitializePlayerControllers</c> needs a full asset-catalog pawn
     /// prefab this headless montage does not build) - <c>AdoptPlayerPawn</c>'s own
@@ -271,7 +272,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
     /// finds it exactly as it would the engine-spawned one.</summary>
     private static void RegisterPlayerController(World world, Entity pawn)
     {
-        var controller = new AlundraPlayerController();
+        var controller = new HeroController();
         controller.Possess(pawn);
 
         var field = typeof(World).GetField("_playerControllers", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -299,11 +300,11 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         Flags = 0x5001 | (transitionEffectId << 4),
     };
 
-    private static AlundraEntityScriptProxy NewDeparturePlayer(int posXPixels, int posYPixels)
+    private static EntityScriptProxy NewDeparturePlayer(int posXPixels, int posYPixels)
     {
-        var entity = new Entity { Name = "player", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "player", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var player = (AlundraEntityScriptProxy)entity.GameplayProxy;
+        var player = (EntityScriptProxy)entity.GameplayProxy;
         player.IsPlayer = true;
         player.Status = EntityStatus.Normal;
         player.PosX = posXPixels << 16;
@@ -381,7 +382,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         var (heroEntity, _) = BuildHeroPawnEntity(world);
         RegisterPlayerController(world, heroEntity);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
 
         var previousProjectPath = EngineEnvironment.ProjectPath;
         EngineEnvironment.ProjectPath = FindProjectRoot();
@@ -394,7 +395,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
             EngineEnvironment.ProjectPath = previousProjectPath;
         }
 
-        var hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
+        var hero = Assert.IsType<EntityScriptProxy>(heroEntity.GameplayProxy);
 
         // Position (10*24+12, 40*16+8) << 16, before ClampToGround raises PosZ.
         Assert.Equal((10 * 24 + 12) << 16, hero.PosX);
@@ -426,7 +427,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         var (heroEntity, _) = BuildHeroPawnEntity(world);
         RegisterPlayerController(world, heroEntity);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         var previousProjectPath = EngineEnvironment.ProjectPath;
         EngineEnvironment.ProjectPath = FindProjectRoot();
         try
@@ -465,7 +466,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         var (heroEntity, _) = BuildHeroPawnEntity(world);
         RegisterPlayerController(world, heroEntity);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         var previousProjectPath = EngineEnvironment.ProjectPath;
         EngineEnvironment.ProjectPath = FindProjectRoot();
         try
@@ -477,7 +478,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
             EngineEnvironment.ProjectPath = previousProjectPath;
         }
 
-        var hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
+        var hero = Assert.IsType<EntityScriptProxy>(heroEntity.GameplayProxy);
 
         Assert.Equal((GameState.CameraTileX * 24 + 12) << 16, hero.PosX);
         Assert.Equal((GameState.CameraTileY * 16 + 8) << 16, hero.PosY);
@@ -499,7 +500,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         var (heroEntity, _) = BuildHeroPawnEntity(world);
         RegisterPlayerController(world, heroEntity);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         var previousProjectPath = EngineEnvironment.ProjectPath;
         EngineEnvironment.ProjectPath = FindProjectRoot();
         try
@@ -511,7 +512,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
             EngineEnvironment.ProjectPath = previousProjectPath;
         }
 
-        var hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
+        var hero = Assert.IsType<EntityScriptProxy>(heroEntity.GameplayProxy);
         var newGamePosX = (GameState.CameraTileX * 24 + 12) << 16;
         var newGamePosY = (GameState.CameraTileY * 16 + 8) << 16;
 
@@ -530,7 +531,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         var (heroEntity, _) = BuildHeroPawnEntity(world);
         RegisterPlayerController(world, heroEntity);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         var previousProjectPath = EngineEnvironment.ProjectPath;
         EngineEnvironment.ProjectPath = FindProjectRoot();
         try
@@ -558,7 +559,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         Assert.Equal(5, WarpDirector.Instance.ArrivalRecordForTests.EffectId);
 
         var world = BuildRealMap390World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
 
         using var logger = CapturingLogger.Install();
         proxy.InstallScreenFadeSystems(world);
@@ -579,7 +580,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         Assert.False(WarpDirector.Instance.HasPendingArrival);
 
         var world = BuildRealMap390World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
 
         using var logger = CapturingLogger.Install();
         proxy.InstallScreenFadeSystems(world);

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Gameplay;
@@ -17,12 +16,13 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E19.c2 (docs/plan-e19-opcodes.md §1.2f): the exact ends of the animations as the event programs see them, driven through the
-/// PRODUCTION <see cref="AlundraEntityScriptProxy.Update"/> (the real-time component pass first, then the proxy) over the real
+/// PRODUCTION <see cref="EntityScriptProxy.Update"/> (the real-time component pass first, then the proxy) over the real
 /// interpreter, a real <see cref="AnimatedSpriteComponent"/> and synthetic animations carrying the export's durations. Only the
 /// tick count of a frame is scripted (a fake <see cref="IScriptHost"/>). Map-event programs (B) are emulated by calling the
 /// interpreter on the logic entity once per tick after the entity's update, the order of the world's own pass. Every expected value
@@ -83,12 +83,12 @@ public sealed class AlundraAnimationClockDriveTests
     {
         public int Ticks = 1;
         public IEventProgramRunner Runner { get; set; } = null!;
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController => null;
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -101,7 +101,7 @@ public sealed class AlundraAnimationClockDriveTests
         public EventProgramRunner Inner = null!;
         public bool TickProgramEnabled;
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             if (programSlot != ScriptHelper.ProgramCTick || TickProgramEnabled)
             {
@@ -109,7 +109,7 @@ public sealed class AlundraAnimationClockDriveTests
             }
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -117,7 +117,7 @@ public sealed class AlundraAnimationClockDriveTests
     private sealed class Drive
     {
         public readonly Entity Entity;
-        public readonly AlundraEntityScriptProxy Proxy;
+        public readonly EntityScriptProxy Proxy;
         public readonly AnimatedSpriteComponent Sprite;
         public readonly EventProgramRunner Runner;
         public readonly Host Host = new();
@@ -174,11 +174,11 @@ public sealed class AlundraAnimationClockDriveTests
                 }
             }
 
-            Entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = Sprite };
+            Entity = new Entity { Name = "e", GameplayProxyClassName = typeof(EntityScriptProxy).FullName!, RootComponent = Sprite };
             HeroWorldFixture.SetProperty(Entity, nameof(Entity.World), world);
             Entity.Initialize();
 
-            Proxy = Assert.IsType<AlundraEntityScriptProxy>(Entity.GameplayProxy);
+            Proxy = Assert.IsType<EntityScriptProxy>(Entity.GameplayProxy);
             Proxy.ScriptHost = Host;
             Proxy.IsPlayer = isPlayer;
             Proxy.Status = EntityStatus.Normal;

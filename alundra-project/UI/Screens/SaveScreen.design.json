@@ -1,5 +1,5 @@
 {
-  "view_model_type": "Alundra.Scripts.AlundraSaveScreenViewModel",
+  "view_model_type": "Alundra.UI.Saving.SaveScreenViewModel",
   "values": {
     "RootVisibility": "Visible",
     "MessageBox": {

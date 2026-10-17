@@ -1,8 +1,8 @@
 using System;
-using Alundra.Scripts;
 using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Cameras;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -10,12 +10,12 @@ namespace Alundra.Tests;
 /// Covers the pure math of the DEBUG-only right-stick camera pan
 /// (<see cref="CameraMath.ComputeDebugCameraPanOffset"/>, <see cref="CameraMath.ResolveDebugCameraBase"/>)
 /// and the <c>ALUNDRA_DEBUG_CAMERA_ENABLED</c> flag - see
-/// <see cref="AlundraWorldProxy.UpdateDebugCameraPan"/>'s own doc comment for the tool's rationale/lifetime
+/// <see cref="WorldProxy.UpdateDebugCameraPan"/>'s own doc comment for the tool's rationale/lifetime
 /// and the base/offset composition (<c>Target = base + offset</c>).
 ///
 /// Not covered here (headless-untestable, needs a live gamepad/world): the gamepad read through
 /// <c>CasaEngineGame.InputComponent.GamePadManager</c> and the "camera" entity/<c>Camera2dComponent</c>
-/// lookup in <see cref="AlundraWorldProxy.UpdateDebugCameraPan"/> itself.
+/// lookup in <see cref="WorldProxy.UpdateDebugCameraPan"/> itself.
 /// </summary>
 public class AlundraWorldProxyDebugCameraPanTests
 {
@@ -190,10 +190,10 @@ public class AlundraWorldProxyDebugCameraPanTests
     [Fact]
     public void DebugCameraPanEnabled_DefaultsTrue_WhenEnvironmentVariableUnset()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         try
         {
-            Assert.Null(Environment.GetEnvironmentVariable(AlundraWorldProxy.DebugCameraPanEnabledEnvVar));
+            Assert.Null(Environment.GetEnvironmentVariable(WorldProxy.DebugCameraPanEnabledEnvVar));
 
             // No override and no environment variable set for this process: falls back to the real
             // environment-derived value, which - per the documented "0"/"false" opt-out contract and this
@@ -201,14 +201,14 @@ public class AlundraWorldProxyDebugCameraPanTests
         }
         finally
         {
-            AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+            WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         }
     }
 
     [Fact]
     public void DebugOffset_WhenFlagOverriddenDisabled_StickNeverChangesOffset()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(false);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(false);
         try
         {
             // Mirrors UpdateDebugCameraPan's own gate: when the flag override is disabled, production
@@ -217,11 +217,11 @@ public class AlundraWorldProxyDebugCameraPanTests
             // nothing else ever writes it). This test documents that contract at the flag-read level; the
             // per-frame gating itself lives in UpdateDebugCameraPan (see that method's own doc), which is
             // not directly unit-testable without a live gamepad/world.
-            Assert.False(AlundraWorldProxy.DebugCameraPanEnabledForTests);
+            Assert.False(WorldProxy.DebugCameraPanEnabledForTests);
         }
         finally
         {
-            AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+            WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         }
     }
 }

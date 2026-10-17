@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using Alundra.Session;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Entities;
 
@@ -20,7 +20,7 @@ namespace Alundra.Entities;
 ///
 /// Degraded mode: when the file is missing, unreadable, or fails to parse, this logs exactly one
 /// warning at construction time and then behaves as an always-empty catalog - every
-/// <see cref="TryGet"/> call returns false. Callers (<see cref="AlundraWorldProxy"/>) are documented to
+/// <see cref="TryGet"/> call returns false. Callers (<see cref="WorldProxy"/>) are documented to
 /// treat that as "spawn the entity without header-derived initialization" rather than fail the spawn,
 /// so a missing companion file degrades map entities to their pre-header-port behaviour instead of
 /// breaking world load entirely.
@@ -104,7 +104,7 @@ public sealed class SpriteRecordCatalog : ISpriteRecordCatalog
 
     /// <summary>
     /// Session-scoped cache keyed by project path (D-T-14, docs/plan-transitions-carte.md, slice T1):
-    /// <see cref="AlundraWorldProxy"/>'s own field initializer resolves through here instead of always
+    /// <see cref="WorldProxy"/>'s own field initializer resolves through here instead of always
     /// constructing a fresh catalog, so two consecutive worlds over the SAME project read
     /// <c>Data/sprite-records.json</c> only once - the keying by <paramref name="projectPath"/> is what
     /// keeps two DIFFERENT projects (e.g. two test fixtures) from ever sharing a cached catalog.

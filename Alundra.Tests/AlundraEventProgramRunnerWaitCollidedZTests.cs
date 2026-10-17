@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using Xunit;
 using Alundra.Maps;
@@ -27,19 +26,19 @@ public class AlundraEventProgramRunnerWaitCollidedZTests
 
     private sealed class GridWorld : IEntityWorldContext
     {
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = new List<AlundraEntityScriptProxy>();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = new List<EntityScriptProxy>();
 
-        public AlundraEntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? PlayerEntity => null;
 
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
 
         public void SetForcedCameraLookAt(int x, int y, int z)
         {
         }
 
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
+        public void DestroyEntity(EntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
 
         public NavigationGrid2D? NavigationGrid { get; } = new(20, 20, 1f);
     }
@@ -59,7 +58,7 @@ public class AlundraEventProgramRunnerWaitCollidedZTests
     {
         var document = NewDocument(0x01, 0x25, 0xFF);
         var (runner, trace) = NewRunner(document);
-        var owner = new AlundraEntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, CollidedWithEntityZ = 0, IsOnGround = 0 };
+        var owner = new EntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, CollidedWithEntityZ = 0, IsOnGround = 0 };
         var state = StateFor(document);
 
         runner.RunOneScriptCall(owner, state);
@@ -71,7 +70,7 @@ public class AlundraEventProgramRunnerWaitCollidedZTests
         foreach (var (collided, onGround) in new[] { (0, 1), (1, 0), (1, 1) })
         {
             var s = StateFor(document);
-            var o = new AlundraEntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, CollidedWithEntityZ = 0, IsOnGround = 0 };
+            var o = new EntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, CollidedWithEntityZ = 0, IsOnGround = 0 };
             var (r, t) = NewRunner(document);
             r.RunOneScriptCall(o, s);
             Assert.Equal(1, s.CodeIndex);
@@ -94,8 +93,8 @@ public class AlundraEventProgramRunnerWaitCollidedZTests
 
         // The owner is at (1, 1) and the logic entity at (0, 0): the wait goes on.
         var (runner, _) = NewRunner(document);
-        var owner = new AlundraEntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, CollidedWithEntityZ = 1, IsOnGround = 1 };
-        var logic = new AlundraEntityScriptProxy { EntityRefId = 2, Status = EntityStatus.Normal, CollidedWithEntityZ = 0, IsOnGround = 0 };
+        var owner = new EntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, CollidedWithEntityZ = 1, IsOnGround = 1 };
+        var logic = new EntityScriptProxy { EntityRefId = 2, Status = EntityStatus.Normal, CollidedWithEntityZ = 0, IsOnGround = 0 };
         owner.LogicEntity = logic;
         var state = StateFor(document);
         runner.RunOneScriptCall(owner, state);
@@ -114,7 +113,7 @@ public class AlundraEventProgramRunnerWaitCollidedZTests
     {
         var document = NewDocument(0x01, 0x25, 0xFF); // 0x25 at pc 1, as the first case: the pc 0 would hide a stray write to Parameters[1].
         var (runner, _) = NewRunner(document, new GridWorld());
-        var owner = new AlundraEntityScriptProxy
+        var owner = new EntityScriptProxy
         {
             EntityRefId = 1,
             Status = EntityStatus.Normal,

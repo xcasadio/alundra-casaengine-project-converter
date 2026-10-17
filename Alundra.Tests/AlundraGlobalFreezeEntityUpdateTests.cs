@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -28,16 +27,16 @@ namespace Alundra.Tests;
 /// No assertion on the player, the camera or rendering anywhere in this file - <c>HeadlessIntroSimulation</c>
 /// makes none of them vary (its own class doc says so), so any such assertion would be vacuous. That half
 /// of T2's acceptance belongs to ORACLE 2 (<see cref="AlundraWorldProxyGlobalFreezeTests"/>), which drives
-/// the real <see cref="AlundraWorldProxy.Update"/> instead.
+/// the real <see cref="WorldProxy.Update"/> instead.
 ///
 /// The frozen NPC's own pose/force fields are SEEDED directly (same technique as
 /// <see cref="AlundraInteractionPassTests"/>'s <c>NewCollidable</c>/<c>player.XCollisionEntity = sailor</c>)
 /// rather than left to sailor 11's own real Tick-program walk timing: that walk is real (see
 /// <see cref="IntroTraceHarnessTests"/>'s own frame-620-634 derivation) but tying a freeze window to it
 /// would make this file depend on the WHOLE 1704-frame flag chain just to reach it. Seeding
-/// <see cref="AlundraEntityScriptProxy.TargetForceX"/>/<see cref="AlundraEntityScriptProxy.ForceX"/>
+/// <see cref="EntityScriptProxy.TargetForceX"/>/<see cref="EntityScriptProxy.ForceX"/>
 /// directly exercises the exact same production code
-/// (<c>AlundraScriptedMotion.TickScriptedNpc</c>'s <see cref="AlundraEntityScriptProxy.Controller"/>-null
+/// (<c>AlundraScriptedMotion.TickScriptedNpc</c>'s <see cref="EntityScriptProxy.Controller"/>-null
 /// branch, AlundraScriptedMotion.cs:233-241 - "production-safe... what the pre-E3 hero used", per that
 /// method's own doc) with a motion that keeps going every tick until frozen, instead of stopping on its
 /// own after a fixed real distance.
@@ -94,8 +93,8 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
             var sim = new HeadlessIntroSimulation(projectRoot, WorldName, document, installDialogueDirector: true);
             var director = DialogueDirector.Instance;
 
-            AlundraEntityScriptProxy? sailorEleven = null;
-            AlundraEntityScriptProxy? sailorThirteen = null;
+            EntityScriptProxy? sailorEleven = null;
+            EntityScriptProxy? sailorThirteen = null;
             int posXAtFreeze = 0, posYAtFreeze = 0;
             int codeIndexAtFreeze = 0;
             var frozenHeld = true;
@@ -202,12 +201,12 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
     /// <summary>
     /// [R4] mutation "mettre SyncTransform dedans" (docs/plan-transitions-carte.md §3, T2's own mutation
     /// table): the root position of an entity carrying a <see cref="Entity.RootComponent"/> and NO
-    /// <see cref="AlundraEntityScriptProxy.Controller"/> - the only shape <see cref="FrameSyncPasses.SyncTransform"/>
+    /// <see cref="EntityScriptProxy.Controller"/> - the only shape <see cref="FrameSyncPasses.SyncTransform"/>
     /// actually writes to (AlundraFrameSyncPasses.cs:168-183: it is a no-op whenever a controller owns the
     /// root) - must keep publishing the entity's CURRENT logical position every frame, even while
     /// <see cref="GameState.PlayerControlBits.GameplayBlockedMask"/> is posed. Deliberately headless
     /// and minimal (no <see cref="HeadlessIntroSimulation"/>, no map data needed for this specific
-    /// mutation) - still <see cref="AlundraEntityScriptProxy.Update"/> at its real call site, so still
+    /// mutation) - still <see cref="EntityScriptProxy.Update"/> at its real call site, so still
     /// squarely ORACLE 1: no player/camera/render assertion, real production code only.
     /// </summary>
     [Fact]
@@ -220,11 +219,11 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
         {
             Name = "FreezeTestNpc",
             RootComponent = root,
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
         entity.Initialize();
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.ScriptHost = host;
         proxy.IsPlayer = false;
         proxy.Status = EntityStatus.Normal;
@@ -257,11 +256,11 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
 
     private sealed class NoOpEventProgramRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -269,13 +268,13 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
     private sealed class BareFreezeTestScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpEventProgramRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public System.Collections.Generic.IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; }
-            = System.Array.Empty<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController => null;
+        public System.Collections.Generic.IReadOnlyList<EntityScriptProxy> Collidables { get; }
+            = System.Array.Empty<EntityScriptProxy>();
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 

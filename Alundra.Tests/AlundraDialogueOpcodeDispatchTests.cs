@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Compiler.Dialogue;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.AI.Navigation;
@@ -14,6 +13,7 @@ using Alundra.Session;
 using Alundra.Events;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -25,7 +25,7 @@ namespace Alundra.Tests;
 /// production path. Uses the REAL, session-scoped <see cref="DialogueDirector.Instance"/> attached
 /// to a real, headless <see cref="DialogueService"/> - no UI/graphics device needed (D-E12-5's own "the
 /// engine gets the generic mechanism") - so these tests exercise the SAME production singleton
-/// <see cref="AlundraWorldProxy.InstallDialogueSystems"/> wires, reset before/after each test
+/// <see cref="WorldProxy.InstallDialogueSystems"/> wires, reset before/after each test
 /// (<see cref="DialogueDirector.ResetForTests"/>) so no state leaks between tests.
 /// </summary>
 public class AlundraDialogueOpcodeDispatchTests : IDisposable
@@ -57,7 +57,7 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
         DialogueAsset? mapAsset = null)
         => new(document, gameState, worldContext) { MapDialogueAsset = mapAsset };
 
-    private static AlundraEntityScriptProxy NewEntity() => new();
+    private static EntityScriptProxy NewEntity() => new();
 
     /// <summary>E15.c T5: builds a map-134 (see <see cref="NewDocument"/>'s own <c>MapIndex = 1</c>) Yarn
     /// asset with one single-page node <c>M1_S{index:000}</c> per entry - replaces the pre-E15.c raw
@@ -74,12 +74,12 @@ public class AlundraDialogueOpcodeDispatchTests : IDisposable
 
     private sealed class FakeEntityWorldContext : IEntityWorldContext
     {
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity => null;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
 
         // E12.a: overrides IEntityWorldContext.DialogueDirector's default-interface-member "=> null".

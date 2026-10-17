@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -10,6 +9,7 @@ using Alundra.Maps;
 using Alundra.Ai;
 using Alundra.Combat;
 using Alundra.Items;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -22,14 +22,14 @@ public sealed class AlundraEnemyHitReactionTests
 {
     private sealed class HitContext : IEntityWorldContext
     {
-        public HitContext(AlundraEntityScriptProxy? hero) => PlayerEntity = hero;
+        public HitContext(EntityScriptProxy? hero) => PlayerEntity = hero;
 
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity { get; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity { get; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public EquipmentRecords? EquipmentRecords { get; set; }
         public uint HeroAnimationLatch { get; set; }
@@ -37,9 +37,9 @@ public sealed class AlundraEnemyHitReactionTests
 
     private static Entity Attacker(int attribute, int power)
     {
-        var entity = new Entity { Name = "attacker", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "attacker", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
+        var proxy = (EntityScriptProxy)entity.GameplayProxy;
         proxy.CurrentAttack = new BalanceAttack(attribute, power);
         return entity;
     }
@@ -48,9 +48,9 @@ public sealed class AlundraEnemyHitReactionTests
     private static BalanceRecord Sheet() => new(255, 15, 9, Enumerable.Repeat((byte)16, 11).ToArray(), Array.Empty<BalanceAttack>(), null);
 
     /// <summary>The entity of an oracle state: attack (attribute 1, power 1) against a sheet of response 0x10, so one point of life is lost; <paramref name="killed"/> chooses the life that makes <c>ComputeNewHp</c> return true (1) or false (100).</summary>
-    private static AlundraEntityScriptProxy Body(int x, int y, bool killed, byte oldByte, uint oldAnimation, uint oldDirection)
+    private static EntityScriptProxy Body(int x, int y, bool killed, byte oldByte, uint oldAnimation, uint oldDirection)
     {
-        var body = new AlundraEntityScriptProxy
+        var body = new EntityScriptProxy
         {
             PosX = x, PosY = y, BalanceRecord = Sheet(), Hp = killed ? 1 : 100, TouchingEntity = Attacker(1, 1),
             TargetAnimationId = oldAnimation, TargetDirection = oldDirection,
@@ -71,7 +71,7 @@ public sealed class AlundraEnemyHitReactionTests
             var row = rows[i];
             var killed = row.In[4] != 0;
             var where = $"{helper} state {i} in [{string.Join(' ', row.In)}] expected [{string.Join(' ', row.Out)}]";
-            var hero = new AlundraEntityScriptProxy { PosX = row.In[2], PosY = row.In[3] };
+            var hero = new EntityScriptProxy { PosX = row.In[2], PosY = row.In[3] };
             var body = Body(row.In[0], row.In[1], killed, (byte)row.In[5], 0x7777, 0x5555);
 
             EnemyHelpers.HitReaction(body, animation, new HitContext(hero));
@@ -107,9 +107,9 @@ public sealed class AlundraEnemyHitReactionTests
         var expected = new Dictionary<uint, int> { [1] = 100 - 6, [0] = 100 - 4, [16] = 100 - 3 };      // (1 + Attacks[2].Power 5), (1 + Attacks[1] 3), (1 + Attacks[0] 2) at response 0x10
         foreach (var (latch, hp) in expected)
         {
-            var body = new AlundraEntityScriptProxy { BalanceRecord = Sheet(), Hp = 100, TouchingEntity = Attacker(0x81, 1) };
+            var body = new EntityScriptProxy { BalanceRecord = Sheet(), Hp = 100, TouchingEntity = Attacker(0x81, 1) };
 
-            EnemyHelpers.HitReaction(body, 5, new HitContext(new AlundraEntityScriptProxy()) { EquipmentRecords = records, HeroAnimationLatch = latch });
+            EnemyHelpers.HitReaction(body, 5, new HitContext(new EntityScriptProxy()) { EquipmentRecords = records, HeroAnimationLatch = latch });
 
             Assert.Equal(hp, body.Hp);
         }

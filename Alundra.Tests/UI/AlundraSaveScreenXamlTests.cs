@@ -1,4 +1,3 @@
-using Alundra.Scripts;
 using CasaEngine.Framework.UI.MGUI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
@@ -83,9 +82,9 @@ public sealed class AlundraSaveScreenXamlTests
     public void DesignTimeData_PopulatesASaveScreenViewModel()
     {
         var data = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "SaveScreen.design.json")));
-        Assert.Equal(typeof(AlundraSaveScreenViewModel).FullName!, data["view_model_type"]!.ToString());
+        Assert.Equal(typeof(SaveScreenViewModel).FullName!, data["view_model_type"]!.ToString());
 
-        var viewModel = new AlundraSaveScreenViewModel();
+        var viewModel = new SaveScreenViewModel();
         JsonConvert.PopulateObject(data["values"]!.ToString(), viewModel);
 
         Assert.Equal(Visibility.Visible, viewModel.RootVisibility);
@@ -177,13 +176,13 @@ public sealed class AlundraSaveScreenXamlTests
     public void Bindings_PushTheViewModel_TintIncluded()
     {
         var window = LoadWindow("SaveScreen.xaml", out var desktop);
-        var viewModel = new AlundraSaveScreenViewModel { RootVisibility = Visibility.Visible };
+        var viewModel = new SaveScreenViewModel { RootVisibility = Visibility.Visible };
         window.WindowDataContext = viewModel;
 
         viewModel.RecordBox1.Left = 16;
         viewModel.RecordBox1.Top = 64;
         viewModel.RecordBox1.Visibility = Visibility.Visible;
-        viewModel.RecordBox1.TextureColor = AlundraSaveScreenViewModel.TintColor(0x40);
+        viewModel.RecordBox1.TextureColor = SaveScreenViewModel.TintColor(0x40);
         viewModel.Record1Line0.Text = "Wendell Succombe";
         viewModel.Record1Line0.Left = 32;
         viewModel.Record1Line0.Top = 72;
@@ -205,7 +204,7 @@ public sealed class AlundraSaveScreenXamlTests
         Assert.Equal("Enregistrer tes exploits ici?", Element<MGTextBlock>(window, "MessageLine0Text").Text);
         Assert.Equal(Visibility.Collapsed, Element<MGImage>(window, "RecordBox0").Visibility);
 
-        viewModel.RecordBox1.TextureColor = AlundraSaveScreenViewModel.TintColor(0x80);
+        viewModel.RecordBox1.TextureColor = SaveScreenViewModel.TintColor(0x80);
         viewModel.RecordBox1.Top = -57;
         desktop.Update();
         Assert.Equal(new Color(255, 255, 255, 255), box.TextureColor);

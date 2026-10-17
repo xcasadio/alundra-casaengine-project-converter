@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -15,6 +14,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Cameras;
 using Alundra.Dialogues;
 using Alundra.UI.Shared;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -272,7 +272,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
     {
         var prefab = Guid.NewGuid();
         var portrait = new DialoguePortraitRef(Guid.NewGuid(), 48, 72);
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
         var record = Record(prefab);
         EntitySpawnFactory.ApplyRecord(record, proxy);
 
@@ -280,7 +280,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
 
         Assert.Equal(portrait, proxy.DialoguePortrait);
         Assert.Equal(EntityFlags.HasPortrait, proxy.Flags & EntityFlags.HasPortrait);
-        var clone = (AlundraEntityScriptProxy)proxy.Clone();
+        var clone = (EntityScriptProxy)proxy.Clone();
         Assert.Equal(portrait, clone.DialoguePortrait);
     }
 
@@ -288,17 +288,17 @@ public sealed class AlundraDialogueSpeakerRuleTests
     public void ASpawnWithoutAPortrait_AndTheHero_HaveNone()
     {
         var prefab = Guid.NewGuid();
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
         var record = Record(prefab);
         EntitySpawnFactory.ApplyRecord(record, proxy);
         EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefab, Header(null)));
         Assert.Null(proxy.DialoguePortrait);
 
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true };
-        AlundraWorldProxy.ApplyHeroSpriteHeader(hero, Header(new DialoguePortraitRef(Guid.NewGuid(), 48, 56)));
+        var hero = new EntityScriptProxy { IsPlayer = true };
+        WorldProxy.ApplyHeroSpriteHeader(hero, Header(new DialoguePortraitRef(Guid.NewGuid(), 48, 56)));
 
         Assert.Null(hero.DialoguePortrait);
-        Assert.Null(((AlundraEntityScriptProxy)hero.Clone()).DialoguePortrait);
+        Assert.Null(((EntityScriptProxy)hero.Clone()).DialoguePortrait);
     }
 
     // ---- the scroll of the camera --------------------------------------------------------------------------------------------------
@@ -325,7 +325,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
         {
             var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
             world.Entities.Add(new Entity { Name = "camera", RootComponent = new Camera2dComponent() });
-            var proxy = new AlundraWorldProxy();
+            var proxy = new WorldProxy();
             proxy.InitializeWithWorld(world); // no tile map in this world: the installs are not reached, the one under test is called as the install block calls it
             proxy.InstallDialogueSystems(world); // the dialogue systems, the scroll source among them
             proxy._cameraDirector.ResolveDebugCameraOnce(world);

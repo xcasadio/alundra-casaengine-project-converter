@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -71,17 +70,17 @@ public class AlundraWorldProxyAnimationEndBridgeTests
     // OnAnimationFinished
     // -----------------------------------------------------------------------------------------
 
-    private static (Entity Entity, AnimatedSpriteComponent Component, AlundraEntityScriptProxy Proxy) BuildSpawnedEntity()
+    private static (Entity Entity, AnimatedSpriteComponent Component, EntityScriptProxy Proxy) BuildSpawnedEntity()
     {
         var component = new AnimatedSpriteComponent();
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         return (entity, component, proxy);
     }
 
@@ -131,7 +130,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
     /// <c>Chain, ChainTo = 1</c> in all four directions - which is why the idle looped on screen and the
     /// walk froze on its last frame.
     ///
-    /// Without <see cref="AlundraEntityScriptProxy.PendingChainRestartFlag"/> this self-chain is
+    /// Without <see cref="EntityScriptProxy.PendingChainRestartFlag"/> this self-chain is
     /// invisible to the sync pass: <see cref="FrameSyncPasses.TryResolveAnimationTarget"/> only reports
     /// work when the animation id or the direction CHANGES, and a self-chain changes neither, so
     /// <c>SetCurrentAnimation(..., forceReset: true)</c> was never reached. This test pins the exact
@@ -219,7 +218,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
     [Fact]
     public void SubscribeAnimationEndBridge_EntityWithNoAnimatedSpriteComponent_DoesNotThrow()
     {
-        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
 
         EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
@@ -230,7 +229,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
     // -----------------------------------------------------------------------------------------
 
     /// <summary>A spawned entity whose sprite plays one Loop of <paramref name="durationSeconds"/> (animation 0, facing down).</summary>
-    private static (Entity Entity, AnimatedSpriteComponent Component, AlundraEntityScriptProxy Proxy) BuildEntityOnALoop(float durationSeconds)
+    private static (Entity Entity, AnimatedSpriteComponent Component, EntityScriptProxy Proxy) BuildEntityOnALoop(float durationSeconds)
     {
         var component = new AnimatedSpriteComponent();
         var data = new Animation2dData { Name = "bank_anim0_down", AnimationType = AnimationType.Loop };
@@ -241,18 +240,18 @@ public class AlundraWorldProxyAnimationEndBridgeTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
         component.SetCurrentAnimation(0, forceReset: true);
         return (entity, component, proxy);
     }
 
     /// <summary>TB1: the bridge turns the logical clock of the sprite on at 50 ticks per second, keeps the sprite on the proxy, and
-    /// feeds the Loop turn into <see cref="AlundraEntityScriptProxy.AnimCompleteCounter"/>.</summary>
+    /// feeds the Loop turn into <see cref="EntityScriptProxy.AnimCompleteCounter"/>.</summary>
     [Fact]
     public void SubscribeAnimationEndBridge_TurnsTheLogicalClockOn_KeepsTheSprite_AndCountsALoopTurn()
     {
@@ -271,9 +270,9 @@ public class AlundraWorldProxyAnimationEndBridgeTests
     [Fact]
     public void SubscribeAnimationEndBridge_WithoutASprite_LeavesTheClockSpriteNull()
     {
-        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
 
         EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
 

@@ -6,9 +6,9 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Audio;
-using Alundra.Scripts;
 using Alundra.Dialogues;
 using Alundra.SaveGames;
+using Alundra.Entities;
 
 namespace Alundra.Transitions;
 
@@ -21,15 +21,15 @@ namespace Alundra.Transitions;
 /// (<c>GameEngine.cs:302</c>, §1.2.e/D-T-15). Reason it must be session-scoped, not per-world (D-T-2):
 /// the departure sequence itself SPANS the world change - it starts on the departing world, and its own
 /// arrival record/effect id are read back on the very next world, strictly BEFORE that world's first
-/// <see cref="AlundraWorldProxy.Update"/> ever runs (see <see cref="InstallForMapEntry"/>'s own doc for
+/// <see cref="WorldProxy.Update"/> ever runs (see <see cref="InstallForMapEntry"/>'s own doc for
 /// the exact ordering this depends on) - a per-world instance would already be a fresh, empty object by
 /// the time anything could read it back.
 ///
 /// <b>Ownership of the gel (D-T-6, §1.5's own "third mechanism").</b> The original poses NO control-flag
 /// bit on the warp path at all - it short-circuits its whole entity pipeline with a dedicated loop
 /// instead (<c>AdvanceWarpTransitionFrame</c>). <see cref="IsTransitionInProgress"/> is this port's own
-/// stand-in predicate: <see cref="AlundraWorldProxy.Update"/> and
-/// <see cref="AlundraEntityScriptProxy.Update"/> OR it into the exact same "dedans" gate T2 already
+/// stand-in predicate: <see cref="WorldProxy.Update"/> and
+/// <see cref="EntityScriptProxy.Update"/> OR it into the exact same "dedans" gate T2 already
 /// built (<c>GameplayBlockedMask</c>), at the exact same two sites - see those methods' own T4 comments.
 /// </summary>
 /// <remarks>
@@ -39,7 +39,7 @@ namespace Alundra.Transitions;
 /// own doc) is reset to zero; the pending world-change path is reset to null; but the ARRIVAL RECORD
 /// (position/animation/direction) and the TRANSITION EFFECT ID are deliberately left untouched - they
 /// are consumed by T5's own <c>AdoptPlayerPawn</c>/<c>InstallScreenFadeSystems</c>, both of which run
-/// AFTER this method returns (<see cref="AlundraWorldProxy.InitializeWithWorld"/>'s own installation
+/// AFTER this method returns (<see cref="WorldProxy.InitializeWithWorld"/>'s own installation
 /// block, <c>:505-508</c> for the installs, <c>:531</c> for <c>AdoptPlayerPawn</c>) - clearing them here
 /// would destroy their only reader's input before it ever runs.</para>
 ///
@@ -53,7 +53,7 @@ namespace Alundra.Transitions;
 /// </remarks>
 public sealed class WarpDirector
 {
-    /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-T-2) -
+    /// <summary>The one session-scoped instance every <see cref="WorldProxy"/> shares (D-T-2) -
     /// never <see langword="new"/>'d per world.</summary>
     public static readonly WarpDirector Instance = new();
 
@@ -112,7 +112,7 @@ public sealed class WarpDirector
     /// <summary>The player whose gravity <see cref="BeginDeparture"/> suspended, and what it was, so an
     /// aborted departure can put it back - a completed one never needs to (fresh pawn, and
     /// AdoptPlayerPawn rewrites both values at every map entry).</summary>
-    private AlundraEntityScriptProxy? _gravitySuspendedPlayer;
+    private EntityScriptProxy? _gravitySuspendedPlayer;
     private (float Gravity, float MaxFallSpeed, bool VerticalOwnedExternally) _gravityBeforeDeparture;
 
     // ---- The arrival record + transition effect id (D-T-15: CONSERVED across InstallForMapEntry - T5's
@@ -134,9 +134,9 @@ public sealed class WarpDirector
     /// <summary>
     /// T5 (§1.4.g, D-T-7): the transition effect id carried by the pending arrival, or 0 when there is
     /// none - a PEEK, no side effect on <see cref="HasPendingArrival"/>. Read by
-    /// <see cref="AlundraWorldProxy.InstallScreenFadeSystems"/>, which runs BEFORE <c>AdoptPlayerPawn</c>
+    /// <see cref="WorldProxy.InstallScreenFadeSystems"/>, which runs BEFORE <c>AdoptPlayerPawn</c>
     /// (the record's own consuming reader, <see cref="ConsumeArrivalRecord"/>) in the SAME
-    /// <see cref="AlundraWorldProxy.InitializeWithWorld"/> call - a peek, not a consume, is required here
+    /// <see cref="WorldProxy.InitializeWithWorld"/> call - a peek, not a consume, is required here
     /// so the id is still readable when the position/animation/direction reader runs afterward.
     /// </summary>
     public int PendingArrivalEffectId => HasPendingArrival ? _arrivalEffectId : 0;
@@ -203,7 +203,7 @@ public sealed class WarpDirector
     /// way <see cref="BeginDepartureCore"/> does - the seven fields and <see cref="HasPendingArrival"/> - and nothing
     /// else: no fade, no gravity suspension, no world change. The next map entry's <c>AdoptPlayerPawn</c> consumes it, so
     /// an arc that starts from a real portal arrival gets the position, tile, animation and direction that production
-    /// gives (including <see cref="AlundraEntityScriptProxy.ClampToGround"/>) instead of values written by the test.
+    /// gives (including <see cref="EntityScriptProxy.ClampToGround"/>) instead of values written by the test.
     /// </summary>
     internal void SetPendingArrivalForTests(
         uint mapIndex,
@@ -252,14 +252,14 @@ public sealed class WarpDirector
     }
 
     /// <summary>
-    /// D-T-15's own map-entry disposition - called from <see cref="AlundraWorldProxy.InitializeWithWorld"/>
+    /// D-T-15's own map-entry disposition - called from <see cref="WorldProxy.InitializeWithWorld"/>
     /// alongside its session-carrier peers (<see cref="GameState.InstallForMapEntry"/>,
     /// <see cref="ScreenFadeDirector.InstallForMapEntry"/>), BEFORE <c>AdoptPlayerPawn</c> runs
     /// (T5's own reader of the arrival record this method deliberately leaves untouched - see this
     /// class' own doc). Port of <c>GameEngine.cs:302</c>'s <c>_isWarpTransitionRunning = false</c>,
     /// which the original runs strictly BEFORE its own map re-initialization - without this, joueur and
     /// PNJ would stay frozen on the arrival map forever, since that map already receives its own first
-    /// <see cref="AlundraWorldProxy.Update"/> in the very same frame as the switch (§1.3.b).
+    /// <see cref="WorldProxy.Update"/> in the very same frame as the switch (§1.3.b).
     /// </summary>
     /// <summary>Undoes everything <see cref="BeginDeparture"/> armed, for a departure that will never
     /// reach an arrival: lifts the gate, drops the arrival record no one will read, and puts the hero's
@@ -308,17 +308,17 @@ public sealed class WarpDirector
 
     /// <summary>
     /// Port of <c>PlayerManager.HandleWarpTransition</c> (<c>PlayerManager.cs:3488-3541</c>, §1.2.c) -
-    /// called from <see cref="AlundraWorldProxy"/>'s own <see cref="IScriptHost.OnPortalTriggerDetected"/>
-    /// override, i.e. from INSIDE <paramref name="player"/>'s own <see cref="AlundraEntityScriptProxy.Update"/>
+    /// called from <see cref="WorldProxy"/>'s own <see cref="IScriptHost.OnPortalTriggerDetected"/>
+    /// override, i.e. from INSIDE <paramref name="player"/>'s own <see cref="EntityScriptProxy.Update"/>
     /// this same frame (<see cref="PlayerManager.MovePlayer"/>'s own call site) - so
     /// <see cref="IsTransitionInProgress"/> is already true by the time this SAME frame's
-    /// <see cref="AlundraWorldProxy.Update"/> reads its own gate, freezing map events/pending triggers
+    /// <see cref="WorldProxy.Update"/> reads its own gate, freezing map events/pending triggers
     /// starting this very frame, not one frame late.
     /// </summary>
     public void BeginDeparture(
         PortalRecord portal,
         uint arrivalDirectionId,
-        AlundraEntityScriptProxy player,
+        EntityScriptProxy player,
         GameState state,
         uint? arrivalAnimationId = null)
     {
@@ -373,7 +373,7 @@ public sealed class WarpDirector
     /// world-path resolution, gel arming) byte for byte - WITHOUT touching <see cref="BeginDeparture"/>'s
     /// own behaviour. Only two things differ from the portal path, and both are the point of this opcode
     /// (T7): the arrival animation/direction come from the PLAYER's OWN CURRENT
-    /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/>/<see cref="AlundraEntityScriptProxy.TargetDirection"/>
+    /// <see cref="EntityScriptProxy.TargetAnimationId"/>/<see cref="EntityScriptProxy.TargetDirection"/>
     /// (not the portal path's constant 0x36 animation / caller-supplied direction), and the departure sfx
     /// is <paramref name="sfxId"/>, the opcode's own raw <c>v[7]</c> operand, played DIRECTLY - not looked
     /// up through <see cref="WarpBehaviorTable"/> (there is no <c>WarpBehaviorId</c> here, no portal).
@@ -398,7 +398,7 @@ public sealed class WarpDirector
         int posZ,
         int effectId,
         int sfxId,
-        AlundraEntityScriptProxy player,
+        EntityScriptProxy player,
         GameState state)
     {
         if (state.IsWarpDisabled)
@@ -467,7 +467,7 @@ public sealed class WarpDirector
         int posX,
         int posY,
         int posZ,
-        AlundraEntityScriptProxy player,
+        EntityScriptProxy player,
         GameState state)
     {
         if (state.IsWarpDisabled)
@@ -508,7 +508,7 @@ public sealed class WarpDirector
         uint animationId,
         uint directionId,
         int effectId,
-        AlundraEntityScriptProxy player,
+        EntityScriptProxy player,
         Action soundAction)
     {
         _arrivalMapIndex = desiredMapIndex;
@@ -599,7 +599,7 @@ public sealed class WarpDirector
     }
 
     /// <summary>
-    /// Called once per frame from <see cref="AlundraWorldProxy.Update"/> (a "dehors" pass, same
+    /// Called once per frame from <see cref="WorldProxy.Update"/> (a "dehors" pass, same
     /// unconditional shape as <see cref="ScreenFadeDirector.Advance"/>/<c>PushToAttachedService</c>
     /// right next to it - the departure sequence itself must keep running WHILE the gel it drives is
     /// posed). See this class' own remarks for why <see cref="IsTransitionInProgress"/> is re-derived

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Dialogue.Assets;
 using CasaEngine.Framework.Dialogue.Runtime;
@@ -45,13 +44,13 @@ internal sealed class SpeakerRig : IDisposable
     /// <summary>A world with a settable list of spawned entities (the searches read it) and no hero.</summary>
     internal sealed class Context : IEntityWorldContext
     {
-        public List<AlundraEntityScriptProxy> Spawned { get; } = new();
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public List<EntityScriptProxy> Spawned { get; } = new();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Spawned;
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public IDialogueDirector? DialogueDirector { get; set; }
     }
@@ -108,7 +107,7 @@ internal sealed class SpeakerRig : IDisposable
     public static int[] CodesC4(int search, int nameId, int textId) => new[] { 0xC4, search, nameId & 0xFF, nameId >> 8, textId, 1, 0xFF };
 
     /// <summary>A speaker: the sprite type of its record (the id of its name), the flag and the field of its portrait, a position (integer parts; the 16.16 words are those shifted).</summary>
-    public static AlundraEntityScriptProxy Speaker(int spriteType, bool portrait, int height = 56, int x = 200, int y = 150, int z = 0, int refId = 0)
+    public static EntityScriptProxy Speaker(int spriteType, bool portrait, int height = 56, int x = 200, int y = 150, int z = 0, int refId = 0)
         => new()
         {
             SpriteType = spriteType,
@@ -122,7 +121,7 @@ internal sealed class SpeakerRig : IDisposable
         };
 
     /// <summary>One call of the interpreter for <paramref name="owner"/> on a fresh state: true when the box opened (<see cref="DialogueDirector.OpenSerial"/> grew), false for "retry (0)".</summary>
-    public bool Run(AlundraEntityScriptProxy owner, int[] codes)
+    public bool Run(EntityScriptProxy owner, int[] codes)
     {
         var state = new EventProgramState { Codes = Document(codes).CodesAsBytes(), Result = 7 };
         var serial = Director.OpenSerial;

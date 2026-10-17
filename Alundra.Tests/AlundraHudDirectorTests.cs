@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -14,6 +13,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.UI.Hud;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -521,13 +521,13 @@ public sealed class AlundraHudDirectorTests : IDisposable
     // (AlundraWorldProxy.Update) even while a modal dialogue box is open.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraWorldProxy BuildProxyWithBothDirectorsAttached()
+    private static WorldProxy BuildProxyWithBothDirectorsAttached()
     {
         var world = new World { Name = "TestWorld" };
         var camera = new Camera2dComponent();
         world.Entities.Add(new Entity { Name = "camera", RootComponent = camera });
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // "TestWorld" has no tileMap entity - early-returns before the
                                            // real install, same seam AlundraDialogueFramePassTests documents.
 

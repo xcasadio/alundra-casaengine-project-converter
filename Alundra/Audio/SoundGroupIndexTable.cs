@@ -5,7 +5,7 @@ using System.IO;
 using System.Text.Json;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Audio;
 
@@ -21,7 +21,7 @@ namespace Alundra.Audio;
 /// Degraded mode: missing/unreadable/unparsable file logs one warning at construction and then every
 /// lookup misses (<see cref="TryGetGroup"/> returns false) - same shape as
 /// <see cref="MusicIndexTable"/>'s own degraded mode. A miss is NOT an error at the call site: a
-/// world's own <see cref="AlundraWorldProxy.InstallAudioSystems"/> simply installs its
+/// world's own <see cref="WorldProxy.InstallAudioSystems"/> simply installs its
 /// <see cref="SoundPlayer"/> with no group, the exact pre-B3 shape (D-E11-6's own deviation),
 /// so redirection never fires and the polyphony ceiling behaves exactly as it did before this table
 /// existed.
@@ -84,7 +84,7 @@ public sealed class SoundGroupIndexTable
 
     /// <summary>The map's own VAB group id (<see cref="SfxBank.TryResolve"/>'s own
     /// <c>soundGroup</c> parameter), or false for an id absent from the table (degraded mode, or an id
-    /// outside 0..482) - <see cref="AlundraWorldProxy.InstallAudioSystems"/> treats that exactly like
+    /// outside 0..482) - <see cref="WorldProxy.InstallAudioSystems"/> treats that exactly like
     /// "no group", the pre-B3 shape.</summary>
     public bool TryGetGroup(int mapId, out int groupId) => _groupByMapId.TryGetValue(mapId, out groupId);
 

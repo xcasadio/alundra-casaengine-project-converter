@@ -1,5 +1,5 @@
 {
-  "view_model_type": "Alundra.Scripts.AlundraSubInventoryViewModel",
+  "view_model_type": "Alundra.UI.SubInventory.SubInventoryViewModel",
   "values": {
     "RootVisibility": "Visible",
     "BoxArmory": {

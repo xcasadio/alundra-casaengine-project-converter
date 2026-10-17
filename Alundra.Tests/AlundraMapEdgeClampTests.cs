@@ -1,9 +1,9 @@
 #nullable enable
 using System;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Entities.Spawning;
 using Alundra.Physics;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -27,16 +27,16 @@ public sealed class AlundraMapEdgeClampTests
         { -5, -9, 11, 18 },
     };
 
-    private static AlundraEntityScriptProxy Box(int offX, int offY, int sizeX, int sizeY, int posX, int posY)
+    private static EntityScriptProxy Box(int offX, int offY, int sizeX, int sizeY, int posX, int posY)
     {
-        var entity = new AlundraEntityScriptProxy();
+        var entity = new EntityScriptProxy();
         EntitySpawnFactory.SetEntityDimensions(entity, offX, offY, 0, sizeX, sizeY, 8);
         entity.PosX = posX;
         entity.PosY = posY;
         return entity;
     }
 
-    private static (int X, int Y, bool Adjusted) Clamp(AlundraEntityScriptProxy entity, int stepX, int stepY)
+    private static (int X, int Y, bool Adjusted) Clamp(EntityScriptProxy entity, int stepX, int stepY)
     {
         var result = ScriptedMotion.ClampStepToMapEdge(entity, stepX, stepY);
         return (result.StepX, result.StepY, result.Adjusted);
@@ -103,7 +103,7 @@ public sealed class AlundraMapEdgeClampTests
         var highX = HighX - ((offX + sizeX) << 16);
         var highY = HighY - ((offY + sizeY) << 16);
         const int step = 196608;                            // 3 px, the step of the oracle key edge-exact
-        var cases = new (string Name, AlundraEntityScriptProxy Entity, int Dx, int Dy)[]
+        var cases = new (string Name, EntityScriptProxy Entity, int Dx, int Dy)[]
         {
             ("east", Box(offX, offY, sizeX, sizeY, highX - step, 400 * Px), step, 0),
             ("west", Box(offX, offY, sizeX, sizeY, lowX + step, 400 * Px), -step, 0),

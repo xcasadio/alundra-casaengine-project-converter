@@ -18,13 +18,14 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
-using Alundra.Scripts;
 using Alundra.Transitions;
+using Alundra.Entities;
+using Alundra.Maps;
 
 namespace Alundra.Cameras;
 
 /// <summary>
-/// Camera instance wiring extracted out of <see cref="AlundraWorldProxy"/>
+/// Camera instance wiring extracted out of <see cref="WorldProxy"/>
 /// (docs/plan-update-caracterisation.md, slice S2), with NO behaviour change - see that plan's §3
 /// "S2" for the extraction rules this class follows (the "règle de preuve étendue") and
 /// AlundraWorldProxyUpdateCharacterizationTests for the oracle this move must keep satisfying with
@@ -32,7 +33,7 @@ namespace Alundra.Cameras;
 ///
 /// Owns the one-time debug-camera lookup (<see cref="ResolveDebugCameraOnce"/>), the scripted camera
 /// follow (<see cref="UpdateCameraFollow"/>) and the debug stick pan (<see cref="UpdateDebugCameraPan"/>),
-/// plus every field those three exclusively read or write. Built in <see cref="AlundraWorldProxy"/>'s own
+/// plus every field those three exclusively read or write. Built in <see cref="WorldProxy"/>'s own
 /// FIELD INITIALIZER (never lazily from a <c>World</c>, never static, never handed a back-reference to
 /// the proxy) - the plan's trap 9: <c>AlundraWorldProxy.Clone</c> returns a bare
 /// <c>new AlundraWorldProxy()</c> and copies nothing, which is only safe while every collaborator is
@@ -129,7 +130,7 @@ internal sealed class CameraDirector
     private Vector3 _cameraSmoothedTarget;
 
     /// <summary>E5.a: <c>IEntityWorldContext.SetForcedCameraLookAt</c> (opcode 0x69, Script_105_069) -
-    /// the half of that call that is this collaborator's own state. <see cref="AlundraWorldProxy"/> still
+    /// the half of that call that is this collaborator's own state. <see cref="WorldProxy"/> still
     /// owns the interface member itself (it also clears <c>EntityFollowedByCamera</c>, which stays on the
     /// proxy) and delegates here - see this class' own doc on why that delegation is not a facade.</summary>
     internal void SetForcedLookAt(int x, int y, int z)
@@ -182,7 +183,7 @@ internal sealed class CameraDirector
         if (_debugCamera == null)
         {
             Logs.WriteWarning(
-                $"AlundraWorldProxy: no Camera2dComponent found in world "
+                $"WorldProxy: no Camera2dComponent found in world "
                 + $"'{world?.Name}'; debug camera pan/follow disabled.");
             return;
         }
@@ -210,7 +211,7 @@ internal sealed class CameraDirector
     /// <c>InitializeWithWorld</c> AFTER two early returns, so capturing it any earlier would hold null
     /// forever and silently drop the map-bounds clamp below.
     /// </summary>
-    internal void UpdateCameraFollow(int ticksThisFrame, AlundraEntityScriptProxy? followedByCamera, int? mapWidthPx, int? mapHeightPx)
+    internal void UpdateCameraFollow(int ticksThisFrame, EntityScriptProxy? followedByCamera, int? mapWidthPx, int? mapHeightPx)
     {
         // E19.k1 (docs/plan-e19-opcodes.md section 1.2k.1, K3/K4): the ONE site of the camera sway step - the
         // binary steps it once per tick at the head of its camera follow (0x8002CDD8), so exactly
@@ -338,7 +339,7 @@ internal sealed class CameraDirector
                     }
                 }
 
-                if (AlundraWorldProxy.DebugCameraPanEnabled)
+                if (WorldProxy.DebugCameraPanEnabled)
                 {
                     _debugCameraOffset = gamePad.RightStickJustPressed
                         ? Vector3.Zero

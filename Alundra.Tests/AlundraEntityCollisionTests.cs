@@ -1,5 +1,4 @@
 #nullable enable
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Physics;
@@ -15,7 +14,7 @@ namespace Alundra.Tests;
 /// </summary>
 public class AlundraEntityCollisionTests
 {
-    private static AlundraEntityScriptProxy NewBox(int x, int y, int z, int w, int h, int d)
+    private static EntityScriptProxy NewBox(int x, int y, int z, int w, int h, int d)
         => new()
         {
             Flags = EntityFlags.Collidable,

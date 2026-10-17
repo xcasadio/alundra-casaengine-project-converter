@@ -16,7 +16,6 @@ using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues.Yarn;
-using Alundra.Scripts;
 using Alundra.UI.Choice;
 using Alundra.UI.Messages;
 using Alundra.UI.Shared;
@@ -27,11 +26,11 @@ namespace Alundra.Dialogues;
 /// SESSION-scoped singleton (same shape as <see cref="BgmPlayer"/>/<see cref="ScreenFadeDirector"/>
 /// - see either class's own doc for the full "vacuous by construction" reasoning, D-C-6/D-E10-6): the
 /// original's own <c>g_dialog_flags</c>/close-mode mask/choice result are GLOBALS that survive a map
-/// change, and a per-world instance rebuilt in <see cref="AlundraWorldProxy.InitializeWithWorld"/> would
+/// change, and a per-world instance rebuilt in <see cref="WorldProxy.InitializeWithWorld"/> would
 /// make that survival vacuous by construction. <see cref="AttachToWorld"/> re-points this session's
 /// presenter/game-state references WITHOUT touching open/mask/page state (same contract as
 /// <see cref="BgmPlayer.AttachToWorld"/>); <see cref="InstallForMapEntry"/> is the SEPARATE call
-/// that actually resets that state, from <see cref="AlundraWorldProxy.InstallDialogueSystems"/>'s own
+/// that actually resets that state, from <see cref="WorldProxy.InstallDialogueSystems"/>'s own
 /// install preamble (docs/plan-e12-dialogues.md, "AttachToWorld re-points without touching state,
 /// map-entry reset in the install preamble").
 /// <para/>
@@ -43,7 +42,7 @@ namespace Alundra.Dialogues;
 /// </summary>
 public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
 {
-    /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares.</summary>
+    /// <summary>The one session-scoped instance every <see cref="WorldProxy"/> shares.</summary>
     public static readonly DialogueDirector Instance = new();
 
     private const int DefaultCloseMask = 3; // §1.2 - bit0 (auto-timer) | bit1 (button), the original's default g_etcAnimationMode.
@@ -61,7 +60,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     // E19.f4b: the speaker's name box and portrait (the binary's slot 12 and portrait block), run by every pass of the director right after the text box's and the choice's.
     private readonly DialogueNameBox _nameBox = new();
     private readonly InventoryPortrait _portrait = new();
-    private AlundraEntityScriptProxy? _portraitSpeaker;
+    private EntityScriptProxy? _portraitSpeaker;
     private DialoguePortraitRef? _portraitSource;
     private readonly HashSet<int> _warnedPortraitSpriteTypes = new();
     private readonly Func<char, int> _advanceDelegate;
@@ -130,11 +129,11 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     internal DialoguePortraitRef? PortraitSource => _portraitSource;
 
     /// <summary>E19.f4b: the speaker whose start the portrait machine accepted, the one its return flies to (null while no start was accepted).</summary>
-    internal AlundraEntityScriptProxy? PortraitSpeaker => _portraitSpeaker;
+    internal EntityScriptProxy? PortraitSpeaker => _portraitSpeaker;
 
     /// <summary>
     /// E19.f4b (F4B-R4): the scroll of the camera in the original's pixels (<c>g_cameraScrollingX/Y</c>), read at the opening of a portrait and at its return; null = (0, 0). Set by
-    /// <see cref="AlundraWorldProxy.InstallDialogueSystems"/>, kept by <see cref="AttachToWorld"/>, cleared by <see cref="ResetForTests"/>.
+    /// <see cref="WorldProxy.InstallDialogueSystems"/>, kept by <see cref="AttachToWorld"/>, cleared by <see cref="ResetForTests"/>.
     /// </summary>
     internal Func<(int X, int Y)>? ScrollSource { get; set; }
 
@@ -145,7 +144,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     internal Func<char, int>? AdvanceProviderForTests { get; set; }
 
     /// <summary>Re-points this session-scoped instance at the current world's own presenter/game state/sound player -
-    /// called by <see cref="AlundraWorldProxy.InstallDialogueSystems"/> on every world install. Deliberately
+    /// called by <see cref="WorldProxy.InstallDialogueSystems"/> on every world install. Deliberately
     /// does NOT touch the box, the page state or the choice state (same
     /// contract as <see cref="BgmPlayer.AttachToWorld"/>/<see cref="ScreenFadeDirector.AttachToWorld"/>)
     /// - only <see cref="InstallForMapEntry"/> does that: the box goes on running, its page already known, even when the
@@ -190,7 +189,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     /// contract): closes out any dialogue this session still thought was open (clearing
     /// <see cref="GameState.PlayerControlFlags"/>'s MessageBox/MenuOpen bits so a stale lock never
     /// survives a map transition) and resets every piece of open/mask/page/choice state to New-Game-
-    /// equivalent. Called from <see cref="AlundraWorldProxy.InstallDialogueSystems"/>, right after
+    /// equivalent. Called from <see cref="WorldProxy.InstallDialogueSystems"/>, right after
     /// <see cref="AttachToWorld"/> - the ONLY call site (same M16 lesson as every other install method in
     /// this DLL: no separate, independently deletable call site).</summary>
     public void InstallForMapEntry()
@@ -391,7 +390,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     // ---- the speaker: name and portrait (E19.f4b)
 
     /// <inheritdoc/>
-    public void OpenSpeaker(AlundraEntityScriptProxy? speaker, int? nameId = null)
+    public void OpenSpeaker(EntityScriptProxy? speaker, int? nameId = null)
     {
         if (speaker == null)
         {
@@ -423,7 +422,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     }
 
     /// <summary>The head point of a speaker on the original's screen: its 16.16 position (integer parts) minus the scroll of the camera, read now (<see cref="ScrollSource"/>, (0, 0) without one).</summary>
-    private (int X, int Y) HeadPointOf(AlundraEntityScriptProxy speaker)
+    private (int X, int Y) HeadPointOf(EntityScriptProxy speaker)
     {
         var scroll = ScrollSource is { } source ? source() : (0, 0);
         return InventoryPortrait.ComputeHeadPoint(speaker.PosX, speaker.PosY, speaker.PosZ, scroll.Item1, scroll.Item2);

@@ -1,11 +1,11 @@
 #nullable enable
 using System;
 using System.IO;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Events;
 using Alundra.Rng;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -40,7 +40,7 @@ public sealed class AlundraRandomDirectionModesTests : IDisposable
     {
         GameRandom.RandomSeed = seed;
         var runner = NewRunner();
-        var entity = new AlundraEntityScriptProxy();
+        var entity = new EntityScriptProxy();
         var values = new uint[encodedDirs.Length];
         for (var i = 0; i < encodedDirs.Length; i++)
         {
@@ -131,7 +131,7 @@ public sealed class AlundraRandomDirectionModesTests : IDisposable
 
         GameRandom.RandomSeed = 0xB017C93D;
         var runner = new EventProgramRunner(document, new GameState());
-        var entity = new AlundraEntityScriptProxy();
+        var entity = new EntityScriptProxy();
         var state = new EventProgramState { Codes = codes, CodeIndex = 144 };
 
         runner.RunOneScriptCall(entity, state);

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -15,6 +14,8 @@ using Alundra.Session;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Physics;
+using Alundra.Entities;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
@@ -109,7 +110,7 @@ public sealed class AlundraCabinWalkTests
     /// <summary>One walk like a scripted <c>0x1E</c>: the direction and the walk animation held until the hero has
     /// covered <paramref name="distance"/> px on the walked axis (whole pixels), or fails after 400 frames or 30 frames
     /// without any motion, naming where the hero stopped.</summary>
-    private static void Walk(World world, AlundraEntityScriptProxy hero, uint direction, int distance, string name, float dt)
+    private static void Walk(World world, EntityScriptProxy hero, uint direction, int distance, string name, float dt)
     {
         hero.TargetDirection = direction;
         hero.TargetAnimationId = 1;
@@ -148,11 +149,11 @@ public sealed class AlundraCabinWalkTests
 
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -164,15 +165,15 @@ public sealed class AlundraCabinWalkTests
 
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
 
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
 
         public GameState GameState { get; } = new() { PlayerControlFlags = GameState.PlayerControlBits.ControlLocked };
 
-        public AlundraPlayerController? PlayerController { get; init; } = new AlundraPlayerController();
+        public HeroController? PlayerController { get; init; } = new HeroController();
 
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 

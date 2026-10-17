@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -15,6 +14,7 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -28,7 +28,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
 {
     public AlundraGameplayFreezeTests()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
@@ -37,7 +37,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
 
     public void Dispose()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();
@@ -65,11 +65,11 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         LastRequestedDisplacement: new Vector3(0f, 0f, 3f),
         LastActualDisplacement: new Vector3(0f, 0f, 3f));
 
-    private static AlundraEntityScriptProxy NewProxyWithController(CharacterControllerStateSnapshot state)
+    private static EntityScriptProxy NewProxyWithController(CharacterControllerStateSnapshot state)
     {
         var controller = new CharacterControllerComponent();
         controller.RestoreStateSnapshot(state);
-        return new AlundraEntityScriptProxy { Controller = controller };
+        return new EntityScriptProxy { Controller = controller };
     }
 
     private static float ExternalVerticalLatch(CharacterControllerComponent controller)
@@ -159,7 +159,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         Assert.Equal(expectedLatch, ExternalVerticalLatch(proxy.Controller));
     }
 
-    private static (AlundraEntityScriptProxy Proxy, AnimatedSpriteComponent Sprite) NewProxyWithSprite()
+    private static (EntityScriptProxy Proxy, AnimatedSpriteComponent Sprite) NewProxyWithSprite()
     {
         var root = new TransformComponent();
         var sprite = new AnimatedSpriteComponent();
@@ -168,10 +168,10 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         {
             Name = "FreezeTestEntity",
             RootComponent = root,
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         return (proxy, sprite);
     }
 
@@ -199,7 +199,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         Assert.True(sprite.IsPlaybackPaused);
     }
 
-    /// <summary>The production site: the end of <see cref="AlundraWorldProxy.Update"/> freezes every
+    /// <summary>The production site: the end of <see cref="WorldProxy.Update"/> freezes every
     /// spawned entity while MenuOpen is posed, and thaws it once MenuOpen is lifted. Same headless montage as
     /// <see cref="AlundraWorldProxyGlobalFreezeTests"/>'s own camera test; the spawned entity is placed in
     /// the world proxy's own spawned list, where every real spawn path puts it.</summary>
@@ -207,14 +207,14 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
     public void WorldUpdate_MenuOpen_FreezesASpawnedEntity_LiftingItThawsIt()
     {
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
-        var worldProxy = new AlundraWorldProxy();
+        var worldProxy = new WorldProxy();
         worldProxy.InitializeWithWorld(world);
 
         var (proxy, sprite) = NewProxyWithSprite();
         var controller = new CharacterControllerComponent();
         controller.RestoreStateSnapshot(MidJump);
         proxy.Controller = controller;
-        var spawnedField = typeof(AlundraWorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic);
+        var spawnedField = typeof(WorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(spawnedField);
         ((List<Entity>)spawnedField!.GetValue(worldProxy)!).Add(sprite.Owner!);
 

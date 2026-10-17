@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -60,7 +59,7 @@ public sealed class AlundraBirthBoxTests : IDisposable
     }
 
     /// <summary>What the entity holds as its box at the hit point of a tick (stored box minus position, then the sizes), or null when it has none.</summary>
-    private static BoxRow? DllBox(AlundraEntityScriptProxy born)
+    private static BoxRow? DllBox(EntityScriptProxy born)
         => born.HasFrameBox
             ? new BoxRow((long)born.HitBoxX - born.PosX, (long)born.HitBoxY - born.PosY, (long)born.HitBoxZ - born.PosZ, born.CollisionWidth, born.CollisionDepth, born.CollisionHeight)
             : null;
@@ -296,12 +295,12 @@ public sealed class AlundraBirthBoxTests : IDisposable
     {
         public int Calls;
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController { get; init; }
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController { get; init; }
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -316,11 +315,11 @@ public sealed class AlundraBirthBoxTests : IDisposable
 
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }

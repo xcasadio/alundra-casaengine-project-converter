@@ -1,14 +1,14 @@
 #nullable enable
 
-using Alundra.Scripts;
 using Alundra.Physics;
+using Alundra.Entities;
 
 namespace Alundra.Maps.Loop;
 
 /// <summary>
 /// Bug fix (user-reported runtime pacing bug, gull entity 6, docs/... see commit message for the log
 /// evidence): the alundra-project runs with "IsFixedTimeStep": false, so
-/// <see cref="AlundraEntityScriptProxy.Update"/>/<see cref="AlundraWorldProxy.Update"/> are called once
+/// <see cref="EntityScriptProxy.Update"/>/<see cref="WorldProxy.Update"/> are called once
 /// per RENDERED frame, not once per the original PSX build's own fixed 50 Hz game tick. Everything the
 /// original counted in FRAMES (the whole event-program 0x37 Wait chronology, MapEvents, the do/while
 /// catch-up rescan) ran at that same fixed rate; running the SAME per-frame pick/run pass once per
@@ -19,13 +19,13 @@ namespace Alundra.Maps.Loop;
 /// second invented one) - callers loop that many times over whatever they gate on ticks.
 ///
 /// ONE clock is shared by the whole world (an <see cref="IScriptHost"/> implementer owns exactly
-/// one instance - <see cref="AlundraWorldProxy"/> in production, the intro trace harness's own
+/// one instance - <see cref="WorldProxy"/> in production, the intro trace harness's own
 /// HeadlessIntroSimulation in tests), NOT one accumulator per entity: a per-entity accumulator would
 /// phase-drift entities spawned at different real times against each other and against the world's own
 /// MapEvents/catch-up passes, which must all agree on "how many ticks happened this frame" to stay in
 /// lock-step. <see cref="ScriptedMotion"/> used to keep its OWN separate per-entity accumulator for
 /// exactly this reason it should not have (motion IS logic-stepped, its per-tick outcome feeds back into
-/// the script pass via <see cref="AlundraEntityScriptProxy.ForceAdjusted"/> - see that class' own
+/// the script pass via <see cref="EntityScriptProxy.ForceAdjusted"/> - see that class' own
 /// ONE-CLOCK fix doc) - it has since been folded into this same clock instead, so <see cref="TicksThisFrame"/>
 /// is now the single source of "how many ticks happened this frame" for script, motion, AND vertical
 /// support alike.
@@ -40,7 +40,7 @@ namespace Alundra.Maps.Loop;
 /// after every entity's <c>Update</c> already ran) so the NEXT frame's first caller recomputes fresh. A
 /// world with zero spawned entities still needs its clock to advance every frame - the world proxy itself
 /// becomes the first (and only, and closing) caller in that case; see
-/// <see cref="AlundraWorldProxy.Update"/>'s own call site.
+/// <see cref="WorldProxy.Update"/>'s own call site.
 /// </summary>
 internal sealed class LogicClock
 {
@@ -52,7 +52,7 @@ internal sealed class LogicClock
     /// Returns this frame's tick count, computing and caching it on the first call this frame (see this
     /// class' own doc) - every later call this frame is a pure cache read, <paramref name="elapsedTime"/>
     /// ignored. The returned count is what every caller this frame (script pass, motion,
-    /// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>) loops over - see
+    /// <see cref="EntityScriptProxy.EvaluateEntitySupport"/>) loops over - see
     /// <see cref="ScriptedMotion"/>'s own class doc.
     /// </summary>
     internal int TicksThisFrame(float elapsedTime)

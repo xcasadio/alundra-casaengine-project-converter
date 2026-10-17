@@ -4,9 +4,9 @@ using CasaEngine.Framework.UI;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Items;
-using Alundra.Scripts;
 using Alundra.UI.Inventory;
 using Alundra.UI.Shared;
+using Alundra.Maps;
 
 namespace Alundra.UI.SubInventory;
 
@@ -15,8 +15,8 @@ namespace Alundra.UI.SubInventory;
 /// already-ticked state plus the item lookups it does not own (<see cref="ItemTables"/>,
 /// <see cref="GameState"/>), composes a <see cref="SubInventoryDisplayModel"/> through the pure
 /// <see cref="SubInventoryComposer"/>, and writes it into the screen's
-/// <see cref="AlundraSubInventoryViewModel"/> (parent ADR-0002), which the screen's XAML binds - one
-/// <see cref="Tick"/> call per LOGIC tick, made from <see cref="AlundraWorldProxy.Update(float)"/>'s own
+/// <see cref="SubInventoryViewModel"/> (parent ADR-0002), which the screen's XAML binds - one
+/// <see cref="Tick"/> call per LOGIC tick, made from <see cref="WorldProxy.Update(float)"/>'s own
 /// pad-tick loop, immediately after <see cref="SubInventoryDirector.Tick"/> (same "presenter runs
 /// right after its director, inside the per-tick loop" shape <see cref="InventoryPresenter"/> already
 /// establishes).
@@ -35,7 +35,7 @@ public sealed class SubInventoryPresenter
     private readonly SubInventoryDirector _director;
     private readonly GameState _gameState;
     private readonly ItemTables _itemTables;
-    private readonly AlundraSubInventoryViewModel _viewModel;
+    private readonly SubInventoryViewModel _viewModel;
     private readonly IUIScreen _screen;
     private readonly IUIViewRuntime? _uiView;
 
@@ -47,7 +47,7 @@ public sealed class SubInventoryPresenter
         SubInventoryDirector director,
         GameState gameState,
         ItemTables itemTables,
-        AlundraSubInventoryViewModel viewModel,
+        SubInventoryViewModel viewModel,
         IUIScreen screen,
         IUIViewRuntime? uiView)
     {

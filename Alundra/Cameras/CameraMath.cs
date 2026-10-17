@@ -18,25 +18,25 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scene.World;
 using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Cameras;
 
 /// <summary>
-/// Owns the pure camera mathematics formerly on <see cref="AlundraWorldProxy"/>: the scripted-follow
+/// Owns the pure camera mathematics formerly on <see cref="WorldProxy"/>: the scripted-follow
 /// scroll/smoothing/clamp math (<see cref="StepCameraScroll"/>, <see cref="AdvanceCameraSmoothing"/>,
 /// <see cref="ComputeSmoothedCameraTarget"/>, <see cref="ResolveCameraLookAt"/>,
 /// <see cref="ComputeCameraLookAtRenderPosition"/>, <see cref="ClampCameraTargetToMap"/>) and the
 /// debug-pan math (<see cref="ComputeDebugCameraPanOffset"/>,
 /// <see cref="ResolveDebugCameraBase"/>), plus the constants only these methods read. Pure `static`,
-/// stateless, moved from <see cref="AlundraWorldProxy"/> by slice R2 of
+/// stateless, moved from <see cref="WorldProxy"/> by slice R2 of
 /// docs/plan-decoupage-proxies.md - a behaviour-preserving relocation only, see that plan's §3 for
 /// the exact delta rule (call qualification only; no widening was needed here since every constant
 /// moved with its only remaining callers) this move used. Broken `<see cref>` references left by this
 /// move are fixed in slice R5, not here (plan §4 R5) - this class's XML documentation is otherwise the
 /// ORIGINAL text, unmodified. The instance wiring around this math (<c>UpdateCameraFollow</c>,
 /// <c>UpdateDebugCameraPan</c>, <c>ResolveDebugCameraOnce</c>, <c>SetForcedCameraLookAt</c> and every
-/// camera field) stays on <see cref="AlundraWorldProxy"/> - plan decision R-1, explicitly out of scope.
+/// camera field) stays on <see cref="WorldProxy"/> - plan decision R-1, explicitly out of scope.
 /// </summary>
 internal static class CameraMath
 {

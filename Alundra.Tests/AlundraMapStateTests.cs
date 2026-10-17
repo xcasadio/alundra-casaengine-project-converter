@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -40,7 +39,7 @@ public sealed class AlundraMapStateTests
     /// <summary>A prefab with a controller (default settings: mask 0, not owned, minimum move distance 0.001), the only thing the state needs besides the header.</summary>
     private static Entity PrefabWithController()
     {
-        var prefab = new Entity { Name = "MapStatePrefab", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var prefab = new Entity { Name = "MapStatePrefab", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         prefab.AddComponent(new CharacterControllerComponent());
         return prefab;
     }
@@ -48,18 +47,18 @@ public sealed class AlundraMapStateTests
     /// <summary>What the state reads back: the two raw words, the mask, the ownership and the minimum move distance.</summary>
     private sealed record State(int GravityRaw, int ViscosityRaw, uint Mask, bool Owned, float MinMove);
 
-    private static State Read(AlundraEntityScriptProxy proxy)
+    private static State Read(EntityScriptProxy proxy)
     {
         Assert.NotNull(proxy.Controller);
         return new State(proxy.MapGravityRaw, proxy.MapZViscosityRaw, proxy.Controller!.Settings.WalkabilityMask, proxy.Controller.IsVerticalOwnedExternally, proxy.Controller.Settings.MinMoveDistance);
     }
 
-    private static AlundraEntityScriptProxy Born(bool isMapPage, int index, TileMapData? map)
+    private static EntityScriptProxy Born(bool isMapPage, int index, TileMapData? map)
     {
         Assert.True(Catalog.Value.TryGetPrefab(isMapPage, index, out var prefabId));
         Assert.True(Catalog.Value.TryGet(prefabId, out var header));
         var entity = EntitySpawnFactory.CreateEntityFromSpriteIndex(PrefabWithController(), header, isMapPage, index, null, 150 << 16, 100 << 16, 0, 0x18, null, map);
-        return Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        return Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
     }
 
     /// <summary>The defaults of a controller no map has touched: the state a creation without a map must leave.</summary>
@@ -121,7 +120,7 @@ public sealed class AlundraMapStateTests
 
         Assert.Equal(
             (new State(MapGravity, MapViscosity, expectedMask, Owned: true, MinMove: 0f), Untouched()),
-            (Read(Assert.IsType<AlundraEntityScriptProxy>(withMap.GameplayProxy)), Read(Assert.IsType<AlundraEntityScriptProxy>(withoutMap.GameplayProxy))));
+            (Read(Assert.IsType<EntityScriptProxy>(withMap.GameplayProxy)), Read(Assert.IsType<EntityScriptProxy>(withoutMap.GameplayProxy))));
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Alundra.Maps;
@@ -30,7 +29,7 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
 
     private static IEntityWorldContext Context(ArcRun arc) => arc.Proxy;
 
-    private static AlundraEntityScriptProxy Spawn(ArcRun arc, AlundraEntityScriptProxy? parent, bool isMapPage, int index, int xPixels = HeroX, int yPixels = HeroY, int dllZ = -1, int direction = 0x10)
+    private static EntityScriptProxy Spawn(ArcRun arc, EntityScriptProxy? parent, bool isMapPage, int index, int xPixels = HeroX, int yPixels = HeroY, int dllZ = -1, int direction = 0x10)
         => Context(arc).SpawnEntityBySpriteIndex(parent, isMapPage, index, xPixels << 16, yPixels << 16, dllZ, direction)!;
 
     private static int Lines(ArcRun arc) => arc.Log!.Warnings.Count(w => w.Contains("SpawnEntityBySpriteIndex", StringComparison.Ordinal));
@@ -286,7 +285,7 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
     {
         using var arc = Arc("sound");
         var player = new RecordingSoundPlayer();
-        typeof(AlundraWorldProxy).GetField("<SoundPlayer>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.SetValue(arc.Proxy, player);
+        typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.SetValue(arc.Proxy, player);
 
         Spawn(arc, arc.Hero, false, 3);
         Assert.Empty(player.Ids); // the arrows have no sound at their creation.

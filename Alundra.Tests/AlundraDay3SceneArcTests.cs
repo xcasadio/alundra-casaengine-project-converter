@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
@@ -271,7 +270,7 @@ public sealed class AlundraDay3SceneArcTests
 
         // E19.r R3: the blocks of the records 8 to 10 exist after B[2] 0x2D @219-@223 and are captured at the trace of 0x2E @272, all three still listed and
         // flagged for destruction by B[2] (0x2E @268, @270, @272); the recycling of the same tick takes them away.
-        List<AlundraEntityScriptProxy>? blocks = null;
+        List<EntityScriptProxy>? blocks = null;
         var chained = arc.OnInstruction!;
         arc.OnInstruction = t =>
         {

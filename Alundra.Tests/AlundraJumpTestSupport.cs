@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Alundra.Scripts;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Application.Components.Physics;
@@ -39,7 +38,7 @@ internal sealed class JumpNpcRig
 
     public required ContactHost Host { get; init; }
 
-    public required AlundraEntityScriptProxy Npc { get; init; }
+    public required EntityScriptProxy Npc { get; init; }
 
     /// <summary>Replaces (or adds) the animation set of <paramref name="entry"/> of the NPC (the table is read-only on the proxy).</summary>
     public void SetAnimSet(AnimSetEntry entry)
@@ -114,7 +113,7 @@ internal sealed class JumpNpcRig
 
         root.AddChildComponent(sprite);
 
-        var entity = new Entity { Name = "SpriteJumper", RootComponent = root, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "SpriteJumper", RootComponent = root, GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         var controller = new CharacterControllerComponent
         {
             Settings = new CharacterControllerSettings
@@ -127,7 +126,7 @@ internal sealed class JumpNpcRig
         entity.AddComponent(controller);
         entity.Initialize();
 
-        var npc = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var npc = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         npc.Controller = entity.GetComponent<CharacterControllerComponent>();
         npc.ScriptHost = host;
         npc.Status = EntityStatus.Normal;
@@ -166,7 +165,7 @@ internal sealed class JumpNpcRig
     /// <summary>
     /// Builds the NPC montage and runs ONE settling update at rest (animation 0 current and target). <paramref name="impulse"/> is the
     /// <c>IsZForceApplied</c> of the animation <see cref="ImpulseAnimation"/> (animation 0 has speed 0 and no impulse); the animation
-    /// sets are the caller's to extend through <see cref="AlundraEntityScriptProxy.AnimSetsByAnim"/>.
+    /// sets are the caller's to extend through <see cref="EntityScriptProxy.AnimSetsByAnim"/>.
     /// </summary>
     public static JumpNpcRig Build(int impulse = 1360, bool gravity = true, int x = 200, int y = 100, int z = 0)
     {
@@ -230,7 +229,7 @@ internal sealed class HeroPad
 /// synthetic cells (<see cref="CellsField"/>, height 0 unless a test gives its own), a hero pawn with the REAL exported controller settings
 /// (<see cref="HeroWorldFixture.BuildHeroPawn"/>, <c>MapGravity</c> 1250, <c>MapMaxFallSpeed</c> 800, <c>MapGravityRaw</c> 128,
 /// <c>MapZViscosityRaw</c> 4096 as <c>AdoptPlayerPawn</c> posts them), <see cref="EntityFlags.Gravity"/> set (BuildHeroPawn leaves the flags at 0 and
-/// <c>MovePlayer</c> returns before posting the bit under <c>ControlLocked</c>), and a host that exposes a <see cref="AlundraPlayerController"/> (without
+/// <c>MovePlayer</c> returns before posting the bit under <c>ControlLocked</c>), and a host that exposes a <see cref="HeroController"/> (without
 /// one the tick of the hero does not run). The pad is locked (<c>ControlLocked</c>): the animation and the direction are the test's to write.
 /// </summary>
 internal sealed class JumpHeroRig
@@ -246,7 +245,7 @@ internal sealed class JumpHeroRig
 
     public required ContactHost Host { get; init; }
 
-    public required AlundraEntityScriptProxy Hero { get; init; }
+    public required EntityScriptProxy Hero { get; init; }
 
     public required Entity HeroEntity { get; init; }
 
@@ -299,7 +298,7 @@ internal sealed class JumpHeroRig
         bool attackClock = false)
     {
         var pad = new HeroPad();
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => freePad ? pad.State : default };
+        var controller = new HeroController { PadStateProviderForTests = () => freePad ? pad.State : default };
         var host = new ContactHost(playerControlFlags: freePad ? 0 : GameState.PlayerControlBits.ControlLocked, playerController: controller);
         var world = ContactWorld.BuildWorld(field ?? FlatCells.Create(), probeFactory?.Invoke(host));
         configure?.Invoke(world, host);
@@ -397,7 +396,7 @@ internal static class HeroAttackClock
     }
 
     /// <summary>Gives <paramref name="hero"/> the animations, the end table, the animation sets and the bridge of <see cref="Table"/>, and settles it facing east with a stable first switch.</summary>
-    public static void Install(Entity entity, AlundraEntityScriptProxy hero)
+    public static void Install(Entity entity, EntityScriptProxy hero)
     {
         var sprite = entity.GetComponent<AnimatedSpriteComponent>()!;
         var sets = new Dictionary<int, AnimSetEntry>(hero.AnimSetsByAnim!);

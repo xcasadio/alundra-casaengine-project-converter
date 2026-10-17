@@ -1,15 +1,15 @@
 #nullable enable
 using System;
 using CasaEngine.Framework.UI;
-using Alundra.Scripts;
 using Alundra.UI.SubInventory;
+using Alundra.Maps;
 
 namespace Alundra.UI.Saving;
 
 /// <summary>
 /// E16.e T4 (docs/plan-e16-etat-partie.md, L5): reads <see cref="SaveScreenDirector"/>'s already-ticked state
-/// and writes it into the screen's <see cref="AlundraSaveScreenViewModel"/>, which <c>SaveScreen.xaml</c> binds - one
-/// <see cref="Tick"/> per LOGIC tick, from <see cref="AlundraWorldProxy.Update(float)"/>'s per-tick loop, right after
+/// and writes it into the screen's <see cref="SaveScreenViewModel"/>, which <c>SaveScreen.xaml</c> binds - one
+/// <see cref="Tick"/> per LOGIC tick, from <see cref="WorldProxy.Update(float)"/>'s per-tick loop, right after
 /// the director (the shape of <see cref="SubInventoryPresenter"/>).
 ///
 /// <para><b>Push/remove</b> (the inventory's precedent): this presenter owns the screen and pushes it on the active
@@ -20,14 +20,14 @@ namespace Alundra.UI.Saving;
 public sealed class SaveScreenPresenter
 {
     private readonly SaveScreenDirector _director;
-    private readonly AlundraSaveScreenViewModel _viewModel;
+    private readonly SaveScreenViewModel _viewModel;
     private readonly IUIScreen _screen;
     private readonly IUIViewRuntime? _uiView;
     private bool _pushed;
 
     public SaveScreenPresenter(
         SaveScreenDirector director,
-        AlundraSaveScreenViewModel viewModel,
+        SaveScreenViewModel viewModel,
         IUIScreen screen,
         IUIViewRuntime? uiView)
     {

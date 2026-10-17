@@ -1,6 +1,5 @@
 #nullable enable
 using System;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
@@ -55,7 +54,7 @@ public sealed class AlundraHeroApexAndCeilingTests : IDisposable
         return rig;
     }
 
-    private static AlundraEntityScriptProxy AddBox(World world, ContactHost host, string name, int x, int y, int z, int sizeX, int sizeY, int sizeZ)
+    private static EntityScriptProxy AddBox(World world, ContactHost host, string name, int x, int y, int z, int sizeX, int sizeY, int sizeZ)
     {
         var box = ContactWorld.AddEntity(world, host, name, x, y, z, 0, 0, 0, sizeX, sizeY, sizeZ);
         box.LogicContextEntity = box.OwnerEntity!;

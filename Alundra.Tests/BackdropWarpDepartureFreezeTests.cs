@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Rendering.CellularLayers;
 using CasaEngine.Framework.Rendering.ScrollingLayers;
@@ -14,6 +13,7 @@ using Alundra.Rng;
 using Alundra.Rendering.Backdrops;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -47,7 +47,7 @@ public sealed class BackdropWarpDepartureFreezeTests : IDisposable
     public void Update_DuringAWarpDeparture_PushesEveryFrameWithZeroTicks_ThenOneTickAfterTheMapEntry()
     {
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
         var stage = proxy._backdropStage;
@@ -97,7 +97,7 @@ public sealed class BackdropWarpDepartureFreezeTests : IDisposable
     public void RealMap389Sea_DuringAWarpDeparture_AutoScrollAndTimersDoNotAdvance()
     {
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
         var stage = proxy._backdropStage;
@@ -176,7 +176,7 @@ public sealed class BackdropWarpDepartureRainTests : IDisposable
         }
 
         var world = new World { Name = worldName };
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
         var stage = proxy._backdropStage;
@@ -235,11 +235,11 @@ internal static class BackdropWarpDepartureSupport
     /// <summary>Arms a departure through portal 0 of map 389 (the pattern of <c>AlundraWarpDepartureTests</c>), on a
     /// non-degraded montage: the director is attached to a real <see cref="GameManager"/> so that the gate stays posted
     /// through the 16 frames.</summary>
-    internal static AlundraEntityScriptProxy BeginDeparture(AlundraWorldProxy proxy)
+    internal static EntityScriptProxy BeginDeparture(WorldProxy proxy)
     {
-        var entity = new Entity { Name = "player", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "player", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var player = (AlundraEntityScriptProxy)entity.GameplayProxy;
+        var player = (EntityScriptProxy)entity.GameplayProxy;
         player.IsPlayer = true;
         player.Status = EntityStatus.Normal;
         player.PosX = (18 * 24 + 12) << 16;

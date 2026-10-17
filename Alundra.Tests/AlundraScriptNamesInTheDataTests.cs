@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Gameplay;
 using CasaEngine.Framework.Scripting;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Alundra.Entities;
+using Alundra.Hero;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -36,27 +38,27 @@ public sealed class AlundraScriptNamesInTheDataTests
     public void TheGameMode_NamesThePlayerControllerByItsFullName()
     {
         var document = ReadJson("Entities/Alundra/Alundra.gameMode");
-        Assert.Equal(typeof(AlundraPlayerController).FullName, (string?)document["player_controller_class"]);
-        Assert.True(ElementFactory.TryResolveScriptType(typeof(PlayerController), "player_controller_class", typeof(AlundraPlayerController).FullName!, out var type, out var message), message);
-        Assert.Equal(typeof(AlundraPlayerController), type);
+        Assert.Equal(typeof(HeroController).FullName, (string?)document["player_controller_class"]);
+        Assert.True(ElementFactory.TryResolveScriptType(typeof(PlayerController), "player_controller_class", typeof(HeroController).FullName!, out var type, out var message), message);
+        Assert.Equal(typeof(HeroController), type);
     }
 
     [Fact]
     public void TheHeroPrefab_NamesTheEntityProxyByItsFullName()
     {
         var document = ReadJson("Entities/Alundra/Alundra.entity");
-        Assert.Equal(typeof(AlundraEntityScriptProxy).FullName, (string?)document["script_class_name"]);
-        Assert.True(ElementFactory.TryResolveScriptType(typeof(GameplayProxy), "script_class_name", typeof(AlundraEntityScriptProxy).FullName!, out var type, out var message), message);
-        Assert.Equal(typeof(AlundraEntityScriptProxy), type);
+        Assert.Equal(typeof(EntityScriptProxy).FullName, (string?)document["script_class_name"]);
+        Assert.True(ElementFactory.TryResolveScriptType(typeof(GameplayProxy), "script_class_name", typeof(EntityScriptProxy).FullName!, out var type, out var message), message);
+        Assert.Equal(typeof(EntityScriptProxy), type);
     }
 
     [Fact]
     public void AMapWorld_NamesTheWorldProxyByItsFullName()
     {
         var document = ReadJson(WorldRelativePath);
-        Assert.Equal(typeof(AlundraWorldProxy).FullName, (string?)document["script_class_name"]);
-        Assert.True(ElementFactory.TryResolveScriptType(typeof(GameplayProxy), "script_class_name", typeof(AlundraWorldProxy).FullName!, out var type, out var message), message);
-        Assert.Equal(typeof(AlundraWorldProxy), type);
+        Assert.Equal(typeof(WorldProxy).FullName, (string?)document["script_class_name"]);
+        Assert.True(ElementFactory.TryResolveScriptType(typeof(GameplayProxy), "script_class_name", typeof(WorldProxy).FullName!, out var type, out var message), message);
+        Assert.Equal(typeof(WorldProxy), type);
     }
 
     // The creation catches of AlundraWorldProxy (the map-load loop, SpawnEntityByRecordId, SpawnEntityBySpriteIndex): a script type name that
@@ -82,7 +84,7 @@ public sealed class AlundraScriptNamesInTheDataTests
             var asset = _inner.LoadAsset(fileName, assetContentManager);
             if (asset is CasaEngine.Framework.Scene.Entities.Entity entity)
             {
-                entity.GameplayProxyClassName = nameof(AlundraEntityScriptProxy);
+                entity.GameplayProxyClassName = nameof(EntityScriptProxy);
             }
 
             return asset;
@@ -97,11 +99,11 @@ public sealed class AlundraScriptNamesInTheDataTests
         var thrown = Assert.Throws<ScriptTypeResolutionException>(() => Arc("wrong-prefab-script", CorruptEveryPrefabButTheHero).Dispose());
 
         Assert.Equal("script_class_name", thrown.Key);
-        Assert.Equal(nameof(AlundraEntityScriptProxy), thrown.Value);
+        Assert.Equal(nameof(EntityScriptProxy), thrown.Value);
         Assert.EndsWith(".entity", thrown.FileName, StringComparison.Ordinal);
         Assert.StartsWith("Entities", thrown.FileName, StringComparison.Ordinal);
         Assert.Contains(thrown.FileName, thrown.Message, StringComparison.Ordinal);
-        Assert.Contains(typeof(AlundraEntityScriptProxy).FullName!, thrown.Message, StringComparison.Ordinal); // the hint names the full name.
+        Assert.Contains(typeof(EntityScriptProxy).FullName!, thrown.Message, StringComparison.Ordinal); // the hint names the full name.
     }
 
     [Fact]
@@ -114,7 +116,7 @@ public sealed class AlundraScriptNamesInTheDataTests
         }
 
         var thrown = false;
-        AlundraWorldProxy.CreationFaultHookForTests = (path, _) =>
+        WorldProxy.CreationFaultHookForTests = (path, _) =>
         {
             if (path == "load" && !thrown)
             {
@@ -132,7 +134,7 @@ public sealed class AlundraScriptNamesInTheDataTests
         }
         finally
         {
-            AlundraWorldProxy.CreationFaultHookForTests = null;
+            WorldProxy.CreationFaultHookForTests = null;
         }
     }
 }

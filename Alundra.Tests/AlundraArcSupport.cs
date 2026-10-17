@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
@@ -75,8 +74,8 @@ internal readonly record struct ArcInstruction(int Frame, int Slot, int ProgramS
 
 /// <summary>
 /// E19.a T5 (docs/plan-e19-opcodes.md §0.2.6, §1.2 T5): the shared support of the chain arcs, built on the montage
-/// of <see cref="AlundraSaveBookEndToEndTests"/> - the real <see cref="AlundraWorldProxy.InitializeWithWorld"/>
-/// over a real exported map, a hero possessed by a real <see cref="AlundraPlayerController"/> with a pad seam, a
+/// of <see cref="AlundraSaveBookEndToEndTests"/> - the real <see cref="WorldProxy.InitializeWithWorld"/>
+/// over a real exported map, a hero possessed by a real <see cref="HeroController"/> with a pad seam, a
 /// real dialogue presenter over a recording UI view, one logic tick per <c>Update(0.02f)</c>. On top of it:
 /// <list type="bullet">
 /// <item><description>the world is built from the map's folder path (zone and name) with all its layers;</description></item>
@@ -113,15 +112,15 @@ internal sealed class ArcRun : IDisposable
     /// <summary>E20.e0b2: the tile of the hero right after <c>InitializeWithWorld</c>, before the arc writes the tile of its <see cref="ArcSpec"/>: the tile the spawn-zone gate of the load loop read (the New Game tile, or the arrival record's).</summary>
     public (int X, int Y) HeroTileAtLoad { get; }
 
-    public AlundraWorldProxy Proxy { get; }
+    public WorldProxy Proxy { get; }
 
-    public AlundraEntityScriptProxy Hero { get; }
+    public EntityScriptProxy Hero { get; }
 
     /// <summary>The entity that carries <see cref="Hero"/>.</summary>
     public Entity HeroEntity { get; }
 
     /// <summary>The entity that carries <paramref name="proxy"/> (its protected <c>Owner</c>), whether bare or a prefab.</summary>
-    public static Entity? EntityOf(AlundraEntityScriptProxy proxy) =>
+    public static Entity? EntityOf(EntityScriptProxy proxy) =>
         (Entity?)typeof(CasaEngine.Framework.Scripting.GameplayProxy)
             .GetProperty("Owner", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!.GetValue(proxy);
 
@@ -194,7 +193,7 @@ internal sealed class ArcRun : IDisposable
                 Log = LogCapture.Install();
             }
 
-            AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+            WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
             var root = FindProjectRoot();
             EngineEnvironment.ProjectPath = root; // the sprite record catalog is resolved when the proxy is built.
@@ -230,7 +229,7 @@ internal sealed class ArcRun : IDisposable
                 heroEntity = AddHeroPawn(world);
             }
 
-            var controller = world.PlayerControllers.OfType<AlundraPlayerController>().Single();
+            var controller = world.PlayerControllers.OfType<HeroController>().Single();
             controller.PadStateProviderForTests = () => new PadState
             {
                 ButtonsHold = _hold | _held | (_dialogueHold ? PadState.Square : 0),
@@ -250,7 +249,7 @@ internal sealed class ArcRun : IDisposable
                     (uint)arrivalMap, arrival.PosX, arrival.PosY, arrival.PosZ, arrival.AnimationId, arrival.DirectionId);
             }
 
-            Proxy = new AlundraWorldProxy();
+            Proxy = new WorldProxy();
             beforeInitialize?.Invoke(world);
             Proxy.InitializeWithWorld(world);
 
@@ -276,12 +275,12 @@ internal sealed class ArcRun : IDisposable
             Assert.True(DialogueDirector.Instance.HasPresenter);
 
             HeroEntity = heroEntity;
-            Hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
+            Hero = Assert.IsType<EntityScriptProxy>(heroEntity.GameplayProxy);
 
             // The hero's sprite header (flags, programs, body box): AdoptPlayerPawn resolves it through the asset
             // catalog, empty in the test process - the same block, from the export's own catalog file.
             Assert.True(Proxy.SpriteRecordCatalog.TryGet(HeroPrefabId(root), out var heroHeader));
-            AlundraWorldProxy.ApplyHeroSpriteHeader(Hero, heroHeader);
+            WorldProxy.ApplyHeroSpriteHeader(Hero, heroHeader);
             // E20.c1a C1: the balance record of the hero (record 0), which AdoptPlayerPawn gives it in production once the header resolves (here the header comes after the adoption).
             Hero.InitializeBalance(Proxy.BalanceTables, Proxy.BalanceThreshold);
             Proxy.PullHeroLifeFromStats(Hero); // E20.c2a T1: in the game the pull comes right after InitializeBalance (the headless montage runs the balance part after the adoption, which would put the life back to 10/10).
@@ -357,7 +356,7 @@ internal sealed class ArcRun : IDisposable
         var slid = !alreadyFailing && Frame > 0 && Spec.RealController && slides != expectedSlides ? slides : -1;
         Log?.Dispose();
         EngineEnvironment.ProjectPath = _previousProjectPath;
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         ResetAll();
         if (blocked != 0)
         {
@@ -385,10 +384,10 @@ internal sealed class ArcRun : IDisposable
         SaveBook.Instance.ResetForTests();
     }
 
-    public IReadOnlyList<AlundraEntityScriptProxy> Entities => ((IEntityWorldContext)Proxy).SpawnedEntities;
+    public IReadOnlyList<EntityScriptProxy> Entities => ((IEntityWorldContext)Proxy).SpawnedEntities;
 
     /// <summary>The entity of an "Entities" record of the map (its <c>Index</c>), or null when it never spawned.</summary>
-    public AlundraEntityScriptProxy? EntityByRecord(int record) => Entities.FirstOrDefault(e => e.EntityRefId == record);
+    public EntityScriptProxy? EntityByRecord(int record) => Entities.FirstOrDefault(e => e.EntityRefId == record);
 
     /// <summary>The index in the trace of the first execution of (slot, pc, opcode), or -1.</summary>
     public int FirstIndexOf(int slot, int pc, int opcode) => _firstIndex.TryGetValue((slot, pc, opcode), out var index) ? index : -1;
@@ -580,7 +579,7 @@ internal sealed class ArcRun : IDisposable
         {
             Name = "AlundraHeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
         entity.AddComponent(new CharacterControllerComponent { Settings = settings });
         entity.Initialize();
@@ -603,7 +602,7 @@ internal sealed class ArcRun : IDisposable
 
     private static void PossessWithAPlayerController(World world, Entity pawn)
     {
-        var controller = new AlundraPlayerController();
+        var controller = new HeroController();
         controller.Possess(pawn);
         var field = typeof(World).GetField("_playerControllers", BindingFlags.Instance | BindingFlags.NonPublic)!;
         ((List<PlayerController>)field.GetValue(world)!).Add(controller);

@@ -2,7 +2,6 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Rendering;
 using CasaEngine.Framework.Scene.Entities;
@@ -15,6 +14,7 @@ using Alundra.Cameras;
 using Alundra.Rendering.Backdrops;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -101,7 +101,7 @@ public class AlundraScreenFadeCameraWiringTests : IDisposable
 
         // The real install path: InitializeWithWorld arms the camera resolve lazily, consumed by the
         // first Update (ResolveDebugCameraOnce, called from AlundraCameraDirector).
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // no "tileMap" entity -> early return, harmless for this proof.
         proxy.Update(0.02f);
 

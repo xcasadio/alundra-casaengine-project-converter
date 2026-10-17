@@ -1,6 +1,6 @@
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Entities.Spawning;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -45,7 +45,7 @@ public class EntityRecordMapperTests
     public void Map_FullMap389Entity0Record_FillsAllMappedFields()
     {
         var properties = BuildFullMap389Entity0Properties();
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
 
         EntityRecordMapper.Map("Entity_0", properties, proxy);
 
@@ -70,7 +70,7 @@ public class EntityRecordMapperTests
     public void Map_UnmappedKeys_DoNotAffectAnyProxyField()
     {
         var properties = BuildFullMap389Entity0Properties();
-        var mapped = new AlundraEntityScriptProxy();
+        var mapped = new EntityScriptProxy();
         EntityRecordMapper.Map("Entity_0", properties, mapped);
 
         // Same record but with every deliberately-unmapped key stripped: the mapped fields must be
@@ -86,7 +86,7 @@ public class EntityRecordMapperTests
             properties.Remove(key);
         }
 
-        var stripped = new AlundraEntityScriptProxy();
+        var stripped = new EntityScriptProxy();
         EntityRecordMapper.Map("Entity_0", properties, stripped);
 
         Assert.Equal(mapped.EntityRefId, stripped.EntityRefId);
@@ -101,7 +101,7 @@ public class EntityRecordMapperTests
     [Fact]
     public void Map_MissingKeys_LeaveProxyFieldsAtDefault()
     {
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
 
         EntityRecordMapper.Map("Entity_missing", new Dictionary<string, string>(), proxy);
 
@@ -121,7 +121,7 @@ public class EntityRecordMapperTests
     public void Map_MalformedValue_ThrowsFormatExceptionNamingRecordAndKey(string key)
     {
         var properties = new Dictionary<string, string> { [key] = "not-an-int" };
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
 
         var exception = Assert.Throws<FormatException>(
             () => EntityRecordMapper.Map("Entity_7", properties, proxy));
@@ -134,7 +134,7 @@ public class EntityRecordMapperTests
     public void Map_ContentsGameFlag_ZeroedWhenMaskedValueOutOfRange()
     {
         var properties = new Dictionary<string, string> { ["_10"] = "2048" }; // (2048 & 0x7fff) = 2048 > 0x7ff
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
 
         EntityRecordMapper.Map("Entity_0", properties, proxy);
 
@@ -145,7 +145,7 @@ public class EntityRecordMapperTests
     public void Map_ContentsGameFlag_KeptWhenMaskedValueInRange()
     {
         var properties = new Dictionary<string, string> { ["_10"] = "42" };
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
 
         EntityRecordMapper.Map("Entity_0", properties, proxy);
 
@@ -166,7 +166,7 @@ public class EntityRecordMapperTests
             ["YPos"] = "72",
             ["Height"] = "46",
         };
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
 
         EntityRecordMapper.Map("Entity_0", properties, proxy);
 
@@ -182,11 +182,11 @@ public class EntityRecordMapperTests
     public void Map_Height_IsKeptRawAsTheRecordHeight_OnlyWhenTheRecordCarriesOne()
     {
         // E19.h1b2 (H1B2-R2): the target of 0x22/0x23 is the record's own Height byte (record byte 9); the mapper's PosZ is overwritten by the spawn, this is not.
-        var withHeight = new AlundraEntityScriptProxy();
+        var withHeight = new EntityScriptProxy();
         EntityRecordMapper.Map("Entity_0", new Dictionary<string, string> { ["Height"] = "46" }, withHeight);
         Assert.Equal(46, withHeight.RecordHeight);
 
-        var withoutHeight = new AlundraEntityScriptProxy();
+        var withoutHeight = new EntityScriptProxy();
         EntityRecordMapper.Map("Entity_missing", new Dictionary<string, string>(), withoutHeight);
         Assert.Null(withoutHeight.RecordHeight);
     }
@@ -194,7 +194,7 @@ public class EntityRecordMapperTests
     [Fact]
     public void Map_MissingXPosYPosHeight_LeavePositionFieldsAtDefault()
     {
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
 
         EntityRecordMapper.Map("Entity_missing", new Dictionary<string, string>(), proxy);
 
@@ -218,7 +218,7 @@ public class EntityRecordMapperTests
             ["EventCodesE_DeactivateIndex"] = "14",
             ["EventCodesF_InteractIndex"] = "15",
         };
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
 
         EntityRecordMapper.Map("Entity_0", properties, proxy);
 

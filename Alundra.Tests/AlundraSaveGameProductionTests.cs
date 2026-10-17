@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
@@ -119,7 +118,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         var state = new GameState();
         PlayerManager.InitializeNewGameInventory(state, tables);
         Assert.Contains(state.NumberOfItems, count => count != 0); // the New Game inventory is really there.
-        var hero = new AlundraEntityScriptProxy
+        var hero = new EntityScriptProxy
         {
             TileX = GameState.CameraTileX,
             TileY = GameState.CameraTileY,
@@ -229,7 +228,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         // The jauge: opened by its display request, ticked with its real presenter until every roll settles.
         var hud = HudDirector.Instance;
         hud.AttachToWorld(state);
-        var hudView = new AlundraHudViewModel();
+        var hudView = new HudViewModel();
         var hudPresenter = new HudPresenter(hud, hudView, () => PlayerManager.ResolveHudEquipmentIcons(state, tables));
         state.AddFlag(HudDirector.ScriptOpenRequestFlag, HudDirector.ScriptOpenRequestMask);
 
@@ -256,8 +255,8 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         var sub = SubInventoryDirector.Instance;
         main.AttachToWorld(state, tables, null);
         sub.AttachToWorld(state, tables, null);
-        var mainView = new AlundraInventoryViewModel(_ => new Point(16, 16));
-        var subView = new AlundraSubInventoryViewModel();
+        var mainView = new InventoryViewModel(_ => new Point(16, 16));
+        var subView = new SubInventoryViewModel();
         var mainPresenter = new InventoryPresenter(main, state, tables, mainView, new FakeScreen(), new RecordingUIViewRuntime());
         var subPresenter = new SubInventoryPresenter(sub, state, tables, subView, new FakeScreen(), new RecordingUIViewRuntime());
 

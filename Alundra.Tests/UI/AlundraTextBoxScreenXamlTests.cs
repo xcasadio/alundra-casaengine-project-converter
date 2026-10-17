@@ -1,4 +1,3 @@
-using Alundra.Scripts;
 using CasaEngine.Framework.UI.MGUI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
@@ -113,9 +112,9 @@ public sealed class AlundraTextBoxScreenXamlTests
     public void DesignTimeData_PopulatesATextBoxViewModel_WithTheRestState()
     {
         var data = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "TextBoxScreen.design.json")));
-        Assert.Equal(typeof(AlundraTextBoxViewModel).FullName!, data["view_model_type"]!.ToString());
+        Assert.Equal(typeof(TextBoxViewModel).FullName!, data["view_model_type"]!.ToString());
 
-        var viewModel = new AlundraTextBoxViewModel();
+        var viewModel = new TextBoxViewModel();
         JsonConvert.PopulateObject(data["values"]!.ToString(), viewModel);
 
         Assert.Equal(Visibility.Visible, viewModel.RootVisibility);
@@ -232,7 +231,7 @@ public sealed class AlundraTextBoxScreenXamlTests
     public void TheSpeakerBindings_PushTheViewModel_ToThePortraitAndTheNameBox_AndTheFrameAndTheClipFollowTheirVisibility()
     {
         var window = LoadWindow(out var desktop, out var runtime);
-        var viewModel = new AlundraTextBoxViewModel { RootVisibility = Visibility.Visible };
+        var viewModel = new TextBoxViewModel { RootVisibility = Visibility.Visible };
         window.WindowDataContext = viewModel;
 
         viewModel.NameBox.Left = 64;
@@ -282,7 +281,7 @@ public sealed class AlundraTextBoxScreenXamlTests
     public void Bindings_PushTheViewModel_AndTheBoundsAtRestAreTheOriginals()
     {
         var window = LoadWindow(out var desktop, out var runtime);
-        var viewModel = new AlundraTextBoxViewModel { RootVisibility = Visibility.Visible };
+        var viewModel = new TextBoxViewModel { RootVisibility = Visibility.Visible };
         window.WindowDataContext = viewModel;
 
         viewModel.Frame.Top = 168;

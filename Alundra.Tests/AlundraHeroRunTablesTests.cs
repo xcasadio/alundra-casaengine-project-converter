@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.IO;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Hero;
@@ -79,7 +78,7 @@ public sealed class AlundraHeroRunTablesTests
     [Fact]
     public void T1d_TheResumeCounter_IsAFieldOfTheHero_AtZero()
     {
-        var hero = new AlundraEntityScriptProxy();
+        var hero = new EntityScriptProxy();
         Assert.Equal(0, hero.StopSprintCounter);
     }
 
@@ -91,7 +90,7 @@ public sealed class AlundraHeroRunTablesTests
     [InlineData(0, 0x08u, 2)] // facing down, direction left.
     public void T1e_TheFacingOfTheTick_IsTheTableLookup_WithoutWritingTheField(int facing, uint direction, int expected)
     {
-        var hero = new AlundraEntityScriptProxy { AnimationDirection = facing, TargetDirection = direction };
+        var hero = new EntityScriptProxy { AnimationDirection = facing, TargetDirection = direction };
 
         Assert.Equal(expected, PlayerManager.TickFacing(hero));
         Assert.Equal(facing, hero.AnimationDirection);

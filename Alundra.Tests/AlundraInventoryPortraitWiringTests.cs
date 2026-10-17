@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using Microsoft.Xna.Framework;
@@ -19,12 +18,13 @@ using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// docs/plan-portrait-inventaire.md PI8: the opening portrait wired into both inventories, driven through the real
-/// <see cref="AlundraWorldProxy.Update(float)"/> per-tick loop (one 0.02 s update = one logic tick). The expected tick
+/// <see cref="WorldProxy.Update(float)"/> per-tick loop (one 0.02 s update = one logic tick). The expected tick
 /// counts come from the executable (§1.1 of the plan, PI1): the trigger's opening steps first in the render half of
 /// its own tick (the original's next render), and a start or a return made in a render half - the post-process
 /// openings, the four exits - steps in that same tick.
@@ -57,12 +57,12 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
 
     private static InventoryPortrait Portrait => InventoryPortrait.Instance;
 
-    private static AlundraWorldProxy NewWorld()
+    private static WorldProxy NewWorld()
     {
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
-        var worldProxy = new AlundraWorldProxy();
+        var worldProxy = new WorldProxy();
         worldProxy.InitializeWithWorld(world);
-        worldProxy.PlayerEntity = new AlundraEntityScriptProxy
+        worldProxy.PlayerEntity = new EntityScriptProxy
         {
             PosX = (200 << 16) | 0x4000,
             PosY = 150 << 16,
@@ -79,21 +79,21 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
 
     /// <summary>The head point the world hands the portrait: the player above, and the headless proxy's camera
     /// (none resolved, so <see cref="CameraMath.ToOriginalScrollSpace"/> of <see cref="Vector3.Zero"/>).</summary>
-    private static (int X, int Y) ExpectedHead(AlundraWorldProxy worldProxy)
+    private static (int X, int Y) ExpectedHead(WorldProxy worldProxy)
     {
         var scroll = CameraMath.ToOriginalScrollSpace(Vector3.Zero);
         var player = worldProxy.PlayerEntity!;
         return InventoryPortrait.ComputeHeadPoint(player.PosX, player.PosY, player.PosZ, scroll.X, scroll.Y);
     }
 
-    private static void Press(AlundraWorldProxy worldProxy, uint buttons)
+    private static void Press(WorldProxy worldProxy, uint buttons)
     {
         worldProxy.GameState.LastPadState = new PadState { ButtonsHold = buttons };
         worldProxy.Update(0.02f);
         worldProxy.GameState.LastPadState = default;
     }
 
-    private static void Ticks(AlundraWorldProxy worldProxy, int count)
+    private static void Ticks(WorldProxy worldProxy, int count)
     {
         for (var i = 0; i < count; i++)
         {
@@ -249,7 +249,7 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
     {
         var portraitId = Guid.Parse("19436250-bfec-529a-bf3f-23d258f82db6");
         var worldProxy = NewWorld();
-        var viewModel = new AlundraInventoryViewModel();
+        var viewModel = new InventoryViewModel();
         var presenter = new InventoryPresenter(
             InventoryDirector.Instance, worldProxy.GameState, TablesWithPortrait(portraitId), viewModel, new FakeScreen(), null);
 
@@ -381,7 +381,7 @@ public sealed class AlundraInventoryPortraitWiringTests : IDisposable
     public void Presenter_WithoutAPortraitIndex_KeepsThePortraitHidden()
     {
         var worldProxy = NewWorld();
-        var viewModel = new AlundraInventoryViewModel();
+        var viewModel = new InventoryViewModel();
         var presenter = new InventoryPresenter(
             InventoryDirector.Instance, worldProxy.GameState, TablesWithPortrait(null), viewModel, new FakeScreen(), null);
 

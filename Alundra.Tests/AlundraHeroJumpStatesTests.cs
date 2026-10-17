@@ -1,6 +1,5 @@
 #nullable enable
 using System;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Alundra.Maps;
@@ -14,7 +13,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E19.d2c2 D1 (docs/plan-e19-opcodes.md §1.2h.3.2, S1): the jump states of <c>MovePlayer</c> - the binary's <c>0x80031E38</c>/<c>0x80031E84</c> and the common
 /// tail <c>0x80031EA8</c>. The tests of <c>MovePlayer</c> alone (SJ-1 to SJ-4) work on a bare proxy (no controller: the air predicate reads
-/// <see cref="AlundraEntityScriptProxy.HeroAirborne"/>), the tests of the whole flow (SJ-8, UH-4, UH-5, the return to Idle/Moving) on <see cref="JumpHeroRig"/>
+/// <see cref="EntityScriptProxy.HeroAirborne"/>), the tests of the whole flow (SJ-8, UH-4, UH-5, the return to Idle/Moving) on <see cref="JumpHeroRig"/>
 /// with a free pad.
 /// </summary>
 public sealed class AlundraHeroJumpStatesTests
@@ -38,12 +37,12 @@ public sealed class AlundraHeroJumpStatesTests
         1802240, 1769472, 1703936, 1605632, 1474560, 1310720, 1114112, 884736, 622592, 327680,
     };
 
-    private static AlundraEntityScriptProxy Hero(uint animation, int onGround = 1, uint direction = 0)
+    private static EntityScriptProxy Hero(uint animation, int onGround = 1, uint direction = 0)
         => new() { TargetAnimationId = animation, TargetDirection = direction, IsOnGround = onGround };
 
     private static PadState Pad(uint hold = 0, uint pressed = 0) => new() { ButtonsHold = hold, ButtonsJustPressed = pressed };
 
-    private static void Move(AlundraEntityScriptProxy hero, PadState pad, GameState? state = null, IScriptHost? host = null)
+    private static void Move(EntityScriptProxy hero, PadState pad, GameState? state = null, IScriptHost? host = null)
         => PlayerManager.MovePlayer(hero, in pad, state ?? new GameState(), host);
 
     // -----------------------------------------------------------------------------------------
@@ -117,7 +116,7 @@ public sealed class AlundraHeroJumpStatesTests
     {
         // A NPC that asks for the button: Square and Cross on the same frame -> Idle, the NPC is the active collision, no jump (UH-4 d).
         var host = new ContactHost();
-        var npc = new AlundraEntityScriptProxy { Flags = EntityFlags.InteractRequiresButton | EntityFlags.Collidable, Status = EntityStatus.Normal };
+        var npc = new EntityScriptProxy { Flags = EntityFlags.InteractRequiresButton | EntityFlags.Collidable, Status = EntityStatus.Normal };
         npc.ProgramIndexes[ScriptHelper.ProgramFInteract] = 1;
         var hero = Hero(Moving, direction: 0x18);
         hero.XCollisionEntity = npc;
@@ -127,7 +126,7 @@ public sealed class AlundraHeroJumpStatesTests
 
         // A NPC of automatic contact: the case ends with the animation untouched (the hero stays Moving although the pad is clear), no jump.
         var contactHost = new ContactHost();
-        var contactNpc = new AlundraEntityScriptProxy { Flags = EntityFlags.Collidable, Status = EntityStatus.Normal };
+        var contactNpc = new EntityScriptProxy { Flags = EntityFlags.Collidable, Status = EntityStatus.Normal };
         contactNpc.ProgramIndexes[ScriptHelper.ProgramFInteract] = 1;
         var walker = Hero(Moving, direction: 0x18);
         walker.XCollisionEntity = contactNpc;

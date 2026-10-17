@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using Xunit;
 using Alundra.Maps;
@@ -29,20 +28,20 @@ public sealed class AlundraTurnOrderTests : IDisposable
 
     private sealed class WorldContext : IEntityWorldContext
     {
-        public List<AlundraEntityScriptProxy> Entities { get; } = new();
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Entities;
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public List<EntityScriptProxy> Entities { get; } = new();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Entities;
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity)
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity)
         {
         }
 
         public NavigationGrid2D? NavigationGrid => null;
     }
 
-    private static AlundraEntityScriptProxy NewNormalEntity(bool isPlayer = false)
+    private static EntityScriptProxy NewNormalEntity(bool isPlayer = false)
         => new() { Status = EntityStatus.Normal, IsPlayer = isPlayer };
 
     private static void Run(WorldContext context, params int[] codes)

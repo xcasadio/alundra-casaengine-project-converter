@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -20,7 +19,7 @@ using Alundra.Physics;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers E1 (docs/plan-echelles-chiffrage.md É1): <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>'s
+/// Covers E1 (docs/plan-echelles-chiffrage.md É1): <see cref="EntityScriptProxy.UpdateGroundSlope"/>'s
 /// port of <c>PhysicsEngine.UpdateTileAttributes</c>'s <c>Slope_18c</c> four-corner rule, against the REAL
 /// map 389 ("Ship Klark (beginning)") cell data - same fixture/self-skip pattern as
 /// <see cref="AlundraCellsCollisionFieldTests"/>/<see cref="AlundraCharacterControllerAdoptionTests"/>: a
@@ -84,19 +83,19 @@ public class AlundraGroundSlopeTests
 
     /// <summary>
     /// Builds the shared hero-pawn montage (<see cref="HeroWorldFixture"/>) and pins the struct fields
-    /// <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/> reads directly. <paramref name="x1"/>/
-    /// <paramref name="y1"/> are the footprint's own top-left pixel corner - <see cref="AlundraEntityScriptProxy.PosX"/>/
-    /// <see cref="AlundraEntityScriptProxy.PosY"/> are derived from them so that
-    /// <c>(PosX + ModX) &gt;&gt; 16 == x1</c> holds under the PRODUCTION <see cref="AlundraEntityScriptProxy.ModX"/>/
-    /// <see cref="AlundraEntityScriptProxy.ModY"/>/<see cref="AlundraEntityScriptProxy.Width"/>/
-    /// <see cref="AlundraEntityScriptProxy.Height"/> set below (F4 fix - was <c>ModX=ModY=0</c>,
+    /// <see cref="EntityScriptProxy.UpdateGroundSlope"/> reads directly. <paramref name="x1"/>/
+    /// <paramref name="y1"/> are the footprint's own top-left pixel corner - <see cref="EntityScriptProxy.PosX"/>/
+    /// <see cref="EntityScriptProxy.PosY"/> are derived from them so that
+    /// <c>(PosX + ModX) &gt;&gt; 16 == x1</c> holds under the PRODUCTION <see cref="EntityScriptProxy.ModX"/>/
+    /// <see cref="EntityScriptProxy.ModY"/>/<see cref="EntityScriptProxy.Width"/>/
+    /// <see cref="EntityScriptProxy.Height"/> set below (F4 fix - was <c>ModX=ModY=0</c>,
     /// <c>Width=21&lt;&lt;16</c>, <c>Height=15&lt;&lt;16</c>, a 1px-per-axis-larger footprint than any real
-    /// player entity ever carries). <see cref="AlundraEntityScriptProxy.Flags"/> defaults to carrying
+    /// player entity ever carries). <see cref="EntityScriptProxy.Flags"/> defaults to carrying
     /// <see cref="EntityFlags.Gravity"/> - the gate <see cref="PlayerManager.MovePlayer"/> itself
     /// unconditionally sets every frame in the free branch (PlayerManager.cs:59-60) before this method
     /// would ever run for a real player - individual tests clear it to cover the no-gravity case.
     /// </summary>
-    private static AlundraEntityScriptProxy BuildProbe(
+    private static EntityScriptProxy BuildProbe(
         World world, int x1, int y1, int posZ, bool gravity = true)
     {
         var settings = new CharacterControllerSettings();
@@ -127,21 +126,21 @@ public class AlundraGroundSlopeTests
     /// <summary>16.16 ground height (px) matching <see cref="TerrainProbe.SampleTerrainHeightCorner"/>'s
     /// own rounding - the exact <c>ModdedPosZ</c> a resting player entity carries in THIS port (F1 fix,
     /// docs/plan-echelles-chiffrage.md: the qualification rule is <c>height == ModdedPosZ</c>, no <c>+1</c>
-    /// - see <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>'s own doc for why this port never
+    /// - see <see cref="EntityScriptProxy.UpdateGroundSlope"/>'s own doc for why this port never
     /// adopted the original's <c>+1</c> resting invariant).</summary>
     private static int QualifyingPosZ(int cellHeightUnits) => cellHeightUnits * CellHeightPx << 16;
 
     /// <summary>No-op <see cref="IScriptHost"/> - none of these tests ever call
-    /// <see cref="AlundraEntityScriptProxy.Update"/>, only <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>
+    /// <see cref="EntityScriptProxy.Update"/>, only <see cref="EntityScriptProxy.UpdateGroundSlope"/>
     /// directly, so nothing on this host is ever exercised.</summary>
     private sealed class NoOpScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner => throw new NotSupportedException();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public System.Collections.Generic.IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId) { }
+        public HeroController? PlayerController => null;
+        public System.Collections.Generic.IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
+        public void DestroyEntity(EntityScriptProxy entity, int effectId) { }
         public int LogicTicksThisFrame(float elapsedTime) => 0;
     }
 
@@ -369,30 +368,30 @@ public class AlundraGroundSlopeTests
 
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
 
-    /// <summary>Minimal real-<see cref="AlundraPlayerController"/> script host for the production
+    /// <summary>Minimal real-<see cref="HeroController"/> script host for the production
     /// call-site test below - <see cref="PlayerController"/> is a REAL controller (its own
     /// <c>BuildPadState</c> is what <see cref="PlayerManager.MovePlayer"/> actually calls), unlike
     /// every other test in this file's own <see cref="NoOpScriptHost"/> (<c>PlayerController =&gt; null</c>,
-    /// which makes the whole <c>IsPlayer</c> branch in <see cref="AlundraEntityScriptProxy.Update"/> a
-    /// no-op and is exactly why those tests never reach <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>
+    /// which makes the whole <c>IsPlayer</c> branch in <see cref="EntityScriptProxy.Update"/> a
+    /// no-op and is exactly why those tests never reach <see cref="EntityScriptProxy.UpdateGroundSlope"/>
     /// through production code).</summary>
     private sealed class PlayerScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController { get; init; }
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public HeroController? PlayerController { get; init; }
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -435,7 +434,7 @@ public class AlundraGroundSlopeTests
         var groundHeightPx = cellHeightUnits * CellHeightPx;
 
         var world = HeroWorldFixture.BuildWorld(field);
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
+        var controller = new HeroController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
         var host = new PlayerScriptHost { PlayerController = controller };
 
         var settings = new CharacterControllerSettings();

@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Session;
@@ -40,7 +39,7 @@ internal static class RecordBirthTickOracle
 /// sees it born (<c>JoinsBirthTick</c>, posed LAST by the opcode): born in the pass of the map events it turns from the tick S, born in the programs of another entity (the loop 2) from S+1, in the same frame when the frame has
 /// another tick. The real world of map 14 (<see cref="ArcRun"/>, real prefabs); the subject is the record of the global sprite 27 added by <see cref="AlundraRecordBirthClockTests.RegisterRecord"/>; the births are made at the
 /// pass <c>mapEvents</c> (just before the map events of the tick, as a map-event program does) or <c>programs</c> (head of the loop of the programs, as a program of another entity does) of
-/// <see cref="AlundraWorldProxy.TickTraceForTests"/>. Labels: [R] red on the code of phase A (predicted), [V] green by construction.
+/// <see cref="WorldProxy.TickTraceForTests"/>. Labels: [R] red on the code of phase A (predicted), [V] green by construction.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraRecordBirthTickTests : IDisposable
@@ -59,7 +58,7 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     /// <summary>Runs the program <paramref name="codes"/> (ending in 0xFF) and returns the entity it made (null when none).</summary>
-    internal static AlundraEntityScriptProxy? RunProgram(ArcRun arc, int mapIndex, params int[] codes)
+    internal static EntityScriptProxy? RunProgram(ArcRun arc, int mapIndex, params int[] codes)
     {
         var before = arc.Entities.ToList();
         var document = new EventProgramDocument { MapIndex = mapIndex, EventCodesATable = new[] { 0, 0 }, Codes = codes };
@@ -68,22 +67,22 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
         return arc.Entities.Except(before).SingleOrDefault();
     }
 
-    internal static AlundraEntityScriptProxy? Op2D(ArcRun arc, int record, int mapIndex = 14) => RunProgram(arc, mapIndex, 0x2D, record, 0xFF);
+    internal static EntityScriptProxy? Op2D(ArcRun arc, int record, int mapIndex = 14) => RunProgram(arc, mapIndex, 0x2D, record, 0xFF);
 
     /// <summary>0x8A [record, X, Y, Z] in pixels (two bytes each, low then high).</summary>
-    internal static AlundraEntityScriptProxy? Op8A(ArcRun arc, int record, int x, int y, int z)
+    internal static EntityScriptProxy? Op8A(ArcRun arc, int record, int x, int y, int z)
         => RunProgram(arc, 14, 0x8A, record, x & 0xFF, x >> 8, y & 0xFF, y >> 8, z & 0xFF, z >> 8, 0xFF);
 
     /// <summary>0x8B [search type, record, dx, dy, dz] in pixels (two bytes each, low then high): the new entity at the first match plus the offset.</summary>
-    internal static AlundraEntityScriptProxy? Op8B(ArcRun arc, int search, int record, int dx, int dy, int dz)
+    internal static EntityScriptProxy? Op8B(ArcRun arc, int search, int record, int dx, int dy, int dz)
         => RunProgram(arc, 14, 0x8B, search, record, dx & 0xFF, dx >> 8, dy & 0xFF, dy >> 8, dz & 0xFF, dz >> 8, 0xFF);
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // The montage: one birth, sampled at the head of every pass of every tick from the birth on.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private static bool Contains(ArcRun arc, string field, AlundraEntityScriptProxy proxy)
-        => ((IEnumerable)typeof(AlundraWorldProxy).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!).Cast<object>().Any(o => ReferenceEquals(o, proxy));
+    private static bool Contains(ArcRun arc, string field, EntityScriptProxy proxy)
+        => ((IEnumerable)typeof(WorldProxy).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!).Cast<object>().Any(o => ReferenceEquals(o, proxy));
 
     /// <summary>What the newborn shows at the head of a pass.</summary>
     internal sealed record Snap(int Frame, EntityStatus Status, int EventTrigger, int FrameCounter, bool InUpdateList, bool InHitList, int Cursor, int Flag, bool Integrated, int ARuns, int Reads,
@@ -102,7 +101,7 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
             _sprite = sprite;
         }
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             if (entity.SpriteType == _sprite && programSlot == ScriptHelper.ProgramALoad)
             {
@@ -112,7 +111,7 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
             _inner.RunScript(entity, programSlot);
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
             if (entity.SpriteType == _sprite && entity.EventTrigger == ScriptHelper.ProgramALoad)
             {
@@ -127,9 +126,9 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
     {
         public readonly ArcRun Arc;
         public readonly string BirthPass;
-        private readonly Func<ArcRun, AlundraEntityScriptProxy?> _make;
+        private readonly Func<ArcRun, EntityScriptProxy?> _make;
         private readonly CountingRunner _counter;
-        public AlundraEntityScriptProxy? Born;
+        public EntityScriptProxy? Born;
         public int Tick;
         public int S = int.MaxValue;
         public int Reads;
@@ -138,7 +137,7 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
         public readonly Dictionary<int, int> FrameOfTick = new();
         public readonly List<(int K, string Pass, Snap State)> Samples = new();
 
-        public ScriptBirth(ArcRun arc, string birthPass, Func<ArcRun, AlundraEntityScriptProxy?> make, int sprite = 27)
+        public ScriptBirth(ArcRun arc, string birthPass, Func<ArcRun, EntityScriptProxy?> make, int sprite = 27)
         {
             Arc = arc;
             BirthPass = birthPass;
@@ -173,7 +172,7 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
         }
 
         /// <summary>The scripted record of the global sprite 27 added to the table of the world, born by <paramref name="make"/> at the pass <paramref name="birthPass"/>.</summary>
-        public static ScriptBirth OfTheTestRecord(string name, string birthPass, Func<ArcRun, AlundraEntityScriptProxy?> make)
+        public static ScriptBirth OfTheTestRecord(string name, string birthPass, Func<ArcRun, EntityScriptProxy?> make)
         {
             var arc = AlundraCreationSwitchClockTests.Arc(name);
             AlundraRecordBirthClockTests.RegisterRecord(arc, TestRecord, 27);

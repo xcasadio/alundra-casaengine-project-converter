@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.SaveGames;
 using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
@@ -17,13 +16,15 @@ using Alundra.UI.Choice;
 using Alundra.UI.Saving;
 using Alundra.UI.Speech;
 using Alundra.SaveGames;
+using Alundra.Entities;
+using Alundra.Maps;
 
 namespace Alundra.Tests.Scripts;
 
 /// <summary>
 /// E16.e T4 (docs/plan-e16-etat-partie.md, L5): <see cref="SaveScreen"/> is not constructible headless (it
 /// needs the game's asset manager and fonts), so this drives <see cref="SaveScreenPresenter"/> over the real
-/// <see cref="SaveScreenDirector"/>, a real <see cref="AlundraSaveScreenViewModel"/>, a recording
+/// <see cref="SaveScreenDirector"/>, a real <see cref="SaveScreenViewModel"/>, a recording
 /// <see cref="IUIScreen"/> stand-in on <see cref="SaveScreen.ScreenLayer"/>, and ONE recording
 /// <see cref="IUIViewRuntime"/> shared with the real dialogue presenter - so the order of the two screens on the
 /// view is observed. The save service is a fake (D-E16-31).
@@ -35,7 +36,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
     private readonly DialoguePresenter _dialoguePresenter;
     private readonly FakeSaveScreen _screen = new();
     private readonly FakeSaveScreen _choiceScreen = new();
-    private readonly AlundraSaveScreenViewModel _viewModel = new();
+    private readonly SaveScreenViewModel _viewModel = new();
     private readonly SaveScreenPresenter _presenter;
     private readonly ChoicePresenter _choicePresenter;
     private readonly AlundraSaveScreenDirectorTests.SlotsBySlot _slots = new();
@@ -51,7 +52,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         SaveGameDirector.Instance.SaveSlots = _slots;
         Director.AttachToWorld(State, null);
         _presenter = new SaveScreenPresenter(Director, _viewModel, _screen, _uiView);
-        _choicePresenter = new ChoicePresenter(DialogueDirector.Instance, new AlundraChoiceViewModel(), _choiceScreen, _uiView); // E19.f3b: on the same view
+        _choicePresenter = new ChoicePresenter(DialogueDirector.Instance, new ChoiceViewModel(), _choiceScreen, _uiView); // E19.f3b: on the same view
     }
 
     public void Dispose() => ResetAll();
@@ -178,19 +179,19 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
     }
 
     /// <summary>The production call site: the director and the presenter tick inside
-    /// <see cref="AlundraWorldProxy.Update(float)"/>'s per-tick loop - removing either call fails this test.</summary>
+    /// <see cref="WorldProxy.Update(float)"/>'s per-tick loop - removing either call fails this test.</summary>
     [Fact]
     public void WorldUpdate_TicksTheDirectorAndPushesTheScreenThroughTheRealLoop()
     {
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
-        var worldProxy = new AlundraWorldProxy();
+        var worldProxy = new WorldProxy();
         worldProxy.InitializeWithWorld(world);
-        worldProxy.PlayerEntity = new AlundraEntityScriptProxy();
+        worldProxy.PlayerEntity = new EntityScriptProxy();
         Director.AttachToWorld(worldProxy.GameState, null);
 
         var screen = new FakeSaveScreen();
         var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
-        worldProxy.AttachSaveScreenPresenterForTests(new AlundraSaveScreenViewModel(), screen, uiView);
+        worldProxy.AttachSaveScreenPresenterForTests(new SaveScreenViewModel(), screen, uiView);
 
         Assert.True(Director.Start(ValidSave()));
         worldProxy.GameState.LastPadState = new PadState();

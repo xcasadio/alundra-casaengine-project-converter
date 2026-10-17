@@ -6,7 +6,6 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
 using Microsoft.Xna.Framework;
-using Alundra.Scripts;
 using Alundra.UI.Inventory;
 using Alundra.UI.Messages;
 
@@ -14,7 +13,7 @@ namespace Alundra.UI.Choice;
 
 /// <summary>
 /// E19.f3b (docs/plan-e19-opcodes.md): the screen of the choice box - a project asset, <c>UI/Screens/ChoiceScreen.uiscreen</c> and its XAML, versioned in <c>alundra-project</c>
-/// (parent ADR-0002) - bound to an <see cref="AlundraChoiceViewModel"/> that <see cref="ChoicePresenter"/> writes after each pass of the choice box. Same shape as
+/// (parent ADR-0002) - bound to an <see cref="ChoiceViewModel"/> that <see cref="ChoicePresenter"/> writes after each pass of the choice box. Same shape as
 /// <see cref="TextBoxScreen"/>: the code only sizes and scales the window, the XAML declares everything else.
 ///
 /// <para><b>Layer/modal</b>: <see cref="UILayer.Modal"/>, modal, like the text box screen it is drawn above (D-E19-80): the windows are drawn in the order they were pushed.</para>
@@ -39,7 +38,7 @@ public sealed class ChoiceScreen : XamlUIScreenBase, IDisposable
         : base(assetContentManager, ScreenAssetId)
     {
         ArgumentNullException.ThrowIfNull(fonts);
-        ViewModel = new AlundraChoiceViewModel();
+        ViewModel = new ChoiceViewModel();
 
         try
         {
@@ -55,7 +54,7 @@ public sealed class ChoiceScreen : XamlUIScreenBase, IDisposable
     }
 
     /// <summary>What the XAML binds, and what <see cref="ChoicePresenter"/> writes.</summary>
-    public AlundraChoiceViewModel ViewModel { get; }
+    public ChoiceViewModel ViewModel { get; }
 
     /// <summary>Gives font3 back and the screen asset itself, when the world that built this screen ends. Idempotent.</summary>
     public override void Dispose()

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components.Physics;
@@ -17,13 +16,15 @@ using Alundra.Maps.Loop;
 using Alundra.Session;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
+using Alundra.Entities;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// Covers E3.a (docs/plan-e3-collisions.md): the logical/render pose split introduced on
-/// <see cref="AlundraWorldProxy"/>'s three transform write sites
-/// (<see cref="EntitySpawnFactory.CreateEntityFromPrefab"/>, <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>,
+/// <see cref="WorldProxy"/>'s three transform write sites
+/// (<see cref="EntitySpawnFactory.CreateEntityFromPrefab"/>, <see cref="WorldProxy.AdoptPlayerPawn"/>,
 /// <see cref="FrameSyncPasses.SyncTransform"/>).
 ///  - Formula: <see cref="EntitySpawnFactory.ResolveLogicalPosition"/> followed by
 ///    <see cref="TopDownElevationSimulationSpacePolicy.DeriveRenderPosition"/> must reproduce, bit for
@@ -31,7 +32,7 @@ namespace Alundra.Tests;
 ///    for every one of map 389's own 19 "Entities" layer records (XPos/YPos/Height read from the real
 ///    converter export, see <see cref="AlundraWorldProxySpawnInitializationTests.ShouldSpawnRecord_Map389EntitiesLayer_Keeps14Of19"/>'s
 ///    own doc for the sibling SpriteDirection list) and the hero's own New Game spawn
-///    (<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>).
+///    (<see cref="WorldProxy.AdoptPlayerPawn"/>).
 ///  - Ordering: a real <see cref="Entity"/> (TransformComponent -&gt; RenderProjectionComponent -&gt;
 ///    AnimatedSpriteComponent) in a <see cref="World"/> under <see cref="TopDownElevationSimulationSpacePolicy"/>
 ///    (same headless montage as <c>WallPlacementOverlayTests</c>'s own world/game fixture, plus the
@@ -104,7 +105,7 @@ public class AlundraEntityLogicalRenderPoseTests
         record.CustomProperties["YPos"] = yPos.ToString();
         record.CustomProperties["Height"] = height.ToString();
 
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
         EntityRecordMapper.Map(record, proxy);
 
         var expected = OldResolveWorldPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
@@ -151,7 +152,7 @@ public class AlundraEntityLogicalRenderPoseTests
             _newPosZ = newPosZ;
         }
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             RunScriptCallCount++;
             entity.PosX = _newPosX;
@@ -159,7 +160,7 @@ public class AlundraEntityLogicalRenderPoseTests
             entity.PosZ = _newPosZ;
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -167,17 +168,17 @@ public class AlundraEntityLogicalRenderPoseTests
     private sealed class FakeScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; }
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = new List<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController => null;
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = new List<EntityScriptProxy>();
 
         public FakeScriptHost(IEventProgramRunner runner)
         {
             Runner = runner;
         }
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -245,7 +246,7 @@ public class AlundraEntityLogicalRenderPoseTests
     /// plus the <see cref="PhysicsWorld"/>/<see cref="GameManager"/> wiring CasaEngineMonogame's own
     /// <c>CasaEngine.Tests.Physics.TransformComponentTests</c> uses for E3.0) and one entity: root
     /// <see cref="TransformComponent"/> at logical pose A, with a <see cref="RenderProjectionComponent"/>
-    /// child carrying an <see cref="AnimatedSpriteComponent"/>, and an <see cref="AlundraEntityScriptProxy"/>
+    /// child carrying an <see cref="AnimatedSpriteComponent"/>, and an <see cref="EntityScriptProxy"/>
     /// - resolved/cached exactly like <see cref="EntitySpawnFactory.CreateEntityFromPrefab"/> does - whose
     /// Load program (<see cref="PoseMovingRunner"/>) moves it to logical pose B.
     /// </summary>
@@ -277,7 +278,7 @@ public class AlundraEntityLogicalRenderPoseTests
         record.CustomProperties["Height"] = "46";
         record.CustomProperties["EventCodesA_LoadIndex"] = "1"; // nonzero => RunPickedEvent calls RunScript, not RunSpriteEvent.
 
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
         EntitySpawnFactory.ApplyRecord(record, proxy); // PosX/Y/Z = pose A; Status = Loaded; ProgramIndexes[ALoad] = 1.
 
         var poseA = EntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
@@ -291,7 +292,7 @@ public class AlundraEntityLogicalRenderPoseTests
         proxy.ScriptHost = new FakeScriptHost(runner);
         proxy.IsPlayer = false;
 
-        var entity = new Entity { Name = "PoseTestEntity", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "PoseTestEntity", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         SetProperty(entity, nameof(Entity.GameplayProxy), (IGameplayProxy)proxy);
 
         var root = new TransformComponent();

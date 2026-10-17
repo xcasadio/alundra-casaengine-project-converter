@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.UI.Shared;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -71,7 +71,7 @@ public sealed class AlundraDialogueSpeakerCorpusTests
                 _ => SpeakerRig.Speaker(-1, portrait: false, refId: 5),
             };
 
-            AlundraEntityScriptProxy owner;
+            EntityScriptProxy owner;
             int[] codes;
             if (site.Op == "0x0D")
             {

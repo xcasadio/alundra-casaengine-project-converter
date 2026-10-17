@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Alundra.Scripts;
 using CasaEngine.Engine.Physics;
 using Xunit;
 using Alundra.Maps;
@@ -422,7 +421,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
     private static RecordingSoundPlayer InjectSounds(ArcRun arc)
     {
         var player = new RecordingSoundPlayer();
-        typeof(AlundraWorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, player);
+        typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, player);
         return player;
     }
 

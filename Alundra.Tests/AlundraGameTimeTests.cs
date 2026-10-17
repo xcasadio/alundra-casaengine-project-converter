@@ -1,11 +1,11 @@
 #nullable enable
 using System;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -15,7 +15,7 @@ namespace Alundra.Tests;
 /// (<see cref="GameState.DeathRetryCount"/>, the original's <c>SaveSlotIndex</c>, D-E16-22). The
 /// counter counts sixtieths of a second on elapsed real time, capped at <c>0x14996C4</c>; the cap is applied
 /// in <see cref="double"/> before the <see cref="uint"/> conversion (SC11). The last test drives the
-/// production call site, the head of <see cref="AlundraWorldProxy.Update"/>, through
+/// production call site, the head of <see cref="WorldProxy.Update"/>, through
 /// <see cref="GameState.Instance"/> - reset around every test, like every session-singleton test class.
 /// </summary>
 public sealed class AlundraGameTimeTests : IDisposable
@@ -184,15 +184,15 @@ public sealed class AlundraGameTimeTests : IDisposable
         Assert.Equal((byte)0, state.DeathRetryCount);
     }
 
-    /// <summary>The production call site: the head of <see cref="AlundraWorldProxy.Update"/>. Same headless
+    /// <summary>The production call site: the head of <see cref="WorldProxy.Update"/>. Same headless
     /// montage as <see cref="AlundraGameplayFreezeTests"/>' world-level test ("TestWorld" has no tileMap
-    /// entity, so <see cref="AlundraWorldProxy.InitializeWithWorld"/> returns before the real install). The
+    /// entity, so <see cref="WorldProxy.InitializeWithWorld"/> returns before the real install). The
     /// frame durations are exact binary fractions, so four quarter-second frames are exactly one second.</summary>
     [Fact]
     public void WorldProxyUpdate_AdvancesTheSessionGameTime()
     {
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
-        var worldProxy = new AlundraWorldProxy();
+        var worldProxy = new WorldProxy();
         worldProxy.InitializeWithWorld(world);
         Assert.Equal(0u, worldProxy.GameState.GameTime);
 

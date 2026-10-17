@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Alundra.Maps.Loop;
@@ -189,7 +188,7 @@ public class AlundraHeroJumpTests
     [Fact]
     public void UJ12_TheHeroPushingAgainstA32PixelEntity_PassesOverItExactlyWhileItsHeightIsAtLeast32Pixels()
     {
-        AlundraEntityScriptProxy? wall = null;
+        EntityScriptProxy? wall = null;
         var rig = JumpHeroRig.Build(
             probeFactory: host => new MovementObstacleProbe(host),
             x: 100.25f,

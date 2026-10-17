@@ -1,6 +1,5 @@
 #nullable enable
 using System;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -11,11 +10,12 @@ using Alundra.Entities;
 using Alundra.Cameras;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
-/// E19.k1 K2b (docs/plan-e19-opcodes.md, section 1.2k.1): the sway through the real <see cref="AlundraWorldProxy.Update"/>
+/// E19.k1 K2b (docs/plan-e19-opcodes.md, section 1.2k.1): the sway through the real <see cref="WorldProxy.Update"/>
 /// - one site (<c>AlundraCameraDirector.UpdateCameraFollow</c>), exactly <c>ticksThisFrame</c> steps, with or without a
 /// camera, and none during a transition. Montage of <c>AlundraWorldProxyUpdateCharacterizationTests</c>: headless world, a
 /// camera entity added to <c>World.Entities</c>, a still followed entity, <c>proxy.Update(0.02f)</c> = one 50 Hz tick.
@@ -24,13 +24,13 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
 {
     public AlundraCameraSwayWiringTests()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
         Reset();
     }
 
     public void Dispose()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         Reset();
     }
 
@@ -50,7 +50,7 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
         return camera;
     }
 
-    private static AlundraEntityScriptProxy StillTarget() => new()
+    private static EntityScriptProxy StillTarget() => new()
     {
         Status = EntityStatus.Normal,
         PosX = 100 << 16,
@@ -65,7 +65,7 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
     {
         var world = new World { Name = "TestWorld" };
         var camera = AddCameraEntity(world);
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         proxy.EntityFollowedByCamera = StillTarget();
 
@@ -97,7 +97,7 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
     public void WithoutACamera_ThreeFrames_StillStepTheSwayOncePerTick()
     {
         var world = new World { Name = "TestWorld" };
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         PoseSway(CameraSway.Instance);
 
@@ -116,7 +116,7 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
     {
         var world = new World { Name = "TestWorld" };
         var camera = AddCameraEntity(world);
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         proxy.EntityFollowedByCamera = StillTarget();
         for (var i = 0; i < 3; i++)
@@ -131,7 +131,7 @@ public sealed class AlundraCameraSwayWiringTests : IDisposable
         var targetBefore = camera.Target;
 
         var state = new GameState();
-        var player = new AlundraEntityScriptProxy
+        var player = new EntityScriptProxy
         {
             IsPlayer = true,
             PosX = (18 * 24 + 12) << 16,

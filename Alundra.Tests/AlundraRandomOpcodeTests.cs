@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Events;
 using Alundra.Rng;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -32,7 +32,7 @@ public sealed class AlundraRandomOpcodeTests : IDisposable
             Codes = new[] { 0x0C, 0x0C, 0x0C, 0x0C, 0x0C, 0xFF },
         };
         var runner = new EventProgramRunner(document, new GameState());
-        var entity = new AlundraEntityScriptProxy();
+        var entity = new EntityScriptProxy();
         var directions = new List<uint>();
         uint? seedAfterTheFirstDraw = null;
         var sizes = new List<int>();

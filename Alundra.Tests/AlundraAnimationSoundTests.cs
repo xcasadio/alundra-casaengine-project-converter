@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
@@ -67,7 +66,7 @@ public sealed class AlundraAnimationSoundTests
     private static StampedSoundPlayer Inject(ArcRun arc)
     {
         var player = new StampedSoundPlayer(() => arc.Frame);
-        typeof(AlundraWorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, player);
+        typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, player);
         return player;
     }
 
@@ -365,8 +364,8 @@ public sealed class AlundraAnimationSoundTests
 
         WarpDirector.Instance.ResetForTests();
         WarpDirector.Instance.SetPendingArrivalForTests(179, (17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, 43u, 0u);
-        var tileMapData = (TileMapData)typeof(AlundraWorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!;
-        typeof(AlundraWorldProxy).GetMethod("AdoptPlayerPawn", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(arc.Proxy, new object[] { arc.RealWorld!, tileMapData });
+        var tileMapData = (TileMapData)typeof(WorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!;
+        typeof(WorldProxy).GetMethod("AdoptPlayerPawn", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(arc.Proxy, new object[] { arc.RealWorld!, tileMapData });
         WarpDirector.Instance.ResetForTests();
 
         Assert.Equal(43u, hero.TargetAnimationId);

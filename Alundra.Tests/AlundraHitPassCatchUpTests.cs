@@ -2,15 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E20.c1a C5 (docs/plan-e20-heros.md section 1.5), the rendered frames that carry several logic ticks. The DLL validates an animation switch once, at the end of the frame (D-E19-13), while the binary switches, loads the box and
 /// the attack and hits at the tick that sees it: in the rest of a catch-up frame the sprite still holds the old animation. The hit pass reads a cursor of its own (the animation, the direction and the ticks since the switch,
-/// <see cref="AlundraEntityScriptProxy.NoteSwitchPendingAtTick"/>), so a hit lands at the tick of the oracle whatever the grouping of the ticks into frames. Each test replays an oracle trace with another grouping and compares every
+/// <see cref="EntityScriptProxy.NoteSwitchPendingAtTick"/>), so a hit lands at the tick of the oracle whatever the grouping of the ticks into frames. Each test replays an oracle trace with another grouping and compares every
 /// tick, every column, as <see cref="AlundraHitPassTests"/> does. The pad of a frame is the oracle's pad of its first tick.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]

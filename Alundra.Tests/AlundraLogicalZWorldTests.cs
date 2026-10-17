@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
@@ -46,9 +45,9 @@ public sealed class AlundraLogicalZWorldTests
 
     private static void Install(ArcRun arc, CellsCollisionField field)
     {
-        typeof(AlundraWorldProxy).GetProperty(nameof(AlundraWorldProxy.CollisionField))!.SetValue(arc.Proxy, field);
+        typeof(WorldProxy).GetProperty(nameof(WorldProxy.CollisionField))!.SetValue(arc.Proxy, field);
         arc.RealWorld!.CollisionField = field;
-        typeof(AlundraWorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, Map(128, 4096));
+        typeof(WorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, Map(128, 4096));
     }
 
     private static CellsCollisionField Flat() => FlatCells.Create();
@@ -60,7 +59,7 @@ public sealed class AlundraLogicalZWorldTests
     private static CellsCollisionField RampDown()
         => FlatCells.Create(cell: (x, y) => (0, x < 3 ? 4 : x <= 6 ? 4 - (x - 3) : 0), slope: (x, y) => x >= 3 && x <= 6 ? 2 : 0);
 
-    private static AlundraEntityScriptProxy Born(ArcRun arc, bool mapPage, int sprite, int xPixels, int zRaw)
+    private static EntityScriptProxy Born(ArcRun arc, bool mapPage, int sprite, int xPixels, int zRaw)
         => ((IEntityWorldContext)arc.Proxy).SpawnEntityBySpriteIndex(arc.Hero, mapPage, sprite, xPixels << 16, 100 << 16, zRaw, 0x18)!;
 
     /// <summary>One frame of <paramref name="ticks"/> logic ticks (the clock hands out a tick per 20 ms; the small surplus keeps the float accumulator from losing one).</summary>
@@ -110,10 +109,10 @@ public sealed class AlundraLogicalZWorldTests
     private static int FirstTick(IReadOnlyList<JsonElement> oracle, string field)
         => oracle.Select((s, i) => (s, i)).Where(p => p.s.GetProperty(field).GetInt32() != 0).Select(p => p.i + 1).DefaultIfEmpty(0).First();
 
-    private static float RootZ(AlundraEntityScriptProxy p) => ArcRun.EntityOf(p)!.RootComponent!.LocalTransform.Position.Z;
+    private static float RootZ(EntityScriptProxy p) => ArcRun.EntityOf(p)!.RootComponent!.LocalTransform.Position.Z;
 
     /// <summary>A record entity at rest on the ground after ten settling frames: the witness that the entities from a record are not touched.</summary>
-    private static AlundraEntityScriptProxy Companion(ArcRun arc)
+    private static EntityScriptProxy Companion(ArcRun arc)
     {
         for (var i = 0; i < 10; i++)
         {
@@ -167,7 +166,7 @@ public sealed class AlundraLogicalZWorldTests
         var h1 = OracleSlot(h1Root);
         var h2 = OracleSlot(OracleRows("arrows-arrow-h2.json"));
 
-        List<int> Fly(int heightByte, Func<AlundraEntityScriptProxy, int> read, out int firstAdjusted)
+        List<int> Fly(int heightByte, Func<EntityScriptProxy, int> read, out int firstAdjusted)
         {
             using var arc = Arc("z2-" + heightByte);
             Install(arc, Steps(15, 30, heightByte));
@@ -463,7 +462,7 @@ public sealed class AlundraLogicalZWorldTests
     // (z9) the magnet of 3 px.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private static AlundraEntityScriptProxy Walker(ArcRun arc, int speed, int xPixels, int zRaw)
+    private static EntityScriptProxy Walker(ArcRun arc, int speed, int xPixels, int zRaw)
     {
         var walker = Born(arc, true, Beannoid, xPixels, zRaw);
         // The AI of the Beannoid picks its animation 2 at the first tick (speed 0): the speed of the harness (the oracle overrides the walk the same way) is given to that animation, east.

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using Xunit;
 using Alundra.Session;
@@ -16,7 +15,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// T1 (docs/plan-e12-dialogues.md, slice E12.a): drives the REAL production call site - sailor 12's own
 /// Tick program (map 389, masked index 12, offset 1356) via
-/// <see cref="AlundraEntityScriptProxy.Update"/> -&gt; <c>PickEventTrigger</c> -&gt; <c>RunPickedEvent</c>,
+/// <see cref="EntityScriptProxy.Update"/> -&gt; <c>PickEventTrigger</c> -&gt; <c>RunPickedEvent</c>,
 /// in a FRAME LOOP crossing the pick phase every iteration (<see cref="HeadlessIntroSimulation.RunFramesForTest"/>'s
 /// own per-entity <c>entity.Update</c> call - NOT <c>AlundraWorldProxy.RunPendingEventTriggers</c>'s D3
 /// catch-up), exactly like <see cref="AlundraSoundOpcodesProductionTests"/> does for E11.a.
@@ -208,7 +207,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
             var sim = new HeadlessIntroSimulation(projectRoot, WorldName, document, installDialogueDirector: true);
             var director = DialogueDirector.Instance;
 
-            AlundraEntityScriptProxy? sailorThirteen = null;
+            EntityScriptProxy? sailorThirteen = null;
             var openedWithMenuOpen = false;
             var stillOpenLongAfterProgramEnded = false;
             var closedOnButton = false;
@@ -303,7 +302,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
             var sim = new HeadlessIntroSimulation(projectRoot, WorldName, document!, installDialogueDirector: true);
             var director = DialogueDirector.Instance;
 
-            AlundraEntityScriptProxy? sailor = null;
+            EntityScriptProxy? sailor = null;
             var openedAfterPress = false;
             var openSurvivedItsOwnPress = false;
             var closedOnLaterPresses = false;

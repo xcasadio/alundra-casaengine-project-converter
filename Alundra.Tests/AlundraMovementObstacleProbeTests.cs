@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using Microsoft.Xna.Framework;
@@ -24,9 +23,9 @@ public sealed class AlundraMovementObstacleProbeTests
 {
     // ---- T-R1: the rule, on the real dimensions -------------------------------------------------------------------
 
-    private static AlundraEntityScriptProxy Box(int posX, int posY, int posZ, int sizeX, int sizeY, int sizeZ, uint flags = EntityFlags.Collidable)
+    private static EntityScriptProxy Box(int posX, int posY, int posZ, int sizeX, int sizeY, int sizeZ, uint flags = EntityFlags.Collidable)
     {
-        var proxy = new AlundraEntityScriptProxy { Flags = flags };
+        var proxy = new EntityScriptProxy { Flags = flags };
         EntitySpawnFactory.SetEntityDimensions(proxy, -10, -7, 0, sizeX, sizeY, sizeZ);
         proxy.PosX = posX;
         proxy.PosY = posY;
@@ -157,7 +156,7 @@ public sealed class AlundraMovementObstacleProbeTests
 
         public required ContactHost Host { get; init; }
 
-        public AlundraEntityScriptProxy Add(string name, int x, int y, int z = 48, int sizeX = 20, int sizeY = 14, uint extraFlags = 0, bool controller = true)
+        public EntityScriptProxy Add(string name, int x, int y, int z = 48, int sizeX = 20, int sizeY = 14, uint extraFlags = 0, bool controller = true)
         {
             var proxy = ContactWorld.AddEntity(World, Host, name, x, y, z, -10, -7, 0, sizeX, sizeY, 32, withController: controller);
             proxy.Flags |= extraFlags;
@@ -174,7 +173,7 @@ public sealed class AlundraMovementObstacleProbeTests
         return new Rig { World = ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 48f }, probe), Host = host };
     }
 
-    private static Entity? ObstacleOf(AlundraEntityScriptProxy proxy)
+    private static Entity? ObstacleOf(EntityScriptProxy proxy)
     {
         var contact = proxy.Controller!.LastContact;
         return contact.H2Obstacle ?? contact.H1Obstacle;

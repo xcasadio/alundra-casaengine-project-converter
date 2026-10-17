@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using Xunit;
 using Alundra.Maps;
@@ -26,19 +25,19 @@ public class AlundraEventProgramRunnerWaitForceAdjustedTests
 
     private sealed class GridWorld : IEntityWorldContext
     {
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = new List<AlundraEntityScriptProxy>();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = new List<EntityScriptProxy>();
 
-        public AlundraEntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? PlayerEntity => null;
 
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
 
         public void SetForcedCameraLookAt(int x, int y, int z)
         {
         }
 
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
+        public void DestroyEntity(EntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
 
         public NavigationGrid2D? NavigationGrid { get; } = new(20, 20, 1f);
     }
@@ -58,7 +57,7 @@ public class AlundraEventProgramRunnerWaitForceAdjustedTests
     {
         var document = NewDocument(0x01, 0x24, 0xFF);
         var (runner, trace) = NewRunner(document);
-        var owner = new AlundraEntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, ForceAdjusted = 0 };
+        var owner = new EntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, ForceAdjusted = 0 };
         var state = StateFor(document);
 
         runner.RunOneScriptCall(owner, state);
@@ -82,7 +81,7 @@ public class AlundraEventProgramRunnerWaitForceAdjustedTests
         // ForceAdjusted is copied as is by the binary (0x6E too): 2 ends the wait like 1.
         var document = NewDocument(0x24, 0xFF);
         var (runner, trace) = NewRunner(document);
-        var owner = new AlundraEntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, ForceAdjusted = 2 };
+        var owner = new EntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, ForceAdjusted = 2 };
         var state = StateFor(document);
 
         runner.RunOneScriptCall(owner, state);
@@ -98,8 +97,8 @@ public class AlundraEventProgramRunnerWaitForceAdjustedTests
 
         // The owner is at 1 and the logic entity at 0: the wait goes on.
         var (runner, _) = NewRunner(document);
-        var owner = new AlundraEntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, ForceAdjusted = 1 };
-        var logic = new AlundraEntityScriptProxy { EntityRefId = 2, Status = EntityStatus.Normal, ForceAdjusted = 0 };
+        var owner = new EntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, ForceAdjusted = 1 };
+        var logic = new EntityScriptProxy { EntityRefId = 2, Status = EntityStatus.Normal, ForceAdjusted = 0 };
         owner.LogicEntity = logic;
         var state = StateFor(document);
         runner.RunOneScriptCall(owner, state);
@@ -117,7 +116,7 @@ public class AlundraEventProgramRunnerWaitForceAdjustedTests
     {
         var document = NewDocument(0x24, 0xFF);
         var (runner, _) = NewRunner(document, new GridWorld());
-        var owner = new AlundraEntityScriptProxy
+        var owner = new EntityScriptProxy
         {
             EntityRefId = 1,
             Status = EntityStatus.Normal,

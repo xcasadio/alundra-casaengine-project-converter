@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Alundra.Maps;
@@ -44,7 +43,7 @@ public sealed class AlundraEntitySlotV5RowsTests
         Assert.Equal(EntitySlotTable.SlotCount, arc.Proxy.SlotTable.HeldCount);
     }
 
-    private static AlundraEntityScriptProxy? Call(ArcRun arc, bool isMapPage, int index)
+    private static EntityScriptProxy? Call(ArcRun arc, bool isMapPage, int index)
         => ((IEntityWorldContext)arc.Proxy).SpawnEntityBySpriteIndex(arc.Hero, isMapPage, index, HeroX << 16, HeroY << 16, 0, 0x10);
 
     [Fact]

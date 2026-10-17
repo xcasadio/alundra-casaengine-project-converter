@@ -9,14 +9,14 @@ using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Audio.Mixing;
 using CasaEngine.Framework.Audio.Streaming;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Audio;
 
 /// <summary>
 /// This session's background-music playback seam (docs/plan-bgm-demarrage-binaire.md, T2.1) - the
 /// equivalent of the original's <c>LoadMapSounds</c>/<c>LoadMapSequence</c> pair for BGM, called once
-/// per map entry (see <see cref="AlundraWorldProxy.InstallAudioSystems"/>, item 4 of the plan's own
+/// per map entry (see <see cref="WorldProxy.InstallAudioSystems"/>, item 4 of the plan's own
 /// contract). Same shape as <see cref="ISoundPlayer"/>: the vocabulary is a plain map id, not
 /// an <see cref="AudioService"/> one, so a fake can stand in for a test.
 ///
@@ -25,7 +25,7 @@ namespace Alundra.Audio;
 /// session fields below are the direct ports of the executable's own globals:
 /// <see cref="CurrentMapSoundIndex"/> (<c>g_currentMapSoundIndex</c>, RAW, never remapped, B7's own
 /// <c>0x80049cf4</c>) and <see cref="ResetSoundFlag"/> (<c>g_resetSoundFlag</c>, B8), consumed at the
-/// frame-close site (<see cref="AlundraWorldProxy.Update"/>, P3) by <see cref="BgmFadeDirector.StopAllSound"/>.</para>
+/// frame-close site (<see cref="WorldProxy.Update"/>, P3) by <see cref="BgmFadeDirector.StopAllSound"/>.</para>
 /// </summary>
 public interface IMusicPlayer
 {

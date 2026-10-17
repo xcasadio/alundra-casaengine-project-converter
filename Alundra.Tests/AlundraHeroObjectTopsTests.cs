@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Microsoft.Xna.Framework;
@@ -22,7 +21,7 @@ namespace Alundra.Tests;
 /// E19.d2c2 D3 (docs/plan-e19-opcodes.md §1.2h.3.2, S3, S4, S6): the hero lands on the tops of objects and rides what carries it, on
 /// <see cref="JumpHeroRig"/> with a free pad (the real hero controller settings, a field of synthetic cells, the animation sets of the export). Values of
 /// annex B.1 (table S-C, UH-6, UH-10, UH-11) and B.2.2 (SJ-12, SJ-13) as the plan restates them (C.saut-binaire and C.saut-dll win); UH-14 is the
-/// plan's own. One tick per frame. The entities of the montages carry their <see cref="AlundraEntityScriptProxy.LogicContextEntity"/> (what
+/// plan's own. One tick per frame. The entities of the montages carry their <see cref="EntityScriptProxy.LogicContextEntity"/> (what
 /// <c>RidingEntity</c> holds, S4).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
@@ -72,7 +71,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
     }
 
     /// <summary>A collidable object of the montage (the box of the original given by offset and size), with its logic entity set.</summary>
-    private static AlundraEntityScriptProxy AddObject(World world, ContactHost host, string name, int x, int y, int sizeX, int sizeY, int sizeZ, int offsetX = 0, int offsetY = 0)
+    private static EntityScriptProxy AddObject(World world, ContactHost host, string name, int x, int y, int sizeX, int sizeY, int sizeZ, int offsetX = 0, int offsetY = 0)
     {
         var obj = ContactWorld.AddEntity(world, host, name, x, y, 0, offsetX, offsetY, 0, sizeX, sizeY, sizeZ);
         obj.LogicContextEntity = obj.OwnerEntity!;
@@ -81,21 +80,21 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
 
     private sealed class PlayerContext : IEntityWorldContext
     {
-        public required AlundraEntityScriptProxy Player { get; init; }
+        public required EntityScriptProxy Player { get; init; }
 
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
 
-        public AlundraEntityScriptProxy? PlayerEntity => Player;
+        public EntityScriptProxy? PlayerEntity => Player;
 
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
 
         public void SetForcedCameraLookAt(int x, int y, int z)
         {
         }
 
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity)
+        public void DestroyEntity(EntityScriptProxy entity)
         {
         }
 
@@ -225,9 +224,9 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
     // UH-10 / UH-11 - the jump onto a chest (S3, S4).
     // -----------------------------------------------------------------------------------------
 
-    private static (JumpHeroRig Rig, AlundraEntityScriptProxy Chest) ChestRig()
+    private static (JumpHeroRig Rig, EntityScriptProxy Chest) ChestRig()
     {
-        AlundraEntityScriptProxy? chest = null;
+        EntityScriptProxy? chest = null;
         var rig = JumpHeroRig.Build(
             probeFactory: host => new MovementObstacleProbe(host),
             configure: (world, host) => chest = AddObject(world, host, "Chest", 144, 92, 24, 16, 16),
@@ -394,7 +393,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
     [Fact]
     public void SJ13_AWalkingJumpAgainstATombOf25Pixels_PassesOverItWhileTheFootIsHighEnough_AndLandsOnItAtTick14()
     {
-        AlundraEntityScriptProxy? tomb = null;
+        EntityScriptProxy? tomb = null;
         var rig = JumpHeroRig.Build(
             probeFactory: host => new MovementObstacleProbe(host),
             configure: (world, host) => tomb = AddObject(world, host, "Tomb", 140, 100, 20, 14, 25, offsetX: -10, offsetY: -7),
@@ -490,7 +489,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
     /// The montage of UH-14 without movement: the hero (at <paramref name="x"/>, <paramref name="y"/>) rests at 16 px on an object of 24 x 16 x 16 whose logical box
     /// (x 144..168, y 92..108) is offset from its root so that its physical box never meets the hero's body; the object joins the world after the hero. Four settling frames.
     /// </summary>
-    private static (JumpHeroRig Rig, AlundraEntityScriptProxy Object) RestingOnObjectRig(float x = 156.25f, float y = 100.5f, bool objectGravity = false)
+    private static (JumpHeroRig Rig, EntityScriptProxy Object) RestingOnObjectRig(float x = 156.25f, float y = 100.5f, bool objectGravity = false)
     {
         var rig = JumpHeroRig.Build(x: x, y: y, freePad: true);
         var obj = AddObject(rig.World, rig.Host, "Object", 100, 92, 24, 16, 16, offsetX: 44);
@@ -514,7 +513,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
     }
 
     /// <summary>The answer of the opcode <c>0x3E</c> run by <paramref name="asker"/> (the hero's own <c>RidingEntity</c> against the logic entity of the asker).</summary>
-    private static int Opcode3EAnswer(AlundraEntityScriptProxy hero, AlundraEntityScriptProxy asker)
+    private static int Opcode3EAnswer(EntityScriptProxy hero, EntityScriptProxy asker)
     {
         var context = new PlayerContext { Player = hero };
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = new[] { 0x3E, 0xFF } };

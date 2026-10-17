@@ -9,8 +9,8 @@ using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Audio.Mixing;
 using CasaEngine.Framework.Audio.Streaming;
-using Alundra.Scripts;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Audio;
 
@@ -31,13 +31,13 @@ namespace Alundra.Audio;
 /// <remarks>
 /// <para><b>D-C-6, the point that decided this class's whole shape</b>: the guard state below
 /// (<see cref="_currentMapSoundIndex"/>) is the port of the original's <c>g_currentMapSoundIndex</c>, a
-/// GLOBAL that survives every map change by construction. <see cref="AlundraWorldProxy"/> is rebuilt
+/// GLOBAL that survives every map change by construction. <see cref="WorldProxy"/> is rebuilt
 /// per world (<c>AlundraWorldProxy.cs</c>, field initializers), and so is its own
-/// <see cref="SoundPlayer"/> (<see cref="AlundraWorldProxy.InstallAudioSystems"/>) - porting the
+/// <see cref="SoundPlayer"/> (<see cref="WorldProxy.InstallAudioSystems"/>) - porting the
 /// guard into an object built the same way would make it vacuous BY CONSTRUCTION: a fresh instance has
 /// nothing to guard, so the request would fire with or without the guard and the mutation "remove the
 /// guard" could never be caught by a test. So THIS type is instead a SESSION-SCOPED SINGLETON
-/// (<see cref="Instance"/>) - <see cref="AlundraWorldProxy.InstallAudioSystems"/> re-points its
+/// (<see cref="Instance"/>) - <see cref="WorldProxy.InstallAudioSystems"/> re-points its
 /// <see cref="AudioService"/> reference on every world install (a live game's <c>AudioSystemComponent</c>
 /// does not change instance across a map change, but re-attaching costs nothing and keeps this class
 /// honest about where its data actually comes from) WITHOUT touching <see cref="_currentMapSoundIndex"/>
@@ -61,7 +61,7 @@ public sealed class BgmPlayer : IMusicPlayer
 {
     private const string BgmManifestRelativePath = "Musics/bgm-manifest.json";
 
-    /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-C-6) -
+    /// <summary>The one session-scoped instance every <see cref="WorldProxy"/> shares (D-C-6) -
     /// never <see langword="new"/>'d per world.</summary>
     public static readonly BgmPlayer Instance = new();
 
@@ -95,7 +95,7 @@ public sealed class BgmPlayer : IMusicPlayer
     /// (<c>0x8002c3f4-0x8002c45c</c>) runs the frame function first (whose <c>HandleMapSoundStreaming</c>
     /// consumes <c>g_resetSoundFlag</c>, B9) and only AFTER it exits does <c>0x8002c46c</c> call
     /// <c>HandleMapSoundEffects</c>, the departure's music half. So the decision below runs at the
-    /// frame-close site (<see cref="AlundraWorldProxy.Update"/>), AFTER the reset-flag consumption, not
+    /// frame-close site (<see cref="WorldProxy.Update"/>), AFTER the reset-flag consumption, not
     /// mid-frame when the departure is requested. <see langword="null"/> when no departure is pending.</summary>
     private (int DestinationMapId, bool WarpSoundIsSilent)? _pendingWarpDeparture;
 
@@ -111,7 +111,7 @@ public sealed class BgmPlayer : IMusicPlayer
     }
 
     /// <summary>Re-points this session-scoped instance at the current world's own <see cref="AudioService"/>
-    /// and reloads <c>Musics/bgm-manifest.json</c> - called by <see cref="AlundraWorldProxy.InstallAudioSystems"/>
+    /// and reloads <c>Musics/bgm-manifest.json</c> - called by <see cref="WorldProxy.InstallAudioSystems"/>
     /// on every world install. Deliberately does NOT touch <see cref="_currentMapSoundIndex"/> or
     /// <see cref="_currentTrack"/> (D-C-6) - those survive across this call exactly like the original's
     /// global survives a map change.</summary>
@@ -247,7 +247,7 @@ public sealed class BgmPlayer : IMusicPlayer
     /// F2 (docs/plan-bgm-demarrage-binaire.md): evaluates and clears whatever
     /// <see cref="HandleWarpDeparture"/> recorded this frame, with EXACTLY that method's own decision
     /// rule (B17) - only moved later in time. Called by the frame-close site
-    /// (<see cref="AlundraWorldProxy.Update"/>), right after the reset-flag block, AFTER
+    /// (<see cref="WorldProxy.Update"/>), right after the reset-flag block, AFTER
     /// <c>SoundPlayer.FlushFrameSounds()</c> (mirrors the original's own "after the frame" ordering,
     /// B9/B17 - before or after that flush is equivalent, since the two touch disjoint state). No
     /// allocation, no LINQ, no closure: a nullable-tuple field read and, on the rare non-null path, one

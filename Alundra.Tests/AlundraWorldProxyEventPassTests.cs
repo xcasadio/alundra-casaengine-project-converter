@@ -1,4 +1,3 @@
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -7,33 +6,34 @@ using Alundra.Maps.Loop;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// Covers the E1 replacement for the old manager-level <c>AlundraWorldProxy.RunEntityEventsPass</c>
 /// (removed - see docs/plan-conversion-totale.md §2 decision D2/D3): per-entity pick/run
-/// (<see cref="AlundraEntityScriptProxy.PickEventTrigger"/>/<see cref="AlundraEntityScriptProxy.RunPickedEvent"/>,
+/// (<see cref="EntityScriptProxy.PickEventTrigger"/>/<see cref="EntityScriptProxy.RunPickedEvent"/>,
 /// exercised directly - this is what each entity's own <c>Update</c> now calls) plus the world's own
-/// catch-up re-scan (<see cref="AlundraWorldProxy.RunPendingEventTriggers"/>, decision D3) and MapEvents
-/// pass (<see cref="AlundraWorldProxy.RunMapEventsPass"/>). Uses a fake <see cref="IEventProgramRunner"/>
+/// catch-up re-scan (<see cref="WorldProxy.RunPendingEventTriggers"/>, decision D3) and MapEvents
+/// pass (<see cref="WorldProxy.RunMapEventsPass"/>). Uses a fake <see cref="IEventProgramRunner"/>
 /// recording every RunScript/RunSpriteEvent call, and a fake <see cref="IScriptHost"/> instead of a
-/// live <see cref="AlundraWorldProxy"/>/<see cref="CasaEngine.Framework.Scene.World.World"/>.
+/// live <see cref="WorldProxy"/>/<see cref="CasaEngine.Framework.Scene.World.World"/>.
 /// </summary>
 public class AlundraWorldProxyEventPassTests
 {
-    private sealed record RunCall(AlundraEntityScriptProxy Entity, int? ProgramSlot);
+    private sealed record RunCall(EntityScriptProxy Entity, int? ProgramSlot);
 
     private sealed class RecordingRunner : IEventProgramRunner
     {
         public readonly List<RunCall> Calls = new();
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             Calls.Add(new RunCall(entity, programSlot));
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
             Calls.Add(new RunCall(entity, null));
         }
@@ -42,11 +42,11 @@ public class AlundraWorldProxyEventPassTests
     private sealed class FakeScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; }
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = new List<AlundraEntityScriptProxy>();
-        public readonly List<(AlundraEntityScriptProxy Entity, int EffectId)> Destroyed = new();
+        public HeroController? PlayerController => null;
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = new List<EntityScriptProxy>();
+        public readonly List<(EntityScriptProxy Entity, int EffectId)> Destroyed = new();
 
         public FakeScriptHost(IEventProgramRunner runner)
         {
@@ -65,17 +65,17 @@ public class AlundraWorldProxyEventPassTests
             return ticks;
         }
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
             Destroyed.Add((entity, effectId));
             entity.Status = EntityStatus.FlagToDestroy;
         }
     }
 
-    private static AlundraEntityScriptProxy NewEntity(
+    private static EntityScriptProxy NewEntity(
         EntityStatus status, int[]? programIndexes = null, IScriptHost? host = null)
     {
-        var entity = new AlundraEntityScriptProxy { Status = status, ScriptHost = host };
+        var entity = new EntityScriptProxy { Status = status, ScriptHost = host };
         if (programIndexes != null)
         {
             programIndexes.CopyTo(entity.ProgramIndexes, 0);
@@ -84,10 +84,10 @@ public class AlundraWorldProxyEventPassTests
         return entity;
     }
 
-    /// <summary>Runs <see cref="AlundraEntityScriptProxy.PickEventTrigger"/> then
-    /// <see cref="AlundraEntityScriptProxy.RunPickedEvent"/> for <paramref name="entity"/> - what each
+    /// <summary>Runs <see cref="EntityScriptProxy.PickEventTrigger"/> then
+    /// <see cref="EntityScriptProxy.RunPickedEvent"/> for <paramref name="entity"/> - what each
     /// entity's own <c>Update</c> does for a non-player entity (see that method's own doc).</summary>
-    private static void PickAndRun(AlundraEntityScriptProxy entity, IEventProgramRunner runner)
+    private static void PickAndRun(EntityScriptProxy entity, IEventProgramRunner runner)
     {
         entity.PickEventTrigger();
         entity.RunPickedEvent(runner);
@@ -321,7 +321,7 @@ public class AlundraWorldProxyEventPassTests
         entityA.PickEventTrigger();
         entityA.RunPickedEvent(triggeringRunner);
 
-        AlundraWorldProxy.RunPendingEventTriggers(new[] { entityA, entityB }, triggeringRunner);
+        WorldProxy.RunPendingEventTriggers(new[] { entityA, entityB }, triggeringRunner);
 
         Assert.Equal(2, calls.Count);
         Assert.Same(entityA, calls[0].Entity);
@@ -340,7 +340,7 @@ public class AlundraWorldProxyEventPassTests
         player.IsPlayer = true;
         player.EventTrigger = ScriptHelper.ProgramALoad; // e.g. left over from RunMapEventsPass
 
-        AlundraWorldProxy.RunPendingEventTriggers(new[] { player }, runner);
+        WorldProxy.RunPendingEventTriggers(new[] { player }, runner);
 
         Assert.Empty(runner.Calls);
         // Untouched - RunPendingEventTriggers skips the player outright, exactly like the original's own
@@ -350,18 +350,18 @@ public class AlundraWorldProxyEventPassTests
 
     private sealed class DelegatingRunner : IEventProgramRunner
     {
-        private readonly Action<AlundraEntityScriptProxy, int> _onRunScript;
-        private readonly Action<AlundraEntityScriptProxy> _onRunSpriteEvent;
+        private readonly Action<EntityScriptProxy, int> _onRunScript;
+        private readonly Action<EntityScriptProxy> _onRunSpriteEvent;
 
-        public DelegatingRunner(Action<AlundraEntityScriptProxy, int> onRunScript, Action<AlundraEntityScriptProxy> onRunSpriteEvent)
+        public DelegatingRunner(Action<EntityScriptProxy, int> onRunScript, Action<EntityScriptProxy> onRunSpriteEvent)
         {
             _onRunScript = onRunScript;
             _onRunSpriteEvent = onRunSpriteEvent;
         }
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot) => _onRunScript(entity, programSlot);
+        public void RunScript(EntityScriptProxy entity, int programSlot) => _onRunScript(entity, programSlot);
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity) => _onRunSpriteEvent(entity);
+        public void RunSpriteEvent(EntityScriptProxy entity) => _onRunSpriteEvent(entity);
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -369,20 +369,20 @@ public class AlundraWorldProxyEventPassTests
     // ------------------------------------------------------------------------------------------------
 
     private static MapEvent NewMapEvent(
-        int x1, int y1, int x2, int y2, int programBMap, AlundraEntityScriptProxy player, int id = 0)
+        int x1, int y1, int x2, int y2, int programBMap, EntityScriptProxy player, int id = 0)
         => new() { Id = id, X1 = x1, Y1 = y1, X2 = x2, Y2 = y2, ProgramBMap = programBMap, OriginalProgramBMap = programBMap, Entity = player };
 
     [Fact]
     public void RunMapEventsPass_PlayerInZone_RunsProgramB_AndCopiesStateBack()
     {
         var runner = new RecordingRunner();
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
+        var player = new EntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
         // Id != the list position (0) on purpose - EventTrigger must come from the record's own index
         // (mapEvent.Id), not the (possibly compacted) list position - see the next test for the case
         // where they actually diverge.
         var mapEvent = NewMapEvent(0, 0, 10, 10, 129, player, id: 3);
 
-        AlundraWorldProxy.RunMapEventsPass(player, new[] { mapEvent }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(player, new[] { mapEvent }, runner, playerControlFlags: 0);
 
         var call = Assert.Single(runner.Calls);
         Assert.Same(player, call.Entity);
@@ -406,7 +406,7 @@ public class AlundraWorldProxyEventPassTests
     public void RunMapEventsPass_SkippedZeroRecordPrecedingRealOne_EventTriggerUsesRecordIndex_NotListPosition()
     {
         var runner = new RecordingRunner();
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
+        var player = new EntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
 
         // BuildMapEvents would never actually add a ProgramBMap==0 entry (it skips it outright before
         // ever constructing an AlundraMapEvent) - this stands in for one anyway, purely to prove
@@ -416,7 +416,7 @@ public class AlundraWorldProxyEventPassTests
         // Record index 5 (e.g. map-event 5, "134" in the real map 389 data), sitting at LIST position 1.
         var real = NewMapEvent(0, 0, 10, 10, 134, player, id: 5);
 
-        AlundraWorldProxy.RunMapEventsPass(player, new[] { skipped, real }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(player, new[] { skipped, real }, runner, playerControlFlags: 0);
 
         var call = Assert.Single(runner.Calls);
         Assert.Same(player, call.Entity);
@@ -433,8 +433,8 @@ public class AlundraWorldProxyEventPassTests
     public void RunMapEventsPass_PlayerOutOfZone_RearmsTheSlot_AndWritesNoEntity()
     {
         var runner = new RecordingRunner();
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 50, TileY = 50, Index = 7 };
-        var logic = new AlundraEntityScriptProxy { Index = 3, RelativeWarpOffsetX = 42 };
+        var player = new EntityScriptProxy { IsPlayer = true, TileX = 50, TileY = 50, Index = 7 };
+        var logic = new EntityScriptProxy { Index = 3, RelativeWarpOffsetX = 42 };
         var child = new Entity();
         logic.ChildEntity = child;
         logic.EventProgramState.Sp = 0xAB;
@@ -447,7 +447,7 @@ public class AlundraWorldProxyEventPassTests
         mapEvent.EventData.Result = 1;
         mapEvent.EventData.Parameters[3] = 9;
 
-        AlundraWorldProxy.RunMapEventsPass(player, new[] { mapEvent }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(player, new[] { mapEvent }, runner, playerControlFlags: 0);
 
         Assert.Empty(runner.Calls);
         Assert.Equal(0, mapEvent.EventData.Sp);
@@ -470,13 +470,13 @@ public class AlundraWorldProxyEventPassTests
 
     private sealed class MapEventWorld : IEntityWorldContext
     {
-        public List<AlundraEntityScriptProxy> Spawned { get; } = new();
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public List<EntityScriptProxy> Spawned { get; } = new();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Spawned;
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
     }
 
@@ -494,18 +494,18 @@ public class AlundraWorldProxyEventPassTests
     private static EventProgramRunner RealRunner(EventProgramDocument document, MapEventWorld world)
         => new(document, new GameState(), world);
 
-    /// <summary>One tick: the hero stands on (x, x), one <see cref="AlundraWorldProxy.RunMapEventsPass"/>.</summary>
-    private static void Tick(AlundraEntityScriptProxy hero, MapEvent mapEvent, IEventProgramRunner runner, int x)
+    /// <summary>One tick: the hero stands on (x, x), one <see cref="WorldProxy.RunMapEventsPass"/>.</summary>
+    private static void Tick(EntityScriptProxy hero, MapEvent mapEvent, IEventProgramRunner runner, int x)
     {
         hero.TileX = x;
         hero.TileY = x;
-        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
     }
 
     [Fact]
     public void RunMapEventsPass_J1a_ProgramLeftMidWay_RestartsFromTheStartOnReentry()
     {
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true };
+        var hero = new EntityScriptProxy { IsPlayer = true };
         var world = new MapEventWorld { PlayerEntity = hero };
         var runner = RealRunner(BProgram(0x1A, 7, 0x00, 0x1A, 8, 0xFF), world);
         var mapEvent = NewMapEvent(0, 0, 10, 10, 129, hero);
@@ -527,7 +527,7 @@ public class AlundraWorldProxyEventPassTests
     [Fact]
     public void RunMapEventsPass_J1b_FinishedProgram_RunsAgainAfterALeaveAndReentry()
     {
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true };
+        var hero = new EntityScriptProxy { IsPlayer = true };
         var world = new MapEventWorld { PlayerEntity = hero };
         var runner = RealRunner(BProgram(0x1A, 7, 0xFF), world);
         var mapEvent = NewMapEvent(0, 0, 10, 10, 129, hero);
@@ -548,11 +548,11 @@ public class AlundraWorldProxyEventPassTests
     [Fact]
     public void RunMapEventsPass_J1c_OutOfZone_PutsTheLogicEntityBackOnTheHero_WithoutWritingAnyEntity()
     {
-        var hero = new AlundraEntityScriptProxy
+        var hero = new EntityScriptProxy
         {
             IsPlayer = true, Status = EntityStatus.Normal, RelativeWarpOffsetX = 17, Index = 9,
         };
-        var npc = new AlundraEntityScriptProxy
+        var npc = new EntityScriptProxy
         {
             EntityRefId = 5, Status = EntityStatus.Normal, RelativeWarpOffsetX = 42, Index = 3,
         };
@@ -587,7 +587,7 @@ public class AlundraWorldProxyEventPassTests
     [Fact]
     public void RunMapEventsPass_J1d_OutOfZone_ClearsResult()
     {
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true };
+        var hero = new EntityScriptProxy { IsPlayer = true };
         var world = new MapEventWorld { PlayerEntity = hero };
         // @0 IfTrueGoto 6 ; @3 anim 7 ; @5 end ; @6 anim 8 ; @8 end.
         var runner = RealRunner(BProgram(0x03, 6, 0, 0x1A, 7, 0xFF, 0x1A, 8, 0xFF), world);
@@ -605,14 +605,14 @@ public class AlundraWorldProxyEventPassTests
     public void RunMapEventsPass_J1e_ProgramByte_ZeroMaskedIsSkippedBeforeTheZoneTest_StartedByteGoesBackToTheOriginal()
     {
         var runner = new RecordingRunner();
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileX = OutOfZone, TileY = OutOfZone };
+        var hero = new EntityScriptProxy { IsPlayer = true, TileX = OutOfZone, TileY = OutOfZone };
 
         var masked = NewMapEvent(0, 0, 10, 10, 129, hero);
         masked.ProgramBMap = 0x80; // masked to 0: skipped before the zone test, so not put back either
         var started = NewMapEvent(0, 0, 10, 10, 129, hero);
         started.ProgramBMap = 130;
 
-        AlundraWorldProxy.RunMapEventsPass(hero, new[] { masked, started }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(hero, new[] { masked, started }, runner, playerControlFlags: 0);
 
         Assert.Equal(0x80, masked.ProgramBMap);
         Assert.Equal(129, started.ProgramBMap);
@@ -629,10 +629,10 @@ public class AlundraWorldProxyEventPassTests
     public void RunMapEventsPass_J1f_ZoneBoundsAreInclusive(int tileX, int tileY, bool runs)
     {
         var runner = new RecordingRunner();
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileX = tileX, TileY = tileY };
+        var hero = new EntityScriptProxy { IsPlayer = true, TileX = tileX, TileY = tileY };
         var mapEvent = NewMapEvent(2, 3, 4, 6, 129, hero);
 
-        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
 
         Assert.Equal(runs ? 1 : 0, runner.Calls.Count);
     }
@@ -646,12 +646,12 @@ public class AlundraWorldProxyEventPassTests
     public void RunMapEventsPass_J1f_AnOutOfZoneTickRearmsTheSlot_TheCornerOfTheZoneDoesNot(int tileX, int tileY, bool rearmed)
     {
         var runner = new RecordingRunner();
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileX = tileX, TileY = tileY };
+        var hero = new EntityScriptProxy { IsPlayer = true, TileX = tileX, TileY = tileY };
         var mapEvent = NewMapEvent(2, 3, 4, 6, 129, hero);
         mapEvent.EventData.Sp = 0xAB;
         mapEvent.EventData.CodeIndex = 2;
 
-        AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
 
         Assert.Equal(rearmed ? 0 : 0xAB, mapEvent.EventData.Sp);
         Assert.Equal(rearmed ? 0 : 2, mapEvent.EventData.CodeIndex);
@@ -665,7 +665,7 @@ public class AlundraWorldProxyEventPassTests
         var document = MapEventProgramLoader.Load(projectRoot, "Torla (inner)-445");
         Assert.NotNull(document);
 
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true };
+        var hero = new EntityScriptProxy { IsPlayer = true };
         var world = new MapEventWorld { PlayerEntity = hero };
         var runner = RealRunner(document!, world);
         var trace = new List<(int Opcode, int CodeIndex, EventTraceKind Kind)>();
@@ -677,7 +677,7 @@ public class AlundraWorldProxyEventPassTests
             trace.Clear();
             hero.TileX = x;
             hero.TileY = y;
-            AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+            WorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
             return new List<(int, int, EventTraceKind)>(trace);
         }
 
@@ -715,10 +715,10 @@ public class AlundraWorldProxyEventPassTests
     public void RunMapEventsPass_ProgramBMapZeroMasked_Skipped()
     {
         var runner = new RecordingRunner();
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
+        var player = new EntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
         var mapEvent = NewMapEvent(0, 0, 10, 10, 0x80, player); // masked to 0
 
-        AlundraWorldProxy.RunMapEventsPass(player, new[] { mapEvent }, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(player, new[] { mapEvent }, runner, playerControlFlags: 0);
 
         Assert.Empty(runner.Calls);
     }
@@ -727,10 +727,10 @@ public class AlundraWorldProxyEventPassTests
     public void RunMapEventsPass_GameplayBlockedMask_SkipsEverything()
     {
         var runner = new RecordingRunner();
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
+        var player = new EntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
         var mapEvent = NewMapEvent(0, 0, 10, 10, 129, player);
 
-        AlundraWorldProxy.RunMapEventsPass(
+        WorldProxy.RunMapEventsPass(
             player, new[] { mapEvent }, runner, GameState.PlayerControlBits.MenuOpen);
 
         Assert.Empty(runner.Calls);

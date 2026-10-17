@@ -4,18 +4,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Dialogues;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E19.f2a F2A-2 (docs/plan-e19-opcodes.md section 1.2j.3, "tests unitaires de la boîte contre l'oracle"): the DLL's box, driven at the proxy's own
-/// <see cref="AlundraWorldProxy.Update"/> in the production order (<see cref="DialogueBoxMontage"/>), against <see cref="AlundraTextBoxOracle"/> frame by frame - the
+/// <see cref="WorldProxy.Update"/> in the production order (<see cref="DialogueBoxMontage"/>), against <see cref="AlundraTextBoxOracle"/> frame by frame - the
 /// state at the end of each frame (phase, glyphs drawn, cursor, MessageBox and MenuOpen, the position of the box where it is comparable), the first frame of each text
 /// flag, and every sound with its frame - on the arcs' pad (<see cref="OracleRulePad.ForArcs"/>, the rule of <c>RunUntilPressingTheButtonOnEveryDialogueFrame</c>, which the
 /// montage applies the same way). Two families: synthetic boxes (opcodes 0x4C to 0x51 at chosen ticks, both origins), and boxes of the real export (the three real texts

@@ -7,7 +7,7 @@ using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Alundra.Maps.Loop;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Cells;
 
@@ -16,7 +16,7 @@ namespace Alundra.Cells;
 /// drives the wall/sprite depth interleave (strip the baked wall tiles from the flat layers, resubmit
 /// them through <see cref="TileMapComponent.AddSortedOverlayTile"/> so they order against Y-sorted
 /// entity sprites by <see cref="RenderSortKey2D"/> instead of always drawing flat) - see
-/// <see cref="AlundraWorldProxy.InitializeWithWorld"/> for the call site and
+/// <see cref="WorldProxy.InitializeWithWorld"/> for the call site and
 /// <c>docs/formats/cells-companion.md</c> for the original PSX depth formula this ports
 /// (<c>GraphicManager.DepthWallBlock</c>/<c>DepthEntity</c>, AlundraTools/AlundraEngine/Graphics/GraphicManager.cs:313-346).
 /// </summary>
@@ -75,7 +75,7 @@ public static class WallPlacementOverlay
 
     /// <summary>
     /// Best-effort parse of <see cref="CustomPropertyKey"/> off <paramref name="customProperties"/>.
-    /// Tolerant by design (see <see cref="AlundraWorldProxy.InitializeWithWorld"/>'s class doc): a
+    /// Tolerant by design (see <see cref="WorldProxy.InitializeWithWorld"/>'s class doc): a
     /// missing property, malformed JSON, or a document whose array lengths do not match its own
     /// <c>Count</c> all return false with a single warning logged - the feature is simply disabled for
     /// that world, spawned entities and the map's flat tile layers stay exactly as loaded.
@@ -338,7 +338,7 @@ public static class WallPlacementOverlay
     /// is that per-frame image-depth-sort bias (<c>Data/sprite-records.json</c>'s "IdsvAnimDirs", see
     /// <c>SpriteWriter</c>'s class doc), 0 when the entity's current (anim, direction) has none. The
     /// original's finer <c>depthSortValue &amp; 0xffff</c> tiebreak is a screen-projected z, which this 2D
-    /// engine has no equivalent input for at the proxy level - see <see cref="AlundraWorldProxy"/>'s class
+    /// engine has no equivalent input for at the proxy level - see <see cref="WorldProxy"/>'s class
     /// doc and the deviation note on <c>ApplyEntitySortKey</c> below for how the fine order is handled
     /// instead. <paramref name="posY"/> is the entity's logical Y (16.16 fixed, <c>AlundraEntityScriptProxy.PosY</c>).
     /// </summary>
@@ -360,7 +360,7 @@ public static class WallPlacementOverlay
     /// entirely component-computed (<see cref="DepthSortMode2D.TopDownYUp"/>, from the entity's actual world
     /// position) - not settable from gameplay code without either a new engine hook (out of scope, engine is
     /// read-only for this slice) or re-deriving the world transform every frame (out of scope, a separate
-    /// follow-up per <see cref="AlundraWorldProxy"/>'s class doc). DEVIATION from the original: the fine order
+    /// follow-up per <see cref="WorldProxy"/>'s class doc). DEVIATION from the original: the fine order
     /// within a row therefore comes from <c>-worldY</c> (which folds in <c>PosZ</c>'s elevation offset via
     /// <c>AlundraWorldProxy.ResolveLogicalPosition</c> + the policy's render projection) instead of the original's <c>PosZ &gt;&gt; 16</c> screen-elevation low bits (<c>EntityManager.cs:1036</c>) -
     /// both still order correctly by row (the coarse <c>Elevation</c> bucket this method sets), only the

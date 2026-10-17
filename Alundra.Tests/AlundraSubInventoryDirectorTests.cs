@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
@@ -17,6 +16,7 @@ using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// <see cref="InventoryPostProcess"/> together, the way <see cref="AlundraInventoryDirectorTests"/>
 /// drives the main inventory alone - a tick is <c>state.TickPad.Update(hold)</c> then each director's own
 /// <c>Tick</c>, THEN the post-process (plan §1.2's own clock), isolated <see cref="GameState"/>
-/// instances for every test but the last (which drives the real <see cref="AlundraWorldProxy"/>).
+/// instances for every test but the last (which drives the real <see cref="WorldProxy"/>).
 /// </summary>
 public sealed class AlundraSubInventoryDirectorTests : IDisposable
 {
@@ -127,7 +127,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         SubInventoryDirector.Instance.AttachToWorld(state, tables, sound);
     }
 
-    /// <summary>One logic tick, both directors then the post-process - <see cref="AlundraWorldProxy"/>'s
+    /// <summary>One logic tick, both directors then the post-process - <see cref="WorldProxy"/>'s
     /// inventory block order, at the end of each tick of its loop of the passes (E13.d SI3, E19.u).</summary>
     private static void Tick(GameState state, uint hold)
     {
@@ -712,9 +712,9 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     public void WorldUpdate_R1InMainInventory_OpensTheSubInventory()
     {
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
-        var worldProxy = new AlundraWorldProxy();
+        var worldProxy = new WorldProxy();
         worldProxy.InitializeWithWorld(world);
-        worldProxy.PlayerEntity = new AlundraEntityScriptProxy();
+        worldProxy.PlayerEntity = new EntityScriptProxy();
 
         var tables = ItemTablesFixture.LoadReal();
         InventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, worldProxy.SoundPlayer);

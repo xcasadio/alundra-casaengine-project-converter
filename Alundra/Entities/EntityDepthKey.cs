@@ -1,6 +1,5 @@
 #nullable enable
 using Alundra.Maps.Loop;
-using Alundra.Scripts;
 using Alundra.Rendering.Effects;
 
 namespace Alundra.Entities;
@@ -24,6 +23,6 @@ internal static class EntityDepthKey
     }
 
     /// <summary>The key of <paramref name="proxy"/>: its <c>PosY</c>, the IDSV of the sprite it shows (<see cref="FrameSyncPasses.ResolveIdsv"/>) and its <c>PosZ + 1</c>.</summary>
-    internal static uint Compute(AlundraEntityScriptProxy proxy)
+    internal static uint Compute(EntityScriptProxy proxy)
         => Compute(proxy.PosY, FrameSyncPasses.ResolveIdsv(proxy), unchecked(proxy.PosZ + 1));
 }

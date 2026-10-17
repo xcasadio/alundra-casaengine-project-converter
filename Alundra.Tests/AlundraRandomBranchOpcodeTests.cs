@@ -1,10 +1,10 @@
 #nullable enable
 using System;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Events;
 using Alundra.Rng;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -31,7 +31,7 @@ public sealed class AlundraRandomBranchOpcodeTests : IDisposable
         runner ??= new EventProgramRunner(document, new GameState());
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
 
-        runner.RunOneScriptCall(new AlundraEntityScriptProxy(), state);
+        runner.RunOneScriptCall(new EntityScriptProxy(), state);
 
         Assert.Equal(2, state.CodeIndex);
         return state.Result;

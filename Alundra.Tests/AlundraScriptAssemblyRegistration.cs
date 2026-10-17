@@ -1,7 +1,7 @@
 #nullable enable
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -13,5 +13,5 @@ namespace Alundra.Tests;
 internal static class AlundraScriptAssemblyRegistration
 {
     [ModuleInitializer]
-    internal static void Register() => ElementFactory.RegisterScriptAssembly(typeof(AlundraWorldProxy).Assembly);
+    internal static void Register() => ElementFactory.RegisterScriptAssembly(typeof(WorldProxy).Assembly);
 }

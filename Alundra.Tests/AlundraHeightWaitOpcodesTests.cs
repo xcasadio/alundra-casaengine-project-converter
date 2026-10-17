@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Entities;
@@ -35,7 +34,7 @@ public class AlundraHeightWaitOpcodesTests
 
     private static EventProgramState StateFor(EventProgramDocument document) => new() { Codes = document.CodesAsBytes() };
 
-    private static AlundraEntityScriptProxy NewEntity(int? recordHeight = null, bool withController = false) =>
+    private static EntityScriptProxy NewEntity(int? recordHeight = null, bool withController = false) =>
         new()
         {
             EntityRefId = 1,

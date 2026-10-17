@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.AI.Navigation;
@@ -41,7 +40,7 @@ namespace Alundra.Tests;
 /// as <see cref="AlundraCharacterControllerAdoptionTests"/> (the hero's own E3.d pattern this file
 /// mirrors, per docs/plan-e4-deplacement-scripte.md E4.b's own acceptance note), IsPlayer=false so the
 /// scripted mover (<see cref="ScriptedMotion.TickScriptedNpc"/>, wired from
-/// <see cref="AlundraEntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch) drives it instead of
+/// <see cref="EntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch) drives it instead of
 /// <see cref="PlayerManager"/>. Self-skips every [Fact] when <c>alundra-project/</c> is not present
 /// in this checkout (same convention as <see cref="AlundraCharacterControllerAdoptionTests"/>).
 /// </summary>
@@ -141,7 +140,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// file. Confirmed on the real export: Radius 6, Height 32, SkinWidth 0.5, StepHeight 3,
     /// GroundSnapDistance 4, Gravity/MaxFallSpeed/WalkabilityMask all 0 (E4.a leaves them 0 - overridden at
     /// spawn by <see cref="EntitySpawnFactory.ApplySpawnInitialization"/>, exactly like the hero's own
-    /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> override, E4.b's own "Spawn" item).
+    /// <see cref="WorldProxy.AdoptPlayerPawn"/> override, E4.b's own "Spawn" item).
     /// </summary>
     private static CharacterControllerSettings? LoadBank146ControllerSettings(string projectRoot)
     {
@@ -206,12 +205,12 @@ public class AlundraNpcCharacterControllerMoverTests
     }
 
     /// <summary>Hand-built NPC pawn - box 18x12x32 local_position (0,0,16), the real bank-146 prefab's own
-    /// fixture (see this class' own doc). <see cref="AlundraEntityScriptProxy.IsPlayer"/> false, so
-    /// <see cref="AlundraEntityScriptProxy.Update"/>'s scripted-NPC-mover branch drives it. Added to
+    /// fixture (see this class' own doc). <see cref="EntityScriptProxy.IsPlayer"/> false, so
+    /// <see cref="EntityScriptProxy.Update"/>'s scripted-NPC-mover branch drives it. Added to
     /// <paramref name="world"/> (queued - the caller's first <see cref="World.Update"/> registers it with
     /// CharacterMotionSystem before this same frame's <c>GameplayProxy.Update</c> ever runs, same ordering
     /// note as <see cref="AlundraCharacterControllerAdoptionTests.BuildHeroPawn"/>).</summary>
-    private static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildNpcPawn(
+    private static (Entity Entity, EntityScriptProxy Proxy) BuildNpcPawn(
         World world, CharacterControllerSettings settings, Vector3 startPosition, IScriptHost scriptHost)
     {
         var root = new TransformComponent();
@@ -230,7 +229,7 @@ public class AlundraNpcCharacterControllerMoverTests
         {
             Name = "NpcTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
 
         var controllerComponent = new CharacterControllerComponent { Settings = settings };
@@ -243,7 +242,7 @@ public class AlundraNpcCharacterControllerMoverTests
 
         entity.Initialize();
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
         Assert.NotNull(proxy.Controller);
         proxy.IsPlayer = false;
@@ -266,11 +265,11 @@ public class AlundraNpcCharacterControllerMoverTests
     /// invoked.</summary>
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -278,19 +277,19 @@ public class AlundraNpcCharacterControllerMoverTests
     private sealed class FakeScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
+        public HeroController? PlayerController => null;
 
         /// <summary>E4.f (verifier A5 tests): mutable so a test can seed the collidables list a scripted
         /// mover's own <c>EvaluateEntitySupport</c> call reads every frame (see
         /// <see cref="IScriptHost.Collidables"/>) - empty by default, same as before this list
         /// existed.</summary>
-        public List<AlundraEntityScriptProxy> Collidables { get; } = new();
+        public List<EntityScriptProxy> Collidables { get; } = new();
 
-        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
+        IReadOnlyList<EntityScriptProxy> IScriptHost.Collidables => Collidables;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -310,22 +309,22 @@ public class AlundraNpcCharacterControllerMoverTests
 
     /// <summary>E4.d: same shape as <see cref="FakeScriptHost"/>, but wraps a REAL
     /// <see cref="EventProgramRunner"/> instead of the no-op one - so a hand-built Tick program
-    /// (0x1E/0x1F) actually dispatches through <see cref="AlundraEntityScriptProxy.Update"/>'s own
+    /// (0x1E/0x1F) actually dispatches through <see cref="EntityScriptProxy.Update"/>'s own
     /// pick/run pass every <c>World.Update</c>.</summary>
     private sealed class RealRunnerScriptHost : IScriptHost
     {
         public RealRunnerScriptHost(IEventProgramRunner runner) => Runner = runner;
         public IEventProgramRunner Runner { get; }
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
+        public HeroController? PlayerController => null;
 
         /// <summary>See <see cref="FakeScriptHost.Collidables"/>'s own doc.</summary>
-        public List<AlundraEntityScriptProxy> Collidables { get; } = new();
+        public List<EntityScriptProxy> Collidables { get; } = new();
 
-        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
+        IReadOnlyList<EntityScriptProxy> IScriptHost.Collidables => Collidables;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -348,12 +347,12 @@ public class AlundraNpcCharacterControllerMoverTests
     private sealed class FakeNavigationWorldContext : IEntityWorldContext
     {
         public NavigationGrid2D? NavigationGrid { get; set; }
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity => null;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity)
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity)
         {
         }
     }
@@ -363,7 +362,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// <c>World.Update</c> - <see cref="ScriptHelper.ProgramCTick"/>'s masked index 1 -&gt; offset 0 (index
     /// 0 of the table is left unused/zero, never referenced).</summary>
     private static EventProgramRunner WireRealTickProgram(
-        AlundraEntityScriptProxy proxy, int[] codes, IEntityWorldContext? worldContext = null)
+        EntityScriptProxy proxy, int[] codes, IEntityWorldContext? worldContext = null)
     {
         var document = new EventProgramDocument
         {
@@ -827,17 +826,17 @@ public class AlundraNpcCharacterControllerMoverTests
     /// zero the vertical impulse (0x1B [0,0]), hold for 60 real ticks, then a real 0x1B [127,255] scripted
     /// descent, then the REAL 0x62 opcode bridge restores gravity ([128,0,1]: set mask 0x100).
     /// Pre-fix (original 0x62/0x63 fix), <see cref="EventProgramRunner.RunOneScriptCall"/>'s own
-    /// 0x63 handler mutated <see cref="AlundraEntityScriptProxy.Flags"/> but never told the entity's own
+    /// 0x63 handler mutated <see cref="EntityScriptProxy.Flags"/> but never told the entity's own
     /// <see cref="CharacterControllerComponent"/> - <c>Settings.Gravity</c> stayed at its spawn-time 1250
     /// and kept pulling the entity down every RENDERED frame of the "hover" via the engine's own continuous
     /// integrator, exactly the reported bug's own root cause (measured ~158 px/s vs the faithful 150 px/s
-    /// - see <see cref="AlundraEntityScriptProxy.ApplyGravitySettingsToController"/>'s own doc). Current
+    /// - see <see cref="EntityScriptProxy.ApplyGravitySettingsToController"/>'s own doc). Current
     /// fix: <c>Settings.Gravity</c>/<c>MaxFallSpeed</c> now stay pinned at 0 for this entity at every
-    /// Flags.Gravity state - the DLL's own <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>
-    /// decays <see cref="AlundraEntityScriptProxy.ForceZ"/> exactly once per 50 Hz logic tick and drives the
+    /// Flags.Gravity state - the DLL's own <see cref="EntityScriptProxy.EvaluateEntitySupport"/>
+    /// decays <see cref="EntityScriptProxy.ForceZ"/> exactly once per 50 Hz logic tick and drives the
     /// controller's vertical velocity from that decayed value directly, so Z genuinely holds during the
     /// hover (0x63) and genuinely resumes at the faithful decayed rate once gravity is restored (0x62) -
-    /// both bridged the same way, via <see cref="AlundraEntityScriptProxy.ResyncControllerFromFlags"/>.
+    /// both bridged the same way, via <see cref="EntityScriptProxy.ResyncControllerFromFlags"/>.
     /// </summary>
     [Fact]
     public void GullHoverCycle_Real0x63ClearsGravityMidAir_HoldsAltitudeThenScriptedDescentThenReal0x62Falls()
@@ -1086,7 +1085,7 @@ public class AlundraNpcCharacterControllerMoverTests
         var prefab = new Entity
         {
             Name = "Bank146Prefab",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = prefabRoot,
         };
         prefab.AddComponent(controllerComponent);
@@ -1096,7 +1095,7 @@ public class AlundraNpcCharacterControllerMoverTests
         var catalog = new SpriteRecordCatalog(projectRoot!);
 
         var entity = EntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
 
         // The regression itself (F1): this is null without ApplySpawnInitialization's own assignment.
         Assert.NotNull(proxy.AnimSetsByAnim);
@@ -1512,11 +1511,11 @@ public class AlundraNpcCharacterControllerMoverTests
     // still advances. Same wall as above: east of the sailor at (564,632), cell (24,39) from px 576.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraEntityScriptProxy BuildSailorBesideTheEastWall() => BuildSailorAt(new Vector3(564f, 632f, 80f));
+    private static EntityScriptProxy BuildSailorBesideTheEastWall() => BuildSailorAt(new Vector3(564f, 632f, 80f));
 
     /// <summary>The same montage as <see cref="BuildSailorBesideTheEastWall"/> (real field of map 389, controller of bank 146,
     /// box 18 x 12, mask 0x41, one frame of the world), the pawn put at <paramref name="position"/>.</summary>
-    private static AlundraEntityScriptProxy BuildSailorAt(Vector3 position)
+    private static EntityScriptProxy BuildSailorAt(Vector3 position)
     {
         var projectRoot = FindProjectRoot();
         Assert.True(projectRoot != null, "the real alundra-project export is missing");
@@ -1740,14 +1739,14 @@ public class AlundraNpcCharacterControllerMoverTests
     // "off by one 16.16 unit" edge the plan's own E4.f "Pourquoi" note describes, not a synthetic one.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraEntityScriptProxy BuildRealRecordProxy(
+    private static EntityScriptProxy BuildRealRecordProxy(
         TileMapData tileMapData, SpriteRecordCatalog catalog, int recordIndex)
     {
         var entitiesLayer = tileMapData.ObjectLayers.First(l => l.Name == "Entities");
         var record = entitiesLayer.Objects.First(
             o => o.CustomProperties.TryGetValue("Index", out var idx) && idx == recordIndex.ToString());
 
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
         EntitySpawnFactory.ApplyRecord(record, proxy);
         var backingEntity = new Entity();
         proxy.LogicContextEntity = backingEntity;
@@ -1759,11 +1758,11 @@ public class AlundraNpcCharacterControllerMoverTests
     }
 
     /// <summary>Real record 11 (sailor 11), spawned through the SAME <c>CreateEntityFromRecord</c> path
-    /// test (5)/(6) above already use, under a real controller/world so <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>'s
+    /// test (5)/(6) above already use, under a real controller/world so <see cref="EntityScriptProxy.EvaluateEntitySupport"/>'s
     /// own controller-pinning half (<c>Settings.Gravity = 0</c>, <c>PushLogicalPositionToRoot</c>) is
     /// exercised for real - not overridden to a synthetic position like test (5)/(6): the real record's
     /// own (468,584,400) spawn is exactly the scenario under test.</summary>
-    private static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildRealSailor11Pawn(
+    private static (Entity Entity, EntityScriptProxy Proxy) BuildRealSailor11Pawn(
         World world, TileMapData tileMapData, SpriteRecordCatalog catalog, CharacterControllerSettings settings, IScriptHost host)
     {
         var entitiesLayer = tileMapData.ObjectLayers.First(l => l.Name == "Entities");
@@ -1786,13 +1785,13 @@ public class AlundraNpcCharacterControllerMoverTests
         var prefab = new Entity
         {
             Name = "Bank146PrefabRecord11",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = prefabRoot,
         };
         prefab.AddComponent(controllerComponent);
 
         var entity = EntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab, catalog, tileMapData: tileMapData);
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.IsPlayer = false;
         proxy.ScriptHost = host;
         proxy.Status = EntityStatus.Normal;
@@ -1921,10 +1920,10 @@ public class AlundraNpcCharacterControllerMoverTests
 
     /// <summary>(a) continued - the SAME claim as
     /// <see cref="Support_SailorElevenOnRealRecordTwoPlatform_HeldAtZApprox400FromFrameZeroInclusiveFor60Frames"/>
-    /// but exercised via direct, repeated <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>
+    /// but exercised via direct, repeated <see cref="EntityScriptProxy.EvaluateEntitySupport"/>
     /// calls (bypassing <c>World.Update</c>'s own controller/float round-trip entirely) - a narrower
     /// regression net directly on the port's own 16.16 arithmetic, independent of
-    /// <see cref="AlundraEntityScriptProxy.WasEntitySupportedLastTick"/>'s own pull-preservation fix (which
+    /// <see cref="EntityScriptProxy.WasEntitySupportedLastTick"/>'s own pull-preservation fix (which
     /// the test above now covers through the real engine frame loop).</summary>
     [Fact]
     public void Support_SailorElevenOnRealRecordTwoPlatform_LogicLevelDirectEvaluateCallsStayBitExact()
@@ -1972,12 +1971,12 @@ public class AlundraNpcCharacterControllerMoverTests
     [Fact]
     public void TryFindSupport_StrictComparator_ExactTopDoesNotSupport_OneUnitBelowDoes()
     {
-        var subject = new AlundraEntityScriptProxy { PosX = 0, PosY = 0, PosZ = 1000, Width = 100, Height = 100 };
-        var candidateAtFeet = new AlundraEntityScriptProxy { PosX = 0, PosY = 0, PosZ = 0, Width = 100, Height = 100, Depth = 1000 }; // top == 1000 == subject's feet, exactly.
-        var candidateOneUnitBelow = new AlundraEntityScriptProxy { PosX = 0, PosY = 0, PosZ = 0, Width = 100, Height = 100, Depth = 999 }; // top == 999, strictly below.
+        var subject = new EntityScriptProxy { PosX = 0, PosY = 0, PosZ = 1000, Width = 100, Height = 100 };
+        var candidateAtFeet = new EntityScriptProxy { PosX = 0, PosY = 0, PosZ = 0, Width = 100, Height = 100, Depth = 1000 }; // top == 1000 == subject's feet, exactly.
+        var candidateOneUnitBelow = new EntityScriptProxy { PosX = 0, PosY = 0, PosZ = 0, Width = 100, Height = 100, Depth = 999 }; // top == 999, strictly below.
 
-        Assert.False(EntitySupport.TryFindSupport(subject, new List<AlundraEntityScriptProxy> { candidateAtFeet }, platformTopZSeed: int.MinValue, out _, out _));
-        Assert.True(EntitySupport.TryFindSupport(subject, new List<AlundraEntityScriptProxy> { candidateOneUnitBelow }, platformTopZSeed: int.MinValue, out var support, out var supportTopZ));
+        Assert.False(EntitySupport.TryFindSupport(subject, new List<EntityScriptProxy> { candidateAtFeet }, platformTopZSeed: int.MinValue, out _, out _));
+        Assert.True(EntitySupport.TryFindSupport(subject, new List<EntityScriptProxy> { candidateOneUnitBelow }, platformTopZSeed: int.MinValue, out var support, out var supportTopZ));
         Assert.Same(candidateOneUnitBelow, support);
         Assert.Equal(1000, supportTopZ); // candidateTop (999) + 1.
 
@@ -1995,7 +1994,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// <summary>(b)/(d) walking while supported: X (and Y) advance normally, Z stays pinned to the real
     /// platform top; once the walk carries it off the platform's own real footprint, with 0x17's own
     /// effect already applied (Gravity flag cleared, matching sailor 11's real program 139 sequence at
-    /// offset 1193 - <see cref="AlundraEntityScriptProxy.ApplyGravitySettingsToController"/> zeroes
+    /// offset 1193 - <see cref="EntityScriptProxy.ApplyGravitySettingsToController"/> zeroes
     /// Settings.Gravity/MaxFallSpeed), Z simply stays constant (floating, no fall) - the same real anim 1
     /// (Speed 160, Acceleration 0) this file's own test (6) already verified end-to-end for 0x1F.</summary>
     [Fact]
@@ -2178,7 +2177,7 @@ public class AlundraNpcCharacterControllerMoverTests
         Assert.Equal(12, (int)entity.RootComponent!.Position.Z / 16);
     }
 
-    /// <summary>(e) searches 5/6 driven by REAL <see cref="AlundraEntityScriptProxy.RidingEntity"/> (real
+    /// <summary>(e) searches 5/6 driven by REAL <see cref="EntityScriptProxy.RidingEntity"/> (real
     /// record 2/11 numbers reproduce <c>CheckRidingEntities</c>'s own EXACT-match test, verifier A1's own
     /// doc on <see cref="EntitySupport.UpdateRidingEntities"/>) + functions 5-11 exclude the player
     /// (verifier: <see cref="EntitySearchService"/>'s own E4.f fix).</summary>
@@ -2196,7 +2195,7 @@ public class AlundraNpcCharacterControllerMoverTests
         var platformProxy = BuildRealRecordProxy(tileMapData, catalog, recordIndex: 2);
         var sailorProxy = BuildRealRecordProxy(tileMapData, catalog, recordIndex: 11);
 
-        var collidables = new List<AlundraEntityScriptProxy> { platformProxy, sailorProxy };
+        var collidables = new List<EntityScriptProxy> { platformProxy, sailorProxy };
         EntitySupport.UpdateRidingEntities(collidables);
 
         // Real numbers (verifier A1's own doc): record 2's top + 1 == record 11's own real ModdedPosZ
@@ -2205,7 +2204,7 @@ public class AlundraNpcCharacterControllerMoverTests
         Assert.Same(platformProxy.LogicContextEntity, sailorProxy.RidingEntity);
         Assert.Null(platformProxy.RidingEntity); // platform's own Flags carry no Gravity bit - never a rider itself.
 
-        var playerProxy = new AlundraEntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, LogicContextEntity = new Entity() };
+        var playerProxy = new EntityScriptProxy { IsPlayer = true, Status = EntityStatus.Normal, LogicContextEntity = new Entity() };
         // Coincidentally wire the player into the SAME relationships every function 5-11 below reads, so a
         // failure to exclude it would show up as a false-positive match, not merely an absent one.
         playerProxy.RidingEntity = platformProxy.LogicContextEntity;
@@ -2217,7 +2216,7 @@ public class AlundraNpcCharacterControllerMoverTests
         playerProxy.ParentEntity = sailorProxy.LogicContextEntity;
         playerProxy.PlatformEntity = sailorProxy.LogicContextEntity;
 
-        var spawned = new List<AlundraEntityScriptProxy> { platformProxy, sailorProxy, playerProxy };
+        var spawned = new List<EntityScriptProxy> { platformProxy, sailorProxy, playerProxy };
 
         // Search 5: entities the owner (platform) is riding on - matches sailorProxy.RidingEntity ==
         // platform.LogicContextEntity... wait, search 5 is FROM the owner's own RidingEntity, so exercise
@@ -2259,10 +2258,10 @@ public class AlundraNpcCharacterControllerMoverTests
     /// program 134 does this every logic tick via its own Wait(1)-gated loop before the climb apex - see
     /// GullHoverCycle's own doc above) through the REAL <see cref="EventProgramRunner"/> opcode
     /// dispatch (not a hand-rolled ForceZ/SetVerticalVelocity assignment - same formula, real dispatch
-    /// code), once per <see cref="AlundraEntityScriptProxy.Update"/>'s own per-LOGIC-tick pick/run call
-    /// (never once per rendered frame - see that method's own E4.b doc): <see cref="AlundraEntityScriptProxy.PickEventTrigger"/>
+    /// code), once per <see cref="EntityScriptProxy.Update"/>'s own per-LOGIC-tick pick/run call
+    /// (never once per rendered frame - see that method's own E4.b doc): <see cref="EntityScriptProxy.PickEventTrigger"/>
     /// re-selects slot C (Tick) every logic tick regardless of the previous call's own outcome, and
-    /// <see cref="AlundraEntityScriptProxy.RunPickedEvent"/> dispatches through this runner - this is what
+    /// <see cref="EntityScriptProxy.RunPickedEvent"/> dispatches through this runner - this is what
     /// makes dt=1/123 vs dt=1/50 behave identically for the real gull scenario below:
     /// <see cref="IScriptHost.LogicTicksThisFrame"/> decouples this from the render rate exactly
     /// like production (<see cref="LogicClock"/>'s own class doc).</summary>
@@ -2271,7 +2270,7 @@ public class AlundraNpcCharacterControllerMoverTests
         private static readonly byte[] ClimbBytes = { 0x1B, 128, 3, 0xFF };
         private readonly EventProgramRunner _opcodeRunner = new(document: null, new GameState(), worldContext: null);
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             if (programSlot != ScriptHelper.ProgramCTick)
             {
@@ -2286,7 +2285,7 @@ public class AlundraNpcCharacterControllerMoverTests
             _opcodeRunner.RunOneScriptCall(entity, state, programSlot);
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -2300,15 +2299,15 @@ public class AlundraNpcCharacterControllerMoverTests
     private sealed class GullClimbScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new GullClimbRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public List<AlundraEntityScriptProxy> Collidables { get; } = new();
-        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
+        public HeroController? PlayerController => null;
+        public List<EntityScriptProxy> Collidables { get; } = new();
+        IReadOnlyList<EntityScriptProxy> IScriptHost.Collidables => Collidables;
 
         public int TotalTicks { get; private set; }
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -2328,7 +2327,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// <c>EndToEndSpawn_RealBank146RecordThroughApplySpawnInitialization_PopulatesAnimSetsByAnimAndDrivesRealWalkKinematics</c>
     /// above. Null when this checkout has no real bank-146 controller settings to load (self-skip, same
     /// convention as every other real-fixture test in this class).</summary>
-    private static (Entity Entity, AlundraEntityScriptProxy Proxy)? SpawnRealGullEntitySix(string projectRoot, TileMapData tileMapData)
+    private static (Entity Entity, EntityScriptProxy Proxy)? SpawnRealGullEntitySix(string projectRoot, TileMapData tileMapData)
     {
         var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == "Entities");
         Assert.NotNull(entitiesLayer);
@@ -2359,14 +2358,14 @@ public class AlundraNpcCharacterControllerMoverTests
         var prefab = new Entity
         {
             Name = "GullSixPrefab",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = prefabRoot,
         };
         prefab.AddComponent(controllerComponent);
 
         var catalog = new SpriteRecordCatalog(projectRoot);
         var entity = EntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         Assert.NotNull(proxy.Controller);
         return (entity, proxy);
     }
@@ -2378,7 +2377,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// gives every real bank prefab - needed for the E5.b acceptance below, which reads the projected
     /// render position rather than the logical root position the other tests in this class check.
     /// </summary>
-    private static (Entity Entity, AlundraEntityScriptProxy Proxy, RenderProjectionComponent Projection)? SpawnRealGullEntitySixWithRenderProjection(
+    private static (Entity Entity, EntityScriptProxy Proxy, RenderProjectionComponent Projection)? SpawnRealGullEntitySixWithRenderProjection(
         string projectRoot, TileMapData tileMapData)
     {
         var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == "Entities");
@@ -2414,14 +2413,14 @@ public class AlundraNpcCharacterControllerMoverTests
         var prefab = new Entity
         {
             Name = "GullSixPrefabWithProjection",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = prefabRoot,
         };
         prefab.AddComponent(controllerComponent);
 
         var catalog = new SpriteRecordCatalog(projectRoot);
         var entity = EntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         Assert.NotNull(proxy.Controller);
         Assert.NotNull(proxy.RenderProjection);
         return (entity, proxy, proxy.RenderProjection!);
@@ -2570,7 +2569,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// ticks that frame while a real elapsed-time-driven integrator would keep integrating the vertical for
     /// the FULL 0.3s). Must still reach the apex at 171 ticks and drift 209.25px (landing X = 594.75), the
     /// SAME numbers the hitch-free run produces - the whole point of driving the vertical through
-    /// <see cref="AlundraEntityScriptProxy.MoveVerticalAndPullPosition"/> as a per-tick DISPLACEMENT instead
+    /// <see cref="EntityScriptProxy.MoveVerticalAndPullPosition"/> as a per-tick DISPLACEMENT instead
     /// of <c>Controller.SetVerticalVelocity</c> (a rate the engine would integrate over whatever real
     /// elapsedTime a hitch frame happens to carry) is that this result no longer depends on frame timing at
     /// all.
@@ -2756,8 +2755,8 @@ public class AlundraNpcCharacterControllerMoverTests
     /// <summary>Counts every real script dispatch (<see cref="IEventProgramRunner.RunScript"/>) while
     /// delegating to a REAL <see cref="EventProgramRunner"/> - lets a test observe "how many times
     /// this entity's own script pass actually ran" from OUTSIDE the fused per-tick loop, independent of
-    /// <see cref="AlundraEntityScriptProxy.MotionTickCount"/>/<see cref="AlundraEntityScriptProxy.SupportTickCount"/>
-    /// (which are incremented from inside <see cref="ScriptedMotion"/>/<see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>
+    /// <see cref="EntityScriptProxy.MotionTickCount"/>/<see cref="EntityScriptProxy.SupportTickCount"/>
+    /// (which are incremented from inside <see cref="ScriptedMotion"/>/<see cref="EntityScriptProxy.EvaluateEntitySupport"/>
     /// respectively) - three independently-observed counters for the same ONE-CLOCK invariant.</summary>
     private sealed class ScriptPassCountingRunner : IEventProgramRunner
     {
@@ -2765,13 +2764,13 @@ public class AlundraNpcCharacterControllerMoverTests
         public ScriptPassCountingRunner(EventProgramRunner inner) => _inner = inner;
         public int ScriptPassCount { get; private set; }
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             ScriptPassCount++;
             _inner.RunScript(entity, programSlot);
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
             ScriptPassCount++;
             _inner.RunSpriteEvent(entity);
@@ -2787,13 +2786,13 @@ public class AlundraNpcCharacterControllerMoverTests
     {
         public TickCountingRunnerScriptHost(IEventProgramRunner runner) => Runner = runner;
         public IEventProgramRunner Runner { get; }
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController => null;
-        public List<AlundraEntityScriptProxy> Collidables { get; } = new();
-        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
+        public HeroController? PlayerController => null;
+        public List<EntityScriptProxy> Collidables { get; } = new();
+        IReadOnlyList<EntityScriptProxy> IScriptHost.Collidables => Collidables;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -2908,8 +2907,8 @@ public class AlundraNpcCharacterControllerMoverTests
     /// (B) Single-clock invariant: over N frames at a non-integer-dividing dt (1/123, the user's own real
     /// frame rate) the number of script passes (<see cref="ScriptPassCountingRunner.ScriptPassCount"/>,
     /// observed from OUTSIDE the fused loop), motion sub-steps
-    /// (<see cref="AlundraEntityScriptProxy.MotionTickCount"/>), and vertical/support steps
-    /// (<see cref="AlundraEntityScriptProxy.SupportTickCount"/>) are IDENTICAL - they can no longer diverge,
+    /// (<see cref="EntityScriptProxy.MotionTickCount"/>), and vertical/support steps
+    /// (<see cref="EntityScriptProxy.SupportTickCount"/>) are IDENTICAL - they can no longer diverge,
     /// which is the whole point of this fix (pre-fix, motion ran on its own separate accumulator and could
     /// diverge from the other two at this exact dt). At dt=1/50 (an exact divisor - one render frame is
     /// always exactly one logic tick) all three are additionally exactly 1 per frame, i.e. equal to the
@@ -2989,7 +2988,7 @@ public class AlundraNpcCharacterControllerMoverTests
     }
 
     /// <summary>
-    /// (C) <see cref="AlundraEntityScriptProxy.ForceAdjusted"/>'s own corrected lifetime: cleared once per
+    /// (C) <see cref="EntityScriptProxy.ForceAdjusted"/>'s own corrected lifetime: cleared once per
     /// LOGIC tick (not once per rendered frame), set within that same tick when a real wall curtails the
     /// move, and - the actual bug this fix closes - VISIBLE to the immediately following tick's own script
     /// pass, even across the several render frames of dt=1/123 that carry no tick in between (this is
@@ -3076,7 +3075,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// <summary>
     /// (A) terrain branch: rises on tick k, lands on terrain on tick k+1 with
     /// <c>wasAlreadyLanded</c> true (PosZ/ForceZ already match the landed target) - the ONE case in
-    /// that branch where <see cref="AlundraEntityScriptProxy.PushLogicalPositionToRoot"/> (whose own
+    /// that branch where <see cref="EntityScriptProxy.PushLogicalPositionToRoot"/> (whose own
     /// <c>Controller.Teleport</c> call would otherwise reset the latch to 0) is SKIPPED, so this is
     /// the case that actually fails without the method's own end-of-tick declaration: a
     /// still-moving-branch-only declaration would leave tick k's positive latch stale, and
@@ -3146,8 +3145,8 @@ public class AlundraNpcCharacterControllerMoverTests
     /// (no <see cref="CharacterControllerComponent"/> needed - <see cref="EntitySupport.TryFindSupport"/>
     /// only reads its position/size fields). Documents the found branch's own contract (declares 0 or
     /// negative on every landing tick this seed formula can reach, see
-    /// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>'s own tail doc) - note this branch
-    /// ALSO calls <see cref="AlundraEntityScriptProxy.PushLogicalPositionToRoot"/> unconditionally,
+    /// <see cref="EntityScriptProxy.EvaluateEntitySupport"/>'s own tail doc) - note this branch
+    /// ALSO calls <see cref="EntityScriptProxy.PushLogicalPositionToRoot"/> unconditionally,
     /// whose own <c>Controller.Teleport</c> already resets the latch to 0 on its own; this test still
     /// asserts the full documented contract (IsGrounded true one simulated frame after landing).
     /// </summary>
@@ -3180,7 +3179,7 @@ public class AlundraNpcCharacterControllerMoverTests
         Assert.True(proxy.Controller!.IsGrounded);
         var terrainPosZ = proxy.PosZ; // 80px, 16.16 - this cell's real terrain height.
 
-        var candidate = new AlundraEntityScriptProxy
+        var candidate = new EntityScriptProxy
         {
             Flags = EntityFlags.Collidable,
             PosX = proxy.PosX,

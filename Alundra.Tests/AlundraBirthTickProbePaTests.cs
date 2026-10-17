@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.Animations;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -12,6 +11,7 @@ using Xunit.Abstractions;
 using Alundra.Maps;
 using Alundra.Maps.Loop;
 using Alundra.Physics;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -37,7 +37,7 @@ public sealed class AlundraBirthTickProbePaTests
 
     private static ArcRun Arc(string name) => new(new ArcSpec("E20e0a3a-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true));
 
-    private static AlundraEntityScriptProxy SpawnArrow(ArcRun arc)
+    private static EntityScriptProxy SpawnArrow(ArcRun arc)
         => ((IEntityWorldContext)arc.Proxy).SpawnEntityBySpriteIndex(arc.Hero, false, Arrow, StartX << 16, StartY << 16, 0, Direction)!;
 
     private void Say(string line) => _output.WriteLine("PA: " + line);
@@ -47,7 +47,7 @@ public sealed class AlundraBirthTickProbePaTests
            $"logicalRate={s.LogicalTickRate} logicalTick={s.LogicalTick} endReached={s.IsLogicalEndReached} loops={s.CompletedLoopCount}";
 
     /// <summary>The animation the first switch of the binary would select: animation 0 in the direction the table derives from the target direction (the pure half of the sync pass).</summary>
-    private static Animation2d? FirstAnimation(AlundraEntityScriptProxy proxy, AnimatedSpriteComponent sprite)
+    private static Animation2d? FirstAnimation(EntityScriptProxy proxy, AnimatedSpriteComponent sprite)
     {
         FrameSyncPasses.TryResolveAnimationTarget(proxy, out var id, out var dir);
         return FrameSyncPasses.TrySelectAnimationByNameSuffix(sprite, id, dir, out var selected) ? selected : null;

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Entities;
@@ -85,7 +84,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
 
         private int _lastAuraGeneration;
 
-        public AlundraEntityScriptProxy Hero => Rig.Hero;
+        public EntityScriptProxy Hero => Rig.Hero;
 
         /// <summary>
         /// One tick: the sounds and the effects read are those of this tick alone. The generator is posed on <paramref name="seed"/> when given (the oracle's entry word of the tick). The frame of the stage runs after the
@@ -124,7 +123,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
     /// <summary>The fields of an aura slot the oracle journals (<c>f.s34</c> mode, <c>s60</c>, <c>s48/4c/50</c>, the start position), read after the logic of the tick and before the frame of the stage.</summary>
     internal readonly record struct AuraSnapshot(int Index, int Effect, bool MapTable, int Mode, int X, int Y, int Z, int OffsetX, int OffsetY, int OffsetZ, int DepthOffset, bool AnchorIsHero, int Generation)
     {
-        public static AuraSnapshot Of(EffectSlot slot, AlundraEntityScriptProxy hero)
+        public static AuraSnapshot Of(EffectSlot slot, EntityScriptProxy hero)
             => new(slot.Index, slot.TargetEffect, slot.TargetMapTable, slot.Mode, slot.X, slot.Y, slot.Z, slot.OffsetX, slot.OffsetY, slot.OffsetZ, slot.DepthOffset, ReferenceEquals(slot.Anchor, hero), slot.Generation);
     }
 

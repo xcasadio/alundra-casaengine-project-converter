@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Maps;
@@ -25,7 +24,7 @@ public sealed class AlundraControllerlessVerticalStepTests
 
         public required ContactHost Host { get; init; }
 
-        public required AlundraEntityScriptProxy Entity { get; init; }
+        public required EntityScriptProxy Entity { get; init; }
 
         public void Tick()
         {
@@ -62,7 +61,7 @@ public sealed class AlundraControllerlessVerticalStepTests
         return rig;
     }
 
-    private static (int PosZ, int ForceZ, int FinalForceZ, int Contact, int OnGround) State(AlundraEntityScriptProxy e) =>
+    private static (int PosZ, int ForceZ, int FinalForceZ, int Contact, int OnGround) State(EntityScriptProxy e) =>
         (e.PosZ, e.ForceZ, e.FinalForceZ, e.CollidedWithEntityZ, e.IsOnGround);
 
     /// <summary>Runs the ticks and checks each row of <paramref name="expected"/> (tick number -> state) at its tick.</summary>
@@ -261,14 +260,14 @@ public sealed class AlundraControllerlessVerticalStepTests
     public void Guard_ABareProxyWithGravityAndTheRawWords_OutsideAnyWorld_KeepsItsForcePositionAndGround()
     {
         // The intro harness: bare entities, never in a world, which run their own vertical pass. The criterion "the world has a collision field" keeps them out.
-        var proxy = new AlundraEntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, PosZ = 327680 };
+        var proxy = new EntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal, PosZ = 327680 };
         proxy.Flags |= EntityFlags.Gravity | EntityFlags.Collidable;
         proxy.MapGravityRaw = 128;
         proxy.MapZViscosityRaw = 4096;
 
         for (var call = 0; call < 5; call++)
         {
-            proxy.EvaluateEntitySupport(Array.Empty<AlundraEntityScriptProxy>());
+            proxy.EvaluateEntitySupport(Array.Empty<EntityScriptProxy>());
             Assert.Equal((327680, 0, 0, 0), (proxy.PosZ, proxy.ForceZ, proxy.IsOnGround, proxy.CollidedWithEntityZ));
         }
     }

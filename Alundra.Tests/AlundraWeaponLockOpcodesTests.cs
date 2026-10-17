@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -28,13 +27,13 @@ public sealed class AlundraWeaponLockOpcodesTests
 
     private sealed class Context : IEntityWorldContext
     {
-        public List<AlundraEntityScriptProxy> Spawned { get; } = new();
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public List<EntityScriptProxy> Spawned { get; } = new();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Spawned;
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public ItemTables? Tables { get; set; }
         public ItemTables? ItemTables => Tables;
@@ -42,7 +41,7 @@ public sealed class AlundraWeaponLockOpcodesTests
 
     private static readonly ItemTables RealTables = new(SaveGameDirectorTestSupport.FindProjectRoot());
 
-    private static AlundraEntityScriptProxy NewEntity()
+    private static EntityScriptProxy NewEntity()
         => new() { Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" } };
 
     /// <summary>Runs the instruction bytes followed by <c>0x1A 9 0xFF</c>: animation 9 proves the opcode consumed exactly its size.</summary>

@@ -6,7 +6,7 @@ using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Audio.Mixing;
 using Alundra.Events;
 using Alundra.Cells;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Audio;
 
@@ -93,7 +93,7 @@ public sealed class SoundPlayer : ISoundPlayer
     /// <summary>
     /// <paramref name="owner"/> is passed straight through to every <see cref="AudioService.PlayClip"/>
     /// call this instance makes (docs/plan-e11c-musique.md, slice C1, D-C-5): production hands it the
-    /// owning <c>World</c> (<see cref="AlundraWorldProxy.InstallAudioSystems"/>) so
+    /// owning <c>World</c> (<see cref="WorldProxy.InstallAudioSystems"/>) so
     /// <c>World.Clear</c>'s own <c>StopVoicesOwnedBy(world)</c> actually stops these voices - the fix
     /// for fact 1.7's real defect (this class used to pass <c>owner: this</c>, and a fresh instance is
     /// built per world, so <see cref="CasaEngine.Framework.Audio.AudioService.StopVoicesOwnedBy"/> could
@@ -102,7 +102,7 @@ public sealed class SoundPlayer : ISoundPlayer
     /// receives the world.
     ///
     /// <paramref name="soundGroup"/> (docs/plan-e11b-opcodes-audio.md, slice B3, D-B-7): this world's
-    /// own VAB group id, resolved by <see cref="AlundraWorldProxy.InstallAudioSystems"/> off
+    /// own VAB group id, resolved by <see cref="WorldProxy.InstallAudioSystems"/> off
     /// <see cref="SoundGroupIndexTable"/> for the world's map id, or <c>null</c> when that table
     /// has no entry (degraded mode, or a world outside 0..482) - the exact pre-B3 shape, D-E11-6's own
     /// deviation for as long as no group is known. Passed straight through to every

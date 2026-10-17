@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Rendering.CellularLayers;
 using CasaEngine.Framework.Rendering.ScrollingLayers;
 using Microsoft.Xna.Framework;
@@ -13,13 +12,14 @@ using Alundra.Cameras;
 using Alundra.Rendering.Backdrops;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// D-E9d - production-site pin for <see cref="BackdropStage.PushFrame"/> feeding BOTH the
 /// sibling scrolling-layer service AND the cellular-layer service from the SAME call site (no second
-/// push site was added to <see cref="AlundraWorldProxy.Update"/>). Reuses the real map 389 headless
+/// push site was added to <see cref="WorldProxy.Update"/>). Reuses the real map 389 headless
 /// montage exactly like <see cref="BackdropPushProductionTests"/> - see that class's own doc for the
 /// "recipe B3" accommodation (posing <c>_clearColorApplied</c>, priming <c>Update</c>) this montage
 /// always needs.
@@ -53,7 +53,7 @@ public sealed class BackdropCellularPushProductionTests : IDisposable
     public void Update_PushesFrame_ToBothServices_AtTheSameProductionCallSite()
     {
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
         var stage = proxy._backdropStage;
@@ -92,7 +92,7 @@ public sealed class BackdropCellularPushProductionTests : IDisposable
     public void Update_PushesFrame_WithNoCellularServiceAttached_ScrollingServiceStillPushed()
     {
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
         var stage = proxy._backdropStage;

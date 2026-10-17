@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Audio;
 using CasaEngine.Framework.Audio.Mixing;
 using Xunit;
@@ -10,6 +9,7 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Events;
 using Alundra.Audio;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -331,7 +331,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
             Codes = codes,
         };
         var runner = new EventProgramRunner(document, new GameState(), context);
-        var entity = new AlundraEntityScriptProxy();
+        var entity = new EntityScriptProxy();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
         runner.RunOneScriptCall(entity, state);
@@ -485,7 +485,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
     // (d/e/f), driven through the REAL runner, exactly like ProductionSite_SyntheticProgram above.
     // -----------------------------------------------------------------------------------------------
 
-    private static EventProgramRunner NewRunner(int[] codes, out AlundraEntityScriptProxy entity, out EventProgramState state)
+    private static EventProgramRunner NewRunner(int[] codes, out EntityScriptProxy entity, out EventProgramState state)
     {
         var context = new ProductionFakeContext(BgmPlayer.Instance, BgmFadeDirector.Instance);
         var document = new EventProgramDocument
@@ -495,7 +495,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
             Codes = codes,
         };
         var runner = new EventProgramRunner(document, new GameState(), context);
-        entity = new AlundraEntityScriptProxy();
+        entity = new EntityScriptProxy();
         state = new EventProgramState { Codes = document.CodesAsBytes() };
         return runner;
     }
@@ -734,12 +734,12 @@ public class AlundraBgmFadeDirectorTests : IDisposable
             BgmFadeDirector = bgmFadeDirector;
         }
 
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = Array.Empty<AlundraEntityScriptProxy>();
-        public AlundraEntityScriptProxy? PlayerEntity => null;
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = Array.Empty<EntityScriptProxy>();
+        public EntityScriptProxy? PlayerEntity => null;
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) { }
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public CasaEngine.Framework.AI.Navigation.NavigationGrid2D? NavigationGrid => null;
         public IMusicPlayer? MusicPlayer { get; }
         public IBgmFadeDirector? BgmFadeDirector { get; }

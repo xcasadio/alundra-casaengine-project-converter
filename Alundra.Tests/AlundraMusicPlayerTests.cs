@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
@@ -18,6 +17,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -86,13 +86,13 @@ public class AlundraMusicPlayerTests : IDisposable
     }
 
     /// <summary>Drives the frame-close site's OWN production code (T4.2,
-    /// <see cref="AlundraWorldProxy.ConsumeMusicResetSoundFlagOnFrameClose"/> - the exact block
-    /// <see cref="AlundraWorldProxy.Update"/> runs right before <c>SoundPlayer.FlushFrameSounds</c>, P3)
+    /// <see cref="WorldProxy.ConsumeMusicResetSoundFlagOnFrameClose"/> - the exact block
+    /// <see cref="WorldProxy.Update"/> runs right before <c>SoundPlayer.FlushFrameSounds</c>, P3)
     /// against the session singletons directly, for tests that drive them without a real
     /// AlundraWorldProxy.Update tick.</summary>
     private static void SimulateFrameClose()
     {
-        AlundraWorldProxy.ConsumeMusicResetSoundFlagOnFrameClose(BgmPlayer.Instance, BgmFadeDirector.Instance);
+        WorldProxy.ConsumeMusicResetSoundFlagOnFrameClose(BgmPlayer.Instance, BgmFadeDirector.Instance);
     }
 
     // ---- fixtures -------------------------------------------------------------------------------
@@ -210,7 +210,7 @@ public class AlundraMusicPlayerTests : IDisposable
         EngineEnvironment.ProjectPath = projectRoot; // InstallAudioSystems attaches the music player off this
         try
         {
-            var proxy = new AlundraWorldProxy();
+            var proxy = new WorldProxy();
             proxy.InstallAudioSystems(world);
 
             Assert.Empty(backend.StreamVoices); // (a): loading never plays.
@@ -233,7 +233,7 @@ public class AlundraMusicPlayerTests : IDisposable
             // instance instead of the session singleton D-C-6 requires.
             var world390 = new World { Name = "Some Other Map (beginning)-390" };
             HeroWorldFixture.SetProperty(world390, nameof(World.Game), game);
-            var proxy390 = new AlundraWorldProxy();
+            var proxy390 = new WorldProxy();
             proxy390.InstallAudioSystems(world390);
             proxy390.Update(0.02f); // (b): 390's own frame close, same raw index 25 - still a total no-op.
 
@@ -303,7 +303,7 @@ public class AlundraMusicPlayerTests : IDisposable
         {
             var world389 = new World { Name = "Ship-389" };
             HeroWorldFixture.SetProperty(world389, nameof(World.Game), game);
-            var proxy389 = new AlundraWorldProxy();
+            var proxy389 = new WorldProxy();
             proxy389.InstallAudioSystems(world389);
             proxy389.Update(0.02f);
             Assert.Single(backend.StreamVoices); // track 25 playing.
@@ -312,7 +312,7 @@ public class AlundraMusicPlayerTests : IDisposable
             // B2 guard (P2/D6) makes the frame close a TOTAL no-op: silence, the old voice stopped above.
             var world183 = new World { Name = "Inoa night-183" };
             HeroWorldFixture.SetProperty(world183, nameof(World.Game), game);
-            var proxy183 = new AlundraWorldProxy();
+            var proxy183 = new WorldProxy();
             proxy183.InstallAudioSystems(world183);
             Assert.False(((BgmPlayer)proxy183.MusicPlayer!).IsCurrentVoiceAlive); // stopped at load.
             proxy183.Update(0.02f);
@@ -322,7 +322,7 @@ public class AlundraMusicPlayerTests : IDisposable
             // 184: also raw -1 - same raw index as 183 (B10's own "already current" guard), total no-op.
             var world184 = new World { Name = "Inoa night later-184" };
             HeroWorldFixture.SetProperty(world184, nameof(World.Game), game);
-            var proxy184 = new AlundraWorldProxy();
+            var proxy184 = new WorldProxy();
             proxy184.InstallAudioSystems(world184);
             proxy184.Update(0.02f);
             Assert.Single(backend.StreamVoices);
@@ -331,7 +331,7 @@ public class AlundraMusicPlayerTests : IDisposable
             // 226: a real index (16) - plays.
             var world226 = new World { Name = "Sable-226" };
             HeroWorldFixture.SetProperty(world226, nameof(World.Game), game);
-            var proxy226 = new AlundraWorldProxy();
+            var proxy226 = new WorldProxy();
             proxy226.InstallAudioSystems(world226);
             proxy226.Update(0.02f);
             Assert.Equal(2, backend.StreamVoices.Count);
@@ -350,7 +350,7 @@ public class AlundraMusicPlayerTests : IDisposable
     public void T2_NoGame_TriggerMapEntryMusic_NoRequestAndNoException()
     {
         var world = new World { Name = WorldName }; // Game left null - no AudioSystemComponent.
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
 
         var ex = Record.Exception(() =>
         {
@@ -446,7 +446,7 @@ public class AlundraMusicPlayerTests : IDisposable
         EngineEnvironment.ProjectPath = projectPath;
         try
         {
-            var proxy = new AlundraWorldProxy();
+            var proxy = new WorldProxy();
             proxy.InstallAudioSystems(world); // loads 25, arms ResetSoundFlag.
             Assert.True(((BgmPlayer)proxy.MusicPlayer!).ResetSoundFlag);
 
@@ -485,7 +485,7 @@ public class AlundraMusicPlayerTests : IDisposable
         EngineEnvironment.ProjectPath = projectPath;
         try
         {
-            var proxy = new AlundraWorldProxy();
+            var proxy = new WorldProxy();
             proxy.InstallAudioSystems(world); // loads 25, arms ResetSoundFlag.
 
             ((BgmPlayer)proxy.MusicPlayer!).PlayFromRawIndex(5); // simulated 0xA7 5,0, same frame.
@@ -528,7 +528,7 @@ public class AlundraMusicPlayerTests : IDisposable
             BgmFadeDirector.Instance.LoadBgm(1); // armed by an earlier frame's own 0xA6 1.
             Assert.True(BgmFadeDirector.Instance.IsArmed);
 
-            var proxy = new AlundraWorldProxy();
+            var proxy = new WorldProxy();
             proxy.InstallAudioSystems(world); // loads 16 (differs from CurrentMapSoundIndex 0), arms flag.
 
             proxy.Update(0.02f); // frame close.

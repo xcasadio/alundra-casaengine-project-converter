@@ -6,7 +6,6 @@ using System.Reflection;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
-using Alundra.Scripts;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Maps;
@@ -51,7 +50,7 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
     }
 
     /// <summary>Spawns the real prefab <paramref name="prefix"/> by the production factory at (xPos 16, yPos 8) and <paramref name="height"/> (units of 8 px), into a world of flat ground.</summary>
-    private static (JumpNpcRig Rig, AlundraEntityScriptProxy Spawned) Spawn(string prefix, int height)
+    private static (JumpNpcRig Rig, EntityScriptProxy Spawned) Spawn(string prefix, int height)
     {
         var root = ProjectRootFinder.Find();
         EngineEnvironment.ProjectPath = root;
@@ -70,7 +69,7 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
 
         var entity = EntitySpawnFactory.CreateEntityFromRecord(
             record, id => world.Game!.AssetContentManager.LoadCopy<Entity>(id), SpriteRecordCatalog.GetOrCreate(root));
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.ScriptHost = host;
         host.All.Add(proxy);
         world.AddEntity(entity);
@@ -152,7 +151,7 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
     {
         public bool Done { get; private set; }
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             if (!Done)
             {
@@ -161,7 +160,7 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
             }
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -199,21 +198,21 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
 
     private sealed class HeroWorldContext : IEntityWorldContext
     {
-        public HeroWorldContext(AlundraEntityScriptProxy hero) => PlayerEntity = hero;
+        public HeroWorldContext(EntityScriptProxy hero) => PlayerEntity = hero;
 
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities { get; } = new List<AlundraEntityScriptProxy>();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities { get; } = new List<EntityScriptProxy>();
 
-        public AlundraEntityScriptProxy? PlayerEntity { get; }
+        public EntityScriptProxy? PlayerEntity { get; }
 
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
 
         public void SetForcedCameraLookAt(int x, int y, int z)
         {
         }
 
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
+        public void DestroyEntity(EntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
 
         public CasaEngine.Framework.AI.Navigation.NavigationGrid2D? NavigationGrid => null;
     }
@@ -237,7 +236,7 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
         hero.TargetAnimationId = 2;
         var document = new EventProgramDocument { MapIndex = 179, EventCodesATable = new[] { 0, 0 }, Codes = new[] { 0x53, 179, 0, 17, 7, 1, 0, 0, 0xFF } };
         var runner = new EventProgramRunner(document, ArcRun.State, new HeroWorldContext(hero));
-        runner.RunOneScriptCall(new AlundraEntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal }, new EventProgramState { Codes = document.CodesAsBytes() });
+        runner.RunOneScriptCall(new EntityScriptProxy { EntityRefId = 1, Status = EntityStatus.Normal }, new EventProgramState { Codes = document.CodesAsBytes() });
         var record = WarpDirector.Instance.ArrivalRecordForTests;
         Assert.True(WarpDirector.Instance.HasPendingArrival);
         Assert.Equal(2u, record.AnimationId);
@@ -246,9 +245,9 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
         // transition itself - fade, world change - is not played by the headless montage, so the record is posed again after the reset of the director).
         WarpDirector.Instance.ResetForTests();
         WarpDirector.Instance.SetPendingArrivalForTests(record.MapIndex, record.PosX, record.PosY, record.PosZ, record.AnimationId, record.DirectionId);
-        var tileMapData = (CasaEngine.Framework.Assets.TileMap.TileMapData)typeof(AlundraWorldProxy)
+        var tileMapData = (CasaEngine.Framework.Assets.TileMap.TileMapData)typeof(WorldProxy)
             .GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!;
-        typeof(AlundraWorldProxy).GetMethod("AdoptPlayerPawn", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(arc.Proxy, new object[] { arc.RealWorld!, tileMapData });
+        typeof(WorldProxy).GetMethod("AdoptPlayerPawn", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(arc.Proxy, new object[] { arc.RealWorld!, tileMapData });
         WarpDirector.Instance.ResetForTests();
         Assert.Equal(2u, hero.TargetAnimationId); // the arrival animation is the 2 the 0x53 copied.
         Assert.True(hero.SpawnAnimationActive);

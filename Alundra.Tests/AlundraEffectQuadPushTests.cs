@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Assets.Sprites;
 using CasaEngine.Framework.Rendering.Depth;
@@ -18,13 +17,14 @@ using Alundra.Session;
 using Alundra.Cameras;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E19.g G3c (docs/plan-e19-opcodes.md, G3C-R1 to G3C-R5, ADR-0049): the DLL pushes the effect quads of the reservoir to the engine's
 /// <see cref="EffectQuadService"/> every rendered frame. The pure construction (<see cref="EffectQuadBuilder"/>), the stage (<see cref="EffectStage.AttachService"/>,
-/// <see cref="EffectStage.PushFrame"/>) and the proxy wiring (<see cref="AlundraWorldProxy.Update"/>), against the values of the prediction
+/// <see cref="EffectStage.PushFrame"/>) and the proxy wiring (<see cref="WorldProxy.Update"/>), against the values of the prediction
 /// <c>docs/plan-e19-g3c-annexe/g3c_model.py</c> (the value at the pixel is proved by the out-of-repo harness, G3c-3, not here). Written red first on stub bodies.
 /// Shares <see cref="AlundraMusicPlayerSingletonCollection"/>: the warp departure arms the real BGM fade director.
 /// </summary>
@@ -453,11 +453,11 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     // The proxy: every rendered frame, frozen or not, during a warp departure; the real map 391
     // ---------------------------------------------------------------------------------------------------------------------
 
-    private static (AlundraWorldProxy Proxy, EffectQuadService Service, EffectSlot Slot) HeadlessProxyWithAQuad()
+    private static (WorldProxy Proxy, EffectQuadService Service, EffectSlot Slot) HeadlessProxyWithAQuad()
     {
         var world = new World { Name = "TestWorld" };
         world.Entities.Add(new Entity { Name = "camera", RootComponent = new Camera2dComponent() });
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         var service = new EffectQuadService();
         proxy._effectStage.Load(QuadBank());
@@ -500,7 +500,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     public void Update_PushesTheFrame_DuringAWarpDeparture_Which_GivesTheEffectsNoTick()
     {
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         BackdropWarpDepartureSupport.SetPrivateField(proxy._backdropStage, "_clearColorApplied", true); // the headless montage has no view for the clear colour.
         var service = new EffectQuadService();
@@ -532,7 +532,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
         Assert.Equal("Ship Klark (night, break, Event)-391", worldName);
 
         var world = new World { Name = worldName! };
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         var previousProjectPath = EngineEnvironment.ProjectPath;
         EngineEnvironment.ProjectPath = Root;
         try

@@ -8,7 +8,7 @@ using Alundra.Events;
 using Alundra.Ai.Enemies;
 using Alundra.Ai.Objects;
 using Alundra.Ai.Projectiles;
-using Alundra.Scripts;
+using Alundra.Entities;
 
 namespace Alundra.Ai;
 
@@ -17,7 +17,7 @@ namespace Alundra.Ai;
 /// original's per-slot function tables (<c>g_entityEventFunctionsByType</c>, master table 0x80098F4C), shaped like
 /// the save book's handlers: the entity whose picked event it is, the world context and the game state.
 /// </summary>
-internal delegate void NativeSpriteHandler(AlundraEntityScriptProxy entity, IEntityWorldContext context, GameState state);
+internal delegate void NativeSpriteHandler(EntityScriptProxy entity, IEntityWorldContext context, GameState state);
 
 /// <summary>
 /// E14.a0 (D-E14-1, docs/plan-e14-ia-native.md section 1.1a): the registry of the native sprite handlers, keyed by
@@ -47,7 +47,7 @@ internal sealed class NativeSpriteRegistry
 
     /// <summary>
     /// Registers <paramref name="handler"/> for (<paramref name="slot"/>, <paramref name="code"/>), for the sprite types
-    /// <paramref name="spriteTypes"/> only (<see cref="AlundraEntityScriptProxy.SpriteType"/>). A key can be registered
+    /// <paramref name="spriteTypes"/> only (<see cref="EntityScriptProxy.SpriteType"/>). A key can be registered
     /// once: a second registration of the same key throws (the original has one function per table entry). Returns a
     /// disposable that removes the entry, for tests.
     /// </summary>

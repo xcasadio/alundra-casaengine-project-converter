@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Assets.Animations;
@@ -29,7 +28,7 @@ public sealed class AlundraHitPassEffectTests
     private sealed class Actor
     {
         public readonly Entity Entity;
-        public readonly AlundraEntityScriptProxy Proxy;
+        public readonly EntityScriptProxy Proxy;
 
         public Actor(uint flags, BalanceRecord? record, bool withBox)
         {
@@ -50,9 +49,9 @@ public sealed class AlundraHitPassEffectTests
             data.CollisionKeyframes.Add(keyframe);
             sprite.AddAnimation(new Animation2d(data));
 
-            Entity = new Entity { Name = "actor", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = sprite };
+            Entity = new Entity { Name = "actor", GameplayProxyClassName = typeof(EntityScriptProxy).FullName!, RootComponent = sprite };
             Entity.Initialize();
-            Proxy = (AlundraEntityScriptProxy)Entity.GameplayProxy;
+            Proxy = (EntityScriptProxy)Entity.GameplayProxy;
             Proxy.LogicContextEntity = Entity;
             Proxy.Status = EntityStatus.Normal;
             Proxy.Flags = flags;
@@ -137,8 +136,8 @@ public sealed class AlundraHitPassEffectTests
         var journal = new List<string>();
         var touchedWhenFirstCalled = -1;
         var pass = new HitPass();
-        var list = new List<AlundraEntityScriptProxy> { attacker.Proxy, target.Proxy };
-        Action<AlundraEntityScriptProxy, int>? attach = withCallback
+        var list = new List<EntityScriptProxy> { attacker.Proxy, target.Proxy };
+        Action<EntityScriptProxy, int>? attach = withCallback
             ? (who, id) =>
             {
                 if (touchedWhenFirstCalled < 0)
@@ -246,7 +245,7 @@ public sealed class AlundraHitPassEffectTests
         var targetB = new Actor(EntityFlags.ClassA, SheetWithByte(6, 16), withBox: false);
         var journal = new List<string>();
         var pass = new HitPass();
-        var list = new List<AlundraEntityScriptProxy> { first.Proxy, second.Proxy, targetA.Proxy, targetB.Proxy };
+        var list = new List<EntityScriptProxy> { first.Proxy, second.Proxy, targetA.Proxy, targetB.Proxy };
         pass.Run(
             list,
             first.Proxy,

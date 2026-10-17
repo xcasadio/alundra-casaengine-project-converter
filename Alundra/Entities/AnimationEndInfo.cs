@@ -9,12 +9,11 @@ using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using Alundra.Session;
 using Alundra.Entities.Spawning;
-using Alundra.Scripts;
 
 namespace Alundra.Entities;
 
 /// <summary>
-/// One <see cref="AlundraEntityScriptProxy.AnimationEndByAnimDirection"/> table value - see
+/// One <see cref="EntityScriptProxy.AnimationEndByAnimDirection"/> table value - see
 /// <see cref="EntitySpawnFactory.BuildAnimationEndByAnimDirection"/> and
 /// <see cref="EntitySpawnFactory.OnAnimationFinished"/>.
 /// </summary>

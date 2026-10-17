@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Application;
@@ -37,8 +36,8 @@ namespace Alundra.Tests;
 /// <summary>
 /// E16.e T5 (docs/plan-e16-etat-partie.md, L1 to L5): the save book end to end on the REAL map 17 (one of the 65
 /// maps with a book, « SaveBook (Ne pas toucher !) » at tile (6, 40)): the real installation
-/// (<see cref="AlundraWorldProxy.InitializeWithWorld"/>, the book spawned from the export), the real frame
-/// (<see cref="AlundraWorldProxy.Update"/> after every entity's own <c>Update</c>, the hero's included, whose
+/// (<see cref="WorldProxy.InitializeWithWorld"/>, the book spawned from the export), the real frame
+/// (<see cref="WorldProxy.Update"/> after every entity's own <c>Update</c>, the hero's included, whose
 /// controller gives the pad), a real dialogue presenter over a recording UI view of the world's active view. The
 /// hero walks into the book (Square when its record asks for the button), the book asks, OUI, the save screen, Down
 /// to <c>slot2</c>, Cross, OUI: the fake service receives <c>slot2</c> in binary. A second visit shows, recomputed
@@ -64,12 +63,12 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
     public AlundraSaveBookEndToEndTests()
     {
         ResetAll();
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
     }
 
     public void Dispose()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         ResetAll();
     }
 
@@ -216,10 +215,10 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
 
     /// <summary>The map 17 montage up to the point where the hero is a spawned pawn adopted with its sprite header, the book spawned from the export, the
     /// chapter reached: what both facts share.</summary>
-    private (AlundraWorldProxy Proxy, AlundraEntityScriptProxy Hero, AlundraEntityScriptProxy Book) PrepareTheBookScene(
+    private (WorldProxy Proxy, EntityScriptProxy Hero, EntityScriptProxy Book) PrepareTheBookScene(
         AlundraSaveBookTests.RecordingUIViewRuntime uiView, World world, Entity heroEntity)
     {
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         typeof(BackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
             .SetValue(proxy._backdropStage, true); // the headless montage has no view for the clear colour.
@@ -237,13 +236,13 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         // spawns it from its map program B[1] (opcode 0x8B at code offset 0xFA, SpawnEntityNextToEntity(record 0),
         // behind story flags). It is spawned here by that same production path, SpawnEntityByRecordId.
         Assert.DoesNotContain(Spawned(proxy), e => e.SpriteType == SaveBook.SpriteType);
-        var hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
+        var hero = Assert.IsType<EntityScriptProxy>(heroEntity.GameplayProxy);
         Assert.NotNull(proxy.SpawnEntityByRecordId(hero, 0));
 
         // The hero's sprite header (flags, programs, body box): AdoptPlayerPawn resolves it through the asset
         // catalog, empty in the test process - the same block, from the export's own catalog file.
         Assert.True(proxy.SpriteRecordCatalog.TryGet(HeroPrefabId(), out var heroHeader));
-        AlundraWorldProxy.ApplyHeroSpriteHeader(hero, heroHeader);
+        WorldProxy.ApplyHeroSpriteHeader(hero, heroHeader);
 
         // The map-entry animation (0x36) ends through the animation chain (anim 54 -> 0, OnAnimationFinished),
         // which the headless montage never plays: the hero is put at its end, Idle.
@@ -268,14 +267,14 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         return Guid.Parse((string)entry["id"]!);
     }
 
-    private void Press(AlundraWorldProxy proxy, uint button)
+    private void Press(WorldProxy proxy, uint button)
     {
         _hold = button;
         OneFrame(proxy);
         _hold = 0;
     }
 
-    private void Frames(AlundraWorldProxy proxy, int count)
+    private void Frames(WorldProxy proxy, int count)
     {
         for (var i = 0; i < count; i++)
         {
@@ -283,7 +282,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         }
     }
 
-    private void FramesUntil(AlundraWorldProxy proxy, Func<bool> condition, int max)
+    private void FramesUntil(WorldProxy proxy, Func<bool> condition, int max)
     {
         for (var i = 0; i < max && !condition(); i++)
         {
@@ -295,7 +294,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
 
     /// <summary>One frame the engine's way: every spawned entity's own <c>Update</c> - the hero's included, whose
     /// controller samples the pad - then the world's.</summary>
-    private static void OneFrame(AlundraWorldProxy proxy)
+    private static void OneFrame(WorldProxy proxy)
     {
         // E19.d2c2 D1 (disposition de la session principale): the production frame runs the world's runtime systems (the character motion system of the
         // controllers) before the entities (World.Update); without it the hero's controller never grounds and S1's air predicate takes him for airborne.
@@ -317,12 +316,12 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         proxy.Update(0.02f);
     }
 
-    private static IReadOnlyList<AlundraEntityScriptProxy> Spawned(AlundraWorldProxy proxy)
+    private static IReadOnlyList<EntityScriptProxy> Spawned(WorldProxy proxy)
         => ((IEntityWorldContext)proxy).SpawnedEntities;
 
-    /// <summary>The hero pawn possessed by a real <see cref="AlundraPlayerController"/>, returned for its pad seam -
+    /// <summary>The hero pawn possessed by a real <see cref="HeroController"/>, returned for its pad seam -
     /// the fixture of <see cref="SaveGameDirectorTestSupport.AddHeroPawn"/>.</summary>
-    private static (Entity Entity, AlundraPlayerController Controller) AddHeroPawn(World world)
+    private static (Entity Entity, HeroController Controller) AddHeroPawn(World world)
     {
         var root = new TransformComponent();
         var collisionComponent = new CollisionComponent();
@@ -338,7 +337,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         {
             Name = "AlundraHeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
 
         // E19.d2b B4 (T-REG-E12D-1): a real controller with the export's settings; the world gets the physics world it needs.
@@ -348,7 +347,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         typeof(Entity).GetProperty(nameof(Entity.World), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)!
             .SetValue(entity, world);
 
-        var controller = new AlundraPlayerController();
+        var controller = new HeroController();
         controller.Possess(entity);
         var field = typeof(World).GetField("_playerControllers", BindingFlags.Instance | BindingFlags.NonPublic)!;
         ((List<PlayerController>)field.GetValue(world)!).Add(controller);

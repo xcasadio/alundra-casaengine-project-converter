@@ -9,7 +9,6 @@ using CasaEngine.Framework.Assets.TileMap;
 using Microsoft.Xna.Framework;
 using Alundra.Maps;
 using Alundra.Entities;
-using Alundra.Scripts;
 using Alundra.Cells;
 
 namespace Alundra.Physics;
@@ -17,7 +16,7 @@ namespace Alundra.Physics;
 /// <summary>
 /// <see cref="ICollisionField"/> over one map's <see cref="CellsRecords"/>, in the LOGICAL
 /// space E3.a established (X east, Y depth, Z elevation - <c>up = Vector3.UnitZ</c>). Built once per
-/// world by <see cref="AlundraWorldProxy.InitializeWithWorld"/> from the loaded
+/// world by <see cref="WorldProxy.InitializeWithWorld"/> from the loaded
 /// <see cref="TileMapData"/> and installed as <c>World.CollisionField</c>.
 ///
 /// Every rule below is a port of the FIRST-CORNER branch of
@@ -195,7 +194,7 @@ public sealed class CellsCollisionField : ICollisionField
     /// reads this exact same <c>_groundProperty[cellIndex]</c> internally but, until now, only exposed it
     /// through <see cref="GroundSample.SurfaceTag"/>'s string form (<c>_surfaceTagCache</c>). Needed
     /// because <c>PhysicsEngine.UpdateTileAttributes</c>'s <c>Slope_18c</c> four-corner rule
-    /// (PhysicsEngine.cs:1706-1826, ported in <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>)
+    /// (PhysicsEngine.cs:1706-1826, ported in <see cref="EntityScriptProxy.UpdateGroundSlope"/>)
     /// reads <c>GroundProperty</c> bits directly, not a surface-tag string. Same clamp-to-nearest-cell
     /// convention as <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/> (never fails -
     /// see that method's own doc on the out-of-grid deviation); does not touch any existing member.

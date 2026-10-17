@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using Alundra.Entities;
-using Alundra.Scripts;
 
 namespace Alundra.Physics;
 
@@ -11,7 +10,7 @@ namespace Alundra.Physics;
 /// uses, first ported for E12.d (docs/plan-e12d-interaction-joueur.md) as detection only (D-E12D-1). Since
 /// E19.d2b (D-E19-27, B3) it also blocks movement: the movement obstacle probe of the controller's field stage
 /// (<see cref="MovementObstacleProbe"/>) asks it for each candidate step, and the blocking report feeds the
-/// player's <see cref="AlundraEntityScriptProxy.XCollisionEntity"/> and from there <c>CheckEntityInteraction</c>.
+/// player's <see cref="EntityScriptProxy.XCollisionEntity"/> and from there <c>CheckEntityInteraction</c>.
 ///
 /// Ported as its own function rather than reusing an <see cref="EntitySupport"/> helper (the ÉCHELLES
 /// rule n°3: the original has a distinct function, we port it distinct) - with ONE deliberate shared
@@ -27,7 +26,7 @@ namespace Alundra.Physics;
 public static class EntityCollision
 {
     /// <summary>
-    /// The same rule as <see cref="FindEntityCollisionCandidate(AlundraEntityScriptProxy, IReadOnlyList{AlundraEntityScriptProxy})"/> (asymmetric AABB on the three axes, the
+    /// The same rule as <see cref="FindEntityCollisionCandidate(EntityScriptProxy, IReadOnlyList{EntityScriptProxy})"/> (asymmetric AABB on the three axes, the
     /// semi-open edge corrected by E19.d2b B5) with the position of the SUBJECT given (E19.d2b B3, D-E19-27): the movement obstacle probe asks it for the
     /// candidate position of the root of a controller step, in the 16.16 fields (the subject's own <c>Pos*</c> are not read). The
     /// subject gate and the candidate order are unchanged; a candidate whose flags intersect <paramref name="skippedCandidateFlags"/>
@@ -35,9 +34,9 @@ public static class EntityCollision
     /// The edge is semi-open, the binary's: <c>Width = (size &lt;&lt; 16) - 1</c> and an overlap needs <c>delta &lt; Width + 1</c>, so a
     /// flush contact does NOT overlap and one 16.16 unit less does.
     /// </summary>
-    public static AlundraEntityScriptProxy? FindEntityCollisionCandidate(
-        AlundraEntityScriptProxy entity, int subjectPosX, int subjectPosY, int subjectPosZ,
-        IReadOnlyList<AlundraEntityScriptProxy> collidables, uint skippedCandidateFlags = 0)
+    public static EntityScriptProxy? FindEntityCollisionCandidate(
+        EntityScriptProxy entity, int subjectPosX, int subjectPosY, int subjectPosZ,
+        IReadOnlyList<EntityScriptProxy> collidables, uint skippedCandidateFlags = 0)
     {
         if (!EntitySupport.IsEligibleSubject(entity) || collidables.Count == 0)
         {
@@ -99,8 +98,8 @@ public static class EntityCollision
     /// <c>Pos* + Mod*</c> on the fly for subject AND candidate - the established convention of
     /// <see cref="EntitySupport"/> (EntitySupport.cs:112-114), for exactly this staleness reason.
     /// </summary>
-    public static AlundraEntityScriptProxy? FindEntityCollisionCandidate(
-        AlundraEntityScriptProxy entity, IReadOnlyList<AlundraEntityScriptProxy> collidables)
+    public static EntityScriptProxy? FindEntityCollisionCandidate(
+        EntityScriptProxy entity, IReadOnlyList<EntityScriptProxy> collidables)
     {
         // PhysicsEngine.cs:1183-1186 - the subject gate (see this class' own doc on the shared helper).
         if (!EntitySupport.IsEligibleSubject(entity) || collidables.Count == 0)

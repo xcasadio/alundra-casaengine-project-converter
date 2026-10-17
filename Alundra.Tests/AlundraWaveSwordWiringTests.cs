@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Xunit.Abstractions;
 using Alundra.Maps;
@@ -223,7 +222,7 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
     // The shots of the ArcRun: the pointer armed so that the next tick reaches the spawn.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private static void ArmBow(AlundraEntityScriptProxy hero)
+    private static void ArmBow(EntityScriptProxy hero)
     {
         hero.WeaponRecordPointer = WeaponTables.AnimationAddress(8, air: false);
         hero.WeaponStepCounter = WeaponTables.RecordByte(hero.WeaponRecordPointer + 2);
@@ -231,7 +230,7 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
     }
 
     /// <summary>The release of a charge of the steel sword (record 1): the pointer of the charged animation 0x18 (type 27, delay 20), the counter at the delay so that the next tick shoots.</summary>
-    private static void ArmSteelSword(AlundraEntityScriptProxy hero)
+    private static void ArmSteelSword(EntityScriptProxy hero)
     {
         hero.WeaponRecordPointer = WeaponTables.ChargeAnimationAddress(1);
         Assert.Equal(27, WeaponTables.RecordByte(hero.WeaponRecordPointer + 1));

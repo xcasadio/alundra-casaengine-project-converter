@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
@@ -29,7 +28,7 @@ namespace Alundra.Tests;
 /// T4 (docs/plan-transitions-carte.md §3 T4) - <see cref="WarpDirector"/>: the departure
 /// sequence, its own gel gate, and the map-entry disposition (D-T-15) that ends it. Every test resets
 /// the FOUR session singletons this class' own montages touch, plus the three T1 introduced (D-T-14) -
-/// same shape as every other class that constructs an <see cref="AlundraWorldProxy"/>. Joins
+/// same shape as every other class that constructs an <see cref="WorldProxy"/>. Joins
 /// <see cref="AlundraMusicPlayerSingletonCollection"/> (T2.1, docs/plan-bgm-demarrage-binaire.md): the
 /// n/o/p warp-departure tests arm the REAL <see cref="BgmFadeDirector.Instance"/>, which
 /// <see cref="SoundPlayer.PlaySfx"/> reads directly (fact 8) - so this class must never race
@@ -95,8 +94,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
     /// <summary>Same shape as <see cref="BuildGameWithGameManager"/>, plus a real
     /// <see cref="AudioSystemComponent"/> (same recipe as <c>AlundraMusicPlayerTests.BuildGameWithAudio</c>)
-    /// - T2.1's own warp-departure tests (n/o/p) need BOTH <see cref="AlundraWorldProxy.InstallAudioSystems"/>
-    /// (the music) and <see cref="AlundraWorldProxy.InstallWarpSystems"/> (the departure, off the SAME
+    /// - T2.1's own warp-departure tests (n/o/p) need BOTH <see cref="WorldProxy.InstallAudioSystems"/>
+    /// (the music) and <see cref="WorldProxy.InstallWarpSystems"/> (the departure, off the SAME
     /// <see cref="GameManager"/>) on one world.</summary>
     private static CasaEngineGame BuildGameWithAudioAndGameManager(FakeAudioBackend backend, FakeAudioClipProvider provider, out GameManager gameManager)
     {
@@ -124,11 +123,11 @@ public sealed class AlundraWarpDepartureTests : IDisposable
     /// <c>GameplayProxy</c> null - a gap <see cref="FrameSyncPasses.SyncAnimation"/> silently
     /// no-ops on, since it keys off <c>entity.GameplayProxy</c>, not <c>proxy.Owner</c>) - same pattern
     /// as <see cref="NewNpcEntityWithEventTrigger"/>/<see cref="AlundraWorldProxyEntityManipulationTests.NewEntityWithProxy"/>.</summary>
-    private static AlundraEntityScriptProxy NewPlayer(int posXPixels, int posYPixels)
+    private static EntityScriptProxy NewPlayer(int posXPixels, int posYPixels)
     {
-        var entity = new Entity { Name = "player", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "player", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var player = (AlundraEntityScriptProxy)entity.GameplayProxy;
+        var player = (EntityScriptProxy)entity.GameplayProxy;
         player.IsPlayer = true;
         player.Status = EntityStatus.Normal;
         player.PosX = posXPixels << 16;
@@ -139,18 +138,18 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
     private static Entity NewNpcEntityWithEventTrigger()
     {
-        var entity = new Entity { Name = "npc", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "npc", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
+        var proxy = (EntityScriptProxy)entity.GameplayProxy;
         proxy.Status = EntityStatus.Normal;
         proxy.IsPlayer = false;
         proxy.EventTrigger = ScriptHelper.ProgramCTick; // ProgramIndexes[2] defaults to 0 -> RunSpriteEvent.
         return entity;
     }
 
-    private static void AddSpawnedEntity(AlundraWorldProxy proxy, Entity entity)
+    private static void AddSpawnedEntity(WorldProxy proxy, Entity entity)
     {
-        var field = typeof(AlundraWorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var field = typeof(WorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!;
         ((List<Entity>)field.GetValue(proxy)!).Add(entity);
     }
 
@@ -174,7 +173,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             // InstallScreenFadeSystems calls): this world has no "tileMap" entity, so the full
             // InitializeWithWorld would exit through its early return (AlundraWorldProxy.cs:515-520)
             // before ever reaching the install block this test needs.
-            var proxy = new AlundraWorldProxy();
+            var proxy = new WorldProxy();
             proxy.InstallWarpSystems(world);
 
             // Player standing exactly on the source tile's own centre (18,38) - deltaX/deltaY reduce to
@@ -247,12 +246,12 @@ public sealed class AlundraWarpDepartureTests : IDisposable
     public void Update_FreezesNpcEventProgram_AndPlayer_WhileTransitionInProgress_ThenResumesOnceLifted()
     {
         var world = new World { Name = "TestWorld" };
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // no tileMap entity - early return, harmless for this montage.
 
         var npcEntity = NewNpcEntityWithEventTrigger();
         AddSpawnedEntity(proxy, npcEntity);
-        var npc = (AlundraEntityScriptProxy)npcEntity.GameplayProxy;
+        var npc = (EntityScriptProxy)npcEntity.GameplayProxy;
         npc.ScriptHost = proxy;
         npc.TargetAnimationId = 5;
         npc.CurrentAnimationId = 9; // != Target, so SyncAnimation would commute if it ran (§1.5).
@@ -321,7 +320,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
     public void InstallForMapEntry_OnArrivalWorld_LiftsGate_ClearsSequenceAndPendingWorldPath_KeepsArrivalRecordReadable()
     {
         var world1 = new World { Name = "DepartureWorld" };
-        var proxy1 = new AlundraWorldProxy();
+        var proxy1 = new WorldProxy();
         proxy1.InitializeWithWorld(world1);
 
         var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
@@ -339,7 +338,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         // "tileMap" entity either - see the previous test's own comment on InitializeWithWorld's early
         // return).
         var world2 = new World { Name = "ArrivalWorld" };
-        var proxy2 = new AlundraWorldProxy();
+        var proxy2 = new WorldProxy();
         proxy2.InstallWarpSystems(world2); // runs AlundraWarpDirector.InstallForMapEntry (D-T-15).
 
         Assert.False(WarpDirector.Instance.IsTransitionInProgress);
@@ -356,12 +355,12 @@ public sealed class AlundraWarpDepartureTests : IDisposable
     public void Update_ProductionSite_FrozenPassesResume_OnceGateIsLifted()
     {
         var world = new World { Name = "TestWorld" };
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
         var npcEntity = NewNpcEntityWithEventTrigger();
         AddSpawnedEntity(proxy, npcEntity);
-        var npc = (AlundraEntityScriptProxy)npcEntity.GameplayProxy;
+        var npc = (EntityScriptProxy)npcEntity.GameplayProxy;
         npc.ScriptHost = proxy;
 
         var player = NewPlayer(0, 0);
@@ -493,7 +492,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             var world389 = new World { Name = "Ship-389" };
             HeroWorldFixture.SetProperty(world389, nameof(World.Game), game);
-            var proxy389 = new AlundraWorldProxy();
+            var proxy389 = new WorldProxy();
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f); // frame close: track 25 starts.
@@ -517,7 +516,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             var world45 = new World { Name = "Dest-45" };
             HeroWorldFixture.SetProperty(world45, nameof(World.Game), game);
-            var proxy45 = new AlundraWorldProxy();
+            var proxy45 = new WorldProxy();
             proxy45.InstallAudioSystems(world45); // loads 30 (differs from 25) - stops the old voice.
             proxy45.Update(0.02f); // arrival's own first frame close.
 
@@ -554,7 +553,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             var world389 = new World { Name = "Ship-389" };
             HeroWorldFixture.SetProperty(world389, nameof(World.Game), game);
-            var proxy389 = new AlundraWorldProxy();
+            var proxy389 = new WorldProxy();
             proxy389.InstallAudioSystems(world389); // loads track 25, arms ResetSoundFlag - no voice yet.
             proxy389.InstallWarpSystems(world389);
 
@@ -599,7 +598,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             var world389 = new World { Name = "Ship-389" };
             HeroWorldFixture.SetProperty(world389, nameof(World.Game), game);
-            var proxy389 = new AlundraWorldProxy();
+            var proxy389 = new WorldProxy();
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f);
@@ -624,7 +623,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             var world45 = new World { Name = "Dest-45" };
             HeroWorldFixture.SetProperty(world45, nameof(World.Game), game);
-            var proxy45 = new AlundraWorldProxy();
+            var proxy45 = new WorldProxy();
             proxy45.InstallAudioSystems(world45);
             proxy45.Update(0.02f);
 
@@ -658,7 +657,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             var world389 = new World { Name = "Ship-389" };
             HeroWorldFixture.SetProperty(world389, nameof(World.Game), game);
-            var proxy389 = new AlundraWorldProxy();
+            var proxy389 = new WorldProxy();
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f);
@@ -699,7 +698,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             var world389 = new World { Name = "Ship-389" };
             HeroWorldFixture.SetProperty(world389, nameof(World.Game), game);
-            var proxy389 = new AlundraWorldProxy();
+            var proxy389 = new WorldProxy();
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f);
@@ -751,7 +750,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             var world389 = new World { Name = "Ship-389" };
             HeroWorldFixture.SetProperty(world389, nameof(World.Game), game);
-            var proxy389 = new AlundraWorldProxy();
+            var proxy389 = new WorldProxy();
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f); // frame close: track 25 starts.
@@ -777,7 +776,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             var world45 = new World { Name = "Dest-45" };
             HeroWorldFixture.SetProperty(world45, nameof(World.Game), game);
-            var proxy45 = new AlundraWorldProxy();
+            var proxy45 = new WorldProxy();
             proxy45.InstallAudioSystems(world45); // loads 30 (differs from 25) - stops the old voice.
             proxy45.Update(0.02f); // arrival's own first frame close.
 
@@ -809,7 +808,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             var world389 = new World { Name = "Ship-389" };
             HeroWorldFixture.SetProperty(world389, nameof(World.Game), game);
-            var proxy389 = new AlundraWorldProxy();
+            var proxy389 = new WorldProxy();
             proxy389.InstallAudioSystems(world389);
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f);
@@ -834,7 +833,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             var world45 = new World { Name = "Dest-45" };
             HeroWorldFixture.SetProperty(world45, nameof(World.Game), game);
-            var proxy45 = new AlundraWorldProxy();
+            var proxy45 = new WorldProxy();
             proxy45.InstallAudioSystems(world45);
             proxy45.Update(0.02f);
 
@@ -907,7 +906,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         return Guid.Parse(assetIdText);
     }
 
-    private static AlundraEntityScriptProxy NewPlayerWithController(float gravity, float maxFallSpeed)
+    private static EntityScriptProxy NewPlayerWithController(float gravity, float maxFallSpeed)
     {
         var player = NewPlayer(posXPixels: 0, posYPixels: 0);
         var controller = new CharacterControllerComponent();

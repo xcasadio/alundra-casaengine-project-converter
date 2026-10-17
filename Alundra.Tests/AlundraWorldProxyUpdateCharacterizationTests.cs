@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -18,11 +17,13 @@ using Alundra.Events;
 using Alundra.Cameras;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Hero;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
-/// Characterization test for <see cref="AlundraWorldProxy.Update"/> (docs/plan-update-caracterisation.md
+/// Characterization test for <see cref="WorldProxy.Update"/> (docs/plan-update-caracterisation.md
 /// S1) - the method had ZERO coverage before this file, both direct (no test calls it) and indirect
 /// (<c>World.Update</c> only reaches the proxy through a live <c>Game.ExecutionPolicy</c>, which no test
 /// wires - see the plan's §1). This file exists PURELY to pin the CURRENT behaviour of steps 2-4 of
@@ -40,7 +41,7 @@ namespace Alundra.Tests;
 /// a <c>Game</c> without reflected <c>GameManager</c>/<c>ViewManager</c>, and S1 does not need one since
 /// every wiring step it pins is a documented no-op without a live game.</description></item>
 /// <item><description>The world's <see cref="World.Name"/> carries NO trailing <c>-&lt;digits&gt;</c> -
-/// <see cref="AlundraWorldProxy.InitializeWithWorld"/> calls <c>_backdropRenderer.Load</c> BEFORE its own
+/// <see cref="WorldProxy.InitializeWithWorld"/> calls <c>_backdropRenderer.Load</c> BEFORE its own
 /// early return, and that <c>Load</c> dereferences <c>world.Game</c> unless <c>BackdropLoader.Load</c>
 /// degrades to null first, which only happens for a name with no map index.</description></item>
 /// <item><description>A camera entity added DIRECTLY to the mutable <c>World.Entities</c> list -
@@ -52,8 +53,8 @@ namespace Alundra.Tests;
 /// camera's <c>Viewport</c> stays <c>default</c> (Height 0). Since E19.s the engine owns the zoom
 /// (engine ADR-0048): <c>ResolveDebugCameraOnce</c> no longer touches it, so <c>Zoom</c> stays at the
 /// <see cref="Camera2dComponent"/> default of 1.0. Pinned as such, not guessed.</description></item>
-/// <item><description>An explicit followed target (<see cref="AlundraWorldProxy.EntityFollowedByCamera"/>)
-/// that <see cref="AlundraEntityScriptProxy.IsLoadedNormalOrDeactivated"/>, whose logical position is
+/// <item><description>An explicit followed target (<see cref="WorldProxy.EntityFollowedByCamera"/>)
+/// that <see cref="EntityScriptProxy.IsLoadedNormalOrDeactivated"/>, whose logical position is
 /// moved between frames by stated pixel amounts - without one the look-at never changes and items 4/5/6
 /// below would have nothing to observe.</description></item>
 /// <item><description><c>_debugCameraOffset</c> seeded to a NON-ZERO value by reflection, isolated in the
@@ -61,7 +62,7 @@ namespace Alundra.Tests;
 /// <c>UpdateDebugCameraPan</c>'s own pan step is the IDENTITY on <c>Target</c> (base adopts
 /// <c>Target</c> itself when it changed), so the pan's own contribution - and swapping steps 3/4 - would
 /// be completely unobservable.</description></item>
-/// <item><description><see cref="AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests"/> set
+/// <item><description><see cref="WorldProxy.SetDebugCameraPanEnabledOverrideForTests"/> set
 /// explicitly (constructor/<see cref="IDisposable.Dispose"/> below) - the real static/env-var seam is
 /// documented as unreliable under a shared xunit host.</description></item>
 /// </list>
@@ -81,7 +82,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         // through the test seam explicitly instead. The value itself is inert for every scenario below
         // (world.Game is always null here, so UpdateDebugCameraPan's gamepad branch never runs at all),
         // but the plan requires calling it anyway rather than relying on the static's own initial state.
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
@@ -94,7 +95,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
 
     public void Dispose()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
 
         // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
         // isolation) - kept for symmetry with the existing session-singleton test classes.
@@ -127,10 +128,10 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         return camera;
     }
 
-    /// <summary>A followed-target proxy that <see cref="AlundraEntityScriptProxy.IsLoadedNormalOrDeactivated"/>
+    /// <summary>A followed-target proxy that <see cref="EntityScriptProxy.IsLoadedNormalOrDeactivated"/>
     /// (<see cref="EntityStatus.Normal"/>) at the given LOGICAL pixel position (converted to this proxy's
     /// own 16.16 fixed-point <c>PosX</c>/<c>PosY</c>/<c>PosZ</c> units).</summary>
-    private static AlundraEntityScriptProxy BuildFollowedTarget(int posXPixels, int posYPixels, int posZPixels = 0)
+    private static EntityScriptProxy BuildFollowedTarget(int posXPixels, int posYPixels, int posZPixels = 0)
         => new()
         {
             Status = EntityStatus.Normal,
@@ -141,7 +142,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
 
     /// <summary>The ONE reflection seam this montage needs (plan §3 S1: isolated so S2 has a single line
     /// to re-point once <c>_debugCameraOffset</c> moves to the new camera-wiring collaborator).</summary>
-    private static void SeedDebugCameraOffset(AlundraWorldProxy proxy, Vector3 offset)
+    private static void SeedDebugCameraOffset(WorldProxy proxy, Vector3 offset)
     {
         var field = typeof(CameraDirector).GetField("_debugCameraOffset", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
@@ -162,7 +163,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         var world = BuildHeadlessWorld();
         var camera = AddCameraEntity(world);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         SeedDebugCameraOffset(proxy, SeededOffset);
 
@@ -193,7 +194,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         var world = BuildHeadlessWorld();
         var camera = AddCameraEntity(world);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         SeedDebugCameraOffset(proxy, SeededOffset);
 
@@ -229,7 +230,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         var world = BuildHeadlessWorld();
         var camera = AddCameraEntity(world);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         SeedDebugCameraOffset(proxy, SeededOffset);
         proxy.EntityFollowedByCamera = BuildFollowedTarget(posXPixels: 0, posYPixels: 0);
@@ -258,7 +259,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
     [Fact]
     public void CharacterizedDefect_UpdateBeforeInitializeWithWorld_PermanentlyDisablesCamera_SeeFollowUpU1()
     {
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
 
         // The premature call: _world is still null here. ResolveDebugCameraOnce sets its one-shot latch
         // BEFORE checking _world != null (trap 1) - so the camera lookup never gets a second chance, ever.
@@ -297,7 +298,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         var world = BuildHeadlessWorld();
         var camera = AddCameraEntity(world);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         SeedDebugCameraOffset(proxy, SeededOffset);
 
@@ -326,7 +327,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         var world = BuildHeadlessWorld();
         var camera = AddCameraEntity(world);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         SeedDebugCameraOffset(proxy, SeededOffset);
 
@@ -404,13 +405,13 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         var world = BuildHeadlessWorld();
         var camera = AddCameraEntity(world);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // no "tileMap" entity -> early return, PlayerEntity stays null.
 
         // Seed PlayerEntity == EntityFollowedByCamera (same instance, see montage note above), Normal so
         // IsLoadedNormalOrDeactivated holds, at an arbitrary PRE-move position - anything other than the
         // 0x64's own target below, so a camera reading the stale position is observably wrong.
-        var playerProxy = new AlundraEntityScriptProxy
+        var playerProxy = new EntityScriptProxy
         {
             Status = EntityStatus.Normal,
             PosX = 1 << 16,
@@ -506,7 +507,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
             + "converter export of map 389 and cannot self-skip without one (docs/plan-camera-premiere-frame.md §4).");
     }
 
-    /// <summary>Reflection seam for two <see cref="AlundraWorldProxy"/> fields this montage needs but
+    /// <summary>Reflection seam for two <see cref="WorldProxy"/> fields this montage needs but
     /// that carry no test-only accessor: <c>_tileMapData</c> (plan §4 needs the REAL map-389 tilemap
     /// installed there, exactly as <c>InitializeWithWorld</c> itself does, so the camera's map-bounds
     /// clamp and the map-events/record-spawn loops below all see real data) and <c>_world</c> - without
@@ -514,16 +515,16 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
     /// <c>Update</c>) sees a null world and never resolves the camera entity this montage already added,
     /// which would make every later <c>UpdateCameraFollow</c> call an unconditional no-op
     /// (<c>if (_debugCamera == null) return;</c>) - not the defect this montage exists to reproduce.</summary>
-    private static void SetTileMapData(AlundraWorldProxy proxy, TileMapData tileMapData)
+    private static void SetTileMapData(WorldProxy proxy, TileMapData tileMapData)
     {
-        var field = typeof(AlundraWorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic);
+        var field = typeof(WorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
         field!.SetValue(proxy, tileMapData);
     }
 
-    private static void SetWorld(AlundraWorldProxy proxy, World world)
+    private static void SetWorld(WorldProxy proxy, World world)
     {
-        var field = typeof(AlundraWorldProxy).GetField("_world", BindingFlags.Instance | BindingFlags.NonPublic);
+        var field = typeof(WorldProxy).GetField("_world", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
         field!.SetValue(proxy, world);
     }
@@ -532,32 +533,32 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
     /// spawn loop below needs to land its entities there directly, exactly like
     /// <c>InitializeWithWorld</c>'s own record-spawn loop and <c>AdoptPlayerPawn</c>'s own trailing
     /// <c>_spawnedEntities.Add(entity)</c> do.</summary>
-    private static System.Collections.Generic.List<Entity> GetSpawnedEntities(AlundraWorldProxy proxy)
+    private static System.Collections.Generic.List<Entity> GetSpawnedEntities(WorldProxy proxy)
     {
-        var field = typeof(AlundraWorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic);
+        var field = typeof(WorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
         return (System.Collections.Generic.List<Entity>)field!.GetValue(proxy)!;
     }
 
     /// <summary>
     /// Builds the real map-389 montage the reproduction test needs (plan §4): headless <see cref="World"/>
-    /// + camera entity, a real <see cref="AlundraWorldProxy"/> with the real map-389
+    /// + camera entity, a real <see cref="WorldProxy"/> with the real map-389
     /// <see cref="TileMapData"/> installed as <c>_tileMapData</c>, the player seeded EXACTLY as
-    /// <see cref="AlundraWorldProxy"/>'s own private <c>AdoptPlayerPawn</c> does (tile 33/59 -&gt; px
+    /// <see cref="WorldProxy"/>'s own private <c>AdoptPlayerPawn</c> does (tile 33/59 -&gt; px
     /// 804/952 - <see cref="GameState.CameraTileX"/>/<see cref="GameState.CameraTileY"/>,
     /// <c>PlayerEntity</c> == <c>EntityFollowedByCamera</c> - <c>AdoptPlayerPawn</c> itself is not
-    /// headless-reachable, it needs a live <see cref="AlundraPlayerController"/>, the same reason
+    /// headless-reachable, it needs a live <see cref="HeroController"/>, the same reason
     /// <c>IntroTraceHarnessTests</c>' own <c>HeadlessIntroSimulation</c> seeds its player by hand too), the
     /// 14 "Entities" records this map's own spawn-zone gate actually admits through the SAME production
     /// seam <c>InitializeWithWorld</c> itself uses (<see cref="EntitySpawnFactory.ShouldSpawnRecord"/>/
     /// <see cref="EntitySpawnFactory.CreateBareEntityFromRecord"/> - the bare-entity, not
     /// prefab-clone, path, since this headless montage has no <c>World.Game.AssetContentManager</c> to
-    /// clone a prefab through), map events built through the real <see cref="AlundraWorldProxy.BuildMapEvents"/>,
+    /// clone a prefab through), map events built through the real <see cref="WorldProxy.BuildMapEvents"/>,
     /// and the real bytecode interpreter (<see cref="EventProgramRunner"/>) wired over map 389's own
     /// real event-code document (the same file <see cref="MapEventProgramLoader"/> loads in production).
     ///
     /// The player entity is built through <c>Entity.Initialize()</c> off a bare
-    /// <c>GameplayProxyClassName</c> (not a hand-built <see cref="AlundraEntityScriptProxy"/> wired to a
+    /// <c>GameplayProxyClassName</c> (not a hand-built <see cref="EntityScriptProxy"/> wired to a
     /// separate <c>new Entity()</c>) so <c>Entity.GameplayProxy</c> - private-set, only ever assigned by
     /// <c>Entity.Initialize()</c>'s own <c>ElementFactory</c> resolution - actually round-trips back to
     /// the SAME proxy instance this method configures, exactly like the engine-spawned pawn
@@ -565,7 +566,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
     /// <c>RefreshUpdateProxiesAndCollidables</c> (reads <c>entity.GameplayProxy is AlundraEntityScriptProxy</c>)
     /// would silently drop the player out of <c>_updateProxies</c>.
     /// </summary>
-    private static (AlundraWorldProxy Proxy, Camera2dComponent Camera) BuildMap389Montage()
+    private static (WorldProxy Proxy, Camera2dComponent Camera) BuildMap389Montage()
     {
         var projectRoot = FindProjectRootForCameraTests();
 
@@ -579,7 +580,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapFile!)));
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         SetTileMapData(proxy, tileMapData);
         SetWorld(proxy, world);
         proxy.SpriteRecordCatalog = new SpriteRecordCatalog(projectRoot);
@@ -589,9 +590,9 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         // Player - see this method's own doc for why it goes through Entity.Initialize() rather than a
         // hand-built proxy/Entity pair, and AdoptPlayerPawn's own doc for the exact field set this mirrors
         // (New Game tile (33,59), tile-centre 16.16 fixed-point pose (804,952,0), Status=Normal).
-        var playerEntity = new Entity { GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var playerEntity = new Entity { GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         playerEntity.Initialize();
-        var playerProxy = (AlundraEntityScriptProxy)playerEntity.GameplayProxy!;
+        var playerProxy = (EntityScriptProxy)playerEntity.GameplayProxy!;
         playerProxy.IsPlayer = true;
         playerProxy.LogicContextEntity = playerEntity;
         playerProxy.ScriptHost = proxy;
@@ -624,7 +625,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
             }
 
             var entity = EntitySpawnFactory.CreateBareEntityFromRecord(record, proxy.SpriteRecordCatalog, tileMapData: tileMapData);
-            if (entity.GameplayProxy is AlundraEntityScriptProxy spawnedProxy)
+            if (entity.GameplayProxy is EntityScriptProxy spawnedProxy)
             {
                 spawnedProxy.ScriptHost = proxy;
             }
@@ -672,7 +673,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         var world = BuildHeadlessWorld();
         var camera = AddCameraEntity(world);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // arms the first-frame snap (ArmFirstFrameSnap).
         SeedDebugCameraOffset(proxy, SeededOffset);
 
@@ -710,7 +711,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
     [Fact]
     public void LogicTicksThisFrame_FirstFrameFloorIsStickyForEveryCallThatFrame_NotJustTheFirst()
     {
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
 
         // Frame 1, driven at 60Hz (1/60s < 1/50s - carries ZERO raw ticks): the floor must apply to
         // EVERY call this frame, not just the first - in production the FIRST caller is an entity's own

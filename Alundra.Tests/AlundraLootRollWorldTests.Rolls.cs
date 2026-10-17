@@ -2,13 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
 using static Alundra.Tests.AlundraLootOracle;
 using Alundra.Rng;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -136,7 +136,7 @@ public sealed partial class AlundraLootRollWorldTests
         var seed = U(row.GetProperty("rng_in"));
 
         var armed = true;
-        AlundraWorldProxy.CreationFaultHookForTests = (site, _) =>
+        WorldProxy.CreationFaultHookForTests = (site, _) =>
         {
             if (armed && site == "sprite-index")
             {
@@ -200,7 +200,7 @@ public sealed partial class AlundraLootRollWorldTests
     {
         // The binary writes +0x40 = 0 for a creation without a record, whatever the slot held (the dirty-slot vector of the oracle); the roll must not read the leftover as a record flag.
         using var arc = Arc14("m7");
-        var helper = typeof(AlundraWorldProxy).GetMethod("RollLootAtCreation", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+        var helper = typeof(WorldProxy).GetMethod("RollLootAtCreation", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
         var spawned = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, 3, HeroX << 16, HeroY << 16, -1, 0x10)!;
         spawned.ContentsGameFlag = 0x1234;
         spawned.ContentsItemId = 99;

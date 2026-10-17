@@ -1,8 +1,8 @@
 #nullable enable
 
-using Alundra.Scripts;
 using Alundra.UI.Inventory;
 using Alundra.UI.SubInventory;
+using Alundra.Maps;
 
 namespace Alundra.UI.Shared;
 
@@ -10,7 +10,7 @@ namespace Alundra.UI.Shared;
 /// E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21): port of <c>g_postProcessState</c>
 /// (<c>StaticVariables.cs:13098</c>) and of the post-process block that reads/writes it
 /// (<c>GraphicManager.cs:1691-1706</c>), run once per LOGIC TICK, in the inventory block at the end of each tick of
-/// <see cref="AlundraWorldProxy"/>'s loop of the passes (E19.u, ADR-0050), AFTER both <see cref="InventoryDirector.Tick"/> and
+/// <see cref="WorldProxy"/>'s loop of the passes (E19.u, ADR-0050), AFTER both <see cref="InventoryDirector.Tick"/> and
 /// <see cref="SubInventoryDirector.Tick"/> - the same "after all thirteen callbacks" position the
 /// original's own post-process holds inside <c>GraphicManager.UpdateUserInterface</c>. It replaces the
 /// director's own <c>_pendingSubInventoryTransition</c> hook (SI3): one state shared by BOTH inventories,
@@ -63,7 +63,7 @@ public sealed class InventoryPostProcess
     /// <summary>Port of the post-process block (<c>GraphicManager.cs:1691-1706</c>), called once per logic
     /// tick after both directors' own <see cref="InventoryDirector.Tick"/>/
     /// <see cref="SubInventoryDirector.Tick"/> (the inventory block at the end of each tick of
-    /// <see cref="AlundraWorldProxy"/>'s loop of the passes, E19.u).</summary>
+    /// <see cref="WorldProxy"/>'s loop of the passes, E19.u).</summary>
     public void Run()
     {
         // :1693-1697 - state 1, main inventory's own rappel free -> open the sub-inventory (StartFadeOut's

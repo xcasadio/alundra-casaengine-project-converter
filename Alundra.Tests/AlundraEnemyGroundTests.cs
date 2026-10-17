@@ -2,17 +2,17 @@
 using System;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.Physics;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E14.a0b T2 (docs/plan-e14-ia-native.md section 1.2): the floor (<c>FloorHeight</c>) and the four corner heights (<c>MapHeights</c>) of the entities other than the hero
-/// (<see cref="AlundraEntityScriptProxy.UpdateEnemyGroundHeights(CasaEngine.Engine.Physics.ICollisionField?)"/>), against the real code of <c>ALUN_CD.EXE</c> (France): <c>docs/plan-e14-annexe/e14a/oracle/out/h2/map_&lt;N&gt;.txt.gz</c>,
+/// (<see cref="EntityScriptProxy.UpdateEnemyGroundHeights(CasaEngine.Engine.Physics.ICollisionField?)"/>), against the real code of <c>ALUN_CD.EXE</c> (France): <c>docs/plan-e14-annexe/e14a/oracle/out/h2/map_&lt;N&gt;.txt.gz</c>,
 /// 1,711 rows on the REAL cells of maps 14, 115 and 116 (here read from the converter's export of the same maps), bodies and hero, flat and raised ground, creation, physics step and displaced bodies.
 /// The single formula under test: every height of the DLL is the binary's minus 1 (ADR-0026), so <c>FloorHeight(DLL) = floor(binary) - 1</c> and <c>MapHeights[k](DLL) = corner(binary)[k] - 1</c>; hence
 /// <c>FloorHeight - MapHeights[k]</c> and the difference of the floors of a body and of the hero are the binary's. The expected values are the oracle's, never computed by the code under test.
@@ -39,7 +39,7 @@ public sealed class AlundraEnemyGroundTests
     }
 
     /// <summary>A proxy with the box of one block of the oracle (the binary's fields, which the DLL names Pos/Mod/Width/Height/Depth).</summary>
-    internal static AlundraEntityScriptProxy Body(int[] block) => new()
+    internal static EntityScriptProxy Body(int[] block) => new()
     {
         SpriteType = 0x100 + 79,
         PosX = block[EnemyGroundRow.PosX],
@@ -123,7 +123,7 @@ public sealed class AlundraEnemyGroundTests
     [Fact]
     public void UpdateEnemyGroundHeights_WithoutAField_OrForABareProxy_LeavesTheEntityAlone()
     {
-        var proxy = new AlundraEntityScriptProxy { FloorHeight = 7, SpriteType = 0x100 + 79 };
+        var proxy = new EntityScriptProxy { FloorHeight = 7, SpriteType = 0x100 + 79 };
         proxy.MapHeights[2] = 9;
 
         proxy.UpdateEnemyGroundHeights(null);
@@ -132,7 +132,7 @@ public sealed class AlundraEnemyGroundTests
         Assert.Equal(9, proxy.MapHeights[2]);
 
         // a proxy that was never created from a sprite record (SpriteType -1): the harness pawns, whatever the field
-        var bare = new AlundraEntityScriptProxy { FloorHeight = 7 };
+        var bare = new EntityScriptProxy { FloorHeight = 7 };
         bare.UpdateEnemyGroundHeights(LoadField(14));
         Assert.Equal(7, bare.FloorHeight);
         Assert.Equal(0, bare.MapHeights[0]);

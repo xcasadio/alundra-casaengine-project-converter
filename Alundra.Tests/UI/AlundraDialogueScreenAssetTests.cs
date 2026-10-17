@@ -1,4 +1,3 @@
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Configuration.Project;
@@ -11,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.UI.Speech;
+using Alundra.Maps;
 
 namespace Alundra.Tests.UI;
 
@@ -151,7 +151,7 @@ public sealed class AlundraDialogueScreenAssetTests
     public void OnEndPlay_DisposesTheDialoguePresenter()
     {
         var assets = NewAssets();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.AttachDialoguePresenterForTests(new DialoguePresenter(new NullUIViewRuntime(), assetContentManager: assets));
 
         proxy.OnEndPlay(null!);

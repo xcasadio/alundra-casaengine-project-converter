@@ -3,13 +3,12 @@ using System;
 using System.Collections.Generic;
 using Alundra.Session;
 using Alundra.Items;
-using Alundra.Scripts;
 using Alundra.UI.Inventory;
 
 namespace Alundra.UI.SubInventory;
 
 /// <summary>The whole sub-inventory screen's display state for one tick - <see cref="SubInventoryComposer.Compose"/>'s
-/// own return value, written into <see cref="AlundraSubInventoryViewModel"/> by
+/// own return value, written into <see cref="SubInventoryViewModel"/> by
 /// <see cref="SubInventoryPresenter"/>. <see cref="Visible"/> false means every other member is a
 /// default/empty placeholder - same "IsDrawn faux -&gt; liste vide" contract as
 /// <see cref="InventoryDisplayModel"/>.</summary>

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using CasaEngine.Framework.Scripting;
@@ -56,28 +55,28 @@ public sealed class AlundraTickStructureTests : IDisposable
 
     private sealed class RecordingRunner : IEventProgramRunner
     {
-        public readonly List<(int Tick, AlundraEntityScriptProxy Entity, int Slot)> Calls = new();
+        public readonly List<(int Tick, EntityScriptProxy Entity, int Slot)> Calls = new();
         public Func<int> CurrentTick = () => 0;
-        public Action<AlundraEntityScriptProxy, int>? OnScript;
+        public Action<EntityScriptProxy, int>? OnScript;
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             Calls.Add((CurrentTick(), entity, programSlot));
             OnScript?.Invoke(entity, programSlot);
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity) => Calls.Add((CurrentTick(), entity, -1));
+        public void RunSpriteEvent(EntityScriptProxy entity) => Calls.Add((CurrentTick(), entity, -1));
     }
 
     /// <summary>A real world driven by <c>World.Update</c> (a game with the runtime policy, a flat field), its gameplay proxy, a hero with a real controller and one NPC.</summary>
     private sealed class Rig
     {
         public readonly World World;
-        public readonly AlundraWorldProxy Proxy = new();
+        public readonly WorldProxy Proxy = new();
         public readonly Entity HeroEntity;
-        public readonly AlundraEntityScriptProxy Hero;
+        public readonly EntityScriptProxy Hero;
         public readonly Entity NpcEntity;
-        public readonly AlundraEntityScriptProxy Npc;
+        public readonly EntityScriptProxy Npc;
         public readonly RecordingRunner Runner = new();
         public readonly List<string> Trace = new();
         public uint Hold;
@@ -94,9 +93,9 @@ public sealed class AlundraTickStructureTests : IDisposable
             Proxy.EventProgramRunner = Runner;
             Runner.CurrentTick = () => Tick;
 
-            var controller = new AlundraPlayerController { PadStateProviderForTests = () => Sample ?? new PadState { ButtonsHold = Hold } };
-            typeof(AlundraWorldProxy).GetField("_playerController", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Proxy, controller);
-            _spawned = (List<Entity>)typeof(AlundraWorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Proxy)!;
+            var controller = new HeroController { PadStateProviderForTests = () => Sample ?? new PadState { ButtonsHold = Hold } };
+            typeof(WorldProxy).GetField("_playerController", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Proxy, controller);
+            _spawned = (List<Entity>)typeof(WorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Proxy)!;
 
             var settings = HeroWorldFixture.LoadHeroControllerSettings(ProjectRootFinder.Find());
             (HeroEntity, Hero) = HeroWorldFixture.BuildHeroPawn(World, settings, new Vector3(200.25f, 100.5f, 0f), Proxy);
@@ -128,13 +127,13 @@ public sealed class AlundraTickStructureTests : IDisposable
             };
         }
 
-        public (Entity Entity, AlundraEntityScriptProxy Proxy) AddNpc(int xPixels, int yPixels)
+        public (Entity Entity, EntityScriptProxy Proxy) AddNpc(int xPixels, int yPixels)
         {
             var root = new TransformComponent();
             root.LocalTransform.Position = new Vector3(xPixels, yPixels, 0f);
-            var entity = new Entity { Name = "npc", RootComponent = root, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+            var entity = new Entity { Name = "npc", RootComponent = root, GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
             entity.Initialize();
-            var npc = (AlundraEntityScriptProxy)entity.GameplayProxy;
+            var npc = (EntityScriptProxy)entity.GameplayProxy;
             npc.ScriptHost = Proxy;
             npc.Status = EntityStatus.Normal;
             npc.EventTrigger = ScriptHelper.ProgramUnknown; // as the spawn seeds it: nothing picked yet.
@@ -185,7 +184,7 @@ public sealed class AlundraTickStructureTests : IDisposable
     {
         var rig = BuildWarmRig();
         var seen = new List<PadState>();
-        AlundraEntityScriptProxy.PadOfTickSeenForTests = seen.Add;
+        EntityScriptProxy.PadOfTickSeenForTests = seen.Add;
         try
         {
             rig.Sample = new PadState { ButtonsHold = PadState.Right, StickBitsHold = PadState.Right, DigitalDirectionBitsHold = 0, StickX = 0.9f, StickY = 0.3f };
@@ -193,7 +192,7 @@ public sealed class AlundraTickStructureTests : IDisposable
         }
         finally
         {
-            AlundraEntityScriptProxy.PadOfTickSeenForTests = null;
+            EntityScriptProxy.PadOfTickSeenForTests = null;
         }
 
         Assert.Equal(2, seen.Count);
@@ -378,7 +377,7 @@ public sealed class AlundraTickStructureTests : IDisposable
         // The rig adds the entity as the map load would: without JoinsBirthTick. An entity a script opcode made from a record (0x2D, 0x8A, 0x8B), or the interface of the sprite index, takes part in the tick that
         // sees it born instead (E20.e0a3b, E20.e0a4: AlundraBirthTickTests, AlundraRecordBirthTickTests).
         var rig = BuildWarmRig();
-        AlundraEntityScriptProxy? newcomer = null;
+        EntityScriptProxy? newcomer = null;
         var spawnTick = -1;
         rig.OnPass = name =>
         {

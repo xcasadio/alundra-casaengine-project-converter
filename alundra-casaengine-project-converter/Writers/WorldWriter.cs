@@ -139,7 +139,7 @@ public static class WorldWriter
 
     // The world-level GameplayProxy class, implemented in the Alundra gameplay DLL
     // (Alundra/Scripts/AlundraWorldProxy.cs) and resolved by full name (namespace included) at runtime.
-    private const string WorldScriptClassName = "Alundra.Scripts.AlundraWorldProxy";
+    private const string WorldScriptClassName = "Alundra.Maps.WorldProxy";
 
     // docs/demarrage-nouvelle-partie.md section 2.1: the only documented spawn in the whole game.
     // g_saveData.InitialMapId = 389, CameraTileX/Y/Z = 33 / 59 / 0.

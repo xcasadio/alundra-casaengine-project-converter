@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Assets.Animations;
@@ -42,7 +41,7 @@ public sealed class AlundraHitPassRulesTests
     private sealed class Actor
     {
         public readonly Entity Entity;
-        public readonly AlundraEntityScriptProxy Proxy;
+        public readonly EntityScriptProxy Proxy;
 
         public Actor(
             uint flags, int x, int y, int z, BalanceRecord? record = null, (int Ox, int Oy, int Oz, int W, int D, int H)? box = null, (int W, int D, int H)? body = null, int animationByte = 0)
@@ -68,9 +67,9 @@ public sealed class AlundraHitPassRulesTests
             data.CollisionKeyframes.Add(keyframe);
             sprite.AddAnimation(new Animation2d(data));
 
-            Entity = new Entity { Name = "actor", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = sprite };
+            Entity = new Entity { Name = "actor", GameplayProxyClassName = typeof(EntityScriptProxy).FullName!, RootComponent = sprite };
             Entity.Initialize();
-            Proxy = (AlundraEntityScriptProxy)Entity.GameplayProxy;
+            Proxy = (EntityScriptProxy)Entity.GameplayProxy;
             Proxy.LogicContextEntity = Entity;
             Proxy.Status = EntityStatus.Normal;
             Proxy.Flags = flags;
@@ -84,7 +83,7 @@ public sealed class AlundraHitPassRulesTests
             Proxy.LoadAnimationSwitch(0, 0, fromClock: false);
         }
 
-        public static implicit operator AlundraEntityScriptProxy(Actor actor) => actor.Proxy;
+        public static implicit operator EntityScriptProxy(Actor actor) => actor.Proxy;
     }
 
     /// <summary>A record with the given responses (the first, for the attack nibble 1, is <paramref name="response"/>; the rest 16) and the given attacks.</summary>
@@ -345,7 +344,7 @@ public sealed class AlundraHitPassRulesTests
     [Fact]
     public void ATargetWithACooldown_ADamagedCounter_OrTheAnimationByte0x40_IsSkipped_AndATargetWithNoneIsHit()
     {
-        foreach (var (name, setup, hit) in new (string, Action<AlundraEntityScriptProxy>, bool)[]
+        foreach (var (name, setup, hit) in new (string, Action<EntityScriptProxy>, bool)[]
         {
             ("control", _ => { }, true),
             ("+0x1D0", t => t.FrameCollisionTickCounter = 5, false),
@@ -477,10 +476,10 @@ public sealed class AlundraHitPassRulesTests
         hero.Proxy.TargetAnimationId = 0x31;
         hero.Proxy.CurrentAnimationId = 0x10;
         var pass = new HitPass();
-        pass.Run(Array.Empty<AlundraEntityScriptProxy>(), hero.Proxy, null);
+        pass.Run(Array.Empty<EntityScriptProxy>(), hero.Proxy, null);
         Assert.Equal(0x31u, pass.HeroAnimationLatch);
         hero.Proxy.TargetAnimationId = 0x04;
-        pass.Run(new List<AlundraEntityScriptProxy> { hero.Proxy }, hero.Proxy, null);
+        pass.Run(new List<EntityScriptProxy> { hero.Proxy }, hero.Proxy, null);
         Assert.Equal(0x04u, pass.HeroAnimationLatch);
     }
 }

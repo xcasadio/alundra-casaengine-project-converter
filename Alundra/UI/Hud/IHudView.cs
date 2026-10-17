@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Alundra.Hero;
-using Alundra.Scripts;
 using Alundra.UI.Speech;
+using Alundra.Maps;
 
 namespace Alundra.UI.Hud;
 
 /// <summary>
-/// E13 C3 (docs/plan-e13-hud.md, D-E13-8): the seam <see cref="AlundraHudViewModel"/> implements (the screen's
+/// E13 C3 (docs/plan-e13-hud.md, D-E13-8): the seam <see cref="HudViewModel"/> implements (the screen's
 /// view model since the bound screens program, parent ADR-0002; <see cref="HudScreen"/> itself before) so
 /// <see cref="HudPresenter"/> can push state INTO it every LOGIC tick without <see cref="HudScreen"/>
 /// ever depending on <see cref="CasaEngine.Framework.UI.IUIScreen.Update"/> - the exact freeze C2's own
@@ -17,7 +17,7 @@ namespace Alundra.UI.Hud;
 /// <see cref="CasaEngine.Framework.UI.ScreenStack"/> from calling <c>Update</c> on every screen below it
 /// (<c>CasaEngine/Framework/UI/ScreenStack.cs:5-13</c>), so the jauge must be driven from OUTSIDE that
 /// call, exactly like <see cref="HudDirector"/> itself already is (from
-/// <see cref="AlundraWorldProxy.Update(float)"/>'s own tick loop).
+/// <see cref="WorldProxy.Update(float)"/>'s own tick loop).
 ///
 /// <para>Also the reason this interface exists at all rather than the presenter reaching straight into
 /// <see cref="HudScreen"/>'s own <c>MGCanvas</c>: a real <c>MGWindow</c>/<c>MGCanvas</c> is not

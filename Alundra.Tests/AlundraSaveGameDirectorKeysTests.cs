@@ -2,13 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.SaveGames;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Session;
 using Alundra.SaveGames;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -47,7 +47,7 @@ public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
         return (keyboard, slots);
     }
 
-    private static void Frame(AlundraEntityScriptProxy? hero, string worldName = Map389WorldName)
+    private static void Frame(EntityScriptProxy? hero, string worldName = Map389WorldName)
         => Director.UpdateRecipeKeys(null, GameState.Instance, worldName, hero);
 
     // ---- K2: the switch ---------------------------------------------------------------------------------------

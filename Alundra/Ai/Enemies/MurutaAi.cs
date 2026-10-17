@@ -2,8 +2,8 @@
 using System;
 using Alundra.Maps;
 using Alundra.Events;
-using Alundra.Scripts;
 using Alundra.Rng;
+using Alundra.Entities;
 
 namespace Alundra.Ai.Enemies;
 
@@ -12,7 +12,7 @@ namespace Alundra.Ai.Enemies;
 /// (<c>0x8007DE04</c>, slot D, code 9) of the master table <c>0x80098F4C</c> - registered in the registry of the native sprite handlers (<see cref="NativeSpriteRegistry"/>) for the type 347 only. E1 (its death) is
 /// <c>DestroyEntity(e, -1)</c> of the host (E14.a1b). They are ported from the real code of <c>ALUN_CD.EXE</c> (France) run in the emulator of the E14.a1 oracle (<c>docs/plan-e14-annexe/e14a/oracle-a1</c>: 4,043 single-call vectors
 /// of C10, 720 of D9, 6 of A0, and the calls of the scenarios MU-*) and compared call by call (<c>AlundraMurutaOracleTests</c>). The fields they read are tied to the DLL's in the table of the plan (section 1.3c): the tile, floor
-/// and corner heights of the entity and of the hero, the direction of the TICK (<see cref="AlundraEntityScriptProxy.BoxDirection"/>, D-E14-6), the hero's frame box (the FIELD <see cref="AlundraEntityScriptProxy.HasFrameBox"/>, never
+/// and corner heights of the entity and of the hero, the direction of the TICK (<see cref="EntityScriptProxy.BoxDirection"/>, D-E14-6), the hero's frame box (the FIELD <see cref="EntityScriptProxy.HasFrameBox"/>, never
 /// re-evaluated) and current attack, the generator's word (<see cref="GameRandom"/>) and the sound player.
 /// <para>
 /// Not ported: the branch of C10 for the map <c>0x99</c> (the BSS word <c>[0x800DC5A0]</c> read at <c>0x80068164</c>, then the parent entity at <c>+0x0C</c>, <c>0x80068178</c>-<c>0x8006819C</c>): no record of the map 153 places a 347, the branch is
@@ -22,7 +22,7 @@ namespace Alundra.Ai.Enemies;
 /// </summary>
 internal static class MurutaAi
 {
-    /// <summary>The sprite type of the Muruta (<see cref="AlundraEntityScriptProxy.SpriteType"/>).</summary>
+    /// <summary>The sprite type of the Muruta (<see cref="EntityScriptProxy.SpriteType"/>).</summary>
     internal const int SpriteType = 347;
 
     /// <summary>The program code of A0 in slot A.</summary>
@@ -50,17 +50,17 @@ internal static class MurutaAi
     }
 
     /// <summary>
-    /// A0 (<c>0x8006174C</c>): <c>AIValues[0]</c> (<c>+0x280</c>, <c>0x80061754</c>) takes the high half-word of the entity's Z (<c>lh +0x11E</c>, signed). The DLL's <see cref="AlundraEntityScriptProxy.PosZ"/> is the binary's minus
+    /// A0 (<c>0x8006174C</c>): <c>AIValues[0]</c> (<c>+0x280</c>, <c>0x80061754</c>) takes the high half-word of the entity's Z (<c>lh +0x11E</c>, signed). The DLL's <see cref="EntityScriptProxy.PosZ"/> is the binary's minus
     /// one raw unit (ADR-0026), so the binary's Z is <c>PosZ + 1</c>.
     /// </summary>
-    internal static void Load(AlundraEntityScriptProxy entity) => entity.AIValues[0] = unchecked((short)(unchecked(entity.PosZ + 1) >> 16));
+    internal static void Load(EntityScriptProxy entity) => entity.AIValues[0] = unchecked((short)(unchecked(entity.PosZ + 1) >> 16));
 
     /// <summary>D9 (<c>0x8007DE04</c>): <see cref="EnemyHelpers.HitReaction"/> with the animation 2.</summary>
-    internal static void Hit(AlundraEntityScriptProxy entity, IEntityWorldContext context) => EnemyHelpers.HitReaction(entity, 2, context);
+    internal static void Hit(EntityScriptProxy entity, IEntityWorldContext context) => EnemyHelpers.HitReaction(entity, 2, context);
 
     /// <summary>
     /// C10 (<c>0x80068154</c>), one tick of the Muruta, by its target animation (<c>+0x88</c>; only 0, 5, 9, 10 and 12 have code, the others only run the tail). <c>rel</c> is the relative position to the hero
-    /// (<see cref="EnemyHelpers.RelativePosition"/>), <c>ai1</c> the 16-bit counter <c>+0x282</c> (<see cref="AlundraEntityScriptProxy.AIValues"/>[1]), <c>b0</c> (<c>+0x274</c>) 0 calm / 1 alerted, <c>b1</c> (<c>+0x275</c>) the calm step.
+    /// (<see cref="EnemyHelpers.RelativePosition"/>), <c>ai1</c> the 16-bit counter <c>+0x282</c> (<see cref="EntityScriptProxy.AIValues"/>[1]), <c>b0</c> (<c>+0x274</c>) 0 calm / 1 alerted, <c>b1</c> (<c>+0x275</c>) the calm step.
     /// Every path ends in the tail: <c>TargetDirection = (TargetDirection + 2) &amp; 0x1C</c> (<c>0x80068904</c>).
     /// <list type="bullet">
     /// <item><description>0 calm: the hero in the front window (2 tiles wide, 6 deep) alerts it; else the counter counts down; else, with <c>b1</c> 0 only one time in four (a draw below 4 equal to 1), it plays the step <c>b1</c>: 0 to 2 hop
@@ -71,7 +71,7 @@ internal static class MurutaAi
     /// 12 (walk): the front window alerts it; the counter or a wall stops it; a ledge (<see cref="EnemyHelpers.HandleAnimationDirection"/>) turns it.</description></item>
     /// </list>
     /// </summary>
-    internal static void Tick(AlundraEntityScriptProxy entity, IEntityWorldContext context)
+    internal static void Tick(EntityScriptProxy entity, IEntityWorldContext context)
     {
         if (context.PlayerEntity is not { } hero)
         {
@@ -124,7 +124,7 @@ internal static class MurutaAi
         Tail(entity);
     }
 
-    private static void Idle(AlundraEntityScriptProxy entity, IEntityWorldContext context, AlundraEntityScriptProxy hero, ReadOnlySpan<int> rel)
+    private static void Idle(EntityScriptProxy entity, IEntityWorldContext context, EntityScriptProxy hero, ReadOnlySpan<int> rel)
     {
         if (entity.Bytes[0] == 0)
         {
@@ -138,7 +138,7 @@ internal static class MurutaAi
         Tail(entity);
     }
 
-    private static void Calm(AlundraEntityScriptProxy entity, IEntityWorldContext context, AlundraEntityScriptProxy hero, ReadOnlySpan<int> rel)
+    private static void Calm(EntityScriptProxy entity, IEntityWorldContext context, EntityScriptProxy hero, ReadOnlySpan<int> rel)
     {
         if (EnemyHelpers.TryAttackPlayerFront(entity, rel, 2, 6, ZMax))
         {
@@ -202,7 +202,7 @@ internal static class MurutaAi
         }
     }
 
-    private static void Alerted(AlundraEntityScriptProxy entity, IEntityWorldContext context, AlundraEntityScriptProxy hero, ReadOnlySpan<int> rel)
+    private static void Alerted(EntityScriptProxy entity, IEntityWorldContext context, EntityScriptProxy hero, ReadOnlySpan<int> rel)
     {
         if (!EnemyHelpers.TryAttackPlayerFront(entity, rel, 2, 6, ZMax) && !EnemyHelpers.TryAttackPlayer2(rel, entity.BoxDirection ^ 1, 2, 3, ZMax))
         {
@@ -317,7 +317,7 @@ internal static class MurutaAi
     }
 
     /// <summary>State 12 (<c>0x80068800</c>), the walk.</summary>
-    private static void Walk(AlundraEntityScriptProxy entity, ReadOnlySpan<int> rel)
+    private static void Walk(EntityScriptProxy entity, ReadOnlySpan<int> rel)
     {
         if (entity.Bytes[0] == 0 && EnemyHelpers.TryAttackPlayerFront(entity, rel, 2, 6, ZMax))
         {
@@ -348,7 +348,7 @@ internal static class MurutaAi
     }
 
     /// <summary><c>0x800688E0</c>: the cooldown of 0x1E ticks, the calm step cleared, then the tail.</summary>
-    private static void CooldownExit(AlundraEntityScriptProxy entity)
+    private static void CooldownExit(EntityScriptProxy entity)
     {
         SetCounter(entity, 0x1E);
         entity.Bytes[1] = 0;
@@ -356,10 +356,10 @@ internal static class MurutaAi
     }
 
     /// <summary><c>0x80068904</c>: every path ends by snapping the target direction to a multiple of four after a half step.</summary>
-    private static void Tail(AlundraEntityScriptProxy entity) => entity.TargetDirection = (entity.TargetDirection + 2) & 0x1C;
+    private static void Tail(EntityScriptProxy entity) => entity.TargetDirection = (entity.TargetDirection + 2) & 0x1C;
 
-    private static void SetCounter(AlundraEntityScriptProxy entity, int value) => entity.AIValues[1] = unchecked((short)value);
+    private static void SetCounter(EntityScriptProxy entity, int value) => entity.AIValues[1] = unchecked((short)value);
 
-    private static uint DirectionToHero(AlundraEntityScriptProxy entity, AlundraEntityScriptProxy hero)
+    private static uint DirectionToHero(EntityScriptProxy entity, EntityScriptProxy hero)
         => ScriptHelper.GetDirectionToTarget(unchecked(hero.PosX - entity.PosX), unchecked(hero.PosY - entity.PosY));
 }

@@ -1,4 +1,3 @@
-using Alundra.Scripts;
 using CasaEngine.Framework.UI.MGUI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
@@ -108,9 +107,9 @@ public sealed class AlundraChoiceScreenXamlTests
     public void DesignTimeData_PopulatesAChoiceViewModel_WithTheRestState()
     {
         var data = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "ChoiceScreen.design.json")));
-        Assert.Equal(typeof(AlundraChoiceViewModel).FullName!, data["view_model_type"]!.ToString());
+        Assert.Equal(typeof(ChoiceViewModel).FullName!, data["view_model_type"]!.ToString());
 
-        var viewModel = new AlundraChoiceViewModel();
+        var viewModel = new ChoiceViewModel();
         JsonConvert.PopulateObject(data["values"]!.ToString(), viewModel);
 
         Assert.Equal(Visibility.Visible, viewModel.RootVisibility);
@@ -197,7 +196,7 @@ public sealed class AlundraChoiceScreenXamlTests
     public void Bindings_PushTheViewModel_AndTheBoundsAtRestAreTheOriginals()
     {
         var window = LoadWindow(out var desktop, out var runtime);
-        var viewModel = new AlundraChoiceViewModel { RootVisibility = Visibility.Visible };
+        var viewModel = new ChoiceViewModel { RootVisibility = Visibility.Visible };
         window.WindowDataContext = viewModel;
 
         viewModel.Frame.Left = 176;

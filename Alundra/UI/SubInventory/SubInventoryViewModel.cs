@@ -5,7 +5,7 @@ using MGUI.Shared.Helpers;
 using Alundra.UI.Inventory;
 using Alundra.UI.SubInventory;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.SubInventory;
 
 /// <summary>
 /// The sub-inventory screen's view model (parent ADR-0002, engine ADR-0038): what
@@ -13,14 +13,14 @@ namespace Alundra.Scripts;
 /// <see cref="SubInventoryPresenter"/> writes it once per logic tick through <see cref="Apply"/>, from
 /// the composer's <see cref="SubInventoryDisplayModel"/>; only the values that change notify, so a settled
 /// sub-inventory pushes nothing to the screen. Reuses <see cref="InventoryImageViewModel"/>/
-/// <see cref="InventoryTextViewModel"/> from <see cref="AlundraInventoryViewModel"/> (E13.d SI4 brief) - the
+/// <see cref="InventoryTextViewModel"/> from <see cref="InventoryViewModel"/> (E13.d SI4 brief) - the
 /// same per-element shape, no behaviour change.
 /// <para/>
 /// The seven boxes, the two selection frames and the cursor name their source in the XAML; the icons and the
 /// digits take theirs from here. The cursor is the <c>ui_inventory_cursor</c> animation, which carries the
 /// original's per-phase pixel offset itself (D-E13D-27): its position here is the composer's base position.
 /// </summary>
-public sealed class AlundraSubInventoryViewModel : ViewModelBase
+public sealed class SubInventoryViewModel : ViewModelBase
 {
     private readonly InventoryImageViewModel[] _armoryIcons = { new(), new(), new(), new(), new(), new(), new() };
     private readonly InventoryImageViewModel[] _keyItemIcons = { new(), new(), new(), new(), new() };
@@ -94,7 +94,7 @@ public sealed class AlundraSubInventoryViewModel : ViewModelBase
     public InventoryPortraitViewModel Portrait { get; } = new();
 
     /// <summary>Writes one tick's composed display into the bound members. Mirrors
-    /// <see cref="AlundraInventoryViewModel.Apply"/>: a box or an icon absent from the model stays as it was,
+    /// <see cref="InventoryViewModel.Apply"/>: a box or an icon absent from the model stays as it was,
     /// or hidden.</summary>
     public void Apply(SubInventoryDisplayModel model)
     {
@@ -209,7 +209,7 @@ public sealed class AlundraSubInventoryViewModel : ViewModelBase
 
     private static void ApplyDigit(InventoryImageViewModel image, InventoryDigit digit)
     {
-        image.SetSource(AlundraInventoryViewModel.DigitAssetIds[Math.Clamp(digit.Value, 0, 9)]);
+        image.SetSource(InventoryViewModel.DigitAssetIds[Math.Clamp(digit.Value, 0, 9)]);
         image.Show(digit.NativeX, digit.NativeY);
     }
 

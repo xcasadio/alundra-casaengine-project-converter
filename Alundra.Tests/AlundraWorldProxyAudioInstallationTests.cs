@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Application.Components;
@@ -18,14 +17,15 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// The end-to-end recette point of docs/plan-e11-audio.md, slice E11.a's own acceptance (§4): on the
-/// REAL install path (<see cref="AlundraWorldProxy.InstallAudioSystems"/>) for world
+/// REAL install path (<see cref="WorldProxy.InstallAudioSystems"/>) for world
 /// "Ship Klark (beginning)-389", the four intro sound ids (300/301/302/61) resolve to their tone files -
-/// and the same wiring fails (no <see cref="AlundraWorldProxy.SoundPlayer"/> at all) when there is no
+/// and the same wiring fails (no <see cref="WorldProxy.SoundPlayer"/> at all) when there is no
 /// <c>Game</c>/<c>AudioSystemComponent</c> to install against, i.e. the bank is never reachable through
 /// this seam without installation.
 ///
@@ -34,7 +34,7 @@ namespace Alundra.Tests;
 /// <see cref="HeroWorldFixture.BuildWorld"/> already does for <c>World.Game</c> itself, both the
 /// <c>Game</c> and its <see cref="AudioSystemComponent"/> are built via
 /// <see cref="RuntimeHelpers.GetUninitializedObject"/> plus direct backing-field writes: this is still
-/// the REAL <see cref="AlundraWorldProxy.InstallAudioSystems"/>/<see cref="AudioService"/>/
+/// the REAL <see cref="WorldProxy.InstallAudioSystems"/>/<see cref="AudioService"/>/
 /// <see cref="SoundPlayer"/> production code, only the otherwise-unconstructible MonoGame shell
 /// around it is faked.
 /// </summary>
@@ -124,7 +124,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         var game = BuildGameWithAudio(new FakeAudioBackend(), new FakeAudioClipProvider());
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-        var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(projectRoot) };
+        var proxy = new WorldProxy { SoundBank = new SfxBank(projectRoot) };
         proxy.InstallAudioSystems(world);
 
         Assert.NotNull(proxy.SoundPlayer);
@@ -152,7 +152,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
     ///
     /// <para>Found in main-session verification of slice C1: the ownership test in
     /// <c>AlundraSoundPlayerTests</c> builds the player DIRECTLY with an explicit owner, so it proves
-    /// the parameter is honoured but is blind to what <see cref="AlundraWorldProxy.InstallAudioSystems"/>
+    /// the parameter is honoured but is blind to what <see cref="WorldProxy.InstallAudioSystems"/>
     /// actually passes. Changing that one call site to any non-world object left the whole suite green
     /// — the "no slice without a test traversing the production call site" rule, unsatisfied.</para>
     ///
@@ -170,7 +170,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         var game = BuildGameWithAudio(backend, provider);
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-        var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(projectRoot) };
+        var proxy = new WorldProxy { SoundBank = new SfxBank(projectRoot) };
         proxy.InstallAudioSystems(world);
         Assert.NotNull(proxy.SoundPlayer);
 
@@ -197,7 +197,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
     public void InstallAudioSystems_NoGame_LeavesSoundPlayerNull_TheSoundsAreUnreachableWithoutInstallation()
     {
         var world = new World(); // World.Game left null - no Game/AudioSystemComponent to install against.
-        var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(FindProjectRoot()) };
+        var proxy = new WorldProxy { SoundBank = new SfxBank(FindProjectRoot()) };
 
         proxy.InstallAudioSystems(world);
 
@@ -261,7 +261,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
             var game = BuildGameWithAudio(backend, provider);
             HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-            var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(projectPath) };
+            var proxy = new WorldProxy { SoundBank = new SfxBank(projectPath) };
             proxy.InstallAudioSystems(world);
             Assert.NotNull(proxy.SoundPlayer);
 
@@ -290,13 +290,13 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
 
     /// <summary>
     /// One slot-B (map-event) program that plays <paramref name="sfxId"/> via 0x12 (PlaySound1) then
-    /// ends - wired as <paramref name="proxy"/>'s own <see cref="AlundraWorldProxy.EventProgramRunner"/>,
-    /// with <see cref="AlundraWorldProxy.PlayerEntity"/> seeded inside the map event's own zone (same
+    /// ends - wired as <paramref name="proxy"/>'s own <see cref="WorldProxy.EventProgramRunner"/>,
+    /// with <see cref="WorldProxy.PlayerEntity"/> seeded inside the map event's own zone (same
     /// montage as <c>AlundraWorldProxyUpdateCharacterizationTests.MapEventTeleport_IsVisibleToCameraTarget_SameFrame</c>).
     /// </summary>
-    private static AlundraEntityScriptProxy WireMapEventSoundTrigger(AlundraWorldProxy proxy, int sfxId)
+    private static EntityScriptProxy WireMapEventSoundTrigger(WorldProxy proxy, int sfxId)
     {
-        var player = new AlundraEntityScriptProxy
+        var player = new EntityScriptProxy
         {
             Status = EntityStatus.Normal,
             TileX = 0,
@@ -331,32 +331,32 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
     }
 
     /// <summary>
-    /// A SECOND entity, driven through <see cref="AlundraWorldProxy.RunPendingEventTriggers"/> (the D3
-    /// catch-up "rattrapage" pass, NOT <see cref="AlundraWorldProxy.RunMapEventsPass"/>'s own map-events
+    /// A SECOND entity, driven through <see cref="WorldProxy.RunPendingEventTriggers"/> (the D3
+    /// catch-up "rattrapage" pass, NOT <see cref="WorldProxy.RunMapEventsPass"/>'s own map-events
     /// pass) - its own slot-C (Tick) program plays the SAME <paramref name="sfxId"/> via 0x12, so a
     /// single tick dispatches it from a DIFFERENT pass than <see cref="WireMapEventSoundTrigger"/>'s own
     /// map event. Added to <paramref name="proxy"/>'s own private <c>_spawnedEntities</c> by reflection
-    /// (no internal seam exists for it, unlike <see cref="AlundraWorldProxy.PlayerEntity"/>/<see
-    /// cref="AlundraWorldProxy.BuildMapEvents"/>) so <c>RefreshUpdateProxiesAndCollidables</c> picks it
-    /// up into <c>_updateProxies</c> on the next <see cref="AlundraWorldProxy.Update"/> call. The SAME
+    /// (no internal seam exists for it, unlike <see cref="WorldProxy.PlayerEntity"/>/<see
+    /// cref="WorldProxy.BuildMapEvents"/>) so <c>RefreshUpdateProxiesAndCollidables</c> picks it
+    /// up into <c>_updateProxies</c> on the next <see cref="WorldProxy.Update"/> call. The SAME
     /// document/table shape as the map event (Table[1]=0, same 3-byte program) - slot C reads
     /// <c>EventCodesCTable</c> instead of B, off the SAME underlying <c>Codes</c> array.
     /// </summary>
-    private static void WireRescanSoundTrigger(AlundraWorldProxy proxy, int sfxId)
+    private static void WireRescanSoundTrigger(WorldProxy proxy, int sfxId)
     {
         var document = (EventProgramDocument)typeof(EventProgramRunner)
             .GetField("_document", BindingFlags.Instance | BindingFlags.NonPublic)!
             .GetValue(proxy.EventProgramRunner)!;
         document.EventCodesCTable = new[] { 0, 0 };
 
-        var entity = new Entity { GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var rescanProxy = (AlundraEntityScriptProxy)entity.GameplayProxy!;
+        var rescanProxy = (EntityScriptProxy)entity.GameplayProxy!;
         rescanProxy.IsPlayer = false;
         rescanProxy.ProgramIndexes[ScriptHelper.ProgramCTick] = 129; // masked 0x7f = 1, same Table[1]=0.
         rescanProxy.EventTrigger = ScriptHelper.ProgramCTick;
 
-        var spawnedEntitiesField = typeof(AlundraWorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var spawnedEntitiesField = typeof(WorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!;
         var spawnedEntities = (List<Entity>)spawnedEntitiesField.GetValue(proxy)!;
         spawnedEntities.Add(entity);
     }
@@ -364,7 +364,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
     /// <summary>Resolves <paramref name="sfxId"/> against <paramref name="proxy"/>'s own real
     /// <see cref="SfxBank"/> and registers a fake clip for every one of its tones, so
     /// <see cref="SoundPlayer.PlaySfx"/> can actually start a backend voice.</summary>
-    private static void RegisterClipsFor(AlundraWorldProxy proxy, FakeAudioClipProvider provider, int sfxId)
+    private static void RegisterClipsFor(WorldProxy proxy, FakeAudioClipProvider provider, int sfxId)
     {
         Assert.True(proxy.SoundBank.TryResolve(sfxId, soundGroup: null, out var resolution));
         foreach (var tone in resolution.Tones)
@@ -389,7 +389,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         var game = BuildGameWithAudio(backend, provider);
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-        var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(projectRoot) };
+        var proxy = new WorldProxy { SoundBank = new SfxBank(projectRoot) };
         proxy.InstallAudioSystems(world);
         // sfxId 300: real manifest MaxVoices=2 (single tone) - high enough that the anti-duplicate
         // table, not MaxVoices, is what has to be the thing refusing the second tick's request.
@@ -418,7 +418,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         var game = BuildGameWithAudio(backend, provider);
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-        var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(projectRoot) };
+        var proxy = new WorldProxy { SoundBank = new SfxBank(projectRoot) };
         proxy.InstallAudioSystems(world);
         // sfxId 300: real manifest MaxVoices=2 - room for both the frame's own successful voice AND
         // the "replays next frame" voice below, so MaxVoices never masks what the anti-duplicate table

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
@@ -39,17 +38,17 @@ public class AlundraEventProgramRunnerTests
     private static EventProgramRunner NewRunner(EventProgramDocument document, GameState? gameState = null, IEntityWorldContext? worldContext = null)
         => new(document, gameState ?? new GameState(), worldContext);
 
-    private static AlundraEntityScriptProxy NewEntity() => new();
+    private static EntityScriptProxy NewEntity() => new();
 
     /// <summary>Records spawn/destroy calls and hands back a fixed <see cref="SpawnedEntities"/> list -
     /// the fake <see cref="IEntityWorldContext"/> every 0x2D/0x2E/0x62/0x63/0x64/0x65/0xAC test below
-    /// uses instead of a live <see cref="AlundraWorldProxy"/>.</summary>
+    /// uses instead of a live <see cref="WorldProxy"/>.</summary>
     private sealed class FakeEntityWorldContext : IEntityWorldContext
     {
-        public List<AlundraEntityScriptProxy> SpawnedEntitiesList { get; } = new();
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => SpawnedEntitiesList;
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public List<EntityScriptProxy> SpawnedEntitiesList { get; } = new();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => SpawnedEntitiesList;
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public readonly List<(int X, int Y, int Z)> ForcedCameraLookAtCalls = new();
         public void SetForcedCameraLookAt(int x, int y, int z)
         {
@@ -57,21 +56,21 @@ public class AlundraEventProgramRunnerTests
             ForcedCameraLookAtCalls.Add((x, y, z));
         }
 
-        public readonly List<(AlundraEntityScriptProxy LogicEntity, int EntityRecordId)> SpawnCalls = new();
-        public AlundraEntityScriptProxy? EntityToSpawn;
+        public readonly List<(EntityScriptProxy LogicEntity, int EntityRecordId)> SpawnCalls = new();
+        public EntityScriptProxy? EntityToSpawn;
 
         /// <summary>E19.b: entities handed back one per call (before <see cref="EntityToSpawn"/>), for a program that spawns twice.</summary>
-        public readonly Queue<AlundraEntityScriptProxy> SpawnQueue = new();
+        public readonly Queue<EntityScriptProxy> SpawnQueue = new();
 
-        public readonly List<AlundraEntityScriptProxy> DestroyedEntities = new();
+        public readonly List<EntityScriptProxy> DestroyedEntities = new();
 
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId)
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId)
         {
             SpawnCalls.Add((logicEntity, entityRecordId));
             return SpawnQueue.Count > 0 ? SpawnQueue.Dequeue() : EntityToSpawn;
         }
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity)
+        public void DestroyEntity(EntityScriptProxy entity)
         {
             DestroyedEntities.Add(entity);
         }
@@ -584,7 +583,7 @@ public class AlundraEventProgramRunnerTests
         var spawned = NewEntity();
         var context = new FakeEntityWorldContext { EntityToSpawn = spawned };
         var runner = NewRunner(document, worldContext: context);
-        var entity = new AlundraEntityScriptProxy { PosX = 5 << 16, PosY = 7 << 16, PosZ = 9 << 16 };
+        var entity = new EntityScriptProxy { PosX = 5 << 16, PosY = 7 << 16, PosZ = 9 << 16 };
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
         runner.RunOneScriptCall(entity, state);
@@ -604,7 +603,7 @@ public class AlundraEventProgramRunnerTests
         // entirely, leaving the spawned entity wherever SpawnEntityByRecordId already placed it (its own
         // record's spawn position, mirrored by the fake context here as a preset PosX/PosY/PosZ).
         var document = NewDocument(0x8B, 0x81, 6, 2, 0, 3, 0, 4, 0, 0xFF);
-        var spawned = new AlundraEntityScriptProxy { PosX = 111, PosY = 222, PosZ = 333 };
+        var spawned = new EntityScriptProxy { PosX = 111, PosY = 222, PosZ = 333 };
         var context = new FakeEntityWorldContext { EntityToSpawn = spawned };
         var runner = NewRunner(document, worldContext: context);
         var entity = NewEntity();
@@ -623,10 +622,10 @@ public class AlundraEventProgramRunnerTests
         // E19.b T2 (docs/plan-e19-opcodes.md §1.2d): 0x8A [record 1, X 972 (0xCC,3), Y 112 (112,0), Z 48 (48,0)], the
         // operands of the camera block of map 476. 972 needs its HIGH byte (a read that drops it gives 204).
         var document = NewDocument(0x8A, 1, 0xCC, 3, 112, 0, 48, 0, 0xFF);
-        var spawned = new AlundraEntityScriptProxy { PosX = 111, PosY = 222, PosZ = 333 };
+        var spawned = new EntityScriptProxy { PosX = 111, PosY = 222, PosZ = 333 };
         var context = new FakeEntityWorldContext { EntityToSpawn = spawned };
         var runner = NewRunner(document, worldContext: context);
-        var logic = new AlundraEntityScriptProxy { PosX = 5 << 16, PosY = 7 << 16, PosZ = 9 << 16 };
+        var logic = new EntityScriptProxy { PosX = 5 << 16, PosY = 7 << 16, PosZ = 9 << 16 };
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
 
         runner.RunOneScriptCall(logic, state);
@@ -683,7 +682,7 @@ public class AlundraEventProgramRunnerTests
             0xFF);
         var context = new FakeEntityWorldContext { EntityToSpawn = null };
         var runner = NewRunner(document, worldContext: context);
-        var logic = new AlundraEntityScriptProxy { PosX = 5, PosY = 6, PosZ = 7 };
+        var logic = new EntityScriptProxy { PosX = 5, PosY = 6, PosZ = 7 };
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
 
         runner.RunOneScriptCall(logic, state);
@@ -725,11 +724,11 @@ public class AlundraEventProgramRunnerTests
         // by itself: the spawned entity carries EntityRefId = 1 and is in SpawnedEntities, and a search by number
         // requires the OWNER to be Loaded, Normal or Deactivated.
         var document = NewDocument(0x8A, 1, 0xCC, 3, 112, 0, 48, 0, 0x67, 1, 0xFF);
-        var spawned = new AlundraEntityScriptProxy { EntityRefId = 1 };
+        var spawned = new EntityScriptProxy { EntityRefId = 1 };
         var context = new FakeEntityWorldContext { EntityToSpawn = spawned };
         context.SpawnedEntitiesList.Add(spawned);
         var runner = NewRunner(document, worldContext: context);
-        var owner = new AlundraEntityScriptProxy { Status = EntityStatus.Normal };
+        var owner = new EntityScriptProxy { Status = EntityStatus.Normal };
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
         runner.RunOneScriptCall(owner, state);
@@ -1006,8 +1005,8 @@ public class AlundraEventProgramRunnerTests
 
     /// <summary>Bug fix (user-reported runtime timing bug, gull entity 6): 0x62/0x63 must resync a
     /// matched entity's <see cref="CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent"/>
-    /// (gravity AND walkability mask) whenever they touch <see cref="AlundraEntityScriptProxy.Flags"/> on
-    /// an entity that carries one - see <see cref="AlundraEntityScriptProxy.ResyncControllerFromFlags"/>'s
+    /// (gravity AND walkability mask) whenever they touch <see cref="EntityScriptProxy.Flags"/> on
+    /// an entity that carries one - see <see cref="EntityScriptProxy.ResyncControllerFromFlags"/>'s
     /// own doc. Sets Gravity (0x100) via v2/v3 = (0,1) -&gt; flag = (1&lt;&lt;8)|0 = 0x100, the exact byte
     /// pair the real gull program uses (just the OR direction, not the clear direction below).</summary>
     [Fact]
@@ -2422,14 +2421,14 @@ public class AlundraEventProgramRunnerTests
         Assert.False(entity.WalkDetourAttempted);
     }
 
-    private static FakeEntityWorldContext ContextWith(params AlundraEntityScriptProxy[] entities)
+    private static FakeEntityWorldContext ContextWith(params EntityScriptProxy[] entities)
     {
         var context = new FakeEntityWorldContext();
         context.SpawnedEntitiesList.AddRange(entities);
         return context;
     }
 
-    private static AlundraEntityScriptProxy Numbered(int refId, int xPx = 0, int yPx = 0, int zPx = 0) => new()
+    private static EntityScriptProxy Numbered(int refId, int xPx = 0, int yPx = 0, int zPx = 0) => new()
     {
         EntityRefId = refId,
         Status = EntityStatus.Normal,
@@ -2965,11 +2964,11 @@ public class AlundraEventProgramRunnerTests
     private sealed class PadSeamScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunnerForPadSeamTest();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController { get; init; }
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = System.Array.Empty<AlundraEntityScriptProxy>();
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public HeroController? PlayerController { get; init; }
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = System.Array.Empty<EntityScriptProxy>();
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -2978,11 +2977,11 @@ public class AlundraEventProgramRunnerTests
 
     private sealed class NoOpRunnerForPadSeamTest : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -2990,10 +2989,10 @@ public class AlundraEventProgramRunnerTests
     [Fact]
     public void PadSeam_ProductionSite_PlayerUpdate_PublishesLastPadStateBeforeMovePlayer_And0x2FReadsIt()
     {
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new PadState { ButtonsHold = PadState.Up } };
+        var controller = new HeroController { PadStateProviderForTests = () => new PadState { ButtonsHold = PadState.Up } };
         var host = new PadSeamScriptHost { PlayerController = controller };
 
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, ScriptHost = host };
+        var player = new EntityScriptProxy { IsPlayer = true, ScriptHost = host };
         var owner = new CasaEngine.Framework.Scene.Entities.Entity();
         player.Initialize(owner); // gives Owner a value so Update's SyncAnimation/SyncTransform are no-ops.
 
@@ -3068,7 +3067,7 @@ public class AlundraEventProgramRunnerTests
     /// entry observed.</summary>
     private readonly record struct DispatchSnapshot(int Opcode, int CodeIndex, EventTraceKind Kind, int ResultAtDispatch);
 
-    private static List<DispatchSnapshot> RunHatchDoorProgramTwice(EventProgramRunner runner, AlundraEntityScriptProxy player)
+    private static List<DispatchSnapshot> RunHatchDoorProgramTwice(EventProgramRunner runner, EntityScriptProxy player)
     {
         var records = new List<DispatchSnapshot>();
         runner.TraceSink = r => records.Add(new DispatchSnapshot(r.Opcode, r.CodeIndex, r.Kind, r.State.Result));
@@ -3078,11 +3077,11 @@ public class AlundraEventProgramRunnerTests
 
         // Frame 1: fresh state -> InitializeEventData seeds CodeIndex at table[2]=400. Dispatches
         // 0x55/0x85 (map-entry hatch-close template) then hits the program's own Break at 412, suspends.
-        AlundraWorldProxy.RunMapEventsPass(player, mapEvents, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(player, mapEvents, runner, playerControlFlags: 0);
         records.Clear(); // only the SECOND call (0x3B onward) matters for this test.
 
         // Frame 2: resumes at pc 413 (0x3B).
-        AlundraWorldProxy.RunMapEventsPass(player, mapEvents, runner, playerControlFlags: 0);
+        WorldProxy.RunMapEventsPass(player, mapEvents, runner, playerControlFlags: 0);
 
         runner.TraceSink = null;
         return records;
@@ -3095,7 +3094,7 @@ public class AlundraEventProgramRunnerTests
         var document = MapEventProgramLoader.Load(projectRoot, Map389WorldName);
         Assert.NotNull(document);
 
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 18, TileY = 38, TileZ = 8 };
+        var player = new EntityScriptProxy { IsPlayer = true, TileX = 18, TileY = 38, TileZ = 8 };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = new EventProgramRunner(document!, new GameState(), context);
 
@@ -3125,7 +3124,7 @@ public class AlundraEventProgramRunnerTests
         // production runner cannot see it (proves IEntityWorldContext.PlayerEntity and RunMapEventsPass's
         // own "player" parameter are two distinct seams - see item 2 bis's own doc, docs/plan-e7-
         // mutation-tuiles.md).
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 18, TileY = 38, TileZ = 8 };
+        var player = new EntityScriptProxy { IsPlayer = true, TileX = 18, TileY = 38, TileZ = 8 };
         var context = new FakeEntityWorldContext { PlayerEntity = null };
         var runner = new EventProgramRunner(document!, new GameState(), context);
 
@@ -3646,7 +3645,7 @@ public class AlundraEventProgramRunnerTests
         public void StopAllSfx() { }
     }
 
-    private static AlundraEntityScriptProxy NewPlayerForWarp(uint targetAnimationId, uint targetDirection)
+    private static EntityScriptProxy NewPlayerForWarp(uint targetAnimationId, uint targetDirection)
         => new() { TargetAnimationId = targetAnimationId, TargetDirection = targetDirection };
 
     [Fact]
@@ -4048,7 +4047,7 @@ public class AlundraEventProgramRunnerTests
         var document = NewDocument(0x3E, 0xFF);
         var entity = NewEntity();
         entity.LogicContextEntity = new Entity { Name = "logic" };
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, RidingEntity = entity.LogicContextEntity };
+        var player = new EntityScriptProxy { IsPlayer = true, RidingEntity = entity.LogicContextEntity };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = NewRunner(document, worldContext: context);
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 0 };
@@ -4065,7 +4064,7 @@ public class AlundraEventProgramRunnerTests
         var document = NewDocument(0x3E, 0xFF);
         var entity = NewEntity();
         entity.LogicContextEntity = new Entity { Name = "logic" };
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, RidingEntity = new Entity { Name = "other" } };
+        var player = new EntityScriptProxy { IsPlayer = true, RidingEntity = new Entity { Name = "other" } };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = NewRunner(document, worldContext: context);
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 1 };
@@ -4112,7 +4111,7 @@ public class AlundraEventProgramRunnerTests
 
         var entity = NewEntity();
         entity.LogicContextEntity = new Entity { Name = "logic" };
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, RidingEntity = entity.LogicContextEntity };
+        var player = new EntityScriptProxy { IsPlayer = true, RidingEntity = entity.LogicContextEntity };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = NewRunner(document, worldContext: context);
         var state = new EventProgramState { Codes = instructionBytes.Append((byte)0xFF).ToArray(), Result = 0 };
@@ -4383,7 +4382,7 @@ public class AlundraEventProgramRunnerTests
         // so the player lands inside the box the real offsets build around the owner (D-E16-27's own
         // worked example).
         var gameState = new GameState();
-        var player = new AlundraEntityScriptProxy { IsPlayer = true };
+        var player = new EntityScriptProxy { IsPlayer = true };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = NewRunner(document, gameState, context);
         var entity = NewEntity(); // owner, PosX/Y/Z default to 0,0,0, same as the player above
@@ -4496,7 +4495,7 @@ public class AlundraEventProgramRunnerTests
         // AlundraEntityScriptProxy.ComputeTerrainHeight's own doc), never one pixel. PosZ ==
         // TerrainHeight + 1 satisfies "<=" exactly at its own upper bound -> Result = 1.
         var document = NewDocument(0x8D, 0x81, 0xFF);
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TerrainHeight = 5 << 16, PosZ = (5 << 16) + 1 };
+        var player = new EntityScriptProxy { IsPlayer = true, TerrainHeight = 5 << 16, PosZ = (5 << 16) + 1 };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = NewRunner(document, worldContext: context);
         var entity = NewEntity();
@@ -4514,7 +4513,7 @@ public class AlundraEventProgramRunnerTests
         // PosZ == TerrainHeight (one unit BELOW the +1 bound checked above) still satisfies "<=" ->
         // Result = 1 - the original's test has no lower bound, only the +1 upper one.
         var document = NewDocument(0x8D, 0x81, 0xFF);
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TerrainHeight = 5 << 16, PosZ = 5 << 16 };
+        var player = new EntityScriptProxy { IsPlayer = true, TerrainHeight = 5 << 16, PosZ = 5 << 16 };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = NewRunner(document, worldContext: context);
         var entity = NewEntity();
@@ -4532,7 +4531,7 @@ public class AlundraEventProgramRunnerTests
         // A full pixel above TerrainHeight + 1 (the "<=" bound) - well past it, so clearly in the air ->
         // Result = 0.
         var document = NewDocument(0x8D, 0x81, 0xFF);
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TerrainHeight = 5 << 16, PosZ = (6 << 16) + 1 };
+        var player = new EntityScriptProxy { IsPlayer = true, TerrainHeight = 5 << 16, PosZ = (6 << 16) + 1 };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = NewRunner(document, worldContext: context);
         var entity = NewEntity();
@@ -4646,7 +4645,7 @@ public class AlundraEventProgramRunnerTests
         // v1=0x81 (player): a player set exactly on the ground (ModdedPosZ == TerrainHeight + 1 raw
         // 16.16 unit) gives a meaningful true case off the real operand.
         var gameState = new GameState();
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TerrainHeight = 20 << 16, PosZ = (20 << 16) + 1 };
+        var player = new EntityScriptProxy { IsPlayer = true, TerrainHeight = 20 << 16, PosZ = (20 << 16) + 1 };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = NewRunner(document, gameState, context);
         var entity = NewEntity();
@@ -4903,7 +4902,7 @@ public class AlundraEventProgramRunnerTests
     /// gets to inspect them; only a value copied out immediately survives that.</summary>
     private readonly record struct FamilyTraceSnapshot(int CodeIndex, int Opcode, int ThirtyFour, int Result);
 
-    private static List<FamilyTraceSnapshot> RunWithFamilyTrace(EventProgramRunner runner, AlundraEntityScriptProxy entity, EventProgramState state, int callCount)
+    private static List<FamilyTraceSnapshot> RunWithFamilyTrace(EventProgramRunner runner, EntityScriptProxy entity, EventProgramState state, int callCount)
     {
         var records = new List<FamilyTraceSnapshot>();
         runner.TraceSink = record => records.Add(new FamilyTraceSnapshot(record.CodeIndex, record.Opcode, record.State._34, record.State.Result));
@@ -4997,7 +4996,7 @@ public class AlundraEventProgramRunnerTests
         // goto) at 764 that reaches offset 773.
         var gameState = new GameState();
         gameState.AddFlag(0x83EC, 1u << (0xEC & 0x1f));
-        var player = new AlundraEntityScriptProxy { IsPlayer = true, TileX = 40, TileY = 17, TileZ = 1 };
+        var player = new EntityScriptProxy { IsPlayer = true, TileX = 40, TileY = 17, TileZ = 1 };
         var context = new FakeEntityWorldContext { PlayerEntity = player };
         var runner = new EventProgramRunner(document, gameState, context);
         var entity = NewEntity();
@@ -5063,7 +5062,7 @@ public class AlundraEventProgramRunnerTests
         gameState.AddFlag(0x807A, 1u << (0x7A & 0x1f));
         var owner = NewEntity();
         owner.Status = EntityStatus.Normal; // gates the raw-id search on the owner's own status
-        var candidate = new AlundraEntityScriptProxy
+        var candidate = new EntityScriptProxy
         {
             Status = EntityStatus.Normal,
             EntityRefId = 0x1A,

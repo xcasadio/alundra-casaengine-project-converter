@@ -1,15 +1,15 @@
-using Alundra.Scripts;
 using Alundra.Hero;
 using Alundra.Physics;
+using Alundra.Maps;
 
 namespace Alundra.Entities;
 
 /// <summary>
 /// Static lookup tables ported verbatim from
 /// alundra-datas-analyser/AlundraTools/AlundraEngine/StaticVariables.cs, used to resolve an entity's
-/// spawn-time facing (<see cref="AlundraWorldProxy"/>'s spawn init, porting
+/// spawn-time facing (<see cref="WorldProxy"/>'s spawn init, porting
 /// <c>GameEngine.SpawnEntity</c>/<c>EntityManager.InitializeEntity</c>) and its per-frame animation
-/// direction (<see cref="AlundraWorldProxy"/>'s animation sync pass, porting the target-resolution part
+/// direction (<see cref="WorldProxy"/>'s animation sync pass, porting the target-resolution part
 /// of <c>EntityManager.UpdateAnimation</c> @ 0x80038AB4).
 /// </summary>
 internal static class AnimationTables
@@ -17,7 +17,7 @@ internal static class AnimationTables
     /// <summary>
     /// StaticVariables.g_cardinalDirectionTable (StaticVariables.cs:527): maps a record's 2-bit
     /// <c>SpriteDirection</c> facing index (0..3) to the packed direction value
-    /// <see cref="AlundraEntityScriptProxy.TargetDirection"/>/<see cref="AlundraEntityScriptProxy.CurrentDirection"/>
+    /// <see cref="EntityScriptProxy.TargetDirection"/>/<see cref="EntityScriptProxy.CurrentDirection"/>
     /// actually store - <c>GameEngine.SpawnEntity</c> (GameEngine.cs:741,753) indexes it with
     /// <c>entityRecord.SpriteDirection &amp; 0x3</c>.
     /// </summary>
@@ -28,7 +28,7 @@ internal static class AnimationTables
     /// a 4x8 table indexed <c>[AnimationDirection * 8 + col]</c>
     /// (<c>col = ((TargetDirection + 2) &amp; 0x1c) &gt;&gt; 2</c>, 0..7) by
     /// <c>EntityManager.UpdateAnimation</c> @ 0x80038AB4 to resolve the next
-    /// <see cref="AlundraEntityScriptProxy.AnimationDirection"/> (0=down, 1=up, 2=left, 3=right - see
+    /// <see cref="EntityScriptProxy.AnimationDirection"/> (0=down, 1=up, 2=left, 3=right - see
     /// <c>LoaderSelectionScreen.cs:244</c>) from the entity's current facing and its target direction.
     /// </summary>
     public static readonly int[] AnimationDirectionTable =
@@ -42,7 +42,7 @@ internal static class AnimationTables
     /// <summary>
     /// Direction-name suffix order used by the converter for animation asset names
     /// (<c>AlundraCasaEngineProjectConverter.Writers.SpriteWriter.DirectionNames</c>: "…_anim{N}_{dir}"),
-    /// indexed by <see cref="AlundraEntityScriptProxy.AnimationDirection"/> - the same 0=down/1=up/2=left/
+    /// indexed by <see cref="EntityScriptProxy.AnimationDirection"/> - the same 0=down/1=up/2=left/
     /// 3=right order as <see cref="AnimationDirectionTable"/>'s output.
     /// </summary>
     public static readonly string[] DirectionNames = { "down", "up", "left", "right" };
@@ -51,7 +51,7 @@ internal static class AnimationTables
     /// StaticVariables.g_directionByButtons (StaticVariables.cs:99-103, address comment 0x80022c6c): maps
     /// the 4-bit directional pad mask (<c>ButtonsHold &gt;&gt; 0xc</c>, bit 0=Up, 1=Right, 2=Down, 3=Left -
     /// see <see cref="PadState"/>'s own doc) to the packed direction value
-    /// <see cref="AlundraEntityScriptProxy.TargetDirection"/> stores. <c>0xFFFFFFFF</c> marks an invalid
+    /// <see cref="EntityScriptProxy.TargetDirection"/> stores. <c>0xFFFFFFFF</c> marks an invalid
     /// combination (e.g. Up+Down held together) - <see cref="PlayerManager.MovePlayer"/> falls back
     /// to the entity's current <c>TargetDirection</c> in that case, exactly like
     /// <c>PlayerManager.cs:199-205</c>.
@@ -117,7 +117,7 @@ internal static class AnimationTables
     };
 
     /// <summary>
-    /// E20.d1 T1: the cone of the run, the table at <c>0x80022CEC</c> (12 words, three per facing, <c>0x80022CEC + 12 * facing</c>, facing = <see cref="AlundraEntityScriptProxy.AnimationDirection"/>: 0 down, 1 up, 2 left, 3 right):
+    /// E20.d1 T1: the cone of the run, the table at <c>0x80022CEC</c> (12 words, three per facing, <c>0x80022CEC + 12 * facing</c>, facing = <see cref="EntityScriptProxy.AnimationDirection"/>: 0 down, 1 up, 2 left, 3 right):
     /// the eight-way directions the run goes on in. The facing's own direction and its two neighbours (down 0x1C, 0, 4; up 0xC, 0x10, 0x14; left 4, 8, 0xC; right 0x14, 0x18, 0x1C). Read at one place only
     /// (<c>0x800320A4</c>, the state 0x03). Checked word by word against the executable by <c>AlundraHeroRunTablesTests</c>.
     /// </summary>

@@ -1,6 +1,5 @@
 #nullable enable
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -22,7 +21,7 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed class AlundraEntityDestructionTests
 {
-    private static AlundraEntityScriptProxy Proxy(EntityStatus status, uint flags = EntityFlags.Collidable)
+    private static EntityScriptProxy Proxy(EntityStatus status, uint flags = EntityFlags.Collidable)
         => new() { Status = status, Flags = flags };
 
     // ---- T-R2 -----------------------------------------------------------------------------------------------------
@@ -36,8 +35,8 @@ public sealed class AlundraEntityDestructionTests
         var destroyed = Proxy(EntityStatus.FlagToDestroy);
         var liftable = Proxy(EntityStatus.Normal, EntityFlags.Collidable | 0x200u);
         var notCollidable = Proxy(EntityStatus.Normal, 0);
-        var all = new List<AlundraEntityScriptProxy> { normal, destroyed, deactivated, loaded, liftable, notCollidable };
-        var buffer = new List<AlundraEntityScriptProxy>();
+        var all = new List<EntityScriptProxy> { normal, destroyed, deactivated, loaded, liftable, notCollidable };
+        var buffer = new List<EntityScriptProxy>();
 
         EntitySupport.BuildCollidables(all, buffer);
 
@@ -67,7 +66,7 @@ public sealed class AlundraEntityDestructionTests
         Assert.Equal(doomedY0, ContactWorld.Root(walkerDoomed).Y);
     }
 
-    private static AlundraEntityScriptProxy AddWalker(CasaEngine.Framework.Scene.World.World world, ContactHost host, string name, int x, EntityStatus status)
+    private static EntityScriptProxy AddWalker(CasaEngine.Framework.Scene.World.World world, ContactHost host, string name, int x, EntityStatus status)
     {
         var proxy = ContactWorld.AddEntity(world, host, name, x, 100, 48, -10, -7, 0, 20, 14, 32, status: status);
         proxy.TargetDirection = 0; // south
@@ -79,11 +78,11 @@ public sealed class AlundraEntityDestructionTests
 
     // ---- T-R5 -----------------------------------------------------------------------------------------------------
 
-    private static (AlundraEntityScriptProxy Entity, ContactHost Host, EventProgramRunner Runner) NativeE(int slot, int spriteIndex, int scriptedIndex = 0)
+    private static (EntityScriptProxy Entity, ContactHost Host, EventProgramRunner Runner) NativeE(int slot, int spriteIndex, int scriptedIndex = 0)
     {
         var host = new ContactHost();
         var runner = new EventProgramRunner(null, new GameState());
-        var entity = new AlundraEntityScriptProxy { Status = EntityStatus.Deactivated, Flags = EntityFlags.Collidable, ScriptHost = host, EventTrigger = slot };
+        var entity = new EntityScriptProxy { Status = EntityStatus.Deactivated, Flags = EntityFlags.Collidable, ScriptHost = host, EventTrigger = slot };
         entity.SpriteProgramIndexes[slot] = spriteIndex;
         entity.ProgramIndexes[slot] = scriptedIndex;
         host.All.Add(entity);
@@ -157,7 +156,7 @@ public sealed class AlundraEntityDestructionTests
         };
         var runner = new EventProgramRunner(document, new GameState());
         var host = new ContactHost(runner);
-        var entity = new AlundraEntityScriptProxy { Status = EntityStatus.Normal, Flags = EntityFlags.Collidable, ScriptHost = host };
+        var entity = new EntityScriptProxy { Status = EntityStatus.Normal, Flags = EntityFlags.Collidable, ScriptHost = host };
         entity.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x81; // the program of slot C is 0x19 (Deactivate), no program on slot E.
         host.All.Add(entity);
         host.Rebuild();
@@ -182,16 +181,16 @@ public sealed class AlundraEntityDestructionTests
 
     // ---- T-R6 -----------------------------------------------------------------------------------------------------
 
-    private static (Entity Entity, AlundraEntityScriptProxy Proxy) SpritelessEntity()
+    private static (Entity Entity, EntityScriptProxy Proxy) SpritelessEntity()
     {
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
             RootComponent = new TransformComponent(),
         };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.Status = EntityStatus.Normal;
         proxy.CurrentAnimationId = ~0u;
         proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
@@ -245,7 +244,7 @@ public sealed class AlundraEntityDestructionTests
     {
         var (entity, proxy) = SpritelessEntity();
         proxy.Flags = EntityFlags.Collidable;
-        var buffer = new List<AlundraEntityScriptProxy>();
+        var buffer = new List<EntityScriptProxy>();
 
         proxy.TargetAnimationId = 0;
         FrameSyncPasses.SyncAnimation(entity);

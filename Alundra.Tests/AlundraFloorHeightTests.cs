@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -22,7 +21,7 @@ using Alundra.Physics;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers E2 (docs/plan-echelles-chiffrage.md E2): <see cref="AlundraEntityScriptProxy.UpdateFloorHeight"/>'s
+/// Covers E2 (docs/plan-echelles-chiffrage.md E2): <see cref="EntityScriptProxy.UpdateFloorHeight"/>'s
 /// composed port of <c>GetCollisionOnZ</c> (PhysicsEngine.cs:1602-1675) against the REAL map 389
 /// ("Ship Klark (beginning)") cell/record data - same fixture/self-skip pattern as
 /// <see cref="AlundraGroundSlopeTests"/> (E1's own sibling slice): a real headless <see cref="World"/>
@@ -93,14 +92,14 @@ public class AlundraFloorHeightTests
     /// <see cref="EntitySpawnFactory.ApplySpawnInitialization"/> against the REAL map 389 record data, so
     /// every field <see cref="EntitySupport.TryFindSupport"/> reads (Flags/Width/Height/Depth/Pos*/Mod*)
     /// is the genuine converter-exported value, not a hand-picked literal.</summary>
-    private static AlundraEntityScriptProxy BuildRealRecordProxy(
+    private static EntityScriptProxy BuildRealRecordProxy(
         TileMapData tileMapData, SpriteRecordCatalog catalog, int recordIndex)
     {
         var entitiesLayer = tileMapData.ObjectLayers.First(l => l.Name == "Entities");
         var record = entitiesLayer.Objects.First(
             o => o.CustomProperties.TryGetValue("Index", out var idx) && idx == recordIndex.ToString());
 
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
         EntitySpawnFactory.ApplyRecord(record, proxy);
         var backingEntity = new Entity();
         proxy.LogicContextEntity = backingEntity;
@@ -110,29 +109,29 @@ public class AlundraFloorHeightTests
 
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
 
     /// <summary>Same shape as <c>AlundraGroundSlopeTests.PlayerScriptHost</c>, plus a MUTABLE
     /// <see cref="Collidables"/> so a test can seed the entity-support candidate
-    /// <see cref="AlundraEntityScriptProxy.UpdateFloorHeight"/> reads (see
+    /// <see cref="EntityScriptProxy.UpdateFloorHeight"/> reads (see
     /// <c>AlundraNpcCharacterControllerMoverTests.FakeScriptHost</c>'s own identical addition for E4.f).</summary>
     private sealed class PlayerScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController { get; init; }
-        public List<AlundraEntityScriptProxy> Collidables { get; } = new();
-        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
+        public HeroController? PlayerController { get; init; }
+        public List<EntityScriptProxy> Collidables { get; } = new();
+        IReadOnlyList<EntityScriptProxy> IScriptHost.Collidables => Collidables;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -181,7 +180,7 @@ public class AlundraFloorHeightTests
         var groundHeightPx = cellHeightUnits * CellHeightPx;
 
         var world = HeroWorldFixture.BuildWorld(field);
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
+        var controller = new HeroController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
         var host = new PlayerScriptHost { PlayerController = controller };
 
         var settings = new CharacterControllerSettings();
@@ -280,7 +279,7 @@ public class AlundraFloorHeightTests
         var heroStartZPx = (candidateTop >> 16) + 8;
 
         var world = HeroWorldFixture.BuildWorld(field);
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
+        var controller = new HeroController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } };
         var host = new PlayerScriptHost { PlayerController = controller };
         host.Collidables.Add(platformProxy);
 
@@ -326,7 +325,7 @@ public class AlundraFloorHeightTests
         // terrain-only branch must answer the DIFFERENT terrainHeightPx value above, proving the
         // assertion above genuinely exercises EntitySupport.TryFindSupport rather than passing through
         // the terrain branch alone (as the record-2 pose this test replaced silently did).
-        var controlHost = new PlayerScriptHost { PlayerController = new AlundraPlayerController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } } };
+        var controlHost = new PlayerScriptHost { PlayerController = new HeroController { PadStateProviderForTests = () => new PadState { ButtonsHold = 0, ButtonsJustPressed = 0 } } };
         Assert.Empty(controlHost.Collidables);
         var controlWorld = HeroWorldFixture.BuildWorld(field);
         var (_, controlProxy) = HeroWorldFixture.BuildHeroPawn(
@@ -349,7 +348,7 @@ public class AlundraFloorHeightTests
     [Fact]
     public void NoCollisionFieldInstalled_FloorHeightFallsBackToZero_NoThrow()
     {
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
 
         var host = new PlayerScriptHost();
         proxy.ScriptHost = host;
@@ -407,11 +406,11 @@ public class AlundraFloorHeightTests
         {
             Name = "NpcFloorHeightTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
         entity.Initialize();
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.IsPlayer = false;
         proxy.ScriptHost = host;
         proxy.Status = EntityStatus.Normal;

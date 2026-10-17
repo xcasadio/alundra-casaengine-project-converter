@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps.Loop;
 using Alundra.Entities;
@@ -39,7 +38,7 @@ public sealed class AlundraBalanceTablesTests
     public void AClockTickThatSeesASwitch_LoadsTheAttackTheByteAndTheBoxCursor_AndTheTicksThatDoNot_ChangeNone()
     {
         var record = Record(16, (0x01, 10), (0x81, 20), (0x82, 30));
-        var proxy = new AlundraEntityScriptProxy { BalanceRecord = record };
+        var proxy = new EntityScriptProxy { BalanceRecord = record };
         proxy.LoadAnimationSwitch(0, 0, fromClock: false);
         proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry>
         {
@@ -162,7 +161,7 @@ public sealed class AlundraBalanceTablesTests
     public void AnEntityGetsItsRecord_ItsLifeAndMaxLife_AndTheAttackOfItsFirstAnimation_AtItsCreation()
     {
         var tables = BalanceTables.GetOrCreate(ProjectRootFinder.Find());
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
         proxy.SpriteType = 79 | 0x100;
         proxy.TargetAnimationId = 0;
         proxy.CurrentAnimationId = ~0u; // as a creation leaves it
@@ -172,7 +171,7 @@ public sealed class AlundraBalanceTablesTests
         Assert.Equal(9, proxy.HpMax);
         Assert.Equal(1, proxy.CurrentAttack!.Attribute);
 
-        var degraded = new AlundraEntityScriptProxy { SpriteType = -1 }; // a spawn whose sprite header did not resolve: nothing is loaded.
+        var degraded = new EntityScriptProxy { SpriteType = -1 }; // a spawn whose sprite header did not resolve: nothing is loaded.
         degraded.InitializeBalance(tables, 0);
         Assert.Null(degraded.BalanceRecord);
         Assert.Equal(0, degraded.Hp);

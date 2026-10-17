@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using Alundra.Scripts;
 
 namespace Alundra.Entities;
 
 /// <summary>
-/// Named bits of <see cref="AlundraEntityScriptProxy.Flags"/> (offset 0x6C of the original
+/// Named bits of <see cref="EntityScriptProxy.Flags"/> (offset 0x6C of the original
 /// <c>Entity</c> struct). Ported from
 /// alundra-datas-analyser/AlundraTools/AlundraEngine/Gameplay/EntityFlags.cs.
 ///
@@ -17,7 +16,7 @@ namespace Alundra.Entities;
 /// </code>
 /// Bits 24-31 are never produced by the data and are never read by the engine.
 ///
-/// <see cref="AlundraEntityScriptProxy.Flags"/> IS populated from the sprite record header at spawn
+/// <see cref="EntityScriptProxy.Flags"/> IS populated from the sprite record header at spawn
 /// time (<c>AlundraWorldProxy.CreateEntityFromPrefab</c> ~:894 and <c>AlundraWorldProxy.AdoptPlayerPawn</c>
 /// ~:1042, both porting <c>EntityManager.cs:92-93</c>'s packing), so every branch that reads a flag
 /// below is live.
@@ -64,20 +63,20 @@ public static class EntityFlags
 
     /// <summary>
     /// Bit 4 - run the deactivate program (slot E) as soon as the entity hits something: either
-    /// <see cref="AlundraEntityScriptProxy.ForceAdjusted"/> or <see cref="AlundraEntityScriptProxy.IsOnGround"/>
+    /// <see cref="EntityScriptProxy.ForceAdjusted"/> or <see cref="EntityScriptProxy.IsOnGround"/>
     /// is non zero. Checked by <c>EntityManager.UpdateEntitiesEvents</c> @ 0x800386D0.
     /// </summary>
     public const uint DeactivateOnImpact = 0x00000010;
 
     /// <summary>
-    /// Bit 5 - run the deactivate program (slot E) when <see cref="AlundraEntityScriptProxy.HitCounter"/>
+    /// Bit 5 - run the deactivate program (slot E) when <see cref="EntityScriptProxy.HitCounter"/>
     /// is non zero. Checked by <c>EntityManager.UpdateEntitiesEvents</c> @ 0x800386D0.
     /// </summary>
     public const uint DeactivateOnHit = 0x00000020;
 
     /// <summary>
     /// Bit 6 - run the deactivate program (slot E) once the animation wrapped around
-    /// (<see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/> is non zero). By far the most
+    /// (<see cref="EntityScriptProxy.ForceResetAnimationFlag"/> is non zero). By far the most
     /// used flag of the whole field: nearly every "play this animation then continue" step of the AI
     /// scripts sets it. Checked by <c>EntityManager.UpdateEntitiesEvents</c> @ 0x800386D0.
     /// </summary>

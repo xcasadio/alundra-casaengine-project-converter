@@ -1,5 +1,5 @@
-using Alundra.Scripts;
 using Alundra.Ai;
+using Alundra.Entities;
 
 namespace Alundra.Events;
 
@@ -8,7 +8,7 @@ namespace Alundra.Events;
 /// alundra-datas-analyser/AlundraTools/AlundraEngine/Gameplay/Scripts/ScriptHelper.cs (only the
 /// constants used by the entity event status machine - the rest of the original helper belongs to the
 /// bytecode interpreter, a later chantier). Slots A/C/D/E/F map 1:1 to
-/// <see cref="AlundraEntityScriptProxy.ProgramIndexes"/> / <see cref="AlundraEntityScriptProxy.SpriteProgramIndexes"/>
+/// <see cref="EntityScriptProxy.ProgramIndexes"/> / <see cref="EntityScriptProxy.SpriteProgramIndexes"/>
 /// index 0/2/3/4/5 - the mapper (<c>EntityRecordMapper</c>) already relies on that A..F = 0..5 layout.
 /// </summary>
 public static class ScriptHelper

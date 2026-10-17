@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using Alundra.Session;
 using Alundra.Events;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -110,7 +110,7 @@ internal static class AlundraStoryChainOpcodeAudit
 
         try
         {
-            runner.RunOneScriptCall(new AlundraEntityScriptProxy(), new EventProgramState { Codes = document.CodesAsBytes() });
+            runner.RunOneScriptCall(new EntityScriptProxy(), new EventProgramState { Codes = document.CodesAsBytes() });
         }
         catch (Exception)
         {

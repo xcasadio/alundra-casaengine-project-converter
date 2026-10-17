@@ -1,15 +1,15 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
 using Alundra.Hero;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
-/// E19.f2a F2A-3 (docs/plan-e19-opcodes.md section 1.2j.3, F2-R1, F2-R2, F2-R6): the order of a logic tick at the proxy's own <see cref="AlundraWorldProxy.Update"/>,
+/// E19.f2a F2A-3 (docs/plan-e19-opcodes.md section 1.2j.3, F2-R1, F2-R2, F2-R6): the order of a logic tick at the proxy's own <see cref="WorldProxy.Update"/>,
 /// seen by the box. Every number is a value of docs/plan-e19-f2a-valeurs.md section K, written by the oracle before the director ran. N is the frame of the opening; a
 /// <b>map event</b> script runs after the pass of the box of its frame (so its box is first updated at N + 1 and released, for it, at T + 18), an <b>entity</b> script
 /// before it (first update at N, release seen at T + 19: the engine updates the entities before the world's proxy - the named gap of D-E19-64, no dating).

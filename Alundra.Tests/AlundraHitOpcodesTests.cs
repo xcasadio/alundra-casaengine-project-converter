@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -26,25 +25,25 @@ public sealed class AlundraHitOpcodesTests
 
     private sealed class Context : IEntityWorldContext
     {
-        public List<AlundraEntityScriptProxy> Spawned { get; } = new();
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public List<EntityScriptProxy> Spawned { get; } = new();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Spawned;
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
     }
 
     /// <summary>The world of K3: the hero (slot 0), T and T2 (map records 0 and 1, touched by the hero's sword, attribute 0x81), A (record 2, armed, attribute 0x04), V (record 3, touched by A), U (record 4, untouched).</summary>
     private sealed class K3World
     {
-        public AlundraEntityScriptProxy Hero { get; } = Make(-1, 0x3118C, 0x81, 1);
-        public AlundraEntityScriptProxy T { get; } = Make(0, 0x103, 0x01, 9);
-        public AlundraEntityScriptProxy T2 { get; } = Make(1, 0x103, 0x01, 9);
-        public AlundraEntityScriptProxy A { get; } = Make(2, 0x107, 0x04, 2);
-        public AlundraEntityScriptProxy V { get; } = Make(3, 0x103, 0x01, 9);
-        public AlundraEntityScriptProxy U { get; } = Make(4, 0x103, 0x01, 9);
+        public EntityScriptProxy Hero { get; } = Make(-1, 0x3118C, 0x81, 1);
+        public EntityScriptProxy T { get; } = Make(0, 0x103, 0x01, 9);
+        public EntityScriptProxy T2 { get; } = Make(1, 0x103, 0x01, 9);
+        public EntityScriptProxy A { get; } = Make(2, 0x107, 0x04, 2);
+        public EntityScriptProxy V { get; } = Make(3, 0x103, 0x01, 9);
+        public EntityScriptProxy U { get; } = Make(4, 0x103, 0x01, 9);
         public Context Context { get; } = new();
 
         public K3World()
@@ -66,14 +65,14 @@ public sealed class AlundraHitOpcodesTests
             SetBox(U, 252 * Raw, 168 * Raw, 0, 29, 15, 15);
         }
 
-        public IEnumerable<AlundraEntityScriptProxy> All => new[] { Hero, T, T2, A, V, U };
+        public IEnumerable<EntityScriptProxy> All => new[] { Hero, T, T2, A, V, U };
     }
 
-    private static AlundraEntityScriptProxy Make(int recordId, uint flags, int attribute, int power)
+    private static EntityScriptProxy Make(int recordId, uint flags, int attribute, int power)
     {
-        var entity = new Entity { Name = "e" + recordId, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "e" + recordId, GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
+        var proxy = (EntityScriptProxy)entity.GameplayProxy;
         proxy.LogicContextEntity = entity;
         proxy.EntityRefId = recordId;
         proxy.Status = EntityStatus.Normal;
@@ -83,7 +82,7 @@ public sealed class AlundraHitOpcodesTests
         return proxy;
     }
 
-    private static void SetBox(AlundraEntityScriptProxy entity, int x, int y, int z, int width, int depth, int height)
+    private static void SetBox(EntityScriptProxy entity, int x, int y, int z, int width, int depth, int height)
     {
         entity.HitBoxX = x;
         entity.HitBoxY = y;
@@ -96,7 +95,7 @@ public sealed class AlundraHitOpcodesTests
     private static EventProgramDocument Document(params int[] codes) => new() { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = codes };
 
     /// <summary>Runs <paramref name="code"/> (then the end) for <paramref name="self"/>; returns the state (its size is <c>CodeIndex</c>, its answer <c>Result</c>, which starts at a sentinel).</summary>
-    private static EventProgramState Run(K3World world, AlundraEntityScriptProxy self, params int[] code)
+    private static EventProgramState Run(K3World world, EntityScriptProxy self, params int[] code)
     {
         var document = Document(code.Append(0xFF).ToArray());
         var runner = new EventProgramRunner(document, new GameState(), world.Context);
@@ -195,7 +194,7 @@ public sealed class AlundraHitOpcodesTests
     // 0x87
     // -----------------------------------------------------------------------------------------
 
-    private static int Op87(K3World world, AlundraEntityScriptProxy self, int search, int typeIndex)
+    private static int Op87(K3World world, EntityScriptProxy self, int search, int typeIndex)
     {
         var state = Run(world, self, 0x87, search, typeIndex);
         Assert.Equal(3, state.CodeIndex);

@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Xunit.Abstractions;
 using Alundra.Session;
@@ -85,7 +84,7 @@ public sealed class AlundraFireSwitchRegressionTests
         Assert.Equal(0, arc.Runner.SharedProgramStateForTests.Result);
     }
 
-    private static int ProgramOf(AlundraEntityScriptProxy entity)
+    private static int ProgramOf(EntityScriptProxy entity)
     {
         // EventCodesDTable[(index & 0x7F)]: the table of this map is [0,0,0,0,0,700,712,724,...], and the record's D index is 133 + k.
         var table = new[] { 0, 0, 0, 0, 0, 700, 712, 724, 736, 748, 760 };

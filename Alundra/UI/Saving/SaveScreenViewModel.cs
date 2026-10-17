@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Alundra.UI.Inventory;
 using Alundra.UI.Saving;
 
-namespace Alundra.Scripts;
+namespace Alundra.UI.Saving;
 
 /// <summary>
 /// E16.e T4 (docs/plan-e16-etat-partie.md, L5, J4): what <c>UI/Screens/SaveScreen.xaml</c> binds - the message box
@@ -15,7 +15,7 @@ namespace Alundra.Scripts;
 /// <see cref="SaveScreenDirector"/>'s already-ticked state (<see cref="Apply"/>); only the values that change
 /// notify. Every text comes from the game (ETC texts, the computed summary), bounded by the director (L3).
 /// </summary>
-public sealed class AlundraSaveScreenViewModel : ViewModelBase
+public sealed class SaveScreenViewModel : ViewModelBase
 {
     private readonly SaveScreenBoxViewModel[] _recordBoxes = { new(), new(), new(), new() };
     private readonly InventoryTextViewModel[] _recordLines0 = { new(), new(), new(), new() };

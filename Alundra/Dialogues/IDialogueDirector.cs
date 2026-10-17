@@ -15,7 +15,6 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Transitions;
-using Alundra.Scripts;
 
 namespace Alundra.Dialogues;
 
@@ -50,7 +49,7 @@ public interface IDialogueDirector
     /// test, as the binary does (portrait first, then name). <paramref name="speaker"/> null (the search found nobody) opens neither; <paramref name="nameId"/> is the ETC index of the name
     /// (0xC4's operands), the sprite type of the speaker when null. A default member that does nothing, like the other seams of this interface, so every implementer keeps compiling.
     /// </summary>
-    void OpenSpeaker(AlundraEntityScriptProxy? speaker, int? nameId = null) { }
+    void OpenSpeaker(EntityScriptProxy? speaker, int? nameId = null) { }
 
     /// <summary>
     /// Opcode 0x0D/0x5C/0xC4's own "open" half (Dispatch itself owns the reentrancy guard - see that method's

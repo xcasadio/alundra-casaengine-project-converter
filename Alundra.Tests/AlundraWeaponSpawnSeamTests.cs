@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Session;
@@ -41,7 +40,7 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
     private static IEntityWorldContext Context(ArcRun arc) => arc.Proxy;
 
     /// <summary>Arms the hero's bow so that the NEXT tick of <c>MovePlayer</c> reaches the spawn of the shot (the record of Hunter's Bow, the animation that spawns after the delay).</summary>
-    private static void Arm(AlundraEntityScriptProxy hero)
+    private static void Arm(EntityScriptProxy hero)
     {
         hero.WeaponRecordPointer = WeaponTables.AnimationAddress(8, air: false);
         hero.WeaponStepCounter = WeaponTables.RecordByte(hero.WeaponRecordPointer + 2);
@@ -49,7 +48,7 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
     }
 
     /// <summary>What one shot did: the counter and the journal of the stub, the entities that were not there before, the pointer after.</summary>
-    private sealed record ShotResult(int CounterDelta, IReadOnlyList<PlayerManager.WeaponSpawnCall> Journal, IReadOnlyList<AlundraEntityScriptProxy> Born, uint PointerAfter, int LowestFreeSlotBefore);
+    private sealed record ShotResult(int CounterDelta, IReadOnlyList<PlayerManager.WeaponSpawnCall> Journal, IReadOnlyList<EntityScriptProxy> Born, uint PointerAfter, int LowestFreeSlotBefore);
 
     private static ShotResult Fire(ArcRun arc)
     {
@@ -122,7 +121,7 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
         {
             Wire(Arrow);
             var hookCalls = 0;
-            AlundraEntityScriptProxy? fromHook = null;
+            EntityScriptProxy? fromHook = null;
             PlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
             {
                 hookCalls++;

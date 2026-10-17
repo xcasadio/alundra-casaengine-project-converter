@@ -1,4 +1,3 @@
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.UI.MGUI;
@@ -88,9 +87,9 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
     public void DesignTimeData_PopulatesAHudViewModel()
     {
         var data = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "HudScreen.design.json")));
-        Assert.Equal(typeof(AlundraHudViewModel).FullName!, data["view_model_type"]!.ToString());
+        Assert.Equal(typeof(HudViewModel).FullName!, data["view_model_type"]!.ToString());
 
-        var viewModel = new AlundraHudViewModel();
+        var viewModel = new HudViewModel();
         JsonConvert.PopulateObject(data["values"]!.ToString(), viewModel);
 
         Assert.Equal(Visibility.Visible, viewModel.RootVisibility);
@@ -111,7 +110,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
 
         Assert.Equal(HudScreen.MaxTileCount, TileNames.Length);
         Assert.Equal(TileNames.Length + 2, Element<MGCanvas>(window, "RootCanvas").TraverseVisualTree().OfType<MGImage>().Count());
-        Assert.Equal(AlundraHudViewModel.CoinAnimationId, Element<MGImage>(window, "Coin").SourceName);
+        Assert.Equal(HudViewModel.CoinAnimationId, Element<MGImage>(window, "Coin").SourceName);
     }
 
     /// <summary>The two equipment background quads are declared in the XAML with the composer's own values.</summary>
@@ -145,7 +144,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
     public void Bindings_PushTheViewModelIntoTheElements()
     {
         var window = LoadWindow(out var desktop);
-        var viewModel = new AlundraHudViewModel();
+        var viewModel = new HudViewModel();
         window.WindowDataContext = viewModel;
         IHudView view = viewModel;
 
@@ -163,7 +162,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
         Assert.Equal(tiles[0].NativeY, slash.CanvasTop);
 
         var pip = Element<MGImage>(window, "MagicPip0");
-        Assert.Equal(AlundraHudViewModel.MagicPipAnimationId, pip.SourceName);
+        Assert.Equal(HudViewModel.MagicPipAnimationId, pip.SourceName);
         Assert.Equal(TimeSpan.FromMilliseconds((3 * 10 + 7) * 20), pip.AnimationStartOffset);
         Assert.True(pip.IsAnimationPlaying);
         Assert.Equal("ace49f58-4b1c-54c1-8a08-52ecec193305", Element<MGImage>(window, "MagicPip2").SourceName); // wind_104

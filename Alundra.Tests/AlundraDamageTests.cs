@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Combat;
 using Alundra.Items;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -221,9 +221,9 @@ public sealed class AlundraDamageTests
     /// <summary>An entity whose current attack is the given one: what a target's <c>TouchingEntity</c> points at.</summary>
     private static Entity Attacker(int attribute, int power)
     {
-        var entity = new Entity { Name = "attacker", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "attacker", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
+        var proxy = (EntityScriptProxy)entity.GameplayProxy;
         proxy.CurrentAttack = new BalanceAttack(attribute, power);
         return entity;
     }
@@ -263,7 +263,7 @@ public sealed class AlundraDamageTests
         var power = line.GetProperty("power").GetInt32();
         var response = line.GetProperty("response").GetInt32();
         var latch = unchecked((uint)line.GetProperty("latch").GetInt32());
-        var target = new AlundraEntityScriptProxy { Hp = line.GetProperty("hp_before").GetInt32(), TouchingEntity = Attacker(attribute, power) };
+        var target = new EntityScriptProxy { Hp = line.GetProperty("hp_before").GetInt32(), TouchingEntity = Attacker(attribute, power) };
 
         var dead = Damage.ComputeNewHp(target, BeannoidWithResponse(attribute, response), EquipmentOf(line.GetProperty("equip_attacks")), latch);
 
@@ -369,7 +369,7 @@ public sealed class AlundraDamageTests
     [Fact]
     public void D2_Case3_AResponseOf0xC0_LeavesTheLife_AndIsNotDead()
     {
-        var target = new AlundraEntityScriptProxy { Hp = 10, TouchingEntity = Attacker(1, 1) };
+        var target = new EntityScriptProxy { Hp = 10, TouchingEntity = Attacker(1, 1) };
 
         var dead = Damage.ComputeNewHp(target, SheetWithResponse(0xC0), null, 0);
 
@@ -383,7 +383,7 @@ public sealed class AlundraDamageTests
     [InlineData(1, 8, 1, 0, true)] // minimum at HP 1: HP 1 -> 0, dead
     public void D2_Case4_TheMinimumDamageIsOne(int power, int response, int hpBefore, int hpAfter, bool dead)
     {
-        var target = new AlundraEntityScriptProxy { Hp = hpBefore, TouchingEntity = Attacker(1, power) };
+        var target = new EntityScriptProxy { Hp = hpBefore, TouchingEntity = Attacker(1, power) };
 
         Assert.Equal(dead, Damage.ComputeNewHp(target, SheetWithResponse(response), null, 0));
         Assert.Equal(hpAfter, target.Hp);
@@ -392,7 +392,7 @@ public sealed class AlundraDamageTests
     [Fact]
     public void D2_ExtraX8_AResponseOf0x40_SendsTheLifeToZero_WhateverTheDamage()
     {
-        var target = new AlundraEntityScriptProxy { Hp = 10, TouchingEntity = Attacker(1, 1) };
+        var target = new EntityScriptProxy { Hp = 10, TouchingEntity = Attacker(1, 1) };
 
         Assert.True(Damage.ComputeNewHp(target, SheetWithResponse(0x40), null, 0));
         Assert.Equal(0, target.Hp);
@@ -401,15 +401,15 @@ public sealed class AlundraDamageTests
     [Fact]
     public void ComputeNewHp_WithoutAnAttackerOrAnAttack_LeavesTheLife()
     {
-        var withoutAttacker = new AlundraEntityScriptProxy { Hp = 7 };
+        var withoutAttacker = new EntityScriptProxy { Hp = 7 };
         Assert.False(Damage.ComputeNewHp(withoutAttacker, SheetWithResponse(16), null, 0));
         Assert.Equal(7, withoutAttacker.Hp);
 
-        var noSheet = new AlundraEntityScriptProxy { Hp = 7, TouchingEntity = Attacker(1, 1) };
+        var noSheet = new EntityScriptProxy { Hp = 7, TouchingEntity = Attacker(1, 1) };
         Assert.False(Damage.ComputeNewHp(noSheet, null, null, 0));
         Assert.Equal(7, noSheet.Hp);
 
-        var attributeZero = new AlundraEntityScriptProxy { Hp = 7, TouchingEntity = Attacker(0, 50) };
+        var attributeZero = new EntityScriptProxy { Hp = 7, TouchingEntity = Attacker(0, 50) };
         Assert.False(Damage.ComputeNewHp(attributeZero, SheetWithResponse(16), null, 0));
         Assert.Equal(7, attributeZero.Hp);
     }

@@ -4,7 +4,7 @@ using CasaEngine.Framework.Scene.Entities.Components;
 using Alundra.Maps.Loop;
 using Alundra.Combat;
 
-namespace Alundra.Scripts;
+namespace Alundra.Entities;
 
 /// <summary>
 /// E20.c1a (docs/plan-e20-heros.md section 1.5): the state the hit pass of the binary (<see cref="HitPass"/>, <c>UpdateBalanceRecords</c> <c>0x80039300</c>) reads on each entity, and what keeps it in step with
@@ -18,7 +18,7 @@ namespace Alundra.Scripts;
 /// still holds the old animation in the rest of a catch-up frame.
 /// </para>
 /// </summary>
-public partial class AlundraEntityScriptProxy
+public partial class EntityScriptProxy
 {
     /// <summary>The balance record of the entity (<c>+0x1C4</c>): chosen at the creation by <see cref="InitializeBalance"/>; null in the degraded cases (no table, a spawn whose sprite header did not resolve).</summary>
     public BalanceRecord? BalanceRecord; //1c4

@@ -7,14 +7,13 @@ using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Gameplay;
 using CasaEngine.Framework.Input;
 using Alundra.Session;
-using Alundra.Scripts;
 
 namespace Alundra.Hero;
 
 /// <summary>
 /// One PSX pad snapshot subset (see <c>alundra-datas-analyser/AlundraTools/AlundraEngine/Gameplay/PadState.cs</c>
 /// for the full original bit layout), built once per frame by
-/// <see cref="AlundraPlayerController.BuildPadState"/> from the converted "AlundraButtons"
+/// <see cref="HeroController.BuildPadState"/> from the converted "AlundraButtons"
 /// <see cref="ButtonsMapping"/> (converter E2-A, <c>Data/Alundra.buttonsMapping</c>) and fed to
 /// <see cref="PlayerManager.MovePlayer"/>. Every bit a mapped action can reach is ported here, with
 /// the original's own values (PadState.cs:5-19): the nine gameplay buttons, and since E13.d D1
@@ -46,7 +45,7 @@ public readonly struct PadState
     public uint ButtonsJustPressed { get; init; }
 
     /// <summary>E20.a A1 (docs/plan-e20-heros.md section 1.3): buttons that went up on this tick, the original's <c>ButtonsReleased</c> (pad +0x14). Only a pad built from
-    /// <see cref="TickPad"/> (<see cref="FromTickPad"/>) carries it; the per-frame snapshot of <see cref="AlundraPlayerController.BuildPadState"/> leaves it 0.</summary>
+    /// <see cref="TickPad"/> (<see cref="FromTickPad"/>) carries it; the per-frame snapshot of <see cref="HeroController.BuildPadState"/> leaves it 0.</summary>
     public uint ButtonsReleased { get; init; }
 
     /// <summary>E20.d2a S1 (D-E20-32): the direction bits (<see cref="Up"/> to <see cref="Left"/>) held by the KEYBOARD and the D-PAD (the digital actions <c>MoveUp</c> to <c>MoveRight</c>). <see cref="ButtonsHold"/> keeps the OR of these and of

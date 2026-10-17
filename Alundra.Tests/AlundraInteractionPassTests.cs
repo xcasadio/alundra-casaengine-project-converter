@@ -1,7 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
@@ -20,8 +19,8 @@ namespace Alundra.Tests;
 /// <summary>
 /// E12.d's PRODUCTION-SITE stage (plan §3 étage 1, docs/plan-e12d-interaction-joueur.md): the player
 /// interaction chain pinned at the real call sites - the contact of the hero's blocked step inside the real
-/// <see cref="AlundraWorldProxy.Update"/> (P-a), the <c>CheckEntityInteraction</c> call inside the real
-/// player branch of <see cref="AlundraEntityScriptProxy.Update"/> → <c>MovePlayer</c> (P-b), and the
+/// <see cref="WorldProxy.Update"/> (P-a), the <c>CheckEntityInteraction</c> call inside the real
+/// player branch of <see cref="EntityScriptProxy.Update"/> → <c>MovePlayer</c> (P-b), and the
 /// consume-on-pick cadence at the real slot-F pick (P-c). The full-flow sailor test in
 /// <see cref="AlundraDialogueOpcodesProductionTests"/> may then legitimately mirror these passes in its
 /// harness - the F1 contract: a harness mirror only stands when the production site carries its own
@@ -31,7 +30,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
 {
     public AlundraInteractionPassTests()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
@@ -44,7 +43,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
 
     public void Dispose()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
 
         // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
         // isolation) - kept for symmetry with the existing session-singleton test classes.
@@ -58,7 +57,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
     // Shared montage bits
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraEntityScriptProxy NewCollidable(int x, int y, int z, uint extraFlags = 0)
+    private static EntityScriptProxy NewCollidable(int x, int y, int z, uint extraFlags = 0)
         => new()
         {
             Flags = EntityFlags.Collidable | extraFlags,
@@ -73,34 +72,34 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
 
     private sealed class RecordingRunner : IEventProgramRunner
     {
-        public readonly List<(AlundraEntityScriptProxy Entity, int Slot)> ScriptRuns = new();
+        public readonly List<(EntityScriptProxy Entity, int Slot)> ScriptRuns = new();
         public int SpriteEventRuns;
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot) => ScriptRuns.Add((entity, programSlot));
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity) => SpriteEventRuns++;
+        public void RunScript(EntityScriptProxy entity, int programSlot) => ScriptRuns.Add((entity, programSlot));
+        public void RunSpriteEvent(EntityScriptProxy entity) => SpriteEventRuns++;
     }
 
     private sealed class InteractScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; init; } = new RecordingRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController { get; init; }
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; init; } = System.Array.Empty<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController { get; init; }
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; init; } = System.Array.Empty<EntityScriptProxy>();
         public int TicksThisFrame { get; set; } = 1;
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
         public int LogicTicksThisFrame(float elapsedTime) => TicksThisFrame;
     }
 
-    /// <summary>A real player proxy whose real <see cref="AlundraEntityScriptProxy.Update"/> player
+    /// <summary>A real player proxy whose real <see cref="EntityScriptProxy.Update"/> player
     /// branch runs <c>MovePlayer</c> - the exact montage of the D-E7-8 pad-seam production test.</summary>
-    private static AlundraEntityScriptProxy NewDrivablePlayer(InteractScriptHost host)
+    private static EntityScriptProxy NewDrivablePlayer(InteractScriptHost host)
     {
-        var player = new AlundraEntityScriptProxy
+        var player = new EntityScriptProxy
         {
             IsPlayer = true,
             ScriptHost = host,
@@ -129,9 +128,9 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
 
         public required ContactHost Host { get; init; }
 
-        public required AlundraEntityScriptProxy Hero { get; init; }
+        public required EntityScriptProxy Hero { get; init; }
 
-        public required AlundraEntityScriptProxy Sailor { get; init; }
+        public required EntityScriptProxy Sailor { get; init; }
 
         public required PadHold Pad { get; init; }
 
@@ -149,7 +148,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
     private static HeroAndSailor BuildHeroAndSailor()
     {
         var pad = new PadHold();
-        var host = new ContactHost(playerController: new AlundraPlayerController
+        var host = new ContactHost(playerController: new HeroController
         {
             PadStateProviderForTests = () => new PadState { ButtonsHold = pad.Buttons, ButtonsJustPressed = pad.Buttons },
         });
@@ -252,7 +251,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
     {
         var host = new InteractScriptHost
         {
-            PlayerController = new AlundraPlayerController { PadStateProviderForTests = SquarePress },
+            PlayerController = new HeroController { PadStateProviderForTests = SquarePress },
         };
         var player = NewDrivablePlayer(host);
         var sailor = NewCollidable(0, 0, 0, EntityFlags.InteractRequiresButton);
@@ -272,7 +271,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         // No press.
         var quietHost = new InteractScriptHost
         {
-            PlayerController = new AlundraPlayerController { PadStateProviderForTests = () => default },
+            PlayerController = new HeroController { PadStateProviderForTests = () => default },
         };
         var player = NewDrivablePlayer(quietHost);
         var sailor = NewCollidable(0, 0, 0, EntityFlags.InteractRequiresButton);
@@ -284,7 +283,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         // Press, but the entity has NO F program at all.
         var host = new InteractScriptHost
         {
-            PlayerController = new AlundraPlayerController { PadStateProviderForTests = SquarePress },
+            PlayerController = new HeroController { PadStateProviderForTests = SquarePress },
         };
         player = NewDrivablePlayer(host);
         player.XCollisionEntity = NewCollidable(0, 0, 0, EntityFlags.InteractRequiresButton);
@@ -295,7 +294,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         // box up the original never even reached MovePlayer (EntityManager.cs:377).
         host = new InteractScriptHost
         {
-            PlayerController = new AlundraPlayerController { PadStateProviderForTests = SquarePress },
+            PlayerController = new HeroController { PadStateProviderForTests = SquarePress },
         };
         player = NewDrivablePlayer(host);
         player.XCollisionEntity = sailor;
@@ -310,7 +309,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         // T3 (plan §3): no InteractRequiresButton flag -> res=1, assignment without a press.
         var host = new InteractScriptHost
         {
-            PlayerController = new AlundraPlayerController { PadStateProviderForTests = () => default },
+            PlayerController = new HeroController { PadStateProviderForTests = () => default },
         };
         var player = NewDrivablePlayer(host);
         var touchPlate = NewCollidable(0, 0, 0);
@@ -332,7 +331,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         var pressNow = false;
         var host = new InteractScriptHost
         {
-            PlayerController = new AlundraPlayerController
+            PlayerController = new HeroController
             {
                 PadStateProviderForTests = () => pressNow ? SquarePress() : default,
             },
@@ -365,7 +364,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         var pressNow = false;
         var host = new InteractScriptHost
         {
-            PlayerController = new AlundraPlayerController
+            PlayerController = new HeroController
             {
                 PadStateProviderForTests = () => pressNow ? SquarePress() : default,
             },

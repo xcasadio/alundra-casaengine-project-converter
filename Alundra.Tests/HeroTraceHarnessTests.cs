@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -205,11 +204,11 @@ public class HeroTraceHarnessTests
 
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -217,15 +216,15 @@ public class HeroTraceHarnessTests
     private sealed class HeroScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
 
         // §2.4: PlayerControlFlags = 0 explicitly (not the ALUNDRA_DEBUG_IGNORE_CONTROL_LOCK escape hatch),
         // so MovePlayer's real InputBlockedMask gate is exercised (and found open) rather than masked.
         public GameState GameState { get; } = new() { PlayerControlFlags = 0 };
-        public AlundraPlayerController? PlayerController { get; init; }
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController { get; init; }
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -261,7 +260,7 @@ public class HeroTraceHarnessTests
     /// deliberately seeded position for scenario B, both callers' own responsibility). Overrides are
     /// applied to <c>proxy.Controller!.Settings</c> - the LIVE, already-cloned instance (see class doc's
     /// own post-mortem) - never to a detached pre-construction object.</summary>
-    private static void ApplyCommonHeaderAndOverrides(AlundraEntityScriptProxy proxy, SpriteRecordHeader header, TileMapData tileMapData)
+    private static void ApplyCommonHeaderAndOverrides(EntityScriptProxy proxy, SpriteRecordHeader header, TileMapData tileMapData)
     {
         proxy.TargetAnimationId = 0; // §2.3 documented gap (Idle, not LoadingMap).
         proxy.TargetDirection = GameState.ResetDirectionId;
@@ -287,7 +286,7 @@ public class HeroTraceHarnessTests
         liveSettings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(proxy.Flags);
     }
 
-    private static void ApplyNewGameState(AlundraEntityScriptProxy proxy, SpriteRecordHeader header, TileMapData tileMapData)
+    private static void ApplyNewGameState(EntityScriptProxy proxy, SpriteRecordHeader header, TileMapData tileMapData)
     {
         // PosX/PosY/PosZ then ClampToGround(), TileX/Y/Z - AdoptPlayerPawn:1442-1453.
         proxy.PosX = (CameraTileX * TileWidth + TileWidth / 2) << 16;
@@ -304,7 +303,7 @@ public class HeroTraceHarnessTests
     /// <summary>Scenario B (§2.6 bis): still the real hero header/overrides (movement math must be real),
     /// but the POSITION is deliberately seeded on an elevated landing tile - documented in the trace
     /// header, never claimed as a reachable New Game state.</summary>
-    private static void ApplyHighGroundState(AlundraEntityScriptProxy proxy, SpriteRecordHeader header, TileMapData tileMapData, Vector3 startPosition)
+    private static void ApplyHighGroundState(EntityScriptProxy proxy, SpriteRecordHeader header, TileMapData tileMapData, Vector3 startPosition)
     {
         proxy.PosX = (int)Math.Round((double)startPosition.X * 65536.0);
         proxy.PosY = (int)Math.Round((double)startPosition.Y * 65536.0);
@@ -318,10 +317,10 @@ public class HeroTraceHarnessTests
     }
 
     /// <summary>Full (x,y,z) scripted reposition via the SAME production entry point real scripted
-    /// repositioning uses (0x64 SetEntitiesPosition et al - <see cref="AlundraEntityScriptProxy.PushLogicalPositionToRoot"/>).
+    /// repositioning uses (0x64 SetEntitiesPosition et al - <see cref="EntityScriptProxy.PushLogicalPositionToRoot"/>).
     /// Used by scenario A only, mid-trace, to reach the one place on this map a real gravity-driven fall is
     /// reachable from - see the trace header's own note.</summary>
-    private static void Reposition(AlundraEntityScriptProxy proxy, float x, float y, float z)
+    private static void Reposition(EntityScriptProxy proxy, float x, float y, float z)
     {
         proxy.PosX = (int)Math.Round((double)x * 65536.0);
         proxy.PosY = (int)Math.Round((double)y * 65536.0);
@@ -408,7 +407,7 @@ public class HeroTraceHarnessTests
         world.RuntimeSystems.CharacterMotion.FixedTimeStep = fixedTimeStep;
         world.RuntimeSystems.CharacterMotion.MaxStepsPerFrame = 4;
 
-        var controller = new AlundraPlayerController();
+        var controller = new HeroController();
         var host = new HeroScriptHost { PlayerController = controller };
 
         Vector3 startPosition = scenario == Scenario.Spawn

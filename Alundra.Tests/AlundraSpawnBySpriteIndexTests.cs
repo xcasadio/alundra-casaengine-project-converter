@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Engine.Environment;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Scene.Entities;
@@ -21,7 +20,7 @@ namespace Alundra.Tests;
 internal static class SpawnProjectionAsserts
 {
     /// <summary>The fields the plan compares (README of the annex). <paramref name="withTerrain"/> false leaves out the ones that depend on the terrain of the field: <c>PosZ</c>, <c>ModdedPosZ</c>, the terrain, the floor and the corner heights.</summary>
-    internal static void Check(string id, SpawnProjection p, AlundraEntityScriptProxy proxy, ICollisionField? field, Entity hero, Entity? aux, bool withTerrain)
+    internal static void Check(string id, SpawnProjection p, EntityScriptProxy proxy, ICollisionField? field, Entity hero, Entity? aux, bool withTerrain)
     {
         Assert.True(p.Hp == proxy.Hp, $"{id}: Hp {proxy.Hp} (oracle {p.Hp})");
         Assert.True(p.HpMax == proxy.HpMax, $"{id}: HpMax {proxy.HpMax} (oracle {p.HpMax})");
@@ -163,7 +162,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
 
     private static Entity NewBareEntity()
     {
-        var entity = new Entity { GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
         return entity;
     }
@@ -171,7 +170,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     private static CellsCollisionField FieldOf(string world)
         => world == "raised" ? FlatCells.Create(cell: (_, _) => (0, 2)) : FlatCells.Create();
 
-    private sealed record Created(Entity Entity, AlundraEntityScriptProxy Proxy, Entity Hero, Entity? Aux);
+    private sealed record Created(Entity Entity, EntityScriptProxy Proxy, Entity Hero, Entity? Aux);
 
     /// <summary>The vector, as the oracle made it, at the level of the core: the parent as asked (none, the hero, an entity created first), then the creation (the binary's argument Z), then the balance sheet of the sprite (threshold 0, as the oracle).</summary>
     private static Created Create(SpawnVector v, ICollisionField field, bool initializeBalance = true)
@@ -185,7 +184,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
             _ => aux = CreateAt(false, 3, hero, 150, 100, 0, 0x10, field),
         };
         var entity = CreateAt(v.IsMapPage, v.Index, parent, v.X, v.Y, v.Z, v.Direction, field);
-        var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy!;
+        var proxy = (EntityScriptProxy)entity.GameplayProxy!;
         if (initializeBalance)
         {
             proxy.InitializeBalance(Tables.Value, 0);
@@ -271,21 +270,21 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
         var field = FieldOf("flat");
         var hero = NewBareEntity();
 
-        var none = (AlundraEntityScriptProxy)CreateAt(false, 3, null, 150, 100, 0, 0x10, field).GameplayProxy!;
+        var none = (EntityScriptProxy)CreateAt(false, 3, null, 150, 100, 0, 0x10, field).GameplayProxy!;
         Assert.Null(none.ParentEntity);
         Assert.Null(none.ChildEntity);
 
         var firstEntity = CreateAt(false, 3, hero, 150, 100, 0, 0x10, field);
-        var first = (AlundraEntityScriptProxy)firstEntity.GameplayProxy!;
+        var first = (EntityScriptProxy)firstEntity.GameplayProxy!;
         Assert.Same(hero, first.ParentEntity);
         Assert.Same(hero, first.ChildEntity); // the parent has no root: the root is the parent (parent.+8 == 0 gives the parent, 0x80039D48-0x80039D5C).
 
         var secondEntity = CreateAt(false, 4, firstEntity, 150, 100, 0, 0x10, field);
-        var second = (AlundraEntityScriptProxy)secondEntity.GameplayProxy!;
+        var second = (EntityScriptProxy)secondEntity.GameplayProxy!;
         Assert.Same(firstEntity, second.ParentEntity);
         Assert.Same(hero, second.ChildEntity); // a child of a child: the root of the parent.
 
-        var third = (AlundraEntityScriptProxy)CreateAt(false, 7, secondEntity, 150, 100, 0, 0x10, field).GameplayProxy!;
+        var third = (EntityScriptProxy)CreateAt(false, 7, secondEntity, 150, 100, 0, 0x10, field).GameplayProxy!;
         Assert.Same(hero, third.ChildEntity);
     }
 

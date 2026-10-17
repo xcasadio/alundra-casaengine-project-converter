@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
@@ -42,9 +41,9 @@ public sealed class AlundraMapStateWorldTests
 
     private static void Install(ArcRun arc, CellsCollisionField field, TileMapData? map)
     {
-        typeof(AlundraWorldProxy).GetProperty(nameof(AlundraWorldProxy.CollisionField))!.SetValue(arc.Proxy, field);
+        typeof(WorldProxy).GetProperty(nameof(WorldProxy.CollisionField))!.SetValue(arc.Proxy, field);
         arc.RealWorld!.CollisionField = field;
-        typeof(AlundraWorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, map);
+        typeof(WorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, map);
     }
 
     /// <summary>A wall that only the mask blocks: the cells of column 15 hold the word 0x40 and the height 0 (the family C1 of the oracle: the arrow flies at 16 px above the ground).</summary>
@@ -183,11 +182,11 @@ public sealed class AlundraMapStateWorldTests
         record.CustomProperties["SpriteTableIndex"] = Arrow.ToString();
         record.CustomProperties["SpriteDirection"] = "64";
         record.CustomProperties["PrefabAssetId"] = prefabId.ToString();
-        var prefab = new Entity { Name = "K4Prefab", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var prefab = new Entity { Name = "K4Prefab", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         prefab.AddComponent(new CharacterControllerComponent());
-        var fromRecord = (AlundraEntityScriptProxy)EntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab, catalog, tileMapData: map).GameplayProxy!;
+        var fromRecord = (EntityScriptProxy)EntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab, catalog, tileMapData: map).GameplayProxy!;
 
-        static (int, int, uint, bool, float) Fields(AlundraEntityScriptProxy p)
+        static (int, int, uint, bool, float) Fields(EntityScriptProxy p)
             => (p.MapGravityRaw, p.MapZViscosityRaw, p.Controller!.Settings.WalkabilityMask, p.Controller.IsVerticalOwnedExternally, p.Controller.Settings.MinMoveDistance);
 
         Assert.Equal((128, 4096, 0x40u, true, 0f), Fields(fromRecord)); // the record path, unchanged.

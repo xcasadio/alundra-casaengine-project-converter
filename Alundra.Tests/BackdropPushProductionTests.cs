@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Rendering.ScrollingLayers;
 using Microsoft.Xna.Framework;
 using Xunit;
@@ -12,6 +11,7 @@ using Alundra.Cameras;
 using Alundra.Rendering.Backdrops;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -70,7 +70,7 @@ public sealed class BackdropPushProductionTests : IDisposable
     public void Update_PushesFrame_AtTheProductionCallSite_PendingTicksReflectsTheLatestPush()
     {
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
         var stage = proxy._backdropStage;
@@ -108,7 +108,7 @@ public sealed class BackdropPushProductionTests : IDisposable
     public void Update_PushesFrame_WhileGameplayBlockedMaskIsPosed_PendingTicksStillReflectsThePush()
     {
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
         var stage = proxy._backdropStage;
@@ -137,7 +137,7 @@ public sealed class BackdropPushProductionTests : IDisposable
     public void Update_PushesFrame_OnAWorldWithNoGame()
     {
         var world = new World { Name = "TestWorld" };
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // no "tileMap" entity -> early return, harmless here.
 
         var stage = proxy._backdropStage;

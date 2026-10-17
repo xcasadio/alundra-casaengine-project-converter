@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Alundra.Scripts;
 using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Maps;
@@ -11,7 +10,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Acceptance 3 of docs/plan-e7-mutation-tuiles.md, slice E7.a: drives the REAL production call site -
-/// <see cref="AlundraWorldProxy.RunMapEventsPass"/>/<see cref="EventProgramRunner.Dispatch"/> -
+/// <see cref="WorldProxy.RunMapEventsPass"/>/<see cref="EventProgramRunner.Dispatch"/> -
 /// through <see cref="HeadlessIntroSimulation"/> (Alundra.Tests\IntroTraceHarnessTests.cs), not a
 /// synthetic document, and proves the mutation actually flows end-to-end from opcode dispatch down to
 /// <see cref="CellsCollisionField"/>'s own read side. Twinned with a NEUTRALIZATION run

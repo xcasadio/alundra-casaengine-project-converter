@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
@@ -11,6 +10,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.UI.Speech;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -133,7 +133,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
 
     /// <summary>
     /// Pins the PRODUCTION INSTALL DECISION itself - found by a main-session mutation on the delivered
-    /// slice: with <see cref="AlundraWorldProxy.InstallDialogueSystems"/> gutted to never construct the
+    /// slice: with <see cref="WorldProxy.InstallDialogueSystems"/> gutted to never construct the
     /// presenter (AttachToWorld(null, ...)), all 687 tests stayed green while no dialogue box could
     /// ever appear in the game. Fourth occurrence of the green-and-inert wiring family (fade trigger,
     /// audio install, backdrop textures, now this). The wiring tests above drive the presenter
@@ -175,7 +175,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
 
             HeroWorldFixture.SetProperty(world, nameof(CasaEngine.Framework.Scene.World.World.Game), game);
 
-            var proxy = new AlundraWorldProxy();
+            var proxy = new WorldProxy();
             proxy.InstallDialogueSystems(world);
 
             Assert.True(DialogueDirector.Instance.HasPresenter,
@@ -207,7 +207,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
     public void Update_WiresThePresenter_OnceTheViewAppearsAfterWorldInit()
     {
         DialogueDirector.Instance.ResetForTests();
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
         try
         {
             var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
@@ -231,7 +231,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
 
             // Phase 1 - the LoadContent window: InitializeWithWorld runs while the ViewManager is
             // still empty (the real game's exact state). The install's eager lookup must find nothing.
-            var proxy = new AlundraWorldProxy();
+            var proxy = new WorldProxy();
             proxy.InitializeWithWorld(world);
             proxy.InstallDialogueSystems(world); // "TestWorld" has no tileMap, so InitializeWithWorld
                                                  // early-returns before the real install - drive it
@@ -267,7 +267,7 @@ public class AlundraDialoguePresenterWiringTests : IDisposable
         finally
         {
             DialogueDirector.Instance.ResetForTests();
-            AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+            WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         }
     }
 }

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
@@ -34,7 +33,7 @@ namespace Alundra.Tests;
 ///
 /// Driven through the real <c>world.Update</c> so the production call site is what is pinned, not a
 /// mirror: the hero montage of <see cref="HeroWorldFixture"/> carries a real
-/// <see cref="AlundraPlayerController"/> whose pad can be scripted.
+/// <see cref="HeroController"/> whose pad can be scripted.
 /// </summary>
 public sealed class AlundraPadSnapshotFreezeTests : IDisposable
 {
@@ -67,7 +66,7 @@ public sealed class AlundraPadSnapshotFreezeTests : IDisposable
         var world = HeroWorldFixture.BuildWorld(field);
 
         var pad = new PadState();
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => pad };
+        var controller = new HeroController { PadStateProviderForTests = () => pad };
         var host = new PadScriptHost { PlayerController = controller };
         HeroWorldFixture.BuildHeroPawn(world, new CharacterControllerSettings(), new Vector3(804f, 952f, 0f), host);
 
@@ -95,7 +94,7 @@ public sealed class AlundraPadSnapshotFreezeTests : IDisposable
         var world = HeroWorldFixture.BuildWorld(field);
 
         var pad = new PadState();
-        var controller = new AlundraPlayerController { PadStateProviderForTests = () => pad };
+        var controller = new HeroController { PadStateProviderForTests = () => pad };
         var host = new PadScriptHost { PlayerController = controller };
         HeroWorldFixture.BuildHeroPawn(world, new CharacterControllerSettings(), new Vector3(804f, 952f, 0f), host);
 
@@ -109,12 +108,12 @@ public sealed class AlundraPadSnapshotFreezeTests : IDisposable
     private sealed class PadScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
-        public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+        public EntityScriptProxy? ActiveCollisionEntity { get; set; }
         public GameState GameState { get; } = new();
-        public AlundraPlayerController? PlayerController { get; init; }
-        public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = Array.Empty<AlundraEntityScriptProxy>();
+        public HeroController? PlayerController { get; init; }
+        public IReadOnlyList<EntityScriptProxy> Collidables { get; } = Array.Empty<EntityScriptProxy>();
 
-        public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+        public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
         }
 
@@ -123,11 +122,11 @@ public sealed class AlundraPadSnapshotFreezeTests : IDisposable
 
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }

@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.IO;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Assets.TileMap;
 using Xunit;
@@ -83,20 +82,20 @@ public sealed class AlundraBreakEffectByteTests : IDisposable
     public void TheApparitionCopiesTheByteOfTheHeader_AndTheCloneCopiesIt()
     {
         var prefab = Guid.NewGuid();
-        var proxy = new AlundraEntityScriptProxy();
+        var proxy = new EntityScriptProxy();
         var record = Record(prefab);
         EntitySpawnFactory.ApplyRecord(record, proxy);
 
         EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefab, new SpriteRecordHeader { BreakEffect = 12 }));
 
         Assert.Equal(12, proxy.BreakEffect);
-        Assert.Equal(12, ((AlundraEntityScriptProxy)proxy.Clone()).BreakEffect);
+        Assert.Equal(12, ((EntityScriptProxy)proxy.Clone()).BreakEffect);
     }
 
     [Fact]
     public void AnEntityWithoutAHeader_HasNoBreakEffect()
     {
-        Assert.Equal(0, new AlundraEntityScriptProxy().BreakEffect);
+        Assert.Equal(0, new EntityScriptProxy().BreakEffect);
     }
 
     private static string RealExport()

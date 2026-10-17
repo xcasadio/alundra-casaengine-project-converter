@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
@@ -15,7 +14,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E20.e0a2 (docs/plan-e20-heros.md section 1.16.2, ADR-0064), the table of slots on the REAL world of map 14 (<c>Overworld 3,1-14</c>, built by the production path of <see cref="ArcRun"/> with the export's prefabs): the hero
-/// holds slot 0, the other entities the lowest free slot of 1 to 63, <c>_spawnedEntities</c> follows the order of the slots, a destroyed entity keeps its slot until <see cref="AlundraWorldProxy.RecycleDestroyedEntities"/>, the 64th
+/// holds slot 0, the other entities the lowest free slot of 1 to 63, <c>_spawnedEntities</c> follows the order of the slots, a destroyed entity keeps its slot until <see cref="WorldProxy.RecycleDestroyedEntities"/>, the 64th
 /// apparition is refused on the three paths that create entities, and an exception after the addition leaves nothing behind. Also <c>ChildEntity</c> (the root of the chain of parents) on the record path.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
@@ -29,19 +28,19 @@ public sealed class AlundraEntitySlotWorldTests
 
     private static IEntityWorldContext Context(ArcRun arc) => arc.Proxy;
 
-    private static AlundraEntityScriptProxy? TrySpawn(ArcRun arc, AlundraEntityScriptProxy? parent = null, int index = 3)
+    private static EntityScriptProxy? TrySpawn(ArcRun arc, EntityScriptProxy? parent = null, int index = 3)
         => Context(arc).SpawnEntityBySpriteIndex(parent ?? arc.Hero, false, index, HeroX << 16, HeroY << 16, -1, 0x10);
 
-    private static AlundraEntityScriptProxy Spawn(ArcRun arc, AlundraEntityScriptProxy? parent = null, int index = 3) => TrySpawn(arc, parent, index)!;
+    private static EntityScriptProxy Spawn(ArcRun arc, EntityScriptProxy? parent = null, int index = 3) => TrySpawn(arc, parent, index)!;
 
     private static List<Entity> SpawnedList(ArcRun arc)
-        => (List<Entity>)typeof(AlundraWorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!;
+        => (List<Entity>)typeof(WorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(arc.Proxy)!;
 
     private static int WarningsWith(ArcRun arc, string text) => arc.Log!.Warnings.Count(w => w.Contains(text, StringComparison.Ordinal));
 
     private static int FreeSlots(ArcRun arc) => EntitySlotTable.SlotCount - arc.Proxy.SlotTable.HeldCount;
 
-    private static void Recycle(ArcRun arc, params AlundraEntityScriptProxy[] entities)
+    private static void Recycle(ArcRun arc, params EntityScriptProxy[] entities)
     {
         foreach (var entity in entities)
         {
@@ -51,11 +50,11 @@ public sealed class AlundraEntitySlotWorldTests
         arc.Proxy.RecycleDestroyedEntities();
     }
 
-    private static AlundraEntityScriptProxy SlotlessProxy()
+    private static EntityScriptProxy SlotlessProxy()
     {
-        var entity = new Entity { Name = "SlotlessEntity", RootComponent = new TransformComponent(), GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = "SlotlessEntity", RootComponent = new TransformComponent(), GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         entity.Initialize();
-        return Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        return Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
     }
 
     private static bool IsAscending(IEnumerable<int> slots)
@@ -89,7 +88,7 @@ public sealed class AlundraEntitySlotWorldTests
     [Fact]
     public void AWorldWithoutAHero_HoldsSlot0_FromItsConstruction()
     {
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         Assert.True(proxy.SlotTable.IsHeld(0));
         Assert.Equal(1, proxy.SlotTable.Allocate());
     }
@@ -238,7 +237,7 @@ public sealed class AlundraEntitySlotWorldTests
 
         Assert.True(normal > 4, "map 14 must load more entities than the two free slots left below");
 
-        AlundraWorldProxy.SlotTableFactoryForTests = () =>
+        WorldProxy.SlotTableFactoryForTests = () =>
         {
             var table = new EntitySlotTable();
             for (var i = 0; i < 61; i++)
@@ -257,7 +256,7 @@ public sealed class AlundraEntitySlotWorldTests
         }
         finally
         {
-            AlundraWorldProxy.SlotTableFactoryForTests = null;
+            WorldProxy.SlotTableFactoryForTests = null;
         }
     }
 
@@ -272,7 +271,7 @@ public sealed class AlundraEntitySlotWorldTests
         var expectedSlot = count; // hero 0 plus count - 1 entities: the lowest free one is count.
         var record = arc.Entities.First(e => e.EntityRefId >= 0).EntityRefId;
         Entity? thrown = null;
-        AlundraWorldProxy.CreationFaultHookForTests = (p, entity) =>
+        WorldProxy.CreationFaultHookForTests = (p, entity) =>
         {
             if (p == path)
             {
@@ -280,14 +279,14 @@ public sealed class AlundraEntitySlotWorldTests
                 throw new InvalidOperationException("injected fault after the addition");
             }
         };
-        AlundraEntityScriptProxy? result;
+        EntityScriptProxy? result;
         try
         {
             result = path == "sprite-index" ? TrySpawn(arc) : arc.Proxy.SpawnEntityByRecordId(arc.Hero, record);
         }
         finally
         {
-            AlundraWorldProxy.CreationFaultHookForTests = null;
+            WorldProxy.CreationFaultHookForTests = null;
         }
 
         Assert.Null(result);
@@ -296,7 +295,7 @@ public sealed class AlundraEntitySlotWorldTests
         Assert.DoesNotContain(thrown, SpawnedList(arc));
         Assert.Equal(count, arc.Entities.Count);
         Assert.Equal(held, arc.Proxy.SlotTable.HeldCount);
-        Assert.Equal(-1, ((AlundraEntityScriptProxy)thrown.GameplayProxy!).Slot);
+        Assert.Equal(-1, ((EntityScriptProxy)thrown.GameplayProxy!).Slot);
         Assert.Contains("injected fault", arc.Log!.Warnings.Last(), StringComparison.Ordinal);
 
         Assert.Equal(expectedSlot, Spawn(arc).Slot); // the slot was given back: the next apparition takes it.
@@ -313,7 +312,7 @@ public sealed class AlundraEntitySlotWorldTests
 
         var calls = 0;
         Entity? thrown = null;
-        AlundraWorldProxy.CreationFaultHookForTests = (p, entity) =>
+        WorldProxy.CreationFaultHookForTests = (p, entity) =>
         {
             if (p == "load" && calls++ == 1) // the second record of the layer.
             {
@@ -334,7 +333,7 @@ public sealed class AlundraEntitySlotWorldTests
         }
         finally
         {
-            AlundraWorldProxy.CreationFaultHookForTests = null;
+            WorldProxy.CreationFaultHookForTests = null;
         }
     }
 

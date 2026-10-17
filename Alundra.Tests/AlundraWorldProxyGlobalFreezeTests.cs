@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
@@ -20,12 +19,13 @@ using Alundra.Entities;
 using Alundra.Cameras;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// T2 (docs/plan-transitions-carte.md §1.5/§3, "Gel global du monde") - ORACLE 2 (production site): drives
-/// the real <see cref="AlundraWorldProxy.Update"/> itself (same headless montage as
+/// the real <see cref="WorldProxy.Update"/> itself (same headless montage as
 /// <see cref="AlundraWorldProxyUpdateCharacterizationTests"/>/<see cref="AlundraDialogueFramePassTests"/>),
 /// proving the gate this slice adds is really exercised at its call site AND that the "dehors" passes keep
 /// running while it is closed.
@@ -47,7 +47,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
 {
     public AlundraWorldProxyGlobalFreezeTests()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
@@ -60,7 +60,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
 
     public void Dispose()
     {
-        AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
+        WorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
 
         // D-T-14: hygiene, not covered by the acceptance (the constructor above is what carries
         // isolation) - kept for symmetry with the existing session-singleton test classes.
@@ -85,7 +85,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
         return camera;
     }
 
-    private static AlundraEntityScriptProxy BuildFollowedTarget(int posXPixels, int posYPixels)
+    private static EntityScriptProxy BuildFollowedTarget(int posXPixels, int posYPixels)
         => new()
         {
             Status = EntityStatus.Normal,
@@ -97,7 +97,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
     /// <summary>
     /// The camera follow (<see cref="CameraDirector.UpdateCameraFollow"/>) is "dehors" (§1.5's own
     /// table: "the original's own look-at update is the LAST thing UpdateEntities does, AFTER the `else`")
-    /// - it must keep tracking <see cref="AlundraWorldProxy.EntityFollowedByCamera"/> even while
+    /// - it must keep tracking <see cref="WorldProxy.EntityFollowedByCamera"/> even while
     /// <see cref="GameState.PlayerControlBits.GameplayBlockedMask"/> is posed (a MenuOpen dialogue
     /// box must not also freeze the camera).
     /// </summary>
@@ -107,7 +107,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
         var world = BuildHeadlessWorld();
         var camera = AddCameraEntity(world);
 
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
         var followed = BuildFollowedTarget(posXPixels: 100, posYPixels: 200);
@@ -230,7 +230,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
     /// <summary>Same headless (no GraphicsDevice) real-map-389 <see cref="TileMapComponent"/> montage as
     /// <see cref="AlundraCellVisualSyncTests.BuildHeadlessProxy"/> - built independently here (that
     /// class' own helpers are private) because THIS test needs the raw <see cref="World"/>/<see cref="Entity"/>
-    /// BEFORE any proxy touches them, to call <see cref="AlundraWorldProxy.InitializeWithWorld"/> directly
+    /// BEFORE any proxy touches them, to call <see cref="WorldProxy.InitializeWithWorld"/> directly
     /// instead of <c>InstallCellAndOverlaySystems</c>.</summary>
     internal static (World World, Entity TileMapEntity) BuildRealMap389World()
     {
@@ -298,13 +298,13 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
     }
 
     /// <summary>
-    /// [R5]: crosses <see cref="AlundraWorldProxy.InitializeWithWorld"/>'s two early returns (a real
+    /// [R5]: crosses <see cref="WorldProxy.InitializeWithWorld"/>'s two early returns (a real
     /// "tileMap" entity with loaded <see cref="TileMapData"/>, exactly the montage
     /// <see cref="AlundraCellVisualSyncTests"/> already proves is reachable headless) and pins the two
     /// T1 instructions that sit right after them (AlundraWorldProxy.cs:527/535):
     /// <see cref="GameState.InstallForMapEntry"/> really runs (a stale TemporaryFlags entry and a
     /// non-null InteractLatchEntity, both seeded BEFORE the call, are gone after it), and
-    /// <see cref="AlundraWorldProxy.ActiveCollisionEntity"/> really gets reset to null. The call is made
+    /// <see cref="WorldProxy.ActiveCollisionEntity"/> really gets reset to null. The call is made
     /// with NO try/catch: if a later step inside the SAME method throws, that is itself new information
     /// this test surfaces rather than hides.
     /// </summary>
@@ -317,10 +317,10 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
         // is the ONLY thing that can make the post-call assertions below true.
         const int seededTemporaryFlagIndex = 3;
         GameState.Instance.TemporaryFlags[seededTemporaryFlagIndex] = 0xdead_beef;
-        GameState.Instance.InteractLatchEntity = new AlundraEntityScriptProxy();
+        GameState.Instance.InteractLatchEntity = new EntityScriptProxy();
 
-        var proxy = new AlundraWorldProxy();
-        proxy.ActiveCollisionEntity = new AlundraEntityScriptProxy();
+        var proxy = new WorldProxy();
+        proxy.ActiveCollisionEntity = new EntityScriptProxy();
 
         proxy.InitializeWithWorld(world);
 

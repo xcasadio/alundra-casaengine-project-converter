@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using CasaEngine.Engine.Physics;
 using Xunit;
 using Alundra.Session;
@@ -11,6 +10,7 @@ using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Cells;
 using Alundra.Transitions;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -61,9 +61,9 @@ public sealed class AlundraFlailBounceTests : IDisposable
     // (1) The port on its own.
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraEntityScriptProxy HeroOn(ICollisionField? field = null) => JumpHeroRig.Build(field, freePad: true).Hero;
+    private static EntityScriptProxy HeroOn(ICollisionField? field = null) => JumpHeroRig.Build(field, freePad: true).Hero;
 
-    private static void PoseBox(AlundraEntityScriptProxy hero, bool frameBox = true, int x = BoxX, int y = BoxY, int z = BoxZ)
+    private static void PoseBox(EntityScriptProxy hero, bool frameBox = true, int x = BoxX, int y = BoxY, int z = BoxZ)
     {
         hero.HasFrameBox = frameBox;
         hero.HitBoxX = x;
@@ -331,7 +331,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
 
     // ---- which named stub is called for which state ----------------------------------------------------------------------------------
 
-    private static List<(int Mode, string Stub, uint State)> Call(AlundraEntityScriptProxy hero, int mode, uint state, int onGround = 1, int forceX = 0, int forceY = 0, int forceZ = 0)
+    private static List<(int Mode, string Stub, uint State)> Call(EntityScriptProxy hero, int mode, uint state, int onGround = 1, int forceX = 0, int forceY = 0, int forceZ = 0)
     {
         hero.TargetAnimationId = state;
         hero.IsOnGround = onGround;

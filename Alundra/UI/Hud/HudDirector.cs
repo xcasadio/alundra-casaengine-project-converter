@@ -3,9 +3,9 @@
 using Alundra.Session;
 using Alundra.Transitions;
 using Alundra.Dialogues;
-using Alundra.Scripts;
 using Alundra.UI.Inventory;
 using Alundra.SaveGames;
+using Alundra.Maps;
 
 namespace Alundra.UI.Hud;
 
@@ -205,7 +205,7 @@ public sealed class HudDirector
     }
 
     /// <summary>
-    /// Map-entry hook, called from <see cref="AlundraWorldProxy"/>'s own per-map install pass: the port of the
+    /// Map-entry hook, called from <see cref="WorldProxy"/>'s own per-map install pass: the port of the
     /// <c>InitializeHudPositionBeforeHide</c> call of the main loop's map-entry block (0x8002c3d0, GameEngine.cs:215, right
     /// after <c>InitializeScrollingMode</c> and before the first <c>Update</c>; <c>LoadMapSounds</c> calls it a second time at
     /// 0x8004a160, a no-op after the first since <c>g_drawFrameFlags</c> is then 5). The block runs for EVERY warp, so a script
@@ -344,7 +344,7 @@ public sealed class HudDirector
     /// <c>GraphicManager.UpdateUserInterface</c>'s (0x80048054) own trigger machine which runs strictly
     /// BEFORE it every original frame too (GraphicManager.cs:1646-1689 runs its three branches, THEN the
     /// callback-table loop that invokes the render callback registered at index 1 - plan §1.1). Called
-    /// once per LOGIC tick from <see cref="AlundraWorldProxy.Update"/>'s own <c>ticksThisFrame</c> loop -
+    /// once per LOGIC tick from <see cref="WorldProxy.Update"/>'s own <c>ticksThisFrame</c> loop -
     /// D-E13-8, the tick logique owns all of the HUD's time.
     /// </summary>
     public void Tick()

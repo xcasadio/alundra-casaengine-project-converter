@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using Alundra.Scripts;
 using CasaEngine.Framework.UI.MGUI;
 using MGUI.Core.UI;
 using MGUI.Core.UI.Containers;
@@ -17,7 +16,7 @@ namespace Alundra.Tests.UI;
 /// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-16/17), versioned as a project asset since the bound screens
 /// program (parent ADR-0002): loads <c>alundra-project/UI/Screens/InventoryScreen.xaml</c> through the SAME pipeline
 /// production uses (<see cref="UIScreenLoader"/>), on the reduced headless harness, checks every named element and
-/// every binding against a real <see cref="AlundraInventoryViewModel"/>, and the envelope and design-time data next
+/// every binding against a real <see cref="InventoryViewModel"/>, and the envelope and design-time data next
 /// to it.
 /// <para/>
 /// Loading this XAML creates MGUI bindings, which MGUI keeps in a static, single-threaded registry
@@ -87,9 +86,9 @@ public sealed class AlundraInventoryScreenXamlTests
     public void DesignTimeData_PopulatesAnInventoryViewModel()
     {
         var data = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "InventoryScreen.design.json")));
-        Assert.Equal(typeof(AlundraInventoryViewModel).FullName!, data["view_model_type"]!.ToString());
+        Assert.Equal(typeof(InventoryViewModel).FullName!, data["view_model_type"]!.ToString());
 
-        var viewModel = new AlundraInventoryViewModel();
+        var viewModel = new InventoryViewModel();
         JsonConvert.PopulateObject(data["values"]!.ToString(), viewModel);
 
         Assert.Equal(Visibility.Visible, viewModel.RootVisibility);
@@ -118,7 +117,7 @@ public sealed class AlundraInventoryScreenXamlTests
     public void Bindings_PushTheViewModel_AndFollowItsNestedChanges()
     {
         var window = LoadWindow(out var desktop);
-        var viewModel = new AlundraInventoryViewModel(_ => new Point(16, 16));
+        var viewModel = new InventoryViewModel(_ => new Point(16, 16));
         window.WindowDataContext = viewModel;
 
         viewModel.Apply(SampleModel());
@@ -160,7 +159,7 @@ public sealed class AlundraInventoryScreenXamlTests
     [Fact]
     public void ViewModel_ApplyingTheSameModelAgain_NotifiesNothing()
     {
-        var viewModel = new AlundraInventoryViewModel(_ => new Point(16, 16));
+        var viewModel = new InventoryViewModel(_ => new Point(16, 16));
         viewModel.Apply(SampleModel());
 
         var notifications = 0;
@@ -273,7 +272,7 @@ public sealed class AlundraInventoryScreenXamlTests
     public void PortraitImage_SitsAtRest_BindsItsRenderTransform_AndSitsAtEntryThree()
     {
         var window = LoadWindow(out var desktop);
-        var viewModel = new AlundraInventoryViewModel();
+        var viewModel = new InventoryViewModel();
         window.WindowDataContext = viewModel;
 
         var portrait = Element<MGImage>(window, "PortraitImage");

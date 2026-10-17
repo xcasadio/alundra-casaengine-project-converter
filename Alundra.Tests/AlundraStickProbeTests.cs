@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-using Alundra.Scripts;
 using CasaEngine.Engine.Input;
 using CasaEngine.Framework.Input;
 using Xunit;
@@ -12,6 +11,7 @@ using Alundra.Hero;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Probes;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -33,7 +33,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     public void Dispose()
     {
         StickProbe.SetForTests(null, null);
-        AlundraEntityScriptProxy.PadOfTickSeenForTests = null;
+        EntityScriptProxy.PadOfTickSeenForTests = null;
         NativeEffects.CreatedForTests = null;
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();
@@ -80,7 +80,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     [Fact]
     public void ComputePadState_A45DegreePush_SetsBothStickBits_TheSampleKeepsBothAxes_AndTheOrIsUnchanged()
     {
-        var s = AlundraPlayerController.ComputePadState(Manager(), FakeStick(0.7071f, 0.7071f));
+        var s = HeroController.ComputePadState(Manager(), FakeStick(0.7071f, 0.7071f));
 
         Assert.Equal(PadState.Up | PadState.Right, s.StickBitsHold);
         Assert.Equal(0u, s.DigitalDirectionBitsHold);
@@ -93,7 +93,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     [Fact]
     public void ComputePadState_HalfWayUnderTheDeadZone_LogsXAndY_ButSetsNoStickBit()
     {
-        var s = AlundraPlayerController.ComputePadState(Manager(), FakeStick(0.4f, 0.3f));
+        var s = HeroController.ComputePadState(Manager(), FakeStick(0.4f, 0.3f));
 
         Assert.Equal(0u, s.StickBitsHold);
         Assert.Equal(0u, s.DigitalDirectionBitsHold);
@@ -105,7 +105,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     [Fact]
     public void ComputePadState_TheNegativeQuadrant_GivesNegativeSamples_AndLeftDownBits()
     {
-        var s = AlundraPlayerController.ComputePadState(Manager(), FakeStick(-0.6f, -0.8f));
+        var s = HeroController.ComputePadState(Manager(), FakeStick(-0.6f, -0.8f));
 
         Assert.Equal(PadState.Left | PadState.Down, s.StickBitsHold);
         Assert.Equal(PadState.Left | PadState.Down, s.ButtonsHold);
@@ -116,7 +116,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     [Fact]
     public void ComputePadState_FullRight_GivesOne_NotTwo()
     {
-        var s = AlundraPlayerController.ComputePadState(Manager(), FakeStick(1f, 0f));
+        var s = HeroController.ComputePadState(Manager(), FakeStick(1f, 0f));
 
         Assert.Equal(1f, s.StickX); // MoveRightStick.Value alone: the half-axis difference (1 - (-1)) would give 2.
         Assert.Equal(0f, s.StickY);
@@ -126,7 +126,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     [Fact]
     public void ComputePadState_FullDownLeft_GivesMinusOneAndMinusOne()
     {
-        var s = AlundraPlayerController.ComputePadState(Manager(), FakeStick(-1f, -1f));
+        var s = HeroController.ComputePadState(Manager(), FakeStick(-1f, -1f));
 
         Assert.Equal(-1f, s.StickX);
         Assert.Equal(-1f, s.StickY);
@@ -135,7 +135,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     [Fact]
     public void ComputePadState_KeyboardAndDPad_AreDNotS_AndTheStickSampleStaysZero()
     {
-        var s = AlundraPlayerController.ComputePadState(Manager(), FakeStick(0f, 0f, "MoveUp", "MoveRight", "Sprint"));
+        var s = HeroController.ComputePadState(Manager(), FakeStick(0f, 0f, "MoveUp", "MoveRight", "Sprint"));
 
         Assert.Equal(PadState.Up | PadState.Right, s.DigitalDirectionBitsHold);
         Assert.Equal(0u, s.StickBitsHold);
@@ -147,7 +147,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     [Fact]
     public void ComputePadState_KeyboardAndStickTogether_KeepTheOrInButtonsHold_AndEachItsOwnBits()
     {
-        var s = AlundraPlayerController.ComputePadState(Manager(), FakeStick(-1f, 0f, "MoveUp"));
+        var s = HeroController.ComputePadState(Manager(), FakeStick(-1f, 0f, "MoveUp"));
 
         Assert.Equal(PadState.Up, s.DigitalDirectionBitsHold);
         Assert.Equal(PadState.Left, s.StickBitsHold);
@@ -197,7 +197,7 @@ public sealed class AlundraStickProbeTests : IDisposable
         var montage = RunMontage.Start(RunOracleTrace.Load("g1/R1-T+R"));
         var controller = montage.Rig.Host.PlayerController!;
         var seen = new List<PadState>();
-        AlundraEntityScriptProxy.PadOfTickSeenForTests = seen.Add;
+        EntityScriptProxy.PadOfTickSeenForTests = seen.Add;
         controller.PadStateProviderForTests = () => new PadState
         {
             ButtonsHold = PadState.Right, StickBitsHold = PadState.Right, StickX = 0.8f, StickY = -0.25f,

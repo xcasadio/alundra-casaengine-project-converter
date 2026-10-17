@@ -1,8 +1,9 @@
 #nullable enable
-using Alundra.Scripts;
 using Xunit;
 using Alundra.Session;
 using Alundra.Events;
+using Alundra.Entities;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -29,7 +30,7 @@ public sealed class AlundraInitializeEventDataTests
         // D, like A, E and F, is re-initialized at every call (one shared state): the binary keeps the marker of the wait, so the count goes
         // on across calls; the port used to clear it and the wait never ended.
         var runner = new EventProgramRunner(WaitThenSetAnim9(3), new GameState());
-        var entity = new AlundraEntityScriptProxy();
+        var entity = new EntityScriptProxy();
         entity.ProgramIndexes[ScriptHelper.ProgramDTouch] = 0x80;
 
         for (var call = 1; call <= 4; call++)
@@ -63,7 +64,7 @@ public sealed class AlundraInitializeEventDataTests
                 passed = true;
             }
         };
-        var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileY = 5 };
+        var hero = new EntityScriptProxy { IsPlayer = true, TileY = 5 };
         var mapEvent = new MapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 10, Y2 = 10, ProgramBMap = 3 | 0x80, OriginalProgramBMap = 3 | 0x80 };
 
         var ticksInTheZone = 0;
@@ -71,7 +72,7 @@ public sealed class AlundraInitializeEventDataTests
         {
             var inside = tick != 32;
             hero.TileX = inside ? 5 : 50;
-            AlundraWorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
+            WorldProxy.RunMapEventsPass(hero, new[] { mapEvent }, runner, playerControlFlags: 0);
             if (inside)
             {
                 ticksInTheZone++;
@@ -88,7 +89,7 @@ public sealed class AlundraInitializeEventDataTests
         // C has the entity's own state: cleared by hand after 2 calls as EndCall clears a running state (Sp = 0, Codes = null), the next call
         // re-initializes it, and the kept marker lets the count go on (the port used to restart it: 2 calls more).
         var runner = new EventProgramRunner(WaitThenSetAnim9(3), new GameState());
-        var entity = new AlundraEntityScriptProxy();
+        var entity = new EntityScriptProxy();
         entity.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x80;
 
         for (var call = 1; call <= 4; call++)
@@ -110,7 +111,7 @@ public sealed class AlundraInitializeEventDataTests
     public void M9d_AReInitializationWritesTheStartAndThePc()
     {
         var runner = new EventProgramRunner(WaitThenSetAnim9(3), new GameState());
-        var entity = new AlundraEntityScriptProxy();
+        var entity = new EntityScriptProxy();
         entity.ProgramIndexes[ScriptHelper.ProgramCTick] = 0x80;
 
         runner.RunScript(entity, ScriptHelper.ProgramCTick);

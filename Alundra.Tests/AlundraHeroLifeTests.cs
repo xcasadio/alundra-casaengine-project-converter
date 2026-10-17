@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Alundra.Session;
@@ -13,6 +12,7 @@ using Alundra.Hero;
 using Alundra.Combat;
 using Alundra.Items;
 using Alundra.Audio;
+using Alundra.Entities;
 
 namespace Alundra.Tests;
 
@@ -94,7 +94,7 @@ public sealed class AlundraHeroLifeTests
     {
         public required ContactHost Host { get; init; }
 
-        public required AlundraEntityScriptProxy Hero { get; init; }
+        public required EntityScriptProxy Hero { get; init; }
 
         public GameState State => Host.GameState;
 
@@ -121,7 +121,7 @@ public sealed class AlundraHeroLifeTests
         PlayerManager.SetPlayerHp(state, (short)hp);
 
         // What AdoptPlayerPawn does (PullHeroLifeFromStats), on a bare proxy that carries the hero's own balance record (+0x1C4).
-        var hero = new AlundraEntityScriptProxy
+        var hero = new EntityScriptProxy
         {
             ScriptHost = host,
             BalanceRecord = BalanceTables().Select(0, 0),
@@ -320,7 +320,7 @@ public sealed class AlundraHeroLifeTests
         Frozen,
     }
 
-    private static void RunExit(AlundraEntityScriptProxy hero, GameState state, Exit exit)
+    private static void RunExit(EntityScriptProxy hero, GameState state, Exit exit)
     {
         switch (exit)
         {
@@ -345,7 +345,7 @@ public sealed class AlundraHeroLifeTests
         var state = new GameState();
         state.PlayerStats.HpMax = 4;
         state.PlayerStats.Hp = 3;
-        var hero = new AlundraEntityScriptProxy { Hp = 20, HpMax = 30, LifePulledFromStats = true };
+        var hero = new EntityScriptProxy { Hp = 20, HpMax = 30, LifePulledFromStats = true };
 
         RunExit(hero, state, exit);
 
@@ -362,7 +362,7 @@ public sealed class AlundraHeroLifeTests
         var state = new GameState();
         state.PlayerStats.HpMax = 12;
         state.PlayerStats.Hp = 4;
-        var hero = new AlundraEntityScriptProxy(); // Hp 0, HpMax 0 (the C# defaults), LifePulledFromStats false.
+        var hero = new EntityScriptProxy(); // Hp 0, HpMax 0 (the C# defaults), LifePulledFromStats false.
 
         RunExit(hero, state, exit);
 
@@ -377,7 +377,7 @@ public sealed class AlundraHeroLifeTests
     public void TheEnd_ClampsLikeTheSetters(int hp, int hpMax, int statsHp, int statsHpMax)
     {
         var state = new GameState();
-        var hero = new AlundraEntityScriptProxy { Hp = hp, HpMax = hpMax, LifePulledFromStats = true };
+        var hero = new EntityScriptProxy { Hp = hp, HpMax = hpMax, LifePulledFromStats = true };
 
         RunExit(hero, state, Exit.Normal);
 
@@ -465,7 +465,7 @@ public sealed class AlundraHeroLifeTests
         Assert.All(m.Records.HeroSheet!.DamageResponses, b => Assert.Equal(0, b)); // oracle G-noarmour: record 0 of the balance table, all responses 0.
 
         var bare = new EquipmentRecords();
-        PlayerManager.ComputeHeroSheet(new AlundraEntityScriptProxy(), bare); // no armour and no record of its own: nothing to copy.
+        PlayerManager.ComputeHeroSheet(new EntityScriptProxy(), bare); // no armour and no record of its own: nothing to copy.
         Assert.Null(bare.HeroSheet);
     }
 
@@ -505,7 +505,7 @@ public sealed class AlundraHeroLifeTests
         return records;
     }
 
-    private static void Regenerate(AlundraEntityScriptProxy hero, GameState state, EquipmentRecords? records, uint hold = 0)
+    private static void Regenerate(EntityScriptProxy hero, GameState state, EquipmentRecords? records, uint hold = 0)
     {
         var pad = new PadState { ButtonsHold = hold };
         PlayerManager.RegenerateLife(hero, in pad, state, records);
@@ -515,7 +515,7 @@ public sealed class AlundraHeroLifeTests
     public void Regeneration_OneRecordOfByte2_3_GainsOneEveryFourTicks()
     {
         var state = new GameState();
-        var hero = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 };
+        var hero = new EntityScriptProxy { Hp = 5, HpMax = 10 };
         var records = RecordsWithPeriods(3);
 
         var lives = new List<int>();
@@ -537,7 +537,7 @@ public sealed class AlundraHeroLifeTests
     public void Regeneration_EachBitOf_0x7C_ClosesTheGate_AndZeroesTheCounters(uint flag)
     {
         var state = new GameState();
-        var hero = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 };
+        var hero = new EntityScriptProxy { Hp = 5, HpMax = 10 };
         var records = RecordsWithPeriods(100, 100, 100);
         Regenerate(hero, state, records);
         Regenerate(hero, state, records);
@@ -557,7 +557,7 @@ public sealed class AlundraHeroLifeTests
     public void Regeneration_TheBitsOutsideTheMask_DoNotCloseTheGate(uint flag)
     {
         var state = new GameState { PlayerControlFlags = flag };
-        var hero = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 };
+        var hero = new EntityScriptProxy { Hp = 5, HpMax = 10 };
 
         Regenerate(hero, state, RecordsWithPeriods(100));
 
@@ -570,23 +570,23 @@ public sealed class AlundraHeroLifeTests
         var records = RecordsWithPeriods(100);
 
         var state = new GameState();
-        var frozen = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10, BlockedByEntity = new Entity { Name = "blocker" } };
+        var frozen = new EntityScriptProxy { Hp = 5, HpMax = 10, BlockedByEntity = new Entity { Name = "blocker" } };
         Regenerate(frozen, state, records);
         Assert.Equal(0, state.RegenerationCounters[0]);
 
-        Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records, hold: PadState.L2); // any button of the halfword, the D-pad included.
+        Regenerate(new EntityScriptProxy { Hp = 5, HpMax = 10 }, state, records, hold: PadState.L2); // any button of the halfword, the D-pad included.
         Assert.Equal(0, state.RegenerationCounters[0]);
-        Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records, hold: PadState.Up);
-        Assert.Equal(0, state.RegenerationCounters[0]);
-
-        Regenerate(new AlundraEntityScriptProxy { Hp = 0, HpMax = 10 }, state, records); // Hp == 0: the regeneration stops (D-E20-20).
-        Assert.Equal(0, state.RegenerationCounters[0]);
-        Regenerate(new AlundraEntityScriptProxy { Hp = 10, HpMax = 10 }, state, records);
-        Assert.Equal(0, state.RegenerationCounters[0]);
-        Regenerate(new AlundraEntityScriptProxy { Hp = 11, HpMax = 10 }, state, records);
+        Regenerate(new EntityScriptProxy { Hp = 5, HpMax = 10 }, state, records, hold: PadState.Up);
         Assert.Equal(0, state.RegenerationCounters[0]);
 
-        Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records, hold: 0x10000); // bit 16: out of the halfword (lhu), the gate stays open.
+        Regenerate(new EntityScriptProxy { Hp = 0, HpMax = 10 }, state, records); // Hp == 0: the regeneration stops (D-E20-20).
+        Assert.Equal(0, state.RegenerationCounters[0]);
+        Regenerate(new EntityScriptProxy { Hp = 10, HpMax = 10 }, state, records);
+        Assert.Equal(0, state.RegenerationCounters[0]);
+        Regenerate(new EntityScriptProxy { Hp = 11, HpMax = 10 }, state, records);
+        Assert.Equal(0, state.RegenerationCounters[0]);
+
+        Regenerate(new EntityScriptProxy { Hp = 5, HpMax = 10 }, state, records, hold: 0x10000); // bit 16: out of the halfword (lhu), the gate stays open.
         Assert.Equal(1, state.RegenerationCounters[0]);
     }
 
@@ -594,7 +594,7 @@ public sealed class AlundraHeroLifeTests
     public void Regeneration_TwoRecordsThatPassTogether_GainTwo_CappedAtTheMaximum_AndARecordWithoutByte2ZeroesItsCounter()
     {
         var state = new GameState();
-        var hero = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 };
+        var hero = new EntityScriptProxy { Hp = 5, HpMax = 10 };
         var records = RecordsWithPeriods(1, 1, 0);
 
         Regenerate(hero, state, records);
@@ -615,10 +615,10 @@ public sealed class AlundraHeroLifeTests
     {
         var state = new GameState();
         var records = RecordsWithPeriods(100);
-        Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records);
-        Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records);
+        Regenerate(new EntityScriptProxy { Hp = 5, HpMax = 10 }, state, records);
+        Regenerate(new EntityScriptProxy { Hp = 5, HpMax = 10 }, state, records);
 
-        Regenerate(new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 }, state, records);
+        Regenerate(new EntityScriptProxy { Hp = 5, HpMax = 10 }, state, records);
 
         Assert.Equal(3, state.RegenerationCounters[0]); // nothing resets them at a map load: the binary's globals 0x80126FE8-0x80126FF0.
     }
@@ -627,7 +627,7 @@ public sealed class AlundraHeroLifeTests
     public void Regeneration_WithoutRecords_OnlyKeepsTheCountersAtZero()
     {
         var state = new GameState();
-        var hero = new AlundraEntityScriptProxy { Hp = 5, HpMax = 10 };
+        var hero = new EntityScriptProxy { Hp = 5, HpMax = 10 };
 
         Regenerate(hero, state, records: null);
 
@@ -666,7 +666,7 @@ public sealed class AlundraHeroLifeTests
     {
         var sound = new RecordingSound();
         var host = new ContactHost { SoundPlayer = sound };
-        var hero = new AlundraEntityScriptProxy { ScriptHost = host, Hp = hp, HpMax = hpMax, LifePulledFromStats = true };
+        var hero = new EntityScriptProxy { ScriptHost = host, Hp = hp, HpMax = hpMax, LifePulledFromStats = true };
         var sets = hpSets.Length == 0
             ? new Dictionary<int, int>()
             : hpSets.Split(',').Select(p => p.Split(':')).ToDictionary(p => int.Parse(p[0]), p => int.Parse(p[1]));
@@ -705,7 +705,7 @@ public sealed class AlundraHeroLifeTests
     [Fact]
     public void TheLowLifeAlarm_AHeroWithoutAScriptHost_HasNoSessionCounter_AndIsSilent()
     {
-        var hero = new AlundraEntityScriptProxy { Hp = 1, HpMax = 10 };
+        var hero = new EntityScriptProxy { Hp = 1, HpMax = 10 };
 
         PlayerAnimationEffects.Create(hero, PlayerAnimationEffects.FreeMode); // the bare proxy of a montage: no session state, nothing to count, nothing thrown.
 
@@ -717,11 +717,11 @@ public sealed class AlundraHeroLifeTests
     {
         var sound = new RecordingSound();
         var host = new ContactHost { SoundPlayer = sound };
-        var first = new AlundraEntityScriptProxy { ScriptHost = host, Hp = 2, HpMax = 12, LifePulledFromStats = true };
+        var first = new EntityScriptProxy { ScriptHost = host, Hp = 2, HpMax = 12, LifePulledFromStats = true };
         PlayerAnimationEffects.Create(first, PlayerAnimationEffects.FreeMode); // tick 1: the sound, the counter 0x2D.
         Assert.Equal(PlayerAnimationEffects.LowHpAlarmReload, host.GameState.LowHpAlarmCounter);
 
-        var second = new AlundraEntityScriptProxy { ScriptHost = host, Hp = 2, HpMax = 12, LifePulledFromStats = true }; // the hero of the next map: the global is not reset by a map load.
+        var second = new EntityScriptProxy { ScriptHost = host, Hp = 2, HpMax = 12, LifePulledFromStats = true }; // the hero of the next map: the global is not reset by a map load.
         PlayerAnimationEffects.Create(second, PlayerAnimationEffects.FreeMode);
 
         Assert.Equal(PlayerAnimationEffects.LowHpAlarmReload - 1, host.GameState.LowHpAlarmCounter);

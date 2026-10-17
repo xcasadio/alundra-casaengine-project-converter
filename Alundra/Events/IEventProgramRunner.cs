@@ -1,9 +1,10 @@
-using Alundra.Scripts;
+using Alundra.Entities;
+using Alundra.Maps;
 
 namespace Alundra.Events;
 
 /// <summary>
-/// Seam between the entity event status machine (<see cref="AlundraWorldProxy"/>, ported from
+/// Seam between the entity event status machine (<see cref="WorldProxy"/>, ported from
 /// <c>EntityManager.UpdateEntitiesEvents</c> @ 0x800386D0) and the actual event-program bytecode
 /// interpreter, which is a later chantier. The original "run" phase calls one of two callees depending
 /// on whether the picked program slot resolves to a real bytecode program index (<c>RunScript</c>) or
@@ -16,13 +17,13 @@ public interface IEventProgramRunner
     /// Runs the bytecode program at <paramref name="programSlot"/> (one of the <c>ScriptHelper.Program*</c>
     /// slots) for <paramref name="entity"/>. Mirrors the original's <c>_gameEngine.RunScript(entity, entity.EventTrigger)</c>.
     /// </summary>
-    void RunScript(AlundraEntityScriptProxy entity, int programSlot);
+    void RunScript(EntityScriptProxy entity, int programSlot);
 
     /// <summary>
     /// Runs the sprite-level AI event for <paramref name="entity"/> (picked program index masked to 0).
     /// Mirrors the original's <c>_gameEngine.RunSpriteEvent(entity)</c>.
     /// </summary>
-    void RunSpriteEvent(AlundraEntityScriptProxy entity);
+    void RunSpriteEvent(EntityScriptProxy entity);
 }
 
 /// <summary>
@@ -35,12 +36,12 @@ public sealed class NoOpEventProgramRunner : IEventProgramRunner
     public int ScriptRunCount { get; private set; }
     public int SpriteEventRunCount { get; private set; }
 
-    public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+    public void RunScript(EntityScriptProxy entity, int programSlot)
     {
         ScriptRunCount++;
     }
 
-    public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+    public void RunSpriteEvent(EntityScriptProxy entity)
     {
         SpriteEventRunCount++;
     }

@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
@@ -15,6 +14,7 @@ using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-6): <see cref="InventoryScreen"/> is not
 /// constructible headless (same reason <see cref="AlundraHudPresenterTests"/> and
 /// <see cref="AlundraDialoguePresenterWiringTests"/> give their own class docs), so this drives
-/// <see cref="InventoryPresenter"/> against a real <see cref="AlundraInventoryViewModel"/> (parent ADR-0002:
+/// <see cref="InventoryPresenter"/> against a real <see cref="InventoryViewModel"/> (parent ADR-0002:
 /// the presenter writes the view model the screen's XAML binds), a recording <see cref="IUIScreen"/> stand-in and a
 /// recording <see cref="IUIViewRuntime"/> - the pattern <see cref="AlundraHudPresenterTests"/> and
 /// <see cref="AlundraDialoguePresenterWiringTests"/> already establish.
@@ -96,7 +96,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
     }
 
     private static (GameState State, InventoryDirector Director, InventoryPresenter Presenter,
-        AlundraInventoryViewModel View, FakeInventoryScreen Screen, RecordingUIViewRuntime UiView) NewFixture()
+        InventoryViewModel View, FakeInventoryScreen Screen, RecordingUIViewRuntime UiView) NewFixture()
     {
         var state = GameState.Instance;
         var itemTables = ItemTablesFixture.LoadReal();
@@ -104,7 +104,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
         director.AttachToWorld(state, itemTables, null);
 
         // Every icon 16x16: its size only centres it in its cell.
-        var view = new AlundraInventoryViewModel(_ => new Point(16, 16));
+        var view = new InventoryViewModel(_ => new Point(16, 16));
         var screen = new FakeInventoryScreen();
         var uiView = new RecordingUIViewRuntime();
         var presenter = new InventoryPresenter(director, state, itemTables, view, screen, uiView);
@@ -198,7 +198,7 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
 
     /// <summary>
     /// The production call site: every test above ticks the presenter by hand, so removing
-    /// <c>_inventoryPresenter?.Tick()</c> from <see cref="AlundraWorldProxy.Update(float)"/>'s loop of the passes (the inventory block at the end of each tick, E19.u)
+    /// <c>_inventoryPresenter?.Tick()</c> from <see cref="WorldProxy.Update(float)"/>'s loop of the passes (the inventory block at the end of each tick, E19.u)
     /// left them all green (docs/plan-e13d-sous-inventaire.md §6 point 6). This one goes through that real loop -
     /// the main inventory's version of
     /// <c>AlundraSubInventoryPresenterTests.WorldUpdate_StartThenR1_PushesTheSubInventoryScreenThroughTheRealLoop</c>.
@@ -207,16 +207,16 @@ public sealed class AlundraInventoryPresenterTests : IDisposable
     public void WorldUpdate_Start_PushesTheInventoryScreenThroughTheRealLoop()
     {
         var world = new CasaEngine.Framework.Scene.World.World { Name = "TestWorld" };
-        var worldProxy = new AlundraWorldProxy();
+        var worldProxy = new WorldProxy();
         worldProxy.InitializeWithWorld(world);
-        worldProxy.PlayerEntity = new AlundraEntityScriptProxy();
+        worldProxy.PlayerEntity = new EntityScriptProxy();
 
         var tables = ItemTablesFixture.LoadReal();
         PlayerManager.InitializeNewGameInventory(worldProxy.GameState, tables);
         InventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null);
         SubInventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, null); // the loop ticks it too.
 
-        var view = new AlundraInventoryViewModel(_ => new Point(16, 16));
+        var view = new InventoryViewModel(_ => new Point(16, 16));
         var screen = new FakeInventoryScreen();
         var uiView = new RecordingUIViewRuntime();
         worldProxy.AttachInventoryPresenterForTests(view, screen, uiView);

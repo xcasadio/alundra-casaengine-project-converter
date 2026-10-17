@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
@@ -11,6 +10,7 @@ using Alundra.Hero;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
+using Alundra.Maps;
 
 namespace Alundra.Tests;
 
@@ -52,16 +52,16 @@ public sealed partial class AlundraRandomPerTickTests
     // ---------------------------------------------------------------------------------------------------------------------
 
     /// <summary>The headless world of the effect-stage tests: a proxy attached to a world without game (no hero, no entity: nothing draws but the advance).</summary>
-    private static AlundraWorldProxy HeadlessProxy()
+    private static WorldProxy HeadlessProxy()
     {
         var world = new World { Name = "TestWorld" };
         world.Entities.Add(new Entity { Name = "camera", RootComponent = new Camera2dComponent() });
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         return proxy;
     }
 
-    private static AlundraWorldProxy WarmProxy()
+    private static WorldProxy WarmProxy()
     {
         var proxy = HeadlessProxy();
         proxy.Update(0.02f); // the first frame of a world: the sticky floor of one tick.
@@ -146,7 +146,7 @@ public sealed partial class AlundraRandomPerTickTests
     {
         const uint seed = 0x5A5A5A5A;
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         BackdropWarpDepartureSupport.SetPrivateField(proxy._backdropStage, "_clearColorApplied", true); // the headless montage has no view for the clear colour.
         proxy.Update(0.02f); // the priming frame.

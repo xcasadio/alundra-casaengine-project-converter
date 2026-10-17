@@ -46,7 +46,7 @@ public static class PlayerSetupWriter
     private static readonly string GameModeEntitiesFolder = Path.Combine("Entities", "Alundra");
     private const string GameModeFileName = "Alundra" + Constants.FileNameExtensions.PlayerStartupSettings;
     private const string GameModeCatalogName = "AlundraPlayer";
-    private const string PlayerControllerClassName = "Alundra.Scripts.AlundraPlayerController";
+    private const string PlayerControllerClassName = "Alundra.Hero.HeroController";
 
     private const string ButtonsMappingDataFolder = "Data";
     private const string ButtonsMappingFileName = "Alundra" + Constants.FileNameExtensions.ButtonsMapping;

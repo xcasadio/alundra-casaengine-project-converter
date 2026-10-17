@@ -6,13 +6,13 @@ using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Scene.Entities.Components;
-using Alundra.Scripts;
+using Alundra.Maps;
 
 namespace Alundra.Cells;
 
 /// <summary>
 /// E7.b (docs/plan-e7-mutation-tuiles.md): the visual + navigation half of "cell mutation at runtime" -
-/// subscribed to <see cref="CellStore.CellsMutated"/> by <see cref="AlundraWorldProxy"/>'s own
+/// subscribed to <see cref="CellStore.CellsMutated"/> by <see cref="WorldProxy"/>'s own
 /// installation method, this is what makes 0x54/0x55/0x85 actually redraw the map and re-route
 /// navigation instead of only mutating data E7.a otherwise leaves inert (that class doc's own "assumed
 /// gap"). One instance per world.
@@ -26,7 +26,7 @@ namespace Alundra.Cells;
 /// re-derives that cell's floor/wall contributions from the SAME <see cref="CellStore"/> the
 /// opcodes just wrote into and compares them field-by-field against the model; only a real difference
 /// marks the overlay dirty. <see cref="FlushPendingOverlayReconstruction"/> - called once per rendered
-/// frame by <see cref="AlundraWorldProxy.Update"/>, coalescing every mutation dispatched that frame (a
+/// frame by <see cref="WorldProxy.Update"/>, coalescing every mutation dispatched that frame (a
 /// map's four-hatch entry alone fires four separate <c>CopyCellRectangle</c> calls) - is the only place
 /// that ever calls <see cref="TileMapComponent.ClearSortedOverlayTiles"/>/
 /// <see cref="TileMapComponent.AddSortedOverlayTile"/> again after construction: there is no unitary
@@ -108,7 +108,7 @@ public sealed class CellVisualSync
     /// value), not from the (superset) <paramref name="wallRecords"/>/<paramref name="floorRecords"/>
     /// documents themselves - see this class's own doc. <paramref name="navigationGridAccessor"/> is a
     /// live getter (not a captured snapshot) so a test can inject
-    /// <see cref="AlundraWorldProxy.NavigationGrid"/> AFTER this call and still have navigation sync
+    /// <see cref="WorldProxy.NavigationGrid"/> AFTER this call and still have navigation sync
     /// pick it up (the real resolver needs a live <c>AssetContentManager</c> and degrades to null without
     /// one - acceptance item 7's own "inject a grid into the proxy" step).
     /// </summary>
@@ -186,7 +186,7 @@ public sealed class CellVisualSync
     }
 
     /// <summary>Subscribed directly to <see cref="CellStore.CellsMutated"/> by
-    /// <see cref="AlundraWorldProxy"/>'s installation method - acceptance item 1's own wiring check
+    /// <see cref="WorldProxy"/>'s installation method - acceptance item 1's own wiring check
     /// (docs/plan-e7-mutation-tuiles.md). Processes every mutated cell's overlay contributions AND its
     /// navigation cell; only the overlay half is deferred (<see cref="_overlayDirty"/>) to
     /// <see cref="FlushPendingOverlayReconstruction"/> - navigation writes are a single array element each,
@@ -206,7 +206,7 @@ public sealed class CellVisualSync
 
     /// <summary>Applies every pending overlay change accumulated since the last flush - a no-op when
     /// nothing changed (bits-only mutations, acceptance item 5). Called once per rendered frame by
-    /// <see cref="AlundraWorldProxy.Update"/>, coalescing however many mutation opcodes dispatched that
+    /// <see cref="WorldProxy.Update"/>, coalescing however many mutation opcodes dispatched that
     /// frame into at most one <see cref="TileMapComponent.ClearSortedOverlayTiles"/> +
     /// resubmit-the-whole-model pass (plan Conception, "coalescer par frame").</summary>
     public void FlushPendingOverlayReconstruction()

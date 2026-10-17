@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Alundra.Hero;
-using Alundra.Scripts;
 using Alundra.UI.Speech;
+using Alundra.Maps;
 
 namespace Alundra.UI.Hud;
 
@@ -12,11 +12,11 @@ namespace Alundra.UI.Hud;
 /// E13 C3 (docs/plan-e13-hud.md, D-E13-8: "le tick logique possede tout le temps du HUD. MGUI dessine.").
 /// Reads <see cref="HudDirector"/>'s own already-ticked state and pushes it into an
 /// <see cref="IHudView"/> - never the reverse, and never on its own clock: one <see cref="Tick"/>
-/// call is made from <see cref="AlundraWorldProxy.Update(float)"/>'s own <c>ticksThisFrame</c> loop,
+/// call is made from <see cref="WorldProxy.Update(float)"/>'s own <c>ticksThisFrame</c> loop,
 /// immediately after <see cref="HudDirector.Tick"/> itself - the same "presenter wraps the engine
 /// seam, director stays ignorant of it" shape <see cref="DialoguePresenter"/> already uses for the
 /// dialogue box (E12's own patron the mission cites), except this presenter never pushes/pops any screen
-/// itself: <see cref="HudScreen"/> is pushed once by <see cref="AlundraWorldProxy"/>'s own
+/// itself: <see cref="HudScreen"/> is pushed once by <see cref="WorldProxy"/>'s own
 /// <c>TryWireHudScreenOnce</c> and stays up for the whole session (C2), so there is no open/close state to
 /// unwind here.
 ///
@@ -62,7 +62,7 @@ public sealed class HudPresenter
     /// One LOGIC tick: push visibility, translation and the recomposed tile list. All three read the
     /// director's CURRENT (already-ticked) state - this method never advances anything itself, and must be
     /// called strictly AFTER <see cref="HudDirector.Tick"/> for the same tick (production call site:
-    /// <see cref="AlundraWorldProxy.Update(float)"/>'s own <c>hudTick</c> loop).
+    /// <see cref="WorldProxy.Update(float)"/>'s own <c>hudTick</c> loop).
     /// </summary>
     public void Tick()
     {

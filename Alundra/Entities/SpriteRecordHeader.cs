@@ -9,7 +9,6 @@ using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using Alundra.Session;
 using Alundra.Entities.Spawning;
-using Alundra.Scripts;
 using Alundra.Hero;
 using Alundra.Cells;
 
@@ -72,7 +71,7 @@ public readonly struct SpriteRecordHeader
     /// (not array position - the source only carries one element per AnimSet the bank's converter run
     /// actually converted, so indexes can be sparse). Used by <see cref="PlayerManager"/>'s
     /// kinematic tick to resolve <c>AnimationSet.Speed</c>/<c>Acceleration</c> for the player's current
-    /// <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> (hero anim 1 "Moving" -&gt; Speed 208,
+    /// <see cref="EntityScriptProxy.TargetAnimationId"/> (hero anim 1 "Moving" -&gt; Speed 208,
     /// Acceleration 1; anim 54 "LoadingMap" -&gt; Speed 0, Acceleration 64 - verified on the real export).
     /// Null (not empty) when the source record has no <c>"AnimSets"</c> array at all (older export,
     /// backward-tolerant like every other header field) or an empty one; callers treat a miss the same way

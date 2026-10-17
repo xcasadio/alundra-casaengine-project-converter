@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Scene.Entities;
 using Microsoft.Xna.Framework.Input;
@@ -134,7 +133,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
 
         // What a session holds by the arrival: temporary flags, an interact latch.
         State.TemporaryFlags[4] = 0xABCD;
-        State.InteractLatchEntity = new AlundraEntityScriptProxy();
+        State.InteractLatchEntity = new EntityScriptProxy();
         State.InteractLatchFacing = 2;
 
         // The arrival map's own order (AlundraWorldProxy.InitializeWithWorld): map entry, then the load.
@@ -179,7 +178,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
 
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
         AddHeroPawn(world);
-        InitializeWithRealProject(new AlundraWorldProxy(), world);
+        InitializeWithRealProject(new WorldProxy(), world);
 
         Assert.Equal(3, State.PlayerStats.WeaponId); // the New Game inventory would put the sword's slot (1) back.
         Assert.All(State.NumberOfItems, count => Assert.Equal(0, count)); // ... and its items in.
@@ -201,7 +200,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
 
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
         AddHeroPawn(world);
-        InitializeWithRealProject(new AlundraWorldProxy(), world);
+        InitializeWithRealProject(new WorldProxy(), world);
 
         Assert.False(Director.HasPendingLoad);
         Assert.Equal(expected, HudDirector.Instance.Phase);
@@ -252,7 +251,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         StateSnapshot.Take(State).AssertSameGameStateAs(afterPlay);
     }
 
-    /// <summary>SD9: an early return of <see cref="AlundraWorldProxy.InitializeWithWorld"/> before the application
+    /// <summary>SD9: an early return of <see cref="WorldProxy.InitializeWithWorld"/> before the application
     /// (a world without a tile map) abandons the pending load, with a message.</summary>
     [Fact]
     public void AnArrivalWorldWithoutATileMap_AbandonsThePendingLoad()
@@ -261,7 +260,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         var before = StateSnapshot.Take(State);
         using var log = LogCapture.Install();
 
-        new AlundraWorldProxy().InitializeWithWorld(new World { Name = "Ship Klark (beginning)-389" });
+        new WorldProxy().InitializeWithWorld(new World { Name = "Ship Klark (beginning)-389" });
 
         Assert.False(Director.HasPendingLoad);
         Assert.Contains(log.Warnings, line => line.Contains("pending load of map 389 abandoned"));
@@ -312,16 +311,16 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
     private static void SetPrivate(object target, string field, object value)
         => target.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(target, value);
 
-    private static IReadOnlyList<AlundraEntityScriptProxy> Spawned(AlundraWorldProxy proxy)
+    private static IReadOnlyList<EntityScriptProxy> Spawned(WorldProxy proxy)
         => ((IEntityWorldContext)proxy).SpawnedEntities;
 
-    private static AlundraEntityScriptProxy LoadEntity(AlundraWorldProxy proxy, int loadIndex)
+    private static EntityScriptProxy LoadEntity(WorldProxy proxy, int loadIndex)
         => Assert.Single(Spawned(proxy), e => !e.IsPlayer && e.ProgramIndexes[ScriptHelper.ProgramALoad] == loadIndex);
 
     /// <summary>One frame the engine's way: every spawned entity's own <c>Update</c> (their load program, slot A,
     /// on their first), then the world's. The hero is not stepped: this headless montage has no input for it,
     /// and the loaded values' readers under test are the other entities' load programs.</summary>
-    private static void OneFrame(AlundraWorldProxy proxy)
+    private static void OneFrame(WorldProxy proxy)
     {
         foreach (var entity in Spawned(proxy).Where(e => !e.IsPlayer).ToList())
         {
@@ -333,7 +332,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
 
     /// <summary>
     /// SD8, mandatory: F9 in a session where flag 860 is OFF, from a save where it is ON; the departure hands map
-    /// 389 to the engine; the real map 389 installation (<see cref="AlundraWorldProxy.InitializeWithWorld"/>), then
+    /// 389 to the engine; the real map 389 installation (<see cref="WorldProxy.InitializeWithWorld"/>), then
     /// the first frame. The load programs that test flag 860 with <c>0x31</c> (<c>docs/intro-programs-389.txt</c>:
     /// load 134 at offset 143, load 139 at offset 234; load 135 at offset 180 is spawned by load 134's own
     /// <c>0x2D</c>) take the LOADED flag's branch - <c>0x31</c> skips when the flag is off
@@ -367,7 +366,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         // The arrival: the real map 389 installation.
         var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
         var heroEntity = AddHeroPawn(world);
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         InitializeWithRealProject(proxy, world);
         SetPrivate(proxy._backdropStage, "_clearColorApplied", true); // the headless montage has no view (BackdropPushProductionTests).
 
@@ -381,7 +380,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         Assert.DoesNotContain(Spawned(proxy), e => e.ProgramIndexes[ScriptHelper.ProgramALoad] == 135);
 
         // The hero at the saved tile; the New Game inventory did not run (the save carries no item).
-        var hero = Assert.IsType<AlundraEntityScriptProxy>(heroEntity.GameplayProxy);
+        var hero = Assert.IsType<EntityScriptProxy>(heroEntity.GameplayProxy);
         Assert.Equal((33, 59, 0), (hero.TileX, hero.TileY, hero.TileZ));
         Assert.Equal((33 * 24 + 12) << 16, hero.PosX);
         Assert.Equal((59 * 16 + 8) << 16, hero.PosY);

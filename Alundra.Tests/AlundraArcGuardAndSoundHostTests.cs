@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Reflection;
-using Alundra.Scripts;
 using Xunit;
 using Xunit.Sdk;
 using Alundra.Maps;
@@ -11,7 +10,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E19.d2c2 D4 (docs/plan-e19-opcodes.md §1.2h.3.2, hygiene of E19.d2c1): the permanent test of the guard T-REG-0 of <see cref="ArcRun"/>, and the one of the
-/// production branch of the sound player of the script host (<see cref="AlundraWorldProxy"/> hands its player out through <see cref="IScriptHost.SoundPlayer"/>).
+/// production branch of the sound player of the script host (<see cref="WorldProxy"/> hands its player out through <see cref="IScriptHost.SoundPlayer"/>).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraArcGuardAndSoundHostTests
@@ -62,12 +61,12 @@ public sealed class AlundraArcGuardAndSoundHostTests
     [Fact]
     public void TheSoundPlayerOfTheWorldProxy_IsTheOneTheScriptHostHandsOut()
     {
-        var proxy = new AlundraWorldProxy();
+        var proxy = new WorldProxy();
         var host = (IScriptHost)proxy;
         Assert.Null(host.SoundPlayer); // not installed yet: the proxy's own member answers (the default member of the interface answers null too).
 
         var player = new RecordingSoundPlayer();
-        typeof(AlundraWorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(proxy, player);
+        typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(proxy, player);
 
         // The interface member is the proxy's own (not the default member of the interface, which would answer null): the take-off sound of the hero reaches it.
         Assert.Same(player, host.SoundPlayer);

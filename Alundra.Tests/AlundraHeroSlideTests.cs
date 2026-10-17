@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.Physics;
 using CasaEngine.Framework.Assets.Animations;
 using Xunit;
@@ -224,7 +223,7 @@ public sealed class AlundraHeroSlideTests : IDisposable
     [Fact]
     public void TSL9_ACornerBehindAnEntity_NeverSlides_ForceAdjustedFromTheNextTick()
     {
-        AlundraEntityScriptProxy? wall = null;
+        EntityScriptProxy? wall = null;
         var rig = Rig(OneCell, 263f, 200f,
             probeFactory: host => new MovementObstacleProbe(host),
             configure: (world, host) => wall = ContactWorld.AddEntity(world, host, "Wall", 250, 167, 0, -10, -7, 0, 24, 16, 32));
@@ -300,7 +299,7 @@ public sealed class AlundraHeroSlideTests : IDisposable
     // UO-1 / UO-2 - 0x45 and 0x46
     // -----------------------------------------------------------------------------------------
 
-    private static void RunOpcode(AlundraEntityScriptProxy entity, int opcode, int result, out EventProgramState state)
+    private static void RunOpcode(EntityScriptProxy entity, int opcode, int result, out EventProgramState state)
     {
         var document = new EventProgramDocument { MapIndex = 1, EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 }, Codes = new[] { opcode, 0xFF } };
         var runner = new EventProgramRunner(document, new GameState());
@@ -311,7 +310,7 @@ public sealed class AlundraHeroSlideTests : IDisposable
     [Fact]
     public void UO1_0x46SetsNoObstacleSlide_0x45ClearsIt_SizeOne_ResultUntouched()
     {
-        var entity = new AlundraEntityScriptProxy { Status = EntityStatus.Normal, Flags = 0x100 };
+        var entity = new EntityScriptProxy { Status = EntityStatus.Normal, Flags = 0x100 };
 
         RunOpcode(entity, 0x46, 7, out var set);
         Assert.Equal(0x2100u, entity.Flags);

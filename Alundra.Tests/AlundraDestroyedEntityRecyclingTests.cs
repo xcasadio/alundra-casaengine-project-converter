@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Alundra.Scripts;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
@@ -48,25 +47,25 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
     /// <summary>Stands for a map program: at every pass it records what <c>0x2C [2]</c> would answer, then runs the scripted action of that pass.</summary>
     private sealed class ProbingRunner : IEventProgramRunner
     {
-        private readonly AlundraEntityScriptProxy _player;
+        private readonly EntityScriptProxy _player;
         private readonly IEntityWorldContext _world;
         public readonly List<int> NoEntityOfRecord2 = new();
         public Action<int>? OnPass;
 
-        public ProbingRunner(AlundraEntityScriptProxy player, IEntityWorldContext world)
+        public ProbingRunner(EntityScriptProxy player, IEntityWorldContext world)
         {
             _player = player;
             _world = world;
         }
 
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
             var matches = EntitySearchService.GetMatchingEntitiesBySearchType(entity, Record, _world.SpawnedEntities, _player);
             NoEntityOfRecord2.Add(matches.Count == 0 ? 1 : 0);
             OnPass?.Invoke(NoEntityOfRecord2.Count - 1);
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
@@ -74,10 +73,10 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
     private sealed class Montage
     {
         public World World { get; } = new() { Name = "TestWorld" };
-        public AlundraWorldProxy Proxy { get; } = new();
-        public AlundraEntityScriptProxy Hero { get; }
+        public WorldProxy Proxy { get; } = new();
+        public EntityScriptProxy Hero { get; }
         public Entity HeroEntity { get; }
-        public AlundraEntityScriptProxy Npc { get; }
+        public EntityScriptProxy Npc { get; }
         public Entity NpcEntity { get; }
         public ProbingRunner Runner { get; }
 
@@ -90,31 +89,31 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
             NpcEntity = npcEntity;
             Proxy.PlayerEntity = Hero;
 
-            var spawned = (List<Entity>)typeof(AlundraWorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Proxy)!;
+            var spawned = (List<Entity>)typeof(WorldProxy).GetField("_spawnedEntities", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Proxy)!;
             spawned.Add(heroEntity);
             spawned.Add(npcEntity);
 
             // One map event whose zone is the hero's tile (0, 0): every tick runs its program once.
-            var mapEvents = (List<MapEvent>)typeof(AlundraWorldProxy).GetField("_mapEvents", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Proxy)!;
+            var mapEvents = (List<MapEvent>)typeof(WorldProxy).GetField("_mapEvents", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Proxy)!;
             mapEvents.Add(new MapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 0, Y2 = 0, ProgramBMap = 1, OriginalProgramBMap = 1, Entity = Hero });
 
             Runner = new ProbingRunner(Hero, Proxy);
             Proxy.EventProgramRunner = Runner;
         }
 
-        public IReadOnlyList<AlundraEntityScriptProxy> Listed => ((IEntityWorldContext)Proxy).SpawnedEntities;
+        public IReadOnlyList<EntityScriptProxy> Listed => ((IEntityWorldContext)Proxy).SpawnedEntities;
     }
 
-    private static AlundraEntityScriptProxy NewProxy(int recordId, EntityStatus status, out Entity entity)
+    private static EntityScriptProxy NewProxy(int recordId, EntityStatus status, out Entity entity)
     {
         entity = new Entity
         {
             Name = "RecycleTestEntity" + recordId,
             RootComponent = new TransformComponent(),
-            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
+            GameplayProxyClassName = typeof(EntityScriptProxy).FullName!,
         };
         entity.Initialize();
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         proxy.EntityRefId = recordId;
         proxy.Status = status;
         return proxy;

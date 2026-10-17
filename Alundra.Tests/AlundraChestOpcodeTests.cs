@@ -1,6 +1,5 @@
 #nullable enable
 using System.Collections.Generic;
-using Alundra.Scripts;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
@@ -22,17 +21,17 @@ public sealed class AlundraChestOpcodeTests
 
     private sealed class Context : IEntityWorldContext
     {
-        public List<AlundraEntityScriptProxy> Spawned { get; } = new();
-        public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
-        public AlundraEntityScriptProxy? PlayerEntity { get; set; }
-        public AlundraEntityScriptProxy? EntityFollowedByCamera { get; set; }
+        public List<EntityScriptProxy> Spawned { get; } = new();
+        public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Spawned;
+        public EntityScriptProxy? PlayerEntity { get; set; }
+        public EntityScriptProxy? EntityFollowedByCamera { get; set; }
         public void SetForcedCameraLookAt(int x, int y, int z) => EntityFollowedByCamera = null;
-        public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
-        public void DestroyEntity(AlundraEntityScriptProxy entity) { }
+        public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
+        public void DestroyEntity(EntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
     }
 
-    private static AlundraEntityScriptProxy Chest(int refId, int contentsGameFlag)
+    private static EntityScriptProxy Chest(int refId, int contentsGameFlag)
         => new() { EntityRefId = refId, Status = EntityStatus.Normal, ContentsGameFlag = contentsGameFlag };
 
     private static EventProgramState Run(GameState gameState, Context context)
@@ -45,7 +44,7 @@ public sealed class AlundraChestOpcodeTests
         };
         var runner = new EventProgramRunner(document, gameState, context);
         var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = ResultBefore };
-        var entity = new AlundraEntityScriptProxy { Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" } };
+        var entity = new EntityScriptProxy { Status = EntityStatus.Normal, LogicContextEntity = new Entity { Name = "logic" } };
         runner.RunOneScriptCall(entity, state);
         Assert.Equal(9u, entity.TargetAnimationId); // 0x1A 9 ran in the same call: 0x9F never suspends.
         return state;

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Scripts;
 using CasaEngine.Engine.Geometry;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Application;
@@ -25,6 +24,7 @@ using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Rendering.Effects;
 using Alundra.Audio;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 
@@ -55,16 +55,16 @@ internal sealed class ContactHost : IScriptHost
 
     private sealed class NoOpRunner : IEventProgramRunner
     {
-        public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
+        public void RunScript(EntityScriptProxy entity, int programSlot)
         {
         }
 
-        public void RunSpriteEvent(AlundraEntityScriptProxy entity)
+        public void RunSpriteEvent(EntityScriptProxy entity)
         {
         }
     }
 
-    public ContactHost(IEventProgramRunner? runner = null, uint playerControlFlags = 0, AlundraPlayerController? playerController = null)
+    public ContactHost(IEventProgramRunner? runner = null, uint playerControlFlags = 0, HeroController? playerController = null)
     {
         Runner = runner ?? new NoOpRunner();
         GameState = new GameState { PlayerControlFlags = playerControlFlags };
@@ -73,11 +73,11 @@ internal sealed class ContactHost : IScriptHost
 
     public IEventProgramRunner Runner { get; }
 
-    public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
+    public EntityScriptProxy? ActiveCollisionEntity { get; set; }
 
     public GameState GameState { get; }
 
-    public AlundraPlayerController? PlayerController { get; }
+    public HeroController? PlayerController { get; }
 
     /// <summary>E19.d2c1 R8: the sound player the host hands to the hero's take-off (null: none, as the default member of the interface).</summary>
     public ISoundPlayer? SoundPlayer { get; set; }
@@ -96,15 +96,15 @@ internal sealed class ContactHost : IScriptHost
     public EffectStage? EffectStage { get; set; }
 
     /// <summary>Every proxy of the world, in world order (the hero first).</summary>
-    public List<AlundraEntityScriptProxy> All { get; } = new();
+    public List<EntityScriptProxy> All { get; } = new();
 
-    public List<AlundraEntityScriptProxy> Collidables { get; } = new();
+    public List<EntityScriptProxy> Collidables { get; } = new();
 
-    IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
+    IReadOnlyList<EntityScriptProxy> IScriptHost.Collidables => Collidables;
 
-    public List<(AlundraEntityScriptProxy Entity, int EffectId)> Destroyed { get; } = new();
+    public List<(EntityScriptProxy Entity, int EffectId)> Destroyed { get; } = new();
 
-    public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
+    public void DestroyEntity(EntityScriptProxy entity, int effectId)
     {
         entity.Status = EntityStatus.FlagToDestroy;
         Destroyed.Add((entity, effectId));
@@ -154,7 +154,7 @@ internal static class ContactWorld
     /// (offset, size) given. Added to the world and to <paramref name="host"/> (not yet integrated: call <see cref="Integrate"/> once all
     /// the entities are there).
     /// </summary>
-    public static AlundraEntityScriptProxy AddEntity(
+    public static EntityScriptProxy AddEntity(
         World world, ContactHost host, string name, int xPixels, int yPixels, int zPixels,
         int offsetX, int offsetY, int offsetZ, int sizeX, int sizeY, int sizeZ,
         bool isPlayer = false, bool collidable = true, EntityStatus status = EntityStatus.Normal, bool withController = true)
@@ -171,7 +171,7 @@ internal static class ContactWorld
         });
         root.AddChildComponent(collision);
 
-        var entity = new Entity { Name = name, RootComponent = root, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
+        var entity = new Entity { Name = name, RootComponent = root, GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };
         if (withController)
         {
             AddController(entity);
@@ -179,7 +179,7 @@ internal static class ContactWorld
 
         entity.Initialize();
 
-        var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
+        var proxy = Assert.IsType<EntityScriptProxy>(entity.GameplayProxy);
         if (withController)
         {
             proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
@@ -224,7 +224,7 @@ internal static class ContactWorld
     }
 
     /// <summary>The root position of the entity of <paramref name="proxy"/> (pixels).</summary>
-    public static Vector3 Root(AlundraEntityScriptProxy proxy) => proxy.OwnerEntity!.RootComponent!.LocalTransform.Position;
+    public static Vector3 Root(EntityScriptProxy proxy) => proxy.OwnerEntity!.RootComponent!.LocalTransform.Position;
 
     /// <summary>One update of the world (integrates the entities added so far) then the end-of-frame rebuild of the collidable list.</summary>
     public static void Integrate(World world, ContactHost host)
