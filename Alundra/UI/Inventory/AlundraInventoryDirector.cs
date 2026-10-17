@@ -371,7 +371,7 @@ public sealed class AlundraInventoryDirector
 
         // GameEngine.cs:1562-1564 (0x8002bc58-0x8002bc68): the map-entry delay is consumed every tick, open or
         // not, before the trigger tests it - one logic tick of time (plan E13.d SI12, D-E13D-36).
-        AlundraWarpDirector.Instance.AdvanceWarpDelay(AlundraScriptedMotion.FixedTickSeconds);
+        AlundraWarpDirector.Instance.AdvanceWarpDelay(ScriptedMotion.FixedTickSeconds);
 
         // D-E13D-22: a HEAD run by the post-process last tick has a SETUP still pending - run it alone,
         // before the trigger/idle check (RunDisplayInventoryHeadFromPostProcess's own doc), no trigger and

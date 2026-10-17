@@ -310,9 +310,9 @@ public class AlundraPortalDetectionTests : IDisposable
         return tileMapData;
     }
 
-    private static AlundraCellsCollisionField? LoadMap389Field(TileMapData tileMapData)
+    private static CellsCollisionField? LoadMap389Field(TileMapData tileMapData)
     {
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
+        var created = CellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
         Assert.True(created, "map 389's AlundraCells custom property should parse and match MapSize.");
         return field;
     }

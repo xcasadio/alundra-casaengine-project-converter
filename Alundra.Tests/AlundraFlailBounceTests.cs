@@ -73,7 +73,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         hero.CollisionDepth = BoxDepth;
     }
 
-    private static AlundraCellsCollisionField Field(Func<int, int, (int Walkability, int Height)>? cell = null) => FlatCells.Create(52, 60, cell);
+    private static CellsCollisionField Field(Func<int, int, (int Walkability, int Height)>? cell = null) => FlatCells.Create(52, 60, cell);
 
     [Theory]
     [InlineData(0x12u, 1, 0x08u)]
@@ -304,7 +304,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
         var tileMapPath = System.IO.Path.Combine(ProjectRootFinder.Find(), "Maps", "Overworld", "Overworld 3,1-14", "tilemap", "Overworld 3,1-14.tileMap");
         var tileMapData = new CasaEngine.Framework.Assets.TileMap.TileMapData();
         tileMapData.Load(Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(tileMapPath)));
-        Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, "Overworld 3,1-14", out var field, out var records));
+        Assert.True(CellsCollisionField.TryCreate(tileMapData, "Overworld 3,1-14", out var field, out var records));
         Assert.True(AlundraCellStore.TryCreate(records!, tileMapData.MapSize.Width, tileMapData.MapSize.Height, "Overworld 3,1-14", out var store));
         Assert.Equal((52, 60), (tileMapData.MapSize.Width, tileMapData.MapSize.Height));
 

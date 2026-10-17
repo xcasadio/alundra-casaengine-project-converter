@@ -263,7 +263,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
 
     /// <summary>
     /// Engine-only (E19.d2c1 R6, docs/plan-e19-opcodes.md §1.2h.3.1): the hero is in the air state the logic tick holds (a scripted jump, an impulse of
-    /// the animation, or <c>0x1B</c> on the hero). While it is up, <see cref="AlundraScriptedMotion"/> owns the vertical - the force of the tick, the strict
+    /// the animation, or <c>0x1B</c> on the hero). While it is up, <see cref="ScriptedMotion"/> owns the vertical - the force of the tick, the strict
     /// landing test, the exact <see cref="PosZ"/> - and the engine only follows the root: its gravity is 0, its vertical external with a positive latch. No
     /// pull of <see cref="PosZ"/> or <see cref="IsOnGround"/> from the root while it is up. Cleared at the landing and at the adoption of a new pawn. Not copied by <see cref="Clone"/>.
     /// </summary>
@@ -367,11 +367,11 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <summary>
     /// Port of the original's <c>Entity.ForceAdjusted</c> (E4.d, docs/plan-e4-deplacement-scripte.md):
     /// cleared once per LOGIC TICK, immediately before that tick's own kinematic step
-    /// (<see cref="AlundraScriptedMotion.TickPlayer"/>/<see cref="AlundraScriptedMotion.TickScriptedNpc"/>,
+    /// (<see cref="ScriptedMotion.TickPlayer"/>/<see cref="ScriptedMotion.TickScriptedNpc"/>,
     /// porting <c>PhysicsEngine.UpdateEntitiesPhysics</c>'s own top-of-frame reset, PhysicsEngine.cs:17 -
     /// "per frame" in the original IS "per tick" here, since the original's engine runs exactly one script
     /// pass and one physics pass per fixed 50 Hz frame; see the ONE-CLOCK fix doc on
-    /// <see cref="AlundraScriptedMotion"/> for why this field used to go stale before that fix), set
+    /// <see cref="ScriptedMotion"/> for why this field used to go stale before that fix), set
     /// (nonzero) by <see cref="MoveControllerAndPullPosition"/> whenever, on either horizontal axis, a
     /// displacement beyond a small epsilon was requested and the controller's own <c>Move</c> returns none
     /// of it (an actual displacement within that epsilon; <c>CharacterControllerComponent.Move</c> returns
@@ -398,12 +398,12 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
 
     /// <summary>
     /// Engine-only, not part of the original struct: incremented once every time this entity's own motion
-    /// sub-step runs (<see cref="AlundraScriptedMotion"/>'s shared per-tick helper, both the
-    /// <see cref="PlayerManager.Tick"/> and <see cref="AlundraScriptedMotion.TickScriptedNpc"/>
+    /// sub-step runs (<see cref="ScriptedMotion"/>'s shared per-tick helper, both the
+    /// <see cref="PlayerManager.Tick"/> and <see cref="ScriptedMotion.TickScriptedNpc"/>
     /// callers) - never read by any gameplay code. Exists solely so the ONE-CLOCK invariant this class'
     /// own fix establishes (this entity's own script pass count, motion sub-step count, and
     /// <see cref="EvaluateEntitySupport"/> step count can never diverge again - see
-    /// <see cref="AlundraScriptedMotion"/>'s own class doc) is independently verifiable at runtime, not
+    /// <see cref="ScriptedMotion"/>'s own class doc) is independently verifiable at runtime, not
     /// merely implied by the call-site structure. Wraps around 32 bits like every other frame counter on
     /// this class (e.g. <see cref="FrameCounter"/>) - a real run never gets remotely close.
     /// </summary>
@@ -573,7 +573,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// own controller-unit conversion - see <see cref="MapGravity"/>'s own doc), resolved at the SAME spawn
     /// site and gated the SAME way (<c>Controller != null</c>). Needed because a controller-driven entity's
     /// own vertical fall is entirely owned by the ENGINE (<c>Settings.Gravity</c>/<c>MaxFallSpeed</c>), so
-    /// <see cref="AlundraScriptedMotion.RunOneKinematicTick"/> (shared, horizontal-only) never decays
+    /// <see cref="ScriptedMotion.RunOneKinematicTick"/> (shared, horizontal-only) never decays
     /// <see cref="ForceZ"/> for such an entity - <see cref="EvaluateEntitySupport"/> now does that decay
     /// itself, in the SAME <c>ForceZ -= Gravity&lt;&lt;8</c>/terminal-velocity-clamp shape the intro trace
     /// harness's own <c>RunVerticalPhysicsPass</c> already used (port of <c>UpdateEntityPhysics</c>'s
@@ -595,7 +595,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// branch - i.e. always kept in sync with this same call, no stale carry-over). Consumed by BOTH of
     /// this class' own root-Z pull sites - <see cref="Update"/>'s own head pull (root -&gt; <c>Pos*</c>)
     /// AND <see cref="MoveControllerAndPullPosition"/>'s own pull (reached EARLIER in the same frame, via
-    /// <see cref="AlundraScriptedMotion.TickScriptedNpc"/>'s own kinematic tick, for every controller-
+    /// <see cref="ScriptedMotion.TickScriptedNpc"/>'s own kinematic tick, for every controller-
     /// driven NPC) - while true, both pulls PRESERVE the current logical <see cref="PosZ"/> instead of
     /// re-deriving it from the engine's own float32 root transform (X/Y are never guarded - support never
     /// constrains them). See either call site's own doc for why (the authored support margin on map 389
@@ -658,7 +658,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// controller keeps acting on stale flags. This is the ONE shared resync point: re-applies gravity
     /// (delegating to <see cref="ApplyGravitySettingsToController"/>, unchanged) AND re-derives
     /// <c>Settings.WalkabilityMask</c> from the CURRENT <see cref="Flags"/> via
-    /// <see cref="AlundraCellsCollisionField.WalkabilityMaskFor"/> - same pairing
+    /// <see cref="CellsCollisionField.WalkabilityMaskFor"/> - same pairing
     /// <see cref="EntitySpawnFactory.ApplySpawnInitialization"/>/<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>
     /// already apply once at spawn. Called by every opcode handler that can flip a controller-relevant bit
     /// in <see cref="Flags"/> (0x16/0x17 High/Low gravity - Gravity bit only; 0x62/0x63 Set/Clear entities
@@ -675,7 +675,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         }
 
         ApplyGravitySettingsToController();
-        Controller.Settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(Flags);
+        Controller.Settings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(Flags);
     }
 
     /// <summary>
@@ -718,7 +718,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// per-frame call from <see cref="Update"/>) computes the FULL original conjunct's terrain-clamped
     /// seed - for a controller-driven entity there is no DLL-tracked <c>TerrainHeight</c> (the engine owns
     /// terrain separately), so this passes the UNCLAMPED <c>ModdedPosZ + FinalForceZ</c> (this tick's own
-    /// natural vertical step, already computed by <see cref="AlundraScriptedMotion.RunOneKinematicTick"/>
+    /// natural vertical step, already computed by <see cref="ScriptedMotion.RunOneKinematicTick"/>
     /// earlier this SAME call chain) straight through to <see cref="EntitySupport.TryFindSupport"/> - see
     /// that method's own doc for why a controller-driven caller cannot supply the terrain half and does
     /// not need to (the engine's own ground-snap already prevents falling through real terrain
@@ -1045,7 +1045,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
 
     /// <summary>
     /// E20.e0k2 (D-E0K-3, docs/plan-e20-heros.md section 1.18): the force law of an entity that is not the hero, extracted unchanged from <see cref="EvaluateEntitySupport"/> so that the logical step of
-    /// a marked entity (<see cref="HasLogicalZ"/>, <see cref="AlundraScriptedMotion.RunLogicalZPreXyStep"/>) and the support block of the controller share ONE decay site. The binary's law
+    /// a marked entity (<see cref="HasLogicalZ"/>, <see cref="ScriptedMotion.RunLogicalZPreXyStep"/>) and the support block of the controller share ONE decay site. The binary's law
     /// (<c>0x80036A84-0x80036BBC</c>): an impulse taken this tick (<see cref="IsZForceApplied"/>) sets the force with no decay, <c>IZF &lt;&lt; 8</c>, or 0 for the stop marker of the iron grids (the 16 low
     /// bits equal <c>0x8000</c>) on an entity without gravity; without an impulse, an entity with gravity decays its force by <c>MapGravity &lt;&lt; 8</c> and the result is bounded on BOTH sides to
     /// +-(<c>MapZViscosity</c> &lt;&lt; 8); without gravity and without an impulse the force is left as it is (the flight at constant Z). Writes <see cref="ForceZ"/> and <see cref="FinalForceZ"/> together.
@@ -1378,7 +1378,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, D-E0K-1, ADR-0069): the entity keeps its Z in the logic tick (the "logical Z"), as the hero does in the air state: <see cref="PosZ"/> belongs to the
     /// tick, the root only follows it, nothing pulls it back from the root. Posed by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> ONLY, in the marker block of ADR-0065 (the last write of
     /// the creation); never by the creations from a record, never for the hero, never cloned. It is neither <c>EntityRefId == -1</c> (the adopted hero and the recycled entities have it too) nor
-    /// <see cref="JoinsBirthTick"/> (which the script opcodes pose on the entities from a record since E20.e0a4; this one stays for the interface). Read by the logic tick (<see cref="AlundraScriptedMotion"/>, W1), by the support block and the root pull (W2, W3), by <see cref="PushLogicalPositionToRoot"/> and by the thaw (W4).
+    /// <see cref="JoinsBirthTick"/> (which the script opcodes pose on the entities from a record since E20.e0a4; this one stays for the interface). Read by the logic tick (<see cref="ScriptedMotion"/>, W1), by the support block and the root pull (W2, W3), by <see cref="PushLogicalPositionToRoot"/> and by the thaw (W4).
     /// </summary>
     internal bool HasLogicalZ;
 
@@ -1628,7 +1628,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         // Controller-null branch is production-safe (every body-carrying entity keeps a real CharacterControllerComponent, E4.a).
         if (Status.IsActive())
         {
-            AlundraScriptedMotion.TickScriptedNpc(this);
+            ScriptedMotion.TickScriptedNpc(this);
         }
 
         EvaluateEntitySupport(ScriptHost!.Collidables);
@@ -1851,10 +1851,10 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
 
         var hasGround = false;
         var groundMax = 0f;
-        AlundraTerrainProbe.SampleGroundCorner(field, minX, minY, ref hasGround, ref groundMax);
-        AlundraTerrainProbe.SampleGroundCorner(field, minX, maxY, ref hasGround, ref groundMax);
-        AlundraTerrainProbe.SampleGroundCorner(field, maxX, minY, ref hasGround, ref groundMax);
-        AlundraTerrainProbe.SampleGroundCorner(field, maxX, maxY, ref hasGround, ref groundMax);
+        TerrainProbe.SampleGroundCorner(field, minX, minY, ref hasGround, ref groundMax);
+        TerrainProbe.SampleGroundCorner(field, minX, maxY, ref hasGround, ref groundMax);
+        TerrainProbe.SampleGroundCorner(field, maxX, minY, ref hasGround, ref groundMax);
+        TerrainProbe.SampleGroundCorner(field, maxX, maxY, ref hasGround, ref groundMax);
 
         if (!hasGround)
         {
@@ -1901,10 +1901,10 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         var y1 = (PosY + ModY) >> 16;
         var y2 = (PosY + ModY + Height) >> 16;
         var highest = int.MinValue;
-        AlundraTerrainProbe.SampleTerrainHeightCorner(field, x1, y1, ref highest);
-        AlundraTerrainProbe.SampleTerrainHeightCorner(field, x2, y1, ref highest);
-        AlundraTerrainProbe.SampleTerrainHeightCorner(field, x1, y2, ref highest);
-        AlundraTerrainProbe.SampleTerrainHeightCorner(field, x2, y2, ref highest);
+        TerrainProbe.SampleTerrainHeightCorner(field, x1, y1, ref highest);
+        TerrainProbe.SampleTerrainHeightCorner(field, x2, y1, ref highest);
+        TerrainProbe.SampleTerrainHeightCorner(field, x1, y2, ref highest);
+        TerrainProbe.SampleTerrainHeightCorner(field, x2, y2, ref highest);
         return highest == int.MinValue ? 0 : highest;
     }
 
@@ -1924,7 +1924,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// silently read the wrong cell and misreport the slope).
     ///
     /// Per corner: qualifies only when that corner's ground height (16.16, same rounding as
-    /// <see cref="AlundraTerrainProbe.SampleTerrainHeightCorner"/>) is exactly equal to <c>PosZ + ModZ</c> - i.e. the entity
+    /// <see cref="TerrainProbe.SampleTerrainHeightCorner"/>) is exactly equal to <c>PosZ + ModZ</c> - i.e. the entity
     /// is standing exactly on that corner's ground.
     ///
     /// DEVIATION FROM THE LITERAL ORIGINAL (deliberate, not a bug): the original compares
@@ -1963,8 +1963,8 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     ///
     /// No-op (<see cref="Slope_18c"/> forced to 0) without <see cref="EntityFlags.Gravity"/> set
     /// (PhysicsEngine.cs:1706's own gravity gate) or without an installed
-    /// <see cref="AlundraCellsCollisionField"/> (no <see cref="GroundSample"/> string tag was needed
-    /// here - the four-corner rule needs the NUMERIC accessor <see cref="AlundraCellsCollisionField.SampleGroundProperty"/>,
+    /// <see cref="CellsCollisionField"/> (no <see cref="GroundSample"/> string tag was needed
+    /// here - the four-corner rule needs the NUMERIC accessor <see cref="CellsCollisionField.SampleGroundProperty"/>,
     /// which only that concrete field type exposes, hence the type check instead of the plain
     /// <see cref="ICollisionField"/> interface <see cref="ComputeTerrainHeight"/> uses).
     /// </summary>
@@ -1976,7 +1976,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
             return;
         }
 
-        if (ReadCollisionField() is not AlundraCellsCollisionField cellsField)
+        if (ReadCollisionField() is not CellsCollisionField cellsField)
         {
             Slope_18c = 0;
             return;
@@ -1989,10 +1989,10 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         var moddedPosZ = PosZ + ModZ;
 
         var bestFlagMask = 0xe00u;
-        AlundraTerrainProbe.ProbeSlopeCorner(cellsField, x1, y1, moddedPosZ, ref bestFlagMask);
-        AlundraTerrainProbe.ProbeSlopeCorner(cellsField, x2, y1, moddedPosZ, ref bestFlagMask);
-        AlundraTerrainProbe.ProbeSlopeCorner(cellsField, x1, y2, moddedPosZ, ref bestFlagMask);
-        AlundraTerrainProbe.ProbeSlopeCorner(cellsField, x2, y2, moddedPosZ, ref bestFlagMask);
+        TerrainProbe.ProbeSlopeCorner(cellsField, x1, y1, moddedPosZ, ref bestFlagMask);
+        TerrainProbe.ProbeSlopeCorner(cellsField, x2, y1, moddedPosZ, ref bestFlagMask);
+        TerrainProbe.ProbeSlopeCorner(cellsField, x1, y2, moddedPosZ, ref bestFlagMask);
+        TerrainProbe.ProbeSlopeCorner(cellsField, x2, y2, moddedPosZ, ref bestFlagMask);
 
         Slope_18c = (int)(bestFlagMask >> 9);
     }
@@ -2010,7 +2010,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// alongside it is the same shape).
     ///
     /// Per corner: qualifies only when that corner's ground height (16.16, same rounding as
-    /// <see cref="AlundraTerrainProbe.ProbeVramFlagsCorner"/>) is exactly equal to <c>PosZ + ModZ</c>.
+    /// <see cref="TerrainProbe.ProbeVramFlagsCorner"/>) is exactly equal to <c>PosZ + ModZ</c>.
     ///
     /// DEVIATION FROM THE LITERAL ORIGINAL (deliberate, D-T-10, same rule as
     /// <see cref="UpdateGroundSlope"/>'s own "DEVIATION" paragraph - read that one first): the original
@@ -2039,7 +2039,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// default 0 - see the single call site in <see cref="Update"/>'s <c>IsPlayer</c> branch.
     ///
     /// Same no-op gates as <see cref="UpdateGroundSlope"/> (no <see cref="EntityFlags.Gravity"/>, no
-    /// installed <see cref="AlundraCellsCollisionField"/>) - see that method's own doc for why.
+    /// installed <see cref="CellsCollisionField"/>) - see that method's own doc for why.
     /// </summary>
     internal void UpdateVramFlags()
     {
@@ -2050,7 +2050,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
             return;
         }
 
-        if (ReadCollisionField() is not AlundraCellsCollisionField cellsField)
+        if (ReadCollisionField() is not CellsCollisionField cellsField)
         {
             CombinedVramFlagsOR = 0;
             CombinedVramFlagsAND = 0;
@@ -2063,10 +2063,10 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         var y2 = (PosY + ModY + Height) >> 16;
         var moddedPosZ = PosZ + ModZ;
 
-        AlundraTerrainProbe.ProbeVramFlagsCorner(cellsField, x1, y1, moddedPosZ, out var corner0);
-        AlundraTerrainProbe.ProbeVramFlagsCorner(cellsField, x2, y1, moddedPosZ, out var corner1);
-        AlundraTerrainProbe.ProbeVramFlagsCorner(cellsField, x1, y2, moddedPosZ, out var corner2);
-        AlundraTerrainProbe.ProbeVramFlagsCorner(cellsField, x2, y2, moddedPosZ, out var corner3);
+        TerrainProbe.ProbeVramFlagsCorner(cellsField, x1, y1, moddedPosZ, out var corner0);
+        TerrainProbe.ProbeVramFlagsCorner(cellsField, x2, y1, moddedPosZ, out var corner1);
+        TerrainProbe.ProbeVramFlagsCorner(cellsField, x1, y2, moddedPosZ, out var corner2);
+        TerrainProbe.ProbeVramFlagsCorner(cellsField, x2, y2, moddedPosZ, out var corner3);
 
         CombinedVramFlagsOR = corner0 | corner1 | corner2 | corner3;
         CombinedVramFlagsAND = corner0 & corner1 & corner2 & corner3;
@@ -2184,7 +2184,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         for (var corner = 0; corner < 4; corner++)
         {
             var best = int.MinValue;
-            AlundraTerrainProbe.SampleTerrainHeightCorner(field, (corner & 1) == 0 ? x1 : x2, corner < 2 ? y1 : y2, ref best);
+            TerrainProbe.SampleTerrainHeightCorner(field, (corner & 1) == 0 ? x1 : x2, corner < 2 ? y1 : y2, ref best);
             MapHeights[corner] = (best == int.MinValue ? 0 : best) - 1;
             if (best > highest)
             {
@@ -2234,21 +2234,21 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// derived.
     ///
     /// CORRECTED AFTER REVIEW (this slice's own re-derivation, not the original commit): the FIRST
-    /// version of this port reused <see cref="AlundraTerrainProbe.SampleTerrainHeightCorner"/> -&gt;
-    /// <see cref="AlundraCellsCollisionField.TrySampleGround(in Vector3, float, out GroundSample)"/>,
+    /// version of this port reused <see cref="TerrainProbe.SampleTerrainHeightCorner"/> -&gt;
+    /// <see cref="CellsCollisionField.TrySampleGround(in Vector3, float, out GroundSample)"/>,
     /// i.e. <see cref="ComputeTerrainHeight"/>'s own helper. That is WRONG: the original
     /// <c>GetTileHeightAtOffset</c> (<c>EntityGameplayManager.cs:338-340</c>,
     /// <c>if (maxHeight &lt; tile.Height) maxHeight = tile.Height</c>) reads <c>tile.Height</c> - the
     /// cell's RAW, un-interpolated height - and NEVER inspects <c>tile.Slope</c>; there is no
     /// <c>switch (tile.Slope &amp; 0x3)</c> anywhere in its 68-line body. That switch belongs to a
     /// DIFFERENT original function, <c>PhysicsEngine.ComputeEntityGroundHeight</c>
-    /// (PhysicsEngine.cs:1007-1061) - the function <see cref="AlundraCellsCollisionField"/>'s
+    /// (PhysicsEngine.cs:1007-1061) - the function <see cref="CellsCollisionField"/>'s
     /// <c>ComputeGroundHeight</c> actually ports. Reusing it here silently imported slope
     /// interpolation the original does not perform: measured on map 389's real production hero
     /// footprint, 4560 of 1,159,515 integer poses diverge from the original by 1 to 15 px (worst case
     /// x1=312,y1=447: this port would have returned 145 px where the original returns 160 px). This
-    /// version instead samples <see cref="AlundraCellsCollisionField.SampleRawCellHeight"/> - the raw
-    /// per-cell value, added alongside <see cref="AlundraCellsCollisionField.SampleGroundProperty"/> in
+    /// version instead samples <see cref="CellsCollisionField.SampleRawCellHeight"/> - the raw
+    /// per-cell value, added alongside <see cref="CellsCollisionField.SampleGroundProperty"/> in
     /// the exact same additive style É1 already established - so no interpolation is ever applied here.
     ///
     /// UNITS: <c>tile.Height</c> is in CELL units (1 unit = 16 px, <c>StaticVariables.MapTileHeight</c>),
@@ -2272,13 +2272,13 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// precomputed lookup that answers <c>(pixelsX &gt;&gt; 16) / 24</c> - a fixed division by 24 (the
     /// cell width), nothing more (established in the read-only reconnaissance for this slice). This
     /// port already performs that same division directly, inside
-    /// <see cref="AlundraCellsCollisionField.SampleRawCellHeight"/> (<c>x / CellWidthPx</c>,
+    /// <see cref="CellsCollisionField.SampleRawCellHeight"/> (<c>x / CellWidthPx</c>,
     /// <c>CellWidthPx = 24</c>) - reusing it gets this division for free without needing the table.
     /// The original's table has 1248 entries and is never clamped before indexing
     /// (out-of-range is undefined there); this port's own clamp-to-nearest-cell (inherited from
-    /// <see cref="AlundraCellsCollisionField"/>'s established convention, see its class doc) is a
+    /// <see cref="CellsCollisionField"/>'s established convention, see its class doc) is a
     /// DEVIATION for out-of-map offsets, not a faithful port of that table - see
-    /// <see cref="AlundraCellsCollisionField.TrySampleGround(in Vector3, float, out GroundSample)"/>'s
+    /// <see cref="CellsCollisionField.TrySampleGround(in Vector3, float, out GroundSample)"/>'s
     /// own doc for the same pre-existing (E1) deviation.</description></item>
     /// <item><description>The <c>ClassA</c>/<c>ClassB</c> walkability filter
     /// (<c>EntityGameplayManager.cs:300-304</c>/<c>333-336</c>, returning the sentinel <c>0x7800000</c>
@@ -2326,11 +2326,11 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <param name="offsetX">Horizontal displacement (16.16) applied to the footprint before sampling.</param>
     /// <param name="offsetY">Vertical displacement (16.16) applied to the footprint before sampling.</param>
     /// <returns>The maximum RAW terrain height (16.16, cell-unit precision - never interpolated by
-    /// slope) across the four displaced corners, or 0 if no <see cref="AlundraCellsCollisionField"/> is
+    /// slope) across the four displaced corners, or 0 if no <see cref="CellsCollisionField"/> is
     /// installed.</returns>
     internal int GetTileHeightAtOffset(int offsetX, int offsetY)
     {
-        if (ReadCollisionField() is not AlundraCellsCollisionField cellsField)
+        if (ReadCollisionField() is not CellsCollisionField cellsField)
         {
             return 0;
         }
@@ -2341,10 +2341,10 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         var y2 = (PosY + ModY + offsetY + Height) >> 16;
 
         var best = 0;
-        AlundraTerrainProbe.SampleRawTileHeightCorner(cellsField, x1, y1, ref best);
-        AlundraTerrainProbe.SampleRawTileHeightCorner(cellsField, x2, y1, ref best);
-        AlundraTerrainProbe.SampleRawTileHeightCorner(cellsField, x1, y2, ref best);
-        AlundraTerrainProbe.SampleRawTileHeightCorner(cellsField, x2, y2, ref best);
+        TerrainProbe.SampleRawTileHeightCorner(cellsField, x1, y1, ref best);
+        TerrainProbe.SampleRawTileHeightCorner(cellsField, x2, y1, ref best);
+        TerrainProbe.SampleRawTileHeightCorner(cellsField, x1, y2, ref best);
+        TerrainProbe.SampleRawTileHeightCorner(cellsField, x2, y2, ref best);
 
         return best << 20;
     }
@@ -2381,7 +2381,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         // E20.e0k2 W4 (z10): Teleport resets the vertical latch; a marked entity declares the sentinel again so the engine does not anchor it to the ground before the next logical step.
         if (HasLogicalZ)
         {
-            Controller.SetExternalVerticalDisplacement(AlundraScriptedMotion.AirborneExternalDisplacementSentinel);
+            Controller.SetExternalVerticalDisplacement(ScriptedMotion.AirborneExternalDisplacementSentinel);
         }
     }
 
@@ -2507,7 +2507,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <para>
     /// Deliberately a SEPARATE call from <see cref="MoveControllerAndPullPosition"/> (not one Move() call
     /// carrying X/Y/Z together): this tick's own ForceZ gravity decay is computed by
-    /// <see cref="EvaluateEntitySupport"/>, which runs AFTER <see cref="AlundraScriptedMotion.RunOneKinematicTick"/>'s
+    /// <see cref="EvaluateEntitySupport"/>, which runs AFTER <see cref="ScriptedMotion.RunOneKinematicTick"/>'s
     /// own horizontal Move() call this same tick (see <see cref="Update"/>'s own doc on the fused per-tick
     /// loop order: script, THEN motion, THEN support) - by the time <see cref="FinalForceZ"/> is known for
     /// this tick, the horizontal step has already been taken. A second, vertical-only Move() call here is

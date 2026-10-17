@@ -168,7 +168,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
         return entity;
     }
 
-    private static AlundraCellsCollisionField FieldOf(string world)
+    private static CellsCollisionField FieldOf(string world)
         => world == "raised" ? FlatCells.Create(cell: (_, _) => (0, 2)) : FlatCells.Create();
 
     private sealed record Created(Entity Entity, AlundraEntityScriptProxy Proxy, Entity Hero, Entity? Aux);

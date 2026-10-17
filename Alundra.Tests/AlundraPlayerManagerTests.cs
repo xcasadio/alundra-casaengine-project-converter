@@ -262,7 +262,7 @@ public class AlundraPlayerManagerTests
         Assert.Equal(79872 + 159744 + 159744, player.PosX);
     }
 
-    /// <summary>ONE-CLOCK fix (see <see cref="AlundraScriptedMotion"/>'s own class doc): <see cref="PlayerManager.Tick"/>
+    /// <summary>ONE-CLOCK fix (see <see cref="ScriptedMotion"/>'s own class doc): <see cref="PlayerManager.Tick"/>
     /// no longer owns a sub-step elapsed-time accumulator itself - production now derives its own tick
     /// count from the SAME shared <see cref="LogicClock"/> the script pass reads. This test's own
     /// driver is adapted to match (a local clock feeding elapsed time in, ticks out) so the expected

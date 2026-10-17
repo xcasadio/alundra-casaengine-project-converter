@@ -14,7 +14,7 @@ namespace Alundra.Maps.Loop;
 /// catch-up rescan) ran at that same fixed rate; running the SAME per-frame pick/run pass once per
 /// rendered frame instead makes it run at the display's own (unrelated, usually much higher) rate. This
 /// clock decouples the two: it hands out an integer TICK COUNT per rendered frame, reusing
-/// <see cref="AlundraScriptedMotion.FixedTickSeconds"/>/<see cref="AlundraScriptedMotion.MaxTicksPerFrame"/>
+/// <see cref="ScriptedMotion.FixedTickSeconds"/>/<see cref="ScriptedMotion.MaxTicksPerFrame"/>
 /// (the SAME constants the hero/NPC kinematic mover already fixed-steps at - one clock, one rate, not a
 /// second invented one) - callers loop that many times over whatever they gate on ticks.
 ///
@@ -23,7 +23,7 @@ namespace Alundra.Maps.Loop;
 /// HeadlessIntroSimulation in tests), NOT one accumulator per entity: a per-entity accumulator would
 /// phase-drift entities spawned at different real times against each other and against the world's own
 /// MapEvents/catch-up passes, which must all agree on "how many ticks happened this frame" to stay in
-/// lock-step. <see cref="AlundraScriptedMotion"/> used to keep its OWN separate per-entity accumulator for
+/// lock-step. <see cref="ScriptedMotion"/> used to keep its OWN separate per-entity accumulator for
 /// exactly this reason it should not have (motion IS logic-stepped, its per-tick outcome feeds back into
 /// the script pass via <see cref="AlundraEntityScriptProxy.ForceAdjusted"/> - see that class' own
 /// ONE-CLOCK fix doc) - it has since been folded into this same clock instead, so <see cref="TicksThisFrame"/>
@@ -53,7 +53,7 @@ internal sealed class LogicClock
     /// class' own doc) - every later call this frame is a pure cache read, <paramref name="elapsedTime"/>
     /// ignored. The returned count is what every caller this frame (script pass, motion,
     /// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>) loops over - see
-    /// <see cref="AlundraScriptedMotion"/>'s own class doc.
+    /// <see cref="ScriptedMotion"/>'s own class doc.
     /// </summary>
     internal int TicksThisFrame(float elapsedTime)
     {
@@ -65,13 +65,13 @@ internal sealed class LogicClock
         _accumulator += elapsedTime;
 
         var ticks = 0;
-        while (_accumulator >= AlundraScriptedMotion.FixedTickSeconds && ticks < AlundraScriptedMotion.MaxTicksPerFrame)
+        while (_accumulator >= ScriptedMotion.FixedTickSeconds && ticks < ScriptedMotion.MaxTicksPerFrame)
         {
-            _accumulator -= AlundraScriptedMotion.FixedTickSeconds;
+            _accumulator -= ScriptedMotion.FixedTickSeconds;
             ticks++;
         }
 
-        if (ticks >= AlundraScriptedMotion.MaxTicksPerFrame)
+        if (ticks >= ScriptedMotion.MaxTicksPerFrame)
         {
             _accumulator = 0f;
         }

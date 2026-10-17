@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// composed port of <c>GetCollisionOnZ</c> (PhysicsEngine.cs:1602-1675) against the REAL map 389
 /// ("Ship Klark (beginning)") cell/record data - same fixture/self-skip pattern as
 /// <see cref="AlundraGroundSlopeTests"/> (E1's own sibling slice): a real headless <see cref="World"/>
-/// with the real map 389 <see cref="AlundraCellsCollisionField"/> installed as <c>World.CollisionField</c>,
+/// with the real map 389 <see cref="CellsCollisionField"/> installed as <c>World.CollisionField</c>,
 /// and hero pawns built from the shared <see cref="HeroWorldFixture"/> montage. Tests self-skip (return
 /// early) when <c>alundra-project/</c> is not present in this checkout.
 /// </summary>
@@ -79,9 +79,9 @@ public class AlundraFloorHeightTests
         return tileMapData;
     }
 
-    private static AlundraCellsCollisionField? LoadMap389Field(TileMapData tileMapData)
+    private static CellsCollisionField? LoadMap389Field(TileMapData tileMapData)
     {
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
+        var created = CellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
         Assert.True(created, "map 389's AlundraCells custom property should parse and match MapSize.");
         return field;
     }

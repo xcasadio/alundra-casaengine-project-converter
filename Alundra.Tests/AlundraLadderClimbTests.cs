@@ -23,11 +23,11 @@ namespace Alundra.Tests;
 /// <summary>
 /// Covers E4 (docs/plan-echelles-chiffrage.md É4): the case-6 ladder entry gate and the Climbing(0x0E)/
 /// ClimbStill(0x35) state machine in <see cref="PlayerManager.MovePlayer"/>, plus the per-tick
-/// vertical step <see cref="AlundraScriptedMotion.TickPlayer"/> now applies while climbing - against the
+/// vertical step <see cref="ScriptedMotion.TickPlayer"/> now applies while climbing - against the
 /// REAL map 389 ("Ship Klark (beginning)") ladder cell (18, 36). Same fixture/self-skip pattern as
 /// <see cref="AlundraGroundSlopeTests"/>/<see cref="AlundraFloorHeightTests"/>/<see cref="AlundraTileHeightAtOffsetTests"/>
 /// (E1/E2/É3's own sibling slices): a real headless <see cref="World"/> with the real map 389
-/// <see cref="AlundraCellsCollisionField"/> installed as <c>World.CollisionField</c>, and a hand-built hero
+/// <see cref="CellsCollisionField"/> installed as <c>World.CollisionField</c>, and a hand-built hero
 /// pawn from the shared <see cref="HeroWorldFixture"/> montage, driven through the SAME production call
 /// site (<see cref="AlundraEntityScriptProxy.Update"/>'s own <c>IsPlayer</c> branch) every other slice in
 /// this plan uses (see <see cref="AlundraGroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix"/>'s
@@ -125,7 +125,7 @@ public class AlundraLadderClimbTests
         return settings;
     }
 
-    private static AlundraCellsCollisionField? LoadMap389Field(string projectRoot)
+    private static CellsCollisionField? LoadMap389Field(string projectRoot)
     {
         var tileMapPath = Path.Combine(
             projectRoot, "Maps", "The Klark", "Ship Klark (beginning)-389", "tilemap",
@@ -138,7 +138,7 @@ public class AlundraLadderClimbTests
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapPath)));
 
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
+        var created = CellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
         Assert.True(created, "map 389's AlundraCells custom property should parse and match MapSize.");
         return field;
     }

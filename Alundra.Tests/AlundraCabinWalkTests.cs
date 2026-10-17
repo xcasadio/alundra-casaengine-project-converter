@@ -52,7 +52,7 @@ public sealed class AlundraCabinWalkTests
         Assert.True(File.Exists(tileMapPath), $"the real export of map '{WorldName}' is missing: '{tileMapPath}'");
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapPath)));
-        Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field, out var records));
+        Assert.True(CellsCollisionField.TryCreate(tileMapData, WorldName, out var field, out var records));
         foreach (var (x, y) in Rails)
         {
             records!.Walkability[y * tileMapData.MapSize.Width + x] |= 1;

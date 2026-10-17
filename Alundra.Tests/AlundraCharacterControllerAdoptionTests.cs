@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// CharacterControllerComponent whose settings are loaded from the real converter export's own
 /// Alundra.entity "settings" node) under a real headless <see cref="World"/> (TopDownElevation policy,
 /// same montage as <see cref="AlundraEntityLogicalRenderPoseTests"/>'s own BuildScene) with the REAL map
-/// 389 <see cref="AlundraCellsCollisionField"/> installed as <c>World.CollisionField</c> - same pattern as
+/// 389 <see cref="CellsCollisionField"/> installed as <c>World.CollisionField</c> - same pattern as
 /// <see cref="AlundraCellsCollisionFieldTests"/>/<see cref="SpriteRecordCatalogTests"/>. Self-skips every
 /// [Fact] when <c>alundra-project/</c> is not present in this checkout (same convention as
 /// <see cref="Map389LoadProgramsTests"/>).
@@ -71,7 +71,7 @@ public class AlundraCharacterControllerAdoptionTests
         return tileMapData;
     }
 
-    private static AlundraCellsCollisionField? LoadMap389Field(string projectRoot)
+    private static CellsCollisionField? LoadMap389Field(string projectRoot)
     {
         var tileMapData = LoadMap389TileMapData(projectRoot);
         if (tileMapData == null)
@@ -79,7 +79,7 @@ public class AlundraCharacterControllerAdoptionTests
             return null;
         }
 
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
+        var created = CellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
         Assert.True(created, "map 389 AlundraCells custom property should parse and match MapSize.");
         return field;
     }
@@ -125,7 +125,7 @@ public class AlundraCharacterControllerAdoptionTests
     /// <summary>Docs/plan-oracle-heros.md §2.1: extracted to the shared HeroWorldFixture so
     /// HeroTraceHarnessTests can reuse the exact same montage - this file's own tests below are
     /// unchanged, only the plumbing moved.</summary>
-    private static World BuildWorld(AlundraCellsCollisionField field) => HeroWorldFixture.BuildWorld(field);
+    private static World BuildWorld(CellsCollisionField field) => HeroWorldFixture.BuildWorld(field);
 
     private static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildHeroPawn(
         World world, CharacterControllerSettings settings, Vector3 startPosition, IScriptHost scriptHost)
@@ -232,12 +232,12 @@ public class AlundraCharacterControllerAdoptionTests
         // docs/plan-e3-collisions.md "DLL - adoption".
         settings.Gravity = mapGravity * 256f / 65536f * 2500f;
         settings.MaxFallSpeed = mapZViscosity * 256f / 65536f * 50f;
-        settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(flags);
+        settings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(flags);
 
         Assert.NotEqual(0u, (uint)flags);
         Assert.Equal(1250f, settings.Gravity);
         Assert.Equal(800f, settings.MaxFallSpeed);
-        Assert.Equal(AlundraCellsCollisionField.WalkabilityMaskFor(flags), settings.WalkabilityMask);
+        Assert.Equal(CellsCollisionField.WalkabilityMaskFor(flags), settings.WalkabilityMask);
         Assert.NotEqual(0u, settings.WalkabilityMask);
     }
 

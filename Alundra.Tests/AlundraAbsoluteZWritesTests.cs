@@ -130,7 +130,7 @@ public sealed class AlundraAbsoluteZWritesTests
         tileMapData.CustomProperties["AlundraCells"] =
             "{\"map_index\":1,\"cell_count\":4,\"walkability\":[0,0,0,0],\"ground_property\":[0,0,0,0],"
             + "\"slope\":[0,0,0,0],\"height\":[1,1,1,1]}";
-        Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, "map_1", out var field));
+        Assert.True(CellsCollisionField.TryCreate(tileMapData, "map_1", out var field));
 
         var header = new SpriteRecordHeader
         {

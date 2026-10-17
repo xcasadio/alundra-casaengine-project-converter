@@ -455,7 +455,7 @@ internal static class FlatCells
     /// A field of <paramref name="width"/> x <paramref name="height"/> cells, every one of walkability 0 and height 0 - or, with <paramref name="cell"/>, the
     /// walkability (<c>0x08</c> water, <c>0x10</c> the x160 bit, <c>0x20</c> ice) and the height (in cells of 16 px) that function gives for the cell (x, y).
     /// </summary>
-    public static AlundraCellsCollisionField Create(int width = 40, int height = 40, Func<int, int, (int Walkability, int Height)>? cell = null, Func<int, int, int>? groundProperty = null, Func<int, int, int>? slope = null)
+    public static CellsCollisionField Create(int width = 40, int height = 40, Func<int, int, (int Walkability, int Height)>? cell = null, Func<int, int, int>? groundProperty = null, Func<int, int, int>? slope = null)
     {
         var count = width * height;
         string Zeros()
@@ -510,7 +510,7 @@ internal static class FlatCells
             "{\"map_index\":1,\"cell_count\":" + count + ",\"walkability\":" + walkabilityJson + ",\"ground_property\":" + (groundProperty == null ? Zeros() : GroundPropertyColumn())
             + ",\"slope\":" + (slope == null ? Zeros() : SlopeColumn()) + ",\"height\":" + heightJson + ",\"tile_id\":" + Zeros() + ",\"wall_tiles_offset\":" + Zeros()
             + ",\"wall_tiles\":{}}";
-        Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, "flat_cells", out var field));
+        Assert.True(CellsCollisionField.TryCreate(tileMapData, "flat_cells", out var field));
         return field!;
     }
 }

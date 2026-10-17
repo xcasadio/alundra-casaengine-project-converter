@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E20.e0k3 (docs/plan-e20-heros.md section 1.18.3, T2): the world tests (b1) to (b4) of the map edge for an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> (marked <see cref="AlundraEntityScriptProxy.HasLogicalZ"/>),
 /// in the real world of map 14 (<see cref="ArcRun"/>, the real prefabs and controllers, a synthetic field of 52 x 60 cells whose cells go on past the bound: the edge is crossable, which (b3) proves in the same assertion), against the
-/// oracle of <c>docs/plan-e20-annexe/e20-e0k/oracle/out</c> read by key (never copied). Written before the phase B wiring and red until it: the phase A function <see cref="AlundraScriptedMotion.ClampStepToMapEdge"/> exists but nothing calls it,
+/// oracle of <c>docs/plan-e20-annexe/e20-e0k/oracle/out</c> read by key (never copied). Written before the phase B wiring and red until it: the phase A function <see cref="ScriptedMotion.ClampStepToMapEdge"/> exists but nothing calls it,
 /// so a marked entity goes past its bound and never raises the flag. Each case without effect is set next to a positive case in the same assertion.
 /// (b1) the arrow of <c>arrows2-map-edge</c> (ticks 1 to 7 ONLY: at tick 8 the oracle shows the bounce of the E17 handler, which is not ported, E20.f5) next to an arrow that is far from the edge; (b2) the continuous push of the walker,
 /// east (<c>edge-push-east</c>) and north-east (<c>edge-push-diag</c>: X bounded while Y goes on, the flag kept through the slide along the wall); (b3) a walker from a record at the same place is not bounded (O-E19-17, D-E19-25);

@@ -13,7 +13,7 @@ namespace Alundra.Tests;
 /// </summary>
 public class AlundraLogicClockTests
 {
-    private const float FixedTickSeconds = AlundraScriptedMotion.FixedTickSeconds; // 1/50
+    private const float FixedTickSeconds = ScriptedMotion.FixedTickSeconds; // 1/50
 
     [Fact]
     public void TicksThisFrame_DtExactlyOneTick_YieldsExactlyOneTickPerFrame_Indefinitely_NoDrift()
@@ -82,7 +82,7 @@ public class AlundraLogicClockTests
         var ticks = clock.TicksThisFrame(1f); // a 1-second stall
         clock.CloseFrame();
 
-        Assert.Equal(AlundraScriptedMotion.MaxTicksPerFrame, ticks);
+        Assert.Equal(ScriptedMotion.MaxTicksPerFrame, ticks);
     }
 
     [Fact]

@@ -710,7 +710,7 @@ internal static class EntitySpawnFactory
         if (proxy.Controller != null && tileMapData != null)
         {
             proxy.ApplyGravitySettingsToController();
-            proxy.Controller.Settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags);
+            proxy.Controller.Settings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(proxy.Flags);
 
             // E4.g (docs/plan-e4-deplacement-scripte.md): a scripted NPC's vertical is entirely owned
             // by AlundraEntityScriptProxy.EvaluateEntitySupport's own per-tick ForceZ, declared through

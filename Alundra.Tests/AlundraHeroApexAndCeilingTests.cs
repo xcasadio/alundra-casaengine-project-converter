@@ -41,7 +41,7 @@ public sealed class AlundraHeroApexAndCeilingTests : IDisposable
     }
 
     /// <summary>Terrain cells of <paramref name="heightCells"/> x 16 px from x = 144 px (the cells are 24 px wide: from the sixth), flat 0 before.</summary>
-    private static AlundraCellsCollisionField LedgeField(int heightCells) => FlatCells.Create(cell: (cx, _) => (0, cx >= 6 ? heightCells : 0));
+    private static CellsCollisionField LedgeField(int heightCells) => FlatCells.Create(cell: (cx, _) => (0, cx >= 6 ? heightCells : 0));
 
     /// <summary>The walking jump of the plan: the animation 2 carries <paramref name="izf"/> (imposed by the montage), the hero walks east at the steady force.</summary>
     private static JumpHeroRig WalkingJumpRig(int izf, int ledgeHeightCells, float x, Action<World, ContactHost>? configure = null)

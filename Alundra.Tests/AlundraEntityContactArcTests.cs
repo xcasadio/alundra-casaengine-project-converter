@@ -482,8 +482,8 @@ public sealed class AlundraEntityContactArcTests
         arc.OneFrame();
 
         var collidables = ((IScriptHost)arc.Proxy).Collidables;
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(arc.Hero, collidables));
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(arc.Hero, arc.Hero.PosX, arc.Hero.PosY, arc.Hero.PosZ, collidables, EntityFlags.PickupKindMask));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(arc.Hero, collidables));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(arc.Hero, arc.Hero.PosX, arc.Hero.PosY, arc.Hero.PosZ, collidables, EntityFlags.PickupKindMask));
     }
 
     // ----------------------------------------------------------------------------------------------------------

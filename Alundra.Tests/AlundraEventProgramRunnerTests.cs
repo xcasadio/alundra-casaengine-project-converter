@@ -1037,7 +1037,7 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(EntityFlags.Gravity, target.Flags & EntityFlags.Gravity);
         Assert.Equal(0f, target.Controller.Settings.Gravity);
         Assert.Equal(0f, target.Controller.Settings.MaxFallSpeed);
-        Assert.Equal(AlundraCellsCollisionField.WalkabilityMaskFor(target.Flags), target.Controller.Settings.WalkabilityMask);
+        Assert.Equal(CellsCollisionField.WalkabilityMaskFor(target.Flags), target.Controller.Settings.WalkabilityMask);
         Assert.Equal(0x1040u, target.Controller.Settings.WalkabilityMask); // base 0x40 | ClassA's own 0x1000.
     }
 
@@ -1068,7 +1068,7 @@ public class AlundraEventProgramRunnerTests
         Assert.Equal(0u, target.Flags & EntityFlags.Gravity);
         Assert.Equal(0f, target.Controller.Settings.Gravity);
         Assert.Equal(0f, target.Controller.Settings.MaxFallSpeed);
-        Assert.Equal(AlundraCellsCollisionField.WalkabilityMaskFor(target.Flags), target.Controller.Settings.WalkabilityMask);
+        Assert.Equal(CellsCollisionField.WalkabilityMaskFor(target.Flags), target.Controller.Settings.WalkabilityMask);
         Assert.Equal(0x41u, target.Controller.Settings.WalkabilityMask); // base 0x40 | ClassB's own 0x01, Gravity cleared, ClassA never set.
     }
 
@@ -2545,7 +2545,7 @@ public class AlundraEventProgramRunnerTests
     // branch); cell (0,1) starts all-zero with no wall stack (to exercise stack destruction).
     // -----------------------------------------------------------------------------------------
 
-    private static AlundraCellStore NewSyntheticCellStore(out AlundraCellsCollisionField field)
+    private static AlundraCellStore NewSyntheticCellStore(out CellsCollisionField field)
     {
         var tileMapData = new TileMapData();
         tileMapData.MapSize = new CasaEngine.Core.Math.Size(2, 2);
@@ -2559,7 +2559,7 @@ public class AlundraEventProgramRunnerTests
             + "\"wall_tiles_offset\":[10,20,-1,-1],"
             + "\"wall_tiles\":{\"0\":{\"offset\":5,\"tiles\":[11,22]},\"1\":{\"offset\":50,\"tiles\":[99]}}}";
 
-        var fieldCreated = AlundraCellsCollisionField.TryCreate(tileMapData, "synthetic", out var createdField, out var records);
+        var fieldCreated = CellsCollisionField.TryCreate(tileMapData, "synthetic", out var createdField, out var records);
         Assert.True(fieldCreated);
         field = createdField!;
 
@@ -2647,7 +2647,7 @@ public class AlundraEventProgramRunnerTests
             + "\"wall_tiles_offset\":[" + walkability + "],"
             + "\"wall_tiles\":{}}";
 
-        AlundraCellsCollisionField.TryCreate(tileMapData, "clamp", out var field, out var records);
+        CellsCollisionField.TryCreate(tileMapData, "clamp", out var field, out var records);
         AlundraCellStore.TryCreate(records!, width, height, "clamp", out var store);
         var context = new FakeEntityWorldContext { CellMutator = store };
         var document = NewDocument(0x54, 60, 70, 0x40, 0, 0xFF); // (60,70) -> clamps to (0x33,0x3b)

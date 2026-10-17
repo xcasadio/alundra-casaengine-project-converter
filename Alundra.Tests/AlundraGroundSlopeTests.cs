@@ -24,7 +24,7 @@ namespace Alundra.Tests;
 /// port of <c>PhysicsEngine.UpdateTileAttributes</c>'s <c>Slope_18c</c> four-corner rule, against the REAL
 /// map 389 ("Ship Klark (beginning)") cell data - same fixture/self-skip pattern as
 /// <see cref="AlundraCellsCollisionFieldTests"/>/<see cref="AlundraCharacterControllerAdoptionTests"/>: a
-/// real headless <see cref="World"/> with the real map 389 <see cref="AlundraCellsCollisionField"/>
+/// real headless <see cref="World"/> with the real map 389 <see cref="CellsCollisionField"/>
 /// installed as <c>World.CollisionField</c>, and a hand-built hero pawn from the shared
 /// <see cref="HeroWorldFixture"/> montage.
 /// </summary>
@@ -54,7 +54,7 @@ public class AlundraGroundSlopeTests
         return null;
     }
 
-    private static AlundraCellsCollisionField? LoadMap389Field(string projectRoot)
+    private static CellsCollisionField? LoadMap389Field(string projectRoot)
     {
         var tileMapPath = Path.Combine(
             projectRoot, "Maps", "The Klark", "Ship Klark (beginning)-389", "tilemap",
@@ -67,7 +67,7 @@ public class AlundraGroundSlopeTests
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapPath)));
 
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
+        var created = CellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
         Assert.True(created, "map 389's AlundraCells custom property should parse and match MapSize.");
         return field;
     }
@@ -124,7 +124,7 @@ public class AlundraGroundSlopeTests
         return proxy;
     }
 
-    /// <summary>16.16 ground height (px) matching <see cref="AlundraTerrainProbe.SampleTerrainHeightCorner"/>'s
+    /// <summary>16.16 ground height (px) matching <see cref="TerrainProbe.SampleTerrainHeightCorner"/>'s
     /// own rounding - the exact <c>ModdedPosZ</c> a resting player entity carries in THIS port (F1 fix,
     /// docs/plan-echelles-chiffrage.md: the qualification rule is <c>height == ModdedPosZ</c>, no <c>+1</c>
     /// - see <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>'s own doc for why this port never

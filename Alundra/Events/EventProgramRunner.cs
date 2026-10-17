@@ -2971,7 +2971,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// (thresholdPx + WalkDetourMarginPx)</c> - i.e. projected past where the ORIGINAL walk was always
     /// heading anyway, exactly <see cref="WalkDetourMarginPx"/> beyond the distance that would have ended
     /// it cleanly. Both the entity's current position and that destination are converted px-&gt;cell the
-    /// same clamped way <see cref="AlundraCellsCollisionField"/> does (24x16, clamped to the grid bounds -
+    /// same clamped way <see cref="CellsCollisionField"/> does (24x16, clamped to the grid bounds -
     /// see that class' own doc), then <c>NavigationGrid2D.TryFindPath</c> runs ONCE, from cell-center to
     /// cell-center. On failure (no path exists, e.g. a fully enclosed wall) <see cref="AlundraEntityScriptProxy.WalkDetourPath"/>
     /// stays null - D5's own "no detour (keep pushing, original behavior)" - and
@@ -3005,7 +3005,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     }
 
     /// <summary>px-&gt;cell conversion (E4.d decision E4-2), same clamped shape
-    /// <see cref="AlundraCellsCollisionField"/>'s own ground sampling uses (that class' own doc,
+    /// <see cref="CellsCollisionField"/>'s own ground sampling uses (that class' own doc,
     /// "cell = (x / 24, y / 16), clamped to [0, width-1] x [0, height-1]").</summary>
     private static (int X, int Y) ToCell(NavigationGrid2D grid, int px, int py)
         => (Math.Clamp(px / TileWidthPx, 0, grid.Width - 1), Math.Clamp(py / TileHeightPx, 0, grid.Height - 1));

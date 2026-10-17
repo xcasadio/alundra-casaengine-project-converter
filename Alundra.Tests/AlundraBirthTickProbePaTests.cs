@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// E20.e0a3a probe P-A (docs/plan-e20-heros.md section 1.16.3a, "Resultat de P-A"). MEASURES, and asserts only what is true today of the production code (nothing here is a requirement
 /// of E20.e0a3b): what an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> (the arrow, number 3 of the global page, direction 0x18) does BEFORE the engine integrates it
 /// (<c>Entity.World</c> still null) when (1) the sprite is asked for its first animation with <c>SetCurrentAnimation(forceReset: true)</c>, (2) <c>Controller.Move</c> is called,
-/// (3) the generic kinematics of the DLL (<see cref="AlundraScriptedMotion.TickScriptedNpc"/>) runs the birth tick and the tick after, with <c>CurrentAnimationId</c> as the interface leaves it (~0)
+/// (3) the generic kinematics of the DLL (<see cref="ScriptedMotion.TickScriptedNpc"/>) runs the birth tick and the tick after, with <c>CurrentAnimationId</c> as the interface leaves it (~0)
 /// and with <c>Current = Target</c> posed by hand. Every measured value is also written to the test output with the prefix <c>PA:</c> (the plan copies them).
 /// No production code is changed by this slice; the interface is not called by any production path.
 /// </summary>
@@ -199,7 +199,7 @@ public sealed class AlundraBirthTickProbePaTests
             string outcome = "ok";
             try
             {
-                AlundraScriptedMotion.TickScriptedNpc(proxy);
+                ScriptedMotion.TickScriptedNpc(proxy);
             }
             catch (Exception e)
             {

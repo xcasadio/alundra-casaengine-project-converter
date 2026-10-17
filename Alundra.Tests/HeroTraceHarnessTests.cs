@@ -134,9 +134,9 @@ public class HeroTraceHarnessTests
         return tileMapData;
     }
 
-    private static AlundraCellsCollisionField LoadMap389Field(TileMapData tileMapData)
+    private static CellsCollisionField LoadMap389Field(TileMapData tileMapData)
     {
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
+        var created = CellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
         Assert.True(created, "HeroTraceHarnessTests: map 389 AlundraCells custom property should parse and match MapSize.");
         return field!;
     }
@@ -284,7 +284,7 @@ public class HeroTraceHarnessTests
         var liveSettings = proxy.Controller!.Settings;
         liveSettings.Gravity = mapGravityRaw * 256f / 65536f * 2500f;
         liveSettings.MaxFallSpeed = mapZViscosityRaw * 256f / 65536f * 50f;
-        liveSettings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags);
+        liveSettings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(proxy.Flags);
     }
 
     private static void ApplyNewGameState(AlundraEntityScriptProxy proxy, SpriteRecordHeader header, TileMapData tileMapData)
@@ -401,7 +401,7 @@ public class HeroTraceHarnessTests
 
     private static RunResult RunOnce(
         Scenario scenario, float fixedTimeStep, string projectRoot, TileMapData tileMapData,
-        AlundraCellsCollisionField field, SpriteRecordHeader header)
+        CellsCollisionField field, SpriteRecordHeader header)
     {
         var settings = LoadHeroControllerSettings(projectRoot);
         var world = HeroWorldFixture.BuildWorld(field);
@@ -547,9 +547,9 @@ public class HeroTraceHarnessTests
         return new RunResult(lines, counts, maxEngineStepsDelta);
     }
 
-    private static AlundraCellsRecords ReadRecords(TileMapData tileMapData)
+    private static CellsRecords ReadRecords(TileMapData tileMapData)
     {
-        Assert.True(AlundraCellsRecords.TryParse(tileMapData.CustomProperties, WorldName, out var records));
+        Assert.True(CellsRecords.TryParse(tileMapData.CustomProperties, WorldName, out var records));
         return records;
     }
 
@@ -723,7 +723,7 @@ public class HeroTraceHarnessTests
             var dllTicksValues = result.Lines.Select(l => l.DllTicks).ToArray();
             Assert.Contains(0, dllTicksValues);
             Assert.Contains(dllTicksValues, v => v >= 2);
-            Assert.Contains(AlundraScriptedMotion.MaxTicksPerFrame, dllTicksValues);
+            Assert.Contains(ScriptedMotion.MaxTicksPerFrame, dllTicksValues);
 
             var engineStepsDeltaValues = result.Lines.Select(l => l.EngineStepsDelta).ToArray();
             if (fixedTimeStep > 0f)

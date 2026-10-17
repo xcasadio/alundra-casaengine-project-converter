@@ -191,7 +191,7 @@ public class AlundraHeroJumpTests
     {
         AlundraEntityScriptProxy? wall = null;
         var rig = JumpHeroRig.Build(
-            probeFactory: host => new AlundraMovementObstacleProbe(host),
+            probeFactory: host => new MovementObstacleProbe(host),
             x: 100.25f,
             configure: (world, host) => wall = ContactWorld.AddEntity(world, host, "Wall", 140, 100, 0, -10, -7, 0, 20, 14, 32));
         var hero = rig.Hero;

@@ -34,7 +34,7 @@ namespace Alundra.Physics;
 /// copied by <c>ChangeAreaTileProperties</c> or the 0x54/0x55 handlers - so there is nothing for this
 /// port to read it into.
 /// </summary>
-public sealed class AlundraCellsRecords
+public sealed class CellsRecords
 {
     public int MapIndex { get; init; }
     public int CellCount { get; init; }
@@ -66,25 +66,25 @@ public sealed class AlundraCellsRecords
     /// world instead of throwing.
     /// </summary>
     public static bool TryParse(
-        IReadOnlyDictionary<string, string> customProperties, string worldName, out AlundraCellsRecords records)
+        IReadOnlyDictionary<string, string> customProperties, string worldName, out CellsRecords records)
     {
         records = null!;
 
         if (!customProperties.TryGetValue(CustomPropertyKey, out var json) || string.IsNullOrEmpty(json))
         {
             Logs.WriteWarning(
-                $"AlundraCellsCollisionField: world '{worldName}' has no '{CustomPropertyKey}' custom property; "
+                $"CellsCollisionField: world '{worldName}' has no '{CustomPropertyKey}' custom property; "
                 + "collision field not installed (degraded mode).");
             return false;
         }
 
         try
         {
-            var parsed = JsonSerializer.Deserialize<AlundraCellsRecords>(json, SerializerOptions);
+            var parsed = JsonSerializer.Deserialize<CellsRecords>(json, SerializerOptions);
             if (parsed == null || !IsWellFormed(parsed))
             {
                 Logs.WriteWarning(
-                    $"AlundraCellsCollisionField: world '{worldName}' - '{CustomPropertyKey}' parsed to a "
+                    $"CellsCollisionField: world '{worldName}' - '{CustomPropertyKey}' parsed to a "
                     + "malformed document (column length mismatch); collision field not installed (degraded mode).");
                 return false;
             }
@@ -95,13 +95,13 @@ public sealed class AlundraCellsRecords
         catch (JsonException ex)
         {
             Logs.WriteWarning(
-                $"AlundraCellsCollisionField: world '{worldName}' - failed to parse '{CustomPropertyKey}' "
+                $"CellsCollisionField: world '{worldName}' - failed to parse '{CustomPropertyKey}' "
                 + $"({ex.Message}); collision field not installed (degraded mode).");
             return false;
         }
     }
 
-    private static bool IsWellFormed(AlundraCellsRecords records)
+    private static bool IsWellFormed(CellsRecords records)
     {
         var count = records.CellCount;
         return records.Walkability.Length == count

@@ -13,9 +13,9 @@ using Alundra.Cells;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Covers <see cref="AlundraCellsCollisionField"/>: tolerant parsing of the "AlundraCells" custom
+/// Covers <see cref="CellsCollisionField"/>: tolerant parsing of the "AlundraCells" custom
 /// property (synthetic, same shape as <see cref="WallPlacementOverlayTests"/>'s own parsing coverage),
-/// <see cref="AlundraCellsCollisionField.WalkabilityMaskFor"/>'s ClassA/ClassB folding, and the ground
+/// <see cref="CellsCollisionField.WalkabilityMaskFor"/>'s ClassA/ClassB folding, and the ground
 /// height / walkability rules against the REAL map 389 ("Ship Klark (beginning)") cell data - self-skips
 /// when alundra-project/ is absent, same pattern as <see cref="Map389LoadProgramsTests"/>.
 /// </summary>
@@ -30,7 +30,7 @@ public class AlundraCellsCollisionFieldTests
     {
         var customProperties = new Dictionary<string, string>();
 
-        var result = AlundraCellsRecords.TryParse(customProperties, "map_1", out var records);
+        var result = CellsRecords.TryParse(customProperties, "map_1", out var records);
 
         Assert.False(result);
         Assert.Null(records);
@@ -41,7 +41,7 @@ public class AlundraCellsCollisionFieldTests
     {
         var customProperties = new Dictionary<string, string> { ["AlundraCells"] = "{not valid json" };
 
-        var result = AlundraCellsRecords.TryParse(customProperties, "map_1", out var records);
+        var result = CellsRecords.TryParse(customProperties, "map_1", out var records);
 
         Assert.False(result);
         Assert.Null(records);
@@ -56,7 +56,7 @@ public class AlundraCellsCollisionFieldTests
                 + "\"slope\":[0,0,0,0],\"height\":[0,0,0,0]}",
         };
 
-        var result = AlundraCellsRecords.TryParse(customProperties, "map_1", out var records);
+        var result = CellsRecords.TryParse(customProperties, "map_1", out var records);
 
         Assert.False(result);
         Assert.Null(records);
@@ -71,7 +71,7 @@ public class AlundraCellsCollisionFieldTests
             "{\"map_index\":1,\"cell_count\":4,\"walkability\":[0,0,0,0],\"ground_property\":[0,0,0,0],"
             + "\"slope\":[0,0,0,0],\"height\":[1,2,3,4]}";
 
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, "map_1", out var field);
+        var created = CellsCollisionField.TryCreate(tileMapData, "map_1", out var field);
 
         Assert.True(created);
         Assert.NotNull(field);
@@ -90,7 +90,7 @@ public class AlundraCellsCollisionFieldTests
             + "\"ground_property\":[0,0,0,0,0,0,0,0,0],\"slope\":[0,0,0,0,0,0,0,0,0],"
             + "\"height\":[0,0,0,0,0,0,0,0,0]}";
 
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, "map_1", out var field);
+        var created = CellsCollisionField.TryCreate(tileMapData, "map_1", out var field);
 
         Assert.False(created);
         Assert.Null(field);
@@ -112,7 +112,7 @@ public class AlundraCellsCollisionFieldTests
             "{\"map_index\":1,\"cell_count\":1,\"walkability\":[0],\"ground_property\":[5],"
             + "\"slope\":[0],\"height\":[0],\"tile_id\":[65535],\"wall_tiles_offset\":[0]}";
 
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, "map_1", out var field, out var records);
+        var created = CellsCollisionField.TryCreate(tileMapData, "map_1", out var field, out var records);
         Assert.True(created);
 
         var storeCreated = AlundraCellStore.TryCreate(records!, 1, 1, "map_1", out var store);
@@ -137,25 +137,25 @@ public class AlundraCellsCollisionFieldTests
     [Fact]
     public void WalkabilityMaskFor_NoClassBits_ReturnsBaseMask()
     {
-        Assert.Equal(0x40u, AlundraCellsCollisionField.WalkabilityMaskFor(0));
+        Assert.Equal(0x40u, CellsCollisionField.WalkabilityMaskFor(0));
     }
 
     [Fact]
     public void WalkabilityMaskFor_ClassB_AddsBit0()
     {
-        Assert.Equal(0x41u, AlundraCellsCollisionField.WalkabilityMaskFor(EntityFlags.ClassB));
+        Assert.Equal(0x41u, CellsCollisionField.WalkabilityMaskFor(EntityFlags.ClassB));
     }
 
     [Fact]
     public void WalkabilityMaskFor_ClassA_AddsBit12()
     {
-        Assert.Equal(0x1040u, AlundraCellsCollisionField.WalkabilityMaskFor(EntityFlags.ClassA));
+        Assert.Equal(0x1040u, CellsCollisionField.WalkabilityMaskFor(EntityFlags.ClassA));
     }
 
     [Fact]
     public void WalkabilityMaskFor_ClassAAndClassB_CombinesBoth()
     {
-        Assert.Equal(0x1041u, AlundraCellsCollisionField.WalkabilityMaskFor(EntityFlags.ClassA | EntityFlags.ClassB));
+        Assert.Equal(0x1041u, CellsCollisionField.WalkabilityMaskFor(EntityFlags.ClassA | EntityFlags.ClassB));
     }
 
     // -------------------- Real map 389 data --------------------
@@ -177,7 +177,7 @@ public class AlundraCellsCollisionFieldTests
         return null;
     }
 
-    private static AlundraCellsCollisionField? LoadMap389Field()
+    private static CellsCollisionField? LoadMap389Field()
     {
         var projectRoot = FindProjectRoot();
         if (projectRoot == null)
@@ -197,7 +197,7 @@ public class AlundraCellsCollisionFieldTests
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapPath)));
 
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
+        var created = CellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
         Assert.True(created, "map 389's AlundraCells custom property should parse and match MapSize.");
         return field;
     }

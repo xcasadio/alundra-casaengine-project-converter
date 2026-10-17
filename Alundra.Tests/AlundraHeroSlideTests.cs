@@ -226,7 +226,7 @@ public sealed class AlundraHeroSlideTests : IDisposable
     {
         AlundraEntityScriptProxy? wall = null;
         var rig = Rig(OneCell, 263f, 200f,
-            probeFactory: host => new AlundraMovementObstacleProbe(host),
+            probeFactory: host => new MovementObstacleProbe(host),
             configure: (world, host) => wall = ContactWorld.AddEntity(world, host, "Wall", 250, 167, 0, -10, -7, 0, 24, 16, 32));
         ImposeNorthForceProfile(rig);
         var rows = Run(rig, 8, Up);

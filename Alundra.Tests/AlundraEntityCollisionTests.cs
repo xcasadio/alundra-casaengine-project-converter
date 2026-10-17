@@ -7,7 +7,7 @@ using Alundra.Physics;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Unit tests for <see cref="AlundraEntityCollision.FindEntityCollisionCandidate"/> (E12.d,
+/// Unit tests for <see cref="EntityCollision.FindEntityCollisionCandidate"/> (E12.d,
 /// docs/plan-e12d-interaction-joueur.md D-E12D-1) - the port of the original's asymmetric AABB probe
 /// (PhysicsEngine.cs:1169-1283). The function is unit-agnostic (it only compares the caller's own
 /// numbers), so these montages use small plain integers for legibility; the real-data path is covered
@@ -34,7 +34,7 @@ public class AlundraEntityCollisionTests
         var first = NewBox(12, 12, 12, 4, 4, 4);
         var second = NewBox(11, 11, 11, 4, 4, 4);
 
-        var found = AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { first, second });
+        var found = EntityCollision.FindEntityCollisionCandidate(subject, new[] { first, second });
 
         // Both overlap; the original returns on the FIRST match in list order.
         Assert.Same(first, found);
@@ -51,8 +51,8 @@ public class AlundraEntityCollisionTests
         var oneUnitLess = NewBox(10 - 4, 0, 0, 4, 4, 4);
         var flush = NewBox(10 - 5, 0, 0, 4, 4, 4);
 
-        Assert.Same(oneUnitLess, AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { oneUnitLess }));
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { flush }));
+        Assert.Same(oneUnitLess, EntityCollision.FindEntityCollisionCandidate(subject, new[] { oneUnitLess }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(subject, new[] { flush }));
     }
 
     [Fact]
@@ -64,12 +64,12 @@ public class AlundraEntityCollisionTests
         var subject = NewBox(10, 0, 0, 2, 2, 2);
         var wideOnTheLeft = NewBox(10 - 8, 0, 0, 10, 10, 10);
 
-        Assert.Same(wideOnTheLeft, AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { wideOnTheLeft }));
+        Assert.Same(wideOnTheLeft, EntityCollision.FindEntityCollisionCandidate(subject, new[] { wideOnTheLeft }));
 
         // And the mirror image: candidate to the RIGHT at the same distance - now the SUBJECT's own
         // width (2) is the threshold and 8 > 2 must miss, even though the candidate is 10 wide.
         var wideOnTheRight = NewBox(10 + 8, 0, 0, 10, 10, 10);
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { wideOnTheRight }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(subject, new[] { wideOnTheRight }));
     }
 
     [Fact]
@@ -77,9 +77,9 @@ public class AlundraEntityCollisionTests
     {
         var subject = NewBox(0, 0, 0, 4, 4, 4);
 
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { NewBox(20, 0, 0, 4, 4, 4) }));
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { NewBox(0, 20, 0, 4, 4, 4) }));
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { NewBox(0, 0, 20, 4, 4, 4) }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(subject, new[] { NewBox(20, 0, 0, 4, 4, 4) }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(subject, new[] { NewBox(0, 20, 0, 4, 4, 4) }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(subject, new[] { NewBox(0, 0, 20, 4, 4, 4) }));
     }
 
     [Fact]
@@ -89,15 +89,15 @@ public class AlundraEntityCollisionTests
 
         var notCollidable = NewBox(0, 0, 0, 4, 4, 4);
         notCollidable.Flags = 0;
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(notCollidable, new[] { overlapped }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(notCollidable, new[] { overlapped }));
 
         var noCollisionAnim = NewBox(0, 0, 0, 4, 4, 4);
         noCollisionAnim.AnimFlags = 0x80; // EntityAnimFlags.NoEntityCollision.
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(noCollisionAnim, new[] { overlapped }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(noCollisionAnim, new[] { overlapped }));
 
         var carried = NewBox(0, 0, 0, 4, 4, 4);
         carried.PlatformEntity = new CasaEngine.Framework.Scene.Entities.Entity();
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(carried, new[] { overlapped }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(carried, new[] { overlapped }));
     }
 
     [Fact]
@@ -114,19 +114,19 @@ public class AlundraEntityCollisionTests
         subject.ModdedPosY = 100;
         subject.ModdedPosZ = 100;
 
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { candidate }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(subject, new[] { candidate }));
 
         subject.PosX = 2;
         subject.PosY = 2;
         subject.PosZ = 2; // cached ModdedPos* deliberately NOT refreshed.
 
-        Assert.Same(candidate, AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { candidate }));
+        Assert.Same(candidate, EntityCollision.FindEntityCollisionCandidate(subject, new[] { candidate }));
     }
 
     [Fact]
     public void TheSubjectItself_IsSkipped()
     {
         var subject = NewBox(0, 0, 0, 4, 4, 4);
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(subject, new[] { subject }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(subject, new[] { subject }));
     }
 }

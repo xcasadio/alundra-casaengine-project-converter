@@ -40,7 +40,7 @@ public sealed class AlundraMapStateWorldTests
         return map;
     }
 
-    private static void Install(ArcRun arc, AlundraCellsCollisionField field, TileMapData? map)
+    private static void Install(ArcRun arc, CellsCollisionField field, TileMapData? map)
     {
         typeof(AlundraWorldProxy).GetProperty(nameof(AlundraWorldProxy.CollisionField))!.SetValue(arc.Proxy, field);
         arc.RealWorld!.CollisionField = field;
@@ -48,11 +48,11 @@ public sealed class AlundraMapStateWorldTests
     }
 
     /// <summary>A wall that only the mask blocks: the cells of column 15 hold the word 0x40 and the height 0 (the family C1 of the oracle: the arrow flies at 16 px above the ground).</summary>
-    private static AlundraCellsCollisionField MaskWall() => FlatCells.Create(cell: (x, y) => (x == WallColumn ? 0x40 : 0, 0));
+    private static CellsCollisionField MaskWall() => FlatCells.Create(cell: (x, y) => (x == WallColumn ? 0x40 : 0, 0));
 
     private sealed record Flight(IReadOnlyList<int> X, IReadOnlyList<int> Z, IReadOnlyList<int> Ground, int FirstFlagTick, int FirstGroundTick);
 
-    private static Flight Fly(int sprite, int xPixels, int zPixels, AlundraCellsCollisionField field, TileMapData? map, int ticks)
+    private static Flight Fly(int sprite, int xPixels, int zPixels, CellsCollisionField field, TileMapData? map, int ticks)
     {
         using var arc = Arc("fly");
         Install(arc, field, map);

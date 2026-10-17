@@ -385,7 +385,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                 // (AlundraMovementObstacleProbe.TryFindObstacle). Gated like production (D-E12D-5: no step is taken behind the mask).
                 if ((s.GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) == 0)
                 {
-                    player!.XCollisionEntity = AlundraEntityCollision.FindEntityCollisionCandidate(
+                    player!.XCollisionEntity = EntityCollision.FindEntityCollisionCandidate(
                         player, player.PosX, player.PosY, player.PosZ, s.Collidables, EntityFlags.PickupKindMask);
                 }
 

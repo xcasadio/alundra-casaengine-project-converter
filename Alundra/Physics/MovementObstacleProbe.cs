@@ -14,7 +14,7 @@ namespace Alundra.Physics;
 /// E19.d2b B3 (docs/plan-e19-opcodes.md §1.2h.2, D-E19-27, D-E19-28, D-E19-34, ADR-0022): the movement obstacle probe the character
 /// controller consults in its field stage (<see cref="IMovementObstacleProbe"/>, ADR-0047 of the engine), installed on
 /// <c>World.MovementObstacleProbe</c> at each world load next to the cell field. It gives the controller the rule of the binary: a mobile
-/// stops at the first entity of the collidable list its box overlaps (<see cref="AlundraEntityCollision.FindEntityCollisionCandidate(AlundraEntityScriptProxy,int,int,int,System.Collections.Generic.IReadOnlyList{AlundraEntityScriptProxy},uint)"/>,
+/// stops at the first entity of the collidable list its box overlaps (<see cref="EntityCollision.FindEntityCollisionCandidate(AlundraEntityScriptProxy,int,int,int,System.Collections.Generic.IReadOnlyList{AlundraEntityScriptProxy},uint)"/>,
 /// <c>FindEntityCollisionCandidate</c> <c>0x80036FE0</c>, semi-open), the entity tested before the cell.
 /// <para>
 /// The candidate X and Y are the root the controller proposes, converted to 16.16 EXACTLY as <see cref="AlundraEntityScriptProxy.MoveControllerAndPullPosition"/>
@@ -27,13 +27,13 @@ namespace Alundra.Physics;
 /// </para>
 /// No allocation, no state: it reads <see cref="IScriptHost.Collidables"/>, rebuilt by the world at the end of each frame.
 /// </summary>
-public sealed class AlundraMovementObstacleProbe : IMovementObstacleProbe
+public sealed class MovementObstacleProbe : IMovementObstacleProbe
 {
     private static readonly Color DebugColor = new(255, 128, 0);
 
     private readonly IScriptHost _host;
 
-    public AlundraMovementObstacleProbe(IScriptHost host)
+    public MovementObstacleProbe(IScriptHost host)
     {
         _host = host;
     }
@@ -48,7 +48,7 @@ public sealed class AlundraMovementObstacleProbe : IMovementObstacleProbe
 
         var candidateX = (int)Math.Round((double)candidateRootPosition.X * 65536.0);
         var candidateY = (int)Math.Round((double)candidateRootPosition.Y * 65536.0);
-        var found = AlundraEntityCollision.FindEntityCollisionCandidate(
+        var found = EntityCollision.FindEntityCollisionCandidate(
             proxy, candidateX, candidateY, proxy.PosZ, _host.Collidables, EntityFlags.PickupKindMask);
         if (found?.OwnerEntity is not { } foundEntity)
         {

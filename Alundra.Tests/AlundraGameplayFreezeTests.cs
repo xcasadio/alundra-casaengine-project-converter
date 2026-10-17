@@ -142,8 +142,8 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
     }
 
     [Theory]
-    [InlineData(PlayerManager.ClimbingAnimationId, AlundraScriptedMotion.ClimbingExternalDisplacementSentinel)]
-    [InlineData(PlayerManager.ClimbStillAnimationId, AlundraScriptedMotion.ClimbingExternalDisplacementSentinel)]
+    [InlineData(PlayerManager.ClimbingAnimationId, ScriptedMotion.ClimbingExternalDisplacementSentinel)]
+    [InlineData(PlayerManager.ClimbStillAnimationId, ScriptedMotion.ClimbingExternalDisplacementSentinel)]
     [InlineData(0u, 0f)]
     public void Thaw_Hero_DeclaresTheClimbingSentinelAgain_OnlyWhileClimbing(uint animationId, float expectedLatch)
     {
@@ -151,7 +151,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         proxy.IsPlayer = true;
         proxy.TargetAnimationId = animationId;
         proxy.Controller!.IsVerticalOwnedExternally = true;
-        proxy.Controller.SetExternalVerticalDisplacement(AlundraScriptedMotion.ClimbingExternalDisplacementSentinel);
+        proxy.Controller.SetExternalVerticalDisplacement(ScriptedMotion.ClimbingExternalDisplacementSentinel);
 
         GameplayFreeze.Freeze(proxy);
         GameplayFreeze.Thaw(proxy);

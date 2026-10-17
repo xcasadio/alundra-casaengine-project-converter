@@ -60,7 +60,7 @@ public sealed class EquipmentRecords
 
     /// <summary>
     /// E20.c2a T2: the boots level of the hero (<c>[0x80127000]</c>), written by step 1 of <c>UpdateItemEffectState</c> (3, 2 or 1 for the objects <c>0x1C</c>, <c>0x1B</c>, <c>0x1A</c>, else 0). The binary caches it
-    /// at the end of every tick; the physics of the DLL (<see cref="AlundraScriptedMotion"/>) recompute it on demand through <see cref="PlayerManager.BootsLevelOf"/>, the same function, so the value read there
+    /// at the end of every tick; the physics of the DLL (<see cref="ScriptedMotion"/>) recompute it on demand through <see cref="PlayerManager.BootsLevelOf"/>, the same function, so the value read there
     /// is the cached one of this tick at the latest (the one-tick lag of the binary is immaterial).
     /// </summary>
     public int BootsLevel { get; internal set; }

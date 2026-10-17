@@ -37,10 +37,10 @@ namespace Alundra.Tests;
 /// 32 - the real bank-146 "sailor/passenger/seagull" prefab, one of the intro's own scripted walkers,
 /// map 389 entity records 6-14/16 per <c>data-extracted/data/map_389.json</c>'s own <c>SpriteTableIndex</c>)
 /// - under a real headless <see cref="World"/> (TopDownElevation policy) with the REAL map 389
-/// <see cref="AlundraCellsCollisionField"/> installed as <c>World.CollisionField</c>. Same fixture pattern
+/// <see cref="CellsCollisionField"/> installed as <c>World.CollisionField</c>. Same fixture pattern
 /// as <see cref="AlundraCharacterControllerAdoptionTests"/> (the hero's own E3.d pattern this file
 /// mirrors, per docs/plan-e4-deplacement-scripte.md E4.b's own acceptance note), IsPlayer=false so the
-/// scripted mover (<see cref="AlundraScriptedMotion.TickScriptedNpc"/>, wired from
+/// scripted mover (<see cref="ScriptedMotion.TickScriptedNpc"/>, wired from
 /// <see cref="AlundraEntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch) drives it instead of
 /// <see cref="PlayerManager"/>. Self-skips every [Fact] when <c>alundra-project/</c> is not present
 /// in this checkout (same convention as <see cref="AlundraCharacterControllerAdoptionTests"/>).
@@ -121,7 +121,7 @@ public class AlundraNpcCharacterControllerMoverTests
         return tileSets;
     }
 
-    private static AlundraCellsCollisionField? LoadMap389Field(string projectRoot)
+    private static CellsCollisionField? LoadMap389Field(string projectRoot)
     {
         var tileMapData = LoadMap389TileMapData(projectRoot);
         if (tileMapData == null)
@@ -129,7 +129,7 @@ public class AlundraNpcCharacterControllerMoverTests
             return null;
         }
 
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
+        var created = CellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
         Assert.True(created, "map 389 AlundraCells custom property should parse and match MapSize.");
         return field;
     }
@@ -176,7 +176,7 @@ public class AlundraNpcCharacterControllerMoverTests
     }
 
     /// <summary>Same headless montage as <see cref="AlundraCharacterControllerAdoptionTests.BuildWorld"/>.</summary>
-    private static World BuildWorld(AlundraCellsCollisionField field)
+    private static World BuildWorld(CellsCollisionField field)
     {
         var world = new World();
         var game = (CasaEngineGame)RuntimeHelpers.GetUninitializedObject(typeof(CasaEngineGame));
@@ -2296,7 +2296,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// real render-rate-independent accumulator, exactly what production wires up. <see cref="TotalTicks"/>
     /// is the test's own direct, exact observable for "how many real logic ticks have elapsed so far" -
     /// more precise than re-deriving it from a frame counter and dt (which would need to reproduce
-    /// <see cref="AlundraScriptedMotion.MaxTicksPerFrame"/>'s own catch-up-cap rounding by hand).</summary>
+    /// <see cref="ScriptedMotion.MaxTicksPerFrame"/>'s own catch-up-cap rounding by hand).</summary>
     private sealed class GullClimbScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new GullClimbRunner();
@@ -2566,7 +2566,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// <see cref="GullEntitySix_RealFlightAtRenderRateAndAtFiftyHertz_ClimbsAndDriftsWithFaithfulTickQuantizedPhysics"/>)
     /// at the user's own real frame rate (dt=1/123), with a real asset-streaming HITCH injected mid-climb -
     /// every 11th frame runs dt=0.3s instead of dt=1/123s (exactly what the game does while streaming
-    /// assets: <see cref="AlundraScriptedMotion.MaxTicksPerFrame"/> legitimately caps the horizontal at 4
+    /// assets: <see cref="ScriptedMotion.MaxTicksPerFrame"/> legitimately caps the horizontal at 4
     /// ticks that frame while a real elapsed-time-driven integrator would keep integrating the vertical for
     /// the FULL 0.3s). Must still reach the apex at 171 ticks and drift 209.25px (landing X = 594.75), the
     /// SAME numbers the hitch-free run produces - the whole point of driving the vertical through
@@ -2757,7 +2757,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// delegating to a REAL <see cref="EventProgramRunner"/> - lets a test observe "how many times
     /// this entity's own script pass actually ran" from OUTSIDE the fused per-tick loop, independent of
     /// <see cref="AlundraEntityScriptProxy.MotionTickCount"/>/<see cref="AlundraEntityScriptProxy.SupportTickCount"/>
-    /// (which are incremented from inside <see cref="AlundraScriptedMotion"/>/<see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>
+    /// (which are incremented from inside <see cref="ScriptedMotion"/>/<see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/>
     /// respectively) - three independently-observed counters for the same ONE-CLOCK invariant.</summary>
     private sealed class ScriptPassCountingRunner : IEventProgramRunner
     {

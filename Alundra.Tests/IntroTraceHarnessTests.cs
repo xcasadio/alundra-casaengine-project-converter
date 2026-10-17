@@ -405,7 +405,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     // warned by AlundraCellsCollisionField.TryCreate itself) - RunVerticalPhysicsPass is then a no-op.
     private SpriteRecordCatalog? _catalog;
     private TileMapData? _tileMapData;
-    private AlundraCellsCollisionField? _groundField;
+    private CellsCollisionField? _groundField;
     private int _mapGravityRaw;
     private int _mapZViscosityRaw;
 
@@ -494,7 +494,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     // E7.a test-only accessors (acceptance 3/4, docs/plan-e7-mutation-tuiles.md): let a test inspect
     // post-mutation cell state after driving real frames via RunFramesForTest, without this class itself
     // needing any assertion of its own.
-    public AlundraCellsCollisionField? GroundField => _groundField;
+    public CellsCollisionField? GroundField => _groundField;
     public AlundraCellStore? CellStore => _cellStore;
 
     /// <summary>E11.a test-only accessor (T1/T2, docs/plan-e11-audio.md): every <c>(Frame, sfxId)</c>
@@ -681,7 +681,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         // aliases its arrays from, so AlundraCellStore's mutations (0x54/0x55/0x85, via CellMutator below)
         // are instantly visible to _groundField's own TrySampleGround/SampleGroundProperty/
         // SampleRawCellHeight - no separate parse, no copy (see AlundraCellStore's own class doc).
-        AlundraCellsCollisionField.TryCreate(tileMapData, _worldName, out _groundField, out var cellRecords);
+        CellsCollisionField.TryCreate(tileMapData, _worldName, out _groundField, out var cellRecords);
         if (cellRecords != null)
         {
             AlundraCellStore.TryCreate(
@@ -873,7 +873,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         // without needing entitiesThisFrame to be non-empty. At this harness's fixed dt
         // (AlundraScriptedMotion.FixedTickSeconds exactly, see below) this always yields exactly 1 - see
         // this class' own _logicClock doc.
-        var ticksThisFrame = LogicTicksThisFrame(AlundraScriptedMotion.FixedTickSeconds);
+        var ticksThisFrame = LogicTicksThisFrame(ScriptedMotion.FixedTickSeconds);
 
         // E4.e: AlundraScriptedMotion.FixedTickSeconds (1/50 s), not 0f - the harness is frame-locked at
         // 50 Hz (1 frame = 1 tick, matching the original's own fixed physics rate), so this must feed
@@ -894,7 +894,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
 
         foreach (var entity in entitiesThisFrame)
         {
-            entity.Update(AlundraScriptedMotion.FixedTickSeconds);
+            entity.Update(ScriptedMotion.FixedTickSeconds);
         }
 
         for (var tick = 0; tick < ticksThisFrame; tick++)
@@ -944,12 +944,12 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// player (whose <see cref="AlundraEntityScriptProxy.Flags"/> stays 0, so the gravity branch below
     /// never applies to it, and whose <see cref="AlundraEntityScriptProxy.ForceZ"/> never becomes non-zero
     /// either) and for <see cref="_groundField"/> == null (degraded mode - AlundraCellsCollisionField
-    /// missing/malformed for this world, already warned by <see cref="AlundraCellsCollisionField.TryCreate"/>
+    /// missing/malformed for this world, already warned by <see cref="CellsCollisionField.TryCreate"/>
     /// itself).
     ///
     /// Ground probe: <see cref="ComputeTerrainHeight"/> below is the SAME 4-corner-max, far-edge-exclusive
     /// convention as <see cref="AlundraEntityScriptProxy.ClampToGround"/> and the original's own
-    /// <c>ComputeEntityGroundHeight</c> (see <see cref="AlundraCellsCollisionField"/>'s own class doc) -
+    /// <c>ComputeEntityGroundHeight</c> (see <see cref="CellsCollisionField"/>'s own class doc) -
     /// reused here directly against the entity's real header body box
     /// (<see cref="AlundraEntityScriptProxy.Width"/>/<c>Height</c>/<c>ModX</c>/<c>ModY</c>, populated by
     /// <c>AlundraEntitySpawnFactory.ApplySpawnInitialization</c> at spawn - see <see cref="BuildInitialState"/>'s
@@ -1295,7 +1295,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// Bug fix (AlundraLogicClock's own class doc): this harness's own shared logic clock - same one
     /// instance every spawned entity's own <see cref="AlundraEntityScriptProxy.Update"/> AND
     /// <see cref="RunFrame"/> itself read/advance, mirroring production's <see cref="AlundraWorldProxy"/>.
-    /// This harness runs at a FIXED dt (<see cref="AlundraScriptedMotion.FixedTickSeconds"/> exactly) one
+    /// This harness runs at a FIXED dt (<see cref="ScriptedMotion.FixedTickSeconds"/> exactly) one
     /// frame at a time - see <see cref="RunFrame"/>'s own doc on why that makes
     /// <see cref="LogicClock.TicksThisFrame"/> yield exactly 1 every single frame, forever, so this
     /// fix is intentionally a no-op for the intro trace (see docs/intro-trace-389.txt's own acceptance

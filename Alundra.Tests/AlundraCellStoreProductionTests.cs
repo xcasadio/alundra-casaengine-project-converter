@@ -14,7 +14,7 @@ namespace Alundra.Tests;
 /// <see cref="AlundraWorldProxy.RunMapEventsPass"/>/<see cref="EventProgramRunner.Dispatch"/> -
 /// through <see cref="HeadlessIntroSimulation"/> (Alundra.Tests\IntroTraceHarnessTests.cs), not a
 /// synthetic document, and proves the mutation actually flows end-to-end from opcode dispatch down to
-/// <see cref="AlundraCellsCollisionField"/>'s own read side. Twinned with a NEUTRALIZATION run
+/// <see cref="CellsCollisionField"/>'s own read side. Twinned with a NEUTRALIZATION run
 /// (<c>installCellMutator: false</c>) per the plan's own "rule 2" (production or neutralization proof):
 /// the same drive, with <see cref="IEntityWorldContext.CellMutator"/> forced null, must leave the export's
 /// original values untouched - proving the main test's change comes from this exact seam, not some other

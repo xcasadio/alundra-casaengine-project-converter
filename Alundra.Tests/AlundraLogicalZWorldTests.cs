@@ -44,20 +44,20 @@ public sealed class AlundraLogicalZWorldTests
         return map;
     }
 
-    private static void Install(ArcRun arc, AlundraCellsCollisionField field)
+    private static void Install(ArcRun arc, CellsCollisionField field)
     {
         typeof(AlundraWorldProxy).GetProperty(nameof(AlundraWorldProxy.CollisionField))!.SetValue(arc.Proxy, field);
         arc.RealWorld!.CollisionField = field;
         typeof(AlundraWorldProxy).GetField("_tileMapData", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, Map(128, 4096));
     }
 
-    private static AlundraCellsCollisionField Flat() => FlatCells.Create();
+    private static CellsCollisionField Flat() => FlatCells.Create();
 
     /// <summary>The height byte <paramref name="heightByte"/> (16 px) on the columns <paramref name="from"/> to <paramref name="to"/> - 1, flat elsewhere.</summary>
-    private static AlundraCellsCollisionField Steps(int from, int to, int heightByte) => FlatCells.Create(cell: (x, y) => (0, x >= from && x < to ? heightByte : 0));
+    private static CellsCollisionField Steps(int from, int to, int heightByte) => FlatCells.Create(cell: (x, y) => (0, x >= from && x < to ? heightByte : 0));
 
     /// <summary>The descending ramp of the oracle (k0_walker.py E2): columns 0 to 2 at height byte 4, columns 3 to 6 at 4..1 with the slope 2, flat 0 after.</summary>
-    private static AlundraCellsCollisionField RampDown()
+    private static CellsCollisionField RampDown()
         => FlatCells.Create(cell: (x, y) => (0, x < 3 ? 4 : x <= 6 ? 4 - (x - 3) : 0), slope: (x, y) => x >= 3 && x <= 6 ? 2 : 0);
 
     private static AlundraEntityScriptProxy Born(ArcRun arc, bool mapPage, int sprite, int xPixels, int zRaw)

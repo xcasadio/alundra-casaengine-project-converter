@@ -224,7 +224,7 @@ internal sealed class RunMontage
     private static ItemTables Tables() => ItemTables.GetOrCreate(ProjectRootFinder.Find());
 
     /// <summary>The field of the trace: 52 x 60 cells of 24 x 16 px, the layout painted (walkability, ground property, height).</summary>
-    public static AlundraCellsCollisionField FieldOf(RunOracleTrace trace)
+    public static CellsCollisionField FieldOf(RunOracleTrace trace)
         => trace.Layout.Count == 0
             ? FlatCells.Create(52, 60)
             : FlatCells.Create(52, 60, cell: (c, r) => { var cell = trace.CellAt(c, r); return (cell.Walkability, cell.Height); }, groundProperty: (c, r) => trace.CellAt(c, r).GroundProperty);
@@ -237,7 +237,7 @@ internal sealed class RunMontage
     {
         var rig = JumpHeroRig.Build(
             field ?? FieldOf(trace), x: trace.Col("pos_x", 0) / 65536f, y: trace.Col("pos_y", 0) / 65536f, z: trace.Col("pos_z_dll", 0) / 65536f, freePad: true, attackClock: true);
-        rig.Controller.Settings.WalkabilityMask = AlundraCellsCollisionField.BaseWalkabilityMask; // the LIVE settings of the controller: the montage leaves the mask at 0, the wall cells (0x40) would not block.
+        rig.Controller.Settings.WalkabilityMask = CellsCollisionField.BaseWalkabilityMask; // the LIVE settings of the controller: the montage leaves the mask at 0, the wall cells (0x40) would not block.
         // The Idle of the hero record carries the acceleration byte 1 (`sprite-records.json`, animation 0: 129024 -> 64512 on the tick the slide ends); the sprite clock of the swings keeps the 0 its oracles were built with.
         rig.SetAnimSet(new AnimSetEntry { Anim = 0, Speed = 0, Acceleration = 1 });
         var sounds = new RecordingSoundPlayer();

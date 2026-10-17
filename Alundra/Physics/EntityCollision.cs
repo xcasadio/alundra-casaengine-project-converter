@@ -10,7 +10,7 @@ namespace Alundra.Physics;
 /// PhysicsEngine.cs:1169-1283) - the entity-pair overlap probe the original's movement resolution
 /// uses, first ported for E12.d (docs/plan-e12d-interaction-joueur.md) as detection only (D-E12D-1). Since
 /// E19.d2b (D-E19-27, B3) it also blocks movement: the movement obstacle probe of the controller's field stage
-/// (<see cref="AlundraMovementObstacleProbe"/>) asks it for each candidate step, and the blocking report feeds the
+/// (<see cref="MovementObstacleProbe"/>) asks it for each candidate step, and the blocking report feeds the
 /// player's <see cref="AlundraEntityScriptProxy.XCollisionEntity"/> and from there <c>CheckEntityInteraction</c>.
 ///
 /// Ported as its own function rather than reusing an <see cref="EntitySupport"/> helper (the ÉCHELLES
@@ -24,7 +24,7 @@ namespace Alundra.Physics;
 /// <c>AlundraWorldProxy</c>'s <c>_collidables</c> doc), and the FIRST match in list order wins,
 /// exactly like the original's early <c>return</c>.
 /// </summary>
-public static class AlundraEntityCollision
+public static class EntityCollision
 {
     /// <summary>
     /// The same rule as <see cref="FindEntityCollisionCandidate(AlundraEntityScriptProxy, IReadOnlyList{AlundraEntityScriptProxy})"/> (asymmetric AABB on the three axes, the

@@ -57,7 +57,7 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
-    private static JumpHeroRig FreeRig(AlundraCellsCollisionField? field = null, float x = 200.25f, float z = 0f, float groundSnapDistance = -1f)
+    private static JumpHeroRig FreeRig(CellsCollisionField? field = null, float x = 200.25f, float z = 0f, float groundSnapDistance = -1f)
         => JumpHeroRig.Build(field, x: x, z: z, freePad: true, groundSnapDistance: groundSnapDistance);
 
     /// <summary>The hero walking east in the steady state (Moving, ForceX 159744, the pad on the Right), as the tables of annex B.1 start.</summary>

@@ -130,18 +130,18 @@ internal static class GameplayFreeze
             // E19.d2c1 R6: the hero in the air state of the logic tick declares the airborne sentinel every tick (a thaw on a frame without tick must not re-ground it).
             if (proxy.HeroAirborne)
             {
-                return AlundraScriptedMotion.AirborneExternalDisplacementSentinel;
+                return ScriptedMotion.AirborneExternalDisplacementSentinel;
             }
 
             return proxy.TargetAnimationId is PlayerManager.ClimbingAnimationId or PlayerManager.ClimbStillAnimationId
-                ? AlundraScriptedMotion.ClimbingExternalDisplacementSentinel
+                ? ScriptedMotion.ClimbingExternalDisplacementSentinel
                 : 0f;
         }
 
         // E20.e0k2 W4: a marked entity owns its vertical (its logical Z); the thaw gives back the sentinel, never FinalForceZ, which would anchor the root.
         if (proxy.HasLogicalZ)
         {
-            return AlundraScriptedMotion.AirborneExternalDisplacementSentinel;
+            return ScriptedMotion.AirborneExternalDisplacementSentinel;
         }
 
         return proxy.FinalForceZ / 65536f;

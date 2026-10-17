@@ -39,7 +39,7 @@ public sealed class AlundraMovementObstacleProbeTests
     {
         var hero = Box(heroX, heroY, heroZ, 21, 15, 32);
         var villager = Box(villagerX, villagerY, villagerZ, 20, 14, 32);
-        var found = AlundraEntityCollision.FindEntityCollisionCandidate(hero, heroX, heroY, heroZ, new[] { villager });
+        var found = EntityCollision.FindEntityCollisionCandidate(hero, heroX, heroY, heroZ, new[] { villager });
         Assert.True(found == null || ReferenceEquals(found, villager));
         return found != null;
     }
@@ -93,7 +93,7 @@ public sealed class AlundraMovementObstacleProbeTests
         var meade = Box(62881792, 33030144, VillagerZ, 20, 14, 32);
         var nestus = Box(63438848, nestusY, VillagerZ, 20, 14, 32);
 
-        var found = AlundraEntityCollision.FindEntityCollisionCandidate(nestus, nestus.PosX, nestus.PosY, nestus.PosZ, new[] { meade });
+        var found = EntityCollision.FindEntityCollisionCandidate(nestus, nestus.PosX, nestus.PosY, nestus.PosZ, new[] { meade });
 
         Assert.Equal(blocked ? meade : null, found);
     }
@@ -105,8 +105,8 @@ public sealed class AlundraMovementObstacleProbeTests
         var first = Box(32768000, HeroY, VillagerZ, 20, 14, 32);
         var second = Box(32768000, HeroY, VillagerZ, 20, 14, 32);
 
-        Assert.Same(first, AlundraEntityCollision.FindEntityCollisionCandidate(hero, hero.PosX, hero.PosY, hero.PosZ, new[] { hero, first, second }));
-        Assert.Same(second, AlundraEntityCollision.FindEntityCollisionCandidate(hero, hero.PosX, hero.PosY, hero.PosZ, new[] { hero, second, first }));
+        Assert.Same(first, EntityCollision.FindEntityCollisionCandidate(hero, hero.PosX, hero.PosY, hero.PosZ, new[] { hero, first, second }));
+        Assert.Same(second, EntityCollision.FindEntityCollisionCandidate(hero, hero.PosX, hero.PosY, hero.PosZ, new[] { hero, second, first }));
     }
 
     [Fact]
@@ -118,8 +118,8 @@ public sealed class AlundraMovementObstacleProbeTests
         var noEntityCollisionAnimation = Box(32768000, HeroY, VillagerZ, 21, 15, 32);
         noEntityCollisionAnimation.AnimFlags = 0x80;
 
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(notCollidable, notCollidable.PosX, notCollidable.PosY, notCollidable.PosZ, new[] { villager }));
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(notCollidable, notCollidable.PosX, notCollidable.PosY, notCollidable.PosZ, new[] { villager }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(
             noEntityCollisionAnimation, noEntityCollisionAnimation.PosX, noEntityCollisionAnimation.PosY, noEntityCollisionAnimation.PosZ, new[] { villager }));
     }
 
@@ -129,8 +129,8 @@ public sealed class AlundraMovementObstacleProbeTests
         var hero = Box(32768000, HeroY, VillagerZ, 21, 15, 32);
         var crate = Box(32768000, HeroY, VillagerZ, 20, 14, 32, EntityFlags.Collidable | 0x200u);
 
-        Assert.Same(crate, AlundraEntityCollision.FindEntityCollisionCandidate(hero, hero.PosX, hero.PosY, hero.PosZ, new[] { crate }));
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(hero, hero.PosX, hero.PosY, hero.PosZ, new[] { crate }, EntityFlags.PickupKindMask));
+        Assert.Same(crate, EntityCollision.FindEntityCollisionCandidate(hero, hero.PosX, hero.PosY, hero.PosZ, new[] { crate }));
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(hero, hero.PosX, hero.PosY, hero.PosZ, new[] { crate }, EntityFlags.PickupKindMask));
     }
 
     // ---- T-REG-Z: the Z of the mover is the logical integer, never the float root -----------------------------------
@@ -144,7 +144,7 @@ public sealed class AlundraMovementObstacleProbeTests
         var platform = Box(32768000, HeroY, 24117249, 20, 14, 32);
         var mover = Box(32768000, HeroY, moverPosZ, 20, 14, 32);
 
-        var found = AlundraEntityCollision.FindEntityCollisionCandidate(mover, mover.PosX, mover.PosY, mover.PosZ, new[] { platform });
+        var found = EntityCollision.FindEntityCollisionCandidate(mover, mover.PosX, mover.PosY, mover.PosZ, new[] { platform });
 
         Assert.Equal(blocked, found != null);
     }
@@ -170,7 +170,7 @@ public sealed class AlundraMovementObstacleProbeTests
     private static Rig NewRig()
     {
         var host = new ContactHost();
-        var probe = new AlundraMovementObstacleProbe(host);
+        var probe = new MovementObstacleProbe(host);
         return new Rig { World = ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 48f }, probe), Host = host };
     }
 
@@ -280,7 +280,7 @@ public sealed class AlundraMovementObstacleProbeTests
         Assert.Same(obstacle.OwnerEntity, ObstacleOf(mover));
         Assert.Same(obstacle, mover.XCollisionEntity);
         Assert.InRange(ContactWorld.Root(mover).X, flush - ulp, flush + ulp);
-        Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(mover, new[] { obstacle })); // the logical fields: flush does not overlap.
+        Assert.Null(EntityCollision.FindEntityCollisionCandidate(mover, new[] { obstacle })); // the logical fields: flush does not overlap.
     }
 
     // ---- T-R-ID: two obstacles on the path: the closest to the contact is the one reported -------------------------
@@ -455,7 +455,7 @@ public sealed class AlundraMovementObstacleProbeTests
         rig.Integrate();
         var drawer = new RecordingDrawer();
 
-        new AlundraMovementObstacleProbe(rig.Host).DrawDebug(drawer);
+        new MovementObstacleProbe(rig.Host).DrawDebug(drawer);
 
         Assert.Equal(24, drawer.Lines.Count);
         var min = new Vector3(950f, 497f, 48f);

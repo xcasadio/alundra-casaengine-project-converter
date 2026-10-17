@@ -8,7 +8,7 @@ using Alundra.Physics;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E20.e0k3 (docs/plan-e20-heros.md section 1.18.3, T1, phase A): the pure clamp of the step to the grid of the map, <see cref="AlundraScriptedMotion.ClampStepToMapEdge"/>, the binary's forces pass (<c>0x800366FC</c>-<c>0x800367E0</c>).
+/// E20.e0k3 (docs/plan-e20-heros.md section 1.18.3, T1, phase A): the pure clamp of the step to the grid of the map, <see cref="ScriptedMotion.ClampStepToMapEdge"/>, the binary's forces pass (<c>0x800366FC</c>-<c>0x800367E0</c>).
 /// Nothing in the tick calls it yet (phase B wires it). The bounds are derived HERE from the offsets of the box, never read back from the entity: <c>PosX + ModX &gt;= 0</c> and <c>PosX + ((offX + sizeX) &lt;&lt; 16) &lt;= 0x4E00000</c>
 /// (the same on Y with <c>0x3C00000</c>). Each case without effect is set next to a positive case in the same assertion. The comparison is STRICT, as the binary's two <c>slt</c> (<c>0x80036774</c>, <c>0x80036788</c>, <c>0x800367AC</c>,
 /// <c>0x800367C0</c>): a step that arrives exactly on a bound is neither bounded nor flagged (the oracle key <c>edge-exact</c>).
@@ -38,7 +38,7 @@ public sealed class AlundraMapEdgeClampTests
 
     private static (int X, int Y, bool Adjusted) Clamp(AlundraEntityScriptProxy entity, int stepX, int stepY)
     {
-        var result = AlundraScriptedMotion.ClampStepToMapEdge(entity, stepX, stepY);
+        var result = ScriptedMotion.ClampStepToMapEdge(entity, stepX, stepY);
         return (result.StepX, result.StepY, result.Adjusted);
     }
 

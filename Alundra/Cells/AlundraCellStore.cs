@@ -14,22 +14,22 @@ namespace Alundra.Cells;
 /// <summary>
 /// Mutable per-cell gameplay store for one map (docs/plan-e7-mutation-tuiles.md, slice E7.a) - the DLL
 /// counterpart of the original's in-place <c>MapTile</c> mutation (GameEngine.cs:2260-2321,
-/// EntityEventHandlers.cs:1589-1654). Built from the SAME <see cref="AlundraCellsRecords"/> instance
-/// <see cref="AlundraCellsCollisionField"/> aliases its own arrays from (see
-/// <see cref="AlundraCellsCollisionField.TryCreate(TileMapData, string, out AlundraCellsCollisionField?, out AlundraCellsRecords?)"/>):
+/// EntityEventHandlers.cs:1589-1654). Built from the SAME <see cref="CellsRecords"/> instance
+/// <see cref="CellsCollisionField"/> aliases its own arrays from (see
+/// <see cref="CellsCollisionField.TryCreate(TileMapData, string, out CellsCollisionField?, out CellsRecords?)"/>):
 /// this store mutates <c>Walkability</c>/<c>GroundProperty</c>/<c>Slope</c>/<c>Height</c>/<c>TileId</c>/
 /// <c>WallTilesOffset</c> IN PLACE, element by element, on those exact same <c>int[]</c> instances -
 /// never by replacing the array reference - so a mutation is instantly visible to
-/// <see cref="AlundraCellsCollisionField.TrySampleGround(in Vector3, float, out GroundSample)"/>/
-/// <see cref="AlundraCellsCollisionField.SampleGroundProperty"/>/
-/// <see cref="AlundraCellsCollisionField.SampleRawCellHeight"/>, exactly like the original's entities
+/// <see cref="CellsCollisionField.TrySampleGround(in Vector3, float, out GroundSample)"/>/
+/// <see cref="CellsCollisionField.SampleGroundProperty"/>/
+/// <see cref="CellsCollisionField.SampleRawCellHeight"/>, exactly like the original's entities
 /// holding a live <c>MapTile</c> reference. Wall tile stacks are the one field NOT aliased from
-/// <see cref="AlundraCellsRecords"/> (nothing else reads them in E7.a - E7.b's overlay applier is the
-/// first other reader): this store re-indexes the sparse, JSON-shaped <see cref="AlundraCellsRecords.WallTiles"/>
+/// <see cref="CellsRecords"/> (nothing else reads them in E7.a - E7.b's overlay applier is the
+/// first other reader): this store re-indexes the sparse, JSON-shaped <see cref="CellsRecords.WallTiles"/>
 /// dictionary into a dense, mutable per-cell array once, at construction, for O(1) access/replace/destroy.
 ///
 /// D-E7-5 (map re-entry fidelity): every mutation here is transient by construction - a fresh
-/// <see cref="AlundraCellsRecords"/> is parsed (and this store rebuilt from it) every time a world is
+/// <see cref="CellsRecords"/> is parsed (and this store rebuilt from it) every time a world is
 /// (re)initialized, and nothing here ever writes back into <c>TileMapData</c> itself.
 /// </summary>
 public sealed class AlundraCellStore : IAlundraCellMutator
@@ -52,7 +52,7 @@ public sealed class AlundraCellStore : IAlundraCellMutator
     /// </summary>
     public event Action<IReadOnlyList<int>>? CellsMutated;
 
-    private AlundraCellStore(int width, int height, AlundraCellsRecords records, string worldName)
+    private AlundraCellStore(int width, int height, CellsRecords records, string worldName)
     {
         _width = width;
         _height = height;
@@ -94,13 +94,13 @@ public sealed class AlundraCellStore : IAlundraCellMutator
 
     /// <summary>
     /// Builds the store from an ALREADY-PARSED <paramref name="records"/> (the same instance a sibling
-    /// <see cref="AlundraCellsCollisionField"/> was built from - see this class's own doc). Fails, with a
-    /// single warning, when <see cref="AlundraCellsRecords.TileId"/>/<see cref="AlundraCellsRecords.WallTilesOffset"/>
+    /// <see cref="CellsCollisionField"/> was built from - see this class's own doc). Fails, with a
+    /// single warning, when <see cref="CellsRecords.TileId"/>/<see cref="CellsRecords.WallTilesOffset"/>
     /// do not have exactly <paramref name="width"/>*<paramref name="height"/> elements - a column-length
-    /// mismatch these two arrays specifically can carry that <see cref="AlundraCellsCollisionField"/>'s
+    /// mismatch these two arrays specifically can carry that <see cref="CellsCollisionField"/>'s
     /// own well-formed gate does not check (it never reads them - see that gate's own doc).
     /// </summary>
-    public static bool TryCreate(AlundraCellsRecords records, int width, int height, string worldName, out AlundraCellStore? store)
+    public static bool TryCreate(CellsRecords records, int width, int height, string worldName, out AlundraCellStore? store)
     {
         store = null;
         var expectedCellCount = width * height;
@@ -119,18 +119,18 @@ public sealed class AlundraCellStore : IAlundraCellMutator
     }
 
     /// <summary>One cell's raw floor tile id (E7.b, docs/plan-e7-mutation-tuiles.md) - <c>0xffff</c> means
-    /// "no floor" (matches the export's own sentinel, see <see cref="AlundraCellsCollisionField"/>'s class
+    /// "no floor" (matches the export's own sentinel, see <see cref="CellsCollisionField"/>'s class
     /// doc on <c>tile_id</c> not being read there). No clamping, same contract as
     /// <see cref="GetWallTileStack"/>.</summary>
     public int GetFloorTileId(int x, int y) => _tileId[y * _width + x];
 
     /// <summary>One cell's current elevation (E7.b) - the SAME <c>_cellHeight</c> array
-    /// <see cref="AlundraCellsCollisionField"/> aliases, read here by (x, y) instead of by world
+    /// <see cref="CellsCollisionField"/> aliases, read here by (x, y) instead of by world
     /// position.</summary>
     public int GetHeight(int x, int y) => _cellHeight[y * _width + x];
 
     /// <summary>One cell's raw Walkability byte (E7.b) - see <see cref="GetHeight"/>'s own doc on why this
-    /// duplicates an <see cref="AlundraCellsCollisionField.SampleRawWalkability"/>-shaped read by (x, y)
+    /// duplicates an <see cref="CellsCollisionField.SampleRawWalkability"/>-shaped read by (x, y)
     /// instead of by world position: the overlay/navigation applier only ever has cell coordinates on
     /// hand, not a <c>Vector3</c>.</summary>
     public int GetWalkability(int x, int y) => _walkability[y * _width + x];
@@ -338,7 +338,7 @@ public sealed class AlundraCellStore : IAlundraCellMutator
     }
 
     /// <summary>Mutable counterpart of the immutable, JSON-parsed <see cref="WallTileStack"/> - this
-    /// store's own private working copy, never shared with <see cref="AlundraCellsRecords"/> itself (see
+    /// store's own private working copy, never shared with <see cref="CellsRecords"/> itself (see
     /// class doc on why wall stacks are not aliased). Unlike the parsed record it carries the original's
     /// <c>Count</c> (<c>WallTiles.cs:5-7</c>), because a copy can leave it below
     /// <see cref="Tiles"/>.Length - see <see cref="CopyWallTileStack"/>.</summary>

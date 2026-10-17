@@ -574,7 +574,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
-    /// same instance <see cref="AlundraCellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
+    /// same instance <see cref="CellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
     /// cached so every NPC spawn (<see cref="EntitySpawnFactory.CreateEntityFromRecord"/> -&gt; <see cref="EntitySpawnFactory.CreateEntityFromPrefab"/>/
     /// <see cref="EntitySpawnFactory.CreateBareEntityFromRecord"/> -&gt; <see cref="EntitySpawnFactory.ApplySpawnInitialization"/>, both the
     /// map-load loop below and the dynamic-spawn opcode 0x2D's own <see cref="SpawnEntityByRecordId"/>)
@@ -630,12 +630,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     private bool _wallPlacementOverlayApplied;
 
     /// <summary>
-    /// This world's <see cref="AlundraCellsCollisionField"/>, built once in
+    /// This world's <see cref="CellsCollisionField"/>, built once in
     /// <see cref="InitializeWithWorld"/> from the loaded <see cref="TileMapData"/>'s "AlundraCells"
     /// custom property and installed as <c>World.CollisionField</c> (also exposed here for tests -
-    /// null in degraded mode, see <see cref="AlundraCellsRecords.TryParse"/>).
+    /// null in degraded mode, see <see cref="CellsRecords.TryParse"/>).
     /// </summary>
-    public AlundraCellsCollisionField? CollisionField { get; private set; }
+    public CellsCollisionField? CollisionField { get; private set; }
 
     /// <summary>
     /// This world's navigation grid (E4.d, docs/plan-e4-deplacement-scripte.md decision E4-2), built once
@@ -649,7 +649,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// This world's cell-mutation seam (E7.a, docs/plan-e7-mutation-tuiles.md) - a real
-    /// <see cref="AlundraCellStore"/> built from the SAME parsed <see cref="AlundraCellsRecords"/>
+    /// <see cref="AlundraCellStore"/> built from the SAME parsed <see cref="CellsRecords"/>
     /// <see cref="CollisionField"/> aliases its own arrays from (<see cref="InstallCellAndOverlaySystems"/>),
     /// satisfying <see cref="IEntityWorldContext.CellMutator"/>. Null in degraded mode (missing/malformed
     /// "AlundraCells" property, or a tile_id/wall_tiles_offset column length mismatch) - the interpreter's
@@ -789,7 +789,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// Bug fix (docs/plan-camera-premiere-frame.md §3, point 1): on a free time-step engine faster than
     /// 50 Hz, the very first rendered frame can carry ZERO raw logic ticks (the accumulator has not yet
-    /// reached <see cref="AlundraScriptedMotion.FixedTickSeconds"/>) - so neither the map-events loop nor
+    /// reached <see cref="ScriptedMotion.FixedTickSeconds"/>) - so neither the map-events loop nor
     /// the camera's armed first-frame snap (<see cref="AlundraCameraDirector.ArmFirstFrameSnap"/>) ever
     /// runs before that frame's own camera resolve, and the one snap is spent on the player's raw spawn
     /// pose instead of wherever the intro's own opening script retargets the camera one instruction
@@ -1200,8 +1200,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // E7.a/E7.b: the 4-out overload also hands back the parsed AlundraCellsRecords, so the cell store
         // built right below aliases the SAME int[] instances this field reads - a mutation is instantly
         // visible to both.
-        AlundraCellsRecords? cellRecords = null;
-        if (AlundraCellsCollisionField.TryCreate(tileMapData, world.Name, out var collisionField, out cellRecords))
+        CellsRecords? cellRecords = null;
+        if (CellsCollisionField.TryCreate(tileMapData, world.Name, out var collisionField, out cellRecords))
         {
             CollisionField = collisionField;
             world.CollisionField = collisionField;
@@ -1213,7 +1213,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         // E19.d2b B3 (D-E19-27): the movement obstacle probe, next to the field and for the same reason - World.Clear() resets the slot to
         // null, so every load re-installs it. The controller's field stage consults it for every non-zero horizontal step.
-        world.MovementObstacleProbe = new AlundraMovementObstacleProbe(this);
+        world.MovementObstacleProbe = new MovementObstacleProbe(this);
 
         // E4.d (docs/plan-e4-deplacement-scripte.md, decision E4-2): navigation grid, built from the same
         // TileMapData right after the collision field above - see TryBuildNavigationGrid's own doc.
@@ -1930,7 +1930,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// deliberately NOT used in E4 (its <c>(X, -Z)</c> intent axis is hard-coded, E4-2). Degraded mode -
     /// null, one warning - on a missing navigation layer (an older/regenerated export that predates E4.a)
     /// or any tileset-resolution failure (missing asset id, catalog miss), the same tolerant shape as
-    /// <see cref="AlundraCellsCollisionField.TryCreate"/> right above this method's own call site.
+    /// <see cref="CellsCollisionField.TryCreate"/> right above this method's own call site.
     /// </summary>
     internal static NavigationGrid2D? TryBuildNavigationGrid(World world, TileMapData tileMapData)
     {
@@ -2177,7 +2177,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // values the state captured (its StepHeight above all, 0 in the air) go back to the controller first.
         if (proxy.HeroAirborne && proxy.Controller != null)
         {
-            AlundraScriptedMotion.RestoreAirborneEngineValues(proxy, proxy.Controller);
+            ScriptedMotion.RestoreAirborneEngineValues(proxy, proxy.Controller);
         }
 
         proxy.HeadPullGroundTrusted = false;
@@ -2259,7 +2259,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             var settings = proxy.Controller.Settings;
             settings.Gravity = mapGravity;
             settings.MaxFallSpeed = mapMaxFallSpeed;
-            settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags);
+            settings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(proxy.Flags);
         }
         else if (!_loggedNoHeroController)
         {

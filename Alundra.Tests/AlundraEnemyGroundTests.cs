@@ -27,14 +27,14 @@ public sealed class AlundraEnemyGroundTests
         _ => throw new ArgumentOutOfRangeException(nameof(map)),
     };
 
-    internal static AlundraCellsCollisionField LoadField(int map)
+    internal static CellsCollisionField LoadField(int map)
     {
         var folder = MapFolder(map);
         var name = Path.GetFileName(folder);
         var path = Path.Combine(SaveGameDirectorTestSupport.FindProjectRoot(), "Maps", folder, "tilemap", name + ".tileMap");
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(path)));
-        Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, name, out var field), $"the AlundraCells property of map {map} should parse");
+        Assert.True(CellsCollisionField.TryCreate(tileMapData, name, out var field), $"the AlundraCells property of map {map} should parse");
         return field!;
     }
 

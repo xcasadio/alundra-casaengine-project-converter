@@ -45,7 +45,7 @@ public class AlundraCellStoreTests
             + "(docs/plan-e7-mutation-tuiles.md, slice E7.b, acceptance item 9).");
     }
 
-    private static (AlundraCellsCollisionField Field, AlundraCellStore Store) LoadMap389()
+    private static (CellsCollisionField Field, AlundraCellStore Store) LoadMap389()
     {
         var projectRoot = FindProjectRoot();
 
@@ -63,7 +63,7 @@ public class AlundraCellStoreTests
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapPath)));
 
-        var fieldCreated = AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field, out var records);
+        var fieldCreated = CellsCollisionField.TryCreate(tileMapData, WorldName, out var field, out var records);
         Assert.True(fieldCreated, "map 389's AlundraCells custom property should parse and match MapSize.");
 
         var storeCreated = AlundraCellStore.TryCreate(
@@ -210,7 +210,7 @@ public class AlundraCellStoreTests
             + "\"slope\":[0],\"height\":[0],\"tile_id\":[0],\"wall_tiles_offset\":[0],"
             + "\"wall_tiles\":{\"not_a_number\":{\"offset\":0,\"tiles\":[1]}}}";
 
-        var fieldCreated = AlundraCellsCollisionField.TryCreate(tileMapData, "map_1", out _, out var records);
+        var fieldCreated = CellsCollisionField.TryCreate(tileMapData, "map_1", out _, out var records);
         Assert.True(fieldCreated);
 
         var storeCreated = AlundraCellStore.TryCreate(records!, 1, 1, "map_1", out var store);

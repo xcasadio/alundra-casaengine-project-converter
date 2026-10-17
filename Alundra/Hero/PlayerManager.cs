@@ -212,7 +212,7 @@ public static class PlayerManager
 
     /// <summary>PlayerAnimation.Climbing = 0x0E (PlayerAnimation.cs, address comment - see
     /// docs/plan-echelles-chiffrage.md É4): the hero is actively moving up/down a ladder wall this
-    /// frame. Internal (not private): <see cref="AlundraScriptedMotion.TickPlayer"/> needs it too, to gate
+    /// frame. Internal (not private): <see cref="ScriptedMotion.TickPlayer"/> needs it too, to gate
     /// its own per-TICK vertical step - see that method's own doc.</summary>
     internal const uint ClimbingAnimationId = 0x0E;
 
@@ -1326,7 +1326,7 @@ public static class PlayerManager
 
     /// <summary>
     /// Step 1 of <c>UpdateItemEffectState</c> (<c>0x800307EC-0x80030890</c>): the boots level <c>[0x80127000]</c>, 3 when the object <c>0x1C</c> is owned, else 2 for <c>0x1B</c>, else 1 for <c>0x1A</c>, else 0
-    /// (<see cref="GetNumberOfItem"/>, <c>0x8004E428</c>); the object <c>0x19</c> does not count. Shared with the physics of the DLL (<see cref="AlundraScriptedMotion"/>).
+    /// (<see cref="GetNumberOfItem"/>, <c>0x8004E428</c>); the object <c>0x19</c> does not count. Shared with the physics of the DLL (<see cref="ScriptedMotion"/>).
     /// </summary>
     internal static int BootsLevelOf(GameState state)
     {
@@ -1617,7 +1617,7 @@ public static class PlayerManager
         // portal while the state is up): the state ends first, the engine values it captured go back (its StepHeight above all), then the climb claims them below.
         if (player.HeroAirborne)
         {
-            AlundraScriptedMotion.RestoreAirborneEngineValues(player, player.Controller);
+            ScriptedMotion.RestoreAirborneEngineValues(player, player.Controller);
             player.HeroAirborne = false;
             player.HeroFlyMarked = false;
         }
@@ -1720,10 +1720,10 @@ public static class PlayerManager
     /// calls (PhysicsEngine.cs:1445-1446/1490-1491), and the flat-ground half of <c>ApplyEntityForces</c>
     /// (PhysicsEngine.cs:1514-1547) plus the position update (PhysicsEngine.cs:421-422) - restricted to
     /// exactly what a collision-free, gravity-free player needs (see this class' own doc, D4/E2).
-    /// Delegates to <see cref="AlundraScriptedMotion.TickPlayer"/> (E4.b extraction,
+    /// Delegates to <see cref="ScriptedMotion.TickPlayer"/> (E4.b extraction,
     /// docs/plan-e4-deplacement-scripte.md - see that class' own doc), now driven by the SAME
     /// <c>ticksThisFrame</c> the shared <see cref="LogicClock"/> hands the script/pick-run pass this
-    /// frame (ONE-CLOCK fix, see <see cref="AlundraScriptedMotion"/>'s own class doc) instead of its own
+    /// frame (ONE-CLOCK fix, see <see cref="ScriptedMotion"/>'s own class doc) instead of its own
     /// separately-accumulated elapsed time - the hero's own observable per-tick behaviour is unchanged, only
     /// the source of the tick count.
     /// </summary>
@@ -1838,7 +1838,7 @@ public static class PlayerManager
     }
 
     public static void Tick(AlundraEntityScriptProxy player, int ticks)
-        => AlundraScriptedMotion.TickPlayer(player, ticks);
+        => ScriptedMotion.TickPlayer(player, ticks);
 
     // ---------------------------------------------------------------------------------------------
     // E13 C0 (docs/plan-e13-hud.md): the five player-stat setters, ported from PlayerManager.cs's own

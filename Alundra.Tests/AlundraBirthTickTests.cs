@@ -456,7 +456,7 @@ public sealed class AlundraBirthTickTests : IDisposable
         var x = new List<int>();
         for (var t = 0; t < 3; t++)
         {
-            AlundraScriptedMotion.TickScriptedNpc(proxy);
+            ScriptedMotion.TickScriptedNpc(proxy);
             x.Add(proxy.PosX >> 16);
         }
 

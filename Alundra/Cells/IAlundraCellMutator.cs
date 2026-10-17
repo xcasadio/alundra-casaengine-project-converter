@@ -16,7 +16,7 @@ namespace Alundra.Cells;
 /// E7.a) - implemented by <see cref="AlundraCellStore"/>, consumed by
 /// <see cref="EventProgramRunner.Dispatch"/> through <see cref="IEntityWorldContext.CellMutator"/>.
 /// A separate interface (rather than exposing <see cref="AlundraCellStore"/> itself through the seam)
-/// so a synthetic interpreter test can inject a fake without any real <see cref="AlundraCellsRecords"/>.
+/// so a synthetic interpreter test can inject a fake without any real <see cref="CellsRecords"/>.
 /// </summary>
 public interface IAlundraCellMutator
 {

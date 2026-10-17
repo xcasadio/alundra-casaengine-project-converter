@@ -153,7 +153,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         {
             PadStateProviderForTests = () => new PadState { ButtonsHold = pad.Buttons, ButtonsJustPressed = pad.Buttons },
         });
-        var world = ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 48f }, new AlundraMovementObstacleProbe(host));
+        var world = ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 48f }, new MovementObstacleProbe(host));
         var hero = ContactWorld.AddEntity(world, host, "Hero", 100, 100, 48, -10, -7, 0, 21, 15, 32, isPlayer: true);
         var sailor = ContactWorld.AddEntity(world, host, "Sailor", 140, 100, 48, -10, -7, 0, 20, 14, 32);
         sailor.Flags |= EntityFlags.InteractRequiresButton;

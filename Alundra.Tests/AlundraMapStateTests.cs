@@ -143,7 +143,7 @@ public sealed class AlundraMapStateTests
             proxy.CurrentAnimationId = current;
             proxy.TargetAnimationId = target;
             var before = proxy.PosX;
-            AlundraScriptedMotion.TickScriptedNpc(proxy);
+            ScriptedMotion.TickScriptedNpc(proxy);
             return proxy.PosX - before;
         }
 

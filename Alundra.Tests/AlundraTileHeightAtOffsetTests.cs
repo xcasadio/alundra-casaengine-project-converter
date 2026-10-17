@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 /// port of <c>GetTileHeightAtOffset</c> (<c>EntityGameplayManager.cs:277-345</c>) against the REAL map 389
 /// ("Ship Klark (beginning)") cell data - same fixture/self-skip pattern as
 /// <see cref="AlundraGroundSlopeTests"/>/<see cref="AlundraFloorHeightTests"/> (E1/E2's own sibling
-/// slices): a real headless <see cref="World"/> with the real map 389 <see cref="AlundraCellsCollisionField"/>
+/// slices): a real headless <see cref="World"/> with the real map 389 <see cref="CellsCollisionField"/>
 /// installed as <c>World.CollisionField</c>, and a hand-built hero pawn from the shared
 /// <see cref="HeroWorldFixture"/> montage.
 ///
@@ -29,13 +29,13 @@ namespace Alundra.Tests;
 ///
 /// ORACLE INDEPENDENCE (fixed after review - see the completion report for this slice): the FIRST
 /// version of this file derived every expectation from
-/// <see cref="AlundraCellsCollisionField.TrySampleGround(in Vector3, float, out GroundSample)"/> - the
+/// <see cref="CellsCollisionField.TrySampleGround(in Vector3, float, out GroundSample)"/> - the
 /// SAME per-slope-interpolating helper the method under test's FIRST (wrong) implementation also
 /// called. That made every assertion structurally blind to "does this method interpolate by slope
 /// when the original never does" - the actual bug this slice had. <see cref="ExpectedRawCornerHeight16"/>
 /// below instead re-parses the map's raw <c>AlundraCells</c> JSON directly (via
-/// <see cref="AlundraCellsRecords.TryParse"/>, completely independent of
-/// <see cref="AlundraCellsCollisionField"/>'s own internals) and takes the four-corner max of the RAW
+/// <see cref="CellsRecords.TryParse"/>, completely independent of
+/// <see cref="CellsCollisionField"/>'s own internals) and takes the four-corner max of the RAW
 /// <c>Height</c> array entries - exactly what the original's <c>tile.Height</c> read - so an
 /// implementation that interpolates by slope produces a DIFFERENT number than this oracle for any
 /// corner landing on a sloped cell (see
@@ -83,7 +83,7 @@ public class AlundraTileHeightAtOffsetTests
         projectRoot, "Maps", "The Klark", "Ship Klark (beginning)-389", "tilemap",
         "Ship Klark (beginning)-389.tileMap");
 
-    private static AlundraCellsCollisionField? LoadMap389Field(string projectRoot)
+    private static CellsCollisionField? LoadMap389Field(string projectRoot)
     {
         var tileMapPath = TileMapPath(projectRoot);
         if (!File.Exists(tileMapPath))
@@ -94,15 +94,15 @@ public class AlundraTileHeightAtOffsetTests
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapPath)));
 
-        var created = AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
+        var created = CellsCollisionField.TryCreate(tileMapData, WorldName, out var field);
         Assert.True(created, "map 389's AlundraCells custom property should parse and match MapSize.");
         return field;
     }
 
     /// <summary>Independent second parse of the SAME file <see cref="LoadMap389Field"/> loads - deliberately
-    /// NOT going through <see cref="AlundraCellsCollisionField"/> at all, so the oracle below cannot share
+    /// NOT going through <see cref="CellsCollisionField"/> at all, so the oracle below cannot share
     /// any bug with the code under test (see class doc, "ORACLE INDEPENDENCE").</summary>
-    private static (AlundraCellsRecords Records, int Width, int Height)? LoadRawRecords(string projectRoot)
+    private static (CellsRecords Records, int Width, int Height)? LoadRawRecords(string projectRoot)
     {
         var tileMapPath = TileMapPath(projectRoot);
         if (!File.Exists(tileMapPath))
@@ -113,7 +113,7 @@ public class AlundraTileHeightAtOffsetTests
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapPath)));
 
-        var parsed = AlundraCellsRecords.TryParse(tileMapData.CustomProperties, WorldName, out var records);
+        var parsed = CellsRecords.TryParse(tileMapData.CustomProperties, WorldName, out var records);
         Assert.True(parsed, "map 389's AlundraCells custom property should parse (raw oracle).");
         return (records, tileMapData.MapSize.Width, tileMapData.MapSize.Height);
     }
@@ -123,7 +123,7 @@ public class AlundraTileHeightAtOffsetTests
     /// <see cref="AlundraEntityScriptProxy.GetTileHeightAtOffset"/>'s own doc for the shift derivation.
     /// Never touches <c>Slope</c>, so it cannot be satisfied by an implementation that interpolates.</summary>
     private static int ExpectedRawCornerHeight16(
-        AlundraCellsRecords records, int width, int height, int x1, int y1, int x2, int y2)
+        CellsRecords records, int width, int height, int x1, int y1, int x2, int y2)
     {
         var best = 0;
         foreach (var (px, py) in new[] { (x1, y1), (x2, y1), (x1, y2), (x2, y2) })

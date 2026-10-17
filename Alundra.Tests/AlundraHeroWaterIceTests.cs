@@ -21,7 +21,7 @@ public class AlundraHeroWaterIceTests
 {
     private const int East = 24;
 
-    private static AlundraCellsCollisionField Cells(int walkability, int height = 0)
+    private static CellsCollisionField Cells(int walkability, int height = 0)
         => FlatCells.Create(cell: (_, _) => (walkability, height));
 
     /// <summary>The <c>ForceX</c> of the hero after each of <paramref name="ticks"/> updates, walking east in the animation 1 (speed 208, acceleration 1).</summary>

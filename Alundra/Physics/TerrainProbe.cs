@@ -27,7 +27,7 @@ namespace Alundra.Physics;
 /// `GameplayProxy`) and form a call cycle with the controller bridge, which is out of scope for this
 /// plan.
 /// </summary>
-internal static class AlundraTerrainProbe
+internal static class TerrainProbe
 {
     internal static void SampleTerrainHeightCorner(ICollisionField field, int px, int py, ref int best)
     {
@@ -42,7 +42,7 @@ internal static class AlundraTerrainProbe
     }
 
     internal static void ProbeSlopeCorner(
-        AlundraCellsCollisionField field, int px, int py, int moddedPosZ, ref uint bestFlagMask)
+        CellsCollisionField field, int px, int py, int moddedPosZ, ref uint bestFlagMask)
     {
         var position = new Vector3(px, py, 0f);
         if (field.TrySampleGround(position, float.MaxValue, out var sample) && sample.HasGround)
@@ -82,7 +82,7 @@ internal static class AlundraTerrainProbe
     /// (<c>PhysicsEngine.cs:1763</c>) - the caller ORs/ANDs the four contributions itself, since OR/AND
     /// (unlike <see cref="ProbeSlopeCorner"/>'s running MIN) need all four values gathered first.
     /// </summary>
-    internal static void ProbeVramFlagsCorner(AlundraCellsCollisionField field, int px, int py, int moddedPosZ, out uint tileFlags)
+    internal static void ProbeVramFlagsCorner(CellsCollisionField field, int px, int py, int moddedPosZ, out uint tileFlags)
     {
         var position = new Vector3(px, py, 0f);
         if (field.TrySampleGround(position, float.MaxValue, out var sample) && sample.HasGround)
@@ -100,7 +100,7 @@ internal static class AlundraTerrainProbe
         tileFlags = 0;
     }
 
-    internal static void SampleRawTileHeightCorner(AlundraCellsCollisionField field, int px, int py, ref int best)
+    internal static void SampleRawTileHeightCorner(CellsCollisionField field, int px, int py, ref int best)
     {
         var height = field.SampleRawCellHeight(new Vector3(px, py, 0f));
         if (height > best)

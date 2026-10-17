@@ -15,7 +15,7 @@ using Alundra.Cells;
 namespace Alundra.Physics;
 
 /// <summary>
-/// <see cref="ICollisionField"/> over one map's <see cref="AlundraCellsRecords"/>, in the LOGICAL
+/// <see cref="ICollisionField"/> over one map's <see cref="CellsRecords"/>, in the LOGICAL
 /// space E3.a established (X east, Y depth, Z elevation - <c>up = Vector3.UnitZ</c>). Built once per
 /// world by <see cref="AlundraWorldProxy.InitializeWithWorld"/> from the loaded
 /// <see cref="TileMapData"/> and installed as <c>World.CollisionField</c>.
@@ -46,7 +46,7 @@ namespace Alundra.Physics;
 /// limit.</description></item>
 /// </list>
 /// </summary>
-public sealed class AlundraCellsCollisionField : ICollisionField
+public sealed class CellsCollisionField : ICollisionField
 {
     /// <summary>
     /// Base walkability mask used by the mask-less <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/>
@@ -67,7 +67,7 @@ public sealed class AlundraCellsCollisionField : ICollisionField
     private readonly int[] _cellHeight;
     private readonly string?[] _surfaceTagCache = new string?[256];
 
-    private AlundraCellsCollisionField(int width, int height, AlundraCellsRecords records)
+    private CellsCollisionField(int width, int height, CellsRecords records)
     {
         _width = width;
         _height = height;
@@ -96,11 +96,11 @@ public sealed class AlundraCellsCollisionField : ICollisionField
     /// failure - parse or size mismatch - logs a single warning and returns false: degraded mode, no
     /// field installed for that world.
     /// </summary>
-    public static bool TryCreate(TileMapData tileMapData, string worldName, out AlundraCellsCollisionField? field)
+    public static bool TryCreate(TileMapData tileMapData, string worldName, out CellsCollisionField? field)
         => TryCreate(tileMapData, worldName, out field, out _);
 
     /// <summary>
-    /// Same as <see cref="TryCreate(TileMapData, string, out AlundraCellsCollisionField?)"/>, but also
+    /// Same as <see cref="TryCreate(TileMapData, string, out CellsCollisionField?)"/>, but also
     /// hands back the parsed <paramref name="records"/> - E7.a (docs/plan-e7-mutation-tuiles.md,
     /// slice E7.a "share one parsed instance"): a caller that also wants an <see cref="AlundraCellStore"/>
     /// for the SAME world builds it from these exact <paramref name="records"/> instead of re-parsing the
@@ -110,12 +110,12 @@ public sealed class AlundraCellsCollisionField : ICollisionField
     /// <see cref="SampleRawCellHeight"/> - no separate parse, no copy).
     /// </summary>
     public static bool TryCreate(
-        TileMapData tileMapData, string worldName, out AlundraCellsCollisionField? field, out AlundraCellsRecords? records)
+        TileMapData tileMapData, string worldName, out CellsCollisionField? field, out CellsRecords? records)
     {
         field = null;
         records = null;
 
-        if (!AlundraCellsRecords.TryParse(tileMapData.CustomProperties, worldName, out var parsedRecords))
+        if (!CellsRecords.TryParse(tileMapData.CustomProperties, worldName, out var parsedRecords))
         {
             return false;
         }
@@ -127,13 +127,13 @@ public sealed class AlundraCellsCollisionField : ICollisionField
         if (parsedRecords.CellCount != expectedCellCount || parsedRecords.Walkability.Length != expectedCellCount)
         {
             Logs.WriteWarning(
-                $"AlundraCellsCollisionField: world '{worldName}' - AlundraCells cell_count "
+                $"CellsCollisionField: world '{worldName}' - AlundraCells cell_count "
                 + $"({parsedRecords.CellCount}) does not match TileMapData.MapSize ({width}x{height}="
                 + $"{expectedCellCount}); collision field not installed (degraded mode).");
             return false;
         }
 
-        field = new AlundraCellsCollisionField(width, height, parsedRecords);
+        field = new CellsCollisionField(width, height, parsedRecords);
         records = parsedRecords;
         return true;
     }

@@ -178,7 +178,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         Assert.Equal(walking, trace.Start.AnimTarget == 1);
     }
 
-    private static AlundraCellsCollisionField Flagged(Func<int, int, bool> flagged) => FlatCells.Create(groundProperty: (c, r) => flagged(c, r) ? 0x20 : 0);
+    private static CellsCollisionField Flagged(Func<int, int, bool> flagged) => FlatCells.Create(groundProperty: (c, r) => flagged(c, r) ? 0x20 : 0);
 
     // -----------------------------------------------------------------------------------------
     // The sword, on the ground.
@@ -335,7 +335,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         var trace = AttackOracleTrace.Load("AT8b");
         var field = FlatCells.Create(cell: (_, _) => (0, 1));
         var (rig, sounds) = Start(trace, field);
-        var heights = (int[])typeof(AlundraCellsCollisionField).GetField("_cellHeight", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(field)!;
+        var heights = (int[])typeof(CellsCollisionField).GetField("_cellHeight", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(field)!;
         var tickNow = 0;
         rig.Host.BeforeTicks = () =>
         {
@@ -354,7 +354,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
     }
 
     /// <summary>The platform of the ledge scenarios: columns 0 to 4 (x &lt; 120 px) at 16 px (height byte 1), the rest at 0.</summary>
-    private static AlundraCellsCollisionField LedgeField() => FlatCells.Create(cell: (cx, _) => (0, cx < 5 ? 1 : 0));
+    private static CellsCollisionField LedgeField() => FlatCells.Create(cell: (cx, _) => (0, cx < 5 ? 1 : 0));
 
     // -----------------------------------------------------------------------------------------
     // The weapons of the table.

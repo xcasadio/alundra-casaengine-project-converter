@@ -94,7 +94,7 @@ internal static class AnimationTables
     /// per-pixel-column height offsets (in map-tile-height units, i.e. already the value added to
     /// <c>(tile.Height - 1) * StaticVariables.MapTileHeight</c>) used by the ladder-entering/exiting
     /// slope branches of <c>PhysicsEngine.ComputeEntityGroundHeight</c> @ 0x800370c4 - see
-    /// <see cref="AlundraCellsCollisionField"/>.
+    /// <see cref="CellsCollisionField"/>.
     /// </summary>
     public static readonly byte[] HeightsTable_800236d4 =
     {

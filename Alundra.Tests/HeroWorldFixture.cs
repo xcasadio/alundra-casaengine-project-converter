@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// <see cref="HeroTraceHarnessTests"/> can reuse the EXACT same real-<see cref="World"/>/real-
 /// <see cref="PhysicsWorld"/>/real-<see cref="CharacterControllerComponent"/> montage without duplicating
 /// it - both callers build a real headless <see cref="World"/> (TopDownElevation policy) with a real map
-/// 389 <see cref="AlundraCellsCollisionField"/> installed as <see cref="World.CollisionField"/>, and a
+/// 389 <see cref="CellsCollisionField"/> installed as <see cref="World.CollisionField"/>, and a
 /// hand-built hero pawn (root <c>TransformComponent</c> -&gt; <c>RenderProjectionComponent</c> -&gt;
 /// <c>AnimatedSpriteComponent</c>, sibling <c>CollisionComponent</c> Box 21x15x32 local_position
 /// (0.5,0.5,16), and a <see cref="CharacterControllerComponent"/> whose <see cref="CharacterControllerSettings"/>
@@ -39,7 +39,7 @@ internal static class HeroWorldFixture
     /// with a <see cref="PhysicsWorld"/> wired (<see cref="CharacterControllerComponent"/> requires one,
     /// <c>TryResolveCollisionDependencies</c>), plus the real map 389 field installed as
     /// <see cref="World.CollisionField"/>.</summary>
-    internal static World BuildWorld(AlundraCellsCollisionField field)
+    internal static World BuildWorld(CellsCollisionField field)
     {
         var world = new World();
         var game = (CasaEngineGame)RuntimeHelpers.GetUninitializedObject(typeof(CasaEngineGame));

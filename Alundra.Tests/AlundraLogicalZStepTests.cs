@@ -38,7 +38,7 @@ public sealed class AlundraLogicalZStepTests
         return map;
     }
 
-    private static void Install(ArcRun arc, AlundraCellsCollisionField field)
+    private static void Install(ArcRun arc, CellsCollisionField field)
     {
         typeof(AlundraWorldProxy).GetProperty(nameof(AlundraWorldProxy.CollisionField))!.SetValue(arc.Proxy, field);
         arc.RealWorld!.CollisionField = field;
@@ -46,7 +46,7 @@ public sealed class AlundraLogicalZStepTests
     }
 
     /// <summary>A field whose every cell has the height byte <paramref name="heightByte"/> (16 px each).</summary>
-    private static AlundraCellsCollisionField Floor(int heightByte) => FlatCells.Create(cell: (x, y) => (0, heightByte));
+    private static CellsCollisionField Floor(int heightByte) => FlatCells.Create(cell: (x, y) => (0, heightByte));
 
     private static AlundraEntityScriptProxy Born(ArcRun arc, int sprite, int zRaw)
         => ((IEntityWorldContext)arc.Proxy).SpawnEntityBySpriteIndex(arc.Hero, false, sprite, 100 << 16, 100 << 16, zRaw, 0x18)!;
@@ -56,10 +56,10 @@ public sealed class AlundraLogicalZStepTests
     {
         entity.CollidedWithEntityZ = 0;
         entity.ZHeldByTick = false;
-        Assert.True(AlundraScriptedMotion.RunLogicalZPreXyStep(entity));
+        Assert.True(ScriptedMotion.RunLogicalZPreXyStep(entity));
         if (post)
         {
-            AlundraScriptedMotion.RunLogicalZPostXyStep(entity);
+            ScriptedMotion.RunLogicalZPostXyStep(entity);
         }
     }
 
@@ -309,7 +309,7 @@ public sealed class AlundraLogicalZStepTests
             ball.LastTickDeltaX = 0x10000;
             ball.LastTickDeltaY = 0;
             setup?.Invoke(ball);
-            AlundraScriptedMotion.RunLogicalZPostXyStep(ball);
+            ScriptedMotion.RunLogicalZPostXyStep(ball);
             return ball.PosZ - terrain;
         }
 
@@ -372,7 +372,7 @@ public sealed class AlundraLogicalZStepTests
         var latch = typeof(CharacterControllerComponent).GetField("_externalVerticalDisplacement", BindingFlags.Instance | BindingFlags.NonPublic)!;
         var heroZ = arc.Hero.PosZ;
 
-        var heroRan = AlundraScriptedMotion.RunLogicalZPreXyStep(arc.Hero);
+        var heroRan = ScriptedMotion.RunLogicalZPreXyStep(arc.Hero);
         var rootComponent = ArcRun.EntityOf(ball)!.RootComponent!;
         var rootBefore = rootComponent.LocalTransform.Position;
         Tick(ball);
@@ -380,7 +380,7 @@ public sealed class AlundraLogicalZStepTests
         var root = rootComponent.LocalTransform.Position;
 
         Assert.Equal(
-            (false, heroZ, AlundraScriptedMotion.AirborneExternalDisplacementSentinel, true, rootBefore.X, rootBefore.Y),
+            (false, heroZ, ScriptedMotion.AirborneExternalDisplacementSentinel, true, rootBefore.X, rootBefore.Y),
             (heroRan, arc.Hero.PosZ, (float)latch.GetValue(ball.Controller!)!, Math.Abs(root.Z - ball.PosZ / 65536f) < 0.001f, root.X, root.Y));
     }
 }

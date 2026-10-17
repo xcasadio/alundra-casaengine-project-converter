@@ -115,7 +115,7 @@ public class AlundraWorldProxyLogicClockTests
         var entity = BuildDispatchingEntity(host);
 
         const int frames = 200;
-        const float dt = AlundraScriptedMotion.FixedTickSeconds;
+        const float dt = ScriptedMotion.FixedTickSeconds;
 
         for (var i = 0; i < frames; i++)
         {

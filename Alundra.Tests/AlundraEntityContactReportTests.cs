@@ -42,7 +42,7 @@ public sealed class AlundraEntityContactReportTests
     private static HeroRig NewHeroRig()
     {
         var host = new ContactHost(playerControlFlags: GameState.PlayerControlBits.ControlLocked, playerController: new AlundraPlayerController());
-        var world = ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 48f }, new AlundraMovementObstacleProbe(host));
+        var world = ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 48f }, new MovementObstacleProbe(host));
         var hero = ContactWorld.AddEntity(world, host, "Hero", 100, 100, 48, -10, -7, 0, 21, 15, 32, isPlayer: true);
         var npc = ContactWorld.AddEntity(world, host, "Npc", 160, 100, 48, -10, -7, 0, 20, 14, 32);
         npc.Flags |= EntityFlags.InteractRequiresButton;

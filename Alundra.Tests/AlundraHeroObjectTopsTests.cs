@@ -61,7 +61,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
     }
 
     /// <summary>Terrain cells of 16 px from x = 144 px (the cells are 24 px wide: from the sixth), flat 0 before.</summary>
-    private static AlundraCellsCollisionField StepField() => FlatCells.Create(cell: (cx, _) => (0, cx >= 6 ? 1 : 0));
+    private static CellsCollisionField StepField() => FlatCells.Create(cell: (cx, _) => (0, cx >= 6 ? 1 : 0));
 
     private static void SteadyWalk(JumpHeroRig rig)
     {
@@ -229,7 +229,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
     {
         AlundraEntityScriptProxy? chest = null;
         var rig = JumpHeroRig.Build(
-            probeFactory: host => new AlundraMovementObstacleProbe(host),
+            probeFactory: host => new MovementObstacleProbe(host),
             configure: (world, host) => chest = AddObject(world, host, "Chest", 144, 92, 24, 16, 16),
             x: 120f,
             freePad: true);
@@ -396,7 +396,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
     {
         AlundraEntityScriptProxy? tomb = null;
         var rig = JumpHeroRig.Build(
-            probeFactory: host => new AlundraMovementObstacleProbe(host),
+            probeFactory: host => new MovementObstacleProbe(host),
             configure: (world, host) => tomb = AddObject(world, host, "Tomb", 140, 100, 20, 14, 25, offsetX: -10, offsetY: -7),
             x: 100.25f,
             freePad: true);

@@ -55,7 +55,7 @@ public sealed class AlundraSailor12EndOfIntroTests
         Assert.True(File.Exists(tileMapPath), $"the real export of map '{WorldName}' is missing: '{tileMapPath}'");
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapPath)));
-        Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, WorldName, out var field));
+        Assert.True(CellsCollisionField.TryCreate(tileMapData, WorldName, out var field));
 
         var eventsDirectory = Path.Combine(root, "Maps", "The Klark", WorldName, "events");
         Assert.True(Directory.Exists(eventsDirectory), $"the real events of map '{WorldName}' are missing: '{eventsDirectory}'");
@@ -76,7 +76,7 @@ public sealed class AlundraSailor12EndOfIntroTests
         proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
         proxy.AnimSetsByAnim = header.AnimSets;
         EntitySpawnFactory.SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
-        proxy.Controller!.Settings.WalkabilityMask = AlundraCellsCollisionField.WalkabilityMaskFor(proxy.Flags);
+        proxy.Controller!.Settings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(proxy.Flags);
         world.Update(Dt);
 
         Assert.True(NavigationGrid2D.TryCreateFromTileMap(tileMapData, LoadTileSets(root, tileMapData), 1f, out var grid));

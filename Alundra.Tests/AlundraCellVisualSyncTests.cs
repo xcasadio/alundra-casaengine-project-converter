@@ -395,7 +395,7 @@ public class AlundraCellVisualSyncTests : IDisposable
         var tileMapData = new TileMapData { MapSize = new CasaEngine.Core.Math.Size(2, 1) };
         tileMapData.CustomProperties["AlundraCells"] = alundraCellsJson;
 
-        var fieldCreated = AlundraCellsCollisionField.TryCreate(tileMapData, "map_1", out _, out var cellRecords);
+        var fieldCreated = CellsCollisionField.TryCreate(tileMapData, "map_1", out _, out var cellRecords);
         Assert.True(fieldCreated);
         var storeCreated = AlundraCellStore.TryCreate(cellRecords!, 2, 1, "map_1", out var store);
         Assert.True(storeCreated);
@@ -772,7 +772,7 @@ public class AlundraCellVisualSyncTests : IDisposable
         var tileMapData = new TileMapData { MapSize = new CasaEngine.Core.Math.Size(width, height) };
         tileMapData.CustomProperties["AlundraCells"] = alundraCellsJson;
 
-        Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, "map_476_like", out _, out var cellRecords));
+        Assert.True(CellsCollisionField.TryCreate(tileMapData, "map_476_like", out _, out var cellRecords));
         Assert.True(AlundraCellStore.TryCreate(cellRecords!, width, height, "map_476_like", out var store));
 
         var sync = AlundraCellVisualSync.Create(
@@ -911,7 +911,7 @@ public class AlundraCellVisualSyncTests : IDisposable
         var tileMapData = new TileMapData { MapSize = new CasaEngine.Core.Math.Size(width, height) };
         tileMapData.CustomProperties["AlundraCells"] = alundraCellsJson;
 
-        Assert.True(AlundraCellsCollisionField.TryCreate(tileMapData, "map_476_like", out _, out var cellRecords));
+        Assert.True(CellsCollisionField.TryCreate(tileMapData, "map_476_like", out _, out var cellRecords));
         Assert.True(AlundraCellStore.TryCreate(cellRecords!, width, height, "map_476_like", out var store));
 
         // The placement: cell (1,7), plane 0, drawn at (1,4), gid 6 = FirstGid + local tile id 5, depth slot 0.
