@@ -6991,7 +6991,7 @@ au moteur ; plus de 10 tests existants bougent ; un nom refusé par `check_names
 
 **Retour arrière.** La phase B se retire seule (les deux appels) ; la phase A ne change aucun comportement.
 
-### 1.28 E20.g3 — Les soulevables redeviennent solides ⏳ (détaillée le 2026-10-18, à relire ; exécutable après g1a, g2a, g2b et la fin du chantier de restructuration)
+### 1.28 E20.g3 — Les soulevables redeviennent solides ⏳ (détaillée le 2026-10-18, **READY** à la première relecture ; exécutable après g1a, g2a, g2b et la fin du chantier de restructuration)
 
 **Provenance.** Découverte en lecture seule de la nuit du 17 au 18 octobre (`docs/plan-e20-annexe/e20-g3/`) : une lecture du binaire (`bin/`),
 une lecture de la DLL et des tests (`dll/`), puis trois critiques indépendantes, une re-dérivation du binaire (`critic/`), une réconciliation
@@ -7151,31 +7151,61 @@ après le chargement (`GameRandom.Reset()`, `:255-261`) : un arc est déterminis
 et du soulèvement de g1b) : g4a avec g3, g4b avec g1b. Q-G3-c (la chute de la caisse du dessus) : l'écart documenté jusqu'à E19.h2, mesuré
 en g4b.
 
-#### 1.29.1 E20.g4a — La barricade par le saut ⏳
+#### 1.29.1 E20.g4a — La barricade par le saut ⏳ (révision 1)
+
+**Relecture (2026-10-18).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) les règles du pilote s'ancraient sur `0x11 @124`, qui ne
+s'exécute qu'après un roulis, comptaient en images sans dire comment trouver le tick du sondage à 2 et 3 ticks par image, et reposaient sur
+une inférence (« calé au mur, le roulis ne sort pas de la fenêtre ») : elles sont réécrites sur la cadence réelle de B1, mesurée en T0, et le
+pilote **ne déclenche aucun roulis** ; (2) le périmètre ne nommait ni la table des glissements des arcs, ni le fichier des arcs, ni les deux
+tables du test des préréglages.
+
+**Faits de B1 qui portent le pilote** (`critic-complet/c5_392_B1.out:29-40`, A5r `AlundraShipCorridorArcTests.cs:214-234`). La boucle :
+`@104 0x11` (rend la main), `@105 0x37 [15]` (attend), `@107 0x2F` (une direction est-elle tenue ?), `@111 0x04` (non : retour à `@105`),
+`@114 0x70` (au sol ?), `@115 0x04` (non : retour à `@105`), puis le roulis : `@118 0x10` (verrou), `@119 0x0C` (direction au hasard),
+`@120 0x08 [2]`, `@122 0x37 [4]`, `@124 0x11`, `@125` retour à `@105`. A5r à 1 tick par image : `0x11 @104` à l'image 204, le sondage
+`0x2F @107` à l'image 220, un roulis de 5 images. **Sans direction tenue au sondage, ou en l'air, il n'y a pas de roulis.**
 
 **Prérequis.** g3 (sur la même branche ; fusion avec g3 et g1b, Q-G3-b).
 
 **Périmètre.** `Alundra/SaveGames/TestSaves.cs` (un préréglage `barricade-m392` : carte 392, case (29, 13), z 4, drapeau G1641, repris de
-l'`ArcSpec` d'A5, `AlundraShipCorridorArcTests.cs:32-33` ; B1 replace le héros en (720, 216) à l'entrée ; la liste exacte des préréglages de
-`AlundraTestSavesTests` s'allonge d'un, dans l'ordre de la table) ; `docs/test-saves.md` ; un pilote réactif de test dans `Alundra.Tests/`
-(sur les crochets d'`ArcRun`) ; les arcs. Aucun code de la DLL hors du préréglage.
+l'`ArcSpec` d'A5, `AlundraShipCorridorArcTests.cs:32-33` ; B1 replace le héros en (720, 216) à l'entrée) ; `Alundra.Tests/AlundraTestSavesTests.cs`
+(ses deux tables : la liste des noms, `:67`, et les attentes par préréglage, `:376`) ; `docs/test-saves.md` ; un fichier neuf d'arcs et de
+pilote, `Alundra.Tests/AlundraShipBarricadeArcTests.cs` (chemin et nom de classe selon la table de R5 si R5 est passée) ;
+`Alundra.Tests/AlundraShipCorridorArcTests.cs` (la doc d'A5 et A5r, `:22-23`, seulement) ; `Alundra.Tests/AlundraArcSupport.cs` (les seules
+entrées de `ArcsThatSlide`, `:342`, pour les arcs neufs ; la garde de `Dispose`, `:354-368`, refuse un arc qui glisse sans y figurer). Aucun
+code de la DLL hors du préréglage.
 
 **Tâches.**
-- ⏳ **T0** : (a) le pilote et ses règles, écrites avant les arcs : il lit l'état avant chaque image (position, sol, compte des images depuis le
-  dernier `0x11 @124` de B1), ne tient aucune direction à l'image d'un sondage `0x2F` (ou se cale au mur, où le roulis ne sort pas de la
-  fenêtre), saute quand le héros est au sol et calé ; (b) une mesure sur la DLL, après g3 : le calage au mur nord (Gauche seul depuis y0 de
-  286 à 295, la loi `295 + ((y0 − 295) mod 0,5)` ; Haut tenu, 295,000) contre `critic/out/w3_door.txt` ; un écart est un arrêt.
+- ⏳ **T0** : (a) **la cadence de B1** mesurée sur la DLL, à 1, 2 et 3 ticks par image, dans un arc sans aucune direction tenue : les
+  images où s'exécutent `0x11 @104` puis chaque `0x2F @107` (par `OnInstruction`, qui donne l'image de chaque instruction) ; attendu, à
+  1 tick par image : 204 puis 220, puis tous les 16 (A5r) ; aux autres cadences, la mesure dit si l'attente `0x37 [15]` compte des ticks ou
+  des images, et donne `C`, le nombre d'images entre deux sondages (ou les deux valeurs possibles si le sondage tombe à cheval) ; un
+  roulis dans cet arc, ou une cadence irrégulière, est un arrêt ; (b) **la route du binaire refaite avec les 12 enregistrements** sur la
+  machine MIPS (le harnais de `critic/my392.py`, qui les fait tous naître ; `a3_fullroute.py` partait d'un monde sans rec9) : les phases et
+  leurs seuils (descendre jusqu'à quel Y, gauche jusqu'à quel X, contourner rec9 et le plateau de hauteur 5 des colonnes 20 à 22, rangées
+  16 à 18, puis le portail), écrits dans `docs/plan-e20-annexe/e20-g3/g4a-route/` avec la trace ; (c) **les règles du pilote**, écrites
+  avant les arcs : il lit l'état du jeu avant chaque image et ne l'écrit jamais ; **il lâche toutes les directions pendant chaque image qui
+  peut contenir un sondage** (l'image d'ancrage `0x11 @104`, puis tous les `C` d'après (a), les deux images candidates quand le sondage
+  peut tomber dans l'une ou l'autre) ; hors de ces images il tient la direction de la phase de (b) jusqu'à son seuil ; **le saut** : Croix
+  et Gauche tenues ensemble, à la première image où le héros est au sol, `PosY` dans [295,0 ; 297,0] et `PosX` dans [657,0 ; 694,4]
+  (depuis l'est, `bin/report.md` §A3.2), hors d'une image de sondage ; un roulis observé (`0x10 @118`) est un arrêt de l'arc ; (d) **les
+  glissements** : le calage au mur nord (Gauche seule depuis y0 de 286 à 295 : la loi `295 + ((y0 − 295) mod 0,5)` est un second pas d'un
+  demi-pixel le long d'un mur de case, `ScriptedMotion.cs:771-773`, `:888`, qui compte dans `SlideCount`) : le nombre de glissements de
+  chaque arc neuf, à chaque cadence, mesuré, comparé à la loi, puis épinglé dans `ArcsThatSlide` ; un compte que la loi n'explique pas est
+  un arrêt ; (e) le calage mesuré sur la DLL après g3 contre `critic/out/w3_door.txt` ; un écart est un arrêt.
 - ⏳ **T1 — Arcs** (sous B1, les 12 enregistrements, à 1, 2 et 3 ticks par image) : (a1) le calage au mur nord (les valeurs de T0 (b)) ; (a2)
-  la route du saut de bout en bout : depuis l'arrivée de B1, se caler, sauter sur rec5, descendre à l'ouest, contourner rec9, atteindre le
-  portail 0 (`HasPendingArrival`, la cellule (22, 23)) ; (a3) une entrée en cardinal à y0 > 297,0 : le saut se refuse (le héros reste à
+  la route du saut de bout en bout par le pilote de T0 (c) : depuis l'arrivée de B1, les phases de T0 (b), le saut, la descente à l'ouest, le
+  contournement de rec9, jusqu'au portail 0 (`WarpDirector.Instance.HasPendingArrival`, la cellule (22, 23)) ; aucun roulis ; (a3) une entrée en cardinal à y0 > 297,0 : le saut se refuse (le héros reste à
   l'est de la colonne), accolée à (a2) ; (a4) l'arc A5 inchangé (le téléport) et sa doc corrigée ; les nouveaux arcs hors de
   `ArcsWithoutEntityContact` (ils touchent des caisses).
 - ⏳ **T2 — Plan, verifier frais.**
 
-**Acceptation.** (a1) à (a3) verts sous B1, à 1, 2 et 3 ticks par image ; la suite verte ; recette de l'auteur avec `barricade-m392` : se caler
+**Acceptation.** (a1) à (a3) verts sous B1, à 1, 2 et 3 ticks par image, avec la garde des glissements de `Dispose` (leurs entrées de
+`ArcsThatSlide`, T0 (d)) ; la suite verte ; recette de l'auteur avec `barricade-m392` : se caler
 contre le haut de la porte, sauter sur la caisse basse, rejoindre le portail.
 
-**Arrêts.** T0 (b) contredit le binaire ; le pilote doit lire autre chose que l'état du jeu (aucune valeur écrite par le test pendant l'arc) ;
+**Arrêts.** T0 (a) montre un roulis ou une cadence irrégulière ; T0 (d) un compte de glissements que la loi n'explique pas ; T0 (e)
+contredit le binaire ; un roulis pendant un arc ; le pilote doit lire autre chose que l'état du jeu (aucune valeur écrite par le test pendant l'arc) ;
 un besoin de toucher au moteur.
 
 #### 1.29.2 E20.g4b — La barricade en soulevant (esquisse, détaillée avec g1b) ⏳
