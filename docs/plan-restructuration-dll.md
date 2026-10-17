@@ -39,6 +39,11 @@ réponse de l'auteur (D-R-10)** ; R1 détaillée et READY, attend R0. Démarre a
   journal et omise, comme aujourd'hui : l'exception de D-R-4 sort en jeu et en session de jeu de l'éditeur, pas dans l'aperçu (option A :
   un drapeau de la politique d'exécution, faux pour l'aperçu). **En plus, l'éditeur affiche une icône d'avertissement à côté du nom du
   script** quand ce nom ne se résout pas. Le plan du moteur l'ajoute à R0 (son O2 est fermé par cette décision).
+- **D-R-11** (2026-10-17, précise D-R-10) — L'éditeur n'affichait plus le script : la section « Script » de l'inspecteur WPF a disparu
+  le 2026-03-30 avec le projet WPF (moteur `dc2f4d25`) ; l'auteur : « cela doit être affiché dans l'inspector obligatoirement ; c'est un
+  bug ». R0 la rétablit (choix du script, annulable, avec l'icône). Dans l'aperçu, une entité **et le monde** dont le script ne se résout
+  pas sont **gardés sans script** (visibles, sélectionnables, l'icône sur leur ligne Script), au lieu d'être omis ou de faire planter
+  l'éditeur ; en jeu et en session de jeu, l'exception sort. « Game Mode » et « Default Pawn », perdus en même temps, restent hors de R0.
 - Règle du moteur (D-R-2), notée aussi en mémoire : « le moteur, quand il crée les objets script, ne doit chercher que dans la DLL ».
 
 ## 1. Faits établis (découverte du 2026-10-16, lecture seule)
