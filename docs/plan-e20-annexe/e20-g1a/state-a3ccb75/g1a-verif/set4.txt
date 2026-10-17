@@ -1,0 +1,15 @@
+ECT85||||Alundra.Tests/AlundraEntityCollisionTests.cs|85-86
+ESST123||||Alundra.Tests/EntitySearchServiceTests.cs|122-124
+ESST243||||Alundra.Tests/EntitySearchServiceTests.cs|242-244
+AS332||||Alundra.Tests/AlundraArcSupport.cs|331-333
+SCOA39||||Alundra.Tests/AlundraStoryChainOpcodeAudit.cs|38-40
+JTS235||||Alundra.Tests/AlundraJumpTestSupport.cs|234-236
+CTS128||||Alundra.Tests/AlundraContactTestSupport.cs|127-129
+HOT240||||Alundra.Tests/AlundraHeroObjectTopsTests.cs|238-241
+HOT291||||Alundra.Tests/AlundraHeroObjectTopsTests.cs|290-292
+HOT316||||Alundra.Tests/AlundraHeroObjectTopsTests.cs|315-317
+HOT447||||Alundra.Tests/AlundraHeroObjectTopsTests.cs|445-448
+LC242||||Alundra.Tests/AlundraLadderClimbTests.cs|236-243
+LC682||||Alundra.Tests/AlundraLadderClimbTests.cs|680-690
+PMT121||||Alundra.Tests/AlundraPlayerManagerTests.cs|119-122
+WSST243||||Alundra.Tests/AlundraWeaponSpawnSeamTests.cs|241-245

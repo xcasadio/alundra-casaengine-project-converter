@@ -1,0 +1,127 @@
+### 1.28 E20.g3 — Les soulevables redeviennent solides ⏳ (détaillée le 2026-10-18, **READY** à la première relecture ; exécutable après g1a, g2a, g2b et la fin du chantier de restructuration)
+
+**Provenance.** Découverte en lecture seule de la nuit du 17 au 18 octobre (`docs/plan-e20-annexe/e20-g3/`) : une lecture du binaire (`bin/`),
+une lecture de la DLL et des tests (`dll/`), puis trois critiques indépendantes, une re-dérivation du binaire (`critic/`), une réconciliation
+règle par règle avec la DLL (`critic-recon/`) et une critique de complétude (`critic-complet/`) ; leurs corrections font foi sur les deux
+lectures. Aucune source de la DLL n'a changé entre `c84fd72` et `b6a2f92`.
+
+**But.** Comme l'original : les caisses et les jarres (et les autres soulevables collisionnables) arrêtent Alundra et les PNJ
+collisionnables ; le contact qui en résulte est celui que le soulèvement (g1b) lira. Fin de l'écart D-E19-28 et D-E19-46 (ADR-0021,
+ADR-0022) ; D-E20-27 et D-E20-39.
+
+**Faits (binaire, FAIT sauf mention ; `bin/report.md`, corrigé par `critic/report.md`).**
+- **Aucune règle propre aux soulevables.** Le test d'entité contre entité est `FindEntityCollisionCandidate` `0x80036F34`, appelé par le seul
+  déplacement XY `0x80037730` ; il n'écarte que le sujet lui-même, prend **le premier** collidable de la liste qui recouvre la boîte d'essai
+  (bords semi-ouverts) et ne lit aucun drapeau du candidat. La liste des collidables (`0x800384F4`, ordre des cases, slots 0 à
+  `[0x80134360]`) prend une entité si `+0x6C & 0x80` (Collidable), si l'octet d'animation `+0xB4 & 0x80` est nul et si `+0x28 == 0` (non
+  portée) ; **aucun test de statut, de genre de ramassage, de classe ni d'état du héros**. Le sujet passe la même porte (plus une exception
+  du héros pendant une transition d'écran). Le test d'entité passe **avant** le terrain ; après un refus par une entité, aucun glissement ;
+  aucune règle de sortie d'un chevauchement (enfoncé de plus d'un pas, le héros y reste). Preuves : 39 657 appels par fonction contre des
+  modèles, 0 écart, 100 % des instructions ; 526 mutants, 438 tués, les survivants classés.
+- **Le contact `héros.+0x130`** est la valeur de retour du déplacement XY (`0x80037F08`), lue au tick suivant par `PlayerTryAction`
+  (`0x8002EF08`) et `CheckEntityInteraction` (`0x8002E918`). Au sol, c'est l'entité qui a refusé le pas complet du tick ; il vaut 0 si le
+  premier pas complet est accepté, **même s'il finit exactement affleurant**, et 0 sans force (`critic/` R1, 160 sur 160). D'une pile vue du
+  sol : la caisse du bas ; debout sur une caisse : la caisse du haut voisine (bord plat en Z).
+- **La libération** (lancer) : C23 (caisse, jarre, herbe, glace, rocher tortue, pierre très lourde) et C70 (torche) effacent `0x80` ; C4
+  (pierre, tonneau, tronc, quatre objets) ne l'efface que si `+0x24 == -1` et `+0x80 == 2` ; C73 (haricots) le garde ; E2 ne le rétablit
+  jamais. Une caisse lancée ne bloque donc plus rien.
+- **Une entité détruite** reste dans la liste des collidables jusqu'à la fin de la physique du tick (le statut n'y est pas lu) : la DLL la
+  retire tout de suite (`Alundra/Physics/EntitySupport.cs:53-55`, le filtre `FlagToDestroy` de D-E19-29, dont la prémisse « comme dans le
+  binaire » est réfutée).
+- **L'octet d'animation** est lu deux fois par tick : la liste avant l'horloge (valeur du tick précédent), la porte du sujet après (valeur du
+  tick). Les animations 32 à 36 et 39 du héros ont le bit `0x80` (le héros sort de la liste pendant elles).
+- 17 en-têtes soulevables : 16 de genre 1, 1 de genre 3 (« Pierre très lourde », Gant requis) ; la bombe n'est pas collisionnable.
+
+**Faits (DLL au HEAD, `dll/report.md` et `critic-recon/report.md`).**
+- **Un seul site de production porte l'écart** : `Alundra/Physics/MovementObstacleProbe.cs:48-51` passe `EntityFlags.PickupKindMask` en
+  drapeaux écartés à `EntityCollision.FindEntityCollisionCandidate` (`Alundra/Physics/EntityCollision.cs:37-39`, `:53`). La liste
+  (`EntitySupport.BuildCollidables`, `:45-61`) garde déjà les soulevables ; l'appui sur un dessus, le plafond, le passager et le calage à
+  l'apex les comptent déjà (on saute déjà sur une caisse). Rien dans le convertisseur ni dans l'export n'encode l'écart.
+- **Règle par règle** : la porte (`IsEligibleSubject`, `EntitySupport.cs:73-76` : Collidable, `AnimFlags & 0x80`, `PlatformEntity == null`,
+  `PlatformEntity` étant le `+0x28`) et l'ordre de la liste (`_spawnedEntities` dans l'ordre des cases, `WorldProxy.cs:216-232`) sont ceux
+  du binaire ; le contact (`XCollisionEntity`, seul écrivain `Alundra/Entities/EntityScriptProxy.cs:2424-2431`, `H2Obstacle ??
+  H1Obstacle`) est le premier candidat de la liste, remis à 0 sans force (`CharacterControllerComponent.cs:443-450`), lu par le `MovePlayer`
+  du tick suivant ; l'entité passe avant le terrain et interdit le glissement (`ScriptedMotion.cs:819`). **Écarts** : le filtre
+  `FlagToDestroy` (un tick) ; `AnimFlags` écrit en fin d'image (`Alundra/Maps/Loop/FrameSyncPasses.cs:154-161`, un tick ou plus de retard ;
+  l'équivalent exact existe : `HitAnimByte`, `EntityScriptProxy.HitPass.cs:29-30`) ; la division du pas axe par axe du contrôleur
+  (`CharacterControllerComponent.cs:1170-1197`) contre la division conjointe du binaire : **en poussant en diagonale contre une caisse,
+  l'original s'arrête net, le portage glisse le long** (l'écart déjà accepté par O-E19-28 et D-E19-58, que g3 rend visible sur 2 250
+  placements) ; `PlatformEntity` n'est encore jamais écrit (g1a le pose par `PutInHands`).
+- **Portée** : 2 251 soulevables dans l'export, 2 250 collisionnables, dont 248 placements hors de la chaîne qui ne sont pas des C23 (C4 :
+  76 tonneaux, 56 troncs, 27 pierres, 32 objets ; C70 : 57 torches), soulevables seulement avec g2c ; les 7 pierres très lourdes de la carte 4
+  coupent des chemins jusqu'au Gant, comme l'original. 73 soulevables ne naissent qu'au script. Sur la chaîne : 18 cartes, 219 soulevables,
+  tous nés au chargement ; d'après un modèle grossier par cases (`critic-complet/`, INFÉRENCE), **seule la 392 exige de franchir une caisse**
+  (E20.g4) ; sur 173/180, 174/181, 175/182, de petites poches vides se ferment.
+- **Tests** : rouge certain, `AlundraMovementObstacleProbeTests.TRLift_ACrateOnThePathDoesNotBlock_AnIronBallWallDoes` ; verts mais à
+  retoucher : `TR1_SkippedCandidateFlags_…` (l'API du masque), la ligne redondante de `AlundraEntityContactArcTests.TH4_…` (`:485`), le
+  miroir de la sonde dans `AlundraDialogueOpcodesProductionTests` (`:383-388`), la doc des arcs A5/A5r (`AlundraShipCorridorArcTests.cs:22-23`),
+  la doc de `AlundraMovementObstacleProbeTests` ; inchangés par lecture (les arrivées de la chaîne ne recouvrent aucun soulevable, les arcs
+  A1c, A5, A5r, A8, A9, A10, A11, A12, A14, A18, TH4, UJ-7, S6c ne croisent aucune empreinte ; A115 et G116 tranchés sans exécution) ;
+  **à mesurer** : les marches des PNJ d'A10, A11, A14, A18 et H115 (écarts statiques de 65 px ou plus).
+
+**Défauts réversibles retenus en mode autonome (à confirmer par l'auteur, §2).** Q-G3-a : **tous** les soulevables collisionnables
+deviennent solides (fidèle aux collisions ; les tonneaux, troncs, pierres, torches et objets du sanctuaire ne se soulèvent qu'avec g2c ; sur
+la carte 4, les grosses pierres bloquent jusqu'au Gant comme l'original). Q-G3-b : g3 et g1b fusionnés **ensemble** (entre les deux, les
+caisses seraient des murs que l'on ne peut que sauter). Q-G3-d : la poussée en diagonale garde l'écart de D-E19-58 (le portage glisse le long
+d'une caisse). Choix de conception de la session principale (réversibles, consignés dans l'ADR) : le paramètre `skippedCandidateFlags`
+**retiré** avec ses trois usages de test (une API sans appelant) ; le filtre `FlagToDestroy` et le moment de l'octet d'animation **gardés et
+consignés** (deux écarts d'un tick, préexistants, qui ne touchent pas que les soulevables : une tranche à part, O-G3-1 et O-G3-2) ; le
+commentaire de D-E19-29 (`EntitySupport.cs:53-54`) corrigé pour dire que c'est un écart.
+
+**Prérequis** (affine la ligne 12 de l'enveloppe, qui reste READY : g3 après g1a, g2a et g2b ; g1b après g3). g1a (`PutInHands` pose
+`PlatformEntity`, `+0x28` : une caisse portée sort de la liste), g2a et g2b (une caisse lancée
+s'efface de la liste et se brise) ; la fin du chantier de restructuration et la garde des fichiers neufs (Q-R-7). g1b vient **après** g3 (le
+seul contact possible est `XCollisionEntity`, que le masque vide de tout soulevable ; D-E20-39 : pas de détecteur provisoire).
+
+**Périmètre.** `MovementObstacleProbe.cs` (la ligne 51 et sa doc `:13`, `:23-24`, `:27`), `EntityCollision.cs` (le paramètre et sa doc
+`:32-39`, `:53`), `EntitySupport.cs` (les commentaires `:36`, `:53-54`, `:68-70`), `WorldProxy.cs` (le commentaire `:2994-2995`, « recomputes the carrier once per frame », alors que `UpdateRidingEntities` le fait par tick) ; les tests ;
+l'annexe ; un ADR qui remplace D-E19-28 et D-E19-46 (ADR-0021 et ADR-0022 en partie, `Superseded`). Aucun code du moteur, du convertisseur,
+des données.
+
+**Hors périmètre.** Le soulèvement (g1b) ; le franchissement de la 392 (g4) ; le portage de la division conjointe (Q-G3-d) ; les deux écarts
+d'un tick (O-G3-1, O-G3-2) ; C4, C70, C73 (g2c) ; la chute de la caisse du dessus d'une pile (Q-G3-c, avec g4b).
+
+**Tâches.**
+- ⏳ **T0 — Annexe, oracle, sondes** (aucun commit de code) : (a) les scripts de `bin/` et `critic/` rejoués depuis une copie (avec la copie
+  de `e20-g1a/work/` en `g1a/`), sorties identiques à leurs manifestes ; (b) **sondes de la DLL sur une copie de travail où seule la ligne 51
+  change, jamais commitée** (une mesure, comme les preuves de retrait), avec les 12 enregistrements de la 392 : P-G3-1 l'arrêt du héros à
+  x = 657,000 (face est) et 615,000 (face ouest) en y = 296, le contact rec5 ; P-G3-2 le contact d'une pile vue du sol (la caisse du bas) et
+  depuis le dessus de rec5 (rec10) ; P-G3-3 le cas affleurant (pas complet accepté, contact nul ; Carré au tick suivant : épée), contre
+  `critic/out/w4_contact.txt` et `w7_return.txt` ; P-G3-4 la sortie d'un chevauchement (0,5 à 1,2 px, 1,3 à 2,0 px, 5 et 10 px) contre
+  `bin/out/a1_overlap.txt` ; P-G3-5 un PNJ collisionnable réel arrêté par une caisse, un Beannoïde (non collisionnable) qui la traverse,
+  contre `bin/out/a1_scen*` ; P-G3-6 la poussée en diagonale (l'écart Q-G3-d, mesuré) ; P-G3-7 la suite entière : la liste des tests rouges
+  avec la seule ligne changée, comparée à la liste prédite ci-dessus ; (c) les arcs « à mesurer » relancés sur la même copie (A10, A11,
+  A14, A18, H115) ; (d) la liste prédite finale des tests qui bougeront.
+- ⏳ **T1 — Le code** (tests d'abord, rouges avant la ligne) : (s1) une caisse arrête le héros (valeurs de P-G3-1), accolée au mur à boule de
+  fer (inchangé) : remplace `TRLift` ; (s2) le contact d'une pile, du sol et du dessus (P-G3-2) ; (s3) le cas affleurant (P-G3-3) ; (s4) un
+  PNJ collisionnable arrêté, un Beannoïde qui passe (P-G3-5) ; (s5) une caisse portée (posée par `PutInHands`) et une caisse lancée (`0x80`
+  effacé) ne bloquent pas, accolées à la caisse posée qui bloque ; (s6) la sortie d'un chevauchement : égale au binaire, ou l'écart mesuré en
+  P-G3-4 épinglé par un test nommé d'après lui (arrêt si l'écart dépasse un pas). Puis la ligne 51, le paramètre retiré et ses trois usages
+  réécrits (TR1 supprimé avec l'API qu'il teste, la ligne `:485` de TH4 supprimée, le miroir de `AlundraDialogueOpcodesProductionTests`
+  aligné sur la sonde), les textes corrigés.
+- ⏳ **T2 — Arcs** : la suite entière ; les arcs gardés par `ArcsWithoutEntityContact` (A1c, A5, A5r, A8, A9, A10) restent verts ; les arcs
+  de T0 (c) verts ou réécrits par dérivation (liste de T0 (d)) ; les traces de la 389 inchangées (aucun soulevable).
+- ⏳ **T3 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles). Mutants, au moins 10, tous tués : masque gardé
+  pour le genre 1 seul ; genre 3 écarté ; caisse portée gardée dans la liste ; caisse lancée gardée ; contact non nul sur un pas affleurant
+  accepté ; contact le plus proche au lieu du premier de la liste ; glissement permis après un contact d'entité ; terrain testé avant
+  l'entité ; un PNJ collisionnable qui traverse ; le Beannoïde arrêté.
+
+**Acceptation.** Les sorties de T0 (a) identiques ; P-G3-1 à P-G3-5 égales au binaire (ou l'écart P-G3-4 épinglé) ; (s1) à (s6) rouges avant
+la ligne (nommés), verts après ; suite en Release (copie neutralisée) **et** en Debug, zéro échec ; tests déplacés ⊂ liste prédite de T0 (d),
+chacun réécrit par dérivation ; traces inchangées ; `cmp` de la DLL ; moteur, convertisseur et données sans diff ; recette de l'auteur,
+après la fusion avec g1b (Q-G3-b) : une caisse et une jarre arrêtent Alundra sur la 392 et sur la 14, un villageois s'y arrête aussi.
+
+**Arrêts.** Une sonde contredit le binaire hors des écarts consignés ; un test hors de la liste prédite bouge ; une arrivée de portail de la
+chaîne recouvre un soulevable ; un besoin de toucher au moteur ; plus de 10 tests existants bougent.
+
+**Budget.** Un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** La tranche se retire par `git revert` (la ligne 51 et les tests) ; l'ADR passe en `Superseded` s'il le faut.
+
+**Conséquences pour §1.24.4 (g1b).** D-G-7 (`LiftContactEntity`, `requiredCandidateFlags`, les témoins k1 à k4 et les preuves de retrait qui
+les citent, O-G-1) est caduc depuis D-E20-39 : g1b se réduit à l'activation (le déclencheur de `PlayerTryAction` sur `XCollisionEntity`), vient
+après g3, et sera réécrite avant son exécution. Faits à y reprendre : le soulèvement exige le contact du **tick précédent** et un front de Carré
+(un Carré le tick de l'affleurement donne l'épée ; 0 sur 79 contre 78 sur 79 un tick plus tard, `critic/out/w4_contact.txt`) ; il est possible
+**depuis les états de saut** (`0x80031E98`, vers l'état `0x0B` : à z ≥ 80 c'est la caisse du haut qui se soulève, `critic/out/w5_airlift.txt`) ;
+une entité dont `+0x12C` désigne le héros se soulève sans bouton (`0x8002EE18`-`0x8002EE34`, la boucle des supports).
+

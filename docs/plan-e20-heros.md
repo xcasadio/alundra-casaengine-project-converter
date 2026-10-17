@@ -6369,6 +6369,97 @@ Le nom `PlatformEntity` de la DLL (et de la décompilation) est trompeur : dans 
 
 ---
 
+#### Révision au HEAD (2026-10-18) — à lire avant §1.24.0 à §1.24.3 ; fait foi sur leur texte où il diffère
+
+**Provenance.** Relevé en lecture seule au HEAD `a3ccb75`, après la restructuration de la DLL, et sa contre-vérification
+(`docs/plan-e20-annexe/e20-g1a/state-a3ccb75/` : `g1a/` et `g2/`, `state.md` et `check.md`, la contre-vérification faisant foi). Toutes les
+citations de §1.24.0 à §1.24.3 et de l'annexe `e20-g1a/` se retrouvent au même code (g1a : 49 et 22 lignes ; g2 : 34 et 12) ; la
+restructuration est pure (aucune ligne de logique changée, hors les `catch` de R0). Ce que les tranches disent que la DLL n'a pas est
+toujours vrai.
+
+**Commun à g1a, g2a et g2b.**
+1. **Chemins et noms.** Chaque citation `AlundraX.cs:NN` se lit par les tables de l'annexe (chemin et ligne au HEAD) ; `Alundra/Scripts/`
+   n'existe plus. Types neufs : `LiftableAi` (`Alundra/Ai/Objects/LiftableAi.cs`, `namespace Alundra.Ai.Objects`, `internal static`, avec
+   `Register(NativeSpriteRegistry)` sur le modèle de `Alundra/Ai/Projectiles/WaveSwordAi.cs:30`) et `CarryRules` (`Alundra/Hero/CarryRules.cs`) :
+   noms libres (contrôlés avec les fonctions de `tools/dll-structure/check_names.py`). Les tests neufs : à plat, `Alundra.Tests/Alundra<Sujet>Tests.cs`,
+   ou selon la table de R5 si elle est passée. ADR : le prochain numéro libre à l'écriture.
+2. **Prérequis ajoutés** : la fin du chantier de restructuration et la garde des fichiers neufs (Q-R-7 : `LiftableAi.cs` et `CarryRules.cs`,
+   créés par g1a, font échouer `check_names.py --tree` sans elle).
+3. **Ordre** : g1a, g2a, g2b, g3, g1b (D-E20-39, §1.28). Caducs : D-G-7 (`LiftContactEntity`, `FindLiftContact`, `requiredCandidateFlags`),
+   O-G-1, la phase B de g1b et ses compteurs k1 à k4, la ligne « Soulever | g1a, g1b » du tableau de la réponse à l'auteur, le fait « Le trou
+   du contact » et l'écart 8 de la critique. Sans objet : la clause e0b2 de D-G-14 et ses reprises (e0b2 ✅). Dépendants nouveaux : g3 (son
+   test (s5) consomme une caisse portée, `PlatformEntity` posé, et une caisse lancée, `0x80` effacé) et g4b.
+4. **Le registre de production a 7 clés** (f3c), épinglées par **deux** tests : `AlundraNativeSpriteRegistryTests.cs:55` et
+   `AlundraWaveSwordLifeTests.cs:181-183` (`V3_TheProductionRegistryHoldsSevenKeys_…`). E20.e0c (§1.26) en ajoute deux, g1a une ((C, 23)),
+   g2b une ((E, 2)) ; leur ordre n'est pas fixé : chaque tranche met les deux épingles dans sa liste prédite et les réécrit par dérivation (le
+   compte d'avant plus ses clés). `Register` lève sur une clé prise (`Alundra/Ai/NativeSpriteRegistry.cs:62`) : un test de phase A qui inscrit
+   une clé le fait dans un registre neuf, jamais dans celui du runner de production.
+5. **États sans cas au HEAD** : 0x05, 0x06, 0x07, 0x0B, 0x0C, 0x2E à 0x30 (0x08 est déjà dans `IsGroundAttackGroup`, `PlayerManager.cs:1026-1027`).
+6. **Commentaires que g1a rend faux, corrigés par g1a** : `Alundra/Physics/EntitySupport.cs:10-11` (« never assigned »),
+   `Alundra.Tests/AlundraTerrainHeightTests.cs:33-36`, la doc du marqueur (`Alundra/Entities/EntityScriptProxy.cs:1376-1383`, « never by the
+   creations from a record »), `Alundra/Physics/ScriptedMotion.cs:611-612`, `Alundra.Tests/AlundraLogicalZStepTests.cs:21`,
+   `Alundra/Entities/EntityPickupKind.cs:12-24` (genres 2 et 3 inversés), les docs du registre (`NativeSpriteRegistry.cs:29`, `:35` ;
+   `Alundra/Events/EventProgramRunner.cs:47-50`), le bouchon (6) de `DestroyEntity` (`Alundra/Maps/WorldProxy.cs:3299`, `:3315`, `:3324`) ;
+   `EntitySupport.cs:36-37` et `:68-70` restent à g3 (son périmètre).
+7. **Le type 35 de la carte 231 (enregistrement 3)** : l'ajout à (C, 23) et (E, 2) que propose `e20-g1a/check.md` §1.5 n'est pas établi
+   (l'export y lit « I05_Arc du chasseur », genre 0, `e20-g3/critic-complet/` Réfuté 4) : **non ajouté** ; O-G-11 (§2).
+
+**g1a.**
+- `PushLogicalPositionToRoot` (le suivi de D-G-3) appelle aussi `ClampToGround()` et `Controller.Teleport` (`EntityScriptProxy.cs:2375`,
+  `:2380`) : T0 mesure qu'un objet porté à (0, 0, 32) n'est pas ramené au sol ; sinon arrêt.
+- `EntitySearchService` lit `PlatformEntity` (recherches de types 4 et 11, `Alundra/Entities/EntitySearchService.cs:163`, `:249`) : poser
+  `PlatformEntity` change ces recherches pour l'objet porté ; T0 recense leurs appelants et la liste prédite les nomme.
+- `GameplayFreeze` lit le marqueur (`Alundra/Maps/Loop/GameplayFreeze.cs:142`) : un test de plus, un objet porté pendant un gel, accolé au non-porté.
+- `EntityDepthKey` ne sert qu'aux ancres d'effets (`EntityScriptProxy.cs:463`) : (W6) se pose dans le tri de dessin réel des entités, que T0
+  nomme ; s'il n'existe pas de site, (W6) et (w10) tombent, avec une note et un point ouvert.
+- `Alundra.Tests/AlundraLadderClimbTests.cs:666-675` met un `Entity` sans proxy dans `CarriedEntity` : le corps de (W1) garde ce cas (aucune
+  exception), accolé.
+- La branche de suivi met à nul l'`XCollisionEntity` de l'objet porté, comme le binaire (`0x80037E80`).
+- `UpdatePlayerCarriedEntity(EntityScriptProxy player, int mode)` n'a pas d'hôte : le mode 1 détruit par `player.ScriptHost is
+  IEntityWorldContext`, comme `PlayerManager.cs:1216`.
+- Le verrou du roulis de la 392 (bit 0x04 du masque 0x34, `Alundra/Session/GameState.cs:79`, `:103`) fait entrer le héros dans la branche
+  verrouillée où (W2) place le mode 1 : avec un objet en main, 5 ticks verrouillés (A5r) comptent sans écrire ; un 6ᵉ ferait descendre l'objet
+  (INFÉRENCE) ; la durée dans le binaire est inconnue : mesurée en g4b.
+- **Liste prédite complétée** (touchés, attendus verts sauf mention) : les deux épingles du registre (rouges en phase C, réécrites) ;
+  `AlundraEntityDestructionTests.TR2_…` (un soulevable dans la liste) ; `AlundraLootRollWorldTests.Rolls.M3_…` (fait naître une caisse de type
+  292 par `SpawnEntityByRecordId` : C23 inscrit en phase C, inerte hors portage) ; les arcs `ArcRun` sur des cartes à caisses (C23 inerte) ; les
+  épingles témoins `AlundraLogicalZStepTests.cs:116` et `AlundraMapEdgeWorldTests.cs:226` ; `AlundraBeannoideOracleTests.cs:360-370` et
+  `AlundraMurutaOracleTests.cs:440-450` ((W5), porteur sans proxy).
+- Q-G1A-1 reste ouverte (défaut A).
+
+**g2a.**
+- **La garde de vitesse** (P-G-3, Q-G1A-4) : la seule règle en place vise `JoinsBirthTick && CurrentAnimationId == ~0u`
+  (`ScriptedMotion.cs:173-176`) ; c'est sa seconde condition, fausse dès la première validation d'animation, qui ne couvre pas une caisse
+  lancée (les opcodes `0x2D`, `0x8A`, `0x8B` posent `JoinsBirthTick` sur une entité née d'un enregistrement, `EventProgramRunner.cs:2367`,
+  `:2378`, `:2406`, `:2445`). La garde étroite (défaut de Q-G1A-4) lit le marqueur **et** l'état « lancé » ; elle ne déplace ni
+  `AlundraMapStateTests.P3_…` (`:150`) ni `AlundraRecordBirthTickTests.B6_R_…` (`:364`), accolés dans la liste prédite. D-F5-5 n'est pas écrite
+  (f5 ⏳) et vise « une entité née par l'interface » : une caisse marquée n'y entre que si la règle lit `HasLogicalZ`.
+- `SpawnDirections` (`PlayerManager.cs:1282`), `NoAttackVramFlag` (`:943`) et `NoJumpVramFlag` (`:110`) sont privés : `CarryRules.ThrowCarried` les
+  lit par un accès `internal` (un changement de visibilité seul, dans le périmètre).
+- La garde des glissements des arcs (`ArcsThatSlide`, `Alundra.Tests/AlundraArcSupport.cs:342`, `:354-368`) : un arc où le héros longe un coin
+  compte ; préférer le héros immobile ou un banc sans soulevable ; tout compte non nul est mesuré et épinglé.
+
+**g2b.**
+- **(b3) l'arène** : `HitArena` éteint tous les natifs (`Alundra.Tests/AlundraHitArena.cs:70`) et D-F4-7 (`NativeSpriteTypeFilterForTests`)
+  n'existe pas (f4 ⏳) : (b3) se joue sur un banc qui rallume les natifs et retire les autres entités de la carte (`Status = FlagToDestroy` puis
+  `RecycleDestroyedEntities()`, le banc d'E20.e, §1.27 T2) ; (b6) l'eau profonde attend f6a (prérequis ajouté, ou (b6) reporté).
+- E2 n'existe pas et `CombinedVramFlagsAND` vaut 0 pour tout non-héros (`EntityScriptProxy.cs:1621`, `:2044-2072`) : la branche
+  `+0x184 & 4` de E2 est morte (écart O-G-2, à f6a). E0, E1 et E10 sont en ligne dans le runner (`EventProgramRunner.cs:284-290`, `:328`) :
+  aucune clé de registre pour E0.
+- La sortie de la liste d'une caisse brisée vient de `0x80` effacé au lancer (`IsEligibleSubject`), pas du filtre `FlagToDestroy` :
+  `AlundraEntityDestructionTests.TR2_…` n'est pas un critère de g2b.
+- La fin de l'animation 2 (bris) est `Hold` dans l'export pour les 7 en-têtes C23 ; `+0xAC = 1` vient de l'événement de fin d'animation du moteur
+  (`Alundra/Entities/Spawning/EntitySpawnFactory.cs:308-325`), pas de l'horloge du tick : la chronologie de (b2) (T+22 à T+26) se mesure en
+  T0 à 1, 2 et 3 ticks par image ; un écart est un arrêt.
+- Données corrigées : `Contents` 130 (banques 34 à 37), 248 (38), 247 (41), 0 (48 et 182), 255 (`alundra_234`) ; les drapeaux `0x3323E4`
+  comprennent `0x04` (HitsClassA : la touche de classe A de (b3) et (v10)), `0x200` (genre 1) et `0x30000` (ombre) ; la jarre `0x2323E4` n'a
+  pas `0x100000`.
+- Si E20.e0c passe avant g2b, le bouchon (1) de `DestroyEntity` est branché : (b5) et `AlundraDestroyEntityBreakEffectTests.cs:205` se lisent
+  avec le lâcher (dérivés, pas collés).
+
+**Enveloppe** (affine les lignes 11 et 12, qui restent READY) : h3 exige E20.g1 et E20.g2 en entier, donc g1b, et vient après g3 (la
+proposition de D-G-1 « h3 n'exige que g1a et g2a » n'est pas appliquée) ; g3 après g1a, g2a, g2b ; g1b après g3.
+
 #### 1.24.0 T0 commun à g1a, g2a, g2b, g1b et g2c
 
 - ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code), `docs/plan-e20-annexe/e20-g/`.
@@ -6595,6 +6686,7 @@ Le nom `PlatformEntity` de la DLL (et de la décompilation) est trompeur : dans 
 | O-G-8 | Portail de la même carte avec un objet porté : l'original décale l'objet avec le héros (`0x80031340`) ; la DLL le suit par la copie de position ; reste à établir si ce téléport pose un verrou qui avalerait l'objet | recette, ou une sonde de l'oracle |
 | O-G-9 | Casse d'une pierre ou d'un tonneau (C4) qui touche une cible : inférence non exécutée | le T0 de g2c |
 | O-G-10 | Le genre 2 (jamais dans le corpus) et les trois en-têtes refusés par le spawner d'enregistrement (`AttackCount` 0 et 7) ne sont couverts que par le fuzz direct | le T0 de g2c |
+| O-G-11 | (2026-10-18) Le placement 231 / enregistrement 3 : l'index 35 désigne la cruche locale (genre 1) dans `data-extracted`, mais l'export y lit « I05_Arc du chasseur » (banque `alundra_35`, genre 0) ; ce qu'il est au spawn dans le binaire est inconnu. Le type 35 n'est pas ajouté à (C, 23) ni (E, 2) | le convertisseur |
 
 **Corrections induites.** (1) **Proposées, non appliquées le 2026-10-15** (elles iront dans une révision ultérieure de l'enveloppe, relue, quand g
 deviendra la tranche suivante) : §1.1, ligne 10 : l'ordre interne g1a, g2a, g2b, g1b ; ligne 11 : h3 exige g1a et g2a ; D-G-14 : retirer
