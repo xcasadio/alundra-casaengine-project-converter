@@ -225,8 +225,32 @@ static class Program
         }
         if (Problems.Count > 0) return Refuse(label);
 
-        // rename
+        // SymbolFinder (hence Renamer) sometimes does not report a cref although the semantic model binds it (seen in a doc comment of a
+        // nested test class): rewrite those tokens first, textually, so that every cref bound to a renamed type is renamed; the
+        // verification below then checks the binding of each of them as for any other reference
+        var found = new HashSet<(DocumentId, int)>(refsBefore.Values.SelectMany(l => l.Select(x => (x.Doc, x.Span.Start))));
         var cur = before;
+        int crefFixups = 0;
+        foreach (var d in oursDocs)
+        {
+            if (!d.SupportsSyntaxTree) continue;
+            var droot = (await d.GetSyntaxRootAsync())!;
+            var dm = (await d.GetSemanticModelAsync())!;
+            var edits = new List<Microsoft.CodeAnalysis.Text.TextChange>();
+            foreach (var tk in droot.DescendantTokens(descendIntoTrivia: true))
+            {
+                if (!tk.IsKind(SyntaxKind.IdentifierToken) || !map.ContainsKey(tk.ValueText)) continue;
+                if (tk.Parent?.FirstAncestorOrSelf<Microsoft.CodeAnalysis.CSharp.Syntax.XmlCrefAttributeSyntax>() == null) continue;
+                if (found.Contains((d.Id, tk.SpanStart)) || !IsRenamedSymbolDesc(dm, tk, renamedDescs)) continue;
+                edits.Add(new Microsoft.CodeAnalysis.Text.TextChange(tk.Span, map[tk.ValueText]));
+            }
+            if (edits.Count == 0) continue;
+            crefFixups += edits.Count;
+            cur = cur.WithDocumentText(d.Id, (await d.GetTextAsync()).WithChanges(edits));
+        }
+        if (crefFixups > 0) Console.WriteLine($"{crefFixups} cref(s) not reported by SymbolFinder rewritten textually");
+
+        // rename
         foreach (var (o, n) in pairs)
         {
             var sym = await FindType(cur, cur.GetProject(alundra.Id)!, o);
@@ -279,7 +303,7 @@ static class Program
                 while (k < atok.Count && atok[k].ValueText != exp && skipped < 8 && nsSegments.Contains(atok[k].ValueText)) { k++; skipped++; }
                 if (k >= atok.Count || atok[k].ValueText != exp)
                 {
-                    Bad($"{path}:{b.GetLocation().GetLineSpan().StartLinePosition.Line + 1}: identifier `{b.ValueText}` has no counterpart `{exp}` after the rename");
+                    Bad($"{path}:{b.GetLocation().GetLineSpan().StartLinePosition.Line + 1}: identifier `{b.ValueText}` has no counterpart `{exp}` after the rename (the after token is `{(j < atok.Count ? atok[j].ValueText : "<end>")}` at line {(j < atok.Count ? atok[j].GetLocation().GetLineSpan().StartLinePosition.Line + 1 : 0)})");
                     ok = false; break;
                 }
                 qualifiers += skipped;
