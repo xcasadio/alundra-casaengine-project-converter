@@ -9,6 +9,7 @@ using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using Alundra.Session;
 using Alundra.Scripts;
+using Alundra.Hero;
 
 namespace Alundra.Entities;
 

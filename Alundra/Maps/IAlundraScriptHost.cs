@@ -7,6 +7,7 @@ using Alundra.Maps.Loop;
 using Alundra.Scripts;
 using Alundra.Session;
 using Alundra.Events;
+using Alundra.Hero;
 
 namespace Alundra.Maps;
 

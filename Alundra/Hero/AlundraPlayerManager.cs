@@ -6,8 +6,9 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Ai;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Hero;
 
 /// <summary>
 /// V1 port of a narrow, documented subset of <c>PlayerManager.MovePlayer</c>

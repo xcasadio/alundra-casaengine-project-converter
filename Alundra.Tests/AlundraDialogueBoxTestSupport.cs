@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Alundra.Scripts;
 using Alundra.Session;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using static Alundra.Tests.AlundraHeroChargeTests;
 using Alundra.Session;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

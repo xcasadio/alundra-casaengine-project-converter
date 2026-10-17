@@ -9,6 +9,7 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Ai.Projectiles;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

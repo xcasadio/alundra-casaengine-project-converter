@@ -2,6 +2,7 @@
 using System;
 using System.Globalization;
 using CasaEngine.Core.Logging;
+using Alundra.Hero;
 
 namespace Alundra.Scripts;
 

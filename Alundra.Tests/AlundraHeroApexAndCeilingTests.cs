@@ -7,6 +7,7 @@ using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

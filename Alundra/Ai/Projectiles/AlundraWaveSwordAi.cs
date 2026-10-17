@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Alundra.Events;
 using Alundra.Scripts;
+using Alundra.Hero;
 
 namespace Alundra.Ai.Projectiles;
 

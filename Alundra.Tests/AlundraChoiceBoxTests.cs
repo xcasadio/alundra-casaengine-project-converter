@@ -9,6 +9,7 @@ using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Runtime;
 using Xunit;
 using Alundra.Session;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

@@ -2,6 +2,7 @@
 using System;
 using CasaEngine.Framework.UI;
 using Alundra.Session;
+using Alundra.Hero;
 
 namespace Alundra.Scripts;
 

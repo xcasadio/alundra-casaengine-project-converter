@@ -6,6 +6,7 @@ using Alundra.Scripts;
 using CasaEngine.Engine.Physics;
 using Xunit;
 using Alundra.Session;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

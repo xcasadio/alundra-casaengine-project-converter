@@ -10,6 +10,7 @@ using CasaEngine.Engine.Environment;
 using Alundra.Session;
 using Alundra.Entities.Spawning;
 using Alundra.Scripts;
+using Alundra.Hero;
 
 namespace Alundra.Entities;
 

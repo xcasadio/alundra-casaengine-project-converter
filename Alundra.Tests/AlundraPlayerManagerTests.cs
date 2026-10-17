@@ -4,6 +4,7 @@ using Xunit;
 using Alundra.Maps.Loop;
 using Alundra.Session;
 using Alundra.Entities;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

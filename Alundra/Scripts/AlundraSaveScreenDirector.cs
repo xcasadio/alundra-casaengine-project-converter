@@ -4,6 +4,7 @@ using CasaEngine.Core.Logging;
 using CasaEngine.Framework.SaveGames;
 using Alundra.Session;
 using Alundra.Ai.Objects;
+using Alundra.Hero;
 
 namespace Alundra.Scripts;
 

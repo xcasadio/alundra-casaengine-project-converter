@@ -28,6 +28,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
+using Alundra.Hero;
 
 namespace Alundra.Scripts;
 

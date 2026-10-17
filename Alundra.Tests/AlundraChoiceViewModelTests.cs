@@ -9,6 +9,7 @@ using System.Text.Json;
 using Alundra.Scripts;
 using MGUI.Core.UI;
 using Xunit;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

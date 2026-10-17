@@ -8,6 +8,7 @@ using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
 using Alundra.Session;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

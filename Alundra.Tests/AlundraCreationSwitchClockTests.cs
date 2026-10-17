@@ -9,6 +9,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Alundra.Maps;
 using Alundra.Entities;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

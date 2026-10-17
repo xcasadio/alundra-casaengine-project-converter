@@ -4,6 +4,7 @@ using System.Linq;
 using Alundra.Scripts;
 using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

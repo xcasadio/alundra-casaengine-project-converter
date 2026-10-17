@@ -10,6 +10,7 @@ using Xunit;
 using Alundra.Maps.Loop;
 using Alundra.Session;
 using Alundra.Events;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

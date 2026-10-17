@@ -1,7 +1,7 @@
 #nullable enable
 using Alundra.Session;
 
-namespace Alundra.Scripts;
+namespace Alundra.Hero;
 
 /// <summary>
 /// E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-8, D-E13D-9): the original's <c>g_padState1</c> as the

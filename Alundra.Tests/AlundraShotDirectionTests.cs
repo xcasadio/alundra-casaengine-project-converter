@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
+using Alundra.Hero;
 
 namespace Alundra.Tests;
 

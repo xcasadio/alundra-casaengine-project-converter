@@ -11,6 +11,7 @@ using Xunit;
 using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Session;
 using Alundra.Ai.Objects;
+using Alundra.Hero;
 
 namespace Alundra.Tests.Scripts;
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CasaEngine.Framework.SaveGames;
 using Alundra.Maps;
 using Alundra.Session;
+using Alundra.Hero;
 
 namespace Alundra.Scripts;
 

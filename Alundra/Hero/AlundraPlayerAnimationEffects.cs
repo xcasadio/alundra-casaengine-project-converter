@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using CasaEngine.Framework.Scene.Entities;
 using Alundra.Session;
+using Alundra.Scripts;
 
-namespace Alundra.Scripts;
+namespace Alundra.Hero;
 
 /// <summary>
 /// E20.f2 (docs/plan-e20-heros.md section 1.10): <c>CreatePlayerAnimationEffects(mode)</c> (<c>0x8002FB14</c>), entered as a skeleton at its two call sites of <c>MovePlayer</c>:

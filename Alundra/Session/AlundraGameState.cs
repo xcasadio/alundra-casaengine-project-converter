@@ -4,6 +4,7 @@ using Alundra.Maps;
 using Alundra.Maps.Loop;
 using Alundra.Scripts;
 using Alundra.Events;
+using Alundra.Hero;
 
 namespace Alundra.Session;
 

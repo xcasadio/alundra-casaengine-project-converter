@@ -1,5 +1,6 @@
 #nullable enable
 using Alundra.Entities;
+using Alundra.Hero;
 
 namespace Alundra.Scripts;
 
