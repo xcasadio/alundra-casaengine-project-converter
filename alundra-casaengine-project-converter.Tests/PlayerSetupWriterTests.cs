@@ -50,14 +50,14 @@ public class PlayerSetupWriterTests
             var document = JObject.Parse(File.ReadAllText(fullPath));
             Assert.Equal(gameModeAssetId.ToString(), (string?)document["id"]);
             Assert.Equal(heroEntityAssetId.ToString(), (string?)document["default_pawn_asset_id"]);
-            Assert.Equal("AlundraPlayerController", (string?)document["player_controller_class"]);
+            Assert.Equal("Alundra.Scripts.AlundraPlayerController", (string?)document["player_controller_class"]);
 
             // Round-trips through the engine's own loader.
             var settings = new CasaEngine.Framework.Gameplay.PlayerStartupSettings();
             settings.Load(document);
             Assert.Equal(gameModeAssetId, settings.Id);
             Assert.Equal(heroEntityAssetId, settings.DefaultPawnAssetId);
-            Assert.Equal("AlundraPlayerController", settings.PlayerControllerClass);
+            Assert.Equal("Alundra.Scripts.AlundraPlayerController", settings.PlayerControllerClass);
             Assert.Equal("AIController", settings.AIControllerClass); // engine default, left untouched.
         }
         finally

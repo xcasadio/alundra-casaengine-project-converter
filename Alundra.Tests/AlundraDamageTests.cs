@@ -217,7 +217,7 @@ public sealed class AlundraDamageTests
     /// <summary>An entity whose current attack is the given one: what a target's <c>TouchingEntity</c> points at.</summary>
     private static Entity Attacker(int attribute, int power)
     {
-        var entity = new Entity { Name = "attacker", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "attacker", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
         proxy.CurrentAttack = new AlundraBalanceAttack(attribute, power);

@@ -400,7 +400,7 @@ public class AlundraFloorHeightTests
         {
             Name = "NpcFloorHeightTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
         entity.Initialize();
 

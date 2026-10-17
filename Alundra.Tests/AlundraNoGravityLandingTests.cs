@@ -139,7 +139,7 @@ public sealed class AlundraNoGravityLandingTests
         });
         root.AddChildComponent(collision);
 
-        var entity = new Entity { Name = "LandingWalker", RootComponent = root, GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "LandingWalker", RootComponent = root, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         var settings = new CharacterControllerSettings
         {
             Radius = 6f,

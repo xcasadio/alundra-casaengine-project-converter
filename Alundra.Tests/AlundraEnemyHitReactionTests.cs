@@ -33,7 +33,7 @@ public sealed class AlundraEnemyHitReactionTests
 
     private static Entity Attacker(int attribute, int power)
     {
-        var entity = new Entity { Name = "attacker", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "attacker", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
         proxy.CurrentAttack = new AlundraBalanceAttack(attribute, power);

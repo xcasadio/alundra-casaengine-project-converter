@@ -435,7 +435,7 @@ internal static class AlundraEntitySpawnFactory
         {
             //The prefab is expected to carry AlundraEntityScriptProxy as its script class; fall back
             //explicitly rather than spawning an entity with no gameplay proxy at all.
-            entity.GameplayProxyClassName = nameof(AlundraEntityScriptProxy);
+            entity.GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!;
         }
 
         //Creates/keeps the GameplayProxy (via ElementFactory, from GameplayProxyClassName) and calls its
@@ -506,7 +506,7 @@ internal static class AlundraEntitySpawnFactory
 
         if (string.IsNullOrEmpty(entity.GameplayProxyClassName))
         {
-            entity.GameplayProxyClassName = nameof(AlundraEntityScriptProxy);
+            entity.GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!;
         }
 
         //Creates/keeps the GameplayProxy (via ElementFactory, from GameplayProxyClassName) and calls its
@@ -585,7 +585,7 @@ internal static class AlundraEntitySpawnFactory
         var entity = new Entity
         {
             Name = BuildEntityName(record),
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
 
         //Creates the GameplayProxy (via ElementFactory, from GameplayProxyClassName) and calls its

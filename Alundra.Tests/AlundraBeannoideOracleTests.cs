@@ -127,7 +127,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
 
     private static (Entity Entity, AlundraEntityScriptProxy Proxy) NewHero(IReadOnlyDictionary<string, long> words, long[]? attack)
     {
-        var entity = new Entity { Name = "hero", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "hero", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
         proxy.PosX = unchecked((int)words["posx"]);

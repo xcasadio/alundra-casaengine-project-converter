@@ -74,7 +74,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
@@ -216,7 +216,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
     [Fact]
     public void SubscribeAnimationEndBridge_EntityWithNoAnimatedSpriteComponent_DoesNotThrow()
     {
-        var entity = new Entity { Name = "bare", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
 
         AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
@@ -238,7 +238,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
@@ -268,7 +268,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
     [Fact]
     public void SubscribeAnimationEndBridge_WithoutASprite_LeavesTheClockSpriteNull()
     {
-        var entity = new Entity { Name = "bare", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
 

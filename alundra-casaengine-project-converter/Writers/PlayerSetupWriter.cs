@@ -46,7 +46,7 @@ public static class PlayerSetupWriter
     private static readonly string GameModeEntitiesFolder = Path.Combine("Entities", "Alundra");
     private const string GameModeFileName = "Alundra" + Constants.FileNameExtensions.PlayerStartupSettings;
     private const string GameModeCatalogName = "AlundraPlayer";
-    private const string PlayerControllerClassName = "AlundraPlayerController";
+    private const string PlayerControllerClassName = "Alundra.Scripts.AlundraPlayerController";
 
     private const string ButtonsMappingDataFolder = "Data";
     private const string ButtonsMappingFileName = "Alundra" + Constants.FileNameExtensions.ButtonsMapping;
@@ -56,8 +56,8 @@ public static class PlayerSetupWriter
     /// Writes Entities/Alundra/Alundra.gameMode, pointing at the hero prefab's own asset id
     /// (resolved from Phase 3's bank-key -&gt; prefab id map, key "alundra_0" - see
     /// EntityNameCatalogReader's class doc: Sector5Id 0 of the map_alundra.json bank is the hero,
-    /// "Alundra"). player_controller_class names the gameplay DLL's AlundraPlayerController by simple
-    /// name, resolved at runtime by ElementFactory the same way WorldScriptClassName is; ai_controller
+    /// "Alundra"). player_controller_class names the gameplay DLL's AlundraPlayerController by full
+    /// name (namespace included), resolved at runtime from the gameplay assembly the same way WorldScriptClassName is; ai_controller
     /// and hud stay at PlayerStartupSettings' own defaults (AIController, no HUD).
     /// </summary>
     public static Guid WriteGameMode(

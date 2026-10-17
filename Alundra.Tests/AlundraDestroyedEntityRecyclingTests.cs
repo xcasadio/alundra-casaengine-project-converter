@@ -105,7 +105,7 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
         {
             Name = "RecycleTestEntity" + recordId,
             RootComponent = new TransformComponent(),
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);

@@ -179,7 +179,7 @@ public sealed class AlundraMapStateWorldTests
         record.CustomProperties["SpriteTableIndex"] = Arrow.ToString();
         record.CustomProperties["SpriteDirection"] = "64";
         record.CustomProperties["PrefabAssetId"] = prefabId.ToString();
-        var prefab = new Entity { Name = "K4Prefab", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var prefab = new Entity { Name = "K4Prefab", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         prefab.AddComponent(new CharacterControllerComponent());
         var fromRecord = (AlundraEntityScriptProxy)AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab, catalog, tileMapData: map).GameplayProxy!;
 

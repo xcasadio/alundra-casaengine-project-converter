@@ -250,7 +250,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         {
             Name = "AlundraHeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
         entity.Initialize();
         SetProperty(entity, nameof(Entity.World), world); // ClampToGround reads Owner.World.CollisionField.
@@ -297,7 +297,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
 
     private static AlundraEntityScriptProxy NewDeparturePlayer(int posXPixels, int posYPixels)
     {
-        var entity = new Entity { Name = "player", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "player", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var player = (AlundraEntityScriptProxy)entity.GameplayProxy;
         player.IsPlayer = true;

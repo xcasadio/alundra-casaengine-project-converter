@@ -168,7 +168,7 @@ public sealed class AlundraAnimationClockDriveTests
                 }
             }
 
-            Entity = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy), RootComponent = Sprite };
+            Entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = Sprite };
             HeroWorldFixture.SetProperty(Entity, nameof(Entity.World), world);
             Entity.Initialize();
 

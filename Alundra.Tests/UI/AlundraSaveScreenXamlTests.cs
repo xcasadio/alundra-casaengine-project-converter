@@ -82,7 +82,7 @@ public sealed class AlundraSaveScreenXamlTests
     public void DesignTimeData_PopulatesASaveScreenViewModel()
     {
         var data = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "SaveScreen.design.json")));
-        Assert.Equal(nameof(AlundraSaveScreenViewModel), data["view_model_type"]!.ToString());
+        Assert.Equal(typeof(AlundraSaveScreenViewModel).FullName!, data["view_model_type"]!.ToString());
 
         var viewModel = new AlundraSaveScreenViewModel();
         JsonConvert.PopulateObject(data["values"]!.ToString(), viewModel);

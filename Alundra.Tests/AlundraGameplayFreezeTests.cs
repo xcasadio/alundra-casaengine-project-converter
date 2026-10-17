@@ -161,7 +161,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         {
             Name = "FreezeTestEntity",
             RootComponent = root,
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);

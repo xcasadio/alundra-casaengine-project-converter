@@ -344,7 +344,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
             .GetValue(proxy.EventProgramRunner)!;
         document.EventCodesCTable = new[] { 0, 0 };
 
-        var entity = new Entity { GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var rescanProxy = (AlundraEntityScriptProxy)entity.GameplayProxy!;
         rescanProxy.IsPlayer = false;

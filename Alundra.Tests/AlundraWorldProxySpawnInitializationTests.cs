@@ -377,7 +377,7 @@ public class AlundraWorldProxySpawnInitializationTests
         var prefab = new Entity
         {
             Name = "BankPrefab",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = new AnimatedSpriteComponent(),
         };
 

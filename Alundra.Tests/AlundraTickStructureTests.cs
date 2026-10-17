@@ -124,7 +124,7 @@ public sealed class AlundraTickStructureTests : IDisposable
         {
             var root = new TransformComponent();
             root.LocalTransform.Position = new Vector3(xPixels, yPixels, 0f);
-            var entity = new Entity { Name = "npc", RootComponent = root, GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+            var entity = new Entity { Name = "npc", RootComponent = root, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
             entity.Initialize();
             var npc = (AlundraEntityScriptProxy)entity.GameplayProxy;
             npc.ScriptHost = Proxy;

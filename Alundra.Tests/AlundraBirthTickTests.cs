@@ -301,7 +301,7 @@ public sealed class AlundraBirthTickTests : IDisposable
         IAlundraScriptHost host = new SelfDrivenHost();
         Assert.False(host.DrivesEntityTicks);
         Assert.Null(host.CollisionField);
-        var entity = new Entity { Name = "marked", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "marked", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.ScriptHost = host;

@@ -212,7 +212,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
         {
             Name = "FreezeTestNpc",
             RootComponent = root,
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
         entity.Initialize();
 

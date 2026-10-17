@@ -1,5 +1,5 @@
 {
-  "view_model_type": "AlundraInventoryViewModel",
+  "view_model_type": "Alundra.Scripts.AlundraInventoryViewModel",
   "values": {
     "RootVisibility": "Visible",
     "BoxWeapon": {

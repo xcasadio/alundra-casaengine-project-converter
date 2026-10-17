@@ -112,7 +112,7 @@ public sealed class AlundraTextBoxScreenXamlTests
     public void DesignTimeData_PopulatesATextBoxViewModel_WithTheRestState()
     {
         var data = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "TextBoxScreen.design.json")));
-        Assert.Equal(nameof(AlundraTextBoxViewModel), data["view_model_type"]!.ToString());
+        Assert.Equal(typeof(AlundraTextBoxViewModel).FullName!, data["view_model_type"]!.ToString());
 
         var viewModel = new AlundraTextBoxViewModel();
         JsonConvert.PopulateObject(data["values"]!.ToString(), viewModel);

@@ -319,10 +319,10 @@ public static class SpriteWriter
     /// DepthSortable2DComponent configured like
     /// CasaEngineMonogame/Projects/RPGDemo/Entities/character_link.entity (YSortedWorld render pass,
     /// top-down Y-up sort - the defaults both components already carry), and entity-level
-    /// script_class_name = "AlundraEntityScriptProxy" so a spawned instance gets the shared gameplay
+    /// script_class_name = "Alundra.Scripts.AlundraEntityScriptProxy" so a spawned instance gets the shared gameplay
     /// proxy. The prefab is never Initialize()'d in this process - AssetVerifier (Phase 8) only
     /// Load()s entities - so the proxy class not being loadable here (this converter has no reference
-    /// to the Alundra gameplay DLL) never surfaces as a failure; ElementFactory.Create only runs from
+    /// to the Alundra gameplay DLL) never surfaces as a failure; ElementFactory.CreateScriptObject only runs from
     /// Entity.InitializePrivate, which Load never calls.
     ///
     /// When the bank's header also declares a positive body volume, a CollisionComponent child of the
@@ -403,7 +403,7 @@ public static class SpriteWriter
         {
             Name = entityFolderName,
             RootComponent = rootComponent,
-            GameplayProxyClassName = "AlundraEntityScriptProxy",
+            GameplayProxyClassName = "Alundra.Scripts.AlundraEntityScriptProxy",
         };
         entity.AddComponent(new DepthSortable2DComponent(Ids.For($"component:depthsort:{bank.BankKey}"))
         {

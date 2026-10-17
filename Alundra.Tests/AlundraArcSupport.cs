@@ -334,7 +334,7 @@ internal sealed class ArcRun : IDisposable
     // spawns an entity at frame 278 that the lists, now refreshed before the physics of the tick, already count as an obstacle: no second step along the wall).
 
     /// <summary>The second steps along a wall that the entities of the world made (the hero's included).</summary>
-    public int TotalSlideCount => Proxy == null ? 0 : Entities.Concat(new[] { Hero }).Distinct().Sum(e => e.SlideCount);
+    public int TotalSlideCount => Proxy == null || Hero == null ? 0 : Entities.Concat(new[] { Hero }).Distinct().Sum(e => e.SlideCount);
 
     public void Dispose()
     {
@@ -569,7 +569,7 @@ internal sealed class ArcRun : IDisposable
         {
             Name = "AlundraHeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
         entity.AddComponent(new CharacterControllerComponent { Settings = settings });
         entity.Initialize();

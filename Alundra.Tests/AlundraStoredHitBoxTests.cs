@@ -46,7 +46,7 @@ public sealed class AlundraStoredHitBoxTests
         data.CollisionKeyframes.Add(keyframe);
         sprite.AddAnimation(new Animation2d(data));
 
-        var entity = new Entity { Name = "actor", GameplayProxyClassName = nameof(AlundraEntityScriptProxy), RootComponent = sprite };
+        var entity = new Entity { Name = "actor", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = sprite };
         entity.Initialize();
         var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
         proxy.LogicContextEntity = entity;

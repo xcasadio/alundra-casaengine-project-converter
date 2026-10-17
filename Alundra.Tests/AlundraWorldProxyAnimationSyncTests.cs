@@ -134,7 +134,7 @@ public class AlundraWorldProxyAnimationSyncTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
@@ -221,7 +221,7 @@ public class AlundraWorldProxyAnimationSyncTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
@@ -241,7 +241,7 @@ public class AlundraWorldProxyAnimationSyncTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
@@ -261,7 +261,7 @@ public class AlundraWorldProxyAnimationSyncTests
     [Fact]
     public void RunAnimationSyncPass_BareEntityWithNoAnimatedSpriteComponent_ResolvesStateButDoesNotThrow()
     {
-        var entity = new Entity { Name = "bare", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = ~0u;

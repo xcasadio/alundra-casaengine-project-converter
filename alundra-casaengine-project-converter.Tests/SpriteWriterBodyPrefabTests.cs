@@ -56,7 +56,7 @@ public class SpriteWriterBodyPrefabTests
                 var entity = new Entity();
                 entity.Load(entityDocument);
 
-                Assert.Equal("AlundraEntityScriptProxy", entity.GameplayProxyClassName);
+                Assert.Equal("Alundra.Scripts.AlundraEntityScriptProxy", entity.GameplayProxyClassName);
 
                 // Root: inert TransformComponent (logical pose) with two children - the render
                 // projection and the collision body, both siblings under the root.
@@ -138,7 +138,7 @@ public class SpriteWriterBodyPrefabTests
         var entity = new Entity();
         entity.Load(entityDocument);
 
-        Assert.Equal("AlundraEntityScriptProxy", entity.GameplayProxyClassName);
+        Assert.Equal("Alundra.Scripts.AlundraEntityScriptProxy", entity.GameplayProxyClassName);
 
         // No body box: root TransformComponent has a single child, the render projection - no
         // CollisionComponent sibling.

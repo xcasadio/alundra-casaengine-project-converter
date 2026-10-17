@@ -107,7 +107,7 @@ internal sealed class JumpNpcRig
 
         root.AddChildComponent(sprite);
 
-        var entity = new Entity { Name = "SpriteJumper", RootComponent = root, GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "SpriteJumper", RootComponent = root, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         var controller = new CharacterControllerComponent
         {
             Settings = new CharacterControllerSettings

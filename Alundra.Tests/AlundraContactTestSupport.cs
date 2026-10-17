@@ -160,7 +160,7 @@ internal static class ContactWorld
         });
         root.AddChildComponent(collision);
 
-        var entity = new Entity { Name = name, RootComponent = root, GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = name, RootComponent = root, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         if (withController)
         {
             AddController(entity);

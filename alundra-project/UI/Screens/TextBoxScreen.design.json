@@ -1,5 +1,5 @@
 {
-  "view_model_type": "AlundraTextBoxViewModel",
+  "view_model_type": "Alundra.Scripts.AlundraTextBoxViewModel",
   "values": {
     "RootVisibility": "Visible",
     "Frame": {

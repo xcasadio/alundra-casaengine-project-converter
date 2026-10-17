@@ -146,7 +146,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     /// <summary>The hero: position, tile and floor; the frame box FIELD (<paramref name="box"/>) and the current attack (<paramref name="attack"/>, null for a null pointer).</summary>
     private static (Entity Entity, AlundraEntityScriptProxy Proxy) NewHero(IReadOnlyDictionary<string, long> words, long[]? attack, bool box)
     {
-        var entity = new Entity { Name = "hero", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "hero", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
         proxy.PosX = unchecked((int)words["posx"]);

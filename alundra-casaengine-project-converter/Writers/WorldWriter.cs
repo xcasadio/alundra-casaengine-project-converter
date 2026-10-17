@@ -138,8 +138,8 @@ public static class WorldWriter
     private const string SharedCameraEntitiesFolder = "Entities";
 
     // The world-level GameplayProxy class, implemented in the Alundra gameplay DLL
-    // (Alundra/Scripts/AlundraWorldProxy.cs) and resolved by simple name at runtime.
-    private const string WorldScriptClassName = "AlundraWorldProxy";
+    // (Alundra/Scripts/AlundraWorldProxy.cs) and resolved by full name (namespace included) at runtime.
+    private const string WorldScriptClassName = "Alundra.Scripts.AlundraWorldProxy";
 
     // docs/demarrage-nouvelle-partie.md section 2.1: the only documented spawn in the whole game.
     // g_saveData.InitialMapId = 389, CameraTileX/Y/Z = 33 / 59 / 0.
@@ -373,8 +373,8 @@ public static class WorldWriter
             ["name"] = worldName,
             ["entity_references"] = entityReferences,
             // The world's own GameplayProxy class, implemented by AlundraWorldProxy in the Alundra
-            // gameplay DLL (Alundra/Scripts/), and resolved at runtime by simple name via
-            // ElementFactory.Create<GameplayProxy>. The forward reference is intentional: the class
+            // gameplay DLL (Alundra/Scripts/), and resolved at runtime by full name (namespace included) via
+            // ElementFactory.CreateScriptObject<GameplayProxy>. The forward reference is intentional: the class
             // itself is implemented in a follow-up commit, but World.Load reads this key
             // unconditionally, so it must be present now.
             ["script_class_name"] = WorldScriptClassName,

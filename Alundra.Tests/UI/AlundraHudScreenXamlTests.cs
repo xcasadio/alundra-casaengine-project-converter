@@ -87,7 +87,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
     public void DesignTimeData_PopulatesAHudViewModel()
     {
         var data = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "HudScreen.design.json")));
-        Assert.Equal(nameof(AlundraHudViewModel), data["view_model_type"]!.ToString());
+        Assert.Equal(typeof(AlundraHudViewModel).FullName!, data["view_model_type"]!.ToString());
 
         var viewModel = new AlundraHudViewModel();
         JsonConvert.PopulateObject(data["values"]!.ToString(), viewModel);

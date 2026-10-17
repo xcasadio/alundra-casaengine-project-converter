@@ -182,7 +182,7 @@ public sealed class AlundraEntityDestructionTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = new TransformComponent(),
         };
         entity.Initialize();

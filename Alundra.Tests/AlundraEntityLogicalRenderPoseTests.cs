@@ -286,7 +286,7 @@ public class AlundraEntityLogicalRenderPoseTests
         proxy.ScriptHost = new FakeScriptHost(runner);
         proxy.IsPlayer = false;
 
-        var entity = new Entity { Name = "PoseTestEntity", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "PoseTestEntity", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         SetProperty(entity, nameof(Entity.GameplayProxy), (IGameplayProxy)proxy);
 
         var root = new TransformComponent();

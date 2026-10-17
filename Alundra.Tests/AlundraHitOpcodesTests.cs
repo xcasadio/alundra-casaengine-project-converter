@@ -66,7 +66,7 @@ public sealed class AlundraHitOpcodesTests
 
     private static AlundraEntityScriptProxy Make(int recordId, uint flags, int attribute, int power)
     {
-        var entity = new Entity { Name = "e" + recordId, GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "e" + recordId, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
         proxy.LogicContextEntity = entity;

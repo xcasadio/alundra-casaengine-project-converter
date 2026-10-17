@@ -69,7 +69,7 @@ public class AlundraTerrainHeightTests
     /// with no <c>PhysicsWorld</c>/content-pipeline setup at all.</summary>
     private static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildEntity(World world, bool withController)
     {
-        var entity = new Entity { Name = "TerrainHeightTestEntity", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "TerrainHeightTestEntity", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         if (withController)
         {
             entity.AddComponent(new CharacterControllerComponent());

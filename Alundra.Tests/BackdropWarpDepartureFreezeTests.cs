@@ -231,7 +231,7 @@ internal static class BackdropWarpDepartureSupport
     /// through the 16 frames.</summary>
     internal static AlundraEntityScriptProxy BeginDeparture(AlundraWorldProxy proxy)
     {
-        var entity = new Entity { Name = "player", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "player", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var player = (AlundraEntityScriptProxy)entity.GameplayProxy;
         player.IsPlayer = true;

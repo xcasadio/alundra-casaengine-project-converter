@@ -117,7 +117,7 @@ public class AlundraWorldProxyTests
         var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, prefabLoader: null);
 
         Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", entity.Name);
-        Assert.Equal(nameof(AlundraEntityScriptProxy), entity.GameplayProxyClassName);
+        Assert.Equal(typeof(AlundraEntityScriptProxy).FullName!, entity.GameplayProxyClassName);
         Assert.True(entity.IsInitialized);
         Assert.Null(entity.RootComponent);
 
@@ -137,7 +137,7 @@ public class AlundraWorldProxyTests
         var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => null);
 
         Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", entity.Name);
-        Assert.Equal(nameof(AlundraEntityScriptProxy), entity.GameplayProxyClassName);
+        Assert.Equal(typeof(AlundraEntityScriptProxy).FullName!, entity.GameplayProxyClassName);
         Assert.True(entity.IsInitialized);
         Assert.Null(entity.RootComponent);
 
@@ -154,7 +154,7 @@ public class AlundraWorldProxyTests
 
         var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => throw new InvalidOperationException("asset not found"));
 
-        Assert.Equal(nameof(AlundraEntityScriptProxy), entity.GameplayProxyClassName);
+        Assert.Equal(typeof(AlundraEntityScriptProxy).FullName!, entity.GameplayProxyClassName);
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         Assert.Equal(EntityStatus.Loaded, proxy.Status);
     }
@@ -169,7 +169,7 @@ public class AlundraWorldProxyTests
         var prefab = new Entity
         {
             Name = "BankPrefab",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = new AnimatedSpriteComponent(),
         };
 
@@ -182,7 +182,7 @@ public class AlundraWorldProxyTests
 
         Assert.Equal(prefabAssetId, requestedId);
         Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", entity.Name);
-        Assert.Equal(nameof(AlundraEntityScriptProxy), entity.GameplayProxyClassName);
+        Assert.Equal(typeof(AlundraEntityScriptProxy).FullName!, entity.GameplayProxyClassName);
         Assert.True(entity.IsInitialized);
 
         var clonedComponent = Assert.IsType<AnimatedSpriteComponent>(entity.RootComponent);
@@ -216,7 +216,7 @@ public class AlundraWorldProxyTests
         var prefab = new Entity
         {
             Name = "BankPrefab",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = null,
         };
 

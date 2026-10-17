@@ -582,7 +582,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         // Player - see this method's own doc for why it goes through Entity.Initialize() rather than a
         // hand-built proxy/Entity pair, and AdoptPlayerPawn's own doc for the exact field set this mirrors
         // (New Game tile (33,59), tile-centre 16.16 fixed-point pose (804,952,0), Status=Normal).
-        var playerEntity = new Entity { GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var playerEntity = new Entity { GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         playerEntity.Initialize();
         var playerProxy = (AlundraEntityScriptProxy)playerEntity.GameplayProxy!;
         playerProxy.IsPlayer = true;

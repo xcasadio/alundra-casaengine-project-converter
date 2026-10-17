@@ -186,7 +186,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
 
     private static Entity NewEntityWithProxy(EntityStatus status, int posX, int posY, int posZ)
     {
-        var entity = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy), RootComponent = new AnimatedSpriteComponent() };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = new AnimatedSpriteComponent() };
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.Status = status;
@@ -240,7 +240,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void RunTransformSyncPass_BareEntityWithNoRootComponent_DoesNotThrow()
     {
-        var entity = new Entity { Name = "bare", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
 
         AlundraFrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
@@ -253,7 +253,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void RunAnimationSyncPass_FlagToDestroy_HidesEntity_AndSkipsSync()
     {
-        var entity = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy), RootComponent = new AnimatedSpriteComponent() };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = new AnimatedSpriteComponent() };
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.Status = EntityStatus.FlagToDestroy;
@@ -269,7 +269,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void RunWallInterleaveSortKeyPass_FlagToDestroy_SkipsElevationWrite()
     {
-        var entity = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         var depthSortable = new DepthSortable2DComponent { Elevation = 123 };
         entity.AddComponent(depthSortable);
         entity.Initialize();
@@ -287,7 +287,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     [Fact]
     public void RunWallInterleaveSortKeyPass_ARelaunchedAnimation_UsesTheBiasOfTheTarget()
     {
-        var entity = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         var depthSortable = new DepthSortable2DComponent { Elevation = 123 };
         entity.AddComponent(depthSortable);
         entity.Initialize();

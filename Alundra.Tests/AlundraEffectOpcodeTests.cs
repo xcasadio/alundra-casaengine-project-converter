@@ -774,7 +774,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         typeof(Microsoft.Xna.Framework.Game).GetField("_components", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
             .SetValue(game, new Microsoft.Xna.Framework.GameComponentCollection());
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
-        var owner = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy), RootComponent = new AnimatedSpriteComponent() };
+        var owner = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = new AnimatedSpriteComponent() };
         HeroWorldFixture.SetProperty(owner, nameof(Entity.World), world);
         owner.Initialize();
         var entity = Assert.IsType<AlundraEntityScriptProxy>(owner.GameplayProxy);

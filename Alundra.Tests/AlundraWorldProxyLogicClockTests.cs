@@ -68,7 +68,7 @@ public class AlundraWorldProxyLogicClockTests
     {
         var entity = new CasaEngine.Framework.Scene.Entities.Entity
         {
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
         entity.Initialize();
 

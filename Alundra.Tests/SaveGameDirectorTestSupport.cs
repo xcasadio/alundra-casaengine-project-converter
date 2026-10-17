@@ -272,7 +272,7 @@ internal static class SaveGameDirectorTestSupport
         {
             Name = "AlundraHeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
         entity.Initialize();
         var worldProperty = typeof(Entity).GetProperty(nameof(Entity.World), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)!;

@@ -328,7 +328,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         {
             Name = "AlundraHeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
 
         // E19.d2b B4 (T-REG-E12D-1): a real controller with the export's settings; the world gets the physics world it needs.

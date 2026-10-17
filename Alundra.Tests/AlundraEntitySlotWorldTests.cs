@@ -50,7 +50,7 @@ public sealed class AlundraEntitySlotWorldTests
 
     private static AlundraEntityScriptProxy SlotlessProxy()
     {
-        var entity = new Entity { Name = "SlotlessEntity", RootComponent = new TransformComponent(), GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "SlotlessEntity", RootComponent = new TransformComponent(), GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         return Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
     }

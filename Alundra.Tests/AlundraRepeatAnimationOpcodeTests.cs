@@ -193,7 +193,7 @@ public class AlundraRepeatAnimationOpcodeTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = component,
         };
         entity.Initialize();
@@ -258,7 +258,7 @@ public class AlundraRepeatAnimationOpcodeTests
         var entity = new Entity
         {
             Name = "e",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
         if (withSprite)
         {
@@ -353,7 +353,7 @@ public class AlundraRepeatAnimationOpcodeTests
         sprite.AddAnimation(MakeAnimation(0, AnimationType.Loop, 0.2f));
         sprite.AddAnimation(MakeAnimation(5, AnimationType.Loop, 0.2f));
         sprite.AddAnimation(MakeAnimation(6, AnimationType.Once, 0.04f));
-        var entity = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy), RootComponent = sprite };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = sprite };
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.AnimationEndByAnimDirection = new Dictionary<int, AnimationEndInfo>
@@ -433,7 +433,7 @@ public class AlundraRepeatAnimationOpcodeTests
     public void SyncAnimation_ASwitchOnASpriteWithoutAnyAnimation_DoesNotThrow()
     {
         var sprite = new AnimatedSpriteComponent();
-        var entity = new Entity { Name = "e", GameplayProxyClassName = nameof(AlundraEntityScriptProxy), RootComponent = sprite };
+        var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = sprite };
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);

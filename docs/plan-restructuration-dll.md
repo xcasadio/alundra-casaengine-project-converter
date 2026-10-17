@@ -294,6 +294,25 @@ doivent concorder).
   à la prédiction, second export identique ; chemins autorisés : les 879 sorties, les 6 `design.json`, `report.json`) dans une fenêtre
   calme : aucun build ni test en cours, ni jeu ni éditeur ouverts (l'auteur les ferme).
 
+**Résultats de la partie parent ✅ (2026-10-17, un commit parent).** Moteur : pointeur du sous-module sur `chantier/script-types-full-name`
+`fcc5280b` (T1.1 à T5.1 faites, CasaEngine.Tests 4 314 / 0 échec). Convertisseur : les trois littéraux en noms complets
+(`Alundra.Scripts.AlundraWorldProxy`, `...AlundraEntityScriptProxy`, `...AlundraPlayerController`), leurs tests (`PlayerSetupWriterTests`,
+`SpriteWriterBodyPrefabTests`) et un verrou nouveau dans `WorldWriterTests` (le `script_class_name` du `.world` écrit et relu par le moteur), les
+commentaires « simple name » corrigés. DLL : trois `catch (ScriptTypeResolutionException)` (`AbortCreation` puis `throw;`) avant les trois
+`catch (Exception ex)` de `AlundraWorldProxy` (chargement de carte, `SpawnEntityByRecordId`, `SpawnEntityBySpriteIndex`) ; trois `nameof` →
+`typeof(AlundraEntityScriptProxy).FullName!` dans `AlundraEntitySpawnFactory`, 69 dans les tests, 6 dans les tests d'écran. Tests nouveaux
+(`AlundraScriptNamesInTheDataTests`, 5 cas) : le garde-fou des données (`Alundra.gameMode`, `Alundra.entity`, un `.world`, contre `typeof(X).FullName` et
+`ElementFactory.TryResolveScriptType`), le chargement réel de la carte 14 dont les préfabs portent le nom court (l'exception nomme le `.entity` du préfab ;
+rouge quand les trois `catch` sont neutralisés par un filtre `when (false)`, restauré octet pour octet), une autre faute à la même création qui journalise,
+omet et finit le chargement. Initialiseur de module `AlundraScriptAssemblyRegistration` (la DLL est enregistrée auprès du moteur). Écart : `ArcRun.Dispose`
+plantait (`Hero` nul) quand le constructeur échouait après la construction du proxy et masquait l'exception d'origine ; `TotalSlideCount` renvoie 0 sans
+héros. Export 1 (fenêtre calme, aucun processus du jeu, de l'éditeur ou de test) : `m1b` (les six `design.json` édités à la main) ne diffère de `m1` que par
+ces six fichiers, chacun égal à son SHA-1 prédit ; `m2` contre `m1` : 0 ajouté, 0 retiré, 886 changés, tous dans les 886 chemins autorisés, les
+885 SHA-1 prédits égaux (0 écart), `AssetInfos.json` inchangé, 24 104 fichiers ; export 2 (`m3`) : seul `report.json` diffère ; `Verification: PASSED
+(20139 loaded, 2477 existence-checked)`, `Errors` 0. Suites : convertisseur 854 / 0 échec ; `Alundra.Tests` 5 097 / 0 échec en Release (copie neutralisée)
+et en Debug ; `cmp` de la DLL Debug égal ; garde des traces sans écart. Reste : les relectures fraîches (moteur, données) et la recette de l'auteur en jeu
+(nouvelle partie, les entités bougent, F5, F6, F9) et dans l'éditeur lancé (recette de T3.2).
+
 **Acceptation.** L'annexe de T0 existe à un commit antérieur au premier commit de code ; `CasaEngine.Tests` vert et ses nouveaux cas
 rouges sur le moteur d'avant (nommés) ; les deux `.sln` du moteur ; démos et RPGDemo démarrent ; `Alundra.Tests` Release et Debug, zéro
 échec ; la suite du convertisseur verte et sa phase 8 `Verification: PASSED` sur l'export de R0 ; le `diff_manifests.py` versé, contre la

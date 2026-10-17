@@ -119,7 +119,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
     /// as <see cref="NewNpcEntityWithEventTrigger"/>/<see cref="AlundraWorldProxyEntityManipulationTests.NewEntityWithProxy"/>.</summary>
     private static AlundraEntityScriptProxy NewPlayer(int posXPixels, int posYPixels)
     {
-        var entity = new Entity { Name = "player", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "player", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var player = (AlundraEntityScriptProxy)entity.GameplayProxy;
         player.IsPlayer = true;
@@ -132,7 +132,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
     private static Entity NewNpcEntityWithEventTrigger()
     {
-        var entity = new Entity { Name = "npc", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "npc", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
         proxy.Status = EntityStatus.Normal;

@@ -107,7 +107,7 @@ public sealed class AlundraChoiceScreenXamlTests
     public void DesignTimeData_PopulatesAChoiceViewModel_WithTheRestState()
     {
         var data = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "ChoiceScreen.design.json")));
-        Assert.Equal(nameof(AlundraChoiceViewModel), data["view_model_type"]!.ToString());
+        Assert.Equal(typeof(AlundraChoiceViewModel).FullName!, data["view_model_type"]!.ToString());
 
         var viewModel = new AlundraChoiceViewModel();
         JsonConvert.PopulateObject(data["values"]!.ToString(), viewModel);

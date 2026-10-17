@@ -158,7 +158,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
 
     private static Entity NewBareEntity()
     {
-        var entity = new Entity { GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         return entity;
     }

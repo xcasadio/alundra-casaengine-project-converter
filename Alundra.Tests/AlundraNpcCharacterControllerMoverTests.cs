@@ -222,7 +222,7 @@ public class AlundraNpcCharacterControllerMoverTests
         {
             Name = "NpcTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
 
         var controllerComponent = new CharacterControllerComponent { Settings = settings };
@@ -1078,7 +1078,7 @@ public class AlundraNpcCharacterControllerMoverTests
         var prefab = new Entity
         {
             Name = "Bank146Prefab",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = prefabRoot,
         };
         prefab.AddComponent(controllerComponent);
@@ -1778,7 +1778,7 @@ public class AlundraNpcCharacterControllerMoverTests
         var prefab = new Entity
         {
             Name = "Bank146PrefabRecord11",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = prefabRoot,
         };
         prefab.AddComponent(controllerComponent);
@@ -2351,7 +2351,7 @@ public class AlundraNpcCharacterControllerMoverTests
         var prefab = new Entity
         {
             Name = "GullSixPrefab",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = prefabRoot,
         };
         prefab.AddComponent(controllerComponent);
@@ -2406,7 +2406,7 @@ public class AlundraNpcCharacterControllerMoverTests
         var prefab = new Entity
         {
             Name = "GullSixPrefabWithProjection",
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
             RootComponent = prefabRoot,
         };
         prefab.AddComponent(controllerComponent);

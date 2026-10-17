@@ -1090,6 +1090,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
                 RollLootAtCreation(spawnedProxy, hasRecord: true, RecordContentsByte(record)); // E20.e0b2 (D-E0B-6): the last statement of the creation.
             }
+            // R0 (ADR-0075): a script type name that does not resolve is a fault of the data, not of this creation: give the slot back, then let it stop the load with its message (file, key, value, assembly, hint); every other fault below keeps the log and the skip.
+            catch (ScriptTypeResolutionException)
+            {
+                AbortCreation(entity, added, slot);
+                throw;
+            }
             catch (Exception ex)
             {
                 AbortCreation(entity, added, slot);
@@ -3406,6 +3412,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             RollLootAtCreation(spawnedProxy, hasRecord: true, RecordContentsByte(record)); // E20.e0b2 (D-E0B-6): the last statement of the creation.
             return spawnedProxy;
         }
+        // R0 (ADR-0075): a script type name that does not resolve is a fault of the data, not of this creation: give the slot back, then let it stop the load with its message (file, key, value, assembly, hint); every other fault below keeps the log and the skip.
+        catch (ScriptTypeResolutionException)
+        {
+            AbortCreation(entity, added, slot);
+            throw;
+        }
         catch (Exception ex)
         {
             AbortCreation(entity, added, slot);
@@ -3535,6 +3547,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             }
 
             return spawnedProxy;
+        }
+        // R0 (ADR-0075): a script type name that does not resolve is a fault of the data, not of this creation: give the slot back, then let it stop the load with its message (file, key, value, assembly, hint); every other fault below keeps the log and the skip.
+        catch (ScriptTypeResolutionException)
+        {
+            AbortCreation(entity, added, slot);
+            throw;
         }
         catch (Exception ex)
         {

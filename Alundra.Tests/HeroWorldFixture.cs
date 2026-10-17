@@ -93,7 +93,7 @@ internal static class HeroWorldFixture
         {
             Name = "HeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
 
         var controllerComponent = new CharacterControllerComponent { Settings = settings };

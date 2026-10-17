@@ -166,7 +166,7 @@ public sealed class AlundraSailor12EndOfIntroTests
             LocalRotation = Quaternion.Identity,
         });
         rootComponent.AddChildComponent(collisionComponent);
-        var entity = new Entity { Name = "Sailor12", RootComponent = rootComponent, GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var entity = new Entity { Name = "Sailor12", RootComponent = rootComponent, GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         var controllerComponent = new CharacterControllerComponent { Settings = settings };
         controllerComponent.SetControlMode(CharacterControlMode.Script);
         controllerComponent.IsVerticalOwnedExternally = true;

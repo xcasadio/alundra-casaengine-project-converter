@@ -92,7 +92,7 @@ public sealed class AlundraNewGameEntryTests : IDisposable
         {
             Name = "AlundraHeroTestPawn",
             RootComponent = root,
-            GameplayProxyClassName = nameof(AlundraEntityScriptProxy),
+            GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!,
         };
         entity.Initialize();
         SetProperty(entity, nameof(Entity.World), world); // ClampToGround reads Owner.World.CollisionField.

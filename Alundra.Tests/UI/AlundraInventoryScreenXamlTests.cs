@@ -79,13 +79,13 @@ public sealed class AlundraInventoryScreenXamlTests
         Assert.True(File.Exists(Path.Combine(directory, envelope.DesignTimeDataFile)));
     }
 
-    /// <summary>The design-time data names the view model by its simple type name (the engine's ElementFactory
-    /// convention) and fills it the way the editor does, with <see cref="JsonConvert.PopulateObject(string, object)"/>.</summary>
+    /// <summary>The design-time data names the view model by its full type name (the engine's ElementFactory
+    /// convention, ADR-0075) and fills it the way the editor does, with <see cref="JsonConvert.PopulateObject(string, object)"/>.</summary>
     [Fact]
     public void DesignTimeData_PopulatesAnInventoryViewModel()
     {
         var data = JObject.Parse(File.ReadAllText(Path.Combine(ScreensDirectory(), "InventoryScreen.design.json")));
-        Assert.Equal(nameof(AlundraInventoryViewModel), data["view_model_type"]!.ToString());
+        Assert.Equal(typeof(AlundraInventoryViewModel).FullName!, data["view_model_type"]!.ToString());
 
         var viewModel = new AlundraInventoryViewModel();
         JsonConvert.PopulateObject(data["values"]!.ToString(), viewModel);

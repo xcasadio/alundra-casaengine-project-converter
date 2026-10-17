@@ -1,5 +1,5 @@
 {
-  "view_model_type": "AlundraChoiceViewModel",
+  "view_model_type": "Alundra.Scripts.AlundraChoiceViewModel",
   "values": {
     "RootVisibility": "Visible",
     "Frame": {

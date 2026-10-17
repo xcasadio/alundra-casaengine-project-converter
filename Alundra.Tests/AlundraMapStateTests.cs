@@ -36,7 +36,7 @@ public sealed class AlundraMapStateTests
     /// <summary>A prefab with a controller (default settings: mask 0, not owned, minimum move distance 0.001), the only thing the state needs besides the header.</summary>
     private static Entity PrefabWithController()
     {
-        var prefab = new Entity { Name = "MapStatePrefab", GameplayProxyClassName = nameof(AlundraEntityScriptProxy) };
+        var prefab = new Entity { Name = "MapStatePrefab", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         prefab.AddComponent(new CharacterControllerComponent());
         return prefab;
     }

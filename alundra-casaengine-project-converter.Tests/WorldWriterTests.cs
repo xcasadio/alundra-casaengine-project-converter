@@ -108,6 +108,10 @@ public class WorldWriterTests
             world.Load(worldDocument);
             Assert.Equal(worldAssetInfo.Id, world.Id);
             Assert.Equal(TestGameModeAssetId, world.PlayerStartupSettingsAssetId);
+            // The engine creates the world proxy by the FULL name from the gameplay assembly (ADR-0075): a
+            // simple name here would stop the game at the first world load.
+            Assert.Equal("Alundra.Scripts.AlundraWorldProxy", (string?)worldDocument["script_class_name"]);
+            Assert.Equal("Alundra.Scripts.AlundraWorldProxy", world.GameplayProxyClassName);
 
             var entityNodes = (JArray)worldDocument["entity_references"]!;
             Assert.Equal(3, entityNodes.Count);
