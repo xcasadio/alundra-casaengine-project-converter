@@ -27,7 +27,7 @@ using Alundra.Probes;
 
 namespace Alundra.Scripts;
 
-public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnchor
+public partial class AlundraEntityScriptProxy : GameplayProxy, IEffectAnchor
 {
     public bool IsLoadedNormalOrDeactivated =>
                 Status is EntityStatus.Loaded or EntityStatus.Normal or EntityStatus.Deactivated;
@@ -447,25 +447,25 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
 
     /// <summary>E20.f1b: the handle of the charge aura (<c>0x80126FF8</c> of the binary, here the slot itself): the slot of the effect 3 attached to the hero, null when none (or when the creation found the reservoir full:
     /// the binary keeps the null result and retries at every tick). <see cref="AuraGeneration"/> is the number the slot had when the aura was created. Hero only.</summary>
-    internal AlundraEffectSlot? AuraSlot;
+    internal EffectSlot? AuraSlot;
 
-    /// <summary>E20.f1b (D-E20-30, ADR-0059): the <see cref="AlundraEffectSlot.Generation"/> of <see cref="AuraSlot"/> at the creation of the aura; the aura is the slot's occupant only while the slot still carries it. Hero only.</summary>
+    /// <summary>E20.f1b (D-E20-30, ADR-0059): the <see cref="EffectSlot.Generation"/> of <see cref="AuraSlot"/> at the creation of the aura; the aura is the slot's occupant only while the slot still carries it. Hero only.</summary>
     internal int AuraGeneration;
 
     // E20.f1b: the proxy is the anchor of the effects attached to its entity (the charge aura of the hero; the break effect of a destroyed entity, E14.a1b). Explicit, so that nothing else sees these members.
     // The position is in the binary's frame of Z (PosZ + 1, ADR-0026): the effect starts at the entity and follows it with the binary's Z.
-    int IAlundraEffectAnchor.PosX => PosX;
+    int IEffectAnchor.PosX => PosX;
 
-    int IAlundraEffectAnchor.PosY => PosY;
+    int IEffectAnchor.PosY => PosY;
 
-    int IAlundraEffectAnchor.PosZ => unchecked(PosZ + 1);
+    int IEffectAnchor.PosZ => unchecked(PosZ + 1);
 
-    uint IAlundraEffectAnchor.DepthKey => EntityDepthKey.Compute(this);
+    uint IEffectAnchor.DepthKey => EntityDepthKey.Compute(this);
 
-    int IAlundraEffectAnchor.Status => (int)Status;
+    int IEffectAnchor.Status => (int)Status;
 
     // The sprite is drawn from the DLL's own PosZ (the render position of the root), not from the binary's.
-    int IAlundraEffectAnchor.SortCoordinate => 100 * ((PosY >> 16) - (PosZ >> 16));
+    int IEffectAnchor.SortCoordinate => 100 * ((PosY >> 16) - (PosZ >> 16));
 
     /// <summary>E20.f2: the landing latch of <c>CreatePlayerAnimationEffects</c>, the binary's <c>0x800A8F30</c>: set when the landing part ran, cleared by every state that is not a landing state; the locked mode (1) does not land again while it is set. Hero only.</summary>
     internal int LandingLatch;

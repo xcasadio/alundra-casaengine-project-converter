@@ -791,7 +791,7 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.d1 T2: the run, state 0x03 (<c>0x80031FF4</c>), in the binary's order; <c>TryUseItem</c> is NOT called. <c>PlayerTryAction</c> (non-zero ends the tick); in the air, 0x2D; the mover curtailed the run
-    /// (<see cref="AlundraEntityScriptProxy.ForceAdjusted"/>): the bounce, the effect 9 at the hero (<see cref="AlundraNativeEffects.CreateSprintBounce"/>), state 0x3E, direction + 0x10; no direction on the pad: the
+    /// (<see cref="AlundraEntityScriptProxy.ForceAdjusted"/>): the bounce, the effect 9 at the hero (<see cref="NativeEffects.CreateSprintBounce"/>), state 0x3E, direction + 0x10; no direction on the pad: the
     /// slide (0x2A) with the resume counter at 1; Triangle released, or the direction (the pad's, or the current one when the pad's combination is invalid) outside the cone of the facing of the tick
     /// (<see cref="AnimationTables.SprintConeRows"/>): the slide with the counter at 0; a Square, a Cross or a Circle held (<c>hold &amp; 0xE0</c>): the tackle (0x04). The direction of the hero is never written here
     /// except by the bounce.
@@ -816,7 +816,7 @@ public static class PlayerManager
                 var x = player.PosX;
                 var y = player.PosY;
                 var z = player.PosZ + 1; // the binary's frame of Z (ADR-0026).
-                stage.Emit(reservoir => AlundraNativeEffects.CreateSprintBounce(reservoir, x, y, z));
+                stage.Emit(reservoir => NativeEffects.CreateSprintBounce(reservoir, x, y, z));
             }
 
             player.TargetAnimationId = SprintBounceAnimationId;
@@ -995,7 +995,7 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.f1a: the release branch of <see cref="PlayerTryAttack"/> (<c>0x8002EB38-0x8002EC88</c>), reached when the Square is released this tick (it comes before the press test). A charge counter below 60, or a hero in the
-    /// air (<c>IsOnGround</c> zero, <c>0x8002EB60</c>), ends it with nothing (the release is lost; D-E20-9). Otherwise: the 16 effects of the burst (<see cref="AlundraNativeEffects.CreateChargeBurst"/>, queued on
+    /// air (<c>IsOnGround</c> zero, <c>0x8002EB60</c>), ends it with nothing (the release is lost; D-E20-9). Otherwise: the 16 effects of the burst (<see cref="NativeEffects.CreateChargeBurst"/>, queued on
     /// the stage, at the hero's position with the binary's Z), the sound 0x2B, the pending-spawn pointer on the charged animation byte of the weapon record (<c>0x80028C79 + 13 w + 8</c>), its counter at 0, and the
     /// target animation on that byte; it returns 1 (the caller ends its tick). The charge counter itself is not touched: it falls to 0 at the next tick, because the charged animation does not count the charge.
     /// The counter is read AFTER <see cref="UpdatePlayerWeaponEffect"/> of the same tick, so a hold spark (counter 60, <c>+0x1C &amp; 3</c> zero) is created first, then the burst (oracle C10, C14, C16 at tick 101: 17 creations).
@@ -1012,7 +1012,7 @@ public static class PlayerManager
             var x = player.PosX;
             var y = player.PosY;
             var z = player.PosZ + 1; // the binary's frame of Z (ADR-0026).
-            stage.Emit(reservoir => AlundraNativeEffects.CreateChargeBurst(reservoir, x, y, z));
+            stage.Emit(reservoir => NativeEffects.CreateChargeBurst(reservoir, x, y, z));
         }
 
         player.ScriptHost?.SoundPlayer?.PlaySfx(ReleaseSfx);
@@ -1048,7 +1048,7 @@ public static class PlayerManager
     /// (<c>byte[0x80028C78 + 13 w]</c> non-zero) and the animation the hero is in counts the charge (<see cref="WeaponTables.AnimationCountsCharge"/>); else 0.</description></item>
     /// <item><description>Below 11: the aura is released (<see cref="ReleaseAura"/>), the function ends. From 11: the aura is created or renewed (<see cref="CreateAuraIfNeeded"/>, E20.f1b), every tick.</description></item>
     /// <item><description>Only when <c>+0x1C &amp; 3</c> is 0 (the counter of frames BEFORE the counters pass of this tick): below 60 the sound 0x2A; at 60 the hold spark, queued on the stage
-    /// (<see cref="AlundraNativeEffects.CreateChargeSpark"/>, whose sound and two numbers happen only if the effect is created, when the stage applies it).</description></item>
+    /// (<see cref="NativeEffects.CreateChargeSpark"/>, whose sound and two numbers happen only if the effect is created, when the stage applies it).</description></item>
     /// </list>
     /// The stage is the host's (<see cref="IScriptHost.EffectStage"/>); a host without one creates no effect, and the sounds that do not depend on a creation still play.
     /// </summary>
@@ -1099,7 +1099,7 @@ public static class PlayerManager
         var forceY = player.ForceY;
         var frameCounter = player.FrameCounter;
         var soundPlayer = host.SoundPlayer;
-        stage.Emit(reservoir => AlundraNativeEffects.CreateChargeSpark(reservoir, x, y, z, forceX, forceY, frameCounter, soundPlayer));
+        stage.Emit(reservoir => NativeEffects.CreateChargeSpark(reservoir, x, y, z, forceX, forceY, frameCounter, soundPlayer));
     }
 
     /// <summary>The effect of the charge aura: global effect 3 (<c>0x8002F5B0</c>, <c>0x8003BE74(0, 3, 0, hero, 1, 0, 0, 0x100000)</c>, its animation 0 lasts 96 ticks and ends with <c>Destroy</c>).</summary>
@@ -1113,9 +1113,9 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.f1b: the creation of the aura at <c>0x8002F570-0x8002F5BC</c>, at every tick where the charge counter is 11 or more. The binary creates when the handle (<c>0x80126FF8</c>) is null or when the <c>+0x7D</c> of
-    /// its slot (<see cref="AlundraEffectSlot.Destroying"/>) is set: the animation of the aura lasts 96 ticks, so a held charge renews the aura every 97 ticks (the old one is freed by the effect pass of the same tick).
+    /// its slot (<see cref="EffectSlot.Destroying"/>) is set: the animation of the aura lasts 96 ticks, so a held charge renews the aura every 97 ticks (the old one is freed by the effect pass of the same tick).
     /// The handle receives the result of the creation even when it is null (a full reservoir: the creation is retried at every tick). The effect is created AT ONCE and its slot read at the tick (D-E20-28, ADR-0057:
-    /// the hero's exception to the queued model of ADR-0046; <see cref="AlundraEffectStage.CreateAttachedNow"/>).
+    /// the hero's exception to the queued model of ADR-0046; <see cref="EffectStage.CreateAttachedNow"/>).
     /// <para>
     /// Written deviation from the binary (ADR-0059, proposed): the aura is also created again when its slot is no longer active or no longer carries the aura (<see cref="AlundraEntityScriptProxy.AuraGeneration"/>).
     /// At one tick per frame the binary never gets there; at three ticks per frame, at the renewal, the frame frees the old aura and then applies the spark of its last tick on the freed slot, which the handle would
@@ -1144,7 +1144,7 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.f1b: the release of the aura below a charge of 11 (<c>0x8002F730-0x8002F744</c>): with a non-null handle, the binary writes 0 in the <c>+0x68</c> of its slot (status free) and clears the handle, without any
-    /// other test. Here the handle is cleared at once and the slot is released by an operation of the stage at the position of this tick (<see cref="AlundraEffectStage.FreeAtTick"/>, ADR-0059), and ONLY IF it still
+    /// other test. Here the handle is cleared at once and the slot is released by an operation of the stage at the position of this tick (<see cref="EffectStage.FreeAtTick"/>, ADR-0059), and ONLY IF it still
     /// holds the aura (D-E20-30, the defect of the original corrected: when the aura expired during a lock and its slot was taken by another effect, the binary frees that other effect).
     /// </summary>
     private static void ReleaseAura(AlundraEntityScriptProxy player, IScriptHost? host)

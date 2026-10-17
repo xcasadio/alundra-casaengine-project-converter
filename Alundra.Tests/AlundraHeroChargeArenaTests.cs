@@ -89,7 +89,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
         var createdAtTick = new Dictionary<int, List<(int X, int Y, int Z, int ForceX, int ForceY)>>();
         var tick = 0;
         arena.BeforeTick = t => tick = t;
-        AlundraNativeEffects.CreatedForTests = slot =>
+        NativeEffects.CreatedForTests = slot =>
         {
             if (!createdAtTick.TryGetValue(tick, out var list))
             {
@@ -136,7 +136,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
         }
         finally
         {
-            AlundraNativeEffects.CreatedForTests = null;
+            NativeEffects.CreatedForTests = null;
         }
     }
 
@@ -163,7 +163,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
         using var arena = Arena("frames" + ticksPerFrame, 212 + 100);
         GameRandom.RandomSeed = 0x12345678;
         var creations = new List<(int X, int Y, int Z, int ForceX, int ForceY)>();
-        AlundraNativeEffects.CreatedForTests = slot => creations.Add((slot.X, slot.Y, slot.Z, slot.ForceX, slot.ForceY));
+        NativeEffects.CreatedForTests = slot => creations.Add((slot.X, slot.Y, slot.Z, slot.ForceX, slot.ForceY));
         try
         {
             arena.Begin();
@@ -174,7 +174,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
         }
         finally
         {
-            AlundraNativeEffects.CreatedForTests = null;
+            NativeEffects.CreatedForTests = null;
         }
 
         var slots = arena.Arc.Proxy.EffectStage!.Reservoir.ActiveSlots

@@ -17,21 +17,21 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, §3 "S2", D-E9b-2/D-E9b-11) - production-site pins for
-/// <see cref="AlundraBackdropStage.PushFrame"/>, replacing the retired <c>BackdropAnimationReplayProductionTests</c>
+/// <see cref="BackdropStage.PushFrame"/>, replacing the retired <c>BackdropAnimationReplayProductionTests</c>
 /// (the animation-counter pin it used to carry now lives engine-side, S0). Reuses the real map 389
 /// headless montage (<see cref="AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World"/>) with the
 /// SAME "recipe B3" accommodation that montage always needs: <c>_clearColorApplied</c> posed by
-/// reflection before the first <c>proxy.Update</c> (<see cref="AlundraBackdropStage.ApplyOriginalBackgroundClearColorOnce"/>
+/// reflection before the first <c>proxy.Update</c> (<see cref="BackdropStage.ApplyOriginalBackgroundClearColorOnce"/>
 /// would otherwise dereference <c>world.Game.GameManager.ViewManager.Views</c> on this uninitialized
 /// <c>CasaEngineGame</c>), plus a priming <c>proxy.Update(0.02f)</c> (the sticky first-frame floor,
 /// <c>AlundraLogicClock</c>'s own first-call memo) so the FOLLOWING frame's tick count is exactly
 /// <c>elapsedTime * 50</c>. A real <see cref="ScrollingLayerService"/> (no
 /// <see cref="CasaEngine.Framework.Application.Components.ScrollingLayerComponent"/> - nothing here
 /// calls <see cref="ScrollingLayerService.Advance"/>) is injected via
-/// <see cref="AlundraBackdropStage.AttachService"/> BEFORE that first <c>Update</c> - <c>InitializeWithWorld</c>
+/// <see cref="BackdropStage.AttachService"/> BEFORE that first <c>Update</c> - <c>InitializeWithWorld</c>
 /// itself already attached a null service (this montage's <c>Game</c> is uninitialized, so its
 /// <c>ScrollingLayerComponent</c> is null too) and logged the one-warning "arrêt" case harmlessly:
-/// <see cref="AlundraBackdropStage.PushFrame"/> depends on neither the loaded layers nor <c>HasContent</c>,
+/// <see cref="BackdropStage.PushFrame"/> depends on neither the loaded layers nor <c>HasContent</c>,
 /// so the later re-attach is all that matters for these pins.
 /// </summary>
 public sealed class BackdropPushProductionTests : IDisposable
@@ -62,7 +62,7 @@ public sealed class BackdropPushProductionTests : IDisposable
     /// while still incrementing <see cref="ScrollingLayerService.FramesPushed"/>, and the following
     /// <c>Update(0.04f)</c> (exactly 2 ticks) drives it to 2. <c>LastPushedScrollX/Y</c> and
     /// <c>CameraTarget</c> are read back against the SAME conversion/fallback
-    /// <see cref="AlundraBackdropStage.PushFrame"/> itself applies to the resolved camera's <c>Target</c>
+    /// <see cref="BackdropStage.PushFrame"/> itself applies to the resolved camera's <c>Target</c>
     /// (this montage has no camera entity, so the resolved camera - and therefore <c>Target</c> - is the
     /// fallback <see cref="Vector3.Zero"/>, same as production on a world with no camera).
     /// </summary>
@@ -99,7 +99,7 @@ public sealed class BackdropPushProductionTests : IDisposable
     /// (b) The freeze-gate pin (D-E9b-2's own "hors porte de gel" clause): posing
     /// <see cref="GameState.PlayerControlBits.MenuOpen"/> (part of <c>GameplayBlockedMask</c>)
     /// BEFORE the very same <c>Update(0.04f)</c> as the test above must NOT change the result -
-    /// <c>PendingTicks</c> is still 2, proving <see cref="AlundraBackdropStage.PushFrame"/>'s call site
+    /// <c>PendingTicks</c> is still 2, proving <see cref="BackdropStage.PushFrame"/>'s call site
     /// sits outside the gameplay freeze gate (a MenuOpen dialogue box does not also freeze the backdrop
     /// push, exactly like the camera follow - <see cref="AlundraWorldProxyGlobalFreezeTests"/>'s own
     /// "mettre le suivi caméra dedans" pin).
@@ -129,7 +129,7 @@ public sealed class BackdropPushProductionTests : IDisposable
     /// <summary>
     /// (c) A world with no <c>Game</c> at all (<c>BuildHeadlessWorld</c>'s own shape - no live
     /// <c>GraphicsDevice</c>-backed collaborator anywhere) - the push still runs:
-    /// <see cref="AlundraBackdropStage.PushFrame"/> depends on neither <c>world.Game</c> nor
+    /// <see cref="BackdropStage.PushFrame"/> depends on neither <c>world.Game</c> nor
     /// <c>HasContent</c>, only on the resolved camera (fallback <see cref="Vector3.Zero"/> here, same
     /// reasoning as the tests above) and the attached service.
     /// </summary>

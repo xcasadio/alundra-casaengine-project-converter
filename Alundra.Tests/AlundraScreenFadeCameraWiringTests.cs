@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// The camera-wiring assertion docs/plan-e10-fondu.md, slice E10.b makes mandatory (blocage de
 /// relecture): E10.a's own <see cref="CasaEngine.Framework.Application.Components.ScreenEffectComponent"/>
 /// reads the camera off <c>ViewManager.ActiveView.Camera</c>, but nothing under <c>Alundra/Scripts</c>
-/// references <c>ActiveView</c> anywhere - <see cref="AlundraBackdropStage"/> instead reuses whatever
+/// references <c>ActiveView</c> anywhere - <see cref="BackdropStage"/> instead reuses whatever
 /// <see cref="CameraDirector"/> resolved (the FIRST <see cref="Camera2dComponent"/> found in
 /// <c>World.Entities</c>, by component - see that class's own doc). This test proves, on the REAL
 /// installation path (<see cref="DefaultRuntimeViewBootstrapper"/>, the same bootstrapper

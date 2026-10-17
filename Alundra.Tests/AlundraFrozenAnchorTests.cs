@@ -8,7 +8,7 @@ using Alundra.Rendering.Effects;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E14.a1b T2 (docs/plan-e14-ia-native.md section 1.3b): the frozen anchor of the break effect (<see cref="AlundraFrozenEffectAnchor"/>) is a snapshot of the destroyed entity (status 4, X, Y, <c>PosZ + 1</c>, the depth key of
+/// E14.a1b T2 (docs/plan-e14-ia-native.md section 1.3b): the frozen anchor of the break effect (<see cref="FrozenEffectAnchor"/>) is a snapshot of the destroyed entity (status 4, X, Y, <c>PosZ + 1</c>, the depth key of
 /// E20.f1b), and an effect created from it in a frame of two or three ticks keeps the position and the key of the entity after the entity was recycled (status 0) and moved.
 /// </summary>
 public sealed class AlundraFrozenAnchorTests
@@ -26,9 +26,9 @@ public sealed class AlundraFrozenAnchorTests
     public void TheSnapshot_HoldsTheStatus4_ThePositionWithTheBinarysZ_AndTheDepthKeyOfTheEntity()
     {
         var entity = Destroyed();
-        IAlundraEffectAnchor live = entity;
+        IEffectAnchor live = entity;
 
-        var frozen = AlundraFrozenEffectAnchor.Of(entity);
+        var frozen = FrozenEffectAnchor.Of(entity);
 
         Assert.Equal(4, frozen.Status);
         Assert.Equal(0x00A40000, frozen.PosX);
@@ -42,7 +42,7 @@ public sealed class AlundraFrozenAnchorTests
     public void TheSnapshot_DoesNotFollowTheEntity()
     {
         var entity = Destroyed();
-        var frozen = AlundraFrozenEffectAnchor.Of(entity);
+        var frozen = FrozenEffectAnchor.Of(entity);
         var key = frozen.DepthKey;
 
         entity.Status = EntityStatus.Destroyed;
@@ -63,13 +63,13 @@ public sealed class AlundraFrozenAnchorTests
     [InlineData(3)]
     public void AnEffectCreatedInAFrameOfSeveralTicks_KeepsThePositionAndTheKeyOfTheRecycledEntity(int ticks)
     {
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(EffectGolden.BankOf(Root, 14));
         var entity = Destroyed();
         var expectedKey = EntityDepthKey.Compute(entity);
-        var frozen = AlundraFrozenEffectAnchor.Of(entity);
+        var frozen = FrozenEffectAnchor.Of(entity);
         stage.BeginSource(0, 1);
-        stage.Emit(reservoir => AlundraNativeEffects.CreateBreakEffect(reservoir, 8, frozen));
+        stage.Emit(reservoir => NativeEffects.CreateBreakEffect(reservoir, 8, frozen));
         stage.EndSource();
 
         // The entity is recycled and released before the frame that applies the operation runs, as in a frame of several ticks.

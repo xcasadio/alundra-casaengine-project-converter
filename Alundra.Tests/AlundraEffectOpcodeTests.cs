@@ -83,7 +83,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
 
     private sealed class Host : IEntityWorldContext
     {
-        public AlundraEffectStage? Stage { get; set; }
+        public EffectStage? Stage { get; set; }
         public List<AlundraEntityScriptProxy> Spawned { get; } = new();
         public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
         public AlundraEntityScriptProxy? PlayerEntity { get; set; }
@@ -92,7 +92,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public AlundraEffectStage? EffectStage => Stage;
+        public EffectStage? EffectStage => Stage;
     }
 
     internal static int[] Codes(int map)
@@ -113,9 +113,9 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         return codes.Skip(pc).Take(EventOpcodeSizeTable.Entries[(byte)codes[pc]].Size).ToArray();
     }
 
-    private static AlundraEffectStage StageOf(int map, int heroTileX = 0, int heroTileY = 0)
+    private static EffectStage StageOf(int map, int heroTileX = 0, int heroTileY = 0)
     {
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(EffectGolden.BankOf(Root, map));
         stage.CaptureHeroTile(heroTileX, heroTileY);
         stage.SpawnLoadEffects();
@@ -139,9 +139,9 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
 
     private static List<EventTraceRecord> Exec(IEntityWorldContext host, params int[][] instructions) => Exec(host, null, instructions);
 
-    private static void Flush(AlundraEffectStage stage, int ticks = 1) => stage.RunFrame(ticks, new bool[ticks]);
+    private static void Flush(EffectStage stage, int ticks = 1) => stage.RunFrame(ticks, new bool[ticks]);
 
-    private static (int Index, int Record, int X, int Y, int Z)[] Snapshot(AlundraEffectStage stage) =>
+    private static (int Index, int Record, int X, int Y, int Z)[] Snapshot(EffectStage stage) =>
         stage.Reservoir.ActiveSlots.Select(s => (s.Index, s.RecordIndex, s.X, s.Y, s.Z)).ToArray();
 
     private static (int Index, int Record, int X, int Y, int Z) Row(string[] r) =>
@@ -200,7 +200,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         var freed = int.Parse(OpcodeGolden.One("S476", "freed")[2]);
         Assert.Equal((222, 223), (last, freed));
 
-        var slot = (AlundraEffectSlot?)null;
+        var slot = (EffectSlot?)null;
         var lastActive = -1;
         var freedAt = -1;
         for (var tick = 0; tick < 300 && freedAt < 0; tick++)
@@ -557,7 +557,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         Assert.Equal(4, entrySlot.RecordIndex);
 
         Exec(host, Real(10, 2828), Real(10, 2864)); // 0x90 [0] then 0x92 [0, 1]
-        var rock = (AlundraEffectSlot?)null;
+        var rock = (EffectSlot?)null;
         var lastActive = -1;
         var freedAt = -1;
         for (var tick = 0; tick < 400 && freedAt < 0; tick++)
@@ -624,7 +624,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
 
         Assert.Equal(0, stage.Reservoir.Slots[0].TargetAnimation);
         Assert.True(stage.Reservoir.Slots[0].Active);
-        Assert.Equal(1, log.Warnings.Count(w => w.Contains("AlundraEffectReservoir")));
+        Assert.Equal(1, log.Warnings.Count(w => w.Contains("EffectReservoir")));
     }
 
     [Theory]
@@ -736,7 +736,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
     private sealed class EntityLoopHost : IScriptHost, IEntityWorldContext, IEventProgramRunner
     {
         public int Ticks;
-        public AlundraEffectStage? Stage { get; set; }
+        public EffectStage? Stage { get; set; }
         public int Calls;
         public IEventProgramRunner Runner => this;
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -752,7 +752,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public AlundraEffectStage? EffectStage => Stage;
+        public EffectStage? EffectStage => Stage;
 
         public void RunScript(AlundraEntityScriptProxy entity, int programSlot)
         {
@@ -771,7 +771,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
     [Fact]
     public void TheEntityLoop_MarksTheEffectOperationsWithTheTickOfItsScript_AFrameOfTwoTicksAppliesTheSecondAfterTheFirstUpdate()
     {
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(EffectGolden.Synthetic(new[] { EffectGolden.Anim("Loop", new[] { 1, 0 }, new[] { 1, 1 }) }, 2)); // image sets 0 then 1, one tick each, forever
         var host = new EntityLoopHost { Stage = stage, Ticks = 2 };
         var world = new World();
@@ -814,7 +814,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public AlundraEffectStage? EffectStage => ((IEntityWorldContext)_proxy).EffectStage;
+        public EffectStage? EffectStage => ((IEntityWorldContext)_proxy).EffectStage;
     }
 }
 
@@ -836,7 +836,7 @@ internal sealed class EffectArcChecks
     public List<string> Violations { get; } = new();
 
     /// <summary>Called at the end of every frame with the frame index, after the checks.</summary>
-    public Action<AlundraEffectStage, int>? PerFrame { get; set; }
+    public Action<EffectStage, int>? PerFrame { get; set; }
 
     private EffectArcChecks(ArcRun arc, int[] codes)
     {
@@ -844,7 +844,7 @@ internal sealed class EffectArcChecks
         _codes = codes;
     }
 
-    public AlundraEffectStage Stage => _arc.Proxy._effectStage;
+    public EffectStage Stage => _arc.Proxy._effectStage;
 
     public static EffectArcChecks Attach(ArcRun arc, int map)
     {
@@ -897,7 +897,7 @@ internal sealed class EffectArcChecks
         var slots = Stage.Reservoir.ActiveSlots.ToList();
         foreach (var record in exists)
         {
-            if (slots.All(s => s.RecordIndex != record) && slots.Count < AlundraEffectReservoir.SlotCount)
+            if (slots.All(s => s.RecordIndex != record) && slots.Count < EffectReservoir.SlotCount)
             {
                 Violations.Add($"frame {frame}: no slot of the record {record} after its creation");
             }

@@ -11,7 +11,7 @@ namespace Alundra.Rendering.Effects;
 
 /// <summary>One quad of an effect image set: a window of the effect sheet drawn on four free corners (docs/formats/effects.md).
 /// Read by the draw (E19.g G3c), not by the reservoir.</summary>
-public sealed class AlundraEffectImage
+public sealed class EffectImage
 {
     public int U { get; set; }
     public int V { get; set; }

@@ -35,7 +35,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
 
     public void Dispose()
     {
-        AlundraNativeEffects.CreatedForTests = null;
+        NativeEffects.CreatedForTests = null;
         GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
@@ -50,7 +50,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
         return arena;
     }
 
-    private static List<AlundraEffectSlot> Auras(HitArena arena)
+    private static List<EffectSlot> Auras(HitArena arena)
         => arena.Arc.Proxy.EffectStage!.Reservoir.ActiveSlots
             .Where(s => s.TargetEffect == PlayerManager.AuraEffect && !s.TargetMapTable && ReferenceEquals(s.Anchor, arena.Hero) && s.Mode == 1).ToList();
 
@@ -63,7 +63,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
     {
         var rows = ChargeOracleKeys();
         using var arena = Arena("key", 100, 100);
-        IAlundraEffectAnchor anchor = arena.Hero;
+        IEffectAnchor anchor = arena.Hero;
         arena.Begin();
 
         for (var tick = 1; tick <= 90; tick++)
@@ -186,7 +186,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
         var handle = arena.Hero.AuraSlot;
         Assert.NotNull(handle);
         Assert.Equal(0, Auras(arena).Count); // the old aura was freed by the frame, and the spark of the tick 131 took its slot...
-        Assert.Equal(AlundraNativeEffects.ChargeEffect, handle!.TargetEffect); // ... which the handle still points at: the stale handle of the frame.
+        Assert.Equal(NativeEffects.ChargeEffect, handle!.TargetEffect); // ... which the handle still points at: the stale handle of the frame.
         Assert.NotEqual(arena.Hero.AuraGeneration, handle.Generation);
 
         arena.Frame(Square, 3); // the ticks 132, 133, 134: the hero notices.
@@ -259,7 +259,7 @@ public sealed class AlundraHeroAuraWorldTests : IDisposable
         var heroKey = depthSortable!.BuildSortKey(projection!.WorldMatrixNoScale.Translation);
 
         var quads = new List<EffectQuad>();
-        AlundraEffectQuadBuilder.Build(arena.Arc.Proxy.EffectStage!.Reservoir.Slots, false, 0, 0, quads);
+        EffectQuadBuilder.Build(arena.Arc.Proxy.EffectStage!.Reservoir.Slots, false, 0, 0, quads);
         var auraQuads = quads.Where(q => q.SortKey.StableId == aura!.Index).ToList();
 
         Assert.NotEmpty(auraQuads);

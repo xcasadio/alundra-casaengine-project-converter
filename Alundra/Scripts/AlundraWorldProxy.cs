@@ -701,7 +701,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     public CameraSway CameraSway => CameraSway.Instance;
 
     /// <summary>E19.g G3b (docs/plan-e19-opcodes.md, section 1.2o.6, G3B-R2): this world's effect stage, on which the opcodes <c>0x90</c> to <c>0x94</c> and <c>0xA0</c> to <c>0xA3</c> queue their operation.</summary>
-    public AlundraEffectStage? EffectStage => _effectStage;
+    public EffectStage? EffectStage => _effectStage;
 
     /// <summary>
     /// Opcode 0xA4's background layer mask (E19.k2, docs/plan-e19-opcodes.md section 1.2k.2): forwarded to this world's
@@ -756,14 +756,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// returns a bare <c>new AlundraWorldProxy()</c> and copies nothing, which stays safe only while every
     /// collaborator is constructed exactly this way).
     /// </summary>
-    internal readonly AlundraBackdropStage _backdropStage = new();
+    internal readonly BackdropStage _backdropStage = new();
 
     /// <summary>E19.g G3a (docs/plan-e19-opcodes.md, section 1.2o.6): the effect reservoir of this world - bank, load-time spawn and per-tick loop. Built in this field initializer like
     /// <see cref="_backdropStage"/> (trap 9 above).</summary>
-    internal readonly AlundraEffectStage _effectStage = new();
+    internal readonly EffectStage _effectStage = new();
 
     /// <summary>E19.g G3a (G3A-R6): for each logic tick of the frame, the gate of the effects <c>PlayerControlFlags &amp; 0x48</c> read in the loop of the map events of that tick, after its events (the
-    /// <c>continue</c> paths included); read by <see cref="AlundraEffectStage.RunFrame"/>.</summary>
+    /// <c>continue</c> paths included); read by <see cref="EffectStage.RunFrame"/>.</summary>
     private readonly List<bool> _effectFrozenOfTick = new();
 
     private bool EffectGateOfThisTick() => (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0;
@@ -3024,14 +3024,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E20.c1a C3: the slot of the binary's <c>0x80038E84</c>, which runs between the physics and the hit pass (the effects attached to the entities). Empty on purpose: it belongs to E20.e. The DLL keeps its reserve of effects
-    /// per frame (<see cref="AlundraEffectStage.RunFrame"/>), and nothing in the hit pass reads what that pass writes. The random generator's advance (<c>0x8002BD14</c>) is not in this pass either: it is the per-tick
-    /// callback of <see cref="AlundraEffectStage.RunFrame"/> (E20.e0b1, <see cref="AdvanceRandomPerTick"/>).
+    /// per frame (<see cref="EffectStage.RunFrame"/>), and nothing in the hit pass reads what that pass writes. The random generator's advance (<c>0x8002BD14</c>) is not in this pass either: it is the per-tick
+    /// callback of <see cref="EffectStage.RunFrame"/> (E20.e0b1, <see cref="AdvanceRandomPerTick"/>).
     /// </summary>
     private void RunActiveEffectsPass()
     {
     }
 
-    /// <summary>E20.e0b1: the per-tick advance of the shared random stream, a static delegate (no allocation per tick) handed to <see cref="AlundraEffectStage.RunFrame"/>.</summary>
+    /// <summary>E20.e0b1: the per-tick advance of the shared random stream, a static delegate (no allocation per tick) handed to <see cref="EffectStage.RunFrame"/>.</summary>
     private static readonly Action AdvanceRandomPerTick = GameRandom.AdvanceFrame;
 
     /// <summary>The list of the hit pass (<c>0x800384F4</c>, <c>0x80127B28</c>), rebuilt at the lists step of each tick.</summary>
@@ -3080,7 +3080,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     private void EmitHitSparks(int centreX, int centreY, int centreZ)
     {
         HitSparksForTests?.Invoke(centreX, centreY, centreZ);
-        _effectStage.Emit(reservoir => AlundraNativeEffects.CreateHitSparks(reservoir, centreX, centreY, centreZ));
+        _effectStage.Emit(reservoir => NativeEffects.CreateHitSparks(reservoir, centreX, centreY, centreZ));
     }
 
     private Action<AlundraEntityScriptProxy, int>? _attachHitEffect;
@@ -3090,7 +3090,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// Documented gap: in a frame of several ticks the creation happens at the end of the frame; the effect follows its target afterwards, which has no visible consequence.
     /// </summary>
     private void AttachHitEffect(AlundraEntityScriptProxy target, int effect)
-        => _effectStage.Emit(reservoir => AlundraNativeEffects.CreateHitAttachedEffect(reservoir, effect, target));
+        => _effectStage.Emit(reservoir => NativeEffects.CreateHitAttachedEffect(reservoir, effect, target));
 
     /// <summary>E20.a A3 hook, E20.c1a C3: the hit pass of the binary (<c>0x80039300</c>, last of the entity block), over the list built at the lists step.</summary>
     private void RunHitPassHook()
@@ -3294,8 +3294,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// (3) the branch delay <c>+0x228 = -1</c> (<c>0x8003A5CC</c>, <see cref="AlundraEntityScriptProxy.EventTrigger"/>, so a same-frame re-scan does not run what the entity had queued); (4) the release of the active effect
     /// attached to the entity (<c>+0x1B8</c>, <c>0x8003A5D0</c>) - NAMED STUB, E20.e (the passes of the active effects are empty in the DLL and it has no member for the pointer); (5) the break effect: <paramref name="effectId"/> -1 reads the
     /// byte <c>+0x1E</c> of the sprite header (<see cref="AlundraEntityScriptProxy.BreakEffect"/>, <c>0x8003A5E0-0x8003A5E8</c>), and when the effect is not 0, <c>0x8003BE74(0, fx, 0, e ; 1, 0, 0, 0)</c> creates it
-    /// (<see cref="AlundraNativeEffects.CreateBreakEffect"/>) - queued on the effect stage with the tick and the rank of the source in progress, on a FROZEN snapshot of the entity
-    /// (<see cref="AlundraFrozenEffectAnchor"/>, taken after the status was written) because the stage applies its queue at the end of the frame; (6) the clearing of the carrier <c>[+0x28] + 0x2C = 0</c> (<c>0x8003A62C</c>) -
+    /// (<see cref="NativeEffects.CreateBreakEffect"/>) - queued on the effect stage with the tick and the rank of the source in progress, on a FROZEN snapshot of the entity
+    /// (<see cref="FrozenEffectAnchor"/>, taken after the status was written) because the stage applies its queue at the end of the frame; (6) the clearing of the carrier <c>[+0x28] + 0x2C = 0</c> (<c>0x8003A62C</c>) -
     /// NAMED STUB, E20.g. Does not remove the entity itself: the recycling comes later in the tick (<see cref="RecycleDestroyedEntities"/>, E19.r R3). A full reservoir creates no effect and the destruction goes on all the same.
     /// </summary>
     internal void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
@@ -3308,8 +3308,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         var fx = effectId == -1 ? entity.BreakEffect : effectId;
         if (fx != 0)
         {
-            var anchor = AlundraFrozenEffectAnchor.Of(entity);
-            _effectStage.Emit(reservoir => AlundraNativeEffects.CreateBreakEffect(reservoir, fx, anchor));
+            var anchor = FrozenEffectAnchor.Of(entity);
+            _effectStage.Emit(reservoir => NativeEffects.CreateBreakEffect(reservoir, fx, anchor));
         }
 
         // (6) clearing of the carrier (the entity this one rests on): E20.g.

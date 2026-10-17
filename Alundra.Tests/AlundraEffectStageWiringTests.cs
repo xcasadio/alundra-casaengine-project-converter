@@ -34,18 +34,18 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
     }
 
     /// <summary>A map table with a loop of two one-tick frames (image sets 0 then 1, forever), and the given records.</summary>
-    private static AlundraEffectBank Alternating(params AlundraEffectRecord[] records) =>
+    private static EffectBank Alternating(params EffectRecord[] records) =>
         EffectGolden.Synthetic(new[] { EffectGolden.Anim("Loop", new[] { 1, 0 }, new[] { 1, 1 }) }, 2, records);
 
-    private static AlundraEffectStage StageOf(AlundraEffectBank bank, int heroTileX = 0, int heroTileY = 0)
+    private static EffectStage StageOf(EffectBank bank, int heroTileX = 0, int heroTileY = 0)
     {
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(bank);
         stage.CaptureHeroTile(heroTileX, heroTileY);
         return stage;
     }
 
-    private static (int Index, bool Active, int Set, int X, int Y, int Z)[] State(AlundraEffectStage stage) =>
+    private static (int Index, bool Active, int Set, int X, int Y, int Z)[] State(EffectStage stage) =>
         stage.Reservoir.Slots.Select(s => (s.Index, s.Active, s.CurrentImageSetIndex, s.X, s.Y, s.Z)).ToArray();
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
     [Fact]
     public void TheRaysOfMap163_AreDrawnAtTicks0To10_AndFreedAtTick11_NotAt10Nor12()
     {
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(EffectGolden.BankOf(Root, 163));
         stage.CaptureHeroTile(0, 0);
         stage.SpawnLoadEffects();
@@ -85,7 +85,7 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
     [Fact]
     public void ACreationQueuedBeforeTheFirstFrame_TakesTheNextSlot_TheLoadSlotsStayAtTheOracle()
     {
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(EffectGolden.BankOf(Root, 391));
         stage.CaptureHeroTile(26, 30);
 
@@ -108,8 +108,8 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
     [Fact]
     public void AFrameOfTwoTicks_GivesTheSameStateAsTwoFramesOfOneTick_OnTheRaysOf163()
     {
-        var two = new AlundraEffectStage();
-        var one = new AlundraEffectStage();
+        var two = new EffectStage();
+        var one = new EffectStage();
         foreach (var stage in new[] { two, one })
         {
             stage.Load(EffectGolden.BankOf(Root, 163));
@@ -194,7 +194,7 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
     public void WithoutAHero_TheLoadSpawnReadsTheTile00_AndWarnsOnce()
     {
         using var log = SaveGameDirectorTestSupport.LogCapture.Install();
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(Alternating(
             EffectGolden.Record(0xC0, 1, 1, 0, 0, x1: 0, y1: 0, x2: 5, y2: 5),
             EffectGolden.Record(0xC0, 2, 2, 0, 0, x1: 10, y1: 10, x2: 20, y2: 20)));
@@ -204,20 +204,20 @@ public sealed class AlundraEffectStageWiringTests : IDisposable
         stage.SpawnLoadEffects();
 
         Assert.Equal(new[] { 0 }, stage.Reservoir.ActiveSlots.Select(s => s.RecordIndex).ToArray());
-        Assert.Equal(1, log.Warnings.Count(w => w.Contains("AlundraEffectStage")));
+        Assert.Equal(1, log.Warnings.Count(w => w.Contains("EffectStage")));
     }
 
     [Fact]
     public void AMapWithNoRecordToSpawn_NeedsNoHero_AndWarnsOfNothing()
     {
         using var log = SaveGameDirectorTestSupport.LogCapture.Install();
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(Alternating());
 
         stage.SpawnLoadEffects();
 
         Assert.Equal(0, stage.Reservoir.ActiveCount);
-        Assert.Empty(log.Warnings.Where(w => w.Contains("AlundraEffectStage")));
+        Assert.Empty(log.Warnings.Where(w => w.Contains("EffectStage")));
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

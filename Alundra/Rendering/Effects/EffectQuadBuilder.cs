@@ -26,7 +26,7 @@ namespace Alundra.Rendering.Effects;
 /// <c>N - 1 - k</c> (image 0 is drawn last, as in the binary), stable id the slot index.</item>
 /// </list>
 /// </summary>
-internal static class AlundraEffectQuadBuilder
+internal static class EffectQuadBuilder
 {
     /// <summary>The sheet of the map companion (<c>SheetTextureAssetId</c> of the map's document).</summary>
     internal const int MapSheet = 0;
@@ -43,7 +43,7 @@ internal static class AlundraEffectQuadBuilder
 
     /// <summary>Appends to <paramref name="into"/> the quads of every active slot with an image set, in the order of the slots then of the images. With <paramref name="hasScroll"/> the slots whose
     /// screen anchor is outside the bounds of G3C-R2 are skipped; <paramref name="scrollX"/> and <paramref name="scrollY"/> are the original scroll (<see cref="CameraMath.ToOriginalScrollSpace"/>).</summary>
-    internal static void Build(IReadOnlyList<AlundraEffectSlot> slots, bool hasScroll, int scrollX, int scrollY, List<EffectQuad> into)
+    internal static void Build(IReadOnlyList<EffectSlot> slots, bool hasScroll, int scrollX, int scrollY, List<EffectQuad> into)
     {
         for (var s = 0; s < slots.Count; s++)
         {

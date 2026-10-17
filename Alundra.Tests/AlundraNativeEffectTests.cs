@@ -114,7 +114,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
 
     private sealed class Host : IEntityWorldContext
     {
-        public AlundraEffectStage? Stage { get; set; }
+        public EffectStage? Stage { get; set; }
         public RecordingSound? Sound { get; set; }
         public List<AlundraEntityScriptProxy> Spawned { get; } = new();
         public IReadOnlyList<AlundraEntityScriptProxy> SpawnedEntities => Spawned;
@@ -124,16 +124,16 @@ public sealed class AlundraNativeEffectTests : IDisposable
         public AlundraEntityScriptProxy? SpawnEntityByRecordId(AlundraEntityScriptProxy logicEntity, int entityRecordId) => null;
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
-        public AlundraEffectStage? EffectStage => Stage;
+        public EffectStage? EffectStage => Stage;
         public IAlundraSoundPlayer? SoundPlayer => Sound;
     }
 
     /// <summary>The bank of map 476 (the global table of the effects holds the effect 14; the map is any one with a companion).</summary>
-    private static AlundraEffectBank Bank() => EffectGolden.BankOf(Root, 476);
+    private static EffectBank Bank() => EffectGolden.BankOf(Root, 476);
 
-    private static AlundraEffectStage NewStage()
+    private static EffectStage NewStage()
     {
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(Bank());
         return stage;
     }
@@ -160,7 +160,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     private sealed class Rig
     {
         public Scenario Scenario { get; }
-        public AlundraEffectStage Stage { get; } = NewStage();
+        public EffectStage Stage { get; } = NewStage();
         public Host Host { get; } = new();
         public GameState State { get; } = new();
         public RecordingSound Sound { get; } = new();
@@ -193,7 +193,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         /// <summary>Applies the queue without any update (the golden <c>S</c> rows).</summary>
         public void Apply() => Stage.RunFrame(0, Array.Empty<bool>());
 
-        public List<AlundraEffectSlot> Created() => Stage.Reservoir.ActiveSlots.Where(s => !Before.Contains(s.Index)).ToList();
+        public List<EffectSlot> Created() => Stage.Reservoir.ActiveSlots.Where(s => !Before.Contains(s.Index)).ToList();
     }
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -695,7 +695,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
 
     public static IEnumerable<object[]> Modes13Cases() => Modes13.Where(r => r[0] == "C").Select(r => new object[] { r[1] });
 
-    private sealed class Anchor : IAlundraEffectAnchor
+    private sealed class Anchor : IEffectAnchor
     {
         public int PosX { get; set; }
         public int PosY { get; set; }
@@ -733,7 +733,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         Assert.Equal(6, updates.Count);
         Assert.Equal(6, results.Count);
 
-        var reservoir = new AlundraEffectReservoir(Bank());
+        var reservoir = new EffectReservoir(Bank());
         var anchor = new Anchor();
         anchor.Set(updates[0]);
         var offsets = (X: int.Parse(c[11]), Y: int.Parse(c[12]), Z: int.Parse(c[13]));
@@ -770,7 +770,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     [Fact]
     public void AnAnchorOfStatus0_StillReceivesTheForcesOnTheUpdateThatFreezesIt_ThenNothingMoves()
     {
-        var reservoir = new AlundraEffectReservoir(Bank());
+        var reservoir = new EffectReservoir(Bank());
         var anchor = new Anchor { Status = 2, PosX = 100, PosY = 200, PosZ = 300, DepthKey = 7 };
         var slot = reservoir.CreateAttached(false, 14, 0, anchor, 0, 1, 2, 3)!;
         slot.ForceX = 10;
@@ -790,7 +790,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     [Fact]
     public void TheCreatorsOfMode0_ResetWhatTheModes1And3Set_AndAFullReservoirCreatesNothing()
     {
-        var reservoir = new AlundraEffectReservoir(Bank());
+        var reservoir = new EffectReservoir(Bank());
         var anchor = new Anchor { Status = 2 };
         var attached = reservoir.CreateAttached(false, 14, 0, anchor, 5, 1, 2, 3)!;
         reservoir.Free(attached);
@@ -800,7 +800,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         Assert.Same(attached, plain);
         Assert.Equal((0, 0, 0, 0, 0, 0), (plain.Mode, plain.DepthOffset, plain.OffsetX, plain.OffsetY, plain.OffsetZ, plain.Anchor is null ? 0 : 1));
 
-        for (var i = reservoir.ActiveCount; i < AlundraEffectReservoir.SlotCount; i++)
+        for (var i = reservoir.ActiveCount; i < EffectReservoir.SlotCount; i++)
         {
             Assert.NotNull(reservoir.CreateDetached(false, 14, 0, anchor, 0, 0, 0, 0));
         }

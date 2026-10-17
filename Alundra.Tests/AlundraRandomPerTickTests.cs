@@ -8,7 +8,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E20.e0b1 T2 (docs/plan-e20-heros.md section 1.17.1, annex docs/plan-e20-annexe/e20-e0b/README.md): the shared random stream advances once per logic tick, at the end of the tick, as the binary's frame function does
-/// (<c>0x8002BD0C-0x8002BD34</c>). This file holds the tests that pin the WIRING of the callback and are green from phase A on: <see cref="AlundraEffectStage.RunFrame"/> calls the optional callback exactly once per tick,
+/// (<c>0x8002BD0C-0x8002BD34</c>). This file holds the tests that pin the WIRING of the callback and are green from phase A on: <see cref="EffectStage.RunFrame"/> calls the optional callback exactly once per tick,
 /// after the update of the reservoir, on a frozen tick too, never for a frame of 0 tick (b), and a direct call without callback advances nothing (e). The tests of the advance itself (the six words, the world, the order in the tick)
 /// are in the other part of the class (<c>AlundraRandomPerTickTests.Advance.cs</c>), written red before phase B.
 /// </summary>
@@ -43,10 +43,10 @@ public sealed partial class AlundraRandomPerTickTests : IDisposable
     private static uint Word => (uint)GameRandom.RandomSeed;
 
     /// <summary>A stage holding one effect that alternates between the image sets 0 and 1 at each update of the reservoir (-1 before the first update): the set tells how many updates the callback has seen.</summary>
-    private static AlundraEffectStage StageWithOneAlternatingEffect(out AlundraEffectSlot slot)
+    private static EffectStage StageWithOneAlternatingEffect(out EffectSlot slot)
     {
-        var stage = new AlundraEffectStage();
-        stage.Load(EffectGolden.Synthetic(new[] { EffectGolden.Anim("Loop", new[] { 1, 0 }, new[] { 1, 1 }) }, 2, Array.Empty<AlundraEffectRecord>()));
+        var stage = new EffectStage();
+        stage.Load(EffectGolden.Synthetic(new[] { EffectGolden.Anim("Loop", new[] { 1, 0 }, new[] { 1, 1 }) }, 2, Array.Empty<EffectRecord>()));
         stage.CaptureHeroTile(0, 0);
         slot = stage.Reservoir.Create(true, 0, 0, 0, 0, 0)!;
         return stage;
@@ -85,7 +85,7 @@ public sealed partial class AlundraRandomPerTickTests : IDisposable
     public void RunFrame_CallsTheCallbackAfterTheQueuedOperationsAndTheUpdateOfTheirTick()
     {
         var stage = StageWithOneAlternatingEffect(out _);
-        AlundraEffectSlot? created = null;
+        EffectSlot? created = null;
         stage.Queue(1, 0, r => created = r.Create(true, 0, 0, 1, 2, 3));
         var seenAtTick = new System.Collections.Generic.List<int?>();
 

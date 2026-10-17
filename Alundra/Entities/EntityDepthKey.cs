@@ -9,7 +9,7 @@ namespace Alundra.Entities;
 /// E20.f1b (docs/plan-e20-heros.md section 1.9, ADR-0057, annex <c>docs/plan-e20-annexe/e20-f1/depth-key.md</c>): the depth key <c>+0x1BC</c> of an entity of the binary, as the sort driver <c>0x800399B8</c> leaves it
 /// for an entity that carries no other entity and overlaps no collidable lower than itself:
 /// <c>((PosY + (IDSV &lt;&lt; 16)) &amp; 0xFFFF0000) + (short)(PosZ &gt;&gt; 16)</c>. For ANY entity proxy (the hero's aura and, since E14.a1b, the break effect of a destroyed entity (its frozen anchor) read it through
-/// <see cref="IAlundraEffectAnchor"/>), with no hero-only shortcut. Written deviation: no raise by a neighbour, a support or a carrier (the binary's recursive maximum over the collidables); the oracle's 150 ticks of the
+/// <see cref="IEffectAnchor"/>), with no hero-only shortcut. Written deviation: no raise by a neighbour, a support or a carrier (the binary's recursive maximum over the collidables); the oracle's 150 ticks of the
 /// charge (<c>docs/plan-e20-annexe/e20-f1/oracle/keyprobe.py</c>) do not need it.
 /// </summary>
 internal static class EntityDepthKey

@@ -416,10 +416,10 @@ public sealed class AlundraHitPassRulesTests
     [Fact]
     public void AHitMakesThreeSparksOfEffect9_AtTheCentre_ThreeDrawsEach_AllThreeAxesWithTheFactor0x20001()
     {
-        var bank = AlundraEffectBankLoader.Load(ProjectRootFinder.Find(), "Overworld 3,1-14");
-        var reservoir = new AlundraEffectReservoir(bank, _ => { });
+        var bank = EffectBankLoader.Load(ProjectRootFinder.Find(), "Overworld 3,1-14");
+        var reservoir = new EffectReservoir(bank, _ => { });
         GameRandom.RandomSeed = 0x12345678;
-        AlundraNativeEffects.CreateHitSparks(reservoir, 1000, 2000, 3000);
+        NativeEffects.CreateHitSparks(reservoir, 1000, 2000, 3000);
 
         var sparks = reservoir.Slots.Where(slot => slot.Active).ToList();
         Assert.Equal(3, sparks.Count);
@@ -447,14 +447,14 @@ public sealed class AlundraHitPassRulesTests
         GameRandom.Reset();
 
         // A nearly full reservoir (two slots left) creates two sparks, draws six numbers, and none for the one it could not create.
-        var nearlyFull = new AlundraEffectReservoir(bank, _ => { });
+        var nearlyFull = new EffectReservoir(bank, _ => { });
         for (var i = 0; i < 126; i++)
         {
             Assert.NotNull(nearlyFull.Create(false, 9, 0, 0, 0, 0));
         }
 
         GameRandom.RandomSeed = 0x12345678;
-        AlundraNativeEffects.CreateHitSparks(nearlyFull, 1, 2, 3);
+        NativeEffects.CreateHitSparks(nearlyFull, 1, 2, 3);
         Assert.Equal(128, nearlyFull.Slots.Count(slot => slot.Active));
         state = 0x12345678u;
         for (var i = 0; i < 6; i++)

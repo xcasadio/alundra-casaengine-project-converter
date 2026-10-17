@@ -80,7 +80,7 @@ public sealed class AlundraLibcRandomTests : System.IDisposable
         }
 
         var service = new CellularLayerService();
-        service.SetLayers(AlundraBackdropStage.BuildCellularDefinitions(document));
+        service.SetLayers(BackdropStage.BuildCellularDefinitions(document));
         LibcRandom.State = 0;
 
         var expected = new[]

@@ -87,7 +87,7 @@ public sealed class AlundraHeroRunArenaTests : IDisposable
             Check("target hit_counter", target.HitCounter, trace.TargetCol(0, "hit_counter", tick));
             Check("target touching", target.Touching, trace.TargetCol(0, "touching_slot", tick));
 
-            var dllSparks = string.Join(";", sample.Sparks.SelectMany(s => Enumerable.Repeat($"{s.X},{s.Y},{s.Z + 1}", AlundraNativeEffects.HitSparkCount)));
+            var dllSparks = string.Join(";", sample.Sparks.SelectMany(s => Enumerable.Repeat($"{s.X},{s.Y},{s.Z + 1}", NativeEffects.HitSparkCount)));
             var oracleSparks = string.Join(";", trace.Journal(tick).Where(j => j.Kind == "effect" && j.Id == 9).Select(j => $"{(long)Math.Round(j.X * 65536.0)},{(long)Math.Round(j.Y * 65536.0)},{(long)Math.Round(j.Z * 65536.0)}"));
             if (dllSparks != oracleSparks)
             {

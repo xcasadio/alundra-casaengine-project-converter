@@ -8,7 +8,7 @@ namespace Alundra.Tests;
 /// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, §3 "S2") - <see cref="BackdropDocument"/>'s
 /// overlay-tint deserialization, moved here from the now-retired <c>BackdropRendererTests</c>
 /// (that renderer's own drawing of the tint is gone; the JSON contract it read is unchanged and
-/// still consumed by <see cref="AlundraBackdropStage.BuildDefinitions"/>).
+/// still consumed by <see cref="BackdropStage.BuildDefinitions"/>).
 /// </summary>
 public class BackdropDocumentTests
 {

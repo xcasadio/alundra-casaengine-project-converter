@@ -7,7 +7,7 @@ namespace Alundra.Rendering.Backdrops;
 /// <summary>
 /// One of a map's (up to) two scrolling background layers - runtime-side mirror of
 /// <c>AlundraCasaEngineProjectConverter.Readers.BackdropLayerDocument</c>. <see cref="Cellular"/>
-/// (mode 2 raw parameters, D-E9d) is now modeled field for field - <see cref="AlundraBackdropStage"/>
+/// (mode 2 raw parameters, D-E9d) is now modeled field for field - <see cref="BackdropStage"/>
 /// translates it into an engine-side <c>CellularLayerDefinition</c>.
 /// </summary>
 public sealed class BackdropLayerData
@@ -28,7 +28,7 @@ public sealed class BackdropLayerData
     /// <c>[0]</c> is always equal to <see cref="TextureAssetId"/>. Absent from a companion's JSON for
     /// every non-animated layer (the converter omits it via <c>JsonIgnoreCondition.WhenWritingNull</c>),
     /// which <see cref="System.Text.Json.JsonSerializer"/> leaves as <see langword="null"/> here - see
-    /// <see cref="AlundraBackdropStage.ResolveFrameAssetIds"/> for the fallback this resolves to.
+    /// <see cref="BackdropStage.ResolveFrameAssetIds"/> for the fallback this resolves to.
     /// </summary>
     public string[]? FrameTextureAssetIds { get; set; }
 

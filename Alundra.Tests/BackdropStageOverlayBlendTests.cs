@@ -31,7 +31,7 @@ public class BackdropStageOverlayBlendTests
         // The guard: an export that predates G2d has no such field.
         Assert.Equal(2, document.OverlayBlendMode);
 
-        var (_, tint, _) = AlundraBackdropStage.BuildDefinitions(document);
+        var (_, tint, _) = BackdropStage.BuildDefinitions(document);
 
         Assert.NotNull(tint);
         Assert.Equal(SpritePsxSemiTransparency.Mode1, tint!.Value.PsxSemiTransparency);
@@ -46,7 +46,7 @@ public class BackdropStageOverlayBlendTests
 
         Assert.Equal(1, document.OverlayBlendMode);
 
-        var (_, tint, _) = AlundraBackdropStage.BuildDefinitions(document);
+        var (_, tint, _) = BackdropStage.BuildDefinitions(document);
 
         Assert.NotNull(tint);
         Assert.Equal(SpritePsxSemiTransparency.Mode0, tint!.Value.PsxSemiTransparency);
@@ -76,7 +76,7 @@ public class BackdropStageOverlayBlendTests
             OverlayBlendMode = overlayBlendMode,
         };
 
-        var (_, tint, _) = AlundraBackdropStage.BuildDefinitions(document);
+        var (_, tint, _) = BackdropStage.BuildDefinitions(document);
 
         Assert.NotNull(tint);
         Assert.Equal(expected, tint!.Value.PsxSemiTransparency);
@@ -88,7 +88,7 @@ public class BackdropStageOverlayBlendTests
     {
         var document = new BackdropDocument { Enabled = true, OverlayEnabled = false, OverlayBlendMode = 2 };
 
-        var (_, tint, _) = AlundraBackdropStage.BuildDefinitions(document);
+        var (_, tint, _) = BackdropStage.BuildDefinitions(document);
 
         Assert.Null(tint);
     }

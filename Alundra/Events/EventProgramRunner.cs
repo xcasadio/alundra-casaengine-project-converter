@@ -3147,12 +3147,12 @@ public sealed class EventProgramRunner : IEventProgramRunner
     private void UseLifeVessel()
     {
         PlayerManager.IncreaseHpMaxAndFill(_gameState, _worldContext.PlayerEntity);
-        _worldContext.SoundPlayer?.PlaySfx(AlundraNativeEffects.LifeVesselSfx);
+        _worldContext.SoundPlayer?.PlaySfx(NativeEffects.LifeVesselSfx);
 
         if (_worldContext.EffectStage is { } stage && _worldContext.PlayerEntity is { } hero)
         {
             var (heroX, heroY, heroZ) = (hero.PosX, hero.PosY, hero.PosZ);
-            stage.Emit(reservoir => AlundraNativeEffects.CreateLifeVesselEffects(reservoir, heroX, heroY, heroZ));
+            stage.Emit(reservoir => NativeEffects.CreateLifeVesselEffects(reservoir, heroX, heroY, heroZ));
             return;
         }
 

@@ -17,10 +17,10 @@ public class BackdropStageBlendTests
     [Fact]
     public void ResolveLayerPsxSemiTransparency_MapsBlendModes1To4_ToTheFourPsxModes()
     {
-        Assert.Equal(SpritePsxSemiTransparency.Mode0, AlundraBackdropStage.ResolveLayerPsxSemiTransparency(1)); // average
-        Assert.Equal(SpritePsxSemiTransparency.Mode1, AlundraBackdropStage.ResolveLayerPsxSemiTransparency(2)); // additive
-        Assert.Equal(SpritePsxSemiTransparency.Mode2, AlundraBackdropStage.ResolveLayerPsxSemiTransparency(3)); // subtractive
-        Assert.Equal(SpritePsxSemiTransparency.Mode3, AlundraBackdropStage.ResolveLayerPsxSemiTransparency(4)); // quarter
+        Assert.Equal(SpritePsxSemiTransparency.Mode0, BackdropStage.ResolveLayerPsxSemiTransparency(1)); // average
+        Assert.Equal(SpritePsxSemiTransparency.Mode1, BackdropStage.ResolveLayerPsxSemiTransparency(2)); // additive
+        Assert.Equal(SpritePsxSemiTransparency.Mode2, BackdropStage.ResolveLayerPsxSemiTransparency(3)); // subtractive
+        Assert.Equal(SpritePsxSemiTransparency.Mode3, BackdropStage.ResolveLayerPsxSemiTransparency(4)); // quarter
     }
 
     [Theory]
@@ -29,7 +29,7 @@ public class BackdropStageBlendTests
     [InlineData(-1)]
     public void ResolveLayerPsxSemiTransparency_ZeroAndUnknownBlendModes_AreNone(int blendMode)
     {
-        Assert.Equal(SpritePsxSemiTransparency.None, AlundraBackdropStage.ResolveLayerPsxSemiTransparency(blendMode));
+        Assert.Equal(SpritePsxSemiTransparency.None, BackdropStage.ResolveLayerPsxSemiTransparency(blendMode));
     }
 
     [Theory]
@@ -61,8 +61,8 @@ public class BackdropStageBlendTests
             },
         };
 
-        var (scrolling, _, _) = AlundraBackdropStage.BuildDefinitions(document);
-        var cellular = AlundraBackdropStage.BuildCellularDefinitions(document);
+        var (scrolling, _, _) = BackdropStage.BuildDefinitions(document);
+        var cellular = BackdropStage.BuildCellularDefinitions(document);
 
         var tiles = Assert.Single(scrolling);
         Assert.Equal(SpritePsxSemiTransparency.Mode0, tiles.PsxSemiTransparency);

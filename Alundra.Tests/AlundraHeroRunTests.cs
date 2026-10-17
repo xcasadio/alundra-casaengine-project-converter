@@ -46,7 +46,7 @@ public sealed class AlundraHeroRunTests : IDisposable
 
     public void Dispose()
     {
-        AlundraNativeEffects.CreatedForTests = null;
+        NativeEffects.CreatedForTests = null;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();

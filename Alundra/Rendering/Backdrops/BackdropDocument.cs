@@ -9,7 +9,7 @@ namespace Alundra.Rendering.Backdrops;
 /// <c>AlundraCasaEngineProjectConverter.Readers.BackdropDocument</c>, read back from the converter's
 /// own companion file (<c>Maps/{Zone}/{Name}-{id}/backdrop/{Name}-{id}.backdrop.json</c>), the same
 /// convention as <see cref="EventProgramDocument"/>/<see cref="MapEventProgramLoader"/>. See
-/// <see cref="BackdropLoader"/> for path resolution and <see cref="AlundraBackdropStage"/> (which
+/// <see cref="BackdropLoader"/> for path resolution and <see cref="BackdropStage"/> (which
 /// builds engine-side <c>ScrollingLayerDefinition</c>s/<c>CellularLayerDefinition</c>s from this and
 /// pushes ticks to <c>CasaEngine.Framework.Rendering.ScrollingLayers.ScrollingLayerService</c> and
 /// <c>CasaEngine.Framework.Rendering.CellularLayers.CellularLayerService</c>) for how this gets drawn.

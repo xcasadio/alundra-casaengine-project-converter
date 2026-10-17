@@ -40,7 +40,7 @@ public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
 
     private static void RunFrame(AlundraWorldProxy world, int ticks) => world.EffectStage!.RunFrame(ticks, Enumerable.Repeat(false, ticks).ToList());
 
-    private static AlundraEffectSlot[] Slots(AlundraWorldProxy world) => world.EffectStage!.Reservoir.ActiveSlots.ToArray();
+    private static EffectSlot[] Slots(AlundraWorldProxy world) => world.EffectStage!.Reservoir.ActiveSlots.ToArray();
 
     [Fact]
     public void TheTwoArgumentOverload_WritesTheStatus4_AndTheLetterMinus1()
@@ -187,7 +187,7 @@ public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
     {
         var world = World();
         var reservoir = world.EffectStage!.Reservoir;
-        for (var i = 0; i < AlundraEffectReservoir.SlotCount; i++)
+        for (var i = 0; i < EffectReservoir.SlotCount; i++)
         {
             Assert.NotNull(reservoir.Create(false, 9, 0, 0, 0, 0));
         }
@@ -196,7 +196,7 @@ public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
         world.DestroyEntity(victim, -1);
         RunFrame(world, 0);
 
-        Assert.Equal(AlundraEffectReservoir.SlotCount, Slots(world).Length);
+        Assert.Equal(EffectReservoir.SlotCount, Slots(world).Length);
         Assert.DoesNotContain(Slots(world), s => s.Mode == 1);
         Assert.Equal(EntityStatus.FlagToDestroy, victim.Status);
         Assert.Equal(-1, victim.EventTrigger);

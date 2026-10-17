@@ -23,7 +23,7 @@ public class BackdropStagePsxSemiTransparencyTests
     [Fact]
     public void RealMap391_CellularRain_IsMode0_OpaqueWhite()
     {
-        var layers = AlundraBackdropStage.BuildCellularDefinitions(LoadRealCompanion("Ship Klark (night, break, Event)-391"));
+        var layers = BackdropStage.BuildCellularDefinitions(LoadRealCompanion("Ship Klark (night, break, Event)-391"));
 
         var layer = Assert.Single(layers);
         Assert.Equal(SpritePsxSemiTransparency.Mode0, layer.PsxSemiTransparency);
@@ -36,8 +36,8 @@ public class BackdropStagePsxSemiTransparencyTests
     {
         var document = LoadRealCompanion("Wendels Nightmare-44");
 
-        var (scrolling, _, _) = AlundraBackdropStage.BuildDefinitions(document);
-        var cellular = AlundraBackdropStage.BuildCellularDefinitions(document);
+        var (scrolling, _, _) = BackdropStage.BuildDefinitions(document);
+        var cellular = BackdropStage.BuildCellularDefinitions(document);
 
         var tiles = Assert.Single(scrolling);
         Assert.Equal(1, tiles.StableId); // layer 1, whose Ground is false: the pass stays Background
@@ -55,7 +55,7 @@ public class BackdropStagePsxSemiTransparencyTests
     [Fact]
     public void RealMap389_TheSeaLayer_IsMode0()
     {
-        var (layers, _, _) = AlundraBackdropStage.BuildDefinitions(LoadRealCompanion("Ship Klark (beginning)-389"));
+        var (layers, _, _) = BackdropStage.BuildDefinitions(LoadRealCompanion("Ship Klark (beginning)-389"));
 
         var layer = Assert.Single(layers);
         Assert.Equal(SpritePsxSemiTransparency.Mode0, layer.PsxSemiTransparency);
@@ -66,7 +66,7 @@ public class BackdropStagePsxSemiTransparencyTests
     [Fact]
     public void RealMap321_TheLayerWithoutBlend_IsNone()
     {
-        var (layers, _, _) = AlundraBackdropStage.BuildDefinitions(LoadRealCompanion("Arena Zorgia (Boss)-321"));
+        var (layers, _, _) = BackdropStage.BuildDefinitions(LoadRealCompanion("Arena Zorgia (Boss)-321"));
 
         var layer = Assert.Single(layers);
         Assert.Equal(SpritePsxSemiTransparency.None, layer.PsxSemiTransparency);

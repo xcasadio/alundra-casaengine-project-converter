@@ -18,12 +18,12 @@ public sealed class AlundraEffectBankLoaderTests : IDisposable
 
     public AlundraEffectBankLoaderTests()
     {
-        AlundraEffectBankLoader.ResetForTests();
+        EffectBankLoader.ResetForTests();
     }
 
     public void Dispose()
     {
-        AlundraEffectBankLoader.ResetForTests();
+        EffectBankLoader.ResetForTests();
         if (Directory.Exists(_projectPath))
         {
             Directory.Delete(_projectPath, recursive: true);
@@ -58,16 +58,16 @@ public sealed class AlundraEffectBankLoaderTests : IDisposable
     private const string GlobalCompanion =
         "{\"SheetTextureAssetId\":null,\"Effects\":[{\"Animations\":[{\"Frames\":[[30,0]],\"End\":\"Loop\"}],\"ImageSets\":[{\"Idsv\":20,\"Images\":[]}]}]}";
 
-    private static string[] EffectWarnings(SaveGameDirectorTestSupport.LogCapture log) => log.Warnings.Where(w => w.Contains("AlundraEffectBankLoader")).ToArray();
+    private static string[] EffectWarnings(SaveGameDirectorTestSupport.LogCapture log) => log.Warnings.Where(w => w.Contains("EffectBankLoader")).ToArray();
 
     [Fact]
     public void NoWorldNameOrNoMapId_GivesAnEmptyBank_WithoutWarning()
     {
         using var log = SaveGameDirectorTestSupport.LogCapture.Install();
 
-        Assert.Empty(AlundraEffectBankLoader.Load(_projectPath, null).Records);
-        Assert.Empty(AlundraEffectBankLoader.Load(_projectPath, "no id here").Records);
-        Assert.Empty(AlundraEffectBankLoader.Load(null, "Some Map-5").Records);
+        Assert.Empty(EffectBankLoader.Load(_projectPath, null).Records);
+        Assert.Empty(EffectBankLoader.Load(_projectPath, "no id here").Records);
+        Assert.Empty(EffectBankLoader.Load(null, "Some Map-5").Records);
         Assert.Empty(EffectWarnings(log));
     }
 
@@ -76,11 +76,11 @@ public sealed class AlundraEffectBankLoaderTests : IDisposable
     {
         using var log = SaveGameDirectorTestSupport.LogCapture.Install();
 
-        Assert.Empty(AlundraEffectBankLoader.Load(_projectPath, "Some Map-5").Records);
+        Assert.Empty(EffectBankLoader.Load(_projectPath, "Some Map-5").Records);
 
         WriteIndex();
-        Assert.Empty(AlundraEffectBankLoader.Load(_projectPath, "Other Map-6").Records);
-        Assert.Empty(AlundraEffectBankLoader.Load(_projectPath, "Some Map-5").Records);
+        Assert.Empty(EffectBankLoader.Load(_projectPath, "Other Map-6").Records);
+        Assert.Empty(EffectBankLoader.Load(_projectPath, "Some Map-5").Records);
         Assert.Empty(EffectWarnings(log));
     }
 
@@ -91,7 +91,7 @@ public sealed class AlundraEffectBankLoaderTests : IDisposable
         WriteCompanion(MapCompanion);
         WriteGlobal(GlobalCompanion);
 
-        var bank = AlundraEffectBankLoader.Load(_projectPath, "Some Map-5");
+        var bank = EffectBankLoader.Load(_projectPath, "Some Map-5");
 
         var record = Assert.Single(bank.Records);
         Assert.Equal((0, 51, 0, 59, 192, 0, 20, 18, 2, 1), (record.X1, record.X2, record.Y1, record.Y2, record.Flags, record.Effect, record.X, record.Y, record.Z, record.Anim));
@@ -116,7 +116,7 @@ public sealed class AlundraEffectBankLoaderTests : IDisposable
         WriteCompanion("{ this is not json");
         using var log = SaveGameDirectorTestSupport.LogCapture.Install();
 
-        var bank = AlundraEffectBankLoader.Load(_projectPath, "Some Map-5");
+        var bank = EffectBankLoader.Load(_projectPath, "Some Map-5");
 
         Assert.Empty(bank.Records);
         Assert.False(bank.TryGetTable(true, 0, out _));
@@ -129,15 +129,15 @@ public sealed class AlundraEffectBankLoaderTests : IDisposable
         WriteIndex();
         WriteCompanion(MapCompanion);
         WriteGlobal(GlobalCompanion);
-        Assert.True(AlundraEffectBankLoader.Load(_projectPath, "Some Map-5").TryGetTable(false, 0, out var first));
+        Assert.True(EffectBankLoader.Load(_projectPath, "Some Map-5").TryGetTable(false, 0, out var first));
         Assert.Equal(20, first.ImageSets[0].Idsv);
 
         WriteGlobal(GlobalCompanion.Replace("\"Idsv\":20", "\"Idsv\":21"));
-        Assert.True(AlundraEffectBankLoader.Load(_projectPath, "Some Map-5").TryGetTable(false, 0, out var second));
+        Assert.True(EffectBankLoader.Load(_projectPath, "Some Map-5").TryGetTable(false, 0, out var second));
         Assert.Same(first, second);
 
-        AlundraEffectBankLoader.ResetForTests();
-        Assert.True(AlundraEffectBankLoader.Load(_projectPath, "Some Map-5").TryGetTable(false, 0, out var third));
+        EffectBankLoader.ResetForTests();
+        Assert.True(EffectBankLoader.Load(_projectPath, "Some Map-5").TryGetTable(false, 0, out var third));
         Assert.Equal(21, third.ImageSets[0].Idsv);
     }
 
@@ -149,8 +149,8 @@ public sealed class AlundraEffectBankLoaderTests : IDisposable
         WriteGlobal("not json at all");
         using var log = SaveGameDirectorTestSupport.LogCapture.Install();
 
-        var first = AlundraEffectBankLoader.Load(_projectPath, "Some Map-5");
-        var second = AlundraEffectBankLoader.Load(_projectPath, "Some Map-5");
+        var first = EffectBankLoader.Load(_projectPath, "Some Map-5");
+        var second = EffectBankLoader.Load(_projectPath, "Some Map-5");
 
         Assert.Single(first.Records);
         Assert.False(first.TryGetTable(false, 0, out _));
@@ -162,7 +162,7 @@ public sealed class AlundraEffectBankLoaderTests : IDisposable
     public void TheRealExport_LoadsTheCompanionsOfMaps163And391_AndTheGlobalTables()
     {
         var root = SaveGameDirectorTestSupport.FindProjectRoot();
-        var rays = AlundraEffectBankLoader.Load(root, EffectGolden.WorldNameOf(root, 163));
+        var rays = EffectBankLoader.Load(root, EffectGolden.WorldNameOf(root, 163));
         Assert.Equal(4, rays.Records.Count);
         Assert.All(rays.Records, r => Assert.Equal(0xC0, r.Flags));
         Assert.True(rays.TryGetTable(true, 0, out var table));
@@ -170,7 +170,7 @@ public sealed class AlundraEffectBankLoaderTests : IDisposable
         Assert.True(rays.TryGetTable(false, 28, out _));
         Assert.False(rays.TryGetTable(false, 29, out _));
 
-        var ship = AlundraEffectBankLoader.Load(root, EffectGolden.WorldNameOf(root, 391));
+        var ship = EffectBankLoader.Load(root, EffectGolden.WorldNameOf(root, 391));
         Assert.Equal(5, ship.Records.Count(r => (r.Flags & 0x40) != 0));
     }
 }

@@ -199,7 +199,7 @@ public sealed partial class AlundraRandomPerTickTests
             var tickOfCreation = new List<int>();
             var tick = 0;
             arena.BeforeTick = t => tick = t;
-            AlundraNativeEffects.CreatedForTests = _ =>
+            NativeEffects.CreatedForTests = _ =>
             {
                 wordAfterCreation.Add(Word);
                 tickOfCreation.Add(tick);
@@ -227,7 +227,7 @@ public sealed partial class AlundraRandomPerTickTests
         }
         finally
         {
-            AlundraNativeEffects.CreatedForTests = null;
+            NativeEffects.CreatedForTests = null;
             CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = previousProject;
         }
     }

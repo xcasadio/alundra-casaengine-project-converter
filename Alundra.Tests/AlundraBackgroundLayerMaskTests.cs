@@ -180,7 +180,7 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
     // ---------------------------------------------------------------------------------------
 
     // The shape of map 475: layer 0 cellular, layer 1 scrolling.
-    private static (AlundraBackdropStage Stage, ScrollingLayerService Scrolling, CellularLayerService Cellular) NewStageLikeMap475()
+    private static (BackdropStage Stage, ScrollingLayerService Scrolling, CellularLayerService Cellular) NewStageLikeMap475()
     {
         var scrolling = new ScrollingLayerService();
         scrolling.SetLayers(new[]
@@ -206,7 +206,7 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
             },
         });
 
-        var stage = new AlundraBackdropStage();
+        var stage = new BackdropStage();
         stage.AttachService(scrolling);
         stage.AttachCellularService(cellular);
         return (stage, scrolling, cellular);
@@ -244,7 +244,7 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
     public void SetLayerMask_WithoutAnyService_LogsOnce_AndStillReportsHandled()
     {
         using var capture = CapturingLogger.Install();
-        var stage = new AlundraBackdropStage();
+        var stage = new BackdropStage();
 
         Assert.True(stage.SetLayerMask(0));
         Assert.True(stage.SetLayerMask(3));
@@ -256,7 +256,7 @@ public sealed class AlundraBackgroundLayerMaskTests : IDisposable
     public void SetLayerMask_WithOnlyOneKindOfService_StillMasksThatKind()
     {
         var (_, scrolling, _) = NewStageLikeMap475();
-        var stage = new AlundraBackdropStage();
+        var stage = new BackdropStage();
         stage.AttachService(scrolling);
 
         Assert.True(stage.SetLayerMask(1)); // layer 1 (scrolling) off.

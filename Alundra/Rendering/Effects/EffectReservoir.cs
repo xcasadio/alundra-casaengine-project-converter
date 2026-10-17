@@ -20,31 +20,31 @@ namespace Alundra.Rendering.Effects;
 /// (once per reservoir) and a destruction.
 /// </para>
 /// </summary>
-public sealed class AlundraEffectReservoir
+public sealed class EffectReservoir
 {
     public const int SlotCount = 128;
 
-    private readonly AlundraEffectBank _bank;
+    private readonly EffectBank _bank;
     private readonly Action<string>? _warn;
-    private readonly AlundraEffectSlot[] _slots = new AlundraEffectSlot[SlotCount];
+    private readonly EffectSlot[] _slots = new EffectSlot[SlotCount];
     private bool _warned;
     private bool _warnedOperation;
     private int _generation;
 
-    public AlundraEffectReservoir(AlundraEffectBank bank, Action<string>? warn = null)
+    public EffectReservoir(EffectBank bank, Action<string>? warn = null)
     {
         _bank = bank;
         _warn = warn;
         for (var i = 0; i < SlotCount; i++)
         {
-            _slots[i] = new AlundraEffectSlot(i);
+            _slots[i] = new EffectSlot(i);
         }
     }
 
-    public IReadOnlyList<AlundraEffectSlot> Slots => _slots;
+    public IReadOnlyList<EffectSlot> Slots => _slots;
 
     /// <summary>The active slots in the order of the slots (the order of the update, of the push and of the draw).</summary>
-    public IEnumerable<AlundraEffectSlot> ActiveSlots
+    public IEnumerable<EffectSlot> ActiveSlots
     {
         get
         {
@@ -77,7 +77,7 @@ public sealed class AlundraEffectReservoir
 
     /// <summary><c>SpawnMapEffect(record, force)</c> with <c>force</c> set (the opcodes <c>0x90</c> and <c>0xA2</c>, no zone test, no <c>0x40</c> test): the effect of the record at its
     /// position and animation. A record outside the table: nothing (as the binary); a full reservoir: nothing.</summary>
-    public AlundraEffectSlot? Spawn(int recordIndex)
+    public EffectSlot? Spawn(int recordIndex)
     {
         var records = _bank.Records;
         return recordIndex >= 0 && recordIndex < records.Count ? SpawnCore(recordIndex, records[recordIndex]) : null;
@@ -98,11 +98,11 @@ public sealed class AlundraEffectReservoir
     }
 
     /// <summary>The generic creator of mode 0 (<c>CreateEffectEntity 0x8003BDD8</c>, E19.g G3d): not from a record, at the given 16.16 position.</summary>
-    public AlundraEffectSlot? Create(bool mapTable, int effect, int animation, int x, int y, int z) => CreateCore(-1, mapTable, effect, animation, x, y, z);
+    public EffectSlot? Create(bool mapTable, int effect, int animation, int x, int y, int z) => CreateCore(-1, mapTable, effect, animation, x, y, z);
 
     /// <summary>The creator of mode 1 (<c>0x8003BE74</c>, G3D-R4): the slot starts at the anchor's position and follows it at the given offsets, its depth key at the anchor's plus <paramref name="depthOffset"/>.
     /// The forces are set by the caller afterwards, like the binary's native code does.</summary>
-    public AlundraEffectSlot? CreateAttached(bool mapTable, int effect, int animation, IAlundraEffectAnchor anchor, int depthOffset, int offsetX, int offsetY, int offsetZ)
+    public EffectSlot? CreateAttached(bool mapTable, int effect, int animation, IEffectAnchor anchor, int depthOffset, int offsetX, int offsetY, int offsetZ)
     {
         var slot = CreateCore(-1, mapTable, effect, animation, anchor.PosX, anchor.PosY, anchor.PosZ);
         if (slot != null)
@@ -120,7 +120,7 @@ public sealed class AlundraEffectReservoir
 
     /// <summary>The creator of mode 3 (<c>0x8003BFE8</c>, G3D-R4): the slot starts at the given position, moves by its own forces and takes the anchor's depth key plus <paramref name="depthOffset"/>
     /// while the anchor lives.</summary>
-    public AlundraEffectSlot? CreateDetached(bool mapTable, int effect, int animation, IAlundraEffectAnchor anchor, int depthOffset, int x, int y, int z)
+    public EffectSlot? CreateDetached(bool mapTable, int effect, int animation, IEffectAnchor anchor, int depthOffset, int x, int y, int z)
     {
         var slot = CreateCore(-1, mapTable, effect, animation, x, y, z);
         if (slot != null)
@@ -134,13 +134,13 @@ public sealed class AlundraEffectReservoir
     }
 
     /// <summary>Frees a slot at once (the binary's status 0).</summary>
-    public void Free(AlundraEffectSlot slot)
+    public void Free(EffectSlot slot)
     {
         slot.Active = false;
     }
 
     /// <summary>E20.f1b (D-E20-30): frees the slot only if it is active and still holds the occupant numbered <paramref name="generation"/> (the aura's release must not free the effect that took its slot).</summary>
-    public bool FreeIfGeneration(AlundraEffectSlot slot, int generation)
+    public bool FreeIfGeneration(EffectSlot slot, int generation)
     {
         if (!slot.Active || slot.Generation != generation)
         {
@@ -187,7 +187,7 @@ public sealed class AlundraEffectReservoir
                 if (!_warnedOperation)
                 {
                     _warnedOperation = true;
-                    _warn?.Invoke($"AlundraEffectReservoir: animation {animation} is not in the table of effect {slot.TargetEffect}; the operation is ignored (the binary would read past the table).");
+                    _warn?.Invoke($"EffectReservoir: animation {animation} is not in the table of effect {slot.TargetEffect}; the operation is ignored (the binary would read past the table).");
                 }
 
                 continue;
@@ -256,7 +256,7 @@ public sealed class AlundraEffectReservoir
     }
 
     /// <summary>Opcode <c>0xA2</c>: <see cref="Spawn"/>, then the slot it created, and only that one, goes to the position of <c>0x93</c> (z + 1); null when nothing was created.</summary>
-    public AlundraEffectSlot? SpawnPlaced(int recordIndex, int x, int y, int z)
+    public EffectSlot? SpawnPlaced(int recordIndex, int x, int y, int z)
     {
         var slot = Spawn(recordIndex);
         if (slot != null)
@@ -268,7 +268,7 @@ public sealed class AlundraEffectReservoir
     }
 
     /// <summary>Opcode <c>0xA3</c> (the entity was found): <see cref="Spawn"/>, then the slot it created, and only that one, goes to the position of the entity plus the offsets, no + 1.</summary>
-    public AlundraEffectSlot? SpawnAtEntity(int recordIndex, int entityX, int entityY, int entityZ, int dx, int dy, int dz)
+    public EffectSlot? SpawnAtEntity(int recordIndex, int entityX, int entityY, int entityZ, int dx, int dy, int dz)
     {
         var slot = Spawn(recordIndex);
         if (slot != null)
@@ -280,7 +280,7 @@ public sealed class AlundraEffectReservoir
     }
 
     /// <summary>The position of <c>0x93</c> and <c>0xA2</c>: the operands in the high word, and one more on z (the binary's <c>+ 1</c>, which moves the drawn row).</summary>
-    private static void Place(AlundraEffectSlot slot, int x, int y, int z)
+    private static void Place(EffectSlot slot, int x, int y, int z)
     {
         unchecked
         {
@@ -291,7 +291,7 @@ public sealed class AlundraEffectReservoir
     }
 
     /// <summary>The position of <c>0xA1</c> and <c>0xA3</c>: the 16.16 position of the entity plus the operands in the high word, no <c>+ 1</c>.</summary>
-    private static void PlaceAtEntity(AlundraEffectSlot slot, int entityX, int entityY, int entityZ, int dx, int dy, int dz)
+    private static void PlaceAtEntity(EffectSlot slot, int entityX, int entityY, int entityZ, int dx, int dy, int dz)
     {
         unchecked
         {
@@ -308,7 +308,7 @@ public sealed class AlundraEffectReservoir
     public void Tick(bool frozen) => Tick(frozen, int.MaxValue);
 
     /// <summary>
-    /// <see cref="Tick(bool)"/> of the logic tick <paramref name="tick"/> of a frame: a slot created at once by the hero at a later tick of the frame (<see cref="AlundraEffectSlot.FirstUpdateTick"/>) does not exist
+    /// <see cref="Tick(bool)"/> of the logic tick <paramref name="tick"/> of a frame: a slot created at once by the hero at a later tick of the frame (<see cref="EffectSlot.FirstUpdateTick"/>) does not exist
     /// yet at this tick and is left as it is (E20.f1b, D-E20-28).
     /// </summary>
     internal void Tick(bool frozen, int tick)
@@ -336,13 +336,13 @@ public sealed class AlundraEffectReservoir
         }
     }
 
-    private AlundraEffectSlot? SpawnCore(int recordIndex, AlundraEffectRecord record) =>
+    private EffectSlot? SpawnCore(int recordIndex, EffectRecord record) =>
         CreateCore(recordIndex, (record.Flags & 0x80) != 0, record.Effect, record.Anim,
             unchecked((record.X * 12 + 12) << 16), unchecked((record.Y * 8 + 8) << 16), unchecked(record.Z << 19));
 
-    private AlundraEffectSlot? CreateCore(int recordIndex, bool mapTable, int effect, int animation, int x, int y, int z)
+    private EffectSlot? CreateCore(int recordIndex, bool mapTable, int effect, int animation, int x, int y, int z)
     {
-        AlundraEffectSlot? slot = null;
+        EffectSlot? slot = null;
         foreach (var candidate in _slots)
         {
             if (!candidate.Active)
@@ -393,7 +393,7 @@ public sealed class AlundraEffectReservoir
         return slot;
     }
 
-    private void Animate(AlundraEffectSlot slot)
+    private void Animate(EffectSlot slot)
     {
         if (slot.TargetEffect != slot.CurrentEffect || slot.TargetMapTable != slot.CurrentMapTable)
         {
@@ -472,7 +472,7 @@ public sealed class AlundraEffectReservoir
         }
     }
 
-    private static void Move(AlundraEffectSlot slot)
+    private static void Move(EffectSlot slot)
     {
         // Mode 0: the forces, then the key. Mode 2 stays put. Modes 1 and 3 are created only by native code (G3d, G3D-R4, Move 0x8003C284).
         switch (slot.Mode)
@@ -500,7 +500,7 @@ public sealed class AlundraEffectReservoir
     /// the anchor plus the depth offset, and status 4 freezes it. Then, for mode 1 whatever happened above (the binary's code falls through), and for mode 3 straight away: the forces are added to the
     /// position, the key follows the anchor again unless its status is 0, and status 0 or 4 freezes the slot. So an anchor of status 0 still gives its forces to the slot on the update that freezes it.
     /// </summary>
-    private static void MoveFollower(AlundraEffectSlot slot)
+    private static void MoveFollower(EffectSlot slot)
     {
         var anchor = slot.Anchor!;
         unchecked
@@ -540,12 +540,12 @@ public sealed class AlundraEffectReservoir
     }
 
     /// <summary>The defensive rule: one warning per reservoir, no image, the destruction flag (the slot is freed at the next update).</summary>
-    private void Destroy(AlundraEffectSlot slot, string reason)
+    private void Destroy(EffectSlot slot, string reason)
     {
         if (!_warned)
         {
             _warned = true;
-            _warn?.Invoke($"AlundraEffectReservoir: {reason}; the effect is destroyed (the binary would halt here).");
+            _warn?.Invoke($"EffectReservoir: {reason}; the effect is destroyed (the binary would halt here).");
         }
 
         slot.CurrentImageSetIndex = -1;

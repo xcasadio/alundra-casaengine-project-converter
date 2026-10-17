@@ -17,7 +17,7 @@ using Alundra.Transitions;
 namespace Alundra.Tests;
 
 /// <summary>
-/// D-E9d - production-site pin for <see cref="AlundraBackdropStage.PushFrame"/> feeding BOTH the
+/// D-E9d - production-site pin for <see cref="BackdropStage.PushFrame"/> feeding BOTH the
 /// sibling scrolling-layer service AND the cellular-layer service from the SAME call site (no second
 /// push site was added to <see cref="AlundraWorldProxy.Update"/>). Reuses the real map 389 headless
 /// montage exactly like <see cref="BackdropPushProductionTests"/> - see that class's own doc for the
@@ -44,7 +44,7 @@ public sealed class BackdropCellularPushProductionTests : IDisposable
 
     /// <summary>
     /// The ONE production push site (<c>AlundraWorldProxy.Update</c> -&gt;
-    /// <see cref="AlundraBackdropStage.PushFrame"/>) feeds a real <see cref="CellularLayerService"/>
+    /// <see cref="BackdropStage.PushFrame"/>) feeds a real <see cref="CellularLayerService"/>
     /// exactly like it already feeds a real <see cref="ScrollingLayerService"/> - same
     /// <c>FramesPushed</c>/<c>PendingTicks</c> progression on both, same camera target, proving there is
     /// no separate call site for the cellular mechanism.

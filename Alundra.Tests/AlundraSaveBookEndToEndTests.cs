@@ -221,7 +221,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
     {
         var proxy = new AlundraWorldProxy();
         proxy.InitializeWithWorld(world);
-        typeof(AlundraBackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
+        typeof(BackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
             .SetValue(proxy._backdropStage, true); // the headless montage has no view for the clear colour.
 
         // The headless game has no asset manager: the ETC texts come from the export on disk, the rules and the

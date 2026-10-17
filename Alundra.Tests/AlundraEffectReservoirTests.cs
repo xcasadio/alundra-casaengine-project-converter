@@ -73,24 +73,24 @@ internal static class EffectGolden
         return index.Keys.Select(int.Parse).OrderBy(i => i).ToList();
     }
 
-    internal static AlundraEffectBank BankOf(string projectRoot, int mapId) =>
-        AlundraEffectBankLoader.Load(projectRoot, WorldNameOf(projectRoot, mapId));
+    internal static EffectBank BankOf(string projectRoot, int mapId) =>
+        EffectBankLoader.Load(projectRoot, WorldNameOf(projectRoot, mapId));
 
     /// <summary>A bank with one map table (<paramref name="animations"/>, one image set per index) and the given records.</summary>
-    internal static AlundraEffectBank Synthetic(AlundraEffectAnimation[] animations, int imageSets, params AlundraEffectRecord[] records)
+    internal static EffectBank Synthetic(EffectAnimation[] animations, int imageSets, params EffectRecord[] records)
     {
-        var table = new AlundraEffectTable { Animations = animations.ToList() };
+        var table = new EffectTable { Animations = animations.ToList() };
         for (var i = 0; i < imageSets; i++)
         {
-            table.ImageSets.Add(new AlundraEffectImageSet { Idsv = 10 + i, Images = { new AlundraEffectImage { W = 1 + i, H = 1 } } });
+            table.ImageSets.Add(new EffectImageSet { Idsv = 10 + i, Images = { new EffectImage { W = 1 + i, H = 1 } } });
         }
 
-        return new AlundraEffectBank(new AlundraEffectDocument { Records = records.ToList(), Effects = { table } }, null);
+        return new EffectBank(new EffectDocument { Records = records.ToList(), Effects = { table } }, null);
     }
 
-    internal static AlundraEffectAnimation Anim(string end, params int[][] frames) => new() { End = end, Frames = frames };
+    internal static EffectAnimation Anim(string end, params int[][] frames) => new() { End = end, Frames = frames };
 
-    internal static AlundraEffectRecord Record(int flags, int x, int y, int z, int anim, int x1 = 0, int y1 = 0, int x2 = 51, int y2 = 59, int effect = 0) =>
+    internal static EffectRecord Record(int flags, int x, int y, int z, int anim, int x1 = 0, int y1 = 0, int x2 = 51, int y2 = 59, int effect = 0) =>
         new() { X1 = x1, X2 = x2, Y1 = y1, Y2 = y2, Flags = flags, Effect = effect, X = x, Y = y, Z = z, Anim = anim };
 }
 
@@ -102,12 +102,12 @@ public sealed class AlundraEffectReservoirTests
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
 
-    private static AlundraEffectReservoir Reservoir(AlundraEffectBank bank, List<string>? warnings = null) => new(bank, warnings is null ? null : warnings.Add);
+    private static EffectReservoir Reservoir(EffectBank bank, List<string>? warnings = null) => new(bank, warnings is null ? null : warnings.Add);
 
     [Fact]
     public void EveryAnimationOfTheBinary_IsDrawnFromTick0ToItsLastTick_ThenFreedOrLooped()
     {
-        var banks = new Dictionary<int, AlundraEffectBank>();
+        var banks = new Dictionary<int, EffectBank>();
         var rows = EffectGolden.Animations;
         Assert.Equal(363, rows.Count);
         Assert.Equal(130, rows.Count(r => r.Destroy));
@@ -230,7 +230,7 @@ public sealed class AlundraEffectReservoirTests
         Assert.True(reservoir.Slots[0].TargetMapTable);
         Assert.False(reservoir.Slots[1].TargetMapTable);
 
-        var empty = Reservoir(AlundraEffectBank.Empty);
+        var empty = Reservoir(EffectBank.Empty);
         empty.SpawnAtLoad(0, 0);
         Assert.Equal(0, empty.ActiveCount);
     }
@@ -241,7 +241,7 @@ public sealed class AlundraEffectReservoirTests
         var bank = EffectGolden.Synthetic(new[] { EffectGolden.Anim("Loop", new[] { 5, 0 }) }, 1, EffectGolden.Record(0x80, 4, 4, 0, 0));
         var warnings = new List<string>();
         var reservoir = Reservoir(bank, warnings);
-        Assert.Equal(128, AlundraEffectReservoir.SlotCount);
+        Assert.Equal(128, EffectReservoir.SlotCount);
         Assert.Equal(128, reservoir.Slots.Count);
 
         for (var i = 0; i < 128; i++)
@@ -339,7 +339,7 @@ public sealed class AlundraEffectReservoirTests
 
         reservoir.Tick(frozen: false);
         Assert.Equal(1, warnings.Count);
-        Assert.All(warnings, w => Assert.Contains("AlundraEffect", w));
+        Assert.All(warnings, w => Assert.Contains("Effect", w));
         Assert.True(missingAnimation.Active && missingEffect.Active && globalWithoutBank.Active); // destroyed this tick, freed at the next
         Assert.All(new[] { missingAnimation, missingEffect, globalWithoutBank }, s => Assert.True(s.Destroying));
 
@@ -472,7 +472,7 @@ public sealed class AlundraEffectReservoirTests
     // ---------------------------------------------------------------------------------------------------------------------
 
     /// <summary>Two records of one effect (a loop animation 0, a destroy animation 1 of two ticks), neither flagged for the load spawn.</summary>
-    private static AlundraEffectReservoir TwoRecords(List<string>? warnings = null) => Reservoir(EffectGolden.Synthetic(new[]
+    private static EffectReservoir TwoRecords(List<string>? warnings = null) => Reservoir(EffectGolden.Synthetic(new[]
     {
         EffectGolden.Anim("Loop", new[] { 5, 0 }),
         EffectGolden.Anim("Destroy", new[] { 1, 1 }, new[] { 1, 2 }),
@@ -622,7 +622,7 @@ public sealed class AlundraEffectReservoirTests
     public void SpawnPlaced_OnAFullReservoir_CreatesNothing_AndMovesNothing()
     {
         var reservoir = TwoRecords();
-        for (var i = 0; i < AlundraEffectReservoir.SlotCount; i++)
+        for (var i = 0; i < EffectReservoir.SlotCount; i++)
         {
             Assert.NotNull(reservoir.Spawn(0));
         }

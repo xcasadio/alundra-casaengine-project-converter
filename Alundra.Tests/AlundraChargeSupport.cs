@@ -40,14 +40,14 @@ internal sealed record ChargeRow(
     public IEnumerable<int> Sounds => Events.Where(e => e[0] == 's').Select(e => int.Parse(e[1..], CultureInfo.InvariantCulture)).Where(id => id > 0);
 
     /// <summary>The creations of the effect 16 (the hold spark and the burst) that succeeded, in order: what the DLL creates (the aura, effect 3, is the stub of E20.f1a).</summary>
-    public IEnumerable<ChargeCall> ChargeEffects => Calls.Where(c => c.Effect == AlundraNativeEffects.ChargeEffect && c.Created);
+    public IEnumerable<ChargeCall> ChargeEffects => Calls.Where(c => c.Effect == NativeEffects.ChargeEffect && c.Created);
 
     /// <summary>The hold sparks of the tick (the creations of the effect 16 before the last 16 when there are 16 or more, as <c>probe_ext.check_effects</c> splits them).</summary>
     public IEnumerable<ChargeCall> Sparks
     {
         get
         {
-            var all = Calls.Where(c => c.Effect == AlundraNativeEffects.ChargeEffect).ToList();
+            var all = Calls.Where(c => c.Effect == NativeEffects.ChargeEffect).ToList();
             return all.Count >= 16 ? all.Take(all.Count - 16) : all;
         }
     }

@@ -54,7 +54,7 @@ namespace Alundra.Rendering.Backdrops;
 /// collaborator's state, not its own - passing it in keeps this class from reaching into
 /// <c>AlundraCameraDirector</c> itself.
 /// </summary>
-internal sealed class AlundraBackdropStage
+internal sealed class BackdropStage
 {
     /// <summary>Cached once <see cref="ApplyOriginalBackgroundClearColorOnce"/> has set the world's
     /// runtime view <see cref="CasaEngine.Framework.Rendering.RenderView.ClearColor"/> - the view does not
@@ -126,7 +126,7 @@ internal sealed class AlundraBackdropStage
             if (!_loggedMaskWithoutService)
             {
                 _loggedMaskWithoutService = true;
-                Logs.WriteWarning("AlundraBackdropStage: background layer mask set but no layer service attached; ignored.");
+                Logs.WriteWarning("BackdropStage: background layer mask set but no layer service attached; ignored.");
             }
 
             return true;
@@ -195,7 +195,7 @@ internal sealed class AlundraBackdropStage
             if (world.Game != null)
             {
                 Logs.WriteWarning(
-                    $"AlundraBackdropStage: world '{world.Name}' has a live Game but no ScrollingLayerService "
+                    $"BackdropStage: world '{world.Name}' has a live Game but no ScrollingLayerService "
                     + "was attached (AttachService); scrolling background layers will not render.");
             }
 

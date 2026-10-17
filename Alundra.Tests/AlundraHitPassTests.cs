@@ -97,7 +97,7 @@ public sealed class AlundraHitPassTests
 
             if (sparks)
             {
-                var dllSparks = string.Join(";", sample.Sparks.SelectMany(s => Enumerable.Repeat($"{s.X},{s.Y},{s.Z + 1}", AlundraNativeEffects.HitSparkCount)));
+                var dllSparks = string.Join(";", sample.Sparks.SelectMany(s => Enumerable.Repeat($"{s.X},{s.Y},{s.Z + 1}", NativeEffects.HitSparkCount)));
                 var oracleSparks = string.Join(";", row.Sparks.Select(s => $"{s.X},{s.Y},{s.Z}"));
                 if (dllSparks != oracleSparks && ignore?.Invoke(tick, -1, "sparks") != true)
                 {
@@ -160,7 +160,7 @@ public sealed class AlundraHitPassTests
         }
 
         var slots = arena.Arc.Proxy.EffectStage!.Reservoir.Slots.Where(slot => slot.Active && slot.TargetEffect == 9).ToList();
-        Assert.Equal(AlundraNativeEffects.HitSparkCount, slots.Count);
+        Assert.Equal(NativeEffects.HitSparkCount, slots.Count);
         Assert.All(slots, slot => Assert.Equal(-1, slot.RecordIndex));
         Assert.All(slots, slot => Assert.False(slot.TargetMapTable));
     }
@@ -366,7 +366,7 @@ public sealed class AlundraHitPassTests
         Assert.Equal(1, hit.Hero.HitCounter);
         Assert.Single(hit.Sparks);
         var slots = arena.Arc.Proxy.EffectStage!.Reservoir.Slots.Where(slot => slot.Active && slot.TargetEffect == 9).ToList();
-        Assert.Equal(AlundraNativeEffects.HitSparkCount, slots.Count); // the three sparks exist on the reservoir of the world,
+        Assert.Equal(NativeEffects.HitSparkCount, slots.Count); // the three sparks exist on the reservoir of the world,
         Assert.Contains((1, 3), samples[hitTick].Handlers); // the program D is chosen at the next tick (native: a counted no-op),
         Assert.Equal(-1, samples[hitTick].Targets[0].Touching); // and the touch is cleared by that tick's counters pass.
         Assert.All(samples, s => Assert.Equal(9, s.Targets[0].Hp)); // nothing hurts it before E20.c1b.

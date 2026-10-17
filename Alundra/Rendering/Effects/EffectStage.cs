@@ -28,15 +28,15 @@ namespace Alundra.Rendering.Effects;
 /// </para>
 /// <para>
 /// <b>Draw</b> (E19.g G3c, ADR-0049): the stage pushes the quads of the active slots to the engine's <see cref="EffectQuadService"/> (<see cref="AttachService"/>, <see cref="PushFrame(Camera2dComponent?)"/>):
-/// the two sheets of the bank at <see cref="Load(AlundraEffectBank)"/> (or at <see cref="AttachService"/> when a bank is already loaded), the frame at every rendered frame. The construction is
-/// <see cref="AlundraEffectQuadBuilder"/>. Without a service (headless montages) nothing is built or logged.
+/// the two sheets of the bank at <see cref="Load(EffectBank)"/> (or at <see cref="AttachService"/> when a bank is already loaded), the frame at every rendered frame. The construction is
+/// <see cref="EffectQuadBuilder"/>. Without a service (headless montages) nothing is built or logged.
 /// </para>
 /// </summary>
-public sealed class AlundraEffectStage
+public sealed class EffectStage
 {
     private readonly List<PendingOperation> _queue = new();
-    private AlundraEffectBank _bank = AlundraEffectBank.Empty;
-    private AlundraEffectReservoir _reservoir;
+    private EffectBank _bank = EffectBank.Empty;
+    private EffectReservoir _reservoir;
     private int _heroTileX;
     private int _heroTileY;
     private bool _heroTileCaptured;
@@ -50,26 +50,26 @@ public sealed class AlundraEffectStage
     private int _sourceTick;
     private int _sourceRank;
 
-    public AlundraEffectStage()
+    public EffectStage()
     {
-        _reservoir = new AlundraEffectReservoir(_bank, Logs.WriteWarning);
+        _reservoir = new EffectReservoir(_bank, Logs.WriteWarning);
     }
 
     /// <summary>The reservoir of the world: the active slots, in the order of the slots, are what G3c draws.</summary>
-    public AlundraEffectReservoir Reservoir => _reservoir;
+    public EffectReservoir Reservoir => _reservoir;
 
     /// <summary>True once <see cref="CaptureHeroTile"/> has been called since the last load.</summary>
     public bool HeroTileCaptured => _heroTileCaptured;
 
-    /// <summary>Loads the bank of the world named <paramref name="worldName"/> from the exported project (<see cref="AlundraEffectBankLoader"/>) and starts a fresh reservoir.</summary>
-    public void Load(string? worldName, string? projectPath) => Load(AlundraEffectBankLoader.Load(projectPath, worldName));
+    /// <summary>Loads the bank of the world named <paramref name="worldName"/> from the exported project (<see cref="EffectBankLoader"/>) and starts a fresh reservoir.</summary>
+    public void Load(string? worldName, string? projectPath) => Load(EffectBankLoader.Load(projectPath, worldName));
 
     /// <summary>Starts a fresh reservoir over <paramref name="bank"/> (the world's own, or a test's): nothing is spawned, queued or captured any more.</summary>
-    public void Load(AlundraEffectBank bank)
+    public void Load(EffectBank bank)
     {
         _bank = bank;
         _bankLoaded = true;
-        _reservoir = new AlundraEffectReservoir(bank, Logs.WriteWarning);
+        _reservoir = new EffectReservoir(bank, Logs.WriteWarning);
         _queue.Clear();
         _sourceTick = 0;
         _sourceRank = 0;
@@ -79,8 +79,8 @@ public sealed class AlundraEffectStage
         PushSheets();
     }
 
-    /// <summary>Attaches (or detaches, with <see langword="null"/>) the engine's effect quad service (G3C-R5), before or after <see cref="Load(AlundraEffectBank)"/>: when a bank is already loaded its
-    /// sheets are pushed at once, exactly as <see cref="Load(AlundraEffectBank)"/> does. Public so that a harness outside the repository can drive the stage.</summary>
+    /// <summary>Attaches (or detaches, with <see langword="null"/>) the engine's effect quad service (G3C-R5), before or after <see cref="Load(EffectBank)"/>: when a bank is already loaded its
+    /// sheets are pushed at once, exactly as <see cref="Load(EffectBank)"/> does. Public so that a harness outside the repository can drive the stage.</summary>
     public void AttachService(EffectQuadService? service)
     {
         _quadService = service;
@@ -113,7 +113,7 @@ public sealed class AlundraEffectStage
         }
 
         _quads.Clear();
-        AlundraEffectQuadBuilder.Build(_reservoir.Slots, hasScroll, scrollX, scrollY, _quads);
+        EffectQuadBuilder.Build(_reservoir.Slots, hasScroll, scrollX, scrollY, _quads);
         service.SetFrame(CollectionsMarshal.AsSpan(_quads));
     }
 
@@ -126,8 +126,8 @@ public sealed class AlundraEffectStage
             return;
         }
 
-        _sheetIds[AlundraEffectQuadBuilder.MapSheet] = ParseSheetIdOrEmpty(_bank.Map?.SheetTextureAssetId);
-        _sheetIds[AlundraEffectQuadBuilder.GlobalSheet] = ParseSheetIdOrEmpty(_bank.Global?.SheetTextureAssetId);
+        _sheetIds[EffectQuadBuilder.MapSheet] = ParseSheetIdOrEmpty(_bank.Map?.SheetTextureAssetId);
+        _sheetIds[EffectQuadBuilder.GlobalSheet] = ParseSheetIdOrEmpty(_bank.Global?.SheetTextureAssetId);
         service.Clear();
         service.SetSheets(_sheetIds);
     }
@@ -142,7 +142,7 @@ public sealed class AlundraEffectStage
         _heroTileCaptured = true;
     }
 
-    /// <summary>The map-entry spawn (<see cref="AlundraEffectReservoir.SpawnAtLoad"/>), once: later calls do nothing.</summary>
+    /// <summary>The map-entry spawn (<see cref="EffectReservoir.SpawnAtLoad"/>), once: later calls do nothing.</summary>
     public void SpawnLoadEffects()
     {
         if (_loadSpawned)
@@ -160,7 +160,7 @@ public sealed class AlundraEffectStage
             if (!_warnedNoHero && _bank.Records.Any(r => (r.Flags & 0x40) != 0))
             {
                 _warnedNoHero = true;
-                Logs.WriteWarning("AlundraEffectStage: no hero to read the arrival tile from; the effects that appear at load are placed for the tile (0, 0).");
+                Logs.WriteWarning("EffectStage: no hero to read the arrival tile from; the effects that appear at load are placed for the tile (0, 0).");
             }
         }
 
@@ -169,7 +169,7 @@ public sealed class AlundraEffectStage
 
     /// <summary>Queues an operation on the reservoir, marked with the logic <paramref name="tick"/> of the frame that emits it and the <paramref name="rank"/> of its source (the map events
     /// first, then the entities, then the pending triggers, like the binary's order).</summary>
-    public void Queue(int tick, int rank, Action<AlundraEffectReservoir> operation)
+    public void Queue(int tick, int rank, Action<EffectReservoir> operation)
     {
         _queue.Add(new PendingOperation(tick, rank, _sequence++, operation));
     }
@@ -189,21 +189,21 @@ public sealed class AlundraEffectStage
     }
 
     /// <summary>What the opcode handlers call: <see cref="Queue"/> with the mark of <see cref="BeginSource"/>.</summary>
-    public void Emit(Action<AlundraEffectReservoir> operation) => Queue(_sourceTick, _sourceRank, operation);
+    public void Emit(Action<EffectReservoir> operation) => Queue(_sourceTick, _sourceRank, operation);
 
     /// <summary>
-    /// E20.f1b (D-E20-28, amends ADR-0046 for the hero only): creates a mode 0 effect AT ONCE in the reservoir, like <see cref="AlundraEffectReservoir.Create"/>, and returns its slot (null when the reservoir is
+    /// E20.f1b (D-E20-28, amends ADR-0046 for the hero only): creates a mode 0 effect AT ONCE in the reservoir, like <see cref="EffectReservoir.Create"/>, and returns its slot (null when the reservoir is
     /// full), so that the hero keeps the slot as its handle and reads it at its next tick. The slot is marked with the logic tick of the current source (<see cref="BeginSource"/>): <see cref="RunFrame"/> does not
     /// update it before that tick. Deviation for frames of several ticks, written here: the hero's slot index is taken before the queued operations of earlier ticks of the frame are applied.
     /// </summary>
-    public AlundraEffectSlot? CreateNow(bool mapTable, int effect, int animation, int x, int y, int z)
+    public EffectSlot? CreateNow(bool mapTable, int effect, int animation, int x, int y, int z)
         => Mark(_reservoir.Create(mapTable, effect, animation, x, y, z));
 
-    /// <summary>E20.f1b (D-E20-28): <see cref="CreateNow"/> for the creator of mode 1 (<see cref="AlundraEffectReservoir.CreateAttached"/>).</summary>
-    public AlundraEffectSlot? CreateAttachedNow(bool mapTable, int effect, int animation, IAlundraEffectAnchor anchor, int depthOffset, int offsetX, int offsetY, int offsetZ)
+    /// <summary>E20.f1b (D-E20-28): <see cref="CreateNow"/> for the creator of mode 1 (<see cref="EffectReservoir.CreateAttached"/>).</summary>
+    public EffectSlot? CreateAttachedNow(bool mapTable, int effect, int animation, IEffectAnchor anchor, int depthOffset, int offsetX, int offsetY, int offsetZ)
         => Mark(_reservoir.CreateAttached(mapTable, effect, animation, anchor, depthOffset, offsetX, offsetY, offsetZ));
 
-    private AlundraEffectSlot? Mark(AlundraEffectSlot? slot)
+    private EffectSlot? Mark(EffectSlot? slot)
     {
         if (slot != null)
         {
@@ -218,7 +218,7 @@ public sealed class AlundraEffectStage
     /// <see cref="RunFrame"/> in the order of the ticks, so that a creation queued at an earlier tick of the same frame cannot take the slot first. Guarded by <paramref name="generation"/> (D-E20-30): the slot is
     /// freed only if it still holds the effect the caller meant.
     /// </summary>
-    public void FreeAtTick(AlundraEffectSlot slot, int generation)
+    public void FreeAtTick(EffectSlot slot, int generation)
         => Emit(reservoir => reservoir.FreeIfGeneration(slot, generation));
 
     /// <summary>
@@ -253,5 +253,5 @@ public sealed class AlundraEffectStage
         _reservoir.ClearFirstUpdateMarks();
     }
 
-    private readonly record struct PendingOperation(int Tick, int Rank, long Sequence, Action<AlundraEffectReservoir> Operation);
+    private readonly record struct PendingOperation(int Tick, int Rank, long Sequence, Action<EffectReservoir> Operation);
 }

@@ -35,7 +35,7 @@ public sealed class AlundraHeroAuraTests : IDisposable
 
     public void Dispose()
     {
-        AlundraNativeEffects.CreatedForTests = null;
+        NativeEffects.CreatedForTests = null;
         GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
@@ -43,7 +43,7 @@ public sealed class AlundraHeroAuraTests : IDisposable
     }
 
     /// <summary>The auras alive in the reservoir: effect 3 of the global table anchored to the hero.</summary>
-    private static List<AlundraEffectSlot> Auras(Montage m)
+    private static List<EffectSlot> Auras(Montage m)
         => m.Stage.Reservoir.ActiveSlots.Where(s => s.TargetEffect == PlayerManager.AuraEffect && !s.TargetMapTable && ReferenceEquals(s.Anchor, m.Hero) && s.Mode == 1).ToList();
 
     /// <summary>Holds the Square for <paramref name="ticks"/> ticks of one tick per frame; <paramref name="beforeTick"/> is told the tick (1-based) before it runs. Returns the (tick, slot) of every creation of the aura.</summary>
@@ -128,13 +128,13 @@ public sealed class AlundraHeroAuraTests : IDisposable
     {
         using var seed = new SeedScope();
         var m = Start(2);
-        var fillers = new List<AlundraEffectSlot>();
+        var fillers = new List<EffectSlot>();
 
         var creations = Hold(m, 70, beforeTick: tick =>
         {
             if (tick == 30)
             {
-                while (m.Stage.Reservoir.ActiveCount < AlundraEffectReservoir.SlotCount)
+                while (m.Stage.Reservoir.ActiveCount < EffectReservoir.SlotCount)
                 {
                     fillers.Add(m.Stage.Reservoir.Create(false, 3, 1, 0, 0, 0)!);
                 }
@@ -161,7 +161,7 @@ public sealed class AlundraHeroAuraTests : IDisposable
         var rows = ChargeOracle.Load("C2-steel");
         using var seed = new SeedScope();
         var m = Start(2);
-        AlundraEffectSlot? aura = null;
+        EffectSlot? aura = null;
 
         foreach (var row in rows)
         {

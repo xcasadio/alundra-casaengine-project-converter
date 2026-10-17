@@ -45,7 +45,7 @@ public sealed class AlundraHeroSwimTests : IDisposable
 
     public void Dispose()
     {
-        AlundraNativeEffects.CreatedForTests = null;
+        NativeEffects.CreatedForTests = null;
         PlayerManager.TryUseItemResultForTests = null;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();

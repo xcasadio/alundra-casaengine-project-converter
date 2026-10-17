@@ -11,10 +11,10 @@ using Alundra.Rendering.Backdrops;
 namespace Alundra.Tests;
 
 /// <summary>
-/// D-E9d (docs/plan-e9d-mode-cellulaire.md) - covers <see cref="AlundraBackdropStage.BuildCellularDefinitions"/>,
+/// D-E9d (docs/plan-e9d-mode-cellulaire.md) - covers <see cref="BackdropStage.BuildCellularDefinitions"/>,
 /// the PURE translation of a loaded <see cref="BackdropDocument"/> into the engine mechanism's own
 /// <c>CellularLayerDefinition[]</c> (<c>CasaEngine.Framework.Rendering.CellularLayers</c>). Nothing
-/// here calls <see cref="AlundraBackdropStage.AttachCellularService"/>/<see cref="AlundraBackdropStage.PushFrame"/>
+/// here calls <see cref="BackdropStage.AttachCellularService"/>/<see cref="BackdropStage.PushFrame"/>
 /// or touches production - see <see cref="BackdropPushProductionTests"/> for the production push pin.
 ///
 /// The two real-companion tests read <c>alundra-project/</c> (the converter's own export) and FAIL,
@@ -40,7 +40,7 @@ public class BackdropStageCellularDefinitionTests
     {
         var document = LoadRealCompanion("Coast house (Nava)-420");
 
-        var layers = AlundraBackdropStage.BuildCellularDefinitions(document);
+        var layers = BackdropStage.BuildCellularDefinitions(document);
 
         var layer = Assert.Single(layers);
         Assert.Equal(0, layer.LayerId);
@@ -99,7 +99,7 @@ public class BackdropStageCellularDefinitionTests
         var document = LoadRealCompanion("Ship Klark (night, break, Event)-391");
         Assert.Equal(4, document.AnimNum); // sanity check on the source value itself.
 
-        var layers = AlundraBackdropStage.BuildCellularDefinitions(document);
+        var layers = BackdropStage.BuildCellularDefinitions(document);
 
         var layer = Assert.Single(layers);
         Assert.Equal(1, layer.AnimTimer); // from the LAYER (layerInfos.AnimTimer), NOT document.AnimNum (4).
@@ -151,7 +151,7 @@ public class BackdropStageCellularDefinitionTests
             },
         };
 
-        var layers = AlundraBackdropStage.BuildCellularDefinitions(document);
+        var layers = BackdropStage.BuildCellularDefinitions(document);
 
         var layer = Assert.Single(layers);
         Assert.Equal(7, layer.AnimNum); // document.AnimNum, never layer.AnimTimer.
@@ -171,7 +171,7 @@ public class BackdropStageCellularDefinitionTests
             },
         };
 
-        var layers = AlundraBackdropStage.BuildCellularDefinitions(document);
+        var layers = BackdropStage.BuildCellularDefinitions(document);
 
         Assert.Empty(layers);
     }
@@ -224,7 +224,7 @@ public class BackdropStageCellularDefinitionTests
             },
         };
 
-        var layers = AlundraBackdropStage.BuildCellularDefinitions(document);
+        var layers = BackdropStage.BuildCellularDefinitions(document);
 
         Assert.Equal(2, layers.Length);
 
@@ -271,7 +271,7 @@ public class BackdropStageCellularDefinitionTests
             },
         };
 
-        var layers = AlundraBackdropStage.BuildCellularDefinitions(document);
+        var layers = BackdropStage.BuildCellularDefinitions(document);
 
         Assert.Equal(2, layers.Length);
         var expected = new[] { id0, Guid.Empty, Guid.Empty, id3, Guid.Empty, Guid.Empty, Guid.Empty, Guid.Empty };
@@ -291,13 +291,13 @@ public class BackdropStageCellularDefinitionTests
             },
         };
 
-        var layers = AlundraBackdropStage.BuildCellularDefinitions(document);
+        var layers = BackdropStage.BuildCellularDefinitions(document);
 
         Assert.Empty(Assert.Single(layers).SheetTextureAssetIds);
     }
 
     /// <summary>The PSX mode of a Cellular layer matches EXACTLY what the Tiles path resolves for the same
-    /// (Ground, BlendMode) inputs - both call the SAME <see cref="AlundraBackdropStage.ResolveLayerPsxSemiTransparency"/>,
+    /// (Ground, BlendMode) inputs - both call the SAME <see cref="BackdropStage.ResolveLayerPsxSemiTransparency"/>,
     /// no second policy; the blend of the layer is opaque white whatever the mode (E19.g G2c).</summary>
     [Theory]
     [InlineData(true, 1)]
@@ -323,10 +323,10 @@ public class BackdropStageCellularDefinitionTests
             },
         };
 
-        var layers = AlundraBackdropStage.BuildCellularDefinitions(document);
+        var layers = BackdropStage.BuildCellularDefinitions(document);
         var layer = Assert.Single(layers);
 
-        Assert.Equal(AlundraBackdropStage.ResolveLayerPsxSemiTransparency(blendMode), layer.PsxSemiTransparency);
+        Assert.Equal(BackdropStage.ResolveLayerPsxSemiTransparency(blendMode), layer.PsxSemiTransparency);
         Assert.Equal(SpriteBlendMode.Opaque, layer.Blend);
         Assert.Equal(Color.White, layer.Tint);
     }

@@ -52,7 +52,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
         PlayerManager.WeaponSpawnBirthHookForTests = null;
         PlayerManager.WiredWeaponTypesForTests = null;
         WaveSwordAi.StubCallsForTests = null;
-        AlundraNativeEffects.CreatedForTests = null;
+        NativeEffects.CreatedForTests = null;
         GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
         GameState.Instance.ResetForTests();
@@ -72,7 +72,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
         run.Arena.Arc.Runner.NativeHandlersEnabled = nativeHandlers;
         var tick = 0;
         var creationTicks = new List<int>();
-        AlundraNativeEffects.CreatedForTests = _ => creationTicks.Add(tick);
+        NativeEffects.CreatedForTests = _ => creationTicks.Add(tick);
         run.Arena.BeforeTick = t => tick = t;
         var statusAt = new Dictionary<int, string>();
         var slotDuringTheLife = -2; // read while the wave is alive (at S): once it is destroyed its slot is given back (Slot = -1).

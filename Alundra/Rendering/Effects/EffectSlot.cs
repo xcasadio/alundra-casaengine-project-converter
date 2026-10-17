@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 namespace Alundra.Rendering.Effects;
 
-/// <summary>One slot of the effect reservoir (the binary's 0x80-byte slot, <c>0x80138608 + 0x80 * i</c>); see <see cref="AlundraEffectReservoir"/>.</summary>
-public sealed class AlundraEffectSlot
+/// <summary>One slot of the effect reservoir (the binary's 0x80-byte slot, <c>0x80138608 + 0x80 * i</c>); see <see cref="EffectReservoir"/>.</summary>
+public sealed class EffectSlot
 {
     /// <summary>The place of the slot in the reservoir (0 to 127).</summary>
     public int Index { get; }
@@ -16,12 +16,12 @@ public sealed class AlundraEffectSlot
     /// <summary>The record that created it (the index the script opcodes name), -1 for a creation that does not come from a record.</summary>
     public int RecordIndex { get; internal set; } = -1;
 
-    /// <summary>0 free with forces, 1 attached to an anchor (<see cref="AlundraEffectReservoir.CreateAttached"/>), 2 frozen, 3 detached from its anchor but following its depth key
-    /// (<see cref="AlundraEffectReservoir.CreateDetached"/>); 1 and 3 are created only by native code (E19.g G3d, G3D-R4).</summary>
+    /// <summary>0 free with forces, 1 attached to an anchor (<see cref="EffectReservoir.CreateAttached"/>), 2 frozen, 3 detached from its anchor but following its depth key
+    /// (<see cref="EffectReservoir.CreateDetached"/>); 1 and 3 are created only by native code (E19.g G3d, G3D-R4).</summary>
     public int Mode { get; internal set; }
 
     /// <summary>The entity a slot of mode 1 or 3 follows; null in the other modes.</summary>
-    public IAlundraEffectAnchor? Anchor { get; internal set; }
+    public IEffectAnchor? Anchor { get; internal set; }
 
     /// <summary>Added to the anchor's depth key (the binary's <c>+0x60</c>).</summary>
     public int DepthOffset { get; internal set; }
@@ -61,7 +61,7 @@ public sealed class AlundraEffectSlot
     /// <summary>The image set shown, and its index in the table; -1 and null before the first update.</summary>
     public int CurrentImageSetIndex { get; internal set; } = -1;
 
-    public AlundraEffectImageSet? CurrentImageSet { get; internal set; }
+    public EffectImageSet? CurrentImageSet { get; internal set; }
 
     /// <summary>The depth bias of the image set shown (<c>IDSV</c>, shifted left by 16 in the key).</summary>
     public int Idsv { get; internal set; }
@@ -79,19 +79,19 @@ public sealed class AlundraEffectSlot
     public int Generation { get; internal set; }
 
     /// <summary>
-    /// E20.f1b (D-E20-28): the logic tick of the frame at which an effect created at once by the hero (<see cref="AlundraEffectStage.CreateNow"/>) first exists; <see cref="AlundraEffectReservoir.Tick"/> does not
-    /// update the slot before it. 0 for every other slot. Local to a frame: <see cref="AlundraEffectStage.RunFrame"/> clears it.
+    /// E20.f1b (D-E20-28): the logic tick of the frame at which an effect created at once by the hero (<see cref="EffectStage.CreateNow"/>) first exists; <see cref="EffectReservoir.Tick"/> does not
+    /// update the slot before it. 0 for every other slot. Local to a frame: <see cref="EffectStage.RunFrame"/> clears it.
     /// </summary>
     internal int FirstUpdateTick;
 
     internal bool CurrentMapTable;
     internal int CurrentEffect;
-    internal AlundraEffectTable? Table;
-    internal AlundraEffectAnimation? Animation;
+    internal EffectTable? Table;
+    internal EffectAnimation? Animation;
     internal int FrameIndex;
     internal int Counter;
 
-    internal AlundraEffectSlot(int index)
+    internal EffectSlot(int index)
     {
         Index = index;
     }

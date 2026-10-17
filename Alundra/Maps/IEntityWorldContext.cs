@@ -208,7 +208,7 @@ public interface IEntityWorldContext
     /// shape as <see cref="CameraSway"/> above, defaulting to null so every EXISTING implementer keeps compiling unmodified.
     /// <see cref="AlundraWorldProxy"/> returns its own stage.
     /// </summary>
-    AlundraEffectStage? EffectStage => null;
+    EffectStage? EffectStage => null;
 
     /// <summary>
     /// This session's dialogue-flow seam (E12.a, docs/plan-e12-dialogues.md) - backs opcodes

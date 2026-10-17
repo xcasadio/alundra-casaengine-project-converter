@@ -17,11 +17,11 @@ namespace Alundra.Tests;
 /// <summary>
 /// E20.f1a (docs/plan-e20-heros.md section 1.9): the charge of the Square, the hold spark, the release and its burst, WITHOUT the aura (the aura is E20.f1b: <see cref="AlundraHeroAuraTests"/>; here only its creations and its releases are compared with the oracle).
 /// The montage is the hero rig of E20.b (<see cref="JumpHeroRig"/> with the sprite clock of the swings) with an effect stage over the bank of map 163 (the real global companion: effects 3 and 16), one tick per
-/// frame; after each step the harness runs the stage's frame (<see cref="AlundraEffectStage.RunFrame"/>: the queued operation of the tick is applied, then the reservoir is updated), then does what the counters pass
+/// frame; after each step the harness runs the stage's frame (<see cref="EffectStage.RunFrame"/>: the queued operation of the tick is applied, then the reservoir is updated), then does what the counters pass
 /// of the world does (the montage has none): <c>FrameCounter++</c>. The probes are the five charge probes of the extended oracle (<c>docs/plan-e20-annexe/e20-f1/oracle/out/</c>: the real code of the binary, the real
 /// effect creators over a 128-slot reservoir, the generator word before and after each tick, the fields of each created effect at the end of the logic of the tick).
 /// <para>
-/// The effects are read through the test seam of the native effects (<see cref="AlundraNativeEffects.CreatedForTests"/>): told each charge effect once created and written, before the update of its tick, which is
+/// The effects are read through the test seam of the native effects (<see cref="NativeEffects.CreatedForTests"/>): told each charge effect once created and written, before the update of its tick, which is
 /// the oracle's "fields at the end of the logic". The slot indices are not compared (the oracle's aura occupies a slot the DLL does not occupy yet). The generator is posed on the oracle's entry word of each tick
 /// (the oracle does not advance it per frame, nor does the DLL), and its word after the tick is compared: the (entry, exit) pairs.
 /// </para>
@@ -47,7 +47,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
 
     public void Dispose()
     {
-        AlundraNativeEffects.CreatedForTests = null;
+        NativeEffects.CreatedForTests = null;
         PlayerManager.WeaponSpawnCallsForTests = null;
         GameRandom.RandomSeed = _previousSeed;
         CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath = _previousProjectPath;
@@ -70,7 +70,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
 
         public required RecordingSoundPlayer Sounds { get; init; }
 
-        public required AlundraEffectStage Stage { get; init; }
+        public required EffectStage Stage { get; init; }
 
         public List<Effect> Created { get; } = new();
 
@@ -124,7 +124,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
     /// <summary>The fields of an aura slot the oracle journals (<c>f.s34</c> mode, <c>s60</c>, <c>s48/4c/50</c>, the start position), read after the logic of the tick and before the frame of the stage.</summary>
     internal readonly record struct AuraSnapshot(int Index, int Effect, bool MapTable, int Mode, int X, int Y, int Z, int OffsetX, int OffsetY, int OffsetZ, int DepthOffset, bool AnchorIsHero, int Generation)
     {
-        public static AuraSnapshot Of(AlundraEffectSlot slot, AlundraEntityScriptProxy hero)
+        public static AuraSnapshot Of(EffectSlot slot, AlundraEntityScriptProxy hero)
             => new(slot.Index, slot.TargetEffect, slot.TargetMapTable, slot.Mode, slot.X, slot.Y, slot.Z, slot.OffsetX, slot.OffsetY, slot.OffsetZ, slot.DepthOffset, ReferenceEquals(slot.Anchor, hero), slot.Generation);
     }
 
@@ -140,7 +140,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         rig.Host.GameState.NumberOfItems[item * 2 + 1] = 1;
         PlayerManager.SetPlayerWeaponId(rig.Host.GameState, tables, tables.ItemsProperties[item * 5]);
 
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(EffectGolden.BankOf(Root, 163));
         if (withStage)
         {
@@ -158,7 +158,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         hero.HitCounter = 0;
         hero.WeaponChargeTimer = 0;
         var montage = new Montage { Rig = rig, Sounds = sounds, Stage = stage };
-        AlundraNativeEffects.CreatedForTests = slot => montage.Created.Add(
+        NativeEffects.CreatedForTests = slot => montage.Created.Add(
             new Effect(slot.TargetEffect, slot.TargetMapTable, slot.X, slot.Y, slot.Z, slot.ForceX, slot.ForceY, slot.ForceZ, slot.Mode, slot.Index));
         return montage;
     }
@@ -169,7 +169,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
         var sounds = row.Sounds.ToList();
         if (row.Sparks.Any(c => c.Created) && sounds.Count > 1)
         {
-            var spark = sounds.Single(s => s is AlundraNativeEffects.ChargeSparkEvenSfx or AlundraNativeEffects.ChargeSparkOddSfx);
+            var spark = sounds.Single(s => s is NativeEffects.ChargeSparkEvenSfx or NativeEffects.ChargeSparkOddSfx);
             sounds.Remove(spark);
             sounds.Add(spark);
         }
@@ -563,8 +563,8 @@ public sealed class AlundraHeroChargeTests : IDisposable
             m.Tick(row.Hold, row.RngBefore);
         }
 
-        var fillers = Fill(m, AlundraEffectReservoir.SlotCount - m.Stage.Reservoir.ActiveCount);
-        Assert.Equal(AlundraEffectReservoir.SlotCount, m.Stage.Reservoir.ActiveCount);
+        var fillers = Fill(m, EffectReservoir.SlotCount - m.Stage.Reservoir.ActiveCount);
+        Assert.Equal(EffectReservoir.SlotCount, m.Stage.Reservoir.ActiveCount);
         GameRandom.RandomSeed = 0x12345678;
         m.Tick(rows[84].Hold); // tick 85
         Assert.Empty(m.Created);
@@ -600,8 +600,8 @@ public sealed class AlundraHeroChargeTests : IDisposable
             m.Tick(row.Hold, row.RngBefore);
         }
 
-        Fill(m, AlundraEffectReservoir.SlotCount - 5 - m.Stage.Reservoir.ActiveCount);
-        Assert.Equal(AlundraEffectReservoir.SlotCount - 5, m.Stage.Reservoir.ActiveCount);
+        Fill(m, EffectReservoir.SlotCount - 5 - m.Stage.Reservoir.ActiveCount);
+        Assert.Equal(EffectReservoir.SlotCount - 5, m.Stage.Reservoir.ActiveCount);
         Assert.Equal(new[] { 123, 124, 125, 126, 127 }, m.Stage.Reservoir.Slots.Where(s => !s.Active).Select(s => s.Index).ToArray());
         m.Tick(rows[90].Hold, rows[90].RngBefore);
 
@@ -618,9 +618,9 @@ public sealed class AlundraHeroChargeTests : IDisposable
     }
 
     /// <summary>Fills the first free slots of the reservoir with effects that never end (the aura's looping animation 1 of the global effect 3); returns them.</summary>
-    private static List<AlundraEffectSlot> Fill(Montage m, int count)
+    private static List<EffectSlot> Fill(Montage m, int count)
     {
-        var slots = new List<AlundraEffectSlot>();
+        var slots = new List<EffectSlot>();
         for (var i = 0; i < count; i++)
         {
             slots.Add(m.Stage.Reservoir.Create(false, 3, 1, 0, 0, 0)!);

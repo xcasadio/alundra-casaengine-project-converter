@@ -44,7 +44,7 @@ public sealed class AlundraHitEffectWorldTests : IDisposable
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
-    private sealed record SlotView(int Effect, int Mode, IAlundraEffectAnchor? Anchor, int DepthOffset, int Index);
+    private sealed record SlotView(int Effect, int Mode, IEffectAnchor? Anchor, int DepthOffset, int Index);
 
     private sealed record Frame(int Ticks, IReadOnlyList<SlotView> Effects, ulong SeedAfter);
 

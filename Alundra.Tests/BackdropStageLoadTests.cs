@@ -14,7 +14,7 @@ using Alundra.Rendering.Backdrops;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, §3 "S2") - <see cref="AlundraBackdropStage.Load"/>'s
+/// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, §3 "S2") - <see cref="BackdropStage.Load"/>'s
 /// own two mutation-driven pins (§3 "S2" mutation table): the null-service warning (D-E9b-2's "arrêt"
 /// clause) and the per-world reset (D-E9b-9: <c>Clear()</c> before every <c>SetLayers</c>, so a second
 /// world's layers never accumulate onto the first's).
@@ -33,9 +33,9 @@ public sealed class BackdropStageLoadTests : IDisposable
 
     /// <summary>
     /// D-E9b-2's own "arrêt" clause: a world with a live <c>Game</c> but no
-    /// <see cref="ScrollingLayerService"/> attached (<see cref="AlundraBackdropStage.AttachService"/>
+    /// <see cref="ScrollingLayerService"/> attached (<see cref="BackdropStage.AttachService"/>
     /// never called, or called with <see langword="null"/>) logs EXACTLY ONE warning - never zero (silent
-    /// degraded mode would hide the bug) and never more than one per <see cref="AlundraBackdropStage.Load"/>
+    /// degraded mode would hide the bug) and never more than one per <see cref="BackdropStage.Load"/>
     /// call.
     /// </summary>
     [Fact]
@@ -43,7 +43,7 @@ public sealed class BackdropStageLoadTests : IDisposable
     {
         using var capture = CapturingWarningLogger.Install();
 
-        var stage = new AlundraBackdropStage(); // AttachService never called - _service stays null.
+        var stage = new BackdropStage(); // AttachService never called - _service stays null.
         var game = (CasaEngineGame)RuntimeHelpers.GetUninitializedObject(typeof(CasaEngineGame));
         var world = new World { Name = "TestWorld" };
         AlundraWorldProxyGlobalFreezeTests.SetProperty(world, nameof(World.Game), game);
@@ -71,7 +71,7 @@ public sealed class BackdropStageLoadTests : IDisposable
         WriteBackdropFixture(mapIndex: 5, worldName: "Map A-5", layerCount: 2);
         WriteBackdropFixture(mapIndex: 6, worldName: "Map B-6", layerCount: 1);
 
-        var stage = new AlundraBackdropStage();
+        var stage = new BackdropStage();
         var service = new ScrollingLayerService();
         stage.AttachService(service);
 

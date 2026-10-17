@@ -8,11 +8,11 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E20.f1b B2 (docs/plan-e20-heros.md section 1.9, ADR-0057 D-E20-28, ADR-0059): the stage lets the hero create its effects AT ONCE and release them at their tick. Alone, on a synthetic bank whose effect 0 of the map
-/// table is a loop of 20 one-tick frames, so that <see cref="AlundraEffectSlot.FrameIndex"/> counts the updates a slot received.
+/// table is a loop of 20 one-tick frames, so that <see cref="EffectSlot.FrameIndex"/> counts the updates a slot received.
 /// </summary>
 public sealed class AlundraEffectStageNowTests
 {
-    private sealed class FakeAnchor : IAlundraEffectAnchor
+    private sealed class FakeAnchor : IEffectAnchor
     {
         public int PosX { get; set; } = 3 << 16;
         public int PosY { get; set; } = 4 << 16;
@@ -21,10 +21,10 @@ public sealed class AlundraEffectStageNowTests
         public int Status { get; set; } = 2;
     }
 
-    private static AlundraEffectStage Stage()
+    private static EffectStage Stage()
     {
         var frames = Enumerable.Range(0, 20).Select(i => new[] { 1, i }).ToArray();
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(EffectGolden.Synthetic(new[] { EffectGolden.Anim("Loop", frames) }, 20));
         return stage;
     }
@@ -94,7 +94,7 @@ public sealed class AlundraEffectStageNowTests
         Assert.Same(anchor, slot.Anchor);
         Assert.Equal((anchor.PosX, anchor.PosY, anchor.PosZ), (slot.X, slot.Y, slot.Z));
 
-        for (var i = stage.Reservoir.ActiveCount; i < AlundraEffectReservoir.SlotCount; i++)
+        for (var i = stage.Reservoir.ActiveCount; i < EffectReservoir.SlotCount; i++)
         {
             Assert.NotNull(stage.CreateNow(true, 0, 0, 0, 0, 0));
         }
@@ -113,8 +113,8 @@ public sealed class AlundraEffectStageNowTests
         stage.BeginSource(2, 1);
         stage.FreeAtTick(slot, generation);
         stage.EndSource();
-        AlundraEffectSlot? atTick1 = null;
-        AlundraEffectSlot? atTick3 = null;
+        EffectSlot? atTick1 = null;
+        EffectSlot? atTick3 = null;
         stage.Queue(1, 1, reservoir => atTick1 = reservoir.Create(true, 0, 0, 0, 0, 0));
         stage.Queue(3, 1, reservoir => atTick3 = reservoir.Create(true, 0, 0, 0, 0, 0));
 

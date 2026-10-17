@@ -34,7 +34,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     {
         AlundraStickProbe.SetForTests(null, null);
         AlundraEntityScriptProxy.PadOfTickSeenForTests = null;
-        AlundraNativeEffects.CreatedForTests = null;
+        NativeEffects.CreatedForTests = null;
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }

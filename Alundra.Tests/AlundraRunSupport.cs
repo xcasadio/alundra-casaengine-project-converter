@@ -208,7 +208,7 @@ internal sealed class RunMontage
 
     public required RecordingSoundPlayer Sounds { get; init; }
 
-    public required AlundraEffectStage Stage { get; init; }
+    public required EffectStage Stage { get; init; }
 
     public required RunOracleTrace Trace { get; init; }
 
@@ -272,12 +272,12 @@ internal sealed class RunMontage
                 throw new InvalidOperationException($"{trace.Name}: the inventory '{trace.Inventory}' is not built by the montage");
         }
 
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(EffectGolden.BankOf(Root, 163));
         rig.Host.EffectStage = stage;
 
         var montage = new RunMontage { Rig = rig, Sounds = sounds, Stage = stage, Trace = trace };
-        AlundraNativeEffects.CreatedForTests = slot => montage.Created.Add((slot.TargetEffect, slot.X, slot.Y, slot.Z));
+        NativeEffects.CreatedForTests = slot => montage.Created.Add((slot.TargetEffect, slot.X, slot.Y, slot.Z));
         configure?.Invoke(montage);
 
         var hero = rig.Hero;

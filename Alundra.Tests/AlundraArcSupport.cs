@@ -261,7 +261,7 @@ internal sealed class ArcRun : IDisposable
             SeedAfterTheLoad = GameRandom.RandomSeed;
             GameRandom.Reset();
 
-            typeof(AlundraBackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
+            typeof(BackdropStage).GetField("_clearColorApplied", BindingFlags.Instance | BindingFlags.NonPublic)!
                 .SetValue(Proxy._backdropStage, true); // the headless montage has no view for the clear colour.
 
             Runner = Assert.IsType<EventProgramRunner>(Proxy.EventProgramRunner);

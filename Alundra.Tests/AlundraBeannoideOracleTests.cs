@@ -34,7 +34,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
     private const long Marker = 0x5A5A5A5A;
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
     private static readonly string[] ForceNames = { "tforcex_BC", "tforcey_C0", "forcex_C4", "forcey_C8", "fstepx_D4", "fstepy_D8" };
-    private static readonly Lazy<AlundraEffectBank> Bank = new(() => EffectGolden.BankOf(Root, 14));
+    private static readonly Lazy<EffectBank> Bank = new(() => EffectGolden.BankOf(Root, 14));
     private readonly ulong _seed = GameRandom.RandomSeed;
 
     public void Dispose() => GameRandom.RandomSeed = _seed;

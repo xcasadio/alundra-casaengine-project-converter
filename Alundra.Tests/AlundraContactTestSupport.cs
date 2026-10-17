@@ -93,7 +93,7 @@ internal sealed class ContactHost : IScriptHost
     public EquipmentRecords? EquipmentRecords { get; set; }
 
     /// <summary>E20.f1a: the effect stage the host hands to the hero's tick (null: none, as the default member of the interface, so the hold spark and the burst of a charge create nothing).</summary>
-    public AlundraEffectStage? EffectStage { get; set; }
+    public EffectStage? EffectStage { get; set; }
 
     /// <summary>Every proxy of the world, in world order (the hero first).</summary>
     public List<AlundraEntityScriptProxy> All { get; } = new();

@@ -10,12 +10,12 @@ using CasaEngine.Core.Logging;
 namespace Alundra.Rendering.Effects;
 
 /// <summary>The effect companion of a map (<c>*.effects.json</c>) or the global one (<c>effects-global.json</c>, records absent), see <c>docs/formats/effects.md</c>.</summary>
-public sealed class AlundraEffectDocument
+public sealed class EffectDocument
 {
     public int? MapIndex { get; set; }
     public string? SheetTextureAssetId { get; set; }
-    public List<AlundraEffectRecord> Records { get; set; } = new();
-    public List<AlundraEffectTable> Effects { get; set; } = new();
+    public List<EffectRecord> Records { get; set; } = new();
+    public List<EffectTable> Effects { get; set; } = new();
 
     /// <summary>A member written as <c>null</c> reads as an empty list.</summary>
     internal void Normalize()

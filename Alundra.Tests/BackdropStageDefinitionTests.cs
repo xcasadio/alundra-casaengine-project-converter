@@ -17,13 +17,13 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, §3 "S1"/"S2") - covers
-/// <see cref="AlundraBackdropStage.BuildDefinitions"/>, the PURE translation of a loaded
+/// <see cref="BackdropStage.BuildDefinitions"/>, the PURE translation of a loaded
 /// <see cref="BackdropDocument"/> into the engine mechanism's own
 /// <see cref="ScrollingLayerDefinition"/>/<see cref="ScrollingTintDefinition"/>/
 /// <see cref="ScrollingLayerConfiguration"/> data, applying exactly the rules the now-retired
-/// <c>BackdropRenderer.Load</c> applied (D-E9b-8), plus (S2) <see cref="AlundraBackdropStage.ResolveFrameAssetIds"/>
+/// <c>BackdropRenderer.Load</c> applied (D-E9b-8), plus (S2) <see cref="BackdropStage.ResolveFrameAssetIds"/>
 /// and the tint sort key, both moved here from the same retired renderer's own tests. Nothing here
-/// calls <see cref="AlundraBackdropStage.AttachService"/>/<see cref="AlundraBackdropStage.PushFrame"/>
+/// calls <see cref="BackdropStage.AttachService"/>/<see cref="BackdropStage.PushFrame"/>
 /// or touches production.
 ///
 /// The three real-companion tests read <c>alundra-project/</c> (the converter's own export) and FAIL,
@@ -43,7 +43,7 @@ public class BackdropStageDefinitionTests
     {
         var document = LoadRealCompanion("Ship Klark (beginning)-389", "The Klark");
 
-        var (layers, tint, configuration) = AlundraBackdropStage.BuildDefinitions(document);
+        var (layers, tint, configuration) = BackdropStage.BuildDefinitions(document);
 
         Assert.Single(layers); // the companion's second layer is Mode "Disabled" - must be absent.
         var layer = layers[0];
@@ -75,7 +75,7 @@ public class BackdropStageDefinitionTests
     {
         var document = LoadRealCompanion("Fairy cave (underwater)-159", "Fairy cave");
 
-        var (layers, tint, configuration) = AlundraBackdropStage.BuildDefinitions(document);
+        var (layers, tint, configuration) = BackdropStage.BuildDefinitions(document);
 
         Assert.Single(layers);
         var layer = layers[0];
@@ -115,7 +115,7 @@ public class BackdropStageDefinitionTests
     {
         var document = LoadRealCompanion("Arena Zorgia (Boss)-321", "Arena Zorgia");
 
-        var (layers, tint, configuration) = AlundraBackdropStage.BuildDefinitions(document);
+        var (layers, tint, configuration) = BackdropStage.BuildDefinitions(document);
 
         Assert.Single(layers);
         var layer = layers[0];
@@ -172,7 +172,7 @@ public class BackdropStageDefinitionTests
             },
         };
 
-        var (layers, _, _) = AlundraBackdropStage.BuildDefinitions(document);
+        var (layers, _, _) = BackdropStage.BuildDefinitions(document);
 
         Assert.Empty(layers);
     }
@@ -203,10 +203,10 @@ public class BackdropStageDefinitionTests
             },
         };
 
-        var exception = Record.Exception(() => AlundraBackdropStage.BuildDefinitions(document));
+        var exception = Record.Exception(() => BackdropStage.BuildDefinitions(document));
 
         Assert.Null(exception);
-        var (layers, _, _) = AlundraBackdropStage.BuildDefinitions(document);
+        var (layers, _, _) = BackdropStage.BuildDefinitions(document);
         Assert.Empty(layers);
     }
 
@@ -230,7 +230,7 @@ public class BackdropStageDefinitionTests
             },
         };
 
-        var (layers, _, _) = AlundraBackdropStage.BuildDefinitions(document);
+        var (layers, _, _) = BackdropStage.BuildDefinitions(document);
 
         Assert.Single(layers);
         // Same LENGTH as BackdropRenderer.LoadLayerFrames' input (D-E9-9 fallback runs engine-side,
@@ -283,10 +283,10 @@ public class BackdropStageDefinitionTests
     public void ResolveFrameAssetIds_LayerWithNoFrameIds_ResolvesToExactlyTheTextureAssetId()
     {
         var layer = new BackdropLayerData { TextureAssetId = "layer-texture-id", FrameTextureAssetIds = null };
-        Assert.Equal(new[] { "layer-texture-id" }, AlundraBackdropStage.ResolveFrameAssetIds(layer));
+        Assert.Equal(new[] { "layer-texture-id" }, BackdropStage.ResolveFrameAssetIds(layer));
 
         var layerWithEmptyArray = new BackdropLayerData { TextureAssetId = "layer-texture-id", FrameTextureAssetIds = Array.Empty<string>() };
-        Assert.Equal(new[] { "layer-texture-id" }, AlundraBackdropStage.ResolveFrameAssetIds(layerWithEmptyArray));
+        Assert.Equal(new[] { "layer-texture-id" }, BackdropStage.ResolveFrameAssetIds(layerWithEmptyArray));
     }
 
     /// <summary>A layer WITH resolved frame ids gets them back unchanged.</summary>
@@ -295,7 +295,7 @@ public class BackdropStageDefinitionTests
     {
         var frameIds = new[] { "id0", "id1", "id2", "id3" };
         var layer = new BackdropLayerData { TextureAssetId = "id0", FrameTextureAssetIds = frameIds };
-        Assert.Same(frameIds, AlundraBackdropStage.ResolveFrameAssetIds(layer));
+        Assert.Same(frameIds, BackdropStage.ResolveFrameAssetIds(layer));
     }
 
     // -----------------------------------------------------------------------------------------

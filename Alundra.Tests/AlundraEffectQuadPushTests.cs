@@ -23,8 +23,8 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E19.g G3c (docs/plan-e19-opcodes.md, G3C-R1 to G3C-R5, ADR-0049): the DLL pushes the effect quads of the reservoir to the engine's
-/// <see cref="EffectQuadService"/> every rendered frame. The pure construction (<see cref="AlundraEffectQuadBuilder"/>), the stage (<see cref="AlundraEffectStage.AttachService"/>,
-/// <see cref="AlundraEffectStage.PushFrame"/>) and the proxy wiring (<see cref="AlundraWorldProxy.Update"/>), against the values of the prediction
+/// <see cref="EffectQuadService"/> every rendered frame. The pure construction (<see cref="EffectQuadBuilder"/>), the stage (<see cref="EffectStage.AttachService"/>,
+/// <see cref="EffectStage.PushFrame"/>) and the proxy wiring (<see cref="AlundraWorldProxy.Update"/>), against the values of the prediction
 /// <c>docs/plan-e19-g3c-annexe/g3c_model.py</c> (the value at the pixel is proved by the out-of-repo harness, G3c-3, not here). Written red first on stub bodies.
 /// Shares <see cref="AlundraMusicPlayerSingletonCollection"/>: the warp departure arms the real BGM fade director.
 /// </summary>
@@ -49,18 +49,18 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     // Helpers
     // ---------------------------------------------------------------------------------------------------------------------
 
-    private static AlundraEffectImage Img(int u, int v, int w, int h, int[]? c = null, bool semi = false, int abr = 0) =>
+    private static EffectImage Img(int u, int v, int w, int h, int[]? c = null, bool semi = false, int abr = 0) =>
         new() { U = u, V = v, W = w, H = h, C = c ?? Plain, Semi = semi, Abr = abr };
 
-    private static AlundraEffectImageSet SetOf(int idsv, params AlundraEffectImage[] images) => new() { Idsv = idsv, Images = images.ToList() };
+    private static EffectImageSet SetOf(int idsv, params EffectImage[] images) => new() { Idsv = idsv, Images = images.ToList() };
 
-    private static AlundraEffectSlot SlotAt(int index, int x, int y, int z, AlundraEffectImageSet? set, bool mapTable = true, uint depthKey = 0) =>
+    private static EffectSlot SlotAt(int index, int x, int y, int z, EffectImageSet? set, bool mapTable = true, uint depthKey = 0) =>
         new(index) { Active = true, X = x, Y = y, Z = z, CurrentImageSet = set, CurrentMapTable = mapTable, DepthKey = depthKey };
 
-    private static List<EffectQuad> Build(bool hasScroll, int scrollX, int scrollY, params AlundraEffectSlot[] slots)
+    private static List<EffectQuad> Build(bool hasScroll, int scrollX, int scrollY, params EffectSlot[] slots)
     {
         var quads = new List<EffectQuad>();
-        AlundraEffectQuadBuilder.Build(slots, hasScroll, scrollX, scrollY, quads);
+        EffectQuadBuilder.Build(slots, hasScroll, scrollX, scrollY, quads);
         return quads;
     }
 
@@ -69,16 +69,16 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     private static void EmptyTheService(EffectQuadService service) => service.SetFrame(ReadOnlySpan<EffectQuad>.Empty);
 
     /// <summary>A bank whose map table has one Loop animation of one image set of two images (ids of the sheets as given).</summary>
-    private static AlundraEffectBank QuadBank(string? mapSheet = null, string? globalSheet = null)
+    private static EffectBank QuadBank(string? mapSheet = null, string? globalSheet = null)
     {
-        var table = new AlundraEffectTable
+        var table = new EffectTable
         {
             Animations = { EffectGolden.Anim("Loop", new[] { 1, 0 }) },
             ImageSets = { SetOf(3, Img(0, 0, 20, 40), Img(30, 0, 20, 40, semi: true, abr: 1)) },
         };
-        return new AlundraEffectBank(
-            new AlundraEffectDocument { SheetTextureAssetId = mapSheet, Effects = { table } },
-            new AlundraEffectDocument { SheetTextureAssetId = globalSheet });
+        return new EffectBank(
+            new EffectDocument { SheetTextureAssetId = mapSheet, Effects = { table } },
+            new EffectDocument { SheetTextureAssetId = globalSheet });
     }
 
     private static string FindDoc(params string[] relative)
@@ -218,7 +218,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     public void Key_OfTheRealAura_Elevation214_Coordinate11100_LocalOffsetCountsDown_StableIdIsTheSlotIndex()
     {
         var bank = EffectGolden.BankOf(Root, 476);
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(bank);
         var aura = stage.Reservoir.SpawnPlaced(0, 960, 160, 48)!;
         var second = stage.Reservoir.Create(true, 0, 1, 970 << 16, 160 << 16, (48 << 16) + 1)!;
@@ -290,7 +290,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     public void PushFrame_PushesAnEmptyFrame_WhenNothingIsActive_AndWhenTheLastSlotIsFreed()
     {
         var service = new EffectQuadService();
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(QuadBank());
         stage.AttachService(service);
         var slot = stage.Reservoir.Create(true, 0, 0, 0, 0, 0)!;
@@ -308,7 +308,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     public void PushFrame_ASlotBeforeItsFirstUpdate_HasNoImageSet_AndPushesNothing()
     {
         var service = new EffectQuadService();
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(QuadBank());
         stage.AttachService(service);
         stage.Reservoir.Create(true, 0, 0, 0, 0, 0);
@@ -322,7 +322,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     public void PushFrame_WithTheCameraTarget_CullsOnTheOriginalScrollSpace()
     {
         var service = new EffectQuadService();
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(QuadBank());
         stage.AttachService(service);
         // anchor world (960, 111) is the screen anchor (160, 119) at the scroll (800, -8): kept; at the scroll (800, 400) its screen row is -289: culled.
@@ -345,7 +345,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     [Fact]
     public void PushFrame_WithoutAService_DoesNothing_AndDoesNotThrow()
     {
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.Load(QuadBank("11111111-1111-1111-1111-111111111111"));
         stage.Reservoir.Create(true, 0, 0, 0, 0, 0);
         stage.RunFrame(1, new[] { false });
@@ -372,7 +372,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
         var map = Guid.NewGuid();
         var global = Guid.NewGuid();
         var service = new EffectQuadService();
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
 
         stage.AttachService(service);
         stage.Load(QuadBank(map.ToString(), global.ToString("D")));
@@ -388,7 +388,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
         var map = Guid.NewGuid();
         var global = Guid.NewGuid();
         var service = new EffectQuadService();
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
 
         stage.Load(QuadBank(map.ToString(), global.ToString("D")));
         Assert.Equal(0, service.SheetCount);
@@ -403,7 +403,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     public void Sheets_AttachBeforeAnyLoad_PushesNothingYet()
     {
         var service = new EffectQuadService();
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
 
         stage.AttachService(service);
 
@@ -418,13 +418,13 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     public void Sheets_ANullOrUnreadableId_IsGuidEmpty_AndAMissingDocumentToo(string? text)
     {
         var service = new EffectQuadService();
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.AttachService(service);
 
         stage.Load(QuadBank(text, text));
         Assert.Equal(new[] { Guid.Empty, Guid.Empty }, new[] { service.GetSheetId(0), service.GetSheetId(1) });
 
-        stage.Load(new AlundraEffectBank(null, null));
+        stage.Load(new EffectBank(null, null));
         Assert.Equal(2, service.SheetCount);
         Assert.Equal(new[] { Guid.Empty, Guid.Empty }, new[] { service.GetSheetId(0), service.GetSheetId(1) });
     }
@@ -433,7 +433,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     public void Load_ClearsThePushedFrame_ThenSetsTheSheets()
     {
         var service = new EffectQuadService();
-        var stage = new AlundraEffectStage();
+        var stage = new EffectStage();
         stage.AttachService(service);
         stage.Load(QuadBank());
         stage.Reservoir.Create(true, 0, 0, 0, 0, 0);
@@ -453,7 +453,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     // The proxy: every rendered frame, frozen or not, during a warp departure; the real map 391
     // ---------------------------------------------------------------------------------------------------------------------
 
-    private static (AlundraWorldProxy Proxy, EffectQuadService Service, AlundraEffectSlot Slot) HeadlessProxyWithAQuad()
+    private static (AlundraWorldProxy Proxy, EffectQuadService Service, EffectSlot Slot) HeadlessProxyWithAQuad()
     {
         var world = new World { Name = "TestWorld" };
         world.Entities.Add(new Entity { Name = "camera", RootComponent = new Camera2dComponent() });
@@ -560,7 +560,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
         var camera = proxy._cameraDirector.ResolvedCamera;
         var scroll = CameraMath.ToOriginalScrollSpace(camera?.Target ?? Vector3.Zero);
         var expected = new List<EffectQuad>();
-        AlundraEffectQuadBuilder.Build(proxy._effectStage.Reservoir.Slots, camera != null, scroll.X, scroll.Y, expected);
+        EffectQuadBuilder.Build(proxy._effectStage.Reservoir.Slots, camera != null, scroll.X, scroll.Y, expected);
 
         Assert.True(expected.Count >= 1);
         Assert.Equal(expected.Count, service.QuadCount);
