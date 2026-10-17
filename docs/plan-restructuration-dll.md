@@ -863,7 +863,13 @@ F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité 
 **But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/` et `Support/` ; les classes de test sans préfixe ;
 aucune valeur attendue changée. Le classement de l'inventaire (`report_inventory.md` §7) sert de base, recensé à nouveau en T0.
 
-## 10. Tranche R6 — Documentation vivante ⏳ (détaillée le 2026-10-18, à relire)
+## 10. Tranche R6 — Documentation vivante ⏳ (détaillée le 2026-10-18 ; révision 2, en relecture de clôture)
+
+**Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : (1) les lignes qui demandent du jugement ont leur texte
+cible fixé ci-dessous (« Cibles fixées ») et l'exécutant devient un `executor` ; (2) les lignes F ont une tâche, un texte et un
+contrôle ; (3) T0 nomme ses générateurs, ses modes et ses chemins. Seconde relecture : REVISE, un blocage P2 (le vérificateur de membres
+lit `hits.tsv`, que seul `check/cscan.py` écrit, non nommé) : FIX en révision 2 (T0 (b) nomme `cscan.py`, l'ordre et le dossier, et remplace
+`members.py` par `check/decl.py`, plus strict, avec sa sortie attendue ; T3 nomme `prove_research.py`) ; nouvelle époque, une seule relecture de clôture.
 
 **But.** Les documents vivants, les scripts de `research/` et les commentaires du convertisseur qui citent un ancien chemin ou un ancien nom
 de la DLL disent le chemin et le nom finaux de `tools/dll-structure/table.json` ; la règle de nommage des guides dit celle de l'ADR-0075 ;
@@ -896,28 +902,128 @@ PlayerManager.cs` qui n'a jamais existé ; ses numéros de ligne sont ceux de la
 (`alundra-datas-analyser/AlundraTools/AlundraEngine/Gameplay/PlayerManager.cs`). Hors de R6 : les ~300 anciens noms restés dans les
 **commentaires** du code de la DLL et des tests (R3 et R4 laissent les commentaires intacts) : question Q-R-5.
 
-**Propriétaire, chemins, budget.** Un `mech-executor` (le relevé est complet ; l'application est mécanique, avec la vérification de
-membre). Chemins : les fichiers des classes A, B, C, E du relevé (docs vivants, `research/census/**`, commentaires du convertisseur et de ses
-tests), ce plan (§10). Aucun code de la DLL ni des tests ; aucune donnée ; aucun export. Budget : une passe, une passe de correction au plus ; un
+**Cibles fixées (révision 1).** Ces lignes ne se substituent pas mécaniquement : leur texte final est celui des blocs ci-dessous, au
+caractère près (indentation et repli de ligne compris, les lignes sources étant repliées comme dans le fichier). Chaque bloc « avant » est
+le texte exact au HEAD `ee175f7` ; un « avant » qui ne correspond plus arrête la tranche.
+
+1. `docs/guidelines-runtime-alundra-casaengine.md:138` (le membre est `internal static` de `EntitySpawnFactory`,
+   `Alundra/Entities/Spawning/EntitySpawnFactory.cs:566`) :
+   ```text
+   avant : Alundra bruts, écrite par `AlundraWorldProxy.ResolveLogicalPosition` (les trois sites qui posaient
+   après : Alundra bruts, écrite par `EntitySpawnFactory.ResolveLogicalPosition` (les trois sites qui posaient
+   ```
+2. `alundra-casaengine-project-converter/Writers/WorldWriter.cs:206` :
+   ```text
+   avant :     /// the DLL itself writes (<c>AlundraWorldProxy.ResolveLogicalPosition</c>) - a RenderProjectionComponent
+   après :     /// the DLL itself writes (<c>EntitySpawnFactory.ResolveLogicalPosition</c>) - a RenderProjectionComponent
+   ```
+3. `docs/intro-roadmap.md:70` (`EntitySpawnFactory.cs:71,83,115`) :
+   ```text
+   avant :   0x2D/0x8B. Le harnais réutilise `AlundraWorldProxy.ShouldSpawnRecord`, qui porte déjà cette règle.
+   après :   0x2D/0x8B. Le harnais réutilise `EntitySpawnFactory.ShouldSpawnRecord`, qui porte déjà cette règle.
+   ```
+4. `docs/intro-roadmap.md:227` (les anciens numéros `288-323` désignaient l'ancien fichier : ils tombent) :
+   ```text
+   avant :   `AlundraWorldProxy.ShouldSpawnRecord` (`Alundra/Scripts/AlundraWorldProxy.cs:288-323`) porte déjà ces
+   après :   `EntitySpawnFactory.ShouldSpawnRecord` (`Alundra/Entities/Spawning/EntitySpawnFactory.cs`) porte déjà ces
+   ```
+5. `docs/intro-roadmap.md:37-38` (`RunEntityEventsPass` n'existe plus : `Alundra/Maps/WorldProxy.cs:2423` renvoie à
+   `EntityScriptProxy.Update`, `Alundra/Entities/EntityScriptProxy.cs:1286`) :
+   ```text
+   avant :
+   - la passe pick/run déjà portée, `AlundraWorldProxy.RunEntityEventsPass`, réutilisée **sans
+     modification** ;
+   après :
+   - la passe pick/run déjà portée (alors `AlundraWorldProxy.RunEntityEventsPass`, retirée depuis : voir
+     `EntityScriptProxy.Update`), réutilisée **sans modification** ;
+   ```
+6. `docs/guidelines-runtime-alundra-casaengine.md:192-200` (classe C). La ligne 192 `### 5.1 Résolution des classes par nom` devient
+   `### 5.1 Résolution des classes par nom complet` ; les lignes 193 à 200 (vide, paragraphe de trois lignes, vide, paragraphe « → » de
+   trois lignes) deviennent le bloc suivant ; la ligne 201 (vide) et `### 5.2` restent :
+   ```text
+
+   Le moteur crée un objet script (proxy d'entité ou de monde, contrôleur de joueur, mode de jeu, view model
+   d'écran) d'après le **nom complet** de sa classe, namespace compris, casse exacte, et **seulement dans
+   l'assembly de gameplay enregistrée** (ADR-0075 du moteur). Un nom vide, introuvable, ambigu ou qui désigne
+   un type du mauvais genre lève `ScriptTypeResolutionException` à la création ; son message donne la clé, la
+   valeur, le fichier, les assemblies cherchées et un indice. Dans l'aperçu de l'éditeur, l'entité ou le monde
+   reste sans script et l'inspecteur affiche un avertissement sur sa ligne « Script ». Les composants (le
+   `"type"` des JSON) restent résolus par nom simple, insensible à la casse (`ElementFactory.Create<T>`).
+
+   → Les clés `script_class_name`, `player_controller_class` (vide = le `PlayerController` du moteur),
+   `mode_class_name` et `view_model_type` portent le nom complet (`Alundra.Maps.WorldProxy`,
+   `Alundra.Entities.EntityScriptProxy`, `Alundra.Hero.HeroController`, `Alundra.UI.Hud.HudViewModel`). Dans
+   la DLL, un dossier = un namespace `Alundra.<Domaine>`, sans préfixe `Alundra` sur les types, un nom unique
+   parmi la DLL, le moteur, MGUI, MonoGame, les paquets et la BCL (contrôlé par
+   `tools/dll-structure/check_names.py`), aucun type nommé comme un segment de namespace (ADR-0075 du parent).
+   ```
+   Faits : `ElementFactory.cs:39-42` et `:51-57` du moteur `92d8e847` ; `ScriptTypeResolutionException.cs:5-11` ; les valeurs citées
+   sont celles de `alundra-project` (`rg -uu`) ; `mode_class_name` : `GameplayModeAsset.cs:18,25`.
+7. `docs/editeur-couverture-dll.md:64-66` (classe F ; état lu au moteur `92d8e847`, `CasaEngine.Editor/Controls/EntityDetailsPanel.cs` :
+   `AddScriptRow` appelé pour le monde l. 655 et pour l'entité l. 859 ; `AddWorldModeRows` l. 982-1028 : « Game Mode » sur
+   `PlayerStartupSettingsAssetId`, « Gameplay Mode » sur `GameplayModeAssetId` ; `space_policy` seulement sérialisé,
+   `CasaEngine.EditorServices/EditorEntityJsonSerializer.cs:41`). Les trois lignes deviennent ces cinq, la case reste `[ ]` :
+   ```text
+   - [ ] **`space_policy`** (monde) — préservé au save mais **aucun sélecteur**. Les trois autres clés de ce
+     branchement ont leur ligne dans l'inspecteur (moteur `92d8e847`) : `script_class_name` (monde ET entité)
+     la ligne « Script » (choix parmi les classes de la DLL, avertissement si le nom ne se résout pas ; D-R-11
+     de `docs/plan-restructuration-dll.md`), `player_startup_settings_asset_id` la ligne « Game Mode »,
+     `gameplay_mode_asset_id` la ligne « Gameplay Mode ».
+   ```
+8. `alundra-casaengine-project-converter/Writers/PlayerSetupWriter.cs:27-28` (classe F ; le chemin cité n'a jamais existé ; les numéros
+   `PlayerManager.cs:413`, `:430`, `:549`, `:1904` sont ceux de la décompilation — Cross, Triangle, Square, Circle à ces lignes —, pas ceux de
+   `Alundra/Hero/PlayerManager.cs`, dont les mêmes lignes sont des commentaires ou des accolades) :
+   ```text
+   avant :
+   /// PSX to Xbox-pad button table (Alundra/Alundra.Tests/Scripts/PlayerManager.cs line references are to
+   /// the gameplay DLL's own copy, which reproduces the original's control scheme):
+   après :
+   /// PSX to Xbox-pad button table (the PlayerManager.cs line references are to the decompilation,
+   /// alundra-datas-analyser/AlundraTools/AlundraEngine/Gameplay/PlayerManager.cs, which reproduces the
+   /// original's control scheme):
+   ```
+
+**Propriétaire, chemins, budget.** Un `executor` (l'application est mécanique selon le relevé et les « Cibles fixées » ; le jugement borné
+qui reste : vérifier le membre de chaque citation qualifiée du relevé). Chemins : les fichiers des classes A, B, C, E, F du relevé (docs vivants, `research/census/**`, commentaires du convertisseur et de
+ses tests), `tools/dll-structure/r6-occurrences.tsv` et `tools/dll-structure/apply_r6.py` (pas `tools/dll-structure/README.md`, classe D),
+ce plan (§10). Aucun code de la DLL ni des tests ; aucune donnée ; aucun export. Budget : une passe, une passe de correction au plus ; un
 verifier frais.
 
 **Tâches.**
-- T0 : le relevé versé dans `tools/dll-structure/r6-occurrences.tsv` (regénéré au HEAD d'après R4, avec la colonne de la cible et la
-  vérification du membre de chaque citation qualifiée) et `tools/dll-structure/apply_r6.py` (substitution ligne par ligne, exactement selon le
-  relevé ; refus d'une ligne qui a changé depuis le relevé).
-- T1 — Classes A et B (docs, `research/`, commentaires du convertisseur et de ses tests), un commit par zone (docs, `research/`,
-  convertisseur) ; les citations qualifiées dont le membre a changé de classe pointent vers sa classe réelle ; une citation d'un membre supprimé
+- T0 : le relevé régénéré au HEAD par les générateurs de la découverte (dossier `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/r6-disc`), copiés dans deux
+  dossiers de travail neufs de l'exécuteur (sans aucune sortie préexistante) et rejoués dans cet ordre :
+  (a) `disc/scan.py` et `disc/classify.py` copiés ensemble ; `python -B scan.py` écrit `raw.json` à côté de lui, puis
+  `python -B classify.py` lit ce `raw.json` et écrit `occurrences.tsv` et `classified.json` à côté de lui (les lignes D, F et
+  `demarrage-nouvelle-partie.md:176` y sont codées à la main, `MANUAL`, `classify.py:239-247`) ;
+  (b) `check/cscan.py` et `check/decl.py` copiés ensemble ; `python -B cscan.py` écrit `hits.tsv` et `sweep.json` à côté de lui, puis
+  `python -B decl.py`, lancé avec ce dossier comme répertoire courant (il lit `./hits.tsv`), imprime `DECL` ou `NODECL` pour chaque
+  citation qualifiée `AncienType.Membre` selon que le membre est **déclaré** dans le fichier final du type (plus strict que
+  `check/members.py`, qui ne cherche que le nom et laisse passer un membre déplacé appelé depuis ce fichier). Attendu, rejoué le
+  2026-10-18 au HEAD `ee175f7` : exactement cinq `NODECL`, les lignes des cibles 1 à 5 (`WorldWriter.cs:206`, guidelines `:138`,
+  intro-roadmap `:37`, `:70`, `:227`) ; tout autre `NODECL` arrête la tranche ;
+  la sortie de (a) diffère de `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/r6-disc/disc/occurrences.tsv` seulement par des lignes expliquées (un écart non expliqué
+  arrête la tranche) ;
+  versé dans `tools/dll-structure/r6-occurrences.tsv`, chaque ligne A, B, C, E, F avec une cible non vide et unique (les « Cibles fixées »
+  ci-dessus, au caractère près, pour les lignes qu'elles nomment ; les cibles 5 à 8 remplacent une plage de lignes par un bloc : le relevé
+  porte pour elles la plage, le bloc « avant » et le bloc « après ») ; `tools/dll-structure/apply_r6.py` : mode `apply`
+  (remplace chaque ligne ou plage exactement par sa cible ; refuse une ligne ou une plage dont le texte a changé depuis le relevé) et mode `--check` (aucune ligne
+  A, B, C, E, F ne garde son ancien texte ; aucun fichier hors des chemins de la tranche n'a changé depuis la base ; plans, annexes, ADR et
+  traces `docs/*.txt` intacts) ; un commit d'outil.
+- T1 — Classes A, B et F (docs, `research/`, commentaires du convertisseur et de ses tests), un commit par zone (docs, `research/`,
+  convertisseur), selon le relevé et les « Cibles fixées » ; les citations qualifiées dont le membre a changé de classe pointent vers sa classe réelle ; une citation d'un membre supprimé
   devient la mention de sa suppression ou se retire de la phrase, sans inventer.
-- T2 — Classe C : `docs/guidelines-runtime-alundra-casaengine.md` §5.1 réécrite : la résolution des objets script par **nom complet**, casse
+- T2 — Classe C : `docs/guidelines-runtime-alundra-casaengine.md` §5.1 remplacée par le texte des « Cibles fixées », qui couvre : la résolution des objets script par **nom complet**, casse
   exacte, dans l'assembly de gameplay seule (ADR-0075 du moteur ; les composants restent résolus par nom simple, `WorldWriter.cs:487`) ; les
   clés `script_class_name`, `player_controller_class` (vide = le `PlayerController` du moteur), `mode_class_name`, `view_model_type` ; les noms
   de la DLL : un dossier = un namespace `Alundra.<Domaine>`, plus de préfixe, un nom unique contrôlé par `tools/dll-structure/check_names.py`,
   aucun type nommé comme un segment (ADR-0075 du parent).
 - T3 — Classe E : les dix ouvertures de source de `research/census/` vers les chemins finaux, les deux commentaires « lines 512..1447 » ;
-  preuve : les trois lectures (`EventOpcodeSizeTable`, les tableaux d'`AnimationTables`, les `case` du `Dispatch`) rendent les mêmes valeurs que
+  preuve par `C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/r6-disc/disc/prove_research.py` (copié, `python -B`, lecture seule : il lit l'ancien source par `git show 5434cf6:<chemin>`
+  et le nouveau dans l'arbre) : les trois lectures (`EventOpcodeSizeTable`, les tableaux d'`AnimationTables`, les `case` du `Dispatch`) rendent les mêmes valeurs que
   sur le source de `5434cf6` ; `report_v2.py` régénère `docs/census-0x24-waits.md` à l'identique hors des noms (s'il le peut sans
   `ALUN_CD.EXE` ni `capstone` : sinon le doc se corrige à la main et la régénération est notée non faite).
-- T4 — Clôture : `apply_r6.py --check` : aucune ligne A, B, C, E du relevé ne garde un ancien chemin ou un ancien nom ; aucun fichier hors des
+- T4 — Clôture : `apply_r6.py --check` : aucune ligne A, B, C, E, F du relevé ne garde son ancien texte ; `prove_r4.py --kind end`
+  sort 0 (le commentaire `SpriteWriter.cs:92` corrigé ferme le P3 de R4) ; aucun fichier hors des
   chemins de la tranche n'a changé ; les plans, annexes, ADR et traces intacts (`git diff --stat`) ; la suite du convertisseur verte (seuls
   des commentaires ont changé : la construction suffit, la suite le confirme) ; ce plan (§10 et résultats).
 
