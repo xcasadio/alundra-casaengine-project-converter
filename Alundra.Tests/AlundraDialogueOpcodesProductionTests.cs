@@ -348,7 +348,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
                     // (MoreFlags 0x8c | CanPickup 0x11 << 8 | 0x3 << 16 - Collidable set, no
                     // InteractRequiresButton) and the 21/15/32 box at offsets -10/-7/0.
                     player!.Flags = 0x3118c;
-                    AlundraEntitySpawnFactory.SetEntityDimensions(player, offsetX: -10, offsetY: -7, offsetZ: 0, sizeX: 21, sizeY: 15, sizeZ: 32);
+                    EntitySpawnFactory.SetEntityDimensions(player, offsetX: -10, offsetY: -7, offsetZ: 0, sizeX: 21, sizeY: 15, sizeZ: 32);
 
                     player.TargetAnimationId = 0; // out of the intro's LoadingMap pose - Idle.
                 }

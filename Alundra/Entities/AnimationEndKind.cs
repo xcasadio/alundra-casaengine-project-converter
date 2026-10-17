@@ -16,7 +16,7 @@ namespace Alundra.Entities;
 /// How an (anim, direction)'s trailing control frame ends playback - mirrors the converter's own
 /// <c>AnimationEndClassifier.AnimationEndKind</c> (alundra-casaengine-project-converter/Readers/
 /// AnimationEndClassifier.cs), duplicated here rather than shared since this DLL does not reference
-/// the converter project. See <see cref="AlundraEntitySpawnFactory.SubscribeAnimationEndBridge"/> for how
+/// the converter project. See <see cref="EntitySpawnFactory.SubscribeAnimationEndBridge"/> for how
 /// this drives the engine's Once-finished event back to the original's Hold/Chain semantics
 /// (EntityManager.cs:257-281).
 /// </summary>

@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// E19.d2c1 R2 (docs/plan-e19-opcodes.md §1.2h.3.1), tests UJ-6 and UJ-6b: the animation of an appearance never gives its Z impulse (the binary makes
 /// that first switch itself in <c>InitializeEntity</c>, and its next <c>UpdateAnimation</c> clears the impulse before the physics), but another animation
 /// written by a script before the first validation does. The entities are the export's REAL prefabs, spawned by the production factory
-/// (<see cref="AlundraEntitySpawnFactory.CreateEntityFromRecord"/>, the call of the map load, <c>0x2D</c>, <c>0x8A</c> and <c>0x8B</c>) with a record written by hand.
+/// (<see cref="EntitySpawnFactory.CreateEntityFromRecord"/>, the call of the map load, <c>0x2D</c>, <c>0x8A</c> and <c>0x8B</c>) with a record written by hand.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
@@ -68,7 +68,7 @@ public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
         record.CustomProperties["YPos"] = "8";
         record.CustomProperties["Height"] = height.ToString();
 
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(
+        var entity = EntitySpawnFactory.CreateEntityFromRecord(
             record, id => world.Game!.AssetContentManager.LoadCopy<Entity>(id), SpriteRecordCatalog.GetOrCreate(root));
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.ScriptHost = host;

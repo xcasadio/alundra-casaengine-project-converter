@@ -11,7 +11,7 @@ namespace Alundra.Entities;
 /// refuses (the binary prints <c>0x800239B0</c> and returns 0). A slot is held until it is released, which the world does when it recycles a destroyed entity (<c>0x80038634</c>): an entity in the state 4 still holds its slot.
 /// Pure state, no engine: the world owns one per instance, so a new map starts empty.
 /// </summary>
-internal sealed class AlundraEntitySlotTable
+internal sealed class EntitySlotTable
 {
     /// <summary>The number of slots of the binary's table (the hero's slot 0 plus 63 others).</summary>
     internal const int SlotCount = 64;

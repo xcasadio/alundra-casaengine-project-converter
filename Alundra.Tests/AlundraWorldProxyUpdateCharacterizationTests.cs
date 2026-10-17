@@ -549,8 +549,8 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
     /// headless-reachable, it needs a live <see cref="AlundraPlayerController"/>, the same reason
     /// <c>IntroTraceHarnessTests</c>' own <c>HeadlessIntroSimulation</c> seeds its player by hand too), the
     /// 14 "Entities" records this map's own spawn-zone gate actually admits through the SAME production
-    /// seam <c>InitializeWithWorld</c> itself uses (<see cref="AlundraEntitySpawnFactory.ShouldSpawnRecord"/>/
-    /// <see cref="AlundraEntitySpawnFactory.CreateBareEntityFromRecord"/> - the bare-entity, not
+    /// seam <c>InitializeWithWorld</c> itself uses (<see cref="EntitySpawnFactory.ShouldSpawnRecord"/>/
+    /// <see cref="EntitySpawnFactory.CreateBareEntityFromRecord"/> - the bare-entity, not
     /// prefab-clone, path, since this headless montage has no <c>World.Game.AssetContentManager</c> to
     /// clone a prefab through), map events built through the real <see cref="AlundraWorldProxy.BuildMapEvents"/>,
     /// and the real bytecode interpreter (<see cref="AlundraEventProgramRunner"/>) wired over map 389's own
@@ -618,12 +618,12 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
 
         foreach (var record in entitiesLayer.Objects)
         {
-            if (!AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: false, playerProxy.TileX, playerProxy.TileY, out _))
+            if (!EntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: false, playerProxy.TileX, playerProxy.TileY, out _))
             {
                 continue;
             }
 
-            var entity = AlundraEntitySpawnFactory.CreateBareEntityFromRecord(record, proxy.SpriteRecordCatalog, tileMapData: tileMapData);
+            var entity = EntitySpawnFactory.CreateBareEntityFromRecord(record, proxy.SpriteRecordCatalog, tileMapData: tileMapData);
             if (entity.GameplayProxy is AlundraEntityScriptProxy spawnedProxy)
             {
                 spawnedProxy.ScriptHost = proxy;

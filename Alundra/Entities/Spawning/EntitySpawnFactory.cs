@@ -39,7 +39,7 @@ namespace Alundra.Entities.Spawning;
 /// slice R5, not here (plan §4 R5) - this class's XML documentation is otherwise the ORIGINAL text,
 /// unmodified.
 /// </summary>
-internal static class AlundraEntitySpawnFactory
+internal static class EntitySpawnFactory
 {
     /// <summary>Key of the custom property linking an "Entities" record to its bank prefab asset.</summary>
     private const string PrefabAssetIdPropertyKey = "PrefabAssetId";

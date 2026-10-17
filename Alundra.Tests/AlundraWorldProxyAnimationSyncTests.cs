@@ -160,7 +160,7 @@ public class AlundraWorldProxyAnimationSyncTests
     /// User-reported bug (2026-08-26, "the walk animation does not loop when it should"). The hero's walk
     /// is exported as <c>Once</c> plus a chain edge onto ITSELF (<c>anim 1 -&gt; ChainTo 1</c>, all four
     /// directions), which is how the original spells a looping walk; his idle is a real engine
-    /// <c>Loop</c>. On the chain, <see cref="AlundraEntitySpawnFactory.OnAnimationFinished"/> writes
+    /// <c>Loop</c>. On the chain, <see cref="EntitySpawnFactory.OnAnimationFinished"/> writes
     /// <c>TargetAnimationId = 1</c> - the id it already had - so
     /// <see cref="FrameSyncPasses.TryResolveAnimationTarget"/> reports "no change" and the sync pass
     /// used to return early, leaving the sampler parked at its terminal pose: a frozen walk.

@@ -18,7 +18,7 @@ namespace Alundra.Entities;
 /// excluded), in animation-frame order. <see cref="End"/>/<see cref="ChainTo"/> are the same
 /// classification <c>SpriteWriter</c> already used to pick this animation's own AnimationType
 /// (Loop stays engine Loop; Hold/Chain became engine Once) - see
-/// <see cref="AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection"/>.
+/// <see cref="EntitySpawnFactory.BuildAnimationEndByAnimDirection"/>.
 /// </summary>
 public readonly struct AnimDirIdsv
 {

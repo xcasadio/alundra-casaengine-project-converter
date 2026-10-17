@@ -55,7 +55,7 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
     {
         arc.OneFrame(); // settles.
         var before = arc.Entities.ToList();
-        var lowestFree = Enumerable.Range(0, AlundraEntitySlotTable.SlotCount).FirstOrDefault(i => !arc.Proxy.SlotTable.IsHeld(i), -1);
+        var lowestFree = Enumerable.Range(0, EntitySlotTable.SlotCount).FirstOrDefault(i => !arc.Proxy.SlotTable.IsHeld(i), -1);
         var counter = AlundraPlayerManager.WeaponSpawnCallCountForTests;
         var journal = new List<AlundraPlayerManager.WeaponSpawnCall>();
         AlundraPlayerManager.WeaponSpawnCallsForTests = journal;
@@ -70,7 +70,7 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
     /// <summary>Fills the table of the entity slots with arrows born through the interface, up to <paramref name="free"/> free slots.</summary>
     private static void FillSlots(ArcRun arc, int free)
     {
-        while (AlundraEntitySlotTable.SlotCount - arc.Proxy.SlotTable.HeldCount > free)
+        while (EntitySlotTable.SlotCount - arc.Proxy.SlotTable.HeldCount > free)
         {
             Assert.NotNull(Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, Arrow, 100 << 16, 100 << 16, 0, 0x10));
         }
@@ -198,7 +198,7 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
             Wire(Arrow);
             arc.OneFrame();
             FillSlots(arc, free: 0);
-            Assert.Equal(AlundraEntitySlotTable.SlotCount, arc.Proxy.SlotTable.HeldCount);
+            Assert.Equal(EntitySlotTable.SlotCount, arc.Proxy.SlotTable.HeldCount);
             var count = arc.Entities.Count;
             var counter = AlundraPlayerManager.WeaponSpawnCallCountForTests;
             var fullLines = arc.Log!.Warnings.Count(w => w.Contains("slots is full", StringComparison.Ordinal));
@@ -219,14 +219,14 @@ public sealed class AlundraWeaponSpawnSeamTests : IDisposable
             arc.OneFrame();
             FillSlots(arc, free: 1);
             var count = arc.Entities.Count;
-            var freeSlot = Enumerable.Range(0, AlundraEntitySlotTable.SlotCount).Single(i => !arc.Proxy.SlotTable.IsHeld(i));
+            var freeSlot = Enumerable.Range(0, EntitySlotTable.SlotCount).Single(i => !arc.Proxy.SlotTable.IsHeld(i));
 
             Arm(arc.Hero);
             arc.OneFrame();
 
             Assert.Equal(count + 1, arc.Entities.Count);
             Assert.Equal(freeSlot, arc.Entities.Single(e => e.Slot == freeSlot).Slot);
-            Assert.Equal(AlundraEntitySlotTable.SlotCount, arc.Proxy.SlotTable.HeldCount);
+            Assert.Equal(EntitySlotTable.SlotCount, arc.Proxy.SlotTable.HeldCount);
             Assert.Equal(0u, arc.Hero.WeaponRecordPointer);
         }
     }

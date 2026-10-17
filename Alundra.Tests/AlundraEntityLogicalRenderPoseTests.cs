@@ -23,9 +23,9 @@ namespace Alundra.Tests;
 /// <summary>
 /// Covers E3.a (docs/plan-e3-collisions.md): the logical/render pose split introduced on
 /// <see cref="AlundraWorldProxy"/>'s three transform write sites
-/// (<see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/>, <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>,
+/// (<see cref="EntitySpawnFactory.CreateEntityFromPrefab"/>, <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>,
 /// <see cref="FrameSyncPasses.SyncTransform"/>).
-///  - Formula: <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/> followed by
+///  - Formula: <see cref="EntitySpawnFactory.ResolveLogicalPosition"/> followed by
 ///    <see cref="TopDownElevationSimulationSpacePolicy.DeriveRenderPosition"/> must reproduce, bit for
 ///    bit, the OLD single-step formula this slice replaced (kept below as <see cref="OldResolveWorldPosition"/>),
 ///    for every one of map 389's own 19 "Entities" layer records (XPos/YPos/Height read from the real
@@ -71,7 +71,7 @@ public class AlundraEntityLogicalRenderPoseTests
     private static Vector3 DeriveRenderPositionFromLogical(int posX, int posY, int posZ)
     {
         var policy = new TopDownElevationSimulationSpacePolicy();
-        return policy.DeriveRenderPosition(AlundraEntitySpawnFactory.ResolveLogicalPosition(posX, posY, posZ));
+        return policy.DeriveRenderPosition(EntitySpawnFactory.ResolveLogicalPosition(posX, posY, posZ));
     }
 
     /// <summary>
@@ -246,7 +246,7 @@ public class AlundraEntityLogicalRenderPoseTests
     /// <c>CasaEngine.Tests.Physics.TransformComponentTests</c> uses for E3.0) and one entity: root
     /// <see cref="TransformComponent"/> at logical pose A, with a <see cref="RenderProjectionComponent"/>
     /// child carrying an <see cref="AnimatedSpriteComponent"/>, and an <see cref="AlundraEntityScriptProxy"/>
-    /// - resolved/cached exactly like <see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/> does - whose
+    /// - resolved/cached exactly like <see cref="EntitySpawnFactory.CreateEntityFromPrefab"/> does - whose
     /// Load program (<see cref="PoseMovingRunner"/>) moves it to logical pose B.
     /// </summary>
     private static (World World, Entity Entity, AnimatedSpriteComponent Sprite, Vector3 PoseA, Vector3 PoseB, PoseMovingRunner Runner)
@@ -278,9 +278,9 @@ public class AlundraEntityLogicalRenderPoseTests
         record.CustomProperties["EventCodesA_LoadIndex"] = "1"; // nonzero => RunPickedEvent calls RunScript, not RunSpriteEvent.
 
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy); // PosX/Y/Z = pose A; Status = Loaded; ProgramIndexes[ALoad] = 1.
+        EntitySpawnFactory.ApplyRecord(record, proxy); // PosX/Y/Z = pose A; Status = Loaded; ProgramIndexes[ALoad] = 1.
 
-        var poseA = AlundraEntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+        var poseA = EntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
 
         const int newPosX = 900 * 0x10000;
         const int newPosY = 300 * 0x10000;

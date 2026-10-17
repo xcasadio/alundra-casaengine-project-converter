@@ -11,9 +11,9 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Covers the spawn-time entity initialization port added to <see cref="AlundraWorldProxy"/>:
-/// <see cref="AlundraEntitySpawnFactory.ShouldSpawnRecord"/> (the map-load gating ported from
+/// <see cref="EntitySpawnFactory.ShouldSpawnRecord"/> (the map-load gating ported from
 /// <c>GameEngine.SpawnEntity</c>/<c>InitializeEntitySlots</c>) and
-/// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>/<see cref="AlundraEntitySpawnFactory.SetEntityDimensions"/>
+/// <see cref="EntitySpawnFactory.ApplySpawnInitialization"/>/<see cref="EntitySpawnFactory.SetEntityDimensions"/>
 /// (ported from <c>EntityManager.InitializeEntity</c>/<c>SetEntityDimensions</c>).
 /// </summary>
 public class AlundraWorldProxySpawnInitializationTests
@@ -31,7 +31,7 @@ public class AlundraWorldProxySpawnInitializationTests
         record.CustomProperties["IsEnabled"] = "0";
         record.CustomProperties["SpriteDirection"] = "64";
 
-        Assert.False(AlundraEntitySpawnFactory.ShouldSpawnRecord(record, out var reason));
+        Assert.False(EntitySpawnFactory.ShouldSpawnRecord(record, out var reason));
         Assert.Contains("IsEnabled", reason);
     }
 
@@ -44,7 +44,7 @@ public class AlundraWorldProxySpawnInitializationTests
         record.CustomProperties["IsEnabled"] = "1";
         record.CustomProperties["SpriteDirection"] = spriteDirection;
 
-        Assert.False(AlundraEntitySpawnFactory.ShouldSpawnRecord(record, out var reason));
+        Assert.False(EntitySpawnFactory.ShouldSpawnRecord(record, out var reason));
         Assert.Contains("0x40", reason);
     }
 
@@ -59,7 +59,7 @@ public class AlundraWorldProxySpawnInitializationTests
         record.CustomProperties["IsEnabled"] = "1";
         record.CustomProperties["SpriteDirection"] = spriteDirection;
 
-        Assert.True(AlundraEntitySpawnFactory.ShouldSpawnRecord(record, out var reason));
+        Assert.True(EntitySpawnFactory.ShouldSpawnRecord(record, out var reason));
         Assert.Equal(string.Empty, reason);
     }
 
@@ -68,7 +68,7 @@ public class AlundraWorldProxySpawnInitializationTests
     {
         var record = NewRecord();
 
-        Assert.True(AlundraEntitySpawnFactory.ShouldSpawnRecord(record, out _));
+        Assert.True(EntitySpawnFactory.ShouldSpawnRecord(record, out _));
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ public class AlundraWorldProxySpawnInitializationTests
             record.CustomProperties["IsEnabled"] = "1";
             record.CustomProperties["SpriteDirection"] = spriteDirection;
 
-            if (AlundraEntitySpawnFactory.ShouldSpawnRecord(record, out _))
+            if (EntitySpawnFactory.ShouldSpawnRecord(record, out _))
             {
                 keptCount++;
             }
@@ -114,7 +114,7 @@ public class AlundraWorldProxySpawnInitializationTests
         var proxy = new AlundraEntityScriptProxy();
 
         // Bloc transparent (1x1x2) real header (Data/sprite-records.json, prefab fd375feb-...).
-        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, offsetX: -12, offsetY: -8, offsetZ: 0, sizeX: 24, sizeY: 16, sizeZ: 32);
+        EntitySpawnFactory.SetEntityDimensions(proxy, offsetX: -12, offsetY: -8, offsetZ: 0, sizeX: 24, sizeY: 16, sizeZ: 32);
 
         Assert.Equal(-12 << 16, proxy.ModX);
         Assert.Equal(-8 << 16, proxy.ModY);
@@ -134,7 +134,7 @@ public class AlundraWorldProxySpawnInitializationTests
     {
         var proxy = new AlundraEntityScriptProxy();
 
-        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, offsetX: 0, offsetY: 0, offsetZ: 0, sizeX: 0, sizeY: 0, sizeZ: 0);
+        EntitySpawnFactory.SetEntityDimensions(proxy, offsetX: 0, offsetY: 0, offsetZ: 0, sizeX: 0, sizeY: 0, sizeZ: 0);
 
         Assert.Equal(0, proxy.Width);
         Assert.Equal(0, proxy.Height);
@@ -162,11 +162,11 @@ public class AlundraWorldProxySpawnInitializationTests
     {
         var record = BuildRecordWithPrefabLink(Guid.NewGuid());
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
         var rawPosZ = proxy.PosZ;
         var entity = new Entity();
 
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog: null);
+        EntitySpawnFactory.ApplySpawnInitialization(record, entity, proxy, spriteRecordCatalog: null);
 
         Assert.Same(entity, proxy.LogicContextEntity);
         Assert.Equal(0u, proxy.Flags);
@@ -178,11 +178,11 @@ public class AlundraWorldProxySpawnInitializationTests
     {
         var record = BuildRecordWithPrefabLink(Guid.NewGuid());
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
         var entity = new Entity();
         var catalog = new FakeSpriteRecordCatalog(); // empty: lookup misses
 
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, entity, proxy, catalog);
+        EntitySpawnFactory.ApplySpawnInitialization(record, entity, proxy, catalog);
 
         Assert.Same(entity, proxy.LogicContextEntity);
         Assert.Equal(0u, proxy.Flags);
@@ -199,7 +199,7 @@ public class AlundraWorldProxySpawnInitializationTests
         var prefabAssetId = Guid.Parse("fd375feb-2f77-447e-aedb-c3fa44c64edd");
         var record = BuildRecordWithPrefabLink(prefabAssetId, spriteDirection: "64");
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
         // Pre-adjustment PosZ, exactly as EntityRecordMapper leaves it (46 << 19, Height=46).
         Assert.Equal(46 << 19, proxy.PosZ);
 
@@ -224,7 +224,7 @@ public class AlundraWorldProxySpawnInitializationTests
         };
         var catalog = new FakeSpriteRecordCatalog().Add(prefabAssetId, header);
 
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, entity, proxy, catalog);
+        EntitySpawnFactory.ApplySpawnInitialization(record, entity, proxy, catalog);
 
         Assert.Same(entity, proxy.LogicContextEntity);
 
@@ -260,9 +260,9 @@ public class AlundraWorldProxySpawnInitializationTests
         // 0x40 | facing=2 -> g_cardinalDirectionTable[2] = 0x08.
         var record = BuildRecordWithPrefabLink(prefabAssetId, spriteDirection: (0x40 | 2).ToString());
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
 
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, catalog);
+        EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, catalog);
 
         Assert.Equal(0x08u, proxy.TargetDirection);
     }
@@ -277,11 +277,11 @@ public class AlundraWorldProxySpawnInitializationTests
         var record = BuildRecordWithPrefabLink(prefabAssetId);
         record.CustomProperties["Height"] = "100"; // rawZ = 100 << 19
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
         var rawZ = proxy.PosZ;
         Assert.Equal(100 << 19, rawZ);
 
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, catalog);
+        EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, catalog);
 
         var expectedModZ = 5 << 16;
         Assert.Equal(expectedModZ, proxy.ModZ);
@@ -295,7 +295,7 @@ public class AlundraWorldProxySpawnInitializationTests
     [Fact]
     public void BuildIdsvByAnimDirection_EmptyList_ReturnsNull()
     {
-        Assert.Null(AlundraEntitySpawnFactory.BuildIdsvByAnimDirection(Array.Empty<AnimDirIdsv>()));
+        Assert.Null(EntitySpawnFactory.BuildIdsvByAnimDirection(Array.Empty<AnimDirIdsv>()));
     }
 
     [Fact]
@@ -307,7 +307,7 @@ public class AlundraWorldProxySpawnInitializationTests
             new AnimDirIdsv { Anim = 10, Direction = 2, Frames = new[] { 0 } },
         };
 
-        var table = AlundraEntitySpawnFactory.BuildIdsvByAnimDirection(idsvAnimDirs);
+        var table = EntitySpawnFactory.BuildIdsvByAnimDirection(idsvAnimDirs);
 
         Assert.NotNull(table);
         Assert.Equal(6, table![1 * 4 + 0]);
@@ -330,9 +330,9 @@ public class AlundraWorldProxySpawnInitializationTests
         var catalog = new FakeSpriteRecordCatalog().Add(prefabAssetId, header);
         var record = BuildRecordWithPrefabLink(prefabAssetId);
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
 
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, catalog);
+        EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, catalog);
 
         Assert.NotNull(proxy.IdsvByAnimDirection);
         Assert.Equal(6, proxy.IdsvByAnimDirection![1 * 4 + 0]);
@@ -347,9 +347,9 @@ public class AlundraWorldProxySpawnInitializationTests
         var catalog = new FakeSpriteRecordCatalog().Add(prefabAssetId, header);
         var record = BuildRecordWithPrefabLink(prefabAssetId);
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
 
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, catalog);
+        EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, catalog);
 
         Assert.Null(proxy.IdsvByAnimDirection);
     }
@@ -383,13 +383,13 @@ public class AlundraWorldProxySpawnInitializationTests
             RootComponent = new AnimatedSpriteComponent(),
         };
 
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab, catalog);
+        var entity = EntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab, catalog);
 
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         // E3.a: the root now carries the LOGICAL pose (this fixture's prefab root is a bare
         // AnimatedSpriteComponent with no RenderProjectionComponent, so the re-projection call in
         // CreateEntityFromPrefab is a no-op here, same as elsewhere in this file's fixtures).
-        var expectedPosition = AlundraEntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+        var expectedPosition = EntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
         Assert.Equal(expectedPosition, entity.RootComponent!.LocalTransform.Position);
         // PosZ carries the header's -ModZ adjustment ((46<<19) - 0), unlike the no-catalog case
         // covered by AlundraWorldProxyTests.CreateEntityFromRecord_ValidPrefabLink_ClonesPrefabAndMapsProxy.

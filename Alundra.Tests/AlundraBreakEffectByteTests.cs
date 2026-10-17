@@ -85,9 +85,9 @@ public sealed class AlundraBreakEffectByteTests : IDisposable
         var prefab = Guid.NewGuid();
         var proxy = new AlundraEntityScriptProxy();
         var record = Record(prefab);
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
 
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefab, new SpriteRecordHeader { BreakEffect = 12 }));
+        EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefab, new SpriteRecordHeader { BreakEffect = 12 }));
 
         Assert.Equal(12, proxy.BreakEffect);
         Assert.Equal(12, ((AlundraEntityScriptProxy)proxy.Clone()).BreakEffect);

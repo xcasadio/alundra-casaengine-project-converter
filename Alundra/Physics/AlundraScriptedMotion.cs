@@ -734,7 +734,7 @@ internal static class AlundraScriptedMotion
     /// <summary>
     /// E20.e0k3 (docs/plan-e20-heros.md section 1.18.3, D-E0K-7, phase A): the clamp of the step to the grid of the map (52 x 60 cells), ported from the forces pass of the binary (<c>0x800366FC</c>-<c>0x800367E0</c>). Pure: it reads
     /// the position and the bounds the entity already carries (<see cref="AlundraEntityScriptProxy.NegModX"/>/<see cref="AlundraEntityScriptProxy.NegModY"/> = <c>+0x108</c>/<c>+0x10C</c>, <see cref="AlundraEntityScriptProxy.ScreenClipX"/>/
-    /// <see cref="AlundraEntityScriptProxy.ScreenClipY"/> = <c>+0xFC</c>/<c>+0x100</c>, set by <see cref="AlundraEntitySpawnFactory.SetEntityDimensions"/>) and moves nothing. Per axis the arrival <c>Pos + step</c> is compared
+    /// <see cref="AlundraEntityScriptProxy.ScreenClipY"/> = <c>+0xFC</c>/<c>+0x100</c>, set by <see cref="EntitySpawnFactory.SetEntityDimensions"/>) and moves nothing. Per axis the arrival <c>Pos + step</c> is compared
     /// STRICTLY (the two <c>slt</c> of the binary, <c>0x80036774</c>/<c>0x80036788</c> on X and <c>0x800367AC</c>/<c>0x800367C0</c> on Y): below the low bound it is brought back to it, else above the high bound it is brought back to it,
     /// and the flag is raised (<c>+0x13C</c>, the same tick); an arrival exactly ON a bound is neither bounded nor flagged. The two axes are independent (a diagonal step bounded on X keeps its Y). Phase B calls it before the mover for an
     /// entity marked <see cref="AlundraEntityScriptProxy.HasLogicalZ"/> only (see <see cref="RunOneKinematicTick"/>).

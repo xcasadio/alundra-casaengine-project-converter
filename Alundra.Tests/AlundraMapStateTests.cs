@@ -15,7 +15,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E20.e0k1 (docs/plan-e20-heros.md section 1.18.1, D-E0K-2): the state that reads the map (the two raw words of gravity and viscosity, the walkability mask, the vertical ownership and the minimum move distance of the
-/// controller) is posed by ONE helper (<see cref="AlundraEntitySpawnFactory.ApplyMapDependentState"/>), called by the record path and by the creation by sprite index when a map is given.
+/// controller) is posed by ONE helper (<see cref="EntitySpawnFactory.ApplyMapDependentState"/>), called by the record path and by the creation by sprite index when a map is given.
 /// (a) the helper on the creation by sprite index, at the level of the core (a prefab with a controller, the real headers of the catalog): with a map (128, 4096) the arrow (flags <c>0x012074</c>, mask <c>0x40</c>), the wave
 /// (ClassB, <c>0x41</c>) and a ClassA entity (<c>0x1040</c>) get the state; the SAME creation without a map leaves the defaults of the controller, in the same assertion. (b) the guard: an entity created from a record has
 /// the same values as before the extraction (green by construction). (c) the pin P3 of E20.e0a3b (D-E0A-8): the marked entity whose first animation is validated keys its kinematics on its CURRENT animation, never on a
@@ -58,7 +58,7 @@ public sealed class AlundraMapStateTests
     {
         Assert.True(Catalog.Value.TryGetPrefab(isMapPage, index, out var prefabId));
         Assert.True(Catalog.Value.TryGet(prefabId, out var header));
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex(PrefabWithController(), header, isMapPage, index, null, 150 << 16, 100 << 16, 0, 0x18, null, map);
+        var entity = EntitySpawnFactory.CreateEntityFromSpriteIndex(PrefabWithController(), header, isMapPage, index, null, 150 << 16, 100 << 16, 0, 0x18, null, map);
         return Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
     }
 
@@ -116,8 +116,8 @@ public sealed class AlundraMapStateTests
         record.CustomProperties["SpriteDirection"] = isMapPage ? "192" : "64"; // 0x80 selects the map page; the low bits are the facing.
         record.CustomProperties["PrefabAssetId"] = prefabId.ToString();
 
-        var withMap = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => PrefabWithController(), Catalog.Value, tileMapData: Map(MapGravity, MapViscosity));
-        var withoutMap = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => PrefabWithController(), Catalog.Value);
+        var withMap = EntitySpawnFactory.CreateEntityFromRecord(record, _ => PrefabWithController(), Catalog.Value, tileMapData: Map(MapGravity, MapViscosity));
+        var withoutMap = EntitySpawnFactory.CreateEntityFromRecord(record, _ => PrefabWithController(), Catalog.Value);
 
         Assert.Equal(
             (new State(MapGravity, MapViscosity, expectedMask, Owned: true, MinMove: 0f), Untouched()),

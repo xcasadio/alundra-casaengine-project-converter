@@ -12,9 +12,9 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Covers <see cref="AlundraWorldProxy"/>'s per-record entity creation, split into
-/// <see cref="AlundraEntitySpawnFactory.BuildEntityName"/>, <see cref="AlundraEntitySpawnFactory.ApplyRecord"/>,
-/// <see cref="AlundraEntitySpawnFactory.TryGetPrefabAssetId"/> and the full
-/// <see cref="AlundraEntitySpawnFactory.CreateEntityFromRecord"/> (which additionally exercises
+/// <see cref="EntitySpawnFactory.BuildEntityName"/>, <see cref="EntitySpawnFactory.ApplyRecord"/>,
+/// <see cref="EntitySpawnFactory.TryGetPrefabAssetId"/> and the full
+/// <see cref="EntitySpawnFactory.CreateEntityFromRecord"/> (which additionally exercises
 /// <c>Entity.Initialize()</c> resolving <see cref="AlundraEntityScriptProxy"/> through <c>ElementFactory</c>
 /// - this needs Alundra.Tests to carry its own MonoGame.Framework.DesktopGL reference, since
 /// Alundra.csproj marks its own copy PrivateAssets="All" for game-folder deployment and it would
@@ -23,7 +23,7 @@ namespace Alundra.Tests;
 /// Not covered: the live prefab loader (<c>World.Game.AssetContentManager.Load&lt;Entity&gt;</c>) wired in
 /// <see cref="AlundraWorldProxy.InitializeWithWorld"/> - it needs a running
 /// <see cref="CasaEngine.Framework.Application.CasaEngineGame"/> with a populated asset catalog, so tests
-/// exercise <see cref="AlundraEntitySpawnFactory.CreateEntityFromRecord"/> directly with a fake loader instead.
+/// exercise <see cref="EntitySpawnFactory.CreateEntityFromRecord"/> directly with a fake loader instead.
 /// Likewise not covered: the entity actually being added to and integrated by a live
 /// <see cref="World"/> (<c>World.AddEntity</c> / <c>InternalAddEntities</c> calling
 /// <c>Entity.InitializeWithWorld</c>).
@@ -75,7 +75,7 @@ public class AlundraWorldProxyTests
         var record = BuildEntity0Record();
         var proxy = new AlundraEntityScriptProxy();
 
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
 
         Assert.Equal(EntityStatus.Loaded, proxy.Status);
         Assert.Equal(0, proxy.EntityRefId);
@@ -92,7 +92,7 @@ public class AlundraWorldProxyTests
     {
         var record = BuildEntity0Record();
 
-        Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", AlundraEntitySpawnFactory.BuildEntityName(record));
+        Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", EntitySpawnFactory.BuildEntityName(record));
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class AlundraWorldProxyTests
     {
         var record = BuildEntity0Record(entityName: null);
 
-        Assert.Equal("Entity_0", AlundraEntitySpawnFactory.BuildEntityName(record));
+        Assert.Equal("Entity_0", EntitySpawnFactory.BuildEntityName(record));
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class AlundraWorldProxyTests
     {
         var record = BuildEntity0Record(name: null!, entityName: null);
 
-        Assert.Equal("Entity", AlundraEntitySpawnFactory.BuildEntityName(record));
+        Assert.Equal("Entity", EntitySpawnFactory.BuildEntityName(record));
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class AlundraWorldProxyTests
     {
         var record = BuildEntity0Record();
 
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, prefabLoader: null);
+        var entity = EntitySpawnFactory.CreateEntityFromRecord(record, prefabLoader: null);
 
         Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", entity.Name);
         Assert.Equal(typeof(AlundraEntityScriptProxy).FullName!, entity.GameplayProxyClassName);
@@ -136,7 +136,7 @@ public class AlundraWorldProxyTests
         var record = BuildEntity0Record();
         record.CustomProperties["PrefabAssetId"] = Guid.NewGuid().ToString();
 
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => null);
+        var entity = EntitySpawnFactory.CreateEntityFromRecord(record, _ => null);
 
         Assert.Equal("Entity_0 (Bloc transparent (1x1x2))", entity.Name);
         Assert.Equal(typeof(AlundraEntityScriptProxy).FullName!, entity.GameplayProxyClassName);
@@ -154,7 +154,7 @@ public class AlundraWorldProxyTests
         var record = BuildEntity0Record();
         record.CustomProperties["PrefabAssetId"] = Guid.NewGuid().ToString();
 
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => throw new InvalidOperationException("asset not found"));
+        var entity = EntitySpawnFactory.CreateEntityFromRecord(record, _ => throw new InvalidOperationException("asset not found"));
 
         Assert.Equal(typeof(AlundraEntityScriptProxy).FullName!, entity.GameplayProxyClassName);
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
@@ -176,7 +176,7 @@ public class AlundraWorldProxyTests
         };
 
         Guid? requestedId = null;
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, id =>
+        var entity = EntitySpawnFactory.CreateEntityFromRecord(record, id =>
         {
             requestedId = id;
             return prefab;
@@ -201,7 +201,7 @@ public class AlundraWorldProxyTests
         // fed with the proxy's own PosX/PosY/PosZ (E3.a - the root now carries the LOGICAL pose, not a
         // render pose) - this is the clone path exercising the same conversion covered directly by
         // ResolveLogicalPosition_* below.
-        var expectedPosition = AlundraEntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+        var expectedPosition = EntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
         Assert.Equal(expectedPosition, entity.RootComponent.LocalTransform.Position);
         // XPos=34/YPos=72/Height=46 -> pixelX=420, pixelY=584, elevation=368 (see ResolveLogicalPosition_*
         // below for the full derivation) - the logical pose, un-flipped and un-shifted.
@@ -222,7 +222,7 @@ public class AlundraWorldProxyTests
             RootComponent = null,
         };
 
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab);
+        var entity = EntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab);
 
         Assert.Null(entity.RootComponent);
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
@@ -238,7 +238,7 @@ public class AlundraWorldProxyTests
         var record = BuildEntity0Record();
         record.CustomProperties["PrefabAssetId"] = rawValue;
 
-        var result = AlundraEntitySpawnFactory.TryGetPrefabAssetId(record, out var prefabAssetId);
+        var result = EntitySpawnFactory.TryGetPrefabAssetId(record, out var prefabAssetId);
 
         Assert.Equal(expected, result);
         if (expected)
@@ -256,7 +256,7 @@ public class AlundraWorldProxyTests
     {
         var record = BuildEntity0Record();
 
-        var result = AlundraEntitySpawnFactory.TryGetPrefabAssetId(record, out var prefabAssetId);
+        var result = EntitySpawnFactory.TryGetPrefabAssetId(record, out var prefabAssetId);
 
         Assert.False(result);
         Assert.Equal(Guid.Empty, prefabAssetId);
@@ -272,7 +272,7 @@ public class AlundraWorldProxyTests
         // TopDownElevation) is what later turns this into the same render position the old single-step
         // formula used to compute directly: -(584-368) = -216 (see
         // AlundraEntityLogicalRenderPoseTests.RenderPoseFormula_* for that full round-trip check).
-        var position = AlundraEntitySpawnFactory.ResolveLogicalPosition(420 * 0x10000, 584 * 0x10000, 46 << 19);
+        var position = EntitySpawnFactory.ResolveLogicalPosition(420 * 0x10000, 584 * 0x10000, 46 << 19);
 
         Assert.Equal(new Vector3(420, 584, 368f), position);
     }
@@ -283,7 +283,7 @@ public class AlundraWorldProxyTests
         // XPos=10/YPos=20/Height=0 -> PosX=132*0x10000, PosY=168*0x10000, PosZ=0. With no elevation the
         // logical Y is exactly the raw (down-positive) pixel Y, not negated - E3.a moves the flip to the
         // render policy.
-        var position = AlundraEntitySpawnFactory.ResolveLogicalPosition(132 * 0x10000, 168 * 0x10000, 0);
+        var position = EntitySpawnFactory.ResolveLogicalPosition(132 * 0x10000, 168 * 0x10000, 0);
 
         Assert.Equal(new Vector3(132, 168, 0f), position);
     }

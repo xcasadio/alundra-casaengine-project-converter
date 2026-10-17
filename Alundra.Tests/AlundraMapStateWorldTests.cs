@@ -185,7 +185,7 @@ public sealed class AlundraMapStateWorldTests
         record.CustomProperties["PrefabAssetId"] = prefabId.ToString();
         var prefab = new Entity { Name = "K4Prefab", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         prefab.AddComponent(new CharacterControllerComponent());
-        var fromRecord = (AlundraEntityScriptProxy)AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab, catalog, tileMapData: map).GameplayProxy!;
+        var fromRecord = (AlundraEntityScriptProxy)EntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab, catalog, tileMapData: map).GameplayProxy!;
 
         static (int, int, uint, bool, float) Fields(AlundraEntityScriptProxy p)
             => (p.MapGravityRaw, p.MapZViscosityRaw, p.Controller!.Settings.WalkabilityMask, p.Controller.IsVerticalOwnedExternally, p.Controller.Settings.MinMoveDistance);

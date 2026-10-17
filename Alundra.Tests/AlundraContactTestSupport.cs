@@ -194,7 +194,7 @@ internal static class ContactWorld
             proxy.Flags |= EntityFlags.Collidable;
         }
 
-        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, offsetX, offsetY, offsetZ, sizeX, sizeY, sizeZ);
+        EntitySpawnFactory.SetEntityDimensions(proxy, offsetX, offsetY, offsetZ, sizeX, sizeY, sizeZ);
         proxy.PosX = xPixels << 16;
         proxy.PosY = yPixels << 16;
         proxy.PosZ = zPixels << 16;

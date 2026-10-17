@@ -485,7 +485,7 @@ public class AlundraPortalDetectionTests : IDisposable
 
         var settings = new CharacterControllerSettings();
         var (_, proxy) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(rootX, rootY, groundHeightPx), host);
-        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
+        EntitySpawnFactory.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
 
         proxy.IsPlayer = false; // D-T-12: NPC, not the player.
         proxy.Flags = EntityFlags.Gravity | EntityFlags.DestroyOnVramFlags;

@@ -89,8 +89,8 @@ public class AlundraFloorHeightTests
     /// <summary>Same real-record fixture shape as
     /// <c>AlundraNpcCharacterControllerMoverTests.BuildRealRecordProxy</c> - a pure logic-side collidable
     /// (no root/physics component at all, matching how that class' own sailor-11/record-2 platform test
-    /// builds its own support candidate): <see cref="AlundraEntitySpawnFactory.ApplyRecord"/> then
-    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/> against the REAL map 389 record data, so
+    /// builds its own support candidate): <see cref="EntitySpawnFactory.ApplyRecord"/> then
+    /// <see cref="EntitySpawnFactory.ApplySpawnInitialization"/> against the REAL map 389 record data, so
     /// every field <see cref="EntitySupport.TryFindSupport"/> reads (Flags/Width/Height/Depth/Pos*/Mod*)
     /// is the genuine converter-exported value, not a hand-picked literal.</summary>
     private static AlundraEntityScriptProxy BuildRealRecordProxy(
@@ -101,10 +101,10 @@ public class AlundraFloorHeightTests
             o => o.CustomProperties.TryGetValue("Index", out var idx) && idx == recordIndex.ToString());
 
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
         var backingEntity = new Entity();
         proxy.LogicContextEntity = backingEntity;
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, backingEntity, proxy, catalog, tileMapData: tileMapData);
+        EntitySpawnFactory.ApplySpawnInitialization(record, backingEntity, proxy, catalog, tileMapData: tileMapData);
         return proxy;
     }
 
@@ -188,7 +188,7 @@ public class AlundraFloorHeightTests
         var (_, proxy) = HeroWorldFixture.BuildHeroPawn(
             world, settings, new Vector3(rootX, rootY, groundHeightPx), host);
 
-        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
+        EntitySpawnFactory.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
 
         // Sanity: nothing is seeded in Collidables, so the terrain-only branch of UpdateFloorHeight is
         // what this test exercises (mirrors the flat-ground half of GetCollisionOnZ - no qualifying
@@ -288,7 +288,7 @@ public class AlundraFloorHeightTests
         var (_, proxy) = HeroWorldFixture.BuildHeroPawn(
             world, settings, new Vector3(rootX, rootY, heroStartZPx), host);
 
-        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
+        EntitySpawnFactory.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
 
         // Real hero header (sprite-records.json, asset 4158f0d7-...) carries MoreFlags 140 (0x8C), which
         // includes the Collidable bit (0x80) - EntitySupport.IsEligibleSubject's own SUBJECT gate
@@ -331,7 +331,7 @@ public class AlundraFloorHeightTests
         var controlWorld = HeroWorldFixture.BuildWorld(field);
         var (_, controlProxy) = HeroWorldFixture.BuildHeroPawn(
             controlWorld, new CharacterControllerSettings(), new Vector3(rootX, rootY, heroStartZPx), controlHost);
-        AlundraEntitySpawnFactory.SetEntityDimensions(controlProxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
+        EntitySpawnFactory.SetEntityDimensions(controlProxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
         controlProxy.Flags |= EntityFlags.Collidable;
         controlWorld.Update(1f / 50f);
         Assert.NotEqual(expectedFloorHeight, controlProxy.FloorHeight);

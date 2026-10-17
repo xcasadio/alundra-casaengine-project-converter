@@ -15,8 +15,8 @@ namespace Alundra.Entities;
 
 /// <summary>
 /// One <see cref="AlundraEntityScriptProxy.AnimationEndByAnimDirection"/> table value - see
-/// <see cref="AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection"/> and
-/// <see cref="AlundraEntitySpawnFactory.OnAnimationFinished"/>.
+/// <see cref="EntitySpawnFactory.BuildAnimationEndByAnimDirection"/> and
+/// <see cref="EntitySpawnFactory.OnAnimationFinished"/>.
 /// </summary>
 public readonly struct AnimationEndInfo
 {

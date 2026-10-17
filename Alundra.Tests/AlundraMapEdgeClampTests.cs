@@ -30,7 +30,7 @@ public sealed class AlundraMapEdgeClampTests
     private static AlundraEntityScriptProxy Box(int offX, int offY, int sizeX, int sizeY, int posX, int posY)
     {
         var entity = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.SetEntityDimensions(entity, offX, offY, 0, sizeX, sizeY, 8);
+        EntitySpawnFactory.SetEntityDimensions(entity, offX, offY, 0, sizeX, sizeY, 8);
         entity.PosX = posX;
         entity.PosY = posY;
         return entity;

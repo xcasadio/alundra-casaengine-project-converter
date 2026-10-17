@@ -12,7 +12,7 @@ namespace Alundra.Entities;
 /// <see cref="IAlundraEffectAnchor"/>), with no hero-only shortcut. Written deviation: no raise by a neighbour, a support or a carrier (the binary's recursive maximum over the collidables); the oracle's 150 ticks of the
 /// charge (<c>docs/plan-e20-annexe/e20-f1/oracle/keyprobe.py</c>) do not need it.
 /// </summary>
-internal static class AlundraEntityDepthKey
+internal static class EntityDepthKey
 {
     /// <summary>The key of an entity at <paramref name="posY"/> (16.16) with the sprite bias <paramref name="idsv"/> and the integer height of <paramref name="posZ"/> (16.16, in the binary's frame of Z: the DLL's <c>PosZ + 1</c>, ADR-0026).</summary>
     internal static uint Compute(int posY, int idsv, int posZ)

@@ -215,7 +215,7 @@ public class AlundraRepeatAnimationOpcodeTests
             [54 * 4] = new() { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = 0 },
         };
 
-        AlundraEntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
+        EntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
 
         Assert.Equal(0u, proxy.TargetAnimationId);
         Assert.Equal(1, proxy.AnimCompleteCounter);
@@ -232,7 +232,7 @@ public class AlundraRepeatAnimationOpcodeTests
             [1 * 4] = new() { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = 1 },
         };
 
-        AlundraEntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
+        EntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
 
         Assert.Equal(1, proxy.AnimCompleteCounter);
     }
@@ -248,7 +248,7 @@ public class AlundraRepeatAnimationOpcodeTests
             [10 * 4] = new() { Kind = AnimationEndKind.Hold },
         };
 
-        AlundraEntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
+        EntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
 
         Assert.Equal(1, proxy.ForceResetAnimationFlag);
         Assert.Equal(4, proxy.AnimCompleteCounter);
@@ -363,9 +363,9 @@ public class AlundraRepeatAnimationOpcodeTests
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.AnimationEndByAnimDirection = new Dictionary<int, AnimationEndInfo>
         {
-            [6 * AlundraEntitySpawnFactory.IdsvDirectionStride] = new() { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = 0 },
+            [6 * EntitySpawnFactory.IdsvDirectionStride] = new() { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = 0 },
         };
-        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+        EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
 
         proxy.TargetAnimationId = 0;
         proxy.CurrentAnimationId = ~0u;
@@ -441,7 +441,7 @@ public class AlundraRepeatAnimationOpcodeTests
         var entity = new Entity { Name = "e", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName!, RootComponent = sprite };
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
-        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+        EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
         proxy.TargetAnimationId = 3;
         proxy.CurrentAnimationId = ~3u;
 

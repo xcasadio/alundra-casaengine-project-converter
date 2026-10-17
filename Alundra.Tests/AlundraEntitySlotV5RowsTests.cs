@@ -36,12 +36,12 @@ public sealed class AlundraEntitySlotV5RowsTests
 
     private static void FillTheTable(ArcRun arc)
     {
-        for (var i = AlundraEntitySlotTable.SlotCount - arc.Proxy.SlotTable.HeldCount; i > 0; i--)
+        for (var i = EntitySlotTable.SlotCount - arc.Proxy.SlotTable.HeldCount; i > 0; i--)
         {
             Assert.NotNull(((IEntityWorldContext)arc.Proxy).SpawnEntityBySpriteIndex(arc.Hero, false, 3, HeroX << 16, HeroY << 16, -1, 0x10));
         }
 
-        Assert.Equal(AlundraEntitySlotTable.SlotCount, arc.Proxy.SlotTable.HeldCount);
+        Assert.Equal(EntitySlotTable.SlotCount, arc.Proxy.SlotTable.HeldCount);
     }
 
     private static AlundraEntityScriptProxy? Call(ArcRun arc, bool isMapPage, int index)
@@ -75,7 +75,7 @@ public sealed class AlundraEntitySlotV5RowsTests
         Assert.Equal(1, dirty.GetProperty("ret").GetInt32());
 
         // The allocator: the lowest free slot is the one the oracle's creation landed in, and a released slot is handed out again.
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         Assert.Equal(p.GetProperty("slot").GetInt32(), table.Allocate());
         table.Release(p.GetProperty("slot").GetInt32());
         Assert.Equal(p.GetProperty("slot").GetInt32(), table.Allocate());

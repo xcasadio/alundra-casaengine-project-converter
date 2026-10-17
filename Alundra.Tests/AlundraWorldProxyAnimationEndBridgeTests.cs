@@ -12,9 +12,9 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// Covers the "Alundra's animation is too fast" fix's DLL-side bridge: reading End/ChainTo off
-/// <see cref="SpriteRecordHeader.IdsvAnimDirs"/> (<see cref="AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection"/>)
+/// <see cref="SpriteRecordHeader.IdsvAnimDirs"/> (<see cref="EntitySpawnFactory.BuildAnimationEndByAnimDirection"/>)
 /// and reacting to <see cref="AnimatedSpriteComponent.AnimationFinished"/>
-/// (<see cref="AlundraEntitySpawnFactory.OnAnimationFinished"/>) - bridging the engine's Once-finished event
+/// (<see cref="EntitySpawnFactory.OnAnimationFinished"/>) - bridging the engine's Once-finished event
 /// back to the original's Hold ("freeze") / Chain ("play this other animation next") semantics,
 /// EntityManager.cs:257-281.
 /// </summary>
@@ -32,7 +32,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
             new() { Anim = 0, Direction = 0, End = AnimationEndKind.Loop },
         };
 
-        var table = AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection(idsvAnimDirs);
+        var table = EntitySpawnFactory.BuildAnimationEndByAnimDirection(idsvAnimDirs);
 
         Assert.Null(table); // every entry was Loop -> nothing worth keeping.
     }
@@ -47,7 +47,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
             new() { Anim = 54, Direction = 0, End = AnimationEndKind.Chain, ChainTo = 0 },
         };
 
-        var table = AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection(idsvAnimDirs);
+        var table = EntitySpawnFactory.BuildAnimationEndByAnimDirection(idsvAnimDirs);
 
         Assert.NotNull(table);
         Assert.Equal(2, table!.Count); // the Loop entry is excluded.
@@ -63,8 +63,8 @@ public class AlundraWorldProxyAnimationEndBridgeTests
     [Fact]
     public void BuildAnimationEndByAnimDirection_EmptyOrNullList_ReturnsNull()
     {
-        Assert.Null(AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection(null));
-        Assert.Null(AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection(new List<AnimDirIdsv>()));
+        Assert.Null(EntitySpawnFactory.BuildAnimationEndByAnimDirection(null));
+        Assert.Null(EntitySpawnFactory.BuildAnimationEndByAnimDirection(new List<AnimDirIdsv>()));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
             [10 * 4 + 2] = new() { Kind = AnimationEndKind.Hold },
         };
 
-        AlundraEntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
+        EntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
 
         Assert.Equal(1, proxy.ForceResetAnimationFlag);
         Assert.Equal(0u, proxy.TargetAnimationId); // Hold never touches TargetAnimationId, unlike Chain.
@@ -115,7 +115,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
             [54 * 4 + 0] = new() { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = 0 },
         };
 
-        AlundraEntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
+        EntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
 
         Assert.Equal(0u, proxy.TargetAnimationId);
         Assert.Equal(0, proxy.ForceResetAnimationFlag); // Chain only touches TargetAnimationId, not Hold.
@@ -149,7 +149,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
             [1 * 4 + 0] = new() { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = 1 },
         };
 
-        AlundraEntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
+        EntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
 
         // The chain target IS the animation that just ended, so nothing about the target changed...
         Assert.Equal(1u, proxy.TargetAnimationId);
@@ -169,7 +169,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
             [54 * 4 + 0] = new() { Kind = AnimationEndKind.Hold },
         };
 
-        AlundraEntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
+        EntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
 
         Assert.Equal(1, proxy.ForceResetAnimationFlag);
         Assert.Equal(0, proxy.PendingChainRestartFlag); // a Hold must stay frozen, never restart.
@@ -187,7 +187,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
             [10 * 4 + 2] = new() { Kind = AnimationEndKind.Hold }, // a different (anim, direction)
         };
 
-        AlundraEntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
+        EntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
 
         Assert.Equal(0, proxy.ForceResetAnimationFlag);
         Assert.Equal(0u, proxy.TargetAnimationId);
@@ -200,7 +200,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
         var (_, component, proxy) = BuildSpawnedEntity();
         proxy.AnimationEndByAnimDirection = null;
 
-        AlundraEntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
+        EntitySpawnFactory.OnAnimationFinished(component, new Animation2d(new Animation2dData()));
 
         Assert.Equal(0, proxy.ForceResetAnimationFlag);
     }
@@ -208,8 +208,8 @@ public class AlundraWorldProxyAnimationEndBridgeTests
     [Fact]
     public void OnAnimationFinished_SenderIsNotAnAnimatedSpriteComponent_DoesNotThrow()
     {
-        AlundraEntitySpawnFactory.OnAnimationFinished(new object(), new Animation2d(new Animation2dData()));
-        AlundraEntitySpawnFactory.OnAnimationFinished(null, new Animation2d(new Animation2dData()));
+        EntitySpawnFactory.OnAnimationFinished(new object(), new Animation2d(new Animation2dData()));
+        EntitySpawnFactory.OnAnimationFinished(null, new Animation2d(new Animation2dData()));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -222,7 +222,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
         var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
 
-        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+        EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -246,7 +246,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
         };
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
-        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+        EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
         component.SetCurrentAnimation(0, forceReset: true);
         return (entity, component, proxy);
     }
@@ -275,7 +275,7 @@ public class AlundraWorldProxyAnimationEndBridgeTests
         entity.Initialize();
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
 
-        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+        EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
 
         Assert.Null(proxy.LogicalClockSprite);
     }
@@ -303,9 +303,9 @@ public class AlundraWorldProxyAnimationEndBridgeTests
         Assert.Equal(4, proxy.AnimCompleteCounter);
 
         var animation = new Animation2d(new Animation2dData());
-        AlundraEntitySpawnFactory.OnAnimationLooped(null, animation);
-        AlundraEntitySpawnFactory.OnAnimationLooped(new object(), animation);
-        AlundraEntitySpawnFactory.OnAnimationLooped(new AnimatedSpriteComponent(), animation); // no owner.
+        EntitySpawnFactory.OnAnimationLooped(null, animation);
+        EntitySpawnFactory.OnAnimationLooped(new object(), animation);
+        EntitySpawnFactory.OnAnimationLooped(new AnimatedSpriteComponent(), animation); // no owner.
         Assert.Equal(4, proxy.AnimCompleteCounter);
     }
 }

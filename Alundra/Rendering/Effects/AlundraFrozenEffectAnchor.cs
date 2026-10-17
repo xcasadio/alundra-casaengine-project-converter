@@ -6,7 +6,7 @@ namespace Alundra.Rendering.Effects;
 
 /// <summary>
 /// E14.a1b T2 (docs/plan-e14-ia-native.md section 1.3b, ADR-0060): the anchor of the break effect of a destroyed entity, an immutable SNAPSHOT taken by <c>DestroyEntity</c> right after it wrote the status 4: the position
-/// (X, Y, and the binary's Z, <c>PosZ + 1</c>, ADR-0026), the depth key of E20.f1b (<see cref="AlundraEntityDepthKey.Compute(AlundraEntityScriptProxy)"/>) and the sort coordinate of the sprite, at the moment of the destruction.
+/// (X, Y, and the binary's Z, <c>PosZ + 1</c>, ADR-0026), the depth key of E20.f1b (<see cref="EntityDepthKey.Compute(AlundraEntityScriptProxy)"/>) and the sort coordinate of the sprite, at the moment of the destruction.
 /// Why a snapshot and not the entity: the effect operations of a tick are applied by <see cref="AlundraEffectStage.RunFrame"/> at the end of the rendered frame (ADR-0046), and in a frame of two ticks or more the destroyed
 /// entity has already been recycled to the status 0 (and may have been released) when the effect is created; a live anchor would then freeze the new slot without writing its position or its key
 /// (<c>MoveFollower</c>, anchor status 0). In the binary the effect is created at once, while the entity still exists with status 4, and its first update copies this very position and key and freezes the slot (mode 2).

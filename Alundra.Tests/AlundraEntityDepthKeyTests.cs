@@ -26,7 +26,7 @@ public sealed class AlundraEntityDepthKeyTests
     [InlineData(100 << 16, 0, 0x7FFF << 16, 0x00647FFFu)]   // the largest short.
     [InlineData(100 << 16, 0, unchecked((int)0x80000000), 0x0063_8000u)] // the smallest short: 0x640000 - 0x8000.
     public void Compute_IsTheFormulaOfTheSortDriver_ByHand(int posY, int idsv, int posZ, uint expected)
-        => Assert.Equal(expected, AlundraEntityDepthKey.Compute(posY, idsv, posZ));
+        => Assert.Equal(expected, EntityDepthKey.Compute(posY, idsv, posZ));
 
     private static readonly Regex Row = new(@"^t\s*(\d+) anim88=([0-9A-F]+) idsv=(-?\d+) y=(-?\d+) z=(-?\d+) key=([0-9A-F]{8}) formula=([0-9A-F]{8}) (OK|DIFF)$", RegexOptions.Compiled);
 
@@ -55,7 +55,7 @@ public sealed class AlundraEntityDepthKeyTests
         Assert.Equal(150, rows.Count);
         foreach (var row in rows)
         {
-            Assert.True(row.Key == AlundraEntityDepthKey.Compute(row.Y, row.Idsv, row.Z), $"tick {row.Tick}: oracle {row.Key:X8}, Compute {AlundraEntityDepthKey.Compute(row.Y, row.Idsv, row.Z):X8}");
+            Assert.True(row.Key == EntityDepthKey.Compute(row.Y, row.Idsv, row.Z), $"tick {row.Tick}: oracle {row.Key:X8}, Compute {EntityDepthKey.Compute(row.Y, row.Idsv, row.Z):X8}");
         }
 
         Assert.All(rows.Where(r => r.Tick is >= 22 and <= 91), r => Assert.Equal(0x00690000u, r.Key)); // the charge: the swing is over, the hero idles with the IDSV 5.

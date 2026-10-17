@@ -468,7 +468,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         Assert.True(slot.Active && slot.RecordIndex == -1 && slot.TargetEffect == arguments[1] && slot.TargetMapTable == (arguments[0] != 0) && slot.TargetAnimation == arguments[2], $"{where}: the slot is not the oracle's effect");
         Assert.True(slot.Mode == 1 && slot.Anchor != null && slot.Anchor.Status == 4 && slot.DepthOffset == 1 && slot.OffsetX == 0 && slot.OffsetY == 0 && slot.OffsetZ == 0, $"{where}: not a mode 1 slot of the frozen anchor");
         Assert.True(slot.X == entity.PosX && slot.Y == entity.PosY && slot.Z == unchecked(entity.PosZ + 1), $"{where}: the slot is not at the entity");
-        var key = AlundraEntityDepthKey.Compute(entity);
+        var key = EntityDepthKey.Compute(entity);
 
         stage.RunFrame(1, new[] { false });
 

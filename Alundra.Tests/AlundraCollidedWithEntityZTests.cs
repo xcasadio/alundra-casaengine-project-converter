@@ -124,7 +124,7 @@ public sealed class AlundraCollidedWithEntityZTests
             settings.Gravity = 1250f;
             settings.MaxFallSpeed = 800f;
             var (_, hero) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(310f, 207f, 0f), host);
-            AlundraEntitySpawnFactory.SetEntityDimensions(hero, -10, -7, 0, 21, 15, 32);
+            EntitySpawnFactory.SetEntityDimensions(hero, -10, -7, 0, 21, 15, 32);
             hero.MapGravity = 1250f;
             hero.MapMaxFallSpeed = 800f;
             if (gravity)

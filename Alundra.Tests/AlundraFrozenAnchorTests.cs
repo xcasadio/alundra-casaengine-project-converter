@@ -34,7 +34,7 @@ public sealed class AlundraFrozenAnchorTests
         Assert.Equal(0x00A40000, frozen.PosX);
         Assert.Equal(0x01E00000, frozen.PosY);
         Assert.Equal(0x00080001, frozen.PosZ);
-        Assert.Equal(AlundraEntityDepthKey.Compute(entity), frozen.DepthKey);
+        Assert.Equal(EntityDepthKey.Compute(entity), frozen.DepthKey);
         Assert.Equal(live.SortCoordinate, frozen.SortCoordinate);
     }
 
@@ -66,7 +66,7 @@ public sealed class AlundraFrozenAnchorTests
         var stage = new AlundraEffectStage();
         stage.Load(EffectGolden.BankOf(Root, 14));
         var entity = Destroyed();
-        var expectedKey = AlundraEntityDepthKey.Compute(entity);
+        var expectedKey = EntityDepthKey.Compute(entity);
         var frozen = AlundraFrozenEffectAnchor.Of(entity);
         stage.BeginSource(0, 1);
         stage.Emit(reservoir => AlundraNativeEffects.CreateBreakEffect(reservoir, 8, frozen));

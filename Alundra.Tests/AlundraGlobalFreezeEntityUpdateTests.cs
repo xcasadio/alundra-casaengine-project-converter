@@ -238,7 +238,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
         // Baseline, unfrozen: SyncTransform must publish the logical pose onto the root right away.
         proxy.Update(1f / 50f);
         Assert.Equal(
-            AlundraEntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ),
+            EntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ),
             root.LocalTransform.Position);
 
         // Freeze - then move the logical position again (standing in for "the last unfrozen tick just
@@ -251,7 +251,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
         proxy.Update(1f / 50f);
 
         Assert.Equal(
-            AlundraEntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ),
+            EntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ),
             root.LocalTransform.Position);
     }
 

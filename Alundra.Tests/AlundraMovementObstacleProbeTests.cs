@@ -27,7 +27,7 @@ public sealed class AlundraMovementObstacleProbeTests
     private static AlundraEntityScriptProxy Box(int posX, int posY, int posZ, int sizeX, int sizeY, int sizeZ, uint flags = EntityFlags.Collidable)
     {
         var proxy = new AlundraEntityScriptProxy { Flags = flags };
-        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, -10, -7, 0, sizeX, sizeY, sizeZ);
+        EntitySpawnFactory.SetEntityDimensions(proxy, -10, -7, 0, sizeX, sizeY, sizeZ);
         proxy.PosX = posX;
         proxy.PosY = posY;
         proxy.PosZ = posZ;

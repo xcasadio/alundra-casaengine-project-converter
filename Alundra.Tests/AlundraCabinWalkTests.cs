@@ -72,7 +72,7 @@ public sealed class AlundraCabinWalkTests
         hero.IsOnGround = 1;
         hero.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
         hero.AnimSetsByAnim = header.AnimSets;
-        AlundraEntitySpawnFactory.SetEntityDimensions(hero, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
+        EntitySpawnFactory.SetEntityDimensions(hero, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
         tileMapData.CustomProperties.TryGetValue("Gravity", out var gravityRaw);
         tileMapData.CustomProperties.TryGetValue("ZViscosity", out var viscosityRaw);
         hero.MapGravityRaw = int.Parse(gravityRaw!);

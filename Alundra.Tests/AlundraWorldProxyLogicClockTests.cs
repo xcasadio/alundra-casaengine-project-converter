@@ -63,7 +63,7 @@ public class AlundraWorldProxyLogicClockTests
 
     /// <summary>
     /// Real <see cref="CasaEngine.Framework.Scene.Entities.Entity"/>/<see cref="AlundraEntityScriptProxy"/>
-    /// pair, same construction shape <see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/> uses
+    /// pair, same construction shape <see cref="EntitySpawnFactory.CreateEntityFromPrefab"/> uses
     /// (<c>entity.Initialize()</c>) - needed because <see cref="AlundraEntityScriptProxy.Update"/>'s own
     /// tail (<see cref="FrameSyncPasses.SyncAnimation"/>/<see cref="FrameSyncPasses.SyncTransform"/>)
     /// reads <c>Owner</c>, which only a real <c>Initialize(Entity)</c> call sets - a bare

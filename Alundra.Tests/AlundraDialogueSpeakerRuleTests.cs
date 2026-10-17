@@ -274,9 +274,9 @@ public sealed class AlundraDialogueSpeakerRuleTests
         var portrait = new DialoguePortraitRef(Guid.NewGuid(), 48, 72);
         var proxy = new AlundraEntityScriptProxy();
         var record = Record(prefab);
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
 
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefab, Header(portrait)));
+        EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefab, Header(portrait)));
 
         Assert.Equal(portrait, proxy.DialoguePortrait);
         Assert.Equal(EntityFlags.HasPortrait, proxy.Flags & EntityFlags.HasPortrait);
@@ -290,8 +290,8 @@ public sealed class AlundraDialogueSpeakerRuleTests
         var prefab = Guid.NewGuid();
         var proxy = new AlundraEntityScriptProxy();
         var record = Record(prefab);
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefab, Header(null)));
+        EntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefab, Header(null)));
         Assert.Null(proxy.DialoguePortrait);
 
         var hero = new AlundraEntityScriptProxy { IsPlayer = true };

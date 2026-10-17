@@ -140,7 +140,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// <see cref="AlundraCharacterControllerAdoptionTests.LoadHeroControllerSettings"/>, a different entity
     /// file. Confirmed on the real export: Radius 6, Height 32, SkinWidth 0.5, StepHeight 3,
     /// GroundSnapDistance 4, Gravity/MaxFallSpeed/WalkabilityMask all 0 (E4.a leaves them 0 - overridden at
-    /// spawn by <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>, exactly like the hero's own
+    /// spawn by <see cref="EntitySpawnFactory.ApplySpawnInitialization"/>, exactly like the hero's own
     /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/> override, E4.b's own "Spawn" item).
     /// </summary>
     private static CharacterControllerSettings? LoadBank146ControllerSettings(string projectRoot)
@@ -1095,7 +1095,7 @@ public class AlundraNpcCharacterControllerMoverTests
         // a FakeSpriteRecordCatalog with hand-copied values.
         var catalog = new SpriteRecordCatalog(projectRoot!);
 
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
+        var entity = EntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
 
         // The regression itself (F1): this is null without ApplySpawnInitialization's own assignment.
@@ -1748,13 +1748,13 @@ public class AlundraNpcCharacterControllerMoverTests
             o => o.CustomProperties.TryGetValue("Index", out var idx) && idx == recordIndex.ToString());
 
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
         var backingEntity = new Entity();
         proxy.LogicContextEntity = backingEntity;
         // No controller/world needed for a pure candidate/search fixture - ApplySpawnInitialization sets
         // Flags/Width/Height/Depth/Mod*/AnimSetsByAnim from the real header regardless (only the
         // Controller-gated Gravity/MaxFallSpeed/WalkabilityMask override needs a real Controller).
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, backingEntity, proxy, catalog, tileMapData: tileMapData);
+        EntitySpawnFactory.ApplySpawnInitialization(record, backingEntity, proxy, catalog, tileMapData: tileMapData);
         return proxy;
     }
 
@@ -1791,7 +1791,7 @@ public class AlundraNpcCharacterControllerMoverTests
         };
         prefab.AddComponent(controllerComponent);
 
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab, catalog, tileMapData: tileMapData);
+        var entity = EntitySpawnFactory.CreateEntityFromRecord(record, _ => prefab, catalog, tileMapData: tileMapData);
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.IsPlayer = false;
         proxy.ScriptHost = host;
@@ -2324,7 +2324,7 @@ public class AlundraNpcCharacterControllerMoverTests
 
     /// <summary>Real record spawn (bank 146, XPos 66/YPos 71 - "Entity_6", the real gull the bug was
     /// measured on; EventCodesC_TickIndex 134 in the real tileMap confirms it) through
-    /// <see cref="AlundraEntitySpawnFactory.CreateEntityFromRecord"/>, same pattern as
+    /// <see cref="EntitySpawnFactory.CreateEntityFromRecord"/>, same pattern as
     /// <c>EndToEndSpawn_RealBank146RecordThroughApplySpawnInitialization_PopulatesAnimSetsByAnimAndDrivesRealWalkKinematics</c>
     /// above. Null when this checkout has no real bank-146 controller settings to load (self-skip, same
     /// convention as every other real-fixture test in this class).</summary>
@@ -2365,7 +2365,7 @@ public class AlundraNpcCharacterControllerMoverTests
         prefab.AddComponent(controllerComponent);
 
         var catalog = new SpriteRecordCatalog(projectRoot);
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
+        var entity = EntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         Assert.NotNull(proxy.Controller);
         return (entity, proxy);
@@ -2420,7 +2420,7 @@ public class AlundraNpcCharacterControllerMoverTests
         prefab.AddComponent(controllerComponent);
 
         var catalog = new SpriteRecordCatalog(projectRoot);
-        var entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
+        var entity = EntitySpawnFactory.CreateEntityFromRecord(record!, _ => prefab, catalog, tileMapData: tileMapData);
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         Assert.NotNull(proxy.Controller);
         Assert.NotNull(proxy.RenderProjection);
@@ -2432,7 +2432,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// fixture/flight as <see cref="GullEntitySix_RealFlightAtRenderRateAndAtFiftyHertz_ClimbsAndDriftsWithFaithfulTickQuantizedPhysics"/>,
     /// whose own 209.25px westward drift proves the LOGICAL root position keeps a fractional remainder
     /// every tick - must still end up with an INTEGER render position every frame, because
-    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/> now sets
+    /// <see cref="EntitySpawnFactory.ApplySpawnInitialization"/> now sets
     /// <see cref="RenderProjectionComponent.SnapToPixel"/> on every controller-driven entity's cached
     /// projection. Checked every frame (not just at the end): the snap must hold continuously while the
     /// entity is airborne and drifting, not only once it settles.
@@ -3187,7 +3187,7 @@ public class AlundraNpcCharacterControllerMoverTests
             PosY = proxy.PosY,
             PosZ = terrainPosZ + 4, // a few 16.16 units above terrainHeight+1 - reachable, negligible height.
         };
-        AlundraEntitySpawnFactory.SetEntityDimensions(candidate, offsetX: 0, offsetY: 0, offsetZ: 0, sizeX: 64, sizeY: 64, sizeZ: 0);
+        EntitySpawnFactory.SetEntityDimensions(candidate, offsetX: 0, offsetY: 0, offsetZ: 0, sizeX: 64, sizeY: 64, sizeZ: 0);
         host.Collidables.Add(candidate);
         var candidateTop = candidate.PosZ + candidate.ModZ + candidate.Depth;
 

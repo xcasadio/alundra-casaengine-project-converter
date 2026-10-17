@@ -78,7 +78,7 @@ internal sealed class AlundraFrameBoxTimeline
         var boxes = new AlundraFrameBox[keyframes.Count];
         for (var i = 0; i < keyframes.Count; i++)
         {
-            startTicks[i] = (int)Math.Round((double)keyframes[i].TimeSeconds * AlundraEntitySpawnFactory.LogicTicksPerSecond, MidpointRounding.AwayFromZero);
+            startTicks[i] = (int)Math.Round((double)keyframes[i].TimeSeconds * EntitySpawnFactory.LogicTicksPerSecond, MidpointRounding.AwayFromZero);
             foreach (var fixture in keyframes[i].Fixtures)
             {
                 if (fixture.Shape is Box box)
@@ -97,7 +97,7 @@ internal sealed class AlundraFrameBoxTimeline
         var durationSeconds = data.GetDurationSeconds();
         var durationTicks = durationSeconds <= 0f
             ? 0
-            : Math.Max(1, (int)Math.Round((double)durationSeconds * AlundraEntitySpawnFactory.LogicTicksPerSecond, MidpointRounding.AwayFromZero));
+            : Math.Max(1, (int)Math.Round((double)durationSeconds * EntitySpawnFactory.LogicTicksPerSecond, MidpointRounding.AwayFromZero));
         return new AlundraFrameBoxTimeline(startTicks, hasBox, boxes, durationTicks, data.AnimationType == AnimationType.Loop);
     }
 

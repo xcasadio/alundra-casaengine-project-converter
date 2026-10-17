@@ -108,7 +108,7 @@ internal sealed class JumpNpcRig
             sets[(int)anim.Id] = new AnimSetEntry { Anim = (int)anim.Id, Speed = 0, IsZForceApplied = anim.Impulse };
             if (anim.End != AnimationEndKind.Loop)
             {
-                endTable[(int)anim.Id * AlundraEntitySpawnFactory.IdsvDirectionStride] = new AnimationEndInfo { Kind = anim.End, ChainTargetAnimationId = anim.ChainTo };
+                endTable[(int)anim.Id * EntitySpawnFactory.IdsvDirectionStride] = new AnimationEndInfo { Kind = anim.End, ChainTargetAnimationId = anim.ChainTo };
             }
         }
 
@@ -138,7 +138,7 @@ internal sealed class JumpNpcRig
             npc.Flags |= EntityFlags.Gravity;
         }
 
-        AlundraEntitySpawnFactory.SetEntityDimensions(npc, -10, -7, 0, 20, 14, 32);
+        EntitySpawnFactory.SetEntityDimensions(npc, -10, -7, 0, 20, 14, 32);
         npc.PosX = 200 << 16;
         npc.PosY = 100 << 16;
         npc.PosZ = 0;
@@ -156,7 +156,7 @@ internal sealed class JumpNpcRig
         npc.ResyncControllerFromFlags();
         host.All.Add(npc);
         world.AddEntity(entity);
-        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+        EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
 
         var rig = new JumpNpcRig { World = world, Host = host, Npc = npc };
         rig.Update(); // the settling update.
@@ -313,7 +313,7 @@ internal sealed class JumpHeroRig
         }
 
         var (entity, hero) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(x, y, z), host);
-        AlundraEntitySpawnFactory.SetEntityDimensions(hero, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
+        EntitySpawnFactory.SetEntityDimensions(hero, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
         hero.MapGravity = MapGravity;
         hero.MapMaxFallSpeed = MapMaxFallSpeed;
         hero.MapGravityRaw = 128;
@@ -353,7 +353,7 @@ internal sealed class JumpHeroRig
 /// <see cref="AnimatedSpriteComponent"/> with no animation, so its logical clock never runs and no Chain ever fires. <see cref="Install"/> gives it one synthetic animation per
 /// (animation, direction) of the swings and of the states around them, of the length of the binary in logic ticks (<c>round(DurationSeconds x 50)</c> is the tick of the end), an
 /// <see cref="AnimationEndInfo"/> chain per (animation, direction) like the export's, the animation sets (speed, acceleration, sound) of the table of
-/// <c>docs/plan-e20-annexe/e20-b/faits-binaire-dll.md</c> section 3, and the bridge of <see cref="AlundraEntitySpawnFactory.SubscribeAnimationEndBridge"/>. The lengths are the binary's
+/// <c>docs/plan-e20-annexe/e20-b/faits-binaire-dll.md</c> section 3, and the bridge of <see cref="EntitySpawnFactory.SubscribeAnimationEndBridge"/>. The lengths are the binary's
 /// frame-delay sums, which the exported <c>.anim2d</c> files reproduce (checked offline for every id and direction of the table, 0 mismatches).
 /// </summary>
 internal static class HeroAttackClock
@@ -412,18 +412,18 @@ internal static class HeroAttackClock
                 sprite.AddAnimation(Make(entry.Id, AnimationTables.DirectionNames[direction], ticks * 0.02f, once ? AnimationType.Once : AnimationType.Loop));
                 if (entry.Hold)
                 {
-                    endTable[entry.Id * AlundraEntitySpawnFactory.IdsvDirectionStride + direction] = new AnimationEndInfo { Kind = AnimationEndKind.Hold };
+                    endTable[entry.Id * EntitySpawnFactory.IdsvDirectionStride + direction] = new AnimationEndInfo { Kind = AnimationEndKind.Hold };
                 }
                 else if (once)
                 {
-                    endTable[entry.Id * AlundraEntitySpawnFactory.IdsvDirectionStride + direction] = new AnimationEndInfo { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = entry.ChainTo };
+                    endTable[entry.Id * EntitySpawnFactory.IdsvDirectionStride + direction] = new AnimationEndInfo { Kind = AnimationEndKind.Chain, ChainTargetAnimationId = entry.ChainTo };
                 }
             }
         }
 
         hero.AnimSetsByAnim = sets;
         hero.AnimationEndByAnimDirection = endTable;
-        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+        EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
     }
 }
 

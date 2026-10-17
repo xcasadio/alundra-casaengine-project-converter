@@ -237,7 +237,7 @@ public sealed class AlundraHitPassTests
         target.Hp = record.MaxHp;
         target.HpMax = record.MaxHp;
         target.CurrentAttack = null;
-        AlundraEntitySpawnFactory.SetEntityDimensions(target, -12, -8, 0, 24, 16, 16);
+        EntitySpawnFactory.SetEntityDimensions(target, -12, -8, 0, 24, 16, 16);
 
         var samples = arena.Run(trace, 1);
         AssertEqualToOracle(Compare(trace, samples, ignore: (_, entity, field) =>

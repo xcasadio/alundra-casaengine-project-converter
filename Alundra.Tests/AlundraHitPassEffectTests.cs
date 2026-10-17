@@ -59,7 +59,7 @@ public sealed class AlundraHitPassEffectTests
             Proxy.PosX = 100 << 16;
             Proxy.PosY = 100 << 16;
             Proxy.PosZ = 0;
-            AlundraEntitySpawnFactory.SetEntityDimensions(Proxy, 0, 0, 0, 8, 8, 8);
+            EntitySpawnFactory.SetEntityDimensions(Proxy, 0, 0, 0, 8, 8, 8);
             Proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry> { [0] = new AnimSetEntry { Anim = 0, Acceleration = 0 } };
             Proxy.BalanceRecord = record;
             Proxy.LoadAnimationSwitch(0, 0, fromClock: false);

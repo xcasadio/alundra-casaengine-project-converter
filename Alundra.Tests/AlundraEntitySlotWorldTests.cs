@@ -39,7 +39,7 @@ public sealed class AlundraEntitySlotWorldTests
 
     private static int WarningsWith(ArcRun arc, string text) => arc.Log!.Warnings.Count(w => w.Contains(text, StringComparison.Ordinal));
 
-    private static int FreeSlots(ArcRun arc) => AlundraEntitySlotTable.SlotCount - arc.Proxy.SlotTable.HeldCount;
+    private static int FreeSlots(ArcRun arc) => EntitySlotTable.SlotCount - arc.Proxy.SlotTable.HeldCount;
 
     private static void Recycle(ArcRun arc, params AlundraEntityScriptProxy[] entities)
     {
@@ -176,7 +176,7 @@ public sealed class AlundraEntitySlotWorldTests
             Assert.NotNull(TrySpawn(arc));
         }
 
-        Assert.Equal(AlundraEntitySlotTable.SlotCount, arc.Proxy.SlotTable.HeldCount);
+        Assert.Equal(EntitySlotTable.SlotCount, arc.Proxy.SlotTable.HeldCount);
         Assert.Equal(63, arc.Entities.Max(e => e.Slot));
         var count = arc.Entities.Count;
         var lines = WarningsWith(arc, "SpawnEntityBySpriteIndex");
@@ -185,7 +185,7 @@ public sealed class AlundraEntitySlotWorldTests
         Assert.Equal(count, arc.Entities.Count);
         Assert.Equal(lines + 2, WarningsWith(arc, "SpawnEntityBySpriteIndex"));
         Assert.Contains("slots is full", arc.Log!.Warnings.Last(), StringComparison.Ordinal);
-        Assert.Equal(AlundraEntitySlotTable.SlotCount, arc.Proxy.SlotTable.HeldCount); // a refusal takes nothing.
+        Assert.Equal(EntitySlotTable.SlotCount, arc.Proxy.SlotTable.HeldCount); // a refusal takes nothing.
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public sealed class AlundraEntitySlotWorldTests
 
         AlundraWorldProxy.SlotTableFactoryForTests = () =>
         {
-            var table = new AlundraEntitySlotTable();
+            var table = new EntitySlotTable();
             for (var i = 0; i < 61; i++)
             {
                 table.Allocate(); // slots 1 to 61 held: two free, 62 and 63.

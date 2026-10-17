@@ -61,7 +61,7 @@ public readonly struct SpriteRecordHeader
     /// entries, via <c>SpriteRecordJson.ToHeader</c>) or null (a <see cref="FakeSpriteRecordCatalog"/>
     /// entry built without it) when the source record had no entries, or the file predates this field
     /// (backward-tolerant: unknown/missing JSON fields default here, same as every other header
-    /// field) - <see cref="AlundraEntitySpawnFactory.BuildIdsvByAnimDirection"/> treats both the same way.
+    /// field) - <see cref="EntitySpawnFactory.BuildIdsvByAnimDirection"/> treats both the same way.
     /// </summary>
     public IReadOnlyList<AnimDirIdsv>? IdsvAnimDirs { get; init; }
 

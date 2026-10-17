@@ -78,7 +78,7 @@ public sealed class AlundraHitPassRulesTests
             Proxy.PosY = y << 16;
             Proxy.PosZ = z << 16;
             var size = body ?? (8, 8, 8);
-            AlundraEntitySpawnFactory.SetEntityDimensions(Proxy, 0, 0, 0, size.W, size.D, size.H);
+            EntitySpawnFactory.SetEntityDimensions(Proxy, 0, 0, 0, size.W, size.D, size.H);
             Proxy.AnimSetsByAnim = new Dictionary<int, AnimSetEntry> { [0] = new AnimSetEntry { Anim = 0, Acceleration = animationByte } };
             Proxy.BalanceRecord = record;
             Proxy.LoadAnimationSwitch(0, 0, fromClock: false);
@@ -241,7 +241,7 @@ public sealed class AlundraHitPassRulesTests
         // The box at offset 20, the body at mod -4: the box (HitBox = Pos + offset) meets the body (ModdedPos = Pos + Mod) only when the positions line up that way.
         var attacker = new Actor(HitsA, 100, 100, 0, SwordRecord(), (20, 0, 0, 8, 8, 8));
         var target = new Actor(ClassA, 100, 100, 0, NeutralRecord());
-        AlundraEntitySpawnFactory.SetEntityDimensions(target.Proxy, -4, 0, 0, 8, 8, 8);
+        EntitySpawnFactory.SetEntityDimensions(target.Proxy, -4, 0, 0, 8, 8, 8);
         target.Proxy.PosX = 124 << 16; // ModdedPos 120 .. 128 against HitBox 120 .. 128.
         Run(attacker, target);
         Assert.Equal(1, attacker.Proxy.HitCounter);
@@ -249,7 +249,7 @@ public sealed class AlundraHitPassRulesTests
 
         var late = new Actor(HitsA, 100, 100, 0, SwordRecord(), (20, 0, 0, 8, 8, 8));
         var target2 = new Actor(ClassA, 100, 100, 0, NeutralRecord());
-        AlundraEntitySpawnFactory.SetEntityDimensions(target2.Proxy, -4, 0, 0, 8, 8, 8);
+        EntitySpawnFactory.SetEntityDimensions(target2.Proxy, -4, 0, 0, 8, 8, 8);
         target2.Proxy.PosX = (124 << 16) + (9 << 16); // the body starts one pixel after the box ends.
         Run(late, target2);
         Assert.Equal(0, late.Proxy.HitCounter);

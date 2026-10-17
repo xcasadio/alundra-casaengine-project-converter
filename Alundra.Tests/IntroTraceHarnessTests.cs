@@ -743,7 +743,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             var recordIndex = int.Parse(cp.GetValueOrDefault("Index", "0"));
             _entityRecordsByIndex[recordIndex] = record;
 
-            if (!AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: false, _player.TileX, _player.TileY, out _))
+            if (!EntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: false, _player.TileX, _player.TileY, out _))
             {
                 continue;
             }
@@ -763,7 +763,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             // Controller/RenderProjection stay null (the bare entity carries no components), which is
             // exactly the "bare-fallback" case AlundraScriptedMotion.RunOneKinematicTick's own
             // Controller-null branch and RunVerticalPhysicsPass below are built to drive directly.
-            var entity = AlundraEntitySpawnFactory.CreateBareEntityFromRecord(record, _catalog, tileMapData: tileMapData);
+            var entity = EntitySpawnFactory.CreateBareEntityFromRecord(record, _catalog, tileMapData: tileMapData);
             var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy!;
             proxy.ScriptHost = this; // ApplySpawnInitialization already set proxy.LogicContextEntity = entity
 
@@ -1218,7 +1218,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             return null;
         }
 
-        if (!AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: true, out _))
+        if (!EntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: true, out _))
         {
             return null;
         }
@@ -1227,7 +1227,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         // load-time spawn loop's own doc, above (BuildInitialState), on why. Block 18 (record 18) is
         // spawned this way (opcode 0x2D) and needs its real header box for RunVerticalPhysicsPass's own
         // ground probe, plus a proxy whose CurrentAnimationId actually advances via SyncAnimation.
-        var entity = AlundraEntitySpawnFactory.CreateBareEntityFromRecord(record, _catalog, tileMapData: _tileMapData);
+        var entity = EntitySpawnFactory.CreateBareEntityFromRecord(record, _catalog, tileMapData: _tileMapData);
         var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy!;
         proxy.ScriptHost = this; // ApplySpawnInitialization already set proxy.LogicContextEntity = entity
 

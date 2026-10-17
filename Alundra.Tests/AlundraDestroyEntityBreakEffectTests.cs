@@ -102,7 +102,7 @@ public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
     {
         var world = World();
         var victim = Victim();
-        var key = AlundraEntityDepthKey.Compute(victim);
+        var key = EntityDepthKey.Compute(victim);
 
         world.DestroyEntity(victim, -1);
         RunFrame(world, 0);
@@ -124,7 +124,7 @@ public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
     {
         var world = World();
         var victim = Victim();
-        var key = AlundraEntityDepthKey.Compute(victim);
+        var key = EntityDepthKey.Compute(victim);
 
         world.DestroyEntity(victim, -1);
         RunFrame(world, 1);
@@ -151,7 +151,7 @@ public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
         var other = Victim();
         world.DestroyEntity(other, -1);
         // The entity is recycled and moved before the frame runs, as in a frame of several ticks (RecycleDestroyedEntities).
-        var key = AlundraEntityDepthKey.Compute(other);
+        var key = EntityDepthKey.Compute(other);
         other.Status = EntityStatus.Destroyed;
         other.PosX = 0x7000000;
         other.PosY = 0x7000000;

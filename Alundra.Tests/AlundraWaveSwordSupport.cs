@@ -176,7 +176,7 @@ internal sealed class WaveRun : IDisposable
         {
             if (Born is null)
             {
-                var lowest = Enumerable.Range(0, AlundraEntitySlotTable.SlotCount).FirstOrDefault(i => !Arena.Arc.Proxy.SlotTable.IsHeld(i), -1);
+                var lowest = Enumerable.Range(0, EntitySlotTable.SlotCount).FirstOrDefault(i => !Arena.Arc.Proxy.SlotTable.IsHeld(i), -1);
                 Born = Find();
                 if (Born is not null)
                 {

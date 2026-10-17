@@ -353,7 +353,7 @@ public sealed class AlundraTickStructureTests : IDisposable
             rig.Frame(dt);
 
             // The NPC: the root shows the position after the last tick of THIS frame and the animation is resolved to the last target of this frame.
-            var expected = AlundraEntitySpawnFactory.ResolveLogicalPosition(rig.Npc.PosX, rig.Npc.PosY, rig.Npc.PosZ);
+            var expected = EntitySpawnFactory.ResolveLogicalPosition(rig.Npc.PosX, rig.Npc.PosY, rig.Npc.PosZ);
             Assert.Equal(expected.X, rig.NpcEntity.RootComponent!.LocalTransform.Position.X);
             Assert.Equal((uint)(100 + counter), rig.Npc.TargetAnimationId);
             Assert.Equal(rig.Npc.TargetAnimationId, rig.Npc.CurrentAnimationId);

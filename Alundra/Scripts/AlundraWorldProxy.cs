@@ -66,7 +66,7 @@ namespace Alundra.Scripts;
 /// <see cref="EntityRecordMapper"/>, whose logical position fields (<c>PosX</c>/<c>PosY</c>/<c>PosZ</c>)
 /// this proxy then converts into the spawned entity's <c>RootComponent.LocalTransform.Position</c> - now
 /// the entity's LOGICAL pose (E3.a, docs/plan-e3-collisions.md decision E3-1), not a render pose - via
-/// <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/> - see <see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/>. A
+/// <see cref="EntitySpawnFactory.ResolveLogicalPosition"/> - see <see cref="EntitySpawnFactory.CreateEntityFromPrefab"/>. A
 /// <c>RenderProjectionComponent</c> child of that root (<c>SpriteWriter.WriteEntityPrefab</c>) derives
 /// the render pose from it every update.
 ///
@@ -167,16 +167,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// E20.e0a2 (ADR-0064): the slots of this world's entities, one table per instance (a map has its own proxy, so a new map starts empty, slot 0 held for the hero).
     /// </summary>
-    private readonly AlundraEntitySlotTable _slots = SlotTableFactoryForTests?.Invoke() ?? new();
+    private readonly EntitySlotTable _slots = SlotTableFactoryForTests?.Invoke() ?? new();
 
     /// <summary>Test seam, inert in production (null): called with the path ("load", "record", "sprite-index") and the entity right after its addition to the world and to the list, to make the error path of the creation reachable.</summary>
     internal static Action<string, Entity>? CreationFaultHookForTests;
 
     /// <summary>Test seam, inert in production (null): builds the slot table of a NEW proxy, so a test can start a world with slots already held (the full-table refusal at the map load).</summary>
-    internal static Func<AlundraEntitySlotTable>? SlotTableFactoryForTests;
+    internal static Func<EntitySlotTable>? SlotTableFactoryForTests;
 
     /// <summary>The table of the slots, for the tests.</summary>
-    internal AlundraEntitySlotTable SlotTable => _slots;
+    internal EntitySlotTable SlotTable => _slots;
 
     /// <summary>The highest slot of the entries of <see cref="_spawnedEntities"/> that have one (-1 when none does).</summary>
     private int HighestLiveSlot()
@@ -284,7 +284,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// (<c>GameEngine.SpawnEntity</c>'s <c>entityId</c> parameter) looks records up by
     /// (<c>GameEngine.GetEntityRecord</c>, GameEngine.cs:2125-2144). Populated once in
     /// <see cref="InitializeWithWorld"/> from every record of the layer, including ones
-    /// <see cref="AlundraEntitySpawnFactory.ShouldSpawnRecord"/> would reject for the map-load pass - 0x2D applies its own,
+    /// <see cref="EntitySpawnFactory.ShouldSpawnRecord"/> would reject for the map-load pass - 0x2D applies its own,
     /// looser gate (<c>notCheckSpawnZone = 1</c>, see <see cref="SpawnEntityByRecordId"/>) so a record
     /// this world did not spawn at load time can still become spawnable later.
     /// </summary>
@@ -575,8 +575,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
     /// same instance <see cref="AlundraCellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
-    /// cached so every NPC spawn (<see cref="AlundraEntitySpawnFactory.CreateEntityFromRecord"/> -&gt; <see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/>/
-    /// <see cref="AlundraEntitySpawnFactory.CreateBareEntityFromRecord"/> -&gt; <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>, both the
+    /// cached so every NPC spawn (<see cref="EntitySpawnFactory.CreateEntityFromRecord"/> -&gt; <see cref="EntitySpawnFactory.CreateEntityFromPrefab"/>/
+    /// <see cref="EntitySpawnFactory.CreateBareEntityFromRecord"/> -&gt; <see cref="EntitySpawnFactory.ApplySpawnInitialization"/>, both the
     /// map-load loop below and the dynamic-spawn opcode 0x2D's own <see cref="SpawnEntityByRecordId"/>)
     /// can resolve THIS map's own Gravity/ZViscosity (E4.b, docs/plan-e4-deplacement-scripte.md "Spawn")
     /// without re-threading a <see cref="TileMapData"/> parameter through every caller of this world's own
@@ -1047,7 +1047,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             // Indexed for the whole world's lifetime regardless of whether this record spawns right now
             // (see _entityRecordsByIndex's own doc) - 0x2D's looser gate can still spawn it later.
-            if (AlundraEntitySpawnFactory.TryGetRecordInt(record, "Index", out var recordIndex))
+            if (EntitySpawnFactory.TryGetRecordInt(record, "Index", out var recordIndex))
             {
                 _entityRecordsByIndex[recordIndex] = record;
             }
@@ -1056,11 +1056,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             string skipReason;
             if (PlayerEntity != null)
             {
-                shouldSpawn = AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: false, PlayerEntity.TileX, PlayerEntity.TileY, out skipReason);
+                shouldSpawn = EntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: false, PlayerEntity.TileX, PlayerEntity.TileY, out skipReason);
             }
             else
             {
-                shouldSpawn = AlundraEntitySpawnFactory.ShouldSpawnRecord(record, out skipReason);
+                shouldSpawn = EntitySpawnFactory.ShouldSpawnRecord(record, out skipReason);
             }
 
             if (!shouldSpawn)
@@ -1077,7 +1077,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
                 skippedCount++;
                 ReportSlot(-1);
                 Logs.WriteWarning(
-                    $"AlundraWorldProxy: record '{record.Name}' not spawned in world '{world.Name}': the table of the {AlundraEntitySlotTable.SlotCount} entity slots is full; skipping.");
+                    $"AlundraWorldProxy: record '{record.Name}' not spawned in world '{world.Name}': the table of the {EntitySlotTable.SlotCount} entity slots is full; skipping.");
                 continue;
             }
 
@@ -1086,7 +1086,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             try
             {
                 // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
-                entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(
+                entity = EntitySpawnFactory.CreateEntityFromRecord(
                     record, guid => world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
                     tileMapData: _tileMapData, collisionField: CollisionField);
                 var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
@@ -1908,7 +1908,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <see cref="CharacterControllerSettings.Gravity"/>/<see cref="CharacterControllerSettings.MaxFallSpeed"/>
     /// expect - E3.d's own formula (<c>AdoptPlayerPawn</c>'s original override block): <c>mapGravity*256/
     /// 65536*2500</c> / <c>mapZViscosity*256/65536*50</c> (1250/800 on map 389). Shared by
-    /// <see cref="AdoptPlayerPawn"/> (hero, unconditional) and <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/> (NPC,
+    /// <see cref="AdoptPlayerPawn"/> (hero, unconditional) and <see cref="EntitySpawnFactory.ApplySpawnInitialization"/> (NPC,
     /// gated on the Gravity flag bit via <see cref="AlundraEntityScriptProxy.ApplyGravitySettingsToController"/>)
     /// so the formula itself lives in exactly one place. Float arithmetic throughout: an integer
     /// <c>128*256/65536</c> truncates to 0 before the final <c>*2500</c> ever runs.
@@ -1999,15 +1999,15 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         proxy.SpriteProgramIndexes[ScriptHelper.ProgramDTouch] = header.ProgramTouch;
         proxy.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] = header.ProgramDeactivate;
         proxy.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = header.ProgramInteract;
-        proxy.IdsvByAnimDirection = AlundraEntitySpawnFactory.BuildIdsvByAnimDirection(header.IdsvAnimDirs);
-        proxy.AnimationEndByAnimDirection = AlundraEntitySpawnFactory.BuildAnimationEndByAnimDirection(header.IdsvAnimDirs);
+        proxy.IdsvByAnimDirection = EntitySpawnFactory.BuildIdsvByAnimDirection(header.IdsvAnimDirs);
+        proxy.AnimationEndByAnimDirection = EntitySpawnFactory.BuildAnimationEndByAnimDirection(header.IdsvAnimDirs);
         proxy.AnimSetsByAnim = header.AnimSets;
         // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): the hero's own logical
         // Mod*/Width/Height/Depth, same port (SetEntityDimensions, EntityManager.cs:160-199) every
         // record-spawned NPC already gets from ApplySpawnInitialization - needed so the hero counts as
         // a valid EntitySupport candidate/target (e.g. a future entity standing on the hero, or the
         // hero itself queried by EntitySearchService) with real dimensions instead of all-zero ones.
-        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
+        EntitySpawnFactory.SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
     }
 
     /// <summary>
@@ -2043,7 +2043,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     ///
     /// Deviation note: the engine already positioned the pawn's transform at the <c>PlayerStart</c>
     /// component (logical pose (804, 952, 0) on map 389, equal to <c>ResolveLogicalPosition</c> of this same
-    /// New Game tile) - this method's own <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/> call below OVERWRITES that
+    /// New Game tile) - this method's own <see cref="EntitySpawnFactory.ResolveLogicalPosition"/> call below OVERWRITES that
     /// with the logical position instead, which is harmless (same result) but makes explicit that
     /// <c>AlundraEntityScriptProxy</c>'s logical PosX/PosY/PosZ, not the engine's PlayerStart transform, is
     /// the field this proxy's own <see cref="FrameSyncPasses.SyncTransform"/> re-derives from every frame going forward
@@ -2242,7 +2242,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // integer 128*256/65536 truncates to 0 before the final *2500 ever runs).
         if (proxy.Controller != null)
         {
-            var (mapGravity, mapMaxFallSpeed, mapGravityRaw, mapZViscosityRaw) = AlundraEntitySpawnFactory.ResolveMapGravitySettings(tileMapData);
+            var (mapGravity, mapMaxFallSpeed, mapGravityRaw, mapZViscosityRaw) = EntitySpawnFactory.ResolveMapGravitySettings(tileMapData);
             // E4 (docs/plan-echelles-chiffrage.md É4): stash the resolved values on the proxy itself, not
             // just on the live Controller.Settings below - AlundraPlayerManager's own climbing state
             // machine needs a RESERVE to restore the hero's engine-driven gravity to once a climb ends
@@ -2270,13 +2270,13 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
                 + "movement (no gravity, no field collision).");
         }
 
-        AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+        EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
 
         // Overwrites the engine's own PlayerStart-derived transform - see this method's own doc
         // ("Deviation note") for why that is intentional, not redundant.
         if (entity.RootComponent != null)
         {
-            entity.RootComponent.LocalTransform.Position = AlundraEntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+            entity.RootComponent.LocalTransform.Position = EntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
 
             // The pawn is already in world.Entities by the time this method runs (see this method's
             // own doc), so - unlike CreateEntityFromPrefab's spawn-time call - this re-projection is
@@ -2334,17 +2334,17 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         foreach (var record in mapEventsLayer.Objects)
         {
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "EventCodesBIndex", out var programBMap);
+            EntitySpawnFactory.TryGetRecordInt(record, "EventCodesBIndex", out var programBMap);
             if (programBMap == 0)
             {
                 continue;
             }
 
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "Index", out var id);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "X1", out var x1);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "Y1", out var y1);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "X2", out var x2);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "Y2", out var y2);
+            EntitySpawnFactory.TryGetRecordInt(record, "Index", out var id);
+            EntitySpawnFactory.TryGetRecordInt(record, "X1", out var x1);
+            EntitySpawnFactory.TryGetRecordInt(record, "Y1", out var y1);
+            EntitySpawnFactory.TryGetRecordInt(record, "X2", out var x2);
+            EntitySpawnFactory.TryGetRecordInt(record, "Y2", out var y2);
 
             _mapEvents.Add(new MapEvent
             {
@@ -2383,16 +2383,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         foreach (var record in portalsLayer.Objects)
         {
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "Index", out var index);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "X1", out var x1);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "Y1", out var y1);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "X2", out var x2);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "Y2", out var y2);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "DestMapId", out var destMapId);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "DestTileX", out var destTileX);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "DestTileY", out var destTileY);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "ZLevel", out var zLevel);
-            AlundraEntitySpawnFactory.TryGetRecordInt(record, "Flags", out var flags);
+            EntitySpawnFactory.TryGetRecordInt(record, "Index", out var index);
+            EntitySpawnFactory.TryGetRecordInt(record, "X1", out var x1);
+            EntitySpawnFactory.TryGetRecordInt(record, "Y1", out var y1);
+            EntitySpawnFactory.TryGetRecordInt(record, "X2", out var x2);
+            EntitySpawnFactory.TryGetRecordInt(record, "Y2", out var y2);
+            EntitySpawnFactory.TryGetRecordInt(record, "DestMapId", out var destMapId);
+            EntitySpawnFactory.TryGetRecordInt(record, "DestTileX", out var destTileX);
+            EntitySpawnFactory.TryGetRecordInt(record, "DestTileY", out var destTileY);
+            EntitySpawnFactory.TryGetRecordInt(record, "ZLevel", out var zLevel);
+            EntitySpawnFactory.TryGetRecordInt(record, "Flags", out var flags);
 
             _portals.Add(new AlundraPortalRecord
             {
@@ -3360,8 +3360,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <c>IsEnabled</c> gate applies (see <see cref="ShouldSpawnRecord(TileMapObjectData,bool,out string)"/>'s
     /// own doc); the record lookup (<c>GameEngine.GetEntityRecord</c>) is <see cref="_entityRecordsByIndex"/>.
     /// Shares the exact same build path as the map-load spawn loop in <see cref="InitializeWithWorld"/>
-    /// (<see cref="AlundraEntitySpawnFactory.CreateEntityFromRecord"/> -&gt; <see cref="AlundraEntitySpawnFactory.ApplyRecord"/> -&gt;
-    /// <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>), with <paramref name="logicEntity"/>'s own backing entity
+    /// (<see cref="EntitySpawnFactory.CreateEntityFromRecord"/> -&gt; <see cref="EntitySpawnFactory.ApplyRecord"/> -&gt;
+    /// <see cref="EntitySpawnFactory.ApplySpawnInitialization"/>), with <paramref name="logicEntity"/>'s own backing entity
     /// passed down as the new entity's <c>ParentEntity</c> - exactly like <c>EntityManager.InitializeEntity</c>
     /// does for its <c>parentEntity</c> argument. The spawned entity joins <see cref="_spawnedEntities"/>
     /// immediately, so it is visible to any further search this same script call issues. E20.e0a4: the three opcodes pose
@@ -3387,7 +3387,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             return null;
         }
 
-        if (!AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: true, out var skipReason))
+        if (!EntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: true, out var skipReason))
         {
             Logs.WriteDebug(
                 $"AlundraWorldProxy: SpawnEntityByRecordId({entityRecordId}) - record '{record.Name}' "
@@ -3401,7 +3401,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             ReportSlot(-1);
             Logs.WriteWarning(
-                $"AlundraWorldProxy: SpawnEntityByRecordId({entityRecordId}) refused: the table of the {AlundraEntitySlotTable.SlotCount} entity slots is full; nothing spawned.");
+                $"AlundraWorldProxy: SpawnEntityByRecordId({entityRecordId}) refused: the table of the {EntitySlotTable.SlotCount} entity slots is full; nothing spawned.");
             return null;
         }
 
@@ -3410,7 +3410,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         try
         {
             // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
-            entity = AlundraEntitySpawnFactory.CreateEntityFromRecord(
+            entity = EntitySpawnFactory.CreateEntityFromRecord(
                 record, guid => _world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
                 parentEntity: logicEntity.LogicContextEntity, tileMapData: _tileMapData, collisionField: CollisionField);
             var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
@@ -3458,7 +3458,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>The low byte of the <c>Contents</c> of an entity record (the binary reads the byte <c>+0x12</c> of the record), 0 when the record carries none.</summary>
     private static int RecordContentsByte(TileMapObjectData record)
-        => AlundraEntitySpawnFactory.TryGetRecordInt(record, "Contents", out var contents) ? contents & 0xFF : 0;
+        => EntitySpawnFactory.TryGetRecordInt(record, "Contents", out var contents) ? contents & 0xFF : 0;
 
     /// <summary>
     /// E20.e0b2 (D-E0B-4, D-E0B-6, docs/plan-e20-heros.md section 1.17.2): the loot roll of a creation (<c>0x80032A40</c>, the last action of <c>InitializeEntity</c>), called ONCE per creation as the last statement of the <c>try</c> of each of the
@@ -3481,7 +3481,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, ADR-0063): <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, the apparition of <c>SpawnWarpEntity</c> (<c>0x80039F58</c>) without a record. In the order of the
     /// binary: the page lookup (<c>0x80039B28</c>: an index outside 0 to 255, or one the table of the page does not hold, is refused before anything is touched), then the creation of
-    /// <see cref="AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex"/> with the Z of the caller plus the raw unit of the binary (D-E0A-1, here and nowhere else), then what the record path does after its factory: the script
+    /// <see cref="EntitySpawnFactory.CreateEntityFromSpriteIndex"/> with the Z of the caller plus the raw unit of the binary (D-E0A-1, here and nowhere else), then what the record path does after its factory: the script
     /// host, the balance sheet, the addition to the world and to <see cref="_spawnedEntities"/> at the place of its slot (E20.e0a2), the sound of the animation 0, the push to the root. The prefab is read fresh for every call
     /// (engine ADR-0037). The entity ticks from the frame after its creation, as every spawn does until E20.e0a3.
     /// </summary>
@@ -3529,7 +3529,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         if (slot < 0)
         {
             ReportSlot(-1);
-            return Refuse($"the table of the {AlundraEntitySlotTable.SlotCount} entity slots is full");
+            return Refuse($"the table of the {EntitySlotTable.SlotCount} entity slots is full");
         }
 
         Entity? entity = null;
@@ -3545,7 +3545,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             }
 
             // D-E0A-1: the Z of a DLL entity is the binary's minus one raw unit (ADR-0026); the binary's argument has it, and the creation subtracts ModZ from the binary's argument.
-            entity = AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex(
+            entity = EntitySpawnFactory.CreateEntityFromSpriteIndex(
                 prefab, header, isMapPage, index, parent?.LogicContextEntity, x, y, unchecked(z + 1), direction, CollisionField, _tileMapData);
             var spawnedProxy = entity.GameplayProxy as AlundraEntityScriptProxy;
             if (spawnedProxy != null)

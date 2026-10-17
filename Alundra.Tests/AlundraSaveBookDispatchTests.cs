@@ -228,9 +228,9 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
         var prefabAssetId = Guid.NewGuid();
         var record = Record(prefabAssetId, spriteTableIndex, spriteDirection);
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
 
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefabAssetId, BookHeader()));
+        EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefabAssetId, BookHeader()));
 
         Assert.Equal(expected, proxy.SpriteType);
     }
@@ -240,9 +240,9 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
     {
         var record = Record(Guid.NewGuid(), "237", "0");
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplyRecord(record, proxy);
 
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog());
+        EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog());
 
         Assert.Equal(-1, proxy.SpriteType);
     }
@@ -265,8 +265,8 @@ public sealed class AlundraSaveBookDispatchTests : IDisposable
         var prefabAssetId = Guid.NewGuid();
         var record = Record(prefabAssetId, "237", "0");
         var proxy = new AlundraEntityScriptProxy();
-        AlundraEntitySpawnFactory.ApplyRecord(record, proxy);
-        AlundraEntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefabAssetId, BookHeader()));
+        EntitySpawnFactory.ApplyRecord(record, proxy);
+        EntitySpawnFactory.ApplySpawnInitialization(record, new Entity(), proxy, new FakeSpriteRecordCatalog().Add(prefabAssetId, BookHeader()));
         proxy.EventTrigger = ScriptHelper.ProgramCTick;
         var runner = new AlundraEventProgramRunner(null, GameState.Instance);
 

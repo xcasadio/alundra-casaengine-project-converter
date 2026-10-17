@@ -445,7 +445,7 @@ public class AlundraGroundSlopeTests
         // Production footprint (F4 fix) - AlundraEntitySpawnFactory.SetEntityDimensions is the SAME method the
         // real AdoptPlayerPawn calls with the hero's own real header (SizeX=21, SizeY=15, OffsetX=-10,
         // OffsetY=-7, OffsetZ=0); SizeZ=32 matches the CollisionComponent Box HeroWorldFixture builds.
-        AlundraEntitySpawnFactory.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
+        EntitySpawnFactory.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
 
         // One real production frame: CharacterMotionSystem runs first (root stays put - already exactly
         // on real ground, no pad input), then AlundraEntityScriptProxy.Update's IsPlayer branch runs

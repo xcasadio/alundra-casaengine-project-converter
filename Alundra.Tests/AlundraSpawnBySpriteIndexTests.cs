@@ -198,7 +198,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     {
         Assert.True(Catalog.Value.TryGetPrefab(isMapPage, index, out var prefab));
         Assert.True(Catalog.Value.TryGet(prefab, out var header));
-        return AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex(null, header, isMapPage, index, parent, xPixels << 16, yPixels << 16, zRaw, direction, field);
+        return EntitySpawnFactory.CreateEntityFromSpriteIndex(null, header, isMapPage, index, parent, xPixels << 16, yPixels << 16, zRaw, direction, field);
     }
 
     [Fact]

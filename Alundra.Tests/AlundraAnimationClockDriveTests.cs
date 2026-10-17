@@ -169,7 +169,7 @@ public sealed class AlundraAnimationClockDriveTests
                 Sprite.AddAnimation(Make(anim));
                 if (anim.End != AnimationEndKind.Loop)
                 {
-                    endTable[(int)anim.Id * AlundraEntitySpawnFactory.IdsvDirectionStride] =
+                    endTable[(int)anim.Id * EntitySpawnFactory.IdsvDirectionStride] =
                         new AnimationEndInfo { Kind = anim.End, ChainTargetAnimationId = anim.ChainTo };
                 }
             }
@@ -187,7 +187,7 @@ public sealed class AlundraAnimationClockDriveTests
             Proxy.ProgramIndexes[ScriptHelper.ProgramBMap] = 1;
             Proxy.TargetAnimationId = initialAnimation;
             Proxy.CurrentAnimationId = ~initialAnimation;
-            AlundraEntitySpawnFactory.SubscribeAnimationEndBridge(Entity);
+            EntitySpawnFactory.SubscribeAnimationEndBridge(Entity);
             _entities.Add(Entity);
         }
 

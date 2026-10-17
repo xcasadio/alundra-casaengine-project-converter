@@ -20,12 +20,12 @@ public sealed class AlundraEntitySlotTableTests
         return document.RootElement.GetProperty("table").GetProperty(line).Clone();
     }
 
-    private static int[] Take(AlundraEntitySlotTable table, int count) => Enumerable.Range(0, count).Select(_ => table.Allocate()).ToArray();
+    private static int[] Take(EntitySlotTable table, int count) => Enumerable.Range(0, count).Select(_ => table.Allocate()).ToArray();
 
     [Fact]
     public void V5_five_FiveApparitionsTakeSlots1To5_AndTheTableHoldsTheHeroPlusFive()
     {
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         Assert.Equal(V5("five").GetProperty("slots").EnumerateArray().Select(e => e.GetInt32()).ToArray(), Take(table, 5));
         Assert.Equal(V5("five").GetProperty("count_word").GetInt32() + 1, table.HeldCount); // the count word of the binary is the highest slot; the hero is the extra held one.
     }
@@ -33,7 +33,7 @@ public sealed class AlundraEntitySlotTableTests
     [Fact]
     public void V5_busy_status4_ASlotOfADestroyedEntityIsBusyUntilItIsReleased_TheNextApparitionGoesAbove()
     {
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         Take(table, 5); // slot 2 now holds an entity of the state 4 (FlagToDestroy): nobody released it.
         Assert.Equal(V5("busy_status4").GetProperty("slot_of_spawn_before_pass").GetInt32(), table.Allocate());
         Assert.True(table.IsHeld(2));
@@ -42,7 +42,7 @@ public sealed class AlundraEntitySlotTableTests
     [Fact]
     public void V5_reuse_after_pass_AfterTheSlotIsReleased_TheNextApparitionTakesIt()
     {
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         Take(table, 6);
         table.Release(2);
         Assert.False(table.IsHeld(2));
@@ -53,7 +53,7 @@ public sealed class AlundraEntitySlotTableTests
     public void V5_full_TheHeroPlus63ApparitionsFillTheTable_TheSixtyFourthAndSixtyFifthAreRefused()
     {
         var full = V5("full");
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         var slots = Take(table, full.GetProperty("accepted").GetInt32());
         Assert.Equal(full.GetProperty("slots_first_last").EnumerateArray().Select(e => e.GetInt32()).ToArray(), new[] { slots[0], slots[^1] });
         Assert.Equal(Enumerable.Range(1, 63), slots);
@@ -66,7 +66,7 @@ public sealed class AlundraEntitySlotTableTests
     [Fact]
     public void V5_lowest_first_AfterReleasing40_9_And21_TheNextThreeApparitionsTakeThemLowestFirst()
     {
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         Take(table, 63);
         foreach (var slot in new[] { 40, 9, 21 })
         {
@@ -80,7 +80,7 @@ public sealed class AlundraEntitySlotTableTests
     public void V5_recycled_loop2_AnApparitionAfterTheSlotPassOfTheSameTick_TakesTheRecycledSlot_ThenTheNextOnes()
     {
         var line = V5("recycled_loop2");
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         var before = Take(table, 5);
         Assert.Equal(line.GetProperty("slots_before").EnumerateArray().Select(e => e.GetInt32()).ToArray(), before);
         foreach (var dead in line.GetProperty("dead_before").EnumerateArray())
@@ -96,7 +96,7 @@ public sealed class AlundraEntitySlotTableTests
     [Fact]
     public void TheHeroSlot0_IsHeldFromTheConstruction_EvenInAWorldWithoutHero_AndNothingAllocatesIt()
     {
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         Assert.True(table.IsHeld(0));
         Assert.Equal(1, table.HeldCount);
         Assert.DoesNotContain(0, Take(table, 63));
@@ -105,7 +105,7 @@ public sealed class AlundraEntitySlotTableTests
     [Fact]
     public void ReleaseOfSlot0_IsNotPossible_TheHeroIsNeverFreed()
     {
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         table.Release(0);
         Assert.True(table.IsHeld(0));
         Assert.Equal(1, table.Allocate());
@@ -114,7 +114,7 @@ public sealed class AlundraEntitySlotTableTests
     [Fact]
     public void ReleaseOfMinusOne_AnEntityWithoutASlot_HasNoEffect()
     {
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         Take(table, 4);
         var before = table.HeldCount;
         table.Release(-1);
@@ -129,7 +129,7 @@ public sealed class AlundraEntitySlotTableTests
     [InlineData(int.MaxValue)]
     public void ReleaseOutsideTheTable_HasNoEffect(int slot)
     {
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         Take(table, 63);
         table.Release(slot);
         Assert.Equal(64, table.HeldCount);
@@ -139,7 +139,7 @@ public sealed class AlundraEntitySlotTableTests
     [Fact]
     public void ReleasingTwice_ThenAllocating_GivesTheSlotOnce()
     {
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         Take(table, 3);
         table.Release(2);
         table.Release(2);
@@ -150,7 +150,7 @@ public sealed class AlundraEntitySlotTableTests
     [Fact]
     public void AReleasedSlotLowerThanTheOthers_IsTakenBeforeAnyFreshHigherOne()
     {
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         Take(table, 10);
         table.Release(7);
         table.Release(3);
@@ -160,8 +160,8 @@ public sealed class AlundraEntitySlotTableTests
     [Fact]
     public void TwoTables_AreIndependent_ANewMapStartsEmpty()
     {
-        var first = new AlundraEntitySlotTable();
-        var second = new AlundraEntitySlotTable();
+        var first = new EntitySlotTable();
+        var second = new EntitySlotTable();
         Take(first, 63);
         Assert.Equal(1, second.Allocate());
     }
@@ -169,7 +169,7 @@ public sealed class AlundraEntitySlotTableTests
     [Fact]
     public void AFullTableRefusesWithoutDisturbing_ThenAReleaseMakesRoomForExactlyOne()
     {
-        var table = new AlundraEntitySlotTable();
+        var table = new EntitySlotTable();
         Take(table, 63);
         Assert.Equal(-1, table.Allocate());
         table.Release(63);

@@ -285,7 +285,7 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
 
     private static void FillSlots(ArcRun arc, int free)
     {
-        while (AlundraEntitySlotTable.SlotCount - arc.Proxy.SlotTable.HeldCount > free)
+        while (EntitySlotTable.SlotCount - arc.Proxy.SlotTable.HeldCount > free)
         {
             Assert.NotNull(Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, Arrow, 100 << 16, 100 << 16, 0, 0x10));
         }
@@ -323,7 +323,7 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
         }
 
         Assert.Equal(
-            ((AlundraEntitySlotTable.SlotCount, 1, 0, 0u), (AlundraEntitySlotTable.SlotCount - 1, 1, 1, 0u, 27)),
+            ((EntitySlotTable.SlotCount, 1, 0, 0u), (EntitySlotTable.SlotCount - 1, 1, 1, 0u, 27)),
             ((full.HeldBefore, full.Counter, full.Born, full.Pointer), (one.HeldBefore, one.Counter, one.Born, one.Pointer, one.Type)));
     }
 }
