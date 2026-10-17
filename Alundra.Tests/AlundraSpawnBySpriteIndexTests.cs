@@ -76,7 +76,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
 {
     private static readonly string Root = ProjectRootFinder.Find();
     private static readonly Lazy<SpriteRecordCatalog> Catalog = new(() => new SpriteRecordCatalog(Root));
-    private static readonly Lazy<AlundraBalanceTables> Tables = new(() => AlundraBalanceTables.GetOrCreate(Root));
+    private static readonly Lazy<BalanceTables> Tables = new(() => BalanceTables.GetOrCreate(Root));
 
     // ---------------------------------------------------------------------------------------------------------------------
     // (a) the data

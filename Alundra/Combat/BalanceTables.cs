@@ -16,7 +16,7 @@ namespace Alundra.Combat;
 /// levels is walked while the level of the record is below the threshold of the map (<c>0x80044520</c>, the property <c>D</c> of the map header). Degraded mode: a file that is missing or unreadable logs one
 /// warning and leaves every entry empty, so no entity gets a record (and so no attack, no response, no life from it).
 /// </summary>
-public sealed class AlundraBalanceTables
+public sealed class BalanceTables
 {
     private const string DataDirectoryName = "Data";
     private const string FileName = "balance.json";
@@ -27,29 +27,29 @@ public sealed class AlundraBalanceTables
     /// <summary>The property of the map header the threshold comes from (<c>lbu 0xB</c> of the header, <c>0x8002C39C</c>); the exported <c>BalanceLevel</c> is the byte 9, not this one.</summary>
     public const string ThresholdPropertyName = "D";
 
-    private readonly AlundraBalanceRecord?[] _entries = new AlundraBalanceRecord?[EntryCount];
+    private readonly BalanceRecord?[] _entries = new BalanceRecord?[EntryCount];
 
     /// <summary>Loads <c>Data/balance.json</c> from <see cref="EngineEnvironment.ProjectPath"/>.</summary>
-    public AlundraBalanceTables() : this(EngineEnvironment.ProjectPath)
+    public BalanceTables() : this(EngineEnvironment.ProjectPath)
     {
     }
 
     /// <summary>Loads <c>Data/balance.json</c> under <paramref name="projectPath"/> (the overload tests point at the real project with).</summary>
-    public AlundraBalanceTables(string projectPath)
+    public BalanceTables(string projectPath)
     {
         var filePath = Path.Combine(projectPath ?? string.Empty, DataDirectoryName, FileName);
         try
         {
             if (!File.Exists(filePath))
             {
-                Logs.WriteWarning($"AlundraBalanceTables: '{filePath}' not found; no entity gets a balance record (degraded mode).");
+                Logs.WriteWarning($"BalanceTables: '{filePath}' not found; no entity gets a balance record (degraded mode).");
                 return;
             }
 
             using var document = JsonDocument.Parse(File.ReadAllText(filePath));
             var entries = document.RootElement.GetProperty("EntriesBySpriteIndex");
             var count = Math.Min(entries.GetArrayLength(), EntryCount);
-            var byFileOffset = new Dictionary<int, AlundraBalanceRecord>();
+            var byFileOffset = new Dictionary<int, BalanceRecord>();
             for (var i = 0; i < count; i++)
             {
                 _entries[i] = ReadRecord(entries[i], byFileOffset);
@@ -67,12 +67,12 @@ public sealed class AlundraBalanceTables
         catch (Exception ex)
         {
             Array.Clear(_entries);
-            Logs.WriteWarning($"AlundraBalanceTables: failed to load '{filePath}' ({ex.Message}); no entity gets a balance record (degraded mode).");
+            Logs.WriteWarning($"BalanceTables: failed to load '{filePath}' ({ex.Message}); no entity gets a balance record (degraded mode).");
         }
     }
 
     /// <summary>Builds tables from records a test wrote by hand (entry index to record).</summary>
-    internal AlundraBalanceTables(IReadOnlyDictionary<int, AlundraBalanceRecord> records)
+    internal BalanceTables(IReadOnlyDictionary<int, BalanceRecord> records)
     {
         foreach (var (index, record) in records)
         {
@@ -80,7 +80,7 @@ public sealed class AlundraBalanceTables
         }
     }
 
-    private static AlundraBalanceRecord? ReadRecord(JsonElement element, Dictionary<int, AlundraBalanceRecord> byFileOffset)
+    private static BalanceRecord? ReadRecord(JsonElement element, Dictionary<int, BalanceRecord> byFileOffset)
     {
         if (element.ValueKind != JsonValueKind.Object)
         {
@@ -94,23 +94,23 @@ public sealed class AlundraBalanceTables
             responses[k] = (byte)responseElements[k].GetInt32();
         }
 
-        var attacks = Array.Empty<AlundraBalanceAttack>();
+        var attacks = Array.Empty<BalanceAttack>();
         if (element.TryGetProperty("Attacks", out var attackElements) && attackElements.ValueKind == JsonValueKind.Array)
         {
-            attacks = new AlundraBalanceAttack[attackElements.GetArrayLength()];
+            attacks = new BalanceAttack[attackElements.GetArrayLength()];
             for (var k = 0; k < attacks.Length; k++)
             {
-                attacks[k] = new AlundraBalanceAttack(attackElements[k].GetProperty("AttackAttribute").GetInt32(), attackElements[k].GetProperty("Power").GetInt32());
+                attacks[k] = new BalanceAttack(attackElements[k].GetProperty("AttackAttribute").GetInt32(), attackElements[k].GetProperty("Power").GetInt32());
             }
         }
 
-        AlundraBalanceRecord? next = null;
+        BalanceRecord? next = null;
         if (element.TryGetProperty("NextLevel", out var nextElement))
         {
             next = ReadRecord(nextElement, byFileOffset);
         }
 
-        var record = new AlundraBalanceRecord(
+        var record = new BalanceRecord(
             element.GetProperty("BalanceLevel").GetInt32(), element.GetProperty("RecordSize").GetInt32(), element.GetProperty("MaxHp").GetInt32(), responses, attacks, next);
         if (element.TryGetProperty("FileOffset", out var offsetElement) && offsetElement.ValueKind == JsonValueKind.Number)
         {
@@ -126,7 +126,7 @@ public sealed class AlundraBalanceTables
     /// <paramref name="threshold"/> (<c>0x80044550</c>): an index in <c>0x1F..0x7F</c> is read as <c>0x1E</c> (<c>0x80044558-0x80044560</c>), then the chain advances while <c>record.Level &lt; threshold</c>
     /// (<c>0x8004458C</c>). Null when the entry is missing (degraded tables, an index outside the table).
     /// </summary>
-    public AlundraBalanceRecord? Select(int spriteIndex, int threshold)
+    public BalanceRecord? Select(int spriteIndex, int threshold)
     {
         if (spriteIndex >= 0x1F && spriteIndex <= 0x7F)
         {
@@ -141,7 +141,7 @@ public sealed class AlundraBalanceTables
         return WalkChain(_entries[spriteIndex], threshold);
     }
 
-    private static AlundraBalanceRecord? WalkChain(AlundraBalanceRecord? record, int threshold)
+    private static BalanceRecord? WalkChain(BalanceRecord? record, int threshold)
     {
         while (record != null && record.Level < threshold && record.Next != null)
         {
@@ -156,7 +156,7 @@ public sealed class AlundraBalanceTables
     /// walked up to <paramref name="threshold"/>. UNLIKE <see cref="Select"/> there is NO remapping of <c>0x1F-0x7F</c> to <c>0x1E</c> (that is <c>0x80044550</c>, the sprite lookup, which would collapse every item onto one
     /// entry). An item past <c>0x61</c> (the guard <c>n &lt; 0x62</c>; the binary prints and ends the program there) or below 0 gives null.
     /// </summary>
-    public AlundraBalanceRecord? SelectEquipment(int itemId, int threshold)
+    public BalanceRecord? SelectEquipment(int itemId, int threshold)
     {
         if ((uint)itemId >= 0x62)
         {
@@ -167,7 +167,7 @@ public sealed class AlundraBalanceTables
     }
 
     /// <summary>The raw entry (the first level of the chain) of an index, with no remapping; for the tests.</summary>
-    internal AlundraBalanceRecord? Entry(int index) => index >= 0 && index < EntryCount ? _entries[index] : null;
+    internal BalanceRecord? Entry(int index) => index >= 0 && index < EntryCount ? _entries[index] : null;
 
     /// <summary>
     /// The balance threshold of a map: its custom property <see cref="ThresholdPropertyName"/> (a string, like <c>Gravity</c>), 0 when the map or the property is missing or not a number. The binary stores it once
@@ -183,15 +183,15 @@ public sealed class AlundraBalanceTables
         return 0;
     }
 
-    private static readonly Dictionary<string, AlundraBalanceTables> SessionCacheByProjectPath = new();
+    private static readonly Dictionary<string, BalanceTables> SessionCacheByProjectPath = new();
 
     /// <summary>Returns the cached tables for <paramref name="projectPath"/>, loading them on the first request (the same session cache as <see cref="AlundraItemTables.GetOrCreate"/>).</summary>
-    public static AlundraBalanceTables GetOrCreate(string projectPath)
+    public static BalanceTables GetOrCreate(string projectPath)
     {
         var key = projectPath ?? string.Empty;
         if (!SessionCacheByProjectPath.TryGetValue(key, out var tables))
         {
-            tables = new AlundraBalanceTables(key);
+            tables = new BalanceTables(key);
             SessionCacheByProjectPath[key] = tables;
         }
 

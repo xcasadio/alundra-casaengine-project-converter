@@ -11,7 +11,7 @@ namespace Alundra.Combat;
 /// is a target touched by an attack of a given type, and is some attacker's stored box inside a rectangle. The interpreter (<see cref="EventProgramRunner"/>) calls them; the oracle
 /// <c>docs/plan-e20-annexe/e20-c1b/oracle/out/K3.txt</c> pins them.
 /// </summary>
-internal static class AlundraHitOpcodes
+internal static class HitOpcodes
 {
     /// <summary>
     /// The 12 bytes the binary reads at <c>0x80098FA4 + typeIdx</c>: the attack types <c>1, 2, 3, 4, 5, 5, 6, 7</c> (so the index 1 is the hammer, 2 the arrow, 3 the bomb..., the sword is the index 0), then the first four
@@ -35,7 +35,7 @@ internal static class AlundraHitOpcodes
     /// <paramref name="originZ"/>, sizes <paramref name="sizeX"/> (also the Z size), <paramref name="sizeY"/>; raw 16.16, the Z in the binary's convention) and passes the filters: status Normal or Deactivated, not blocked,
     /// a frame box, an attack of the attribute nibble <paramref name="typeIndex"/> asks for, and <c>Flags &amp; mask != 0</c>. A zero mask answers false at once. The hero is slot 0, scanned first, then the others in order.
     /// <para>
-    /// The overlap is the hit pass's (<see cref="AlundraHitPass.AxisOverlaps"/>) with the rectangle as the body, but NOT widened on the positive side: with <c>d = hitBox - origin</c> a hit when <c>d &gt;= 0</c> and <c>d &lt; size</c>,
+    /// The overlap is the hit pass's (<see cref="HitPass.AxisOverlaps"/>) with the rectangle as the body, but NOT widened on the positive side: with <c>d = hitBox - origin</c> a hit when <c>d &gt;= 0</c> and <c>d &lt; size</c>,
     /// or <c>d &lt; 0</c> and <c>-d &lt; attackerSize + 1</c> (K3 boundaries). The DLL's Z is the binary's minus 1 (ADR-0026): the stored box gets one raw unit on Z, on this comparison only.
     /// </para>
     /// </summary>
@@ -74,9 +74,9 @@ internal static class AlundraHitOpcodes
 
         unchecked
         {
-            return AlundraHitPass.AxisOverlaps(attacker.HitBoxX, attacker.CollisionWidth, originX, sizeX - 1)
-                && AlundraHitPass.AxisOverlaps(attacker.HitBoxY, attacker.CollisionDepth, originY, sizeY - 1)
-                && AlundraHitPass.AxisOverlaps(attacker.HitBoxZ + 1, attacker.CollisionHeight, originZ, sizeX - 1);
+            return HitPass.AxisOverlaps(attacker.HitBoxX, attacker.CollisionWidth, originX, sizeX - 1)
+                && HitPass.AxisOverlaps(attacker.HitBoxY, attacker.CollisionDepth, originY, sizeY - 1)
+                && HitPass.AxisOverlaps(attacker.HitBoxZ + 1, attacker.CollisionHeight, originZ, sizeX - 1);
         }
     }
 }

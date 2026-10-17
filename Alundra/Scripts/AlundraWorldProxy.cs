@@ -431,12 +431,12 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// E20.c1a C1 (docs/plan-e20-heros.md section 1.5): the 512 balance entries (<c>Data/balance.json</c>), loaded once per project like <see cref="ItemTables"/>. Internal and assignable so tests swap in their own.
     /// An entity gets its record from them at its creation (<see cref="AlundraEntityScriptProxy.InitializeBalance"/>), at the threshold <see cref="BalanceThreshold"/> of the map.
     /// </summary>
-    internal AlundraBalanceTables BalanceTables = AlundraBalanceTables.GetOrCreate(EngineEnvironment.ProjectPath);
+    internal BalanceTables BalanceTables = BalanceTables.GetOrCreate(EngineEnvironment.ProjectPath);
 
-    /// <summary>E20.c1a C1: the balance threshold of the loaded map (its property <c>D</c>, <see cref="AlundraBalanceTables.ResolveThreshold"/>), read once when the entities are created.</summary>
+    /// <summary>E20.c1a C1: the balance threshold of the loaded map (its property <c>D</c>, <see cref="BalanceTables.ResolveThreshold"/>), read once when the entities are created.</summary>
     internal int BalanceThreshold;
 
-    AlundraBalanceTables? IScriptHost.BalanceTables => BalanceTables;
+    BalanceTables? IScriptHost.BalanceTables => BalanceTables;
 
     int IScriptHost.BalanceThreshold => BalanceThreshold;
 
@@ -962,7 +962,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         }
 
         _tileMapData = tileMapData;
-        BalanceThreshold = AlundraBalanceTables.ResolveThreshold(tileMapData); // E20.c1a C1: the threshold of the balance chain, before any entity is created.
+        BalanceThreshold = BalanceTables.ResolveThreshold(tileMapData); // E20.c1a C1: the threshold of the balance chain, before any entity is created.
         EquipmentRecords.Clear(); // E20.c1b K2: 0x80044520 zeroes the three equipment pointers at every map load.
 
         // D-T-3 (docs/plan-transitions-carte.md, slice T1): the session carrier's own map-entry
@@ -3038,7 +3038,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     private readonly List<AlundraEntityScriptProxy> _hitList = new();
 
     /// <summary>E20.c1a C3: the hit pass of the binary (<c>UpdateBalanceRecords</c>), with the latch of the hero's animation (<c>0x80146DF8</c>) it keeps for the damage calculation of E20.c1b.</summary>
-    private readonly AlundraHitPass _hitPass = new();
+    private readonly HitPass _hitPass = new();
 
     /// <summary>The binary's <c>0x80146DF8</c>: <c>+0x88</c> of the hero, latched at the head of every hit pass, after the animation clock of the tick (E20.c1a C3; read one tick later by the damage calculation, E20.c1b).</summary>
     internal uint HeroAnimationLatch => _hitPass.HeroAnimationLatch;

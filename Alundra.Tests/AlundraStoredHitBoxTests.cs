@@ -67,7 +67,7 @@ public sealed class AlundraStoredHitBoxTests
         var proxy = Entity(100, 60, 8, (3, -2, 1, 8, 8, 8));
         proxy.SpriteType = 0x100 + 79; // a Beannoid: it has a record, but this proxy's attack is not what is under test.
 
-        proxy.InitializeBalance(AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0);
+        proxy.InitializeBalance(BalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0);
 
         Assert.True(proxy.HasFrameBox);
         Assert.Equal((100 << 16) + (3 << 16), proxy.HitBoxX);
@@ -81,7 +81,7 @@ public sealed class AlundraStoredHitBoxTests
         var proxy = Entity(100, 60, 8, null);
         proxy.SpriteType = 0x100 + 79;
 
-        proxy.InitializeBalance(AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0);
+        proxy.InitializeBalance(BalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0);
         proxy.StoreHitBox();
 
         Assert.False(proxy.HasFrameBox);

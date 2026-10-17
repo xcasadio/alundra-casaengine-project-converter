@@ -10,7 +10,7 @@ namespace Alundra.Items;
 /// <summary>
 /// The three equipment balance records of the binary (E20.c1b K2, docs/plan-e20-heros.md section 1.6): the pointers at <c>0x80146E00</c> (armour), <c>0x80146E08</c> (weapon) and <c>0x80146E10</c> (accessory), each with
 /// the item word that follows it (<c>item id + 0x1E</c>, 0 for none). They are cleared at every map load (<c>InitializeItems</c> <c>0x80044520</c>), filled at every normal tick of the hero by
-/// <see cref="PlayerManager"/> (<c>UpdateItemEffectState</c> <c>0x800307E8</c>, steps 2 to 5) and read only by the damage calculation (<see cref="AlundraDamage"/>, <c>0x8004464C</c>) and by the step 6 of
+/// <see cref="PlayerManager"/> (<c>UpdateItemEffectState</c> <c>0x800307E8</c>, steps 2 to 5) and read only by the damage calculation (<see cref="Damage"/>, <c>0x8004464C</c>) and by the step 6 of
 /// <c>UpdateItemEffectState</c> (E20.c2). One instance per world, reached through <see cref="IScriptHost.EquipmentRecords"/> and <see cref="IEntityWorldContext.EquipmentRecords"/>.
 /// </summary>
 public sealed class AlundraEquipmentRecords
@@ -27,11 +27,11 @@ public sealed class AlundraEquipmentRecords
     /// <summary>The number of records.</summary>
     public const int Count = 3;
 
-    private readonly AlundraBalanceRecord?[] _records = new AlundraBalanceRecord?[Count];
+    private readonly BalanceRecord?[] _records = new BalanceRecord?[Count];
     private readonly int[] _itemIds = new int[Count];
 
     /// <summary>The record of a slot (<see cref="Armour"/>, <see cref="Weapon"/>, <see cref="Accessory"/>), null when the slot is empty.</summary>
-    public AlundraBalanceRecord? this[int slot] => _records[slot];
+    public BalanceRecord? this[int slot] => _records[slot];
 
     /// <summary>The item the record of a slot describes (the item word of the binary minus <c>0x1E</c>), 0 when the slot is empty.</summary>
     public int ItemIdOf(int slot) => _itemIds[slot];
@@ -66,29 +66,29 @@ public sealed class AlundraEquipmentRecords
     public int BootsLevel { get; internal set; }
 
     private byte[]? _sheetResponses;
-    private AlundraBalanceRecord? _sheetSource;
+    private BalanceRecord? _sheetSource;
 
     /// <summary>
     /// E20.c2a T2: the hero's defence sheet (<c>0x80127008</c>, 255 bytes in the binary), the one <c>ComputeNewHp</c> reads when the hero is hit (E20.c2b). A sheet is the record of the armour (or the hero's own
     /// <c>+0x1C4</c> record without armour) whose eleven responses are combined with the weapon's and the accessory's by step 6 of <c>UpdateItemEffectState</c>. One object for the whole life of the world: the same record
     /// is rewritten in place (<see cref="StoreHeroSheet"/>) and only rebuilt when the record it copies changes. Null until a first step 6 ran (the binary's BSS zero before the first tick).
     /// </summary>
-    public AlundraBalanceRecord? HeroSheet { get; private set; }
+    public BalanceRecord? HeroSheet { get; private set; }
 
     /// <summary>The bytes 3 to 13 of the sheet written by step 6 (the byte 2 and the attacks are those of <paramref name="source"/>, copied as they are).</summary>
-    internal void StoreHeroSheet(AlundraBalanceRecord source, ReadOnlySpan<byte> responses)
+    internal void StoreHeroSheet(BalanceRecord source, ReadOnlySpan<byte> responses)
     {
         if (HeroSheet == null || !ReferenceEquals(_sheetSource, source))
         {
             _sheetResponses = new byte[responses.Length];
-            HeroSheet = new AlundraBalanceRecord(source.Level, source.RecordSize, source.MaxHp, _sheetResponses, System.Linq.Enumerable.ToArray(source.Attacks), null);
+            HeroSheet = new BalanceRecord(source.Level, source.RecordSize, source.MaxHp, _sheetResponses, System.Linq.Enumerable.ToArray(source.Attacks), null);
             _sheetSource = source;
         }
 
         responses.CopyTo(_sheetResponses);
     }
 
-    internal void Set(int slot, AlundraBalanceRecord? record, int itemId)
+    internal void Set(int slot, BalanceRecord? record, int itemId)
     {
         _records[slot] = record;
         _itemIds[slot] = itemId;

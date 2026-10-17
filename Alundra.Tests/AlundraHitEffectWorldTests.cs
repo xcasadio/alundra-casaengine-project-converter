@@ -73,7 +73,7 @@ public sealed class AlundraHitEffectWorldTests : IDisposable
         using var arena = new HitArena($"f3b-{attribute}-{grouping}", 212, 96, null, 24, 0, naturalTargetCount: 1);
         var attacker = arena.Targets[0];
         HitArena.Place(attacker, 212, 96);
-        attacker.CurrentAttack = new AlundraBalanceAttack(attribute, 1);
+        attacker.CurrentAttack = new BalanceAttack(attribute, 1);
         var outcome = new Outcome { Hero = arena.Hero };
 
         arena.BeforeTick = tick =>

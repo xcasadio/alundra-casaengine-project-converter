@@ -86,7 +86,7 @@ internal sealed class ContactHost : IScriptHost
     public AlundraItemTables? ItemTables { get; set; }
 
     /// <summary>E20.c1b K2: the balance tables, the threshold and the equipment records the host hands to the hero's tick (null: none, as the default members of the interface).</summary>
-    public AlundraBalanceTables? BalanceTables { get; set; }
+    public BalanceTables? BalanceTables { get; set; }
 
     public int BalanceThreshold { get; set; }
 

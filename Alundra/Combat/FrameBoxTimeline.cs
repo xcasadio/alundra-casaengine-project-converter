@@ -8,7 +8,7 @@ using Alundra.Entities.Spawning;
 namespace Alundra.Combat;
 
 /// <summary>One frame box of an animation, in the binary's integers (E20.c1a C2): the three signed offsets and the three sizes, in pixels (the binary stores them <c>&lt;&lt; 16</c>, sizes minus 1).</summary>
-internal readonly record struct AlundraFrameBox(int OffsetX, int OffsetY, int OffsetZ, int Width, int Depth, int Height);
+internal readonly record struct FrameBox(int OffsetX, int OffsetY, int OffsetZ, int Width, int Depth, int Height);
 
 /// <summary>
 /// The box timeline of an animation, read from the exported <c>collision_keyframes</c> (E20.c1a C2, D-E20-6, docs/plan-e20-annexe/d6-boites/notes.md): the box of the frame the binary shows at a logic tick
@@ -19,16 +19,16 @@ internal readonly record struct AlundraFrameBox(int OffsetX, int OffsetY, int Of
 /// <c>max(1, round(duration * 50))</c> ticks, 0 when the animation has none). Built once per animation (<see cref="For"/>), then read with no allocation.
 /// </para>
 /// </summary>
-internal sealed class AlundraFrameBoxTimeline
+internal sealed class FrameBoxTimeline
 {
-    private static readonly ConditionalWeakTable<Animation2d, AlundraFrameBoxTimeline> Cache = new();
-    private static readonly ConditionalWeakTable<Animation2dData, AlundraFrameBoxTimeline> DataCache = new();
+    private static readonly ConditionalWeakTable<Animation2d, FrameBoxTimeline> Cache = new();
+    private static readonly ConditionalWeakTable<Animation2dData, FrameBoxTimeline> DataCache = new();
 
     private readonly int[] _startTicks;
     private readonly bool[] _hasBox;
-    private readonly AlundraFrameBox[] _boxes;
+    private readonly FrameBox[] _boxes;
 
-    private AlundraFrameBoxTimeline(int[] startTicks, bool[] hasBox, AlundraFrameBox[] boxes, int durationTicks, bool isLoop)
+    private FrameBoxTimeline(int[] startTicks, bool[] hasBox, FrameBox[] boxes, int durationTicks, bool isLoop)
     {
         _startTicks = startTicks;
         _hasBox = hasBox;
@@ -44,7 +44,7 @@ internal sealed class AlundraFrameBoxTimeline
     public bool IsLoop { get; }
 
     /// <summary>The timeline of <paramref name="animation"/>, built on the first request and kept with the animation.</summary>
-    public static AlundraFrameBoxTimeline For(Animation2d animation)
+    public static FrameBoxTimeline For(Animation2d animation)
     {
         if (!Cache.TryGetValue(animation, out var timeline))
         {
@@ -59,7 +59,7 @@ internal sealed class AlundraFrameBoxTimeline
     /// E20.e0a5 (D-E0A5-3): the timeline of the shared <paramref name="data"/> of an animation, built on the first request and kept with the data. It is the timeline of a sprite that holds this very instance (the
     /// asset manager shares one instance per id), so an entity that is not integrated yet and the same entity after the integration read the same boxes.
     /// </summary>
-    public static AlundraFrameBoxTimeline ForData(Animation2dData data)
+    public static FrameBoxTimeline ForData(Animation2dData data)
     {
         if (!DataCache.TryGetValue(data, out var timeline))
         {
@@ -70,12 +70,12 @@ internal sealed class AlundraFrameBoxTimeline
         return timeline;
     }
 
-    private static AlundraFrameBoxTimeline Build(Animation2dData data)
+    private static FrameBoxTimeline Build(Animation2dData data)
     {
         var keyframes = data.CollisionKeyframes;
         var startTicks = new int[keyframes.Count];
         var hasBox = new bool[keyframes.Count];
-        var boxes = new AlundraFrameBox[keyframes.Count];
+        var boxes = new FrameBox[keyframes.Count];
         for (var i = 0; i < keyframes.Count; i++)
         {
             startTicks[i] = (int)Math.Round((double)keyframes[i].TimeSeconds * EntitySpawnFactory.LogicTicksPerSecond, MidpointRounding.AwayFromZero);
@@ -85,7 +85,7 @@ internal sealed class AlundraFrameBoxTimeline
                 {
                     var size = box.Size;
                     var local = fixture.LocalPosition;
-                    boxes[i] = new AlundraFrameBox(
+                    boxes[i] = new FrameBox(
                         RoundToInt(local.X - size.X / 2f), RoundToInt(local.Y - size.Y / 2f), RoundToInt(local.Z - size.Z / 2f),
                         RoundToInt(size.X), RoundToInt(size.Y), RoundToInt(size.Z));
                     hasBox[i] = true;
@@ -98,7 +98,7 @@ internal sealed class AlundraFrameBoxTimeline
         var durationTicks = durationSeconds <= 0f
             ? 0
             : Math.Max(1, (int)Math.Round((double)durationSeconds * EntitySpawnFactory.LogicTicksPerSecond, MidpointRounding.AwayFromZero));
-        return new AlundraFrameBoxTimeline(startTicks, hasBox, boxes, durationTicks, data.AnimationType == AnimationType.Loop);
+        return new FrameBoxTimeline(startTicks, hasBox, boxes, durationTicks, data.AnimationType == AnimationType.Loop);
     }
 
     private static int RoundToInt(float value) => (int)Math.Round(value, MidpointRounding.AwayFromZero);
@@ -115,7 +115,7 @@ internal sealed class AlundraFrameBoxTimeline
     }
 
     /// <summary>The box of the frame shown <paramref name="ticksSinceSwitch"/> ticks after the switch; false when there is none.</summary>
-    public bool TryGetBox(int ticksSinceSwitch, out AlundraFrameBox box)
+    public bool TryGetBox(int ticksSinceSwitch, out FrameBox box)
     {
         var tick = LogicalTick(ticksSinceSwitch);
         var found = -1;

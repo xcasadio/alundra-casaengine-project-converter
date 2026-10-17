@@ -7,24 +7,24 @@ using Alundra.Combat;
 namespace Alundra.Scripts;
 
 /// <summary>
-/// E20.c1a (docs/plan-e20-heros.md section 1.5): the state the hit pass of the binary (<see cref="AlundraHitPass"/>, <c>UpdateBalanceRecords</c> <c>0x80039300</c>) reads on each entity, and what keeps it in step with
+/// E20.c1a (docs/plan-e20-heros.md section 1.5): the state the hit pass of the binary (<see cref="HitPass"/>, <c>UpdateBalanceRecords</c> <c>0x80039300</c>) reads on each entity, and what keeps it in step with
 /// the animation clock of the tick: the balance record (<c>+0x1C4</c>), the current attack (<c>+0x1C8</c>), the animation byte of the clock (<c>+0xB4</c>) and the box of the frame shown at the tick (<c>+0x1D4</c>, whose
 /// values are <see cref="CollisionOffsetX"/> to <see cref="CollisionHeight"/> and whose <c>HitBox</c> is <see cref="HitBoxX"/> to <see cref="HitBoxZ"/>).
 /// <para>
 /// <b>Why not <see cref="AnimFlags"/> and <see cref="CurrentAnimationId"/>.</b> The DLL writes them at the end of the frame only (<see cref="FrameSyncPasses.SyncAnimation"/>, D-E19-13, kept), while the binary changes them
 /// in the tick that sees the switch (<c>0x80038B18-0x80038BAC</c>) and the hit pass of that very tick already reads them. So the clock (<see cref="FrameSyncPasses.StepAnimationClock"/>) tells this class every switch
 /// it sees (<see cref="NoteSwitchPendingAtTick"/>, <see cref="NoteOwedSwitchTick"/>, <see cref="NoteChainEndSwitch"/>, and the spawn, <see cref="InitializeBalance"/>), and it reloads the attack and the byte then, and
-/// keeps its own <b>cursor</b>: the animation and direction shown, and the number of ticks since the switch. The frame box is read from that cursor (<see cref="AlundraFrameBoxTimeline"/>), never from the sprite, which
+/// keeps its own <b>cursor</b>: the animation and direction shown, and the number of ticks since the switch. The frame box is read from that cursor (<see cref="FrameBoxTimeline"/>), never from the sprite, which
 /// still holds the old animation in the rest of a catch-up frame.
 /// </para>
 /// </summary>
 public partial class AlundraEntityScriptProxy
 {
     /// <summary>The balance record of the entity (<c>+0x1C4</c>): chosen at the creation by <see cref="InitializeBalance"/>; null in the degraded cases (no table, a spawn whose sprite header did not resolve).</summary>
-    public AlundraBalanceRecord? BalanceRecord; //1c4
+    public BalanceRecord? BalanceRecord; //1c4
 
     /// <summary>The attack the entity deals while its current animation plays (<c>+0x1C8</c>): reloaded at every switch the clock sees; null when its record has none.</summary>
-    public AlundraBalanceAttack? CurrentAttack; //1c8
+    public BalanceAttack? CurrentAttack; //1c8
 
     /// <summary>The binary's <c>+0xB4</c>: byte <c>0xD</c> of the animation set, loaded at every switch the clock sees (the bit <c>0x40</c> makes the entity untouchable). <see cref="AnimFlags"/> is the same byte, one frame late.</summary>
     public int HitAnimByte; //b4
@@ -44,7 +44,7 @@ public partial class AlundraEntityScriptProxy
     /// <summary>True from the tick the clock loaded a switch until <see cref="FrameSyncPasses.SyncAnimation"/> validates it at the end of the frame: the sprite still holds the old animation, so the cursor counts the ticks itself.</summary>
     internal bool BoxSwitchLoaded;
 
-    private AlundraFrameBoxTimeline? _boxTimeline;
+    private FrameBoxTimeline? _boxTimeline;
     private bool _boxTimelineResolved;
     private bool _boxHostAsked;
 
@@ -56,7 +56,7 @@ public partial class AlundraEntityScriptProxy
     /// map, <see cref="Hp"/> and <see cref="HpMax"/> from its maximum life, and the first switch the creation makes (the attack, the animation byte and the box of the animation 0). Does nothing without tables, or when the
     /// sprite header did not resolve at the spawn (<see cref="SpriteType"/> is -1): the binary has no such case.
     /// </summary>
-    internal void InitializeBalance(AlundraBalanceTables? tables, int threshold)
+    internal void InitializeBalance(BalanceTables? tables, int threshold)
     {
         if (tables == null || SpriteType < 0)
         {
@@ -208,7 +208,7 @@ public partial class AlundraEntityScriptProxy
                     var data = ScriptHost?.ResolveAnimationData(sprite.AnimationAssetIds, BoxAnimationId, BoxDirection);
                     if (data != null)
                     {
-                        _boxTimeline = AlundraFrameBoxTimeline.ForData(data);
+                        _boxTimeline = FrameBoxTimeline.ForData(data);
                         _boxTimelineResolved = true;
                     }
                 }
@@ -217,7 +217,7 @@ public partial class AlundraEntityScriptProxy
             {
                 _boxTimelineResolved = true;
                 _boxTimeline = sprite != null && FrameSyncPasses.TrySelectAnimationByNameSuffix(sprite, BoxAnimationId, BoxDirection, out var selected) && selected != null
-                    ? AlundraFrameBoxTimeline.For(selected)
+                    ? FrameBoxTimeline.For(selected)
                     : null;
             }
         }

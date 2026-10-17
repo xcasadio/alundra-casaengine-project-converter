@@ -1414,7 +1414,7 @@ public static class PlayerManager
     /// <summary>
     /// Step 7 of <c>UpdateItemEffectState</c>, the regeneration (<c>0x80030C20-0x80030D3C</c>). Its gates, all of which must hold: no bit of <c>0x7C</c> in the control flags, the hero not frozen (<c>+0x20</c>,
     /// <see cref="AlundraEntityScriptProxy.BlockedByEntity"/>), the hold word of the pad (<c>0x80126F28</c>, a halfword: every button and the D-pad) zero, the life not 0 and below the maximum. When a gate is closed
-    /// the three counters (<see cref="GameState.RegenerationCounters"/>) go back to 0 and the life is left alone. Otherwise, for each of the three records with a byte 2 (the period, <see cref="AlundraBalanceRecord.MaxHp"/>)
+    /// the three counters (<see cref="GameState.RegenerationCounters"/>) go back to 0 and the life is left alone. Otherwise, for each of the three records with a byte 2 (the period, <see cref="BalanceRecord.MaxHp"/>)
     /// other than 0, the counter grows by one and, when it passes the byte 2, goes back to 0 and the life gains 1 (so a period of byte 2 + 1 ticks; a record without a byte 2 zeroes its counter); the life is then
     /// capped at the maximum.
     /// </summary>
@@ -1475,9 +1475,9 @@ public static class PlayerManager
     /// <item><description>record 2 is the accessory: <see cref="SetItemIdFromCurrentItemId"/> (which also rewrites <c>ItemId</c>, as the binary's <c>0x8004E0F8</c> does: the tick is a second caller beside the HUD) when it answers 1 to
     /// <c>0x61</c> with the category 3.</description></item>
     /// </list>
-    /// The record of item <c>n</c> is <see cref="AlundraBalanceTables.SelectEquipment"/>, with NO remapping of the index (the sprite lookup remaps <c>0x1F-0x7F</c> to <c>0x1E</c>, the equipment lookup does not).
+    /// The record of item <c>n</c> is <see cref="BalanceTables.SelectEquipment"/>, with NO remapping of the index (the sprite lookup remaps <c>0x1F-0x7F</c> to <c>0x1E</c>, the equipment lookup does not).
     /// </summary>
-    internal static void FillEquipmentRecords(GameState state, AlundraItemTables itemTables, AlundraBalanceTables balanceTables, int threshold, AlundraEquipmentRecords records)
+    internal static void FillEquipmentRecords(GameState state, AlundraItemTables itemTables, BalanceTables balanceTables, int threshold, AlundraEquipmentRecords records)
     {
         records.ClearAll(); // 0x800308A4-0x800308BC: all six words, the item words too (the map load, 0x80044520, empties the pointers only: records.Clear()).
 

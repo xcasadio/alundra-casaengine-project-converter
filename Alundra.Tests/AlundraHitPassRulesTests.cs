@@ -45,7 +45,7 @@ public sealed class AlundraHitPassRulesTests
         public readonly AlundraEntityScriptProxy Proxy;
 
         public Actor(
-            uint flags, int x, int y, int z, AlundraBalanceRecord? record = null, (int Ox, int Oy, int Oz, int W, int D, int H)? box = null, (int W, int D, int H)? body = null, int animationByte = 0)
+            uint flags, int x, int y, int z, BalanceRecord? record = null, (int Ox, int Oy, int Oz, int W, int D, int H)? box = null, (int W, int D, int H)? body = null, int animationByte = 0)
         {
             var sprite = new AnimatedSpriteComponent();
             var spriteId = Guid.Parse("bbbbbbbb-0000-0000-0000-000000000001");
@@ -88,24 +88,24 @@ public sealed class AlundraHitPassRulesTests
     }
 
     /// <summary>A record with the given responses (the first, for the attack nibble 1, is <paramref name="response"/>; the rest 16) and the given attacks.</summary>
-    private static AlundraBalanceRecord Record(int response = 16, params (int Attribute, int Power)[] attacks)
+    private static BalanceRecord Record(int response = 16, params (int Attribute, int Power)[] attacks)
     {
         var responses = Enumerable.Repeat((byte)16, 11).ToArray();
         responses[0] = (byte)response;
-        return new AlundraBalanceRecord(255, 15 + 2 * attacks.Length, 9, responses, attacks.Select(a => new AlundraBalanceAttack(a.Attribute, a.Power)).ToArray(), null);
+        return new BalanceRecord(255, 15 + 2 * attacks.Length, 9, responses, attacks.Select(a => new BalanceAttack(a.Attribute, a.Power)).ToArray(), null);
     }
 
-    private static AlundraBalanceRecord SwordRecord() => Record(16, (0x81, 3));
+    private static BalanceRecord SwordRecord() => Record(16, (0x81, 3));
 
-    private static AlundraBalanceRecord NeutralRecord() => Record(16);
+    private static BalanceRecord NeutralRecord() => Record(16);
 
     private static readonly (int Ox, int Oy, int Oz, int W, int D, int H) Box8 = (0, 0, 0, 8, 8, 8);
 
     private static void Run(params Actor[] actors) => RunAll(actors, out _);
 
-    private static AlundraHitPass RunAll(IReadOnlyList<Actor> actors, out List<(int X, int Y, int Z)> sparks)
+    private static HitPass RunAll(IReadOnlyList<Actor> actors, out List<(int X, int Y, int Z)> sparks)
     {
-        var pass = new AlundraHitPass();
+        var pass = new HitPass();
         var centres = new List<(int, int, int)>();
         pass.Run(actors.Select(a => a.Proxy).ToList(), actors.Count > 0 ? actors[0].Proxy : null, (x, y, z) => centres.Add((x, y, z)));
         sparks = centres;
@@ -161,10 +161,10 @@ public sealed class AlundraHitPassRulesTests
         Assert.Equal(0, harmless.Proxy.HitCounter);
         Assert.Null(Touching(victim));
 
-        Assert.Equal(1u, AlundraHitPass.ClassMaskOf(HitsA));
-        Assert.Equal(8u, AlundraHitPass.ClassMaskOf(HitsB));
-        Assert.Equal(0x800u, AlundraHitPass.ClassMaskOf(HitsC));
-        Assert.Equal(0u, AlundraHitPass.ClassMaskOf(ClassA | ClassB | ClassC | EntityFlags.Collidable));
+        Assert.Equal(1u, HitPass.ClassMaskOf(HitsA));
+        Assert.Equal(8u, HitPass.ClassMaskOf(HitsB));
+        Assert.Equal(0x800u, HitPass.ClassMaskOf(HitsC));
+        Assert.Equal(0u, HitPass.ClassMaskOf(ClassA | ClassB | ClassC | EntityFlags.Collidable));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -290,7 +290,7 @@ public sealed class AlundraHitPassRulesTests
         var attacker = new Actor(HitsA, 100, 100, 0, Record(16, (0x83, 1)), Box8);
         var responses = Enumerable.Repeat((byte)16, 11).ToArray();
         responses[2] = 0x80;
-        var target = new Actor(ClassA, 100, 100, 0, new AlundraBalanceRecord(255, 15, 9, responses, Array.Empty<AlundraBalanceAttack>(), null));
+        var target = new Actor(ClassA, 100, 100, 0, new BalanceRecord(255, 15, 9, responses, Array.Empty<BalanceAttack>(), null));
         Run(attacker, target);
         Assert.Null(Touching(target));
         Assert.Equal(0x19, target.Proxy.FrameCollisionTickCounter);
@@ -409,8 +409,8 @@ public sealed class AlundraHitPassRulesTests
         var expectedZ = (0 + (8 << 16) - 1) / 2;
         Assert.Equal((expectedX, expectedY, expectedZ), Assert.Single(sparks));
 
-        Assert.Equal(-1, AlundraHitPass.AxisCentre(-3, 3, -3, 3)); // (-3 + 0) / 2 truncates toward zero (a shift would give -2).
-        Assert.Equal(1, AlundraHitPass.AxisCentre(0, 3, 0, 3)); // (0 + 3) / 2.
+        Assert.Equal(-1, HitPass.AxisCentre(-3, 3, -3, 3)); // (-3 + 0) / 2 truncates toward zero (a shift would give -2).
+        Assert.Equal(1, HitPass.AxisCentre(0, 3, 0, 3)); // (0 + 3) / 2.
     }
 
     [Fact]
@@ -476,7 +476,7 @@ public sealed class AlundraHitPassRulesTests
         var hero = new Actor(0, 100, 100, 0, NeutralRecord());
         hero.Proxy.TargetAnimationId = 0x31;
         hero.Proxy.CurrentAnimationId = 0x10;
-        var pass = new AlundraHitPass();
+        var pass = new HitPass();
         pass.Run(Array.Empty<AlundraEntityScriptProxy>(), hero.Proxy, null);
         Assert.Equal(0x31u, pass.HeroAnimationLatch);
         hero.Proxy.TargetAnimationId = 0x04;

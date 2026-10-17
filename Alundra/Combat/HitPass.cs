@@ -22,7 +22,7 @@ namespace Alundra.Combat;
 /// </list>
 /// No <c>Hp</c> changes here: the damage is E20.c1b (the program D of the target reads <c>TouchingEntity</c> at the next tick).
 /// </summary>
-internal sealed class AlundraHitPass
+internal sealed class HitPass
 {
     /// <summary>The value the pass writes in <c>+0x1D0</c> of a target it hit: 25 ticks before the same target can be hit again.</summary>
     public const int HitCooldownTicks = 0x19;

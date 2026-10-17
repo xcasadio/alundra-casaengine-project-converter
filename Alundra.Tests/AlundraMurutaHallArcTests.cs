@@ -49,7 +49,7 @@ public sealed class AlundraMurutaHallArcTests
     }
 
     private static bool Hittable(AlundraEntityScriptProxy target)
-        => target.Status == EntityStatus.Normal && target.IsOnGround != 0 && target.FrameCollisionTickCounter == 0 && target.DamagedTickCounter == 0 && (target.HitAnimByte & AlundraHitPass.InvulnerableAnimationBit) == 0;
+        => target.Status == EntityStatus.Normal && target.IsOnGround != 0 && target.FrameCollisionTickCounter == 0 && target.DamagedTickCounter == 0 && (target.HitAnimByte & HitPass.InvulnerableAnimationBit) == 0;
 
     /// <summary>The first place (40, 34, 28, 22 or 16 px west of the target) whose four footprint corners (offset (-10, -7), size (21, 15)) are walkable cells at the target's height, or -1.</summary>
     private static int FindDx(AlundraCellStore store, AlundraEntityScriptProxy target)

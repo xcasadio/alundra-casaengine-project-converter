@@ -78,7 +78,7 @@ public sealed class AlundraHitOpcodesTests
         proxy.EntityRefId = recordId;
         proxy.Status = EntityStatus.Normal;
         proxy.Flags = flags;
-        proxy.CurrentAttack = new AlundraBalanceAttack(attribute, power);
+        proxy.CurrentAttack = new BalanceAttack(attribute, power);
         proxy.HasFrameBox = true;
         return proxy;
     }
@@ -251,7 +251,7 @@ public sealed class AlundraHitOpcodesTests
         Assert.Equal(0, Op87(world, world.U, 0, 0));
 
         world = new K3World();
-        world.Hero.CurrentAttack = new AlundraBalanceAttack(0, 1);
+        world.Hero.CurrentAttack = new BalanceAttack(0, 1);
         Assert.Equal(0, Op87(world, world.U, 0, 0));
 
         world = new K3World();
@@ -266,16 +266,16 @@ public sealed class AlundraHitOpcodesTests
         // K3: V touched by A (nibble 4): typeIdx 8..11 -> 0 0 0 0.
         Assert.Equal(new[] { 0, 0, 0, 0 }, Enumerable.Range(8, 4).Select(index => Op87(world, world.U, 3, index)).ToArray());
 
-        world.A.CurrentAttack = new AlundraBalanceAttack(0x03, 2); // nibble 3: typeIdx 2 and 10 (bytes 03 and 03).
+        world.A.CurrentAttack = new BalanceAttack(0x03, 2); // nibble 3: typeIdx 2 and 10 (bytes 03 and 03).
         Assert.Equal(1, Op87(world, world.U, 3, 2));
         Assert.Equal(new[] { 0, 0, 1, 0 }, Enumerable.Range(8, 4).Select(index => Op87(world, world.U, 3, index)).ToArray());
 
-        world.A.CurrentAttack = new AlundraBalanceAttack(0x05, 2); // nibble 5: typeIdx 4 and 5.
+        world.A.CurrentAttack = new BalanceAttack(0x05, 2); // nibble 5: typeIdx 4 and 5.
         Assert.Equal(1, Op87(world, world.U, 3, 4));
         Assert.Equal(1, Op87(world, world.U, 3, 5));
 
         Assert.Equal(0, Op87(world, world.U, 3, 12)); // past the table of 12: no site in the corpus, never a match here.
-        Assert.Equal(new byte[] { 1, 2, 3, 4, 5, 5, 6, 7, 0x58, 0xD1, 3, 0x80 }, AlundraHitOpcodes.TypeNibbles);
+        Assert.Equal(new byte[] { 1, 2, 3, 4, 5, 5, 6, 7, 0x58, 0xD1, 3, 0x80 }, HitOpcodes.TypeNibbles);
     }
 
     // -----------------------------------------------------------------------------------------
@@ -315,10 +315,10 @@ public sealed class AlundraHitOpcodesTests
         Assert.Equal(1, Op95(world, 14, 5, 0, 2, 2, 0x0100, 0)); // V and A share the bit 8; V is nibble 1
 
         // typeIdx 8..11 with A at nibble 3 and mask 4: only the index 2 (byte 3) and 10 (byte 3) match.
-        world.A.CurrentAttack = new AlundraBalanceAttack(0x03, 2);
+        world.A.CurrentAttack = new BalanceAttack(0x03, 2);
         Assert.Equal(new[] { 1, 0, 0, 0, 1, 0, 0 }, new[] { 2, 3, 8, 9, 10, 11, 12 }.Select(index => Op95(world, 14, 5, 0, 2, 2, 0x0004, index)).ToArray());
 
-        world.A.CurrentAttack = new AlundraBalanceAttack(0x04, 2); // the real nibble 4: 8..11 -> 0 0 0 0
+        world.A.CurrentAttack = new BalanceAttack(0x04, 2); // the real nibble 4: 8..11 -> 0 0 0 0
         Assert.Equal(new[] { 0, 0, 0, 0 }, Enumerable.Range(8, 4).Select(index => Op95(world, 14, 5, 0, 2, 2, 0x0004, index)).ToArray());
     }
 
@@ -342,7 +342,7 @@ public sealed class AlundraHitOpcodesTests
         Assert.Equal(0, Op95(world, 9, 5, 0, 2, 2, 0x0008, 0));
 
         world = new K3World();
-        world.Hero.CurrentAttack = new AlundraBalanceAttack(0, 1);
+        world.Hero.CurrentAttack = new BalanceAttack(0, 1);
         Assert.Equal(0, Op95(world, 9, 5, 0, 2, 2, 0x0008, 0));
 
         world = new K3World();

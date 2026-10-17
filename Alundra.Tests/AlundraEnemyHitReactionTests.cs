@@ -40,12 +40,12 @@ public sealed class AlundraEnemyHitReactionTests
         var entity = new Entity { Name = "attacker", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
         var proxy = (AlundraEntityScriptProxy)entity.GameplayProxy;
-        proxy.CurrentAttack = new AlundraBalanceAttack(attribute, power);
+        proxy.CurrentAttack = new BalanceAttack(attribute, power);
         return entity;
     }
 
     /// <summary>A record whose response to the attack nibble 1 is 0x10 (damage = power): the natural response of the Beannoid and of the Muruta.</summary>
-    private static AlundraBalanceRecord Sheet() => new(255, 15, 9, Enumerable.Repeat((byte)16, 11).ToArray(), Array.Empty<AlundraBalanceAttack>(), null);
+    private static BalanceRecord Sheet() => new(255, 15, 9, Enumerable.Repeat((byte)16, 11).ToArray(), Array.Empty<BalanceAttack>(), null);
 
     /// <summary>The entity of an oracle state: attack (attribute 1, power 1) against a sheet of response 0x10, so one point of life is lost; <paramref name="killed"/> chooses the life that makes <c>ComputeNewHp</c> return true (1) or false (100).</summary>
     private static AlundraEntityScriptProxy Body(int x, int y, bool killed, byte oldByte, uint oldAnimation, uint oldDirection)
@@ -103,7 +103,7 @@ public sealed class AlundraEnemyHitReactionTests
     {
         // K2 of the E20.c1b oracle: an attack with the bit 0x80 adds the power of Attacks[g + 1 < count ? g + 1 : 0] of each equipment record, g = the latch as a signed number
         var records = new AlundraEquipmentRecords();
-        records.Set(AlundraEquipmentRecords.Weapon, new AlundraBalanceRecord(255, 21, 0, new byte[11], new[] { new AlundraBalanceAttack(1, 2), new AlundraBalanceAttack(1, 3), new AlundraBalanceAttack(1, 5) }, null), 4);
+        records.Set(AlundraEquipmentRecords.Weapon, new BalanceRecord(255, 21, 0, new byte[11], new[] { new BalanceAttack(1, 2), new BalanceAttack(1, 3), new BalanceAttack(1, 5) }, null), 4);
         var expected = new Dictionary<uint, int> { [1] = 100 - 6, [0] = 100 - 4, [16] = 100 - 3 };      // (1 + Attacks[2].Power 5), (1 + Attacks[1] 3), (1 + Attacks[0] 2) at response 0x10
         foreach (var (latch, hp) in expected)
         {

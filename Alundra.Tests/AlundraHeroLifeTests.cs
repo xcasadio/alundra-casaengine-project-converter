@@ -84,7 +84,7 @@ public sealed class AlundraHeroLifeTests
 
     private static AlundraItemTables ItemTables() => AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
 
-    private static AlundraBalanceTables BalanceTables() => AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find());
+    private static BalanceTables BalanceTables() => Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
 
     // -----------------------------------------------------------------------------------------
     // The montage: a host with the real tables and a hero that carries its life, an inventory taken from the oracle.
@@ -473,7 +473,7 @@ public sealed class AlundraHeroLifeTests
     public void TheMapLoad_EmptiesThePointersOnly_AndTheSixWordClearEmptiesTheItemWordsToo()
     {
         var records = new AlundraEquipmentRecords();
-        var record = new AlundraBalanceRecord(255, 15, 0, new byte[11], Array.Empty<AlundraBalanceAttack>(), null);
+        var record = new BalanceRecord(255, 15, 0, new byte[11], Array.Empty<BalanceAttack>(), null);
         records.Set(AlundraEquipmentRecords.Armour, record, 0x12);
         records.Set(AlundraEquipmentRecords.Accessory, record, 0x36);
 
@@ -499,7 +499,7 @@ public sealed class AlundraHeroLifeTests
         var records = new AlundraEquipmentRecords();
         for (var slot = 0; slot < periods.Length; slot++)
         {
-            records.Set(slot, new AlundraBalanceRecord(255, 15, periods[slot], new byte[11], Array.Empty<AlundraBalanceAttack>(), null), slot + 1);
+            records.Set(slot, new BalanceRecord(255, 15, periods[slot], new byte[11], Array.Empty<BalanceAttack>(), null), slot + 1);
         }
 
         return records;

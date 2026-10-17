@@ -129,11 +129,11 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
         var items = AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
         PlayerManager.InitializeNewGameInventory(state, items);
         var records = new AlundraEquipmentRecords();
-        PlayerManager.FillEquipmentRecords(state, items, AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0, records);
+        PlayerManager.FillEquipmentRecords(state, items, BalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0, records);
         return _kit = records;
     }
 
-    private static AlundraBalanceRecord Sheet() => AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()).Select(BeannoideAi.SpriteType, 0)!;
+    private static BalanceRecord Sheet() => BalanceTables.GetOrCreate(ProjectRootFinder.Find()).Select(BeannoideAi.SpriteType, 0)!;
 
     private static (Entity Entity, AlundraEntityScriptProxy Proxy) NewHero(IReadOnlyDictionary<string, long> words, long[]? attack)
     {
@@ -147,7 +147,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
         proxy.FloorHeight = H(words["floor_134"]);
         if (attack != null)
         {
-            proxy.CurrentAttack = new AlundraBalanceAttack((int)attack[0], (int)attack[1]);
+            proxy.CurrentAttack = new BalanceAttack((int)attack[0], (int)attack[1]);
         }
 
         return (entity, proxy);

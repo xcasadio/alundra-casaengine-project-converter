@@ -131,14 +131,14 @@ public interface IEntityWorldContext
     IAlundraSoundPlayer? SoundPlayer => null;
 
     /// <summary>
-    /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): this world's three equipment records (<c>0x80146E00-0x80146E14</c>), read by the damage calculation (<see cref="AlundraDamage"/>) of the native handlers that
+    /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): this world's three equipment records (<c>0x80146E00-0x80146E14</c>), read by the damage calculation (<see cref="Damage"/>) of the native handlers that
     /// decide on a hit (E14.a) and of the hero's entry (E20.c2). A default interface member, null like <see cref="ItemTables"/>.
     /// </summary>
     AlundraEquipmentRecords? EquipmentRecords => null;
 
     /// <summary>
-    /// E14.a0b T4 (docs/plan-e14-ia-native.md section 1.2): the frozen animation of the hero (<c>0x80146DF8</c>, <see cref="AlundraHitPass.HeroAnimationLatch"/>), the second input the damage calculation of the native hit handlers needs next to
-    /// <see cref="EquipmentRecords"/> (<see cref="AlundraDamage.ComputeNewHp"/>). A default interface member, 0 like a hero that has not swung, so every existing implementer keeps compiling; <see cref="AlundraWorldProxy"/> returns its hit pass's latch.
+    /// E14.a0b T4 (docs/plan-e14-ia-native.md section 1.2): the frozen animation of the hero (<c>0x80146DF8</c>, <see cref="HitPass.HeroAnimationLatch"/>), the second input the damage calculation of the native hit handlers needs next to
+    /// <see cref="EquipmentRecords"/> (<see cref="Damage.ComputeNewHp"/>). A default interface member, 0 like a hero that has not swung, so every existing implementer keeps compiling; <see cref="AlundraWorldProxy"/> returns its hit pass's latch.
     /// </summary>
     uint HeroAnimationLatch => 0;
 

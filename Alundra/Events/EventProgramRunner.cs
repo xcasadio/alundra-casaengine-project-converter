@@ -804,7 +804,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                 var touched = false;
                 foreach (var match in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
                 {
-                    if (AlundraHitOpcodes.IsTouchedByAttackType(match, v[2]))
+                    if (HitOpcodes.IsTouchedByAttackType(match, v[2]))
                     {
                         touched = true;
                         break;
@@ -819,7 +819,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                        // (24 x, 16 y, 16 z) px with the sizes (24 wx, 16 hy, 24 wx) px (the Z size is the X size); Result = 1 when an attacker (hero first) whose Flags have a bit of
                        // the mask, with a frame box and an attack of the type typeIdx, has its STORED HitBox (AlundraEntityScriptProxy.StoreHitBox) in it; a zero mask answers 0. Size 10.
             {
-                state.Result = AlundraHitOpcodes.AnyAttackerInRectangle(
+                state.Result = HitOpcodes.AnyAttackerInRectangle(
                     _worldContext.SpawnedEntities, _worldContext.PlayerEntity, v[7] | (v[8] << 8), v[9],
                     (v[1] * 24) << 16, (v[2] * 16) << 16, (v[3] * 16) << 16, (v[4] * 24) << 16, (v[5] * 16) << 16) ? 1 : 0;
                 return 10;

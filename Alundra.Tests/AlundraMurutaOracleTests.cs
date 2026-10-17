@@ -149,11 +149,11 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         var items = AlundraItemTables.GetOrCreate(ProjectRootFinder.Find());
         PlayerManager.InitializeNewGameInventory(state, items);
         var records = new AlundraEquipmentRecords();
-        PlayerManager.FillEquipmentRecords(state, items, AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0, records);
+        PlayerManager.FillEquipmentRecords(state, items, BalanceTables.GetOrCreate(ProjectRootFinder.Find()), 0, records);
         return _kit = records;
     }
 
-    private static AlundraBalanceRecord Sheet() => AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()).Select(MurutaAi.SpriteType, 0)!;
+    private static BalanceRecord Sheet() => BalanceTables.GetOrCreate(ProjectRootFinder.Find()).Select(MurutaAi.SpriteType, 0)!;
 
     /// <summary>The hero: position, tile and floor; the frame box FIELD (<paramref name="box"/>) and the current attack (<paramref name="attack"/>, null for a null pointer).</summary>
     private static (Entity Entity, AlundraEntityScriptProxy Proxy) NewHero(IReadOnlyDictionary<string, long> words, long[]? attack, bool box)
@@ -169,7 +169,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         proxy.HasFrameBox = box;
         if (attack != null)
         {
-            proxy.CurrentAttack = new AlundraBalanceAttack((int)attack[0], (int)attack[1]);
+            proxy.CurrentAttack = new BalanceAttack((int)attack[0], (int)attack[1]);
         }
 
         return (entity, proxy);

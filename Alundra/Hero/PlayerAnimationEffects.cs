@@ -165,7 +165,7 @@ internal static class PlayerAnimationEffects
 
     /// <summary>
     /// <c>0x80030600-0x80030624</c>: a cell is a wall when the box is below its height (<c>HitBoxZ &lt; Height &lt;&lt; 20</c>, signed) or when its walkability has the bit <c>0x40</c>. The DLL's Z is the binary's minus 1
-    /// (ADR-0026): the stored box gets one raw unit on this comparison only, as the opcode <c>0x95</c> does (<see cref="AlundraHitOpcodes"/>). A cell outside the field (a test field narrower than the 52 x 60 of
+    /// (ADR-0026): the stored box gets one raw unit on this comparison only, as the opcode <c>0x95</c> does (<see cref="HitOpcodes"/>). A cell outside the field (a test field narrower than the 52 x 60 of
     /// every real map, <see cref="AlundraCellsCollisionField.TryReadBinaryCell"/>) is not a wall.
     /// </summary>
     private static bool IsWall(AlundraCellsCollisionField cells, int column, int row, int hitBoxZ)

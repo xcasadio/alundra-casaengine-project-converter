@@ -31,7 +31,7 @@ public sealed class AlundraHitPassEffectTests
         public readonly Entity Entity;
         public readonly AlundraEntityScriptProxy Proxy;
 
-        public Actor(uint flags, AlundraBalanceRecord? record, bool withBox)
+        public Actor(uint flags, BalanceRecord? record, bool withBox)
         {
             var sprite = new AnimatedSpriteComponent();
             var spriteId = Guid.Parse("bbbbbbbb-0000-0000-0000-000000000001");
@@ -68,13 +68,13 @@ public sealed class AlundraHitPassEffectTests
 
     /// <summary>
     /// A record whose byte at offset <c>nibble + 2</c> (the one the pass reads) is <paramref name="response"/>: the maximum life for the nibble 0, a response for 1 to 11, the number of attacks for 12, then the bytes of the attacks
-    /// (<see cref="AlundraBalanceRecord.ByteAt"/>), so that the 160 pairs of the oracle (nibbles 0 to 15) can all be written.
+    /// (<see cref="BalanceRecord.ByteAt"/>), so that the 160 pairs of the oracle (nibbles 0 to 15) can all be written.
     /// </summary>
-    private static AlundraBalanceRecord SheetWithByte(int nibble, int response)
+    private static BalanceRecord SheetWithByte(int nibble, int response)
     {
         var maxHp = 9;
         var responses = Enumerable.Repeat((byte)16, 11).ToArray();
-        var attacks = new List<AlundraBalanceAttack>();
+        var attacks = new List<BalanceAttack>();
         switch (nibble)
         {
             case 0:
@@ -84,21 +84,21 @@ public sealed class AlundraHitPassEffectTests
                 responses[nibble - 1] = (byte)response;
                 break;
             case 12:
-                attacks.AddRange(Enumerable.Range(0, response).Select(_ => new AlundraBalanceAttack(0, 0)));
+                attacks.AddRange(Enumerable.Range(0, response).Select(_ => new BalanceAttack(0, 0)));
                 break;
             case 13:
-                attacks.Add(new AlundraBalanceAttack(response, 0));
+                attacks.Add(new BalanceAttack(response, 0));
                 break;
             case 14:
-                attacks.Add(new AlundraBalanceAttack(0, response));
+                attacks.Add(new BalanceAttack(0, response));
                 break;
             default:
-                attacks.Add(new AlundraBalanceAttack(0, 0));
-                attacks.Add(new AlundraBalanceAttack(response, 0));
+                attacks.Add(new BalanceAttack(0, 0));
+                attacks.Add(new BalanceAttack(response, 0));
                 break;
         }
 
-        return new AlundraBalanceRecord(255, 255, maxHp, responses, attacks.ToArray(), null);
+        return new BalanceRecord(255, 255, maxHp, responses, attacks.ToArray(), null);
     }
 
     private sealed record Row(int Attribute, int Nibble, int Response, int[] Effects, int Sparks, int CooldownTicks, bool Touched, int HitCounter);
@@ -130,13 +130,13 @@ public sealed class AlundraHitPassEffectTests
     }
 
     /// <summary>One hit of an attacker with the given attribute on a target with the given sheet; returns the journal of what the pass asked for, in order ("fx:4", "spark").</summary>
-    private static (List<string> Journal, Actor Attacker, Actor Target, AlundraHitPass Pass, int TouchedWhenFirstCalled) Hit(int attribute, AlundraBalanceRecord targetSheet, bool withCallback = true)
+    private static (List<string> Journal, Actor Attacker, Actor Target, HitPass Pass, int TouchedWhenFirstCalled) Hit(int attribute, BalanceRecord targetSheet, bool withCallback = true)
     {
-        var attacker = new Actor(EntityFlags.HitsClassA, new AlundraBalanceRecord(255, 17, 9, Enumerable.Repeat((byte)16, 11).ToArray(), new[] { new AlundraBalanceAttack(attribute, 1) }, null), withBox: true);
+        var attacker = new Actor(EntityFlags.HitsClassA, new BalanceRecord(255, 17, 9, Enumerable.Repeat((byte)16, 11).ToArray(), new[] { new BalanceAttack(attribute, 1) }, null), withBox: true);
         var target = new Actor(EntityFlags.ClassA, targetSheet, withBox: false);
         var journal = new List<string>();
         var touchedWhenFirstCalled = -1;
-        var pass = new AlundraHitPass();
+        var pass = new HitPass();
         var list = new List<AlundraEntityScriptProxy> { attacker.Proxy, target.Proxy };
         Action<AlundraEntityScriptProxy, int>? attach = withCallback
             ? (who, id) =>
@@ -221,7 +221,7 @@ public sealed class AlundraHitPassEffectTests
     [Fact]
     public void E3_AHeroTargetWithNullResponses_GetsTheEffectsOfTheNibbles6_7_9_10()
     {
-        var heroSheet = new AlundraBalanceRecord(255, 17, 9, new byte[11], Array.Empty<AlundraBalanceAttack>(), null);
+        var heroSheet = new BalanceRecord(255, 17, 9, new byte[11], Array.Empty<BalanceAttack>(), null);
         foreach (var (attribute, effect) in new[] { (6, 4), (7, 5), (9, 5), (10, 4) })
         {
             Assert.Equal(new[] { "fx:" + effect, "spark" }, Hit(attribute, heroSheet).Journal);
@@ -238,14 +238,14 @@ public sealed class AlundraHitPassEffectTests
     [Fact]
     public void E4_OneEffectPerHit_NotPerPass()
     {
-        var sheet = new AlundraBalanceRecord(255, 17, 9, Enumerable.Repeat((byte)16, 11).ToArray(), new[] { new AlundraBalanceAttack(6, 1) }, null);
-        var sheet7 = new AlundraBalanceRecord(255, 17, 9, Enumerable.Repeat((byte)16, 11).ToArray(), new[] { new AlundraBalanceAttack(7, 1) }, null);
+        var sheet = new BalanceRecord(255, 17, 9, Enumerable.Repeat((byte)16, 11).ToArray(), new[] { new BalanceAttack(6, 1) }, null);
+        var sheet7 = new BalanceRecord(255, 17, 9, Enumerable.Repeat((byte)16, 11).ToArray(), new[] { new BalanceAttack(7, 1) }, null);
         var first = new Actor(EntityFlags.HitsClassA, sheet, withBox: true);
         var second = new Actor(EntityFlags.HitsClassA, sheet7, withBox: true);
         var targetA = new Actor(EntityFlags.ClassA, SheetWithByte(6, 16), withBox: false);
         var targetB = new Actor(EntityFlags.ClassA, SheetWithByte(6, 16), withBox: false);
         var journal = new List<string>();
-        var pass = new AlundraHitPass();
+        var pass = new HitPass();
         var list = new List<AlundraEntityScriptProxy> { first.Proxy, second.Proxy, targetA.Proxy, targetB.Proxy };
         pass.Run(
             list,

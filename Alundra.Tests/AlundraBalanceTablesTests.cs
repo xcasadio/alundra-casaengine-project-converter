@@ -17,11 +17,11 @@ namespace Alundra.Tests;
 /// </summary>
 public sealed class AlundraBalanceTablesTests
 {
-    private static AlundraBalanceRecord Record(int response = 16, params (int Attribute, int Power)[] attacks)
+    private static BalanceRecord Record(int response = 16, params (int Attribute, int Power)[] attacks)
     {
         var responses = Enumerable.Repeat((byte)16, 11).ToArray();
         responses[0] = (byte)response;
-        return new AlundraBalanceRecord(255, 15 + 2 * attacks.Length, 9, responses, attacks.Select(a => new AlundraBalanceAttack(a.Attribute, a.Power)).ToArray(), null);
+        return new BalanceRecord(255, 15 + 2 * attacks.Length, 9, responses, attacks.Select(a => new BalanceAttack(a.Attribute, a.Power)).ToArray(), null);
     }
 
     [Fact]
@@ -76,8 +76,8 @@ public sealed class AlundraBalanceTablesTests
     [Fact]
     public void TheBalanceTables_OfTheExport_HoldTheRecordsTheOracleUses()
     {
-        var tables = AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find());
-        Assert.Same(tables, AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find()));
+        var tables = BalanceTables.GetOrCreate(ProjectRootFinder.Find());
+        Assert.Same(tables, BalanceTables.GetOrCreate(ProjectRootFinder.Find()));
 
         var hero = tables.Select(0, 0)!;
         Assert.Equal(10, hero.MaxHp);
@@ -106,7 +106,7 @@ public sealed class AlundraBalanceTablesTests
     [Fact]
     public void AByteBeyondTheRecord_IsReadFromTheNextRecordOfTheFile()
     {
-        var tables = AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find());
+        var tables = BalanceTables.GetOrCreate(ProjectRootFinder.Find());
         var beannoid = tables.Select(335, 0)!;
         var next = tables.Select(336, 0)!;
         Assert.Equal(17, beannoid.RecordSize);
@@ -115,13 +115,13 @@ public sealed class AlundraBalanceTablesTests
         Assert.Equal(next.RecordSize, beannoid.ByteAt(18));
         Assert.Equal(next.MaxHp, beannoid.ByteAt(19));
         Assert.Equal(beannoid.Attacks[0].Power, beannoid.ByteAt(16)); // inside the record: unchanged.
-        Assert.Equal(0, new AlundraBalanceRecord(255, 15, 9, new byte[11], Array.Empty<AlundraBalanceAttack>(), null).ByteAt(40)); // no follower (a record written by hand): 0, as before.
+        Assert.Equal(0, new BalanceRecord(255, 15, 9, new byte[11], Array.Empty<BalanceAttack>(), null).ByteAt(40)); // no follower (a record written by hand): 0, as before.
     }
 
     [Fact]
     public void TheBalanceIndexIn0x1FTo0x7F_IsReadAs0x1E_AndTheChainAdvancesWhileTheLevelIsBelowTheThreshold()
     {
-        var tables = AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find());
+        var tables = BalanceTables.GetOrCreate(ProjectRootFinder.Find());
         foreach (var index in new[] { 0x1F, 0x31, 0x7F })
         {
             Assert.Same(tables.Select(0x1E, 0), tables.Select(index, 0));
@@ -130,10 +130,10 @@ public sealed class AlundraBalanceTablesTests
         Assert.NotSame(tables.Select(0x1E, 0), tables.Select(0x80, 0));
 
         // An entry whose chain has levels 3 and 7: the threshold picks the first record whose level is not below it (the last one when none is).
-        var last = new AlundraBalanceRecord(255, 15, 30, new byte[11], Array.Empty<AlundraBalanceAttack>(), null);
-        var middle = new AlundraBalanceRecord(7, 15, 20, new byte[11], Array.Empty<AlundraBalanceAttack>(), last);
-        var first = new AlundraBalanceRecord(3, 15, 10, new byte[11], Array.Empty<AlundraBalanceAttack>(), middle);
-        var chain = new AlundraBalanceTables(new Dictionary<int, AlundraBalanceRecord> { [200] = first });
+        var last = new BalanceRecord(255, 15, 30, new byte[11], Array.Empty<BalanceAttack>(), null);
+        var middle = new BalanceRecord(7, 15, 20, new byte[11], Array.Empty<BalanceAttack>(), last);
+        var first = new BalanceRecord(3, 15, 10, new byte[11], Array.Empty<BalanceAttack>(), middle);
+        var chain = new BalanceTables(new Dictionary<int, BalanceRecord> { [200] = first });
         Assert.Equal(10, chain.Select(200, 0)!.MaxHp);
         Assert.Equal(10, chain.Select(200, 3)!.MaxHp);
         Assert.Equal(20, chain.Select(200, 4)!.MaxHp);
@@ -148,20 +148,20 @@ public sealed class AlundraBalanceTablesTests
     [Fact]
     public void TheThresholdIsThePropertyDOfTheMap_AsAString_ZeroWhenMissing()
     {
-        Assert.Equal(0, AlundraBalanceTables.ResolveThreshold(null));
+        Assert.Equal(0, BalanceTables.ResolveThreshold(null));
         var map = new CasaEngine.Framework.Assets.TileMap.TileMapData();
-        Assert.Equal(0, AlundraBalanceTables.ResolveThreshold(map));
+        Assert.Equal(0, BalanceTables.ResolveThreshold(map));
         map.CustomProperties["D"] = "4";
         map.CustomProperties["BalanceLevel"] = "2"; // the byte 9 of the header, NOT the threshold.
-        Assert.Equal(4, AlundraBalanceTables.ResolveThreshold(map));
+        Assert.Equal(4, BalanceTables.ResolveThreshold(map));
         map.CustomProperties["D"] = "not a number";
-        Assert.Equal(0, AlundraBalanceTables.ResolveThreshold(map));
+        Assert.Equal(0, BalanceTables.ResolveThreshold(map));
     }
 
     [Fact]
     public void AnEntityGetsItsRecord_ItsLifeAndMaxLife_AndTheAttackOfItsFirstAnimation_AtItsCreation()
     {
-        var tables = AlundraBalanceTables.GetOrCreate(ProjectRootFinder.Find());
+        var tables = BalanceTables.GetOrCreate(ProjectRootFinder.Find());
         var proxy = new AlundraEntityScriptProxy();
         proxy.SpriteType = 79 | 0x100;
         proxy.TargetAnimationId = 0;
