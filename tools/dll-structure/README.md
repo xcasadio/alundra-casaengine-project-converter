@@ -1,7 +1,7 @@
 # dll-structure
 
 Tooling of the restructuring of the Alundra gameplay DLL (`docs/plan-restructuration-dll.md`, ADR-0075). Python 3, standard library only,
-always run with `python -B`. Read-only on the repository: the only files written are `table.json` and `table.md` (by `gen_table.py`).
+always run with `python -B`. Read-only on the repository except `gen_table.py` (writes `table.json` and `table.md`) and `apply_r2.py` (the working tree of the R2 slice).
 
 | Script | Role |
 |---|---|
@@ -10,6 +10,8 @@ always run with `python -B`. Read-only on the repository: the only files written
 | `check_names.py --table` | The planned names against the engine, MGUI, NvgSharp, packages and BCL: type collisions, namespace segments that would mask a type, a type named like a segment of the DLL. Lists every finding; exit 1 if any. |
 | `check_names.py --tree --stage r2\|r3\|final [--root <folder>]` | The tree of the DLL (working tree, or `<folder>/Alundra`) against the table at that stage: absent file, `.cs` outside the table, type missing under its name, in another namespace or file; then the collision checks on the names really declared. Lists every deviation; exit 1 if any. |
 | `selftest.py <work folder outside the repository>` | Builds synthetic trees from the table and proves the checks fire: conforming tree, wrong namespace, wrong name, extra file, missing file, and a final name changed to `Vector2` (`--table`). |
+| `apply_r2.py <Domain> --move\|--fix` | R2: step 1 `git mv` of the files of a domain to their `r2` path; step 2 the `namespace` lines, the cut of the split types (byte for byte, in a new file), the `using` lines, the `Alundra.Scripts.<T>` qualifications and the source paths read by a test, recomputed from the current location of each type. Writes the working tree (not read-only); commits nothing. `--domains` lists the order; `--dry-run`; `--allow-dirty`. |
+| `prove_r2.py --domain <D> --kind move\|fix [--commit REV]` / `--all --base REV` | R2 proof of a commit (renames at 100 % by the table; cut blocks equal to the bit; every changed line in an allowed class; justified `using` lines) or of the whole range plus the end state. Read-only. |
 
 Finding tags: `[collision]`, `[segment]`, `[nom]`, `[namespace]`, `[fichier]`, `[absent]`, `[hors table]`; warnings: `[avertissement]`.
 
