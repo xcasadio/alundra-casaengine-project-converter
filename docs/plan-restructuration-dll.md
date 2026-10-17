@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; R4 détaillée, à relire. Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; R4 détaillée et READY. Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -716,7 +716,16 @@ ligne d'attribution (la ligne vient du harnais des exécuteurs ; rien n'est pous
 dérivées du nom des classes de test (par exemple les dossiers temporaires `"AlundraSoundPlayerTests_"`) suivent les classes de test en R5 ;
 `prove_r3.py` corrigé une fois en cours de tranche (`b98b6f8`, faux positifs), sans effet sur la vérification indépendante.
 
-## 8. Tranche R4 — Les 9 types cités par les données ; second export ⏳ (détaillée le 2026-10-17, à relire)
+## 8. Tranche R4 — Les 9 types cités par les données ; second export ⏳ (détaillée le 2026-10-17 ; révision 2, relecture de clôture **READY**)
+
+**Relecture (2026-10-17).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) les outils de R2 et R3 ne savent pas traiter les
+types cités (leur table s'arrête à l'étape `r3`, où ces types n'ont pas bougé ; `apply_r2.py` indexe les anciens noms ; l'outil de
+renommage saute les paires où `r2 == r3` ; `prove_r3.py` ne connaît que les paires r2→r3) : T0 verse un `apply_r4.py` et un
+`prove_r4.py`, l'outil de renommage est appelé avec les 9 paires explicites, et l'ordre interne de T2 est fixé ; (2) le relevé des
+littéraux de R4 (51 entrées) est versé en T0 avec la classe et la valeur cible de chacune, la prose de harnais écrite dans une trace
+versionnée étant gardée. Seconde relecture : REVISE, un blocage ; cap de deux relectures atteint, disposition de la session
+principale, FIX, puis une relecture de clôture (révision 2) : (3) T1 se prouve par `prove_r4.py` (mode `move` : les 10 fichiers appariés
+`r3` → `final` par la table, chacun renommé à 100 %, aucun autre fichier changé), pas par `prove_r3.py`.
 
 **But.** Les 9 types que les données citent à leur place finale et sous leur nom final (`final` de `tools/dll-structure/table.json`) :
 `Alundra.Maps.WorldProxy` (avec `MapEvent`), `Alundra.Entities.EntityScriptProxy` (et sa partie `.HitPass`), `Alundra.Hero.HeroController`,
@@ -734,31 +743,55 @@ versionnés). Le convertisseur les écrit en dur (`WorldWriter.cs:142`, `SpriteW
 verrouillent (`WorldWriterTests.cs:113-114`, `PlayerSetupWriterTests.cs:53,60`, `SpriteWriterBodyPrefabTests.cs:59,141`). La DLL et les tests
 les citent par `typeof(X).FullName` (R0), qui suit le renommage. Les littéraux de R3 de classe (1b) qui nomment un des 9 types cités
 (`tools/dll-structure/r3-literals.tsv`, par exemple le préfixe « AlundraWorldProxy: » écrit par `CameraDirector` et `EntitySpawnFactory`)
-changent ici. L'outil de renommage de R3 (`tools/dll-structure/rename-tool/`) et `prove_r3.py` servent tels quels.
+changent ici. L'outil de renommage de R3 (`tools/dll-structure/rename-tool/`) sert en mode `--rename Old=New`
+(paires explicites) ; son mode par domaine saute les paires où `r2 == r3`, ce qui est le cas des 9 types cités. `apply_r2.py` ne lit que
+l'étape `r2` et indexe les anciens noms ; `prove_r3.py` ne connaît que les paires r2→r3 et les sujets de commit de R3 : ni l'un ni l'autre
+ne s'applique tel quel. Le relevé `tools/dll-structure/r3-literals.tsv` porte 51 entrées qui nomment un type cité : 40 de classe (1) (les
+préfixes de journal « AlundraWorldProxy: … », « AlundraEntityScriptProxy: … », « AlundraPlayerController: … », et les tests qui les lisent)
+et 11 de classe (1b), avec `new_name == name` (aucune valeur cible versée) ; trois d'entre elles (`HeroTraceHarnessTests.cs:80,84,87`,
+l'en-tête `SixItemHeader` recopié « verbatim per docs/plan-oracle-heros.md §1.3 ») sont de la prose de harnais écrite dans les quatre
+traces versionnées `docs/hero-trace-389-*.txt` (`HeroTraceHarnessTests.cs:604`, `:702-703`).
 
 **Propriétaire, chemins, budget.** Un `executor` (jugement : la prédiction, l'ordre code → export → tests). Chemins : `Alundra/**`,
-`Alundra.Tests/**`, `tools/AlundraTestSaves/**`, `alundra-casaengine-project-converter/Writers/{WorldWriter,SpriteWriter,PlayerSetupWriter}.cs`
+`Alundra.Tests/**`, `tools/AlundraTestSaves/**`, `tools/dll-structure/` (T0 ; puis `apply_r4.py` et `prove_r4.py` pour les seules
+corrections de leurs règles), `alundra-casaengine-project-converter/Writers/{WorldWriter,SpriteWriter,PlayerSetupWriter}.cs`
 et leurs tests, `alundra-project/UI/Screens/*.design.json`, l'export (`alundra-project/`, en place, fenêtre calme), l'annexe
 `docs/plan-restructuration-annexe/r4/`, ce plan (§8). Rien dans les sous-modules. Budget : une passe d'exécution, une passe de correction au plus ;
 **deux verifiers frais** (rejeu, adversarial), comme R0.
 
 **Tâches.**
-- T0 (commit de docs, avant tout code) : l'annexe `docs/plan-restructuration-annexe/r4/` : copies de `predict_names.py`, `manifest.py`,
-  `diff_manifests.py` de l'annexe `r0/`, avec leurs sommes ; la prédiction pour les noms finaux (les neuf paires ancien → nouveau tirées de
-  `table.json`) : la liste des chemins autorisés, le SHA-1 prédit et la taille de chaque fichier changé, le delta d'octets attendu (le script le
-  calcule ; il n'est pas le même pour chaque clé, les noms finaux ayant des longueurs différentes), `AssetInfos.json` inchangé, nombre de fichiers
-  inchangé, `report.json` seul différent au second export ; l'**export de référence au HEAD** avant tout code, en fenêtre calme : `m0`, l'export,
-  `m1`, seul `report.json` diffère ; les comptes de départ (`Alundra.Tests` Release et Debug, convertisseur).
+- T0 (aucun code de la DLL, avant tout code) : (a) l'annexe `docs/plan-restructuration-annexe/r4/` : copies de `predict_names.py`,
+  `manifest.py`, `diff_manifests.py` de l'annexe `r0/`, avec leurs sommes ; la prédiction pour les noms finaux (les neuf paires
+  ancien → nouveau tirées de `table.json` : `entity=`, `world=`, `controller=` et six `vm=`) : la liste des chemins autorisés, le SHA-1
+  prédit et la taille de chaque fichier changé, le delta d'octets par clé (le script le calcule), `AssetInfos.json` inchangé, nombre de
+  fichiers inchangé, `report.json` seul différent au second export ; l'**export de référence au HEAD** en fenêtre calme : `m0`,
+  l'export, `m1`, seul `report.json` diffère ; les comptes de départ (`Alundra.Tests` Release et Debug, convertisseur). (b) **L'outillage
+  de R4**, versé dans `tools/dll-structure/` : `apply_r4.py`, qui applique aussi les littéraux de `r4-literals.tsv` (étape (3) de T2), et qui calcule, depuis l'emplacement `final` des 10 fichiers et les noms
+  courants (`r3`) de tous les autres types, la ligne `namespace` des 10 fichiers, les `using` de tous les fichiers de la DLL, des tests et
+  de `tools/AlundraTestSaves` (règle de l'emplacement courant de R2, méthode d'extension comprise) et la réécriture des qualifications
+  `Alundra.Scripts.<T>` (code et `cref`) vers le namespace final ; et `prove_r4.py`, qui apparie les fichiers par l'étape `final` : T1 (`--kind move`) = les
+  10 renommages à 100 %, appariés `r3` → `final` ; T2 = seulement des lignes `namespace` des 10 fichiers, des lignes `using`, des qualifications `Alundra.Scripts.`
+  → namespace final, des noms ancien → final dans le code et les `cref` (au plus une qualification ajoutée par Roslyn), les littéraux du
+  relevé de R4 exactement, et les changements nommés du convertisseur et des `design.json` ; preuves sur une copie jetable de l'arbre : le mode `move` vert sur un `git mv` pur des 10 fichiers, une
+  mutation d'un octet en T1 refusée, d'une valeur de test, d'une ligne de corps ou d'un `using` injustifié est refusée ; le T2 rejoué sur la copie
+  compile et `prove_r4.py` y sort 0. (c) **Le relevé des littéraux de R4**, `tools/dll-structure/r4-literals.tsv` : les 51 entrées de
+  `r3-literals.tsv` qui nomment un type cité, chacune avec sa classe de R4 et sa valeur cible exacte : (1) et (1b) renommées vers le nom
+  final ; (4) gardées, dont **la prose de harnais écrite dans une trace versionnée** (`HeroTraceHarnessTests.cs:80,84,87`) ; (5) arrêt et
+  question. Un commit d'outil pour (b) et (c), un commit de docs pour (a).
 - T1 — `git mv` des 10 fichiers cités vers leur chemin final, sans changer un octet (ils gardent `namespace Alundra.Scripts` : la solution se
-  construit telle quelle), construction, `prove_r3.py` (renommages à 100 %), commit
-  `refactor(dll): move the data-cited files into their folders (R4, git mv only)`.
-- T2 — **un seul commit** qui garde tout vert : la ligne `namespace` des 10 fichiers ; les `using` recalculés (règle de R2, `apply_r2.py`) ;
-  l'outil de renommage de R3 sur les 9 types (vérification sémantique comprise) ; les littéraux (1b) de R3 qui nomment un type cité ; les
-  trois littéraux du convertisseur et leurs tests ; les six `design.json` ; construction ; **export 1** en fenêtre calme (aucune construction
-  ni test en cours, `Alundra.dll` non verrouillée, aucun lanceur, éditeur ni jeu) : `m2` contre `m1` avec les chemins autorisés, chaque
-  fichier égal à son SHA-1 prédit, `AssetInfos.json` inchangé ; **export 2** aussitôt : seul `report.json` diffère ; la suite du
-  convertisseur et sa phase 8 `Verification: PASSED` ; `Alundra.Tests` Release (copie neutralisée) et Debug ; `cmp` ; garde des traces ;
-  `prove_r3.py` sur le diff de la DLL et des tests ; commit `refactor(dll): the data-cited types at their final place and name; second export (R4)`.
+  construit telle quelle), construction, `prove_r4.py --kind move` (les 10 fichiers appariés `r3` → `final` par la table, chacun
+  renommé à 100 %, aucun autre fichier changé), commit `refactor(dll): move the data-cited files into their folders (R4, git mv only)`.
+- T2 — **un seul commit** qui garde tout vert, dans cet ordre : (1) l'outil de renommage en mode `--rename` sur les 9 paires explicites
+  (`AlundraEntityScriptProxy` une seule fois pour ses deux parties), quand la solution compile encore sous `Alundra.Scripts` (sa
+  vérification sémantique comprise) ; (2) `apply_r4.py` : la ligne `namespace` des 10 fichiers, les `using`, les qualifications ; (3) les
+  littéraux (1) et (1b) du relevé de R4 ; (4) les trois littéraux du convertisseur et leurs tests ; (5) les six `design.json` ;
+  construction ; **export 1** en fenêtre calme (aucune construction ni test en cours, `Alundra.dll` non verrouillée, aucun lanceur,
+  éditeur ni jeu) : `m2` contre `m1` avec les chemins autorisés, chaque fichier égal à son SHA-1 prédit, `AssetInfos.json` inchangé ;
+  **export 2** aussitôt : seul `report.json` diffère ; la suite du convertisseur et sa phase 8 `Verification: PASSED` ; `Alundra.Tests`
+  Release (copie neutralisée) et Debug ; `cmp` ; garde des traces (les traces versionnées ne changent pas) ; `prove_r4.py` sur le diff de
+  T2 (chaque entrée (1)/(1b) du relevé appliquée, chaque entrée (4) intacte) ; commit
+  `refactor(dll): the data-cited types at their final place and name; second export (R4)`. Une erreur ne se corrige que par une règle
+  des outils de T0 (commit d'outil, rejeu de T2 depuis l'état de T1) : sinon arrêt.
 - T3 — Clôture : `check_names.py --tree --stage final` **vert (sortie 0)** ; aucun type déclaré dans `Alundra/` dont le nom commence par
   `Alundra` ou `IAlundra` ; `Alundra/Scripts/` n'existe plus ; `rg -uu` sur `alundra-project/` : aucun `Alundra.Scripts.` dans
   `script_class_name`, `player_controller_class`, `view_model_type` ; `git log --follow` sur les 10 fichiers ; ce plan (§8 et résultats).
