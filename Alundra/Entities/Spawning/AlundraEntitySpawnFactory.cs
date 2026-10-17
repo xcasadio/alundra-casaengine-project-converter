@@ -20,6 +20,7 @@ using CasaEngine.Framework.Scripting;
 using Microsoft.Xna.Framework;
 using Alundra.Maps.Loop;
 using Alundra.Scripts;
+using Alundra.Events;
 
 namespace Alundra.Entities.Spawning;
 

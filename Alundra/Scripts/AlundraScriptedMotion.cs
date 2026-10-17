@@ -5,6 +5,7 @@ using Alundra.Maps;
 using Alundra.Maps.Loop;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
+using Alundra.Events;
 
 namespace Alundra.Scripts;
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CasaEngine.Framework.AI.Navigation;
 using Alundra.Scripts;
 using Alundra.Entities;
+using Alundra.Events;
 
 namespace Alundra.Maps;
 

@@ -6,6 +6,7 @@ using System.Text.Json;
 using CasaEngine.Core.Logging;
 using CasaEngine.Engine.Environment;
 using Alundra.Scripts;
+using Alundra.Events;
 
 namespace Alundra.Maps;
 

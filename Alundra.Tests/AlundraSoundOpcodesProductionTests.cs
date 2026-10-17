@@ -3,6 +3,7 @@ using System.IO;
 using Alundra.Scripts;
 using Xunit;
 using Alundra.Maps;
+using Alundra.Events;
 
 namespace Alundra.Tests;
 

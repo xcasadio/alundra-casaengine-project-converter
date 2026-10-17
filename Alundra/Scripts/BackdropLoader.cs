@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using CasaEngine.Core.Logging;
 using Alundra.Entities;
+using Alundra.Events;
 
 namespace Alundra.Scripts;
 

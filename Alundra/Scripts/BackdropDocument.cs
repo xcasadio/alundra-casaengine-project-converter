@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using Alundra.Events;
 
 namespace Alundra.Scripts;
 

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
 using Alundra.Entities;
+using Alundra.Events;
 
 namespace Alundra.Tests;
 

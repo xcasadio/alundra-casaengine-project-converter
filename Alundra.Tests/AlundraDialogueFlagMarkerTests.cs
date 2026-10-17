@@ -9,6 +9,7 @@ using CasaEngine.Framework.Dialogue.Yarn;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Session;
+using Alundra.Events;
 
 namespace Alundra.Tests;
 

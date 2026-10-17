@@ -1,4 +1,6 @@
-namespace Alundra.Scripts;
+using Alundra.Scripts;
+
+namespace Alundra.Events;
 
 /// <summary>
 /// Event-program slot constants, ported from

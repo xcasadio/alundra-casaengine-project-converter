@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CasaEngine.Framework.AI.Navigation;
 using Alundra.Scripts;
+using Alundra.Events;
 
 namespace Alundra.Maps;
 

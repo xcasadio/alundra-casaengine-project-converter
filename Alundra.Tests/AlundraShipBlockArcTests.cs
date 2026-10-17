@@ -5,6 +5,7 @@ using System.Linq;
 using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.ArcChecks;
+using Alundra.Events;
 
 namespace Alundra.Tests;
 

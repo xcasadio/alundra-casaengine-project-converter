@@ -1,4 +1,6 @@
-namespace Alundra.Scripts;
+using Alundra.Scripts;
+
+namespace Alundra.Events;
 
 /// <summary>
 /// Seam between the entity event status machine (<see cref="AlundraWorldProxy"/>, ported from

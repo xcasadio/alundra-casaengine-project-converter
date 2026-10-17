@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using Alundra.Maps;
+using Alundra.Events;
 
 namespace Alundra.Scripts;
 

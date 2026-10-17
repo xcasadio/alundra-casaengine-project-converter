@@ -3,6 +3,7 @@ using System;
 using Alundra.Maps;
 using Alundra.Maps.Loop;
 using Alundra.Scripts;
+using Alundra.Events;
 
 namespace Alundra.Session;
 

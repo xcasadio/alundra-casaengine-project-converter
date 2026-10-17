@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using Alundra.Scripts;
 using Alundra.Session;
+using Alundra.Events;
 
 namespace Alundra.Tests;
 

@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Alundra.Scripts;
 using Xunit;
 using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+using Alundra.Events;
 
 namespace Alundra.Tests;
 

@@ -11,6 +11,7 @@ using CasaEngine.Framework.Dialogue.Yarn;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
+using Alundra.Events;
 
 namespace Alundra.Scripts;
 

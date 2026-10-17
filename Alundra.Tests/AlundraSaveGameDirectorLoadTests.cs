@@ -14,6 +14,7 @@ using static Alundra.Tests.SaveGameDirectorTestSupport;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Session;
 using Alundra.Entities;
+using Alundra.Events;
 
 namespace Alundra.Tests;
 

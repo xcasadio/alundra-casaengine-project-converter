@@ -7,6 +7,7 @@ using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Entities;
+using Alundra.Events;
 
 namespace Alundra.Tests;
 

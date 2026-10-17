@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Alundra.Scripts;
 using Xunit;
+using Alundra.Events;
 
 namespace Alundra.Tests;
 

@@ -1,7 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 
-namespace Alundra.Scripts;
+namespace Alundra.Events;
 
 /// <summary>
 /// Verbatim port of the opcode size/name table from

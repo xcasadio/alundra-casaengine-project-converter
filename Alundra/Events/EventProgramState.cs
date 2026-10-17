@@ -1,7 +1,7 @@
 #nullable enable
 using System;
 
-namespace Alundra.Scripts;
+namespace Alundra.Events;
 
 /// <summary>
 /// Port of AlundraEngine.Gameplay.Scripts.EventProgramState (alundra-datas-analyser

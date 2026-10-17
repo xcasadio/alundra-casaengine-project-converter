@@ -4,6 +4,7 @@ using Alundra.Scripts;
 using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Maps;
+using Alundra.Events;
 
 namespace Alundra.Tests;
 

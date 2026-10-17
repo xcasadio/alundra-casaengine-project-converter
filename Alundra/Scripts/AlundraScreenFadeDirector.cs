@@ -2,6 +2,7 @@
 using CasaEngine.Framework.Rendering.Depth;
 using CasaEngine.Framework.Rendering.ScreenEffects;
 using Alundra.Maps;
+using Alundra.Events;
 
 namespace Alundra.Scripts;
 

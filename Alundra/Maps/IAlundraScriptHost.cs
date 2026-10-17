@@ -6,6 +6,7 @@ using CasaEngine.Framework.Assets.Animations;
 using Alundra.Maps.Loop;
 using Alundra.Scripts;
 using Alundra.Session;
+using Alundra.Events;
 
 namespace Alundra.Maps;
 

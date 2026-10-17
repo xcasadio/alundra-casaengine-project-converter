@@ -11,6 +11,7 @@ using static Alundra.Tests.SaveGameDirectorTestSupport;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
+using Alundra.Events;
 
 namespace Alundra.Tests;
 
