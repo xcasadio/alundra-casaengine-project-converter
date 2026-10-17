@@ -93,7 +93,7 @@ Commandes (non déclarées au compilateur) : `<<flag n>>` (anciens exports, plus
 ## Variables
 
 Les variables Yarn sont les drapeaux d'Alundra (ADR-0010, ADR-0011) : ni Yarn ni le moteur ne gardent
-de valeur à eux. `AlundraDialogueDirector` pose `AlundraYarnVariableStorage` sur chaque runner qu'il
+de valeur à eux. `DialogueDirector` pose `YarnVariableStorage` sur chaque runner qu'il
 crée.
 
 | Nom | Drapeau | Type |
@@ -117,12 +117,12 @@ crée.
 - **`GetVariableKind`** : `Stored` pour un nom de drapeau, `Unknown` sinon.
 - **`Clear()`** : ne touche aucune banque ; l'appel est journalisé. Le runner ne l'appelle pas.
 - **Cycle de vie** : celui des banques. `TemporaryFlags` est vidée à chaque entrée de carte ;
-  `GameFlags` est gardée, et sauvegardée sur 64 mots par `AlundraSaveGame` (ADR-0012). Rien de propre
+  `GameFlags` est gardée, et sauvegardée sur 64 mots par `SaveGame` (ADR-0012). Rien de propre
   à Yarn n'est sauvegardé.
 - **Corpus exporté** : aucun des 485 `.dialogue` ne lit ni n'écrit de variable
   (`AlundraYarnVariableCorpusTests`).
 - **Limite** : le chemin dégradé de l'interpréteur, qui joue un nœud sans boîte
-  (`AlundraEventProgramRunner.PlayNodeHeadlessToEnd`), crée son propre runner sans ce stockage. C'est
+  (`EventProgramRunner.PlayNodeHeadlessToEnd`), crée son propre runner sans ce stockage. C'est
   sans effet tant que le corpus n'a pas de variable.
 
 ## Lire une ligne

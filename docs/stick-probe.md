@@ -42,7 +42,7 @@ StickProbe start <state> <nibble>  at each read of the run's start table
    While holding a diagonal, also hold Triangle for about a second (the preparation then the run: the `start 29` lines appear).
 4. Quit the game. The journal is `log.txt` in the working directory of the launched process, rewritten at each launch: copy it
    before starting the game again. It also holds the other traces: `rg StickProbe log.txt` keeps the probe lines (plus one start-up
-warning line, `AlundraStickProbe: ALUNDRA_DEBUG_STICK_PROBE=1 ...`, which says the probe is on).
+warning line, `StickProbe: ALUNDRA_DEBUG_STICK_PROBE=1 ...`, which says the probe is on).
 5. Send the file (or its `StickProbe` lines).
 
 The working directory of the process depends on how the author starts the game; the launcher opens `log.txt` relative to it

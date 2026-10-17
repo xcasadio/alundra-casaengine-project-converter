@@ -26,7 +26,7 @@ déplacements des PNJ y sont de durée nulle, faute de physique).**
 `Alundra.Tests/IntroTraceHarnessTests.cs` (test `IntroTrace_Map389_ProducesOrderedOpcodeAndSystemTrace`)
 rejoue headless (sans rendu) la structure de frame de l'original, en utilisant :
 
-- le vrai interpréteur (`Alundra/Scripts/AlundraEventProgramRunner.cs`), étendu d'une sonde de trace
+- le vrai interpréteur (`Alundra/Events/EventProgramRunner.cs`), étendu d'une sonde de trace
   `TraceSink` (interne, nulle par défaut : un test de nullité par opcode, aucune allocation sur le chemin
   sans sonde) qui rapporte chaque opcode dispatché avec son `EventTraceKind` (`Implemented` / `Degraded` /
   `UnknownSkipped` / `UnknownNoSizeTerminated` / `End` / `Break`) et une référence vers l'`EventProgramState`
@@ -34,8 +34,8 @@ rejoue headless (sans rendu) la structure de frame de l'original, en utilisant :
 - le mapping réel des records (`EntityRecordMapper.Map`) et le chargeur réel des programmes
   (`MapEventProgramLoader.Load`) sur `alundra-project/Maps/The Klark/Ship Klark (beginning)-389/` — les
   données rejouées sont celles que le convertisseur écrit, pas des données synthétiques ;
-- la passe pick/run déjà portée, `AlundraWorldProxy.RunEntityEventsPass`, réutilisée **sans
-  modification** ;
+- la passe pick/run déjà portée (alors `AlundraWorldProxy.RunEntityEventsPass`, retirée depuis : voir
+  `EntityScriptProxy.Update`), réutilisée **sans modification** ;
 - un port headless de `RunMapEvents` (`GameEngine.cs:1667-1718`) : les 7 map-events exécutent leur
   programme B sur l'entité joueur, chacun avec son propre `EventProgramState` ;
 - une extension **trace-only** de l'interpréteur aux slots B–F via les internals
@@ -67,7 +67,7 @@ Tests unitaires ajoutés dans `Alundra.Tests/AlundraEventProgramRunnerTests.cs` 
 - **A. Filtre de spawn au chargement** : `GameEngine.SpawnEntity` (`GameEngine.cs:684-717`) ne spawne un
   record au chargement que si `(SpriteDirection & 0x40) != 0` (et si le joueur est dans sa zone
   `XMin..YMax`). Sur la 389 : 14 entités au chargement, les records 7/8/9/10/18 n'arrivent que par
-  0x2D/0x8B. Le harnais réutilise `AlundraWorldProxy.ShouldSpawnRecord`, qui porte déjà cette règle.
+  0x2D/0x8B. Le harnais réutilise `EntitySpawnFactory.ShouldSpawnRecord`, qui porte déjà cette règle.
 - **B. Spawn dynamique réel** : `SpawnEntityByRecordId` construit une entité depuis le record
   (`Status = Loaded`, direction par `AnimationTables.CardinalDirectionTable`), l'ajoute à la simulation à
   partir de la frame suivante (la passe itère un instantané de la liste, comme la pick-phase de
@@ -85,7 +85,7 @@ Tests unitaires ajoutés dans `Alundra.Tests/AlundraEventProgramRunnerTests.cs` 
   des scripts de porte qui utilisent aussi 0x10/0x11) ; (b) 300 frames sans qu'aucune paire (contexte,
   pc) inédite ne s'exécute (progression, pas opcode distinct : un Wait qui se ré-entre n'est pas un
   progrès) ; (c) plafond 3600 frames.
-- **F. Garde-fous diagnostiques** : `AlundraEventProgramRunner.MaxIterationsPerCall` (depuis E19.a, il
+- **F. Garde-fous diagnostiques** : `EventProgramRunner.MaxIterationsPerCall` (depuis E19.a, il
   remplace la garde de production `ProductionLoopBudget` = 1024 quand il est réglé ; le harnais le règle à
   20 000) et un plafond cumulé côté harnais. Silencieux dans la trace finale ; ils ont
   servi à prouver que le chemin « skip » sur 0x36 bouclait.
@@ -98,7 +98,7 @@ lieu du `EventProgramState` du joueur (`GameEngine.cs:1690-1697` zéroe aussi `C
 `RelativeWarpOffsetX`, `Index`) — les 7 zones couvrent toute la map ; (2) *(corrigé)*
 `RunMapEventsPass` pose désormais `MapEventProgramId = ProgramBMap`, `EventTrigger = mapEvent.Id` (l'index
 d'enregistrement de l'événement, pas sa position dans la liste compactée) et
-`LogicEntity = mapEventEntity` (`AlundraWorldProxy.cs`), et depuis E19.a le runner lit cette entité logique
+`LogicEntity = mapEventEntity` (`WorldProxy.cs`), et depuis E19.a le runner lit cette entité logique
 avant chaque instruction : les opcodes `0x42` et `0x43` la re-ciblent (`0x66` ne la touche pas, contrairement
 à ce que ce point disait) ; (3) le slot F zéroe les forces de l'entité au lieu
 de celles du joueur (`EntityEventHandlers.cs:268-273`) — aucun slot F n'est atteint. Le port de production
@@ -224,7 +224,7 @@ Références dans `alundra-datas-analyser/AlundraTools/AlundraEngine/`.
   spawné que si `PlayerEntity.TileX ∈ [XMin, XMax]`, `TileY ∈ [YMin, YMax]` **et `(SpriteDirection & 0x40)
   != 0`** (`:714-717`) — le héros doit exister avant les records ; 0x2D/0x8B passent `1` et ignorent ces
   deux gates. Sur la 389, 14 records spawnent au chargement ; 7/8/9/10/18 attendent un spawn scripté.
-  `AlundraWorldProxy.ShouldSpawnRecord` (`Alundra/Scripts/AlundraWorldProxy.cs:288-323`) porte déjà ces
+  `EntitySpawnFactory.ShouldSpawnRecord` (`Alundra/Entities/Spawning/EntitySpawnFactory.cs`) porte déjà ces
   règles.
 
 ### 1.4 Création du héros et état de jeu
@@ -322,7 +322,7 @@ gardé par 0x800C du Tick 140), 0x59/0x27 (idem).
 
 | # | 1re frame | Fonction originale | file:line | Rôle | État dans la DLL |
 |---|---|---|---|---|---|
-| 1 | 0 | `GameEngine.ClearTemporaryFlags` | GameEngine.cs:429 | vide `g_temporaryFlags` à l'entrée de map | porté : `AlundraGameState.InstallForMapEntry` vide `TemporaryFlags` à chaque entrée de carte (`AlundraGameState.cs:275-294`, D-T-13 de `plan-transitions-carte.md`) ; l'original vide 64 mots (`0x8008159C`), la DLL ses 1024 (mesure E16.0, `plan-e16-etat-partie.md` §2) |
+| 1 | 0 | `GameEngine.ClearTemporaryFlags` | GameEngine.cs:429 | vide `g_temporaryFlags` à l'entrée de map | porté : `GameState.InstallForMapEntry` vide `TemporaryFlags` à chaque entrée de carte (`GameState.cs:275-294`, D-T-13 de `plan-transitions-carte.md`) ; l'original vide 64 mots (`0x8008159C`), la DLL ses 1024 (mesure E16.0, `plan-e16-etat-partie.md` §2) |
 | 2 | 0 | `GameEngine.ResetCameraAndLoadVRAMAssets` | GameEngine.cs:445 | reset caméra/scroll | non porté |
 | 3 | 0 | `GameEngine.InitializeItems` | GameEngine.cs:454 | table d'objets de la map | non porté |
 | 4 | 0 | `InitializeEntitySlots` → `ResetEntityState` (joueur slot 0) | GameEngine.cs:621-670 | création du héros | non porté (approximé dans le harnais) |
@@ -330,7 +330,7 @@ gardé par 0x800C du Tick 140), 0x59/0x27 (idem).
 | 6 | 0 | `EffectManager.InitializeEffectSlots` | GameEngine.cs:472 | pool d'effets | non porté |
 | 7 | 0 | `GameEngine.WarpPlayer` | GameEngine.cs:878-973 | fondu d'entrée, `g_warpDelayFrames = 10` | non porté |
 | 8 | 0 | `GameEngine.InitializeScrollingMode` | GameEngine.cs:214 | mode de scroll caméra | non porté |
-| 9 | 0 | `HudManager.InitializeHudPositionBeforeHide` | GameEngine.cs:215 | HUD | porté (E19.r R1) : `AlundraHudDirector.InstallForMapEntry` arme l'apparition si le verrou 1662 est posé |
+| 9 | 0 | `HudManager.InitializeHudPositionBeforeHide` | GameEngine.cs:215 | HUD | porté (E19.r R1) : `HudDirector.InstallForMapEntry` arme l'apparition si le verrou 1662 est posé |
 | 10 | 0 | `GameEngine.LoadMapSounds` | GameEngine.cs:216 | BGM/SFX de la map | non porté (audio exporté en Phase 4, non branché) |
 | 11 | 0 | `GraphicManager.ResetDebugRenderingState` | GameEngine.cs:218 | debug | sans objet |
 | 12 | 1 | `PadManager.UpdatePads` | GameEngine.cs:1517 | lecture manette | non branché au proxy |

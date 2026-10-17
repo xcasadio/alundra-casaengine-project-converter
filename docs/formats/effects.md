@@ -11,9 +11,9 @@ free quads cut from an effect sheet: each effect is an animation of image sets, 
 free corners with a PS1 blend mode. Map records create effects at load or by script; the tables hold what they play. None of
 it was exported before E19.g G1, and the entity path cannot carry it (a sprite part is a rectangle plus flips, with no scale,
 no free corners and no per-quad blend mode). Neither the editor nor the engine reads these files: they are raw companions,
-like `events.json` and the backdrop companion. The DLL reads them (E19.g G3a: `AlundraEffectBankLoader`, the reservoir that animates the
+like `events.json` and the backdrop companion. The DLL reads them (E19.g G3a: `EffectBankLoader`, the reservoir that animates the
 slots) and, since E19.g G3c (ADR-0049), pushes every frame the quads of the active slots to the engine's `EffectQuadService`, which
-draws them (`AlundraEffectStage`, `AlundraEffectQuadBuilder`). The two sheets of a world (`SheetTextureAssetId` of the map companion,
+draws them (`EffectStage`, `EffectQuadBuilder`). The two sheets of a world (`SheetTextureAssetId` of the map companion,
 then of the global one) are texture assets of the catalog, resolved by the engine; a `null` id (71 maps) means no sheet of its own.
 
 ## Where it is written

@@ -23,7 +23,7 @@ provient), et un extrait réel tiré d'une conversion complète.
 | [`map-sprite-indices.md`](map-sprite-indices.md) | `Data/map-sprite-indices.json` : pour chaque carte, les indices de la page des cartes dont la fiche de sprite n'est pas nulle (ce que `SpawnWarpEntity` peut faire apparaître sur cette carte). |
 | [`world-index.md`](world-index.md) | `Maps/world-index.json` : la table MapId → chemin du `.world`. |
 | [`misc-data.md`](misc-data.md) | `Data/balance.json`, `UI/wind-sprites.json`, `Sprites/hero/hero_effects.json`. |
-| [`save-game.md`](save-game.md) | La sauvegarde de partie (`AlundraSaveGame`) : écrite en jeu par la DLL à travers le service du moteur, pas par le convertisseur ; champs, domaines, métadonnées. |
+| [`save-game.md`](save-game.md) | La sauvegarde de partie (`SaveGame`) : écrite en jeu par la DLL à travers le service du moteur, pas par le convertisseur ; champs, domaines, métadonnées. |
 
 Voir aussi le [`README.md`](../../README.md) racine pour l'usage du CLI et la disposition générale
 d'un projet converti.

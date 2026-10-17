@@ -2,7 +2,7 @@
 
 Code : [`Writers/SpriteWriter.cs`](../../alundra-casaengine-project-converter/Writers/SpriteWriter.cs)
 (`WriteSpriteRecords`, Phase 3), lu par la DLL dans
-[`SpriteRecordCatalog.cs`](../../Alundra/Scripts/SpriteRecordCatalog.cs). Décisions :
+[`SpriteRecordCatalog.cs`](../../Alundra/Entities/SpriteRecordCatalog.cs). Décisions :
 [ADR-0005](../decisions/0005-inventory-portrait-data-path.md)
 (portrait de l'inventaire) et [ADR-0039](../decisions/0039-the-dialogue-portraits-are-exported-and-linked-from-sprite-records.md)
 (portraits de dialogue), plan [E19.f4a](../plan-e19-opcodes.md) ; [ADR-0061](../decisions/0061-the-break-effect-byte-is-exported-in-every-sprite-record.md)

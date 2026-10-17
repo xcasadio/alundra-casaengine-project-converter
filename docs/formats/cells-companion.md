@@ -285,7 +285,7 @@ chacune indexée par sa cellule PROPRIÉTAIRE (celle qui l'a produite au bake), 
 d'autre. `WallPlacementReplayer.Replay` calcule cette fermeture après la boucle de rejeu principale
 (`FloorPlacementReplayResult.FloorConflictEmitted`) et l'ajoute à `AlundraFloorPlacements` ; le schéma
 ne change pas (pas de colonne « kind » : la formule de tri `cell_y*16 + clamp(depth_slot,0,5)` est
-déjà indépendante de la hauteur côté moteur, voir `Alundra/Scripts/WallPlacementOverlay.cs`).
+déjà indépendante de la hauteur côté moteur, voir `Alundra/Cells/WallPlacementOverlay.cs`).
 
 **Invariant dur** : après la fermeture, `WallPlacementReplayer.FindResidualConflicts` revérifie chaque
 position tenant un placement : aucun plan ne doit plus y porter une tuile non vide qui ne soit pas
@@ -301,7 +301,7 @@ plate, donc aucune divergence observable ; c'est le même argument que « Pourqu
 
 ## Clé de tri côté moteur
 
-`Alundra/Scripts/WallPlacementOverlay.ApplyFloor`/`ComputeFloorSortKey` retire chaque tuile de sol
+`Alundra/Cells/WallPlacementOverlay.ApplyFloor`/`ComputeFloorSortKey` retire chaque tuile de sol
 élevée de sa couche plate (même mécanisme `TileMapComponent.RemoveTile` +
 `AddSortedOverlayTile` que pour les murs) et la réinsère avec
 `Elevation = cell_y*16 + clamp(depth_slot, 0, 5)` - **sans** le biais `+7` des murs. Un sol élevé de

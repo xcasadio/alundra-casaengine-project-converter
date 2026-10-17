@@ -135,7 +135,7 @@ Table de conversion complète pour une entité :
 conversion pixel → écran, mais elle n'est plus appliquée directement par la DLL.** La racine d'une
 entité (un `TransformComponent` inerte pour les prefabs convertis, ou le `PlayerStart` d'un world)
 porte désormais la **pose logique** `(X, Y profondeur non inversé, Z élévation)`, en pixels
-Alundra bruts, écrite par `AlundraWorldProxy.ResolveLogicalPosition` (les trois sites qui posaient
+Alundra bruts, écrite par `EntitySpawnFactory.ResolveLogicalPosition` (les trois sites qui posaient
 autrefois `RootComponent.LocalTransform.Position` en pose de rendu). C'est un
 `RenderProjectionComponent` enfant, porté par le sprite, qui applique cette table à chaque frame
 via `SimulationSpacePolicy.DeriveRenderPosition` sous la politique `TopDownElevation` du world
@@ -189,15 +189,22 @@ des `AnimSets` d'Alundra, et `g_resetDirectionId = 0` signifie donc **down**.
 
 ## 5. Contrats du moteur à respecter
 
-### 5.1 Résolution des classes par nom
+### 5.1 Résolution des classes par nom complet
 
-`ElementFactory.Create<T>(typeName)` cherche par **nom de type simple, insensible à la casse**,
-dans tous les assemblies chargés, et garde le **premier** en cas d'homonymie
-(`GroupBy(x => x.Name).ToDictionary(g => g.Key, g => g.First())`).
+Le moteur crée un objet script (proxy d'entité ou de monde, contrôleur de joueur, mode de jeu, view model
+d'écran) d'après le **nom complet** de sa classe, namespace compris, casse exacte, et **seulement dans
+l'assembly de gameplay enregistrée** (ADR-0075 du moteur). Un nom vide, introuvable, ambigu ou qui désigne
+un type du mauvais genre lève `ScriptTypeResolutionException` à la création ; son message donne la clé, la
+valeur, le fichier, les assemblies cherchées et un indice. Dans l'aperçu de l'éditeur, l'entité ou le monde
+reste sans script et l'inspecteur affiche un avertissement sur sa ligne « Script ». Les composants (le
+`"type"` des JSON) restent résolus par nom simple, insensible à la casse (`ElementFactory.Create<T>`).
 
-→ Les classes de la DLL gameplay référencées depuis le JSON (`script_class_name`,
-`player_controller_class`) **doivent avoir un nom unique dans tout le processus**. Préfixer
-`Alundra…` (`AlundraPlayerController`, pas `PlayerController`).
+→ Les clés `script_class_name`, `player_controller_class` (vide = le `PlayerController` du moteur),
+`mode_class_name` et `view_model_type` portent le nom complet (`Alundra.Maps.WorldProxy`,
+`Alundra.Entities.EntityScriptProxy`, `Alundra.Hero.HeroController`, `Alundra.UI.Hud.HudViewModel`). Dans
+la DLL, un dossier = un namespace `Alundra.<Domaine>`, sans préfixe `Alundra` sur les types, un nom unique
+parmi la DLL, le moteur, MGUI, MonoGame, les paquets et la BCL (contrôlé par
+`tools/dll-structure/check_names.py`), aucun type nommé comme un segment de namespace (ADR-0075 du parent).
 
 ### 5.2 Chargement de la DLL gameplay
 
@@ -222,7 +229,7 @@ map (`TileMapData.CustomProperties`, `ObjectLayers`) : à ce moment le world et 
 FAIT (`CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:443-491`) : le moteur met à jour
 les entités d'abord (`Entity.Update` → composants, enfants, `GameplayProxy.Update`), puis le
 `GameplayProxy` du world. Conséquence pour Alundra ([plan-conversion-totale.md](plan-conversion-totale.md)
-§3) : chaque `AlundraEntityScriptProxy.Update` joue son propre programme (A–F) ; `AlundraWorldProxy.Update`
+§3) : chaque `EntityScriptProxy.Update` joue son propre programme (A–F) ; `WorldProxy.Update`
 ne joue que les MapEvents (programmes B sur l'entité joueur), la boucle de rattrapage des entités
 déclenchées dans la frame, et les services partagés. Ne pas remettre de machine d'états d'entités
 dans le world.

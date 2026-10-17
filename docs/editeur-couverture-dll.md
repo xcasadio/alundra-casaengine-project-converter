@@ -47,11 +47,11 @@ les créer, ni préserver leurs liens.
 |---|---|---|
 | `Maps/**/events/*.events.json` | `EventProgramDocument` | tout le bytecode de la carte |
 | `Maps/**/backdrop/*.backdrop.json` | `BackdropLoader` | parallaxe/fusion des fonds |
-| `Maps/**/effects/*.effects.json`, `Data/effects/effects-global.json` | `AlundraEffectBankLoader` (E19.g G3a), `AlundraEffectStage` (G3c) | enregistrements d'effets de la carte et tables d'animations ; la DLL pousse chaque image au `EffectQuadService` du moteur ; les planches (`SheetTextureAssetId`) sont, elles, des assets `.texture` du catalogue |
+| `Maps/**/effects/*.effects.json`, `Data/effects/effects-global.json` | `EffectBankLoader` (E19.g G3a), `EffectStage` (G3c) | enregistrements d'effets de la carte et tables d'animations ; la DLL pousse chaque image au `EffectQuadService` du moteur ; les planches (`SheetTextureAssetId`) sont, elles, des assets `.texture` du catalogue |
 | `Maps/world-index.json` | les deux ci-dessus + musique | id de carte → chemin du monde |
-| `Maps/music-index.json` | `AlundraMusicIndexTable` | carte → piste musicale |
-| `Sounds/sfx-manifest.json` | `AlundraSoundBank` | id de bruitage → fichiers/boucles |
-| `Musics/bgm-manifest.json` | `AlundraMusicPlayer` | index musical → wav/guid |
+| `Maps/music-index.json` | `MusicIndexTable` | carte → piste musicale |
+| `Sounds/sfx-manifest.json` | `SfxBank` | id de bruitage → fichiers/boucles |
+| `Musics/bgm-manifest.json` | `BgmPlayer` | index musical → wav/guid |
 | `Data/sprite-records.json` | `SpriteRecordCatalog` | records/AnimSets/Sfx |
 | (à venir : `strings.json`, `balance.json`, `control-codes`, `font3-charset`, `wind-sprites`) | E12/E13 | dialogues, HUD |
 
@@ -61,9 +61,11 @@ les créer, ni préserver leurs liens.
 
 ## 3. SÉRIALISÉ MAIS SANS UI — l'aller-retour marche, rien ne l'édite
 
-- [ ] **`script_class_name`** (monde ET entité) — le lien au proxy gameplay, préservé au save mais
-  **aucun sélecteur** ; idem `space_policy`, `player_startup_settings_asset_id`,
-  `gameplay_mode_asset_id`. C'est LE branchement Alundra par excellence.
+- [ ] **`space_policy`** (monde) — préservé au save mais **aucun sélecteur**. Les trois autres clés de ce
+  branchement ont leur ligne dans l'inspecteur (moteur `92d8e847`) : `script_class_name` (monde ET entité)
+  la ligne « Script » (choix parmi les classes de la DLL, avertissement si le nom ne se résout pas ; D-R-11
+  de `docs/plan-restructuration-dll.md`), `player_startup_settings_asset_id` la ligne « Game Mode »,
+  `gameplay_mode_asset_id` la ligne « Gameplay Mode ».
 - [ ] **`CharacterControllerSettings`** — sérialisation complète (les 20 clés), mais la grille
   générique n'édite pas une propriété de type classe : seul un booléen apparaît. Il faut un éditeur
   dédié (gravité, vitesses, masques de marchabilité…).

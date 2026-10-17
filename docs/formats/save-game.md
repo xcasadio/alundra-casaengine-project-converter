@@ -1,9 +1,9 @@
-# Sauvegarde de partie (`AlundraSaveGame`)
+# Sauvegarde de partie (`SaveGame`)
 
-Code : [`AlundraSaveGame.cs`](../../Alundra/Scripts/AlundraSaveGame.cs),
-[`AlundraSaveGameRules.cs`](../../Alundra/Scripts/AlundraSaveGameRules.cs),
-[`AlundraMapSizeReader.cs`](../../Alundra/Scripts/AlundraMapSizeReader.cs),
-[`AlundraChapterFlags.cs`](../../Alundra/Scripts/AlundraChapterFlags.cs). Décisions :
+Code : [`SaveGame.cs`](../../Alundra/SaveGames/SaveGame.cs),
+[`SaveGameRules.cs`](../../Alundra/SaveGames/SaveGameRules.cs),
+[`MapSizeReader.cs`](../../Alundra/Maps/MapSizeReader.cs),
+[`ChapterFlags.cs`](../../Alundra/Session/ChapterFlags.cs). Décisions :
 [ADR-0012](../decisions/0012-alundra-save-game-content-and-validation.md), plan
 [E16](../plan-e16-etat-partie.md) (tranche E16.c).
 
@@ -63,7 +63,7 @@ vivant. Une seule valeur hors domaine, ou une version de données autre que 1, r
 chargement avec un message qui nomme le champ. L'application (`ApplyTo`) efface les 1024 mots de la
 banque `GameFlags` avant de copier les 64 sauvegardés.
 
-Le chargement passe par le chemin des warps (ADR-0013, `AlundraSaveGameDirector`) :
+Le chargement passe par le chemin des warps (ADR-0013, `SaveGameDirector`) :
 1. préconditions : héros présent, aucun chargement en attente, aucun dialogue, aucun inventaire,
    post-traitement et portrait inactifs, aucune transition, aucun fondu maître de la musique armé,
    `PlayerControlFlags == 0` ;
