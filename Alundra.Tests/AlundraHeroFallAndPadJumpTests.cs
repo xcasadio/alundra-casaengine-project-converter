@@ -553,7 +553,7 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         var forceZ = hero.ForceZ;
 
         rig.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.MenuOpen;
-        AlundraGameplayFreeze.Apply(hero, gameplayBlocked: true);
+        GameplayFreeze.Apply(hero, gameplayBlocked: true);
         for (var frame = 0; frame < 5; frame++)
         {
             rig.Step();
@@ -563,7 +563,7 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         }
 
         rig.Host.GameState.PlayerControlFlags = 0;
-        AlundraGameplayFreeze.Apply(hero, gameplayBlocked: false);
+        GameplayFreeze.Apply(hero, gameplayBlocked: false);
         Assert.True(rig.Controller.IsVerticalOwnedExternally);
         rig.Step();
         Assert.Equal(JumpHeights[8], hero.PosZ);
@@ -659,11 +659,11 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
 
         Assert.Equal(0f, rig.Controller.Settings.StepHeight);
         rig.Host.GameState.PlayerControlFlags = AlundraGameState.PlayerControlBits.MenuOpen;
-        AlundraGameplayFreeze.Apply(rig.Hero, gameplayBlocked: true);
+        GameplayFreeze.Apply(rig.Hero, gameplayBlocked: true);
         rig.Step();
         Assert.Equal(0f, rig.Controller.Settings.StepHeight);
         rig.Host.GameState.PlayerControlFlags = 0;
-        AlundraGameplayFreeze.Apply(rig.Hero, gameplayBlocked: false);
+        GameplayFreeze.Apply(rig.Hero, gameplayBlocked: false);
         for (var frame = 0; frame < 40 && rig.Hero.HeroAirborne; frame++)
         {
             rig.Step();

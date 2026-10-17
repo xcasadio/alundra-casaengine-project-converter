@@ -76,7 +76,7 @@ public sealed class AlundraEntityContactArcTests
             previousOnFrame!();
             if (rec7First != null)
             {
-                rec7InList[arc.Frame] = ((IAlundraScriptHost)arc.Proxy).Collidables.Contains(rec7First);
+                rec7InList[arc.Frame] = ((IScriptHost)arc.Proxy).Collidables.Contains(rec7First);
             }
         };
 
@@ -290,7 +290,7 @@ public sealed class AlundraEntityContactArcTests
             previousOnFrame!();
             if (rec41 != null)
             {
-                inList[arc.Frame] = ((IAlundraScriptHost)arc.Proxy).Collidables.Contains(rec41);
+                inList[arc.Frame] = ((IScriptHost)arc.Proxy).Collidables.Contains(rec41);
             }
         };
         arc.PlaceHero(898, 736, 16);
@@ -481,7 +481,7 @@ public sealed class AlundraEntityContactArcTests
         using var arc = new ArcRun(ArrivalSpec(arrival));
         arc.OneFrame();
 
-        var collidables = ((IAlundraScriptHost)arc.Proxy).Collidables;
+        var collidables = ((IScriptHost)arc.Proxy).Collidables;
         Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(arc.Hero, collidables));
         Assert.Null(AlundraEntityCollision.FindEntityCollisionCandidate(arc.Hero, arc.Hero.PosX, arc.Hero.PosY, arc.Hero.PosZ, collidables, EntityFlags.PickupKindMask));
     }

@@ -45,7 +45,7 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
         public NavigationGrid2D? NavigationGrid => null;
     }
 
-    private sealed class PortalHost : IAlundraScriptHost
+    private sealed class PortalHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; set; } = null!;
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }

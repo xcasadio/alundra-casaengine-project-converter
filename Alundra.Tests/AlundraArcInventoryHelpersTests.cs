@@ -35,7 +35,7 @@ public sealed class AlundraArcInventoryHelpersTests
     public void GiveThenEquip_TheHuntersBow_MakesItTheCurrentWeapon_AndTheHeroDrawsIt()
     {
         using var arc = new ArcRun(Spec("E20f0-bow"));
-        var tables = ((IAlundraScriptHost)arc.Proxy).ItemTables!;
+        var tables = ((IScriptHost)arc.Proxy).ItemTables!;
         WaitUntilTheHeroIsFree(arc);
         Assert.Equal(0, ArcRun.State.NumberOfItems[11]); // nothing owned before.
         Assert.Equal(AlundraPlayerManager.NoItem, AlundraPlayerManager.GetItemIdFromCurrentWeapon(ArcRun.State, tables));
@@ -70,7 +70,7 @@ public sealed class AlundraArcInventoryHelpersTests
     public void Equip_ASlotWithNoOwnedItem_ResolvesToNoItem_AndMinusOneUnequips()
     {
         using var arc = new ArcRun(Spec("E20f0-equip"));
-        var tables = ((IAlundraScriptHost)arc.Proxy).ItemTables!;
+        var tables = ((IScriptHost)arc.Proxy).ItemTables!;
 
         arc.Equip(4);
 

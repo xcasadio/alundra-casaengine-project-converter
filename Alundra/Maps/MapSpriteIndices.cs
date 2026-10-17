@@ -20,7 +20,7 @@ namespace Alundra.Maps;
 /// "valid" for every index of 0 to 255 - the bank key of the catalog alone then decides, so a project without the file keeps spawning what its catalog holds.
 /// </para>
 /// </summary>
-public sealed class AlundraMapSpriteIndices
+public sealed class MapSpriteIndices
 {
     private const string DataDirectoryName = "Data";
     private const string FileName = "map-sprite-indices.json";
@@ -31,7 +31,7 @@ public sealed class AlundraMapSpriteIndices
     private readonly Dictionary<int, HashSet<int>> _validByMap = new();
 
     /// <summary>Loads from <c>Data/map-sprite-indices.json</c> under <paramref name="projectPath"/>.</summary>
-    public AlundraMapSpriteIndices(string projectPath)
+    public MapSpriteIndices(string projectPath)
     {
         var filePath = Path.Combine(projectPath, DataDirectoryName, FileName);
 
@@ -40,14 +40,14 @@ public sealed class AlundraMapSpriteIndices
             if (!File.Exists(filePath))
             {
                 Logs.WriteWarning(
-                    $"AlundraMapSpriteIndices: '{filePath}' not found; the indices of the map page are checked against the catalog only (degraded mode, map-sprite-indices).");
+                    $"MapSpriteIndices: '{filePath}' not found; the indices of the map page are checked against the catalog only (degraded mode, map-sprite-indices).");
                 return;
             }
 
             var parsed = JsonSerializer.Deserialize<Dictionary<string, int[]>>(File.ReadAllText(filePath));
             if (parsed == null)
             {
-                Logs.WriteWarning($"AlundraMapSpriteIndices: '{filePath}' parsed to nothing; degraded mode (map-sprite-indices).");
+                Logs.WriteWarning($"MapSpriteIndices: '{filePath}' parsed to nothing; degraded mode (map-sprite-indices).");
                 return;
             }
 
@@ -63,13 +63,13 @@ public sealed class AlundraMapSpriteIndices
         }
         catch (Exception ex)
         {
-            Logs.WriteWarning($"AlundraMapSpriteIndices: failed to load '{filePath}' ({ex.Message}); degraded mode (map-sprite-indices).");
+            Logs.WriteWarning($"MapSpriteIndices: failed to load '{filePath}' ({ex.Message}); degraded mode (map-sprite-indices).");
             _validByMap.Clear();
         }
     }
 
     /// <summary>Test seam: a table built in memory (loaded, whatever the maps it holds).</summary>
-    internal AlundraMapSpriteIndices(IReadOnlyDictionary<int, IReadOnlyList<int>> indicesByMap)
+    internal MapSpriteIndices(IReadOnlyDictionary<int, IReadOnlyList<int>> indicesByMap)
     {
         foreach (var (map, indices) in indicesByMap)
         {
@@ -101,16 +101,16 @@ public sealed class AlundraMapSpriteIndices
     }
 
     /// <summary>Session cache keyed by project path, like <see cref="SpriteRecordCatalog.GetOrCreate"/>: the file is read once per project.</summary>
-    private static readonly Dictionary<string, AlundraMapSpriteIndices> SessionCacheByProjectPath = new();
+    private static readonly Dictionary<string, MapSpriteIndices> SessionCacheByProjectPath = new();
 
     /// <summary>The cached table of <paramref name="projectPath"/>, read on the first request.</summary>
-    public static AlundraMapSpriteIndices GetOrCreate(string projectPath)
+    public static MapSpriteIndices GetOrCreate(string projectPath)
     {
         lock (SessionCacheByProjectPath)
         {
             if (!SessionCacheByProjectPath.TryGetValue(projectPath, out var indices))
             {
-                indices = new AlundraMapSpriteIndices(projectPath);
+                indices = new MapSpriteIndices(projectPath);
                 SessionCacheByProjectPath[projectPath] = indices;
             }
 

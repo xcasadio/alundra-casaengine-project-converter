@@ -202,7 +202,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
     /// <summary>
     /// [R4] mutation "mettre SyncTransform dedans" (docs/plan-transitions-carte.md §3, T2's own mutation
     /// table): the root position of an entity carrying a <see cref="Entity.RootComponent"/> and NO
-    /// <see cref="AlundraEntityScriptProxy.Controller"/> - the only shape <see cref="AlundraFrameSyncPasses.SyncTransform"/>
+    /// <see cref="AlundraEntityScriptProxy.Controller"/> - the only shape <see cref="FrameSyncPasses.SyncTransform"/>
     /// actually writes to (AlundraFrameSyncPasses.cs:168-183: it is a no-op whenever a controller owns the
     /// root) - must keep publishing the entity's CURRENT logical position every frame, even while
     /// <see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/> is posed. Deliberately headless
@@ -266,7 +266,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
         }
     }
 
-    private sealed class BareFreezeTestScriptHost : IAlundraScriptHost
+    private sealed class BareFreezeTestScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpEventProgramRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }

@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 /// exercised directly - this is what each entity's own <c>Update</c> now calls) plus the world's own
 /// catch-up re-scan (<see cref="AlundraWorldProxy.RunPendingEventTriggers"/>, decision D3) and MapEvents
 /// pass (<see cref="AlundraWorldProxy.RunMapEventsPass"/>). Uses a fake <see cref="IEventProgramRunner"/>
-/// recording every RunScript/RunSpriteEvent call, and a fake <see cref="IAlundraScriptHost"/> instead of a
+/// recording every RunScript/RunSpriteEvent call, and a fake <see cref="IScriptHost"/> instead of a
 /// live <see cref="AlundraWorldProxy"/>/<see cref="CasaEngine.Framework.Scene.World.World"/>.
 /// </summary>
 public class AlundraWorldProxyEventPassTests
@@ -39,7 +39,7 @@ public class AlundraWorldProxyEventPassTests
         }
     }
 
-    private sealed class FakeScriptHost : IAlundraScriptHost
+    private sealed class FakeScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; }
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -57,7 +57,7 @@ public class AlundraWorldProxyEventPassTests
         // directly, never through AlundraEntityScriptProxy.Update, so nothing here ever calls this - kept
         // only to satisfy the interface. Auto-closes its own clock each call (own frame per call) in case
         // a future test does call Update, same pattern as every other FakeScriptHost in this test project.
-        private readonly AlundraLogicClock _logicClock = new();
+        private readonly LogicClock _logicClock = new();
         public int LogicTicksThisFrame(float elapsedTime)
         {
             var ticks = _logicClock.TicksThisFrame(elapsedTime);
@@ -73,7 +73,7 @@ public class AlundraWorldProxyEventPassTests
     }
 
     private static AlundraEntityScriptProxy NewEntity(
-        EntityStatus status, int[]? programIndexes = null, IAlundraScriptHost? host = null)
+        EntityStatus status, int[]? programIndexes = null, IScriptHost? host = null)
     {
         var entity = new AlundraEntityScriptProxy { Status = status, ScriptHost = host };
         if (programIndexes != null)
@@ -368,7 +368,7 @@ public class AlundraWorldProxyEventPassTests
     // AlundraWorldProxy.RunMapEventsPass - port of RunMapEvents (GameEngine.cs:1667-1718)
     // ------------------------------------------------------------------------------------------------
 
-    private static AlundraMapEvent NewMapEvent(
+    private static MapEvent NewMapEvent(
         int x1, int y1, int x2, int y2, int programBMap, AlundraEntityScriptProxy player, int id = 0)
         => new() { Id = id, X1 = x1, Y1 = y1, X2 = x2, Y2 = y2, ProgramBMap = programBMap, OriginalProgramBMap = programBMap, Entity = player };
 
@@ -400,7 +400,7 @@ public class AlundraWorldProxyEventPassTests
     /// (0x8003C5F4-0x8003C608), with no effect on the data (no record has a zero program byte). This port's own
     /// <c>mapEvents</c> list is COMPACTED (BuildMapEvents skips records with EventCodesBIndex == 0 entirely), so a B==0 record
     /// preceding a real one shifts the real one's LIST position away from its own record index -
-    /// EventTrigger must still come from <see cref="AlundraMapEvent.Id"/>, never the loop position.
+    /// EventTrigger must still come from <see cref="MapEvent.Id"/>, never the loop position.
     /// </summary>
     [Fact]
     public void RunMapEventsPass_SkippedZeroRecordPrecedingRealOne_EventTriggerUsesRecordIndex_NotListPosition()
@@ -495,7 +495,7 @@ public class AlundraWorldProxyEventPassTests
         => new(document, new AlundraGameState(), world);
 
     /// <summary>One tick: the hero stands on (x, x), one <see cref="AlundraWorldProxy.RunMapEventsPass"/>.</summary>
-    private static void Tick(AlundraEntityScriptProxy hero, AlundraMapEvent mapEvent, IEventProgramRunner runner, int x)
+    private static void Tick(AlundraEntityScriptProxy hero, MapEvent mapEvent, IEventProgramRunner runner, int x)
     {
         hero.TileX = x;
         hero.TileY = x;

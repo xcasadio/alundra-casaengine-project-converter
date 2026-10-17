@@ -63,9 +63,9 @@ public sealed class AlundraNoGravityLandingTests
     }
 
     /// <summary>A script host with a real logic clock (one tick per 0.02 s update) and a hook at the head of each entity update.</summary>
-    private sealed class Host : IAlundraScriptHost
+    private sealed class Host : IScriptHost
     {
-        private readonly AlundraLogicClock _clock = new();
+        private readonly LogicClock _clock = new();
 
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
 
@@ -77,7 +77,7 @@ public sealed class AlundraNoGravityLandingTests
 
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();
 
-        IReadOnlyList<AlundraEntityScriptProxy> IAlundraScriptHost.Collidables => Collidables;
+        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
 
         /// <summary>Called after the head-of-frame pull of the root, before the tick (see the class doc).</summary>
         public Action? AfterPull { get; set; }

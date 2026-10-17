@@ -208,12 +208,12 @@ public sealed class AlundraEntityDestructionTests
         var (entity, proxy) = SpritelessEntity();
 
         proxy.TargetAnimationId = 1;
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
         Assert.Equal(1u, proxy.CurrentAnimationId);
         Assert.Equal(0xD0, proxy.AnimFlags);
 
         proxy.TargetAnimationId = 0;
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
         Assert.Equal(0u, proxy.CurrentAnimationId);
         Assert.Equal(0, proxy.AnimFlags);
     }
@@ -225,7 +225,7 @@ public sealed class AlundraEntityDestructionTests
         proxy.AnimFlags = 0x80;
         proxy.TargetAnimationId = 7;
 
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
 
         Assert.Equal(7u, proxy.CurrentAnimationId);
         Assert.Equal(0, proxy.AnimFlags);
@@ -235,7 +235,7 @@ public sealed class AlundraEntityDestructionTests
         proxy2.AnimFlags = 0x80;
         proxy2.TargetAnimationId = 1;
 
-        AlundraFrameSyncPasses.SyncAnimation(entity2);
+        FrameSyncPasses.SyncAnimation(entity2);
 
         Assert.Equal(0, proxy2.AnimFlags);
     }
@@ -248,12 +248,12 @@ public sealed class AlundraEntityDestructionTests
         var buffer = new List<AlundraEntityScriptProxy>();
 
         proxy.TargetAnimationId = 0;
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
         EntitySupport.BuildCollidables(new[] { proxy }, buffer);
         Assert.Single(buffer);
 
         proxy.TargetAnimationId = 1; // 0xD0 has the bit 0x80
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
         EntitySupport.BuildCollidables(new[] { proxy }, buffer);
         Assert.Empty(buffer);
     }

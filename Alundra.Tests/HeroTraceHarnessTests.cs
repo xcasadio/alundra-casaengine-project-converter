@@ -214,7 +214,7 @@ public class HeroTraceHarnessTests
         }
     }
 
-    private sealed class HeroScriptHost : IAlundraScriptHost
+    private sealed class HeroScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -229,7 +229,7 @@ public class HeroTraceHarnessTests
         {
         }
 
-        private readonly AlundraLogicClock _logicClock = new();
+        private readonly LogicClock _logicClock = new();
 
         /// <summary>Last value this frame's own call computed - the harness's own frame driver reads this
         /// right after <c>World.Update</c> returns to populate the trace's own <c>dllTicks</c> column,

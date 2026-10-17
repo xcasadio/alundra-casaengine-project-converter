@@ -152,7 +152,7 @@ public class AlundraTileHeightAtOffsetTests
         }
     }
 
-    private sealed class NoOpScriptHost : IAlundraScriptHost
+    private sealed class NoOpScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }

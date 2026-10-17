@@ -462,7 +462,7 @@ public sealed class AlundraVisionAndCoastArcTests
 
     /// <summary>
     /// A9 (map 172, Inoa, no flag): the player talks to Wendell through the invisible trigger of record 4 (the production seam of the
-    /// interaction, <see cref="IAlundraScriptHost.ActiveCollisionEntity"/>): its slot F program sets T0 (<c>0x05 @1840</c>), which releases
+    /// interaction, <see cref="IScriptHost.ActiveCollisionEntity"/>): its slot F program sets T0 (<c>0x05 @1840</c>), which releases
     /// Wendell's tick program C[6] (@504). It locks the player (<c>0x10 @530</c>), opens the box (<c>0x0D @534</c>), plays Wendell's
     /// animation 11, a Loop of 90 ticks (<c>0x1A @537</c>), and waits for one turn of it (<c>0x1C [1] @539</c>), which the binary sees 91
     /// ticks after the <c>0x1A</c>; then <c>0x1A [10] @541</c>, <c>0x39 @543</c>, <c>0x06 @544</c> clears T0 and <c>0x11 @547</c> gives the hand
@@ -479,7 +479,7 @@ public sealed class AlundraVisionAndCoastArcTests
         // 1. The end signal: the interaction, the lock and the box (closed at once, one press per page), then the unlock.
         arc.OneFrame();
         arc.OneFrame();
-        ((IAlundraScriptHost)arc.Proxy).ActiveCollisionEntity = arc.EntityByRecord(4);
+        ((IScriptHost)arc.Proxy).ActiveCollisionEntity = arc.EntityByRecord(4);
         arc.RunUntil(() => arc.Has(CProgram, 530, 0x10), "Wendell (C[6]) executes 0x10 @530 after the interaction");
         var f530 = FrameOf(arc, CProgram, 530, 0x10);
         arc.CloseDialogueWithTheButton("the box of Wendell closes");

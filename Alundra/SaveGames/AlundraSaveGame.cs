@@ -235,7 +235,7 @@ public sealed class AlundraSaveGame : ISaveGameData
     /// <summary>
     /// C5: captures from the live world, reading <c>UpdateSavedData</c>'s own sources - the current map from
     /// the "-{id}" suffix of <paramref name="worldName"/> (<see cref="BackdropLoader.TryParseMapIndex"/>, F4:
-    /// the id a warp loads through <see cref="AlundraWorldIndexTable.Resolve"/>), and the hero's tile from
+    /// the id a warp loads through <see cref="WorldIndexTable.Resolve"/>), and the hero's tile from
     /// <see cref="AlundraEntityScriptProxy.TileX"/>/<see cref="AlundraEntityScriptProxy.TileY"/>/
     /// <see cref="AlundraEntityScriptProxy.TileZ"/> (F5). Returns <c>false</c>, without throwing, when the
     /// name carries no id or the hero is missing. Does not validate.
@@ -392,7 +392,7 @@ public sealed class AlundraSaveGame : ISaveGameData
             return Format($"initialMapId = {InitialMapId}, world '{worldPath}' is not in the asset catalog");
         }
 
-        if (!AlundraMapSizeReader.TryRead(rules.ProjectPath, worldPath, out width, out height, out var readError))
+        if (!MapSizeReader.TryRead(rules.ProjectPath, worldPath, out width, out height, out var readError))
         {
             return Format($"initialMapId = {InitialMapId}, map size unreadable: {readError}");
         }

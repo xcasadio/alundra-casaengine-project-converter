@@ -20,7 +20,7 @@ namespace Alundra.Transitions;
 /// portal list and writes nothing, starts no fade, requests no world change, and never calls
 /// <c>HandleWarpTransition</c>. It is the seam T4's <c>AlundraWarpDirector</c> will consume (via
 /// <see cref="AlundraPlayerManager.MovePlayer"/>'s own call site, wired through
-/// <see cref="IAlundraScriptHost.OnPortalTriggerDetected"/> - see that member's own doc) - "exposé par
+/// <see cref="IScriptHost.OnPortalTriggerDetected"/> - see that member's own doc) - "exposé par
 /// une couture que T4 remplira".
 /// </summary>
 internal static class AlundraPortalTrigger

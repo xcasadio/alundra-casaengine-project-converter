@@ -6,7 +6,7 @@ using Alundra.Physics;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Bug fix (user-reported runtime pacing bug - see <see cref="AlundraLogicClock"/>'s own class doc for the
+/// Bug fix (user-reported runtime pacing bug - see <see cref="LogicClock"/>'s own class doc for the
 /// full diagnosis/log evidence): unit coverage for the shared 50 Hz logic clock in isolation, before any
 /// integration with <see cref="Alundra.Scripts.AlundraEntityScriptProxy"/>/<see cref="Alundra.Scripts.AlundraWorldProxy"/>
 /// (see <see cref="AlundraWorldProxyLogicClockTests"/> for that half).
@@ -18,7 +18,7 @@ public class AlundraLogicClockTests
     [Fact]
     public void TicksThisFrame_DtExactlyOneTick_YieldsExactlyOneTickPerFrame_Indefinitely_NoDrift()
     {
-        var clock = new AlundraLogicClock();
+        var clock = new LogicClock();
 
         for (var frame = 0; frame < 1000; frame++)
         {
@@ -54,7 +54,7 @@ public class AlundraLogicClockTests
     [InlineData(7380, 2999)] // 60 s
     public void TicksThisFrame_Dt1Over123_IsExactlyOneTickBehind_WhateverTheDuration(int frames, int expectedTotal)
     {
-        var clock = new AlundraLogicClock();
+        var clock = new LogicClock();
         const float dt = 1f / 123f;
 
         var total = 0;
@@ -77,7 +77,7 @@ public class AlundraLogicClockTests
     [Fact]
     public void TicksThisFrame_LongStallFrame_CapsAtMaxTicksPerFrame()
     {
-        var clock = new AlundraLogicClock();
+        var clock = new LogicClock();
 
         var ticks = clock.TicksThisFrame(1f); // a 1-second stall
         clock.CloseFrame();
@@ -88,7 +88,7 @@ public class AlundraLogicClockTests
     [Fact]
     public void TicksThisFrame_StallFrame_DropsLeftoverPastTheCap_NextFrameStartsFresh()
     {
-        var clock = new AlundraLogicClock();
+        var clock = new LogicClock();
 
         clock.TicksThisFrame(1f); // stall: capped at MaxTicksPerFrame, leftover dropped (accumulator reset)
         clock.CloseFrame();
@@ -104,7 +104,7 @@ public class AlundraLogicClockTests
     [Fact]
     public void TicksThisFrame_LeftoverCarries_TwoSubThresholdFrames_ZeroThenOne()
     {
-        var clock = new AlundraLogicClock();
+        var clock = new LogicClock();
         const float dt = 1f / 75f; // < FixedTickSeconds (1/50) on its own, two of them exceed it
 
         var first = clock.TicksThisFrame(dt);
@@ -119,7 +119,7 @@ public class AlundraLogicClockTests
     [Fact]
     public void TicksThisFrame_AllCallersInOneFrame_ObserveTheSameCount()
     {
-        var clock = new AlundraLogicClock();
+        var clock = new LogicClock();
 
         var first = clock.TicksThisFrame(1f / 123f);
         var second = clock.TicksThisFrame(1f / 123f); // same frame - memo, elapsedTime ignored
@@ -138,7 +138,7 @@ public class AlundraLogicClockTests
     [Fact]
     public void TicksThisFrame_WithoutClosingFrame_KeepsReturningTheSameMemoizedValue()
     {
-        var clock = new AlundraLogicClock();
+        var clock = new LogicClock();
 
         var first = clock.TicksThisFrame(FixedTickSeconds);
         var second = clock.TicksThisFrame(FixedTickSeconds); // no CloseFrame in between

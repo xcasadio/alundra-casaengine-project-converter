@@ -24,7 +24,7 @@ namespace Alundra.Maps;
 /// <see cref="JsonElement.TryGetInt32"/>, never a conversion that throws (C4, SC6). The width and height are
 /// returned as read; the caller checks they are at least 1.</para>
 /// </summary>
-public static class AlundraMapSizeReader
+public static class MapSizeReader
 {
     private const string TileMapFolderName = "tilemap";
     private const string TileMapExtension = ".tileMap";

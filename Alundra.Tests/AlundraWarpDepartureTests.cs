@@ -121,7 +121,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
     /// <summary>Wires <c>entity.GameplayProxy</c> to the returned proxy through the real
     /// <c>GameplayProxyClassName</c>/<see cref="Entity.Initialize()"/> factory path (NOT
     /// <c>proxy.Initialize(new Entity())</c>, which only sets <c>Owner</c> and leaves the entity's own
-    /// <c>GameplayProxy</c> null - a gap <see cref="AlundraFrameSyncPasses.SyncAnimation"/> silently
+    /// <c>GameplayProxy</c> null - a gap <see cref="FrameSyncPasses.SyncAnimation"/> silently
     /// no-ops on, since it keys off <c>entity.GameplayProxy</c>, not <c>proxy.Owner</c>) - same pattern
     /// as <see cref="NewNpcEntityWithEventTrigger"/>/<see cref="AlundraWorldProxyEntityManipulationTests.NewEntityWithProxy"/>.</summary>
     private static AlundraEntityScriptProxy NewPlayer(int posXPixels, int posYPixels)
@@ -190,7 +190,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             var arrivalDirectionId = AnimationTables.CardinalDirectionTable[portal.ArrivalDirectionIndex];
             Assert.Equal(0x10u, arrivalDirectionId); // §1.2.c's own note: index 1 gives 0x10, never 1.
 
-            ((IAlundraScriptHost)proxy).OnPortalTriggerDetected(portal, arrivalDirectionId);
+            ((IScriptHost)proxy).OnPortalTriggerDetected(portal, arrivalDirectionId);
 
             // The gel starts THIS SAME call (D-T-6).
             Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
@@ -328,7 +328,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         proxy1.PlayerEntity = player;
 
         var portal = Map389Portal0();
-        ((IAlundraScriptHost)proxy1).OnPortalTriggerDetected(portal, 0x10);
+        ((IScriptHost)proxy1).OnPortalTriggerDetected(portal, 0x10);
 
         Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
         Assert.True(AlundraWarpDirector.Instance.IsDepartureArmedForTests);
@@ -503,7 +503,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.PlayerEntity = player;
 
             var portal = Map389PortalTo(45, warpBehaviorId: 1);
-            ((IAlundraScriptHost)proxy389).OnPortalTriggerDetected(portal, 0x10);
+            ((IScriptHost)proxy389).OnPortalTriggerDetected(portal, 0x10);
 
             // F2: the departure only RECORDS the request - nothing armed yet, same frame it was requested.
             Assert.Single(backend.StreamVoices);
@@ -562,7 +562,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.PlayerEntity = player;
 
             var portal = Map389PortalTo(45, warpBehaviorId: 1);
-            ((IAlundraScriptHost)proxy389).OnPortalTriggerDetected(portal, 0x10); // same frame, before Update.
+            ((IScriptHost)proxy389).OnPortalTriggerDetected(portal, 0x10); // same frame, before Update.
 
             // Nothing started yet at all - map entry only loads and arms the flag (B7); the departure
             // only records its own request (F2).
@@ -609,7 +609,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.PlayerEntity = player;
 
             var portal = Map389PortalTo(45, warpBehaviorId: 3);
-            ((IAlundraScriptHost)proxy389).OnPortalTriggerDetected(portal, 0x10);
+            ((IScriptHost)proxy389).OnPortalTriggerDetected(portal, 0x10);
 
             // F2: the departure only RECORDS the request - the voice is still playing right after it.
             Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
@@ -668,7 +668,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.PlayerEntity = player;
 
             var portal = Map389PortalTo(45, warpBehaviorId: 5);
-            ((IAlundraScriptHost)proxy389).OnPortalTriggerDetected(portal, 0x10);
+            ((IScriptHost)proxy389).OnPortalTriggerDetected(portal, 0x10);
 
             proxy389.Update(0.02f); // frame close: evaluates the pending departure (F2).
 
@@ -709,7 +709,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
             proxy389.PlayerEntity = player;
 
-            ((IAlundraScriptHost)proxy389).OnPortalTriggerDetected(Map389Portal0(), 0x10); // DestMapId 390.
+            ((IScriptHost)proxy389).OnPortalTriggerDetected(Map389Portal0(), 0x10); // DestMapId 390.
 
             proxy389.Update(0.02f); // frame close: evaluates the pending departure (F2) - index égal, rien.
 

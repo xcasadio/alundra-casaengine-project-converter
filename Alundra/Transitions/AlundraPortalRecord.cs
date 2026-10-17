@@ -16,7 +16,7 @@ namespace Alundra.Transitions;
 ///
 /// A plain mutable class (not a record/struct): built once per world load by
 /// <see cref="AlundraWorldProxy.BuildPortals"/> and never mutated afterward - mutability here is just to
-/// match the object-initializer style <see cref="AlundraMapEvent"/> already uses, not a design need.
+/// match the object-initializer style <see cref="MapEvent"/> already uses, not a design need.
 /// </summary>
 public sealed class AlundraPortalRecord
 {

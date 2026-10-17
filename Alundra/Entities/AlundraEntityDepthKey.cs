@@ -23,7 +23,7 @@ internal static class AlundraEntityDepthKey
         }
     }
 
-    /// <summary>The key of <paramref name="proxy"/>: its <c>PosY</c>, the IDSV of the sprite it shows (<see cref="AlundraFrameSyncPasses.ResolveIdsv"/>) and its <c>PosZ + 1</c>.</summary>
+    /// <summary>The key of <paramref name="proxy"/>: its <c>PosY</c>, the IDSV of the sprite it shows (<see cref="FrameSyncPasses.ResolveIdsv"/>) and its <c>PosZ + 1</c>.</summary>
     internal static uint Compute(AlundraEntityScriptProxy proxy)
-        => Compute(proxy.PosY, AlundraFrameSyncPasses.ResolveIdsv(proxy), unchecked(proxy.PosZ + 1));
+        => Compute(proxy.PosY, FrameSyncPasses.ResolveIdsv(proxy), unchecked(proxy.PosZ + 1));
 }

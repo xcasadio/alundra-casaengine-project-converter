@@ -137,7 +137,7 @@ public class AlundraRepeatAnimationOpcodeTests
         Assert.Equal(1, h.State.Parameters[2]);
         Assert.Equal(1, proxy.ForceResetAnimationFlag);
 
-        AlundraFrameSyncPasses.SyncAnimation(entity); // the switch the count asked for.
+        FrameSyncPasses.SyncAnimation(entity); // the switch the count asked for.
 
         Assert.Equal(0, proxy.ForceResetAnimationFlag);
         Assert.False(proxy.HoldCountedAwaitingSwitch);
@@ -289,7 +289,7 @@ public class AlundraRepeatAnimationOpcodeTests
         var (entity, proxy) = BuildEntity(withSprite);
         proxy.TargetAnimationId = 5;
 
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
 
         Assert.Equal(5u, proxy.CurrentAnimationId);
         Assert.Equal(0, proxy.ForceResetAnimationFlag);
@@ -304,7 +304,7 @@ public class AlundraRepeatAnimationOpcodeTests
         var (entity, proxy) = BuildEntity(withSprite);
         proxy.TargetDirection = 6; // row 0, column 2: animation direction 2.
 
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
 
         Assert.Equal(2, proxy.AnimationDirection);
         Assert.Equal(0, proxy.ForceResetAnimationFlag);
@@ -319,7 +319,7 @@ public class AlundraRepeatAnimationOpcodeTests
         var (entity, proxy) = BuildEntity(withSprite);
         proxy.PendingChainRestartFlag = 1;
 
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
 
         Assert.Equal(0, proxy.ForceResetAnimationFlag);
         Assert.Equal(2, proxy.AnimCompleteCounter);
@@ -332,7 +332,7 @@ public class AlundraRepeatAnimationOpcodeTests
     {
         var (entity, proxy) = BuildEntity(withSprite);
 
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
 
         Assert.Equal(1, proxy.ForceResetAnimationFlag);
         Assert.Equal(2, proxy.AnimCompleteCounter);
@@ -369,7 +369,7 @@ public class AlundraRepeatAnimationOpcodeTests
 
         proxy.TargetAnimationId = 0;
         proxy.CurrentAnimationId = ~0u;
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
         proxy.AnimationSwitchTickOwed = false;
         return (entity, sprite, proxy);
     }
@@ -388,7 +388,7 @@ public class AlundraRepeatAnimationOpcodeTests
         proxy.AnimationSwitchTicksReserved = reserved;
         proxy.HoldCountedAwaitingSwitch = true;
 
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
 
         Assert.False(proxy.HoldCountedAwaitingSwitch);
         Assert.Equal(5u, proxy.CurrentAnimationId);
@@ -404,7 +404,7 @@ public class AlundraRepeatAnimationOpcodeTests
         sprite.AdvanceLogicalTicks(4);
         proxy.AnimationSwitchTicksReserved = 2;
 
-        AlundraFrameSyncPasses.SyncAnimation(entity); // no change pending.
+        FrameSyncPasses.SyncAnimation(entity); // no change pending.
 
         Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
         Assert.Equal(4, sprite.LogicalTick);
@@ -413,7 +413,7 @@ public class AlundraRepeatAnimationOpcodeTests
         proxy.Status = EntityStatus.FlagToDestroy;
         proxy.AnimationSwitchTicksReserved = 2;
 
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
 
         Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
     }
@@ -425,7 +425,7 @@ public class AlundraRepeatAnimationOpcodeTests
         sprite.AdvanceLogicalTicks(4);
         proxy.TargetAnimationId = 9; // not one of the sprite's animations.
 
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
 
         Assert.Equal(9u, proxy.CurrentAnimationId);
         Assert.EndsWith("_anim0_down", sprite.CurrentAnimation!.Animation2dData.Name);
@@ -445,7 +445,7 @@ public class AlundraRepeatAnimationOpcodeTests
         proxy.TargetAnimationId = 3;
         proxy.CurrentAnimationId = ~3u;
 
-        AlundraFrameSyncPasses.SyncAnimation(entity);
+        FrameSyncPasses.SyncAnimation(entity);
 
         Assert.Equal(3u, proxy.CurrentAnimationId);
         Assert.Null(sprite.CurrentAnimation);
@@ -460,7 +460,7 @@ public class AlundraRepeatAnimationOpcodeTests
         proxy.TargetAnimationId = 5; // Current is 0: a switch is pending.
         proxy.AnimationSwitchTickOwed = true;
 
-        AlundraFrameSyncPasses.StepAnimationClock(proxy);
+        FrameSyncPasses.StepAnimationClock(proxy);
 
         Assert.Equal(1, proxy.AnimationSwitchTicksReserved);
         Assert.False(proxy.AnimationSwitchTickOwed);
@@ -474,7 +474,7 @@ public class AlundraRepeatAnimationOpcodeTests
         sprite.AdvanceLogicalTicks(4);
         proxy.AnimationSwitchTickOwed = true;
 
-        AlundraFrameSyncPasses.StepAnimationClock(proxy);
+        FrameSyncPasses.StepAnimationClock(proxy);
 
         Assert.False(proxy.AnimationSwitchTickOwed);
         Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
@@ -487,7 +487,7 @@ public class AlundraRepeatAnimationOpcodeTests
         var (_, sprite, proxy) = BuildClockedEntity();
         sprite.AdvanceLogicalTicks(4);
 
-        AlundraFrameSyncPasses.StepAnimationClock(proxy);
+        FrameSyncPasses.StepAnimationClock(proxy);
 
         Assert.Equal(5, sprite.LogicalTick);
         Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
@@ -502,7 +502,7 @@ public class AlundraRepeatAnimationOpcodeTests
         proxy.TargetDirection = 6; // row 0, column 2: animation direction 2.
         var turns = proxy.AnimCompleteCounter;
 
-        AlundraFrameSyncPasses.StepAnimationClock(proxy);
+        FrameSyncPasses.StepAnimationClock(proxy);
 
         Assert.Equal(1, proxy.AnimationSwitchTicksReserved);
         Assert.False(proxy.AnimationSwitchTickOwed);
@@ -515,12 +515,12 @@ public class AlundraRepeatAnimationOpcodeTests
     {
         var (entity, sprite, proxy) = BuildClockedEntity();
         proxy.TargetAnimationId = 6;
-        AlundraFrameSyncPasses.SyncAnimation(entity); // plays animation 6: a Once of 2 ticks, chaining to 0.
+        FrameSyncPasses.SyncAnimation(entity); // plays animation 6: a Once of 2 ticks, chaining to 0.
         proxy.AnimationSwitchTickOwed = false;
-        AlundraFrameSyncPasses.StepAnimationClock(proxy); // tick 1.
+        FrameSyncPasses.StepAnimationClock(proxy); // tick 1.
         Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
 
-        AlundraFrameSyncPasses.StepAnimationClock(proxy); // tick 2: the end.
+        FrameSyncPasses.StepAnimationClock(proxy); // tick 2: the end.
 
         Assert.Equal(1, proxy.AnimationSwitchTicksReserved);
         Assert.Equal(1, proxy.PendingChainRestartFlag);
@@ -535,7 +535,7 @@ public class AlundraRepeatAnimationOpcodeTests
         proxy.Status = EntityStatus.FlagToDestroy;
         proxy.TargetAnimationId = 5;
 
-        AlundraFrameSyncPasses.StepAnimationClock(proxy);
+        FrameSyncPasses.StepAnimationClock(proxy);
 
         Assert.Equal(0, proxy.AnimationSwitchTicksReserved);
         Assert.Equal(4, sprite.LogicalTick);
@@ -543,7 +543,7 @@ public class AlundraRepeatAnimationOpcodeTests
         var (_, bare) = BuildEntity(withSprite: false);
         bare.TargetAnimationId = 5;
 
-        AlundraFrameSyncPasses.StepAnimationClock(bare);
+        FrameSyncPasses.StepAnimationClock(bare);
 
         Assert.Equal(0, bare.AnimationSwitchTicksReserved);
     }
@@ -559,7 +559,7 @@ public class AlundraRepeatAnimationOpcodeTests
         chain.PendingChainRestartFlag = 1;
         var (steadyEntity, steady) = BuildEntity(withSprite: false);
 
-        AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches(new[] { pendingEntity, chainEntity, steadyEntity });
+        FrameSyncPasses.ClearHoldFlagsOfPendingSwitches(new[] { pendingEntity, chainEntity, steadyEntity });
 
         Assert.Equal(0, pending.ForceResetAnimationFlag);
         Assert.False(pending.HoldCountedAwaitingSwitch);

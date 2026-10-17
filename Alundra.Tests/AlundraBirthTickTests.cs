@@ -289,7 +289,7 @@ public sealed class AlundraBirthTickTests : IDisposable
     // (c) a world with ticks of its own: no participation.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private sealed class SelfDrivenHost : IAlundraScriptHost
+    private sealed class SelfDrivenHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; set; } = null!;
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -307,7 +307,7 @@ public sealed class AlundraBirthTickTests : IDisposable
     [Fact]
     public void AHostWithTicksOfItsOwn_HasNoCollisionFieldByDefault_AndTheMarkerChangesNothingToThe_Read()
     {
-        IAlundraScriptHost host = new SelfDrivenHost();
+        IScriptHost host = new SelfDrivenHost();
         Assert.False(host.DrivesEntityTicks);
         Assert.Null(host.CollisionField);
         var entity = new Entity { Name = "marked", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
@@ -487,7 +487,7 @@ public sealed class AlundraBirthTickTests : IDisposable
         Assert.True(proxy.SpawnAnimationActive);
         Assert.Equal(~0u, proxy.CurrentAnimationId);
         Assert.Equal(~(uint)direction, proxy.CurrentDirection);
-        Assert.True(AlundraFrameSyncPasses.TryResolveAnimationTarget(proxy, out _, out _)); // pending in the four directions (a switch with Current = Target would not be for the direction 0).
+        Assert.True(FrameSyncPasses.TryResolveAnimationTarget(proxy, out _, out _)); // pending in the four directions (a switch with Current = Target would not be for the direction 0).
 
         arc.OneFrame();
         Assert.False(proxy.SpawnAnimationActive);

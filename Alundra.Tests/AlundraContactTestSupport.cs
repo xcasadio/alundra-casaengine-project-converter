@@ -49,9 +49,9 @@ internal sealed class FlatGroundField : ICollisionField
 /// (the status goes to <see cref="EntityStatus.FlagToDestroy"/>) and a collidable list rebuilt by <see cref="Rebuild"/> from
 /// <see cref="All"/> with <see cref="EntitySupport.BuildCollidables"/>, as <c>AlundraWorldProxy.RefreshUpdateProxiesAndCollidables</c>.
 /// </summary>
-internal sealed class ContactHost : IAlundraScriptHost
+internal sealed class ContactHost : IScriptHost
 {
-    private readonly AlundraLogicClock _clock = new();
+    private readonly LogicClock _clock = new();
 
     private sealed class NoOpRunner : IEventProgramRunner
     {
@@ -100,7 +100,7 @@ internal sealed class ContactHost : IAlundraScriptHost
 
     public List<AlundraEntityScriptProxy> Collidables { get; } = new();
 
-    IReadOnlyList<AlundraEntityScriptProxy> IAlundraScriptHost.Collidables => Collidables;
+    IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
 
     public List<(AlundraEntityScriptProxy Entity, int EffectId)> Destroyed { get; } = new();
 

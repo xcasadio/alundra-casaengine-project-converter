@@ -79,7 +79,7 @@ public sealed class AlundraWarpDirector
 
     private GameManager? _gameManager;
     private IAlundraSoundPlayer? _soundPlayer;
-    private AlundraWorldIndexTable? _worldIndex;
+    private WorldIndexTable? _worldIndex;
 
     /// <summary>B17 (docs/plan-bgm-demarrage-binaire.md, D8/P7): the SAME session-cached bank
     /// <see cref="AlundraSoundBank.GetOrCreate"/> hands every other reader - read-only here, to test the
@@ -99,7 +99,7 @@ public sealed class AlundraWarpDirector
     /// </summary>
     private int _sequenceTicks;
 
-    /// <summary>The chemin resolved by <see cref="AlundraWorldIndexTable.Resolve"/> at
+    /// <summary>The chemin resolved by <see cref="WorldIndexTable.Resolve"/> at
     /// <see cref="BeginDeparture"/> time, held until the outgoing fade settles (§1.1.e: "émis seulement
     /// une fois le fondu stabilisé") - D-T-15's own "demande de changement de monde" row.</summary>
     private string? _pendingWorldPath;
@@ -247,7 +247,7 @@ public sealed class AlundraWarpDirector
     {
         _gameManager = gameManager;
         _soundPlayer = soundPlayer;
-        _worldIndex = new AlundraWorldIndexTable(projectPath);
+        _worldIndex = new WorldIndexTable(projectPath);
         _soundBank = AlundraSoundBank.GetOrCreate(projectPath); // B17: departure sound silence test
     }
 
@@ -308,7 +308,7 @@ public sealed class AlundraWarpDirector
 
     /// <summary>
     /// Port of <c>PlayerManager.HandleWarpTransition</c> (<c>PlayerManager.cs:3488-3541</c>, §1.2.c) -
-    /// called from <see cref="AlundraWorldProxy"/>'s own <see cref="IAlundraScriptHost.OnPortalTriggerDetected"/>
+    /// called from <see cref="AlundraWorldProxy"/>'s own <see cref="IScriptHost.OnPortalTriggerDetected"/>
     /// override, i.e. from INSIDE <paramref name="player"/>'s own <see cref="AlundraEntityScriptProxy.Update"/>
     /// this same frame (<see cref="AlundraPlayerManager.MovePlayer"/>'s own call site) - so
     /// <see cref="IsTransitionInProgress"/> is already true by the time this SAME frame's

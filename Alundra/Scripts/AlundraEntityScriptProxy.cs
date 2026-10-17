@@ -65,7 +65,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
 
     /// <summary>
     /// Seam over the world-level services this entity's own pick/run pass needs (see
-    /// <see cref="IAlundraScriptHost"/>'s own doc) - set once per spawn by whichever
+    /// <see cref="IScriptHost"/>'s own doc) - set once per spawn by whichever
     /// <see cref="AlundraWorldProxy"/> created this entity (<c>InitializeWithWorld</c> /
     /// <c>SpawnEntityByRecordId</c>), never by <see cref="Clone"/> (a cloned prefab has not been spawned
     /// into any world yet, so there is no host to carry over - the spawner always sets its own reference
@@ -73,7 +73,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// every other override on this class staying a safe no-op before the entity is actually spawned - see
     /// the class-level note above <see cref="InitializeWithWorld"/>).
     /// </summary>
-    internal IAlundraScriptHost? ScriptHost;
+    internal IScriptHost? ScriptHost;
 
     /// <summary>
     /// E20.e0a2 (docs/plan-e20-heros.md section 1.16.2, ADR-0064): the slot of the entity in the world's table of 64 (<see cref="AlundraEntitySlotTable"/>): 0 for the hero, 1 to 63 for the others, -1 for an entity that has none
@@ -169,7 +169,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <summary>
     /// Engine-only, not part of the original struct. Raised by
     /// <see cref="AlundraEntitySpawnFactory.OnAnimationFinished"/> when a <c>Chain</c> terminator fires, and
-    /// consumed by <see cref="AlundraFrameSyncPasses.SyncAnimation"/> to restart the animation even when the
+    /// consumed by <see cref="FrameSyncPasses.SyncAnimation"/> to restart the animation even when the
     /// chain target turns out to be the animation that just ended.
     ///
     /// <para>Needed because the original expresses a LOOPING animation two different ways, and only one
@@ -180,7 +180,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// which is exactly why the idle looped and the walk froze on its last frame (user report,
     /// 2026-08-26).</para>
     ///
-    /// <para>Without this flag <see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/> reports "nothing
+    /// <para>Without this flag <see cref="FrameSyncPasses.TryResolveAnimationTarget"/> reports "nothing
     /// to do" for a self-chain - it only restarts when <see cref="CurrentAnimationId"/> or
     /// <see cref="AnimationDirection"/> actually CHANGE, and a self-chain changes neither - so
     /// <c>SetCurrentAnimation(..., forceReset: true)</c> was never reached and the sampler stayed parked
@@ -200,15 +200,15 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     internal AnimatedSpriteComponent? LogicalClockSprite;
 
     /// <summary>
-    /// Engine-only (E19.c2): the logic ticks of the current frame at which <see cref="AlundraFrameSyncPasses.StepAnimationClock"/>
+    /// Engine-only (E19.c2): the logic ticks of the current frame at which <see cref="FrameSyncPasses.StepAnimationClock"/>
     /// found an animation switch pending (the binary's <c>UpdateAnimation</c> of that tick switches instead of advancing the
-    /// old animation). Read and zeroed by <see cref="AlundraFrameSyncPasses.SyncAnimation"/>, once per frame, whatever it
+    /// old animation). Read and zeroed by <see cref="FrameSyncPasses.SyncAnimation"/>, once per frame, whatever it
     /// decides. Not copied by <see cref="Clone"/>.
     /// </summary>
     internal int AnimationSwitchTicksReserved;
 
     /// <summary>
-    /// Engine-only (E19.c2): set by <see cref="AlundraFrameSyncPasses.SyncAnimation"/> when it switches an animation on a frame
+    /// Engine-only (E19.c2): set by <see cref="FrameSyncPasses.SyncAnimation"/> when it switches an animation on a frame
     /// that had no logic tick to spend on the switch; the next tick is then consumed without advancing the new animation (the
     /// binary shows the new animation's frame 0 on the tick of the switch without counting it). Cleared by a switch that reserves
     /// a tick. Not copied by <see cref="Clone"/>.
@@ -219,7 +219,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// Engine-only (E19.c2): a Hold end already counted by <c>0x1C</c>/<c>0x1D</c> that waits for the switch it asked for
     /// (<c>CurrentAnimationId</c> = ~<c>TargetAnimationId</c>). While set, the Hold flag is invisible to those opcodes, so a
     /// catch-up frame cannot count the same end twice before the switch clears the flag. Cleared by any switch
-    /// (<see cref="AlundraFrameSyncPasses.SyncAnimation"/>, <see cref="AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches"/>).
+    /// (<see cref="FrameSyncPasses.SyncAnimation"/>, <see cref="FrameSyncPasses.ClearHoldFlagsOfPendingSwitches"/>).
     /// Not copied by <see cref="Clone"/>.
     /// </summary>
     internal bool HoldCountedAwaitingSwitch;
@@ -227,8 +227,8 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <summary>
     /// Engine-only (E19.d2c1 R1, docs/plan-e19-opcodes.md §1.2h.3.1): the "impulse taken" lock of the pending animation switch. The binary gives
     /// the Z impulse of an animation (<see cref="IsZForceApplied"/>, <c>+0xF8</c>) in the switch block of its <c>UpdateAnimation</c>, at the tick
-    /// of the switch; here the switch is validated at the end of the frame by <see cref="AlundraFrameSyncPasses.SyncAnimation"/>, after any
-    /// number of ticks (catch-up), so the first <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> that sees the switch pending takes the
+    /// of the switch; here the switch is validated at the end of the frame by <see cref="FrameSyncPasses.SyncAnimation"/>, after any
+    /// number of ticks (catch-up), so the first <see cref="FrameSyncPasses.StepAnimationClock"/> that sees the switch pending takes the
     /// impulse and raises this lock, the next ticks of the frame do not take it again, and the validation lowers it. Not copied by <see cref="Clone"/>.
     /// </summary>
     internal bool ZImpulseTaken;
@@ -241,8 +241,8 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     internal uint ZImpulseTakenForTarget;
 
     /// <summary>
-    /// Engine-only (E19.d2c1 R1): an impulse owed to a switch that <see cref="AlundraFrameSyncPasses.SyncAnimation"/> validated on a frame without
-    /// a logic tick (a target written by a map event, for example): the first <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> that follows
+    /// Engine-only (E19.d2c1 R1): an impulse owed to a switch that <see cref="FrameSyncPasses.SyncAnimation"/> validated on a frame without
+    /// a logic tick (a target written by a map event, for example): the first <see cref="FrameSyncPasses.StepAnimationClock"/> that follows
     /// takes it, from <see cref="CurrentAnimationId"/>, before anything else. Not copied by <see cref="Clone"/>.
     /// </summary>
     internal bool ZImpulseDue;
@@ -253,7 +253,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// <c>AlundraWorldProxy.AdoptPlayerPawn</c> (every arrival of the hero): the binary makes that first switch itself in
     /// <c>InitializeEntity</c> and its next <c>UpdateAnimation</c> clears the impulse before the physics, so an entity never takes off at its
     /// appearance. A pending switch whose target is that animation gives no impulse; the flag falls at the first validation of
-    /// <see cref="AlundraFrameSyncPasses.SyncAnimation"/>. Another animation written by a script before that validation gives the impulse (an ordinary
+    /// <see cref="FrameSyncPasses.SyncAnimation"/>. Another animation written by a script before that validation gives the impulse (an ordinary
     /// switch in the binary); the <c>0x1C</c> relaunch is never excluded (it clears the flag). Copied by <see cref="Clone"/>.
     /// </summary>
     internal bool SpawnAnimationActive;
@@ -380,7 +380,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// (<see cref="AlundraEventProgramRunner"/>'s own Walk-with-collision bridge) and by 0x1E's own
     /// navigation detour. A value this field holds after its owning entity's motion tick survives
     /// unchanged across any additional RENDERED frames until the entity's next LOGIC tick (there may be
-    /// zero, one, or several ticks per rendered frame - see <see cref="IAlundraScriptHost.LogicTicksThisFrame"/>),
+    /// zero, one, or several ticks per rendered frame - see <see cref="IScriptHost.LogicTicksThisFrame"/>),
     /// so the next tick's own script pass always reads exactly the last completed tick's own outcome, never
     /// a value a tick-less render frame silently wiped. Stays 0 the whole session for an entity with no
     /// controller (bare-fallback spawn) - <see cref="MoveControllerAndPullPosition"/> is itself a no-op in
@@ -506,7 +506,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// entity root's own <see cref="RenderProjectionComponent"/> child (E3.a,
     /// docs/plan-e3-collisions.md), resolved once at spawn/adoption
     /// (<see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/>/<see cref="AlundraWorldProxy.AdoptPlayerPawn"/>)
-    /// so the per-frame transform sync (<see cref="AlundraFrameSyncPasses.SyncTransform"/>) can re-project the
+    /// so the per-frame transform sync (<see cref="FrameSyncPasses.SyncTransform"/>) can re-project the
     /// sprite the same frame the logical root pose changes without a per-frame
     /// <c>Entity.GetComponent&lt;RenderProjectionComponent&gt;()</c> search. Null for a bare-fallback
     /// spawn (<see cref="AlundraEntitySpawnFactory.CreateBareEntityFromRecord"/>, which has no
@@ -526,12 +526,12 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// </summary>
     public CharacterControllerComponent? Controller;
 
-    /// <summary>E13.d D2 (docs/plan-e13d-inventaire.md): what <see cref="AlundraGameplayFreeze"/> took away
+    /// <summary>E13.d D2 (docs/plan-e13d-inventaire.md): what <see cref="GameplayFreeze"/> took away
     /// from this entity's controller and sprite while a MenuOpen freezes the world, to give it back.</summary>
-    internal readonly AlundraGameplayFreeze.State FreezeState = new();
+    internal readonly GameplayFreeze.State FreezeState = new();
 
     /// <summary>E13.d D2: this entity's animated sprite, if it has one - for
-    /// <see cref="AlundraGameplayFreeze"/>, which cannot reach the protected <c>Owner</c>. Looked up on
+    /// <see cref="GameplayFreeze"/>, which cannot reach the protected <c>Owner</c>. Looked up on
     /// each call: only a freeze or a thaw asks, never a per-frame path.</summary>
     internal AnimatedSpriteComponent? AnimatedSprite => Owner?.GetComponent<AnimatedSpriteComponent>();
 
@@ -1153,7 +1153,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// this entity's IDSV table, resolved once at spawn from its <c>SpriteRecordCatalog</c> entry
     /// (see <see cref="AlundraEntitySpawnFactory.ApplySpawnInitialization"/>) and keyed by
     /// <c>(int)CurrentAnimationId * 4 + AnimationDirection</c> so the per-frame wall-interleave sort
-    /// pass (<see cref="AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass"/>) never re-looks-up the
+    /// pass (<see cref="FrameSyncPasses.RunWallInterleaveSortKeyPass"/>) never re-looks-up the
     /// catalog's own (larger, Guid-keyed) dictionary. Null when the entity's header carried no
     /// IdsvAnimDirs entries (degraded catalog, or a bank whose header simply has none); callers treat
     /// that the same as "0 bias for every (anim, direction)".
@@ -1264,12 +1264,12 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     ///
     /// <see cref="IsPlayer"/> is excluded from the pick/run half only (see that field's own doc - the
     /// original's own pass never picks/runs slot 0 either); every entity, player included, still gets its
-    /// per-frame animation/transform sync every frame (<see cref="AlundraFrameSyncPasses.SyncAnimation"/> /
-    /// <see cref="AlundraFrameSyncPasses.SyncTransform"/>, moved here from the world's own per-frame passes -
+    /// per-frame animation/transform sync every frame (<see cref="FrameSyncPasses.SyncAnimation"/> /
+    /// <see cref="FrameSyncPasses.SyncTransform"/>, moved here from the world's own per-frame passes -
     /// see those methods' own doc on why the world no longer loops over every spawned entity for this).
     ///
     /// E20.a A2 (docs/plan-e20-heros.md section 1.3): the paragraphs below describe the SELF-DRIVEN mode, the one of a rig or a fake host with no driver of ticks
-    /// (<see cref="IAlundraScriptHost.DrivesEntityTicks"/> false). In production the world drives: this method only samples the pad, pulls the root pose and records
+    /// (<see cref="IScriptHost.DrivesEntityTicks"/> false). In production the world drives: this method only samples the pad, pulls the root pose and records
     /// that the entity took part in the frame (<see cref="TookPartInFrame"/>); the ticks of all the entities, in the order of the binary, then SyncAnimation and
     /// SyncTransform after the last tick, are <see cref="AlundraWorldProxy.Update"/>'s (the map events now run BEFORE the entities of each tick, D-E20-11).
     ///
@@ -1356,11 +1356,11 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
             RunGameplayBlockableUpdate(elapsedTime);
         }
 
-        AlundraFrameSyncPasses.SyncTransform(Owner);
+        FrameSyncPasses.SyncTransform(Owner);
     }
 
     /// <summary>
-    /// E20.a A2: set by <see cref="Update"/> when the host drives the ticks (<see cref="IAlundraScriptHost.DrivesEntityTicks"/>): the engine called this entity's update
+    /// E20.a A2: set by <see cref="Update"/> when the host drives the ticks (<see cref="IScriptHost.DrivesEntityTicks"/>): the engine called this entity's update
     /// this frame, so the host ticks it. Cleared by the host at the end of its frame.
     /// </summary>
     internal bool TookPartInFrame;
@@ -1399,7 +1399,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
 
     /// <summary>
     /// E20.e0a3b (D-E0A-5): the collision field the reads of <c>Owner.World.CollisionField</c> of this proxy use: the world's, once the engine integrated the entity; before that, and only for an entity that
-    /// <see cref="JoinsBirthTick"/>, the host's (<see cref="IAlundraScriptHost.CollisionField"/>). An entity from a record keeps the exact read it had (null before its integration) unless a script opcode (<c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>, E20.e0a4) posed the marker on it.
+    /// <see cref="JoinsBirthTick"/>, the host's (<see cref="IScriptHost.CollisionField"/>). An entity from a record keeps the exact read it had (null before its integration) unless a script opcode (<c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>, E20.e0a4) posed the marker on it.
     /// </summary>
     internal ICollisionField? ReadCollisionField()
     {
@@ -1414,13 +1414,13 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
 
     /// <summary>
     /// E20.a A2: set by <see cref="Update"/> when the host drives the ticks and the gate (<see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/>) was open at the
-    /// head of the frame, the condition under which this entity's <see cref="AlundraFrameSyncPasses.SyncAnimation"/> ran (T2, "dedans"). Consumed by the host's end-of-frame publication.
+    /// head of the frame, the condition under which this entity's <see cref="FrameSyncPasses.SyncAnimation"/> ran (T2, "dedans"). Consumed by the host's end-of-frame publication.
     /// </summary>
     internal bool SyncAnimationDue;
 
     /// <summary>Everything <see cref="Update"/> skips while <see cref="AlundraGameState.PlayerControlBits.GameplayBlockedMask"/>
     /// is posed - see that method's own T2 doc for the exhaustive per-pass placement this reproduces. The self-driven mode only (a host with no
-    /// <see cref="IAlundraScriptHost.DrivesEntityTicks"/>): the pull of the root pose, the loop of ticks of <see cref="RunSelfDrivenTicks"/>, then SyncAnimation.</summary>
+    /// <see cref="IScriptHost.DrivesEntityTicks"/>): the pull of the root pose, the loop of ticks of <see cref="RunSelfDrivenTicks"/>, then SyncAnimation.</summary>
     private void RunGameplayBlockableUpdate(float elapsedTime)
     {
         PullRootPose();
@@ -1431,7 +1431,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
         // (EntityManager.cs:384). Runs at the end of THIS gameplay-blockable block, not from the
         // caller (Update) below - so it is skipped, along with everything else above, whenever
         // GameplayBlockedMask is posed (Update never calls this method at all in that case).
-        AlundraFrameSyncPasses.SyncAnimation(Owner);
+        FrameSyncPasses.SyncAnimation(Owner);
     }
 
     /// <summary>
@@ -1503,7 +1503,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     }
 
     /// <summary>
-    /// E20.a A2 (docs/plan-e20-heros.md section 1.3): the self-driven mode, for a rig or a fake host with no driver of ticks (<see cref="IAlundraScriptHost.DrivesEntityTicks"/>
+    /// E20.a A2 (docs/plan-e20-heros.md section 1.3): the self-driven mode, for a rig or a fake host with no driver of ticks (<see cref="IScriptHost.DrivesEntityTicks"/>
     /// false): this entity runs ALL the ticks of the frame in its own loop (entity-major), each over the same tick passes the host drives in the binary's order
     /// (<see cref="TickPrograms"/>, <see cref="TickAnimationClock"/>, <see cref="TickPhysics"/>, <see cref="MovePlayerOnTickPad"/>), so the montages that call
     /// <see cref="Update"/> directly keep working. E20.a A4: the hero's <c>MovePlayer</c> runs at EVERY tick, on a pad of the tick (<see cref="SelfDrivenTickPad"/>, advanced here from the hold
@@ -1582,11 +1582,11 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     }
 
     /// <summary>
-    /// E20.a A2: the animation-clock half of one logic tick of this entity, <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> (the binary's <c>0x80038E18</c>, after the lists and
+    /// E20.a A2: the animation-clock half of one logic tick of this entity, <see cref="FrameSyncPasses.StepAnimationClock"/> (the binary's <c>0x80038E18</c>, after the lists and
     /// before the physics). E19.c2 (docs/plan-e19-opcodes.md §1.2f, ADR-0019): it steps once per tick, right after the entity's script and before its motion; a switch the script just
     /// asked for reserves the tick, otherwise the animation advances one tick and may end, which 0x1C/0x1D see at the next tick. The sprites themselves keep drawing in real time.
     /// </summary>
-    internal void TickAnimationClock() => AlundraFrameSyncPasses.StepAnimationClock(this);
+    internal void TickAnimationClock() => FrameSyncPasses.StepAnimationClock(this);
 
     /// <summary>
     /// E20.a A2: the physics half of one logic tick of this entity (the binary's <c>0x80038364</c>).
@@ -2355,9 +2355,9 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IAlundraEffectAnc
     /// racine par frame" item 4 (grep sites: <c>AlundraEventProgramRunner</c>'s 0x64
     /// SetEntitiesPosition/0x65 AddEntitiesPositionOffset/0x8B SpawnEntityNextToEntity). A no-op for
     /// every entity WITHOUT a <see cref="Controller"/> - those keep the deferred per-frame
-    /// re-derivation <see cref="AlundraFrameSyncPasses.SyncTransform"/> already does every frame (see that
+    /// re-derivation <see cref="FrameSyncPasses.SyncTransform"/> already does every frame (see that
     /// method's own doc), unchanged since E3.a. For a controller-driven entity the root write can no
-    /// longer wait for <see cref="AlundraFrameSyncPasses.SyncTransform"/> - that method now skips the root
+    /// longer wait for <see cref="FrameSyncPasses.SyncTransform"/> - that method now skips the root
     /// write entirely for a controller-driven entity (item 3 of the same plan section) - so this pushes
     /// the (possibly ground-clamped, see <see cref="ClampToGround"/>) logical position onto the root
     /// immediately, re-projects the sprite the same frame, and calls

@@ -25,15 +25,15 @@ namespace Alundra.Physics;
 /// grab and the blows exist, E14); every other collidable is, the iron-ball walls included (D-E19-34). A mover that already overlaps an
 /// entity stays blocked (D-E19-36): no exit rule, as in the binary.
 /// </para>
-/// No allocation, no state: it reads <see cref="IAlundraScriptHost.Collidables"/>, rebuilt by the world at the end of each frame.
+/// No allocation, no state: it reads <see cref="IScriptHost.Collidables"/>, rebuilt by the world at the end of each frame.
 /// </summary>
 public sealed class AlundraMovementObstacleProbe : IMovementObstacleProbe
 {
     private static readonly Color DebugColor = new(255, 128, 0);
 
-    private readonly IAlundraScriptHost _host;
+    private readonly IScriptHost _host;
 
-    public AlundraMovementObstacleProbe(IAlundraScriptHost host)
+    public AlundraMovementObstacleProbe(IScriptHost host)
     {
         _host = host;
     }

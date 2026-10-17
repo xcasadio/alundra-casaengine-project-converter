@@ -43,7 +43,7 @@ public sealed class AlundraHeroJumpStatesTests
 
     private static AlundraPadState Pad(uint hold = 0, uint pressed = 0) => new() { ButtonsHold = hold, ButtonsJustPressed = pressed };
 
-    private static void Move(AlundraEntityScriptProxy hero, AlundraPadState pad, AlundraGameState? state = null, IAlundraScriptHost? host = null)
+    private static void Move(AlundraEntityScriptProxy hero, AlundraPadState pad, AlundraGameState? state = null, IScriptHost? host = null)
         => AlundraPlayerManager.MovePlayer(hero, in pad, state ?? new AlundraGameState(), host);
 
     // -----------------------------------------------------------------------------------------

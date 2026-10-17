@@ -24,7 +24,7 @@ namespace Alundra.Tests;
 /// E19.c2 (docs/plan-e19-opcodes.md §1.2f): the exact ends of the animations as the event programs see them, driven through the
 /// PRODUCTION <see cref="AlundraEntityScriptProxy.Update"/> (the real-time component pass first, then the proxy) over the real
 /// interpreter, a real <see cref="AnimatedSpriteComponent"/> and synthetic animations carrying the export's durations. Only the
-/// tick count of a frame is scripted (a fake <see cref="IAlundraScriptHost"/>). Map-event programs (B) are emulated by calling the
+/// tick count of a frame is scripted (a fake <see cref="IScriptHost"/>). Map-event programs (B) are emulated by calling the
 /// interpreter on the logic entity once per tick after the entity's update, the order of the world's own pass. Every expected value
 /// was written by hand before the code, from two independent models of the binary (<c>UpdateAnimation</c> @ <c>0x80038AB4</c>,
 /// <c>0x1C</c> @ <c>0x8003D7FC</c>); a contradicted value is a stop, never a re-pin. The frame <c>s</c> is the frame that runs the
@@ -79,7 +79,7 @@ public sealed class AlundraAnimationClockDriveTests
     // A Loop of 7 ticks (the animation played before the wait) and a Loop of 10 ticks (the one waited on).
     private static readonly Anim[] LoopsOf7And10 = { Loop(3, 0.14f), Loop(7, 0.2f) };
 
-    private sealed class Host : IAlundraScriptHost
+    private sealed class Host : IScriptHost
     {
         public int Ticks = 1;
         public IEventProgramRunner Runner { get; set; } = null!;
@@ -217,7 +217,7 @@ public sealed class AlundraAnimationClockDriveTests
                     // The world's own pass, between the passes of a catch-up frame.
                     if (tick > 0)
                     {
-                        AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_entities);
+                        FrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_entities);
                     }
 
                     Runner.RunScript(Proxy, ScriptHelper.ProgramBMap);
@@ -639,13 +639,13 @@ public sealed class AlundraAnimationClockDriveTests
     {
         var drive = new Drive(new[] { Loop(0, 0.2f) }, 0, new[] { 0x01, 0xFF }, _ => 1);
         drive.RunTo(5);
-        AlundraFrameSyncPasses.StepAnimationClock(drive.Proxy); // once before the measure: nothing is lazily built inside it.
+        FrameSyncPasses.StepAnimationClock(drive.Proxy); // once before the measure: nothing is lazily built inside it.
         var counterBefore = drive.Proxy.AnimCompleteCounter;
 
         var before = GC.GetAllocatedBytesForCurrentThread();
         for (var i = 0; i < 1000; i++)
         {
-            AlundraFrameSyncPasses.StepAnimationClock(drive.Proxy);
+            FrameSyncPasses.StepAnimationClock(drive.Proxy);
         }
 
         var allocated = GC.GetAllocatedBytesForCurrentThread() - before;

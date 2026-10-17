@@ -51,12 +51,12 @@ public sealed class AlundraBalanceTablesTests
         proxy.TargetDirection = 0;
         Assert.Equal(20, proxy.CurrentAttack!.Power);
 
-        AlundraFrameSyncPasses.StepAnimationClock(proxy); // nothing pending: nothing reloaded.
+        FrameSyncPasses.StepAnimationClock(proxy); // nothing pending: nothing reloaded.
         Assert.Equal(20, proxy.CurrentAttack!.Power);
         Assert.Equal(0, proxy.HitAnimByte);
 
         proxy.TargetAnimationId = 1;
-        AlundraFrameSyncPasses.StepAnimationClock(proxy); // the switch tick: the attack, the byte and the cursor of the animation 1, while CurrentAnimationId still says 0 (the end of the frame validates it).
+        FrameSyncPasses.StepAnimationClock(proxy); // the switch tick: the attack, the byte and the cursor of the animation 1, while CurrentAnimationId still says 0 (the end of the frame validates it).
         Assert.Equal(30, proxy.CurrentAttack!.Power);
         Assert.Equal(0x45, proxy.HitAnimByte);
         Assert.Equal(0u, proxy.CurrentAnimationId);
@@ -64,7 +64,7 @@ public sealed class AlundraBalanceTablesTests
         Assert.Equal(0, proxy.BoxTicks);
         Assert.True(proxy.BoxSwitchLoaded);
 
-        AlundraFrameSyncPasses.StepAnimationClock(proxy); // a later tick of the same frame: still pending for SyncAnimation, but no new switch: the cursor counts.
+        FrameSyncPasses.StepAnimationClock(proxy); // a later tick of the same frame: still pending for SyncAnimation, but no new switch: the cursor counts.
         Assert.Equal(30, proxy.CurrentAttack!.Power);
         Assert.Equal(1, proxy.BoxTicks);
     }

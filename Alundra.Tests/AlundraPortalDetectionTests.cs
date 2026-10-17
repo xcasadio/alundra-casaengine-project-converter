@@ -343,7 +343,7 @@ public class AlundraPortalDetectionTests : IDisposable
         return proxy;
     }
 
-    private sealed class NoOpScriptHost : IAlundraScriptHost
+    private sealed class NoOpScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner => throw new NotSupportedException();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -520,7 +520,7 @@ public class AlundraPortalDetectionTests : IDisposable
         var worldProxy = new AlundraWorldProxy();
         worldProxy.BuildPortals(portalsLayer);
 
-        var portals = ((IAlundraScriptHost)worldProxy).Portals;
+        var portals = ((IScriptHost)worldProxy).Portals;
         Assert.Equal(4, portals.Count);
 
         var portalZero = portals[0];
@@ -559,7 +559,7 @@ public class AlundraPortalDetectionTests : IDisposable
 
         // T4/T5 bring world reloads; appending would duplicate every portal, and first-match-wins
         // (§1.2.b) makes the scan order-sensitive, so duplicates are not merely wasteful.
-        Assert.Equal(4, ((IAlundraScriptHost)worldProxy).Portals.Count);
+        Assert.Equal(4, ((IScriptHost)worldProxy).Portals.Count);
     }
 
     [Fact]
@@ -596,7 +596,7 @@ public class AlundraPortalDetectionTests : IDisposable
         public void RunSpriteEvent(AlundraEntityScriptProxy entity) { }
     }
 
-    private sealed class RecordingPortalScriptHost : IAlundraScriptHost
+    private sealed class RecordingPortalScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new RecordingRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }

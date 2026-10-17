@@ -192,9 +192,9 @@ public sealed class AlundraSailor12EndOfIntroTests
         return proxy;
     }
 
-    private sealed class Host : IAlundraScriptHost
+    private sealed class Host : IScriptHost
     {
-        private readonly AlundraLogicClock _clock = new();
+        private readonly LogicClock _clock = new();
         public Host(IEventProgramRunner runner) => Runner = runner;
         public IEventProgramRunner Runner { get; }
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }

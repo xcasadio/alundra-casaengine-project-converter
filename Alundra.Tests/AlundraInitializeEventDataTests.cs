@@ -64,7 +64,7 @@ public sealed class AlundraInitializeEventDataTests
             }
         };
         var hero = new AlundraEntityScriptProxy { IsPlayer = true, TileY = 5 };
-        var mapEvent = new AlundraMapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 10, Y2 = 10, ProgramBMap = 3 | 0x80, OriginalProgramBMap = 3 | 0x80 };
+        var mapEvent = new MapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 10, Y2 = 10, ProgramBMap = 3 | 0x80, OriginalProgramBMap = 3 | 0x80 };
 
         var ticksInTheZone = 0;
         for (var tick = 1; tick <= 200 && !passed; tick++)

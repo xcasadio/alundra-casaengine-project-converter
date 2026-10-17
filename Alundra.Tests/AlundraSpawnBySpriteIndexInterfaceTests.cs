@@ -133,7 +133,7 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
 
         // A map the file does not know.
         var previousIndices = arc.Proxy.MapSpriteIndices;
-        arc.Proxy.MapSpriteIndices = new AlundraMapSpriteIndices(new Dictionary<int, IReadOnlyList<int>> { [15] = new[] { 79 } });
+        arc.Proxy.MapSpriteIndices = new MapSpriteIndices(new Dictionary<int, IReadOnlyList<int>> { [15] = new[] { 79 } });
         var countBefore = arc.Entities.Count;
         var linesBefore = Lines(arc);
         Assert.Null(Context(arc).SpawnEntityBySpriteIndex(arc.Hero, true, 79, HeroX << 16, HeroY << 16, 0, 0x10));

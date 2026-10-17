@@ -87,10 +87,10 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
     public void RealMap389_ReadsAs52By60()
     {
         var root = FindProjectRoot();
-        var worldPath = new AlundraWorldIndexTable(root).Resolve(389);
+        var worldPath = new WorldIndexTable(root).Resolve(389);
         Assert.NotNull(worldPath);
 
-        Assert.True(AlundraMapSizeReader.TryRead(root, worldPath!, out var w, out var h, out var error), error);
+        Assert.True(MapSizeReader.TryRead(root, worldPath!, out var w, out var h, out var error), error);
         Assert.Equal(52, w);
         Assert.Equal(60, h);
     }
@@ -98,7 +98,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
     [Fact]
     public void RealWorldIndex_Has483Keys_0To482()
     {
-        var index = new AlundraWorldIndexTable(FindProjectRoot());
+        var index = new WorldIndexTable(FindProjectRoot());
 
         for (var id = 0; id <= 482; id++)
         {

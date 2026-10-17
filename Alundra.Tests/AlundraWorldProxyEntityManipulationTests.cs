@@ -23,7 +23,7 @@ namespace Alundra.Tests;
 /// <see cref="AlundraEntitySpawnFactory.ShouldSpawnRecord(TileMapObjectData,bool,out string)"/>, the single-argument
 /// <see cref="AlundraWorldProxy.DestroyEntity(AlundraEntityScriptProxy)"/> overload, the
 /// <c>ParentEntity</c> threading through the shared spawn path, transform re-derivation
-/// (<see cref="AlundraFrameSyncPasses.RunTransformSyncPass"/>) and destroyed-entity visibility/skip in the
+/// (<see cref="FrameSyncPasses.RunTransformSyncPass"/>) and destroyed-entity visibility/skip in the
 /// per-frame passes. <see cref="AlundraWorldProxy.SpawnEntityByRecordId"/>'s live-<c>World</c> path is
 /// intentionally not exercised here for the same reason <see cref="AlundraWorldProxyTests"/> does not
 /// cover <see cref="AlundraWorldProxy.InitializeWithWorld"/>'s live prefab loader - it needs a running
@@ -210,7 +210,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
     {
         var entity = NewEntityWithProxy(EntityStatus.Normal, 420 * 0x10000, 584 * 0x10000, 46 << 19);
 
-        AlundraFrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
 
         // E3.a: the root now carries the LOGICAL pose (RenderProjection is null in this fixture -
         // AnimatedSpriteComponent is the bare root, so the re-projection call is a no-op here).
@@ -229,7 +229,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
         proxy.PosY = 50 * 0x10000;
         proxy.PosZ = 0;
 
-        AlundraFrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
 
         // E3.a: logical pose, Y un-flipped.
         Assert.Equal(new Microsoft.Xna.Framework.Vector3(100, 50, 0f), entity.RootComponent.LocalTransform.Position);
@@ -241,7 +241,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
         var entity = NewEntityWithProxy(EntityStatus.FlagToDestroy, 1000 * 0x10000, 1000 * 0x10000, 0);
         var originalPosition = entity.RootComponent.LocalTransform.Position;
 
-        AlundraFrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
 
         Assert.Equal(originalPosition, entity.RootComponent.LocalTransform.Position);
     }
@@ -252,7 +252,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
         var entity = new Entity { Name = "bare", GameplayProxyClassName = typeof(AlundraEntityScriptProxy).FullName! };
         entity.Initialize();
 
-        AlundraFrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunTransformSyncPass(new List<Entity> { entity });
     }
 
     // -----------------------------------------------------------------------------------------
@@ -269,7 +269,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
         proxy.CurrentAnimationId = ~0u; // would normally fire a sync if not skipped
         Assert.True(entity.IsVisible);
 
-        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.False(entity.IsVisible);
         Assert.Equal(~0u, proxy.CurrentAnimationId); // untouched - the pass returned before resolving
@@ -286,7 +286,7 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
         proxy.Status = EntityStatus.FlagToDestroy;
         proxy.PosY = 999 * 0x10000;
 
-        AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass(new List<Entity> { entity });
+        FrameSyncPasses.RunWallInterleaveSortKeyPass(new List<Entity> { entity });
 
         Assert.Equal(123, depthSortable.Elevation);
     }
@@ -307,14 +307,14 @@ public class AlundraWorldProxyEntityManipulationTests : IDisposable
         proxy.CurrentAnimationId = ~6u;
         proxy.IdsvByAnimDirection = new Dictionary<int, int> { [6 * AlundraEntitySpawnFactory.IdsvDirectionStride + 0] = 3 };
 
-        AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass(new List<Entity> { entity });
+        FrameSyncPasses.RunWallInterleaveSortKeyPass(new List<Entity> { entity });
 
         Assert.Equal(WallPlacementOverlay.ComputeEntityElevation(15 << 16, 3), depthSortable.Elevation);
         Assert.NotEqual(WallPlacementOverlay.ComputeEntityElevation(15 << 16, 0), depthSortable.Elevation); // the bias is what makes the difference.
 
         // The ordinary case is unchanged: a settled entity keys on its current animation.
         proxy.CurrentAnimationId = 6;
-        AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass(new List<Entity> { entity });
+        FrameSyncPasses.RunWallInterleaveSortKeyPass(new List<Entity> { entity });
         Assert.Equal(WallPlacementOverlay.ComputeEntityElevation(15 << 16, 3), depthSortable.Elevation);
     }
 }

@@ -11,8 +11,8 @@ namespace Alundra.Scripts;
 /// the animation clock of the tick: the balance record (<c>+0x1C4</c>), the current attack (<c>+0x1C8</c>), the animation byte of the clock (<c>+0xB4</c>) and the box of the frame shown at the tick (<c>+0x1D4</c>, whose
 /// values are <see cref="CollisionOffsetX"/> to <see cref="CollisionHeight"/> and whose <c>HitBox</c> is <see cref="HitBoxX"/> to <see cref="HitBoxZ"/>).
 /// <para>
-/// <b>Why not <see cref="AnimFlags"/> and <see cref="CurrentAnimationId"/>.</b> The DLL writes them at the end of the frame only (<see cref="AlundraFrameSyncPasses.SyncAnimation"/>, D-E19-13, kept), while the binary changes them
-/// in the tick that sees the switch (<c>0x80038B18-0x80038BAC</c>) and the hit pass of that very tick already reads them. So the clock (<see cref="AlundraFrameSyncPasses.StepAnimationClock"/>) tells this class every switch
+/// <b>Why not <see cref="AnimFlags"/> and <see cref="CurrentAnimationId"/>.</b> The DLL writes them at the end of the frame only (<see cref="FrameSyncPasses.SyncAnimation"/>, D-E19-13, kept), while the binary changes them
+/// in the tick that sees the switch (<c>0x80038B18-0x80038BAC</c>) and the hit pass of that very tick already reads them. So the clock (<see cref="FrameSyncPasses.StepAnimationClock"/>) tells this class every switch
 /// it sees (<see cref="NoteSwitchPendingAtTick"/>, <see cref="NoteOwedSwitchTick"/>, <see cref="NoteChainEndSwitch"/>, and the spawn, <see cref="InitializeBalance"/>), and it reloads the attack and the byte then, and
 /// keeps its own <b>cursor</b>: the animation and direction shown, and the number of ticks since the switch. The frame box is read from that cursor (<see cref="AlundraFrameBoxTimeline"/>), never from the sprite, which
 /// still holds the old animation in the rest of a catch-up frame.
@@ -41,7 +41,7 @@ public partial class AlundraEntityScriptProxy
     /// <summary>The ticks since the switch of the cursor's animation: 0 at the tick of the switch (its frame 0 is shown, uncounted), then one more per tick the clock advances.</summary>
     internal int BoxTicks;
 
-    /// <summary>True from the tick the clock loaded a switch until <see cref="AlundraFrameSyncPasses.SyncAnimation"/> validates it at the end of the frame: the sprite still holds the old animation, so the cursor counts the ticks itself.</summary>
+    /// <summary>True from the tick the clock loaded a switch until <see cref="FrameSyncPasses.SyncAnimation"/> validates it at the end of the frame: the sprite still holds the old animation, so the cursor counts the ticks itself.</summary>
     internal bool BoxSwitchLoaded;
 
     private AlundraFrameBoxTimeline? _boxTimeline;
@@ -73,7 +73,7 @@ public partial class AlundraEntityScriptProxy
         Hp = record.MaxHp;
         HpMax = record.MaxHp;
 
-        var changed = AlundraFrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction);
+        var changed = FrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction);
         LoadAnimationSwitch(TargetAnimationId, changed ? direction : AnimationDirection, fromClock: false);
         StoreHitBox(); // E20.c1b K3: the creation (0x80039F30) stores the HitBox of the first frame too.
     }
@@ -119,11 +119,11 @@ public partial class AlundraEntityScriptProxy
 
     /// <summary>
     /// The clock found a switch pending at this tick (a new target, a new direction, or a chain restart). The first tick that sees it loads it (the binary switches at once); the later ticks of the same catch-up frame
-    /// (<see cref="AlundraFrameSyncPasses.SyncAnimation"/> has not validated it yet, so it still looks pending) are ticks of the new animation: the cursor only counts them.
+    /// (<see cref="FrameSyncPasses.SyncAnimation"/> has not validated it yet, so it still looks pending) are ticks of the new animation: the cursor only counts them.
     /// </summary>
     internal void NoteSwitchPendingAtTick()
     {
-        var changed = AlundraFrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction);
+        var changed = FrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction);
         if (!changed)
         {
             direction = AnimationDirection; // a restart onto the same animation (a self-chain): the row does not change.
@@ -140,7 +140,7 @@ public partial class AlundraEntityScriptProxy
 
     /// <summary>
     /// E20.e0a5 (D-E0A5-2): the switch of the creation is still the current one. True while the entity is flagged <see cref="SwitchedAtCreation"/>, the appearance flag is still up (<see cref="SpawnAnimationActive"/>, so no end of frame validated anything and no
-    /// <c>RepeatAnimation</c> relaunched it), the target is the animation of the creation, no restart of a chain is asked, the direction the target derives (a switch is pending, <see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/>) is the one of the
+    /// <c>RepeatAnimation</c> relaunched it), the target is the animation of the creation, no restart of a chain is asked, the direction the target derives (a switch is pending, <see cref="FrameSyncPasses.TryResolveAnimationTarget"/>) is the one of the
     /// cursor, and the cursor was not reloaded by another switch (<see cref="BoxSwitchLoaded"/>). Once any other switch is seen it is false for good in the window: a target that comes back to the animation of the creation is an ordinary switch.
     /// </summary>
     internal bool IsCreationSwitchCurrent()
@@ -149,7 +149,7 @@ public partial class AlundraEntityScriptProxy
         && !BoxSwitchLoaded
         && PendingChainRestartFlag == 0
         && TargetAnimationId == SpawnAnimationId
-        && AlundraFrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction)
+        && FrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction)
         && direction == BoxDirection;
 
     /// <summary>E20.e0a5 (D-E0A5-1): the clock saw the entity while the switch of the creation is current: a COUNTED tick of the binary (the first call of the animation pass counts), the cursor follows (1 at the first tick, 2 at the next: <c>+0x1C</c>).</summary>
@@ -164,7 +164,7 @@ public partial class AlundraEntityScriptProxy
     /// <summary>The tick's advance ended a Chain animation: the binary jumps straight into the switch block (<c>0x80038D54-0x80038D68</c>) at this very tick, with the chained animation in <see cref="TargetAnimationId"/>.</summary>
     internal void NoteChainEndSwitch()
     {
-        var changed = AlundraFrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction);
+        var changed = FrameSyncPasses.TryResolveAnimationTarget(this, out _, out var direction);
         LoadAnimationSwitch(TargetAnimationId, changed ? direction : AnimationDirection, fromClock: true);
     }
 
@@ -216,7 +216,7 @@ public partial class AlundraEntityScriptProxy
             else
             {
                 _boxTimelineResolved = true;
-                _boxTimeline = sprite != null && AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix(sprite, BoxAnimationId, BoxDirection, out var selected) && selected != null
+                _boxTimeline = sprite != null && FrameSyncPasses.TrySelectAnimationByNameSuffix(sprite, BoxAnimationId, BoxDirection, out var selected) && selected != null
                     ? AlundraFrameBoxTimeline.For(selected)
                     : null;
             }

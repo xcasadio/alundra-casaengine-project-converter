@@ -212,7 +212,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// CharacterMotionSystem before this same frame's <c>GameplayProxy.Update</c> ever runs, same ordering
     /// note as <see cref="AlundraCharacterControllerAdoptionTests.BuildHeroPawn"/>).</summary>
     private static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildNpcPawn(
-        World world, CharacterControllerSettings settings, Vector3 startPosition, IAlundraScriptHost scriptHost)
+        World world, CharacterControllerSettings settings, Vector3 startPosition, IScriptHost scriptHost)
     {
         var root = new TransformComponent();
         root.LocalTransform.Position = startPosition;
@@ -275,7 +275,7 @@ public class AlundraNpcCharacterControllerMoverTests
         }
     }
 
-    private sealed class FakeScriptHost : IAlundraScriptHost
+    private sealed class FakeScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -284,11 +284,11 @@ public class AlundraNpcCharacterControllerMoverTests
 
         /// <summary>E4.f (verifier A5 tests): mutable so a test can seed the collidables list a scripted
         /// mover's own <c>EvaluateEntitySupport</c> call reads every frame (see
-        /// <see cref="IAlundraScriptHost.Collidables"/>) - empty by default, same as before this list
+        /// <see cref="IScriptHost.Collidables"/>) - empty by default, same as before this list
         /// existed.</summary>
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();
 
-        IReadOnlyList<AlundraEntityScriptProxy> IAlundraScriptHost.Collidables => Collidables;
+        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
 
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {
@@ -299,7 +299,7 @@ public class AlundraNpcCharacterControllerMoverTests
         // tick per world.Update call" behaviour these tests already assume, since every call passes the
         // SAME dt as the clock's own fixed-tick constant. Same pattern as every other FakeScriptHost in
         // this test project.
-        private readonly AlundraLogicClock _logicClock = new();
+        private readonly LogicClock _logicClock = new();
         public int LogicTicksThisFrame(float elapsedTime)
         {
             var ticks = _logicClock.TicksThisFrame(elapsedTime);
@@ -312,7 +312,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// <see cref="AlundraEventProgramRunner"/> instead of the no-op one - so a hand-built Tick program
     /// (0x1E/0x1F) actually dispatches through <see cref="AlundraEntityScriptProxy.Update"/>'s own
     /// pick/run pass every <c>World.Update</c>.</summary>
-    private sealed class RealRunnerScriptHost : IAlundraScriptHost
+    private sealed class RealRunnerScriptHost : IScriptHost
     {
         public RealRunnerScriptHost(IEventProgramRunner runner) => Runner = runner;
         public IEventProgramRunner Runner { get; }
@@ -323,7 +323,7 @@ public class AlundraNpcCharacterControllerMoverTests
         /// <summary>See <see cref="FakeScriptHost.Collidables"/>'s own doc.</summary>
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();
 
-        IReadOnlyList<AlundraEntityScriptProxy> IAlundraScriptHost.Collidables => Collidables;
+        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
 
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {
@@ -331,7 +331,7 @@ public class AlundraNpcCharacterControllerMoverTests
 
         // Bug fix (AlundraLogicClock's own class doc): see FakeScriptHost's own doc on this same member,
         // above - identical rationale.
-        private readonly AlundraLogicClock _logicClock = new();
+        private readonly LogicClock _logicClock = new();
         public int LogicTicksThisFrame(float elapsedTime)
         {
             var ticks = _logicClock.TicksThisFrame(elapsedTime);
@@ -1764,7 +1764,7 @@ public class AlundraNpcCharacterControllerMoverTests
     /// exercised for real - not overridden to a synthetic position like test (5)/(6): the real record's
     /// own (468,584,400) spawn is exactly the scenario under test.</summary>
     private static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildRealSailor11Pawn(
-        World world, TileMapData tileMapData, SpriteRecordCatalog catalog, CharacterControllerSettings settings, IAlundraScriptHost host)
+        World world, TileMapData tileMapData, SpriteRecordCatalog catalog, CharacterControllerSettings settings, IScriptHost host)
     {
         var entitiesLayer = tileMapData.ObjectLayers.First(l => l.Name == "Entities");
         var record = entitiesLayer.Objects.First(
@@ -2264,8 +2264,8 @@ public class AlundraNpcCharacterControllerMoverTests
     /// re-selects slot C (Tick) every logic tick regardless of the previous call's own outcome, and
     /// <see cref="AlundraEntityScriptProxy.RunPickedEvent"/> dispatches through this runner - this is what
     /// makes dt=1/123 vs dt=1/50 behave identically for the real gull scenario below:
-    /// <see cref="IAlundraScriptHost.LogicTicksThisFrame"/> decouples this from the render rate exactly
-    /// like production (<see cref="AlundraLogicClock"/>'s own class doc).</summary>
+    /// <see cref="IScriptHost.LogicTicksThisFrame"/> decouples this from the render rate exactly
+    /// like production (<see cref="LogicClock"/>'s own class doc).</summary>
     private sealed class GullClimbRunner : IEventProgramRunner
     {
         private static readonly byte[] ClimbBytes = { 0x1B, 128, 3, 0xFF };
@@ -2291,20 +2291,20 @@ public class AlundraNpcCharacterControllerMoverTests
         }
     }
 
-    /// <summary>Real <see cref="AlundraLogicClock"/>-driven host (NOT <see cref="FakeScriptHost"/>'s own
+    /// <summary>Real <see cref="LogicClock"/>-driven host (NOT <see cref="FakeScriptHost"/>'s own
     /// always-exactly-one-tick clock) - the whole point of the dt=1/123 vs dt=1/50 acceptance below: a
     /// real render-rate-independent accumulator, exactly what production wires up. <see cref="TotalTicks"/>
     /// is the test's own direct, exact observable for "how many real logic ticks have elapsed so far" -
     /// more precise than re-deriving it from a frame counter and dt (which would need to reproduce
     /// <see cref="AlundraScriptedMotion.MaxTicksPerFrame"/>'s own catch-up-cap rounding by hand).</summary>
-    private sealed class GullClimbScriptHost : IAlundraScriptHost
+    private sealed class GullClimbScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new GullClimbRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();
-        IReadOnlyList<AlundraEntityScriptProxy> IAlundraScriptHost.Collidables => Collidables;
+        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
 
         public int TotalTicks { get; private set; }
 
@@ -2312,7 +2312,7 @@ public class AlundraNpcCharacterControllerMoverTests
         {
         }
 
-        private readonly AlundraLogicClock _logicClock = new();
+        private readonly LogicClock _logicClock = new();
         public int LogicTicksThisFrame(float elapsedTime)
         {
             var ticks = _logicClock.TicksThisFrame(elapsedTime);
@@ -2779,11 +2779,11 @@ public class AlundraNpcCharacterControllerMoverTests
     }
 
     /// <summary>Same shape as <see cref="RealRunnerScriptHost"/>, but exposes <see cref="TotalTicks"/> -
-    /// the shared <see cref="AlundraLogicClock"/>'s own running tick total across every
-    /// <see cref="IAlundraScriptHost.LogicTicksThisFrame"/> call this host has served, the test's own
+    /// the shared <see cref="LogicClock"/>'s own running tick total across every
+    /// <see cref="IScriptHost.LogicTicksThisFrame"/> call this host has served, the test's own
     /// direct observable for "how many real logic ticks have elapsed so far" (same pattern
     /// <c>GullClimbScriptHost</c>, in this file's own gull vertical-fidelity tests, already uses).</summary>
-    private sealed class TickCountingRunnerScriptHost : IAlundraScriptHost
+    private sealed class TickCountingRunnerScriptHost : IScriptHost
     {
         public TickCountingRunnerScriptHost(IEventProgramRunner runner) => Runner = runner;
         public IEventProgramRunner Runner { get; }
@@ -2791,7 +2791,7 @@ public class AlundraNpcCharacterControllerMoverTests
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController => null;
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();
-        IReadOnlyList<AlundraEntityScriptProxy> IAlundraScriptHost.Collidables => Collidables;
+        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
 
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {
@@ -2799,7 +2799,7 @@ public class AlundraNpcCharacterControllerMoverTests
 
         public int TotalTicks { get; private set; }
 
-        private readonly AlundraLogicClock _logicClock = new();
+        private readonly LogicClock _logicClock = new();
         public int LogicTicksThisFrame(float elapsedTime)
         {
             var ticks = _logicClock.TicksThisFrame(elapsedTime);

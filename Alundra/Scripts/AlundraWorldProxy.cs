@@ -79,7 +79,7 @@ namespace Alundra.Scripts;
 /// (<see cref="EventProgramRunner"/>); the bytecode interpreter itself is a later chantier. Transform
 /// re-derivation when the logical position changes at runtime is still a follow-up task.
 /// </summary>
-public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScriptHost
+public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 {
     // EntityRecordMapper's own tile constants (StaticVariables.MapTileWidth/Height) - duplicated here
     // (rather than made public there) since only the player spawn (this class) and that pure mapper need
@@ -314,7 +314,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): this frame's collidable-entity snapshot
     /// (<see cref="EntitySupport.BuildCollidables"/>), rebuilt from <see cref="_updateProxies"/> every time
     /// that list is refreshed (<see cref="RefreshUpdateProxiesAndCollidables"/>) - same no-per-frame-
-    /// allocation shape as <see cref="_updateProxies"/> itself. Exposed as <see cref="IAlundraScriptHost.Collidables"/>.
+    /// allocation shape as <see cref="_updateProxies"/> itself. Exposed as <see cref="IScriptHost.Collidables"/>.
     /// </summary>
     private readonly List<AlundraEntityScriptProxy> _collidables = new();
 
@@ -367,14 +367,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// Empty (not null) when this world has no "MapEvents" layer, or no <see cref="PlayerEntity"/> to run
     /// them against.
     /// </summary>
-    private readonly List<AlundraMapEvent> _mapEvents = new();
+    private readonly List<MapEvent> _mapEvents = new();
 
     /// <summary>
     /// T3 (docs/plan-transitions-carte.md §1.1/§3): this world's own parsed "Portals" object-layer
     /// records (see <see cref="BuildPortals"/>), in slot order - the exact list
     /// <see cref="AlundraPortalScanner.FindPortalAtTile"/> scans (§1.2.b: first-match-wins is order-
     /// sensitive, so this MUST stay in record order, never re-sorted). Empty (not null) when this world
-    /// has no "Portals" layer. Exposed as <see cref="IAlundraScriptHost.Portals"/>.
+    /// has no "Portals" layer. Exposed as <see cref="IScriptHost.Portals"/>.
     /// </summary>
     private readonly List<AlundraPortalRecord> _portals = new();
 
@@ -411,7 +411,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// E20.e0a1 (ADR-0063): the valid indices of the map page of each map (<c>Data/map-sprite-indices.json</c>), read at the FIRST call of <see cref="SpawnEntityBySpriteIndex"/> and never at the load of a world (no
     /// existing world sees the warning of a missing file). Internal so a test swaps it.
     /// </summary>
-    internal AlundraMapSpriteIndices? MapSpriteIndices;
+    internal MapSpriteIndices? MapSpriteIndices;
 
     /// <summary>
     /// E13.c S3 (docs/plan-e13c-icones-hud.md): the three item tables the converter republishes under
@@ -425,7 +425,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     AlundraItemTables? IEntityWorldContext.ItemTables => ItemTables;
 
     /// <summary>E20.b B1: the same tables for the hero's <c>MovePlayer</c>, which resolves the equipped weapon from them.</summary>
-    AlundraItemTables? IAlundraScriptHost.ItemTables => ItemTables;
+    AlundraItemTables? IScriptHost.ItemTables => ItemTables;
 
     /// <summary>
     /// E20.c1a C1 (docs/plan-e20-heros.md section 1.5): the 512 balance entries (<c>Data/balance.json</c>), loaded once per project like <see cref="ItemTables"/>. Internal and assignable so tests swap in their own.
@@ -436,9 +436,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>E20.c1a C1: the balance threshold of the loaded map (its property <c>D</c>, <see cref="AlundraBalanceTables.ResolveThreshold"/>), read once when the entities are created.</summary>
     internal int BalanceThreshold;
 
-    AlundraBalanceTables? IAlundraScriptHost.BalanceTables => BalanceTables;
+    AlundraBalanceTables? IScriptHost.BalanceTables => BalanceTables;
 
-    int IAlundraScriptHost.BalanceThreshold => BalanceThreshold;
+    int IScriptHost.BalanceThreshold => BalanceThreshold;
 
     /// <summary>
     /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): the three equipment records (<c>0x80146E00-0x80146E14</c>), one set per world. The hero's tick fills them (<see cref="AlundraPlayerManager"/>, <c>UpdateItemEffectState</c>
@@ -446,7 +446,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </summary>
     internal AlundraEquipmentRecords EquipmentRecords = new();
 
-    AlundraEquipmentRecords? IAlundraScriptHost.EquipmentRecords => EquipmentRecords;
+    AlundraEquipmentRecords? IScriptHost.EquipmentRecords => EquipmentRecords;
 
     AlundraEquipmentRecords? IEntityWorldContext.EquipmentRecords => EquipmentRecords;
 
@@ -623,7 +623,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// True once <see cref="InitializeWithWorld"/> successfully parsed and applied this world's
     /// <see cref="WallPlacementOverlay"/> (see <see cref="WallPlacementOverlay.CustomPropertyKey"/>).
     /// Gates the per-entity <see cref="WallPlacementOverlay.ApplyEntitySortKey"/> call in
-    /// <see cref="AlundraFrameSyncPasses.RunAnimationSyncPass"/>'s caller (<see cref="Update"/>): with no wall placements loaded
+    /// <see cref="FrameSyncPasses.RunAnimationSyncPass"/>'s caller (<see cref="Update"/>): with no wall placements loaded
     /// there is nothing to interleave against, so entities keep whatever
     /// <see cref="DepthSortable2DComponent"/> defaults their prefab already carries.
     /// </summary>
@@ -780,11 +780,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>Test-only seam (E19.u, docs/plan-e19-u-annexe/): the gate the pending event triggers read in the last <see cref="Update"/> (true = frozen).</summary>
     internal bool PendingTriggersGateForTests => _pendingTriggersGate;
 
-    /// <summary>Bug fix (see <see cref="AlundraLogicClock"/>'s own class doc for the full diagnosis): this
+    /// <summary>Bug fix (see <see cref="LogicClock"/>'s own class doc for the full diagnosis): this
     /// world's ONE shared 50 Hz logic clock - every spawned entity's own <see cref="AlundraEntityScriptProxy.Update"/>
     /// and this proxy's own <see cref="Update"/> read <see cref="LogicTicksThisFrame"/> off this SAME
     /// instance, so they always agree on how many logic ticks happened this rendered frame.</summary>
-    private readonly AlundraLogicClock _logicClock = new();
+    private readonly LogicClock _logicClock = new();
 
     /// <summary>
     /// Bug fix (docs/plan-camera-premiere-frame.md §3, point 1): on a free time-step engine faster than
@@ -797,22 +797,22 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     ///
     /// Guarantees at least ONE tick on this world's very first frame - applied INSIDE
     /// <see cref="LogicTicksThisFrame"/> itself (every caller, entity or proxy, already funnels through
-    /// it), not as a flag <see cref="Update"/> alone consumes: <see cref="AlundraLogicClock"/>'s own memo
+    /// it), not as a flag <see cref="Update"/> alone consumes: <see cref="LogicClock"/>'s own memo
     /// caches the RAW count on the FIRST call of the frame and every later call this same frame is a pure
-    /// cache read (<see cref="AlundraLogicClock.TicksThisFrame"/>), and the engine updates every entity
+    /// cache read (<see cref="LogicClock.TicksThisFrame"/>), and the engine updates every entity
     /// BEFORE this world's own <see cref="Update"/> - so a floor consumed only by the first caller would
     /// hand a tick to whichever entity happens to call first and leave every later caller (every other
     /// entity, and this proxy's own read) at the RAW, un-floored count, permanently splitting the world's
-    /// tick count from the entities' - exactly the desync <see cref="AlundraLogicClock"/>'s own class doc
+    /// tick count from the entities' - exactly the desync <see cref="LogicClock"/>'s own class doc
     /// gives as the reason to share ONE clock in the first place. So this flag is instead STICKY across
     /// the whole open frame - applied on EVERY call while <see langword="true"/> - and cleared exactly
     /// once, at the frame-close site right next to <see cref="_logicClock"/>'s own <c>CloseFrame()</c>
-    /// call in <see cref="Update"/>. <see cref="AlundraLogicClock"/> itself is untouched (plan §2: both
+    /// call in <see cref="Update"/>. <see cref="LogicClock"/> itself is untouched (plan §2: both
     /// golden trace harnesses build their own instance of it and pin exact tick counts against it).
     /// </summary>
     private bool _firstFrameStillOpen = true;
 
-    /// <summary>E20.a A2 (D-E20-12): this proxy runs the logic ticks of its entities, in the binary's order (<see cref="RunEntityBlock"/>); see <see cref="IAlundraScriptHost.DrivesEntityTicks"/>.</summary>
+    /// <summary>E20.a A2 (D-E20-12): this proxy runs the logic ticks of its entities, in the binary's order (<see cref="RunEntityBlock"/>); see <see cref="IScriptHost.DrivesEntityTicks"/>.</summary>
     /// <remarks>
     /// True for a world attached to a game (production, and the montages that give the world a <c>Game</c> and update the entities then this proxy, as <c>World.Update</c> does, World.cs:533-584).
     /// False for a bare <c>World</c> with no game (a montage that builds the proxies by hand, in any order): that world has no driver, so its entities keep their own loop of ticks
@@ -820,11 +820,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// </remarks>
     public bool DrivesEntityTicks => _world?.Game != null;
 
-    /// <summary>E20.e0a3b test seam: told every time an entity reads the collision field of this host by the fallback of <see cref="IAlundraScriptHost.CollisionField"/> (an entity that joins the tick of its birth, before the engine integrated it).</summary>
+    /// <summary>E20.e0a3b test seam: told every time an entity reads the collision field of this host by the fallback of <see cref="IScriptHost.CollisionField"/> (an entity that joins the tick of its birth, before the engine integrated it).</summary>
     internal Action? CollisionFieldFallbackReadForTests;
 
-    /// <summary>E20.e0a3b (D-E0A-5): the collision field an entity born by the interface of the sprite index reads before the engine integrated it (see <see cref="IAlundraScriptHost.CollisionField"/>). Explicit: <see cref="CollisionField"/> has another type.</summary>
-    ICollisionField? IAlundraScriptHost.CollisionField
+    /// <summary>E20.e0a3b (D-E0A-5): the collision field an entity born by the interface of the sprite index reads before the engine integrated it (see <see cref="IScriptHost.CollisionField"/>). Explicit: <see cref="CollisionField"/> has another type.</summary>
+    ICollisionField? IScriptHost.CollisionField
     {
         get
         {
@@ -833,14 +833,14 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         }
     }
 
-    /// <summary>E20.e0a5 test seam: told every time an entity asks this host for the animation data of its prefab before the engine integrated it (<see cref="IAlundraScriptHost.ResolveAnimationData"/>).</summary>
+    /// <summary>E20.e0a5 test seam: told every time an entity asks this host for the animation data of its prefab before the engine integrated it (<see cref="IScriptHost.ResolveAnimationData"/>).</summary>
     internal Action? ResolveAnimationDataForTests;
 
     /// <summary>
     /// E20.e0a5 (D-E0A5-3): the animation data of the prefab of an entity that is not integrated yet, found by the name of its animations among the asset ids of its sprite. The handles taken on the way are given back at once: the
     /// manager keeps the instance pending until the engine's own hold on it (the integration of the sprite) takes it again, the same instance. Null without a game (no asset manager) or when nothing matches.
     /// </summary>
-    Animation2dData? IAlundraScriptHost.ResolveAnimationData(IReadOnlyList<Guid> animationAssetIds, uint animationId, int direction)
+    Animation2dData? IScriptHost.ResolveAnimationData(IReadOnlyList<Guid> animationAssetIds, uint animationId, int direction)
     {
         ResolveAnimationDataForTests?.Invoke();
         var manager = _world?.Game?.AssetContentManager;
@@ -849,7 +849,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             return null;
         }
 
-        var suffix = AlundraFrameSyncPasses.AnimationNameSuffix(animationId, direction);
+        var suffix = FrameSyncPasses.AnimationNameSuffix(animationId, direction);
         foreach (var id in animationAssetIds)
         {
             using var handle = manager.Acquire<Animation2dData>(id);
@@ -862,7 +862,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         return null;
     }
 
-    /// <summary>See <see cref="IAlundraScriptHost.LogicTicksThisFrame"/>'s own doc; the sticky first-frame
+    /// <summary>See <see cref="IScriptHost.LogicTicksThisFrame"/>'s own doc; the sticky first-frame
     /// floor is documented on <see cref="_firstFrameStillOpen"/> itself.</summary>
     public int LogicTicksThisFrame(float elapsedTime)
     {
@@ -1169,7 +1169,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <c>RenderProjectionComponent.UpdateProjection()</c> in the same frame so the sprite renders the
     /// new pose immediately rather than one frame late (component update order:
     /// <c>RootComponent.Update</c>, hence the projection, runs before <c>GameplayProxy.Update</c> -
-    /// Entity.cs:473-504) - see <see cref="AlundraFrameSyncPasses.SyncTransform"/>.
+    /// Entity.cs:473-504) - see <see cref="FrameSyncPasses.SyncTransform"/>.
     /// </summary>
     /// <summary>
     /// E7.b (docs/plan-e7-mutation-tuiles.md, "Testabilité du câblage", plan fact 17): the block that used
@@ -2046,7 +2046,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// New Game tile) - this method's own <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/> call below OVERWRITES that
     /// with the logical position instead, which is harmless (same result) but makes explicit that
     /// <c>AlundraEntityScriptProxy</c>'s logical PosX/PosY/PosZ, not the engine's PlayerStart transform, is
-    /// the field this proxy's own <see cref="AlundraFrameSyncPasses.SyncTransform"/> re-derives from every frame going forward
+    /// the field this proxy's own <see cref="FrameSyncPasses.SyncTransform"/> re-derives from every frame going forward
     /// (decision D2's "logical state wins" rule).
     ///
     /// Deliberately NOT ported (still out of E2's own scope - a real <c>InitializeGameState</c>/full
@@ -2313,9 +2313,9 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// <summary>
     /// Port of <c>InitializeMapEvents</c> (GameEngine.cs:476-583), restricted to the record-driven half
     /// (the fixed 0x40-slot pre-clear loop is a PSX-specific fixed-array reset with no equivalent need
-    /// here - <see cref="_mapEvents"/> is just built fresh every world load). One <see cref="AlundraMapEvent"/>
+    /// here - <see cref="_mapEvents"/> is just built fresh every world load). One <see cref="MapEvent"/>
     /// per "MapEvents" object-layer record whose <c>EventCodesBIndex</c> custom property is non-zero, in
-    /// record order, each with <see cref="AlundraMapEvent.Entity"/> = <see cref="PlayerEntity"/> and a
+    /// record order, each with <see cref="MapEvent.Entity"/> = <see cref="PlayerEntity"/> and a
     /// fresh <see cref="EventProgramState"/> - exactly like the original's <c>Entity = PlayerEntity</c>,
     /// <c>EventData = new EventProgramState()</c>. Left empty when there is no "MapEvents" layer, or no
     /// <see cref="PlayerEntity"/> to run them against (<see cref="RunMapEventsPass"/> always executes
@@ -2346,7 +2346,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             AlundraEntitySpawnFactory.TryGetRecordInt(record, "X2", out var x2);
             AlundraEntitySpawnFactory.TryGetRecordInt(record, "Y2", out var y2);
 
-            _mapEvents.Add(new AlundraMapEvent
+            _mapEvents.Add(new MapEvent
             {
                 Id = id,
                 X1 = x1,
@@ -2561,7 +2561,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 // clear it here too, so a 0x1C does not count the same Hold end again. A no-op at 0 or 1 tick per frame.
                 if (tick > 0)
                 {
-                    AlundraFrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_spawnedEntities);
+                    FrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_spawnedEntities);
                 }
 
                 TickTraceForTests?.Invoke("mapEvents");
@@ -2679,7 +2679,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
             // field write for nothing.
             if (_wallPlacementOverlayApplied)
             {
-                AlundraFrameSyncPasses.RunWallInterleaveSortKeyPass(_spawnedEntities);
+                FrameSyncPasses.RunWallInterleaveSortKeyPass(_spawnedEntities);
             }
         }
 
@@ -2803,7 +2803,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
         {
             if (spawnedEntity.GameplayProxy is AlundraEntityScriptProxy spawnedProxy)
             {
-                AlundraGameplayFreeze.Apply(spawnedProxy, worldFrozen);
+                GameplayFreeze.Apply(spawnedProxy, worldFrozen);
             }
         }
 
@@ -3109,8 +3109,8 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     internal Action<string>? TickTraceForTests;
 
     /// <summary>
-    /// E20.a A2: the publication of the frame, after the last tick: for each entity the engine updated this frame, <see cref="AlundraFrameSyncPasses.SyncAnimation"/> (only if its gate was open as
-    /// the frame opened, T2 "dedans") then <see cref="AlundraFrameSyncPasses.SyncTransform"/> (unconditional). It used to run in <see cref="AlundraEntityScriptProxy.Update"/>, before the ticks of the
+    /// E20.a A2: the publication of the frame, after the last tick: for each entity the engine updated this frame, <see cref="FrameSyncPasses.SyncAnimation"/> (only if its gate was open as
+    /// the frame opened, T2 "dedans") then <see cref="FrameSyncPasses.SyncTransform"/> (unconditional). It used to run in <see cref="AlundraEntityScriptProxy.Update"/>, before the ticks of the
     /// frame, which now belong to this proxy. Clears the per-frame records of the entities.
     /// </summary>
     private void PublishEntityFrame()
@@ -3124,10 +3124,10 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
             if (proxy.SyncAnimationDue)
             {
-                AlundraFrameSyncPasses.SyncAnimation(entity);
+                FrameSyncPasses.SyncAnimation(entity);
             }
 
-            AlundraFrameSyncPasses.SyncTransform(entity);
+            FrameSyncPasses.SyncTransform(entity);
             proxy.TookPartInFrame = false;
             proxy.SyncAnimationDue = false;
         }
@@ -3160,7 +3160,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
     /// before every instruction.
     /// </summary>
     internal static void RunMapEventsPass(
-        AlundraEntityScriptProxy player, IReadOnlyList<AlundraMapEvent> mapEvents, IEventProgramRunner runner,
+        AlundraEntityScriptProxy player, IReadOnlyList<MapEvent> mapEvents, IEventProgramRunner runner,
         uint playerControlFlags)
     {
         if ((playerControlFlags & AlundraGameState.PlayerControlBits.GameplayBlockedMask) != 0)
@@ -3512,7 +3512,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
                 return Refuse($"the world '{_world.Name}' has no map number");
             }
 
-            MapSpriteIndices ??= AlundraMapSpriteIndices.GetOrCreate(EngineEnvironment.ProjectPath);
+            MapSpriteIndices ??= MapSpriteIndices.GetOrCreate(EngineEnvironment.ProjectPath);
             if (!MapSpriteIndices.IsValid(mapIndex, index))
             {
                 return Refuse($"the table of map {mapIndex} does not hold this number");
@@ -3605,34 +3605,34 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 
     // IAlundraScriptHost - see that interface's own doc. Explicit implementation, same reasoning as
     // IEntityWorldContext above.
-    IEventProgramRunner IAlundraScriptHost.Runner => EventProgramRunner;
+    IEventProgramRunner IScriptHost.Runner => EventProgramRunner;
 
-    AlundraEntityScriptProxy? IAlundraScriptHost.ActiveCollisionEntity
+    AlundraEntityScriptProxy? IScriptHost.ActiveCollisionEntity
     {
         get => ActiveCollisionEntity;
         set => ActiveCollisionEntity = value;
     }
 
-    void IAlundraScriptHost.DestroyEntity(AlundraEntityScriptProxy entity, int effectId) => DestroyEntity(entity, effectId);
+    void IScriptHost.DestroyEntity(AlundraEntityScriptProxy entity, int effectId) => DestroyEntity(entity, effectId);
 
-    AlundraGameState IAlundraScriptHost.GameState => GameState;
+    AlundraGameState IScriptHost.GameState => GameState;
 
-    AlundraPlayerController? IAlundraScriptHost.PlayerController => _playerController;
+    AlundraPlayerController? IScriptHost.PlayerController => _playerController;
 
-    IReadOnlyList<AlundraEntityScriptProxy> IAlundraScriptHost.Collidables => _collidables;
+    IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => _collidables;
 
     // T3 (docs/plan-transitions-carte.md §3): production always exposes the real parsed list - the
     // interface's own default (empty) only covers hosts from OTHER slices/tests that never override it.
-    IReadOnlyList<AlundraPortalRecord> IAlundraScriptHost.Portals => _portals;
+    IReadOnlyList<AlundraPortalRecord> IScriptHost.Portals => _portals;
 
     /// <summary>E19.t: the sound player the changes of animation reach through the host seam (the world's own, <see cref="SoundPlayer"/>).</summary>
-    IAlundraSoundPlayer? IAlundraScriptHost.SoundPlayer => SoundPlayer;
+    IAlundraSoundPlayer? IScriptHost.SoundPlayer => SoundPlayer;
 
     // T4 (docs/plan-transitions-carte.md §3): the override T3's own comment (formerly here) named in
     // advance - AlundraPlayerManager.MovePlayer calls this from INSIDE PlayerEntity's own Update, so
     // AlundraWarpDirector.IsTransitionInProgress is already true before this SAME frame's
     // AlundraWorldProxy.Update reads its own gel gate (see AlundraWarpDirector.BeginDeparture's own doc).
-    void IAlundraScriptHost.OnPortalTriggerDetected(AlundraPortalRecord portal, uint arrivalDirectionId)
+    void IScriptHost.OnPortalTriggerDetected(AlundraPortalRecord portal, uint arrivalDirectionId)
     {
         if (PlayerEntity == null)
         {
@@ -3822,7 +3822,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IAlundraScr
 /// <see cref="Entity"/>/<see cref="ProgramBMap"/> in place across frames, exactly like the original's own
 /// persistent array slot.
 /// </summary>
-internal sealed class AlundraMapEvent
+internal sealed class MapEvent
 {
     public int Id;
     public int X1, Y1, X2, Y2;

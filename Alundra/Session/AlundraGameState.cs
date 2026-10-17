@@ -293,7 +293,7 @@ public sealed class AlundraGameState
     /// E16.c C8 (docs/plan-e16-etat-partie.md, D-E16-23): advances <see cref="GameTime"/> by
     /// <paramref name="elapsedSeconds"/> real seconds, at <see cref="GameTimeUnitsPerSecond"/> units per second.
     /// Called once per frame at the head of <see cref="AlundraWorldProxy.Update"/>. The DLL's logic clock runs
-    /// at 50 Hz (F9, <see cref="AlundraLogicClock"/>), so the units are counted on elapsed time, not on ticks.
+    /// at 50 Hz (F9, <see cref="LogicClock"/>), so the units are counted on elapsed time, not on ticks.
     /// A non-finite, zero or negative duration adds nothing. The whole units are passed on and the counter is
     /// capped at <see cref="GameTimeMax"/> in <see cref="double"/>, BEFORE the conversion to <see cref="uint"/>,
     /// so a huge finite duration reaches the cap instead of wrapping (SC11).

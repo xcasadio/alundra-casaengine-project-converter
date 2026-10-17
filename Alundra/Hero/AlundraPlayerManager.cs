@@ -195,13 +195,13 @@ public static class AlundraPlayerManager
     /// <summary>
     /// E20.d1 T1: the facing (<see cref="AlundraEntityScriptProxy.AnimationDirection"/>: 0 down, 1 up, 2 left, 3 right) the binary has when <c>MovePlayer</c> of this tick starts: <c>UpdateAnimation</c> (<c>0x80038AB4</c>) rewrites
     /// <c>+0x98</c> at every tick from the previous facing and the direction (<c>+0x8C</c>) <c>MovePlayer</c> left, through the table <c>0x800237F4</c> (<c>0x80038AD8</c>). The DLL writes the field only when a frame ends
-    /// (<see cref="AlundraFrameSyncPasses.SyncAnimation"/>), so in a frame of two ticks the second one would read the facing of the frame before. The value is the one the binary would have posed, the table lookup of
-    /// <see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/>; it is exact with one and two ticks per frame, and for any number of ticks in <c>0x03</c>, whose direction is a cardinal one (the table is idempotent on
+    /// (<see cref="FrameSyncPasses.SyncAnimation"/>), so in a frame of two ticks the second one would read the facing of the frame before. The value is the one the binary would have posed, the table lookup of
+    /// <see cref="FrameSyncPasses.TryResolveAnimationTarget"/>; it is exact with one and two ticks per frame, and for any number of ticks in <c>0x03</c>, whose direction is a cardinal one (the table is idempotent on
     /// a cardinal direction). Computed once at the head of <see cref="MovePlayer"/>, before the tick writes anything; this is the binary's own value, not a deviation.
     /// </summary>
     internal static int TickFacing(AlundraEntityScriptProxy player)
     {
-        AlundraFrameSyncPasses.TryResolveAnimationTarget(player, out _, out var direction);
+        FrameSyncPasses.TryResolveAnimationTarget(player, out _, out var direction);
         return direction;
     }
 
@@ -280,7 +280,7 @@ public static class AlundraPlayerManager
     /// position change is <see cref="Tick"/>, called separately (mirrors the original's own split between
     /// <c>PlayerManager.MovePlayer</c> and <c>PhysicsEngine.UpdateEntitiesPhysics</c>).
     /// </summary>
-    public static void MovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
+    public static void MovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host)
     {
         MovePlayerCallCountForTests++;
 
@@ -632,7 +632,7 @@ public static class AlundraPlayerManager
     /// <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>): the bare heroes of the unit tests keep the default life of 0, which would otherwise be written over the stats the test set up. This guard is the one
     /// documented deviation of the epilogue.
     /// </summary>
-    internal static void EndOfMovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
+    internal static void EndOfMovePlayer(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host)
     {
         UpdateItemEffectState(player, in pad, state, host);
 
@@ -653,7 +653,7 @@ public static class AlundraPlayerManager
     /// weapon effects, the weapon steps, <c>PlayerTryAttack</c> or <c>PlayerTryAction</c>; the caller ends the tick. It reads no boots level: the wall of the deep water (O-E19-22) and the currents (O-E20-16) are not ported,
     /// so a hero without the swim boots swims where the original stops him; the splash, the wake and the ripple of the dive (the shadow pass <c>0x80038E84</c> and <c>CreatePlayerAnimationEffects</c>) are E20.e's.
     /// </summary>
-    private static void SwimTick(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host, uint nibble, uint dir)
+    private static void SwimTick(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host, uint nibble, uint dir)
     {
         player.WeaponChargeTimer = 0;
         player.WeaponRecordPointer = 0;
@@ -695,7 +695,7 @@ public static class AlundraPlayerManager
     /// <c>TryUseItem</c> at 0 ends the tick; <c>CheckEntityInteraction</c> 2 gives 0x1D, another non-zero value ends the tick; then an edge of the Triangle, the Cross or the Square (<see cref="SwimDiveButtons"/>) starts the
     /// burst (0x28), else any bit of the direction nibble (even a contradictory pair) swims (0x0F), else the hero floats (0x1D).
     /// </summary>
-    private static void SwimSteerTick(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host, uint nibble, uint dir)
+    private static void SwimSteerTick(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host, uint nibble, uint dir)
     {
         player.TargetDirection = dir;
         if (TryUseItem(player, in pad) == 0)
@@ -1050,9 +1050,9 @@ public static class AlundraPlayerManager
     /// <item><description>Only when <c>+0x1C &amp; 3</c> is 0 (the counter of frames BEFORE the counters pass of this tick): below 60 the sound 0x2A; at 60 the hold spark, queued on the stage
     /// (<see cref="AlundraNativeEffects.CreateChargeSpark"/>, whose sound and two numbers happen only if the effect is created, when the stage applies it).</description></item>
     /// </list>
-    /// The stage is the host's (<see cref="IAlundraScriptHost.EffectStage"/>); a host without one creates no effect, and the sounds that do not depend on a creation still play.
+    /// The stage is the host's (<see cref="IScriptHost.EffectStage"/>); a host without one creates no effect, and the sounds that do not depend on a creation still play.
     /// </summary>
-    internal static void UpdatePlayerWeaponEffect(AlundraEntityScriptProxy player, in AlundraPadState pad, IAlundraScriptHost? host)
+    internal static void UpdatePlayerWeaponEffect(AlundraEntityScriptProxy player, in AlundraPadState pad, IScriptHost? host)
     {
         if (((pad.ButtonsHold | pad.ButtonsReleased) & AlundraPadState.Square) != 0
             && AlundraWeaponTables.RecordByte(AlundraWeaponTables.RecordsAddress + (uint)(AlundraWeaponTables.RecordSize * player.CurrentWeaponRecord)) != 0
@@ -1123,7 +1123,7 @@ public static class AlundraPlayerManager
     /// of the stage (E20.f1a); the hero's slot index is taken before the queued operations of the frame.
     /// </para>
     /// </summary>
-    private static void CreateAuraIfNeeded(AlundraEntityScriptProxy player, IAlundraScriptHost? host)
+    private static void CreateAuraIfNeeded(AlundraEntityScriptProxy player, IScriptHost? host)
     {
         if (host?.EffectStage is not { } stage)
         {
@@ -1147,7 +1147,7 @@ public static class AlundraPlayerManager
     /// other test. Here the handle is cleared at once and the slot is released by an operation of the stage at the position of this tick (<see cref="AlundraEffectStage.FreeAtTick"/>, ADR-0059), and ONLY IF it still
     /// holds the aura (D-E20-30, the defect of the original corrected: when the aura expired during a lock and its slot was taken by another effect, the binary frees that other effect).
     /// </summary>
-    private static void ReleaseAura(AlundraEntityScriptProxy player, IAlundraScriptHost? host)
+    private static void ReleaseAura(AlundraEntityScriptProxy player, IScriptHost? host)
     {
         var slot = player.AuraSlot;
         if (slot == null)
@@ -1171,7 +1171,7 @@ public static class AlundraPlayerManager
     /// <see cref="AlundraWeaponTables.AnimationFlagsAddress"/>, clears the pointer (the melee swings: at the tick after the press); otherwise the counter counts up to the delay of the record
     /// (<c>ptr[2]</c>), then the projectile is spawned (<see cref="SpawnWeaponProjectile"/>) and the pointer cleared.
     /// </summary>
-    private static void UpdateWeaponStepProgression(AlundraEntityScriptProxy player, IAlundraScriptHost? host)
+    private static void UpdateWeaponStepProgression(AlundraEntityScriptProxy player, IScriptHost? host)
     {
         var pointer = player.WeaponRecordPointer;
         if (pointer == 0)
@@ -1197,7 +1197,7 @@ public static class AlundraPlayerManager
 
     /// <summary>E20.b B4 seam of the spawn call <c>0x80039F58</c> of <c>UpdateWeaponStepProgression</c> (<c>0x8002F818</c>): the projectile of a bow or a wand, at the hero's X and Y, at his Z plus the
     /// height <c>ptr[3]</c> of the record. Counted and journaled for the tests; since E20.f3a it calls the apparition of an entity by sprite index for the types of <see cref="WiredWeaponTypes"/> (empty until E20.f3c). The direction is the one of the tick (<see cref="AlundraEntityScriptProxy.BoxDirection"/>), read before the tick writes anything, as the binary reads <c>+0x98</c>.</summary>
-    internal static void SpawnWeaponProjectile(AlundraEntityScriptProxy player, uint recordPointer, IAlundraScriptHost? host)
+    internal static void SpawnWeaponProjectile(AlundraEntityScriptProxy player, uint recordPointer, IScriptHost? host)
     {
         WeaponSpawnCallCountForTests++;
         var call = new WeaponSpawnCall(
@@ -1297,7 +1297,7 @@ public static class AlundraPlayerManager
     /// </list>
     /// A host without the seam, tables or records does steps 1, 6 and 2-5 nothing (a bare test montage); the regeneration then finds no record and only keeps its counters at 0.
     /// </summary>
-    internal static void UpdateItemEffectState(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
+    internal static void UpdateItemEffectState(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host)
     {
         RefreshEquipmentAndSheet(player, state, host);
         RegenerateLife(player, in pad, state, host?.EquipmentRecords);
@@ -1308,7 +1308,7 @@ public static class AlundraPlayerManager
     /// (<see cref="AlundraWorldProxy"/>, E20.c2a T2): the binary's sheet is a global that outlives the map load (the load only empties the record pointers), so a hit on the first tick of a map reads the sheet of the
     /// end of the previous map; this port, which rebuilds the world's records at every map, computes it again at the adoption from the same inventory instead of reading an empty sheet.
     /// </summary>
-    internal static void RefreshEquipmentAndSheet(AlundraEntityScriptProxy player, AlundraGameState state, IAlundraScriptHost? host)
+    internal static void RefreshEquipmentAndSheet(AlundraEntityScriptProxy player, AlundraGameState state, IScriptHost? host)
     {
         if (host?.EquipmentRecords is not { } records)
         {
@@ -1722,7 +1722,7 @@ public static class AlundraPlayerManager
     /// exactly what a collision-free, gravity-free player needs (see this class' own doc, D4/E2).
     /// Delegates to <see cref="AlundraScriptedMotion.TickPlayer"/> (E4.b extraction,
     /// docs/plan-e4-deplacement-scripte.md - see that class' own doc), now driven by the SAME
-    /// <c>ticksThisFrame</c> the shared <see cref="AlundraLogicClock"/> hands the script/pick-run pass this
+    /// <c>ticksThisFrame</c> the shared <see cref="LogicClock"/> hands the script/pick-run pass this
     /// frame (ONE-CLOCK fix, see <see cref="AlundraScriptedMotion"/>'s own class doc) instead of its own
     /// separately-accumulated elapsed time - the hero's own observable per-tick behaviour is unchanged, only
     /// the source of the tick count.
@@ -1732,7 +1732,7 @@ public static class AlundraPlayerManager
     /// E12.d (docs/plan-e12d-interaction-joueur.md). Reads the player's per-tick entity contact
     /// (<see cref="AlundraEntityScriptProxy.XCollisionEntity"/>, written by the blocking report of his controller in
     /// <see cref="AlundraEntityScriptProxy.MoveControllerAndPullPosition"/>, E19.d2b B4), maintains the interact latch on <paramref name="state"/> (see the latch fields'
-    /// own doc there), and on success assigns <see cref="IAlundraScriptHost.ActiveCollisionEntity"/> -
+    /// own doc there), and on success assigns <see cref="IScriptHost.ActiveCollisionEntity"/> -
     /// the one-shot signal the slot-F pick consumes (D-E12D-4). Returns the original's exact result
     /// codes: 0 = no interaction, 1 = auto-touch interact (no InteractRequiresButton flag),
     /// 2 = button interact (flag + Square just pressed).
@@ -1748,7 +1748,7 @@ public static class AlundraPlayerManager
     /// false; this method's own repeated check just carries the same gate one level deeper, narrowly,
     /// the way D-E12D-5 chose - not because the port lacked one.
     /// </summary>
-    internal static int CheckEntityInteraction(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IAlundraScriptHost? host)
+    internal static int CheckEntityInteraction(AlundraEntityScriptProxy player, in AlundraPadState pad, AlundraGameState state, IScriptHost? host)
     {
         if (host == null)
         {

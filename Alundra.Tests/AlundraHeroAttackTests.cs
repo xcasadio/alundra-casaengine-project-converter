@@ -293,7 +293,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
     {
         var trace = AttackOracleTrace.Load("AT10");
         var (rig, sounds) = Start(trace, withTables: false);
-        Assert.Null(((IAlundraScriptHost)rig.Host).ItemTables);
+        Assert.Null(((IScriptHost)rig.Host).ItemTables);
         AssertEqualToOracle(Compare(rig, sounds, trace));
     }
 
@@ -448,7 +448,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         WaitUntilTheHeroIsFree(arc);
         arc.OneFrame();
         sounds.Requests.Clear();
-        AlundraPlayerManager.InitializeNewGameInventory(AlundraGameState.Instance, ((IAlundraScriptHost)arc.Proxy).ItemTables!);
+        AlundraPlayerManager.InitializeNewGameInventory(AlundraGameState.Instance, ((IScriptHost)arc.Proxy).ItemTables!);
 
         // On the ground: the press at S asks the sound 29 at S, the swing 0x10 runs ticks S to S+20, Idle at S+21 (tick 22 of AT1).
         var swing = new List<uint>();
@@ -502,7 +502,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         using var arc = new ArcRun(FreeHeroSpec("E20b-tables"));
         InjectSounds(arc);
         var hero = arc.Hero;
-        var tables = ((IAlundraScriptHost)arc.Proxy).ItemTables;
+        var tables = ((IScriptHost)arc.Proxy).ItemTables;
         Assert.NotNull(tables);
         WaitUntilTheHeroIsFree(arc);
         arc.OneFrame();
@@ -603,7 +603,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         hero.MovePlayerOnTickPad(in pressed); // tick 23: Idle, the new press.
         hero.TickAnimationClock();
         hero.TickPhysics();
-        AlundraFrameSyncPasses.SyncAnimation(rig.HeroEntity);
+        FrameSyncPasses.SyncAnimation(rig.HeroEntity);
 
         Assert.Equal(0x10u, hero.TargetAnimationId);
         Assert.Equal(0x10u, hero.CurrentAnimationId);
@@ -629,7 +629,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
         hero.MovePlayerOnTickPad(in pressed);
         hero.TickAnimationClock();
         hero.TickPhysics();
-        AlundraFrameSyncPasses.SyncAnimation(rig.HeroEntity);
+        FrameSyncPasses.SyncAnimation(rig.HeroEntity);
 
         var endTick = 0;
         for (var tick = 24; tick <= 60 && endTick == 0; tick++)

@@ -11,7 +11,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E2 acceptance check: the hero bank's converted animation assets (<c>Entities/Alundra/</c>,
 /// <c>bankalundra_0_anim{N}_{direction}.anim2d</c> - converter naming, see
-/// <see cref="AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix"/>'s own doc) must cover every (anim,
+/// <see cref="FrameSyncPasses.TrySelectAnimationByNameSuffix"/>'s own doc) must cover every (anim,
 /// direction) pair <see cref="AlundraPlayerManager"/>'s ported Idle(0)/Moving(1)/LoadingMap(54) cases can
 /// ever select, for all 4 directions (<see cref="AnimationTables.DirectionNames"/>) - otherwise
 /// <c>SyncAnimation</c> would silently fail to find an animation and the pawn would freeze visually while
@@ -64,7 +64,7 @@ public class HeroAnimationExportTests
     /// 0x10 (up, per <see cref="AnimationTables.CardinalDirectionTable"/>) must resolve to the "up" file
     /// suffix, and TargetDirection 0x18 (east/right, the direction <see cref="AlundraPlayerManager.MovePlayer"/>'s
     /// own East scenario uses) must resolve to "right" - both via the SAME
-    /// <see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/>/<see cref="AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix"/>
+    /// <see cref="FrameSyncPasses.TryResolveAnimationTarget"/>/<see cref="FrameSyncPasses.TrySelectAnimationByNameSuffix"/>
     /// chain <c>SyncAnimation</c> drives every frame, and both files must actually exist in the real
     /// export.
     /// </summary>
@@ -88,7 +88,7 @@ public class HeroAnimationExportTests
             CurrentAnimationId = ~1u, // force the sync to fire
         };
 
-        var fired = AlundraFrameSyncPasses.TryResolveAnimationTarget(proxy, out _, out var animationDirection);
+        var fired = FrameSyncPasses.TryResolveAnimationTarget(proxy, out _, out var animationDirection);
 
         Assert.True(fired);
         Assert.Equal(expectedSuffix, AnimationTables.DirectionNames[animationDirection]);

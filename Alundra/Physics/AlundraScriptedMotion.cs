@@ -24,7 +24,7 @@ namespace Alundra.Physics;
 /// ONE-CLOCK fix (user-reported stall, sailor entity 12 of map 389 stuck on opcode 0x1F at pc 1470 -
 /// see the commit message for the full diagnosis): this class used to own its OWN per-entity 50 Hz
 /// accumulator (<c>PhysicsTickAccumulator</c>, fed a raw <c>elapsedTime</c> every RENDERED frame),
-/// completely independent of <see cref="AlundraLogicClock"/>, the SAME clock that already gates the
+/// completely independent of <see cref="LogicClock"/>, the SAME clock that already gates the
 /// script (pick/run) pass. The two accumulators phase-drifted against each other (they only agree on the
 /// long-run RATE, not on which rendered frame carries a tick) - <see cref="AlundraEntityScriptProxy.ForceAdjusted"/>
 /// was cleared on a render frame that carried no motion sub-step and set only on a frame that did, so a
@@ -32,7 +32,7 @@ namespace Alundra.Physics;
 /// never took its "movement was curtailed" exit - the entity walked into geometry and stalled forever.
 /// <see cref="TickPlayer"/>/<see cref="TickScriptedNpc"/> no longer accumulate time themselves: the
 /// caller (<see cref="AlundraEntityScriptProxy.Update"/>) passes the SAME <c>ticksThisFrame</c> count
-/// <see cref="IAlundraScriptHost.LogicTicksThisFrame"/> already handed the script pass this frame, so one
+/// <see cref="IScriptHost.LogicTicksThisFrame"/> already handed the script pass this frame, so one
 /// logic tick is always exactly one script pass followed by one motion sub-step (and, for an NPC, one
 /// <see cref="AlundraEntityScriptProxy.EvaluateEntitySupport"/> vertical step) - never more, never fewer,
 /// never on a different frame.
@@ -83,7 +83,7 @@ internal static class AlundraScriptedMotion
 
     /// <summary>Runs <paramref name="ticks"/> whole 50 Hz kinematic ticks for the hero pawn - the tick
     /// COUNT is owned entirely by the caller now (this class' own doc, ONE-CLOCK fix): it is always the
-    /// same <c>ticksThisFrame</c> the shared <see cref="AlundraLogicClock"/> already handed the script
+    /// same <c>ticksThisFrame</c> the shared <see cref="LogicClock"/> already handed the script
     /// pass this same frame, never a separately-accumulated value. Called from
     /// <see cref="AlundraPlayerManager.Tick"/>.</summary>
     internal static void TickPlayer(AlundraEntityScriptProxy player, int ticks)
@@ -385,7 +385,7 @@ internal static class AlundraScriptedMotion
             RestoreAirborneEngineValues(hero, controller);
             if (hero.AirborneSavedVerticalOwned)
             {
-                controller.SetExternalVerticalDisplacement(AlundraGameplayFreeze.OwnerExternalVerticalDisplacement(hero));
+                controller.SetExternalVerticalDisplacement(GameplayFreeze.OwnerExternalVerticalDisplacement(hero));
             }
         }
         else

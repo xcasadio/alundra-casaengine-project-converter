@@ -158,9 +158,9 @@ public sealed class AlundraCabinWalkTests
     }
 
     /// <summary>A script host whose control is locked (a cutscene): the hero walks by its <c>TargetDirection</c>.</summary>
-    private sealed class Host : IAlundraScriptHost
+    private sealed class Host : IScriptHost
     {
-        private readonly AlundraLogicClock _clock = new();
+        private readonly LogicClock _clock = new();
 
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
 

@@ -11,7 +11,7 @@ namespace Alundra.SaveGames;
 /// <list type="bullet">
 /// <item><description>the map table, <c>Maps/world-index.json</c> of <see cref="ProjectPath"/>
 /// (<see cref="WorldIndex"/>): which map ids exist, and where each world lives;</description></item>
-/// <item><description>the project folder itself, where <see cref="AlundraMapSizeReader"/> finds each map's
+/// <item><description>the project folder itself, where <see cref="MapSizeReader"/> finds each map's
 /// <c>.tileMap</c> (D-E16-32);</description></item>
 /// <item><description>whether a world is in the asset catalog (<see cref="IsWorldInCatalog"/>), an injected
 /// predicate over a <c>world-index.json</c> value - production wires it to <c>AssetCatalog.GetByFileName</c> in
@@ -35,7 +35,7 @@ public sealed class AlundraSaveGameRules
         ArgumentNullException.ThrowIfNull(itemTables);
 
         ProjectPath = projectPath;
-        WorldIndex = new AlundraWorldIndexTable(projectPath);
+        WorldIndex = new WorldIndexTable(projectPath);
         IsWorldInCatalog = isWorldInCatalog;
         ItemTables = itemTables;
     }
@@ -45,7 +45,7 @@ public sealed class AlundraSaveGameRules
 
     /// <summary><c>Maps/world-index.json</c> of <see cref="ProjectPath"/> (degraded mode: no key resolves, so
     /// every save is refused on <c>initialMapId</c>).</summary>
-    public AlundraWorldIndexTable WorldIndex { get; }
+    public WorldIndexTable WorldIndex { get; }
 
     /// <summary>The catalog predicate, over a <c>world-index.json</c> value.</summary>
     public Func<string, bool> IsWorldInCatalog { get; }

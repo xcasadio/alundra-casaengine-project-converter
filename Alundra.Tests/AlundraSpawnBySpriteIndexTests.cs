@@ -114,7 +114,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     [Fact]
     public void A_Data_TheValidIndicesOfTheMapPage_OfThe483Maps_AreTheOnesTheBinaryAnswered_123648Comparisons()
     {
-        var indices = AlundraMapSpriteIndices.GetOrCreate(Root);
+        var indices = MapSpriteIndices.GetOrCreate(Root);
         Assert.True(indices.IsLoaded);
         var oracle = AlundraSpawnIndexOracle.ValidIndicesByMap();
         Assert.Equal(483, oracle.Count);
@@ -146,7 +146,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
         try
         {
             using var log = LogCapture.Install();
-            var degraded = new AlundraMapSpriteIndices(empty);
+            var degraded = new MapSpriteIndices(empty);
             Assert.False(degraded.IsLoaded);
             Assert.True(degraded.IsValid(14, 79)); // permissive: the catalog's bank key alone decides.
             Assert.Single(log.Warnings, w => w.Contains("map-sprite-indices", StringComparison.Ordinal));

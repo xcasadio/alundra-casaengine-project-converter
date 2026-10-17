@@ -29,7 +29,7 @@ namespace Alundra.Maps;
 /// Degraded mode (same shape as <see cref="AlundraMusicIndexTable"/>): a missing/unparsable file logs
 /// one warning at construction and every lookup then misses.
 /// </summary>
-public sealed class AlundraWorldIndexTable
+public sealed class WorldIndexTable
 {
     private const string DataDirectoryName = "Maps";
     private const string FileName = "world-index.json";
@@ -38,7 +38,7 @@ public sealed class AlundraWorldIndexTable
 
     /// <summary>Loads from <c>Maps/world-index.json</c> under <paramref name="projectPath"/> - the
     /// overload tests use to point at a temporary fixture directory instead of the real project.</summary>
-    public AlundraWorldIndexTable(string projectPath)
+    public WorldIndexTable(string projectPath)
     {
         var filePath = Path.Combine(projectPath, DataDirectoryName, FileName);
 
@@ -47,7 +47,7 @@ public sealed class AlundraWorldIndexTable
             if (!File.Exists(filePath))
             {
                 Logs.WriteWarning(
-                    $"AlundraWorldIndexTable: '{filePath}' not found; no map id resolves to a world path "
+                    $"WorldIndexTable: '{filePath}' not found; no map id resolves to a world path "
                     + "(degraded mode).");
                 return;
             }
@@ -58,7 +58,7 @@ public sealed class AlundraWorldIndexTable
             if (parsed == null)
             {
                 Logs.WriteWarning(
-                    $"AlundraWorldIndexTable: '{filePath}' parsed to nothing; no map id resolves to a "
+                    $"WorldIndexTable: '{filePath}' parsed to nothing; no map id resolves to a "
                     + "world path (degraded mode).");
                 return;
             }
@@ -74,14 +74,14 @@ public sealed class AlundraWorldIndexTable
         catch (Exception ex)
         {
             Logs.WriteWarning(
-                $"AlundraWorldIndexTable: failed to load '{filePath}' ({ex.Message}); no map id resolves "
+                $"WorldIndexTable: failed to load '{filePath}' ({ex.Message}); no map id resolves "
                 + "to a world path (degraded mode).");
             _pathByMapId.Clear();
         }
     }
 
     /// <summary>Loads from <c>Maps/world-index.json</c> under <see cref="EngineEnvironment.ProjectPath"/>.</summary>
-    public AlundraWorldIndexTable() : this(EngineEnvironment.ProjectPath)
+    public WorldIndexTable() : this(EngineEnvironment.ProjectPath)
     {
     }
 

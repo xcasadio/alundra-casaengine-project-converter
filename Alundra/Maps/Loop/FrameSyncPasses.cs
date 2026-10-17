@@ -35,7 +35,7 @@ namespace Alundra.Maps.Loop;
 /// this move used. Broken `<see cref>` references left by this move are fixed in slice R5, not here
 /// (plan §4 R5) - this class's XML documentation is otherwise the ORIGINAL text, unmodified.
 /// </summary>
-internal static class AlundraFrameSyncPasses
+internal static class FrameSyncPasses
 {
     /// <summary>
     /// Loops <see cref="SyncAnimation"/> over <paramref name="entities"/> - kept as its own method (rather

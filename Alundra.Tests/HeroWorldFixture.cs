@@ -73,7 +73,7 @@ internal static class HeroWorldFixture
     /// CharacterMotionSystem, which always runs before this same frame's GameplayProxy.Update - see
     /// AlundraEntityScriptProxy.Update's own E3.d doc).</summary>
     internal static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildHeroPawn(
-        World world, CharacterControllerSettings settings, Vector3 startPosition, IAlundraScriptHost scriptHost)
+        World world, CharacterControllerSettings settings, Vector3 startPosition, IScriptHost scriptHost)
     {
         var root = new TransformComponent();
         root.LocalTransform.Position = startPosition;

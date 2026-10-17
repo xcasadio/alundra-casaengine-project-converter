@@ -11,12 +11,12 @@ using Alundra.Physics;
 namespace Alundra.Tests;
 
 /// <summary>
-/// Bug fix (user-reported runtime pacing bug - see <see cref="AlundraLogicClock"/>'s own class doc): the
+/// Bug fix (user-reported runtime pacing bug - see <see cref="LogicClock"/>'s own class doc): the
 /// integration half of the fix's acceptance - a bare <see cref="AlundraEntityScriptProxy"/>, driven
 /// entirely through its own public <see cref="AlundraEntityScriptProxy.Update"/> (never calling
 /// <see cref="AlundraEntityScriptProxy.PickEventTrigger"/>/<see cref="AlundraEntityScriptProxy.RunPickedEvent"/>
 /// directly, unlike <see cref="AlundraWorldProxyEventPassTests"/>), against a host sharing ONE
-/// <see cref="AlundraLogicClock"/> - the same wiring <see cref="Alundra.Scripts.AlundraWorldProxy"/> uses in
+/// <see cref="LogicClock"/> - the same wiring <see cref="Alundra.Scripts.AlundraWorldProxy"/> uses in
 /// production. Confirms the script pick/run pass now dispatches at 50/s regardless of the caller's own
 /// frame rate, not at whatever rate <see cref="AlundraEntityScriptProxy.Update"/> itself is called.
 /// </summary>
@@ -29,11 +29,11 @@ public class AlundraWorldProxyLogicClockTests
         public void RunSpriteEvent(AlundraEntityScriptProxy entity) => Calls++;
     }
 
-    /// <summary>Minimal <see cref="IAlundraScriptHost"/> - one shared <see cref="AlundraLogicClock"/>,
+    /// <summary>Minimal <see cref="IScriptHost"/> - one shared <see cref="LogicClock"/>,
     /// exactly the field every real host (<see cref="Alundra.Scripts.AlundraWorldProxy"/>, the intro trace
     /// harness's own HeadlessIntroSimulation) owns. World-level callers (RunMapEventsPass et al) are out
     /// of scope for this test - only the per-entity half is exercised here.</summary>
-    private sealed class ClockHost : IAlundraScriptHost
+    private sealed class ClockHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; }
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -41,7 +41,7 @@ public class AlundraWorldProxyLogicClockTests
         public AlundraPlayerController? PlayerController => null;
         public IReadOnlyList<AlundraEntityScriptProxy> Collidables { get; } = System.Array.Empty<AlundraEntityScriptProxy>();
 
-        private readonly AlundraLogicClock _logicClock = new();
+        private readonly LogicClock _logicClock = new();
 
         public ClockHost(IEventProgramRunner runner) => Runner = runner;
 
@@ -65,13 +65,13 @@ public class AlundraWorldProxyLogicClockTests
     /// Real <see cref="CasaEngine.Framework.Scene.Entities.Entity"/>/<see cref="AlundraEntityScriptProxy"/>
     /// pair, same construction shape <see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/> uses
     /// (<c>entity.Initialize()</c>) - needed because <see cref="AlundraEntityScriptProxy.Update"/>'s own
-    /// tail (<see cref="AlundraFrameSyncPasses.SyncAnimation"/>/<see cref="AlundraFrameSyncPasses.SyncTransform"/>)
+    /// tail (<see cref="FrameSyncPasses.SyncAnimation"/>/<see cref="FrameSyncPasses.SyncTransform"/>)
     /// reads <c>Owner</c>, which only a real <c>Initialize(Entity)</c> call sets - a bare
     /// <c>new AlundraEntityScriptProxy()</c> (as <see cref="AlundraWorldProxyEventPassTests"/> uses) is not
     /// enough here since this test drives the full <see cref="AlundraEntityScriptProxy.Update"/>, not just
     /// its pick/run half directly.
     /// </summary>
-    private static AlundraEntityScriptProxy BuildDispatchingEntity(IAlundraScriptHost host)
+    private static AlundraEntityScriptProxy BuildDispatchingEntity(IScriptHost host)
     {
         var entity = new CasaEngine.Framework.Scene.Entities.Entity
         {

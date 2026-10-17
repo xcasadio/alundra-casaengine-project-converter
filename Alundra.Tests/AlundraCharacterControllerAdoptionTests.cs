@@ -128,7 +128,7 @@ public class AlundraCharacterControllerAdoptionTests
     private static World BuildWorld(AlundraCellsCollisionField field) => HeroWorldFixture.BuildWorld(field);
 
     private static (Entity Entity, AlundraEntityScriptProxy Proxy) BuildHeroPawn(
-        World world, CharacterControllerSettings settings, Vector3 startPosition, IAlundraScriptHost scriptHost)
+        World world, CharacterControllerSettings settings, Vector3 startPosition, IScriptHost scriptHost)
         => HeroWorldFixture.BuildHeroPawn(world, settings, startPosition, scriptHost);
 
     /// <summary>No-op <see cref="IEventProgramRunner"/> - the pick/run half never fires here
@@ -149,7 +149,7 @@ public class AlundraCharacterControllerAdoptionTests
     /// player branch (MovePlayer/Tick) never runs, so a direct <see cref="CharacterControllerComponent.Move"/>
     /// call from the test is the only source of horizontal motion, matching how E3.c own acceptance
     /// tests drive the mover ("Move(...) puis exactement un Update(1/50)").</summary>
-    private sealed class FakeScriptHost : IAlundraScriptHost
+    private sealed class FakeScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -165,7 +165,7 @@ public class AlundraCharacterControllerAdoptionTests
         // this (out of this fix's scope - the player's own AlundraPlayerManager.Tick keeps its own
         // pre-existing 50 Hz accumulator, untouched). Auto-closes its own clock each call (own frame per
         // call), same pattern as every other FakeScriptHost in this test project.
-        private readonly AlundraLogicClock _logicClock = new();
+        private readonly LogicClock _logicClock = new();
         public int LogicTicksThisFrame(float elapsedTime)
         {
             var ticks = _logicClock.TicksThisFrame(elapsedTime);

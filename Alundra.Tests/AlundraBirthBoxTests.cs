@@ -292,7 +292,7 @@ public sealed class AlundraBirthBoxTests : IDisposable
     }
 
     /// <summary>A host with no asset manager: it answers nothing to the resolver and counts the questions.</summary>
-    private sealed class NoAssetsHost : IAlundraScriptHost
+    private sealed class NoAssetsHost : IScriptHost
     {
         public int Calls;
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
@@ -307,7 +307,7 @@ public sealed class AlundraBirthBoxTests : IDisposable
 
         public int LogicTicksThisFrame(float elapsedTime) => 1;
 
-        Animation2dData? IAlundraScriptHost.ResolveAnimationData(IReadOnlyList<Guid> animationAssetIds, uint animationId, int direction)
+        Animation2dData? IScriptHost.ResolveAnimationData(IReadOnlyList<Guid> animationAssetIds, uint animationId, int direction)
         {
             Calls++;
             return null;

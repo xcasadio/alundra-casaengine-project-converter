@@ -18,7 +18,7 @@ namespace Alundra.Maps.Loop;
 /// (the SAME constants the hero/NPC kinematic mover already fixed-steps at - one clock, one rate, not a
 /// second invented one) - callers loop that many times over whatever they gate on ticks.
 ///
-/// ONE clock is shared by the whole world (an <see cref="IAlundraScriptHost"/> implementer owns exactly
+/// ONE clock is shared by the whole world (an <see cref="IScriptHost"/> implementer owns exactly
 /// one instance - <see cref="AlundraWorldProxy"/> in production, the intro trace harness's own
 /// HeadlessIntroSimulation in tests), NOT one accumulator per entity: a per-entity accumulator would
 /// phase-drift entities spawned at different real times against each other and against the world's own
@@ -42,7 +42,7 @@ namespace Alundra.Maps.Loop;
 /// becomes the first (and only, and closing) caller in that case; see
 /// <see cref="AlundraWorldProxy.Update"/>'s own call site.
 /// </summary>
-internal sealed class AlundraLogicClock
+internal sealed class LogicClock
 {
     private float _accumulator;
     private int _ticksThisFrame;

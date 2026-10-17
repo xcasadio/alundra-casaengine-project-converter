@@ -733,7 +733,7 @@ public sealed class AlundraEffectOpcodeTests : IDisposable
     }
 
     /// <summary>A script host that is also the effect host: its runner emits one operation per script call (the calls are the ticks of the entity's own loop).</summary>
-    private sealed class EntityLoopHost : IAlundraScriptHost, IEntityWorldContext, IEventProgramRunner
+    private sealed class EntityLoopHost : IScriptHost, IEntityWorldContext, IEventProgramRunner
     {
         public int Ticks;
         public AlundraEffectStage? Stage { get; set; }

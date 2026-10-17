@@ -95,8 +95,8 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
             spawned.Add(npcEntity);
 
             // One map event whose zone is the hero's tile (0, 0): every tick runs its program once.
-            var mapEvents = (List<AlundraMapEvent>)typeof(AlundraWorldProxy).GetField("_mapEvents", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Proxy)!;
-            mapEvents.Add(new AlundraMapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 0, Y2 = 0, ProgramBMap = 1, OriginalProgramBMap = 1, Entity = Hero });
+            var mapEvents = (List<MapEvent>)typeof(AlundraWorldProxy).GetField("_mapEvents", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Proxy)!;
+            mapEvents.Add(new MapEvent { Id = 0, X1 = 0, Y1 = 0, X2 = 0, Y2 = 0, ProgramBMap = 1, OriginalProgramBMap = 1, Entity = Hero });
 
             Runner = new ProbingRunner(Hero, Proxy);
             Proxy.EventProgramRunner = Runner;

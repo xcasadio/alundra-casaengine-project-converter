@@ -172,8 +172,8 @@ public class AlundraHeroJumpTests
 
         Assert.Equal(JumpHeights[4], hero.PosZ);
 
-        AlundraGameplayFreeze.Freeze(hero);
-        AlundraGameplayFreeze.Thaw(hero);
+        GameplayFreeze.Freeze(hero);
+        GameplayFreeze.Thaw(hero);
         rig.Update(0.001f); // a frame without a logic tick.
 
         Assert.True(rig.Controller.IsVerticalOwnedExternally);

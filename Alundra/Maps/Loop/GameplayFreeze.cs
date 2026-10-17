@@ -39,7 +39,7 @@ namespace Alundra.Maps.Loop;
 /// <para><b>The animations</b>: <see cref="AnimatedSpriteComponent.IsPlaybackPaused"/> is posed, and its
 /// previous value given back at the thaw, so an animation something else had paused stays paused. This pauses the
 /// DRAWING only (E19.c2, D-E19-17): the logical clock of the animation ends, which the scripts see, is stepped by
-/// <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> inside the gameplay-blockable block, so the same gate stops
+/// <see cref="FrameSyncPasses.StepAnimationClock"/> inside the gameplay-blockable block, so the same gate stops
 /// it, and it ignores <see cref="AnimatedSpriteComponent.IsPlaybackPaused"/> (a stale pause must not eat the first tick
 /// after a thaw). A warp departure does not pause the drawing: only the clock stops.</para>
 ///
@@ -49,7 +49,7 @@ namespace Alundra.Maps.Loop;
 /// engine update - a freeze applied from the entity's own proxy would let one more frame of fall through.
 /// An entity spawned during a freeze is frozen on the frame it appears.</para>
 /// </summary>
-internal static class AlundraGameplayFreeze
+internal static class GameplayFreeze
 {
     /// <summary>What one entity's freeze took away, to give it back.</summary>
     internal sealed class State

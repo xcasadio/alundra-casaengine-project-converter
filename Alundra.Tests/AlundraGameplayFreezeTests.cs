@@ -19,7 +19,7 @@ using Alundra.Transitions;
 namespace Alundra.Tests;
 
 /// <summary>
-/// E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): <see cref="AlundraGameplayFreeze"/> - the engine's
+/// E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): <see cref="GameplayFreeze"/> - the engine's
 /// own gravity integration and sprite animation frozen while GameplayBlockedMask is posed, and given back
 /// exactly. The production call sites (a real hero, a real ladder, a real frame with zero logic ticks) are
 /// in <see cref="AlundraLadderClimbTests"/>; the world-level wiring is the last test here.
@@ -86,14 +86,14 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         var proxy = NewProxyWithController(MidJump);
         var before = proxy.Controller!.CaptureStateSnapshot();
 
-        AlundraGameplayFreeze.Freeze(proxy);
+        GameplayFreeze.Freeze(proxy);
 
         // SetControlMode(Disabled) goes through Stop(), which wipes the motion state - the reason for the
         // snapshot (plan §1.2).
         Assert.Equal(CharacterControlMode.Disabled, proxy.Controller.ControlMode);
         Assert.Equal(Vector3.Zero, proxy.Controller.Velocity);
 
-        AlundraGameplayFreeze.Thaw(proxy);
+        GameplayFreeze.Thaw(proxy);
 
         Assert.Equal(before, proxy.Controller.CaptureStateSnapshot());
         Assert.Equal(CharacterMovementState.Jumping, proxy.Controller.MovementState);
@@ -105,9 +105,9 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
     {
         var proxy = NewProxyWithController(MidJump);
 
-        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: true);
-        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: true);
-        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: false);
+        GameplayFreeze.Apply(proxy, gameplayBlocked: true);
+        GameplayFreeze.Apply(proxy, gameplayBlocked: true);
+        GameplayFreeze.Apply(proxy, gameplayBlocked: false);
 
         Assert.Equal(new Vector3(3f, -2f, 150f), proxy.Controller!.Velocity);
         Assert.False(proxy.FreezeState.IsFrozen);
@@ -118,7 +118,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
     {
         var proxy = NewProxyWithController(MidJump);
 
-        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: false);
+        GameplayFreeze.Apply(proxy, gameplayBlocked: false);
 
         Assert.Equal(CharacterControlMode.Player, proxy.Controller!.ControlMode);
         Assert.Equal(new Vector3(3f, -2f, 150f), proxy.Controller.Velocity);
@@ -134,10 +134,10 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         proxy.FinalForceZ = 2 * 65536;
         proxy.Controller.SetExternalVerticalDisplacement(2f);
 
-        AlundraGameplayFreeze.Freeze(proxy);
+        GameplayFreeze.Freeze(proxy);
         Assert.Equal(0f, ExternalVerticalLatch(proxy.Controller));
 
-        AlundraGameplayFreeze.Thaw(proxy);
+        GameplayFreeze.Thaw(proxy);
         Assert.Equal(2f, ExternalVerticalLatch(proxy.Controller));
     }
 
@@ -153,8 +153,8 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         proxy.Controller!.IsVerticalOwnedExternally = true;
         proxy.Controller.SetExternalVerticalDisplacement(AlundraScriptedMotion.ClimbingExternalDisplacementSentinel);
 
-        AlundraGameplayFreeze.Freeze(proxy);
-        AlundraGameplayFreeze.Thaw(proxy);
+        GameplayFreeze.Freeze(proxy);
+        GameplayFreeze.Thaw(proxy);
 
         Assert.Equal(expectedLatch, ExternalVerticalLatch(proxy.Controller));
     }
@@ -180,10 +180,10 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
     {
         var (proxy, sprite) = NewProxyWithSprite();
 
-        AlundraGameplayFreeze.Freeze(proxy);
+        GameplayFreeze.Freeze(proxy);
         Assert.True(sprite.IsPlaybackPaused);
 
-        AlundraGameplayFreeze.Thaw(proxy);
+        GameplayFreeze.Thaw(proxy);
         Assert.False(sprite.IsPlaybackPaused);
     }
 
@@ -193,8 +193,8 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         var (proxy, sprite) = NewProxyWithSprite();
         sprite.IsPlaybackPaused = true;
 
-        AlundraGameplayFreeze.Freeze(proxy);
-        AlundraGameplayFreeze.Thaw(proxy);
+        GameplayFreeze.Freeze(proxy);
+        GameplayFreeze.Thaw(proxy);
 
         Assert.True(sprite.IsPlaybackPaused);
     }

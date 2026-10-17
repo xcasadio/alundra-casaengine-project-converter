@@ -1007,7 +1007,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         // stays posted through the world-change request instead of being lifted by the abort guard - same
         // montage as AlundraWarpDepartureTests' own freeze test. Departs through the production trigger site.
         AlundraWarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
-        ((IAlundraScriptHost)worldProxy).OnPortalTriggerDetected(Map389Portal0(), 0x10);
+        ((IScriptHost)worldProxy).OnPortalTriggerDetected(Map389Portal0(), 0x10);
         Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
         Assert.Equal(0u, worldProxy.GameState.PlayerControlFlags); // the warp poses no control-flag bit (D-T-6).
 

@@ -409,7 +409,7 @@ public class AlundraWorldProxyCameraFollowTests
     }
 
     /// <summary>
-    /// Frame-rate independence, driven by the REAL <see cref="AlundraLogicClock"/>. The camera must be a
+    /// Frame-rate independence, driven by the REAL <see cref="LogicClock"/>. The camera must be a
     /// pure function of the accumulated TICK count, never of the display rate.
     ///
     /// The target keeps advancing throughout (2.4 px per tick) rather than standing still: under the
@@ -434,7 +434,7 @@ public class AlundraWorldProxyCameraFollowTests
     }
 
     /// <summary>Runs a followed entity moving at 2.4 px per logic tick until the real
-    /// <see cref="AlundraLogicClock"/> has delivered exactly 50 ticks at the given frame time, and returns
+    /// <see cref="LogicClock"/> has delivered exactly 50 ticks at the given frame time, and returns
     /// the camera's render-space Y. <paramref name="stepPerFrame"/> selects the regression shape (one
     /// catch-up step per rendered frame) instead of the production one (one per logic tick).</summary>
     private static float RunPursuit(float dt, bool stepPerFrame)
@@ -442,7 +442,7 @@ public class AlundraWorldProxyCameraFollowTests
         const float pixelsPerTick = 2.4f;
         const int totalTicks = 50;
 
-        var clock = new AlundraLogicClock();
+        var clock = new LogicClock();
         var rawY = 0f;
         var state = Vector3.Zero;
         var started = false;

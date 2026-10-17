@@ -123,14 +123,14 @@ public class AlundraFloorHeightTests
     /// <see cref="Collidables"/> so a test can seed the entity-support candidate
     /// <see cref="AlundraEntityScriptProxy.UpdateFloorHeight"/> reads (see
     /// <c>AlundraNpcCharacterControllerMoverTests.FakeScriptHost</c>'s own identical addition for E4.f).</summary>
-    private sealed class PlayerScriptHost : IAlundraScriptHost
+    private sealed class PlayerScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
         public AlundraGameState GameState { get; } = new();
         public AlundraPlayerController? PlayerController { get; init; }
         public List<AlundraEntityScriptProxy> Collidables { get; } = new();
-        IReadOnlyList<AlundraEntityScriptProxy> IAlundraScriptHost.Collidables => Collidables;
+        IReadOnlyList<AlundraEntityScriptProxy> IScriptHost.Collidables => Collidables;
 
         public void DestroyEntity(AlundraEntityScriptProxy entity, int effectId)
         {

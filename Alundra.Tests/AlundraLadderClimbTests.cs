@@ -157,7 +157,7 @@ public class AlundraLadderClimbTests
     /// <summary>Same minimal real-<see cref="AlundraPlayerController"/> script host as
     /// <see cref="AlundraGroundSlopeTests"/>'s own sibling class (see that file's own doc) - one logic tick
     /// per rendered frame, exactly what these tests need to observe a single +-1px per-tick step.</summary>
-    private sealed class PlayerScriptHost : IAlundraScriptHost
+    private sealed class PlayerScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -387,13 +387,13 @@ public class AlundraLadderClimbTests
         var heldRootZ = entity.RootComponent!.LocalTransform.Position.Z;
 
         host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
-        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: true);
+        GameplayFreeze.Apply(proxy, gameplayBlocked: true);
         world.Update(1f / 50f);
         world.Update(1f / 50f);
         Assert.Equal(heldRootZ, entity.RootComponent!.LocalTransform.Position.Z);
 
         host.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
-        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: false);
+        GameplayFreeze.Apply(proxy, gameplayBlocked: false);
         host.TicksPerFrame = 0;
         world.Update(1f / 50f);
 
@@ -439,7 +439,7 @@ public class AlundraLadderClimbTests
 
         var frozenRootZ = entity.RootComponent!.LocalTransform.Position.Z;
         host.GameState.PlayerControlFlags |= AlundraGameState.PlayerControlBits.MenuOpen;
-        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: true);
+        GameplayFreeze.Apply(proxy, gameplayBlocked: true);
         for (var frame = 0; frame < 5; frame++)
         {
             world.Update(1f / 50f);
@@ -450,7 +450,7 @@ public class AlundraLadderClimbTests
         }
 
         host.GameState.PlayerControlFlags &= ~AlundraGameState.PlayerControlBits.MenuOpen;
-        AlundraGameplayFreeze.Apply(proxy, gameplayBlocked: false);
+        GameplayFreeze.Apply(proxy, gameplayBlocked: false);
         Assert.Equal(previousForce, proxy.ForceZ);
         Assert.Equal(previousPosZ, proxy.PosZ);
 

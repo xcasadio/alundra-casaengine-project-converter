@@ -106,7 +106,7 @@ public sealed class AlundraPadSnapshotFreezeTests : IDisposable
         Assert.Equal(AlundraPadState.Up, host.GameState.LastPadState.ButtonsJustPressed);
     }
 
-    private sealed class PadScriptHost : IAlundraScriptHost
+    private sealed class PadScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }

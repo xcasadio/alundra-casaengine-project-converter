@@ -226,7 +226,7 @@ internal static class AlundraEntitySpawnFactory
     /// the scripts see, exactly once, at spawn/adoption (see <see cref="ApplySpawnInitialization"/>/<see cref="AdoptPlayerPawn"/>):
     /// <list type="bullet">
     /// <item><description>the sprite's logical clock is set to <see cref="LogicTicksPerSecond"/> (E19.c2): from then on only
-    /// <see cref="AlundraFrameSyncPasses.StepAnimationClock"/>, once per logic tick, raises <see cref="AnimatedSpriteComponent.AnimationFinished"/>
+    /// <see cref="FrameSyncPasses.StepAnimationClock"/>, once per logic tick, raises <see cref="AnimatedSpriteComponent.AnimationFinished"/>
     /// and <see cref="AnimatedSpriteComponent.AnimationLooped"/>, at the tick of the original (the sprite keeps drawing in real time,
     /// D-E19-17); the sprite is cached on the proxy for that step;</description></item>
     /// <item><description><see cref="OnAnimationFinished"/> bridges the end of a Once animation back to the original's Hold/Chain semantics
@@ -239,7 +239,7 @@ internal static class AlundraEntitySpawnFactory
     /// No unsubscribe on destroy: <see cref="AlundraWorldProxy.DestroyEntity(AlundraEntityScriptProxy)"/> only sets
     /// <see cref="EntityStatus.FlagToDestroy"/>; the recycling of the tick (<see cref="AlundraWorldProxy.RecycleDestroyedEntities"/>, E19.r R3) hands
     /// the entity to the engine, which releases what its components hold. The subscription this method makes lives exactly as long as the entity
-    /// object itself and needs no explicit teardown. A FlagToDestroy entity's clock does not step (<see cref="AlundraFrameSyncPasses.StepAnimationClock"/>),
+    /// object itself and needs no explicit teardown. A FlagToDestroy entity's clock does not step (<see cref="FrameSyncPasses.StepAnimationClock"/>),
     /// so its handlers never run again.
     /// </para>
     /// </summary>
@@ -283,8 +283,8 @@ internal static class AlundraEntitySpawnFactory
 
     /// <summary>
     /// Bridge from <see cref="AnimatedSpriteComponent.AnimationFinished"/> (raised once per Once animation by the sprite's logical clock,
-    /// from <see cref="AlundraFrameSyncPasses.StepAnimationClock"/> or the compensation of
-    /// <see cref="AlundraFrameSyncPasses.SyncAnimation"/>, E19.c2 - never by the real-time component pass any more, so an end is
+    /// from <see cref="FrameSyncPasses.StepAnimationClock"/> or the compensation of
+    /// <see cref="FrameSyncPasses.SyncAnimation"/>, E19.c2 - never by the real-time component pass any more, so an end is
     /// not bridged twice) back to the original's Hold/Chain semantics (EntityManager.cs:257-281):
     /// <list type="bullet">
     /// <item><description>Hold: sets <see cref="AlundraEntityScriptProxy.ForceResetAnimationFlag"/> = 1
@@ -294,11 +294,11 @@ internal static class AlundraEntitySpawnFactory
     /// class doc) - nothing else to do.</description></item>
     /// <item><description>Chain: sets <see cref="AlundraEntityScriptProxy.TargetAnimationId"/> to the
     /// chain target (EntityManager.cs:277-279). <see cref="AlundraEntityScriptProxy.Update"/> calls
-    /// <see cref="AlundraFrameSyncPasses.SyncAnimation"/> every frame regardless, so the end-of-frame call notices
+    /// <see cref="FrameSyncPasses.SyncAnimation"/> every frame regardless, so the end-of-frame call notices
     /// <c>TargetAnimationId</c> changed and switches animation (the switch tick is reserved by
-    /// <see cref="AlundraFrameSyncPasses.StepAnimationClock"/>, which sees <see cref="AlundraEntityScriptProxy.PendingChainRestartFlag"/>):
+    /// <see cref="FrameSyncPasses.StepAnimationClock"/>, which sees <see cref="AlundraEntityScriptProxy.PendingChainRestartFlag"/>):
     /// the same-tick effect the original gets from its own recursive <c>UpdateAnimation</c> call (EntityManager.cs:280), without this
-    /// bridge needing to call <see cref="AlundraFrameSyncPasses.SyncAnimation"/> itself.</description></item>
+    /// bridge needing to call <see cref="FrameSyncPasses.SyncAnimation"/> itself.</description></item>
     /// </list>
     /// A lookup miss (no entry for the just-finished (anim, direction), or a record with no end table) is a no-op. A Chain end also
     /// increments <see cref="AlundraEntityScriptProxy.AnimCompleteCounter"/> (E19.c1 T4, <c>0x80038D64</c>), a self-chain

@@ -13,9 +13,9 @@ namespace Alundra.Tests;
 /// <summary>
 /// Covers the animation-sync port added to <see cref="AlundraWorldProxy"/>: the target-resolution part
 /// of <c>EntityManager.UpdateAnimation</c> @ 0x80038AB4
-/// (<see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/>), the by-suffix animation lookup
-/// (<see cref="AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix"/>) and the per-frame driver
-/// (<see cref="AlundraFrameSyncPasses.RunAnimationSyncPass"/>). Uses real
+/// (<see cref="FrameSyncPasses.TryResolveAnimationTarget"/>), the by-suffix animation lookup
+/// (<see cref="FrameSyncPasses.TrySelectAnimationByNameSuffix"/>) and the per-frame driver
+/// (<see cref="FrameSyncPasses.RunAnimationSyncPass"/>). Uses real
 /// <see cref="AnimatedSpriteComponent"/>/<see cref="Animation2d"/> instances (both headless-constructible,
 /// as CasaEngine.Tests's own animation tests do), not a fake/spy - the component only needs asset loading
 /// for sprites, which this proxy never touches.
@@ -38,7 +38,7 @@ public class AlundraWorldProxyAnimationSyncTests
             TargetDirection = 0,
         };
 
-        var fired = AlundraFrameSyncPasses.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
+        var fired = FrameSyncPasses.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
 
         Assert.True(fired);
         Assert.Equal(0u, newAnim);
@@ -56,7 +56,7 @@ public class AlundraWorldProxyAnimationSyncTests
             TargetDirection = 0,
         };
 
-        var fired = AlundraFrameSyncPasses.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
+        var fired = FrameSyncPasses.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
 
         Assert.False(fired);
         Assert.Equal(proxy.CurrentAnimationId, newAnim);
@@ -77,7 +77,7 @@ public class AlundraWorldProxyAnimationSyncTests
             TargetDirection = 0x10,
         };
 
-        var fired = AlundraFrameSyncPasses.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
+        var fired = FrameSyncPasses.TryResolveAnimationTarget(proxy, out var newAnim, out var newDirection);
 
         Assert.True(fired);
         Assert.Equal(0u, newAnim);
@@ -108,7 +108,7 @@ public class AlundraWorldProxyAnimationSyncTests
     {
         var component = BuildComponentWithAllDirections(animationId: 0);
 
-        var found = AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix(component, 0, animationDirection, out var selected);
+        var found = FrameSyncPasses.TrySelectAnimationByNameSuffix(component, 0, animationDirection, out var selected);
 
         Assert.True(found);
         Assert.EndsWith($"_anim0_{expectedDirectionName}", selected!.Animation2dData.Name);
@@ -119,7 +119,7 @@ public class AlundraWorldProxyAnimationSyncTests
     {
         var component = BuildComponentWithAllDirections(animationId: 0);
 
-        var found = AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix(component, 5, 0, out var selected);
+        var found = FrameSyncPasses.TrySelectAnimationByNameSuffix(component, 5, 0, out var selected);
 
         Assert.False(found);
         Assert.Null(selected);
@@ -143,7 +143,7 @@ public class AlundraWorldProxyAnimationSyncTests
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = ~0u; // as ApplySpawnInitialization leaves it: TargetAnimationId=0, CurrentAnimationId=~0.
 
-        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.Equal(0u, proxy.CurrentAnimationId);
         Assert.Equal(0, proxy.AnimationDirection);
@@ -152,7 +152,7 @@ public class AlundraWorldProxyAnimationSyncTests
 
         // Second call: nothing changed since the first sync, so no further work happens (change-detected).
         var animationBeforeSecondCall = component.CurrentAnimation;
-        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
         Assert.Same(animationBeforeSecondCall, component.CurrentAnimation);
     }
 
@@ -162,7 +162,7 @@ public class AlundraWorldProxyAnimationSyncTests
     /// directions), which is how the original spells a looping walk; his idle is a real engine
     /// <c>Loop</c>. On the chain, <see cref="AlundraEntitySpawnFactory.OnAnimationFinished"/> writes
     /// <c>TargetAnimationId = 1</c> - the id it already had - so
-    /// <see cref="AlundraFrameSyncPasses.TryResolveAnimationTarget"/> reports "no change" and the sync pass
+    /// <see cref="FrameSyncPasses.TryResolveAnimationTarget"/> reports "no change" and the sync pass
     /// used to return early, leaving the sampler parked at its terminal pose: a frozen walk.
     ///
     /// This test drives the real observable rather than an internal flag: it advances playback with
@@ -180,7 +180,7 @@ public class AlundraWorldProxyAnimationSyncTests
         Assert.True(component.CurrentAnimationTimeSeconds > 0f);
 
         proxy.PendingChainRestartFlag = 1; // as OnAnimationFinished raises it on a self-chain
-        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.Equal(0f, component.CurrentAnimationTimeSeconds);
         Assert.Equal(0, proxy.PendingChainRestartFlag); // consumed, so one ending causes one restart
@@ -196,7 +196,7 @@ public class AlundraWorldProxyAnimationSyncTests
         Assert.True(timeBefore > 0f);
 
         Assert.Equal(0, proxy.PendingChainRestartFlag);
-        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.Equal(timeBefore, component.CurrentAnimationTimeSeconds);
     }
@@ -230,7 +230,7 @@ public class AlundraWorldProxyAnimationSyncTests
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = ~0u;
 
-        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         return (entity, component, proxy);
     }
@@ -250,11 +250,11 @@ public class AlundraWorldProxyAnimationSyncTests
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = 0;
         proxy.TargetAnimationId = 0;
-        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity }); // settle the initial spawn state
+        FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity }); // settle the initial spawn state
 
         proxy.TargetAnimationId = 1;
 
-        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.Equal(1u, proxy.CurrentAnimationId);
         Assert.EndsWith("_anim1_down", component.CurrentAnimation!.Animation2dData.Name);
@@ -268,7 +268,7 @@ public class AlundraWorldProxyAnimationSyncTests
         var proxy = Assert.IsType<AlundraEntityScriptProxy>(entity.GameplayProxy);
         proxy.CurrentAnimationId = ~0u;
 
-        AlundraFrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
+        FrameSyncPasses.RunAnimationSyncPass(new List<Entity> { entity });
 
         Assert.Equal(0u, proxy.CurrentAnimationId);
     }
@@ -276,6 +276,6 @@ public class AlundraWorldProxyAnimationSyncTests
     [Fact]
     public void RunAnimationSyncPass_EmptyList_DoesNothing()
     {
-        AlundraFrameSyncPasses.RunAnimationSyncPass(Array.Empty<Entity>());
+        FrameSyncPasses.RunAnimationSyncPass(Array.Empty<Entity>());
     }
 }

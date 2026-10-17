@@ -264,7 +264,7 @@ public class AlundraPlayerManagerTests
 
     /// <summary>ONE-CLOCK fix (see <see cref="AlundraScriptedMotion"/>'s own class doc): <see cref="AlundraPlayerManager.Tick"/>
     /// no longer owns a sub-step elapsed-time accumulator itself - production now derives its own tick
-    /// count from the SAME shared <see cref="AlundraLogicClock"/> the script pass reads. This test's own
+    /// count from the SAME shared <see cref="LogicClock"/> the script pass reads. This test's own
     /// driver is adapted to match (a local clock feeding elapsed time in, ticks out) so the expected
     /// per-call results stay exactly what they were before this fix.</summary>
     [Fact]
@@ -276,7 +276,7 @@ public class AlundraPlayerManagerTests
             TargetDirection = 0x18,
             AnimSetsByAnim = new Dictionary<int, AnimSetEntry> { [1] = new AnimSetEntry { Anim = 1, Speed = 208, Acceleration = 1 } },
         };
-        var clock = new AlundraLogicClock();
+        var clock = new LogicClock();
 
         // A small slice of elapsed time - not enough to run any 50 Hz (0.02s) step yet.
         AlundraPlayerManager.Tick(player, clock.TicksThisFrame(0.005f));
@@ -291,7 +291,7 @@ public class AlundraPlayerManagerTests
     }
 
     /// <summary>ONE-CLOCK fix - see <see cref="Tick_AccumulatesSubStepElapsedTime_RunsWholeTicksOnly"/>'s
-    /// own doc: driver adapted to a local <see cref="AlundraLogicClock"/>, same expected values.</summary>
+    /// own doc: driver adapted to a local <see cref="LogicClock"/>, same expected values.</summary>
     [Fact]
     public void Tick_LongStall_CapsCatchUpAtFourTicksPerFrame()
     {
@@ -301,7 +301,7 @@ public class AlundraPlayerManagerTests
             TargetDirection = 0x18,
             AnimSetsByAnim = new Dictionary<int, AnimSetEntry> { [1] = new AnimSetEntry { Anim = 1, Speed = 208, Acceleration = 1 } },
         };
-        var clock = new AlundraLogicClock();
+        var clock = new LogicClock();
 
         // 1 full second (50 ticks worth) in one go - capped at 4 ticks for this single frame.
         AlundraPlayerManager.Tick(player, clock.TicksThisFrame(1f));

@@ -368,7 +368,7 @@ public sealed class AlundraInoaDayOneArcTests
         // sets T6 then T2; the hero is then placed in the zone of B[1].
         arc.OneFrame();
         arc.OneFrame();
-        ((IAlundraScriptHost)arc.Proxy).ActiveCollisionEntity = arc.EntityByRecord(1);
+        ((IScriptHost)arc.Proxy).ActiveCollisionEntity = arc.EntityByRecord(1);
         arc.Press(AlundraPadState.Square);
         arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() => IsTemporarySet(2), "T2 set by C[2] @289");
         arc.PlaceHero(996, 120, 16);

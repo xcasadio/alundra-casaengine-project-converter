@@ -49,8 +49,8 @@ public sealed class AlundraBirthTickProbePaTests
     /// <summary>The animation the first switch of the binary would select: animation 0 in the direction the table derives from the target direction (the pure half of the sync pass).</summary>
     private static Animation2d? FirstAnimation(AlundraEntityScriptProxy proxy, AnimatedSpriteComponent sprite)
     {
-        AlundraFrameSyncPasses.TryResolveAnimationTarget(proxy, out var id, out var dir);
-        return AlundraFrameSyncPasses.TrySelectAnimationByNameSuffix(sprite, id, dir, out var selected) ? selected : null;
+        FrameSyncPasses.TryResolveAnimationTarget(proxy, out var id, out var dir);
+        return FrameSyncPasses.TrySelectAnimationByNameSuffix(sprite, id, dir, out var selected) ? selected : null;
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public sealed class AlundraBirthTickProbePaTests
         var sprite = entity.GetComponent<AnimatedSpriteComponent>()!;
         proxy.CurrentAnimationId = proxy.TargetAnimationId;
         proxy.CurrentDirection = proxy.TargetDirection;
-        var pending = AlundraFrameSyncPasses.TryResolveAnimationTarget(proxy, out var id, out var dir);
+        var pending = FrameSyncPasses.TryResolveAnimationTarget(proxy, out var id, out var dir);
         Say($"PA1b Current=Target posed by hand: a switch is still pending={pending} (resolved id={id} animationDirection={dir}; the proxy's AnimationDirection={proxy.AnimationDirection})");
         arc.OneFrame();
         Say($"PA1b after one engine frame: proxy current={(int)proxy.CurrentAnimationId} animationDirection={proxy.AnimationDirection}");

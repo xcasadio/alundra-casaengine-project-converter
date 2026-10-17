@@ -24,7 +24,7 @@ namespace Alundra.Tests;
 /// Covers E3.a (docs/plan-e3-collisions.md): the logical/render pose split introduced on
 /// <see cref="AlundraWorldProxy"/>'s three transform write sites
 /// (<see cref="AlundraEntitySpawnFactory.CreateEntityFromPrefab"/>, <see cref="AlundraWorldProxy.AdoptPlayerPawn"/>,
-/// <see cref="AlundraFrameSyncPasses.SyncTransform"/>).
+/// <see cref="FrameSyncPasses.SyncTransform"/>).
 ///  - Formula: <see cref="AlundraEntitySpawnFactory.ResolveLogicalPosition"/> followed by
 ///    <see cref="TopDownElevationSimulationSpacePolicy.DeriveRenderPosition"/> must reproduce, bit for
 ///    bit, the OLD single-step formula this slice replaced (kept below as <see cref="OldResolveWorldPosition"/>),
@@ -136,7 +136,7 @@ public class AlundraEntityLogicalRenderPoseTests
     /// <summary>
     /// A fake <see cref="IEventProgramRunner"/> whose <c>RunScript</c> mutates the entity's OWN logical
     /// pose fields, standing in for a Load program that repositions the entity - exactly the kind of
-    /// same-frame, mid-<c>Update</c> pose change <see cref="AlundraFrameSyncPasses.SyncTransform"/>'s
+    /// same-frame, mid-<c>Update</c> pose change <see cref="FrameSyncPasses.SyncTransform"/>'s
     /// re-projection call exists for.
     /// </summary>
     private sealed class PoseMovingRunner : IEventProgramRunner
@@ -164,7 +164,7 @@ public class AlundraEntityLogicalRenderPoseTests
         }
     }
 
-    private sealed class FakeScriptHost : IAlundraScriptHost
+    private sealed class FakeScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; }
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -185,7 +185,7 @@ public class AlundraEntityLogicalRenderPoseTests
         // World.Update(1/50) call per test, so a single-frame auto-closed clock reproduces the pre-fix
         // "always exactly 1 tick" behaviour these tests already assume - same pattern as every other
         // FakeScriptHost in this test project.
-        private readonly AlundraLogicClock _logicClock = new();
+        private readonly LogicClock _logicClock = new();
         public int LogicTicksThisFrame(float elapsedTime)
         {
             var ticks = _logicClock.TicksThisFrame(elapsedTime);

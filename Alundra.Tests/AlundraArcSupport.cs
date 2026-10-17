@@ -144,7 +144,7 @@ internal sealed class ArcRun : IDisposable
 
     /// <summary>E20.f0 T4: the item tables of the world, which the hero's inventory setters need (non-null in an arc with <see cref="ArcSpec.Prefabs"/>).</summary>
     private AlundraItemTables InventoryTables
-        => ((IAlundraScriptHost)Proxy).ItemTables
+        => ((IScriptHost)Proxy).ItemTables
            ?? throw new InvalidOperationException($"Arc '{Spec.Name}': the world has no item tables (the inventory helpers need an arc with Prefabs).");
 
     /// <summary>E20.f0 T4: gives one of each item through the real giver (<see cref="AlundraPlayerManager.AddOneItemIfUnlocked"/>, the one of the item opcode 0x82), so a weapon is

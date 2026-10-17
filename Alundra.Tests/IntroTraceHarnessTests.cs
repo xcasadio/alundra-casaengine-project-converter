@@ -314,7 +314,7 @@ public class IntroTraceHarnessTests
 /// follow (E14). Dynamic entity spawn (opcodes 0x2D/0x8A/0x8B, via <see cref="SpawnEntityByRecordId"/>) IS
 /// simulated - see that method's own doc.
 /// </summary>
-internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScriptHost, IAlundraSoundPlayer
+internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost, IAlundraSoundPlayer
 {
     private const string WorldName_ = "Ship Klark (beginning)-389";
 
@@ -447,7 +447,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     private readonly List<AlundraEntityScriptProxy> _spawnedEntities = new();
     private readonly Dictionary<AlundraEntityScriptProxy, string> _entityNames = new();
     private readonly Dictionary<int, TileMapObjectData> _entityRecordsByIndex = new(); // for SpawnEntityByRecordId (0x2D/0x8B)
-    private readonly List<AlundraMapEvent> _mapEvents = new();
+    private readonly List<MapEvent> _mapEvents = new();
 
     private readonly SortedSet<int> _referencedALoad = new();
     private readonly SortedSet<int> _referencedBMap = new();
@@ -709,7 +709,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
                 continue;
             }
 
-            _mapEvents.Add(new AlundraMapEvent
+            _mapEvents.Add(new MapEvent
             {
                 Id = int.Parse(cp.GetValueOrDefault("Index", "0")),
                 X1 = int.Parse(cp.GetValueOrDefault("X1", "0")),
@@ -1297,11 +1297,11 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IAlundraScr
     /// <see cref="RunFrame"/> itself read/advance, mirroring production's <see cref="AlundraWorldProxy"/>.
     /// This harness runs at a FIXED dt (<see cref="AlundraScriptedMotion.FixedTickSeconds"/> exactly) one
     /// frame at a time - see <see cref="RunFrame"/>'s own doc on why that makes
-    /// <see cref="AlundraLogicClock.TicksThisFrame"/> yield exactly 1 every single frame, forever, so this
+    /// <see cref="LogicClock.TicksThisFrame"/> yield exactly 1 every single frame, forever, so this
     /// fix is intentionally a no-op for the intro trace (see docs/intro-trace-389.txt's own acceptance
     /// note).
     /// </summary>
-    private readonly AlundraLogicClock _logicClock = new();
+    private readonly LogicClock _logicClock = new();
 
     public int LogicTicksThisFrame(float elapsedTime) => _logicClock.TicksThisFrame(elapsedTime);
 

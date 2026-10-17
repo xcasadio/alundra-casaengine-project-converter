@@ -131,10 +131,10 @@ public class AlundraGroundSlopeTests
     /// adopted the original's <c>+1</c> resting invariant).</summary>
     private static int QualifyingPosZ(int cellHeightUnits) => cellHeightUnits * CellHeightPx << 16;
 
-    /// <summary>No-op <see cref="IAlundraScriptHost"/> - none of these tests ever call
+    /// <summary>No-op <see cref="IScriptHost"/> - none of these tests ever call
     /// <see cref="AlundraEntityScriptProxy.Update"/>, only <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>
     /// directly, so nothing on this host is ever exercised.</summary>
-    private sealed class NoOpScriptHost : IAlundraScriptHost
+    private sealed class NoOpScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner => throw new NotSupportedException();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -385,7 +385,7 @@ public class AlundraGroundSlopeTests
     /// which makes the whole <c>IsPlayer</c> branch in <see cref="AlundraEntityScriptProxy.Update"/> a
     /// no-op and is exactly why those tests never reach <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/>
     /// through production code).</summary>
-    private sealed class PlayerScriptHost : IAlundraScriptHost
+    private sealed class PlayerScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }

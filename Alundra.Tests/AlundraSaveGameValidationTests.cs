@@ -14,7 +14,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// E16.c T4 (docs/plan-e16-etat-partie.md, C3, C4, D-E16-32, SC2, SC6): <see cref="AlundraSaveGame.TryValidate"/>,
-/// <see cref="AlundraSaveGameRules"/> and <see cref="AlundraMapSizeReader"/> on a temporary project folder (under
+/// <see cref="AlundraSaveGameRules"/> and <see cref="MapSizeReader"/> on a temporary project folder (under
 /// <see cref="Path.GetTempPath"/>, deleted by <see cref="Dispose"/>) holding a <c>world-index.json</c> and test
 /// <c>.tileMap</c> files, a test item table and an injected catalog predicate. Each domain row is checked at its
 /// minimum and maximum (accepted), then one past each end (refused, the message naming the field). The tests on
@@ -68,7 +68,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
         AddMap(WidthZero, "WidthZero-107", SizeJson(0, 60));
         AddMap(HeightNegative, "HeightNegative-108", SizeJson(52, -1));
         AddMap(FolderInPlace, "FolderInPlace-109", null);
-        Directory.CreateDirectory(AlundraMapSizeReader.GetTileMapPath(_projectPath, _worldPaths[FolderInPlace])!);
+        Directory.CreateDirectory(MapSizeReader.GetTileMapPath(_projectPath, _worldPaths[FolderInPlace])!);
         AddMap(NotInCatalog, NotInCatalogMarker + "-110", SizeJson(52, 60));
         AddMap(MapSizeArray, "MapSizeArray-111", "{ \"map_size\": [52, 60] }");
         AddMap(HeightMissing, "HeightMissing-112", "{ \"map_size\": { \"w\": 52 } }");
@@ -97,13 +97,13 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     private static string SizeJson(int w, int h) => "{ \"name\": \"m\", \"map_size\": { \"w\": " + w + ", \"h\": " + h + " } }";
 
     /// <summary>Adds a world-index entry, <c>Maps\&lt;name&gt;\&lt;name&gt;.world</c>, and (unless null) its
-    /// <c>.tileMap</c> at the path <see cref="AlundraMapSizeReader.GetTileMapPath"/> derives.</summary>
+    /// <c>.tileMap</c> at the path <see cref="MapSizeReader.GetTileMapPath"/> derives.</summary>
     private void AddMap(int mapId, string name, string? tileMapJson)
     {
         var worldPath = "Maps\\" + name + "\\" + name + ".world";
         _worldPaths[mapId] = worldPath;
 
-        var tileMapPath = AlundraMapSizeReader.GetTileMapPath(_projectPath, worldPath)!;
+        var tileMapPath = MapSizeReader.GetTileMapPath(_projectPath, worldPath)!;
         Directory.CreateDirectory(Path.GetDirectoryName(tileMapPath)!);
         if (tileMapJson != null)
         {
@@ -485,7 +485,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     [Fact]
     public void MapSizeReader_ReadsTheFixturesMapSize()
     {
-        Assert.True(AlundraMapSizeReader.TryRead(_projectPath, _worldPaths[Map389], out var w, out var h, out var error), error);
+        Assert.True(MapSizeReader.TryRead(_projectPath, _worldPaths[Map389], out var w, out var h, out var error), error);
         Assert.Equal(52, w);
         Assert.Equal(60, h);
     }
@@ -493,7 +493,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     [Fact]
     public void MapSizeReader_DerivesTheTileMapPathLikeTheEventLoader()
     {
-        var path = AlundraMapSizeReader.GetTileMapPath(_projectPath, "Maps\\The Klark\\Ship-389\\Ship-389.world");
+        var path = MapSizeReader.GetTileMapPath(_projectPath, "Maps\\The Klark\\Ship-389\\Ship-389.world");
 
         Assert.Equal(Path.Combine(_projectPath, "Maps", "The Klark", "Ship-389", "tilemap", "Ship-389.tileMap"), path);
     }
@@ -511,7 +511,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     [InlineData(FolderInPlace)]
     public void MapSizeReader_Unreadable_ReturnsFalseWithAReason_WithoutThrowing(int mapId)
     {
-        var read = AlundraMapSizeReader.TryRead(_projectPath, _worldPaths[mapId], out var w, out var h, out var error);
+        var read = MapSizeReader.TryRead(_projectPath, _worldPaths[mapId], out var w, out var h, out var error);
 
         Assert.False(read);
         Assert.Equal(0, w);

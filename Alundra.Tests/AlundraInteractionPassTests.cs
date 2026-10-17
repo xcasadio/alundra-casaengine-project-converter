@@ -80,7 +80,7 @@ public sealed class AlundraInteractionPassTests : System.IDisposable
         public void RunSpriteEvent(AlundraEntityScriptProxy entity) => SpriteEventRuns++;
     }
 
-    private sealed class InteractScriptHost : IAlundraScriptHost
+    private sealed class InteractScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; init; } = new RecordingRunner();
         public AlundraEntityScriptProxy? ActiveCollisionEntity { get; set; }
