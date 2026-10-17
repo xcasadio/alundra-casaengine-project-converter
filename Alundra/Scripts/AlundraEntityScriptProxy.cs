@@ -1323,7 +1323,7 @@ public partial class AlundraEntityScriptProxy : GameplayProxy, IEffectAnchor
             if (padSource != null)
             {
                 ScriptHost.GameState.LastPadState = padSource.BuildPadState();
-                AlundraStickProbe.LogFrame(in ScriptHost.GameState.LastPadState); // E20.d2a S3: one line per frame when ALUNDRA_DEBUG_STICK_PROBE=1.
+                StickProbe.LogFrame(in ScriptHost.GameState.LastPadState); // E20.d2a S3: one line per frame when ALUNDRA_DEBUG_STICK_PROBE=1.
             }
         }
 

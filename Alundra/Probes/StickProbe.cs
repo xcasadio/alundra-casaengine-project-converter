@@ -14,7 +14,7 @@ namespace Alundra.Probes;
 /// <see cref="PadState"/> bits: Up 1000, Right 2000, Down 4000, Left 8000), and <c>StickProbe start S N</c> at each read of the table (S = the state, 29 for the start in 0x29, 2A for the resume in 0x2A from the
 /// eleventh tick on; N = the direction nibble, <c>ButtonsHold &gt;&gt; 12</c>, the OR, in hex).</para>
 /// </summary>
-internal static class AlundraStickProbe
+internal static class StickProbe
 {
     /// <summary>The environment variable that turns the probe on (the value <c>1</c>).</summary>
     internal const string EnvVar = "ALUNDRA_DEBUG_STICK_PROBE";
@@ -36,7 +36,7 @@ internal static class AlundraStickProbe
         var active = Environment.GetEnvironmentVariable(EnvVar) == "1";
         if (active)
         {
-            Logs.WriteWarning($"AlundraStickProbe: {EnvVar}=1 - the stick sample is journalled every frame (debug-only, never active by default).");
+            Logs.WriteWarning($"StickProbe: {EnvVar}=1 - the stick sample is journalled every frame (debug-only, never active by default).");
         }
 
         return active;

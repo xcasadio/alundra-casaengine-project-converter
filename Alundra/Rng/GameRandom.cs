@@ -29,32 +29,32 @@ public static class GameRandom
 
     /// <summary>
     /// The state of the stream (64 bits, only the low 32 count). A property since E20.e0b1 (D-E0B-7, source-compatible: nothing passes it by <c>ref</c> or reflects on it) so that the
-    /// measuring sink (<see cref="AlundraRandomShadow"/>) sees the assignments and the reads; <see cref="Next"/> works on the private field alone.
+    /// measuring sink (<see cref="RandomShadow"/>) sees the assignments and the reads; <see cref="Next"/> works on the private field alone.
     /// </summary>
     public static ulong RandomSeed
     {
         get
         {
-            AlundraRandomShadow.OnSeedRead(_seed);
+            RandomShadow.OnSeedRead(_seed);
             return _seed;
         }
         set
         {
             _seed = value;
-            AlundraRandomShadow.OnEpoch(value);
+            RandomShadow.OnEpoch(value);
         }
     }
 
     public static void Reset()
     {
         _seed = InitialSeed;
-        AlundraRandomShadow.OnEpoch(InitialSeed);
+        RandomShadow.OnEpoch(InitialSeed);
     }
 
     public static ulong Next()
     {
         _seed = _seed * 0x7d2b89dd + 0xe06a02e7;
-        AlundraRandomShadow.OnDraw(_seed);
+        RandomShadow.OnDraw(_seed);
         return (uint)_seed;
     }
 
@@ -65,6 +65,6 @@ public static class GameRandom
     public static void AdvanceFrame()
     {
         _seed = _seed * 0x7d2b89dd + 0xe06a02e7;
-        AlundraRandomShadow.OnVirtualAdvance();
+        RandomShadow.OnVirtualAdvance();
     }
 }

@@ -256,7 +256,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     private void ReportSlot(int slot)
     {
-        if (!AlundraSlotShadow.Active)
+        if (!SlotShadow.Active)
         {
             return;
         }
@@ -265,16 +265,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         var world = _world?.Name;
         if (slot < 0)
         {
-            AlundraSlotShadow.Report(AlundraSlotShadow.Overflow, world, slot, maxLive);
+            SlotShadow.Report(SlotShadow.Overflow, world, slot, maxLive);
             return;
         }
 
         if (slot < maxLive)
         {
-            AlundraSlotShadow.Report(AlundraSlotShadow.OutOfOrder, world, slot, maxLive);
+            SlotShadow.Report(SlotShadow.OutOfOrder, world, slot, maxLive);
         }
 
-        AlundraSlotShadow.Report(AlundraSlotShadow.Seen, world, slot, maxLive);
+        SlotShadow.Report(SlotShadow.Seen, world, slot, maxLive);
     }
 
     /// <summary>

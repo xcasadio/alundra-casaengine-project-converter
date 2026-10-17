@@ -32,7 +32,7 @@ public sealed class AlundraStickProbeTests : IDisposable
 
     public void Dispose()
     {
-        AlundraStickProbe.SetForTests(null, null);
+        StickProbe.SetForTests(null, null);
         AlundraEntityScriptProxy.PadOfTickSeenForTests = null;
         NativeEffects.CreatedForTests = null;
         GameState.Instance.ResetForTests();
@@ -223,15 +223,15 @@ public sealed class AlundraStickProbeTests : IDisposable
     public void TheProbe_WritesTheWrittenFormat_WithTheInvariantDecimalPoint_AndHexBits()
     {
         var lines = new List<string>();
-        AlundraStickProbe.SetForTests(true, lines.Add);
+        StickProbe.SetForTests(true, lines.Add);
         var previous = Thread.CurrentThread.CurrentCulture;
         Thread.CurrentThread.CurrentCulture = new CultureInfo("fr-FR");
         try
         {
-            AlundraStickProbe.LogFrame(new PadState { StickX = 0.7071f, StickY = 0.7071f, StickBitsHold = PadState.Up | PadState.Right });
-            AlundraStickProbe.LogFrame(new PadState { StickX = -0.6f, StickY = -0.8f, DigitalDirectionBitsHold = PadState.Left, StickBitsHold = PadState.Left | PadState.Down });
-            AlundraStickProbe.LogStartTableRead(0x29, 0x2);
-            AlundraStickProbe.LogStartTableRead(0x2A, 0xA);
+            StickProbe.LogFrame(new PadState { StickX = 0.7071f, StickY = 0.7071f, StickBitsHold = PadState.Up | PadState.Right });
+            StickProbe.LogFrame(new PadState { StickX = -0.6f, StickY = -0.8f, DigitalDirectionBitsHold = PadState.Left, StickBitsHold = PadState.Left | PadState.Down });
+            StickProbe.LogStartTableRead(0x29, 0x2);
+            StickProbe.LogStartTableRead(0x2A, 0xA);
         }
         finally
         {
@@ -247,9 +247,9 @@ public sealed class AlundraStickProbeTests : IDisposable
     public void WithoutTheVariable_NothingIsJournalled_EvenOverAFullRun()
     {
         var lines = new List<string>();
-        AlundraStickProbe.SetForTests(false, lines.Add);
-        AlundraStickProbe.LogFrame(new PadState { StickX = 1f });
-        AlundraStickProbe.LogStartTableRead(0x29, 2);
+        StickProbe.SetForTests(false, lines.Add);
+        StickProbe.LogFrame(new PadState { StickX = 1f });
+        StickProbe.LogStartTableRead(0x29, 2);
 
         var montage = RunMontage.Start(RunOracleTrace.Load("g1/R1-T+R"));
         for (var t = 1; t <= 30; t++)
@@ -265,7 +265,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     public void WithTheVariable_ARunJournalsOneLinePerFrame_AndOneLineAtEachReadOfTheStartTable()
     {
         var lines = new List<string>();
-        AlundraStickProbe.SetForTests(true, lines.Add);
+        StickProbe.SetForTests(true, lines.Add);
         var montage = RunMontage.Start(RunOracleTrace.Load("g1/R1-T+R"));
         lines.Clear(); // the settling steps of the montage's start are frames too.
         var firstStartLine = -1;
@@ -291,7 +291,7 @@ public sealed class AlundraStickProbeTests : IDisposable
     public void WithTheVariable_TheResumeInTheSlideReadsTheTableToo_StateTwoA()
     {
         var lines = new List<string>();
-        AlundraStickProbe.SetForTests(true, lines.Add);
+        StickProbe.SetForTests(true, lines.Add);
         var montage = RunMontage.Start(RunOracleTrace.Load("g4/R4-rel12-R"));
         for (var t = 1; t <= montage.Trace.Ticks; t++)
         {

@@ -12,7 +12,7 @@ namespace Alundra.Probes;
 
 /// <summary>
 /// E20.e0b1 (D-E0B-7, docs/plan-e20-annexe/e20-e0b/README.md): the measuring sink of the per-tick advance of the shared random stream (<see cref="GameRandom"/>), a measuring channel like
-/// <see cref="AlundraSlotShadow"/> (ADR-0064 precedent): production code that does NOTHING unless <see cref="EnvVar"/> names a file (read once; absent, no file is written, nothing is allocated and
+/// <see cref="SlotShadow"/> (ADR-0064 precedent): production code that does NOTHING unless <see cref="EnvVar"/> names a file (read once; absent, no file is written, nothing is allocated and
 /// neither the virtual word nor a counter moves). It never touches the real state of the stream: it only watches it.
 /// <para>
 /// <b>Predicate.</b> <c>R</c> is the real state (what the stream holds), <c>V</c> what it would hold with the advance (phase B). An assignment of <see cref="GameRandom.RandomSeed"/> or a
@@ -24,7 +24,7 @@ namespace Alundra.Probes;
 /// One line per attributed test, written when the attributed test changes and at the exit of the process:
 /// <c>test=&lt;Type.Method&gt; virtual_advances=&lt;n&gt; draws=&lt;n&gt; divergent_draws=&lt;n&gt; first_divergent=&lt;category:Type.Method|-&gt; divergent_seed_reads=&lt;n&gt; epochs=&lt;n&gt; ambient_draws=&lt;n&gt;</c>.
 /// </summary>
-internal static class AlundraRandomShadow
+internal static class RandomShadow
 {
     internal const string EnvVar = "ALUNDRA_RNG_SHADOW_LOG";
 
@@ -63,7 +63,7 @@ internal static class AlundraRandomShadow
     private static string? _currentTest;
     private static Counters _counters = new();
 
-    static AlundraRandomShadow()
+    static RandomShadow()
     {
         if (Path != null)
         {
@@ -217,7 +217,7 @@ internal static class AlundraRandomShadow
         {
             var method = frame.GetMethod();
             var type = method?.DeclaringType;
-            if (type == null || type == typeof(GameRandom) || type == typeof(AlundraRandomShadow))
+            if (type == null || type == typeof(GameRandom) || type == typeof(RandomShadow))
             {
                 continue;
             }

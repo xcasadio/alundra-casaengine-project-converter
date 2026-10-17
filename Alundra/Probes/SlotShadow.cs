@@ -10,7 +10,7 @@ namespace Alundra.Probes;
 /// <see cref="EnvVar"/> names a file; absent, nothing is written and nothing is allocated. One line per event, <c>&lt;event&gt; test=&lt;Type.Method&gt; world=&lt;name&gt; slot=&lt;s&gt; maxLive=&lt;m&gt;</c>, the test being the
 /// outermost frame of the stack in the <c>Alundra.Tests</c> namespace (the suites run without parallelism, and an apparition is always made in the call stack of its test).
 /// </summary>
-internal static class AlundraSlotShadow
+internal static class SlotShadow
 {
     internal const string EnvVar = "ALUNDRA_SLOT_SHADOW_LOG";
 

@@ -115,23 +115,23 @@ public sealed partial class AlundraLootRollWorldTests : IDisposable
     [Fact]
     public void WithoutTheVariableOfTheSink_TheHelperOfTheCreation_WritesNoFile_AndMovesNeitherTheVirtualWordNorTheCounters()
     {
-        if (AlundraRandomShadow.Active)
+        if (RandomShadow.Active)
         {
             return; // the measuring run: the sink is on on purpose.
         }
 
         using var arc = Arc14("inert");
-        var word = AlundraRandomShadow.VirtualWord;
-        var events = AlundraRandomShadow.EventCount;
-        var lines = AlundraRandomShadow.LinesWritten;
+        var word = RandomShadow.VirtualWord;
+        var events = RandomShadow.EventCount;
+        var lines = RandomShadow.LinesWritten;
 
         // A creation that would roll (global 254, header code with bit 0x80) and one that cannot (global 3).
         Recycle(arc, Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, 254, HeroX << 16, HeroY << 16, -1, 0x10)!);
         Recycle(arc, Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, 3, HeroX << 16, HeroY << 16, -1, 0x10)!);
 
-        Assert.Equal(word, AlundraRandomShadow.VirtualWord);
-        Assert.Equal(events, AlundraRandomShadow.EventCount);
-        Assert.Equal(lines, AlundraRandomShadow.LinesWritten);
+        Assert.Equal(word, RandomShadow.VirtualWord);
+        Assert.Equal(events, RandomShadow.EventCount);
+        Assert.Equal(lines, RandomShadow.LinesWritten);
         Assert.Equal(0, lines);
         Assert.Equal(0, events);
     }
