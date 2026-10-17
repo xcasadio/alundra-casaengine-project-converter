@@ -165,7 +165,7 @@ public class PlayerSetupWriterTests
             // ...and the four left-stick actions are analog (user report, 2026-08-26: the stick moved
             // nothing because only the D-pad was bound). An InputMapping is either digital or analog and
             // never both, which is exactly why these are separate actions rather than extra slots on the
-            // four Move* entries; AlundraPlayerController.ActionBits aliases them onto the same PSX bits.
+            // four Move* entries; HeroController.ActionBits aliases them onto the same PSX bits.
             AssertLeftStickBinding(buttonsMapping, "MoveUpStick", CasaEngine.Engine.Input.AnalogAxis.LeftStickY, invert: false);
             AssertLeftStickBinding(buttonsMapping, "MoveDownStick", CasaEngine.Engine.Input.AnalogAxis.LeftStickY, invert: true);
             AssertLeftStickBinding(buttonsMapping, "MoveRightStick", CasaEngine.Engine.Input.AnalogAxis.LeftStickX, invert: false);

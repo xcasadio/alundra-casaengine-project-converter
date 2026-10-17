@@ -22,9 +22,9 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    screen pixels (CasaUIAssetProvider.CasaUIAnimatedImage.CurrentDrawOffset), so these offsets are screen
 ///    pixels, Y down - unlike a world animation, whose part positions are Y up.
 ///  - The cycles, from the original's own counters: cursor 4 x 10 ticks with offsets (0,0) (-1,+1) (-2,+2) (-2,+2)
-///    (AlundraInventoryDirector.cs:520-524; the offsets are the executable's word tables at 0x800a82c8/0x800a82d8,
-///    which the decompilation misread as half-words - AlundraInventoryComposer's CursorPhaseX/Y, plan E13.d SI9); magic pip 4 x 10 ticks
-///    (AlundraHudDirector.cs:461-468); coin 4 x 6 ticks (AlundraHudDirector.cs:627-634); dialogue wait cursor 4 x 10 ticks, no offset (ALUN_CD.EXE, plan E19.f1). The original moves the
+///    (InventoryDirector.cs:520-524; the offsets are the executable's word tables at 0x800a82c8/0x800a82d8,
+///    which the decompilation misread as half-words - InventoryComposer's CursorPhaseX/Y, plan E13.d SI9); magic pip 4 x 10 ticks
+///    (HudDirector.cs:461-468); coin 4 x 6 ticks (HudDirector.cs:627-634); dialogue wait cursor 4 x 10 ticks, no offset (ALUN_CD.EXE, plan E19.f1). The original moves the
 ///    cursor one tick after it changes its sprite (the composer's position phase lags the sprite phase); here
 ///    both change together, one 20 ms tick earlier for the offset, within the program's 20 ms tolerance.
 ///  - Ids are stable (<see cref="Ids.For"/> on "anim2d-ui:" + the name), so a screen can name an animation by

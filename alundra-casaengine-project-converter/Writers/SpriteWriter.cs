@@ -61,7 +61,7 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    child (derives the render pose from the root every update under the world's TopDownElevation
 ///    policy), which itself carries the AnimatedSpriteComponent with every animation the bank
 ///    converted (in the same (AnimSet, direction) order they were written); a DepthSortable2DComponent
-///    entity-level component; entity-level script_class_name = "AlundraEntityScriptProxy"; and - only
+///    entity-level component; entity-level script_class_name = "Alundra.Entities.EntityScriptProxy"; and - only
 ///    when the bank's header (SpriteRecord.Header) declares a positive body volume - a
 ///    CollisionComponent child of the ROOT (sibling of the projection, not of the sprite) with a
 ///    single Box fixture, the entity's own body box, so its pose stays logical rather than following
@@ -89,7 +89,7 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 ///    corpus (395 unique banks, 9620 (anim,dir) pairs with at least one displayed frame): 2851 of
 ///    them (about 30%) have a non-constant IDSV between frames, so the full per-frame list is
 ///    emitted for completeness rather than collapsing to one value per (anim,dir) - see
-///    Alundra.Scripts.WallPlacementOverlay.ApplyEntitySortKey for the frame-0-only approximation the
+///    Alundra.Cells.WallPlacementOverlay.ApplyEntitySortKey for the frame-0-only approximation the
 ///    DLL currently applies from this data, and its documented deviation. Each entry also carries
 ///    "End" ("Loop" | "Hold" | "Chain", from AnimationEndClassifier reading the animation's trailing
 ///    control frame - see EntityManager.cs:257-281) and, only when End is "Chain", "ChainTo" (the
@@ -417,7 +417,7 @@ public static class SpriteWriter
         // satisfies CharacterControllerSettings.Validate even though the mover itself sweeps the
         // sibling CollisionComponent's Box fixture above, not this capsule - docs/plan-e3-collisions.md
         // E3.c C3); Gravity/MaxFallSpeed/WalkabilityMask are exported as 0 and OVERWRITTEN at runtime
-        // by AlundraWorldProxy.AdoptPlayerPawn, which alone knows this entity's map (Gravity/ZViscosity
+        // by WorldProxy.AdoptPlayerPawn, which alone knows this entity's map (Gravity/ZViscosity
         // custom properties) and its own header Flags (ClassA/ClassB). ControlMode is left at its
         // class default (Player) - not written explicitly.
         if (bank.IsAlundraBank && bank.Sector5Id == 0)

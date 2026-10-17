@@ -14,7 +14,7 @@ namespace AlundraCasaEngineProjectConverter.Readers;
 ///
 /// Values are exported RAW on purpose (D-C-2): interpreting them (0 = do nothing, same-as-current =
 /// do nothing, 45 = stop only, -1 = play index 1, otherwise play that index - fact 1.1) is the
-/// CONSUMER's job (<c>Alundra.Scripts.AlundraMusicIndexTable</c>/<c>AlundraMusicPlayer</c>), not this
+/// CONSUMER's job (<c>Alundra.Audio.MusicIndexTable</c>/<c>BgmPlayer</c>), not this
 /// reader's - exporting already-interpreted values would lose information and freeze any future
 /// re-reading of the semantics into the data itself.
 /// </summary>

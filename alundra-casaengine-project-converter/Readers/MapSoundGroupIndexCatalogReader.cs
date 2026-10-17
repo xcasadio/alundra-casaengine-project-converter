@@ -14,7 +14,7 @@ namespace AlundraCasaEngineProjectConverter.Readers;
 /// <c>Maps/sound-group-index.json</c> (<see cref="Writers.WorldWriter"/>) for the runtime to consume.
 ///
 /// Values are exported RAW on purpose, same reasoning as D-C-2 for the music index: this is the group
-/// id <c>AlundraSoundBank.TryResolve</c> compares a sound-effect record's own <c>VabId</c> against to
+/// id <c>SfxBank.TryResolve</c> compares a sound-effect record's own <c>VabId</c> against to
 /// decide whether the <c>RefSfxId</c> redirection chain fires - interpreting it here (rather than
 /// letting the DLL consumer pass it straight through) would freeze that comparison's semantics into
 /// the data.

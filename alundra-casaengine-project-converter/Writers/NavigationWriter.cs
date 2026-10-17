@@ -20,7 +20,7 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 /// intro's four scripted walkers (map 389 records 11/12 bank 146, 15 bank 161, 18 bank 25) were
 /// ClassB, justifying M = 0x41 (0x40 | ClassB). The real header data refutes that - all three banks'
 /// SpriteRecord.Header.MoreFlags is 0x80 (Collidable only; full Flags 0x3A180/0x83A180), so their
-/// actual mover mask (Alundra.Scripts.AlundraCellsCollisionField.WalkabilityMaskFor) is 0x40, not
+/// actual mover mask (Alundra.Physics.CellsCollisionField.WalkabilityMaskFor) is 0x40, not
 /// 0x41. The plan was revised to M = 0x40 before this tranche started: only bit 6 of Walkability
 /// blocks a cell in the grid (GroundProperty &lt;&lt; 8 never intersects 0x40), class restrictions
 /// stay entirely at the per-entity mover (see WalkabilityMask on the CharacterControllerComponent

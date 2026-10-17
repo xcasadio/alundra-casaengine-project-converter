@@ -126,8 +126,8 @@ public class UiWriterTests
             Assert.DoesNotContain(dialogueCursor.Tracks, track => track.Property == Animation2dTrackProperty.Position);
             Assert.Equal(0.8f, dialogueCursor.GetDurationSeconds(), 5);
 
-            // The sprite ids are the ones the Alundra DLL already names (AlundraInventoryScreen.cs,
-            // AlundraHudScreen.cs): wind_159 and wind_001.
+            // The sprite ids are the ones the Alundra DLL already names (InventoryScreen.cs,
+            // HudScreen.cs): wind_159 and wind_001.
             Assert.Equal(Guid.Parse("6ed4380a-ba9c-5d0b-84db-22e1ddf61361"), UiWriter.WindSpriteId(159));
             Assert.Equal(Guid.Parse("eb70224b-d6d5-558e-a1ef-438f072135f8"), UiWriter.WindSpriteId(1));
 

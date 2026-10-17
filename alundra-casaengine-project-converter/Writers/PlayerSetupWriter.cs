@@ -24,8 +24,9 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 /// EditorAssetWriterService.SaveDocument, the same engine-owned writer SaveAsset itself calls after
 /// serializing - only the "build the JObject" step happens here instead of inside the engine.
 ///
-/// PSX to Xbox-pad button table (Alundra/Alundra.Tests/Scripts/PlayerManager.cs line references are to
-/// the gameplay DLL's own copy, which reproduces the original's control scheme):
+/// PSX to Xbox-pad button table (the PlayerManager.cs line references are to the decompilation,
+/// alundra-datas-analyser/AlundraTools/AlundraEngine/Gameplay/PlayerManager.cs, which reproduces the
+/// original's control scheme):
 ///  - Cross  (Jump)   -&gt; A       (PlayerManager.cs:413)
 ///  - Square (Attack)  -&gt; X       (PlayerManager.cs:549/964)
 ///  - Circle (UseItem) -&gt; B       (PlayerManager.cs:1904)
@@ -56,7 +57,7 @@ public static class PlayerSetupWriter
     /// Writes Entities/Alundra/Alundra.gameMode, pointing at the hero prefab's own asset id
     /// (resolved from Phase 3's bank-key -&gt; prefab id map, key "alundra_0" - see
     /// EntityNameCatalogReader's class doc: Sector5Id 0 of the map_alundra.json bank is the hero,
-    /// "Alundra"). player_controller_class names the gameplay DLL's AlundraPlayerController by full
+    /// "Alundra"). player_controller_class names the gameplay DLL's Alundra.Hero.HeroController by full
     /// name (namespace included), resolved at runtime from the gameplay assembly the same way WorldScriptClassName is; ai_controller
     /// and hud stay at PlayerStartupSettings' own defaults (AIController, no HUD).
     /// </summary>
@@ -124,7 +125,7 @@ public static class PlayerSetupWriter
             // Left stick, as four SEPARATE actions rather than extra slots on the four above: an
             // InputMapping's ButtonBehavior is either DigitalInput or AnalogInput, never both
             // (InputMapping.Update), so a digital D-pad binding cannot also carry an axis. The DLL ORs
-            // these into the very same PSX pad bits as the D-pad (AlundraPlayerController.ActionBits),
+            // these into the very same PSX pad bits as the D-pad (HeroController.ActionBits),
             // so the ported game logic still sees one ButtonsHold and never learns the difference.
             BuildLeftStickBinding("MoveUpStick", "LeftStickY", invert: false),
             BuildLeftStickBinding("MoveDownStick", "LeftStickY", invert: true),

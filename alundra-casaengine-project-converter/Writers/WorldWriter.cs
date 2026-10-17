@@ -138,7 +138,7 @@ public static class WorldWriter
     private const string SharedCameraEntitiesFolder = "Entities";
 
     // The world-level GameplayProxy class, implemented in the Alundra gameplay DLL
-    // (Alundra/Scripts/AlundraWorldProxy.cs) and resolved by full name (namespace included) at runtime.
+    // (Alundra/Maps/WorldProxy.cs) and resolved by full name (namespace included) at runtime.
     private const string WorldScriptClassName = "Alundra.Maps.WorldProxy";
 
     // docs/demarrage-nouvelle-partie.md section 2.1: the only documented spawn in the whole game.
@@ -203,7 +203,7 @@ public static class WorldWriter
     /// docs/plan-e3-collisions.md decision E3-1), for a spawn placed at the centre of its tile.
     /// PlayerStartComponent's local_transform is copied verbatim onto the spawned pawn's root
     /// (World.CreateLocalPlayerController, World.cs:361-364), so this must be the same logical pose
-    /// the DLL itself writes (<c>AlundraWorldProxy.ResolveLogicalPosition</c>) - a RenderProjectionComponent
+        /// the DLL itself writes (<c>EntitySpawnFactory.ResolveLogicalPosition</c>) - a RenderProjectionComponent
     /// child of the pawn's own root derives the render pose from it every update:
     ///  - runtime tile coordinate to pixels (docs/guidelines-runtime-alundra-casaengine.md section 2.2):
     ///    pixelX = tileX*24 + 12, pixelY = tileY*16 + 8 (the +12/+8 centre the point in the tile).
@@ -372,8 +372,8 @@ public static class WorldWriter
             ["id"] = worldId.ToString(),
             ["name"] = worldName,
             ["entity_references"] = entityReferences,
-            // The world's own GameplayProxy class, implemented by AlundraWorldProxy in the Alundra
-            // gameplay DLL (Alundra/Scripts/), and resolved at runtime by full name (namespace included) via
+            // The world's own GameplayProxy class, implemented by WorldProxy in the Alundra
+            // gameplay DLL (Alundra/Maps/), and resolved at runtime by full name (namespace included) via
             // ElementFactory.CreateScriptObject<GameplayProxy>. The forward reference is intentional: the class
             // itself is implemented in a follow-up commit, but World.Load reads this key
             // unconditionally, so it must be present now.
