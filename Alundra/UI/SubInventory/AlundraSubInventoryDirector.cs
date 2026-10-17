@@ -73,12 +73,12 @@ public sealed class AlundraSubInventoryDirector
 
     private GameState? _gameState;
     private ItemTables? _itemTables;
-    private IAlundraSoundPlayer? _soundPlayer;
+    private ISoundPlayer? _soundPlayer;
 
     /// <summary>Re-points this session-scoped instance, same "re-point without touching state" contract as
     /// <see cref="AlundraInventoryDirector.AttachToWorld"/>. Every argument null is tolerated (no live
     /// session yet) - <see cref="Tick"/>/<see cref="OpenFromPostProcess"/> then degrade to no-ops.</summary>
-    public void AttachToWorld(GameState? gameState, ItemTables? itemTables, IAlundraSoundPlayer? soundPlayer)
+    public void AttachToWorld(GameState? gameState, ItemTables? itemTables, ISoundPlayer? soundPlayer)
     {
         _gameState = gameState;
         _itemTables = itemTables;

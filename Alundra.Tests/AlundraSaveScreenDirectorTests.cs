@@ -961,7 +961,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         }
     }
 
-    private sealed class RecordingSound : IAlundraSoundPlayer
+    private sealed class RecordingSound : ISoundPlayer
     {
         public readonly List<int> Played = new();
 

@@ -56,7 +56,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         AlundraDialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

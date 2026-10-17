@@ -234,7 +234,7 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
     }
 
     private GameState? _gameState;
-    private IAlundraSoundPlayer? _soundPlayer;
+    private ISoundPlayer? _soundPlayer;
 
     private int _state;
     private int _fadeFrame;
@@ -343,7 +343,7 @@ public sealed class AlundraSaveScreenDirector : ISaveBookScreen
 
     /// <summary>Re-points this session instance at the world's game state and sound player, touching no flow state
     /// (same contract as the other session directors). Null is tolerated: <see cref="Tick"/> then does nothing.</summary>
-    public void AttachToWorld(GameState? gameState, IAlundraSoundPlayer? soundPlayer)
+    public void AttachToWorld(GameState? gameState, ISoundPlayer? soundPlayer)
     {
         _gameState = gameState;
         _soundPlayer = soundPlayer;

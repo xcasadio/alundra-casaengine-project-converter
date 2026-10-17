@@ -41,7 +41,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         AlundraDialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraEtcStringTable.ResetForTests(); // E15.c T6: this class' own SetEtcFixture leaves an injected asset behind.
         _previousProjectPath = EngineEnvironment.ProjectPath;
@@ -56,7 +56,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         AlundraDialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraEtcStringTable.ResetForTests(); // E15.c T6: same reason as the constructor.
         EngineEnvironment.ProjectPath = _previousProjectPath!;
@@ -66,7 +66,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     // Fixtures
     // -----------------------------------------------------------------------------------------
 
-    private sealed class RecordingSoundPlayer : IAlundraSoundPlayer
+    private sealed class RecordingSoundPlayer : ISoundPlayer
     {
         public readonly List<int> Requests = new();
         public void PlaySfx(int sfxId) => Requests.Add(sfxId);
@@ -121,7 +121,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         return state;
     }
 
-    private static void AttachAll(GameState state, ItemTables tables, IAlundraSoundPlayer? sound)
+    private static void AttachAll(GameState state, ItemTables tables, ISoundPlayer? sound)
     {
         AlundraInventoryDirector.Instance.AttachToWorld(state, tables, sound);
         AlundraSubInventoryDirector.Instance.AttachToWorld(state, tables, sound);

@@ -314,7 +314,7 @@ public class IntroTraceHarnessTests
 /// follow (E14). Dynamic entity spawn (opcodes 0x2D/0x8A/0x8B, via <see cref="SpawnEntityByRecordId"/>) IS
 /// simulated - see that method's own doc.
 /// </summary>
-internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost, IAlundraSoundPlayer
+internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost, ISoundPlayer
 {
     private const string WorldName_ = "Ship Klark (beginning)-389";
 
@@ -1150,11 +1150,11 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// E11.a (docs/plan-e11-audio.md) - the "production call site" acceptance for T1: this harness
     /// drives opcodes 0xBD/0xBE/0x12/0x75 through the REAL <see cref="EventProgramRunner.Dispatch"/>
     /// via <see cref="AlundraWorldProxy.RunMapEventsPass"/>/<see cref="TraceAwareEntityRunner.RunScript"/>
-    /// exactly like production, backed by itself as a fake <see cref="IAlundraSoundPlayer"/> (see
+    /// exactly like production, backed by itself as a fake <see cref="ISoundPlayer"/> (see
     /// <see cref="PlaySfx"/>). <see cref="_installSoundPlayer"/> gates only THIS property's returned
     /// value (T2's neutralization twin), same shape as <see cref="CellMutator"/> above.
     /// </summary>
-    public IAlundraSoundPlayer? SoundPlayer => _installSoundPlayer ? this : null;
+    public ISoundPlayer? SoundPlayer => _installSoundPlayer ? this : null;
 
     /// <summary>
     /// E12.a (docs/plan-e12-dialogues.md) - the "production call site" for T1: this harness drives
@@ -1168,7 +1168,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// </summary>
     public IAlundraDialogueDirector? DialogueDirector => _installDialogueDirector ? AlundraDialogueDirector.Instance : null;
 
-    /// <summary>Fake <see cref="IAlundraSoundPlayer"/> implementation (T1, docs/plan-e11-audio.md):
+    /// <summary>Fake <see cref="ISoundPlayer"/> implementation (T1, docs/plan-e11-audio.md):
     /// records the request instead of actually playing anything - no live AudioService in this
     /// headless harness.</summary>
     public void PlaySfx(int sfxId) => _soundRequests.Add((Frame, sfxId));
@@ -1181,7 +1181,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
 
     /// <summary>B1 (docs/plan-e11b-opcodes-audio.md): deliberately a no-op - this harness's own fake is a
     /// plain recorder with NO 64-slot anti-duplicate table of its own (the production table lives in the
-    /// real <see cref="AlundraSoundPlayer"/>, exercised by <c>AlundraWorldProxyAudioInstallationTests</c>
+    /// real <see cref="Audio.SoundPlayer"/>, exercised by <c>AlundraWorldProxyAudioInstallationTests</c>
     /// instead - see this DLL's own plan for why duplicating it here would be pointless).</summary>
     public void FlushFrameSounds()
     {

@@ -35,11 +35,11 @@ namespace Alundra.Tests;
 /// <c>Game</c> and its <see cref="AudioSystemComponent"/> are built via
 /// <see cref="RuntimeHelpers.GetUninitializedObject"/> plus direct backing-field writes: this is still
 /// the REAL <see cref="AlundraWorldProxy.InstallAudioSystems"/>/<see cref="AudioService"/>/
-/// <see cref="AlundraSoundPlayer"/> production code, only the otherwise-unconstructible MonoGame shell
+/// <see cref="SoundPlayer"/> production code, only the otherwise-unconstructible MonoGame shell
 /// around it is faked.
 /// </summary>
 /// docs/plan-e11c-musique.md, slice C1: <see cref="InstallAudioSystems"/> now also re-points the
-/// SESSION-scoped <see cref="AlundraMusicPlayer.Instance"/> singleton (D-C-6) - so this class shares
+/// SESSION-scoped <see cref="BgmPlayer.Instance"/> singleton (D-C-6) - so this class shares
 /// the <see cref="AlundraMusicPlayerSingletonCollection"/> xunit collection with
 /// <see cref="AlundraMusicPlayerTests"/>, the only other class touching that same shared instance,
 /// keeping them from racing (xunit runs different test CLASSES in parallel by default).
@@ -55,11 +55,11 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
-        AlundraSoundGroupIndexTable.ResetForTests(); // B3 (D-B-7): joins the session carriers this class resets.
+        SfxBank.ResetForTests();
+        SoundGroupIndexTable.ResetForTests(); // B3 (D-B-7): joins the session carriers this class resets.
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
-        AlundraMusicPlayer.Instance.ResetForTests(); // BGM T2.1: a warp departure recorded by another class must not reach this class's frame close.
-        AlundraBgmFadeDirector.Instance.ResetForTests(); // BGM T2.1: nor a fade another class left armed (it gates PlaySfx).
+        BgmPlayer.Instance.ResetForTests(); // BGM T2.1: a warp departure recorded by another class must not reach this class's frame close.
+        BgmFadeDirector.Instance.ResetForTests(); // BGM T2.1: nor a fade another class left armed (it gates PlaySfx).
     }
 
     public void Dispose()
@@ -68,11 +68,11 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         // isolation) - kept for symmetry with the existing session-singleton test classes.
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
-        AlundraSoundGroupIndexTable.ResetForTests(); // B3 (D-B-7): joins the session carriers this class resets.
+        SfxBank.ResetForTests();
+        SoundGroupIndexTable.ResetForTests(); // B3 (D-B-7): joins the session carriers this class resets.
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
-        AlundraMusicPlayer.Instance.ResetForTests(); // BGM T2.1: a warp departure recorded by another class must not reach this class's frame close.
-        AlundraBgmFadeDirector.Instance.ResetForTests(); // BGM T2.1: nor a fade another class left armed (it gates PlaySfx).
+        BgmPlayer.Instance.ResetForTests(); // BGM T2.1: a warp departure recorded by another class must not reach this class's frame close.
+        BgmFadeDirector.Instance.ResetForTests(); // BGM T2.1: nor a fade another class left armed (it gates PlaySfx).
     }
 
     private static string FindProjectRoot()
@@ -124,11 +124,11 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         var game = BuildGameWithAudio(new FakeAudioBackend(), new FakeAudioClipProvider());
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-        var proxy = new AlundraWorldProxy { SoundBank = new AlundraSoundBank(projectRoot) };
+        var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(projectRoot) };
         proxy.InstallAudioSystems(world);
 
         Assert.NotNull(proxy.SoundPlayer);
-        Assert.IsType<AlundraSoundPlayer>(proxy.SoundPlayer);
+        Assert.IsType<SoundPlayer>(proxy.SoundPlayer);
 
         // The exact seam AlundraSoundPlayer itself resolves through - all four intro ids (§1.1) must be
         // playable on the real install path.
@@ -147,7 +147,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
     }
 
     /// <summary>
-    /// Pins the OWNER that the real install path hands to <see cref="AlundraSoundPlayer"/> — the
+    /// Pins the OWNER that the real install path hands to <see cref="SoundPlayer"/> — the
     /// production decision itself, not just the constructor plumbing.
     ///
     /// <para>Found in main-session verification of slice C1: the ownership test in
@@ -157,7 +157,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
     /// — the "no slice without a test traversing the production call site" rule, unsatisfied.</para>
     ///
     /// <para>What it guards (fact 1.7 of docs/plan-e11c-musique.md): <c>World.Clear</c> stops voices by
-    /// <c>ReferenceEquals(entry.Owner, world)</c>, and a fresh <see cref="AlundraSoundPlayer"/> is built
+    /// <c>ReferenceEquals(entry.Owner, world)</c>, and a fresh <see cref="SoundPlayer"/> is built
     /// per world — so any owner other than the world leaves sound effects running past their world.</para>
     /// </summary>
     [Fact]
@@ -170,7 +170,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         var game = BuildGameWithAudio(backend, provider);
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-        var proxy = new AlundraWorldProxy { SoundBank = new AlundraSoundBank(projectRoot) };
+        var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(projectRoot) };
         proxy.InstallAudioSystems(world);
         Assert.NotNull(proxy.SoundPlayer);
 
@@ -197,7 +197,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
     public void InstallAudioSystems_NoGame_LeavesSoundPlayerNull_TheSoundsAreUnreachableWithoutInstallation()
     {
         var world = new World(); // World.Game left null - no Game/AudioSystemComponent to install against.
-        var proxy = new AlundraWorldProxy { SoundBank = new AlundraSoundBank(FindProjectRoot()) };
+        var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(FindProjectRoot()) };
 
         proxy.InstallAudioSystems(world);
 
@@ -261,7 +261,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
             var game = BuildGameWithAudio(backend, provider);
             HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-            var proxy = new AlundraWorldProxy { SoundBank = new AlundraSoundBank(projectPath) };
+            var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(projectPath) };
             proxy.InstallAudioSystems(world);
             Assert.NotNull(proxy.SoundPlayer);
 
@@ -362,8 +362,8 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
     }
 
     /// <summary>Resolves <paramref name="sfxId"/> against <paramref name="proxy"/>'s own real
-    /// <see cref="AlundraSoundBank"/> and registers a fake clip for every one of its tones, so
-    /// <see cref="AlundraSoundPlayer.PlaySfx"/> can actually start a backend voice.</summary>
+    /// <see cref="SfxBank"/> and registers a fake clip for every one of its tones, so
+    /// <see cref="SoundPlayer.PlaySfx"/> can actually start a backend voice.</summary>
     private static void RegisterClipsFor(AlundraWorldProxy proxy, FakeAudioClipProvider provider, int sfxId)
     {
         Assert.True(proxy.SoundBank.TryResolve(sfxId, soundGroup: null, out var resolution));
@@ -389,7 +389,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         var game = BuildGameWithAudio(backend, provider);
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-        var proxy = new AlundraWorldProxy { SoundBank = new AlundraSoundBank(projectRoot) };
+        var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(projectRoot) };
         proxy.InstallAudioSystems(world);
         // sfxId 300: real manifest MaxVoices=2 (single tone) - high enough that the anti-duplicate
         // table, not MaxVoices, is what has to be the thing refusing the second tick's request.
@@ -418,7 +418,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         var game = BuildGameWithAudio(backend, provider);
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-        var proxy = new AlundraWorldProxy { SoundBank = new AlundraSoundBank(projectRoot) };
+        var proxy = new AlundraWorldProxy { SoundBank = new SfxBank(projectRoot) };
         proxy.InstallAudioSystems(world);
         // sfxId 300: real manifest MaxVoices=2 - room for both the frame's own successful voice AND
         // the "replays next frame" voice below, so MaxVoices never masks what the anti-duplicate table

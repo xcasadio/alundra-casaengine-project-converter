@@ -262,7 +262,7 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
     }
 
     /// <summary>A recorder of the sounds asked (the world proxy's sound player seam).</summary>
-    private sealed class RecordingSoundPlayer : IAlundraSoundPlayer
+    private sealed class RecordingSoundPlayer : ISoundPlayer
     {
         public List<int> Ids { get; } = new();
 

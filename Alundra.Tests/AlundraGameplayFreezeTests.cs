@@ -31,7 +31,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -40,7 +40,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

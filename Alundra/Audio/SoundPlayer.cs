@@ -11,7 +11,7 @@ using Alundra.Scripts;
 namespace Alundra.Audio;
 
 /// <summary>
-/// Implements <see cref="IAlundraSoundPlayer"/> on top of a real <see cref="AudioService"/>
+/// Implements <see cref="ISoundPlayer"/> on top of a real <see cref="AudioService"/>
 /// (docs/plan-e11-audio.md, slice E11.a, D-E11-2: no <c>.sound</c> asset, no convertor change - the
 /// exported <c>.wav</c> files already load as <see cref="IAudioClip"/> through
 /// <see cref="AudioService.ClipProvider"/>, so this seam resolves a clip straight from its manifest
@@ -23,7 +23,7 @@ namespace Alundra.Audio;
 /// Fidelity (fact 1.3, D-E11-4): one voice PER TONE of the resolved record, played simultaneously, each
 /// flat at its own tone's header sample rate (the export already applied the original's transposition -
 /// transposing again here would be wrong). No group is ever passed to
-/// <see cref="AlundraSoundBank.TryResolve"/> here (D-E11-6: no production caller has one to give).
+/// <see cref="SfxBank.TryResolve"/> here (D-E11-6: no production caller has one to give).
 ///
 /// The polyphony cap (<c>MaxVoices</c>) is tested BEFORE the per-tone loop, exactly like the original
 /// (fact 1.3: "<c>MaxVoices</c> is not a selector: it's a polyphony ceiling tested before the loop") -
@@ -38,10 +38,10 @@ namespace Alundra.Audio;
 /// the son 302 loop point (the whole buffer loops, not the true 1820..28055 window - the engine has no
 /// loop-point support at the <c>SoundEffectInstance</c> level).
 /// </remarks>
-public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
+public sealed class SoundPlayer : ISoundPlayer
 {
     private readonly AudioService _audioService;
-    private readonly AlundraSoundBank _soundBank;
+    private readonly SfxBank _soundBank;
     private readonly object _owner;
     private readonly int? _soundGroup;
 
@@ -98,17 +98,17 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
     /// for fact 1.7's real defect (this class used to pass <c>owner: this</c>, and a fresh instance is
     /// built per world, so <see cref="CasaEngine.Framework.Audio.AudioService.StopVoicesOwnedBy"/> could
     /// never match it by <c>ReferenceEquals</c>). A sound effect has no reason to outlive its world, so
-    /// unlike <see cref="AlundraMusicPlayer"/> (session-owned, D-C-5's other half) this one always
+    /// unlike <see cref="BgmPlayer"/> (session-owned, D-C-5's other half) this one always
     /// receives the world.
     ///
     /// <paramref name="soundGroup"/> (docs/plan-e11b-opcodes-audio.md, slice B3, D-B-7): this world's
     /// own VAB group id, resolved by <see cref="AlundraWorldProxy.InstallAudioSystems"/> off
-    /// <see cref="AlundraSoundGroupIndexTable"/> for the world's map id, or <c>null</c> when that table
+    /// <see cref="SoundGroupIndexTable"/> for the world's map id, or <c>null</c> when that table
     /// has no entry (degraded mode, or a world outside 0..482) - the exact pre-B3 shape, D-E11-6's own
     /// deviation for as long as no group is known. Passed straight through to every
-    /// <see cref="AlundraSoundBank.TryResolve"/> call <see cref="PlaySfx"/> makes.
+    /// <see cref="SfxBank.TryResolve"/> call <see cref="PlaySfx"/> makes.
     /// </summary>
-    public AlundraSoundPlayer(AudioService audioService, AlundraSoundBank soundBank, object owner, int? soundGroup = null)
+    public SoundPlayer(AudioService audioService, SfxBank soundBank, object owner, int? soundGroup = null)
     {
         _audioService = audioService ?? throw new ArgumentNullException(nameof(audioService));
         _soundBank = soundBank ?? throw new ArgumentNullException(nameof(soundBank));
@@ -125,7 +125,7 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
         // (AlundraMusicPlayer.EvaluatePendingWarpDeparture -> AlundraBgmFadeDirector.ArmFadeForWarpDeparture);
         // disarmed by 0xA5 and by the frame-close site's own StopAllSound call (B9, when ResetSoundFlag
         // was armed - AlundraWorldProxy.Update) - see AlundraBgmFadeDirector's own doc.
-        if (AlundraBgmFadeDirector.Instance.IsArmed)
+        if (BgmFadeDirector.Instance.IsArmed)
         {
             return;
         }
@@ -192,7 +192,7 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
 
     /// <summary>
     /// T4.2 (docs/plan-audio-mix-exact-muet.md, ADR-0039, ADR-0003): starts ONE tone's voice, with the
-    /// original's own key-on left/right SPU volumes (<see cref="AlundraSpuVoiceVolume.ComputeKeyOn"/>)
+    /// original's own key-on left/right SPU volumes (<see cref="SpuVoiceVolume.ComputeKeyOn"/>)
     /// when every attribute the formula needs survived the export AND the clip can actually be played in
     /// stereo (<see cref="IAudioClipSamples"/>, non-empty samples - ADR-0039). Falls back to the
     /// pre-T4.2 shape (<see cref="AudioService.PlayClip"/>, unit volume, centred pan) otherwise - NEVER
@@ -209,20 +209,20 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
         {
             if (clip is IAudioClipSamples { MonoSamples.IsEmpty: false })
             {
-                var (left, right) = AlundraSpuVoiceVolume.ComputeKeyOn(
+                var (left, right) = SpuVoiceVolume.ComputeKeyOn(
                     vabMasterVolume, programVolume, programPan, toneVolume, tonePan);
                 var stereoParameters = new AudioVoiceParameters(
                     AudioVoiceParameters.MaxVolume, 0f, 0f, tone.Repeat);
                 return _audioService.PlayClipStereo(
                     clip, AudioBusNames.Sfx, stereoParameters,
-                    AlundraSpuVoiceVolume.ToGain(left), AlundraSpuVoiceVolume.ToGain(right), _owner);
+                    SpuVoiceVolume.ToGain(left), SpuVoiceVolume.ToGain(right), _owner);
             }
 
             if (!_loggedClipWithoutSamples)
             {
                 _loggedClipWithoutSamples = true;
                 Logs.WriteWarning(
-                    "AlundraSoundPlayer: a sound effect clip exposes no samples for the key-on stereo "
+                    "SoundPlayer: a sound effect clip exposes no samples for the key-on stereo "
                     + "volume path (T4.2); falling back to unit volume, centred pan.");
             }
         }
@@ -230,7 +230,7 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
         {
             _loggedMissingAttributes = true;
             Logs.WriteWarning(
-                "AlundraSoundPlayer: a sound effect record is missing its VAB volume/pan attributes "
+                "SoundPlayer: a sound effect record is missing its VAB volume/pan attributes "
                 + "(ADR-0003); falling back to unit volume, centred pan.");
         }
 
@@ -329,9 +329,9 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
                 continue;
             }
 
-            var (spuLeft, spuRight) = AlundraSpuVoiceVolume.ComputeRemix(left, right, programVolume, toneVolume, tonePan);
+            var (spuLeft, spuRight) = SpuVoiceVolume.ComputeRemix(left, right, programVolume, toneVolume, tonePan);
             _audioService.SetVoiceStereoGains(
-                oldestVoice.Handle, AlundraSpuVoiceVolume.ToGain(spuLeft), AlundraSpuVoiceVolume.ToGain(spuRight));
+                oldestVoice.Handle, SpuVoiceVolume.ToGain(spuLeft), SpuVoiceVolume.ToGain(spuRight));
         }
     }
 
@@ -349,7 +349,7 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
 
         _loggedMissingRemixAttributes = true;
         Logs.WriteWarning(
-            "AlundraSoundPlayer: a sound effect record is missing its VAB program/tone volume or pan "
+            "SoundPlayer: a sound effect record is missing its VAB program/tone volume or pan "
             + "attributes (ADR-0003); skipping the remix for the affected tone(s).");
     }
 
@@ -366,17 +366,17 @@ public sealed class AlundraSoundPlayer : IAlundraSoundPlayer
 
         _loggedMonoFallbackVoiceSkipped = true;
         Logs.WriteWarning(
-            "AlundraSoundPlayer: a live voice has no stereo gains to remix (T4.2's own mono fallback); "
+            "SoundPlayer: a live voice has no stereo gains to remix (T4.2's own mono fallback); "
             + "skipping it.");
     }
 
-    /// <inheritdoc cref="IAlundraSoundPlayer.FlushFrameSounds"/>
+    /// <inheritdoc cref="ISoundPlayer.FlushFrameSounds"/>
     public void FlushFrameSounds()
     {
         _frameSoundCount = 0;
     }
 
-    /// <inheritdoc cref="IAlundraSoundPlayer.StopAllSfx"/>
+    /// <inheritdoc cref="ISoundPlayer.StopAllSfx"/>
     public void StopAllSfx()
     {
         foreach (var voices in _liveVoicesBySfxId.Values)

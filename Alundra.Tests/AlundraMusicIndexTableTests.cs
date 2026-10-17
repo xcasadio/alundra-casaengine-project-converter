@@ -6,8 +6,8 @@ using Alundra.Audio;
 namespace Alundra.Tests;
 
 /// <summary>
-/// T3 of docs/plan-e11c-musique.md, slice C1: drives <see cref="AlundraMusicIndexTable.ResolvePlaybackDirective(int, out int)"/> -
-/// the SAME production resolution API <see cref="AlundraMusicPlayer.PlayMapMusic(int)"/> itself calls -
+/// T3 of docs/plan-e11c-musique.md, slice C1: drives <see cref="MusicIndexTable.ResolvePlaybackDirective(int, out int)"/> -
+/// the SAME production resolution API <see cref="BgmPlayer.PlayMapMusic(int)"/> itself calls -
 /// off the REAL converter export's own <c>Maps/music-index.json</c>, at several raw values (fact 1.1):
 /// <c>0</c> (map 0, total short-circuit), <c>45</c> (map 476, stop only), <c>-1</c> (map 183, remapped to
 /// index 1), and a real index that is NOT 25 (map 45, raw 30) alongside map 389 itself (raw 25) - so a
@@ -38,7 +38,7 @@ public class AlundraMusicIndexTableTests
     [Fact]
     public void ResolvePlaybackDirective_Map389_RawIndex25_ResolvesToPlay25()
     {
-        var table = new AlundraMusicIndexTable(FindProjectRoot());
+        var table = new MusicIndexTable(FindProjectRoot());
 
         var directive = table.ResolvePlaybackDirective(389, out var raw);
 
@@ -52,7 +52,7 @@ public class AlundraMusicIndexTableTests
     {
         // Fact 2.1's own recount: map 45's raw table entry is 30, not 25 - a resolution site that
         // hard-codes 25 would fail THIS assertion while still passing the map-389 one above.
-        var table = new AlundraMusicIndexTable(FindProjectRoot());
+        var table = new MusicIndexTable(FindProjectRoot());
 
         var directive = table.ResolvePlaybackDirective(45, out var raw);
 
@@ -64,7 +64,7 @@ public class AlundraMusicIndexTableTests
     [Fact]
     public void ResolvePlaybackDirective_Map0_RawIndex0_ResolvesToNoOp()
     {
-        var table = new AlundraMusicIndexTable(FindProjectRoot());
+        var table = new MusicIndexTable(FindProjectRoot());
 
         var directive = table.ResolvePlaybackDirective(0, out var raw);
 
@@ -75,7 +75,7 @@ public class AlundraMusicIndexTableTests
     [Fact]
     public void ResolvePlaybackDirective_Map476_RawIndex45_ResolvesToStop()
     {
-        var table = new AlundraMusicIndexTable(FindProjectRoot());
+        var table = new MusicIndexTable(FindProjectRoot());
 
         var directive = table.ResolvePlaybackDirective(476, out var raw);
 
@@ -86,7 +86,7 @@ public class AlundraMusicIndexTableTests
     [Fact]
     public void ResolvePlaybackDirective_Map183_RawIndexMinusOne_ResolvesToPlayIndex1()
     {
-        var table = new AlundraMusicIndexTable(FindProjectRoot());
+        var table = new MusicIndexTable(FindProjectRoot());
 
         var directive = table.ResolvePlaybackDirective(183, out var raw);
 
@@ -105,8 +105,8 @@ public class AlundraMusicIndexTableTests
 
         try
         {
-            AlundraMusicIndexTable table = null!;
-            var ex = Record.Exception(() => table = new AlundraMusicIndexTable(emptyProjectPath));
+            MusicIndexTable table = null!;
+            var ex = Record.Exception(() => table = new MusicIndexTable(emptyProjectPath));
             Assert.Null(ex);
 
             Assert.False(table.TryGetRawIndex(389, out _));
@@ -130,8 +130,8 @@ public class AlundraMusicIndexTableTests
 
         try
         {
-            AlundraMusicIndexTable table = null!;
-            var ex = Record.Exception(() => table = new AlundraMusicIndexTable(projectPath));
+            MusicIndexTable table = null!;
+            var ex = Record.Exception(() => table = new MusicIndexTable(projectPath));
             Assert.Null(ex);
 
             Assert.False(table.TryGetRawIndex(389, out _));

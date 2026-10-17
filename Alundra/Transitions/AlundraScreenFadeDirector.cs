@@ -9,7 +9,7 @@ using Alundra.Scripts;
 namespace Alundra.Transitions;
 
 /// <summary>
-/// SESSION-scoped singleton (D-E10-6, same shape as <see cref="AlundraMusicPlayer"/> - see that class's
+/// SESSION-scoped singleton (D-E10-6, same shape as <see cref="BgmPlayer"/> - see that class's
 /// own doc for the full reasoning on why a per-world instance would make this state vacuous by
 /// construction): the two 16.16 fixed-point colour machines of <c>RenderTransitionEffects</c>
 /// (GraphicManager.cs:1552-1643), plus the persistence latch and the "arm effect 0 at map entry" preamble
@@ -111,7 +111,7 @@ public sealed class AlundraScreenFadeDirector : IAlundraScreenFadeDirector
     /// <summary>Re-points this session-scoped instance at the current world's own
     /// <see cref="ScreenEffectService"/> (<c>world.Game?.ScreenEffectComponent?.Service</c>) - called by
     /// <see cref="AlundraWorldProxy.InstallScreenFadeSystems"/> on every world install. Deliberately does
-    /// NOT touch any of the fade/warp state (D-E10-6, same shape as <see cref="AlundraMusicPlayer.AttachToWorld"/>)
+    /// NOT touch any of the fade/warp state (D-E10-6, same shape as <see cref="BgmPlayer.AttachToWorld"/>)
     /// - only <see cref="InstallForMapEntry"/> does that. Null is a valid, tolerated value (T2 - a world
     /// with no <c>Game</c>): <see cref="PushToAttachedService"/> then bypasses with no exception.</summary>
     public void AttachToWorld(ScreenEffectService? service) => _service = service;
@@ -366,7 +366,7 @@ public sealed class AlundraScreenFadeDirector : IAlundraScreenFadeDirector
     }
 
     /// <summary>Test-only: clears every piece of session state so tests do not leak into each other
-    /// through this singleton - same seam as <see cref="AlundraMusicPlayer.ResetForTests"/>.</summary>
+    /// through this singleton - same seam as <see cref="BgmPlayer.ResetForTests"/>.</summary>
     internal void ResetForTests()
     {
         _service = null;

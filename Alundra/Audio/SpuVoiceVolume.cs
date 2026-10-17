@@ -11,7 +11,7 @@ namespace Alundra.Audio;
 /// sound effect's own two call sites - T0.2's "Départ d'une voix de bruitage"), and the mono flag left out (T0.2's
 /// "Drapeau mono" closed the fact that its write is dead code in this executable - always 0, i.e. always stereo).
 /// </summary>
-public static class AlundraSpuVoiceVolume
+public static class SpuVoiceVolume
 {
     /// <summary>
     /// Computes the (left, right) SPU volumes the original writes at key-on for one tone, straight port of

@@ -34,9 +34,9 @@ namespace Alundra.Tests;
 /// fixtures (re-built here, since those are private to that class).
 ///
 /// <para>F5 (docs/plan-bgm-demarrage-binaire.md): the real map 389 install below writes the
-/// SESSION-scoped <see cref="AlundraMusicPlayer.Instance"/> (map entry arms its reset flag, B7) - so
+/// SESSION-scoped <see cref="BgmPlayer.Instance"/> (map entry arms its reset flag, B7) - so
 /// this class shares <see cref="AlundraMusicPlayerSingletonCollection"/> with every other class touching
-/// that same shared instance, and resets <see cref="AlundraBgmFadeDirector.Instance"/> too.</para>
+/// that same shared instance, and resets <see cref="BgmFadeDirector.Instance"/> too.</para>
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraNewGameEntryTests : IDisposable
@@ -45,11 +45,11 @@ public sealed class AlundraNewGameEntryTests : IDisposable
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
-        AlundraMusicPlayer.Instance.ResetForTests();
-        AlundraBgmFadeDirector.Instance.ResetForTests(); // F5: joins the music-player singleton collection.
+        BgmPlayer.Instance.ResetForTests();
+        BgmFadeDirector.Instance.ResetForTests(); // F5: joins the music-player singleton collection.
         AlundraHudDirector.Instance.ResetForTests(); // E19.r R1: the map entry now arms the jauge.
     }
 
@@ -57,11 +57,11 @@ public sealed class AlundraNewGameEntryTests : IDisposable
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
-        AlundraMusicPlayer.Instance.ResetForTests();
-        AlundraBgmFadeDirector.Instance.ResetForTests();
+        BgmPlayer.Instance.ResetForTests();
+        BgmFadeDirector.Instance.ResetForTests();
         AlundraHudDirector.Instance.ResetForTests();
     }
 

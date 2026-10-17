@@ -6,7 +6,7 @@ using Alundra.Audio;
 namespace Alundra.Tests;
 
 /// <summary>
-/// T3 of docs/plan-e11-audio.md, slice E11.a: <see cref="AlundraSoundBank.TryResolve"/> as pure data,
+/// T3 of docs/plan-e11-audio.md, slice E11.a: <see cref="SfxBank.TryResolve"/> as pure data,
 /// against the real <c>Sounds/sfx-manifest.json</c> export (no synthetic fixture - every fact asserted
 /// here is read straight off the manifest itself, same self-skip-forbidden shape as
 /// <see cref="AlundraCellStoreProductionTests"/>).
@@ -36,7 +36,7 @@ public class AlundraSoundBankTests
     [Fact]
     public void TryResolve_Id302_TwoLoopedTonesAtTheirOwnDetunedRates()
     {
-        var bank = new AlundraSoundBank(FindProjectRoot());
+        var bank = new SfxBank(FindProjectRoot());
 
         var resolved = bank.TryResolve(302, soundGroup: null, out var resolution);
 
@@ -58,7 +58,7 @@ public class AlundraSoundBankTests
     [Fact]
     public void TryResolve_Id61_GlobalVab()
     {
-        var bank = new AlundraSoundBank(FindProjectRoot());
+        var bank = new SfxBank(FindProjectRoot());
 
         var resolved = bank.TryResolve(61, soundGroup: null, out var resolution);
 
@@ -72,7 +72,7 @@ public class AlundraSoundBankTests
     public void TryResolve_DisabledOrNoToneId_FailsSoftly()
     {
         // id 9: vab_id -2 (disabled), no tones - one of the manifest's own 91 "skip_reason" entries (§1.2).
-        var bank = new AlundraSoundBank(FindProjectRoot());
+        var bank = new SfxBank(FindProjectRoot());
 
         var resolved = bank.TryResolve(9, soundGroup: null, out _);
 
@@ -82,7 +82,7 @@ public class AlundraSoundBankTests
     [Fact]
     public void TryResolve_UnknownId_FailsSoftly()
     {
-        var bank = new AlundraSoundBank(FindProjectRoot());
+        var bank = new SfxBank(FindProjectRoot());
 
         Assert.False(bank.TryResolve(999999, soundGroup: null, out _));
     }
@@ -92,7 +92,7 @@ public class AlundraSoundBankTests
     {
         // id 303: vab_id 17, ref_sfx_id 835 (835's own vab_id is 56). D-E11-6: no group supplied ->
         // record with VabId >= 0 plays ITS OWN tones, never redirected by the chain.
-        var bank = new AlundraSoundBank(FindProjectRoot());
+        var bank = new SfxBank(FindProjectRoot());
 
         var resolved = bank.TryResolve(303, soundGroup: null, out var resolution);
 
@@ -108,7 +108,7 @@ public class AlundraSoundBankTests
         // Same id 303 as above, but this time under group 56 (its OWN vab_id, 17, differs from it) - the
         // ref_sfx_id chain (303 -> 835) is followed, and 835's own vab_id (56) matches the requested
         // group, so 835's tones are used instead - the one case the group changes anything (§1.4).
-        var bank = new AlundraSoundBank(FindProjectRoot());
+        var bank = new SfxBank(FindProjectRoot());
 
         var resolved = bank.TryResolve(303, soundGroup: 56, out var resolution);
 
@@ -123,7 +123,7 @@ public class AlundraSoundBankTests
     public void TryResolve_WithGroup_MatchingOwnVab_PlaysItsOwnTones()
     {
         // id 300: vab_id 56 - requesting under group 56 (the map's own) matches directly, no chain walk.
-        var bank = new AlundraSoundBank(FindProjectRoot());
+        var bank = new SfxBank(FindProjectRoot());
 
         var resolved = bank.TryResolve(300, soundGroup: 56, out var resolution);
 
@@ -136,7 +136,7 @@ public class AlundraSoundBankTests
     {
         // docs/plan-audio-mix-exact-muet.md, T4.1 / ADR-0003: the two looped tones of 302 sit left and right
         // (tone pans 34 and 94), at VAB and program volume 127 and program pan 64.
-        var bank = new AlundraSoundBank(FindProjectRoot());
+        var bank = new SfxBank(FindProjectRoot());
 
         Assert.True(bank.TryResolve(302, soundGroup: 56, out var resolution));
 
@@ -154,7 +154,7 @@ public class AlundraSoundBankTests
     {
         // 303 (vab 17) carries tone pans 0 and 127; its sibling 835 (vab 56) carries 34 and 94. Under group 56 the
         // tones played are 835's, so their attributes must be 835's too, never 303's.
-        var bank = new AlundraSoundBank(FindProjectRoot());
+        var bank = new SfxBank(FindProjectRoot());
 
         Assert.True(bank.TryResolve(303, soundGroup: 56, out var resolution));
 
@@ -167,7 +167,7 @@ public class AlundraSoundBankTests
     public void TryResolve_Id162_KeepsTheOriginalsSilentTone()
     {
         // Tone 1 of 162 has a volume of 0 in the original: a real 0, not a missing value.
-        var bank = new AlundraSoundBank(FindProjectRoot());
+        var bank = new SfxBank(FindProjectRoot());
 
         Assert.True(bank.TryResolve(162, soundGroup: 12, out var resolution));
 
@@ -222,7 +222,7 @@ public class AlundraSoundBankAttributeTests : IDisposable
     [Fact]
     public void TryResolve_UnderRedirection_TakesEveryAttributeFromTheSibling()
     {
-        var bank = new AlundraSoundBank(_projectPath);
+        var bank = new SfxBank(_projectPath);
 
         Assert.True(bank.TryResolve(600, soundGroup: 56, out var resolution));
 
@@ -237,7 +237,7 @@ public class AlundraSoundBankAttributeTests : IDisposable
     [Fact]
     public void TryResolve_WithoutRedirection_TakesItsOwnAttributes()
     {
-        var bank = new AlundraSoundBank(_projectPath);
+        var bank = new SfxBank(_projectPath);
 
         Assert.True(bank.TryResolve(600, soundGroup: 10, out var resolution));
 
@@ -254,7 +254,7 @@ public class AlundraSoundBankAttributeTests : IDisposable
     [InlineData(603)]
     public void TryResolve_WithMissingOrNullAttributes_LeavesThemAbsent(int sfxId)
     {
-        var bank = new AlundraSoundBank(_projectPath);
+        var bank = new SfxBank(_projectPath);
 
         Assert.True(bank.TryResolve(sfxId, soundGroup: null, out var resolution));
 
@@ -310,7 +310,7 @@ public class AlundraSoundBankChainTests : IDisposable
     [Fact]
     public void TryResolve_WithGroup_TwoHopChain_SkipsTheWrongFirstSiblingToReachTheRightOne()
     {
-        var bank = new AlundraSoundBank(_projectPath);
+        var bank = new SfxBank(_projectPath);
 
         var resolved = bank.TryResolve(500, soundGroup: 56, out var resolution);
 

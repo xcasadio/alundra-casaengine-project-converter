@@ -124,7 +124,7 @@ public interface IScriptHost
     /// animation, <see cref="AlundraEntityScriptProxy.AnimationSoundOf"/>; the hero's take-off is one of them). Default-implemented as null, like <see cref="Portals"/>, so no other host needs to change - only
     /// <see cref="AlundraWorldProxy"/> overrides it, with its own player (<see cref="AlundraWorldProxy.SoundPlayer"/>).
     /// </summary>
-    IAlundraSoundPlayer? SoundPlayer => null;
+    ISoundPlayer? SoundPlayer => null;
 
     /// <summary>
     /// E20.b B1 (docs/plan-e20-heros.md section 1.4): this world's item tables, which <see cref="PlayerManager.MovePlayer"/> reads at its head to resolve the equipped weapon

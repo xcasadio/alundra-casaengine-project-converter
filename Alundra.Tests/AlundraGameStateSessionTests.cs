@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 ///
 /// This class does NOT construct an <see cref="AlundraWorldProxy"/>, so it falls outside D-T-14's own
 /// "ten classes" criterion (docs/plan-transitions-carte.md, D-T-14) - it still resets
-/// <see cref="GameState.Instance"/>/<see cref="AlundraSoundBank"/>'s session cache in
+/// <see cref="GameState.Instance"/>/<see cref="SfxBank"/>'s session cache in
 /// constructor/Dispose, for the same isolation reason every other session-singleton test class does.
 /// </summary>
 public sealed class AlundraGameStateSessionTests : IDisposable
@@ -30,13 +30,13 @@ public sealed class AlundraGameStateSessionTests : IDisposable
     public AlundraGameStateSessionTests()
     {
         GameState.Instance.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
     }
 
     public void Dispose()
     {
         GameState.Instance.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
     }
 
     // ---- D-T-13's seven rows, each across two consecutive map entries (the last test covers the
@@ -158,8 +158,8 @@ public sealed class AlundraGameStateSessionTests : IDisposable
         var projectRoot = BuildTempProjectWithEmptyManifest();
         try
         {
-            var world1Bank = AlundraSoundBank.GetOrCreate(projectRoot); // "world 1" install.
-            var world2Bank = AlundraSoundBank.GetOrCreate(projectRoot); // "world 2" install, same project.
+            var world1Bank = SfxBank.GetOrCreate(projectRoot); // "world 1" install.
+            var world2Bank = SfxBank.GetOrCreate(projectRoot); // "world 2" install, same project.
 
             // Same instance back both times: the manifest file behind it was parsed only once, at the
             // first request - a fresh AlundraSoundBank(projectRoot) would re-read it every time.
@@ -178,8 +178,8 @@ public sealed class AlundraGameStateSessionTests : IDisposable
         var projectRootB = BuildTempProjectWithEmptyManifest();
         try
         {
-            var bankA = AlundraSoundBank.GetOrCreate(projectRootA);
-            var bankB = AlundraSoundBank.GetOrCreate(projectRootB);
+            var bankA = SfxBank.GetOrCreate(projectRootA);
+            var bankB = SfxBank.GetOrCreate(projectRootB);
 
             Assert.NotSame(bankA, bankB); // D-T-14: two different projects never share a cached bank.
         }

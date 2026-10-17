@@ -335,7 +335,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     ///
     /// D-T-3 (docs/plan-transitions-carte.md, slice T1): this is no longer a field initializer - it is
     /// this SESSION's own carrier (<see cref="GameState.Instance"/>), same shape as
-    /// <see cref="DialogueDirector"/>/<see cref="AlundraMusicPlayer.Instance"/>/<see cref="AlundraScreenFadeDirector.Instance"/>
+    /// <see cref="DialogueDirector"/>/<see cref="BgmPlayer.Instance"/>/<see cref="AlundraScreenFadeDirector.Instance"/>
     /// below - so game flags, control flags, the last pad snapshot and the interact latch's own numeric
     /// fields all survive a map change instead of being lost with the old, per-world instance (§1.4.c).
     /// <see cref="GameState.InstallForMapEntry"/> applies this session's own map-entry disposition
@@ -659,30 +659,30 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// This world's sound-effect playback seam (E11.a, docs/plan-e11-audio.md) - a real
-    /// <see cref="AlundraSoundPlayer"/> over <c>world.Game.AudioSystemComponent.Service</c>, installed by
+    /// <see cref="Audio.SoundPlayer"/> over <c>world.Game.AudioSystemComponent.Service</c>, installed by
     /// <see cref="InstallAudioSystems"/>. Null without a <c>Game</c> (e.g. a world built without one in a
     /// test) - the interpreter's own null-player fallback then applies (skip by size, <c>Degraded</c>
     /// trace kind), same shape as <see cref="CellMutator"/> above.
     /// </summary>
-    public IAlundraSoundPlayer? SoundPlayer { get; private set; }
+    public ISoundPlayer? SoundPlayer { get; private set; }
 
     /// <summary>
     /// This session's background-music playback seam (docs/plan-e11c-musique.md, slice C1) - the
-    /// session-scoped <see cref="AlundraMusicPlayer.Instance"/> (D-C-6, see that class's own doc), NOT
+    /// session-scoped <see cref="BgmPlayer.Instance"/> (D-C-6, see that class's own doc), NOT
     /// a per-world instance like <see cref="SoundPlayer"/> above. Null without a <c>Game</c> (same
     /// degraded shape as <see cref="SoundPlayer"/>), installed by <see cref="InstallAudioSystems"/>.
     /// </summary>
-    public IAlundraMusicPlayer? MusicPlayer { get; private set; }
+    public IMusicPlayer? MusicPlayer { get; private set; }
 
     /// <summary>
     /// This session's master BGM fade-machine seam (B2, docs/plan-e11b-opcodes-audio.md, D-B-5) - the
-    /// SESSION-scoped <see cref="AlundraBgmFadeDirector.Instance"/> (see that class's own doc), NOT a
+    /// SESSION-scoped <see cref="BgmFadeDirector.Instance"/> (see that class's own doc), NOT a
     /// per-world instance. Always non-null (unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>):
     /// attaching to a null <see cref="CasaEngine.Framework.Audio.AudioService"/>/<see cref="SoundPlayer"/>
     /// is itself a tolerated, degraded state - <see cref="InstallAudioSystems"/> attaches it
     /// unconditionally, same shape as <see cref="ScreenFadeDirector"/>.
     /// </summary>
-    public IAlundraBgmFadeDirector BgmFadeDirector => AlundraBgmFadeDirector.Instance;
+    public IBgmFadeDirector BgmFadeDirector => Audio.BgmFadeDirector.Instance;
 
     /// <summary>
     /// This session's screen fade/tint seam (E10.b, docs/plan-e10-fondu.md, D-E10-6) - the SESSION-scoped
@@ -724,16 +724,16 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     public string? WorldName => _world?.Name;
 
     /// <summary>
-    /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Audio.AlundraSoundBank"/>'s
+    /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Audio.SfxBank"/>'s
     /// class doc), read once and reused by <see cref="SoundPlayer"/> for every sfx it resolves. Internal,
     /// not injected through the constructor - same reasoning as <see cref="SpriteRecordCatalog"/> above.
     ///
-    /// D-T-14 (docs/plan-transitions-carte.md, slice T1): resolved through <see cref="AlundraSoundBank.GetOrCreate"/>'s
+    /// D-T-14 (docs/plan-transitions-carte.md, slice T1): resolved through <see cref="SfxBank.GetOrCreate"/>'s
     /// session-scoped cache (keyed by <see cref="EngineEnvironment.ProjectPath"/>) - same rationale as
     /// <see cref="SpriteRecordCatalog"/> above, so the sfx manifest is read only once for two consecutive
     /// worlds over the same project.
     /// </summary>
-    internal AlundraSoundBank SoundBank = AlundraSoundBank.GetOrCreate(EngineEnvironment.ProjectPath);
+    internal SfxBank SoundBank = SfxBank.GetOrCreate(EngineEnvironment.ProjectPath);
 
     /// <summary>
     /// E7.b (docs/plan-e7-mutation-tuiles.md): the visual + navigation applier subscribed to
@@ -1277,7 +1277,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E11.a (docs/plan-e11-audio.md, D-E11-1/D-E11-2): installs <see cref="SoundPlayer"/> - a real
-    /// <see cref="AlundraSoundPlayer"/> over <c>world.Game.AudioSystemComponent.Service</c> (the same
+    /// <see cref="Audio.SoundPlayer"/> over <c>world.Game.AudioSystemComponent.Service</c> (the same
     /// engine-owned <see cref="AudioService"/> every other production audio call site resolves off of,
     /// e.g. <c>CutsceneActionCoroutineFactory.GetAudioService</c>/<c>SoundEmitterComponent</c>'s own
     /// <c>world?.Game?.AudioSystemComponent?.Service</c>). Extracted as its own INTERNAL method
@@ -1302,7 +1302,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             int? soundGroup = null;
             if (BackdropLoader.TryParseMapIndex(world.Name, out var soundGroupMapId))
             {
-                var soundGroupTable = AlundraSoundGroupIndexTable.GetOrCreate(EngineEnvironment.ProjectPath);
+                var soundGroupTable = SoundGroupIndexTable.GetOrCreate(EngineEnvironment.ProjectPath);
                 if (soundGroupTable.TryGetGroup(soundGroupMapId, out var resolvedGroup))
                 {
                     soundGroup = resolvedGroup;
@@ -1311,20 +1311,20 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
             // D-C-5: owner: world, so World.Clear's own StopVoicesOwnedBy(world) actually stops these
             // voices (fact 1.7's fix - see AlundraSoundPlayer's own constructor doc).
-            SoundPlayer = new AlundraSoundPlayer(audioService, SoundBank, world, soundGroup);
+            SoundPlayer = new SoundPlayer(audioService, SoundBank, world, soundGroup);
 
             // D-C-6: AlundraMusicPlayer.Instance is SESSION-scoped, never rebuilt here - only
             // re-pointed at this world's own AudioService/project path. See that class's own doc for
             // why (the guard state would be vacuous by construction in a per-world instance).
-            AlundraMusicPlayer.Instance.AttachToWorld(audioService, EngineEnvironment.ProjectPath);
-            MusicPlayer = AlundraMusicPlayer.Instance;
+            BgmPlayer.Instance.AttachToWorld(audioService, EngineEnvironment.ProjectPath);
+            MusicPlayer = BgmPlayer.Instance;
         }
 
         // B2 (docs/plan-e11b-opcodes-audio.md, D-B-5): re-points the session-scoped master fade machine
         // at this world's own AudioService/SoundPlayer - called UNCONDITIONALLY (even with audioService
         // null), same "AttachToWorld tolerates null, never touches its own state" contract as
         // AlundraMusicPlayer.AttachToWorld/AlundraScreenFadeDirector.AttachToWorld above.
-        AlundraBgmFadeDirector.Instance.AttachToWorld(audioService, SoundPlayer);
+        Audio.BgmFadeDirector.Instance.AttachToWorld(audioService, SoundPlayer);
 
         // The map-entry music TRIGGER lives HERE rather than at a second call site in
         // InitializeWithWorld, and that placement is the point: an outcome-verifier of slice C1 showed
@@ -2757,7 +2757,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // B2 (docs/plan-e11b-opcodes-audio.md, D-B-5): the master BGM fade machine - same tick-driven
         // discipline as the screen fade above (LOGIC ticks, never rendered frames), no separate "push"
         // step (it writes the engine's own Master bus volume directly, once per tick it actually steps).
-        AlundraBgmFadeDirector.Instance.Advance(ticksThisFrame);
+        Audio.BgmFadeDirector.Instance.Advance(ticksThisFrame);
 
         // T4 (docs/plan-transitions-carte.md §3): the departure sequence itself is a "dehors" pass too
         // (this class' own gel gate must keep running WHILE it holds other passes frozen) - placed right
@@ -2842,7 +2842,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // BEFORE HandleMapSoundEffects, the departure's music half, ever runs). Cast, not an interface
         // member: only the real AlundraMusicPlayer.Instance is ever installed here (AttachToWorld), and
         // the opcode-runner's own fakes never reach this proxy-level site.
-        (MusicPlayer as AlundraMusicPlayer)?.EvaluatePendingWarpDeparture();
+        (MusicPlayer as BgmPlayer)?.EvaluatePendingWarpDeparture();
 
         // docs/plan-camera-premiere-frame.md §3, point 1: clears the sticky first-frame tick floor
         // exactly once, right next to CloseFrame - see _firstFrameStillOpen's own doc. Idempotent past
@@ -3139,11 +3139,11 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <c>Alundra.Tests</c>' own frame-close test helper can drive this EXACT production code instead of
     /// a hand-copied version of it. Static and allocation-free (no closure, straight parameter reads and
     /// two virtual calls), so a test can call it directly with the session singletons
-    /// (<see cref="AlundraMusicPlayer.Instance"/>/<see cref="AlundraBgmFadeDirector.Instance"/>) with no
+    /// (<see cref="BgmPlayer.Instance"/>/<see cref="BgmFadeDirector.Instance"/>) with no
     /// <see cref="AlundraWorldProxy"/> in scope, exactly like <see cref="Update"/> calls it with this
     /// instance's own <see cref="MusicPlayer"/>/<see cref="BgmFadeDirector"/>.
     /// </summary>
-    internal static void ConsumeMusicResetSoundFlagOnFrameClose(IAlundraMusicPlayer? musicPlayer, IAlundraBgmFadeDirector bgmFadeDirector)
+    internal static void ConsumeMusicResetSoundFlagOnFrameClose(IMusicPlayer? musicPlayer, IBgmFadeDirector bgmFadeDirector)
     {
         if (musicPlayer is { ResetSoundFlag: true } activeMusicPlayer)
         {
@@ -3626,7 +3626,7 @@ public class AlundraWorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     IReadOnlyList<AlundraPortalRecord> IScriptHost.Portals => _portals;
 
     /// <summary>E19.t: the sound player the changes of animation reach through the host seam (the world's own, <see cref="SoundPlayer"/>).</summary>
-    IAlundraSoundPlayer? IScriptHost.SoundPlayer => SoundPlayer;
+    ISoundPlayer? IScriptHost.SoundPlayer => SoundPlayer;
 
     // T4 (docs/plan-transitions-carte.md §3): the override T3's own comment (formerly here) named in
     // advance - AlundraPlayerManager.MovePlayer calls this from INSIDE PlayerEntity's own Update, so

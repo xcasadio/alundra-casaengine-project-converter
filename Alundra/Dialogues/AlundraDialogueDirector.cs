@@ -24,13 +24,13 @@ using Alundra.UI.Shared;
 namespace Alundra.Dialogues;
 
 /// <summary>
-/// SESSION-scoped singleton (same shape as <see cref="AlundraMusicPlayer"/>/<see cref="AlundraScreenFadeDirector"/>
+/// SESSION-scoped singleton (same shape as <see cref="BgmPlayer"/>/<see cref="AlundraScreenFadeDirector"/>
 /// - see either class's own doc for the full "vacuous by construction" reasoning, D-C-6/D-E10-6): the
 /// original's own <c>g_dialog_flags</c>/close-mode mask/choice result are GLOBALS that survive a map
 /// change, and a per-world instance rebuilt in <see cref="AlundraWorldProxy.InitializeWithWorld"/> would
 /// make that survival vacuous by construction. <see cref="AttachToWorld"/> re-points this session's
 /// presenter/game-state references WITHOUT touching open/mask/page state (same contract as
-/// <see cref="AlundraMusicPlayer.AttachToWorld"/>); <see cref="InstallForMapEntry"/> is the SEPARATE call
+/// <see cref="BgmPlayer.AttachToWorld"/>); <see cref="InstallForMapEntry"/> is the SEPARATE call
 /// that actually resets that state, from <see cref="AlundraWorldProxy.InstallDialogueSystems"/>'s own
 /// install preamble (docs/plan-e12-dialogues.md, "AttachToWorld re-points without touching state,
 /// map-entry reset in the install preamble").
@@ -71,7 +71,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     private const int PortraitRestBottom = 172;
     private IDialoguePresenter? _presenter;
     private GameState? _gameState;
-    private IAlundraSoundPlayer? _soundPlayer;
+    private ISoundPlayer? _soundPlayer;
 
     // E15.c T5 (docs/plan-e15-yarn.md, contract item 2): this director's own Yarn runner, built on a
     // capture presenter (AlundraDialogueCapturePresenter) - NEVER built directly on _presenter, which is
@@ -147,13 +147,13 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     /// <summary>Re-points this session-scoped instance at the current world's own presenter/game state/sound player -
     /// called by <see cref="AlundraWorldProxy.InstallDialogueSystems"/> on every world install. Deliberately
     /// does NOT touch the box, the page state or the choice state (same
-    /// contract as <see cref="AlundraMusicPlayer.AttachToWorld"/>/<see cref="AlundraScreenFadeDirector.AttachToWorld"/>)
+    /// contract as <see cref="BgmPlayer.AttachToWorld"/>/<see cref="AlundraScreenFadeDirector.AttachToWorld"/>)
     /// - only <see cref="InstallForMapEntry"/> does that: the box goes on running, its page already known, even when the
     /// presenter is gone (E19.f2a, F2-R2). <paramref name="presenter"/> null is a valid,
     /// tolerated value (no UI view available for this world's active render view) - <see cref="HasPresenter"/>
     /// then drives every opcode's own degraded fallback. <paramref name="soundPlayer"/> plays the sounds of the box (6 at the opening, 7 at the close,
     /// 79 to 82 for the voices, F2-R5).</summary>
-    public void AttachToWorld(IDialoguePresenter? presenter, GameState? gameState, IAlundraSoundPlayer? soundPlayer = null)
+    public void AttachToWorld(IDialoguePresenter? presenter, GameState? gameState, ISoundPlayer? soundPlayer = null)
     {
         _presenter = presenter;
         _gameState = gameState;
@@ -638,7 +638,7 @@ public sealed class AlundraDialogueDirector : IAlundraDialogueDirector, IAlundra
     }
 
     /// <summary>Test-only: clears every piece of session state (same seam as
-    /// <see cref="AlundraMusicPlayer.ResetForTests"/>/<see cref="AlundraScreenFadeDirector.ResetForTests"/>)
+    /// <see cref="BgmPlayer.ResetForTests"/>/<see cref="AlundraScreenFadeDirector.ResetForTests"/>)
     /// so tests do not leak into each other through this singleton.</summary>
     internal void ResetForTests()
     {

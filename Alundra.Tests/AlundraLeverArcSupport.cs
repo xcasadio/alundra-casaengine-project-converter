@@ -15,7 +15,7 @@ namespace Alundra.Tests;
 /// <summary>
 /// E20.c1b-2 (docs/plan-e20-heros.md section 1.7): a recorder of the sounds asked, stamped with the frame of the arc.
 /// </summary>
-internal sealed class LeverStampedSounds : IAlundraSoundPlayer
+internal sealed class LeverStampedSounds : ISoundPlayer
 {
     private readonly Func<int> _frame;
 

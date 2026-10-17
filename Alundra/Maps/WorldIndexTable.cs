@@ -26,7 +26,7 @@ namespace Alundra.Maps;
 /// path recombination needed (unlike <see cref="MapEventProgramLoader"/>, which still has to rebuild a
 /// full events-file path relative to it).
 ///
-/// Degraded mode (same shape as <see cref="AlundraMusicIndexTable"/>): a missing/unparsable file logs
+/// Degraded mode (same shape as <see cref="MusicIndexTable"/>): a missing/unparsable file logs
 /// one warning at construction and every lookup then misses.
 /// </summary>
 public sealed class WorldIndexTable
@@ -87,6 +87,6 @@ public sealed class WorldIndexTable
 
     /// <summary>The raw <c>file_name</c>-shaped path for <paramref name="mapId"/> (§1.1.e), or null when
     /// absent (degraded mode, or an id outside the table) - callers treat that as "no world to request",
-    /// same shape as <see cref="AlundraMusicIndexTable.TryGetRawIndex"/>'s own miss.</summary>
+    /// same shape as <see cref="MusicIndexTable.TryGetRawIndex"/>'s own miss.</summary>
     public string? Resolve(int mapId) => _pathByMapId.TryGetValue(mapId, out var path) ? path : null;
 }

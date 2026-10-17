@@ -357,8 +357,8 @@ public sealed class FakeAudioClip : IAudioClip, IAudioClipSamples
 }
 
 /// <summary>In-memory <see cref="IAudioClipProvider"/> for T5, keyed by the SAME asset guids the
-/// synthetic manifest fixture carries (so <see cref="AlundraSoundPlayer"/>'s real
-/// <see cref="AlundraSoundBank.TryResolve"/> lookup and this provider's clips line up) - see
+/// synthetic manifest fixture carries (so <see cref="SoundPlayer"/>'s real
+/// <see cref="SfxBank.TryResolve"/> lookup and this provider's clips line up) - see
 /// <see cref="FakeAudioBackend"/>'s own doc.</summary>
 public sealed class FakeAudioClipProvider : IAudioClipProvider
 {

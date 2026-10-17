@@ -53,7 +53,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         AlundraDialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -103,7 +103,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
     // The mounting
     // ---------------------------------------------------------------------------------------------------------------------
 
-    private sealed class RecordingSound : IAlundraSoundPlayer
+    private sealed class RecordingSound : ISoundPlayer
     {
         public List<int> Played { get; } = new();
         public void PlaySfx(int sfxId) => Played.Add(sfxId);
@@ -125,7 +125,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
         public void DestroyEntity(AlundraEntityScriptProxy entity) { }
         public NavigationGrid2D? NavigationGrid => null;
         public EffectStage? EffectStage => Stage;
-        public IAlundraSoundPlayer? SoundPlayer => Sound;
+        public ISoundPlayer? SoundPlayer => Sound;
     }
 
     /// <summary>The bank of map 476 (the global table of the effects holds the effect 14; the map is any one with a companion).</summary>

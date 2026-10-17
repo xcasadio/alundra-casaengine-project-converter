@@ -31,7 +31,7 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
         // isolation-carrying element) and in Dispose (hygiene).
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -39,7 +39,7 @@ public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

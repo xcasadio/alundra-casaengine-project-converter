@@ -28,7 +28,7 @@ namespace Alundra.Audio;
 /// every <see cref="TryResolve"/> call returns false - same shape as <see cref="SpriteRecordCatalog"/>'s
 /// own degraded mode.
 /// </summary>
-public sealed class AlundraSoundBank
+public sealed class SfxBank
 {
     private const string DataDirectoryName = "Sounds";
     private const string FileName = "sfx-manifest.json";
@@ -36,13 +36,13 @@ public sealed class AlundraSoundBank
     private readonly Dictionary<int, ManifestRecord> _recordsById = new();
 
     /// <summary>Loads from <c>Sounds/sfx-manifest.json</c> under <see cref="EngineEnvironment.ProjectPath"/>.</summary>
-    public AlundraSoundBank() : this(EngineEnvironment.ProjectPath)
+    public SfxBank() : this(EngineEnvironment.ProjectPath)
     {
     }
 
     /// <summary>Loads from <c>Sounds/sfx-manifest.json</c> under <paramref name="projectPath"/> - the
     /// overload tests use to point at a temporary fixture directory instead of the real project.</summary>
-    public AlundraSoundBank(string projectPath)
+    public SfxBank(string projectPath)
     {
         var filePath = Path.Combine(projectPath, DataDirectoryName, FileName);
 
@@ -51,7 +51,7 @@ public sealed class AlundraSoundBank
             if (!File.Exists(filePath))
             {
                 Logs.WriteWarning(
-                    $"AlundraSoundBank: '{filePath}' not found; every sound effect resolves to nothing "
+                    $"SfxBank: '{filePath}' not found; every sound effect resolves to nothing "
                     + "(degraded mode).");
                 return;
             }
@@ -62,7 +62,7 @@ public sealed class AlundraSoundBank
             if (parsed == null)
             {
                 Logs.WriteWarning(
-                    $"AlundraSoundBank: '{filePath}' parsed to nothing; every sound effect resolves to "
+                    $"SfxBank: '{filePath}' parsed to nothing; every sound effect resolves to "
                     + "nothing (degraded mode).");
                 return;
             }
@@ -75,7 +75,7 @@ public sealed class AlundraSoundBank
         catch (Exception ex)
         {
             Logs.WriteWarning(
-                $"AlundraSoundBank: failed to load '{filePath}' ({ex.Message}); every sound effect "
+                $"SfxBank: failed to load '{filePath}' ({ex.Message}); every sound effect "
                 + "resolves to nothing (degraded mode).");
             _recordsById.Clear();
         }
@@ -183,15 +183,15 @@ public sealed class AlundraSoundBank
     /// field initializer resolves through here so two consecutive worlds over the SAME project read
     /// <c>Sounds/sfx-manifest.json</c> only once, while two DIFFERENT projects never share a cached bank.
     /// </summary>
-    private static readonly Dictionary<string, AlundraSoundBank> SessionCacheByProjectPath = new();
+    private static readonly Dictionary<string, SfxBank> SessionCacheByProjectPath = new();
 
     /// <summary>Returns the cached bank for <paramref name="projectPath"/>, loading it once on the first
     /// request and reusing it for every later one - see <see cref="SessionCacheByProjectPath"/>'s own doc.</summary>
-    public static AlundraSoundBank GetOrCreate(string projectPath)
+    public static SfxBank GetOrCreate(string projectPath)
     {
         if (!SessionCacheByProjectPath.TryGetValue(projectPath, out var bank))
         {
-            bank = new AlundraSoundBank(projectPath);
+            bank = new SfxBank(projectPath);
             SessionCacheByProjectPath[projectPath] = bank;
         }
 

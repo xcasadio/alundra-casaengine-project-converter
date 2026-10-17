@@ -20,7 +20,7 @@ using Alundra.Dialogues;
 namespace Alundra.Tests;
 
 /// <summary>A sound player that records what it is asked, with the frame of the montage it was asked in.</summary>
-internal sealed class PassStampedSoundPlayer : IAlundraSoundPlayer
+internal sealed class PassStampedSoundPlayer : ISoundPlayer
 {
     private readonly Func<int> _frame;
     private readonly Func<int> _pass;
@@ -127,7 +127,7 @@ internal sealed class DialogueBoxMontage : IDisposable
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
 
         var world = new World { Name = "TestWorld" };
@@ -223,7 +223,7 @@ internal sealed class DialogueBoxMontage : IDisposable
         AlundraWorldProxy.SetDebugCameraPanEnabledOverrideForTests(null);
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 }

@@ -30,7 +30,7 @@ namespace Alundra.Session;
 public sealed class GameState
 {
     /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-T-3,
-    /// docs/plan-transitions-carte.md) - same shape as <see cref="AlundraMusicPlayer.Instance"/>/
+    /// docs/plan-transitions-carte.md) - same shape as <see cref="BgmPlayer.Instance"/>/
     /// <see cref="AlundraScreenFadeDirector.Instance"/>/<see cref="AlundraDialogueDirector.Instance"/>.
     /// Unlike those three, this class KEEPS its public parameterless constructor (two test harnesses -
     /// <see cref="AlundraEventProgramRunnerTests"/> and <see cref="IntroTraceHarnessTests"/> among others -
@@ -434,7 +434,7 @@ public sealed class GameState
 
     /// <summary>Test-only: restores this session carrier to its New-Game-equivalent construction state,
     /// so tests do not leak state into each other through <see cref="Instance"/> - same seam as
-    /// <see cref="AlundraMusicPlayer.ResetForTests"/>/<see cref="AlundraScreenFadeDirector.ResetForTests"/>.</summary>
+    /// <see cref="BgmPlayer.ResetForTests"/>/<see cref="AlundraScreenFadeDirector.ResetForTests"/>.</summary>
     internal void ResetForTests()
     {
         Array.Clear(GameFlags);

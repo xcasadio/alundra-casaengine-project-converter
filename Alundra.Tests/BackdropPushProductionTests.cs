@@ -43,7 +43,7 @@ public sealed class BackdropPushProductionTests : IDisposable
         // every other class exercising this montage (AlundraWorldProxyGlobalFreezeTests, ...).
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 
@@ -51,7 +51,7 @@ public sealed class BackdropPushProductionTests : IDisposable
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
     }
 

@@ -462,7 +462,7 @@ public sealed class AlundraCreationSwitchClockTests : IDisposable
         Assert.Equal((1, 0), (player.Ids.Count(id => id == 0x1E), run.After.Values.Take(6).Sum(s => Math.Abs(s.Impulse)))); // the other requests are the hero's own sounds.
     }
 
-    private sealed class RecordingSoundPlayer : IAlundraSoundPlayer
+    private sealed class RecordingSoundPlayer : ISoundPlayer
     {
         public List<int> Ids { get; } = new();
 

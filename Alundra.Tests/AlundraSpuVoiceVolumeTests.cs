@@ -5,7 +5,7 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// T4.2 (docs/plan-audio-mix-exact-muet.md): every row of the plan's own key-on volume table, straight
-/// against <see cref="AlundraSpuVoiceVolume.ComputeKeyOn"/> - the plan's own numbers, hard-coded here so
+/// against <see cref="SpuVoiceVolume.ComputeKeyOn"/> - the plan's own numbers, hard-coded here so
 /// a regression in the port (wrong operation order, wrong truncation, a missing pan branch) fails a
 /// concrete assertion instead of a description.
 /// </summary>
@@ -22,7 +22,7 @@ public class AlundraSpuVoiceVolumeTests
     public void ComputeKeyOn_MatchesThePlanTable_WithProgramPan64(
         int toneVolume, int tonePan, int expectedLeft, int expectedRight)
     {
-        var (left, right) = AlundraSpuVoiceVolume.ComputeKeyOn(
+        var (left, right) = SpuVoiceVolume.ComputeKeyOn(
             vabMasterVolume: 127, programVolume: 127, programPan: 64, toneVolume, tonePan);
 
         Assert.Equal(expectedLeft, left);
@@ -37,7 +37,7 @@ public class AlundraSpuVoiceVolumeTests
     public void ComputeKeyOn_MatchesThePlanTable_SyntheticProgramPans(
         int programPan, int expectedLeft, int expectedRight)
     {
-        var (left, right) = AlundraSpuVoiceVolume.ComputeKeyOn(
+        var (left, right) = SpuVoiceVolume.ComputeKeyOn(
             vabMasterVolume: 127, programVolume: 127, programPan, toneVolume: 127, tonePan: 64);
 
         Assert.Equal(expectedLeft, left);
@@ -50,7 +50,7 @@ public class AlundraSpuVoiceVolumeTests
     [InlineData(6500, 6500 / 16384f)]
     public void ToGain_DividesBy16384(int spuVolume, float expectedGain)
     {
-        Assert.Equal(expectedGain, AlundraSpuVoiceVolume.ToGain(spuVolume), 6);
+        Assert.Equal(expectedGain, SpuVoiceVolume.ToGain(spuVolume), 6);
     }
 
     // T4.3 (docs/plan-audio-mix-exact-muet.md): every row of the plan's own remix table, hard-coded -
@@ -66,7 +66,7 @@ public class AlundraSpuVoiceVolumeTests
     public void ComputeRemix_MatchesThePlanTable_WithProgramVolume127(
         int leftMix, int rightMix, int toneVolume, int tonePan, int expectedLeft, int expectedRight)
     {
-        var (left, right) = AlundraSpuVoiceVolume.ComputeRemix(leftMix, rightMix, programVolume: 127, toneVolume, tonePan);
+        var (left, right) = SpuVoiceVolume.ComputeRemix(leftMix, rightMix, programVolume: 127, toneVolume, tonePan);
 
         Assert.Equal(expectedLeft, left);
         Assert.Equal(expectedRight, right);
@@ -77,9 +77,9 @@ public class AlundraSpuVoiceVolumeTests
     [Fact]
     public void ComputeRemix_FullMix_MatchesComputeKeyOn_ForTheSameTone()
     {
-        var (remixLeft, remixRight) = AlundraSpuVoiceVolume.ComputeRemix(
+        var (remixLeft, remixRight) = SpuVoiceVolume.ComputeRemix(
             leftMix: 0x7f, rightMix: 0x7f, programVolume: 127, toneVolume: 127, tonePan: 64);
-        var (keyOnLeft, keyOnRight) = AlundraSpuVoiceVolume.ComputeKeyOn(
+        var (keyOnLeft, keyOnRight) = SpuVoiceVolume.ComputeKeyOn(
             vabMasterVolume: 127, programVolume: 127, programPan: 64, toneVolume: 127, tonePan: 64);
 
         Assert.Equal((16383, 16383), (remixLeft, remixRight));

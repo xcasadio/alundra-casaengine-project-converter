@@ -11,14 +11,14 @@ using Alundra.Entities;
 namespace Alundra.Audio;
 
 /// <summary>
-/// One playable sound effect, resolved by <see cref="AlundraSoundBank.TryResolve"/> - the record
+/// One playable sound effect, resolved by <see cref="SfxBank.TryResolve"/> - the record
 /// actually chosen (which, when the <c>RefSfxId</c> chain fired, is a DIFFERENT id than the one asked
-/// for - see that method's own doc), carrying every tone <see cref="AlundraSoundPlayer"/> needs to start
+/// for - see that method's own doc), carrying every tone <see cref="SoundPlayer"/> needs to start
 /// one voice per tone (fact 1.3: "several tones at once, not one").
 /// </summary>
 public readonly struct SfxResolution
 {
-    /// <summary>The id of the record actually resolved to - <see cref="AlundraSoundBank.TryResolve"/>'s
+    /// <summary>The id of the record actually resolved to - <see cref="SfxBank.TryResolve"/>'s
     /// own requested id when no <c>RefSfxId</c> redirection happened, or the chain sibling's id when it
     /// did.</summary>
     public int ResolvedId { get; init; }
@@ -28,7 +28,7 @@ public readonly struct SfxResolution
     /// B3 (docs/plan-e11b-opcodes-audio.md, D-B-7, fact 7 corrected): the VabId of the RECORD ACTUALLY
     /// REQUESTED (the <c>sfxId</c> parameter of <see cref="TryResolve"/>) - BEFORE any
     /// <c>RefSfxId</c> redirection, so it equals <see cref="VabId"/> exactly when no redirection fired
-    /// and differs from it otherwise. <see cref="AlundraSoundPlayer"/>'s own polyphony ceiling filters
+    /// and differs from it otherwise. <see cref="SoundPlayer"/>'s own polyphony ceiling filters
     /// by THIS value, not <see cref="VabId"/> (the resolved record's own) - the original's
     /// <c>CountActiveVoicesForSfx</c> indexes <c>g_soundEffectData</c> with the requested id and filters
     /// by that record's VabId (<c>SoundManager.cs:4025-4034/:4049</c>), while voices are registered with

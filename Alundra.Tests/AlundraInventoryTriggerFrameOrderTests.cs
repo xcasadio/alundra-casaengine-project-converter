@@ -27,7 +27,7 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
 {
     private const int P = 5;
 
-    private sealed class NullSounds : IAlundraSoundPlayer
+    private sealed class NullSounds : ISoundPlayer
     {
         public void PlaySfx(int sfxId) { }
         public void RemixVoice(int sfxId, int left, int right) { }

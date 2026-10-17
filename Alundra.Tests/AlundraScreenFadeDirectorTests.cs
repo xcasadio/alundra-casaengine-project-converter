@@ -32,7 +32,7 @@ public class AlundraScreenFadeDirectorSingletonCollection
 /// <summary>
 /// T1-T7 of docs/plan-e10-fondu.md, slice E10.b. Every test resets
 /// <see cref="AlundraScreenFadeDirector.Instance"/> first/last (the "moyen de le réinitialiser en test"
-/// D-E10-6 asks the slice to name, same shape as <see cref="AlundraMusicPlayer.ResetForTests"/>).
+/// D-E10-6 asks the slice to name, same shape as <see cref="BgmPlayer.ResetForTests"/>).
 /// </summary>
 [Collection(AlundraScreenFadeDirectorSingletonCollection.Name)]
 public class AlundraScreenFadeDirectorTests : IDisposable
@@ -46,7 +46,7 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 
@@ -58,7 +58,7 @@ public class AlundraScreenFadeDirectorTests : IDisposable
         // isolation) - kept for symmetry with the existing session-singleton test classes.
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 

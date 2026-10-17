@@ -132,10 +132,10 @@ internal static class SaveGameDirectorTestSupport
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
         CameraSway.Instance.ResetForTests();
-        AlundraMusicPlayer.Instance.ResetForTests();
-        AlundraBgmFadeDirector.Instance.ResetForTests();
+        BgmPlayer.Instance.ResetForTests();
+        BgmFadeDirector.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
     }
 
     /// <summary>Poses one blocker and only that one, and returns the hero to pass and a fragment of the refusal's
@@ -208,8 +208,8 @@ internal static class SaveGameDirectorTestSupport
                 Assert.True(AlundraWarpDirector.Instance.IsTransitionInProgress);
                 return (hero, "map transition is in progress");
             case SaveGameBlocker.MasterMusicFadeArmed:
-                AlundraBgmFadeDirector.Instance.LoadBgm(1);
-                Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
+                BgmFadeDirector.Instance.LoadBgm(1);
+                Assert.True(BgmFadeDirector.Instance.IsArmed);
                 return (hero, "master music fade");
             case SaveGameBlocker.ControlFlagsNonZero:
                 GameState.Instance.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked;
@@ -263,8 +263,8 @@ internal static class SaveGameDirectorTestSupport
     /// asked it for anything.</summary>
     internal static object? GetMusicPendingWarpDeparture()
     {
-        var field = typeof(AlundraMusicPlayer).GetField("_pendingWarpDeparture", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        return field.GetValue(AlundraMusicPlayer.Instance);
+        var field = typeof(BgmPlayer).GetField("_pendingWarpDeparture", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        return field.GetValue(BgmPlayer.Instance);
     }
 
     /// <summary>Hand-built hero pawn possessed by a real <see cref="AlundraPlayerController"/> registered into the

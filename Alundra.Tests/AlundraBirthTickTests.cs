@@ -362,7 +362,7 @@ public sealed class AlundraBirthTickTests : IDisposable
     // (e) the sound of the creation, once.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private sealed class RecordingSoundPlayer : IAlundraSoundPlayer
+    private sealed class RecordingSoundPlayer : ISoundPlayer
     {
         public List<int> Ids { get; } = new();
 

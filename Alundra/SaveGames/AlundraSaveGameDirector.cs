@@ -530,7 +530,7 @@ public sealed class AlundraSaveGameDirector
             return "a map transition is in progress.";
         }
 
-        if (AlundraBgmFadeDirector.Instance.IsArmed)
+        if (BgmFadeDirector.Instance.IsArmed)
         {
             return "the master music fade (opcode 0xA6) is armed.";
         }

@@ -12,7 +12,7 @@ namespace Alundra.Dialogues;
 /// E19.f2b1b F2B1B-R1: the advances of the glyphs of the dialogue box, read from <c>UI/font3.fnt</c> of the project (the lines <c>char id=N ... xadvance=M</c>, the ids being Unicode
 /// code points: <c>id=339</c> is the oe ligature, <c>id=21</c> the glyph 21). They make the width of a centred line (<c>\H</c>), which the binary measures with the advances of its own glyph table;
 /// on every glyph of the corpus the two agree (docs/plan-e19-f2b1-annexe/s025-notes.md, summary 2). A missing or unreadable file gives an empty table - every width 0, every x 32 - and one warning
-/// per project path. Same shape as <see cref="AlundraSoundBank"/>: a session cache keyed by the path of the project.
+/// per project path. Same shape as <see cref="SfxBank"/>: a session cache keyed by the path of the project.
 /// </summary>
 internal sealed class AlundraFont3Advances
 {

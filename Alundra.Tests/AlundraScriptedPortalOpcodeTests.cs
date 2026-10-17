@@ -30,8 +30,8 @@ public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
         GameState.Instance.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
-        AlundraMusicPlayer.Instance.ResetForTests();
-        AlundraBgmFadeDirector.Instance.ResetForTests();
+        BgmPlayer.Instance.ResetForTests();
+        BgmFadeDirector.Instance.ResetForTests();
     }
 
     private sealed class Context : IEntityWorldContext

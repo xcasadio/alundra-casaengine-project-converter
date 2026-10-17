@@ -85,7 +85,7 @@ public class AlundraEventProgramRunnerTests
 
         // E11.a (docs/plan-e11-audio.md): same override shape as CellMutator above - overrides
         // IEntityWorldContext.SoundPlayer's default-interface-member "=> null" for THIS class.
-        public IAlundraSoundPlayer? SoundPlayer { get; set; }
+        public ISoundPlayer? SoundPlayer { get; set; }
 
         // E10.b (docs/plan-e10-fondu.md): same override shape as SoundPlayer above - overrides
         // IEntityWorldContext.ScreenFadeDirector's default-interface-member "=> null" for THIS class.
@@ -93,18 +93,18 @@ public class AlundraEventProgramRunnerTests
 
         // B2 (docs/plan-e11b-opcodes-audio.md): same override shape as SoundPlayer above - overrides
         // IEntityWorldContext.MusicPlayer's default-interface-member "=> null" for THIS class.
-        public IAlundraMusicPlayer? MusicPlayer { get; set; }
+        public IMusicPlayer? MusicPlayer { get; set; }
 
         // B2 (docs/plan-e11b-opcodes-audio.md): same override shape as SoundPlayer above - overrides
         // IEntityWorldContext.BgmFadeDirector's default-interface-member "=> null" for THIS class.
-        public IAlundraBgmFadeDirector? BgmFadeDirector { get; set; }
+        public IBgmFadeDirector? BgmFadeDirector { get; set; }
     }
 
     /// <summary>B2 (docs/plan-e11b-opcodes-audio.md): records every <see cref="PlayFromRawIndex"/> call,
     /// in order - the dispatch-level oracle for opcode 0xA7's own operand extraction, isolated from the
-    /// REAL <see cref="AlundraMusicPlayer"/> singleton (see <see cref="AlundraBgmFadeDirectorTests"/> for
+    /// REAL <see cref="BgmPlayer"/> singleton (see <see cref="AlundraBgmFadeDirectorTests"/> for
     /// tests against the real one).</summary>
-    private sealed class FakeMusicPlayer : IAlundraMusicPlayer
+    private sealed class FakeMusicPlayer : IMusicPlayer
     {
         private readonly List<string>? _callOrder;
         public FakeMusicPlayer(List<string>? callOrder = null) => _callOrder = callOrder;
@@ -136,9 +136,9 @@ public class AlundraEventProgramRunnerTests
 
     /// <summary>B2 (docs/plan-e11b-opcodes-audio.md): records every <see cref="StopAllSound"/>/
     /// <see cref="LoadBgm"/> call, in order - the dispatch-level oracle for opcodes 0xA5/0xA6/0xA7's own
-    /// orchestration, isolated from the REAL <see cref="AlundraBgmFadeDirector"/> singleton (see
+    /// orchestration, isolated from the REAL <see cref="BgmFadeDirector"/> singleton (see
     /// <see cref="AlundraBgmFadeDirectorTests"/> for tests against the real one).</summary>
-    private sealed class FakeBgmFadeDirector : IAlundraBgmFadeDirector
+    private sealed class FakeBgmFadeDirector : IBgmFadeDirector
     {
         private readonly List<string>? _callOrder;
         public FakeBgmFadeDirector(List<string>? callOrder = null) => _callOrder = callOrder;
@@ -180,7 +180,7 @@ public class AlundraEventProgramRunnerTests
 
     /// <summary>Records every <see cref="PlaySfx"/> call, in order - T6's own oracle for the exact id
     /// each opcode derived (docs/plan-e11-audio.md, slice E11.a).</summary>
-    private sealed class FakeSoundPlayer : IAlundraSoundPlayer
+    private sealed class FakeSoundPlayer : ISoundPlayer
     {
         public readonly List<int> Requests = new();
 
@@ -3637,7 +3637,7 @@ public class AlundraEventProgramRunnerTests
     // test here resets it before AND after, so no state leaks into another test in this assembly.
     // -----------------------------------------------------------------------------------------------
 
-    private sealed class FakeWarpSoundPlayer : IAlundraSoundPlayer
+    private sealed class FakeWarpSoundPlayer : ISoundPlayer
     {
         public readonly List<int> Requests = new();
         public void PlaySfx(int sfxId) => Requests.Add(sfxId);

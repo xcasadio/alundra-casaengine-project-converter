@@ -63,7 +63,7 @@ public sealed class AlundraHeroLifeTests
     internal static IEnumerable<object[]> RunNames(string file) =>
         Load(file).GetProperty("runs").EnumerateArray().Select(r => new object[] { r.GetProperty("spec").GetProperty("name").GetString()! });
 
-    private sealed class RecordingSound : IAlundraSoundPlayer
+    private sealed class RecordingSound : ISoundPlayer
     {
         public List<int> Played { get; } = new();
 

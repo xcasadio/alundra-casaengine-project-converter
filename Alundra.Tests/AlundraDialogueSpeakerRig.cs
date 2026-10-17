@@ -17,7 +17,7 @@ using Alundra.Dialogues.Yarn;
 namespace Alundra.Tests;
 
 /// <summary>A sound player that records the ids it is asked.</summary>
-internal sealed class SpeakerSoundRecorder : IAlundraSoundPlayer
+internal sealed class SpeakerSoundRecorder : ISoundPlayer
 {
     public List<int> Played { get; } = new();
 

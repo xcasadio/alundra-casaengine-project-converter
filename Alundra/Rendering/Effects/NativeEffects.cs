@@ -102,7 +102,7 @@ public static class NativeEffects
     /// <c>r2</c>), <c>jx = hi(r1 * 0x60001) - 0x30000</c>, <c>jy = hi(r2 * 0x40001) - 0x20000</c> (unsigned products), x += 20 jx, y += 20 jy, forces = the hero's forces minus (jx, jy). A full reservoir creates
     /// nothing: no sound, no number drawn. Queued by the hero on the stage, so the sound and the draws happen when the stage applies the operation, after the sounds of the tick (ADR-0048 deviation 2, plan section 1.9).
     /// </summary>
-    public static void CreateChargeSpark(EffectReservoir reservoir, int heroX, int heroY, int heroZ, int heroForceX, int heroForceY, int frameCounter, IAlundraSoundPlayer? soundPlayer)
+    public static void CreateChargeSpark(EffectReservoir reservoir, int heroX, int heroY, int heroZ, int heroForceX, int heroForceY, int frameCounter, ISoundPlayer? soundPlayer)
     {
         unchecked
         {

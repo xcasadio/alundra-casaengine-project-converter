@@ -15,7 +15,7 @@ using Alundra.Transitions;
 namespace Alundra.Audio;
 
 /// <summary>
-/// Implements <see cref="IAlundraMusicPlayer"/> - since E19.L-b3 (ADR-0051) the engine's music player
+/// Implements <see cref="IMusicPlayer"/> - since E19.L-b3 (ADR-0051) the engine's music player
 /// (<see cref="AudioService.Music"/>) streams each track as a <see cref="SoundAsset"/> on
 /// <see cref="AudioBusNames.Music"/>, at full volume, straight from the already-exported <c>Musics/*.wav</c>
 /// (resolved through <c>Musics/bgm-manifest.json</c>'s own <c>SoundIndex -&gt; AssetId</c>, the SAME manifest
@@ -33,7 +33,7 @@ namespace Alundra.Audio;
 /// (<see cref="_currentMapSoundIndex"/>) is the port of the original's <c>g_currentMapSoundIndex</c>, a
 /// GLOBAL that survives every map change by construction. <see cref="AlundraWorldProxy"/> is rebuilt
 /// per world (<c>AlundraWorldProxy.cs</c>, field initializers), and so is its own
-/// <see cref="AlundraSoundPlayer"/> (<see cref="AlundraWorldProxy.InstallAudioSystems"/>) - porting the
+/// <see cref="SoundPlayer"/> (<see cref="AlundraWorldProxy.InstallAudioSystems"/>) - porting the
 /// guard into an object built the same way would make it vacuous BY CONSTRUCTION: a fresh instance has
 /// nothing to guard, so the request would fire with or without the guard and the mutation "remove the
 /// guard" could never be caught by a test. So THIS type is instead a SESSION-SCOPED SINGLETON
@@ -44,12 +44,12 @@ namespace Alundra.Audio;
 /// or the currently owned voice - exactly the survival <c>g_currentMapSoundIndex</c> gets for free from
 /// being a global. A test resets this shared state with <see cref="ResetForTests"/> (T1 bis, docs/plan-e11c-musique.md,
 /// slice C1) - the harness's own fake player cannot see this guard at all (it stands in for
-/// <see cref="AlundraMusicPlayer"/> entirely), so T1 bis drives THIS singleton directly instead.</para>
+/// <see cref="BgmPlayer"/> entirely), so T1 bis drives THIS singleton directly instead.</para>
 ///
 /// <para><b>Voice ownership (D-C-5)</b>: the voice is played with <c>owner: this</c> - THIS SINGLETON,
 /// never <c>owner: world</c> - so <c>World.Clear</c>'s own <c>StopVoicesOwnedBy(world)</c> never touches
 /// it. That is deliberate, not an oversight: the 389/390 pair share raw index 25, and the original never
-/// restarts or cuts the track crossing between them - only <see cref="AlundraSoundPlayer"/>'s SFX voices
+/// restarts or cuts the track crossing between them - only <see cref="SoundPlayer"/>'s SFX voices
 /// move to <c>owner: world</c> in this same slice (fixing the real defect of fact 1.7, D-C-5). The
 /// plan's own §4 item 3 literally reads "owner: world" for this class - written before D-C-5 replaced an
 /// earlier, broken "everything owns world" draft (see the plan's own §3, D-C-5's parenthetical: that
@@ -57,16 +57,16 @@ namespace Alundra.Audio;
 /// was never re-edited to match (the plan's own §5: "the present version was NOT re-reviewed") - this
 /// class follows D-C-5/D-C-6, the decisions actually reasoned through, not that stale line.</para>
 /// </remarks>
-public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
+public sealed class BgmPlayer : IMusicPlayer
 {
     private const string BgmManifestRelativePath = "Musics/bgm-manifest.json";
 
     /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-C-6) -
     /// never <see langword="new"/>'d per world.</summary>
-    public static readonly AlundraMusicPlayer Instance = new();
+    public static readonly BgmPlayer Instance = new();
 
     private AudioService? _audioService;
-    private AlundraMusicIndexTable? _table;
+    private MusicIndexTable? _table;
 
     /// <summary>One streaming sound per track, built once per attach from the manifest (E19.L-b3).</summary>
     private Dictionary<int, SoundAsset>? _assetBySoundIndex;
@@ -75,7 +75,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
     /// written by <see cref="PlayMapMusic"/>/<see cref="PlayFromRawIndex"/>, NEVER remapped (0 initially,
     /// same as <c>SoundManager.cs:335</c>'s own reset). Compared directly against a new map's RAW table
     /// entry (fact 1.1's own guard, before any <c>-1</c> remap) - see
-    /// <see cref="AlundraMusicIndexTable.ResolvePlaybackDirective(int)"/>'s own doc for why the
+    /// <see cref="MusicIndexTable.ResolvePlaybackDirective(int)"/>'s own doc for why the
     /// remap-then-compare order matters. Left untouched by the <c>45</c> (stop) path, exactly like the
     /// original: <c>LoadMapSequenceCore</c> is the only site that writes it on the map-entry path, and
     /// the <c>45</c> branch never reaches that write (<c>SoundManager.cs:5183</c> returns before it).</summary>
@@ -87,7 +87,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
     /// alive: loading never plays (B6).</summary>
     private int? _loadedTrackIndex;
 
-    /// <summary>Port of <c>g_resetSoundFlag</c> (B8) - see <see cref="IAlundraMusicPlayer.ResetSoundFlag"/>.</summary>
+    /// <summary>Port of <c>g_resetSoundFlag</c> (B8) - see <see cref="IMusicPlayer.ResetSoundFlag"/>.</summary>
     private bool _resetSoundFlag;
 
     /// <summary>F2 (docs/plan-bgm-demarrage-binaire.md): a warp departure's MUSIC half, recorded by
@@ -106,7 +106,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
 
     private SoundAsset? _currentAsset;
 
-    private AlundraMusicPlayer()
+    private BgmPlayer()
     {
     }
 
@@ -118,7 +118,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
     public void AttachToWorld(AudioService? audioService, string projectPath)
     {
         _audioService = audioService;
-        _table = new AlundraMusicIndexTable(projectPath);
+        _table = new MusicIndexTable(projectPath);
         _assetBySoundIndex = LoadBgmManifest(projectPath);
     }
 
@@ -133,7 +133,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
     }
 
     /// <summary>The per-map table's OWN raw-index handling (B10/B7) - guarded on "0 or same index
-    /// already current" and remapped through <see cref="AlundraMusicIndexTable.ResolvePlaybackDirective"/>.
+    /// already current" and remapped through <see cref="MusicIndexTable.ResolvePlaybackDirective"/>.
     /// NOT the same method as the public <see cref="PlayFromRawIndex"/> (B13, opcode 0xA7's own
     /// semantics, which never guards and never remaps) - see that member's own doc on why the two must
     /// not be merged. Loads only: NEVER starts a voice (B6/B7) - see this interface's own class doc.</summary>
@@ -147,7 +147,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
         StopCurrentVoice();
         _loadedTrackIndex = null; // B10: "arrêt et fermeture de l'ancienne" - unconditional past this point
 
-        var directive = AlundraMusicIndexTable.ResolvePlaybackDirective(rawIndex);
+        var directive = MusicIndexTable.ResolvePlaybackDirective(rawIndex);
         if (directive.Kind != MusicPlaybackDirectiveKind.Play)
         {
             return; // 45 (Stop): nothing new loaded, CurrentMapSoundIndex left untouched (B10/B7)
@@ -167,7 +167,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
         _pendingWarpDeparture = null; // F6: and whatever F2's own HandleWarpDeparture had recorded.
     }
 
-    /// <inheritdoc cref="IAlundraMusicPlayer.PlayFromRawIndex"/>
+    /// <inheritdoc cref="IMusicPlayer.PlayFromRawIndex"/>
     public void PlayFromRawIndex(int rawIndex)
     {
         if (rawIndex < 0)
@@ -188,13 +188,13 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
         ClearResetSoundFlag(); // P8: the streaming path's own reset-flag clear (deviation declared in P8)
     }
 
-    /// <inheritdoc cref="IAlundraMusicPlayer.StopSequence"/>
+    /// <inheritdoc cref="IMusicPlayer.StopSequence"/>
     public void StopSequence()
     {
         StopCurrentVoice(); // B5: an arrêt - the loaded track, if any, stays loaded, rewound
     }
 
-    /// <inheritdoc cref="IAlundraMusicPlayer.PlaySequence"/>
+    /// <inheritdoc cref="IMusicPlayer.PlaySequence"/>
     public void PlaySequence()
     {
         if (IsCurrentVoiceAlive)
@@ -208,13 +208,13 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
         }
     }
 
-    /// <inheritdoc cref="IAlundraMusicPlayer.CurrentMapSoundIndex"/>
+    /// <inheritdoc cref="IMusicPlayer.CurrentMapSoundIndex"/>
     public int CurrentMapSoundIndex => _currentMapSoundIndex;
 
-    /// <inheritdoc cref="IAlundraMusicPlayer.ResetSoundFlag"/>
+    /// <inheritdoc cref="IMusicPlayer.ResetSoundFlag"/>
     public bool ResetSoundFlag => _resetSoundFlag;
 
-    /// <inheritdoc cref="IAlundraMusicPlayer.ClearResetSoundFlag"/>
+    /// <inheritdoc cref="IMusicPlayer.ClearResetSoundFlag"/>
     public void ClearResetSoundFlag() => _resetSoundFlag = false;
 
     /// <summary>
@@ -232,7 +232,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
     /// <see cref="PlayMapMusic"/> uses, at evaluation time.</param>
     /// <param name="warpSoundIsSilent">Whether the departing warp sound is "nul" (id 0, an unresolved
     /// manifest record, or <c>SeqNum == -1</c> and <c>MaxVoices == 0</c> - B17's own test, computed by
-    /// the caller against <see cref="AlundraSoundBank"/>).</param>
+    /// the caller against <see cref="SfxBank"/>).</param>
     internal void HandleWarpDeparture(int destinationMapId, bool warpSoundIsSilent)
     {
         if (_table == null)
@@ -280,11 +280,11 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
 
         if (pending.WarpSoundIsSilent)
         {
-            AlundraBgmFadeDirector.Instance.ArmFadeForWarpDeparture(); // B17: drapeau de reset intact
+            BgmFadeDirector.Instance.ArmFadeForWarpDeparture(); // B17: drapeau de reset intact
         }
         else
         {
-            AlundraBgmFadeDirector.Instance.LoadBgm(0); // B17: arrêt, drapeau effacé
+            BgmFadeDirector.Instance.LoadBgm(0); // B17: arrêt, drapeau effacé
         }
     }
 
@@ -325,7 +325,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
 
     /// <summary>Test-only accessor (T1/T1 bis/T4): the track handle currently owned by this session
     /// director, so a test can compare it before and after without this class exposing it on its public
-    /// <see cref="IAlundraMusicPlayer"/> surface.</summary>
+    /// <see cref="IMusicPlayer"/> surface.</summary>
     internal MusicTrackHandle CurrentVoiceForTests => _currentTrack;
 
     /// <summary>Test-only (E19.L-b3): the sound asset of the track being played - its streaming flag, loop flag, loop
@@ -357,7 +357,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
             if (!File.Exists(filePath))
             {
                 Logs.WriteWarning(
-                    $"AlundraMusicPlayer: '{filePath}' not found; no background music can be resolved "
+                    $"BgmPlayer: '{filePath}' not found; no background music can be resolved "
                     + "(degraded mode).");
                 return null;
             }
@@ -367,7 +367,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
             if (entries == null)
             {
                 Logs.WriteWarning(
-                    $"AlundraMusicPlayer: '{filePath}' parsed to nothing; no background music can be "
+                    $"BgmPlayer: '{filePath}' parsed to nothing; no background music can be "
                     + "resolved (degraded mode).");
                 return null;
             }
@@ -404,7 +404,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
             if (withoutLoopFields > 0)
             {
                 Logs.WriteWarning(
-                    $"AlundraMusicPlayer: '{filePath}' has no 'looping' field for {withoutLoopFields} track(s) "
+                    $"BgmPlayer: '{filePath}' has no 'looping' field for {withoutLoopFields} track(s) "
                     + "(an export from before the loop points); they loop the whole file from sample 0. "
                     + "Export the project again for the loop points.");
             }
@@ -414,7 +414,7 @@ public sealed class AlundraMusicPlayer : IAlundraMusicPlayer
         catch (Exception ex)
         {
             Logs.WriteWarning(
-                $"AlundraMusicPlayer: failed to load '{filePath}' ({ex.Message}); no background music "
+                $"BgmPlayer: failed to load '{filePath}' ({ex.Message}); no background music "
                 + "can be resolved (degraded mode).");
             return null;
         }

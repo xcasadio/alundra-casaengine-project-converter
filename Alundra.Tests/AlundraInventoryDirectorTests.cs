@@ -41,11 +41,11 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         AlundraDialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests(); // SD5: the warp departure tests arm the outgoing fade...
-        AlundraMusicPlayer.Instance.ResetForTests();        // ...record a departure request on the music player...
-        AlundraBgmFadeDirector.Instance.ResetForTests();    // ...which may arm the BGM fade at the frame close.
+        BgmPlayer.Instance.ResetForTests();        // ...record a departure request on the music player...
+        BgmFadeDirector.Instance.ResetForTests();    // ...which may arm the BGM fade at the frame close.
         AlundraEtcStringTable.ResetForTests(); // E15.c T6: this class' own SetEtcFixture leaves an injected asset behind.
         _previousProjectPath = EngineEnvironment.ProjectPath;
     }
@@ -59,11 +59,11 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         AlundraDialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests(); // SD5: same reason as the constructor.
-        AlundraMusicPlayer.Instance.ResetForTests();
-        AlundraBgmFadeDirector.Instance.ResetForTests();
+        BgmPlayer.Instance.ResetForTests();
+        BgmFadeDirector.Instance.ResetForTests();
         AlundraEtcStringTable.ResetForTests(); // E15.c T6: same reason as the constructor.
         EngineEnvironment.ProjectPath = _previousProjectPath!;
     }
@@ -72,7 +72,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
     // Fixtures
     // -----------------------------------------------------------------------------------------
 
-    private sealed class RecordingSoundPlayer : IAlundraSoundPlayer
+    private sealed class RecordingSoundPlayer : ISoundPlayer
     {
         public readonly List<int> Requests = new();
         public void PlaySfx(int sfxId) => Requests.Add(sfxId);
@@ -131,7 +131,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
 
     private static GameState NewState() => new();
 
-    private static AlundraInventoryDirector NewDirector(GameState state, ItemTables? tables = null, IAlundraSoundPlayer? sound = null)
+    private static AlundraInventoryDirector NewDirector(GameState state, ItemTables? tables = null, ISoundPlayer? sound = null)
     {
         var director = AlundraInventoryDirector.Instance;
         director.AttachToWorld(state, tables ?? ItemTablesFixture.LoadReal(), sound);

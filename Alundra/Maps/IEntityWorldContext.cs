@@ -123,12 +123,12 @@ public interface IEntityWorldContext
     /// every test fake, <see cref="AlundraWorldProxy"/> itself - keeps compiling unmodified, defaulting
     /// to null (the same "degraded, skip by size" fallback <see cref="EventProgramRunner"/> already
     /// applies when a world has no sound player installed). <see cref="AlundraWorldProxy"/> installs a
-    /// real <see cref="AlundraSoundPlayer"/> once a <c>Game</c>'s <c>AudioSystemComponent</c> exists
+    /// real <see cref="Audio.SoundPlayer"/> once a <c>Game</c>'s <c>AudioSystemComponent</c> exists
     /// (<see cref="AlundraWorldProxy.InstallAudioSystems"/>); the intro trace harness's
     /// <c>HeadlessIntroSimulation</c> installs a fake instead, gated by its own
     /// <c>installSoundPlayer</c> flag (same neutralization shape as <see cref="CellMutator"/>).
     /// </summary>
-    IAlundraSoundPlayer? SoundPlayer => null;
+    ISoundPlayer? SoundPlayer => null;
 
     /// <summary>
     /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): this world's three equipment records (<c>0x80146E00-0x80146E14</c>), read by the damage calculation (<see cref="Damage"/>) of the native handlers that
@@ -155,25 +155,25 @@ public interface IEntityWorldContext
     /// map entry by <see cref="AlundraWorldProxy.InitializeWithWorld"/> itself (item 4 of the plan's own
     /// contract). A default interface member, same "degraded, skip" shape as <see cref="SoundPlayer"/>
     /// above, defaulting to null so every EXISTING implementer keeps compiling unmodified.
-    /// <see cref="AlundraWorldProxy"/> installs the session-scoped <see cref="AlundraMusicPlayer.Instance"/>
+    /// <see cref="AlundraWorldProxy"/> installs the session-scoped <see cref="BgmPlayer.Instance"/>
     /// once a <c>Game</c>'s <c>AudioSystemComponent</c> exists (see that class's own doc for why it is a
     /// singleton rather than a per-world instance - D-C-6).
     /// </summary>
-    IAlundraMusicPlayer? MusicPlayer => null;
+    IMusicPlayer? MusicPlayer => null;
 
     /// <summary>
     /// This session's master BGM fade-machine seam (B2, docs/plan-e11b-opcodes-audio.md, D-B-5) - backs
     /// opcodes 0xA5/0xA6 in <see cref="EventProgramRunner.Dispatch"/> (0xA7's own conditional
     /// stop-all also goes through this, orchestrated at the dispatch site - see
-    /// <see cref="AlundraBgmFadeDirector"/>'s own class doc). A default interface member, same
+    /// <see cref="Audio.BgmFadeDirector"/>'s own class doc). A default interface member, same
     /// "degraded, skip" shape as <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/> above, defaulting
     /// to null so every EXISTING implementer keeps compiling unmodified.
     /// <see cref="AlundraWorldProxy"/> installs the session-scoped
-    /// <see cref="AlundraBgmFadeDirector.Instance"/> (see that class's own doc for why it is a singleton
+    /// <see cref="BgmFadeDirector.Instance"/> (see that class's own doc for why it is a singleton
     /// rather than a per-world instance - the same D-C-6/D-E10-6 lesson as
-    /// <see cref="AlundraMusicPlayer"/>/<see cref="AlundraScreenFadeDirector"/>).
+    /// <see cref="BgmPlayer"/>/<see cref="AlundraScreenFadeDirector"/>).
     /// </summary>
-    IAlundraBgmFadeDirector? BgmFadeDirector => null;
+    IBgmFadeDirector? BgmFadeDirector => null;
 
     /// <summary>
     /// This session's screen fade/tint seam (E10.b, docs/plan-e10-fondu.md) - backs opcodes
@@ -218,7 +218,7 @@ public interface IEntityWorldContext
     /// (<see cref="NoOpEntityWorldContext"/>, every existing test fake) keeps compiling unmodified.
     /// <see cref="AlundraWorldProxy"/> installs the session-scoped <see cref="AlundraDialogueDirector.Instance"/>
     /// (see that class's own doc for why it is a singleton rather than a per-world instance - same D-C-6/
-    /// D-E10-6 lesson as <see cref="AlundraMusicPlayer"/>/<see cref="AlundraScreenFadeDirector"/>) via
+    /// D-E10-6 lesson as <see cref="BgmPlayer"/>/<see cref="AlundraScreenFadeDirector"/>) via
     /// <see cref="AlundraWorldProxy.InstallDialogueSystems"/>. Unlike <see cref="ScreenFadeDirector"/>, this
     /// member stays NULLABLE even on <see cref="AlundraWorldProxy"/> itself: <see cref="IAlundraDialogueDirector.HasPresenter"/>
     /// is what actually distinguishes real from degraded dispatch (the singleton is attached with a null

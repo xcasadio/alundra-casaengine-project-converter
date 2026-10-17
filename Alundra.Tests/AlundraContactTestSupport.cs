@@ -80,7 +80,7 @@ internal sealed class ContactHost : IScriptHost
     public AlundraPlayerController? PlayerController { get; }
 
     /// <summary>E19.d2c1 R8: the sound player the host hands to the hero's take-off (null: none, as the default member of the interface).</summary>
-    public IAlundraSoundPlayer? SoundPlayer { get; set; }
+    public ISoundPlayer? SoundPlayer { get; set; }
 
     /// <summary>E20.b B1: the item tables the host hands to the hero's <c>MovePlayer</c> (null: none, as the default member of the interface, so the hero has no weapon and swings the basic sword).</summary>
     public ItemTables? ItemTables { get; set; }

@@ -13,7 +13,7 @@ namespace Alundra.Items;
 /// <summary>
 /// The three item tables the converter republishes raw under <c>Data/</c> (docs/plan-e13c-icones-hud.md,
 /// slices S2 and S2.b), loaded once from <see cref="EngineEnvironment.ProjectPath"/> - the same project-root
-/// resolution <see cref="AlundraSoundGroupIndexTable"/> and <see cref="SpriteRecordCatalog"/> use:
+/// resolution <see cref="SoundGroupIndexTable"/> and <see cref="SpriteRecordCatalog"/> use:
 /// <list type="bullet">
 /// <item><c>items-properties.json</c> - <c>g_itemsProperties</c> (StaticVariables.cs:737-838), 100 rows of
 /// 5 columns: inventory slot, replacement flag, replacement priority, max count, icon. Exposed flattened as
@@ -219,7 +219,7 @@ public sealed class ItemTables
 
     /// <summary>
     /// Session-scoped cache keyed by project path - same shape and rationale as
-    /// <see cref="AlundraSoundGroupIndexTable"/>'s own: two consecutive worlds over the same project read the
+    /// <see cref="SoundGroupIndexTable"/>'s own: two consecutive worlds over the same project read the
     /// three files only once, while two different projects never share cached tables.
     /// </summary>
     private static readonly Dictionary<string, ItemTables> SessionCacheByProjectPath = new();

@@ -47,7 +47,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 
@@ -60,7 +60,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
         // isolation) - kept for symmetry with the existing session-singleton test classes.
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests(); // T4 (D-T-14): warp director joins the session carriers this class resets.
     }
 

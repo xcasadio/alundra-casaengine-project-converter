@@ -14,7 +14,7 @@ namespace Alundra.Transitions;
 
 /// <summary>
 /// T4 (docs/plan-transitions-carte.md §1.2.c/§1.2.e/§3, D-T-2): SESSION-scoped singleton - same
-/// contract shape as <see cref="AlundraMusicPlayer"/>/<see cref="AlundraScreenFadeDirector"/>/
+/// contract shape as <see cref="BgmPlayer"/>/<see cref="AlundraScreenFadeDirector"/>/
 /// <see cref="AlundraDialogueDirector"/> (<c>Instance</c>, <see cref="AttachToWorld"/>,
 /// <see cref="InstallForMapEntry"/>, <see cref="ResetForTests"/>) - port of <c>PlayerManager.HandleWarpTransition</c>
 /// (<c>PlayerManager.cs:3488-3541</c>) plus the map-entry preamble that ENDS it
@@ -78,13 +78,13 @@ public sealed class AlundraWarpDirector
     };
 
     private GameManager? _gameManager;
-    private IAlundraSoundPlayer? _soundPlayer;
+    private ISoundPlayer? _soundPlayer;
     private WorldIndexTable? _worldIndex;
 
     /// <summary>B17 (docs/plan-bgm-demarrage-binaire.md, D8/P7): the SAME session-cached bank
-    /// <see cref="AlundraSoundBank.GetOrCreate"/> hands every other reader - read-only here, to test the
+    /// <see cref="SfxBank.GetOrCreate"/> hands every other reader - read-only here, to test the
     /// departure sfx's own <c>SeqNum</c>/<c>MaxVoices</c> (<see cref="IsWarpSoundSilent"/>).</summary>
-    private AlundraSoundBank? _soundBank;
+    private SfxBank? _soundBank;
 
     /// <summary>The gel gate - see this class' own doc. Re-derived from <see cref="_sequenceTicks"/> by
     /// <see cref="Advance"/> every tick it runs; only ever written to <see langword="false"/> by
@@ -236,19 +236,19 @@ public sealed class AlundraWarpDirector
     /// <summary>
     /// Re-points this session-scoped instance at the current world's own <see cref="GameManager"/> (the
     /// seam <see cref="Advance"/> calls <c>SetWorldToLoad</c> through, §1.1.e/§1.3.e) and
-    /// <see cref="IAlundraSoundPlayer"/> (the departure sfx channel, §1.2.d/D-T-8), and reloads
+    /// <see cref="ISoundPlayer"/> (the departure sfx channel, §1.2.d/D-T-8), and reloads
     /// <c>Maps/world-index.json</c> (cheap - a JSON file read, same precedent as
-    /// <see cref="AlundraMusicPlayer.AttachToWorld"/> reloading its own index table on every call).
+    /// <see cref="BgmPlayer.AttachToWorld"/> reloading its own index table on every call).
     /// Deliberately does NOT touch <see cref="IsTransitionInProgress"/>/the arrival record/anything else
     /// (D-T-2, same shape as every other session director's own <c>AttachToWorld</c>) - only
     /// <see cref="InstallForMapEntry"/> does that.
     /// </summary>
-    public void AttachToWorld(GameManager? gameManager, IAlundraSoundPlayer? soundPlayer, string projectPath)
+    public void AttachToWorld(GameManager? gameManager, ISoundPlayer? soundPlayer, string projectPath)
     {
         _gameManager = gameManager;
         _soundPlayer = soundPlayer;
         _worldIndex = new WorldIndexTable(projectPath);
-        _soundBank = AlundraSoundBank.GetOrCreate(projectPath); // B17: departure sound silence test
+        _soundBank = SfxBank.GetOrCreate(projectPath); // B17: departure sound silence test
     }
 
     /// <summary>
@@ -426,7 +426,7 @@ public sealed class AlundraWarpDirector
                 // plays it in any branch - IsWarpSoundSilent is computed exactly once and the SAME value
                 // feeds both HandleWarpDeparture (the BGM decision) and the PlaySfx guard below.
                 var isSilent = IsWarpSoundSilent(sfxId);
-                AlundraMusicPlayer.Instance.HandleWarpDeparture((int)desiredMapIndex, isSilent);
+                BgmPlayer.Instance.HandleWarpDeparture((int)desiredMapIndex, isSilent);
                 if (!isSilent)
                 {
                     _soundPlayer?.PlaySfx(sfxId);
@@ -458,7 +458,7 @@ public sealed class AlundraWarpDirector
     /// <see cref="GameState.ResetDirectionId"/> (0) - never the hero's current animation, which
     /// <see cref="BeginDepartureFromChangeMapOpcode"/> would copy (a load pressed mid-attack or mid-jump). Effect
     /// 0, and an EMPTY sound action: no departure sound, and no
-    /// <see cref="AlundraMusicPlayer.HandleWarpDeparture"/> - the arrival's own <c>PlayMapMusic</c> sets the
+    /// <see cref="BgmPlayer.HandleWarpDeparture"/> - the arrival's own <c>PlayMapMusic</c> sets the
     /// music. Repeats the <see cref="GameState.IsWarpDisabled"/> test of the two other entries (the caller
     /// has already refused it, K7 step 5).
     /// </summary>
@@ -496,7 +496,7 @@ public sealed class AlundraWarpDirector
     /// fade (D-T-5), the hero's gravity suspension ([R6] reserve #1), and the world-path resolution plus
     /// gel arming (D-T-6). <paramref name="soundAction"/> is the one piece each caller supplies its own
     /// way (<see cref="PlayDepartureSound"/> for the portal path, a direct
-    /// <see cref="AlundraMusicPlayer"/>/<see cref="IAlundraSoundPlayer.PlaySfx"/> pair for 0x53) - called
+    /// <see cref="BgmPlayer"/>/<see cref="ISoundPlayer.PlaySfx"/> pair for 0x53) - called
     /// at the exact same point in the sequence <see cref="BeginDeparture"/> always called it, right after
     /// the arrival record is written and before the fade starts.
     /// </summary>
@@ -550,25 +550,25 @@ public sealed class AlundraWarpDirector
 
     /// <summary>
     /// B17/P7/F2 (docs/plan-bgm-demarrage-binaire.md, D8), the BGM half of <c>HandleMapSoundEffects</c>:
-    /// the departure NEVER loads the destination track. <see cref="AlundraMusicPlayer.HandleWarpDeparture"/>
+    /// the departure NEVER loads the destination track. <see cref="BgmPlayer.HandleWarpDeparture"/>
     /// only RECORDS this request now (F2) - the actual decision (arm the fade for a silent warp sound,
     /// stop the current sequence outright for an audible one, or do nothing when the destination's raw
-    /// music index equals <see cref="AlundraMusicPlayer.CurrentMapSoundIndex"/>) runs later, at the
+    /// music index equals <see cref="BgmPlayer.CurrentMapSoundIndex"/>) runs later, at the
     /// departing world's own frame-close site, AFTER its reset-flag consumption - see
-    /// <see cref="AlundraMusicPlayer.EvaluatePendingWarpDeparture"/>'s own doc for why. The destination
+    /// <see cref="BgmPlayer.EvaluatePendingWarpDeparture"/>'s own doc for why. The destination
     /// track itself only starts at ARRIVAL, through that map's own
-    /// <see cref="AlundraMusicPlayer.PlayMapMusic"/> call (B10) - see B17's own fact for why loading at
+    /// <see cref="BgmPlayer.PlayMapMusic"/> call (B10) - see B17's own fact for why loading at
     /// departure, as this port used to, is unfaithful. T4.4 (S1): a silent warp sound (in the B17 sense
     /// <see cref="IsWarpSoundSilent"/> already decides) is never played - the executable zeroes it
     /// (<c>0x80049f78</c>) and never plays it in any branch; the SAME <see cref="IsWarpSoundSilent"/>
-    /// value feeds both this guard and <see cref="AlundraMusicPlayer.HandleWarpDeparture"/>'s own BGM
+    /// value feeds both this guard and <see cref="BgmPlayer.HandleWarpDeparture"/>'s own BGM
     /// decision.
     /// </summary>
     private void PlayDepartureSound(uint desiredMapIndex, int warpBehaviorId)
     {
         var sfxId = WarpBehaviorTable[warpBehaviorId & 0xF];
         var isSilent = IsWarpSoundSilent(sfxId);
-        AlundraMusicPlayer.Instance.HandleWarpDeparture((int)desiredMapIndex, isSilent);
+        BgmPlayer.Instance.HandleWarpDeparture((int)desiredMapIndex, isSilent);
         if (!isSilent)
         {
             _soundPlayer?.PlaySfx(sfxId);
@@ -580,7 +580,7 @@ public sealed class AlundraWarpDirector
     /// <c>0</c>, a manifest miss (fiche absente, treated as silent, same degraded shape as every other
     /// seam in this DLL), or <c>SeqNum == -1</c> AND <c>MaxVoices == 0</c> (the original's own
     /// <c>HandleMapSoundEffectsCore</c> test, <c>0x80049f58</c>-<c>0x80049f78</c>) - decides whether
-    /// <see cref="AlundraMusicPlayer.HandleWarpDeparture"/> only fades (silent) or stops outright
+    /// <see cref="BgmPlayer.HandleWarpDeparture"/> only fades (silent) or stops outright
     /// (audible, <c>LoadBgm(0)</c>).
     /// </summary>
     private bool IsWarpSoundSilent(int sfxId)

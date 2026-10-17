@@ -45,9 +45,9 @@ namespace Alundra.Tests;
 /// Every test resets the FOUR session singletons this class' own montages touch (D-T-14).
 ///
 /// <para>F5 (docs/plan-bgm-demarrage-binaire.md): <see cref="AlundraWorldProxy.InitializeWithWorld"/>
-/// writes the SESSION-scoped <see cref="AlundraMusicPlayer.Instance"/> (map entry arms its reset flag,
+/// writes the SESSION-scoped <see cref="BgmPlayer.Instance"/> (map entry arms its reset flag,
 /// B7) - so this class shares <see cref="AlundraMusicPlayerSingletonCollection"/> with every other class
-/// touching that same shared instance, and resets <see cref="AlundraBgmFadeDirector.Instance"/> too
+/// touching that same shared instance, and resets <see cref="BgmFadeDirector.Instance"/> too
 /// (nothing in this file drives it directly, but a stray armed state left over from a differently-
 /// ordered parallel run must never leak in).</para>
 /// </summary>
@@ -58,22 +58,22 @@ public sealed class AlundraWarpArrivalTests : IDisposable
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
-        AlundraMusicPlayer.Instance.ResetForTests();
-        AlundraBgmFadeDirector.Instance.ResetForTests(); // F5: joins the music-player singleton collection.
+        BgmPlayer.Instance.ResetForTests();
+        BgmFadeDirector.Instance.ResetForTests(); // F5: joins the music-player singleton collection.
     }
 
     public void Dispose()
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
-        AlundraMusicPlayer.Instance.ResetForTests();
-        AlundraBgmFadeDirector.Instance.ResetForTests();
+        BgmPlayer.Instance.ResetForTests();
+        BgmFadeDirector.Instance.ResetForTests();
     }
 
     // -----------------------------------------------------------------------------------------------

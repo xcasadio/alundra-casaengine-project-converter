@@ -6,7 +6,7 @@ using Alundra.Audio;
 namespace Alundra.Tests;
 
 /// <summary>
-/// B3 of docs/plan-e11b-opcodes-audio.md, D-B-7: drives <see cref="AlundraSoundGroupIndexTable"/>
+/// B3 of docs/plan-e11b-opcodes-audio.md, D-B-7: drives <see cref="SoundGroupIndexTable"/>
 /// directly off small synthetic fixtures - the real linked <c>Maps/sound-group-index.json</c> is not
 /// re-exported by this slice (full export is out of scope here), so the real-project positive-lookup
 /// coverage lives on the converter side (<c>WorldWriterTests.ConvertWorlds_WritesSoundGroupIndex_AllEntries_Map389Is56</c>)
@@ -25,7 +25,7 @@ public class AlundraSoundGroupIndexTableTests
 
         try
         {
-            var table = new AlundraSoundGroupIndexTable(projectPath);
+            var table = new SoundGroupIndexTable(projectPath);
 
             Assert.True(table.TryGetGroup(389, out var group));
             Assert.Equal(56, group);
@@ -47,8 +47,8 @@ public class AlundraSoundGroupIndexTableTests
 
         try
         {
-            AlundraSoundGroupIndexTable table = null!;
-            var ex = Record.Exception(() => table = new AlundraSoundGroupIndexTable(emptyProjectPath));
+            SoundGroupIndexTable table = null!;
+            var ex = Record.Exception(() => table = new SoundGroupIndexTable(emptyProjectPath));
             Assert.Null(ex);
 
             Assert.False(table.TryGetGroup(389, out _));
@@ -69,8 +69,8 @@ public class AlundraSoundGroupIndexTableTests
 
         try
         {
-            AlundraSoundGroupIndexTable table = null!;
-            var ex = Record.Exception(() => table = new AlundraSoundGroupIndexTable(projectPath));
+            SoundGroupIndexTable table = null!;
+            var ex = Record.Exception(() => table = new SoundGroupIndexTable(projectPath));
             Assert.Null(ex);
 
             Assert.False(table.TryGetGroup(389, out _));

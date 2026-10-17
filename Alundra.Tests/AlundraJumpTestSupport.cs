@@ -196,7 +196,7 @@ internal sealed class JumpNpcRig
 }
 
 /// <summary>A recorder of the sounds the hero's take-off asks for (R8).</summary>
-internal sealed class RecordingSoundPlayer : IAlundraSoundPlayer
+internal sealed class RecordingSoundPlayer : ISoundPlayer
 {
     public List<int> Requests { get; } = new();
 

@@ -8,7 +8,7 @@ using CasaEngine.Engine.Environment;
 
 namespace Alundra.Audio;
 
-/// <summary>One resolved outcome of <see cref="AlundraMusicIndexTable.ResolvePlaybackDirective(int)"/>
+/// <summary>One resolved outcome of <see cref="MusicIndexTable.ResolvePlaybackDirective(int)"/>
 /// - see <see cref="MusicPlaybackDirectiveKind"/> for what each case means.</summary>
 public readonly struct MusicPlaybackDirective
 {

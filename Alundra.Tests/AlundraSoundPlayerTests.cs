@@ -9,10 +9,10 @@ namespace Alundra.Tests;
 
 /// <summary>
 /// T5 of docs/plan-e11-audio.md, slice E11.a - the readback blocker of the plan's own §2.2b: without
-/// this test, every mechanic <see cref="AlundraSoundPlayer"/> claims to port (one voice per tone,
+/// this test, every mechanic <see cref="SoundPlayer"/> claims to port (one voice per tone,
 /// MaxVoices ceiling, no per-tone anti-duplicate) would ship unproven, because a request-only oracle
-/// (T1/T2) cannot see past <see cref="IAlundraSoundPlayer.PlaySfx"/>'s own boundary. Built against a
-/// REAL <see cref="AlundraSoundPlayer"/> over a REAL <see cref="AudioService"/>, backed by
+/// (T1/T2) cannot see past <see cref="ISoundPlayer.PlaySfx"/>'s own boundary. Built against a
+/// REAL <see cref="SoundPlayer"/> over a REAL <see cref="AudioService"/>, backed by
 /// <see cref="FakeAudioBackend"/>/<see cref="FakeAudioClip"/>/<see cref="FakeAudioClipProvider"/> (this
 /// project's own re-implementation of the engine's test fakes - see <see cref="FakeAudioBackend"/>'s own
 /// doc), the exact shape CasaEngineMonogame\CasaEngine.Tests\Audio\AudioServicePlaySoundTests.cs uses.
@@ -92,7 +92,7 @@ public class AlundraSoundPlayerTests : IDisposable
         }
     }
 
-    private AlundraSoundPlayer NewPlayer(
+    private SoundPlayer NewPlayer(
         out FakeAudioBackend backend, out AudioService service, object? owner = null, int? soundGroup = null)
     {
         backend = new FakeAudioBackend();
@@ -105,7 +105,7 @@ public class AlundraSoundPlayerTests : IDisposable
         provider.Register(Id501Tone0, new FakeAudioClip("sfx_0501", 11025));
 
         service = new AudioService(backend) { ClipProvider = provider };
-        return new AlundraSoundPlayer(service, new AlundraSoundBank(_projectPath), owner ?? new object(), soundGroup);
+        return new SoundPlayer(service, new SfxBank(_projectPath), owner ?? new object(), soundGroup);
     }
 
     [Fact]
@@ -212,7 +212,7 @@ public class AlundraSoundPlayerTests : IDisposable
     /// <summary>Builds a synthetic manifest with <paramref name="idCount"/> distinct one-tone,
     /// uncapped-enough (<c>max_voices</c> = <paramref name="idCount"/>) records, ids 1..idCount - its own
     /// isolated project directory, never shared with <see cref="NewPlayer"/>'s fixture above.</summary>
-    private static AlundraSoundPlayer NewPlayerWithManyIds(int idCount, out FakeAudioBackend backend, out string projectPath)
+    private static SoundPlayer NewPlayerWithManyIds(int idCount, out FakeAudioBackend backend, out string projectPath)
     {
         projectPath = Path.Combine(Path.GetTempPath(), "AlundraSoundPlayerTests_Overflow_" + Guid.NewGuid());
         var soundsDirectory = Path.Combine(projectPath, "Sounds");
@@ -246,7 +246,7 @@ public class AlundraSoundPlayerTests : IDisposable
 
         backend = new FakeAudioBackend(voiceCapacity: idCount + 8);
         var service = new AudioService(backend) { ClipProvider = provider };
-        return new AlundraSoundPlayer(service, new AlundraSoundBank(projectPath), new object());
+        return new SoundPlayer(service, new SfxBank(projectPath), new object());
     }
 
     [Fact]

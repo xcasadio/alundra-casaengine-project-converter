@@ -39,7 +39,7 @@ public sealed class AlundraAnimationSoundTests
     private const int C = ScriptHelper.ProgramCTick;
 
     /// <summary>A recorder of the sounds asked, stamped with the frame of the arc (or of the rig) at which they were asked.</summary>
-    private sealed class StampedSoundPlayer : IAlundraSoundPlayer
+    private sealed class StampedSoundPlayer : ISoundPlayer
     {
         private readonly Func<int> _frame;
 
@@ -244,7 +244,7 @@ public sealed class AlundraAnimationSoundTests
     [Fact]
     public void T1_Map476_0x8A_At553_AsksMelzasSound219AtTheTickOfTheOpcode_TheBankResolves864InTheGroup62()
     {
-        var bank = new AlundraSoundBank(ProjectRootFinder.Find());
+        var bank = new SfxBank(ProjectRootFinder.Find());
         Assert.True(bank.TryResolve(219, soundGroup: 62, out var resolution));
         Assert.Equal(864, resolution.ResolvedId);
 
@@ -386,7 +386,7 @@ public sealed class AlundraAnimationSoundTests
         // (group 62) with the record 0 (Melzas, prefab b06c2c33, animation 0 asks 219) made loadable (bit 0x40 of its SpriteDirection), a game with a fake
         // audio backend. 219 is redirected by the bank to 864 in the group 62 (it plays its own tones in no group).
         var root = ProjectRootFinder.Find();
-        var bank = new AlundraSoundBank(root);
+        var bank = new SfxBank(root);
         Assert.True(bank.TryResolve(219, soundGroup: 62, out var inGroup));
         Assert.Equal(864, inGroup.ResolvedId);
         Assert.True(bank.TryResolve(219, soundGroup: null, out var ownTones));

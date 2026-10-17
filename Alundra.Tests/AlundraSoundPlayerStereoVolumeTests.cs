@@ -8,9 +8,9 @@ using Alundra.Audio;
 namespace Alundra.Tests;
 
 /// <summary>
-/// T4.2 (docs/plan-audio-mix-exact-muet.md): <see cref="AlundraSoundPlayer.PlaySfx"/> starting a real
+/// T4.2 (docs/plan-audio-mix-exact-muet.md): <see cref="SoundPlayer.PlaySfx"/> starting a real
 /// stereo voice through <see cref="AudioService.PlayClipStereo"/>, with the exact key-on left/right SPU
-/// volumes (<see cref="AlundraSpuVoiceVolume.ComputeKeyOn"/>) - and its two fallback causes (a record
+/// volumes (<see cref="SpuVoiceVolume.ComputeKeyOn"/>) - and its two fallback causes (a record
 /// without the ADR-0003 attributes, a clip without samples), which must still start a mono voice exactly
 /// as before T4.2 (never silence). Same shape as <see cref="AlundraSoundPlayerTests"/>, split into its
 /// own file because it needs its own synthetic manifest fixture (the VAB/program/tone attributes T4.2
@@ -102,7 +102,7 @@ public sealed class AlundraSoundPlayerStereoVolumeTests : IDisposable
         }
     }
 
-    private AlundraSoundPlayer NewPlayer(out FakeAudioBackend backend, out AudioService service)
+    private SoundPlayer NewPlayer(out FakeAudioBackend backend, out AudioService service)
     {
         backend = new FakeAudioBackend();
         var provider = new FakeAudioClipProvider();
@@ -115,7 +115,7 @@ public sealed class AlundraSoundPlayerStereoVolumeTests : IDisposable
         provider.Register(Id401Tone0, new FakeAudioClip("sfx_0401", 11025, monoSamples: new short[] { 400, -400 }));
 
         service = new AudioService(backend) { ClipProvider = provider };
-        return new AlundraSoundPlayer(service, new AlundraSoundBank(_projectPath), new object());
+        return new SoundPlayer(service, new SfxBank(_projectPath), new object());
     }
 
     [Fact]
@@ -128,18 +128,18 @@ public sealed class AlundraSoundPlayerStereoVolumeTests : IDisposable
         Assert.Equal(2, backend.ActiveVoiceCount);
         Assert.Empty(backend.PlayCalls); // never the mono PlayClip fallback.
 
-        var (left0, right0) = AlundraSpuVoiceVolume.ComputeKeyOn(127, 127, 64, 100, 34);
-        var (left1, right1) = AlundraSpuVoiceVolume.ComputeKeyOn(127, 127, 64, 100, 94);
+        var (left0, right0) = SpuVoiceVolume.ComputeKeyOn(127, 127, 64, 100, 34);
+        var (left1, right1) = SpuVoiceVolume.ComputeKeyOn(127, 127, 64, 100, 94);
         Assert.Equal((10157, 2957), (left0, right0)); // T4.2 table, 302 t0.
         Assert.Equal((2786, 10157), (left1, right1)); // T4.2 table, 302 t1.
 
         Assert.True(service.GetVoiceStereoGains(new AudioVoiceHandle(0, 0), out var g0Left, out var g0Right));
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(left0), g0Left, 5);
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(right0), g0Right, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(left0), g0Left, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(right0), g0Right, 5);
 
         Assert.True(service.GetVoiceStereoGains(new AudioVoiceHandle(1, 0), out var g1Left, out var g1Right));
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(left1), g1Left, 5);
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(right1), g1Right, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(left1), g1Left, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(right1), g1Right, 5);
     }
 
     [Fact]
@@ -198,18 +198,18 @@ public sealed class AlundraSoundPlayerStereoVolumeTests : IDisposable
 
         player.RemixVoice(302, left: 0x40, right: 0x40);
 
-        var (left0, right0) = AlundraSpuVoiceVolume.ComputeRemix(0x40, 0x40, programVolume: 127, toneVolume: 100, tonePan: 34);
-        var (left1, right1) = AlundraSpuVoiceVolume.ComputeRemix(0x40, 0x40, programVolume: 127, toneVolume: 100, tonePan: 94);
+        var (left0, right0) = SpuVoiceVolume.ComputeRemix(0x40, 0x40, programVolume: 127, toneVolume: 100, tonePan: 34);
+        var (left1, right1) = SpuVoiceVolume.ComputeRemix(0x40, 0x40, programVolume: 127, toneVolume: 100, tonePan: 94);
         Assert.Equal((2629, 765), (left0, right0)); // T4.3 table, 302 t0, Ship Klark (intérieur) card 390.
         Assert.Equal((721, 2629), (left1, right1)); // T4.3 table, 302 t1, card 390.
 
         Assert.True(service.GetVoiceStereoGains(new AudioVoiceHandle(0, 0), out var g0Left, out var g0Right));
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(left0), g0Left, 5);
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(right0), g0Right, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(left0), g0Left, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(right0), g0Right, 5);
 
         Assert.True(service.GetVoiceStereoGains(new AudioVoiceHandle(1, 0), out var g1Left, out var g1Right));
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(left1), g1Left, 5);
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(right1), g1Right, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(left1), g1Left, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(right1), g1Right, 5);
     }
 
     [Fact]
@@ -240,19 +240,19 @@ public sealed class AlundraSoundPlayerStereoVolumeTests : IDisposable
         player.PlaySfx(303); // newer instance -> handle (1, 0), StartSequence 1.
         Assert.Equal(2, backend.ActiveVoiceCount);
 
-        var (keyLeft, keyRight) = AlundraSpuVoiceVolume.ComputeKeyOn(127, 127, 64, 100, 34);
+        var (keyLeft, keyRight) = SpuVoiceVolume.ComputeKeyOn(127, 127, 64, 100, 34);
         Assert.True(service.GetVoiceStereoGains(new AudioVoiceHandle(1, 0), out var newerBeforeLeft, out var newerBeforeRight));
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(keyLeft), newerBeforeLeft, 5);
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(keyRight), newerBeforeRight, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(keyLeft), newerBeforeLeft, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(keyRight), newerBeforeRight, 5);
 
         player.RemixVoice(303, left: 0x40, right: 0x40);
 
-        var (remixLeft, remixRight) = AlundraSpuVoiceVolume.ComputeRemix(0x40, 0x40, programVolume: 127, toneVolume: 100, tonePan: 34);
+        var (remixLeft, remixRight) = SpuVoiceVolume.ComputeRemix(0x40, 0x40, programVolume: 127, toneVolume: 100, tonePan: 34);
 
         // The oldest voice (handle (0, 0)) changed to the remix gains...
         Assert.True(service.GetVoiceStereoGains(new AudioVoiceHandle(0, 0), out var oldestLeft, out var oldestRight));
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(remixLeft), oldestLeft, 5);
-        Assert.Equal(AlundraSpuVoiceVolume.ToGain(remixRight), oldestRight, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(remixLeft), oldestLeft, 5);
+        Assert.Equal(SpuVoiceVolume.ToGain(remixRight), oldestRight, 5);
 
         // ...the newer voice (handle (1, 0)) kept its original key-on gains, untouched.
         Assert.True(service.GetVoiceStereoGains(new AudioVoiceHandle(1, 0), out var newerAfterLeft, out var newerAfterRight));

@@ -10,7 +10,7 @@ namespace Alundra.Audio;
 
 /// <summary>
 /// SESSION-scoped singleton (D-B-5, same shape/reasoning as <see cref="AlundraScreenFadeDirector"/>/
-/// <see cref="AlundraMusicPlayer"/> - see either class's own doc for why a per-world instance would make
+/// <see cref="BgmPlayer"/> - see either class's own doc for why a per-world instance would make
 /// this state vacuous by construction): the faithful transcription of <c>FUN_8004b674</c>
 /// (SoundManager.cs:3763-3801), the master fade machine 0xA5/0xA6 share (fact 2, transcribed in full in
 /// docs/plan-e11b-opcodes-audio.md's own B2 section):
@@ -49,23 +49,23 @@ namespace Alundra.Audio;
 /// itself choosing a new track OR restarting playback - it is an ARRÊT. This port models that
 /// separation directly: a track is LOADED (<c>AlundraMusicPlayer</c>'s own loaded-track state) or not,
 /// independently of whether a voice is currently alive, so <c>InitializeBgm</c> maps onto
-/// <see cref="IAlundraMusicPlayer.StopSequence"/> (stop the voice, keep the track loaded) and
-/// <c>PlaySeq</c> onto <see cref="IAlundraMusicPlayer.PlaySequence"/> (start a voice for the loaded
+/// <see cref="IMusicPlayer.StopSequence"/> (stop the voice, keep the track loaded) and
+/// <c>PlaySeq</c> onto <see cref="IMusicPlayer.PlaySequence"/> (start a voice for the loaded
 /// track ONLY IF none is already alive) - see either member's own doc.</para>
 ///
 /// <para><b>0xA7's own stop-all flag is NOT handled here</b> (D-B-6): <see cref="StopAllSound"/> is
 /// still the method 0xA7's dispatch calls when its flag operand is set (fact 3's own "StopAllSound
 /// (drapeau) ou PlaySeq"), but the ORCHESTRATION - load first, then conditionally stop-all - lives at
 /// the opcode dispatch site (<see cref="EventProgramRunner.Dispatch"/>'s own 0xA7 case), not in
-/// this class or in <see cref="AlundraMusicPlayer.PlayFromRawIndex"/>.</para>
+/// this class or in <see cref="BgmPlayer.PlayFromRawIndex"/>.</para>
 /// </remarks>
-public sealed class AlundraBgmFadeDirector : IAlundraBgmFadeDirector
+public sealed class BgmFadeDirector : IBgmFadeDirector
 {
     /// <summary>The one session-scoped instance every <see cref="AlundraWorldProxy"/> shares (D-B-5) -
     /// never <see langword="new"/>'d per world.</summary>
-    public static readonly AlundraBgmFadeDirector Instance = new();
+    public static readonly BgmFadeDirector Instance = new();
 
-    private AlundraBgmFadeDirector()
+    private BgmFadeDirector()
     {
     }
 
@@ -79,20 +79,20 @@ public sealed class AlundraBgmFadeDirector : IAlundraBgmFadeDirector
     private const float FullScaleVolume = 0x7f;
 
     private AudioService? _audioService;
-    private IAlundraSoundPlayer? _soundPlayer;
+    private ISoundPlayer? _soundPlayer;
 
     /// <summary>Port of <c>g_soundEffectState</c> (fact 2) - 0 at rest, else the 1..120 countdown.</summary>
     private int _state;
 
     /// <summary>Re-points this session-scoped instance at the current world's own
-    /// <see cref="AudioService"/>/<see cref="IAlundraSoundPlayer"/> - called by
+    /// <see cref="AudioService"/>/<see cref="ISoundPlayer"/> - called by
     /// <see cref="AlundraWorldProxy.InstallAudioSystems"/> on every world install, even when
     /// <paramref name="audioService"/> is null (no <c>Game</c> for this world - tolerated, same shape as
     /// <see cref="AlundraScreenFadeDirector.AttachToWorld"/>). Deliberately does NOT touch
     /// <see cref="IsArmed"/>'s own state (D-B-5, same "AttachToWorld never touches state" contract as
-    /// <see cref="AlundraMusicPlayer.AttachToWorld"/>/<see cref="AlundraScreenFadeDirector.AttachToWorld"/>)
+    /// <see cref="BgmPlayer.AttachToWorld"/>/<see cref="AlundraScreenFadeDirector.AttachToWorld"/>)
     /// - a fade already in flight survives a map change exactly like the original's global does.</summary>
-    public void AttachToWorld(AudioService? audioService, IAlundraSoundPlayer? soundPlayer)
+    public void AttachToWorld(AudioService? audioService, ISoundPlayer? soundPlayer)
     {
         _audioService = audioService;
         _soundPlayer = soundPlayer;
@@ -106,7 +106,7 @@ public sealed class AlundraBgmFadeDirector : IAlundraBgmFadeDirector
     {
         // B2: g_currentMapSoundIndex < 0 -> IMMEDIATE, TOTAL return (bltz 0x80049b04) - nothing below
         // this line runs at all, not even the SFX stop or the master restore.
-        if (AlundraMusicPlayer.Instance.CurrentMapSoundIndex < 0)
+        if (BgmPlayer.Instance.CurrentMapSoundIndex < 0)
         {
             return;
         }
@@ -122,20 +122,20 @@ public sealed class AlundraBgmFadeDirector : IAlundraBgmFadeDirector
 
         // B2: master restore + PlaySeq are UNCONDITIONAL past the index guard above.
         SetMasterVolume(FullScaleVolume);
-        AlundraMusicPlayer.Instance.PlaySequence();
+        BgmPlayer.Instance.PlaySequence();
     }
 
     /// <inheritdoc/>
     public void LoadBgm(int bgmIndex)
     {
         // B14: g_resetSoundFlag = 0 runs UNCONDITIONALLY, before either branch below.
-        AlundraMusicPlayer.Instance.ClearResetSoundFlag();
+        BgmPlayer.Instance.ClearResetSoundFlag();
 
         if (bgmIndex == 0)
         {
             // B14: LoadBgmCore's own "bgmIndex == 0" branch calls InitializeBgm - an arrêt, never a
             // restart. An already-armed ramp (if any) keeps running untouched, independently of this.
-            AlundraMusicPlayer.Instance.StopSequence();
+            BgmPlayer.Instance.StopSequence();
             return;
         }
 
@@ -145,9 +145,9 @@ public sealed class AlundraBgmFadeDirector : IAlundraBgmFadeDirector
     /// <summary>
     /// B17/P7 (docs/plan-bgm-demarrage-binaire.md, D8): arms the master fade machine directly, the way
     /// the warp-departure path writes <c>g_soundEffectState</c> WITHOUT going through <c>LoadBgmCore</c>
-    /// - so, unlike <see cref="LoadBgm"/>, <see cref="AlundraMusicPlayer.ResetSoundFlag"/> is left
+    /// - so, unlike <see cref="LoadBgm"/>, <see cref="BgmPlayer.ResetSoundFlag"/> is left
     /// UNTOUCHED (B17's own "drapeau de reset intact"). Called only by
-    /// <see cref="AlundraMusicPlayer.HandleWarpDeparture"/>.
+    /// <see cref="BgmPlayer.HandleWarpDeparture"/>.
     /// </summary>
     internal void ArmFadeForWarpDeparture()
     {
@@ -183,7 +183,7 @@ public sealed class AlundraBgmFadeDirector : IAlundraBgmFadeDirector
         {
             _state = n;
             SetMasterVolume(0);
-            AlundraMusicPlayer.Instance.StopSequence(); // B15: InitializeBgm - an arrêt, never a restart.
+            BgmPlayer.Instance.StopSequence(); // B15: InitializeBgm - an arrêt, never a restart.
             _soundPlayer?.StopAllSfx(); // key-off all 24 voices, unconditional at this exact tick.
             return;
         }
@@ -213,7 +213,7 @@ public sealed class AlundraBgmFadeDirector : IAlundraBgmFadeDirector
     }
 
     /// <summary>Test-only: clears every piece of session state so tests do not leak into each other
-    /// through this singleton - same seam as <see cref="AlundraMusicPlayer.ResetForTests"/>/
+    /// through this singleton - same seam as <see cref="BgmPlayer.ResetForTests"/>/
     /// <see cref="AlundraScreenFadeDirector.ResetForTests"/>.</summary>
     internal void ResetForTests()
     {

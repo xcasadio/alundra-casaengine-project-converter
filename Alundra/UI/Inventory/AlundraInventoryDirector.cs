@@ -138,13 +138,13 @@ public sealed class AlundraInventoryDirector
 
     private GameState? _gameState;
     private ItemTables? _itemTables;
-    private IAlundraSoundPlayer? _soundPlayer;
+    private ISoundPlayer? _soundPlayer;
 
     /// <summary>Re-points this session-scoped instance, same "re-point without touching state" contract
     /// as <see cref="AlundraHudDirector.AttachToWorld"/>/<see cref="AlundraDialogueDirector.AttachToWorld"/>.
     /// Every argument null is tolerated (no live session yet) - <see cref="Tick"/> then degrades to a
     /// no-op, same shape as every other missing-system seam in this DLL.</summary>
-    public void AttachToWorld(GameState? gameState, ItemTables? itemTables, IAlundraSoundPlayer? soundPlayer)
+    public void AttachToWorld(GameState? gameState, ItemTables? itemTables, ISoundPlayer? soundPlayer)
     {
         _gameState = gameState;
         _itemTables = itemTables;

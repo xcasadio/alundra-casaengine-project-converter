@@ -112,11 +112,11 @@ public sealed class AlundraMurutaOracleTests : IDisposable
         public NavigationGrid2D? NavigationGrid => null;
         public EquipmentRecords? EquipmentRecords { get; set; }
         public uint HeroAnimationLatch { get; set; }
-        public IAlundraSoundPlayer? SoundPlayer { get; set; }
+        public ISoundPlayer? SoundPlayer { get; set; }
     }
 
     /// <summary>The sounds asked, in order (the oracle's <c>sound</c> journal entries).</summary>
-    private sealed class SoundRecorder : IAlundraSoundPlayer
+    private sealed class SoundRecorder : ISoundPlayer
     {
         public List<int> Ids { get; } = new();
 

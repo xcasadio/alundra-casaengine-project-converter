@@ -31,8 +31,8 @@ namespace Alundra.Tests;
 /// the FOUR session singletons this class' own montages touch, plus the three T1 introduced (D-T-14) -
 /// same shape as every other class that constructs an <see cref="AlundraWorldProxy"/>. Joins
 /// <see cref="AlundraMusicPlayerSingletonCollection"/> (T2.1, docs/plan-bgm-demarrage-binaire.md): the
-/// n/o/p warp-departure tests arm the REAL <see cref="AlundraBgmFadeDirector.Instance"/>, which
-/// <see cref="AlundraSoundPlayer.PlaySfx"/> reads directly (fact 8) - so this class must never race
+/// n/o/p warp-departure tests arm the REAL <see cref="BgmFadeDirector.Instance"/>, which
+/// <see cref="SoundPlayer.PlaySfx"/> reads directly (fact 8) - so this class must never race
 /// <see cref="AlundraBgmFadeDirectorTests"/>/<see cref="AlundraMusicPlayerTests"/> on that shared state
 /// either, same reasoning as <see cref="AlundraWorldProxyAudioInstallationTests"/>.
 /// </summary>
@@ -43,22 +43,22 @@ public sealed class AlundraWarpDepartureTests : IDisposable
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
-        AlundraMusicPlayer.Instance.ResetForTests();
-        AlundraBgmFadeDirector.Instance.ResetForTests(); // T2.1 (n/o/p): the warp-departure music tests.
+        BgmPlayer.Instance.ResetForTests();
+        BgmFadeDirector.Instance.ResetForTests(); // T2.1 (n/o/p): the warp-departure music tests.
     }
 
     public void Dispose()
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
-        AlundraSoundBank.ResetForTests();
+        SfxBank.ResetForTests();
         AlundraWarpDirector.Instance.ResetForTests();
         AlundraScreenFadeDirector.Instance.ResetForTests();
-        AlundraMusicPlayer.Instance.ResetForTests();
-        AlundraBgmFadeDirector.Instance.ResetForTests();
+        BgmPlayer.Instance.ResetForTests();
+        BgmFadeDirector.Instance.ResetForTests();
     }
 
     // ---- fixtures ---------------------------------------------------------------------------------
@@ -507,13 +507,13 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             // F2: the departure only RECORDS the request - nothing armed yet, same frame it was requested.
             Assert.Single(backend.StreamVoices);
-            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
+            Assert.False(BgmFadeDirector.Instance.IsArmed);
 
             proxy389.Update(0.02f); // the departing world's own next frame close: evaluates the pending
                                      // departure (F2), AFTER the reset-flag consumption (B9).
             // No destination track loaded, only the fade armed.
             Assert.Single(backend.StreamVoices); // still just track 25's own play.
-            Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
+            Assert.True(BgmFadeDirector.Instance.IsArmed);
 
             var world45 = new World { Name = "Dest-45" };
             HeroWorldFixture.SetProperty(world45, nameof(World.Game), game);
@@ -521,12 +521,12 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy45.InstallAudioSystems(world45); // loads 30 (differs from 25) - stops the old voice.
             proxy45.Update(0.02f); // arrival's own first frame close.
 
-            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed); // disarmed by StopAllSound.
+            Assert.False(BgmFadeDirector.Instance.IsArmed); // disarmed by StopAllSound.
             var service = game.AudioSystemComponent.Service;
             Assert.Equal(1f, service.Mixer.GetBus(AudioBusNames.Master).Volume, 5);
             Assert.Equal(2, backend.StreamVoices.Count);
             Assert.Equal("bgm_030", provider.OpenedStreams[1]);
-            Assert.True(((AlundraMusicPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.True(((BgmPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
         }
         finally
         {
@@ -567,14 +567,14 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             // Nothing started yet at all - map entry only loads and arms the flag (B7); the departure
             // only records its own request (F2).
             Assert.Empty(backend.StreamVoices);
-            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
+            Assert.False(BgmFadeDirector.Instance.IsArmed);
 
             proxy389.Update(0.02f); // the ONE frame close both consume.
 
             Assert.Single(backend.StreamVoices); // track 25's own voice, started by the flag's StopAllSound.
             Assert.Equal("bgm_025", provider.OpenedStreams[0]);
-            Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
-            Assert.True(AlundraBgmFadeDirector.Instance.IsArmed); // the departure ran AFTER it (B9 then B17).
+            Assert.True(((BgmPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.True(BgmFadeDirector.Instance.IsArmed); // the departure ran AFTER it (B9 then B17).
         }
         finally
         {
@@ -612,14 +612,14 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             ((IScriptHost)proxy389).OnPortalTriggerDetected(portal, 0x10);
 
             // F2: the departure only RECORDS the request - the voice is still playing right after it.
-            Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.True(((BgmPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
             Assert.Single(backend.StreamVoices);
 
             proxy389.Update(0.02f); // frame close: evaluates the pending departure (F2), AFTER the
                                      // reset-flag consumption (B9).
             // The music voice is stopped outright (LoadBgm(0)), the fade never arms.
-            Assert.False(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
-            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
+            Assert.False(((BgmPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.False(BgmFadeDirector.Instance.IsArmed);
             Assert.Single(backend.StreamVoices); // no new play at departure either.
 
             var world45 = new World { Name = "Dest-45" };
@@ -630,7 +630,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             Assert.Equal(2, backend.StreamVoices.Count);
             Assert.Equal("bgm_030", provider.OpenedStreams[1]);
-            Assert.True(((AlundraMusicPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.True(((BgmPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
         }
         finally
         {
@@ -673,8 +673,8 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.Update(0.02f); // frame close: evaluates the pending departure (F2).
 
             // Stopped outright (LoadBgm(0)), never armed - same shape as (o), NOT the silent (n) shape.
-            Assert.False(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
-            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
+            Assert.False(((BgmPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.False(BgmFadeDirector.Instance.IsArmed);
             Assert.Single(backend.StreamVoices);
         }
         finally
@@ -704,7 +704,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.InstallWarpSystems(world389);
             proxy389.Update(0.02f);
             Assert.Single(backend.StreamVoices);
-            var voiceBeforeDeparture = ((AlundraMusicPlayer)proxy389.MusicPlayer!).CurrentVoiceForTests;
+            var voiceBeforeDeparture = ((BgmPlayer)proxy389.MusicPlayer!).CurrentVoiceForTests;
 
             var player = NewPlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);
             proxy389.PlayerEntity = player;
@@ -714,9 +714,9 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy389.Update(0.02f); // frame close: evaluates the pending departure (F2) - index égal, rien.
 
             Assert.Single(backend.StreamVoices); // no new play, no stop: still the SAME voice.
-            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
-            Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
-            Assert.Equal(voiceBeforeDeparture, ((AlundraMusicPlayer)proxy389.MusicPlayer!).CurrentVoiceForTests);
+            Assert.False(BgmFadeDirector.Instance.IsArmed);
+            Assert.True(((BgmPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.Equal(voiceBeforeDeparture, ((BgmPlayer)proxy389.MusicPlayer!).CurrentVoiceForTests);
         }
         finally
         {
@@ -767,13 +767,13 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             // F2: the departure only RECORDS the request - nothing armed yet, same frame it was requested.
             Assert.Single(backend.StreamVoices);
-            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
+            Assert.False(BgmFadeDirector.Instance.IsArmed);
 
             proxy389.Update(0.02f); // the departing world's own next frame close: evaluates the pending
                                      // departure (F2), AFTER the reset-flag consumption (B9).
             Assert.Single(backend.StreamVoices); // still just track 25's own play.
-            Assert.True(AlundraBgmFadeDirector.Instance.IsArmed);
-            Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive); // track 25 still alive.
+            Assert.True(BgmFadeDirector.Instance.IsArmed);
+            Assert.True(((BgmPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive); // track 25 still alive.
 
             var world45 = new World { Name = "Dest-45" };
             HeroWorldFixture.SetProperty(world45, nameof(World.Game), game);
@@ -781,10 +781,10 @@ public sealed class AlundraWarpDepartureTests : IDisposable
             proxy45.InstallAudioSystems(world45); // loads 30 (differs from 25) - stops the old voice.
             proxy45.Update(0.02f); // arrival's own first frame close.
 
-            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed); // disarmed by StopAllSound.
+            Assert.False(BgmFadeDirector.Instance.IsArmed); // disarmed by StopAllSound.
             Assert.Equal(2, backend.StreamVoices.Count);
             Assert.Equal("bgm_030", provider.OpenedStreams[1]);
-            Assert.True(((AlundraMusicPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.True(((BgmPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
         }
         finally
         {
@@ -823,13 +823,13 @@ public sealed class AlundraWarpDepartureTests : IDisposable
                 player, GameState.Instance);
 
             // F2: the departure only RECORDS the request - the voice is still playing right after it.
-            Assert.True(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.True(((BgmPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
             Assert.Single(backend.StreamVoices);
 
             proxy389.Update(0.02f); // frame close: evaluates the pending departure (F2), AFTER the
                                      // reset-flag consumption (B9).
-            Assert.False(((AlundraMusicPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
-            Assert.False(AlundraBgmFadeDirector.Instance.IsArmed);
+            Assert.False(((BgmPlayer)proxy389.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.False(BgmFadeDirector.Instance.IsArmed);
             Assert.Single(backend.StreamVoices); // no new play at departure either.
 
             var world45 = new World { Name = "Dest-45" };
@@ -840,7 +840,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
 
             Assert.Equal(2, backend.StreamVoices.Count);
             Assert.Equal("bgm_030", provider.OpenedStreams[1]);
-            Assert.True(((AlundraMusicPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
+            Assert.True(((BgmPlayer)proxy45.MusicPlayer!).IsCurrentVoiceAlive);
         }
         finally
         {
@@ -848,10 +848,10 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         }
     }
 
-    /// <summary>Records every <see cref="IAlundraSoundPlayer.PlaySfx"/> request - same shape as
+    /// <summary>Records every <see cref="ISoundPlayer.PlaySfx"/> request - same shape as
     /// <c>AlundraEventProgramRunnerTests.FakeWarpSoundPlayer</c>, local to this class since T4.4's own
     /// test needs it here too.</summary>
-    private sealed class FakeWarpSoundPlayer : IAlundraSoundPlayer
+    private sealed class FakeWarpSoundPlayer : ISoundPlayer
     {
         public readonly List<int> Requests = new();
         public void PlaySfx(int sfxId) => Requests.Add(sfxId);

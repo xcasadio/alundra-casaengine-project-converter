@@ -16,21 +16,21 @@ namespace Alundra.Audio;
 /// <see cref="AudioService"/>'s, because <see cref="AudioService"/> is <c>sealed</c> and unusable as a
 /// fake in a synthetic interpreter test, and the opcodes themselves only ever carry a plain sfx id.
 /// </summary>
-public interface IAlundraSoundPlayer
+public interface ISoundPlayer
 {
     /// <summary>Requests playback of sound effect <paramref name="sfxId"/> (Alundra's own id space, the
     /// manifest's own <c>"id"</c> field) - a no-op when the id has no resolvable tones (see
-    /// <see cref="AlundraSoundBank.TryResolve"/>) or its <c>MaxVoices</c> cap is currently full (see
-    /// <see cref="AlundraSoundPlayer"/>'s own doc).</summary>
+    /// <see cref="SfxBank.TryResolve"/>) or its <c>MaxVoices</c> cap is currently full (see
+    /// <see cref="SoundPlayer"/>'s own doc).</summary>
     void PlaySfx(int sfxId);
 
     /// <summary>
     /// B1 (docs/plan-e11b-opcodes-audio.md, D-B-6), T4.3 (docs/plan-audio-mix-exact-muet.md): backs
     /// opcodes 0xAB/0xBF - remixes the stereo gains of the OLDEST voice ALREADY PLAYING for each tone of
     /// <paramref name="sfxId"/>'s resolved record, from the original's own SPU volume computation
-    /// (<see cref="AlundraSpuVoiceVolume.ComputeRemix"/>) over <paramref name="left"/>/<paramref name="right"/>
+    /// (<see cref="SpuVoiceVolume.ComputeRemix"/>) over <paramref name="left"/>/<paramref name="right"/>
     /// (the opcode's own mix operands); NEVER starts new playback (fact 4 - a non-audible/silent id is a
-    /// total no-op). See <see cref="AlundraSoundPlayer"/>'s own doc for the exact rules.
+    /// total no-op). See <see cref="SoundPlayer"/>'s own doc for the exact rules.
     /// </summary>
     void RemixVoice(int sfxId, int left, int right);
 
@@ -44,7 +44,7 @@ public interface IAlundraSoundPlayer
 
     /// <summary>
     /// B2 (docs/plan-e11b-opcodes-audio.md, D-B-6): the SFX half of opcode 0xA5
-    /// (<see cref="AlundraBgmFadeDirector.StopAllSound"/>) and of the master fade machine's own
+    /// (<see cref="BgmFadeDirector.StopAllSound"/>) and of the master fade machine's own
     /// swap-tick key-off (fact 2's own "key-off all 24 voices") - stops every voice this player still
     /// tracks as live, across every sfx id, and forgets them, so a fresh <see cref="PlaySfx"/> for the
     /// SAME id is free to start again immediately. Never touches the per-frame anti-duplicate table
