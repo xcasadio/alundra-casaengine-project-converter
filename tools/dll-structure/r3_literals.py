@@ -61,7 +61,7 @@ class Info:
             self.domain_of_name[r['old_name']] = d
         self.r2_to_r3 = {}     # r2 path -> r3 path, for the files that change name
         self.r3_to_r2 = {}
-        for m in self.tb.main.values():
+        for m in self.tb.rows:   # every type row: the file of a split type is renamed like the file of a main type
             if m['r2']['file'] != m['r3']['file']:
                 self.r2_to_r3[m['r2']['file']] = m['r3']['file']
                 self.r3_to_r2[m['r3']['file']] = m['r2']['file']
