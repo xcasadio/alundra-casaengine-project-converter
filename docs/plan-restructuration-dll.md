@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
-Statut : ⏳ proposé le 2026-10-16 ; enveloppe READY ; R0 démarrée puis **en pause le 2026-10-16 sur Q-R-2** (arrêt de T0.1 du plan du
-moteur, D-R-9) ; R1 détaillée et READY, attend R0. Démarre après E20.e0a4 (plan E20, §1.16.4).
+Statut : ⏳ proposé le 2026-10-16 ; enveloppe READY ; R0 démarrée, en pause le 2026-10-16 sur Q-R-2, **reprise le 2026-10-17 après la
+réponse de l'auteur (D-R-10)** ; R1 détaillée et READY, attend R0. Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 ## 0. Décisions de l'auteur
 
@@ -35,6 +35,10 @@ moteur, D-R-9) ; R1 détaillée et READY, attend R0. Démarre après E20.e0a4 (p
   (`CasaEngineMonogame/ai-agent/tasks/`) recense d'abord, dans le code, **tous** les filets qui rattrapent la création d'un objet script
   (moteur et DLL) et applique la règle de D-R-4 à chacun ; un filet que la règle ne peut pas traverser sans changer un autre comportement
   est un arrêt et une question.
+- **D-R-10** (2026-10-17, réponse à Q-R-2) — Dans l'**aperçu de l'éditeur**, une entité dont le script est introuvable reste écrite au
+  journal et omise, comme aujourd'hui : l'exception de D-R-4 sort en jeu et en session de jeu de l'éditeur, pas dans l'aperçu (option A :
+  un drapeau de la politique d'exécution, faux pour l'aperçu). **En plus, l'éditeur affiche une icône d'avertissement à côté du nom du
+  script** quand ce nom ne se résout pas. Le plan du moteur l'ajoute à R0 (son O2 est fermé par cette décision).
 - Règle du moteur (D-R-2), notée aussi en mémoire : « le moteur, quand il crée les objets script, ne doit chercher que dans la DLL ».
 
 ## 1. Faits établis (découverte du 2026-10-16, lecture seule)
@@ -154,7 +158,7 @@ script à chaque tranche ; (5) les renommages imposés : `AlundraPlayerControlle
   (`executor`) ; `plan-verifier` avant chaque tranche ; un verifier frais après chaque tranche, deux pour R0 et R4 (moteur, données).
 - Retour arrière : `git revert` de la tranche ; pour R0 et R4, revert du commit parent et réexport depuis le commit précédent.
 
-## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export ⚠️ (révision 4 ; démarrage décidé par l'auteur, D-R-9 ; en pause le 2026-10-16 sur Q-R-2)
+## 4. Tranche R0 — Moteur : objets script par nom complet, DLL seule ; premier export 🚧 (révision 4 ; démarrage décidé par l'auteur, D-R-9 ; en pause le 2026-10-16 sur Q-R-2, reprise le 2026-10-17 avec D-R-10)
 
 **Relecture (2026-10-16).** Enveloppe (§0 à §3) : **READY**. R0 : **REVISE**, trois blocages corrigés (FIX, révision 1) : (1) le lieu
 de l'exception de D-R-4 et le chemin de son contexte, sans casser les chargements sans DLL (vérification du convertisseur) ; (2) un seul
@@ -443,7 +447,8 @@ par chemin ; les annexes figées ne bougent pas (D-R-6).
 
 ## 11. Questions à l'auteur
 
-- **Q-R-2** (2026-10-16, ouverte ; bloque R0 donc tout le programme ; O2 du plan du moteur) — Que doit faire **l'éditeur** quand il ouvre
+- **Q-R-2** — **Tranchée le 2026-10-17 (D-R-10)** : l'aperçu tolérant (A), avec une icône d'avertissement à côté du nom du script dans
+  l'éditeur. Question d'origine (2026-10-16 ; O2 du plan du moteur) — Que doit faire **l'éditeur** quand il ouvre
   un monde ou l'aperçu d'un préfab dont la DLL de scripts n'est pas construite ? Aujourd'hui, une entité au script introuvable est
   journalisée et omise ; avec la règle de D-R-4 (exception), l'éditeur planterait à l'ouverture. (A) **recommandé** : l'exception sort en jeu
   et en session de jeu de l'éditeur, mais pas dans l'aperçu de l'éditeur, où l'entité reste journalisée et omise comme aujourd'hui (un
