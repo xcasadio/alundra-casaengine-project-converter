@@ -12119,7 +12119,7 @@ comportement n'a touché le périmètre depuis l'annexe. Le recomptage à HEAD r
   tant que ses lignes restent : le code d'un opcode et le retrait de ses lignes vont dans **le même commit** (précédent : L2-1 et L2-2
   fusionnés).
 
-#### 1.4.1 E19.sm0 — Le filet : la liste fermée des opcodes sautés sur le corpus entier ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2 ; relecture de clôture)
+#### 1.4.1 E19.sm0 — Le filet : la liste fermée des opcodes sautés sur le corpus entier ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `61db1e8`)
 
 **Prérequis.** La fin du chantier de restructuration, **R5 comprise** (un fichier de test ajouté avant R5 désynchronise sa table de 336 lignes
 et son compte « 5 097 / 0 », `docs/plan-restructuration-dll.md:978`, `:879` ; `docs/plan-restructuration-dll.md:160` interdit toute tranche
