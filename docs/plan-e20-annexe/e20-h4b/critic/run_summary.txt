@@ -1,0 +1,102 @@
+##### c0_loaddelay.py  (0s, exit 0)
+load-delay hazards in whole text: 5
+0x800238f8
+0x800c6004
+0x800c600c
+0x800c6014
+0x800c601c
+push []
+forcepass []
+slotpass []
+lists []
+query []
+sort []
+camera []
+sway []
+e13 []
+fire2 []
+cancel []
+birth []
+
+##### c1_push.py  (0s, exit 0)
+push model: runs 4000 mismatches 0 flag set in 3260 coverage 52
+TX [0, 0, 0, 0, -61440, -61440, -61440, -983040, 61440, 61440, 61440, 983040, 0, 0, 0, 0]
+TY [0, -40960, 40960, 0, 0, -40960, 40960, 0, 0, -40960, 40960, 0, 0, -40960, 40960, 0]
+
+##### c1b_physpass.py  (3s, exit 0)
+mutant None vectors differing from the real code: 0 of 800
+mutant push_shifted vectors differing from the real code: 480 of 800
+mutant hero_nopush vectors differing from the real code: 393 of 800
+mutant carrier_consumes vectors differing from the real code: 398 of 800
+mutant nopush vectors differing from the real code: 767 of 800
+coverage of 0x80036828..0x80036BE0: 238 / 238
+uncovered: []
+
+##### c2_loops.py  (0s, exit 0)
+events 0x800386D0 (2 loops)      [(10, (1, 10), True), (3, (1, 3), True), (1, (1, 1), True), (0, None, True)]
+counters 0x80038998              [(10, (0, 10), True), (3, (0, 3), True), (1, (0, 1), True), (0, (0, 0), True)]
+effects 0x80038E84               [(10, (0, 10), True), (3, (0, 3), True), (1, (0, 1), True), (0, (0, 0), True)]
+cancel earth2 0x80034BDC         [(10, (1, 10), True), (3, (1, 3), True), (1, (1, 1), True), (0, None, True)]
+cancel water 0x80034C54          [(10, (1, 10), True), (3, (1, 3), True), (1, (1, 1), True), (0, None, True)]
+cancel fire1 0x80034D2C          [(10, (1, 10), True), (3, (1, 3), True), (1, (1, 1), True), (0, None, True)]
+cancel fire2 0x80034E08          [(10, (1, 10), True), (3, (1, 3), True), (1, (1, 1), True), (0, None, True)]
+cancel wind2 0x80034EC4          [(10, (1, 10), True), (3, (1, 3), True), (1, (1, 1), True), (0, None, True)]
+item start 0x80034320            [(10, (0, 0), True), (3, (0, 0), True), (1, (0, 0), True), (0, (0, 0), True)]
+hero interact 0x8002EEAC         [(10, (0, 10), True), (3, (0, 3), True), (1, (0, 1), True), (0, (0, 0), True)]
+lists 0x800384F4                 [(10, (0, 10), True), (3, (0, 3), True), (1, (0, 1), True), (0, (0, 0), True)]
+query 0x8003AF70                 [(10, (1, 9), True), (3, (1, 2), True), (1, None, True), (0, None, True)]
+
+##### c3_query.py 4000 (3s, exit 0)
+vectors 4000 with tied keys 211
+vectors where the model differs from the real code (None = my model must be 0): {None: 0, 'inclusive': 234, 'status2only': 832, 'ign20': 533, 'sort_from2': 157}
+coverage query 94/94, sort 91/91
+uncovered: []
+
+##### c4_slots.py  (11s, exit 0)
+results over 800 random worlds (bad = real-vs-model mismatches; the last key counts worlds where the exclusive-bound mutant differs): {'slot': 0, 'lists': 0, 'birth': 0, 'lists_exclusive_mutant_distinguished': 267}
+coverage slot pass 39/39, lists pass 80/80
+stored count 6, slot 6 dead (status 4)  [binary, same tick]    -> n=5 slots=[1, 2, 3, 4, 5]
+on-demand highest live slot = 5            [candidate DLL port] -> n=4 slots=[1, 2, 3, 4]
+
+##### c5_camera.py  (0s, exit 0)
+camera+sway: 3000 trials, mismatches 0, coverage 184/185
+uncovered ['0x8002cf38']
+scrollY after each camera step (start 300, target centred, kick +2 once): [302, 301, 300, 300, 300, 300]
+
+##### c6_fire2.py  (1s, exit 0)
+fire2 driver: 4000 runs, mismatches 0, coverage of the driver 144/146
+uncovered ['0x80035c90', '0x80035c94']
+
+##### c9_replay.py  (0s, exit 0)
+vec_birthraise.json                vectors   30 failures 0 []
+vec_camera_8002CDA0.json           vectors  100 failures 0 []
+vec_e13_8007F30C.json              vectors   40 failures 0 []
+vec_fire2_80035C64.json            vectors   60 failures 0 []
+vec_listspass.json                 vectors   60 failures 0 []
+vec_physpass_80036828.json         vectors   40 failures 0 []
+vec_push_800366FC.json             vectors  200 failures 0 []
+vec_query_8003AF70.json            vectors  120 failures 0 []
+vec_slotpass.json                  vectors   40 failures 0 []
+vec_sway_8002C894.json             vectors   80 failures 0 []
+TOTAL 770 FAILURES 0
+
+##### c9b_vecpower.py  (0s, exit 0)
+push pack: mutant None           differs on 0 of 200 vectors
+push pack: mutant push_shifted   differs on 70 of 200 vectors
+push pack: mutant nopush         differs on 154 of 200 vectors
+query pack: variant None         differs on 0 of 120 | vectors with tied keys 16, with n==2 7, with n>=3 and ties 15
+query pack: variant inclusive    differs on 107 of 120 
+query pack: variant status2only  differs on 47 of 120 
+query pack: variant ign20        differs on 40 of 120 
+query pack: variant sort_from2   differs on 4 of 120 
+slotpass pack: my count model differs on 0 of 40
+slotpass vectors where a status-4 slot lies above the highest live slot: 15 of 40
+listspass vectors where slot==count is live (distinguishes inclusive/exclusive): 39 of 60
+
+##### c10_extra_vectors.py  (0s, exit 0)
+vec_extra_push.json 12
+vec_extra_query.json 10
+vec_extra_camera.json 3
+vec_extra_slotpass.json 3
+vec_extra_cancel_fire2.json 1
+
