@@ -6392,8 +6392,9 @@ toujours vrai.
 4. **Le registre de production a 7 clés** (f3c), épinglées par **deux** tests : `AlundraNativeSpriteRegistryTests.cs:55` et
    `AlundraWaveSwordLifeTests.cs:181-183` (`V3_TheProductionRegistryHoldsSevenKeys_…`). E20.e0c (§1.26) en ajoute deux, g1a une ((C, 23)),
    g2b une ((E, 2)) ; leur ordre n'est pas fixé : chaque tranche met les deux épingles dans sa liste prédite et les réécrit par dérivation (le
-   compte d'avant plus ses clés). `Register` lève sur une clé prise (`Alundra/Ai/NativeSpriteRegistry.cs:62`) : un test de phase A qui inscrit
-   une clé le fait dans un registre neuf, jamais dans celui du runner de production.
+   compte d'avant plus ses clés). `Register` lève sur une clé prise (`Alundra/Ai/NativeSpriteRegistry.cs:62`) : un test qui inscrit une clé
+   le fait dans un registre neuf (test pur), ou dans celui du runner **seulement si la clé est absente**, par le `IDisposable` que rend
+   `Register` (`:54`, `:84`), libéré à la fin du test (test de monde) ; jamais une inscription qui lèverait après la phase de production.
 5. **États sans cas au HEAD** : 0x05, 0x06, 0x07, 0x0B, 0x0C, 0x2E à 0x30 (0x08 est déjà dans `IsGroundAttackGroup`, `PlayerManager.cs:1026-1027`).
 6. **Commentaires que g1a rend faux, corrigés par g1a** : `Alundra/Physics/EntitySupport.cs:10-11` (« never assigned »),
    `Alundra.Tests/AlundraTerrainHeightTests.cs:33-36`, la doc du marqueur (`Alundra/Entities/EntityScriptProxy.cs:1376-1383`, « never by the
@@ -6428,12 +6429,12 @@ toujours vrai.
 - Q-G1A-1 reste ouverte (défaut A).
 
 **g2a.**
-- **La garde de vitesse** (P-G-3, Q-G1A-4) : la seule règle en place vise `JoinsBirthTick && CurrentAnimationId == ~0u`
-  (`ScriptedMotion.cs:173-176`) ; c'est sa seconde condition, fausse dès la première validation d'animation, qui ne couvre pas une caisse
-  lancée (les opcodes `0x2D`, `0x8A`, `0x8B` posent `JoinsBirthTick` sur une entité née d'un enregistrement, `EventProgramRunner.cs:2367`,
-  `:2378`, `:2406`, `:2445`). La garde étroite (défaut de Q-G1A-4) lit le marqueur **et** l'état « lancé » ; elle ne déplace ni
-  `AlundraMapStateTests.P3_…` (`:150`) ni `AlundraRecordBirthTickTests.B6_R_…` (`:364`), accolés dans la liste prédite. D-F5-5 n'est pas écrite
-  (f5 ⏳) et vise « une entité née par l'interface » : une caisse marquée n'y entre que si la règle lit `HasLogicalZ`.
+- **La règle de vitesse** (Q-G1A-4) : **voir §1.24.2**, « La règle de vitesse de la caisse lancée », qui fait foi : après f5 (prérequis ferme ;
+  D-F5-5 vise les entités nées par l'interface), g2a étend la clé `TargetAnimationId` de `ScriptedMotion.TickScriptedNpc` au marqueur
+  `HasLogicalZ` seul ; prédiction à une valeur (109,0 sans la ligne, 110,5 avec) ; P3 et B6_R inchangées. Fait utile : la règle en place
+  vise `JoinsBirthTick && CurrentAnimationId == ~0u` (`ScriptedMotion.cs:173-176`), dont la seconde condition, fausse dès la première
+  validation d'animation, ne couvre pas une caisse lancée (les opcodes `0x2D`, `0x8A`, `0x8B` posent `JoinsBirthTick` sur une entité née d'un
+  enregistrement, `EventProgramRunner.cs:2367`, `:2378`, `:2406`, `:2445`).
 - `SpawnDirections` (`PlayerManager.cs:1282`), `NoAttackVramFlag` (`:943`) et `NoJumpVramFlag` (`:110`) sont privés : `CarryRules.ThrowCarried` les
   lit par un accès `internal` (un changement de visibilité seul, dans le périmètre).
 - La garde des glissements des arcs (`ArcsThatSlide`, `Alundra.Tests/AlundraArcSupport.cs:342`, `:354-368`) : un arc où le héros longe un coin
@@ -6467,7 +6468,7 @@ proposition de D-G-1 « h3 n'exige que g1a et g2a » n'est pas appliquée) ; g3 
   - Au moins 16 mutants d'un mot, tous tués ou prouvés équivalents un à un : test du genre (`0x8002EDD4`-`0x8002EDE0`), branche de `GetNumberOfItem(0x3B)`, masque de Carré `0x80`, test de statut de la boucle, `+0x12C == héros`, pas de `0x10000` du mode 0, pas de `0x20000` du mode 1, seuil `0x1FFFF`, le 5 du compteur, `slt` de l'égalité du mode 0, cible `0x200000`, masque `~0x30` de E2, `~0x80` et `|0x30` de C23, table `0x80027400`, gardes `0x2000` et `0x4000`, `+0x98` lu à la place de `+0x8C`.
   - README : les vecteurs de « Faits porteurs » avec leurs clés ; la prédiction qualitative de chaque sous-tranche ; les comptes de départ de la suite (à relever) ; la **liste prédite recomptée au HEAD de départ** : toutes les méthodes de `Alundra.Tests/` qui atteignent `PlayerTryAction`, `UpdatePlayerCarriedEntity`, `CarriedEntity`, `PlatformEntity`, un type de l'ensemble câblé, un `Flags & 0x600`, ou qui épinglent le registre ou la liste des préréglages, avec leur compte.
   - Le recensement des cartes de la recette : une carte libre à l'arrivée (aucun verrou de contrôle dans son programme B[1]), avec au moins un soulevable C23 et, à moins de 100 px, un dessus d'objet de 16 px ; candidates du relevé : 224 (23 caisses), 27, 24, 159, 445 ; chacune passe un arc de construction (6 images). Le préréglage de la recette se nomme `porter-m<N>` ; il déplace l'épingle de la liste des préréglages (dérivation).
-  - **Sondes de la DLL** (écrites, lancées au HEAD de départ, versées au README, puis retirées ; prédiction écrite avant) : P-G-1, une caisse de la 392 portée en animation 0 n'a aucune boîte d'attaque (l'export n'a des boîtes que pour les animations 1, 3 et 4) ; P-G-2, la valeur de `BoxDirection` au moment du lancer (prédiction : la direction du tick précédent) ; P-G-3, la garde de D-F5-5 couvre-t-elle une entité par enregistrement marquée par g1 ? (prédiction : oui si elle lit le marqueur, non si elle lit `JoinsBirthTick` : alors g2a étend la garde d'une ligne) ; P-G-4, la force verticale et le Z brut d'une caisse relâchée au tick du lancer (prédiction : Z brut = héros + `0x200000`, aucune perte) ; P-G-5, `RidingEntity` du héros au tick qui suit l'atterrissage sur une plateforme mouvante (prédiction : posé au tick suivant, comme `c2`).
+  - **Sondes de la DLL** (écrites, lancées au HEAD de départ, versées au README, puis retirées ; prédiction écrite avant) : P-G-1, une caisse de la 392 portée en animation 0 n'a aucune boîte d'attaque (l'export n'a des boîtes que pour les animations 1, 3 et 4) ; P-G-2, la valeur de `BoxDirection` au moment du lancer (prédiction : la direction du tick précédent) ; P-G-3, **remplacée pour g2a** (2026-10-18) par la prédiction à une valeur de §1.24.2 (X de la caisse lancée au tick T : 109,0 sans l'extension au marqueur, 110,5 avec) ; P-G-4, la force verticale et le Z brut d'une caisse relâchée au tick du lancer (prédiction : Z brut = héros + `0x200000`, aucune perte) ; P-G-5, `RidingEntity` du héros au tick qui suit l'atterrissage sur une plateforme mouvante (prédiction : posé au tick suivant, comme `c2`).
 
 ---
 
@@ -6542,7 +6543,7 @@ production (T4) : le test l'inscrit lui-même seulement si la clé est absente.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : un test existant hors de la liste prédite bouge ; la phase A fait bouger un test ; un test nommé rouge vert avant son branchement ; une sonde contredit sa prédiction (P-G-3, P-G-4) ; le Z brut de l'objet relâché perd une unité (le marqueur d'e0k2 ne tient pas) ; un diff du chemin du héros hors du groupe de portage ; plus de 10 tests existants bougent ; un besoin de changer le moteur.
+- **Arrêts** : un test existant hors de la liste prédite bouge ; la phase A fait bouger un test ; un test nommé rouge vert avant son branchement ; une sonde contredit sa prédiction (P-G-4) ; le Z brut de l'objet relâché perd une unité (le marqueur d'e0k2 ne tient pas) ; un diff du chemin du héros hors du groupe de portage ; plus de 10 tests existants bougent ; un besoin de changer le moteur.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase C se retire seule (l'enregistrement) ; la phase B se retire seule (les six branchements) ; la phase A ne change aucun comportement.
 
@@ -6553,7 +6554,8 @@ production (T4) : le test l'inscrit lui-même seulement si la clé est absente.
 **Relecture (2026-10-18).** REVISE, cinq blocages corrigés (FIX) : la règle de vitesse est nommée (l'extension au marqueur `HasLogicalZ`,
 après f5) et P-G-3 devient une prédiction à une valeur ; f5 est un prérequis ferme, Q-G1A-4 aligné ; `CarryRules.cs` et les chemins du HEAD
 dans le périmètre ; la liste prédite nomme (w12) et les lignes Carré de (c6) de g1a ; la preuve de retrait nomme tous les tests qui lisent X
-dès T.
+dès T. Seconde relecture : REVISE, un blocage (le bloc « Révision au HEAD » et le T0 commun décrivaient encore l'ancienne garde et
+P-G-3 à deux issues) : FIX (le bloc renvoie au §1.24.2, P-G-3 marquée remplacée) ; une seule relecture de clôture.
 
 **Prérequis.** g1a ; **E20.f5 ✅** (D-F5-5 : la clé de vitesse d'une entité **née par l'interface** lit `TargetAnimationId` ; l'ordre de l'enveloppe la place avant g2a ; sans elle, arrêt) ; E20.e0k2 ✅ ; le T0 commun. **À relire à l'exécution** : la forme de la règle de f5, la valeur de `BoxDirection` (P-G-2), le point d'appel dans le groupe de portage.
 
@@ -6609,7 +6611,9 @@ avec la ligne, 110,5 ; une autre valeur est un arrêt.
 
 **Relecture (2026-10-18).** REVISE, six blocages corrigés (FIX) : l'arrêt vise les tests hors de la liste prédite, qui nomme les deux épingles
 du registre ; l'inscription de E2 dans les tests de phase A est nommée ; le butin dépend de l'état d'E20.e0c au début de la tranche ; f4 et f6a
-sont des prérequis fermes ; l'inertie au repos couvre les 10 types ; le périmètre nomme tous les fichiers écrits.
+sont des prérequis fermes ; l'inertie au repos couvre les 10 types ; le périmètre nomme tous les fichiers écrits. Seconde relecture : REVISE,
+deux blocages (une seule carte ne peut pas porter les 10 types ; l'inscription de test contredisait le point 4 du bloc) : FIX (un ensemble de
+cartes et sa table, un arrêt par type non couvert ; le point 4 du bloc aligné) ; une seule relecture de clôture.
 
 **Prérequis.** g2a ; E14.a1b ✅ ; **E20.f4 ✅** (D-F4-7, `NativeSpriteTypeFilterForTests` : l'arène de (b3) garde les caisses vivantes et le Beannoïde inerte) et **E20.f6a ✅** (la mort dans l'eau d'une entité marquée à gravité, (b6)) : l'ordre de l'enveloppe les place avant g ; sans l'une d'elles, arrêt ; E20.e0k2 ✅, E20.e0b2 ✅ ; le T0 commun. **À relire à l'exécution** : la sortie d'f6a (`Slope_18c`), l'interrupteur d'arène (D-F4-7), l'état d'E20.e0c, les deux épingles du registre.
 
@@ -6639,7 +6643,7 @@ sont des prérequis fermes ; l'inertie au repos couvre les 10 types ; le périm�
 
 - ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette, puis le code). Chaque « sans effet » est accolé à un positif.
   - (b1) E2 direct, table : (animation 2 et `+0xAC` 1) → `DestroyEntity(e, −1)` ; `(+0x184 & 4)` → idem ; sinon animation 2 et `(drapeaux | 0x40) & ~0x30`, `0x332374` → `0x332344` ; les trois lignes accolées deux à deux ; (b2) la vie par le crochet : la chronologie du tableau pour une caisse (effet 10) et pour une jarre (effet 2) ; (b3) la touche (arène : caisses vivantes, Beannoïde inerte, D-F4-7) à x = 165, accolée au Beannoïde à x = 150 ; (b4) mur, marches de 16 et de 48 px ; (b5) le butin selon l'état d'e0c (But) : e0c non faite, aucune entité née, accolé à `Contents` 130 (le bouchon documenté) ; e0c faite, l'objet dérivé d'e0c naît au bris ; (b6) l'eau profonde (f6a) : effet 6 ; (b7) un objet au repos n'exécute jamais E2 ; les étincelles de la touche sont **dérivées** (D-E0B-8).
-- ⏳ **T2 — Tests de production**, crochet nul, **rouges avant T3** : (p1) un objet lancé (par `PutInHands` et `ThrowCarried`) se brise en production à T+23, effet 10 ; (p2) l'épingle du registre, (E, 2) pour les 10 types, pas pour les autres ; (p3) **l'inertie au repos des 10 types** : T0 choisit, dans les recensements de l'annexe `e20-g1a/work/`, une carte qui porte au repos des entités de chacun des 10 types (dont 34, 37 et 117, de programme C 4) ; chacune tourne 100 ticks au repos, natifs allumés : aucun appel de E2 (journal du runner), accolé à un objet lancé qui l'appelle ; si E2 est appelé au repos (`DeactivateOnHit` et `HitCounter`, ou `DeactivateOnAnimationEnd` et `ForceResetAnimationFlag`, `Alundra/Entities/EntityScriptProxy.cs:1718-1723`), T0 compare aux drapeaux du binaire et un écart est un arrêt.
+- ⏳ **T2 — Tests de production**, crochet nul, **rouges avant T3** : (p1) un objet lancé (par `PutInHands` et `ThrowCarried`) se brise en production à T+23, effet 10 ; (p2) l'épingle du registre, (E, 2) pour les 10 types, pas pour les autres ; (p3) **l'inertie au repos des 10 types** : T0 choisit, dans les recensements de l'annexe `e20-g1a/work/` (`lst/census_maps2.json`), **un ensemble de cartes** qui, ensemble, portent au repos des entités de chacun des 10 types (dont 34, 37 et 117, de programme C 4 ; la pierre très lourde, type 234, n'est que sur les cartes 3, 4, 7 et 11, `e20-g1a/report.md:297`) et remplit la table type → carte ; un type sans placement au repos chargeable est un arrêt ; chaque carte tourne 100 ticks au repos, natifs allumés : aucun appel de E2 (journal du runner), accolé à un objet lancé qui l'appelle ; si E2 est appelé au repos (`DeactivateOnHit` et `HitCounter`, ou `DeactivateOnAnimationEnd` et `ForceResetAnimationFlag`, `Alundra/Entities/EntityScriptProxy.cs:1718-1723`), T0 compare aux drapeaux du binaire et un écart est un arrêt.
 - ⏳ **T3 — Phase B** : l'enregistrement. Verts.
 - ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : `~0x30` changé en `~0x31` (équivalent si aucun test ne lit le bit 0 : à prouver) ; `|0x40` oublié ; `+0xAC` ignoré ; `+0x184 & 4` oublié ; destruction avec un autre effet ; E2 enregistré pour un type hors des 10 ; clé (E, 2) oubliée.
 
