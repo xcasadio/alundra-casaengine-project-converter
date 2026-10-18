@@ -8068,7 +8068,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a détaillée le 2026-10-18, à relire ; h4b à h4f2 esquissées)
+### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a détaillée le 2026-10-18, **READY** ; h4b à h4f2 esquissées)
 
 **Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-h4/`, `report.md` et `check.md`,
 la critique faisant foi : aucun fait de comportement réfuté ; D13, le sprite 154, la portée de Q-H4-2 et du §6 corrigés ; ses statistiques de
@@ -8117,7 +8117,7 @@ la contre-vérification faisant foi). Le cadre (h0a, §1.30.1) est un prérequis
 
 ---
 
-#### 1.31.1 E20.h4a — Le départ et la pose des tomes ⏳ (détaillée le 2026-10-18, à relire)
+#### 1.31.1 E20.h4a — Le départ et la pose des tomes ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31af999`)
 
 **Prérequis.** h0a (§1.30.1 : le cadre, ses coutures D-H-4 et le test du défaut D-H-5) ; la fin du chantier de restructuration et Q-R-7.
 
