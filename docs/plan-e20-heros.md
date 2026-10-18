@@ -8232,17 +8232,22 @@ prête ; rien ne l'appelle encore en production.
   (`Alundra.Tests/EntitySearchServiceTests.cs`) : **il ne change pas**.
 
 **Décisions.**
-- **D-H4B1-1** — Une fonction pure, `TargetQuery.Find(slots, compte, appelant, masque, type)`, dans un fichier neuf `Alundra/Combat/TargetQuery.cs`
-  (Q-R-7), sur les proxies de la DLL : la liste des cases par emplacement (celle de `SpawnedEntities`, `IEntityWorldContext.cs:29`), le compte passé
-  par l'appelant ; le tri exact de Hoare du fait ci-dessus (porté tel quel : coût nul, ordre des égalités déterministe ; Q-B5 de la lecture, sans
+- **D-H4B1-1** — Une fonction pure, `TargetQuery.Find(entités, compte, appelant, masque, type)`, dans un fichier neuf `Alundra/Combat/TargetQuery.cs`
+  (Q-R-7), sur les proxies de la DLL : les entités nées (`SpawnedEntities`, `Alundra/Maps/IEntityWorldContext.cs:35`), **une liste compacte dans
+  l'ordre des emplacements, où une case libre est absente** (`WorldProxy.cs:216-232`, `:3657-3670`) ; le balayage filtre donc par
+  **`EntityScriptProxy.Slot`** (`Alundra/Entities/EntityScriptProxy.cs:82`, −1 hors table) : 1 ≤ `Slot` < compte en mode binaire, ≤ compte en mode
+  corrigé, **jamais l'indice de la liste** (révision 1) ; le compte passé par l'appelant ; le tri exact de Hoare du fait ci-dessus (porté tel quel : coût nul, ordre des égalités déterministe ; Q-B5 de la lecture, sans
   question).
 - **D-H4B1-2** — Deux réglages nommés, `InclusiveBound` et `SortThreshold`, dont les valeurs de production sont les défauts de Q-H4B-2 et Q-H4B-3
   (**corriger**, par la règle de l'auteur sur les défauts avérés de l'original : borne inclusive, tri dès 2 résultats) ; le mode « binaire » (borne
   exclusive, tri dès 3) est celui des vecteurs. Avec la borne inclusive, les entités vivantes suffisent et le champ stocké n'est pas porté (h4b1b
   seulement si l'auteur choisit de reproduire).
-- **D-H4B1-3** — Les vecteurs se rejouent par un **adaptateur image → proxies** écrit pour les tests : chaque mot lu d'un vecteur est décodé dans le
-  champ de la DLL de la table de correspondance (T0 (b)) ; **une lecture qu'aucun champ ne porte est une erreur** (la règle de la critique, §6.1,
-  rendue normative) ; le résultat (la liste des emplacements, dans l'ordre) est comparé tel quel.
+- **D-H4B1-3** — Les vecteurs se rejouent par un **adaptateur image → proxies** écrit pour les tests (révision 1). **Au décodage** : chaque octet lu
+  d'un vecteur est porté par un membre de la DLL de la table de correspondance (T0 (b)) ; un octet lu sans membre arrête la tranche (la règle de la
+  critique, §6.1, appliquée là où elle peut l'être). **À l'exécution** : l'adaptateur ne construit un proxy que pour un emplacement que le vecteur
+  lit, et pose son `Slot` ; un emplacement non lu n'a pas de proxy, ce qui, pour une lecture de statut, vaut un statut 0 (les proxies de la DLL sont
+  des champs publics : une lecture non listée ne peut pas être détectée à l'exécution). Le résultat (la liste des emplacements, dans l'ordre) est
+  comparé tel quel.
 
 **Périmètre.** `Alundra/Combat/TargetQuery.cs` (neuf) ; `Alundra.Tests/` (l'adaptateur et les tests) ; l'annexe `docs/plan-e20-annexe/e20-h4b1/` ;
 ce plan, l'index des ADR et un ADR. **Hors périmètre** : le champ stocké du plus haut emplacement (h4b1b) ; les appelants (h4d2, h4e1, h4e2, h4f1) ;
@@ -8253,27 +8258,36 @@ ce plan, l'index des ADR et un ADR. **Hors périmètre** : le champ stocké du p
 ##### Tâches
 
 - ⏳ **T0 — Annexe et correspondance** (aucun code) : (a) rejouer depuis une copie `e20-h4b/critic/c3_query.py` (4 000 mondes, 0 écart) et
-  `c9_replay.py` (les 770 vecteurs de la lecture, dont les 120 de `bin/vec/vec_query_8003AF70.json`, depuis une mémoire vide) : sorties identiques ;
+  `c9_replay.py` (les 770 vecteurs de la lecture, dont les 120 de `bin/vec/vec_query_8003AF70.json`, depuis une mémoire vide), **la copie repointant
+  `VEC`** (`critic/c9_replay.py:11`, que `c9b_vecpower.py:7` importe) vers `docs/plan-e20-annexe/e20-h4b/bin/vec/` au lieu du scratchpad, et rejouant
+  aussi `critic/vec_extra/vec_extra_query.json` : sorties identiques, 120 sur 120 sans échec, le chemin absolu lu écrit au README (révision 1) ;
   (b) la table de correspondance des octets lus par la requête vers les membres de la DLL (le fait ci-dessus), versée au README ; un octet lu par les
-  vecteurs sans membre est nommé et arrête la tranche ; (c) les vecteurs du mode corrigé : les mondes des 120 vecteurs et des vecteurs sentinelles de
-  la critique (`critic/vec_extra/vec_extra_query.json`) rejoués par les modèles mutants « borne inclusive » et « tri dès 2 » de `c3_query.py`, sorties
-  versées (`e20-h4b1/vec_query_corrected.json`) ; (d) la liste prédite : aucun test existant (aucun appelant) ; recomptée.
+  vecteurs sans membre est nommé et arrête la tranche ; (c) **les vecteurs du mode corrigé** (révision 1) : une variante **combinée** « borne inclusive
+  et tri dès 2 » écrite dans la copie de `c3_query.py` (qui n'a que des variantes séparées, `:37`, `:69`, `:122`), lancée sur les mondes des 120
+  vecteurs et des vecteurs sentinelles avec la règle nommée « un octet absent vaut 0 » (pour ce seul oracle : le vrai code ne lit jamais l'emplacement
+  `compte`), sorties versées (`e20-h4b1/vec_query_corrected.json`) ; le README nomme les vecteurs qui distinguent chaque réglage : la borne, les seuls
+  vecteurs sentinelles (un candidat à l'emplacement `compte`) ; le seuil du tri, les vecteurs à exactement deux résultats ; (d) la liste prédite : aucun test existant (aucun appelant) ; recomptée.
 - ⏳ **T1 — Tests puis code.** (q1) le mode binaire contre les 120 vecteurs et les vecteurs sentinelles (le candidat de l'emplacement `compte`, listé
   mais jamais lu, est exclu) : la liste et son ordre, à l'identique ; (q2) le mode corrigé contre `vec_query_corrected.json` ; (q3) chaque filtre accolé
   à son contraire (statut 1 et 4 écartés, 2 et 3 gardés ; `BlockedByEntity` ; masque ; les deux compteurs ; `HitAnimByte & 0x40` ; sans fiche ; les
-  réponses `0x80` écartée, `0xC0`, `0x40`, `0x00` gardées) ; (q4) le tri : n = 2 dans le mauvais ordre (non trié en mode binaire, trié en mode corrigé),
+  réponses `0x80` écartée, `0xC0`, `0x40`, `0x00` gardées) ; **une case libre entre deux candidats** : le résultat du binaire (le balayage par
+  `Slot`) ; **un héros pleinement éligible à l'emplacement 0** (statut 2, le bit du masque, une fiche, aucune exclusion) et un autre appelant : le héros
+  absent du résultat (révision 1) ; (q4) le tri : n = 2 dans le mauvais ordre (non trié en mode binaire, trié en mode corrigé),
   n = 3 à clés égales (l'ordre de Hoare `[3, 2, 1]` de la critique), 4 résultats avec égalités (`[2, 3, 4, 1]`) ; (q5) la clé modulo 2³² et la
   différence 32 bits ; (q6) les valeurs de production des réglages (D-H4B1-2). Puis le code.
 - ⏳ **T2 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : borne inclusive en mode binaire ; statut 2 seul ; statuts 1 à 3
   (`IsLoadedNormalOrDeactivated`) ; `BlockedByEntity` ignoré ; `AnimFlags` au lieu de `HitAnimByte` ; réponse `0xC0` écartée ; fiche absente gardée ;
-  tri dès 2 en mode binaire ; tri stable ; pivot recalculé ; échange sur `i <= j` ; clé en 64 bits ; héros candidat.
+  tri dès 2 en mode binaire ; tri stable ; pivot recalculé ; échange sur `i <= j` ; clé en 64 bits ; héros candidat (tué par le héros éligible de
+  (q3)) ; balayage par l'indice de la liste (tué par la case libre de (q3)).
 
 ##### Acceptation
 
 - **Oracle** : les rejeux de T0 (a) et (c) identiques.
 - **DLL** : (q1) à (q6) verts, rouges avant le code ; la suite en Release (copie neutralisée) et en Debug, zéro échec ; aucun test existant déplacé ;
   `cmp` de la DLL ; traces inchangées ; moteur, convertisseur et données sans diff.
-- **Preuve de retrait** : retirer `TargetQuery` rend rouges exactement (q1) à (q6), rien d'autre.
+- **Preuve de retrait** (révision 1) : le corps neutralisé (`Find` rend une liste vide), les déclarations et les réglages gardés (sinon les tests ne
+  compilent pas) : rouges exactement (q1), (q2), les cas de (q3) où un candidat est gardé, (q4) et (q5) ; restent verts (q6) (les valeurs des
+  réglages) et les cas de (q3) où le candidat est écarté (une liste vide les satisfait).
 
 ##### Arrêts, budget, retour arrière
 
