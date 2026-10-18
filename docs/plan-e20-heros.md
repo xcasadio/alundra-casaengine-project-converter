@@ -6471,9 +6471,15 @@ proposition de D-G-1 « h3 n'exige que g1a et g2a » n'est pas appliquée) ; g3 
 
 ---
 
-#### 1.24.1 E20.g1a — Porter ⏳
+#### 1.24.1 E20.g1a — Porter ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi)
 
-**Prérequis.** E20.e0k2 (le marqueur `HasLogicalZ` et la loi du vol ; **à relire à l'exécution** : le nom, les points d'appel W1 à W4 d'e0k2), E20.e0a1 ✅, E14.a1b ✅ ; le T0 commun.
+**Relecture (2026-10-18).** REVISE, deux blocages corrigés (FIX) : (1) E20.f6a précède g1 dans l'enveloppe ; une fois faite, la caisse
+relâchée dans l'eau profonde (drapeaux `0x3323E4`, dont `0x100000`, `DestroyOnSlidingSlope`, `Alundra/Entities/EntityFlags.cs:163` ; marquée
+par `PutInHands`) est détruite par le choix de programme (`Alundra/Entities/EntityScriptProxy.cs:1708`), comme l'oracle (« se brise à
+l'arrivée (l'eau : effet 6) ») : f6a devient un prérequis nommé et (w8) dit cette issue ; (2) (w8) fait tourner C23 avant l'inscription de
+production (T4) : le test l'inscrit lui-même seulement si la clé est absente.
+
+**Prérequis.** E20.e0k2 (le marqueur `HasLogicalZ` et la loi du vol ; **à relire à l'exécution** : le nom, les points d'appel W1 à W4 d'e0k2), E20.e0a1 ✅, E14.a1b ✅ ; **E20.f6a ✅** (l'ordre de l'enveloppe la place avant g1 ; sans elle, l'issue de (w8) n'est pas celle écrite : arrêt) ; le T0 commun.
 
 **But.** Un objet mis dans les mains par `PutInHands` suit le héros qui marche, saute, monte sur un dessus de 16 px et sur une plateforme mouvante, comme l'original ; le verrou, la nage et la destruction le traitent comme l'original. Aucun chemin de production ne met encore un objet dans les mains (g1b).
 
@@ -6518,8 +6524,12 @@ proposition de D-G-1 « h3 n'exige que g1a et g2a » n'est pas appliquée) ; g3 
 - ⏳ **T2 — Tests de monde**, écrits après T1, **rouges avant T3** (sauf (w6)), chacun à 1, 2 et 3 ticks par image (bancs `JumpHeroRig` et `ContactWorld`, l'objet mis par `PutInHands` à la géométrie de l'oracle) :
   - (w1) suivi : position = héros + triplet à chaque tick, forces nulles, `adj` et `collz` à 1, `xcoll` nul, hors de `Collidables` ; (w2) la trace du soulèvement du tableau, tick par tick ; (w3) marche et marches de 16, 32 et 48 px : vitesse et blocage égaux à la même scène sans objet (accolés) ; (w4) saut sur place et en marche : séries du tableau, caisse = héros + 32 ; (w5) dessus d'un objet de 16 px (modèle UH10) et plateforme mouvante (modèle UH14, un tick de phase documenté) : `support` et l'objet qui suit, accolés à l'objet de 32 px que l'on n'atteint pas ;
   - (w6) **garde, verte dès T1** : l'entrée d'échelle est refusée en portant (`CaseSixGate`), accolée au non-porté qui entre ;
-  - (w7) verrou : l'objet est avalé 21 ticks après, accolé à la fiche sans attaque qui reste ; (w8) nage : l'objet est relâché (animation 3, liens effacés), tombe et atterrit, **sans** se briser (E2 est g2b) ; (w9) `DestroyEntity`, les deux surcharges, d'un objet porté : `CarriedEntity` du héros effacé ; porteur sans proxy : aucune exception ; objet non porté : rien ne change ; (w10) clé de tri : un objet porté se trie au moins comme son porteur ; (w11) objet lourd (genre 3) : reste en `0x0C`, droite et Croix ignorées, accolé au genre 1 qui marche ;
+  - (w7) verrou : l'objet est avalé 21 ticks après, accolé à la fiche sans attaque qui reste ; (w8) nage : l'objet est relâché (animation 3, liens effacés, `0x332374`), tombe, et **à l'arrivée sur l'eau profonde il est détruit par le choix de programme** (f6a : la pente 4 et le bit `0x100000` de la caisse), avec l'effet 6, comme l'oracle ; sans E2 (g2b) ; C23 y tourne par l'inscription de test décrite au-dessous de T2 ; (w9) `DestroyEntity`, les deux surcharges, d'un objet porté : `CarriedEntity` du héros effacé ; porteur sans proxy : aucune exception ; objet non porté : rien ne change ; (w10) clé de tri : un objet porté se trie au moins comme son porteur ; (w11) objet lourd (genre 3) : reste en `0x0C`, droite et Croix ignorées, accolé au genre 1 qui marche ;
   - (w12) **garde, verte dès T1** : le bouchon du lancer, Carré avec un objet porté ne change rien (g2a le remplace).
+  - **C23 dans les tests de monde** ((w8) et tout test de monde qui fait tourner C23) : le test l'inscrit dans le registre du runner
+    **seulement si la clé (C, 23) est absente** (`NativeSprites.TryGet` faux), par le `IDisposable` que rend `Register`
+    (`Alundra/Ai/NativeSpriteRegistry.cs:54`, `:84`), libéré à la fin du test ; avant T4 c'est cette inscription qui sert, après T4 la clé de
+    production ; (w8) est vert après T3 et après T4, et la preuve de retrait de l'enregistrement reste (r1) et (r2).
 - ⏳ **T3 — Phase B** (commit de code B) : les six branchements. Verts.
 - ⏳ **T4 — Phase C** : l'enregistrement. Tests de production, **rouges avant la ligne** : (r1) registre : (C, 23) pour les 7 types, pas pour les autres, épingle par dérivation ; (r2) une carte entière de caisses au repos (la 392) garde tous ses champs pendant 100 ticks, accolée à une caisse portée qui les change.
 - ⏳ **T5 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 18, tous tués : `<` pour `<=` à l'égalité du mode 0 ; pas de 1 px changé ; seuil `0x1FFFF` changé ; le 5 du compteur changé ; compteur non remis à 0 ; mode 1 → mode 0 oublié pour `AttackCount` 0 ; destruction à deux arguments ; décalage lu sur le triplet au lieu des positions ; mode 2 sans `−1` ; mode 2 qui efface `CarriedEntity` ; suivi sans copie des hauteurs ; suivi qui garde les forces ; `XCollisionEntity` non annulé ; objet porté laissé dans `Collidables` ; effacement du porteur oublié (chacune des deux surcharges) ; effacement avec test d'identité ; états `0x06` et `0x2E` permutés ; marqueur non posé ; `RidingEntity` non vidé.
@@ -6538,13 +6548,30 @@ proposition de D-G-1 « h3 n'exige que g1a et g2a » n'est pas appliquée) ; g3 
 
 ---
 
-#### 1.24.2 E20.g2a — Lancer ⏳
+#### 1.24.2 E20.g2a — Lancer ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi)
 
-**Prérequis.** g1a ; E20.f5 (D-F5-5 : la vitesse d'une entité marquée lit `TargetAnimationId`) ; E20.e0k2 ; le T0 commun. **À relire à l'exécution** : la garde de D-F5-5 (P-G-3), la valeur de `BoxDirection` (P-G-2), le point d'appel dans le groupe de portage.
+**Relecture (2026-10-18).** REVISE, cinq blocages corrigés (FIX) : la règle de vitesse est nommée (l'extension au marqueur `HasLogicalZ`,
+après f5) et P-G-3 devient une prédiction à une valeur ; f5 est un prérequis ferme, Q-G1A-4 aligné ; `CarryRules.cs` et les chemins du HEAD
+dans le périmètre ; la liste prédite nomme (w12) et les lignes Carré de (c6) de g1a ; la preuve de retrait nomme tous les tests qui lisent X
+dès T.
+
+**Prérequis.** g1a ; **E20.f5 ✅** (D-F5-5 : la clé de vitesse d'une entité **née par l'interface** lit `TargetAnimationId` ; l'ordre de l'enveloppe la place avant g2a ; sans elle, arrêt) ; E20.e0k2 ✅ ; le T0 commun. **À relire à l'exécution** : la forme de la règle de f5, la valeur de `BoxDirection` (P-G-2), le point d'appel dans le groupe de portage.
+
+**La règle de vitesse de la caisse lancée** (remplace « la garde étroite » et P-G-3). Au tick du lancer, `MovePlayer` écrit le lancer, C23 le
+passe en projectile dans la passe des programmes (animation cible 3, 1 ou 4 ; `+0x24` et les liens remis à zéro), puis la physique lit la
+clé de vitesse : sans couverture, elle lit `CurrentAnimationId` (l'animation portée, validée en fin d'image) et la caisse prend 1,5 px de
+retard dès T. g2a **étend la règle de f5 au marqueur** : dans `ScriptedMotion.TickScriptedNpc` (`Alundra/Physics/ScriptedMotion.cs:171-176`),
+la clé est `TargetAnimationId` quand `entity.HasLogicalZ` est vrai, en plus de la règle de f5 et du terme `JoinsBirthTick &&
+CurrentAnimationId == ~0u`. `HasLogicalZ` est écrit par la naissance par l'interface (`Alundra/Maps/WorldProxy.cs:3573`) et par `PutInHands`
+(g1a, D-G-13) ; C23 ne l'efface pas au lancer : il tient dans le tick. Si la règle de f5 lit déjà `HasLogicalZ`, la ligne existe et g2a ne
+l'écrit pas (T0 le constate). Effet sur les épingles : `AlundraMapStateTests.P3_…` (`:150`) est celle que f5 a réécrite (les entités nées par
+l'interface sont toutes marquées : inchangée) ; `AlundraRecordBirthTickTests.B6_R_…` (`:364`, naissances par script, sans marqueur) garde le
+terme `~0u` : inchangée. **Prédiction** (T0, sur la DLL après f5 et g1a, sans la ligne) : X de la caisse lancée au tick T vaut **109,0** ;
+avec la ligne, 110,5 ; une autre valeur est un arrêt.
 
 **But.** Carré lance l'objet porté comme l'original : direction, position, vitesse, arc, gestes `0x09` et `0x0A`. Sans E2 (g2b), l'objet atterrit et reste.
 
-**Périmètre.** `AlundraPlayerManager.cs` (la branche de Carré du groupe de portage ; `SpawnDirections` partagée avec f3a), `AlundraScriptedMotion.cs` (une ligne, seulement si P-G-3 le demande), `Alundra.Tests/`, annexe, l'ADR de g1a. **Hors périmètre.** E2, le butin, C4, les dégâts de l'objet (la passe de coups existe ; g2b l'éprouve).
+**Périmètre.** `Alundra/Hero/PlayerManager.cs` (la branche de Carré du groupe de portage ; l'accès `internal` de `SpawnDirections` `:1282`, `NoAttackVramFlag` `:943`, `NoJumpVramFlag` `:110`, partagés avec f3a), `Alundra/Hero/CarryRules.cs` (`ThrowCarried`), `Alundra/Physics/ScriptedMotion.cs` (la ligne de la clé de vitesse, sauf si f5 l'a déjà), `Alundra.Tests/`, annexe, l'ADR de g1a, ce plan. **Hors périmètre.** E2, le butin, C4, les dégâts de l'objet (la passe de coups existe ; g2b l'éprouve).
 
 **Partage des phases** (seul à faire foi) :
 - **Phase A** (T1, sans changement de comportement) : `ThrowCarried`, fonction pure des écritures du lancer ; tests directs.
@@ -6572,22 +6599,26 @@ proposition de D-G-1 « h3 n'exige que g1a et g2a » n'est pas appliquée) ; g3 
 
 ##### Acceptation
 
-- **DLL** : (t1), (t2) verts ; (v1) à (v9) rouges avant T3 (nommés) ; suite en Release **et** en Debug, zéro échec ; tests déplacés ⊂ liste prédite (aucun attendu) ; `cmp` ; cinq traces ; moteur, convertisseur et données sans diff.
-- **Preuve de retrait** : retirer la branche de la phase B rend rouges exactement (v1) à (v9) ; retirer la couverture de la règle de vitesse pour l'objet marqué rend rouge exactement (v7).
-- **Arrêts** : une sonde contredit sa prédiction (P-G-2, P-G-3) ; X au tick T diffère de 1,5 ; un test existant bouge ; un besoin de changer le moteur. **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après. **Retour arrière** : la phase B se retire seule.
+- **DLL** : (t1), (t2) verts ; (v1) à (v9) rouges avant T3 (nommés) ; suite en Release **et** en Debug, zéro échec ; tests déplacés ⊂ liste prédite : la garde (w12) de g1a (le bouchon du lancer, remplacé) et les lignes Carré de la table (c6) de g1a qui encodent le bouchon, réécrites par dérivation (D-G-17) ; `cmp` ; cinq traces ; moteur, convertisseur et données sans diff.
+- **Preuve de retrait** : retirer la branche de la phase B rend rouges exactement (v1) à (v9) ; retirer l'extension de la règle de vitesse au marqueur (ou, si f5 l'a écrite, la lecture du marqueur) rend rouges exactement (v1) à (v4) et (v7) (tous les tests qui lisent X de la caisse dès T).
+- **Arrêts** : une sonde contredit sa prédiction (P-G-2 ; la prédiction de la règle de vitesse) ; X au tick T diffère de 1,5 ; un test hors de la liste prédite bouge ; un besoin de changer le moteur. **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après. **Retour arrière** : la phase B se retire seule.
 
 ---
 
-#### 1.24.3 E20.g2b — Briser ⏳
+#### 1.24.3 E20.g2b — Briser ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi)
 
-**Prérequis.** g2a ; E14.a1b ✅ ; E20.f6a (la mort dans l'eau d'une entité marquée à gravité) ; E20.e0k2 ; E20.e0b2 selon D-G-14 ; le T0 commun. **À relire à l'exécution** : la sortie d'f6a (`Slope_18c`), l'interrupteur d'arène (D-F4-7), l'épingle du registre.
+**Relecture (2026-10-18).** REVISE, six blocages corrigés (FIX) : l'arrêt vise les tests hors de la liste prédite, qui nomme les deux épingles
+du registre ; l'inscription de E2 dans les tests de phase A est nommée ; le butin dépend de l'état d'E20.e0c au début de la tranche ; f4 et f6a
+sont des prérequis fermes ; l'inertie au repos couvre les 10 types ; le périmètre nomme tous les fichiers écrits.
 
-**But.** Caisses et jarres lancées se brisent comme l'original : à l'arrivée, à la touche d'une cible, contre un mur ; l'effet de bris est celui de l'en-tête. Le butin reste le bouchon nommé de `DestroyEntity` (D-E14-3).
+**Prérequis.** g2a ; E14.a1b ✅ ; **E20.f4 ✅** (D-F4-7, `NativeSpriteTypeFilterForTests` : l'arène de (b3) garde les caisses vivantes et le Beannoïde inerte) et **E20.f6a ✅** (la mort dans l'eau d'une entité marquée à gravité, (b6)) : l'ordre de l'enveloppe les place avant g ; sans l'une d'elles, arrêt ; E20.e0k2 ✅, E20.e0b2 ✅ ; le T0 commun. **À relire à l'exécution** : la sortie d'f6a (`Slope_18c`), l'interrupteur d'arène (D-F4-7), l'état d'E20.e0c, les deux épingles du registre.
 
-**Périmètre.** `AlundraLiftableAi.cs` (E2), `AlundraNativeSpriteRegistry.cs` (clés (E, 2) des 10 types), `Alundra.Tests/`, annexe. **Hors périmètre.** Le butin (e0c), C4 (g2c), la nourriture de `+0x180` et `+0x184` (D-G-14), les dégâts réels sur les ennemis (E14).
+**But.** Caisses et jarres lancées se brisent comme l'original : à l'arrivée, à la touche d'une cible, contre un mur ; l'effet de bris est celui de l'en-tête. **Le butin** dépend de l'état d'E20.e0c au début de la tranche : e0c non faite, le bouchon nommé de `DestroyEntity` (D-E14-3), aucune entité ne naît ; e0c faite, l'objet tiré à la création de la caisse (`ContentsItemId` ; le code `0x82` des caisses et jarres ne donne que des cœurs) naît au bris, attendu **dérivé** d'e0c (jamais collé).
+
+**Périmètre.** `Alundra/Ai/Objects/LiftableAi.cs` (E2, `Register`), `Alundra/Ai/NativeSpriteRegistry.cs` (clés (E, 2) des 10 types ; ses docs `:29`, `:35`), `Alundra/Events/EventProgramRunner.cs` (la seule doc du contenu du registre, `:47-50`), `Alundra.Tests/`, annexe, l'ADR de g1a (amendé) ou un ADR neuf, ce plan. **Hors périmètre.** Le butin (e0c), C4 (g2c), la nourriture de `+0x180` et `+0x184` (D-G-14), les dégâts réels sur les ennemis (E14).
 
 **Partage des phases** (seul à faire foi) :
-- **Phase A** (T1, sans changement de comportement en production) : E2 et la méthode `Register`. Les tests enregistrent les clés eux-mêmes dans le registre du runner de test ; les objets viennent de `PutInHands` et de `ThrowCarried`.
+- **Phase A** (T1, sans changement de comportement en production) : E2 et la méthode `Register`. **Inscription de test** (le « crochet » de (b2) à (b7)) : un test inscrit (E, 2) dans le registre du runner **seulement si la clé est absente**, par le `IDisposable` que rend `Register` (`Alundra/Ai/NativeSpriteRegistry.cs:54`, `:84`), libéré à la fin du test : valable avant et après la phase B, sans exception ; « crochet nul » (T2) : aucune inscription de test, la clé de production seule. Les objets viennent de `PutInHands` et de `ThrowCarried`.
 - **Phase B** (T3) : `CreateForProduction` enregistre les clés (E, 2). Inerte au repos (un objet au repos ne lève jamais E). Seul effet visible : l'épingle du registre ; la casse n'est atteignable qu'avec g1b.
 
 **Valeurs attendues** (clés de `g4`, `g4b`, `g7`, `g15` d ; T = tick du front de Carré).
@@ -6607,16 +6638,16 @@ proposition de D-G-1 « h3 n'exige que g1a et g2a » n'est pas appliquée) ; g3 
 ##### Tâches
 
 - ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette, puis le code). Chaque « sans effet » est accolé à un positif.
-  - (b1) E2 direct, table : (animation 2 et `+0xAC` 1) → `DestroyEntity(e, −1)` ; `(+0x184 & 4)` → idem ; sinon animation 2 et `(drapeaux | 0x40) & ~0x30`, `0x332374` → `0x332344` ; les trois lignes accolées deux à deux ; (b2) la vie par le crochet : la chronologie du tableau pour une caisse (effet 10) et pour une jarre (effet 2) ; (b3) la touche (arène : caisses vivantes, Beannoïde inerte, D-F4-7) à x = 165, accolée au Beannoïde à x = 150 ; (b4) mur, marches de 16 et de 48 px ; (b5) aucun butin : aucune entité née, accolé à `Contents` 130 (le bouchon documenté) ; (b6) l'eau profonde (f6a) : effet 6 ; (b7) un objet au repos n'exécute jamais E2 ; les étincelles de la touche sont **dérivées** (D-E0B-8).
-- ⏳ **T2 — Tests de production**, crochet nul, **rouges avant T3** : (p1) un objet lancé (par `PutInHands` et `ThrowCarried`) se brise en production à T+23, effet 10 ; (p2) l'épingle du registre, (E, 2) pour les 10 types, pas pour les autres ; (p3) un monde de caisses au repos (la 392) ne change pas pendant 100 ticks.
+  - (b1) E2 direct, table : (animation 2 et `+0xAC` 1) → `DestroyEntity(e, −1)` ; `(+0x184 & 4)` → idem ; sinon animation 2 et `(drapeaux | 0x40) & ~0x30`, `0x332374` → `0x332344` ; les trois lignes accolées deux à deux ; (b2) la vie par le crochet : la chronologie du tableau pour une caisse (effet 10) et pour une jarre (effet 2) ; (b3) la touche (arène : caisses vivantes, Beannoïde inerte, D-F4-7) à x = 165, accolée au Beannoïde à x = 150 ; (b4) mur, marches de 16 et de 48 px ; (b5) le butin selon l'état d'e0c (But) : e0c non faite, aucune entité née, accolé à `Contents` 130 (le bouchon documenté) ; e0c faite, l'objet dérivé d'e0c naît au bris ; (b6) l'eau profonde (f6a) : effet 6 ; (b7) un objet au repos n'exécute jamais E2 ; les étincelles de la touche sont **dérivées** (D-E0B-8).
+- ⏳ **T2 — Tests de production**, crochet nul, **rouges avant T3** : (p1) un objet lancé (par `PutInHands` et `ThrowCarried`) se brise en production à T+23, effet 10 ; (p2) l'épingle du registre, (E, 2) pour les 10 types, pas pour les autres ; (p3) **l'inertie au repos des 10 types** : T0 choisit, dans les recensements de l'annexe `e20-g1a/work/`, une carte qui porte au repos des entités de chacun des 10 types (dont 34, 37 et 117, de programme C 4) ; chacune tourne 100 ticks au repos, natifs allumés : aucun appel de E2 (journal du runner), accolé à un objet lancé qui l'appelle ; si E2 est appelé au repos (`DeactivateOnHit` et `HitCounter`, ou `DeactivateOnAnimationEnd` et `ForceResetAnimationFlag`, `Alundra/Entities/EntityScriptProxy.cs:1718-1723`), T0 compare aux drapeaux du binaire et un écart est un arrêt.
 - ⏳ **T3 — Phase B** : l'enregistrement. Verts.
 - ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : `~0x30` changé en `~0x31` (équivalent si aucun test ne lit le bit 0 : à prouver) ; `|0x40` oublié ; `+0xAC` ignoré ; `+0x184 & 4` oublié ; destruction avec un autre effet ; E2 enregistré pour un type hors des 10 ; clé (E, 2) oubliée.
 
 ##### Acceptation
 
-- **DLL** : (b1) à (b7) verts ; (p1) à (p3) rouges avant T3 ; suite en Release **et** en Debug, zéro échec ; tests déplacés ⊂ liste prédite (l'épingle du registre) ; `cmp` ; cinq traces ; moteur, convertisseur et données sans diff.
+- **DLL** : (b1) à (b7) verts ; (p1) à (p3) rouges avant T3 ; suite en Release **et** en Debug, zéro échec ; tests déplacés ⊂ liste prédite : les deux épingles du registre (`AlundraNativeSpriteRegistryTests.cs:55`, `AlundraWaveSwordLifeTests.cs:181-183`), réécrites par dérivation (le compte d'avant plus (E, 2)), et, si e0c est faite, `AlundraDestroyEntityBreakEffectTests.cs:205` ; `cmp` ; cinq traces ; moteur, convertisseur et données sans diff.
 - **Preuve de retrait** : retirer l'enregistrement rend rouges exactement (p1) et (p2) ; retirer la ligne de masque `~0x30` rend rouge exactement (b1) et la chronologie de (b2).
-- **Arrêts** : la chronologie T+22, T+23, T+25, T+26 diffère ; un butin naît ; un test existant bouge ; un besoin de changer le moteur. **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après. **Retour arrière** : la phase B se retire seule.
+- **Arrêts** : la chronologie T+22, T+23, T+25, T+26 diffère (mesurée en T0 à 1, 2 et 3 ticks par image, bloc « Révision au HEAD ») ; un butin différent de l'attendu de l'état d'e0c ; un test hors de la liste prédite bouge ; f4 ou f6a non faite ; un besoin de changer le moteur. **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après. **Retour arrière** : la phase B se retire seule.
 
 ---
 
@@ -7346,7 +7377,7 @@ depuis les états de saut ; (b5) Haut le long de la face x = 657 : y = 295, cont
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains | l'auteur |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? | l'auteur |
 | Q-G1A-3 | (2026-10-17) Un objet lancé ne blesse, avant E14.b, que les cibles dont le gestionnaire D est porté (Beannoïde, Muruta) : confirmer | l'auteur |
-| Q-G1A-4 | (2026-10-17) D-F5-5 : prendre dans g2a la garde étroite d'une ligne (« une entité marquée et lancée lit `TargetAnimationId` »), ou attendre f5 ? Défaut : la garde étroite | E20.g2a (T0) |
+| Q-G1A-4 | (2026-10-17 ; révisée le 2026-10-18) D-F5-5 : la clé de vitesse d'une entité née par l'interface lit `TargetAnimationId` (f5) ; la caisse lancée, marquée par `PutInHands` mais née d'un enregistrement, n'y entre pas. Défaut retenu : g2a vient après f5 (l'ordre de l'enveloppe) et **étend la règle au marqueur `HasLogicalZ`** (une ligne de `ScriptedMotion.cs`, sans effet sur les épingles P3 et B6_R) ; autre voie : f5 écrit directement sa règle sur le marqueur | E20.g2a (§1.24.2) |
 | Q-G1A-5 | (2026-10-17) Recette : il faut une carte avec un objet soulevable, une plateforme qui se déplace d'elle-même à l'horizontale et un dessus de 16 px ; le T0 dépouille les cartes candidates | E20.g1a (T0) |
 | Q-G1A-6 | (2026-10-17) Changer de carte avec un objet : l'original efface-t-il l'objet porté au chargement (la décompilation efface les 64 cases ; non lu au binaire) ? Un test que le héros reconstruit à l'arrivée n'emporte pas `CarriedEntity` | E20.g1a (T0) |
 | Q-E0C-1 | (2026-10-17) Le ramassage des 151 objets posés sur les cartes (message « X gagné ! », fanfare, blocage des autres entités) entre-t-il dans e0c ? Sans lui, vases, cœurs et herbes posés restent inertes, seul le butin se ramasse | l'auteur |
