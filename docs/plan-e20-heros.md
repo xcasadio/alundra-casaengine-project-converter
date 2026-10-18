@@ -5729,6 +5729,15 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
    `docs/plan-e20-annexe/e20-f4f6/bin/out/json/` (les effets en chaînes `fx(id=…,dir=…,x=…,v=(…))` et `attach(…)`, les sons dans `journal`
    en `snd(N)`, les tirages et le générateur dans leurs champs) et les fenêtres de mur dans `bin/out/sweep_wall_charged.txt` (type 7) et
    `bin/out/sweep_wall.txt` (type 3) ; le format d'objets `.effects[]`, `.snd[]` demandé par l'ancien T0 d'f4 est abandonné.
+   **Le générateur** (révision 2) : le harnais ne modélise pas le pas par image du binaire (la fin de la fonction de trame, `0x8002BD0C-0x8002BD34`) :
+   sur un tick sans tirage, `rng0` égale `rng1` et `draws` vaut 0 (`bin/fw.py:91-99` ; par exemple `charged7_grass.json`, ticks 101 à 106) ; la DLL
+   avance d'un pas par tick après la mise à jour des effets (ADR-0066, `Alundra/Maps/WorldProxy.cs:2690`). Règle : un compte `draws` de la clé se
+   compare au nombre de pas de la DLL pendant le même tick **moins un** ; un état attendu se dérive par D-E0B-8 (le germe avancé d'un pas par tick et
+   d'un pas par tirage). Là où la **valeur** d'un tirage décide d'un résultat (le butin d'une coupe : un ou deux pas par case selon le premier), la
+   clé est refaite en T0 avec le pas par image ajouté à la fin de chaque tick du harnais (`s ← s × 0x7D2B89DD + 0xE06A02E7`), suffixe `_pf`, et les
+   tests lisent celle-là, à **un tick par image** seulement (à 2 et 3 ticks par image, les tirages immédiats des ticks suivants ne voient pas les
+   avances intermédiaires : écart documenté d'ADR-0066 ; les tests n'y vérifient que ce qui ne dépend pas des valeurs tirées). **Sonde T0** de chaque
+   tranche : un tir loin de toute herbe et de toute cible, le nombre de pas de la DLL à chaque tick égal à `draws` + 1 ; un écart est un arrêt.
 4. **L'ordre** : E20.e0c puis E20.e (§1.26, §1.27, READY) **avant** f4 (l'ordre que propose §1.25) ; f4, f5, f6a, f6b (ordre ferme), puis h0 et h1,
    puis g. Conséquence pour f4 : C94 appelle la coupe d'E20.e en tête de son tick (comme `0x8007C0E4`), par la méthode nommée de la puce « f4 »
    ci-dessous (« L'appel de C94 à la coupe ») ; D-F4-3 (déplacer le bouchon hors du fichier de la vague) et D-F4-10 (le bouchon ne coupe rien)
@@ -5755,7 +5764,14 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
     « flat synthetic field », en-tête de la carte 10) avec les fonctions de cases de chaque scénario (par exemple `bin/run_charged.py` : un mur en colonne
     15, une marche de hauteur 1 ou 2 en colonne 8, une bande d'herbe en colonnes 5 à 12, rangées 5 et 6) : les tests posent le même champ par
     `FlatCells.Create` et la réflexion, comme `Alundra.Tests/AlundraMapEdgeWorldTests.cs:43-50`, le héros à la même place ; les tests de production
-    gardent la vraie carte 14 (`HitArena`) avec l'interrupteur de D-F4-7.
+    gardent la vraie carte 14 (`HitArena`) avec l'interrupteur de D-F4-7, sauf (p1) à (p3) d'f4 (puce « f4 » ci-dessous). **Les entités de la carte**
+    (révision 2) : l'oracle ne fait naître que le héros et les cibles demandées (`docs/plan-e20-annexe/e20-f4f6/bin/src/pworld.py:93-116`) ; `ArcRun` et
+    `HitArena` gardent toutes celles de la carte 14 (`Alundra.Tests/AlundraHitArena.cs:77-84` ne collecte que les cibles ; les Beannoïdes des
+    enregistrements 0 à 6 sont à (252, 96), (264, 104), (348, 96), (360, 96), (252, 168)…, `docs/plan-e20-annexe/e20-c1b/oracle/notes.md:44`, sur le
+    chemin d'un tir vers l'est à y = 100). **Tout test de monde de ces quatre tranches** retire donc, avant le scénario, les entités de la carte autres
+    que le héros et les cibles demandées, comme le T2 d'E20.e (§1.27) : `Status = FlagToDestroy` puis `WorldProxy.RecycleDestroyedEntities()`, l'aide
+    `Recycle` d'`Alundra.Tests/AlundraLootRollWorldTests.cs:74-78` (ni butin ni effet). **Sonde T0** : sur le banc ainsi vidé et sans cible, aucune
+    touche ni étincelle sur tout le chemin des clés de la tranche (pour f4 : `charged7_east_wall`, `charged7_map_edge`, `charged7_grass`) ; sinon arrêt.
 
 **f4.**
 - **D-F4-7, la forme** : `EventProgramRunner.NativeSpriteTypeFilterForTests`, `[ThreadStatic] internal static IReadOnlySet<int>?`, nul en production ;
@@ -5785,9 +5801,13 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
   échoue est un arrêt ; la synchronisation visuelle n'est pas branchée sur ce magasin (aucune reconstruction de l'overlay n'est vérifiée sur ce
   banc). **La clé** `charged7_grass` (`docs/plan-e20-annexe/e20-f4f6/bin/out/json/charged7_grass.json`, la coupe du vrai code) : S = 105 ; une coupe
   de deux cases tous les 4 ticks, de S+2 (tick 107) à S+30 (tick 135), chacune avec l'effet `fx(id=2,…)` à x = 132 + 24k, y = 88 et 104, Z 0, et deux
-  `snd(31)` ; 3 ou 2 tirages à chaque tick de coupe (champ `draws`). (c8) pose le générateur à la valeur `rng0` de la clé au tick S+1, puis compare à
-  chaque tick de S+1 à S+30 : les cases coupées, la position et le Z des effets 2, les sons, le nombre de tirages et `rng1` ; aucune coupe aux autres
-  ticks ; le journal de C94 contient la flèche à chaque tick de S+1 à S+30. **O-F4-1 est fermé** par E20.e (le flux reçoit les tirages de la coupe) ;
+  `snd(31)` ; 3 ou 2 tirages à chaque tick de coupe (champ `draws`). **Le générateur** (révision 2, règle du point 3) : le nombre de pas par case
+  dépend de la valeur tirée, donc T0 refait la clé avec le pas par image (`charged7_grass_pf`, versée avec son manifeste) ; (c8) la lit, **à un tick par
+  image** : le générateur posé au germe de la clé (`0x12345678`, `bin/run_charged.py:20`) au tick 1, comme le harnais ; à chaque tick de S+1 à S+30,
+  l'état lu à l'appel `TickTraceForTests("inventory")` de la fin du tick (`WorldProxy.cs:2589`, avant le pas par tick que `RunFrame` fait ensuite,
+  `:2690-2691` ; la sonde T0 du point 3 confirme ce point de lecture) égale `rng1` de `charged7_grass_pf` à ce tick, et les cases coupées, la position et le Z des effets 2 et les sons
+  égalent la clé ; aucune coupe aux autres ticks. À 2 et 3 ticks par image, (c8) ne vérifie que les cases coupées, les effets 2 et les sons. Le journal
+  de C94 contient la flèche à chaque tick de S+1 à S+30. **O-F4-1 est fermé** par E20.e (le flux reçoit les tirages de la coupe) ;
   la recette dit « elle coupe l'herbe sur son passage » au lieu de « Elle ne coupe pas l'herbe (E20.e) ».
 - **P-F4-1** (attendu : l'indice de direction de la traînée vaut 0, 1, 2, 3 pour sud, nord, ouest, est, la table inverse de `{0, 0x10, 8, 0x18}`, égal à
   `BoxDirection`) et **P-F4-2** (attendu : la boîte de la flèche au tick S, 24 × 16 × 15 à `hbz` 0) : une sonde qui contredit son attendu est un arrêt.
@@ -5799,8 +5819,19 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
 - **(p1)** : aucun banc ne donne aujourd'hui l'arc de William (`Give(6)` : aucune occurrence ; l'hôte des tests de charge est `ContactHost`,
   `Alundra.Tests/AlundraJumpTestSupport.cs:290-344`) ; (p1) le donne par `Give(6)` puis `Equip(2)`, sur le modèle de l'arc du chasseur
   (`Alundra.Tests/AlundraShotDirectionTests.cs:30-31`, `:54-55` ; objet 6 = l'arc de William, `Alundra/Items/WeaponTables.cs:53`, fiche 9 par
-  `:84`) ; que l'arc de William s'équipe au même emplacement 2 est vérifié en T0 (un autre emplacement : le mettre, pas d'arrêt) ; l'arène de la
-  charge (carte 14, relâchement à 91) avec l'ensemble {7} de D-F4-7.
+  `:84`) ; que l'arc de William s'équipe au même emplacement 2 est vérifié en T0 (un autre emplacement : le mettre, pas d'arrêt).
+- **Le banc de (p1) à (p3)** (révision 2 ; remplace « l'arène de la charge (carte 14, relâchement à 91) » et le banc de T2) : le banc des tests de monde
+  d'f4 (le champ synthétique du scénario et son magasin partagé, puce (c8) ; les entités de la carte retirées, point 10), par le **chemin de
+  production** (crochet des types nul : `ProductionWiredWeaponTypes`), avec l'ensemble {7} de D-F4-7 ; le héros à (100, 100) tourné à l'est
+  (direction 24), l'arc de William, Carré tenu des ticks 1 à 95 et relâché au tick 96, le générateur au germe `0x12345678` au tick 1 : le calendrier
+  de `bin/run_charged.py:9`, `:20` (R = 96). **Sonde T0** : sur ce banc, le tick du relâchement et celui de la naissance égalent ceux de la clé (96 et
+  S = 105 = R + 9) ; un décalage constant d mesuré se reporte sur tous les ticks de la clé (comme `WaveOracle.ArenaOffset`,
+  `Alundra.Tests/AlundraWaveSwordSupport.cs:18`) et s'écrit au README ; un autre écart est un arrêt. **(p1)** lit `charged7_east_wall` (mur en colonne
+  15) : naissance à S, type 7, fille du héros, à la plus basse case libre mesurée avant le tir ; puis, à un tick par image, `px` et `pz` de S à S+43, la
+  traînée (effet 25, direction 3, x = 124 + 24k, v = (−3, 0, 0)) aux ticks de la clé, aucun tirage, le statut 4 et `attach(id=8)` à S+43, absente à
+  S+44 (les lignes du tableau de §1.20.1, qui viennent de cette clé) ; dans la même assertion, le tir normal du début de la prise (type 4) né **si et
+  seulement si** l'ensemble de production contient 4. **(p2)** même banc, table pleine puis une case libre. **(p3)** même banc avec la cible de
+  `charged7_vs_target` (le vrai Beannoïde à x = 300, y = 104) : `TouchingEntity` = la flèche au tick de la touche de la clé (S+29).
 - Le tir chargé en l'air : INCONNU (la fiche w9 n'a qu'une variante chargée) ; reste hors périmètre.
 
 **f5.**
@@ -5844,6 +5875,18 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
 **f6b.**
 - **R et S** : l'oracle des boules relâche à R = 96 et fait naître à S = 107 (`bin/run_balls.py:2`) ; « 112 pour R = 101 de l'arène » est faux (l'arène de
   la charge relâche à 91, `Alundra.Tests/AlundraWaveSwordSupport.cs:18` ; 112 est le S de la vague) : les tests de boule relâchent à R = 96.
+- **Le R de (p1)** (révision 2 ; remplace « R = 101 de l'arène » du (p1) de §1.22.2) : (p1) tourne dans l'arène de la charge de la carte 14, qui
+  relâche au tick **91** (`Alundra.Tests/AlundraWaveSwordSupport.cs:18`, `ArenaOffset` 5 sous l'oracle) : la boule chargée y naît à 91 + 11 = **102**
+  (S = R + 11, `bin/run_balls.py:2`) ; la non chargée à P + 11, P l'appui de l'arène mesuré en T0 et écrit au README. **Sonde T0** : un tir chargé de
+  chaque baguette dans l'arène fait naître le type 12 ou 15 au tick 102 ; sinon arrêt. « R = 96 » ne vaut que pour les tests de monde sur le champ
+  synthétique, au calendrier de l'oracle.
+- **(b7) sur un registre neuf** (révision 2 ; remplace « sur le registre du runner de test » de la puce « La phase B déplace aussi des tests existants ») : (b7) appelle `BallAi.Register` sur
+  un `new NativeSpriteRegistry()` (un test pur, la règle du bloc du §1.24, point 4) : il reste vert avant et après T3 (le registre de production, qui
+  tient (C, 60) et (E, 9) après T3, refuserait une seconde inscription, `Alundra/Ai/NativeSpriteRegistry.cs:60-63`).
+- **La source des réécritures de la phase B** (révision 2) : pour chaque test de la liste prédite de la puce « La phase B déplace aussi des tests existants », T0 nomme la clé d'oracle qu'il
+  lit : la clé dont il vient déjà (son annexe, si elle couvre ses ticks avec le vrai C60 et le vrai E9), sinon un scénario neuf joué par une copie de
+  `bin/run_balls.py` au même champ, à la même place et aux mêmes ticks, sa clé versée dans l'annexe d'f6b avec son manifeste ; la réécriture de T3 lit
+  cette clé (règle du générateur du point 3). Un test sans clé est un arrêt.
 - Les conditionnelles caduques tombent : P-F6-3 « avant la règle de vitesse » et « si f5 n'est pas faite » (f5 est un prérequis ferme).
 - **La phase B déplace aussi des tests existants** (révision 1 ; remplace, au §1.22.2, « Seul changement de comportement : les trois flammes de la 309
   émettent », l'arrêt « plus de 10 tests existants bougent » et la preuve de retrait de l'enregistrement). En phase B, les boules des tests de monde
@@ -5853,8 +5896,8 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
   liste prédite, avec les épingles communes ; T3 réécrit chacun par dérivation du binaire (jamais collé de la DLL). **Changements de comportement de
   la phase B** : les flammes de la 309 et ces tests. **Arrêt** : un test hors de la liste prédite bouge ; le seuil « plus de 10 » ne s'applique pas à
   f6b (la liste mesurée en T0 en tient lieu). **Preuve de retrait** : retirer l'appel d'enregistrement rend rouges exactement (m1) à (m3) et les tests
-  de la liste de T0 réécrits en T3 ; « (b7) de production » en sort : (b7) est un test de `Register` en phase A, sur le registre du runner de test, et
-  l'épingle de production est (m3) (le compte d'avant plus deux clés).
+  de la liste de T0 réécrits en T3 ; « (b7) de production » en sort : (b7) est un test de `Register` en phase A, sur un registre neuf (puce
+  « (b7) sur un registre neuf »), et l'épingle de production est (m3) (le compte d'avant plus deux clés).
 - `SpawnContents` sur une boule ne lâche rien (§1.26 : objet 0 ; une boule née par l'interface a `ContentsItemId` 0) : (s3) « aucun tirage » tient après e0c.
 
 ---
@@ -7196,6 +7239,8 @@ rafraîchissement) ; la phase A ne change aucun comportement.
 
 ### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ⏳ (détaillée le 2026-10-18, révision 2 **READY** ; exécutable après E20.e0c et la fin du chantier de restructuration)
 
+**Note (2026-10-18, relecture d'E20.f4).** O-E-1 (§2) : l'oracle de coupe de T0 (g) doit modéliser le pas par image du générateur (ADR-0066), sinon (w1), (w2) et la sonde (g2) divergent ; à relire à l'exécution.
+
 **Relecture (2026-10-18).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) l'oracle `wave_grass` d'E20.f3 a été calculé sur un champ
 synthétique (toutes les cases en herbe, hauteur 0, `wave_grass.py:2`), pas sur la vraie carte 14 : (w1) et (w2) se comparent maintenant à un
 oracle que T0 (g) calcule sur les vraies cases de la 14 et le même état de départ ; `wave_grass` ne sert plus qu'au rejeu de T0 (a) ;
@@ -7689,6 +7734,7 @@ avec `barricade-m392` : se caler contre le haut de la porte, pousser la caisse b
 | Q-E3 | (2026-10-18) L'effet de coupe vient de l'octet 9 de l'en-tête de carte (exporté sous le nom trompeur `BalanceLevel`, il vaut 2 sur les 483 cartes) : le lire, avec repli sur 2, ou figer l'effet 2 ? Défaut retenu : le lire | l'auteur |
 | Q-E4 | (2026-10-18) 100 cases coupables n'ont pas de buisson visible (une douzaine de cartes) : garder le binaire (la coupe y est invisible, mais l'effet, l'objet et le son ont lieu) ? Défaut retenu : oui | l'auteur |
 | Q-E5 | (2026-10-18) L'herbe repousse à chaque entrée dans la carte (le binaire ne garde rien) : est-ce voulu ? Défaut retenu : oui | l'auteur |
+| O-E-1 | (2026-10-18, relecture d'E20.f4) Les oracles de coupe d'E20.e (`cut_m14`, et `wave_grass` d'E20.f3) ne modélisent pas le pas par image du générateur (le harnais de `bin/fw.py:91-99` d'`e20-f4f6` non plus : `rng0` = `rng1` sur un tick sans tirage) ; la DLL avance d'un pas par tick (ADR-0066) ; le nombre de pas par case coupée dépend de la valeur tirée : sans ce pas dans l'oracle, (w1) et (w2) d'E20.e divergeraient et sa sonde T0 (g2) s'arrêterait. Règle d'f4 à reprendre : la clé refaite avec le pas par image (`_pf`), lue à un tick par image (bloc du §1.20, point 3) | E20.e (T0 (g), à relire à l'exécution) |
 | Q-G3-a | (2026-10-18) Après E20.g3, les tonneaux, troncs, pierres, torches et les quatre objets du sanctuaire (248 placements, hors de l'histoire actuelle) arrêtent Alundra comme des caisses, mais ne se soulèvent qu'avec g2c ; sur la carte 4, les grosses pierres bloquent des chemins jusqu'au Gant, comme l'original. (A, défaut retenu) tous solides, sans code de plus ; (B) les laisser traversables jusqu'à g2c (un nouvel écart, des tests écrits deux fois) ; (C) faire g2c avant g3 (un T0 qui décode C4 d'abord) | l'auteur |
 | Q-G3-b | (2026-10-18) Entre g3 et g1b, les caisses seraient des murs que l'on ne peut que sauter (sur le navire, il faudrait se caler contre le haut de la porte et sauter sur la seule caisse basse, malgré le roulis). (A, défaut retenu) g3 et g1b fusionnés ensemble ; (B) fusionner g3 d'abord (la recette ne montre que le blocage) | l'auteur |
 | Q-G3-c | (2026-10-18) Quand on soulève la caisse du bas d'une pile, l'original fait tomber celle du dessus de 16 px en 8 images ; le portage garde l'ancienne règle de chute des objets de carte jusqu'à E19.h2 (la chute peut durer autrement, ou se faire d'un coup). (A, défaut retenu) écart documenté jusqu'à E19.h2, mesuré en g4b ; (B) donner tout de suite la loi du binaire à la caisse qui perd son appui (un nouveau site du marqueur de Z logique) ; (C) attendre E19.h2 pour le critère « pile » | l'auteur |
