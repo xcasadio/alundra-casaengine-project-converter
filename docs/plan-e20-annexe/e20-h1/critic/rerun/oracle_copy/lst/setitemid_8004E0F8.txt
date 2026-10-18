@@ -1,0 +1,30 @@
+# setitemid_8004E0F8  [8004e0f8, 8004e168)  SetItemIdFromCurrentItemId (promotion of the Circle item)
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8004e0f8  3c028017  lui     $v0, 0x8017
+8004e0fc  8c426318  lw      $v0, 0x6318($v0)
+8004e100  27bdffe8  addiu   $sp, $sp, -0x18
+8004e104  afbf0014  sw      $ra, 0x14($sp)
+8004e108  afb00010  sw      $s0, 0x10($sp)
+8004e10c  8450000c  lh      $s0, 0xc($v0)
+8004e110  0c01390a  jal     0x8004e428
+8004e114  02002021  move    $a0, $s0
+8004e118  1040000d  beqz    $v0, 0x8004e150
+8004e11c  3c03800c  lui     $v1, 0x800c
+8004e120  24639fe8  addiu   $v1, $v1, -0x6018
+8004e124  00101080  sll     $v0, $s0, 2
+8004e128  00501021  addu    $v0, $v0, $s0
+8004e12c  00021040  sll     $v0, $v0, 1
+8004e130  00431021  addu    $v0, $v0, $v1
+8004e134  84440000  lh      $a0, ($v0)
+8004e138  0c013863  jal     0x8004e18c
+8004e13c  00000000  nop     
+8004e140  0c013936  jal     0x8004e4d8
+8004e144  00402021  move    $a0, $v0
+8004e148  08013855  j       0x8004e154
+8004e14c  02001021  move    $v0, $s0
+8004e150  2402ffff  addiu   $v0, $zero, -1
+8004e154  8fbf0014  lw      $ra, 0x14($sp)
+8004e158  8fb00010  lw      $s0, 0x10($sp)
+8004e15c  27bd0018  addiu   $sp, $sp, 0x18
+8004e160  03e00008  jr      $ra
+8004e164  00000000  nop     

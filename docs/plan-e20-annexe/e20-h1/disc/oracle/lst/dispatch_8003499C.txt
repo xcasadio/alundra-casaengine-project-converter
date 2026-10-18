@@ -1,0 +1,78 @@
+# dispatch_8003499C  [8003499c, 80034acc)  the start dispatcher: promoted item, refusals, jump table 0x8002339C, the in-use words
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8003499c  27bdffe8  addiu   $sp, $sp, -0x18
+800349a0  afbf0014  sw      $ra, 0x14($sp)
+800349a4  0c01383e  jal     0x8004e0f8
+800349a8  afb00010  sw      $s0, 0x10($sp)
+800349ac  00408021  move    $s0, $v0
+800349b0  2e020062  sltiu   $v0, $s0, 0x62
+800349b4  1040003d  beqz    $v0, 0x80034aac
+800349b8  3c028012  lui     $v0, 0x8012
+800349bc  8c427164  lw      $v0, 0x7164($v0)
+800349c0  00000000  nop     
+800349c4  10400003  beqz    $v0, 0x800349d4
+800349c8  2603ffe1  addiu   $v1, $s0, -0x1f
+800349cc  14500037  bne     $v0, $s0, 0x80034aac
+800349d0  00000000  nop     
+800349d4  2c620014  sltiu   $v0, $v1, 0x14
+800349d8  10400034  beqz    $v0, 0x80034aac
+800349dc  3c028002  lui     $v0, 0x8002
+800349e0  2442339c  addiu   $v0, $v0, 0x339c
+800349e4  00031880  sll     $v1, $v1, 2
+800349e8  00621821  addu    $v1, $v1, $v0
+800349ec  8c620000  lw      $v0, ($v1)
+800349f0  00000000  nop     
+800349f4  00400008  jr      $v0
+800349f8  00000000  nop     
+800349fc  0c00d089  jal     0x80034224
+80034a00  02002021  move    $a0, $s0
+80034a04  0800d2a2  j       0x80034a88
+80034a08  00401821  move    $v1, $v0
+80034a0c  0c00d0c8  jal     0x80034320
+80034a10  02002021  move    $a0, $s0
+80034a14  0800d2a2  j       0x80034a88
+80034a18  00401821  move    $v1, $v0
+80034a1c  0c00d14f  jal     0x8003453c
+80034a20  02002021  move    $a0, $s0
+80034a24  0800d2a2  j       0x80034a88
+80034a28  00401821  move    $v1, $v0
+80034a2c  0c00d1a0  jal     0x80034680
+80034a30  02002021  move    $a0, $s0
+80034a34  0800d2ae  j       0x80034ab8
+80034a38  24020001  addiu   $v0, $zero, 1
+80034a3c  0c00d1bc  jal     0x800346f0
+80034a40  02002021  move    $a0, $s0
+80034a44  0800d2ae  j       0x80034ab8
+80034a48  24020001  addiu   $v0, $zero, 1
+80034a4c  0c00d1d8  jal     0x80034760
+80034a50  02002021  move    $a0, $s0
+80034a54  0800d2ae  j       0x80034ab8
+80034a58  24020001  addiu   $v0, $zero, 1
+80034a5c  0c00d1f5  jal     0x800347d4
+80034a60  02002021  move    $a0, $s0
+80034a64  0800d2ae  j       0x80034ab8
+80034a68  24020001  addiu   $v0, $zero, 1
+80034a6c  0c00d21c  jal     0x80034870
+80034a70  02002021  move    $a0, $s0
+80034a74  0800d2ae  j       0x80034ab8
+80034a78  24020001  addiu   $v0, $zero, 1
+80034a7c  0c00d238  jal     0x800348e0
+80034a80  02002021  move    $a0, $s0
+80034a84  00401821  move    $v1, $v0
+80034a88  14600006  bnez    $v1, 0x80034aa4
+80034a8c  3c028012  lui     $v0, 0x8012
+80034a90  ac507164  sw      $s0, 0x7164($v0)
+80034a94  3c028012  lui     $v0, 0x8012
+80034a98  ac40715c  sw      $zero, 0x715c($v0)
+80034a9c  3c028012  lui     $v0, 0x8012
+80034aa0  ac407160  sw      $zero, 0x7160($v0)
+80034aa4  0800d2ae  j       0x80034ab8
+80034aa8  00601021  move    $v0, $v1
+80034aac  0c01243f  jal     0x800490fc
+80034ab0  24040003  addiu   $a0, $zero, 3
+80034ab4  24020001  addiu   $v0, $zero, 1
+80034ab8  8fbf0014  lw      $ra, 0x14($sp)
+80034abc  8fb00010  lw      $s0, 0x10($sp)
+80034ac0  27bd0018  addiu   $sp, $sp, 0x18
+80034ac4  03e00008  jr      $ra
+80034ac8  00000000  nop     

@@ -1,0 +1,17 @@
+herb min 5->6                                 -> failing vectors: 38
+herb slt->sltu cap                            -> failing vectors: 34
+herb sra 2->1                                 -> failing vectors: 91
+herb ForceZ 0x20000->0x30000                  -> failing vectors: 301
+spotion rng const mult hi 0x20001->0x20003    -> failing vectors: 265
+spotion min 10->11                            -> failing vectors: 10
+spotion count 4->3                            -> failing vectors: 301
+lpotion shl 11->10                            -> failing vectors: 268
+lpotion ForceZ 3->4                           -> failing vectors: 268
+elixir anim 2->0                              -> failing vectors: 301
+cureale anim parity sltiu->                   -> failing vectors: 301
+herb start sound 0x31->0x32                   -> failing vectors: 51
+herb start slt->sltu hp<hpmax                 -> failing vectors: 6
+elixir start slt swap                         -> failing vectors: 39
+dispatch bound 0x62->0x61                     -> failing vectors: 3
+tryuse mask 0x20->0x10                        -> failing vectors: 76
+noop patch (nop for nop)                      -> failing vectors: 0

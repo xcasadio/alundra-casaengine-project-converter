@@ -1,0 +1,23 @@
+# setmp_8004DEBC  [8004debc, 8004df10)  SetPlayerMp
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8004debc  3c028017  lui     $v0, 0x8017
+8004dec0  8c436318  lw      $v1, 0x6318($v0)
+8004dec4  00000000  nop     
+8004dec8  84620006  lh      $v0, 6($v1)
+8004decc  94650006  lhu     $a1, 6($v1)
+8004ded0  0044102a  slt     $v0, $v0, $a0
+8004ded4  10400003  beqz    $v0, 0x8004dee4
+8004ded8  00000000  nop     
+8004dedc  080137be  j       0x8004def8
+8004dee0  a4650004  sh      $a1, 4($v1)
+8004dee4  04810003  bgez    $a0, 0x8004def4
+8004dee8  00000000  nop     
+8004deec  080137be  j       0x8004def8
+8004def0  a4600004  sh      $zero, 4($v1)
+8004def4  a4640004  sh      $a0, 4($v1)
+8004def8  3c028017  lui     $v0, 0x8017
+8004defc  8c426318  lw      $v0, 0x6318($v0)
+8004df00  00000000  nop     
+8004df04  84420004  lh      $v0, 4($v0)
+8004df08  03e00008  jr      $ra
+8004df0c  00000000  nop     

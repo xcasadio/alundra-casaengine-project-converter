@@ -1,0 +1,31 @@
+# start_elixir_80034760  [80034760, 800347d4)  I38 Magic Elixir start
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+80034760  27bdffe0  addiu   $sp, $sp, -0x20
+80034764  afb10014  sw      $s1, 0x14($sp)
+80034768  00808821  move    $s1, $a0
+8003476c  afbf0018  sw      $ra, 0x18($sp)
+80034770  0c0137a9  jal     0x8004dea4
+80034774  afb00010  sw      $s0, 0x10($sp)
+80034778  0c013777  jal     0x8004dddc
+8003477c  00408021  move    $s0, $v0
+80034780  0202802a  slt     $s0, $s0, $v0
+80034784  1200000a  beqz    $s0, 0x800347b0
+80034788  3c048012  lui     $a0, 0x8012
+8003478c  24847d30  addiu   $a0, $a0, 0x7d30
+80034790  0c00cdbc  jal     0x800336f0
+80034794  02202821  move    $a1, $s1
+80034798  0c01243f  jal     0x800490fc
+8003479c  24040030  addiu   $a0, $zero, 0x30
+800347a0  0c013971  jal     0x8004e5c4
+800347a4  02202021  move    $a0, $s1
+800347a8  0800d1ef  j       0x800347bc
+800347ac  24020001  addiu   $v0, $zero, 1
+800347b0  0c01243f  jal     0x800490fc
+800347b4  24040003  addiu   $a0, $zero, 3
+800347b8  24020001  addiu   $v0, $zero, 1
+800347bc  8fbf0018  lw      $ra, 0x18($sp)
+800347c0  8fb10014  lw      $s1, 0x14($sp)
+800347c4  8fb00010  lw      $s0, 0x10($sp)
+800347c8  27bd0020  addiu   $sp, $sp, 0x20
+800347cc  03e00008  jr      $ra
+800347d0  00000000  nop     

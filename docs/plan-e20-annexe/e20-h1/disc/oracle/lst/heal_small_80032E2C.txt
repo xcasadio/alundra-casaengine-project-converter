@@ -1,0 +1,11 @@
+# heal_small_80032E2C  [80032e2c, 80032e50)  Hp = min(HpMax, Hp + 2), no effect (loot pickup 0x54)
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+80032e2c  8c830014  lw      $v1, 0x14($a0)
+80032e30  8c850018  lw      $a1, 0x18($a0)
+80032e34  24630002  addiu   $v1, $v1, 2
+80032e38  00a3102a  slt     $v0, $a1, $v1
+80032e3c  10400002  beqz    $v0, 0x80032e48
+80032e40  00000000  nop     
+80032e44  00a01821  move    $v1, $a1
+80032e48  03e00008  jr      $ra
+80032e4c  ac830014  sw      $v1, 0x14($a0)

@@ -1,0 +1,22 @@
+# sethp_8004DD30  [8004dd30, 8004dd80)  SetPlayerHp
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8004dd30  3c028017  lui     $v0, 0x8017
+8004dd34  8c436318  lw      $v1, 0x6318($v0)
+8004dd38  00000000  nop     
+8004dd3c  84620002  lh      $v0, 2($v1)
+8004dd40  94650002  lhu     $a1, 2($v1)
+8004dd44  0044102a  slt     $v0, $v0, $a0
+8004dd48  10400003  beqz    $v0, 0x8004dd58
+8004dd4c  00000000  nop     
+8004dd50  0801375b  j       0x8004dd6c
+8004dd54  a4650000  sh      $a1, ($v1)
+8004dd58  04810003  bgez    $a0, 0x8004dd68
+8004dd5c  00000000  nop     
+8004dd60  0801375b  j       0x8004dd6c
+8004dd64  a4600000  sh      $zero, ($v1)
+8004dd68  a4640000  sh      $a0, ($v1)
+8004dd6c  3c028017  lui     $v0, 0x8017
+8004dd70  8c426318  lw      $v0, 0x6318($v0)
+8004dd74  00000000  nop     
+8004dd78  84420000  lh      $v0, ($v0)
+8004dd7c  03e00008  jr      $ra

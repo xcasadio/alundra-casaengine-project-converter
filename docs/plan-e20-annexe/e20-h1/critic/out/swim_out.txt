@@ -1,0 +1,95 @@
+-- item 24 DRY idle, Circle at 10
+   anim timeline : 1:00 2:00 3:00 5:00 9:00 10:00 11:00 12:00 14:00 19:00 20:00 21:00 22:00 30:00
+   slope timeline: 1:0 2:0 3:0 5:0 9:0 10:0 11:0 12:0 14:0 19:0 20:0 21:0 22:0 30:0
+   tick 10: sounds [49] effects 1 hp 8 mp 4 count 0 anim 00 slope 0 z 1
+   final: hp 8 mp 4 count 0 anim 00 slope 0
+-- item 24 DEEP WATER (boots 2) idle, Circle at 10
+   anim timeline : 1:00 2:1D 3:1D 5:1D 9:1D 10:1D 11:1D 12:1D 14:1D 19:1D 20:1D 21:1D 22:1D 30:1D
+   slope timeline: 1:4 2:4 3:4 5:4 9:4 10:4 11:4 12:4 14:4 19:4 20:4 21:4 22:4 30:4
+   tick 2: sounds [0] effects 0 hp 3 mp 4 count 1 anim 1D slope 4 z 1
+   tick 10: sounds [49] effects 1 hp 8 mp 4 count 0 anim 1D slope 4 z 1
+   final: hp 8 mp 4 count 0 anim 1D slope 4
+-- item 24 DEEP WATER (boots 2) swimming right, Circle at 20
+   anim timeline : 1:01 2:1D 3:0F 5:0F 10:0F 19:0F 20:0F 21:0F 22:0F 30:0F 40:0F
+   slope timeline: 1:4 2:4 3:4 5:4 10:4 19:4 20:4 21:4 22:4 30:4 40:4
+   tick 1: sounds [0] effects 0 hp 3 mp 4 count 1 anim 01 slope 4 z 1
+   tick 2: sounds [0] effects 0 hp 3 mp 4 count 1 anim 1D slope 4 z 1
+   tick 3: sounds [22] effects 0 hp 3 mp 4 count 1 anim 0F slope 4 z 1
+   tick 20: sounds [49] effects 1 hp 8 mp 4 count 0 anim 0F slope 4 z 1
+   final: hp 8 mp 4 count 0 anim 0F slope 4
+-- item 25 DRY idle, Circle at 10
+   anim timeline : 1:00 2:00 3:00 5:00 9:00 10:00 11:00 12:00 14:00 19:00 20:00 21:00 22:00 30:00
+   slope timeline: 1:0 2:0 3:0 5:0 9:0 10:0 11:0 12:0 14:0 19:0 20:0 21:0 22:0 30:0
+   tick 10: sounds [50] effects 8 hp 10 mp 4 count 0 anim 00 slope 0 z 1
+   final: hp 10 mp 4 count 0 anim 00 slope 0
+-- item 25 DEEP WATER (boots 2) idle, Circle at 10
+   anim timeline : 1:00 2:1D 3:1D 5:1D 9:1D 10:1D 11:1D 12:1D 14:1D 19:1D 20:1D 21:1D 22:1D 30:1D
+   slope timeline: 1:4 2:4 3:4 5:4 9:4 10:4 11:4 12:4 14:4 19:4 20:4 21:4 22:4 30:4
+   tick 2: sounds [0] effects 0 hp 3 mp 4 count 1 anim 1D slope 4 z 1
+   tick 10: sounds [50] effects 8 hp 10 mp 4 count 0 anim 1D slope 4 z 1
+   final: hp 10 mp 4 count 0 anim 1D slope 4
+-- item 25 DEEP WATER (boots 2) swimming right, Circle at 20
+   anim timeline : 1:01 2:1D 3:0F 5:0F 10:0F 19:0F 20:0F 21:0F 22:0F 30:0F 40:0F
+   slope timeline: 1:4 2:4 3:4 5:4 10:4 19:4 20:4 21:4 22:4 30:4 40:4
+   tick 1: sounds [0] effects 0 hp 3 mp 4 count 1 anim 01 slope 4 z 1
+   tick 2: sounds [0] effects 0 hp 3 mp 4 count 1 anim 1D slope 4 z 1
+   tick 3: sounds [22] effects 0 hp 3 mp 4 count 1 anim 0F slope 4 z 1
+   tick 20: sounds [50] effects 8 hp 10 mp 4 count 0 anim 0F slope 4 z 1
+   final: hp 10 mp 4 count 0 anim 0F slope 4
+-- item 26 DRY idle, Circle at 10
+   anim timeline : 1:00 2:00 3:00 5:00 9:00 10:00 11:00 12:00 14:00 19:00 20:00 21:00 22:00 30:00
+   slope timeline: 1:0 2:0 3:0 5:0 9:0 10:0 11:0 12:0 14:0 19:0 20:0 21:0 22:0 30:0
+   tick 10: sounds [48] effects 8 hp 10 mp 4 count 0 anim 00 slope 0 z 1
+   final: hp 10 mp 4 count 0 anim 00 slope 0
+-- item 26 DEEP WATER (boots 2) idle, Circle at 10
+   anim timeline : 1:00 2:1D 3:1D 5:1D 9:1D 10:1D 11:1D 12:1D 14:1D 19:1D 20:1D 21:1D 22:1D 30:1D
+   slope timeline: 1:4 2:4 3:4 5:4 9:4 10:4 11:4 12:4 14:4 19:4 20:4 21:4 22:4 30:4
+   tick 2: sounds [0] effects 0 hp 10 mp 1 count 1 anim 1D slope 4 z 1
+   tick 10: sounds [48] effects 8 hp 10 mp 4 count 0 anim 1D slope 4 z 1
+   final: hp 10 mp 4 count 0 anim 1D slope 4
+-- item 26 DEEP WATER (boots 2) swimming right, Circle at 20
+   anim timeline : 1:01 2:1D 3:0F 5:0F 10:0F 19:0F 20:0F 21:0F 22:0F 30:0F 40:0F
+   slope timeline: 1:4 2:4 3:4 5:4 10:4 19:4 20:4 21:4 22:4 30:4 40:4
+   tick 1: sounds [0] effects 0 hp 10 mp 1 count 1 anim 01 slope 4 z 1
+   tick 2: sounds [0] effects 0 hp 10 mp 1 count 1 anim 1D slope 4 z 1
+   tick 3: sounds [22] effects 0 hp 10 mp 1 count 1 anim 0F slope 4 z 1
+   tick 20: sounds [48] effects 8 hp 10 mp 4 count 0 anim 0F slope 4 z 1
+   final: hp 10 mp 4 count 0 anim 0F slope 4
+-- item 27 DRY idle, Circle at 10
+   anim timeline : 1:00 2:00 3:00 5:00 9:00 10:00 11:00 12:00 14:00 19:00 20:00 21:00 22:00 30:00
+   slope timeline: 1:0 2:0 3:0 5:0 9:0 10:0 11:0 12:0 14:0 19:0 20:0 21:0 22:0 30:0
+   tick 10: sounds [48] effects 16 hp 10 mp 4 count 0 anim 00 slope 0 z 1
+   final: hp 10 mp 4 count 0 anim 00 slope 0
+-- item 27 DEEP WATER (boots 2) idle, Circle at 10
+   anim timeline : 1:00 2:1D 3:1D 5:1D 9:1D 10:1D 11:1D 12:1D 14:1D 19:1D 20:1D 21:1D 22:1D 30:1D
+   slope timeline: 1:4 2:4 3:4 5:4 9:4 10:4 11:4 12:4 14:4 19:4 20:4 21:4 22:4 30:4
+   tick 2: sounds [0] effects 0 hp 3 mp 1 count 1 anim 1D slope 4 z 1
+   tick 10: sounds [48] effects 16 hp 10 mp 4 count 0 anim 1D slope 4 z 1
+   final: hp 10 mp 4 count 0 anim 1D slope 4
+-- item 27 DEEP WATER (boots 2) swimming right, Circle at 20
+   anim timeline : 1:01 2:1D 3:0F 5:0F 10:0F 19:0F 20:0F 21:0F 22:0F 30:0F 40:0F
+   slope timeline: 1:4 2:4 3:4 5:4 10:4 19:4 20:4 21:4 22:4 30:4 40:4
+   tick 1: sounds [0] effects 0 hp 3 mp 1 count 1 anim 01 slope 4 z 1
+   tick 2: sounds [0] effects 0 hp 3 mp 1 count 1 anim 1D slope 4 z 1
+   tick 3: sounds [22] effects 0 hp 3 mp 1 count 1 anim 0F slope 4 z 1
+   tick 20: sounds [48] effects 16 hp 10 mp 4 count 0 anim 0F slope 4 z 1
+   final: hp 10 mp 4 count 0 anim 0F slope 4
+-- item 29 DRY idle, Circle at 10
+   anim timeline : 1:00 2:00 3:00 5:00 9:00 10:00 11:00 12:00 14:00 19:00 20:00 21:00 22:00 30:00
+   slope timeline: 1:0 2:0 3:0 5:0 9:0 10:0 11:0 12:0 14:0 19:0 20:0 21:0 22:0 30:0
+   tick 10: sounds [49] effects 4 hp 10 mp 4 count 0 anim 00 slope 0 z 1
+   final: hp 10 mp 4 count 0 anim 00 slope 0
+-- item 29 DEEP WATER (boots 2) idle, Circle at 10
+   anim timeline : 1:00 2:1D 3:1D 5:1D 9:1D 10:1D 11:1D 12:1D 14:1D 19:1D 20:1D 21:1D 22:1D 30:1D
+   slope timeline: 1:4 2:4 3:4 5:4 9:4 10:4 11:4 12:4 14:4 19:4 20:4 21:4 22:4 30:4
+   tick 2: sounds [0] effects 0 hp 3 mp 4 count 1 anim 1D slope 4 z 1
+   tick 10: sounds [49] effects 4 hp 10 mp 4 count 0 anim 1D slope 4 z 1
+   final: hp 10 mp 4 count 0 anim 1D slope 4
+-- item 29 DEEP WATER (boots 2) swimming right, Circle at 20
+   anim timeline : 1:01 2:1D 3:0F 5:0F 10:0F 19:0F 20:0F 21:0F 22:0F 30:0F 40:0F
+   slope timeline: 1:4 2:4 3:4 5:4 10:4 19:4 20:4 21:4 22:4 30:4 40:4
+   tick 1: sounds [0] effects 0 hp 3 mp 4 count 1 anim 01 slope 4 z 1
+   tick 2: sounds [0] effects 0 hp 3 mp 4 count 1 anim 1D slope 4 z 1
+   tick 3: sounds [22] effects 0 hp 3 mp 4 count 1 anim 0F slope 4 z 1
+   tick 20: sounds [49] effects 4 hp 10 mp 4 count 0 anim 0F slope 4 z 1
+   final: hp 10 mp 4 count 0 anim 0F slope 4

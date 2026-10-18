@@ -1,0 +1,69 @@
+# pickup_loot_80033DBC  [80033dbc, 80033ec8)  loot pickup effects by id 0x45-0x56 (C255 0x8007C358)
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+80033dbc  27bdffe8  addiu   $sp, $sp, -0x18
+80033dc0  24a3ffbb  addiu   $v1, $a1, -0x45
+80033dc4  2c620012  sltiu   $v0, $v1, 0x12
+80033dc8  10400039  beqz    $v0, 0x80033eb0
+80033dcc  afbf0010  sw      $ra, 0x10($sp)
+80033dd0  3c028002  lui     $v0, 0x8002
+80033dd4  2442308c  addiu   $v0, $v0, 0x308c
+80033dd8  00031880  sll     $v1, $v1, 2
+80033ddc  00621821  addu    $v1, $v1, $v0
+80033de0  8c620000  lw      $v0, ($v1)
+80033de4  00000000  nop     
+80033de8  00400008  jr      $v0
+80033dec  00000000  nop     
+80033df0  0c0137f6  jal     0x8004dfd8
+80033df4  24040001  addiu   $a0, $zero, 1
+80033df8  0800cfae  j       0x80033eb8
+80033dfc  00000000  nop     
+80033e00  0c0137f6  jal     0x8004dfd8
+80033e04  24040005  addiu   $a0, $zero, 5
+80033e08  0800cfae  j       0x80033eb8
+80033e0c  00000000  nop     
+80033e10  0c0137f6  jal     0x8004dfd8
+80033e14  2404000a  addiu   $a0, $zero, 0xa
+80033e18  0800cfae  j       0x80033eb8
+80033e1c  00000000  nop     
+80033e20  0c0137f6  jal     0x8004dfd8
+80033e24  2404001e  addiu   $a0, $zero, 0x1e
+80033e28  0800cfae  j       0x80033eb8
+80033e2c  00000000  nop     
+80033e30  0c0139bb  jal     0x8004e6ec
+80033e34  24040001  addiu   $a0, $zero, 1
+80033e38  0800cfae  j       0x80033eb8
+80033e3c  00000000  nop     
+80033e40  0c00ce0b  jal     0x8003382c
+80033e44  00000000  nop     
+80033e48  0800cfae  j       0x80033eb8
+80033e4c  00000000  nop     
+80033e50  0c00cd6b  jal     0x800335ac
+80033e54  00000000  nop     
+80033e58  0800cfae  j       0x80033eb8
+80033e5c  00000000  nop     
+80033e60  0c00cdbc  jal     0x800336f0
+80033e64  00000000  nop     
+80033e68  0800cfae  j       0x80033eb8
+80033e6c  00000000  nop     
+80033e70  0c00cceb  jal     0x800333ac
+80033e74  00000000  nop     
+80033e78  0800cfae  j       0x80033eb8
+80033e7c  00000000  nop     
+80033e80  0c00cb8b  jal     0x80032e2c
+80033e84  00000000  nop     
+80033e88  0800cfae  j       0x80033eb8
+80033e8c  00000000  nop     
+80033e90  0c00cbbb  jal     0x80032eec
+80033e94  00000000  nop     
+80033e98  0800cfae  j       0x80033eb8
+80033e9c  00000000  nop     
+80033ea0  0c00cbe1  jal     0x80032f84
+80033ea4  00000000  nop     
+80033ea8  0800cfae  j       0x80033eb8
+80033eac  00000000  nop     
+80033eb0  0c01394c  jal     0x8004e530
+80033eb4  00a02021  move    $a0, $a1
+80033eb8  8fbf0010  lw      $ra, 0x10($sp)
+80033ebc  27bd0018  addiu   $sp, $sp, 0x18
+80033ec0  03e00008  jr      $ra
+80033ec4  00000000  nop     

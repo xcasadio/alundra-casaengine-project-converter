@@ -1,0 +1,41 @@
+# heal_herb_80032E50  [80032e50, 80032eec)  Hp += max(5, HpMax/4), effect 14
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+80032e50  27bdffe0  addiu   $sp, $sp, -0x20
+80032e54  afbf0018  sw      $ra, 0x18($sp)
+80032e58  8c860018  lw      $a2, 0x18($a0)
+80032e5c  8c850014  lw      $a1, 0x14($a0)
+80032e60  04c10002  bgez    $a2, 0x80032e6c
+80032e64  00c01021  move    $v0, $a2
+80032e68  24c20003  addiu   $v0, $a2, 3
+80032e6c  00021883  sra     $v1, $v0, 2
+80032e70  28620005  slti    $v0, $v1, 5
+80032e74  10400002  beqz    $v0, 0x80032e80
+80032e78  00000000  nop     
+80032e7c  24030005  addiu   $v1, $zero, 5
+80032e80  00a32821  addu    $a1, $a1, $v1
+80032e84  00c5102a  slt     $v0, $a2, $a1
+80032e88  10400002  beqz    $v0, 0x80032e94
+80032e8c  00000000  nop     
+80032e90  00c02821  move    $a1, $a2
+80032e94  3c068012  lui     $a2, 0x8012
+80032e98  24c67d30  addiu   $a2, $a2, 0x7d30
+80032e9c  3c030010  lui     $v1, 0x10
+80032ea0  ac850014  sw      $a1, 0x14($a0)
+80032ea4  8cc20118  lw      $v0, 0x118($a2)
+80032ea8  00002021  move    $a0, $zero
+80032eac  afa20010  sw      $v0, 0x10($sp)
+80032eb0  8cc2011c  lw      $v0, 0x11c($a2)
+80032eb4  2405000e  addiu   $a1, $zero, 0xe
+80032eb8  00431021  addu    $v0, $v0, $v1
+80032ebc  afa20014  sw      $v0, 0x14($sp)
+80032ec0  8cc70114  lw      $a3, 0x114($a2)
+80032ec4  0c00ef76  jal     0x8003bdd8
+80032ec8  00803021  move    $a2, $a0
+80032ecc  00401821  move    $v1, $v0
+80032ed0  10600002  beqz    $v1, 0x80032edc
+80032ed4  3c020002  lui     $v0, 2
+80032ed8  ac62005c  sw      $v0, 0x5c($v1)
+80032edc  8fbf0018  lw      $ra, 0x18($sp)
+80032ee0  27bd0020  addiu   $sp, $sp, 0x20
+80032ee4  03e00008  jr      $ra
+80032ee8  00000000  nop     

@@ -1,0 +1,2 @@
+31 vectors replayed from an empty memory on the real code: all ok
+model of the two blocks vs the real code: 0 mismatches on 31 vectors

@@ -1,0 +1,16 @@
+# getfreeeffect_8003B9C4  [8003b9c4, 8003b9fc)  GetFreeEffect: 128 slots of 0x80 bytes from 0x80138608
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8003b9c4  00002021  move    $a0, $zero
+8003b9c8  3c028014  lui     $v0, 0x8014
+8003b9cc  24438608  addiu   $v1, $v0, -0x79f8
+8003b9d0  8c620068  lw      $v0, 0x68($v1)
+8003b9d4  00000000  nop     
+8003b9d8  10400006  beqz    $v0, 0x8003b9f4
+8003b9dc  00601021  move    $v0, $v1
+8003b9e0  24840001  addiu   $a0, $a0, 1
+8003b9e4  28820080  slti    $v0, $a0, 0x80
+8003b9e8  1440fff9  bnez    $v0, 0x8003b9d0
+8003b9ec  24630080  addiu   $v1, $v1, 0x80
+8003b9f0  00001021  move    $v0, $zero
+8003b9f4  03e00008  jr      $ra
+8003b9f8  00000000  nop     

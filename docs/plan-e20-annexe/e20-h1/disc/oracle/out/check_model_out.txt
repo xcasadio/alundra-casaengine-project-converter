@@ -1,0 +1,14 @@
+vec_cureale_heal_80033A2C.json             301 vectors   model vs real code: all equal
+vec_cureale_start_800347D4.json            189 vectors   model vs real code: all equal
+vec_dispatch_8003499C.json                 204 vectors   model vs real code: all equal
+vec_elixir_heal_800336F0.json              301 vectors   model vs real code: all equal
+vec_elixir_start_80034760.json              47 vectors   model vs real code: all equal
+vec_herb_heal_80032E50.json                301 vectors   model vs real code: all equal
+vec_herb_start_80034680.json                75 vectors   model vs real code: all equal
+vec_lpotion_heal_80033274.json             301 vectors   model vs real code: all equal
+vec_lpotion_start_800346F0.json             75 vectors   model vs real code: all equal
+vec_spotion_heal_800330FC.json             301 vectors   model vs real code: all equal
+vec_spotion_start_80034870.json             75 vectors   model vs real code: all equal
+vec_tryuseitem_8002ED64.json               178 vectors   model vs real code: all equal
+vec_water1_heal_80032F84.json              301 vectors   model vs real code: all equal
+TOTAL 2649 vectors, 0 mismatches

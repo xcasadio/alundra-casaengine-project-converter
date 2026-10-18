@@ -1,0 +1,52 @@
+# initeffect_8003BB14  [8003bb14, 8003bbdc)  InitEffect: the template copy and the position
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8003bb14  00804021  move    $t0, $a0
+8003bb18  00a06021  move    $t4, $a1
+8003bb1c  01005021  move    $t2, $t0
+8003bb20  3c028014  lui     $v0, 0x8014
+8003bb24  2449c608  addiu   $t1, $v0, -0x39f8
+8003bb28  252d0080  addiu   $t5, $t1, 0x80
+8003bb2c  8fae0014  lw      $t6, 0x14($sp)
+8003bb30  8faf0018  lw      $t7, 0x18($sp)
+8003bb34  8d0b0000  lw      $t3, ($t0)
+8003bb38  8d220000  lw      $v0, ($t1)
+8003bb3c  8d230004  lw      $v1, 4($t1)
+8003bb40  8d240008  lw      $a0, 8($t1)
+8003bb44  8d25000c  lw      $a1, 0xc($t1)
+8003bb48  ad420000  sw      $v0, ($t2)
+8003bb4c  ad430004  sw      $v1, 4($t2)
+8003bb50  ad440008  sw      $a0, 8($t2)
+8003bb54  ad45000c  sw      $a1, 0xc($t2)
+8003bb58  25290010  addiu   $t1, $t1, 0x10
+8003bb5c  152dfff6  bne     $t1, $t5, 0x8003bb38
+8003bb60  254a0010  addiu   $t2, $t2, 0x10
+8003bb64  ad0b0000  sw      $t3, ($t0)
+8003bb68  11800003  beqz    $t4, 0x8003bb78
+8003bb6c  ad0c0004  sw      $t4, 4($t0)
+8003bb70  0800eee0  j       0x8003bb80
+8003bb74  ad060030  sw      $a2, 0x30($t0)
+8003bb78  2402ffff  addiu   $v0, $zero, -1
+8003bb7c  ad020030  sw      $v0, 0x30($t0)
+8003bb80  24020002  addiu   $v0, $zero, 2
+8003bb84  ad070034  sw      $a3, 0x34($t0)
+8003bb88  ad020068  sw      $v0, 0x68($t0)
+8003bb8c  8fa20010  lw      $v0, 0x10($sp)
+8003bb90  a10e006e  sb      $t6, 0x6e($t0)
+8003bb94  a10f0070  sb      $t7, 0x70($t0)
+8003bb98  0002102b  sltu    $v0, $zero, $v0
+8003bb9c  a102006c  sb      $v0, 0x6c($t0)
+8003bba0  38420001  xori    $v0, $v0, 1
+8003bba4  a102006d  sb      $v0, 0x6d($t0)
+8003bba8  000e1027  nor     $v0, $zero, $t6
+8003bbac  a102006f  sb      $v0, 0x6f($t0)
+8003bbb0  000f1027  nor     $v0, $zero, $t7
+8003bbb4  a1020071  sb      $v0, 0x71($t0)
+8003bbb8  8fa2001c  lw      $v0, 0x1c($sp)
+8003bbbc  00000000  nop     
+8003bbc0  ad02003c  sw      $v0, 0x3c($t0)
+8003bbc4  8fa20020  lw      $v0, 0x20($sp)
+8003bbc8  00000000  nop     
+8003bbcc  ad020040  sw      $v0, 0x40($t0)
+8003bbd0  8fa20024  lw      $v0, 0x24($sp)
+8003bbd4  03e00008  jr      $ra
+8003bbd8  ad020044  sw      $v0, 0x44($t0)

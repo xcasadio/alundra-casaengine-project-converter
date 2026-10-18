@@ -1,0 +1,25 @@
+# getnumberofitem_8004E428  [8004e428, 8004e484)  GetNumberOfItem
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8004e428  27bdffe8  addiu   $sp, $sp, -0x18
+8004e42c  00802821  move    $a1, $a0
+8004e430  04a00007  bltz    $a1, 0x8004e450
+8004e434  afbf0010  sw      $ra, 0x10($sp)
+8004e438  3c028017  lui     $v0, 0x8017
+8004e43c  8c42638c  lw      $v0, 0x638c($v0)
+8004e440  00000000  nop     
+8004e444  00a2102a  slt     $v0, $a1, $v0
+8004e448  14400006  bnez    $v0, 0x8004e464
+8004e44c  3c028017  lui     $v0, 0x8017
+8004e450  3c048002  lui     $a0, 0x8002
+8004e454  0c0136e4  jal     0x8004db90
+8004e458  2484660c  addiu   $a0, $a0, 0x660c
+8004e45c  0801391d  j       0x8004e474
+8004e460  00001021  move    $v0, $zero
+8004e464  8c43631c  lw      $v1, 0x631c($v0)
+8004e468  00051080  sll     $v0, $a1, 2
+8004e46c  00431021  addu    $v0, $v0, $v1
+8004e470  84420002  lh      $v0, 2($v0)
+8004e474  8fbf0010  lw      $ra, 0x10($sp)
+8004e478  27bd0018  addiu   $sp, $sp, 0x18
+8004e47c  03e00008  jr      $ra
+8004e480  00000000  nop     

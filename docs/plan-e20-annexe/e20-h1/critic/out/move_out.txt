@@ -1,0 +1,8 @@
+walk east    tick 30 hero pos before the tick (11106304, 6553600, 1) after (11266048, 6553600, 1) effect (x,y,z) [11106304, 6553600, 1048577] anim 01 hp 8
+run (Tri+R)  tick 29 hero pos before the tick (6940672, 6553600, 1) after (7198720, 6553600, 1) effect (x,y,z) [6940672, 6553600, 1] anim 03 hp 3
+run (Tri+R)  tick 33 hero pos before the tick (7972864, 6553600, 1) after (8230912, 6553600, 1) effect (x,y,z) [7972864, 6553600, 1] anim 03 hp 3
+run (Tri+R)  tick 37 hero pos before the tick (9005056, 6553600, 1) after (9263104, 6553600, 1) effect (x,y,z) [9005056, 6553600, 1] anim 03 hp 3
+run (Tri+R)  tick 41 hero pos before the tick (10033216, 6553600, 1) after (10283200, 6553600, 1) effect (x,y,z) [10033216, 6553600, 1] anim 04 hp 3
+run (Tri+R)  tick 45 hero pos before the tick (11008960, 6553600, 1) after (11242816, 6553600, 1) effect (x,y,z) [11008960, 6553600, 1] anim 04 hp 3
+run (Tri+R)  tick 49 hero pos before the tick (11920192, 6553600, 1) after (12137920, 6553600, 1) effect (x,y,z) [11920192, 6553600, 1] anim 04 hp 3
+jump (Cross) tick 6 hero pos before the tick (6553600, 6553600, 1310721) after (6553600, 6553600, 1474561) effect (x,y,z) [6553600, 6553600, 2359297] anim 2D hp 8

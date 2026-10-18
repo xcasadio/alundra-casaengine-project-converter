@@ -1,0 +1,39 @@
+8003BDD8  27bdffc0  addiu    $sp, $sp, -0x40
+8003BDDC  afb1002c  sw       $s1, 0x2c($sp)
+8003BDE0  00808821  move     $s1, $a0
+8003BDE4  afb20030  sw       $s2, 0x30($sp)
+8003BDE8  00a09021  move     $s2, $a1
+8003BDEC  afb30034  sw       $s3, 0x34($sp)
+8003BDF0  00c09821  move     $s3, $a2
+8003BDF4  afb40038  sw       $s4, 0x38($sp)
+8003BDF8  00e0a021  move     $s4, $a3
+8003BDFC  afbf003c  sw       $ra, 0x3c($sp)
+8003BE00  0c00ee71  jal      0x8003b9c4
+8003BE04  afb00028  sw       $s0, 0x28($sp)
+8003BE08  00408021  move     $s0, $v0
+8003BE0C  1200000f  beqz     $s0, 0x8003be4c
+8003BE10  02002021  move     $a0, $s0
+8003BE14  00002821  move     $a1, $zero
+8003BE18  8fa20050  lw       $v0, 0x50($sp)
+8003BE1C  2406ffff  addiu    $a2, $zero, -1
+8003BE20  afa20020  sw       $v0, 0x20($sp)
+8003BE24  8fa20054  lw       $v0, 0x54($sp)
+8003BE28  00a03821  move     $a3, $a1
+8003BE2C  afb10010  sw       $s1, 0x10($sp)
+8003BE30  afb20014  sw       $s2, 0x14($sp)
+8003BE34  afb30018  sw       $s3, 0x18($sp)
+8003BE38  afb4001c  sw       $s4, 0x1c($sp)
+8003BE3C  0c00eec5  jal      0x8003bb14
+8003BE40  afa20024  sw       $v0, 0x24($sp)
+8003BE44  0800ef94  j        0x8003be50
+8003BE48  02001021  move     $v0, $s0
+8003BE4C  00001021  move     $v0, $zero
+8003BE50  8fbf003c  lw       $ra, 0x3c($sp)
+8003BE54  8fb40038  lw       $s4, 0x38($sp)
+8003BE58  8fb30034  lw       $s3, 0x34($sp)
+8003BE5C  8fb20030  lw       $s2, 0x30($sp)
+8003BE60  8fb1002c  lw       $s1, 0x2c($sp)
+8003BE64  8fb00028  lw       $s0, 0x28($sp)
+8003BE68  27bd0040  addiu    $sp, $sp, 0x40
+8003BE6C  03e00008  jr       $ra
+8003BE70  00000000  nop      

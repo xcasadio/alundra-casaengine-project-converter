@@ -1,0 +1,13 @@
+0x8002ed64 tryuseitem       178 vectors,   22 distinct pcs executed
+0x80032e50 herb_heal        301 vectors,   39 distinct pcs executed
+0x80032f84 water1_heal      301 vectors,   94 distinct pcs executed
+0x800330fc spotion_heal     301 vectors,   94 distinct pcs executed
+0x80033274 lpotion_heal     301 vectors,   78 distinct pcs executed
+0x800336f0 elixir_heal      301 vectors,  104 distinct pcs executed
+0x80033a2c cureale_heal     301 vectors,  219 distinct pcs executed
+0x80034680 herb_start        75 vectors,   98 distinct pcs executed
+0x800346f0 lpotion_start     75 vectors,  137 distinct pcs executed
+0x80034760 elixir_start      47 vectors,  170 distinct pcs executed
+0x800347d4 cureale_start    189 vectors,  295 distinct pcs executed
+0x80034870 spotion_start     75 vectors,  153 distinct pcs executed
+0x8003499c dispatch         204 vectors,   76 distinct pcs executed

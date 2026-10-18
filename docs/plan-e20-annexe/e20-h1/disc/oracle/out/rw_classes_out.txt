@@ -1,0 +1,39 @@
+vec_cureale_heal_80033A2C.json
+   reads : EXE table 0x80023654 (x), EXE table 0x80023694 (y), effect+0x3C, effect+0x40, hero+0x114, hero+0x118, hero+0x11C, hero+0x18, hero2+0x18, ptr stats, rng(0x80098708), stats+6
+   writes: effect+0x3C, effect+0x40, effect+0x54, effect+0x58, effect+0x5C, hero+0x14, hero2+0x14, rng(0x80098708), stats+4
+vec_cureale_start_800347D4.json
+   reads : EXE table 0x80023654 (x), EXE table 0x80023694 (y), effect+0x3C, effect+0x40, hero+0x114, hero+0x118, hero+0x11C, hero+0x14, hero+0x18, inventory size, inventory[item].count, ptr inventory, ptr stats, rng(0x80098708), stats+4, stats+6
+   writes: effect+0x3C, effect+0x40, effect+0x54, effect+0x58, effect+0x5C, hero+0x14, inventory[item].count, rng(0x80098708), stats+4
+vec_dispatch_8003499C.json
+   reads : EXE jump table 0x8002339C, in-use word
+   writes: counter, in-use word, phase
+vec_elixir_heal_800336F0.json
+   reads : EXE table 0x80023654 (x), EXE table 0x80023694 (y), effect+0x3C, effect+0x40, hero+0x114, hero+0x118, hero+0x11C, ptr stats, stats+6
+   writes: effect+0x3C, effect+0x40, effect+0x54, effect+0x58, effect+0x5C, stats+4
+vec_elixir_start_80034760.json
+   reads : EXE table 0x80023654 (x), EXE table 0x80023694 (y), effect+0x3C, effect+0x40, hero+0x114, hero+0x118, hero+0x11C, inventory size, inventory[item].count, ptr inventory, ptr stats, stats+4, stats+6
+   writes: effect+0x3C, effect+0x40, effect+0x54, effect+0x58, effect+0x5C, inventory[item].count, stats+4
+vec_herb_heal_80032E50.json
+   reads : hero+0x114, hero+0x118, hero+0x11C, hero+0x14, hero+0x18, hero2+0x14, hero2+0x18
+   writes: effect+0x5C, hero+0x14, hero2+0x14
+vec_herb_start_80034680.json
+   reads : hero+0x114, hero+0x118, hero+0x11C, hero+0x14, hero+0x18, inventory size, inventory[item].count, ptr inventory
+   writes: effect+0x5C, hero+0x14, inventory[item].count
+vec_lpotion_heal_80033274.json
+   reads : EXE table 0x80023654 (x), EXE table 0x80023694 (y), effect+0x3C, effect+0x40, hero+0x114, hero+0x118, hero+0x11C, hero+0x18, hero2+0x18
+   writes: effect+0x3C, effect+0x40, effect+0x54, effect+0x58, effect+0x5C, hero+0x14, hero2+0x14
+vec_lpotion_start_800346F0.json
+   reads : EXE table 0x80023654 (x), EXE table 0x80023694 (y), effect+0x3C, effect+0x40, hero+0x114, hero+0x118, hero+0x11C, hero+0x14, hero+0x18, inventory size, inventory[item].count, ptr inventory
+   writes: effect+0x3C, effect+0x40, effect+0x54, effect+0x58, effect+0x5C, hero+0x14, inventory[item].count
+vec_spotion_heal_800330FC.json
+   reads : hero+0x114, hero+0x118, hero+0x11C, hero+0x14, hero+0x18, hero2+0x14, hero2+0x18, rng(0x80098708)
+   writes: effect+0x54, effect+0x58, effect+0x5C, hero+0x14, hero2+0x14, rng(0x80098708)
+vec_spotion_start_80034870.json
+   reads : hero+0x114, hero+0x118, hero+0x11C, hero+0x14, hero+0x18, inventory size, inventory[item].count, ptr inventory, rng(0x80098708)
+   writes: effect+0x54, effect+0x58, effect+0x5C, hero+0x14, inventory[item].count, rng(0x80098708)
+vec_tryuseitem_8002ED64.json
+   reads : control flags, other 0x80126F2A
+   writes: 
+vec_water1_heal_80032F84.json
+   reads : hero+0x114, hero+0x118, hero+0x11C, hero+0x14, hero+0x18, hero2+0x14, hero2+0x18, rng(0x80098708)
+   writes: effect+0x54, effect+0x58, effect+0x5C, hero+0x14, hero2+0x14, rng(0x80098708)

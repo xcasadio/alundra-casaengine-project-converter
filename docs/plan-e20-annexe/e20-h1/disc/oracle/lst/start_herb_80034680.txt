@@ -1,0 +1,30 @@
+# start_herb_80034680  [80034680, 800346f0)  I36 Herb start
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+80034680  27bdffe8  addiu   $sp, $sp, -0x18
+80034684  afb00010  sw      $s0, 0x10($sp)
+80034688  00808021  move    $s0, $a0
+8003468c  3c028012  lui     $v0, 0x8012
+80034690  24447d30  addiu   $a0, $v0, 0x7d30
+80034694  afbf0014  sw      $ra, 0x14($sp)
+80034698  8c820014  lw      $v0, 0x14($a0)
+8003469c  8c830018  lw      $v1, 0x18($a0)
+800346a0  00000000  nop     
+800346a4  0043102a  slt     $v0, $v0, $v1
+800346a8  10400009  beqz    $v0, 0x800346d0
+800346ac  00000000  nop     
+800346b0  0c00cb94  jal     0x80032e50
+800346b4  02002821  move    $a1, $s0
+800346b8  0c01243f  jal     0x800490fc
+800346bc  24040031  addiu   $a0, $zero, 0x31
+800346c0  0c013971  jal     0x8004e5c4
+800346c4  02002021  move    $a0, $s0
+800346c8  0800d1b7  j       0x800346dc
+800346cc  24020001  addiu   $v0, $zero, 1
+800346d0  0c01243f  jal     0x800490fc
+800346d4  24040003  addiu   $a0, $zero, 3
+800346d8  24020001  addiu   $v0, $zero, 1
+800346dc  8fbf0014  lw      $ra, 0x14($sp)
+800346e0  8fb00010  lw      $s0, 0x10($sp)
+800346e4  27bd0018  addiu   $sp, $sp, 0x18
+800346e8  03e00008  jr      $ra
+800346ec  00000000  nop     

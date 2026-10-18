@@ -1,0 +1,8 @@
+# getmpmax_8004DDDC  [8004dddc, 8004ddf4)  GetPlayerMpMax
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8004dddc  3c028017  lui     $v0, 0x8017
+8004dde0  8c426318  lw      $v0, 0x6318($v0)
+8004dde4  00000000  nop     
+8004dde8  84420006  lh      $v0, 6($v0)
+8004ddec  03e00008  jr      $ra
+8004ddf0  00000000  nop     

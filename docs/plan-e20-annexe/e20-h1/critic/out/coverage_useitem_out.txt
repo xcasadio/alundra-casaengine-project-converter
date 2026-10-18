@@ -1,0 +1,2 @@
+UseItem body words: 31 covered by all start vectors: 31 by game-class only: 25
+not covered by game-class: ['0x8004e5ec', '0x8004e5f0', '0x8004e5f4', '0x8004e5f8', '0x8004e5fc', '0x8004e62c']

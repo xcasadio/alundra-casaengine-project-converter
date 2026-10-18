@@ -1,0 +1,8 @@
+equipped 24 owned {'0x24': 3} -> returns 0x24, equipped after 24
+equipped 26 owned {'0x26': 1} -> returns 0x26, equipped after 26
+equipped 2A owned {'0x2a': 1} -> returns 0x2a, equipped after 2A
+equipped 2A owned {'0x2a': 1, '0x26': 1} -> returns 0x2a, equipped after 26
+equipped 26 owned {'0x26': 1, '0x2a': 1} -> returns 0x26, equipped after 26
+equipped 24 owned {} -> returns -1, equipped after 24
+equipped 2B owned {'0x2b': 1, '0x2c': 1} -> returns 0x2b, equipped after 2C
+equipped 2C owned {'0x2b': 1, '0x2c': 1} -> returns 0x2c, equipped after 2C

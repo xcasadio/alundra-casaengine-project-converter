@@ -1,0 +1,27 @@
+vec_cureale_heal_80033A2C.json                 301/ 301 
+vec_cureale_start_800347D4.json                189/ 189 
+vec_dispatch_8003499C.json                     204/ 204 
+vec_elixir_heal_800336F0.json                  301/ 301 
+vec_elixir_start_80034760.json                  47/  47 
+vec_herb_heal_80032E50.json                    301/ 301 
+vec_herb_start_80034680.json                    75/  75 
+vec_lpotion_heal_80033274.json                 301/ 301 
+vec_lpotion_start_800346F0.json                 75/  75 
+vec_spotion_heal_800330FC.json                 301/ 301 
+vec_spotion_start_80034870.json                 75/  75 
+vec_tryuseitem_8002ED64.json                   178/ 178 
+vec_water1_heal_80032F84.json                  301/ 301 
+TOTAL 2649/2649  load-delay hazards seen: 0
+coverage 8002ED64: 22/22
+coverage 80032E50: 39/39
+coverage 80032F84: 94/94
+coverage 800330FC: 94/94
+coverage 80033274: 78/78
+coverage 800336F0: 79/79
+coverage 80033A2C: 194/194
+coverage 80034680: 28/28
+coverage 800346F0: 28/28
+coverage 80034760: 29/29
+coverage 800347D4: 39/39
+coverage 80034870: 28/28
+coverage 8003499C: 76/76

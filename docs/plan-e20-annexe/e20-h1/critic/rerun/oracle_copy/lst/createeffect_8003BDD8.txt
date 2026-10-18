@@ -1,0 +1,41 @@
+# createeffect_8003BDD8  [8003bdd8, 8003be74)  CreateEffectEntity(0, id, animation, x, y, z)
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8003bdd8  27bdffc0  addiu   $sp, $sp, -0x40
+8003bddc  afb1002c  sw      $s1, 0x2c($sp)
+8003bde0  00808821  move    $s1, $a0
+8003bde4  afb20030  sw      $s2, 0x30($sp)
+8003bde8  00a09021  move    $s2, $a1
+8003bdec  afb30034  sw      $s3, 0x34($sp)
+8003bdf0  00c09821  move    $s3, $a2
+8003bdf4  afb40038  sw      $s4, 0x38($sp)
+8003bdf8  00e0a021  move    $s4, $a3
+8003bdfc  afbf003c  sw      $ra, 0x3c($sp)
+8003be00  0c00ee71  jal     0x8003b9c4
+8003be04  afb00028  sw      $s0, 0x28($sp)
+8003be08  00408021  move    $s0, $v0
+8003be0c  1200000f  beqz    $s0, 0x8003be4c
+8003be10  02002021  move    $a0, $s0
+8003be14  00002821  move    $a1, $zero
+8003be18  8fa20050  lw      $v0, 0x50($sp)
+8003be1c  2406ffff  addiu   $a2, $zero, -1
+8003be20  afa20020  sw      $v0, 0x20($sp)
+8003be24  8fa20054  lw      $v0, 0x54($sp)
+8003be28  00a03821  move    $a3, $a1
+8003be2c  afb10010  sw      $s1, 0x10($sp)
+8003be30  afb20014  sw      $s2, 0x14($sp)
+8003be34  afb30018  sw      $s3, 0x18($sp)
+8003be38  afb4001c  sw      $s4, 0x1c($sp)
+8003be3c  0c00eec5  jal     0x8003bb14
+8003be40  afa20024  sw      $v0, 0x24($sp)
+8003be44  0800ef94  j       0x8003be50
+8003be48  02001021  move    $v0, $s0
+8003be4c  00001021  move    $v0, $zero
+8003be50  8fbf003c  lw      $ra, 0x3c($sp)
+8003be54  8fb40038  lw      $s4, 0x38($sp)
+8003be58  8fb30034  lw      $s3, 0x34($sp)
+8003be5c  8fb20030  lw      $s2, 0x30($sp)
+8003be60  8fb1002c  lw      $s1, 0x2c($sp)
+8003be64  8fb00028  lw      $s0, 0x28($sp)
+8003be68  27bd0040  addiu   $sp, $sp, 0x40
+8003be6c  03e00008  jr      $ra
+8003be70  00000000  nop     

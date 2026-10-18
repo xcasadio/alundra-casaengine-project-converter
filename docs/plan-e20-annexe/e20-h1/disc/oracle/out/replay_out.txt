@@ -1,0 +1,30 @@
+vec_cureale_heal_80033A2C.json             301 vectors   reads=  8956 words writes= 14065 words   replay: all ok
+vec_cureale_start_800347D4.json            189 vectors   reads=  5674 words writes=  7935 words   replay: all ok
+vec_dispatch_8003499C.json                 204 vectors   reads=   286 words writes=    66 words   replay: all ok
+vec_elixir_heal_800336F0.json              301 vectors   reads=  8325 words writes=  8351 words   replay: all ok
+vec_elixir_start_80034760.json              47 vectors   reads=  1126 words writes=  1052 words   replay: all ok
+vec_herb_heal_80032E50.json                301 vectors   reads=  1505 words writes=   445 words   replay: all ok
+vec_herb_start_80034680.json                75 vectors   reads=   447 words writes=   128 words   replay: all ok
+vec_lpotion_heal_80033274.json             301 vectors   reads=  8070 words writes=  8411 words   replay: all ok
+vec_lpotion_start_800346F0.json             75 vectors   reads=  1755 words writes=  1702 words   replay: all ok
+vec_spotion_heal_800330FC.json             301 vectors   reads=  1771 words writes=  2880 words   replay: all ok
+vec_spotion_start_80034870.json             75 vectors   reads=   494 words writes=   606 words   replay: all ok
+vec_tryuseitem_8002ED64.json               178 vectors   reads=   258 words writes=     0 words   replay: all ok
+vec_water1_heal_80032F84.json              301 vectors   reads=  1770 words writes=  2828 words   replay: all ok
+TOTAL 2649 vectors, 0 failures
+
+COVERAGE (instructions of each function executed by the replay; all vectors / game vectors only)
+  herb_heal 0x80032E50        39/ 39 (all)   38/ 39 (game)   missing(all): -
+  water1_heal 0x80032F84      94/ 94 (all)   94/ 94 (game)   missing(all): -
+  spotion_heal 0x800330FC     94/ 94 (all)   94/ 94 (game)   missing(all): -
+  lpotion_heal 0x80033274     78/ 78 (all)   78/ 78 (game)   missing(all): -
+  elixir_heal 0x800336F0      79/ 79 (all)   79/ 79 (game)   missing(all): -
+  cureale_heal 0x80033A2C    194/194 (all)  194/194 (game)   missing(all): -
+  herb_start 0x80034680       28/ 28 (all)   28/ 28 (game)   missing(all): -
+  lpotion_start 0x800346F0    28/ 28 (all)   28/ 28 (game)   missing(all): -
+  elixir_start 0x80034760     29/ 29 (all)   29/ 29 (game)   missing(all): -
+  cureale_start 0x800347D4    39/ 39 (all)   39/ 39 (game)   missing(all): -
+  spotion_start 0x80034870    28/ 28 (all)   28/ 28 (game)   missing(all): -
+  dispatch 0x8003499C         76/ 76 (all)   76/ 76 (game)   missing(all): -
+  useitem 0x8004E5C4          31/ 31 (all)   25/ 31 (game)   missing(all): -
+  tryuseitem 0x8002ED64       22/ 22 (all)   22/ 22 (game)   missing(all): -

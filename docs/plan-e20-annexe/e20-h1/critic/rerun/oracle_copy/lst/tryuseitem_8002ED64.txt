@@ -1,0 +1,24 @@
+# tryuseitem_8002ED64  [8002ed64, 8002edbc)  TryUseItem: the Circle front, the control flags, the dispatcher
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8002ed64  3c028012  lui     $v0, 0x8012
+8002ed68  94426f2a  lhu     $v0, 0x6f2a($v0)
+8002ed6c  27bdffe8  addiu   $sp, $sp, -0x18
+8002ed70  30420020  andi    $v0, $v0, 0x20
+8002ed74  1040000c  beqz    $v0, 0x8002eda8
+8002ed78  afbf0010  sw      $ra, 0x10($sp)
+8002ed7c  3c02800e  lui     $v0, 0x800e
+8002ed80  8c42c4b8  lw      $v0, -0x3b48($v0)
+8002ed84  00000000  nop     
+8002ed88  14400005  bnez    $v0, 0x8002eda0
+8002ed8c  00000000  nop     
+8002ed90  0c00d267  jal     0x8003499c
+8002ed94  00000000  nop     
+8002ed98  0800bb6b  j       0x8002edac
+8002ed9c  00000000  nop     
+8002eda0  0c01243f  jal     0x800490fc
+8002eda4  24040003  addiu   $a0, $zero, 3
+8002eda8  24020001  addiu   $v0, $zero, 1
+8002edac  8fbf0010  lw      $ra, 0x10($sp)
+8002edb0  27bd0018  addiu   $sp, $sp, 0x18
+8002edb4  03e00008  jr      $ra
+8002edb8  00000000  nop     

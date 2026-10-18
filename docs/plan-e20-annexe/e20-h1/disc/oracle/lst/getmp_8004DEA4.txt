@@ -1,0 +1,8 @@
+# getmp_8004DEA4  [8004dea4, 8004debc)  GetPlayerMp
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8004dea4  3c028017  lui     $v0, 0x8017
+8004dea8  8c426318  lw      $v0, 0x6318($v0)
+8004deac  00000000  nop     
+8004deb0  84420004  lh      $v0, 4($v0)
+8004deb4  03e00008  jr      $ra
+8004deb8  00000000  nop     

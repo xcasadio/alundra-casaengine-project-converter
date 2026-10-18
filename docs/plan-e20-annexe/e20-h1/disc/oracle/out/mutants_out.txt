@@ -1,0 +1,152 @@
+baseline: 0 mismatches on 2649 vectors (strict and lenient)
+killed    herb: minimum 5 -> 4                                           by "herb_heal hp=0 hpmax=5 effects=all": writes differ [(2148695364, 4), (2148695364, 5)]
+killed    herb: minimum 5 -> 6                                           by "herb_heal hp=0 hpmax=8 effects=random": writes differ [(2148695364, 5), (2148695364, 6)]
+killed    herb: quarter -> third                                         by "herb_heal hp=0 hpmax=18 effects=none": writes differ [(2148695364, 5), (2148695364, 6)]
+killed    herb: quarter -> eighth                                        by "herb_heal hp=0 hpmax=24 effects=none": writes differ [(2148695364, 5), (2148695364, 6)]
+killed    herb: no minimum                                               by "herb_heal hp=0 hpmax=1 effects=all": writes differ [(2148695364, 0), (2148695364, 1)]
+killed    herb: effect z force 0x20000 -> 0x40000                        by "herb_heal hp=0 hpmax=1 effects=all": writes differ [(2149482590, 2), (2149482590, 4)]
+killed    herb: effect z lift 0x100000 -> 0x80000                        by "herb_heal hp=0 hpmax=1 effects=all": calls differ
+killed    herb: z force written without the effect                       by "herb_heal hp=1 hpmax=1 effects=none": writes differ [(92, 0), (93, 0)]
+killed    herb: effect animation 0 -> 2                                  by "herb_heal hp=0 hpmax=1 effects=all": calls differ
+killed    cap: removed                                                   by "herb_heal hp=0 hpmax=1 effects=all": writes differ [(2148695364, 1), (2148695364, 5)]
+killed    cap: compares unsigned                                         by "herb_heal hp=-7 hpmax=0 effects=random": writes differ [(2148695364, 0), (2148695364, 254)]
+killed    cap: the sum is not wrapped to 32 bits                         by "herb_heal hp=2147483640 hpmax=2147483647 effects=all": writes differ [(2148695364, 247), (2148695364, 255)]
+killed    cap: writes the life only when it changes                      by "herb_heal hp=1 hpmax=1 effects=none": writes differ [(2148695364, 1), (2148695365, 0)]
+killed    water1: minimum 5 -> 4                                         by "water1_heal hp=0 hpmax=5 effects=all": writes differ [(2148695364, 4), (2148695364, 5)]
+killed    water1: minimum 5 -> 10                                        by "water1_heal hp=0 hpmax=8 effects=random": writes differ [(2148695364, 5), (2148695364, 8)]
+killed    spotion: minimum 10 -> 9                                       by "spotion_heal hp=0 hpmax=10 effects=random": writes differ [(2148695364, 9), (2148695364, 10)]
+killed    spotion: minimum 10 -> 5                                       by "spotion_heal hp=0 hpmax=8 effects=random": writes differ [(2148695364, 5), (2148695364, 8)]
+killed    half: half -> quarter                                          by "spotion_heal hp=0 hpmax=22 effects=alt": writes differ [(2148695364, 10), (2148695364, 11)]
+killed    half: half -> third                                            by "spotion_heal hp=0 hpmax=22 effects=alt": writes differ [(2148695364, 10), (2148695364, 11)]
+killed    half: three sparks                                             by "spotion_heal hp=0 hpmax=1 effects=all": stub values left unused
+killed    half: five sparks                                              by "spotion_heal hp=0 hpmax=1 effects=all": the model called a stub the vector does not list
+killed    half: spark z force 0x20000 -> 0x40000                         by "spotion_heal hp=0 hpmax=1 effects=all": writes differ [(2149482590, 2), (2149482590, 4)]
+killed    half: spark z lift 0x100000 -> 0x80000                         by "spotion_heal hp=0 hpmax=1 effects=all": calls differ
+killed    half: spark animation 0 -> 2                                   by "spotion_heal hp=0 hpmax=1 effects=all": calls differ
+killed    spark: draws although the effect was refused                   by "cureale_heal hp=1 hpmax=1 effects=none": writes differ [(84, 100), (85, 165)]
+killed    spark: first multiplier 0x20001 -> 0x30001                     by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149484628, 73), (2149484628, 109)]
+killed    spark: second multiplier 0x30001 -> 0x20001                    by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149484632, 114), (2149484632, 247)]
+killed    spark: x offset 0x10000 -> 0x18000                             by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149484629, 10), (2149484629, 138)]
+killed    spark: y offset 0x18000 -> 0x10000                             by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149484633, 55), (2149484633, 183)]
+killed    spark: x force written to the y slot                           by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149484628, 73), (2149484629, 10)]
+killed    spark: the generator keeps the first state                     by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2148108040, 55), (2148108040, 63)]
+killed    spark: the second draw reuses the first state                  by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2148108040, 55), (2148108040, 63)]
+killed    spark: generator constant A                                    by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2148108040, 47), (2148108040, 63)]
+killed    spark: generator constant C                                    by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2148108040, 63), (2148108040, 223)]
+killed    spark: no z force                                              by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149484636, 0), (2149484637, 0)]
+killed    spark: first draw taken from the second state                  by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149484628, 73), (2149484628, 247)]
+killed    lpotion: life not filled                                       by "lpotion_heal hp=0 hpmax=1 effects=all": writes differ [(2148695364, 1), (2148695365, 0)]
+killed    lpotion: life filled from the life                             by "lpotion_heal hp=0 hpmax=1 effects=all": writes differ [(2148695364, 0), (2148695364, 1)]
+killed    lpotion: ring animation 0 -> 2                                 by "lpotion_heal hp=0 hpmax=1 effects=all": calls differ
+killed    lpotion: seven rings                                           by "lpotion_heal hp=0 hpmax=1 effects=all": stub values left unused
+killed    ring: offset shift 11 -> 12                                    by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482813, 8), (2149482813, 16)]
+killed    ring: offset shift of y 11 -> 10                               by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482562, 108), (2149482562, 116)]
+killed    ring: force multiplier 448 -> 512                              by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482581, 0), (2149482581, 192)]
+killed    ring: y force multiplier 448 -> 384                            by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482840, 0), (2149482840, 128)]
+killed    ring: z force 0x30000 -> 0x20000                               by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482590, 2), (2149482590, 3)]
+killed    ring: force index 8 + 4i -> 4 + 4i                             by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482580, 0), (2149482580, 192)]
+killed    ring: force index wrapped at 64                                by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149484117, 0), (2149484117, 128)]
+killed    ring: position index 4i -> 2i                                  by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482813, 0), (2149482813, 8)]
+killed    ring: y position from the x table                              by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482562, 100), (2149482562, 116)]
+killed    ring: x force from the y table                                 by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482581, 0), (2149482581, 192)]
+killed    ring: z lift 0x80000 -> 0x100000                               by "cureale_heal hp=0 hpmax=1 effects=all": calls differ
+killed    ring: offset replaced instead of added (x)                     by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482558, 0), (2149482558, 100)]
+killed    ring: offset replaced instead of added (y)                     by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482562, 16), (2149482562, 116)]
+killed    ring: table entry read as unsigned                             by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482815, 0), (2149482815, 8)]
+killed    ring: written although the effect was refused                  by "cureale_heal hp=1 hpmax=1 effects=none": writes differ [(60, 0), (61, 0)]
+killed    elixir: ring animation 2 -> 0                                  by "elixir_heal hp=0 hpmax=1 effects=all": calls differ
+killed    elixir: magic not filled                                       by "elixir_heal hp=0 hpmax=1 effects=all": writes differ [(2149453828, 6), (2149453829, 0)]
+killed    elixir: magic set to 0                                         by "elixir_heal hp=0 hpmax=1 effects=all": writes differ [(2149453828, 0), (2149453828, 6)]
+killed    elixir: magic filled to the life maximum                       by "elixir_heal hp=0 hpmax=1 effects=all": writes differ [(2149453828, 0), (2149453828, 6)]
+killed    mp: negative maximum not floored                               by "cureale_heal hp=0 hpmax=3 effects=random": writes differ [(2149453828, 0), (2149453828, 255)]
+killed    mp: written to the maximum slot                                by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149453828, 3), (2149453829, 0)]
+killed    mp: maximum read as unsigned                                   by "cureale_heal hp=0 hpmax=3 effects=random": writes differ [(2149453828, 0), (2149453828, 255)]
+killed    mp: current magic read as unsigned                             by "cureale_start hp=11/10 mp=-1/4 count=3 effects=none": stub values left unused
+killed    cureale: life not filled                                       by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2148695364, 1), (2148695365, 0)]
+killed    cureale: magic not filled                                      by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149453828, 3), (2149453829, 0)]
+killed    cureale: ring animations start at 0                            by "cureale_heal hp=0 hpmax=1 effects=all": calls differ
+killed    cureale: all rings animation 2                                 by "cureale_heal hp=0 hpmax=1 effects=all": calls differ
+killed    cureale: seven rings                                           by "cureale_heal hp=0 hpmax=1 effects=all": stub values left unused
+killed    cureale: first spark z force 0x40000 -> 0x20000                by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149484638, 2), (2149484638, 4)]
+killed    cureale: second spark z force 0x20000 -> 0x40000               by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149484894, 2), (2149484894, 4)]
+killed    cureale: second spark animation 2 -> 0                         by "cureale_heal hp=0 hpmax=1 effects=all": calls differ
+killed    cureale: sparks swapped                                        by "cureale_heal hp=0 hpmax=1 effects=all": calls differ
+killed    cureale: three spark pairs                                     by "cureale_heal hp=0 hpmax=1 effects=all": stub values left unused
+killed    cureale: only the first spark                                  by "cureale_heal hp=0 hpmax=1 effects=all": stub values left unused
+killed    herb start: sound 0x31 -> 0x32                                 by "herb_start hp=1/10 mp=4/3 count=1 effects=all": calls differ
+killed    lpotion start: sound 0x32 -> 0x31                              by "lpotion_start hp=1/10 mp=-32768/4 count=1 effects=all": calls differ
+killed    elixir start: sound 0x30 -> 0x31                               by "elixir_start hp=1/1 mp=0/4 count=1 effects=all": calls differ
+killed    cureale start: sound 0x30 -> 0x32                              by "cureale_start hp=1/10 mp=0/4 count=1 effects=all": calls differ
+killed    spotion start: sound 0x31 -> 0x32                              by "spotion_start hp=1/10 mp=0/1 count=1 effects=all": calls differ
+killed    herb start: refusal sound 3 -> 4                               by "herb_start hp=10/10 mp=0/4 count=99 effects=random": calls differ
+killed    lpotion start: refusal sound 3 -> 4                            by "lpotion_start hp=10/10 mp=3/4 count=99 effects=random": calls differ
+killed    elixir start: refusal sound 3 -> 4                             by "elixir_start hp=5/20 mp=4/4 count=99 effects=random": calls differ
+killed    cureale start: refusal sound 3 -> 4                            by "cureale_start hp=10/10 mp=4/4 count=1 effects=none": calls differ
+killed    spotion start: refusal sound 3 -> 4                            by "spotion_start hp=10/10 mp=0/1 count=99 effects=random": calls differ
+killed    herb start: no consumption                                     by "herb_start hp=1/10 mp=4/3 count=1 effects=all": writes differ [(2149458066, 0), (2149458067, 0)]
+killed    lpotion start: no consumption                                  by "lpotion_start hp=1/10 mp=-32768/4 count=1 effects=all": writes differ [(2149458070, 0), (2149458071, 0)]
+killed    elixir start: no consumption                                   by "elixir_start hp=1/1 mp=0/4 count=1 effects=all": writes differ [(2149458074, 0), (2149458075, 0)]
+killed    cureale start: no consumption                                  by "cureale_start hp=1/10 mp=0/4 count=1 effects=all": writes differ [(2149458078, 0), (2149458079, 0)]
+killed    spotion start: no consumption                                  by "spotion_start hp=1/10 mp=0/1 count=1 effects=all": writes differ [(2149458086, 0), (2149458087, 0)]
+killed    herb start: consumes before the sound                          by "herb_start called with item argument -0x1": calls differ
+killed    herb start: sound before the heal                              by "herb_start hp=1/10 mp=4/3 count=1 effects=all": calls differ
+killed    life test: < -> <=                                             by "cureale_start hp=10/10 mp=4/4 count=1 effects=none": the model called a stub the vector does not list
+killed    life test: unsigned                                            by "cureale_start hp=-1/10 mp=3/-2 count=1 effects=alt2": stub values left unused
+killed    life test: always true                                         by "cureale_start hp=10/10 mp=4/4 count=1 effects=none": the model called a stub the vector does not list
+killed    magic test: < -> <=                                            by "cureale_start hp=10/10 mp=4/4 count=1 effects=none": the model called a stub the vector does not list
+killed    magic test: always true                                        by "cureale_start hp=10/10 mp=4/4 count=1 effects=none": the model called a stub the vector does not list
+killed    cureale start: and instead of or                               by "cureale_start hp=1/10 mp=0/0 count=9 effects=none": stub values left unused
+killed    cureale start: life only                                       by "cureale_start hp=10/10 mp=0/4 count=99 effects=all": stub values left unused
+killed    cureale start: magic only                                      by "cureale_start hp=1/10 mp=0/0 count=9 effects=none": stub values left unused
+killed    elixir start: life test instead of the magic test              by "elixir_start hp=1/1 mp=0/4 count=1 effects=all": stub values left unused
+killed    herb start: answers 0                                          by "herb_start hp=1/10 mp=4/3 count=1 effects=all": ret 0x0 want 0x1
+killed    use_item: decrement 2                                          by "cureale_start hp=1/10 mp=0/4 count=1 effects=all": writes differ [(2149458078, 0), (2149458078, 255)]
+killed    use_item: decrements at count 0 too                            by "cureale_start hp=3/10 mp=1/4 count=0 effects=all (count probe)": writes differ [(2149458078, 255), (2149458079, 255)]
+killed    use_item: wrong halfword                                       by "cureale_start hp=1/10 mp=0/4 count=1 effects=all": writes differ [(2149458078, 0), (2149458079, 0)]
+killed    use_item: entry stride 4 -> 8                                  by "cureale_start hp=1/10 mp=0/4 count=1 effects=all": writes differ [(2149458078, 0), (2149458079, 0)]
+killed    use_item: size test <= instead of <                            by "cureale_start inventory size 0x27 (UseItem error path)": stub values left unused
+killed    use_item: no size test                                         by "cureale_start inventory size 0x27 (UseItem error path)": stub values left unused
+killed    use_item: no negative test                                     by "cureale_start called with item argument -0x1": stub values left unused
+killed    use_item: error message address                                by "cureale_start inventory size 0x27 (UseItem error path)": calls differ
+killed    dispatch: in-use rule without the same-item pass               by "dispatch s0=0x1f in_use=0x1f start_ret=0": the model called a stub the vector does not list
+killed    dispatch: in-use rule ignored                                  by "dispatch s0=0x1f in_use=0x2c start_ret=0": the model called a stub the vector does not list
+killed    dispatch: in-use rule inverted                                 by "dispatch s0=0x1f in_use=0x1f start_ret=0": the model called a stub the vector does not list
+killed    dispatch: table lower bound forgotten                          by "dispatch s0=0x0 in_use=0x0 start_ret=-": the model called a stub the vector does not list
+killed    dispatch: table size 0x14 -> 0x13                              by "dispatch s0=0x32 in_use=0x0 start_ret=0": the model called a stub the vector does not list
+killed    dispatch: hole 0x28 forgotten                                  by "dispatch s0=0x28 in_use=0x0 start_ret=-": the model called a stub the vector does not list
+killed    dispatch: hole 0x2A forgotten                                  by "dispatch s0=0x2a in_use=0x0 start_ret=-": the model called a stub the vector does not list
+killed    dispatch: hole 0x21 forgotten                                  by "dispatch s0=0x21 in_use=0x0 start_ret=-": the model called a stub the vector does not list
+killed    dispatch: hole 0x22 forgotten                                  by "dispatch s0=0x22 in_use=0x0 start_ret=-": the model called a stub the vector does not list
+killed    dispatch: refusal sound 3 -> 4                                 by "dispatch s0=0xffffffff in_use=0x0 start_ret=-": calls differ
+killed    dispatch: instant items set the item in use                    by "dispatch s0=0x24 in_use=0x0 start_ret=0": writes differ [(2148692324, 36), (2148692325, 0)]
+killed    dispatch: instant items answer the start answer                by "dispatch s0=0x24 in_use=0x0 start_ret=0": ret 0x0 want 0x1
+killed    dispatch: instant start not called                             by "dispatch s0=0x24 in_use=0x0 start_ret=0": stub values left unused
+killed    dispatch: in-use set on every answer                           by "dispatch s0=0x1f in_use=0x0 start_ret=1": writes differ [(2148692316, 0), (2148692317, 0)]
+killed    dispatch: in-use set on answer 1                               by "dispatch s0=0x1f in_use=0x0 start_ret=0": writes differ [(2148692316, 0), (2148692317, 0)]
+killed    dispatch: counter not zeroed                                   by "dispatch s0=0x1f in_use=0x0 start_ret=0": writes differ [(2148692316, 0), (2148692317, 0)]
+killed    dispatch: phase not zeroed                                     by "dispatch s0=0x1f in_use=0x0 start_ret=0": writes differ [(2148692320, 0), (2148692321, 0)]
+killed    dispatch: in-use not written                                   by "dispatch s0=0x1f in_use=0x0 start_ret=0": writes differ [(2148692324, 31), (2148692325, 0)]
+killed    dispatch: answer lost                                          by "dispatch s0=0x1f in_use=0x0 start_ret=0": ret 0x1 want 0x0
+killed    dispatch: other start receives the wrong argument              by "dispatch s0=0x1f in_use=0x0 start_ret=0": calls differ
+killed    DECOMPILATION D-H1-2: ring position from the force index (8 + 4i) & 31 by "cureale_heal hp=0 hpmax=1 effects=all": writes differ [(2149482558, 76), (2149482558, 100)]
+killed    DECOMPILATION D-H1-1: the S Potion start is the cure-ale body  by "spotion_start hp=1/10 mp=0/1 count=1 effects=all": the model called a stub the vector does not list
+killed    try: front mask 0x20 -> 0x10                                   by "tryuseitem pressed=0x20 ctrl=0x0 start_ret=0": stub values left unused
+killed    try: front mask 0x20 -> 0x30                                   by "tryuseitem pressed=0x10 ctrl=0x0 start_ret=1": the model called a stub the vector does not list
+killed    try: no front still tries                                      by "tryuseitem pressed=0x0 ctrl=0x0 start_ret=1": the model called a stub the vector does not list
+killed    try: no front answers 0                                        by "tryuseitem pressed=0x0 ctrl=0x0 start_ret=1": ret 0x0 want 0x1
+killed    try: control flags test only bit 0x34                          by "tryuseitem pressed=0x20 ctrl=0x1 start_ret=1": the model called a stub the vector does not list
+killed    try: control flags test only bit 4                             by "tryuseitem pressed=0x20 ctrl=0x1 start_ret=1": the model called a stub the vector does not list
+killed    try: control flags ignored                                     by "tryuseitem pressed=0x20 ctrl=0x1 start_ret=1": the model called a stub the vector does not list
+killed    try: locked refusal sound 3 -> 4                               by "tryuseitem pressed=0x20 ctrl=0x1 start_ret=1": calls differ
+killed    try: locked refusal answers 0                                  by "tryuseitem pressed=0x20 ctrl=0x1 start_ret=1": ret 0x0 want 0x1
+killed    try: dispatcher answer lost                                    by "tryuseitem pressed=0x20 ctrl=0x0 start_ret=0": ret 0x1 want 0x0
+
+141 mutants: 141 killed by a value difference, 0 killed only by the read set, 0 killed by a crash of the mutated model, 0 survivors
+
+EQUIVALENT mutants (must survive in lenient mode; strict mode may still tell them by the read set):
+  cap: reads the life as unsigned                      lenient: survives   strict: survives
+  cap: floor division of a negative maximum            lenient: survives   strict: survives
+  cureale start: magic first                           lenient: survives   strict: read set (model read an unlisted byte 0x801e1004)
+  dispatch: bound 0x62 -> 0x61                         lenient: survives   strict: survives
+  dispatch: bound 0x62 -> 0x63                         lenient: survives   strict: read set (model read an unlisted byte 0x80127164)
+  dispatch: bound as signed                            lenient: survives   strict: read set (model read an unlisted byte 0x80127164)

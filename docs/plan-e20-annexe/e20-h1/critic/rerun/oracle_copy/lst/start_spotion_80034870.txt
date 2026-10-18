@@ -1,0 +1,30 @@
+# start_spotion_80034870  [80034870, 800348e0)  I41 S Potion start
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+80034870  27bdffe8  addiu   $sp, $sp, -0x18
+80034874  afb00010  sw      $s0, 0x10($sp)
+80034878  00808021  move    $s0, $a0
+8003487c  3c028012  lui     $v0, 0x8012
+80034880  24447d30  addiu   $a0, $v0, 0x7d30
+80034884  afbf0014  sw      $ra, 0x14($sp)
+80034888  8c820014  lw      $v0, 0x14($a0)
+8003488c  8c830018  lw      $v1, 0x18($a0)
+80034890  00000000  nop     
+80034894  0043102a  slt     $v0, $v0, $v1
+80034898  10400009  beqz    $v0, 0x800348c0
+8003489c  00000000  nop     
+800348a0  0c00cc3f  jal     0x800330fc
+800348a4  02002821  move    $a1, $s0
+800348a8  0c01243f  jal     0x800490fc
+800348ac  24040031  addiu   $a0, $zero, 0x31
+800348b0  0c013971  jal     0x8004e5c4
+800348b4  02002021  move    $a0, $s0
+800348b8  0800d233  j       0x800348cc
+800348bc  24020001  addiu   $v0, $zero, 1
+800348c0  0c01243f  jal     0x800490fc
+800348c4  24040003  addiu   $a0, $zero, 3
+800348c8  24020001  addiu   $v0, $zero, 1
+800348cc  8fbf0014  lw      $ra, 0x14($sp)
+800348d0  8fb00010  lw      $s0, 0x10($sp)
+800348d4  27bd0018  addiu   $sp, $sp, 0x18
+800348d8  03e00008  jr      $ra
+800348dc  00000000  nop     

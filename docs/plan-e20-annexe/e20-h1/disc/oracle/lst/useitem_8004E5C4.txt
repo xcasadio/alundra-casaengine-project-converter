@@ -1,0 +1,33 @@
+# useitem_8004E5C4  [8004e5c4, 8004e640)  UseItem: one less of the item
+# my capstone listing of ALUN_CD.EXE (France): address  word  instruction
+8004e5c4  27bdffe8  addiu   $sp, $sp, -0x18
+8004e5c8  00802821  move    $a1, $a0
+8004e5cc  04a00007  bltz    $a1, 0x8004e5ec
+8004e5d0  afbf0010  sw      $ra, 0x10($sp)
+8004e5d4  3c028017  lui     $v0, 0x8017
+8004e5d8  8c42638c  lw      $v0, 0x638c($v0)
+8004e5dc  00000000  nop     
+8004e5e0  00a2102a  slt     $v0, $a1, $v0
+8004e5e4  14400006  bnez    $v0, 0x8004e600
+8004e5e8  3c028017  lui     $v0, 0x8017
+8004e5ec  3c048002  lui     $a0, 0x8002
+8004e5f0  0c0136e4  jal     0x8004db90
+8004e5f4  24846674  addiu   $a0, $a0, 0x6674
+8004e5f8  0801398c  j       0x8004e630
+8004e5fc  00001021  move    $v0, $zero
+8004e600  8c43631c  lw      $v1, 0x631c($v0)
+8004e604  00051080  sll     $v0, $a1, 2
+8004e608  00432021  addu    $a0, $v0, $v1
+8004e60c  84820002  lh      $v0, 2($a0)
+8004e610  94830002  lhu     $v1, 2($a0)
+8004e614  10400005  beqz    $v0, 0x8004e62c
+8004e618  2462ffff  addiu   $v0, $v1, -1
+8004e61c  a4820002  sh      $v0, 2($a0)
+8004e620  00021400  sll     $v0, $v0, 0x10
+8004e624  0801398c  j       0x8004e630
+8004e628  00021403  sra     $v0, $v0, 0x10
+8004e62c  2402ffff  addiu   $v0, $zero, -1
+8004e630  8fbf0010  lw      $ra, 0x10($sp)
+8004e634  27bd0018  addiu   $sp, $sp, 0x18
+8004e638  03e00008  jr      $ra
+8004e63c  00000000  nop     
