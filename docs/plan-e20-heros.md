@@ -7772,8 +7772,8 @@ faisant foi : 84 citations, 0 fausse). Le binaire tranche ; la décompilation se
 9. **Les haricots ne sont pas une attaque** : leur seul usage est de réveiller le pot magique (type `0x199`, C74/A20), 39 pots sur 16 cartes,
    **aucune sur la chaîne de l'histoire** ; sinon ils éclatent 3 ticks après l'atterrissage (effet 8) (critique 0.7, A6).
 10. **Le menu Start est refusé tant qu'un objet est en cours** (`0x8002BC90`, `[0x80127164] != 0`) ; la garde de la DLL est déclarée absente
-    (`Alundra/UI/Inventory/InventoryDirector.cs:419-422`). Un second site, `0x8002BB94` (Start + Select, la potion de secours), n'a pas
-    d'équivalent dans la DLL.
+    (`Alundra/UI/Inventory/InventoryDirector.cs:419-422`). Un second site, `0x8002BB94` (Start + Select : non pas une potion de secours
+    mais l'abandon, qui relève d'E18 ; lu au binaire par h1, O-H-3), n'a pas d'équivalent dans la DLL.
 11. **La décompilation** : D1, les deux annulations y testent `+0x20` au lieu de `+0x24` (à la mort, le binaire lâche la bombe, qui continue sa fusée)
     (critique 0.9).
 12. **Sur la chaîne, seule la carte 10 donne la bombe** (`0x82 0x23`, programme B[8]) ; aucune ne donne les haricots ; la 362 pose la bombe d'Olen.
@@ -8068,15 +8068,17 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18)
+#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, révision 1)
 
 **Prérequis.** h0a (la table de départ, les mots de l'objet, la couture `ItemStartForTests`, le refus par le son 3) ; E20.c2a ✅ (les PV de
 l'entité du héros et leur miroir) ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H1-1, Q-H1-2 et Q-H1-3. Ni g1a, ni g2a, ni f4 à
 f6, ni e0c : h1 n'en dépend pas, mais **l'ordre ferme** du bloc du §1.20 (point 4 : f4, f5, f6a, f6b, puis h0 et h1) reste (critique C-16).
 
 **But.** Comme l'original : Rond avec l'un des cinq objets équipé soigne **dans le même tick**, avec ses effets, son son et un exemplaire de
-moins ; sinon le son 3, rien de consommé ; l'objet n'est jamais « en cours » ; il se boit dans les 63 états où Rond démarre un objet (en l'air,
-en portant, dans l'eau profonde à l'arrêt et à la nage).
+moins ; sinon le son 3, rien de consommé ; l'objet n'est jamais « en cours » ; il se boit dans les états où la DLL appelle `TryUseItem` (les 13
+lignes d'appel de la table de h0a T0 (a)) : **au sol, en l'air, dans l'eau profonde à l'arrêt et à la nage**, chacun couvert par une clé de T1. Le
+binaire le permet aussi dans les états de portage, d'échelle, de la cape et des tomes, que la DLL ne porte pas encore (§1.30, fait 1 : g1a, h4a,
+aucune tranche pour la cape) : **hors périmètre** de h1 (révision 1).
 
 **Faits** (`e20-h1/disc/report.md` §1, la critique `e20-h1/critic/check.md` faisant foi : tous les faits de comportement CONFIRMÉS par son
 propre interpréteur et son propre modèle, aucun P0 ni P1).
@@ -8142,7 +8144,8 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   `out/SHA1SUMS_vectors_keys.txt` identiques) et `e20-h1/critic/c_replay.py` (2 649 sur 2 649) ; (b) **les clés ajoutées** par la copie de
   `keys_h1.py` et des montages de la critique (`critic/c_swim.py`, `c_move.py`), deux exécutions identiques : `herb_two_uses` (compte 3, PV
   rabaissés au tick 29), `spotion_hp3of19` (le minimum 10 : 3 → 13), `herb_walk_east` (la relation « X de l'effet = X du héros au début du
-  tick »), `herb_deepwater_rest` et `herb_deepwater_swim` ; la clé `spotion_two_uses` se lit « un usage puis un refus » (le maximum de possession
+  tick »), `herb_jump` (en l'air : « Z de l'effet = Z du héros au début du tick + `0x100000` », critique §4 ; révision 1), `herb_deepwater_rest` et
+  `herb_deepwater_swim` (le champ entier en cases `0x0800`, la pente 4, et les bottes de nage `0x1B`, comme `critic/c_swim.py:15-21` ; révision 1) ; la clé `spotion_two_uses` se lit « un usage puis un refus » (le maximum de possession
   est 1 ; critique C-4) ; une clé que la machine ne sait pas faire est un arrêt avant T1 ; (c) l'adaptateur de D-H1-7 versé au README, les 15
   vecteurs de taille de table et ceux à `a0` ≠ héros marqués ; (d) **sondes** (prédiction écrite avant ; contredite, un arrêt) : P1, au banc des
   tests de monde, le générateur lu après l'image égale `rng0(t+1)` de la clé et le nombre de pas `draws + 1` (le bloc du §1.20, point 3) ; P2, le
@@ -8150,24 +8153,33 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   créations puis `null` ; P4, le miroir donne le même PVmax aux stats et à l'entité, 24 et 30 compris ; P5, les sons 48, 49 et 50 résolus par
   `alundra-project/Sounds/sfx-manifest.json` (assertion de non-régression, critique C-13) ; (e) la liste prédite : aucun test existant pour le
   code ; avec le préréglage de Q-H1-1, `AlundraTestSavesTests.TheNinePresets_AreListed_InTheOrderOfTheTable` et les lignes de la théorie
-  `EveryPresetName` ; recomptée au HEAD de départ ; (f) h0a faite (la table, les trois coutures, `ItemInUse`) ; (g) les noms passent la garde.
+  `EveryPresetName` ; recomptée au HEAD de départ ; (f) h0a faite (la table, les trois coutures, `ItemInUse`) ; (g) les noms passent la garde ; (h) les traces
+  d'oracle que h0a T0 (b) laisse « en attente de la tranche de leur objet » pour les cinq objets (`docs/plan-e20-annexe/e20-d/oracle/out*/w9/`,
+  `W9-item24`, `-25`, `-26`, `-27`, `-29` ; `0x28` est un trou, déjà exact avec h0a) : pour chacune, la prédiction écrite avant (un soin, ou un
+  refus si la vie et la magie de la trace sont au maximum) et, après la phase B, la trace exacte ; un écart est un arrêt (révision 1).
 - ⏳ **T1 — Phase A** (tests d'abord ; chaque « sans effet » accolé à un positif ; tous les tests (r), (e1), (e2), (g1) appellent le départ ou le
   soin **directement**, jamais par la table) : (v1) un test par soin, six, sur son fichier de vecteurs moins les « binaire seul », par
-  l'adaptateur (un écart sur un vecteur le rend rouge ; l'eau 1 par `Half(5)`) ; (v2) un test par départ, cinq, de même ; (r-herbe), (r-potionL),
-  (r-extrait), (r-breuvage), (r-potionS) : le positif avec des montants calculés à la main (Herbe : PVmax ∈ {10, 19, 20, 23, 24, 25, 40, 50} à
-  PVmax − 1 et à 3 ; Potion S : 10, **19**, 25, 30 ; le plafond ; le son ; le compte − 1 ; l'objet reste équipé à 0 exemplaire), accolé au refus
-  (PV ou PM au maximum : son 3, compte et valeurs inchangés) ; (r-breuvage) les quatre combinaisons PV/PM ; (r-nu) un héros sans reprise de vie
-  refuse ; (r-hud) aucun calage du HUD ; (r-ordre) un faux `ISoundPlayer` lit les PV et le compte à l'appel de `PlaySfx` : les PV déjà soignés, le
-  compte pas encore décrémenté (critique C-7) ; (e1) les effets de chaque objet par `CreatedForTests` : nombre, animation, Z, positions et forces
+  l'adaptateur (un écart sur un vecteur le rend rouge ; l'eau 1 par `Half(5)`) ; (v2) un test par départ, cinq, de même ; (r-herbe+), (r-potionL+),
+  (r-extrait+), (r-breuvage+), (r-potionS+) : le positif avec des montants calculés à la main (Herbe : PVmax ∈ {10, 19, 20, 23, 24, 25, 40, 50} à
+  PVmax − 1 et à 3 ; Potion S : 10, **19**, 25, 30 ; le plafond ; le son ; le compte − 1 ; l'objet reste équipé à 0 exemplaire), et, **en tests
+  séparés**, (r-herbe−) à (r-potionS−) le refus (PV ou PM au maximum : son 3, compte et valeurs inchangés) (révision 1) ; (r-breuvage+) les trois
+  combinaisons qui soignent et (r-breuvage−) celle qui refuse ; les (r) n'observent ni les effets ni le générateur ; (r-nu) un héros sans reprise de
+  vie (0/0) : l'Herbe, la Potion L et la Potion S refusent, et le Breuvage avec des PM sous le maximum ne soigne que les PM (révision 1) ; (r-hud)
+  aucun calage du HUD ; (r-ordre-X), un par objet : un faux `ISoundPlayer` lit les PV (ou les PM) et le compte à l'appel de `PlaySfx` (les valeurs
+  déjà soignées, le compte pas encore décrémenté ; critique C-7), **puis le test vérifie le compte final décrémenté** au retour du départ
+  (révision 1) ; (e1) les effets de chaque objet par `CreatedForTests` : nombre, animation, Z, positions et forces
   des anneaux calculés à la main depuis les deux tables ; (e2) un réservoir à K emplacements libres : K créations, 2 tirages par étincelle
   obtenue ; (g1) les tirages 0, 0, 0, 16, 8 et l'état final du générateur égal à `rng1` de la clé ; (lv) la fiole de vie inchangée : une épingle
   neuve de ses positions, forces et tirages (`CreateLifeVesselEffects`, appelée par `Alundra/Events/EventProgramRunner.cs:3154` ; aucun test ne
   la nomme au HEAD), écrite et verte avant tout changement de `NativeEffects` ; puis les tests de monde, **un par clé** (les 30 de la découverte et les cinq de T0 (b)) :
-  `ArcRun` de la carte 14, champ plat, entités de la carte retirées, `Give`, `SetItem`, `SetMp`, vie abaissée, graine posée avant la première
+  `ArcRun` de la carte 14, champ plat, entités de la carte retirées, `Give`, `SetItem`, `SetMp`, la vie abaissée **sur l'entité** (`Hero.Hp`,
+  après la reprise de la vie ; un abaissement dans les stats seules serait écrasé par le miroir, `PlayerManager.cs:638-644` ; révision 1), graine
+  posée avant la première
   image, Rond par `Press` à un tick par image, sauf `herb_circle_held_30` par `HoldDirections(PadState.Circle)` (`Alundra.Tests/AlundraArcSupport.cs:463`)
   puis `ReleaseDirections()` (un seul front ; critique C-5), par la couture de départ de h0a ; le générateur égal à la clé `_pf` après chaque
-  image ; les événements égaux à la clé (les sons dans l'ordre, les effets en ensemble) ; la marche, l'eau profonde et la nage par leurs clés. Puis
-  le code.
+  image ; les événements égaux à la clé (les sons dans l'ordre, les effets en ensemble) ; la marche, le saut, l'eau profonde et la nage par leurs clés. Les clés de
+  **refus** sont `herb_hp10of10_refused`, `lpotion_hp10of10_refused`, `spotion_hp10of10_refused`, `elixir_mp4of4_refused`,
+  `elixir_hp3_mp4_refused`, `cureale_hp10_mp4_refused` ; les autres ont au moins un usage réussi (révision 1). Puis le code.
 - ⏳ **T2 — Phase B** : les cinq entrées de la table de h0a et le préréglage (Q-H1-1) ; (p1) à (p5) un test de production par objet, **une clé
   chacun** : `herb_hp3of10`, `lpotion_hp3of10`, `elixir_mp1of4`, `cureale_hp3_mp1`, `spotion_hp3of10`, sans couture ; (p6) le préréglage se
   construit et ses épingles tiennent ; (p7) la table : les cinq entrées sont les cinq départs ; les onze autres (`0x1F`, `0x20`, `0x23`,
@@ -8188,11 +8200,15 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 - **DLL** : T1 vert en phase A ; (p1) à (p5) et (p7) rouges avant la phase B, verts après ; la suite en Release (copie neutralisée) et en Debug,
   zéro échec ; tests déplacés ⊂ liste prédite ; `cmp` ; traces inchangées ; moteur, convertisseur et données sans diff.
 - **Preuve de retrait** (critique C-3) : rendre les cinq entrées à leurs bouchons rend rouges exactement (p1) à (p5) et (p7), (v), (r), (e), (g),
-  (lv), les tests de monde et (p6) restant verts (ils appellent les départs directement ou par la couture) ; retirer l'appel de `UseItem` d'un
-  départ rend rouges exactement (v2) de ce départ, ses (r) et ses tests de monde, son (p) et (r-ordre) s'il est l'objet du faux ; de même pour
-  `PlaySfx` ; retirer un effet d'un soin rend rouges (v1) de ce soin, (v2) des départs qui l'appellent (le journal des appels d'effet), (e1), (e2)
-  s'il crée des anneaux ou des étincelles, (g1) s'il s'agit d'une étincelle, et les tests de monde et (p) des objets qui l'appellent ; pour l'eau 1
-  (sans appelant dans h1), seul (v1).
+  (lv), les tests de monde et (p6) restant verts (ils appellent les départs directement ou par la couture) ; **retirer l'appel de `UseItem` du
+  départ X** rend rouges exactement (v2) de X (l'écriture du compte), (r-X+), (r-ordre-X) (le compte final), les clés de monde de X qui ont un usage
+  réussi et le (p) de X, et laisse verts (r-X−), (r-nu), (r-hud), les clés de refus de X et tout ce qui touche les autres objets ; **retirer l'appel
+  de `PlaySfx` du succès de X** rend rouges exactement (v2) de X (le journal des sons), (r-X+), (r-ordre-X) (le faux n'est jamais appelé), les clés
+  de X qui ont un usage réussi et le (p) de X, avec les mêmes verts ; **faire que le soin H ne crée plus ses effets** rend rouges exactement (v1)
+  de H — et, pour `Half`, partagé, (v1) de la Potion S **et** de l'eau 1 —, (v2) des départs qui appellent H, (e1) et (e2) de leurs objets, (g1) si
+  H crée des étincelles (Potion S, Breuvage), les clés de monde de leurs objets où un effet est obtenu (toutes sauf les refus et les
+  `*_pool_full`) et le (p) de leurs objets, et laisse verts les (r), (r-ordre), les clés de refus et les `*_pool_full` (le test compare les effets
+  créés) (révision 1).
 - **Recette de l'auteur** (non bloquante) : le préréglage de Q-H1-1 ; Rond puis l'objet voulu : les cœurs ou les points de magie qui montent, le
   son, les anneaux ou les étincelles, un exemplaire de moins ; à pleine vie, le son de refus et rien de consommé ; dans l'eau profonde, de même.
 
