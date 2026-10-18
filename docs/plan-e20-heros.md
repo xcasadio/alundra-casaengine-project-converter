@@ -8068,7 +8068,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a, h4b1, h4c1, h4c2, h4d2 **READY** ; h4d1 détaillée, relecture en pause ; h4e1 détaillée, en relecture ; h4b1b, h4b2, h4e2 à h4f2 esquissées)
+### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a, h4b1, h4c1, h4c2, h4d2, h4e1 **READY** ; h4d1 détaillée, relecture en pause ; h4b1b, h4b2, h4e2 à h4f2 esquissées)
 
 **Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-h4/`, `report.md` et `check.md`,
 la critique faisant foi : aucun fait de comportement réfuté ; D13, le sprite 154, la portée de Q-H4-2 et du §6 corrigés ; ses statistiques de
@@ -8899,7 +8899,7 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
 - **Retour arrière** : la phase B (les trois entrées et l'appel) ; la phase A : le fichier, `SpriteTypes` `{16}`, l'accesseur, la référence de cible, et
   la fonction du compte, `ItemSpawnedEntity` et le créateur d'effet s'ils viennent de h4d2.
 
-#### 1.31.7 E20.h4e1 — Le vent 1 : le pilote `0x80035EB0`, la clé de distance et le plancher de naissance ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2 ; relecture de clôture)
+#### 1.31.7 E20.h4e1 — Le vent 1 : le pilote `0x80035EB0`, la clé de distance et le plancher de naissance ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `bb7bb47`)
 
 **Prérequis.** h0a et h4a (les coutures, la fonction de départ des tomes, les états, la garde) ; h4b1 (la requête et ses réglages) ; la fin du
 chantier et Q-R-7 ; les défauts retenus de Q-H4B-2 et Q-H4B-3 (corriger) et de Q-H4E1-1 (B, corriger). **Ni f4, f5, f6a, h4c1, h4c2, E14.b0** (le
