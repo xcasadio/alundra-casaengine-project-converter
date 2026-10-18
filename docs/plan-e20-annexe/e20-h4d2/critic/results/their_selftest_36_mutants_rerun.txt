@@ -1,0 +1,46 @@
+driver  binary_only vectors: 87 of 3270
+driver  right model: 3270/3270 vectors agree
+cancel  binary_only vectors: 81 of 400
+cancel  right model: 400/400 vectors agree
+e3      binary_only vectors: 0 of 288
+e3      right model: 288/288 vectors agree
+c63     binary_only vectors: 0 of 3524
+c63     right model: 3524/3524 vectors agree
+driver  counter & 7 -> & 15                      killed by   82 of 3270 vectors
+driver  draw range 32 -> 16                      killed by  180 of 3270 vectors
+driver  ball Z + 16 px -> + 8 px                 killed by  183 of 3270 vectors
+driver  ForceZ 0x80000 -> 0x40000                killed by  131 of 3270 vectors
+driver  +0x274 = 0x10 -> 0x0F                    killed by  131 of 3270 vectors
+driver  +0x278 not cleared                       killed by  131 of 3270 vectors
+driver  column death -> anim 0x33                killed by  159 of 3270 vectors
+driver  identity ignored                         killed by  159 of 3270 vectors
+driver  phase 1 without the guard                killed by 1418 of 3270 vectors
+driver  no chaining of phase 1 at birth          killed by 1760 of 3270 vectors
+driver  null column not returning 1              killed by   20 of 3270 vectors
+driver  phase 2 waits for 0x33                   killed by  110 of 3270 vectors
+driver  guard accepts 0x34                       killed by  254 of 3270 vectors
+driver  guard ignores slope 4                    killed by  456 of 3270 vectors
+cancel  type 20 / 23 swapped                     killed by  177 of 400 vectors
+cancel  effect variant 2 -> 1                    killed by  139 of 400 vectors
+cancel  effect id 19 -> 18                       killed by  139 of 400 vectors
+cancel  balls -> status 4                        killed by  136 of 400 vectors
+cancel  ctl20 not cleared                        killed by  136 of 400 vectors
+cancel  loop exclusive of the last slot          killed by   35 of 400 vectors
+cancel  status 3 balls also cancelled            killed by  240 of 400 vectors
+e3      no | 0x40                                killed by  147 of 288 vectors
+e3      ~0x10 instead of ~0x30                   killed by  127 of 288 vectors
+e3      destroy without the anim end             killed by   36 of 288 vectors
+c63     delay not decremented                    killed by  313 of 3524 vectors
+c63     ForceZ -3 px -> -2 px                    killed by 3211 of 3524 vectors
+c63     no-target draw 9 -> 8                    killed by  243 of 3524 vectors
+c63     type & 0xF -> & 0x7                      killed by  764 of 3524 vectors
+c63     mask ClassA 1 -> 5                       killed by  600 of 3524 vectors
+c63     identity not stored                      killed by  660 of 3524 vectors
+c63     dead target not forgotten                killed by  591 of 3524 vectors
+c63     +0x274 = 2 -> 3                          killed by 1956 of 3524 vectors
+c63     turn step 4 -> 3                         killed by  754 of 3524 vectors
+c63     turn threshold < 4 -> < 3                killed by   53 of 3524 vectors
+c63     turn up step 4 -> 5                      killed by  864 of 3524 vectors
+c63     first result: last instead of first      killed by  416 of 3524 vectors
+corrected mode (inclusive bound + sort from 2 + shortest-path turn) differs from the binary on 1433 of 3524 C63 vectors (240 of 1024 turn-grid vectors, 1193 random)
+ALL MUTANTS KILLED

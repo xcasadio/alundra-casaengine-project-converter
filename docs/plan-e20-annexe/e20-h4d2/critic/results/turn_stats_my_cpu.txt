@@ -1,0 +1,7 @@
+fire1_tgt_one_pf                   turns  69  long-way 14  turns not equal to my reading of the binary: 0
+fire1_tgt_three_pf                 turns 121  long-way 24  turns not equal to my reading of the binary: 0
+fire1_tgt_two_wrong_order_pf       turns 117  long-way 18  turns not equal to my reading of the binary: 0
+fire1_tgt_vanish75_pf              turns  14  long-way  1  turns not equal to my reading of the binary: 0
+fire1_col_hit_pf                   turns   0  long-way  0  turns not equal to my reading of the binary: 0
+fire1_tgt_topslot_pf               turns   0  long-way  0  turns not equal to my reading of the binary: 0
+TOTAL turns 321 long way 57 => 17.8%

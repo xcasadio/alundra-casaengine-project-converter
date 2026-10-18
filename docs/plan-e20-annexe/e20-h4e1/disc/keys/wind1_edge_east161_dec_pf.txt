@@ -1,0 +1,26 @@
+scenario wind1_edge_east161_dec_pf : {"circle_hold": null, "decoy": [500, 300], "decoy_slot": 2, "faithful": true, "gate_off": false, "hero_dir": 24, "hero_px": [100, 100], "hurt": null, "item": 49, "kill": null, "pf": true, "query_fix": false, "seed": 305419896, "target_slots": [1], "targets": [{"x": 261, "y": 100}], "ticks": 90}
+  t=  1 hero anim_t=0x32 item_in_use=0x31 phase=0 counter=0 mp=3
+  t=  2 hero anim_t=0x32 item_in_use=0x31 phase=1 counter=1 mp=3
+  t= 33 hero anim_t=0x33 item_in_use=0x31 phase=1 counter=32 mp=3
+  t= 42 QUERY counter(before incr)=40 count_word=2 n=1 cands=[(1, 25921)] -> random 0
+  t= 42 SPAWN sprite=22 x=2673096 y=9490330 z=8388609 dir=0 (raw args ok) -> slot 3
+  t= 42 draws=2 rng 0x2f9d6da7 -> 0xd99f3371 -> 0xc25be474 hit_targets=[]
+  t= 52 QUERY counter(before incr)=50 count_word=3 n=1 cands=[(1, 25921)] -> random 0
+  t= 52 SPAWN sprite=22 x=4350866 y=3202181 z=8388609 dir=0 (raw args ok) -> slot 4
+  t= 52 draws=2 rng 0xfcbcb593 -> 0x19b90bbd -> 0x5e304a10 hit_targets=[]
+  t= 62 QUERY counter(before incr)=60 count_word=4 n=1 cands=[(1, 25921)] -> random 0
+  t= 62 SPAWN sprite=22 x=3633126 y=3123578 z=8388609 dir=0 (raw args ok) -> slot 5
+  t= 62 draws=2 rng 0xc55964bf -> 0x1752f549 -> 0x408ed3ec hit_targets=[]
+  t= 72 QUERY counter(before incr)=70 count_word=5 n=1 cands=[(1, 25921)] -> random 0
+  t= 72 SPAWN sprite=22 x=9554625 y=3500734 z=8388609 dir=0 (raw args ok) -> slot 6
+  t= 72 draws=2 rng 0x9729a72b -> 0x22d57c15 -> 0x4aa45e08 hit_targets=[]
+  t= 82 QUERY counter(before incr)=80 count_word=6 n=1 cands=[(1, 25921)] -> random 0
+  t= 82 SPAWN sprite=22 x=2257614 y=7367478 z=8388609 dir=0 (raw args ok) -> slot 3
+  t= 82 draws=2 rng 0x1286e8d7 -> 0x98d66c21 -> 0xd7ee0464 hit_targets=[]
+  strike slot 3 id 4 : ticks 42..79 (life 38) at px (40.7882, 144.8109) z0=7831554
+  strike slot 4 id 5 : ticks 52..89 (life 38) at px (66.3889, 48.8614) z0=7831554
+  strike slot 5 id 6 : ticks 62..90 (life 29) at px (55.4371, 47.6620) z0=7831554
+  strike slot 6 id 7 : ticks 72..90 (life 19) at px (145.7920, 53.4170) z0=7831554
+  strike slot 3 id 8 : ticks 82..90 (life 9) at px (34.4485, 112.4188) z0=7831554
+  final: hero anim_t 0x33 item_in_use 0x31 phase 1 counter 89 mp 3
+  object freed at tick None

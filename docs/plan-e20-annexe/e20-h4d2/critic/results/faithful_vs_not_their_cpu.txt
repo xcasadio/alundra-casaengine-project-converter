@@ -1,0 +1,5 @@
+(run of scripts/nofaithful.py: fire1_lib.run(ticks=200) with / without the slot index + template +0x48 = -1 ("faithful") and with / without the per-frame generator step ("pf"))
+faithful=True  pf=True : column first=34 last=121 ; 11 balls first ticks [34, 42, 50, 58, 66, 74, 82, 90, 98, 106, 114] ; last entity gone after tick 193 ; object freed at 149 ; draws total 115
+faithful=True  pf=False: column first=34 last=121 ; 11 balls first ticks [34, 42, 50, 58, 66, 74, 82, 90, 98, 106, 114] ; last entity gone after tick 185 ; object freed at 149 ; draws total 111
+faithful=False pf=True : column first=34 last=122 ; 12 balls first ticks [34, 42, 50, 58, 66, 74, 82, 90, 98, 106, 114, 122] ; last entity gone after tick 178 ; object freed at 150 ; draws total 124
+faithful=False pf=False: column first=34 last=122 ; 12 balls first ticks [34, 42, 50, 58, 66, 74, 82, 90, 98, 106, 114, 122] ; last entity gone after tick 200 ; object freed at 150 ; draws total 118

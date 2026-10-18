@@ -1,0 +1,36 @@
+scenario wind1_slot_control_dec_pf : {"circle_hold": null, "decoy": [500, 300], "decoy_slot": 3, "faithful": true, "gate_off": false, "hero_dir": 24, "hero_px": [100, 100], "hurt": null, "item": 49, "kill": null, "pf": true, "query_fix": false, "seed": 305419896, "target_slots": [1, 2], "targets": [{"x": 140, "y": 100}, {"x": 150, "y": 150}], "ticks": 110}
+  t=  1 hero anim_t=0x32 item_in_use=0x31 phase=0 counter=0 mp=3
+  t=  2 hero anim_t=0x32 item_in_use=0x31 phase=1 counter=1 mp=3
+  t= 33 hero anim_t=0x33 item_in_use=0x31 phase=1 counter=32 mp=3
+  t=102 hero anim_t=0x34 item_in_use=0x31 phase=2 counter=101 mp=3
+  t= 42 QUERY counter(before incr)=40 count_word=3 n=2 cands=[(1, 1600), (2, 5000)] -> target 1
+  t= 42 SPAWN sprite=22 x=9175040 y=6553600 z=8388609 dir=0 (raw args ok) -> slot 4
+  t= 51 draws=9 rng 0xf26df1fa -> 0x85e33d01 -> 0xcd6635c4 hit_targets=[0]
+  t= 52 QUERY counter(before incr)=50 count_word=4 n=1 cands=[(2, 5000)] -> target 2
+  t= 52 SPAWN sprite=22 x=9830400 y=9830400 z=8388609 dir=0 (raw args ok) -> slot 5
+  t= 61 draws=9 rng 0xdfc441a3 -> 0xbd0e5606 -> 0x22d57c15 hit_targets=[1]
+  t= 62 QUERY counter(before incr)=60 count_word=5 n=0 cands=[] -> random 0
+  t= 62 SPAWN sprite=22 x=3930950 y=10550460 z=8388609 dir=0 (raw args ok) -> slot 6
+  t= 62 draws=2 rng 0x22d57c15 -> 0xf9f977cf -> 0x60a9379a hit_targets=[]
+  t= 72 QUERY counter(before incr)=70 count_word=6 n=0 cands=[] -> random 0
+  t= 72 SPAWN sprite=22 x=10875524 y=4261032 z=8388609 dir=0 (raw args ok) -> slot 7
+  t= 72 draws=2 rng 0x98d66c21 -> 0x3a09513b -> 0x6ad6b5d6 hit_targets=[]
+  t= 76 draws=9 rng 0xc9101edf -> 0xa5f99e52 -> 0x606791b1 hit_targets=[0]
+  t= 82 QUERY counter(before incr)=80 count_word=7 n=0 cands=[] -> random 0
+  t= 82 SPAWN sprite=22 x=8434884 y=9680327 z=8388609 dir=0 (raw args ok) -> slot 4
+  t= 82 draws=2 rng 0x05d676a8 -> 0xdf6b8d3a -> 0x5994f7f9 hit_targets=[]
+  t= 86 draws=9 rng 0x9d656d0e -> 0xdfcc6bc5 -> 0xc4a678f8 hit_targets=[1]
+  t= 92 QUERY counter(before incr)=90 count_word=7 n=0 cands=[] -> random 0
+  t= 92 SPAWN sprite=22 x=3791097 y=9695864 z=8388609 dir=0 (raw args ok) -> slot 5
+  t= 92 draws=2 rng 0x645eb9e3 -> 0xdfe4ee8d -> 0x976467a0 hit_targets=[]
+  t=102 QUERY counter(before incr)=100 count_word=7 n=1 cands=[(1, 1600)] -> target 1
+  t=102 SPAWN sprite=22 x=9175040 y=6553600 z=8388609 dir=0 (raw args ok) -> slot 6
+  strike slot 4 id 5 : ticks 42..79 (life 38) at px (140.0000, 100.0000) z0=7831554
+  strike slot 5 id 6 : ticks 52..89 (life 38) at px (150.0000, 150.0000) z0=7831554
+  strike slot 6 id 7 : ticks 62..99 (life 38) at px (59.9815, 160.9872) z0=7831554
+  strike slot 7 id 8 : ticks 72..109 (life 38) at px (165.9473, 65.0182) z0=7831554
+  strike slot 4 id 9 : ticks 82..110 (life 29) at px (128.7061, 147.7101) z0=7831554
+  strike slot 5 id 10 : ticks 92..110 (life 19) at px (57.8475, 147.9471) z0=7831554
+  strike slot 6 id 11 : ticks 102..110 (life 9) at px (140.0000, 100.0000) z0=7831554
+  final: hero anim_t 0x34 item_in_use 0x31 phase 2 counter 109 mp 3
+  object freed at tick None

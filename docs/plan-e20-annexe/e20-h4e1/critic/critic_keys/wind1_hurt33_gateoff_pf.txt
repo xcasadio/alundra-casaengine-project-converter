@@ -1,0 +1,12 @@
+scenario wind1_hurt33_gateoff_pf : {"circle_hold": null, "decoy": null, "decoy_slot": null, "faithful": true, "gate_off": true, "hero_dir": 24, "hero_px": [100, 100], "hurt": 33, "item": 49, "kill": null, "pf": true, "query_fix": false, "seed": 305419896, "target_slots": [], "targets": [], "ticks": 93}
+  t=  1 hero anim_t=0x32 item_in_use=0x31 phase=0 counter=0 mp=3
+  t=  2 hero anim_t=0x32 item_in_use=0x31 phase=1 counter=1 mp=3
+  t= 33 hero anim_t=0x31 item_in_use=0x0 phase=1 counter=32 mp=3
+  t= 37 hero anim_t=0x1c item_in_use=0x0 phase=1 counter=32 mp=3
+  t= 48 hero anim_t=0x0 item_in_use=0x0 phase=1 counter=32 mp=3
+  t= 32 QUERY counter(before incr)=30 count_word=0 n=0 cands=[] -> random 0
+  t= 32 SPAWN sprite=22 x=6079173 y=7375997 z=8388609 dir=0 (raw args ok) -> slot 1
+  t= 32 draws=2 rng 0x6b3e2065 -> 0x9918fa9f -> 0x24ce752a hit_targets=[]
+  strike slot 1 id 2 : ticks 32..69 (life 38) at px (92.7608, 112.5488) z0=7831554
+  final: hero anim_t 0x0 item_in_use 0x0 phase 1 counter 32 mp 3
+  object freed at tick 33

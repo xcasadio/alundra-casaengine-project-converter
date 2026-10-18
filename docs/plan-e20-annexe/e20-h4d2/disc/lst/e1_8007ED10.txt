@@ -1,0 +1,16 @@
+8007ED10  addiu    $sp, $sp, -0x18
+8007ED14  sw       $ra, 0x10($sp)
+8007ED18  jal      0x8003a59c
+8007ED1C  addiu    $a1, $zero, -1
+8007ED20  lw       $ra, 0x10($sp)
+8007ED24  addiu    $sp, $sp, 0x18
+8007ED28  jr       $ra
+8007ED2C  nop      
+8007ED30  addiu    $sp, $sp, -0x18
+8007ED34  sw       $ra, 0x10($sp)
+8007ED38  lw       $v0, 0x88($a0)
+8007ED3C  addiu    $a1, $zero, 2
+8007ED40  bne      $v0, $a1, 0x8007ed58
+8007ED44  addiu    $v0, $zero, 1
+8007ED48  lw       $v1, 0xac($a0)
+8007ED4C  nop      

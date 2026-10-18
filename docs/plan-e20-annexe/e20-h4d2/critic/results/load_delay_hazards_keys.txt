@@ -1,0 +1,2 @@
+hazards (pc, reg): count -> 1 distinct
+80030b2c r5 5269

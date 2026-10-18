@@ -1,0 +1,63 @@
+8002e814            slti     $v0, $a1, 1
+8002e818            bgez     $a0, 0x8002e824
+8002e81c            sll      $t0, $v0, 1
+8002e820            addiu    $t0, $t0, 1
+8002e824 L8002e824: bgez     $a0, 0x8002e830
+8002e828            nop      
+8002e82c            negu     $a0, $a0
+8002e830 L8002e830: bgez     $a1, 0x8002e83c
+8002e834            nop      
+8002e838            negu     $a1, $a1
+8002e83c L8002e83c: sltu     $v0, $a0, $a1
+8002e840            beqz     $v0, 0x8002e84c
+8002e844            move     $a3, $a0
+8002e848            move     $a3, $a1
+8002e84c L8002e84c: lui      $v1, 0x8002
+8002e850            lw       $v0, 0x2688($v1)
+8002e854            nop      
+8002e858            sltu     $v0, $v0, $a3
+8002e85c            beqz     $v0, 0x8002e880
+8002e860            move     $a2, $zero
+8002e864            addiu    $v1, $v1, 0x2688
+8002e868 L8002e868: addiu    $v1, $v1, 4
+8002e86c            lw       $v0, ($v1)
+8002e870            nop      
+8002e874            sltu     $v0, $v0, $a3
+8002e878            bnez     $v0, 0x8002e868
+8002e87c            addiu    $a2, $a2, 1
+8002e880 L8002e880: srlv     $a0, $a0, $a2
+8002e884            srlv     $a1, $a1, $a2
+8002e888            sll      $v0, $a1, 4
+8002e88c            addu     $v0, $v0, $a0
+8002e890            lui      $v1, 0x8002
+8002e894            addiu    $v1, $v1, 0x2488
+8002e898            sll      $v0, $v0, 1
+8002e89c            addu     $v0, $v0, $v1
+8002e8a0            lh       $v1, ($v0)
+8002e8a4            addiu    $v0, $zero, 1
+8002e8a8            beq      $t0, $v0, 0x8002e8e8
+8002e8ac            slti     $v0, $t0, 2
+8002e8b0            beqz     $v0, 0x8002e8c8
+8002e8b4            addiu    $v0, $zero, 2
+8002e8b8            beqz     $t0, 0x8002e8e0
+8002e8bc            andi     $v0, $v1, 0x1f
+8002e8c0            j        0x8002e908
+8002e8c4            nop      
+8002e8c8 L8002e8c8: beq      $t0, $v0, 0x8002e8f4
+8002e8cc            addiu    $v0, $zero, 3
+8002e8d0            beq      $t0, $v0, 0x8002e900
+8002e8d4            andi     $v0, $v1, 0x1f
+8002e8d8            j        0x8002e908
+8002e8dc            nop      
+8002e8e0 L8002e8e0: j        0x8002e904
+8002e8e4            addiu    $v1, $v1, 0x18
+8002e8e8 L8002e8e8: addiu    $v0, $zero, 8
+8002e8ec            j        0x8002e904
+8002e8f0            subu     $v1, $v0, $v1
+8002e8f4 L8002e8f4: addiu    $v0, $zero, 0x18
+8002e8f8            j        0x8002e904
+8002e8fc            subu     $v1, $v0, $v1
+8002e900 L8002e900: addiu    $v1, $v1, 8
+8002e904 L8002e904: andi     $v0, $v1, 0x1f
+8002e908 L8002e908: jr       $ra
+8002e90c            nop      

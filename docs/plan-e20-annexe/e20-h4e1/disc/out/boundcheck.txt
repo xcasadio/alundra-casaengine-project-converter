@@ -1,0 +1,18 @@
+wind1_one_near_dec_pf                inclusive-bound rows identical to the binary rows: True
+wind1_six_dec_pf                     inclusive-bound rows identical to the binary rows: True
+wind1_d8_far_first_dec_pf            inclusive-bound rows identical to the binary rows: True
+wind1_d8_near_first_dec_pf           inclusive-bound rows identical to the binary rows: True
+wind1_d8_three_sorted_dec_pf         inclusive-bound rows identical to the binary rows: True
+wind1_edge_east160_dec_pf            inclusive-bound rows identical to the binary rows: True
+wind1_edge_east161_dec_pf            inclusive-bound rows identical to the binary rows: True
+wind1_edge_south160_dec_pf           inclusive-bound rows identical to the binary rows: True
+wind1_edge_south161_dec_pf           inclusive-bound rows identical to the binary rows: True
+wind1_edge_east160_frac_dec_pf       inclusive-bound rows identical to the binary rows: True
+wind1_edge_east161_frac_dec_pf       inclusive-bound rows identical to the binary rows: True
+wind1_edge_west160_h200_dec_pf       inclusive-bound rows identical to the binary rows: True
+wind1_edge_west161_h200_dec_pf       inclusive-bound rows identical to the binary rows: True
+wind1_zgate_pass_dec_pf              inclusive-bound rows identical to the binary rows: True
+wind1_zgate_skip_dec_pf              inclusive-bound rows identical to the binary rows: True
+wind1_slot_reuse_dec_pf              inclusive-bound rows identical to the binary rows: True
+wind1_slot_control_dec_pf            inclusive-bound rows identical to the binary rows: True
+ALL IDENTICAL

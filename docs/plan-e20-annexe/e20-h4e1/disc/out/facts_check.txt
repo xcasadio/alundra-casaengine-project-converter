@@ -1,0 +1,77 @@
+exe sha1 a705f8dab665645af5dfaf8fb348c7926b5caa58
+table 0x800235E0 (u16 x9): [30, 40, 50, 60, 70, 80, 90, 100, 65535]
+pilot jump table 0x800235F4, item 0x31 (index 18): 0x8003644c ; 0x2B (index 12): 0x800363d4 ; 0x30: 0x80036434
+cancel table 0x800233EC: item 0x31 -> 0x800351a0 ; 0x2B -> 0x800351a0 ; 0x2C -> 0x80035130 ; 0x30 -> 0x80035178 ; 0x2F -> 0x80035160
+neutral cancel body 0x800351A0:
+   800351a0 lui      $v0, 0x8012
+   800351a4 sw       $zero, 0x7164($v0)
+   800351a8 lw       $ra, 0x10($sp)
+   800351ac addiu    $sp, $sp, 0x18
+   800351b0 jr       $ra
+   800351b4 nop      
+start table 0x8002339C (holes), item 0x31 entry: 0x80034a7c
+tome XA byte 0x80023365+item 0x31: 4
+template init code 0x8003B1F0..0x8003B250:
+   8003b1f0 addiu    $v1, $v1, 0x7d30
+   8003b1f4 move     $a0, $v0
+   8003b1f8 sw       $s3, ($v1)
+   8003b1fc addiu    $s3, $s3, 1
+   8003b200 slt      $v0, $a0, $s3
+   8003b204 beqz     $v0, 0x8003b1f8
+   8003b208 addiu    $v1, $v1, 0x294
+   8003b20c jal      0x80031700
+   8003b210 nop      
+   8003b214 lui      $v1, 0x8013
+   8003b218 addiu    $v0, $zero, -1
+   8003b21c sw       $v0, 0x43b0($v1)
+   8003b220 lw       $ra, 0x34($sp)
+   8003b224 lw       $s6, 0x30($sp)
+   8003b228 lw       $s5, 0x2c($sp)
+   8003b22c lw       $s4, 0x28($sp)
+   8003b230 lw       $s3, 0x24($sp)
+   8003b234 lw       $s2, 0x20($sp)
+   8003b238 lw       $s1, 0x1c($sp)
+   8003b23c lw       $s0, 0x18($sp)
+   8003b240 addiu    $sp, $sp, 0x38
+   8003b244 jr       $ra
+   8003b248 nop      
+   8003b24c addiu    $sp, $sp, -0x28
+slot init loop 0x8003B24C..0x8003B2D8:
+   8003b24c addiu    $sp, $sp, -0x28
+   8003b250 sw       $s0, 0x10($sp)
+   8003b254 move     $s0, $zero
+   8003b258 lui      $v0, 0x8012
+   8003b25c addiu    $t0, $v0, 0x7d30
+   8003b260 lui      $v0, 0x8013
+   8003b264 addiu    $t1, $v0, 0x4368
+   8003b268 addiu    $t2, $t1, 0x290
+   8003b26c sw       $ra, 0x20($sp)
+   8003b270 sw       $s3, 0x1c($sp)
+   8003b274 sw       $s2, 0x18($sp)
+   8003b278 sw       $s1, 0x14($sp)
+   8003b27c move     $a3, $t0
+   8003b280 move     $a2, $t1
+   8003b284 lw       $v0, ($a2)
+   8003b288 lw       $v1, 4($a2)
+   8003b28c lw       $a0, 8($a2)
+   8003b290 lw       $a1, 0xc($a2)
+   8003b294 sw       $v0, ($a3)
+   8003b298 sw       $v1, 4($a3)
+   8003b29c sw       $a0, 8($a3)
+   8003b2a0 sw       $a1, 0xc($a3)
+   8003b2a4 addiu    $a2, $a2, 0x10
+   8003b2a8 bne      $a2, $t2, 0x8003b284
+   8003b2ac addiu    $a3, $a3, 0x10
+   8003b2b0 lw       $v0, ($a2)
+   8003b2b4 nop      
+   8003b2b8 sw       $v0, ($a3)
+   8003b2bc sw       $s0, ($t0)
+   8003b2c0 addiu    $s0, $s0, 1
+   8003b2c4 slti     $v0, $s0, 0x40
+   8003b2c8 bnez     $v0, 0x8003b27c
+   8003b2cc addiu    $t0, $t0, 0x294
+   8003b2d0 lui      $v0, 0x8013
+   8003b2d4 jal      0x80031974
+   8003b2d8 sw       $zero, 0x4360($v0)
+   8003b2dc move     $s0, $zero
+   8003b2e0 lui      $s2, 0x800e

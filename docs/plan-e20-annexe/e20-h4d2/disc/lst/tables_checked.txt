@@ -1,0 +1,24 @@
+SHA-1 of the image used:
+a705f8dab665645af5dfaf8fb348c7926b5caa58
+wrapper jump table 0x800235F4 (index = item - 0x1F):
+  item 0x2b -> 0x800363d4
+  item 0x2c -> 0x800363ec
+  item 0x2d -> 0x80036404
+  item 0x2e -> 0x80036404
+  item 0x2f -> 0x8003641c
+  item 0x30 -> 0x80036434
+  item 0x31 -> 0x8003644c
+  item 0x32 -> 0x80036464
+cancel dispatch table 0x800233EC:
+  item 0x2b -> 0x800351a0
+  item 0x2c -> 0x80035130
+  item 0x2d -> 0x80035148
+  item 0x2e -> 0x80035148
+  item 0x2f -> 0x80035160
+  item 0x30 -> 0x80035178
+  item 0x31 -> 0x800351a0
+  item 0x32 -> 0x80035190
+start table 0x8002339C (fire 1 not a hole): 2147699324
+handlers: slot A code 254 = 0x80061bcc ; slot C code 63 = 0x8007ac60 ; slot E code 1 = 0x8007ed10 ; slot E code 3 = 0x8007eda0
+slot A code 0 = 0x8006174c
+XA track byte table 0x80023365 + item:  [0, 1, 6, 6, 2, 3, 4, 5]

@@ -1,0 +1,8 @@
+scenario wind1_hurt20_pf : {"circle_hold": null, "decoy": null, "decoy_slot": null, "faithful": true, "gate_off": false, "hero_dir": 24, "hero_px": [100, 100], "hurt": 20, "item": 49, "kill": null, "pf": true, "query_fix": false, "seed": 305419896, "target_slots": [], "targets": [], "ticks": 80}
+  t=  1 hero anim_t=0x32 item_in_use=0x31 phase=0 counter=0 mp=3
+  t=  2 hero anim_t=0x32 item_in_use=0x31 phase=1 counter=1 mp=3
+  t= 20 hero anim_t=0x31 item_in_use=0x0 phase=1 counter=19 mp=3
+  t= 24 hero anim_t=0x1c item_in_use=0x0 phase=1 counter=19 mp=3
+  t= 35 hero anim_t=0x0 item_in_use=0x0 phase=1 counter=19 mp=3
+  final: hero anim_t 0x0 item_in_use 0x0 phase 1 counter 19 mp 3
+  object freed at tick 20

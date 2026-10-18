@@ -1,0 +1,35 @@
+8002E814  slti     $v0, $a1, 1
+8002E818  bgez     $a0, 0x8002e824
+8002E81C  sll      $t0, $v0, 1
+8002E820  addiu    $t0, $t0, 1
+8002E824  bgez     $a0, 0x8002e830
+8002E828  nop      
+8002E82C  negu     $a0, $a0
+8002E830  bgez     $a1, 0x8002e83c
+8002E834  nop      
+8002E838  negu     $a1, $a1
+8002E83C  sltu     $v0, $a0, $a1
+8002E840  beqz     $v0, 0x8002e84c
+8002E844  move     $a3, $a0
+8002E848  move     $a3, $a1
+8002E84C  lui      $v1, 0x8002
+8002E850  lw       $v0, 0x2688($v1)
+8002E854  nop      
+8002E858  sltu     $v0, $v0, $a3
+8002E85C  beqz     $v0, 0x8002e880
+8002E860  move     $a2, $zero
+8002E864  addiu    $v1, $v1, 0x2688
+8002E868  addiu    $v1, $v1, 4
+8002E86C  lw       $v0, ($v1)
+8002E870  nop      
+8002E874  sltu     $v0, $v0, $a3
+8002E878  bnez     $v0, 0x8002e868
+8002E87C  addiu    $a2, $a2, 1
+8002E880  srlv     $a0, $a0, $a2
+8002E884  srlv     $a1, $a1, $a2
+8002E888  sll      $v0, $a1, 4
+8002E88C  addu     $v0, $v0, $a0
+8002E890  lui      $v1, 0x8002
+8002E894  addiu    $v1, $v1, 0x2488
+8002E898  sll      $v0, $v0, 1
+8002E89C  addu     $v0, $v0, $v1

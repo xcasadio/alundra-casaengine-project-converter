@@ -1,0 +1,12 @@
+(a) east vs south: strike births identical: True
+    generator states identical at every tick: True
+(b) gate off (what-if): births (tick, slot, x px, y px): [(32, 1, 92.761, 112.549), (42, 2, 149.769, 145.243), (52, 3, 74.641, 72.212), (62, 4, 52.418, 147.883), (72, 1, 59.982, 160.987), (82, 2, 165.947, 65.018), (92, 3, 182.749, 44.321), (102, 4, 35.908, 37.801)]
+    faithful births                                        : [(42, 1, 40.788, 144.811), (52, 2, 66.389, 48.861), (62, 3, 55.437, 47.662), (72, 4, 145.792, 53.417), (82, 1, 34.448, 112.419), (92, 2, 52.463, 71.447), (102, 3, 171.565, 80.791)]
+    gate-off object freed at 129  faithful 129
+(c) h4 stale-slot harness (FAITHFUL=0) vs remade (FAITHFUL=1), no target:
+    stale   births: [(42, 1), (52, 2), (62, 3)]  life of the first strike (ticks seen): [42, 80]
+    remade  births: [(42, 1), (52, 2), (62, 3)]  life of the first strike (ticks seen): [42, 79]
+    stale  z/status ticks 41..46: [(41, None, None), (42, 8388610, 1), (43, 7831554, 2), (44, 7241730, 2), (45, 6619138, 2), (46, 5963778, 2)]
+    remade z/status ticks 41..46: [(41, None, None), (42, 7831554, 2), (43, 7241730, 2), (44, 6619138, 2), (45, 5963778, 2), (46, 5275650, 2)]
+    first tick the two keys differ in the strike (z): 42
+(d) one near target (decoy): first hit tick stale 52 remade 51

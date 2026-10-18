@@ -1,0 +1,4 @@
+vectors 800, mismatches with my model: 0
+stats {'ret0': 689, 'ret1': 111, 'strikes_target': 171, 'strikes_random': 352, 'spawn_null': 149, 'destroy': 55, 'end': 88, 'q_ge3': 173, 'q_eq2': 95, 'far_stop': 0}
+coverage (instructions executed / total) {'driver': (218, 218), 'guard': (19, 19), 'cancel': (22, 62), 'query': (94, 94), 'sort': (91, 91)}
+uncovered {'driver': [], 'guard': []}

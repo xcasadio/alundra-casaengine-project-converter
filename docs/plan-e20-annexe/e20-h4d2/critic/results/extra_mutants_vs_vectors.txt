@@ -1,0 +1,20 @@
+c63     ForceZ written before the delay test (also while the delay runs)                      killed by  313 of 3524 vectors
+c63     +0x274 = 2 also when the direction is unchanged                                       killed by   66 of 3524 vectors
+c63     target forgotten also when its status is 3 only (kept when status 2 or 3)             killed by   53 of 3524 vectors
+c63     turn deferred: no turn in the acquisition tick                                        killed by  642 of 3524 vectors
+c63     target identity compared with the ball id instead of +0x27C                           killed by 1658 of 3524 vectors
+c63     delay decremented by 2                                                                killed by  313 of 3524 vectors
+c63     no-target draw stored without the draw (keeps the generator)                          killed by  598 of 3524 vectors
+driver  counter read AFTER the increment (c+1) & 7                                            killed by  216 of 3270 vectors
+driver  draw consumed only if the ball is born                                                killed by   52 of 3270 vectors
+driver  column pointer stored only when non null                                              killed by   20 of 3270 vectors
+driver  phase advanced before the identity is stored (identity from column of the previous cast) killed by   64 of 3270 vectors
+driver  guard result ignored in phase 1 (cancel done, spell goes on)                          killed by 1418 of 3270 vectors
+cancel  effect Z read from +0x118 instead of +0x11C                                           killed by  139 of 400 vectors
+cancel  balls cancelled by position instead of type 23 (any type != 20 at status 2)           killed by  239 of 400 vectors
+cancel  column destroyed before the effect is created                                         killed by    0 of 400 vectors   *** SURVIVES
+cancel  count read as unsigned (count<=0 not tested)                                          killed by   75 of 400 vectors
+e3      destroy when anim==1 only (no +0xAC)                                                  killed by   36 of 288 vectors
+e3      destroy when +0xAC==1 only (no anim==1)                                               killed by  240 of 288 vectors
+e3      anim set to 2 instead of 1                                                            killed by  276 of 288 vectors
+SURVIVORS: ['column destroyed before the effect is created']

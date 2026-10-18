@@ -1,0 +1,120 @@
+80035a84            addiu    $sp, $sp, -0x28
+80035a88            sw       $s0, 0x20($sp)
+80035a8c            lui      $s0, 0x8012
+80035a90            lw       $v1, 0x7160($s0)
+80035a94            addiu    $v0, $zero, 1
+80035a98            beq      $v1, $v0, 0x80035b40
+80035a9c            sw       $ra, 0x24($sp)
+80035aa0            slti     $v0, $v1, 2
+80035aa4            beqz     $v0, 0x80035abc
+80035aa8            addiu    $v0, $zero, 2
+80035aac            beqz     $v1, 0x80035acc
+80035ab0            move     $v0, $zero
+80035ab4            j        0x80035c50
+80035ab8            nop      
+80035abc L80035abc: beq      $v1, $v0, 0x80035c38
+80035ac0            move     $v0, $zero
+80035ac4            j        0x80035c50
+80035ac8            nop      
+80035acc L80035acc: jal      0x800351b8
+80035ad0            nop      
+80035ad4            bnez     $v0, 0x80035c50
+80035ad8            addiu    $v0, $zero, 1
+80035adc            lui      $v0, 0x8012
+80035ae0            addiu    $a0, $v0, 0x7d30
+80035ae4            lw       $v1, 0x88($a0)
+80035ae8            addiu    $v0, $zero, 0x33
+80035aec            bne      $v1, $v0, 0x80035c4c
+80035af0            move     $a1, $zero
+80035af4            lw       $a3, 0x114($a0)
+80035af8            lw       $v0, 0x118($a0)
+80035afc            lw       $v1, 0x11c($a0)
+80035b00            addiu    $a2, $zero, 0x14
+80035b04            sw       $zero, 0x18($sp)
+80035b08            sw       $v0, 0x10($sp)
+80035b0c            jal      0x80039f58
+80035b10            sw       $v1, 0x14($sp)
+80035b14            move     $v1, $v0
+80035b18            lui      $v0, 0x8012
+80035b1c            sw       $v1, 0x711c($v0)
+80035b20            beqz     $v1, 0x80035c50
+80035b24            addiu    $v0, $zero, 1
+80035b28            lw       $v0, 4($v1)
+80035b2c            lw       $v1, 0x7160($s0)
+80035b30            lui      $a0, 0x8012
+80035b34            addiu    $v1, $v1, 1
+80035b38            sw       $v0, 0x7120($a0)
+80035b3c            sw       $v1, 0x7160($s0)
+80035b40 L80035b40: jal      0x800351b8
+80035b44            nop      
+80035b48            bnez     $v0, 0x80035c50
+80035b4c            addiu    $v0, $zero, 1
+80035b50            lui      $v0, 0x8012
+80035b54            lw       $v0, 0x711c($v0)
+80035b58            lui      $v1, 0x8012
+80035b5c            lw       $a0, 4($v0)
+80035b60            lw       $v0, 0x7120($v1)
+80035b64            nop      
+80035b68            bne      $a0, $v0, 0x80035c1c
+80035b6c            lui      $a1, 0x8012
+80035b70            lui      $v0, 0x8012
+80035b74            lw       $v0, 0x715c($v0)
+80035b78            nop      
+80035b7c            andi     $v0, $v0, 7
+80035b80            bnez     $v0, 0x80035c50
+80035b84            move     $v0, $zero
+80035b88            lui      $v1, 0x7d2b
+80035b8c            lui      $t1, 0x800a
+80035b90            lw       $v0, -0x78f8($t1)
+80035b94            ori      $v1, $v1, 0x89dd
+80035b98            mult     $v0, $v1
+80035b9c            lui      $t0, 0xe06a
+80035ba0            ori      $t0, $t0, 0x2e7
+80035ba4            lui      $a0, 0x8012
+80035ba8            mflo     $t2
+80035bac            addiu    $v0, $zero, 0x20
+80035bb0            addu     $t0, $t2, $t0
+80035bb4            multu    $t0, $v0
+80035bb8            addiu    $a0, $a0, 0x7d30
+80035bbc            move     $a1, $zero
+80035bc0            lw       $a3, 0x114($a0)
+80035bc4            lw       $v0, 0x118($a0)
+80035bc8            addiu    $a2, $zero, 0x17
+80035bcc            sw       $v0, 0x10($sp)
+80035bd0            lw       $v0, 0x11c($a0)
+80035bd4            lui      $v1, 0x10
+80035bd8            sw       $t0, -0x78f8($t1)
+80035bdc            addu     $v0, $v0, $v1
+80035be0            sw       $v0, 0x14($sp)
+80035be4            mfhi     $t3
+80035be8            mflo     $t2
+80035bec            sra      $v0, $t3, 0
+80035bf0            sra      $v1, $t3, 0x1f
+80035bf4            jal      0x80039f58
+80035bf8            sw       $v0, 0x18($sp)
+80035bfc            move     $v1, $v0
+80035c00            beqz     $v1, 0x80035c4c
+80035c04            lui      $v0, 8
+80035c08            sw       $v0, 0xb8($v1)
+80035c0c            addiu    $v0, $zero, 0x10
+80035c10            sw       $v0, 0x274($v1)
+80035c14            j        0x80035c4c
+80035c18            sw       $zero, 0x278($v1)
+80035c1c L80035c1c: lui      $a0, 0x8012
+80035c20            lw       $v0, 0x7160($a0)
+80035c24            addiu    $v1, $zero, 0x34
+80035c28            sw       $v1, 0x7db8($a1)
+80035c2c            addiu    $v0, $v0, 1
+80035c30            j        0x80035c4c
+80035c34            sw       $v0, 0x7160($a0)
+80035c38 L80035c38: lui      $v1, 0x8012
+80035c3c            lw       $a0, 0x7db8($v1)
+80035c40            addiu    $v1, $zero, 0x34
+80035c44            bne      $a0, $v1, 0x80035c50
+80035c48            addiu    $v0, $zero, 1
+80035c4c L80035c4c: move     $v0, $zero
+80035c50 L80035c50: lw       $ra, 0x24($sp)
+80035c54            lw       $s0, 0x20($sp)
+80035c58            addiu    $sp, $sp, 0x28
+80035c5c            jr       $ra
+80035c60            nop      

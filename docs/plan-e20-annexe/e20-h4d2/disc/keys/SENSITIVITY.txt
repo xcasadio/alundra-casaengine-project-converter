@@ -1,0 +1,9 @@
+Sensitivity of each world key to the three defects (Q-H4B-2 bound, Q-H4B-3 sort, Q-H4D2-1 turn): the rows of the corrected-mode key compared with the rows of the binary-mode key of the same scenario
+fire1_tgt_one_pf                   vs fire1_tgt_one_allfix_pf                  differ from tick 51
+fire1_tgt_three_pf                 vs fire1_tgt_three_allfix_pf                differ from tick 51
+fire1_tgt_two_wrong_order_pf       vs fire1_tgt_two_wrong_order_qfix_pf        differ from tick 51
+fire1_tgt_two_wrong_order_pf       vs fire1_tgt_two_wrong_order_allfix_pf      differ from tick 51
+fire1_tgt_topslot_pf               vs fire1_tgt_topslot_qfix_pf                differ from tick 51
+fire1_tgt_topslot_pf               vs fire1_tgt_topslot_allfix_pf              differ from tick 51
+fire1_tgt_vanish75_pf              vs fire1_tgt_vanish75_allfix_pf             differ from tick 51
+fire1_col_hit_pf                   vs fire1_col_hit_allfix_pf                  IDENTICAL

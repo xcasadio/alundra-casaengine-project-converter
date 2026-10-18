@@ -1,0 +1,15 @@
+8003a774            lw       $v1, 0x1b8($a0)
+8003a778            addiu    $v0, $zero, 4
+8003a77c            sw       $v0, 0x10($a0)
+8003a780            addiu    $v0, $zero, -1
+8003a784            beqz     $v1, 0x8003a794
+8003a788            sw       $v0, 0x228($a0)
+8003a78c            sw       $zero, 0x68($v1)
+8003a790            sw       $zero, 0x1b8($a0)
+8003a794 L8003a794: lw       $a0, 0x28($a0)
+8003a798            nop      
+8003a79c            beqz     $a0, 0x8003a7a8
+8003a7a0            nop      
+8003a7a4            sw       $zero, 0x2c($a0)
+8003a7a8 L8003a7a8: jr       $ra
+8003a7ac            nop      

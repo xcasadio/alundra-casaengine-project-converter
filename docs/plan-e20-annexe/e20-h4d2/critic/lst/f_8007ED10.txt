@@ -1,0 +1,8 @@
+8007ed10            addiu    $sp, $sp, -0x18
+8007ed14            sw       $ra, 0x10($sp)
+8007ed18            jal      0x8003a59c
+8007ed1c            addiu    $a1, $zero, -1
+8007ed20            lw       $ra, 0x10($sp)
+8007ed24            addiu    $sp, $sp, 0x18
+8007ed28            jr       $ra
+8007ed2c            nop      

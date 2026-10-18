@@ -1,0 +1,42 @@
+=== sprite 22 MoreFlags 68 CanPickup 33 FPST 0 programs A..F 0 0 0 1 0 off -3 -2 0 size 7 5 8 BreakEffect 0 Contents 0
+   Flags = 0x2144
+   set 0 Speed 0 Accel 80 IsZForceApplied 0 Sfx 0 Flags 0
+    anim-dir 0 frames 15
+      frame  0 delay 0x82 (2 ticks) starts at tick 0  collision None
+      frame  1 delay 0x82 (2 ticks) starts at tick 2  collision None
+      frame  2 delay 0x82 (2 ticks) starts at tick 4  collision None
+      frame  3 delay 0x82 (2 ticks) starts at tick 6  collision None
+      frame  4 delay 0x82 (2 ticks) starts at tick 8  collision {"OffsetX": -18, "OffsetY": -12, "OffsetZ": 0, "Width": 36, "Depth": 24, "Height": 31}
+      frame  5 delay 0x83 (3 ticks) starts at tick 10  collision {"OffsetX": -18, "OffsetY": -12, "OffsetZ": 0, "Width": 36, "Depth": 24, "Height": 31}
+      frame  6 delay 0x83 (3 ticks) starts at tick 13  collision {"OffsetX": -18, "OffsetY": -12, "OffsetZ": 0, "Width": 36, "Depth": 24, "Height": 31}
+      frame  7 delay 0x83 (3 ticks) starts at tick 16  collision {"OffsetX": -18, "OffsetY": -12, "OffsetZ": 0, "Width": 36, "Depth": 24, "Height": 31}
+      frame  8 delay 0x83 (3 ticks) starts at tick 19  collision {"OffsetX": -18, "OffsetY": -12, "OffsetZ": 0, "Width": 36, "Depth": 24, "Height": 31}
+      frame  9 delay 0x83 (3 ticks) starts at tick 22  collision {"OffsetX": -18, "OffsetY": -12, "OffsetZ": 0, "Width": 36, "Depth": 24, "Height": 31}
+      frame 10 delay 0x83 (3 ticks) starts at tick 25  collision {"OffsetX": -18, "OffsetY": -12, "OffsetZ": 0, "Width": 36, "Depth": 24, "Height": 31}
+      frame 11 delay 0x83 (3 ticks) starts at tick 28  collision {"OffsetX": -18, "OffsetY": -12, "OffsetZ": 0, "Width": 36, "Depth": 24, "Height": 31}
+      frame 12 delay 0x83 (3 ticks) starts at tick 31  collision {"OffsetX": -18, "OffsetY": -12, "OffsetZ": 0, "Width": 36, "Depth": 24, "Height": 31}
+      frame 13 delay 0x83 (3 ticks) starts at tick 34  collision {"OffsetX": -18, "OffsetY": -12, "OffsetZ": 0, "Width": 36, "Depth": 24, "Height": 31}
+      frame 14 delay 0x0 (0 ticks) starts at tick 37  collision None
+      total ticks 37
+    anim-dir 1 frames 15
+    anim-dir 2 frames 15
+    anim-dir 3 frames 15
+=== sprite 25 MoreFlags 128 CanPickup 96 FPST 0 programs A..F 0 0 0 0 0 off -12 -8 0 size 24 16 32 BreakEffect 0 Contents 0
+   Flags = 0x6080
+   set 0 Speed 0 Accel 0 IsZForceApplied 0 Sfx 0 Flags 0
+    anim-dir 0 frames 2
+      frame  0 delay 0x81 (1 ticks) starts at tick 0  collision None
+      frame  1 delay 0x1 (1 ticks) starts at tick 1  collision None
+      total ticks 2
+    anim-dir 1 frames 2
+      frame  0 delay 0x81 (1 ticks) starts at tick 0  collision {"OffsetX": -12, "OffsetY": -12, "OffsetZ": 0, "Width": 23, "Depth": 23, "Height": 15}
+      frame  1 delay 0x1 (1 ticks) starts at tick 1  collision None
+      total ticks 2
+    anim-dir 2 frames 2
+      frame  0 delay 0x81 (1 ticks) starts at tick 0  collision {"OffsetX": -12, "OffsetY": -12, "OffsetZ": 0, "Width": 23, "Depth": 23, "Height": 15}
+      frame  1 delay 0x1 (1 ticks) starts at tick 1  collision None
+      total ticks 2
+    anim-dir 3 frames 2
+      frame  0 delay 0x81 (1 ticks) starts at tick 0  collision {"OffsetX": -12, "OffsetY": -12, "OffsetZ": 0, "Width": 23, "Depth": 23, "Height": 15}
+      frame  1 delay 0x1 (1 ticks) starts at tick 1  collision None
+      total ticks 2

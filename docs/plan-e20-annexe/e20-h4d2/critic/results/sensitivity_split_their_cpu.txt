@@ -1,0 +1,7 @@
+(run of scripts/sens.py: first tick at which the rows differ from the binary-mode key, per corrected defect taken ALONE; None = identical)
+one              bound-only:None | sort-only:None | query(bound+sort):None | turn-only:51 | all:51
+three            bound-only:None | sort-only:None | query(bound+sort):None | turn-only:51 | all:51
+vanish75         bound-only:None | sort-only:None | query(bound+sort):None | turn-only:51 | all:51
+col_hit          bound-only:None | sort-only:None | query(bound+sort):None | turn-only:None | all:None
+two_wrong_order  bound-only:None | sort-only:51   | query(bound+sort):51   | turn-only:51 | all:51
+topslot          bound-only:51   | sort-only:None | query(bound+sort):51   | turn-only:None | all:51

@@ -1,0 +1,3 @@
+12000 states (seed 1): no mismatch ; {'strike_target': 1660, 'strike_random': 2886, 'sorted': 0, 'endcalls': 0, 'ground_branch': 968, 'guard_cancel': 0} ; skipped {'model_ni': 528}
+12000 states (seed 2): no mismatch ; {'strike_target': 1589, 'strike_random': 2923, 'sorted': 0, 'endcalls': 0, 'ground_branch': 945, 'guard_cancel': 0} ; skipped {'model_ni': 487}
+12000 states (seed 3): no mismatch ; {'strike_target': 1558, 'strike_random': 2950, 'sorted': 0, 'endcalls': 0, 'ground_branch': 997, 'guard_cancel': 0} ; skipped {'model_ni': 526}

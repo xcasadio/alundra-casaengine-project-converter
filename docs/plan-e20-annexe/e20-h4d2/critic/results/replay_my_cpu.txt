@@ -1,0 +1,5 @@
+vec_fire1_driver_80035A84.json                vectors  3270  mismatches 0  incomplete 0  distinct PCs run 237
+vec_cancel_fire1_80034D2C.json                vectors   400  mismatches 0  incomplete 0  distinct PCs run 70
+vec_e3_8007EDA0.json                          vectors   288  mismatches 0  incomplete 0  distinct PCs run 25
+vec_c63_8007AC60.json                         vectors  3524  mismatches 0  incomplete 0  distinct PCs run 339
+LOAD-DELAY HAZARDS in the replayed code: 0

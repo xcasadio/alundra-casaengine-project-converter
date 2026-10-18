@@ -1,0 +1,17 @@
+scenario wind1_hurt60_pf : {"circle_hold": null, "decoy": null, "decoy_slot": null, "faithful": true, "gate_off": false, "hero_dir": 24, "hero_px": [100, 100], "hurt": 60, "item": 49, "kill": null, "pf": true, "query_fix": false, "seed": 305419896, "target_slots": [], "targets": [], "ticks": 120}
+  t=  1 hero anim_t=0x32 item_in_use=0x31 phase=0 counter=0 mp=3
+  t=  2 hero anim_t=0x32 item_in_use=0x31 phase=1 counter=1 mp=3
+  t= 33 hero anim_t=0x33 item_in_use=0x31 phase=1 counter=32 mp=3
+  t= 60 hero anim_t=0x31 item_in_use=0x0 phase=1 counter=59 mp=3
+  t= 64 hero anim_t=0x1c item_in_use=0x0 phase=1 counter=59 mp=3
+  t= 75 hero anim_t=0x0 item_in_use=0x0 phase=1 counter=59 mp=3
+  t= 42 QUERY counter(before incr)=40 count_word=0 n=0 cands=[] -> random 0
+  t= 42 SPAWN sprite=22 x=2673096 y=9490330 z=8388609 dir=0 (raw args ok) -> slot 1
+  t= 42 draws=2 rng 0x2f9d6da7 -> 0xd99f3371 -> 0xc25be474 hit_targets=[]
+  t= 52 QUERY counter(before incr)=50 count_word=1 n=0 cands=[] -> random 0
+  t= 52 SPAWN sprite=22 x=4350866 y=3202181 z=8388609 dir=0 (raw args ok) -> slot 2
+  t= 52 draws=2 rng 0xfcbcb593 -> 0x19b90bbd -> 0x5e304a10 hit_targets=[]
+  strike slot 1 id 2 : ticks 42..79 (life 38) at px (40.7882, 144.8109) z0=7831554
+  strike slot 2 id 3 : ticks 52..89 (life 38) at px (66.3889, 48.8614) z0=7831554
+  final: hero anim_t 0x0 item_in_use 0x0 phase 1 counter 59 mp 3
+  object freed at tick 60

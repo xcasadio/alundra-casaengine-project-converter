@@ -1,0 +1,5 @@
+(run of scripts/relief.py: how many of the 11 balls have a life different from the flat key when the terrain has relief; none of the 30 keys of the report covers relief)
+plateau hb=1 (16px) cols 6..12: 5 of 11 balls differ (landing 5 ticks earlier: z=16)
+plateau hb=2 (32px) cols 6..12: 6 of 11 balls differ (landing up to 10 ticks earlier: z=32)
+ledge hb=2 col 6 only         : 1 of 11 balls differs
+hero on a plateau (hero z not raised in this run), ground lower elsewhere: 6 of 11 balls differ
