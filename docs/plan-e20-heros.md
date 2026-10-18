@@ -8140,22 +8140,33 @@ l'annexe `docs/plan-e20-annexe/e20-h4a/` ; ce plan, l'index des ADR et un ADR. *
   PM, PM 1 ; bâton à 2 PM, PM 2) ; la chronologie du début du sort (PM 4 → 3 et `0x32` au tick du départ, `0x33` à T0+32) ; les huit traces
   `docs/plan-e20-annexe/e20-d/oracle/out-swim/w9/W9-item2B` à `W9-item32` (le héros en nage, `0x1D`, le départ refusé par l'animation, son 3 au tick
   10) ; (c) la liste prédite : aucun test existant attendu (`0x32` à `0x34` ne sont dans aucun test d'état, `state-f81304b/dll/state.md` §4.4) ;
-  recomptée au HEAD de départ.
-- ⏳ **T1 — Tests puis code.** Chaque cas « sans effet » est accolé à un positif :
+  recomptée au HEAD de départ ; (d) **les animations du héros dans la DLL** (révision 1) : les enregistrements 50, 51 et 52 de l'export (durée, fin,
+  cible d'enchaînement) relus contre l'oracle (32 ticks puis `0x33` ; boucle ; 26 ticks puis 0), les valeurs de la DLL écrites au README à côté.
+- ⏳ **T1 — Tests puis code.** Chaque cas « sans effet » est accolé à un positif. **Banc** des tests d'états et d'oracle (révision 1) : le monde
+  d'`ArcRun` de la carte 14 (vrai contrôleur, préfabs exportés, les animations du héros de l'export), à **un tick par image** ; les tests du départ
+  sur le héros de ce banc ou d'un hôte de test :
   - (t1) le départ des tomes, dans l'ordre du binaire : un objet porté (`CarriedEntity` posé par le test), une animation hors Idle et Moving, un objet
     en cours, 0 PM sans le bâton : chacun son 3 et 1 ; le départ qui réussit : 0, PM − 1, animation `0x32`, l'octet XA de l'objet journalisé (0, 1, 6,
     6, 2, 3, 4, 5 pour `0x2B` à `0x32`), le tome non consommé ; le bâton (`Equip` de l'objet 7) : ni exigence ni consommation, à 0 et à 2 PM ;
   - (t2) `DecreaseMp` borné à [0, PM max] (`SetPlayerMp`, `PlayerManager.cs:1970`) ;
-  - (t3) les états : `0x32` puis `0x33` 32 ticks plus tard (l'enchaînement de l'animation) ; `0x33` tenu tant qu'un tome est en cours ; libéré : Idle au
-    sol, `0x2D` en l'air ; `0x34` tenu 26 ticks puis 0 ; le héros ne bouge pas ; Carré, Croix et les directions sans effet ; un Rond dans `0x32`, `0x33`
-    ou `0x34` : son 3 (le départ des tomes refuse, un objet est en cours) ;
+  - (t3a) les états (révision 1 ; entrés par le test : l'animation posée à `0x32` et un tome en cours par les coutures de D-H-4, sans la fonction de
+    départ) : `0x32` puis `0x33` 32 ticks plus tard (l'enchaînement de l'animation) ; `0x33` tenu tant qu'un tome est en cours ; libéré (le pilote de
+    test rend non nul) : Idle au sol, `0x2D` en l'air, au tick de la libération ; `0x34` tenu 26 ticks puis 0 ; le héros ne bouge pas ; Carré, Croix et
+    les directions sans effet ;
+  - (t3b) un Rond dans `0x32`, `0x33` ou `0x34` pendant un tome en cours, la fonction de départ des tomes installée : le cadre la laisse passer (même
+    objet) et elle refuse (un objet est en cours) : son 3 ;
   - (t4) la garde de pente : eau profonde (`Slope_18c` 4) → annulation et 1 ; `0x32` ou `0x33` → 0 ; une autre animation → annulation et 1 ;
-  - (t5) la promotion : avec les tomes 43 et 44 possédés et l'objet 43 du Rond, le départ voit 44 (`SetItemIdFromCurrentItemId`,
-    `PlayerManager.cs:2217`) ;
-  - (t6) le calendrier : `ItemDriverForTests` appelé la première fois au tick qui suit le départ, compteur 0.
+  - (t5) la promotion (révision 1) : avec les tomes 43 et 44 possédés et l'objet 43 du Rond, **au premier appui sans promotion antérieure**, le départ
+    reçoit 43 (l'objet en cours vaut 43, l'octet XA 0) et l'objet du Rond devient 44 (`SetItemIdFromCurrentItemId` rend l'objet dont il est parti,
+    `PlayerManager.cs:2210-2231` ; `0x8003499C` passe ce `s0` au départ, `e20-h4/work/lst/start_8003499C.txt:3-5`, `:57-58`,
+    `tome_start_800348E0.txt:10`, `:29-32`) ; accolé : **un tick avant l'appui** (la fin de tick qui promeut, `PlayerManager.cs:1474`, `:1498`), le
+    départ reçoit 44 (l'octet XA 1) ;
+  - (t6) le calendrier, avec la fonction de départ des tomes (révision 1) : après un départ réel, `ItemDriverForTests` est appelé la première fois au tick
+    qui suit, compteur 0.
   Puis le code.
 - ⏳ **T2 — Tests d'oracle** : (o1) les huit traces `W9-item2B` à `W9-item32` à l'identique, la fonction de départ des tomes installée par la couture ;
-  (o2) les quatre cas du bâton ; (o3) le début de `trace_cast` pour `0x2B` (PM, `0x32`, `0x33` à T0+32), un pilote de test qui rend 0.
+  (o2) les quatre cas du bâton ; (o3) le début de `trace_cast` pour `0x2B` (PM, `0x32`, `0x33` à T0+32), un pilote de test qui rend 0, sur le banc de
+  T1.
 - ⏳ **T3 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : test du bâton retiré ; PM exigés avec le bâton ; PM consommés avec le
   bâton ; PM non consommés ; refus à 0 PM retiré (D1) ; borne d'animation à 3 ; objet porté ignoré ; objet en cours ignoré ; octets XA décalés ;
   `0x33` quitté pendant un tome en cours ; sortie vers Idle en l'air ; `0x34` qui lit le pad ; garde à 0 en eau profonde ; garde qui accepte `0x34`.
@@ -8163,16 +8174,17 @@ l'annexe `docs/plan-e20-annexe/e20-h4a/` ; ce plan, l'index des ADR et un ADR. *
 ##### Acceptation
 
 - **Oracle** : les sorties de T0 (a) identiques.
-- **DLL** : (t1) à (t6), (o1) à (o3) verts, rouges avant le code (sauf les témoins négatifs) ; la suite en Release (copie neutralisée) et en Debug, zéro
+- **DLL** : (t1), (t2), (t3a), (t3b), (t4) à (t6), (o1) à (o3) verts, rouges avant le code (sauf les témoins négatifs) ; la suite en Release (copie neutralisée) et en Debug, zéro
   échec ; tests déplacés ⊂ liste prédite (vide) ; `cmp` de la DLL ; traces inchangées ; moteur, convertisseur et données sans diff.
-- **Preuve de retrait** : retirer la fonction de départ des tomes rend rouges exactement (t1), (t5), (o1) à (o3) ; retirer les gestionnaires de `0x32`
-  à `0x34` rend rouges (t3) et (o3).
+- **Preuve de retrait** (révision 1) : retirer la fonction de départ des tomes rend rouges exactement (t1), (t3b), (t5), (t6), (o1) à (o3) ; retirer les
+  gestionnaires de `0x32` à `0x34` rend rouge exactement (t3a) (sans eux l'état reste, `PlayerManager.cs:620-621`, et `0x32` enchaîne encore sur `0x33`
+  par l'animation : (o3) ne bouge pas).
 - **Recette de l'auteur** : aucune (inerte en production) ; elle vient avec la première tranche d'élément.
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : un test existant bouge ; une trace change ; un refus du départ diffère des vecteurs ; un besoin de toucher au moteur ; un nom refusé par
-  `check_names.py`.
+- **Arrêts** : un test existant bouge ; une trace change ; un refus du départ diffère des vecteurs ; **une durée ou un enchaînement des animations 50 à
+  52 de la DLL diffère de l'oracle** (T0 (d) ; révision 1) ; un besoin de toucher au moteur ; un nom refusé par `check_names.py`.
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : retirer la fonction et les gestionnaires (rien ne les appelle en production).
 
