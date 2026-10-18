@@ -8120,9 +8120,9 @@ la contre-vérification faisant foi). Le cadre (h0a, §1.30.1) est un prérequis
 | **h4b1** | La requête de cibles et son tri, **fonction pure** paramétrée par le compte, inerte en production (révisé le 2026-10-18, fait 8 ; §1.31.2) | h4a ; Q-H4B-2, Q-H4B-3 (défauts retenus) |
 | **h4b1b** | Le champ stocké du plus haut emplacement (recalcul au recyclage, relèvement à la naissance, zéro au chargement) : **seulement si** Q-H4B-2 garde la borne exclusive | h4b1 ; Q-H4B-2 |
 | **h4b2** | La poussée `+0xCC/+0xD0` dans la passe de forces, avec ou sans la table de glissement et l'octet de carte (Q-H4B-6) | h4a ; Q-H4-3, Q-H4B-6 |
-| **h4c1** terre 1 | Pilote `0x80035320`, E3 (type 16), l'inscription d'E3 pour le seul type 16 (Q-H4C1-1 A), avant E14.b0 qui la reprend ; **détaillée au §1.31.3** | h0a, h4a, f4, f5, f6a |
-| **h4c2** terre 2 | Pilote `0x800354D0`, E13 (type 17), son annulation `0x80034BDC`, le coup de caméra (rangé par tick, Q-H4B-4) ; **détaillée au §1.31.4** | h0a, h4a, f5 (f6a pour un témoin) |
-| **h4d1** feu 2 | Pilote `0x80035C64`, E28 (type 21), son annulation `0x80034E08`, le tampon de session du tremblement ; **détaillée au §1.31.5** | h0a, h4a |
+| **h4c1** terre 1 | Pilote `0x80035320`, E3 (type 16), l'inscription d'E3 pour le seul type 16 (Q-H4C1-1 A), avant E14.b0 qui la reprend ; **détaillée au §1.31.3** | h0a, h4a, f4, f5, f6a ; Q-H4C1-1, -2, -5 (défauts retenus) |
+| **h4c2** terre 2 | Pilote `0x800354D0`, E13 (type 17), son annulation `0x80034BDC`, le coup de caméra (rangé par tick, Q-H4B-4) ; **détaillée au §1.31.4** | h0a, h4a, f5 (f6a pour un témoin) ; Q-H4B-4, Q-H4C2-1, -2, -3 (défauts retenus) |
+| **h4d1** feu 2 | Pilote `0x80035C64`, E28 (type 21), son annulation `0x80034E08`, le tampon de session du tremblement ; **détaillée au §1.31.5** | h0a, h4a ; Q-H4D1-1, -2 (défauts retenus) |
 | **h4d2** feu 1 | Pilote `0x80035A84`, C63 et E3 (type 23), la colonne (sprite 20, E1 en ligne), son annulation `0x80034D2C`, l'accès en mot à `+0x274` | h4a, h4b1, h4c1 (E3) |
 | **h4e1** vent 1 | Pilote `0x80035EB0`, la requête | h4a, h4b1 |
 | **h4e2** vent 2 | Pilote `0x80036218`, C65 (type 24 ; le 154 à trancher), les tables 256, son annulation `0x80034EC4` | h4a, h4b1, h4b2 |
@@ -8352,7 +8352,8 @@ critique, avec leurs clés, vecteurs et scripts). Tous les faits de comportement
 
 **Prérequis.** h0a et h4a (les coutures, la fonction de départ des tomes, les états, la garde) ; f4 (D-F4-7, l'ensemble de types qui laisse les
 Beannoïdes inertes, pour (w5)) ; f5 (D-F5-5 : sans elle, un rocher fait un pas XY de trop au tick d'E3) ; f6a (l'eau profonde d'une entité marquée
-à gravité) ; la fin du chantier et Q-R-7.
+à gravité) ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H4C1-1 (E3 pour le seul type 16), Q-H4C1-2 (les rochers de la 388 tombent) et
+Q-H4C1-5 (l'avance d'un tick contre un mur acceptée) (révision 2).
 
 **But.** Comme l'original : la terre 1 jette 32 rochers, deux tous les 5 ticks du tick 22 au tick 97 ; ils montent, retombent, s'écrasent avec le
 son 46, traversent les ennemis en les blessant (type 8, puissance 32) et disparaissent ; l'objet est libéré au tick 129 ; une interruption n'arrête
@@ -8446,7 +8447,8 @@ PM, la piste XA, les états `0x32` à `0x34`, la garde (h4a) ; E3 pour le type 2
 
 - **Arrêts** : un test hors de la liste prédite bouge ; (w1), (w2), (w4), (w5) ou (w6) diffère de sa clé ; (w3) sort de la fenêtre de R-EL-5 ; une
   sonde contredit son attendu ; un octet de table diffère de l'exécutable ; un besoin de toucher au moteur ; un nom refusé ; f4, f5, f6a ou h4a non
-  faites ; `(E, 3)` déjà inscrit ou `Register` cumulatif au HEAD de départ (E14.b0 passé avant ; révision 1).
+  faites ; `(E, 3)` déjà inscrit ou `Register` cumulatif au HEAD de départ (E14.b0 passé avant ; révision 1) ; une réponse de l'auteur autre que le
+  défaut à Q-H4C1-1, Q-H4C1-2 ou Q-H4C1-5 (révision 2).
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire (les entrées et l'appel) ; la phase A reste inerte.
 
@@ -8491,8 +8493,11 @@ fait retomber au sol les rochers en vol.
   l'annulation `Cancel` (toutes les entités nées de `SpriteType` 17 au statut 2),
   `SpriteTypes = {17}`, `Register` pour `(ProgramEDeactivate, 13)` ; E13 tolère un contexte nul.
 - **D-H4C2-2** — Le coup : un membre par défaut de `IEntityWorldContext` (`SetCameraKick(int scrollY)`), implémenté par `WorldProxy` : une liste par
-  tick à côté de `_effectFrozenOfTick` (`Alundra/Maps/WorldProxy.cs:767`, vidée `:2519`), l'indice du tick posé en tête de `RunEntityBlock`, un accès
-  de test comme `EffectFrozenOfTickForTests` (`:776`) ; hors de `RunEntityBlock` (un banc non piloté), le coup est rangé à l'indice 0 de l'image ;
+  tick à côté de `_effectFrozenOfTick` (`Alundra/Maps/WorldProxy.cs:767`), l'indice du tick posé en tête de `RunEntityBlock`, un accès de test comme
+  `EffectFrozenOfTickForTests` (`:776`) ; hors de `RunEntityBlock` (un banc non piloté, dont les entités tournent avant `WorldProxy.Update`,
+  `:2518`, `:2655-2657`), le coup est rangé à l'indice 0 de l'image ; **la liste n'est vidée qu'après sa consommation par le pas de caméra de l'image**
+  (après l'appel de `UpdateCameraFollow`, `:2716`), dans un monde piloté comme dans un monde non piloté, jamais au début de l'image avec
+  `_effectFrozenOfTick` (`:2519`) (révision 2) ;
   `CameraDirector.UpdateCameraFollow` la reçoit et `CameraMath.AdvanceCameraSmoothing` prend un paramètre **optionnel** final, ajouté à `swayOffsetY`
   à chaque pas non calé (le signe de `CameraMath.cs:223`) ; aucun champ dans `CameraSway`.
 
@@ -8524,8 +8529,9 @@ la blessure du héros (E20.c2b).
   intacts, et au rocher du plus haut emplacement atteint ; (r1) `(E, 13)` pour 17 seul (absent pour 469, 16) ; (k1) le coup, pur : des écarts au repos
   d = 0, 1, 2 et 15, l'accumulation de plusieurs coups, un pas de calage (coup perdu), un coup au pas 1 d'une image de 3 pas, deux coups dans deux
   ticks d'une image, les bornes de la carte, et sans liste : identique à aujourd'hui (les appels de test existants) ; (k2) le monde : le coup rangé à
-  l'indice de son tick, 2 jamais 4 pour deux E13 au même tick, vide à l'image suivante, rien pendant une transition ; (k3) un banc non piloté : le coup
-  à l'indice 0. Puis les tests de monde : (w1) `cast_2c_pf_mid_x600y480` (héros en (600, 480), quinze rochers intérieurs) sans tolérance (naissance,
+  l'indice de son tick, 2 jamais 4 pour deux E13 au même tick, vide après le pas de caméra de l'image, rien pendant une transition ; (k3) un banc non
+  piloté : E13 range le coup à l'indice 0 avant `Update` ; le pas de caméra de la même image l'applique (le défilement Y de l'image porte le coup) et
+  la liste est vide après `Update` (révision 2 : un vidage au début de l'image perdrait le coup et rendrait (k3) rouge). Puis les tests de monde : (w1) `cast_2c_pf_mid_x600y480` (héros en (600, 480), quinze rochers intérieurs) sans tolérance (naissance,
   position, Z, statut 3, animations, `+0xAC`, statut 4, case libre, drapeaux, les sons 55 et 45, les coups aux ticks de la clé, PM 3, l'objet libéré
   au tick 309) ; (w2) le rocher de bord de `cast_2c_pf` (sonde (s3)), accolé à un rocher intérieur ; (w3) la chronologie relative d'un rocher intérieur
   à 2 et 3 ticks par image ; (w4) les interruptions `cancel_2c_pf_t100` et `_t60`, avec un son 45 par rocher annulé et les coups de la clé (le son 23 du héros exclu) ;
@@ -8551,8 +8557,8 @@ la blessure du héros (E20.c2b).
 - **Oracle** : les rejeux de T0 (a) identiques, les MD5 égaux sur deux exécutions.
 - **DLL** : T1 vert en phase A (sauf (w5), non bloquant) ; (p1) à (p4) rouges avant la phase B, verts après ; la suite en Release et en Debug, zéro
   échec ; tests déplacés ⊂ liste prédite ; `cmp` ; traces inchangées ; moteur, convertisseur et données sans diff.
-- **Preuve de retrait** : retirer l'appel d'inscription rend rouges exactement (p1), (p3) et les deux épingles ; remettre l'entrée du pilote au
-  bouchon rend rouges exactement (p1) et (p2) ; retirer le rangement du coup rend rouges (k2), (k3) et les tests de monde qui comparent les coups de
+- **Preuve de retrait** : retirer l'appel d'inscription rend rouges exactement (p1), (p3), (p4) et les deux épingles ; remettre l'entrée du pilote au
+  bouchon rend rouges exactement (p1), (p2) et (p4) (révision 2 : la clé de (p4) tient par les rochers nés et par E13) ; retirer le rangement du coup rend rouges (k2), (k3) et les tests de monde qui comparent les coups de
   leur clé, (w1), (w2), (w4), (w8), (p1) et (p4) ; neutraliser le corps de `EarthTome2Ai.Cancel` rend rouges (c1), (w4) et (p4) ; remettre l'entrée
   d'annulation `0x2C` au bouchon rend rouge exactement (p4) (révision 1).
 - **Recette de l'auteur** (non bloquante) : `arsenal-b-m14` (les livres 44 à 50), le livre de terre (44) mis en objet du Rond par l'inventaire :
@@ -8572,7 +8578,8 @@ la blessure du héros (E20.c2b).
 
 #### 1.31.5 E20.h4d1 — Le feu 2 : le pilote `0x80035C64`, E28, l'annulation et le tampon du tremblement ⏳ (détaillée le 2026-10-18, à relire)
 
-**Prérequis.** h0a, h4a ; la fin du chantier et Q-R-7. Ni f5, ni f6a (le sprite 21 a une vitesse nulle et pas de gravité), ni h4b.
+**Prérequis.** h0a, h4a ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H4D1-1 (A, l'ordre de la DLL) et Q-H4D1-2 (A, le tampon de
+session) (révision 2). Ni f5, ni f6a (le sprite 21 a une vitesse nulle et pas de gravité), ni h4b.
 
 **But.** Comme l'original : 1 PM, 32 ticks de pose ; la colonne de feu naît au tick 34 et grossit pendant 120 ticks, l'écran tremble par paliers ; elle
 brûle ce qu'elle recouvre (attaque 10, puissance 128, un coup tous les 25 ticks par cible) ; huit explosions à sa fin, puis 26 ticks de relâchement.
@@ -8625,8 +8632,8 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
   `fire2_targets_c.py` (`FAITHFUL=1` ; deux exécutions identiques, les `SHA1SUMS` de la critique), `e20-h4d1/disc/keys/vec_e28_8007FB58.json` (202 vecteurs, plus celui
   de la graine `0xA468A517` de la clé fidèle), les vecteurs du pilote (`e20-h4b/bin/vec/vec_fire2_80035C64.json`, 60, et
   `e20-h4b/critic/vec_extra/vec_extra_cancel_fire2.json`, 1), `c6_fire2.py` et `c9_replay.py` repointé ; (b) les clés : celles de
-  `keys_faithful/` remplacent les cinq clés réfutées de la découverte (`fire2_cast_pf`, `fire2_cast_nopf`, `fire2_hurt170`, `fire2_targets_pf`,
-  `fire2_cast_preset_block`) ; `fire2_hurt60`, `fire2_hurt20`, `_zerobuf`, `_stale` gardées ; `fire2_cast_preset_limit0_pf` (le préréglage à limites
+  `keys_faithful/` remplacent quatre des cinq clés réfutées de la découverte (`fire2_cast_pf`, `fire2_hurt170`, `fire2_targets_pf`,
+  `fire2_cast_preset_block`) ; la cinquième, `fire2_cast_nopf`, est **retirée sans remplaçante** (aucun test ne l'emploie ; révision 2) ; `fire2_hurt60`, `fire2_hurt20`, `_zerobuf`, `_stale` gardées ; `fire2_cast_preset_limit0_pf` (le préréglage à limites
   nulles `[1, 0, 0, 7, 8, 0, 0, 1, 1]`) et `fire2_targets_edge_pf` ajoutées ; (c) la table de correspondance des mots lus par les vecteurs du pilote
   (règle de D-H4B1-3 ; l'objet en cours posé sur le héros, `Slot` posé pour « vivant ») ; (d) **sonde** de la vie du sprite 21 né par l'interface au
   point du pilote : statut 2 à la fin du tick de naissance, `+0xAC` à S+119, E28 et statut 4 à S+120, case libre à S+121, Z = Z du héros + 1 unité
@@ -8643,8 +8650,10 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
   recyclée, la restauration et `0x34` (tick 155) ; (d6) les paliers : c = 15, 16, 63, 64, 127, 128 → (c >> 4, c >> 6) = (0, 0), (1, 0), (3, 0), (4, 1),
   (7, 1), (8, 2) ; (c1) l'annulation (le type 21 au statut 2 → 3 et `BlockedByEntity` vidé ; accolés, les statuts 1, 3, 4 du type 21, les types 20,
   22, 23, 24, 17 au statut 2, et l'entité de carte d'indice 21, `SpriteType = 0x115`, intacts) ; (c2) l'appel par la garde : la restauration, 1, la
-  phase n'avance pas ; (c1), (c2), (d1) et les tests de monde passent par `ItemCancelForTests` = `FireTome2Ai.Cancel` (R-EL-4 ; l'annulation générale
-  aiguille sur l'objet en cours `0x30`, critique §2.1) ; puis les tests de monde (le bloc et les entités lus à l'appel `TickTraceForTests("inventory")`
+  phase n'avance pas ; (c1), (c2), (d1) et les tests de monde passent par `ItemCancelForTests` = `FireTome2Ai.Cancel` **seulement quand l'objet en
+  cours est `0x30`**, neutre sinon, comme l'aiguillage du binaire (R-EL-4 ; l'annulation générale aiguille sur l'objet en cours, critique §2.1) ;
+  dans (d1), les 4 vecteurs à l'objet 0 et les 2 à l'objet 43 n'attendent ni restauration ni changement de statut du type `0x15`, et passent
+  (révision 2) ; puis les tests de monde (le bloc et les entités lus à l'appel `TickTraceForTests("inventory")`
   du tick, le générateur et les effets après l'image ; le bloc comparé par R-EL-7, les interruptions posées et comparées par R-EL-6) : (w1) `fire2_cast_pf` fidèle aux ticks 1 à 182 (le héros, l'objet, la phase, le compteur, les PM ; entre les ticks 34 et 154,
   `Flag`, `LimitX`, `LimitY`, `SpeedX`, `SpeedY` du bloc seulement, et les neuf mots après la restauration ; le tampon ; le sprite 21 ; les 8 effets du
   tick 154 ; le générateur ; la restauration au tick 155, l'objet libéré au tick 182) ; (w2) `fire2_hurt60` (l'objet, la phase, le compteur, la
@@ -8685,7 +8694,7 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
 
 - **Arrêts** : un test existant autre que les deux épingles bouge, ou une trace change ; un rejeu de T0 diffère ; la sonde du générateur diffère
   ailleurs qu'au tick 154 ; la vie du sprite 21 diffère de la clé fidèle ; un mot lu par les vecteurs n'a pas de membre ; un besoin de toucher au
-  moteur ; un nom refusé ; h0a ou h4a absentes.
+  moteur ; un nom refusé ; h0a ou h4a absentes ; une réponse de l'auteur autre que le défaut à Q-H4D1-1 ou Q-H4D1-2 (révision 2).
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B (l'entrée et l'appel) ; la phase A : le fichier, l'inscription, l'API du tampon, le créateur, le champ.
 
