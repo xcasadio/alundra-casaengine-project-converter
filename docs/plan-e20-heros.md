@@ -8242,10 +8242,15 @@ prête ; rien ne l'appelle encore en production.
   (**corriger**, par la règle de l'auteur sur les défauts avérés de l'original : borne inclusive, tri dès 2 résultats) ; le mode « binaire » (borne
   exclusive, tri dès 3) est celui des vecteurs. Avec la borne inclusive, les entités vivantes suffisent et le champ stocké n'est pas porté (h4b1b
   seulement si l'auteur choisit de reproduire).
-- **D-H4B1-3** — Les vecteurs se rejouent par un **adaptateur image → proxies** écrit pour les tests (révision 1). **Au décodage** : chaque octet lu
-  d'un vecteur est porté par un membre de la DLL de la table de correspondance (T0 (b)) ; un octet lu sans membre arrête la tranche (la règle de la
-  critique, §6.1, appliquée là où elle peut l'être). **À l'exécution** : l'adaptateur ne construit un proxy que pour un emplacement que le vecteur
-  lit, et pose son `Slot` ; un emplacement non lu n'a pas de proxy, ce qui, pour une lecture de statut, vaut un statut 0 (les proxies de la DLL sont
+- **D-H4B1-3** — Les vecteurs se rejouent par un **adaptateur image → proxies** écrit pour les tests (révision 1). **Au décodage** (révision 2) :
+  les lectures sont classées en trois : (i) **les entrées de l'appel**, le mot du compte `[0x80134360]` (le paramètre `compte` de `Find`) et le
+  cinquième argument `[0x801FFF10]` (le pointeur vers le tableau des clés `0x800CC158`, `bin/vec/README.txt:6`), avec les tableaux de sortie
+  `0x800CC058` (les pointeurs) et `0x800CC158` (les clés), **non modélisés** ; (ii) les octets d'entité (base `0x80127D30`, pas `0x294`) et de fiche
+  d'équilibrage, chacun porté par un membre de la DLL de la table de correspondance (T0 (b)) ; un octet de cette classe sans membre arrête la
+  tranche (la règle de la critique, §6.1, appliquée là où elle peut l'être) ; (iii) rien d'autre n'est attendu, et un octet hors de ces classes arrête
+  aussi. **Le résultat** : le tableau `0x800CC058[k]` écrit par le vrai code devient la liste des emplacements `(pointeur − 0x80127D30) / 0x294`
+  (`critic/c3_query.py:6-7`), dans l'ordre ; le tableau des clés n'est pas comparé. **À l'exécution** : l'adaptateur construit toujours le proxy de
+  l'appelant (même si sa position n'est pas lue, sans candidat) et un proxy pour chaque emplacement que le vecteur lit, dont il pose le `Slot` ; un emplacement non lu n'a pas de proxy, ce qui, pour une lecture de statut, vaut un statut 0 (les proxies de la DLL sont
   des champs publics : une lecture non listée ne peut pas être détectée à l'exécution). Le résultat (la liste des emplacements, dans l'ordre) est
   comparé tel quel.
 
@@ -8264,11 +8269,13 @@ ce plan, l'index des ADR et un ADR. **Hors périmètre** : le champ stocké du p
   (b) la table de correspondance des octets lus par la requête vers les membres de la DLL (le fait ci-dessus), versée au README ; un octet lu par les
   vecteurs sans membre est nommé et arrête la tranche ; (c) **les vecteurs du mode corrigé** (révision 1) : une variante **combinée** « borne inclusive
   et tri dès 2 » écrite dans la copie de `c3_query.py` (qui n'a que des variantes séparées, `:37`, `:69`, `:122`), lancée sur les mondes des 120
-  vecteurs et des vecteurs sentinelles avec la règle nommée « un octet absent vaut 0 » (pour ce seul oracle : le vrai code ne lit jamais l'emplacement
-  `compte`), sorties versées (`e20-h4b1/vec_query_corrected.json`) ; le README nomme les vecteurs qui distinguent chaque réglage : la borne, les seuls
-  vecteurs sentinelles (un candidat à l'emplacement `compte`) ; le seuil du tri, les vecteurs à exactement deux résultats ; (d) la liste prédite : aucun test existant (aucun appelant) ; recomptée.
-- ⏳ **T1 — Tests puis code.** (q1) le mode binaire contre les 120 vecteurs et les vecteurs sentinelles (le candidat de l'emplacement `compte`, listé
-  mais jamais lu, est exclu) : la liste et son ordre, à l'identique ; (q2) le mode corrigé contre `vec_query_corrected.json` ; (q3) chaque filtre accolé
+  vecteurs et du vecteur sentinelle avec la règle nommée « un octet absent vaut 0 » (pour ce seul oracle : le vrai code ne lit jamais l'emplacement
+  `compte`), sorties versées (`e20-h4b1/vec_query_corrected.json`) ; le README nomme les vecteurs qui distinguent chaque réglage : la borne, le seul
+  vecteur sentinelle (un candidat à l'emplacement `compte`, `critic/c10_extra_vectors.py:105`) ; le seuil du tri, les vecteurs à exactement deux résultats ; (d) la liste prédite : aucun test existant (aucun appelant) ; recomptée.
+- ⏳ **T1 — Tests puis code.** (q1) le mode binaire contre les 120 vecteurs et les vecteurs complémentaires de la critique, dont le vecteur sentinelle
+  (le candidat de l'emplacement `compte`, listé mais jamais lu, est exclu) : la liste et son ordre, à l'identique, **en un seul test sur l'ensemble
+  des vecteurs** (un écart sur un vecteur suffit à le rendre rouge ; révision 2) ; (q2) le mode corrigé contre `vec_query_corrected.json`, de même en
+  un seul test ; (q3) chaque filtre accolé
   à son contraire (statut 1 et 4 écartés, 2 et 3 gardés ; `BlockedByEntity` ; masque ; les deux compteurs ; `HitAnimByte & 0x40` ; sans fiche ; les
   réponses `0x80` écartée, `0xC0`, `0x40`, `0x00` gardées) ; **une case libre entre deux candidats** : le résultat du binaire (le balayage par
   `Slot`) ; **un héros pleinement éligible à l'emplacement 0** (statut 2, le bit du masque, une fiche, aucune exclusion) et un autre appelant : le héros
@@ -8286,12 +8293,14 @@ ce plan, l'index des ADR et un ADR. **Hors périmètre** : le champ stocké du p
 - **DLL** : (q1) à (q6) verts, rouges avant le code ; la suite en Release (copie neutralisée) et en Debug, zéro échec ; aucun test existant déplacé ;
   `cmp` de la DLL ; traces inchangées ; moteur, convertisseur et données sans diff.
 - **Preuve de retrait** (révision 1) : le corps neutralisé (`Find` rend une liste vide), les déclarations et les réglages gardés (sinon les tests ne
-  compilent pas) : rouges exactement (q1), (q2), les cas de (q3) où un candidat est gardé, (q4) et (q5) ; restent verts (q6) (les valeurs des
+  compilent pas) : rouges exactement (q1) et (q2) (chacun un seul test sur un fichier qui a des résultats non vides ; environ 48 des 120 vecteurs
+  attendent une liste vide et ne suffiraient pas seuls ; révision 2), les cas de (q3) où un candidat est gardé, (q4) et (q5) ; restent verts (q6) (les valeurs des
   réglages) et les cas de (q3) où le candidat est écarté (une liste vide les satisfait).
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : un octet lu par les vecteurs n'a pas de membre dans la DLL ; un vecteur diffère ; un test existant bouge ; un nom refusé par
+- **Arrêts** : un octet d'entité ou de fiche lu par les vecteurs n'a pas de membre dans la DLL, ou un octet lu n'entre dans aucune des classes de
+  D-H4B1-3 (révision 2) ; un vecteur diffère ; un test existant bouge ; un nom refusé par
   `check_names.py`.
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : retirer le fichier (rien ne l'appelle).
