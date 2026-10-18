@@ -6725,8 +6725,9 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
   rejoue les scripts de manette de l'oracle et relève, à chaque tick, l'`XCollisionEntity` du héros, sa `PosZ` et son animation : (b1)
   **en l'air**, le script de `g15` a) (`e20-g1a/work/orc/out/g15-misc.txt:1-3`), ticks t4 à t9 : contact = la caisse en **t5 et t6**, nul en
   t7, t8, t9 ; Z 5,0 ; 9,5 ; 13,5 ; 17,0 ; 20,0 ; 22,5 ; animations 2, 44, 44 sans Carré ; (b2) **au sol**, les lignes A à G de `c3`
-  (`critic-scenarios/out/c3-contact.txt`) : l'oracle par tick vient d'une variante de `c3_contact.py` (copiée dans l'annexe sous
-  `c3_contact_ticks.py`, mêmes scripts de manette, qui imprime en plus le contact de chaque tick ; ses verdicts égaux à `out/c3-contact.txt`) ;
+  (`critic-scenarios/out/c3-contact.txt`) : l'oracle par tick vient d'une variante de `c3_contact.py` que **T0 écrit** (versée dans
+  `critic-scenarios/` sous `c3_contact_ticks.py` : mêmes scripts de manette, le contact de chaque tick imprimé en plus ; ses verdicts égaux à
+  `out/c3-contact.txt`, sinon arrêt) ;
   **les ticks comparés** (le contact du héros, présent ou nul), avant tout soulèvement de l'oracle, qu'une DLL au bouchon ne peut pas
   reproduire : A (Carré en t10) : t1 à t9 ; B (Carré en t11) : t1 à t10 ; C (Carré en t10, Droite tenue) : t1 à t9 ; D2 (Carré en t16) :
   t1 à t15 ; E2 (Carré en t6) : t1 à t5 ; D, E, F, G (aucun soulèvement) : t1 à t16 ; les issues de soulèvement de ces lignes ne se jugent qu'en
