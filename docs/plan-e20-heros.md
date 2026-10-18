@@ -716,10 +716,10 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | 6 | E20.f4 (§1.20) | Flèche chargée : C94, E1 avec l'effet 8 (l'effet de bris vient d'E14.a1b, D-E20-26) | E20.f3, E20.e0a5, E20.e0k1 à E20.e0k3, E14.a1b ✅ |
 | 7 | E20.f5 (§1.21) | Flèches : E17 (D-E20-25) ; `ResyncControllerFromFlags` quand E17 change les drapeaux (§1.18, N9) | E20.f4 (interrupteur d'arène, témoins négatifs, annexe commune), E20.f3, E20.e0a5, E20.e0k1 à E20.e0k3 |
 | 8 | E20.f6 (§1.22 : f6a, f6b) | Boules de feu et de glace : C60, E9 (D-E20-25) ; f6a : les attributs de tuile des entités marquées à gravité ; les trois enregistrements `0x0C` de la carte 309 (sprite 12) émettent des étincelles dès l'enregistrement de C60 (E9 ne tourne jamais pour eux) | f6a : E20.e0k1, E20.e0k2 ; f6b : f6a, E20.f4, E20.f5 (règle de vitesse D-F5-5), E20.f3 (dont f3b), E20.e0a5, E20.e0b1 (§1.17), E20.e0k1 à E20.e0k3 |
-| 9 | E20.h0, E20.h1 | Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
-| 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3 | E20.c1b-1 ✅ |
+| 9 | E20.h0, E20.h1 | **h0a détaillée au §1.30.1 (2026-10-18)** ; h1 non détaillée. Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
+| 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3. **Revu le 2026-10-18 (§1.30, critique de `e20-h3`)** : à jouer **avant** h3a (le couvercle réagit sans D30 ni E12 ; E12 ne retire que la bombe ; il mesurera le manque `(E, 19)`, porté par h3a) | E20.c1b-1 ✅ |
 | 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées ; g1 pose le marqueur du Z logique (§1.18, D-E0K-1) sur l'entité soulevée | E20.e0a1 (§1.16), E20.e0k2 ; E14.a1b ✅ et E20.e0b2 (§1.17) pour g2 |
-| 11 | E20.h3, E20.h4 | Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 et E20.e0a5 (§1.16), E20.e0k2 et E20.f6a (mort des graines et de la bombe dans l'eau profonde) pour h3 ; E20.e0k1 à E20.e0k3, E20.f6a (types 16, 17, 23) et E20.e0a5 pour h4 |
+| 11 | E20.h3, E20.h4 | **h3a et h3b détaillées au §1.30 (2026-10-18)** ; h3c et h3d reportées (Q-H3-3) ; h3 n'exige que g1a et g2a, pas g1b, g2b ni g3 ; h4 à détailler (`e20-h4/report.md` §11). Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 et E20.e0a5 (§1.16), E20.e0k2 et E20.f6a (mort des graines et de la bombe dans l'eau profonde) pour h3 ; E20.e0k1 à E20.e0k3, E20.f6a (types 16, 17, 23) et E20.e0a5 pour h4 |
 | 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) ; ordre interne fixé au détail (g3 dépend aussi de la géométrie de la barricade de g4 et d'un choix de l'auteur, `order-critic.md`) | E20.g1, E20.g2 |
 
 Les projectiles d'E20.f3, f5 et f6 (E10, E17, E9) appellent aussi `DestroyEntity(e, fx)` : fait par E14.a1b ✅.
@@ -7728,6 +7728,298 @@ avec `barricade-m392` : se caler contre le haut de la porte, pousser la caisse b
 
 **Budget.** Un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après.
 
+### 1.30 E20.h0 et E20.h3 — Le cadre de l'usage d'un objet, la bombe et les haricots ⏳ (détaillée le 2026-10-18, à relire)
+
+**Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 (`docs/plan-e20-annexe/e20-h4/`, `report.md` §1 et `check.md`) ; lecture
+au binaire de la bombe et des haricots du 2026-10-18 et sa critique adverse (`docs/plan-e20-annexe/e20-h3/bin/report.md`,
+`e20-h3/critic/check.md`, la critique faisant foi : 12 fonctions remodelées par elle, 6 000 et 20 000 vecteurs par fonction, 0 écart) ; état de la
+DLL et des tests au HEAD `f81304b` et sa contre-vérification (`e20-h3/state-f81304b/dll/state.md`, `check/check.md`, la contre-vérification
+faisant foi : 84 citations, 0 fausse). Le binaire tranche ; la décompilation se lit, ne se corrige pas.
+
+**Faits qui changent le plan** (FAIT sauf mention ; les adresses sont celles d'`ALUN_CD.EXE` France).
+1. **Rond démarre l'objet depuis 63 états du héros sur 80**, dont les 25 états des deux groupes d'attaque (`0x80031E18` au sol, `0x80031DF8` en l'air)
+   et l'état de blessure `0x31` ; 17 états sans réaction (`03 0D 1A 1B 1E 27 36 37 38 3D 43 45 47 48 4A 4C 4D`) ; dans les six états de portage, le
+   départ est refusé par `H+0x2C != 0` (critique R1, `e20-h3/critic/results/states_circle_all.txt`). Le binaire a **15** sites `jal 0x8002ED64` ; les
+   13 lignes d'appel de la DLL en couvrent 8 ; les 7 autres sont dans des états que la DLL ne porte pas (portage `0x05`, `0x06`, `0x07`, `0x0B`, `0x0C`,
+   `0x2E`-`0x30` et échelle `0x0E`/`0x35` : g1a ; cape `0x20`-`0x24` : aucune tranche ; tomes `0x32`/`0x33` : h4a) (`e20-h3/state-f81304b/check/check.md`
+   S2, `evidence_jal_sites.txt`).
+2. **Le cadre** (`e20-h4/report.md` §1) : `TryUseItem` `0x8002ED64` rend 1 sans front du Rond ; avec un front et `[0x800DC4B8] != 0` (tout bit), son 3
+   et 1 ; sinon le départ `0x8003499C` : l'objet du Rond promu par `0x8004E0F8`, refus (son 3, 1) si ≥ `0x62` non signé, si un autre objet est en cours,
+   hors de `0x1F`-`0x32`, ou dans un trou de la table `0x8002339C` (`0x21`, `0x22`, `0x28`, `0x2A`) ; un départ qui rend 0 pose l'objet en cours
+   `[0x80127164]`, le compteur `[0x8012715C]` et la phase `[0x80127160]` à 0. Le pilote `0x8003634C` (appelé au tick libre `0x80031CC4` et sur le chemin
+   de blessure `0x80031C6C`) incrémente le compteur et libère l'objet quand le pilote de l'objet rend non nul. L'annulation `0x800350C0` appelle
+   l'annulation de l'objet puis libère ; ses sites : la branche verrouillée `0x80031BFC`, le défaut des états sans gestionnaire `0x80032758`, la case de
+   sortie `0x80032770`, la mort `0x800327B4`. L'initialisation du héros remet l'objet à 0 (`0x8003295C`).
+3. **Le défaut des états sans gestionnaire** : la table principale `0x80022D3C` envoie à `0x80032758` les **mêmes 15 états** que la table de nage, plus
+   tout état ≥ `0x50` ; un `else` final de `MovePlayer` attraperait en plus 21 états non portés qui ont leur propre gestionnaire : l'annulation est un
+   test `SwimHandlerOf(état) == Skip` (la table existe, `Alundra/Hero/PlayerManager.cs:169-190`), jamais un `else` (contre-vérification S1).
+4. **La bombe et les haricots ne coûtent rien et ne se consomment pas** ; seule limite : au plus 3 bombes (entités `+0x68 == 2` sur les 64 cases,
+   tout statut : une bombe détruite compte jusqu'au recyclage de sa case ; la bombe d'Olen de la 362 compte aussi). Le départ ne regarde ni
+   l'animation ni les PM ; possible en l'air (`bin/report.md` §2.3, critique 0.1, 0.2).
+5. **h3 n'exige que g1a et g2a** (le lien de portage, les modes, le Carré qui lance), ni g1b, ni g2b, ni g3 : la bombe posée n'est pas relevable
+   (pas de bit `Collidable`) (critique 0.3).
+6. **La bombe explose seule, même dans les mains** : fusée `+0x274 = 0xF0` posée après la naissance, 241 décrémentations ; statut 3 à T+242,
+   animation 1 et son 46 à T+243, boîtes de coup de T+259 à T+273, fin d'animation T+294, statut 4 T+295, case libre T+296 (critique, tableau 3).
+   Sept étincelles (effet 9) aux valeurs 56 à 8 de la fusée, **deux tirages chacune si l'effet est obtenu** (critique A5).
+7. **L'explosion** : indicateurs `0x4E` (classe B, frappe A et B, désactivée en fin d'animation) ; attaque attribut 4, puissance 5 ; dégâts
+   `max(1, (5·r) >> 4)`, `r` la réponse de la cible au type 4, `0x40` tue, `0x80` rien ; 45 fiches meurent d'un coup (dont la 335, le Beannoïde) ;
+   un coup par cible et par explosion ; zone : recouvrement strict de la boîte de l'image courante (48 × 32 au plus) avec la boîte de la cible
+   (critique R4) ; une bombe touchée par un attribut 4, 6 ou 10 explose (D30) ; le héros du kit perd 5 PV sur 10 (sa réaction est E20.c2b).
+8. **La bombe ne casse rien elle-même** : E12 appelle `CheckAndTriggerTileEffect` à chaque tick d'explosion (l'herbe se coupe pendant les 15 ticks
+   de boîte) ; murs, rochers et couvercles réagissent par leurs programmes de carte (`0x87`, `0x95`, l'attribut 4) ; **les couvercles 241 à 243 ont
+   besoin du gestionnaire `(E, 19)`** (`0x8007F690` : son `0xE6` puis `DestroyEntity(E, −1)`, effet de bris 11), absent du plan et du registre
+   (critique A2).
+9. **Les haricots ne sont pas une attaque** : leur seul usage est de réveiller le pot magique (type `0x199`, C74/A20), 39 pots sur 16 cartes,
+   **aucune sur la chaîne de l'histoire** ; sinon ils éclatent 3 ticks après l'atterrissage (effet 8) (critique 0.7, A6).
+10. **Le menu Start est refusé tant qu'un objet est en cours** (`0x8002BC90`, `[0x80127164] != 0`) ; la garde de la DLL est déclarée absente
+    (`Alundra/UI/Inventory/InventoryDirector.cs:419-422`). Un second site, `0x8002BB94` (Start + Select, la potion de secours), n'a pas
+    d'équivalent dans la DLL.
+11. **La décompilation** : D1, les deux annulations y testent `+0x20` au lieu de `+0x24` (à la mort, le binaire lâche la bombe, qui continue sa fusée)
+    (critique 0.9).
+12. **Sur la chaîne, seule la carte 10 donne la bombe** (`0x82 0x23`, programme B[8]) ; aucune ne donne les haricots ; la 362 pose la bombe d'Olen.
+13. **La DLL** (`state-f81304b`) : `TryUseItem` est un bouchon (`PlayerManager.cs:932`, avec la couture `TryUseItemResultForTests`, `:936-937`, que des
+    tests posent) ; le pilote est vide (`:1507-1509`, appelé en `:353`) ; `CancelItemMode` est vide (`:740-742`, appelé par le groupe `Skip` de la nage,
+    `:663-665`) ; le registre a 7 clés (`Alundra/Ai/NativeSpriteRegistry.cs:36-43`) ; `IsInlineDeactivateCode` ne couvre que E0, E1 et E10
+    (`Alundra/Events/EventProgramRunner.cs:328`) ; `SpawnEntityBySpriteIndex` peut rendre `null` et l'appelant doit le tester
+    (`Alundra/Maps/IEntityWorldContext.cs:78`) ; les champs propres au héros vivent sur son proxy, reconstruit à chaque carte
+    (`Alundra/Entities/EntityScriptProxy.cs:432-442`, `WorldProxy.cs:2075`) ; le son d'échec 3 a son précédent (`PlayerManager.cs:946`).
+
+**Décisions de découpage et de forme** (internes à la tranche ; les choix visibles en jeu sont des questions, plus bas).
+- **D-H-1 — L'état d'usage sur le proxy du héros.** `ItemInUse` (`uint`, l'objet en cours, `[0x80127164]`), `ItemUseCounter` (`int`,
+  `[0x8012715C]`, saturé à `0x7FFFFFFF`) et `ItemUsePhase` (`int`, `[0x80127160]`), « Hero only », à côté de `WeaponRecordPointer`
+  (`EntityScriptProxy.cs:432-442`) : remis à 0 à la reconstruction du héros à chaque carte, comme `0x8003295C`.
+- **D-H-2 — `TryUseItem` lit l'état du jeu par l'hôte du héros** (`player.ScriptHost?.GameState`, `PlayerControlFlags`) : aucune signature des 13
+  lignes d'appel ne change ; sans hôte (tests à hôte nul), il rend 1 sans son et sans exception, comme aujourd'hui (`AlundraHeroRunStatesTests.cs:472-480`).
+  La couture `TryUseItemResultForTests` reste et garde la priorité (les tests qui la posent ne bougent pas).
+- **D-H-3 — Les entrées des objets non portés.** La table de départ de `0x8003499C` a une entrée par objet `0x1F`-`0x32` : en h0a, celles des objets
+  que porte une autre tranche (h1 : les soins `0x24`-`0x29` ; h3b : `0x23` ; h3c : `0x1F` ; la cape `0x20` ; h4a : `0x2B`-`0x32`) sont des
+  **bouchons nommés qui rendent 1 sans son**, journalisés pour les tests (le comportement d'un départ dont la naissance échoue, `0x80034290`) ; de
+  même pour les pilotes et les annulations de ces objets. Chaque tranche remplace ses entrées. Écart transitoire, visible : Rond avec un objet
+  non porté équipé ne fait rien (aujourd'hui non plus).
+- **D-H-4 — La couture de départ des tests.** `[ThreadStatic] internal static Func<EntityScriptProxy, uint, int>? ItemStartForTests` : non nul, il
+  remplace l'entrée de départ de l'objet pour le test (un départ qui rend 0 pose l'objet en cours) ; nul en production.
+- **D-H-5 — L'annulation du défaut** est un test `SwimHandlerOf(état) == SwimHandler.Skip` (fait 3), dans la chaîne principale de `MovePlayer` à la
+  place du commentaire « NOT PORTED » (`PlayerManager.cs:620-621`), et `CancelItemMode` (`:740-742`) devient l'annulation `0x800350C0`.
+- **D-H-6 — Les nouveaux gestionnaires de la bombe** vont dans `Alundra/Ai/Items/BombAi.cs` (D30, E12 en h3a ; C62, le départ, le pilote et
+  l'annulation en h3b) et `Alundra/Ai/Props/BombLidAi.cs` (`(E, 19)`), sur le modèle de `WaveSwordAi` (`Register(registry)`) ; noms libres, contrôlés
+  par `check_names.py` (la garde des fichiers neufs, Q-R-7). E12 appelle la coupe d'E20.e par `BombAi.CheckAndTriggerTileEffect(entity)`, avec son
+  journal par thread `BombAi.StubCallsForTests`, comme C94 (§1.20, bloc, puce « L'appel de C94 à la coupe »).
+
+**Ordre.** h0a et, indépendants de lui, l'arc A362 (la ligne 9b, **avant** h3a : la critique établit qu'il ne demande ni D30 ni E12 pour que le couvercle réagisse, et
+qu'il mesurera le manque `(E, 19)`), puis h3a ; h3b après g1a et g2a ; h3c et h3d reportés (Q-H3-3) ; h3e à la fin. h1 (les soins) et h4 (les tomes,
+`e20-h4/report.md` §11) restent à détailler.
+
+---
+
+#### 1.30.1 E20.h0a — Le cadre de l'usage d'un objet ⏳ (détaillée le 2026-10-18, à relire)
+
+**Prérequis.** E20.c2a ✅ ; la fin du chantier de restructuration et la garde des fichiers neufs (Q-R-7).
+
+**But.** Comme l'original, Rond tente l'objet du Rond depuis les états que la DLL porte : un refus joue le son 3 ; un objet en cours a son compteur,
+son pilote, son annulation et ferme le menu Start ; les objets eux-mêmes viennent avec leurs tranches.
+
+**Périmètre.** `Alundra/Hero/PlayerManager.cs` (`TryUseItem`, la table de départ, `UpdateItemUseDriver`, `CancelItemMode`, le site de la branche
+verrouillée, le test du défaut) ; `Alundra/Entities/EntityScriptProxy.cs` (les trois champs de D-H-1) ; `Alundra/UI/Inventory/InventoryDirector.cs`
+(la garde, `:419-422`) ; `Alundra.Tests/` ; l'annexe `docs/plan-e20-annexe/e20-h0a/` ; ce plan, l'index des ADR et un ADR. **Hors périmètre** : les
+départs, pilotes et annulations des objets (h1, h3, h4) ; les sites de blessure (E20.c2b), de mort (E18) et de case de sortie (`TileAttributes` n'est
+jamais écrit) ; les états non portés et leurs sites (fait 1) ; le site `0x8002BB94`.
+
+**Partage des phases.** Une seule phase : le seul changement visible est le **son 3 des refus du cadre** (Rond sans objet du Rond, un objet d'un
+trou de la table, un autre objet en cours) ; un objet dont le départ n'est pas porté reste silencieux (D-H-3).
+
+##### Tâches
+
+- ⏳ **T0 — Annexe, oracle, liste prédite** (aucun code) : (a) la table des 63 états de la critique rapportée à la DLL : pour chaque état, la ligne
+  d'appel de la DLL (`PlayerManager.cs` : `:432`, `:451`, `:575`, `:607`, `:617`, `:669`, `:675`, `:679`, `:700`, `:726`, `:756`, `:861`, `:915`) ou la
+  tranche qui portera l'état (fait 1), et les 15 états `Skip` ; versée au README ; (b) les traces d'oracle qui ont un front de Rond
+  (`docs/plan-e20-annexe/e20-d/oracle/out*/` : `w3/W3-O-idle`, `W3-O-swim`, `w9/W9-circle-idle`, `W9-circle-swim`, `g7/R7-circle-windup`, et les 20
+  `w9/W9-item1F` à `W9-item32`, échec du départ en nage, son 3 au tick 10) : lesquelles h0a rend exactes (objet du Rond nul : le refus `≥ 0x62` ;
+  objets des trous `0x21`, `0x22`, `0x28`, `0x2A`) et lesquelles attendent la tranche de leur objet ; (c) la liste prédite des tests qui bougent :
+  ceux qui ignorent le son 3 (`AlundraHeroRunTests.cs:612`, `AlundraHeroSwimTests.cs:60`, `AlundraRunSupport.cs:402-405`), qui deviennent exacts et
+  perdent leur exception ; aucun autre attendu ; recomptée au HEAD de départ.
+- ⏳ **T1 — Tests puis code.** Chaque cas « sans effet » est accolé à un positif :
+  - (a1) le front : Rond tenu sans front ne tente rien ; un front tente ;
+  - (a2) le verrou : un front avec `PlayerControlFlags` non nul (chaque bit qui ne passe pas par la branche verrouillée) : son 3, rien en cours ;
+  - (a3) les refus : objet du Rond nul (`0x8004E0F8` rend −1 : son 3), hors de `0x1F`-`0x32`, les quatre trous, un autre objet en cours ; chacun
+    accolé au même front avec un départ de test qui réussit (D-H-4) ;
+  - (a4) un départ qui rend 0 : objet en cours, compteur et phase à 0 ; un départ de bouchon (D-H-3) : rien en cours, aucun son, le journal ;
+  - (a5) le pilote : appelé une fois par tick libre (avant la lecture du pad, `:353`), jamais dans la branche verrouillée ni avec `BlockedByEntity` ;
+    le compteur monte, saturé ; l'objet libéré au tick où le pilote de l'objet rend non nul ;
+  - (a6) l'annulation : la branche verrouillée l'appelle (après les deux remises à zéro `:341-342`, avant `EndOfMovePlayer`) ; les 15 états `Skip`
+    l'appellent, dans la chaîne principale et dans la nage ; un état porté qui n'est pas `Skip` ne l'appelle pas ; elle appelle l'annulation de
+    l'objet puis libère ; sans objet, rien ;
+  - (a7) les états : pour chaque état de la DLL de la table T0 (a), un front avec un départ de test qui réussit pose l'objet en cours ; pour les
+    états sans réaction, le départ n'est pas appelé ;
+  - (a8) le menu : refusé tant qu'un objet est en cours, ouvert sans (`InventoryDirector`), accolés ;
+  - (a9) le héros reconstruit (nouvelle carte) n'a plus d'objet en cours.
+  Puis le code.
+- ⏳ **T2 — Tests d'oracle** : (o1) les traces de T0 (b) que h0a rend exactes, comparées à l'identique, son 3 compris ; (o2) les tests de la liste
+  prédite sans leur exception du son 3.
+- ⏳ **T3 — ADR, plan, verifiers frais** (deux, l'un sur la table des états). Mutants, au moins 12, tous tués : front ignoré ; verrou limité à `0x34` ;
+  borne `0x62` décalée ; un trou oublié ; un trou de trop ; objet en cours ignoré ; compteur non incrémenté ; libération sur 0 au lieu de non nul ;
+  pilote appelé dans la branche verrouillée ; annulation par un `else` final (tué par un état porté non `Skip`) ; annulation sans libération ; garde
+  du menu absente.
+
+##### Acceptation
+
+- **DLL** : (a1) à (a9), (o1), (o2) verts, rouges avant le code (sauf les témoins négatifs, verts avant et après) ; la suite en Release
+  (copie neutralisée) et en Debug, zéro échec ; tests déplacés ⊂ liste prédite ; `cmp` de la DLL ; traces inchangées sauf le son 3 des refus
+  prédits ; moteur, convertisseur et données sans diff.
+- **Preuve de retrait** : rendre `TryUseItem` au bouchon rend rouges exactement (a1) à (a4), (a7), (o1), (o2) ; retirer l'appel de l'annulation de la
+  branche verrouillée rend rouge (a6) seulement.
+- **Recette de l'auteur** (non bloquante) : une nouvelle partie, Rond sans objet : le son de refus ; dans l'eau, de même.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : un test hors de la liste prédite bouge ; une trace change ailleurs qu'au son 3 prédit ; un état de la table T0 (a) n'a ni ligne
+  d'appel ni tranche ; un besoin de toucher au moteur ; un nom refusé par `check_names.py`.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : rendre `TryUseItem` au bouchon (la table, le pilote et l'annulation restent inertes sans objet en cours).
+
+---
+
+#### 1.30.2 E20.h3a — La bombe sans les mains : D30, E12 et le couvercle `(E, 19)` ⏳ (détaillée le 2026-10-18, à relire)
+
+**Prérequis.** L'arc A362 (ligne 9b, joué avant : sa mesure nomme ce qui manque, `(E, 19)` prédit) ; E20.e (la coupe, avant f4 dans l'ordre ;
+la forme de l'appel est celle de D-H-6) ; le registre (E14.a0 ✅), la passe de coups (E20.c1a ✅), `DestroyEntity(e, −1)` (E14.a1b ✅) ; la fin du
+chantier et Q-R-7.
+
+**But.** Comme l'original : une bombe en statut 3 explose (animation 1, son 46), blesse les classes A et B au recouvrement de ses boîtes, coupe
+l'herbe, fait exploser une bombe voisine, puis disparaît ; un couvercle désactivé par son programme disparaît avec son effet de bris et son son.
+
+**Périmètre.** `Alundra/Ai/Items/BombAi.cs`, `Alundra/Ai/Props/BombLidAi.cs` (neufs, D-H-6) ; `Alundra/Ai/NativeSpriteRegistry.cs` (deux appels,
+phase B) ; `Alundra.Tests/` ; l'annexe `docs/plan-e20-annexe/e20-h3a/` ; ce plan, l'index des ADR et un ADR. **Hors périmètre** : C62, le départ,
+le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros à la bombe (E20.c2b).
+
+**Partage des phases.**
+- **Phase A** (T1, aucun changement de comportement) : D30, E12, `(E, 19)`, les méthodes `Register` ; les tests inscrivent leurs clés dans le registre
+  du runner **seulement si elles sont absentes** (bloc du §1.24, point 4), ou dans un registre neuf pour les tests purs.
+- **Phase B** (T3) : `CreateForProduction` appelle les deux `Register`. Changements visibles : la bombe d'Olen de la 362 disparaît après son
+  explosion et coupe l'herbe ; une bombe touchée par une boule de feu explose ; un couvercle désactivé disparaît.
+
+##### Tâches
+
+- ⏳ **T0 — Annexe, oracle, recensement** (aucun code) : (a) les vecteurs autonomes de la critique pour D30, E12 et E19
+  (`docs/plan-e20-annexe/e20-h3/critic/results/goldens_critic.json`, 25 par fonction, tous les mots lus) rejoués depuis une copie, sortie identique ;
+  la table de correspondance des champs (`+0x10` statut, `+0x88` animation cible, `+0xAC` fin d'animation, `+0x6C` drapeaux, `+0x184` trou,
+  `+0x224` l'entité qui touche et son attaque `+0x1C8`) vers les membres de la DLL, versée au README ; (b) **le recensement d'E19** : les sprites
+  qui portent `E = 19` sur toutes les pages (sur le modèle de `bin/tools/corpus/scan6.py`) ; l'inscription couvre 241 à 243 ; un autre utilisateur
+  est nommé au README et reste hors de la tranche ; (c) les clés d'oracle des tests de monde, tirées des scénarios de la critique
+  (`critic/run/scen_bomb1.py`, `scen_zone.py`, `scen_limit3.py` pour la chaîne) et rejouées : la chronologie relative au tick du statut 3 (animation
+  1 à +1, premières boîtes à +17, fin d'animation à +52, statut 4 à +53, case libre à +54), la grille de zone, la chaîne de deux bombes ; règle du
+  générateur du §1.20 (bloc, point 3) pour tout tirage ; (d) la liste prédite : les deux épingles du registre (le compte d'avant plus trois clés),
+  et la mesure de `AlundraLogicalZWorldTests` Z4 et Z7 (`:270-300`, `:394-413`, une bombe née par l'interface et lancée : avec D30 et E12 seuls,
+  rien ne la passe en statut 3, neutre attendu) ; recomptée au HEAD de départ.
+- ⏳ **T1 — Phase A** (tests d'abord). (b1) D30 contre les vecteurs : attribut 4, 6, 10 → statut 3 ; 1 à 3, 5, 7 à 9, 11 → rien, accolés ; (b2) E12
+  contre les vecteurs : animation 1 et drapeaux (`| 0x40`, `& ~0x30`) au premier appel, l'appel de la coupe à chaque appel (journal de
+  `BombAi.StubCallsForTests`), `DestroyEntity(E, −1)` quand l'animation 1 est finie, et sur un trou ; (b3) `(E, 19)` : son `0xE6` puis
+  `DestroyEntity(E, −1)` (effet de bris 11 de l'en-tête) ; (b4) les inscriptions : (D, 30) et (E, 12) pour le type 2 seul, (E, 19) pour 241 à 243.
+- ⏳ **T2 — Tests de monde, rouges avant T3** (banc : `ArcRun` sur le champ synthétique de l'oracle, les entités de la carte retirées comme au §1.20,
+  bloc, point 10 ; natifs allumés ; la bombe née par l'interface, mise en statut 3 par le test au tick 0 de la clé) : (w1) la chronologie de (c) à
+  un tick par image, et à 2 et 3 ticks par image pour ce qui ne dépend pas des tirages ; (w2) la zone : une cible de la fiche 335 dans la boîte
+  meurt une fois, une cible à |dx| ≥ 36 ou |dy| ≥ 24 n'est pas touchée, accolées ; (w3) la chaîne : une seconde bombe à 11 px explose au tick de la
+  clé ; (w4) l'herbe : sur le banc du magasin partagé (§1.20, puce (c8)), les cases que la clé coupe ; (w5) un couvercle de la 362 (le banc d'A362),
+  désactivé par son programme D, disparaît avec l'effet 11 et le son `0xE6`.
+- ⏳ **T3 — Phase B** : les deux appels d'inscription. Verts.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : attribut 6 oublié ; 10 oublié ; 5 ajouté ; statut 2 au lieu de 3 ;
+  drapeau `0x40` oublié ; `0x30` non effacé ; coupe appelée une fois seulement ; destruction à l'animation 0 ; trou ignoré ; (E, 19) sans son ; (E, 19)
+  sans effet de bris ; (D, 30) inscrit pour le type 1.
+
+##### Acceptation
+
+- **Oracle** : vecteurs et clés rejoués à l'identique.
+- **DLL** : (b1) à (b4) verts en T1 ; (w1) à (w5) rouges avant T3, verts après ; suite en Release et en Debug, zéro échec ; tests déplacés ⊂ liste
+  prédite ; `cmp` ; traces inchangées ; moteur, convertisseur et données sans diff.
+- **Preuve de retrait** : retirer les deux appels d'inscription rend rouges exactement (w1) à (w5) et les deux épingles du registre.
+- **Recette de l'auteur** (non bloquante) : la carte 362 (par `Change map`) : la bombe d'Olen explose, le couvercle disparaît, la bombe aussi.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : un test hors de la liste prédite bouge ; (w1) diffère de la clé de plus d'un tick ; E19 sert un sprite de la chaîne hors des
+  couvercles (le recensement de T0 (b)) ; un besoin de toucher au moteur ; un nom refusé.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : retirer les deux appels d'inscription ; la phase A reste inerte.
+
+---
+
+#### 1.30.3 E20.h3b — La bombe dans les mains : le départ, C62, le pilote et l'annulation ⏳ (détaillée le 2026-10-18, à relire)
+
+**Prérequis.** h0a, h3a ; g1a (le lien de portage, `PutInHands`, les modes 0, 1 et 2, les états de portage) et g2a (le Carré qui lance) ; f5 (la
+clé de vitesse d'une entité marquée, D-F5-5) et f6a (la pente d'une entité marquée : la bombe lancée dans l'eau profonde meurt avec l'effet 6) ;
+la fin du chantier et Q-R-7.
+
+**But.** Comme l'original : Rond fait naître une bombe dans les mains (au plus trois en jeu), la fusée court, les étincelles tombent, Carré la lance
+(34,5 px à l'est et à l'ouest, 23 px au nord et au sud), elle rebondit une fois sur un mur, explose seule, même tenue ; le verrou du contrôle ou l'eau
+profonde l'éteignent en fumée (effet 12).
+
+**Périmètre.** `Alundra/Ai/Items/BombAi.cs` (C62, le départ, le pilote, l'annulation) ; `Alundra/Hero/PlayerManager.cs` (les entrées `0x23` des
+tables de h0a) ; `Alundra/Ai/NativeSpriteRegistry.cs` (l'inscription de (C, 62)) ; `Alundra.Tests/` ; l'annexe `docs/plan-e20-annexe/e20-h3b/` ; ce
+plan, l'index des ADR et un ADR.
+
+**Partage des phases.**
+- **Phase A** (T1) : C62, le départ, le pilote, l'annulation, testés en direct et par la couture de départ ; aucun appelant de production.
+- **Phase B** (T3) : les entrées `0x23` de h0a et l'inscription de (C, 62). Visible : la bombe se lance.
+
+##### Tâches
+
+- ⏳ **T0 — Annexe, oracle, liste prédite** : (a) les vecteurs autonomes de la critique pour le départ de la bombe, son pilote, son annulation et
+  C62 (`goldens_critic.json`) rejoués ; (b) les clés de monde de la critique rejouées (`critic/results/` : `bomb_timeline.txt`, `bomb_limit3.txt`,
+  `throw_dirs.txt`, `water.txt`, `hurt_circle.txt` ; de la lecture : `bin/results/scenarios/bomb_wall.txt`, `bomb_wall2.txt`, `bomb_locked.txt`,
+  `bomb_air_throw.txt`), refaites avec le pas par image là où la valeur d'un tirage compte (les vitesses des étincelles ; règle du §1.20, bloc,
+  point 3) ; (c) **la politique des étincelles** (critique A5) : deux tirages seulement si l'effet est obtenu ; la sonde de la DLL dit quand
+  `EffectStage` rend un effet (réservoir plein compris) et l'écrit au README ; (d) la liste prédite : `AlundraLogicalZWorldTests` Z4 et Z7 (une bombe
+  née par l'interface dont la fusée vaut 0 : avec C62 inscrit, elle passe en statut 3 au premier tick et explose), réécrits par dérivation ou
+  avec une autre entité à gravité (le choix écrit au README, la valeur de Z de l'oracle gardée) ; les épingles du registre (+1 clé) ; recomptée.
+- ⏳ **T1 — Phase A** (tests d'abord). (c1) le départ : les refus (porte déjà, pente 4, objet en cours, trois entités de type 2 en jeu, tout
+  statut, une bombe détruite comptant jusqu'au recyclage de sa case), chacun avec le son 3 et accolé au départ qui réussit ; une naissance nulle
+  (table pleine) rend 1 sans son ; `+0x274 = 0xF0` après la naissance ; le lien (le héros porte la bombe, la bombe a le héros pour porteur),
+  l'animation de levée 5 au sol, `0x0B` en l'air ; (c2) le pilote : rend 1 sans bombe portée ou si l'objet porté n'est plus de type 2, 0 sinon,
+  annule en pente 4 ; (c3) l'annulation : rien sans bombe, sur un autre type, ou si `+0x24 != 0` (le binaire, D1) ; sinon le lien effacé, l'effet 12
+  à la position de la bombe, `DestroyEntity` à un argument ; (c4) C62 contre les vecteurs : trou, fusée, fin de fusée (statut 3, lien effacé), les
+  sept étincelles (effet 9, Z + `0x80000`, deux tirages si l'effet est obtenu), portée (animation 0), lâchée (animation 2, lien effacé), le rebond
+  unique sur un mur en l'air, l'explosion sur place au pied d'un mur de classe B, le son `0x18` à l'atterrissage.
+- ⏳ **T2 — Tests de monde, rouges avant T3** (banc d'`ArcRun` sur le champ de chaque scénario, les entités de la carte retirées, la bombe dans
+  l'inventaire et comme objet du Rond par `Give(35)` et `SetItem(35)` (`Alundra.Tests/AlundraArcSupport.cs:151-171`), Rond par `Press`
+  (`:454-459`)) : (w1) la chronologie de `bomb_timeline` (naissance, levée, sept étincelles, statut 3 à T+242, explosion, case libre à T+296) ;
+  (w2) le quatrième départ refusé tant que la première case n'est pas libre ; (w3) les lancers aux quatre directions (portée, arc de 22 ticks,
+  son 24) ; (w4) le rebond au mur et l'atterrissage au pied d'un mur ; (w5) le verrou du contrôle pendant le portage : fumée 12 au tick suivant,
+  aucune explosion ; (w6) l'eau profonde : portée, fumée 12 ; lancée, l'effet 6 à l'atterrissage ; (w7) Rond pendant un coup d'épée : la bombe naît
+  et le coup est interrompu (critique R1) ; (w8) l'explosion dans les mains (critique A4) ; (w9) le menu Start refusé du départ à T+243.
+- ⏳ **T3 — Phase B** : les entrées `0x23` et l'inscription. Verts.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 16, tous tués : limite à 4 ; une bombe détruite non comptée ; fusée à 239 ;
+  étincelles à 64 ; étincelles sans la condition « effet obtenu » ; un seul tirage par étincelle ; garde `+0x20` au lieu de `+0x24` (D1) ; fumée 12
+  remplacée par 6 ; rebond illimité ; explosion au pied de tout mur ; son `0x18` oublié ; lien non effacé à la fin de fusée ; levée 5 en l'air ;
+  `+0x274` posé avant la naissance ; naissance nulle avec son ; pilote qui ne libère pas sur un autre type.
+
+##### Acceptation
+
+- **Oracle** : vecteurs et clés rejoués à l'identique.
+- **DLL** : (c1) à (c4) verts ; (w1) à (w9) rouges avant T3, verts après ; suite en Release et en Debug, zéro échec ; tests déplacés ⊂ liste
+  prédite ; `cmp` ; traces inchangées ; moteur, convertisseur et données sans diff.
+- **Preuve de retrait** : retirer les entrées `0x23` rend rouges exactement (w1) à (w9) ; retirer l'inscription de (C, 62) rend rouges (w1), (w3) à
+  (w6), (w8).
+- **Recette de l'auteur** (non bloquante) : un préréglage de recette qui équipe la bombe (à nommer en T0 avec `TestSaves.cs`) : Rond, la bombe
+  levée, marcher, sauter, la lancer, elle explose ; trois bombes au plus.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : un test hors de la liste prédite bouge ; la politique des étincelles ne peut pas être rendue fidèle sans toucher au moteur ; une
+  valeur de chronologie diffère de plus d'un tick ; g1a ou g2a ne sont pas faites.
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : retirer les entrées `0x23` (Rond revient au bouchon silencieux) ; la phase A reste inerte.
+
+---
+
+#### 1.30.4 E20.h3c, h3d, h3e — Les haricots, le pot magique, les arcs (esquisses, non détaillées)
+
+- **h3c — les haricots** (le départ `0x80034224`, son pilote et son annulation, C73, E21) et **h3d — le pot magique** (A20, C74, le type `0x199`) :
+  **reportées** par le défaut de Q-H3-3 (ensemble, quand une carte à pot deviendra atteignable). Un T0 de h3c vérifiera l'appui `+0x12C` d'une
+  entité née par l'interface (critique A7).
+- **h3e — les arcs** : la carte 10 (le don de la bombe et la roche secrète `0x95`) ; une bombe contre un Beannoïde (un coup) ; l'herbe coupée ; la
+  blessure du héros par sa propre bombe (avec E20.c2b).
+
+**Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
+
 ## 2. Points ouverts
 
 | Point | Question | Où elle se tranche |
@@ -7792,6 +8084,17 @@ avec `barricade-m392` : se caler contre le haut de la porte, pousser la caisse b
 | Q-H4-6 | (2026-10-17) L'unité du coup de caméra d'E13 (+2 sur le défilement Y pendant un tick, INFÉRENCE) | E20.h4 (T0) |
 | Q-H4-7 | (2026-10-17) Les tomes sont donnés en coffre (cartes 25, 76, 84, 95 ; niveau 2 : 17, 439, 3, 448, 431) et par des `0x82` (cartes 17, 31, 77, 80, 158, 439, 443) ; le bâton par la 134 : lesquels sont sur la chaîne actuelle ? | E20.h4 (T0) |
 | Q-H4-8 | (2026-10-17) E3 et E13 : une inscription commune avec E14 (E3 sert 98 sprites d'ennemis) ; dépend du registre cumulatif d'E14.b0 | E14.b0 |
+| Q-H3-1 | (2026-10-18) Porter la bombe avant que les caisses redeviennent solides (après h0a, g1a, g2a, sans g1b ni g3) ? Le joueur : Rond, un geste de levée de 36 ticks, marcher et sauter avec la bombe, la lancer à 34 px (23 px vers le haut ou le bas), elle explose 242 ticks après le départ ; Rond interrompt aussi un coup d'épée. Coût : tant qu'E20.c2b et E18 manquent, une bombe tenue reste en main si le héros est touché. Défaut : oui | l'auteur |
+| Q-H3-2 | (2026-10-18) Le héros dans sa propre explosion : l'original lui retire 5 PV sur 10 et le repousse ; sans E20.c2b, rien. (A, défaut) livrer ainsi, la blessure arrive avec c2b ; (B) attendre c2b avant d'ouvrir h3b au joueur (coût : l'ordre) | l'auteur |
+| Q-H3-3 | (2026-10-18) Les haricots : sans le pot magique (39 pots sur 16 cartes, aucune sur la chaîne de l'histoire), ils éclatent 3 ticks après l'atterrissage, sans autre effet visible. (A) h3c seule ; (B) h3c et h3d (le tremplin, 127 instructions de plus, un arc sur une carte à pot) ; (C, défaut) les reporter ensemble à l'arrivée d'une carte à pot | l'auteur |
+| Q-H3-4 | (2026-10-18) Le menu Start refusé tant qu'un objet est en cours (jusqu'à 243 ticks pour la bombe, sans limite pour des haricots tenus) : fidèle (défaut) ou laisser ouvrir (un écart visible à documenter) ? | l'auteur |
+| Q-H3-5 | (2026-10-18) À la mort du héros, le binaire lâche la bombe, qui continue sa fusée ; la décompilation la détruirait en fumée (D1) : le binaire est suivi (rien à décider, sauf préférence de l'auteur ; la mort est E18) | l'auteur |
+| Q-H3-6 | (2026-10-18) h3a en tête de h3 (D30, E12, `(E, 19)`) et l'arc A362 avant h3a ? Défaut : oui (la critique : le couvercle réagit sans D30 ni E12) | l'auteur |
+| Q-H3-7 | (2026-10-18) La racine destructible (D32, sprite 253, deux placements, carte 8, hors chaîne) : dans h3a ou à E14 ? Défaut : la laisser | l'auteur |
+| Q-H3-8 | (2026-10-18) Les sons éventuels des effets 2, 6, 8, 9, 12 ne sont pas décodés (comme Q-H4-5) | E20.h3b (T0) |
+| O-H-1 | (2026-10-18) La cape de sable (objet `0x20`, états `0x20` à `0x24`, pilote `0x80035260`) n'est dans aucune tranche ; ses deux sites `jal 0x8002ED64` attendent son port | à placer |
+| O-H-2 | (2026-10-18) La case de sortie (`+0x188 & 0x80`, l'annulation `0x80032770` puis le mode 1) n'est pas portée : `TileAttributes` n'est jamais écrit | à placer (E19 ou E20.c2b) |
+| O-H-3 | (2026-10-18) Le second site de garde `0x8002BB94` (Start + Select, la potion de secours) n'a pas d'équivalent dans la DLL | h1 |
 
 ## 3. Hors périmètre
 
