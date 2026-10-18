@@ -6549,7 +6549,7 @@ production (T4) : le test l'inscrit lui-même seulement si la clé est absente.
 
 ---
 
-#### 1.24.2 E20.g2a — Lancer ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi)
+#### 1.24.2 E20.g2a — Lancer ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi ; **READY** à la relecture de clôture)
 
 **Relecture (2026-10-18).** REVISE, cinq blocages corrigés (FIX) : la règle de vitesse est nommée (l'extension au marqueur `HasLogicalZ`,
 après f5) et P-G-3 devient une prédiction à une valeur ; f5 est un prérequis ferme, Q-G1A-4 aligné ; `CarryRules.cs` et les chemins du HEAD
@@ -6607,7 +6607,7 @@ avec la ligne, 110,5 ; une autre valeur est un arrêt.
 
 ---
 
-#### 1.24.3 E20.g2b — Briser ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi)
+#### 1.24.3 E20.g2b — Briser ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi ; **READY** à la relecture de clôture)
 
 **Relecture (2026-10-18).** REVISE, six blocages corrigés (FIX) : l'arrêt vise les tests hors de la liste prédite, qui nomme les deux épingles
 du registre ; l'inscription de E2 dans les tests de phase A est nommée ; le butin dépend de l'état d'E20.e0c au début de la tranche ; f4 et f6a
@@ -6655,49 +6655,97 @@ cartes et sa table, un arrêt par type non couvert ; le point 4 du bloc aligné)
 
 ---
 
-#### 1.24.4 E20.g1b — Soulever (l'activation) ⏳ (**à réécrire avant son exécution** : D-G-7 et la phase B sont caducs depuis D-E20-39 ; g1b vient après g3 ; voir §1.28, « Conséquences pour §1.24.4 »)
+#### 1.24.4 E20.g1b — Soulever (l'activation) ⏳ (réécrite le 2026-10-18 après E20.g3, à relire ; le texte du 2026-10-15 est remplacé)
 
-**Prérequis.** g1a, g2a, g2b (ordre de D-G-1 ; si l'enveloppe maintient e0b2 pour g2, g1b passe après g1a et avant g2a, sans le lancer), E20.e0k2, le T0 commun. **À relire à l'exécution** : `MoveControllerAndPullPosition` après e0k2 et f3 à f6, l'ensemble de test d'f3a (modèle), l'état des préréglages.
+**Pourquoi réécrite.** D-E20-39 (le soulèvement n'est activé qu'avec g3) rend caducs D-G-7 (`LiftContactEntity`, `FindLiftContact`,
+`requiredCandidateFlags`), la phase B de remplissage et ses compteurs-témoins k1 à k4, et O-G-1 : le seul contact est celui que g3 rend
+possible, `XCollisionEntity` (`Alundra/Entities/EntityScriptProxy.cs:2424-2431`), que le binaire appelle `+0x130`.
 
-**But.** Carré contre une caisse ou une jarre la soulève comme l'original (aux écarts de Q-G1 et O-G-1 près) ; un soulevable posé sur la tête du héros est soulevé sans bouton ; les genres 2 et 3 demandent l'objet `0x3B`. C'est la phase visible : la recette de l'auteur.
+**Prérequis.** g1a, g2a, g2b, **g3** (et g4a, dans la même fusion : Q-G3-b) ; par eux f4, f5, f6a ; le T0 commun ; la fin du chantier de
+restructuration et la garde des fichiers neufs (Q-R-7).
 
-**Périmètre.** `AlundraPlayerManager.cs` (`PlayerTryAction`, `TryLift`, appels de l'état d'escalade, `ProductionWiredLiftableTypes`) ; `AlundraEntityScriptProxy.cs` (champ `LiftContactEntity`, remplissage dans `MoveControllerAndPullPosition`) ; `AlundraEntityCollision.cs` (paramètre facultatif `requiredCandidateFlags`) ; `AlundraTestSaves.cs` (préréglage de la recette) ; `docs/test-saves.md` ; `Alundra.Tests/` ; annexe ; ADR. **Hors périmètre.** La solidité (g3), les PNJ, torches, C4, graines et bombe (hors ensemble), la priorité de l'interaction (inchangée).
+**But.** Carré contre une caisse ou une jarre la soulève comme l'original ; un soulevable posé sur la tête du héros est soulevé sans bouton ;
+les genres 2 et 3 demandent l'objet `0x3B`. C'est la phase visible : la recette de l'auteur (porter, sauter, monter sur un dessus de 16 px et
+sur une plateforme qui bouge à l'horizontale, lancer, briser : D-E20-40).
+
+**Faits (binaire ; `docs/plan-e20-annexe/e20-g3/critic/report.md` R1, R2, R4 et Manques 3, qui font foi ; §1.28 « Conséquences pour §1.24.4 »).**
+- `PlayerTryAction` `0x8002EEAC` lit le contact `+0x130` de la physique du **tick précédent** ; avec un front de Carré, il rend `TryLift(contact)`
+  même nul ; sans front, la boucle des supports (une entité de statut 2 ou 3, `+0x20` nul, dont `+0x12C` désigne le héros) soulève sans bouton.
+  Au sol, le contact est l'entité qui a refusé le pas complet du tick, nul si le pas complet est accepté, même affleurant : un Carré au tick où le
+  héros devient affleurant donne l'épée (0 sur 79), un tick plus tard le soulèvement (78 sur 79, `critic/out/w4_contact.txt`).
+- `PlayerTryAction` est appelé depuis six sites, dont les états de saut (`0x80031E98`) : en l'air à z ≥ 80, le contact est la caisse du haut et
+  Carré la soulève en vol (état `0x2C` vers `0x0B`, `critic/out/w5_airlift.txt`).
+- `TryLift` : genre 0 → 0 ; genre 1 → soulève ; genres 2 et 3 → l'objet `0x3B` ; aucun test de distance ni de regard.
+
+**Faits (DLL, après g3).** Le contact `XCollisionEntity` est le premier candidat de la liste qui recouvre le pas essayé, remis à nul sans force,
+lu par le `MovePlayer` du tick suivant (`critic-recon/report.md` 2a, 2b) : la règle « contact du tick précédent » tient par l'ordre du tick.
+Le cas affleurant est épinglé par g3 ((s3)). **Inconnu** : le contact de la DLL en l'air (le binaire réécrit sa valeur à chaque essai en
+vol, INFÉRENCE ; la DLL rend l'obstacle du dernier essai bloqué, `H2Obstacle ?? H1Obstacle`) : T0 le mesure.
+
+**Périmètre.** `Alundra/Hero/PlayerManager.cs` (`PlayerTryAction`, `TryLift`, les appels de l'état d'escalade, `ProductionWiredLiftableTypes`) ;
+`Alundra/SaveGames/TestSaves.cs` (le préréglage `porter-m<N>`) ; `Alundra.Tests/AlundraTestSavesTests.cs` (ses deux tables, `:66-67` et
+`:370-378`) ; `docs/test-saves.md` ; les tests ; l'annexe ; l'ADR de g1a (amendé) ; ce plan. Aucun changement d'`EntityScriptProxy.cs` ni
+d'`EntityCollision.cs`.
+
+**Hors périmètre.** La solidité (g3) ; les PNJ ; les torches, C4, graines et bombe (hors de l'ensemble câblé) ; la priorité de l'interaction
+(inchangée) ; la barricade de la 392 en soulevant (g4b).
 
 **Partage des phases** (seul à faire foi) :
-- **Phase A** (T1, sans changement de comportement) : `TryLift`, `PlayerTryAction` et `FindLiftContact` en fonctions pures ; le bouchon `PlayerTryAction` renvoie toujours 0. Tests directs.
-- **Phase B** (T2) : le remplissage de `LiftContactEntity` par `MoveControllerAndPullPosition` et les compteurs-témoins temporaires. Aucun lecteur de production : inerte.
-- **Phase C** (T3) : l'activation, trois lignes ensemble : le corps du bouchon `PlayerTryAction` remplacé ; les appels de `TryUseItem` et de `PlayerTryAction` de l'état d'escalade ; `ProductionWiredLiftableTypes` = les 7 types. Seul changement de comportement.
+- **Phase A** (T1, sans changement de comportement) : `TryLift` et `PlayerTryAction` en fonctions pures sur `XCollisionEntity` ; le bouchon de
+  production rend toujours 0. Tests directs.
+- **Phase B** (T3) : l'activation, trois lignes ensemble : le corps du bouchon `PlayerTryAction` remplacé ; les appels de `TryUseItem` et de
+  `PlayerTryAction` de l'état d'escalade ; `ProductionWiredLiftableTypes` = les 7 types C23. Seul changement de comportement.
 
-**Valeurs attendues** (clés de `g9`, `g15`, `c3`, `g1_lift` ; la caisse en x = 130, le héros pousse vers l'est depuis x = 100).
-
-| Valeur | Clé | Attendu |
-|---|---|---|
-| Contact | `xcoll` | non nul de t5 (le héros reste à 109,0) |
-| Carré au tick 4 ou 5 | `anim_t` | 16 (l'épée), pas de soulèvement |
-| Carré au tick 6 ou 7 | `carried2C`, `anim_t` | caisse ; 5 |
-| Pousser aux ticks 1 à 9, lâcher au tick 10 | Carré au tick 10, 11 | soulèvement (la force résiduelle garde le contact) |
-| Idem | Carré au tick 12 | l'épée |
-| Pause de 5 ticks puis nouvelle poussée | Carré au premier tick, au suivant | l'épée, puis le soulèvement |
-| Carré tenu depuis le tick 1 | `anim_t` | jamais de soulèvement |
-| Haut tenu (sans pousser la caisse) | `anim_t` | l'épée |
-| En l'air, contact au tick 5 | Carré au tick 6, 7, 8 | soulèvement (`anim_t` 11), soulèvement, l'épée en l'air (20) |
-| Objet de genre 3 (sprite 234) sans / avec `0x3B` | `anim_t`, `carried2C` | l'épée / soulevé au tick 13 puis 12 à L+36 |
-| Objet sur la tête (Z 32, `support` = héros) | `carried2C`, `anim_t` | soulevé au premier `MovePlayer` sans bouton ; 12 |
-| Décalages écrits par `TryLift` (test direct, géométrie de l'oracle : poussée vers l'est, l'ouest, le nord, le sud) | `off30`, `off34` | (21, 0), (−21, 0), (0, −15), (0, +15) |
+**Valeurs attendues** (clés de l'oracle `g9`, `g15`, `c3`, `g1_lift` de `docs/plan-e20-annexe/e20-g1a/` ; la caisse en x = 130, le héros pousse
+vers l'est depuis x = 100) : le tableau du texte du 2026-10-15 est gardé tel quel (contact non nul de t5, héros à 109,0 ; Carré aux ticks 4 ou
+5 : l'épée ; aux ticks 6 ou 7 : soulèvement, `anim_t` 5 ; la force résiduelle garde le contact un tick ; une pause puis une nouvelle poussée :
+l'épée puis le soulèvement ; Carré tenu depuis le tick 1 : jamais ; Haut tenu sans pousser : l'épée ; en l'air, contact au tick 5 : Carré
+aux ticks 6, 7, 8 : soulèvement `anim_t` 11, soulèvement, l'épée en l'air 20 ; genre 3 (sprite 234) sans et avec `0x3B` ; objet sur la tête :
+soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (21, 0), (−21, 0), (0, −15), (0, +15)).
 
 ##### Tâches
 
-- ⏳ **T1 — Phase A** (tests d'abord, puis le code). (l1) `TryLift` direct : genres 0, 1, 2, 3 × `0x3B` (huit cas), retour, appel de `PutInHands`, animation cible ; type hors ensemble câblé → 0, accolé au même objet dans l'ensemble ; (l2) `PlayerTryAction` direct : porté → 1 et `0x0C`/`0x30` ; contact et front → retour direct de `TryLift` (même 0, sans passer par la boucle) ; contact sans front → boucle ; boucle sans bouton : objet sur la tête soulevé, accolé à `RidingEntity` autre ; statut 4 ou `+0x20` non nul ignoré ; **héros sans `LogicContextEntity` : rien** (piège « nul égale nul »), accolé au héros qui en a un ; (l3) `FindLiftContact` pur : chevauchement du pas, bord contre bord (non), Z hors (non), premier de la liste, héros et objet porté exclus, pas nul → nul.
-- ⏳ **T2 — Phase B** (tests puis code, puis compteurs). (k1) le champ est rempli à la position de fin du pas **demandé**, nul sans pas, vivant un tick après le lâcher ; il ne touche ni `XCollisionEntity` ni `EntityBlockCount`, accolé à un PNJ qui, lui, les remplit. **Compteurs-témoins**, retirés avant la phase C : (k2) nombre de pas où `LiftContactEntity` est non nul sur toute la suite hors des tests nouveaux, prédit **0** ; (k3) boucle sans bouton qui lève, prédit 0 ; (k4) `CarriedEntity` non nul à la fin d'un test existant, prédit 0. Un compteur non nul est un arrêt (liste mesurée contre liste prédite, avant l'activation).
-- ⏳ **T3 — Phase C** (tests de monde écrits avant, **rouges avant C**) : (m1) la chronologie du tableau sur le vrai contrôleur (champ synthétique avec un soulevable de l'ensemble) ; (m2) l'arc de recette sur la carte choisie par le T0 (préréglage `porter-m<N>`) : soulever, marcher, sauter sur un dessus de 16 px, lancer, briser ; (m3) genre 3 sur la carte 3, 4, 7 ou 11, avec et sans l'objet `0x3B` ; (m4) objet sur la tête ; (m5) hors ensemble (torche de la 86, bombe de la 362 : genre 1 mais non câblés) : Carré donne l'épée, accolé à la caisse de la même scène qui se soulève ; (m6) priorité : contact PNJ → `TryLift` 0 → interaction ; contact caisse → soulèvement ; (m8) l'état d'escalade (`0x0E`, `0x35`, binaire `0x800321D4`-`0x800321E4` : `TryUseItem`, puis `PlayerTryAction`, dont un retour non nul termine le tick) : Carré au contact d'un soulevable câblé pendant l'escalade soulève (`anim_t` 5 ou 11, selon la prédiction du scénario `c4_climb_lift`), accolé à l'escalade sans contact qui ne change pas. Témoins (suite existante, verts avant et après) : les arcs de leviers (115, 116, 117, 44), `A5`, `A5r` et la chaîne. Puis la ligne d'activation.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 16, tous tués : genre 2 ou 3 sans `0x3B` ; `0x3B` inversé (la doc fausse) ; masque de Carré ; boucle avec bouton ; `+0x12C` ignoré ; statut 2 ou 3 élargi ; retour de `TryLift` du contact perdu ; ensemble câblé étendu à un type non enregistré ; sonde sur le pas effectué au lieu du pas demandé ; sonde qui remplit `XCollisionEntity` ; contact non nul sans pas ; héros inclus dans la sonde ; garde « nul égale nul » retirée ; priorité de l'interaction inversée ; appel de l'état d'escalade oublié ; marqueur non posé.
+- ⏳ **T0** (aucun code) : (a) la carte de la recette (Q-G1A-5) : une carte avec un soulevable câblé, un dessus de 16 px et une plateforme
+  qui se déplace d'elle-même à l'horizontale, choisie dans les recensements de `e20-g1a/work/` (`census_platforms.py`, `census_maps2.py`) ; (b)
+  **le contact en l'air** sur la DLL après g3 : la ligne « en l'air » du tableau rejouée ; un écart avec l'oracle est un arrêt (pas un choix de
+  l'exécuteur) ; (c) la liste prédite : la liste des préréglages (`AlundraTestSavesTests`, ses deux tables), dérivée de l'état des autres
+  préréglages ajoutés avant (E20.e `herbe-m14`, E20.g4a `barricade-m392`), et les tests nommés par T0 (b).
+- ⏳ **T1 — Phase A** (tests d'abord, puis le code). (l1) `TryLift` direct : genres 0, 1, 2, 3 × `0x3B` (huit cas), retour, appel de
+  `PutInHands`, animation cible ; type hors de l'ensemble câblé → 0, accolé au même objet dans l'ensemble ; (l2) `PlayerTryAction` direct :
+  porté → 1 et `0x0C`/`0x30` ; contact et front → retour direct de `TryLift` (même 0, sans passer par la boucle) ; contact sans front →
+  boucle ; boucle sans bouton : objet sur la tête soulevé, accolé à `RidingEntity` autre ; statut 4 ou `+0x20` non nul ignoré ; héros sans
+  `LogicContextEntity` : rien (piège « nul égale nul »), accolé au héros qui en a un.
+- ⏳ **T2 — Tests de monde, rouges avant T3** (le vrai contrôleur, après g3) : (m1) la chronologie du tableau (un champ synthétique avec un
+  soulevable de l'ensemble) ; (m2) l'arc de la recette sur la carte de T0 (a) (préréglage `porter-m<N>`) : soulever, marcher, sauter sur un
+  dessus de 16 px, monter sur la plateforme mouvante, lancer, briser ; (m3) le genre 3 sur la carte 3, 4, 7 ou 11, avec et sans `0x3B` ; (m4)
+  l'objet sur la tête ; (m5) hors de l'ensemble (la torche de la 86, la bombe de la 362 : genre 1 mais non câblés) : Carré donne l'épée,
+  accolé à la caisse de la même scène qui se soulève ; (m6) la priorité : contact d'un PNJ → `TryLift` 0 → interaction ; contact d'une
+  caisse → soulèvement ; (m7) le soulèvement en l'air (la ligne du tableau, selon T0 (b)) ; (m8) l'état d'escalade (`0x0E`, `0x35`, binaire
+  `0x800321D4`-`0x800321E4` : `TryUseItem`, puis `PlayerTryAction`, dont un retour non nul termine le tick) : Carré au contact d'un soulevable
+  câblé pendant l'escalade soulève (`anim_t` 5 ou 11, selon le scénario `c4_climb_lift`), accolé à l'escalade sans contact. Témoins (verts
+  avant et après) : les arcs de leviers (115, 116, 117, 44), A5, A5r, les arcs de g4a et la chaîne.
+- ⏳ **T3 — Phase B** : les trois lignes. Verts.
+- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : genre 2 ou 3 sans `0x3B` ; `0x3B` inversé ; masque de
+  Carré ; boucle avec bouton ; `+0x12C` ignoré ; statut 2 ou 3 élargi ; retour de `TryLift` du contact perdu ; ensemble câblé étendu à un
+  type non enregistré ; contact du tick courant au lieu du précédent ; garde « nul égale nul » retirée ; priorité de l'interaction inversée ;
+  appel de l'état d'escalade oublié.
 
 ##### Acceptation
 
-- **DLL** : (l1) à (l3), (k1) verts ; (k2) à (k4) à 0 ; (m1) à (m6) et (m8) **rouges avant C** (nommés) ; suite en Release **et** en Debug, zéro échec ; tests déplacés ⊂ liste prédite (l'épingle de la liste des préréglages) ; `cmp` ; cinq traces ; arcs de la chaîne inchangés ; moteur, convertisseur et données sans diff.
-- **Preuve de retrait** : vider `ProductionWiredLiftableTypes` rend rouges exactement (m1) à (m6) et (m8) ; remettre le bouchon rend rouges exactement les mêmes ; retirer le remplissage de la phase B rend rouges exactement (k1) et (m1) à (m4), (m6) ; retirer les appels de l'état d'escalade rend rouge exactement (m8).
-- **Recette de l'auteur** (non bloquante) : générer `porter-m<N>` hors de l'app (`docs/test-saves.md`), puis : (1) pousser une caisse ou une jarre et appuyer sur Carré : le geste de 36 images, l'objet monte au-dessus de la tête ; (2) marcher, tourner, sauter avec l'objet ; (3) sauter sur un dessus de 16 px ; (4) monter sur une plateforme qui bouge, si la carte en a une ; (5) Carré : l'objet part et se brise (sans butin avant E20.e0c) ; (6) l'échelle est refusée ; (7) une scène qui verrouille le contrôle avale l'objet. Avant g2, l'objet ne peut pas être lancé : l'écrire dans la recette.
-- **Arrêts** : un compteur de la phase B est non nul ; un arc de la chaîne ou de levier bouge ; un test nommé de (m1) à (m6) ou (m8) vert avant C ; la boucle sans bouton relève un objet lancé ; plus de 10 tests existants bougent ; un besoin de changer le moteur. **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après. **Retour arrière** : la phase C se retire seule (ensemble vide, bouchon) ; la phase B se retire seule ; la phase A ne change aucun comportement.
+- **DLL** : (l1), (l2) verts ; (m1) à (m8) **rouges avant T3** (nommés), verts après ; suite en Release (copie neutralisée) **et** en Debug,
+  zéro échec ; tests déplacés ⊂ liste prédite de T0 (c) ; `cmp` ; traces ; arcs de la chaîne inchangés ; moteur, convertisseur et données
+  sans diff.
+- **Preuve de retrait** : vider `ProductionWiredLiftableTypes` rend rouges exactement (m1) à (m8) ; remettre le bouchon rend rouges
+  exactement les mêmes ; retirer les appels de l'état d'escalade rend rouge exactement (m8).
+- **Recette de l'auteur** (après la fusion de g3, g4a et g1b) : générer `porter-m<N>` hors de l'app (`docs/test-saves.md`), puis : (1) pousser
+  une caisse ou une jarre et appuyer sur Carré : le geste de 36 images, l'objet monte au-dessus de la tête ; (2) marcher, tourner, sauter
+  avec l'objet ; (3) sauter sur un dessus de 16 px ; (4) monter sur la plateforme qui bouge ; (5) Carré : l'objet part et se brise (le butin
+  selon E20.e0c) ; (6) l'échelle est refusée ; (7) une scène qui verrouille le contrôle avale l'objet ; avec `barricade-m392` : se caler contre
+  le haut de la porte et sauter sur la caisse basse (g4a).
+- **Arrêts** : T0 (b) contredit l'oracle ; un arc de la chaîne ou de levier bouge ; un test nommé de (m1) à (m8) vert avant T3 ; la boucle
+  sans bouton relève un objet lancé ; un test hors de la liste prédite bouge ; un besoin de changer le moteur. **Budget** : un `executor` par
+  phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après. **Retour arrière** : la phase B se retire seule (ensemble vide,
+  bouchon) ; la phase A ne change aucun comportement.
 
 ---
 
