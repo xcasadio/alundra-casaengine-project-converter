@@ -12118,11 +12118,13 @@ comportement n'a touché le périmètre depuis l'annexe. Le recomptage à HEAD r
   tant que ses lignes restent : le code d'un opcode et le retrait de ses lignes vont dans **le même commit** (précédent : L2-1 et L2-2
   fusionnés).
 
-#### 1.4.1 E19.sm0 — Le filet : la liste fermée des opcodes sautés sur le corpus entier ⏳ (détaillée le 2026-10-18)
+#### 1.4.1 E19.sm0 — Le filet : la liste fermée des opcodes sautés sur le corpus entier ⏳ (détaillée le 2026-10-18 ; REVISE, révision 1)
 
 **Prérequis.** La fin du chantier de restructuration, **R5 comprise** (un fichier de test ajouté avant R5 désynchronise sa table de 336 lignes
 et son compte « 5 097 / 0 », `docs/plan-restructuration-dll.md:978`, `:879` ; `docs/plan-restructuration-dll.md:160` interdit toute tranche
-E19 pendant le chantier) ; l'accord de l'auteur sur le découpage (Q-E19-SM1) ; l'export du projet de la date du recomptage
+E19 pendant le chantier) ; **Q-R-7 répondue et la garde par règles faite** (R7 proposée, `check_names.py --rules` : l'arbre vivant de la DLL
+et des tests contre les règles de l'ADR-0075, sans table ; `docs/plan-restructuration-dll.md:1234-1239`) : la garde de R5 (`--tests`, `:983`)
+contrôle chaque fichier à son chemin de `r5-files.tsv` et ne peut ni accepter ni contrôler un fichier neuf (révision 1) ; l'accord de l'auteur sur le découpage (Q-E19-SM1) ; l'export du projet de la date du recomptage
 (`alundra-project/Maps/world-index.json` du 2026-10-17) ou un recomptage refait sur un export plus récent (T0). Aucune autre tranche.
 
 **But.** Un test statique sur les **483 cartes** : chaque site atteignable d'un opcode que l'interpréteur saute par sa taille est une ligne
@@ -12130,7 +12132,10 @@ d'une liste versionnée, avec son propriétaire ; aucune ligne périmée, aucune
 aucune taille nulle atteinte. C'est le test M-05 / G7 (§1.2s, la ligne E19.m de l'enveloppe) : sm0 le rend vrai dès aujourd'hui en listant
 les 510 sites, et chaque tranche suivante retire ses lignes.
 
-**Faits** (`docs/plan-e19-sm-annexe/state-317b336/`, `check_sm0.md` faisant foi).
+**Faits** (`docs/plan-e19-sm-annexe/state-317b336/`, `reports/check_sm0.md` faisant foi). Les chemins, les types et les lignes des tests
+cités ci-dessous sont ceux d'**avant R5** (R5 range tous les fichiers de la racine de `Alundra.Tests/` et retire le préfixe `Alundra` des types,
+`docs/plan-restructuration-dll.md:981-983`) : T0 les traduit par `r5-files.tsv` et `r5-types.tsv` avant tout autre travail, y compris pour le
+contrôle « aucun test existant déplacé » (révision 1).
 - Le parcours et les règles existent pour la chaîne (E19.e E1, §1.2i) : `Alundra.Tests/AlundraStoryChainOpcodeAudit.cs` (`IsPorted :75`, le vrai
   runner sur `[op, 0…, 0xFF]` ; `WalkMap :130`, `WalkProgram :163`, `ReadRoots :294`, `LoadMap :343`, `WalkExportedMap :356` ; `FindListPath
   :367` ; `ParseList :389`, onze colonnes : carte, créneau, programme, libellé, pc, opcode, nom, classe, tranche, niveau, épingle ; `Rule1UnlistedSites
@@ -12157,7 +12162,11 @@ les 510 sites, et chaque tranche suivante retire ses lignes.
 **Décisions** (du plan, réversibles).
 - **D-SM0-1** — Une **seconde liste**, propre au corpus, et une **seconde classe de test** ; la liste et les tests de la chaîne ne changent pas.
   Noms et dossiers suivant le rangement de R5 au HEAD de départ (Q-R-3 points 5 et 6) ; propositions : `CorpusSkippedOpcodesTests` et
-  `Data/corpus-skipped-opcodes.tsv`, contrôlés par la garde des tests de R5 (`check_names.py --tests`, `docs/plan-restructuration-dll.md:983`).
+  `Data/corpus-skipped-opcodes.tsv`, contrôlés par la garde par règles de R7 (révision 1). La recherche de la liste, la fonction de la règle 4
+  et `ClosedOwners` vivent dans la classe neuve (`FindListPath` est écrit en dur pour la liste de la chaîne,
+  `AlundraStoryChainOpcodeAudit.cs:369`) ; le parcours, l'oracle, `ParseList` et les règles 1 à 3 de l'aide de la chaîne sont réutilisés sans
+  changement ; la fonction de la règle 4 reçoit l'ensemble des propriétaires clos **en argument** (le test du corpus lui passe `ClosedOwners`, les
+  tests (f) un ensemble fabriqué).
 - **D-SM0-2** — Le format : les onze colonnes de `ParseList` (le parseur est réutilisé tel quel) ; `label` = le créneau et le programme
   (`C[2]`) ; `name` = le libellé de la table des tailles au HEAD ; `class` = `P` (prédicat suivi d'un lecteur de `Result`, la colonne du même nom
   de `skipped-sites.tsv`), `W` (attente, `WaitOpcodes`) ou `A` (le reste) ; `slice` = **le propriétaire**, dans le vocabulaire fermé `sm1`, `sm2`,
@@ -12170,7 +12179,9 @@ les 510 sites, et chaque tranche suivante retire ses lignes.
   chaque tranche qui retire ses lignes y ajoute son nom dans le même commit) ; (5) **les comptes épinglés** : 510 lignes, 508 instructions
   distinctes, 96 cartes, 21 opcodes, et les comptes par propriétaire du fait ci-dessus. La règle 4 de la chaîne (prédicats de scène) et la règle
   5 (arcs) ne s'appliquent pas au corpus.
-- **D-SM0-4** — La carte 117 garde son site `0xB9` (propriétaire sm7) ; les huit sites de la carte 60 gardent le propriétaire de leur opcode
+- **D-SM0-4** — Les propriétaires sont ceux du tableau du §1.4 ; une réponse de l'auteur qui les change (Q-sm-4 pour `0xB2`, sm3 ou E20.g1a ;
+  Q-sm-6 pour `0x88` ; O-E19-36 pour `0xB9`) change la colonne `slice` de ses lignes et les comptes de la règle 5 dans un commit de la tranche qui
+  la reçoit (révision 1). La carte 117 garde son site `0xB9` (propriétaire sm7) ; les huit sites de la carte 60 gardent le propriétaire de leur opcode
   (sm2) jusqu'à la réponse d'O-SM0-1 ; `0xBB` reste hors de `WaitOpcodes` (propriétaire sm8) jusqu'à O-SM0-2.
 - **D-SM0-5** — **Hors périmètre** : le miroir `IntroTraceHarnessTests.ImplementedOpcodes` (`:332-387`) et sa règle L1-R8 (§1.2m) restent ;
   le test « zéro `LoopBudgetExceeded` » ; les opcodes partiels (`2F 53 82 A4 AC`) et les no-op (`01 A8 BA`), sans garde statique ici ; `0x5F`
@@ -12184,8 +12195,9 @@ les 510 sites, et chaque tranche suivante retire ses lignes.
   483 cartes, 110 140 instructions, 510 sites, le multiensemble des clés égal à `skipped-sites.tsv` ; **si l'export a changé depuis le
   2026-10-17**, refaire le relevé et les comptes de D-SM0-3 sur l'export du HEAD de départ et les consigner (une clé qui change est un arrêt
   avant T1, à soumettre) ; (b) le script de conversion de D-SM0-2 et sa sortie (deux exécutions identiques), versés à l'annexe ; (c) la liste
-  prédite : **aucun test existant** (la liste et les tests de la chaîne ne changent pas) ; recomptée au HEAD de départ ; (d) la garde des noms
-  des tests de R5 sur les deux noms.
+  prédite : **aucun test existant** (la liste et les tests de la chaîne ne changent pas) ; recomptée au HEAD de départ ; (d) la garde par règles de R7
+  sur l'arbre avec les deux fichiers neufs (révision 1) : elle passe pour eux, et elle refuserait un nom à préfixe `Alundra` ou un namespace
+  différent du dossier (le contrôle de R7 lui-même ; ici, l'appel et sa sortie consignés).
 - ⏳ **T1 — Tests** (aucun code de la DLL) : la liste (copie à l'octet de T0 (b)) ; la classe de test : (c1) à (c4) les règles 1 à 4 sur le
   corpus ; (f1) à (f4) les fonctions des règles sur des entrées fabriquées (le motif d'E19.e : une ligne retirée, une ligne d'opcode porté
   ajoutée, un programme fabriqué qui contient `0x20`, une ligne au propriétaire hors vocabulaire, une au propriétaire clos) ; (k1) les comptes de
@@ -12200,15 +12212,18 @@ les 510 sites, et chaque tranche suivante retire ses lignes.
 ##### Acceptation
 
 - **Oracle** : T0 (a) et (b) identiques sur deux exécutions.
-- **DLL** : T1 vert, chaque mutation (m1) à (m6) rouge exactement ses tests nommés ; la suite `Alundra.Tests` en Release (copie neutralisée) et en Debug, zéro
-  échec ; aucun test existant déplacé ; `git diff` vide sous `Alundra/`, le moteur, le convertisseur et les données ; traces inchangées.
+- **DLL** : T1 vert, chaque mutation (m1) à (m6) rouge exactement ses tests nommés, chacune passée par `dotnet test
+  Alundra.Tests/Alundra.Tests.csproj -c Debug --no-build --blame-hang-timeout 300s --filter <la classe neuve>` ; la suite `Alundra.Tests` par
+  `dotnet test Alundra.Tests/Alundra.Tests.csproj -c Release --no-build --blame-hang-timeout 300s` après le build Release à copie neutralisée,
+  puis la même commande en `-c Debug` après le build Debug, zéro échec (révision 1 : le parcours des 483 cartes n'a jamais tourné, sa durée est
+  INCONNUE) ; la liste relue à l'octet après le commit (normalisation des fins de ligne) ; aucun test existant déplacé ; `git diff` vide sous `Alundra/`, le moteur, le convertisseur et les données ; traces inchangées.
 - **Preuve de retrait** : retirer la classe de test et la liste ne rend rien rouge (aucun autre test ne les lit) ; vider la liste (l'en-tête
   seul) rend rouges exactement (c1), (k1) et (k2) ((c2) et (c4) sont vides sur une liste vide, (c3) ne lit pas la liste).
 - **Recette de l'auteur** : aucune (rien ne change en jeu).
 
 ##### Arrêts, budget, retour arrière
 
-- **Arrêts** : le parcours C# ne redonne pas **exactement** les 510 lignes (ou le relevé de T0 (a) si l'export a changé) ; une clé change
+- **Arrêts** : Q-R-7 sans réponse ou R7 non faite (révision 1) ; le parcours C# ne redonne pas **exactement** les 510 lignes (ou le relevé de T0 (a) si l'export a changé) ; une clé change
   entre deux exportations ; un test existant bouge ; un besoin de toucher à `Alundra/` ; un nom refusé par la garde de R5 ; R5 non faite ; une
   réponse de l'auteur à Q-E19-SM1 autre que l'accord.
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après.
