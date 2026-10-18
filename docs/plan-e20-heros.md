@@ -6655,13 +6655,16 @@ cartes et sa table, un arrêt par type non couvert ; le point 4 du bloc aligné)
 
 ---
 
-#### 1.24.4 E20.g1b — Soulever (l'activation) ⏳ (réécrite le 2026-10-18 après E20.g3 ; révision 1 ; le texte du 2026-10-15 est remplacé)
+#### 1.24.4 E20.g1b — Soulever (l'activation) ⏳ (réécrite le 2026-10-18 après E20.g3 ; révision 2 ; le texte du 2026-10-15 est remplacé)
 
 **Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : la mesure du contact en l'air n'était pas exécutable en T0 (le
 bouchon rend 0) : T0 (b) est une sonde jetable qui relève le contact par tick, en l'air (g15 a), contact en t5 **et** t6) et au sol (c3, lignes
 A à G), avec un arrêt au moindre écart ; les lignes « au sol » gardées ont maintenant cette mesure et cet arrêt, et `c3` sa copie durable
 (`docs/plan-e20-annexe/e20-g1a/critic-scenarios/`) ; T0 (a) prouve le mouvement propre de la plateforme et s'arrête sur une question à
-l'auteur si aucune carte ne réunit les trois conditions.
+l'auteur si aucune carte ne réunit les trois conditions. Seconde relecture : REVISE, deux blocages introduits (la comparaison par tick suivait
+les lignes où l'oracle soulève, ce qu'une DLL sans soulèvement ne peut pas reproduire ; la copie de `c3` ne s'exécutait pas, faute de
+`gl.py` et `k0lib.py`) : FIX en révision 2 (les ticks comparés ligne par ligne ; l'outillage complété et rejoué à l'identique) ; une seule
+relecture de clôture.
 
 **Pourquoi réécrite.** D-E20-39 (le soulèvement n'est activé qu'avec g3) rend caducs D-G-7 (`LiftContactEntity`, `FindLiftContact`,
 `requiredCandidateFlags`), la phase B de remplissage et ses compteurs-témoins k1 à k4, et O-G-1 : le seul contact est celui que g3 rend
@@ -6721,10 +6724,13 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
   (écrite sur une copie de travail après g1a, g2a, g2b et g3, lancée, versée à l'annexe, jamais commitée, comme le T0 (b) de g3) : elle
   rejoue les scripts de manette de l'oracle et relève, à chaque tick, l'`XCollisionEntity` du héros, sa `PosZ` et son animation : (b1)
   **en l'air**, le script de `g15` a) (`e20-g1a/work/orc/out/g15-misc.txt:1-3`), ticks t4 à t9 : contact = la caisse en **t5 et t6**, nul en
-  t7, t8, t9 ; Z 5,0 ; 9,5 ; 13,5 ; 17,0 ; 20,0 ; 22,5 ; animations 2, 44, 44 sans Carré ; (b2) **au sol**, les lignes A, B, C, D, D2, E, E2,
-  F, G de `c3` (`critic-scenarios/out/c3-contact.txt`) : le contact par tick (présent ou nul) de t1 à t16 égal à celui de l'oracle
-  (`c3_contact.py`, rejoué depuis une copie pour l'écrire tick par tick) ; les issues de soulèvement de ces lignes ne se jugent qu'en
-  (m1) et (m7) après T3 ; **un contact par tick qui diffère, en l'air ou au sol, est un arrêt** ; les valeurs attendues ne changent jamais
+  t7, t8, t9 ; Z 5,0 ; 9,5 ; 13,5 ; 17,0 ; 20,0 ; 22,5 ; animations 2, 44, 44 sans Carré ; (b2) **au sol**, les lignes A à G de `c3`
+  (`critic-scenarios/out/c3-contact.txt`) : l'oracle par tick vient d'une variante de `c3_contact.py` (copiée dans l'annexe sous
+  `c3_contact_ticks.py`, mêmes scripts de manette, qui imprime en plus le contact de chaque tick ; ses verdicts égaux à `out/c3-contact.txt`) ;
+  **les ticks comparés** (le contact du héros, présent ou nul), avant tout soulèvement de l'oracle, qu'une DLL au bouchon ne peut pas
+  reproduire : A (Carré en t10) : t1 à t9 ; B (Carré en t11) : t1 à t10 ; C (Carré en t10, Droite tenue) : t1 à t9 ; D2 (Carré en t16) :
+  t1 à t15 ; E2 (Carré en t6) : t1 à t5 ; D, E, F, G (aucun soulèvement) : t1 à t16 ; les issues de soulèvement de ces lignes ne se jugent qu'en
+  (m1) et (m7) après T3 ; **un contact qui diffère dans ces ticks, en l'air ou au sol, est un arrêt** ; les valeurs attendues ne changent jamais
   pour suivre la DLL ; (c) la liste prédite : la liste des préréglages (`AlundraTestSavesTests`, ses deux tables), dérivée de l'état des
   autres préréglages ajoutés avant (E20.e `herbe-m14`, E20.g4a `barricade-m392`).
 - ⏳ **T1 — Phase A** (tests d'abord, puis le code). (l1) `TryLift` direct : genres 0, 1, 2, 3 × `0x3B` (huit cas), retour, appel de

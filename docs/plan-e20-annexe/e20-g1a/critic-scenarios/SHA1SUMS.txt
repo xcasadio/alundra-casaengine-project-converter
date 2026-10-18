@@ -1,7 +1,10 @@
-b6ba4070ef6fd64757033b1cf319c4a12203db94 *./README.md
+b9eda5ba5af7ff2cdc9f49ee8ae67a8167a74c86 *./README.md
+4b82092995946d9e7a9f63d629458816b9f02cdb *./ana.py
 17d48edc665c6611bb80f00008d73d38a40c469b *./c1_equality.py
 1078618b1eec0d14033a84441a22eeb3ea4dc664 *./c2_platform.py
 5f21f4c8136462a35091ce68d1e9369d7272a154 *./c3_contact.py
+4d30aa719880772e1f89031c9ab94010cb25ef24 *./gl.py
+0ab499b3435d3aabfbad4d021a9f43dbb2ef236d *./k0lib.py
 a39ce3d8cdf34d57d6bac213f308586b6ba6db1e *./oracle/bank.py
 bffe67ff2656e2cddd9cb4ebb0eff5b37d5c0549 *./oracle/c1world.py
 4a0f475f753310c977336e35c5a3b4a87afb8a3c *./oracle/callgraph.py

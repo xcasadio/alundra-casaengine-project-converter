@@ -4,4 +4,6 @@ Provenance: the adversarial critic of the E20.g1a discovery of 2026-10-15 wrote 
 ../check.md and section 1.24 of docs/plan-e20-heros.md): `c1_equality` (the equality and thresholds of UpdatePlayerCarriedEntity),
 `c2_platform` (arriving on foot and by a jump on a moving platform, crate in hands), `c3_contact` (the persistence of the contact `+0x130`:
 rows A to G). They lived only in the session scratchpad (`disc-e20g/critic/`); they are copied here unchanged with their outputs because
-E20.g1b's T0 replays them. They import the critic's copy of the oracle tools, `oracle/` next to them (copied too, caches and files over 300 kB left out: the tools regenerate them). Rerun from a copy, never in place.
+E20.g1b's T0 replays them. They import the critic's helpers `gl.py`, `k0lib.py`, `ana.py` (copied next to them) and its copy of the oracle tools, `oracle/` (copied
+too, all 40 files). Rerun from a copy, never in place: on 2026-10-18 a fresh copy of this folder ran `python -B -I c1_equality.py`,
+`c2_platform.py` and `c3_contact.py` with outputs byte-identical to `out/` (SHA-1 `73d37e19…`, `0344c302…`, `0b9ab493…`).
