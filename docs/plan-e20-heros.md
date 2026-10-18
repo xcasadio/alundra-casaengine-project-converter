@@ -7318,7 +7318,7 @@ après g3, et sera réécrite avant son exécution. Faits à y reprendre : le so
 **depuis les états de saut** (`0x80031E98`, vers l'état `0x0B` : à z ≥ 80 c'est la caisse du haut qui se soulève, `critic/out/w5_airlift.txt`) ;
 une entité dont `+0x12C` désigne le héros se soulève sans bouton (`0x8002EE18`-`0x8002EE34`, la boucle des supports).
 
-### 1.29 E20.g4 — La barricade de la carte 392 : g4a (le saut) et g4b (soulever et lancer) ⏳ (g4a détaillée le 2026-10-18, à relire ; g4b esquissée)
+### 1.29 E20.g4 — La barricade de la carte 392 : g4a (le saut) et g4b (soulever et lancer) ⏳ (g4a et g4b détaillées le 2026-10-18, READY)
 
 **Faits (binaire et données, `bin/report.md` §A3, corrigé par `critic/` R3 à R5 et `critic-complet/` Réfuté 1).**
 - La salle est (arrivée du héros, posé par B1 en (720, 216, 64)) et la salle ouest (portail 0 en (22, 23)) ne communiquent que par une porte de
@@ -7416,7 +7416,7 @@ contre le haut de la porte, sauter sur la caisse basse, rejoindre le portail.
 contredit le binaire ; un roulis pendant un arc ; le pilote doit lire autre chose que l'état du jeu (aucune valeur écrite par le test pendant l'arc) ;
 un besoin de toucher au moteur.
 
-#### 1.29.2 E20.g4b — La barricade en soulevant ⏳ (détaillée le 2026-10-18 ; révision 2)
+#### 1.29.2 E20.g4b — La barricade en soulevant ⏳ (détaillée le 2026-10-18 ; révision 2, **READY** à la relecture de clôture)
 
 **Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : chaque arc (b2) à (b5) a son départ, ses seuils (mesurés au
 binaire en T0, avec un arrêt) et sa règle de Croix et de Carré ; l'assertion de (b1) se lit par image, à chaque cadence, avec la règle du
