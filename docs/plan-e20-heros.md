@@ -8899,7 +8899,7 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
 - **Retour arrière** : la phase B (les trois entrées et l'appel) ; la phase A : le fichier, `SpriteTypes` `{16}`, l'accesseur, la référence de cible, et
   la fonction du compte, `ItemSpawnedEntity` et le créateur d'effet s'ils viennent de h4d2.
 
-#### 1.31.7 E20.h4e1 — Le vent 1 : le pilote `0x80035EB0`, la clé de distance et le plancher de naissance ⏳ (détaillée le 2026-10-18 ; REVISE, révision 1)
+#### 1.31.7 E20.h4e1 — Le vent 1 : le pilote `0x80035EB0`, la clé de distance et le plancher de naissance ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2 ; relecture de clôture)
 
 **Prérequis.** h0a et h4a (les coutures, la fonction de départ des tomes, les états, la garde) ; h4b1 (la requête et ses réglages) ; la fin du
 chantier et Q-R-7 ; les défauts retenus de Q-H4B-2 et Q-H4B-3 (corriger) et de Q-H4E1-1 (B, corriger). **Ni f4, f5, f6a, h4c1, h4c2, E14.b0** (le
@@ -9014,7 +9014,9 @@ les trois entrées `0x31`.
   `ForceAdjusted` 1 (`ClampStepToMapEdge`, `Alundra/Physics/ScriptedMotion.cs:741`) ; P6, `plateau_h64` : Z = 4 194 304 en unités DLL (64 px
   exactement ; la clé, en repère du binaire, donne 4 194 305) à S+6 pour les cinq frappes concernées (critique §6) ; **P7** (réécrite, critique R1),
   au retour de `SpawnEntityBySpriteIndex`, `PosZ <= FloorHeight` vaut 1 sur la falaise de 144 px (`cliff_hb9`) et 0 sur celle de 128 px (`cliff_hb8`)
-  et sur le plat ; P8, l'éclair se pose au sol (Z 0), pas sur le bloc cible ; **P9**, au même retour, `IsOnGround` vaut 0 même sur `cliff_hb9` (la
+  et sur le plat (révision 2, le calcul : le héros au sol plat a `PosZ` 0 ; l'argument `0 + 0x800000` reçoit + 1 de l'interface, `WorldProxy.cs:3549`,
+  et `ModZ` 0 : `PosZ` 0x800001 ; sur 128 px, le terrain 0x800000 est sous lui, rien n'est relevé et le test vaut 0 ; sur 144 px, 0x900000 ≥ 0x800001,
+  `PosZ` est relevé à 0x900000 = `FloorHeight` et le test vaut 1 ; c'est le Z binaire 9 437 185 de la clé moins 1) ; P8, l'éclair se pose au sol (Z 0), pas sur le bloc cible ; **P9**, au même retour, `IsOnGround` vaut 0 même sur `cliff_hb9` (la
   raison de D-H4E1-5) ; **P10** (critique), un nouveau-né détruit à sa naissance n'émet ni effet ni son, et sa case est reprise au tick suivant ; P11,
   après chaque image, l'état du générateur égale `rng0(t+1)` de la clé (2 pas par frappe au hasard, 9 par touche, plus 1) ; (d) la liste prédite :
   **vide** (aucune clé de registre ; aucun test ne presse le Rond dans un monde ; les préréglages de `TestSaves` ne bougent que si la recette en ajoute
@@ -9046,7 +9048,7 @@ les trois entrées `0x31`.
   `wind1_cast_pf` et `cast_pf_seed2` : les naissances (ticks, cases, X, Y, Z), le générateur à chaque tick, la vie de chaque éclair de S à S+37, `0x34`
   au tick 102, l'objet libéré au 129, PM 3 ; (w1b) `wind1_cast_pf_gateoff` : huit éclairs, le premier au tick 32 ; (w2) `_south` identique à (w1) ; (w3)
   les huit interruptions fidèles et les six `_gateoff` (R-EL-6) : l'objet, la phase, le compteur, les éclairs, le générateur ; (w4) `edge_west_x20`,
-  `edge_north_y10` (P5), `plateau_h64` (P6) ; (w5) `one_near_dec` (touches aux ticks 51, 76, 101 ; 9 tirages ; `+0x1D0` 25), `one_near_dec_gateoff`,
+  `edge_north_y10` (P5), `plateau_h64` (P6), `full_table` (réglage fidèle ; révision 2) ; (w5) `one_near_dec` (touches aux ticks 51, 76, 101 ; 9 tirages ; `+0x1D0` 25), `one_near_dec_gateoff`,
   `one_near_fix`, `one_near_fixgate` ; (w6) `six_dec`, `six_dec_gateoff`, `six_fix`, `six_fixgate` (l'ordre exact du tri sur les égalités) ; (w7) les
   cinq `d8_*` (D8 sous `SortThreshold` 3 seulement), les huit `edge_*160/161` (`edge_east161_frac` est un doublon de `edge_east161` : la fraction est
   portée par les vecteurs, critique §4), les deux `zgate_*` ; (w8) `slot_reuse` accolé à `slot_control` ; (w9) `cast_pf` et `cast_pf_gateoff` à 2 puis 3
@@ -9078,7 +9080,8 @@ les trois entrées `0x31`.
   neutraliser `Drive` (0, rien d'autre) rend rouges (d1) à (d8), (w1) à (w10), (p1) à (p4) et (p6), et laisse verts (t1), (q1), (e1), (c1) et (p5) ;
   retirer l'appel de la requête (une liste vide) rend rouges (d1), (d2) avec cible, les cas de (d7) qui retiennent une cible (le passage de (d7a), de
   (d7b), le proche en tête de (d7c), (d7d)), (p3) et **exactement les clés de monde où une cible est retenue** (révision 1 ; le décompte des lignes
-  `QUERY … -> target` des résumés `.txt` des clés) : `one_near_bin`, `one_near_dec`, `one_near_dec_gateoff`, `one_near_fix`, `one_near_fixgate`, les cinq `six_*`, `d8_far_first_fix`, `d8_far_first_fixgate`, `d8_near_first_dec`, `d8_three_sorted_dec`, `edge_east160_dec`, `edge_east160_frac_dec`, `edge_south160_dec`, `edge_west160_h200_dec`, `zgate_pass_dec`, `slot_control_dec`, `slot_reuse_dec` ; il laisse verts (d8), les autres cas de (d7), toutes les autres clés de
+  `QUERY … -> target` des résumés `.txt` des clés) : `one_near_dec`, `one_near_dec_gateoff`, `one_near_fix`, `one_near_fixgate`, `six_dec`, `six_dec_gateoff`, `six_fix`, `six_fixgate`, `d8_far_first_fix`, `d8_far_first_fixgate`, `d8_near_first_dec`, `d8_three_sorted_dec`, `edge_east160_dec`, `edge_east160_frac_dec`, `edge_south160_dec`, `edge_west160_h200_dec`, `zgate_pass_dec`, `slot_control_dec`, `slot_reuse_dec` (19 cas ; les clés `_bin_` retiennent aussi une cible mais ne
+  sont pas jouées avant h4b1b ; révision 2) ; il laisse verts (d8), les autres cas de (d7), toutes les autres clés de
   monde (dont `edge_*161*`, `zgate_skip_dec` et `d8_far_first_dec`, dont la requête rend des candidats sans en retenir : une liste vide mène à la
   même frappe au hasard), (p1), (p2), (p4) et (p6) ; neutraliser la garde rend rouges (d1), (d3), (w3) et (p4), et laisse verts (w1), (w2), (w4) à
   (w10), (p1) à (p3) et (p6) ; **ignorer `StrikeDuringPose`** (la porte `0x33` toujours appliquée) rend rouges exactement les clés dont la ligne de
