@@ -8068,7 +8068,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a, h4b1, h4c1, h4c2 **READY** ; h4d1 détaillée, relecture en pause ; h4b1b, h4b2, h4d2 à h4f2 esquissées)
+### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a, h4b1, h4c1, h4c2 **READY** ; h4d1 détaillée, relecture en pause ; h4d2 et h4e1 détaillées ; h4b1b, h4b2, h4e2 à h4f2 esquissées)
 
 **Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-h4/`, `report.md` et `check.md`,
 la critique faisant foi : aucun fait de comportement réfuté ; D13, le sprite 154, la portée de Q-H4-2 et du §6 corrigés ; ses statistiques de
@@ -8123,8 +8123,8 @@ la contre-vérification faisant foi). Le cadre (h0a, §1.30.1) est un prérequis
 | **h4c1** terre 1 | Pilote `0x80035320`, E3 (type 16), l'inscription d'E3 pour le seul type 16 (Q-H4C1-1 A), avant E14.b0 qui la reprend ; **détaillée au §1.31.3** | h0a, h4a, f4, f5, f6a ; Q-H4C1-1, -2, -5 (défauts retenus) |
 | **h4c2** terre 2 | Pilote `0x800354D0`, E13 (type 17), son annulation `0x80034BDC`, le coup de caméra (rangé par tick, Q-H4B-4) ; **détaillée au §1.31.4** | h0a, h4a, f5 (f6a pour un témoin) ; Q-H4B-4, Q-H4C2-1, -2, -3 (défauts retenus) |
 | **h4d1** feu 2 | Pilote `0x80035C64`, E28 (type 21), son annulation `0x80034E08`, le tampon de session du tremblement ; **détaillée au §1.31.5** | h0a, h4a ; Q-H4D1-1, -2 (défauts retenus) |
-| **h4d2** feu 1 | Pilote `0x80035A84`, C63 et E3 (type 23), la colonne (sprite 20, E1 en ligne), son annulation `0x80034D2C`, l'accès en mot à `+0x274` | h4a, h4b1, h4c1 (E3) |
-| **h4e1** vent 1 | Pilote `0x80035EB0`, la requête | h4a, h4b1 |
+| **h4d2** feu 1 | Pilote `0x80035A84`, C63 et E3 (type 23), la colonne (sprite 20, E1 en ligne), son annulation `0x80034D2C`, l'accès en mot à `+0x274` ; **détaillée au §1.31.6** | h0a, h4a, h4b1, h4c1 (donc f4, f5, f6a) ; Q-H4D2-1, Q-H4B-2, -3, -5, Q-H4C1-1 (défauts retenus) |
+| **h4e1** vent 1 | Pilote `0x80035EB0`, la clé de distance de la requête (`DistanceKey`), le plancher de naissance ; **détaillée au §1.31.7** | h0a, h4a, h4b1 ; Q-H4E1-1, Q-H4B-2, -3 (défauts retenus) |
 | **h4e2** vent 2 | Pilote `0x80036218`, C65 (type 24 ; le 154 à trancher), les tables 256, son annulation `0x80034EC4` | h4a, h4b1, h4b2 |
 | **h4f1** eau 1 | Pilote `0x80035790`, C75 (type 19), le soin `0x80032F84`, les tables 256 (si h4e2 ne les a pas), les accès en mot à `+0x274` et `+0x280..+0x290`, les drapeaux, son annulation `0x80034C54` | h4a, h4b1, h4b2 |
 | **h4f2** eau 2 | La table de six orbes, le soin `0x80033274` (partagé avec la potion de h1) | h4f1, h1 |
@@ -8307,11 +8307,12 @@ ce plan, l'index des ADR et un ADR. **Hors périmètre** : le champ stocké du p
 
 ---
 
-#### Règles communes aux tranches d'élément (h4c1, h4c2, h4d1 ; 2026-10-18)
+#### Règles communes aux tranches d'élément (h4c1, h4c2, h4d1, h4d2, h4e1 ; 2026-10-18)
 
 **Provenance.** Découverte en lecture seule du 2026-10-18, une par tranche, chacune avec sa critique adverse (son propre interpréteur MIPS et
-ses propres modèles ; la critique fait foi) : `docs/plan-e20-annexe/e20-h4c1/`, `e20-h4c2/`, `e20-h4d1/` (`disc/` le rapport, `critic/` la
-critique, avec leurs clés, vecteurs et scripts). Tous les faits de comportement du binaire y sont CONFIRMÉS.
+ses propres modèles ; la critique fait foi) : `docs/plan-e20-annexe/e20-h4c1/`, `e20-h4c2/`, `e20-h4d1/`, `e20-h4d2/`, `e20-h4e1/` (`disc/` le rapport, `critic/` la
+critique, avec leurs clés, vecteurs et scripts). Tous les faits de comportement du binaire y sont CONFIRMÉS, sauf la « branche morte » de la
+découverte d'h4e1, RÉFUTÉE par sa critique (§1.31.7).
 
 - **R-EL-1 — Les clés de monde de h4 sont fausses d'un tick pour les entités nées dans une case neuve.** Le banc d'oracle de h4
   (`e20-h4/work/oracle/world.py:106`, `spellworld.make`) met les 64 cases à zéro, alors que le chargement de carte (`0x8003B24C-0x8003B2D8`) y
@@ -8319,7 +8320,8 @@ critique, avec leurs clés, vecteurs et scripts). Tous les faits de comportement
   (`0x80039D24-0x80039D3C`) : sans index, une entité née dans une case jamais utilisée ne prend pas part au tick de sa naissance ; la DLL, elle, y
   prend part (ADR-0065). Toute clé d'une tranche d'élément vient donc des **clés refaites** de son annexe (index écrits, `+0x48 = −1`), jamais de
   `e20-h4/work/results/trace_summaries.txt` ni de `targets_inv*.txt`. Les fins d'objet de `e20-h4/report.md` §3 deviennent : terre 2, rochers de
-  81 ticks ; eau 1, 343 ; eau 2, 393 ; feu 1, 149 (onze boules) ; feu 2, 182 ; vent 2, 242 (critiques d'h4c2 §2.5 et d'h4d1 §3). Le banc de h3
+  81 ticks ; eau 1, 343 ; eau 2, 393 ; feu 1, 149 (onze boules) ; feu 2, 182 ; vent 2, 242 (critiques d'h4c2 §2.5 et d'h4d1 §3) ; vent 1, 129
+  inchangé, mais chaque éclair agit dès son tick de naissance (première touche au tick 51 et non 52 ; critique d'h4e1 §1). Le banc de h3
   (§1.30) en est issu : O-H-4.
 - **R-EL-2 — Le générateur** : la règle du bloc du §1.20, point 3 (clés `_pf` là où la valeur d'un tirage décide d'un résultat, lecture après
   l'image) ; chaque tranche verse ses clés `_pf`.
@@ -8700,6 +8702,397 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B (l'entrée et l'appel) ; la phase A : le fichier, l'inscription, l'API du tampon, le créateur, le champ.
 
+#### 1.31.6 E20.h4d2 — Le feu 1 : le pilote `0x80035A84`, la colonne, C63, E3 pour le type 23 et l'annulation `0x80034D2C` ⏳ (détaillée le 2026-10-18)
+
+**Prérequis.** h0a et h4a (les coutures, la fonction de départ des tomes, les états, la garde) ; h4b1 (`TargetQuery.Find` et ses réglages) ; h4c1
+(E3, `EarthTome1Ai`, son inscription), **donc par transitivité f4, f5 et f6a** (critique d'h4d2 §5, point 3 ; f5 sert aussi directement : au tick
+d'E3, la décélération de l'animation 1 s'applique tout de suite, D-F5-5) ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H4D2-1 (corriger
+le tour), Q-H4B-2 et Q-H4B-3 (corriger), Q-H4B-5 (accesseurs communs, h4d2 les crée) et Q-H4C1-1 (A). Ni h4b1b, ni h4b2. **h4d1 avant ou après**
+(deux ordres admis) : le champ `ItemSpawnedEntity` (D-H4D1-3) et le créateur de l'effet `(19, 2)` (D-H4D1-4) sont repris s'ils existent, créés aux
+mêmes noms sinon.
+
+**But.** Comme l'original : 1 PM, 32 ticks de pose ; au tick 34, une colonne de feu naît aux pieds d'Alundra (87 ticks ; une touche tous les 25 ticks
+par cible, attaque 10, puissance 64) ; une boule de feu tous les 8 ticks du tick 34 au tick 114 (onze), qui monte de 8 px par tick pendant 16 ticks,
+redescend de 3 px par tick et tourne vers l'ennemi de classe A le plus proche (attaque 10, puissance 32 ; elle meurt à sa première touche) ; à la mort
+de la colonne, 26 ticks de relâchement ; l'objet libéré au tick 149.
+
+**Faits** (`e20-h4d2/disc/report.md` §1, la critique `e20-h4d2/critic/check.md` faisant foi : F1 à F22 CONFIRMÉS par son propre interpréteur MIPS et
+ses propres listings, aucun réfuté ; les 30 clés refaites confirmées sur deux processeurs).
+- **Le pilote** : phase 0 (la garde ; animation `0x33` requise, sinon 0 ; `SpawnWarpEntity(héros, page globale, 0x14, X, Y, Z, 0)`, le pointeur rangé
+  en `[0x8012711C]` **avant** le test de nullité, nul → 1 sans rien d'autre ; l'identité `[ptr + 4]` en `[0x80127120]`, phase 1, enchaînée au même
+  tick) ; phase 1 (la garde, non nulle → 1, **sans** restauration ; identité changée → `0x34`, phase 2, 0 ; sinon `compteur & 7 != 0` → 0 ; sinon un pas
+  du générateur, la direction `hi(s × 32)` (0 à 31, non normalisée), `SpawnWarpEntity(héros, 0, 0x17, X, Y, Z + 0x100000, direction)` — les 16 px sont
+  **en Z**, la boule naît à l'(X, Y) du héros —, sur une naissance non nulle `ForceZ = 0x80000`, `+0x274 = 0x10`, `+0x278 = 0`, `+0x27C` non écrit ;
+  le tirage est consommé même si la naissance est refusée) ; phase 2 sans garde (0 tant que `0x34`, 1 sinon) ; une phase ≥ 3 ou négative → 0. Le
+  compteur lu est celui d'avant l'incrément.
+- **C63** `0x8007AC60` (la boule) : `+0x274 != 0` → `+0x274 − 1`, rien d'autre ; sinon `ForceZ = 0xFFFD0000` (−3 px par tick) ; puis, si
+  `+0x278 == 0`, la requête `(boule, masque 1, ([+0x1C8] octet 0) & 0xF)` : aucun résultat → `+0x274 = hi(s × 9)` (un tirage, 0 à 8) ; au moins un →
+  `+0x278` = le **premier**, `+0x27C` = son identité, et le tour **au même tick** ; si `+0x278 != 0`, la cible doit être au statut 2 et d'identité
+  égale, sinon `+0x278 = 0` (la requête repart au tick suivant, sans délai). **Le tour** : `d = GetDirectionToTarget(dx, dy)` sur les différences
+  brutes 16.16 ; `d` égale la direction courante `+0x8C` → rien n'est écrit ; sinon une comparaison **numérique** (`d < cur` : `d` si `cur − d < 4`,
+  sinon `cur − 4` ; `d > cur` : `d` si `d − cur < 4`, sinon `cur + 4`), `+0x8C` écrit, `+0x274 = 2`. Jamais de bouclage : de 31 vers 0, huit pas (31,
+  27, … 3, 0). La naissance ne fait pas tourner C63 : `+0x274` vaut 16 à S, 15 à S+1, 0 à la fin de S+16 ; première action à S+17.
+- **L'annulation** `0x80034D2C`, atteinte par la seule garde (`0x800233EC[0x2F]`) : les emplacements 1 à `[0x80134360]` **inclus**, au statut 2
+  seulement ; le type `0x14` : `CreateEffectEntity(0, 0x13, 2, X, Y, Z)` à la position brute de la colonne **puis** `DestroyEntityNoFx` ; le type
+  `0x17` : statut 3, `+0x20 = 0` ; le reste intact.
+- **E3** (h4c1) sert la boule : `0x102074 → 0x102044` à l'impact, `DestroyEntity(self, −1)` à la fin de l'animation 1. Les programmes : A254 (vide,
+  `jr ra`), C63, D0, E3 pour le sprite 23 ; A0, C0, D0, E1 pour la colonne (E1 en ligne, `Alundra/Events/EventProgramRunner.cs:283-292` : aucun
+  gestionnaire à porter).
+- **Le sprite 20 (la colonne)** : drapeaux `0x2044` ; une animation de 87 ticks, `Hold` ; boîte 23 × 16 × 47 ; Z de naissance = Z du héros + 1 unité
+  brute + 18 px (`OffsetZ −18`) ; fiche 20 : type 10, puissance 64 ; contre un bloc 25, touché pour x ∈ [76, 122] à y = 100 et y ∈ [85, 115] à x = 100
+  (pas à 75, 123, 84, 116).
+- **Le sprite 23 (la boule)** : drapeaux `0x102074` (`DestroyOnSlidingSlope` **sans** `Gravity` : l'eau profonde ne la détruit pas, la clé sur l'eau
+  égale la clé plate) ; animation 0 (vitesse 256, accélération 68, `Loop`), animation 1 (vitesse 0, accélération 4, `Hold`, 10 ticks) ; boîte
+  23 × 15 × 15 ; fiche 23 : type 10, puissance 32. Atterrissage au tick L, statut 3 et E3 à L+1, `+0xAC` à L+11, statut 4 à L+12 ; un mur ou un bord :
+  statut 3 en l'air. **C'est la première entité sans `Gravity` qui tombe et atterrit** : dans la DLL elle passe par `RunLogicalZPreXyStep` avec
+  `gravity = false` (atterrissage strict, `StepHeight` 0), un chemin que les rochers à gravité de h4c1 et h4c2 n'exercent pas ; le relief change la vie
+  de 5 à 6 boules sur 11 (critique §5, point 2).
+- **Le calendrier** (`fire1_cast_pf`, S = 34) : la colonne (case 1) et la boule 1 (case 2) au statut 2 à la fin du tick 34 ; onze boules aux ticks
+  34 + 8k ; `+0xAC` de la colonne au tick 120, statut 4 au 121 (sans effet de bris), la case recyclée et l'identité changée au 122 → le héros en `0x34`,
+  phase 2 ; animation 0 au 148 ; **l'objet libéré au 149** ; la dernière entité disparue au 193 ; 115 tirages (graine A), 118 (graine B).
+  Interruptions : T ≤ 34, rien de né ; T ∈ {35, 60, 100, 121}, l'effet `(19, 2, 6553600, 6553600, 1179650)` et les boules au statut 3 ; T = 122, les
+  boules seules ; T ≥ 124, l'objet libéré, les boules **non** annulées (vivantes jusqu'au tick 193).
+- **Aucun son** (naissance, E3, annulation) ; la piste XA de l'octet 2 (Q-H4-1).
+- **Le compte stocké** `[0x80134360]` égale, sur les 494 appels de la requête des clés, le plus haut emplacement de statut ∉ {0, 4} (F22, sonde
+  `probe_count.py`, 0 écart, aussi sur l'interpréteur de la critique).
+- **Le tour sans plus court chemin** (Q-H4D2-1) : sur la grille 32 × 32 du vrai code, 240 paires sur 1 024 ont un écart numérique > 16 (le binaire y
+  tourne par le long côté) ; dans les clés avec cible, 57 virages sur 321 (17,8 %).
+- **La DLL** (`disc/dll/state.md`, confirmé) : la naissance par indice (`Alundra/Maps/WorldProxy.cs:3488`, `:3572-3574`), la direction 0..31 sans
+  normalisation (`Alundra/Entities/Spawning/EntitySpawnFactory.cs:834-836`), la rampe (`Alundra/Physics/ScriptedMotion.cs:620-638`), la passe de coups
+  (`Alundra/Combat/HitPass.cs:43`, `:105`, `:167`), `DeactivateOnHit` (`Alundra/Entities/EntityScriptProxy.cs:1719`), `DestroyEntity(e)` = `0x8003A774`
+  (`WorldProxy.cs:3329`), `EnemyHelpers.Below` (`:35`), `ScriptHelper.GetDirectionToTarget` (`:77`), le registre (`Alundra/Ai/NativeSpriteRegistry.cs:36-43`,
+  `:54-65` ; un doublon lève, `:60-63`), `NativeEffects.CreatedForTests` ; le pilote et l'annulation de l'objet vides (`Alundra/Hero/PlayerManager.cs:1507-1509`,
+  `:740-742`).
+
+**Décisions.**
+- **D-H4D2-1** — Un fichier neuf `Alundra/Ai/Items/FireTome1Ai.cs` (Q-R-7) : `Drive(héros)`, `Cancel(héros)`, `BallTick(entité, contexte, état)` (C63),
+  `SpriteTypes = {23}`, `Register(registre)` pour `(ProgramCTick, 63)` et le type 23 seul ; le réglage `ShortestTurn` (valeur de production : le défaut
+  de Q-H4D2-1, corriger) ; la loi corrigée (INFÉRENCE de la règle de l'auteur sur les défauts avérés) : identique au binaire quand l'écart numérique est
+  ≤ 16, sinon par le côté opposé, un pas de 4 au plus, `& 31`, sans dépasser la cible.
+- **D-H4D2-2** — E3 pour le type 23 : `EarthTome1Ai.SpriteTypes` passe de `{16}` à `{16, 23}`, **sans** `Register` neuf (un doublon lève) ; posé en
+  phase A, inerte en production tant qu'aucun type 23 ne naît (critique §3 : aucun placement statique des sprites 20 et 23 sur 484 cartes, seuls
+  `0x80035B0C` et `0x80035BF4` les font naître parmi les 46 appels à type constant ; les 56 appels à type dynamique du binaire restent NON ÉTABLIS,
+  comme le sprite 154).
+- **D-H4D2-3** — L'accesseur 32 bits de `+0x274` (`EntityScriptProxy`, octets `Bytes[0..3]`, `:1226`), commun (Q-H4B-5) : nécessaire au rejeu des
+  vecteurs ; en production, les valeurs restent ≤ 16 (critique §5, point 13).
+- **D-H4D2-4** — L'identité (critique §5, point 1 : la DLL n'a aucun membre pour `+0x04`, `+0x27C`, `[0x80127120]` ni `[ptr + 4]`, pas de compteur de
+  naissance) : la cible de la boule est une **référence** propre à la boule (`SpellTarget`, non clonée) ; « identité inchangée » ⇔ même référence **et**
+  `Status == Normal` (INFÉRENCE : la DLL ne réutilise pas les objets ; un recyclage pose `Destroyed` et `Slot −1`) ; le `Slot` de la cible est reflété
+  dans `DelayOrAngleOrEntityId` (`:1228`, 0 = aucune ; le héros n'est jamais candidat) pour comparer `b278_slot` ; la colonne par `ItemSpawnedEntity`
+  (D-H4D1-3) : « morte » ⇔ `Status == Destroyed || Slot < 0` après le recyclage, jamais `Slot < 0` seul.
+- **D-H4D2-5** — Le compte de la requête (commun avec h4e1, D-H4E1-4) : le plus haut `Slot` des entités nées dont le statut n'est ni `Destroyed` ni
+  `FlagToDestroy` (−1 : aucune), par une fonction de `TargetQuery` ajoutée par la première des deux tranches (nom libre, contrôlé par `check_names.py`) ;
+  en mode corrigé (borne inclusive) il n'exclut aucune candidate ; en mode binaire il égale le compte stocké sur les clés (F22). Les vecteurs passent
+  le mot `[0x80134360]` par une surcharge interne `BallTick(…, compte)` ; le gestionnaire inscrit calcule le compte.
+- **D-H4D2-6** — Les réglages dans les tests : chaque test pose explicitement `InclusiveBound`, `SortThreshold` et `ShortestTurn` et les restaure en
+  `try/finally` (critique d'h4e1 §4 ; la suite ne parallélise pas les collections, `Alundra.Tests/xunit.runner.json:3`).
+
+**Périmètre.** `Alundra/Ai/Items/FireTome1Ai.cs` (neuf) ; `EarthTome1Ai.cs` (l'ensemble de types) ; `NativeSpriteRegistry.cs` (un appel) ;
+`TargetQuery.cs` (la fonction du compte, si h4e1 ne l'a pas posée) ; `EntityScriptProxy.cs` (l'accesseur, la référence de cible ; `ItemSpawnedEntity`
+si h4d1 ne l'a pas posé) ; `NativeEffects.cs` (le créateur `(19, 2)`, de même) ; les entrées `0x2F` de h0a dans `PlayerManager.cs` ; `Alundra.Tests/` ;
+l'annexe `docs/plan-e20-annexe/e20-h4d2/` ; ce plan, l'index des ADR et un ADR. **Hors périmètre** : la piste XA (Q-H4-1) ; la blessure, la mort et
+la case de sortie ; le champ stocké (h4b1b) ; E3 pour les autres types (E14.b0).
+
+**Phases** (critique §7, option retenue pour la taille). **A1** : l'accesseur, la référence de cible, `Cancel`, l'élargissement d'E3, `BallTick` et
+leurs tests unitaires ; **A2** : `Drive`, ses tests et les tests de monde (R-EL-4) ; A1 et A2 inertes en production (les entrées `0x2F` restent des
+bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entrées `0x2F` et `FireTome1Ai.Register` dans `CreateForProduction`.
+
+##### Tâches
+
+- ⏳ **T0 — Annexe, oracle, sondes, liste prédite** (aucun code) : (a) rejouer depuis des copies `e20-h4d2/disc/h4o/fire1_make_keys.py` (deux
+  exécutions, le manifeste des 30 clés identique), `vec_fire1.py` (deux exécutions, les quatre MD5 identiques, 0 écart des modèles, les couvertures de
+  `disc/report.md` §3.4), `vec_selftest.py` (36 mutants tués), `probe_count.py` (494 appels, 0 écart), `h4_vec_drivers.py` et `h4_vec_handlers.py`
+  d'`e20-h4` (0 écart) et `e20-h4d2/critic/scripts/make_relief_keys.py` (les trois clés de relief aux MD5 de la critique §5) ; (b) la table de
+  correspondance des mots lus par les vecteurs vers les membres de la DLL (règle de D-H4B1-3) **avec les règles de l'adaptateur** (critique §5,
+  point 1) : un pointeur d'entité ↔ son `Slot` (`+0x278`, `[0x8012711C]`) ; une identité lue différente de l'identité rangée → l'adaptateur pose une
+  **référence morte** (un proxy `Destroyed`, `Slot −1`) ; le Z du binaire vaut le Z de la DLL + 1 (ADR-0026), pour les lectures du pilote et de
+  l'annulation et pour la position de l'effet ; les vecteurs `binary_only` (87 du pilote, 81 de l'annulation : un `+0x1B8` ou un `+0x28` non nul que
+  `DestroyEntity(e)` ne porte pas) sautés par leur drapeau ; les tableaux de sortie de la requête ignorés ; un octet d'entité sans membre hors de ces
+  règles est nommé et arrête la tranche ; (c) **sondes de la DLL**, prédiction écrite avant (une sonde contredite est un arrêt) : P1, la colonne naît à
+  S = 34 en case 1, au Z de la clé moins une unité brute, statut 2 à la fin de S ; P2, la boule naît à S en case 2, `ForceZ 0x80000`, `+0x274` 16 à S
+  et 15 à S+1, première action à S+17 ; P3, après chaque image l'état du générateur égale `rng0(t+1)` de `fire1_cast_pf` et le nombre de pas de
+  l'image égale `draws + 1`, sur 200 ticks ; P4, les bords ouest et nord arrêtent les boules aux ticks de la clé (statut 3 en l'air, 86 pour la
+  première) ; P5, une boule sans gravité qui tombe à −3 px par tick pose `IsOnGround` au tick L de la clé (109 pour la boule d'`id` 4), passe au statut
+  3 à L+1 avec `TargetAnimationId = 1`, les drapeaux `0x102044` et `fx` décroissant de 8 688 par tick ; P6, `+0xAC` à (statut 3) + 10, `FlagToDestroy`
+  au tick suivant ; P7, la colonne : `ForceResetAnimationFlag` à S+86, `FlagToDestroy` à S+87 par l'E1 en ligne sans effet de bris, `Status ==
+  Destroyed` et `Slot < 0` à S+88 ; P8, la boîte 23 × 16 × 47 et les paires de bord d'un bloc 25 (le fait ci-dessus) ; P9, `CurrentAttack.Attribute &
+  0xF == 10` pour la boule en animation 0 à S+17 ; P10, l'effet `(19, 2, 6553600, 6553600, 1179650)` de `hurt60` au tick T, lu à `CreatedForTests`
+  (repère du binaire) ; P11, `Slope_18c` d'une boule sur l'eau profonde reste 0 ; P12, les mêmes cases dans la clé et dans la DLL (la plus basse
+  libre) ; P13, la requête de la DLL en mode binaire, avec le compte de D-H4D2-5, rend les listes de `probe_count.py` ; **P14** (critique §6), le
+  relief : sur les trois clés de relief, les boules atterrissent sur le plateau à z = 16 ou 32 px et hors du plateau à z = 0, aux ticks des clés ;
+  **P15** (critique §7), `ScriptHelper.GetDirectionToTarget` égale `0x8002E814` sur des différences brutes 16.16 de tout signe (la grille `kind:
+  "turn"` et les mondes de `vec_c63`) ; (d) la liste prédite : les deux épingles du registre (`AlundraNativeSpriteRegistryTests.cs:55`,
+  `AlundraWaveSwordLifeTests.cs:181-183` : +1 pour `(C, 63)`, réécrites par dérivation, bloc du §1.24, point 4) et (e2) de h4c1 (« `(E, 3)` pour le
+  type 16 seul » devient « pour `{16, 23}` ») ; le mutant de h4c1 « E3 inscrit pour `{16, 23}` » devient l'état de production ; les tests des boucles
+  v1 qui font naître les types 20 et 23 sans tick (`AlundraSpawnBySpriteIndexInterfaceTests.cs` B2, `AlundraBirthBoxTests.cs` B2,
+  `AlundraSpawnBySpriteIndexTests.cs` B : nés, jamais tickés ; critique §5, point 7) ne bougent pas ; recomptée au HEAD de départ.
+- ⏳ **T1 — Phase A1** (tests d'abord) : (t1) l'accesseur 32 bits (aller-retour, petit-boutiste, octets hauts, négatifs) ; (c1) l'annulation contre
+  `vec_cancel_fire1_80034D2C.json` (319 comparables) en un seul test ; (c2) les cas nommés : le type 20 au statut 2 → l'effet `(19, 2)` à sa position
+  en repère du binaire **puis** `FlagToDestroy` ; le type 23 au statut 2 → `Deactivated` et `BlockedByEntity` vidé ; accolés, intacts : les statuts 1,
+  3 et 4 ; les types 17, 21, 22 et 24 au statut 2 ; l'entité de carte d'indice 20 ou 23 (`SpriteType` `0x114`, `0x117`) ; (e1) E3 contre
+  `vec_e3_8007EDA0.json` (288, dont `0x102074`) en un seul test ; (e2) les inscriptions sur un registre neuf : `(E, 3)` → `{16, 23}` (pas 17, 24,
+  150), `(C, 63)` → `{23}` seul, `(E, 1)` absent ; (k1) C63 en mode binaire contre `vec_c63_8007AC60.json` (3 524) en un seul test, par la surcharge à
+  compte, les tableaux de sortie de la requête ignorés ; (k2) le tour en mode binaire sur la grille 32 × 32 ; (k3) le tour corrigé sur la même grille :
+  égal au binaire sur 784 paires, par le plus court sur 240, jamais plus de 4 pas, sans dépasser ; (k4) les valeurs de production des trois réglages ;
+  (k5) un `BallTick` sur une boule dont l'octet d'attaque vaut `0x8A`, la requête espionnée : le type 10 et le masque `ClassA` (le cas « sans
+  `CurrentAttack` » de la découverte est retiré : le binaire y lit l'adresse 0, sans oracle ; critique §5, point 10).
+- ⏳ **T1 bis — Phase A2** (tests d'abord ; R-EL-4) : (d1) le pilote contre `vec_fire1_driver_80035A84.json` (3 183 comparables) en un seul test : le
+  retour, la phase, l'animation du héros, le compteur lu, les naissances (parent, type, X, Y, Z, direction), `ForceZ`, `+0x274`, `+0x278`, le
+  générateur, les entités annulées ; la garde passe par `ItemCancelForTests` = `FireTome1Ai.Cancel` **seulement quand l'objet en cours est `0x2F`**,
+  neutre sinon ; (d2) la colonne refusée : le pointeur nul rangé, 1, rien d'autre ; la boule refusée : rien d'écrit, le tirage consommé ; (c3)
+  l'annulation par la garde : l'objet libéré, le sort annulé, 1 ; puis les tests de monde (banc R-EL-4, sans tolérance sauf (w4) ; les blocs 25 posés
+  classe A aux premières cases libres avec `Hp = 5000` ; les réglages posés par D-H4D2-6 ; **colonnes comparées** (critique §5, point 12) : le héros
+  (`anim_t`, `anim_c`, X, Y, Z), l'objet (`inuse`, `phase`, `counter`, `mp`), `ptr_slot`, le générateur et, par entité, le statut, le type, les
+  drapeaux, X, Y, Z, les forces, les animations, les directions, la rangée, `animend`, `b274`, `b278_slot`, `c20`, `c1cc`, `c1d0`, la touche, la pente,
+  le sol, la boîte de coup, l'attaque, les coups et les événements ; **jamais `id`, `b27c`, `count` ni `ident`**, la relation « même entité » les
+  remplaçant) : (w1) `fire1_cast_pf` et `_seedB` ; (w2) en mode binaire (`InclusiveBound` faux, `SortThreshold` 3, `ShortestTurn` faux) : `tgt_one`,
+  `tgt_three`, `tgt_vanish75`, `col_hit` ; (w2c) les mêmes contre leurs `_allfix` aux réglages de production ; (w3) en mode binaire :
+  `tgt_two_wrong_order` (le tri et le tour) et `tgt_topslot` (la borne seule : il n'a aucune acquisition en mode binaire ; critique §5, point 9) ; (w3c)
+  leurs `_qfix` (`InclusiveBound` vrai, `SortThreshold` 2, `ShortestTurn` faux) et leurs `_allfix` (la production) ; (w4) `wall_col6` par R-EL-5 ;
+  (w5) `water_cols6_12` ≡ `cast_pf` ; (w6) les dix `hurt` par R-EL-6 ; (w7) `table_full` et `table_one_free` ; (w8) `fire1_cast_pf` à 2 puis 3 ticks par
+  image, sans interruption : seulement les ticks de naissance, la fin de la colonne (S+86), la libération, le nombre de boules et le nombre de tirages ;
+  (w9), (w10) et (w11) les trois clés de relief de la critique (`fire1_relief_plateau_hb1_cols6_12_pf`, `fire1_relief_plateau_hb2_cols6_12_pf`,
+  `fire1_relief_hero_on_plateau_hb2_pf` ; aucune cible), sans tolérance hors R-EL-5.
+- ⏳ **T2 — Phase B et tests de production, rouges avant** : (p1) Rond avec le seul tome 47, PM 4/4 : la clé de (w1) par le chemin de production ; (p2)
+  la table des cases pleine : le PM perdu, l'objet libéré au tick 34, rien né (`table_full`) ; (p3) Rond puis l'interruption du tick 60 (R-EL-6) :
+  `hurt60` et l'effet `(19, 2)` ; (p4) `UnhandledWeaponSpriteCodes({20, 23}, catalogue, registre de production)` vide après la phase B, `[(C, 63)]`
+  avant (la phase A a déjà élargi E3 ; seuls les programmes C et E comptent ; critique §5, point 8) ; les épingles réécrites par dérivation.
+- ⏳ **T3 — ADR, plan, deux verifiers frais** (l'un sur les clés et leur initialisation). Mutants, au moins 30, tous tués sauf les équivalents déclarés :
+  les 36 des modèles de la découverte portés sur le C# (`disc/report.md` §5, T3 : pilote, annulation, E3, C63) ; les 18 de la critique
+  (`critic/results/extra_mutants_vs_vectors.txt`) ; et `(E, 3)` encore `{16}` ; E3 élargi à 24 ; `(C, 63)` inscrit pour 17 ; `ShortestTurn` inversé ou
+  sans `& 31` ; le tour corrigé aussi à l'écart 16 exactement ; le compte fixé à 63 en mode binaire ; la requête appelée malgré une cible ; la cible
+  mémorisée par `Slot` seul (tué par `vanish75` puis le recyclage) ; `ItemSpawnedEntity` testé par `Slot < 0` seul ; l'annulation qui touche aussi les
+  entités de carte ; la mort de la colonne lue un tick trop tôt ; la naissance de la boule avant la garde ; C63 au tick de naissance. Équivalents
+  déclarés (critique §4) : la colonne détruite avant la création de l'effet (l'effet prend des coordonnées) ; le seuil du tour `<= 4` ou `< 5`.
+
+##### Acceptation
+
+- **Oracle** : T0 (a) identique sur deux exécutions ; (c) sans écart.
+- **DLL** : A1 et A2 vertes en phase A ((w4) par sa fenêtre) ; (p1) à (p4) rouges avant la phase B, verts après ; la suite en Release (copie
+  neutralisée) et en Debug, zéro échec ; tests déplacés ⊂ liste prédite ; `cmp` de la DLL ; traces inchangées ; moteur, convertisseur et données sans
+  diff.
+- **Preuve de retrait** (chacune se déduit des définitions ; critique §5 et §7) : retirer l'appel `FireTome1Ai.Register` de `CreateForProduction` rend
+  rouges exactement (p1), (p3), (p4) et les deux épingles ((p2) reste vert : aucune boule ne naît ; (e2) aussi : il appelle `Register` lui-même) ;
+  remettre les trois entrées `0x2F` au bouchon rend rouges exactement (p1), (p2) et (p3), (p4) vert ; remettre la seule entrée d'annulation au bouchon
+  rend rouge exactement (p3) ; neutraliser `Cancel` rend rouges (d1) (ses vecteurs à garde échouée avec l'objet `0x2F`), (c1), (c2), (c3), (w6) pour
+  T ∈ {35, 60, 100, 121, 122} et (p3), (w6) pour T ∈ {10, 33, 34, 124, 140} et (w8) restant verts ; neutraliser `Drive` rend rouges (d1), (d2), (c3),
+  tous les (w), (p1), (p2) et (p3), et laisse verts (t1), (c1), (c2), (e1), (e2), (k1) à (k5) et (p4) ; neutraliser `BallTick` rend rouges (k1) à
+  (k3), (k5), (w1) à (w5) (dont (w2c) et (w3c)), (w6) pour T ≥ 60, (w8) à (w11), (p1) et (p3), et laisse verts (d1), (c1), (w6) pour T ≤ 35 (la boule
+  née au tick 34 est annulée en tête du tick 35, avant son premier C63 ; critique §5, point 5), (w7) et (p2) ; remettre `EarthTome1Ai.SpriteTypes` à
+  `{16}` rend rouges (e2), (p1), (p3), (p4) et tous les tests de monde où une boule passe au statut 3 (tous sauf (w6) pour T ∈ {10, 33, 34} et (w7)),
+  les (k) et les (d) restant verts.
+- **Recette de l'auteur** (non bloquante) : `arsenal-a-m14` (le kit porte le parchemin 47, aucun livre 48 ne le coiffe, PM 4/4 ;
+  `Alundra.Tests/TestSaves.cs:72-75`, `:124`), le tome 47 mis en objet du Rond par l'inventaire : 0,64 s de pose ; la colonne aux pieds d'Alundra
+  1,74 s ; une boule toutes les 0,16 s (onze), qui monte, retombe et vise l'ennemi le plus proche ; le héros bloqué environ 3 s ; 1 PM de moins ; les
+  dégâts suivent la puissance (64 la colonne, 32 la boule) et la réponse de la fiche de l'ennemi (critique §5, point 11).
+- **Inconnus** : l'atterrissage sur une entité `Collidable` par le chemin sans gravité (les boules des clés touchent avant d'atterrir ; INCONNU côté
+  binaire) ; la création d'effet quand la réserve est pleine ; le rendu en jeu ; la piste XA ; les tomes sur la chaîne (Q-H4-7).
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : une clé diffère de sa lecture au tick près (hors fenêtre de R-EL-5) ; une sonde P1 à P15 diffère ; un octet lu par un vecteur n'a pas
+  de membre hors des règles de T0 (b) ; un test existant hors de la liste prédite bouge, ou une trace change ; `(C, 63)` déjà inscrit, ou `Register`
+  cumulatif au HEAD de départ (E14.b0 passé avant) ; h0a, h4a, h4b1 ou h4c1 (donc f4, f5, f6a) non faites ; la DLL ne pose pas `IsOnGround` pour une
+  entité sans gravité qui tombe (P5) ; un besoin de toucher au moteur ; un nom refusé par `check_names.py` ; une réponse de l'auteur autre que le
+  défaut à Q-H4D2-1, Q-H4B-2, Q-H4B-3, Q-H4B-5 ou Q-H4C1-1.
+- **Budget** : un `executor` par phase (A1, A2, B), deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B (les trois entrées et l'appel) ; la phase A : le fichier, `SpriteTypes` `{16}`, l'accesseur, la référence de cible, et
+  la fonction du compte, `ItemSpawnedEntity` et le créateur d'effet s'ils viennent de h4d2.
+
+#### 1.31.7 E20.h4e1 — Le vent 1 : le pilote `0x80035EB0`, la clé de distance et le plancher de naissance ⏳ (détaillée le 2026-10-18)
+
+**Prérequis.** h0a et h4a (les coutures, la fonction de départ des tomes, les états, la garde) ; h4b1 (la requête et ses réglages) ; la fin du
+chantier et Q-R-7 ; les défauts retenus de Q-H4B-2 et Q-H4B-3 (corriger) et de Q-H4E1-1 (B, corriger). **Ni f4, f5, f6a, h4c1, h4c2, E14.b0** (le
+sprite 22 a une vitesse d'animation nulle et la gravité sans `DestroyOnSlidingSlope` ; E1 en ligne ; critique d'h4e1 §2, CONFIRMÉ). Ni h4b1b : les
+clés `_bin_` ne se comparent pas sans lui.
+
+**But.** Comme l'original, avec la première frappe rendue (Q-H4E1-1, B) : 1 PM, 32 ticks de pose ; un éclair tous les 10 ticks, huit du tick 32 au
+tick 102 (sept à partir du tick 42 dans l'original) ; chacun tombe de 128 px sur l'ennemi de classe A le plus proche à moins de 160 px (jamais deux
+fois de suite sur le même, jamais plus haut que 80 px au-dessus d'Alundra), sinon au hasard dans un rectangle de 192 × 128 px centré sur le héros ;
+un éclair tiré au hasard qui naîtrait dans le décor (un sol plus haut de plus de 128 px que celui d'Alundra) est détruit aussitôt ; chaque éclair
+blesse (type 11, puissance 32) pendant 30 ticks, une fois tous les 25 ticks par cible ; le héros est figé jusqu'au tick 129.
+
+**Faits** (`e20-h4e1/disc/report.md` §1, la critique `e20-h4e1/critic/check.md` faisant foi : le pilote, la requête, le tri, les 42 clés et les 800
+vecteurs CONFIRMÉS par son propre interpréteur ; **la « branche morte » (D9) de la découverte RÉFUTÉE**).
+- **Le pilote** (la table `0x800235F4` → `0x8003644C`) : phase 0, **sans test d'animation** (la dernière cible `[0x8012712C]` à 0, phase 1, enchaînée
+  au même appel) ; phase 1 (la garde, non nulle → la rend ; puis la **porte** : animation ≠ `0x33` → 0 ; compteur < `Table[0]` → 0 ; la table
+  `0x800235E0` (`u16` : 30, 40, … 100, `0xFFFF`) parcourue jusqu'à l'entrée dont le tick dépasse le compteur, une frappe à l'égalité seulement ; à la
+  sentinelle, `0x34` et la phase 2 **au même appel** que la frappe du compteur 100) ; phase 2 sans garde (0 tant que `0x34`, 1 sinon) ; une autre phase
+  → 0. Le compteur lu est celui d'avant l'incrément ; l'annulation de `0x31` est neutre (`0x800351A0`) ; le compteur s'incrémente aussi au tick de
+  l'annulation.
+- **La frappe** : la requête `(héros, masque 1, type 11)` ; pour chaque résultat, dans l'ordre : `PosZ > héros.PosZ + 0x500000` (signé, strict) →
+  suivant ; égal à la dernière cible (un **pointeur**, donc une case) → suivant ; clé `(int) K < 0x6401` → la cible, fin ; sinon fin (D8 : le premier
+  candidat non sauté trop loin arrête la recherche ; sans effet avec le tri dès 2, critique §7). Avec une cible : `SpawnWarpEntity(héros, page globale,
+  22, cible.X, cible.Y, cible.Z + 0x800000, 0)`, sur une naissance non nulle `ForceZ = 0xFFF80000` ; la dernière cible posée **même si la naissance
+  échoue**. Sans cible : deux tirages **avant** la naissance, X d'abord (`Below(0xC00001)`, puis `Below(0x800001)`), la naissance en `(héros.X + x −
+  0x600000, héros.Y + y − 0x400000, héros.Z + 0x800000)` ; si elle est non nulle, `+0x144` (le sol) non nul → `DestroyEntityNoFx`, sinon `ForceZ =
+  0xFFF80000` ; la dernière cible à 0 dans tous les cas.
+- **Le test du sol est vivant** (critique R1, P1 : il réfute D9 « branche morte ») : la création (`0x80039D04`) appelle `0x80038064` (`0x80039F30`), qui
+  écrit `+0x144 = (plancher ≥ Z)` (`0x8003810C`, dans le délai d'un `beqz`, toujours exécuté) après le relèvement de Z au terrain + 1
+  (`0x80039EE8-0x80039EF4`) : à la naissance, `+0x144 = 1` exactement quand le terrain au point de naissance atteint le Z de naissance. Sur le vrai code,
+  le seul terrain changé (`critic/work/cliff_scen.py`) : une falaise de 144 px (neuf cases de 16 px) détruit les éclairs des ticks 72 et 102 (statut 4,
+  Z 9 437 185) ; 128 px et 32 px ne détruisent rien ; les deux tirages sont faits et la dernière cible effacée dans tous les cas. La DLL relève déjà
+  `PosZ` à la création (`Alundra/Entities/Spawning/EntitySpawnFactory.cs:809-816`, même condition en convention DLL) et pose `FloorHeight`
+  (`UpdateEnemyGroundHeights`, `:821`), mais **n'écrit jamais `IsOnGround` à la création** (ses écrivains sont les pas verticaux du tick,
+  `EntityScriptProxy.cs:900`, `:1005`, `:1019`, `:1148`, `:1487`) : un port littéral du test ne détruirait jamais rien en jeu.
+- **La requête** (h4b1) : le vent 1 lit aussi le tableau des **clés** (`0x800CC158`, `lw` en `0x80035FF8`), que `TargetQuery.Find` ne rend pas.
+- **Le sprite 22** : drapeaux `0x2144` (`HitsClassA`, `DeactivateOnAnimationEnd`, `Gravity`, `NoObstacleSlide` ; ni classe A ni `Collidable` : jamais
+  candidat, il se pose sur le terrain et pas sur un bloc, `Alundra/Entities/EntitySupport.cs:73-76`) ; A0, C0, D0, E1 (en ligne) ; `BreakEffect` 0,
+  `Contents` 0 ; une animation de 37 ticks, `Hold` ; la boîte de coup 36 × 24 × 31 aux images 4 à 13 ; vitesse 0, accélération 80 ; fiche 22 : type
+  11, puissance 32 ; ni son ni effet attaché.
+- **La vie d'un éclair** né au tick S sur le plat : statut 2 dès la fin de S ; chute de 128 px à −8 px par tick plus la gravité ; atterrissage à S+11 ;
+  la boîte dès S+7 ; contre une cible fixe, première touche à S+9 (3 étincelles, 9 tirages, `+0x1D0 = 25`), retouche 25 ticks plus tard tant que la
+  boîte vit ; `+0xAC` à S+36, statut 4 à S+37, case libre à S+38.
+- **Le calendrier** (`wind1_cast_pf`, fidèle) : le héros en `0x32` aux ticks 1 à 32, en `0x33` dès le 33 : la frappe du compteur 30 (tick 32) est
+  perdue par la porte ; sept éclairs aux ticks 42, 52, … 102, aux cases 1, 2, 3, 4, 1, 2, 3 ; `0x34` au tick 102, animation 0 au 128, **l'objet libéré
+  au 129** ; deux tirages par frappe au hasard. La porte retirée (`_gateoff`, le défaut B) : huit éclairs, le premier au tick 32, tous les points tirés
+  au hasard changent, l'objet toujours libéré au 129.
+- **Les interruptions** : la garde annule au tick T, plus aucune naissance, les éclairs nés continuent ; en phase 2, sans garde, l'objet est libéré au
+  tick même. **Les bords** : une naissance hors grille est ramenée au bord au premier pas (X 3,0 px, Y 2,0 px, `ForceAdjusted` 1) ; ces clés valent pour
+  un champ plat (hors grille, le binaire lit le terrain dans des globaux ; INCONNU sur un terrain non plat, critique §3). **La table pleine** : rien ne
+  naît, les tirages sont faits, l'objet libéré au 129.
+
+**Décisions.**
+- **D-H4E1-1** — Un fichier neuf `Alundra/Ai/Items/WindTome1Ai.cs` (Q-R-7) : `Table` (`u16[9]`), `Drive(héros)`, `Cancel(héros)` (corps vide nommé),
+  le réglage `StrikeDuringPose` (valeur de production : le défaut B de Q-H4E1-1 ; faux, il garde la porte `0x33`) ; **pas de `Register`** (E1 en
+  ligne) : les deux épingles du registre ne bougent pas.
+- **D-H4E1-2** — La dernière cible : un **numéro de case** dans un champ « Hero only » d'`EntityScriptProxy` (zone de D-H-1), 0 = aucune (la case 0 est
+  le héros, jamais candidat), remis à 0 à la reconstruction du héros ; posé même si la naissance rend `null`, effacé en phase 0 et à chaque frappe au
+  hasard ; comparé par `Slot` (une entité née dans la même case est sautée comme l'ancienne, `wind1_slot_reuse_dec_pf`).
+- **D-H4E1-3** — `TargetQuery.DistanceKey(appelant, entité)`, additive (sans toucher `Find`) : la clé de h4b1, un `int` calculé en `unchecked`
+  (différence 32 bits, `>> 16`, `dx² + dy²` modulo 2³²), comparée `(int) clé < 0x6401` (au coin dx = dy = −32 768 px la clé vaut 2³¹, négative en
+  `int` : la cible est retenue, comme le binaire ; critique §6).
+- **D-H4E1-4** — Le compte de la requête : celui de D-H4D2-5 (la fonction de `TargetQuery` ajoutée par la première des deux tranches) ; (d1) passe le
+  mot `[0x80134360]` du vecteur par une surcharge interne `Drive(héros, compte)`, l'entrée de production appelant `Drive(héros)`, qui calcule le
+  compte.
+- **D-H4E1-5** (critique R1 ; remplace le port littéral de la découverte) — **Le test du plancher de naissance** : après une naissance au hasard non
+  nulle, `r.PosZ <= r.FloorHeight` → `DestroyEntity(r)` (`0x8003A774`, `WorldProxy.cs:3329`), sinon `ForceZ = 0xFFF80000` ; après le relèvement de la
+  création, c'est le `plancher ≥ Z` du binaire en convention DLL (ADR-0026) ; le sprite 22 n'est pas un sujet éligible : son plancher est le terrain.
+  Le mot `IsOnGround` n'est pas lu pour cette décision.
+- **D-H4E1-6** — Les tirages : `EnemyHelpers.Below(0xC00001)` puis `Below(0x800001)`, deux instructions, X d'abord, avant la naissance (`Below` égale
+  le `multu/mfhi` du binaire).
+- **D-H4E1-7** — Les réglages dans les tests : chaque test pose explicitement `StrikeDuringPose`, `InclusiveBound` et `SortThreshold` selon la table
+  ci-dessous et les restaure en `try/finally` (critique §4 ; la suite ne parallélise pas les collections, `Alundra.Tests/xunit.runner.json:3`).
+
+**Les clés et leurs réglages** (`disc/report.md` §2.4, complétée des clés de la critique, `critic/critic_keys/`) :
+
+| Clés | `StrikeDuringPose` | `InclusiveBound` | `SortThreshold` |
+|---|---|---|---|
+| sans cible : `cast_pf`, `_south`, `cast_pf_seed2` (critique), `hurt*` fidèles, `edge_west_x20`, `edge_north_y10`, `plateau_h64`, `full_table`, `cliff_hb2`, `_hb8`, `_hb9` (critique) | faux | indifférent | indifférent |
+| sans cible, porte retirée : `cast_pf_gateoff`, `full_table_gateoff`, `hurt{33,41,42,60,102,103}_gateoff`, `cliff_hb9_gateoff` (critique) ; `hurt20` et `hurt31` valent pour les deux réglages (l'interruption précède le tick 32) | vrai | indifférent | indifférent |
+| `*_dec_pf` (un leurre, bloc 25 non classe A né après les cibles en (500, 300), rend la borne sans effet : `disc/out/boundcheck.txt`) | faux | vrai | 3 |
+| `*_dec_gateoff_pf` | vrai | vrai | 3 |
+| `*_fix_pf` | faux | vrai | 2 |
+| `*_fixgate_pf` (**la production**) | vrai | vrai | 2 |
+| `*_bin_pf` : **non comparées** sans h4b1b | faux | faux | 3 |
+
+**Périmètre.** `Alundra/Ai/Items/WindTome1Ai.cs` (neuf) ; `TargetQuery.cs` (`DistanceKey`, et la fonction du compte si h4d2 ne l'a pas posée) ;
+`EntityScriptProxy.cs` (un champ) ; les entrées `0x31` de h0a dans `PlayerManager.cs` ; `Alundra.Tests/` ; l'annexe `docs/plan-e20-annexe/e20-h4e1/` ;
+ce plan, l'index des ADR et un ADR. **Hors périmètre** : le départ, les PM, la piste XA, les états et la garde (h4a) ; le contrat de `Find` (h4b1) ; le
+champ stocké (h4b1b) ; `NativeSpriteRegistry` ; les tirages éventuels des programmes d'effets des étincelles (le banc court-circuite `0x80038E84` ; un
+risque commun des tranches qui touchent, critique §6).
+
+**Phases.** A inerte en production (les entrées `0x31` restent des bouchons ; les tests de monde passent par les trois coutures de R-EL-4 :
+`ItemStartForTests` = la fonction de départ de h4a, `ItemDriverForTests` = `WindTome1Ai.Drive`, `ItemCancelForTests` = `WindTome1Ai.Cancel`) ; B câble
+les trois entrées `0x31`.
+
+##### Tâches
+
+- ⏳ **T0 — Annexe, oracle, sondes, liste prédite** (aucun code) : (a) rejouer depuis des copies `e20-h4e1/disc/wind1_key.py` (deux exécutions, le
+  `MANIFEST.sha1` des 84 fichiers identique), `trace_cast.py 0x31` d'`e20-h4` (identique), `wind1_vec.py 800 20261018` (SHA-1 identique, 0 écart du
+  modèle ; pilote 218/218, garde 19/19, requête 94/94, tri 91/91), `wind1_replay.py` (800 sur 800 depuis une mémoire vide), `wind1_mut.py` (45 tués,
+  et les trois de la critique, `critic/work2/` : 48 sur 48), `wind1_boundcheck.py`, `critic/work/critic_keys.py` (les 12 clés de la critique, son
+  `MANIFEST.sha1`) et `critic/work/cliff_scen.py` ; (b) verser les clés, les vecteurs, les scripts et la table de correspondance (`disc/report.md` §3.2 :
+  aucune lecture sans membre ; un octet sans membre arrête) ; **l'hôte de test des naissances** rend `stub_spawn_ret` ou `null`, et donne au nouveau-né
+  une position et un plancher tels que `PosZ <= FloorHeight` égale le mot `+0x144` du vecteur (D-H4E1-5 ; un mot `IsOnGround` posé ne tuerait pas le
+  défaut de R1, critique §5) ; (c) **sondes de la DLL**, prédiction écrite avant (une sonde contredite est un arrêt) : P1, le Z d'un éclair sur le plat
+  vaut le Z de la clé − 1 à chaque tick (7 831 553, 7 241 729, …), atterrissage à S+11, Z 0, force 0 ; P2, première touche à S+9 sur `one_near_dec`,
+  9 tirages, `+0x1D0` 25, retouche à S+34 ; P3, `ForceResetAnimationFlag` à S+36, statut 4 à S+37, la case rendue au recyclage de S+38 (la case 1
+  reprise au tick 82) ; P4, statut 2 et position constante à la fin du tick de naissance ; P5, une naissance hors grille : X 3,0 px, Y 2,0 px,
+  `ForceAdjusted` 1 (`ClampStepToMapEdge`, `Alundra/Physics/ScriptedMotion.cs:741`) ; P6, `plateau_h64` : Z = 4 194 304 en unités DLL (64 px
+  exactement ; la clé, en repère du binaire, donne 4 194 305) à S+6 pour les cinq frappes concernées (critique §6) ; **P7** (réécrite, critique R1),
+  au retour de `SpawnEntityBySpriteIndex`, `PosZ <= FloorHeight` vaut 1 sur la falaise de 144 px (`cliff_hb9`) et 0 sur celle de 128 px (`cliff_hb8`)
+  et sur le plat ; P8, l'éclair se pose au sol (Z 0), pas sur le bloc cible ; **P9**, au même retour, `IsOnGround` vaut 0 même sur `cliff_hb9` (la
+  raison de D-H4E1-5) ; **P10** (critique), un nouveau-né détruit à sa naissance n'émet ni effet ni son, et sa case est reprise au tick suivant ; P11,
+  après chaque image, l'état du générateur égale `rng0(t+1)` de la clé (2 pas par frappe au hasard, 9 par touche, plus 1) ; (d) la liste prédite :
+  **vide** (aucune clé de registre ; aucun test ne presse le Rond dans un monde ; les préréglages de `TestSaves` ne bougent que si la recette en ajoute
+  un, comme Q-H4C1-4), recomptée au HEAD de départ ; (e) `check_names.py` sur `WindTome1Ai`, `DistanceKey` et le champ.
+- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette ; R-EL-4 ; chaque « sans effet » accolé à un positif) : (t1) la table `u16` contre
+  l'exécutable (neuf mots, la sentinelle) ; (d1) le pilote contre les 800 vecteurs en un seul test (l'adaptateur de h4b1 étendu au héros et aux mots
+  du pilote ; `InclusiveBound` faux, `SortThreshold` 3, `StrikeDuringPose` faux ; l'hôte de T0 (b) ; comparés : le retour, la phase, l'animation,
+  l'objet, la dernière cible, le générateur, les arguments de naissance, `ForceZ`, les destructions ; dont les 55 vecteurs de la destruction à la
+  naissance et les 22 du coin −32 768 px) ; (d2) une naissance nulle : avec une cible, la dernière cible posée et `ForceZ` non écrit ; au hasard, deux
+  tirages et la dernière cible effacée ; aucune exception ; (d3) la garde : la pente 4, ou une animation hors `0x32`/`0x33` → l'annulation neutre,
+  l'objet libéré, 1, rien d'autre ; `0x32` avec la porte : 0 sans requête, accolé à `0x33` qui interroge ; (d4) la phase 2 : 0 tant que `0x34`, 1
+  sinon, sans garde (accolé : une pente 4 en phase 2 ne libère pas) ; (d5) la phase 0 efface la dernière cible, passe en phase 1 et frappe au même
+  appel (compteur 40, `0x33`) ; (d6) la fin : au compteur 100, `0x34` et la phase 2 au même appel que la frappe ; un compteur 101 sans passage par
+  100 pose `0x34` sans frappe ; accolés aux compteurs 99 et 31 ; (d7) les bornes : (d7a) la clé 25 600 passe, 25 601 arrête, dans les quatre sens ;
+  (d7b) Z `héros + 0x500000` passe, `+ 1` saute et la recherche continue ; (d7c) D8, sous `SortThreshold` 3 et moins de 3 résultats : un lointain en
+  tête arrête la recherche, accolé au proche en tête (sans effet avec le tri dès 2) ; (d7d) la dernière cible sautée par case, une entité née dans la
+  même case aussi ; **(d8)** le plancher de naissance (D-H4E1-5) : un nouveau-né au hasard à `PosZ <= FloorHeight` est détruit sans effet, `ForceZ`
+  non écrit, deux tirages, la dernière cible effacée, accolé au même nouveau-né à `PosZ > FloorHeight`, qui reçoit `ForceZ` ; un `IsOnGround` posé à 1
+  sur un nouveau-né au-dessus de son plancher ne le détruit pas ; (q1) `DistanceKey` égale la clé qu'écrit la requête de h4b1 (les vecteurs de h4b),
+  le coin −32 768 compris ; (e1) aucune clé de registre : le compte de `CreateForProduction()` est inchangé (dérivé du HEAD de départ) ; un éclair né
+  meurt à S+37 par l'E1 en ligne, sans effet ni son (`BreakEffect` 0 ; critique §6) ; (c1) sur des éclairs posés à la main, l'annulation neutre les
+  laisse, l'objet libéré par l'annulation générale de h0a (le corps de `Cancel` est vide) ; puis les tests de monde (banc R-EL-4, sans tolérance ; R-EL-5
+  sans objet ; les blocs 25 posés classe A avec `Hp = 5000` ; le leurre des clés `_dec_` posé ; les réglages de la table des clés) : (w1)
+  `wind1_cast_pf` et `cast_pf_seed2` : les naissances (ticks, cases, X, Y, Z), le générateur à chaque tick, la vie de chaque éclair de S à S+37, `0x34`
+  au tick 102, l'objet libéré au 129, PM 3 ; (w1b) `wind1_cast_pf_gateoff` : huit éclairs, le premier au tick 32 ; (w2) `_south` identique à (w1) ; (w3)
+  les huit interruptions fidèles et les six `_gateoff` (R-EL-6) : l'objet, la phase, le compteur, les éclairs, le générateur ; (w4) `edge_west_x20`,
+  `edge_north_y10` (P5), `plateau_h64` (P6) ; (w5) `one_near_dec` (touches aux ticks 51, 76, 101 ; 9 tirages ; `+0x1D0` 25), `one_near_dec_gateoff`,
+  `one_near_fix`, `one_near_fixgate` ; (w6) `six_dec`, `six_dec_gateoff`, `six_fix`, `six_fixgate` (l'ordre exact du tri sur les égalités) ; (w7) les
+  cinq `d8_*` (D8 sous `SortThreshold` 3 seulement), les huit `edge_*160/161` (`edge_east161_frac` est un doublon de `edge_east161` : la fraction est
+  portée par les vecteurs, critique §4), les deux `zgate_*` ; (w8) `slot_reuse` accolé à `slot_control` ; (w9) `cast_pf` et `cast_pf_gateoff` à 2 puis 3
+  ticks par image : seulement les ticks de naissance, de fin (S+36), la libération, le nombre de tirages et le nombre d'éclairs, jamais leurs positions
+  (ADR-0066) ; **(w10)** (critique R1) `cliff_hb2`, `cliff_hb8`, `cliff_hb9` (les éclairs des ticks 72 et 102 détruits à leur naissance) et
+  `cliff_hb9_gateoff`, sans tolérance.
+- ⏳ **T2 — Phase B et tests de production, rouges avant** (aux réglages de production, la table des clés) : (p1) Rond avec le seul tome 49, PM 4/4 :
+  `wind1_cast_pf_gateoff` par le chemin de production, PM 3 ; (p2) la table des cases pleine : `wind1_full_table_gateoff_pf` (aucune entité, aucune
+  exception, les tirages faits, l'objet libéré au 129) ; (p3) une cible : `one_near_fixgate` ; (p4) l'interruption du tick 60 :
+  `wind1_hurt60_gateoff_pf` (R-EL-6) ; (p5) les invariants : le compte du registre et `ProductionWiredWeaponTypes` inchangés (vert avant et après) ;
+  **(p6)** (critique R1) `cliff_hb9_gateoff` par le chemin de production. La phase B câble les trois entrées `0x31`.
+- ⏳ **T3 — ADR, plan, deux verifiers frais** (l'un sur les clés et leurs réglages). Mutants, au moins 30, tous tués : les 48 du modèle
+  (`disc/out/mutants.txt` et les trois de la critique) portés sur le C#, chaque famille avec un test tueur nommé : la porte `0x33` retirée en mode
+  fidèle ((d3), (w1)) ; la garde absente ((d3), (w3), (p4)) ; Z à 60 px, sans porte, ou `>=` ((d7b), `zgate_*`) ; la dernière cible par référence
+  ((d7d), `slot_reuse`) ; D8 absent ((d7c), `d8_far_first_dec`) ; les tirages permutés ou un seul ((w1), (d1)) ; le test du sol en branche cible
+  ((d1)) ; la fin au 101 ((d6)) ; la phase 2 gardée ((d4)) ; **la clé en 64 bits** (non équivalente : tuée par les 22 vecteurs du coin et (q1),
+  critique §6) ; et ceux de la critique : le test du plancher de naissance retiré ((d8), (w10) `cliff_hb9`, (p6)) ; le test lu sur `IsOnGround` ((d8),
+  (w10)) ; le plancher strict `<` ((d8), `cliff_hb9`) ; un plancher décalé d'une unité, qui détruit sur 128 px (`cliff_hb8`, P7).
+
+##### Acceptation
+
+- **Oracle** : les rejeux de T0 (a) identiques, les manifestes identiques sur deux exécutions.
+- **DLL** : T1 vert en phase A ; (p1) à (p4) et (p6) rouges avant la phase B, verts après ; (p5) vert avant et après ; la suite en Release (copie
+  neutralisée) et en Debug, zéro échec ; tests déplacés ⊂ liste prédite (vide) ; `cmp` ; traces inchangées ; moteur, convertisseur et données sans
+  diff.
+- **Preuve de retrait** (déduite des définitions ; critique §5) : remettre les trois entrées `0x31` au bouchon, ou la seule entrée du pilote, rend
+  rouges exactement (p1) à (p4) et (p6), (p5) et toute la phase A restant verts (les coutures remplacent les entrées) ; remettre la seule entrée
+  d'annulation au bouchon ne rend **rien** rouge (équivalent déclaré : l'annulation générale de h0a libère l'objet et le corps de `Cancel` est vide) ;
+  neutraliser `Drive` (0, rien d'autre) rend rouges (d1) à (d8), (w1) à (w10), (p1) à (p4) et (p6), et laisse verts (t1), (q1), (e1), (c1) et (p5) ;
+  retirer l'appel de la requête (une liste vide) rend rouges (d1), (d2) avec cible, (d7), (w5) à (w8) et (p3), et laisse verts (d8), (w1) à (w4), (w9),
+  (w10), (p1), (p2), (p4) et (p6) (sans cible) ; neutraliser la garde rend rouges (d1), (d3), (w3) et (p4), et laisse verts (w1), (w2), (w4) à (w10),
+  (p1) à (p3) et (p6) ; rétablir la porte `0x33` avec `StrikeDuringPose` vrai rend rouges (w1b), les `_gateoff` et `_fixgate` de (w3), (w5) et (w6),
+  `cast_pf_gateoff` de (w9), `cliff_hb9_gateoff` de (w10), (p1) à (p4) et (p6), et laisse verts les tests en réglage fidèle ; retirer `DistanceKey` ou la
+  fausser rend rouges (q1), (d1) et (d7a) ; **neutraliser le test du plancher de naissance** rend rouges (d1) (ses 55 vecteurs de destruction), (d8),
+  `cliff_hb9` et `cliff_hb9_gateoff` de (w10), et (p6) ; ajouter une clé `(E, 1)` au registre rend rouges (e1) et les deux épingles.
+- **Recette de l'auteur** (non bloquante) : `arsenal-a-m14` (le kit porte le parchemin 49 sans le 50 ; `Alundra.Tests/TestSaves.cs:72-75`, `:124`), le
+  tome 49 mis en objet du Rond par l'inventaire : 0,64 s de pose, puis un éclair toutes les 0,2 s, du premier à 0,62 s (tick 32 ; 0,82 s, tick 42, dans
+  l'original) au dernier à 2,02 s (tick 102) ; huit éclairs (sept dans l'original), chacun sur un Beannoïde à moins de 160 px, sinon au hasard autour
+  d'Alundra ; le Beannoïde touché meurt (32 de dégâts, réponse 16, 9 PV) ; Alundra immobile jusqu'à environ 2,56 s (tick 129) ; 1 PM de moins.
+- **Inconnus** : le terrain lu hors grille sur un terrain non plat ; la fréquence de la destruction à la naissance en jeu (le balayage approximatif de
+  la critique, INFÉRENCE : 224 cartes sur 483 ont une case praticable avec, à portée du rectangle, une case plus haute d'au moins 144 px) ; les tirages
+  des programmes d'effets des étincelles ; la piste XA 4 (Q-H4-1) ; le tome 49 sur la chaîne (Q-H4-7).
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : h0a, h4a ou h4b1 non faites ; `TargetQuery` change de contrat et ne permet plus `DistanceKey` ; un test existant bouge, ou une trace
+  change ; un rejeu de T0 diffère, ou deux exécutions donnent des manifestes différents ; une sonde P1 à P11 contredit son attendu ; un octet de table
+  diffère de l'exécutable ; un octet lu par les vecteurs n'a pas de membre ; un besoin de toucher au moteur ; un nom refusé par `check_names.py` ; une
+  réponse de l'auteur autre que le défaut à Q-H4E1-1, Q-H4B-2 ou Q-H4B-3 (toute réponse qui met en jeu les clés `_bin_` demande h4b1b).
+- **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : la phase B retire les trois entrées ; la phase A retire le fichier, le champ, `DistanceKey`, et la fonction du compte si elle
+  vient de h4e1.
+
 ## 2. Points ouverts
 
 | Point | Question | Où elle se tranche |
@@ -8781,6 +9174,8 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
 | Q-H4C2-4 | (2026-10-18) Les clés de monde des huit tomes sont à refaire (R-EL-1) : chaque tranche refait la sienne avec les scripts versés (défaut), ou une tranche d'outils commune avant les éléments (une tranche de plus, sans code) ? | l'auteur |
 | Q-H4D1-1 | (2026-10-18) Le tremblement du feu 2 commence un tick plus tôt dans la DLL (le pas de caméra y suit les entités ; 20 ms, invisible) et, dans une image de 2 ou 3 ticks, tous ses pas prennent les réglages du dernier tick. (A, défaut) garder l'ordre de la DLL, écart documenté ; (B) ranger le bloc par tick (un champ de plus, aucun gain visible) | l'auteur |
 | Q-H4D1-2 | (2026-10-18) Le tampon du tremblement vit toute la session dans l'original : annuler le feu 2 avant la naissance de la colonne restaure le tampon du lancer précédent. (A, défaut) fidèle ; (B) le remettre à zéro à chaque nouvelle partie et à chaque chargement (un écart documenté) | l'auteur |
+| Q-H4D2-1 | (2026-10-18) Le tour des boules du feu 1 : dans l'original, une boule qui vise un ennemi compare des numéros de direction (0 à 31) sans tenir compte du passage de 31 à 0 ; quand l'ennemi est de l'autre côté (boule tournée en 31, ennemi en 0), elle fait presque un tour complet par pas de 4 avant de viser, au lieu d'un petit pas (environ 18 % des virages des mesures). (A, défaut) corriger : toujours le plus court (un réglage, des clés « corrigées » dérivées du binaire modifié en mémoire, non fidèles à l'octet) ; les boules rejoignent leur cible plus vite, avec moins de boucles ; (B) reproduire, boucles comprises (les clés binaires suffisent) | l'auteur |
+| Q-H4E1-1 | (2026-10-18) La première frappe du vent 1 (la part de Q-H4-2) : la table prévoit huit éclairs, mais le premier (0,62 s après le Rond) tombe pendant la fin de la pose et il est perdu : sept éclairs dans l'original, à partir de 0,82 s. (A) fidèle, sept ; (B, défaut) huit, le premier à 0,62 s, pendant la fin de la pose (la porte de l'animation retirée ; tous les points tirés au hasard changent ; un réglage et des clés dérivées d'un binaire modifié par un seul `nop`) ; (C) d'autres corrections, sans clé à ce jour : la frappe rattrapée à 0,64 s, juste après la pose, ou la table décalée ; on ignore ce que voulaient les auteurs du jeu (critique d'h4e1 §7). L'objet est libéré au même moment dans tous les cas | l'auteur |
 | O-H-4 | (2026-10-18) Le banc d'oracle de la lecture de h3 (`e20-h3/bin/run/`, issu de `e20-h4/work/oracle`) n'écrit sans doute pas l'index des cases (R-EL-1 ; INFÉRENCE : la critique de h3 mesure le statut 1 de la bombe au tick du départ) : les clés de h3a et h3b sont à refaire avec `+0 = i` en T0 ; à relire à l'exécution de h3a et h3b | E20.h3a, h3b (T0) |
 | O-E0A5-2/4 | (2026-10-18) **Proposés à la fermeture** : une case recyclée n'est jamais périmée (R-EL-3, critique d'h4c1 R1 : la passe des emplacements `0x80038634` recopie le gabarit vierge) ; le `+0x1C` et la rangée de départ d'une entité née valent 0 ; la sonde P-F4-3 d'f4 tombe | l'auteur (fermeture) ; f4 (à sa relecture) |
 | Q-H3-1 | (2026-10-18) Porter la bombe avant que les caisses redeviennent solides (après h0a, g1a, g2a, sans g1b ni g3) ? Le joueur : Rond, un geste de levée de 36 ticks, marcher et sauter avec la bombe, la lancer à 34 px (23 px vers le haut ou le bas), elle explose 242 ticks après le départ ; Rond interrompt aussi un coup d'épée. Coût : tant qu'E20.c2b et E18 manquent, une bombe tenue reste en main si le héros est touché. Défaut : oui | l'auteur |
