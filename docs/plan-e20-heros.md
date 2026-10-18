@@ -5706,7 +5706,120 @@ démon). **Reportés (P4)** :
 | O-F3-6 | La libération des effets 4 et 5 (et des étincelles, même rang) tombe un tick avant ce que le binaire donnerait probablement (touche + 41 au lieu de + 42) ; à rejouer sur le binaire, puis exactitude ou écart documenté | **Fermé le 2026-10-16, aucun écart** : sur la machine MIPS (vraies passes `0x8003BE74`, `0x80038E84`, `0x80039300`, `0x8003C410`), le binaire libère l'effet 4 à touche + 41 et l'effet 5 à + 96 (étincelles + 26), comme la DLL ; la passe qui fait avancer les effets est `0x8003C410`, appelée en `0x8002E110` après le tick du monde `0x8003B388`, et `0x80038E84` n'en fait avancer aucun ; deux harnais indépendants concordent (`docs/plan-e20-annexe/e20-f3/oracle/of36/`) ; aucun changement de la DLL |
 | O-F3-7 | **Bloquant pour E20.f3c (T1 en ⚠️).** Une entité née par l'interface n'a ni boîte de frame (chronologie figée à nul à la création) ni horloge d'animation alignée sur le binaire (un tick de retard) ; la vague de l'épée (boîtes balayantes, mort par fin d'animation à S+26) est la première à en dépendre. Fourche : (A) une tranche préalable qui corrige la DLL (ne pas figer une chronologie nulle avant l'intégration ; tick de naissance compté, ou création qui bascule l'animation comme le binaire) puis f3c reprend ; (B) intégrer l'entité née dès la création (côté moteur : arrêt de la tranche) ; (C) accepter un tick de retard et réécrire les clés (refusée : l'oracle est la vérité). Recommandation : (A), tests de naissance de e0a3b/e0k à relire en premier **FERMÉ le 2026-10-16 par E20.e0a5 (§1.16.5, option A, ADR-0071) : l'horloge et la boîte du tick de naissance sont corrigées pour les entités nées par l'interface ; la preuve de suffisance (T3) est verte.** | auteur / session principale |
 
-### 1.20 E20.f4 — La flèche chargée de William : C94 et E1 avec l'effet de bris 8 ⏳ (détaillée le 2026-10-15)
+### 1.20 E20.f4 — La flèche chargée de William : C94 et E1 avec l'effet de bris 8 ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18, à relire)
+
+#### Révision au HEAD (2026-10-18) — à lire avant §1.20 à §1.22 ; fait foi sur leur texte où il diffère
+
+**Provenance.** Relevé en lecture seule au HEAD `3c923cf` (après la restructuration de la DLL) et sa contre-vérification, par tranche
+(`docs/plan-e20-annexe/e20-f4f6/state-3c923cf/` : `f4/`, `f5/`, `f6/`, `state.md` et `check.md`, la contre-vérification faisant foi). Toutes
+les citations de §1.20 à §1.22 se retrouvent au même code (f4 : 32 sur 32 ; f5 : 50 sur 50 ; f6 : idem, plages corrigées) ; la
+restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans le scratchpad, est versée dans `docs/plan-e20-annexe/e20-f4f6/`
+(`bin/`, `dll/`, `tests/`, `critic/`, README, SHA-1).
+
+**Commun à f4, f5, f6a et f6b.**
+1. **Chemins et noms.** Chaque citation `AlundraX.cs:NN` se lit par les tables de l'annexe ; `Alundra/Scripts/` n'existe plus. Types neufs :
+   `ChargedArrowAi` (`Alundra/Ai/Projectiles/ChargedArrowAi.cs`, f4), `ArrowAi` (`Alundra/Ai/Projectiles/ArrowAi.cs`, f5), `BallAi`
+   (`Alundra/Ai/Projectiles/BallAi.cs`, f6b), sur le modèle de `WaveSwordAi` (`Alundra/Ai/Projectiles/WaveSwordAi.cs:30`, `Register`) ; noms libres
+   (contrôlés par les fonctions de `check_names.py`). Les drapeaux se nomment `EntityFlags.DeactivateOnAnimationEnd` (`Alundra/Entities/EntityFlags.cs:83`),
+   `HitsClassA` (`:53`), `DeactivateOnImpact` (`:69`), `DeactivateOnHit` (`:75`), `NoObstacleSlide` (`:130`).
+2. **Prérequis ajoutés** : la fin du chantier de restructuration et la garde des fichiers neufs (Q-R-7) ; E20.e0a5 ✅ (cité par l'enveloppe).
+3. **Les preuves sont dans le dépôt** (`e20-f4f6/`) : les T0 rejouent les harnais depuis une copie (`bin/fw.py` et `bin/run_arrows.py`, que
+   `run_charged.py`, `run_balls*.py`, `run_flames*.py` importent ; `bin/f3tools/` est la copie des outils d'`e20-f3/oracle/tools/` qu'ils lisent) ;
+   deux exécutions donnent des sorties identiques à celles versées ; **les tests lisent les clés telles qu'elles sont** dans
+   `docs/plan-e20-annexe/e20-f4f6/bin/out/json/` (les effets en chaînes `fx(id=…,dir=…,x=…,v=(…))` et `attach(…)`, les sons dans `journal`
+   en `snd(N)`, les tirages et le générateur dans leurs champs) et les fenêtres de mur dans `bin/out/sweep_wall_charged.txt` (type 7) et
+   `bin/out/sweep_wall.txt` (type 3) ; le format d'objets `.effects[]`, `.snd[]` demandé par l'ancien T0 d'f4 est abandonné.
+4. **L'ordre** : E20.e0c puis E20.e (§1.26, §1.27, READY) **avant** f4 (l'ordre que propose §1.25) ; f4, f5, f6a, f6b (ordre ferme), puis h0 et h1,
+   puis g. Conséquence pour f4 : C94 appelle `TileEffect.Trigger` d'E20.e en tête de son tick (comme `0x8007C0E4`) ; D-F4-3 (déplacer le bouchon
+   hors du fichier de la vague) et D-F4-10 (le bouchon ne coupe rien) tombent ; si E20.e n'est pas faite au début d'f4, arrêt.
+5. **Le registre et les tests** : le compte du registre se dérive par la règle du bloc du §1.24, point 4 (le compte d'avant plus les clés de la
+   tranche), qui remplace la « somme des classes » de D-F4-5 ; les deux épingles (`Alundra.Tests/AlundraNativeSpriteRegistryTests.cs:55`,
+   `Alundra.Tests/AlundraWaveSwordLifeTests.cs:181-183`) sont dans la liste prédite de chaque tranche qui inscrit une clé ; un test de monde
+   inscrit sa clé dans le registre du runner **seulement si elle est absente**, par le `IDisposable` de `Register` (`Alundra/Ai/NativeSpriteRegistry.cs:54`,
+   `:84`), libéré à la fin du test.
+6. **La liste prédite se recompte au HEAD de départ** de chaque tranche (T0) : les épingles de S1 (`Alundra.Tests/AlundraWeaponSpawnSeamTests.cs:83`,
+   premier bloc `:85-95`), de S5 (`:238-259` : l'égalité de l'ensemble de production `:243`, les clauses négatives `:247`, `:251`, `:257`), (p5) de f3c
+   (`AlundraWaveSwordWiringTests.cs:244`, déjà durable), les deux épingles du registre et les tests nés par l'interface qui font tourner des images ;
+   la liste mesurée là est la liste prédite ; un test hors d'elle qui bouge est un arrêt. Répartition des réécritures (remplace D-F4-8) : f4 phase A,
+   la clause `:257` (le type 7) sur un registre vide ; f4 phase B, l'égalité `:243` dérivée de l'ensemble de production ; f5, `:247`, `:251` et le premier
+   bloc de S1.
+7. **Commentaires périmés corrigés par la première tranche qui touche le fichier** (f4) : `Alundra/Hero/PlayerManager.cs:1198`, `:1207-1208`, `:1224`,
+   `:1228` (« empty until E20.f3c », « The set is empty… », « the production set stays empty ») ; `Alundra/Events/EventProgramRunner.cs:48-50` (la doc
+   du registre) si g1a ne l'a pas déjà fait.
+8. **Périmètres complétés** : chaque tranche ajoute ce plan, `docs/decisions/README.md` (l'index des ADR) et, pour un créateur d'effets,
+   `Alundra/Rendering/Effects/NativeEffects.cs` (le créateur y appelle `CreatedForTests`, `:96`, comme ceux du héros : le point d'observation des tests).
+9. Q-K1 et Q-K2 sont tranchées (D-E20-37, D-E20-38). O-E0A5-4 (une direction de création non cardinale) est sans objet : les tirs de flèche et de
+   boule sont cardinaux. La ligne O-E20-4 du §2 (E17 rangé sous E14) est remplacée par D-E20-25.
+10. **Le banc des tests de monde** : les valeurs de l'oracle viennent d'un terrain synthétique (`docs/plan-e20-annexe/e20-f3/oracle/tools/world.py:105-122`,
+    « flat synthetic field », en-tête de la carte 10) avec les fonctions de cases de chaque scénario (par exemple `bin/run_charged.py` : un mur en colonne
+    15, une marche de hauteur 1 ou 2 en colonne 8, une bande d'herbe en colonnes 5 à 12, rangées 5 et 6) : les tests posent le même champ par
+    `FlatCells.Create` et la réflexion, comme `Alundra.Tests/AlundraMapEdgeWorldTests.cs:43-50`, le héros à la même place ; les tests de production
+    gardent la vraie carte 14 (`HitArena`) avec l'interrupteur de D-F4-7.
+
+**f4.**
+- **D-F4-7, la forme** : `EventProgramRunner.NativeSpriteTypeFilterForTests`, `[ThreadStatic] internal static IReadOnlySet<int>?`, nul en production ;
+  non nul, un gestionnaire natif tourne pour une entité dont `SpriteType` (l'indice, plus `0x100` pour une page de carte) est dans l'ensemble **même si**
+  `NativeHandlersEnabled` est faux, et pas pour les autres quand il est faux : `HitArena` (natifs éteints, `Alundra.Tests/AlundraHitArena.cs:70`) plus
+  l'ensemble {7} fait tourner C94 et laisse les Beannoïdes inertes. g2b ((b3)) le consomme.
+- **(c8) l'herbe** : avec E20.e faite, C94 coupe pour de bon : (c8) compare les coupes à la clé `charged7_grass` (tick, case, effet, butin, son), sur le
+  champ synthétique de son scénario.
+- **P-F4-1** (attendu : l'indice de direction de la traînée vaut 0, 1, 2, 3 pour sud, nord, ouest, est, la table inverse de `{0, 0x10, 8, 0x18}`, égal à
+  `BoxDirection`) et **P-F4-2** (attendu : la boîte de la flèche au tick S, 24 × 16 × 15 à `hbz` 0) : une sonde qui contredit son attendu est un arrêt.
+  **P-F4-3** (O-E0A5-2, assigné à f4) : la phase de la traînée (`FrameCounter & 3`) d'une flèche née dans une case réutilisée ; le binaire garde le compteur
+  périmé de la case, la DLL ne compte que les entités vivantes (`Alundra/Maps/WorldProxy.cs:3000-3009`) et une entité neuve part de 0 ; mesurée sur (p1) ; égale : rien ; différente : l'écart consigné (invisible : la
+  traînée décalée de 0 à 3 ticks) et épinglé par un test nommé d'après lui.
+- **(p3)** : la partie pure (`Damage.ResolveBalanceTarget`, `Alundra/Combat/Damage.cs:24`) passe en T1 ((c10), verte par construction comme le (p7a) de f3c) ;
+  (p3) ne garde que `TouchingEntity` = la flèche au tick de la touche (rouge avant T3).
+- **(p1)** : aucun banc ne donne aujourd'hui l'arc de William (`Give(6)` : aucune occurrence ; l'hôte des tests de charge est `ContactHost`,
+  `Alundra.Tests/AlundraJumpTestSupport.cs:290-344`) ; (p1) le donne par `Give(6)` puis `Equip(2)`, sur le modèle de l'arc du chasseur
+  (`Alundra.Tests/AlundraShotDirectionTests.cs:30-31`, `:54-55` ; objet 6 = l'arc de William, `Alundra/Items/WeaponTables.cs:53`, fiche 9 par
+  `:84`) ; que l'arc de William s'équipe au même emplacement 2 est vérifié en T0 (un autre emplacement : le mettre, pas d'arrêt) ; l'arène de la
+  charge (carte 14, relâchement à 91) avec l'ensemble {7} de D-F4-7.
+- Le tir chargé en l'air : INCONNU (la fiche w9 n'a qu'une variante chargée) ; reste hors périmètre.
+
+**f5.**
+- **D-F5-5, le prédicat** : la clé de vitesse d'une entité est `TargetAnimationId` quand **`entity.HasLogicalZ`** est vrai (dans `ScriptedMotion.TickScriptedNpc`,
+  `Alundra/Physics/ScriptedMotion.cs:171-176`, en plus du terme `JoinsBirthTick && CurrentAnimationId == ~0u`). C'est le seul marqueur compatible avec une
+  phase A sans changement : `JoinsBirthTick` est posé aussi par les opcodes `0x2D`, `0x8A`, `0x8B` depuis e0a4 (`EventProgramRunner.cs:2367`, `:2378`, `:2406`,
+  `:2445`), `SwitchedAtCreation` par les naissances par script. g2a (§1.24.2) trouve alors la ligne déjà écrite ; les objets que g1a marque par `PutInHands`
+  y entrent aussi (après f5 dans l'ordre : fidèle).
+- **La phase A est inerte en production**, non parce qu'aucune entité n'est marquée, mais parce que les seules entités marquées nées en production sont
+  les vagues de l'épée (types 27 à 29), dont les animations 0 et 1 ont une vitesse nulle, une fin `Hold` et aucune `Chain` (`alundra-project/Data/sprite-records.json`,
+  `alundra_27` à `alundra_29`).
+- **Le héros est déjà dans `SpawnedEntities`** (`WorldProxy.cs:2302-2305`, `Alundra/Maps/IEntityWorldContext.cs:29`) : la recherche de D-F5-2 parcourt
+  `SpawnedEntities` une fois, sans « plus le héros ».
+- **La phase de rebond** : le `+0x88 == 1` du binaire est `TargetAnimationId == 1` (`EntityScriptProxy.cs:158`) ; quand la recherche ne trouve rien, E17
+  remet lui-même le statut 2 (la flèche continue) ; la destruction est `DestroyEntity(e, −1)`, la forme à deux arguments, par `entity.ScriptHost` comme
+  `EventProgramRunner.cs:290`.
+- **La sonde de vitesse**, attendus à chaque cadence (refaits par la contre-vérification) : 1 tick par image, 1,875 px ; au 1ᵉʳ tick d'une image de 2 ticks,
+  −2,25 px, au 2ᵉ, +1,875 px ; au 1ᵉʳ tick d'une image de 3 ticks, −6,375 px. **La fenêtre du mur du type 3** : S+41 à **S+44** (`bin/out/sweep_wall.txt` :
+  43, 43, 44, 43, 42, 43, 42, 42, 43, 42, 41, 42 pour les 12 départs), règle « arrivée + 1 » de D-F4-9.
+- Les bords : `arrow3_free_north` et `arrow3_free_west` frappent le bord et rebondissent (E17) : leurs attendus le contiennent ; T0 ajoute le scénario du
+  bord sud (l'obligation reportée par e0k3) ; l'épingle du rebond au bord du tick 8 d'`arrows2-map-edge` y entre.
+- (p4) « ajouté par la dernière des quatre » sort de T2 (ce n'est jamais f5). Le tir en l'air de William (fiche w9, sous-fiche 2, `WeaponTables.cs:66`) :
+  T0 le joue (INFÉRENCE : S = P + 9).
+- Risques à mesurer en T0 et à nommer dans la liste prédite : `AlundraMapEdgeWorldTests` B1 (`:120-160`, deux flèches qui se croisent vers les ticks 19 et
+  20) et `AlundraMapStateWorldTests` K1 (`:108-123`, une flèche libre qu'une touche détruirait).
+
+**f6a.**
+- **Le point d'appel et sa garde** : la lecture des attributs de tuile d'une entité marquée se fait dans la branche `IsActive` de `TickMotion`
+  (`EntityScriptProxy.cs:1629-1632`, statuts 2 et 3, comme la liste de physique du binaire, D-E19-29), pas dans `EvaluateEntitySupport` (tous statuts,
+  `:1634`) ; test ajouté (s4) : une boule marquée en **statut 3** posée sur l'eau profonde (`Slope_18c` 4) est détruite, accolée à la même en statut 4 qui
+  ne l'est pas ; mutant ajouté : « appel limité au statut 2 ».
+- Le recensement des lecteurs de `+0x180`, `+0x184`, `+0x190` que le texte annonce entre dans la puce T0, avec une sortie versée.
+- Docs que f6a rend fausses, corrigées par f6a : `EntityScriptProxy.cs:1956-1962` (« PLAYER ONLY… Every NPC's Slope_18c stays 0 »), `:1915-1918`, la
+  doc de `TickPhysics` et `TickMotion` (`:1594-1599`, `:1613`).
+- Correction de texte : les types 17 et 23 n'ont **pas** la gravité (`alundra_17` = `0x132014`, `alundra_23` = `0x102074`) ; la liste « `0x100000` avec la
+  gravité » est (1, 2, 10 à 16, 234) ; seul le type 16 (`0x132114`) fait dépendre h4 d'f6a.
+
+**f6b.**
+- **R et S** : l'oracle des boules relâche à R = 96 et fait naître à S = 107 (`bin/run_balls.py:2`) ; « 112 pour R = 101 de l'arène » est faux (l'arène de
+  la charge relâche à 91, `Alundra.Tests/AlundraWaveSwordSupport.cs:18` ; 112 est le S de la vague) : les tests de boule relâchent à R = 96.
+- Les conditionnelles caduques tombent : P-F6-3 « avant la règle de vitesse » et « si f5 n'est pas faite » (f5 est un prérequis ferme).
+- La liste prédite de la phase B comprend, en plus des épingles communes, les tests de monde à boules de la phase B, recomptés en T0.
+- `SpawnContents` sur une boule ne lâche rien (§1.26 : objet 0 ; une boule née par l'interface a `ContentsItemId` 0) : (s3) « aucun tirage » tient après e0c.
+
+---
 
 **Réponses de l'auteur.** Aucune à ce jour (2026-10-15, mode AUTO, l'auteur absent). f4 ne pose aucune question. La seule question de f4 à f6,
 Q-F5-1 est **déjà tranchée par l'auteur** (§1.1, « Questions de la nuit, tranchées le 2026-10-10 » : la flèche normale vole 16 px
@@ -5891,7 +6004,9 @@ Autres clés : `charged7_free_{west,north,south}`, `charged7_map_edge`, `charged
 
 ---
 
-### 1.21 E20.f5 — Les flèches du chasseur et de William : E17 ⏳ (détaillée le 2026-10-15)
+### 1.21 E20.f5 — Les flèches du chasseur et de William : E17 ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18, à relire)
+
+**Révision au HEAD (2026-10-18).** Le bloc « Révision au HEAD » en tête du §1.20 vaut aussi pour cette section (points communs et puces « f5 ») et fait foi sur son texte où il diffère.
 
 **Réponses de l'auteur.** Q-F5-1 est **déjà tranchée par l'auteur** (§1.1, « Questions de la nuit, tranchées le 2026-10-10 » : la flèche normale vole 16 px
 au-dessus du sol du héros et passe au-dessus des ennemis bas, défaut fidèle sans question) ; la question est gardée plus bas pour mémoire.
@@ -6051,7 +6166,9 @@ gestionnaires (E14) ; le tir en l'air hors de la sonde.
 
 ---
 
-### 1.22 E20.f6 — Les boules de feu et de glace : C60 et E9 (f6a, f6b) ⏳ (détaillée le 2026-10-15)
+### 1.22 E20.f6 — Les boules de feu et de glace : C60 et E9 (f6a, f6b) ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18, à relire)
+
+**Révision au HEAD (2026-10-18).** Le bloc « Révision au HEAD » en tête du §1.20 vaut aussi pour cette section (points communs et puces « f6a » et « f6b ») et fait foi sur son texte où il diffère.
 
 **Réponses de l'auteur.** Aucune à ce jour. Pas de question propre (les défauts fidèles s'appliquent : voir les décisions).
 
@@ -7495,7 +7612,7 @@ avec `barricade-m392` : se caler contre le haut de la porte, pousser la caisse b
 | O-E20-1 | **Tranché le 2026-10-09 (D-E20-16).** La nage (pente 4) et le wagonnet : le plan d'E19 les donnait à E14. D9 propose : la nage en tranche E20.i ; le wagonnet hors d'E20 (il n'a rien dans `MovePlayer`) | — |
 | O-E20-2 | **Tranché le 2026-10-09 (D-E20-15).** La règle exacte de l'arrondi du stick (D-E20-8). Proposition de D8 : seulement au départ et à la reprise de la course, quand clavier et croix ne donnent aucune direction et que le stick donne une diagonale, prendre l'axe dominant du stick ; à moins de ε de 45° (ε = 1/16, à régler par une mesure du stick en E20.d), garder l'axe du regard actuel | — |
 | O-E20-3 | **Tranché le 2026-10-09 (D-E20-17).** Le butin et l'objet ramassable (`0x80032968`, `0x80032B90`, `0x80032C7C`, gestionnaire C255) servent aussi aux ennemis. D9 propose une tranche dédiée avant E20.e, qui porte aussi `SpawnWarpEntity` (102 appelants, partagé avec E14) | — |
-| O-E20-4 | **Tranché le 2026-10-09 (D-E20-18).** Les gestionnaires natifs des projectiles du héros. D9 propose de partager : E20.f porte l'apparition et les gestionnaires propres au héros (vague de l'épée C61, flèches chargées C94 ; la bombe E12 en E20.h) ; ceux que des ennemis partagent peut-être (flèches E17, glace C60, feu C54) vont à E14 | — |
+| O-E20-4 | **Tranché le 2026-10-09 (D-E20-18).** **Modifié le 2026-10-10 par D-E20-25 :** E17, C60 et E9 passent à E20.f (f5, f6) ; seul C54 reste à E14 ; la suite de la ligne est l'état d'avant. Les gestionnaires natifs des projectiles du héros. D9 propose de partager : E20.f porte l'apparition et les gestionnaires propres au héros (vague de l'épée C61, flèches chargées C94 ; la bombe E12 en E20.h) ; ceux que des ennemis partagent peut-être (flèches E17, glace C60, feu C54) vont à E14 | — |
 | O-E20-5 | La barricade de la 392 : l'original la franchit-il en soulevant ou en grimpant ? **Tranché par le binaire le 2026-10-18** (`docs/plan-e20-annexe/e20-g3/`) : les deux (sauter sur la seule caisse basse dans une fenêtre de 2,0 px en Y, ou la soulever et la lancer) ; la route couverte : Q-G4-a | E20.g4 (§1.29) |
 | O-E20-6 | Une fois E18 faite, D-E20-5 tombe ; le prérequis SC8 d'E18 (PV ≥ 1 au chargement) reste à trancher | E18 |
 | O-E20-7 | **Tranché le 2026-10-09 (D-E20-11).** Ordre événements de carte / entités : le corriger dans E20.a (ordre du binaire : pad, événements de carte, entités ; mesure préalable des épingles qui bougent), ou le garder comme écart documenté | — |
