@@ -6655,7 +6655,13 @@ cartes et sa table, un arrêt par type non couvert ; le point 4 du bloc aligné)
 
 ---
 
-#### 1.24.4 E20.g1b — Soulever (l'activation) ⏳ (réécrite le 2026-10-18 après E20.g3, à relire ; le texte du 2026-10-15 est remplacé)
+#### 1.24.4 E20.g1b — Soulever (l'activation) ⏳ (réécrite le 2026-10-18 après E20.g3 ; révision 1 ; le texte du 2026-10-15 est remplacé)
+
+**Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : la mesure du contact en l'air n'était pas exécutable en T0 (le
+bouchon rend 0) : T0 (b) est une sonde jetable qui relève le contact par tick, en l'air (g15 a), contact en t5 **et** t6) et au sol (c3, lignes
+A à G), avec un arrêt au moindre écart ; les lignes « au sol » gardées ont maintenant cette mesure et cet arrêt, et `c3` sa copie durable
+(`docs/plan-e20-annexe/e20-g1a/critic-scenarios/`) ; T0 (a) prouve le mouvement propre de la plateforme et s'arrête sur une question à
+l'auteur si aucune carte ne réunit les trois conditions.
 
 **Pourquoi réécrite.** D-E20-39 (le soulèvement n'est activé qu'avec g3) rend caducs D-G-7 (`LiftContactEntity`, `FindLiftContact`,
 `requiredCandidateFlags`), la phase B de remplissage et ses compteurs-témoins k1 à k4, et O-G-1 : le seul contact est celui que g3 rend
@@ -6696,7 +6702,8 @@ d'`EntityCollision.cs`.
 - **Phase B** (T3) : l'activation, trois lignes ensemble : le corps du bouchon `PlayerTryAction` remplacé ; les appels de `TryUseItem` et de
   `PlayerTryAction` de l'état d'escalade ; `ProductionWiredLiftableTypes` = les 7 types C23. Seul changement de comportement.
 
-**Valeurs attendues** (clés de l'oracle `g9`, `g15`, `c3`, `g1_lift` de `docs/plan-e20-annexe/e20-g1a/` ; la caisse en x = 130, le héros pousse
+**Valeurs attendues** (clés de l'oracle `g9`, `g15`, `g1_lift` de `docs/plan-e20-annexe/e20-g1a/work/orc/out/`, et `c3` de
+`docs/plan-e20-annexe/e20-g1a/critic-scenarios/out/c3-contact.txt` ; la caisse en x = 130, le héros pousse
 vers l'est depuis x = 100) : le tableau du texte du 2026-10-15 est gardé tel quel (contact non nul de t5, héros à 109,0 ; Carré aux ticks 4 ou
 5 : l'épée ; aux ticks 6 ou 7 : soulèvement, `anim_t` 5 ; la force résiduelle garde le contact un tick ; une pause puis une nouvelle poussée :
 l'épée puis le soulèvement ; Carré tenu depuis le tick 1 : jamais ; Haut tenu sans pousser : l'épée ; en l'air, contact au tick 5 : Carré
@@ -6705,11 +6712,21 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
 
 ##### Tâches
 
-- ⏳ **T0** (aucun code) : (a) la carte de la recette (Q-G1A-5) : une carte avec un soulevable câblé, un dessus de 16 px et une plateforme
-  qui se déplace d'elle-même à l'horizontale, choisie dans les recensements de `e20-g1a/work/` (`census_platforms.py`, `census_maps2.py`) ; (b)
-  **le contact en l'air** sur la DLL après g3 : la ligne « en l'air » du tableau rejouée ; un écart avec l'oracle est un arrêt (pas un choix de
-  l'exécuteur) ; (c) la liste prédite : la liste des préréglages (`AlundraTestSavesTests`, ses deux tables), dérivée de l'état des autres
-  préréglages ajoutés avant (E20.e `herbe-m14`, E20.g4a `barricade-m392`), et les tests nommés par T0 (b).
+- ⏳ **T0** (aucun commit de code) : (a) **la carte de la recette** (Q-G1A-5) : une carte avec un soulevable câblé, un dessus de 16 px et
+  une plateforme qui se déplace **d'elle-même** à l'horizontale, libre à l'arrivée ; les candidates viennent des recensements de
+  `e20-g1a/work/` (`census_platforms.py`, `census_maps2.py`) ; le mouvement propre de la plateforme se prouve en **décodant les programmes**
+  de la carte (les décodeurs de `docs/plan-e20-annexe/e20-g3/dll/decode_events.py` et `critic-complet/c5_dump_prog.py`) : une boucle de
+  déplacement horizontal de l'entité de la plateforme qui ne dépend d'aucune action du héros ; **aucune carte ne réunit les trois
+  conditions : arrêt et question à l'auteur** (la recette de D-E20-40 n'est pas réduite par l'exécuteur) ; (b) **sonde jetable de la DLL**
+  (écrite sur une copie de travail après g1a, g2a, g2b et g3, lancée, versée à l'annexe, jamais commitée, comme le T0 (b) de g3) : elle
+  rejoue les scripts de manette de l'oracle et relève, à chaque tick, l'`XCollisionEntity` du héros, sa `PosZ` et son animation : (b1)
+  **en l'air**, le script de `g15` a) (`e20-g1a/work/orc/out/g15-misc.txt:1-3`), ticks t4 à t9 : contact = la caisse en **t5 et t6**, nul en
+  t7, t8, t9 ; Z 5,0 ; 9,5 ; 13,5 ; 17,0 ; 20,0 ; 22,5 ; animations 2, 44, 44 sans Carré ; (b2) **au sol**, les lignes A, B, C, D, D2, E, E2,
+  F, G de `c3` (`critic-scenarios/out/c3-contact.txt`) : le contact par tick (présent ou nul) de t1 à t16 égal à celui de l'oracle
+  (`c3_contact.py`, rejoué depuis une copie pour l'écrire tick par tick) ; les issues de soulèvement de ces lignes ne se jugent qu'en
+  (m1) et (m7) après T3 ; **un contact par tick qui diffère, en l'air ou au sol, est un arrêt** ; les valeurs attendues ne changent jamais
+  pour suivre la DLL ; (c) la liste prédite : la liste des préréglages (`AlundraTestSavesTests`, ses deux tables), dérivée de l'état des
+  autres préréglages ajoutés avant (E20.e `herbe-m14`, E20.g4a `barricade-m392`).
 - ⏳ **T1 — Phase A** (tests d'abord, puis le code). (l1) `TryLift` direct : genres 0, 1, 2, 3 × `0x3B` (huit cas), retour, appel de
   `PutInHands`, animation cible ; type hors de l'ensemble câblé → 0, accolé au même objet dans l'ensemble ; (l2) `PlayerTryAction` direct :
   porté → 1 et `0x0C`/`0x30` ; contact et front → retour direct de `TryLift` (même 0, sans passer par la boucle) ; contact sans front →
@@ -6720,7 +6737,7 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
   dessus de 16 px, monter sur la plateforme mouvante, lancer, briser ; (m3) le genre 3 sur la carte 3, 4, 7 ou 11, avec et sans `0x3B` ; (m4)
   l'objet sur la tête ; (m5) hors de l'ensemble (la torche de la 86, la bombe de la 362 : genre 1 mais non câblés) : Carré donne l'épée,
   accolé à la caisse de la même scène qui se soulève ; (m6) la priorité : contact d'un PNJ → `TryLift` 0 → interaction ; contact d'une
-  caisse → soulèvement ; (m7) le soulèvement en l'air (la ligne du tableau, selon T0 (b)) ; (m8) l'état d'escalade (`0x0E`, `0x35`, binaire
+  caisse → soulèvement ; (m7) le soulèvement en l'air (la ligne du tableau : Carré aux ticks 6, 7, 8 donne soulèvement, soulèvement, l'épée, sur le contact relevé en T0 (b1)) ; (m8) l'état d'escalade (`0x0E`, `0x35`, binaire
   `0x800321D4`-`0x800321E4` : `TryUseItem`, puis `PlayerTryAction`, dont un retour non nul termine le tick) : Carré au contact d'un soulevable
   câblé pendant l'escalade soulève (`anim_t` 5 ou 11, selon le scénario `c4_climb_lift`), accolé à l'escalade sans contact. Témoins (verts
   avant et après) : les arcs de leviers (115, 116, 117, 44), A5, A5r, les arcs de g4a et la chaîne.
@@ -6742,7 +6759,8 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
   avec l'objet ; (3) sauter sur un dessus de 16 px ; (4) monter sur la plateforme qui bouge ; (5) Carré : l'objet part et se brise (le butin
   selon E20.e0c) ; (6) l'échelle est refusée ; (7) une scène qui verrouille le contrôle avale l'objet ; avec `barricade-m392` : se caler contre
   le haut de la porte et sauter sur la caisse basse (g4a).
-- **Arrêts** : T0 (b) contredit l'oracle ; un arc de la chaîne ou de levier bouge ; un test nommé de (m1) à (m8) vert avant T3 ; la boucle
+- **Arrêts** : T0 (b) relève un contact par tick qui diffère de l'oracle (en l'air ou au sol) ; T0 (a) : aucune carte ne réunit les trois
+  conditions (question à l'auteur) ; un arc de la chaîne ou de levier bouge ; un test nommé de (m1) à (m8) vert avant T3 ; la boucle
   sans bouton relève un objet lancé ; un test hors de la liste prédite bouge ; un besoin de changer le moteur. **Budget** : un `executor` par
   phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après. **Retour arrière** : la phase B se retire seule (ensemble vide,
   bouchon) ; la phase A ne change aucun comportement.
