@@ -8097,22 +8097,36 @@ la contre-vérification faisant foi). Le cadre (h0a, §1.30.1) est un prérequis
    d'E13 ; un tampon du bloc de tremblement de session, initialisé à zéro et restauré sans garde par le feu 2 (`check.md` §3.4) ; les soins
    `0x80032F84` et `0x80033274` écrivent les PV de l'entité (`+0x14`) (`check.md` §3.7).
 7. **Les types** : 16 (terre 1) seul a la gravité parmi les types nés par les sorts qui portent `DestroyOnSlidingSlope` : seul h4c1 dépend d'f6a
-   (bloc du §1.20, puce « f6a », correction de texte) ; E3 sert aussi les sprites de la page globale 150 à 153 et 98 sprites de cartes (Q-H4-8) ;
+   (bloc du §1.20, puce « f6a », correction de texte) ; E3 sert aussi les sprites de la page globale 150 à 153 et 98 enregistrements de tables de
+   sprites de cartes (75 cartes), dont **19 placements statiques sur 5 cartes** seulement (`docs/plan-e20-annexe/e20-h4b/state-c221a76/check/check.md`
+   §1.1 ; Q-H4-8) ;
    le sprite 154 porte C65 sans fiche d'attaque, dormant (`check.md` §2.2).
+8. **Les briques de h4b, lues au binaire le 2026-10-18** (`docs/plan-e20-annexe/e20-h4b/`, `bin/report.md`, la critique `critic/check.md` faisant foi :
+   tous les faits de comportement CONFIRMÉS par ses propres modèles et son propre interpréteur). La requête `0x8003AF70` n'a que quatre appelants
+   (vent 1 `0x80035FA4`, C63 `0x8007ACB4`, C65 `0x8007AF5C`, C75 `0x8007BF20`) ; c'est la **seule boucle à borne exclusive** des 24 boucles qui lisent
+   le plus haut emplacement : les 23 autres équivalent à « toutes les entités vivantes » (critique §3.2, §3.4) ; le compte n'est recalculé qu'à la passe
+   des emplacements de la porte du tick, donc **un champ stocké** est nécessaire pour reproduire la borne exclusive (un maximum à la demande ne la
+   reproduit pas : RÉFUTÉ, critique §3.4). Le tri est une variante de Hoare à pivot fixé à l'entrée, instable, appelée seulement dès 3 résultats.
+   La poussée (`0x800366FC`) est inséparable de la table de glissement (`+0x188 & 0xF`) et de l'octet de carte `SlideEffectId` (O-E20-16, Q-I1,
+   O-E19-31), que la DLL n'a pas (critique §7.1). Le coup de caméra n'a qu'un écrivain (E13) et le tampon du tremblement qu'un utilisateur (le feu 2) ;
+   dans la DLL, le coup doit être consommé par le pas de caméra du **même** tick, rangé par tick (critique §7.2). Les tables 256 ne servent qu'à C65
+   et C75 ; les accès 32 bits servent le feu 1 (C63 lit `+0x274` en mot) et l'eau (critique §5, §7.7).
 
 **Découpage** (remplace `e20-h4/report.md` §11 ; chaque tranche d'élément câble en production les entrées de son tome, D-H-3).
 
 | Tranche | Contenu | Prérequis |
 |---|---|---|
 | **h4a** | Le départ commun des tomes, PM − 1, le bâton, la piste XA en bouchon journalisé (Q-H4-1), les états `0x32` à `0x34`, la garde de pente ; **inerte en production** (les entrées des tomes restent des bouchons, D-H-3) | h0a |
-| **h4b** | Les briques communes du fait 6 : la requête et son tri, l'indice du plus haut emplacement, les tables 256, les accès 32 bits, le coup de caméra, le tampon du tremblement, l'inscription commune d'E3 (Q-H4-8) ; la poussée selon Q-H4-3 | h4a ; E20.e0a5 ✅ ; Q-H4-3 |
-| **h4c1** terre 1 | Pilote `0x80035320`, E3 (type 16) | h4a, h4b, f6a |
-| **h4c2** terre 2 | Pilote `0x800354D0`, E13 (type 17), son annulation `0x80034BDC`, le coup de caméra | h4a, h4b |
-| **h4d1** feu 2 | Pilote `0x80035C64`, E28 (type 21), son annulation `0x80034E08`, le tremblement | h4a, h4b |
-| **h4d2** feu 1 | Pilote `0x80035A84`, C63 et E3 (type 23), la colonne (sprite 20, E1 en ligne), son annulation `0x80034D2C` | h4a, h4b |
-| **h4e1** vent 1 | Pilote `0x80035EB0`, la requête (Q-H4-2) | h4a, h4b |
-| **h4e2** vent 2 | Pilote `0x80036218`, C65 (type 24 ; le 154 à trancher), la poussée, son annulation `0x80034EC4` | h4a, h4b, Q-H4-3 |
-| **h4f1** eau 1 | Pilote `0x80035790`, C75 (type 19), le soin `0x80032F84`, la poussée, les drapeaux, son annulation `0x80034C54` | h4a, h4b, Q-H4-3 |
+| **h4b1** | La requête de cibles et son tri, **fonction pure** paramétrée par le compte, inerte en production (révisé le 2026-10-18, fait 8 ; §1.31.2) | h4a ; Q-H4B-2, Q-H4B-3 (défauts retenus) |
+| **h4b1b** | Le champ stocké du plus haut emplacement (recalcul au recyclage, relèvement à la naissance, zéro au chargement) : **seulement si** Q-H4B-2 garde la borne exclusive | h4b1 ; Q-H4B-2 |
+| **h4b2** | La poussée `+0xCC/+0xD0` dans la passe de forces, avec ou sans la table de glissement et l'octet de carte (Q-H4B-6) | h4a ; Q-H4-3, Q-H4B-6 |
+| **h4c1** terre 1 | Pilote `0x80035320`, E3 (type 16), l'inscription d'E3 (Q-H4-8) | h4a, f6a |
+| **h4c2** terre 2 | Pilote `0x800354D0`, E13 (type 17), son annulation `0x80034BDC`, le coup de caméra (rangé par tick, Q-H4B-4) | h4a |
+| **h4d1** feu 2 | Pilote `0x80035C64`, E28 (type 21), son annulation `0x80034E08`, le tampon de session du tremblement (remis à zéro dans les six `ResetSingletons` des tests) | h4a |
+| **h4d2** feu 1 | Pilote `0x80035A84`, C63 et E3 (type 23), la colonne (sprite 20, E1 en ligne), son annulation `0x80034D2C`, l'accès en mot à `+0x274` | h4a, h4b1, h4c1 (E3) |
+| **h4e1** vent 1 | Pilote `0x80035EB0`, la requête | h4a, h4b1 |
+| **h4e2** vent 2 | Pilote `0x80036218`, C65 (type 24 ; le 154 à trancher), les tables 256, son annulation `0x80034EC4` | h4a, h4b1, h4b2 |
+| **h4f1** eau 1 | Pilote `0x80035790`, C75 (type 19), le soin `0x80032F84`, les tables 256 (si h4e2 ne les a pas), les accès en mot à `+0x274` et `+0x280..+0x290`, les drapeaux, son annulation `0x80034C54` | h4a, h4b1, h4b2 |
 | **h4f2** eau 2 | La table de six orbes, le soin `0x80033274` (partagé avec la potion de h1) | h4f1, h1 |
 
 ---
@@ -8190,6 +8204,84 @@ l'annexe `docs/plan-e20-annexe/e20-h4a/` ; ce plan, l'index des ADR et un ADR. *
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : retirer la fonction et les gestionnaires (rien ne les appelle en production).
 
+
+---
+
+#### 1.31.2 E20.h4b1 — La requête de cibles des sorts ⏳ (détaillée le 2026-10-18, à relire)
+
+**Prérequis.** h4a ; la fin du chantier de restructuration et Q-R-7.
+
+**But.** La requête `0x8003AF70` et son tri `0x8003AE04` comme l'original, en fonction pure : les sorts qui visent (vent 1, C63, C65, C75) la trouveront
+prête ; rien ne l'appelle encore en production.
+
+**Faits** (`docs/plan-e20-annexe/e20-h4b/critic/check.md` §4, faisant foi ; `e20-h4/report.md` §4).
+- Balaie les emplacements 1 à `compte − 1` (le compte est le plus haut emplacement occupé, `[0x80134360]`) ; exclut l'appelant ; garde les statuts 2
+  et 3 ; exclut `+0x20 != 0` ; exige `(+0x6C & masque) != 0` ; exclut `+0x1CC != 0` ou `+0x1D0 != 0` ; exclut `+0xB4 & 0x40` ; exige une fiche
+  `+0x1C4` et écarte la réponse `(octet[fiche + type + 2] & 0xC0) == 0x80` (`0x40`, `0xC0` et `0x00` gardés) ; le héros n'est jamais candidat (emplacement 0).
+- Clé `dx² + dy²` modulo 2³², `dx = (PosX_e − PosX_appelant) >> 16` (différence 32 bits d'abord), de même pour `dy`.
+- Tri **seulement à partir de 3 résultats** : Hoare à pivot fixé à l'entrée, `(K[lo] + K[hi]) mod 2³² >> 1`, balayages non signés `K[i] < pivot` et
+  `pivot < K[j]`, échange seulement si `i < j`, récursion `(lo, i − 1)` et `(j + 1, hi)` ; instable.
+- Arguments : le type d'attaque des trois gestionnaires est l'octet pointé par `[ent + 0x1C8] & 0xF` ; le vent 1 passe 11.
+- Dans la DLL (`docs/plan-e20-annexe/e20-h4b/state-c221a76/`, la contre-vérification faisant foi) : `Status` (`EntityScriptProxy.cs:88`, et
+  `Status.IsActive()`, `Alundra/Entities/EntityStatusExtensions.cs:11-12`, **pas** `IsLoadedNormalOrDeactivated`, qui garde les statuts 1 à 3,
+  `EntityScriptProxy.cs:32-33`), `BlockedByEntity` (`:99`), `Flags` (`:156`), `DamagedTickCounter` (`+0x1CC`, `:483`), `FrameCollisionTickCounter`
+  (`+0x1D0`, `:484`), `HitAnimByte` (`+0xB4`, `EntityScriptProxy.HitPass.cs:30`, **pas** `AnimFlags`, écrit une image trop tard), la fiche
+  `BalanceRecord` et `ByteAt(2 + type)` (`HitPass.cs:24`, `Alundra/Combat/BalanceRecord.cs:76`, qui lit l'enregistrement suivant au-delà de la fin,
+  `:78-82`, comme le binaire), `PosX`/`PosY` en 16.16 (`EntityScriptProxy.cs:351-352`) ; la passe de coups a les mêmes filtres
+  (`Alundra/Combat/HitPass.cs:122-131`) ; `EntitySearchService` est la requête des opcodes, un autre algorithme épinglé par ses tests
+  (`Alundra.Tests/EntitySearchServiceTests.cs`) : **il ne change pas**.
+
+**Décisions.**
+- **D-H4B1-1** — Une fonction pure, `TargetQuery.Find(slots, compte, appelant, masque, type)`, dans un fichier neuf `Alundra/Combat/TargetQuery.cs`
+  (Q-R-7), sur les proxies de la DLL : la liste des cases par emplacement (celle de `SpawnedEntities`, `IEntityWorldContext.cs:29`), le compte passé
+  par l'appelant ; le tri exact de Hoare du fait ci-dessus (porté tel quel : coût nul, ordre des égalités déterministe ; Q-B5 de la lecture, sans
+  question).
+- **D-H4B1-2** — Deux réglages nommés, `InclusiveBound` et `SortThreshold`, dont les valeurs de production sont les défauts de Q-H4B-2 et Q-H4B-3
+  (**corriger**, par la règle de l'auteur sur les défauts avérés de l'original : borne inclusive, tri dès 2 résultats) ; le mode « binaire » (borne
+  exclusive, tri dès 3) est celui des vecteurs. Avec la borne inclusive, les entités vivantes suffisent et le champ stocké n'est pas porté (h4b1b
+  seulement si l'auteur choisit de reproduire).
+- **D-H4B1-3** — Les vecteurs se rejouent par un **adaptateur image → proxies** écrit pour les tests : chaque mot lu d'un vecteur est décodé dans le
+  champ de la DLL de la table de correspondance (T0 (b)) ; **une lecture qu'aucun champ ne porte est une erreur** (la règle de la critique, §6.1,
+  rendue normative) ; le résultat (la liste des emplacements, dans l'ordre) est comparé tel quel.
+
+**Périmètre.** `Alundra/Combat/TargetQuery.cs` (neuf) ; `Alundra.Tests/` (l'adaptateur et les tests) ; l'annexe `docs/plan-e20-annexe/e20-h4b1/` ;
+ce plan, l'index des ADR et un ADR. **Hors périmètre** : le champ stocké du plus haut emplacement (h4b1b) ; les appelants (h4d2, h4e1, h4e2, h4f1) ;
+`EntitySearchService`.
+
+**Partage des phases.** Une seule phase, **inerte en production** (aucun appelant).
+
+##### Tâches
+
+- ⏳ **T0 — Annexe et correspondance** (aucun code) : (a) rejouer depuis une copie `e20-h4b/critic/c3_query.py` (4 000 mondes, 0 écart) et
+  `c9_replay.py` (les 770 vecteurs de la lecture, dont les 120 de `bin/vec/vec_query_8003AF70.json`, depuis une mémoire vide) : sorties identiques ;
+  (b) la table de correspondance des octets lus par la requête vers les membres de la DLL (le fait ci-dessus), versée au README ; un octet lu par les
+  vecteurs sans membre est nommé et arrête la tranche ; (c) les vecteurs du mode corrigé : les mondes des 120 vecteurs et des vecteurs sentinelles de
+  la critique (`critic/vec_extra/vec_extra_query.json`) rejoués par les modèles mutants « borne inclusive » et « tri dès 2 » de `c3_query.py`, sorties
+  versées (`e20-h4b1/vec_query_corrected.json`) ; (d) la liste prédite : aucun test existant (aucun appelant) ; recomptée.
+- ⏳ **T1 — Tests puis code.** (q1) le mode binaire contre les 120 vecteurs et les vecteurs sentinelles (le candidat de l'emplacement `compte`, listé
+  mais jamais lu, est exclu) : la liste et son ordre, à l'identique ; (q2) le mode corrigé contre `vec_query_corrected.json` ; (q3) chaque filtre accolé
+  à son contraire (statut 1 et 4 écartés, 2 et 3 gardés ; `BlockedByEntity` ; masque ; les deux compteurs ; `HitAnimByte & 0x40` ; sans fiche ; les
+  réponses `0x80` écartée, `0xC0`, `0x40`, `0x00` gardées) ; (q4) le tri : n = 2 dans le mauvais ordre (non trié en mode binaire, trié en mode corrigé),
+  n = 3 à clés égales (l'ordre de Hoare `[3, 2, 1]` de la critique), 4 résultats avec égalités (`[2, 3, 4, 1]`) ; (q5) la clé modulo 2³² et la
+  différence 32 bits ; (q6) les valeurs de production des réglages (D-H4B1-2). Puis le code.
+- ⏳ **T2 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : borne inclusive en mode binaire ; statut 2 seul ; statuts 1 à 3
+  (`IsLoadedNormalOrDeactivated`) ; `BlockedByEntity` ignoré ; `AnimFlags` au lieu de `HitAnimByte` ; réponse `0xC0` écartée ; fiche absente gardée ;
+  tri dès 2 en mode binaire ; tri stable ; pivot recalculé ; échange sur `i <= j` ; clé en 64 bits ; héros candidat.
+
+##### Acceptation
+
+- **Oracle** : les rejeux de T0 (a) et (c) identiques.
+- **DLL** : (q1) à (q6) verts, rouges avant le code ; la suite en Release (copie neutralisée) et en Debug, zéro échec ; aucun test existant déplacé ;
+  `cmp` de la DLL ; traces inchangées ; moteur, convertisseur et données sans diff.
+- **Preuve de retrait** : retirer `TargetQuery` rend rouges exactement (q1) à (q6), rien d'autre.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : un octet lu par les vecteurs n'a pas de membre dans la DLL ; un vecteur diffère ; un test existant bouge ; un nom refusé par
+  `check_names.py`.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : retirer le fichier (rien ne l'appelle).
+
 ## 2. Points ouverts
 
 | Point | Question | Où elle se tranche |
@@ -8255,6 +8347,12 @@ l'annexe `docs/plan-e20-annexe/e20-h4a/` ; ce plan, l'index des ADR et un ADR. *
 | Q-H4-6 | (2026-10-17) L'unité du coup de caméra d'E13 (+2 sur le défilement Y pendant un tick, INFÉRENCE) | E20.h4 (T0) |
 | Q-H4-7 | (2026-10-17) Les tomes sont donnés en coffre (cartes 25, 76, 84, 95 ; niveau 2 : 17, 439, 3, 448, 431) et par des `0x82` (cartes 17, 31, 77, 80, 158, 439, 443) ; le bâton par la 134 : lesquels sont sur la chaîne actuelle ? | E20.h4 (T0) |
 | Q-H4-8 | (2026-10-17) E3 et E13 : une inscription commune avec E14 (E3 sert 98 sprites d'ennemis) ; dépend du registre cumulatif d'E14.b0 | E14.b0 |
+| Q-H4B-1 | (2026-10-18) Les orbes d'eau se brisent-elles contre un mur ou au bord du terrain ? Le binaire : oui (bit `0x10` et `ForceAdjusted`) ; les garder ne coûte rien, les retirer est un écart documenté. Défaut : fidèle | l'auteur (recette d'h4f1) |
+| Q-H4B-2 | (2026-10-18) Le dernier emplacement occupé n'est jamais visé par la requête des sorts (la seule borne exclusive des 24 boucles) : un ennemi peut être ignoré tant qu'aucune entité n'occupe un emplacement plus haut. Reproduire (le champ stocké, h4b1b) ou corriger (borne inclusive, coût nul) ? Défaut : corriger (règle de l'auteur sur les défauts avérés) | l'auteur |
+| Q-H4B-3 | (2026-10-18) Avec exactement deux cibles possibles, la requête ne trie pas : l'orbe ou la tornade vise la plus lointaine dans environ 48 % des cas. Reproduire (tri dès 3) ou corriger (tri dès 2) ? Défaut : corriger | l'auteur |
+| Q-H4B-4 | (2026-10-18) Le coup de caméra de la terre 2 (environ 2 px sur une image à chaque rocher) : le porter (un champ rangé par tick et un contrôle de signe) ou l'ignorer (presque invisible) ? Défaut : le porter, avec h4c2 | l'auteur |
+| Q-H4B-5 | (2026-10-18) Les accès 32 bits sur `+0x274` et `AIValues` : accesseurs de composition communs (servent aussi E14) ou propres aux tomes ? Défaut : communs, avec la première tranche qui en a besoin (h4d2) | l'auteur |
+| Q-H4B-6 | (2026-10-18) La poussée (vent 2, eau) est faite dans le même bloc que la table de glissement (`+0x188`, les courants, O-E20-16 et Q-I1) et que l'octet de carte `SlideEffectId` (cartes 159 et 160 : le héros va deux fois moins vite, O-E19-31). (A) porter la table et l'octet avec la poussée (une vingtaine de lignes ; tranche aussi O-E20-16 et O-E19-31) ; (B) la poussée seule, les vecteurs `idx = 0, sh = 0` seulement, l'écart consigné | l'auteur |
 | Q-H3-1 | (2026-10-18) Porter la bombe avant que les caisses redeviennent solides (après h0a, g1a, g2a, sans g1b ni g3) ? Le joueur : Rond, un geste de levée de 36 ticks, marcher et sauter avec la bombe, la lancer à 34 px (23 px vers le haut ou le bas), elle explose 242 ticks après le départ ; Rond interrompt aussi un coup d'épée. Coût : tant qu'E20.c2b et E18 manquent, une bombe tenue reste en main si le héros est touché. Défaut : oui | l'auteur |
 | Q-H3-2 | (2026-10-18) Le héros dans sa propre explosion : l'original lui retire 5 PV sur 10 et le repousse ; sans E20.c2b, rien. (A, défaut) livrer ainsi, la blessure arrive avec c2b ; (B) attendre c2b avant d'ouvrir h3b au joueur (coût : l'ordre) | l'auteur |
 | Q-H3-3 | (2026-10-18) Les haricots : sans le pot magique (39 pots sur 16 cartes, aucune sur la chaîne de l'histoire), ils éclatent 3 ticks après l'atterrissage, sans autre effet visible. (A) h3c seule ; (B) h3c et h3d (le tremplin, 127 instructions de plus, un arc sur une carte à pot) ; (C, défaut) les reporter ensemble à l'arrivée d'une carte à pot | l'auteur |
