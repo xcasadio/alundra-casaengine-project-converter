@@ -8068,7 +8068,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, révision 1)
+#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2 ; relecture de clôture)
 
 **Prérequis.** h0a (la table de départ, les mots de l'objet, la couture `ItemStartForTests`, le refus par le son 3) ; E20.c2a ✅ (les PV de
 l'entité du héros et leur miroir) ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H1-1, Q-H1-2 et Q-H1-3. Ni g1a, ni g2a, ni f4 à
@@ -8156,7 +8156,7 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   `EveryPresetName` ; recomptée au HEAD de départ ; (f) h0a faite (la table, les trois coutures, `ItemInUse`) ; (g) les noms passent la garde ; (h) les traces
   d'oracle que h0a T0 (b) laisse « en attente de la tranche de leur objet » pour les cinq objets (`docs/plan-e20-annexe/e20-d/oracle/out*/w9/`,
   `W9-item24`, `-25`, `-26`, `-27`, `-29` ; `0x28` est un trou, déjà exact avec h0a) : pour chacune, la prédiction écrite avant (un soin, ou un
-  refus si la vie et la magie de la trace sont au maximum) et, après la phase B, la trace exacte ; un écart est un arrêt (révision 1).
+  refus si la vie et la magie de la trace sont au maximum), comparée par (o1) de T2 ; un écart est un arrêt (révision 1).
 - ⏳ **T1 — Phase A** (tests d'abord ; chaque « sans effet » accolé à un positif ; tous les tests (r), (e1), (e2), (g1) appellent le départ ou le
   soin **directement**, jamais par la table) : (v1) un test par soin, six, sur son fichier de vecteurs moins les « binaire seul », par
   l'adaptateur (un écart sur un vecteur le rend rouge ; l'eau 1 par `Half(5)`) ; (v2) un test par départ, cinq, de même ; (r-herbe+), (r-potionL+),
@@ -8164,14 +8164,15 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   PVmax − 1 et à 3 ; Potion S : 10, **19**, 25, 30 ; le plafond ; le son ; le compte − 1 ; l'objet reste équipé à 0 exemplaire), et, **en tests
   séparés**, (r-herbe−) à (r-potionS−) le refus (PV ou PM au maximum : son 3, compte et valeurs inchangés) (révision 1) ; (r-breuvage+) les trois
   combinaisons qui soignent et (r-breuvage−) celle qui refuse ; les (r) n'observent ni les effets ni le générateur ; (r-nu) un héros sans reprise de
-  vie (0/0) : l'Herbe, la Potion L et la Potion S refusent, et le Breuvage avec des PM sous le maximum ne soigne que les PM (révision 1) ; (r-hud)
+  vie (0/0) : l'Herbe, la Potion L et la Potion S refusent, et le Breuvage avec des PM sous le maximum ne soigne que les PM ; (r-nu) n'observe
+  que les valeurs de vie et de magie, ni le son ni le compte (révisions 1 et 2) ; (r-hud)
   aucun calage du HUD ; (r-ordre-X), un par objet : un faux `ISoundPlayer` lit les PV (ou les PM) et le compte à l'appel de `PlaySfx` (les valeurs
   déjà soignées, le compte pas encore décrémenté ; critique C-7), **puis le test vérifie le compte final décrémenté** au retour du départ
   (révision 1) ; (e1) les effets de chaque objet par `CreatedForTests` : nombre, animation, Z, positions et forces
   des anneaux calculés à la main depuis les deux tables ; (e2) un réservoir à K emplacements libres : K créations, 2 tirages par étincelle
   obtenue ; (g1) les tirages 0, 0, 0, 16, 8 et l'état final du générateur égal à `rng1` de la clé ; (lv) la fiole de vie inchangée : une épingle
   neuve de ses positions, forces et tirages (`CreateLifeVesselEffects`, appelée par `Alundra/Events/EventProgramRunner.cs:3154` ; aucun test ne
-  la nomme au HEAD), écrite et verte avant tout changement de `NativeEffects` ; puis les tests de monde, **un par clé** (les 30 de la découverte et les cinq de T0 (b)) :
+  la nomme au HEAD), écrite et verte avant tout changement de `NativeEffects` ; puis les tests de monde, **un par clé** (les 30 de la découverte et les six clés ajoutées de T0 (b)) :
   `ArcRun` de la carte 14, champ plat, entités de la carte retirées, `Give`, `SetItem`, `SetMp`, la vie abaissée **sur l'entité** (`Hero.Hp`,
   après la reprise de la vie ; un abaissement dans les stats seules serait écrasé par le miroir, `PlayerManager.cs:638-644` ; révision 1), graine
   posée avant la première
@@ -8184,7 +8185,9 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   chacun** : `herb_hp3of10`, `lpotion_hp3of10`, `elixir_mp1of4`, `cureale_hp3_mp1`, `spotion_hp3of10`, sans couture ; (p6) le préréglage se
   construit et ses épingles tiennent ; (p7) la table : les cinq entrées sont les cinq départs ; les onze autres (`0x1F`, `0x20`, `0x23`,
   `0x2B`-`0x32`) restent des bouchons silencieux ; les quatre trous refusent avec le son 3, `0x2A` posé possédé **sans** `0x26` (sinon la
-  promotion l'échange avant le refus ; critique C-2).
+  promotion l'échange avant le refus ; critique C-2) ; **(o1)** les cinq traces d'oracle de T0 (h) (`W9-item24`, `-25`, `-26`, `-27`, `-29`)
+  rejouées et comparées à l'identique, le son 3 ou le soin compris, par le même mécanisme que (o1) de h0a (§1.30.1 T2) et que la comparaison des
+  `W9-circle-*` (`Alundra.Tests/AlundraHeroSwimTests.cs:666-673`) : rouge avant la phase B (le bouchon est silencieux), vert après (révision 2).
 - ⏳ **T3 — ADR, plan, verifiers frais** (deux : l'un sur les vecteurs et l'adaptateur, l'autre sur les clés et la production). Mutants du C# par
   script, au moins 40, tous tués, repris des 141 du modèle (`disc/oracle/out/mutants_out.txt`) : les minimums 5 et 10 (tués par (r-potionS) à 19
   et `spotion_hp3of19`), les diviseurs, le plafond, les sons, la consommation absente ou double, `<` → `<=`, `et`/`ou` du Breuvage, deux tirages
@@ -8197,9 +8200,10 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 ##### Acceptation
 
 - **Oracle** : T0 (a) et (b) identiques sur deux exécutions.
-- **DLL** : T1 vert en phase A ; (p1) à (p5) et (p7) rouges avant la phase B, verts après ; la suite en Release (copie neutralisée) et en Debug,
-  zéro échec ; tests déplacés ⊂ liste prédite ; `cmp` ; traces inchangées ; moteur, convertisseur et données sans diff.
-- **Preuve de retrait** (critique C-3) : rendre les cinq entrées à leurs bouchons rend rouges exactement (p1) à (p5) et (p7), (v), (r), (e), (g),
+- **DLL** : T1 vert en phase A ; (p1) à (p5), (p7) et (o1) rouges avant la phase B, verts après ; la suite en Release (copie neutralisée) et en
+  Debug, zéro échec ; tests déplacés ⊂ liste prédite ; `cmp` ; les traces versionnées de la garde d'octets inchangées (les traces d'oracle W9 de
+  T0 (h) sont des sorties de l'annexe d'E20.d, comparées par (o1), non réécrites) ; moteur, convertisseur et données sans diff (révision 2).
+- **Preuve de retrait** (critique C-3) : rendre les cinq entrées à leurs bouchons rend rouges exactement (p1) à (p5), (p7) et (o1) (révision 2), (v), (r), (e), (g),
   (lv), les tests de monde et (p6) restant verts (ils appellent les départs directement ou par la couture) ; **retirer l'appel de `UseItem` du
   départ X** rend rouges exactement (v2) de X (l'écriture du compte), (r-X+), (r-ordre-X) (le compte final), les clés de monde de X qui ont un usage
   réussi et le (p) de X, et laisse verts (r-X−), (r-nu), (r-hud), les clés de refus de X et tout ce qui touche les autres objets ; **retirer l'appel
@@ -8215,7 +8219,7 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 ##### Arrêts, budget, retour arrière
 
 - **Arrêts** : un test hors de la liste prédite bouge ; un vecteur ou une clé diffère d'un octet ou d'un tick ; une sonde P1 à P5 contredite ; une
-  adresse sans membre hors des vecteurs « binaire seul » ; une clé de T0 (b) que la machine ne sait pas faire ; h0a sans ses trois coutures ; un
+  adresse sans membre hors des vecteurs « binaire seul » ; une des six clés ajoutées de T0 (b) que la machine ne sait pas faire ; h0a sans ses trois coutures ; un
   besoin de toucher au moteur ; un nom refusé ; une réponse de l'auteur autre que le défaut à Q-H1-1, Q-H1-2 ou Q-H1-3.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : rendre les cinq entrées à leurs bouchons ; la phase A reste inerte.
