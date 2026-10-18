@@ -7416,7 +7416,11 @@ contre le haut de la porte, sauter sur la caisse basse, rejoindre le portail.
 contredit le binaire ; un roulis pendant un arc ; le pilote doit lire autre chose que l'état du jeu (aucune valeur écrite par le test pendant l'arc) ;
 un besoin de toucher au moteur.
 
-#### 1.29.2 E20.g4b — La barricade en soulevant ⏳ (détaillée le 2026-10-18, à relire)
+#### 1.29.2 E20.g4b — La barricade en soulevant ⏳ (détaillée le 2026-10-18 ; révision 1)
+
+**Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : chaque arc (b2) à (b5) a son départ, ses seuils (mesurés au
+binaire en T0, avec un arrêt) et sa règle de Croix et de Carré ; l'assertion de (b1) se lit par image, à chaque cadence, avec la règle du
+sondage entre le contact et Carré ; la chute de rec10 se lit par tick par le crochet existant `WorldProxy.TickTraceForTests`.
 
 **Prérequis.** g1b (le soulèvement, dont le soulèvement en l'air de (m7)), g2a et g2b (le lancer et le bris), g4a (le pilote, le préréglage
 `barricade-m392`, le fichier des arcs) ; même branche et même fusion que g3, g4a et g1b (Q-G3-b).
@@ -7436,31 +7440,44 @@ contact rec10, Carré la soulève (`bin/` R7). En plein saut à z ≥ 80, Carré
 (bit 0x04) fait passer le héros dans la branche verrouillée où tourne le mode 1 de `UpdatePlayerCarriedEntity` : 5 ticks verrouillés (A5r)
 comptent sans écrire, un 6ᵉ ferait descendre l'objet (INFÉRENCE ; la durée dans le binaire est inconnue).
 
-**Périmètre.** `Alundra.Tests/AlundraShipBarricadeArcTests.cs` (le fichier de g4a : les arcs neufs et le pilote) ; `Alundra.Tests/AlundraArcSupport.cs`
+**Périmètre.** `Alundra.Tests/AlundraShipBarricadeArcTests.cs` (le fichier de g4a : les arcs neufs, le pilote et la lecture par tick de T0 (c)) ; `Alundra.Tests/AlundraArcSupport.cs`
 (les seules entrées de `ArcsThatSlide` de ces arcs) ; l'annexe (`docs/plan-e20-annexe/e20-g3/g4b-route/`) ; ce plan. Aucun code de la DLL.
 
 **Tâches.**
-- ⏳ **T0** : (a) **la route « soulever » du binaire refaite avec les 12 enregistrements** sur la machine MIPS (le harnais de `critic/my392.py`) :
-  ses phases et seuils (se caler, pousser jusqu'au contact, Carré au tick suivant, porter à l'ouest jusqu'à quel X, lancer, attendre le bris,
-  contourner rec9, le portail) et la trace, versées dans `docs/plan-e20-annexe/e20-g3/g4b-route/` ; (b) les règles du pilote de g4a étendues :
-  le Carré du soulèvement à la première image qui suit l'apparition du contact (et hors d'une image de sondage), le Carré du lancer au seuil de
-  (a) ; un roulis observé est un arrêt de l'arc (sauf en (b6)) ; (c) la chute de rec10 dans la DLL après g1b, à 1, 2 et 3 ticks par image : la
-  série des Z mesurée contre celle du binaire ; égale : (b2) l'épingle ; différente : l'écart Q-G3-c (défaut A) consigné et épinglé par un test
-  nommé d'après lui ; (d) les glissements de chaque arc neuf, mesurés, expliqués et épinglés dans `ArcsThatSlide` (un nom par cadence).
-- ⏳ **T1 — Arcs** (sous B1, les 12 enregistrements, à 1, 2 et 3 ticks par image) : (b1) la route « soulever » de bout en bout par le pilote :
-  le contact rec5 depuis la face est, le soulèvement au tick qui suit, le port, le lancer, le bris, puis le portail 0
-  (`WarpDirector.Instance.HasPendingArrival`) ; (b2) lever rec6 : la chute de rec10 selon T0 (c) ; (b3) depuis le dessus de rec5, pousser au sud :
-  y = 297,0, contact rec10, Carré la soulève ; (b4) en plein saut à y = 298 : Carré soulève la caisse du haut (le soulèvement en l'air de g1b,
-  (m7)) ; (b5) Haut le long de la face x = 657 : y = 295,0, contact rec5, Carré soulève ; (b6) **le roulis en portant** : le pilote tient une
-  direction à un sondage alors qu'il porte rec5 : le verrou de B1, le mode 1 qui compte ; l'objet reste en main tant que le verrou ne dépasse
-  pas 5 ticks (A5r) ; la valeur mesurée épinglée ; un objet qui descend ou se perd est un arrêt et une question (la durée du verrou dans le
-  binaire est inconnue).
+- ⏳ **T0** : (a) **les routes et départs du binaire refaits avec les 12 enregistrements** sur la machine MIPS (le harnais de
+  `critic/my392.py`), versés dans `docs/plan-e20-annexe/e20-g3/g4b-route/` avec leurs traces ; un scénario qui n'atteint pas l'issue écrite
+  ci-dessous est un arrêt : (a1) la route « soulever » de bout en bout depuis l'arrivée de B1 (se caler, pousser jusqu'au contact rec5, Carré,
+  porter à l'ouest jusqu'au seuil du lancer, lancer, attendre le bris, contourner rec9, le portail) : ses phases et seuils ; (a2) le départ de
+  (b2) : héros posé en (670, 316, 64), Gauche jusqu'au contact par la face est (rec6, `bin/out/a3_contactmap.txt` : y dans [311 ; 327[) ; (a3)
+  le départ de (b3) : héros posé sur le dessus de rec5 (636, 296, 80), Bas jusqu'au contact (rec10, y limité à 297,0, `bin/` R7) ; (a4) le
+  départ de (b4) : héros posé en (680, 298, 64), regard ouest, Croix et Gauche à la première image ; (a5) le départ de (b5) : le cas C de
+  `critic-recon/c1_oblique.py` (héros posé en (657, 312, 64) collé à rec6, regard nord, Haut tenu) ; (b) **les règles du pilote** (celles de
+  g4a, plus) : un départ posé l'est par `Arc.PlaceHero` après le premier `0x11 @104` de B1, avant le scénario, jamais pendant ; **Carré au
+  sol** : Gauche (ou la direction de poussée du scénario) tenue sans interruption depuis le premier contact ; Carré pressé à la première image
+  `F` hors sondage telle que l'`XCollisionEntity` du héros, lue au début de `F`, est la caisse attendue (le contact de la fin du dernier tick de
+  `F − 1`) ; si une image de sondage tombe entre le contact et Carré, la direction est lâchée pendant elle (règle de g4a), puis reprise jusqu'à
+  ce que le contact revienne, et la règle recommence ; **Carré en l'air** ((b4)) : à la première image où le héros est en l'air et sa `PosZ`,
+  lue au début de l'image, vaut au moins 81,0 px (`critic/out/w5_airlift.txt` : Carré 10 ticks après la Croix, z 73,5, soulève rec5 ;
+  12 ticks après, z 81,0, soulève rec10) ; **Carré du lancer** au seuil de (a1) ; un roulis observé est un arrêt de l'arc (sauf en (b6)) ;
+  (c) **la chute de rec10** dans la DLL après g1b : sa `PosZ` lue **à chaque tick** par le crochet existant `WorldProxy.TickTraceForTests` (la
+  passe `inventory` de chaque tick, `Alundra/Maps/WorldProxy.cs:2589`, comme le banc `HitArena`, `Alundra.Tests/AlundraHitArena.cs:74`, `:235`),
+  à 1, 2 et 3 ticks par image, contre la série du binaire (80 ; 79,5 ; 78,5 ; 77 ; 75 ; 72,5 ; 69,5 ; 66 ; 64) ; égale : (b2) l'épingle ;
+  différente : l'écart Q-G3-c (défaut A) consigné et épinglé par un test nommé d'après lui ; (d) les glissements de chaque arc neuf, mesurés,
+  expliqués et épinglés dans `ArcsThatSlide` (un nom par cadence).
+- ⏳ **T1 — Arcs** (sous B1, les 12 enregistrements, à 1, 2 et 3 ticks par image ; départs et seuils de T0 (a), règles de T0 (b)) : (b1) la
+  route « soulever » de bout en bout : **à l'image `F` du Carré, la caisse est portée dès le premier tick de `F`** (le contact rec5 présent à
+  la fin du tick qui précède), puis le port, le lancer, le bris et le portail 0 (`WarpDirector.Instance.HasPendingArrival`) ; (b2) depuis (a2) :
+  la caisse portée est **rec6**, puis la chute de rec10 selon T0 (c) ; (b3) depuis (a3) : y = 297,0, la caisse portée est **rec10** ; (b4)
+  depuis (a4) : la caisse portée est **rec10** (le soulèvement en l'air de g1b, (m7)) ; (b5) depuis (a5) : y = 295,0, contact rec5, la caisse
+  portée est **rec5** ; (b6) **le roulis en portant** : le pilote tient une direction à un sondage alors qu'il porte rec5 : le verrou de B1, le
+  mode 1 qui compte ; l'objet reste en main tant que le verrou ne dépasse pas 5 ticks (A5r) ; la valeur mesurée épinglée ; un objet qui
+  descend ou se perd est un arrêt et une question (la durée du verrou dans le binaire est inconnue).
 - ⏳ **T2 — Plan, verifier frais.**
 
 **Acceptation.** (b1) à (b6) verts sous B1, à 1, 2 et 3 ticks par image, avec la garde des glissements ; la suite verte ; recette de l'auteur
 avec `barricade-m392` : se caler contre le haut de la porte, pousser la caisse basse, la soulever, la lancer, passer.
 
-**Arrêts.** T0 (a) ne trouve pas de route « soulever » de bout en bout avec les 12 enregistrements ; un roulis pendant un arc hors de (b6) ;
+**Arrêts.** Un scénario de T0 (a) n'atteint pas son issue avec les 12 enregistrements ; la caisse portée n'est pas celle qu'écrit l'arc ; un roulis pendant un arc hors de (b6) ;
 (b6) : l'objet descend ou se perd ; un besoin de toucher au moteur ou à la DLL.
 
 **Budget.** Un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après.
