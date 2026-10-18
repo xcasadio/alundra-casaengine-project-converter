@@ -5706,7 +5706,7 @@ démon). **Reportés (P4)** :
 | O-F3-6 | La libération des effets 4 et 5 (et des étincelles, même rang) tombe un tick avant ce que le binaire donnerait probablement (touche + 41 au lieu de + 42) ; à rejouer sur le binaire, puis exactitude ou écart documenté | **Fermé le 2026-10-16, aucun écart** : sur la machine MIPS (vraies passes `0x8003BE74`, `0x80038E84`, `0x80039300`, `0x8003C410`), le binaire libère l'effet 4 à touche + 41 et l'effet 5 à + 96 (étincelles + 26), comme la DLL ; la passe qui fait avancer les effets est `0x8003C410`, appelée en `0x8002E110` après le tick du monde `0x8003B388`, et `0x80038E84` n'en fait avancer aucun ; deux harnais indépendants concordent (`docs/plan-e20-annexe/e20-f3/oracle/of36/`) ; aucun changement de la DLL |
 | O-F3-7 | **Bloquant pour E20.f3c (T1 en ⚠️).** Une entité née par l'interface n'a ni boîte de frame (chronologie figée à nul à la création) ni horloge d'animation alignée sur le binaire (un tick de retard) ; la vague de l'épée (boîtes balayantes, mort par fin d'animation à S+26) est la première à en dépendre. Fourche : (A) une tranche préalable qui corrige la DLL (ne pas figer une chronologie nulle avant l'intégration ; tick de naissance compté, ou création qui bascule l'animation comme le binaire) puis f3c reprend ; (B) intégrer l'entité née dès la création (côté moteur : arrêt de la tranche) ; (C) accepter un tick de retard et réécrire les clés (refusée : l'oracle est la vérité). Recommandation : (A), tests de naissance de e0a3b/e0k à relire en premier **FERMÉ le 2026-10-16 par E20.e0a5 (§1.16.5, option A, ADR-0071) : l'horloge et la boîte du tick de naissance sont corrigées pour les entités nées par l'interface ; la preuve de suffisance (T3) est verte.** | auteur / session principale |
 
-### 1.20 E20.f4 — La flèche chargée de William : C94 et E1 avec l'effet de bris 8 ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18, à relire)
+### 1.20 E20.f4 — La flèche chargée de William : C94 et E1 avec l'effet de bris 8 ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; relecture **en pause** après sa clôture, Q-F4-R)
 
 #### Révision au HEAD (2026-10-18) — à lire avant §1.20 à §1.22 ; fait foi sur leur texte où il diffère
 
@@ -5849,6 +5849,8 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
 - Le tir chargé en l'air : INCONNU (la fiche w9 n'a qu'une variante chargée) ; reste hors périmètre.
 
 **f5.**
+- **État de la relecture (2026-10-18)** : READY (`66d86eb`) ; époque neuve (points 3 et 10) : REVISE (`358f2f0`), REVISE (`9a2490e`), dispositions FIX
+  (révisions 3 et 4), **READY** à la relecture de clôture (`f81304b`).
 - **D-F5-5, le prédicat** : la clé de vitesse d'une entité est `TargetAnimationId` quand **`entity.HasLogicalZ`** est vrai (dans `ScriptedMotion.TickScriptedNpc`,
   `Alundra/Physics/ScriptedMotion.cs:171-176`, en plus du terme `JoinsBirthTick && CurrentAnimationId == ~0u`). C'est le seul marqueur compatible avec une
   phase A sans changement : `JoinsBirthTick` est posé aussi par les opcodes `0x2D`, `0x8A`, `0x8B` depuis e0a4 (`EventProgramRunner.cs:2367`, `:2378`, `:2406`,
@@ -5891,6 +5893,8 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
   un autre écart est un arrêt.
 
 **f6a.**
+- **État de la relecture (2026-10-18)** : REVISE (`66d86eb`), READY (`2fca8c7`) ; époque neuve (points 3 et 10) : REVISE (`358f2f0`), FIX (révision 3),
+  **READY** (`9a2490e`) ; la révision 4 du point 3 (le point de lecture du générateur) ne touche pas f6a, qui ne lit aucun état du générateur.
 - **Le point d'appel et sa garde** : la lecture des attributs de tuile d'une entité marquée se fait dans la branche `IsActive` de `TickMotion`
   (`EntityScriptProxy.cs:1629-1632`, statuts 2 et 3, comme la liste de physique du binaire, D-E19-29), pas dans `EvaluateEntitySupport` (tous statuts,
   `:1634`) ; test ajouté (s4) (révision 1) : une boule marquée en **statut 3** posée sur une case `0x08` sous tout le pied a `Slope_18c` 4 après son
@@ -6121,7 +6125,7 @@ Autres clés : `charged7_free_{west,north,south}`, `charged7_map_edge`, `charged
 
 ---
 
-### 1.21 E20.f5 — Les flèches du chasseur et de William : E17 ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18, à relire)
+### 1.21 E20.f5 — Les flèches du chasseur et de William : E17 ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; **READY** à sa relecture de clôture, `f81304b`)
 
 **Révision au HEAD (2026-10-18).** Le bloc « Révision au HEAD » en tête du §1.20 vaut aussi pour cette section (points communs et puces « f5 ») et fait foi sur son texte où il diffère.
 
@@ -6283,7 +6287,7 @@ gestionnaires (E14) ; le tir en l'air hors de la sonde.
 
 ---
 
-### 1.22 E20.f6 — Les boules de feu et de glace : C60 et E9 (f6a, f6b) ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18, à relire)
+### 1.22 E20.f6 — Les boules de feu et de glace : C60 et E9 (f6a, f6b) ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; f6a **READY** (`9a2490e`) ; f6b relecture **en pause** après sa clôture, Q-F6B-R)
 
 **Révision au HEAD (2026-10-18).** Le bloc « Révision au HEAD » en tête du §1.20 vaut aussi pour cette section (points communs et puces « f6a » et « f6b ») et fait foi sur son texte où il diffère.
 
