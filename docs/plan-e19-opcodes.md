@@ -12096,6 +12096,124 @@ les vrais gestionnaires contre ses propres modèles : 21 000 exécutions, 0 éca
 Tâches proposées par tranche (T0 vecteurs, T1 rouges, T2 code et libellés, T3 arcs sur des sites réels, T4 liste fermée et ADR, T5 verifier) au
 §7 du rapport. Questions Q-sm-1 à Q-sm-9 (§3 de ce plan).
 
+**Révision au HEAD (2026-10-18, lecture seule ; `docs/plan-e19-sm-annexe/state-317b336/`).** Trois relevés indépendants, chacun contre-vérifié
+par un second agent (le contre-vérificateur fait foi), ont traduit au HEAD `317b336` toutes les citations de §1.4, de l'annexe et de
+`sm1-sm4/` : le code cité est le même au renommage près (le runner est `Alundra/Events/EventProgramRunner.cs`, décalé de −50 lignes, `Dispatch`
+`:563-2105`, `UnknownOpcode` `:3065-3091` ; la table des tailles `Alundra/Events/EventOpcodeSizeTable.cs:40-246`, inchangée) ; aucun commit de
+comportement n'a touché le périmètre depuis l'annexe. Le recomptage à HEAD redonne **483 cartes, 110 140 instructions, 171 opcodes, 29 sautés,
+510 sites dans 96 cartes**, le multiensemble des clés égal à `skipped-sites.tsv` (`check_sm0.md` §0). Corrections du texte ci-dessus :
+- « Les 21 opcodes sautés atteints sont lus au binaire » est faux : les 21 lus (`60 61 3C 3D 6A 6B 6C 6D 72 88 96 97 9E A9 AA B2 B3 B4 B5 B6 B7`)
+  comptent 4 opcodes sans site (`3C 9E B4 B7`) et omettent 4 opcodes atteints (`56 B9 BB C2`, 62 sites non lus).
+- Les prédicats suivis d'un lecteur de `Result` sont **onze** opcodes (`60 61 6B 6C 6D A9 AA B2 B5 B6 C2`) ; après sm1 à sm4, `0xC2` (carte 7
+  `B[10] @1508`) reste un prédicat à `Result` périmé jusqu'à sm8.
+- La ligne sm9 est périmée : le plafond de 63 entités est fait (`WorldProxy.cs:1074-1080`, `:3399-3404`, `:3528-3532`, depuis `5e36903`,
+  avant l'annexe) ; le rognage de bord n'existe que pour `HasLogicalZ` (E20.e0k3) ; M-13 a disparu de la ligne.
+- `0x5F` (une attente de taille 8, 0 site) n'a **aucune tranche** : Q-sm-10. Les questions de l'annexe sont décalées d'un rang au §3
+  (l'annexe a neuf questions, le plan huit) ; Q-sm-6 cite `0x88` comme « 0 site », alors qu'il en a 3 (306 `E[14] @1110`, 306 `E[15] @1122`,
+  442 `E[1] @1312`) et appartient à sm4.
+- **sm1 à sm4 : REVISE** à la relecture d'état (`check_sm12.md` §8, `check_sm34.md` §8) : aucune n'est encore une tranche exécutable (pas de
+  règles d'exécution aux noms du HEAD, pas de tests nommés avec leurs valeurs, arcs non spécifiés, dépendances d'E20.g et de D5b pour
+  `RidingEntity`, atteignabilité des cartes 55 à 60 et 307, 344, 442 non prouvée, arithmétique 32 bits de sm2) ; elles se détaillent après
+  sm0 et les réponses de l'auteur (Q-E19-SM1, Q-sm-*). **B11 (commun)** : avec la liste du corpus, porter un opcode atteint rend rouge la règle 2
+  tant que ses lignes restent : le code d'un opcode et le retrait de ses lignes vont dans **le même commit** (précédent : L2-1 et L2-2
+  fusionnés).
+
+#### 1.4.1 E19.sm0 — Le filet : la liste fermée des opcodes sautés sur le corpus entier ⏳ (détaillée le 2026-10-18)
+
+**Prérequis.** La fin du chantier de restructuration, **R5 comprise** (un fichier de test ajouté avant R5 désynchronise sa table de 336 lignes
+et son compte « 5 097 / 0 », `docs/plan-restructuration-dll.md:978`, `:879` ; `docs/plan-restructuration-dll.md:160` interdit toute tranche
+E19 pendant le chantier) ; l'accord de l'auteur sur le découpage (Q-E19-SM1) ; l'export du projet de la date du recomptage
+(`alundra-project/Maps/world-index.json` du 2026-10-17) ou un recomptage refait sur un export plus récent (T0). Aucune autre tranche.
+
+**But.** Un test statique sur les **483 cartes** : chaque site atteignable d'un opcode que l'interpréteur saute par sa taille est une ligne
+d'une liste versionnée, avec son propriétaire ; aucune ligne périmée, aucune sans propriétaire ou à propriétaire clos ; aucune attente sautée,
+aucune taille nulle atteinte. C'est le test M-05 / G7 (§1.2s, la ligne E19.m de l'enveloppe) : sm0 le rend vrai dès aujourd'hui en listant
+les 510 sites, et chaque tranche suivante retire ses lignes.
+
+**Faits** (`docs/plan-e19-sm-annexe/state-317b336/`, `check_sm0.md` faisant foi).
+- Le parcours et les règles existent pour la chaîne (E19.e E1, §1.2i) : `Alundra.Tests/AlundraStoryChainOpcodeAudit.cs` (`IsPorted :75`, le vrai
+  runner sur `[op, 0…, 0xFF]` ; `WalkMap :130`, `WalkProgram :163`, `ReadRoots :294`, `LoadMap :343`, `WalkExportedMap :356` ; `FindListPath
+  :367` ; `ParseList :389`, onze colonnes : carte, créneau, programme, libellé, pc, opcode, nom, classe, tranche, niveau, épingle ; `Rule1UnlistedSites
+  :411`, `Rule2StaleLines :419`, `Rule3WaitsOrUnsized :427`, `WaitOpcodes :54`) et `Alundra.Tests/AlundraStoryChainSkippedOpcodesTests.cs`
+  (21 `[Fact]`) avec sa liste `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` (l'en-tête seul : la chaîne n'a plus de site sauté).
+- **La liste de la chaîne ne peut pas recevoir les 510 lignes** : deux de ses tests rougiraient, `TheListIsOnTheChainAndTheThirtyMapsWithoutASiteHaveNone`
+  (`:74`, `Except(ChainMaps)`) et la règle 2 (`:50`, `Rule2StaleLines` ne parcourt que `ChainMaps`).
+- Le chargement des 483 cartes est déjà exercé par M07 (`AlundraMissingAnimationWaitCorpusTests.cs:295`, `:396-400`, avec `LoadMap`) ; `WalkMap`
+  et `ReadRoots` sur 483 cartes sont nouveaux ; leur durée est INCONNUE (197,5 Mio de cartes, collections xUnit en série).
+- Le relevé : 510 lignes, **508 instructions** (440 `C[2]`, `C[3]` et `C[4]` partagent `@1140`, `0xAA`), 96 cartes, 21 opcodes atteints sur les
+  29 sautés ; 0 site de taille nulle ou inconnue ; 0 site sur les 30 cartes de la chaîne ; 1 site sur les 7 cartes de combat (`0xB9`, 117
+  `B[1] @171`) ; par tranche : sm1 187, sm2 129, sm3 42, sm4 90, sm5 17, sm7 42, sm8 3 (somme 510). Les trois relevés (l'annexe, le relevé et
+  sa contre-vérification) sortent du même `census.py` : **le parcours C# sera la première autre implémentation**.
+- Huit sites de la carte 60 (`C[1] @164`, `@168`, `@185`, `@189`, `C[10] @644`, `@648`, `@665`, `@669` ; `0x6A`, `0x6B`, `0x6A`, `0x6C`) ne sont
+  atteints que par les six enregistrements « Pot magique » à bit `0x80` clair, que la DLL lit par le repli `map_alundra`
+  (`EventProgramRunner.cs:339-346`) ; la table C globale n'a qu'une entrée (`data-extracted/data/map_alundra.json`, `EventCodesCSize` 2) : ce
+  que lit le binaire aux index 1, 4 et 10 est INCONNU (O-SM0-1).
+- `0xBB` (2 sites : 347 `B[6] @837`, 477 `B[1] @151`) écrit la marque d'attente `+0x8` et `+0xC` comme `0x1C`, `0x20` et `0x37`, et compte 60
+  ticks : INFÉRENCE qu'il suspend, absent de `WaitOpcodes` (O-SM0-2).
+- Le motif « une épingle du saut par la taille repointée sur un opcode encore sauté » existe (`AlundraEventProgramRunnerTests.cs:331`, `0xB3`,
+  à repointer par sm4 ; `:346`, `0x5F` ; `:361`, `0xC5`) ; `Oracle_AnOpcodeTheRunnerHandlesIsPorted_…` (`AlundraStoryChainSkippedOpcodesTests.cs:110`)
+  rougit quand le dernier opcode sauté est porté : il reste vert tant que `0x5F` est sauté.
+
+**Décisions** (du plan, réversibles).
+- **D-SM0-1** — Une **seconde liste**, propre au corpus, et une **seconde classe de test** ; la liste et les tests de la chaîne ne changent pas.
+  Noms et dossiers suivant le rangement de R5 au HEAD de départ (Q-R-3 points 5 et 6) ; propositions : `CorpusSkippedOpcodesTests` et
+  `Data/corpus-skipped-opcodes.tsv`, contrôlés par la garde des tests de R5 (`check_names.py --tests`, `docs/plan-restructuration-dll.md:983`).
+- **D-SM0-2** — Le format : les onze colonnes de `ParseList` (le parseur est réutilisé tel quel) ; `label` = le créneau et le programme
+  (`C[2]`) ; `name` = le libellé de la table des tailles au HEAD ; `class` = `P` (prédicat suivi d'un lecteur de `Result`, la colonne du même nom
+  de `skipped-sites.tsv`), `W` (attente, `WaitOpcodes`) ou `A` (le reste) ; `slice` = **le propriétaire**, dans le vocabulaire fermé `sm1`, `sm2`,
+  `sm3`, `sm4`, `sm5`, `sm7`, `sm8` (le tableau du §1.4, opcode par opcode) ; `tier` = `X` pour toutes ; `pinned_by_arc` vide. La conversion de
+  `skipped-sites.tsv` (neuf colonnes, un autre ordre) est un script versé à l'annexe (`docs/plan-e19-sm-annexe/sm0/`), dont la sortie est copiée
+  **à l'octet** dans la liste.
+- **D-SM0-3** — Les règles sur le corpus (les 483 cartes, les cartes de combat comprises) : (1) tout site atteint et sauté est une ligne ;
+  (2) toute ligne est un site atteint et sauté ; (3) aucun opcode de `WaitOpcodes` sauté ni de taille nulle ou inconnue n'est atteint ; (4)
+  **nouvelle** : toute ligne a un propriétaire du vocabulaire fermé, et aucun propriétaire n'est **clos** (un ensemble `ClosedOwners`, vide en sm0 :
+  chaque tranche qui retire ses lignes y ajoute son nom dans le même commit) ; (5) **les comptes épinglés** : 510 lignes, 508 instructions
+  distinctes, 96 cartes, 21 opcodes, et les comptes par propriétaire du fait ci-dessus. La règle 4 de la chaîne (prédicats de scène) et la règle
+  5 (arcs) ne s'appliquent pas au corpus.
+- **D-SM0-4** — La carte 117 garde son site `0xB9` (propriétaire sm7) ; les huit sites de la carte 60 gardent le propriétaire de leur opcode
+  (sm2) jusqu'à la réponse d'O-SM0-1 ; `0xBB` reste hors de `WaitOpcodes` (propriétaire sm8) jusqu'à O-SM0-2.
+- **D-SM0-5** — **Hors périmètre** : le miroir `IntroTraceHarnessTests.ImplementedOpcodes` (`:332-387`) et sa règle L1-R8 (§1.2m) restent ;
+  le test « zéro `LoopBudgetExceeded` » ; les opcodes partiels (`2F 53 82 A4 AC`) et les no-op (`01 A8 BA`), sans garde statique ici ; `0x5F`
+  (Q-sm-10). Les deux énoncés du même test (la ligne E19.m de l'enveloppe, le §1.2s) sont réécrits pour renvoyer à sm0.
+
+**Périmètre.** Les tests (une classe neuve, la liste neuve) ; l'annexe `docs/plan-e19-sm-annexe/sm0/` ; ce plan. **Aucun fichier de `Alundra/`.**
+
+##### Tâches
+
+- ⏳ **T0 — Annexe, relevé, liste prédite** (aucun code) : (a) rejouer depuis une copie `census.py` aux chemins du HEAD de départ, deux fois :
+  483 cartes, 110 140 instructions, 510 sites, le multiensemble des clés égal à `skipped-sites.tsv` ; **si l'export a changé depuis le
+  2026-10-17**, refaire le relevé et les comptes de D-SM0-3 sur l'export du HEAD de départ et les consigner (une clé qui change est un arrêt
+  avant T1, à soumettre) ; (b) le script de conversion de D-SM0-2 et sa sortie (deux exécutions identiques), versés à l'annexe ; (c) la liste
+  prédite : **aucun test existant** (la liste et les tests de la chaîne ne changent pas) ; recomptée au HEAD de départ ; (d) la garde des noms
+  des tests de R5 sur les deux noms.
+- ⏳ **T1 — Tests** (aucun code de la DLL) : la liste (copie à l'octet de T0 (b)) ; la classe de test : (c1) à (c4) les règles 1 à 4 sur le
+  corpus ; (f1) à (f4) les fonctions des règles sur des entrées fabriquées (le motif d'E19.e : une ligne retirée, une ligne d'opcode porté
+  ajoutée, un programme fabriqué qui contient `0x20`, une ligne au propriétaire hors vocabulaire, une au propriétaire clos) ; (k1) les comptes de
+  la règle 5 ; (k2) les trois programmes de 440 qui partagent `@1140` sont trois lignes. **Mutations réelles faites par script** (la mémoire
+  « mutations réelles par script, jamais simulées dans le test »), chacune rendant rouges exactement les tests nommés, fichiers rendus à l'octet après chacune : (m1) une ligne de sm1
+  retirée de la liste : (c1) et (k1) ; (m2) une ligne d'un opcode porté (`0x0B`, propriétaire `sm1`) ajoutée : (c2) et (k1) ; (m3) `0x60` ajouté à
+  `WaitOpcodes` : (c3) ; (m4) le propriétaire d'une ligne de sm1 mis à `à placer` : (c4) et (k1) ; (m5) `sm1` ajouté à `ClosedOwners` : (c4) ;
+  (m6) le compte attendu de sm2 changé : (k1).
+- ⏳ **T2 — Plan, verifier frais.** La ligne E19.m et le §1.2s renvoient à sm0 ; le résultat (la durée du test mesurée et consignée, sans seuil)
+  au plan.
+
+##### Acceptation
+
+- **Oracle** : T0 (a) et (b) identiques sur deux exécutions.
+- **DLL** : T1 vert, chaque mutation (m1) à (m6) rouge exactement ses tests nommés ; la suite `Alundra.Tests` en Release (copie neutralisée) et en Debug, zéro
+  échec ; aucun test existant déplacé ; `git diff` vide sous `Alundra/`, le moteur, le convertisseur et les données ; traces inchangées.
+- **Preuve de retrait** : retirer la classe de test et la liste ne rend rien rouge (aucun autre test ne les lit) ; vider la liste (l'en-tête
+  seul) rend rouges exactement (c1), (k1) et (k2) ((c2) et (c4) sont vides sur une liste vide, (c3) ne lit pas la liste).
+- **Recette de l'auteur** : aucune (rien ne change en jeu).
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : le parcours C# ne redonne pas **exactement** les 510 lignes (ou le relevé de T0 (a) si l'export a changé) ; une clé change
+  entre deux exportations ; un test existant bouge ; un besoin de toucher à `Alundra/` ; un nom refusé par la garde de R5 ; R5 non faite ; une
+  réponse de l'auteur à Q-E19-SM1 autre que l'accord.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après.
+- **Retour arrière** : retirer la classe et la liste.
+
 ## 2. Mesures
 
 Réservé aux mesures faites en exécutant les tranches.
@@ -12479,7 +12597,10 @@ Réservé aux mesures faites en exécutant les tranches.
 | Q-sm-5 | (2026-10-17) `0x60`/`0x61` ferment 186 sites d'énigmes à plaques, mais les blocs poussables des cartes 27, 29, 30, 113 et 400 n'ont pas de tranche (O-E20-21) : ces énigmes ne se résoudront pas en jeu même avec sm1 | l'auteur |
 | Q-sm-6 | (2026-10-17) `0x9E` et `0x88` (0 site) : les porter avec des vecteurs seulement, ou les laisser sautés ? | l'auteur |
 | Q-sm-7 | (2026-10-17) Les libellés faux de `EventOpcodeSizeTable.cs` (`0x6B`-`0x6D`, `0x88`, `0x97`, `0xA9`, `0xAA`, `0xB4`-`0xB6`) sont corrigés dans la tranche qui porte l'opcode | E19.sm1 à sm4 |
-| Q-sm-8 | (2026-10-17) Les cartes 55 à 57 (11 lectures de `0x6D` sans `0x6A`) sont-elles atteignables dans le jeu livré ? | l'auteur |
+| Q-sm-8 | (2026-10-17) Les cartes 55 à 57 (11 lectures de `0x6D` sans `0x6A`) sont-elles atteignables dans le jeu livré ? **Élargie le 2026-10-18** (relecture d'état, `check_sm12.md` B8, I3) : les cartes 55 à 60 (65 sites de sm2 : `0x6A` 27, `0x6B` 7, `0x6C` 2, `0x6D` 29), et 307, 344, 442, où sm2 et sm4 proposent leurs arcs | l'auteur |
+| Q-sm-10 | (2026-10-18) `0x5F` (une attente de 8 octets, aucun site dans le corpus) n'a aucune tranche : le porter avec des vecteurs seulement (dans sm3 ou sm4), ou le laisser sauté (le test de l'oracle reste alors vert pour toujours et E19 ne se clôt pas sur « aucun opcode sauté ») ? | l'auteur |
+| O-SM0-1 | (2026-10-18) Huit sites de `0x6A`/`0x6B`/`0x6C` de la carte 60 ne sont atteints que par les enregistrements à bit `0x80` clair (le repli `map_alundra`), dont la table C globale n'a qu'une entrée : le binaire y lit-il un programme ? Lire `0x80098FAC` et le chargement des index C 1, 4 et 10 au binaire ; jusque-là, propriétaire sm2 (D-SM0-4) | E19.sm9 (T0) |
+| O-SM0-2 | (2026-10-18) `0xBB` suspend-il (il écrit la marque d'attente et compte 60 ticks : INFÉRENCE) ? S'il suspend, il entre dans `WaitOpcodes` et la règle 3 rougit sur ses deux sites tant qu'il est sauté | E19.sm8 (T0) |
 | Q-D5B-1 | (2026-10-17) Plateformes qui bougent en Z (D5b) : le héros seul (M1 à M4, plus le plafond des porteurs) ou tous les passagers, caisses comprises ? | l'auteur |
 | Q-D5B-2 | (2026-10-17) Accepter que la correction déplace l'épingle d'UH-14 (le retard de phase de D-E20-40 disparaît) ? | l'auteur |
 | Q-D5B-3 | (2026-10-17) Piles XY (une caisse au milieu d'une pile reçoit deux fois la force de la plateforme dans le binaire) : reproduire, corriger ou ignorer ? À mesurer d'abord dans le corpus | l'auteur |
