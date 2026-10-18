@@ -719,7 +719,7 @@ ADR-0061), E14.a1b (`DestroyEntity(e, fx)` avec l'effet de bris pour tous ses ap
 | 9 | E20.h0, E20.h1 | **h0a détaillée au §1.30.1 (2026-10-18)** ; h1 non détaillée. Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
 | 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3. **Revu le 2026-10-18 (§1.30, critique de `e20-h3`)** : à jouer **avant** h3a (le couvercle réagit sans D30 ni E12 ; E12 ne retire que la bombe ; il mesurera le manque `(E, 19)`, porté par h3a) | E20.c1b-1 ✅ |
 | 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées ; g1 pose le marqueur du Z logique (§1.18, D-E0K-1) sur l'entité soulevée | E20.e0a1 (§1.16), E20.e0k2 ; E14.a1b ✅ et E20.e0b2 (§1.17) pour g2 |
-| 11 | E20.h3, E20.h4 | **h3a et h3b détaillées au §1.30 (2026-10-18)** ; h3c et h3d reportées (Q-H3-3) ; h3 n'exige que g1a et g2a, pas g1b, g2b ni g3 ; h4 à détailler (`e20-h4/report.md` §11). Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 et E20.e0a5 (§1.16), E20.e0k2 et E20.f6a (mort des graines et de la bombe dans l'eau profonde) pour h3 ; E20.e0k1 à E20.e0k3, E20.f6a (types 16, 17, 23) et E20.e0a5 pour h4 |
+| 11 | E20.h3, E20.h4 | **h3a et h3b détaillées au §1.30 (2026-10-18)** ; h3c et h3d reportées (Q-H3-3) ; h3 n'exige que g1a et g2a, pas g1b, g2b ni g3 ; h4 : découpage au §1.31 (2026-10-18), h4a détaillée, h4b à h4f2 esquissées. Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 et E20.e0a5 (§1.16), E20.e0k2 et E20.f6a (mort des graines et de la bombe dans l'eau profonde) pour h3 ; E20.e0k1 à E20.e0k3, E20.f6a (types 16, 17, 23) et E20.e0a5 pour h4 |
 | 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) ; ordre interne fixé au détail (g3 dépend aussi de la géométrie de la barricade de g4 et d'un choix de l'auteur, `order-critic.md`) | E20.g1, E20.g2 |
 
 Les projectiles d'E20.f3, f5 et f6 (E10, E17, E9) appellent aussi `DestroyEntity(e, fx)` : fait par E14.a1b ✅.
@@ -8067,6 +8067,114 @@ plan, l'index des ADR et un ADR.
   blessure du héros par sa propre bombe (avec E20.c2b).
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
+
+### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a détaillée le 2026-10-18, à relire ; h4b à h4f2 esquissées)
+
+**Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-h4/`, `report.md` et `check.md`,
+la critique faisant foi : aucun fait de comportement réfuté ; D13, le sprite 154, la portée de Q-H4-2 et du §6 corrigés ; ses statistiques de
+mutants des pilotes ne se reproduisent pas et ne sont pas citées) ; état de la DLL au HEAD `f81304b` (`docs/plan-e20-annexe/e20-h3/state-f81304b/`,
+la contre-vérification faisant foi). Le cadre (h0a, §1.30.1) est un prérequis de toute la famille.
+
+**Faits** (FAIT sauf mention ; `report.md` §0 à §6, `check.md` §2 et §3).
+1. **Le départ des tomes** `0x800348E0`, dans l'ordre : rien porté (`hero+0x2C == 0`), animation Idle ou Moving (`hero+0x88 < 2`), rien en cours
+   (`[0x80127164] == 0`) ; si l'arme n'est pas le bâton (objet 7) : PM non nuls (sinon son 3, rend 1), puis PM − 1 borné à [0, PM max]
+   (`0x8004DF3C(1)`) ; avec le bâton, ni exigence ni consommation (`report.md` §2, `staff_check.txt`). Puis la piste XA (`0x8005A9E0` avec l'octet
+   `0x80023365 + objet` : 0, 1, 6, 6, 2, 3, 4, 5 pour `0x2B` à `0x32`), `hero+0x88 = 0x32`, rend 0. Les tomes ne se consomment pas. La décompilation
+   lance le sort à 0 PM (D1) : le binaire tranche.
+2. **Les états du sort** : `0x32` et `0x33` partagent `0x800325A4`, qui reste tant qu'un tome est en cours (`[0x80127164] − 0x2B < 8`) et sinon passe à
+   Idle au sol ou à `0x2D` en l'air ; `0x34` (`0x80032680`) tient sans condition ; tous appellent `TryUseItem`. `0x32` dure 32 ticks et enchaîne sur
+   `0x33` (boucle) ; `0x34` dure 26 ticks et enchaîne sur 0 (données de l'animation). Le héros ne bouge pas ; aucun état ne lit le pad. Dans la nage,
+   la table met `0x32` à `0x34` dans le groupe `Float` (`Alundra/Hero/PlayerManager.cs:178`, défaut `Float` de la table).
+3. **Le calendrier** : le pilote est appelé avant l'aiguillage d'état (`0x80031CC4`) : le premier appel a lieu au tick qui suit le départ, compteur 0.
+4. **La garde de pente** `0x800351B8`, au début des phases 0 et 1 des huit pilotes : pente 4 (l'eau profonde) → annulation, rend 1 ; sinon animation
+   `0x32` ou `0x33` → 0 ; sinon annulation, rend 1 (tout changement d'animation pendant la pose annule le sort au tick suivant).
+5. **Après la pose, le héros est libre** (l'eau : 200 à 250 ticks) alors que l'objet reste en cours : menu, Rond et nouveau tome refusés, marche et
+   combat permis (`check.md` §3.6).
+6. **Les huit pilotes, six gestionnaires (E3, E13, E28, C63, C65, C75) et cinq annulations** sont lus et modélisés (`report.md` §3, §4, §1) ; il leur
+   faut des briques que la DLL n'a pas : la requête de cibles `0x8003AF70` et son tri de Hoare (balayage `1..[0x80134360]−1`, l'indice du plus haut
+   emplacement occupé, que la DLL n'expose pas) ; les tables sin/cos de 256 entrées (`0x800204F0`, `0x800206F0`) ; des accès 32 bits sur `+0x274` et
+   `AIValues` (la DLL a `byte[4]` et `short[10]`) ; la poussée `+0xCC/+0xD0` consommée par le déplacement (Q-H4-3) ; le coup de caméra Y d'un tick
+   d'E13 ; un tampon du bloc de tremblement de session, initialisé à zéro et restauré sans garde par le feu 2 (`check.md` §3.4) ; les soins
+   `0x80032F84` et `0x80033274` écrivent les PV de l'entité (`+0x14`) (`check.md` §3.7).
+7. **Les types** : 16 (terre 1) seul a la gravité parmi les types nés par les sorts qui portent `DestroyOnSlidingSlope` : seul h4c1 dépend d'f6a
+   (bloc du §1.20, puce « f6a », correction de texte) ; E3 sert aussi les sprites de la page globale 150 à 153 et 98 sprites de cartes (Q-H4-8) ;
+   le sprite 154 porte C65 sans fiche d'attaque, dormant (`check.md` §2.2).
+
+**Découpage** (remplace `e20-h4/report.md` §11 ; chaque tranche d'élément câble en production les entrées de son tome, D-H-3).
+
+| Tranche | Contenu | Prérequis |
+|---|---|---|
+| **h4a** | Le départ commun des tomes, PM − 1, le bâton, la piste XA en bouchon journalisé (Q-H4-1), les états `0x32` à `0x34`, la garde de pente ; **inerte en production** (les entrées des tomes restent des bouchons, D-H-3) | h0a |
+| **h4b** | Les briques communes du fait 6 : la requête et son tri, l'indice du plus haut emplacement, les tables 256, les accès 32 bits, le coup de caméra, le tampon du tremblement, l'inscription commune d'E3 (Q-H4-8) ; la poussée selon Q-H4-3 | h4a ; E20.e0a5 ✅ ; Q-H4-3 |
+| **h4c1** terre 1 | Pilote `0x80035320`, E3 (type 16) | h4a, h4b, f6a |
+| **h4c2** terre 2 | Pilote `0x800354D0`, E13 (type 17), son annulation `0x80034BDC`, le coup de caméra | h4a, h4b |
+| **h4d1** feu 2 | Pilote `0x80035C64`, E28 (type 21), son annulation `0x80034E08`, le tremblement | h4a, h4b |
+| **h4d2** feu 1 | Pilote `0x80035A84`, C63 et E3 (type 23), la colonne (sprite 20, E1 en ligne), son annulation `0x80034D2C` | h4a, h4b |
+| **h4e1** vent 1 | Pilote `0x80035EB0`, la requête (Q-H4-2) | h4a, h4b |
+| **h4e2** vent 2 | Pilote `0x80036218`, C65 (type 24 ; le 154 à trancher), la poussée, son annulation `0x80034EC4` | h4a, h4b, Q-H4-3 |
+| **h4f1** eau 1 | Pilote `0x80035790`, C75 (type 19), le soin `0x80032F84`, la poussée, les drapeaux, son annulation `0x80034C54` | h4a, h4b, Q-H4-3 |
+| **h4f2** eau 2 | La table de six orbes, le soin `0x80033274` (partagé avec la potion de h1) | h4f1, h1 |
+
+---
+
+#### 1.31.1 E20.h4a — Le départ et la pose des tomes ⏳ (détaillée le 2026-10-18, à relire)
+
+**Prérequis.** h0a (§1.30.1 : le cadre, ses coutures D-H-4 et le test du défaut D-H-5) ; la fin du chantier de restructuration et Q-R-7.
+
+**But.** Le départ commun des huit tomes, comme l'original : refus et son 3, le coût en PM et le bâton, la pose (`0x32` puis `0x33`) tenue tant que le
+sort est en cours, la fin (`0x34`), la garde de pente ; prêts pour les tranches d'éléments, sans effet en production.
+
+**Périmètre.** `Alundra/Hero/PlayerManager.cs` (la fonction de départ des tomes, `DecreaseMp`, les gestionnaires de `0x32`/`0x33` et de `0x34` dans la
+chaîne principale de `MovePlayer`, avant le test du défaut de D-H-5, la garde de pente, le bouchon journalisé de la piste XA) ; `Alundra.Tests/` ;
+l'annexe `docs/plan-e20-annexe/e20-h4a/` ; ce plan, l'index des ADR et un ADR. **Hors périmètre** : les pilotes, gestionnaires et annulations des
+éléments (h4b à h4f2) ; le câblage de production des entrées des tomes (chaque tranche d'élément) ; la lecture des pistes XA (Q-H4-1).
+
+**Partage des phases.** Une seule phase, **inerte en production** : les entrées des tomes `0x2B` à `0x32` de la table de h0a restent des bouchons
+(D-H-3) ; rien ne pose `0x32` à `0x34` en production. Les tests installent la fonction de départ des tomes par `ItemStartForTests` (D-H-4).
+
+##### Tâches
+
+- ⏳ **T0 — Annexe, oracle, liste prédite** (aucun code) : (a) rejouer depuis une copie `e20-h4/work/oracle/h4_start.py` (5 000 vecteurs),
+  `staff_check.py` et `trace_cast.py` pour `0x2B` (le début seulement : départ, `0x32`, `0x33` à T0+32) : sorties identiques à celles versées ; (b)
+  les clés des tests : les quatre cas du bâton (`e20-h4/work/results/staff_check.txt` : bâton à 0 PM part, PM restent 0 ; épée à 0 PM, son 3 ; épée à 2
+  PM, PM 1 ; bâton à 2 PM, PM 2) ; la chronologie du début du sort (PM 4 → 3 et `0x32` au tick du départ, `0x33` à T0+32) ; les huit traces
+  `docs/plan-e20-annexe/e20-d/oracle/out-swim/w9/W9-item2B` à `W9-item32` (le héros en nage, `0x1D`, le départ refusé par l'animation, son 3 au tick
+  10) ; (c) la liste prédite : aucun test existant attendu (`0x32` à `0x34` ne sont dans aucun test d'état, `state-f81304b/dll/state.md` §4.4) ;
+  recomptée au HEAD de départ.
+- ⏳ **T1 — Tests puis code.** Chaque cas « sans effet » est accolé à un positif :
+  - (t1) le départ des tomes, dans l'ordre du binaire : un objet porté (`CarriedEntity` posé par le test), une animation hors Idle et Moving, un objet
+    en cours, 0 PM sans le bâton : chacun son 3 et 1 ; le départ qui réussit : 0, PM − 1, animation `0x32`, l'octet XA de l'objet journalisé (0, 1, 6,
+    6, 2, 3, 4, 5 pour `0x2B` à `0x32`), le tome non consommé ; le bâton (`Equip` de l'objet 7) : ni exigence ni consommation, à 0 et à 2 PM ;
+  - (t2) `DecreaseMp` borné à [0, PM max] (`SetPlayerMp`, `PlayerManager.cs:1970`) ;
+  - (t3) les états : `0x32` puis `0x33` 32 ticks plus tard (l'enchaînement de l'animation) ; `0x33` tenu tant qu'un tome est en cours ; libéré : Idle au
+    sol, `0x2D` en l'air ; `0x34` tenu 26 ticks puis 0 ; le héros ne bouge pas ; Carré, Croix et les directions sans effet ; un Rond dans `0x32`, `0x33`
+    ou `0x34` : son 3 (le départ des tomes refuse, un objet est en cours) ;
+  - (t4) la garde de pente : eau profonde (`Slope_18c` 4) → annulation et 1 ; `0x32` ou `0x33` → 0 ; une autre animation → annulation et 1 ;
+  - (t5) la promotion : avec les tomes 43 et 44 possédés et l'objet 43 du Rond, le départ voit 44 (`SetItemIdFromCurrentItemId`,
+    `PlayerManager.cs:2217`) ;
+  - (t6) le calendrier : `ItemDriverForTests` appelé la première fois au tick qui suit le départ, compteur 0.
+  Puis le code.
+- ⏳ **T2 — Tests d'oracle** : (o1) les huit traces `W9-item2B` à `W9-item32` à l'identique, la fonction de départ des tomes installée par la couture ;
+  (o2) les quatre cas du bâton ; (o3) le début de `trace_cast` pour `0x2B` (PM, `0x32`, `0x33` à T0+32), un pilote de test qui rend 0.
+- ⏳ **T3 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : test du bâton retiré ; PM exigés avec le bâton ; PM consommés avec le
+  bâton ; PM non consommés ; refus à 0 PM retiré (D1) ; borne d'animation à 3 ; objet porté ignoré ; objet en cours ignoré ; octets XA décalés ;
+  `0x33` quitté pendant un tome en cours ; sortie vers Idle en l'air ; `0x34` qui lit le pad ; garde à 0 en eau profonde ; garde qui accepte `0x34`.
+
+##### Acceptation
+
+- **Oracle** : les sorties de T0 (a) identiques.
+- **DLL** : (t1) à (t6), (o1) à (o3) verts, rouges avant le code (sauf les témoins négatifs) ; la suite en Release (copie neutralisée) et en Debug, zéro
+  échec ; tests déplacés ⊂ liste prédite (vide) ; `cmp` de la DLL ; traces inchangées ; moteur, convertisseur et données sans diff.
+- **Preuve de retrait** : retirer la fonction de départ des tomes rend rouges exactement (t1), (t5), (o1) à (o3) ; retirer les gestionnaires de `0x32`
+  à `0x34` rend rouges (t3) et (o3).
+- **Recette de l'auteur** : aucune (inerte en production) ; elle vient avec la première tranche d'élément.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : un test existant bouge ; une trace change ; un refus du départ diffère des vecteurs ; un besoin de toucher au moteur ; un nom refusé par
+  `check_names.py`.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière** : retirer la fonction et les gestionnaires (rien ne les appelle en production).
 
 ## 2. Points ouverts
 
