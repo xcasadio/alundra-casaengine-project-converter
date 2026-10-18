@@ -14,6 +14,7 @@ s'approuvent chacune à part, comme en E16. Décisions de l'auteur : §0.1 et AD
 | Enveloppe (ce plan) + E19.a | plan-verifier | verifier frais |
 | E19.b à E19.f (phase 1) | plan-verifier, tranche par tranche | verifier frais |
 | E19.g à E19.m (phase 2) | plan-verifier, tranche par tranche | verifier frais |
+| E19.sm0 à E19.sm10 (§1.4 ; 2026-10-18) | plan-verifier, tranche par tranche | verifier frais |
 
 Aucune tranche ne touche aux fichiers de sauvegarde, aux secrets ni à une entrée non fiable : pas de
 revue de sécurité. Si une tranche en ajoute, sa ligne ajoute la revue.
@@ -12118,7 +12119,7 @@ comportement n'a touché le périmètre depuis l'annexe. Le recomptage à HEAD r
   tant que ses lignes restent : le code d'un opcode et le retrait de ses lignes vont dans **le même commit** (précédent : L2-1 et L2-2
   fusionnés).
 
-#### 1.4.1 E19.sm0 — Le filet : la liste fermée des opcodes sautés sur le corpus entier ⏳ (détaillée le 2026-10-18 ; REVISE, révision 1)
+#### 1.4.1 E19.sm0 — Le filet : la liste fermée des opcodes sautés sur le corpus entier ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2 ; relecture de clôture)
 
 **Prérequis.** La fin du chantier de restructuration, **R5 comprise** (un fichier de test ajouté avant R5 désynchronise sa table de 336 lignes
 et son compte « 5 097 / 0 », `docs/plan-restructuration-dll.md:978`, `:879` ; `docs/plan-restructuration-dll.md:160` interdit toute tranche
@@ -12181,7 +12182,8 @@ contrôle « aucun test existant déplacé » (révision 1).
   5 (arcs) ne s'appliquent pas au corpus.
 - **D-SM0-4** — Les propriétaires sont ceux du tableau du §1.4 ; une réponse de l'auteur qui les change (Q-sm-4 pour `0xB2`, sm3 ou E20.g1a ;
   Q-sm-6 pour `0x88` ; O-E19-36 pour `0xB9`) change la colonne `slice` de ses lignes et les comptes de la règle 5 dans un commit de la tranche qui
-  la reçoit (révision 1). La carte 117 garde son site `0xB9` (propriétaire sm7) ; les huit sites de la carte 60 gardent le propriétaire de leur opcode
+  la reçoit (révision 1) ; un propriétaire neuf (par exemple E20.g1a) entre dans le vocabulaire fermé dans le même commit, et (f4) n'en dépend
+  pas (révision 2). La carte 117 garde son site `0xB9` (propriétaire sm7) ; les huit sites de la carte 60 gardent le propriétaire de leur opcode
   (sm2) jusqu'à la réponse d'O-SM0-1 ; `0xBB` reste hors de `WaitOpcodes` (propriétaire sm8) jusqu'à O-SM0-2.
 - **D-SM0-5** — **Hors périmètre** : le miroir `IntroTraceHarnessTests.ImplementedOpcodes` (`:332-387`) et sa règle L1-R8 (§1.2m) restent ;
   le test « zéro `LoopBudgetExceeded` » ; les opcodes partiels (`2F 53 82 A4 AC`) et les no-op (`01 A8 BA`), sans garde statique ici ; `0x5F`
@@ -12195,17 +12197,19 @@ contrôle « aucun test existant déplacé » (révision 1).
   483 cartes, 110 140 instructions, 510 sites, le multiensemble des clés égal à `skipped-sites.tsv` ; **si l'export a changé depuis le
   2026-10-17**, refaire le relevé et les comptes de D-SM0-3 sur l'export du HEAD de départ et les consigner (une clé qui change est un arrêt
   avant T1, à soumettre) ; (b) le script de conversion de D-SM0-2 et sa sortie (deux exécutions identiques), versés à l'annexe ; (c) la liste
-  prédite : **aucun test existant** (la liste et les tests de la chaîne ne changent pas) ; recomptée au HEAD de départ ; (d) la garde par règles de R7
-  sur l'arbre avec les deux fichiers neufs (révision 1) : elle passe pour eux, et elle refuserait un nom à préfixe `Alundra` ou un namespace
-  différent du dossier (le contrôle de R7 lui-même ; ici, l'appel et sa sortie consignés).
+  prédite : **aucun test existant** (la liste et les tests de la chaîne ne changent pas) ; recomptée au HEAD de départ.
 - ⏳ **T1 — Tests** (aucun code de la DLL) : la liste (copie à l'octet de T0 (b)) ; la classe de test : (c1) à (c4) les règles 1 à 4 sur le
-  corpus ; (f1) à (f4) les fonctions des règles sur des entrées fabriquées (le motif d'E19.e : une ligne retirée, une ligne d'opcode porté
-  ajoutée, un programme fabriqué qui contient `0x20`, une ligne au propriétaire hors vocabulaire, une au propriétaire clos) ; (k1) les comptes de
+  corpus ; (f4) la fonction **neuve** de la règle 4 sur des entrées fabriquées : une ligne au propriétaire hors vocabulaire et une au
+  propriétaire clos (l'ensemble passé en argument) signalées, accolées à une ligne valide qui ne l'est pas (les fonctions des règles 1 à 3,
+  réutilisées, gardent leurs tests de la chaîne ; révision 2) ; (k1) les comptes de
   la règle 5 ; (k2) les trois programmes de 440 qui partagent `@1140` sont trois lignes. **Mutations réelles faites par script** (la mémoire
   « mutations réelles par script, jamais simulées dans le test »), chacune rendant rouges exactement les tests nommés, fichiers rendus à l'octet après chacune : (m1) une ligne de sm1
   retirée de la liste : (c1) et (k1) ; (m2) une ligne d'un opcode porté (`0x0B`, propriétaire `sm1`) ajoutée : (c2) et (k1) ; (m3) `0x60` ajouté à
-  `WaitOpcodes` : (c3) ; (m4) le propriétaire d'une ligne de sm1 mis à `à placer` : (c4) et (k1) ; (m5) `sm1` ajouté à `ClosedOwners` : (c4) ;
-  (m6) le compte attendu de sm2 changé : (k1).
+  `WaitOpcodes` de l'aide de la chaîne : (c3) seul (les tests de la chaîne restent verts : aucun site sauté sur la chaîne, et
+  `Rule3_EveryWaitOpcodeAndAZeroOrUnknownSizeAreFlaggedWhenSkipped`, `AlundraStoryChainSkippedOpcodesTests.cs:255-267`, attend que chaque opcode
+  d'attente soit signalé ; révision 2) ; (m4) le propriétaire d'une ligne de sm1 mis à `à placer` : (c4) et (k1) ; (m5) `sm1` ajouté à `ClosedOwners` : (c4) ;
+  (m6) le compte attendu de sm2 changé : (k1). **Puis la garde par règles de R7** sur l'arbre qui contient les deux fichiers neufs, sa sortie
+  consignée (révision 2).
 - ⏳ **T2 — Plan, verifier frais.** La ligne E19.m et le §1.2s renvoient à sm0 ; le résultat (la durée du test mesurée et consignée, sans seuil)
   au plan.
 
@@ -12216,7 +12220,8 @@ contrôle « aucun test existant déplacé » (révision 1).
   Alundra.Tests/Alundra.Tests.csproj -c Debug --no-build --blame-hang-timeout 300s --filter <la classe neuve>` ; la suite `Alundra.Tests` par
   `dotnet test Alundra.Tests/Alundra.Tests.csproj -c Release --no-build --blame-hang-timeout 300s` après le build Release à copie neutralisée,
   puis la même commande en `-c Debug` après le build Debug, zéro échec (révision 1 : le parcours des 483 cartes n'a jamais tourné, sa durée est
-  INCONNUE) ; la liste relue à l'octet après le commit (normalisation des fins de ligne) ; aucun test existant déplacé ; `git diff` vide sous `Alundra/`, le moteur, le convertisseur et les données ; traces inchangées.
+  INCONNUE ; un abandon par `--blame-hang-timeout` est un arrêt, la durée à soumettre) ; la liste relue à l'octet après le commit
+  (normalisation des fins de ligne) ; `check_names.py --rules` de R7 rend 0 sur l'arbre final, sa sortie consignée (révision 2) ; aucun test existant déplacé ; `git diff` vide sous `Alundra/`, le moteur, le convertisseur et les données ; traces inchangées.
 - **Preuve de retrait** : retirer la classe de test et la liste ne rend rien rouge (aucun autre test ne les lit) ; vider la liste (l'en-tête
   seul) rend rouges exactement (c1), (k1) et (k2) ((c2) et (c4) sont vides sur une liste vide, (c3) ne lit pas la liste).
 - **Recette de l'auteur** : aucune (rien ne change en jeu).
@@ -12224,7 +12229,7 @@ contrôle « aucun test existant déplacé » (révision 1).
 ##### Arrêts, budget, retour arrière
 
 - **Arrêts** : Q-R-7 sans réponse ou R7 non faite (révision 1) ; le parcours C# ne redonne pas **exactement** les 510 lignes (ou le relevé de T0 (a) si l'export a changé) ; une clé change
-  entre deux exportations ; un test existant bouge ; un besoin de toucher à `Alundra/` ; un nom refusé par la garde de R5 ; R5 non faite ; une
+  entre deux exportations ; un test existant bouge ; un besoin de toucher à `Alundra/` ; un nom refusé par la garde par règles de R7 ; R5 non faite ; une
   réponse de l'auteur à Q-E19-SM1 autre que l'accord.
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après.
 - **Retour arrière** : retirer la classe et la liste.
@@ -12610,7 +12615,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | Q-sm-3 | (2026-10-17) `0xB3` (pavé forcé, 1 site, carte 161) : une couture dans `AlundraTickPad` suffit-elle, ou faut-il aussi réécrire ce que lit la boîte de dialogue ? | E19.sm4 (T0) |
 | Q-sm-4 | (2026-10-17) `0xB2` : le porter maintenant (rend 0 tant que rien n'est porté) ou attendre E20.g1a ? Attendre laisse 10 sites sautés | l'auteur |
 | Q-sm-5 | (2026-10-17) `0x60`/`0x61` ferment 186 sites d'énigmes à plaques, mais les blocs poussables des cartes 27, 29, 30, 113 et 400 n'ont pas de tranche (O-E20-21) : ces énigmes ne se résoudront pas en jeu même avec sm1 | l'auteur |
-| Q-sm-6 | (2026-10-17) `0x9E` et `0x88` (0 site) : les porter avec des vecteurs seulement, ou les laisser sautés ? | l'auteur |
+| Q-sm-6 | (2026-10-17) `0x9E` et `0x88` (0 site) : les porter avec des vecteurs seulement, ou les laisser sautés ? **Corrigé le 2026-10-18** : `0x9E` a 0 site, mais `0x88` en a 3 (306 `E[14] @1110`, 306 `E[15] @1122`, 442 `E[1] @1312`) et appartient à sm4 ; la question ne vaut plus que pour `0x9E` (l'annexe parlait d'un indice de `0x88` ≥ 3, sans site) | l'auteur |
 | Q-sm-7 | (2026-10-17) Les libellés faux de `EventOpcodeSizeTable.cs` (`0x6B`-`0x6D`, `0x88`, `0x97`, `0xA9`, `0xAA`, `0xB4`-`0xB6`) sont corrigés dans la tranche qui porte l'opcode | E19.sm1 à sm4 |
 | Q-sm-8 | (2026-10-17) Les cartes 55 à 57 (11 lectures de `0x6D` sans `0x6A`) sont-elles atteignables dans le jeu livré ? **Élargie le 2026-10-18** (relecture d'état, `check_sm12.md` B8, I3) : les cartes 55 à 60 (65 sites de sm2 : `0x6A` 27, `0x6B` 7, `0x6C` 2, `0x6D` 29), et 307, 344, 442, où sm2 et sm4 proposent leurs arcs | l'auteur |
 | Q-sm-10 | (2026-10-18) `0x5F` (une attente de 8 octets, aucun site dans le corpus) n'a aucune tranche : le porter avec des vecteurs seulement (dans sm3 ou sm4), ou le laisser sauté (le test de l'oracle reste alors vert pour toujours et E19 ne se clôt pas sur « aucun opcode sauté ») ? | l'auteur |
