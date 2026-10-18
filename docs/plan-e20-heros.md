@@ -7416,11 +7416,13 @@ contre le haut de la porte, sauter sur la caisse basse, rejoindre le portail.
 contredit le binaire ; un roulis pendant un arc ; le pilote doit lire autre chose que l'état du jeu (aucune valeur écrite par le test pendant l'arc) ;
 un besoin de toucher au moteur.
 
-#### 1.29.2 E20.g4b — La barricade en soulevant ⏳ (détaillée le 2026-10-18 ; révision 1)
+#### 1.29.2 E20.g4b — La barricade en soulevant ⏳ (détaillée le 2026-10-18 ; révision 2)
 
 **Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : chaque arc (b2) à (b5) a son départ, ses seuils (mesurés au
 binaire en T0, avec un arrêt) et sa règle de Croix et de Carré ; l'assertion de (b1) se lit par image, à chaque cadence, avec la règle du
-sondage entre le contact et Carré ; la chute de rec10 se lit par tick par le crochet existant `WorldProxy.TickTraceForTests`.
+sondage entre le contact et Carré ; la chute de rec10 se lit par tick par le crochet existant `WorldProxy.TickTraceForTests`. Seconde
+relecture : REVISE, un blocage (la règle de Carré en l'air n'avait pas la porte de contact de l'oracle et lisait mal `w5_airlift`) : FIX en
+révision 2 (le départ et la porte de `w5_airlift`) ; une seule relecture de clôture.
 
 **Prérequis.** g1b (le soulèvement, dont le soulèvement en l'air de (m7)), g2a et g2b (le lancer et le bris), g4a (le pilote, le préréglage
 `barricade-m392`, le fichier des arcs) ; même branche et même fusion que g3, g4a et g1b (Q-G3-b).
@@ -7450,15 +7452,19 @@ comptent sans écrire, un 6ᵉ ferait descendre l'objet (INFÉRENCE ; la durée 
   porter à l'ouest jusqu'au seuil du lancer, lancer, attendre le bris, contourner rec9, le portail) : ses phases et seuils ; (a2) le départ de
   (b2) : héros posé en (670, 316, 64), Gauche jusqu'au contact par la face est (rec6, `bin/out/a3_contactmap.txt` : y dans [311 ; 327[) ; (a3)
   le départ de (b3) : héros posé sur le dessus de rec5 (636, 296, 80), Bas jusqu'au contact (rec10, y limité à 297,0, `bin/` R7) ; (a4) le
-  départ de (b4) : héros posé en (680, 298, 64), regard ouest, Croix et Gauche à la première image ; (a5) le départ de (b5) : le cas C de
+  départ de (b4), celui de `critic/w5_airlift.py` : héros posé en (720, 298, 64), regard ouest, Gauche tenue, Croix au tick `tj = 12`
+  compté depuis la pose (la première image hors sondage qui contient ce tick), le Carré selon la porte de T0 (b) ; T0 (a4) relève le tick de la
+  Croix et l'image du Carré, et un saut qui retombe sans porte ouverte est un arrêt ; (a5) le départ de (b5) : le cas C de
   `critic-recon/c1_oblique.py` (héros posé en (657, 312, 64) collé à rec6, regard nord, Haut tenu) ; (b) **les règles du pilote** (celles de
   g4a, plus) : un départ posé l'est par `Arc.PlaceHero` après le premier `0x11 @104` de B1, avant le scénario, jamais pendant ; **Carré au
   sol** : Gauche (ou la direction de poussée du scénario) tenue sans interruption depuis le premier contact ; Carré pressé à la première image
   `F` hors sondage telle que l'`XCollisionEntity` du héros, lue au début de `F`, est la caisse attendue (le contact de la fin du dernier tick de
   `F − 1`) ; si une image de sondage tombe entre le contact et Carré, la direction est lâchée pendant elle (règle de g4a), puis reprise jusqu'à
-  ce que le contact revienne, et la règle recommence ; **Carré en l'air** ((b4)) : à la première image où le héros est en l'air et sa `PosZ`,
-  lue au début de l'image, vaut au moins 81,0 px (`critic/out/w5_airlift.txt` : Carré 10 ticks après la Croix, z 73,5, soulève rec5 ;
-  12 ticks après, z 81,0, soulève rec10) ; **Carré du lancer** au seuil de (a1) ; un roulis observé est un arrêt de l'arc (sauf en (b6)) ;
+  ce que le contact revienne, et la règle recommence ; **Carré en l'air** ((b4)) : à la première image hors sondage où le héros est en l'air
+  (`IsOnGround` nul) et où son `XCollisionEntity`, lu au début de l'image (le contact du dernier tick de l'image précédente), est **rec10** ;
+  c'est la porte de l'oracle (`critic/w5_airlift.py:2`, `:25-29` : départ (720, y), Gauche tenue, Croix au tick absolu `tj`, Carré au premier
+  tick qui suit un tick terminé avec un contact et en l'air) ; `critic/out/w5_airlift.txt` : Carré aux ticks 28 à 30 ; Croix à `tj = 10` : le
+  contact est rec5 (z 73,5), rec5 portée ; `tj` de 12 à 18 : le contact est rec10 (z de 81,0 à 91,5), rec10 portée ; **Carré du lancer** au seuil de (a1) ; un roulis observé est un arrêt de l'arc (sauf en (b6)) ;
   (c) **la chute de rec10** dans la DLL après g1b : sa `PosZ` lue **à chaque tick** par le crochet existant `WorldProxy.TickTraceForTests` (la
   passe `inventory` de chaque tick, `Alundra/Maps/WorldProxy.cs:2589`, comme le banc `HitArena`, `Alundra.Tests/AlundraHitArena.cs:74`, `:235`),
   à 1, 2 et 3 ticks par image, contre la série du binaire (80 ; 79,5 ; 78,5 ; 77 ; 75 ; 72,5 ; 69,5 ; 66 ; 64) ; égale : (b2) l'épingle ;
