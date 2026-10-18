@@ -12096,7 +12096,7 @@ les vrais gestionnaires contre ses propres modèles : 21 000 exécutions, 0 éca
 Tâches proposées par tranche (T0 vecteurs, T1 rouges, T2 code et libellés, T3 arcs sur des sites réels, T4 liste fermée et ADR, T5 verifier) au
 §7 du rapport. Questions Q-sm-1 à Q-sm-9 (§3 de ce plan).
 
-**Révision au HEAD (2026-10-18, lecture seule ; `docs/plan-e19-sm-annexe/state-317b336/`).** Trois relevés indépendants, chacun contre-vérifié
+**Révision au HEAD (2026-10-18, lecture seule ; `docs/plan-e19-sm-annexe/state-317b336/`, les rapports `check_*.md` sous `reports/`).** Trois relevés indépendants, chacun contre-vérifié
 par un second agent (le contre-vérificateur fait foi), ont traduit au HEAD `317b336` toutes les citations de §1.4, de l'annexe et de
 `sm1-sm4/` : le code cité est le même au renommage près (le runner est `Alundra/Events/EventProgramRunner.cs`, décalé de −50 lignes, `Dispatch`
 `:563-2105`, `UnknownOpcode` `:3065-3091` ; la table des tailles `Alundra/Events/EventOpcodeSizeTable.cs:40-246`, inchangée) ; aucun commit de
