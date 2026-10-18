@@ -1,0 +1,56 @@
+[
+ {
+  "map": 309,
+  "record": 6,
+  "spriteIndex": 12,
+  "enabled": 1,
+  "SpriteDirection": 65,
+  "pos": [
+   78,
+   83,
+   2
+  ],
+  "A": 135,
+  "B": 0,
+  "C": 0,
+  "D": 0,
+  "E": 0,
+  "F": 0
+ },
+ {
+  "map": 309,
+  "record": 7,
+  "spriteIndex": 12,
+  "enabled": 1,
+  "SpriteDirection": 65,
+  "pos": [
+   79,
+   82,
+   2
+  ],
+  "A": 135,
+  "B": 0,
+  "C": 0,
+  "D": 0,
+  "E": 0,
+  "F": 0
+ },
+ {
+  "map": 309,
+  "record": 8,
+  "spriteIndex": 12,
+  "enabled": 1,
+  "SpriteDirection": 65,
+  "pos": [
+   77,
+   82,
+   2
+  ],
+  "A": 135,
+  "B": 0,
+  "C": 0,
+  "D": 0,
+  "E": 0,
+  "F": 0
+ }
+]

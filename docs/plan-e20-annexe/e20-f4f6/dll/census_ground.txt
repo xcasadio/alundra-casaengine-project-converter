@@ -1,0 +1,45 @@
+maps 483
+ground_property value -> cells (slope index = (v>>1)&7)
+  v=0 (0x0) slope=0 cells=1149880 maps=483
+  v=1 (0x1) slope=0 cells=475 maps=5
+  v=2 (0x2) slope=1 cells=5981 maps=49
+  v=4 (0x4) slope=2 cells=2011 maps=12
+  v=6 (0x6) slope=3 cells=9001 maps=29
+  v=8 (0x8) slope=4 cells=8366 maps=54
+  v=12 (0xC) slope=6 cells=135 maps=44
+  v=16 (0x10) slope=0 cells=312227 maps=469
+  v=17 (0x11) slope=0 cells=109 maps=3
+  v=18 (0x12) slope=1 cells=2018 maps=44
+  v=20 (0x14) slope=2 cells=179 maps=11
+  v=22 (0x16) slope=3 cells=1185 maps=25
+  v=24 (0x18) slope=4 cells=2109 maps=52
+  v=28 (0x1C) slope=6 cells=14 maps=11
+  v=32 (0x20) slope=0 cells=56 maps=36
+  v=48 (0x30) slope=0 cells=25 maps=22
+  v=64 (0x40) slope=0 cells=82 maps=7
+  v=70 (0x46) slope=3 cells=2 maps=1
+  v=80 (0x50) slope=0 cells=374 maps=27
+  v=96 (0x60) slope=0 cells=162 maps=52
+  v=112 (0x70) slope=0 cells=1141 maps=145
+  v=128 (0x80) slope=0 cells=6564 maps=431
+  v=130 (0x82) slope=1 cells=28 maps=7
+  v=132 (0x84) slope=2 cells=3 maps=1
+  v=134 (0x86) slope=3 cells=77 maps=12
+  v=136 (0x88) slope=4 cells=30 maps=9
+  v=144 (0x90) slope=0 cells=4378 maps=286
+  v=146 (0x92) slope=1 cells=119 maps=9
+  v=148 (0x94) slope=2 cells=2 maps=1
+  v=150 (0x96) slope=3 cells=66 maps=8
+  v=152 (0x98) slope=4 cells=139 maps=20
+  v=176 (0xB0) slope=0 cells=2 maps=1
+  v=192 (0xC0) slope=0 cells=2 maps=1
+  v=208 (0xD0) slope=0 cells=12 maps=1
+  v=240 (0xF0) slope=0 cells=6 maps=1
+slope 1 value 2 maps: [0, 3, 4, 8, 12, 23, 24, 39, 49, 57, 67, 70, 72, 73, 76, 77, 78, 80, 81, 83, 85, 87, 88, 97, 116, 117, 118, 139, 140, 141, 142, 144, 158, 161, 311, 316, 317, 319, 398, 407, 408, 410, 416, 420, 425, 435, 445, 457, 463]
+slope 4 value 8 maps: [0, 3, 4, 5, 6, 7, 8, 12, 14, 15, 17, 18, 19, 20, 49, 70, 72, 73, 75, 77, 78, 79, 80, 81, 83, 85, 88, 90, 139, 140, 141, 146, 158, 306, 307, 314, 335, 352, 354, 379, 393, 407, 408, 410, 413, 416, 429, 430, 433, 435, 439, 441, 442, 479]
+slope 1 value 18 maps: [3, 4, 7, 8, 39, 49, 57, 70, 72, 73, 76, 77, 78, 80, 81, 83, 85, 87, 88, 97, 116, 117, 118, 139, 140, 141, 142, 144, 158, 161, 312, 316, 317, 319, 382, 386, 408, 410, 416, 420, 425, 435, 445, 457]
+slope 4 value 24 maps: [3, 4, 5, 6, 7, 8, 12, 14, 15, 17, 18, 19, 20, 49, 70, 72, 73, 75, 77, 78, 79, 80, 81, 83, 85, 88, 90, 139, 140, 141, 146, 158, 306, 307, 314, 335, 354, 379, 393, 407, 408, 410, 413, 416, 429, 430, 433, 435, 439, 441, 442, 479]
+slope 1 value 130 maps: [73, 87, 88, 117, 118, 158, 161]
+slope 4 value 136 maps: [3, 4, 8, 17, 70, 77, 79, 416, 439]
+slope 1 value 146 maps: [4, 8, 12, 78, 87, 88, 317, 407, 416]
+slope 4 value 152 maps: [3, 4, 5, 6, 7, 8, 12, 14, 15, 19, 70, 72, 77, 78, 335, 393, 407, 416, 433, 479]

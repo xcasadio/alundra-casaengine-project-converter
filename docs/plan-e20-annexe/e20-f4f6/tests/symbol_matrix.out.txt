@@ -1,0 +1,28 @@
+== shot-seam  (3 files)
+   AlundraHeroChargeTests.cs:9, AlundraBirthTickTests.cs:4, AlundraHeroAttackTests.cs:2
+== weapon-tables/record  (7 files)
+   AlundraHeroAttackTests.cs:28, AlundraHeroChargeTests.cs:17, AlundraBirthTickTests.cs:5, AlundraHeroSwimBranchTests.cs:4, AlundraDamageTests.cs:3, AlundraFlailBounceTests.cs:2, AlundraHeroChargeArenaTests.cs:1
+== interface-spawn  (8 files)
+   AlundraBirthTickTests.cs:18, AlundraSpawnBySpriteIndexInterfaceTests.cs:18, AlundraSpawnBySpriteIndexTests.cs:14, AlundraEntitySlotV5RowsTests.cs:7, AlundraEntitySlotWorldTests.cs:6, AlundraBirthTickProbePaTests.cs:2, AlundraEntitySlotTableTests.cs:1, AlundraSpawnIndexOracle.cs:1
+== native-registry  (5 files)
+   AlundraNativeSpriteRegistryTests.cs:40, AlundraBeannoideOracleTests.cs:3, AlundraMurutaOracleTests.cs:3, AlundraHitArena.cs:1, AlundraMurutaHallArcTests.cs:1
+== Muruta/Beannoide AI keys  (4 files)
+   AlundraMurutaOracleTests.cs:8, AlundraBeannoideOracleTests.cs:3, AlundraBeannoideGrateArcTests.cs:2, AlundraMurutaHallArcTests.cs:1
+== break-effect/DestroyEntity  (9 files)
+   AlundraBreakEffectByteTests.cs:14, AlundraDestroyEntityBreakEffectTests.cs:10, AlundraBeannoideOracleTests.cs:5, AlundraFrozenAnchorTests.cs:5, AlundraMurutaOracleTests.cs:4, AlundraSpawnBySpriteIndexInterfaceTests.cs:2, AlundraBeannoideGrateArcTests.cs:1, AlundraEntityDestructionTests.cs:1, AlundraMurutaHallArcTests.cs:1
+== native-effects/stage  (27 files)
+   AlundraEffectOpcodeTests.cs:21, AlundraHeroChargeTests.cs:17, AlundraNativeEffectTests.cs:14, AlundraEffectStageWiringTests.cs:13, AlundraEffectQuadPushTests.cs:12, AlundraEffectStageNowTests.cs:11, AlundraHeroChargeArenaTests.cs:10, AlundraDestroyEntityBreakEffectTests.cs:7, AlundraHeroAuraWorldTests.cs:7, AlundraEffectReservoirTests.cs:5, AlundraHitPassTests.cs:5, AlundraRunSupport.cs:5, AlundraHitPassRulesTests.cs:4, AlundraRandomPerTickTests.Advance.cs:4, AlundraBeannoideOracleTests.cs:3, AlundraHeroAuraTests.cs:3, AlundraMurutaOracleTests.cs:3, AlundraRandomPerTickTests.cs:3, AlundraChargeSupport.cs:2, AlundraContactTestSupport.cs:2, AlundraFrozenAnchorTests.cs:2, AlundraHeroRunTests.cs:2, AlundraHeroSwimTests.cs:2, AlundraStickProbeTests.cs:2, AlundraBeannoideGrateArcTests.cs:1, AlundraHeroRunArenaTests.cs:1, AlundraMurutaHallArcTests.cs:1
+== hit-pass  (25 files)
+   AlundraHitPassTests.cs:32, AlundraHitPassRulesTests.cs:31, AlundraHitPassCatchUpTests.cs:24, AlundraFlailBounceArcTests.cs:14, AlundraHitArena.cs:9, AlundraFlailBounceTests.cs:8, AlundraHeroAuraWorldTests.cs:6, AlundraHeroRunArenaTests.cs:6, AlundraFlailBounceWallProbeTests.cs:5, AlundraHitOpcodesTests.cs:5, AlundraZWaitOpcodesTests.cs:4, AlundraHeroChargeArenaTests.cs:3, AlundraHitOracle.cs:3, AlundraLeverArcTests.cs:3, AlundraHeroChargeTests.cs:2, AlundraHeroSwimArenaTests.cs:2, AlundraRandomPerTickTests.Advance.cs:2, AlundraRunSupport.cs:2, AlundraTickStructureTests.cs:2, AlundraBeannoideGrateArcTests.cs:1, AlundraEnemyGroundTests.cs:1, AlundraEnemyHitReactionTests.cs:1, AlundraMurutaHallArcTests.cs:1, AlundraStoredHitBoxTests.cs:1, AlundraWorldProxyEventPassTests.cs:1
+== test-saves/presets  (2 files)
+   AlundraTestSavesTests.cs:37, AlundraEntityContactArcTests.cs:1
+== arc give/equip  (19 files)
+   AlundraItemInventoryTests.cs:10, AlundraArcInventoryHelpersTests.cs:6, AlundraFlailBounceArcTests.cs:4, AlundraHeroAttackTests.cs:3, AlundraArcSupport.cs:2, AlundraBeannoideGrateArcTests.cs:2, AlundraFlailBounceWallProbeTests.cs:2, AlundraHeroAuraWorldTests.cs:2, AlundraHeroChargeArenaTests.cs:2, AlundraInventoryDirectorTests.cs:2, AlundraMurutaHallArcTests.cs:2, AlundraRandomPerTickTests.Advance.cs:2, AlundraRunSupport.cs:2, AlundraWeaponLockOpcodesTests.cs:2, AlundraFlailBounceTests.cs:1, AlundraHeroChargeTests.cs:1, AlundraHeroSwimArenaTests.cs:1, AlundraNewGameEntryTests.cs:1, AlundraTestSavesTests.cs:1
+== charge-oracle  (5 files)
+   AlundraHeroChargeTests.cs:11, AlundraChargeSupport.cs:5, AlundraHeroAuraWorldTests.cs:3, AlundraEntityDepthKeyTests.cs:1, AlundraHeroAuraTests.cs:1
+== attack-oracle(AT9)  (2 files)
+   AlundraHeroAttackTests.cs:19, AlundraAttackOracle.cs:3
+== ResyncControllerFromFlags  (11 files)
+   AlundraJumpTestSupport.cs:2, AlundraAnimationImpulseSpawnTests.cs:1, AlundraArcSupport.cs:1, AlundraCabinWalkTests.cs:1, AlundraCollidedWithEntityZTests.cs:1, AlundraContactTestSupport.cs:1, AlundraEventProgramRunnerTests.cs:1, AlundraHeroObjectTopsTests.cs:1, AlundraMovementObstacleProbeTests.cs:1, AlundraNoGravityLandingTests.cs:1, AlundraNpcCharacterControllerMoverTests.cs:1
+== RNG  (21 files)
+   AlundraHeroChargeTests.cs:30, AlundraEnemyHelpersTests.cs:24, AlundraNativeEffectTests.cs:18, AlundraRandomPerTickTests.Advance.cs:18, AlundraRandomTests.cs:15, AlundraBeannoideOracleTests.cs:14, AlundraMurutaOracleTests.cs:14, AlundraRandomDirectionModesTests.cs:13, AlundraHeroAuraWorldTests.cs:10, AlundraHitPassRulesTests.cs:10, AlundraTurnOrderTests.cs:10, AlundraRandomShadowTests.cs:9, AlundraDestroyEntityBreakEffectTests.cs:8, AlundraHeroChargeArenaTests.cs:8, AlundraPrefabArcSupportTests.cs:8, AlundraRandomPerTickTests.cs:6, AlundraWorldProxyCellularRandomWiringTests.cs:6, AlundraRandomBranchOpcodeTests.cs:5, AlundraHeroAuraTests.cs:4, AlundraRandomOpcodeTests.cs:4, AlundraArcSupport.cs:1
