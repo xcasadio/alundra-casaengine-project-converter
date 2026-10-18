@@ -8147,7 +8147,7 @@ l'annexe `docs/plan-e20-annexe/e20-h4a/` ; ce plan, l'index des ADR et un ADR. *
   sur le héros de ce banc ou d'un hôte de test :
   - (t1) le départ des tomes, dans l'ordre du binaire : un objet porté (`CarriedEntity` posé par le test), une animation hors Idle et Moving, un objet
     en cours, 0 PM sans le bâton : chacun son 3 et 1 ; le départ qui réussit : 0, PM − 1, animation `0x32`, l'octet XA de l'objet journalisé (0, 1, 6,
-    6, 2, 3, 4, 5 pour `0x2B` à `0x32`), le tome non consommé ; le bâton (`Equip` de l'objet 7) : ni exigence ni consommation, à 0 et à 2 PM ;
+    6, 2, 3, 4, 5 pour `0x2B` à `0x32`), le tome non consommé ; le bâton (révision 2 : l'objet 7 possédé et l'arme du créneau 6 équipée, `Equip(6)`, comme `e20-h4/work/results/staff_check.txt:1` ; `Equip(7)` serait refusé en silence, `PlayerManager.cs:2077`) : ni exigence ni consommation, à 0 et à 2 PM ;
   - (t2) `DecreaseMp` borné à [0, PM max] (`SetPlayerMp`, `PlayerManager.cs:1970`) ;
   - (t3a) les états (révision 1 ; entrés par le test : l'animation posée à `0x32` et un tome en cours par les coutures de D-H-4, sans la fonction de
     départ) : `0x32` puis `0x33` 32 ticks plus tard (l'enchaînement de l'animation) ; `0x33` tenu tant qu'un tome est en cours ; libéré (le pilote de
@@ -8177,8 +8177,10 @@ l'annexe `docs/plan-e20-annexe/e20-h4a/` ; ce plan, l'index des ADR et un ADR. *
 - **DLL** : (t1), (t2), (t3a), (t3b), (t4) à (t6), (o1) à (o3) verts, rouges avant le code (sauf les témoins négatifs) ; la suite en Release (copie neutralisée) et en Debug, zéro
   échec ; tests déplacés ⊂ liste prédite (vide) ; `cmp` de la DLL ; traces inchangées ; moteur, convertisseur et données sans diff.
 - **Preuve de retrait** (révision 1) : retirer la fonction de départ des tomes rend rouges exactement (t1), (t3b), (t5), (t6), (o1) à (o3) ; retirer les
-  gestionnaires de `0x32` à `0x34` rend rouge exactement (t3a) (sans eux l'état reste, `PlayerManager.cs:620-621`, et `0x32` enchaîne encore sur `0x33`
-  par l'animation : (o3) ne bouge pas).
+  gestionnaires de `0x32` à `0x34` rend rouges exactement (t3a) et (t3b) (révision 2 : sans eux l'état reste, `PlayerManager.cs:620-621`, `0x32` à
+  `0x34` ne sont pas `Skip` mais `Float`, `:178-186`, et le seul appel de `TryUseItem` de ces états est celui des gestionnaires, `0x800325A4` et
+  `0x80032680`, `e20-h4/work/lst/hero_states_32_34.txt:1`, `:56` : (t3b) n'a plus son son 3 ; `0x32` enchaîne encore sur `0x33` par l'animation : (o3) ne
+  bouge pas).
 - **Recette de l'auteur** : aucune (inerte en production) ; elle vient avec la première tranche d'élément.
 
 ##### Arrêts, budget, retour arrière
