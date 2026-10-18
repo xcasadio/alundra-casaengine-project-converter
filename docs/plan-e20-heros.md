@@ -7728,7 +7728,7 @@ avec `barricade-m392` : se caler contre le haut de la porte, pousser la caisse b
 
 **Budget.** Un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après.
 
-### 1.30 E20.h0 et E20.h3 — Le cadre de l'usage d'un objet, la bombe et les haricots ⏳ (détaillée le 2026-10-18 ; h0a et h3a **READY**, h3b en pause de relecture)
+### 1.30 E20.h0 et E20.h3 — Le cadre de l'usage d'un objet, la bombe et les haricots ⏳ (détaillée le 2026-10-18 ; h0a, h3a et h1 (§1.30.5) **READY**, h3b en pause de relecture)
 
 **Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 (`docs/plan-e20-annexe/e20-h4/`, `report.md` §1 et `check.md`) ; lecture
 au binaire de la bombe et des haricots du 2026-10-18 et sa critique adverse (`docs/plan-e20-annexe/e20-h3/bin/report.md`,
@@ -8068,7 +8068,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2 ; relecture de clôture)
+#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2`)
 
 **Prérequis.** h0a (la table de départ, les mots de l'objet, la couture `ItemStartForTests`, le refus par le son 3) ; E20.c2a ✅ (les PV de
 l'entité du héros et leur miroir) ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H1-1, Q-H1-2 et Q-H1-3. Ni g1a, ni g2a, ni f4 à
