@@ -1,0 +1,18 @@
+Alundra/Scripts/AlundraEventProgramRunner.cs|374-382|Alundra/Events/EventProgramRunner.cs|324-332|R1 InitializeEventData start
+Alundra/Scripts/AlundraEventProgramRunner.cs|415-420|Alundra/Events/EventProgramRunner.cs|365-370|R1 InitializeEventData end
+Alundra/Scripts/AlundraEventProgramRunner.cs|2150-2154|Alundra/Events/EventProgramRunner.cs|2100-2104|R2 default/UnknownOpcode
+Alundra/Scripts/AlundraEventProgramRunner.cs|3113-3142|Alundra/Events/EventProgramRunner.cs|3063-3092|R3 UnknownOpcode
+Alundra/Scripts/AlundraEventProgramRunner.cs|248-255|Alundra/Events/EventProgramRunner.cs|198-205|R4 restore LastTarget
+Alundra/Scripts/AlundraEventProgramRunner.cs|273-281|Alundra/Events/EventProgramRunner.cs|223-231|R5 save LastTarget
+Alundra/Scripts/AlundraEventProgramRunner.cs|759-763|Alundra/Events/EventProgramRunner.cs|709-713|R6 case 0x19
+Alundra/Scripts/AlundraEventProgramRunner.cs|1212-1223|Alundra/Events/EventProgramRunner.cs|1162-1173|R7 case 0x5D
+Alundra/Scripts/AlundraEventProgramRunner.cs|1876-1890|Alundra/Events/EventProgramRunner.cs|1826-1840|R8 0x2F TickPad
+Alundra/Scripts/AlundraEventProgramRunner.cs|2009-2014|Alundra/Events/EventProgramRunner.cs|1959-1964|R9 comment 0x3F
+Alundra/Scripts/AlundraEventProgramRunner.cs|611-614|Alundra/Events/EventProgramRunner.cs|561-564|R10 Dispatch start
+Alundra/Scripts/AlundraEventProgramRunner.cs|2152-2156|Alundra/Events/EventProgramRunner.cs|2102-2106|R10 Dispatch end
+Alundra/Scripts/AlundraEventProgramRunner.cs|450-467|Alundra/Events/EventProgramRunner.cs|400-417|R11 loop FF/00
+Alundra/Scripts/AlundraEventProgramRunner.cs|476-480|Alundra/Events/EventProgramRunner.cs|426-430|R12a 478-479
+Alundra/Scripts/AlundraEventProgramRunner.cs|513-516|Alundra/Events/EventProgramRunner.cs|463-466|R12b 515
+Alundra/Scripts/AlundraEventProgramRunner.cs|135-138|Alundra/Events/EventProgramRunner.cs|85-88|R12c 137
+Alundra/Scripts/AlundraEventProgramRunner.cs|1988-1992|Alundra/Events/EventProgramRunner.cs|1938-1942|0x3E/3F precedent 1990
+Alundra/Scripts/AlundraEventProgramRunner.cs|2038-2042|Alundra/Events/EventProgramRunner.cs|1988-1992|0x3E/3F precedent 2040

@@ -1,0 +1,22 @@
+Alundra/Scripts/AlundraEntityScriptProxy.cs|351|Alundra/Entities/EntityScriptProxy.cs|364|P1 XCollisionEntity
+Alundra/Scripts/AlundraEntityScriptProxy.cs|325|Alundra/Entities/EntityScriptProxy.cs|338|P2 ForceZ
+Alundra/Scripts/AlundraEntityScriptProxy.cs|1212-1213|Alundra/Entities/EntityScriptProxy.cs|1225-1226|P3 LastTarget
+Alundra/Scripts/AlundraEntityScriptProxy.cs|75-89|Alundra/Entities/EntityScriptProxy.cs|88-102|P4 Hp HpMax LifePulled Platform Status
+Alundra/Scripts/AlundraEntityScriptProxy.cs|2397-2420|Alundra/Entities/EntityScriptProxy.cs|2410-2433|P6 MoveControllerAndPullPosition
+Alundra/Scripts/AlundraEntityScriptProxy.cs|2594-2597|Alundra/Entities/EntityScriptProxy.cs|2607-2610|P7 clone PlatformEntity
+Alundra/Scripts/AlundraEntityScriptProxy.cs|341-344|Alundra/Entities/EntityScriptProxy.cs|354-357|sm1 TileXYZ RidingEntity
+Alundra/Scripts/AlundraWorldProxy.cs|2077|Alundra/Maps/WorldProxy.cs|2111|W1 hero EntityRefId
+Alundra/Scripts/AlundraWorldProxy.cs|2491-2495|Alundra/Maps/WorldProxy.cs|2525-2531|W2 TickPad.Update
+Alundra/Scripts/AlundraWorldProxy.cs|2893|Alundra/Maps/WorldProxy.cs|2927|W3 MovePlayerOnTickPad
+Alundra/Scripts/AlundraWorldProxy.cs|2453-2454|Alundra/Maps/WorldProxy.cs|2487-2488|W4 squareOfTick decl
+Alundra/Scripts/AlundraWorldProxy.cs|3229-3236|Alundra/Maps/WorldProxy.cs|3263-3271|W5 RecycleDestroyedEntities
+Alundra/Scripts/AlundraPlayerManager.cs|1750|Alundra/Hero/PlayerManager.cs|1763|PM1 XCollisionEntity read
+Alundra/Scripts/AlundraPlayerManager.cs|608-632|Alundra/Hero/PlayerManager.cs|621-645|PM2 life mirror
+Alundra/Scripts/AlundraPlayerManager.cs|1866-1912|Alundra/Hero/PlayerManager.cs|1879-1925|PM3 IncreaseHpMax RestoreLife
+Alundra/Scripts/AlundraPlayerManager.cs|1955-1959|Alundra/Hero/PlayerManager.cs|1968-1972|PM4 SetPlayerMp
+Alundra/Scripts/AlundraGameState.cs|141-144|Alundra/Session/GameState.cs|150-153|GS TickPad
+Alundra/Scripts/AlundraTickPad.cs|29-50|Alundra/Hero/TickPad.cs|31-52|TP setters
+Alundra/Scripts/AlundraCellStore.cs|11-41|Alundra/Cells/ICellMutator.cs|14-40|CM ICellMutator
+Alundra/Scripts/AlundraEntitySpawnFactory.cs|491-495|Alundra/Entities/Spawning/EntitySpawnFactory.cs|495-499|SF 493
+Alundra/Scripts/EntitySupport.cs|70-76|Alundra/Physics/EntitySupport.cs|71-77|ES IsEligibleSubject
+Alundra/Scripts/AlundraHudDirector.cs|292-294|Alundra/UI/Hud/HudDirector.cs|299-301|HUD Snap
