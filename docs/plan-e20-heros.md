@@ -6472,7 +6472,7 @@ proposition de D-G-1 « h3 n'exige que g1a et g2a » n'est pas appliquée) ; g3 
 
 ---
 
-#### 1.24.1 E20.g1a — Porter ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi)
+#### 1.24.1 E20.g1a — Porter ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi ; **READY** à la seconde relecture)
 
 **Relecture (2026-10-18).** REVISE, deux blocages corrigés (FIX) : (1) E20.f6a précède g1 dans l'enveloppe ; une fois faite, la caisse
 relâchée dans l'eau profonde (drapeaux `0x3323E4`, dont `0x100000`, `DestroyOnSlidingSlope`, `Alundra/Entities/EntityFlags.cs:163` ; marquée
