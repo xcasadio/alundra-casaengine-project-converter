@@ -8068,7 +8068,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a détaillée le 2026-10-18, **READY** ; h4b à h4f2 esquissées)
+### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a et h4b1 détaillées le 2026-10-18, **READY** ; h4b1b, h4b2, h4c1 à h4f2 esquissées)
 
 **Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-h4/`, `report.md` et `check.md`,
 la critique faisant foi : aucun fait de comportement réfuté ; D13, le sprite 154, la portée de Q-H4-2 et du §6 corrigés ; ses statistiques de
@@ -8207,7 +8207,7 @@ l'annexe `docs/plan-e20-annexe/e20-h4a/` ; ce plan, l'index des ADR et un ADR. *
 
 ---
 
-#### 1.31.2 E20.h4b1 — La requête de cibles des sorts ⏳ (détaillée le 2026-10-18, à relire)
+#### 1.31.2 E20.h4b1 — La requête de cibles des sorts ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `a50c877`)
 
 **Prérequis.** h4a ; la fin du chantier de restructuration et Q-R-7.
 
