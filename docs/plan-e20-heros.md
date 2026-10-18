@@ -6655,7 +6655,7 @@ cartes et sa table, un arrêt par type non couvert ; le point 4 du bloc aligné)
 
 ---
 
-#### 1.24.4 E20.g1b — Soulever (l'activation) ⏳ (réécrite le 2026-10-18 après E20.g3 ; révision 2 ; le texte du 2026-10-15 est remplacé)
+#### 1.24.4 E20.g1b — Soulever (l'activation) ⏳ (réécrite le 2026-10-18 après E20.g3 ; révision 2, **READY** à la relecture de clôture ; le texte du 2026-10-15 est remplacé)
 
 **Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : la mesure du contact en l'air n'était pas exécutable en T0 (le
 bouchon rend 0) : T0 (b) est une sonde jetable qui relève le contact par tick, en l'air (g15 a), contact en t5 **et** t6) et au sol (c3, lignes
@@ -7416,13 +7416,54 @@ contre le haut de la porte, sauter sur la caisse basse, rejoindre le portail.
 contredit le binaire ; un roulis pendant un arc ; le pilote doit lire autre chose que l'état du jeu (aucune valeur écrite par le test pendant l'arc) ;
 un besoin de toucher au moteur.
 
-#### 1.29.2 E20.g4b — La barricade en soulevant (esquisse, détaillée avec g1b) ⏳
+#### 1.29.2 E20.g4b — La barricade en soulevant ⏳ (détaillée le 2026-10-18, à relire)
 
-Prérequis : g1b (réécrite), g2a, g2b. Arcs sous B1 : (b1) se caler, pousser contre rec5 jusqu'au contact, Carré au tick suivant, porter,
-lancer vers l'ouest (la caisse se brise, `bin/out/a3_r3b.txt`), passer ; (b2) lever rec6 : rec10 tombe (la loi du binaire, 8 ticks, ou l'écart
-de Q-G3-c mesuré et épinglé) ; (b3) lever rec10 depuis le dessus de rec5 ; (b4) lever en plein saut à y = 298 si g1b porte le soulèvement
-depuis les états de saut ; (b5) Haut le long de la face x = 657 : y = 295, contact rec5, Carré soulève (`critic-recon/` cas C). Le mode 1 de
-`UpdatePlayerCarriedEntity` sous le verrou du roulis (5 ou 6 ticks : un 6ᵉ fait descendre l'objet de 2 px) est à mesurer.
+**Prérequis.** g1b (le soulèvement, dont le soulèvement en l'air de (m7)), g2a et g2b (le lancer et le bris), g4a (le pilote, le préréglage
+`barricade-m392`, le fichier des arcs) ; même branche et même fusion que g3, g4a et g1b (Q-G3-b).
+
+**But.** Comme l'original : sur le navire (392), Alundra passe la barricade en soulevant la caisse basse (rec5) et en la lançant, ou en
+soulevant la caisse du dessus d'une pile ; lever la caisse du bas d'une pile fait tomber celle du dessus.
+
+**Faits (binaire et DLL ; §1.29, `docs/plan-e20-annexe/e20-g3/`).** Le contact par la face est (x = 657) apparaît au premier tick bloqué ;
+un Carré au tick suivant soulève (`bin/out/a2_contact.txt`, `a3_contactmap.txt` : y dans [295 ; 311[ → rec5, [311 ; 327[ → rec6, [327 ;
+328,5] → rec7) ; le geste dure 36 ticks ; portée, rec5 sort de la liste et le héros passe à y = 296 sans contact ; lancée vers l'ouest, elle se
+brise vers x = 588 (`bin/out/a3_r3b.txt`, monde sans rec9 : à refaire avec les 12 enregistrements) ; dans la vraie carte, le héros est ensuite
+arrêté par rec9 à x = 597 (`critic/` R3) et doit descendre avant d'aller à l'ouest. Lever rec6 : rec10 tombe de 16 px en 8 ticks (z 80, 79,5,
+78,5, 77, 75, 72,5, 69,5, 66, 64 au tick 36, `bin/report.md` §A3.4) ; dans la DLL, la caisse du dessus suit l'ancienne règle de chute des
+entités de la carte (D-E20-37) : écart possible (Q-G3-c, défaut A). Debout sur rec5, poussant vers le sud contre la pile 19 : y limité à 297,0,
+contact rec10, Carré la soulève (`bin/` R7). En plein saut à z ≥ 80, Carré soulève la caisse du haut (`critic/out/w5_airlift.txt`, y = 298, 300 et
+312). Collé à la face x = 657, Haut tenu : y = 295,0, contact rec5, Carré soulève (`critic-recon/out/c1_oblique.txt`, cas C). Le verrou du roulis
+(bit 0x04) fait passer le héros dans la branche verrouillée où tourne le mode 1 de `UpdatePlayerCarriedEntity` : 5 ticks verrouillés (A5r)
+comptent sans écrire, un 6ᵉ ferait descendre l'objet (INFÉRENCE ; la durée dans le binaire est inconnue).
+
+**Périmètre.** `Alundra.Tests/AlundraShipBarricadeArcTests.cs` (le fichier de g4a : les arcs neufs et le pilote) ; `Alundra.Tests/AlundraArcSupport.cs`
+(les seules entrées de `ArcsThatSlide` de ces arcs) ; l'annexe (`docs/plan-e20-annexe/e20-g3/g4b-route/`) ; ce plan. Aucun code de la DLL.
+
+**Tâches.**
+- ⏳ **T0** : (a) **la route « soulever » du binaire refaite avec les 12 enregistrements** sur la machine MIPS (le harnais de `critic/my392.py`) :
+  ses phases et seuils (se caler, pousser jusqu'au contact, Carré au tick suivant, porter à l'ouest jusqu'à quel X, lancer, attendre le bris,
+  contourner rec9, le portail) et la trace, versées dans `docs/plan-e20-annexe/e20-g3/g4b-route/` ; (b) les règles du pilote de g4a étendues :
+  le Carré du soulèvement à la première image qui suit l'apparition du contact (et hors d'une image de sondage), le Carré du lancer au seuil de
+  (a) ; un roulis observé est un arrêt de l'arc (sauf en (b6)) ; (c) la chute de rec10 dans la DLL après g1b, à 1, 2 et 3 ticks par image : la
+  série des Z mesurée contre celle du binaire ; égale : (b2) l'épingle ; différente : l'écart Q-G3-c (défaut A) consigné et épinglé par un test
+  nommé d'après lui ; (d) les glissements de chaque arc neuf, mesurés, expliqués et épinglés dans `ArcsThatSlide` (un nom par cadence).
+- ⏳ **T1 — Arcs** (sous B1, les 12 enregistrements, à 1, 2 et 3 ticks par image) : (b1) la route « soulever » de bout en bout par le pilote :
+  le contact rec5 depuis la face est, le soulèvement au tick qui suit, le port, le lancer, le bris, puis le portail 0
+  (`WarpDirector.Instance.HasPendingArrival`) ; (b2) lever rec6 : la chute de rec10 selon T0 (c) ; (b3) depuis le dessus de rec5, pousser au sud :
+  y = 297,0, contact rec10, Carré la soulève ; (b4) en plein saut à y = 298 : Carré soulève la caisse du haut (le soulèvement en l'air de g1b,
+  (m7)) ; (b5) Haut le long de la face x = 657 : y = 295,0, contact rec5, Carré soulève ; (b6) **le roulis en portant** : le pilote tient une
+  direction à un sondage alors qu'il porte rec5 : le verrou de B1, le mode 1 qui compte ; l'objet reste en main tant que le verrou ne dépasse
+  pas 5 ticks (A5r) ; la valeur mesurée épinglée ; un objet qui descend ou se perd est un arrêt et une question (la durée du verrou dans le
+  binaire est inconnue).
+- ⏳ **T2 — Plan, verifier frais.**
+
+**Acceptation.** (b1) à (b6) verts sous B1, à 1, 2 et 3 ticks par image, avec la garde des glissements ; la suite verte ; recette de l'auteur
+avec `barricade-m392` : se caler contre le haut de la porte, pousser la caisse basse, la soulever, la lancer, passer.
+
+**Arrêts.** T0 (a) ne trouve pas de route « soulever » de bout en bout avec les 12 enregistrements ; un roulis pendant un arc hors de (b6) ;
+(b6) : l'objet descend ou se perd ; un besoin de toucher au moteur ou à la DLL.
+
+**Budget.** Un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après.
 
 ## 2. Points ouverts
 
