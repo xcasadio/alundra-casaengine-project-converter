@@ -7728,7 +7728,7 @@ avec `barricade-m392` : se caler contre le haut de la porte, pousser la caisse b
 
 **Budget.** Un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après.
 
-### 1.30 E20.h0 et E20.h3 — Le cadre de l'usage d'un objet, la bombe et les haricots ⏳ (détaillée le 2026-10-18, à relire)
+### 1.30 E20.h0 et E20.h3 — Le cadre de l'usage d'un objet, la bombe et les haricots ⏳ (détaillée le 2026-10-18 ; h0a et h3a **READY**, h3b en pause de relecture)
 
 **Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 (`docs/plan-e20-annexe/e20-h4/`, `report.md` §1 et `check.md`) ; lecture
 au binaire de la bombe et des haricots du 2026-10-18 et sa critique adverse (`docs/plan-e20-annexe/e20-h3/bin/report.md`,
@@ -7817,7 +7817,7 @@ qu'il mesurera le manque `(E, 19)`), puis h3a ; h3b après g1a et g2a ; h3c et h
 
 ---
 
-#### 1.30.1 E20.h0a — Le cadre de l'usage d'un objet ⏳ (détaillée le 2026-10-18, à relire)
+#### 1.30.1 E20.h0a — Le cadre de l'usage d'un objet ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `1314242`)
 
 **Prérequis.** E20.c2a ✅ ; la fin du chantier de restructuration et la garde des fichiers neufs (Q-R-7).
 
@@ -7893,7 +7893,7 @@ trou de la table, un autre objet en cours) ; un objet dont le départ n'est pas 
 
 ---
 
-#### 1.30.2 E20.h3a — La bombe sans les mains : D30, E12 et le couvercle `(E, 19)` ⏳ (détaillée le 2026-10-18, à relire)
+#### 1.30.2 E20.h3a — La bombe sans les mains : D30, E12 et le couvercle `(E, 19)` ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `1314242`)
 
 **Prérequis.** L'arc A362 (ligne 9b, joué avant : sa mesure nomme ce qui manque, `(E, 19)` et le retrait de la bombe par E12 prédits ; T0 (e) lit
 son résultat et son banc) ; E20.e (la coupe, avant f4 dans l'ordre ;
@@ -7978,7 +7978,7 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
 
 ---
 
-#### 1.30.3 E20.h3b — La bombe dans les mains : le départ, C62, le pilote et l'annulation ⏳ (détaillée le 2026-10-18, à relire)
+#### 1.30.3 E20.h3b — La bombe dans les mains : le départ, C62, le pilote et l'annulation ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`1314242`, un P2 : une tolérance d'un tick dans ses arrêts), corrigé (révision 3) ; relecture **en pause**, Q-H3B-R)
 
 **Prérequis.** h0a, h3a ; g1a (le lien de portage, `PutInHands`, les modes 0, 1 et 2, les états de portage) et g2a (le Carré qui lance) ; f5 (la
 clé de vitesse d'une entité marquée, D-F5-5) et f6a (la pente d'une entité marquée : la bombe lancée dans l'eau profonde meurt avec l'effet 6) ;
@@ -8025,7 +8025,7 @@ plan, l'index des ADR et un ADR.
   unique sur un mur en l'air, l'explosion sur place au pied d'un mur de classe B, le son `0x18` à l'atterrissage.
 - ⏳ **T2 — Tests de monde, rouges avant T3** (banc d'`ArcRun` sur le champ de chaque scénario, les entités de la carte retirées, la bombe dans
   l'inventaire et comme objet du Rond par `Give(35)` et `SetItem(35)` (`Alundra.Tests/AlundraArcSupport.cs:151-171`), Rond par `Press`
-  (`:454-459`)) : (w1) la chronologie de `bomb_timeline` (naissance, levée, sept étincelles, statut 3 à T+242, explosion, case libre à T+296) ;
+  (`:454-459`)) : (w1) la chronologie de `bomb_timeline`, comparée tick par tick (révision 3) (naissance, levée, sept étincelles, statut 3 à T+242, explosion, case libre à T+296) ;
   (w2) le quatrième départ refusé tant que la première case n'est pas libre ; (w3) les lancers aux quatre directions (portée, arc de 22 ticks,
   son 24) ; (w4) le rebond au mur et l'atterrissage au pied d'un mur ; (w5) le verrou du contrôle pendant le portage : fumée 12 au tick suivant,
   aucune explosion ; (w6a) l'eau profonde, portée : fumée 12 ; (w6b) lancée dans l'eau profonde : l'effet 6 à l'atterrissage ; (w7) Rond pendant un coup d'épée : la bombe naît
@@ -8052,7 +8052,7 @@ plan, l'index des ADR et un ADR.
 ##### Arrêts, budget, retour arrière
 
 - **Arrêts** : un test hors de la liste prédite bouge ; la politique des étincelles ne peut pas être rendue fidèle sans toucher au moteur ; une
-  valeur de chronologie diffère de plus d'un tick ; g1a ou g2a ne sont pas faites.
+  valeur de (w1) ou de (w8) diffère de sa clé, d'un tick ou plus (aucune tolérance, comme h3a ; révision 3) ; g1a ou g2a ne sont pas faites.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : retirer les entrées `0x23` (Rond revient au bouchon silencieux) ; la phase A reste inerte.
 
@@ -8117,6 +8117,7 @@ plan, l'index des ADR et un ADR.
 | O-E-1 | (2026-10-18, relecture d'E20.f4) Les oracles de coupe d'E20.e (`cut_m14`, et `wave_grass` d'E20.f3) ne modélisent pas le pas par image du générateur (le harnais de `bin/fw.py:91-99` d'`e20-f4f6` non plus : `rng0` = `rng1` sur un tick sans tirage) ; la DLL avance d'un pas par tick (ADR-0066) ; le nombre de pas par case coupée dépend de la valeur tirée : sans ce pas dans l'oracle, (w1) et (w2) d'E20.e divergeraient et sa sonde T0 (g2) s'arrêterait. Règle d'f4 à reprendre : la clé refaite avec le pas par image (`_pf`), lue à un tick par image (bloc du §1.20, point 3) | E20.e (T0 (g), à relire à l'exécution) |
 | Q-F4-R | (2026-10-18) E20.f4 : trois relectures (deux REVISE puis la clôture REVISE, un P2 de précision sur la clé `_pf`, corrigé) ; la règle met f4 en pause. Autoriser une relecture de plus après le correctif ? Défaut : non, f4 reste en pause jusqu'à la réponse (son exécution attend de toute façon la fin du chantier) | l'auteur |
 | Q-F6B-R | (2026-10-18) E20.f6b : READY à sa clôture, puis REVISE à la clôture de l'époque ouverte par la précision du point 3 (un P2 sur le point de lecture du générateur, corrigé en révision 4) ; la règle met f6b en pause. Autoriser une relecture de plus après le correctif ? Défaut : non, f6b reste en pause jusqu'à la réponse | l'auteur |
+| Q-H3B-R | (2026-10-18) E20.h3b : deux REVISE puis la clôture REVISE (un P2 : une tolérance d'un tick dans ses arrêts, contraire à son acceptation exacte), corrigé en révision 3 ; la règle met h3b en pause. Autoriser une relecture de plus ? Défaut : non (h3b attend aussi g1a, g2a et la fin du chantier) | l'auteur |
 | Q-G3-a | (2026-10-18) Après E20.g3, les tonneaux, troncs, pierres, torches et les quatre objets du sanctuaire (248 placements, hors de l'histoire actuelle) arrêtent Alundra comme des caisses, mais ne se soulèvent qu'avec g2c ; sur la carte 4, les grosses pierres bloquent des chemins jusqu'au Gant, comme l'original. (A, défaut retenu) tous solides, sans code de plus ; (B) les laisser traversables jusqu'à g2c (un nouvel écart, des tests écrits deux fois) ; (C) faire g2c avant g3 (un T0 qui décode C4 d'abord) | l'auteur |
 | Q-G3-b | (2026-10-18) Entre g3 et g1b, les caisses seraient des murs que l'on ne peut que sauter (sur le navire, il faudrait se caler contre le haut de la porte et sauter sur la seule caisse basse, malgré le roulis). (A, défaut retenu) g3 et g1b fusionnés ensemble ; (B) fusionner g3 d'abord (la recette ne montre que le blocage) | l'auteur |
 | Q-G3-c | (2026-10-18) Quand on soulève la caisse du bas d'une pile, l'original fait tomber celle du dessus de 16 px en 8 images ; le portage garde l'ancienne règle de chute des objets de carte jusqu'à E19.h2 (la chute peut durer autrement, ou se faire d'un coup). (A, défaut retenu) écart documenté jusqu'à E19.h2, mesuré en g4b ; (B) donner tout de suite la loi du binaire à la caisse qui perd son appui (un nouveau site du marqueur de Z logique) ; (C) attendre E19.h2 pour le critère « pile » | l'auteur |
