@@ -1,0 +1,16 @@
+vectors 6000 seed 20261017 mismatches 0
+   853 C63
+   863 C65
+   861 C75
+   894 E1
+   860 E13
+   835 E28
+   834 E3
+coverage E1     8/  8
+coverage E3    25/ 25
+coverage E13   27/ 27
+coverage E28   67/ 67
+coverage C63   95/ 95
+coverage C65   75/ 75
+coverage C75  166/166
+exit 0

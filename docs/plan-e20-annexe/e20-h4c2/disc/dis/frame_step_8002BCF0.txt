@@ -1,0 +1,28 @@
+8002bcf0  nop      
+8002bcf4  bnez     $v0, 0x8002bd04
+8002bcf8  lui      $v1, 0x800e
+8002bcfc  addiu    $v0, $zero, 1
+8002bd00  sw       $v0, -0x3b3c($v1)
+8002bd04  jal      0x8004b1d4
+8002bd08  nop      
+8002bd0c  lui      $v1, 0x7d2b
+8002bd10  lui      $a0, 0x800a
+8002bd14  lw       $v0, -0x78f8($a0)
+8002bd18  ori      $v1, $v1, 0x89dd
+8002bd1c  mult     $v0, $v1
+8002bd20  lui      $v0, 0xe06a
+8002bd24  ori      $v0, $v0, 0x2e7
+8002bd28  mflo     $a2
+8002bd2c  addu     $v0, $a2, $v0
+8002bd30  beqz     $s3, 0x8002bd40
+8002bd34  sw       $v0, -0x78f8($a0)
+8002bd38  lui      $v0, 0x800e
+8002bd3c  sw       $zero, -0x3b3c($v0)
+8002bd40  lw       $ra, 0x20($sp)
+8002bd44  lw       $s3, 0x1c($sp)
+8002bd48  lw       $s2, 0x18($sp)
+8002bd4c  lw       $s1, 0x14($sp)
+8002bd50  lw       $s0, 0x10($sp)
+8002bd54  addiu    $sp, $sp, 0x28
+8002bd58  jr       $ra
+8002bd5c  nop      

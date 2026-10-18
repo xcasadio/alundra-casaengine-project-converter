@@ -1,0 +1,8 @@
+vectors 5000 seed 20261017 mismatches 0 unmodelled 104
+   773 result=0 cast started (weapon other)
+   164 result=0 cast started (weapon staff)
+   3959 result=1
+   104 unmodelled (not a tome / fails modelled earlier)
+instructions of the three functions executed: 142/142
+never executed: 
+exit 0

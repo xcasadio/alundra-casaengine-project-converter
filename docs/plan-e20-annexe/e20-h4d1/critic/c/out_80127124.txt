@@ -1,0 +1,6 @@
+0x80035cfc  sw $v0, 0x7124($v1)                      -> 0x80127124   func 0x80035c64
+0x80035d58  lw $a0, 0x7124($a0)                      -> 0x80127124   func 0x80035c64
+0x80035d6c  sw $v1, 0x7128($v0)                      -> 0x80127128   func 0x80035c64
+0x80035dd4  lw $v0, 0x7124($v0)                      -> 0x80127124   func 0x80035c64
+0x80035de0  lw $v0, 0x7128($v1)                      -> 0x80127128   func 0x80035c64
+5 hits; 1 enclosing function starts (approx, by sp-adjust prologue)

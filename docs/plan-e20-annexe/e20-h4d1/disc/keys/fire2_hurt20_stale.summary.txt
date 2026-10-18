@@ -1,0 +1,13 @@
+options {'pf': True, 'hurt': 20, 'block': [1, 5, 6, 7, 8, 3, -2, 1, 1], 'buf': [9, 9, 9, 9, 9, 9, 9, 9, 9], 'ticks': 60, 'seed': 305419896, 'item': 48, 'out': '../keys/fire2_hurt20_stale.json'}
+t=  1 hero(t 0x32 c 0x32) inuse 0x30 ph 0 cnt 0 mp 3 block [1, 5, 6, 7, 8, 3, -2, 1, 1] buf [9, 9, 9, 9, 9, 9, 9, 9, 9]
+      sound 0
+t= 20 hero(t 0x31 c 0x31) inuse 0x0 ph 0 cnt 19 mp 3 block [9, 9, 9, 9, 9, 9, 9, 9, 9] buf [9, 9, 9, 9, 9, 9, 9, 9, 9]
+      sound 23
+t= 24 hero(t 0x1c c 0x1c) inuse 0x0 ph 0 cnt 19 mp 3 block [9, 9, 9, 9, 9, 9, 9, 9, 9] buf [9, 9, 9, 9, 9, 9, 9, 9, 9]
+      sound 0
+t= 35 hero(t 0x0 c 0x0) inuse 0x0 ph 0 cnt 19 mp 3 block [9, 9, 9, 9, 9, 9, 9, 9, 9] buf [9, 9, 9, 9, 9, 9, 9, 9, 9]
+      sound 0
+
+generator accounting (rng0 = head of the tick, rng1 = after the passes, rng2 = after the frame-end step if --pf):
+ticks with draws: 0
+rng0(t+1) == step(rng1(t)) on every tick: True []

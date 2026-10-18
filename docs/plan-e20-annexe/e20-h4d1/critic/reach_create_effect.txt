@@ -1,0 +1,3 @@
+reachable instructions: 103  functions: 3
+jump tables resolved: 0  unresolved indirect: 0
+reachable accesses to 0x80098708: 0

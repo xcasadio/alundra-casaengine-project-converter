@@ -1,0 +1,33 @@
+# earth1_flat_east: 32 rocks; columns: n birth slot dir_t row | Zspeed(ForceZ at birth) | land(first tick z==terrain+1 raw & fz==0, status 2) E3tick(status 3) animend(reset_AC=1) status4 | final x,y (dx,dy from hero) | sound46 tick
+ 0  22 slot 1 dir=27 row=0 | birth fz after tick 22 (0x38000) | land=37 E3=38 animend=50 st4=51 | (179,135) d=(79,35) | snd46@38
+ 1  22 slot 2 dir=18 row=1 | birth fz after tick 22 (0x38000) | land=37 E3=38 animend=50 st4=51 | (136,40) d=(36,-60) | snd46@38
+ 2  27 slot 3 dir=24 row=3 | birth fz after tick 27 (0x38000) | land=42 E3=43 animend=55 st4=56 | (196,100) d=(96,0) | snd46@43
+ 3  27 slot 4 dir=30 row=0 | birth fz after tick 27 (0x38000) | land=42 E3=43 animend=55 st4=56 | (136,159) d=(36,59) | snd46@43
+ 4  32 slot 5 dir=27 row=0 | birth fz after tick 32 (0x38000) | land=47 E3=48 animend=60 st4=61 | (179,135) d=(79,35) | snd46@48
+ 5  32 slot 6 dir=26 row=0 | birth fz after tick 32 (0x38000) | land=47 E3=48 animend=60 st4=61 | (188,124) d=(88,24) | snd46@48
+ 6  37 slot 7 dir= 0 row=0 | birth fz after tick 37 (0x38000) | land=52 E3=53 animend=65 st4=66 | (100,164) d=(0,64) | snd46@53
+ 7  37 slot 8 dir= 6 row=2 | birth fz after tick 37 (0x38000) | land=52 E3=53 animend=65 st4=66 | (11,124) d=(-89,24) | snd46@53
+ 8  42 slot10 dir= 2 row=0 | birth fz after tick 42 (0x38000) | land=57 E3=58 animend=70 st4=71 | (63,159) d=(-37,59) | snd46@58
+ 9  42 slot 9 dir=27 row=0 | birth fz after tick 42 (0x38000) | land=57 E3=58 animend=70 st4=71 | (179,135) d=(79,35) | snd46@58
+10  47 slot11 dir= 8 row=2 | birth fz after tick 47 (0x38000) | land=62 E3=63 animend=75 st4=76 | (10,100) d=(-90,0) | snd46@63
+11  47 slot12 dir=14 row=1 | birth fz after tick 47 (0x38000) | land=62 E3=63 animend=75 st4=76 | (63,40) d=(-37,-60) | snd46@63
+12  52 slot 1 dir=27 row=0 | birth fz after tick 52 (0x38000) | land=67 E3=68 animend=80 st4=81 | (179,135) d=(79,35) | snd46@68
+13  52 slot 2 dir=10 row=1 | birth fz after tick 52 (0x38000) | land=67 E3=68 animend=80 st4=81 | (11,75) d=(-89,-25) | snd46@68
+14  57 slot 3 dir=16 row=1 | birth fz after tick 57 (0x38000) | land=72 E3=73 animend=85 st4=86 | (100,36) d=(0,-64) | snd46@73
+15  57 slot 4 dir=22 row=3 | birth fz after tick 57 (0x38000) | land=72 E3=73 animend=85 st4=86 | (188,75) d=(88,-25) | snd46@73
+16  62 slot 5 dir=27 row=0 | birth fz after tick 62 (0x48000) | land=81 E3=82 animend=94 st4=95 | (199,144) d=(99,44) | snd46@82
+17  62 slot 6 dir=18 row=1 | birth fz after tick 62 (0x48000) | land=81 E3=82 animend=94 st4=95 | (145,26) d=(45,-74) | snd46@82
+18  67 slot 7 dir=24 row=3 | birth fz after tick 67 (0x48000) | land=86 E3=87 animend=99 st4=100 | (220,100) d=(120,0) | snd46@87
+19  67 slot 8 dir=30 row=0 | birth fz after tick 67 (0x48000) | land=86 E3=87 animend=99 st4=100 | (145,173) d=(45,73) | snd46@87
+20  72 slot10 dir=26 row=0 | birth fz after tick 72 (0x48000) | land=91 E3=92 animend=104 st4=105 | (210,130) d=(110,30) | snd46@92
+21  72 slot 9 dir=27 row=0 | birth fz after tick 72 (0x48000) | land=91 E3=92 animend=104 st4=105 | (199,144) d=(99,44) | snd46@92
+22  77 slot11 dir= 0 row=0 | birth fz after tick 77 (0x48000) | land=96 E3=97 animend=109 st4=110 | (100,180) d=(0,80) | snd46@97
+23  77 slot12 dir= 6 row=2 | birth fz after tick 77 (0x48000) | land=None E3=94 animend=106 st4=107 | (10,126) d=(-90,26) | snd46@94
+24  82 slot 1 dir=27 row=0 | birth fz after tick 82 (0x48000) | land=101 E3=102 animend=114 st4=115 | (199,144) d=(99,44) | snd46@102
+25  82 slot 2 dir= 2 row=0 | birth fz after tick 82 (0x48000) | land=101 E3=102 animend=114 st4=115 | (54,173) d=(-46,73) | snd46@102
+26  87 slot 3 dir= 8 row=2 | birth fz after tick 87 (0x48000) | land=None E3=103 animend=115 st4=116 | (10,100) d=(-90,0) | snd46@103
+27  87 slot 4 dir=14 row=1 | birth fz after tick 87 (0x48000) | land=106 E3=107 animend=119 st4=120 | (54,26) d=(-46,-74) | snd46@107
+28  92 slot13 dir=27 row=0 | birth fz after tick 92 (0x48000) | land=111 E3=112 animend=124 st4=125 | (199,144) d=(99,44) | snd46@112
+29  92 slot14 dir=10 row=1 | birth fz after tick 92 (0x48000) | land=None E3=109 animend=121 st4=122 | (10,73) d=(-90,-27) | snd46@109
+30  97 slot 5 dir=16 row=1 | birth fz after tick 97 (0x48000) | land=116 E3=117 animend=129 st4=130 | (100,20) d=(0,-80) | snd46@117
+31  97 slot 6 dir=22 row=3 | birth fz after tick 97 (0x48000) | land=116 E3=117 animend=129 st4=130 | (210,69) d=(110,-31) | snd46@117

@@ -1,0 +1,7 @@
+t=59 item_in_use=0x2c hero_ta=0x33 kick=0 ents=[(2, 3, 1, 0, 0, '0x132044'), (3, 2, 0, 48, 0, '0x132014'), (4, 2, 0, 176, 0, '0x132014')]
+t=60 item_in_use=0x0 hero_ta=0x31 kick=0 ents=[(2, 3, 1, 0, 0, '0x132044'), (3, 3, 1, 40, 0, '0x132014'), (4, 3, 1, 168, 0, '0x132014')]
+t=61 item_in_use=0x0 hero_ta=0x31 kick=0 ents=[(2, 3, 1, 0, 0, '0x132044'), (3, 3, 1, 32, 0, '0x132014'), (4, 3, 1, 160, 0, '0x132014')]
+t=62 item_in_use=0x0 hero_ta=0x31 kick=0 ents=[(2, 3, 1, 0, 0, '0x132044'), (3, 3, 1, 24, 0, '0x132014'), (4, 3, 1, 152, 0, '0x132014')]
+t=189 item_in_use=0x0 hero_ta=0x0 kick=0 ents=[]
+kicks after the cancel: []
+last tick seen per rock id: {2: 98, 3: 107, 4: 107}

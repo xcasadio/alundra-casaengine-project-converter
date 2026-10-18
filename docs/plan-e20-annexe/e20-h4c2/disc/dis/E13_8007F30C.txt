@@ -1,0 +1,27 @@
+8007f30c  addiu    $sp, $sp, -0x18
+8007f310  move     $a1, $a0
+8007f314  sw       $ra, 0x10($sp)
+8007f318  lw       $v0, 0x88($a1)
+8007f31c  addiu    $a2, $zero, 1
+8007f320  bne      $v0, $a2, 0x8007f348
+8007f324  addiu    $v0, $zero, 2
+8007f328  lw       $v0, 0xac($a1)
+8007f32c  nop      
+8007f330  bne      $v0, $a2, 0x8007f368
+8007f334  nop      
+8007f338  jal      0x8003a59c
+8007f33c  addiu    $a1, $zero, -1
+8007f340  j        0x8007f368
+8007f344  nop      
+8007f348  lui      $a0, 0x800e
+8007f34c  lw       $v1, 0x6c($a1)
+8007f350  sw       $v0, -0x278c($a0)
+8007f354  addiu    $v0, $zero, -0x31
+8007f358  sw       $a2, 0x88($a1)
+8007f35c  ori      $v1, $v1, 0x40
+8007f360  and      $v1, $v1, $v0
+8007f364  sw       $v1, 0x6c($a1)
+8007f368  lw       $ra, 0x10($sp)
+8007f36c  addiu    $sp, $sp, 0x18
+8007f370  jr       $ra
+8007f374  nop      

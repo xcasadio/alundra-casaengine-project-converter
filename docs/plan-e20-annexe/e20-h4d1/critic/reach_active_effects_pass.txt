@@ -1,0 +1,1 @@
+0x80038E84 + its 8-entry jump table 0x800238DC: instructions 339 functions 9 unresolved [(2147717116, 'jr $v0')] seed refs []

@@ -1,0 +1,25 @@
+8007eda0  addiu    $sp, $sp, -0x18
+8007eda4  sw       $ra, 0x10($sp)
+8007eda8  lw       $v1, 0x88($a0)
+8007edac  addiu    $v0, $zero, 1
+8007edb0  bne      $v1, $v0, 0x8007edd8
+8007edb4  nop      
+8007edb8  lw       $v0, 0xac($a0)
+8007edbc  nop      
+8007edc0  bne      $v0, $v1, 0x8007edd8
+8007edc4  nop      
+8007edc8  jal      0x8003a59c
+8007edcc  addiu    $a1, $zero, -1
+8007edd0  j        0x8007edf4
+8007edd4  nop      
+8007edd8  lw       $v0, 0x6c($a0)
+8007eddc  addiu    $v1, $zero, 1
+8007ede0  sw       $v1, 0x88($a0)
+8007ede4  addiu    $v1, $zero, -0x31
+8007ede8  ori      $v0, $v0, 0x40
+8007edec  and      $v0, $v0, $v1
+8007edf0  sw       $v0, 0x6c($a0)
+8007edf4  lw       $ra, 0x10($sp)
+8007edf8  addiu    $sp, $sp, 0x18
+8007edfc  jr       $ra
+8007ee00  nop      

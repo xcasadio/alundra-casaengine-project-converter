@@ -1,0 +1,4 @@
+reachable instructions: 324  functions: 7
+jump tables resolved: 0  unresolved indirect: 1
+   unresolved 0x800831e4 jr $t2
+reachable accesses to 0x80098708: 0

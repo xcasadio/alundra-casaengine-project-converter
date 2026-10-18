@@ -1,0 +1,68 @@
+8002cda0  addiu    $sp, $sp, -0x58
+8002cda4  sw       $s0, 0x30($sp)
+8002cda8  move     $s0, $a1
+8002cdac  sw       $s1, 0x34($sp)
+8002cdb0  move     $s1, $a2
+8002cdb4  sw       $s2, 0x38($sp)
+8002cdb8  move     $s2, $a3
+8002cdbc  sw       $ra, 0x54($sp)
+8002cdc0  sw       $fp, 0x50($sp)
+8002cdc4  sw       $s7, 0x4c($sp)
+8002cdc8  sw       $s6, 0x48($sp)
+8002cdcc  sw       $s5, 0x44($sp)
+8002cdd0  sw       $s4, 0x40($sp)
+8002cdd4  sw       $s3, 0x3c($sp)
+8002cdd8  jal      0x8002c894
+8002cddc  sw       $a0, 0x58($sp)
+8002cde0  lui      $v1, 0x800e
+8002cde4  lw       $v0, 0x42b8($v1)
+8002cde8  nop      
+8002cdec  beqz     $v0, 0x8002ce14
+8002cdf0  addiu    $v0, $s0, -0xa0
+8002cdf4  sw       $zero, 0x42b8($v1)
+8002cdf8  lui      $v1, 0x800e
+8002cdfc  sw       $v0, 0x4328($v1)
+8002ce00  lui      $v1, 0x800e
+8002ce04  subu     $v0, $s1, $s2
+8002ce08  addiu    $v0, $v0, -0x88
+8002ce0c  j        0x8002ce80
+8002ce10  sw       $v0, 0x432c($v1)
+8002ce14  lui      $a3, 0x800e
+8002ce18  lui      $a2, 0x800e
+8002ce1c  addiu    $a2, $a2, 0x4338
+8002ce20  lui      $v1, 0x800e
+8002ce24  lw       $a1, 0x4328($a3)
+8002ce28  lw       $a0, 0x14($a2)
+8002ce2c  lw       $v1, -0x2790($v1)
+8002ce30  addiu    $v0, $a1, 0xa0
+8002ce34  subu     $v0, $s0, $v0
+8002ce38  sra      $v0, $v0, 4
+8002ce3c  addu     $v0, $v0, $a0
+8002ce40  addu     $v0, $v0, $v1
+8002ce44  addu     $a1, $a1, $v0
+8002ce48  sw       $a1, 0x4328($a3)
+8002ce4c  lui      $a3, 0x800e
+8002ce50  subu     $v0, $s1, $s2
+8002ce54  lw       $a1, 0x432c($a3)
+8002ce58  lw       $a0, 0x18($a2)
+8002ce5c  addiu    $v1, $a1, 0x88
+8002ce60  subu     $v0, $v0, $v1
+8002ce64  sra      $v0, $v0, 4
+8002ce68  lui      $v1, 0x800e
+8002ce6c  lw       $v1, -0x278c($v1)
+8002ce70  addu     $v0, $v0, $a0
+8002ce74  addu     $v0, $v0, $v1
+8002ce78  addu     $a1, $a1, $v0
+8002ce7c  sw       $a1, 0x432c($a3)
+8002ce80  lui      $a0, 0x800e
+8002ce84  lw       $v1, 0x4328($a0)
+8002ce88  lui      $v0, 0x800e
+8002ce8c  sw       $zero, -0x2790($v0)
+8002ce90  lui      $v0, 0x800e
+8002ce94  bgez     $v1, 0x8002cea4
+8002ce98  sw       $zero, -0x278c($v0)
+8002ce9c  j        0x8002ceb8
+8002cea0  sw       $zero, 0x4328($a0)
+8002cea4  slti     $v0, $v1, 0x3a0
+8002cea8  bnez     $v0, 0x8002cebc
+8002ceac  lui      $v1, 0x2aaa

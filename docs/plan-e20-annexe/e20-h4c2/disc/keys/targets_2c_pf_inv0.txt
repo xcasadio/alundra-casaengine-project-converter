@@ -1,0 +1,6 @@
+target (140,100): hits 10 dmg 640 first tick 45 by {(17, 64): 10}
+target (100,140): hits 6 dmg 384 first tick 61 by {(17, 64): 6}
+target (180,100): hits 7 dmg 448 first tick 77 by {(17, 64): 7}
+target (100,60): hits 6 dmg 384 first tick 141 by {(17, 64): 6}
+target (60,100): hits 3 dmg 192 first tick 157 by {(17, 64): 3}
+target (140,140): hits 6 dmg 384 first tick 61 by {(17, 64): 6}

@@ -1,0 +1,29 @@
+options {'pf': True, 'hurt': 60, 'block': None, 'buf': None, 'ticks': 230, 'seed': 305419896, 'item': 48, 'out': '../keys/fire2_hurt60.json'}
+t=  1 hero(t 0x32 c 0x32) inuse 0x30 ph 0 cnt 0 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+      sound 0
+t= 33 hero(t 0x33 c 0x33) inuse 0x30 ph 0 cnt 32 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+      sound 0
+t= 34 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 33 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0] slot1(st1 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+      sound 0
+t= 35 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 34 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0] slot1(st2 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+t= 50 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 49 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0] slot1(st2 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+t= 60 hero(t 0x31 c 0x31) inuse 0x0 ph 1 cnt 59 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0] slot1(st4 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+      effect_3BDD8 id=19 anim=2 x=6553600 y=9487360 z=2 (raw args [0, 19, 2, 6553600, 9487360, 2])
+      effect_3BDD8 id=19 anim=2 x=4029736 y=8236176 z=2 (raw args [0, 19, 2, 4029736, 8236176, 2])
+      effect_3BDD8 id=19 anim=2 x=4195840 y=6553600 z=2 (raw args [0, 19, 2, 4195840, 6553600, 2])
+      effect_3BDD8 id=19 anim=2 x=6008428 y=6190152 z=2 (raw args [0, 19, 2, 6008428, 6190152, 2])
+      effect_3BDD8 id=19 anim=2 x=6553600 y=3765760 z=2 (raw args [0, 19, 2, 6553600, 3765760, 2])
+      effect_3BDD8 id=19 anim=2 x=9560191 y=4549206 z=2 (raw args [0, 19, 2, 9560191, 4549206, 2])
+      effect_3BDD8 id=19 anim=2 x=8432128 y=6553600 z=2 (raw args [0, 19, 2, 8432128, 6553600, 2])
+      effect_3BDD8 id=19 anim=2 x=7291537 y=7045558 z=2 (raw args [0, 19, 2, 7291537, 7045558, 2])
+      sound 23
+t= 61 hero(t 0x31 c 0x31) inuse 0x0 ph 1 cnt 59 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+t= 64 hero(t 0x1c c 0x1c) inuse 0x0 ph 1 cnt 59 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+      sound 0
+t= 75 hero(t 0x0 c 0x0) inuse 0x0 ph 1 cnt 59 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+      sound 0
+
+generator accounting (rng0 = head of the tick, rng1 = after the passes, rng2 = after the frame-end step if --pf):
+  t=60 : 8 draw(s) in the passes (rng0 0x85e33d01 -> rng1 0x1752f549)
+ticks with draws: 1
+rng0(t+1) == step(rng1(t)) on every tick: True []

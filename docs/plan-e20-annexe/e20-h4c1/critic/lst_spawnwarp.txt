@@ -1,0 +1,130 @@
+80039F58  addiu    $sp, $sp, -0x60
+80039F5C  sw       $s4, 0x50($sp)
+80039F60  move     $s4, $a0
+80039F64  sw       $s3, 0x4c($sp)
+80039F68  move     $s3, $a1
+80039F6C  sw       $s2, 0x48($sp)
+80039F70  move     $s2, $a2
+80039F74  sw       $s5, 0x54($sp)
+80039F78  move     $s5, $a3
+80039F7C  move     $a0, $s3
+80039F80  move     $a1, $s2
+80039F84  addiu    $a2, $sp, 0x38
+80039F88  addiu    $a3, $sp, 0x3c
+80039F8C  sw       $ra, 0x58($sp)
+80039F90  sw       $s1, 0x44($sp)
+80039F94  jal      0x80039b28
+80039F98  sw       $s0, 0x40($sp)
+80039F9C  move     $s1, $v0
+80039FA0  beqz     $s1, 0x8003a020
+80039FA4  move     $v0, $zero
+80039FA8  jal      0x80039ad0
+80039FAC  nop      
+80039FB0  move     $s0, $v0
+80039FB4  beqz     $s0, 0x8003a020
+80039FB8  move     $v0, $zero
+80039FBC  beqz     $s3, 0x80039fc8
+80039FC0  move     $a2, $s2
+80039FC4  addiu    $a2, $a2, 0x100
+80039FC8  addiu    $v0, $zero, -1
+80039FCC  sw       $v0, 0x14($sp)
+80039FD0  lw       $v0, 0x70($sp)
+80039FD4  nop      
+80039FD8  sw       $v0, 0x1c($sp)
+80039FDC  lw       $v0, 0x74($sp)
+80039FE0  move     $a0, $s0
+80039FE4  sw       $v0, 0x20($sp)
+80039FE8  lw       $v0, 0x78($sp)
+80039FEC  move     $a1, $s4
+80039FF0  sw       $a2, 0x10($sp)
+80039FF4  sw       $s5, 0x18($sp)
+80039FF8  sw       $zero, 0x24($sp)
+80039FFC  sw       $v0, 0x28($sp)
+8003A000  lw       $v0, 0x38($sp)
+8003A004  move     $a2, $s1
+8003A008  sw       $v0, 0x2c($sp)
+8003A00C  lw       $v0, 0x3c($sp)
+8003A010  move     $a3, $zero
+8003A014  jal      0x80039d04
+8003A018  sw       $v0, 0x30($sp)
+8003A01C  move     $v0, $s0
+8003A020  lw       $ra, 0x58($sp)
+8003A024  lw       $s5, 0x54($sp)
+8003A028  lw       $s4, 0x50($sp)
+8003A02C  lw       $s3, 0x4c($sp)
+8003A030  lw       $s2, 0x48($sp)
+8003A034  lw       $s1, 0x44($sp)
+8003A038  lw       $s0, 0x40($sp)
+8003A03C  addiu    $sp, $sp, 0x60
+8003A040  jr       $ra
+8003A044  nop      
+8003A048  addiu    $sp, $sp, -0x58
+8003A04C  sw       $s0, 0x40($sp)
+8003A050  move     $s0, $a0
+8003A054  sw       $s3, 0x4c($sp)
+8003A058  move     $s3, $a1
+8003A05C  sw       $s2, 0x48($sp)
+8003A060  move     $s2, $a2
+8003A064  sw       $s1, 0x44($sp)
+8003A068  move     $s1, $a3
+8003A06C  move     $a3, $s0
+8003A070  lui      $v0, 0x8013
+8003A074  addiu    $a2, $v0, 0x4368
+8003A078  addiu    $t0, $a2, 0x290
+8003A07C  sw       $ra, 0x50($sp)
+8003A080  lw       $v0, ($a2)
+8003A084  lw       $v1, 4($a2)
+8003A088  lw       $a0, 8($a2)
+8003A08C  lw       $a1, 0xc($a2)
+8003A090  sw       $v0, ($a3)
+8003A094  sw       $v1, 4($a3)
+8003A098  sw       $a0, 8($a3)
+8003A09C  sw       $a1, 0xc($a3)
+8003A0A0  addiu    $a2, $a2, 0x10
+8003A0A4  bne      $a2, $t0, 0x8003a080
+8003A0A8  addiu    $a3, $a3, 0x10
+8003A0AC  lw       $v0, ($a2)
+8003A0B0  nop      
+8003A0B4  sw       $v0, ($a3)
+8003A0B8  move     $a0, $s2
+8003A0BC  move     $a1, $s1
+8003A0C0  addiu    $a2, $sp, 0x38
+8003A0C4  jal      0x80039b28
+8003A0C8  addiu    $a3, $sp, 0x3c
+8003A0CC  move     $a2, $v0
+8003A0D0  bnez     $a2, 0x8003a0e0
+8003A0D4  move     $t0, $s0
+8003A0D8  j        0x8003a198
+8003A0DC  move     $v0, $zero
+8003A0E0  lw       $t2, ($s0)
+8003A0E4  lui      $v0, 0x8013
+8003A0E8  addiu    $a3, $v0, 0x4368
+8003A0EC  addiu    $t1, $a3, 0x290
+8003A0F0  lw       $v0, ($a3)
+8003A0F4  lw       $v1, 4($a3)
+8003A0F8  lw       $a0, 8($a3)
+8003A0FC  lw       $a1, 0xc($a3)
+8003A100  sw       $v0, ($t0)
+8003A104  sw       $v1, 4($t0)
+8003A108  sw       $a0, 8($t0)
+8003A10C  sw       $a1, 0xc($t0)
+8003A110  addiu    $a3, $a3, 0x10
+8003A114  bne      $a3, $t1, 0x8003a0f0
+8003A118  addiu    $t0, $t0, 0x10
+8003A11C  lw       $v0, ($a3)
+8003A120  nop      
+8003A124  sw       $v0, ($t0)
+8003A128  sw       $t2, ($s0)
+8003A12C  beqz     $s2, 0x8003a138
+8003A130  move     $a3, $s1
+8003A134  addiu    $a3, $a3, 0x100
+8003A138  addiu    $v0, $zero, -1
+8003A13C  sw       $v0, 0x14($sp)
+8003A140  lw       $v0, 0x68($sp)
+8003A144  nop      
+8003A148  sw       $v0, 0x18($sp)
+8003A14C  lw       $v0, 0x6c($sp)
+8003A150  nop      
+8003A154  sw       $v0, 0x1c($sp)
+8003A158  lw       $v0, 0x70($sp)
+8003A15C  nop      

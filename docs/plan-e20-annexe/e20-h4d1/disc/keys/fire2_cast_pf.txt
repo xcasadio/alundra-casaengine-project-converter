@@ -1,0 +1,617 @@
+t=  1 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 0 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x12345678 rng1 0x12345678 rng2 0xb806e07f ents {}
+       journal sound(0)
+       journal pass_38E84_effects_stub
+t=  2 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 1 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xb806e07f rng1 0xb806e07f rng2 0x24d2c78a ents {}
+       journal pass_38E84_effects_stub
+t=  3 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 2 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x24d2c78a rng1 0x24d2c78a rng2 0x5d571f09 ents {}
+       journal pass_38E84_effects_stub
+t=  4 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 3 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x5d571f09 rng1 0x5d571f09 rng2 0xafbe9eac ents {}
+       journal pass_38E84_effects_stub
+t=  5 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 4 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xafbe9eac rng1 0xafbe9eac rng2 0x3dc70963 ents {}
+       journal pass_38E84_effects_stub
+t=  6 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 5 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x3dc70963 rng1 0x3dc70963 rng2 0xa3e4185e ents {}
+       journal pass_38E84_effects_stub
+t=  7 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 6 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xa3e4185e rng1 0xa3e4185e rng2 0x6b275a0d ents {}
+       journal pass_38E84_effects_stub
+t=  8 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 7 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6b275a0d rng1 0x6b275a0d rng2 0xe9c2b520 ents {}
+       journal pass_38E84_effects_stub
+t=  9 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 8 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xe9c2b520 rng1 0xe9c2b520 rng2 0xecce7f87 ents {}
+       journal pass_38E84_effects_stub
+t= 10 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 9 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xecce7f87 rng1 0xecce7f87 rng2 0x279a5972 ents {}
+       journal pass_38E84_effects_stub
+t= 11 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 10 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x279a5972 rng1 0x279a5972 rng2 0x5aad3c51 ents {}
+       journal pass_38E84_effects_stub
+t= 12 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 11 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x5aad3c51 rng1 0x5aad3c51 rng2 0x8bd96dd4 ents {}
+       journal pass_38E84_effects_stub
+t= 13 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 12 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x8bd96dd4 rng1 0x8bd96dd4 rng2 0xed8046eb ents {}
+       journal pass_38E84_effects_stub
+t= 14 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 13 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xed8046eb rng1 0xed8046eb rng2 0x3693fec6 ents {}
+       journal pass_38E84_effects_stub
+t= 15 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 14 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x3693fec6 rng1 0x3693fec6 rng2 0xaac6e9d5 ents {}
+       journal pass_38E84_effects_stub
+t= 16 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 15 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xaac6e9d5 rng1 0xaac6e9d5 rng2 0x090bdcc8 ents {}
+       journal pass_38E84_effects_stub
+t= 17 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 16 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x090bdcc8 rng1 0x090bdcc8 rng2 0xc666a38f ents {}
+       journal pass_38E84_effects_stub
+t= 18 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 17 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xc666a38f rng1 0xc666a38f rng2 0x6091bc5a ents {}
+       journal pass_38E84_effects_stub
+t= 19 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 18 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6091bc5a rng1 0x6091bc5a rng2 0xd123c699 ents {}
+       journal pass_38E84_effects_stub
+t= 20 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 19 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xd123c699 rng1 0xd123c699 rng2 0xa24755fc ents {}
+       journal pass_38E84_effects_stub
+t= 21 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 20 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xa24755fc rng1 0xa24755fc rng2 0xa2571973 ents {}
+       journal pass_38E84_effects_stub
+t= 22 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 21 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xa2571973 rng1 0xa2571973 rng2 0x0f8a862e ents {}
+       journal pass_38E84_effects_stub
+t= 23 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 22 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x0f8a862e rng1 0x0f8a862e rng2 0x6c88769d ents {}
+       journal pass_38E84_effects_stub
+t= 24 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 23 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6c88769d rng1 0x6c88769d rng2 0x2f116d70 ents {}
+       journal pass_38E84_effects_stub
+t= 25 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 24 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x2f116d70 rng1 0x2f116d70 rng2 0xe7d66c97 ents {}
+       journal pass_38E84_effects_stub
+t= 26 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 25 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xe7d66c97 rng1 0xe7d66c97 rng2 0xbcff9042 ents {}
+       journal pass_38E84_effects_stub
+t= 27 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 26 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xbcff9042 rng1 0xbcff9042 rng2 0x4252dde1 ents {}
+       journal pass_38E84_effects_stub
+t= 28 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 27 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x4252dde1 rng1 0x4252dde1 rng2 0x9c7bf724 ents {}
+       journal pass_38E84_effects_stub
+t= 29 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 28 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x9c7bf724 rng1 0x9c7bf724 rng2 0x65bca0fb ents {}
+       journal pass_38E84_effects_stub
+t= 30 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 29 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x65bca0fb rng1 0x65bca0fb rng2 0x3f904e96 ents {}
+       journal pass_38E84_effects_stub
+t= 31 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 30 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x3f904e96 rng1 0x3f904e96 rng2 0x6b3e2065 ents {}
+       journal pass_38E84_effects_stub
+t= 32 hero(anim_t 0x32 anim_c 0x32) inuse 0x30 phase 0 counter 31 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6b3e2065 rng1 0x6b3e2065 rng2 0x76590718 ents {}
+       journal pass_38E84_effects_stub
+t= 33 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 0 counter 32 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x76590718 rng1 0x76590718 rng2 0x9918fa9f ents {}
+       journal sound(0)
+       journal pass_38E84_effects_stub
+t= 34 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 33 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x9918fa9f rng1 0x9918fa9f rng2 0x24ce752a ents {1: (1, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal sound(0)
+       journal pass_38E84_effects_stub
+t= 35 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 34 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x24ce752a rng1 0x24ce752a rng2 0x5366a229 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 36 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 35 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x5366a229 rng1 0x5366a229 rng2 0x0eaef14c ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 37 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 36 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x0eaef14c rng1 0x0eaef14c rng2 0xd055fd83 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 38 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 37 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xd055fd83 rng1 0xd055fd83 rng2 0x4b51f7fe ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 39 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 38 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x4b51f7fe rng1 0x4b51f7fe rng2 0x718e072d ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 40 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 39 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x718e072d rng1 0x718e072d rng2 0x176c49c0 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 41 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 40 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x176c49c0 rng1 0x176c49c0 rng2 0x2f9d6da7 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 42 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 41 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x2f9d6da7 rng1 0x2f9d6da7 rng2 0x310d0b12 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 43 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 42 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x310d0b12 rng1 0x310d0b12 rng2 0xd99f3371 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 44 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 43 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xd99f3371 rng1 0xd99f3371 rng2 0xc25be474 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 45 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 44 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xc25be474 rng1 0xc25be474 rng2 0xda7c4f0b ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 46 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 45 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xda7c4f0b rng1 0xda7c4f0b rng2 0xa9e02266 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 47 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 46 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xa9e02266 rng1 0xa9e02266 rng2 0x0e724af5 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 48 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 47 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x0e724af5 rng1 0x0e724af5 rng2 0xbb58d568 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 49 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 48 mp 3 block [1, 0, 2, 0, 2, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xbb58d568 rng1 0xbb58d568 rng2 0xc6c6e5af ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 50 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 49 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xc6c6e5af rng1 0xc6c6e5af rng2 0xf26df1fa ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 51 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 50 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xf26df1fa rng1 0xf26df1fa rng2 0xb6d0b1b9 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 52 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 51 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xb6d0b1b9 rng1 0xb6d0b1b9 rng2 0x90c2709c ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 53 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 52 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x90c2709c rng1 0x90c2709c rng2 0xfcbcb593 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 54 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 53 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xfcbcb593 rng1 0xfcbcb593 rng2 0x532f6dce ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 55 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 54 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x532f6dce rng1 0x532f6dce rng2 0x19b90bbd ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 56 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 55 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x19b90bbd rng1 0x19b90bbd rng2 0x5e304a10 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 57 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 56 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x5e304a10 rng1 0x5e304a10 rng2 0x486c82b7 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 58 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 57 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x486c82b7 rng1 0x486c82b7 rng2 0xc7c7c9e2 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 59 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 58 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xc7c7c9e2 rng1 0xc7c7c9e2 rng2 0x85e33d01 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 60 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 59 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x85e33d01 rng1 0x85e33d01 rng2 0xcd6635c4 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 61 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 60 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xcd6635c4 rng1 0xcd6635c4 rng2 0xa058511b ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 62 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 61 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xa058511b rng1 0xa058511b rng2 0x5e987a36 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 63 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 62 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x5e987a36 rng1 0x5e987a36 rng2 0x08846985 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 64 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 63 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x08846985 rng1 0x08846985 rng2 0xc18847b8 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 65 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 64 mp 3 block [1, 0, 3, 0, 3, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xc18847b8 rng1 0xc18847b8 rng2 0xc55964bf ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 66 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 65 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xc55964bf rng1 0xc55964bf rng2 0x449532ca ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 67 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 66 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x449532ca rng1 0x449532ca rng2 0x1752f549 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 68 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 67 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x1752f549 rng1 0x1752f549 rng2 0x408ed3ec ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 69 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 68 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x408ed3ec rng1 0x408ed3ec rng2 0xdfc441a3 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 70 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 69 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xdfc441a3 rng1 0xdfc441a3 rng2 0xb157e79e ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 71 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 70 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xb157e79e rng1 0xb157e79e rng2 0x11ca844d ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 72 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 71 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x11ca844d rng1 0x11ca844d rng2 0x6efa6e60 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 73 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 72 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6efa6e60 rng1 0x6efa6e60 rng2 0x1dccabc7 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 74 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 73 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x1dccabc7 rng1 0x1dccabc7 rng2 0x2774ccb2 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 75 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 74 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x2774ccb2 rng1 0x2774ccb2 rng2 0xbdaffa91 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 76 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 75 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xbdaffa91 rng1 0xbdaffa91 rng2 0xb1c7eb14 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 77 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 76 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xb1c7eb14 rng1 0xb1c7eb14 rng2 0x9729a72b ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 78 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 77 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x9729a72b rng1 0x9729a72b rng2 0xbd0e5606 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 79 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 78 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xbd0e5606 rng1 0xbd0e5606 rng2 0x22d57c15 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 80 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 79 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x22d57c15 rng1 0x22d57c15 rng2 0x4aa45e08 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 81 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 80 mp 3 block [1, 1, 4, 1, 4, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x4aa45e08 rng1 0x4aa45e08 rng2 0xf9f977cf ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 82 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 81 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xf9f977cf rng1 0xf9f977cf rng2 0x60a9379a ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 83 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 82 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x60a9379a rng1 0x60a9379a rng2 0x6a1e6cd9 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 84 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 83 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6a1e6cd9 rng1 0x6a1e6cd9 rng2 0x02611b3c ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 85 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 84 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x02611b3c rng1 0x02611b3c rng2 0xc4e5a1b3 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 86 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 85 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xc4e5a1b3 rng1 0xc4e5a1b3 rng2 0x4e40656e ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 87 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 86 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x4e40656e rng1 0x4e40656e rng2 0xa3c370dd ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 88 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 87 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xa3c370dd rng1 0xa3c370dd rng2 0xb5a7b6b0 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 89 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 88 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xb5a7b6b0 rng1 0xb5a7b6b0 rng2 0x1286e8d7 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 90 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 89 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x1286e8d7 rng1 0x1286e8d7 rng2 0x28991382 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 91 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 90 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x28991382 rng1 0x28991382 rng2 0x98d66c21 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 92 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 91 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x98d66c21 rng1 0x98d66c21 rng2 0xd7ee0464 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 93 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 92 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xd7ee0464 rng1 0xd7ee0464 rng2 0x3a09513b ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 94 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 93 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x3a09513b rng1 0x3a09513b rng2 0x6ad6b5d6 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 95 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 94 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6ad6b5d6 rng1 0x6ad6b5d6 rng2 0x0c0682a5 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 96 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 95 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x0c0682a5 rng1 0x0c0682a5 rng2 0x40aa1858 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 97 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 96 mp 3 block [1, 1, 5, 1, 5, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x40aa1858 rng1 0x40aa1858 rng2 0xc9101edf ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 98 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 97 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xc9101edf rng1 0xc9101edf rng2 0x264f006a ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t= 99 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 98 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x264f006a rng1 0x264f006a rng2 0x0da41869 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=100 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 99 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x0da41869 rng1 0x0da41869 rng2 0xd6c6468c ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=101 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 100 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xd6c6468c rng1 0xd6c6468c rng2 0x9ad9d5c3 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=102 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 101 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x9ad9d5c3 rng1 0x9ad9d5c3 rng2 0x409de73e ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=103 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 102 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x409de73e rng1 0x409de73e rng2 0x46e4d16d ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=104 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 103 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x46e4d16d rng1 0x46e4d16d rng2 0xee552300 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=105 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 104 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xee552300 rng1 0xee552300 rng2 0x10a439e7 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=106 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 105 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x10a439e7 rng1 0x10a439e7 rng2 0xa5f99e52 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=107 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 106 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xa5f99e52 rng1 0xa5f99e52 rng2 0x606791b1 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=108 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 107 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x606791b1 rng1 0x606791b1 rng2 0x6c8581b4 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=109 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 108 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6c8581b4 rng1 0x6c8581b4 rng2 0xaf504f4b ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=110 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 109 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xaf504f4b rng1 0xaf504f4b rng2 0x23c699a6 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=111 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 110 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x23c699a6 rng1 0x23c699a6 rng2 0xe7f87d35 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=112 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 111 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xe7f87d35 rng1 0xe7f87d35 rng2 0x05d676a8 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=113 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 112 mp 3 block [1, 1, 6, 1, 6, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x05d676a8 rng1 0x05d676a8 rng2 0xa64659ef ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=114 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 113 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xa64659ef rng1 0xa64659ef rng2 0xdf6b8d3a ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=115 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 114 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xdf6b8d3a rng1 0xdf6b8d3a rng2 0x5994f7f9 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=116 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 115 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x5994f7f9 rng1 0x5994f7f9 rng2 0x2a8b55dc ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=117 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 116 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x2a8b55dc rng1 0x2a8b55dc rng2 0x0399ddd3 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=118 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 117 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x0399ddd3 rng1 0x0399ddd3 rng2 0x9d656d0e ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=119 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 118 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x9d656d0e rng1 0x9d656d0e rng2 0x2fafa5fd ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=120 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 119 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x2fafa5fd rng1 0x2fafa5fd rng2 0x755fb350 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=121 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 120 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x755fb350 rng1 0x755fb350 rng2 0x996d9ef7 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=122 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 121 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x996d9ef7 rng1 0x996d9ef7 rng2 0x4c9b6d22 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=123 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 122 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x4c9b6d22 rng1 0x4c9b6d22 rng2 0x1eb46b41 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=124 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 123 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x1eb46b41 rng1 0x1eb46b41 rng2 0xb07b6304 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=125 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 124 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xb07b6304 rng1 0xb07b6304 rng2 0xd897a15b ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=126 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 125 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xd897a15b rng1 0xd897a15b rng2 0x89f30176 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=127 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 126 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x89f30176 rng1 0x89f30176 rng2 0xdfcc6bc5 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=128 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 127 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xdfcc6bc5 rng1 0xdfcc6bc5 rng2 0xc4a678f8 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=129 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 128 mp 3 block [1, 1, 7, 1, 7, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xc4a678f8 rng1 0xc4a678f8 rng2 0x248528ff ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=130 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 129 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x248528ff rng1 0x248528ff rng2 0x1023de0a ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=131 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 130 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x1023de0a rng1 0x1023de0a rng2 0x2ee20b89 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=132 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 131 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x2ee20b89 rng1 0x2ee20b89 rng2 0x26bd492c ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=133 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 132 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x26bd492c rng1 0x26bd492c rng2 0x645eb9e3 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=134 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 133 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x645eb9e3 rng1 0x645eb9e3 rng2 0x47cbf6de ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=135 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 134 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x47cbf6de rng1 0x47cbf6de rng2 0xdfe4ee8d ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=136 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 135 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xdfe4ee8d rng1 0xdfe4ee8d rng2 0x976467a0 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=137 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 136 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x976467a0 rng1 0x976467a0 rng2 0xd56c1807 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=138 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 137 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xd56c1807 rng1 0xd56c1807 rng2 0x6bc37ff2 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=139 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 138 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6bc37ff2 rng1 0x6bc37ff2 rng2 0x2f4df8d1 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=140 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 139 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x2f4df8d1 rng1 0x2f4df8d1 rng2 0x48fca854 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=141 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 140 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x48fca854 rng1 0x48fca854 rng2 0x62b8476b ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=142 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 141 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x62b8476b rng1 0x62b8476b rng2 0xf5b0ed46 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=143 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 142 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xf5b0ed46 rng1 0xf5b0ed46 rng2 0xb1e34e55 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=144 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 143 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xb1e34e55 rng1 0xb1e34e55 rng2 0xbfd71f48 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=145 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 144 mp 3 block [1, 2, 8, 2, 8, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xbfd71f48 rng1 0xbfd71f48 rng2 0x05f58c0f ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=146 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 145 mp 3 block [1, 2, 9, 2, 9, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x05f58c0f rng1 0x05f58c0f rng2 0x46dcf2da ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=147 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 146 mp 3 block [1, 2, 9, 2, 9, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x46dcf2da rng1 0x46dcf2da rng2 0x87bc5319 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=148 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 147 mp 3 block [1, 2, 9, 2, 9, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x87bc5319 rng1 0x87bc5319 rng2 0x00a9207c ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=149 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 148 mp 3 block [1, 2, 9, 2, 9, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x00a9207c rng1 0x00a9207c rng2 0xf5a169f3 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=150 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 149 mp 3 block [1, 2, 9, 2, 9, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xf5a169f3 rng1 0xf5a169f3 rng2 0xc14684ae ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=151 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 150 mp 3 block [1, 2, 9, 2, 9, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xc14684ae rng1 0xc14684ae rng2 0xb685ab1d ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=152 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 151 mp 3 block [1, 2, 9, 2, 9, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xb685ab1d rng1 0xb685ab1d rng2 0xe1403ff0 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=153 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 152 mp 3 block [1, 2, 9, 2, 9, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xe1403ff0 rng1 0xe1403ff0 rng2 0xa468a517 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 0, 192)}
+       journal pass_38E84_effects_stub
+t=154 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 153 mp 3 block [1, 2, 9, 2, 9, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xa468a517 rng1 0xa468a517 rng2 0xc4f6d6c2 ents {1: (2, 2, 21, 8260, 100, 100, 2, 0, 0, 1, 192)}
+       journal pass_38E84_effects_stub
+t=155 hero(anim_t 0x33 anim_c 0x33) inuse 0x30 phase 1 counter 154 mp 3 block [1, 2, 9, 2, 9, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xc4f6d6c2 rng1 0xec3bcbaa rng2 0x0794cea9 ents {1: (4, 2, 21, 8260, 100, 100, 2, 0, 0, 1, 192)}
+       journal effect_3BDD8[0, 19, 2, 6553600, 9507328, 2, 1283347041, 4969, -2146270740, -2146271292]
+       journal effect_3BDD8[0, 19, 2, 4249651, 8089566, 2, -1491226204, 3443, -2146270740, -2146271292]
+       journal effect_3BDD8[0, 19, 2, 1998592, 6553600, 2, -470890117, 5131, -2146270740, -2146271292]
+       journal effect_3BDD8[0, 19, 2, 5212390, 5659460, 2, 1179610390, 1670, -2146270740, -2146271292]
+       journal effect_3BDD8[0, 19, 2, 6553600, 5334528, 2, 357801189, 1581, -2146270740, -2146271292]
+       journal effect_3BDD8[0, 19, 2, 9104614, 4852924, 2, 608938392, 3898, -2146270740, -2146271292]
+       journal effect_3BDD8[0, 19, 2, 8568832, 6553600, 2, 1481337631, 1824, -2146270740, -2146271292]
+       journal effect_3BDD8[0, 19, 2, 10066810, 8895740, 2, -2024555606, 5670, -2146270740, -2146271292]
+       journal pass_38E84_effects_stub
+t=156 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 155 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x0794cea9 rng1 0x0794cea9 rng2 0x49dbdbcc ents {}
+       journal sound(0)
+       journal pass_38E84_effects_stub
+t=157 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 156 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x49dbdbcc rng1 0x49dbdbcc rng2 0xd31aee03 ents {}
+       journal pass_38E84_effects_stub
+t=158 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 157 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xd31aee03 rng1 0xd31aee03 rng2 0xf98a167e ents {}
+       journal pass_38E84_effects_stub
+t=159 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 158 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xf98a167e rng1 0xf98a167e rng2 0x7fd2dbad ents {}
+       journal pass_38E84_effects_stub
+t=160 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 159 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x7fd2dbad rng1 0x7fd2dbad rng2 0x70103c40 ents {}
+       journal pass_38E84_effects_stub
+t=161 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 160 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x70103c40 rng1 0x70103c40 rng2 0xad6c4627 ents {}
+       journal pass_38E84_effects_stub
+t=162 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 161 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xad6c4627 rng1 0xad6c4627 rng2 0x5bfa7192 ents {}
+       journal pass_38E84_effects_stub
+t=163 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 162 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x5bfa7192 rng1 0x5bfa7192 rng2 0xabeb2ff1 ents {}
+       journal pass_38E84_effects_stub
+t=164 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 163 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xabeb2ff1 rng1 0xabeb2ff1 rng2 0xe1955ef4 ents {}
+       journal pass_38E84_effects_stub
+t=165 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 164 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xe1955ef4 rng1 0xe1955ef4 rng2 0xa5298f8b ents {}
+       journal pass_38E84_effects_stub
+t=166 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 165 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xa5298f8b rng1 0xa5298f8b rng2 0xae7550e6 ents {}
+       journal pass_38E84_effects_stub
+t=167 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 166 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xae7550e6 rng1 0xae7550e6 rng2 0x289def75 ents {}
+       journal pass_38E84_effects_stub
+t=168 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 167 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x289def75 rng1 0x289def75 rng2 0xcf8e57e8 ents {}
+       journal pass_38E84_effects_stub
+t=169 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 168 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xcf8e57e8 rng1 0xcf8e57e8 rng2 0x474f0e2f ents {}
+       journal pass_38E84_effects_stub
+t=170 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 169 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x474f0e2f rng1 0x474f0e2f rng2 0x1325687a ents {}
+       journal pass_38E84_effects_stub
+t=171 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 170 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x1325687a rng1 0x1325687a rng2 0x8b1c7e39 ents {}
+       journal pass_38E84_effects_stub
+t=172 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 171 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x8b1c7e39 rng1 0x8b1c7e39 rng2 0x40227b1c ents {}
+       journal pass_38E84_effects_stub
+t=173 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 172 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x40227b1c rng1 0x40227b1c rng2 0x0bc44613 ents {}
+       journal pass_38E84_effects_stub
+t=174 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 173 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x0bc44613 rng1 0x0bc44613 rng2 0x1e8bac4e ents {}
+       journal pass_38E84_effects_stub
+t=175 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 174 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x1e8bac4e rng1 0x1e8bac4e rng2 0x054d803d ents {}
+       journal pass_38E84_effects_stub
+t=176 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 175 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x054d803d rng1 0x054d803d rng2 0x41315c90 ents {}
+       journal pass_38E84_effects_stub
+t=177 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 176 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x41315c90 rng1 0x41315c90 rng2 0x6ebffb37 ents {}
+       journal pass_38E84_effects_stub
+t=178 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 177 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6ebffb37 rng1 0x6ebffb37 rng2 0x46d35062 ents {}
+       journal pass_38E84_effects_stub
+t=179 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 178 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x46d35062 rng1 0x46d35062 rng2 0x7550d981 ents {}
+       journal pass_38E84_effects_stub
+t=180 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 179 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x7550d981 rng1 0x7550d981 rng2 0xf146d044 ents {}
+       journal pass_38E84_effects_stub
+t=181 hero(anim_t 0x34 anim_c 0x34) inuse 0x30 phase 2 counter 180 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xf146d044 rng1 0xf146d044 rng2 0x3f6c319b ents {}
+       journal pass_38E84_effects_stub
+t=182 hero(anim_t 0x0 anim_c 0x0) inuse 0x30 phase 2 counter 181 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x3f6c319b rng1 0x3f6c319b rng2 0x8b65c8b6 ents {}
+       journal sound(0)
+       journal pass_38E84_effects_stub
+t=183 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x8b65c8b6 rng1 0x8b65c8b6 rng2 0x4443ae05 ents {}
+       journal pass_38E84_effects_stub
+t=184 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x4443ae05 rng1 0x4443ae05 rng2 0xb2ceea38 ents {}
+       journal pass_38E84_effects_stub
+t=185 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xb2ceea38 rng1 0xb2ceea38 rng2 0xa7ca2d3f ents {}
+       journal pass_38E84_effects_stub
+t=186 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xa7ca2d3f rng1 0xa7ca2d3f rng2 0x48bec94a ents {}
+       journal pass_38E84_effects_stub
+t=187 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x48bec94a rng1 0x48bec94a rng2 0xb84461c9 ents {}
+       journal pass_38E84_effects_stub
+t=188 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xb84461c9 rng1 0xb84461c9 rng2 0x1d89fe6c ents {}
+       journal pass_38E84_effects_stub
+t=189 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x1d89fe6c rng1 0x1d89fe6c rng2 0xb1d67223 ents {}
+       journal pass_38E84_effects_stub
+t=190 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0xb1d67223 rng1 0xb1d67223 rng2 0x6c80461e ents {}
+       journal pass_38E84_effects_stub
+t=191 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6c80461e rng1 0x6c80461e rng2 0x9db698cd ents {}
+       journal pass_38E84_effects_stub
+t=192 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x9db698cd rng1 0x9db698cd rng2 0x8240a0e0 ents {}
+       journal pass_38E84_effects_stub
+t=193 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x8240a0e0 rng1 0x8240a0e0 rng2 0x4decc447 ents {}
+       journal pass_38E84_effects_stub
+t=194 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x4decc447 rng1 0x4decc447 rng2 0x7dc67332 ents {}
+       journal pass_38E84_effects_stub
+t=195 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x7dc67332 rng1 0x7dc67332 rng2 0x6bc73711 ents {}
+       journal pass_38E84_effects_stub
+t=196 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x6bc73711 rng1 0x6bc73711 rng2 0x14b7a594 ents {}
+       journal pass_38E84_effects_stub
+t=197 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x14b7a594 rng1 0x14b7a594 rng2 0x1e6c27ab ents {}
+       journal pass_38E84_effects_stub
+t=198 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x1e6c27ab rng1 0x1e6c27ab rng2 0x2dbbc486 ents {}
+       journal pass_38E84_effects_stub
+t=199 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x2dbbc486 rng1 0x2dbbc486 rng2 0x48306095 ents {}
+       journal pass_38E84_effects_stub
+t=200 hero(anim_t 0x0 anim_c 0x0) inuse 0x0 phase 2 counter 182 mp 3 block [0, 0, 0, 0, 0, 0, 0, 0, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+       rng0 0x48306095 rng1 0x48306095 rng2 0x0fe42088 ents {}
+       journal pass_38E84_effects_stub
+
+real	0m2.470s
+user	0m0.015s
+sys	0m0.000s

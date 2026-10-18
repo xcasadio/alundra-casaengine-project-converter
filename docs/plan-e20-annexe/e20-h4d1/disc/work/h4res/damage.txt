@@ -1,0 +1,7 @@
+vectors 20480 mismatches 0 (categories over all sheets x attacks x hp) {'normal': 4430, 'immune': 16005, 'kill': 45}
+monster sheets (MaxHp > 0 at byte 2): 145 of the sheets
+  earth (type 8, response byte 10): {'r=16': 93, 'immune (0x80/0xC0)': 30, 'r=6': 12, 'r=1': 5, 'r=8': 3, 'r=0': 2}
+  water (type 9, response byte 11): {'r=16': 92, 'immune (0x80/0xC0)': 42, 'r=6': 5, 'r=8': 3, 'r=0': 2, 'r=1': 1}
+  fire  (type 10, response byte 12): {'r=16': 89, 'immune (0x80/0xC0)': 30, 'r=6': 12, 'r=1': 4, 'r=0': 3, 'instant kill (0x4x)': 3, 'r=8': 3, 'r=2': 1}
+  wind  (type 11, response byte 13): {'r=16': 92, 'immune (0x80/0xC0)': 42, 'r=6': 5, 'r=8': 3, 'r=0': 2, 'r=1': 1}
+exit 0

@@ -1,0 +1,67 @@
+8007FB58  27bdffc8  addiu    $sp, $sp, -0x38
+8007FB5C  afb3002c  sw       $s3, 0x2c($sp)                ; sp+0x2C
+8007FB60  00809821  move     $s3, $a0
+8007FB64  afb20028  sw       $s2, 0x28($sp)                ; sp+0x28
+8007FB68  00009021  move     $s2, $zero
+8007FB6C  afb40030  sw       $s4, 0x30($sp)                ; sp+0x30
+8007FB70  3c14800a  lui      $s4, 0x800a
+8007FB74  3c028002  lui      $v0, 0x8002
+8007FB78  afb10024  sw       $s1, 0x24($sp)                ; sp+0x24
+8007FB7C  24513694  addiu    $s1, $v0, 0x3694              ; =0x80023694 DirForceTableY?
+8007FB80  3c028002  lui      $v0, 0x8002
+8007FB84  afb00020  sw       $s0, 0x20($sp)                ; sp+0x20
+8007FB88  24503654  addiu    $s0, $v0, 0x3654              ; =0x80023654 DirForceTableX?
+8007FB8C  afbf0034  sw       $ra, 0x34($sp)                ; sp+0x34
+8007FB90  3c037d2b  lui      $v1, 0x7d2b                   ; <<RNG step begins>>
+8007FB94  8e828708  lw       $v0, -0x78f8($s4)             ; [0x80098708=RNG_state]
+8007FB98  346389dd  ori      $v1, $v1, 0x89dd              ; =0x7D2B89DD
+8007FB9C  00430018  mult     $v0, $v1
+8007FBA0  3c08e06a  lui      $t0, 0xe06a
+8007FBA4  350802e7  ori      $t0, $t0, 0x2e7               ; =0xE06A02E7
+8007FBA8  00001812  mflo     $v1
+8007FBAC  24021801  addiu    $v0, $zero, 0x1801
+8007FBB0  00684021  addu     $t0, $v1, $t0
+8007FBB4  01020019  multu    $t0, $v0                      ; <<multu: RNG scale (look at the addiu N above)>>
+8007FBB8  00005810  mfhi     $t3
+8007FBBC  00005012  mflo     $t2
+8007FBC0  afaa0018  sw       $t2, 0x18($sp)                ; sp+0x18
+8007FBC4  afab001c  sw       $t3, 0x1c($sp)                ; sp+0x1C
+8007FBC8  000b1003  sra      $v0, $t3, 0
+8007FBCC  000b1fc3  sra      $v1, $t3, 0x1f
+8007FBD0  86240000  lh       $a0, ($s1)                    ; [0x80023694=DirForceTableY?]
+8007FBD4  24420320  addiu    $v0, $v0, 0x320               ; =0x80020320
+8007FBD8  00820018  mult     $a0, $v0
+8007FBDC  24050013  addiu    $a1, $zero, 0x13
+8007FBE0  00004812  mflo     $t1
+8007FBE4  86060000  lh       $a2, ($s0)                    ; [0x80023654=DirForceTableX?]
+8007FBE8  26520001  addiu    $s2, $s2, 1
+8007FBEC  00c20018  mult     $a2, $v0
+8007FBF0  ae888708  sw       $t0, -0x78f8($s4)             ; [0x80098708=RNG_state]
+8007FBF4  26310008  addiu    $s1, $s1, 8                   ; =0x8002369C
+8007FBF8  26100008  addiu    $s0, $s0, 8                   ; =0x8002365C
+8007FBFC  8e670114  lw       $a3, 0x114($s3)               ; s3.PosX
+8007FC00  8e620118  lw       $v0, 0x118($s3)               ; s3.PosY
+8007FC04  00002021  move     $a0, $zero
+8007FC08  00491021  addu     $v0, $v0, $t1
+8007FC0C  afa20010  sw       $v0, 0x10($sp)                ; sp+0x10
+8007FC10  8e62011c  lw       $v0, 0x11c($s3)               ; s3.PosZ
+8007FC14  24060002  addiu    $a2, $zero, 2
+8007FC18  afa20014  sw       $v0, 0x14($sp)                ; sp+0x14
+8007FC1C  00001812  mflo     $v1
+8007FC20  0c00ef76  jal      0x8003bdd8                    ; CreateEffectEntity
+8007FC24  00e33821  addu     $a3, $a3, $v1
+8007FC28  2a420008  slti     $v0, $s2, 8
+8007FC2C  1440ffd9  bnez     $v0, 0x8007fb94   -> L_8007FB94
+8007FC30  3c037d2b  lui      $v1, 0x7d2b                   ; <<RNG step begins>>
+8007FC34  02602021  move     $a0, $s3
+8007FC38  0c00e967  jal      0x8003a59c                    ; DestroyEntity
+8007FC3C  2405ffff  addiu    $a1, $zero, -1
+8007FC40  8fbf0034  lw       $ra, 0x34($sp)                ; sp+0x34
+8007FC44  8fb40030  lw       $s4, 0x30($sp)                ; sp+0x30
+8007FC48  8fb3002c  lw       $s3, 0x2c($sp)                ; sp+0x2C
+8007FC4C  8fb20028  lw       $s2, 0x28($sp)                ; sp+0x28
+8007FC50  8fb10024  lw       $s1, 0x24($sp)                ; sp+0x24
+8007FC54  8fb00020  lw       $s0, 0x20($sp)                ; sp+0x20
+8007FC58  27bd0038  addiu    $sp, $sp, 0x38
+8007FC5C  03e00008  jr       $ra
+8007FC60  00000000  nop      

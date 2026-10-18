@@ -1,0 +1,17 @@
+rocks: 15
+birth= 18 slot=1 id= 2 r1=12 r2=26 pos0=(76,83) z0=248 st@birth=2 st3=51 fadj=None ground=50 ta1=51 animend=97 st4=98 last=98 dir=26 t138=0
+birth= 34 slot=2 id= 3 r1= 1 r2=26 pos0=(93,127) z0=248 st@birth=2 st3=67 fadj=None ground=66 ta1=67 animend=113 st4=114 last=114 dir=26 t138=0
+birth= 50 slot=3 id= 4 r1=10 r2= 3 pos0=(54,88) z0=248 st@birth=2 st3=83 fadj=None ground=82 ta1=83 animend=129 st4=130 last=130 dir=3 t138=0
+birth= 66 slot=4 id= 5 r1=13 r2= 3 pos0=(69,71) z0=248 st@birth=2 st3=99 fadj=None ground=98 ta1=99 animend=145 st4=146 last=146 dir=3 t138=0
+birth= 82 slot=5 id= 6 r1= 5 r2=19 pos0=(51,121) z0=248 st@birth=2 st3=115 fadj=None ground=114 ta1=115 animend=161 st4=162 last=162 dir=19 t138=0
+birth= 98 slot=6 id= 7 r1=13 r2=21 pos0=(65,62) z0=248 st@birth=2 st3=131 fadj=None ground=130 ta1=131 animend=177 st4=178 last=178 dir=21 t138=0
+birth=114 slot=1 id= 8 r1=17 r2=27 pos0=(115,53) z0=248 st@birth=2 st3=147 fadj=None ground=146 ta1=147 animend=193 st4=194 last=194 dir=27 t138=0
+birth=130 slot=2 id= 9 r1=23 r2= 0 pos0=(176,91) z0=248 st@birth=2 st3=163 fadj=None ground=162 ta1=163 animend=209 st4=210 last=210 dir=0 t138=0
+birth=146 slot=3 id=10 r1=29 r2= 0 pos0=(146,147) z0=248 st@birth=2 st3=179 fadj=None ground=178 ta1=179 animend=225 st4=226 last=226 dir=0 t138=0
+birth=162 slot=4 id=11 r1= 8 r2= 1 pos0=(10,101) z0=248 st@birth=2 st3=163 fadj=162 ground=194 ta1=163 animend=209 st4=210 last=210 dir=1 t138=0
+birth=178 slot=5 id=12 r1=13 r2=19 pos0=(48,45) z0=248 st@birth=2 st3=211 fadj=None ground=210 ta1=211 animend=257 st4=258 last=258 dir=19 t138=0
+birth=194 slot=6 id=13 r1=28 r2=20 pos0=(173,147) z0=248 st@birth=2 st3=227 fadj=None ground=226 ta1=227 animend=273 st4=274 last=274 dir=20 t138=0
+birth=226 slot=1 id=14 r1=29 r2= 6 pos0=(157,160) z0=248 st@birth=2 st3=259 fadj=None ground=258 ta1=259 animend=305 st4=306 last=306 dir=6 t138=0
+birth=226 slot=2 id=15 r1=29 r2= 6 pos0=(99,25) z0=248 st@birth=2 st3=259 fadj=None ground=258 ta1=259 animend=305 st4=306 last=306 dir=2 t138=0
+birth=242 slot=3 id=16 r1=30 r2= 2 pos0=(145,175) z0=248 st@birth=2 st3=275 fadj=None ground=274 ta1=275 animend=321 st4=322 last=322 dir=2 t138=0
+kicks: [(51, 2), (67, 2), (83, 2), (99, 2), (115, 2), (131, 2), (147, 2), (163, 2), (179, 2), (211, 2), (227, 2), (259, 2), (275, 2)]

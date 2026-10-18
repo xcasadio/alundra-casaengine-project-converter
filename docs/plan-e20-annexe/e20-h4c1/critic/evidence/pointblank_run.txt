@@ -1,0 +1,46 @@
+== crit_pointblank_wall_col5
+birth  22 slot  1 dir 27  E3 26 st4 39  final (109.0,104.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 18
+birth  22 slot  2 dir 18  E3 27 st4 40  final (109.0,85.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 19
+birth  27 slot  3 dir 24  E3 30 st4 43  final (109.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 17
+birth  27 slot  4 dir 30  E3 32 st4 45  final (109.0,114.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 19
+birth  32 slot  5 dir 27  E3 36 st4 49  final (109.0,104.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 18
+birth  32 slot  6 dir 26  E3 35 st4 48  final (109.0,102.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 17
+birth  37 slot  7 dir  0  E3 53 st4 66  final (100.0,164.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  37 slot  8 dir  6  E3 53 st4 66  final (11.2,124.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  42 slot  1 dir 27  E3 46 st4 59  final (109.0,104.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 18
+birth  42 slot  2 dir  2  E3 58 st4 71  final (63.2,159.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  47 slot  3 dir  8  E3 63 st4 76  final (10.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  47 slot  4 dir 14  E3 63 st4 76  final (63.2,40.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  52 slot  5 dir 27  E3 56 st4 69  final (109.0,104.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 18
+birth  52 slot  6 dir 10  E3 68 st4 81  final (11.2,75.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  57 slot  9 dir 16  E3 73 st4 86  final (100.0,36.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  57 slot 10 dir 22  E3 61 st4 74  final (109.0,97.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 18
+birth  62 slot  1 dir 27  E3 66 st4 79  final (109.0,104.0) pz_end 8.50 slope18C [0]  moved after E3 (0.0, 0.0)  life 18
+birth  62 slot 11 dir 18  E3 67 st4 80  final (109.0,85.5) pz_end 4.50 slope18C [0]  moved after E3 (0.0, 0.0)  life 19
+birth  67 slot  7 dir 24  E3 70 st4 83  final (109.0,100.0) pz_end 12.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 17
+birth  67 slot  8 dir 30  E3 72 st4 85  final (109.0,114.5) pz_end 4.50 slope18C [0]  moved after E3 (0.0, 0.0)  life 19
+birth  72 slot  2 dir 27  E3 76 st4 89  final (109.0,104.0) pz_end 8.50 slope18C [0]  moved after E3 (0.0, 0.0)  life 18
+birth  72 slot  5 dir 26  E3 75 st4 88  final (109.0,102.5) pz_end 12.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 17
+birth  77 slot  3 dir  0  E3 97 st4 110  final (100.0,180.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  77 slot  4 dir  6  E3 94 st4 107  final (10.0,126.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 31
+birth  82 slot  1 dir 27  E3 86 st4 99  final (109.0,104.0) pz_end 8.50 slope18C [0]  moved after E3 (0.0, 0.0)  life 18
+birth  82 slot  6 dir  2  E3 102 st4 115  final (54.1,173.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  87 slot  7 dir  8  E3 103 st4 116  final (10.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  87 slot  8 dir 14  E3 107 st4 120  final (54.1,26.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  92 slot  2 dir 27  E3 96 st4 109  final (109.0,104.0) pz_end 8.50 slope18C [0]  moved after E3 (0.0, 0.0)  life 18
+birth  92 slot  5 dir 10  E3 109 st4 122  final (10.0,74.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 31
+birth  97 slot  9 dir 16  E3 117 st4 130  final (100.0,20.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  97 slot 10 dir 22  E3 101 st4 114  final (109.0,97.5) pz_end 8.50 slope18C [0]  moved after E3 (0.0, 0.0)  life 18
+22 1 status 2 px 104.99 py 102.22 pz 3.5000 fz 229376 adj13C 0 anim_t 0
+23 1 status 2 px 109.00 py 104.00 pz 6.5000 fz 196608 adj13C 0 anim_t 0
+24 1 status 2 px 109.00 py 104.00 pz 9.0000 fz 163840 adj13C 0 anim_t 0
+25 1 status 2 px 109.00 py 104.00 pz 11.0000 fz 131072 adj13C 1 anim_t 0
+26 1 status 3 px 109.00 py 104.00 pz 12.5000 fz 98304 adj13C 0 anim_t 1
+27 1 status 3 px 109.00 py 104.00 pz 13.5000 fz 65536 adj13C 0 anim_t 1
+27 3 status 2 px 106.00 py 100.00 pz 3.5000 fz 229376 adj13C 0 anim_t 0
+28 1 status 3 px 109.00 py 104.00 pz 14.0000 fz 32768 adj13C 0 anim_t 1
+28 3 status 2 px 109.00 py 100.00 pz 6.5000 fz 196608 adj13C 0 anim_t 0
+29 1 status 3 px 109.00 py 104.00 pz 14.0000 fz 0 adj13C 0 anim_t 1
+29 3 status 2 px 109.00 py 100.00 pz 9.0000 fz 163840 adj13C 1 anim_t 0
+30 1 status 3 px 109.00 py 104.00 pz 13.5000 fz -32768 adj13C 0 anim_t 1
+30 3 status 3 px 109.00 py 100.00 pz 11.0000 fz 131072 adj13C 0 anim_t 1

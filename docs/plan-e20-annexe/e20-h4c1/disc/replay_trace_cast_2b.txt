@@ -1,0 +1,9 @@
+item 0x2b: MP 4 -> 3
+  tick   1 hero anim 0x32 item_in_use 0x2b phase 0 counter 0 active entities 0
+  tick  33 hero anim 0x33 item_in_use 0x2b phase 0 counter 32 active entities 6
+  tick  97 hero anim 0x33 item_in_use 0x2b phase 1 counter 96 active entities 14
+  tick 102 hero anim 0x34 item_in_use 0x2b phase 2 counter 101 active entities 12
+  tick 128 hero anim 0x0 item_in_use 0x2b phase 2 counter 127 active entities 2
+  tick 129 hero anim 0x0 item_in_use 0x0 phase 2 counter 128 active entities 2
+  type 16: 32 spawned, births 22..97, lifetimes 30..34 ticks (median 31)
+  sounds (id: count): {46: 32}

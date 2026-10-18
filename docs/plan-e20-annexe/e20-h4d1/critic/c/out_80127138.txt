@@ -1,0 +1,32 @@
+0x80034e14  addiu $a2, $v0, 0x7138                   -> 0x80127138   func 0x80034d2c
+0x80034e18  addiu $t0, $a2, 0x20                     -> 0x80127158   func 0x80034d2c
+0x80034e1c  lw $v0, ($a2)                            -> 0x80127138   func 0x80034d2c
+0x80034e20  lw $v1, 4($a2)                           -> 0x8012713c   func 0x80034d2c
+0x80034e24  lw $a0, 8($a2)                           -> 0x80127140   func 0x80034d2c
+0x80034e28  lw $a1, 0xc($a2)                         -> 0x80127144   func 0x80034d2c
+0x80034e3c  addiu $a2, $a2, 0x10                     -> 0x80127148   func 0x80034d2c
+0x80034e48  lw $v0, ($a2)                            -> 0x80127148   func 0x80034d2c
+0x80035d04  addiu $a3, $v0, 0x7138                   -> 0x80127138   func 0x80035c64
+0x80035d24  sw $v0, ($a3)                            -> 0x80127138   func 0x80035c64
+0x80035d28  sw $v1, 4($a3)                           -> 0x8012713c   func 0x80035c64
+0x80035d2c  sw $a0, 8($a3)                           -> 0x80127140   func 0x80035c64
+0x80035d30  sw $a1, 0xc($a3)                         -> 0x80127144   func 0x80035c64
+0x80035d3c  addiu $a3, $a3, 0x10                     -> 0x80127148   func 0x80035c64
+0x80035d48  sw $v0, ($a3)                            -> 0x80127148   func 0x80035c64
+0x80035d88  addiu $a2, $v0, 0x7138                   -> 0x80127138   func 0x80035c64
+0x80035d8c  addiu $t0, $a2, 0x20                     -> 0x80127158   func 0x80035c64
+0x80035d90  lw $v0, ($a2)                            -> 0x80127138   func 0x80035c64
+0x80035d94  lw $v1, 4($a2)                           -> 0x8012713c   func 0x80035c64
+0x80035d98  lw $a0, 8($a2)                           -> 0x80127140   func 0x80035c64
+0x80035d9c  lw $a1, 0xc($a2)                         -> 0x80127144   func 0x80035c64
+0x80035db0  addiu $a2, $a2, 0x10                     -> 0x80127148   func 0x80035c64
+0x80035dbc  lw $v0, ($a2)                            -> 0x80127148   func 0x80035c64
+0x80035e28  addiu $a2, $v0, 0x7138                   -> 0x80127138   func 0x80035c64
+0x80035e2c  addiu $t0, $a2, 0x20                     -> 0x80127158   func 0x80035c64
+0x80035e30  lw $v0, ($a2)                            -> 0x80127138   func 0x80035c64
+0x80035e34  lw $v1, 4($a2)                           -> 0x8012713c   func 0x80035c64
+0x80035e38  lw $a0, 8($a2)                           -> 0x80127140   func 0x80035c64
+0x80035e3c  lw $a1, 0xc($a2)                         -> 0x80127144   func 0x80035c64
+0x80035e50  addiu $a2, $a2, 0x10                     -> 0x80127148   func 0x80035c64
+0x80035e5c  lw $v0, ($a2)                            -> 0x80127148   func 0x80035c64
+31 hits; 2 enclosing function starts (approx, by sp-adjust prologue)

@@ -1,0 +1,9 @@
+target 0 at (140, 100) : hit-pass writes at ticks [43, 68, 93, 118, 143] ; resolutions (tick, damage) [(44, 128), (69, 128), (94, 128), (119, 128), (144, 128)] ; final HP 4360
+target 1 at (100, 140) : hit-pass writes at ticks [55, 80, 105, 130] ; resolutions (tick, damage) [(56, 128), (81, 128), (106, 128), (131, 128)] ; final HP 4488
+target 2 at (180, 100) : hit-pass writes at ticks [73, 98, 123, 148] ; resolutions (tick, damage) [(74, 128), (99, 128), (124, 128), (149, 128)] ; final HP 4488
+  effect creations per tick (stub journal): [(43, 4), (55, 4), (68, 4), (73, 4), (80, 4), (93, 4), (98, 4), (105, 4), (118, 4), (123, 4), (130, 4), (143, 4), (148, 4), (155, 8)]
+  ticks with draws: [(43, '0x310d0b12->0xb6d0b1b9'), (55, '0x8846985->0x6efa6e60'), (68, '0xc4e5a1b3->0x6ad6b5d6'), (73, '0xda41869->0x6c8581b4'), (80, '0x5994f7f9->0xb07b6304'), (93, '0xd56c1807->0x46dcf2da'), (98, '0xb685ab1d->0xa2656998'), (105, '0x7fd2dbad->0xcf8e57e8'), (118, '0x3f6c319b->0x6c80461e'), (123, '0x6bc73711->0x685f65bc'), (130, '0xf11f48a1->0x432fb10c'), (143, '0xec21026f->0xefaf73a2'), (148, '0x162a3045->0x8ecf1a20'), (155, '0x15fcb2d5->0xf9fdf9d')]
+
+real	0m3.531s
+user	0m0.000s
+sys	0m0.000s

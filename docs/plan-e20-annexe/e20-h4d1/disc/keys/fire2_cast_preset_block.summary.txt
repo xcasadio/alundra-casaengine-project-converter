@@ -1,0 +1,35 @@
+options {'pf': True, 'hurt': None, 'block': [1, 5, 6, 7, 8, 3, -2, 1, 0], 'buf': None, 'ticks': 200, 'seed': 305419896, 'item': 48, 'out': '../keys/fire2_cast_preset_block.json'}
+t=  1 hero(t 0x32 c 0x32) inuse 0x30 ph 0 cnt 0 mp 3 block [1, 5, 6, 7, 8, 3, -2, 1, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+      sound 0
+t= 33 hero(t 0x33 c 0x33) inuse 0x30 ph 0 cnt 32 mp 3 block [1, 5, 6, 7, 8, 3, -2, 1, 0] buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+      sound 0
+t= 34 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 33 mp 3 block [1, 0, 2, 0, 2, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0] slot1(st1 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+      sound 0
+t= 35 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 34 mp 3 block [1, 0, 2, 0, 2, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0] slot1(st2 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+t= 50 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 49 mp 3 block [1, 0, 3, 0, 3, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0] slot1(st2 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+t= 66 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 65 mp 3 block [1, 1, 4, 1, 4, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0] slot1(st2 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+t= 82 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 81 mp 3 block [1, 1, 5, 1, 5, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0] slot1(st2 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+t= 98 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 97 mp 3 block [1, 1, 6, 1, 6, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0] slot1(st2 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+t=114 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 113 mp 3 block [1, 1, 7, 1, 7, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0] slot1(st2 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+t=130 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 129 mp 3 block [1, 2, 8, 2, 8, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0] slot1(st2 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+t=146 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 145 mp 3 block [1, 2, 9, 2, 9, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0] slot1(st2 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end0 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+t=154 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 153 mp 3 block [1, 2, 9, 2, 9, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0] slot1(st2 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end1 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+t=155 hero(t 0x33 c 0x33) inuse 0x30 ph 1 cnt 154 mp 3 block [1, 2, 9, 2, 9, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0] slot1(st4 id2 type21 flags0x2044 pos(100,100,2) anim_t0 anim_c0 end1 b4=0xc0 c20=0 atk=0x80144406 hitc=0)
+      effect_3BDD8 id=19 anim=2 x=6553600 y=9507328 z=2 (raw args [0, 19, 2, 6553600, 9507328, 2])
+      effect_3BDD8 id=19 anim=2 x=4249651 y=8089566 z=2 (raw args [0, 19, 2, 4249651, 8089566, 2])
+      effect_3BDD8 id=19 anim=2 x=1998592 y=6553600 z=2 (raw args [0, 19, 2, 1998592, 6553600, 2])
+      effect_3BDD8 id=19 anim=2 x=5212390 y=5659460 z=2 (raw args [0, 19, 2, 5212390, 5659460, 2])
+      effect_3BDD8 id=19 anim=2 x=6553600 y=5334528 z=2 (raw args [0, 19, 2, 6553600, 5334528, 2])
+      effect_3BDD8 id=19 anim=2 x=9104614 y=4852924 z=2 (raw args [0, 19, 2, 9104614, 4852924, 2])
+      effect_3BDD8 id=19 anim=2 x=8568832 y=6553600 z=2 (raw args [0, 19, 2, 8568832, 6553600, 2])
+      effect_3BDD8 id=19 anim=2 x=10066810 y=8895740 z=2 (raw args [0, 19, 2, 10066810, 8895740, 2])
+t=156 hero(t 0x34 c 0x34) inuse 0x30 ph 2 cnt 155 mp 3 block [1, 5, 6, 7, 8, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0]
+      sound 0
+t=182 hero(t 0x0 c 0x0) inuse 0x30 ph 2 cnt 181 mp 3 block [1, 5, 6, 7, 8, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0]
+      sound 0
+t=183 hero(t 0x0 c 0x0) inuse 0x0 ph 2 cnt 182 mp 3 block [1, 5, 6, 7, 8, 3, -2, 1, 0] buf [1, 5, 6, 7, 8, 3, -2, 1, 0]
+
+generator accounting (rng0 = head of the tick, rng1 = after the passes, rng2 = after the frame-end step if --pf):
+  t=155 : 8 draw(s) in the passes (rng0 0xc4f6d6c2 -> rng1 0xec3bcbaa)
+ticks with draws: 1
+rng0(t+1) == step(rng1(t)) on every tick: True []

@@ -1,0 +1,3 @@
+table 0x800237F4 rows: [[0, 0, 2, 1, 1, 1, 3, 0], [0, 0, 2, 1, 1, 1, 3, 0], [0, 2, 2, 2, 1, 3, 3, 3], [0, 2, 2, 2, 1, 3, 3, 3]]
+rocks examined 224 ; rocks whose row differs from table[old row 0][col]: 0
+recycled-slot rocks 128 ; stale model != clean model for 1 ; observed = clean 1 ; observed = stale 0

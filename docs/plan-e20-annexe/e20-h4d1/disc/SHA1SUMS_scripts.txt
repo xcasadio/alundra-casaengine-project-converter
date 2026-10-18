@@ -1,0 +1,9 @@
+61f38300aec3ab63668ca066723d2f169003da10 *dis2.py
+0b01bb100034f32425c2b0e12d89c9263aae5d80 *exelib.py
+389983a1a6ec58cb0eeea63f77bef10f43f2194d *fire2_key.py
+9d87b649e3e6424b6f86f59dedaf35d5aa4f0a82 *fire2_summary.py
+e3bfb5060a90ffbce9627f7160496484d596eacb *fire2_targets.py
+9026d7605262407b256fcccfc595b4ddb17dbab6 *gen_e28_vectors.py
+107b9f44d01fe4abe7e06a575822135bcac9f015 *mipsdis.py
+bd7736bf5d6c8b5fa051e880383aaa8487a32bc8 *rng_scan.py
+b7b4ac23ef7311268f0a01dcd0c61156c6432416 *sprite21_dump.py

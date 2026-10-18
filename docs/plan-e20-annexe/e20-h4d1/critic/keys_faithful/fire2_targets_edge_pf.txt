@@ -1,0 +1,6 @@
+target 0 at (200, 100) : hit-pass writes at ticks [87, 112, 137] ; resolutions (tick, damage) [(88, 128), (113, 128), (138, 128)] ; final HP 4616
+target 1 at (201, 100) : hit-pass writes at ticks [] ; resolutions (tick, damage) [] ; final HP 5000
+target 2 at (100, 186) : hit-pass writes at ticks [87, 112, 137] ; resolutions (tick, damage) [(88, 128), (113, 128), (138, 128)] ; final HP 4616
+target 3 at (100, 187) : hit-pass writes at ticks [] ; resolutions (tick, damage) [] ; final HP 5000
+  effect creations per tick (stub journal): [(87, 8), (112, 8), (137, 8), (154, 8)]
+  ticks with draws: [(87, '0x4e40656e->0xee552300'), (112, '0x248528ff->0x87bc5319'), (137, '0xe1955ef4->0x8b65c8b6'), (154, '0x48306095->0xbd0f255d')]

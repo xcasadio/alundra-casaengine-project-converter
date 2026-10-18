@@ -1,0 +1,2 @@
+driver vectors: 689 mismatches vs my model: 0
+E3 vectors: 224 mismatches vs my model: 0

@@ -1,0 +1,30 @@
+80034bdc  addiu    $a0, $zero, 1
+80034be0  lui      $v1, 0x8012
+80034be4  lui      $v0, 0x8013
+80034be8  lw       $v0, 0x4360($v0)
+80034bec  nop      
+80034bf0  blez     $v0, 0x80034c4c
+80034bf4  addiu    $v1, $v1, 0x7fc4
+80034bf8  addiu    $t1, $zero, 0x11
+80034bfc  addiu    $t0, $zero, 2
+80034c00  addiu    $a3, $zero, 3
+80034c04  move     $a2, $a0
+80034c08  move     $a1, $v0
+80034c0c  addiu    $v1, $v1, 0x88
+80034c10  lw       $v0, -0x20($v1)
+80034c14  nop      
+80034c18  bne      $v0, $t1, 0x80034c3c
+80034c1c  nop      
+80034c20  lw       $v0, -0x78($v1)
+80034c24  nop      
+80034c28  bne      $v0, $t0, 0x80034c3c
+80034c2c  nop      
+80034c30  sw       $a3, -0x78($v1)
+80034c34  sw       $zero, -0x68($v1)
+80034c38  sw       $a2, ($v1)
+80034c3c  addiu    $a0, $a0, 1
+80034c40  slt      $v0, $a1, $a0
+80034c44  beqz     $v0, 0x80034c10
+80034c48  addiu    $v1, $v1, 0x294
+80034c4c  jr       $ra
+80034c50  nop      

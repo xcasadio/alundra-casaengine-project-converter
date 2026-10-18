@@ -1,0 +1,40 @@
+8007EDA0  addiu    $sp, $sp, -0x18
+8007EDA4  sw       $ra, 0x10($sp)
+8007EDA8  lw       $v1, 0x88($a0)
+8007EDAC  addiu    $v0, $zero, 1
+8007EDB0  bne      $v1, $v0, 0x8007edd8
+8007EDB4  nop      
+8007EDB8  lw       $v0, 0xac($a0)
+8007EDBC  nop      
+8007EDC0  bne      $v0, $v1, 0x8007edd8
+8007EDC4  nop      
+8007EDC8  jal      0x8003a59c
+8007EDCC  addiu    $a1, $zero, -1
+8007EDD0  j        0x8007edf4
+8007EDD4  nop      
+8007EDD8  lw       $v0, 0x6c($a0)
+8007EDDC  addiu    $v1, $zero, 1
+8007EDE0  sw       $v1, 0x88($a0)
+8007EDE4  addiu    $v1, $zero, -0x31
+8007EDE8  ori      $v0, $v0, 0x40
+8007EDEC  and      $v0, $v0, $v1
+8007EDF0  sw       $v0, 0x6c($a0)
+8007EDF4  lw       $ra, 0x10($sp)
+8007EDF8  addiu    $sp, $sp, 0x18
+8007EDFC  jr       $ra
+8007EE00  nop      
+8007EE04  addiu    $sp, $sp, -0x18
+8007EE08  sw       $ra, 0x10($sp)
+8007EE0C  lw       $v1, 0x88($a0)
+8007EE10  addiu    $v0, $zero, 4
+8007EE14  bne      $v1, $v0, 0x8007ee3c
+8007EE18  addiu    $v0, $zero, 1
+8007EE1C  lw       $v1, 0xac($a0)
+8007EE20  nop      
+8007EE24  bne      $v1, $v0, 0x8007ee3c
+8007EE28  nop      
+8007EE2C  jal      0x8003a59c
+8007EE30  addiu    $a1, $zero, -1
+8007EE34  j        0x8007ee58
+8007EE38  nop      
+8007EE3C  lw       $v0, 0x6c($a0)
