@@ -1,0 +1,23 @@
+level  0  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 2, 'dmg5': 68, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level  1  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 2, 'dmg5': 68, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level  2  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 2, 'dmg5': 68, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level  3  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 2, 'dmg5': 68, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level  4  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 2, 'dmg5': 68, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level  5  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 2, 'dmg5': 68, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level  6  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 2, 'dmg5': 68, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level  7  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 2, 'dmg5': 68, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level  8  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 3, 'dmg5': 67, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level  9  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 3, 'dmg5': 67, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level 10  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 3, 'dmg5': 67, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level 11  map sheets with MaxHp>0: 133  {'dmg1': 5, 'dmg10': 1, 'dmg3': 3, 'dmg5': 67, 'dmg9': 1, 'immune': 11, 'kill': 45}
+level 1 sheets whose bomb outcome differs from level 0: 0 []
+level 2 sheets whose bomb outcome differs from level 0: 0 []
+level 3 sheets whose bomb outcome differs from level 0: 0 []
+level 4 sheets whose bomb outcome differs from level 0: 0 []
+level 5 sheets whose bomb outcome differs from level 0: 0 []
+level 6 sheets whose bomb outcome differs from level 0: 0 []
+level 7 sheets whose bomb outcome differs from level 0: 0 []
+level 8 sheets whose bomb outcome differs from level 0: 1 [497]
+level 9 sheets whose bomb outcome differs from level 0: 1 [497]
+level 10 sheets whose bomb outcome differs from level 0: 1 [497]
+level 11 sheets whose bomb outcome differs from level 0: 1 [497]

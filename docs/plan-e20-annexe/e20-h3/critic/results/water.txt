@@ -1,0 +1,10 @@
+=== item 23 thrown at t42 into slope-4 cells (col>=5)
+ t60 ents {1: (2, 2, 128.5, 22.5)} journal []
+ t61 ents {1: (2, 2, 130.0, 17.0)} journal [('sound', 0)]
+ t65 ents {1: (4, 2, 134.5, 0.0)} journal [('effect_3BE74', [0, 6])]
+ t66 ents {} journal []
+=== item 1f thrown at t42 into slope-4 cells (col>=5)
+ t60 ents {1: (2, 2, 128.5, 22.5)} journal []
+ t61 ents {1: (2, 2, 130.0, 17.0)} journal [('sound', 0)]
+ t65 ents {1: (4, 2, 134.5, 0.0)} journal [('effect_3BE74', [0, 6])]
+ t66 ents {} journal []

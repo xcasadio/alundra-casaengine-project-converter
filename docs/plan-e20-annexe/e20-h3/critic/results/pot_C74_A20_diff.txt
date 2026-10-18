@@ -1,0 +1,2 @@
+A20  vectors 10000 mismatches 0 covered 3/3
+C74  vectors 10000 mismatches 0 covered 124/124

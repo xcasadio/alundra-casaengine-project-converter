@@ -1,0 +1,337 @@
+start_beans start_beans   mutants    2 killed    0 survivors   2
+   SURV 80034224 nop      27bdffd8 -> 00000000   [addiu $sp, $sp, -0x28]
+   SURV 80034224 imm+1    27bdffd8 -> 27bdffd9   [addiu $sp, $sp, -0x28]
+start_beans start_beans   mutants    3 killed    0 survivors   3
+   SURV 8003422c nop      afb00020 -> 00000000   [sw $s0, 0x20($sp)]
+   SURV 8003422c imm+1    afb00020 -> afb00021   [sw $s0, 0x20($sp)]
+   SURV 8003422c imm+4    afb00020 -> afb00024   [sw $s0, 0x20($sp)]
+start_beans start_beans   mutants    2 killed    1 survivors   1
+   SURV 80034264 alu-swap 02002021 -> 02002023   [move $a0, $s0]
+start_beans start_beans   mutants    2 killed    0 survivors   2
+   SURV 80034270 nop      00002821 -> 00000000   [move $a1, $zero]
+   SURV 80034270 alu-swap 00002821 -> 00002823   [move $a1, $zero]
+start_beans start_beans   mutants    2 killed    1 survivors   1
+   SURV 8003428c alu-swap 00402821 -> 00402823   [move $a1, $v0]
+start_beans start_beans   mutants    2 killed    1 survivors   1
+   SURV 800342f0 alu-swap 00001021 -> 00001023   [move $v0, $zero]
+start_beans start_beans   mutants    3 killed    0 survivors   3
+   SURV 80034310 nop      8fb00020 -> 00000000   [lw $s0, 0x20($sp)]
+   SURV 80034310 imm+1    8fb00020 -> 8fb00021   [lw $s0, 0x20($sp)]
+   SURV 80034310 imm+4    8fb00020 -> 8fb00024   [lw $s0, 0x20($sp)]
+start_beans start_beans   mutants    2 killed    0 survivors   2
+   SURV 80034314 nop      27bd0028 -> 00000000   [addiu $sp, $sp, 0x28]
+   SURV 80034314 imm+1    27bd0028 -> 27bd0029   [addiu $sp, $sp, 0x28]
+start_bomb start_bomb    mutants    2 killed    0 survivors   2
+   SURV 8003453c nop      27bdffd8 -> 00000000   [addiu $sp, $sp, -0x28]
+   SURV 8003453c imm+1    27bdffd8 -> 27bdffd9   [addiu $sp, $sp, -0x28]
+start_bomb start_bomb    mutants    3 killed    2 survivors   1
+   SURV 8003454c nop      afb00020 -> 00000000   [sw $s0, 0x20($sp)]
+start_bomb start_bomb    mutants    2 killed    2 survivors   0
+start_bomb start_bomb    mutants    2 killed    1 survivors   1
+   SURV 8003457c alu-swap 00001821 -> 00001823   [move $v1, $zero]
+start_bomb start_bomb    mutants    2 killed    0 survivors   2
+   SURV 80034580 nop      00602021 -> 00000000   [move $a0, $v1]
+   SURV 80034580 alu-swap 00602021 -> 00602023   [move $a0, $v1]
+start_bomb start_bomb    mutants    2 killed    1 survivors   1
+   SURV 80034588 imm+1    24060040 -> 24060041   [addiu $a2, $zero, 0x40]
+start_bomb start_bomb    mutants    2 killed    1 survivors   1
+   SURV 800345bc alu-swap 02002021 -> 02002023   [move $a0, $s0]
+start_bomb start_bomb    mutants    2 killed    1 survivors   1
+   SURV 800345c8 alu-swap 00002821 -> 00002823   [move $a1, $zero]
+start_bomb start_bomb    mutants    2 killed    1 survivors   1
+   SURV 800345e4 alu-swap 00402821 -> 00402823   [move $a1, $v0]
+start_bomb start_bomb    mutants    2 killed    1 survivors   1
+   SURV 80034650 alu-swap 00001021 -> 00001023   [move $v0, $zero]
+start_bomb start_bomb    mutants    3 killed    0 survivors   3
+   SURV 80034670 nop      8fb00020 -> 00000000   [lw $s0, 0x20($sp)]
+   SURV 80034670 imm+1    8fb00020 -> 8fb00021   [lw $s0, 0x20($sp)]
+   SURV 80034670 imm+4    8fb00020 -> 8fb00024   [lw $s0, 0x20($sp)]
+start_bomb start_bomb    mutants    2 killed    0 survivors   2
+   SURV 80034674 nop      27bd0028 -> 00000000   [addiu $sp, $sp, 0x28]
+   SURV 80034674 imm+1    27bd0028 -> 27bd0029   [addiu $sp, $sp, 0x28]
+drv_beans drv_beans     mutants    2 killed    0 survivors   2
+   SURV 80035204 nop      27bdffe8 -> 00000000   [addiu $sp, $sp, -0x18]
+   SURV 80035204 imm+1    27bdffe8 -> 27bdffe9   [addiu $sp, $sp, -0x18]
+drv_beans drv_beans     mutants    2 killed    1 survivors   1
+   SURV 8003521c nop      1040000b -> 00000000   [beqz $v0, 0x8003524c]
+drv_beans drv_beans     mutants    2 killed    1 survivors   1
+   SURV 80035240 alu-swap 00001021 -> 00001023   [move $v0, $zero]
+drv_beans drv_beans     mutants    2 killed    0 survivors   2
+   SURV 80035254 nop      27bd0018 -> 00000000   [addiu $sp, $sp, 0x18]
+   SURV 80035254 imm+1    27bd0018 -> 27bd0019   [addiu $sp, $sp, 0x18]
+drv_bomb drv_bomb      mutants    2 killed    0 survivors   2
+   SURV 800352c4 nop      27bdffe8 -> 00000000   [addiu $sp, $sp, -0x18]
+   SURV 800352c4 imm+1    27bdffe8 -> 27bdffe9   [addiu $sp, $sp, -0x18]
+drv_bomb drv_bomb      mutants    2 killed    1 survivors   1
+   SURV 800352dc nop      1040000b -> 00000000   [beqz $v0, 0x8003530c]
+drv_bomb drv_bomb      mutants    2 killed    1 survivors   1
+   SURV 80035300 alu-swap 00001021 -> 00001023   [move $v0, $zero]
+drv_bomb drv_bomb      mutants    2 killed    0 survivors   2
+   SURV 80035314 nop      27bd0018 -> 00000000   [addiu $sp, $sp, 0x18]
+   SURV 80035314 imm+1    27bd0018 -> 27bd0019   [addiu $sp, $sp, 0x18]
+cancel_beans cancel_beans  mutants    2 killed    0 survivors   2
+   SURV 80034acc nop      27bdffe0 -> 00000000   [addiu $sp, $sp, -0x20]
+   SURV 80034acc imm+1    27bdffe0 -> 27bdffe1   [addiu $sp, $sp, -0x20]
+cancel_beans cancel_beans  mutants    3 killed    2 survivors   1
+   SURV 80034adc nop      afb00018 -> 00000000   [sw $s0, 0x18($sp)]
+cancel_beans cancel_beans  mutants    2 killed    1 survivors   1
+   SURV 80034ae8 nop      12000015 -> 00000000   [beqz $s0, 0x80034b40]
+cancel_beans cancel_beans  mutants    2 killed    1 survivors   1
+   SURV 80034b18 alu-swap 00002021 -> 00002023   [move $a0, $zero]
+cancel_beans cancel_beans  mutants    2 killed    0 survivors   2
+   SURV 80034b34 nop      00803021 -> 00000000   [move $a2, $a0]
+   SURV 80034b34 alu-swap 00803021 -> 00803023   [move $a2, $a0]
+cancel_beans cancel_beans  mutants    2 killed    1 survivors   1
+   SURV 80034b3c alu-swap 02002021 -> 02002023   [move $a0, $s0]
+cancel_beans cancel_beans  mutants    3 killed    0 survivors   3
+   SURV 80034b44 nop      8fb00018 -> 00000000   [lw $s0, 0x18($sp)]
+   SURV 80034b44 imm+1    8fb00018 -> 8fb00019   [lw $s0, 0x18($sp)]
+   SURV 80034b44 imm+4    8fb00018 -> 8fb0001c   [lw $s0, 0x18($sp)]
+cancel_beans cancel_beans  mutants    2 killed    0 survivors   2
+   SURV 80034b48 nop      27bd0020 -> 00000000   [addiu $sp, $sp, 0x20]
+   SURV 80034b48 imm+1    27bd0020 -> 27bd0021   [addiu $sp, $sp, 0x20]
+cancel_bomb cancel_bomb   mutants    2 killed    0 survivors   2
+   SURV 80034b54 nop      27bdffe0 -> 00000000   [addiu $sp, $sp, -0x20]
+   SURV 80034b54 imm+1    27bdffe0 -> 27bdffe1   [addiu $sp, $sp, -0x20]
+cancel_bomb cancel_bomb   mutants    3 killed    2 survivors   1
+   SURV 80034b64 nop      afb00018 -> 00000000   [sw $s0, 0x18($sp)]
+cancel_bomb cancel_bomb   mutants    2 killed    1 survivors   1
+   SURV 80034b70 nop      12000015 -> 00000000   [beqz $s0, 0x80034bc8]
+cancel_bomb cancel_bomb   mutants    2 killed    1 survivors   1
+   SURV 80034ba0 alu-swap 00002021 -> 00002023   [move $a0, $zero]
+cancel_bomb cancel_bomb   mutants    2 killed    0 survivors   2
+   SURV 80034bbc nop      00803021 -> 00000000   [move $a2, $a0]
+   SURV 80034bbc alu-swap 00803021 -> 00803023   [move $a2, $a0]
+cancel_bomb cancel_bomb   mutants    2 killed    1 survivors   1
+   SURV 80034bc4 alu-swap 02002021 -> 02002023   [move $a0, $s0]
+cancel_bomb cancel_bomb   mutants    3 killed    0 survivors   3
+   SURV 80034bcc nop      8fb00018 -> 00000000   [lw $s0, 0x18($sp)]
+   SURV 80034bcc imm+1    8fb00018 -> 8fb00019   [lw $s0, 0x18($sp)]
+   SURV 80034bcc imm+4    8fb00018 -> 8fb0001c   [lw $s0, 0x18($sp)]
+cancel_bomb cancel_bomb   mutants    2 killed    0 survivors   2
+   SURV 80034bd0 nop      27bd0020 -> 00000000   [addiu $sp, $sp, 0x20]
+   SURV 80034bd0 imm+1    27bd0020 -> 27bd0021   [addiu $sp, $sp, 0x20]
+cancel_bomb cancel_bomb   mutants    1 killed    0 survivors   1
+   SURV 80034bd4 nop      03e00008 -> 00000000   [jr $ra]
+dispatch dispatch      mutants    2 killed    0 survivors   2
+   SURV 800350c8 nop      27bdffe8 -> 00000000   [addiu $sp, $sp, -0x18]
+   SURV 800350c8 imm+1    27bdffe8 -> 27bdffe9   [addiu $sp, $sp, -0x18]
+dispatch dispatch      mutants    2 killed    1 survivors   1
+   SURV 800350cc nop      10400036 -> 00000000   [beqz $v0, 0x800351a8]
+dispatch dispatch      mutants    2 killed    2 survivors   0
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035100 nop      3c028012 -> 00000000   [lui $v0, 0x8012]
+dispatch dispatch      mutants    3 killed    0 survivors   3
+   SURV 80035104 nop      8c447164 -> 00000000   [lw $a0, 0x7164($v0)]
+   SURV 80035104 imm+1    8c447164 -> 8c447165   [lw $a0, 0x7164($v0)]
+   SURV 80035104 imm+4    8c447164 -> 8c447168   [lw $a0, 0x7164($v0)]
+dispatch dispatch      mutants    1 killed    1 survivors   0
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035118 nop      3c028012 -> 00000000   [lui $v0, 0x8012]
+dispatch dispatch      mutants    3 killed    0 survivors   3
+   SURV 8003511c nop      8c447164 -> 00000000   [lw $a0, 0x7164($v0)]
+   SURV 8003511c imm+1    8c447164 -> 8c447165   [lw $a0, 0x7164($v0)]
+   SURV 8003511c imm+4    8c447164 -> 8c447168   [lw $a0, 0x7164($v0)]
+dispatch dispatch      mutants    1 killed    1 survivors   0
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035128 nop      0800d469 -> 00000000   [j 0x800351a4]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035130 nop      3c028012 -> 00000000   [lui $v0, 0x8012]
+dispatch dispatch      mutants    3 killed    0 survivors   3
+   SURV 80035134 nop      8c447164 -> 00000000   [lw $a0, 0x7164($v0)]
+   SURV 80035134 imm+1    8c447164 -> 8c447165   [lw $a0, 0x7164($v0)]
+   SURV 80035134 imm+4    8c447164 -> 8c447168   [lw $a0, 0x7164($v0)]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035138 nop      0c00d2f7 -> 00000000   [jal 0x80034bdc]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035140 nop      0800d469 -> 00000000   [j 0x800351a4]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035144 nop      3c028012 -> 00000000   [lui $v0, 0x8012]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035148 nop      3c028012 -> 00000000   [lui $v0, 0x8012]
+dispatch dispatch      mutants    3 killed    0 survivors   3
+   SURV 8003514c nop      8c447164 -> 00000000   [lw $a0, 0x7164($v0)]
+   SURV 8003514c imm+1    8c447164 -> 8c447165   [lw $a0, 0x7164($v0)]
+   SURV 8003514c imm+4    8c447164 -> 8c447168   [lw $a0, 0x7164($v0)]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035150 nop      0c00d315 -> 00000000   [jal 0x80034c54]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035158 nop      0800d469 -> 00000000   [j 0x800351a4]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 8003515c nop      3c028012 -> 00000000   [lui $v0, 0x8012]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035160 nop      3c028012 -> 00000000   [lui $v0, 0x8012]
+dispatch dispatch      mutants    3 killed    0 survivors   3
+   SURV 80035164 nop      8c447164 -> 00000000   [lw $a0, 0x7164($v0)]
+   SURV 80035164 imm+1    8c447164 -> 8c447165   [lw $a0, 0x7164($v0)]
+   SURV 80035164 imm+4    8c447164 -> 8c447168   [lw $a0, 0x7164($v0)]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035168 nop      0c00d34b -> 00000000   [jal 0x80034d2c]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035170 nop      0800d469 -> 00000000   [j 0x800351a4]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035174 nop      3c028012 -> 00000000   [lui $v0, 0x8012]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035178 nop      3c028012 -> 00000000   [lui $v0, 0x8012]
+dispatch dispatch      mutants    3 killed    0 survivors   3
+   SURV 8003517c nop      8c447164 -> 00000000   [lw $a0, 0x7164($v0)]
+   SURV 8003517c imm+1    8c447164 -> 8c447165   [lw $a0, 0x7164($v0)]
+   SURV 8003517c imm+4    8c447164 -> 8c447168   [lw $a0, 0x7164($v0)]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035180 nop      0c00d382 -> 00000000   [jal 0x80034e08]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035188 nop      0800d469 -> 00000000   [j 0x800351a4]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 8003518c nop      3c028012 -> 00000000   [lui $v0, 0x8012]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035190 nop      3c028012 -> 00000000   [lui $v0, 0x8012]
+dispatch dispatch      mutants    3 killed    0 survivors   3
+   SURV 80035194 nop      8c447164 -> 00000000   [lw $a0, 0x7164($v0)]
+   SURV 80035194 imm+1    8c447164 -> 8c447165   [lw $a0, 0x7164($v0)]
+   SURV 80035194 imm+4    8c447164 -> 8c447168   [lw $a0, 0x7164($v0)]
+dispatch dispatch      mutants    1 killed    0 survivors   1
+   SURV 80035198 nop      0c00d3b1 -> 00000000   [jal 0x80034ec4]
+dispatch dispatch      mutants    2 killed    0 survivors   2
+   SURV 800351ac nop      27bd0018 -> 00000000   [addiu $sp, $sp, 0x18]
+   SURV 800351ac imm+1    27bd0018 -> 27bd0019   [addiu $sp, $sp, 0x18]
+C62 C62           mutants    2 killed    0 survivors   2
+   SURV 8007a978 nop      27bdffd8 -> 00000000   [addiu $sp, $sp, -0x28]
+   SURV 8007a978 imm+1    27bdffd8 -> 27bdffd9   [addiu $sp, $sp, -0x28]
+C62 C62           mutants    3 killed    0 survivors   3
+   SURV 8007a97c nop      afb00020 -> 00000000   [sw $s0, 0x20($sp)]
+   SURV 8007a97c imm+1    afb00020 -> afb00021   [sw $s0, 0x20($sp)]
+   SURV 8007a97c imm+4    afb00020 -> afb00024   [sw $s0, 0x20($sp)]
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007a980 alu-swap 00808021 -> 00808023   [move $s0, $a0]
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007a9b4 alu-swap 00401821 -> 00401823   [move $v1, $v0]
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007a9c4 imm+1    2862003c -> 2862003d   [slti $v0, $v1, 0x3c]
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007a9d4 alu-swap 00002021 -> 00002023   [move $a0, $zero]
+C62 C62           mutants    2 killed    0 survivors   2
+   SURV 8007a9fc nop      00803021 -> 00000000   [move $a2, $a0]
+   SURV 8007a9fc alu-swap 00803021 -> 00803023   [move $a2, $a0]
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007aa00 alu-swap 00405021 -> 00405023   [move $t2, $v0]
+C62 C62           mutants    1 killed    0 survivors   1
+   SURV 8007aa48 nop      00006012 -> 00000000   [mflo $t4]
+C62 C62           mutants    3 killed    2 survivors   1
+   SURV 8007aa58 nop      ad038708 -> 00000000   [sw $v1, -0x78f8($t0)]
+C62 C62           mutants    3 killed    0 survivors   3
+   SURV 8007aa60 nop      afac0018 -> 00000000   [sw $t4, 0x18($sp)]
+   SURV 8007aa60 imm+1    afac0018 -> afac0019   [sw $t4, 0x18($sp)]
+   SURV 8007aa60 imm+4    afac0018 -> afac001c   [sw $t4, 0x18($sp)]
+C62 C62           mutants    3 killed    0 survivors   3
+   SURV 8007aa68 nop      8fac0018 -> 00000000   [lw $t4, 0x18($sp)]
+   SURV 8007aa68 imm+1    8fac0018 -> 8fac0019   [lw $t4, 0x18($sp)]
+   SURV 8007aa68 imm+4    8fac0018 -> 8fac001c   [lw $t4, 0x18($sp)]
+C62 C62           mutants    3 killed    2 survivors   1
+   SURV 8007aa6c nop      8fad001c -> 00000000   [lw $t5, 0x1c($sp)]
+C62 C62           mutants    1 killed    0 survivors   1
+   SURV 8007aa7c nop      000d1fc3 -> 00000000   [sra $v1, $t5, 0x1f]
+C62 C62           mutants    1 killed    0 survivors   1
+   SURV 8007aa8c nop      00003012 -> 00000000   [mflo $a2]
+C62 C62           mutants    1 killed    0 survivors   1
+   SURV 8007aa94 nop      00071fc3 -> 00000000   [sra $v1, $a3, 0x1f]
+C62 C62           mutants    3 killed    3 survivors   0
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007aab0 nop      10600012 -> 00000000   [beqz $v1, 0x8007aafc]
+C62 C62           mutants    3 killed    3 survivors   0
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007aae8 nop      10600002 -> 00000000   [beqz $v1, 0x8007aaf4]
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007ab28 alu-swap 00001821 -> 00001823   [move $v1, $zero]
+C62 C62           mutants    3 killed    3 survivors   0
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007ab48 alu-swap 00002021 -> 00002023   [move $a0, $zero]
+C62 C62           mutants    2 killed    2 survivors   0
+C62 C62           mutants    3 killed    3 survivors   0
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007ab88 alu-swap 00803021 -> 00803023   [move $a2, $a0]
+C62 C62           mutants    1 killed    1 survivors   0
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007ab9c alu-swap 02002021 -> 02002023   [move $a0, $s0]
+C62 C62           mutants    3 killed    3 survivors   0
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007abc4 imm+1    28620004 -> 28620005   [slti $v0, $v1, 4]
+C62 C62           mutants    3 killed    3 survivors   0
+C62 C62           mutants    3 killed    3 survivors   0
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007ac04 alu-swap 00001821 -> 00001823   [move $v1, $zero]
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007ac0c alu-swap 02002021 -> 02002023   [move $a0, $s0]
+C62 C62           mutants    3 killed    3 survivors   0
+C62 C62           mutants    2 killed    2 survivors   0
+C62 C62           mutants    2 killed    0 survivors   2
+   SURV 8007ac28 nop      24020004 -> 00000000   [addiu $v0, $zero, 4]
+   SURV 8007ac28 imm+1    24020004 -> 24020005   [addiu $v0, $zero, 4]
+C62 C62           mutants    2 killed    1 survivors   1
+   SURV 8007ac2c nop      24630001 -> 00000000   [addiu $v1, $v1, 1]
+C62 C62           mutants    2 killed    2 survivors   0
+C62 C62           mutants    2 killed    2 survivors   0
+C62 C62           mutants    3 killed    0 survivors   3
+   SURV 8007ac50 nop      8fb00020 -> 00000000   [lw $s0, 0x20($sp)]
+   SURV 8007ac50 imm+1    8fb00020 -> 8fb00021   [lw $s0, 0x20($sp)]
+   SURV 8007ac50 imm+4    8fb00020 -> 8fb00024   [lw $s0, 0x20($sp)]
+C62 C62           mutants    2 killed    0 survivors   2
+   SURV 8007ac54 nop      27bd0028 -> 00000000   [addiu $sp, $sp, 0x28]
+   SURV 8007ac54 imm+1    27bd0028 -> 27bd0029   [addiu $sp, $sp, 0x28]
+E12 E12           mutants    2 killed    0 survivors   2
+   SURV 8007f27c nop      27bdffe0 -> 00000000   [addiu $sp, $sp, -0x20]
+   SURV 8007f27c imm+1    27bdffe0 -> 27bdffe1   [addiu $sp, $sp, -0x20]
+E12 E12           mutants    3 killed    0 survivors   3
+   SURV 8007f280 nop      afb00010 -> 00000000   [sw $s0, 0x10($sp)]
+   SURV 8007f280 imm+1    afb00010 -> afb00011   [sw $s0, 0x10($sp)]
+   SURV 8007f280 imm+4    afb00010 -> afb00014   [sw $s0, 0x10($sp)]
+E12 E12           mutants    2 killed    1 survivors   1
+   SURV 8007f284 alu-swap 00808021 -> 00808023   [move $s0, $a0]
+E12 E12           mutants    3 killed    2 survivors   1
+   SURV 8007f28c nop      afb10014 -> 00000000   [sw $s1, 0x14($sp)]
+E12 E12           mutants    2 killed    0 survivors   2
+   SURV 8007f2ac nop      02002021 -> 00000000   [move $a0, $s0]
+   SURV 8007f2ac alu-swap 02002021 -> 02002023   [move $a0, $s0]
+E12 E12           mutants    2 killed    0 survivors   2
+   SURV 8007f2c0 nop      02002021 -> 00000000   [move $a0, $s0]
+   SURV 8007f2c0 alu-swap 02002021 -> 02002023   [move $a0, $s0]
+E12 E12           mutants    2 killed    0 survivors   2
+   SURV 8007f2d8 nop      02002021 -> 00000000   [move $a0, $s0]
+   SURV 8007f2d8 alu-swap 02002021 -> 02002023   [move $a0, $s0]
+E12 E12           mutants    3 killed    0 survivors   3
+   SURV 8007f2f8 nop      8fb10014 -> 00000000   [lw $s1, 0x14($sp)]
+   SURV 8007f2f8 imm+1    8fb10014 -> 8fb10015   [lw $s1, 0x14($sp)]
+   SURV 8007f2f8 imm+4    8fb10014 -> 8fb10018   [lw $s1, 0x14($sp)]
+E12 E12           mutants    3 killed    0 survivors   3
+   SURV 8007f2fc nop      8fb00010 -> 00000000   [lw $s0, 0x10($sp)]
+   SURV 8007f2fc imm+1    8fb00010 -> 8fb00011   [lw $s0, 0x10($sp)]
+   SURV 8007f2fc imm+4    8fb00010 -> 8fb00014   [lw $s0, 0x10($sp)]
+E12 E12           mutants    2 killed    0 survivors   2
+   SURV 8007f300 nop      27bd0020 -> 00000000   [addiu $sp, $sp, 0x20]
+   SURV 8007f300 imm+1    27bd0020 -> 27bd0021   [addiu $sp, $sp, 0x20]
+C73 C73           mutants    2 killed    1 survivors   1
+   SURV 8007bb58 nop      10600002 -> 00000000   [beqz $v1, 0x8007bb64]
+E21 E21           mutants    2 killed    0 survivors   2
+   SURV 8007f7cc nop      27bdffe8 -> 00000000   [addiu $sp, $sp, -0x18]
+   SURV 8007f7cc imm+1    27bdffe8 -> 27bdffe9   [addiu $sp, $sp, -0x18]
+E21 E21           mutants    3 killed    0 survivors   3
+   SURV 8007f7d0 nop      afb00010 -> 00000000   [sw $s0, 0x10($sp)]
+   SURV 8007f7d0 imm+1    afb00010 -> afb00011   [sw $s0, 0x10($sp)]
+   SURV 8007f7d0 imm+4    afb00010 -> afb00014   [sw $s0, 0x10($sp)]
+E21 E21           mutants    2 killed    1 survivors   1
+   SURV 8007f7d4 alu-swap 00808021 -> 00808023   [move $s0, $a0]
+E21 E21           mutants    3 killed    3 survivors   0
+E21 E21           mutants    2 killed    1 survivors   1
+   SURV 8007f7e4 nop      1080000c -> 00000000   [beqz $a0, 0x8007f818]
+E21 E21           mutants    2 killed    2 survivors   0
+E21 E21           mutants    3 killed    3 survivors   0
+E21 E21           mutants    2 killed    1 survivors   1
+   SURV 8007f814 alu-swap 02002021 -> 02002023   [move $a0, $s0]
+E21 E21           mutants    2 killed    1 survivors   1
+   SURV 8007f834 alu-swap 02002021 -> 02002023   [move $a0, $s0]
+E21 E21           mutants    3 killed    0 survivors   3
+   SURV 8007f868 nop      8fb00010 -> 00000000   [lw $s0, 0x10($sp)]
+   SURV 8007f868 imm+1    8fb00010 -> 8fb00011   [lw $s0, 0x10($sp)]
+   SURV 8007f868 imm+4    8fb00010 -> 8fb00014   [lw $s0, 0x10($sp)]
+E21 E21           mutants    2 killed    0 survivors   2
+   SURV 8007f86c nop      27bd0018 -> 00000000   [addiu $sp, $sp, 0x18]
+   SURV 8007f86c imm+1    27bd0018 -> 27bd0019   [addiu $sp, $sp, 0x18]

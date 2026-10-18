@@ -1,0 +1,6 @@
+idle: Circle t5                    started at [5]  refused(sound3) at []  hero states [0, 5]
+walking right: Circle t8           started at [8]  refused(sound3) at []  hero states [1, 5]
+sword swing t2, Circle t4          started at [4]  refused(sound3) at []  hero states [0, 5, 12, 16]
+sword swing t2, Circle t14         started at [14]  refused(sound3) at []  hero states [0, 5, 16]
+jump t2, Circle t6 (rising)        started at [6]  refused(sound3) at []  hero states [0, 11, 12, 43, 45]
+run (dash) Circle                  started at []  refused(sound3) at []  hero states [0, 1]

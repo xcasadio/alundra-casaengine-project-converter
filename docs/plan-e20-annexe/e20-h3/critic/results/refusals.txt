@@ -1,0 +1,6 @@
+t  1 hold 20 sounds [0, 44] bombs [(1, 1, 240)] item 23 link 80127fc4 hero tanim 5
+t 10 hold 20 sounds [3] bombs [(1, 2, 232)] item 23 link 80127fc4 hero tanim 5
+t 37 hold 00 sounds [0] bombs [(1, 2, 205)] item 23 link 80127fc4 hero tanim 12
+t 60 hold 20 sounds [3] bombs [(1, 2, 182)] item 23 link 80127fc4 hero tanim 12
+t 62 hold 20 sounds [3] bombs [(1, 2, 180)] item 23 link 80127fc4 hero tanim 12
+t 80 hold 10 sounds [] bombs [(1, 2, 162)] item 23 link 80127fc4 hero tanim 12

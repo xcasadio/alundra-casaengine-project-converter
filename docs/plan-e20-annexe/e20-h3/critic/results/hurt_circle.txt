@@ -1,0 +1,33 @@
+t258 hero tgt  0 hp 10 item 0 link 0 sounds [] ents {1: (2, 3, -1, 1)}
+t259 hero tgt  0 hp 10 item 0 link 0 sounds [] ents {1: (2, 3, -1, 1)}
+t260 hero tgt  0 hp 10 item 0 link 0 sounds [] ents {1: (2, 3, -1, 1)}
+t261 hero tgt 49 hp  5 item 0 link 0 sounds [23] ents {1: (2, 3, -1, 1)}
+t262 hero tgt  5 hp  5 item 23 link 80128258 sounds [0, 44] ents {1: (2, 3, -1, 1), 2: (2, 1, 240, 0)}
+t263 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 2, 240, 0)}
+t264 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 0)}
+t265 hero tgt  5 hp  5 item 23 link 80128258 sounds [46] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t266 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t267 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t268 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t269 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t270 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t271 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t272 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t273 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t274 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t275 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t276 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t277 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t278 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t279 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t280 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t281 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t282 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t283 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t284 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t285 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t286 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t287 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t288 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t289 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}
+t290 hero tgt  5 hp  5 item 23 link 80128258 sounds [] ents {1: (2, 3, -1, 1), 2: (2, 3, 240, 1)}

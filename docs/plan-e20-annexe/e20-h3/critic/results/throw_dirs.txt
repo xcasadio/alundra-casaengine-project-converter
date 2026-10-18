@@ -1,0 +1,8 @@
+RIGHT item 23  hero at throw (101.8,100.0)  object at first z=0: (136.328125, 100.0, 72)   delta (34.50, 0.00)
+RIGHT item 1f  hero at throw (101.8,100.0)  object at first z=0: (136.328125, 100.0, 72)   delta (34.50, 0.00)
+LEFT  item 23  hero at throw (98.2,100.0)  object at first z=0: (63.671875, 100.0, 72)   delta (-34.50, 0.00)
+LEFT  item 1f  hero at throw (98.2,100.0)  object at first z=0: (63.671875, 100.0, 72)   delta (-34.50, 0.00)
+UP    item 23  hero at throw (100.0,98.8)  object at first z=0: (100.0, 75.78125, 72)   delta (0.00, -23.00)
+UP    item 1f  hero at throw (100.0,98.8)  object at first z=0: (100.0, 75.78125, 72)   delta (0.00, -23.00)
+DOWN  item 23  hero at throw (100.0,101.2)  object at first z=0: (100.0, 124.21875, 72)   delta (0.00, 23.00)
+DOWN  item 1f  hero at throw (100.0,101.2)  object at first z=0: (100.0, 124.21875, 72)   delta (0.00, 23.00)

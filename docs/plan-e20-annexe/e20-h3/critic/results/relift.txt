@@ -1,0 +1,10 @@
+=== bomb: Square at t3
+ t 1 hero tanim  0 link 0 ent {1: (2, 0, 114.0, '0x13234e')}
+ t 3 hero tanim 16 link 0 ent {1: (2, 0, 114.0, '0x13234e')}
+ t24 hero tanim  0 link 0 ent {1: (2, 0, 114.0, '0x13234e')}
+  hero H+0x130 (touching entity) at t3: 0x0  bomb/beans flags 0x13234e
+=== beans: Square at t3
+ t 1 hero tanim  0 link 0 ent {1: (2, 0, 114.0, '0x332380')}
+ t 3 hero tanim 16 link 0 ent {1: (3, 1, 114.0, '0x3323c0')}
+ t24 hero tanim  0 link 0 ent {}
+  hero H+0x130 (touching entity) at t3: 0x0  bomb/beans flags 0x0

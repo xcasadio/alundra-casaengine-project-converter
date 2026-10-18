@@ -1,0 +1,1021 @@
+364 citations
+[14] Alundra/Hero/PlayerManager.cs:932
+      ctx: ** FAIT : `TryUseItem` est un bouchon (`PlayerManager.cs:932`), le pilote est vide (`:1507`, un seul appel `:3
+      src: private static int TryUseItem(EntityScriptProxy player, in PadState pad) => TryUseItemResultForTests ?? 1;
+[14] Alundra/Hero/PlayerManager.cs:1507
+      ctx: erManager.cs:932`), le pilote est vide (`:1507`, un seul appel `:353`), l'annulation d'objet est vide (`:740`,
+      src: private static void UpdateItemUseDriver(EntityScriptProxy player)
+[14] Alundra/Hero/PlayerManager.cs:353
+      ctx: pilote est vide (`:1507`, un seul appel `:353`), l'annulation d'objet est vide (`:740`, appelée par la seule n
+      src: UpdateItemUseDriver(player);
+[14] Alundra/Hero/PlayerManager.cs:740
+      ctx: `:353`), l'annulation d'objet est vide (`:740`, appelée par la seule nage `:664`), il n'existe aucun état d'us
+      src: private static void CancelItemMode(EntityScriptProxy player)
+[14] Alundra/Hero/PlayerManager.cs:664
+      ctx: vide (`:740`, appelée par la seule nage `:664`), il n'existe aucun état d'usage, aucun état héros 0x32/0x33/0x
+      src: CancelItemMode(player);
+[15] Alundra/Events/EventProgramRunner.cs:283-292
+      ctx: ) ; (b) l'emplacement E0/E1 inline est `EventProgramRunner.cs:283-292`, pas « +13 » ; (c) `TickScriptedNpc` li
+      src: // E19.d2b (D-E19-29, O-E19-4 in part): the native handler 0x8007ED10 of slot E, reached at each tick of the D // // while the scripted E program is empty, is DestroyEntity(e, -1) (0x8003A59C) for the indexes 0 and 1 (status // // of the sprite header; the loot stays the named stub of E20.e0, O-E19-23). Index 2 and the other slots stay  // if (entity.EventTrigger == ScriptHelper.ProgramEDeactivate
+[15] Alundra/Physics/ScriptedMotion.cs:173-175
+      ctx:  première animation n'est pas validée (`ScriptedMotion.cs:173-175`) : cela touche la première image des sprite
+      src: // E20.e0a3b (D-E0A-8, ADR-0065): an entity born by the interface of the sprite index (and, since E20.e0a4, by // // animation set from the target: the binary's creation has switched to it already (0x80038AB4). Guarded by th // RunOneMotionTick(entity, entity.JoinsBirthTick && entity.CurrentAnimationId == ~0u ? entity.TargetAnimationId 
+[16] docs/plan-e20-annexe/e20-armes/h-g-deps.md:43
+      ctx: rts h4 ; une partielle dans g1a, G9) : `h-g-deps.md:43` (les sorties anticipées de `MovePlayer` n'existent plu
+      src: - The DLL returns early there (`AlundraPlayerManager.cs:220-223`).
+[16] docs/plan-e20-annexe/e20-armes/h-g-deps.md:47
+      ctx:  toutes atteignent `EndOfMovePlayer`), `h-g-deps.md:47` (le miroir des PV et le réceptacle de vie (`IncreaseHp
+      src: - The DLL has `Hp = HpMax = 10` on the entity (`AlundraEntityScriptProxy.HitPass.cs:70-71`) and no mirror. The
+[16] docs/plan-e20-annexe/e20-themes/attacks.md:32
+      ctx:  (`IncreaseHpMaxAndFill`) sont faits), `attacks.md:32` (la coupe d'herbe n'est pas « absente » : bouchon nommé
+      src: - [planned] **Coupe de l'herbe par les projectiles (CheckAndTriggerTileEffect 0x8003A7B0)** — orig: Appelée pa
+[16] Alundra/Ai/Projectiles/WaveSwordAi.cs:40
+      ctx:  n'est pas « absente » : bouchon nommé `WaveSwordAi.cs:40`).
+      src: internal static void CheckAndTriggerTileEffect(EntityScriptProxy entity) => StubCallsForTests?.Add(entity);
+[17] Alundra.Tests/AlundraNativeSpriteRegistryTests.cs:55
+      ctx: che enregistre une clé de production : `AlundraNativeSpriteRegistryTests.cs:55` (`6 + 1`) et `AlundraWaveSword
+      src: Assert.Equal(6 + 1, runner.NativeSprites.Count); // E14.a1b: A1, C1 and D1 of the Beannoid (335); E14.a1c: A0,
+[17] Alundra.Tests/AlundraWaveSwordLifeTests.cs:182-183
+      ctx: priteRegistryTests.cs:55` (`6 + 1`) et `AlundraWaveSwordLifeTests.cs:182-183` (`3 + 3 + 1`). Un banc de test u
+      src: (3 + 3 + 1, true, true, true, false, 0), // (registry.Count,
+[17] Alundra.Tests/AlundraLogicalZWorldTests.cs:292
+      ctx: e (sprite 2) comme entité à gravité** (`AlundraLogicalZWorldTests.cs:292` et `:398`) : h3 y enregistre C62/D30
+      src: var bomb = Born(arc, false, Bomb, 100, OracleInit(root, "pz") - 2);
+[17] Alundra.Tests/AlundraLogicalZWorldTests.cs:398
+      ctx:  (`AlundraLogicalZWorldTests.cs:292` et `:398`) : h3 y enregistre C62/D30/E12 et change ce que ces tests voien
+      src: var bomb = Born(arc, false, Bomb, 100, 32 << 16);
+[17] Alundra.Tests/AlundraTestSavesTests.cs:88-91
+      ctx:  épingles de la liste des préréglages (`AlundraTestSavesTests.cs:88-91`) et du « pas d'objet du Rond » (`:429-
+      src: public void TheNinePresets_AreListed_InTheOrderOfTheTable() // { // Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name)); // }
+[17] Alundra.Tests/AlundraTestSavesTests.cs:429-433
+      ctx: :88-91`) et du « pas d'objet du Rond » (`:429-433`) bougent si une sauvegarde de test reçoit un préréglage ou 
+      src: // Life 4 of 10, magic 4 of 4, no gold, the preset's weapon slot, no Circle item, no falcon. // Assert.Equal( // ((short)4, (short)10, (short)4, (short)4, (short)0, (short)row.Slot, (short)0, (short)0, (short)0), // (save.Hp, save.HpMax, save.Mp, save.MpMax, save.Money, save.WeaponId, save.ItemId, save.FalconTemp, save.Falco
+[26] UNRESOLVED AlundraPlayerManager.cs:919 | ctx: | R1 | §8 `AlundraPlayerManager.cs:919` `TryUseItem`, bouchon, rend 1 | `Hero/Pla
+[26] Alundra/Hero/PlayerManager.cs:932
+      ctx: s:919` `TryUseItem`, bouchon, rend 1 | `Hero/PlayerManager.cs:932` | VRAI | `=> TryUseItemResultForTests ?? 1`
+      src: private static int TryUseItem(EntityScriptProxy player, in PadState pad) => TryUseItemResultForTests ?? 1;
+[26] Alundra/Hero/PlayerManager.cs:936-937
+      ctx: tatic int? TryUseItemResultForTests` en `:936-937`. |
+      src: [ThreadStatic] // internal static int? TryUseItemResultForTests;
+[27] Alundra/Hero/PlayerManager.cs:353
+      ctx: :340` appel de `UpdateItemUseDriver` | `PlayerManager.cs:353` | VRAI | seul site d'appel ; juste après `Player
+      src: UpdateItemUseDriver(player);
+[27] Alundra/Hero/PlayerManager.cs:350
+      ctx: ationEffects.Create(player, FreeMode)` (`:350`) et avant la lecture du pad (`:359-368`), la nage (`:372`) et l
+      src: PlayerAnimationEffects.Create(player, PlayerAnimationEffects.FreeMode);
+[27] Alundra/Hero/PlayerManager.cs:359-368
+      ctx: )` (`:350`) et avant la lecture du pad (`:359-368`), la nage (`:372`) et l'aiguillage d'état (`:426`). |
+      src: // PlayerManager.cs:198-205 (pad -> direction). // var buttonsHold = pad.ButtonsHold >> 0xc; // var dir = buttonsHold < AnimationTables.DirectionByButtons.Length // ? AnimationTables.DirectionByButtons[buttonsHold]
+[27] Alundra/Hero/PlayerManager.cs:372
+      ctx: a lecture du pad (`:359-368`), la nage (`:372`) et l'aiguillage d'état (`:426`). |
+      src: if (player.Slope_18c == DeepWaterSlope)
+[27] Alundra/Hero/PlayerManager.cs:426
+      ctx: a nage (`:372`) et l'aiguillage d'état (`:426`). |
+      src: else if (player.TargetAnimationId == IdleAnimationId || player.TargetAnimationId == MovingAnimationId)
+[28] Alundra/Hero/PlayerManager.cs:1507
+      ctx: | R3 | §8 `:1494` définition (vide) | `PlayerManager.cs:1507` | VRAI | corps vide. |
+      src: private static void UpdateItemUseDriver(EntityScriptProxy player)
+[29] Alundra/Hero/PlayerManager.cs:2087
+      ctx: `:2074` `GetItemIdFromCurrentWeapon` | `PlayerManager.cs:2087` | VRAI | rend `uint` ; `NoItem` = `0xFFFFFFFF` 
+      src: public static uint GetItemIdFromCurrentWeapon(GameState state, ItemTables tables)
+[29] Alundra/Hero/PlayerManager.cs:2036
+      ctx:  rend `uint` ; `NoItem` = `0xFFFFFFFF` (`:2036`) sans arme : le test « arme ≠ 7 (bâton) » du départ est donc v
+      src: public const uint NoItem = 0xffffffff;
+[30] Alundra/Hero/PlayerManager.cs:2181
+      ctx: | R5 | §8 `:2168` `GetNumberOfItem` | `PlayerManager.cs:2181` | VRAI | 0 si l'id est hors de `[0, 99)` (`Item
+      src: public static int GetNumberOfItem(GameState state, int itemId)
+[30] Alundra/Hero/PlayerManager.cs:2033
+      ctx: t hors de `[0, 99)` (`ItemsCount` = 99, `:2033`). |
+      src: public const int ItemsCount = 99;
+[31] Alundra/Hero/PlayerManager.cs:2217
+      ctx: ien id et promeut comme le binaire » | `PlayerManager.cs:2217` | VRAI | relu : rend l'ancien `ItemId` si son c
+      src: public static uint SetItemIdFromCurrentItemId(GameState state, ItemTables tables)
+[31] Alundra/Hero/PlayerManager.cs:2227-2229
+      ctx: rrentItemId(GetItemIdFromSlotId(...))` (`:2227-2229`). Déjà appelé à chaque tick par `FillEquipmentRecords` (`
+      src: var slotId = tables.ItemsProperties[currentItemId * 5]; // var itemId = GetItemIdFromSlotId(state, tables, slotId); // SetCurrentItemId(state, itemId);
+[31] Alundra/Hero/PlayerManager.cs:1498
+      ctx: chaque tick par `FillEquipmentRecords` (`:1498`, fin de `MovePlayer`) et par le HUD (`:2318`). |
+      src: var accessory = SetItemIdFromCurrentItemId(state, itemTables);
+[31] Alundra/Hero/PlayerManager.cs:2318
+      ctx: 8`, fin de `MovePlayer`) et par le HUD (`:2318`). |
+      src: var accessoryItemId = SetItemIdFromCurrentItemId(state, tables);
+[32] Alundra/Hero/PlayerManager.cs:1970
+      ctx: | R7 | §8 `:1957` `SetPlayerMp` | `PlayerManager.cs:1970` | VRAI | borne `[0, MpMax]`, argument `short`. 
+      src: public static int SetPlayerMp(GameState state, short amount)
+[33] Alundra/Hero/PlayerManager.cs:1951
+      ctx: `:1938` `SetPlayerMpMax` (plafond 4) | `PlayerManager.cs:1951` | VRAI | toute valeur ≥ 5 devient 4. |
+      src: public static int SetPlayerMpMax(GameState state, short mpMax)
+[34] Alundra/Hero/PlayerManager.cs:2263
+      ctx: | R9 | §8 `:2250` `UseItem` | `PlayerManager.cs:2263` | VRAI | déjà consommé par l'opcode 0x84 (`Even
+      src: public static int UseItem(GameState state, int itemId)
+[34] Alundra/Events/EventProgramRunner.cs:1520-1522
+      ctx: RAI | déjà consommé par l'opcode 0x84 (`EventProgramRunner.cs:1520-1522`). |
+      src: case 0x84: // Use item - Script_132_084 @ 0x8003FF34 (E19.l2): UseItem(v1); Result = 0 when the count was alre // // (-1), else 1 - an invalid id answers 1 too, as the binary does. Size 2. // state.Result = PlayerManager.UseItem(_gameState, v[1]) == -1 ? 0 : 1;
+[35] Alundra/Hero/PlayerManager.cs:282-625
+      ctx:  `MovePlayer`, absence silencieuse » | `PlayerManager.cs:282-625` | VRAI | aucun de ces ids dans la chaîne d'é
+      src: public static void MovePlayer(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host) // { // MovePlayerCallCountForTests++; // 
+[35] Alundra/Hero/PlayerManager.cs:1026-1027
+      ctx: 'états ; ni dans `IsGroundAttackGroup` (`:1026-1027`) ni dans `IsAirAttackGroup` (`:1030-1031`). En nage (pent
+      src: private static bool IsGroundAttackGroup(uint animationId) // => animationId is 0x04 or 0x08 or 0x09 or 0x10 or 0x11 or 0x12 or 0x13 or 0x18 or 0x19 or 0x25 or 0x3F or 0x40
+[35] Alundra/Hero/PlayerManager.cs:1030-1031
+      ctx: 1026-1027`) ni dans `IsAirAttackGroup` (`:1030-1031`). En nage (pente 4) ils tombent dans `SwimHandler.Float` 
+      src: private static bool IsAirAttackGroup(uint animationId) // => animationId is 0x0A or 0x14 or 0x15 or 0x16 or 0x17 or 0x1F or 0x26 or 0x41 or 0x42 or 0x46 or 0x4B;
+[35] Alundra/Hero/PlayerManager.cs:176-189
+      ctx: s `SwimHandler.Float` par défaut (table `:176-189`) : l'état devient 0x1D puis `TryUseItem` (`:667-670`). Les 
+      src: private static SwimHandler[] BuildSwimTable() // { // var table = new SwimHandler[0x50]; // every entry starts as SwimHandler.Float (0) // foreach (var id in new[] { 0x0D, 0x1A, 0x1B, 0x1E, 0x27, 0x37, 0x38, 0x3D, 0x43, 0x45, 0x47, 0x48, 0x4A, 0x4C,
+[35] Alundra/Hero/PlayerManager.cs:667-670
+      ctx:  l'état devient 0x1D puis `TryUseItem` (`:667-670`). Les fiches d'animation 50, 51, 52 du héros existent (`alu
+      src: case SwimHandler.Float: // 0x80032674: the state, then the item driver; the direction is not written. // player.TargetAnimationId = FloatAnimationId; // TryUseItem(player, in pad); // break;
+[36] UNRESOLVED AlundraWorldProxy.cs:3448 | ctx: | R11 | §8 `AlundraWorldProxy.cs:3448` `SpawnEntityBySpriteIndex(parent, false, id
+[36] Alundra/Maps/WorldProxy.cs:3488
+      ctx: ssance, fiche d'équilibrage, butin » | `Maps/WorldProxy.cs:3488` | VRAI | Z + 1 en `:3549` ; `InitializeBalanc
+      src: internal EntityScriptProxy? SpawnEntityBySpriteIndex(EntityScriptProxy? parent, bool isMapPage, int index, int
+[36] Alundra/Maps/WorldProxy.cs:3549
+      ctx: s/WorldProxy.cs:3488` | VRAI | Z + 1 en `:3549` ; `InitializeBalance` `:3554` ; `RollLootAtCreation` `:3566` ;
+      src: prefab, header, isMapPage, index, parent?.LogicContextEntity, x, y, unchecked(z + 1), direction, CollisionFiel
+[36] Alundra/Maps/WorldProxy.cs:3554
+      ctx:  Z + 1 en `:3549` ; `InitializeBalance` `:3554` ; `RollLootAtCreation` `:3566` ; `JoinsBirthTick` et `HasLogic
+      src: spawnedProxy.InitializeBalance(BalanceTables, BalanceThreshold); // E20.c1a C1.
+[36] Alundra/Maps/WorldProxy.cs:3566
+      ctx: Balance` `:3554` ; `RollLootAtCreation` `:3566` ; `JoinsBirthTick` et `HasLogicalZ` en `:3572-3573`. Exige un 
+      src: RollLootAtCreation(spawnedProxy, hasRecord: false, 0);
+[36] Alundra/Maps/WorldProxy.cs:3572-3573
+      ctx:  ; `JoinsBirthTick` et `HasLogicalZ` en `:3572-3573`. Exige un hôte `IEntityWorldContext` : le défaut de l'int
+      src: spawnedProxy.JoinsBirthTick = true; // spawnedProxy.HasLogicalZ = true; // E20.e0k2 (D-E0K-1): the logical Z marker, in the same block.
+[36] Alundra/Maps/IEntityWorldContext.cs:81
+      ctx:  le défaut de l'interface rend `null` (`Maps/IEntityWorldContext.cs:81`). |
+      src: EntityScriptProxy? SpawnEntityBySpriteIndex(EntityScriptProxy? parent, bool isMapPage, int index, int x, int y
+[38] Alundra/Maps/WorldProxy.cs:3301
+      ctx:  | §8 `:3267` `DestroyEntity(e, fx)` | `WorldProxy.cs:3301` | VRAI | trois bouchons nommés dedans : butin (`:3
+      src: internal void DestroyEntity(EntityScriptProxy entity, int effectId)
+[38] Alundra/Maps/WorldProxy.cs:3303
+      ctx: | trois bouchons nommés dedans : butin (`:3303`), effet actif (`:3306`), porteur (`:3315`). |
+      src: // (1) loot: E20.e0.
+[38] Alundra/Maps/WorldProxy.cs:3306
+      ctx:  dedans : butin (`:3303`), effet actif (`:3306`), porteur (`:3315`). |
+      src: 
+[38] Alundra/Maps/WorldProxy.cs:3315
+      ctx: 3303`), effet actif (`:3306`), porteur (`:3315`). |
+      src: // (6) clearing of the carrier (the entity this one rests on): E20.g.
+[39] Alundra/Maps/WorldProxy.cs:3329
+      ctx: R14 | §8 `:3295` variante sans effet | `WorldProxy.cs:3329` | VRAI | un argument, ni bris ni butin ; exposée p
+      src: internal void DestroyEntity(EntityScriptProxy entity)
+[39] Alundra/Maps/WorldProxy.cs:3604
+      ctx: ar `IEntityWorldContext.DestroyEntity` (`:3604`). |
+      src: void IEntityWorldContext.DestroyEntity(EntityScriptProxy entity) => DestroyEntity(entity);
+[40] UNRESOLVED AlundraEventProgramRunner.cs:378 | ctx: | R15 | §8 `AlundraEventProgramRunner.cs:378` E0/E1 inline | `Events/EventProgramR
+[40] Alundra/Events/EventProgramRunner.cs:283-292
+      ctx: ntProgramRunner.cs:378` E0/E1 inline | `Events/EventProgramRunner.cs:283-292`, prédicat `:328` | VRAI | `IsInl
+      src: // E19.d2b (D-E19-29, O-E19-4 in part): the native handler 0x8007ED10 of slot E, reached at each tick of the D // // while the scripted E program is empty, is DestroyEntity(e, -1) (0x8003A59C) for the indexes 0 and 1 (status // // of the sprite header; the loot stays the named stub of E20.e0, O-E19-23). Index 2 and the other slots stay  // if (entity.EventTrigger == ScriptHelper.ProgramEDeactivate
+[40] Alundra/Events/EventProgramRunner.cs:328
+      ctx: ventProgramRunner.cs:283-292`, prédicat `:328` | VRAI | `IsInlineDeactivateCode` = codes 0, 1 et 10 (E10 par E
+      src: internal static bool IsInlineDeactivateCode(int code) => (uint)code <= 1u || code == WaveSwordAi.DeactivateCod
+[41] UNRESOLVED AlundraNativeSpriteRegistry.cs:29 | ctx: | R16 | §8 `AlundraNativeSpriteRegistry.cs:29` registre de production (Beannoïde, 
+[41] Alundra/Ai/NativeSpriteRegistry.cs:36-43
+      ctx: n (Beannoïde, Muruta, C61 seulement) | `Ai/NativeSpriteRegistry.cs:36-43` | VRAI | 7 clés (§3.6). |
+      src: internal static NativeSpriteRegistry CreateForProduction() // { // var registry = new NativeSpriteRegistry(); // BeannoideAi.Register(registry);
+[42] UNRESOLVED AlundraEntityScriptProxy.cs:1709 | ctx: | R17 | §8 statut 3 « seulement E » `AlundraEntityScriptProxy.cs:1709-1745` | `Entities/EntityScriptProxy.c
+[42] Alundra/Entities/EntityScriptProxy.cs:1717-1726
+      ctx: undraEntityScriptProxy.cs:1709-1745` | `Entities/EntityScriptProxy.cs:1717-1726` (Normal → Deactivated) et `:1
+      src: } // else if (((flags & EntityFlags.DeactivateOnImpact) != 0 && (ForceAdjusted != 0 || IsOnGround != 0)) // || ((flags & EntityFlags.DeactivateOnHit) != 0 && HitCounter != 0) // || ((flags & EntityFlags.DeactivateOnAnimationEnd) != 0 && ForceResetAnimationFlag != 0))
+[42] Alundra/Entities/EntityScriptProxy.cs:1758-1760
+      ctx: cs:1717-1726` (Normal → Deactivated) et `:1758-1760` (`case Deactivated` → programme E) | VRAI | |
+      src: case EntityStatus.Deactivated: // eventProgramType = ScriptHelper.ProgramEDeactivate; // break;
+[43] UNRESOLVED AlundraDamage.cs:27 | ctx: | R18 | §8 `AlundraDamage.cs:27` règle de dégâts ; passe de coups portée | `Combat
+[43] Alundra/Combat/Damage.cs:24
+      ctx: le de dégâts ; passe de coups portée | `Combat/Damage.cs:24` (`ResolveBalanceTarget`), `:79` (`ComputeNewHp`) 
+      src: public static int ResolveBalanceTarget(BalanceAttack? attack, BalanceRecord? sheet, int hp, EquipmentRecords? 
+[43] Alundra/Combat/Damage.cs:79
+      ctx: Damage.cs:24` (`ResolveBalanceTarget`), `:79` (`ComputeNewHp`) ; `Combat/HitPass.cs` | VRAI | la passe pose `T
+      src: public static bool ComputeNewHp(EntityScriptProxy target, BalanceRecord? sheet, EquipmentRecords? equipment, u
+[44] Alundra/Cameras/CameraSway.cs:33-41
+      ctx: draCameraSway.cs` (9 champs, `Step`) | `Cameras/CameraSway.cs:33-41` (9 propriétés `internal set`), `Step` `:6
+      src: public int Flag { get; internal set; } // public int LimitX { get; internal set; } // public int LimitY { get; internal set; } // public int SpeedX { get; internal set; }
+[44] Alundra/Cameras/CameraSway.cs:65
+      ctx: ` (9 propriétés `internal set`), `Step` `:65` | VRAI | `Start` `:45`, `Stop`, `OnMapLoad` ; aucune capture ni 
+      src: internal void Step()
+[44] Alundra/Cameras/CameraSway.cs:45
+      ctx: al set`), `Step` `:65` | VRAI | `Start` `:45`, `Stop`, `OnMapLoad` ; aucune capture ni restauration des 9 cham
+      src: public void Start(int speedX, int speedY, int limitX, int limitY)
+[45] UNRESOLVED AlundraNativeEffects.cs:28 | ctx: | R20 | §8 `AlundraNativeEffects.cs:28` motif d'effets (anneaux, étincelles) | `Re
+[45] Alundra/Rendering/Effects/NativeEffects.cs:28-31
+      ctx: motif d'effets (anneaux, étincelles) | `Rendering/Effects/NativeEffects.cs:28-31` | VRAI | `CreateLifeVesselEf
+      src: /// (it converges to the hero on the 16th update); a created spark draws two numbers from <see cref="GameRando // /// creates fewer slots and draws fewer numbers (no number for a slot that was not created). Everything wraps  // /// </summary> // public static void CreateLifeVesselEffects(EffectReservoir reservoir, int heroX, int heroY, int heroZ)
+[45] Alundra/Events/EventProgramRunner.cs:3154
+      ctx: 'après §5 du rapport). Seul appelant : `EventProgramRunner.cs:3154`. |
+      src: stage.Emit(reservoir => NativeEffects.CreateLifeVesselEffects(reservoir, heroX, heroY, heroZ));
+[46] UNRESOLVED AlundraTestSaves.cs:67 | ctx: s niveau 1 (43, 45, 47, 49), HP 4/10 » `AlundraTestSaves.cs:67-72, 96` | `SaveGames/TestSaves.cs:72-75` (`Test
+[46] Alundra/SaveGames/TestSaves.cs:72-75
+      ctx: 10 » `AlundraTestSaves.cs:67-72, 96` | `SaveGames/TestSaves.cs:72-75` (`TestKitItems`), `:94-98` (`WeaponPrese
+      src: private static readonly (int Item, short Count)[] TestKitItems = // [ // (35, 1), (36, 9), (37, 1), (38, 1), (41, 1), (43, 1), (45, 1), (47, 1), (49, 1), // ];
+[46] Alundra/SaveGames/TestSaves.cs:94-98
+      ctx: s/TestSaves.cs:72-75` (`TestKitItems`), `:94-98` (`WeaponPreset`) | VRAI | §5. |
+      src: private static Preset WeaponPreset(string name, int mapId, int tileX, int tileY, int tileZ, int weaponSlot, pa // => new( // name, "test-" + name, mapId, tileX, tileY, tileZ, // [], [], [], Loadout(extraItems),
+[47] UNRESOLVED AlundraInventoryDirector.cs:406 | ctx: annulation et ses sites, garde du menu `AlundraInventoryDirector.cs:406` | §3 | VRAI (tout absent) | garde du 
+[47] Alundra/UI/Inventory/InventoryDirector.cs:419-422
+      ctx: | VRAI (tout absent) | garde du menu : `UI/Inventory/InventoryDirector.cs:419-422` (commentaire « NO PORT EQUI
+      src: // GameEngine.cs:1570 - StaticVariables.g_warpLockTimer == 0. NO PORT EQUIVALENT: g_warpLockTimer // // is PlayerManager's own item-use/magic-sequence lock (Gameplay/PlayerManager.cs:1929-4013, e.g. // // ":800/900/1994/2409" - a state machine for chained item animations), and no such system exists // // in this DLL at all. Declared absent, treated as always 0 (never blocks).
+[47] Alundra/UI/Inventory/InventoryDirector.cs:405
+      ctx: O PORT EQUIVALENT ») dans `TryTrigger` (`:405`). |
+      src: private static bool TryTrigger(GameState state, EntityScriptProxy? player)
+[49] Alundra/Events/EventProgramRunner.cs:3081
+      ctx: de sans `case` donne `UnknownSkipped` (`EventProgramRunner.cs:3081`) ; `0xB9` n'est que dimensionné (`Events/E
+      src: _lastDispatchKind = EventTraceKind.UnknownSkipped;
+[49] Alundra/Events/EventOpcodeSizeTable.cs:233
+      ctx: 3081`) ; `0xB9` n'est que dimensionné (`Events/EventOpcodeSizeTable.cs:233`) ; aucun support CD/XA dans `Alund
+      src: { 0xB9, new(2, "Start CD streaming") },
+[51] Alundra/Entities/EntitySearchService.cs:75
+      ctx:  son tri exact » | — | VRAI (absent) | `Entities/EntitySearchService.cs:75` (`GetMatchingEntitiesBySearchType`
+      src: public static class EntitySearchService
+[52] UNRESOLVED AlundraEntityScriptProxy.cs:328 | ctx: §0.4 et §8 `PreviousAdjustedForceX/Y` (`AlundraEntityScriptProxy.cs:328-329`) sans consommateur ; poussée « co
+[52] Alundra/Entities/EntityScriptProxy.cs:341-342
+      ctx: e à la carte, avec `ForceAdjusted` » | `Entities/EntityScriptProxy.cs:341-342` | VRAI | consommateurs : aucun 
+      src: public int PreviousAdjustedForceX;//?cc // public int PreviousAdjustedForceY;//?d0
+[52] Alundra/Entities/EntityScriptProxy.cs:2638-2639
+      ctx:  | consommateurs : aucun (seuls `Clone` `:2638-2639` et les tables d'état des tests d'oracle `AlundraBeannoide
+      src: PreviousAdjustedForceX = PreviousAdjustedForceX, // PreviousAdjustedForceY = PreviousAdjustedForceY,
+[52] Alundra.Tests/AlundraBeannoideOracleTests.cs:93-94
+      ctx: t les tables d'état des tests d'oracle `AlundraBeannoideOracleTests.cs:93-94`, `AlundraMurutaOracleTests.cs:92
+      src: ("prevadjx_CC", (e, v) => e.PreviousAdjustedForceX = unchecked((int)v), e => e.PreviousAdjustedForceX), // ("prevadjy_D0", (e, v) => e.PreviousAdjustedForceY = unchecked((int)v), e => e.PreviousAdjustedForceY),
+[52] Alundra.Tests/AlundraMurutaOracleTests.cs:92-93
+      ctx: AlundraBeannoideOracleTests.cs:93-94`, `AlundraMurutaOracleTests.cs:92-93` les posent). La passe de forces `Ru
+      src: ("prevadjx_CC", (e, v) => e.PreviousAdjustedForceX = unchecked((int)v), e => e.PreviousAdjustedForceX), // ("prevadjy_D0", (e, v) => e.PreviousAdjustedForceY = unchecked((int)v), e => e.PreviousAdjustedForceY),
+[52] Alundra/Physics/ScriptedMotion.cs:614
+      ctx: passe de forces `RunOneKinematicTick` (`Physics/ScriptedMotion.cs:614`, forces `:668-674`) ne les lit pas. Poi
+      src: private static void RunOneKinematicTick(EntityScriptProxy entity, uint animSetAnimationId)
+[52] Alundra/Physics/ScriptedMotion.cs:668-674
+      ctx: `Physics/ScriptedMotion.cs:614`, forces `:668-674`) ne les lit pas. Point d'insertion naturel : entre `:674` e
+      src: // PhysicsEngine.ApplyEntityForces (PhysicsEngine.cs:1514-1547), flat-ground-only - see this // // method's own doc for what stays out. // entity.AdjustedForceX = entity.ForceX; // entity.AdjustedForceY = entity.ForceY;
+[52] Alundra/Physics/ScriptedMotion.cs:674
+      ctx:  pas. Point d'insertion naturel : entre `:674` et le flux du porteur `:676` / la borne de carte `:683-691`. `C
+      src: entity.FinalForceZ = entity.ForceZ;
+[52] Alundra/Physics/ScriptedMotion.cs:676
+      ctx: el : entre `:674` et le flux du porteur `:676` / la borne de carte `:683-691`. `ClampStepToMapEdge` (`:741`) e
+      src: // E19.d2c2 S4 (the binary, 0x80037364): the hero carried by an entity adds the displacement that entity reali
+[52] Alundra/Physics/ScriptedMotion.cs:683-691
+      ctx: x du porteur `:676` / la borne de carte `:683-691`. `ClampStepToMapEdge` (`:741`) existe, pour les entités `Ha
+      src: // E20.e0k3 (D-E0K-7): an entity marked HasLogicalZ has its step bounded to the grid of the map BEFORE the mov // var edgeAdjusted = false; // if (entity.HasLogicalZ) // {
+[52] Alundra/Physics/ScriptedMotion.cs:741
+      ctx: carte `:683-691`. `ClampStepToMapEdge` (`:741`) existe, pour les entités `HasLogicalZ` seulement ; or `SpawnEn
+      src: internal static MapEdgeClamp ClampStepToMapEdge(EntityScriptProxy entity, int stepX, int stepY)
+[52] Alundra/Maps/WorldProxy.cs:3573
+      ctx: tyBySpriteIndex` marque `HasLogicalZ` (`WorldProxy.cs:3573`) : les sprites des sorts reçoivent déjà la borne (
+      src: spawnedProxy.HasLogicalZ = true; // E20.e0k2 (D-E0K-1): the logical Z marker, in the same block.
+[52] Alundra/Physics/ScriptedMotion.cs:609
+      ctx: (INFÉRENCE : à tester). Le commentaire `ScriptedMotion.cs:609` range ces champs sous « riding-platform force f
+      src: /// scope as before this extraction: no riding-platform force feed (<c>PreviousAdjustedForceX/Y</c> stay 0), a
+[52] Alundra/Physics/ScriptedMotion.cs:676-680
+      ctx: de la DLL passe par `LastTickDeltaX/Y` (`:676-680`). |
+      src: // E19.d2c2 S4 (the binary, 0x80037364): the hero carried by an entity adds the displacement that entity reali // if (entity.IsPlayer && entity.RidingEntity?.GameplayProxy is EntityScriptProxy carrier) // { // entity.FinalForceX += carrier.LastTickDeltaX;
+[53] Alundra/Entities/EntityScriptProxy.cs:1227
+      ctx: : `Bytes` est un `byte[4]` (`:1214`) | `Entities/EntityScriptProxy.cs:1227` | VRAI | voisins : `DelayOrAngleOr
+      src: public byte[] Bytes = new byte[4];
+[53] Alundra/Entities/EntityScriptProxy.cs:1228
+      ctx:  `DelayOrAngleOrEntityId` int `+0x278` (`:1228`), `ItemState` int `+0x27C` (`:1229`), `AIValues` `short[10]` `
+      src: public int DelayOrAngleOrEntityId; //278
+[53] Alundra/Entities/EntityScriptProxy.cs:1229
+      ctx: 8` (`:1228`), `ItemState` int `+0x27C` (`:1229`), `AIValues` `short[10]` `+0x280..+0x293` (`:1230`) = exacteme
+      src: public int ItemState;//27C
+[53] Alundra/Entities/EntityScriptProxy.cs:1230
+      ctx: AIValues` `short[10]` `+0x280..+0x293` (`:1230`) = exactement les 5 mots (+0x280 à +0x290) de l'eau, en deux s
+      src: public short[] AIValues = new short[10];//280
+[53] Alundra/Ai/Objects/SaveBook.cs:164-171
+      ctx: de composition de 4 octets en un mot : `Ai/Objects/SaveBook.cs:164-171`. Utilisateurs de `Bytes`/`AIValues` : 
+      src: => book.Bytes[0] | (book.Bytes[1] << 8) | (book.Bytes[2] << 16) | (book.Bytes[3] << 24); //  // private static void WriteState(EntityScriptProxy book, int state) // {
+[53] Alundra/Ai/EnemyHelpers.cs:221
+      ctx: Bytes`/`AIValues` : Beannoïde, Muruta, `EnemyHelpers.cs:221,234`, livre de sauvegarde. |
+      src: self.AIValues[1] = unchecked((short)(Below(16) + range));
+[54] Alundra/Entities/EntityScriptProxy.cs:670
+      ctx: 657`) quand C75 modifie les drapeaux | `Entities/EntityScriptProxy.cs:670` | VRAI | `internal`, appelée par le
+      src: internal void ResyncControllerFromFlags()
+[54] Alundra/Events/EventProgramRunner.cs:671-698
+      ctx: I | `internal`, appelée par le runner (`EventProgramRunner.cs:671-698`, `:2478`, `:2500`). Les drapeaux de C75
+      src: entity.ResyncControllerFromFlags(); // return 1; //  // case 0x17: // Low gravity - Script_23_017
+[54] Alundra/Events/EventProgramRunner.cs:2478
+      ctx: unner (`EventProgramRunner.cs:671-698`, `:2478`, `:2500`). Les drapeaux de C75, `\|= 0x2130`, sont dans `Entit
+      src: match.ResyncControllerFromFlags();
+[54] Alundra/Events/EventProgramRunner.cs:2500
+      ctx: ventProgramRunner.cs:671-698`, `:2478`, `:2500`). Les drapeaux de C75, `\|= 0x2130`, sont dans `EntityFlags` :
+      src: match.ResyncControllerFromFlags();
+[54] Alundra/Entities/EntityFlags.cs:69
+      ctx: 0 `Gravity`, 0x2000 `NoObstacleSlide` (`Entities/EntityFlags.cs:69,75,103,130`). Attention : le rapport glose 
+      src: public const uint DeactivateOnImpact = 0x00000010;
+[55] Alundra/Cameras/CameraMath.cs:216-228
+      ctx: DD874]`) dans `AlundraCameraMath.cs` | `Cameras/CameraMath.cs:216-228` | VRAI (absent) | `ComputeSmoothedCamer
+      src: internal static Vector3 ComputeSmoothedCameraTarget( // Vector3 previousSmoothedTarget, bool needsSnap, Vector3 lookAtRenderTarget, // int? mapWidthPx, int? mapHeightPx, int swayOffsetX = 0, int swayOffsetY = 0) // {
+[55] Alundra/Cameras/CameraMath.cs:223
+      ctx: ector3(swayOffsetX, -swayOffsetY, 0f)` (`:223`) ; aucune occurrence de `DD874` ni de coup d'un tick dans la DL
+      src: + new Vector3(swayOffsetX, -swayOffsetY, 0f);
+[56] Alundra/Rendering/Effects/NativeEffects.cs:39
+      ctx: se, effet, animation, x, y, z)` (motif `NativeEffects.cs:39`). Sons des effets : INCONNU (comme Q5). |
+      src: var ring = reservoir.Create(false, LifeVesselEffect, 0, heroX, heroY, z);
+[57] Alundra/SaveGames/SaveGame.cs:182-186
+      ctx: des et le HUD n'ont rien à ajouter » | `SaveGames/SaveGame.cs:182-186,224-228` ; `UI/Hud/HudDirector.cs:612-61
+      src: archive.Value("mp", ref Mp); // archive.Value("mpMax", ref MpMax); // archive.Value("money", ref Money); // archive.Value("weaponId", ref WeaponId);
+[57] Alundra/UI/Hud/HudDirector.cs:612-613
+      ctx: veGames/SaveGame.cs:182-186,224-228` ; `UI/Hud/HudDirector.cs:612-613` | VRAI | `Mp`, `MpMax`, `ItemId` sont s
+      src: var trueMpMax = _gameState.PlayerStats.MpMax; // int mpTarget = _gameState.PlayerStats.Mp;
+[58] Alundra/Ai/NativeSpriteRegistry.cs:54-67
+      ctx: ec des ennemis, clé commune avec E14 | `Ai/NativeSpriteRegistry.cs:54-67` | VRAI | une clé = un enregistrement
+      src: public IDisposable Register(int slot, int code, IEnumerable<int> spriteTypes, NativeSpriteHandler handler) // { // ArgumentNullException.ThrowIfNull(spriteTypes); // ArgumentNullException.ThrowIfNull(handler);
+[58] Alundra/Ai/NativeSpriteRegistry.cs:62
+      ctx: ublon lève `InvalidOperationException`, `:62`), mais l'enregistrement est restreint à une liste de types ; auc
+      src: throw new InvalidOperationException($"A native handler is already registered for slot {slot}, code {code}.");
+[58] Alundra.Tests/AlundraHitArena.cs:82
+      ctx: e, l'indice seul pour la page globale (`Alundra.Tests/AlundraHitArena.cs:82` : `0x100 + 79`). |
+      src: Assert.Equal(0x100 + 79, proxy!.SpriteType); // a Beannoid of the export (balance index 335).
+[59] Alundra/Hero/PlayerManager.cs:353
+      ctx: ote appelé avant l'aiguillage d'état | `PlayerManager.cs:353` | VRAI | le premier appel suit donc le départ d'
+      src: UpdateItemUseDriver(player);
+[59] Alundra/Hero/PlayerManager.cs:432
+      ctx:  tick (le départ est dans l'aiguillage, `:432`). |
+      src: if (TryUseItem(player, in pad) != 0 && PlayerTryAction(player, in pad) == 0)
+[60] Alundra/Maps/WorldProxy.cs:2075
+      ctx:  du héros remet `[0x80127164]` à 0 » | `Maps/WorldProxy.cs:2075` (`AdoptPlayerPawn`), `:1993-2034` (ResetEntit
+      src: private void AdoptPlayerPawn(World world, TileMapData tileMapData)
+[60] Alundra/Maps/WorldProxy.cs:1993-2034
+      ctx: orldProxy.cs:2075` (`AdoptPlayerPawn`), `:1993-2034` (ResetEntityState) | INFÉRENCE | où vivra l'état : deux p
+      src: // E16.e L1/SE6 (docs/plan-e16-etat-partie.md): ResetEntityState (0x80031974, GameEngine.cs:650-652) // // initializes the hero with sprite table index 0, not a map sprite. // proxy.SpriteType = 0; // proxy.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = header.ProgramLoad;
+[60] Alundra/Entities/EntityScriptProxy.cs:434-441
+      ctx: du binaire. (1) Sur le proxy du héros (`EntityScriptProxy.cs:434-441` : pointeur d'arme, compteur, minuterie d
+      src: internal uint WeaponRecordPointer; //  // /// <summary>E20.b B2: the tick counter that goes with <see cref="WeaponRecordPointer"/>, the binary's <c>0x80 // internal int WeaponStepCounter;
+[60] Alundra/Session/GameState.cs:124
+      ctx: s `GameState` (`RegenerationCounters`, `GameState.cs:124`, doc `:120-123` : « nothing resets at a map load ») 
+      src: internal readonly int[] RegenerationCounters = new int[3];
+[60] Alundra/Session/GameState.cs:120-123
+      ctx: ationCounters`, `GameState.cs:124`, doc `:120-123` : « nothing resets at a map load ») : ces compteurs ne sont
+      src: /// <summary> // /// E20.c2a (docs/plan-e20-heros.md section 1.12): the three regeneration counters of <c>UpdateItemEffectState // /// binary that nothing resets at a map load (the only accesses are in <c>0x800307E8</c>), hence session state // /// </summary>
+[60] Alundra/Session/GameState.cs:368
+      ctx:  de remise à zéro (`InstallForMapEntry` `:368`, `ResetSessionForLoad` `:411`, `ResetForTests` `:438`) ; un éta
+      src: public void InstallForMapEntry()
+[60] Alundra/Session/GameState.cs:411
+      ctx: MapEntry` `:368`, `ResetSessionForLoad` `:411`, `ResetForTests` `:438`) ; un état d'usage placé là demanderait
+      src: internal void ResetSessionForLoad()
+[60] Alundra/Session/GameState.cs:438
+      ctx: SessionForLoad` `:411`, `ResetForTests` `:438`) ; un état d'usage placé là demanderait des remises à zéro expl
+      src: internal void ResetForTests()
+[61] Alundra/UI/Inventory/InventoryDirector.cs:405-427
+      ctx: 6 | §0.6 menu refusé pendant l'objet | `InventoryDirector.cs:405-427` | VRAI | `TryTrigger(GameState, EntitySc
+      src: private static bool TryTrigger(GameState state, EntityScriptProxy? player) // { // // GameEngine.cs:1568 - StaticVariables.g_playerControlFlags == 0. // if (state.PlayerControlFlags != 0)
+[61] Alundra/Maps/WorldProxy.cs:2591
+      ctx: ur est appelé à la fin de chaque tick (`WorldProxy.cs:2591`). |
+      src: InventoryDirector.Instance.Tick(PlayerEntity);
+[68] UNRESOLVED AlundraWorldProxy.cs:153 | ctx:  C1 | « `HighestLiveSlot()` est privé (`AlundraWorldProxy.cs:153`) ; `RecycleDestroyedEntities` (`:3220`) ne l
+[68] UNRESOLVED AlundraWorldProxy.cs:3220 | ctx: .cs:153`) ; `RecycleDestroyedEntities` (`:3220`) ne le calcule pas ; la DLL n'a pas l'équivalent de `[0x801343
+[68] Alundra/Maps/WorldProxy.cs:182
+      ctx: pas l'équivalent de `[0x80134360]` » | `WorldProxy.cs:182` (privé) ; `:3265` | VRAI | `HighestLiveSlot` ne ser
+      src: private int HighestLiveSlot()
+[68] Alundra/Maps/WorldProxy.cs:3265
+      ctx: 360]` » | `WorldProxy.cs:182` (privé) ; `:3265` | VRAI | `HighestLiveSlot` ne sert qu'à la sonde `ReportSlot` 
+      src: internal void RecycleDestroyedEntities()
+[68] Alundra/Maps/WorldProxy.cs:257-264
+      ctx: ot` ne sert qu'à la sonde `ReportSlot` (`:257-264`). `EntitySlotTable` (`Entities/EntitySlotTable.cs`, 64 case
+      src: private void ReportSlot(int slot) // { // if (!SlotShadow.Active) // {
+[69] Alundra/Entities/AnimationTables.cs:71
+      ctx: ons `0x80023654/0x80023694` existent : `Entities/AnimationTables.cs:71` (`OffsetXList`), `:82` (`OffsetYList`)
+      src: public static readonly short[] OffsetXList =
+[69] Alundra/Entities/AnimationTables.cs:82
+      ctx: AnimationTables.cs:71` (`OffsetXList`), `:82` (`OffsetYList`) ; l'anneau de `NativeEffects.cs` en utilise les 
+      src: public static readonly short[] OffsetYList =
+[70] Alundra/Entities/EntityScriptProxy.cs:1230
+      ctx: lues[0..9]`, `short[10]` (`:1217`) » | `EntityScriptProxy.cs:1230` | VRAI | voir R28. |
+      src: public short[] AIValues = new short[10];//280
+[72] UNRESOLVED AlundraPlayerManager.cs:305 | ctx: Pilote non appelé si `hero+0x20 != 0` (`AlundraPlayerManager.cs:305`) ni si `[0x800DC4B8] & 0x48` » | `PlayerM
+[72] Alundra/Hero/PlayerManager.cs:321-328
+      ctx: :305`) ni si `[0x800DC4B8] & 0x48` » | `PlayerManager.cs:321-328` ; `WorldProxy.cs:2905-2917` | VRAI | le reto
+      src: if (player.BlockedByEntity != null) // { // // E20.b B2, binary 0x80031BB0-0x80031BC0: this branch also clears the charge timer (E20.f1a, 0x80031BB4) and  // player.WeaponChargeTimer = 0;
+[72] Alundra/Maps/WorldProxy.cs:2905-2917
+      ctx: 0x48` » | `PlayerManager.cs:321-328` ; `WorldProxy.cs:2905-2917` | VRAI | le retour de `BlockedByEntity` précè
+      src: private void RunEntityBlock(int tick, bool gateClosed) // { // if (gateClosed) // {
+[72] Alundra/Maps/WorldProxy.cs:353
+      ctx:  le retour de `BlockedByEntity` précède `:353`. Porte fermée : `RunEntityBlock(tick, gateClosed)` ne fait que 
+      src: /// loader, or the loader fails (logged, degraded - same shape as every other spawn failure in this
+[72] Alundra/Session/GameState.cs:99
+      ctx: edMask = MenuOpen \| Unused40` = 0x48 (`Session/GameState.cs:99`). |
+      src: public const uint GameplayBlockedMask = MenuOpen | Unused40;
+[74] Alundra/Cameras/CameraMath.cs:223
+      ctx: ameraTarget` ajoute `-swayOffsetY` » | `CameraMath.cs:223` | VRAI | la conclusion « secousse −2 » reste une in
+      src: + new Vector3(swayOffsetX, -swayOffsetY, 0f);
+[75] Alundra/Hero/PlayerManager.cs:131
+      ctx:  = eau profonde (`DeepWaterSlope`) » | `PlayerManager.cs:131`, branche `:372` | VRAI | le pilote est appelé (`
+      src: private const int DeepWaterSlope = 4;
+[75] Alundra/Hero/PlayerManager.cs:372
+      ctx: e`) » | `PlayerManager.cs:131`, branche `:372` | VRAI | le pilote est appelé (`:353`) avant la nage (`:372`) :
+      src: if (player.Slope_18c == DeepWaterSlope)
+[75] Alundra/Hero/PlayerManager.cs:353
+      ctx: e `:372` | VRAI | le pilote est appelé (`:353`) avant la nage (`:372`) : comme dans le binaire, il voit la pen
+      src: UpdateItemUseDriver(player);
+[75] Alundra/Hero/PlayerManager.cs:372
+      ctx: lote est appelé (`:353`) avant la nage (`:372`) : comme dans le binaire, il voit la pente 4 avant que la nage 
+      src: if (player.Slope_18c == DeepWaterSlope)
+[76] Alundra/Maps/WorldProxy.cs:2905-2988
+      ctx: ; ordre des passes de `0x8003B388` » | `WorldProxy.cs:2905-2988` | VRAI | `movePlayer`, `programs`, `pending`,
+      src: private void RunEntityBlock(int tick, bool gateClosed) // { // if (gateClosed) // {
+[76] Alundra.Tests/AlundraTickStructureTests.cs:169
+      ctx: , `activeEffects`, `hit` ; épinglé par `AlundraTickStructureTests.cs:169,239`. |
+      src: public void MovePlayer_RunsOncePerTick_AndNotAtAll_InAFrameWithoutTick()
+[77] UNRESOLVED AlundraTestSaves.cs:67 | ctx: | C10 | « sauvegardes d'essai (`AlundraTestSaves.cs:67-72, 96`) » | `TestSaves.cs:72-75, 94-98` | VRAI
+[77] Alundra/SaveGames/TestSaves.cs:72-75
+      ctx:  (`AlundraTestSaves.cs:67-72, 96`) » | `TestSaves.cs:72-75, 94-98` | VRAI | |
+      src: private static readonly (int Item, short Count)[] TestKitItems = // [ // (35, 1), (36, 9), (37, 1), (38, 1), (41, 1), (43, 1), (45, 1), (47, 1), (49, 1), // ];
+[78] UNRESOLVED AlundraEventProgramRunner.cs:378 | ctx: | C11 | « E0/E1 inline (`AlundraEventProgramRunner.cs:378`) » | `EventProgramRunner.cs:283-292`
+[78] Alundra/Events/EventProgramRunner.cs:283-292
+      ctx: AlundraEventProgramRunner.cs:378`) » | `EventProgramRunner.cs:283-292` | VRAI | voir R15. |
+      src: // E19.d2b (D-E19-29, O-E19-4 in part): the native handler 0x8007ED10 of slot E, reached at each tick of the D // // while the scripted E program is empty, is DestroyEntity(e, -1) (0x8003A59C) for the indexes 0 and 1 (status // // of the sprite header; the loot stays the named stub of E20.e0, O-E19-23). Index 2 and the other slots stay  // if (entity.EventTrigger == ScriptHelper.ProgramEDeactivate
+[85] UNRESOLVED AlundraPlayerManager.cs:395 | ctx: | G1 | §3.7 « appel mode 0 `AlundraPlayerManager.cs:395` ; verrou `:317-335` ; garde d'échelle `:3
+[85] UNRESOLVED AlundraPlayerManager.cs:317 | ctx:  `AlundraPlayerManager.cs:395` ; verrou `:317-335` ; garde d'échelle `:386` ; états d'échelle `:444` » | `Play
+[85] UNRESOLVED AlundraPlayerManager.cs:386 | ctx: ` ; verrou `:317-335` ; garde d'échelle `:386` ; états d'échelle `:444` » | `PlayerManager.cs:408` ; `:321-345
+[85] UNRESOLVED AlundraPlayerManager.cs:444 | ctx: arde d'échelle `:386` ; états d'échelle `:444` » | `PlayerManager.cs:408` ; `:321-345` (BlockedByEntity `:321-
+[85] Alundra/Hero/PlayerManager.cs:408
+      ctx: le `:386` ; états d'échelle `:444` » | `PlayerManager.cs:408` ; `:321-345` (BlockedByEntity `:321-328`, verrou
+      src: UpdatePlayerCarriedEntity(player, 0);
+[85] Alundra/Hero/PlayerManager.cs:321-345
+      ctx: lle `:444` » | `PlayerManager.cs:408` ; `:321-345` (BlockedByEntity `:321-328`, verrouillée `:335-345`) ; `:39
+      src: if (player.BlockedByEntity != null) // { // // E20.b B2, binary 0x80031BB0-0x80031BC0: this branch also clears the charge timer (E20.f1a, 0x80031BB4) and  // player.WeaponChargeTimer = 0;
+[85] Alundra/Hero/PlayerManager.cs:321-328
+      ctx: r.cs:408` ; `:321-345` (BlockedByEntity `:321-328`, verrouillée `:335-345`) ; `:394-402` ; `:456-459` | VRAI |
+      src: if (player.BlockedByEntity != null) // { // // E20.b B2, binary 0x80031BB0-0x80031BC0: this branch also clears the charge timer (E20.f1a, 0x80031BB4) and  // player.WeaponChargeTimer = 0;
+[85] Alundra/Hero/PlayerManager.cs:335-345
+      ctx: BlockedByEntity `:321-328`, verrouillée `:335-345`) ; `:394-402` ; `:456-459` | VRAI | |
+      src: if (!DebugIgnoreControlLock && (state.PlayerControlFlags & GameState.PlayerControlBits.InputBlockedMask) != 0) // { // PlayerAnimationEffects.Create(player, PlayerAnimationEffects.LockedMode); // 
+[85] Alundra/Hero/PlayerManager.cs:394-402
+      ctx: y `:321-328`, verrouillée `:335-345`) ; `:394-402` ; `:456-459` | VRAI | |
+      src: if (player.Slope_18c == 6 // && buttonsHold != 0 // && dir == 0x10 // && player.TargetDirection == 0x10
+[85] Alundra/Hero/PlayerManager.cs:456-459
+      ctx:  verrouillée `:335-345`) ; `:394-402` ; `:456-459` | VRAI | |
+      src: // Climbing(0x0E)/ClimbStill(0x35) case, PlayerManager.cs:675-731 (docs/plan-echelles-chiffrage.md // // É4). TryUseItem/PlayerTryAction (:677) NOT PORTED (no item/interaction system, same scope // // restriction as every other unported call in this class) - proceeds straight to the body. // else if (player.TargetAnimationId == ClimbingAnimationId || player.TargetAnimationId == ClimbStillAnimationId)
+[86] Alundra/Hero/PlayerManager.cs:932
+      ctx: chons : `:919`, `:927`, `:1271-1274` | `PlayerManager.cs:932`, `:940`, `:1285-1287` | VRAI | appel de `UpdateP
+      src: private static int TryUseItem(EntityScriptProxy player, in PadState pad) => TryUseItemResultForTests ?? 1;
+[86] Alundra/Hero/PlayerManager.cs:940
+      ctx:  `:1271-1274` | `PlayerManager.cs:932`, `:940`, `:1285-1287` | VRAI | appel de `UpdatePlayerCarriedEntity` mod
+      src: private static int PlayerTryAction(EntityScriptProxy player, in PadState pad) => 0;
+[86] Alundra/Hero/PlayerManager.cs:1285-1287
+      ctx: 1274` | `PlayerManager.cs:932`, `:940`, `:1285-1287` | VRAI | appel de `UpdatePlayerCarriedEntity` mode 0 `:40
+      src: private static void UpdatePlayerCarriedEntity(EntityScriptProxy player, int mode) // { // }
+[86] Alundra/Hero/PlayerManager.cs:408
+      ctx: l de `UpdatePlayerCarriedEntity` mode 0 `:408`, mode 2 (nage) `:659`. |
+      src: UpdatePlayerCarriedEntity(player, 0);
+[86] Alundra/Hero/PlayerManager.cs:659
+      ctx: iedEntity` mode 0 `:408`, mode 2 (nage) `:659`. |
+      src: UpdatePlayerCarriedEntity(player, 2);
+[87] Alundra/Hero/PlayerManager.cs:335-345
+      ctx:  le mode 1 ni l'annulation d'objet » | `PlayerManager.cs:335-345` | VRAI | contenu : `Create(Locked)` `:337`, 
+      src: if (!DebugIgnoreControlLock && (state.PlayerControlFlags & GameState.PlayerControlBits.InputBlockedMask) != 0) // { // PlayerAnimationEffects.Create(player, PlayerAnimationEffects.LockedMode); // 
+[87] Alundra/Hero/PlayerManager.cs:337
+      ctx: 45` | VRAI | contenu : `Create(Locked)` `:337`, deux remises à zéro `:341-342`, `EndOfMovePlayer` `:343`. |
+      src: PlayerAnimationEffects.Create(player, PlayerAnimationEffects.LockedMode);
+[87] Alundra/Hero/PlayerManager.cs:341-342
+      ctx: te(Locked)` `:337`, deux remises à zéro `:341-342`, `EndOfMovePlayer` `:343`. |
+      src: player.WeaponChargeTimer = 0; // player.WeaponRecordPointer = 0;
+[87] Alundra/Hero/PlayerManager.cs:343
+      ctx: es à zéro `:341-342`, `EndOfMovePlayer` `:343`. |
+      src: EndOfMovePlayer(player, in pad, state, host); // E20.c2a T1: the locked branch also reaches END (0x80031C0C-0x
+[89] Alundra/Hero/PlayerManager.cs:1026-1031
+      ctx: et 0x0A dans les groupes d'attaque » | `PlayerManager.cs:1026-1031` | VRAI | |
+      src: private static bool IsGroundAttackGroup(uint animationId) // => animationId is 0x04 or 0x08 or 0x09 or 0x10 or 0x11 or 0x12 or 0x13 or 0x18 or 0x19 or 0x25 or 0x3F or 0x40 //  // /// <summary>E20.b B3: the ids the jump table <c>0x80022D3C</c> sends to the air attack group <c>0x80031DF8</c
+[90] UNRESOLVED AlundraPlayerManager.cs:386 | ctx: 600`), `CarriedEntity` lu seulement en `AlundraPlayerManager.cs:386` | `EntityScriptProxy.cs:101-105`, `:2609-
+[90] Alundra/Entities/EntityScriptProxy.cs:101-105
+      ctx: ent en `AlundraPlayerManager.cs:386` | `EntityScriptProxy.cs:101-105`, `:2609-2613` ; `PlayerManager.cs:399` |
+      src: public Entity? PlatformEntity; //28 // public Entity? CarriedEntity; // public int RelativeWarpOffsetX; // public int RelativeWarpOffsetY;
+[90] Alundra/Entities/EntityScriptProxy.cs:2609-2613
+      ctx: :386` | `EntityScriptProxy.cs:101-105`, `:2609-2613` ; `PlayerManager.cs:399` | VRAI | `CarriedEntity` n'est j
+      src: PlatformEntity = PlatformEntity, // CarriedEntity = CarriedEntity, // RelativeWarpOffsetX = RelativeWarpOffsetX, // RelativeWarpOffsetY = RelativeWarpOffsetY,
+[90] Alundra/Hero/PlayerManager.cs:399
+      ctx: criptProxy.cs:101-105`, `:2609-2613` ; `PlayerManager.cs:399` | VRAI | `CarriedEntity` n'est jamais écrit : « 
+      src: && player.CarriedEntity == null)
+[91] Alundra/Maps/WorldProxy.cs:3301-3318
+      ctx: `RecycleDestroyedEntities` `:3231` » | `WorldProxy.cs:3301-3318`, `:3329-3334` ; `:3265` | VRAI | |
+      src: internal void DestroyEntity(EntityScriptProxy entity, int effectId) // { // // (1) loot: E20.e0. // entity.Status = EntityStatus.FlagToDestroy;
+[91] Alundra/Maps/WorldProxy.cs:3329-3334
+      ctx:  `:3231` » | `WorldProxy.cs:3301-3318`, `:3329-3334` ; `:3265` | VRAI | |
+      src: internal void DestroyEntity(EntityScriptProxy entity) // { // entity.Status = EntityStatus.FlagToDestroy; // entity.EventTrigger = ScriptHelper.ProgramUnknown;
+[91] Alundra/Maps/WorldProxy.cs:3265
+      ctx: orldProxy.cs:3301-3318`, `:3329-3334` ; `:3265` | VRAI | |
+      src: internal void RecycleDestroyedEntities()
+[92] Alundra.Tests/AlundraNativeSpriteRegistryTests.cs:51
+      ctx:  E12, E20, E21 ; « compte épinglé à 7 (`AlundraNativeSpriteRegistryTests.cs:51`) » | `NativeSpriteRegistry.cs:
+      src: public void ProductionRunner_RegistryHoldsTheSevenHandlersOfTheBeannoidTheMurutaAndTheSwordWave_AndTheSwitchIs
+[92] Alundra/Ai/NativeSpriteRegistry.cs:36-43
+      ctx: aNativeSpriteRegistryTests.cs:51`) » | `NativeSpriteRegistry.cs:36-43` ; `AlundraNativeSpriteRegistryTests.cs:
+      src: internal static NativeSpriteRegistry CreateForProduction() // { // var registry = new NativeSpriteRegistry(); // BeannoideAi.Register(registry);
+[92] Alundra.Tests/AlundraNativeSpriteRegistryTests.cs:51
+      ctx:  » | `NativeSpriteRegistry.cs:36-43` ; `AlundraNativeSpriteRegistryTests.cs:51,55` | VRAI | |
+      src: public void ProductionRunner_RegistryHoldsTheSevenHandlersOfTheBeannoidTheMurutaAndTheSwordWave_AndTheSwitchIs
+[93] Alundra/Physics/ScriptedMotion.cs:171-176
+      ctx: ionId`, pas de `TargetAnimationId` » | `Physics/ScriptedMotion.cs:171-176` | PÉRIMÉ en partie | depuis E20.e0a
+      src: internal static void TickScriptedNpc(EntityScriptProxy entity) // { // // E20.e0a3b (D-E0A-8, ADR-0065): an entity born by the interface of the sprite index (and, since E20.e0a4, by // // animation set from the target: the binary's creation has switched to it already (0x80038AB4). Guarded by th
+[93] Alundra/Physics/ScriptedMotion.cs:173-175
+      ctx: 0` lit la fiche de `TargetAnimationId` (`:173-175`) ; sinon `CurrentAnimationId`. |
+      src: // E20.e0a3b (D-E0A-8, ADR-0065): an entity born by the interface of the sprite index (and, since E20.e0a4, by // // animation set from the target: the binary's creation has switched to it already (0x80038AB4). Guarded by th // RunOneMotionTick(entity, entity.JoinsBirthTick && entity.CurrentAnimationId == ~0u ? entity.TargetAnimationId 
+[94] Alundra/Physics/ScriptedMotion.cs:671-675
+      ctx: | G10 | §4 plateforme horizontale `ScriptedMotion.cs:671-675` | `ScriptedMotion.cs:676-680` | VRAI | |
+      src: entity.AdjustedForceY = entity.ForceY; // entity.FinalForceX = entity.AdjustedForceX; // entity.FinalForceY = entity.AdjustedForceY; // entity.FinalForceZ = entity.ForceZ;
+[94] Alundra/Physics/ScriptedMotion.cs:676-680
+      ctx: izontale `ScriptedMotion.cs:671-675` | `ScriptedMotion.cs:676-680` | VRAI | |
+      src: // E19.d2c2 S4 (the binary, 0x80037364): the hero carried by an entity adds the displacement that entity reali // if (entity.IsPlayer && entity.RidingEntity?.GameplayProxy is EntityScriptProxy carrier) // { // entity.FinalForceX += carrier.LastTickDeltaX;
+[95] Alundra/Physics/MovementObstacleProbe.cs:48-49
+      ctx: | G11 | §4 « obstacle : `MovementObstacleProbe.cs:48-49` passe `PickupKindMask` » | `Physics/Mo
+      src: var candidateX = (int)Math.Round((double)candidateRootPosition.X * 65536.0); // var candidateY = (int)Math.Round((double)candidateRootPosition.Y * 65536.0);
+[95] Alundra/Physics/MovementObstacleProbe.cs:51
+      ctx: e.cs:48-49` passe `PickupKindMask` » | `Physics/MovementObstacleProbe.cs:51` | VRAI | |
+      src: proxy, candidateX, candidateY, proxy.PosZ, _host.Collidables, EntityFlags.PickupKindMask);
+[96] Alundra/Entities/EntityScriptProxy.cs:1383
+      ctx: ions :1269`, `GetNumberOfItem :2168` | `EntityScriptProxy.cs:1383` ; `PlayerManager.cs:1282` ; `:2181` | VRAI 
+      src: internal bool HasLogicalZ;
+[96] Alundra/Hero/PlayerManager.cs:1282
+      ctx: :2168` | `EntityScriptProxy.cs:1383` ; `PlayerManager.cs:1282` ; `:2181` | VRAI | |
+      src: private static readonly int[] SpawnDirections = { 0, 0x10, 8, 0x18 };
+[96] Alundra/Hero/PlayerManager.cs:2181
+      ctx: xy.cs:1383` ; `PlayerManager.cs:1282` ; `:2181` | VRAI | |
+      src: public static int GetNumberOfItem(GameState state, int itemId)
+[97] Alundra.Tests/AlundraNativeSpriteRegistryTests.cs:51-55
+      ctx: ; `TheNinePresets_AreListed… :85-87` | `AlundraNativeSpriteRegistryTests.cs:51-55` ; `AlundraTestSavesTests.cs
+      src: public void ProductionRunner_RegistryHoldsTheSevenHandlersOfTheBeannoidTheMurutaAndTheSwordWave_AndTheSwitchIs // { // var runner = NewRunner(); // 
+[97] Alundra.Tests/AlundraTestSavesTests.cs:88-91
+      ctx: aNativeSpriteRegistryTests.cs:51-55` ; `AlundraTestSavesTests.cs:88-91` | VRAI | |
+      src: public void TheNinePresets_AreListed_InTheOrderOfTheTable() // { // Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name)); // }
+[105] UNRESOLVED AlundraPlayerManager.cs:1213 | ctx:  l.7 « seuls 27, 28, 29 câblés au tir (`AlundraPlayerManager.cs:1213`) » | `PlayerManager.cs:1226` (ensemble),
+[105] Alundra/Hero/PlayerManager.cs:1226
+      ctx: r (`AlundraPlayerManager.cs:1213`) » | `PlayerManager.cs:1226` (ensemble), `:1216` (`Contains`) | VRAI | |
+      src: internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredWeaponTypes = new System.
+[105] Alundra/Hero/PlayerManager.cs:1216
+      ctx: » | `PlayerManager.cs:1226` (ensemble), `:1216` (`Contains`) | VRAI | |
+      src: if (WiredWeaponTypes.Contains(call.Type) && host is IEntityWorldContext world)
+[107] UNRESOLVED AlundraTestSaves.cs:66 | ctx: | A3 | l.26 bombe : « DLL absent ; `AlundraTestSaves.cs:66` la donne, sans test de tir » | `TestSaves.cs:7
+[107] Alundra/SaveGames/TestSaves.cs:72-75
+      ctx: .cs:66` la donne, sans test de tir » | `TestSaves.cs:72-75` (`(35, 1)`) | VRAI | aucun test ne tire la bombe (
+      src: private static readonly (int Item, short Count)[] TestKitItems = // [ // (35, 1), (36, 9), (37, 1), (38, 1), (41, 1), (43, 1), (45, 1), (47, 1), (49, 1), // ];
+[109] UNRESOLVED AlundraPlayerManager.cs:1205 | ctx:  l.31 appel `SpawnEntityBySpriteIndex` `AlundraPlayerManager.cs:1205` ; registre `:28-34` | `PlayerManager.cs:
+[109] UNRESOLVED AlundraPlayerManager.cs:28 | ctx: lundraPlayerManager.cs:1205` ; registre `:28-34` | `PlayerManager.cs:1218` ; `NativeSpriteRegistry.cs:36-43` |
+[109] Alundra/Hero/PlayerManager.cs:1218
+      ctx: Manager.cs:1205` ; registre `:28-34` | `PlayerManager.cs:1218` ; `NativeSpriteRegistry.cs:36-43` | VRAI | |
+      src: world.SpawnEntityBySpriteIndex(player, false, call.Type, call.X, call.Y, call.Z, call.Direction);
+[109] Alundra/Ai/NativeSpriteRegistry.cs:36-43
+      ctx: e `:28-34` | `PlayerManager.cs:1218` ; `NativeSpriteRegistry.cs:36-43` | VRAI | |
+      src: internal static NativeSpriteRegistry CreateForProduction() // { // var registry = new NativeSpriteRegistry(); // BeannoideAi.Register(registry);
+[110] Alundra/Ai/Projectiles/WaveSwordAi.cs:34
+      ctx: TileEffect` dans `Alundra/Scripts` » | `Ai/Projectiles/WaveSwordAi.cs:34,40` | PÉRIMÉ | bouchon nommé, `intern
+      src: internal static void Tick(EntityScriptProxy entity) => CheckAndTriggerTileEffect(entity);
+[110] Alundra/Ai/Projectiles/WaveSwordAi.cs:40
+      ctx: dTriggerTileEffect(EntityScriptProxy)` (`:40`), appelé par `Tick` (`:34`) ; la section 1.27 du plan crée `Alun
+      src: internal static void CheckAndTriggerTileEffect(EntityScriptProxy entity) => StubCallsForTests?.Add(entity);
+[110] Alundra/Ai/Projectiles/WaveSwordAi.cs:34
+      ctx: riptProxy)` (`:40`), appelé par `Tick` (`:34`) ; la section 1.27 du plan crée `Alundra/Cells/TileEffect.cs` et
+      src: internal static void Tick(EntityScriptProxy entity) => CheckAndTriggerTileEffect(entity);
+[111] UNRESOLVED AlundraHitPass.cs:8 | ctx: | A7 | l.30 passe de coups, dégâts (`AlundraHitPass.cs:8,:166`, `AlundraDamage.cs:21,:76`, `AlundraWorldPro
+[111] UNRESOLVED AlundraHitPass.cs:166 | ctx:  de coups, dégâts (`AlundraHitPass.cs:8,:166`, `AlundraDamage.cs:21,:76`, `AlundraWorldProxy.cs:2952,:3062`) |
+[111] UNRESOLVED AlundraDamage.cs:21 | ctx: s, dégâts (`AlundraHitPass.cs:8,:166`, `AlundraDamage.cs:21,:76`, `AlundraWorldProxy.cs:2952,:3062`) | `Combat
+[111] UNRESOLVED AlundraDamage.cs:76 | ctx: itPass.cs:8,:166`, `AlundraDamage.cs:21,:76`, `AlundraWorldProxy.cs:2952,:3062`) | `Combat/HitPass.cs`, `Comba
+[111] UNRESOLVED AlundraWorldProxy.cs:2952 | ctx: cs:8,:166`, `AlundraDamage.cs:21,:76`, `AlundraWorldProxy.cs:2952,:3062`) | `Combat/HitPass.cs`, `Combat/Damag
+[111] UNRESOLVED AlundraWorldProxy.cs:3062 | ctx: .cs:21,:76`, `AlundraWorldProxy.cs:2952,:3062`) | `Combat/HitPass.cs`, `Combat/Damage.cs:24,79`, `WorldProxy.c
+[111] Alundra/Combat/Damage.cs:24
+      ctx: cs:2952,:3062`) | `Combat/HitPass.cs`, `Combat/Damage.cs:24,79`, `WorldProxy.cs:3083,3093` (étincelles, effet 
+      src: public static int ResolveBalanceTarget(BalanceAttack? attack, BalanceRecord? sheet, int hp, EquipmentRecords? 
+[111] Alundra/Maps/WorldProxy.cs:3083
+      ctx: HitPass.cs`, `Combat/Damage.cs:24,79`, `WorldProxy.cs:3083,3093` (étincelles, effet attaché) | VRAI | |
+      src: _effectStage.Emit(reservoir => NativeEffects.CreateHitSparks(reservoir, centreX, centreY, centreZ));
+[112] Alundra/Hero/PlayerManager.cs:961
+      ctx: ponEffect :1041`, aura `:1024-1136`) | `PlayerManager.cs:961`, `:1173`, `:1054`, `:1125-1161` | VRAI | f-slice
+      src: private static int PlayerTryAttack(EntityScriptProxy player, in PadState pad)
+[112] Alundra/Hero/PlayerManager.cs:1173
+      ctx: `:1024-1136`) | `PlayerManager.cs:961`, `:1173`, `:1054`, `:1125-1161` | VRAI | f-slices : hors h. |
+      src: private static void UpdateWeaponStepProgression(EntityScriptProxy player, IScriptHost? host)
+[112] Alundra/Hero/PlayerManager.cs:1054
+      ctx: 36`) | `PlayerManager.cs:961`, `:1173`, `:1054`, `:1125-1161` | VRAI | f-slices : hors h. |
+      src: internal static void UpdatePlayerWeaponEffect(EntityScriptProxy player, in PadState pad, IScriptHost? host)
+[112] Alundra/Hero/PlayerManager.cs:1125-1161
+      ctx: layerManager.cs:961`, `:1173`, `:1054`, `:1125-1161` | VRAI | f-slices : hors h. |
+      src: private static void CreateAuraIfNeeded(EntityScriptProxy player, IScriptHost? host) // { // if (host?.EffectStage is not { } stage) // {
+[118] docs/plan-e20-annexe/e20-armes/h-g-deps.md:116
+      ctx: | H1 | `h-g-deps.md:116` « `TryUseItem` rend 1 ; le Rond est lié à `UseItem` (
+      src: - `AlundraPlayerManager.cs:468`: `TryUseItem` returns 1. Circle is bound to "UseItem" (`AlundraPlayerControlle
+[118] UNRESOLVED AlundraPlayerController.cs:109 | ctx:  rend 1 ; le Rond est lié à `UseItem` (`AlundraPlayerController.cs:109`) mais rien ne le lit ; le son 3 d'éche
+[118] Alundra/Hero/PlayerManager.cs:932
+      ctx:  ; le son 3 d'échec ne joue jamais » | `PlayerManager.cs:932` ; `Hero/HeroController.cs:65` | VRAI | action `U
+      src: private static int TryUseItem(EntityScriptProxy player, in PadState pad) => TryUseItemResultForTests ?? 1;
+[118] Alundra/Hero/HeroController.cs:65
+      ctx: ue jamais » | `PlayerManager.cs:932` ; `Hero/HeroController.cs:65` | VRAI | action `UseItem` → `PadState.Circl
+      src: ("UseItem", PadState.Circle),
+[118] Alundra/Hero/PadState.cs:29
+      ctx:  action `UseItem` → `PadState.Circle` (`Hero/PadState.cs:29`), exportée dans `alundra-project/Data/Alundra.but
+      src: public const uint Circle = 0x0020;
+[118] alundra-project/Data/Alundra.buttonsMapping:217
+      ctx: (`Hero/PadState.cs:29`), exportée dans `alundra-project/Data/Alundra.buttonsMapping:217`. Les seules lectures 
+      src: "name": "UseItem",
+[118] Alundra/Hero/PlayerManager.cs:840
+      ctx:  Rond : le maintien dans `SprintTick` (`PlayerManager.cs:840`, plaquage). Aucune lecture du front. |
+      src: if ((pad.ButtonsHold & (PadState.Circle | PadState.Cross | PadState.Square)) != 0)
+[119] docs/plan-e20-annexe/e20-armes/h-g-deps.md:117
+      ctx: | H2 | `h-g-deps.md:117` `UpdateItemUseDriver` vide, appelé en `:230` = 2e sit
+      src: - `AlundraPlayerManager.cs:646`: `UpdateItemUseDriver`, an empty named stub. Called at `:230`, which is the se
+[119] Alundra/Hero/PlayerManager.cs:353
+      ctx: x80031CC4` ; pas de site de blessure | `PlayerManager.cs:353`, `:1507` | VRAI | |
+      src: UpdateItemUseDriver(player);
+[119] Alundra/Hero/PlayerManager.cs:1507
+      ctx: e de blessure | `PlayerManager.cs:353`, `:1507` | VRAI | |
+      src: private static void UpdateItemUseDriver(EntityScriptProxy player)
+[120] docs/plan-e20-annexe/e20-armes/h-g-deps.md:118
+      ctx: | H3 | `h-g-deps.md:118` setters et lecteurs d'objets ; « pas de `DecreaseMp` 
+      src: - `AlundraPlayerManager.cs:1303` (`SetItemIdFromCurrentItemId`), `:1267` (`GetNumberOfItem`), `:1349` (`UseIte
+[121] docs/plan-e20-annexe/e20-armes/h-g-deps.md:119
+      ctx: | H4 | `h-g-deps.md:119` `CreateLifeVesselEffects` (`:28`) | `NativeEffects.cs
+      src: - `AlundraNativeEffects.CreateLifeVesselEffects` (`AlundraNativeEffects.cs:28`) already builds global effect 1
+[121] Alundra/Rendering/Effects/NativeEffects.cs:31
+      ctx: 9` `CreateLifeVesselEffects` (`:28`) | `NativeEffects.cs:31` | VRAI | R20. |
+      src: public static void CreateLifeVesselEffects(EffectReservoir reservoir, int heroX, int heroY, int heroZ)
+[122] docs/plan-e20-annexe/e20-armes/h-g-deps.md:120
+      ctx: | H5 | `h-g-deps.md:120` « `AlundraItemTables` : colonne 3 et catégorie ; le H
+      src: - `AlundraItemTables` carries column 3 (max count) and the category. The HUD reads `PlayerStats` (`AlundraHudD
+[122] UNRESOLVED AlundraHudDirector.cs:544 | ctx:  catégorie ; le HUD lit `PlayerStats` (`AlundraHudDirector.cs:544-586`) » | `Items/ItemTables.cs` ; `UI/Hud/Hu
+[122] Alundra/UI/Hud/HudDirector.cs:566-567
+      ctx: :544-586`) » | `Items/ItemTables.cs` ; `UI/Hud/HudDirector.cs:566-567,612-613` | VRAI | |
+      src: var trueHpMax = _gameState.PlayerStats.HpMax; // int hpTarget = _gameState.PlayerStats.Hp;
+[123] docs/plan-e20-annexe/e20-armes/h-g-deps.md:121
+      ctx: | H6 | `h-g-deps.md:121` « États 0x05, 0x0B, 0x20-0x24, 0x32-0x34 sans cas ; l
+      src: - The hero states `0x05`, `0x0B`, `0x20-0x24`, `0x32-0x34` have no case in `MovePlayer`. The hero has no spell
+[123] Alundra.Tests/AlundraPlayerManagerTests.cs:100-114
+      ctx: pas de sprites de sorts » | — | VRAI | `AlundraPlayerManagerTests.cs:100-114` utilise 0x20 comme exemple d'éta
+      src: public void MovePlayer_AirStillOnTheGround_GoesBackToMoving_AnUnportedAnimationIsLeftUnchanged() // { // // E19.d2c2 S1: 0x2D (in the air, no direction) IS a ported case now: on the ground (a bare proxy is never in  // // Moving, like the binary's tail. A case that is still not ported stays untouched.
+[124] docs/plan-e20-annexe/e20-armes/h-g-deps.md:27
+      ctx: | H7 | `h-g-deps.md:27` « `RunSpriteEvent` ne tourne que le livre et E0/E1 (`A
+      src: - FACT: `RunSpriteEvent` runs only the save book and E0/E1 (`AlundraEventProgramRunner.cs:293-330`).
+[124] UNRESOLVED AlundraEventProgramRunner.cs:293 | ctx: vent` ne tourne que le livre et E0/E1 (`AlundraEventProgramRunner.cs:293-330`) » | `EventProgramRunner.cs:264-
+[124] Alundra/Events/EventProgramRunner.cs:264-324
+      ctx: draEventProgramRunner.cs:293-330`) » | `EventProgramRunner.cs:264-324` | PÉRIMÉ | il consulte aussi le registr
+      src: public void RunSpriteEvent(EntityScriptProxy entity) // { // SpriteEventRunCount++; // 
+[124] Alundra/Events/EventProgramRunner.cs:294-312
+      ctx:  | il consulte aussi le registre natif (`:294-312`, E14.a0). |
+      src: // E14.a0 (D-E14-1, D-E14-5): the registry of the native handlers, by (slot, code) and sprite type; the book a // // above stay outside it. A native slot only (the test RunPickedEvent already made), the switch on. // var nativeSlot = entity.EventTrigger; // if (nativeSlot >= 0 && nativeSlot < entity.ProgramIndexes.Length && (entity.ProgramIndexes[nativeSlot] & 0x7f)
+[125] docs/plan-e20-annexe/e20-armes/h-g-deps.md:43
+      ctx: | H8 | `h-g-deps.md:43` « la DLL retourne tôt ici (`AlundraPlayerManager.cs:22
+      src: - The DLL returns early there (`AlundraPlayerManager.cs:220-223`).
+[125] UNRESOLVED AlundraPlayerManager.cs:220 | ctx: deps.md:43` « la DLL retourne tôt ici (`AlundraPlayerManager.cs:220-223`) » | `PlayerManager.cs:321-345` | PÉR
+[125] Alundra/Hero/PlayerManager.cs:321-345
+      ctx: `AlundraPlayerManager.cs:220-223`) » | `PlayerManager.cs:321-345` | PÉRIMÉ | les deux sorties anticipées attei
+      src: if (player.BlockedByEntity != null) // { // // E20.b B2, binary 0x80031BB0-0x80031BC0: this branch also clears the charge timer (E20.f1a, 0x80031BB4) and  // player.WeaponChargeTimer = 0;
+[125] Alundra/Hero/PlayerManager.cs:326
+      ctx: teignent `EndOfMovePlayer` (E20.c2a T1, `:326`, `:343`) et effacent la charge et le pointeur d'arme (E20.f1a).
+      src: EndOfMovePlayer(player, in pad, state, host); // E20.c2a T1: every exit of the binary reaches END (0x80032914)
+[125] Alundra/Hero/PlayerManager.cs:343
+      ctx:  `EndOfMovePlayer` (E20.c2a T1, `:326`, `:343`) et effacent la charge et le pointeur d'arme (E20.f1a). |
+      src: EndOfMovePlayer(player, in pad, state, host); // E20.c2a T1: the locked branch also reaches END (0x80031C0C-0x
+[126] docs/plan-e20-annexe/e20-armes/h-g-deps.md:47
+      ctx: | H9 | `h-g-deps.md:47` « PV 10/10 sur l'entité, pas de miroir ; le réceptacle
+      src: - The DLL has `Hp = HpMax = 10` on the entity (`AlundraEntityScriptProxy.HitPass.cs:70-71`) and no mirror. The
+[126] Alundra/Hero/PlayerManager.cs:634-645
+      ctx: s` (`:1004`, « provisional seam ») » | `PlayerManager.cs:634-645` ; `:1875-1887` | PÉRIMÉ | miroir des PV en f
+      src: internal static void EndOfMovePlayer(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost?  // { // UpdateItemEffectState(player, in pad, state, host); // 
+[126] Alundra/Hero/PlayerManager.cs:1875-1887
+      ctx: eam ») » | `PlayerManager.cs:634-645` ; `:1875-1887` | PÉRIMÉ | miroir des PV en fin de `MovePlayer` ; `Increa
+      src: public static void IncreaseHpMaxAndFill(GameState state, EntityScriptProxy? hero = null) // { // if (hero is { LifePulledFromStats: true }) // {
+[127] Alundra/Hero/PlayerManager.cs:353
+      ctx: n bouchon est fidèle jusqu'à E20.h » | `PlayerManager.cs:353` | VRAI | site de blessure absent (§3.4). |
+      src: UpdateItemUseDriver(player);
+[128] docs/plan-e20-annexe/decouverte-2026-10-09/4-dll-state.md:100
+      ctx: | H11 | `decouverte-2026-10-09/4-dll-state.md:100` « Rond : aucun consommateur 
+      src: - Circle: no consumer at all.
+[129] docs/plan-e20-annexe/decouverte-2026-10-09/5-chain-needs.md:45
+      ctx: | H12 | `decouverte-2026-10-09/5-chain-needs.md:45` : la bombe de la 362 naît p
+      src: | 9 | 362 (day 4 dream) | B[4] @168 waits T6. T6 is set only by lid rec0, D[1] @728: `0x87 [128,3]` = touched 
+[129] Alundra.Tests/AlundraEntityContactArcTests.cs:54-55
+      ctx: NFÉRENCE ; aucun test ne joue la 362 : `AlundraEntityContactArcTests.cs:54-55` joue la 185 jusqu'au départ ver
+      src: public void TA19_TheMeetingOnMap185_SeptimusStopsAtTheBlock_TheSceneReachesMap362() // {
+[129] Alundra.Tests/AlundraEntityContactArcTests.cs:50-51
+      ctx: la 185 jusqu'au départ vers la 362, doc `:50-51`). |
+      src: /// wall, and leaves for map 362 (<c>0x53 @147</c>). Without the contacts Septimus walks THROUGH rec7 to the w // /// the scene stalls on <c>0x0B @506</c> (T70 never set).
+[135] Alundra/Hero/PadState.cs:29
+      ctx: - FAIT : `PadState.Circle = 0x0020` (`Hero/PadState.cs:29`) ; `ButtonsJustPressed` (`:45`), `ButtonsHold` (`
+      src: public const uint Circle = 0x0020;
+[135] Alundra/Hero/PadState.cs:45
+      ctx: adState.cs:29`) ; `ButtonsJustPressed` (`:45`), `ButtonsHold` (`:40`), `ButtonsReleased` (`:49`) ; le pad d'un
+      src: public uint ButtonsJustPressed { get; init; }
+[135] Alundra/Hero/PadState.cs:40
+      ctx: onsJustPressed` (`:45`), `ButtonsHold` (`:40`), `ButtonsReleased` (`:49`) ; le pad d'un tick est `PadState.Fro
+      src: public uint ButtonsHold { get; init; }
+[135] Alundra/Hero/PadState.cs:49
+      ctx: uttonsHold` (`:40`), `ButtonsReleased` (`:49`) ; le pad d'un tick est `PadState.FromTickPad(TickPad…)` (front 
+      src: public uint ButtonsReleased { get; init; }
+[135] Alundra/Hero/TickPad.cs:43
+      ctx: FromTickPad(TickPad…)` (front du tick, `Hero/TickPad.cs:43`). Le binaire lit le mot « pressé » `[0x80126F2A] &
+      src: public uint ButtonsJustPressed { get; private set; }
+[135] Alundra/Ai/NativeSpriteRegistry.cs:20
+      ctx: priteHandler(entity, context, state)`, `Ai/NativeSpriteRegistry.cs:20`) et donc `GameState.TickPad` (avancé en
+      src: internal delegate void NativeSpriteHandler(EntityScriptProxy entity, IEntityWorldContext context, GameState st
+[135] Alundra/Maps/WorldProxy.cs:2527
+      ctx: tate.TickPad` (avancé en tête de tick, `Maps/WorldProxy.cs:2527`).
+      src: GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
+[136] Alundra/Hero/HeroController.cs:65
+      ctx:  l'entrée vient de l'action `UseItem` (`Hero/HeroController.cs:65`, `alundra-project/Data/Alundra.buttonsMappi
+      src: ("UseItem", PadState.Circle),
+[136] alundra-project/Data/Alundra.buttonsMapping:217
+      ctx: UseItem` (`Hero/HeroController.cs:65`, `alundra-project/Data/Alundra.buttonsMapping:217`).
+      src: "name": "UseItem",
+[138] Alundra/Hero/PlayerManager.cs:946
+      ctx: kSoundId)` avec `NoAttackSoundId = 3` (`PlayerManager.cs:946,982`) et `_soundPlayer?.PlaySfx(3)` dans le menu 
+      src: private const int NoAttackSoundId = 3;
+[138] Alundra/UI/Inventory/InventoryDirector.cs:895
+      ctx: soundPlayer?.PlaySfx(3)` dans le menu (`InventoryDirector.cs:895,959,975`).
+      src: _soundPlayer?.PlaySfx(3);
+[139] Alundra/Entities/EntityScriptProxy.cs:1666
+      ctx:  production `state == host.GameState` (`EntityScriptProxy.cs:1666`). Dans les tests à hôte nul (`MovePlayer(he
+      src: PlayerManager.MovePlayer(this, in pad, host.GameState, host);
+[143] Alundra/SaveGames/SaveGame.cs:186
+      ctx: ssion/PlayerStats.cs`, `+0xC`), sauvé (`SaveGame.cs:186`, `:228`).
+      src: archive.Value("itemId", ref ItemId);
+[143] Alundra/SaveGames/SaveGame.cs:228
+      ctx: cs`, `+0xC`), sauvé (`SaveGame.cs:186`, `:228`).
+      src: save.ItemId = stats.ItemId;
+[144] Alundra/Entities/EntityScriptProxy.cs:434-441
+      ctx: es du binaire : sur le proxy du héros (`EntityScriptProxy.cs:434-441` : `WeaponRecordPointer`, `WeaponStepCoun
+      src: internal uint WeaponRecordPointer; //  // /// <summary>E20.b B2: the tick counter that goes with <see cref="WeaponRecordPointer"/>, the binary's <c>0x80 // internal int WeaponStepCounter;
+[144] Alundra/Entities/EntityScriptProxy.cs:124
+      ctx: ns `GameState` (`RegenerationCounters`, `:124`, qui n'est remis à zéro par aucune des trois méthodes de remise
+      src: public int EntityRefId;
+[144] Alundra/Entities/EntityScriptProxy.cs:368
+      ctx: méthodes de remise à zéro de la classe, `:368`, `:411`, `:438`). Le proxy du héros est reconstruit à chaque ca
+      src: /// Port of the original's <c>Entity.ForceAdjusted</c> (E4.d, docs/plan-e4-deplacement-scripte.md):
+[144] Alundra/Entities/EntityScriptProxy.cs:411
+      ctx:  de remise à zéro de la classe, `:368`, `:411`, `:438`). Le proxy du héros est reconstruit à chaque carte (`Ad
+      src: 
+[144] Alundra/Entities/EntityScriptProxy.cs:438
+      ctx: se à zéro de la classe, `:368`, `:411`, `:438`). Le proxy du héros est reconstruit à chaque carte (`AdoptPlaye
+      src: 
+[144] Alundra/Maps/WorldProxy.cs:2075
+      ctx: uit à chaque carte (`AdoptPlayerPawn`, `WorldProxy.cs:2075`).
+      src: private void AdoptPlayerPawn(World world, TileMapData tileMapData)
+[149] Alundra/Hero/PlayerManager.cs:432
+      ctx: FAIT. `PlayerManager.cs` : `:432` (Idle/Moving, `!= 0 &&` `PlayerTryAction`), `:451` (sauts, idem
+      src: if (TryUseItem(player, in pad) != 0 && PlayerTryAction(player, in pad) == 0)
+[149] Alundra/Hero/PlayerManager.cs:451
+      ctx: e/Moving, `!= 0 &&` `PlayerTryAction`), `:451` (sauts, idem), `:575` (sorties de nage, résultat ignoré), `:607
+      src: if (TryUseItem(player, in pad) != 0 && PlayerTryAction(player, in pad) == 0)
+[149] Alundra/Hero/PlayerManager.cs:575
+      ctx: layerTryAction`), `:451` (sauts, idem), `:575` (sorties de nage, résultat ignoré), `:607` (groupe d'attaque au
+      src: TryUseItem(player, in pad);
+[149] Alundra/Hero/PlayerManager.cs:607
+      ctx: 75` (sorties de nage, résultat ignoré), `:607` (groupe d'attaque au sol, ignoré), `:617` (groupe d'attaque en 
+      src: TryUseItem(player, in pad);
+[149] Alundra/Hero/PlayerManager.cs:617
+      ctx: 607` (groupe d'attaque au sol, ignoré), `:617` (groupe d'attaque en l'air, ignoré), `:669`, `:675`, `:679` (ge
+      src: TryUseItem(player, in pad);
+[149] Alundra/Hero/PlayerManager.cs:669
+      ctx: 7` (groupe d'attaque en l'air, ignoré), `:669`, `:675`, `:679` (gestionnaires de nage Float, FlipThenFloat, It
+      src: TryUseItem(player, in pad);
+[149] Alundra/Hero/PlayerManager.cs:675
+      ctx: pe d'attaque en l'air, ignoré), `:669`, `:675`, `:679` (gestionnaires de nage Float, FlipThenFloat, ItemOnly, 
+      src: TryUseItem(player, in pad);
+[149] Alundra/Hero/PlayerManager.cs:679
+      ctx: aque en l'air, ignoré), `:669`, `:675`, `:679` (gestionnaires de nage Float, FlipThenFloat, ItemOnly, ignorés)
+      src: TryUseItem(player, in pad);
+[149] Alundra/Hero/PlayerManager.cs:700
+      ctx: oat, FlipThenFloat, ItemOnly, ignorés), `:700` (`SwimSteerTick` : 0 termine le tick), `:726` (`SwimHurtEndTick
+      src: if (TryUseItem(player, in pad) == 0)
+[149] Alundra/Hero/PlayerManager.cs:726
+      ctx:  (`SwimSteerTick` : 0 termine le tick), `:726` (`SwimHurtEndTick` : 0 retourne la direction), `:756` (`Prepare
+      src: if (TryUseItem(player, in pad) == 0)
+[149] Alundra/Hero/PlayerManager.cs:756
+      ctx: urtEndTick` : 0 retourne la direction), `:756` (`PrepareSprintTick`), `:861` (`StopSprintTick`), `:915` (`Boun
+      src: if (TryUseItem(player, in pad) == 0 || PlayerTryAction(player, in pad) != 0 || PlayerTryAttack(player, in pad)
+[149] Alundra/Hero/PlayerManager.cs:861
+      ctx: rection), `:756` (`PrepareSprintTick`), `:861` (`StopSprintTick`), `:915` (`BounceTick`). Non appelé : `Sprint
+      src: if (TryUseItem(player, in pad) == 0 || PlayerTryAction(player, in pad) != 0)
+[149] Alundra/Hero/PlayerManager.cs:915
+      ctx: printTick`), `:861` (`StopSprintTick`), `:915` (`BounceTick`). Non appelé : `SprintTick` (`:798`, comme le bin
+      src: if (TryUseItem(player, in pad) == 0)
+[149] Alundra/Hero/PlayerManager.cs:798
+      ctx: ounceTick`). Non appelé : `SprintTick` (`:798`, comme le binaire), états d'échelle (`:457-458`, commentaire « 
+      src: private static void SprintTick(EntityScriptProxy player, in PadState pad, uint nibble, uint dir, int tickFacin
+[149] Alundra/Hero/PlayerManager.cs:457-458
+      ctx: 8`, comme le binaire), états d'échelle (`:457-458`, commentaire « NOT PORTED »), branche `LoadingMap` (`:414-4
+      src: // É4). TryUseItem/PlayerTryAction (:677) NOT PORTED (no item/interaction system, same scope // // restriction as every other unported call in this class) - proceeds straight to the body.
+[149] Alundra/Hero/PlayerManager.cs:414-420
+      ctx:  « NOT PORTED »), branche `LoadingMap` (`:414-420`). Le groupe `Skip` de la nage annule au lieu d'appeler (`:6
+      src: if (player.TargetAnimationId == LoadingMapAnimationId) // { // if (IsHeroInTheAir(player) && IsAboveItsTerrain(player)) // {
+[149] Alundra/Hero/PlayerManager.cs:664
+      ctx: p` de la nage annule au lieu d'appeler (`:664`).
+      src: CancelItemMode(player);
+[159] Alundra/Entities/EntityScriptProxy.cs:473
+      ctx: -D5`). | Non porté : `TileAttributes` (`EntityScriptProxy.cs:473`) n'est jamais écrit ; doc `PlayerManager.cs:
+      src: public int TileAttributes; //188
+[159] Alundra/Hero/PlayerManager.cs:66-67
+      ctx: roxy.cs:473`) n'est jamais écrit ; doc `PlayerManager.cs:66-67`, commentaire `:355-357`. |
+      src: /// <item><description><c>TileAttributes &amp; 0x80</c> warp-tile branch - PlayerManager.cs:172-196 (no // /// tile-attribute sampling yet, <see cref="EntityScriptProxy.TileAttributes"/> stays 0).</description></item>
+[159] Alundra/Hero/PlayerManager.cs:355-357
+      ctx: c `PlayerManager.cs:66-67`, commentaire `:355-357`. |
+      src: // PlayerManager.cs:61-353 (CheckAndExecuteWarp's warp-facing branch, HP==0 death branch, // // TileAttributes&0x80 warp-tile branch) - NOT PORTED, see this class' own doc for why each is // // safe to skip for a fresh New Game / flat-ground V1 scenario.
+[160] Alundra/Hero/PlayerManager.cs:62-65
+      ctx: ` dans le flux. | Non porté (E18), doc `PlayerManager.cs:62-65`. |
+      src: /// <item><description>HP==0 death branch - PlayerManager.cs:82-170 (no HP system wired to the player // /// yet - <see cref="EntityScriptProxy.Hp"/> stays the C# default 0, which would otherwise // /// immediately hit this branch every frame; skipping it entirely is the deliberate V1 choice, not an // /// oversight).</description></item>
+[161] Alundra/Entities/EntityScriptProxy.cs:434-441
+      ctx: geTimer` et `WeaponRecordPointer` à 0 (`EntityScriptProxy.cs:434-441`), appellera `UpdatePlayerCarriedEntity(p
+      src: internal uint WeaponRecordPointer; //  // /// <summary>E20.b B2: the tick counter that goes with <see cref="WeaponRecordPointer"/>, the binary's <c>0x80 // internal int WeaponStepCounter;
+[161] Alundra/Entities/EntityScriptProxy.cs:1285
+      ctx: tePlayerCarriedEntity(player, 2)` (stub `:1285`), puis `UpdateItemUseDriver(player)` (stub `:1507`), puis pose
+      src: /// </summary>
+[161] Alundra/Entities/EntityScriptProxy.cs:1507
+      ctx: uis `UpdateItemUseDriver(player)` (stub `:1507`), puis posera 0x31 (0x3A en eau profonde ; `SwimHurtAnimationI
+      src: /// false): this entity runs ALL the ticks of the frame in its own loop (entity-major), each over the same tic
+[161] Alundra/Entities/EntityScriptProxy.cs:143
+      ctx: n eau profonde ; `SwimHurtAnimationId`, `:143`, existe). Le commentaire `:347-348` nomme l'entrée des dégâts `
+      src: /// <summary>
+[161] Alundra/Entities/EntityScriptProxy.cs:347-348
+      ctx: ionId`, `:143`, existe). Le commentaire `:347-348` nomme l'entrée des dégâts `0x80031C44`. | Non porté : le hé
+      src: public int Speed;//f4 // public int IsZForceApplied;//this is probably named wrong, has to do with animation  f8
+[161] Alundra/Hero/PlayerManager.cs:722
+      ctx: d aucun PV au contact (plan l. 2343) ; `PlayerManager.cs:722` : « Nothing enters 0x3A or 0x3B yet ». |
+      src: /// <c>+0xAC</c> (<see cref="EntityScriptProxy.ForceResetAnimationFlag"/>, the hold of its last frame), then f
+[165] Alundra/Session/GameState.cs:286
+      ctx: ). `GameState.DeathRetryCount` existe (`GameState.cs:286`) sans branche de mort. Pas de réinitialisation douce
+      src: public byte DeathRetryCount;
+[169] Alundra/Hero/PlayerManager.cs:1951-1965
+      ctx: tats.Mp`/`MpMax` (`short`), plafond 4 (`PlayerManager.cs:1951-1965`), `SetPlayerMp` (`:1970`), HUD (`HudDirect
+      src: public static int SetPlayerMpMax(GameState state, short mpMax) // { // var stats = state.PlayerStats; // 
+[169] Alundra/Hero/PlayerManager.cs:1970
+      ctx: rManager.cs:1951-1965`), `SetPlayerMp` (`:1970`), HUD (`HudDirector.cs:612-613`), sauvegarde (`SaveGame.cs:182
+      src: public static int SetPlayerMp(GameState state, short amount)
+[169] Alundra/UI/Hud/HudDirector.cs:612-613
+      ctx: -1965`), `SetPlayerMp` (`:1970`), HUD (`HudDirector.cs:612-613`), sauvegarde (`SaveGame.cs:182-183`). Pas de `
+      src: var trueMpMax = _gameState.PlayerStats.MpMax; // int mpTarget = _gameState.PlayerStats.Mp;
+[169] Alundra/SaveGames/SaveGame.cs:182-183
+      ctx: `HudDirector.cs:612-613`), sauvegarde (`SaveGame.cs:182-183`). Pas de `DecreaseMp`/`GetPlayerMp`.
+      src: archive.Value("mp", ref Mp); // archive.Value("mpMax", ref MpMax);
+[170] Alundra/SaveGames/TestSaves.cs:124
+      ctx: 303 », « arrow-m16 » donnent le bâton (`TestSaves.cs:124,125,128,129`) ; le rapport dit que dans le jeu seul u
+      src: WeaponPreset("arsenal-a-m14", 14, 8, 6, 0, 1, 5, 9, 14, 16, 7),
+[171] Alundra/Hero/PlayerManager.cs:2128-2177
+      ctx: nd au niveau 2 (`GetItemIdFromSlotId`, `PlayerManager.cs:2128-2177`). Bombe (35) : créneau 11 ; herbes (36) : 
+      src: public static uint GetItemIdFromSlotId(GameState state, ItemTables tables, uint slotId) // { // if (slotId >= 0x20) // {
+[176] Alundra/Ai/Enemies/BeannoideAi.cs:33-35
+      ctx:  (A,1), (C,1), (D,1) pour le type 335 (`BeannoideAi.cs:33-35`) ; (A,0), (C,10), (D,9) pour le type 347 (`Murut
+      src: registry.Register(ScriptHelper.ProgramALoad, Code, types, (entity, context, state) => Load(entity)); // registry.Register(ScriptHelper.ProgramCTick, Code, types, (entity, context, state) => Tick(entity, context)); // registry.Register(ScriptHelper.ProgramDTouch, Code, types, (entity, context, state) => Hit(entity, context));
+[176] Alundra/Ai/Enemies/MurutaAi.cs:47-49
+      ctx: (A,0), (C,10), (D,9) pour le type 347 (`MurutaAi.cs:47-49`) ; (C,61) pour 27, 28, 29 (`WaveSwordAi.cs:31`) = 7
+      src: registry.Register(ScriptHelper.ProgramALoad, LoadCode, types, (entity, context, state) => Load(entity)); // registry.Register(ScriptHelper.ProgramCTick, TickCode, types, (entity, context, state) => Tick(entity, context // registry.Register(ScriptHelper.ProgramDTouch, TouchCode, types, (entity, context, state) => Hit(entity, contex
+[176] Alundra/Ai/Projectiles/WaveSwordAi.cs:31
+      ctx: i.cs:47-49`) ; (C,61) pour 27, 28, 29 (`WaveSwordAi.cs:31`) = 7 clés. Slots : A=0, B=1, C=2, D=3, E=4, F=5 (`E
+      src: => registry.Register(ScriptHelper.ProgramCTick, TickCode, SpriteTypes, (entity, context, state) => Tick(entity
+[176] Alundra/Events/ScriptHelper.cs:19-24
+      ctx:  Slots : A=0, B=1, C=2, D=3, E=4, F=5 (`Events/ScriptHelper.cs:19-24`).
+      src: public const int ProgramALoad = 0; // public const int ProgramBMap = 1; // public const int ProgramCTick = 2; // public const int ProgramDTouch = 3;
+[194] Alundra/Events/EventProgramRunner.cs:309-314
+      ctx: vec une trace de debug unique par clé (`EventProgramRunner.cs:309-314`) ; conforme au rapport (fonction vide).
+      src: if (_loggedNoOpKeys.Add((nativeSlot, nativeCode))) // { // Logs.WriteDebug( // $"EventProgramRunner: native sprite handler slot {nativeSlot} code {nativeCode} (sprite type {entity.SpriteTyp
+[196] Alundra/Events/EventProgramRunner.cs:283-292
+      ctx:  `E10` ne passent pas par le registre (`EventProgramRunner.cs:283-292`, `:328`).
+      src: // E19.d2b (D-E19-29, O-E19-4 in part): the native handler 0x8007ED10 of slot E, reached at each tick of the D // // while the scripted E program is empty, is DestroyEntity(e, -1) (0x8003A59C) for the indexes 0 and 1 (status // // of the sprite header; the loot stays the named stub of E20.e0, O-E19-23). Index 2 and the other slots stay  // if (entity.EventTrigger == ScriptHelper.ProgramEDeactivate
+[196] Alundra/Events/EventProgramRunner.cs:328
+      ctx: istre (`EventProgramRunner.cs:283-292`, `:328`).
+      src: internal static bool IsInlineDeactivateCode(int code) => (uint)code <= 1u || code == WaveSwordAi.DeactivateCod
+[199] Alundra/Hero/PlayerManager.cs:1240
+      ctx: - FAIT : `UnhandledWeaponSpriteCodes` (`PlayerManager.cs:1240`) ne vérifie que les codes C et E des types câbl
+      src: internal static System.Collections.Generic.IReadOnlyList<(int Slot, int Code)> UnhandledWeaponSpriteCodes(
+[199] Alundra/Hero/PlayerManager.cs:1226
+      ctx: i-même) : `ProductionWiredWeaponTypes` (`:1226`) n'a pas à changer pour h3 et h4 (INFÉRENCE).
+      src: internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredWeaponTypes = new System.
+[205] Alundra/Maps/WorldProxy.cs:3488-3598
+      ctx: direction, plafond de 64 cases | Oui | `WorldProxy.cs:3488-3598`, `Entities/EntitySlotTable.cs:17,28` |
+      src: internal EntityScriptProxy? SpawnEntityBySpriteIndex(EntityScriptProxy? parent, bool isMapPage, int index, int // { // var page = isMapPage ? "map" : "global"; // 
+[205] Alundra/Entities/EntitySlotTable.cs:17
+      ctx: ses | Oui | `WorldProxy.cs:3488-3598`, `Entities/EntitySlotTable.cs:17,28` |
+      src: internal const int SlotCount = 64;
+[206] Alundra/Maps/WorldProxy.cs:3572
+      ctx:  de naissance | Oui | `JoinsBirthTick` `WorldProxy.cs:3572`, `RunEntityBlock` `:2932-2936` |
+      src: spawnedProxy.JoinsBirthTick = true;
+[206] Alundra/Maps/WorldProxy.cs:2932-2936
+      ctx:  `WorldProxy.cs:3572`, `RunEntityBlock` `:2932-2936` |
+      src: if (_birthSpawnsThisTick != 0) // { // CollectTickEntities(); // _birthSpawnsThisTick = 0;
+[207] Alundra/Maps/WorldProxy.cs:3573
+      ctx:  borne de carte) | Oui | `HasLogicalZ` `WorldProxy.cs:3573` ; `ScriptedMotion.cs:212` (pas vertical avant XY, 
+      src: spawnedProxy.HasLogicalZ = true; // E20.e0k2 (D-E0K-1): the logical Z marker, in the same block.
+[207] Alundra/Physics/ScriptedMotion.cs:212
+      ctx: | `HasLogicalZ` `WorldProxy.cs:3573` ; `ScriptedMotion.cs:212` (pas vertical avant XY, `RunLogicalZPreXyStep` 
+      src: var logicalZ = entity.HasLogicalZ && RunLogicalZPreXyStep(entity);
+[207] Alundra/Physics/ScriptedMotion.cs:465
+      ctx: rtical avant XY, `RunLogicalZPreXyStep` `:465`), `:741` (borne de carte) |
+      src: internal static bool RunLogicalZPreXyStep(EntityScriptProxy entity)
+[207] Alundra/Physics/ScriptedMotion.cs:741
+      ctx: ant XY, `RunLogicalZPreXyStep` `:465`), `:741` (borne de carte) |
+      src: internal static MapEdgeClamp ClampStepToMapEdge(EntityScriptProxy entity, int stepX, int stepY)
+[208] Alundra/Maps/WorldProxy.cs:3301
+      ctx:  (2 args) / sans effet (1 arg) | Oui | `WorldProxy.cs:3301`, `:3329` |
+      src: internal void DestroyEntity(EntityScriptProxy entity, int effectId)
+[208] Alundra/Maps/WorldProxy.cs:3329
+      ctx: t (1 arg) | Oui | `WorldProxy.cs:3301`, `:3329` |
+      src: internal void DestroyEntity(EntityScriptProxy entity)
+[209] Alundra/Entities/EntityScriptProxy.cs:1717-1726
+      ctx: | Statut 3 « seulement E » | Oui | `EntityScriptProxy.cs:1717-1726,1758` |
+      src: } // else if (((flags & EntityFlags.DeactivateOnImpact) != 0 && (ForceAdjusted != 0 || IsOnGround != 0)) // || ((flags & EntityFlags.DeactivateOnHit) != 0 && HitCounter != 0) // || ((flags & EntityFlags.DeactivateOnAnimationEnd) != 0 && ForceResetAnimationFlag != 0))
+[211] Alundra/Hero/PlayerManager.cs:1139
+      ctx: Oui | `EffectStage.CreateAttachedNow` (`PlayerManager.cs:1139`), `Emit` (`:1101`), `NativeEffects` |
+      src: var created = stage.CreateAttachedNow(false, AuraEffect, 0, player, AuraDepthOffset, 0, 0, AuraOffsetZ);
+[211] Alundra/Hero/PlayerManager.cs:1101
+      ctx: Now` (`PlayerManager.cs:1139`), `Emit` (`:1101`), `NativeEffects` |
+      src: stage.Emit(reservoir => NativeEffects.CreateChargeSpark(reservoir, x, y, z, forceX, forceY, frameCounter, soun
+[212] Alundra/Cameras/CameraDirector.cs:216-231
+      ctx: restauration | `CameraSway.cs`, appelé `CameraDirector.cs:216-231,270` |
+      src: // E19.k1 (docs/plan-e19-opcodes.md section 1.2k.1, K3/K4): the ONE site of the camera sway step - the // // binary steps it once per tick at the head of its camera follow (0x8002CDD8), so exactly // // ticksThisFrame steps here, after the map-event passes (the caller's own order). During a warp // // transition neither a step nor an offset: the binary leaves its frame loop as soon as the departure is
+[218] Alundra/Entities/AnimationTables.cs:71
+      ctx:  32 directions `0x80023654/94` | Oui | `AnimationTables.cs:71,82` |
+      src: public static readonly short[] OffsetXList =
+[222] Alundra/Ai/Projectiles/WaveSwordAi.cs:40
+      ctx: ndTriggerTileEffect` | Bouchon nommé | `WaveSwordAi.cs:40` ; E20.e fait `Cells/TileEffect.cs` |
+      src: internal static void CheckAndTriggerTileEffect(EntityScriptProxy entity) => StubCallsForTests?.Add(entity);
+[223] Alundra/Entities/EntityScriptProxy.cs:670
+      ctx: | `ResyncControllerFromFlags` | Oui | `EntityScriptProxy.cs:670` |
+      src: internal void ResyncControllerFromFlags()
+[224] Alundra/Ai/EnemyHelpers.cs:35
+      ctx:  (`GameRandom` ; `EnemyHelpers.Below`, `Ai/EnemyHelpers.cs:35`) |
+      src: internal static int Below(int n) => (int)(((ulong)(uint)GameRandom.Next() * (uint)n) >> 32);
+[237] Alundra.Tests/AlundraNativeSpriteRegistryTests.cs:84-96
+      ctx: érivation » par le plan (§1.24, tête). `AlundraNativeSpriteRegistryTests.cs:84-96` (`ProductionRunner_NoRegist
+      src: [Fact] // public void ProductionRunner_NoRegistrationListsTheTypeMinus1() // { // // E14.a0b P4: Register accepts any type; the type -1 is the harnesses' bare pawn (no sprite record), which no
+[237] Alundra.Tests/AlundraNativeSpriteRegistryTests.cs:238-251
+      ctx: stent des types explicites (jamais −1). `:238-251` (doublon) utilise une clé libre (C,25), sans conflit.
+      src: [Fact] // public void Registering_TheSameKeyTwice_Throws_AndDisposingRemovesTheEntry() // { // var runner = NewRunner();
+[258] Alundra/Hero/PlayerManager.cs:937
+      ctx: . Valables tant que le seam est gardé (`PlayerManager.cs:937`). |
+      src: internal static int? TryUseItemResultForTests;
+[259] Alundra.Tests/AlundraHeroSwimTests.cs:49
+      ctx: sts` (même seam) | `:39, :178, :274` ; `AlundraHeroSwimTests.cs:49` | idem. |
+      src: PlayerManager.TryUseItemResultForTests = null;
+[266] Alundra.Tests/AlundraPlayerControllerTests.cs:164
+      ctx: age et de pad listés ci-dessus et dans `AlundraPlayerControllerTests.cs:164`, test du pad seul). Aucune assert
+      src: | PadState.Cross | PadState.Square | PadState.Circle | PadState.Triangle
+[268] Alundra.Tests/AlundraInventoryDirectorTests.cs:208-330
+      ctx: - `AlundraInventoryDirectorTests.cs:208-330` (gardes du déclencheur : dra
+      src: public void Trigger_Refused_WhenPlayerControlFlagsNonZero() // { // var state = NewState(); // state.PlayerControlFlags = GameState.PlayerControlBits.ControlLocked;
+[269] Alundra.Tests/AlundraBirthBoxTests.cs:131
+      ctx:  font naître tous les préfabs globaux (`AlundraBirthBoxTests.cs:131`, `AlundraSpawnBySpriteIndex*Tests`) : san
+      src: var spawned = ((IEntityWorldContext)arc.Proxy).SpawnEntityBySpriteIndex(arc.Hero, v.IsMapPage, v.Index, v.X <<
+[271] Alundra.Tests/AlundraTickStructureTests.cs:169
+      ctx: - `AlundraTickStructureTests.cs:169,239` : l'ordre des passes ; h0/h3/h4 
+      src: public void MovePlayer_RunsOncePerTick_AndNotAtAll_InAFrameWithoutTick()
+[272] Alundra.Tests/AlundraBeannoideOracleTests.cs:93-94
+      ctx: - Oracles d'état `AlundraBeannoideOracleTests.cs:93-94`, `AlundraMurutaOracleTests.cs:92
+      src: ("prevadjx_CC", (e, v) => e.PreviousAdjustedForceX = unchecked((int)v), e => e.PreviousAdjustedForceX), // ("prevadjy_D0", (e, v) => e.PreviousAdjustedForceY = unchecked((int)v), e => e.PreviousAdjustedForceY),
+[272] Alundra.Tests/AlundraMurutaOracleTests.cs:92-93
+      ctx: AlundraBeannoideOracleTests.cs:93-94`, `AlundraMurutaOracleTests.cs:92-93` : posent `PreviousAdjustedForceX/Y`
+      src: ("prevadjx_CC", (e, v) => e.PreviousAdjustedForceX = unchecked((int)v), e => e.PreviousAdjustedForceX), // ("prevadjy_D0", (e, v) => e.PreviousAdjustedForceY = unchecked((int)v), e => e.PreviousAdjustedForceY),
+[278] Alundra.Tests/AlundraTestSavesTests.cs:361
+      ctx: ts 1, 17, 25, compteurs `3, 35, 51` de `AlundraTestSavesTests.cs:361`). Vie 4/10, magie 4/4 (`WeaponPreset` `:
+      src: private static readonly (int Index, int Count)[] CommonCounters =
+[278] Alundra.Tests/AlundraTestSavesTests.cs:94-98
+      ctx: `). Vie 4/10, magie 4/4 (`WeaponPreset` `:94-98`).
+      src: [MemberData(nameof(PresetNames))] // public void ABuiltPreset_IsTheNewGamePlusThePreset_InEveryField(string name) // { // var expected = For(name);
+[281] Alundra.Tests/AlundraTestSavesTests.cs:429-433
+      ctx: ent pas ; l'`ItemId` sauvé vaut 0 (pin `AlundraTestSavesTests.cs:429-433`). Sans objet du Rond, `TryUseItem` é
+      src: // Life 4 of 10, magic 4 of 4, no gold, the preset's weapon slot, no Circle item, no falcon. // Assert.Equal( // ((short)4, (short)10, (short)4, (short)4, (short)0, (short)row.Slot, (short)0, (short)0, (short)0), // (save.Hp, save.HpMax, save.Mp, save.MpMax, save.Money, save.WeaponId, save.ItemId, save.FalconTemp, save.Falco
+[288] Alundra.Tests/AlundraArcSupport.cs:94
+      ctx: | `ArcRun` (`AlundraArcSupport.cs:94`) avec `ArcSpec(…, RealController: true, Prefa
+      src: internal sealed class ArcRun : IDisposable
+[288] Alundra.Tests/AlundraWeaponSpawnSeamTests.cs:38
+      ctx: oller: true, Prefabs: true)` (modèle : `AlundraWeaponSpawnSeamTests.cs:38`, carte 14) | `Give(params int[])` (
+      src: private static ArcRun Arc(string name) => new(new ArcSpec("E20f3a-" + name, "Overworld", "Overworld 3,1-14", A
+[288] Alundra.Tests/AlundraWeaponSpawnSeamTests.cs:151
+      ctx: :38`, carte 14) | `Give(params int[])` (`:151`, par `AddOneItemIfUnlocked`), `Equip(slot)` (`:161`), `SetMp(ma
+      src: }
+[288] Alundra.Tests/AlundraWeaponSpawnSeamTests.cs:161
+      ctx: `AddOneItemIfUnlocked`), `Equip(slot)` (`:161`), `SetMp(max, mp)` (`:164`), `SetItem(item)` (`:171`, objet du 
+      src: Wire(Arrow);
+[288] Alundra.Tests/AlundraWeaponSpawnSeamTests.cs:164
+      ctx: quip(slot)` (`:161`), `SetMp(max, mp)` (`:164`), `SetItem(item)` (`:171`, objet du Rond), `Press(PadState.Circ
+      src: var hero = rig.Hero;
+[288] Alundra.Tests/AlundraWeaponSpawnSeamTests.cs:171
+      ctx: Mp(max, mp)` (`:164`), `SetItem(item)` (`:171`, objet du Rond), `Press(PadState.Circle)` (`:454-459`, une imag
+      src: PlayerManager.WeaponSpawnCallsForTests = journal;
+[288] AlundraWeaponSpawnSeamTests.cs:454 OUT OF RANGE (len 307) | ctx: jet du Rond), `Press(PadState.Circle)` (`:454-459`, une image avec le bouton tenu et pressé), `HoldDirections`
+[288] AlundraWeaponSpawnSeamTests.cs:463 OUT OF RANGE (len 307) | ctx: uton tenu et pressé), `HoldDirections` (`:463`), `OneFrame(elapsed)`. Monde réel : préfabs des sprites 1, 2, 1
+[288] Alundra/Events/EventProgramRunner.cs:56
+      ctx: ativeHandlersEnabled` vrai par défaut, `EventProgramRunner.cs:56`), hôte `IEntityWorldContext` (naissances), s
+      src: internal bool NativeHandlersEnabled { get; set; } = true;
+[289] Alundra.Tests/AlundraHitArena.cs:27
+      ctx: | `HitArena` (`AlundraHitArena.cs:27`) | enveloppe `ArcRun` (`Arc`) : `Frame(hold, ti
+      src: internal sealed class HitArena : IDisposable
+[289] Alundra.Tests/AlundraHitArena.cs:166-170
+      ctx: ArcRun` (`Arc`) : `Frame(hold, ticks)` (`:166-170`), `BeforeTick`/`AfterTick`, échantillons par tick, cibles =
+      src: /// <summary>One frame of <paramref name="ticks"/> logic ticks with the pad word <paramref name="hold"/> held  // public void Frame(uint hold, int ticks) // { // Arc.HoldDirections(hold);
+[289] Alundra.Tests/AlundraHitArena.cs:70
+      ctx: . | **Coupe les gestionnaires natifs** (`:70`) : les C63/C65/C75 enregistrés ne tourneraient pas ; à rallumer 
+      src: realRunner.NativeHandlersEnabled = false;
+[289] Alundra.Tests/AlundraWaveSwordLifeTests.cs:128
+      ctx: ne tourneraient pas ; à rallumer comme `AlundraWaveSwordLifeTests.cs:128`. Les Beannoïdes y sont des no-ops co
+      src: run.Arena.Arc.Runner.NativeHandlersEnabled = true; // HitArena turns them off (E14.a0, D-E14-5): the positive 
+[290] Alundra.Tests/AlundraContactTestSupport.cs:52
+      ctx: actHost` + `JumpHeroRig`/`RunMontage` (`AlundraContactTestSupport.cs:52`, `AlundraJumpTestSupport.cs:235`, `Al
+      src: internal sealed class ContactHost : IScriptHost
+[290] Alundra.Tests/AlundraJumpTestSupport.cs:235
+      ctx: e` (`AlundraContactTestSupport.cs:52`, `AlundraJumpTestSupport.cs:235`, `AlundraRunSupport.cs:202`) | hôte min
+      src: internal sealed class JumpHeroRig
+[290] Alundra.Tests/AlundraRunSupport.cs:202
+      ctx: :52`, `AlundraJumpTestSupport.cs:235`, `AlundraRunSupport.cs:202`) | hôte minimal : `SoundPlayer` (`RecordingS
+      src: internal sealed class RunMontage
+[290] Alundra.Tests/AlundraRunSupport.cs:242-246
+      ctx: oue une trace d'oracle et lit les sons (`:242-246`). Convient au cadre h0 (son 3, garde de verrou, gardes de p
+      src: var sounds = new RecordingSoundPlayer(); // rig.Host.SoundPlayer = sounds; //  // var tables = Tables();
+[290] Alundra.Tests/AlundraRunSupport.cs:159
+      ctx: i par `AlundraWeaponSpawnSeamTests.S3`, `:159`). |
+      src: 
+[295] Alundra.Tests/AlundraLogicalZWorldTests.cs:292
+      ctx: he ; ils décident de l'effet de h3 sur `AlundraLogicalZWorldTests.cs:292,398`.
+      src: var bomb = Born(arc, false, Bomb, 100, OracleInit(root, "pz") - 2);

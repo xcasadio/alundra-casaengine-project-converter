@@ -1,0 +1,107 @@
+## dispatch 0x80031D80..0x80031DB0
+0x80031d80  lui      $v0, 0x8012
+0x80031d84  lw       $v1, 0x7db8($v0)
+0x80031d88  nop      
+0x80031d8c  sltiu    $v0, $v1, 0x50
+0x80031d90  beqz     $v0, 0x80032758
+0x80031d94  lui      $v0, 0x8002
+0x80031d98  addiu    $v0, $v0, 0x2d3c
+0x80031d9c  sll      $v1, $v1, 2
+0x80031da0  addu     $v1, $v1, $v0
+0x80031da4  lw       $v0, ($v1)
+0x80031da8  nop      
+0x80031dac  jr       $v0
+0x80031db0  nop      
+## hurt path and pilot call 0x80031C30..0x80031CC8
+0x80031c30  lw       $v0, 0x6c($s0)
+0x80031c34  nop      
+0x80031c38  ori      $v0, $v0, 0x100
+0x80031c3c  jal      0x8002fb14
+0x80031c40  sw       $v0, 0x6c($s0)
+0x80031c44  jal      0x80031a68
+0x80031c48  addiu    $s4, $zero, -1
+0x80031c4c  move     $s1, $v0
+0x80031c50  beq      $s1, $s4, 0x80031ca0
+0x80031c54  addiu    $a0, $zero, 2
+0x80031c58  lui      $v0, 0x8012
+0x80031c5c  sw       $zero, 0x6ffc($v0)
+0x80031c60  lui      $v0, 0x8012
+0x80031c64  jal      0x8002f884
+0x80031c68  sw       $zero, 0x7110($v0)
+0x80031c6c  jal      0x8003634c
+0x80031c70  nop      
+0x80031c74  addiu    $v0, $zero, 4
+0x80031c78  bne      $s2, $v0, 0x80031c84
+0x80031c7c  addiu    $v0, $zero, 0x31
+0x80031c80  addiu    $v0, $zero, 0x3a
+0x80031c84  sw       $v0, 0x88($s0)
+0x80031c88  lui      $v0, 0x8012
+0x80031c8c  addiu    $v0, $v0, 0x7d30
+0x80031c90  addiu    $v1, $zero, 0x78
+0x80031c94  sw       $s1, 0x8c($v0)
+0x80031c98  j        0x80032914
+0x80031c9c  sw       $v1, 0x1cc($v0)
+0x80031ca0  lw       $v0, 0x14($s0)
+0x80031ca4  nop      
+0x80031ca8  beqz     $v0, 0x800327a4
+0x80031cac  lui      $v0, 0x8012
+0x80031cb0  lw       $v0, 0x188($s0)
+0x80031cb4  nop      
+0x80031cb8  andi     $v0, $v0, 0x80
+0x80031cbc  bnez     $v0, 0x80032768
+0x80031cc0  lui      $v0, 0x8012
+0x80031cc4  jal      0x8003634c
+## default/exit/death 0x80032754..0x800327C0
+0x80032754  sw       $v0, 0x8c($a0)
+0x80032758  jal      0x800350c0
+0x8003275c  nop      
+0x80032760  j        0x80032914
+0x80032764  nop      
+0x80032768  sw       $zero, 0x6ffc($v0)
+0x8003276c  lui      $v0, 0x8012
+0x80032770  jal      0x800350c0
+0x80032774  sw       $zero, 0x7110($v0)
+0x80032778  jal      0x8002f884
+0x8003277c  addiu    $a0, $zero, 1
+0x80032780  addiu    $v0, $zero, 4
+0x80032784  beq      $s2, $v0, 0x80032830
+0x80032788  addiu    $v0, $zero, 0x1d
+0x8003278c  lw       $v0, 0x144($s0)
+0x80032790  nop      
+0x80032794  bnez     $v0, 0x80031e7c
+0x80032798  addiu    $v0, $zero, 0x2d
+0x8003279c  j        0x80032914
+0x800327a0  sw       $v0, 0x88($s0)
+0x800327a4  sw       $zero, 0x6ffc($v0)
+0x800327a8  lui      $v0, 0x8012
+0x800327ac  jal      0x8002f884
+0x800327b0  sw       $zero, 0x7110($v0)
+0x800327b4  jal      0x800350c0
+0x800327b8  nop      
+0x800327bc  lw       $v0, 0x88($s0)
+## locked branch 0x80031BA0..0x80031C04
+0x80031ba0  nop      
+0x80031ba4  lw       $v0, 0x20($s0)
+0x80031ba8  nop      
+0x80031bac  beqz     $v0, 0x80031bc4
+0x80031bb0  lui      $v0, 0x8012
+0x80031bb4  sw       $zero, 0x6ffc($v0)
+0x80031bb8  lui      $v0, 0x8012
+0x80031bbc  j        0x80032914
+0x80031bc0  sw       $zero, 0x7110($v0)
+0x80031bc4  lui      $s1, 0x800e
+0x80031bc8  lw       $v0, -0x3b48($s1)
+0x80031bcc  nop      
+0x80031bd0  andi     $v0, $v0, 0x34
+0x80031bd4  beqz     $v0, 0x80031c30
+0x80031bd8  move     $a0, $zero
+0x80031bdc  jal      0x8002fb14
+0x80031be0  addiu    $a0, $zero, 1
+0x80031be4  addiu    $a0, $zero, 1
+0x80031be8  lui      $v0, 0x8012
+0x80031bec  sw       $zero, 0x6ffc($v0)
+0x80031bf0  lui      $v0, 0x8012
+0x80031bf4  jal      0x8002f884
+0x80031bf8  sw       $zero, 0x7110($v0)
+0x80031bfc  jal      0x800350c0
+0x80031c00  nop      

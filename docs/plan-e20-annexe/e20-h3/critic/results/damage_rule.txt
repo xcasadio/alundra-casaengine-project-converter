@@ -1,0 +1,7 @@
+mismatches 0
+sheet byte vs JSON DamageResponses[3] mismatches: 97 of 512
+global 0..255 {'dmg1': 1, 'dmg5': 8, 'immune': 247}
+map sprites 256..511 {'dmg1': 5, 'dmg10': 1, 'dmg3': 2, 'dmg5': 70, 'dmg9': 1, 'immune': 132, 'kill': 45}
+map sheets with MaxHp>0: 133 {'dmg1': 5, 'dmg10': 1, 'dmg3': 2, 'dmg5': 68, 'dmg9': 1, 'immune': 11, 'kill': 45}
+map sheets with MaxHp>0 and attacks: 111 {'dmg1': 5, 'dmg10': 1, 'dmg3': 2, 'dmg5': 53, 'dmg9': 1, 'immune': 4, 'kill': 45}
+kill sheets (all): 45 [329, 335, 338, 341, 344, 347, 350, 356, 362, 365, 371, 377, 386, 389, 392, 395, 401, 404, 410, 423, 425, 428, 431, 437, 440, 443, 449, 450, 452, 453, 455, 456, 458, 461, 467, 473, 478, 484, 486, 487, 496, 502, 503, 504, 505]

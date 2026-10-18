@@ -1,0 +1,12 @@
+=== item 23: jump at t1, Circle at t12
+ t 1 hero tanim 43 canim 43 gnd 0 z 5.0 link 0 item 0 | ents {} [('sound', 10)]
+ t 2 hero tanim 45 canim 45 gnd 0 z 9.5 link 0 item 0 | ents {} [('sound', 0)]
+ t12 hero tanim 11 canim 11 gnd 0 z 27.0 link 80127fc4 item 23 | ents {1: (1, 0, 27.5)} [('sound', 0), ('sound', 44)]
+ t21 hero tanim 11 canim 11 gnd 1 z 0.0 link 80127fc4 item 23 | ents {1: (2, 0, 9.5)} []
+ t22 hero tanim 12 canim 12 gnd 1 z 0.0 link 80127fc4 item 23 | ents {1: (2, 0, 10.5)} [('sound', 11), ('sound', 0)]
+=== item 1f: jump at t1, Circle at t12
+ t 1 hero tanim 43 canim 43 gnd 0 z 5.0 link 0 item 0 | ents {} [('sound', 10)]
+ t 2 hero tanim 45 canim 45 gnd 0 z 9.5 link 0 item 0 | ents {} [('sound', 0)]
+ t12 hero tanim 11 canim 11 gnd 0 z 27.0 link 80127fc4 item 1f | ents {1: (1, 0, 27.5)} [('sound', 0), ('sound', 44)]
+ t21 hero tanim 11 canim 11 gnd 1 z 0.0 link 80127fc4 item 1f | ents {1: (2, 0, 9.5)} []
+ t22 hero tanim 12 canim 12 gnd 1 z 0.0 link 80127fc4 item 1f | ents {1: (2, 0, 10.5)} [('sound', 11), ('sound', 0)]

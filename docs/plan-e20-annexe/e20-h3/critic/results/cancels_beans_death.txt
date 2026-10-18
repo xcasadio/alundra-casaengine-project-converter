@@ -1,0 +1,7 @@
+=== mode death item 0x1f event at tick 60
+ t 58 hero tanim 12 link 80127fc4 item 1f hp 10 {1: (2, 0, 0, 0, 32.0)} []
+ t 61 hero tanim 57 link 0 item 0 hp 0 {1: (2, 2, 0, 0, 36.0)} [('sound', 0), ('sound', 0)]
+ t 84 hero tanim 57 link 0 item 0 hp 0 {1: (3, 1, 0, 0, 0.0)} [('sound', 0)]
+ t 86 hero tanim 57 link 0 item 0 hp 0 {1: (4, 1, 0, 0, 0.0)} [('effect_3BE74', [0, 8, 0, 2148696004, 1, 0, 0, 0, 2148696004, 2148696004])]
+ t 87 hero tanim 57 link 0 item 0 hp 0 {} []
+ t111 hero tanim 78 link 0 item 0 hp 0 {} [('sound', 0)]

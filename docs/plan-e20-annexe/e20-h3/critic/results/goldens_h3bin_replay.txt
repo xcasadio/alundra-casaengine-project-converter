@@ -1,0 +1,4 @@
+  J gold [['spawn', 2148695344, 0, 1, 858822620, 3137724890, 3024052725, 0]]
+most frequent absent words: [('80127164', 23), ('80127D5C', 23), ('80127E74', 23), ('8012AC00', 11), ('8012FE80', 11), ('8012CD84', 11), ('80129C88', 11), ('8012EF08', 11), ('8012BE0C', 11), ('8013108C', 11), ('8012DF90', 11), ('8012AE94', 11)]
+vectors 480 differences 61 reads of words absent from the golden input: 2104
+{'start_beans': 12, 'start_bomb': 11, 'drv_beans': 0, 'drv_bomb': 1, 'cancel_beans': 6, 'cancel_bomb': 1, 'dispatch': 0, 'C62': 12, 'D30': 0, 'E12': 0, 'C73': 17, 'E21': 1}
