@@ -5730,8 +5730,9 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
    en `snd(N)`, les tirages et le générateur dans leurs champs) et les fenêtres de mur dans `bin/out/sweep_wall_charged.txt` (type 7) et
    `bin/out/sweep_wall.txt` (type 3) ; le format d'objets `.effects[]`, `.snd[]` demandé par l'ancien T0 d'f4 est abandonné.
 4. **L'ordre** : E20.e0c puis E20.e (§1.26, §1.27, READY) **avant** f4 (l'ordre que propose §1.25) ; f4, f5, f6a, f6b (ordre ferme), puis h0 et h1,
-   puis g. Conséquence pour f4 : C94 appelle `TileEffect.Trigger` d'E20.e en tête de son tick (comme `0x8007C0E4`) ; D-F4-3 (déplacer le bouchon
-   hors du fichier de la vague) et D-F4-10 (le bouchon ne coupe rien) tombent ; si E20.e n'est pas faite au début d'f4, arrêt.
+   puis g. Conséquence pour f4 : C94 appelle la coupe d'E20.e en tête de son tick (comme `0x8007C0E4`), par la méthode nommée de la puce « f4 »
+   ci-dessous (« L'appel de C94 à la coupe ») ; D-F4-3 (déplacer le bouchon hors du fichier de la vague) et D-F4-10 (le bouchon ne coupe rien)
+   tombent ; si E20.e n'est pas faite au début d'f4, arrêt.
 5. **Le registre et les tests** : le compte du registre se dérive par la règle du bloc du §1.24, point 4 (le compte d'avant plus les clés de la
    tranche), qui remplace la « somme des classes » de D-F4-5 ; les deux épingles (`Alundra.Tests/AlundraNativeSpriteRegistryTests.cs:55`,
    `Alundra.Tests/AlundraWaveSwordLifeTests.cs:181-183`) sont dans la liste prédite de chaque tranche qui inscrit une clé ; un test de monde
@@ -5761,8 +5762,33 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
   non nul, un gestionnaire natif tourne pour une entité dont `SpriteType` (l'indice, plus `0x100` pour une page de carte) est dans l'ensemble **même si**
   `NativeHandlersEnabled` est faux, et pas pour les autres quand il est faux : `HitArena` (natifs éteints, `Alundra.Tests/AlundraHitArena.cs:70`) plus
   l'ensemble {7} fait tourner C94 et laisse les Beannoïdes inertes. g2b ((b3)) le consomme.
-- **(c8) l'herbe** : avec E20.e faite, C94 coupe pour de bon : (c8) compare les coupes à la clé `charged7_grass` (tick, case, effet, butin, son), sur le
-  champ synthétique de son scénario.
+- **L'appel de C94 à la coupe et son journal** (révision 1 ; remplace D-F4-3, D-F4-10 et le « bouchon » de T1, T4 et de la preuve de retrait) : C94
+  appelle `ChargedArrowAi.CheckAndTriggerTileEffect(entity)`, une méthode nommée sur le modèle de `WaveSwordAi.CheckAndTriggerTileEffect`
+  (`Alundra/Ai/Projectiles/WaveSwordAi.cs:25-27`, `:40`) : elle ajoute l'entité à son journal par thread `ChargedArrowAi.StubCallsForTests`
+  (`[ThreadStatic] internal static List<EntityScriptProxy>?`, nul en production), puis appelle le port d'E20.e (`TileEffect`,
+  `Alundra/Cells/TileEffect.cs`) **par le même appel** que `WaveSwordAi.CheckAndTriggerTileEffect` au HEAD de départ d'f4 (T0 le relit et l'écrit
+  au README ; si `WaveSwordAi` n'appelle pas le port, E20.e n'est pas faite : arrêt). Tout « bouchon appelé » de T1, de T4 et de la preuve de retrait
+  se lit dans ce journal : (c1) y trouve l'entité à **trois ticks consécutifs** (`FrameCounter` 3, 4 et 5), réservoir plein compris, ce qui tue le
+  mutant « appelé seulement toutes les 4 ticks » ; « jamais » est tué par (c1) et (c8). Sur l'entité faite à la main de (c1), sans
+  `IEntityWorldContext`, la coupe ne fait rien (§1.27) : (c1) n'observe que le journal. **Preuve de retrait** (remplace « retirer l'appel du bouchon
+  rend rouge (c1) et (c8) seulement ») : retirer l'appel dans C94 rend rouges (c1) et (c8) seulement ; retirer seulement l'appel du port (le journal
+  gardé) rend rouge (c8) seulement.
+- **(c8) l'herbe, son banc et sa clé** (révision 1 ; remplace le (c8) de T1). **Le banc** : le champ synthétique et le magasin de cases sur **les mêmes
+  enregistrements**, comme les construit `WorldProxy` (`Alundra/Maps/WorldProxy.cs:1203-1230`) : un `TileMapData` synthétique composé comme le compose
+  `FlatCells.Create` (`Alundra.Tests/AlundraJumpTestSupport.cs:507-511`, qui n'en rend que le champ, `:512`), puis la surcharge
+  `CellsCollisionField.TryCreate(tileMapData, nom, out champ, out enregistrements)` (`Alundra/Physics/CellsCollisionField.cs:111-112`) et
+  `CellStore.TryCreate(enregistrements, …)` (`Alundra/Cells/CellStore.cs:103`) ; le champ et le magasin posés par réflexion comme
+  `Alundra.Tests/AlundraMapEdgeWorldTests.cs:46-49` pose `CollisionField` et `_tileMapData` (`CellMutator` a un setter privé, `WorldProxy.cs:658`) ;
+  une aide de test neuve à côté de `FlatCells` (`Alundra.Tests/AlundraJumpTestSupport.cs:451-515`). **Tous** les tests de monde d'f4 sur un champ synthétique
+  prennent ce banc (sinon le magasin de la vraie carte 14 resterait sous le champ synthétique, et la coupe lirait l'un et écrirait l'autre).
+  **Sonde T0** : sur ce banc, une coupe par `CellMutator` efface le bit que le champ lit à la même case (les tableaux sont partagés) ; une sonde qui
+  échoue est un arrêt ; la synchronisation visuelle n'est pas branchée sur ce magasin (aucune reconstruction de l'overlay n'est vérifiée sur ce
+  banc). **La clé** `charged7_grass` (`docs/plan-e20-annexe/e20-f4f6/bin/out/json/charged7_grass.json`, la coupe du vrai code) : S = 105 ; une coupe
+  de deux cases tous les 4 ticks, de S+2 (tick 107) à S+30 (tick 135), chacune avec l'effet `fx(id=2,…)` à x = 132 + 24k, y = 88 et 104, Z 0, et deux
+  `snd(31)` ; 3 ou 2 tirages à chaque tick de coupe (champ `draws`). (c8) pose le générateur à la valeur `rng0` de la clé au tick S+1, puis compare à
+  chaque tick de S+1 à S+30 : les cases coupées, la position et le Z des effets 2, les sons, le nombre de tirages et `rng1` ; aucune coupe aux autres
+  ticks ; le journal de C94 contient la flèche à chaque tick de S+1 à S+30. **O-F4-1 est fermé** par E20.e (le flux reçoit les tirages de la coupe) ;
+  la recette dit « elle coupe l'herbe sur son passage » au lieu de « Elle ne coupe pas l'herbe (E20.e) ».
 - **P-F4-1** (attendu : l'indice de direction de la traînée vaut 0, 1, 2, 3 pour sud, nord, ouest, est, la table inverse de `{0, 0x10, 8, 0x18}`, égal à
   `BoxDirection`) et **P-F4-2** (attendu : la boîte de la flèche au tick S, 24 × 16 × 15 à `hbz` 0) : une sonde qui contredit son attendu est un arrêt.
   **P-F4-3** (O-E0A5-2, assigné à f4) : la phase de la traînée (`FrameCounter & 3`) d'une flèche née dans une case réutilisée ; le binaire garde le compteur
@@ -5804,8 +5830,11 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
 **f6a.**
 - **Le point d'appel et sa garde** : la lecture des attributs de tuile d'une entité marquée se fait dans la branche `IsActive` de `TickMotion`
   (`EntityScriptProxy.cs:1629-1632`, statuts 2 et 3, comme la liste de physique du binaire, D-E19-29), pas dans `EvaluateEntitySupport` (tous statuts,
-  `:1634`) ; test ajouté (s4) : une boule marquée en **statut 3** posée sur l'eau profonde (`Slope_18c` 4) est détruite, accolée à la même en statut 4 qui
-  ne l'est pas ; mutant ajouté : « appel limité au statut 2 ».
+  `:1634`) ; test ajouté (s4) (révision 1) : une boule marquée en **statut 3** posée sur une case `0x08` sous tout le pied a `Slope_18c` 4 après son
+  tick, accolée à la même boule en **statut 4**, qui garde sa valeur d'avant (0) : f6a ne détruit rien en statut 3 (le choix du programme ne détruit sur
+  la pente 4 qu'en statut 2, `EntityScriptProxy.cs:1703-1712` ; en statut 3 il ne prend que le programme E, `:1758-1760` ; la destruction d'une boule
+  posée sur l'eau est la branche A d'E9, en f6b) ; mutant ajouté à T2 : « appel limité au statut 2 », tué par (s4). **Acceptation et preuve de
+  retrait** (remplacent celles de §1.22.1) : (s1) à (s4) verts, rouges avant le code ; retirer l'appel rend rouges exactement (s1), (s3) et (s4).
 - Le recensement des lecteurs de `+0x180`, `+0x184`, `+0x190` que le texte annonce entre dans la puce T0, avec une sortie versée.
 - Docs que f6a rend fausses, corrigées par f6a : `EntityScriptProxy.cs:1956-1962` (« PLAYER ONLY… Every NPC's Slope_18c stays 0 »), `:1915-1918`, la
   doc de `TickPhysics` et `TickMotion` (`:1594-1599`, `:1613`).
@@ -5816,7 +5845,16 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
 - **R et S** : l'oracle des boules relâche à R = 96 et fait naître à S = 107 (`bin/run_balls.py:2`) ; « 112 pour R = 101 de l'arène » est faux (l'arène de
   la charge relâche à 91, `Alundra.Tests/AlundraWaveSwordSupport.cs:18` ; 112 est le S de la vague) : les tests de boule relâchent à R = 96.
 - Les conditionnelles caduques tombent : P-F6-3 « avant la règle de vitesse » et « si f5 n'est pas faite » (f5 est un prérequis ferme).
-- La liste prédite de la phase B comprend, en plus des épingles communes, les tests de monde à boules de la phase B, recomptés en T0.
+- **La phase B déplace aussi des tests existants** (révision 1 ; remplace, au §1.22.2, « Seul changement de comportement : les trois flammes de la 309
+  émettent », l'arrêt « plus de 10 tests existants bougent » et la preuve de retrait de l'enregistrement). En phase B, les boules des tests de monde
+  existants qui tournent avec le registre de production (`NativeSpriteRegistry.CreateForProduction`, `Alundra/Ai/NativeSpriteRegistry.cs:36-43`)
+  exécutent C60 et E9 : la contre-vérification en compte treize (`AlundraLogicalZWorldTests` : Z3 trois fois, Z3 par pas, Z5, Z6 trois fois, Z8, Z10,
+  Z11 ; `AlundraMapStateWorldTests` : K2, K3 ; `docs/plan-e20-annexe/e20-f4f6/state-3c923cf/f6/check.md:97-101`). T0 les mesure et les nomme dans la
+  liste prédite, avec les épingles communes ; T3 réécrit chacun par dérivation du binaire (jamais collé de la DLL). **Changements de comportement de
+  la phase B** : les flammes de la 309 et ces tests. **Arrêt** : un test hors de la liste prédite bouge ; le seuil « plus de 10 » ne s'applique pas à
+  f6b (la liste mesurée en T0 en tient lieu). **Preuve de retrait** : retirer l'appel d'enregistrement rend rouges exactement (m1) à (m3) et les tests
+  de la liste de T0 réécrits en T3 ; « (b7) de production » en sort : (b7) est un test de `Register` en phase A, sur le registre du runner de test, et
+  l'épingle de production est (m3) (le compte d'avant plus deux clés).
 - `SpawnContents` sur une boule ne lâche rien (§1.26 : objet 0 ; une boule née par l'interface a `ContentsItemId` 0) : (s3) « aucun tirage » tient après e0c.
 
 ---
