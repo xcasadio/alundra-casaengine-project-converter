@@ -8068,7 +8068,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a et h4b1 détaillées le 2026-10-18, **READY** ; h4c1, h4c2, h4d1 détaillées, à relire ; h4b1b, h4b2, h4d2 à h4f2 esquissées)
+### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a, h4b1, h4c1, h4c2 **READY** ; h4d1 détaillée, relecture en pause ; h4b1b, h4b2, h4d2 à h4f2 esquissées)
 
 **Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-h4/`, `report.md` et `check.md`,
 la critique faisant foi : aucun fait de comportement réfuté ; D13, le sprite 154, la portée de Q-H4-2 et du §6 corrigés ; ses statistiques de
@@ -8348,7 +8348,7 @@ critique, avec leurs clés, vecteurs et scripts). Tous les faits de comportement
 
 ---
 
-#### 1.31.3 E20.h4c1 — La terre 1 : le pilote `0x80035320` et E3 pour le type 16 ⏳ (détaillée le 2026-10-18, à relire)
+#### 1.31.3 E20.h4c1 — La terre 1 : le pilote `0x80035320` et E3 pour le type 16 ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95`)
 
 **Prérequis.** h0a et h4a (les coutures, la fonction de départ des tomes, les états, la garde) ; f4 (D-F4-7, l'ensemble de types qui laisse les
 Beannoïdes inertes, pour (w5)) ; f5 (D-F5-5 : sans elle, un rocher fait un pas XY de trop au tick d'E3) ; f6a (l'eau profonde d'une entité marquée
@@ -8454,7 +8454,7 @@ PM, la piste XA, les états `0x32` à `0x34`, la garde (h4a) ; E3 pour le type 2
 
 ---
 
-#### 1.31.4 E20.h4c2 — La terre 2 : le pilote `0x800354D0`, E13, l'annulation et le coup de caméra ⏳ (détaillée le 2026-10-18, à relire)
+#### 1.31.4 E20.h4c2 — La terre 2 : le pilote `0x800354D0`, E13, l'annulation et le coup de caméra ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95`)
 
 **Prérequis.** h0a, h4a ; f5 (D-F5-5) ; f6a pour le seul témoin de (w6) ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H4B-4,
 Q-H4C2-1 (porter le coup), Q-H4C2-2 (`(E, 13)` pour le seul type 17) et Q-H4C2-3 (le rocher arrêté en l'air, fidèle) (révision 1). Ni h4b1, ni h4b2.
@@ -8576,7 +8576,7 @@ la blessure du héros (E20.c2b).
 
 ---
 
-#### 1.31.5 E20.h4d1 — Le feu 2 : le pilote `0x80035C64`, E28, l'annulation et le tampon du tremblement ⏳ (détaillée le 2026-10-18, à relire)
+#### 1.31.5 E20.h4d1 — Le feu 2 : le pilote `0x80035C64`, E28, l'annulation et le tampon du tremblement ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`ae1fe95`, un P2 : la phrase des six vecteurs de (d1)), corrigé (révision 3) ; relecture **en pause**, Q-H4D1-R)
 
 **Prérequis.** h0a, h4a ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H4D1-1 (A, l'ordre de la DLL) et Q-H4D1-2 (A, le tampon de
 session) (révision 2). Ni f5, ni f6a (le sprite 21 a une vitesse nulle et pas de gravité), ni h4b.
@@ -8652,8 +8652,10 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
   22, 23, 24, 17 au statut 2, et l'entité de carte d'indice 21, `SpriteType = 0x115`, intacts) ; (c2) l'appel par la garde : la restauration, 1, la
   phase n'avance pas ; (c1), (c2), (d1) et les tests de monde passent par `ItemCancelForTests` = `FireTome2Ai.Cancel` **seulement quand l'objet en
   cours est `0x30`**, neutre sinon, comme l'aiguillage du binaire (R-EL-4 ; l'annulation générale aiguille sur l'objet en cours, critique §2.1) ;
-  dans (d1), les 4 vecteurs à l'objet 0 et les 2 à l'objet 43 n'attendent ni restauration ni changement de statut du type `0x15`, et passent
-  (révision 2) ; puis les tests de monde (le bloc et les entités lus à l'appel `TickTraceForTests("inventory")`
+  dans (d1), les six vecteurs à l'objet 0 ou 43 (`ItemCancelForTests` neutre pour eux) n'attendent **aucun changement de statut du type `0x15`** ;
+  les cinq en phase 1 (ids 12, 16, 38, 42 et 50 de `vec_fire2_80035C64.json`) attendent encore **la restauration des neuf mots par la branche du
+  pilote** (« garde non nulle : restauration, 1 ») ; les deux à l'objet 43 (ids 16 et 38) attendent en plus l'objet libéré par l'annulation générale
+  de h0a et h4a ; l'id 41 (phase 0) n'attend aucune écriture (révision 3) ; puis les tests de monde (le bloc et les entités lus à l'appel `TickTraceForTests("inventory")`
   du tick, le générateur et les effets après l'image ; le bloc comparé par R-EL-7, les interruptions posées et comparées par R-EL-6) : (w1) `fire2_cast_pf` fidèle aux ticks 1 à 182 (le héros, l'objet, la phase, le compteur, les PM ; entre les ticks 34 et 154,
   `Flag`, `LimitX`, `LimitY`, `SpeedX`, `SpeedY` du bloc seulement, et les neuf mots après la restauration ; le tampon ; le sprite 21 ; les 8 effets du
   tick 154 ; le générateur ; la restauration au tick 155, l'objet libéré au tick 182) ; (w2) `fire2_hurt60` (l'objet, la phase, le compteur, la
@@ -8748,6 +8750,7 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
 | Q-F4-R | (2026-10-18) E20.f4 : trois relectures (deux REVISE puis la clôture REVISE, un P2 de précision sur la clé `_pf`, corrigé) ; la règle met f4 en pause. Autoriser une relecture de plus après le correctif ? Défaut : non, f4 reste en pause jusqu'à la réponse (son exécution attend de toute façon la fin du chantier) | l'auteur |
 | Q-F6B-R | (2026-10-18) E20.f6b : READY à sa clôture, puis REVISE à la clôture de l'époque ouverte par la précision du point 3 (un P2 sur le point de lecture du générateur, corrigé en révision 4) ; la règle met f6b en pause. Autoriser une relecture de plus après le correctif ? Défaut : non, f6b reste en pause jusqu'à la réponse | l'auteur |
 | Q-H3B-R | (2026-10-18) E20.h3b : deux REVISE puis la clôture REVISE (un P2 : une tolérance d'un tick dans ses arrêts, contraire à son acceptation exacte), corrigé en révision 3 ; la règle met h3b en pause. Autoriser une relecture de plus ? Défaut : non (h3b attend aussi g1a, g2a et la fin du chantier) | l'auteur |
+| Q-H4D1-R | (2026-10-18) E20.h4d1 : deux REVISE puis la clôture REVISE (un P2 : une phrase de (d1) contredisait les vecteurs du pilote), corrigé en révision 3 ; la règle met h4d1 en pause. Autoriser une relecture de plus ? Défaut : non | l'auteur |
 | Q-G3-a | (2026-10-18) Après E20.g3, les tonneaux, troncs, pierres, torches et les quatre objets du sanctuaire (248 placements, hors de l'histoire actuelle) arrêtent Alundra comme des caisses, mais ne se soulèvent qu'avec g2c ; sur la carte 4, les grosses pierres bloquent des chemins jusqu'au Gant, comme l'original. (A, défaut retenu) tous solides, sans code de plus ; (B) les laisser traversables jusqu'à g2c (un nouvel écart, des tests écrits deux fois) ; (C) faire g2c avant g3 (un T0 qui décode C4 d'abord) | l'auteur |
 | Q-G3-b | (2026-10-18) Entre g3 et g1b, les caisses seraient des murs que l'on ne peut que sauter (sur le navire, il faudrait se caler contre le haut de la porte et sauter sur la seule caisse basse, malgré le roulis). (A, défaut retenu) g3 et g1b fusionnés ensemble ; (B) fusionner g3 d'abord (la recette ne montre que le blocage) | l'auteur |
 | Q-G3-c | (2026-10-18) Quand on soulève la caisse du bas d'une pile, l'original fait tomber celle du dessus de 16 px en 8 images ; le portage garde l'ancienne règle de chute des objets de carte jusqu'à E19.h2 (la chute peut durer autrement, ou se faire d'un coup). (A, défaut retenu) écart documenté jusqu'à E19.h2, mesuré en g4b ; (B) donner tout de suite la loi du binaire à la caisse qui perd son appui (un nouveau site du marqueur de Z logique) ; (C) attendre E19.h2 pour le critère « pile » | l'auteur |
