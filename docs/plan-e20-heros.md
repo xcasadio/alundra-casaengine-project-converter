@@ -8068,7 +8068,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a, h4b1, h4c1, h4c2 **READY** ; h4d1 détaillée, relecture en pause ; h4d2 et h4e1 détaillées ; h4b1b, h4b2, h4e2 à h4f2 esquissées)
+### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a, h4b1, h4c1, h4c2, h4d2 **READY** ; h4d1 détaillée, relecture en pause ; h4e1 détaillée, en relecture ; h4b1b, h4b2, h4e2 à h4f2 esquissées)
 
 **Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-h4/`, `report.md` et `check.md`,
 la critique faisant foi : aucun fait de comportement réfuté ; D13, le sprite 154, la portée de Q-H4-2 et du §6 corrigés ; ses statistiques de
@@ -8702,7 +8702,7 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B (l'entrée et l'appel) ; la phase A : le fichier, l'inscription, l'API du tampon, le créateur, le champ.
 
-#### 1.31.6 E20.h4d2 — Le feu 1 : le pilote `0x80035A84`, la colonne, C63, E3 pour le type 23 et l'annulation `0x80034D2C` ⏳ (détaillée le 2026-10-18)
+#### 1.31.6 E20.h4d2 — Le feu 1 : le pilote `0x80035A84`, la colonne, C63, E3 pour le type 23 et l'annulation `0x80034D2C` ⏳ (détaillée le 2026-10-18 ; **READY** à la première relecture, `b20eb8c`)
 
 **Prérequis.** h0a et h4a (les coutures, la fonction de départ des tomes, les états, la garde) ; h4b1 (`TargetQuery.Find` et ses réglages) ; h4c1
 (E3, `EarthTome1Ai`, son inscription), **donc par transitivité f4, f5 et f6a** (critique d'h4d2 §5, point 3 ; f5 sert aussi directement : au tick
@@ -8882,7 +8882,7 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
   `{16}` rend rouges (e2), (p1), (p3), (p4) et tous les tests de monde où une boule passe au statut 3 (tous sauf (w6) pour T ∈ {10, 33, 34} et (w7)),
   les (k) et les (d) restant verts.
 - **Recette de l'auteur** (non bloquante) : `arsenal-a-m14` (le kit porte le parchemin 47, aucun livre 48 ne le coiffe, PM 4/4 ;
-  `Alundra.Tests/TestSaves.cs:72-75`, `:124`), le tome 47 mis en objet du Rond par l'inventaire : 0,64 s de pose ; la colonne aux pieds d'Alundra
+  `Alundra/SaveGames/TestSaves.cs:72-75`, `:124`), le tome 47 mis en objet du Rond par l'inventaire : 0,64 s de pose ; la colonne aux pieds d'Alundra
   1,74 s ; une boule toutes les 0,16 s (onze), qui monte, retombe et vise l'ennemi le plus proche ; le héros bloqué environ 3 s ; 1 PM de moins ; les
   dégâts suivent la puissance (64 la colonne, 32 la boule) et la réponse de la fiche de l'ennemi (critique §5, point 11).
 - **Inconnus** : l'atterrissage sur une entité `Collidable` par le chemin sans gravité (les boules des clés touchent avant d'atterrir ; INCONNU côté
@@ -8899,7 +8899,7 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
 - **Retour arrière** : la phase B (les trois entrées et l'appel) ; la phase A : le fichier, `SpriteTypes` `{16}`, l'accesseur, la référence de cible, et
   la fonction du compte, `ItemSpawnedEntity` et le créateur d'effet s'ils viennent de h4d2.
 
-#### 1.31.7 E20.h4e1 — Le vent 1 : le pilote `0x80035EB0`, la clé de distance et le plancher de naissance ⏳ (détaillée le 2026-10-18)
+#### 1.31.7 E20.h4e1 — Le vent 1 : le pilote `0x80035EB0`, la clé de distance et le plancher de naissance ⏳ (détaillée le 2026-10-18 ; REVISE, révision 1)
 
 **Prérequis.** h0a et h4a (les coutures, la fonction de départ des tomes, les états, la garde) ; h4b1 (la requête et ses réglages) ; la fin du
 chantier et Q-R-7 ; les défauts retenus de Q-H4B-2 et Q-H4B-3 (corriger) et de Q-H4E1-1 (B, corriger). **Ni f4, f5, f6a, h4c1, h4c2, E14.b0** (le
@@ -8934,10 +8934,11 @@ vecteurs CONFIRMÉS par son propre interpréteur ; **la « branche morte » (D9)
   Z 9 437 185) ; 128 px et 32 px ne détruisent rien ; les deux tirages sont faits et la dernière cible effacée dans tous les cas. La DLL relève déjà
   `PosZ` à la création (`Alundra/Entities/Spawning/EntitySpawnFactory.cs:809-816`, même condition en convention DLL) et pose `FloorHeight`
   (`UpdateEnemyGroundHeights`, `:821`), mais **n'écrit jamais `IsOnGround` à la création** (ses écrivains sont les pas verticaux du tick,
-  `EntityScriptProxy.cs:900`, `:1005`, `:1019`, `:1148`, `:1487`) : un port littéral du test ne détruirait jamais rien en jeu.
+  `EntityScriptProxy.cs:900`, `:1005`, `:1019`, `:1148`, `:1487`, `:1499`, `Alundra/Physics/ScriptedMotion.cs:229`, `:548`, et l'adoption du héros,
+  `WorldProxy.cs:2174` ; révision 1) : un port littéral du test ne détruirait jamais rien en jeu.
 - **La requête** (h4b1) : le vent 1 lit aussi le tableau des **clés** (`0x800CC158`, `lw` en `0x80035FF8`), que `TargetQuery.Find` ne rend pas.
 - **Le sprite 22** : drapeaux `0x2144` (`HitsClassA`, `DeactivateOnAnimationEnd`, `Gravity`, `NoObstacleSlide` ; ni classe A ni `Collidable` : jamais
-  candidat, il se pose sur le terrain et pas sur un bloc, `Alundra/Entities/EntitySupport.cs:73-76`) ; A0, C0, D0, E1 (en ligne) ; `BreakEffect` 0,
+  candidat, il se pose sur le terrain et pas sur un bloc, `Alundra/Physics/EntitySupport.cs:73-76`) ; A0, C0, D0, E1 (en ligne) ; `BreakEffect` 0,
   `Contents` 0 ; une animation de 37 ticks, `Hold` ; la boîte de coup 36 × 24 × 31 aux images 4 à 13 ; vitesse 0, accélération 80 ; fiche 22 : type
   11, puissance 32 ; ni son ni effet attaché.
 - **La vie d'un éclair** né au tick S sur le plat : statut 2 dès la fin de S ; chute de 128 px à −8 px par tick plus la gravité ; atterrissage à S+11 ;
@@ -9003,7 +9004,8 @@ les trois entrées `0x31`.
   modèle ; pilote 218/218, garde 19/19, requête 94/94, tri 91/91), `wind1_replay.py` (800 sur 800 depuis une mémoire vide), `wind1_mut.py` (45 tués,
   et les trois de la critique, `critic/work2/` : 48 sur 48), `wind1_boundcheck.py`, `critic/work/critic_keys.py` (les 12 clés de la critique, son
   `MANIFEST.sha1`) et `critic/work/cliff_scen.py` ; (b) verser les clés, les vecteurs, les scripts et la table de correspondance (`disc/report.md` §3.2 :
-  aucune lecture sans membre ; un octet sans membre arrête) ; **l'hôte de test des naissances** rend `stub_spawn_ret` ou `null`, et donne au nouveau-né
+  aucune lecture sans membre ; un octet sans membre arrête), **sa ligne « `+0x144` → `IsOnGround` » remplacée par la règle de l'hôte ci-après**
+  (D-H4E1-5 ; révision 1) ; **l'hôte de test des naissances** rend `stub_spawn_ret` ou `null`, et donne au nouveau-né
   une position et un plancher tels que `PosZ <= FloorHeight` égale le mot `+0x144` du vecteur (D-H4E1-5 ; un mot `IsOnGround` posé ne tuerait pas le
   défaut de R1, critique §5) ; (c) **sondes de la DLL**, prédiction écrite avant (une sonde contredite est un arrêt) : P1, le Z d'un éclair sur le plat
   vaut le Z de la clé − 1 à chaque tick (7 831 553, 7 241 729, …), atterrissage à S+11, Z 0, force 0 ; P2, première touche à S+9 sur `one_near_dec`,
@@ -9032,10 +9034,15 @@ les trois entrées `0x31`.
   même case aussi ; **(d8)** le plancher de naissance (D-H4E1-5) : un nouveau-né au hasard à `PosZ <= FloorHeight` est détruit sans effet, `ForceZ`
   non écrit, deux tirages, la dernière cible effacée, accolé au même nouveau-né à `PosZ > FloorHeight`, qui reçoit `ForceZ` ; un `IsOnGround` posé à 1
   sur un nouveau-né au-dessus de son plancher ne le détruit pas ; (q1) `DistanceKey` égale la clé qu'écrit la requête de h4b1 (les vecteurs de h4b),
-  le coin −32 768 compris ; (e1) aucune clé de registre : le compte de `CreateForProduction()` est inchangé (dérivé du HEAD de départ) ; un éclair né
-  meurt à S+37 par l'E1 en ligne, sans effet ni son (`BreakEffect` 0 ; critique §6) ; (c1) sur des éclairs posés à la main, l'annulation neutre les
+  le coin −32 768 compris ; (e1) aucune clé de registre : le compte de `CreateForProduction()` est inchangé (dérivé du HEAD de départ) ; un éclair
+  **né par `SpawnEntityBySpriteIndex` appelé par le test, sans `Drive`**, meurt à S+37 par l'E1 en ligne, sans effet ni son (`BreakEffect` 0 ;
+  critique §6 ; révision 1) ; (c1) sur des éclairs posés à la main, l'annulation neutre les
   laisse, l'objet libéré par l'annulation générale de h0a (le corps de `Cancel` est vide) ; puis les tests de monde (banc R-EL-4, sans tolérance ; R-EL-5
-  sans objet ; les blocs 25 posés classe A avec `Hp = 5000` ; le leurre des clés `_dec_` posé ; les réglages de la table des clés) : (w1)
+  sans objet ; les blocs 25 posés classe A avec `Hp = 5000` ; le leurre des clés `_dec_` posé ; les réglages de la table des clés ; **chaque clé
+  est un cas nommé de son test** (une donnée de théorie par clé), et les preuves de retrait se lisent clé par clé ; le relief posé comme dans les
+  scripts des clés, en octets de hauteur de 16 px sur les cases du champ plat de R-EL-4 : `plateau_h64` : la hauteur 4 sur les colonnes 1 et 2 des
+  rangées 3 à 8 (`disc/wind1_key.py:305`) ; `cliff_hb<N>` : la hauteur N sur toutes les colonnes ≥ 5 (x ≥ 120 px ; `critic/work/cliff_scen.py:16`) ;
+  révision 1) : (w1)
   `wind1_cast_pf` et `cast_pf_seed2` : les naissances (ticks, cases, X, Y, Z), le générateur à chaque tick, la vie de chaque éclair de S à S+37, `0x34`
   au tick 102, l'objet libéré au 129, PM 3 ; (w1b) `wind1_cast_pf_gateoff` : huit éclairs, le premier au tick 32 ; (w2) `_south` identique à (w1) ; (w3)
   les huit interruptions fidèles et les six `_gateoff` (R-EL-6) : l'objet, la phase, le compteur, les éclairs, le générateur ; (w4) `edge_west_x20`,
@@ -9069,13 +9076,20 @@ les trois entrées `0x31`.
   rouges exactement (p1) à (p4) et (p6), (p5) et toute la phase A restant verts (les coutures remplacent les entrées) ; remettre la seule entrée
   d'annulation au bouchon ne rend **rien** rouge (équivalent déclaré : l'annulation générale de h0a libère l'objet et le corps de `Cancel` est vide) ;
   neutraliser `Drive` (0, rien d'autre) rend rouges (d1) à (d8), (w1) à (w10), (p1) à (p4) et (p6), et laisse verts (t1), (q1), (e1), (c1) et (p5) ;
-  retirer l'appel de la requête (une liste vide) rend rouges (d1), (d2) avec cible, (d7), (w5) à (w8) et (p3), et laisse verts (d8), (w1) à (w4), (w9),
-  (w10), (p1), (p2), (p4) et (p6) (sans cible) ; neutraliser la garde rend rouges (d1), (d3), (w3) et (p4), et laisse verts (w1), (w2), (w4) à (w10),
-  (p1) à (p3) et (p6) ; rétablir la porte `0x33` avec `StrikeDuringPose` vrai rend rouges (w1b), les `_gateoff` et `_fixgate` de (w3), (w5) et (w6),
-  `cast_pf_gateoff` de (w9), `cliff_hb9_gateoff` de (w10), (p1) à (p4) et (p6), et laisse verts les tests en réglage fidèle ; retirer `DistanceKey` ou la
-  fausser rend rouges (q1), (d1) et (d7a) ; **neutraliser le test du plancher de naissance** rend rouges (d1) (ses 55 vecteurs de destruction), (d8),
+  retirer l'appel de la requête (une liste vide) rend rouges (d1), (d2) avec cible, les cas de (d7) qui retiennent une cible (le passage de (d7a), de
+  (d7b), le proche en tête de (d7c), (d7d)), (p3) et **exactement les clés de monde où une cible est retenue** (révision 1 ; le décompte des lignes
+  `QUERY … -> target` des résumés `.txt` des clés) : `one_near_bin`, `one_near_dec`, `one_near_dec_gateoff`, `one_near_fix`, `one_near_fixgate`, les cinq `six_*`, `d8_far_first_fix`, `d8_far_first_fixgate`, `d8_near_first_dec`, `d8_three_sorted_dec`, `edge_east160_dec`, `edge_east160_frac_dec`, `edge_south160_dec`, `edge_west160_h200_dec`, `zgate_pass_dec`, `slot_control_dec`, `slot_reuse_dec` ; il laisse verts (d8), les autres cas de (d7), toutes les autres clés de
+  monde (dont `edge_*161*`, `zgate_skip_dec` et `d8_far_first_dec`, dont la requête rend des candidats sans en retenir : une liste vide mène à la
+  même frappe au hasard), (p1), (p2), (p4) et (p6) ; neutraliser la garde rend rouges (d1), (d3), (w3) et (p4), et laisse verts (w1), (w2), (w4) à
+  (w10), (p1) à (p3) et (p6) ; **ignorer `StrikeDuringPose`** (la porte `0x33` toujours appliquée) rend rouges exactement les clés dont la ligne de
+  réglages porte `StrikeDuringPose` vrai, dans tous les tests qui les jouent (révision 1) : `cast_pf_gateoff` de (w1b) et de (w9), les six
+  `hurt*_gateoff` de (w3), `one_near_dec_gateoff` et `one_near_fixgate` de (w5), `six_dec_gateoff` et `six_fixgate` de (w6), `d8_far_first_fixgate`
+  de (w7), `cliff_hb9_gateoff` de (w10), (p1) à (p4) et (p6), et laisse verts les autres ; **`DistanceKey` qui rend toujours `0x6401`** (aucune
+  entité à portée ; révision 1) rend rouges (q1) et exactement les tests rouges du retrait de la requête ci-dessus (une cible n'est plus jamais
+  retenue : le premier candidat non sauté arrête la recherche, D8, et la frappe part au hasard), et laisse verts les mêmes ; **la clé calculée en
+  64 bits** rend rouges (q1) et (d1) (ses 22 vecteurs du coin) seulement ; **neutraliser le test du plancher de naissance** rend rouges (d1) (ses 55 vecteurs de destruction), (d8),
   `cliff_hb9` et `cliff_hb9_gateoff` de (w10), et (p6) ; ajouter une clé `(E, 1)` au registre rend rouges (e1) et les deux épingles.
-- **Recette de l'auteur** (non bloquante) : `arsenal-a-m14` (le kit porte le parchemin 49 sans le 50 ; `Alundra.Tests/TestSaves.cs:72-75`, `:124`), le
+- **Recette de l'auteur** (non bloquante) : `arsenal-a-m14` (le kit porte le parchemin 49 sans le 50 ; `Alundra/SaveGames/TestSaves.cs:72-75`, `:124`), le
   tome 49 mis en objet du Rond par l'inventaire : 0,64 s de pose, puis un éclair toutes les 0,2 s, du premier à 0,62 s (tick 32 ; 0,82 s, tick 42, dans
   l'original) au dernier à 2,02 s (tick 102) ; huit éclairs (sept dans l'original), chacun sur un Beannoïde à moins de 160 px, sinon au hasard autour
   d'Alundra ; le Beannoïde touché meurt (32 de dégâts, réponse 16, 9 PV) ; Alundra immobile jusqu'à environ 2,56 s (tick 129) ; 1 PM de moins.
