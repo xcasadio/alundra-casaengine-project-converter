@@ -14,7 +14,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Cameras;
 
 /// <summary>
 /// E19.k1 K1 (docs/plan-e19-opcodes.md, section 1.2k.1): the camera sway state and its per-tick step
@@ -22,9 +22,9 @@ namespace Alundra.Tests;
 /// reset. Every sequence below was reproduced by the independent model of the audit (binary
 /// <c>0x8002C894</c>).
 /// </summary>
-public sealed class AlundraCameraSwayTests : IDisposable
+public sealed class CameraSwayTests : IDisposable
 {
-    public AlundraCameraSwayTests()
+    public CameraSwayTests()
     {
         CameraSway.Instance.ResetForTests();
         GameState.Instance.ResetForTests();

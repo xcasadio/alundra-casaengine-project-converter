@@ -2,14 +2,14 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Cameras;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Cameras;
 
 /// <summary>
 /// Covers <see cref="CameraMath.ToOriginalScrollSpace"/> (docs/plan-e9-backdrops-residus.md
 /// §2/§3, D-E9-1) - the sole conversion from the render-space camera <c>Target</c> back to the
 /// original's own <c>g_cameraScrollingX/Y</c> scroll space. Pure, headless-testable.
 /// </summary>
-public class AlundraCameraMathTests
+public class CameraMathTests
 {
     [Fact]
     public void ToOriginalScrollSpace_MapOrigin_IsZeroZero()

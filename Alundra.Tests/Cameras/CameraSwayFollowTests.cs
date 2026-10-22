@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Cameras;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Cameras;
 
 /// <summary>
 /// E19.k1 K2 (docs/plan-e19-opcodes.md, section 1.2k.1): the camera follow adds the sway offset to the scroll at every
@@ -13,7 +13,7 @@ namespace Alundra.Tests;
 /// (<see cref="CameraMath.ToOriginalScrollSpace"/>) and are relative to the rest position (the state sitting on
 /// the target). Sequences reproduced by the audit's independent model (<c>0x8002CDA0</c>).
 /// </summary>
-public sealed class AlundraCameraSwayFollowTests
+public sealed class CameraSwayFollowTests
 {
     private static readonly Vector3 RestTarget = new(500f, -400f, 0f);
 

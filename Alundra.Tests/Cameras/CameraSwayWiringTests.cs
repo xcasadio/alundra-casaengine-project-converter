@@ -12,7 +12,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Cameras;
 
 /// <summary>
 /// E19.k1 K2b (docs/plan-e19-opcodes.md, section 1.2k.1): the sway through the real <see cref="WorldProxy.Update"/>
@@ -20,9 +20,9 @@ namespace Alundra.Tests;
 /// camera, and none during a transition. Montage of <c>AlundraWorldProxyUpdateCharacterizationTests</c>: headless world, a
 /// camera entity added to <c>World.Entities</c>, a still followed entity, <c>proxy.Update(0.02f)</c> = one 50 Hz tick.
 /// </summary>
-public sealed class AlundraCameraSwayWiringTests : IDisposable
+public sealed class CameraSwayWiringTests : IDisposable
 {
-    public AlundraCameraSwayWiringTests()
+    public CameraSwayWiringTests()
     {
         WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
         Reset();
