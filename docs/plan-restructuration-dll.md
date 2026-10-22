@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), **R5 faite et CONFIRMED le 2026-10-22** (`61d2d46b` à `613c6c9e`, mode AUTO accordé par l'auteur ; révision 3 ; D-R-21 ; recette de l'auteur à faire) ; R6b décidée (D-R-20) ; **R7, R8 et R6b faites et CONFIRMED le 2026-10-22 (§12 à §14), puis la fusion finale (§15), en mode AUTO (D-R-22)** ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), **R5 faite et CONFIRMED le 2026-10-22** (`61d2d46b` à `613c6c9e`, mode AUTO accordé par l'auteur ; révision 3 ; D-R-21 ; recette de l'auteur à faire) ; R6b décidée (D-R-20) ; **R7, R8 et R6b faites et CONFIRMED le 2026-10-22 (§12 à §14), puis la fusion finale (§15), en mode AUTO (D-R-22) ; **chantier FUSIONNÉ dans `main` le 2026-10-22**, rien poussé** ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -1839,8 +1839,8 @@ que la ligne 143 est dans `CreateTileJson` (un mot à changer, hors de la règle
 `EntitySpawnFactory.cs:59-94` reprend les lignes de l'original (la méthode entière est `:83-100`) ; `docs/intro-roadmap.md:326` vise une
 ligne interne de `ResetCameraAndLoadVRAMAssets` (cohérente avec sa phrase).
 
-## 15. Fusion finale (D-R-22) ⏳ (relecture du 2026-10-22 avec R6b : REVISE, révision 1 : arrêts, retour arrière et portes de la
-branche d'intégration ajoutés)
+## 15. Fusion finale (D-R-22) ✅ (faite le 2026-10-22 ; relecture avec R6b : REVISE, révision 1 : arrêts, retour arrière et portes de la
+branche d'intégration ajoutés, READY)
 
 Après R7, R8 et R6b faites et CONFIRMED :
 - **Parent** : `main` reçoit `chantier/restructuration-dll-r3` par avance rapide (`git fetch . chantier/restructuration-dll-r3:main`, qui
@@ -1856,6 +1856,9 @@ Après R7, R8 et R6b faites et CONFIRMED :
   (= pointeur) ; MGUI `develop` `3db3c769f5f6be3e6a746291a41245a996c13506` dans le clone du moteur (= pointeur du moteur) et dans celui
   de l'analyseur (qui contient son pointeur `d3e0cd12`). Les sous-modules n'ont donc rien à fusionner ; le parent avance par avance
   rapide (`main` est ancêtre du chantier).
+- **Fusion faite le 2026-10-22** : parent `main` `11cc63e3..9949d2d8` par avance rapide (`git fetch . chantier/restructuration-dll-r3:main`),
+  puis ce commit de compte rendu, ajouté à `main` de la même façon ; `main` pointe le moteur `92d8e847` et l'analyseur `fc168729`, déjà
+  dans `main` (moteur), `master` (analyseur) et dont MGUI est dans `develop` : aucune autre branche n'a bougé. Rien n'est poussé.
 - Rien n'est poussé. Les modifications locales de l'auteur (le lanceur du moteur, le pointeur MGUI de l'analyseur, `AlundraTools/log.txt`,
   les outils non suivis) ne sont ni touchées ni indexées.
 - Après la fusion : la branche du chantier reste ; la recette courte de l'auteur (nouvelle partie jusqu'au premier écran jouable, F5, F6,
