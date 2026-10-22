@@ -24,7 +24,7 @@ public sealed class BalanceTables
     /// <summary>The number of entries of <c>BALANCE.BIN</c>.</summary>
     public const int EntryCount = 512;
 
-    /// <summary>The property of the map header the threshold comes from (<c>lbu 0xB</c> of the header, <c>0x8002C39C</c>); the exported <c>BalanceLevel</c> is the byte 9, not this one.</summary>
+    /// <summary>The property of the map header the threshold comes from (<c>lbu 0xB</c> of the header, <c>0x8002C39C</c>); the exported <c>TileCutEffectId</c> is the byte 9, not this one.</summary>
     public const string ThresholdPropertyName = "D";
 
     private readonly BalanceRecord?[] _entries = new BalanceRecord?[EntryCount];

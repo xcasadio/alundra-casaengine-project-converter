@@ -10,7 +10,7 @@ namespace AlundraCasaEngineProjectConverter.Writers;
 /// Phase 2: merges per-cell gameplay metadata (Walkability, GroundProperty, Slope, Height, Flags,
 /// raw TileId/Palette/Tile, wall tile stacks) into the TileMapData.CustomProperties of the
 /// .tileMap assets produced by Phase 1. Map-level fields (Gravity, ZViscosity, SlideEffectId,
-/// BalanceLevel) are already carried over by Phase 1 via the Tiled map's own custom properties,
+/// TileCutEffectId) are already carried over by Phase 1 via the Tiled map's own custom properties,
 /// so they are not duplicated here.
 /// </summary>
 public static class CellMetadataWriter

@@ -70,7 +70,7 @@ dense supplémentaire.
 | `wall_tiles.{index}.offset` | int | Offset d'origine de la pile | `WallTiles.Offset` |
 | `wall_tiles.{index}.tiles[]` | int[] | Ids de tuile empilés | `WallTiles.Tiles` |
 
-Les champs de niveau map (`Gravity`, `ZViscosity`, `SlideEffectId`, `BalanceLevel`) sont déjà portés
+Les champs de niveau map (`Gravity`, `ZViscosity`, `SlideEffectId`, `TileCutEffectId`) sont déjà portés
 par les propriétés personnalisées Tiled de la Phase 1 et ne sont pas dupliqués ici.
 
 ## Extrait réel

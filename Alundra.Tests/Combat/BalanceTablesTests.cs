@@ -152,10 +152,31 @@ public sealed class BalanceTablesTests
         var map = new CasaEngine.Framework.Assets.TileMap.TileMapData();
         Assert.Equal(0, BalanceTables.ResolveThreshold(map));
         map.CustomProperties["D"] = "4";
-        map.CustomProperties["BalanceLevel"] = "2"; // the byte 9 of the header, NOT the threshold.
+        map.CustomProperties["TileCutEffectId"] = "2"; // the byte 9 of the header, NOT the threshold.
         Assert.Equal(4, BalanceTables.ResolveThreshold(map));
         map.CustomProperties["D"] = "not a number";
         Assert.Equal(0, BalanceTables.ResolveThreshold(map));
+    }
+
+    [Fact]
+    public void TheMapHeaderByte9_IsExportedAsTileCutEffectId_AndTheOldNameIsGone_OnTheRealMaps14_389_And_390()
+    {
+        // E20.eR (D-E20-60): the byte 9 of the map header is the property "TileCutEffectId" (2 on all 483 maps). A stale export would still carry "BalanceLevel", and nothing else in the DLL reads the byte yet.
+        var root = ProjectRootFinder.Find();
+        var maps = new[]
+        {
+            System.IO.Path.Combine(root, "Maps", "Overworld", "Overworld 3,1-14", "tilemap", "Overworld 3,1-14.tileMap"),
+            System.IO.Path.Combine(root, "Maps", "The Klark", "Ship Klark (beginning)-389", "tilemap", "Ship Klark (beginning)-389.tileMap"),
+            System.IO.Path.Combine(root, "Maps", "The Klark", "Ship Klark (inner)-390", "tilemap", "Ship Klark (inner)-390.tileMap"),
+        };
+        foreach (var path in maps)
+        {
+            var map = new CasaEngine.Framework.Assets.TileMap.TileMapData();
+            map.Load(Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(path)));
+            Assert.True(map.CustomProperties.TryGetValue("TileCutEffectId", out var value), path);
+            Assert.Equal("2", value);
+            Assert.False(map.CustomProperties.ContainsKey("BalanceLevel"), path);
+        }
     }
 
     [Fact]
