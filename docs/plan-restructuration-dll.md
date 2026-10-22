@@ -1425,7 +1425,7 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
   contient tout E20, non fusionné dans `main`), ou fusionner d'abord `chantier/e20-heros` dans `main` (votre décision) et partir de `main` ?
   Recommandation : fusionner E20 d'abord, sinon toute reprise d'E20 sur l'ancienne arborescence entrera en conflit.
 
-## 12. Tranche R7 — La garde des règles : `check_names.py --rules` ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22)
+## 12. Tranche R7 — La garde des règles : `check_names.py --rules` ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22 ; **READY** à la première relecture)
 
 **But.** Une garde permanente, **sans table**, de l'arbre vivant de la DLL (`Alundra/`) et des tests (`Alundra.Tests/`) contre les règles
 de l'ADR-0075 et de l'ADR-0080, qui prend le relais des modes à table quand le chantier est fini (D-R-15) : une tranche qui ajoute un
@@ -1522,7 +1522,12 @@ paquet ou la BCL absents.
 
 **Retour arrière.** `git revert` des commits de la tranche.
 
-## 13. Tranche R8 — Les anciens noms des commentaires ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22)
+## 13. Tranche R8 — Les anciens noms des commentaires ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22 ; REVISE, révision 1)
+
+**Relecture (2026-10-22, relecteur neuf) : REVISE**, deux blocages corrigés (FIX, révision 1) : (1) les deux fichiers qui ne sont pas
+des `.cs` n'avaient ni mode d'application ni preuve (le lexeur et Roslyn ne lisent que du C#) : un mode propre et sa preuve (P-R8-5) ;
+(2) deux des quatre `IntroTraceHarnessTests.cs` ne citent aucun type et la règle (c) ne les tranchait pas : chaque cas à la main a
+maintenant sa cible écrite (P-R8-3). Prochaine relecture : un relecteur neuf.
 
 **But.** Les anciens noms de R3, R4 et R5 qui restent dans les **commentaires** du code de la DLL et des tests deviennent les noms
 d'aujourd'hui, mécaniquement, **ligne pour ligne** (D-R-14, D-R-18 (b), D-R-20) ; aucun octet de code ni de chaîne ne change.
@@ -1558,15 +1563,23 @@ d'aujourd'hui, mécaniquement, **ligne pour ligne** (D-R-14, D-R-18 (b), D-R-20)
   se réécrit en entier (`Alundra.Scripts.AlundraEntityScriptProxy` → `Alundra.Entities.EntityScriptProxy`,
   `Alundra.Tests.UI.TextBoxGpu` → `Alundra.Tests.UI.Shared.TextBoxGpu`) ; un ancien nom de fichier des tables prend son nouveau nom de
   base (unique dans l'arbre).
-- **P-R8-3 — Les cas à la main**, chacun écrit dans le relevé avec sa raison et contrôlé un par un par le verifier : (a) **gardés** :
+- **P-R8-3 — Les cas à la main**, chacun écrit dans le relevé avec sa raison et contrôlé un par un par le verifier ; **révision 1 : chaque
+  cas a sa cible écrite ci-dessous** (la première version donnait des règles) : (a) **gardés** :
   `AlundraDisplay.cs`, `AlundraGame.cs`, `AlundraGame.json` (décompilation, analyseur, données) et la citation
   `Alundra/Scripts/PlayerManager.cs:…` de `Alundra/Hero/HeroController.cs:42` (elle cite une note d'un plan gelé) ; (b) `Alundra/Scripts`
-  (le dossier, `Alundra.Tests/Transitions/ScreenFadeCameraWiringTests.cs:25,30,97`) devient le dossier actuel des fichiers dont parle
-  la phrase, ou `Alundra/` si la phrase parle de toute la DLL ; (c) `IntroTraceHarnessTests.cs` (×4) et `UI/TextBoxGpuHarness.cs`
-  deviennent le chemin actuel du fichier qui déclare le type que la phrase cite (par exemple `Arcs/HeadlessIntroSimulation.cs` quand elle
-  passe par `HeadlessIntroSimulation`) ; (d) `AlundraArcSupport` devient le fichier actuel qui déclare ce que la phrase cite ; (e) le
-  `cref` vers `AlundraDialogueSpeakerOracle` vise le type de l'oracle si le fichier qui l'a remplacé en déclare un sans ambiguïté, sinon
-  il devient `<c>` avec le nom de ce fichier. Un cas que (a) à (e) ne tranchent pas est un arrêt.
+  (le dossier) dans `Alundra.Tests/Transitions/ScreenFadeCameraWiringTests.cs:25`, `:30` et `:97` devient **`Alundra/`** : les trois
+  phrases parlent de toute la DLL (« nothing under … references / overrides ») ; (c) les quatre `IntroTraceHarnessTests.cs` deviennent
+  **`Arcs/HeadlessIntroSimulation.cs`** (avec la racine et le séparateur d'origine : `Alundra.Tests\…` reste à barres inverses,
+  `Alundra.Tests/…` à barres droites) : `Alundra.Tests/Audio/SoundOpcodesProductionTests.cs:14` et
+  `Alundra.Tests/Cells/CellStoreProductionTests.cs:15` passent par le type `HeadlessIntroSimulation` ; `Alundra/Events/EventProgramRunner.cs:61`
+  parle du fil de traçage `TraceSink` que la simulation branche (`Alundra.Tests/Arcs/HeadlessIntroSimulation.cs:270`) ;
+  `Alundra/Physics/EntitySupport.cs:17` parle de la cinématique simulée qui appelle `TryFindSupport`, dans ce même fichier ; et
+  `UI/TextBoxGpuHarness.cs` (`Alundra.Tests/UI/Speech/Font3GlyphTests.cs:133`) devient **`UI/Shared/TextBoxGpu.cs`**, le fichier qui
+  déclare le type cité ; (d) `<c>AlundraArcSupport</c>` (`Alundra.Tests/Events/MissingAnimationWaitCorpusTests.cs:282`, « resolves its
+  prefab ») devient **`<c>ArcPrefabAssets</c>`**, le type qui résout aujourd'hui les préfabs (`Alundra.Tests/Support/ArcPrefabAssets.cs:55`) ;
+  (e) `<see cref="AlundraDialogueSpeakerOracle"/>` (`Alundra.Tests/Dialogues/DialogueSpeakerMachineTests.cs:72`, « the C# oracle of »
+  ce fichier d'aides) devient **`<c>Alundra.Tests/Support/SpeakerAnnex.cs</c>`** : le fichier qui l'a remplacé ne déclare aucun type unique
+  de l'oracle (`SpeakerAnnex`, `OracleSlide`, `OracleNameBox`, `OraclePortrait`…). Un cas qui ne figure pas ici est un arrêt.
 - **P-R8-4 — Les citations de lignes** `Fichier.cs:NNN` dans les commentaires (60) gardent leurs numéros : R8 est ligne pour ligne, R6b
   ne traite que les documents. Elles sont listées dans les résultats comme suite possible.
 - **P-R8-5 — Outils.** Le relevé `tools/dll-structure/r8-comments.tsv` (fichier, ligne, rang, genre, ancien, nouveau, classe, raison),
@@ -1576,11 +1589,17 @@ d'aujourd'hui, mécaniquement, **ligne pour ligne** (D-R-14, D-R-18 (b), D-R-20)
   appliqué ; à la fin, aucun ancien nom en commentaire hors des entrées gardées et de l'alias `EventProgramRunner.cs` ; ajouts =
   suppressions par fichier) ; un second contrôle indépendant, Roslyn, versé comme `rename-tool` : `tools/dll-structure/comment-xcheck/`
   (le flux des jetons et des trivias hors commentaire identique avant et après, sur tous les `.cs` du périmètre). Le filtre
-  `startswith("'")` des outils gelés n'est pas corrigé (sans effet ici).
+  `startswith("'")` des outils gelés n'est pas corrigé (sans effet ici). **Les deux fichiers qui ne sont pas des `.cs`** (révision 1)
+  ont un mode propre, `apply_r8.py --other` et `prove_r8.py --other` : dans `Alundra.Tests/xunit.runner.json`, seule la **valeur** de
+  la clé `_comment` change (repérée par l'analyse JSON ; les autres clés et valeurs identiques à l'octet, le JSON toujours valide avec
+  les mêmes clés) ; dans `Alundra.Tests/Alundra.Tests.csproj`, seul le **contenu** du commentaire XML `<!-- … -->` des lignes 32 à 34
+  change (le reste identique à l'octet, le XML toujours valide) ; l'après égale l'avant plus les événements du relevé, mêmes nombres de
+  lignes, même BOM, mêmes fins de ligne.
 - **P-R8-6 — Mutations refusées** (`tools/dll-structure/selftest_r8.py`, versé) : un identifiant de code, un littéral, un commentaire hors
   relevé, une entrée omise, un nom de la décompilation (`AlundraDisplay.cs`), le mot `Alundra` seul, une substitution par sous-chaîne
   (`AlundraMusicPlayerTests` → `BgmPlayerTests`), un saut de ligne ajouté, un BOM ou des fins de ligne changés, un nom gardé modifié ;
-  et l'arbre au départ et à l'arrivée accepté.
+  pour le mode `--other`, une autre clé ou valeur du JSON changée et du XML changé hors du commentaire ; et l'arbre au départ et à
+  l'arrivée accepté.
 - **P-R8-7 — Découpage.** Un commit d'outil (relevé, outils, mutations), un commit pour `Alundra/`, un pour `Alundra.Tests/` (avec le
   `.json` et le `.csproj`), un commit de plan et de résultats. Pas d'ADR (D-R-14 suffit).
 
@@ -1594,21 +1613,23 @@ correction au plus ; un verifier frais.
 - T0 — Le relevé à l'état de départ (les 811 noms, les noms de fichier, chemins et noms qualifiés, les cas de P-R8-3 classés), les
   outils, `comment-xcheck`, les mutations de P-R8-6 toutes refusées et les deux états acceptés ; commit d'outil.
 - T1 — `apply_r8.py` sur `Alundra/`, `prove_r8.py` et `comment-xcheck` verts, la solution en Release (copie neutralisée) ; commit.
-- T2 — Idem sur `Alundra.Tests/` et les deux fichiers ; commit.
+- T2 — Idem sur `Alundra.Tests/` ; les deux autres fichiers par `apply_r8.py --other`, `prove_r8.py --other` vert ; commit.
 - T3 — Les portes : la solution en Release (copie neutralisée) puis en Debug, 0 erreur ; `Alundra.Tests` en Release puis en Debug,
   5 097 / 0, une exécution chacune ; `cmp` de la DLL Debug avec `alundra-project/Alundra.dll` ; la garde des traces (fins de ligne remises
   par `git checkout`) ; `check_names.py --rules` à 0 (R7) ; la fin de `prove_r8.py` (aucun ancien nom hors gardés) ; ce plan (résultats,
   les 60 citations de lignes listées) ; commit.
 
-**Acceptation.** `prove_r8.py` et `comment-xcheck` verts sur chaque commit ; aucune ligne ajoutée ni retirée ; aucun octet de code ni de
-chaîne changé ; plus aucun ancien nom en commentaire hors des cas gardés ; les cas à la main justifiés ; les portes de T3.
+**Acceptation.** `prove_r8.py` (et `--other`) et `comment-xcheck` verts sur chaque commit ; aucune ligne ajoutée ni retirée ; aucun octet
+de code ni de chaîne changé dans les `.cs` (dans les deux autres fichiers, seuls la valeur de `_comment` et le contenu du commentaire
+XML changent) ; plus aucun ancien nom en commentaire hors des cas gardés ; les cas à la main justifiés ; les portes de T3.
 
 **Arrêts.** Une occurrence que les règles ne tranchent pas ; un refus de `prove_r8.py` ou de `comment-xcheck` ; un nombre de lignes qui
 change ; un octet de code ou de chaîne qui change ; un test qui échoue.
 
 **Retour arrière.** `git revert` des commits de la tranche.
 
-## 14. Tranche R6b — Les numéros de ligne des documents vivants ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22)
+## 14. Tranche R6b — Les numéros de ligne des documents vivants ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22 ; relue avec le §15 :
+REVISE sur le §15 seulement, révision 1)
 
 **But.** Dans **les 21 documents vivants**, chaque citation de ligne désigne au HEAD ce que sa phrase cite (D-R-17, D-R-20) ; les
 documents historiques, les audits, les annexes figées et les plans ne changent pas.
@@ -1682,13 +1703,15 @@ d'un sous-module qu'il faudrait changer.
 
 **Retour arrière.** `git revert` des commits de la tranche.
 
-## 15. Fusion finale (D-R-22) ⏳
+## 15. Fusion finale (D-R-22) ⏳ (relecture du 2026-10-22 avec R6b : REVISE, révision 1 : arrêts, retour arrière et portes de la
+branche d'intégration ajoutés)
 
 Après R7, R8 et R6b faites et CONFIRMED :
 - **Parent** : `main` reçoit `chantier/restructuration-dll-r3` par avance rapide (`git fetch . chantier/restructuration-dll-r3:main`, qui
   refuse tout autre cas, sans toucher l'arbre de travail) ; si `main` a bougé entre-temps, une branche d'intégration depuis le chantier
-  reçoit `main`, la solution se construit (Release avec la copie neutralisée, Debug en dernier) et `Alundra.Tests` passe en Release et en
-  Debug, puis `main` avance sur elle.
+  reçoit `main`, puis, avant que `main` avance sur elle, toutes ces portes passent : la solution en Release (copie neutralisée) puis en
+  Debug, 0 erreur ; `Alundra.Tests` et la suite du convertisseur en Release et en Debug, 0 échec ; la garde des traces ;
+  `check_names.py --rules` à 0 (R7) ; `cmp` de la DLL Debug avec `alundra-project/Alundra.dll`.
 - **Sous-modules** : le `main` du moteur, le `master` de l'analyseur et le `develop` de MGUI doivent contenir les pointeurs du parent
   (`git merge-base --is-ancestor <pointeur> <branche>`) ; au 2026-10-22 c'est le cas (`92d8e847`, `fc16872`, `3db3c769`). Un pointeur qui
   ne serait pas contenu : avance rapide de la branche s'il en est le descendant, sinon arrêt et question.
@@ -1696,3 +1719,10 @@ Après R7, R8 et R6b faites et CONFIRMED :
   les outils non suivis) ne sont ni touchées ni indexées.
 - Après la fusion : la branche du chantier reste ; la recette courte de l'auteur (nouvelle partie jusqu'au premier écran jouable, F5, F6,
   F9) reste due pour R2 à R8.
+- **Arrêts** : un conflit de fusion (code, documents ou pointeur de sous-module) ; une erreur de construction ; un test qui échoue ; une
+  porte qui ne passe pas ; un pointeur de sous-module que sa branche ne contient pas et dont elle n'est pas l'ancêtre. Dans chaque cas :
+  arrêt et question à l'auteur, aucune résolution par jugement (en AUTO, ce serait sortir du périmètre).
+- **Retour arrière** : avant toute fusion, les SHA de `main` du parent et de `main` (moteur), `master` (analyseur) et `develop` (MGUI)
+  sont relevés et écrits ici ; chaque référence se remet à son SHA par `git update-ref refs/heads/<branche> <sha> <sha attendu>` dans son
+  dépôt (sans toucher l'arbre de travail) ; la branche d'intégration éventuelle se supprime (`git branch -D`, une branche que l'on vient
+  de créer).
