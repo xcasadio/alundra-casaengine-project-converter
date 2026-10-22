@@ -17,11 +17,12 @@ using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Physics;
 using Alundra.Tests.Entities;
+using Alundra.Tests.Physics;
 
 namespace Alundra.Tests.Support;
 
 /// <summary>
-/// Shared headless hero-pawn/world montage, extracted from <see cref="AlundraCharacterControllerAdoptionTests"/>
+/// Shared headless hero-pawn/world montage, extracted from <see cref="CharacterControllerAdoptionTests"/>
 /// (its own former <c>BuildWorld</c>/<c>BuildHeroPawn</c>, docs/plan-oracle-heros.md §2.1) so
 /// <see cref="HeroTraceHarnessTests"/> can reuse the EXACT same real-<see cref="World"/>/real-
 /// <see cref="PhysicsWorld"/>/real-<see cref="CharacterControllerComponent"/> montage without duplicating

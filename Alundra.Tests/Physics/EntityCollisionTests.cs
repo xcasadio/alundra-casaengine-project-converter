@@ -3,7 +3,7 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Physics;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Physics;
 
 /// <summary>
 /// Unit tests for <see cref="EntityCollision.FindEntityCollisionCandidate"/> (E12.d,
@@ -12,7 +12,7 @@ namespace Alundra.Tests;
 /// numbers), so these montages use small plain integers for legibility; the real-data path is covered
 /// by the production-site and full-flow tests.
 /// </summary>
-public class AlundraEntityCollisionTests
+public class EntityCollisionTests
 {
     private static EntityScriptProxy NewBox(int x, int y, int z, int w, int h, int d)
         => new()

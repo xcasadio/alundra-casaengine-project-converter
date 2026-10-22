@@ -25,6 +25,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Physics;
+using Alundra.Tests.Physics;
 
 namespace Alundra.Tests.Entities;
 
@@ -37,12 +38,12 @@ namespace Alundra.Tests.Entities;
 /// map 389 entity records 6-14/16 per <c>data-extracted/data/map_389.json</c>'s own <c>SpriteTableIndex</c>)
 /// - under a real headless <see cref="World"/> (TopDownElevation policy) with the REAL map 389
 /// <see cref="CellsCollisionField"/> installed as <c>World.CollisionField</c>. Same fixture pattern
-/// as <see cref="AlundraCharacterControllerAdoptionTests"/> (the hero's own E3.d pattern this file
+/// as <see cref="CharacterControllerAdoptionTests"/> (the hero's own E3.d pattern this file
 /// mirrors, per docs/plan-e4-deplacement-scripte.md E4.b's own acceptance note), IsPlayer=false so the
 /// scripted mover (<see cref="ScriptedMotion.TickScriptedNpc"/>, wired from
 /// <see cref="EntityScriptProxy.Update"/>'s own <c>!IsPlayer</c> branch) drives it instead of
 /// <see cref="PlayerManager"/>. Self-skips every [Fact] when <c>alundra-project/</c> is not present
-/// in this checkout (same convention as <see cref="AlundraCharacterControllerAdoptionTests"/>).
+/// in this checkout (same convention as <see cref="CharacterControllerAdoptionTests"/>).
 /// </summary>
 public class NpcCharacterControllerMoverTests
 {
@@ -136,7 +137,7 @@ public class NpcCharacterControllerMoverTests
     /// <summary>
     /// Reads the "settings" node of the REAL bank-146 sailor prefab's own <see cref="CharacterControllerComponent"/>
     /// (E4.a, <c>SpriteWriter.WriteEntityPrefab</c>) - same raw-JSON pattern as
-    /// <see cref="AlundraCharacterControllerAdoptionTests.LoadHeroControllerSettings"/>, a different entity
+    /// <see cref="CharacterControllerAdoptionTests.LoadHeroControllerSettings"/>, a different entity
     /// file. Confirmed on the real export: Radius 6, Height 32, SkinWidth 0.5, StepHeight 3,
     /// GroundSnapDistance 4, Gravity/MaxFallSpeed/WalkabilityMask all 0 (E4.a leaves them 0 - overridden at
     /// spawn by <see cref="EntitySpawnFactory.ApplySpawnInitialization"/>, exactly like the hero's own
@@ -174,7 +175,7 @@ public class NpcCharacterControllerMoverTests
         return settings;
     }
 
-    /// <summary>Same headless montage as <see cref="AlundraCharacterControllerAdoptionTests.BuildWorld"/>.</summary>
+    /// <summary>Same headless montage as <see cref="CharacterControllerAdoptionTests.BuildWorld"/>.</summary>
     private static World BuildWorld(CellsCollisionField field)
     {
         var world = new World();
@@ -209,7 +210,7 @@ public class NpcCharacterControllerMoverTests
     /// <see cref="EntityScriptProxy.Update"/>'s scripted-NPC-mover branch drives it. Added to
     /// <paramref name="world"/> (queued - the caller's first <see cref="World.Update"/> registers it with
     /// CharacterMotionSystem before this same frame's <c>GameplayProxy.Update</c> ever runs, same ordering
-    /// note as <see cref="AlundraCharacterControllerAdoptionTests.BuildHeroPawn"/>).</summary>
+    /// note as <see cref="CharacterControllerAdoptionTests.BuildHeroPawn"/>).</summary>
     private static (Entity Entity, EntityScriptProxy Proxy) BuildNpcPawn(
         World world, CharacterControllerSettings settings, Vector3 startPosition, IScriptHost scriptHost)
     {

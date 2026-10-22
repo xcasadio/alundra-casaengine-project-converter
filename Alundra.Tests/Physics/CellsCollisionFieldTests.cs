@@ -10,7 +10,7 @@ using Alundra.Entities;
 using Alundra.Physics;
 using Alundra.Cells;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Physics;
 
 /// <summary>
 /// Covers <see cref="CellsCollisionField"/>: tolerant parsing of the "AlundraCells" custom
@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// height / walkability rules against the REAL map 389 ("Ship Klark (beginning)") cell data - self-skips
 /// when alundra-project/ is absent, same pattern as <see cref="Map389LoadProgramsTests"/>.
 /// </summary>
-public class AlundraCellsCollisionFieldTests
+public class CellsCollisionFieldTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 

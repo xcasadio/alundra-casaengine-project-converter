@@ -19,7 +19,7 @@ using Alundra.Hero;
 using Alundra.Tests.Support;
 using Alundra.Tests.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Physics;
 
 /// <summary>
 /// Covers E3.d "Branchement Alundra" Acceptation 3 (docs/plan-e3-collisions.md): a hand-built hero pawn
@@ -29,11 +29,11 @@ namespace Alundra.Tests;
 /// Alundra.entity "settings" node) under a real headless <see cref="World"/> (TopDownElevation policy,
 /// same montage as <see cref="EntityLogicalRenderPoseTests"/>'s own BuildScene) with the REAL map
 /// 389 <see cref="CellsCollisionField"/> installed as <c>World.CollisionField</c> - same pattern as
-/// <see cref="AlundraCellsCollisionFieldTests"/>/<see cref="SpriteRecordCatalogTests"/>. Self-skips every
+/// <see cref="CellsCollisionFieldTests"/>/<see cref="SpriteRecordCatalogTests"/>. Self-skips every
 /// [Fact] when <c>alundra-project/</c> is not present in this checkout (same convention as
 /// <see cref="Map389LoadProgramsTests"/>).
 /// </summary>
-public class AlundraCharacterControllerAdoptionTests
+public class CharacterControllerAdoptionTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 

@@ -16,6 +16,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Tests.Support;
+using Alundra.Tests.Physics;
 
 namespace Alundra.Tests.Entities;
 
@@ -23,7 +24,7 @@ namespace Alundra.Tests.Entities;
 /// Covers E1 (docs/plan-echelles-chiffrage.md É1): <see cref="EntityScriptProxy.UpdateGroundSlope"/>'s
 /// port of <c>PhysicsEngine.UpdateTileAttributes</c>'s <c>Slope_18c</c> four-corner rule, against the REAL
 /// map 389 ("Ship Klark (beginning)") cell data - same fixture/self-skip pattern as
-/// <see cref="AlundraCellsCollisionFieldTests"/>/<see cref="AlundraCharacterControllerAdoptionTests"/>: a
+/// <see cref="CellsCollisionFieldTests"/>/<see cref="CharacterControllerAdoptionTests"/>: a
 /// real headless <see cref="World"/> with the real map 389 <see cref="CellsCollisionField"/>
 /// installed as <c>World.CollisionField</c>, and a hand-built hero pawn from the shared
 /// <see cref="HeroWorldFixture"/> montage.

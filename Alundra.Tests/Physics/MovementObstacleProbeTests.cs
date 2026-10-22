@@ -11,7 +11,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Physics;
 
 /// <summary>
 /// E19.d2b B3 (docs/plan-e19-opcodes.md §1.2h.2, D-E19-27, D-E19-28, D-E19-34, ADR-0022): the movement obstacle probe of the DLL, which
@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 /// alone on real dimensions; T-R3, T-R4, T-R-ID, T-R-LIFT, T-REG-Z and T-R9 drive real controllers in a real world, the positions written
 /// on the logical fields (whole pixels where a teleport truncates them).
 /// </summary>
-public sealed class AlundraMovementObstacleProbeTests
+public sealed class MovementObstacleProbeTests
 {
     // ---- T-R1: the rule, on the real dimensions -------------------------------------------------------------------
 
