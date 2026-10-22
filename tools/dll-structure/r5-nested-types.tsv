@@ -1,0 +1,2 @@
+old_file	new_file	outer_old_type	outer_new_full	old_type	new_type	old_full	new_full	reason
+Alundra.Tests/AlundraHudComposerTests.cs	Alundra.Tests/UI/Hud/HudComposerTests.cs	AlundraHudComposerTests	Alundra.Tests.UI.Hud.HudComposerTests	AlundraHudComposerEquipmentBackgroundsTests	HudComposerEquipmentBackgroundsTests	Alundra.Tests.UI.Hud.HudComposerTests+AlundraHudComposerEquipmentBackgroundsTests	Alundra.Tests.UI.Hud.HudComposerTests+HudComposerEquipmentBackgroundsTests	D-R-21 (3): only the prefix is removed (D-R-13 point 2)

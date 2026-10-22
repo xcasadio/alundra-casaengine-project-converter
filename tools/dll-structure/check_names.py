@@ -5,8 +5,12 @@
   python -B tools/dll-structure/check_names.py --tree --stage r2|r3|final [--root <folder>]
       The tree of the DLL (the working tree, or <folder>/Alundra) against the table at that stage, then the same collision checks on the
       names really declared.
+  python -B tools/dll-structure/check_names.py --tests
+      R5 (T22): the tree of Alundra.Tests (the working tree) against r5-files.tsv and r5-types.tsv: every .cs at its path of the table and
+      no other, namespace = folder, every top-level type at its new name in its arrival file, no `Alundra*` / `IAlundra*` type or file name,
+      no `Scripts/` folder, no `.cs` at the root or directly under `UI/`, then the collision checks on the names really declared.
 
-Both list EVERY finding and exit 1 if there is any (0 otherwise, 2 on a usage or reading error). Read-only on the repository.
+All list EVERY finding and exit 1 if there is any (0 otherwise, 2 on a usage or reading error). Read-only on the repository.
 Finding tags: [collision] [segment] [nom] [namespace] [fichier] [absent] [hors table]; warnings: [avertissement].
 """
 import argparse
@@ -123,12 +127,63 @@ def check_tree(table, stage, root, ext):
     return findings, test_warnings(segs), 'tree: %d files, %d top-level types' % (len(paths), len(top))
 
 
+def check_tests(ext):
+    import r5_lib
+    tbl = r5_lib.R5()
+    findings = []
+    out = scan_types.git(scan_types.REPO, 'ls-files', '--cached', '--others', '--exclude-standard', '--', 'Alundra.Tests').decode('utf-8').splitlines()
+    paths = sorted(p for p in out if p.endswith('.cs') and not scan_types.EXCLUDED_DIR_RE.search(p) and (scan_types.REPO / p).is_file())
+    expected = {r['new_path']: r for r in tbl.cs}
+    for f in sorted(expected):
+        if f not in paths:
+            findings.append('[absent] file %s' % f)
+    low = {p.lower() for p in expected}
+    for p in paths:
+        if p.lower() not in low:
+            findings.append('[hors table] file %s is not in r5-files.tsv' % p)
+        rel = p[len('Alundra.Tests/'):]
+        folder, _, name = rel.rpartition('/')
+        if not folder:
+            findings.append('[fichier] %s is a .cs at the root of Alundra.Tests' % p)
+        if folder == 'UI':
+            findings.append('[fichier] %s is directly under UI/' % p)
+        if folder.split('/')[0] == 'Scripts':
+            findings.append('[fichier] %s is under a Scripts/ folder' % p)
+        if name.startswith('Alundra') or name.startswith('IAlundra'):
+            findings.append('[nom] file name %s keeps the prefix' % p)
+    decls = []
+    for p in paths:
+        decls += scan_types.parse(p, (scan_types.REPO / p).read_bytes().decode('utf-8-sig', errors='replace'))
+    top = [d for d in decls if not d['nested']]
+    for d in decls:
+        if d['name'].startswith('Alundra') or d['name'].startswith('IAlundra'):
+            findings.append('[nom] %s:%d declares %s%s with the prefix' % (d['path'], d['line'], d['name'], ' (nested)' if d['nested'] else ''))
+    for p in paths:
+        r = expected.get(p)
+        if r is None:
+            continue
+        folder = p[len('Alundra.Tests/'):].rsplit('/', 1)[0]
+        if r['namespace'] != 'Alundra.Tests.' + folder.replace('/', '.'):
+            findings.append('[namespace] the table: %s has namespace %s, not its folder' % (p, r['namespace']))
+    got = collections.Counter((d['path'], d['ns'], d['name']) for d in top)
+    want = collections.Counter((t['new_file'], t['new_namespace'], t['new_type']) for t in tbl.types)
+    for k in sorted(set(got) | set(want)):
+        if got[k] != want[k]:
+            findings.append('[nom] %s: type %s.%s declared %d time(s), r5-types.tsv says %d' % (k[0], k[1], k[2], got[k], want[k]))
+    names = [(d['path'], d['ns'], d['name']) for d in top]
+    dll = [(d['path'], d['ns'], d['name']) for d in scan_types.dll_decls()[0] if not d['nested']]
+    findings += collision_findings(names + dll, ext)
+    segs = {s for _, ns, _ in names + dll for s in (ns or '').split('.') if s}
+    return findings, test_warnings(segs), 'tests: %d files, %d top-level types' % (len(paths), len(top))
+
+
 def main(argv=None):
     sys.stdout.reconfigure(encoding='utf-8')
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument('--table', action='store_true')
     g.add_argument('--tree', action='store_true')
+    g.add_argument('--tests', action='store_true')
     ap.add_argument('--table-file', default=DEFAULT_TABLE)
     ap.add_argument('--stage', choices=STAGES)
     ap.add_argument('--root')
@@ -138,7 +193,10 @@ def main(argv=None):
     try:
         table = json.load(open(a.table_file, encoding='utf-8'))
         ext = scan_types.external_types()
-        findings, warnings, head = check_table(table, ext) if a.table else check_tree(table, a.stage, a.root, ext)
+        if a.tests:
+            findings, warnings, head = check_tests(ext)
+        else:
+            findings, warnings, head = check_table(table, ext) if a.table else check_tree(table, a.stage, a.root, ext)
     except (scan_types.ScanError, OSError, ValueError) as e:
         print('ERROR: %s' % e)
         return 2

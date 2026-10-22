@@ -3,6 +3,7 @@
 //   RenameTool <repo root> <Domain> [--dry-run] [--table <table.json>]
 //   RenameTool <repo root> --rename Old=New [--rename Old2=New2 ...] [--dry-run]      (proofs: explicit pairs instead of a domain)
 //   RenameTool <repo root> --r5 <Domain> [--types <r5-types.tsv>] [--dry-run]           (R5: the TEST classes of a domain of r5-types.tsv)
+//   RenameTool <repo root> --r5-nested <r5-nested-types.tsv> [--dry-run]               (R5, D-R-21: the NESTED test classes of that survey)
 //   (with --rename, --in-tests looks the types up in Alundra.Tests instead of Alundra)
 //
 // R5 (docs/plan-restructuration-dll.md, section 9, T0b): the same guarantees for the classes of Alundra.Tests: the types are looked up in the
@@ -44,7 +45,7 @@ static class Program
 
     static int Main(string[] args)
     {
-        string? root = null, domain = null, tablePath = null, r5Domain = null, typesPath = null;
+        string? root = null, domain = null, tablePath = null, r5Domain = null, typesPath = null, nestedPath = null;
         bool dry = false, inTests = false;
         var explicitPairs = new List<(string Old, string New)>();
         for (int i = 0; i < args.Length; i++)
@@ -54,6 +55,7 @@ static class Program
                 case "--dry-run": dry = true; break;
                 case "--in-tests": inTests = true; break;
                 case "--r5": r5Domain = args[++i]; inTests = true; break;
+                case "--r5-nested": nestedPath = args[++i]; inTests = true; break;
                 case "--types": typesPath = args[++i]; break;
                 case "--table": tablePath = args[++i]; break;
                 case "--rename":
@@ -66,13 +68,19 @@ static class Program
                     break;
             }
         }
-        if (root == null || ((domain != null ? 1 : 0) + (r5Domain != null ? 1 : 0) + (explicitPairs.Count > 0 ? 1 : 0)) != 1) return Usage();
+        if (root == null || ((domain != null ? 1 : 0) + (r5Domain != null ? 1 : 0) + (nestedPath != null ? 1 : 0) + (explicitPairs.Count > 0 ? 1 : 0)) != 1) return Usage();
         root = Path.GetFullPath(root);
         tablePath ??= Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "table.json");
         typesPath ??= Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "r5-types.tsv");
 
         List<(string Old, string New)> pairs;
-        if (r5Domain != null)
+        if (nestedPath != null)
+        {
+            try { pairs = NestedPairs(nestedPath); }
+            catch (Exception e) { Console.Error.WriteLine("nested survey: " + e.Message); return 2; }
+            if (pairs.Count == 0) { Console.WriteLine("no nested test class to rename."); return 0; }
+        }
+        else if (r5Domain != null)
         {
             try { pairs = R5Pairs(typesPath, r5Domain); }
             catch (Exception e) { Console.Error.WriteLine("r5 table: " + e.Message); return 2; }
@@ -95,12 +103,12 @@ static class Program
         if (pick == null) { Console.Error.WriteLine("no MSBuild instance found"); return 2; }
         MSBuildLocator.RegisterInstance(pick);
         Console.WriteLine($"msbuild {pick.Version}; {pairs.Count} type(s) to rename");
-        return Run(root, r5Domain != null ? "R5 " + r5Domain : (domain ?? "(explicit)"), pairs, dry, inTests).GetAwaiter().GetResult();
+        return Run(root, nestedPath != null ? "R5 nested" : r5Domain != null ? "R5 " + r5Domain : (domain ?? "(explicit)"), pairs, dry, inTests).GetAwaiter().GetResult();
     }
 
     static int Usage()
     {
-        Console.Error.WriteLine("usage: RenameTool <repo root> <Domain> [--dry-run] [--table <table.json>]\n       RenameTool <repo root> --rename Old=New [--rename ...] [--in-tests] [--dry-run]\n       RenameTool <repo root> --r5 <Domain> [--types <r5-types.tsv>] [--dry-run]");
+        Console.Error.WriteLine("usage: RenameTool <repo root> <Domain> [--dry-run] [--table <table.json>]\n       RenameTool <repo root> --rename Old=New [--rename ...] [--in-tests] [--dry-run]\n       RenameTool <repo root> --r5 <Domain> [--types <r5-types.tsv>] [--dry-run]\n       RenameTool <repo root> --r5-nested <r5-nested-types.tsv> [--dry-run]");
         return 2;
     }
 
@@ -118,6 +126,27 @@ static class Program
             var c = l.Split('\t');
             if (c[iDom] != domain || c[iOld] == c[iNew]) continue;
             if (!res.Contains((c[iOld], c[iNew]))) res.Add((c[iOld], c[iNew]));
+        }
+        return res;
+    }
+
+    // r5-nested-types.tsv: the nested classes (old simple name, new simple name); each is looked up inside its outer class, found by the last
+    // simple name of `outer_new_full` (the outer class already carries its R5 name when the survey is applied).
+    static readonly Dictionary<string, string> NestedOuter = new();
+    static List<(string, string)> NestedPairs(string path)
+    {
+        var lines = File.ReadAllLines(path, Encoding.UTF8);
+        var head = lines[0].Split('\t');
+        int iOut = Array.IndexOf(head, "outer_new_full"), iOld = Array.IndexOf(head, "old_type"), iNew = Array.IndexOf(head, "new_type");
+        if (iOut < 0 || iOld < 0 || iNew < 0) throw new InvalidDataException("columns outer_new_full, old_type and new_type expected");
+        var res = new List<(string, string)>();
+        foreach (var l in lines.Skip(1))
+        {
+            if (l.Length == 0) continue;
+            var c = l.Split('\t');
+            if (c[iOld] == c[iNew]) continue;
+            NestedOuter[c[iOld]] = c[iOut][(c[iOut].LastIndexOf('.') + 1)..];
+            res.Add((c[iOld], c[iNew]));
         }
         return res;
     }
@@ -182,7 +211,9 @@ static class Program
     static async Task<INamedTypeSymbol?> FindType(Solution sol, Project alundra, string name)
     {
         var comp = await sol.GetProject(alundra.Id)!.GetCompilationAsync();
-        var found = comp!.GetSymbolsWithName(n => n == name, SymbolFilter.Type).OfType<INamedTypeSymbol>().Where(t => t.ContainingType == null).ToList();
+        var found = NestedOuter.TryGetValue(name, out var outer)
+            ? comp!.GetSymbolsWithName(n => n == name, SymbolFilter.Type).OfType<INamedTypeSymbol>().Where(t => t.ContainingType != null && t.ContainingType.ContainingType == null && t.ContainingType.Name == outer).ToList()
+            : comp!.GetSymbolsWithName(n => n == name, SymbolFilter.Type).OfType<INamedTypeSymbol>().Where(t => t.ContainingType == null).ToList();
         if (found.Count == 1) return found[0];
         Bad($"type {name}: {found.Count} top-level declaration(s) found (expected exactly one)");
         return null;
