@@ -94,3 +94,17 @@ bfc09d7912d6da624cad6d40e88558f27a559db8  work/t_destroy.py
 e59f01b846174cc5c52f4c6f6fd6087cab5b6e7a  work/t_init.py
 3340dc61519ce807b9fa7c0cbe9836a406360ec5  work/t_spawn.py
 9380bd8199feb91d41dd6efd5f7a255680cbf33c  work/t_table.py
+7a8cfcdf8e36bcb824ad77ca3323c2712c762e0a  posed-rev3/README.md
+f767ab46f8332d66a696af369f77ccd5dcc14721  posed-rev3/c255_full_fdis.txt
+1d657b59f5d34096e89b64bbf61557904b675d13  posed-rev3/census_exported.py
+21d7b6578d45ed364dadc18f63f2892894be5586  posed-rev3/census_exported_out.txt
+60a72f1a19dcc8228145bc3a1d093d3ccaf1f3fa  posed-rev3/census_placed.py
+3925e65215de10a41702a2aa1a8c7b95ffa395c1  posed-rev3/census_placed_out.txt
+43261ef23e0684e86271ad4bc2c968852ce76b32  posed-rev3/fdis.py
+75766858a0f4536eb1f2e06ee6c191f63aa79b3c  posed-rev3/fulldis.py
+95b23a13688855efff788b729cd713a89df2c990  posed-rev3/placed.json
+834308e6acb1e02a01dbd6823ce9b4a06b62570c  posed-rev3/report.md
+261003b63395616bc6084b7b7c0b2ac1574e01b5  posed-rev3/run_c255.py
+9ba36fe4babd6659480d428b28c526afc3cd76c9  posed-rev3/run_c255_out.txt
+9e7ed3153770c3a10126d83dfb2b2471a12b5183  state-1d0b6953/README.md
+bbe883b87a37fd817f90a5527828e8a83fdd8cb5  state-1d0b6953/state.md

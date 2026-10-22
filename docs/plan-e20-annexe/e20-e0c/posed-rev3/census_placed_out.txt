@@ -1,0 +1,168 @@
+maps 483 enabled entities 9631 placed pickups 152
+types 53
+flag10 != 0: 0  contents != 0: 0
+auto-appear (bit 0x40): 52  forced only: 100
+entity event codes non-zero: [(('A', 131), 24), (('C', 129), 20), (('A', 129), 20), (('C', 132), 19), (('C', 136), 12), (('F', 131), 11), (('F', 138), 7), (('C', 133), 6), (('D', 130), 6), (('E', 129), 6), (('A', 132), 6), (('C', 131), 5)]
+
+type item  b4(600) b5(sound) count  name
+  34 0x004     0      0     3  I04_Épée sacrée Elnard
+  35 0x005     0      0     1  I05_Arc du chasseur
+  36 0x006     0      0     1  I06_Arc de William
+  37 0x007     0      0     3  I07_Bâton magique
+  38 0x008     0      0     2  I08_Objet 008
+  39 0x009     0      0     1  I09_Lancer de chaîne
+  40 0x00a     0      0     1  I10_Le Broyeur
+  44 0x00e     0      0     1  I14_Bâton des glaces flottantes
+  46 0x010     0      0     1  I16_Bâton de feu
+  48 0x012     0      0     1  I18_Veste en cuir
+  49 0x013     0      0     1  I19_Veste en acier
+  50 0x014     0      0     5  I20_Veste en argent
+  58 0x01c     0      0     1  I28_Bottes magiques
+  61 0x01f     0      0     1  I31_Haricots de Jack
+  62 0x020     0      0     1  I32_Cape de sable
+  63 0x021     0     52     3  I33_Armure brisée
+  65 0x023     0      0     3  I35_Bombe explosive
+  66 0x024     1     52     9  I36_Herbe médicinale
+  67 0x025     1     52     3  I37_Potion L
+  68 0x026     1     52     6  I38_Extrait magique
+  69 0x027     1     52     2  I39_Breuvage de soin
+  70 0x028     0      0     2  I40_Cape aquatique
+  71 0x029     1     52     6  I41_Potion S
+  73 0x02b     0      0     1  I43_Tome de la Terre (haut)
+  74 0x02c     0      0     1  I44_Tome de la Terre (bas)
+  75 0x02d     0      0     1  I45_Tome du démon d’eau (haut)
+  76 0x02e     0      0     1  I46_Tome du démon d’eau (bas)
+  77 0x02f     0      0     1  I47_Tome du dragon de feu (haut)
+  78 0x030     0      0     1  I48_Tome du dragon de feu (bas)
+  79 0x031     0      0     1  I49_Tome du dieu du vent (haut)
+  80 0x032     0      0     1  I50_Tome du dieu du vent (bas)
+  81 0x033     0      0     3  I51_Anneau d’orc
+  83 0x035     0      0     3  I53_Bracelet d’armure d’acier
+  84 0x036     0      0     1  I54_Bracelet d’armure d’argent
+  85 0x037     0      0     3  I55_Anneau de régénération
+  89 0x03b     0      0     2  I59_Gant de puissance
+  91 0x03d     0     52     1  I61_Clé
+  92 0x03e     0      0     2  I62_Emblème du sang de pigeon
+  93 0x03f     0      0     2  I63_Emblème azur
+  94 0x040     0      0     4  I64_Emblème de topaze
+  95 0x041     0      0     2  I65_Emblème brun
+  96 0x042     0      0     2  I66_Emblème écarlate
+  97 0x043     0      0     2  I67_Emblème vert sombre
+  98 0x044     0      0     3  I68_Emblème d’argent
+ 100 0x046     1     53     8  I70_5 Gildas
+ 101 0x047     1     53     1  I71_10 Gildas
+ 104 0x04a     0      0    17  I74_Bouquet de fleurs
+ 106 0x04c     0      0     1  I76_Testament d’Anzes
+ 108 0x04e     0      0     1  I78_Pierre de Zolist
+ 111 0x051     1     54     1  I81_Petit cristal
+ 112 0x052     1     54     1  I82_Grand cristal
+ 113 0x053     0      0    16  I83_Récipient de vie
+ 115 0x055     1     52    10  I85_Cœur moyen
+
+KEY objects (sound octet 5 == 0): 101 types [34, 35, 36, 37, 38, 39, 40, 44, 46, 48, 49, 50, 58, 61, 62, 65, 70, 73, 74, 75, 76, 77, 78, 79, 80, 81, 83, 84, 85, 89, 92, 93, 94, 95, 96, 97, 98, 104, 106, 108, 113]
+  map 5 idx 0 type 92 I62_Emblème du sang de pigeon auto False flag10 0
+  map 5 idx 1 type 93 I63_Emblème azur auto False flag10 0
+  map 5 idx 2 type 94 I64_Emblème de topaze auto False flag10 0
+  map 5 idx 3 type 96 I66_Emblème écarlate auto False flag10 0
+  map 5 idx 4 type 97 I67_Emblème vert sombre auto False flag10 0
+  map 5 idx 5 type 95 I65_Emblème brun auto False flag10 0
+  map 5 idx 6 type 98 I68_Emblème d’argent auto False flag10 0
+  map 7 idx 31 type 38 I08_Objet 008 auto False flag10 0
+  map 10 idx 14 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 10 idx 15 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 10 idx 17 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 10 idx 22 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 10 idx 40 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 10 idx 58 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 10 idx 69 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 10 idx 81 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 11 idx 0 type 61 I31_Haricots de Jack auto True flag10 0
+  map 11 idx 1 type 37 I07_Bâton magique auto True flag10 0
+  map 11 idx 2 type 62 I32_Cape de sable auto True flag10 0
+  map 11 idx 3 type 50 I20_Veste en argent auto True flag10 0
+  map 11 idx 4 type 58 I28_Bottes magiques auto True flag10 0
+  map 11 idx 5 type 65 I35_Bombe explosive auto True flag10 0
+  map 11 idx 7 type 34 I04_Épée sacrée Elnard auto True flag10 0
+  map 11 idx 8 type 73 I43_Tome de la Terre (haut) auto True flag10 0
+  map 11 idx 9 type 74 I44_Tome de la Terre (bas) auto True flag10 0
+  map 11 idx 10 type 75 I45_Tome du démon d’eau (haut) auto True flag10 0
+  map 11 idx 11 type 76 I46_Tome du démon d’eau (bas) auto True flag10 0
+  map 11 idx 12 type 77 I47_Tome du dragon de feu (haut) auto True flag10 0
+  map 11 idx 13 type 78 I48_Tome du dragon de feu (bas) auto True flag10 0
+  map 11 idx 14 type 79 I49_Tome du dieu du vent (haut) auto True flag10 0
+  map 11 idx 15 type 80 I50_Tome du dieu du vent (bas) auto True flag10 0
+  map 11 idx 16 type 36 I06_Arc de William auto True flag10 0
+  map 11 idx 17 type 40 I10_Le Broyeur auto True flag10 0
+  map 11 idx 18 type 44 I14_Bâton des glaces flottantes auto True flag10 0
+  map 11 idx 19 type 46 I16_Bâton de feu auto True flag10 0
+  map 11 idx 24 type 38 I08_Objet 008 auto True flag10 0
+  map 11 idx 25 type 84 I54_Bracelet d’armure d’argent auto True flag10 0
+  map 11 idx 28 type 89 I59_Gant de puissance auto True flag10 0
+  map 17 idx 2 type 113 I83_Récipient de vie auto False flag10 0
+  map 17 idx 28 type 94 I64_Emblème de topaze auto False flag10 0
+  map 17 idx 39 type 70 I40_Cape aquatique auto False flag10 0
+  map 134 idx 1 type 113 I83_Récipient de vie auto False flag10 0
+  map 134 idx 2 type 81 I51_Anneau d’orc auto False flag10 0
+  map 134 idx 3 type 113 I83_Récipient de vie auto False flag10 0
+  map 134 idx 4 type 83 I53_Bracelet d’armure d’acier auto False flag10 0
+  map 134 idx 5 type 113 I83_Récipient de vie auto False flag10 0
+  map 134 idx 6 type 85 I55_Anneau de régénération auto False flag10 0
+  map 134 idx 7 type 113 I83_Récipient de vie auto False flag10 0
+  map 134 idx 8 type 37 I07_Bâton magique auto False flag10 0
+  map 134 idx 9 type 113 I83_Récipient de vie auto False flag10 0
+  map 134 idx 10 type 81 I51_Anneau d’orc auto False flag10 0
+  map 134 idx 11 type 113 I83_Récipient de vie auto False flag10 0
+  map 134 idx 12 type 83 I53_Bracelet d’armure d’acier auto False flag10 0
+  map 134 idx 13 type 113 I83_Récipient de vie auto False flag10 0
+  map 134 idx 14 type 85 I55_Anneau de régénération auto False flag10 0
+  map 134 idx 15 type 113 I83_Récipient de vie auto False flag10 0
+  map 134 idx 16 type 37 I07_Bâton magique auto False flag10 0
+  map 134 idx 17 type 113 I83_Récipient de vie auto False flag10 0
+  map 134 idx 18 type 81 I51_Anneau d’orc auto False flag10 0
+  map 134 idx 19 type 83 I53_Bracelet d’armure d’acier auto False flag10 0
+  map 134 idx 20 type 85 I55_Anneau de régénération auto False flag10 0
+  map 138 idx 18 type 34 I04_Épée sacrée Elnard auto False flag10 0
+  map 163 idx 6 type 113 I83_Récipient de vie auto True flag10 0
+  map 163 idx 8 type 50 I20_Veste en argent auto True flag10 0
+  map 199 idx 2 type 39 I09_Lancer de chaîne auto True flag10 0
+  map 231 idx 3 type 35 I05_Arc du chasseur auto True flag10 0
+  map 249 idx 5 type 89 I59_Gant de puissance auto False flag10 0
+  map 258 idx 6 type 113 I83_Récipient de vie auto False flag10 0
+  map 258 idx 8 type 50 I20_Veste en argent auto True flag10 0
+  map 260 idx 16 type 106 I76_Testament d’Anzes auto False flag10 0
+  map 298 idx 6 type 113 I83_Récipient de vie auto False flag10 0
+  map 298 idx 8 type 50 I20_Veste en argent auto False flag10 0
+  map 302 idx 6 type 113 I83_Récipient de vie auto False flag10 0
+  map 302 idx 8 type 50 I20_Veste en argent auto False flag10 0
+  map 331 idx 14 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 331 idx 15 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 331 idx 17 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 331 idx 22 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 331 idx 40 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 331 idx 58 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 331 idx 69 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 331 idx 81 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 334 idx 2 type 65 I35_Bombe explosive auto True flag10 0
+  map 365 idx 2 type 65 I35_Bombe explosive auto True flag10 0
+  map 372 idx 6 type 104 I74_Bouquet de fleurs auto False flag10 0
+  map 398 idx 5 type 48 I18_Veste en cuir auto False flag10 0
+  map 398 idx 6 type 113 I83_Récipient de vie auto False flag10 0
+  map 398 idx 10 type 49 I19_Veste en acier auto False flag10 0
+  map 419 idx 0 type 34 I04_Épée sacrée Elnard auto True flag10 0
+  map 432 idx 1 type 98 I68_Emblème d’argent auto False flag10 0
+  map 432 idx 2 type 108 I78_Pierre de Zolist auto False flag10 0
+  map 439 idx 2 type 113 I83_Récipient de vie auto False flag10 0
+  map 439 idx 28 type 94 I64_Emblème de topaze auto False flag10 0
+  map 439 idx 39 type 70 I40_Cape aquatique auto False flag10 0
+  map 479 idx 0 type 92 I62_Emblème du sang de pigeon auto False flag10 0
+  map 479 idx 1 type 93 I63_Emblème azur auto False flag10 0
+  map 479 idx 2 type 94 I64_Emblème de topaze auto False flag10 0
+  map 479 idx 3 type 96 I66_Emblème écarlate auto False flag10 0
+  map 479 idx 4 type 97 I67_Emblème vert sombre auto False flag10 0
+  map 479 idx 5 type 95 I65_Emblème brun auto False flag10 0
+  map 479 idx 6 type 98 I68_Emblème d’argent auto False flag10 0
+
+b4==0 (no 600-tick rule) placed: 105  b5!=0 placed: 51
+sound distribution: Counter({0: 101, 52: 40, 53: 9, 54: 2})
+b6/b7 distribution: Counter({(0, 1): 74, (0, 0): 37, (1, 1): 14, (0, 9): 10, (3, 1): 10, (2, 1): 7})
+maps holding placed pickups: 40

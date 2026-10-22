@@ -613,6 +613,7 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.e0 | Apparition d'entités et butin (D-E20-17) : `SpawnWarpEntity` (`0x80039F58`, 102 appelants) par indice de sprite global, tirage du butin à l'apparition (`0x80032A40`), lâcher à la mort (`0x80032B90`) avec son veto, objet ramassable (gestionnaire C255), avance du générateur pseudo-aléatoire une fois par tick après la mise à jour du monde (`0x8002BD14`) | oracle ; arcs | Rien de visible seul ; recette avec E20.e |
 | E20.eR | (2026-10-22, D-E20-60 ; détaillée au §1.27a) Renommage de `BalanceLevel` (l'octet 9 de l'en-tête de carte) en `TileCutEffectId` à la source : l'exporteur Tiled de l'analyseur et sa doc, la ré-extraction des cartes, la copie `data-extracted/`, le convertisseur et l'export | export complet, preuve par manifeste | aucune (rien ne change en jeu) |
 | E20.e | Effets du héros et herbe coupée : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage), `CheckAndTriggerTileEffect`, butin tiré par E20.e0 | oracle ; arcs | Pas et poussière ; l'herbe se coupe à l'épée et à la charge ; argent et cœurs tombent et se ramassent |
+| E20.e2 | (2026-10-22, révision 3 d'E20.e ; prérequis E20.e) Effets du héros sortis d'E20.e : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage) ; les bouchons « Stub (E20.e) » de `PlayerAnimationEffects` y renvoient | oracle ; arcs | Pas et poussière |
 | E20.f | Autres armes (D-E20-7) : charge et aura, fléau et rebond, baguettes, arcs, projectiles par l'apparition d'E20.e0 et les gestionnaires propres au héros, vague de l'épée C61 et flèches chargées C94 (D-E20-18), `0xC0`/`0xC1` | oracle ; arcs | Sauvegarde de test avec les armes (à créer) |
 | E20.g | Porter, poser, lancer (`PlayerTryAction`, `UpdatePlayerCarriedEntity`) ; caisses et jarres redeviennent des obstacles (fin de l'écart D-E19-28/D-E19-46) ; barricade de la 392 (O-E20-5) | oracle ; arcs | Soulever et lancer une caisse ; la 392 |
 | E20.h | Objets du Rond (`TryUseItem`) : graines, bombes (gestionnaire E12), magie, potions ; le couvercle de la 362 | oracle ; arcs | La 362 |
@@ -7192,7 +7193,7 @@ les orbes et la tornade n'avancent que par la **poussée** `+0xCC/+0xD0`, que la
 pendant un sort, le menu Start est refusé ; E3 est partagé avec 98 sprites d'ennemis (clé commune avec E14) ; le départ lance une piste XA
 (comme `0xB9`, O-E19-36) ; les tomes n'exigent pas E20.g. Questions Q-H4-1 à Q-H4-8 (§2).
 
-### 1.26 E20.e0c — Le butin et l'objet ramassable, lâché ou posé ⏳ (détaillée le 2026-10-18, révision 2 READY du 2026-10-18 ; révision 3 du 2026-10-22 après les réponses de l'auteur, à relire par un plan-verifier frais ; exécutable : le chantier de restructuration est fini, R8 comprise)
+### 1.26 E20.e0c — Le butin et l'objet ramassable, lâché ou posé ⏳ (détaillée le 2026-10-18, révision 2 READY du 2026-10-18 ; révision 3 du 2026-10-22 après les réponses de l'auteur, relue : REVISE ; révision 3.1 du 2026-10-22, à relire par un plan-verifier frais ; exécutable : le chantier de restructuration est fini, R8 comprise)
 
 **Révision 3 (2026-10-22).** Les réponses de l'auteur (§0.1) changent la tranche en six points. (1) Le ramassage des objets posés sur les cartes
 entre dans e0c (D-E20-47) : phase D. (2) Les étincelles du ramassage passent par la file d'effets (D-E20-59, ADR-0077) : les clés de l'oracle se
@@ -7202,9 +7203,16 @@ objet lâché, ce que la révision 2 disait à tort de l'état 2 (la correction 
 (O-H-5). (6) Les noms sont ceux d'après la restructuration et la garde est `check_names.py --rules`. La lecture ajoute un fait qui borne D-E20-47 :
 seuls 59 des 152 objets posés exécutent C255 ; les 93 autres ont un script de carte au créneau C.
 
+**Révision 3.1 (2026-10-22).** La relecture de la révision 3 (REVISE) a relevé deux points, corrigés ici.
+- Les accès 32 bits prévus dans `EntityScriptProxy` contredisaient D-E20-55. Ils deviennent propres à e0c (D-E0C-13), et
+  `EntityScriptProxy.cs` sort du périmètre.
+- L'annexe `posed-rev3/` n'était pas versée. Elle l'est, avec `state-1d0b6953/`, au commit de cette révision.
+
 **Provenance.** Lecture du binaire du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-e0c/`, `report.md`, `check.md`) ; état de la DLL au HEAD
 `978608d` (`state-978608d/`) ; lecture complémentaire de la branche « posé », de ses sites et de la DLL au HEAD `1d0b6953`
-(`docs/plan-e20-annexe/e20-e0c/posed-rev3/`, à verser : `census_placed.py`, `census_exported.py`, `run_c255.py` et leurs sorties). Le binaire
+(`docs/plan-e20-annexe/e20-e0c/posed-rev3/`, versée avec la révision 3.1 : `report.md`, les recensements `census_placed.py` et
+`census_exported.py` avec `placed.json`, les scénarios `run_c255.py`, le désassembleur `fdis.py`, et leurs sorties ; l'état de la DLL et des
+tests au HEAD `1d0b6953` est dans `docs/plan-e20-annexe/e20-e0c/state-1d0b6953/`). Le binaire
 tranche ; la décompilation se lit, ne se corrige pas.
 
 **But.** Comme l'original, en trois temps.
@@ -7296,6 +7304,12 @@ les arcs `Alundra.Tests/Arcs/MurutaHallArcTests.cs` et `BeannoideGrateArcTests.c
   cela remplace la proposition de Q-E0C-7 (repli comme `IncreaseHpMaxAndFill`), que l'auteur n'a pas tranchée.
 - **D-E0C-11** — La récursion E11 reste un no-op jusqu'à E14.b (D-E20-48).
 - **D-E0C-12** — `SetGameFlag(+0x280)` est porté pour un objet lâché (drapeau du conteneur, sans effet quand il vaut 0) ; l'écriture `SetGameFlag(-1)` d'un posé ne l'est pas.
+- **D-E0C-13** (révision 3.1, D-E20-55) — Les accès 32 bits de `+0x274`, `+0x280` et `+0x284` sont propres à e0c. Il n'y a pas d'accesseur commun
+  sur `EntityScriptProxy`, qui ne change pas.
+  - Un seul jeu d'aides `internal static` dans `Alundra/Ai/Objects/PickupAi.cs`, que `LootDrop` utilise aussi.
+  - Les aides lisent et écrivent les mots en petit-boutiste, comme le binaire : `+0x274` sur `Bytes[0..3]`, `+0x280` sur
+    `AIValues[0]` (bas) et `AIValues[1]` (haut), `+0x284` sur `AIValues[2]` et `AIValues[3]`.
+  - Les tomes (h4d2) et E14 font les leurs (D-E20-55).
 
 **Défauts reconduits ou confirmés.** Q-E0C-3 (clignotement avec E20.c2b ; `+0x1CC = 0x78` est quand même écrit, ce qui rend l'objet non ciblable, `HitPass.cs:127`), Q-E0C-5, Q-E0C-8
 (l'écart d'un tick pour la case plus haute, épinglé par un test nommé d'après lui). Q-E0C-4 (défaut fidèle : `ModdedPos` rafraîchi en fin d'image, le héros compris) reste à T0.
@@ -7305,24 +7319,25 @@ Un objet lâché dans l'eau ou un trou n'est pas détruit tant que `CombinedVram
 E19.sm7 non requise (la fanfare est un bouchon) ; h1 non requise (e0c écrit les soins, h1 les reprendra).
 
 **Périmètre.** Nouveaux : `Alundra/Items/LootDrop.cs` (`SpawnContents`, `SpawnRandomLoot`, veto), `Alundra/Items/ItemEffects.cs` (`GiveItem`), `Alundra/Hero/HeroHeals.cs` (les corps de
-soin), `Alundra/Ai/Objects/PickupAi.cs` (C255 et A255) ; modifiés : `Alundra/Items/ItemTables.cs` (colonnes 0 et 1), `Alundra/Entities/EntityScriptProxy.cs` (mots 32 bits `+0x274`, `+0x280`, `+0x284`),
+soin), `Alundra/Ai/Objects/PickupAi.cs` (C255, A255 et les accès 32 bits propres à e0c, D-E0C-13) ; modifiés : `Alundra/Items/ItemTables.cs` (colonnes 0 et 1),
 `Alundra/Rendering/Effects/NativeEffects.cs` (créateurs d'étincelles et d'anneaux), `Alundra/Dialogues/DialogueDirector.cs` (ouverture sur ligne composée), `Alundra/Maps/IEntityWorldContext.cs` et
 `Alundra/Maps/WorldProxy.cs` (`Block`, `Unblock`, horloge, physique, rafraîchissement de `ModdedPos`, `DestroyEntity`), `Alundra/Ai/NativeSpriteRegistry.cs` (deux clés) ; les tests (dont une garde
 de données dans `Alundra.Tests/ExportGuards/`) ; l'annexe ; un ADR (0082 à revérifier). Les noms passent `check_names.py --rules`.
 
 **Hors périmètre.** Le coffre (F255, `ApplyItem`, `+0x274 == 2`, A255 du type 30 : E14) ; la récursion E11 (E14.b) ; les pistes XA et leur lecture (E19.sm7) ; le clignotement rendu (E20.c2b) ;
 la destruction des objets par la VRAM (O-E0K-2) ; la coupe d'herbe (E20.e) ; l'opcode `0x82` (O-E19-39 ; h1 pour le soin sur place du coffre) ; les 93 objets posés à script de carte ;
-la branche d'A255 à drapeau ; le moteur, le convertisseur et les données.
+la branche d'A255 à drapeau ; `Alundra/Entities/EntityScriptProxy.cs` (D-E20-55, D-E0C-13) ; le moteur, le convertisseur et les données.
 
 **Partage des phases.**
-- **Phase A** (T1, sans changement de comportement) : `LootDrop`, `ItemEffects`, `HeroHeals`, la ligne composée, `Block`/`Unblock` purs, colonnes, accès 32 bits.
+- **Phase A** (T1, sans changement de comportement) : `LootDrop`, `ItemEffects`, `HeroHeals`, la ligne composée, `Block`/`Unblock` purs, colonnes, accès 32 bits locaux (D-E0C-13).
 - **Phase B** (T2) : C255 et A255 inscrits (branche lâchée ; posée et coffre en bouchons nommés), `ModdedPos` rafraîchi. Inerte tant que rien ne lâche.
 - **Phase C** (T3) : `DestroyEntity` lâche en tête. Effet visible : les objets tombent des ennemis et des conteneurs.
 - **Phase D** (T4) : la branche posée (A255, C255, message, son, blocage, bouchon de la fanfare). Effet visible : les 59 objets natifs se ramassent.
 
 **Tâches.**
-- Todo **T0 — Annexe, oracle, mesures** (aucun code de la DLL).
-  (a) Rejouer depuis une copie les modèles et harnais (`work/`), sortie égale au manifeste ; verser `posed-rev3/` et `state-1d0b6953/`.
+- ⏳ **T0 — Annexe, oracle, mesures** (aucun code de la DLL).
+  (a) Rejouer depuis une copie les modèles et harnais (`work/`), sortie égale au manifeste ; rejouer de même `posed-rev3/` (versée avec la révision 3.1),
+  sorties égales à celles versées.
   (b) **P-L1** : le premier tick où tourne un objet lâché à la mort d'un ennemi (case plus haute et plus basse), mesuré sur la DLL ; attendu : un tick après la mort (défaut Q-E0C-8) ;
   un résultat qui contredit V6 ou ce défaut est un arrêt.
   (c) **P-L2** : le premier `IsOnGround` de l'objet lâché (le binaire : 0 au premier tick de C255).
@@ -7337,25 +7352,26 @@ la branche d'A255 à drapeau ; le moteur, le convertisseur et les données.
   (i) Mesurer où la DLL lit `BlockedByEntity` et où elle ne le lit pas ; le héros bloqué en l'air ; les entités de rang inférieur et supérieur au bloqueur dans le tick.
   (j) Mesurer si le héros peut se tenir sur un objet posé aujourd'hui (`Collidable`, `EntitySupport`) et ce qu'A255 y change.
   (k) Choisir les préréglages de recette (Debug zone, carte 11, près de (54, 30) ; carte 1, Cœur moyen, entité 24).
-- Todo **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile).
+- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile).
   (l1) `SpawnContents` et `SpawnRandomLoot` contre les vecteurs (les sept écritures, le son 84, le Z moins 1, le veto qui consomme quand même le générateur, la table pleine sans son), chaque
   cas « sans effet » accolé à un cas positif.
   (l2) `GiveItem` : argent et plafond, les trois cœurs, PM, herbe et potions avec l'inventaire plein ou non, cristaux, vase de vie, ajout simple ; les étincelles sont émises dans la file : avant son
   application, ni réservoir ni générateur n'ont bougé ; après, avec l'état S imposé, les forces égalent les clés de l'oracle.
   (l3) Colonnes 0 et 1.
-  (l4) Accès 32 bits de `+0x274`, `+0x280`, `+0x284`.
+  (l4) Accès 32 bits locaux (D-E0C-13) de `+0x274`, `+0x280`, `+0x284` : petit-boutiste sur `Bytes` et `AIValues`, aller-retour de -1 et d'une valeur
+  dont les deux moitiés diffèrent ; `EntityScriptProxy.cs` sans diff.
   (l5) Le message composé, vide pour un lâché.
   (l6) `Block`/`Unblock` purs : état 2 ou 3 seulement, soi exclu, déjà bloqué exclu, remise à zéro par bloqueur.
-- Todo **T2 — Phase B** (tests de monde rouges avant le code B : monde initialisé avec le catalogue ; 1, 2 et 3 ticks par image).
+- ⏳ **T2 — Phase B** (tests de monde rouges avant le code B : monde initialisé avec le catalogue ; 1, 2 et 3 ticks par image).
   (w1) montée et rebond tick par tick à la gravité 128 et 3 ; (w2) ramassage aux bornes exactes du recouvrement (taille + 1) ; (w3) rien pendant un dialogue ouvert ; (w4) extinction à 600 ticks,
   `+0x1CC = 0x78` à 120 ; (w5) un objet sans règle des 600 ticks reste ; (w6) l'effet du ramassage sur le héros et le son de l'octet 5 ; (w7) un objet posé à bouchon ne fait rien ;
   (w8) **corrigé** : du ramassage d'un objet lâché à sa destruction, tick par tick : états 1 puis 3, jamais 2, le registre jamais écrit, aucun message, l'objet dessiné jusqu'à la
   destruction, accolé à un dialogue ouvert qui retient l'état 3 ; (w9) le premier tick de l'objet lâché (écart de Q-E0C-8 nommé, case plus basse égale au binaire).
   Code B ; le compte du registre passe de 7 à 9 (les deux épingles, réécrites par dérivation). Verts.
-- Todo **T3 — Phase C**. Tests de production rouges avant la ligne : (d1) le test du bouchon réécrit (contenu 69 lâche le type 99, le générateur n'avance pas, contenu 0 ne lâche rien) ;
+- ⏳ **T3 — Phase C**. Tests de production rouges avant la ligne : (d1) le test du bouchon réécrit (contenu 69 lâche le type 99, le générateur n'avance pas, contenu 0 ne lâche rien) ;
   (d2) les oracles Beannoïde et Muruta comparent `spawn_39F58` et le son 84 au lieu de les exclure (80 lâchers, 48 vetos, 16 contenus nuls) ; (d3) la destruction légère ne lâche rien ;
   (d3b) le tick de naissance de (w9) sur le vrai chemin ; (d4) un arc réel : tuer un Beannoïde de la carte 14 (code `0xFC`) jusqu'au ramassage ou à l'extinction.
-- Todo **T4 — Phase D** (tests rouges avant le code D).
+- ⏳ **T4 — Phase D** (tests rouges avant le code D).
   (p1) A255 posé : `~0x80`, `+0x27C = 0`, `+0x280 = -1`, `+0x284 = 0`, `+0x278 = +0x40`.
   (p2) Objet non-clé (cœur, gildas, herbe, potion) : message « nom gagné! » en mode 0, le bloc des entités s'arrête sous le message, son 52, 53 ou 54, effet sur le héros, objet détruit après la
   fermeture, jamais d'état 2.
@@ -7370,7 +7386,7 @@ la branche d'A255 à drapeau ; le moteur, le convertisseur et les données.
   (p10) La garde de données : 152/53, 59/36/57, `_10 = 0`, `Contents = 0`, A255 sur 87 types et C255 sur 87 (les mêmes sauf le 30 pour A), F255 sur le seul type 30.
   (p11) Le héros ne peut plus se tenir sur un objet posé si T0 (j) l'a mesuré possible aujourd'hui.
   (p12) Dans le même tick, deux objets posés côte à côte : le second attend la fermeture du premier.
-- Todo **T5 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 24, tous tués :
+- ⏳ **T5 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 24, tous tués :
   veto oublié ; veto avant le tirage ; `+0x278` toujours 600 ; seuil du rebond `<` pour `<=` ; rebond sans remise à 0 ; décompte qui détruit à 1 ; marque à 120 oubliée ; recouvrement `<=` pour `<`
   (chaque sens) ; positions du tick courant ; ramassage pendant un dialogue ; état 3 qui n'attend pas la fermeture ; plafond d'argent ; cœur moyen à `PVmax/2` ; **retourné** : étincelles créées tout de
   suite au lieu de la file ; lâcher à la destruction légère ; lâcher après l'état 4 ; message omis pour un posé (ou présent pour un lâché) ; clé et non-clé permutées ; modes 0 et 1 permutés ; masque 4
@@ -7379,7 +7395,7 @@ la branche d'A255 à drapeau ; le moteur, le convertisseur et les données.
 
 **Acceptation.** Les vecteurs de l'oracle égaux ; (l1) à (l6) verts en T1 ; (w1) à (w9) et (p1) à (p12) rouges avant leur code (nommés), verts après ; (d1) à (d4) et (d3b) rouges avant T3, verts
 après ; suite en Release (copie neutralisée) **et** en Debug (en dernier), zéro échec ; tests déplacés ⊂ liste prédite de T0 (e), chacun réécrit par dérivation ; traces et arcs inchangés hors de la
-liste ; `cmp` de la DLL ; moteur, convertisseur et données sans diff ; `check_names.py --rules` vert. Recette de l'auteur : préréglage en Debug zone, marcher sur un cœur ou une potion (message
+liste ; `cmp` de la DLL ; moteur, convertisseur et données sans diff ; `Alundra/Entities/EntityScriptProxy.cs` sans diff ; `check_names.py --rules` vert. Recette de l'auteur : préréglage en Debug zone, marcher sur un cœur ou une potion (message
 « … gagné! », monde figé, son), prendre un objet-clé (message, le héros et les entités figés, pas de fanfare) ; préréglage près d'un Beannoïde de la carte 14 : le tuer, voir l'objet monter et
 rebondir, le ramasser, en laisser un s'éteindre.
 
@@ -7390,14 +7406,19 @@ composée exige de changer le moteur ; un test hors de la liste prédite bouge ;
 **Budget.** Un `executor` par phase (quatre), deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 
 **Retour arrière.** La phase D se retire seule (la branche posée, `Block`/`Unblock`, le membre de dialogue, le bouchon de la fanfare) ; la phase C se retire seule (la ligne de `DestroyEntity`) ; la
-phase B se retire seule (les deux inscriptions et le rafraîchissement) ; la phase A ne change aucun comportement.
+phase B se retire seule (les deux inscriptions et le rafraîchissement) ; la phase A ne change aucun comportement (ses fichiers neufs se retirent, ses
+membres additifs dans `ItemTables`, `NativeEffects`, `DialogueDirector`, `IEntityWorldContext` et `WorldProxy` reviennent par `git revert`).
 
 ### 1.27a E20.eR — Le nom de l'octet 9 de l'en-tête de carte : `TileCutEffectId` ⏳ (détaillée le 2026-10-22 ; prérequis d'E20.e ; D-E20-60, ADR-0079)
 
 Lecture seule du 2026-10-22 au HEAD `1d0b6953`, avec une répétition à blanc complète dans le scratchpad (rien écrit dans le dépôt, le
 remaster ni `data-extracted/`). Risque : données extraites et projet exporté (comme E20.e0x et E19.G0b).
 
-**Révision 0 (2026-10-22).** À relire (`plan-verifier` frais).
+**Révision 1 (2026-10-22).** La révision 0 a été relue : REVISE. Trois points : l'ordre du retour arrière ; les constructions Release
+d'`Alundra.Tests` sans la copie neutralisée, et la DLL du `cmp` et d'`OutputSizeBytes` non nommée ; le contrôle `rg` de T2 écrit en
+prose. Ils sont corrigés ici. Deux ajouts : l'annexe est versée avec cette révision, et les `rg` sur `alundra-project/` portent
+`--no-ignore` (sans lui, `rg` ne lit rien de ce dossier ignoré par git : 0 fichier au lieu de 967, mesuré le 2026-10-22).
+À relire par un `plan-verifier` frais.
 
 **Prérequis.** La restructuration de la DLL faite (R8, recette validée le 2026-10-22) ; `data-extracted/` égal à
 `Alundra Remake/remaster-data-extracted` (4 536 fichiers, `diff -rq` vide mesuré le 2026-10-22, à refaire en T0) ; l'analyseur à
@@ -7461,23 +7482,59 @@ ne lit encore cet octet. Après la tranche, E20.e lit `TileCutEffectId`.
 - Le moteur (`CasaEngineMonogame/` : jamais indexé).
 - Les modifications locales de l'auteur dans l'analyseur (`MGUI`, `AlundraTools/log.txt`) et `tools/Convert-*.ps1`, `tools/Saves/`.
 
+**Commandes** (depuis la racine du dépôt parent, sauf mention).
+- Export, fenêtre calme : `dotnet run --project alundra-casaengine-project-converter -c Release -- data-extracted alundra-project`.
+  Le convertisseur et ses tests ne référencent pas `Alundra.csproj` : ils ne déposent pas la DLL.
+- Construction de l'extracteur : `dotnet build alundra-datas-analyser/AlundraTools/AlundraDataExtractor/AlundraDataExtractor.csproj -c Release -nologo`.
+- Extraction, depuis un dossier neuf du scratchpad `<scratch>/eR-run/`. On y copie d'abord
+  `alundra-datas-analyser/AlundraTools/AlundraTools/EntityNames.csv`, le fichier qu'a lu la répétition à blanc (le dossier courant
+  passe avant `AppContext.BaseDirectory`, `EntityNames.cs:19-23`). Le `log.txt` de l'extracteur s'écrit là, jamais dans le
+  sous-module. Commande : `dotnet "D:/development/repo/alundra-casaengine-project-converter/alundra-datas-analyser/AlundraTools/AlundraDataExtractor/bin/Release/net9.0-windows/AlundraDataExtractor.dll"
+  "D:/development/repo/Alundra Remake/Alundra (France)/Alundra (France)_extracted" "D:/development/repo/Alundra Remake/remaster-data-extracted-er"
+  > <scratch>/eR-run/extract-stdout.log 2>&1`, sans option.
+- `Alundra.Tests` en Release, toujours avec la copie de la DLL neutralisée, sur `dotnet build` comme sur `dotnet test` :
+  `-p:CustomAfterMicrosoftCommonTargets=<scratch>/skipcopy.targets`, fichier `<Project><Target Name="CopyGameplayDllToProject" /></Project>`.
+  Les suites tournent au premier plan, avec `--blame-hang-timeout 60s`. Sans la copie neutralisée, la cible `CopyGameplayDllToProject`
+  d'`Alundra.csproj` remplace `alundra-project/Alundra.dll` et `Alundra.pdb` par la Release.
+- La seule construction qui dépose la DLL est la dernière : `Alundra.Tests` en Debug, à T8, sans la copie neutralisée.
+  De T0 à T7, `alundra-project/Alundra.dll` et `Alundra.pdb` ne changent donc pas. Le manifeste les exclut : leur SHA-1 est relevé à
+  T0 et revérifié à T7.
+- Tout `rg` sur `alundra-project/` porte `--no-ignore`.
+
 ##### Tâches
 
-- ⏳ **T0 — Annexe, prédiction, état de départ** (commit de docs, avant tout changement). Annexe `docs/plan-e20-annexe/e20-er/` :
-  README ; `dry_run.sh` (la répétition à blanc : `git archive HEAD` de l'analyseur, renommage dans la copie, construction Release,
-  extraction hors dépôt, `diff -rq`) ; `verify_extraction_diff.py` ; `predict_export.py` ; `expected_extract_changes.txt` (483 lignes,
-  SHA-1 `1ae6a9cb…`) ; `predicted_export_changes.tsv` (966 lignes, 163 103 o, SHA-1 `bc3730b8…`) ; `manifest.py` et
-  `diff_manifests.py` copiés d'`e20-e0x`. Relevés : `git status` du parent et de l'analyseur ; `diff -rq` remaster/`data-extracted/`
-  vide (4 536) ; manifeste `m0` de `alundra-project/` ; `report.json` (`OutputFileCount`, `OutputSizeBytes`, `Verification`) ; comptes
-  de tests du convertisseur et d'`Alundra.Tests` (Release) ; place libre sur D:. La répétition à blanc est rejouée par l'exécuteur
-  (mêmes 483 lignes).
+- ⏳ **T0 — Relevés de départ** (commit de docs, avant tout changement).
+  - L'annexe `docs/plan-e20-annexe/e20-er/` est versée avec la révision 1 (fichiers et SHA-1 dans son `SHA1SUMS.txt`) :
+    - `report.md` (la lecture) ;
+    - `dry_run.sh` (la répétition à blanc : `git archive HEAD` de l'analyseur, renommage dans la copie, construction Release,
+      extraction hors dépôt, `diff -rq`), `verify_extraction_diff.py`, `predict_export.py`, `make_lists.py` ;
+    - `expected_extract_changes.txt` (483 lignes, SHA-1 `1ae6a9cb…`) ; `predicted_export_changes.tsv` (en-tête et 966 lignes,
+      163 103 o, SHA-1 `bc3730b8…`) ; `extract_stdout_dry_run.log` (la console de référence) ;
+    - `manifest.py` et `diff_manifests.py`, copiés d'`e20-e0x`.
+  - T0 y ajoute `state-T0.md`, avec les relevés suivants :
+    - `git status` du parent et de l'analyseur ;
+    - `diff -rq` remaster/`data-extracted/` vide (4 536 fichiers) ;
+    - le manifeste `m0` de `alundra-project/`, et le SHA-1 d'`alundra-project/Alundra.dll` et d'`Alundra.pdb` ;
+    - `report.json` (`OutputFileCount`, `OutputSizeBytes`, `Verification`) ;
+    - les comptes de tests du convertisseur et d'`Alundra.Tests` (Release, copie neutralisée) ;
+    - la place libre sur D:.
+  - L'exécuteur rejoue la répétition à blanc depuis une copie de `dry_run.sh` dont `S` pointe un dossier neuf du scratchpad.
+    Il doit retrouver les mêmes 483 lignes.
 - ⏳ **T1 — Export de référence au HEAD**, avant tout changement : fenêtre calme, commande d'export ci-dessus ; sortie 0,
   `Verification: PASSED` ; `m1` contre `m0` : `report.json` seul (sinon on explique l'écart et on rebase, comme E14.a1a).
 - ⏳ **T2 — L'analyseur** (un appel Bash par commande git, `git -C <chemin absolu>`). `git switch -c chantier/e20er-tilecuteffectid` ;
   `TiledMapExporter.cs:275` devient `TiledProperty.Int("TileCutEffectId", gameMap.Info.BalanceLevel)` (CRLF conservé) ; la note du
   nom exporté est ajoutée à la description de la ligne 78 par un remplacement d'octets. Contrôles : `git diff --stat` = ces deux
   fichiers, une ligne chacun ; le blob garde ses 5 lignes à `0xD7` ; construction Release du projet de l'extracteur, 0 erreur ;
-  `rg BalanceLevel` dans l'analyseur ne montre plus que les sites de R4 et la doc des fiches d'ennemis. Indexation fichier par fichier,
+  `rg -l BalanceLevel alundra-datas-analyser` (depuis la racine du parent) rend exactement les 10 fichiers d'avant :
+  `TiledMapExporter.cs` y reste, car il garde `gameMap.Info.BalanceLevel`. Ces fichiers sont :
+  - `AlundraTools/AlundraDataExtractor/TiledMapExporter.cs` ;
+  - `AlundraTools/AlundraEngine/Balance/BalanceBin.cs`, `BalanceRecord.cs`, `EffectiveBalanceStats.cs` ;
+  - `AlundraTools/AlundraEngine/DatasBin/GameMapInfo.cs`, `AlundraTools/AlundraEngine/GameEngine.cs` ;
+  - `AlundraTools/AlundraGameRuntimeMcpServer/RuntimeHelperTools.cs` ;
+  - `AlundraTools/docs/balance-bin-structure.md`, `AlundraTools/docs/datas-bin-structure.md` ;
+  - `docs/alundra-tiled-map-exporter-agent-plan.md` (historique, gardée).
+  Dans `TiledMapExporter.cs`, `rg -c '"BalanceLevel"'` ne trouve rien et `rg -c '"TileCutEffectId"'` trouve 1. Indexation fichier par fichier,
   un commit (`fix(extractor): export the map header byte 9 as the TileCutEffectId Tiled property (E20.eR, D-E20-60)`). Ensuite
   `MGUI` et `log.txt` sont toujours non indexés.
 - ⏳ **T3 — Ré-extraction en dossier neuf.** Construction Release fraîche du commit de T2 ; lancement **hors du dépôt** vers
@@ -7496,22 +7553,31 @@ ne lit encore cet octet. Après la tranche, E20.e lit `TileCutEffectId`.
   (`chore(analyser): export the map header byte 9 as TileCutEffectId (E20.eR)`).
 - ⏳ **T6 — Test rouge, puis les noms** (pas de commit encore). D'abord le test réel de R6 dans `BalanceTablesTests.cs`. Les chemins
   des cartes sont déjà utilisés par `Alundra.Tests/Hero/FlailBounceTests.cs:306`, `Hero/PadSnapshotFreezeTests.cs:152-158` et
-  `Transitions/WarpArrivalTests.cs:111-115`. `Alundra.Tests` en Release avec `--blame-hang-timeout 60s`, au premier plan : le nouveau
+  `Transitions/WarpArrivalTests.cs:111-115`. `Alundra.Tests` en Release (copie neutralisée, voir Commandes) avec
+  `--blame-hang-timeout 60s`, au premier plan : le nouveau
   test est **rouge** (export périmé) et rien d'autre ne l'est. Puis la clé de `BalanceTablesTests.cs:155`, les commentaires
   `BalanceTables.cs:27` et `CellMetadataWriter.cs:13`, et `docs/formats/cells-companion.md:73`. Les tests du convertisseur gardent leur
   compte. `check_names.py --rules` vert.
 - ⏳ **T7 — Export 1, puis export 2 tout de suite**, fenêtre calme. `m2` contre `m1` : CHANGED = exactement les 966 chemins de
   `predicted_export_changes.tsv` plus `report.json`, ADDED et REMOVED vides ; le SHA-1 de chacun égal à sa prédiction (un petit script
   compare l'ensemble, la ligne de commande ne porte pas 967 chemins) ; `AssetInfos.json` identique ; `report.json` : `Errors` 0,
-  mêmes `Warnings`, mêmes compteurs, `OutputFileCount` inchangé, `OutputSizeBytes` = T1 + 2 898 + écarts du `report.json`, de la DLL
-  et du PDB mesurés ; `Verification: PASSED`. `rg -l BalanceLevel alundra-project` ne montre plus que `Data/balance.json`. `m3` contre
+  mêmes `Warnings`, mêmes compteurs, `OutputFileCount` inchangé, `OutputSizeBytes` = T1 + 2 898 + l'écart du
+  `report.json` présent sur le disque au moment de la mesure. La DLL et le PDB du projet sont ceux de T0 : SHA-1 revérifiés, aucune
+  construction ne les a déposés (voir Commandes). `Verification: PASSED`. `rg -l --no-ignore BalanceLevel alundra-project` ne
+  montre plus que `Data/balance.json`, et `rg -l --no-ignore TileCutEffectId alundra-project` montre les 966 fichiers prédits. `m3` contre
   `m2` : `report.json` seul.
-- ⏳ **T8 — Suites et commit du parent.** `Alundra.Tests` en Release puis en Debug : même compte plus le nouveau test, sans échec ;
-  `cmp` de `Alundra.dll` avec la DLL déposée ; garde des traces (`git diff --ignore-cr-at-eol --exit-code`, bruit de fins de ligne des
-  traces restauré par `git checkout --`). Un commit pour le test, les deux commentaires et la doc de format.
+- ⏳ **T8 — Suites et commit du parent.**
+  - `Alundra.Tests` en Release, avec la copie neutralisée.
+  - Puis en Debug, en dernier et sans la copie neutralisée : c'est la construction qui dépose `alundra-project/Alundra.dll` et
+    `Alundra.pdb`.
+  - Les deux suites : même compte plus le nouveau test, sans échec.
+  - `cmp` d'`Alundra/bin/Debug/net9.0-windows/Alundra.dll` (sortie de cette construction Debug) avec `alundra-project/Alundra.dll`.
+  - Garde des traces (`git diff --ignore-cr-at-eol --exit-code`) ; le bruit de fins de ligne des traces est restauré par
+    `git checkout --`.
+  - Un commit pour le test, les deux commentaires et la doc de format.
 - ⏳ **T9 — Plan et vérification.**
-  - Mises à jour du plan : ligne E20.eR du tableau (`:613`), l'esquisse de §1.27 (`:7446-7458`) remplacée par un renvoi ici avec la
-    mention « E20.e lit `TileCutEffectId` », Q-E3b faite, résultats mesurés de cette section, annexe.
+  - Mises à jour du plan : la ligne « E20.eR » du tableau du §1.1, Q-E3b faite, les résultats mesurés de cette section, l'annexe.
+    La révision 3 du §1.27 dit déjà qu'E20.e lit `TileCutEffectId` et exige E20.eR faite.
   - Un `verifier` frais (lancé par la session principale) rejoue l'export, les deux listes et le test.
 
 ##### Acceptation
@@ -7534,13 +7600,23 @@ ne lit encore cet octet. Après la tranche, E20.e lit `TileCutEffectId`.
   - Un processus sur l'arbre pendant l'export.
   - Toute idée de supprimer `alundra-project/` ou une sauvegarde.
   - Toute tentative d'indexer `CasaEngineMonogame/`, `MGUI`, `log.txt` ou `tools/`.
+  - La DLL ou le PDB du projet changent avant T8, ou la construction Debug de T8 ne peut pas les déposer (fichier verrouillé).
   - Un outil qui réencode `datas-bin-structure.md`.
 - **Budget** : un `executor`, deux tentatives au plus ; `plan-verifier` avant ; deux verifiers frais après (rejeu et adversarial).
-- **Retour arrière** :
-  - `git revert` des commits du parent, puis un export complet en place.
-  - Remettre le pointeur du sous-module.
-  - Renommer les dossiers dans l'autre sens (`remaster-data-extracted` → `remaster-data-extracted-er`, `….bak-er` → `remaster-data-extracted`), refaire le miroir depuis PowerShell, preuve `diff -rq`.
-  - La branche de l'analyseur n'est pas supprimée sans accord de l'auteur.
+- **Retour arrière**, dans cet ordre : les données d'abord, l'export en dernier, pour qu'il relise les anciennes données. Seules les
+  étapes déjà atteintes se défont.
+  1. Données, hors dépôt, depuis PowerShell, rien n'est supprimé.
+     - Renommer `remaster-data-extracted` → `remaster-data-extracted-er`, puis `remaster-data-extracted.bak-er` → `remaster-data-extracted`.
+     - `robocopy … /MIR` vers `data-extracted/`.
+     - Preuve : `diff -rq` remaster/`data-extracted/` vide (4 536 fichiers), et `rg -l --no-ignore TileCutEffectId data-extracted` vide.
+  2. Dépôts.
+     - `git revert` des commits du parent : le test, les commentaires et la doc ; le pointeur, qui revient à `fc16872`.
+     - Dans l'analyseur : `git -C <chemin absolu> switch master`. Les modifications locales de l'auteur suivent, intactes.
+     - La branche de l'analyseur n'est pas supprimée sans accord de l'auteur.
+  3. `Alundra.Tests` en Debug, pour déposer la DLL du code d'avant (en Release, toujours la copie neutralisée).
+  4. En dernier, un export complet en place, en fenêtre calme.
+     - `m` contre `m1` : CHANGED = `report.json` seul.
+     - `rg -l --no-ignore TileCutEffectId alundra-project` vide.
 
 ### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ⏳ (détaillée le 2026-10-18 ; **révision 3 du 2026-10-22** (réponses de l'auteur), nouvelle époque : à relire par un `plan-verifier` frais ; exécutable après E20.eR, E20.e0c révisée et faite)
 
@@ -7623,7 +7699,7 @@ ne lit encore cet octet. Après la tranche, E20.e lit `TileCutEffectId`.
   - `Alundra/SaveGames/TestSaves.cs` : préréglage `herbe-m14`.
 - Tests dans les dossiers miroirs (ADR-0080) : `Alundra.Tests/Cells/TileEffectTests.cs`, `TileEffectWorldTests.cs`, `Alundra.Tests/ExportGuards/TileCutEffectIdExportGuardTests.cs`.
 - Aussi : l'annexe `docs/plan-e20-annexe/e20-e/rev3/`, un ADR, `docs/decisions/README.md`. Les commentaires de `PlayerAnimationEffects` (doc de classe `:22-24` et bouchons « Stub (E20.e) ») renvoient les pas, la poussière et l'atterrissage à E20.e2.
-- La ligne d'enveloppe E20.e (`:614`) est réduite à la coupe de l'herbe.
+- La ligne d'enveloppe « E20.e » (§1.1) est réduite à la coupe de l'herbe. La ligne « E20.e2 », juste après, porte déjà le reste.
 
 **Hors périmètre.**
 - C94 (f4) et E12 (h3) : leur tranche ajoute l'appel.

@@ -1,0 +1,37 @@
+=== dropped medium heart 0x55 overlapping the hero, state 1
+tick 0: dialogOpen?=0, GiveItem(item=0x55) -> 0, SetGameFlag(0x0), sound(52) | +0x27C=3 +0x278=399 +0x1CC=0
+tick 1: dialogOpen?=0, Unblock(self), DestroyLight(self) | +0x27C=3 +0x278=398 +0x1CC=0
+=== posed medium heart 0x55 (flag 0), overlapping
+tick 0: dialogOpen?=0, GiveItem(item=0x55) -> 0, strcpy(name0x55), strcat(etc0x45), SetGameFlag(0xffffffff), sound(52), OPEN_MESSAGE(mode=0) | +0x27C=3 +0x278=0 +0x1CC=0
+tick 1: dialogOpen?=0, Unblock(self), DestroyLight(self) | +0x27C=3 +0x278=0 +0x1CC=0
+=== posed key object 0x04, fanfare busy 3 ticks, dialogue open from tick 2 to 6
+tick 0: dialogOpen?=0, GiveItem(item=0x4) -> 1, strcpy(name0x4), strcat(etc0x45), SetGameFlag(0xffffffff), Block(self), Bgm(0), CD_PlayTrack(11), OPEN_MESSAGE(mode=1), SetEtcAnimationMode(4) | +0x27C=2 +0x278=0 +0x1CC=0
+tick 1: CdBusy?=0, SetEtcAnimationMode(3), StopFanfareFade() | +0x27C=3 +0x278=0 +0x1CC=0
+tick 2: dialogOpen?=1 | +0x27C=3 +0x278=0 +0x1CC=0
+tick 3: dialogOpen?=1 | +0x27C=3 +0x278=0 +0x1CC=0
+tick 4: dialogOpen?=1 | +0x27C=3 +0x278=0 +0x1CC=0
+tick 5: dialogOpen?=1 | +0x27C=3 +0x278=0 +0x1CC=0
+tick 6: dialogOpen?=1 | +0x27C=3 +0x278=0 +0x1CC=0
+tick 7: dialogOpen?=0, Unblock(self), DestroyLight(self) | +0x27C=3 +0x278=0 +0x1CC=0
+=== posed 5 gildas 0x46
+tick 0: dialogOpen?=0, GiveItem(item=0x46) -> 0, strcpy(name0x46), strcat(etc0x45), SetGameFlag(0xffffffff), sound(53), OPEN_MESSAGE(mode=0) | +0x27C=3 +0x278=0 +0x1CC=0
+tick 1: dialogOpen?=0, Unblock(self), DestroyLight(self) | +0x27C=3 +0x278=0 +0x1CC=0
+=== posed herb 0x24
+tick 0: dialogOpen?=0, GiveItem(item=0x24) -> 0, strcpy(name0x24), strcat(etc0x45), SetGameFlag(0xffffffff), sound(52), OPEN_MESSAGE(mode=0) | +0x27C=3 +0x278=0 +0x1CC=0
+tick 1: dialogOpen?=0, Unblock(self), DestroyLight(self) | +0x27C=3 +0x278=0 +0x1CC=0
+=== posed heart, dialogue open for 3 ticks first
+tick 0: dialogOpen?=1 | +0x27C=1 +0x278=0 +0x1CC=0
+tick 1: dialogOpen?=1 | +0x27C=1 +0x278=0 +0x1CC=0
+tick 2: dialogOpen?=1 | +0x27C=1 +0x278=0 +0x1CC=0
+tick 3: dialogOpen?=0, GiveItem(item=0x55) -> 0, strcpy(name0x55), strcat(etc0x45), SetGameFlag(0xffffffff), sound(52), OPEN_MESSAGE(mode=0) | +0x27C=3 +0x278=0 +0x1CC=0
+tick 4: dialogOpen?=0, Unblock(self), DestroyLight(self) | +0x27C=3 +0x278=0 +0x1CC=0
+=== posed object at state 0 (ForceZ 0)
+tick 0: - | +0x27C=1 +0x278=0 +0x1CC=0
+tick 1: dialogOpen?=0, GiveItem(item=0x55) -> 0, strcpy(name0x55), strcat(etc0x45), SetGameFlag(0xffffffff), sound(52), OPEN_MESSAGE(mode=0) | +0x27C=3 +0x278=0 +0x1CC=0
+tick 2: dialogOpen?=0, Unblock(self), DestroyLight(self) | +0x27C=3 +0x278=0 +0x1CC=0
+=== posed object whose flag +0x40 = 5 (so +0x278 = 5): the countdown destroys it
+tick 0: dialogOpen?=0 | +0x27C=1 +0x278=4 +0x1CC=0
+tick 1: dialogOpen?=0 | +0x27C=1 +0x278=3 +0x1CC=0
+tick 2: dialogOpen?=0 | +0x27C=1 +0x278=2 +0x1CC=0
+tick 3: dialogOpen?=0 | +0x27C=1 +0x278=1 +0x1CC=0
+tick 4: DestroyLight(self) | +0x27C=1 +0x278=0 +0x1CC=0

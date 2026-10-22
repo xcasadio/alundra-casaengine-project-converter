@@ -1,0 +1,7 @@
+maps 483 entity objects 9741
+props {'Index': 9741, 'XMin': 9741, 'YMin': 9741, 'XMax': 9741, 'YMax': 9741, 'IsEnabled': 9741, 'SpriteDirection': 9741, 'SpriteTableIndex': 9741, 'XPos': 9741, 'YPos': 9741, 'Height': 9741, 'EventCodesA_LoadIndex': 9741, 'EventCodesB_MapIndex': 9741, 'EventCodesC_TickIndex': 9741, 'EventCodesD_TouchIndex': 9741, 'EventCodesE_DeactivateIndex': 9741, 'EventCodesF_InteractIndex': 9741, '_10': 9741, 'Contents': 9741, 'DisplayX': 9741, 'DisplayY': 9741, 'DisplayHeight': 9741, 'DisplayPixelX': 9741, 'DisplayPixelY': 9741, 'EntityName': 9741}
+placed pickups (exported): 152 types 53
+C native: 59 maps 25 A native among them 59
+map 11 count among native: 31
+flag _10 non zero: 0  contents non-zero: 0
+A native / C script 36  both script 57
