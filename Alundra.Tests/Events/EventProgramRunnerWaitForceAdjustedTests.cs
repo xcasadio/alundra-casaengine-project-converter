@@ -8,13 +8,13 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.d D4 (docs/plan-e19-opcodes.md §1.2g, D-E19-21), tests U1 to U4: opcode <c>0x24</c> (Wait force adjusted, <c>0x8003DB70</c>, size 1)
 /// returns 1 when the LOGIC entity's <c>ForceAdjusted</c> is nonzero, else 0. No operand, no memory, no detour, no timer.
 /// </summary>
-public class AlundraEventProgramRunnerWaitForceAdjustedTests
+public class EventProgramRunnerWaitForceAdjustedTests
 {
     private static EventProgramDocument NewDocument(params int[] codes) => new()
     {

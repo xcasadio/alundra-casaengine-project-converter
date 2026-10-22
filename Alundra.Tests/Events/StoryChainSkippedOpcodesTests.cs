@@ -8,7 +8,7 @@ using static Alundra.Tests.Support.StoryChainOpcodeAudit;
 using Alundra.Events;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.e E1 (docs/plan-e19-opcodes.md §1.2i): the closed list of the opcodes the interpreter skips by their size on the 30 maps of
@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 /// E19.e (A13, A14, A15, A17, A18) in their own tests; here its function is tested on a made-up trace.
 /// A missing export FAILS the corpus tests naming it, never skips them.
 /// </summary>
-public class AlundraStoryChainSkippedOpcodesTests
+public class StoryChainSkippedOpcodesTests
 {
     private static readonly Lazy<IReadOnlyList<ReachedSite>> Corpus = new(() =>
     {

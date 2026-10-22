@@ -6,14 +6,14 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.h1b2 (docs/plan-e19-opcodes.md §1.2n.1c, H1B2-R1): the opcodes <c>0x20</c> (<c>0x8003D9BC</c>, size 3), <c>0x22</c> (<c>0x8003DA70</c>, size 1) and
 /// <c>0x23</c> (<c>0x8003DB28</c>, size 1). Every value is a row of <c>docs/plan-e19-h1b2-annexe/handlers_emu.txt</c> (the real code of the binary run in an
-/// interpreter), written before the code. Same montage as <see cref="AlundraZWaitOpcodesTests"/>: the opcode sits at pc 1 behind a <c>0x01</c>.
+/// interpreter), written before the code. Same montage as <see cref="ZWaitOpcodesTests"/>: the opcode sits at pc 1 behind a <c>0x01</c>.
 /// </summary>
-public class AlundraHeightWaitOpcodesTests
+public class HeightWaitOpcodesTests
 {
     private const string NoRecordWarning = "Opcode 0x22 without an entity record: the wait ends.";
 

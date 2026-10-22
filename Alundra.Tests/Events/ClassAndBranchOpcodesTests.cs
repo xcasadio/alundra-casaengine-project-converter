@@ -10,7 +10,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.l1 L1-1 (docs/plan-e19-opcodes.md, section 1.2m.1): the class opcodes 0x28/0x29/0x2A/0x2B, the riding predicate 0x3F,
@@ -18,7 +18,7 @@ namespace Alundra.Tests;
 /// bytecode. Every value is the binary's (handlers 0x8003DC24-0x8003DC6C, 0x8003E734, 0x8003E9EC, 0x8003EE28/0x8003EE5C,
 /// 0x8003F144).
 /// </summary>
-public sealed class AlundraClassAndBranchOpcodesTests
+public sealed class ClassAndBranchOpcodesTests
 {
     private const int ResultBefore = 7;
 

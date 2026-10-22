@@ -9,7 +9,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Rng;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.m1 (docs/plan-e19-opcodes.md, section 1.2s.2, M-47): opcodes <c>0x5A</c> (<c>0x8003EEF4</c>) and <c>0x5B</c> (<c>0x8003EF80</c>)
@@ -18,11 +18,11 @@ namespace Alundra.Tests;
 /// the loop writes). The class is in the collection that serialises the generator's static state.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraTurnOrderTests : IDisposable
+public sealed class TurnOrderTests : IDisposable
 {
     private const ulong Seed = 0xB017C93D;
 
-    public AlundraTurnOrderTests() => GameRandom.Reset();
+    public TurnOrderTests() => GameRandom.Reset();
 
     public void Dispose() => GameRandom.Reset();
 

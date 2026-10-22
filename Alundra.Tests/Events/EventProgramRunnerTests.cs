@@ -17,14 +17,14 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// Covers <see cref="EventProgramRunner"/>'s interpreter core on synthetic bytecode (not real
 /// map data - see <see cref="MapEventProgramLoaderTests"/> for path resolution/loading, and the
 /// self-skipping map-389 test below for a real decoded program).
 /// </summary>
-public class AlundraEventProgramRunnerTests
+public class EventProgramRunnerTests
 {
     private static EventProgramDocument NewDocument(params int[] codes)
     {
@@ -3052,7 +3052,7 @@ public class AlundraEventProgramRunnerTests
         }
 
         throw new System.InvalidOperationException(
-            $"AlundraEventProgramRunnerTests: no 'alundra-project/Maps' directory found above "
+            $"EventProgramRunnerTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - the 0x3B production-site test needs the real converter "
             + "export of map 389 and cannot self-skip without one (docs/plan-e7-mutation-tuiles.md, "
             + "slice E7.c, acceptance item 2 bis).");

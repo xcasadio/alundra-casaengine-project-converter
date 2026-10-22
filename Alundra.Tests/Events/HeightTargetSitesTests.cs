@@ -7,7 +7,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.h1b3 (docs/plan-e19-opcodes.md §1.2n.1d, H1B3-2): the real sites of <c>0x22</c> / <c>0x23</c> of the export, the 33 instances of the 17 programs listed in
@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// the zone and the dialogue button pressed on every dialogue frame.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHeightTargetSitesTests
+public sealed class HeightTargetSitesTests
 {
     internal sealed record Site(string Id, int Map, int HeroX, int HeroY, int HeroZ, int Rec, int Slot, int Pc, int Opcode, int Frames,
         int FirstFrame, int EndFrame, int Calls, int EndPosZ)

@@ -6,7 +6,7 @@ using Alundra.Entities;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.m9 (docs/plan-e19-opcodes.md section 1.2s.10, O-E19-34): the binary's <c>InitializeEventData</c> (0x80041EE4) writes only the
@@ -14,7 +14,7 @@ namespace Alundra.Tests;
 /// +0x28) survive a re-initialization. It matters only for a program re-initialized while its FIRST instruction waits: any instruction
 /// that advances puts the marker back to 0. Values from <c>docs/plan-e19-m9-annexe/dynamic.md</c>.
 /// </summary>
-public sealed class AlundraInitializeEventDataTests
+public sealed class InitializeEventDataTests
 {
     /// <summary>@0 0x01, @1 0xFF, then the program at @2 (never at pc 0, where a zero marker would already match):
     /// <c>0x37 n</c> (Wait), <c>0x1A 9</c> (SetAnim 9), <c>0xFF</c>.</summary>

@@ -6,6 +6,7 @@ using Xunit;
 using Alundra.Maps.Loop;
 using Alundra.Cameras;
 using Alundra.Maps;
+using Alundra.Tests.Events;
 
 namespace Alundra.Tests.Maps;
 
@@ -22,7 +23,7 @@ namespace Alundra.Tests.Maps;
 /// that state transition (<see cref="WorldProxy.UpdateCameraFollow"/>'s own null-guard/field
 /// writes, and <see cref="WorldProxy.ResolveDebugCameraOnce"/>) -
 /// same shape as <see cref="WorldProxyDebugCameraPanTests"/>'s own doc on
-/// <see cref="WorldProxy.UpdateDebugCameraPan"/>. <see cref="AlundraEventProgramRunnerTests"/> covers
+/// <see cref="WorldProxy.UpdateDebugCameraPan"/>. <see cref="EventProgramRunnerTests"/> covers
 /// opcodes 0x67/0x68/0x69 (the only way <see cref="WorldProxy.EntityFollowedByCamera"/> is written
 /// at runtime, besides pawn adoption).
 /// </summary>

@@ -8,14 +8,14 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.d2c1 R4 (docs/plan-e19-opcodes.md §1.2h.3.1), test UJ-2: opcode <c>0x25</c> (<c>0x8003DB7C</c>, size 1) returns 1 when the LOGIC
 /// entity's <c>CollidedWithEntityZ</c> (+0x140) or <c>IsOnGround</c> (+0x144) is nonzero, else 0. No operand, no memory, no side effect.
-/// Same montage as <see cref="AlundraEventProgramRunnerWaitForceAdjustedTests"/>.
+/// Same montage as <see cref="EventProgramRunnerWaitForceAdjustedTests"/>.
 /// </summary>
-public class AlundraEventProgramRunnerWaitCollidedZTests
+public class EventProgramRunnerWaitCollidedZTests
 {
     private static EventProgramDocument NewDocument(params int[] codes) => new()
     {

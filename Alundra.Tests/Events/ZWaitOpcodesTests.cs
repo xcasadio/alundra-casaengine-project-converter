@@ -5,15 +5,15 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.h1 H1-1 (docs/plan-e19-opcodes.md §1.2n.1): the Z wait opcodes <c>0x21</c> (<c>0x8003DA28</c>, size 3), <c>0x26</c>
 /// (<c>0x8003DBA8</c>, 1), <c>0x47</c> (<c>0x8003E984</c>, 1), <c>0x48</c> (<c>0x8003E9B0</c>, 1) and the reader <c>0x6F</c>
-/// (<c>0x8003F9E8</c>, 1). Same montage as <see cref="AlundraEventProgramRunnerWaitCollidedZTests"/>: the opcode sits at pc 1
+/// (<c>0x8003F9E8</c>, 1). Same montage as <see cref="EventProgramRunnerWaitCollidedZTests"/>: the opcode sits at pc 1
 /// behind a <c>0x01</c> (a memo on <c>CodeIndex</c> 0 would be confused with the value cleared in advance).
 /// </summary>
-public class AlundraZWaitOpcodesTests
+public class ZWaitOpcodesTests
 {
     private static EventProgramDocument NewDocument(params int[] codes) => new()
     {

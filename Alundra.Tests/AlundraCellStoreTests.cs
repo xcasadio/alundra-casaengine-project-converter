@@ -6,13 +6,14 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.Physics;
 using Alundra.Cells;
+using Alundra.Tests.Events;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// Covers <see cref="CellStore"/> against the REAL map 389 ("Ship Klark (beginning)") cell data.
 /// docs/plan-e7-mutation-tuiles.md, slice E7.a, acceptance 2 and 4. Acceptance 1 (synthetic, per-opcode
-/// dispatch) lives in <see cref="AlundraEventProgramRunnerTests"/>; acceptance 3 (the production call
+/// dispatch) lives in <see cref="EventProgramRunnerTests"/>; acceptance 3 (the production call
 /// site, via the real headless intro harness) lives in <see cref="AlundraCellStoreProductionTests"/>.
 ///
 /// E7.b (docs/plan-e7-mutation-tuiles.md, acceptance item 9, picking up an E7.a deferral): these used to

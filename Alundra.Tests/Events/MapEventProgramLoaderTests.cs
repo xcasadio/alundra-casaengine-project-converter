@@ -3,7 +3,7 @@ using System.IO;
 using Xunit;
 using Alundra.Events;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// Covers <see cref="MapEventProgramLoader"/>'s path resolution and degraded-mode contract (see its

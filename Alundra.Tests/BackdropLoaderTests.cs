@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Xunit;
 using Alundra.Rendering.Backdrops;
+using Alundra.Tests.Events;
 
 namespace Alundra.Tests;
 

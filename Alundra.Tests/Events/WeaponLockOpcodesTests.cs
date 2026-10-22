@@ -13,7 +13,7 @@ using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E20.f0 T1 and T2 (docs/plan-e20-heros.md section 1.8): the scripted weapon opcodes 0xC0 (Script_192_0C0 @ 0x80041CDC, size 2) and 0xC1
@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 /// Expected values are written from the disassembly of ALUN_CD.EXE (France), never read back from the code under test:
 /// 0xC0 = SetPlayerWeaponId(v1 + 1) then [0x800DC4B8] |= 0x80, returns 2; 0xC1 = [0x800DC4B8] &amp;= ~0x80, returns 1; Result untouched.
 /// </summary>
-public sealed class AlundraWeaponLockOpcodesTests
+public sealed class WeaponLockOpcodesTests
 {
     private const int ResultBefore = 7;
     private const uint Lock = GameState.PlayerControlBits.ForcedWeapon;

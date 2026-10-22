@@ -9,7 +9,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.a T1 to T4 (docs/plan-e19-opcodes.md §0.2.3, §1.2): the logic entity of the interpreter. Every handler is
@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 /// (<c>0x80042284</c>); <c>0x42</c> and <c>0x43</c> are the only writers of the owner's word. The program state
 /// stays the owner's. Documents are synthetic, built with the tables of the slot under test.
 /// </summary>
-public class AlundraEventProgramRunnerLogicEntityTests
+public class EventProgramRunnerLogicEntityTests
 {
     private static EventProgramDocument NewDocument(params int[] codes) => new()
     {

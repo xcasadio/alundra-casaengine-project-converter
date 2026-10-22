@@ -17,7 +17,7 @@ using Alundra.Rendering.Backdrops;
 using Alundra.Audio;
 using Alundra.Transitions;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.k2 (docs/plan-e19-opcodes.md, section 1.2k.2, rule K2-R2): the background layer mask opcode <c>0xA4 [b1, b2]</c>.
@@ -26,9 +26,9 @@ namespace Alundra.Tests;
 /// the identifier of the binary, not by its place in the service). A palette bank <c>b2 &gt; 0</c> (the palette cycle,
 /// O-E19-43) is not ported: logged once, traced as degraded.
 /// </summary>
-public sealed class AlundraBackgroundLayerMaskTests : IDisposable
+public sealed class BackgroundLayerMaskTests : IDisposable
 {
-    public AlundraBackgroundLayerMaskTests()
+    public BackgroundLayerMaskTests()
     {
         // D-T-14 (docs/plan-transitions-carte.md): this class constructs an AlundraWorldProxy, so it resets the session carriers in its constructor (the
         // isolation-carrying element) and in Dispose (hygiene).

@@ -7,6 +7,7 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Tests.Events;
 
 namespace Alundra.Tests;
 
@@ -14,7 +15,7 @@ namespace Alundra.Tests;
 /// Runs the real map 389 ("Ship Klark (beginning)") Load programs end to end, off the converter's own
 /// output in alundra-project/ - self-skips when that directory is absent (it is regenerable output, not
 /// guaranteed to exist on a fresh clone; the synthetic tests in
-/// <see cref="AlundraEventProgramRunnerTests"/> carry the interpreter's correctness guarantees on their
+/// <see cref="EventProgramRunnerTests"/> carry the interpreter's correctness guarantees on their
 /// own). Exercises the exact scenario the interpreter was built for: sailors ending up on their real
 /// Load-program animation instead of TargetAnimationId staying 0.
 /// </summary>

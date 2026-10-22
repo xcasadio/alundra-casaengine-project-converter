@@ -8,14 +8,14 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.l2 L2-1 (docs/plan-e19-opcodes.md, section 1.2m.2): opcode 0x9F, "is the chest opened", through the real interpreter.
 /// Binary 0x80040C80: the first match of the search v1 decides (its ContentsGameFlag non-zero and set), and the handler ALWAYS
 /// returns its size (2): it never suspends - the wait is the shape of the scripts (<c>00; 9F; 04</c>).
 /// </summary>
-public sealed class AlundraChestOpcodeTests
+public sealed class ChestOpcodeTests
 {
     private const int ResultBefore = 7;
 

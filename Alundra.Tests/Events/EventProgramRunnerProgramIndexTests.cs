@@ -9,7 +9,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.d D6 (docs/plan-e19-opcodes.md §1.2g, D-E19-22), tests U5 to U13 (U9 abandoned, no site in the corpus): opcodes <c>0x40</c> (Set program
@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// Break or a suspension too, whatever v1); otherwise the logic entity's own state is cleared at once. A program slot v1 of 6 or more does
 /// nothing (the original would write past its array), with one warning per opcode.
 /// </summary>
-public class AlundraEventProgramRunnerProgramIndexTests
+public class EventProgramRunnerProgramIndexTests
 {
     private static EventProgramDocument NewDocument(params int[] codes) => new()
     {

@@ -10,7 +10,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Events;
 
 /// <summary>
 /// E19.m8 M-07 / O-E19-14 / O-E19-79 (docs/plan-e19-opcodes.md section 1.2s.9, M8-b then M8-d): the static guard on the corpus of the finding of E19.c2,
@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// a retarget made by another program could reach a <c>0x1A</c> with no retarget visible in its own program; the census assumes a program starts on its
 /// owner. That is verified for the Flames, not for the whole corpus.
 /// </summary>
-public class AlundraMissingAnimationWaitCorpusTests
+public class MissingAnimationWaitCorpusTests
 {
     private sealed record Site(int Map, int Pc, int Animation, int SetCount, string Prefab, string Entity);
 
