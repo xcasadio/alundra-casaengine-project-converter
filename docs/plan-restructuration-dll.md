@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), révisée le 2026-10-22 (révision 2 : D-R-16, D-R-18, D-R-19), relecture à faire (Q-R-4c tranchée, D-R-20) ; R6b décidée (D-R-20) ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), révisée le 2026-10-22 (révisions 2, 2b et 3) et **READY** à sa relecture du 2026-10-22, en attente de l'accord d'exécution ; R6b décidée (D-R-20) ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -899,7 +899,7 @@ après R6 ; **P4** des commentaires et des `<c>` gardent les anciens noms (≈ 9
 ligne vient du harnais des exécuteurs), ceux de T0 « Claude Opus 5.5 ». Reste la recette de l'auteur : nouvelle partie, les entités bougent,
 F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité sans avertissement.
 
-## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17 ; révision 1 **READY** ; Q-R-3 tranchée le 2026-10-22, D-R-13, D-R-16, D-R-19, ADR-0080 ; révisions 2 et 2b, REVISE, **révision 3** le 2026-10-22 ; relecture neuve à faire)
+## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17 ; révision 1 **READY** ; Q-R-3 tranchée le 2026-10-22, D-R-13, D-R-16, D-R-19, ADR-0080 ; révisions 2 et 2b, REVISE, **révision 3** le 2026-10-22, **READY** à la seconde relecture de l'époque ; attend l'accord de l'auteur pour son exécution)
 
 **Relecture (2026-10-17).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) le hachage de `Alundra.dll` ne pouvait pas rester
 égal : la version informative de l'assembly porte le commit (`Alundra/obj/Debug/net9.0-windows/Alundra.AssemblyInfo.cs:16`,
@@ -927,7 +927,7 @@ dans un bloc que P-R5-1 coupe au même commit (`AlundraSoundBankTests.cs:187` et
 `AlundraSoundBankAttributeTests` et `AlundraSoundBankChainTests`), ou sous un bloc coupé (`AlundraMusicPlayerTests.cs:107`, `:164`, sous
 la collection de la musique) ; la règle du fichier neuf ne permettait pas ces changements et les entrées se repéraient par leur ligne.
 **Révision 3** : les entrées Q1, L1 et de capture se repèrent par leur occurrence au commit parent ; une entrée d'un bloc coupé le suit
-dans le fichier neuf ; deux preuves de T0c de plus. Prochaine relecture : un relecteur neuf (second de l'époque).
+dans le fichier neuf ; deux preuves de T0c de plus. **Seconde relecture de l'époque (relecteur neuf, révision 3) : READY.**
 
 **But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/`, `Support/` et `ExportGuards/`, sur le modèle de la DLL (un
 dossier = un namespace) ; les classes de test sans préfixe `Alundra` ; **aucune valeur attendue changée, aucun test ajouté ni retiré** ;
