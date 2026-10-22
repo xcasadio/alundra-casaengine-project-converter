@@ -8,17 +8,17 @@ using Alundra.Hero;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.i T4 (docs/plan-e20-heros.md section 1.14): the swim on the REAL world, through the production path (<see cref="HitArena"/>: the arcs' real map, the real prefabs, the real exported animations, the world's own
-/// <c>Update</c>), where <see cref="AlundraHeroSwimTests"/> uses the montage on a synthetic field. One arc, on the pond of map 14 (<c>Overworld 3,1-14</c>): 81 deep cells at the tiles x 40 to 46, y 43 to 59, height 0,
+/// <c>Update</c>), where <see cref="HeroSwimTests"/> uses the montage on a synthetic field. One arc, on the pond of map 14 (<c>Overworld 3,1-14</c>): 81 deep cells at the tiles x 40 to 46, y 43 to 59, height 0,
 /// the shores at height 1. The hero stands on the shore at tile (40, 48), height 1, walks south, falls the 16 pixels of the bank into the water, floats one tick, swims, bursts with the Triangle (42 ticks, 90112 of force
 /// south), swims on and stops against the bank at the south end of the pond. Written before the first run (the numbers are the oracle's: the swim 73728 south, the burst 90112, the float then the swim after a fall).
 /// The same arc without boots is pinned as a deviation: the original stops a hero without the swim boots at the edge of the deep water (O-E19-22, not ported), this one swims.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHeroSwimArenaTests : IDisposable
+public sealed class HeroSwimArenaTests : IDisposable
 {
     private const uint Triangle = PadState.Triangle;
     private const uint Down = PadState.Down;
@@ -31,7 +31,7 @@ public sealed class AlundraHeroSwimArenaTests : IDisposable
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
-    public AlundraHeroSwimArenaTests()
+    public HeroSwimArenaTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

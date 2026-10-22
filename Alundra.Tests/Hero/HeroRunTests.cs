@@ -9,7 +9,7 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.d1 T4 (docs/plan-e20-heros.md section 1.13): the run of the Triangle, tick by tick against the run oracle (<c>docs/plan-e20-annexe/e20-d/oracle/out/</c>: the real code of <c>ALUN_CD.EXE</c> (France) in the MIPS
@@ -21,11 +21,11 @@ namespace Alundra.Tests;
 /// the step (sound 12, dust) and the landing (sound 11, effect 7) are stubs of E20.e; the hurt of the Beannoid (columns after the blow) is E20.c2b; the sound 3 of a Circle pressed in the preparation is the item driver
 /// <c>TryUseItem</c> (E20.h); the east wall bounces one tick EARLY (O-E19-42 / D-E19-58: the DLL stops at the contact where the binary stops one unit short), the traces of that wall are compared with the DLL's pad shifted
 /// by one tick from the bounce on; the ground column of a ledge is compared one tick late at the tick of the loss (O-E20-12, as AT8); the deep-water wall without boots (O-E19-22) and the clamp at the border
-/// of the map (O-E19-17) are not ported (the swim is E20.i's: see <see cref="AlundraHeroSwimTests"/>).
+/// of the map (O-E19-17) are not ported (the swim is E20.i's: see <see cref="HeroSwimTests"/>).
 /// </para>
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraHeroRunTests : IDisposable
+public sealed class HeroRunTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
@@ -39,7 +39,7 @@ public sealed class AlundraHeroRunTests : IDisposable
     private const uint Tackle = 4;
     private const uint Bounce = 0x3E;
 
-    public AlundraHeroRunTests()
+    public HeroRunTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

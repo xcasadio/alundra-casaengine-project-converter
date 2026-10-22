@@ -8,11 +8,11 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.d1 T4 (docs/plan-e20-heros.md section 1.13): the run on the REAL world, through the production path (<see cref="ArcRun"/>, real prefabs, the real exported animations and the world's own <c>Update</c>), where
-/// <see cref="AlundraHeroRunTests"/> uses the montage of E20.b. One arc, on map 14 (the ladder of the ship, map 389, cannot be played here: its intro locks the hero and moves him, see the plan):
+/// <see cref="HeroRunTests"/> uses the montage of E20.b. One arc, on map 14 (the ladder of the ship, map 389, cannot be played here: its intro locks the hero and moves him, see the plan):
 /// <list type="bullet">
 /// <item><description>map 14 (<see cref="HitArena"/>, the flat free cells of the oracle): the hero runs east at a Beannoid 152 pixels away, with and without the tackle, tick by tick against the run oracle
 /// (G7: <c>R7-run-into-beannoid</c> and the sweep of the press tick <c>g7/tackle/R7-tackle-s30</c> to <c>s62</c>). The real exported animations give the lengths of the preparation (25 ticks) and of the tackle (32), the real
@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 /// </list>
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHeroRunArenaTests : IDisposable
+public sealed class HeroRunArenaTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
@@ -29,7 +29,7 @@ public sealed class AlundraHeroRunArenaTests : IDisposable
     private const int HeroPixelY = 96;
     private const int TargetPixelX = 252;
 
-    public AlundraHeroRunArenaTests()
+    public HeroRunArenaTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

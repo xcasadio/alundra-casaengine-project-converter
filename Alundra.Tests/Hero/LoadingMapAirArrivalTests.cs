@@ -7,7 +7,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E19.v (docs/plan-e19-opcodes.md section 1.2z, O-E19-32): the LoadingMap case of the binary's MovePlayer (0x800325E8) gives 0x2D as soon as
@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 /// map 10 (the witness). Real controller and prefabs, no input.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraLoadingMapAirArrivalTests
+public sealed class LoadingMapAirArrivalTests
 {
     private const uint LoadingMap = 0x36;
     private const uint AirStill = 0x2D;

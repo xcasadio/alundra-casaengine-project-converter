@@ -8,7 +8,7 @@ using Xunit;
 using Alundra.Hero;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// Covers <see cref="HeroController"/>'s input-mapping registration
@@ -18,7 +18,7 @@ namespace Alundra.Tests;
 /// wrap around a live <c>CasaEngineGame</c>, which this project's headless test process cannot construct
 /// (same constraint as <see cref="WorldProxy"/>'s own live-World tests).
 /// </summary>
-public class AlundraPlayerControllerTests
+public class PlayerControllerTests
 {
     private static string? FindProjectRoot()
     {

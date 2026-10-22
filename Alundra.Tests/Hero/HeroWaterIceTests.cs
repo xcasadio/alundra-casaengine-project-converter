@@ -9,7 +9,7 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E19.d2c1 C4 (docs/plan-e19-opcodes.md §1.2h.3.1, R7 and the x160 of R6): the water, the ice and the lower jump of the hero, and the boots level, read
@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 /// (<see cref="FlatCells"/>: walkability <c>0x18</c> = water and the x160 bit, <c>0x20</c> = ice, height 0 or 16 px), one settling update at rest, the pad
 /// locked (the animation and the direction are written by the test).
 /// </summary>
-public class AlundraHeroWaterIceTests
+public class HeroWaterIceTests
 {
     private const int East = 24;
 

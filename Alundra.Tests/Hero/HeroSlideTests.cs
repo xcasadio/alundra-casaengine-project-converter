@@ -14,7 +14,7 @@ using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E19.h4 H4-1 (docs/plan-e19-opcodes.md §1.2n.4, rules H4-R1, H4-R2, H4-R4): the slide of the hero along a wall (binary <c>ComputeXYPosition</c> <c>0x80037730</c>, the table
@@ -24,7 +24,7 @@ namespace Alundra.Tests;
 /// line port of the binary's routine on the same grid).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHeroSlideTests : IDisposable
+public sealed class HeroSlideTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
@@ -35,7 +35,7 @@ public sealed class AlundraHeroSlideTests : IDisposable
     private const int West = 8;
     private const int NorthEast = 20;
 
-    public AlundraHeroSlideTests()
+    public HeroSlideTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

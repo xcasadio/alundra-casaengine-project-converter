@@ -15,6 +15,7 @@ using Alundra.Physics;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
+using Alundra.Tests.Hero;
 
 namespace Alundra.Tests.Maps.Loop;
 
@@ -22,7 +23,7 @@ namespace Alundra.Tests.Maps.Loop;
 /// E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): <see cref="GameplayFreeze"/> - the engine's
 /// own gravity integration and sprite animation frozen while GameplayBlockedMask is posed, and given back
 /// exactly. The production call sites (a real hero, a real ladder, a real frame with zero logic ticks) are
-/// in <see cref="AlundraLadderClimbTests"/>; the world-level wiring is the last test here.
+/// in <see cref="LadderClimbTests"/>; the world-level wiring is the last test here.
 /// </summary>
 public sealed class GameplayFreezeTests : IDisposable
 {

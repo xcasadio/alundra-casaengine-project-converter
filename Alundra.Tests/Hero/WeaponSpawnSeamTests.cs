@@ -11,7 +11,7 @@ using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.f3a (docs/plan-e20-heros.md section 1.19.1, D-F3-3, D-F3-4): the seam that wires the shot of the hero to <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> without wiring any type.
@@ -21,11 +21,11 @@ namespace Alundra.Tests;
 /// never works cannot pass. The shot is the one of Hunter's Bow (record 8, ground): the pointer is armed with its counter at the delay, so that the next tick of <c>MovePlayer</c> reaches the spawn.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraWeaponSpawnSeamTests : IDisposable
+public sealed class WeaponSpawnSeamTests : IDisposable
 {
     private const int Arrow = 3;
 
-    public AlundraWeaponSpawnSeamTests() => Reset();
+    public WeaponSpawnSeamTests() => Reset();
 
     public void Dispose() => Reset();
 

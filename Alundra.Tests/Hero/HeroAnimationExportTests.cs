@@ -5,7 +5,7 @@ using Alundra.Maps.Loop;
 using Alundra.Entities;
 using Alundra.Hero;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E2 acceptance check: the hero bank's converted animation assets (<c>Entities/Alundra/</c>,

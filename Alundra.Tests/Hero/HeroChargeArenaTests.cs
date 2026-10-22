@@ -11,15 +11,15 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.f1a T5 (docs/plan-e20-heros.md section 1.9): the charge on the REAL world of map 14 (<see cref="HitArena"/>: the production path, the real hit pass, a real Beannoid), with the steel sword (item 2, slot 1).
-/// Two things the montage of <see cref="AlundraHeroChargeTests"/> cannot show: the effects reach the WORLD's reservoir through the stage the world drives (the world marks the hero's operations itself, rank 1), and the
+/// Two things the montage of <see cref="HeroChargeTests"/> cannot show: the effects reach the WORLD's reservoir through the stage the world drives (the world marks the hero's operations itself, rank 1), and the
 /// charged swing 0x18 touches a Beannoid.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHeroChargeArenaTests : IDisposable
+public sealed class HeroChargeArenaTests : IDisposable
 {
     private const uint Square = PadState.Square;
     private const int SteelEdge = 2;
@@ -29,7 +29,7 @@ public sealed class AlundraHeroChargeArenaTests : IDisposable
     private readonly ulong _previousSeed = GameRandom.RandomSeed;
     private readonly ITestOutputHelper _output;
 
-    public AlundraHeroChargeArenaTests(ITestOutputHelper output)
+    public HeroChargeArenaTests(ITestOutputHelper output)
     {
         _output = output;
         GameState.Instance.ResetForTests();

@@ -16,7 +16,7 @@ using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.b B5 (docs/plan-e20-heros.md section 1.4): the sword swing without damage, tick by tick against the attack oracle
@@ -28,7 +28,7 @@ namespace Alundra.Tests;
 /// charge timer (E20.f), the frame box and the attack pointer (E20.c1) are not compared.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHeroAttackTests : IDisposable
+public sealed class HeroAttackTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
@@ -38,7 +38,7 @@ public sealed class AlundraHeroAttackTests : IDisposable
     private const uint Up = PadState.Up;
     private const int LandingSound = 11;
 
-    public AlundraHeroAttackTests()
+    public HeroAttackTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

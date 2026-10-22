@@ -10,6 +10,7 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
+using Alundra.Tests.Hero;
 
 namespace Alundra.Tests;
 
@@ -283,7 +284,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
     /// REAL slot-F pick (the sim's own per-entity Update, not a direct RunScript) → 0x27+0x0D → the
     /// dialogue opens, survives its own opening press (D-E12D-6), closes on later presses, and NEVER
     /// reopens uncommanded (consume-on-pick, D-E12D-4). The per-frame MovePlayer call and the contact of the hero's step
-    /// here are the harness MIRROR of the two production sites <see cref="AlundraInteractionPassTests"/>
+    /// here are the harness MIRROR of the two production sites <see cref="InteractionPassTests"/>
     /// pins (the F1 contract: a mirror only stands when the production site carries its own test).
     /// Mirror order matches production phase: MovePlayer consumes the PREVIOUS frame's contact
     /// (events before physics in the original, EntityManager.cs:377-387), so the hook runs MovePlayer

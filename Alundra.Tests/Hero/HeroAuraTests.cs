@@ -6,7 +6,7 @@ using CasaEngine.Framework.Rendering.EffectQuads;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Microsoft.Xna.Framework;
 using Xunit;
-using static Alundra.Tests.AlundraHeroChargeTests;
+using static Alundra.Tests.Hero.HeroChargeTests;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Rng;
@@ -14,21 +14,21 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.f1b (docs/plan-e20-heros.md section 1.9, ADR-0057, ADR-0059): the aura of the charge, at one tick per frame on the montage of the charge (the steel sword, C2-steel), against the oracle
 /// (<c>docs/plan-e20-annexe/e20-f1/oracle</c>: the binary's own <c>0x8003BE74</c> over a real pool): the creation at the counter 11, the renewal every 97 ticks of a held charge, the retry on a full reservoir, the release
-/// below 11, and the stale handle of the original (D-E20-30). The frames of several ticks and the draw order are in <see cref="AlundraHeroAuraWorldTests"/>.
+/// below 11, and the stale handle of the original (D-E20-30). The frames of several ticks and the draw order are in <see cref="HeroAuraWorldTests"/>.
 /// </summary>
-public sealed class AlundraHeroAuraTests : IDisposable
+public sealed class HeroAuraTests : IDisposable
 {
     private const uint Square = PadState.Square;
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
     private readonly ulong _previousSeed = GameRandom.RandomSeed;
 
-    public AlundraHeroAuraTests()
+    public HeroAuraTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

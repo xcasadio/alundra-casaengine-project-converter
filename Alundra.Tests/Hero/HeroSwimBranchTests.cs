@@ -8,7 +8,7 @@ using Alundra.Hero;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.i T4 (docs/plan-e20-heros.md section 1.14): the branches of the swim that the traces of the oracle cannot reach or that a bare hero shows best, on a bare hero (no controller: the air predicate reads
@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 /// the oracle holds at the end of tick t-1 is posed, one <c>MovePlayer</c> runs with the pad of tick t, and what it writes (the target animation, the direction) is the oracle's of tick t.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraHeroSwimBranchTests : IDisposable
+public sealed class HeroSwimBranchTests : IDisposable
 {
     private const uint Triangle = PadState.Triangle;
     private const uint Square = PadState.Square;

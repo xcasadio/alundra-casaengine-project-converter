@@ -9,7 +9,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E19.d2c2 D1 (docs/plan-e19-opcodes.md §1.2h.3.2, S1): the jump states of <c>MovePlayer</c> - the binary's <c>0x80031E38</c>/<c>0x80031E84</c> and the common
@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 /// <see cref="EntityScriptProxy.HeroAirborne"/>), the tests of the whole flow (SJ-8, UH-4, UH-5, the return to Idle/Moving) on <see cref="JumpHeroRig"/>
 /// with a free pad.
 /// </summary>
-public sealed class AlundraHeroJumpStatesTests
+public sealed class HeroJumpStatesTests
 {
     private const uint Cross = PadState.Cross;
     private const uint Square = PadState.Square;

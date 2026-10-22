@@ -15,7 +15,7 @@ using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E19.d2c2 D2 (docs/plan-e19-opcodes.md §1.2h.3.2, S1, S2, S6): the jump of the pad and the falls in the real world, on <see cref="JumpHeroRig"/> with a free pad
@@ -23,7 +23,7 @@ namespace Alundra.Tests;
 /// 43 standing jump, 44 in the air 196, 45 in the air still). Values of annex B.1 (tables S-A to S-I) as the plan restates them: one tick per frame unless said.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
+public sealed class HeroFallAndPadJumpTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
@@ -45,7 +45,7 @@ public sealed class AlundraHeroFallAndPadJumpTests : IDisposable
         2723328, 2873856, 3024384, 3174912, 3330048, 3489792, 3649536,
     };
 
-    public AlundraHeroFallAndPadJumpTests()
+    public HeroFallAndPadJumpTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

@@ -13,7 +13,7 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.f1b (docs/plan-e20-heros.md section 1.9, ADR-0057, ADR-0059) on the REAL world of map 14 (<see cref="HitArena"/>, the production path, the steel sword): the depth key of the real hero as an effect anchor, the frames of
@@ -21,14 +21,14 @@ namespace Alundra.Tests;
 /// <see cref="DepthSortable2DComponent.BuildSortKey(Vector3)"/>.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHeroAuraWorldTests : IDisposable
+public sealed class HeroAuraWorldTests : IDisposable
 {
     private const uint Square = PadState.Square;
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
     private readonly ulong _previousSeed = GameRandom.RandomSeed;
 
-    public AlundraHeroAuraWorldTests()
+    public HeroAuraWorldTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

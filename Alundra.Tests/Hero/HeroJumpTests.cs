@@ -10,7 +10,7 @@ using Alundra.Events;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E19.d2c1 C3 (docs/plan-e19-opcodes.md §1.2h.3.1, R6 and R8): the hero in the air for the scripted jumps and for <c>0x1B</c>. The logic tick
@@ -18,7 +18,7 @@ namespace Alundra.Tests;
 /// root. Montage: <see cref="JumpHeroRig"/> (the real hero controller settings, the pad locked: the animation and the direction are written by the
 /// test, and the interpreter is the real one for <c>0x1B</c> and <c>0x17</c>).
 /// </summary>
-public class AlundraHeroJumpTests
+public class HeroJumpTests
 {
     /// <summary>The list of UJ-1b / UJ-3: IZF 1280, gravity 128 (positions in 16.16, no +1 of the binary).</summary>
     private static readonly int[] JumpHeights =

@@ -4,13 +4,13 @@ using System.IO;
 using Xunit;
 using Alundra.Hero;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.i T1 (docs/plan-e20-heros.md section 1.14): the swim table and the names of the swim. The table <c>0x80022E7C</c> (80 words, the address of a handler per state) is compared entry by entry with the executable
-/// (<c>ALUN_CD.EXE</c>, France; file offset <c>0x800 + address - 0x80020000</c>; the path of <see cref="AlundraHeroRunTablesTests"/>, or the variable <c>ALUNDRA_EXE</c>).
+/// (<c>ALUN_CD.EXE</c>, France; file offset <c>0x800 + address - 0x80020000</c>; the path of <see cref="HeroRunTablesTests"/>, or the variable <c>ALUNDRA_EXE</c>).
 /// </summary>
-public sealed class AlundraHeroSwimTablesTests
+public sealed class HeroSwimTablesTests
 {
     private const string DefaultExecutable = @"D:\development\repo\Alundra Remake\Alundra (France)\Alundra (France)_extracted\ALUN_CD.EXE";
 

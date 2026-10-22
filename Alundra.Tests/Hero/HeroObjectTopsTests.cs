@@ -16,7 +16,7 @@ using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E19.d2c2 D3 (docs/plan-e19-opcodes.md §1.2h.3.2, S3, S4, S6): the hero lands on the tops of objects and rides what carries it, on
@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// <c>RidingEntity</c> holds, S4).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHeroObjectTopsTests : IDisposable
+public sealed class HeroObjectTopsTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
@@ -47,7 +47,7 @@ public sealed class AlundraHeroObjectTopsTests : IDisposable
         2723328, 2878464, 3038208, 3197952, 3357696, 3517440, 3677184, 3836928, 3996672,
     };
 
-    public AlundraHeroObjectTopsTests()
+    public HeroObjectTopsTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

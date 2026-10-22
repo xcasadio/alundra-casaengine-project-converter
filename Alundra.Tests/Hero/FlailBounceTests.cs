@@ -13,7 +13,7 @@ using Alundra.Transitions;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.f2 T2 (docs/plan-e20-heros.md section 1.10): <c>CreatePlayerAnimationEffects(mode)</c> (<c>0x8002FB14</c>) as a skeleton at its two call sites, and the flail bounce (<c>0x80030434-0x80030654</c>) for real.
@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// the function's: the DLL asks no sound for an animation set with no sound.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraFlailBounceTests : IDisposable
+public sealed class FlailBounceTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
@@ -44,7 +44,7 @@ public sealed class AlundraFlailBounceTests : IDisposable
     private const int BoxDepth = (11 << 16) - 1;
     private const int BoxZ = (3 << 16) + 1;
 
-    public AlundraFlailBounceTests()
+    public FlailBounceTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

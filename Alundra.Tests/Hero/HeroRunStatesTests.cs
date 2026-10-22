@@ -5,7 +5,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.d1 T4 (docs/plan-e20-heros.md section 1.13): the branches of the states of the run that the oracle's traces cannot reach, on a bare hero (no controller: the air predicate reads
@@ -14,7 +14,7 @@ namespace Alundra.Tests;
 /// stubs of E20.a cannot give. The lines of the plan's "facts" section are the expectations.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraHeroRunStatesTests : IDisposable
+public sealed class HeroRunStatesTests : IDisposable
 {
     private const uint Triangle = PadState.Triangle;
     private const uint Square = PadState.Square;

@@ -16,6 +16,7 @@ using Alundra.Hero;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Hero;
 
 namespace Alundra.Tests.Entities;
 
@@ -32,7 +33,7 @@ namespace Alundra.Tests.Entities;
 /// the real <see cref="WorldProxy.Update"/> instead.
 ///
 /// The frozen NPC's own pose/force fields are SEEDED directly (same technique as
-/// <see cref="AlundraInteractionPassTests"/>'s <c>NewCollidable</c>/<c>player.XCollisionEntity = sailor</c>)
+/// <see cref="InteractionPassTests"/>'s <c>NewCollidable</c>/<c>player.XCollisionEntity = sailor</c>)
 /// rather than left to sailor 11's own real Tick-program walk timing: that walk is real (see
 /// <see cref="IntroTraceHarnessTests"/>'s own frame-620-634 derivation) but tying a freeze window to it
 /// would make this file depend on the WHOLE 1704-frame flag chain just to reach it. Seeding

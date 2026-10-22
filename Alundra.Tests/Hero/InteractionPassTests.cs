@@ -15,7 +15,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E12.d's PRODUCTION-SITE stage (plan §3 étage 1, docs/plan-e12d-interaction-joueur.md): the player
@@ -27,9 +27,9 @@ namespace Alundra.Tests;
 /// harness - the F1 contract: a harness mirror only stands when the production site carries its own
 /// test (this repo's green-and-inert family).
 /// </summary>
-public sealed class AlundraInteractionPassTests : System.IDisposable
+public sealed class InteractionPassTests : System.IDisposable
 {
-    public AlundraInteractionPassTests()
+    public InteractionPassTests()
     {
         WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 

@@ -5,13 +5,13 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Hero;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.d1 T1 (docs/plan-e20-heros.md section 1.13): the tables, the field and the helper of the run. The two tables of the run are compared word by word with the executable (<c>ALUN_CD.EXE</c>, France; file offset
 /// <c>0x800 + address - 0x80020000</c>); the path is the oracle's (<c>docs/plan-e20-annexe/e20-d/oracle/base/tools/lib.py</c>) unless the variable <c>ALUNDRA_EXE</c> names another one, and the test fails naming it when the file is absent.
 /// </summary>
-public sealed class AlundraHeroRunTablesTests
+public sealed class HeroRunTablesTests
 {
     private const string DefaultExecutable = @"D:\development\repo\Alundra Remake\Alundra (France)\Alundra (France)_extracted\ALUN_CD.EXE";
 

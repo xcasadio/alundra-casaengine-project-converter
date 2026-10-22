@@ -17,7 +17,7 @@ using Alundra.Physics;
 using Alundra.Audio;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// Regression pin for the softlock T2 introduced and the user hit in play: with a MenuOpen dialogue box
@@ -36,11 +36,11 @@ namespace Alundra.Tests;
 /// mirror: the hero montage of <see cref="HeroWorldFixture"/> carries a real
 /// <see cref="HeroController"/> whose pad can be scripted.
 /// </summary>
-public sealed class AlundraPadSnapshotFreezeTests : IDisposable
+public sealed class PadSnapshotFreezeTests : IDisposable
 {
     private const string WorldName = "Ship Klark (beginning)";
 
-    public AlundraPadSnapshotFreezeTests()
+    public PadSnapshotFreezeTests()
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();

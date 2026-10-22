@@ -9,7 +9,7 @@ using Alundra.Cells;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.f2 T2 (docs/plan-e20-heros.md section 1.10), the wall probes of the oracle on the REAL world: the hero montage has no frame box (its sprite is synthetic), so the probes whose bounce comes from a wall under
@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 /// walkability 0 from the same map, and the bit 0x40 set on a flat cell. The animation the DLL gives is compared with the oracle's at every tick, and no hit is ever registered: the bounces here are the walls'.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraFlailBounceWallProbeTests : IDisposable
+public sealed class FlailBounceWallProbeTests : IDisposable
 {
     private const uint Square = PadState.Square;
     private const int IronFlail = 9;
@@ -29,7 +29,7 @@ public sealed class AlundraFlailBounceWallProbeTests : IDisposable
 
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
-    public AlundraFlailBounceWallProbeTests()
+    public FlailBounceWallProbeTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

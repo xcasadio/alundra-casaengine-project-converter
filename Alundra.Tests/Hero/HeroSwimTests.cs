@@ -9,7 +9,7 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.i T4 (docs/plan-e20-heros.md section 1.14): the swim, tick by tick against the swim oracle (<c>docs/plan-e20-annexe/e20-d/oracle/out-swim/</c>, groups W1 to W10, and the swim traces R9 of the run oracle): the real code of
@@ -24,7 +24,7 @@ namespace Alundra.Tests;
 /// </para>
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraHeroSwimTests : IDisposable
+public sealed class HeroSwimTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
@@ -38,7 +38,7 @@ public sealed class AlundraHeroSwimTests : IDisposable
     private const uint SwimHurtEnd = 0x3B;
     private const uint Sprint = 3;
 
-    public AlundraHeroSwimTests()
+    public HeroSwimTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

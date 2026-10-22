@@ -6,7 +6,7 @@ using Xunit;
 using Alundra.Hero;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.f3a T2 (docs/plan-e20-heros.md section 1.19.1, D-F3-2): the direction word of the hero's shot, on the REAL world of map 14 (<see cref="HitArena"/>: the production path, the world's own update, frames of 1, 2 or 3 logic ticks)
@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 /// </para>
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraShotDirectionTests : IDisposable
+public sealed class ShotDirectionTests : IDisposable
 {
     private const uint Square = PadState.Square;
     private const uint Cross = PadState.Cross;
@@ -31,7 +31,7 @@ public sealed class AlundraShotDirectionTests : IDisposable
     private const int HuntersBow = 5;
     private const int BowSlot = 2;
 
-    public AlundraShotDirectionTests() => Reset();
+    public ShotDirectionTests() => Reset();
 
     public void Dispose() => Reset();
 

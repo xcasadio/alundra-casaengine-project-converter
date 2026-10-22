@@ -12,10 +12,10 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
-/// E20.f1a (docs/plan-e20-heros.md section 1.9): the charge of the Square, the hold spark, the release and its burst, WITHOUT the aura (the aura is E20.f1b: <see cref="AlundraHeroAuraTests"/>; here only its creations and its releases are compared with the oracle).
+/// E20.f1a (docs/plan-e20-heros.md section 1.9): the charge of the Square, the hold spark, the release and its burst, WITHOUT the aura (the aura is E20.f1b: <see cref="HeroAuraTests"/>; here only its creations and its releases are compared with the oracle).
 /// The montage is the hero rig of E20.b (<see cref="JumpHeroRig"/> with the sprite clock of the swings) with an effect stage over the bank of map 163 (the real global companion: effects 3 and 16), one tick per
 /// frame; after each step the harness runs the stage's frame (<see cref="EffectStage.RunFrame"/>: the queued operation of the tick is applied, then the reservoir is updated), then does what the counters pass
 /// of the world does (the montage has none): <c>FrameCounter++</c>. The probes are the five charge probes of the extended oracle (<c>docs/plan-e20-annexe/e20-f1/oracle/out/</c>: the real code of the binary, the real
@@ -31,7 +31,7 @@ namespace Alundra.Tests;
 /// </para>
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraHeroChargeTests : IDisposable
+public sealed class HeroChargeTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
@@ -39,7 +39,7 @@ public sealed class AlundraHeroChargeTests : IDisposable
 
     private const uint Square = PadState.Square;
 
-    public AlundraHeroChargeTests()
+    public HeroChargeTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

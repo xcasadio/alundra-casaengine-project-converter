@@ -11,7 +11,7 @@ using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E19.h3 (docs/plan-e19-opcodes.md §1.2n.3, H3-1): the snap at the top of a jump (binary <c>0x80037848</c>) and the ceilings (binary <c>0x80036D94</c>) of the
@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// The boxes are laid by <see cref="ContactWorld.AddEntity"/> (the DLL's convention: the floor is the height, without the binary's +1). Positions in 16.16.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHeroApexAndCeilingTests : IDisposable
+public sealed class HeroApexAndCeilingTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
 
@@ -27,7 +27,7 @@ public sealed class AlundraHeroApexAndCeilingTests : IDisposable
     private const uint Right = PadState.Right;
     private const int East = 24;
 
-    public AlundraHeroApexAndCeilingTests()
+    public HeroApexAndCeilingTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

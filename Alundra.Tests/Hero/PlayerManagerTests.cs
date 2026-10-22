@@ -6,13 +6,13 @@ using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Physics;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// Covers <see cref="PlayerManager"/>'s ported subset of <c>PlayerManager.MovePlayer</c> and its
 /// own kinematic tick - see that class' own doc for the exact ported/not-ported line ranges.
 /// </summary>
-public class AlundraPlayerManagerTests
+public class PlayerManagerTests
 {
     private static GameState NewUnlockedState() => new(); // PlayerControlFlags = 0 (New Game default)
 

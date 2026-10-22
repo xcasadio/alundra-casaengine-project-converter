@@ -3,7 +3,7 @@ using System.Linq;
 using Xunit;
 using Alundra.Hero;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-8, D-E13D-9): <see cref="TickPad"/>, the port of
@@ -12,7 +12,7 @@ namespace Alundra.Tests;
 /// (PadState.cs:25) and <c>RepeatInterval</c> = 0 (GameInitializer.cs:169): an edge on the tick of the
 /// press, 20 silent ticks, then an edge on every tick while the state holds.
 /// </summary>
-public class AlundraTickPadTests
+public class TickPadTests
 {
     private const uint Right = PadState.Right;
     private const uint Cross = PadState.Cross;

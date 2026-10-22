@@ -1,6 +1,7 @@
 using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Tests.Hero;
 
 namespace Alundra.Tests.Session;
 
@@ -9,7 +10,7 @@ namespace Alundra.Tests.Session;
 /// both sides, transcribed from <c>PlayerManager.cs</c>'s own <c>SetPlayerHpMax</c>/<c>SetPlayerHp</c>/
 /// <c>SetPlayerMpMax</c>/<c>SetPlayerMp</c>/<c>SetMoney</c> - see <see cref="PlayerManager"/>'s
 /// own doc for the exact line ranges each setter ports. Uses fresh <c>new AlundraGameState()</c>
-/// instances throughout (same convention as <see cref="AlundraPlayerManagerTests"/>), not the shared
+/// instances throughout (same convention as <see cref="PlayerManagerTests"/>), not the shared
 /// <see cref="GameState.Instance"/> singleton, so no reset-for-tests seam is needed here.
 /// </summary>
 public class PlayerStatsTests

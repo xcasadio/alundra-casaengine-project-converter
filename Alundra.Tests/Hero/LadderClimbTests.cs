@@ -20,7 +20,7 @@ using Alundra.Entities;
 using Alundra.Tests.Support;
 using Alundra.Tests.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// Covers E4 (docs/plan-echelles-chiffrage.md É4): the case-6 ladder entry gate and the Climbing(0x0E)/
@@ -35,7 +35,7 @@ namespace Alundra.Tests;
 /// this plan uses (see <see cref="GroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix"/>'s
 /// own doc for why that matters - LESSON 2 of this ticket, "le vert inerte").
 /// </summary>
-public class AlundraLadderClimbTests
+public class LadderClimbTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 
@@ -678,7 +678,7 @@ public class AlundraLadderClimbTests
 
     /// <summary>Otherwise-qualifying setup for the case-6 gate (all five conditions hold) - a controller-
     /// less bare proxy is enough here since these tests only care about <c>TargetAnimationId</c>, not the
-    /// per-tick vertical step (that is <see cref="AlundraLadderClimbTests"/>'s own production-call-site
+    /// per-tick vertical step (that is <see cref="LadderClimbTests"/>'s own production-call-site
     /// tests' job). Each "CaseSixGate_*" test above takes a fresh copy and breaks exactly ONE of the five
     /// conjuncts (LESSON 2 - proving the targeted path alone gates entry).</summary>
     private static EntityScriptProxy MakeQualifyingIdlePlayer() => new()
