@@ -1867,7 +1867,11 @@ Après R7, R8 et R6b faites et CONFIRMED :
   non suivis) pour que leur nom suive la règle des emplacements du moteur (`[a-z0-9_-]`, 32 caractères au plus, hors noms réservés de
   Windows : `CasaEngineMonogame/CasaEngine/Framework/SaveGames/SaveGameNames.cs:18`) ; un nom hors règle est sauté en silence par
   l'énumération des emplacements (`SaveGameFileStorage.cs:281`), d'où « on ne peut pas les charger ». Le fichier ne contient pas son
-  nom : renommer suffit, sans rien indexer ; la table ancien → nouveau est gardée.
+  nom : renommer suffit, sans rien indexer ; la table ancien → nouveau est gardée. **Faite le 2026-10-22** : 121 fichiers renommés, `bug.sav`
+  déjà conforme ; minuscules, accents et apostrophes retirés, toute autre suite de caractères → `-`, coupe à 32 sur un `-`
+  (`114-2-klines-dream-bug-colonne.sav`) ; `Casino.sav` → `casino.sav` par un nom intermédiaire (disque insensible à la casse) ; contenus
+  inchangés (empreintes SHA-256 égales) ; la table est `tools/Saves/renommages-2026-10-22.tsv`. Le jeu les lit dans
+  `%LOCALAPPDATA%\AlundraGame\SaveGames\` (`docs/test-saves.md`) : l'auteur les y copie lui-même, hors de l'app Claude.
 - **Arrêts** : un conflit de fusion (code, documents ou pointeur de sous-module) ; une erreur de construction ; un test qui échoue ; une
   porte qui ne passe pas ; un pointeur de sous-module que sa branche ne contient pas et dont elle n'est pas l'ancêtre. Dans chaque cas :
   arrêt et question à l'auteur, aucune résolution par jugement (en AUTO, ce serait sortir du périmètre).
