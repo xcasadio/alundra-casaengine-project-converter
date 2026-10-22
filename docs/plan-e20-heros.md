@@ -7193,7 +7193,7 @@ les orbes et la tornade n'avancent que par la **poussée** `+0xCC/+0xD0`, que la
 pendant un sort, le menu Start est refusé ; E3 est partagé avec 98 sprites d'ennemis (clé commune avec E14) ; le départ lance une piste XA
 (comme `0xB9`, O-E19-36) ; les tomes n'exigent pas E20.g. Questions Q-H4-1 à Q-H4-8 (§2).
 
-### 1.26 E20.e0c — Le butin et l'objet ramassable, lâché ou posé ⏳ (détaillée le 2026-10-18, révision 2 READY du 2026-10-18 ; révision 3 du 2026-10-22 après les réponses de l'auteur, relue : REVISE ; révision 3.1 du 2026-10-22, à relire par un plan-verifier frais ; exécutable : le chantier de restructuration est fini, R8 comprise)
+### 1.26 E20.e0c — Le butin et l'objet ramassable, lâché ou posé ⏳ (détaillée le 2026-10-18, révision 2 READY du 2026-10-18 ; révision 3 du 2026-10-22 après les réponses de l'auteur, relue : REVISE ; révision 3.1 du 2026-10-22, READY le 2026-10-22 (plan-verifier frais) ; exécutable : le chantier de restructuration est fini, R8 comprise)
 
 **Révision 3 (2026-10-22).** Les réponses de l'auteur (§0.1) changent la tranche en six points. (1) Le ramassage des objets posés sur les cartes
 entre dans e0c (D-E20-47) : phase D. (2) Les étincelles du ramassage passent par la file d'effets (D-E20-59, ADR-0077) : les clés de l'oracle se
@@ -7409,7 +7409,7 @@ composée exige de changer le moteur ; un test hors de la liste prédite bouge ;
 phase B se retire seule (les deux inscriptions et le rafraîchissement) ; la phase A ne change aucun comportement (ses fichiers neufs se retirent, ses
 membres additifs dans `ItemTables`, `NativeEffects`, `DialogueDirector`, `IEntityWorldContext` et `WorldProxy` reviennent par `git revert`).
 
-### 1.27a E20.eR — Le nom de l'octet 9 de l'en-tête de carte : `TileCutEffectId` ⏳ (détaillée le 2026-10-22 ; prérequis d'E20.e ; D-E20-60, ADR-0079)
+### 1.27a E20.eR — Le nom de l'octet 9 de l'en-tête de carte : `TileCutEffectId` ⏳ (détaillée le 2026-10-22 ; révision 1 READY le 2026-10-22 ; prérequis d'E20.e ; D-E20-60, ADR-0079)
 
 Lecture seule du 2026-10-22 au HEAD `1d0b6953`, avec une répétition à blanc complète dans le scratchpad (rien écrit dans le dépôt, le
 remaster ni `data-extracted/`). Risque : données extraites et projet exporté (comme E20.e0x et E19.G0b).
@@ -7418,7 +7418,7 @@ remaster ni `data-extracted/`). Risque : données extraites et projet exporté (
 d'`Alundra.Tests` sans la copie neutralisée, et la DLL du `cmp` et d'`OutputSizeBytes` non nommée ; le contrôle `rg` de T2 écrit en
 prose. Ils sont corrigés ici. Deux ajouts : l'annexe est versée avec cette révision, et les `rg` sur `alundra-project/` portent
 `--no-ignore` (sans lui, `rg` ne lit rien de ce dossier ignoré par git : 0 fichier au lieu de 967, mesuré le 2026-10-22).
-À relire par un `plan-verifier` frais.
+Relue par un `plan-verifier` frais le 2026-10-22 : READY.
 
 **Prérequis.** La restructuration de la DLL faite (R8, recette validée le 2026-10-22) ; `data-extracted/` égal à
 `Alundra Remake/remaster-data-extracted` (4 536 fichiers, `diff -rq` vide mesuré le 2026-10-22, à refaire en T0) ; l'analyseur à
@@ -7618,7 +7618,7 @@ ne lit encore cet octet. Après la tranche, E20.e lit `TileCutEffectId`.
      - `m` contre `m1` : CHANGED = `report.json` seul.
      - `rg -l --no-ignore TileCutEffectId alundra-project` vide.
 
-### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ⏳ (détaillée le 2026-10-18 ; **révision 3 du 2026-10-22** (réponses de l'auteur), nouvelle époque : à relire par un `plan-verifier` frais ; exécutable après E20.eR, E20.e0c révisée et faite)
+### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ⏳ (détaillée le 2026-10-18 ; **révision 3 du 2026-10-22** (réponses de l'auteur), nouvelle époque : relue REVISE (ligne d'enveloppe E20.e2 manquante, renvoi de ligne périmé), corrigée, puis READY le 2026-10-22 (`plan-verifier` frais) ; exécutable après E20.eR, E20.e0c révisée et faite)
 
 **Révision 3 (2026-10-22).** Elle applique les réponses de l'auteur sans en ajouter :
 - **D-E20-49 et D-E20-60** : l'octet 9 de l'en-tête de carte est lu sous le nom `TileCutEffectId`, avec repli sur 2. E20.eR le renomme d'abord, à la source.
