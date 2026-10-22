@@ -64,7 +64,10 @@ def main():
                 if x != y and not oldpat.search(x):
                     findings.append('%s:%d: a changed line without the old name' % (path, i))
         # the old name stands nowhere in the tracked sources afterwards
-        hits = git(repo, 'grep', '-l', '-w', '-e', old, a.commit, '--', '*.cs').decode('utf-8', 'replace').split()
+        g = subprocess.run(['git', '-C', str(repo), 'grep', '-l', '-w', '-e', old, a.commit, '--', '*.cs'], capture_output=True)
+        if g.returncode not in (0, 1):   # 1 = no match
+            raise SystemExit('git grep failed: ' + g.stderr.decode('utf-8', 'replace'))
+        hits = g.stdout.decode('utf-8', 'replace').split()
         if hits:
             findings.append('the old name %s still stands in %s' % (old, hits))
     if findings:
