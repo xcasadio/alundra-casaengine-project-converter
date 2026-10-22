@@ -9,9 +9,13 @@
       R5 (T22): the tree of Alundra.Tests (the working tree) against r5-files.tsv and r5-types.tsv: every .cs at its path of the table and
       no other, namespace = folder, every top-level type at its new name in its arrival file, no `Alundra*` / `IAlundra*` type or file name,
       no `Scripts/` folder, no `.cs` at the root or directly under `UI/`, then the collision checks on the names really declared.
+  python -B tools/dll-structure/check_names.py --rules [--root <folder>]
+      R7: the rules of ADR-0075 and ADR-0080 on the living tree of Alundra/ and Alundra.Tests/ (or <folder>/...), WITHOUT a table (rules.py).
+      The guard that replaces the table-bound modes once the restructuring is done; they are the archive of the chantier.
 
 All list EVERY finding and exit 1 if there is any (0 otherwise, 2 on a usage or reading error). Read-only on the repository.
-Finding tags: [collision] [segment] [nom] [namespace] [fichier] [absent] [hors table]; warnings: [avertissement].
+Finding tags: [collision] [segment] [nom] [namespace] [fichier] [absent] [hors table]; --rules adds [doublon] [dossier] [lecture] [principal]
+[miroir]; warnings: [avertissement].
 """
 import argparse
 import collections
@@ -184,6 +188,7 @@ def main(argv=None):
     g.add_argument('--table', action='store_true')
     g.add_argument('--tree', action='store_true')
     g.add_argument('--tests', action='store_true')
+    g.add_argument('--rules', action='store_true')
     ap.add_argument('--table-file', default=DEFAULT_TABLE)
     ap.add_argument('--stage', choices=STAGES)
     ap.add_argument('--root')
@@ -191,6 +196,14 @@ def main(argv=None):
     if a.tree and not a.stage:
         ap.error('--tree needs --stage')
     try:
+        if a.rules:
+            import rules
+            findings, warnings, head = rules.check_rules(a.root)
+            print(head)
+            for line in findings + warnings:
+                print(line)
+            print('%d finding(s), %d warning(s)' % (len(findings), len(warnings)))
+            return 1 if findings else 0
         table = json.load(open(a.table_file, encoding='utf-8'))
         ext = scan_types.external_types()
         if a.tests:
