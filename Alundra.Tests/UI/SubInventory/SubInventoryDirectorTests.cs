@@ -19,22 +19,23 @@ using Alundra.UI.SubInventory;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Items;
+using Alundra.Tests.UI.Inventory;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.SubInventory;
 
 /// <summary>
 /// E13.d SI3 (docs/plan-e13d-sous-inventaire.md) acceptance: drives the REAL
 /// <see cref="SubInventoryDirector"/>, <see cref="InventoryDirector"/> and
-/// <see cref="InventoryPostProcess"/> together, the way <see cref="AlundraInventoryDirectorTests"/>
+/// <see cref="InventoryPostProcess"/> together, the way <see cref="InventoryDirectorTests"/>
 /// drives the main inventory alone - a tick is <c>state.TickPad.Update(hold)</c> then each director's own
 /// <c>Tick</c>, THEN the post-process (plan §1.2's own clock), isolated <see cref="GameState"/>
 /// instances for every test but the last (which drives the real <see cref="WorldProxy"/>).
 /// </summary>
-public sealed class AlundraSubInventoryDirectorTests : IDisposable
+public sealed class SubInventoryDirectorTests : IDisposable
 {
     private readonly string? _previousProjectPath;
 
-    public AlundraSubInventoryDirectorTests()
+    public SubInventoryDirectorTests()
     {
         InventoryDirector.Instance.ResetForTests();
         SubInventoryDirector.Instance.ResetForTests();
@@ -78,7 +79,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     }
 
     /// <summary>E15.c T6 (docs/plan-e15-yarn.md, contract items 5/6): same migration as
-    /// <see cref="AlundraInventoryDirectorTests"/>'s own <c>SetEtcFixture</c> - a <c>dialogue_etc</c>-shaped
+    /// <see cref="InventoryDirectorTests"/>'s own <c>SetEtcFixture</c> - a <c>dialogue_etc</c>-shaped
     /// asset injected through <see cref="EtcStringTable.SetEtcDialogueAssetForTests"/>, replacing the
     /// old <c>Dialogues/etc-index.json</c>/<c>global-strings.json</c> pair this class used to write.</summary>
     private static void SetEtcFixture(int itemId, string name, string desc0, string desc1)
@@ -107,7 +108,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraSubInventoryDirectorTests: no 'alundra-project/Dialogues' directory found above "
+            $"SubInventoryDirectorTests: no 'alundra-project/Dialogues' directory found above "
             + $"'{AppContext.BaseDirectory}' (docs/plan-e13d-sous-inventaire.md).");
     }
 
@@ -150,7 +151,7 @@ public sealed class AlundraSubInventoryDirectorTests : IDisposable
     }
 
     /// <summary>Opens the MAIN inventory (one trigger tick) and settles its 18-call opening slide - same
-    /// shape as <see cref="AlundraInventoryDirectorTests"/>'s own <c>OpenAndSettle</c>.</summary>
+    /// shape as <see cref="InventoryDirectorTests"/>'s own <c>OpenAndSettle</c>.</summary>
     private static void OpenMainAndSettle(GameState state)
     {
         Tick(state, PadState.Start);

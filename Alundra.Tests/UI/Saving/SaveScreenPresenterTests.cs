@@ -22,7 +22,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Ai.Objects;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests.Scripts;
+namespace Alundra.Tests.UI.Saving;
 
 /// <summary>
 /// E16.e T4 (docs/plan-e16-etat-partie.md, L5): <see cref="SaveScreen"/> is not constructible headless (it
@@ -33,7 +33,7 @@ namespace Alundra.Tests.Scripts;
 /// view is observed. The save service is a fake (D-E16-31).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSaveScreenPresenterTests : IDisposable
+public sealed class SaveScreenPresenterTests : IDisposable
 {
     private readonly SaveBookTests.RecordingUIViewRuntime _uiView = new();
     private readonly DialoguePresenter _dialoguePresenter;
@@ -42,9 +42,9 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
     private readonly SaveScreenViewModel _viewModel = new();
     private readonly SaveScreenPresenter _presenter;
     private readonly ChoicePresenter _choicePresenter;
-    private readonly AlundraSaveScreenDirectorTests.SlotsBySlot _slots = new();
+    private readonly SaveScreenDirectorTests.SlotsBySlot _slots = new();
 
-    public AlundraSaveScreenPresenterTests()
+    public SaveScreenPresenterTests()
     {
         ResetAll();
         EtcStringTable.SetEtcDialogueAssetForTests(

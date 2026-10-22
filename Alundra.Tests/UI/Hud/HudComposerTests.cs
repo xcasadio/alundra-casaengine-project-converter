@@ -4,7 +4,7 @@ using System.Linq;
 using Xunit;
 using Alundra.UI.Hud;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Hud;
 
 /// <summary>
 /// E13 C2 acceptance (docs/plan-e13-hud.md, mission item 7): the pure composition function, exercised
@@ -12,7 +12,7 @@ namespace Alundra.Tests;
 /// DisplayHpMaxWithNumber (:910-953) - expected positions re-derived from those citations directly in
 /// each test's own comments, never copied from <see cref="HudComposer"/> itself.
 /// </summary>
-public sealed class AlundraHudComposerTests
+public sealed class HudComposerTests
 {
     private static readonly IReadOnlyList<int> UnisonPipFrame0 = new[] { 0, 0, 0, 0 };
 

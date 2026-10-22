@@ -15,7 +15,7 @@ using Alundra.UI.SubInventory;
 using Alundra.Tests.Support;
 using Alundra.Tests.Items;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Inventory;
 
 /// <summary>
 /// E19.u (docs/plan-e19-opcodes.md section 1.2y, D-E19-103, open point O-E19-78, ADR-0050): the inventory's trigger runs in the binary's Update(k), AFTER RenderScene(k)
@@ -25,7 +25,7 @@ namespace Alundra.Tests;
 /// code; the measurements and the disassembly are in docs/plan-e19-u-annexe/ (bin-out.txt, notes.md, verify/verify.md). The montage is the dialogue one
 /// (map-event script as a lambda, one tick per 0.02 s frame).
 /// </summary>
-public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
+public sealed class InventoryTriggerFrameOrderTests : IDisposable
 {
     private const int P = 5;
 
@@ -37,7 +37,7 @@ public sealed class AlundraInventoryTriggerFrameOrderTests : IDisposable
         public void StopAllSfx() { }
     }
 
-    public AlundraInventoryTriggerFrameOrderTests() => Reset();
+    public InventoryTriggerFrameOrderTests() => Reset();
 
     public void Dispose() => Reset();
 

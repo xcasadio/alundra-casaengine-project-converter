@@ -13,18 +13,20 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.UI.Messages;
 using Alundra.Tests.Support;
+using Alundra.Tests.UI.Saving;
+using Alundra.Tests.UI.Shared;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Messages;
 
 /// <summary>
 /// E19.f2b1c T3 (docs/plan-e19-opcodes.md, F2B1C-R3): loads the versioned <c>alundra-project/UI/Screens/TextBoxScreen.xaml</c> through the pipeline production uses
 /// (<see cref="UIScreenLoader"/>) into a headless <see cref="MGDesktop"/> (never a <c>UIRoot</c>) and checks the elements, the attributes that carry the pixels (the
 /// view notes of the annex, section 1.2: <c>Padding="0"</c>, <c>WrapText="False"</c>, <c>Width="255"</c>, the clip canvas), the bindings and, next to them, the
-/// envelope and the design-time data - the shape of <see cref="AlundraSaveScreenXamlTests"/>. The pixels themselves are proved by
-/// <see cref="AlundraTextBoxPixelTests"/> on a real GPU.
+/// envelope and the design-time data - the shape of <see cref="SaveScreenXamlTests"/>. The pixels themselves are proved by
+/// <see cref="TextBoxPixelTests"/> on a real GPU.
 /// </summary>
 [Collection(MguiDataBindingCollection.Name)]
-public sealed class AlundraTextBoxScreenXamlTests
+public sealed class TextBoxScreenXamlTests
 {
     private const string FrameSourceName = "973a9208-c867-57fe-bee3-cf30237221ef";
     private const string NameFrameSourceName = "91ca17ae-e279-5a45-bb45-b15fbabdde68";   // the baked 112 x 32 frame of the name (g_textTilesConfiguration)
@@ -47,7 +49,7 @@ public sealed class AlundraTextBoxScreenXamlTests
         }
 
         throw new FileNotFoundException(
-            $"AlundraTextBoxScreenXamlTests: no versioned 'alundra-project/UI/Screens' above '{AppContext.BaseDirectory}'.");
+            $"TextBoxScreenXamlTests: no versioned 'alundra-project/UI/Screens' above '{AppContext.BaseDirectory}'.");
     }
 
     private static MGWindow LoadWindow(out MGDesktop desktop) => LoadWindow(out desktop, out _);

@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.UI.Hud;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Hud;
 
 /// <summary>
 /// The HUD's magic pips and coin as the screen plays them since the bound screens program (parent ADR-0002): the
@@ -13,7 +13,7 @@ namespace Alundra.Tests.UI;
 /// and the coin every 6 ticks while the money rolls (<c>AlundraHudDirector.UpdateMoneyRoll</c>). The program allows
 /// 20 ms of drift against those.
 /// </summary>
-public sealed class AlundraHudAnimationTimingTests
+public sealed class HudAnimationTimingTests
 {
     // wind_001/003/010/017 and wind_126/130/134/139: the frames of the pip and of the coin, in play order.
     private static readonly Guid[] PipFrames =
@@ -49,7 +49,7 @@ public sealed class AlundraHudAnimationTimingTests
         }
 
         throw new FileNotFoundException(
-            $"AlundraHudAnimationTimingTests: no 'alundra-project/UI/Animations/{name}.anim2d' above '{AppContext.BaseDirectory}' "
+            $"HudAnimationTimingTests: no 'alundra-project/UI/Animations/{name}.anim2d' above '{AppContext.BaseDirectory}' "
             + "- run the converter's full export first.");
     }
 

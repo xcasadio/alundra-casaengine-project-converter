@@ -21,7 +21,7 @@ using Alundra.UI.Shared;
 using Alundra.Tests.Support;
 using Alundra.Tests.Dialogues;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Messages;
 
 /// <summary>
 /// E19.f2b1c T2 (docs/plan-e19-opcodes.md, F2B1C-R2): the view model of the text box screen, without any display. For each pass of the six scenarios of the annex
@@ -30,14 +30,14 @@ namespace Alundra.Tests;
 /// pass, <c>Row r</c> the text of the row with <c>Left = x - 32</c> and <c>Top = rowY - ClipTop</c> (relative to the clip canvas), the cursor by its sprite name. The
 /// pass that ends a scroll is read as F2B1B-1 pins it (the rows after the shift at offset 0, D-E19-83).
 /// </summary>
-public sealed class AlundraTextBoxViewModelTests : IDisposable
+public sealed class TextBoxViewModelTests : IDisposable
 {
     private static readonly DialogueDirector Director = DialogueDirector.Instance;
     private const string Br = "[br trimwhitespace=false/]";
 
     private static readonly string[] CursorNames = { "wind_150", "wind_173", "wind_201", "wind_228" };
 
-    public AlundraTextBoxViewModelTests()
+    public TextBoxViewModelTests()
     {
         Reset();
     }
@@ -849,27 +849,4 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
         rig.Director.NotifyPresenterClosed();
         Assert.Null(rig.Director.PortraitSource);
     }
-}
-
-/// <summary>The folder <c>docs/plan-e19-f4c-annexe</c> (the prediction of E19.f4c2: states, classes, references, digests), searched upward from the test binaries.</summary>
-internal static class F4cAnnex
-{
-    public static string Directory()
-    {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null)
-        {
-            var candidate = Path.Combine(directory.FullName, "docs", "plan-e19-f4c-annexe");
-            if (File.Exists(Path.Combine(candidate, "classes.tsv")))
-            {
-                return candidate;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("docs/plan-e19-f4c-annexe not found above " + AppContext.BaseDirectory);
-    }
-
-    public static string File_(string name) => Path.Combine(Directory(), name);
 }

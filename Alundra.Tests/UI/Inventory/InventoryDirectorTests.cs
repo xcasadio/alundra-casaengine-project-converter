@@ -20,20 +20,21 @@ using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
 using Alundra.Tests.Support;
 using Alundra.Tests.Items;
+using Alundra.Tests.UI.Hud;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Inventory;
 
 /// <summary>
 /// E13.d D4 acceptance (docs/plan-e13d-inventaire.md) - drives <see cref="InventoryDirector"/> the
-/// way <see cref="AlundraHudDirectorTests"/> drives <see cref="HudDirector"/>: a tick is
+/// way <see cref="HudDirectorTests"/> drives <see cref="HudDirector"/>: a tick is
 /// <c>state.TickPad.Update(hold)</c> then <c>director.Tick(player)</c>, isolated <see cref="GameState"/>
 /// instances for every test but the last (which drives the real <see cref="WorldProxy"/>).
 /// </summary>
-public sealed class AlundraInventoryDirectorTests : IDisposable
+public sealed class InventoryDirectorTests : IDisposable
 {
     private readonly string? _previousProjectPath;
 
-    public AlundraInventoryDirectorTests()
+    public InventoryDirectorTests()
     {
         InventoryDirector.Instance.ResetForTests();
         SubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.
@@ -126,7 +127,7 @@ public sealed class AlundraInventoryDirectorTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraInventoryDirectorTests: no 'alundra-project/Maps' directory found above "
+            $"InventoryDirectorTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - this test needs the real converter export.");
     }
 

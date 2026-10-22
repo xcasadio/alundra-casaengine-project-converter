@@ -2,14 +2,14 @@
 using Xunit;
 using Alundra.UI.Shared;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Shared;
 
 /// <summary>
 /// docs/plan-portrait-inventaire.md PI7: <see cref="InventoryPortrait"/> against the tables measured in the
 /// France executable (§1.1 of the plan, cross-checked by PI1). The tables are written out literally here, not
 /// recomputed from the formulas the class uses, so a wrong formula cannot agree with itself.
 /// </summary>
-public sealed class AlundraInventoryPortraitTests
+public sealed class InventoryPortraitTests
 {
     // Opening, per call 1..16: the size drawn (the first call is 0x0, the 16th reaches the rest size).
     private static readonly (int W, int H)[] OpeningSizes =

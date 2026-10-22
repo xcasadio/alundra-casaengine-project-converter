@@ -19,15 +19,16 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.UI.Inventory;
 using Alundra.UI.Speech;
+using Alundra.Tests.UI.Inventory;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Speech;
 
 /// <summary>
 /// E15.c T5 (docs/plan-e15-yarn.md, contract item 4; ADR-0008/D-E15-12): the dialogue box's own presenter
 /// holds font3 through the game's UI font registry, from its construction to its disposal, the same
-/// contract <see cref="AlundraInventoryScreenFontTests"/> already pins for the inventory screen.
+/// contract <see cref="InventoryScreenFontTests"/> already pins for the inventory screen.
 /// </summary>
-public sealed class AlundraDialoguePresenterFontTests
+public sealed class DialoguePresenterFontTests
 {
     private sealed class RecordingUIViewRuntime : IUIViewRuntime
     {
@@ -80,7 +81,7 @@ public sealed class AlundraDialoguePresenterFontTests
             }
 
             throw new FileNotFoundException(
-                $"AlundraDialoguePresenterFontTests: no 'CasaEngineMonogame/CasaEngine/Content/Fonts/tahoma.ttf' above '{AppContext.BaseDirectory}'.");
+                $"DialoguePresenterFontTests: no 'CasaEngineMonogame/CasaEngine/Content/Fonts/tahoma.ttf' above '{AppContext.BaseDirectory}'.");
         }
     }
 
@@ -180,13 +181,13 @@ public sealed class AlundraDialoguePresenterFontTests
         }
 
         public IUIDrawTransaction CreateDrawTransaction(DrawSettings settings, bool deferBegin)
-            => throw new NotSupportedException($"{nameof(AlundraDialoguePresenterFontTests)} never draws.");
+            => throw new NotSupportedException($"{nameof(DialoguePresenterFontTests)} never draws.");
 
         public void RegisterView(IUIView view) { }
     }
 
     /// <summary>Contract item 4/D-E15-12: the dialogue box's own <c>lblLine</c> element - the SAME element
-    /// <see cref="AlundraFont3GlyphTests"/> checks against the real exported font3 - actually receives
+    /// <see cref="Font3GlyphTests"/> checks against the real exported font3 - actually receives
     /// <c>FontFamily = "font3"</c> from <see cref="DialoguePresenter"/>'s own wiring, not only that
     /// the family is resolvable on the text engine (the previous test above). Built through the real
     /// <see cref="DialoguePresenter.ScreenForTests"/> seam and <c>DialogueScreen</c>'s own public

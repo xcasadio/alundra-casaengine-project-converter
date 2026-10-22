@@ -18,7 +18,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Ai.Objects;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Saving;
 
 /// <summary>
 /// E19.f3c (docs/plan-e19-opcodes.md, D-E19-93; annex docs/plan-e19-save-order-annexe/): the order of the save screen inside
@@ -29,13 +29,13 @@ namespace Alundra.Tests;
 /// director tests (<c>AlundraSaveScreenDirectorTests</c>) keep presenting their words at age 0 by design: the age is proved here, at the proxy.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSaveScreenTickOrderTests : IDisposable
+public sealed class SaveScreenTickOrderTests : IDisposable
 {
     private readonly SaveBookTests.RecordingUIViewRuntime _uiView = new();
-    private readonly AlundraSaveScreenDirectorTests.SlotsBySlot _slots = new();
+    private readonly SaveScreenDirectorTests.SlotsBySlot _slots = new();
     private readonly WorldProxy _proxy;
 
-    public AlundraSaveScreenTickOrderTests()
+    public SaveScreenTickOrderTests()
     {
         ResetSingletons();
         EtcStringTable.ResetForTests();

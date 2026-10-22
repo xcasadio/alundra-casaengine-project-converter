@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Shared;
 
 /// <summary>
 /// Tests that create MGUI data bindings (loading a screen's XAML with <c>{dataBinding:MGBinding …}</c>, or setting a

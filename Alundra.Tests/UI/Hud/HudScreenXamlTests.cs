@@ -11,8 +11,9 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.UI.Hud;
 using Alundra.Tests.Support;
+using Alundra.Tests.UI.Shared;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Hud;
 
 /// <summary>
 /// The HUD as a project asset (bound screens program, parent ADR-0002): loads
@@ -21,7 +22,7 @@ namespace Alundra.Tests.UI;
 /// Loading it creates MGUI bindings: the class runs in <see cref="MguiDataBindingCollection"/>.
 /// </summary>
 [Collection(MguiDataBindingCollection.Name)]
-public sealed class AlundraHudScreenXamlTests : IDisposable
+public sealed class HudScreenXamlTests : IDisposable
 {
     private static readonly string[] TileNames =
     {
@@ -33,7 +34,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
         "MoneyDigit0", "MoneyDigit1", "MoneyDigit2", "MoneyDigit3", "Coin",
     };
 
-    public AlundraHudScreenXamlTests() => HudDirector.Instance.ResetForTests();
+    public HudScreenXamlTests() => HudDirector.Instance.ResetForTests();
 
     public void Dispose() => HudDirector.Instance.ResetForTests();
 
@@ -52,7 +53,7 @@ public sealed class AlundraHudScreenXamlTests : IDisposable
         }
 
         throw new FileNotFoundException(
-            $"AlundraHudScreenXamlTests: no versioned 'alundra-project/UI/Screens/HudScreen.xaml' above '{AppContext.BaseDirectory}'.");
+            $"HudScreenXamlTests: no versioned 'alundra-project/UI/Screens/HudScreen.xaml' above '{AppContext.BaseDirectory}'.");
     }
 
     private static string ScreensDirectory() => Path.Combine(ProjectDirectory(), "UI", "Screens");

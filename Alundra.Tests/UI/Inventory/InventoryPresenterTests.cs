@@ -16,21 +16,23 @@ using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
 using Alundra.Maps;
 using Alundra.Tests.Items;
+using Alundra.Tests.UI.Hud;
+using Alundra.Tests.UI.Speech;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Inventory;
 
 /// <summary>
 /// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-6): <see cref="InventoryScreen"/> is not
-/// constructible headless (same reason <see cref="AlundraHudPresenterTests"/> and
-/// <see cref="AlundraDialoguePresenterWiringTests"/> give their own class docs), so this drives
+/// constructible headless (same reason <see cref="HudPresenterTests"/> and
+/// <see cref="DialoguePresenterWiringTests"/> give their own class docs), so this drives
 /// <see cref="InventoryPresenter"/> against a real <see cref="InventoryViewModel"/> (parent ADR-0002:
 /// the presenter writes the view model the screen's XAML binds), a recording <see cref="IUIScreen"/> stand-in and a
-/// recording <see cref="IUIViewRuntime"/> - the pattern <see cref="AlundraHudPresenterTests"/> and
-/// <see cref="AlundraDialoguePresenterWiringTests"/> already establish.
+/// recording <see cref="IUIViewRuntime"/> - the pattern <see cref="HudPresenterTests"/> and
+/// <see cref="DialoguePresenterWiringTests"/> already establish.
 /// </summary>
-public sealed class AlundraInventoryPresenterTests : IDisposable
+public sealed class InventoryPresenterTests : IDisposable
 {
-    public AlundraInventoryPresenterTests()
+    public InventoryPresenterTests()
     {
         InventoryDirector.Instance.ResetForTests();
         SubInventoryDirector.Instance.ResetForTests(); // E13.d SI3: joins the session carriers this class resets.

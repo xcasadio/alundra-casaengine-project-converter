@@ -11,21 +11,23 @@ using Alundra.UI.Inventory;
 using Alundra.UI.SubInventory;
 using Alundra.Tests.Support;
 using Alundra.Tests.Items;
+using Alundra.Tests.UI.Inventory;
+using Alundra.Tests.UI.Shared;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.SubInventory;
 
 /// <summary>
 /// E13.d SI4 (docs/plan-e13d-sous-inventaire.md), versioned as a project asset since the bound screens
 /// program (parent ADR-0002): loads <c>alundra-project/UI/Screens/SubInventoryScreen.xaml</c> through the
 /// SAME pipeline production uses (<see cref="UIScreenLoader"/>), on the reduced headless harness, checks
 /// every named element and every binding against a real <see cref="SubInventoryViewModel"/>, and the
-/// envelope and design-time data next to it - same shape as <see cref="AlundraInventoryScreenXamlTests"/>.
+/// envelope and design-time data next to it - same shape as <see cref="InventoryScreenXamlTests"/>.
 /// <para/>
 /// Loading this XAML creates MGUI bindings, which MGUI keeps in a static, single-threaded registry
 /// (<c>DataBindingManager</c>): this class runs in <see cref="MguiDataBindingCollection"/>.
 /// </summary>
 [Collection(MguiDataBindingCollection.Name)]
-public sealed class AlundraSubInventoryScreenXamlTests
+public sealed class SubInventoryScreenXamlTests
 {
     private static string ScreensDirectory()
     {
@@ -42,7 +44,7 @@ public sealed class AlundraSubInventoryScreenXamlTests
         }
 
         throw new FileNotFoundException(
-            $"AlundraSubInventoryScreenXamlTests: no versioned 'alundra-project/UI/Screens/SubInventoryScreen.xaml' above '{AppContext.BaseDirectory}'.");
+            $"SubInventoryScreenXamlTests: no versioned 'alundra-project/UI/Screens/SubInventoryScreen.xaml' above '{AppContext.BaseDirectory}'.");
     }
 
     private static MGWindow LoadWindow() => LoadWindow(out _);

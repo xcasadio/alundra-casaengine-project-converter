@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Inventory;
 
 /// <summary>
 /// The inventory cursor as the screen plays it since the bound screens program (parent ADR-0002): the converter's
@@ -12,7 +12,7 @@ namespace Alundra.Tests.UI;
 /// (<c>AlundraInventoryDirector.cs:520-524</c>); the program allows 20 ms of drift against that, since the UI no longer
 /// runs at 50 Hz. Played here at 60 frames per second, the way a display refreshes.
 /// </summary>
-public sealed class AlundraCursorAnimationTimingTests
+public sealed class CursorAnimationTimingTests
 {
     // wind_159/182/210/237, the cursor's four phases, and the pixel offset of each (ALUN_CD.EXE 0x800a82c8/0x800a82d8,
     // AlundraInventoryComposer's CursorPhaseX/Y).
@@ -48,7 +48,7 @@ public sealed class AlundraCursorAnimationTimingTests
         }
 
         throw new FileNotFoundException(
-            $"AlundraCursorAnimationTimingTests: no 'alundra-project/UI/Animations/ui_inventory_cursor.anim2d' above "
+            $"CursorAnimationTimingTests: no 'alundra-project/UI/Animations/ui_inventory_cursor.anim2d' above "
             + $"'{AppContext.BaseDirectory}' - run the converter's full export first.");
     }
 

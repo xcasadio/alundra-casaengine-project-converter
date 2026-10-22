@@ -10,12 +10,13 @@ using Xunit;
 using Alundra.UI.Inventory;
 using Alundra.UI.SubInventory;
 using Alundra.Maps;
+using Alundra.Tests.UI.Inventory;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.SubInventory;
 
 /// <summary>
 /// E13.d SI4 (engine ADR-0036, plan D-E13D-18): same font-registry contract as
-/// <see cref="AlundraInventoryScreenFontTests"/> - the sub-inventory screen holds font3 through the game's
+/// <see cref="InventoryScreenFontTests"/> - the sub-inventory screen holds font3 through the game's
 /// UI font registry, from its construction to its disposal, so texts stay in font3 across a map change
 /// (D5.f's own finding, which applies identically here).
 /// <para/>
@@ -23,7 +24,7 @@ namespace Alundra.Tests.UI;
 /// <see cref="BitmapFont"/> on a fixed-size font rasterized on the CPU from a TTF, the substitute the engine's
 /// own font tests use.
 /// </summary>
-public sealed class AlundraSubInventoryScreenFontTests
+public sealed class SubInventoryScreenFontTests
 {
     internal sealed class CpuFont3Loader : IAssetLoader
     {
@@ -55,7 +56,7 @@ public sealed class AlundraSubInventoryScreenFontTests
             }
 
             throw new FileNotFoundException(
-                $"AlundraSubInventoryScreenFontTests: no 'CasaEngineMonogame/CasaEngine/Content/Fonts/tahoma.ttf' above '{AppContext.BaseDirectory}'.");
+                $"SubInventoryScreenFontTests: no 'CasaEngineMonogame/CasaEngine/Content/Fonts/tahoma.ttf' above '{AppContext.BaseDirectory}'.");
         }
     }
 

@@ -13,7 +13,7 @@ using Alundra.UI.Speech;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Speech;
 
 /// <summary>
 /// ③bis (docs/plan-e12-dialogues.md, slice E12.a) - the UI wiring link: <see cref="DialoguePresenter"/>
@@ -27,9 +27,9 @@ namespace Alundra.Tests;
 /// Mutation (plan §4, ③bis): skipping the push on open, or the remove on close, is exactly what this
 /// test's own assertions are built to catch.
 /// </summary>
-public class AlundraDialoguePresenterWiringTests : IDisposable
+public class DialoguePresenterWiringTests : IDisposable
 {
-    public AlundraDialoguePresenterWiringTests()
+    public DialoguePresenterWiringTests()
     {
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the

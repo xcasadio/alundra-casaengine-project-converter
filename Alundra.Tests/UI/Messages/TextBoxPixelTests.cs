@@ -7,7 +7,7 @@ using CasaEngine.Framework.Dialogue.Runtime;
 using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
-using static Alundra.Tests.UI.TextBoxGpu;
+using static Alundra.Tests.UI.Shared.TextBoxGpu;
 using Alundra.Session;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
@@ -15,8 +15,9 @@ using Alundra.UI.Messages;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 using Alundra.Tests.Dialogues;
+using Alundra.Tests.UI.Shared;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Messages;
 
 /// <summary>
 /// E19.f2b1c T5 (docs/plan-e19-opcodes.md, F2B1C-R3/R4): the pixels of the text box screen on a real GPU. The real <see cref="TextBoxScreen"/> (its versioned XAML, its
@@ -24,11 +25,11 @@ namespace Alundra.Tests.UI;
 /// read back, and compared texel for texel with the images composed from the binary's model (<c>docs/plan-e19-f2b1-annexe/pixels/*.png</c>, produced by
 /// <c>scripts/refcompose2.py</c>, which reads the binary outside the repository and is not rerun here) and with the points of <c>pixels.md</c>; the synthetic states (the cut
 /// at 255 pixels, the text over the cursor, the view offset of a window that is not 4:3) against a small independent compositor. At x1 and x2. Skipped without a GPU
-/// (<see cref="AlundraGpuFactAttribute"/>). The harness is <see cref="TextBoxGpu"/>; the caveats of the discovery stand (a stand-in asset provider, one GPU, the production
+/// (<see cref="GpuFactAttribute"/>). The harness is <see cref="TextBoxGpu"/>; the caveats of the discovery stand (a stand-in asset provider, one GPU, the production
 /// <c>UIRoot</c> chain only proved by the recipe).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraTextBoxPixelTests : IDisposable
+public sealed class TextBoxPixelTests : IDisposable
 {
     private static readonly DialogueDirector Director = DialogueDirector.Instance;
     private const string Br = "[br trimwhitespace=false/]";
@@ -37,7 +38,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
     private static readonly (int R, int G, int B) FrameBeige = (184, 176, 144);
     private static readonly (int R, int G, int B) Background = (ClearR, ClearG, ClearB);
 
-    public AlundraTextBoxPixelTests()
+    public TextBoxPixelTests()
     {
         Reset();
     }
@@ -214,7 +215,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
 
     // ---- the versioned images -----------------------------------------------------------------------------------------------------------
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheRestState_IsTheVersionedImage_AtX1AndX2()
     {
         DriveRest();
@@ -232,7 +233,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
             (295, 207, (192, 192, 192), "cursor interior texel"));
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void ACentredLine_IsTheVersionedImage_AtX1AndX2()
     {
         DriveCentred();
@@ -244,7 +245,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
             (96, 191, (152, 152, 112), "row 1 the texel left of it"));
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void AScrollAtOffset6_IsTheVersionedImage_AtX1AndX2()
     {
         DriveScroll(95);
@@ -260,7 +261,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
             (20, 171, FrameBeige, "frame left of the clip: never clipped"));
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheScrollEndingPass_ShowsTheRowsAfterTheShift_AsTheVersionedImage_AtX1AndX2()
     {
         DriveScroll(100);
@@ -272,7 +273,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
             (49, 191, Ink, "old row 2 ('trois') pixel row 2"));
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheScrollEndingPass_WithTheVariantOfTheConstant_ShowsTheCpuDrawList_AtX1AndX2()
     {
         DriveScroll(100, preShiftVariant: true);
@@ -281,7 +282,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
             (33, 172, Ink, "the CPU draw list holds the old top row's descender ink at y 172"));
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void ASlideOutAtY182_ClipsFromThePreviousY_AsTheVersionedImage_AtX1AndX2()
     {
         DriveSlideOut182();
@@ -358,7 +359,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
     }
 
     /// <summary>A row of 25 'm' (glyph 109, 11 pixels each: 275) is cut at 255 pixels: the last column of the band the binary draws (254) is ink, the next one is not.</summary>
-    [AlundraGpuFact]
+    [GpuFact]
     public void ALineLongerThan255Pixels_IsCutAtTheBand_AtX1AndX2()
     {
         var row = new string('m', 25);
@@ -376,7 +377,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
 
     /// <summary>The text is drawn over the cursor (the binary's slot 0 holds the frame then the cursor, slot 2 the text): 'K' x 60 from x 39 on row 1 (y 189 to 204) with the
     /// cursor wind_201 (y 200 to 215) overlaps it on the columns 288 and 289, 3 texels at x1 (view-verify.md:78); the pixels there are the text's.</summary>
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheTextIsDrawnOverTheCursor_AtX1AndX2()
     {
         var row = new string('K', 60);
@@ -399,7 +400,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
     /// <summary>The engine fits the 320 x 240 image in a window that is not 4:3 and shifts the view (engine ADR-0054): the host's bounds are view-local and the viewport is
     /// offset. A state whose frame is at Y >= 232 (the end of a slide-out: 235, then 240) draws nothing outside the view: not below the 320 x 240 canvas, not in the margin.
     /// Inside the view the picture is the one drawn without an offset.</summary>
-    [AlundraGpuFact]
+    [GpuFact]
     public void AStateWithTheFrameAtYOver232_InAViewThatIsOffset_DrawsNothingOutsideTheView()
     {
         foreach (var pass in new[] { 46, 47 })

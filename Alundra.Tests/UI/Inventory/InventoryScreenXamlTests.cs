@@ -11,8 +11,9 @@ using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.Tests.Support;
 using Alundra.Tests.Items;
+using Alundra.Tests.UI.Shared;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Inventory;
 
 /// <summary>
 /// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-16/17), versioned as a project asset since the bound screens
@@ -25,7 +26,7 @@ namespace Alundra.Tests.UI;
 /// (<c>DataBindingManager</c>): this class runs in <see cref="MguiDataBindingCollection"/>.
 /// </summary>
 [Collection(MguiDataBindingCollection.Name)]
-public sealed class AlundraInventoryScreenXamlTests
+public sealed class InventoryScreenXamlTests
 {
     private static string ScreensDirectory()
     {
@@ -42,7 +43,7 @@ public sealed class AlundraInventoryScreenXamlTests
         }
 
         throw new FileNotFoundException(
-            $"AlundraInventoryScreenXamlTests: no versioned 'alundra-project/UI/Screens/InventoryScreen.xaml' above '{AppContext.BaseDirectory}'.");
+            $"InventoryScreenXamlTests: no versioned 'alundra-project/UI/Screens/InventoryScreen.xaml' above '{AppContext.BaseDirectory}'.");
     }
 
     private static MGWindow LoadWindow() => LoadWindow(out _);

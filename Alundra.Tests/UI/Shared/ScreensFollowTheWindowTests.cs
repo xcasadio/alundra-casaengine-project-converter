@@ -15,8 +15,9 @@ using Alundra.UI.Messages;
 using Alundra.UI.Saving;
 using Alundra.UI.SubInventory;
 using Alundra.Tests.Support;
+using Alundra.Tests.UI.Inventory;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Shared;
 
 /// <summary>
 /// E19.s (plan docs/plan-e19-opcodes.md §1.2q, S-R5; engine ADR-0048): the four full-screen screens (HUD, inventory,
@@ -27,9 +28,9 @@ namespace Alundra.Tests.UI;
 /// at x3 (the view of a game, view-local: its bounds start at 0, 0).
 /// </summary>
 [Collection(MguiDataBindingCollection.Name)]
-public sealed class AlundraScreensFollowTheWindowTests : IDisposable
+public sealed class ScreensFollowTheWindowTests : IDisposable
 {
-    public AlundraScreensFollowTheWindowTests() => HudDirector.Instance.ResetForTests();
+    public ScreensFollowTheWindowTests() => HudDirector.Instance.ResetForTests();
 
     public void Dispose() => HudDirector.Instance.ResetForTests();
 
@@ -60,7 +61,7 @@ public sealed class AlundraScreensFollowTheWindowTests : IDisposable
         }
 
         throw new DirectoryNotFoundException(
-            $"AlundraScreensFollowTheWindowTests: no versioned 'alundra-project/UI/Screens' above '{AppContext.BaseDirectory}'.");
+            $"ScreensFollowTheWindowTests: no versioned 'alundra-project/UI/Screens' above '{AppContext.BaseDirectory}'.");
     }
 
     private static AssetContentManager NewAssets(string screenAssetId, string screenName)
@@ -79,7 +80,7 @@ public sealed class AlundraScreensFollowTheWindowTests : IDisposable
                 id => id == screenInfo.Id ? screenInfo : id == font3Info.Id ? font3Info : null),
         };
         assets.RegisterAssetLoader(typeof(UIScreenAsset), new ScreenEnvelopeLoader());
-        assets.RegisterAssetLoader(typeof(BitmapFont), new AlundraInventoryScreenFontTests.CpuFont3Loader());
+        assets.RegisterAssetLoader(typeof(BitmapFont), new InventoryScreenFontTests.CpuFont3Loader());
         return assets;
     }
 

@@ -16,19 +16,20 @@ using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
 using Alundra.Maps;
 using Alundra.Tests.Items;
+using Alundra.Tests.UI.Inventory;
 
-namespace Alundra.Tests.Scripts;
+namespace Alundra.Tests.UI.SubInventory;
 
 /// <summary>
 /// E13.d SI4 (docs/plan-e13d-sous-inventaire.md): <see cref="SubInventoryScreen"/> is not
-/// constructible headless (same reason <see cref="AlundraInventoryPresenterTests"/> gives its own class
+/// constructible headless (same reason <see cref="InventoryPresenterTests"/> gives its own class
 /// doc), so this drives <see cref="SubInventoryPresenter"/> against a real
 /// <see cref="SubInventoryViewModel"/>, a recording <see cref="IUIScreen"/> stand-in and a recording
 /// <see cref="IUIViewRuntime"/> - the same pattern.
 /// </summary>
-public sealed class AlundraSubInventoryPresenterTests : IDisposable
+public sealed class SubInventoryPresenterTests : IDisposable
 {
-    public AlundraSubInventoryPresenterTests()
+    public SubInventoryPresenterTests()
     {
         InventoryDirector.Instance.ResetForTests();
         SubInventoryDirector.Instance.ResetForTests();

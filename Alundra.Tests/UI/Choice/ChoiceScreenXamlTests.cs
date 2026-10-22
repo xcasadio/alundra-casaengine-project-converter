@@ -12,18 +12,20 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.UI.Choice;
 using Alundra.Tests.Support;
+using Alundra.Tests.UI.Messages;
+using Alundra.Tests.UI.Shared;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Choice;
 
 /// <summary>
 /// E19.f3b F3B-1 (docs/plan-e19-opcodes.md, F3B-R1): loads the versioned <c>alundra-project/UI/Screens/ChoiceScreen.xaml</c> through the pipeline production uses
 /// (<see cref="UIScreenLoader"/>) into a headless <see cref="MGDesktop"/> (never a <c>UIRoot</c>) and checks the envelope, the design-time data, the elements, the attributes that
 /// carry the pixels (<c>docs/plan-e19-f3-annexe/view/view-notes.md</c> section 1: <c>Padding="0"</c> of the labels, <c>BorderThickness="0"</c> and <c>Padding="0"</c> of the
-/// window), the bindings and the bounds at rest - the shape of <see cref="AlundraTextBoxScreenXamlTests"/>. The pixels themselves are proved by
-/// <see cref="AlundraChoicePixelTests"/> on a real GPU.
+/// window), the bindings and the bounds at rest - the shape of <see cref="TextBoxScreenXamlTests"/>. The pixels themselves are proved by
+/// <see cref="ChoicePixelTests"/> on a real GPU.
 /// </summary>
 [Collection(MguiDataBindingCollection.Name)]
-public sealed class AlundraChoiceScreenXamlTests
+public sealed class ChoiceScreenXamlTests
 {
     private const string FrameSourceName = "829f31a7-39d1-5fc5-b436-befd59b50985";
 
@@ -44,7 +46,7 @@ public sealed class AlundraChoiceScreenXamlTests
         }
 
         throw new FileNotFoundException(
-            $"AlundraChoiceScreenXamlTests: no versioned 'alundra-project/UI/Screens' above '{AppContext.BaseDirectory}'.");
+            $"ChoiceScreenXamlTests: no versioned 'alundra-project/UI/Screens' above '{AppContext.BaseDirectory}'.");
     }
 
     private static MGWindow LoadWindow(out MGDesktop desktop, out HeadlessUiTestHarness.HeadlessRuntime runtime)

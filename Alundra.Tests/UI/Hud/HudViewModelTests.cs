@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.UI.Hud;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Hud;
 
 /// <summary>
 /// The bound screens program (parent ADR-0002): <see cref="HudViewModel"/> places the composer's tiles by role
@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 /// same thing - every tile's sprite at its position, the full pips and the coin as their UI animations - and that it
 /// starts those animations in phase with the original's counters.
 /// </summary>
-public sealed class AlundraHudViewModelTests
+public sealed class HudViewModelTests
 {
     private static readonly string PipAnimation = HudViewModel.MagicPipAnimationId;
     private static readonly string CoinAnimation = HudViewModel.CoinAnimationId;

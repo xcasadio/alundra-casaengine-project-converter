@@ -8,18 +8,20 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.UI.Saving;
 using Alundra.Tests.Support;
+using Alundra.Tests.UI.Shared;
+using Alundra.Tests.UI.SubInventory;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Saving;
 
 /// <summary>
 /// E16.e T4 (docs/plan-e16-etat-partie.md, L5, SE10, D-E16-38): loads the versioned
 /// <c>alundra-project/UI/Screens/SaveScreen.xaml</c> and <c>DialogueScreen.xaml</c> through the pipeline production
 /// uses (<see cref="UIScreenLoader"/>) into a headless <see cref="MGDesktop"/> (the author's rule: never a
 /// <c>UIRoot</c>), and checks the elements, the bindings (the box tint included) and the envelope and design-time
-/// data next to them - the shape of <see cref="AlundraSubInventoryScreenXamlTests"/>.
+/// data next to them - the shape of <see cref="SubInventoryScreenXamlTests"/>.
 /// </summary>
 [Collection(MguiDataBindingCollection.Name)]
-public sealed class AlundraSaveScreenXamlTests
+public sealed class SaveScreenXamlTests
 {
     private const string BoxSourceName = "973a9208-c867-57fe-bee3-cf30237221ef";
 
@@ -47,7 +49,7 @@ public sealed class AlundraSaveScreenXamlTests
         }
 
         throw new FileNotFoundException(
-            $"AlundraSaveScreenXamlTests: no versioned 'alundra-project/UI/Screens/SaveScreen.xaml' above '{AppContext.BaseDirectory}'.");
+            $"SaveScreenXamlTests: no versioned 'alundra-project/UI/Screens/SaveScreen.xaml' above '{AppContext.BaseDirectory}'.");
     }
 
     private static MGWindow LoadWindow(string fileName, out MGDesktop desktop)

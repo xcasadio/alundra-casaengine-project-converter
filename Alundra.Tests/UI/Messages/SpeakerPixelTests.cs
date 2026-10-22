@@ -10,15 +10,16 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Xunit;
 using Xunit.Abstractions;
-using static Alundra.Tests.UI.TextBoxGpu;
+using static Alundra.Tests.UI.Shared.TextBoxGpu;
 using Alundra.Entities;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
 using Alundra.UI.Messages;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
+using Alundra.Tests.UI.Shared;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Messages;
 
 /// <summary>
 /// E19.f4c2 T5 (docs/plan-e19-opcodes.md, F4C2-1): the pixels of the speaker's name box and portrait on a real GPU. The real <see cref="TextBoxScreen"/> (its versioned XAML) is
@@ -27,10 +28,10 @@ namespace Alundra.Tests.UI;
 /// (<c>docs/plan-e19-f4c-annexe/refs/*.png</c>, produced by <c>gen_cases.py</c> from the binary's value model, never from the DLL), each image in its class (<c>classes.tsv</c>):
 /// <b>exact</b> (Rgb 128, the portrait at rest; or no portrait) and <b>tint8</b> (Rgb other than 128: every pixel outside the portrait's quad exact, inside it each channel within 8/255 of
 /// the reference, the rows and columns on a tie of the centre rule excluded; D-E19-100, D-E19-101). The PS1's own texel rule is not a reference. Skipped without a GPU
-/// (<see cref="AlundraGpuFactAttribute"/>): running them on a machine with a GPU is the evidence. Needs the exported <c>alundra-project</c> (<c>UI/Portraits</c>).
+/// (<see cref="GpuFactAttribute"/>): running them on a machine with a GPU is the evidence. Needs the exported <c>alundra-project</c> (<c>UI/Portraits</c>).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSpeakerPixelTests : IDisposable
+public sealed class SpeakerPixelTests : IDisposable
 {
     private static readonly DialogueDirector Director = DialogueDirector.Instance;
 
@@ -39,7 +40,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
 
     private readonly ITestOutputHelper _output;
 
-    public AlundraSpeakerPixelTests(ITestOutputHelper output)
+    public SpeakerPixelTests(ITestOutputHelper output)
     {
         _output = output;
         Reset();
@@ -221,14 +222,14 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
         return failures;
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheExactImages_AreTheirReferencesPixelForPixel_AtRestAndWhereNoPortraitIsDrawn()
     {
         var failures = CompareClass("exact");
         Assert.True(failures.Count == 0, $"{failures.Count} exact images differ:\n{string.Join("\n", failures.Take(6))}");
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheTintedImages_AreTheirReferences_OutsideThePortraitExactly_InsideItWithin8Of255()
     {
         var failures = CompareClass("tint8");
@@ -241,7 +242,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
 
     /// <summary>S1 at N+16 (image 19): the portrait is over the text frame, the name frame over it, the name text over its frame; the same points with the portrait and the name hidden are
     /// the frame's own colours (the control: the order points move when the elements are shown).</summary>
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheOrder_PortraitOverTheTextFrame_NameFrameOverIt_NameTextOverTheNameFrame()
     {
         var shown = DrawImage("S1", 19, 1);
@@ -262,7 +263,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
     // ---- the sixty names ---------------------------------------------------------------------------------------------------------------------------
 
     /// <summary>The name box alone, 60 names at x 64, 303 and 150 (the rest, the slide's tail, the middle of the slide), 0 pixel off the SHA-1 of the image the binary's glyph table gives.</summary>
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheSixtyNames_AtThreePositions_AreTheBinarysGlyphsToThePixel()
     {
         var rows = File.ReadAllLines(F4cAnnex.File_("names-digests.tsv")).Skip(1).Where(l => l.Length > 0).Select(l => l.Split('\t')).ToList();
@@ -295,7 +296,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
 
     /// <summary>Every portrait by its sprite id (docs/plan-e19-f4-annexe/portraits_table.tsv; the one of bank 15 lives under Entities/), at rest at (8, 172 - h) through the view model: the
     /// sprite's own texels, 0 pixel off.</summary>
-    [AlundraGpuFact]
+    [GpuFact]
     public void EveryPortrait_ByItsSpriteId_IsDrawnAtRestAsItsOwnTexels()
     {
         var rows = File.ReadAllLines(Path.Combine(SpeakerAnnex.Directory(), "portraits_table.tsv")).Skip(1).Where(l => l.Length > 0).Select(l => l.Split('\t')).ToList();
@@ -348,7 +349,7 @@ public sealed class AlundraSpeakerPixelTests : IDisposable
 
     /// <summary>F4C2-1: the cost of the first use of a portrait sheet (decode and upload of its PNG, the way the project assets stand-in loads it): the three largest sheets of the 13 are
     /// measured; above 20 ms (about one tick) the plan stops and a preload is to be decided. The best of three is taken for each (the first run pays the JIT).</summary>
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheThreeLargestPortraitSheets_LoadInUnderOneTick()
     {
         var rows = File.ReadAllLines(Path.Combine(SpeakerAnnex.Directory(), "portraits_table.tsv")).Skip(1).Where(l => l.Length > 0).Select(l => l.Split('\t')).ToList();

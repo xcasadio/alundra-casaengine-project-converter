@@ -11,8 +11,9 @@ using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.UI.Messages;
 using Alundra.Tests.Support;
+using Alundra.Tests.UI.Inventory;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Shared;
 
 /// <summary>
 /// Engine task T5.2 (gap G10): the inventory and the HUD are rebuilt at every world change, and the previous screen
@@ -21,9 +22,9 @@ namespace Alundra.Tests.UI;
 /// so the class runs in <see cref="MguiDataBindingCollection"/>.
 /// </summary>
 [Collection(MguiDataBindingCollection.Name)]
-public sealed class AlundraScreenBindingReleaseTests : IDisposable
+public sealed class ScreenBindingReleaseTests : IDisposable
 {
-    public AlundraScreenBindingReleaseTests() => HudDirector.Instance.ResetForTests();
+    public ScreenBindingReleaseTests() => HudDirector.Instance.ResetForTests();
 
     public void Dispose() => HudDirector.Instance.ResetForTests();
 
@@ -54,7 +55,7 @@ public sealed class AlundraScreenBindingReleaseTests : IDisposable
         }
 
         throw new DirectoryNotFoundException(
-            $"AlundraScreenBindingReleaseTests: no versioned 'alundra-project/UI/Screens' above '{AppContext.BaseDirectory}'.");
+            $"ScreenBindingReleaseTests: no versioned 'alundra-project/UI/Screens' above '{AppContext.BaseDirectory}'.");
     }
 
     private static AssetContentManager NewAssets(params AssetInfo[] infos)
@@ -80,7 +81,7 @@ public sealed class AlundraScreenBindingReleaseTests : IDisposable
         };
         var font3Info = new AssetInfo(InventoryScreen.Font3FontAssetId) { Name = "font3", FileName = Path.Combine("UI", "font3.fnt") };
         var assets = NewAssets(screenInfo, font3Info);
-        assets.RegisterAssetLoader(typeof(BitmapFont), new AlundraInventoryScreenFontTests.CpuFont3Loader());
+        assets.RegisterAssetLoader(typeof(BitmapFont), new InventoryScreenFontTests.CpuFont3Loader());
 
         var screen = new InventoryScreen(assets, new UIFontRegistry(assets));
         var (desktop, _) = HeadlessUiTestHarness.NewDesktop();

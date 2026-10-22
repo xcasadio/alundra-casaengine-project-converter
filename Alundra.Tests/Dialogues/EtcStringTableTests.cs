@@ -5,6 +5,8 @@ using Xunit;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
 using Alundra.Tests.Support;
+using Alundra.Tests.UI.Inventory;
+using Alundra.Tests.UI.SubInventory;
 
 namespace Alundra.Tests.Dialogues;
 
@@ -13,7 +15,7 @@ namespace Alundra.Tests.Dialogues;
 /// <see cref="EtcStringTable"/> itself, against a <c>dialogue_etc</c>-shaped asset injected
 /// through <see cref="EtcStringTable.SetEtcDialogueAssetForTests"/> - never a raw-file reader.
 /// Integration-level coverage (through the real inventory/sub-inventory directors and the real OUI/NON
-/// dispatch) lives in <see cref="AlundraInventoryDirectorTests"/>, <see cref="AlundraSubInventoryDirectorTests"/>,
+/// dispatch) lives in <see cref="InventoryDirectorTests"/>, <see cref="SubInventoryDirectorTests"/>,
 /// <see cref="DialogueOpcodeDispatchTests"/> and <see cref="DialogueOpcodesProductionTests"/>.
 /// <c>projectPath</c> is passed as <see cref="EngineEnvironment.ProjectPath"/> throughout, matching every
 /// production call site, even though the table itself no longer reads it (see that class' own doc).

@@ -9,14 +9,15 @@ using System.Text.RegularExpressions;
 using CasaEngine.Framework.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
-using static Alundra.Tests.UI.TextBoxGpu;
+using static Alundra.Tests.UI.Shared.TextBoxGpu;
 using Alundra.Hero;
 using Alundra.Dialogues;
 using Alundra.UI.Choice;
 using Alundra.UI.Messages;
 using Alundra.Tests.Audio;
+using Alundra.Tests.UI.Shared;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Choice;
 
 /// <summary>
 /// E19.f3b F3B-1 (docs/plan-e19-opcodes.md, F3B-R1 to R3): the pixels of the choice screen on a real GPU. The real <see cref="ChoiceScreen"/> (its versioned XAML, its view
@@ -24,11 +25,11 @@ namespace Alundra.Tests.UI;
 /// <c>docs/plan-e19-f3-annexe/values.json</c>) is drawn by an <c>MGDesktop</c> into a render target, read back, and compared texel for texel with the 19 images of
 /// <c>docs/plan-e19-f3-annexe/view/pixels/</c> (composed by the independent <c>view/compositor/ref.py</c> from the exported PNGs and the binary's tables, not rerun here) and
 /// with the points of <c>view/points.md</c>, at x1 and x2; over the text box screen (its window first, the choice above it) at rest and with a full first row, with the control of the
-/// inverse order; and in a view that is offset (the window is not 4:3). Skipped without a GPU (<see cref="AlundraGpuFactAttribute"/>); the harness is <see cref="TextBoxGpu"/>
+/// inverse order; and in a view that is offset (the window is not 4:3). Skipped without a GPU (<see cref="GpuFactAttribute"/>); the harness is <see cref="TextBoxGpu"/>
 /// and the caveats of the discovery stand (a stand-in asset provider, one GPU, the production <c>UIRoot</c> chain only proved by the recipe).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraChoicePixelTests
+public sealed class ChoicePixelTests
 {
     private static readonly (int R, int G, int B) Background = (ClearR, ClearG, ClearB);
 
@@ -247,37 +248,37 @@ public sealed class AlundraChoicePixelTests
 
     // ---- the choice alone: the versioned images ----------------------------------------------------------------------------------------
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheRestStateOnOui_IsTheVersionedImage_AtX1AndX2_AndTheirPoints()
     {
         AssertTheImage("choice_V1_t19_rest_oui", BoxAt(0, 19), sectionOfPoints: "choice rest OUI");
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheRestStateOnNon_IsTheVersionedImage_AtX1AndX2_AndTheirPoints()
     {
         AssertTheImage("choice_V2_t22_rest_non", BoxAt(1, 22), sectionOfPoints: "choice rest NON");
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheFirstDrawnPass_IsTheVersionedImage_AtX1AndX2()
     {
         AssertTheImage("choice_V1_t02_first_drawn", BoxAt(0, 2));
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void ASlideIn_IsTheVersionedImage_AtX1AndX2_AndItsPoints()
     {
         AssertTheImage("choice_V1_t05_slide_in", BoxAt(0, 5), sectionOfPoints: "choice slide-in");
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void ASlideOut_IsTheVersionedImage_AtX1AndX2_AndItsPoints()
     {
         AssertTheImage("choice_V1_t25_slide_out", BoxAt(0, 25), sectionOfPoints: "choice slide-out");
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheInitPass_TheEdgeOfTheExit_TheOffScreenPassAndTheClosePass_AreTheVersionedImages_AtX1()
     {
         // N+1: nothing drawn; N+34: the frame at x 310, the cursor and NON beyond the right edge; N+36: the frame at 320, off screen; N+37: the close pass, nothing drawn.
@@ -289,13 +290,13 @@ public sealed class AlundraChoicePixelTests
 
     // ---- over the text box ---------------------------------------------------------------------------------------------------------------
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheChoice_OverTheTextBoxAtRest_IsTheVersionedImage_AtX1AndX2_AndTheOrderPoints()
     {
         AssertTheImage("overlap_rest_V1_t19", BoxAt(0, 19), underlay: "rest", sectionOfPoints: "choice over the text box at rest");
     }
 
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheChoice_OverAFullFirstRow_IsTheVersionedImage_AtX1AndX2_AndTheOrderPoints()
     {
         AssertTheImage("overlap_mrow_V1_t19", BoxAt(0, 19), underlay: "mrow", sectionOfPoints: "choice over a full first text row");
@@ -304,7 +305,7 @@ public sealed class AlundraChoicePixelTests
 
     /// <summary>The control: with the windows added the other way round (the text box above the choice) the same states differ from the versioned images; the order is what is
     /// measured (338 to 345 texels at x1, the discovery's figures, view-notes.md section 3).</summary>
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheInverseOrderOfTheWindows_DiffersFromTheVersionedImages()
     {
         foreach (var (image, index, pass, underlay) in new[]
@@ -326,7 +327,7 @@ public sealed class AlundraChoicePixelTests
     /// <summary>The engine fits the 320 x 240 image in a window that is not 4:3 and shifts the view (engine ADR-0054). States whose frame, labels and cursor leave the image on the right
     /// (the first slide-in passes, frame at x 311 with the cursor at 331 or 379 on V6 whose default is NON, and the end of the exit at 320) draw nothing outside the view: not right of
     /// the 320 x 240 canvas, not in the margin. Inside the view the picture is the one drawn without an offset.</summary>
-    [AlundraGpuFact]
+    [GpuFact]
     public void AStateBeyondTheRightEdge_InAViewThatIsOffset_DrawsNothingOutsideTheView()
     {
         foreach (var (index, pass) in new[] { (0, 2), (0, 3), (5, 2), (0, 35) })
@@ -370,7 +371,7 @@ public sealed class AlundraChoicePixelTests
     }
 
     /// <summary>A sanity of the harness for the reader: the plain pictures at the offset states are not empty (the frame is on screen from x 311 on).</summary>
-    [AlundraGpuFact]
+    [GpuFact]
     public void TheOffsetStates_ShowSomethingInsideTheView()
     {
         var picture = Draw(2, BoxAt(0, 3));

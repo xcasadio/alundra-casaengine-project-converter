@@ -10,7 +10,7 @@ using Xunit;
 using Alundra.UI.Inventory;
 using Alundra.Maps;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.UI.Inventory;
 
 /// <summary>
 /// E13.d D5.f (engine ADR-0036, plan D-E13D-18). Found in game (D6): after a map change, the inventory
@@ -22,7 +22,7 @@ namespace Alundra.Tests.UI;
 /// <see cref="BitmapFont"/> on a fixed-size font rasterized on the CPU from a TTF, the substitute the engine's
 /// own font tests use. The real font3 is proven by the in-game check (D5.f.3).
 /// </summary>
-public sealed class AlundraInventoryScreenFontTests
+public sealed class InventoryScreenFontTests
 {
     internal sealed class CpuFont3Loader : IAssetLoader
     {
@@ -54,7 +54,7 @@ public sealed class AlundraInventoryScreenFontTests
             }
 
             throw new FileNotFoundException(
-                $"AlundraInventoryScreenFontTests: no 'CasaEngineMonogame/CasaEngine/Content/Fonts/tahoma.ttf' above '{AppContext.BaseDirectory}'.");
+                $"InventoryScreenFontTests: no 'CasaEngineMonogame/CasaEngine/Content/Fonts/tahoma.ttf' above '{AppContext.BaseDirectory}'.");
         }
     }
 

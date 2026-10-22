@@ -16,7 +16,7 @@ using Alundra.UI.Hud;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Hud;
 
 /// <summary>
 /// E13 C1 acceptance (docs/plan-e13-hud.md, tranche "C1 - DLL : le directeur de session du HUD"). Every
@@ -25,7 +25,7 @@ namespace Alundra.Tests;
 /// own item 4) rather than copied from <see cref="HudDirector"/>'s private constants, so a
 /// regression in one cannot silently pass the other's test.
 /// </summary>
-public sealed class AlundraHudDirectorTests : IDisposable
+public sealed class HudDirectorTests : IDisposable
 {
     // word 0x38 bit 21 -> (0x38 &lt;&lt; 5) + 21 = 1813, mask 0x200000 - "please appear".
     private const uint ScriptOpenRequestFlag = 1813;
@@ -39,7 +39,7 @@ public sealed class AlundraHudDirectorTests : IDisposable
     private const uint PersistentLatchFlag = 1662;
     private const uint PersistentLatchMask = 0x40000000;
 
-    public AlundraHudDirectorTests()
+    public HudDirectorTests()
     {
         HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();

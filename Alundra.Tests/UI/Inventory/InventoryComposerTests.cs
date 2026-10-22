@@ -4,14 +4,14 @@ using System.Linq;
 using Xunit;
 using Alundra.UI.Inventory;
 
-namespace Alundra.Tests.Scripts;
+namespace Alundra.Tests.UI.Inventory;
 
 /// <summary>
 /// E13.d D5 (docs/plan-e13d-inventaire.md): pins <see cref="InventoryComposer.Compose"/>'s own
 /// position formulas by hand-computed values, against the original citations reproduced in the
 /// composer's own doc (<c>MainInventoryManager.cs:1267-1615</c>).
 /// </summary>
-public sealed class AlundraInventoryComposerTests
+public sealed class InventoryComposerTests
 {
     private static readonly (int X, int Y)[] RestBoxPositions =
     {

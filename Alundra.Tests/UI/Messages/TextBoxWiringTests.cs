@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Alundra.Tests.UI;
 using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Assets;
 using CasaEngine.Framework.Dialogue.Assets;
@@ -29,8 +28,9 @@ using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Ai.Objects;
 using Alundra.Tests.Audio;
+using Alundra.Tests.UI.Shared;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Messages;
 
 /// <summary>
 /// E19.f2b1c T4 (docs/plan-e19-opcodes.md, F2B1C-R4 and R5): the wiring of the text box screen. The presenter pushes the screen at the first drawn pass of the box, writes the
@@ -39,11 +39,11 @@ namespace Alundra.Tests;
 /// text box screen is pushed first and the choice screen (E19.f3b) above it, which goes when the answer is taken.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraTextBoxWiringTests : IDisposable
+public sealed class TextBoxWiringTests : IDisposable
 {
     private static readonly DialogueDirector Director = DialogueDirector.Instance;
 
-    public AlundraTextBoxWiringTests()
+    public TextBoxWiringTests()
     {
         Reset();
     }

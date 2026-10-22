@@ -23,8 +23,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
 using Alundra.Tests.UI;
+using Alundra.Tests.UI.Shared;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Speech;
 
 /// <summary>
 /// E15.c, T1 (docs/plan-e15-yarn.md, "E15.c - La DLL lit le Yarn", contract item 4; ADR-0008): proves that
@@ -65,7 +66,7 @@ namespace Alundra.Tests;
 /// and enabled in T2, once the export carried D-E15-16's mapping: an export older than E15.e keeps 'é'
 /// at CP850's cell 130 (x=32,y=128) and fails the cell assertion.
 /// </summary>
-public sealed class AlundraFont3GlyphTests
+public sealed class Font3GlyphTests
 {
     // font3 glyphs 16-29 (ADR-0006 §Context / ADR-0008 §Context): bullet, quotes, star, arrows, buttons.
     // 28 and 29 are the ones the plan calls out by name: U+001C and U+001D are control characters some
@@ -88,7 +89,7 @@ public sealed class AlundraFont3GlyphTests
         }
 
         throw new InvalidOperationException(
-            $"AlundraFont3GlyphTests: no 'alundra-project/UI/font3.fnt' found above '{AppContext.BaseDirectory}' - "
+            $"Font3GlyphTests: no 'alundra-project/UI/font3.fnt' found above '{AppContext.BaseDirectory}' - "
             + "this test needs the real converter export of font3 (docs/plan-e15-yarn.md, E15.c, T1) and cannot "
             + "self-skip without one.");
     }
@@ -136,19 +137,19 @@ public sealed class AlundraFont3GlyphTests
     {
         public static readonly GpuThread Instance = new();
 
-        public GraphicsDevice GraphicsDevice => Alundra.Tests.UI.TextBoxGpu.Device;
+        public GraphicsDevice GraphicsDevice => Alundra.Tests.UI.Shared.TextBoxGpu.Device;
 
         public void EnsureDevice()
         {
-            if (!Alundra.Tests.UI.TextBoxGpu.IsAvailable)
+            if (!Alundra.Tests.UI.Shared.TextBoxGpu.IsAvailable)
             {
-                throw new InvalidOperationException(Alundra.Tests.UI.TextBoxGpu.UnavailableReason);
+                throw new InvalidOperationException(Alundra.Tests.UI.Shared.TextBoxGpu.UnavailableReason);
             }
         }
 
-        public void Invoke(Action action) => Alundra.Tests.UI.TextBoxGpu.Invoke(action);
+        public void Invoke(Action action) => Alundra.Tests.UI.Shared.TextBoxGpu.Invoke(action);
 
-        public T Invoke<T>(Func<T> func) => Alundra.Tests.UI.TextBoxGpu.Invoke(func);
+        public T Invoke<T>(Func<T> func) => Alundra.Tests.UI.Shared.TextBoxGpu.Invoke(func);
     }
 
     // ── Minimal IUIDesktopRuntime carrying a REAL FontStashSharpTextEngine (no CasaEngine game/world) ────
@@ -188,7 +189,7 @@ public sealed class AlundraFont3GlyphTests
         }
 
         public IUIDrawTransaction CreateDrawTransaction(DrawSettings settings, bool deferBegin)
-            => throw new NotSupportedException($"{nameof(AlundraFont3GlyphTests)} never draws.");
+            => throw new NotSupportedException($"{nameof(Font3GlyphTests)} never draws.");
 
         public void RegisterView(IUIView view)
         {

@@ -18,18 +18,19 @@ using Alundra.Dialogues;
 using Alundra.UI.Hud;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.UI.Speech;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Hud;
 
 /// <summary>
 /// E13 C3 acceptance (docs/plan-e13-hud.md, tranche "Les transitions et les deux cycles, au tick", D-E13-8).
-/// <see cref="HudScreen"/> is not constructible headless (<see cref="AlundraDialoguePresenterWiringTests"/>'s
+/// <see cref="HudScreen"/> is not constructible headless (<see cref="DialoguePresenterWiringTests"/>'s
 /// own class doc: a real <c>MGWindow</c>/<c>ScreenStack</c> needs a live graphics stack), so every test here
 /// drives <see cref="HudPresenter"/> against a recording <see cref="IHudView"/> double instead -
 /// the value the presenter itself PUSHED, exactly what mission item 4.a asks for when the element is not
 /// constructible without a head.
 /// </summary>
-public sealed class AlundraHudPresenterTests : IDisposable
+public sealed class HudPresenterTests : IDisposable
 {
     // word 0x38 bit 21 -> (0x38 &lt;&lt; 5) + 21 = 1813, mask 0x200000 - "please appear" (same constants
     // AlundraHudDirectorTests re-derives independently from AlundraGameState's own IndexOf arithmetic).
@@ -44,7 +45,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
     private const uint PersistentLatchFlag = 1662;
     private const uint PersistentLatchMask = 0x40000000;
 
-    public AlundraHudPresenterTests()
+    public HudPresenterTests()
     {
         HudDirector.Instance.ResetForTests();
         DialogueDirector.Instance.ResetForTests();
@@ -475,7 +476,7 @@ public sealed class AlundraHudPresenterTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraHudPresenterTests: no 'Alundra/Scripts/HudDirector.cs' found above "
+            $"HudPresenterTests: no 'Alundra/Scripts/HudDirector.cs' found above "
             + $"'{AppContext.BaseDirectory}' - this test needs the repo's own source tree, not just the built DLL.");
     }
 }

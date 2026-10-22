@@ -12,7 +12,7 @@ using Alundra.Hero;
 using Alundra.Dialogues;
 using Alundra.UI.Choice;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Choice;
 
 /// <summary>
 /// E19.f3b F3B-1 (docs/plan-e19-opcodes.md, F3B-R2): <see cref="ChoiceViewModel.Apply"/> against the real <see cref="ChoiceBox"/>, pass by pass, on V1 and V2 of
@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 /// the frame at the pass's x (311 ... 176 at the entry, 176, 185, ... 320 at the exit), the labels and the cursor (sprite by image, x by selection); and the view model
 /// notifies only what changes.
 /// </summary>
-public sealed class AlundraChoiceViewModelTests
+public sealed class ChoiceViewModelTests
 {
     private static readonly string[] Sprites = { "wind_150", "wind_173", "wind_201", "wind_228" };
 

@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using Alundra.UI.SubInventory;
+using Alundra.Tests.UI.Inventory;
 
-namespace Alundra.Tests.Scripts;
+namespace Alundra.Tests.UI.SubInventory;
 
 /// <summary>
 /// E13.d SI4 (docs/plan-e13d-sous-inventaire.md): pins <see cref="SubInventoryComposer.Compose"/>'s own
 /// position formulas by hand-computed values, against the plan's own §1.3/§1.5 tables - same shape as
-/// <see cref="AlundraInventoryComposerTests"/>.
+/// <see cref="InventoryComposerTests"/>.
 /// </summary>
-public sealed class AlundraSubInventoryComposerTests
+public sealed class SubInventoryComposerTests
 {
     // Rest positions (plan §1.3's own table), PUBLIC index order: 0 armory, 1 key items, 2 armor name,
     // 3 boots name, 4 icons, 5 description, 6 money/falcon/key.

@@ -21,7 +21,7 @@ using Alundra.UI.SubInventory;
 using Alundra.Maps;
 using Alundra.Tests.Items;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Shared;
 
 /// <summary>
 /// docs/plan-portrait-inventaire.md PI8: the opening portrait wired into both inventories, driven through the real
@@ -30,9 +30,9 @@ namespace Alundra.Tests;
 /// its own tick (the original's next render), and a start or a return made in a render half - the post-process
 /// openings, the four exits - steps in that same tick.
 /// </summary>
-public sealed class AlundraInventoryPortraitWiringTests : IDisposable
+public sealed class InventoryPortraitWiringTests : IDisposable
 {
-    public AlundraInventoryPortraitWiringTests()
+    public InventoryPortraitWiringTests()
     {
         ResetAll();
     }

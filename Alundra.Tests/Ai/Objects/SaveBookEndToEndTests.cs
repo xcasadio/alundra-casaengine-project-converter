@@ -33,6 +33,7 @@ using Alundra.SaveGames;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Audio;
+using Alundra.Tests.UI.Saving;
 
 namespace Alundra.Tests.Ai.Objects;
 

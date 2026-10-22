@@ -28,7 +28,7 @@ using Alundra.Tests.Maps;
 using Alundra.Tests.Ai.Objects;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.UI.Saving;
 
 /// <summary>
 /// E16.e T3 (docs/plan-e16-etat-partie.md, L2, L3, L5, J3, J4, SE3, SE4, SE5, SE9): the save screen's director
@@ -38,7 +38,7 @@ namespace Alundra.Tests;
 /// never reached).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSaveScreenDirectorTests : IDisposable
+public sealed class SaveScreenDirectorTests : IDisposable
 {
     private const string Examine = "Examen de la Carte Mémoire . . .";
     private const string PickHeading = "Sélectionne une fente pour l'enregistrement.";
@@ -57,7 +57,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     private readonly DialoguePresenter _presenter;
     private readonly RecordingSound _sound = new();
 
-    public AlundraSaveScreenDirectorTests()
+    public SaveScreenDirectorTests()
     {
         ResetAll();
         EtcStringTable.SetEtcDialogueAssetForTests(
@@ -1012,41 +1012,5 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         public NavigationGrid2D? NavigationGrid => null;
 
         public string? WorldName => _worldName;
-    }
-}
-
-/// <summary>E16.e T3/T4: a headless world with a game whose active render view carries a given UI runtime - the
-/// recipe of <c>AlundraDialoguePresenterWiringTests</c>.</summary>
-internal static class SaveScreenTestWorlds
-{
-    internal static World WorldWithUIView(string name, IUIViewRuntime uiView)
-    {
-        var world = new World { Name = name };
-        var game = (CasaEngine.Framework.Application.CasaEngineGame)System.Runtime.CompilerServices.RuntimeHelpers
-            .GetUninitializedObject(typeof(CasaEngine.Framework.Application.CasaEngineGame));
-        var componentsField = typeof(Microsoft.Xna.Framework.Game)
-            .GetField("_components", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
-        componentsField.SetValue(game, new Microsoft.Xna.Framework.GameComponentCollection());
-
-        var gameManager = (CasaEngine.Framework.Application.GameManager)System.Runtime.CompilerServices.RuntimeHelpers
-            .GetUninitializedObject(typeof(CasaEngine.Framework.Application.GameManager));
-        var viewManager = new CasaEngine.Framework.Rendering.ViewManager();
-        typeof(CasaEngine.Framework.Application.GameManager)
-            .GetField("<ViewManager>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
-            .SetValue(gameManager, viewManager);
-        typeof(CasaEngine.Framework.Application.CasaEngineGame)
-            .GetField("<GameManager>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
-            .SetValue(game, gameManager);
-
-        var view = (CasaEngine.Framework.Rendering.RenderView)System.Runtime.CompilerServices.RuntimeHelpers
-            .GetUninitializedObject(typeof(CasaEngine.Framework.Rendering.RenderView));
-        view.UIView = uiView;
-        view.Enabled = true;
-        view.IsVisible = true;
-        viewManager.Add(view);
-        viewManager.SetActive(view);
-
-        HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
-        return world;
     }
 }
