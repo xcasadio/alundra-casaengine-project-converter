@@ -1,0 +1,8 @@
+raw-id sites 178 hero-group sites 8 bad []
+27 records 50 max index 49
+29 records 46 max index 45
+30 records 51 max index 50
+113 records 24 max index 23
+159 records 19 max index 18
+398 records 15 max index 14
+400 records 17 max index 16

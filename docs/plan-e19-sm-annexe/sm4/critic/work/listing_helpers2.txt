@@ -1,0 +1,93 @@
+=== addr 8003c914 ===
+8003c914: 27bdffe8  addiu    $sp, $sp, -0x18
+8003c918: afbf0014  sw       $ra, 0x14($sp)
+8003c91c: 0c00e6f4  jal      0x80039bd0
+8003c920: afb00010  sw       $s0, 0x10($sp)
+8003c924: 00408021  move     $s0, $v0
+8003c928: 16000005  bnez     $s0, 0x8003c940
+8003c92c: 02001021  move     $v0, $s0
+8003c930: 3c048002  lui      $a0, 0x8002
+8003c934: 0c00f210  jal      0x8003c840
+8003c938: 24843bfc  addiu    $a0, $a0, 0x3bfc
+8003c93c: 02001021  move     $v0, $s0
+8003c940: 8fbf0014  lw       $ra, 0x14($sp)
+8003c944: 8fb00010  lw       $s0, 0x10($sp)
+8003c948: 27bd0018  addiu    $sp, $sp, 0x18
+8003c94c: 03e00008  jr       $ra
+8003c950: 00000000  nop      
+=== addr 8003c840 ===
+8003c840: 27bdffe8  addiu    $sp, $sp, -0x18
+8003c844: afbf0014  sw       $ra, 0x14($sp)
+8003c848: 0c02057b  jal      0x800815ec
+8003c84c: afb00010  sw       $s0, 0x10($sp)
+8003c850: 3c02800e  lui      $v0, 0x800e
+8003c854: 3c048002  lui      $a0, 0x8002
+8003c858: 8c45c5a0  lw       $a1, -0x3a60($v0)
+8003c85c: 0c02057f  jal      0x800815fc
+8003c860: 24843b90  addiu    $a0, $a0, 0x3b90
+8003c864: 3c108014  lui      $s0, 0x8014
+8003c868: 8e03d9dc  lw       $v1, -0x2624($s0)
+8003c86c: 24020001  addiu    $v0, $zero, 1
+8003c870: 10620009  beq      $v1, $v0, 0x8003c898
+8003c874: 3c028014  lui      $v0, 0x8014
+8003c878: 3c048002  lui      $a0, 0x8002
+8003c87c: 8c45d8d4  lw       $a1, -0x272c($v0)
+8003c880: 0c02057f  jal      0x800815fc
+8003c884: 24843ba0  addiu    $a0, $a0, 0x3ba0
+8003c888: 3c048002  lui      $a0, 0x8002
+8003c88c: 8e05d9dc  lw       $a1, -0x2624($s0)
+8003c890: 0800f22d  j        0x8003c8b4
+8003c894: 24843bac  addiu    $a0, $a0, 0x3bac
+8003c898: 3c048002  lui      $a0, 0x8002
+8003c89c: 0c02057b  jal      0x800815ec
+8003c8a0: 24843bb8  addiu    $a0, $a0, 0x3bb8
+8003c8a4: 3c028012  lui      $v0, 0x8012
+8003c8a8: 8c457f58  lw       $a1, 0x7f58($v0)
+8003c8ac: 3c048002  lui      $a0, 0x8002
+8003c8b0: 24843bcc  addiu    $a0, $a0, 0x3bcc
+8003c8b4: 0c02057f  jal      0x800815fc
+8003c8b8: 00000000  nop      
+8003c8bc: 3c028014  lui      $v0, 0x8014
+8003c8c0: 3c048002  lui      $a0, 0x8002
+8003c8c4: 8c45da24  lw       $a1, -0x25dc($v0)
+8003c8c8: 0c02057f  jal      0x800815fc
+8003c8cc: 24843bd8  addiu    $a0, $a0, 0x3bd8
+8003c8d0: 3c028014  lui      $v0, 0x8014
+8003c8d4: 3c048002  lui      $a0, 0x8002
+8003c8d8: 8c45da28  lw       $a1, -0x25d8($v0)
+8003c8dc: 0c02057f  jal      0x800815fc
+8003c8e0: 24843be4  addiu    $a0, $a0, 0x3be4
+8003c8e4: 3c028014  lui      $v0, 0x8014
+8003c8e8: 3c048002  lui      $a0, 0x8002
+8003c8ec: 8c45d9e0  lw       $a1, -0x2620($v0)
+8003c8f0: 0c02057f  jal      0x800815fc
+8003c8f4: 24843bf0  addiu    $a0, $a0, 0x3bf0
+8003c8f8: 0c020c78  jal      0x800831e0
+8003c8fc: 24040001  addiu    $a0, $zero, 1
+8003c900: 8fbf0014  lw       $ra, 0x14($sp)
+8003c904: 8fb00010  lw       $s0, 0x10($sp)
+8003c908: 27bd0018  addiu    $sp, $sp, 0x18
+8003c90c: 03e00008  jr       $ra
+8003c910: 00000000  nop      
+=== addr 8004debc ===
+8004debc: 3c028017  lui      $v0, 0x8017
+8004dec0: 8c436318  lw       $v1, 0x6318($v0)
+8004dec4: 00000000  nop      
+8004dec8: 84620006  lh       $v0, 6($v1)
+8004decc: 94650006  lhu      $a1, 6($v1)
+8004ded0: 0044102a  slt      $v0, $v0, $a0
+8004ded4: 10400003  beqz     $v0, 0x8004dee4
+8004ded8: 00000000  nop      
+8004dedc: 080137be  j        0x8004def8
+8004dee0: a4650004  sh       $a1, 4($v1)
+8004dee4: 04810003  bgez     $a0, 0x8004def4
+8004dee8: 00000000  nop      
+8004deec: 080137be  j        0x8004def8
+8004def0: a4600004  sh       $zero, 4($v1)
+8004def4: a4640004  sh       $a0, 4($v1)
+8004def8: 3c028017  lui      $v0, 0x8017
+8004defc: 8c426318  lw       $v0, 0x6318($v0)
+8004df00: 00000000  nop      
+8004df04: 84420004  lh       $v0, 4($v0)
+8004df08: 03e00008  jr       $ra
+8004df0c: 00000000  nop      

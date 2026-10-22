@@ -1,0 +1,2 @@
+mapped run: ok
+STOPPED as expected: vector selftest/unmapped: UNMAPPED reads ['slot[0]+0x6c', 'slot[1]+0x6c'] writes []

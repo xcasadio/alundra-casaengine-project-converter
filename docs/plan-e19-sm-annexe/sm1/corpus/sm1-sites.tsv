@@ -1,0 +1,188 @@
+map	world	program	pc	opcode	operands	shape	logic_entity	result_writers_reaching_the_site_today	first_reader_after	covered_by
+27	Ancient Shrine-27	C[2]	612	60	05	plate-phase-loop	owner (the plate)	ENTRY	@614:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	617	60	06	plate-phase-loop	owner (the plate)	ENTRY	@619:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	622	60	07	plate-phase-loop	owner (the plate)	ENTRY	@624:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	627	60	08	plate-phase-loop	owner (the plate)	ENTRY	@629:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	643	60	05	plate-phase-loop	owner (the plate)	ENTRY	@645:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	648	60	06	plate-phase-loop	owner (the plate)	ENTRY	@650:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	653	60	07	plate-phase-loop	owner (the plate)	ENTRY	@655:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	658	60	08	plate-phase-loop	owner (the plate)	ENTRY	@660:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	674	60	05	plate-phase-loop	owner (the plate)	ENTRY	@676:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	679	60	06	plate-phase-loop	owner (the plate)	ENTRY	@681:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	684	60	07	plate-phase-loop	owner (the plate)	ENTRY	@686:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	689	60	08	plate-phase-loop	owner (the plate)	ENTRY	@691:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	705	60	05	plate-phase-loop	owner (the plate)	ENTRY	@707:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	710	60	06	plate-phase-loop	owner (the plate)	ENTRY	@712:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	715	60	07	plate-phase-loop	owner (the plate)	ENTRY	@717:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[2]	720	60	08	plate-phase-loop	owner (the plate)	ENTRY	@722:03	RB-02 / AR-27, AR-400
+27	Ancient Shrine-27	C[26]	985	60	1F	plate-wait	owner (the plate)	ENTRY	@987:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+27	Ancient Shrine-27	C[27]	1005	60	20	plate-wait	owner (the plate)	ENTRY	@1007:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+27	Ancient Shrine-27	C[28]	1025	60	1D	plate-wait	owner (the plate)	ENTRY	@1027:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+27	Ancient Shrine-27	C[29]	1045	60	1E	plate-wait	owner (the plate)	ENTRY	@1047:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+27	Ancient Shrine-27	C[36]	1109	60	2D	stack-chain-with-0x43	the 0x43 target (record 35, then each stacked object)	@1106:43	@1111:04	RB-03
+27	Ancient Shrine-27	C[36]	1116	60	2E	stack-chain-with-0x43	the 0x43 target (record 35, then each stacked object)	@1114:43	@1118:04	RB-03
+27	Ancient Shrine-27	C[36]	1123	60	2F	stack-chain-with-0x43	the 0x43 target (record 35, then each stacked object)	@1121:43	@1125:04	RB-03
+27	Ancient Shrine-27	C[36]	1130	60	30	stack-chain-with-0x43	the 0x43 target (record 35, then each stacked object)	@1128:43	@1132:04	RB-03
+29	Ancient Shrine-29	C[17]	813	60	14	plate-wait	owner (the plate)	ENTRY	@815:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+29	Ancient Shrine-29	C[18]	837	60	15	plate-wait	owner (the plate)	ENTRY	@839:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+29	Ancient Shrine-29	C[19]	861	60	16	plate-wait	owner (the plate)	ENTRY	@863:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+29	Ancient Shrine-29	C[20]	885	60	17	plate-wait	owner (the plate)	ENTRY	@887:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+29	Ancient Shrine-29	C[25]	909	60	03	plate-wait	owner (the plate)	ENTRY	@911:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+29	Ancient Shrine-29	C[26]	933	60	04	plate-wait	owner (the plate)	ENTRY	@935:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+29	Ancient Shrine-29	C[27]	957	60	05	plate-wait	owner (the plate)	ENTRY	@959:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+29	Ancient Shrine-29	C[28]	981	60	06	plate-wait	owner (the plate)	ENTRY	@983:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+30	Ancient Shrine-30	C[19]	1686	60	16	plate-wait	owner (the plate)	ENTRY	@1688:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+30	Ancient Shrine-30	C[20]	1730	60	17	plate-wait	owner (the plate)	ENTRY	@1732:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+30	Ancient Shrine-30	C[21]	1774	60	18	plate-wait	owner (the plate)	ENTRY	@1776:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+30	Ancient Shrine-30	C[22]	1818	60	19	plate-wait	owner (the plate)	ENTRY	@1820:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+77	Underground Watercourse-77	C[14]	1871	61	81	wood-rides-hero	owner (the wood); group 0x81 = the hero	@1857:70	@1873:03	RB-13 / RB-14
+77	Underground Watercourse-77	C[15]	1903	61	81	wood-rides-hero	owner (the wood); group 0x81 = the hero	@1889:70	@1905:03	RB-13 / RB-14
+77	Underground Watercourse-77	C[16]	1935	61	81	wood-rides-hero	owner (the wood); group 0x81 = the hero	@1921:70	@1937:03	RB-13 / RB-14
+77	Underground Watercourse-77	C[17]	1967	61	81	wood-rides-hero	owner (the wood); group 0x81 = the hero	@1953:70	@1969:03	RB-13 / RB-14
+77	Underground Watercourse-77	C[24]	2007	61	81	wood-rides-hero	owner (the wood); group 0x81 = the hero	@1993:70	@2009:03	RB-13 / RB-14
+78	Underground Watercourse-78	C[19]	1679	61	81	wood-rides-hero	owner (the wood); group 0x81 = the hero	@1665:70	@1681:03	RB-13 / RB-14
+113	Nestus' Dream-113	C[9]	993	60	0A	plate-wait	owner (the plate)	ENTRY	@995:04	RB-01 / RB-04 / RB-06 (+ RB-05 shape for 30)
+113	Nestus' Dream-113	C[10]	1069	60	0B	plate-toggle	owner (the plate)	ENTRY	@1071:04	RB-07
+113	Nestus' Dream-113	C[10]	1083	60	0B	plate-toggle	owner (the plate)	ENTRY	@1085:03	RB-07
+136	Church-136	C[5]	1579	60	81	hero-switch	owner (the switch); group 0x81 = the hero	ENTRY	@1581:04	RB-08
+136	Church-136	C[10]	2067	60	81	hero-switch	owner (the switch); group 0x81 = the hero	ENTRY	@2069:04	RB-08
+159	Fairy cave (underwater)-159	B[5]	729	61	0D	map-event-hero	the hero (owner = logic = hero, program B)	ENTRY,@752:3B	@731:4B	RB-09
+159	Fairy cave (underwater)-159	C[13]	1654	60	03	bubble-restart	owner (the bubble)	ENTRY	@1656:4A	RB-10
+159	Fairy cave (underwater)-159	C[13]	1657	60	04	bubble-restart	owner (the bubble)	ENTRY	@1659:4A	RB-10
+159	Fairy cave (underwater)-159	C[13]	1660	60	0A	bubble-restart	owner (the bubble)	ENTRY	@1662:4A	RB-10
+226	Inoa-226	B[3]	247	3D	2B 2B 30 33 0C 0C	zone-wait-B	none: 0x3D ignores the logic entity (owner = logic = hero after 0x42)	@234:43	other:@254:00	RB-11
+398	Lurvy House, Well-398	B[1]	88	61	00	map-event-0x43-target	the 0x43 target (the item), owner = hero	@86:43	other:@90:42	RB-12
+398	Lurvy House, Well-398	B[2]	268	61	00	map-event-0x43-target	the 0x43 target (the item), owner = hero	@266:43	other:@270:42	RB-12
+398	Lurvy House, Well-398	B[3]	448	61	00	map-event-0x43-target	the 0x43 target (the item), owner = hero	@446:43	other:@450:42	RB-12
+398	Lurvy House, Well-398	B[4]	628	61	00	map-event-0x43-target	the 0x43 target (the item), owner = hero	@626:43	other:@630:42	RB-12
+398	Lurvy House, Well-398	B[5]	823	61	00	map-event-0x43-target	the 0x43 target (the item), owner = hero	@821:43	other:@825:42	RB-12
+398	Lurvy House, Well-398	B[6]	1043	61	00	map-event-0x43-target	the 0x43 target (the item), owner = hero	@1041:43	other:@1045:42	RB-12
+398	Lurvy House, Well-398	B[7]	1251	61	00	map-event-0x43-target	the 0x43 target (the item), owner = hero	@1249:43	other:@1253:42	RB-12
+400	Desert _ Ancient Shrine-400	C[1]	448	60	04	plate-phase-loop	owner (the plate)	ENTRY	@450:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	453	60	05	plate-phase-loop	owner (the plate)	ENTRY	@455:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	458	60	06	plate-phase-loop	owner (the plate)	ENTRY	@460:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	463	60	07	plate-phase-loop	owner (the plate)	ENTRY	@465:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	479	60	04	plate-phase-loop	owner (the plate)	ENTRY	@481:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	484	60	05	plate-phase-loop	owner (the plate)	ENTRY	@486:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	489	60	06	plate-phase-loop	owner (the plate)	ENTRY	@491:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	494	60	07	plate-phase-loop	owner (the plate)	ENTRY	@496:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	510	60	04	plate-phase-loop	owner (the plate)	ENTRY	@512:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	515	60	05	plate-phase-loop	owner (the plate)	ENTRY	@517:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	520	60	06	plate-phase-loop	owner (the plate)	ENTRY	@522:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	525	60	07	plate-phase-loop	owner (the plate)	ENTRY	@527:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	541	60	04	plate-phase-loop	owner (the plate)	ENTRY	@543:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	546	60	05	plate-phase-loop	owner (the plate)	ENTRY	@548:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	551	60	06	plate-phase-loop	owner (the plate)	ENTRY	@553:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[1]	556	60	07	plate-phase-loop	owner (the plate)	ENTRY	@558:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	764	60	04	plate-phase-loop	owner (the plate)	ENTRY	@766:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	769	60	05	plate-phase-loop	owner (the plate)	ENTRY	@771:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	774	60	06	plate-phase-loop	owner (the plate)	ENTRY	@776:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	779	60	07	plate-phase-loop	owner (the plate)	ENTRY	@781:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	795	60	04	plate-phase-loop	owner (the plate)	ENTRY	@797:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	800	60	05	plate-phase-loop	owner (the plate)	ENTRY	@802:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	805	60	06	plate-phase-loop	owner (the plate)	ENTRY	@807:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	810	60	07	plate-phase-loop	owner (the plate)	ENTRY	@812:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	826	60	04	plate-phase-loop	owner (the plate)	ENTRY	@828:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	831	60	05	plate-phase-loop	owner (the plate)	ENTRY	@833:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	836	60	06	plate-phase-loop	owner (the plate)	ENTRY	@838:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	841	60	07	plate-phase-loop	owner (the plate)	ENTRY	@843:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	857	60	04	plate-phase-loop	owner (the plate)	ENTRY	@859:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	862	60	05	plate-phase-loop	owner (the plate)	ENTRY	@864:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	867	60	06	plate-phase-loop	owner (the plate)	ENTRY	@869:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[2]	872	60	07	plate-phase-loop	owner (the plate)	ENTRY	@874:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1080	60	04	plate-phase-loop	owner (the plate)	ENTRY	@1082:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1085	60	05	plate-phase-loop	owner (the plate)	ENTRY	@1087:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1090	60	06	plate-phase-loop	owner (the plate)	ENTRY	@1092:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1095	60	07	plate-phase-loop	owner (the plate)	ENTRY	@1097:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1111	60	04	plate-phase-loop	owner (the plate)	ENTRY	@1113:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1116	60	05	plate-phase-loop	owner (the plate)	ENTRY	@1118:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1121	60	06	plate-phase-loop	owner (the plate)	ENTRY	@1123:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1126	60	07	plate-phase-loop	owner (the plate)	ENTRY	@1128:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1142	60	04	plate-phase-loop	owner (the plate)	ENTRY	@1144:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1147	60	05	plate-phase-loop	owner (the plate)	ENTRY	@1149:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1152	60	06	plate-phase-loop	owner (the plate)	ENTRY	@1154:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1157	60	07	plate-phase-loop	owner (the plate)	ENTRY	@1159:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1173	60	04	plate-phase-loop	owner (the plate)	ENTRY	@1175:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1178	60	05	plate-phase-loop	owner (the plate)	ENTRY	@1180:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1183	60	06	plate-phase-loop	owner (the plate)	ENTRY	@1185:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[3]	1188	60	07	plate-phase-loop	owner (the plate)	ENTRY	@1190:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1396	60	04	plate-phase-loop	owner (the plate)	ENTRY	@1398:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1401	60	05	plate-phase-loop	owner (the plate)	ENTRY	@1403:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1406	60	06	plate-phase-loop	owner (the plate)	ENTRY	@1408:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1411	60	07	plate-phase-loop	owner (the plate)	ENTRY	@1413:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1427	60	04	plate-phase-loop	owner (the plate)	ENTRY	@1429:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1432	60	05	plate-phase-loop	owner (the plate)	ENTRY	@1434:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1437	60	06	plate-phase-loop	owner (the plate)	ENTRY	@1439:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1442	60	07	plate-phase-loop	owner (the plate)	ENTRY	@1444:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1458	60	04	plate-phase-loop	owner (the plate)	ENTRY	@1460:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1463	60	05	plate-phase-loop	owner (the plate)	ENTRY	@1465:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1468	60	06	plate-phase-loop	owner (the plate)	ENTRY	@1470:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1473	60	07	plate-phase-loop	owner (the plate)	ENTRY	@1475:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1489	60	04	plate-phase-loop	owner (the plate)	ENTRY	@1491:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1494	60	05	plate-phase-loop	owner (the plate)	ENTRY	@1496:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1499	60	06	plate-phase-loop	owner (the plate)	ENTRY	@1501:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[4]	1504	60	07	plate-phase-loop	owner (the plate)	ENTRY	@1506:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1712	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@1714:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1717	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@1719:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1722	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@1724:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1727	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@1729:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1743	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@1745:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1748	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@1750:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1753	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@1755:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1758	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@1760:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1774	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@1776:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1779	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@1781:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1784	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@1786:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1789	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@1791:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1805	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@1807:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1810	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@1812:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1815	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@1817:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[9]	1820	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@1822:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2028	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2030:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2033	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2035:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2038	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2040:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2043	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2045:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2059	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2061:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2064	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2066:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2069	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2071:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2074	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2076:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2090	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2092:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2095	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2097:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2100	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2102:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2105	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2107:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2121	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2123:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2126	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2128:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2131	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2133:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[10]	2136	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2138:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2344	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2346:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2349	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2351:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2354	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2356:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2359	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2361:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2375	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2377:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2380	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2382:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2385	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2387:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2390	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2392:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2406	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2408:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2411	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2413:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2416	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2418:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2421	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2423:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2437	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2439:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2442	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2444:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2447	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2449:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[11]	2452	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2454:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2660	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2662:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2665	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2667:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2670	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2672:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2675	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2677:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2691	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2693:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2696	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2698:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2701	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2703:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2706	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2708:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2722	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2724:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2727	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2729:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2732	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2734:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2737	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2739:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2753	60	0C	plate-phase-loop	owner (the plate)	ENTRY	@2755:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2758	60	0D	plate-phase-loop	owner (the plate)	ENTRY	@2760:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2763	60	0E	plate-phase-loop	owner (the plate)	ENTRY	@2765:03	RB-02 / AR-27, AR-400
+400	Desert _ Ancient Shrine-400	C[12]	2768	60	0F	plate-phase-loop	owner (the plate)	ENTRY	@2770:03	RB-02 / AR-27, AR-400

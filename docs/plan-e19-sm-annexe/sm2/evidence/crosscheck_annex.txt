@@ -1,0 +1,8 @@
+discovery oracle  op 0x6a: 3000 random states, 0 mismatches, Result histogram {None: 3000} 
+discovery oracle  op 0x6b: 3000 random states, 0 mismatches, Result histogram {0: 922, 1: 2078} 
+discovery oracle  op 0x6c: 3000 random states, 0 mismatches, Result histogram {0: 854, 1: 2146} 
+discovery oracle  op 0x6d: 3000 random states, 0 mismatches, Result histogram {0: 1112, 1: 1888} 
+critic oracle     op 0x6a: 3000 runs, 0 mismatches, Result word histogram {'sentinel': 3000}
+critic oracle     op 0x6b: 3000 runs, 0 mismatches, Result word histogram {0: 1109, 1: 1891}
+critic oracle     op 0x6c: 3000 runs, 0 mismatches, Result word histogram {0: 1101, 1: 1899}
+critic oracle     op 0x6d: 3000 runs, 0 mismatches, Result word histogram {0: 1113, 1: 1887}

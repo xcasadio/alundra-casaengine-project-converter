@@ -1,0 +1,47 @@
+NEW MUTANT member_active killed by ['OV-01', 'OV-02', 'RP-05', 'RP-24']
+NEW MUTANT member_not_blocked killed by ['OV-01', 'OV-02', 'RP-05']
+NEW MUTANT logic_active killed by ['OV-01', 'OV-02', 'RP-04', 'RP-24']
+NEW MUTANT logic_not_blocked killed by ['OV-01', 'OV-02']
+NEW MUTANT member_loaded_normal_deact killed by ['OV-01', 'OV-02', 'RP-05', 'RP-24']
+NEW MUTANT logic_loaded_normal_deact killed by ['OV-01', 'OV-02']
+NEW MUTANT skip_first_spawned killed by ['OV-05a', 'OV-05b', 'ZP-3C-09', 'ZP-3D-09']
+NEW MUTANT hero_status_bypass killed by []
+NEW MUTANT hero_bypass_eligibility killed by ['OV-03', 'OV-05a', 'ZP-3C-23']
+mutants with a different kill set (mut, only-theirs, only-mine):
+  ('swap_60_61', [], ['OV-01', 'OV-02'])
+  ('no_player_in_search', [], ['OV-01', 'OV-02'])
+  ('first_only', [], ['OV-01', 'OV-02'])
+  ('last_only', [], ['OV-01', 'OV-02'])
+  ('owner_instead_of_logic', ['RP-01', 'RP-02', 'RP-04', 'RP-05', 'RP-06', 'RP-08', 'RP-11', 'RP-12', 'RP-21', 'RP-23', 'RP-24', 'RP-25', 'RP-30'], [])
+  ('reuse_IsRidingTheLogicEntity', [], ['OV-01', 'RP-10'])
+  ('no_null_guard', [], ['OV-01', 'OV-02'])
+  ('platform_instead_of_riding', [], ['OV-01', 'OV-02', 'RP-21', 'RP-24', 'RP-25'])
+  ('empty_group_keeps_result', [], ['OV-01', 'OV-02'])
+  ('empty_group_one', [], ['OV-01', 'OV-02'])
+  ('result_always_one', [], ['OV-01', 'OV-02'])
+  ('size_one', [], ['OV-01', 'OV-02'])
+  ('size_three', [], ['OV-01', 'OV-02'])
+  ('zone_3c_equals_3d', [], ['OV-03', 'OV-05a'])
+  ('zone_3d_equals_3c', [], ['OV-04', 'OV-05b'])
+  ('signed_operands', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('spawned_only', [], ['OV-05a', 'OV-05b'])
+  ('skip_last', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('logic_only', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('no_status_filter', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('active_only', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('inverted_3c', [], ['OV-03', 'OV-05a'])
+  ('3c_no_collidable', [], ['OV-03', 'OV-05a'])
+  ('3c_no_anim', [], ['OV-03', 'OV-05a'])
+  ('3c_no_platform', [], ['OV-03', 'OV-05a'])
+  ('3c_flags_equal', [], ['OV-03', 'OV-05a'])
+  ('3c_anim_nonzero', [], ['OV-03', 'OV-05a'])
+  ('axes_xy_swapped', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('axes_yz_swapped', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('upper_exclusive', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('lower_exclusive', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('z_ignored', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('byte_truncated_tile', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('size_six', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('size_eight', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+  ('result_only_on_true', [], ['OV-03', 'OV-04', 'OV-05a', 'OV-05b'])
+mutants never killed by my evaluation: ['hero_status_bypass', 'unsigned_tile']

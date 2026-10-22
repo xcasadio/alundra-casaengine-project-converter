@@ -1,0 +1,63 @@
+mode: binary
+op 0x3c handler 0x8003e558: 2500 random states, 0 mismatches, Result histogram {0: 2366, 1: 134}
+op 0x3d handler 0x8003e64c: 2500 random states, 0 mismatches, Result histogram {0: 1637, 1: 863}
+op 0x60 handler 0x8003f3f8: 2500 random states, 0 mismatches, Result histogram {0: 2329, 1: 171}
+op 0x61 handler 0x8003f488: 2500 random states, 0 mismatches, Result histogram {0: 2317, 1: 183}
+op 0x6a handler 0x8003f8dc: 2500 random states, 0 mismatches, Result histogram {None: 2500}
+op 0x6b handler 0x8003f908: 2500 random states, 0 mismatches, Result histogram {0: 745, 1: 1755}
+op 0x6c handler 0x8003f94c: 2500 random states, 0 mismatches, Result histogram {0: 727, 1: 1773}
+op 0x6d handler 0x8003f990: 2500 random states, 0 mismatches, Result histogram {0: 928, 1: 1572}
+op 0x72 handler 0x8003fa24: 2500 random states, 0 mismatches, Result histogram {None: 2500}
+op 0x88 handler 0x8004011c: 2500 random states, 0 mismatches, Result histogram {None: 2500}
+op 0x96 handler 0x800409a8: 2500 random states, 0 mismatches, Result histogram {None: 2500}
+op 0x97 handler 0x80040a2c: 2500 random states, 0 mismatches, Result histogram {None: 2500}
+op 0x9e handler 0x80040bb4: 2500 random states, 0 mismatches, Result histogram {0: 1306, 1: 1194}
+op 0xa9 handler 0x80041174: 2500 random states, 0 mismatches, Result histogram {0: 2310, 1: 190}
+op 0xaa handler 0x80041200: 2500 random states, 0 mismatches, Result histogram {0: 2306, 1: 194}
+op 0xb2 handler 0x80041628: 2500 random states, 0 mismatches, Result histogram {0: 2237, 1: 263}
+op 0xb3 handler 0x80041750: 2500 random states, 0 mismatches, Result histogram {None: 2500}
+op 0xb4 handler 0x800417cc: 2500 random states, 0 mismatches, Result histogram {0: 2099, 1: 401}
+op 0xb5 handler 0x80041830: 2500 random states, 0 mismatches, Result histogram {0: 2132, 1: 368}
+op 0xb6 handler 0x80041894: 2500 random states, 0 mismatches, Result histogram {0: 2306, 1: 194}
+op 0xb7 handler 0x800418f8: 2500 random states, 0 mismatches, Result histogram {0: 2233, 1: 267}
+TOTAL 52500 runs, 0 mismatches
+
+EntitySearchService.cs (python translation) vs the binary search model, every search type:
+  type 0 (raw id): 453 worlds, 0 set differences
+  type 1 (raw id): 476 worlds, 0 set differences
+  type 10 (raw id): 475 worlds, 0 set differences
+  type 11 (raw id): 447 worlds, 0 set differences
+  type 12 (raw id): 442 worlds, 0 set differences
+  type 127 (raw id): 401 worlds, 0 set differences
+  type 13 (raw id): 423 worlds, 0 set differences
+  type 14 (raw id): 469 worlds, 0 set differences
+  type 15 (raw id): 458 worlds, 0 set differences
+  type 2 (raw id): 421 worlds, 0 set differences
+  type 0x0 (group): 460 worlds, 0 set differences
+  type 0x1 (group): 386 worlds, 0 set differences
+  type 0x2 (group): 423 worlds, 0 set differences
+  type 0x3 (group): 467 worlds, 0 set differences
+  type 0x4 (group): 450 worlds, 0 set differences
+  type 0x5 (group): 435 worlds, 0 set differences
+  type 0x6 (group): 424 worlds, 0 set differences
+  type 0x7 (group): 437 worlds, 0 set differences
+  type 0x8 (group): 410 worlds, 0 set differences
+  type 0x9 (group): 432 worlds, 0 set differences
+  type 0xa (group): 461 worlds, 0 set differences
+  type 0xb (group): 454 worlds, 0 set differences
+  type 0xc (group): 426 worlds, 0 set differences
+  type 0xd (group): 476 worlds, 0 set differences
+  type 0xe (group): 399 worlds, 0 set differences
+  type 0xf (group): 413 worlds, 0 set differences
+  type 3 (raw id): 438 worlds, 0 set differences
+  type 0x7f (group): 475 worlds, 0 set differences
+  type 4 (raw id): 394 worlds, 0 set differences
+  type 5 (raw id): 450 worlds, 0 set differences
+  type 6 (raw id): 461 worlds, 0 set differences
+  type 7 (raw id): 430 worlds, 0 set differences
+  type 8 (raw id): 485 worlds, 0 set differences
+  type 9 (raw id): 449 worlds, 0 set differences
+
+real	0m37.387s
+user	0m0.000s
+sys	0m0.015s

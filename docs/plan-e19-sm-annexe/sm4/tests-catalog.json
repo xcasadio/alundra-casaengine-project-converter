@@ -1,0 +1,1080 @@
+[
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U72-1",
+  "kind": "unit",
+  "name": "SetLastTarget_0x72_CopiesTheTargetOntoLastTarget",
+  "needs": [
+   "case0x72"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "logic = owner = the entity"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U72-2",
+  "kind": "unit",
+  "name": "SetLastTarget_0x72_ActsOnTheLogicEntity_NotOnTheOwner",
+  "needs": [
+   "case0x72"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "owner = hero, logic = the NPC"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U72-3",
+  "kind": "unit",
+  "name": "SetLastTarget_0x72_CopiesMaxUnsignedValuesVerbatim",
+  "needs": [
+   "case0x72"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "uint values"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U72-4",
+  "kind": "unit",
+  "name": "SetLastTarget_0x72_ZeroTargetOverwritesANonZeroLast",
+  "needs": [
+   "case0x72"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "zero is a value"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U72-5",
+  "kind": "unit",
+  "name": "SetLastTarget_0x72_HasNoStatusGuard",
+  "needs": [
+   "case0x72"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "FlagToDestroy logic entity"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U88-1",
+  "kind": "unit",
+  "name": "SetStatus_0x88_Self_Index0_BecomesNormal",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "Deactivated -> Normal"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U88-2",
+  "kind": "unit",
+  "name": "SetStatus_0x88_Self_Index1_BecomesDeactivated",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "Normal -> Deactivated"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U88-3",
+  "kind": "unit",
+  "name": "SetStatus_0x88_Self_Index2_BecomesFlagToDestroy_WithoutDestroyEntity",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "Deactivated -> FlagToDestroy"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U88-4",
+  "kind": "unit",
+  "name": "SetStatus_0x88_AllActive_OnlyStatuses1To3Change",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "group 0x82 includes the hero"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U88-5",
+  "kind": "unit",
+  "name": "SetStatus_0x88_HeroGroup_Index2_SetsTheHeroToo",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "no guard on the hero"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U88-6",
+  "kind": "unit",
+  "name": "SetStatus_0x88_EmptyGroup_WritesNothing",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "green guard"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U88-7",
+  "kind": "unit",
+  "name": "SetStatus_0x88_RawId_CandidateStatusIsNotTested",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "corpse revived: no candidate guard"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U88-8",
+  "kind": "unit",
+  "name": "SetStatus_0x88_RawId_InactiveReferenceFindsNothing",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "reference status 4 -> empty (green guard)"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U88-9",
+  "kind": "unit",
+  "name": "SetStatus_0x88_IndexBeyondTheTable_WritesNothing_AndWarnsOnce",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "POLICY (Q-sm-6 default, precedent 0x40/0x41 D-E19-22): the binary stores a word read past its 3-word table; the DLL writes nothing and warns once. NOT audited against the binary"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-1",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_HeroAtTheSiteShape_FillsToHpMax",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "31 sites shape: byte 1 = 0x81 (hero, +129), byte 2 = 0xFF ignored"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-2",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_SaveRoomShape_ReferenceIsTheLogicEntity",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "byte 1 = 0x80 (self, +128)"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-3",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_TheSecondByteIsNeverRead",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "same result with byte 2 = 0"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-4",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_RawId_SumBelowHpMax_IsNotClamped",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "amount = the raw id 20"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-5",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_SumEqualToHpMax_IsWritten",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "exact"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-6",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_HpAboveHpMax_IsLoweredToHpMax",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "no ceiling test"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-7",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_NegativeHp_HasNoFloor",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "stays negative"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-8",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_ThirtyTwoBitWrap_IsWrittenAsIs",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "unchecked int arithmetic"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-9",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_NegativeHpMax_IsTheResult",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "HpMax < sum"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-10",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_ACorpseFoundByRawId_IsHealed",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "no life test"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-11",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_AllActiveGroup_EachUsesItsOwnHpMax",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "amount 130"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-12",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_DoesNotTouchThePlayerStats",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "the mirror is the epilogue of MovePlayer, not the opcode"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-13",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_EmptyGroup_WritesNothing",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "green guard"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-1",
+  "kind": "unit",
+  "name": "AddMagic_0x97_SaveRoomShape_FillsToMpMax_MoneyUntouched",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-2",
+  "kind": "unit",
+  "name": "AddMagic_0x97_BelowMax_IsNotClamped",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-3",
+  "kind": "unit",
+  "name": "AddMagic_0x97_FullGaugeStaysFull",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-4",
+  "kind": "unit",
+  "name": "AddMagic_0x97_MpMaxZero_StaysZero",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-5",
+  "kind": "unit",
+  "name": "AddMagic_0x97_MpAboveMpMax_IsLoweredToMpMax",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-6",
+  "kind": "unit",
+  "name": "AddMagic_0x97_NegativeMp_FloorZero",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-7",
+  "kind": "unit",
+  "name": "AddMagic_0x97_NegativeMpSumZero_IsZero",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-8",
+  "kind": "unit",
+  "name": "AddMagic_0x97_NegativeMpSumNegative_FloorZero",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-9",
+  "kind": "unit",
+  "name": "AddMagic_0x97_TheSumIsNotWrappedTo16Bits",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-10",
+  "kind": "unit",
+  "name": "AddMagic_0x97_MinInt16Mp_FloorZero",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-11",
+  "kind": "unit",
+  "name": "AddMagic_0x97_NegativeMpMax_IsTheResult",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-12",
+  "kind": "unit",
+  "name": "AddMagic_0x97_InnShape_Plus10",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "cls": "PadWriteOpcodeTests",
+  "count": 1,
+  "id": "UB3-1",
+  "kind": "unit",
+  "name": "SetPadButtons_0xB3_WritesTheFourWordsLittleEndian",
+  "needs": [
+   "case0xB3"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "four distinct words"
+ },
+ {
+  "cls": "PadWriteOpcodeTests",
+  "count": 1,
+  "id": "UB3-2",
+  "kind": "unit",
+  "name": "SetPadButtons_0xB3_TheRealSiteShape_HoldsUp",
+  "needs": [
+   "case0xB3"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "161 B[1] @54"
+ },
+ {
+  "cls": "PadWriteOpcodeTests",
+  "count": 1,
+  "id": "UB3-3",
+  "kind": "unit",
+  "name": "SetPadButtons_0xB3_OverwritesNeverOrs",
+  "needs": [
+   "case0xB3",
+   "seamOverwrite"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "previous words dropped"
+ },
+ {
+  "cls": "PadWriteOpcodeTests",
+  "count": 1,
+  "id": "UB3-4",
+  "kind": "unit",
+  "name": "SetPadButtons_0xB3_AllFFFF",
+  "needs": [
+   "case0xB3"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "no mask"
+ },
+ {
+  "cls": "PadWriteOpcodeTests",
+  "count": 1,
+  "id": "UB3-5",
+  "kind": "unit",
+  "name": "SetPadButtons_0xB3_OwnerAndLogicAreIrrelevant",
+  "needs": [
+   "case0xB3"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "logic = NPC"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U72-6",
+  "kind": "unit",
+  "name": "SetLastTarget_0x72_ATouchProgramEndingWithIt_SurvivesTheResumeOfTheTickProgram",
+  "needs": [
+   "case0x72"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "C program resumable (Break); F program [09 0A, 1A 07, 72, FF] interrupts it; the C call that follows restores Target from Last: (7, 10) with the opcode, the pre-F (3, 5) today"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U88-10",
+  "kind": "unit",
+  "name": "SetStatus_0x88_HeroGroup_WithoutAPlayerEntity_IsEmptyAndDoesNotThrow",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "context without PlayerEntity, byte 1 = 0x81: no match, CodeIndex 3"
+ },
+ {
+  "cls": "EntityStateOpcodesTests",
+  "count": 1,
+  "id": "U88-3b",
+  "kind": "unit",
+  "name": "SetStatus_0x88_Index2_DoesNotCallDestroyEntity_NorClearEventTrigger",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "recording context: DestroyedEntities empty, EventTrigger untouched (kills the structural mutant MS-3); red through the status assertion"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-14",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_HeroGroup_WithoutAPlayerEntity_IsEmptyAndDoesNotThrow",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "no PlayerEntity: nothing written, CodeIndex 3"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-15",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_DoesNotSnapTheHud",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "HudDirector displayed (10, 20, 0, 2) while the stats maxima are (50, 4): unchanged after 96 81 FF (a Snap would give 50, 50, 4, 4); green today, kills MS-2"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U96-16",
+  "kind": "unit",
+  "name": "RestoreLife_0x96_ForAHeroThatCarriesItsLife_TheStatsFollowAtTheEndOfMovePlayer",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "LifePulledFromStats hero 10/50, stats 10/50: entity Hp 50 at once, stats still 10, then PlayerManager.EndOfMovePlayer: stats 50/50"
+ },
+ {
+  "cls": "LifeAndMagicOpcodesTests",
+  "count": 1,
+  "id": "U97-13",
+  "kind": "unit",
+  "name": "AddMagic_0x97_DoesNotSnapTheHud",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "same as U96-15 for 97 32; green today, kills MS-2"
+ },
+ {
+  "cls": "PadWriteOpcodeTests",
+  "count": 1,
+  "id": "UB3-6",
+  "kind": "unit",
+  "name": "SetPadButtons_0xB3_ThenTheOpcode0x2F_SeesTheForcedWordsInTheSameCall",
+  "needs": [
+   "case0xB3"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "[B3 00 10 80 00 00 01 00 02, 2F 00 10 00, FF] -> Result 1; second program [B3 ..., 2F 80 00 01] -> 1 (pressed); [2F 00 20 00] -> 0; today Result 0 (real pad)"
+ },
+ {
+  "cls": "PadWriteOpcodeTests",
+  "count": 1,
+  "id": "UB3-7",
+  "kind": "unit",
+  "name": "SetPadButtons_0xB3_LeavesTheCountersAndTheStickAlone",
+  "needs": [
+   "case0xB3"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "after 3 Update(0x1000): NumberOfFrameHold 2; B3 -> hold 0x1000 still, counters 2/0/0, GameState.LastPadState (stick 0.5) unchanged"
+ },
+ {
+  "cls": "TickPadTests",
+  "count": 1,
+  "id": "S-1",
+  "kind": "seam",
+  "name": "Overwrite_WritesTheFourWordsAndKeepsTheCounters",
+  "needs": [
+   "seamOverwrite"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "Update x3 then Overwrite(0x1234, 0x5678, 0x9ABC, 0xDEF0): words set, NumberOfFrameHold 2, IsOverThanMaxNbFrameHeld 0, RepeatInterval 0"
+ },
+ {
+  "cls": "TickPadTests",
+  "count": 1,
+  "id": "S-2",
+  "kind": "seam",
+  "name": "Overwrite_ThenUpdate_ComputesTheEdgesFromTheForcedHold",
+  "needs": [
+   "seamOverwrite"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "Overwrite(0x1000,0,0,0) then Update(0): pressed 0, released 0x1000, hold 0, counters reset"
+ },
+ {
+  "cls": "TickPadTests",
+  "count": 1,
+  "id": "S-3",
+  "kind": "seam",
+  "name": "Overwrite_ThenUpdateOfTheSameHold_KeepsCountingFromTheCounters",
+  "needs": [
+   "seamOverwrite"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "Overwrite(0x1000,...) after 3 Update(0x1000), then Update(0x1000): NumberOfFrameHold 3, interval 0"
+ },
+ {
+  "cls": "ActionOpcodeVectorTests",
+  "count": 67,
+  "id": "V-72",
+  "kind": "vector",
+  "name": "TheVectorsOfTheOpcode_72_ReplayOnTheDll",
+  "needs": [
+   "case0x72"
+  ],
+  "redCount": 66,
+  "redToday": true,
+  "what": "67 replayable rows"
+ },
+ {
+  "cls": "ActionOpcodeVectorTests",
+  "count": 61,
+  "id": "V-88",
+  "kind": "vector",
+  "name": "TheVectorsOfTheOpcode_88_ReplayOnTheDll",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 30,
+  "redToday": true,
+  "what": "61 replayable rows"
+ },
+ {
+  "cls": "ActionOpcodeVectorTests",
+  "count": 79,
+  "id": "V-96",
+  "kind": "vector",
+  "name": "TheVectorsOfTheOpcode_96_ReplayOnTheDll",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 45,
+  "redToday": true,
+  "what": "79 replayable rows"
+ },
+ {
+  "cls": "ActionOpcodeVectorTests",
+  "count": 74,
+  "id": "V-97",
+  "kind": "vector",
+  "name": "TheVectorsOfTheOpcode_97_ReplayOnTheDll",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 64,
+  "redToday": true,
+  "what": "74 replayable rows"
+ },
+ {
+  "cls": "ActionOpcodeVectorTests",
+  "count": 67,
+  "id": "V-B3",
+  "kind": "vector",
+  "name": "TheVectorsOfTheOpcode_B3_ReplayOnTheDll",
+  "needs": [
+   "case0xB3",
+   "seamOverwrite"
+  ],
+  "redCount": 67,
+  "redToday": true,
+  "what": "67 replayable rows"
+ },
+ {
+  "cls": "ActionOpcodeVectorTests",
+  "count": 22,
+  "id": "V-OOT",
+  "kind": "vector",
+  "name": "TheOutOfTableVectorsOf_0x88_WriteNothing",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "22 rows with an index above 2: statuses unchanged"
+ },
+ {
+  "cls": "ActionOpcodeVectorTests",
+  "count": 1,
+  "id": "V-MANIFEST",
+  "kind": "vector",
+  "name": "TheVectorFilesMatchTheirManifest",
+  "needs": [],
+  "redCount": 0,
+  "redToday": false,
+  "what": "sha256 of every file against MANIFEST.sha256 (drift guard)"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "RB-SHAPES",
+  "kind": "realbytes",
+  "name": "TheOperandsOfTheNinetySitesAreInsideTheCoveredShapes",
+  "needs": [],
+  "redCount": 0,
+  "redToday": false,
+  "what": "90 sites in 50 maps: bytes at (map, pc) equal opcode+operands of the list; 0x96 byte 1 in {0x80,0x81}; 0x97 in {0x32,0x0A}; 0x88 index in {0,2}; 0xB3 words = 00 10 00 00 00 00 00 00; export drift guard"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 19,
+  "id": "RB-SAVEROOMS",
+  "kind": "realbytes",
+  "name": "TheNineteenSaveRoomsHaveTheSameProgramBytes",
+  "needs": [],
+  "redCount": 0,
+  "redToday": false,
+  "what": "maps 452..470: B[2] entry 116 / B[3] entry 224; bytes 96 80 32 @204 and 97 32 @330 in each (export drift guard); the 36 sites of the 18 other rooms are covered by this pin and by the shape"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "RB-452-B2",
+  "kind": "realbytes",
+  "name": "RealBytes_452_B2",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "bytes 96 80 32 @204 of Save Room (Coal Mine)-452 B[2]; hero 5/40 -> 40"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "RB-452-B3",
+  "kind": "realbytes",
+  "name": "RealBytes_452_B3",
+  "needs": [
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "bytes 97 32 @330 B[3]; Mp 1/4 -> 4, money 500 untouched"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "RB-394-C3",
+  "kind": "realbytes",
+  "name": "RealBytes_394_C3",
+  "needs": [
+   "case0x96",
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "bytes 96 80 32 97 0A @749..753 (logic = hero after the 0x42 @592): Hp full, Mp +10 clamped to 4"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "RB-475-B2",
+  "kind": "realbytes",
+  "name": "RealBytes_475_B2",
+  "needs": [
+   "case0x96",
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "bytes 96 81 32 97 32 @502..506 (logic = hero after the 0x42 @139)"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "RB-22-C6",
+  "kind": "realbytes",
+  "name": "RealBytes_22_C6",
+  "needs": [
+   "case0x96"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "bytes 96 81 FF @863 of Lars Crypt 22 C[6]"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "RB-306-E14",
+  "kind": "realbytes",
+  "name": "RealBytes_306_E14",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "bytes 88 80 00 @1110 of Meia Dream-306 E[14]: Deactivated -> Normal"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "RB-442-E1",
+  "kind": "realbytes",
+  "name": "RealBytes_442_E1",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "bytes 88 80 02 @1312 of Meia Dream-442 E[1]: -> FlagToDestroy"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "RB-444-D15",
+  "kind": "realbytes",
+  "name": "RealBytes_444_D15",
+  "needs": [
+   "case0x72"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "bytes 2B 09 10 72 @1299..1302 of Torla (inner)-444 D[15]: ClassA cleared, Target dir 16, Last = Target"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "RB-140-D2",
+  "kind": "realbytes",
+  "name": "RealBytes_140_D2",
+  "needs": [
+   "case0x72"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "bytes 27 0A BD DC 01 72 @2032..2037 of Cave-140 D[2]: Last = Target and differs from the sentinel 0x77"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "RB-161-B1",
+  "kind": "realbytes",
+  "name": "RealBytes_161_B1",
+  "needs": [
+   "case0xB3"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "bytes B3 00 10 00 00 00 00 00 00 @54 of Fairy cave (Stenia)-161 B[1]: TickPad hold 0x1000, others 0"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "ARC-452",
+  "kind": "arc",
+  "name": "Arc_452",
+  "needs": [
+   "case0x96",
+   "case0x97"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "Save Room (Coal Mine)-452: B[2] ... 96 @204 then B[3] ... 97 @330; Hp 5/40 -> 40, Mp 1/4 -> 4, money untouched; no sm4 opcode in SkippedOrExceeded"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "ARC-161a",
+  "kind": "arc",
+  "name": "Arc_161a",
+  "needs": [
+   "case0xB3"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "Fairy cave (Stenia)-161: B3 @54 runs; the pad seen by MovePlayer in the same frame is hold 0x1000 / pressed 0 / released 0 (order probe)"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "ARC-161b",
+  "kind": "arc",
+  "name": "Arc_161b",
+  "needs": [
+   "case0xB3"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "same map, real controller: the loop reaches (B, 67, 0x8B) with the hero in (6..13, 29, 3); the frame after the last B3 shows released 0x1000"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "ARC-306",
+  "kind": "arc",
+  "name": "Arc_306",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "Meia Dream-306: records 13 and 14 set Deactivated; E runs once, 88 @1110 implemented, status Normal, FF @1113"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "ARC-442",
+  "kind": "arc",
+  "name": "Arc_442",
+  "needs": [
+   "case0x88"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "Meia Dream-442: record 0 set Deactivated; E[1] runs once, status 4 at FF @1315, the entity leaves the world at the next tick"
+ },
+ {
+  "cls": "ActionOpcodeSiteTests",
+  "count": 1,
+  "id": "ARC-40",
+  "kind": "arc",
+  "name": "Arc_40",
+  "needs": [
+   "case0x72"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "Nirude Lair-40: record 0 mid C[2], ActiveCollisionEntity = it; at 72 @1153 Last = Target = (1, dir); the next C instruction keeps Target"
+ },
+ {
+  "cls": "EventProgramRunnerTests",
+  "count": 1,
+  "id": "P-WIT",
+  "kind": "pin",
+  "name": "UnknownOpcode_KnownSize_SkipsBySize",
+  "needs": [
+   "witness"
+  ],
+  "redCount": 0,
+  "redToday": false,
+  "what": "repointed from 0xB3 to 0xB9: [B9, 0, 1A, 4, FF] -> TargetAnimationId 4; green before and after; the old 0xB3 version stays green but empty after the slice"
+ },
+ {
+  "cls": "EventOpcodeSizeTableTests",
+  "count": 1,
+  "id": "P-LBL",
+  "kind": "pin",
+  "name": "TheSm4LabelsAreCorrected",
+  "needs": [
+   "labels"
+  ],
+  "redCount": 1,
+  "redToday": true,
+  "what": "Entries[0x88].Name not empty, Entries[0x97].Name has no \"money\"; red today (empty / \"Spend money\")"
+ }
+]

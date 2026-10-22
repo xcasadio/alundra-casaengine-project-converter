@@ -1,0 +1,80 @@
+// =====================================================================================================================================
+// E19.sm2 - the proposed code (UNBUILT DRAFT: a text, not a repository file; the executor builds it against the HEAD of the slice).
+// Target file: Alundra/Events/EventProgramRunner.cs (HEAD 36ac0686/31fc8b23, unchanged since 317b3360).
+// Insert 1 (the four cases): after the `case 0x43` block (ends `:2024`, blank line `:2025`), before `case 0x6E:` (`:2026`).
+// Insert 2 (the helper): right after `IsRidingTheLogicEntity` (`:2641-2645`), before the `Wait` summary (`:2647`).
+// Nothing else in Alundra/ changes except the three labels of Alundra/Events/EventOpcodeSizeTable.cs (see EventOpcodeSizeTable.sm2.diff.txt).
+// `entity` below is the LOGIC entity (Dispatch :563: the `entity` parameter), `state` the running program's state (the owner's).
+// =====================================================================================================================================
+
+            case 0x6A: // Save entity position - Script_106_06A @ 0x8003F8DC (E19.sm2, SM2-R1), PER THE BINARY: the three position words of the LOGIC entity
+                       // (+0x114/+0x118/+0x11C) into the program state's Parameters[2], [3] and [4] (+0xC/+0x10/+0x14); Result untouched; size 1.
+                       // No search, no host, no PlayerEntity. The cells are the ones the waits 0x0B/0x1C-0x23/0x37 also use (SM2-R3): a later wait may overwrite
+                       // Parameters[2] (and 0x0B/0x1E/0x1F Parameters[3]) between a 0x6A and its read, exactly as in the binary; Parameters[4] has no other writer.
+                state.Parameters[2] = entity.PosX;
+                state.Parameters[3] = entity.PosY;
+                state.Parameters[4] = entity.PosZ;
+                return 1;
+
+            case 0x6B: // If the entity moved along x - Script_107_06B @ 0x8003F908 (E19.sm2, SM2-R2), PER THE BINARY: Result = 1 when |Parameters[2] - PosX| is
+                       // greater than or equal to the threshold (v1 | v2 << 8) << 16, all in 32-bit signed arithmetic (see MovedAtLeastTheThreshold); otherwise 0. Size 3.
+                state.Result = MovedAtLeastTheThreshold(state.Parameters[2], entity.PosX, v) ? 1 : 0;
+                return 3;
+
+            case 0x6C: // If the entity moved along y - Script_108_06C @ 0x8003F94C: the same with Parameters[3] and PosY. Size 3.
+                state.Result = MovedAtLeastTheThreshold(state.Parameters[3], entity.PosY, v) ? 1 : 0;
+                return 3;
+
+            case 0x6D: // If the entity moved along z - Script_109_06D @ 0x8003F990: the same with Parameters[4] and PosZ. Size 3. With no 0x6A in the program the cell is
+                       // whatever the state holds (0 for a new entity): the read then compares |0 - PosZ| (SM2-R3, 11 corpus sites, maps 55 to 57).
+                state.Result = MovedAtLeastTheThreshold(state.Parameters[4], entity.PosZ, v) ? 1 : 0;
+                return 3;
+
+// ---------------------------------------------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// The test of 0x6B/0x6C/0x6D (E19.sm2, SM2-R2), the handlers' own instructions (<c>0x8003F908-0x8003F948</c>): <c>subu</c> (wraps), <c>bgez</c>/<c>negu</c> (the
+    /// negation wraps: <c>int.MinValue</c> stays <c>int.MinValue</c>, hence NO <c>Math.Abs</c>, which throws on it), the threshold <c>(v1 | v2 &lt;&lt; 8) &lt;&lt; 16</c> as a 32-bit
+    /// signed integer (negative from <c>v2</c> = 0x80, so such a threshold is below every distance but <c>int.MinValue</c>), <c>slt</c> (signed) and <c>xori 1</c>:
+    /// the result is "distance not below threshold". <c>unchecked</c> is explicit although no project turns overflow checking on (FAIT: no <c>CheckForOverflowUnderflow</c>
+    /// and no <c>checked</c> keyword in the repository).
+    /// </summary>
+    private static bool MovedAtLeastTheThreshold(int memo, int position, int[] v)
+    {
+        unchecked
+        {
+            var distance = memo - position;
+            if (distance < 0)
+            {
+                distance = -distance;
+            }
+
+            var threshold = (v[1] | (v[2] << 8)) << 16;
+            return !(distance < threshold);
+        }
+    }
+
+// =====================================================================================================================================
+// MUTATION SCRIPT SPEC (real mutations by script; the file is restored to the byte after each: `git checkout -- <file>` then `cmp` with the saved copy).
+// Each line: id | exact OLD text | exact NEW text | tests that go red (kill matrix of evidence/killmatrix.txt, mutants_rows.txt, mutants_vectors.txt;
+// "V" = the vector facts V6A..V6D with the number of killing rows). The texts are those of the draft above; one edit per mutant.
+// =====================================================================================================================================
+// M1  | `distance = -distance;`                                      | `distance = Math.Abs(distance);`                          | H3b, H3c, H4 ; V6B/6C/6D 168 rows
+// M2  | `return !(distance < threshold);`                            | `return !((distance >> 16) < (v[1] | (v[2] << 8)));`      | H3a, H4 ; V 366 rows        (the `threshold` local becomes unused: a warning)
+// M3  | `return !(distance < threshold);`                            | `return !((uint)distance < (uint)threshold);`              | H3a, H4 ; V 366 rows
+// M4  | `return !(distance < threshold);`                            | `return !(distance <= threshold);`                         | H2X, H2X<, H2Y, H2Z, H3c, H5, H7a, RB-55, RB-55n, RB-56, RB-56b, RB-59, RB-307, RB-344, RB-442 ; V 72 rows
+// M5  | `? 1 : 0;` on the 0x6B line                                  | `? 0 : 1;`                                                | H2*, H3*, H4, H5, H7*, H9*, RB-* ; V 1083 rows (0x6B alone: 361)
+// M6  | `var distance = memo - position;`                            | `long distance = Math.Abs((long)memo - position);`        | H3b, H4 ; V 193 rows        (64-bit distance: no wrap, no int.MinValue)
+// M7  | `if (distance < 0)` + its 3-line body                        | (the 4 lines removed)                                     | H2X, H2Y, H2Z, H5, H7a, H9X, RB-55, RB-56, RB-56b, RB-59, RB-307, RB-344, RB-442 ; V 216 rows
+// M8  | the 0x6A line `state.Parameters[4] = entity.PosZ;`           | (removed)                                                 | H1, H8, H9X, H9Y, H9Z, RB-55, RB-55n, RB-59, RB-307, RB-344, RB-442 ; V6A 30 rows
+// M9  | the 0x6A line `return 1;`                                    | `state.Result = 1; return 1;`                             | H1, H7a, H7b, H8, H9X, H9Y, H9Z ; V6A 19 rows
+// M10 | `entity.PosX` of the 0x6B line (`PosY`, `PosZ` of 6C, 6D; and the three of 6A) | `owner.PosX` (`owner.PosY`, `owner.PosZ`) | H1, H2*, H3b, H4, H5, H7*, H8, H9*, RB-55, RB-55n, RB-56, RB-59, RB-307, RB-344, RB-442 ; V 416 rows
+// M11 | `state.Parameters[4], entity.PosZ, v` (0x6D line)            | `state.Parameters[3], entity.PosZ, v`                     | H2Z, RB-59 ; V6D 127 rows
+// M12 | `return 3;` of the 0x6B case                                 | `return 1;`                                               | every test that reads CodeIndex after a 0x6B (H2X, H2X<, H3*, H4, H7*, H9X, RB-55, RB-55n, RB-307, RB-344, RB-442) [also crashes in the draft by misparsing]
+// M13 | the 0x6A line `return 1;`                                    | `return 2;`                                               | H1, H7*, H8, H9*, RB-55, RB-55n, RB-59, RB-307, RB-344, RB-442
+// M14 | (existing :411) `state.Parameters[1] = 0;` in the Break branch | `state.Parameters[1] = 0; state.Parameters[2] = state.Parameters[3] = state.Parameters[4] = 0;` | H7a, H7b, H8, RB-55, RB-55n, RB-59, RB-307, RB-344, RB-442
+// M15 | (existing :368) `state.Parameters[0] = state.CodeIndex;`    | the same line followed by `state.Parameters[2] = state.Parameters[3] = state.Parameters[4] = 0;` | H8
+// M16 | (existing :2655, :2659-2660) the Wait writes `Parameters[2]` | writes `Parameters[5]`                                    | H9X (and H9Y, H9Z through the P2 observation) ; the existing Wait tests also go red
+// M17 | the label of 0x6B in EventOpcodeSizeTable.cs                 | restored to "If entity x < threshold"                    | T-L (the label pin) only
+// Equivalent mutants (provably identical, excluded from the "one per rule" count): operands swapped (`position - memo`: |a-b| = |b-a| in Z/2^32, int.MinValue included),
+// `(sbyte)v[2]` (its sign bits are shifted out by `<< 16`).

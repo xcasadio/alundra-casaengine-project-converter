@@ -1,0 +1,1237 @@
+=== map 55 C[4] entry=272 reach=22 instrs, marks=[], retusers=[]
+>>  272  6A Save entity position               
+    273  1A Set anim                           02
+    275  00 Break                              
+>>  276  6B If entity x < threshold            78 00
+    279  03 If true goto                       0B 00
+    282  30 If flag on                         0A 80 0E 00
+    287  02 Goto                               F2 FF
+    290  1A Set anim                           00
+    292  0A Reverse direction                  
+    293  02 Goto                               EB FF
+    296  BD Play sound 2                       26 00
+    299  1A Set anim                           05
+    301  1C Wait for animation ends (Hold flag or end counter) 01
+    303  1A Set anim                           06
+    305  2B Clear EntityFlags.ClassA           
+    306  62 Set entities flags (low 16 bits)   03 80 00
+    310  63 Clear entities flags (low 16 bits) 03 02 00
+    314  37 Wait                               F0
+    316  37 Wait                               3C
+    318  BD Play sound 2                       2D 00
+    321  19 Deactivate entity                  
+    322  FF End script                         
+=== map 55 C[5] entry=324 reach=23 instrs, marks=[], retusers=[]
+>>  324  6A Save entity position               
+    325  1A Set anim                           02
+    327  00 Break                              
+>>  328  6B If entity x < threshold            78 00
+    331  03 If true goto                       0B 00
+    334  30 If flag on                         0B 80 0E 00
+    339  02 Goto                               F2 FF
+    342  1A Set anim                           00
+    344  0A Reverse direction                  
+    345  02 Goto                               EB FF
+    348  BD Play sound 2                       26 00
+    351  1A Set anim                           05
+    353  1C Wait for animation ends (Hold flag or end counter) 01
+    355  1A Set anim                           06
+    357  2B Clear EntityFlags.ClassA           
+    358  62 Set entities flags (low 16 bits)   04 80 00
+    362  63 Clear entities flags (low 16 bits) 04 02 00
+    366  37 Wait                               3C
+    368  37 Wait                               F0
+    370  BD Play sound 2                       2D 00
+    373  19 Deactivate entity                  
+    374  00 Break                              
+    375  FF End script                         
+=== map 55 C[7] entry=424 reach=23 instrs, marks=[], retusers=[]
+>>  424  6A Save entity position               
+    425  1A Set anim                           02
+    427  00 Break                              
+>>  428  6B If entity x < threshold            78 00
+    431  03 If true goto                       0B 00
+    434  30 If flag on                         0C 80 0E 00
+    439  02 Goto                               F2 FF
+    442  1A Set anim                           00
+    444  0A Reverse direction                  
+    445  02 Goto                               EB FF
+    448  BD Play sound 2                       26 00
+    451  1A Set anim                           05
+    453  1C Wait for animation ends (Hold flag or end counter) 01
+    455  1A Set anim                           06
+    457  2B Clear EntityFlags.ClassA           
+    458  62 Set entities flags (low 16 bits)   07 80 00
+    462  63 Clear entities flags (low 16 bits) 07 02 00
+    466  37 Wait                               3C
+    468  37 Wait                               F0
+    470  BD Play sound 2                       2D 00
+    473  19 Deactivate entity                  
+    474  00 Break                              
+    475  FF End script                         
+=== map 55 C[8] entry=476 reach=23 instrs, marks=[], retusers=[]
+>>  476  6A Save entity position               
+    477  1A Set anim                           02
+    479  00 Break                              
+>>  480  6B If entity x < threshold            78 00
+    483  03 If true goto                       0B 00
+    486  30 If flag on                         0D 80 0E 00
+    491  02 Goto                               F2 FF
+    494  1A Set anim                           00
+    496  0A Reverse direction                  
+    497  02 Goto                               EB FF
+    500  BD Play sound 2                       26 00
+    503  1A Set anim                           05
+    505  1C Wait for animation ends (Hold flag or end counter) 01
+    507  1A Set anim                           06
+    509  2B Clear EntityFlags.ClassA           
+    510  62 Set entities flags (low 16 bits)   08 80 00
+    514  63 Clear entities flags (low 16 bits) 08 02 00
+    518  37 Wait                               3C
+    520  37 Wait                               F0
+    522  BD Play sound 2                       2D 00
+    525  19 Deactivate entity                  
+    526  00 Break                              
+    527  FF End script                         
+=== map 55 C[9] entry=528 reach=23 instrs, marks=[], retusers=[]
+>>  528  6A Save entity position               
+    529  1A Set anim                           02
+    531  00 Break                              
+>>  532  6B If entity x < threshold            78 00
+    535  03 If true goto                       0B 00
+    538  30 If flag on                         0E 80 0E 00
+    543  02 Goto                               F2 FF
+    546  1A Set anim                           00
+    548  0A Reverse direction                  
+    549  02 Goto                               EB FF
+    552  BD Play sound 2                       26 00
+    555  1A Set anim                           05
+    557  1C Wait for animation ends (Hold flag or end counter) 01
+    559  1A Set anim                           06
+    561  2B Clear EntityFlags.ClassA           
+    562  62 Set entities flags (low 16 bits)   09 80 00
+    566  63 Clear entities flags (low 16 bits) 09 02 00
+    570  37 Wait                               3C
+    572  37 Wait                               F0
+    574  BD Play sound 2                       2D 00
+    577  19 Deactivate entity                  
+    578  00 Break                              
+    579  FF End script                         
+=== map 55 C[20] entry=1388 reach=39 instrs, marks=[], retusers=[]
+   1388  1A Set anim                           00
+   1390  16 High gravity                       
+   1391  37 Wait                               14
+   1393  1B Fly                                00 06
+   1396  00 Break                              
+>> 1397  6D If entity z < threshold            70 00
+   1400  03 If true goto                       0B 00
+   1403  30 If flag on                         F4 81 1B 00
+   1408  02 Goto                               F1 FF
+   1411  1B Fly                                00 00
+   1414  1B Fly                                00 00
+   1417  00 Break                              
+   1418  6F Is collided with entity Z          
+   1419  03 If true goto                       E6 FF
+   1422  30 If flag on                         F4 81 08 00
+   1427  02 Goto                               F3 FF
+   1430  1B Fly                                00 00
+   1433  06 Flag off                           F4 81
+   1436  17 Low gravity                        
+   1437  2B Clear EntityFlags.ClassA           
+   1438  62 Set entities flags (low 16 bits)   1D 80 00
+   1442  63 Clear entities flags (low 16 bits) 1D 02 00
+   1446  00 Break                              
+   1447  BD Play sound 2                       26 00
+   1450  1A Set anim                           05
+   1452  1C Wait for animation ends (Hold flag or end counter) 01
+   1454  1A Set anim                           06
+   1456  37 Wait                               3C
+   1458  37 Wait                               F0
+   1460  BD Play sound 2                       26 00
+   1463  1A Set anim                           08
+   1465  1C Wait for animation ends (Hold flag or end counter) 01
+   1467  1A Set anim                           00
+   1469  2A Set EntityFlags.ClassA             
+   1470  62 Set entities flags (low 16 bits)   1D 02 00
+   1474  63 Clear entities flags (low 16 bits) 1D 80 00
+   1478  16 High gravity                       
+   1479  00 Break                              
+   1480  02 Goto                               BB FF
+=== map 55 C[21] entry=1484 reach=39 instrs, marks=[], retusers=[]
+   1484  1A Set anim                           00
+   1486  16 High gravity                       
+   1487  37 Wait                               05
+   1489  1B Fly                                00 06
+   1492  00 Break                              
+>> 1493  6D If entity z < threshold            70 00
+   1496  03 If true goto                       0B 00
+   1499  30 If flag on                         F5 81 1B 00
+   1504  02 Goto                               F1 FF
+   1507  1B Fly                                00 00
+   1510  1B Fly                                00 00
+   1513  00 Break                              
+   1514  6F Is collided with entity Z          
+   1515  03 If true goto                       E6 FF
+   1518  30 If flag on                         F5 81 08 00
+   1523  02 Goto                               F3 FF
+   1526  1B Fly                                00 00
+   1529  06 Flag off                           F5 81
+   1532  17 Low gravity                        
+   1533  2B Clear EntityFlags.ClassA           
+   1534  62 Set entities flags (low 16 bits)   1E 80 00
+   1538  63 Clear entities flags (low 16 bits) 1E 02 00
+   1542  00 Break                              
+   1543  BD Play sound 2                       26 00
+   1546  1A Set anim                           05
+   1548  1C Wait for animation ends (Hold flag or end counter) 01
+   1550  1A Set anim                           06
+   1552  37 Wait                               3C
+   1554  37 Wait                               F0
+   1556  BD Play sound 2                       26 00
+   1559  1A Set anim                           08
+   1561  1C Wait for animation ends (Hold flag or end counter) 01
+   1563  1A Set anim                           00
+   1565  2A Set EntityFlags.ClassA             
+   1566  62 Set entities flags (low 16 bits)   1E 02 00
+   1570  63 Clear entities flags (low 16 bits) 1E 80 00
+   1574  16 High gravity                       
+   1575  00 Break                              
+   1576  02 Goto                               BB FF
+=== map 55 C[22] entry=1580 reach=39 instrs, marks=[], retusers=[]
+   1580  1A Set anim                           00
+   1582  16 High gravity                       
+   1583  37 Wait                               1E
+   1585  1B Fly                                00 06
+   1588  00 Break                              
+>> 1589  6D If entity z < threshold            70 00
+   1592  03 If true goto                       0B 00
+   1595  30 If flag on                         F6 81 1B 00
+   1600  02 Goto                               F1 FF
+   1603  1B Fly                                00 00
+   1606  1B Fly                                00 00
+   1609  00 Break                              
+   1610  6F Is collided with entity Z          
+   1611  03 If true goto                       E6 FF
+   1614  30 If flag on                         F6 81 08 00
+   1619  02 Goto                               F3 FF
+   1622  1B Fly                                00 00
+   1625  06 Flag off                           F6 81
+   1628  17 Low gravity                        
+   1629  2B Clear EntityFlags.ClassA           
+   1630  62 Set entities flags (low 16 bits)   1F 80 00
+   1634  63 Clear entities flags (low 16 bits) 1F 02 00
+   1638  00 Break                              
+   1639  BD Play sound 2                       26 00
+   1642  1A Set anim                           05
+   1644  1C Wait for animation ends (Hold flag or end counter) 01
+   1646  1A Set anim                           06
+   1648  37 Wait                               3C
+   1650  37 Wait                               F0
+   1652  BD Play sound 2                       26 00
+   1655  1A Set anim                           08
+   1657  1C Wait for animation ends (Hold flag or end counter) 01
+   1659  1A Set anim                           00
+   1661  2A Set EntityFlags.ClassA             
+   1662  62 Set entities flags (low 16 bits)   1F 02 00
+   1666  63 Clear entities flags (low 16 bits) 1F 80 00
+   1670  16 High gravity                       
+   1671  00 Break                              
+   1672  02 Goto                               BB FF
+=== map 55 C[23] entry=1676 reach=39 instrs, marks=[], retusers=[]
+   1676  1A Set anim                           00
+   1678  16 High gravity                       
+   1679  37 Wait                               78
+   1681  1B Fly                                00 06
+   1684  00 Break                              
+>> 1685  6D If entity z < threshold            70 00
+   1688  03 If true goto                       0B 00
+   1691  30 If flag on                         F7 81 1B 00
+   1696  02 Goto                               F1 FF
+   1699  1B Fly                                00 00
+   1702  1B Fly                                00 00
+   1705  00 Break                              
+   1706  6F Is collided with entity Z          
+   1707  03 If true goto                       E6 FF
+   1710  30 If flag on                         F7 81 08 00
+   1715  02 Goto                               F3 FF
+   1718  1B Fly                                00 00
+   1721  06 Flag off                           F7 81
+   1724  17 Low gravity                        
+   1725  2B Clear EntityFlags.ClassA           
+   1726  62 Set entities flags (low 16 bits)   20 80 00
+   1730  63 Clear entities flags (low 16 bits) 20 02 00
+   1734  00 Break                              
+   1735  BD Play sound 2                       26 00
+   1738  1A Set anim                           05
+   1740  1C Wait for animation ends (Hold flag or end counter) 01
+   1742  1A Set anim                           06
+   1744  37 Wait                               3C
+   1746  37 Wait                               F0
+   1748  BD Play sound 2                       26 00
+   1751  1A Set anim                           08
+   1753  1C Wait for animation ends (Hold flag or end counter) 01
+   1755  1A Set anim                           00
+   1757  2A Set EntityFlags.ClassA             
+   1758  62 Set entities flags (low 16 bits)   20 02 00
+   1762  63 Clear entities flags (low 16 bits) 20 80 00
+   1766  16 High gravity                       
+   1767  00 Break                              
+   1768  02 Goto                               BB FF
+=== map 55 C[24] entry=1772 reach=39 instrs, marks=[], retusers=[]
+   1772  1A Set anim                           00
+   1774  16 High gravity                       
+   1775  37 Wait                               3C
+   1777  1B Fly                                00 06
+   1780  00 Break                              
+>> 1781  6D If entity z < threshold            70 00
+   1784  03 If true goto                       0B 00
+   1787  30 If flag on                         F8 81 1B 00
+   1792  02 Goto                               F1 FF
+   1795  1B Fly                                00 00
+   1798  1B Fly                                00 00
+   1801  00 Break                              
+   1802  6F Is collided with entity Z          
+   1803  03 If true goto                       E6 FF
+   1806  30 If flag on                         F8 81 08 00
+   1811  02 Goto                               F3 FF
+   1814  1B Fly                                00 00
+   1817  06 Flag off                           F8 81
+   1820  17 Low gravity                        
+   1821  2B Clear EntityFlags.ClassA           
+   1822  62 Set entities flags (low 16 bits)   21 80 00
+   1826  63 Clear entities flags (low 16 bits) 21 02 00
+   1830  00 Break                              
+   1831  BD Play sound 2                       26 00
+   1834  1A Set anim                           05
+   1836  1C Wait for animation ends (Hold flag or end counter) 01
+   1838  1A Set anim                           06
+   1840  37 Wait                               3C
+   1842  37 Wait                               F0
+   1844  BD Play sound 2                       26 00
+   1847  1A Set anim                           08
+   1849  1C Wait for animation ends (Hold flag or end counter) 01
+   1851  1A Set anim                           00
+   1853  2A Set EntityFlags.ClassA             
+   1854  62 Set entities flags (low 16 bits)   21 02 00
+   1858  63 Clear entities flags (low 16 bits) 21 80 00
+   1862  16 High gravity                       
+   1863  00 Break                              
+   1864  02 Goto                               BB FF
+=== map 56 C[1] entry=88 reach=42 instrs, marks=[], retusers=[]
+     88  1A Set anim                           00
+     90  16 High gravity                       
+     91  37 Wait                               14
+     93  1B Fly                                00 06
+     96  00 Break                              
+>>   97  6D If entity z < threshold            00 01
+    100  03 If true goto                       0B 00
+    103  30 If flag on                         F4 81 1B 00
+    108  02 Goto                               F1 FF
+    111  1B Fly                                00 00
+    114  1B Fly                                00 00
+    117  00 Break                              
+    118  6F Is collided with entity Z          
+    119  03 If true goto                       E6 FF
+    122  30 If flag on                         F4 81 08 00
+    127  02 Goto                               F3 FF
+    130  1B Fly                                00 00
+    133  06 Flag off                           F4 81
+    136  17 Low gravity                        
+    137  2B Clear EntityFlags.ClassA           
+    138  62 Set entities flags (low 16 bits)   00 80 00
+    142  63 Clear entities flags (low 16 bits) 00 02 00
+    146  00 Break                              
+    147  BD Play sound 2                       26 00
+    150  1A Set anim                           05
+    152  1C Wait for animation ends (Hold flag or end counter) 01
+    154  1A Set anim                           06
+    156  37 Wait                               78
+    158  00 Break                              
+    159  3E Is player riding entity            
+    160  03 If true goto                       FE FF
+    163  37 Wait                               1E
+    165  BD Play sound 2                       26 00
+    168  1A Set anim                           08
+    170  1C Wait for animation ends (Hold flag or end counter) 01
+    172  1A Set anim                           00
+    174  2A Set EntityFlags.ClassA             
+    175  62 Set entities flags (low 16 bits)   00 02 00
+    179  63 Clear entities flags (low 16 bits) 00 80 00
+    183  16 High gravity                       
+    184  00 Break                              
+    185  02 Goto                               B6 FF
+=== map 56 C[2] entry=192 reach=42 instrs, marks=[], retusers=[]
+    192  1A Set anim                           00
+    194  16 High gravity                       
+    195  37 Wait                               0A
+    197  1B Fly                                00 06
+    200  00 Break                              
+>>  201  6D If entity z < threshold            00 01
+    204  03 If true goto                       0B 00
+    207  30 If flag on                         F5 81 1B 00
+    212  02 Goto                               F1 FF
+    215  1B Fly                                00 00
+    218  1B Fly                                00 00
+    221  00 Break                              
+    222  6F Is collided with entity Z          
+    223  03 If true goto                       E6 FF
+    226  30 If flag on                         F5 81 08 00
+    231  02 Goto                               F3 FF
+    234  1B Fly                                00 00
+    237  06 Flag off                           F5 81
+    240  17 Low gravity                        
+    241  2B Clear EntityFlags.ClassA           
+    242  62 Set entities flags (low 16 bits)   01 80 00
+    246  63 Clear entities flags (low 16 bits) 01 02 00
+    250  00 Break                              
+    251  BD Play sound 2                       26 00
+    254  1A Set anim                           05
+    256  1C Wait for animation ends (Hold flag or end counter) 01
+    258  1A Set anim                           06
+    260  37 Wait                               78
+    262  00 Break                              
+    263  3E Is player riding entity            
+    264  03 If true goto                       FE FF
+    267  37 Wait                               1E
+    269  BD Play sound 2                       26 00
+    272  1A Set anim                           08
+    274  1C Wait for animation ends (Hold flag or end counter) 01
+    276  1A Set anim                           00
+    278  2A Set EntityFlags.ClassA             
+    279  62 Set entities flags (low 16 bits)   01 02 00
+    283  63 Clear entities flags (low 16 bits) 01 80 00
+    287  16 High gravity                       
+    288  00 Break                              
+    289  02 Goto                               B6 FF
+=== map 56 C[3] entry=296 reach=42 instrs, marks=[], retusers=[]
+    296  1A Set anim                           00
+    298  16 High gravity                       
+    299  37 Wait                               05
+    301  1B Fly                                00 06
+    304  00 Break                              
+>>  305  6D If entity z < threshold            00 01
+    308  03 If true goto                       0B 00
+    311  30 If flag on                         F6 81 1B 00
+    316  02 Goto                               F1 FF
+    319  1B Fly                                00 00
+    322  1B Fly                                00 00
+    325  00 Break                              
+    326  6F Is collided with entity Z          
+    327  03 If true goto                       E6 FF
+    330  30 If flag on                         F6 81 08 00
+    335  02 Goto                               F3 FF
+    338  1B Fly                                00 00
+    341  06 Flag off                           F6 81
+    344  17 Low gravity                        
+    345  2B Clear EntityFlags.ClassA           
+    346  62 Set entities flags (low 16 bits)   02 80 00
+    350  63 Clear entities flags (low 16 bits) 02 02 00
+    354  00 Break                              
+    355  BD Play sound 2                       26 00
+    358  1A Set anim                           05
+    360  1C Wait for animation ends (Hold flag or end counter) 01
+    362  1A Set anim                           06
+    364  37 Wait                               78
+    366  00 Break                              
+    367  3E Is player riding entity            
+    368  03 If true goto                       FE FF
+    371  37 Wait                               1E
+    373  BD Play sound 2                       26 00
+    376  1A Set anim                           08
+    378  1C Wait for animation ends (Hold flag or end counter) 01
+    380  1A Set anim                           00
+    382  2A Set EntityFlags.ClassA             
+    383  62 Set entities flags (low 16 bits)   02 02 00
+    387  63 Clear entities flags (low 16 bits) 02 80 00
+    391  16 High gravity                       
+    392  00 Break                              
+    393  02 Goto                               B6 FF
+=== map 56 C[4] entry=400 reach=42 instrs, marks=[], retusers=[]
+    400  1A Set anim                           00
+    402  16 High gravity                       
+    403  37 Wait                               0F
+    405  1B Fly                                00 06
+    408  00 Break                              
+>>  409  6D If entity z < threshold            00 01
+    412  03 If true goto                       0B 00
+    415  30 If flag on                         F7 81 1B 00
+    420  02 Goto                               F1 FF
+    423  1B Fly                                00 00
+    426  1B Fly                                00 00
+    429  00 Break                              
+    430  6F Is collided with entity Z          
+    431  03 If true goto                       E6 FF
+    434  30 If flag on                         F7 81 08 00
+    439  02 Goto                               F3 FF
+    442  1B Fly                                00 00
+    445  06 Flag off                           F7 81
+    448  17 Low gravity                        
+    449  2B Clear EntityFlags.ClassA           
+    450  62 Set entities flags (low 16 bits)   03 80 00
+    454  63 Clear entities flags (low 16 bits) 03 02 00
+    458  00 Break                              
+    459  BD Play sound 2                       26 00
+    462  1A Set anim                           05
+    464  1C Wait for animation ends (Hold flag or end counter) 01
+    466  1A Set anim                           06
+    468  37 Wait                               78
+    470  00 Break                              
+    471  3E Is player riding entity            
+    472  03 If true goto                       FE FF
+    475  37 Wait                               1E
+    477  BD Play sound 2                       26 00
+    480  1A Set anim                           08
+    482  1C Wait for animation ends (Hold flag or end counter) 01
+    484  1A Set anim                           00
+    486  2A Set EntityFlags.ClassA             
+    487  62 Set entities flags (low 16 bits)   03 02 00
+    491  63 Clear entities flags (low 16 bits) 03 80 00
+    495  16 High gravity                       
+    496  00 Break                              
+    497  02 Goto                               B6 FF
+=== map 57 C[4] entry=208 reach=42 instrs, marks=[], retusers=[]
+    208  1A Set anim                           00
+    210  16 High gravity                       
+    211  37 Wait                               05
+    213  1B Fly                                00 06
+    216  00 Break                              
+>>  217  6D If entity z < threshold            50 00
+    220  03 If true goto                       0B 00
+    223  30 If flag on                         F6 81 1B 00
+    228  02 Goto                               F1 FF
+    231  1B Fly                                00 00
+    234  1B Fly                                00 00
+    237  00 Break                              
+    238  6F Is collided with entity Z          
+    239  03 If true goto                       E6 FF
+    242  30 If flag on                         F6 81 08 00
+    247  02 Goto                               F3 FF
+    250  1B Fly                                00 00
+    253  06 Flag off                           F6 81
+    256  17 Low gravity                        
+    257  2B Clear EntityFlags.ClassA           
+    258  62 Set entities flags (low 16 bits)   03 80 00
+    262  63 Clear entities flags (low 16 bits) 03 02 00
+    266  00 Break                              
+    267  BD Play sound 2                       26 00
+    270  1A Set anim                           05
+    272  1C Wait for animation ends (Hold flag or end counter) 01
+    274  1A Set anim                           06
+    276  37 Wait                               78
+    278  00 Break                              
+    279  3E Is player riding entity            
+    280  03 If true goto                       FE FF
+    283  37 Wait                               1E
+    285  BD Play sound 2                       26 00
+    288  1A Set anim                           08
+    290  1C Wait for animation ends (Hold flag or end counter) 01
+    292  1A Set anim                           00
+    294  2A Set EntityFlags.ClassA             
+    295  62 Set entities flags (low 16 bits)   03 02 00
+    299  63 Clear entities flags (low 16 bits) 03 80 00
+    303  16 High gravity                       
+    304  00 Break                              
+    305  02 Goto                               B6 FF
+=== map 57 C[7] entry=404 reach=42 instrs, marks=[], retusers=[]
+    404  1A Set anim                           00
+    406  16 High gravity                       
+    407  37 Wait                               05
+    409  1B Fly                                00 06
+    412  00 Break                              
+>>  413  6D If entity z < threshold            50 00
+    416  03 If true goto                       0B 00
+    419  30 If flag on                         F4 81 1B 00
+    424  02 Goto                               F1 FF
+    427  1B Fly                                00 00
+    430  1B Fly                                00 00
+    433  00 Break                              
+    434  6F Is collided with entity Z          
+    435  03 If true goto                       E6 FF
+    438  30 If flag on                         F4 81 08 00
+    443  02 Goto                               F3 FF
+    446  1B Fly                                00 00
+    449  06 Flag off                           F4 81
+    452  17 Low gravity                        
+    453  2B Clear EntityFlags.ClassA           
+    454  62 Set entities flags (low 16 bits)   08 80 00
+    458  63 Clear entities flags (low 16 bits) 08 02 00
+    462  00 Break                              
+    463  BD Play sound 2                       26 00
+    466  1A Set anim                           05
+    468  1C Wait for animation ends (Hold flag or end counter) 01
+    470  1A Set anim                           06
+    472  37 Wait                               78
+    474  00 Break                              
+    475  3E Is player riding entity            
+    476  03 If true goto                       FE FF
+    479  37 Wait                               1E
+    481  BD Play sound 2                       26 00
+    484  1A Set anim                           08
+    486  1C Wait for animation ends (Hold flag or end counter) 01
+    488  1A Set anim                           00
+    490  2A Set EntityFlags.ClassA             
+    491  62 Set entities flags (low 16 bits)   08 02 00
+    495  63 Clear entities flags (low 16 bits) 08 80 00
+    499  16 High gravity                       
+    500  00 Break                              
+    501  02 Goto                               B6 FF
+=== map 59 C[6] entry=456 reach=21 instrs, marks=[], retusers=[]
+    456  2A Set EntityFlags.ClassA             
+>>  457  6A Save entity position               
+    458  1B Fly                                80 FF
+    461  00 Break                              
+>>  462  6D If entity z < threshold            20 00
+    465  03 If true goto                       0B 00
+    468  30 If flag on                         C8 80 1B 00
+    473  02 Goto                               F1 FF
+>>  476  6A Save entity position               
+    477  1B Fly                                80 00
+    480  00 Break                              
+>>  481  6D If entity z < threshold            20 00
+    484  03 If true goto                       E4 FF
+    487  30 If flag on                         C8 80 08 00
+    492  02 Goto                               F1 FF
+    495  2B Clear EntityFlags.ClassA           
+    496  1A Set anim                           01
+    498  1C Wait for animation ends (Hold flag or end counter) 01
+    500  2E Destroy entity                     08
+    502  00 Break                              
+    503  FF End script                         
+=== map 59 C[8] entry=552 reach=21 instrs, marks=[], retusers=[]
+    552  2A Set EntityFlags.ClassA             
+>>  553  6A Save entity position               
+    554  1B Fly                                80 FF
+    557  00 Break                              
+>>  558  6D If entity z < threshold            20 00
+    561  03 If true goto                       0B 00
+    564  30 If flag on                         C9 80 1B 00
+    569  02 Goto                               F1 FF
+>>  572  6A Save entity position               
+    573  1B Fly                                80 00
+    576  00 Break                              
+>>  577  6D If entity z < threshold            20 00
+    580  03 If true goto                       E4 FF
+    583  30 If flag on                         C9 80 08 00
+    588  02 Goto                               F1 FF
+    591  2B Clear EntityFlags.ClassA           
+    592  1A Set anim                           01
+    594  1C Wait for animation ends (Hold flag or end counter) 01
+    596  2E Destroy entity                     0A
+    598  00 Break                              
+    599  FF End script                         
+=== map 59 C[9] entry=600 reach=21 instrs, marks=[], retusers=[]
+    600  2A Set EntityFlags.ClassA             
+>>  601  6A Save entity position               
+    602  1B Fly                                80 FF
+    605  00 Break                              
+>>  606  6D If entity z < threshold            20 00
+    609  03 If true goto                       0B 00
+    612  30 If flag on                         CA 80 1B 00
+    617  02 Goto                               F1 FF
+>>  620  6A Save entity position               
+    621  1B Fly                                80 00
+    624  00 Break                              
+>>  625  6D If entity z < threshold            20 00
+    628  03 If true goto                       E4 FF
+    631  30 If flag on                         CA 80 08 00
+    636  02 Goto                               F1 FF
+    639  2B Clear EntityFlags.ClassA           
+    640  1A Set anim                           01
+    642  1C Wait for animation ends (Hold flag or end counter) 01
+    644  2E Destroy entity                     0B
+    646  00 Break                              
+    647  FF End script                         
+=== map 59 C[10] entry=648 reach=21 instrs, marks=[], retusers=[]
+    648  2A Set EntityFlags.ClassA             
+>>  649  6A Save entity position               
+    650  1B Fly                                80 FF
+    653  00 Break                              
+>>  654  6D If entity z < threshold            20 00
+    657  03 If true goto                       0B 00
+    660  30 If flag on                         CB 80 1B 00
+    665  02 Goto                               F1 FF
+>>  668  6A Save entity position               
+    669  1B Fly                                80 00
+    672  00 Break                              
+>>  673  6D If entity z < threshold            20 00
+    676  03 If true goto                       E4 FF
+    679  30 If flag on                         CB 80 08 00
+    684  02 Goto                               F1 FF
+    687  2B Clear EntityFlags.ClassA           
+    688  1A Set anim                           01
+    690  1C Wait for animation ends (Hold flag or end counter) 01
+    692  2E Destroy entity                     0C
+    694  00 Break                              
+    695  FF End script                         
+=== map 59 C[11] entry=696 reach=21 instrs, marks=[], retusers=[]
+    696  2A Set EntityFlags.ClassA             
+>>  697  6A Save entity position               
+    698  1B Fly                                80 FF
+    701  00 Break                              
+>>  702  6D If entity z < threshold            20 00
+    705  03 If true goto                       0B 00
+    708  30 If flag on                         CC 80 1B 00
+    713  02 Goto                               F1 FF
+>>  716  6A Save entity position               
+    717  1B Fly                                80 00
+    720  00 Break                              
+>>  721  6D If entity z < threshold            20 00
+    724  03 If true goto                       E4 FF
+    727  30 If flag on                         CC 80 08 00
+    732  02 Goto                               F1 FF
+    735  2B Clear EntityFlags.ClassA           
+    736  1A Set anim                           01
+    738  1C Wait for animation ends (Hold flag or end counter) 01
+    740  2E Destroy entity                     0D
+    742  00 Break                              
+    743  FF End script                         
+=== map 60 C[1] entry=160 reach=45 instrs, marks=[178, 199], retusers=[251]
+    160  1A Set anim                           00
+    162  08 Add to TargetDirection (modulo 32) 08
+>>  164  6A Save entity position               
+    165  1A Set anim                           04
+    167  00 Break                              
+>>  168  6B If entity x < threshold            60 00
+    171  03 If true goto                       0A 00
+    174  3E Is player riding entity            
+    175  79 Jump if choice accepted            1B 00
+    178  02 Goto                               F3 FF
+    181  1A Set anim                           00
+    183  08 Add to TargetDirection (modulo 32) 08
+>>  185  6A Save entity position               
+    186  1A Set anim                           04
+    188  00 Break                              
+>>  189  6C If entity y < threshold            80 00
+    192  03 If true goto                       E0 FF
+    195  3E Is player riding entity            
+    196  79 Jump if choice accepted            06 00
+    199  02 Goto                               F3 FF
+    202  1A Set anim                           00
+    204  42 SetLogicContextEntity = PlayerEntity 
+    205  73 Set loop counter _30               0A
+    207  70 Is above ground                    
+    208  04 If false goto                      18 00
+    211  00 Break                              
+    212  74 Decrement _30 and jump while positive FB FF
+    215  1B Fly                                00 04
+    218  00 Break                              
+    219  43 Set LogicContextEntity             00
+    221  1A Set anim                           02
+    223  73 Set loop counter _30               0C
+    225  00 Break                              
+    226  74 Decrement _30 and jump while positive FF FF
+    229  02 Goto                               14 00
+    232  1B Fly                                00 0A
+    235  00 Break                              
+    236  43 Set LogicContextEntity             00
+    238  1A Set anim                           01
+    240  73 Set loop counter _30               22
+    242  00 Break                              
+    243  74 Decrement _30 and jump while positive FF FF
+    246  02 Goto                               03 00
+    249  1A Set anim                           00
+    251  7D Jump relative from stored param    
+=== map 60 C[6] entry=448 reach=21 instrs, marks=[], retusers=[]
+    448  2A Set EntityFlags.ClassA             
+>>  449  6A Save entity position               
+    450  1B Fly                                80 FF
+    453  00 Break                              
+>>  454  6D If entity z < threshold            20 00
+    457  03 If true goto                       0B 00
+    460  30 If flag on                         C8 80 1B 00
+    465  02 Goto                               F1 FF
+>>  468  6A Save entity position               
+    469  1B Fly                                80 00
+    472  00 Break                              
+>>  473  6D If entity z < threshold            20 00
+    476  03 If true goto                       E4 FF
+    479  30 If flag on                         C8 80 08 00
+    484  02 Goto                               F1 FF
+    487  2B Clear EntityFlags.ClassA           
+    488  1A Set anim                           01
+    490  1C Wait for animation ends (Hold flag or end counter) 01
+    492  2E Destroy entity                     05
+    494  00 Break                              
+    495  FF End script                         
+=== map 60 C[7] entry=496 reach=21 instrs, marks=[], retusers=[]
+    496  2A Set EntityFlags.ClassA             
+>>  497  6A Save entity position               
+    498  1B Fly                                80 FF
+    501  00 Break                              
+>>  502  6D If entity z < threshold            20 00
+    505  03 If true goto                       0B 00
+    508  30 If flag on                         C9 80 1B 00
+    513  02 Goto                               F1 FF
+>>  516  6A Save entity position               
+    517  1B Fly                                80 00
+    520  00 Break                              
+>>  521  6D If entity z < threshold            20 00
+    524  03 If true goto                       E4 FF
+    527  30 If flag on                         C9 80 08 00
+    532  02 Goto                               F1 FF
+    535  2B Clear EntityFlags.ClassA           
+    536  1A Set anim                           01
+    538  1C Wait for animation ends (Hold flag or end counter) 01
+    540  2E Destroy entity                     06
+    542  00 Break                              
+    543  FF End script                         
+=== map 60 C[8] entry=544 reach=21 instrs, marks=[], retusers=[]
+    544  2A Set EntityFlags.ClassA             
+>>  545  6A Save entity position               
+    546  1B Fly                                80 FF
+    549  00 Break                              
+>>  550  6D If entity z < threshold            20 00
+    553  03 If true goto                       0B 00
+    556  30 If flag on                         CA 80 1B 00
+    561  02 Goto                               F1 FF
+>>  564  6A Save entity position               
+    565  1B Fly                                80 00
+    568  00 Break                              
+>>  569  6D If entity z < threshold            20 00
+    572  03 If true goto                       E4 FF
+    575  30 If flag on                         CA 80 08 00
+    580  02 Goto                               F1 FF
+    583  2B Clear EntityFlags.ClassA           
+    584  1A Set anim                           01
+    586  1C Wait for animation ends (Hold flag or end counter) 01
+    588  2E Destroy entity                     07
+    590  00 Break                              
+    591  FF End script                         
+=== map 60 C[9] entry=592 reach=21 instrs, marks=[], retusers=[]
+    592  2A Set EntityFlags.ClassA             
+>>  593  6A Save entity position               
+    594  1B Fly                                80 FF
+    597  00 Break                              
+>>  598  6D If entity z < threshold            20 00
+    601  03 If true goto                       0B 00
+    604  30 If flag on                         CB 80 1B 00
+    609  02 Goto                               F1 FF
+>>  612  6A Save entity position               
+    613  1B Fly                                80 00
+    616  00 Break                              
+>>  617  6D If entity z < threshold            20 00
+    620  03 If true goto                       E4 FF
+    623  30 If flag on                         CB 80 08 00
+    628  02 Goto                               F1 FF
+    631  2B Clear EntityFlags.ClassA           
+    632  1A Set anim                           01
+    634  1C Wait for animation ends (Hold flag or end counter) 01
+    636  2E Destroy entity                     08
+    638  00 Break                              
+    639  FF End script                         
+=== map 60 C[10] entry=640 reach=45 instrs, marks=[658, 679], retusers=[731]
+    640  1A Set anim                           00
+    642  08 Add to TargetDirection (modulo 32) 08
+>>  644  6A Save entity position               
+    645  1A Set anim                           04
+    647  00 Break                              
+>>  648  6B If entity x < threshold            60 00
+    651  03 If true goto                       0A 00
+    654  3E Is player riding entity            
+    655  79 Jump if choice accepted            1B 00
+    658  02 Goto                               F3 FF
+    661  1A Set anim                           00
+    663  08 Add to TargetDirection (modulo 32) 08
+>>  665  6A Save entity position               
+    666  1A Set anim                           04
+    668  00 Break                              
+>>  669  6C If entity y < threshold            80 00
+    672  03 If true goto                       E0 FF
+    675  3E Is player riding entity            
+    676  79 Jump if choice accepted            06 00
+    679  02 Goto                               F3 FF
+    682  1A Set anim                           00
+    684  42 SetLogicContextEntity = PlayerEntity 
+    685  73 Set loop counter _30               0A
+    687  70 Is above ground                    
+    688  04 If false goto                      18 00
+    691  00 Break                              
+    692  74 Decrement _30 and jump while positive FB FF
+    695  1B Fly                                00 04
+    698  00 Break                              
+    699  43 Set LogicContextEntity             09
+    701  1A Set anim                           02
+    703  73 Set loop counter _30               0C
+    705  00 Break                              
+    706  74 Decrement _30 and jump while positive FF FF
+    709  02 Goto                               14 00
+    712  1B Fly                                00 0A
+    715  00 Break                              
+    716  43 Set LogicContextEntity             09
+    718  1A Set anim                           01
+    720  73 Set loop counter _30               22
+    722  00 Break                              
+    723  74 Decrement _30 and jump while positive FF FF
+    726  02 Goto                               03 00
+    729  1A Set anim                           00
+    731  7D Jump relative from stored param    
+=== map 307 C[1] entry=424 reach=24 instrs, marks=[433, 451], retusers=[475, 479]
+    424  1A Set anim                           02
+>>  426  6A Save entity position               
+    427  1B Fly                                00 FF
+    430  78 Store choice param and jump        2C 00
+>>  433  6B If entity x < threshold            3C 00
+    436  03 If true goto                       08 00
+    439  00 Break                              
+    440  02 Goto                               F3 FF
+>>  444  6A Save entity position               
+    445  1B Fly                                00 01
+    448  78 Store choice param and jump        1A 00
+>>  451  6B If entity x < threshold            3C 00
+    454  03 If true goto                       08 00
+    457  00 Break                              
+    458  02 Goto                               F3 FF
+    462  1A Set anim                           00
+    464  1B Fly                                00 00
+    467  37 Wait                               14
+    469  08 Add to TargetDirection (modulo 32) 10
+    471  49 Restart                            
+    474  6E Is force adjusted                  
+    475  7F Conditional jump if false          
+    476  1B Fly                                00 00
+    479  7D Jump relative from stored param    
+=== map 307 C[2] entry=484 reach=28 instrs, marks=[498, 516], retusers=[475, 479]
+    474  6E Is force adjusted                  
+    475  7F Conditional jump if false          
+    476  1B Fly                                00 00
+    479  7D Jump relative from stored param    
+    484  36 Wait until flag on                 1E 80
+    487  73 Set loop counter _30               02
+    489  1A Set anim                           02
+>>  491  6A Save entity position               
+    492  1B Fly                                00 FF
+    495  78 Store choice param and jump        EB FF
+>>  498  6B If entity x < threshold            3C 00
+    501  03 If true goto                       08 00
+    504  00 Break                              
+    505  02 Goto                               F3 FF
+>>  509  6A Save entity position               
+    510  1B Fly                                00 01
+    513  78 Store choice param and jump        D9 FF
+>>  516  6B If entity x < threshold            3C 00
+    519  03 If true goto                       08 00
+    522  00 Break                              
+    523  02 Goto                               F3 FF
+    527  1A Set anim                           00
+    529  1B Fly                                00 00
+    532  37 Wait                               14
+    534  08 Add to TargetDirection (modulo 32) 10
+    536  74 Decrement _30 and jump while positive D1 FF
+    539  02 Goto                               0B 00
+    550  FF End script                         
+=== map 344 C[60] entry=2356 reach=18 instrs, marks=[], retusers=[]
+   2356  1A Set anim                           01
+>> 2358  6A Save entity position               
+   2359  00 Break                              
+   2360  30 If flag on                         A8 82 32 00
+   2365  89 Set matched entities position relative to reference 80 0B 00 00 00 00 00 00
+>> 2374  6C If entity y < threshold            40 00
+   2377  04 If false goto                      EE FF
+   2380  08 Add to TargetDirection (modulo 32) 18
+>> 2382  6A Save entity position               
+   2383  00 Break                              
+   2384  30 If flag on                         A8 82 1A 00
+   2389  89 Set matched entities position relative to reference 80 0B 00 00 00 00 00 00
+>> 2398  6B If entity x < threshold            60 00
+   2401  04 If false goto                      EE FF
+   2404  08 Add to TargetDirection (modulo 32) 18
+   2406  02 Goto                               D0 FF
+   2410  1A Set anim                           00
+   2412  FF End script                         
+=== map 344 C[61] entry=2416 reach=25 instrs, marks=[], retusers=[]
+   2416  1A Set anim                           01
+>> 2418  6A Save entity position               
+   2419  00 Break                              
+   2420  30 If flag on                         A8 82 4A 00
+   2425  89 Set matched entities position relative to reference 80 0C 00 00 00 00 00 00
+>> 2434  6B If entity x < threshold            30 00
+   2437  04 If false goto                      EE FF
+   2440  08 Add to TargetDirection (modulo 32) 18
+>> 2442  6A Save entity position               
+   2443  00 Break                              
+   2444  30 If flag on                         A8 82 32 00
+   2449  89 Set matched entities position relative to reference 80 0C 00 00 00 00 00 00
+>> 2458  6C If entity y < threshold            40 00
+   2461  04 If false goto                      EE FF
+   2464  08 Add to TargetDirection (modulo 32) 18
+>> 2466  6A Save entity position               
+   2467  00 Break                              
+   2468  30 If flag on                         A8 82 1A 00
+   2473  89 Set matched entities position relative to reference 80 0C 00 00 00 00 00 00
+>> 2482  6B If entity x < threshold            60 00
+   2485  04 If false goto                      EE FF
+   2488  08 Add to TargetDirection (modulo 32) 18
+   2490  02 Goto                               D0 FF
+   2494  1A Set anim                           00
+   2496  FF End script                         
+=== map 344 C[62] entry=2500 reach=18 instrs, marks=[], retusers=[]
+   2500  1A Set anim                           01
+>> 2502  6A Save entity position               
+   2503  00 Break                              
+   2504  30 If flag on                         A8 82 32 00
+   2509  89 Set matched entities position relative to reference 80 0D 00 00 00 00 00 00
+>> 2518  6B If entity x < threshold            60 00
+   2521  04 If false goto                      EE FF
+   2524  08 Add to TargetDirection (modulo 32) 18
+>> 2526  6A Save entity position               
+   2527  00 Break                              
+   2528  30 If flag on                         A8 82 1A 00
+   2533  89 Set matched entities position relative to reference 80 0D 00 00 00 00 00 00
+>> 2542  6C If entity y < threshold            40 00
+   2545  04 If false goto                      EE FF
+   2548  08 Add to TargetDirection (modulo 32) 18
+   2550  02 Goto                               D0 FF
+   2554  1A Set anim                           00
+   2556  FF End script                         
+=== map 344 C[63] entry=2560 reach=25 instrs, marks=[], retusers=[]
+   2560  1A Set anim                           01
+>> 2562  6A Save entity position               
+   2563  00 Break                              
+   2564  30 If flag on                         A8 82 4A 00
+   2569  89 Set matched entities position relative to reference 80 0E 00 00 00 00 00 00
+>> 2578  6C If entity y < threshold            20 00
+   2581  04 If false goto                      EE FF
+   2584  08 Add to TargetDirection (modulo 32) 18
+>> 2586  6A Save entity position               
+   2587  00 Break                              
+   2588  30 If flag on                         A8 82 32 00
+   2593  89 Set matched entities position relative to reference 80 0E 00 00 00 00 00 00
+>> 2602  6B If entity x < threshold            60 00
+   2605  04 If false goto                      EE FF
+   2608  08 Add to TargetDirection (modulo 32) 18
+>> 2610  6A Save entity position               
+   2611  00 Break                              
+   2612  30 If flag on                         A8 82 1A 00
+   2617  89 Set matched entities position relative to reference 80 0E 00 00 00 00 00 00
+>> 2626  6C If entity y < threshold            40 00
+   2629  04 If false goto                      EE FF
+   2632  08 Add to TargetDirection (modulo 32) 18
+   2634  02 Goto                               D0 FF
+   2638  1A Set anim                           00
+   2640  FF End script                         
+=== map 344 C[64] entry=2644 reach=25 instrs, marks=[], retusers=[]
+   2644  1A Set anim                           01
+>> 2646  6A Save entity position               
+   2647  00 Break                              
+   2648  30 If flag on                         A8 82 4A 00
+   2653  89 Set matched entities position relative to reference 80 10 00 00 00 00 00 00
+>> 2662  6C If entity y < threshold            20 00
+   2665  04 If false goto                      EE FF
+   2668  08 Add to TargetDirection (modulo 32) 18
+>> 2670  6A Save entity position               
+   2671  00 Break                              
+   2672  30 If flag on                         A8 82 32 00
+   2677  89 Set matched entities position relative to reference 80 10 00 00 00 00 00 00
+>> 2686  6B If entity x < threshold            60 00
+   2689  04 If false goto                      EE FF
+   2692  08 Add to TargetDirection (modulo 32) 18
+>> 2694  6A Save entity position               
+   2695  00 Break                              
+   2696  30 If flag on                         A8 82 1A 00
+   2701  89 Set matched entities position relative to reference 80 10 00 00 00 00 00 00
+>> 2710  6C If entity y < threshold            40 00
+   2713  04 If false goto                      EE FF
+   2716  08 Add to TargetDirection (modulo 32) 18
+   2718  02 Goto                               D0 FF
+   2722  1A Set anim                           00
+   2724  FF End script                         
+=== map 344 C[65] entry=2728 reach=18 instrs, marks=[], retusers=[]
+   2728  1A Set anim                           01
+>> 2730  6A Save entity position               
+   2731  00 Break                              
+   2732  30 If flag on                         A8 82 32 00
+   2737  89 Set matched entities position relative to reference 80 11 00 00 00 00 00 00
+>> 2746  6B If entity x < threshold            60 00
+   2749  04 If false goto                      EE FF
+   2752  08 Add to TargetDirection (modulo 32) 18
+>> 2754  6A Save entity position               
+   2755  00 Break                              
+   2756  30 If flag on                         A8 82 1A 00
+   2761  89 Set matched entities position relative to reference 80 11 00 00 00 00 00 00
+>> 2770  6C If entity y < threshold            40 00
+   2773  04 If false goto                      EE FF
+   2776  08 Add to TargetDirection (modulo 32) 18
+   2778  02 Goto                               D0 FF
+   2782  1A Set anim                           00
+   2784  FF End script                         
+=== map 344 C[66] entry=2788 reach=25 instrs, marks=[], retusers=[]
+   2788  1A Set anim                           01
+>> 2790  6A Save entity position               
+   2791  00 Break                              
+   2792  30 If flag on                         A8 82 4A 00
+   2797  89 Set matched entities position relative to reference 80 12 00 00 00 00 00 00
+>> 2806  6B If entity x < threshold            30 00
+   2809  04 If false goto                      EE FF
+   2812  08 Add to TargetDirection (modulo 32) 18
+>> 2814  6A Save entity position               
+   2815  00 Break                              
+   2816  30 If flag on                         A8 82 32 00
+   2821  89 Set matched entities position relative to reference 80 12 00 00 00 00 00 00
+>> 2830  6C If entity y < threshold            40 00
+   2833  04 If false goto                      EE FF
+   2836  08 Add to TargetDirection (modulo 32) 18
+>> 2838  6A Save entity position               
+   2839  00 Break                              
+   2840  30 If flag on                         A8 82 1A 00
+   2845  89 Set matched entities position relative to reference 80 12 00 00 00 00 00 00
+>> 2854  6B If entity x < threshold            60 00
+   2857  04 If false goto                      EE FF
+   2860  08 Add to TargetDirection (modulo 32) 18
+   2862  02 Goto                               D0 FF
+   2866  1A Set anim                           00
+   2868  FF End script                         
+=== map 344 C[67] entry=2872 reach=18 instrs, marks=[], retusers=[]
+   2872  1A Set anim                           01
+>> 2874  6A Save entity position               
+   2875  00 Break                              
+   2876  30 If flag on                         A8 82 32 00
+   2881  89 Set matched entities position relative to reference 80 13 00 00 00 00 00 00
+>> 2890  6C If entity y < threshold            40 00
+   2893  04 If false goto                      EE FF
+   2896  08 Add to TargetDirection (modulo 32) 18
+>> 2898  6A Save entity position               
+   2899  00 Break                              
+   2900  30 If flag on                         A8 82 1A 00
+   2905  89 Set matched entities position relative to reference 80 13 00 00 00 00 00 00
+>> 2914  6B If entity x < threshold            60 00
+   2917  04 If false goto                      EE FF
+   2920  08 Add to TargetDirection (modulo 32) 18
+   2922  02 Goto                               D0 FF
+   2926  1A Set anim                           00
+   2928  FF End script                         
+=== map 442 C[23] entry=1108 reach=16 instrs, marks=[], retusers=[]
+>> 1108  6A Save entity position               
+   1109  1A Set anim                           02
+   1111  00 Break                              
+   1112  30 If flag on                         C7 82 1D 00
+   1117  30 If flag on                         BD 82 0F 00
+>> 1122  6B If entity x < threshold            48 00
+   1125  04 If false goto                      F2 FF
+   1128  0A Reverse direction                  
+   1129  02 Goto                               EB FF
+   1132  1A Set anim                           00
+   1134  62 Set entities flags (low 16 bits)   80 00 01
+   1138  36 Wait until flag on                 C7 82
+   1141  1A Set anim                           01
+   1143  1C Wait for animation ends (Hold flag or end counter) 01
+   1145  2E Destroy entity                     80
+   1147  FF End script                         
+=== map 442 C[22] entry=1068 reach=16 instrs, marks=[], retusers=[]
+>> 1068  6A Save entity position               
+   1069  1A Set anim                           02
+   1071  00 Break                              
+   1072  30 If flag on                         C6 82 1D 00
+   1077  30 If flag on                         BD 82 0F 00
+>> 1082  6B If entity x < threshold            48 00
+   1085  04 If false goto                      F2 FF
+   1088  0A Reverse direction                  
+   1089  02 Goto                               EB FF
+   1092  1A Set anim                           00
+   1094  62 Set entities flags (low 16 bits)   80 00 01
+   1098  36 Wait until flag on                 C6 82
+   1101  1A Set anim                           01
+   1103  1C Wait for animation ends (Hold flag or end counter) 01
+   1105  2E Destroy entity                     80
+   1107  FF End script                         
+=== map 442 C[3] entry=512 reach=16 instrs, marks=[], retusers=[]
+>>  512  6A Save entity position               
+    513  1A Set anim                           02
+    515  00 Break                              
+    516  30 If flag on                         C9 82 1D 00
+    521  30 If flag on                         BD 82 0F 00
+>>  526  6B If entity x < threshold            48 00
+    529  04 If false goto                      F2 FF
+    532  0A Reverse direction                  
+    533  02 Goto                               EB FF
+    536  1A Set anim                           00
+    538  62 Set entities flags (low 16 bits)   80 00 01
+    542  36 Wait until flag on                 C9 82
+    545  1A Set anim                           01
+    547  1C Wait for animation ends (Hold flag or end counter) 01
+    549  2E Destroy entity                     80
+    551  FF End script                         
+=== map 442 C[5] entry=568 reach=16 instrs, marks=[], retusers=[]
+>>  568  6A Save entity position               
+    569  1A Set anim                           02
+    571  00 Break                              
+    572  30 If flag on                         C8 82 1D 00
+    577  30 If flag on                         BD 82 0F 00
+>>  582  6B If entity x < threshold            48 00
+    585  04 If false goto                      F2 FF
+    588  0A Reverse direction                  
+    589  02 Goto                               EB FF
+    592  1A Set anim                           00
+    594  62 Set entities flags (low 16 bits)   80 00 01
+    598  36 Wait until flag on                 C8 82
+    601  1A Set anim                           01
+    603  1C Wait for animation ends (Hold flag or end counter) 01
+    605  2E Destroy entity                     80
+    607  FF End script                         
+=== map 442 C[6] entry=608 reach=16 instrs, marks=[], retusers=[]
+>>  608  6A Save entity position               
+    609  1A Set anim                           02
+    611  00 Break                              
+    612  30 If flag on                         CC 82 1D 00
+    617  30 If flag on                         BE 82 0F 00
+>>  622  6B If entity x < threshold            48 00
+    625  04 If false goto                      F2 FF
+    628  0A Reverse direction                  
+    629  02 Goto                               EB FF
+    632  1A Set anim                           00
+    634  62 Set entities flags (low 16 bits)   80 00 01
+    638  36 Wait until flag on                 CC 82
+    641  1A Set anim                           01
+    643  1C Wait for animation ends (Hold flag or end counter) 01
+    645  2E Destroy entity                     80
+    647  FF End script                         
+=== map 442 C[7] entry=648 reach=16 instrs, marks=[], retusers=[]
+>>  648  6A Save entity position               
+    649  1A Set anim                           02
+    651  00 Break                              
+    652  30 If flag on                         CB 82 1D 00
+    657  30 If flag on                         BE 82 0F 00
+>>  662  6B If entity x < threshold            48 00
+    665  04 If false goto                      F2 FF
+    668  0A Reverse direction                  
+    669  02 Goto                               EB FF
+    672  1A Set anim                           00
+    674  62 Set entities flags (low 16 bits)   80 00 01
+    678  36 Wait until flag on                 CB 82
+    681  1A Set anim                           01
+    683  1C Wait for animation ends (Hold flag or end counter) 01
+    685  2E Destroy entity                     80
+    687  FF End script                         
+=== map 442 C[8] entry=688 reach=16 instrs, marks=[], retusers=[]
+>>  688  6A Save entity position               
+    689  1A Set anim                           02
+    691  00 Break                              
+    692  30 If flag on                         CD 82 1D 00
+    697  30 If flag on                         BE 82 0F 00
+>>  702  6B If entity x < threshold            48 00
+    705  04 If false goto                      F2 FF
+    708  0A Reverse direction                  
+    709  02 Goto                               EB FF
+    712  1A Set anim                           00
+    714  62 Set entities flags (low 16 bits)   80 00 01
+    718  36 Wait until flag on                 CD 82
+    721  1A Set anim                           01
+    723  1C Wait for animation ends (Hold flag or end counter) 01
+    725  2E Destroy entity                     80
+    727  FF End script                         
+=== map 442 C[9] entry=728 reach=16 instrs, marks=[], retusers=[]
+>>  728  6A Save entity position               
+    729  1A Set anim                           02
+    731  00 Break                              
+    732  30 If flag on                         CA 82 1D 00
+    737  30 If flag on                         BE 82 0F 00
+>>  742  6B If entity x < threshold            48 00
+    745  04 If false goto                      F2 FF
+    748  0A Reverse direction                  
+    749  02 Goto                               EB FF
+    752  1A Set anim                           00
+    754  62 Set entities flags (low 16 bits)   80 00 01
+    758  36 Wait until flag on                 CA 82
+    761  1A Set anim                           01
+    763  1C Wait for animation ends (Hold flag or end counter) 01
+    765  2E Destroy entity                     80
+    767  FF End script                         

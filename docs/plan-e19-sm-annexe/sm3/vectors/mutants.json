@@ -1,0 +1,531 @@
+{
+ "0x9E:gt": {
+  "first_hand": [
+   "9E-01-one-cell-yes",
+   "9E-04-bit-1-and-0",
+   "9E-07-both-bytes",
+   "9E-08-rect-count-equals-min"
+  ],
+  "hand_killers": 15,
+  "net_killers": 3
+ },
+ "0x9E:high_byte": {
+  "first_hand": [
+   "9E-06-high-byte-bit1"
+  ],
+  "hand_killers": 1,
+  "net_killers": 0
+ },
+ "0x9E:keep_stale_on_false": {
+  "first_hand": [
+   "9E-02-one-cell-min-2",
+   "9E-03-bit-2-not-4",
+   "9E-05-ground-property-only",
+   "9E-06-high-byte-bit1"
+  ],
+  "hand_killers": 12,
+  "net_killers": 17
+ },
+ "0x9E:keep_stale_on_true": {
+  "first_hand": [
+   "9E-01-one-cell-yes",
+   "9E-04-bit-1-and-0",
+   "9E-07-both-bytes",
+   "9E-08-rect-count-equals-min"
+  ],
+  "hand_killers": 15,
+  "net_killers": 13
+ },
+ "0x9E:mask4": {
+  "first_hand": [
+   "9E-01-one-cell-yes",
+   "9E-03-bit-2-not-4",
+   "9E-04-bit-1-and-0",
+   "9E-07-both-bytes"
+  ],
+  "hand_killers": 13,
+  "net_killers": 4
+ },
+ "0x9E:no_wrap": {
+  "first_hand": [
+   "9E-18-wrap-to-next-row"
+  ],
+  "hand_killers": 1,
+  "net_killers": 0
+ },
+ "0x9E:no_x_advance": {
+  "first_hand": [
+   "9E-11-advance-along-x-first-zero",
+   "9E-19-wrap-not-same-row",
+   "9E-22-full-width-row-minus-one"
+  ],
+  "hand_killers": 3,
+  "net_killers": 3
+ },
+ "0x9E:swap_wh": {
+  "first_hand": [
+   "9E-08-rect-count-equals-min",
+   "9E-10-advance-along-x",
+   "9E-11-advance-along-x-first-zero",
+   "9E-12-row-stride"
+  ],
+  "hand_killers": 7,
+  "net_killers": 0
+ },
+ "0x9E:swap_xy": {
+  "first_hand": [
+   "9E-01-one-cell-yes",
+   "9E-04-bit-1-and-0",
+   "9E-07-both-bytes",
+   "9E-08-rect-count-equals-min"
+  ],
+  "hand_killers": 9,
+  "net_killers": 3
+ },
+ "0xA9:first_only": {
+  "first_hand": [
+   "A9-10-rawid-second-of-two",
+   "A9-14-all-contact-loaded",
+   "A9-15-all-contact-deactivated",
+   "A9-17-all-but-hero-npc-contact"
+  ],
+  "hand_killers": 4,
+  "net_killers": 1
+ },
+ "0xA9:hero_ref": {
+  "first_hand": [
+   "A9-01-hero-blocks-me",
+   "A9-07-rawid-reference-loaded",
+   "A9-08-rawid-reference-deactivated",
+   "A9-09-rawid-candidate-status-ignored"
+  ],
+  "hand_killers": 12,
+  "net_killers": 11
+ },
+ "0xA9:keep_stale_on_false": {
+  "first_hand": [
+   "A9-02-null-contact",
+   "A9-03-other-contact",
+   "A9-05-rawid-no-entity",
+   "A9-06-rawid-reference-not-active"
+  ],
+  "hand_killers": 11,
+  "net_killers": 70
+ },
+ "0xA9:keep_stale_on_true": {
+  "first_hand": [
+   "A9-01-hero-blocks-me",
+   "A9-04-rawid24-hero-is-reference",
+   "A9-07-rawid-reference-loaded",
+   "A9-08-rawid-reference-deactivated"
+  ],
+  "hand_killers": 14,
+  "net_killers": 8
+ },
+ "0xA9:swapped": {
+  "first_hand": [
+   "A9-01-hero-blocks-me",
+   "A9-04-rawid24-hero-is-reference",
+   "A9-07-rawid-reference-loaded",
+   "A9-08-rawid-reference-deactivated"
+  ],
+  "hand_killers": 12,
+  "net_killers": 15
+ },
+ "0xAA:first_only": {
+  "first_hand": [
+   "AA-04-all-last-only",
+   "AA-11-member-deactivated",
+   "AA-12-member-loaded"
+  ],
+  "hand_killers": 3,
+  "net_killers": 1
+ },
+ "0xAA:hero_ref": {
+  "first_hand": [
+   "AA-01-hero-blocked-by-me",
+   "AA-04-all-last-only",
+   "AA-05-all-first-only",
+   "AA-08-self"
+  ],
+  "hand_killers": 11,
+  "net_killers": 9
+ },
+ "0xAA:keep_stale_on_false": {
+  "first_hand": [
+   "AA-02-hero-null-contact",
+   "AA-03-hero-other-contact",
+   "AA-06-all-none",
+   "AA-07-all-but-hero-excludes-hero"
+  ],
+  "hand_killers": 9,
+  "net_killers": 76
+ },
+ "0xAA:keep_stale_on_true": {
+  "first_hand": [
+   "AA-01-hero-blocked-by-me",
+   "AA-04-all-last-only",
+   "AA-05-all-first-only",
+   "AA-08-self"
+  ],
+  "hand_killers": 12,
+  "net_killers": 2
+ },
+ "0xAA:swapped": {
+  "first_hand": [
+   "AA-01-hero-blocked-by-me",
+   "AA-04-all-last-only",
+   "AA-05-all-first-only",
+   "AA-11-member-deactivated"
+  ],
+  "hand_killers": 10,
+  "net_killers": 7
+ },
+ "0xB2:all_not_any": {
+  "first_hand": [
+   "B2-05-two-same-id-one-carried",
+   "B2-18-64-slots-last-only",
+   "B2-21-three-way-partial"
+  ],
+  "hand_killers": 3,
+  "net_killers": 5
+ },
+ "0xB2:by_ref_id": {
+  "first_hand": [
+   "B2-22-same-ref-id-different-entities",
+   "B2-23-hero-minus-one-vs-carried-minus-one"
+  ],
+  "hand_killers": 2,
+  "net_killers": 1
+ },
+ "0xB2:first_of_each": {
+  "first_hand": [
+   "B2-05-two-same-id-one-carried",
+   "B2-08-all-but-hero-and-all",
+   "B2-18-64-slots-last-only",
+   "B2-19-64-slots-g2-first-g1-all"
+  ],
+  "hand_killers": 5,
+  "net_killers": 7
+ },
+ "0xB2:g1_only": {
+  "first_hand": [
+   "B2-02-real-258-not-carried",
+   "B2-03-carried-but-destroyed",
+   "B2-04-other-carried",
+   "B2-09-hero-vs-all-but-hero"
+  ],
+  "hand_killers": 9,
+  "net_killers": 23
+ },
+ "0xB2:keep_stale_on_false": {
+  "first_hand": [
+   "B2-02-real-258-not-carried",
+   "B2-03-carried-but-destroyed",
+   "B2-04-other-carried",
+   "B2-06-g1-empty"
+  ],
+  "hand_killers": 12,
+  "net_killers": 106
+ },
+ "0xB2:keep_stale_on_true": {
+  "first_hand": [
+   "B2-01-real-258-carried",
+   "B2-05-two-same-id-one-carried",
+   "B2-08-all-but-hero-and-all",
+   "B2-10-hero-vs-all"
+  ],
+  "hand_killers": 11,
+  "net_killers": 20
+ },
+ "0xB2:only_last_of_g2": {
+  "first_hand": [
+   "B2-10-hero-vs-all",
+   "B2-19-64-slots-g2-first-g1-all"
+  ],
+  "hand_killers": 2,
+  "net_killers": 5
+ },
+ "0xB2:second_uses_first_type": {
+  "first_hand": [
+   "B2-02-real-258-not-carried",
+   "B2-03-carried-but-destroyed",
+   "B2-04-other-carried",
+   "B2-09-hero-vs-all-but-hero"
+  ],
+  "hand_killers": 9,
+  "net_killers": 23
+ },
+ "0xB2:self_intersect": {
+  "first_hand": [
+   "B2-04-other-carried",
+   "B2-09-hero-vs-all-but-hero",
+   "B2-13-self-hero",
+   "B2-22-same-ref-id-different-entities"
+  ],
+  "hand_killers": 5,
+  "net_killers": 12
+ },
+ "0xB4:any": {
+  "first_hand": [
+   "B4-first-match-neg-pos-zero",
+   "B4-first-match-zero-pos-neg"
+  ],
+  "hand_killers": 2,
+  "net_killers": 3
+ },
+ "0xB4:ge": {
+  "first_hand": [
+   "B4-hero-fz-z0",
+   "B4-self-fz-z0",
+   "B4-first-match-zero-pos-neg",
+   "B4-first-match-zero-zero-zero"
+  ],
+  "hand_killers": 6,
+  "net_killers": 5
+ },
+ "0xB4:keep_stale_on_false": {
+  "first_hand": [
+   "B4-hero-fz-z0",
+   "B4-self-fz-z0",
+   "B4-hero-fz-n1",
+   "B4-self-fz-n1"
+  ],
+  "hand_killers": 20,
+  "net_killers": 63
+ },
+ "0xB4:keep_stale_on_true": {
+  "first_hand": [
+   "B4-hero-fz-p1",
+   "B4-self-fz-p1",
+   "B4-hero-fz-p7FFFFFFF",
+   "B4-self-fz-p7FFFFFFF"
+  ],
+  "hand_killers": 14,
+  "net_killers": 15
+ },
+ "0xB4:last": {
+  "first_hand": [
+   "B4-first-match-pos-neg-zero"
+  ],
+  "hand_killers": 1,
+  "net_killers": 5
+ },
+ "0xB4:short": {
+  "first_hand": [
+   "B4-hero-fz-p7FFFFFFF",
+   "B4-self-fz-p7FFFFFFF",
+   "B4-hero-fz-p10000",
+   "B4-self-fz-p10000"
+  ],
+  "hand_killers": 10,
+  "net_killers": 7
+ },
+ "0xB4:unsigned": {
+  "first_hand": [
+   "B4-hero-fz-n1",
+   "B4-self-fz-n1",
+   "B4-hero-fz-n80000000",
+   "B4-self-fz-n80000000"
+  ],
+  "hand_killers": 12,
+  "net_killers": 17
+ },
+ "0xB5:any": {
+  "first_hand": [
+   "B5-first-match-pos-neg-zero",
+   "B5-first-match-zero-pos-neg",
+   "B5-first-match-skips-inactive"
+  ],
+  "hand_killers": 3,
+  "net_killers": 5
+ },
+ "0xB5:ge_label": {
+  "first_hand": [
+   "B5-hero-fz-z0",
+   "B5-self-fz-z0",
+   "B5-hero-fz-p1",
+   "B5-self-fz-p1"
+  ],
+  "hand_killers": 32,
+  "net_killers": 39
+ },
+ "0xB5:keep_stale_on_false": {
+  "first_hand": [
+   "B5-hero-fz-z0",
+   "B5-self-fz-z0",
+   "B5-hero-fz-p1",
+   "B5-self-fz-p1"
+  ],
+  "hand_killers": 21,
+  "net_killers": 60
+ },
+ "0xB5:keep_stale_on_true": {
+  "first_hand": [
+   "B5-hero-fz-n1",
+   "B5-self-fz-n1",
+   "B5-hero-fz-n80000000",
+   "B5-self-fz-n80000000"
+  ],
+  "hand_killers": 13,
+  "net_killers": 18
+ },
+ "0xB5:last": {
+  "first_hand": [
+   "B5-first-match-neg-pos-zero",
+   "B5-first-match-zero-pos-neg",
+   "B5-first-match-skips-inactive"
+  ],
+  "hand_killers": 3,
+  "net_killers": 5
+ },
+ "0xB5:le": {
+  "first_hand": [
+   "B5-hero-fz-z0",
+   "B5-self-fz-z0",
+   "B5-first-match-zero-pos-neg",
+   "B5-first-match-zero-zero-zero"
+  ],
+  "hand_killers": 6,
+  "net_killers": 6
+ },
+ "0xB5:short": {
+  "first_hand": [
+   "B5-hero-fz-p7FFFFFFF",
+   "B5-self-fz-p7FFFFFFF",
+   "B5-hero-fz-n80000000",
+   "B5-self-fz-n80000000"
+  ],
+  "hand_killers": 12,
+  "net_killers": 10
+ },
+ "0xB5:unsigned": {
+  "first_hand": [
+   "B5-hero-fz-n1",
+   "B5-self-fz-n1",
+   "B5-hero-fz-n80000000",
+   "B5-self-fz-n80000000"
+  ],
+  "hand_killers": 13,
+  "net_killers": 18
+ },
+ "0xB6:any": {
+  "first_hand": [
+   "B6-first-match-pos-neg-zero",
+   "B6-first-match-neg-pos-zero"
+  ],
+  "hand_killers": 2,
+  "net_killers": 8
+ },
+ "0xB6:empty_true": {
+  "first_hand": [
+   "B6-empty-group",
+   "B6-rawid-no-entity"
+  ],
+  "hand_killers": 2,
+  "net_killers": 34
+ },
+ "0xB6:keep_stale_on_false": {
+  "first_hand": [
+   "B6-hero-fz-p1",
+   "B6-self-fz-p1",
+   "B6-hero-fz-n1",
+   "B6-self-fz-n1"
+  ],
+  "hand_killers": 28,
+  "net_killers": 70
+ },
+ "0xB6:keep_stale_on_true": {
+  "first_hand": [
+   "B6-hero-fz-z0",
+   "B6-self-fz-z0",
+   "B6-first-match-zero-pos-neg",
+   "B6-first-match-zero-zero-zero"
+  ],
+  "hand_killers": 6,
+  "net_killers": 8
+ },
+ "0xB6:last": {
+  "first_hand": [
+   "B6-first-match-pos-neg-zero",
+   "B6-first-match-neg-pos-zero",
+   "B6-first-match-zero-pos-neg",
+   "B6-first-match-skips-inactive"
+  ],
+  "hand_killers": 4,
+  "net_killers": 6
+ },
+ "0xB6:ne_label": {
+  "first_hand": [
+   "B6-hero-fz-z0",
+   "B6-self-fz-z0",
+   "B6-hero-fz-p1",
+   "B6-self-fz-p1"
+  ],
+  "hand_killers": 32,
+  "net_killers": 44
+ },
+ "0xB6:short": {
+  "first_hand": [
+   "B6-hero-fz-n80000000",
+   "B6-self-fz-n80000000",
+   "B6-hero-fz-p10000",
+   "B6-self-fz-p10000"
+  ],
+  "hand_killers": 6,
+  "net_killers": 10
+ },
+ "0xB7:first_only": {
+  "first_hand": [
+   "B7-09-last-of-group"
+  ],
+  "hand_killers": 1,
+  "net_killers": 4
+ },
+ "0xB7:keep_stale_on_false": {
+  "first_hand": [
+   "B7-02-not-equal",
+   "B7-03-high-bits-differ",
+   "B7-04-all-ones",
+   "B7-07-operand-roles"
+  ],
+  "hand_killers": 8,
+  "net_killers": 68
+ },
+ "0xB7:keep_stale_on_true": {
+  "first_hand": [
+   "B7-01-equal",
+   "B7-05-byte-ff",
+   "B7-06-zero-default",
+   "B7-08-hero-group"
+  ],
+  "hand_killers": 7,
+  "net_killers": 10
+ },
+ "0xB7:low_byte": {
+  "first_hand": [
+   "B7-03-high-bits-differ",
+   "B7-04-all-ones"
+  ],
+  "hand_killers": 2,
+  "net_killers": 0
+ },
+ "0xB7:sign_extended": {
+  "first_hand": [
+   "B7-04-all-ones",
+   "B7-05-byte-ff"
+  ],
+  "hand_killers": 2,
+  "net_killers": 0
+ },
+ "0xB7:swapped": {
+  "first_hand": [
+   "B7-01-equal",
+   "B7-05-byte-ff",
+   "B7-06-zero-default",
+   "B7-07-operand-roles"
+  ],
+  "hand_killers": 8,
+  "net_killers": 10
+ }
+}

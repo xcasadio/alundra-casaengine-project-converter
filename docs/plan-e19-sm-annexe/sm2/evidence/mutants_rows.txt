@@ -1,0 +1,13 @@
+rows: 1114
+  6A forgets Parameters[4] (Z)                               killed by   30 rows (first sm2-0000) by op {'6A': 30}
+  6A forgets Parameters[3] (Y)                               killed by   30 rows (first sm2-0000) by op {'6A': 30}
+  6A writes Result := 1                                      killed by   19 rows (first sm2-0000) by op {'6A': 19}
+  6A writes Result := 0                                      killed by   24 rows (first sm2-0001) by op {'6A': 24}
+  reads the owner instead of the logic entity (all four)     killed by  416 rows (first sm2-0000) by op {'6A': 31, '6B': 131, '6C': 129, '6D': 125}
+  6D reads the Y axis                                        killed by  127 rows (first sm2-0737) by op {'6D': 127}
+  6D reads Parameters[3] with PosZ (M11)                     killed by  127 rows (first sm2-0737) by op {'6D': 127}
+  6B reads the Z memo                                        killed by  128 rows (first sm2-0015) by op {'6B': 128}
+  Result not written when it would be 0                      killed by  280 rows (first sm2-0023) by op {'6B': 90, '6C': 97, '6D': 93}
+  Result not written when it would be 1                      killed by  484 rows (first sm2-0011) by op {'6B': 163, '6C': 161, '6D': 160}
+  v[2] cast to sbyte                                         killed by    0 rows (first None) by op {}
+     !!! SURVIVES

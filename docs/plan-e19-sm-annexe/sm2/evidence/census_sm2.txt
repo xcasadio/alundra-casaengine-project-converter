@@ -1,0 +1,6 @@
+maps 483 time 0.9s
+sites 0x6A-0x6D: 129 {'0x6a': 59, '0x6b': 29, '0x6d': 29, '0x6c': 12}
+reference (skipped-sites.tsv) : 129  mine: 129  equal: True  only-mine: 0  only-ref: 0
+only-mine []
+only-ref []
+per map: {55: 15, 56: 4, 57: 2, 59: 20, 60: 24, 307: 8, 344: 40, 442: 16}

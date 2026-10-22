@@ -1,0 +1,37 @@
+; opcode 0xb7  handler 0x800418f8..0x80041988 (36 words)
+0x800418f8  addiu   $sp, $sp, -0x20
+0x800418fc  sw      $ra, 0x18($sp)
+0x80041900  sw      $s1, 0x14($sp)
+0x80041904  sw      $s0, 0x10($sp)
+0x80041908  lw      $v0, ($a2)
+0x8004190c  nop     
+0x80041910  lbu     $a1, 1($v0)
+0x80041914  lbu     $s1, 2($v0)
+0x80041918  jal     0x8003c954  ; call 0x8003c954
+0x8004191c  move    $s0, $a3
+0x80041920  move    $a0, $v0
+0x80041924  blez    $a0, 0x80041968
+0x80041928  lui     $v0, 0x8014
+0x8004192c  addiu   $a1, $zero, 1
+0x80041930  addiu   $v0, $v0, -0x272c  ; = 0x8013d8d4
+0x80041934  sll     $v1, $a0, 2
+0x80041938  addu    $v1, $v1, $v0
+0x8004193c  lw      $v0, ($v1)
+0x80041940  nop     
+0x80041944  lw      $v0, 0x88($v0)
+0x80041948  nop     
+0x8004194c  bne     $v0, $s1, 0x8004195c
+0x80041950  nop     
+0x80041954  j       0x8004196c
+0x80041958  sw      $a1, 0x2c($s0)
+0x8004195c  addiu   $a0, $a0, -1
+0x80041960  bgtz    $a0, 0x8004193c
+0x80041964  addiu   $v1, $v1, -4
+0x80041968  sw      $zero, 0x2c($s0)
+0x8004196c  addiu   $v0, $zero, 3
+0x80041970  lw      $ra, 0x18($sp)
+0x80041974  lw      $s1, 0x14($sp)
+0x80041978  lw      $s0, 0x10($sp)
+0x8004197c  addiu   $sp, $sp, 0x20
+0x80041980  jr      $ra
+0x80041984  nop     

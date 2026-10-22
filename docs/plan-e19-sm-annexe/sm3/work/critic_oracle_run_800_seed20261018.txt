@@ -1,0 +1,25 @@
+op 3C: 800 runs, 0 mismatches, Result word hist {0: 711, 1: 89}
+op 3D: 800 runs, 0 mismatches, Result word hist {0: 541, 1: 259}
+op 60: 800 runs, 0 mismatches, Result word hist {0: 767, 1: 33}
+op 61: 800 runs, 0 mismatches, Result word hist {0: 769, 1: 31}
+op 6A: 800 runs, 0 mismatches, Result word hist {'sentinel': 800}
+op 6B: 800 runs, 0 mismatches, Result word hist {0: 306, 1: 494}
+op 6C: 800 runs, 0 mismatches, Result word hist {0: 296, 1: 504}
+op 6D: 800 runs, 0 mismatches, Result word hist {0: 284, 1: 516}
+op 72: 800 runs, 0 mismatches, Result word hist {'sentinel': 800}
+op 88: 800 runs, 0 mismatches, Result word hist {'sentinel': 800}
+op 96: 800 runs, 0 mismatches, Result word hist {'sentinel': 800}
+op 97: 800 runs, 0 mismatches, Result word hist {'sentinel': 800}
+op 9E: 800 runs, 0 mismatches, Result word hist {0: 553, 1: 247}
+op A9: 800 runs, 0 mismatches, Result word hist {0: 761, 1: 39}
+op AA: 800 runs, 0 mismatches, Result word hist {0: 752, 1: 48}
+op B2: 800 runs, 0 mismatches, Result word hist {0: 720, 1: 80}
+op B3: 800 runs, 0 mismatches, Result word hist {'sentinel': 800}
+op B4: 800 runs, 0 mismatches, Result word hist {0: 654, 1: 146}
+op B5: 800 runs, 0 mismatches, Result word hist {0: 698, 1: 102}
+op B6: 800 runs, 0 mismatches, Result word hist {0: 755, 1: 45}
+op B7: 800 runs, 0 mismatches, Result word hist {0: 737, 1: 63}
+
+real	2m2.091s
+user	0m0.031s
+sys	0m0.000s

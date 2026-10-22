@@ -1,0 +1,26 @@
+; opcode 0xb5  handler 0x80041830..0x80041894 (25 words)
+0x80041830  addiu   $sp, $sp, -0x18
+0x80041834  sw      $ra, 0x14($sp)
+0x80041838  sw      $s0, 0x10($sp)
+0x8004183c  lw      $v0, ($a2)
+0x80041840  nop     
+0x80041844  lbu     $a1, 1($v0)
+0x80041848  jal     0x8003c954  ; call 0x8003c954
+0x8004184c  move    $s0, $a3
+0x80041850  beqz    $v0, 0x80041878
+0x80041854  lui     $v0, 0x8014
+0x80041858  lw      $v0, -0x2728($v0)  ; [0x8013d8d8]
+0x8004185c  nop     
+0x80041860  lw      $v0, 0xb8($v0)
+0x80041864  nop     
+0x80041868  bgez    $v0, 0x80041878
+0x8004186c  addiu   $v0, $zero, 1
+0x80041870  j       0x8004187c
+0x80041874  sw      $v0, 0x2c($s0)
+0x80041878  sw      $zero, 0x2c($s0)
+0x8004187c  addiu   $v0, $zero, 2
+0x80041880  lw      $ra, 0x14($sp)
+0x80041884  lw      $s0, 0x10($sp)
+0x80041888  addiu   $sp, $sp, 0x18
+0x8004188c  jr      $ra
+0x80041890  nop     

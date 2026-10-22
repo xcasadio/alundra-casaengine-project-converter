@@ -1,0 +1,112 @@
+{
+ "reads": {
+  "0x72": {
+   "mapped": [
+    "slot[*].targetAnimId",
+    "slot[*].targetDir"
+   ]
+  },
+  "0x88": {
+   "binary-constant": [
+    "status table overrun [200]",
+    "status table overrun [255]",
+    "status table overrun [3]",
+    "status table overrun [4]",
+    "status table overrun [5]",
+    "status table overrun [7]",
+    "status table[0]",
+    "status table[1]",
+    "status table[2]"
+   ],
+   "internal": [
+    "cursor pointer (a2)",
+    "match buffer",
+    "search switch table",
+    "stack"
+   ],
+   "mapped": [
+    "instr[1]",
+    "instr[2]",
+    "slotCount-1 (N)",
+    "slot[*].animFlags",
+    "slot[*].flags",
+    "slot[*].hasPlatform",
+    "slot[*].parentSlot",
+    "slot[*].refId",
+    "slot[*].ridingSlot",
+    "slot[*].status",
+    "slot[*].xCollSlot"
+   ]
+  },
+  "0x96": {
+   "internal": [
+    "cursor pointer (a2)",
+    "match buffer",
+    "search switch table",
+    "stack"
+   ],
+   "mapped": [
+    "instr[1]",
+    "slotCount-1 (N)",
+    "slot[*].animFlags",
+    "slot[*].flags",
+    "slot[*].hasPlatform",
+    "slot[*].hp",
+    "slot[*].hpMax",
+    "slot[*].parentSlot",
+    "slot[*].refId",
+    "slot[*].ridingSlot",
+    "slot[*].status",
+    "slot[*].xCollSlot"
+   ]
+  },
+  "0x97": {
+   "internal": [
+    "cursor pointer (a2)",
+    "player stats pointer",
+    "stack"
+   ],
+   "mapped": [
+    "instr[1]",
+    "stats.mp",
+    "stats.mpMax"
+   ]
+  },
+  "0xB3": {
+   "internal": [
+    "cursor pointer (a2)"
+   ],
+   "mapped": [
+    "instr[1]",
+    "instr[2]",
+    "instr[3]",
+    "instr[4]",
+    "instr[5]",
+    "instr[6]",
+    "instr[7]",
+    "instr[8]"
+   ]
+  }
+ },
+ "writes": {
+  "0x72": [
+   "slot.lastTargetAnimId",
+   "slot.lastTargetDir"
+  ],
+  "0x88": [
+   "slot.status"
+  ],
+  "0x96": [
+   "slot.hp"
+  ],
+  "0x97": [
+   "stats.mp"
+  ],
+  "0xB3": [
+   "pad.hold",
+   "pad.interval",
+   "pad.pressed",
+   "pad.released"
+  ]
+ }
+}

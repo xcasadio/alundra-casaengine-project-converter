@@ -1,0 +1,5 @@
+sites reachable from NON-ZERO table entries but absent from the annex list (distinct map,pc): 0
+maps: {}
+of which some record or map event names the program: 0
+annex sites not found by my non-zero-entry walker: []
+found by me and in annex 187 of 187

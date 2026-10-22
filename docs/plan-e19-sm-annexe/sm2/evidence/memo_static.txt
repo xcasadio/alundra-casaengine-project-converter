@@ -1,0 +1,28 @@
+programs with a 0x6A-0x6D site: 45 ; sites: 129
+sites per opcode: {'0x6a': 59, '0x6b': 29, '0x6c': 12, '0x6d': 29}
+
+== variant DLL ==
+flow-sensitive (reader reached by states):
+   ('X', ('SAVED',)) 29
+   ('Y', ('SAVED',)) 12
+   ('Z', ('INIT',)) 11
+   ('Z', ('SAVED',)) 18
+linear (axis, kind, overwritten?, #calls between):
+   ('X', 'LINEAR6A', False, 0) 25
+   ('X', 'LINEAR6A', False, 1) 4
+   ('Y', 'LINEAR6A', False, 0) 12
+   ('Z', 'LINEAR6A', False, 0) 18
+   ('Z', 'NO6A', False, 0) 11
+
+== variant BIN ==
+flow-sensitive (reader reached by states):
+   ('X', ('SAVED',)) 29
+   ('Y', ('SAVED',)) 12
+   ('Z', ('INIT',)) 11
+   ('Z', ('SAVED',)) 18
+linear (axis, kind, overwritten?, #calls between):
+   ('X', 'LINEAR6A', False, 0) 25
+   ('X', 'LINEAR6A', False, 1) 4
+   ('Y', 'LINEAR6A', False, 0) 12
+   ('Z', 'LINEAR6A', False, 0) 18
+   ('Z', 'NO6A', False, 0) 11

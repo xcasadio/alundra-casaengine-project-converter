@@ -1,0 +1,72 @@
+0x53 sites (reach sets, all tables): 331 ; 0x38 remap sites: 66
+   0x38 (1, 'B', 2, 253, [162, 0, 186, 0])
+   0x38 (10, 'B', 18, 2338, [162, 0, 45, 1])
+   0x38 (17, 'B', 1, 221, [17, 0, 183, 1])
+   0x38 (17, 'B', 20, 2358, [162, 0, 3, 1])
+   0x38 (25, 'B', 2, 411, [162, 0, 193, 0])
+   0x38 (30, 'B', 3, 580, [162, 0, 205, 0])
+   0x38 (30, 'B', 3, 585, [12, 0, 151, 1])
+   0x38 (76, 'B', 2, 466, [162, 0, 212, 0])
+   0x38 (84, 'B', 3, 880, [162, 0, 237, 0])
+   0x38 (95, 'B', 2, 284, [162, 0, 241, 0])
+   0x38 (117, 'C', 20, 1068, [162, 0, 176, 0])
+   0x38 (147, 'B', 1, 284, [162, 0, 37, 1])
+   0x38 (153, 'B', 1, 283, [162, 0, 26, 1])
+   0x38 (162, 'B', 1, 104, [162, 0, 169, 0])
+   0x38 (164, 'C', 2, 437, [162, 0, 169, 0])
+   0x38 (178, 'C', 6, 708, [176, 0, 183, 0])
+   0x38 (178, 'C', 6, 713, [162, 0, 183, 0])
+   0x38 (186, 'B', 1, 102, [162, 0, 115, 1])
+   0x38 (196, 'B', 4, 314, [162, 0, 198, 0])
+   0x38 (197, 'C', 5, 667, [10, 0, 75, 1])
+
+map 55: 12 inbound edges (4 from another map)
+     from map 56 via portal P0
+     from map 57 via portal P0
+     from map 57 via portal P8
+     from map 59 via portal P16
+map 56: 7 inbound edges (1 from another map)
+     from map 55 via portal P0
+map 57: 10 inbound edges (4 from another map)
+     from map 55 via portal P1
+     from map 55 via portal P11
+     from map 56 via portal P7
+     from map 58 via portal P0
+map 58: 2 inbound edges (2 from another map)
+     from map 57 via portal P5
+     from map 59 via portal P0
+map 59: 17 inbound edges (2 from another map)
+     from map 58 via portal P1
+     from map 60 via portal P4
+map 60: 7 inbound edges (1 from another map)
+     from map 59 via portal P15
+map 307: 3 inbound edges (3 from another map)
+     from map 305 via portal P4
+     from map 305 via portal P5
+     from map 305 via portal P6
+map 344: 8 inbound edges (8 from another map)
+     from map 337 via 0x53 B[2]@811
+     from map 338 via 0x53 C[8]@471
+     from map 342 via portal P15
+     from map 342 via portal P20
+     from map 342 via portal P21
+     from map 342 via portal P8
+     from map 348 via portal P2
+     from map 348 via portal P3
+map 442: 4 inbound edges (4 from another map)
+     from map 308 via 0x53 B[1]@138
+     from map 310 via 0x53 B[1]@116
+     from map 440 via portal P4
+     from map 440 via portal P5
+
+BFS from 389 over portals + 0x53: 425 maps reached of 483
+   map 55: NOT reached
+   map 56: NOT reached
+   map 57: NOT reached
+   map 58: NOT reached
+   map 59: NOT reached
+   map 60: NOT reached
+   map 307: NOT reached
+   map 344: reached at distance 14
+   map 442: reached at distance 11
+unreached maps: 58

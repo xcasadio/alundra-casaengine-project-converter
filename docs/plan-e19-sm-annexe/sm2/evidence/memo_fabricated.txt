@@ -1,0 +1,30 @@
+save then X read                                                               codes=6A 6B 10 00 FF
+      reach=3 marks=[] : @1 6B(X) -> {SAVED}
+X read with no save (fresh state)                                              codes=6B 10 00 FF
+      reach=2 marks=[] : @0 6B(X) -> {INIT}
+Z read with no save                                                            codes=6D 10 00 FF
+      reach=2 marks=[] : @0 6D(Z) -> {INIT}
+save; 0x37; X read -> clobbered                                                codes=6A 37 05 6B 10 00 FF
+      reach=4 marks=[] : @3 6B(X) -> {CLOB}
+save; 0x37; Z read -> saved (Z immune)                                         codes=6A 37 05 6D 10 00 FF
+      reach=4 marks=[] : @3 6D(Z) -> {SAVED}
+save; 0x37; Y read -> saved (0x37 writes P2 only)                              codes=6A 37 05 6C 10 00 FF
+      reach=4 marks=[] : @3 6C(Y) -> {SAVED}
+save; 0x1E; Y read -> clobbered (0x1E writes P2, P3)                           codes=6A 1E 10 00 6C 10 00 FF
+      reach=4 marks=[] : @4 6C(Y) -> {CLOB}
+save; 0x1E; Z read -> saved                                                    codes=6A 1E 10 00 6D 10 00 FF
+      reach=4 marks=[] : @4 6D(Z) -> {SAVED}
+save; 0x5F (binary-only writer of P2..P6, size 8); Z read -> clobbered         codes=6A 5F 00 00 00 00 00 00 00 6D 10 00 FF
+      reach=4 marks=[] : @9 6D(Z) -> {CLOB}
+read; save; goto entry (backward jump): the read is reached Init (first pass) and Saved (second) codes=6B 10 00 6A 02 FC FF FF
+      reach=3 marks=[] : @0 6B(X) -> {INIT,SAVED}
+save at 0; loop 02 -> 1 reading X: Saved only                                  codes=6A 6B 10 00 02 FC FF FF
+      reach=3 marks=[] : @1 6B(X) -> {SAVED}
+branch: one arm saves, the other does not; read after the join -> Init and Saved codes=03 07 00 6A 02 03 00 6B 10 00 FF
+      reach=5 marks=[] : @7 6B(X) -> {INIT,SAVED}
+save; 0x78 call to an innocent callee (6E 7F 1B 7D); X read -> saved           codes=6A 78 07 00 6B 10 00 FF 6E 7F 1B 00 00 7D
+      reach=8 marks=[4] : @4 6B(X) -> {SAVED}
+save; 0x78 call to a callee with 0x37 (7D return); X read -> clobbered         codes=6A 78 07 00 6B 10 00 FF 37 05 7D
+      reach=6 marks=[4] : @4 6B(X) -> {CLOB}
+map 307 shape: save; fly; call (6E 7F 1B 7D); read                             codes=6A 1B 00 FF 78 07 00 6B 3C 00 FF 6E 7F 1B 00 00 7D
+      reach=9 marks=[7] : @7 6B(X) -> {SAVED}

@@ -1,0 +1,7 @@
+before {'lines': 510, 'instructions': 508, 'maps': 96, 'opcodes': 21}
+sm3    {'lines': 42, 'instructions': 40, 'maps': 11, 'opcodes': 5} {'B5': 3, 'AA': 24, 'B6': 1, 'B2': 10, 'A9': 4}
+after  {'lines': 468, 'instructions': 468, 'maps': 91, 'opcodes': 16}
+variant B2-stays: removed {'lines': 32, 'instructions': 30, 'maps': 9, 'opcodes': 4} after {'lines': 478, 'instructions': 478, 'maps': 91, 'opcodes': 17}
+prep keys == census keys: True 42
+maps vanishing: ['423', '424', '425', '426', '440']
+maps keeping other-owner lines: ['54', '159', '160', '258', '298', '421']

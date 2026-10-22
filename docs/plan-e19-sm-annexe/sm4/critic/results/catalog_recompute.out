@@ -1,0 +1,102 @@
+83 Counter({'unit': 53, 'realbytes': 12, 'vector': 7, 'arc': 6, 'seam': 3, 'pin': 2})
+red today by kind: Counter({'unit': 43, 'realbytes': 10, 'arc': 6, 'vector': 5, 'pin': 1})
+green today by kind: Counter({'unit': 10, 'seam': 3, 'vector': 2, 'realbytes': 2, 'pin': 1})
+needs vocabulary: ['case0x72', 'case0x88', 'case0x96', 'case0x97', 'case0xB3', 'labels', 'seamOverwrite', 'witness']
+case0x72 {"greenGuardsThatStayGreen": [], "redRowsOfTheTheories": 66, "redTestsCount": 10, "redWhenRemoved": ["U72-1", "U72-2", "U72-3", "U72-4", "U72-5", "U72-6", "V-72", "RB-444-D15", "RB-140-D2", "ARC-40"], "testsThatNeedIt": ["U72-1", "U72-2", "U72-3", "U72-4", "U72-5", "U72-6", "V-72", "RB-444-D15", "RB-140-D2", "ARC-40"]}
+case0x88 {"greenGuardsThatStayGreen": ["U88-6", "U88-8", "U88-9", "U88-10", "V-OOT"], "redRowsOfTheTheories": 30, "redTestsCount": 12, "redWhenRemoved": ["U88-1", "U88-2", "U88-3", "U88-4", "U88-5", "U88-7", "U88-3b", "V-88", "RB-306-E14", "RB-442-E1", "ARC-306", "ARC-442"], "testsThatNeedIt": ["U88-1", "U88-2", "U88-3", "U88-4", "U88-5", "U88-6", "U88-7", "U88-8", "U88-9", "U88-10", "U88-3b", "V-88", "V-OOT", "RB-306-E14", "RB-442-E1", "ARC-306", "ARC-442"]}
+case0x96 {"greenGuardsThatStayGreen": ["U96-13", "U96-14", "U96-15"], "redRowsOfTheTheories": 45, "redTestsCount": 19, "redWhenRemoved": ["U96-1", "U96-2", "U96-3", "U96-4", "U96-5", "U96-6", "U96-7", "U96-8", "U96-9", "U96-10", "U96-11", "U96-12", "U96-16", "V-96", "RB-452-B2", "RB-394-C3", "RB-475-B2", "RB-22-C6", "ARC-452"], "testsThatNeedIt": ["U96-1", "U96-2", "U96-3", "U96-4", "U96-5", "U96-6", "U96-7", "U96-8", "U96-9", "U96-10", "U96-11", "U96-12", "U96-13", "U96-14", "U96-15", "U96-16", "V-96", "RB-452-B2", "RB-394-C3", "RB-475-B2", "RB-22-C6", "ARC-452"]}
+case0x97 {"greenGuardsThatStayGreen": ["U97-3", "U97-4", "U97-13"], "redRowsOfTheTheories": 64, "redTestsCount": 15, "redWhenRemoved": ["U97-1", "U97-2", "U97-5", "U97-6", "U97-7", "U97-8", "U97-9", "U97-10", "U97-11", "U97-12", "V-97", "RB-452-B3", "RB-394-C3", "RB-475-B2", "ARC-452"], "testsThatNeedIt": ["U97-1", "U97-2", "U97-3", "U97-4", "U97-5", "U97-6", "U97-7", "U97-8", "U97-9", "U97-10", "U97-11", "U97-12", "U97-13", "V-97", "RB-452-B3", "RB-394-C3", "RB-475-B2", "ARC-452"]}
+case0xB3 {"greenGuardsThatStayGreen": [], "redRowsOfTheTheories": 67, "redTestsCount": 11, "redWhenRemoved": ["UB3-1", "UB3-2", "UB3-3", "UB3-4", "UB3-5", "UB3-6", "UB3-7", "V-B3", "RB-161-B1", "ARC-161a", "ARC-161b"], "testsThatNeedIt": ["UB3-1", "UB3-2", "UB3-3", "UB3-4", "UB3-5", "UB3-6", "UB3-7", "V-B3", "RB-161-B1", "ARC-161a", "ARC-161b"]}
+labels {"greenGuardsThatStayGreen": [], "redRowsOfTheTheories": 0, "redTestsCount": 1, "redWhenRemoved": ["P-LBL"], "testsThatNeedIt": ["P-LBL"]}
+seamOverwrite(compile) {"note": "removing the seam breaks the BUILD of these tests, it does not make them red", "testsThatCallIt": ["UB3-3", "S-1", "S-2", "S-3", "V-B3"]}
+witness {"greenGuardsThatStayGreen": ["P-WIT"], "redRowsOfTheTheories": 0, "redTestsCount": 0, "redWhenRemoved": [], "testsThatNeedIt": ["P-WIT"]}
+RECOMPUTED case0x72 10 ['U72-1', 'U72-2', 'U72-3', 'U72-4', 'U72-5', 'U72-6', 'V-72', 'RB-444-D15', 'RB-140-D2', 'ARC-40']
+RECOMPUTED case0x88 12 ['U88-1', 'U88-2', 'U88-3', 'U88-4', 'U88-5', 'U88-7', 'U88-3b', 'V-88', 'RB-306-E14', 'RB-442-E1', 'ARC-306', 'ARC-442']
+RECOMPUTED case0x96 19 ['U96-1', 'U96-2', 'U96-3', 'U96-4', 'U96-5', 'U96-6', 'U96-7', 'U96-8', 'U96-9', 'U96-10', 'U96-11', 'U96-12', 'U96-16', 'V-96', 'RB-452-B2', 'RB-394-C3', 'RB-475-B2', 'RB-22-C6', 'ARC-452']
+RECOMPUTED case0x97 15 ['U97-1', 'U97-2', 'U97-5', 'U97-6', 'U97-7', 'U97-8', 'U97-9', 'U97-10', 'U97-11', 'U97-12', 'V-97', 'RB-452-B3', 'RB-394-C3', 'RB-475-B2', 'ARC-452']
+RECOMPUTED case0xB3 11 ['UB3-1', 'UB3-2', 'UB3-3', 'UB3-4', 'UB3-5', 'UB3-6', 'UB3-7', 'V-B3', 'RB-161-B1', 'ARC-161a', 'ARC-161b']
+RECOMPUTED seamOverwrite 2 ['UB3-3', 'V-B3']
+RECOMPUTED labels 1 ['P-LBL']
+U72-1 unit red ['case0x72'] 1 / 1 SetLastTarget_0x72_CopiesTheTargetOntoLastTarget
+U72-2 unit red ['case0x72'] 1 / 1 SetLastTarget_0x72_ActsOnTheLogicEntity_NotOnTheOwner
+U72-3 unit red ['case0x72'] 1 / 1 SetLastTarget_0x72_CopiesMaxUnsignedValuesVerbatim
+U72-4 unit red ['case0x72'] 1 / 1 SetLastTarget_0x72_ZeroTargetOverwritesANonZeroLast
+U72-5 unit red ['case0x72'] 1 / 1 SetLastTarget_0x72_HasNoStatusGuard
+U88-1 unit red ['case0x88'] 1 / 1 SetStatus_0x88_Self_Index0_BecomesNormal
+U88-2 unit red ['case0x88'] 1 / 1 SetStatus_0x88_Self_Index1_BecomesDeactivated
+U88-3 unit red ['case0x88'] 1 / 1 SetStatus_0x88_Self_Index2_BecomesFlagToDestroy_WithoutDestroyEntity
+U88-4 unit red ['case0x88'] 1 / 1 SetStatus_0x88_AllActive_OnlyStatuses1To3Change
+U88-5 unit red ['case0x88'] 1 / 1 SetStatus_0x88_HeroGroup_Index2_SetsTheHeroToo
+U88-6 unit green ['case0x88'] 0 / 1 SetStatus_0x88_EmptyGroup_WritesNothing
+U88-7 unit red ['case0x88'] 1 / 1 SetStatus_0x88_RawId_CandidateStatusIsNotTested
+U88-8 unit green ['case0x88'] 0 / 1 SetStatus_0x88_RawId_InactiveReferenceFindsNothing
+U88-9 unit green ['case0x88'] 0 / 1 SetStatus_0x88_IndexBeyondTheTable_WritesNothing_AndWarnsOnce
+U96-1 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_HeroAtTheSiteShape_FillsToHpMax
+U96-2 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_SaveRoomShape_ReferenceIsTheLogicEntity
+U96-3 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_TheSecondByteIsNeverRead
+U96-4 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_RawId_SumBelowHpMax_IsNotClamped
+U96-5 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_SumEqualToHpMax_IsWritten
+U96-6 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_HpAboveHpMax_IsLoweredToHpMax
+U96-7 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_NegativeHp_HasNoFloor
+U96-8 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_ThirtyTwoBitWrap_IsWrittenAsIs
+U96-9 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_NegativeHpMax_IsTheResult
+U96-10 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_ACorpseFoundByRawId_IsHealed
+U96-11 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_AllActiveGroup_EachUsesItsOwnHpMax
+U96-12 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_DoesNotTouchThePlayerStats
+U96-13 unit green ['case0x96'] 0 / 1 RestoreLife_0x96_EmptyGroup_WritesNothing
+U97-1 unit red ['case0x97'] 1 / 1 AddMagic_0x97_SaveRoomShape_FillsToMpMax_MoneyUntouched
+U97-2 unit red ['case0x97'] 1 / 1 AddMagic_0x97_BelowMax_IsNotClamped
+U97-3 unit green ['case0x97'] 0 / 1 AddMagic_0x97_FullGaugeStaysFull
+U97-4 unit green ['case0x97'] 0 / 1 AddMagic_0x97_MpMaxZero_StaysZero
+U97-5 unit red ['case0x97'] 1 / 1 AddMagic_0x97_MpAboveMpMax_IsLoweredToMpMax
+U97-6 unit red ['case0x97'] 1 / 1 AddMagic_0x97_NegativeMp_FloorZero
+U97-7 unit red ['case0x97'] 1 / 1 AddMagic_0x97_NegativeMpSumZero_IsZero
+U97-8 unit red ['case0x97'] 1 / 1 AddMagic_0x97_NegativeMpSumNegative_FloorZero
+U97-9 unit red ['case0x97'] 1 / 1 AddMagic_0x97_TheSumIsNotWrappedTo16Bits
+U97-10 unit red ['case0x97'] 1 / 1 AddMagic_0x97_MinInt16Mp_FloorZero
+U97-11 unit red ['case0x97'] 1 / 1 AddMagic_0x97_NegativeMpMax_IsTheResult
+U97-12 unit red ['case0x97'] 1 / 1 AddMagic_0x97_InnShape_Plus10
+UB3-1 unit red ['case0xB3'] 1 / 1 SetPadButtons_0xB3_WritesTheFourWordsLittleEndian
+UB3-2 unit red ['case0xB3'] 1 / 1 SetPadButtons_0xB3_TheRealSiteShape_HoldsUp
+UB3-3 unit red ['case0xB3', 'seamOverwrite'] 1 / 1 SetPadButtons_0xB3_OverwritesNeverOrs
+UB3-4 unit red ['case0xB3'] 1 / 1 SetPadButtons_0xB3_AllFFFF
+UB3-5 unit red ['case0xB3'] 1 / 1 SetPadButtons_0xB3_OwnerAndLogicAreIrrelevant
+U72-6 unit red ['case0x72'] 1 / 1 SetLastTarget_0x72_ATouchProgramEndingWithIt_SurvivesTheResumeOfTheTic
+U88-10 unit green ['case0x88'] 0 / 1 SetStatus_0x88_HeroGroup_WithoutAPlayerEntity_IsEmptyAndDoesNotThrow
+U88-3b unit red ['case0x88'] 1 / 1 SetStatus_0x88_Index2_DoesNotCallDestroyEntity_NorClearEventTrigger
+U96-14 unit green ['case0x96'] 0 / 1 RestoreLife_0x96_HeroGroup_WithoutAPlayerEntity_IsEmptyAndDoesNotThrow
+U96-15 unit green ['case0x96'] 0 / 1 RestoreLife_0x96_DoesNotSnapTheHud
+U96-16 unit red ['case0x96'] 1 / 1 RestoreLife_0x96_ForAHeroThatCarriesItsLife_TheStatsFollowAtTheEndOfMo
+U97-13 unit green ['case0x97'] 0 / 1 AddMagic_0x97_DoesNotSnapTheHud
+UB3-6 unit red ['case0xB3'] 1 / 1 SetPadButtons_0xB3_ThenTheOpcode0x2F_SeesTheForcedWordsInTheSameCall
+UB3-7 unit red ['case0xB3'] 1 / 1 SetPadButtons_0xB3_LeavesTheCountersAndTheStickAlone
+S-1 seam green ['seamOverwrite'] 0 / 1 Overwrite_WritesTheFourWordsAndKeepsTheCounters
+S-2 seam green ['seamOverwrite'] 0 / 1 Overwrite_ThenUpdate_ComputesTheEdgesFromTheForcedHold
+S-3 seam green ['seamOverwrite'] 0 / 1 Overwrite_ThenUpdateOfTheSameHold_KeepsCountingFromTheCounters
+V-72 vector red ['case0x72'] 66 / 67 TheVectorsOfTheOpcode_72_ReplayOnTheDll
+V-88 vector red ['case0x88'] 30 / 61 TheVectorsOfTheOpcode_88_ReplayOnTheDll
+V-96 vector red ['case0x96'] 45 / 79 TheVectorsOfTheOpcode_96_ReplayOnTheDll
+V-97 vector red ['case0x97'] 64 / 74 TheVectorsOfTheOpcode_97_ReplayOnTheDll
+V-B3 vector red ['case0xB3', 'seamOverwrite'] 67 / 67 TheVectorsOfTheOpcode_B3_ReplayOnTheDll
+V-OOT vector green ['case0x88'] 0 / 22 TheOutOfTableVectorsOf_0x88_WriteNothing
+V-MANIFEST vector green [] 0 / 1 TheVectorFilesMatchTheirManifest
+RB-SHAPES realbytes green [] 0 / 1 TheOperandsOfTheNinetySitesAreInsideTheCoveredShapes
+RB-SAVEROOMS realbytes green [] 0 / 19 TheNineteenSaveRoomsHaveTheSameProgramBytes
+RB-452-B2 realbytes red ['case0x96'] 1 / 1 RealBytes_452_B2
+RB-452-B3 realbytes red ['case0x97'] 1 / 1 RealBytes_452_B3
+RB-394-C3 realbytes red ['case0x96', 'case0x97'] 1 / 1 RealBytes_394_C3
+RB-475-B2 realbytes red ['case0x96', 'case0x97'] 1 / 1 RealBytes_475_B2
+RB-22-C6 realbytes red ['case0x96'] 1 / 1 RealBytes_22_C6
+RB-306-E14 realbytes red ['case0x88'] 1 / 1 RealBytes_306_E14
+RB-442-E1 realbytes red ['case0x88'] 1 / 1 RealBytes_442_E1
+RB-444-D15 realbytes red ['case0x72'] 1 / 1 RealBytes_444_D15
+RB-140-D2 realbytes red ['case0x72'] 1 / 1 RealBytes_140_D2
+RB-161-B1 realbytes red ['case0xB3'] 1 / 1 RealBytes_161_B1
+ARC-452 arc red ['case0x96', 'case0x97'] 1 / 1 Arc_452
+ARC-161a arc red ['case0xB3'] 1 / 1 Arc_161a
+ARC-161b arc red ['case0xB3'] 1 / 1 Arc_161b
+ARC-306 arc red ['case0x88'] 1 / 1 Arc_306
+ARC-442 arc red ['case0x88'] 1 / 1 Arc_442
+ARC-40 arc red ['case0x72'] 1 / 1 Arc_40
+P-WIT pin green ['witness'] 0 / 1 UnknownOpcode_KnownSize_SkipsBySize
+P-LBL pin red ['labels'] 1 / 1 TheSm4LabelsAreCorrected

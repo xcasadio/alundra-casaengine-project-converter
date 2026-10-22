@@ -1,0 +1,493 @@
+{
+ "handler": "0x8003F794",
+ "opcode": 102,
+ "opcodeHex": "0x66",
+ "sites": 0,
+ "vectors": [
+  {
+   "id": "op66/e01",
+   "instruction": [
+    102,
+    20,
+    0
+   ],
+   "lastTargetAfter": {
+    "anim": 85,
+    "dir": 102
+   },
+   "logicSlot": 0,
+   "mappingNote": "cursor and params[0] are relative to the instruction (CODE); the source of the copy is the SHARED state 0x8013D9E8 whatever state runs (a3 is not read)",
+   "note": "offset +20, owner = logic = the hero: state copied, cursor and Parameters[0] = pc + 20",
+   "ownerSlot": 0,
+   "ownerStateAfter": {
+    "_30": 808464432,
+    "_34": 875836468,
+    "cursor": 20,
+    "params[0]": 20,
+    "params[1]": 11,
+    "params[2]": 12,
+    "params[3]": 13,
+    "params[4]": 14,
+    "params[5]": 15,
+    "params[6]": 16,
+    "params[7]": 17,
+    "params[8]": 18,
+    "params[9]": 19,
+    "result": 1
+   },
+   "reads": {
+    "internal": [
+     "cursor pointer (a2)"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "slot[0].targetAnimId",
+     "slot[0].targetDir",
+     "state._30",
+     "state._34",
+     "state.cursor",
+     "state.params[0]",
+     "state.params[1]",
+     "state.params[2]",
+     "state.params[3]",
+     "state.params[4]",
+     "state.params[5]",
+     "state.params[6]",
+     "state.params[7]",
+     "state.params[8]",
+     "state.params[9]",
+     "state.result"
+    ]
+   },
+   "returned": 3,
+   "sharedStateBefore": {
+    "_30": 808464432,
+    "_34": 875836468,
+    "cursor": 4096,
+    "params[0]": 8192,
+    "params[1]": 11,
+    "params[2]": 12,
+    "params[3]": 13,
+    "params[4]": 14,
+    "params[5]": 15,
+    "params[6]": 16,
+    "params[7]": 17,
+    "params[8]": 18,
+    "params[9]": 19,
+    "result": 1
+   },
+   "today": {
+    "redToday": true,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   },
+   "writeSet": [
+    "slot[0].lastTargetAnimId",
+    "slot[0].lastTargetDir",
+    "slot[0].ownerState._30",
+    "slot[0].ownerState._34",
+    "slot[0].ownerState.cursor",
+    "slot[0].ownerState.params[0]",
+    "slot[0].ownerState.params[1]",
+    "slot[0].ownerState.params[2]",
+    "slot[0].ownerState.params[3]",
+    "slot[0].ownerState.params[4]",
+    "slot[0].ownerState.params[5]",
+    "slot[0].ownerState.params[6]",
+    "slot[0].ownerState.params[7]",
+    "slot[0].ownerState.params[8]",
+    "slot[0].ownerState.params[9]",
+    "slot[0].ownerState.result"
+   ]
+  },
+  {
+   "id": "op66/e02",
+   "instruction": [
+    102,
+    252,
+    255
+   ],
+   "lastTargetAfter": {
+    "anim": 85,
+    "dir": 102
+   },
+   "logicSlot": 0,
+   "mappingNote": "cursor and params[0] are relative to the instruction (CODE); the source of the copy is the SHARED state 0x8013D9E8 whatever state runs (a3 is not read)",
+   "note": "offset -4",
+   "ownerSlot": 0,
+   "ownerStateAfter": {
+    "_30": 808464432,
+    "_34": 875836468,
+    "cursor": -4,
+    "params[0]": -4,
+    "params[1]": 11,
+    "params[2]": 12,
+    "params[3]": 13,
+    "params[4]": 14,
+    "params[5]": 15,
+    "params[6]": 16,
+    "params[7]": 17,
+    "params[8]": 18,
+    "params[9]": 19,
+    "result": 1
+   },
+   "reads": {
+    "internal": [
+     "cursor pointer (a2)"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "slot[0].targetAnimId",
+     "slot[0].targetDir",
+     "state._30",
+     "state._34",
+     "state.cursor",
+     "state.params[0]",
+     "state.params[1]",
+     "state.params[2]",
+     "state.params[3]",
+     "state.params[4]",
+     "state.params[5]",
+     "state.params[6]",
+     "state.params[7]",
+     "state.params[8]",
+     "state.params[9]",
+     "state.result"
+    ]
+   },
+   "returned": 3,
+   "sharedStateBefore": {
+    "_30": 808464432,
+    "_34": 875836468,
+    "cursor": 4096,
+    "params[0]": 8192,
+    "params[1]": 11,
+    "params[2]": 12,
+    "params[3]": 13,
+    "params[4]": 14,
+    "params[5]": 15,
+    "params[6]": 16,
+    "params[7]": 17,
+    "params[8]": 18,
+    "params[9]": 19,
+    "result": 1
+   },
+   "today": {
+    "redToday": true,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   },
+   "writeSet": [
+    "slot[0].lastTargetAnimId",
+    "slot[0].lastTargetDir",
+    "slot[0].ownerState._30",
+    "slot[0].ownerState._34",
+    "slot[0].ownerState.cursor",
+    "slot[0].ownerState.params[0]",
+    "slot[0].ownerState.params[1]",
+    "slot[0].ownerState.params[2]",
+    "slot[0].ownerState.params[3]",
+    "slot[0].ownerState.params[4]",
+    "slot[0].ownerState.params[5]",
+    "slot[0].ownerState.params[6]",
+    "slot[0].ownerState.params[7]",
+    "slot[0].ownerState.params[8]",
+    "slot[0].ownerState.params[9]",
+    "slot[0].ownerState.result"
+   ]
+  },
+  {
+   "id": "op66/e03",
+   "instruction": [
+    102,
+    6,
+    0
+   ],
+   "lastTargetAfter": {
+    "anim": 85,
+    "dir": 102
+   },
+   "logicSlot": 1,
+   "mappingNote": "cursor and params[0] are relative to the instruction (CODE); the source of the copy is the SHARED state 0x8013D9E8 whatever state runs (a3 is not read)",
+   "note": "logic (slot 1) differs from the owner (slot 0): LastTarget of the LOGIC entity, the state copy goes to the OWNER",
+   "ownerSlot": 0,
+   "ownerStateAfter": {
+    "_30": 808464432,
+    "_34": 875836468,
+    "cursor": 6,
+    "params[0]": 6,
+    "params[1]": 11,
+    "params[2]": 12,
+    "params[3]": 13,
+    "params[4]": 14,
+    "params[5]": 15,
+    "params[6]": 16,
+    "params[7]": 17,
+    "params[8]": 18,
+    "params[9]": 19,
+    "result": 1
+   },
+   "reads": {
+    "internal": [
+     "cursor pointer (a2)"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "slot[1].targetAnimId",
+     "slot[1].targetDir",
+     "state._30",
+     "state._34",
+     "state.cursor",
+     "state.params[0]",
+     "state.params[1]",
+     "state.params[2]",
+     "state.params[3]",
+     "state.params[4]",
+     "state.params[5]",
+     "state.params[6]",
+     "state.params[7]",
+     "state.params[8]",
+     "state.params[9]",
+     "state.result"
+    ]
+   },
+   "returned": 3,
+   "sharedStateBefore": {
+    "_30": 808464432,
+    "_34": 875836468,
+    "cursor": 4096,
+    "params[0]": 8192,
+    "params[1]": 11,
+    "params[2]": 12,
+    "params[3]": 13,
+    "params[4]": 14,
+    "params[5]": 15,
+    "params[6]": 16,
+    "params[7]": 17,
+    "params[8]": 18,
+    "params[9]": 19,
+    "result": 1
+   },
+   "today": {
+    "redToday": true,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   },
+   "writeSet": [
+    "slot[0].ownerState._30",
+    "slot[0].ownerState._34",
+    "slot[0].ownerState.cursor",
+    "slot[0].ownerState.params[0]",
+    "slot[0].ownerState.params[1]",
+    "slot[0].ownerState.params[2]",
+    "slot[0].ownerState.params[3]",
+    "slot[0].ownerState.params[4]",
+    "slot[0].ownerState.params[5]",
+    "slot[0].ownerState.params[6]",
+    "slot[0].ownerState.params[7]",
+    "slot[0].ownerState.params[8]",
+    "slot[0].ownerState.params[9]",
+    "slot[0].ownerState.result",
+    "slot[1].lastTargetAnimId",
+    "slot[1].lastTargetDir"
+   ]
+  },
+  {
+   "id": "op66/e04",
+   "instruction": [
+    102,
+    255,
+    127
+   ],
+   "lastTargetAfter": {
+    "anim": 85,
+    "dir": 102
+   },
+   "logicSlot": 0,
+   "mappingNote": "cursor and params[0] are relative to the instruction (CODE); the source of the copy is the SHARED state 0x8013D9E8 whatever state runs (a3 is not read)",
+   "note": "offset 0x7FFF",
+   "ownerSlot": 0,
+   "ownerStateAfter": {
+    "_30": 808464432,
+    "_34": 875836468,
+    "cursor": 32767,
+    "params[0]": 32767,
+    "params[1]": 11,
+    "params[2]": 12,
+    "params[3]": 13,
+    "params[4]": 14,
+    "params[5]": 15,
+    "params[6]": 16,
+    "params[7]": 17,
+    "params[8]": 18,
+    "params[9]": 19,
+    "result": 1
+   },
+   "reads": {
+    "internal": [
+     "cursor pointer (a2)"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "slot[0].targetAnimId",
+     "slot[0].targetDir",
+     "state._30",
+     "state._34",
+     "state.cursor",
+     "state.params[0]",
+     "state.params[1]",
+     "state.params[2]",
+     "state.params[3]",
+     "state.params[4]",
+     "state.params[5]",
+     "state.params[6]",
+     "state.params[7]",
+     "state.params[8]",
+     "state.params[9]",
+     "state.result"
+    ]
+   },
+   "returned": 3,
+   "sharedStateBefore": {
+    "_30": 808464432,
+    "_34": 875836468,
+    "cursor": 4096,
+    "params[0]": 8192,
+    "params[1]": 11,
+    "params[2]": 12,
+    "params[3]": 13,
+    "params[4]": 14,
+    "params[5]": 15,
+    "params[6]": 16,
+    "params[7]": 17,
+    "params[8]": 18,
+    "params[9]": 19,
+    "result": 1
+   },
+   "today": {
+    "redToday": true,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   },
+   "writeSet": [
+    "slot[0].lastTargetAnimId",
+    "slot[0].lastTargetDir",
+    "slot[0].ownerState._30",
+    "slot[0].ownerState._34",
+    "slot[0].ownerState.cursor",
+    "slot[0].ownerState.params[0]",
+    "slot[0].ownerState.params[1]",
+    "slot[0].ownerState.params[2]",
+    "slot[0].ownerState.params[3]",
+    "slot[0].ownerState.params[4]",
+    "slot[0].ownerState.params[5]",
+    "slot[0].ownerState.params[6]",
+    "slot[0].ownerState.params[7]",
+    "slot[0].ownerState.params[8]",
+    "slot[0].ownerState.params[9]",
+    "slot[0].ownerState.result"
+   ]
+  },
+  {
+   "id": "op66/e05",
+   "instruction": [
+    102,
+    0,
+    0
+   ],
+   "lastTargetAfter": {
+    "anim": 85,
+    "dir": 102
+   },
+   "logicSlot": 0,
+   "mappingNote": "cursor and params[0] are relative to the instruction (CODE); the source of the copy is the SHARED state 0x8013D9E8 whatever state runs (a3 is not read)",
+   "note": "offset 0",
+   "ownerSlot": 0,
+   "ownerStateAfter": {
+    "_30": 808464432,
+    "_34": 875836468,
+    "cursor": 0,
+    "params[0]": 0,
+    "params[1]": 11,
+    "params[2]": 12,
+    "params[3]": 13,
+    "params[4]": 14,
+    "params[5]": 15,
+    "params[6]": 16,
+    "params[7]": 17,
+    "params[8]": 18,
+    "params[9]": 19,
+    "result": 1
+   },
+   "reads": {
+    "internal": [
+     "cursor pointer (a2)"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "slot[0].targetAnimId",
+     "slot[0].targetDir",
+     "state._30",
+     "state._34",
+     "state.cursor",
+     "state.params[0]",
+     "state.params[1]",
+     "state.params[2]",
+     "state.params[3]",
+     "state.params[4]",
+     "state.params[5]",
+     "state.params[6]",
+     "state.params[7]",
+     "state.params[8]",
+     "state.params[9]",
+     "state.result"
+    ]
+   },
+   "returned": 3,
+   "sharedStateBefore": {
+    "_30": 808464432,
+    "_34": 875836468,
+    "cursor": 4096,
+    "params[0]": 8192,
+    "params[1]": 11,
+    "params[2]": 12,
+    "params[3]": 13,
+    "params[4]": 14,
+    "params[5]": 15,
+    "params[6]": 16,
+    "params[7]": 17,
+    "params[8]": 18,
+    "params[9]": 19,
+    "result": 1
+   },
+   "today": {
+    "redToday": true,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   },
+   "writeSet": [
+    "slot[0].lastTargetAnimId",
+    "slot[0].lastTargetDir",
+    "slot[0].ownerState._30",
+    "slot[0].ownerState._34",
+    "slot[0].ownerState.cursor",
+    "slot[0].ownerState.params[0]",
+    "slot[0].ownerState.params[1]",
+    "slot[0].ownerState.params[2]",
+    "slot[0].ownerState.params[3]",
+    "slot[0].ownerState.params[4]",
+    "slot[0].ownerState.params[5]",
+    "slot[0].ownerState.params[6]",
+    "slot[0].ownerState.params[7]",
+    "slot[0].ownerState.params[8]",
+    "slot[0].ownerState.params[9]",
+    "slot[0].ownerState.result"
+   ]
+  }
+ ]
+}

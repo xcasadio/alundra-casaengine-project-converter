@@ -1,0 +1,32 @@
+ 54 B[14] sites [1226, 1244]           retargets reachable: ['0x42', '0x43']
+159 C[13] sites [1698]                 retargets reachable: -
+160 C[ 1] sites [944]                  retargets reachable: -
+160 C[ 6] sites [1013]                 retargets reachable: -
+258 B[ 6] sites [639, 645, 651, 657, 663] retargets reachable: -
+298 B[ 6] sites [726, 732, 738, 744, 750] retargets reachable: -
+421 C[ 8] sites [1467]                 retargets reachable: -
+421 C[14] sites [1555]                 retargets reachable: -
+421 C[17] sites [1603]                 retargets reachable: -
+423 C[25] sites [971]                  retargets reachable: -
+423 C[26] sites [1039]                 retargets reachable: -
+424 C[ 3] sites [700]                  retargets reachable: -
+424 C[ 4] sites [751]                  retargets reachable: -
+424 C[ 5] sites [787]                  retargets reachable: -
+424 C[ 6] sites [823]                  retargets reachable: -
+424 C[ 9] sites [899]                  retargets reachable: -
+424 C[15] sites [1039]                 retargets reachable: -
+424 C[16] sites [1111]                 retargets reachable: -
+424 C[17] sites [1175]                 retargets reachable: -
+425 C[12] sites [402]                  retargets reachable: -
+426 C[13] sites [1484]                 retargets reachable: -
+426 C[14] sites [1551]                 retargets reachable: -
+426 C[15] sites [1619]                 retargets reachable: -
+426 C[16] sites [1687]                 retargets reachable: -
+426 C[17] sites [1752]                 retargets reachable: -
+440 B[ 9] sites [628]                  retargets reachable: -
+440 C[ 2] sites [1140]                 retargets reachable: -
+440 C[ 3] sites [1140]                 retargets reachable: -
+440 C[ 4] sites [1140]                 retargets reachable: -
+440 C[16] sites [1755]                 retargets reachable: -
+440 C[18] sites [1880]                 retargets reachable: -
+440 C[21] sites [2000, 2012]           retargets reachable: -

@@ -1,0 +1,6 @@
+2F ['00', '10', '00'] returned 4 Result(+0x2C) = 1
+2F ['80', '00', '01'] returned 4 Result(+0x2C) = 1
+2F ['00', '20', '00'] returned 4 Result(+0x2C) = 0
+2F ['00', '01', '02'] returned 4 Result(+0x2C) = 1
+2F ['00', '02', '03'] returned 4 Result(+0x2C) = 1
+2F ['00', '02', '00'] returned 4 Result(+0x2C) = 0

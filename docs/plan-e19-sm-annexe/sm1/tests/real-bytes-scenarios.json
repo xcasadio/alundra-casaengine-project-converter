@@ -1,0 +1,2943 @@
+[
+ {
+  "bytes_hex": "00 60 1F 04 FD FF",
+  "calls": 2,
+  "cut": 990,
+  "entry": 984,
+  "expected": [
+   {
+    "end_pc": 985,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "984:00:Break"
+    ]
+   },
+   {
+    "end_pc": 990,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "985:60:Implemented",
+     "987:04:Implemented",
+     "990:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-01",
+  "map": 27,
+  "program": "C[26]",
+  "red": [
+   {
+    "end_pc": 985,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "984:00:Break"
+    ]
+   },
+   {
+    "end_pc": 985,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "985:60:Skipped",
+     "987:04:Implemented",
+     "984:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 984,
+  "title": "27 C[26] @984: the object rides the plate",
+  "world": "Ancient Shrine-27"
+ },
+ {
+  "bytes_hex": "00 60 1F 04 FD FF",
+  "calls": 2,
+  "cut": 990,
+  "entry": 984,
+  "expected": [
+   {
+    "end_pc": 985,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "984:00:Break"
+    ]
+   },
+   {
+    "end_pc": 985,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "985:60:Implemented",
+     "987:04:Implemented",
+     "984:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-01",
+  "map": 27,
+  "program": "C[26]",
+  "red": [
+   {
+    "end_pc": 985,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "984:00:Break"
+    ]
+   },
+   {
+    "end_pc": 985,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "985:60:Skipped",
+     "987:04:Implemented",
+     "984:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 984,
+  "title": "27 C[26] @984: the object rides nothing",
+  "world": "Ancient Shrine-27"
+ },
+ {
+  "bytes_hex": "73 18 00 30 1D 80 F9 00 60 05 03 75 00 60 06 03 E1 00 60 07 03 DC 00 60 08 03 D7 00 74 E6 FF",
+  "calls": 2,
+  "cut": 635,
+  "entry": 604,
+  "expected": [
+   {
+    "end_pc": 607,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "604:73:Implemented",
+     "606:00:Break"
+    ]
+   },
+   {
+    "end_pc": 731,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "607:30:Implemented",
+     "612:60:Implemented",
+     "614:03:Implemented",
+     "731:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-02",
+  "map": 27,
+  "program": "C[2]",
+  "red": [
+   {
+    "end_pc": 607,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "604:73:Implemented",
+     "606:00:Break"
+    ]
+   },
+   {
+    "end_pc": 607,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "607:30:Implemented",
+     "612:60:Skipped",
+     "614:03:Implemented",
+     "617:60:Skipped",
+     "619:03:Implemented",
+     "622:60:Skipped",
+     "624:03:Implemented",
+     "627:60:Skipped",
+     "629:03:Implemented",
+     "632:74:Implemented",
+     "606:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 604,
+  "title": "27 C[2] @604: object 5 rides the plate (the right one in phase 1)",
+  "world": "Ancient Shrine-27"
+ },
+ {
+  "bytes_hex": "73 18 00 30 1D 80 F9 00 60 05 03 75 00 60 06 03 E1 00 60 07 03 DC 00 60 08 03 D7 00 74 E6 FF",
+  "calls": 2,
+  "cut": 635,
+  "entry": 604,
+  "expected": [
+   {
+    "end_pc": 607,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "604:73:Implemented",
+     "606:00:Break"
+    ]
+   },
+   {
+    "end_pc": 844,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "607:30:Implemented",
+     "612:60:Implemented",
+     "614:03:Implemented",
+     "617:60:Implemented",
+     "619:03:Implemented",
+     "844:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-02",
+  "map": 27,
+  "program": "C[2]",
+  "red": [
+   {
+    "end_pc": 607,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "604:73:Implemented",
+     "606:00:Break"
+    ]
+   },
+   {
+    "end_pc": 607,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "607:30:Implemented",
+     "612:60:Skipped",
+     "614:03:Implemented",
+     "617:60:Skipped",
+     "619:03:Implemented",
+     "622:60:Skipped",
+     "624:03:Implemented",
+     "627:60:Skipped",
+     "629:03:Implemented",
+     "632:74:Implemented",
+     "606:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 604,
+  "title": "27 C[2] @604: object 6 rides the plate (a wrong one in phase 1)",
+  "world": "Ancient Shrine-27"
+ },
+ {
+  "bytes_hex": "73 18 00 30 1D 80 F9 00 60 05 03 75 00 60 06 03 E1 00 60 07 03 DC 00 60 08 03 D7 00 74 E6 FF",
+  "calls": 2,
+  "cut": 635,
+  "entry": 604,
+  "expected": [
+   {
+    "end_pc": 607,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "604:73:Implemented",
+     "606:00:Break"
+    ]
+   },
+   {
+    "end_pc": 607,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "607:30:Implemented",
+     "612:60:Implemented",
+     "614:03:Implemented",
+     "617:60:Implemented",
+     "619:03:Implemented",
+     "622:60:Implemented",
+     "624:03:Implemented",
+     "627:60:Implemented",
+     "629:03:Implemented",
+     "632:74:Implemented",
+     "606:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-02",
+  "map": 27,
+  "program": "C[2]",
+  "red": [
+   {
+    "end_pc": 607,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "604:73:Implemented",
+     "606:00:Break"
+    ]
+   },
+   {
+    "end_pc": 607,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "607:30:Implemented",
+     "612:60:Skipped",
+     "614:03:Implemented",
+     "617:60:Skipped",
+     "619:03:Implemented",
+     "622:60:Skipped",
+     "624:03:Implemented",
+     "627:60:Skipped",
+     "629:03:Implemented",
+     "632:74:Implemented",
+     "606:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 604,
+  "title": "27 C[2] @604: nobody rides",
+  "world": "Ancient Shrine-27"
+ },
+ {
+  "bytes_hex": "73 18 00 30 1D 80 F2 00 60 04 03 75 00 60 05 03 DA 00 60 06 03 D5 00 60 07 03 D0 00 74 E6 FF",
+  "calls": 2,
+  "cut": 471,
+  "entry": 440,
+  "expected": [
+   {
+    "end_pc": 443,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "440:73:Implemented",
+     "442:00:Break"
+    ]
+   },
+   {
+    "end_pc": 567,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "443:30:Implemented",
+     "448:60:Implemented",
+     "450:03:Implemented",
+     "567:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-02",
+  "map": 400,
+  "program": "C[1]",
+  "red": [
+   {
+    "end_pc": 443,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "440:73:Implemented",
+     "442:00:Break"
+    ]
+   },
+   {
+    "end_pc": 443,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "443:30:Implemented",
+     "448:60:Skipped",
+     "450:03:Implemented",
+     "453:60:Skipped",
+     "455:03:Implemented",
+     "458:60:Skipped",
+     "460:03:Implemented",
+     "463:60:Skipped",
+     "465:03:Implemented",
+     "468:74:Implemented",
+     "442:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 440,
+  "title": "400 C[1] @440: object 4 rides the plate (the right one in phase 1)",
+  "world": "Desert _ Ancient Shrine-400"
+ },
+ {
+  "bytes_hex": "73 18 00 30 1D 80 F2 00 60 04 03 75 00 60 05 03 DA 00 60 06 03 D5 00 60 07 03 D0 00 74 E6 FF",
+  "calls": 2,
+  "cut": 471,
+  "entry": 440,
+  "expected": [
+   {
+    "end_pc": 443,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "440:73:Implemented",
+     "442:00:Break"
+    ]
+   },
+   {
+    "end_pc": 673,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "443:30:Implemented",
+     "448:60:Implemented",
+     "450:03:Implemented",
+     "453:60:Implemented",
+     "455:03:Implemented",
+     "673:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-02",
+  "map": 400,
+  "program": "C[1]",
+  "red": [
+   {
+    "end_pc": 443,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "440:73:Implemented",
+     "442:00:Break"
+    ]
+   },
+   {
+    "end_pc": 443,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "443:30:Implemented",
+     "448:60:Skipped",
+     "450:03:Implemented",
+     "453:60:Skipped",
+     "455:03:Implemented",
+     "458:60:Skipped",
+     "460:03:Implemented",
+     "463:60:Skipped",
+     "465:03:Implemented",
+     "468:74:Implemented",
+     "442:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 440,
+  "title": "400 C[1] @440: object 5 rides the plate (a wrong one in phase 1)",
+  "world": "Desert _ Ancient Shrine-400"
+ },
+ {
+  "bytes_hex": "73 18 00 30 1D 80 F2 00 60 04 03 75 00 60 05 03 DA 00 60 06 03 D5 00 60 07 03 D0 00 74 E6 FF",
+  "calls": 2,
+  "cut": 471,
+  "entry": 440,
+  "expected": [
+   {
+    "end_pc": 443,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "440:73:Implemented",
+     "442:00:Break"
+    ]
+   },
+   {
+    "end_pc": 443,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "443:30:Implemented",
+     "448:60:Implemented",
+     "450:03:Implemented",
+     "453:60:Implemented",
+     "455:03:Implemented",
+     "458:60:Implemented",
+     "460:03:Implemented",
+     "463:60:Implemented",
+     "465:03:Implemented",
+     "468:74:Implemented",
+     "442:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-02",
+  "map": 400,
+  "program": "C[1]",
+  "red": [
+   {
+    "end_pc": 443,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "440:73:Implemented",
+     "442:00:Break"
+    ]
+   },
+   {
+    "end_pc": 443,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "443:30:Implemented",
+     "448:60:Skipped",
+     "450:03:Implemented",
+     "453:60:Skipped",
+     "455:03:Implemented",
+     "458:60:Skipped",
+     "460:03:Implemented",
+     "463:60:Skipped",
+     "465:03:Implemented",
+     "468:74:Implemented",
+     "442:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 440,
+  "title": "400 C[1] @440: nobody rides",
+  "world": "Desert _ Ancient Shrine-400"
+ },
+ {
+  "bytes_hex": "43 23 00 60 2D 04 FB FF 43 2D 60 2E 04 F4 FF 43 2E 60 2F 04 ED FF 43 2F 60 30 04 E6 FF 00",
+  "calls": 2,
+  "cut": 1136,
+  "entry": 1064,
+  "expected": [
+   {
+    "end_pc": 1109,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1106:43:Implemented",
+     "1108:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1136,
+    "flags": [],
+    "logic": 4,
+    "result": 1,
+    "trace": [
+     "1109:60:Implemented",
+     "1111:04:Implemented",
+     "1114:43:Implemented",
+     "1116:60:Implemented",
+     "1118:04:Implemented",
+     "1121:43:Implemented",
+     "1123:60:Implemented",
+     "1125:04:Implemented",
+     "1128:43:Implemented",
+     "1130:60:Implemented",
+     "1132:04:Implemented",
+     "1135:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-03",
+  "map": 27,
+  "program": "C[36]",
+  "red": [
+   {
+    "end_pc": 1109,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1106:43:Implemented",
+     "1108:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1136,
+    "flags": [],
+    "logic": 4,
+    "result": 1,
+    "trace": [
+     "1109:60:Skipped",
+     "1111:04:Implemented",
+     "1114:43:Implemented",
+     "1116:60:Skipped",
+     "1118:04:Implemented",
+     "1121:43:Implemented",
+     "1123:60:Skipped",
+     "1125:04:Implemented",
+     "1128:43:Implemented",
+     "1130:60:Skipped",
+     "1132:04:Implemented",
+     "1135:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1106,
+  "title": "27 C[36] @1106: the four objects are stacked",
+  "world": "Ancient Shrine-27"
+ },
+ {
+  "bytes_hex": "43 23 00 60 2D 04 FB FF 43 2D 60 2E 04 F4 FF 43 2E 60 2F 04 ED FF 43 2F 60 30 04 E6 FF 00",
+  "calls": 2,
+  "cut": 1136,
+  "entry": 1064,
+  "expected": [
+   {
+    "end_pc": 1109,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1106:43:Implemented",
+     "1108:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1109,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1109:60:Implemented",
+     "1111:04:Implemented",
+     "1114:43:Implemented",
+     "1116:60:Implemented",
+     "1118:04:Implemented",
+     "1121:43:Implemented",
+     "1123:60:Implemented",
+     "1125:04:Implemented",
+     "1128:43:Implemented",
+     "1130:60:Implemented",
+     "1132:04:Implemented",
+     "1106:43:Implemented",
+     "1108:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-03",
+  "map": 27,
+  "program": "C[36]",
+  "red": [
+   {
+    "end_pc": 1109,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1106:43:Implemented",
+     "1108:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1136,
+    "flags": [],
+    "logic": 4,
+    "result": 1,
+    "trace": [
+     "1109:60:Skipped",
+     "1111:04:Implemented",
+     "1114:43:Implemented",
+     "1116:60:Skipped",
+     "1118:04:Implemented",
+     "1121:43:Implemented",
+     "1123:60:Skipped",
+     "1125:04:Implemented",
+     "1128:43:Implemented",
+     "1130:60:Skipped",
+     "1132:04:Implemented",
+     "1135:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1106,
+  "title": "27 C[36] @1106: the top object is not stacked",
+  "world": "Ancient Shrine-27"
+ },
+ {
+  "bytes_hex": "00 60 14 04 FD FF",
+  "calls": 2,
+  "cut": 818,
+  "entry": 812,
+  "expected": [
+   {
+    "end_pc": 813,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "812:00:Break"
+    ]
+   },
+   {
+    "end_pc": 818,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "813:60:Implemented",
+     "815:04:Implemented",
+     "818:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-04",
+  "map": 29,
+  "program": "C[17]",
+  "red": [
+   {
+    "end_pc": 813,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "812:00:Break"
+    ]
+   },
+   {
+    "end_pc": 813,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "813:60:Skipped",
+     "815:04:Implemented",
+     "812:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 812,
+  "title": "29 C[17] @813: object 20 rides",
+  "world": "Ancient Shrine-29"
+ },
+ {
+  "bytes_hex": "00 60 14 04 FD FF",
+  "calls": 2,
+  "cut": 818,
+  "entry": 812,
+  "expected": [
+   {
+    "end_pc": 813,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "812:00:Break"
+    ]
+   },
+   {
+    "end_pc": 813,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "813:60:Implemented",
+     "815:04:Implemented",
+     "812:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-04",
+  "map": 29,
+  "program": "C[17]",
+  "red": [
+   {
+    "end_pc": 813,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "812:00:Break"
+    ]
+   },
+   {
+    "end_pc": 813,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "813:60:Skipped",
+     "815:04:Implemented",
+     "812:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 812,
+  "title": "29 C[17] @813: object 20 does not ride",
+  "world": "Ancient Shrine-29"
+ },
+ {
+  "bytes_hex": "00 30 FC 83 1D 00 60 16 04 F8 FF",
+  "calls": 2,
+  "cut": 1691,
+  "entry": 1680,
+  "expected": [
+   {
+    "end_pc": 1681,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1680:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1691,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1681:30:Implemented",
+     "1686:60:Implemented",
+     "1688:04:Implemented",
+     "1691:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-05",
+  "map": 30,
+  "program": "C[19]",
+  "red": [
+   {
+    "end_pc": 1681,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1680:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1681,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1681:30:Implemented",
+     "1686:60:Skipped",
+     "1688:04:Implemented",
+     "1680:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1680,
+  "title": "30 C[19] @1686: object 22 rides",
+  "world": "Ancient Shrine-30"
+ },
+ {
+  "bytes_hex": "00 30 FC 83 1D 00 60 16 04 F8 FF",
+  "calls": 2,
+  "cut": 1691,
+  "entry": 1680,
+  "expected": [
+   {
+    "end_pc": 1681,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1680:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1681,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1681:30:Implemented",
+     "1686:60:Implemented",
+     "1688:04:Implemented",
+     "1680:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-05",
+  "map": 30,
+  "program": "C[19]",
+  "red": [
+   {
+    "end_pc": 1681,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1680:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1681,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1681:30:Implemented",
+     "1686:60:Skipped",
+     "1688:04:Implemented",
+     "1680:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1680,
+  "title": "30 C[19] @1686: object 22 does not ride",
+  "world": "Ancient Shrine-30"
+ },
+ {
+  "bytes_hex": "00 60 0A 04 FD FF",
+  "calls": 2,
+  "cut": 998,
+  "entry": 992,
+  "expected": [
+   {
+    "end_pc": 993,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "992:00:Break"
+    ]
+   },
+   {
+    "end_pc": 998,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "993:60:Implemented",
+     "995:04:Implemented",
+     "998:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-06",
+  "map": 113,
+  "program": "C[9]",
+  "red": [
+   {
+    "end_pc": 993,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "992:00:Break"
+    ]
+   },
+   {
+    "end_pc": 993,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "993:60:Skipped",
+     "995:04:Implemented",
+     "992:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 992,
+  "title": "113 C[9] @993: object 10 rides",
+  "world": "Nestus' Dream-113"
+ },
+ {
+  "bytes_hex": "00 60 0A 04 FD FF",
+  "calls": 2,
+  "cut": 998,
+  "entry": 992,
+  "expected": [
+   {
+    "end_pc": 993,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "992:00:Break"
+    ]
+   },
+   {
+    "end_pc": 993,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "993:60:Implemented",
+     "995:04:Implemented",
+     "992:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-06",
+  "map": 113,
+  "program": "C[9]",
+  "red": [
+   {
+    "end_pc": 993,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "992:00:Break"
+    ]
+   },
+   {
+    "end_pc": 993,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "993:60:Skipped",
+     "995:04:Implemented",
+     "992:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 992,
+  "title": "113 C[9] @993: object 10 does not ride",
+  "world": "Nestus' Dream-113"
+ },
+ {
+  "bytes_hex": "00 60 0B 04 FD FF 05 64 80 30 56 01 12 00 00 60 0B 03 F8 FF 06 64 80 02 E9 FF 00",
+  "calls": 3,
+  "cut": 1095,
+  "entry": 1068,
+  "expected": [
+   {
+    "end_pc": 1069,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1068:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1083,
+    "flags": [
+     32868
+    ],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1069:60:Implemented",
+     "1071:04:Implemented",
+     "1074:05:Implemented",
+     "1077:30:Implemented",
+     "1082:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1083,
+    "flags": [
+     32868
+    ],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1083:60:Implemented",
+     "1085:03:Implemented",
+     "1077:30:Implemented",
+     "1082:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-07",
+  "map": 113,
+  "program": "C[10]",
+  "red": [
+   {
+    "end_pc": 1069,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1068:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1069,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1069:60:Skipped",
+     "1071:04:Implemented",
+     "1068:00:Break"
+    ]
+   },
+   {
+    "end_pc": 1069,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1069:60:Skipped",
+     "1071:04:Implemented",
+     "1068:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1068,
+  "title": "113 C[10] @1069: object 11 present for 3 calls",
+  "world": "Nestus' Dream-113"
+ },
+ {
+  "bytes_hex": "60 0B 03 F8 FF 06 64 80 02 E9 FF 00",
+  "calls": 1,
+  "cut": 1095,
+  "entry": 1068,
+  "expected": [
+   {
+    "end_pc": 1069,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1083:60:Implemented",
+     "1085:03:Implemented",
+     "1088:06:Implemented",
+     "1091:02:Implemented",
+     "1068:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [
+   32868
+  ],
+  "id": "RB-07",
+  "map": 113,
+  "program": "C[10]",
+  "red": [
+   {
+    "end_pc": 1083,
+    "flags": [
+     32868
+    ],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1083:60:Skipped",
+     "1085:03:Implemented",
+     "1077:30:Implemented",
+     "1082:00:Break"
+    ]
+   }
+  ],
+  "result0": 1,
+  "start": 1083,
+  "title": "113 C[10] @1083: the rider has left, flag 0x8064 was on",
+  "world": "Nestus' Dream-113"
+ },
+ {
+  "bytes_hex": "37 01 60 81 04 FC FF",
+  "calls": 3,
+  "cut": 1584,
+  "entry": 1568,
+  "expected": [
+   {
+    "end_pc": 1577,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1577:37:Implemented"
+    ]
+   },
+   {
+    "end_pc": 1577,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1577:37:Implemented"
+    ]
+   },
+   {
+    "end_pc": 1584,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1577:37:Implemented",
+     "1579:60:Implemented",
+     "1581:04:Implemented",
+     "1584:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-08",
+  "map": 136,
+  "program": "C[5]",
+  "red": [
+   {
+    "end_pc": 1577,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1577:37:Implemented"
+    ]
+   },
+   {
+    "end_pc": 1577,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1577:37:Implemented"
+    ]
+   },
+   {
+    "end_pc": 1577,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1577:37:Implemented",
+     "1579:60:Skipped",
+     "1581:04:Implemented",
+     "1577:37:Implemented"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1577,
+  "title": "136 C[5] @1579: the hero stands on the switch",
+  "world": "Church-136"
+ },
+ {
+  "bytes_hex": "37 01 60 81 04 FC FF",
+  "calls": 3,
+  "cut": 1584,
+  "entry": 1568,
+  "expected": [
+   {
+    "end_pc": 1577,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1577:37:Implemented"
+    ]
+   },
+   {
+    "end_pc": 1577,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1577:37:Implemented"
+    ]
+   },
+   {
+    "end_pc": 1577,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1577:37:Implemented",
+     "1579:60:Implemented",
+     "1581:04:Implemented",
+     "1577:37:Implemented"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-08",
+  "map": 136,
+  "program": "C[5]",
+  "red": [
+   {
+    "end_pc": 1577,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1577:37:Implemented"
+    ]
+   },
+   {
+    "end_pc": 1577,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1577:37:Implemented"
+    ]
+   },
+   {
+    "end_pc": 1577,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1577:37:Implemented",
+     "1579:60:Skipped",
+     "1581:04:Implemented",
+     "1577:37:Implemented"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1577,
+  "title": "136 C[5] @1579: the hero is elsewhere",
+  "world": "Church-136"
+ },
+ {
+  "bytes_hex": "00 61 0D 4B",
+  "calls": 2,
+  "cut": 732,
+  "entry": 728,
+  "expected": [
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "728:00:Break"
+    ]
+   },
+   {
+    "end_pc": 732,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "729:61:Implemented",
+     "731:4B:Implemented",
+     "732:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-09",
+  "map": 159,
+  "program": "B[5]",
+  "red": [
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "728:00:Break"
+    ]
+   },
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "729:61:Skipped",
+     "731:4B:Implemented",
+     "728:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 728,
+  "title": "159 B[5] @729: the hero rides record 13, Result 0 before",
+  "world": "Fairy cave (underwater)-159"
+ },
+ {
+  "bytes_hex": "00 61 0D 4B",
+  "calls": 2,
+  "cut": 732,
+  "entry": 728,
+  "expected": [
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 7,
+    "trace": [
+     "728:00:Break"
+    ]
+   },
+   {
+    "end_pc": 732,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "729:61:Implemented",
+     "731:4B:Implemented",
+     "732:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-09",
+  "map": 159,
+  "program": "B[5]",
+  "red": [
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 7,
+    "trace": [
+     "728:00:Break"
+    ]
+   },
+   {
+    "end_pc": 732,
+    "flags": [],
+    "logic": 0,
+    "result": 7,
+    "trace": [
+     "729:61:Skipped",
+     "731:4B:Implemented",
+     "732:FF:End"
+    ]
+   }
+  ],
+  "result0": 7,
+  "start": 728,
+  "title": "159 B[5] @729: the hero rides record 13, Result 7 before",
+  "world": "Fairy cave (underwater)-159"
+ },
+ {
+  "bytes_hex": "00 61 0D 4B",
+  "calls": 2,
+  "cut": 732,
+  "entry": 728,
+  "expected": [
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 7,
+    "trace": [
+     "728:00:Break"
+    ]
+   },
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "729:61:Implemented",
+     "731:4B:Implemented",
+     "728:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-09",
+  "map": 159,
+  "program": "B[5]",
+  "red": [
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 7,
+    "trace": [
+     "728:00:Break"
+    ]
+   },
+   {
+    "end_pc": 732,
+    "flags": [],
+    "logic": 0,
+    "result": 7,
+    "trace": [
+     "729:61:Skipped",
+     "731:4B:Implemented",
+     "732:FF:End"
+    ]
+   }
+  ],
+  "result0": 7,
+  "start": 728,
+  "title": "159 B[5] @729: the hero rides nothing, Result 7 before",
+  "world": "Fairy cave (underwater)-159"
+ },
+ {
+  "bytes_hex": "00 61 0D 4B",
+  "calls": 2,
+  "cut": 732,
+  "entry": 728,
+  "expected": [
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "728:00:Break"
+    ]
+   },
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "729:61:Implemented",
+     "731:4B:Implemented",
+     "728:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-09",
+  "map": 159,
+  "program": "B[5]",
+  "red": [
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "728:00:Break"
+    ]
+   },
+   {
+    "end_pc": 729,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "729:61:Skipped",
+     "731:4B:Implemented",
+     "728:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 728,
+  "title": "159 B[5] @729: the hero rides nothing, Result 0 before",
+  "world": "Fairy cave (underwater)-159"
+ },
+ {
+  "bytes_hex": "60 03 4A 60 04 4A 60 0A 4A",
+  "calls": 1,
+  "cut": 1663,
+  "entry": 1652,
+  "expected": [
+   {
+    "end_pc": 1652,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1654:60:Implemented",
+     "1656:4A:Implemented",
+     "1652:37:Implemented"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-10",
+  "map": 159,
+  "program": "C[13]",
+  "red": [
+   {
+    "end_pc": 1663,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1654:60:Skipped",
+     "1656:4A:Implemented",
+     "1657:60:Skipped",
+     "1659:4A:Implemented",
+     "1660:60:Skipped",
+     "1662:4A:Implemented",
+     "1663:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1654,
+  "title": "159 C[13] @1654: record 3 rides the bubble",
+  "world": "Fairy cave (underwater)-159"
+ },
+ {
+  "bytes_hex": "60 03 4A 60 04 4A 60 0A 4A",
+  "calls": 1,
+  "cut": 1663,
+  "entry": 1652,
+  "expected": [
+   {
+    "end_pc": 1652,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1654:60:Implemented",
+     "1656:4A:Implemented",
+     "1657:60:Implemented",
+     "1659:4A:Implemented",
+     "1660:60:Implemented",
+     "1662:4A:Implemented",
+     "1652:37:Implemented"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-10",
+  "map": 159,
+  "program": "C[13]",
+  "red": [
+   {
+    "end_pc": 1663,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1654:60:Skipped",
+     "1656:4A:Implemented",
+     "1657:60:Skipped",
+     "1659:4A:Implemented",
+     "1660:60:Skipped",
+     "1662:4A:Implemented",
+     "1663:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1654,
+  "title": "159 C[13] @1654: record 10 rides the bubble",
+  "world": "Fairy cave (underwater)-159"
+ },
+ {
+  "bytes_hex": "60 03 4A 60 04 4A 60 0A 4A",
+  "calls": 1,
+  "cut": 1663,
+  "entry": 1652,
+  "expected": [
+   {
+    "end_pc": 1663,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1654:60:Implemented",
+     "1656:4A:Implemented",
+     "1657:60:Implemented",
+     "1659:4A:Implemented",
+     "1660:60:Implemented",
+     "1662:4A:Implemented",
+     "1663:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-10",
+  "map": 159,
+  "program": "C[13]",
+  "red": [
+   {
+    "end_pc": 1663,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1654:60:Skipped",
+     "1656:4A:Implemented",
+     "1657:60:Skipped",
+     "1659:4A:Implemented",
+     "1660:60:Skipped",
+     "1662:4A:Implemented",
+     "1663:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1654,
+  "title": "159 C[13] @1654: nobody rides",
+  "world": "Fairy cave (underwater)-159"
+ },
+ {
+  "bytes_hex": "3D 2B 2B 30 33 0C 0C 00 04 F8 FF",
+  "calls": 2,
+  "cut": 258,
+  "entry": 176,
+  "expected": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "247:3D:Implemented",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 258,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "255:04:Implemented",
+     "258:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-11",
+  "map": 226,
+  "program": "B[3]",
+  "red": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "247:3D:Skipped",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "255:04:Implemented",
+     "247:3D:Skipped",
+     "254:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 247,
+  "title": "226 B[3] @247: an entity at (43,50,12), Result 0 before",
+  "world": "Inoa-226"
+ },
+ {
+  "bytes_hex": "3D 2B 2B 30 33 0C 0C 00 04 F8 FF",
+  "calls": 2,
+  "cut": 258,
+  "entry": 176,
+  "expected": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "247:3D:Implemented",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 258,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "255:04:Implemented",
+     "258:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-11",
+  "map": 226,
+  "program": "B[3]",
+  "red": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "247:3D:Skipped",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 258,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "255:04:Implemented",
+     "258:FF:End"
+    ]
+   }
+  ],
+  "result0": 1,
+  "start": 247,
+  "title": "226 B[3] @247: an entity at (43,50,12), Result 1 before",
+  "world": "Inoa-226"
+ },
+ {
+  "bytes_hex": "3D 2B 2B 30 33 0C 0C 00 04 F8 FF",
+  "calls": 2,
+  "cut": 258,
+  "entry": 176,
+  "expected": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "247:3D:Implemented",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "255:04:Implemented",
+     "247:3D:Implemented",
+     "254:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-11",
+  "map": 226,
+  "program": "B[3]",
+  "red": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "247:3D:Skipped",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 258,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "255:04:Implemented",
+     "258:FF:End"
+    ]
+   }
+  ],
+  "result0": 1,
+  "start": 247,
+  "title": "226 B[3] @247: an entity at (43,52,12), Result 1 before",
+  "world": "Inoa-226"
+ },
+ {
+  "bytes_hex": "3D 2B 2B 30 33 0C 0C 00 04 F8 FF",
+  "calls": 2,
+  "cut": 258,
+  "entry": 176,
+  "expected": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "247:3D:Implemented",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "255:04:Implemented",
+     "247:3D:Implemented",
+     "254:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-11",
+  "map": 226,
+  "program": "B[3]",
+  "red": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "247:3D:Skipped",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 258,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "255:04:Implemented",
+     "258:FF:End"
+    ]
+   }
+  ],
+  "result0": 1,
+  "start": 247,
+  "title": "226 B[3] @247: an entity at (43,50,13), Result 1 before",
+  "world": "Inoa-226"
+ },
+ {
+  "bytes_hex": "3D 2B 2B 30 33 0C 0C 00 04 F8 FF",
+  "calls": 2,
+  "cut": 258,
+  "entry": 176,
+  "expected": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "247:3D:Implemented",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "255:04:Implemented",
+     "247:3D:Implemented",
+     "254:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-11",
+  "map": 226,
+  "program": "B[3]",
+  "red": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "247:3D:Skipped",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 258,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "255:04:Implemented",
+     "258:FF:End"
+    ]
+   }
+  ],
+  "result0": 1,
+  "start": 247,
+  "title": "226 B[3] @247: nobody, Result 1 before",
+  "world": "Inoa-226"
+ },
+ {
+  "bytes_hex": "3D 2B 2B 30 33 0C 0C 00 04 F8 FF",
+  "calls": 2,
+  "cut": 258,
+  "entry": 176,
+  "expected": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "247:3D:Implemented",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "255:04:Implemented",
+     "247:3D:Implemented",
+     "254:00:Break"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-11",
+  "map": 226,
+  "program": "B[3]",
+  "red": [
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "247:3D:Skipped",
+     "254:00:Break"
+    ]
+   },
+   {
+    "end_pc": 255,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "255:04:Implemented",
+     "247:3D:Skipped",
+     "254:00:Break"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 247,
+  "title": "226 B[3] @247: nobody, Result 0 before",
+  "world": "Inoa-226"
+ },
+ {
+  "bytes_hex": "43 01 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 94,
+  "entry": 80,
+  "expected": [
+   {
+    "end_pc": 191,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "86:43:Implemented",
+     "88:61:Implemented",
+     "90:42:Implemented",
+     "91:03:Implemented",
+     "191:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[1]",
+  "red": [
+   {
+    "end_pc": 191,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "86:43:Implemented",
+     "88:61:Skipped",
+     "90:42:Implemented",
+     "91:03:Implemented",
+     "191:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 86,
+  "title": "398 B[1] @88: item 1 rides Lurvy",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 01 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 94,
+  "entry": 80,
+  "expected": [
+   {
+    "end_pc": 94,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "86:43:Implemented",
+     "88:61:Implemented",
+     "90:42:Implemented",
+     "91:03:Implemented",
+     "94:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[1]",
+  "red": [
+   {
+    "end_pc": 191,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "86:43:Implemented",
+     "88:61:Skipped",
+     "90:42:Implemented",
+     "91:03:Implemented",
+     "191:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 86,
+  "title": "398 B[1] @88: item 1 does not ride",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 02 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 274,
+  "entry": 260,
+  "expected": [
+   {
+    "end_pc": 371,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "266:43:Implemented",
+     "268:61:Implemented",
+     "270:42:Implemented",
+     "271:03:Implemented",
+     "371:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[2]",
+  "red": [
+   {
+    "end_pc": 371,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "266:43:Implemented",
+     "268:61:Skipped",
+     "270:42:Implemented",
+     "271:03:Implemented",
+     "371:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 266,
+  "title": "398 B[2] @268: item 2 rides Lurvy",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 02 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 274,
+  "entry": 260,
+  "expected": [
+   {
+    "end_pc": 274,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "266:43:Implemented",
+     "268:61:Implemented",
+     "270:42:Implemented",
+     "271:03:Implemented",
+     "274:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[2]",
+  "red": [
+   {
+    "end_pc": 371,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "266:43:Implemented",
+     "268:61:Skipped",
+     "270:42:Implemented",
+     "271:03:Implemented",
+     "371:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 266,
+  "title": "398 B[2] @268: item 2 does not ride",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 03 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 454,
+  "entry": 440,
+  "expected": [
+   {
+    "end_pc": 551,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "446:43:Implemented",
+     "448:61:Implemented",
+     "450:42:Implemented",
+     "451:03:Implemented",
+     "551:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[3]",
+  "red": [
+   {
+    "end_pc": 551,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "446:43:Implemented",
+     "448:61:Skipped",
+     "450:42:Implemented",
+     "451:03:Implemented",
+     "551:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 446,
+  "title": "398 B[3] @448: item 3 rides Lurvy",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 03 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 454,
+  "entry": 440,
+  "expected": [
+   {
+    "end_pc": 454,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "446:43:Implemented",
+     "448:61:Implemented",
+     "450:42:Implemented",
+     "451:03:Implemented",
+     "454:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[3]",
+  "red": [
+   {
+    "end_pc": 551,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "446:43:Implemented",
+     "448:61:Skipped",
+     "450:42:Implemented",
+     "451:03:Implemented",
+     "551:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 446,
+  "title": "398 B[3] @448: item 3 does not ride",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 04 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 634,
+  "entry": 620,
+  "expected": [
+   {
+    "end_pc": 731,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "626:43:Implemented",
+     "628:61:Implemented",
+     "630:42:Implemented",
+     "631:03:Implemented",
+     "731:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[4]",
+  "red": [
+   {
+    "end_pc": 731,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "626:43:Implemented",
+     "628:61:Skipped",
+     "630:42:Implemented",
+     "631:03:Implemented",
+     "731:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 626,
+  "title": "398 B[4] @628: item 4 rides Lurvy",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 04 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 634,
+  "entry": 620,
+  "expected": [
+   {
+    "end_pc": 634,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "626:43:Implemented",
+     "628:61:Implemented",
+     "630:42:Implemented",
+     "631:03:Implemented",
+     "634:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[4]",
+  "red": [
+   {
+    "end_pc": 731,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "626:43:Implemented",
+     "628:61:Skipped",
+     "630:42:Implemented",
+     "631:03:Implemented",
+     "731:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 626,
+  "title": "398 B[4] @628: item 4 does not ride",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 05 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 829,
+  "entry": 800,
+  "expected": [
+   {
+    "end_pc": 926,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "821:43:Implemented",
+     "823:61:Implemented",
+     "825:42:Implemented",
+     "826:03:Implemented",
+     "926:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[5]",
+  "red": [
+   {
+    "end_pc": 926,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "821:43:Implemented",
+     "823:61:Skipped",
+     "825:42:Implemented",
+     "826:03:Implemented",
+     "926:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 821,
+  "title": "398 B[5] @823: item 5 rides Lurvy",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 05 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 829,
+  "entry": 800,
+  "expected": [
+   {
+    "end_pc": 829,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "821:43:Implemented",
+     "823:61:Implemented",
+     "825:42:Implemented",
+     "826:03:Implemented",
+     "829:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[5]",
+  "red": [
+   {
+    "end_pc": 926,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "821:43:Implemented",
+     "823:61:Skipped",
+     "825:42:Implemented",
+     "826:03:Implemented",
+     "926:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 821,
+  "title": "398 B[5] @823: item 5 does not ride",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 06 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 1049,
+  "entry": 1016,
+  "expected": [
+   {
+    "end_pc": 1146,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "1041:43:Implemented",
+     "1043:61:Implemented",
+     "1045:42:Implemented",
+     "1046:03:Implemented",
+     "1146:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[6]",
+  "red": [
+   {
+    "end_pc": 1146,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "1041:43:Implemented",
+     "1043:61:Skipped",
+     "1045:42:Implemented",
+     "1046:03:Implemented",
+     "1146:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1041,
+  "title": "398 B[6] @1043: item 6 rides Lurvy",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 06 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 1049,
+  "entry": 1016,
+  "expected": [
+   {
+    "end_pc": 1049,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "1041:43:Implemented",
+     "1043:61:Implemented",
+     "1045:42:Implemented",
+     "1046:03:Implemented",
+     "1049:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[6]",
+  "red": [
+   {
+    "end_pc": 1146,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "1041:43:Implemented",
+     "1043:61:Skipped",
+     "1045:42:Implemented",
+     "1046:03:Implemented",
+     "1146:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1041,
+  "title": "398 B[6] @1043: item 6 does not ride",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 07 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 1257,
+  "entry": 1224,
+  "expected": [
+   {
+    "end_pc": 1354,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "1249:43:Implemented",
+     "1251:61:Implemented",
+     "1253:42:Implemented",
+     "1254:03:Implemented",
+     "1354:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[7]",
+  "red": [
+   {
+    "end_pc": 1354,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "1249:43:Implemented",
+     "1251:61:Skipped",
+     "1253:42:Implemented",
+     "1254:03:Implemented",
+     "1354:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1249,
+  "title": "398 B[7] @1251: item 7 rides Lurvy",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "43 07 61 00 42 03 64 00",
+  "calls": 1,
+  "cut": 1257,
+  "entry": 1224,
+  "expected": [
+   {
+    "end_pc": 1257,
+    "flags": [],
+    "logic": 0,
+    "result": 0,
+    "trace": [
+     "1249:43:Implemented",
+     "1251:61:Implemented",
+     "1253:42:Implemented",
+     "1254:03:Implemented",
+     "1257:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-12",
+  "map": 398,
+  "program": "B[7]",
+  "red": [
+   {
+    "end_pc": 1354,
+    "flags": [],
+    "logic": 0,
+    "result": 1,
+    "trace": [
+     "1249:43:Implemented",
+     "1251:61:Skipped",
+     "1253:42:Implemented",
+     "1254:03:Implemented",
+     "1354:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1249,
+  "title": "398 B[7] @1251: item 7 does not ride",
+  "world": "Lurvy House, Well-398"
+ },
+ {
+  "bytes_hex": "1A 00 61 81 03 0C 00",
+  "calls": 1,
+  "cut": 1876,
+  "entry": 1856,
+  "expected": [
+   {
+    "end_pc": 1885,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1869:1A:Implemented",
+     "1871:61:Implemented",
+     "1873:03:Implemented",
+     "1885:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-13",
+  "map": 77,
+  "program": "C[14]",
+  "red": [
+   {
+    "end_pc": 1876,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1869:1A:Implemented",
+     "1871:61:Skipped",
+     "1873:03:Implemented",
+     "1876:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1869,
+  "title": "77 C[14] @1871: the wood rides the hero, Result 0 before",
+  "world": "Underground Watercourse-77"
+ },
+ {
+  "bytes_hex": "1A 00 61 81 03 0C 00",
+  "calls": 1,
+  "cut": 1876,
+  "entry": 1856,
+  "expected": [
+   {
+    "end_pc": 1885,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1869:1A:Implemented",
+     "1871:61:Implemented",
+     "1873:03:Implemented",
+     "1885:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-13",
+  "map": 77,
+  "program": "C[14]",
+  "red": [
+   {
+    "end_pc": 1885,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1869:1A:Implemented",
+     "1871:61:Skipped",
+     "1873:03:Implemented",
+     "1885:FF:End"
+    ]
+   }
+  ],
+  "result0": 1,
+  "start": 1869,
+  "title": "77 C[14] @1871: the wood rides the hero, Result 1 before",
+  "world": "Underground Watercourse-77"
+ },
+ {
+  "bytes_hex": "1A 00 61 81 03 0C 00",
+  "calls": 1,
+  "cut": 1876,
+  "entry": 1856,
+  "expected": [
+   {
+    "end_pc": 1876,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1869:1A:Implemented",
+     "1871:61:Implemented",
+     "1873:03:Implemented",
+     "1876:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-13",
+  "map": 77,
+  "program": "C[14]",
+  "red": [
+   {
+    "end_pc": 1885,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1869:1A:Implemented",
+     "1871:61:Skipped",
+     "1873:03:Implemented",
+     "1885:FF:End"
+    ]
+   }
+  ],
+  "result0": 1,
+  "start": 1869,
+  "title": "77 C[14] @1871: the wood rides nothing, Result 1 before",
+  "world": "Underground Watercourse-77"
+ },
+ {
+  "bytes_hex": "1A 01 61 81 03 0C 00",
+  "calls": 1,
+  "cut": 1684,
+  "entry": 1664,
+  "expected": [
+   {
+    "end_pc": 1693,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1677:1A:Implemented",
+     "1679:61:Implemented",
+     "1681:03:Implemented",
+     "1693:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-14",
+  "map": 78,
+  "program": "C[19]",
+  "red": [
+   {
+    "end_pc": 1684,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1677:1A:Implemented",
+     "1679:61:Skipped",
+     "1681:03:Implemented",
+     "1684:FF:End"
+    ]
+   }
+  ],
+  "result0": 0,
+  "start": 1677,
+  "title": "78 C[19] @1679: the wood rides the hero, Result 0 before",
+  "world": "Underground Watercourse-78"
+ },
+ {
+  "bytes_hex": "1A 01 61 81 03 0C 00",
+  "calls": 1,
+  "cut": 1684,
+  "entry": 1664,
+  "expected": [
+   {
+    "end_pc": 1693,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1677:1A:Implemented",
+     "1679:61:Implemented",
+     "1681:03:Implemented",
+     "1693:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-14",
+  "map": 78,
+  "program": "C[19]",
+  "red": [
+   {
+    "end_pc": 1693,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1677:1A:Implemented",
+     "1679:61:Skipped",
+     "1681:03:Implemented",
+     "1693:FF:End"
+    ]
+   }
+  ],
+  "result0": 1,
+  "start": 1677,
+  "title": "78 C[19] @1679: the wood rides the hero, Result 1 before",
+  "world": "Underground Watercourse-78"
+ },
+ {
+  "bytes_hex": "1A 01 61 81 03 0C 00",
+  "calls": 1,
+  "cut": 1684,
+  "entry": 1664,
+  "expected": [
+   {
+    "end_pc": 1684,
+    "flags": [],
+    "logic": 1,
+    "result": 0,
+    "trace": [
+     "1677:1A:Implemented",
+     "1679:61:Implemented",
+     "1681:03:Implemented",
+     "1684:FF:End"
+    ]
+   }
+  ],
+  "flags_at_start": [],
+  "id": "RB-14",
+  "map": 78,
+  "program": "C[19]",
+  "red": [
+   {
+    "end_pc": 1693,
+    "flags": [],
+    "logic": 1,
+    "result": 1,
+    "trace": [
+     "1677:1A:Implemented",
+     "1679:61:Skipped",
+     "1681:03:Implemented",
+     "1693:FF:End"
+    ]
+   }
+  ],
+  "result0": 1,
+  "start": 1677,
+  "title": "78 C[19] @1679: the wood rides nothing, Result 1 before",
+  "world": "Underground Watercourse-78"
+ }
+]

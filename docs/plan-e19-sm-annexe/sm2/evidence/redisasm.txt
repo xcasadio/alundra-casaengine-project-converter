@@ -1,0 +1,110 @@
+table[0x6a] @ 0x80099154 -> handler 0x8003f8dc
+table[0x6b] @ 0x80099158 -> handler 0x8003f908
+table[0x6c] @ 0x8009915c -> handler 0x8003f94c
+table[0x6d] @ 0x80099160 -> handler 0x8003f990
+table[0x6e] @ 0x80099164 -> handler 0x8003f9d4
+
+; opcode 0x6a handler 0x8003f8dc (11 words)
+  0x8003f8dc  lw       $v0, 0x114($a0)
+  0x8003f8e0  nop      
+  0x8003f8e4  sw       $v0, 0xc($a3)
+  0x8003f8e8  lw       $v0, 0x118($a0)
+  0x8003f8ec  nop      
+  0x8003f8f0  sw       $v0, 0x10($a3)
+  0x8003f8f4  lw       $v0, 0x11c($a0)
+  0x8003f8f8  nop      
+  0x8003f8fc  sw       $v0, 0x14($a3)
+  0x8003f900  jr       $ra
+  0x8003f904  addiu    $v0, $zero, 1
+; opcode 0x6b handler 0x8003f908 (17 words)
+  0x8003f908  lw       $v1, 0xc($a3)
+  0x8003f90c  lw       $v0, 0x114($a0)
+  0x8003f910  lw       $a0, ($a2)
+  0x8003f914  subu     $v1, $v1, $v0
+  0x8003f918  bgez     $v1, 0x8003f924
+  0x8003f91c  nop      
+  0x8003f920  negu     $v1, $v1
+  0x8003f924  lbu      $v0, 2($a0)
+  0x8003f928  lbu      $a0, 1($a0)
+  0x8003f92c  sll      $v0, $v0, 8
+  0x8003f930  or       $a0, $a0, $v0
+  0x8003f934  sll      $a0, $a0, 0x10
+  0x8003f938  slt      $v1, $v1, $a0
+  0x8003f93c  xori     $v1, $v1, 1
+  0x8003f940  addiu    $v0, $zero, 3
+  0x8003f944  jr       $ra
+  0x8003f948  sw       $v1, 0x2c($a3)
+; opcode 0x6c handler 0x8003f94c (17 words)
+  0x8003f94c  lw       $v1, 0x10($a3)
+  0x8003f950  lw       $v0, 0x118($a0)
+  0x8003f954  lw       $a0, ($a2)
+  0x8003f958  subu     $v1, $v1, $v0
+  0x8003f95c  bgez     $v1, 0x8003f968
+  0x8003f960  nop      
+  0x8003f964  negu     $v1, $v1
+  0x8003f968  lbu      $v0, 2($a0)
+  0x8003f96c  lbu      $a0, 1($a0)
+  0x8003f970  sll      $v0, $v0, 8
+  0x8003f974  or       $a0, $a0, $v0
+  0x8003f978  sll      $a0, $a0, 0x10
+  0x8003f97c  slt      $v1, $v1, $a0
+  0x8003f980  xori     $v1, $v1, 1
+  0x8003f984  addiu    $v0, $zero, 3
+  0x8003f988  jr       $ra
+  0x8003f98c  sw       $v1, 0x2c($a3)
+; opcode 0x6d handler 0x8003f990 (17 words)
+  0x8003f990  lw       $v1, 0x14($a3)
+  0x8003f994  lw       $v0, 0x11c($a0)
+  0x8003f998  lw       $a0, ($a2)
+  0x8003f99c  subu     $v1, $v1, $v0
+  0x8003f9a0  bgez     $v1, 0x8003f9ac
+  0x8003f9a4  nop      
+  0x8003f9a8  negu     $v1, $v1
+  0x8003f9ac  lbu      $v0, 2($a0)
+  0x8003f9b0  lbu      $a0, 1($a0)
+  0x8003f9b4  sll      $v0, $v0, 8
+  0x8003f9b8  or       $a0, $a0, $v0
+  0x8003f9bc  sll      $a0, $a0, 0x10
+  0x8003f9c0  slt      $v1, $v1, $a0
+  0x8003f9c4  xori     $v1, $v1, 1
+  0x8003f9c8  addiu    $v0, $zero, 3
+  0x8003f9cc  jr       $ra
+  0x8003f9d0  sw       $v1, 0x2c($a3)
+
+; RunScript dispatch 0x800422B0..0x80042348
+  0x800422b0  addiu    $v0, $zero, 0xff
+  0x800422b4  beq      $s0, $v0, 0x80042344
+  0x800422b8  nop      
+  0x800422bc  beqz     $s0, 0x800421f4
+  0x800422c0  move     $a0, $s1
+  0x800422c4  move     $a1, $s4
+  0x800422c8  move     $a2, $s2
+  0x800422cc  sll      $v0, $s0, 2
+  0x800422d0  lui      $t1, 0x800a
+  0x800422d4  addiu    $t1, $t1, -0x7054
+  0x800422d8  addu     $v0, $v0, $t1
+  0x800422dc  lui      $v1, 0x8014
+  0x800422e0  move     $a3, $s3
+  0x800422e4  lw       $v0, ($v0)
+  0x800422e8  lw       $t0, -0x25d8($v1)
+  0x800422ec  lui      $t1, 0x8014
+  0x800422f0  sw       $s0, -0x25d8($v1)
+  0x800422f4  jalr     $v0
+  0x800422f8  sw       $t0, -0x2620($t1)
+  0x800422fc  lw       $v1, -0x25e0($s6)
+  0x80042300  nop      
+  0x80042304  beqz     $v1, 0x80042324
+  0x80042308  move     $a0, $v0
+  0x8004230c  beq      $s1, $s4, 0x80042320
+  0x80042310  sw       $zero, -0x25e0($s6)
+  0x80042314  sw       $zero, 0x234($s1)
+  0x80042318  j        0x80042324
+  0x8004231c  sw       $zero, 0x238($s1)
+  0x80042320  addiu    $s5, $zero, 1
+  0x80042324  beqz     $a0, 0x80042344
+  0x80042328  nop      
+  0x8004232c  sw       $zero, 8($s3)
+  0x80042330  lw       $v0, ($s2)
+  0x80042334  nop      
+  0x80042338  addu     $v0, $v0, $a0
+  0x8004233c  j        0x80042280

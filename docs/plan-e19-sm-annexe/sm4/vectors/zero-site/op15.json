@@ -1,0 +1,296 @@
+{
+ "handler": "0x8003D710",
+ "opcode": 21,
+ "opcodeHex": "0x15",
+ "sites": 0,
+ "vectors": [
+  {
+   "frameNote": "binary frame; the DLL frame is one raw unit lower (ADR-0026) - INCONNU until the port reads RecordHeight / ModZ",
+   "id": "op15/e01",
+   "instruction": [
+    21
+   ],
+   "logicSlot": 1,
+   "modZ": 0,
+   "note": "Height 4, ModZ 0: PosZ = 32 << 16",
+   "posZBefore": 286331153,
+   "reads": {
+    "internal": [
+     "stack"
+    ],
+    "mapped": [
+     "record[9] (record byte 9 = Height)",
+     "slot[1].modZ",
+     "slot[1].recordPtr (non-null = RecordHeight has a value)"
+    ]
+   },
+   "recordHeight": 4,
+   "resultWritten": false,
+   "returned": 1,
+   "slotWrites": [
+    {
+     "field": "posZ",
+     "slot": 1,
+     "value": 2097152
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 1,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "frameNote": "binary frame; the DLL frame is one raw unit lower (ADR-0026) - INCONNU until the port reads RecordHeight / ModZ",
+   "id": "op15/e02",
+   "instruction": [
+    21
+   ],
+   "logicSlot": 1,
+   "modZ": 8,
+   "note": "Height 4, ModZ 8: (32 - 8) << 16",
+   "posZBefore": 286331153,
+   "reads": {
+    "internal": [
+     "stack"
+    ],
+    "mapped": [
+     "record[9] (record byte 9 = Height)",
+     "slot[1].modZ",
+     "slot[1].recordPtr (non-null = RecordHeight has a value)"
+    ]
+   },
+   "recordHeight": 4,
+   "resultWritten": false,
+   "returned": 1,
+   "slotWrites": [
+    {
+     "field": "posZ",
+     "slot": 1,
+     "value": 1572864
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 1,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "frameNote": "binary frame; the DLL frame is one raw unit lower (ADR-0026) - INCONNU until the port reads RecordHeight / ModZ",
+   "id": "op15/e03",
+   "instruction": [
+    21
+   ],
+   "logicSlot": 1,
+   "modZ": 0,
+   "note": "Height 0, ModZ 0: PosZ 0",
+   "posZBefore": 286331153,
+   "reads": {
+    "internal": [
+     "stack"
+    ],
+    "mapped": [
+     "record[9] (record byte 9 = Height)",
+     "slot[1].modZ",
+     "slot[1].recordPtr (non-null = RecordHeight has a value)"
+    ]
+   },
+   "recordHeight": 0,
+   "resultWritten": false,
+   "returned": 1,
+   "slotWrites": [
+    {
+     "field": "posZ",
+     "slot": 1,
+     "value": 0
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 1,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "frameNote": "binary frame; the DLL frame is one raw unit lower (ADR-0026) - INCONNU until the port reads RecordHeight / ModZ",
+   "id": "op15/e04",
+   "instruction": [
+    21
+   ],
+   "logicSlot": 1,
+   "modZ": 5,
+   "note": "Height 0, ModZ 5: negative PosZ ((0 - 5) << 16)",
+   "posZBefore": 286331153,
+   "reads": {
+    "internal": [
+     "stack"
+    ],
+    "mapped": [
+     "record[9] (record byte 9 = Height)",
+     "slot[1].modZ",
+     "slot[1].recordPtr (non-null = RecordHeight has a value)"
+    ]
+   },
+   "recordHeight": 0,
+   "resultWritten": false,
+   "returned": 1,
+   "slotWrites": [
+    {
+     "field": "posZ",
+     "slot": 1,
+     "value": -327680
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 1,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "frameNote": "binary frame; the DLL frame is one raw unit lower (ADR-0026) - INCONNU until the port reads RecordHeight / ModZ",
+   "id": "op15/e05",
+   "instruction": [
+    21
+   ],
+   "logicSlot": 1,
+   "modZ": 0,
+   "note": "Height 255, ModZ 0: 2040 << 16",
+   "posZBefore": 286331153,
+   "reads": {
+    "internal": [
+     "stack"
+    ],
+    "mapped": [
+     "record[9] (record byte 9 = Height)",
+     "slot[1].modZ",
+     "slot[1].recordPtr (non-null = RecordHeight has a value)"
+    ]
+   },
+   "recordHeight": 255,
+   "resultWritten": false,
+   "returned": 1,
+   "slotWrites": [
+    {
+     "field": "posZ",
+     "slot": 1,
+     "value": 133693440
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 1,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "frameNote": "binary frame; the DLL frame is one raw unit lower (ADR-0026) - INCONNU until the port reads RecordHeight / ModZ",
+   "id": "op15/e06",
+   "instruction": [
+    21
+   ],
+   "logicSlot": 1,
+   "modZ": -3,
+   "note": "Height 255, ModZ -3 (0xFFFFFFFD)",
+   "posZBefore": 286331153,
+   "reads": {
+    "internal": [
+     "stack"
+    ],
+    "mapped": [
+     "record[9] (record byte 9 = Height)",
+     "slot[1].modZ",
+     "slot[1].recordPtr (non-null = RecordHeight has a value)"
+    ]
+   },
+   "recordHeight": 255,
+   "resultWritten": false,
+   "returned": 1,
+   "slotWrites": [
+    {
+     "field": "posZ",
+     "slot": 1,
+     "value": 133890048
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 1,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "frameNote": "binary frame; the DLL frame is one raw unit lower (ADR-0026) - INCONNU until the port reads RecordHeight / ModZ",
+   "id": "op15/e07",
+   "instruction": [
+    21
+   ],
+   "logicSlot": 1,
+   "modZ": 2147483647,
+   "note": "Height 1, ModZ 0x7FFFFFFF: 32-bit wrap of the 16.16 shift",
+   "posZBefore": 286331153,
+   "reads": {
+    "internal": [
+     "stack"
+    ],
+    "mapped": [
+     "record[9] (record byte 9 = Height)",
+     "slot[1].modZ",
+     "slot[1].recordPtr (non-null = RecordHeight has a value)"
+    ]
+   },
+   "recordHeight": 1,
+   "resultWritten": false,
+   "returned": 1,
+   "slotWrites": [
+    {
+     "field": "posZ",
+     "slot": 1,
+     "value": 589824
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 1,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "frameNote": "binary frame; the DLL frame is one raw unit lower (ADR-0026) - INCONNU until the port reads RecordHeight / ModZ",
+   "id": "op15/e08",
+   "instruction": [
+    21
+   ],
+   "logicSlot": 1,
+   "modZ": 128,
+   "note": "Height 16, ModZ 128: zero",
+   "posZBefore": 286331153,
+   "reads": {
+    "internal": [
+     "stack"
+    ],
+    "mapped": [
+     "record[9] (record byte 9 = Height)",
+     "slot[1].modZ",
+     "slot[1].recordPtr (non-null = RecordHeight has a value)"
+    ]
+   },
+   "recordHeight": 16,
+   "resultWritten": false,
+   "returned": 1,
+   "slotWrites": [
+    {
+     "field": "posZ",
+     "slot": 1,
+     "value": 0
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 1,
+    "writes": "none (skipped by size)"
+   }
+  }
+ ]
+}

@@ -1,0 +1,13 @@
+rows used (0x6B/6C/6D): 1083
+  Math.Abs (throws on int.MinValue)                killed by  168 rows (first sm2-0015)  by group {'edge-threshold': 42, 'edge-negative-threshold': 24, 'edge-wrap': 90, 'fresh-memo': 12}
+  pixel form (|d| >> 16) >= (v1 | v2 << 8)         killed by  366 rows (first sm2-0015)  by group {'edge-threshold': 42, 'edge-negative-threshold': 156, 'edge-wrap': 78, 'fresh-memo': 12, 'other-axes': 4, 'random': 74}
+  unsigned threshold and distance                  killed by  366 rows (first sm2-0015)  by group {'edge-threshold': 42, 'edge-negative-threshold': 156, 'edge-wrap': 78, 'fresh-memo': 12, 'other-axes': 4, 'random': 74}
+  <= instead of <                                  killed by   72 rows (first sm2-0011)  by group {'edge-threshold': 42, 'edge-negative-threshold': 6, 'edge-wrap': 21, 'fresh-memo': 3}
+  Result inverted (the table label)                killed by 1083 rows (first sm2-0011)  by group {'edge-threshold': 354, 'edge-negative-threshold': 180, 'edge-wrap': 150, 'fresh-memo': 141, 'other-axes': 18, 'random': 240}
+  64-bit subtraction (no wrap)                     killed by  193 rows (first sm2-0015)  by group {'edge-threshold': 78, 'edge-negative-threshold': 18, 'edge-wrap': 84, 'fresh-memo': 12, 'random': 1}
+  no absolute value                                killed by  216 rows (first sm2-0016)  by group {'edge-threshold': 81, 'edge-negative-threshold': 18, 'edge-wrap': 3, 'fresh-memo': 48, 'other-axes': 9, 'random': 57}
+  operands swapped (pos - memo)                    killed by    0 rows (first None)  by group {}
+     !!! SURVIVES: the vectors do not distinguish it
+  threshold from byte 1 only                       killed by  193 rows (first sm2-0095)  by group {'edge-threshold': 30, 'edge-negative-threshold': 60, 'edge-wrap': 27, 'fresh-memo': 18, 'random': 58}
+  threshold bytes big-endian                       killed by  348 rows (first sm2-0027)  by group {'edge-threshold': 108, 'edge-negative-threshold': 60, 'edge-wrap': 36, 'fresh-memo': 39, 'other-axes': 3, 'random': 102}
+  abs saturates int.MinValue                       killed by  144 rows (first sm2-0015)  by group {'edge-threshold': 42, 'edge-negative-threshold': 18, 'edge-wrap': 72, 'fresh-memo': 12}

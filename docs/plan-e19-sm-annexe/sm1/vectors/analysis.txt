@@ -1,0 +1,53 @@
+== Result histogram (all / curated) ==
+0x3C all {0: 300, 1: 66} curated {0: 36, 1: 30}
+0x3D all {0: 209, 1: 144} curated {0: 27, 1: 26}
+0x60 all {0: 233, 1: 105} curated {0: 18, 1: 20}
+0x61 all {0: 215, 1: 112} curated {0: 15, 1: 12}
+
+== fields read, per opcode (field kind: how many vectors read it) ==
+0x3C: N=366, code[k]=366, pc-pointer=366, slot[i].anim=331, slot[i].flags=366, slot[i].platform=307, slot[i].status=366, slot[i].tx=276, slot[i].ty=276, slot[i].tz=276
+0x3D: N=353, code[k]=353, pc-pointer=353, slot[i].status=353, slot[i].tx=353, slot[i].ty=353, slot[i].tz=353
+0x60: N=274, code[k]=338, pc-pointer=338, slot[i].anim=20, slot[i].flags=21, slot[i].parent=37, slot[i].platform=34, slot[i].ref=53, slot[i].riding=207, slot[i].status=251, slot[i].xcoll=38
+0x61: N=265, code[k]=327, pc-pointer=327, slot[i].anim=13, slot[i].flags=14, slot[i].parent=36, slot[i].platform=25, slot[i].ref=48, slot[i].riding=191, slot[i].status=239, slot[i].xcoll=32
+
+== mutants: kill counts over all vectors, over curated vectors; first killing curated vector ids ==
+swap_60_61                     ops 60/61      all=120  curated=32  v60-c01 v60-c05c v60-c05d v60-c06a v60-c06b v60-c06c
+no_player_in_search            ops 60/61      all=45   curated=2   v60-c09a v61-c06a
+first_only                     ops 60/61      all=45   curated=4   v60-c08a v60-c13b v60-c18b v61-c12a
+last_only                      ops 60/61      all=42   curated=4   v60-c08b v60-c12 v61-c12b v61-c13a
+owner_instead_of_logic         ops 60/61      all=151  curated=31  v60-c01 v60-c05c v60-c05d v60-c06a v60-c06b v60-c06c
+reuse_IsRidingTheLogicEntity   ops 60/61      all=26   curated=4   v60-c06a v60-c06b v60-c06c v60-c07
+no_null_guard                  ops 60/61      all=2    curated=2   v60-a01 v61-a01
+platform_instead_of_riding     ops 60/61      all=108  curated=20  v60-c01 v60-c05c v60-c05d v60-c06a v60-c06b v60-c06c
+empty_group_keeps_result       ops 60/61      all=329  curated=8   v60-c04a v60-c05a v60-c05b v60-c14a v61-c04 v61-c10a
+empty_group_one                ops 60/61      all=329  curated=8   v60-c04a v60-c05a v60-c05b v60-c14a v61-c04 v61-c10a
+result_always_one              ops 60/61      all=462  curated=35  v60-c02 v60-c03 v60-c04a v60-c04b v60-c05a v60-c05b
+size_one                       ops 60/61      all=665  curated=65  v60-c01 v60-c02 v60-c03 v60-c04a v60-c04b v60-c05a
+size_three                     ops 60/61      all=665  curated=65  v60-c01 v60-c02 v60-c03 v60-c04a v60-c04b v60-c05a
+zone_3c_equals_3d              ops 3C/3D      all=77   curated=9   v3c-d02a v3c-d02b v3c-d03 v3c-d04a v3c-d04b v3c-d05
+zone_3d_equals_3c              ops 3C/3D      all=84   curated=1   v3d-d10
+signed_operands                ops 3C/3D      all=85   curated=4   v3d-c07a v3d-c07c v3c-c07a v3c-c07c
+spawned_only                   ops 3C/3D      all=62   curated=3   v3d-c12 v3c-c12 v3c-d07a
+skip_last                      ops 3C/3D      all=100  curated=49  v3d-c01 v3d-c02 v3d-c03 v3d-c05a v3d-c05b v3d-c05c
+logic_only                     ops 3C/3D      all=112  curated=12  v3d-c01 v3d-c12 v3d-c13 v3d-c16 v3d-c22 v3c-c01
+no_status_filter               ops 3C/3D      all=33   curated=6   v3d-c110 v3d-c114 v3d-c21 v3c-c110 v3c-c114 v3c-c21
+active_only                    ops 3C/3D      all=39   curated=2   v3d-c111 v3c-c111
+inverted_3c                    ops 3C/3D      all=73   curated=31  v3c-c01 v3c-c02 v3c-c03 v3c-c05a v3c-c05b v3c-c05c
+3c_no_collidable               ops 3C/3D      all=36   curated=5   v3c-d02a v3c-d02b v3c-d06b v3c-d07b v3c-d09
+3c_no_anim                     ops 3C/3D      all=9    curated=1   v3c-d03
+3c_no_platform                 ops 3C/3D      all=10   curated=2   v3c-d04a v3c-d04b
+3c_flags_equal                 ops 3C/3D      all=32   curated=3   v3c-c12 v3c-d06a v3c-d07a
+3c_anim_nonzero                ops 3C/3D      all=22   curated=2   v3c-d06a v3c-d06c
+axes_xy_swapped                ops 3C/3D      all=194  curated=52  v3d-c01 v3d-c02 v3d-c03 v3d-c05a v3d-c05b v3d-c05c
+axes_yz_swapped                ops 3C/3D      all=183  curated=52  v3d-c01 v3d-c02 v3d-c03 v3d-c05a v3d-c05b v3d-c05c
+upper_exclusive                ops 3C/3D      all=151  curated=18  v3d-c03 v3d-c05b v3d-c05d v3d-c05f v3d-c07a v3d-c10c
+lower_exclusive                ops 3C/3D      all=151  curated=18  v3d-c02 v3d-c05a v3d-c05c v3d-c05e v3d-c07c v3d-c10c
+z_ignored                      ops 3C/3D      all=23   curated=12  v3d-c04e v3d-c04f v3d-c08c v3d-c09c v3d-c15 v3d-c19e
+byte_truncated_tile            ops 3C/3D      all=21   curated=20  v3d-c07b v3d-c07d v3d-c08a v3d-c08b v3d-c08c v3d-c09a
+unsigned_tile                  ops 3C/3D      all=0    curated=0   
+size_six                       ops 3C/3D      all=719  curated=119 v3d-c01 v3d-c02 v3d-c03 v3d-c04a v3d-c04b v3d-c04c
+size_eight                     ops 3C/3D      all=719  curated=119 v3d-c01 v3d-c02 v3d-c03 v3d-c04a v3d-c04b v3d-c04c
+result_only_on_true            ops 3C/3D      all=509  curated=63  v3d-c04a v3d-c04b v3d-c04c v3d-c04d v3d-c04e v3d-c04f
+
+== mutants killed by no vector (candidates for "equivalent") ==
+unsigned_tile

@@ -1,0 +1,263 @@
+{
+ "M72a": {
+  "description": "the direction is not copied",
+  "killedByUnitTests": [
+   "U72-1",
+   "U72-2",
+   "U72-3",
+   "U72-4",
+   "U72-5"
+  ],
+  "killedByVectorRows": "57/67",
+  "opcode": "0x72"
+ },
+ "M72b": {
+  "description": "acts on the owner, not on the logic entity",
+  "killedByUnitTests": [
+   "U72-2"
+  ],
+  "killedByVectorRows": "44/67",
+  "opcode": "0x72"
+ },
+ "M72c": {
+  "description": "copies the other way (Target := Last)",
+  "killedByUnitTests": [
+   "U72-1",
+   "U72-2",
+   "U72-3",
+   "U72-4",
+   "U72-5"
+  ],
+  "killedByVectorRows": "66/67",
+  "opcode": "0x72"
+ },
+ "M72d": {
+  "description": "guarded by a status 1..3",
+  "killedByUnitTests": [
+   "U72-5"
+  ],
+  "killedByVectorRows": "16/67",
+  "opcode": "0x72"
+ },
+ "M88a": {
+  "description": "table with Normal and Deactivated swapped",
+  "killedByUnitTests": [
+   "U88-1",
+   "U88-2",
+   "U88-4",
+   "U88-7"
+  ],
+  "killedByVectorRows": "18/61",
+  "opcode": "0x88"
+ },
+ "M88c": {
+  "description": "only the first match is written",
+  "killedByUnitTests": [
+   "U88-4",
+   "U88-7"
+  ],
+  "killedByVectorRows": "8/61",
+  "opcode": "0x88"
+ },
+ "M88e": {
+  "description": "an index above 2 writes a word (0)",
+  "killedByUnitTests": [
+   "U88-9"
+  ],
+  "killedByVectorRows": "0/61",
+  "opcode": "0x88"
+ },
+ "M88f": {
+  "description": "the search reference is the owner, not the logic entity",
+  "killedByUnitTests": [
+   "U88-1",
+   "U88-2",
+   "U88-3"
+  ],
+  "killedByVectorRows": "16/61",
+  "opcode": "0x88"
+ },
+ "M96a": {
+  "description": "the amount is the second byte",
+  "killedByUnitTests": [
+   "U96-3",
+   "U96-4",
+   "U96-5",
+   "U96-7",
+   "U96-8",
+   "U96-10",
+   "U96-11",
+   "U96-12"
+  ],
+  "killedByVectorRows": "25/79",
+  "opcode": "0x96"
+ },
+ "M96b": {
+  "description": "no HpMax clamp",
+  "killedByUnitTests": [
+   "U96-1",
+   "U96-2",
+   "U96-3",
+   "U96-4",
+   "U96-6",
+   "U96-9",
+   "U96-11",
+   "U96-12"
+  ],
+  "killedByVectorRows": "33/79",
+  "opcode": "0x96"
+ },
+ "M96c": {
+  "description": "a floor at 0 is added",
+  "killedByUnitTests": [
+   "U96-7",
+   "U96-8",
+   "U96-9"
+  ],
+  "killedByVectorRows": "15/79",
+  "opcode": "0x96"
+ },
+ "M96d": {
+  "description": "never lowers an Hp above HpMax",
+  "killedByUnitTests": [
+   "U96-6",
+   "U96-8",
+   "U96-9"
+  ],
+  "killedByVectorRows": "16/79",
+  "opcode": "0x96"
+ },
+ "M96e": {
+  "description": "saturating 64-bit sum instead of the 32-bit wrap",
+  "killedByUnitTests": [
+   "U96-8"
+  ],
+  "killedByVectorRows": "2/79",
+  "opcode": "0x96"
+ },
+ "M96f": {
+  "description": "only status 1..3 targets are healed",
+  "killedByUnitTests": [
+   "U96-10"
+  ],
+  "killedByVectorRows": "3/79",
+  "opcode": "0x96"
+ },
+ "M96g": {
+  "description": "a target at Hp 0 is skipped",
+  "killedByUnitTests": [
+   "U96-10"
+  ],
+  "killedByVectorRows": "6/79",
+  "opcode": "0x96"
+ },
+ "M97a": {
+  "description": "spends money (the decompilation)",
+  "killedByUnitTests": [
+   "U97-1",
+   "U97-2",
+   "U97-4",
+   "U97-5",
+   "U97-6",
+   "U97-7",
+   "U97-8",
+   "U97-9",
+   "U97-10",
+   "U97-11",
+   "U97-12"
+  ],
+  "killedByVectorRows": "71/74",
+  "opcode": "0x97"
+ },
+ "M97b": {
+  "description": "the sum is cast to 16 bits before the clamp",
+  "killedByUnitTests": [
+   "U97-9"
+  ],
+  "killedByVectorRows": "7/74",
+  "opcode": "0x97"
+ },
+ "M97c": {
+  "description": "no floor at 0",
+  "killedByUnitTests": [
+   "U97-6",
+   "U97-8",
+   "U97-10"
+  ],
+  "killedByVectorRows": "18/74",
+  "opcode": "0x97"
+ },
+ "M97d": {
+  "description": "no MpMax clamp",
+  "killedByUnitTests": [
+   "U97-1",
+   "U97-4",
+   "U97-5",
+   "U97-6",
+   "U97-8",
+   "U97-9",
+   "U97-10",
+   "U97-11",
+   "U97-12"
+  ],
+  "killedByVectorRows": "65/74",
+  "opcode": "0x97"
+ },
+ "M97e": {
+  "description": "clamps to the constant 4 instead of MpMax",
+  "killedByUnitTests": [
+   "U97-4",
+   "U97-5",
+   "U97-11"
+  ],
+  "killedByVectorRows": "40/74",
+  "opcode": "0x97"
+ },
+ "MB3a": {
+  "description": "only the hold word is written",
+  "killedByUnitTests": [
+   "UB3-1",
+   "UB3-3",
+   "UB3-4"
+  ],
+  "killedByVectorRows": "65/67",
+  "opcode": "0xB3"
+ },
+ "MB3b": {
+  "description": "the words are OR-ed over the previous ones",
+  "killedByUnitTests": [
+   "UB3-3"
+  ],
+  "killedByVectorRows": "62/67",
+  "opcode": "0xB3"
+ },
+ "MB3c": {
+  "description": "big-endian words",
+  "killedByUnitTests": [
+   "UB3-1",
+   "UB3-2",
+   "UB3-5"
+  ],
+  "killedByVectorRows": "65/67",
+  "opcode": "0xB3"
+ },
+ "MB3d": {
+  "description": "pressed and released swapped",
+  "killedByUnitTests": [
+   "UB3-1"
+  ],
+  "killedByVectorRows": "62/67",
+  "opcode": "0xB3"
+ },
+ "MB3e": {
+  "description": "words masked to 8 bits",
+  "killedByUnitTests": [
+   "UB3-1",
+   "UB3-2",
+   "UB3-4",
+   "UB3-5"
+  ],
+  "killedByVectorRows": "64/67",
+  "opcode": "0xB3"
+ }
+}

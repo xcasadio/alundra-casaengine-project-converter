@@ -1,0 +1,91 @@
+opcode	map	slot	program	pc	operands	exact_test
+72	40	F	1	1141		shape only
+72	40	F	2	1153		ARC-40
+72	40	F	3	1165		shape only
+72	40	F	4	1177		shape only
+72	51	F	21	856		shape only
+72	53	F	7	1378		shape only
+72	54	F	39	2243		shape only
+72	139	D	9	793		shape only
+72	140	D	2	2037		RB-140-D2
+72	140	D	16	2125		shape only
+72	159	D	13	1787		shape only
+72	160	D	1	1607		shape only
+72	160	D	5	1612		shape only
+72	199	F	1	1232		shape only
+72	394	F	9	1257		shape only
+72	394	F	10	1265		shape only
+72	444	D	15	1302		RB-444-D15
+72	444	D	15	1317		shape only
+72	446	D	1	1114		shape only
+72	446	D	1	1129		shape only
+88	306	E	14	1110	80 00	ARC-306 + RB-306-E14
+88	306	E	15	1122	80 00	ARC-306 + RB-306-E14
+88	442	E	1	1312	80 02	ARC-442 + RB-442-E1
+96	22	C	6	863	81 FF	RB-22-C6
+96	23	C	15	1241	81 FF	shape only
+96	29	C	9	671	81 FF	shape only
+96	29	C	10	803	81 FF	shape only
+96	31	C	1	355	81 FF	shape only
+96	31	C	2	487	81 FF	shape only
+96	68	B	3	691	81 FF	shape only
+96	84	B	4	1056	80 32	shape only
+96	84	B	5	1164	80 32	shape only
+96	84	B	11	1996	80 32	shape only
+96	123	C	3	331	81 FF	shape only
+96	126	C	47	1187	81 FF	shape only
+96	147	B	3	524	80 32	shape only
+96	327	B	1	292	80 32	shape only
+96	379	B	1	156	81 32	shape only
+96	383	B	1	330	80 32	shape only
+96	394	C	3	749	80 32	RB-394-C3
+96	411	B	4	1056	80 32	shape only
+96	411	B	5	1164	80 32	shape only
+96	411	B	11	1996	80 32	shape only
+96	421	C	24	1702	81 32	shape only
+96	448	C	2	369	81 32	shape only
+96	452	B	2	204	80 32	ARC-452
+96	453	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	454	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	455	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	456	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	457	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	458	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	459	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	460	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	461	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	462	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	463	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	464	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	465	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	466	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	467	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	468	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	469	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	470	B	2	204	80 32	RB-SAVEROOMS pin (same bytes as 452)
+96	475	B	2	502	81 32	RB-475-B2
+97	147	B	4	650	32	shape only
+97	327	B	1	376	32	shape only
+97	379	B	1	159	32	shape only
+97	394	C	3	752	0A	RB-394-C3
+97	452	B	3	330	32	ARC-452
+97	453	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	454	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	455	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	456	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	457	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	458	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	459	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	460	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	461	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	462	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	463	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	464	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	465	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	466	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	467	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	468	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	469	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	470	B	3	330	32	RB-SAVEROOMS pin (same bytes as 452)
+97	475	B	2	505	32	RB-475-B2
+B3	161	B	1	54	00 10 00 00 00 00 00 00	ARC-161a/b + RB-161-B1

@@ -1,0 +1,20 @@
+tests 34 red on the correct port: []
+today                                          red 34: H1 H2X-120 H2X-119.99 H2X+1 H2X<-120 H2X<-119.99a H2X<-119.99b H2Y-16 H2Y-15.99 H2Z-1 H2Z-0.99 H3a H3b H3c H4 H5-00FFFFFF H5-01000000 H5-01000001 H6 H7-120 H7-119 H8 H9-6B H9-6C H9-6D H10 RB-55 RB-55n RB-56 RB-56b RB-59 RB-307 RB-344 RB-442
+M1 Math.Abs                                    red  3: H3b H3c H4
+M2 pixel form                                  red  2: H3a H3c
+M3 unsigned                                    red  2: H3a H4
+M4 <=                                          red 16: H2X-120 H2X<-120 H2Y-16 H2Z-1 H3c H5-01000000 H6 H7-120 RB-55 RB-55n RB-56 RB-56b RB-59 RB-307 RB-344 RB-442
+M5 invert 6B only (the spec: the 0x6B line)    red 19: H2X-120 H2X-119.99 H2X+1 H2X<-120 H2X<-119.99a H2X<-119.99b H3a H3b H3c H4 H6 H7-120 H7-119 H9-6B RB-55 RB-55n RB-307 RB-344 RB-442
+M5b invert 6B+6C+6D (the matrix)               red 31: H2X-120 H2X-119.99 H2X+1 H2X<-120 H2X<-119.99a H2X<-119.99b H2Y-16 H2Y-15.99 H2Z-1 H2Z-0.99 H3a H3b H3c H4 H5-00FFFFFF H5-01000000 H5-01000001 H6 H7-120 H7-119 H9-6B H9-6C H9-6D RB-55 RB-55n RB-56 RB-56b RB-59 RB-307 RB-344 RB-442
+M6 long abs                                    red  2: H3b H4
+M7 no abs                                      red 16: H2X-120 H2X+1 H2Y-16 H2Z-1 H5-01000000 H5-01000001 H6 H7-120 H9-6B RB-55 RB-56 RB-56b RB-59 RB-307 RB-344 RB-442
+M8 6A forgets Z                                red 10: H1 H6 H8 H9-6D RB-55 RB-55n RB-59 RB-307 RB-344 RB-442
+M9 6A writes Result:=1                         red  1: H1
+M10 owner position                             red  1: H6
+M11 6D reads P3                                red  2: H2Z-0.99 RB-59
+M12 6B returns 1                               red 19: H2X-120 H2X-119.99 H2X+1 H2X<-120 H2X<-119.99a H2X<-119.99b H3a H3b H3c H4 H6 H7-120 H7-119 H9-6B RB-55 RB-55n RB-307 RB-344 RB-442
+M13 6A returns 2                               red 13: H1 H6 H7-120 H7-119 H9-6B H9-6C H9-6D RB-55 RB-55n RB-59 RB-307 RB-344 RB-442
+M14 Break clears                               red 10: H6 H7-120 H7-119 H8 RB-55 RB-55n RB-59 RB-307 RB-344 RB-442
+M15 init clears                                red  1: H8
+M16 wait cell P5                               red  3: H9-6B H9-6C H9-6D
+M17 old label                                  red  1: H10

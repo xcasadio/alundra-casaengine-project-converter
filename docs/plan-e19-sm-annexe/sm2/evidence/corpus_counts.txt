@@ -1,0 +1,7 @@
+all: {'lines': 510, 'instr': 508, 'maps': 96, 'opcodes': 21}
+per owner: {'sm1': 187, 'sm2': 129, 'sm3': 42, 'sm4': 90, 'sm5': 17, 'sm7': 42, 'sm8': 3}
+after sm2 removal: {'lines': 381, 'instr': 379, 'maps': 90, 'opcodes': 17}
+sm2 only: {'lines': 129, 'instr': 129, 'maps': 8, 'opcodes': 4}  duplicates (map,pc) inside sm2: 0
+distinct (map,slot,program,pc) in sm2: 129
+maps that leave the list entirely with sm2: [55, 56, 57, 59, 307, 344]
+sm2 maps that keep other-owner lines: {'60': {'56': 1}, '442': {'88': 1}}

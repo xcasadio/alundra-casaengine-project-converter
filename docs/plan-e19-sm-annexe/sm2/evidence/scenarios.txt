@@ -1,0 +1,76 @@
+=== RB-55  55 C[4]  X patrol 120 px (grow) (result0=1)
+  [port]
+   tick 1: executed 272:6A 273:1A 275:00 | Result=1 CodeIndex=276 memo(P2,P3,P4)=(00400000,00C80000,00080000) TargetDirection=0
+   tick 2: executed 276:6B 279:03 282:30 287:02 273:1A 275:00 | Result=0 CodeIndex=276 memo(P2,P3,P4)=(00400000,00C80000,00080000) TargetDirection=0
+   tick 3: executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00 | Result=1 CodeIndex=276 memo(P2,P3,P4)=(00B80000,00C80000,00080000) TargetDirection=16
+  [today]
+   tick 1: executed 272:6A 273:1A 275:00 | Result=1 CodeIndex=276 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 2: executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00 | Result=1 CodeIndex=276 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=16
+   tick 3: executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00 | Result=1 CodeIndex=276 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+=== RB-55n 55 C[4]  X patrol 120 px (shrink: abs) (result0=1)
+  [port]
+   tick 1: executed 272:6A 273:1A 275:00 | Result=1 CodeIndex=276 memo(P2,P3,P4)=(00C80000,00C80000,00080000) TargetDirection=0
+   tick 2: executed 276:6B 279:03 282:30 287:02 273:1A 275:00 | Result=0 CodeIndex=276 memo(P2,P3,P4)=(00C80000,00C80000,00080000) TargetDirection=0
+   tick 3: executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00 | Result=1 CodeIndex=276 memo(P2,P3,P4)=(00500000,00C80000,00080000) TargetDirection=16
+  [today]
+   tick 1: executed 272:6A 273:1A 275:00 | Result=1 CodeIndex=276 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 2: executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00 | Result=1 CodeIndex=276 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=16
+   tick 3: executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00 | Result=1 CodeIndex=276 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+=== RB-56  56 C[1]  6D without 6A, P4 = 0, threshold 256 px (from pc 93) (result0=1)
+  [port]
+   tick 1: executed 93:1B 96:00 | Result=1 CodeIndex=97 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 2: executed 97:6D 100:03 103:30 108:02 93:1B 96:00 | Result=0 CodeIndex=97 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 3: executed 97:6D 100:03 111:1B 114:1B 117:00 | Result=1 CodeIndex=118 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+  [today]
+   tick 1: executed 93:1B 96:00 | Result=1 CodeIndex=97 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 2: executed 97:6D 100:03 111:1B 114:1B 117:00 | Result=1 CodeIndex=118 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 3: executed 118:6F 119:03 93:1B 96:00 | Result=1 CodeIndex=97 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+=== RB-56b 56 C[1]  6D without 6A, Result0 = 0 (the arrival tick) (result0=0)
+  [port]
+   tick 1: executed 93:1B 96:00 | Result=0 CodeIndex=97 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 2: executed 97:6D 100:03 111:1B 114:1B 117:00 | Result=1 CodeIndex=118 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+  [today]
+   tick 1: executed 93:1B 96:00 | Result=0 CodeIndex=97 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 2: executed 97:6D 100:03 103:30 108:02 93:1B 96:00 | Result=0 CodeIndex=97 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+=== RB-59  59 C[6]  Z balloon, 32 px, two 6A (result0=1)
+  [port]
+   tick 1: executed 456:2A 457:6A 458:1B 461:00 | Result=1 CodeIndex=462 memo(P2,P3,P4)=(00500000,003C0000,00600000) TargetDirection=0
+   tick 2: executed 462:6D 465:03 468:30 473:02 458:1B 461:00 | Result=0 CodeIndex=462 memo(P2,P3,P4)=(00500000,003C0000,00600000) TargetDirection=0
+   tick 3: executed 462:6D 465:03 476:6A 477:1B 480:00 | Result=1 CodeIndex=481 memo(P2,P3,P4)=(00500000,003C0000,00800000) TargetDirection=0
+  [today]
+   tick 1: executed 456:2A 457:6A 458:1B 461:00 | Result=1 CodeIndex=462 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 2: executed 462:6D 465:03 476:6A 477:1B 480:00 | Result=1 CodeIndex=481 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 3: executed 481:6D 484:03 456:2A 457:6A 458:1B 461:00 | Result=1 CodeIndex=462 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+=== RB-307 307 C[1] memo across a 0x78 call (result0=1)
+  [port]
+   tick 1: executed 424:1A 426:6A 427:1B 430:78 474:6E 475:7F 433:6B 436:03 439:00 | Result=0 CodeIndex=440 memo(P2,P3,P4)=(00250000,00230000,00280000) TargetDirection=0
+   tick 2: executed 440:02 427:1B 430:78 474:6E 475:7F 433:6B 436:03 439:00 | Result=0 CodeIndex=440 memo(P2,P3,P4)=(00250000,00230000,00280000) TargetDirection=0
+   tick 3: executed 440:02 427:1B 430:78 474:6E 475:7F 433:6B 436:03 444:6A 445:1B 448:78 474:6E 475:7F 451:6B 454:03 457:00 | Result=0 CodeIndex=458 memo(P2,P3,P4)=(00610000,00230000,00280000) TargetDirection=0
+  [today]
+   tick 1: executed 424:1A 426:6A 427:1B 430:78 474:6E 475:7F 433:6B 436:03 439:00 | Result=0 CodeIndex=440 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 2: executed 440:02 427:1B 430:78 474:6E 475:7F 433:6B 436:03 439:00 | Result=0 CodeIndex=440 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 3: executed 440:02 427:1B 430:78 474:6E 475:7F 433:6B 436:03 439:00 | Result=0 CodeIndex=440 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+=== RB-344 344 C[60] Y 64 px then X 96 px (two memos) (result0=1)
+  [port]
+   tick 1: executed 2356:1A 2358:6A 2359:00 | Result=1 CodeIndex=2360 memo(P2,P3,P4)=(00580000,02000000,00600000) TargetDirection=0
+   tick 2: executed 2360:30 2365:89 2374:6C 2377:04 2359:00 | Result=0 CodeIndex=2360 memo(P2,P3,P4)=(00580000,02000000,00600000) TargetDirection=0
+   tick 3: executed 2360:30 2365:89 2374:6C 2377:04 2380:08 2382:6A 2383:00 | Result=1 CodeIndex=2384 memo(P2,P3,P4)=(00580000,02400000,00600000) TargetDirection=24
+   tick 4: executed 2384:30 2389:89 2398:6B 2401:04 2383:00 | Result=0 CodeIndex=2384 memo(P2,P3,P4)=(00580000,02400000,00600000) TargetDirection=24
+   tick 5: executed 2384:30 2389:89 2398:6B 2401:04 2383:00 | Result=0 CodeIndex=2384 memo(P2,P3,P4)=(00580000,02400000,00600000) TargetDirection=24
+   tick 6: executed 2384:30 2389:89 2398:6B 2401:04 2404:08 2406:02 2358:6A 2359:00 | Result=1 CodeIndex=2360 memo(P2,P3,P4)=(00B80000,02400000,00600000) TargetDirection=16
+  [today]
+   tick 1: executed 2356:1A 2358:6A 2359:00 | Result=1 CodeIndex=2360 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 2: executed 2360:30 2365:89 2374:6C 2377:04 2380:08 2382:6A 2383:00 | Result=1 CodeIndex=2384 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=24
+   tick 3: executed 2384:30 2389:89 2398:6B 2401:04 2404:08 2406:02 2358:6A 2359:00 | Result=1 CodeIndex=2360 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=16
+   tick 4: executed 2360:30 2365:89 2374:6C 2377:04 2380:08 2382:6A 2383:00 | Result=1 CodeIndex=2384 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=8
+   tick 5: executed 2384:30 2389:89 2398:6B 2401:04 2404:08 2406:02 2358:6A 2359:00 | Result=1 CodeIndex=2360 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 6: executed 2360:30 2365:89 2374:6C 2377:04 2380:08 2382:6A 2383:00 | Result=1 CodeIndex=2384 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=24
+=== RB-442 442 C[3]  X patrol 72 px (result0=1)
+  [port]
+   tick 1: executed 512:6A 513:1A 515:00 | Result=1 CodeIndex=516 memo(P2,P3,P4)=(00C00000,00640000,00400000) TargetDirection=0
+   tick 2: executed 516:30 521:30 526:6B 529:04 515:00 | Result=0 CodeIndex=516 memo(P2,P3,P4)=(00C00000,00640000,00400000) TargetDirection=0
+   tick 3: executed 516:30 521:30 526:6B 529:04 532:0A 533:02 512:6A 513:1A 515:00 | Result=1 CodeIndex=516 memo(P2,P3,P4)=(01080000,00640000,00400000) TargetDirection=16
+  [today]
+   tick 1: executed 512:6A 513:1A 515:00 | Result=1 CodeIndex=516 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0
+   tick 2: executed 516:30 521:30 526:6B 529:04 532:0A 533:02 512:6A 513:1A 515:00 | Result=1 CodeIndex=516 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=16
+   tick 3: executed 516:30 521:30 526:6B 529:04 532:0A 533:02 512:6A 513:1A 515:00 | Result=1 CodeIndex=516 memo(P2,P3,P4)=(00000000,00000000,00000000) TargetDirection=0

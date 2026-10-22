@@ -1,0 +1,147 @@
+// =====================================================================================================================================
+// E19.sm2 T1 (static tests) - UNBUILT DRAFT. The reference implementation is tools/cfg2.py (dataflow, successors, reach_walkprogram); this file is its port.
+// Expected numbers: evidence/memo_reads_table.tsv (70 rows), evidence/memo_fabricated.txt (the made-up programs), tools/memo_static.py output.
+// =====================================================================================================================================
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Xunit;
+using Alundra.Events;
+
+namespace Alundra.Tests.Events;
+
+[Flags]
+internal enum MemoState { None = 0, Init = 1, Saved = 2, Clobbered = 4 }
+
+/// <summary>
+/// The flow-sensitive check of the position memo (E19.sm2 S1): for a program, the set of states in which each 0x6B/0x6C/0x6D is reached, per axis -
+/// INIT (the entry: no 0x6A passed, the state's own initial or residual cell), SAVED (the last thing that touched the cell is a 0x6A) or CLOBBERED (a writer of the
+/// cell ran after the last 0x6A). The writers are the BINARY's (a superset of the DLL's: it adds 0x5F and 0xBB, not ported), so a later port of these two cannot slip in.
+/// The control flow is the one of AlundraStoryChainOpcodeAudit.WalkProgram (both branches of every conditional, 0x57/0x58 four targets, 0x49/0x4A/0x4B back to the entry,
+/// 0x78/0x79/0x7B/0x7C calls with their return mark, 0x7D-0x81 returns), written here as explicit edges so a call continues in its callee and a return in every mark.
+/// </summary>
+internal static class MemoFlow
+{
+    internal static readonly IReadOnlyDictionary<char, int[]> Writers = new Dictionary<char, int[]>
+    {
+        ['X'] = new[] { 0x0B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x37, 0x5F, 0xBB },
+        ['Y'] = new[] { 0x0B, 0x1E, 0x1F, 0x5F },
+        ['Z'] = new[] { 0x5F },
+    };
+
+    internal static readonly IReadOnlyDictionary<int, char> Readers = new Dictionary<int, char> { [0x6B] = 'X', [0x6C] = 'Y', [0x6D] = 'Z' };
+
+    private static int S16(byte[] codes, int lo) => lo + 1 < codes.Length ? (short)(codes[lo] | (codes[lo + 1] << 8)) : 0;
+
+    private static IEnumerable<int> Successors(byte[] codes, int entry, int pc, IReadOnlyCollection<int> marks)
+    {
+        var op = codes[pc];
+        var size = EventOpcodeSizeTable.Entries.TryGetValue((byte)op, out var info) && info.Size > 0 ? info.Size : 1;
+        switch (op)
+        {
+            case 0xFF: return Array.Empty<int>();
+            case 0x02: return new[] { pc + S16(codes, pc + 1) };
+            case 0x03: case 0x04: case 0x74: return new[] { pc + size, pc + S16(codes, pc + 1) };
+            case 0x30: case 0x31: return new[] { pc + size, pc + S16(codes, pc + 3) };
+            case 0x49: return new[] { entry };
+            case 0x4A: case 0x4B: return new[] { pc + size, entry };
+            case 0x57: case 0x58: return Enumerable.Range(0, 4).Select(d => pc + S16(codes, pc + 1 + 2 * d)).ToArray();
+            case 0x78: return new[] { pc + S16(codes, pc + 1) };
+            case 0x79: return new[] { pc + size, pc + S16(codes, pc + 1) };
+            case 0x7B: case 0x7C: return new[] { pc + size, pc + S16(codes, pc + 3) };
+            case 0x7D: return marks.OrderBy(m => m).ToArray();
+            case 0x7E: case 0x7F: case 0x80: case 0x81: return marks.OrderBy(m => m).Prepend(pc + size).ToArray();
+            default: return new[] { pc + size };
+        }
+    }
+
+    /// <summary>The marks (return points) of the calls the program can make: pc + 3 after a 0x78/0x79, pc + 5 after a 0x7B/0x7C, on the reachable instructions, to a fixpoint
+    /// (a return continues at every mark known so far, and the code after a mark can make more calls).</summary>
+    private static HashSet<int> Marks(byte[] codes, int entry)
+    {
+        var marks = new HashSet<int>();
+        while (true)
+        {
+            var found = new HashSet<int>(marks);
+            var seen = new HashSet<int>();
+            var work = new Stack<int>();
+            work.Push(entry);
+            while (work.Count > 0)
+            {
+                var pc = work.Pop();
+                if (pc < 0 || pc >= codes.Length || !seen.Add(pc)) { continue; }
+                if (codes[pc] is 0x78 or 0x79) { found.Add(pc + 3); }
+                if (codes[pc] is 0x7B or 0x7C) { found.Add(pc + 5); }
+                foreach (var next in Successors(codes, entry, pc, marks)) { work.Push(next); }
+            }
+
+            if (found.Count == marks.Count) { return marks; }
+            marks = found;
+        }
+    }
+
+    /// <summary>Per reader pc (0x6B/0x6C/0x6D) of the program starting at <paramref name="entry"/>: the states it is reached in on ITS axis. A pc that is not reachable is absent.</summary>
+    internal static IReadOnlyDictionary<int, MemoState> ReaderStates(byte[] codes, int entry, IReadOnlyDictionary<char, int[]>? writers = null)
+    {
+        writers ??= Writers;
+        var marks = Marks(codes, entry);
+        var result = new Dictionary<int, MemoState>();
+        foreach (var axis in new[] { 'X', 'Y', 'Z' })
+        {
+            var at = new Dictionary<int, MemoState> { [entry] = MemoState.Init };
+            var work = new Stack<int>();
+            work.Push(entry);
+            while (work.Count > 0)
+            {
+                var pc = work.Pop();
+                if (pc < 0 || pc >= codes.Length) { continue; }
+                var op = codes[pc];
+                var after = MemoState.None;
+                foreach (var state in new[] { MemoState.Init, MemoState.Saved, MemoState.Clobbered })
+                {
+                    if ((at[pc] & state) == 0) { continue; }
+                    after |= op == 0x6A ? MemoState.Saved : writers[axis].Contains(op) ? MemoState.Clobbered : state;
+                }
+
+                foreach (var next in Successors(codes, entry, pc, marks))
+                {
+                    if (next < 0 || next >= codes.Length) { continue; }
+                    var old = at.TryGetValue(next, out var known) ? known : MemoState.None;
+                    var merged = old | after;
+                    if (merged != old) { at[next] = merged; work.Push(next); }
+                }
+            }
+
+            foreach (var (pc, state) in at)
+            {
+                if (Readers.TryGetValue(codes[pc], out var readerAxis) && readerAxis == axis) { result[pc] = state; }
+            }
+        }
+
+        return result;
+    }
+}
+
+public sealed class PositionMemoCorpusTests
+{
+    // S1-f: the function alone, on made-up programs (expected states: evidence/memo_fabricated.txt, 15 programs). A few:
+    [Theory]
+    [InlineData(new byte[] { 0x6A, 0x6B, 0x10, 0x00, 0xFF }, 1, MemoState.Saved)]
+    [InlineData(new byte[] { 0x6B, 0x10, 0x00, 0xFF }, 0, MemoState.Init)]
+    [InlineData(new byte[] { 0x6A, 0x37, 0x05, 0x6B, 0x10, 0x00, 0xFF }, 3, MemoState.Clobbered)]
+    [InlineData(new byte[] { 0x6A, 0x37, 0x05, 0x6D, 0x10, 0x00, 0xFF }, 3, MemoState.Saved)]          // Z is immune to the wait
+    [InlineData(new byte[] { 0x6A, 0x1E, 0x10, 0x00, 0x6C, 0x10, 0x00, 0xFF }, 4, MemoState.Clobbered)] // 0x1E writes Parameters[2] and [3]
+    [InlineData(new byte[] { 0x6A, 0x5F, 0, 0, 0, 0, 0, 0, 0, 0x6D, 0x10, 0x00, 0xFF }, 9, MemoState.Clobbered)] // the binary-only writer
+    [InlineData(new byte[] { 0x6B, 0x10, 0x00, 0x6A, 0x02, 0xFC, 0xFF, 0xFF }, 0, MemoState.Init | MemoState.Saved)]  // a backward jump reaches the read with both
+    [InlineData(new byte[] { 0x6A, 0x78, 0x07, 0x00, 0x6B, 0x10, 0x00, 0xFF, 0x6E, 0x7F, 0x1B, 0x00, 0x00, 0x7D }, 4, MemoState.Saved)]   // an innocent callee (map 307's shape)
+    [InlineData(new byte[] { 0x6A, 0x78, 0x07, 0x00, 0x6B, 0x10, 0x00, 0xFF, 0x37, 0x05, 0x7D }, 4, MemoState.Clobbered)]                  // a callee that waits
+    public void S1f_TheFlowFunction_OnMadeUpPrograms(byte[] codes, int readerPc, MemoState expected)
+        => Assert.Equal(expected, MemoFlow.ReaderStates(codes, 0)[readerPc]);
+
+    // S1: the corpus. The sites come from the existing walk (AlundraStoryChainOpcodeAudit.WalkExportedMap over the 483 maps, as sm0's tests do); no list is read (the sm2 lines
+    // leave the closed list in the commit of the code). Frozen numbers: 129 sites on 8 maps (0x6A 59, 0x6B 29, 0x6C 12, 0x6D 29), 45 programs, 70 reads:
+    //   X 29 all Saved ; Y 12 all Saved ; Z 29 = 18 Saved + 11 Init (the 11 listed below) ; 0 Clobbered.
+    // The 11 reads with no 0x6A: 55 C[20..24] (@1397, @1493, @1589, @1685, @1781), 56 C[1..4] (@97, @201, @305, @409), 57 C[4] @217 and C[7] @413.
+    // Per map: 344 40, 60 24, 59 20, 442 16, 55 15, 307 8, 56 4, 57 2.
+}

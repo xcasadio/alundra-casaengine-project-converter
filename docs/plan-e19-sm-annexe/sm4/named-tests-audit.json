@@ -1,0 +1,3387 @@
+[
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.lastTargetAnimId": 5,
+    "0.lastTargetDir": 9,
+    "0.targetAnimId": 5,
+    "0.targetDir": 9
+   }
+  },
+  "id": "U72-1",
+  "instruction": [
+   114,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "SetLastTarget_0x72_CopiesTheTargetOntoLastTarget",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(0, 'lastTargetAnimId') today 1, expected 5",
+   "slot.(0, 'lastTargetDir') today 2, expected 9"
+  ],
+  "returned": 1,
+  "rule": "R1",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 1,
+     "lastTargetDir": 2,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 5,
+     "targetDir": 9,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "logic = owner = the entity"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.lastTargetAnimId": 0,
+    "0.lastTargetDir": 0,
+    "1.lastTargetAnimId": 3,
+    "1.lastTargetDir": 21
+   }
+  },
+  "id": "U72-2",
+  "instruction": [
+   114,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetLastTarget_0x72_ActsOnTheLogicEntity_NotOnTheOwner",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'lastTargetAnimId') today 99, expected 3",
+   "slot.(1, 'lastTargetDir') today 98, expected 21"
+  ],
+  "returned": 1,
+  "rule": "R1",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 7,
+     "targetDir": 7,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 99,
+     "lastTargetDir": 98,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 3,
+     "targetDir": 21,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "owner = hero, logic = the NPC"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "1.lastTargetAnimId": 4294967295,
+    "1.lastTargetDir": 4294967295
+   }
+  },
+  "id": "U72-3",
+  "instruction": [
+   114,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetLastTarget_0x72_CopiesMaxUnsignedValuesVerbatim",
+  "ownerSlot": 1,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'lastTargetAnimId') today 0, expected 4294967295",
+   "slot.(1, 'lastTargetDir') today 0, expected 4294967295"
+  ],
+  "returned": 1,
+  "rule": "R1",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 4294967295,
+     "targetDir": 4294967295,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "uint values"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "1.lastTargetAnimId": 0,
+    "1.lastTargetDir": 0
+   }
+  },
+  "id": "U72-4",
+  "instruction": [
+   114,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetLastTarget_0x72_ZeroTargetOverwritesANonZeroLast",
+  "ownerSlot": 1,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'lastTargetAnimId') today 65, expected 0",
+   "slot.(1, 'lastTargetDir') today 31, expected 0"
+  ],
+  "returned": 1,
+  "rule": "R1",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 65,
+     "lastTargetDir": 31,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "zero is a value"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "1.lastTargetAnimId": 8,
+    "1.lastTargetDir": 2
+   }
+  },
+  "id": "U72-5",
+  "instruction": [
+   114,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetLastTarget_0x72_HasNoStatusGuard",
+  "ownerSlot": 1,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'lastTargetAnimId') today 0, expected 8",
+   "slot.(1, 'lastTargetDir') today 0, expected 2"
+  ],
+  "returned": 1,
+  "rule": "R1",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 4,
+     "targetAnimId": 8,
+     "targetDir": 2,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 0,
+     "targetAnimId": 8,
+     "targetDir": 2,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "FlagToDestroy logic entity"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.status": 2,
+    "1.status": 2
+   }
+  },
+  "id": "U88-1",
+  "instruction": [
+   136,
+   128,
+   0,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetStatus_0x88_Self_Index0_BecomesNormal",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'status') today 3, expected 2"
+  ],
+  "returned": 3,
+  "rule": "R2",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 3,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "Deactivated -> Normal"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "1.status": 3
+   }
+  },
+  "id": "U88-2",
+  "instruction": [
+   136,
+   128,
+   1,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetStatus_0x88_Self_Index1_BecomesDeactivated",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'status') today 2, expected 3"
+  ],
+  "returned": 3,
+  "rule": "R2",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "Normal -> Deactivated"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "1.status": 4
+   }
+  },
+  "id": "U88-3",
+  "instruction": [
+   136,
+   128,
+   2,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetStatus_0x88_Self_Index2_BecomesFlagToDestroy_WithoutDestroyEntity",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'status') today 3, expected 4"
+  ],
+  "returned": 3,
+  "rule": "R2",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 3,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "Deactivated -> FlagToDestroy"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.status": 2,
+    "1.status": 2,
+    "2.status": 2,
+    "3.status": 4,
+    "4.status": 0,
+    "5.status": 5,
+    "6.status": 2
+   }
+  },
+  "id": "U88-4",
+  "instruction": [
+   136,
+   130,
+   0,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetStatus_0x88_AllActive_OnlyStatuses1To3Change",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(0, 'status') today 3, expected 2",
+   "slot.(1, 'status') today 1, expected 2",
+   "slot.(2, 'status') today 3, expected 2"
+  ],
+  "returned": 3,
+  "rule": "R2",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 3,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 1,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 2,
+     "ridingSlot": -1,
+     "status": 3,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 3,
+     "ridingSlot": -1,
+     "status": 4,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 0,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 5,
+     "ridingSlot": -1,
+     "status": 5,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 6,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "group 0x82 includes the hero"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.status": 4,
+    "1.status": 2
+   }
+  },
+  "id": "U88-5",
+  "instruction": [
+   136,
+   129,
+   2,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetStatus_0x88_HeroGroup_Index2_SetsTheHeroToo",
+  "ownerSlot": 1,
+  "redToday": true,
+  "redValues": [
+   "slot.(0, 'status') today 2, expected 4"
+  ],
+  "returned": 3,
+  "rule": "R2",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "no guard on the hero"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.status": 2,
+    "1.status": 2,
+    "2.status": 2
+   }
+  },
+  "id": "U88-6",
+  "instruction": [
+   136,
+   139,
+   2,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetStatus_0x88_EmptyGroup_WritesNothing",
+  "ownerSlot": 0,
+  "redToday": false,
+  "redValues": [],
+  "returned": 3,
+  "rule": "R2",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 2,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "green guard"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "1.status": 2,
+    "2.status": 2,
+    "3.status": 2,
+    "4.status": 2
+   }
+  },
+  "id": "U88-7",
+  "instruction": [
+   136,
+   7,
+   0,
+   255
+  ],
+  "logicSlot": 3,
+  "name": "SetStatus_0x88_RawId_CandidateStatusIsNotTested",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'status') today 4, expected 2",
+   "slot.(2, 'status') today 0, expected 2"
+  ],
+  "returned": 3,
+  "rule": "R2",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 7,
+     "ridingSlot": -1,
+     "status": 4,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 7,
+     "ridingSlot": -1,
+     "status": 0,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 6,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 7,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "corpse revived: no candidate guard"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "1.status": 2,
+    "2.status": 4
+   }
+  },
+  "id": "U88-8",
+  "instruction": [
+   136,
+   7,
+   0,
+   255
+  ],
+  "logicSlot": 2,
+  "name": "SetStatus_0x88_RawId_InactiveReferenceFindsNothing",
+  "ownerSlot": 0,
+  "redToday": false,
+  "redValues": [],
+  "returned": 3,
+  "rule": "R2",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 7,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 1,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 2,
+     "ridingSlot": -1,
+     "status": 4,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "reference status 4 -> empty (green guard)"
+ },
+ {
+  "binaryAudit": "not audited (policy)",
+  "cls": "EntityStateOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.status": 2,
+    "1.status": 3
+   }
+  },
+  "id": "U88-9",
+  "instruction": [
+   136,
+   128,
+   3,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetStatus_0x88_IndexBeyondTheTable_WritesNothing_AndWarnsOnce",
+  "ownerSlot": 0,
+  "redToday": false,
+  "redValues": [],
+  "rule": "R2",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 3,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "POLICY (Q-sm-6 default, precedent 0x40/0x41 D-E19-22): the binary stores a word read past its 3-word table; the DLL writes nothing and warns once. NOT audited against the binary"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.hp": 50
+   },
+   "stats": {
+    "hp": 33,
+    "hpMax": 44
+   }
+  },
+  "id": "U96-1",
+  "instruction": [
+   150,
+   129,
+   255,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "RestoreLife_0x96_HeroAtTheSiteShape_FillsToHpMax",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(0, 'hp') today 10, expected 50"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 50,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 33,
+    "hpMax": 44,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "31 sites shape: byte 1 = 0x81 (hero, +129), byte 2 = 0xFF ignored"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.hp": 20
+   }
+  },
+  "id": "U96-2",
+  "instruction": [
+   150,
+   128,
+   50,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "RestoreLife_0x96_SaveRoomShape_ReferenceIsTheLogicEntity",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(0, 'hp') today 1, expected 20"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 1,
+     "hpMax": 20,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 33,
+    "hpMax": 44,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "byte 1 = 0x80 (self, +128)"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.hp": 20
+   }
+  },
+  "id": "U96-3",
+  "instruction": [
+   150,
+   128,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "RestoreLife_0x96_TheSecondByteIsNeverRead",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(0, 'hp') today 1, expected 20"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 1,
+     "hpMax": 20,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 33,
+    "hpMax": 44,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "same result with byte 2 = 0"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "1.hp": 23,
+    "2.hp": 50,
+    "3.hp": 1
+   }
+  },
+  "id": "U96-4",
+  "instruction": [
+   150,
+   20,
+   50,
+   255
+  ],
+  "logicSlot": 3,
+  "name": "RestoreLife_0x96_RawId_SumBelowHpMax_IsNotClamped",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'hp') today 3, expected 23",
+   "slot.(2, 'hp') today 45, expected 50"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 3,
+     "hpMax": 50,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 20,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 45,
+     "hpMax": 50,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 20,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 1,
+     "hpMax": 50,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 5,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "amount = the raw id 20"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "1.hp": 50
+   }
+  },
+  "id": "U96-5",
+  "instruction": [
+   150,
+   20,
+   0,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "RestoreLife_0x96_SumEqualToHpMax_IsWritten",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'hp') today 30, expected 50"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 30,
+     "hpMax": 50,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 20,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "exact"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.hp": 10
+   }
+  },
+  "id": "U96-6",
+  "instruction": [
+   150,
+   129,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "RestoreLife_0x96_HpAboveHpMax_IsLoweredToHpMax",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(0, 'hp') today 120, expected 10"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 120,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "no ceiling test"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "1.hp": -180
+   }
+  },
+  "id": "U96-7",
+  "instruction": [
+   150,
+   20,
+   0,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "RestoreLife_0x96_NegativeHp_HasNoFloor",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'hp') today -200, expected -180"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": -200,
+     "hpMax": 50,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 20,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "stays negative"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.hp": -2147483520
+   }
+  },
+  "id": "U96-8",
+  "instruction": [
+   150,
+   129,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "RestoreLife_0x96_ThirtyTwoBitWrap_IsWrittenAsIs",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(0, 'hp') today 2147483647, expected -2147483520"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 2147483647,
+     "hpMax": 50,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "unchecked int arithmetic"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.hp": -1
+   }
+  },
+  "id": "U96-9",
+  "instruction": [
+   150,
+   129,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "RestoreLife_0x96_NegativeHpMax_IsTheResult",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(0, 'hp') today 5, expected -1"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 5,
+     "hpMax": -1,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "HpMax < sum"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "1.hp": 9
+   }
+  },
+  "id": "U96-10",
+  "instruction": [
+   150,
+   9,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "RestoreLife_0x96_ACorpseFoundByRawId_IsHealed",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(1, 'hp') today 0, expected 9"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 0,
+     "hpMax": 30,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 9,
+     "ridingSlot": -1,
+     "status": 4,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "no life test"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.hp": 10,
+    "1.hp": 135,
+    "2.hp": 1,
+    "3.hp": 140
+   }
+  },
+  "id": "U96-11",
+  "instruction": [
+   150,
+   130,
+   0,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "RestoreLife_0x96_AllActiveGroup_EachUsesItsOwnHpMax",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(0, 'hp') today 1, expected 10",
+   "slot.(1, 'hp') today 5, expected 135",
+   "slot.(3, 'hp') today 130, expected 140"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 1,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 5,
+     "hpMax": 200,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 1,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 2,
+     "ridingSlot": -1,
+     "status": 4,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 130,
+     "hpMax": 140,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 3,
+     "ridingSlot": -1,
+     "status": 3,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "amount 130"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.hp": 30
+   },
+   "stats": {
+    "hp": 7,
+    "hpMax": 9
+   }
+  },
+  "id": "U96-12",
+  "instruction": [
+   150,
+   129,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "RestoreLife_0x96_DoesNotTouchThePlayerStats",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "slot.(0, 'hp') today 2, expected 30"
+  ],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 2,
+     "hpMax": 30,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 7,
+    "hpMax": 9,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "the mirror is the epilogue of MovePlayer, not the opcode"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "slot": {
+    "0.hp": 1,
+    "1.hp": 1
+   }
+  },
+  "id": "U96-13",
+  "instruction": [
+   150,
+   139,
+   0,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "RestoreLife_0x96_EmptyGroup_WritesNothing",
+  "ownerSlot": 0,
+  "redToday": false,
+  "redValues": [],
+  "returned": 3,
+  "rule": "R3",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 1,
+     "hpMax": 50,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 1,
+     "hpMax": 50,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "green guard"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 777,
+    "mp": 4
+   }
+  },
+  "id": "U97-1",
+  "instruction": [
+   151,
+   50,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_SaveRoomShape_FillsToMpMax_MoneyUntouched",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "stats.mp today 0, expected 4"
+  ],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 777,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 2
+   }
+  },
+  "id": "U97-2",
+  "instruction": [
+   151,
+   1,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_BelowMax_IsNotClamped",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "stats.mp today 1, expected 2"
+  ],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 1,
+    "mpMax": 4
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 4
+   }
+  },
+  "id": "U97-3",
+  "instruction": [
+   151,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_FullGaugeStaysFull",
+  "ownerSlot": 0,
+  "redToday": false,
+  "redValues": [],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 4,
+    "mpMax": 4
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0
+   }
+  },
+  "id": "U97-4",
+  "instruction": [
+   151,
+   10,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_MpMaxZero_StaysZero",
+  "ownerSlot": 0,
+  "redToday": false,
+  "redValues": [],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 0
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 2
+   }
+  },
+  "id": "U97-5",
+  "instruction": [
+   151,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_MpAboveMpMax_IsLoweredToMpMax",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "stats.mp today 4, expected 2"
+  ],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 4,
+    "mpMax": 2
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0
+   }
+  },
+  "id": "U97-6",
+  "instruction": [
+   151,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_NegativeMp_FloorZero",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "stats.mp today -1, expected 0"
+  ],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": -1,
+    "mpMax": 4
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0
+   }
+  },
+  "id": "U97-7",
+  "instruction": [
+   151,
+   1,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_NegativeMpSumZero_IsZero",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "stats.mp today -1, expected 0"
+  ],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": -1,
+    "mpMax": 4
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0
+   }
+  },
+  "id": "U97-8",
+  "instruction": [
+   151,
+   1,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_NegativeMpSumNegative_FloorZero",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "stats.mp today -3, expected 0"
+  ],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": -3,
+    "mpMax": 4
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 4
+   }
+  },
+  "id": "U97-9",
+  "instruction": [
+   151,
+   255,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_TheSumIsNotWrappedTo16Bits",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "stats.mp today 32767, expected 4"
+  ],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 32767,
+    "mpMax": 4
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0
+   }
+  },
+  "id": "U97-10",
+  "instruction": [
+   151,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_MinInt16Mp_FloorZero",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "stats.mp today -32768, expected 0"
+  ],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": -32768,
+    "mpMax": 4
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": -1
+   }
+  },
+  "id": "U97-11",
+  "instruction": [
+   151,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_NegativeMpMax_IsTheResult",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "stats.mp today 0, expected -1"
+  ],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": -1
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "LifeAndMagicOpcodesTests",
+  "expected": {
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 4
+   }
+  },
+  "id": "U97-12",
+  "instruction": [
+   151,
+   10,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "AddMagic_0x97_InnShape_Plus10",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "stats.mp today 3, expected 4"
+  ],
+  "returned": 2,
+  "rule": "R4",
+  "start": {
+   "pad": null,
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 3,
+    "mpMax": 4
+   }
+  },
+  "what": "stats Mp/MpMax/Money"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "PadWriteOpcodeTests",
+  "expected": {
+   "pad": {
+    "hold": 4660,
+    "interval": 57072,
+    "pressed": 22136,
+    "released": 39612
+   }
+  },
+  "id": "UB3-1",
+  "instruction": [
+   179,
+   52,
+   18,
+   120,
+   86,
+   188,
+   154,
+   240,
+   222,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "SetPadButtons_0xB3_WritesTheFourWordsLittleEndian",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "pad.hold today 0, expected 4660",
+   "pad.pressed today 0, expected 22136",
+   "pad.released today 0, expected 39612",
+   "pad.interval today 0, expected 57072"
+  ],
+  "returned": 9,
+  "rule": "R5",
+  "start": {
+   "pad": {
+    "hold": 0,
+    "interval": 0,
+    "pressed": 0,
+    "released": 0
+   },
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "four distinct words"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "PadWriteOpcodeTests",
+  "expected": {
+   "pad": {
+    "hold": 4096,
+    "interval": 0,
+    "pressed": 0,
+    "released": 0
+   }
+  },
+  "id": "UB3-2",
+  "instruction": [
+   179,
+   0,
+   16,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "SetPadButtons_0xB3_TheRealSiteShape_HoldsUp",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "pad.hold today 0, expected 4096"
+  ],
+  "returned": 9,
+  "rule": "R5",
+  "start": {
+   "pad": {
+    "hold": 0,
+    "interval": 0,
+    "pressed": 0,
+    "released": 0
+   },
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "161 B[1] @54"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "PadWriteOpcodeTests",
+  "expected": {
+   "pad": {
+    "hold": 0,
+    "interval": 0,
+    "pressed": 0,
+    "released": 0
+   }
+  },
+  "id": "UB3-3",
+  "instruction": [
+   179,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "SetPadButtons_0xB3_OverwritesNeverOrs",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "pad.hold today 4660, expected 0",
+   "pad.pressed today 240, expected 0",
+   "pad.released today 32769, expected 0",
+   "pad.interval today 65535, expected 0"
+  ],
+  "returned": 9,
+  "rule": "R5",
+  "start": {
+   "pad": {
+    "hold": 4660,
+    "interval": 65535,
+    "pressed": 240,
+    "released": 32769
+   },
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "previous words dropped"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "PadWriteOpcodeTests",
+  "expected": {
+   "pad": {
+    "hold": 65535,
+    "interval": 65535,
+    "pressed": 65535,
+    "released": 65535
+   }
+  },
+  "id": "UB3-4",
+  "instruction": [
+   179,
+   255,
+   255,
+   255,
+   255,
+   255,
+   255,
+   255,
+   255,
+   255
+  ],
+  "logicSlot": 0,
+  "name": "SetPadButtons_0xB3_AllFFFF",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "pad.hold today 0, expected 65535",
+   "pad.pressed today 0, expected 65535",
+   "pad.released today 0, expected 65535",
+   "pad.interval today 0, expected 65535"
+  ],
+  "returned": 9,
+  "rule": "R5",
+  "start": {
+   "pad": {
+    "hold": 0,
+    "interval": 0,
+    "pressed": 0,
+    "released": 0
+   },
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "no mask"
+ },
+ {
+  "binaryAudit": "ok",
+  "cls": "PadWriteOpcodeTests",
+  "expected": {
+   "pad": {
+    "hold": 4096,
+    "interval": 0,
+    "pressed": 0,
+    "released": 0
+   }
+  },
+  "id": "UB3-5",
+  "instruction": [
+   179,
+   0,
+   16,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   255
+  ],
+  "logicSlot": 1,
+  "name": "SetPadButtons_0xB3_OwnerAndLogicAreIrrelevant",
+  "ownerSlot": 0,
+  "redToday": true,
+  "redValues": [
+   "pad.hold today 0, expected 4096"
+  ],
+  "returned": 9,
+  "rule": "R5",
+  "start": {
+   "pad": {
+    "hold": 0,
+    "interval": 0,
+    "pressed": 0,
+    "released": 0
+   },
+   "slots": [
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": -1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    },
+    {
+     "animFlags": 0,
+     "flags": 0,
+     "hasPlatform": false,
+     "hp": 10,
+     "hpMax": 10,
+     "lastTargetAnimId": 0,
+     "lastTargetDir": 0,
+     "parentSlot": -1,
+     "refId": 1,
+     "ridingSlot": -1,
+     "status": 2,
+     "targetAnimId": 0,
+     "targetDir": 0,
+     "xCollSlot": -1
+    }
+   ],
+   "stats": {
+    "hp": 10,
+    "hpMax": 10,
+    "money": 1234,
+    "mp": 0,
+    "mpMax": 4
+   }
+  },
+  "what": "logic = NPC"
+ }
+]

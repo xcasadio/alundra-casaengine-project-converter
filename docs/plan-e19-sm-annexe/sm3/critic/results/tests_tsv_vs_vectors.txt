@@ -1,0 +1,6 @@
+vectors 837 hand 213
+tests 75
+bad [] 0
+hand vectors not pinned: 0 []
+Counter({'0xB4': 34, '0xB5': 34, '0xB6': 34, '0x9E': 27, '0xA9': 25, '0xB2': 23, '0xAA': 21, '0xB7': 15})
+Counter({7: 196, 1: 9, 0: 8})

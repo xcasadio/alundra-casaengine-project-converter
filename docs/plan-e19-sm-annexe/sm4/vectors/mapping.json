@@ -1,0 +1,398 @@
+{
+ "note": "An address the handler reads or writes that is not in this table stops the generator (UNMAPPED): none was met.",
+ "slotFields": [
+  {
+   "offset": "+0xC",
+   "field": "parentSlot",
+   "dllMember": "EntityScriptProxy.ParentEntity (Entity?; the pointed slot's LogicContextEntity)",
+   "encoding": "slotref"
+  },
+  {
+   "offset": "+0x10",
+   "field": "status",
+   "dllMember": "EntityScriptProxy.Status (EntityStatus, 0..5)",
+   "encoding": "u32"
+  },
+  {
+   "offset": "+0x14",
+   "field": "hp",
+   "dllMember": "EntityScriptProxy.Hp (int)",
+   "encoding": "s32"
+  },
+  {
+   "offset": "+0x18",
+   "field": "hpMax",
+   "dllMember": "EntityScriptProxy.HpMax (int)",
+   "encoding": "s32"
+  },
+  {
+   "offset": "+0x28",
+   "field": "hasPlatform",
+   "dllMember": "EntityScriptProxy.PlatformEntity (Entity?, non-null = true)",
+   "encoding": "ptrbool"
+  },
+  {
+   "offset": "+0x48",
+   "field": "refId",
+   "dllMember": "EntityScriptProxy.EntityRefId (int; the hero is -1, WorldProxy.cs:2111)",
+   "encoding": "s32"
+  },
+  {
+   "offset": "+0x6C",
+   "field": "flags",
+   "dllMember": "EntityScriptProxy.Flags (uint)",
+   "encoding": "u32"
+  },
+  {
+   "offset": "+0x88",
+   "field": "targetAnimId",
+   "dllMember": "EntityScriptProxy.TargetAnimationId (uint)",
+   "encoding": "u32"
+  },
+  {
+   "offset": "+0x8C",
+   "field": "targetDir",
+   "dllMember": "EntityScriptProxy.TargetDirection (uint)",
+   "encoding": "u32"
+  },
+  {
+   "offset": "+0xB4",
+   "field": "animFlags",
+   "dllMember": "EntityScriptProxy.AnimFlags (int)",
+   "encoding": "s32"
+  },
+  {
+   "offset": "+0x12C",
+   "field": "ridingSlot",
+   "dllMember": "EntityScriptProxy.RidingEntity (Entity?; the pointed slot's LogicContextEntity)",
+   "encoding": "slotref"
+  },
+  {
+   "offset": "+0x130",
+   "field": "xCollSlot",
+   "dllMember": "EntityScriptProxy.XCollisionEntity (EntityScriptProxy?)",
+   "encoding": "slotref"
+  },
+  {
+   "offset": "+0x26C",
+   "field": "lastTargetAnimId",
+   "dllMember": "EntityScriptProxy.LastTargetAnimationId (uint)",
+   "encoding": "u32"
+  },
+  {
+   "offset": "+0x270",
+   "field": "lastTargetDir",
+   "dllMember": "EntityScriptProxy.LastTargetDirection (uint)",
+   "encoding": "u32"
+  }
+ ],
+ "slotOnlyForTheZeroSiteOpcodes": [
+  {
+   "offset": "+0x44",
+   "field": "recordPtr / record byte 9",
+   "dllMember": "EntityScriptProxy.RecordHeight (int?; null = no record = fatal message in the binary)",
+   "opcode": "0x15"
+  },
+  {
+   "offset": "+0x1EC",
+   "field": "modZ",
+   "dllMember": "EntityScriptProxy.ModZ (int)",
+   "opcode": "0x15"
+  },
+  {
+   "offset": "+0x11C",
+   "field": "posZ",
+   "dllMember": "EntityScriptProxy.PosZ (int, 16.16; the DLL frame is one raw unit below the binary, ADR-0026)",
+   "opcode": "0x15"
+  },
+  {
+   "offset": "+0x234..+0x26B",
+   "field": "ownerState.*",
+   "dllMember": "the OWNER proxy's EventProgramState (CopyFrom of the shared scratch state)",
+   "opcode": "0x66"
+  }
+ ],
+ "stateFields": [
+  {
+   "offset": "+0x0",
+   "field": "cursor",
+   "dllMember": "EventProgramState.CodeIndex (the binary keeps a pointer; the DLL an index into Codes)"
+  },
+  {
+   "offset": "+0x4",
+   "field": "params[0]",
+   "dllMember": "EventProgramState.Parameters[0]"
+  },
+  {
+   "offset": "+0x8",
+   "field": "params[1]",
+   "dllMember": "EventProgramState.Parameters[1]"
+  },
+  {
+   "offset": "+0xC",
+   "field": "params[2]",
+   "dllMember": "EventProgramState.Parameters[2]"
+  },
+  {
+   "offset": "+0x10",
+   "field": "params[3]",
+   "dllMember": "EventProgramState.Parameters[3]"
+  },
+  {
+   "offset": "+0x14",
+   "field": "params[4]",
+   "dllMember": "EventProgramState.Parameters[4]"
+  },
+  {
+   "offset": "+0x18",
+   "field": "params[5]",
+   "dllMember": "EventProgramState.Parameters[5]"
+  },
+  {
+   "offset": "+0x1C",
+   "field": "params[6]",
+   "dllMember": "EventProgramState.Parameters[6]"
+  },
+  {
+   "offset": "+0x20",
+   "field": "params[7]",
+   "dllMember": "EventProgramState.Parameters[7]"
+  },
+  {
+   "offset": "+0x24",
+   "field": "params[8]",
+   "dllMember": "EventProgramState.Parameters[8]"
+  },
+  {
+   "offset": "+0x28",
+   "field": "params[9]",
+   "dllMember": "EventProgramState.Parameters[9]"
+  },
+  {
+   "offset": "+0x2C",
+   "field": "result",
+   "dllMember": "EventProgramState.Result"
+  },
+  {
+   "offset": "+0x30",
+   "field": "_30",
+   "dllMember": "EventProgramState._30"
+  },
+  {
+   "offset": "+0x34",
+   "field": "_34",
+   "dllMember": "EventProgramState._34"
+  },
+  {
+   "address": "0x8013D9E8",
+   "note": "the SHARED state of the programs A, D, E, F (the binary passes it as a3); the DLL equivalent is EventProgramRunner._slotAScratchState (SharedProgramStateForTests)"
+  }
+ ],
+ "statsFields": [
+  {
+   "offset": "+0",
+   "field": "hp",
+   "dllMember": "PlayerStats.Hp (short)"
+  },
+  {
+   "offset": "+2",
+   "field": "hpMax",
+   "dllMember": "PlayerStats.HpMax (short)"
+  },
+  {
+   "offset": "+4",
+   "field": "mp",
+   "dllMember": "PlayerStats.Mp (short)"
+  },
+  {
+   "offset": "+6",
+   "field": "mpMax",
+   "dllMember": "PlayerStats.MpMax (short)"
+  },
+  {
+   "offset": "+8",
+   "field": "money",
+   "dllMember": "PlayerStats.Money (short)"
+  },
+  {
+   "address": "[0x80176318] -> PlayerStats",
+   "dllMember": "GameState.PlayerStats"
+  }
+ ],
+ "padFields": [
+  {
+   "address": "0x80126F28",
+   "field": "hold",
+   "dllMember": "TickPad.ButtonsHold"
+  },
+  {
+   "address": "0x80126F2A",
+   "field": "pressed",
+   "dllMember": "TickPad.ButtonsJustPressed"
+  },
+  {
+   "address": "0x80126F2C",
+   "field": "released",
+   "dllMember": "TickPad.ButtonsReleased"
+  },
+  {
+   "address": "0x80126F2E",
+   "field": "interval",
+   "dllMember": "TickPad.ButtonsJustPressedByInterval"
+  },
+  {
+   "address": "0x80126F18..0x80126F27",
+   "field": "counters (+0..+0xF)",
+   "dllMember": "TickPad.RepeatInterval / IsOverThanMaxNbFrameHeld / NumberOfFrameHold (never read nor written by 0xB3)"
+  }
+ ],
+ "otherAddresses": [
+  {
+   "address": "0x80134360",
+   "field": "N = index of the last used slot",
+   "dllMember": "IEntityWorldContext.SpawnedEntities.Count - 1 (the hero is the first element)"
+  },
+  {
+   "address": "0x80127D30 + 0x294*i",
+   "field": "slot i",
+   "dllMember": "SpawnedEntities[i]; slot 0 = IEntityWorldContext.PlayerEntity (IsPlayer = true, EntityRefId = -1)"
+  },
+  {
+   "address": "0x8013D8D4..",
+   "field": "match buffer (internal to the search)",
+   "dllMember": "the List<EntityScriptProxy> that EntitySearchService returns"
+  },
+  {
+   "address": "0x80023C30",
+   "field": "search switch table (12 entries)",
+   "dllMember": "the switch of EntitySearchService.GetMatchingEntitiesBySearchType"
+  },
+  {
+   "address": "0x80023D2C",
+   "field": "status table, 3 words {2, 3, 4}",
+   "dllMember": "a new static table {EntityStatus.Normal, Deactivated, FlagToDestroy}; an index above 2 reads past it (policy R2-3)"
+  },
+  {
+   "address": "a2 = &cursor",
+   "field": "the instruction pointer",
+   "dllMember": "EventProgramState.CodeIndex / the int[] v of Dispatch"
+  },
+  {
+   "address": "stack 0x801F....",
+   "field": "saved registers",
+   "dllMember": "none (internal)"
+  }
+ ],
+ "readWriteSets": {
+  "reads": {
+   "0x72": {
+    "mapped": [
+     "slot[*].targetAnimId",
+     "slot[*].targetDir"
+    ]
+   },
+   "0x88": {
+    "binary-constant": [
+     "status table overrun [200]",
+     "status table overrun [255]",
+     "status table overrun [3]",
+     "status table overrun [4]",
+     "status table overrun [5]",
+     "status table overrun [7]",
+     "status table[0]",
+     "status table[1]",
+     "status table[2]"
+    ],
+    "internal": [
+     "cursor pointer (a2)",
+     "match buffer",
+     "search switch table",
+     "stack"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "slotCount-1 (N)",
+     "slot[*].animFlags",
+     "slot[*].flags",
+     "slot[*].hasPlatform",
+     "slot[*].parentSlot",
+     "slot[*].refId",
+     "slot[*].ridingSlot",
+     "slot[*].status",
+     "slot[*].xCollSlot"
+    ]
+   },
+   "0x96": {
+    "internal": [
+     "cursor pointer (a2)",
+     "match buffer",
+     "search switch table",
+     "stack"
+    ],
+    "mapped": [
+     "instr[1]",
+     "slotCount-1 (N)",
+     "slot[*].animFlags",
+     "slot[*].flags",
+     "slot[*].hasPlatform",
+     "slot[*].hp",
+     "slot[*].hpMax",
+     "slot[*].parentSlot",
+     "slot[*].refId",
+     "slot[*].ridingSlot",
+     "slot[*].status",
+     "slot[*].xCollSlot"
+    ]
+   },
+   "0x97": {
+    "internal": [
+     "cursor pointer (a2)",
+     "player stats pointer",
+     "stack"
+    ],
+    "mapped": [
+     "instr[1]",
+     "stats.mp",
+     "stats.mpMax"
+    ]
+   },
+   "0xB3": {
+    "internal": [
+     "cursor pointer (a2)"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "instr[3]",
+     "instr[4]",
+     "instr[5]",
+     "instr[6]",
+     "instr[7]",
+     "instr[8]"
+    ]
+   }
+  },
+  "writes": {
+   "0x72": [
+    "slot.lastTargetAnimId",
+    "slot.lastTargetDir"
+   ],
+   "0x88": [
+    "slot.status"
+   ],
+   "0x96": [
+    "slot.hp"
+   ],
+   "0x97": [
+    "stats.mp"
+   ],
+   "0xB3": [
+    "pad.hold",
+    "pad.interval",
+    "pad.pressed",
+    "pad.released"
+   ]
+  }
+ }
+}

@@ -1,0 +1,58 @@
+{
+ "perOpcode": {
+  "72": {
+   "edge": 7,
+   "greenGuards": 1,
+   "outOfTable": 0,
+   "random": 60,
+   "redToday": 66,
+   "replayable": 67,
+   "vectors": 67
+  },
+  "88": {
+   "edge": 23,
+   "greenGuards": 31,
+   "outOfTable": 22,
+   "random": 60,
+   "redToday": 30,
+   "replayable": 61,
+   "vectors": 83
+  },
+  "96": {
+   "edge": 19,
+   "greenGuards": 34,
+   "outOfTable": 0,
+   "random": 60,
+   "redToday": 45,
+   "replayable": 79,
+   "vectors": 79
+  },
+  "97": {
+   "edge": 14,
+   "greenGuards": 10,
+   "outOfTable": 0,
+   "random": 60,
+   "redToday": 64,
+   "replayable": 74,
+   "vectors": 74
+  },
+  "B3": {
+   "edge": 7,
+   "greenGuards": 0,
+   "outOfTable": 0,
+   "random": 60,
+   "redToday": 67,
+   "replayable": 67,
+   "vectors": 67
+  }
+ },
+ "total": {
+  "edge": 70,
+  "greenGuards": 76,
+  "outOfTable": 22,
+  "random": 300,
+  "redToday": 272,
+  "replayable": 348,
+  "vectors": 370
+ }
+}

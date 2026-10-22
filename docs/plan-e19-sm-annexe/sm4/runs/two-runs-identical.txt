@@ -1,0 +1,9 @@
+0158fd87cc773f71ed1cba911c6cf4dd17b6a5db3f8eb4bfa9bfd6d3b5c972e9 *op72.json
+9518b22f2fa82e145cb416c09c5188e5ca972548bc8e502c63a352fbb5e5d622 *op88.json
+597c60476f94e53d25c88ad58c9ffb773cb03e55c6024b2a7e2238c7bfb30cd4 *op96.json
+5ed78766260ac6d75be6aede54e92de9bc8e6bad354d7c99dbc41d2bc7ad8c8f *op97.json
+1927b6a9c6c331c24da8afea728bdda78d94cb5fc33bebf029593b5bf7f30605 *opB3.json
+2d8ffbfa77327ecc42fee5739a39078e51af84c894ff459f70a6eadb0994b81f *zero-site/op15.json
+bcf6041e9f76b1cc5d6b1694d38d07da44606fc4e7afc960a19d68be4d8e8217 *zero-site/op66.json
+f46efeef771237f9685b9aa7db44cfba68dd50e149eadd1eab36f02f66fb79d6 *zero-site/op7A.json
+diff -r final-a final-b: no difference (seed 20261018, 60 random per opcode)

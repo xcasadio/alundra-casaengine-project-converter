@@ -1,0 +1,2 @@
+vectors 1384 prod mismatches/zone ctx diffs [] flag mismatches []
+vectors whose result differs under ctx montage: 21 ['v60-c12', 'v61-c13a', 'v60-r031', 'v60-r044', 'v60-r053', 'v60-r061', 'v60-r073', 'v60-r076', 'v60-r121', 'v60-r179', 'v60-r199', 'v60-r234', 'v60-r239', 'v60-r257', 'v61-r035', 'v61-r062', 'v61-r110', 'v61-r139', 'v61-r152', 'v61-r159', 'v61-r295']

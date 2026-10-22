@@ -1,0 +1,38 @@
+mutant	real_bytes_groups_that_kill_it
+swap_60_61	RB-01 RB-02 RB-03 RB-04 RB-05 RB-06 RB-07 RB-08 RB-09 RB-10 RB-12 RB-13 RB-14
+no_player_in_search	RB-08 RB-13 RB-14
+first_only	none
+last_only	none
+owner_instead_of_logic	RB-01 RB-02 RB-03 RB-04 RB-05 RB-06 RB-07 RB-08 RB-10 RB-12 RB-13 RB-14
+reuse_IsRidingTheLogicEntity	none
+no_null_guard	none
+platform_instead_of_riding	RB-01 RB-02 RB-03 RB-04 RB-05 RB-06 RB-07 RB-08 RB-10
+empty_group_keeps_result	none
+empty_group_one	none
+result_always_one	RB-01 RB-02 RB-03 RB-04 RB-05 RB-06 RB-07 RB-08 RB-09 RB-10 RB-12 RB-13 RB-14
+size_one	RB-01 RB-02 RB-03 RB-04 RB-05 RB-06 RB-07 RB-08 RB-09 RB-10 RB-12 RB-13 RB-14
+size_three	RB-01 RB-02 RB-03 RB-04 RB-05 RB-06 RB-07 RB-08 RB-09 RB-10 RB-12 RB-13 RB-14
+zone_3c_equals_3d	none
+zone_3d_equals_3c	none
+signed_operands	none
+spawned_only	none
+skip_last	RB-11
+logic_only	RB-11
+no_status_filter	none
+active_only	none
+inverted_3c	none
+3c_no_collidable	none
+3c_no_anim	none
+3c_no_platform	none
+3c_flags_equal	none
+3c_anim_nonzero	none
+axes_xy_swapped	RB-11
+axes_yz_swapped	RB-11
+upper_exclusive	RB-11
+lower_exclusive	RB-11
+z_ignored	RB-11
+byte_truncated_tile	none
+unsigned_tile	none
+size_six	RB-11
+size_eight	RB-11
+result_only_on_true	RB-11

@@ -1,0 +1,43 @@
+map	slot	program	pc	opcode	operands	next_opcode	label_today	label_after	shared_pc_with
+54	B	14	1226	B5	81	04	Check ForceZ >= 0	Check ForceZ < 0	
+54	B	14	1244	B5	81	04	Check ForceZ >= 0	Check ForceZ < 0	
+159	C	13	1698	AA	81	04		Is any entity of group blocked by me	
+160	C	1	944	AA	81	04		Is any entity of group blocked by me	
+160	C	6	1013	B6	80	04	Check ForceZ != 0	Check ForceZ == 0	
+258	B	6	639	B2	03 8B	03	Compare entity groups	Compare entity groups	
+258	B	6	645	B2	04 8B	03	Compare entity groups	Compare entity groups	
+258	B	6	651	B2	05 8B	03	Compare entity groups	Compare entity groups	
+258	B	6	657	B2	06 8B	03	Compare entity groups	Compare entity groups	
+258	B	6	663	B2	08 8B	03	Compare entity groups	Compare entity groups	
+298	B	6	726	B2	03 8B	03	Compare entity groups	Compare entity groups	
+298	B	6	732	B2	04 8B	03	Compare entity groups	Compare entity groups	
+298	B	6	738	B2	05 8B	03	Compare entity groups	Compare entity groups	
+298	B	6	744	B2	05 8B	03	Compare entity groups	Compare entity groups	
+298	B	6	750	B2	08 8B	03	Compare entity groups	Compare entity groups	
+421	C	8	1467	AA	81	4B		Is any entity of group blocked by me	
+421	C	14	1555	AA	81	4B		Is any entity of group blocked by me	
+421	C	17	1603	AA	81	4B		Is any entity of group blocked by me	
+423	C	25	971	AA	81	04		Is any entity of group blocked by me	
+423	C	26	1039	AA	81	04		Is any entity of group blocked by me	
+424	C	3	700	AA	81	04		Is any entity of group blocked by me	
+424	C	4	751	AA	81	04		Is any entity of group blocked by me	
+424	C	5	787	AA	81	04		Is any entity of group blocked by me	
+424	C	6	823	AA	81	04		Is any entity of group blocked by me	
+424	C	9	899	AA	81	04		Is any entity of group blocked by me	
+424	C	15	1039	AA	81	04		Is any entity of group blocked by me	
+424	C	16	1111	AA	81	04		Is any entity of group blocked by me	
+424	C	17	1175	AA	81	04		Is any entity of group blocked by me	
+425	C	12	402	AA	81	04		Is any entity of group blocked by me	
+426	C	13	1484	AA	81	04		Is any entity of group blocked by me	
+426	C	14	1551	AA	81	04		Is any entity of group blocked by me	
+426	C	15	1619	AA	81	04		Is any entity of group blocked by me	
+426	C	16	1687	AA	81	04		Is any entity of group blocked by me	
+426	C	17	1752	AA	81	04		Is any entity of group blocked by me	
+440	B	9	628	A9	18	04		Is blocked by entity of group	
+440	C	2	1140	AA	81	04		Is any entity of group blocked by me	C[2],C[3],C[4] of 440 @1140
+440	C	3	1140	AA	81	04		Is any entity of group blocked by me	C[2],C[3],C[4] of 440 @1140
+440	C	4	1140	AA	81	04		Is any entity of group blocked by me	C[2],C[3],C[4] of 440 @1140
+440	C	16	1755	A9	81	04		Is blocked by entity of group	
+440	C	18	1880	A9	81	04		Is blocked by entity of group	
+440	C	21	2000	A9	81	04		Is blocked by entity of group	
+440	C	21	2012	B5	80	04	Check ForceZ >= 0	Check ForceZ < 0	

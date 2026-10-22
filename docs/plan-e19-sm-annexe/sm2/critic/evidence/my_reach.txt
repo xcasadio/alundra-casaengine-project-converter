@@ -1,0 +1,42 @@
+0x38 remap sites: 66
+remapped ids -> values: {5: [479], 10: [331], 12: [407], 17: [17, 439], 18: [450], 55: [443], 162: [169, 176, 183, 186, 193, 198, 205, 212, 219, 226, 230, 237, 241, 248, 252, 259, 266, 271, 275, 282, 289, 293, 297, 301, 364, 371], 166: [166, 173, 180, 190, 196, 202, 209, 216, 223, 234, 245, 256, 263, 279, 286, 296, 300, 375], 176: [183], 439: [17]}
+
+BFS from 389, identity : reached 425 of 483
+  map 55 NOT reached
+  map 56 NOT reached
+  map 57 NOT reached
+  map 58 NOT reached
+  map 59 NOT reached
+  map 60 NOT reached
+  map 305 NOT reached
+  map 306 NOT reached
+  map 307 NOT reached
+  map 344 14
+  map 442 11
+
+BFS from 389, without any remapped id used by a portal : reached 410 of 483
+  map 55 NOT reached
+  map 56 NOT reached
+  map 57 NOT reached
+  map 58 NOT reached
+  map 59 NOT reached
+  map 60 NOT reached
+  map 305 NOT reached
+  map 306 NOT reached
+  map 307 NOT reached
+  map 344 17
+  map 442 11
+path to 344 [(389, 390, 'portal', 'P0'), (390, 412, '0x53', 'B[2]@698'), (412, 413, '0x53', 'B[3]@128'), (413, 414, '0x53', 'B[2]@316'), (414, 415, '0x53', 'B[2]@74'), (415, 241, '0x53', 'B[1]@77'), (241, 10, 'portal', 'P12'), (10, 6, 'portal', 'P0'), (6, 5, 'portal', 'P6'), (5, 378, '0x53', 'B[9]@986'), (378, 433, 'portal', 'P0'), (433, 434, 'portal', 'P11'), (434, 337, 'portal', 'P1'), (337, 344, '0x53', 'B[2]@811')]
+path to 442 [(389, 390, 'portal', 'P0'), (390, 412, '0x53', 'B[2]@698'), (412, 413, '0x53', 'B[3]@128'), (413, 414, '0x53', 'B[2]@316'), (414, 415, '0x53', 'B[2]@74'), (415, 241, '0x53', 'B[1]@77'), (241, 258, 'portal', 'P15'), (258, 248, '0x53', 'B[6]@931'), (248, 387, 'portal', 'P7'), (387, 440, '0x53', 'B[1]@51'), (440, 442, 'portal', 'P4')]
+inbound 55 [(56, 'portal'), (57, 'portal'), (59, 'portal')]
+inbound 56 [(55, 'portal')]
+inbound 57 [(55, 'portal'), (56, 'portal'), (58, 'portal')]
+inbound 58 [(57, 'portal'), (59, 'portal')]
+inbound 59 [(58, 'portal'), (60, 'portal')]
+inbound 60 [(59, 'portal')]
+inbound 305 [(306, 'portal'), (307, 'portal')]
+inbound 306 [(305, 'portal')]
+inbound 307 [(305, 'portal')]
+inbound 344 [(337, '0x53'), (338, '0x53'), (342, 'portal'), (348, 'portal')]
+inbound 442 [(308, '0x53'), (310, '0x53'), (440, 'portal')]
+remaps touching targets: [(389, 'B', 1, 310, 55, 443)]

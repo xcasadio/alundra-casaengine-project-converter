@@ -1,0 +1,1236 @@
+=== op 0x72 map 40 (Nirude’s Lair-40) F[1] @1141 operands []
+   entry=1132
+      1132  BD Play sound 2                           12 00
+      1135  27 Face player                            
+      1136  0A Reverse direction                      
+      1137  1A Set anim                               01
+      1139  3A Set cardinal direction                 00
+   >> 1141  72 Set LastTargetAnim and Direction       
+      1142  FF End script                             
+      1143  00 Break                                  
+      1144  BD Play sound 2                           12 00
+      1147  27 Face player                            
+=== op 0x72 map 40 (Nirude’s Lair-40) F[2] @1153 operands []
+   entry=1144
+      1144  BD Play sound 2                           12 00
+      1147  27 Face player                            
+      1148  0A Reverse direction                      
+      1149  1A Set anim                               01
+      1151  3A Set cardinal direction                 00
+   >> 1153  72 Set LastTargetAnim and Direction       
+      1154  FF End script                             
+      1155  00 Break                                  
+      1156  BD Play sound 2                           12 00
+      1159  27 Face player                            
+=== op 0x72 map 40 (Nirude’s Lair-40) F[3] @1165 operands []
+   entry=1156
+      1156  BD Play sound 2                           12 00
+      1159  27 Face player                            
+      1160  0A Reverse direction                      
+      1161  1A Set anim                               01
+      1163  3A Set cardinal direction                 00
+   >> 1165  72 Set LastTargetAnim and Direction       
+      1166  FF End script                             
+      1167  00 Break                                  
+      1168  BD Play sound 2                           12 00
+      1171  27 Face player                            
+=== op 0x72 map 40 (Nirude’s Lair-40) F[4] @1177 operands []
+   entry=1168
+      1168  BD Play sound 2                           12 00
+      1171  27 Face player                            
+      1172  0A Reverse direction                      
+      1173  1A Set anim                               01
+      1175  3A Set cardinal direction                 00
+   >> 1177  72 Set LastTargetAnim and Direction       
+      1178  FF End script                             
+      1179  00 Break                                  
+      1180  05 Flag on                                D0 87
+      1183  FF End script                             
+=== op 0x72 map 51 (Elenes Nightmare-51) F[21] @856 operands []
+   entry=852
+       852  27 Face player                            
+       853  0D Dialog                                 8D 00
+   >>  856  72 Set LastTargetAnim and Direction       
+       857  FF End script                             
+       858  00 Break                                  
+       859  00 Break                                  
+       860  00 Break                                  
+=== op 0x72 map 53 (Elenes Nightmare-53) F[7] @1378 operands []
+   entry=1372
+      1372  27 Face player                            
+      1373  5C Dialog with entity                     07 82 00
+      1377  39 Wait for dialog                        
+   >> 1378  72 Set LastTargetAnim and Direction       
+      1379  FF End script                             
+=== op 0x72 map 54 (Elenes Nightmare-54) F[39] @2243 operands []
+   entry=2236
+      2236  59 Set entity anim                        81 00
+      2239  27 Face player                            
+      2240  0D Dialog                                 89 01
+   >> 2243  72 Set LastTargetAnim and Direction       
+      2244  39 Wait for dialog                        
+      2245  FF End script                             
+      2246  00 Break                                  
+      2247  00 Break                                  
+=== op 0x72 map 139 (Cave (Fire manor)-139) D[9] @793 operands []
+   entry=788
+       788  BD Play sound 2                           1D 00
+       791  27 Face player                            
+       792  0A Reverse direction                      
+   >>  793  72 Set LastTargetAnim and Direction       
+       794  FF End script                             
+       795  00 Break                                  
+       796  BD Play sound 2                           3C 00
+       799  2B Clear EntityFlags.ClassA               
+=== op 0x72 map 140 (Cave-140) D[2] @2037 operands []
+   entry=2032
+      2032  27 Face player                            
+      2033  0A Reverse direction                      
+      2034  BD Play sound 2                           DC 01
+   >> 2037  72 Set LastTargetAnim and Direction       
+      2038  FF End script                             
+      2039  00 Break                                  
+      2040  05 Flag on                                03 80
+      2043  05 Flag on                                E9 83
+=== op 0x72 map 140 (Cave-140) D[16] @2125 operands []
+   entry=2120
+      2120  27 Face player                            
+      2121  0A Reverse direction                      
+      2122  BD Play sound 2                           DC 01
+   >> 2125  72 Set LastTargetAnim and Direction       
+      2126  FF End script                             
+      2127  00 Break                                  
+      2128  1A Set anim                               02
+      2130  2B Clear EntityFlags.ClassA               
+=== op 0x72 map 159 (Fairy cave (underwater)-159) D[13] @1787 operands []
+   entry=1780
+      1780  1A Set anim                               02
+      1782  63 Clear entities flags (low 16 bits)     80 80 00
+      1786  2B Clear EntityFlags.ClassA               
+   >> 1787  72 Set LastTargetAnim and Direction       
+      1788  FF End script                             
+      1789  00 Break                                  
+      1790  00 Break                                  
+      1791  00 Break                                  
+=== op 0x72 map 160 (Fairy cave (underwater)-160) D[1] @1607 operands []
+   entry=1600
+      1600  1A Set anim                               02
+      1602  63 Clear entities flags (low 16 bits)     80 80 00
+      1606  2B Clear EntityFlags.ClassA               
+   >> 1607  72 Set LastTargetAnim and Direction       
+      1608  FF End script                             
+      1609  00 Break                                  
+      1610  00 Break                                  
+      1611  00 Break                                  
+=== op 0x72 map 160 (Fairy cave (underwater)-160) D[5] @1612 operands []
+   entry=1612
+   >> 1612  72 Set LastTargetAnim and Direction       
+      1613  63 Clear entities flags (low 16 bits)     80 81 00
+      1617  1A Set anim                               01
+      1619  5E Set forceZ for entities                89 80 00
+      1623  FF End script                             
+=== op 0x72 map 199 (Inoa (inner)-199) F[1] @1232 operands []
+   entry=1228
+      1228  27 Face player                            
+      1229  0D Dialog                                 82 01
+   >> 1232  72 Set LastTargetAnim and Direction       
+      1233  FF End script                             
+      1234  00 Break                                  
+      1235  00 Break                                  
+      1236  27 Face player                            
+=== op 0x72 map 394 (Pub Entrance + Floor-394) F[9] @1257 operands []
+   entry=1252
+      1252  27 Face player                            
+      1253  5C Dialog with entity                     81 94 00
+   >> 1257  72 Set LastTargetAnim and Direction       
+      1258  FF End script                             
+      1259  00 Break                                  
+      1260  27 Face player                            
+      1261  5C Dialog with entity                     81 95 00
+=== op 0x72 map 394 (Pub Entrance + Floor-394) F[10] @1265 operands []
+   entry=1260
+      1260  27 Face player                            
+      1261  5C Dialog with entity                     81 95 00
+   >> 1265  72 Set LastTargetAnim and Direction       
+      1266  FF End script                             
+      1267  00 Break                                  
+=== op 0x72 map 444 (Torla (inner)-444) D[15] @1302 operands []
+   entry=1280
+      1280  58 Goto by animation direction            0D 00 1C 00 2D 00 2D 00
+      1289  02 Goto                                   04 00
+      1292  00 Break                                  
+      1293  87 Check TouchingEntity attack type       80 06
+      1296  04 If false goto                          1D 00
+      1299  2B Clear EntityFlags.ClassA               
+      1300  09 Set direction                          10
+   >> 1302  72 Set LastTargetAnim and Direction       
+      1303  02 Goto                                   16 00
+      1306  00 Break                                  
+      1307  00 Break                                  
+      1308  87 Check TouchingEntity attack type       80 07
+=== op 0x72 map 444 (Torla (inner)-444) D[15] @1317 operands []
+   entry=1280
+      1302  72 Set LastTargetAnim and Direction       
+      1303  02 Goto                                   16 00
+      1306  00 Break                                  
+      1307  00 Break                                  
+      1308  87 Check TouchingEntity attack type       80 07
+      1311  04 If false goto                          0E 00
+      1314  2B Clear EntityFlags.ClassA               
+      1315  09 Set direction                          00
+   >> 1317  72 Set LastTargetAnim and Direction       
+      1318  02 Goto                                   07 00
+      1321  00 Break                                  
+      1322  00 Break                                  
+      1323  00 Break                                  
+=== op 0x72 map 446 (Torla (inner)-446) D[1] @1114 operands []
+   entry=1092
+      1092  58 Goto by animation direction            0D 00 1C 00 2D 00 2D 00
+      1101  02 Goto                                   04 00
+      1104  00 Break                                  
+      1105  87 Check TouchingEntity attack type       80 06
+      1108  04 If false goto                          1D 00
+      1111  2B Clear EntityFlags.ClassA               
+      1112  09 Set direction                          10
+   >> 1114  72 Set LastTargetAnim and Direction       
+      1115  02 Goto                                   16 00
+      1118  00 Break                                  
+      1119  00 Break                                  
+      1120  87 Check TouchingEntity attack type       80 07
+=== op 0x72 map 446 (Torla (inner)-446) D[1] @1129 operands []
+   entry=1092
+      1114  72 Set LastTargetAnim and Direction       
+      1115  02 Goto                                   16 00
+      1118  00 Break                                  
+      1119  00 Break                                  
+      1120  87 Check TouchingEntity attack type       80 07
+      1123  04 If false goto                          0E 00
+      1126  2B Clear EntityFlags.ClassA               
+      1127  09 Set direction                          00
+   >> 1129  72 Set LastTargetAnim and Direction       
+      1130  02 Goto                                   07 00
+      1133  00 Break                                  
+      1134  00 Break                                  
+      1135  00 Break                                  
+=== op 0x88 map 306 (Meia Dream-306) E[14] @1110 operands [80 00]
+   entry=1104
+      1104  1B Fly                                    00 00
+      1107  40 Set program index and clear the program state 02 00
+   >> 1110  88                                        80 00
+      1113  FF End script                             
+      1114  00 Break                                  
+      1115  00 Break                                  
+      1116  1B Fly                                    00 00
+=== op 0x88 map 306 (Meia Dream-306) E[15] @1122 operands [80 00]
+   entry=1116
+      1116  1B Fly                                    00 00
+      1119  40 Set program index and clear the program state 02 00
+   >> 1122  88                                        80 00
+      1125  FF End script                             
+      1126  00 Break                                  
+      1127  00 Break                                  
+=== op 0x88 map 442 (Meia Dream-442) E[1] @1312 operands [80 02]
+   entry=1300
+      1300  BD Play sound 2                           2D 00
+      1303  A3 Create effect with entity pos          00 80 00 00 00 00 00 00
+   >> 1312  88                                        80 02
+      1315  FF End script                             
+=== op 0x96 map 22 (Lars' Crypt-22) C[6] @863 operands [81 FF]
+   entry=784
+       819  A3 Create effect with entity pos          01 81 00 00 FC FF 10 00
+       828  37 Wait                                   06
+       830  A3 Create effect with entity pos          01 81 00 00 04 00 14 00
+       839  37 Wait                                   06
+       841  A3 Create effect with entity pos          01 81 00 00 08 00 18 00
+       850  37 Wait                                   06
+       852  A3 Create effect with entity pos          01 81 00 00 F8 FF 1C 00
+       861  37 Wait                                   06
+   >>  863  96 Restore HP                             81 FF
+       866  11 Player gain control                    
+       867  2D Activate entity                        09
+       869  2D Activate entity                        0A
+       871  2C Check no entity by function id         22
+=== op 0x96 map 23 (Lars' Crypt-23) C[15] @1241 operands [81 FF]
+   entry=1000
+      1197  A3 Create effect with entity pos          00 81 00 00 FC FF 10 00
+      1206  37 Wait                                   06
+      1208  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+      1217  37 Wait                                   06
+      1219  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+      1228  37 Wait                                   06
+      1230  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+      1239  37 Wait                                   06
+   >> 1241  96 Restore HP                             81 FF
+      1244  11 Player gain control                    
+      1245  49 Restart                                
+      1246  FF End script                             
+      1247  00 Break                                  
+=== op 0x96 map 29 (Ancient Shrine-29) C[9] @671 operands [81 FF]
+   entry=548
+       627  A3 Create effect with entity pos          00 81 00 00 FC FF 10 00
+       636  37 Wait                                   06
+       638  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       647  37 Wait                                   06
+       649  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       658  37 Wait                                   06
+       660  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       669  37 Wait                                   06
+   >>  671  96 Restore HP                             81 FF
+       674  11 Player gain control                    
+       675  49 Restart                                
+       676  FF End script                             
+       677  00 Break                                  
+=== op 0x96 map 29 (Ancient Shrine-29) C[10] @803 operands [81 FF]
+   entry=680
+       759  A3 Create effect with entity pos          00 81 00 00 FC FF 10 00
+       768  37 Wait                                   06
+       770  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       779  37 Wait                                   06
+       781  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       790  37 Wait                                   06
+       792  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       801  37 Wait                                   06
+   >>  803  96 Restore HP                             81 FF
+       806  11 Player gain control                    
+       807  49 Restart                                
+       808  FF End script                             
+       809  00 Break                                  
+=== op 0x96 map 31 (Ancient Shrine-31) C[1] @355 operands [81 FF]
+   entry=232
+       311  A3 Create effect with entity pos          00 81 00 00 FC FF 10 00
+       320  37 Wait                                   06
+       322  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       331  37 Wait                                   06
+       333  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       342  37 Wait                                   06
+       344  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       353  37 Wait                                   06
+   >>  355  96 Restore HP                             81 FF
+       358  11 Player gain control                    
+       359  49 Restart                                
+       360  FF End script                             
+       361  00 Break                                  
+=== op 0x96 map 31 (Ancient Shrine-31) C[2] @487 operands [81 FF]
+   entry=364
+       443  A3 Create effect with entity pos          00 81 00 00 FC FF 10 00
+       452  37 Wait                                   06
+       454  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       463  37 Wait                                   06
+       465  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       474  37 Wait                                   06
+       476  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       485  37 Wait                                   06
+   >>  487  96 Restore HP                             81 FF
+       490  11 Player gain control                    
+       491  49 Restart                                
+       492  FF End script                             
+       493  00 Break                                  
+=== op 0x96 map 68 (Coal Mine (unused_)-68) B[3] @691 operands [81 FF]
+   entry=608
+       647  A3 Create effect with entity pos          01 81 00 00 FC FF 10 00
+       656  37 Wait                                   06
+       658  A3 Create effect with entity pos          01 81 00 00 04 00 14 00
+       667  37 Wait                                   06
+       669  A3 Create effect with entity pos          01 81 00 00 08 00 18 00
+       678  37 Wait                                   06
+       680  A3 Create effect with entity pos          01 81 00 00 F8 FF 1C 00
+       689  37 Wait                                   06
+   >>  691  96 Restore HP                             81 FF
+       694  0D Dialog                                 0C 01
+       697  39 Wait for dialog                        
+       698  11 Player gain control                    
+       699  00 Break                                  
+=== op 0x96 map 84 (Lizardman's Lair-84) B[4] @1056 operands [80 32]
+   entry=968
+      1018  37 Wait                                   06
+      1020  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+      1029  37 Wait                                   06
+      1031  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+      1040  37 Wait                                   06
+      1042  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+      1051  37 Wait                                   06
+      1053  0D Dialog                                 0C 01
+   >> 1056  96 Restore HP                             80 32
+      1059  11 Player gain control                    
+      1060  00 Break                                  
+      1061  3B Check player in area                   07 0A 15 17 02 05
+      1068  03 If true goto                           F8 FF
+=== op 0x96 map 84 (Lizardman's Lair-84) B[5] @1164 operands [80 32]
+   entry=1076
+      1126  37 Wait                                   06
+      1128  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+      1137  37 Wait                                   06
+      1139  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+      1148  37 Wait                                   06
+      1150  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+      1159  37 Wait                                   06
+      1161  0D Dialog                                 0C 01
+   >> 1164  96 Restore HP                             80 32
+      1167  11 Player gain control                    
+      1168  00 Break                                  
+      1169  3B Check player in area                   13 16 32 35 02 02
+      1176  03 If true goto                           F8 FF
+=== op 0x96 map 84 (Lizardman's Lair-84) B[11] @1996 operands [80 32]
+   entry=1908
+      1958  37 Wait                                   06
+      1960  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+      1969  37 Wait                                   06
+      1971  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+      1980  37 Wait                                   06
+      1982  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+      1991  37 Wait                                   06
+      1993  0D Dialog                                 0C 01
+   >> 1996  96 Restore HP                             80 32
+      1999  11 Player gain control                    
+      2000  00 Break                                  
+      2001  3B Check player in area                   28 2B 0A 0D 02 03
+      2008  03 If true goto                           F8 FF
+=== op 0x96 map 123 (Kline's Nightmare-123) C[3] @331 operands [81 FF]
+   entry=252
+       287  A3 Create effect with entity pos          00 81 00 00 FC FF 10 00
+       296  37 Wait                                   06
+       298  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       307  37 Wait                                   06
+       309  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       318  37 Wait                                   06
+       320  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       329  37 Wait                                   06
+   >>  331  96 Restore HP                             81 FF
+       334  05 Flag on                                1F 80
+       337  11 Player gain control                    
+       338  49 Restart                                
+       339  FF End script                             
+=== op 0x96 map 126 (Kline's Nightmare-126) C[47] @1187 operands [81 FF]
+   entry=1108
+      1143  A3 Create effect with entity pos          00 81 00 00 FC FF 10 00
+      1152  37 Wait                                   06
+      1154  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+      1163  37 Wait                                   06
+      1165  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+      1174  37 Wait                                   06
+      1176  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+      1185  37 Wait                                   06
+   >> 1187  96 Restore HP                             81 FF
+      1190  11 Player gain control                    
+      1191  49 Restart                                
+      1192  FF End script                             
+      1193  00 Break                                  
+=== op 0x96 map 147 (Murgg Tree (inner)-147) B[3] @524 operands [80 32]
+   entry=436
+       486  37 Wait                                   06
+       488  A3 Create effect with entity pos          01 81 00 00 04 00 14 00
+       497  37 Wait                                   06
+       499  A3 Create effect with entity pos          01 81 00 00 08 00 18 00
+       508  37 Wait                                   06
+       510  A3 Create effect with entity pos          01 81 00 00 F8 FF 1C 00
+       519  37 Wait                                   06
+       521  0D Dialog                                 0C 01
+   >>  524  96 Restore HP                             80 32
+       527  11 Player gain control                    
+       528  00 Break                                  
+       529  3B Check player in area                   27 29 0A 0C 02 02
+       536  03 If true goto                           F8 FF
+=== op 0x96 map 327 (Arena Melzas 1 (Boss)-327) B[1] @292 operands [80 32]
+   entry=24
+       248  A3 Create effect with entity pos          02 81 00 00 FC FF 10 00
+       257  37 Wait                                   06
+       259  A3 Create effect with entity pos          02 81 00 00 04 00 14 00
+       268  37 Wait                                   06
+       270  A3 Create effect with entity pos          02 81 00 00 08 00 18 00
+       279  37 Wait                                   06
+       281  A3 Create effect with entity pos          02 81 00 00 F8 FF 1C 00
+       290  37 Wait                                   06
+   >>  292  96 Restore HP                             80 32
+       295  0D Dialog                                 0C 01
+       298  39 Wait for dialog                        
+       299  7D Jump relative from stored param        
+       300  FF End script                             
+=== op 0x96 map 379 (Lake Shrine teleporter-379) B[1] @156 operands [81 32]
+   entry=16
+       113  37 Wait                                   06
+       115  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       124  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       133  37 Wait                                   06
+       135  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       144  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       153  37 Wait                                   10
+       155  00 Break                                  
+   >>  156  96 Restore HP                             81 32
+       159  97 Spend money                            32
+       161  5C Dialog with entity                     81 10 01
+       165  39 Wait for dialog                        
+       166  11 Player gain control                    
+=== op 0x96 map 383 (Murgg Caves-383) B[1] @330 operands [80 32]
+   entry=240
+       294  37 Wait                                   06
+       296  A3 Create effect with entity pos          01 81 00 00 04 00 14 00
+       305  37 Wait                                   06
+       307  A3 Create effect with entity pos          01 81 00 00 08 00 18 00
+       316  37 Wait                                   06
+       318  A3 Create effect with entity pos          01 81 00 00 F8 FF 1C 00
+       327  37 Wait                                   1E
+       329  00 Break                                  
+   >>  330  96 Restore HP                             80 32
+       333  0D Dialog                                 0C 00
+       336  39 Wait for dialog                        
+       337  11 Player gain control                    
+       338  00 Break                                  
+=== op 0x96 map 394 (Pub Entrance + Floor-394) C[3] @749 operands [80 32]
+   entry=448
+       704  37 Wait                                   06
+       706  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       715  A3 Create effect with entity pos          01 81 00 00 08 00 18 00
+       724  37 Wait                                   06
+       726  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       735  A3 Create effect with entity pos          01 81 00 00 F8 FF 1C 00
+       744  37 Wait                                   06
+       746  0D Dialog                                 10 01
+   >>  749  96 Restore HP                             80 32
+       752  97 Spend money                            0A
+       754  73 Set loop counter _30                   46
+       756  37 Wait                                   01
+       758  5A Turn entity                            80 21
+=== op 0x96 map 411 (Lizardman's Lair (Boss)-411) B[4] @1056 operands [80 32]
+   entry=968
+      1018  37 Wait                                   06
+      1020  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+      1029  37 Wait                                   06
+      1031  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+      1040  37 Wait                                   06
+      1042  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+      1051  37 Wait                                   06
+      1053  0D Dialog                                 0C 01
+   >> 1056  96 Restore HP                             80 32
+      1059  11 Player gain control                    
+      1060  00 Break                                  
+      1061  3B Check player in area                   07 0A 15 17 02 05
+      1068  03 If true goto                           F8 FF
+=== op 0x96 map 411 (Lizardman's Lair (Boss)-411) B[5] @1164 operands [80 32]
+   entry=1076
+      1126  37 Wait                                   06
+      1128  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+      1137  37 Wait                                   06
+      1139  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+      1148  37 Wait                                   06
+      1150  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+      1159  37 Wait                                   06
+      1161  0D Dialog                                 0C 01
+   >> 1164  96 Restore HP                             80 32
+      1167  11 Player gain control                    
+      1168  00 Break                                  
+      1169  3B Check player in area                   13 16 32 35 02 02
+      1176  03 If true goto                           F8 FF
+=== op 0x96 map 411 (Lizardman's Lair (Boss)-411) B[11] @1996 operands [80 32]
+   entry=1908
+      1958  37 Wait                                   06
+      1960  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+      1969  37 Wait                                   06
+      1971  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+      1980  37 Wait                                   06
+      1982  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+      1991  37 Wait                                   06
+      1993  0D Dialog                                 0C 01
+   >> 1996  96 Restore HP                             80 32
+      1999  11 Player gain control                    
+      2000  00 Break                                  
+      2001  3B Check player in area                   28 2B 0A 0D 02 03
+      2008  03 If true goto                           F8 FF
+=== op 0x96 map 421 (Nirude (inner)-421) C[24] @1702 operands [81 32]
+   entry=1684
+      1684  1A Set anim                               06
+      1686  86 Set DamagedTickCounter                 80 28 00
+      1690  36 Wait until flag on                     18 80
+      1693  10 Player lose control                    
+      1694  37 Wait                                   01
+      1696  59 Set entity anim                        81 00
+      1699  BD Play sound 2                           31 00
+   >> 1702  96 Restore HP                             81 32
+      1705  A3 Create effect with entity pos          00 81 00 00 00 00 08 00
+      1714  37 Wait                                   06
+      1716  A3 Create effect with entity pos          00 81 00 00 00 00 0C 00
+      1725  37 Wait                                   06
+=== op 0x96 map 448 (Torla (inner)-448) C[2] @369 operands [81 32]
+   entry=268
+       331  37 Wait                                   06
+       333  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       342  37 Wait                                   06
+       344  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       353  37 Wait                                   06
+       355  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       364  37 Wait                                   06
+       366  0D Dialog                                 0C 01
+   >>  369  96 Restore HP                             81 32
+       372  11 Player gain control                    
+       373  37 Wait                                   28
+       375  05 Flag on                                E6 05
+       378  02 Goto                                   94 FF
+=== op 0x96 map 452 (Save Room (Coal Mine)-452) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 453 (Save Room (Lars Crypt)-453) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 454 (Save Room (Coastal Cave_)-454) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 455 (Save Room (Desert _ Ancient Shrine)-455) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 456 (Save Room (Magyscar)-456) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 457 (Save Room (Underground Watercourse)-457) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 458 (Save Room (Lizardman's Lair)-458) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 459 (Save Room (Magyscar_)-459) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 460 (Save Room (Nirude)-460) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 461 (Save Room (_)-461) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 462 (Save Room (Murgg Tree)-462) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 463 (Save Room (Fairy cave)-463) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 464 (Save Room (Lake Shrine_)-464) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 465 (Save Room (Nightmare ...)-465) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 466 (Save Room (Kline's Nightmare)-466) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 467 (Save Room (Giles Nightmare)-467) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 468 (Save Room (Meia Dream)-468) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 469 (Save Room (Elenes Nightmare)-469) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 470 (Save Room (Nestus' Dream)-470) B[2] @204 operands [80 32]
+   entry=116
+       166  37 Wait                                   06
+       168  A3 Create effect with entity pos          00 81 00 00 04 00 14 00
+       177  37 Wait                                   06
+       179  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       188  37 Wait                                   06
+       190  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       199  37 Wait                                   06
+       201  0D Dialog                                 0C 01
+   >>  204  96 Restore HP                             80 32
+       207  11 Player gain control                    
+       208  00 Break                                  
+       209  3B Check player in area                   0C 0E 0B 0D 01 01
+       216  03 If true goto                           F8 FF
+=== op 0x96 map 475 (Inoa (inner, Yustel, Map)-475) B[2] @502 operands [81 32]
+   entry=76
+       459  37 Wait                                   06
+       461  A3 Create effect with entity pos          02 81 00 00 08 00 18 00
+       470  A3 Create effect with entity pos          03 81 00 00 08 00 0C 00
+       479  37 Wait                                   06
+       481  A3 Create effect with entity pos          02 81 00 00 F8 FF 1C 00
+       490  A3 Create effect with entity pos          03 81 00 00 F8 FF 08 00
+       499  37 Wait                                   10
+       501  00 Break                                  
+   >>  502  96 Restore HP                             81 32
+       505  97 Spend money                            32
+       507  5C Dialog with entity                     81 10 01
+       511  39 Wait for dialog                        
+       512  37 Wait                                   14
+=== op 0x97 map 147 (Murgg Tree (inner)-147) B[4] @650 operands [32]
+   entry=544
+       617  37 Wait                                   06
+       619  A3 Create effect with entity pos          02 81 00 00 08 00 0C 00
+       628  92 Set effect anim                        02 02
+       631  37 Wait                                   06
+       633  A3 Create effect with entity pos          02 81 00 00 F8 FF 08 00
+       642  92 Set effect anim                        02 02
+       645  37 Wait                                   06
+       647  0D Dialog                                 0D 01
+   >>  650  97 Spend money                            32
+       652  11 Player gain control                    
+       653  00 Break                                  
+       654  3B Check player in area                   2A 2C 0A 0C 02 02
+       661  03 If true goto                           F8 FF
+=== op 0x97 map 327 (Arena Melzas 1 (Boss)-327) B[1] @376 operands [32]
+   entry=24
+       332  A3 Create effect with entity pos          03 81 00 00 04 00 14 00
+       341  37 Wait                                   06
+       343  A3 Create effect with entity pos          03 81 00 00 FC FF 10 00
+       352  37 Wait                                   06
+       354  A3 Create effect with entity pos          03 81 00 00 08 00 0C 00
+       363  37 Wait                                   06
+       365  A3 Create effect with entity pos          03 81 00 00 F8 FF 08 00
+       374  37 Wait                                   06
+   >>  376  97 Spend money                            32
+       378  0D Dialog                                 0D 01
+       381  39 Wait for dialog                        
+       382  7D Jump relative from stored param        
+       383  FF End script                             
+=== op 0x97 map 379 (Lake Shrine teleporter-379) B[1] @159 operands [32]
+   entry=16
+       115  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       124  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       133  37 Wait                                   06
+       135  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       144  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       153  37 Wait                                   10
+       155  00 Break                                  
+       156  96 Restore HP                             81 32
+   >>  159  97 Spend money                            32
+       161  5C Dialog with entity                     81 10 01
+       165  39 Wait for dialog                        
+       166  11 Player gain control                    
+       167  00 Break                                  
+=== op 0x97 map 394 (Pub Entrance + Floor-394) C[3] @752 operands [0A]
+   entry=448
+       706  A3 Create effect with entity pos          00 81 00 00 08 00 18 00
+       715  A3 Create effect with entity pos          01 81 00 00 08 00 18 00
+       724  37 Wait                                   06
+       726  A3 Create effect with entity pos          00 81 00 00 F8 FF 1C 00
+       735  A3 Create effect with entity pos          01 81 00 00 F8 FF 1C 00
+       744  37 Wait                                   06
+       746  0D Dialog                                 10 01
+       749  96 Restore HP                             80 32
+   >>  752  97 Spend money                            0A
+       754  73 Set loop counter _30                   46
+       756  37 Wait                                   01
+       758  5A Turn entity                            80 21
+       761  74 Decrement _30 and jump while positive  FB FF
+=== op 0x97 map 452 (Save Room (Coal Mine)-452) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 453 (Save Room (Lars Crypt)-453) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 454 (Save Room (Coastal Cave_)-454) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 455 (Save Room (Desert _ Ancient Shrine)-455) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 456 (Save Room (Magyscar)-456) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 457 (Save Room (Underground Watercourse)-457) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 458 (Save Room (Lizardman's Lair)-458) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 459 (Save Room (Magyscar_)-459) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 460 (Save Room (Nirude)-460) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 461 (Save Room (_)-461) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 462 (Save Room (Murgg Tree)-462) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 463 (Save Room (Fairy cave)-463) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 464 (Save Room (Lake Shrine_)-464) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 465 (Save Room (Nightmare ...)-465) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 466 (Save Room (Kline's Nightmare)-466) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 467 (Save Room (Giles Nightmare)-467) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 468 (Save Room (Meia Dream)-468) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 469 (Save Room (Elenes Nightmare)-469) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 470 (Save Room (Nestus' Dream)-470) B[3] @330 operands [32]
+   entry=224
+       297  37 Wait                                   06
+       299  A3 Create effect with entity pos          01 81 00 00 08 00 0C 00
+       308  92 Set effect anim                        01 02
+       311  37 Wait                                   06
+       313  A3 Create effect with entity pos          01 81 00 00 F8 FF 08 00
+       322  92 Set effect anim                        01 02
+       325  37 Wait                                   06
+       327  0D Dialog                                 0D 01
+   >>  330  97 Spend money                            32
+       332  11 Player gain control                    
+       333  00 Break                                  
+       334  3B Check player in area                   0F 11 0B 0D 01 01
+       341  03 If true goto                           F8 FF
+=== op 0x97 map 475 (Inoa (inner, Yustel, Map)-475) B[2] @505 operands [32]
+   entry=76
+       461  A3 Create effect with entity pos          02 81 00 00 08 00 18 00
+       470  A3 Create effect with entity pos          03 81 00 00 08 00 0C 00
+       479  37 Wait                                   06
+       481  A3 Create effect with entity pos          02 81 00 00 F8 FF 1C 00
+       490  A3 Create effect with entity pos          03 81 00 00 F8 FF 08 00
+       499  37 Wait                                   10
+       501  00 Break                                  
+       502  96 Restore HP                             81 32
+   >>  505  97 Spend money                            32
+       507  5C Dialog with entity                     81 10 01
+       511  39 Wait for dialog                        
+       512  37 Wait                                   14
+       514  5C Dialog with entity                     01 8B 01
+=== op 0xB3 map 161 (Fairy cave (Stenia)-161) B[1] @54 operands [00 10 00 00 00 00 00 00]
+   entry=36
+        36  64 Set entities position                  81 F0 00 80 03 10 00
+        44  3B Check player in area                   06 0D 1D 1D 03 03
+        51  03 If true goto                           10 00
+   >>   54  B3 Set pad buttons                        00 10 00 00 00 00 00 00
+        63  00 Break                                  
+        64  02 Goto                                   EC FF
+        67  8B Spawn entity next to entity            81 00 00 00 00 00 00 00
+        76  10 Player lose control                    

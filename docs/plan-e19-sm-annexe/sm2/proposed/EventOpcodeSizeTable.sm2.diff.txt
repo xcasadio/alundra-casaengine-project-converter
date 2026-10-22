@@ -1,0 +1,16 @@
+Alundra/Events/EventOpcodeSizeTable.cs (HEAD, unchanged since 317b3360) - the labels of sm2, line by line (sizes 1/3/3/3 are the binary's: nothing else changes).
+No test, no trace and no document reads these strings (FAIT: rg of the four old strings over *.cs, *.md, *.tsv outside the decompilation and the annex finds
+only the table itself); after the port the strings no longer reach the warning of UnknownOpcode (:3086) either.
+
+:152  { 0x6A, new(1, "Save entity position") },                 unchanged (check_sm12 O11: the label is right)
+:153  - { 0x6B, new(3, "If entity x < threshold") },
+      + { 0x6B, new(3, "If entity x moved >= threshold from the saved position") },
+:154  - { 0x6C, new(3, "If entity y < threshold") },
+      + { 0x6C, new(3, "If entity y moved >= threshold from the saved position") },
+:155  - { 0x6D, new(3, "If entity z < threshold") },
+      + { 0x6D, new(3, "If entity z moved >= threshold from the saved position") },
+
+Why: the binary writes Result = 1 when |saved - current| is greater than or equal to the threshold (0x8003F938-0x8003F93C: slt then xori 1), the old label says the opposite
+(sm1-sm4/check.md 2.4; report 0.6). The threshold is in 1/65536 pixel units shifted by 16 from a 16-bit pixel value, i.e. the operand is a distance in pixels.
+The word "moved" is true for the 0x6A-then-read use (70 of 70 reads, 59 of them with a save before; the 11 without compare against 0: "from the saved position" is
+then the state's initial 0 - say so in the case comment, not in the label).

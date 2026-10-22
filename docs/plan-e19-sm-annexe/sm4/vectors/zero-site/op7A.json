@@ -1,0 +1,239 @@
+{
+ "handler": "0x8003FB8C",
+ "opcode": 122,
+ "opcodeHex": "0x7A",
+ "sites": 0,
+ "vectors": [
+  {
+   "id": "op7A/e01",
+   "instruction": [
+    122,
+    16,
+    0
+   ],
+   "note": "Result 0, offset +16: jumps, _34 = pc + 3",
+   "reads": {
+    "internal": [
+     "cursor pointer (a2)"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "state.result"
+    ]
+   },
+   "resultBefore": 0,
+   "returned": 16,
+   "stateWrites": [
+    {
+     "field": "_34",
+     "relativeToInstruction": true,
+     "value": 3
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "id": "op7A/e02",
+   "instruction": [
+    122,
+    16,
+    0
+   ],
+   "note": "Result 1: no jump, size 3, nothing written",
+   "reads": {
+    "mapped": [
+     "state.result"
+    ]
+   },
+   "resultBefore": 1,
+   "returned": 3,
+   "stateWrites": [],
+   "today": {
+    "redToday": false,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "id": "op7A/e03",
+   "instruction": [
+    122,
+    248,
+    255
+   ],
+   "note": "Result 0, offset -8 (0xFFF8)",
+   "reads": {
+    "internal": [
+     "cursor pointer (a2)"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "state.result"
+    ]
+   },
+   "resultBefore": 0,
+   "returned": -8,
+   "stateWrites": [
+    {
+     "field": "_34",
+     "relativeToInstruction": true,
+     "value": 3
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "id": "op7A/e04",
+   "instruction": [
+    122,
+    255,
+    127
+   ],
+   "note": "Result 0, offset 0x7FFF",
+   "reads": {
+    "internal": [
+     "cursor pointer (a2)"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "state.result"
+    ]
+   },
+   "resultBefore": 0,
+   "returned": 32767,
+   "stateWrites": [
+    {
+     "field": "_34",
+     "relativeToInstruction": true,
+     "value": 3
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "id": "op7A/e05",
+   "instruction": [
+    122,
+    0,
+    128
+   ],
+   "note": "Result 0, offset 0x8000 (-32768)",
+   "reads": {
+    "internal": [
+     "cursor pointer (a2)"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "state.result"
+    ]
+   },
+   "resultBefore": 0,
+   "returned": -32768,
+   "stateWrites": [
+    {
+     "field": "_34",
+     "relativeToInstruction": true,
+     "value": 3
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "id": "op7A/e06",
+   "instruction": [
+    122,
+    0,
+    0
+   ],
+   "note": "Result 0, offset 0: jumps by 0 (a loop on itself), _34 = pc + 3",
+   "reads": {
+    "internal": [
+     "cursor pointer (a2)"
+    ],
+    "mapped": [
+     "instr[1]",
+     "instr[2]",
+     "state.result"
+    ]
+   },
+   "resultBefore": 0,
+   "returned": 0,
+   "stateWrites": [
+    {
+     "field": "_34",
+     "relativeToInstruction": true,
+     "value": 3
+    }
+   ],
+   "today": {
+    "redToday": true,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "id": "op7A/e07",
+   "instruction": [
+    122,
+    16,
+    0
+   ],
+   "note": "Result 0x80000000 (non-zero, negative): no jump",
+   "reads": {
+    "mapped": [
+     "state.result"
+    ]
+   },
+   "resultBefore": -2147483648,
+   "returned": 3,
+   "stateWrites": [],
+   "today": {
+    "redToday": false,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   }
+  },
+  {
+   "id": "op7A/e08",
+   "instruction": [
+    122,
+    16,
+    0
+   ],
+   "note": "Result 255: no jump",
+   "reads": {
+    "mapped": [
+     "state.result"
+    ]
+   },
+   "resultBefore": 255,
+   "returned": 3,
+   "stateWrites": [],
+   "today": {
+    "redToday": false,
+    "returned": 3,
+    "writes": "none (skipped by size)"
+   }
+  }
+ ]
+}

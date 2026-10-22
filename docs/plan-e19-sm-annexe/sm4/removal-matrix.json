@@ -1,0 +1,238 @@
+{
+ "case0x72": {
+  "greenGuardsThatStayGreen": [],
+  "redRowsOfTheTheories": 66,
+  "redTestsCount": 10,
+  "redWhenRemoved": [
+   "U72-1",
+   "U72-2",
+   "U72-3",
+   "U72-4",
+   "U72-5",
+   "U72-6",
+   "V-72",
+   "RB-444-D15",
+   "RB-140-D2",
+   "ARC-40"
+  ],
+  "testsThatNeedIt": [
+   "U72-1",
+   "U72-2",
+   "U72-3",
+   "U72-4",
+   "U72-5",
+   "U72-6",
+   "V-72",
+   "RB-444-D15",
+   "RB-140-D2",
+   "ARC-40"
+  ]
+ },
+ "case0x88": {
+  "greenGuardsThatStayGreen": [
+   "U88-6",
+   "U88-8",
+   "U88-9",
+   "U88-10",
+   "V-OOT"
+  ],
+  "redRowsOfTheTheories": 30,
+  "redTestsCount": 12,
+  "redWhenRemoved": [
+   "U88-1",
+   "U88-2",
+   "U88-3",
+   "U88-4",
+   "U88-5",
+   "U88-7",
+   "U88-3b",
+   "V-88",
+   "RB-306-E14",
+   "RB-442-E1",
+   "ARC-306",
+   "ARC-442"
+  ],
+  "testsThatNeedIt": [
+   "U88-1",
+   "U88-2",
+   "U88-3",
+   "U88-4",
+   "U88-5",
+   "U88-6",
+   "U88-7",
+   "U88-8",
+   "U88-9",
+   "U88-10",
+   "U88-3b",
+   "V-88",
+   "V-OOT",
+   "RB-306-E14",
+   "RB-442-E1",
+   "ARC-306",
+   "ARC-442"
+  ]
+ },
+ "case0x96": {
+  "greenGuardsThatStayGreen": [
+   "U96-13",
+   "U96-14",
+   "U96-15"
+  ],
+  "redRowsOfTheTheories": 45,
+  "redTestsCount": 19,
+  "redWhenRemoved": [
+   "U96-1",
+   "U96-2",
+   "U96-3",
+   "U96-4",
+   "U96-5",
+   "U96-6",
+   "U96-7",
+   "U96-8",
+   "U96-9",
+   "U96-10",
+   "U96-11",
+   "U96-12",
+   "U96-16",
+   "V-96",
+   "RB-452-B2",
+   "RB-394-C3",
+   "RB-475-B2",
+   "RB-22-C6",
+   "ARC-452"
+  ],
+  "testsThatNeedIt": [
+   "U96-1",
+   "U96-2",
+   "U96-3",
+   "U96-4",
+   "U96-5",
+   "U96-6",
+   "U96-7",
+   "U96-8",
+   "U96-9",
+   "U96-10",
+   "U96-11",
+   "U96-12",
+   "U96-13",
+   "U96-14",
+   "U96-15",
+   "U96-16",
+   "V-96",
+   "RB-452-B2",
+   "RB-394-C3",
+   "RB-475-B2",
+   "RB-22-C6",
+   "ARC-452"
+  ]
+ },
+ "case0x97": {
+  "greenGuardsThatStayGreen": [
+   "U97-3",
+   "U97-4",
+   "U97-13"
+  ],
+  "redRowsOfTheTheories": 64,
+  "redTestsCount": 15,
+  "redWhenRemoved": [
+   "U97-1",
+   "U97-2",
+   "U97-5",
+   "U97-6",
+   "U97-7",
+   "U97-8",
+   "U97-9",
+   "U97-10",
+   "U97-11",
+   "U97-12",
+   "V-97",
+   "RB-452-B3",
+   "RB-394-C3",
+   "RB-475-B2",
+   "ARC-452"
+  ],
+  "testsThatNeedIt": [
+   "U97-1",
+   "U97-2",
+   "U97-3",
+   "U97-4",
+   "U97-5",
+   "U97-6",
+   "U97-7",
+   "U97-8",
+   "U97-9",
+   "U97-10",
+   "U97-11",
+   "U97-12",
+   "U97-13",
+   "V-97",
+   "RB-452-B3",
+   "RB-394-C3",
+   "RB-475-B2",
+   "ARC-452"
+  ]
+ },
+ "case0xB3": {
+  "greenGuardsThatStayGreen": [],
+  "redRowsOfTheTheories": 67,
+  "redTestsCount": 11,
+  "redWhenRemoved": [
+   "UB3-1",
+   "UB3-2",
+   "UB3-3",
+   "UB3-4",
+   "UB3-5",
+   "UB3-6",
+   "UB3-7",
+   "V-B3",
+   "RB-161-B1",
+   "ARC-161a",
+   "ARC-161b"
+  ],
+  "testsThatNeedIt": [
+   "UB3-1",
+   "UB3-2",
+   "UB3-3",
+   "UB3-4",
+   "UB3-5",
+   "UB3-6",
+   "UB3-7",
+   "V-B3",
+   "RB-161-B1",
+   "ARC-161a",
+   "ARC-161b"
+  ]
+ },
+ "labels": {
+  "greenGuardsThatStayGreen": [],
+  "redRowsOfTheTheories": 0,
+  "redTestsCount": 1,
+  "redWhenRemoved": [
+   "P-LBL"
+  ],
+  "testsThatNeedIt": [
+   "P-LBL"
+  ]
+ },
+ "seamOverwrite(compile)": {
+  "note": "removing the seam breaks the BUILD of these tests, it does not make them red",
+  "testsThatCallIt": [
+   "UB3-3",
+   "S-1",
+   "S-2",
+   "S-3",
+   "V-B3"
+  ]
+ },
+ "witness": {
+  "greenGuardsThatStayGreen": [
+   "P-WIT"
+  ],
+  "redRowsOfTheTheories": 0,
+  "redTestsCount": 0,
+  "redWhenRemoved": [],
+  "testsThatNeedIt": [
+   "P-WIT"
+  ]
+ }
+}

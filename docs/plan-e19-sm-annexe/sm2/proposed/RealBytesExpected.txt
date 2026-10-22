@@ -1,0 +1,106 @@
+# Real-bytes tests (E19.sm2 T1): expected values (port) and red values (today = the skip by size). Produced by the second-method interpreter
+# tools/mini_prog.py from the REAL exported programs; positions are 16.16 words; "executed" lists (pc:opcode) the instructions the runner dispatches in the call
+# (the End/Break records come last). Result0 is the Result the state holds before the first tick. start = CodeIndex of the first call (entry unless said).
+
+=== RB-55  55 C[4]  X patrol 120 px (grow)
+    map 55, program C[4], entry 272, first call at CodeIndex 272, Result0 1, all other Parameters 0, flags all clear, no host (bare runner)
+  tick 1  pos=(0x00400000, 0x00C80000, 0x00080000)
+     port : executed 272:6A 273:1A 275:00                                                   Result=1 CodeIndex=276 P2..P4=(0x00400000, 0x00C80000, 0x00080000) TargetDirection=0
+     today: executed 272:6A 273:1A 275:00                                                   Result=1 CodeIndex=276 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+  tick 2  pos=(0x00B70000, 0x00C80000, 0x00080000)
+     port : executed 276:6B 279:03 282:30 287:02 273:1A 275:00                              Result=0 CodeIndex=276 P2..P4=(0x00400000, 0x00C80000, 0x00080000) TargetDirection=0
+     today: executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00                Result=1 CodeIndex=276 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=16  RED
+  tick 3  pos=(0x00B80000, 0x00C80000, 0x00080000)
+     port : executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00                Result=1 CodeIndex=276 P2..P4=(0x00B80000, 0x00C80000, 0x00080000) TargetDirection=16
+     today: executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00                Result=1 CodeIndex=276 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+
+=== RB-55n 55 C[4]  X patrol 120 px (shrink: abs)
+    map 55, program C[4], entry 272, first call at CodeIndex 272, Result0 1, all other Parameters 0, flags all clear, no host (bare runner)
+  tick 1  pos=(0x00C80000, 0x00C80000, 0x00080000)
+     port : executed 272:6A 273:1A 275:00                                                   Result=1 CodeIndex=276 P2..P4=(0x00C80000, 0x00C80000, 0x00080000) TargetDirection=0
+     today: executed 272:6A 273:1A 275:00                                                   Result=1 CodeIndex=276 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+  tick 2  pos=(0x00510000, 0x00C80000, 0x00080000)
+     port : executed 276:6B 279:03 282:30 287:02 273:1A 275:00                              Result=0 CodeIndex=276 P2..P4=(0x00C80000, 0x00C80000, 0x00080000) TargetDirection=0
+     today: executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00                Result=1 CodeIndex=276 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=16  RED
+  tick 3  pos=(0x00500000, 0x00C80000, 0x00080000)
+     port : executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00                Result=1 CodeIndex=276 P2..P4=(0x00500000, 0x00C80000, 0x00080000) TargetDirection=16
+     today: executed 276:6B 279:03 290:1A 292:0A 293:02 272:6A 273:1A 275:00                Result=1 CodeIndex=276 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+
+=== RB-56  56 C[1]  6D without 6A, P4 = 0, threshold 256 px (from pc 93)
+    map 56, program C[1], entry 88, first call at CodeIndex 93, Result0 1, all other Parameters 0, flags all clear, no host (bare runner)
+  tick 1  pos=(0x00600000, 0x00600000, 0x00FFFFFF)
+     port : executed 93:1B 96:00                                                            Result=1 CodeIndex=97 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0
+     today: executed 93:1B 96:00                                                            Result=1 CodeIndex=97 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  same
+  tick 2  pos=(0x00600000, 0x00600000, 0x00FFFFFF)
+     port : executed 97:6D 100:03 103:30 108:02 93:1B 96:00                                 Result=0 CodeIndex=97 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0
+     today: executed 97:6D 100:03 111:1B 114:1B 117:00                                      Result=1 CodeIndex=118 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+  tick 3  pos=(0x00600000, 0x00600000, 0x01000000)
+     port : executed 97:6D 100:03 111:1B 114:1B 117:00                                      Result=1 CodeIndex=118 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0
+     today: executed 118:6F 119:03 93:1B 96:00                                              Result=1 CodeIndex=97 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED  [opcode(s) 6F write Result in the DLL, not modelled here: assert only the ticks before them]
+
+=== RB-56b 56 C[1]  6D without 6A, Result0 = 0 (the arrival tick)
+    map 56, program C[1], entry 88, first call at CodeIndex 93, Result0 0, all other Parameters 0, flags all clear, no host (bare runner)
+  tick 1  pos=(0x00600000, 0x00600000, 0x00FFFFFF)
+     port : executed 93:1B 96:00                                                            Result=0 CodeIndex=97 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0
+     today: executed 93:1B 96:00                                                            Result=0 CodeIndex=97 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  same
+  tick 2  pos=(0x00600000, 0x00600000, 0x01000000)
+     port : executed 97:6D 100:03 111:1B 114:1B 117:00                                      Result=1 CodeIndex=118 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0
+     today: executed 97:6D 100:03 103:30 108:02 93:1B 96:00                                 Result=0 CodeIndex=97 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+
+=== RB-59  59 C[6]  Z balloon, 32 px, two 6A
+    map 59, program C[6], entry 456, first call at CodeIndex 456, Result0 1, all other Parameters 0, flags all clear, no host (bare runner)
+  tick 1  pos=(0x00500000, 0x003C0000, 0x00600000)
+     port : executed 456:2A 457:6A 458:1B 461:00                                            Result=1 CodeIndex=462 P2..P4=(0x00500000, 0x003C0000, 0x00600000) TargetDirection=0
+     today: executed 456:2A 457:6A 458:1B 461:00                                            Result=1 CodeIndex=462 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+  tick 2  pos=(0x00500000, 0x003C0000, 0x00600000)
+     port : executed 462:6D 465:03 468:30 473:02 458:1B 461:00                              Result=0 CodeIndex=462 P2..P4=(0x00500000, 0x003C0000, 0x00600000) TargetDirection=0
+     today: executed 462:6D 465:03 476:6A 477:1B 480:00                                     Result=1 CodeIndex=481 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+  tick 3  pos=(0x00500000, 0x003C0000, 0x00800000)
+     port : executed 462:6D 465:03 476:6A 477:1B 480:00                                     Result=1 CodeIndex=481 P2..P4=(0x00500000, 0x003C0000, 0x00800000) TargetDirection=0
+     today: executed 481:6D 484:03 456:2A 457:6A 458:1B 461:00                              Result=1 CodeIndex=462 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+
+=== RB-307 307 C[1] memo across a 0x78 call
+    map 307, program C[1], entry 424, first call at CodeIndex 424, Result0 1, all other Parameters 0, flags all clear, no host (bare runner)
+  tick 1  pos=(0x00250000, 0x00230000, 0x00280000)
+     port : executed 424:1A 426:6A 427:1B 430:78 474:6E 475:7F 433:6B 436:03 439:00         Result=0 CodeIndex=440 P2..P4=(0x00250000, 0x00230000, 0x00280000) TargetDirection=0
+     today: executed 424:1A 426:6A 427:1B 430:78 474:6E 475:7F 433:6B 436:03 439:00         Result=0 CodeIndex=440 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+  tick 2  pos=(0x00600000, 0x00230000, 0x00280000)
+     port : executed 440:02 427:1B 430:78 474:6E 475:7F 433:6B 436:03 439:00                Result=0 CodeIndex=440 P2..P4=(0x00250000, 0x00230000, 0x00280000) TargetDirection=0
+     today: executed 440:02 427:1B 430:78 474:6E 475:7F 433:6B 436:03 439:00                Result=0 CodeIndex=440 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+  tick 3  pos=(0x00610000, 0x00230000, 0x00280000)
+     port : executed 440:02 427:1B 430:78 474:6E 475:7F 433:6B 436:03 444:6A 445:1B 448:78 474:6E 475:7F 451:6B 454:03 457:00 Result=0 CodeIndex=458 P2..P4=(0x00610000, 0x00230000, 0x00280000) TargetDirection=0
+     today: executed 440:02 427:1B 430:78 474:6E 475:7F 433:6B 436:03 439:00                Result=0 CodeIndex=440 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+
+=== RB-344 344 C[60] Y 64 px then X 96 px (two memos)
+    map 344, program C[60], entry 2356, first call at CodeIndex 2356, Result0 1, all other Parameters 0, flags all clear, no host (bare runner)
+  tick 1  pos=(0x00580000, 0x02000000, 0x00600000)
+     port : executed 2356:1A 2358:6A 2359:00                                                Result=1 CodeIndex=2360 P2..P4=(0x00580000, 0x02000000, 0x00600000) TargetDirection=0
+     today: executed 2356:1A 2358:6A 2359:00                                                Result=1 CodeIndex=2360 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+  tick 2  pos=(0x00580000, 0x023F0000, 0x00600000)
+     port : executed 2360:30 2365:89 2374:6C 2377:04 2359:00                                Result=0 CodeIndex=2360 P2..P4=(0x00580000, 0x02000000, 0x00600000) TargetDirection=0
+     today: executed 2360:30 2365:89 2374:6C 2377:04 2380:08 2382:6A 2383:00                Result=1 CodeIndex=2384 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=24  RED
+  tick 3  pos=(0x00580000, 0x02400000, 0x00600000)
+     port : executed 2360:30 2365:89 2374:6C 2377:04 2380:08 2382:6A 2383:00                Result=1 CodeIndex=2384 P2..P4=(0x00580000, 0x02400000, 0x00600000) TargetDirection=24
+     today: executed 2384:30 2389:89 2398:6B 2401:04 2404:08 2406:02 2358:6A 2359:00        Result=1 CodeIndex=2360 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=16  RED
+  tick 4  pos=(0x00580000, 0x02400000, 0x00600000)
+     port : executed 2384:30 2389:89 2398:6B 2401:04 2383:00                                Result=0 CodeIndex=2384 P2..P4=(0x00580000, 0x02400000, 0x00600000) TargetDirection=24
+     today: executed 2360:30 2365:89 2374:6C 2377:04 2380:08 2382:6A 2383:00                Result=1 CodeIndex=2384 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=8  RED
+  tick 5  pos=(0x00B70000, 0x02400000, 0x00600000)
+     port : executed 2384:30 2389:89 2398:6B 2401:04 2383:00                                Result=0 CodeIndex=2384 P2..P4=(0x00580000, 0x02400000, 0x00600000) TargetDirection=24
+     today: executed 2384:30 2389:89 2398:6B 2401:04 2404:08 2406:02 2358:6A 2359:00        Result=1 CodeIndex=2360 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+  tick 6  pos=(0x00B80000, 0x02400000, 0x00600000)
+     port : executed 2384:30 2389:89 2398:6B 2401:04 2404:08 2406:02 2358:6A 2359:00        Result=1 CodeIndex=2360 P2..P4=(0x00B80000, 0x02400000, 0x00600000) TargetDirection=16
+     today: executed 2360:30 2365:89 2374:6C 2377:04 2380:08 2382:6A 2383:00                Result=1 CodeIndex=2384 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=24  RED
+
+=== RB-442 442 C[3]  X patrol 72 px
+    map 442, program C[3], entry 512, first call at CodeIndex 512, Result0 1, all other Parameters 0, flags all clear, no host (bare runner)
+  tick 1  pos=(0x00C00000, 0x00640000, 0x00400000)
+     port : executed 512:6A 513:1A 515:00                                                   Result=1 CodeIndex=516 P2..P4=(0x00C00000, 0x00640000, 0x00400000) TargetDirection=0
+     today: executed 512:6A 513:1A 515:00                                                   Result=1 CodeIndex=516 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+  tick 2  pos=(0x01070000, 0x00640000, 0x00400000)
+     port : executed 516:30 521:30 526:6B 529:04 515:00                                     Result=0 CodeIndex=516 P2..P4=(0x00C00000, 0x00640000, 0x00400000) TargetDirection=0
+     today: executed 516:30 521:30 526:6B 529:04 532:0A 533:02 512:6A 513:1A 515:00         Result=1 CodeIndex=516 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=16  RED
+  tick 3  pos=(0x01080000, 0x00640000, 0x00400000)
+     port : executed 516:30 521:30 526:6B 529:04 532:0A 533:02 512:6A 513:1A 515:00         Result=1 CodeIndex=516 P2..P4=(0x01080000, 0x00640000, 0x00400000) TargetDirection=16
+     today: executed 516:30 521:30 526:6B 529:04 532:0A 533:02 512:6A 513:1A 515:00         Result=1 CodeIndex=516 P2..P4=(0x00000000, 0x00000000, 0x00000000) TargetDirection=0  RED
+

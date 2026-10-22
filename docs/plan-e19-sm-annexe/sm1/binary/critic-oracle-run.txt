@@ -1,0 +1,4 @@
+op 3C: 2000 runs (critic oracle, seed 11), 0 mismatches, Result word hist {0: 1797, 1: 203}
+op 3D: 2000 runs (critic oracle, seed 11), 0 mismatches, Result word hist {0: 1282, 1: 718}
+op 60: 2000 runs (critic oracle, seed 11), 0 mismatches, Result word hist {0: 1936, 1: 64}
+op 61: 2000 runs (critic oracle, seed 11), 0 mismatches, Result word hist {0: 1917, 1: 83}

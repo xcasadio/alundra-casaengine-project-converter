@@ -1,0 +1,58 @@
+{
+ "0x9E": {
+  "dll_shape_disagrees": 0,
+  "green_today": 0,
+  "result0": 29,
+  "result1": 28,
+  "vectors": 57
+ },
+ "0xA9": {
+  "dll_shape_disagrees": 0,
+  "green_today": 0,
+  "result0": 81,
+  "result1": 22,
+  "vectors": 103
+ },
+ "0xAA": {
+  "dll_shape_disagrees": 0,
+  "green_today": 0,
+  "result0": 85,
+  "result1": 14,
+  "vectors": 99
+ },
+ "0xB2": {
+  "dll_shape_disagrees": 0,
+  "green_today": 0,
+  "result0": 118,
+  "result1": 31,
+  "vectors": 149
+ },
+ "0xB4": {
+  "dll_shape_disagrees": 0,
+  "green_today": 0,
+  "result0": 83,
+  "result1": 29,
+  "vectors": 112
+ },
+ "0xB5": {
+  "dll_shape_disagrees": 0,
+  "green_today": 0,
+  "result0": 81,
+  "result1": 31,
+  "vectors": 112
+ },
+ "0xB6": {
+  "dll_shape_disagrees": 0,
+  "green_today": 0,
+  "result0": 98,
+  "result1": 14,
+  "vectors": 112
+ },
+ "0xB7": {
+  "dll_shape_disagrees": 0,
+  "green_today": 0,
+  "result0": 76,
+  "result1": 17,
+  "vectors": 93
+ }
+}

@@ -1,0 +1,19 @@
+Provenance of tools/ (read-only preparation of E19.sm4, 2026-10-18)
+
+Copies of annex scripts (sm1-sm4/, frozen, never run in place):
+  emu.py         IDENTICAL to the annex copy  docs/plan-e19-sm-annexe/sm1-sm4/work/oracle/emu.py
+  lib.py         IDENTICAL to the annex copy  docs/plan-e19-sm-annexe/sm1-sm4/work/oracle/lib.py
+  oracle.py      IDENTICAL to the annex copy  docs/plan-e19-sm-annexe/sm1-sm4/work/oracle/oracle.py
+  corpus.py      MODIFIED (diff below)  docs/plan-e19-sm-annexe/sm1-sm4/work/corpus.py
+  myoracle.py    IDENTICAL to the annex copy  docs/plan-e19-sm-annexe/sm1-sm4/check/myoracle.py
+
+Modified copies:
+  corpus.py      one line: the size table is read from Alundra/Events/EventOpcodeSizeTable.cs (the annex says Alundra/Scripts/, moved by R2)
+  myoracle_sm4.py  myoracle.py restricted to the opcodes 0x72 0x88 0x96 0x97 0xB3 (the loop over the opcode table)
+
+Written for this slice (new):
+  temu.py (read/write-logging interpreter over emu.py), sm4model.py (layout, mapping, models), gen_vectors.py, gen_zero_site.py, gen_mapping.py,
+  replay_vectors.py, named_tests.py (value audit of the named unit tests), mutants.py, build_catalog.py, finalize_manifest.py,
+  corpus_counts.py, sites_context.py, dump_site.py, mapinfo.py, disas.py
+
+The binary: ALUN_CD.EXE (France) sha1 a705f8dab665645af5dfaf8fb348c7926b5caa58 (checked at the start of the work).

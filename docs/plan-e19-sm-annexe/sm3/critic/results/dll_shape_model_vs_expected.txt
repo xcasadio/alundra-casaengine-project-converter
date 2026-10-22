@@ -1,0 +1,2 @@
+DLL-shape model vs expected: mismatches 0 []
+vectors whose expected == result_before: 0 ; vectors with a free slot: 230

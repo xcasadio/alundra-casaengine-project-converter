@@ -1,0 +1,18 @@
+None         killed rows    0  (per op {}, exceptions 0)
+mathabs      killed rows  168  (per op {107: 56, 108: 56, 109: 56}, exceptions 168)
+pixels       killed rows  282  (per op {107: 96, 108: 93, 109: 93}, exceptions 0)
+unsigned     killed rows  366  (per op {107: 124, 108: 121, 109: 121}, exceptions 0)
+le_cmp       killed rows   72  (per op {107: 24, 108: 24, 109: 24}, exceptions 0)
+inverted     killed rows 1083  (per op {107: 361, 108: 361, 109: 361}, exceptions 0)
+sub64        killed rows  176  (per op {107: 58, 108: 59, 109: 59}, exceptions 0)
+noabs        killed rows  216  (per op {107: 65, 108: 73, 109: 78}, exceptions 0)
+lo_only      killed rows  193  (per op {107: 59, 108: 68, 109: 66}, exceptions 0)
+be           killed rows  348  (per op {107: 123, 108: 119, 109: 106}, exceptions 0)
+6A_noZ       killed rows   30  (per op {106: 30}, exceptions 0)
+6A_noY       killed rows   30  (per op {106: 30}, exceptions 0)
+6A_res1      killed rows   19  (per op {106: 19}, exceptions 0)
+6A_res0      killed rows   24  (per op {106: 24}, exceptions 0)
+6D_reads_P3  killed rows  127  (per op {109: 127}, exceptions 0)
+swap         killed rows    0  (per op {}, exceptions 0)
+total {106: 31, 107: 361, 108: 361, 109: 361}
+red today {106: 30, 107: 253, 108: 258, 109: 253}

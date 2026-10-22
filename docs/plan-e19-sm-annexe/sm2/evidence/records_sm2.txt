@@ -1,0 +1,53 @@
+=== map 55 Torla Buggy_ with bar music and random texts (early version of Torla)-55  map_size={'w': 52, 'h': 60}  program targets [('C', 4), ('C', 5), ('C', 7), ('C', 8), ('C', 9), ('C', 20), ('C', 21), ('C', 22), ('C', 23), ('C', 24)]
+  rec 3   Flammes (pour Ice Rod)             raw C=132 (bit0x80 SET) -> C[4]  sprite=81  tile=(56,82) h=2 dispPix=(672,640) dir=195 enabled=1 A=0 B=0 D=131 E=0 F=0 prefab=45bef91c
+  rec 4   Flammes (pour Ice Rod)             raw C=133 (bit0x80 SET) -> C[5]  sprite=81  tile=(66,86) h=2 dispPix=(792,672) dir=194 enabled=1 A=0 B=0 D=132 E=0 F=0 prefab=45bef91c
+  rec 7   Flammes (pour Ice Rod)             raw C=135 (bit0x80 SET) -> C[7]  sprite=81  tile=(56,90) h=2 dispPix=(672,704) dir=195 enabled=1 A=0 B=0 D=133 E=0 F=0 prefab=45bef91c
+  rec 8   Flammes (pour Ice Rod)             raw C=136 (bit0x80 SET) -> C[8]  sprite=81  tile=(66,94) h=2 dispPix=(792,736) dir=194 enabled=1 A=0 B=0 D=134 E=0 F=0 prefab=45bef91c
+  rec 9   Flammes (pour Ice Rod)             raw C=137 (bit0x80 SET) -> C[9]  sprite=81  tile=(56,98) h=4 dispPix=(672,752) dir=195 enabled=1 A=0 B=0 D=135 E=0 F=0 prefab=45bef91c
+  rec 29  Flammes (pour Ice Rod)             raw C=148 (bit0x80 SET) -> C[20]  sprite=81  tile=(76,30) h=2 dispPix=(912,224) dir=192 enabled=1 A=0 B=0 D=137 E=0 F=0 prefab=45bef91c
+  rec 30  Flammes (pour Ice Rod)             raw C=149 (bit0x80 SET) -> C[21]  sprite=81  tile=(80,30) h=2 dispPix=(960,224) dir=192 enabled=1 A=0 B=0 D=138 E=0 F=0 prefab=45bef91c
+  rec 31  Flammes (pour Ice Rod)             raw C=150 (bit0x80 SET) -> C[22]  sprite=81  tile=(84,30) h=2 dispPix=(1008,224) dir=192 enabled=1 A=0 B=0 D=139 E=0 F=0 prefab=45bef91c
+  rec 32  Flammes (pour Ice Rod)             raw C=151 (bit0x80 SET) -> C[23]  sprite=81  tile=(88,30) h=2 dispPix=(1056,224) dir=192 enabled=1 A=0 B=0 D=140 E=0 F=0 prefab=45bef91c
+  rec 33  Flammes (pour Ice Rod)             raw C=152 (bit0x80 SET) -> C[24]  sprite=81  tile=(92,30) h=2 dispPix=(1104,224) dir=192 enabled=1 A=0 B=0 D=141 E=0 F=0 prefab=45bef91c
+=== map 56 Torla Buggy_ with bar music and random texts (early version of Torla)-56  map_size={'w': 52, 'h': 60}  program targets [('C', 1), ('C', 2), ('C', 3), ('C', 4)]
+  rec 0   Flammes (pour Ice Rod)             raw C=129 (bit0x80 SET) -> C[1]  sprite=81  tile=(6,38) h=12 dispPix=(72,208) dir=192 enabled=1 A=0 B=0 D=129 E=0 F=0 prefab=45bef91c
+  rec 1   Flammes (pour Ice Rod)             raw C=130 (bit0x80 SET) -> C[2]  sprite=81  tile=(10,38) h=12 dispPix=(120,208) dir=192 enabled=1 A=0 B=0 D=130 E=0 F=0 prefab=45bef91c
+  rec 2   Flammes (pour Ice Rod)             raw C=131 (bit0x80 SET) -> C[3]  sprite=81  tile=(14,38) h=12 dispPix=(168,208) dir=192 enabled=1 A=0 B=0 D=131 E=0 F=0 prefab=45bef91c
+  rec 3   Flammes (pour Ice Rod)             raw C=132 (bit0x80 SET) -> C[4]  sprite=81  tile=(18,38) h=12 dispPix=(216,208) dir=192 enabled=1 A=0 B=0 D=132 E=0 F=0 prefab=45bef91c
+=== map 57 Torla Buggy_ with bar music and random texts (early version of Torla)-57  map_size={'w': 52, 'h': 60}  program targets [('C', 4), ('C', 7)]
+  rec 3   Flammes (pour Ice Rod)             raw C=132 (bit0x80 SET) -> C[4]  sprite=81  tile=(38,22) h=4 dispPix=(456,144) dir=192 enabled=1 A=0 B=0 D=130 E=0 F=0 prefab=45bef91c
+  rec 8   Flammes (pour Ice Rod)             raw C=135 (bit0x80 SET) -> C[7]  sprite=81  tile=(68,90) h=4 dispPix=(816,688) dir=192 enabled=1 A=0 B=0 D=132 E=0 F=0 prefab=45bef91c
+=== map 59 Torla Buggy_ with bar music and random texts (early version of Torla)-59  map_size={'w': 52, 'h': 60}  program targets [('C', 6), ('C', 8), ('C', 9), ('C', 10), ('C', 11)]
+  rec 8   (vide)                             raw C=134 (bit0x80 SET) -> C[6]  sprite=250  tile=(80,76) h=24 dispPix=(960,416) dir=64 enabled=1 A=0 B=0 D=129 E=0 F=0 prefab=dc95a16b
+  rec 10  (vide)                             raw C=136 (bit0x80 SET) -> C[8]  sprite=250  tile=(68,78) h=24 dispPix=(816,432) dir=64 enabled=1 A=0 B=0 D=130 E=0 F=0 prefab=dc95a16b
+  rec 11  (vide)                             raw C=137 (bit0x80 SET) -> C[9]  sprite=250  tile=(76,86) h=24 dispPix=(912,496) dir=64 enabled=1 A=0 B=0 D=131 E=0 F=0 prefab=dc95a16b
+  rec 12  (vide)                             raw C=138 (bit0x80 SET) -> C[10]  sprite=250  tile=(84,86) h=24 dispPix=(1008,496) dir=64 enabled=1 A=0 B=0 D=132 E=0 F=0 prefab=dc95a16b
+  rec 13  (vide)                             raw C=139 (bit0x80 SET) -> C[11]  sprite=250  tile=(62,92) h=24 dispPix=(744,544) dir=64 enabled=1 A=0 B=0 D=133 E=0 F=0 prefab=dc95a16b
+=== map 60 Torla Buggy_ with bar music and random texts (early version of Torla)-60  map_size={'w': 52, 'h': 60}  program targets [('C', 1), ('C', 6), ('C', 7), ('C', 8), ('C', 9), ('C', 10)]
+  rec 0   Pot magique (boïng)                raw C=  1 (bit0x80 CLEAR) -> C[1]  sprite=153  tile=(54,24) h=2 dispPix=(648,176) dir=193 enabled=1 A=0 B=0 D=0 E=0 F=0 prefab=00968951
+  rec 5   Interrupteur à ballon              raw C=134 (bit0x80 SET) -> C[6]  sprite=173  tile=(54,24) h=24 dispPix=(648,0) dir=192 enabled=1 A=0 B=0 D=129 E=0 F=0 prefab=ea367a58
+  rec 6   Interrupteur à ballon              raw C=135 (bit0x80 SET) -> C[7]  sprite=173  tile=(54,40) h=24 dispPix=(648,128) dir=192 enabled=1 A=0 B=0 D=130 E=0 F=0 prefab=ea367a58
+  rec 7   Interrupteur à ballon              raw C=136 (bit0x80 SET) -> C[8]  sprite=173  tile=(62,40) h=24 dispPix=(744,128) dir=192 enabled=1 A=0 B=0 D=131 E=0 F=0 prefab=ea367a58
+  rec 8   Interrupteur à ballon              raw C=137 (bit0x80 SET) -> C[9]  sprite=173  tile=(62,24) h=24 dispPix=(744,0) dir=192 enabled=1 A=0 B=0 D=132 E=0 F=0 prefab=ea367a58
+  rec 9   Pot magique (boïng)                raw C= 10 (bit0x80 CLEAR) -> C[10]  sprite=153  tile=(82,24) h=2 dispPix=(984,176) dir=193 enabled=1 A=0 B=0 D=0 E=0 F=0 prefab=00968951
+=== map 307 Meia Dream-307  map_size={'w': 52, 'h': 60}  program targets [('C', 1), ('C', 2)]
+  rec 0   Plateforme flottante (grande)      raw C=129 (bit0x80 SET) -> C[1]  sprite=57  tile=(37,35) h=10 dispPix=(432,192) dir=194 enabled=1 A=0 B=0 D=0 E=0 F=0 prefab=18485279
+  rec 1   Plateforme flottante (grande)      raw C=130 (bit0x80 SET) -> C[2]  sprite=57  tile=(11,35) h=10 dispPix=(120,192) dir=195 enabled=1 A=0 B=0 D=0 E=0 F=0 prefab=18485279
+=== map 344 Lake Shrine (inner)-344  map_size={'w': 52, 'h': 60}  program targets [('C', 60), ('C', 61), ('C', 62), ('C', 63), ('C', 64), ('C', 65), ('C', 66), ('C', 67)]
+  rec 59  Bloc transparent (1×1×2)           raw C=188 (bit0x80 SET) -> C[60]  sprite=25  tile=(88,86) h=6 dispPix=(1056,640) dir=64 enabled=1 A=188 B=0 D=0 E=0 F=0 prefab=d8e3f7a6
+  rec 60  Bloc transparent (1×1×2)           raw C=189 (bit0x80 SET) -> C[61]  sprite=25  tile=(92,86) h=6 dispPix=(1104,640) dir=66 enabled=1 A=188 B=0 D=0 E=0 F=0 prefab=d8e3f7a6
+  rec 61  Bloc transparent (1×1×2)           raw C=190 (bit0x80 SET) -> C[62]  sprite=25  tile=(96,86) h=6 dispPix=(1152,640) dir=66 enabled=1 A=188 B=0 D=0 E=0 F=0 prefab=d8e3f7a6
+  rec 62  Bloc transparent (1×1×2)           raw C=191 (bit0x80 SET) -> C[63]  sprite=25  tile=(88,90) h=6 dispPix=(1056,672) dir=64 enabled=1 A=188 B=0 D=0 E=0 F=0 prefab=d8e3f7a6
+  rec 63  Bloc transparent (1×1×2)           raw C=192 (bit0x80 SET) -> C[64]  sprite=25  tile=(96,90) h=6 dispPix=(1152,672) dir=65 enabled=1 A=188 B=0 D=0 E=0 F=0 prefab=d8e3f7a6
+  rec 64  Bloc transparent (1×1×2)           raw C=193 (bit0x80 SET) -> C[65]  sprite=25  tile=(88,94) h=6 dispPix=(1056,704) dir=67 enabled=1 A=188 B=0 D=0 E=0 F=0 prefab=d8e3f7a6
+  rec 65  Bloc transparent (1×1×2)           raw C=194 (bit0x80 SET) -> C[66]  sprite=25  tile=(92,94) h=6 dispPix=(1104,704) dir=67 enabled=1 A=188 B=0 D=0 E=0 F=0 prefab=d8e3f7a6
+  rec 66  Bloc transparent (1×1×2)           raw C=195 (bit0x80 SET) -> C[67]  sprite=25  tile=(96,94) h=6 dispPix=(1152,704) dir=65 enabled=1 A=188 B=0 D=0 E=0 F=0 prefab=d8e3f7a6
+=== map 442 Meia Dream-442  map_size={'w': 52, 'h': 60}  program targets [('C', 3), ('C', 5), ('C', 6), ('C', 7), ('C', 8), ('C', 9), ('C', 22), ('C', 23)]
+  rec 0   Mur à boule de fer (111)           raw C=151 (bit0x80 SET) -> C[23]  sprite=126  tile=(14,34) h=4 dispPix=(168,240) dir=195 enabled=1 A=129 B=0 D=132 E=129 F=0 prefab=bfb50071
+  rec 1   Mur à boule de fer (111)           raw C=150 (bit0x80 SET) -> C[22]  sprite=126  tile=(12,34) h=6 dispPix=(144,224) dir=195 enabled=1 A=129 B=0 D=131 E=129 F=0 prefab=bfb50071
+  rec 2   Mur à boule de fer (111)           raw C=131 (bit0x80 SET) -> C[3]  sprite=126  tile=(18,34) h=8 dispPix=(216,208) dir=194 enabled=1 A=129 B=0 D=134 E=129 F=0 prefab=bfb50071
+  rec 4   Mur à boule de fer (111)           raw C=133 (bit0x80 SET) -> C[5]  sprite=126  tile=(17,34) h=10 dispPix=(192,192) dir=194 enabled=1 A=129 B=0 D=133 E=129 F=0 prefab=bfb50071
+  rec 5   Mur à boule de fer (111)           raw C=134 (bit0x80 SET) -> C[6]  sprite=126  tile=(37,34) h=4 dispPix=(432,240) dir=194 enabled=1 A=129 B=0 D=137 E=129 F=0 prefab=bfb50071
+  rec 19  Mur à boule de fer (111)           raw C=135 (bit0x80 SET) -> C[7]  sprite=126  tile=(31,34) h=6 dispPix=(360,224) dir=195 enabled=1 A=129 B=0 D=135 E=129 F=0 prefab=bfb50071
+  rec 20  Mur à boule de fer (111)           raw C=136 (bit0x80 SET) -> C[8]  sprite=126  tile=(36,34) h=8 dispPix=(432,208) dir=194 enabled=1 A=129 B=0 D=138 E=129 F=0 prefab=bfb50071
+  rec 21  Mur à boule de fer (111)           raw C=137 (bit0x80 SET) -> C[9]  sprite=126  tile=(30,34) h=10 dispPix=(360,192) dir=195 enabled=1 A=129 B=0 D=136 E=129 F=0 prefab=bfb50071

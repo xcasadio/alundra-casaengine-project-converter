@@ -1,0 +1,6 @@
+baseline                                             reads reached 70  {('X', ('SAVED',)): 29, ('Y', ('SAVED',)): 12, ('Z', ('INIT',)): 11, ('Z', ('SAVED',)): 18}
+mutant: no return edges (the old memo_flow.py)       reads reached 66  {('X', ('SAVED',)): 25, ('Y', ('SAVED',)): 12, ('Z', ('INIT',)): 11, ('Z', ('SAVED',)): 18}
+mutant: 0x37 removed from the X writers              reads reached 70  {('X', ('SAVED',)): 29, ('Y', ('SAVED',)): 12, ('Z', ('INIT',)): 11, ('Z', ('SAVED',)): 18}
+mutant: 0x37 added to the Z writers                  reads reached 70  {('X', ('SAVED',)): 29, ('Y', ('SAVED',)): 12, ('Z', ('CLOB',)): 11, ('Z', ('SAVED',)): 18}
+mutant: Break ends the walk                          reads reached 4  {('X', ('SAVED',)): 4}
+mutant: only forward edges                           reads reached 66  {('X', ('SAVED',)): 25, ('Y', ('SAVED',)): 12, ('Z', ('INIT',)): 11, ('Z', ('SAVED',)): 18}

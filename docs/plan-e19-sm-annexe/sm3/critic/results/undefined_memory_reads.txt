@@ -1,0 +1,2 @@
+('0xB2', 'search-buffer') 15684
+--- examples of non stack/buffer

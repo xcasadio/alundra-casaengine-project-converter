@@ -1,0 +1,71 @@
+hand tests: 24 ; real-bytes scenarios: 8
+
+RED today (the skip by size), hand tests:
+   H1  Save copies the three positions of the logic entity, Result stays 7            RED
+   H2X pos=00880000 (memo 00100000, thr 0078)                                         RED
+   H2X pos=0087FFFF (memo 00100000, thr 0078)                                         RED
+   H2X pos=00880001 (memo 00100000, thr 0078)                                         RED
+   H2X< pos=00100000 (memo 00880000, thr 0078)                                        RED
+   H2X< pos=00100001 (memo 00880000, thr 0078)                                        RED
+   H2X< pos=0010FFFF (memo 00880000, thr 0078)                                        RED
+   H2Y pos=02100000 (memo 02000000, thr 0010)                                         RED
+   H2Y pos=020FFFFF (memo 02000000, thr 0010)                                         RED
+   H2Z pos=00610000 (memo 00600000, thr 0001)                                         RED
+   H2Z pos=0060FFFF (memo 00600000, thr 0001)                                         RED
+   H3a 6B 00 80  memo=pos                                                             RED
+   H3b 6B FF FF  memo=0x80000000 pos=0 (d = int.MinValue)                             RED
+   H3c 6B 00 80  memo=0x80000000 pos=0 (d = thr = int.MinValue)                       RED
+   H4  6B 78 00  memo=0x7FFFFFFF pos=0xFFFFFFFF (memo - pos wraps to int.MinValue)    RED
+   H5  fresh 6D 00 01  PosZ=00FFFFFF                                                  RED
+   H5  fresh 6D 00 01  PosZ=01000000                                                  RED
+   H5  fresh 6D 00 01  PosZ=01000001                                                  RED
+   H7a save; Break; read after +120 px                                                RED
+   H7b save; Break; read after +119 px                                                RED
+   H8  save; Break; InitializeEventData (no run); memo intact                         RED
+   H9X save; Wait 3; read (unmoved entity)                                            RED
+   H9Y save; Wait 3; read (unmoved entity)                                            RED
+   H9Z save; Wait 3; read (unmoved entity)                                            RED
+
+RED today, real-bytes scenarios:
+   RB-55 55 C[4]                  RED
+   RB-55n 55 C[4]                 RED
+   RB-56 56 C[1]                  RED
+   RB-56b 56 C[1]                 RED
+   RB-59 59 C[6]                  RED
+   RB-307 307 C[1]                RED
+   RB-344 344 C[60]               RED
+   RB-442 442 C[3]                RED
+
+KILL MATRIX (mutant -> tests that go red):
+  M1  Math.Abs on the distance (throws on int.MinValue) [R2 32-bit wrap]
+      killed by: H3b, H3c, H4
+  M2  pixel form (|d| >> 16) >= (v1 | v2 << 8)         [R2 threshold/sign]
+      killed by: H3a, H4
+  M3  unsigned threshold and distance                  [R2 threshold/sign]
+      killed by: H3a, H4
+  M4  <= instead of < (equality)                       [R2 equality]
+      killed by: H2X, H2X<, H2Y, H2Z, H3c, H5, H7a, RB-307, RB-344, RB-442, RB-55, RB-55n, RB-56, RB-56b, RB-59
+  M5  Result inverted (the old label)                  [R2 sense]
+      killed by: H2X, H2X<, H2Y, H2Z, H3a, H3b, H3c, H4, H5, H7a, H7b, H9X, H9Y, H9Z, RB-307, RB-344, RB-442, RB-55, RB-55n, RB-56, RB-56b, RB-59
+  M6  64-bit subtraction (no wrap)                     [R2 32-bit wrap]
+      killed by: H3b, H4
+  M7  no absolute value                                [R2 abs]
+      killed by: H2X, H2Y, H2Z, H5, H7a, H9X, RB-307, RB-344, RB-442, RB-55, RB-56, RB-56b, RB-59
+  M8  0x6A forgets Parameters[4]                       [R1 three axes]
+      killed by: H1, H8, H9X, H9Y, H9Z, RB-307, RB-344, RB-442, RB-55, RB-55n, RB-59
+  M9  0x6A writes Result := 1                          [R1/R4 Result untouched]
+      killed by: H1, H7a, H7b, H8, H9X, H9Y, H9Z
+  M10 reads the OWNER instead of the logic entity      [R1/R2 logic entity]
+      killed by: H1, H2X, H2X<, H2Y, H2Z, H3b, H4, H5, H7a, H7b, H8, H9X, H9Y, H9Z, RB-307, RB-344, RB-442, RB-55, RB-55n, RB-56, RB-59
+  M11 0x6D reads Parameters[3]                         [R3 Z memo cell]
+      killed by: H2Z, RB-59
+  M12 0x6B returns 1 instead of 3                      [R5 sizes]
+      killed by: H2X, H2X<, H3a, H3b, H3c, H4, H7a, H7b, H9X, RB-307, RB-344, RB-442, RB-55, RB-55n
+  M13 0x6A returns 2 instead of 1                      [R5 sizes]
+      killed by: H1, H7a, H7b, H8, H9X, H9Y, H9Z, RB-307, RB-344, RB-442, RB-55, RB-55n, RB-59
+  M14 Break clears the memo                            [R3 memo survives Break]
+      killed by: H7a, H7b, H8, RB-307, RB-344, RB-442, RB-55, RB-55n, RB-59
+  M15 InitializeEventData clears the memo              [R3 memo survives re-init]
+      killed by: H8
+  M16 the Wait (0x37) keeps its counter out of the X memo cell [R3 faithful overwrite]
+      killed by: H9X, H9Y, H9Z

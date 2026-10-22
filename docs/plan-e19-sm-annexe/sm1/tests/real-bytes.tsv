@@ -1,0 +1,54 @@
+id	title	world	program	entry_P0	start_pc	cut_pc	real_bytes_from_start_to_cut	Result_before	flags_set	calls	expected_per_call(end_pc/Result/logic_slot)	red_today_per_call	flags_set_at_the_end_of_the_expected_run	verdict
+RB-01	27 C[26] @984: the object rides the plate	Ancient Shrine-27	C[26]	984	984	990	00 60 1F 04 FD FF	0	-	2	985/R0/L1 990/R1/L1	985/R0/L1 985/R0/L1	-	RED today
+RB-01	27 C[26] @984: the object rides nothing	Ancient Shrine-27	C[26]	984	984	990	00 60 1F 04 FD FF	0	-	2	985/R0/L1 985/R0/L1	985/R0/L1 985/R0/L1	-	green in advance (guard)
+RB-02	27 C[2] @604: object 5 rides the plate (the right one in phase 1)	Ancient Shrine-27	C[2]	604	604	635	73 18 00 30 1D 80 F9 00 60 05 03 75 00 60 06 03 E1 00 60 07 03 DC 00 60 08 03 D7 00 74 E6 FF	0	-	2	607/R0/L1 731/R1/L1	607/R0/L1 607/R0/L1	-	RED today
+RB-02	27 C[2] @604: object 6 rides the plate (a wrong one in phase 1)	Ancient Shrine-27	C[2]	604	604	635	73 18 00 30 1D 80 F9 00 60 05 03 75 00 60 06 03 E1 00 60 07 03 DC 00 60 08 03 D7 00 74 E6 FF	0	-	2	607/R0/L1 844/R1/L1	607/R0/L1 607/R0/L1	-	RED today
+RB-02	27 C[2] @604: nobody rides	Ancient Shrine-27	C[2]	604	604	635	73 18 00 30 1D 80 F9 00 60 05 03 75 00 60 06 03 E1 00 60 07 03 DC 00 60 08 03 D7 00 74 E6 FF	0	-	2	607/R0/L1 607/R0/L1	607/R0/L1 607/R0/L1	-	green in advance (guard)
+RB-02	400 C[1] @440: object 4 rides the plate (the right one in phase 1)	Desert _ Ancient Shrine-400	C[1]	440	440	471	73 18 00 30 1D 80 F2 00 60 04 03 75 00 60 05 03 DA 00 60 06 03 D5 00 60 07 03 D0 00 74 E6 FF	0	-	2	443/R0/L1 567/R1/L1	443/R0/L1 443/R0/L1	-	RED today
+RB-02	400 C[1] @440: object 5 rides the plate (a wrong one in phase 1)	Desert _ Ancient Shrine-400	C[1]	440	440	471	73 18 00 30 1D 80 F2 00 60 04 03 75 00 60 05 03 DA 00 60 06 03 D5 00 60 07 03 D0 00 74 E6 FF	0	-	2	443/R0/L1 673/R1/L1	443/R0/L1 443/R0/L1	-	RED today
+RB-02	400 C[1] @440: nobody rides	Desert _ Ancient Shrine-400	C[1]	440	440	471	73 18 00 30 1D 80 F2 00 60 04 03 75 00 60 05 03 DA 00 60 06 03 D5 00 60 07 03 D0 00 74 E6 FF	0	-	2	443/R0/L1 443/R0/L1	443/R0/L1 443/R0/L1	-	green in advance (guard)
+RB-03	27 C[36] @1106: the four objects are stacked	Ancient Shrine-27	C[36]	1064	1106	1136	43 23 00 60 2D 04 FB FF 43 2D 60 2E 04 F4 FF 43 2E 60 2F 04 ED FF 43 2F 60 30 04 E6 FF 00	0	-	2	1109/R1/L1 1136/R1/L4	1109/R1/L1 1136/R1/L4	-	green in advance (guard)
+RB-03	27 C[36] @1106: the top object is not stacked	Ancient Shrine-27	C[36]	1064	1106	1136	43 23 00 60 2D 04 FB FF 43 2D 60 2E 04 F4 FF 43 2E 60 2F 04 ED FF 43 2F 60 30 04 E6 FF 00	0	-	2	1109/R1/L1 1109/R1/L1	1109/R1/L1 1136/R1/L4	-	RED today
+RB-04	29 C[17] @813: object 20 rides	Ancient Shrine-29	C[17]	812	812	818	00 60 14 04 FD FF	0	-	2	813/R0/L1 818/R1/L1	813/R0/L1 813/R0/L1	-	RED today
+RB-04	29 C[17] @813: object 20 does not ride	Ancient Shrine-29	C[17]	812	812	818	00 60 14 04 FD FF	0	-	2	813/R0/L1 813/R0/L1	813/R0/L1 813/R0/L1	-	green in advance (guard)
+RB-05	30 C[19] @1686: object 22 rides	Ancient Shrine-30	C[19]	1680	1680	1691	00 30 FC 83 1D 00 60 16 04 F8 FF	0	-	2	1681/R0/L1 1691/R1/L1	1681/R0/L1 1681/R0/L1	-	RED today
+RB-05	30 C[19] @1686: object 22 does not ride	Ancient Shrine-30	C[19]	1680	1680	1691	00 30 FC 83 1D 00 60 16 04 F8 FF	0	-	2	1681/R0/L1 1681/R0/L1	1681/R0/L1 1681/R0/L1	-	green in advance (guard)
+RB-06	113 C[9] @993: object 10 rides	Nestus' Dream-113	C[9]	992	992	998	00 60 0A 04 FD FF	0	-	2	993/R0/L1 998/R1/L1	993/R0/L1 993/R0/L1	-	RED today
+RB-06	113 C[9] @993: object 10 does not ride	Nestus' Dream-113	C[9]	992	992	998	00 60 0A 04 FD FF	0	-	2	993/R0/L1 993/R0/L1	993/R0/L1 993/R0/L1	-	green in advance (guard)
+RB-07	113 C[10] @1069: object 11 present for 3 calls	Nestus' Dream-113	C[10]	1068	1068	1095	00 60 0B 04 FD FF 05 64 80 30 56 01 12 00 00 60 0B 03 F8 FF 06 64 80 02 E9 FF 00	0	-	3	1069/R0/L1 1083/R1/L1 1083/R1/L1	1069/R0/L1 1069/R0/L1 1069/R0/L1	0x8064	RED today
+RB-07	113 C[10] @1083: the rider has left, flag 0x8064 was on	Nestus' Dream-113	C[10]	1068	1083	1095	60 0B 03 F8 FF 06 64 80 02 E9 FF 00	1	32868	1	1069/R0/L1	1083/R1/L1	-	RED today
+RB-08	136 C[5] @1579: the hero stands on the switch	Church-136	C[5]	1568	1577	1584	37 01 60 81 04 FC FF	0	-	3	1577/R0/L1 1577/R0/L1 1584/R1/L1	1577/R0/L1 1577/R0/L1 1577/R0/L1	-	RED today
+RB-08	136 C[5] @1579: the hero is elsewhere	Church-136	C[5]	1568	1577	1584	37 01 60 81 04 FC FF	0	-	3	1577/R0/L1 1577/R0/L1 1577/R0/L1	1577/R0/L1 1577/R0/L1 1577/R0/L1	-	green in advance (guard)
+RB-09	159 B[5] @729: the hero rides record 13, Result 0 before	Fairy cave (underwater)-159	B[5]	728	728	732	00 61 0D 4B	0	-	2	729/R0/L0 732/R1/L0	729/R0/L0 729/R0/L0	-	RED today
+RB-09	159 B[5] @729: the hero rides record 13, Result 7 before	Fairy cave (underwater)-159	B[5]	728	728	732	00 61 0D 4B	7	-	2	729/R7/L0 732/R1/L0	729/R7/L0 732/R7/L0	-	RED today
+RB-09	159 B[5] @729: the hero rides nothing, Result 7 before	Fairy cave (underwater)-159	B[5]	728	728	732	00 61 0D 4B	7	-	2	729/R7/L0 729/R0/L0	729/R7/L0 732/R7/L0	-	RED today
+RB-09	159 B[5] @729: the hero rides nothing, Result 0 before	Fairy cave (underwater)-159	B[5]	728	728	732	00 61 0D 4B	0	-	2	729/R0/L0 729/R0/L0	729/R0/L0 729/R0/L0	-	green in advance (guard)
+RB-10	159 C[13] @1654: record 3 rides the bubble	Fairy cave (underwater)-159	C[13]	1652	1654	1663	60 03 4A 60 04 4A 60 0A 4A	0	-	1	1652/R1/L1	1663/R0/L1	-	RED today
+RB-10	159 C[13] @1654: record 10 rides the bubble	Fairy cave (underwater)-159	C[13]	1652	1654	1663	60 03 4A 60 04 4A 60 0A 4A	0	-	1	1652/R1/L1	1663/R0/L1	-	RED today
+RB-10	159 C[13] @1654: nobody rides	Fairy cave (underwater)-159	C[13]	1652	1654	1663	60 03 4A 60 04 4A 60 0A 4A	0	-	1	1663/R0/L1	1663/R0/L1	-	green in advance (guard)
+RB-11	226 B[3] @247: an entity at (43,50,12), Result 0 before	Inoa-226	B[3]	176	247	258	3D 2B 2B 30 33 0C 0C 00 04 F8 FF	0	-	2	255/R1/L0 258/R1/L0	255/R0/L0 255/R0/L0	-	RED today
+RB-11	226 B[3] @247: an entity at (43,50,12), Result 1 before	Inoa-226	B[3]	176	247	258	3D 2B 2B 30 33 0C 0C 00 04 F8 FF	1	-	2	255/R1/L0 258/R1/L0	255/R1/L0 258/R1/L0	-	green in advance (guard)
+RB-11	226 B[3] @247: an entity at (43,52,12), Result 1 before	Inoa-226	B[3]	176	247	258	3D 2B 2B 30 33 0C 0C 00 04 F8 FF	1	-	2	255/R0/L0 255/R0/L0	255/R1/L0 258/R1/L0	-	RED today
+RB-11	226 B[3] @247: an entity at (43,50,13), Result 1 before	Inoa-226	B[3]	176	247	258	3D 2B 2B 30 33 0C 0C 00 04 F8 FF	1	-	2	255/R0/L0 255/R0/L0	255/R1/L0 258/R1/L0	-	RED today
+RB-11	226 B[3] @247: nobody, Result 1 before	Inoa-226	B[3]	176	247	258	3D 2B 2B 30 33 0C 0C 00 04 F8 FF	1	-	2	255/R0/L0 255/R0/L0	255/R1/L0 258/R1/L0	-	RED today
+RB-11	226 B[3] @247: nobody, Result 0 before	Inoa-226	B[3]	176	247	258	3D 2B 2B 30 33 0C 0C 00 04 F8 FF	0	-	2	255/R0/L0 255/R0/L0	255/R0/L0 255/R0/L0	-	green in advance (guard)
+RB-12	398 B[1] @88: item 1 rides Lurvy	Lurvy House, Well-398	B[1]	80	86	94	43 01 61 00 42 03 64 00	0	-	1	191/R1/L0	191/R1/L0	-	green in advance (guard)
+RB-12	398 B[1] @88: item 1 does not ride	Lurvy House, Well-398	B[1]	80	86	94	43 01 61 00 42 03 64 00	0	-	1	94/R0/L0	191/R1/L0	-	RED today
+RB-12	398 B[2] @268: item 2 rides Lurvy	Lurvy House, Well-398	B[2]	260	266	274	43 02 61 00 42 03 64 00	0	-	1	371/R1/L0	371/R1/L0	-	green in advance (guard)
+RB-12	398 B[2] @268: item 2 does not ride	Lurvy House, Well-398	B[2]	260	266	274	43 02 61 00 42 03 64 00	0	-	1	274/R0/L0	371/R1/L0	-	RED today
+RB-12	398 B[3] @448: item 3 rides Lurvy	Lurvy House, Well-398	B[3]	440	446	454	43 03 61 00 42 03 64 00	0	-	1	551/R1/L0	551/R1/L0	-	green in advance (guard)
+RB-12	398 B[3] @448: item 3 does not ride	Lurvy House, Well-398	B[3]	440	446	454	43 03 61 00 42 03 64 00	0	-	1	454/R0/L0	551/R1/L0	-	RED today
+RB-12	398 B[4] @628: item 4 rides Lurvy	Lurvy House, Well-398	B[4]	620	626	634	43 04 61 00 42 03 64 00	0	-	1	731/R1/L0	731/R1/L0	-	green in advance (guard)
+RB-12	398 B[4] @628: item 4 does not ride	Lurvy House, Well-398	B[4]	620	626	634	43 04 61 00 42 03 64 00	0	-	1	634/R0/L0	731/R1/L0	-	RED today
+RB-12	398 B[5] @823: item 5 rides Lurvy	Lurvy House, Well-398	B[5]	800	821	829	43 05 61 00 42 03 64 00	0	-	1	926/R1/L0	926/R1/L0	-	green in advance (guard)
+RB-12	398 B[5] @823: item 5 does not ride	Lurvy House, Well-398	B[5]	800	821	829	43 05 61 00 42 03 64 00	0	-	1	829/R0/L0	926/R1/L0	-	RED today
+RB-12	398 B[6] @1043: item 6 rides Lurvy	Lurvy House, Well-398	B[6]	1016	1041	1049	43 06 61 00 42 03 64 00	0	-	1	1146/R1/L0	1146/R1/L0	-	green in advance (guard)
+RB-12	398 B[6] @1043: item 6 does not ride	Lurvy House, Well-398	B[6]	1016	1041	1049	43 06 61 00 42 03 64 00	0	-	1	1049/R0/L0	1146/R1/L0	-	RED today
+RB-12	398 B[7] @1251: item 7 rides Lurvy	Lurvy House, Well-398	B[7]	1224	1249	1257	43 07 61 00 42 03 64 00	0	-	1	1354/R1/L0	1354/R1/L0	-	green in advance (guard)
+RB-12	398 B[7] @1251: item 7 does not ride	Lurvy House, Well-398	B[7]	1224	1249	1257	43 07 61 00 42 03 64 00	0	-	1	1257/R0/L0	1354/R1/L0	-	RED today
+RB-13	77 C[14] @1871: the wood rides the hero, Result 0 before	Underground Watercourse-77	C[14]	1856	1869	1876	1A 00 61 81 03 0C 00	0	-	1	1885/R1/L1	1876/R0/L1	-	RED today
+RB-13	77 C[14] @1871: the wood rides the hero, Result 1 before	Underground Watercourse-77	C[14]	1856	1869	1876	1A 00 61 81 03 0C 00	1	-	1	1885/R1/L1	1885/R1/L1	-	green in advance (guard)
+RB-13	77 C[14] @1871: the wood rides nothing, Result 1 before	Underground Watercourse-77	C[14]	1856	1869	1876	1A 00 61 81 03 0C 00	1	-	1	1876/R0/L1	1885/R1/L1	-	RED today
+RB-14	78 C[19] @1679: the wood rides the hero, Result 0 before	Underground Watercourse-78	C[19]	1664	1677	1684	1A 01 61 81 03 0C 00	0	-	1	1693/R1/L1	1684/R0/L1	-	RED today
+RB-14	78 C[19] @1679: the wood rides the hero, Result 1 before	Underground Watercourse-78	C[19]	1664	1677	1684	1A 01 61 81 03 0C 00	1	-	1	1693/R1/L1	1693/R1/L1	-	green in advance (guard)
+RB-14	78 C[19] @1679: the wood rides nothing, Result 1 before	Underground Watercourse-78	C[19]	1664	1677	1684	1A 01 61 81 03 0C 00	1	-	1	1684/R0/L1	1693/R1/L1	-	RED today

@@ -1,0 +1,316 @@
+// =====================================================================================================================================
+// E19.sm2 T1 - UNBUILT DRAFT of the tests (a text, not a repository file). The VALUES are the contract (evidence/handvalues.txt,
+// proposed/RealBytesExpected.txt, vectors/vectors-sm2.tsv); the API names are those read at HEAD (EventProgramRunner(document, gameState, context),
+// RunOneScriptCall(owner, state) internal, TraceSink, EventProgramState, SaveGameDirectorTestSupport.FindProjectRoot) and are fixed against the HEAD of the slice.
+// Names (ADR-0075, after R5): Alundra.Tests/Events/PositionMemoOpcodesTests.cs, PositionMemoVectors.cs, PositionMemoCorpusTests.cs (free names: FAIT rg).
+// Before R5 the same files would be Alundra.Tests/AlundraPositionMemoOpcodesTests.cs ... (the slice runs after R5: sm0's prerequisite).
+// A missing export or a missing vectors file FAILS naming it (FindProjectRoot's convention), never self-skips (the 0x6E real-occurrence test self-skips: not followed).
+// =====================================================================================================================================
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Session;
+
+namespace Alundra.Tests.Events;   // the namespace of the R5 table
+
+/// <summary>One row of vectors-sm2.tsv (columns documented in its README).</summary>
+internal sealed record PositionMemoVector(
+    string Id, string Group, int Op, int[] Instruction, int PosX, int PosY, int PosZ, int MemoX, int MemoY, int MemoZ, int ResultIn,
+    int V0, int ResultOut, int MemoXOut, int MemoYOut, int MemoZOut);
+
+internal static class PositionMemoVectors
+{
+    private static readonly Lazy<IReadOnlyList<PositionMemoVector>> Rows = new(Read);
+
+    internal static IReadOnlyList<PositionMemoVector> All => Rows.Value;
+
+    private static string FindFile()
+    {
+        const string relative = "docs/plan-e19-sm-annexe/sm2/vectors-sm2.tsv";
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, relative.Replace('/', Path.DirectorySeparatorChar));
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new FileNotFoundException($"'{relative}' not found above '{AppContext.BaseDirectory}': the E19.sm2 vector tests need the frozen oracle output.");
+    }
+
+    private static int Word(string hex) => unchecked((int)uint.Parse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture));
+
+    private static IReadOnlyList<PositionMemoVector> Read()
+    {
+        var lines = File.ReadAllLines(FindFile()).Skip(1).Where(l => l.Length > 0);
+        return lines.Select(line =>
+        {
+            var c = line.Split('\t');
+            return new PositionMemoVector(
+                c[0], c[1], int.Parse(c[2], NumberStyles.HexNumber, CultureInfo.InvariantCulture),
+                c[3].Split(' ').Select(b => int.Parse(b, NumberStyles.HexNumber, CultureInfo.InvariantCulture)).ToArray(),
+                Word(c[4]), Word(c[5]), Word(c[6]), Word(c[7]), Word(c[8]), Word(c[9]), Word(c[10]),
+                int.Parse(c[11], CultureInfo.InvariantCulture), Word(c[12]), Word(c[13]), Word(c[14]), Word(c[15]));
+        }).ToList();
+    }
+}
+
+public sealed class PositionMemoOpcodesTests
+{
+    private const int ResultBefore = 7;
+    private const int DecoyX = 0x0DEC0114, DecoyY = 0x0DEC0118, DecoyZ = 0x0DEC011C;
+
+    private static EventProgramDocument Document(params int[] codes) => new()
+    {
+        MapIndex = 1,
+        EventCodesATable = new[] { 0, 0, 0, 0, 0, 0 },
+        Codes = codes,
+    };
+
+    /// <summary>The montage of every test here: a bare runner (no world context), an OWNER whose program runs and a LOGIC entity the opcodes act on (the owner itself unless <c>logicIsOther</c>).</summary>
+    private sealed class Montage
+    {
+        public readonly EventProgramRunner Runner;
+        public readonly EntityScriptProxy Owner = new() { Status = EntityStatus.Normal };
+        public readonly EntityScriptProxy Logic;
+        public readonly EventProgramState State;
+        public readonly List<EventTraceRecord> Trace = new();
+
+        public Montage(int[] codes, int result = ResultBefore, int codeIndex = 0, bool logicIsOther = false)
+        {
+            var document = Document(codes);
+            Runner = new EventProgramRunner(document, new GameState());
+            Runner.TraceSink = Trace.Add;
+            State = new EventProgramState { Codes = document.CodesAsBytes(), Result = result, CodeIndex = codeIndex };
+            State.Parameters[0] = codeIndex;
+            if (logicIsOther)
+            {
+                Logic = new EntityScriptProxy { Status = EntityStatus.Normal };
+                Owner.LogicEntity = Logic;
+                Owner.PosX = DecoyX; Owner.PosY = DecoyY; Owner.PosZ = DecoyZ;
+            }
+            else
+            {
+                Logic = Owner;
+            }
+        }
+
+        public void Place(int x, int y, int z) { Logic.PosX = x; Logic.PosY = y; Logic.PosZ = z; }
+
+        /// <summary>One call of the runner, as one tick of a C program; the trace is cleared first.</summary>
+        public void Tick() { Trace.Clear(); Runner.RunOneScriptCall(Owner, State); }
+
+        /// <summary>The instructions dispatched in the last call as (pc, opcode), the End/Break record included, in order.</summary>
+        public IReadOnlyList<(int Pc, int Opcode)> Executed => Trace.Select(r => (r.CodeIndex, r.Opcode)).ToList();
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------------
+    // V - the frozen vectors: one Fact per opcode, every row checked, the failures counted (red today: 30/31, 253/361, 258/361, 253/361)
+    // ------------------------------------------------------------------------------------------------------------------------------
+    [Fact] public void Vectors_0x6A_SaveThePositionOfTheLogicEntity() => CheckVectors(0x6A);
+    [Fact] public void Vectors_0x6B_MovedAtLeastTheThresholdAlongX() => CheckVectors(0x6B);
+    [Fact] public void Vectors_0x6C_MovedAtLeastTheThresholdAlongY() => CheckVectors(0x6C);
+    [Fact] public void Vectors_0x6D_MovedAtLeastTheThresholdAlongZ() => CheckVectors(0x6D);
+
+    private static void CheckVectors(int op)
+    {
+        var rows = PositionMemoVectors.All.Where(v => v.Op == op).ToList();
+        Assert.Equal(op == 0x6A ? 31 : 361, rows.Count);
+        var failures = new List<string>();
+        foreach (var row in rows)
+        {
+            var m = new Montage(row.Instruction.Concat(new[] { 0xFF }).ToArray(), row.ResultIn, logicIsOther: true);
+            m.Place(row.PosX, row.PosY, row.PosZ);
+            m.State.Parameters[2] = row.MemoX; m.State.Parameters[3] = row.MemoY; m.State.Parameters[4] = row.MemoZ;
+            var sentinel = new[] { unchecked((int)0xA5A50000), 0, 0, 0, 0, unchecked((int)0xA5A50005), unchecked((int)0xA5A50006), unchecked((int)0xA5A50007), unchecked((int)0xA5A50008), unchecked((int)0xA5A50009) };
+            foreach (var i in new[] { 0, 5, 6, 7, 8, 9 }) { m.State.Parameters[i] = sentinel[i]; }
+            m.State._30 = unchecked((int)0xA5A50030); m.State._34 = unchecked((int)0xA5A50034);
+
+            m.Tick();
+
+            var problems = new List<string>();
+            if (m.State.Result != row.ResultOut) { problems.Add($"Result {m.State.Result:X8} != {row.ResultOut:X8}"); }
+            if (m.State.Parameters[2] != row.MemoXOut || m.State.Parameters[3] != row.MemoYOut || m.State.Parameters[4] != row.MemoZOut) { problems.Add("memo"); }
+            if (m.State.CodeIndex != row.V0) { problems.Add($"CodeIndex {m.State.CodeIndex} != {row.V0}"); }
+            if (m.State.Parameters[1] != 0) { problems.Add("Parameters[1] not cleared by the loop"); }
+            foreach (var i in new[] { 0, 5, 6, 7, 8, 9 }) { if (m.State.Parameters[i] != sentinel[i]) { problems.Add($"Parameters[{i}] touched"); } }
+            if (m.State._30 != unchecked((int)0xA5A50030) || m.State._34 != unchecked((int)0xA5A50034)) { problems.Add("_30/_34 touched"); }
+            if (m.Logic.PosX != row.PosX || m.Logic.PosY != row.PosY || m.Logic.PosZ != row.PosZ) { problems.Add("logic position written"); }
+            if (m.Owner.PosX != DecoyX || m.Owner.PosY != DecoyY || m.Owner.PosZ != DecoyZ) { problems.Add("owner position touched"); }
+            var first = m.Trace.First();
+            if (first.Opcode != op || first.Kind != EventTraceKind.Implemented || first.Size != row.V0) { problems.Add($"trace {first.Opcode:X2} {first.Kind} size {first.Size}"); }
+            if (problems.Count > 0) { failures.Add($"{row.Id} ({row.Group}): {string.Join(", ", problems)}"); }
+        }
+
+        Assert.True(failures.Count == 0, $"{failures.Count} of {rows.Count} rows differ; first: {string.Join(" | ", failures.Take(5))}");
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------------
+    // H - hand-written values (evidence/handvalues.txt). Result before = 7 unless said: every written 0/1 differs from it (red = 7, the skip).
+    // ------------------------------------------------------------------------------------------------------------------------------
+    [Fact]
+    public void H1_Save_CopiesThePositionOfTheLogicEntity_AndLeavesResultAlone()
+    {
+        var m = new Montage(new[] { 0x6A, 0xFF });
+        m.Place(0x00180000, 0x00280000, 0x00300000);
+        m.State.Parameters[2] = 0x11111111; m.State.Parameters[3] = 0x22222222; m.State.Parameters[4] = 0x33333333;
+        m.Tick();
+        Assert.Equal((0x00180000, 0x00280000, 0x00300000), (m.State.Parameters[2], m.State.Parameters[3], m.State.Parameters[4]));   // red: 0x11111111, 0x22222222, 0x33333333
+        Assert.Equal(ResultBefore, m.State.Result);
+        Assert.Equal(1, m.State.CodeIndex);
+    }
+
+    [Theory]
+    // memo, pos, instruction (lo, hi), expected Result : the inclusive threshold, both signs, per axis
+    [InlineData(0x6B, 0x00100000, 0x00880000, 0x78, 0x00, 1)]   // exactly 120 px
+    [InlineData(0x6B, 0x00100000, 0x0087FFFF, 0x78, 0x00, 0)]   // one unit short
+    [InlineData(0x6B, 0x00100000, 0x00880001, 0x78, 0x00, 1)]
+    [InlineData(0x6B, 0x00880000, 0x00100000, 0x78, 0x00, 1)]   // memo above pos: the absolute value
+    [InlineData(0x6B, 0x00880000, 0x00100001, 0x78, 0x00, 0)]
+    [InlineData(0x6B, 0x00880000, 0x0010FFFF, 0x78, 0x00, 0)]
+    [InlineData(0x6C, 0x02000000, 0x02100000, 0x10, 0x00, 1)]   // 16 px on Y
+    [InlineData(0x6C, 0x02000000, 0x020FFFFF, 0x10, 0x00, 0)]
+    [InlineData(0x6D, 0x00600000, 0x00610000, 0x01, 0x00, 1)]   // 1 px on Z
+    [InlineData(0x6D, 0x00600000, 0x0060FFFF, 0x01, 0x00, 0)]
+    // thresholds from 0x8000 are negative (a 32-bit signed value): every distance reaches it, except int.MinValue against a larger one
+    [InlineData(0x6B, 0x00500000, 0x00500000, 0x00, 0x80, 1)]   // H3a: d = 0 >= int.MinValue
+    [InlineData(0x6B, unchecked((int)0x80000000), 0x00000000, 0xFF, 0xFF, 0)]   // H3b: d = int.MinValue < -65536
+    [InlineData(0x6B, unchecked((int)0x80000000), 0x00000000, 0x00, 0x80, 1)]   // H3c: d = thr = int.MinValue
+    // the subtraction wraps like subu, the negation like negu, and nothing throws (Math.Abs(int.MinValue) would)
+    [InlineData(0x6B, 0x7FFFFFFF, unchecked((int)0xFFFFFFFF), 0x78, 0x00, 0)]   // H4: d = int.MinValue
+    public void H2_H3_H4_TheThresholdTest(int op, int memo, int position, int lo, int hi, int expected)
+    {
+        var m = new Montage(new[] { op, lo, hi, 0xFF });
+        var axis = op - 0x6B;
+        m.State.Parameters[2 + axis] = memo;
+        m.Place(axis == 0 ? position : 0, axis == 1 ? position : 0, axis == 2 ? position : 0);
+        m.Tick();
+        Assert.Equal(expected, m.State.Result);   // red: 7
+        Assert.Equal(3, m.State.CodeIndex);
+    }
+
+    [Theory]
+    [InlineData(0x00FFFFFF, 0)]
+    [InlineData(0x01000000, 1)]
+    [InlineData(0x01000001, 1)]
+    public void H5_0x6D_WithoutAnySave_ComparesZeroToPosZ(int posZ, int expected)
+    {
+        // the real occurrence 56 C[1] @97 (6D 00 01 = 256 px): a new entity's Parameters[4] is 0.
+        var m = new Montage(new[] { 0x6D, 0x00, 0x01, 0xFF });
+        m.Place(0, 0, posZ);
+        m.Tick();
+        Assert.Equal(expected, m.State.Result);   // red: 7
+        // ADR-0026: at rest the binary's Z is one unit above the DLL's (PosZ_binary = PosZ_dll + 1) and always 1 mod 256, never a multiple of 65536: the
+        // exact-equality case (PosZ_binary == 0x01000000, which the DLL frame would read as 0x00FFFFFF and answer 0) cannot be met by an entity at rest.
+    }
+
+    [Fact]
+    public void H6_TheLogicEntityIsRead_NotTheOwner()
+    {
+        var m = new Montage(new[] { 0x6A, 0x00, 0x6B, 0x10, 0x00, 0xFF }, logicIsOther: true);
+        m.Place(0x00500000, 0x00600000, 0x00700000);
+        m.Tick();
+        Assert.Equal((0x00500000, 0x00600000, 0x00700000), (m.State.Parameters[2], m.State.Parameters[3], m.State.Parameters[4]));   // red: 0, 0, 0
+        m.Place(0x00600000, 0x00600000, 0x00700000);   // +16 px
+        m.Tick();
+        Assert.Equal(1, m.State.Result);               // red: 7
+    }
+
+    [Theory]
+    [InlineData(120, 1, 0x00400000)]
+    [InlineData(119, 0, 0x00400000)]
+    public void H7_TheMemoSurvivesABreakAndTheNextTick(int movedPixels, int expected, int memoX)
+    {
+        var m = new Montage(new[] { 0x6A, 0x00, 0x6B, 0x78, 0x00, 0xFF });
+        m.Place(64 << 16, 0, 0);
+        m.Tick();
+        Assert.Equal(2, m.State.CodeIndex);
+        m.Place((64 + movedPixels) << 16, 0, 0);
+        m.Tick();
+        Assert.Equal(expected, m.State.Result);   // red: 7
+        Assert.Equal(memoX, m.State.Parameters[2]);
+        Assert.Equal(5, m.State.CodeIndex);
+    }
+
+    [Fact]
+    public void H8_TheMemoSurvivesTheReinitializationOfTheProgram()
+    {
+        var m = new Montage(new[] { 0x6A, 0x00, 0x6B, 0x78, 0x00, 0xFF });
+        m.Place(64 << 16, 5 << 16, 6 << 16);
+        m.Tick();
+        m.Runner.InitializeEventData(m.Owner, ScriptHelper.ProgramCTick, m.State);   // as AlundraInitializeEventDataTests M9a-M9d do; sets Parameters[0] and CodeIndex only
+        Assert.Equal((0x00400000, 0x00050000, 0x00060000), (m.State.Parameters[2], m.State.Parameters[3], m.State.Parameters[4]));   // red: 0, 0, 0
+    }
+
+    [Theory]
+    [InlineData(0x6B, 1)]   // the wait 0x37 keeps its counter in Parameters[2] and overwrites the X memo, as the binary: |4 - 0x500000| >= 16 px
+    [InlineData(0x6C, 0)]   // Parameters[3] is not touched by 0x37
+    [InlineData(0x6D, 0)]   // Parameters[4] has no other writer
+    public void H9_TheWaitOverwritesTheXMemo_AndOnlyIt(int readOp, int expected)
+    {
+        var m = new Montage(new[] { 0x6A, 0x37, 0x03, readOp, 0x10, 0x00, 0xFF });
+        m.Place(0x00500000, 0x00500000, 0x00500000);
+        for (var tick = 0; tick < 5; tick++) { m.Tick(); }   // 0x6A + first Wait call; then counters 0, 1, 2, 3 (the fifth call ends the wait)
+        Assert.Equal(expected, m.State.Result);              // red: 7
+        Assert.Equal(4, m.State.Parameters[2]);              // the Wait's counter after its last call
+        Assert.Equal(6, m.State.CodeIndex);
+    }
+
+    [Fact]
+    public void H10_TheLabelsSayWhatTheHandlersDo()
+    {
+        Assert.Equal("If entity x moved >= threshold from the saved position", EventOpcodeSizeTable.Entries[0x6B].Name);
+        Assert.Equal("If entity y moved >= threshold from the saved position", EventOpcodeSizeTable.Entries[0x6C].Name);
+        Assert.Equal("If entity z moved >= threshold from the saved position", EventOpcodeSizeTable.Entries[0x6D].Name);
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------------
+    // RB - the REAL bytes of the export at the real pcs (proposed/RealBytesExpected.txt gives every tick). Template: RB-55.
+    // ------------------------------------------------------------------------------------------------------------------------------
+    // The existing helper of the story-chain audit loads a map's event document by number (AlundraStoryChainOpcodeAudit.LoadMap(root, map), used by M9b: pre-R5 name;
+    // after R5 `Support/StoryChainOpcodeAudit`). No new loader.
+    private static EventProgramDocument LoadMap(int map)
+        => AlundraStoryChainOpcodeAudit.LoadMap(SaveGameDirectorTestSupport.FindProjectRoot(), map).Document;
+
+    [Fact]
+    public void RB55_55_C4_ThePatrolTurnsAround120PixelsFromItsSavedX()
+    {
+        var document = LoadMap(55);
+        var entry = document.EventCodesCTable[4];
+        Assert.Equal(272, entry);
+        var bytes = document.CodesAsBytes();
+        Assert.Equal(0x6A, bytes[272]);                                     // the real bytes at the real pcs
+        Assert.Equal(new byte[] { 0x6B, 0x78, 0x00 }, bytes[276..279]);
+        var m = new Montage(document.Codes.ToArray(), result: 1, codeIndex: entry);
+
+        m.Place(64 << 16, 200 << 16, 8 << 16);
+        m.Tick();
+        Assert.Equal(new[] { (272, 0x6A), (273, 0x1A), (275, 0x00) }, m.Executed);
+        Assert.Equal((276, 1, 0x00400000, 0x00C80000, 0x00080000), (m.State.CodeIndex, m.State.Result, m.State.Parameters[2], m.State.Parameters[3], m.State.Parameters[4]));   // red: memo 0
+
+        m.Place((64 + 119) << 16, 200 << 16, 8 << 16);
+        m.Tick();
+        Assert.Equal(new[] { (276, 0x6B), (279, 0x03), (282, 0x30), (287, 0x02), (273, 0x1A), (275, 0x00) }, m.Executed);   // red: the 03 is taken (stale Result 1): 290 0A 293 272 ...
+        Assert.Equal(0, m.State.Result);
+
+        m.Place((64 + 120) << 16, 200 << 16, 8 << 16);
+        m.Tick();
+        Assert.Equal(new[] { (276, 0x6B), (279, 0x03), (290, 0x1A), (292, 0x0A), (293, 0x02), (272, 0x6A), (273, 0x1A), (275, 0x00) }, m.Executed);
+        Assert.Equal((276, 1, 0x00B80000), (m.State.CodeIndex, m.State.Result, m.State.Parameters[2]));   // red: memo 0
+        Assert.Equal(16u, m.Owner.TargetDirection);   // the 0x0A @292 turned the patrol (0 + 0x10 & 0x1F); it was 0 after the first two ticks
+        Assert.DoesNotContain(m.Trace, r => r.Kind == EventTraceKind.UnknownSkipped);
+    }
+    // RB55n, RB56, RB56b, RB59, RB307, RB344, RB442: the same template, the values of proposed/RealBytesExpected.txt.
+    // RB56 starts at CodeIndex 93 (the loop, after the Wait of 91) with Result 1 ; RB307 and RB344 need nothing else than a bare runner (0x89 finds no target, the flags are clear).
+}
