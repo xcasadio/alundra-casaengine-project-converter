@@ -204,7 +204,7 @@ reste sans script et l'inspecteur affiche un avertissement sur sa ligne « Scrip
 `Alundra.Entities.EntityScriptProxy`, `Alundra.Hero.HeroController`, `Alundra.UI.Hud.HudViewModel`). Dans
 la DLL, un dossier = un namespace `Alundra.<Domaine>`, sans préfixe `Alundra` sur les types, un nom unique
 parmi la DLL, le moteur, MGUI, MonoGame, les paquets et la BCL (contrôlé par
-`tools/dll-structure/check_names.py`), aucun type nommé comme un segment de namespace (ADR-0075 du parent).
+`python -B tools/dll-structure/check_names.py --rules`, ADR-0081 du parent), aucun type nommé comme un segment de namespace (ADR-0075 du parent).
 
 ### 5.2 Chargement de la DLL gameplay
 

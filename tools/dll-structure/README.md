@@ -1,7 +1,9 @@
 # dll-structure
 
 Tooling of the restructuring of the Alundra gameplay DLL (`docs/plan-restructuration-dll.md`, ADR-0075). Python 3, standard library only,
-always run with `python -B`. Read-only on the repository except `gen_table.py` (writes `table.json` and `table.md`) and `apply_r2.py` (the working tree of the R2 slice).
+always run with `python -B`. Read-only on the repository except the scripts that write: `gen_table.py` (writes `table.json` and `table.md`), `apply_r2.py`, `apply_r4.py`, `apply_r5.py` and `apply_r6.py` (the working tree of their slice) and `gen_extra_types.py` (writes `rules-extra-types.tsv`).
+
+**Since R7 the guard is `check_names.py --rules`** (below): it needs no table and is the command that "the collision check green" means in the plans. The table-bound modes (`--table`, `--tree`, `--tests`), `selftest.py` and the proofs `prove_r2.py` to `prove_r5.py` are the **archive of the chantier**.
 
 | Script | Role |
 |---|---|
@@ -25,8 +27,14 @@ always run with `python -B`. Read-only on the repository except `gen_table.py` (
 | `r5-nested-types.tsv` + `rename-tool --r5-nested <tsv>` + `prove_r5_nested.py [--commit REV]` | R5 (D-R-21 (3)): the survey of the NESTED test classes that `r5-types.tsv` (top-level types) does not cover (one row: `HudComposerTests+AlundraHudComposerEquipmentBackgroundsTests`), the rename tool looking each one up inside its outer class, and the proof of its commit (only that name changes, at its declaration and its references; the old name stands nowhere afterwards). |
 | `cmp_test_lists.py <baseline> <new>` | R5 (T22): two `dotnet test --list-tests` outputs compared as multisets of full names, the baseline mapped by `r5-types.tsv` and `r5-nested-types.tsv`. |
 | `check_names.py --tests` | R5 (T22): the tree of `Alundra.Tests` against `r5-files.tsv` and `r5-types.tsv`: every `.cs` at its path of the table and no other, namespace = folder, every top-level type at its new name in its arrival file, no `Alundra*` / `IAlundra*` type (nested ones included) or file name, no `Scripts/` folder, no `.cs` at the root or directly under `UI/`, then the collision checks. |
+| `apply_r6.py [apply\|--check]` + `r6-occurrences.tsv` | R6: applies the inventory of the 74 documentation, research-script and converter-comment changes (each row: file, line range, exact "before" text, "after" text; validated first, nothing written on one mismatch; the file keeps its line endings), and `--check` proves that no row keeps its old text and that nothing outside the slice changed. Writes the working tree. |
+| `check_names.py --rules [--root <folder>]` | **R7, the guard**: the rules of ADR-0075 and ADR-0080 on the living tree of `Alundra/` and `Alundra.Tests/` (the working tree, untracked files included, `bin/` `obj/` `artifacts/` excluded; or `<folder>/Alundra` and `<folder>/Alundra.Tests`), with no table. A new conforming file passes; a name or a folder outside the rules is refused. Rules: (1) a folder is a namespace (`Alundra` / `Alundra.Tests` + the folder path), one `namespace` per file, every folder segment an identifier; (2) no `Alundra` / `IAlundra` prefix on a type (nested included), a file or a folder; (3) one main type per file (the file name without a `.Part` suffix is a top-level type, every public top-level type bears it; the one exception of ADR-0075 is `Alundra/Events/IEventProgramRunner.cs`); (4) a simple name once: against the engine, MGUI, NvgSharp, the packages, the BCL, inside the DLL and the tests, no type named like a namespace segment, none of the folder names that ADR-0075 rules out; (5) the mirror of ADR-0080: every test folder has its DLL counterpart except `Arcs`, `Support` and `ExportGuards`. Exit 0 with only the warning, 1 on any finding, 2 when a submodule, a package XML or the BCL pack is missing. |
+| `rules.py` | R7: the module behind `--rules`. It masks raw string literals (`"""`), reads the tree itself (`scan_types.parse`, `collision_findings` and `external_types` are called, never changed: the frozen proofs import them), and adds the integrity checks below. |
+| `rules-extra-types.tsv` + `gen_extra_types.py` + `dump_public_types.ps1` | R7: the public top-level types of the 13 packages that `Alundra.Tests` compiles against and that `scan_types.PACKAGES` does not cover (`xunit.assert`, `System.Text.Json`, `YarnSpinner.Compiler`, ...), read from their TypeDef table. `rules.py` adds them, and the sources of the engine project `CasaEngine.Compiler` (HEAD of the submodule), to the external names of rule (4). Regenerate when a package of the test project changes: `python -B tools/dll-structure/gen_extra_types.py <work folder outside the repository>` (needs `pwsh` and a restored `Alundra.Tests`). |
+| `selftest_rules.py <work folder outside the repository>` | R7: 39 mutation cases on throw-away copies of the living tree (13 accepted, 26 refused with their tag) and two command-line runs for the exit codes. |
+| `cmp_typedef.py <work folder outside the repository> [--config Debug\|Release]` + `dump_typedefs.ps1` | R7: the declarations read by `rules.py` against the TypeDef table of the built assemblies (top-level `(namespace, name)` and nested names; only `AutoGeneratedProgram`, generated by the test SDK, is tolerated). Needs a build. |
 
-Finding tags: `[collision]`, `[segment]`, `[nom]`, `[namespace]`, `[fichier]`, `[absent]`, `[hors table]`; warnings: `[avertissement]`.
+Finding tags: `[collision]`, `[segment]`, `[nom]`, `[namespace]`, `[fichier]`, `[absent]`, `[hors table]`; `--rules` adds `[doublon]` (a simple name declared twice in the DLL and tests, parts of one partial type excepted), `[dossier]` (a folder segment that is not an identifier or that ADR-0075 rules out), `[lecture]` (braces that do not balance after masking, or a type declaration that does not start its line: the reader would not see it), `[principal]` (rule 3) and `[miroir]` (rule 5); warnings: `[avertissement]` (a nested type named like a namespace segment; the exit code stays 0).
 
 ## Frozen proofs (after R5)
 
@@ -34,6 +42,10 @@ R5 moved and renamed the files of `Alundra.Tests/` (every `.cs`, every test clas
 (`r3-literals.tsv`, `r4-literals.tsv`). They are therefore **frozen at the commit of their tranche**: `r3_literals.py check --stage after`,
 `prove_r3.py --all` and `prove_r4.py --kind end` only replay at `a193671` (end of R3) and `ce6d335` (end of R4); on a later tree they would read paths that no
 longer exist, and nothing in those tables is remapped. From R5 on, the tests tree is checked by `check_names.py --tests` and `prove_r5.py`.
+
+From R7 on, the whole archive is frozen: `--table`, `--tree`, `--tests`, `selftest.py` and `prove_r2.py` to `prove_r5.py` read tables (`table.json`, `r5-files.tsv`,
+`r5-types.tsv`) that describe the tree as the chantier left it, so they refuse every file added or renamed afterwards (`[hors table]`). They replay at their
+closing commits, not on the living tree; `check_names.py --rules` is the check that lives on.
 
 ## Where the data comes from
 
@@ -50,5 +62,6 @@ longer exist, and nothing in those tables is remapped. From R5 on, the tests tre
   imported name), except that `check_names.py --tests` flags a nested type that keeps the `Alundra` prefix.
 - `Portable.Xaml` ships no XML documentation (`scan_types.PACKAGES_WITHOUT_XML`, named explicitly): its types are not checked by the script. A
   clash there would be an ambiguous reference (`CS0104`) and the build is the judge.
+- `--rules` limits: a type declaration that does not start its line is invisible to the reader, so it is reported as `[lecture]` rather than read; the collisions of nested types and the member names (for example the test methods `AlundraSoundBank_GetOrCreate_...`) are not checked; the existence of the nine types that the data cites, `tools/AlundraTestSaves/` and the files that are not `.cs` (for example under `Alundra.Tests/Data/`) are outside the guard; a new folder is allowed (there is no closed list of domains); `rules-extra-types.tsv` is a snapshot of the packages at the time it was generated and is not refreshed by itself; `Portable.Xaml`, `StbImageSharp` and `StbTrueTypeSharp` stay unread (the build judges), and so do 3 BCL types that have no XML documentation (none is in the implicit usings of the tests).
 - Warnings, not failures: a type nested in `Alundra.Tests` named like a namespace segment (today `Session` in `TextBoxGpuHarness.cs`) only masks the
   segment inside its own class body.

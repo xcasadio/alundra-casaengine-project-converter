@@ -94,3 +94,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0078 | The engine draws entity shadows and the DLL pushes their state | Accepted | 2026-10-22 |
 | ADR-0079 | The map header's byte 9 is exported as `TileCutEffectId`, renamed at the source | Accepted | 2026-10-22 |
 | ADR-0080 | The test project mirrors the DLL tree by the type each file is named after | Accepted | 2026-10-22 |
+| ADR-0081 | The structure of the DLL and its tests is guarded by rules, not by a table | Accepted | 2026-10-22 |
