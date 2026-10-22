@@ -6197,6 +6197,15 @@ Autres clés : `charged7_free_{west,north,south}`, `charged7_map_edge`, `charged
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire seule (retirer `7`). La phase A reste inerte en production.
 
+##### Résultats de l'exécution (2026-10-22) — ARRÊT, aucune tâche commencée
+
+Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ `6fc550f6`. Aucun code, aucun ADR, aucune construction.
+
+- **Constat (lu au HEAD de départ).** Le prérequis ferme de la révision au HEAD, point 4 (« E20.e0c puis E20.e (§1.26, §1.27) **avant** f4 ; si E20.e n'est pas faite au début d'f4, arrêt ») n'est pas rempli : `Alundra/Cells/TileEffect.cs` n'existe pas (le dossier `Alundra/Cells/` ne tient que `CellStore`, `CellVisualSync`, `FloorPlacementRecords`, `ICellMutator`, `WallPlacementOverlay`, `WallPlacementRecords`) ; `WaveSwordAi.CheckAndTriggerTileEffect` (`Alundra/Ai/Projectiles/WaveSwordAi.cs:40`) est toujours le bouchon `=> StubCallsForTests?.Add(entity)` et n'appelle aucun port ; §1.26 (E20.e0c) et §1.27 (E20.e) portent encore ⏳ et la mention « à réviser » (D-E20-47, D-E20-49, D-E20-59, D-E20-60 : E20.eR d'abord).
+- **Règle appliquée.** La puce « L'appel de C94 à la coupe » : « si `WaveSwordAi` n'appelle pas le port, E20.e n'est pas faite : arrêt ». Le T0 d'f4 (relecture de ce fait, README de l'annexe) ne peut pas s'écrire, et C94 ne peut pas appeler la coupe d'E20.e.
+- **Décision.** Pas de contournement (le bouchon seul, que D-F4-3 et D-F4-10 ont retiré, n'est pas ce que le plan demande). Aucune autre tranche n'a été touchée.
+- **Suite demandée à la session principale.** Exécuter d'abord E20.eR, E20.e0c puis E20.e (révisions « à réviser » du 2026-10-22 comprises), puis relancer f4.
+
 ---
 
 ### 1.21 E20.f5 — Les flèches du chasseur et de William : E17 ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; **READY** à sa relecture de clôture, `f81304b`)
