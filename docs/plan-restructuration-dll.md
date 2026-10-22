@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), **R5 faite et CONFIRMED le 2026-10-22** (`61d2d46b` à `613c6c9e`, mode AUTO accordé par l'auteur ; révision 3 ; D-R-21 ; recette de l'auteur à faire) ; R6b décidée (D-R-20) ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), **R5 faite et CONFIRMED le 2026-10-22** (`61d2d46b` à `613c6c9e`, mode AUTO accordé par l'auteur ; révision 3 ; D-R-21 ; recette de l'auteur à faire) ; R6b décidée (D-R-20) ; **R7, R8 et R6b détaillées le 2026-10-22 (§12 à §14), puis la fusion finale (§15), en mode AUTO (D-R-22)** ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -93,6 +93,10 @@ Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructure
   règle de D-R-13 (point 2) : la classe imbriquée `AlundraHudComposerEquipmentBackgroundsTests` (dans `HudComposerTests`), que la table
   des types de premier niveau ne couvrait pas, perd seulement son préfixe (`HudComposerEquipmentBackgroundsTests`), dans un commit à part
   avant la clôture.
+- **D-R-22** (2026-10-22, ordre de l'auteur) — « Fini tous les R* et merge dans main a la fin (de meme pour les sous modules, develop
+  pour MGUI) » : R7, R8 et R6b se détaillent et s'exécutent dans cet ordre, en mode AUTO (chacune relue puis vérifiée par des agents
+  neufs), puis la fusion locale du §15 ; rien n'est poussé. R6b passe en dernier : ses numéros se recalculent quand plus rien ne bouge.
+  Lecture de D-R-20 pour R6b : P-R6b-1 (§14).
 - Règle du moteur (D-R-2), notée aussi en mémoire : « le moteur, quand il crée les objets script, ne doit chercher que dans la DLL ».
 
 ## 1. Faits établis (découverte du 2026-10-16, lecture seule)
@@ -199,9 +203,9 @@ La lecture de la règle (3) (types secondaires publics, types internes, type pri
 | R4 | Les 9 types cités par les données ; second export | `WorldProxy`, `EntityScriptProxy`, `HeroController` et les 6 view models à leur place et sous leur nom ; convertisseur, `design.json`, export | R3 |
 | R5 | Tests en miroir | `Alundra.Tests` dans la même arborescence, sans préfixe | R4 (peut suivre R2 et R3 domaine par domaine si la relecture de R1 le préfère) |
 | R6 | Documentation vivante | `docs/formats/`, guides, `stick-probe.md`, scripts de `research/` | R4 |
-| R7 | Garde des règles (D-R-15, 2026-10-22) | `check_names.py --rules` : l'arbre vivant de la DLL et des tests contrôlé contre les règles de l'ADR-0075, sans la table | R5 |
-| R6b | Reprise de R6 (D-R-17, D-R-20) | tous les documents vivants, `docs/intro-roadmap.md` compris : les numéros de ligne qu'ils citent recalculés partout, en plus des chemins et des noms de R6 | R5 |
-| R8 | Anciens noms des commentaires (D-R-14, 2026-10-22) | les quelque 300 anciens noms des commentaires de la DLL et des tests corrigés, mécaniquement, commentaires seulement, ligne pour ligne (aucune ligne ajoutée ni retirée : les numéros de R6b restent justes, D-R-20) | R5, R7 |
+| R7 | Garde des règles (D-R-15, 2026-10-22 ; §12) | `check_names.py --rules` : l'arbre vivant de la DLL et des tests contrôlé contre les règles de l'ADR-0075, sans la table | R5 |
+| R6b | Reprise de R6 (D-R-17, D-R-20 ; §14, après R8, D-R-22) | tous les documents vivants, `docs/intro-roadmap.md` compris : les numéros de ligne qu'ils citent recalculés partout, en plus des chemins et des noms de R6 | R5 |
+| R8 | Anciens noms des commentaires (D-R-14, 2026-10-22 ; §13) | les quelque 300 anciens noms des commentaires de la DLL et des tests corrigés, mécaniquement, commentaires seulement, ligne pour ligne (aucune ligne ajoutée ni retirée : les numéros de R6b restent justes, D-R-20) | R5, R7 |
 
 **Règles du programme.**
 - Aucune autre tranche (E20, E14, E19) pendant le chantier : il touche tous les fichiers de la DLL et des tests. Depuis le 2026-10-22,
@@ -1420,3 +1424,275 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
 - **Q-R-1** — **Tranchée le 2026-10-16 (D-R-8)**. Question d'origine : branche : la restructuration touche tous les fichiers. La faire sur une branche créée depuis `chantier/e20-heros` (qui
   contient tout E20, non fusionné dans `main`), ou fusionner d'abord `chantier/e20-heros` dans `main` (votre décision) et partir de `main` ?
   Recommandation : fusionner E20 d'abord, sinon toute reprise d'E20 sur l'ancienne arborescence entrera en conflit.
+
+## 12. Tranche R7 — La garde des règles : `check_names.py --rules` ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22)
+
+**But.** Une garde permanente, **sans table**, de l'arbre vivant de la DLL (`Alundra/`) et des tests (`Alundra.Tests/`) contre les règles
+de l'ADR-0075 et de l'ADR-0080, qui prend le relais des modes à table quand le chantier est fini (D-R-15) : une tranche qui ajoute un
+fichier conforme passe, un nom ou un dossier hors des règles est refusé.
+
+**Faits (découverte du 2026-10-22 à `7a81a3be`, lecture seule, `scratchpad/r7-disc/`).**
+- `tools/dll-structure/check_names.py` (211 lignes) a trois modes exclusifs : `--table`, `--tree --stage r2|r3|final [--root R]`, `--tests`
+  (`:183-186`) ; sortie « N finding(s), M warning(s) », code 1 sur un constat, 2 sur une erreur d'environnement (`:200-207`). Les modes à
+  table refusent **tout fichier neuf**, même conforme (`[hors table]`) ; en `--tests`, un namespace faux sort en `[nom]`, pas en
+  `[namespace]` (la colonne de la table est lue, pas la déclaration).
+- Fonctions réutilisables : `collision_findings` (`check_names.py:30-50`), `scan_types.parse` (`scan_types.py:107-141`), `dll_decls`
+  (`:168-180`), `external_types` (`:213-280` : 6 projets du moteur, 5 de MGUI, 3 dossiers de NvgSharp, 20 paquets lus dans leur XML,
+  3 sans XML, la BCL `Microsoft.NETCore.App.Ref/9.0.*`). `parse` et `collision_findings` sont importés par des outils de preuve gelés
+  (`prove_r2.py:197`, `r5_lib.py:330`, `:368-372`, `r5-discovery/`) : les changer changerait ces preuves.
+- Un prototype en lecture seule des règles (1), (2), (3), (4) avec segments et doublons rend, sur l'arbre vivant (DLL 207 fichiers,
+  220 déclarations de premier niveau, 34 imbriquées ; tests 411, 432, 321), **0 constat et 1 avertissement** : le type imbriqué `Session`
+  (`Alundra.Tests/UI/Shared/TextBoxGpu.cs:266`), nommé comme un segment. Le lecteur est recoupé par la table `TypeDef` des DLL Debug :
+  identique (seul écart, `AutoGeneratedProgram`, généré par le SDK de test). 35 cas de mutation sur des copies jetables : 0 cas inattendu.
+- Trous de la règle (4) pour les tests : 13 paquets vus par `Alundra.Tests` ne sont pas dans `PACKAGES` (dont `xunit.assert`) et le
+  projet `CasaEngine.Compiler` manque aux projets du moteur : un type `Assert` déclaré dans les tests passerait. Limites du lecteur : une
+  déclaration qui n'est pas en début de ligne est invisible (`DECL_RE` ancrée, `scan_types.py:102`) ; les littéraux bruts `"""` ne sont
+  pas masqués (`STRIP_RE`, `:93` ; 13 fichiers de tests en ont, sans effet aujourd'hui).
+- Aucun CI ni hook ne lance `check_names.py` : la garde n'existe que par les plans. E19.sm0 (`docs/plan-e19-opcodes.md`, §1.4.1, prérequis,
+  acceptation, arrêts) et 25 lignes du plan d'E20 la citent comme prérequis (« Q-R-7 », « la fin du chantier »).
+
+**Décisions de la session (dans le cadre de D-R-15, de l'ADR-0075 et de l'ADR-0080 ; l'auteur peut les contester).**
+- **P-R7-1 — Les règles.** (1) Un dossier = un namespace : racines `Alundra` et `Alundra.Tests`, segments séparés par des points, un seul
+  `namespace` par fichier, un segment de dossier qui est un identifiant ; un fichier sans type (par exemple
+  `Alundra/Properties/InternalsVisibleTo.cs`) se saute. (2) Aucun préfixe `Alundra` ni `IAlundra` sur un nom de type, imbriqués compris,
+  dans les deux arbres, ni sur un nom de fichier ou de dossier. (3) Un type principal par fichier, la lecture de l'ADR-0075 : le nom du
+  fichier, sans suffixe `.Partie`, est celui d'un type de premier niveau ; tout type public de premier niveau porte le nom du fichier ;
+  l'exception écrite par l'ADR-0075 (`Alundra/Events/IEventProgramRunner.cs` et `NoOpEventProgramRunner`) et les parties de classe
+  partielle `Nom.Partie.cs` sont admises. (4) Unicité : aucun nom de premier niveau égal à un type externe (moteur, MGUI, NvgSharp,
+  paquets, BCL) ni à un autre nom de premier niveau de la DLL ou des tests (les parties d'un même type partiel exceptées) ; aucun type
+  nommé comme un segment, aucun segment qui masque un type externe ; les noms de dossiers que l'ADR-0075 écarte (`World`, `Player`,
+  `Camera`, `Dialogue`, `TextBox`, `Text`, `Debug`, `Math`, `Entity`, `SaveScreen`) sont refusés en second filet. (5) Le miroir de
+  l'ADR-0080 : tout dossier de tests a son pendant dans la DLL, sauf `Arcs`, `Support` et `ExportGuards`. La règle (3) et le miroir ne
+  sont pas dans la liste de Q-R-7 mais sont des règles des ADR que l'auteur a validés ; ils rendent 0 constat aujourd'hui.
+- **P-R7-2 — Ce qui reste hors règle.** Un dossier neuf est permis (pas de liste fermée de domaines : ce serait une table) ; un type
+  imbriqué nommé comme un segment reste un **avertissement** (ADR-0075) ; les collisions des types imbriqués et les noms de membres
+  (par exemple les méthodes de test `AlundraSoundBank_GetOrCreate_…`) ne sont pas contrôlés ; l'existence des 9 types cités par les
+  données, `tools/AlundraTestSaves/` et les fichiers qui ne sont pas des `.cs` (par exemple sous `Alundra.Tests/Data/`) sont hors de la
+  garde.
+- **P-R7-3 — Lecture.** L'arbre de travail, fichiers non suivis compris (un fichier neuf se contrôle avant son commit), `bin/`, `obj/` et
+  `artifacts/` exclus ; `--root <dossier>` lit `Alundra/` et `Alundra.Tests/` sous ce dossier (pour les copies de preuve).
+- **P-R7-4 — Un module neuf, rien de gelé ne change.** Les règles vivent dans `tools/dll-structure/rules.py`, appelé par le mode
+  `check_names.py --rules` ; `scan_types.parse`, `strip`, `external_types` et `collision_findings` ne changent pas (les preuves gelées les
+  importent). `rules.py` ajoute : le masquage des littéraux bruts `"""` avant la lecture ; un constat `[lecture]` quand les accolades ne
+  s'équilibrent pas après masquage ou quand une déclaration de type apparaît ailleurs qu'en début de ligne ; la couverture complète des
+  tests pour la règle (4) (les 13 paquets et le projet `CasaEngine.Compiler`, ajoutés dans `rules.py`, en plus d'`external_types`).
+- **P-R7-5 — Sortie.** Les étiquettes existantes, plus `[doublon]`, `[dossier]`, `[lecture]`, `[principal]` et `[miroir]` ; un
+  avertissement ne change pas le code de sortie (0) ; un sous-module, un paquet ou la BCL absents : code 2, écrit au README.
+- **P-R7-6 — Le sort des modes à table.** `--table`, `--tree`, `--tests`, `selftest.py` et les preuves `prove_r2.py` à `prove_r5.py`
+  deviennent l'**archive du chantier** : ils se rejouent à leurs commits de clôture, le README le dit (son paragraphe « Frozen proofs »
+  s'étend) ; à partir de R7, « le contrôle des collisions vert » de la règle du programme (§3) et des tranches suivantes est
+  `check_names.py --rules` à 0.
+- **P-R7-7 — Preuve versée.** `tools/dll-structure/selftest_rules.py <dossier hors dépôt>` rejoue sur des copies jetables (`git init` hors
+  du dépôt) les cas de mutation de la découverte : refusés avec leur étiquette (namespace faux dans la DLL, dans un test, dans
+  `Plugin.cs`, type global, deux `namespace` dans un fichier, `.g.cs` hors `obj/`, dossier non identifiant, dossier `World`, préfixe sur un
+  type, sur un imbriqué, sur un fichier, sur une classe de test, collision `Vector2`, `Random`, `Assert` de xunit, `YarnDialogueCompiler`,
+  doublon dans la DLL, test nommé comme un type de la DLL, partiel sur deux namespaces, type nommé `Audio`, accolade orpheline,
+  déclaration hors début de ligne, secondaire public dans un fichier, dossier de tests sans pendant) ; acceptés (fichier neuf conforme
+  dans un dossier existant ou neuf, partiel sur deux fichiers d'un namespace, namespace en bloc, fichier racine des tests en
+  `Alundra.Tests`, `.cs` sous `obj/`, littéral brut qui contient une ligne de déclaration). S'y ajoute, en T1, le recoupement du lecteur
+  par la table `TypeDef` des DLL Debug construites (une fois, résultat consigné ici).
+- **P-R7-8 — Documents.** Le README de `tools/dll-structure` (en-tête des scripts qui écrivent, ligne d'`apply_r6.py`, ligne `--rules`,
+  étiquettes, limites, archive) ; un ADR neuf, ADR-0081 (la garde par règles après le chantier ; il complète l'ADR-0075, dont la phrase
+  sur les fichiers ajoutés pendant le chantier reste vraie pour le chantier) ; `docs/guidelines-runtime-alundra-casaengine.md:207` cite
+  `--rules`. Les plans d'E19 et d'E20 se mettent à jour à leurs révisions (pas dans R7).
+
+**Périmètre.** `tools/dll-structure/` (`check_names.py` : le mode `--rules` et son aiguillage seulement ; `rules.py` et
+`selftest_rules.py` neufs ; `README.md`), `docs/decisions/0081-…` et l'index, la ligne 207 des guidelines, ce plan (§12 et résultats).
+**Hors périmètre** : tout fichier de `Alundra/`, `Alundra.Tests/`, du convertisseur, des données, des sous-modules ; les fonctions
+existantes de `scan_types.py` et de `check_names.py`.
+
+**Propriétaire, budget.** Un `executor` ; une passe d'exécution, une de correction au plus ; un verifier frais.
+
+**Tâches.**
+- T1 — `rules.py`, le mode `--rules` ; sur l'arbre vivant : 0 constat, l'avertissement `Session` seul, sortie consignée ; le recoupement
+  par la table `TypeDef` des DLL Debug (la solution construite en Release avec la copie neutralisée, puis en Debug en dernier) ; commit
+  d'outil.
+- T2 — `selftest_rules.py` et ses cas (P-R7-7), tous comme attendu ; `git diff` vide sur les fonctions existantes de `scan_types.py` et
+  de `check_names.py` (seuls l'aiguillage et l'appel du mode neuf s'ajoutent) ; commit d'outil.
+- T3 — Le README, l'ADR-0081 et son index, la ligne des guidelines ; `Alundra.Tests` en Release, une exécution, 5 097 / 0 (aucune source
+  compilée ne change : la suite le confirme) ; `git diff --quiet <base> HEAD -- Alundra/ Alundra.Tests/ CasaEngineMonogame
+  alundra-datas-analyser` ; ce plan (résultats) ; commit de documents.
+
+**Acceptation.** `check_names.py --rules` rend 0 sur l'arbre vivant (l'avertissement `Session` listé) ; `selftest_rules.py` : chaque cas
+comme attendu ; le lecteur égal à la table `TypeDef` ; les fonctions existantes inchangées ; l'ADR-0081 et le README.
+
+**Arrêts.** Un constat sur l'arbre vivant (une vraie violation des règles : question, pas de correction dans R7) ; un cas de mutation qui
+ne rend pas son étiquette ; un écart entre le lecteur et la table `TypeDef` ; un changement d'une fonction gelée ; un sous-module, un
+paquet ou la BCL absents.
+
+**Retour arrière.** `git revert` des commits de la tranche.
+
+## 13. Tranche R8 — Les anciens noms des commentaires ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22)
+
+**But.** Les anciens noms de R3, R4 et R5 qui restent dans les **commentaires** du code de la DLL et des tests deviennent les noms
+d'aujourd'hui, mécaniquement, **ligne pour ligne** (D-R-14, D-R-18 (b), D-R-20) ; aucun octet de code ni de chaîne ne change.
+
+**Faits (découverte du 2026-10-22 à `7a81a3be`, lecture seule, `scratchpad/r8-disc/`).**
+- 444 anciens noms de type : 147 de la DLL (R3 et R4, `tools/dll-structure/table.json`), 296 classes de test (R5, `r5-types.tsv`), une
+  classe imbriquée (`r5-nested-types.tsv`) ; aucun n'est aussi un nom d'aujourd'hui.
+- Dans les commentaires : **811 occurrences** (307 dans 64 fichiers de la DLL, 504 dans 118 fichiers de tests ; 608 en `//`, 203 en `///`,
+  dont 158 en `<c>` et 2 en `<see cref>` : `Alundra/Session/GameState.cs:36`, `Alundra/UI/Hud/IHudView.cs:24`) ; plus 74 noms de fichier
+  nus (66 de la table), 4 chemins `Alundra/Scripts…`, 5 chemins de tests, `Alundra.Scripts.AlundraEntityScriptProxy` et
+  `Alundra.Tests.UI.TextBoxGpu`. Le chiffre de Q-R-5 (« ≈ 300 ») date d'avant R5.
+- Dans le code : aucun ancien nom comme identifiant entier (lexeur Python et Roslyn d'accord) ; 3 noms de méthodes de test en embarquent
+  un. Dans les chaînes : 14 littéraux gardés exprès par R3 et R4 (classe 4) et un message au chemin périmé
+  (`Alundra.Tests/UI/Hud/HudPresenterTests.cs:479`).
+- Un prototype sur copie : 879 éditions, 836 lignes, 191 fichiers ; même nombre de `\n` et de `\r` ; ajouts = suppressions par fichier ;
+  le flux des jetons et des trivias hors commentaire identique (Roslyn, 618 fichiers). Seuls 4 renommages ne sont pas « le préfixe en
+  moins » (`AlundraMusicPlayer` → `BgmPlayer`, `AlundraPlayerController` → `HeroController`, `AlundraRandom` → `GameRandom`,
+  `AlundraSoundBank` → `SfxBank`) ; leurs classes de test ne perdent que le préfixe (D-R-13) : une substitution par sous-chaîne serait
+  fausse pour 14 noms de la table.
+- À ne pas toucher : les noms de la décompilation et de l'analyseur (`AlundraEngine`, `AlundraTools`, `AlundraDisplay.cs`, `AlundraGame.cs`,
+  `…Gameplay.Scripts…`) ne sont jamais d'anciens noms ; l'échange de fichiers `EventProgramRunner.cs` (ancien fichier de l'interface) et
+  `AlundraEventProgramRunner.cs` (devenu `EventProgramRunner.cs`) fait 11 faux restes pour un contrôle naïf.
+- 17 occurrences ne sont pas mécaniques, et 2 jetons sont hors de la table (`AlundraArcSupport`, le `cref` vers
+  `AlundraDialogueSpeakerOracle`, qui ne vise aucun type depuis `f4af632d`).
+- Hors des `.cs` : `Alundra.Tests/xunit.runner.json` (`_comment`, 3 noms) et `Alundra.Tests/Alundra.Tests.csproj` (un commentaire XML).
+
+**Décisions de la session (dans le cadre de D-R-14 ; l'auteur peut les contester).**
+- **P-R8-1 — Périmètre.** Les commentaires (`//`, `///`, `/* */`) des `.cs` suivis de `Alundra/` et `Alundra.Tests/`, plus le `_comment` de
+  `Alundra.Tests/xunit.runner.json` et le commentaire XML de `Alundra.Tests/Alundra.Tests.csproj`. Hors périmètre : les chaînes et le code
+  (les 14 littéraux gardés, le message de `HudPresenterTests.cs:479`, les 3 noms de méthodes de test), les XAML de `alundra-project/`,
+  les sous-modules, `docs/` (R6b), `tools/`.
+- **P-R8-2 — Correspondance.** Par nom entier (bornes d'identifiant, du plus long au plus court), jamais par sous-chaîne ; un nom qualifié
+  se réécrit en entier (`Alundra.Scripts.AlundraEntityScriptProxy` → `Alundra.Entities.EntityScriptProxy`,
+  `Alundra.Tests.UI.TextBoxGpu` → `Alundra.Tests.UI.Shared.TextBoxGpu`) ; un ancien nom de fichier des tables prend son nouveau nom de
+  base (unique dans l'arbre).
+- **P-R8-3 — Les cas à la main**, chacun écrit dans le relevé avec sa raison et contrôlé un par un par le verifier : (a) **gardés** :
+  `AlundraDisplay.cs`, `AlundraGame.cs`, `AlundraGame.json` (décompilation, analyseur, données) et la citation
+  `Alundra/Scripts/PlayerManager.cs:…` de `Alundra/Hero/HeroController.cs:42` (elle cite une note d'un plan gelé) ; (b) `Alundra/Scripts`
+  (le dossier, `Alundra.Tests/Transitions/ScreenFadeCameraWiringTests.cs:25,30,97`) devient le dossier actuel des fichiers dont parle
+  la phrase, ou `Alundra/` si la phrase parle de toute la DLL ; (c) `IntroTraceHarnessTests.cs` (×4) et `UI/TextBoxGpuHarness.cs`
+  deviennent le chemin actuel du fichier qui déclare le type que la phrase cite (par exemple `Arcs/HeadlessIntroSimulation.cs` quand elle
+  passe par `HeadlessIntroSimulation`) ; (d) `AlundraArcSupport` devient le fichier actuel qui déclare ce que la phrase cite ; (e) le
+  `cref` vers `AlundraDialogueSpeakerOracle` vise le type de l'oracle si le fichier qui l'a remplacé en déclare un sans ambiguïté, sinon
+  il devient `<c>` avec le nom de ce fichier. Un cas que (a) à (e) ne tranchent pas est un arrêt.
+- **P-R8-4 — Les citations de lignes** `Fichier.cs:NNN` dans les commentaires (60) gardent leurs numéros : R8 est ligne pour ligne, R6b
+  ne traite que les documents. Elles sont listées dans les résultats comme suite possible.
+- **P-R8-5 — Outils.** Le relevé `tools/dll-structure/r8-comments.tsv` (fichier, ligne, rang, genre, ancien, nouveau, classe, raison),
+  généré une fois à l'état de départ ; `apply_r8.py` (n'édite que les portées de commentaire du lexeur de R2, `apply_r2.py`, un événement
+  par jeton ; lecture et écriture binaires, BOM et fins de ligne gardés) ; `prove_r8.py` (l'après attendu est l'avant plus les seuls
+  événements du relevé, tout autre octet identique ; mêmes fichiers, même BOM, mêmes nombres de `\n` et de `\r` ; relevé entièrement
+  appliqué ; à la fin, aucun ancien nom en commentaire hors des entrées gardées et de l'alias `EventProgramRunner.cs` ; ajouts =
+  suppressions par fichier) ; un second contrôle indépendant, Roslyn, versé comme `rename-tool` : `tools/dll-structure/comment-xcheck/`
+  (le flux des jetons et des trivias hors commentaire identique avant et après, sur tous les `.cs` du périmètre). Le filtre
+  `startswith("'")` des outils gelés n'est pas corrigé (sans effet ici).
+- **P-R8-6 — Mutations refusées** (`tools/dll-structure/selftest_r8.py`, versé) : un identifiant de code, un littéral, un commentaire hors
+  relevé, une entrée omise, un nom de la décompilation (`AlundraDisplay.cs`), le mot `Alundra` seul, une substitution par sous-chaîne
+  (`AlundraMusicPlayerTests` → `BgmPlayerTests`), un saut de ligne ajouté, un BOM ou des fins de ligne changés, un nom gardé modifié ;
+  et l'arbre au départ et à l'arrivée accepté.
+- **P-R8-7 — Découpage.** Un commit d'outil (relevé, outils, mutations), un commit pour `Alundra/`, un pour `Alundra.Tests/` (avec le
+  `.json` et le `.csproj`), un commit de plan et de résultats. Pas d'ADR (D-R-14 suffit).
+
+**Périmètre.** `Alundra/**/*.cs` et `Alundra.Tests/**/*.cs` (commentaires seulement), les deux fichiers de P-R8-1, `tools/dll-structure/`
+(outils et relevé de R8), ce plan. **Hors périmètre** : le reste (P-R8-1).
+
+**Propriétaire, budget.** Un `executor` (relevé et cas à la main avec jugement, application mécanique) ; une passe d'exécution, une de
+correction au plus ; un verifier frais.
+
+**Tâches.**
+- T0 — Le relevé à l'état de départ (les 811 noms, les noms de fichier, chemins et noms qualifiés, les cas de P-R8-3 classés), les
+  outils, `comment-xcheck`, les mutations de P-R8-6 toutes refusées et les deux états acceptés ; commit d'outil.
+- T1 — `apply_r8.py` sur `Alundra/`, `prove_r8.py` et `comment-xcheck` verts, la solution en Release (copie neutralisée) ; commit.
+- T2 — Idem sur `Alundra.Tests/` et les deux fichiers ; commit.
+- T3 — Les portes : la solution en Release (copie neutralisée) puis en Debug, 0 erreur ; `Alundra.Tests` en Release puis en Debug,
+  5 097 / 0, une exécution chacune ; `cmp` de la DLL Debug avec `alundra-project/Alundra.dll` ; la garde des traces (fins de ligne remises
+  par `git checkout`) ; `check_names.py --rules` à 0 (R7) ; la fin de `prove_r8.py` (aucun ancien nom hors gardés) ; ce plan (résultats,
+  les 60 citations de lignes listées) ; commit.
+
+**Acceptation.** `prove_r8.py` et `comment-xcheck` verts sur chaque commit ; aucune ligne ajoutée ni retirée ; aucun octet de code ni de
+chaîne changé ; plus aucun ancien nom en commentaire hors des cas gardés ; les cas à la main justifiés ; les portes de T3.
+
+**Arrêts.** Une occurrence que les règles ne tranchent pas ; un refus de `prove_r8.py` ou de `comment-xcheck` ; un nombre de lignes qui
+change ; un octet de code ou de chaîne qui change ; un test qui échoue.
+
+**Retour arrière.** `git revert` des commits de la tranche.
+
+## 14. Tranche R6b — Les numéros de ligne des documents vivants ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22)
+
+**But.** Dans **les 21 documents vivants**, chaque citation de ligne désigne au HEAD ce que sa phrase cite (D-R-17, D-R-20) ; les
+documents historiques, les audits, les annexes figées et les plans ne changent pas.
+
+**Faits (découverte du 2026-10-22 à `7a81a3be`, lecture seule, `scratchpad/r6b-disc/`).**
+- Les documents vivants, au sens de R6 (§10, `apply_r6.py:110-118`) : `docs/census-0x24-waits.md`, `docs/editeur-couverture-dll.md`,
+  `docs/formats/` (`README`, `audio-manifests`, `backdrops`, `cells-companion`, `dialogues-yarn`, `effects`, `events`, `font`,
+  `map-sprite-indices`, `misc-data`, `save-game`, `sprite-records`, `world-index`), `docs/guidelines-runtime-alundra-casaengine.md`,
+  `docs/intro-roadmap.md`, `docs/stick-probe.md`, `docs/test-saves.md`, `README.md` (racine), `research/census/README.md`.
+- Ils portent **105 citations** (111 plages) : 101 vers la décompilation (`docs/intro-roadmap.md` 94, `docs/formats/cells-companion.md` 7),
+  **une seule vers la DLL** (`docs/intro-roadmap.md:325`, `GameState.cs:275-294`), 2 vers le moteur (`docs/guidelines-runtime-alundra-casaengine.md:142`
+  et `:229`), une vers un autre document (`docs/formats/backdrops.md:20`) ; aucune vers les tests ni les outils.
+- La citation de la DLL se suit sans perte : écrite à `59fac902` contre `Alundra/Scripts/AlundraGameState.cs`, elle est aujourd'hui
+  `Alundra/Session/GameState.cs:368-387` (+93, lignes identiques). La citation que R6 a retirée de `docs/intro-roadmap.md:227`
+  (`AlundraWorldProxy.cs:288-323`, écrite à `3a880a63`) se retrouve identique en `Alundra/Entities/Spawning/EntitySpawnFactory.cs:59-94`.
+- Décompilation (pointeur de l'analyseur `fc16872`) : 61 citations visent un fichier inchangé depuis leur écriture ; sur les 33 autres,
+  30 gardent leurs numéros et 3 sont décalées d'une ligne (`docs/intro-roadmap.md:61`, `:276`, `:242`). Sur 44 débuts de plage contrôlés
+  contre la déclaration du membre que la phrase nomme, 39 sont exacts ; écarts : `:61` et `:276` (les décalages ci-dessus), `:67` et
+  `:223` (`SpawnEntity` cité à 684 et 680, déclaré à 681), `:183` (une sous-plage de `RunScript`). Les 7 de `cells-companion.md` visent
+  des fichiers inchangés.
+- Moteur (pointeur `92d8e847`) : les 2 citations des guidelines sont fausses (`SimulationSpacePolicy.cs:135-137` ne porte plus la
+  formule de rendu ; `World.cs:443-491` tombe dans `GetPlayerIndices` et la fin de `CreateLocalPlayerController`).
+- Document vers document : `docs/formats/backdrops.md:20` cite `docs/editeur-couverture-dll.md:57-59` ; le paragraphe est aujourd'hui à
+  58-60 (une ligne ajoutée au-dessus par `a3fa8810`).
+- Méthode éprouvée : le commit d'écriture W par « pickaxe » sur la citation, le fichier cité à W sous son nom d'avant R6 (colonne
+  `before` de `tools/dll-structure/r6-occurrences.tsv`), un `git diff --histogram` de W au HEAD, et un repli par contenu.
+- Hors des documents : les scripts de `research/` (3 citations de la DLL) et les commentaires du convertisseur (3 de la DLL, 15 vers des
+  fichiers de l'analyseur modifiés) ; les commentaires du code de la DLL et des tests (84 citations de nos sources).
+
+**Décisions de la session (l'auteur peut les contester).**
+- **P-R6b-1 — Lecture de D-R-20.** D-R-20 écrit « les numéros de ligne qu'ils citent dans la DLL, les tests et les outils » ; la question
+  Q-R-4c, à laquelle l'auteur a répondu « tous les documents vivants », parlait des « numéros de ligne cités dans les docs … recalculés
+  partout ». Avec une seule citation vers la DLL, la lecture étroite viderait la tranche : R6b vérifie **toutes** les citations des
+  21 documents vivants, quelle que soit leur cible ; le code cité (décompilation, moteur) ne change jamais, seule la citation.
+- **P-R6b-2 — Périmètre.** Les 21 documents vivants. Hors périmètre, listés comme suites possibles : les scripts de `research/` et les
+  commentaires du convertisseur (les deux autres familles de R6, qui ne sont pas des documents), les commentaires du code (R8 ne change
+  que des noms), les plans, annexes, ADR, audits, traces `docs/*.txt` et `census0b*.md` (gelés ou historiques).
+- **P-R6b-3 — Méthode, par cible.** DLL, tests, outils : W, le fichier à W, le diff jusqu'au HEAD, le repli par contenu. Décompilation et
+  moteur, au pointeur actuel des sous-modules : la plage citée doit porter ce que la phrase nomme (le membre, le bloc décrit) ; si le
+  fichier a changé depuis W, le diff de l'historique du sous-module ; si la phrase nomme un membre, le début de la plage est la ligne de sa
+  déclaration. Document vers document : l'historique du document cité. Chaque citation reçoit une classe : juste, recalculée (décalage),
+  recalculée par contenu, ou indéterminée (arrêt et question).
+- **P-R6b-4 — La citation retirée par R6** (`docs/intro-roadmap.md:227`) est rétablie avec ses numéros d'aujourd'hui
+  (`Alundra/Entities/Spawning/EntitySpawnFactory.cs:59-94`, lignes identiques), puisque la tranche corrige les documents.
+- **P-R6b-5 — Forme et garde.** La forme `Fichier.cs:a-b` reste ; pas de garde permanente des citations (elles s'useront avec E14, E19 et
+  E20). La preuve de R6 (`apply_r6.py --check`, `r6-occurrences.tsv`) est **gelée** à son commit de clôture `2964d9ae`, comme celles de R3
+  et R4 (le README le dit).
+- **P-R6b-6 — Outils.** Le relevé `tools/dll-structure/r6b-citations.tsv` (document, ligne, citation avant, cible, W, méthode, citation
+  après, classe, sondes du contenu) et `prove_r6b.py` : dans les 21 documents, seuls changent les numéros des citations relevées (et la
+  citation rétablie) ; pour chaque citation, les lignes de début et de fin de la plage au HEAD égalent les sondes du relevé ; fins de
+  ligne (CRLF) gardées.
+
+**Périmètre.** Les 21 documents vivants, `tools/dll-structure/` (relevé, `prove_r6b.py`, README), ce plan. **Hors périmètre** : P-R6b-2 ;
+tout fichier de code, de données, des sous-modules.
+
+**Propriétaire, budget.** Un `executor` (les citations demandent du jugement : lire la phrase et la cible) ; une passe d'exécution, une de
+correction au plus ; un verifier frais.
+
+**Tâches.**
+- T0 — Le relevé des 105 citations (plus la citation rétablie), la méthode de P-R6b-3 appliquée, chaque citation classée avec ses sondes ;
+  `prove_r6b.py` et ses refus (un chiffre changé hors relevé, un mot changé, une plage dont la sonde ne correspond pas) ; commit d'outil.
+- T1 — L'application dans les 21 documents, `prove_r6b.py` vert ; le paragraphe de gel de R6 au README ; ce plan (résultats : comptes par
+  classe, chaque citation changée) ; commit. Aucune construction ni suite : aucun fichier compilé ne change (`git diff --stat` le
+  montre).
+
+**Acceptation.** `prove_r6b.py` vert ; chaque citation des 21 documents est juste au HEAD (contrôle par ses sondes), ou classée
+indéterminée avec la question écrite ; seuls les 21 documents, `tools/dll-structure/` et ce plan changent.
+
+**Arrêts.** Une citation dont la cible ou l'intention ne s'établit pas ; un document hors de la liste qui changerait ; une ligne de code
+d'un sous-module qu'il faudrait changer.
+
+**Retour arrière.** `git revert` des commits de la tranche.
+
+## 15. Fusion finale (D-R-22) ⏳
+
+Après R7, R8 et R6b faites et CONFIRMED :
+- **Parent** : `main` reçoit `chantier/restructuration-dll-r3` par avance rapide (`git fetch . chantier/restructuration-dll-r3:main`, qui
+  refuse tout autre cas, sans toucher l'arbre de travail) ; si `main` a bougé entre-temps, une branche d'intégration depuis le chantier
+  reçoit `main`, la solution se construit (Release avec la copie neutralisée, Debug en dernier) et `Alundra.Tests` passe en Release et en
+  Debug, puis `main` avance sur elle.
+- **Sous-modules** : le `main` du moteur, le `master` de l'analyseur et le `develop` de MGUI doivent contenir les pointeurs du parent
+  (`git merge-base --is-ancestor <pointeur> <branche>`) ; au 2026-10-22 c'est le cas (`92d8e847`, `fc16872`, `3db3c769`). Un pointeur qui
+  ne serait pas contenu : avance rapide de la branche s'il en est le descendant, sinon arrêt et question.
+- Rien n'est poussé. Les modifications locales de l'auteur (le lanceur du moteur, le pointeur MGUI de l'analyseur, `AlundraTools/log.txt`,
+  les outils non suivis) ne sont ni touchées ni indexées.
+- Après la fusion : la branche du chantier reste ; la recette courte de l'auteur (nouvelle partie jusqu'au premier écran jouable, F5, F6,
+  F9) reste due pour R2 à R8.
