@@ -1,0 +1,46 @@
+== t_choose
+vectors 11680 mismatches 0
+instructions in function 38 covered 38 missing []
+== t_spawn
+SpawnRandomLoot vectors 12000 mismatches 0
+ coverage 62 / 62 missing []
+SpawnContents vectors 12000 mismatches 0
+ coverage 59 / 59 missing []
+== t_init
+InitializeContents vectors 20000 mismatches 0
+ coverage 57 / 58 missing ['0x80032ab8']
+== t_a255
+A255 vectors 15671 mismatches 0
+ coverage 79 / 80 ['0x80061cb4']
+== t_give
+GiveItem vectors 30000 mismatches 0
+ coverage of 0x80033F00 itself 75 / 128
+  0x80032E2C..0x80033100 hearts+herb 178 / 181
+  0x800335AC crystal 81 / 81
+  0x80033EC8 helper 14 / 14
+  0x8004DF10.. 29 / 44
+== t_destroy
+DestroyEntity/recursion vectors 8000 mismatches 0 spawns 6897
+  DestroyEntity 0x8003A59C 43 / 43 []
+  recursive 0x8003A648 75 / 75 []
+== t_c255 (seed 3)
+C255 vectors 6000 ticks 31256 mismatches 0
+ coverage 381 / 381 missing []
+ journal event counts {'busy': 18120, 'destroy_light': 1338, 'unblock': 677, 'strcpy': 156, 'strcat': 251, 'sound': 110, 'open': 156, 'apply': 107, 'setflag': 325, 'cdbusy': 1255, 'anim': 459, 'stopsound': 313, 'give': 218, 'block': 129, 'bgm0': 129, 'cd': 129}
+recorded 6000
+== mut_models
+SURVIVOR models.py if c >= 0x100: return 0, s, draws -> if c >= 0x101: return 0, s, draws {'t_choose.py': 0, 't_spawn.py': 0, 't_init.py': 0, 't_give.py': 0}
+SURVIVOR give_model.py st['money'] = 9999 if v >= 0x2710 -> st['money'] = 9999 if v >= 0x270F {'t_choose.py': 0, 't_spawn.py': 0, 't_init.py': 0, 't_give.py': 0}
+mutants 25 killed 23
+== mut_c255
+baseline mismatches 0
+mutants 46 killed 46
+== mut_destroy
+SURVIVOR for i in range(0, count + 1): -> for i in range(1, count + 1): ['0'] 
+SURVIVOR if a1 != 0: journal.append(('effect', 0, a1 & M32, 0, eaddr(e), 1, 0,  -> if a1 > 0: journal.append(('effect', 0, a1 & M32,  ['0'] 
+NOT FOUND     model_destroy(ents, e, a1, mpmax, journal, hdr)
+SURVIVOR     model_destroy(ents, e, a1, mpmax, journal, hdr) bad = 0 ->     model_destroy(ents, e, a1, mpmax, journal, hdr ['0'] 
+mutants 11 killed 7
+== census2 vs census2_out.txt
+census2: identical to the manifest output
+census: identical to the manifest output

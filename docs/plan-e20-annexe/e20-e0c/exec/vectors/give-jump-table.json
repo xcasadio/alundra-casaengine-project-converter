@@ -1,0 +1,652 @@
+{
+ "source": "E20.e0c T0 (g): GiveItem jump table 0x800230D4",
+ "types": 53,
+ "placedObjects": 152,
+ "nativeObjects": 59,
+ "rows": [
+  {
+   "item": 4,
+   "type": 34,
+   "name": "I04_\u00c3\u2030p\u00c3\u00a9e sacr\u00c3\u00a9e Elnard",
+   "placed": 3,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 5,
+   "type": 35,
+   "name": "I05_Arc du chasseur",
+   "placed": 1,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 6,
+   "type": 36,
+   "name": "I06_Arc de William",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 7,
+   "type": 37,
+   "name": "I07_B\u00c3\u00a2ton magique",
+   "placed": 3,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 8,
+   "type": 38,
+   "name": "I08_Objet 008",
+   "placed": 2,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 9,
+   "type": 39,
+   "name": "I09_Lancer de cha\u00c3\u00aene",
+   "placed": 1,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 10,
+   "type": 40,
+   "name": "I10_Le Broyeur",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 14,
+   "type": 44,
+   "name": "I14_B\u00c3\u00a2ton des glaces flottantes",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 16,
+   "type": 46,
+   "name": "I16_B\u00c3\u00a2ton de feu",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 18,
+   "type": 48,
+   "name": "I18_Veste en cuir",
+   "placed": 1,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 19,
+   "type": 49,
+   "name": "I19_Veste en acier",
+   "placed": 1,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 20,
+   "type": 50,
+   "name": "I20_Veste en argent",
+   "placed": 5,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 28,
+   "type": 58,
+   "name": "I28_Bottes magiques",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 31,
+   "type": 61,
+   "name": "I31_Haricots de Jack",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 32,
+   "type": 62,
+   "name": "I32_Cape de sable",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 33,
+   "type": 63,
+   "name": "I33_Armure bris\u00c3\u00a9e",
+   "placed": 3,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 52
+  },
+  {
+   "item": 35,
+   "type": 65,
+   "name": "I35_Bombe explosive",
+   "placed": 3,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 36,
+   "type": 66,
+   "name": "I36_Herbe m\u00c3\u00a9dicinale",
+   "placed": 9,
+   "nativeC": 4,
+   "target": "0x80033f48",
+   "group": "herb 0x24 (inventory first, body 0x80032E50)",
+   "octet4": 1,
+   "octet5": 52
+  },
+  {
+   "item": 37,
+   "type": 67,
+   "name": "I37_Potion L",
+   "placed": 3,
+   "nativeC": 2,
+   "target": "0x80033f6c",
+   "group": "Potion L 0x25 (inventory first, body 0x80033274)",
+   "octet4": 1,
+   "octet5": 52
+  },
+  {
+   "item": 38,
+   "type": 68,
+   "name": "I38_Extrait magique",
+   "placed": 6,
+   "nativeC": 1,
+   "target": "0x80033f90",
+   "group": "Extrait magique 0x26 (inventory first, body 0x800335AC)",
+   "octet4": 1,
+   "octet5": 52
+  },
+  {
+   "item": 39,
+   "type": 69,
+   "name": "I39_Breuvage de soin",
+   "placed": 2,
+   "nativeC": 1,
+   "target": "0x80033fa8",
+   "group": "Breuvage 0x27 (inventory first, body 0x80033A2C)",
+   "octet4": 1,
+   "octet5": 52
+  },
+  {
+   "item": 40,
+   "type": 70,
+   "name": "I40_Cape aquatique",
+   "placed": 2,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 41,
+   "type": 71,
+   "name": "I41_Potion S",
+   "placed": 6,
+   "nativeC": 1,
+   "target": "0x80033fcc",
+   "group": "Potion S 0x29 (inventory first, body 0x800330FC)",
+   "octet4": 1,
+   "octet5": 52
+  },
+  {
+   "item": 43,
+   "type": 73,
+   "name": "I43_Tome de la Terre (haut)",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 44,
+   "type": 74,
+   "name": "I44_Tome de la Terre (bas)",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 45,
+   "type": 75,
+   "name": "I45_Tome du d\u00c3\u00a9mon d\u00e2\u20ac\u2122eau (haut)",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 46,
+   "type": 76,
+   "name": "I46_Tome du d\u00c3\u00a9mon d\u00e2\u20ac\u2122eau (bas)",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 47,
+   "type": 77,
+   "name": "I47_Tome du dragon de feu (haut)",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 48,
+   "type": 78,
+   "name": "I48_Tome du dragon de feu (bas)",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 49,
+   "type": 79,
+   "name": "I49_Tome du dieu du vent (haut)",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 50,
+   "type": 80,
+   "name": "I50_Tome du dieu du vent (bas)",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 51,
+   "type": 81,
+   "name": "I51_Anneau d\u00e2\u20ac\u2122orc",
+   "placed": 3,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 53,
+   "type": 83,
+   "name": "I53_Bracelet d\u00e2\u20ac\u2122armure d\u00e2\u20ac\u2122acier",
+   "placed": 3,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 54,
+   "type": 84,
+   "name": "I54_Bracelet d\u00e2\u20ac\u2122armure d\u00e2\u20ac\u2122argent",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 55,
+   "type": 85,
+   "name": "I55_Anneau de r\u00c3\u00a9g\u00c3\u00a9n\u00c3\u00a9ration",
+   "placed": 3,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 59,
+   "type": 89,
+   "name": "I59_Gant de puissance",
+   "placed": 2,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 61,
+   "type": 91,
+   "name": "I61_Cl\u00c3\u00a9",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 52
+  },
+  {
+   "item": 62,
+   "type": 92,
+   "name": "I62_Embl\u00c3\u00a8me du sang de pigeon",
+   "placed": 2,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 63,
+   "type": 93,
+   "name": "I63_Embl\u00c3\u00a8me azur",
+   "placed": 2,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 64,
+   "type": 94,
+   "name": "I64_Embl\u00c3\u00a8me de topaze",
+   "placed": 4,
+   "nativeC": 2,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 65,
+   "type": 95,
+   "name": "I65_Embl\u00c3\u00a8me brun",
+   "placed": 2,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 66,
+   "type": 96,
+   "name": "I66_Embl\u00c3\u00a8me \u00c3\u00a9carlate",
+   "placed": 2,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 67,
+   "type": 97,
+   "name": "I67_Embl\u00c3\u00a8me vert sombre",
+   "placed": 2,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 68,
+   "type": 98,
+   "name": "I68_Embl\u00c3\u00a8me d\u00e2\u20ac\u2122argent",
+   "placed": 3,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 70,
+   "type": 100,
+   "name": "I70_5 Gildas",
+   "placed": 8,
+   "nativeC": 8,
+   "target": "0x80034000",
+   "group": "money 5",
+   "octet4": 1,
+   "octet5": 53
+  },
+  {
+   "item": 71,
+   "type": 101,
+   "name": "I71_10 Gildas",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x80034010",
+   "group": "money 10",
+   "octet4": 1,
+   "octet5": 53
+  },
+  {
+   "item": 74,
+   "type": 104,
+   "name": "I74_Bouquet de fleurs",
+   "placed": 17,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 76,
+   "type": 106,
+   "name": "I76_Testament d\u00e2\u20ac\u2122Anzes",
+   "placed": 1,
+   "nativeC": 0,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 78,
+   "type": 108,
+   "name": "I78_Pierre de Zolist",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x800340cc",
+   "group": "simple add (0x8004E530)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 81,
+   "type": 111,
+   "name": "I81_Petit cristal",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x80034054",
+   "group": "Petit cristal 0x51 (body 0x800335AC)",
+   "octet4": 1,
+   "octet5": 54
+  },
+  {
+   "item": 82,
+   "type": 112,
+   "name": "I82_Grand cristal",
+   "placed": 1,
+   "nativeC": 1,
+   "target": "0x80034068",
+   "group": "Grand cristal 0x52 (body 0x800336F0)",
+   "octet4": 1,
+   "octet5": 54
+  },
+  {
+   "item": 83,
+   "type": 113,
+   "name": "I83_R\u00c3\u00a9cipient de vie",
+   "placed": 16,
+   "nativeC": 2,
+   "target": "0x8003407c",
+   "group": "vase de vie 0x53 (body 0x800333AC)",
+   "octet4": 0,
+   "octet5": 0
+  },
+  {
+   "item": 85,
+   "type": 115,
+   "name": "I85_C\u00c5\u201cur moyen",
+   "placed": 10,
+   "nativeC": 10,
+   "target": "0x800340a4",
+   "group": "heart medium 0x55 (0x80032EEC)",
+   "octet4": 1,
+   "octet5": 52
+  }
+ ],
+ "lootItems": [
+  {
+   "item": 36,
+   "target": "0x80033f48",
+   "group": "herb 0x24 (inventory first, body 0x80032E50)"
+  },
+  {
+   "item": 69,
+   "target": "0x80033ff0",
+   "group": "money 1"
+  },
+  {
+   "item": 70,
+   "target": "0x80034000",
+   "group": "money 5"
+  },
+  {
+   "item": 71,
+   "target": "0x80034010",
+   "group": "money 10"
+  },
+  {
+   "item": 72,
+   "target": "0x80034020",
+   "group": "money 30"
+  },
+  {
+   "item": 81,
+   "target": "0x80034054",
+   "group": "Petit cristal 0x51 (body 0x800335AC)"
+  },
+  {
+   "item": 84,
+   "target": "0x80034090",
+   "group": "heart small 0x54 (0x80032E2C)"
+  },
+  {
+   "item": 85,
+   "target": "0x800340a4",
+   "group": "heart medium 0x55 (0x80032EEC)"
+  },
+  {
+   "item": 86,
+   "target": "0x800340b8",
+   "group": "heart large 0x56 (0x80032F84)"
+  }
+ ],
+ "groups": {
+  "simple add (0x8004E530)": 42,
+  "herb 0x24 (inventory first, body 0x80032E50)": 1,
+  "Potion L 0x25 (inventory first, body 0x80033274)": 1,
+  "Extrait magique 0x26 (inventory first, body 0x800335AC)": 1,
+  "Breuvage 0x27 (inventory first, body 0x80033A2C)": 1,
+  "Potion S 0x29 (inventory first, body 0x800330FC)": 1,
+  "money 5": 1,
+  "money 10": 1,
+  "Petit cristal 0x51 (body 0x800335AC)": 1,
+  "Grand cristal 0x52 (body 0x800336F0)": 1,
+  "vase de vie 0x53 (body 0x800333AC)": 1,
+  "heart medium 0x55 (0x80032EEC)": 1
+ }
+}

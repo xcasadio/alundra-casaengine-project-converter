@@ -1,0 +1,695 @@
+{
+ "source": "E20.e0c T0 (h): ETC_RES.R strings (raw, data-extracted/data/ETC_RES.R.json via EtcIndexTable.csv) against the compiled Etc.dialogue (alundra-project/Dialogues/Etc.dialogue)",
+ "etc45Raw": " gagn\u00e9!",
+ "etc45Dll": "gagn\u00e9!",
+ "expectedBuffer": "name(item) + ETC 0x45 (raw)",
+ "note": "ETC 0x45 is \" gagn\u00e9!\" in the resource: a LEADING space. The Yarn compiler drops it (Etc_0069 is \"gagn\u00e9!\"), so the DLL must put the space back between the name and the string.",
+ "items": [
+  {
+   "item": 0,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 1,
+   "raw": "Poignard",
+   "dll": "Poignard",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 2,
+   "raw": "Ep\u00e9e",
+   "dll": "Ep\u00e9e",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 3,
+   "raw": "Ep\u00e9e infernale",
+   "dll": "Ep\u00e9e infernale",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 4,
+   "raw": "Ep\u00e9e sacr\u00e9e",
+   "dll": "Ep\u00e9e sacr\u00e9e",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 5,
+   "raw": "Arc de chasse",
+   "dll": "Arc de chasse",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 6,
+   "raw": "Arc en saule ",
+   "dll": "Arc en saule",
+   "trailingSpaceInRaw": true,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 7,
+   "raw": "B\u00e2ton magique",
+   "dll": "B\u00e2ton magique",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 8,
+   "raw": "Ep\u00e9e l\u00e9gendaire",
+   "dll": "Ep\u00e9e l\u00e9gendaire",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 9,
+   "raw": "Fl\u00e9au de fer",
+   "dll": "Fl\u00e9au de fer",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 10,
+   "raw": "Fl\u00e9au d'acier",
+   "dll": "Fl\u00e9au d'acier",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 11,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 12,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 13,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 14,
+   "raw": "B\u00e2ton de glace",
+   "dll": "B\u00e2ton de glace",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 15,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 16,
+   "raw": "B\u00e2ton de feu",
+   "dll": "B\u00e2ton de feu",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 17,
+   "raw": "Armure en tissu",
+   "dll": "Armure en tissu",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 18,
+   "raw": "Armure en cuir",
+   "dll": "Armure en cuir",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 19,
+   "raw": "Armure ancienne",
+   "dll": "Armure ancienne",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 20,
+   "raw": "Armure d'argent",
+   "dll": "Armure d'argent",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 21,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 22,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 23,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 24,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 25,
+   "raw": "Bottes courtes",
+   "dll": "Bottes courtes",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 26,
+   "raw": "Bottes longues",
+   "dll": "Bottes longues",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 27,
+   "raw": "Bottes triton",
+   "dll": "Bottes triton",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 28,
+   "raw": "Bottes magiques",
+   "dll": "Bottes magiques",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 29,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 30,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 31,
+   "raw": "Haricot",
+   "dll": "Haricot",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 32,
+   "raw": "Cape de sable",
+   "dll": "Cape de sable",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 33,
+   "raw": "Armure bris\u00e9e",
+   "dll": "Armure bris\u00e9e",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 34,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 35,
+   "raw": "Bombe",
+   "dll": "Bombe",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 36,
+   "raw": "Herbes",
+   "dll": "Herbes",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 37,
+   "raw": "Elixir de force",
+   "dll": "Elixir de force",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 38,
+   "raw": "Elixir de magie",
+   "dll": "Elixir de magie",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 39,
+   "raw": "Essence magique",
+   "dll": "Essence magique",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 40,
+   "raw": "Cape d'eau",
+   "dll": "Cape d'eau",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 41,
+   "raw": "Fortifiant",
+   "dll": "Fortifiant",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 42,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 43,
+   "raw": "Rouleau terre",
+   "dll": "Rouleau terre",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 44,
+   "raw": "Livre de terre",
+   "dll": "Livre de terre",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 45,
+   "raw": "Rouleau d'eau",
+   "dll": "Rouleau d'eau",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 46,
+   "raw": "Livre d'eau",
+   "dll": "Livre d'eau",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 47,
+   "raw": "Rouleau de feu",
+   "dll": "Rouleau de feu",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 48,
+   "raw": "Livre de feu",
+   "dll": "Livre de feu",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 49,
+   "raw": "Rouleau de vent",
+   "dll": "Rouleau de vent",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 50,
+   "raw": "Livre de vent",
+   "dll": "Livre de vent",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 51,
+   "raw": "Anneau d'Olga",
+   "dll": "Anneau d'Olga",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 52,
+   "raw": "Anneau d'Oak",
+   "dll": "Anneau d'Oak",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 53,
+   "raw": "Super bracelet",
+   "dll": "Super bracelet",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 54,
+   "raw": "Charme de Nava",
+   "dll": "Charme de Nava",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 55,
+   "raw": "Super anneau",
+   "dll": "Super anneau",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 56,
+   "raw": "Tonique",
+   "dll": "Tonique",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 57,
+   "raw": "Passe secret ",
+   "dll": "Passe secret",
+   "trailingSpaceInRaw": true,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 58,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 59,
+   "raw": "Gant magique",
+   "dll": "Gant magique",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 60,
+   "raw": "Clef \u00e9l\u00e9vateur",
+   "dll": "Clef \u00e9l\u00e9vateur",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 61,
+   "raw": "Clef",
+   "dll": "Clef",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 62,
+   "raw": "Armoirie Rubis",
+   "dll": "Armoirie Rubis",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 63,
+   "raw": "Armoirie Saphir",
+   "dll": "Armoirie Saphir",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 64,
+   "raw": "Armoirie Topaze",
+   "dll": "Armoirie Topaze",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 65,
+   "raw": "Armoirie Agathe",
+   "dll": "Armoirie Agathe",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 66,
+   "raw": "Armoirie Grenat",
+   "dll": "Armoirie Grenat",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 67,
+   "raw": "Armoi. Emeraude",
+   "dll": "Armoi. Emeraude",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 68,
+   "raw": "Armoi. Diamant",
+   "dll": "Armoi. Diamant",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 69,
+   "raw": "1 florin",
+   "dll": "1 florin",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 70,
+   "raw": "5 florins",
+   "dll": "5 florins",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 71,
+   "raw": "10 florins",
+   "dll": "10 florins",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 72,
+   "raw": "30 florins",
+   "dll": "30 florins",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 73,
+   "raw": "Clef Vanne",
+   "dll": "Clef Vanne",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 74,
+   "raw": "Bouquet",
+   "dll": "Bouquet",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 75,
+   "raw": "Petite clef",
+   "dll": "Petite clef",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 76,
+   "raw": "Lettre de Jess",
+   "dll": "Lettre de Jess",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 77,
+   "raw": "Joyau",
+   "dll": "Joyau",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 78,
+   "raw": "Pierre Zolist",
+   "dll": "Pierre Zolist",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 79,
+   "raw": "Faucon dor\u00e9",
+   "dll": "Faucon dor\u00e9",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 80,
+   "raw": "Graine magique",
+   "dll": "Graine magique",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 81,
+   "raw": "Petit cristal",
+   "dll": "Petit cristal",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 82,
+   "raw": "Grand cristal",
+   "dll": "Grand cristal",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 83,
+   "raw": "Vaisseau de vie",
+   "dll": "Vaisseau de vie",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 84,
+   "raw": "Ros\u00e9e de vie",
+   "dll": "Ros\u00e9e de vie",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 85,
+   "raw": "Goutte de vie",
+   "dll": "Goutte de vie",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 86,
+   "raw": "Eau de vie",
+   "dll": "Eau de vie",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 87,
+   "raw": "Livre des Runes",
+   "dll": "Livre des Runes",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 88,
+   "raw": "Livre d'Elna",
+   "dll": "Livre d'Elna",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 89,
+   "raw": "Clef bizarre",
+   "dll": "Clef bizarre",
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 90,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 91,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 92,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 93,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 94,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 95,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 96,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  },
+  {
+   "item": 97,
+   "raw": null,
+   "dll": null,
+   "trailingSpaceInRaw": false,
+   "leadingSpaceInRaw": false
+  }
+ ]
+}

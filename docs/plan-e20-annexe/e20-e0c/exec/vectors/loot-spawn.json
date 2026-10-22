@@ -1,0 +1,10734 @@
+{
+ "source": "E20.e0c T0 (f/l1): SpawnRandomLoot 0x80032C7C and SpawnContents 0x80032B90 of ALUN_CD.EXE (France) on the real code, harness docs/plan-e20-annexe/e20-e0c/work/lh.py; SpawnWarpEntity 0x80039F58 and the sound 0x800490FC stubbed (journal). Seeds are the generator word BEFORE the call (SpawnContents does not draw; its seed is 0x13572468).",
+ "cases": [
+  {
+   "kind": "random",
+   "id": "R0",
+   "code": 128,
+   "seed": 0,
+   "mpMax": 4,
+   "x": 1215283931,
+   "y": 3667399567,
+   "z": 741091593,
+   "interfaceZ": 741091592,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3765043943,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R1",
+   "code": 128,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 4047763679,
+   "y": 3537378079,
+   "z": 1037582237,
+   "interfaceZ": 1037582236,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3087458431,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R2",
+   "code": 128,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 1007426713,
+   "y": 12566049,
+   "z": 3065157091,
+   "interfaceZ": 3065157090,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 904094096,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R3",
+   "code": 128,
+   "seed": 4294967295,
+   "mpMax": 4,
+   "x": 565518533,
+   "y": 253793912,
+   "z": 854062247,
+   "interfaceZ": 854062246,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 1665038602,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R4",
+   "code": 128,
+   "seed": 2919500803,
+   "mpMax": 0,
+   "x": 1325144359,
+   "y": 2745048858,
+   "z": 3015289105,
+   "interfaceZ": 3015289104,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3218537598,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R5",
+   "code": 128,
+   "seed": 1514454866,
+   "mpMax": 4,
+   "x": 2675815755,
+   "y": 457839100,
+   "z": 3179038091,
+   "interfaceZ": 3179038090,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3303804593,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R6",
+   "code": 130,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 2182269912,
+   "y": 497441993,
+   "z": 929884645,
+   "interfaceZ": 929884644,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3765043943,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R7",
+   "code": 130,
+   "seed": 305419896,
+   "mpMax": 4,
+   "x": 1936974044,
+   "y": 21878956,
+   "z": 2529372961,
+   "interfaceZ": 2529372960,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3087458431,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R8",
+   "code": 130,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 1578654487,
+   "y": 605297423,
+   "z": 2511835682,
+   "interfaceZ": 2511835681,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 904094096,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 1578654487,
+     "y": 605297423,
+     "z": 2511835682,
+     "direction": 0,
+     "interfaceZ": 2511835681
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R9",
+   "code": 130,
+   "seed": 4294967295,
+   "mpMax": 1,
+   "x": 2039992529,
+   "y": 245032561,
+   "z": 264650031,
+   "interfaceZ": 264650030,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 1665038602,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R10",
+   "code": 130,
+   "seed": 830796961,
+   "mpMax": 0,
+   "x": 631106059,
+   "y": 1964613366,
+   "z": 280280730,
+   "interfaceZ": 280280729,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 2066111204,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R11",
+   "code": 130,
+   "seed": 3249026600,
+   "mpMax": 0,
+   "x": 2417645895,
+   "y": 962198896,
+   "z": 2203473406,
+   "interfaceZ": 2203473405,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3025415023,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R12",
+   "code": 247,
+   "seed": 0,
+   "mpMax": 1,
+   "x": 407849435,
+   "y": 3617422746,
+   "z": 763159364,
+   "interfaceZ": 763159363,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3765043943,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 407849435,
+     "y": 3617422746,
+     "z": 763159364,
+     "direction": 0,
+     "interfaceZ": 763159363
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R13",
+   "code": 247,
+   "seed": 305419896,
+   "mpMax": 1,
+   "x": 2642606446,
+   "y": 3263433444,
+   "z": 1788453866,
+   "interfaceZ": 1788453865,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3087458431,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 2642606446,
+     "y": 3263433444,
+     "z": 1788453866,
+     "direction": 0,
+     "interfaceZ": 1788453865
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R14",
+   "code": 247,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 1830728780,
+   "y": 1962215711,
+   "z": 3053240359,
+   "interfaceZ": 3053240358,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 904094096,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R15",
+   "code": 247,
+   "seed": 4294967295,
+   "mpMax": 0,
+   "x": 542051464,
+   "y": 3666358277,
+   "z": 1657777709,
+   "interfaceZ": 1657777708,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 1665038602,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R16",
+   "code": 247,
+   "seed": 3951849992,
+   "mpMax": 4,
+   "x": 893316296,
+   "y": 3241017158,
+   "z": 248508207,
+   "interfaceZ": 248508206,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 1896266703,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R17",
+   "code": 247,
+   "seed": 2206100379,
+   "mpMax": 0,
+   "x": 1592867095,
+   "y": 411894656,
+   "z": 1277881751,
+   "interfaceZ": 1277881750,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3458980534,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 1592867095,
+     "y": 411894656,
+     "z": 1277881751,
+     "direction": 0,
+     "interfaceZ": 1277881750
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R18",
+   "code": 248,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 432750529,
+   "y": 322747792,
+   "z": 1673617900,
+   "interfaceZ": 1673617899,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3765043943,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R19",
+   "code": 248,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 2444589718,
+   "y": 4268729737,
+   "z": 2089532753,
+   "interfaceZ": 2089532752,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3087458431,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 2444589718,
+     "y": 4268729737,
+     "z": 2089532753,
+     "direction": 0,
+     "interfaceZ": 2089532752
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R20",
+   "code": 248,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 2687868474,
+   "y": 319650680,
+   "z": 3175086236,
+   "interfaceZ": 3175086235,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 904094096,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 2687868474,
+     "y": 319650680,
+     "z": 3175086236,
+     "direction": 0,
+     "interfaceZ": 3175086235
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R21",
+   "code": 248,
+   "seed": 4294967295,
+   "mpMax": 4,
+   "x": 3676300522,
+   "y": 3259663081,
+   "z": 256360293,
+   "interfaceZ": 256360292,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1665038602,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 3676300522,
+     "y": 3259663081,
+     "z": 256360293,
+     "direction": 0,
+     "interfaceZ": 256360292
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R22",
+   "code": 248,
+   "seed": 2167614652,
+   "mpMax": 1,
+   "x": 177293321,
+   "y": 3312556549,
+   "z": 3825151876,
+   "interfaceZ": 3825151875,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 471612723,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 177293321,
+     "y": 3312556549,
+     "z": 3825151876,
+     "direction": 0,
+     "interfaceZ": 3825151875
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R23",
+   "code": 248,
+   "seed": 823024300,
+   "mpMax": 4,
+   "x": 4071299463,
+   "y": 4256444873,
+   "z": 1626446338,
+   "interfaceZ": 1626446337,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 523785571,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 4071299463,
+     "y": 4256444873,
+     "z": 1626446338,
+     "direction": 0,
+     "interfaceZ": 1626446337
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R24",
+   "code": 250,
+   "seed": 0,
+   "mpMax": 1,
+   "x": 155649522,
+   "y": 1021834383,
+   "z": 3800904870,
+   "interfaceZ": 3800904869,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2672370514,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 155649522,
+     "y": 1021834383,
+     "z": 3800904870,
+     "direction": 0,
+     "interfaceZ": 3800904869
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R25",
+   "code": 250,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 3240424642,
+   "y": 3045806864,
+   "z": 693948083,
+   "interfaceZ": 693948082,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 617793418,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 3240424642,
+     "y": 3045806864,
+     "z": 693948083,
+     "direction": 0,
+     "interfaceZ": 693948082
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R26",
+   "code": 250,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 3684701338,
+   "y": 2218569570,
+   "z": 2157702218,
+   "interfaceZ": 2157702217,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3357232183,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 101,
+     "x": 3684701338,
+     "y": 2218569570,
+     "z": 2157702218,
+     "direction": 0,
+     "interfaceZ": 2157702217
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R27",
+   "code": 250,
+   "seed": 4294967295,
+   "mpMax": 4,
+   "x": 2220703948,
+   "y": 2857908080,
+   "z": 1587918163,
+   "interfaceZ": 1587918162,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 852286089,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 2220703948,
+     "y": 2857908080,
+     "z": 1587918163,
+     "direction": 0,
+     "interfaceZ": 1587918162
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R28",
+   "code": 250,
+   "seed": 22911122,
+   "mpMax": 4,
+   "x": 181868842,
+   "y": 3681679463,
+   "z": 1323490684,
+   "interfaceZ": 1323490683,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2204564980,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 181868842,
+     "y": 3681679463,
+     "z": 1323490684,
+     "direction": 0,
+     "interfaceZ": 1323490683
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R29",
+   "code": 250,
+   "seed": 3128671302,
+   "mpMax": 1,
+   "x": 62861745,
+   "y": 3626799700,
+   "z": 4136954584,
+   "interfaceZ": 4136954583,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2437654088,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 62861745,
+     "y": 3626799700,
+     "z": 4136954584,
+     "direction": 0,
+     "interfaceZ": 4136954583
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R30",
+   "code": 251,
+   "seed": 0,
+   "mpMax": 1,
+   "x": 2497934075,
+   "y": 2534775828,
+   "z": 216893031,
+   "interfaceZ": 216893030,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2672370514,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 2497934075,
+     "y": 2534775828,
+     "z": 216893031,
+     "direction": 0,
+     "interfaceZ": 216893030
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R31",
+   "code": 251,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 3135808031,
+   "y": 2168452329,
+   "z": 3327600750,
+   "interfaceZ": 3327600749,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 617793418,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 3135808031,
+     "y": 2168452329,
+     "z": 3327600750,
+     "direction": 0,
+     "interfaceZ": 3327600749
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R32",
+   "code": 251,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 1658853603,
+   "y": 2207305080,
+   "z": 1206170404,
+   "interfaceZ": 1206170403,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 904094096,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R33",
+   "code": 251,
+   "seed": 4294967295,
+   "mpMax": 1,
+   "x": 85909181,
+   "y": 1976200300,
+   "z": 3132235769,
+   "interfaceZ": 3132235768,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 1665038602,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R34",
+   "code": 251,
+   "seed": 515533437,
+   "mpMax": 1,
+   "x": 2861449210,
+   "y": 863662242,
+   "z": 2954599453,
+   "interfaceZ": 2954599452,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 374592976,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R35",
+   "code": 251,
+   "seed": 134206729,
+   "mpMax": 1,
+   "x": 2751778270,
+   "y": 3793348768,
+   "z": 2587867579,
+   "interfaceZ": 2587867578,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3614306147,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 2751778270,
+     "y": 3793348768,
+     "z": 2587867579,
+     "direction": 0,
+     "interfaceZ": 2587867578
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R36",
+   "code": 252,
+   "seed": 0,
+   "mpMax": 4,
+   "x": 2879950252,
+   "y": 2197204139,
+   "z": 3114196613,
+   "interfaceZ": 3114196612,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2672370514,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 2879950252,
+     "y": 2197204139,
+     "z": 3114196613,
+     "direction": 0,
+     "interfaceZ": 3114196612
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R37",
+   "code": 252,
+   "seed": 305419896,
+   "mpMax": 4,
+   "x": 3975619547,
+   "y": 2082710205,
+   "z": 1202717680,
+   "interfaceZ": 1202717679,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 617793418,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 3975619547,
+     "y": 2082710205,
+     "z": 1202717680,
+     "direction": 0,
+     "interfaceZ": 1202717679
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R38",
+   "code": 252,
+   "seed": 2954348861,
+   "mpMax": 4,
+   "x": 2851999944,
+   "y": 3669334946,
+   "z": 1106896580,
+   "interfaceZ": 1106896579,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 904094096,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R39",
+   "code": 252,
+   "seed": 4294967295,
+   "mpMax": 1,
+   "x": 2210050613,
+   "y": 4071145196,
+   "z": 1705699945,
+   "interfaceZ": 1705699944,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 1665038602,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R40",
+   "code": 252,
+   "seed": 2397879867,
+   "mpMax": 4,
+   "x": 3511942278,
+   "y": 2445761572,
+   "z": 1525842563,
+   "interfaceZ": 1525842562,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1967069093,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 3511942278,
+     "y": 2445761572,
+     "z": 1525842563,
+     "direction": 0,
+     "interfaceZ": 1525842562
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R41",
+   "code": 252,
+   "seed": 3827727843,
+   "mpMax": 4,
+   "x": 3155533932,
+   "y": 3436871810,
+   "z": 3594952808,
+   "interfaceZ": 3594952807,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 1797532382,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R42",
+   "code": 255,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 2152507387,
+   "y": 651631168,
+   "z": 2000736375,
+   "interfaceZ": 2000736374,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2672370514,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 2152507387,
+     "y": 651631168,
+     "z": 2000736375,
+     "direction": 0,
+     "interfaceZ": 2000736374
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R43",
+   "code": 255,
+   "seed": 305419896,
+   "mpMax": 4,
+   "x": 1253743273,
+   "y": 1938771416,
+   "z": 653453135,
+   "interfaceZ": 653453134,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3087458431,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R44",
+   "code": 255,
+   "seed": 2954348861,
+   "mpMax": 4,
+   "x": 4283899972,
+   "y": 35698662,
+   "z": 164272373,
+   "interfaceZ": 164272372,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 904094096,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R45",
+   "code": 255,
+   "seed": 4294967295,
+   "mpMax": 4,
+   "x": 3554249984,
+   "y": 4099163752,
+   "z": 4009327272,
+   "interfaceZ": 4009327271,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 1665038602,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R46",
+   "code": 255,
+   "seed": 1536059350,
+   "mpMax": 1,
+   "x": 2972820417,
+   "y": 2503905750,
+   "z": 1146654263,
+   "interfaceZ": 1146654262,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 249375909,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R47",
+   "code": 255,
+   "seed": 765050909,
+   "mpMax": 4,
+   "x": 4251698666,
+   "y": 2312315002,
+   "z": 3257126547,
+   "interfaceZ": 3257126546,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4111802903,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 4251698666,
+     "y": 2312315002,
+     "z": 3257126547,
+     "direction": 0,
+     "interfaceZ": 3257126546
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R48",
+   "code": 129,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 3583740229,
+   "y": 3021648962,
+   "z": 529366053,
+   "interfaceZ": 529366052,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3765043943,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R49",
+   "code": 129,
+   "seed": 305419896,
+   "mpMax": 4,
+   "x": 3639244051,
+   "y": 4071254991,
+   "z": 2094322953,
+   "interfaceZ": 2094322952,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3087458431,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 3639244051,
+     "y": 4071254991,
+     "z": 2094322953,
+     "direction": 0,
+     "interfaceZ": 2094322952
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R50",
+   "code": 129,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 2949306815,
+   "y": 3980416361,
+   "z": 3688287536,
+   "interfaceZ": 3688287535,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 904094096,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 2949306815,
+     "y": 3980416361,
+     "z": 3688287536,
+     "direction": 0,
+     "interfaceZ": 3688287535
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R51",
+   "code": 129,
+   "seed": 4294967295,
+   "mpMax": 4,
+   "x": 634518293,
+   "y": 654053946,
+   "z": 2066990469,
+   "interfaceZ": 2066990468,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1665038602,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 109,
+     "x": 634518293,
+     "y": 654053946,
+     "z": 2066990469,
+     "direction": 0,
+     "interfaceZ": 2066990468
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R52",
+   "code": 129,
+   "seed": 3664962774,
+   "mpMax": 0,
+   "x": 4257572452,
+   "y": 2433981483,
+   "z": 3144315465,
+   "interfaceZ": 3144315464,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3758232997,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R53",
+   "code": 129,
+   "seed": 2195712577,
+   "mpMax": 0,
+   "x": 2610356301,
+   "y": 1853812601,
+   "z": 2157230665,
+   "interfaceZ": 2157230664,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3321824772,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 2610356301,
+     "y": 1853812601,
+     "z": 2157230665,
+     "direction": 0,
+     "interfaceZ": 2157230664
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R54",
+   "code": 131,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 793755078,
+   "y": 1736708426,
+   "z": 1446526125,
+   "interfaceZ": 1446526124,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3765043943,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R55",
+   "code": 131,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 1344902838,
+   "y": 3720215335,
+   "z": 3765877891,
+   "interfaceZ": 3765877890,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3087458431,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R56",
+   "code": 131,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 2608393908,
+   "y": 2948400696,
+   "z": 839578181,
+   "interfaceZ": 839578180,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 904094096,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 2608393908,
+     "y": 2948400696,
+     "z": 839578181,
+     "direction": 0,
+     "interfaceZ": 839578180
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R57",
+   "code": 131,
+   "seed": 4294967295,
+   "mpMax": 0,
+   "x": 3146010297,
+   "y": 1158949309,
+   "z": 3087979025,
+   "interfaceZ": 3087979024,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1665038602,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 3146010297,
+     "y": 1158949309,
+     "z": 3087979025,
+     "direction": 0,
+     "interfaceZ": 3087979024
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R58",
+   "code": 131,
+   "seed": 2479153664,
+   "mpMax": 1,
+   "x": 1629578890,
+   "y": 2592480349,
+   "z": 2282297705,
+   "interfaceZ": 2282297704,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3293781223,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R59",
+   "code": 131,
+   "seed": 1595752877,
+   "mpMax": 1,
+   "x": 269158514,
+   "y": 2683572926,
+   "z": 2608766451,
+   "interfaceZ": 2608766450,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 635456064,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 269158514,
+     "y": 2683572926,
+     "z": 2608766451,
+     "direction": 0,
+     "interfaceZ": 2608766450
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R60",
+   "code": 246,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 2106618615,
+   "y": 3244410494,
+   "z": 867064637,
+   "interfaceZ": 867064636,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3765043943,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 101,
+     "x": 2106618615,
+     "y": 3244410494,
+     "z": 867064637,
+     "direction": 0,
+     "interfaceZ": 867064636
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R61",
+   "code": 246,
+   "seed": 305419896,
+   "mpMax": 1,
+   "x": 4228917587,
+   "y": 275837216,
+   "z": 422692876,
+   "interfaceZ": 422692875,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3087458431,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 4228917587,
+     "y": 275837216,
+     "z": 422692876,
+     "direction": 0,
+     "interfaceZ": 422692875
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R62",
+   "code": 246,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 2031552303,
+   "y": 1019606806,
+   "z": 3990521922,
+   "interfaceZ": 3990521921,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 904094096,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 2031552303,
+     "y": 1019606806,
+     "z": 3990521922,
+     "direction": 0,
+     "interfaceZ": 3990521921
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R63",
+   "code": 246,
+   "seed": 4294967295,
+   "mpMax": 0,
+   "x": 1729186184,
+   "y": 3898611326,
+   "z": 1821224049,
+   "interfaceZ": 1821224048,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1665038602,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 1729186184,
+     "y": 3898611326,
+     "z": 1821224049,
+     "direction": 0,
+     "interfaceZ": 1821224048
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R64",
+   "code": 246,
+   "seed": 92710131,
+   "mpMax": 1,
+   "x": 804654563,
+   "y": 3843099093,
+   "z": 3181198943,
+   "interfaceZ": 3181198942,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 264074158,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 804654563,
+     "y": 3843099093,
+     "z": 3181198943,
+     "direction": 0,
+     "interfaceZ": 3181198942
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R65",
+   "code": 246,
+   "seed": 657838768,
+   "mpMax": 1,
+   "x": 1426764792,
+   "y": 2606011496,
+   "z": 4254225635,
+   "interfaceZ": 4254225634,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3677426903,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 101,
+     "x": 1426764792,
+     "y": 2606011496,
+     "z": 4254225635,
+     "direction": 0,
+     "interfaceZ": 4254225634
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R66",
+   "code": 249,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 216413603,
+   "y": 414705396,
+   "z": 2807408567,
+   "interfaceZ": 2807408566,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3765043943,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 216413603,
+     "y": 414705396,
+     "z": 2807408567,
+     "direction": 0,
+     "interfaceZ": 2807408566
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R67",
+   "code": 249,
+   "seed": 305419896,
+   "mpMax": 4,
+   "x": 1948841787,
+   "y": 2219392015,
+   "z": 957678739,
+   "interfaceZ": 957678738,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3087458431,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 1948841787,
+     "y": 2219392015,
+     "z": 957678739,
+     "direction": 0,
+     "interfaceZ": 957678738
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R68",
+   "code": 249,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 541444760,
+   "y": 250402821,
+   "z": 1226082682,
+   "interfaceZ": 1226082681,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 904094096,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 541444760,
+     "y": 250402821,
+     "z": 1226082682,
+     "direction": 0,
+     "interfaceZ": 1226082681
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R69",
+   "code": 249,
+   "seed": 4294967295,
+   "mpMax": 0,
+   "x": 3190100277,
+   "y": 2055034393,
+   "z": 2052519910,
+   "interfaceZ": 2052519909,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1665038602,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 3190100277,
+     "y": 2055034393,
+     "z": 2052519910,
+     "direction": 0,
+     "interfaceZ": 2052519909
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R70",
+   "code": 249,
+   "seed": 1312695437,
+   "mpMax": 1,
+   "x": 1570983618,
+   "y": 1695890286,
+   "z": 1392534232,
+   "interfaceZ": 1392534231,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2857239968,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 1570983618,
+     "y": 1695890286,
+     "z": 1392534232,
+     "direction": 0,
+     "interfaceZ": 1392534231
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R71",
+   "code": 249,
+   "seed": 3485485627,
+   "mpMax": 0,
+   "x": 2561979421,
+   "y": 960947654,
+   "z": 2344596253,
+   "interfaceZ": 2344596252,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1745660630,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 2561979421,
+     "y": 960947654,
+     "z": 2344596253,
+     "direction": 0,
+     "interfaceZ": 2344596252
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R72",
+   "code": 253,
+   "seed": 0,
+   "mpMax": 4,
+   "x": 953821425,
+   "y": 1673341325,
+   "z": 2194237231,
+   "interfaceZ": 2194237230,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3765043943,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 101,
+     "x": 953821425,
+     "y": 1673341325,
+     "z": 2194237231,
+     "direction": 0,
+     "interfaceZ": 2194237230
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R73",
+   "code": 253,
+   "seed": 305419896,
+   "mpMax": 4,
+   "x": 1974874697,
+   "y": 3292909032,
+   "z": 300223587,
+   "interfaceZ": 300223586,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3087458431,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 1974874697,
+     "y": 3292909032,
+     "z": 300223587,
+     "direction": 0,
+     "interfaceZ": 300223586
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R74",
+   "code": 253,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 2178286025,
+   "y": 3159298850,
+   "z": 2453815253,
+   "interfaceZ": 2453815252,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 904094096,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 2178286025,
+     "y": 3159298850,
+     "z": 2453815253,
+     "direction": 0,
+     "interfaceZ": 2453815252
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R75",
+   "code": 253,
+   "seed": 4294967295,
+   "mpMax": 4,
+   "x": 3824655285,
+   "y": 375781187,
+   "z": 4026030198,
+   "interfaceZ": 4026030197,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1665038602,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 3824655285,
+     "y": 375781187,
+     "z": 4026030198,
+     "direction": 0,
+     "interfaceZ": 4026030197
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R76",
+   "code": 253,
+   "seed": 598691921,
+   "mpMax": 0,
+   "x": 3603168312,
+   "y": 391614322,
+   "z": 326699212,
+   "interfaceZ": 326699211,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2337845716,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 3603168312,
+     "y": 391614322,
+     "z": 326699212,
+     "direction": 0,
+     "interfaceZ": 326699211
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R77",
+   "code": 253,
+   "seed": 2353236599,
+   "mpMax": 4,
+   "x": 2467124721,
+   "y": 3941308726,
+   "z": 1983705777,
+   "interfaceZ": 1983705776,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2026846882,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 2467124721,
+     "y": 3941308726,
+     "z": 1983705777,
+     "direction": 0,
+     "interfaceZ": 1983705776
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R78",
+   "code": 254,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 2389671754,
+   "y": 4116544835,
+   "z": 2835449205,
+   "interfaceZ": 2835449204,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3765043943,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 2389671754,
+     "y": 4116544835,
+     "z": 2835449205,
+     "direction": 0,
+     "interfaceZ": 2835449204
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R79",
+   "code": 254,
+   "seed": 305419896,
+   "mpMax": 4,
+   "x": 2944128275,
+   "y": 1340843128,
+   "z": 696653901,
+   "interfaceZ": 696653900,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3087458431,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 2944128275,
+     "y": 1340843128,
+     "z": 696653901,
+     "direction": 0,
+     "interfaceZ": 696653900
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R80",
+   "code": 254,
+   "seed": 2954348861,
+   "mpMax": 4,
+   "x": 1450171687,
+   "y": 1080371392,
+   "z": 3527518296,
+   "interfaceZ": 3527518295,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 904094096,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 1450171687,
+     "y": 1080371392,
+     "z": 3527518296,
+     "direction": 0,
+     "interfaceZ": 3527518295
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R81",
+   "code": 254,
+   "seed": 4294967295,
+   "mpMax": 0,
+   "x": 2230572157,
+   "y": 1174925642,
+   "z": 2772165194,
+   "interfaceZ": 2772165193,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1665038602,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 2230572157,
+     "y": 1174925642,
+     "z": 2772165194,
+     "direction": 0,
+     "interfaceZ": 2772165193
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R82",
+   "code": 254,
+   "seed": 169169906,
+   "mpMax": 4,
+   "x": 4110024991,
+   "y": 1499955505,
+   "z": 4155685997,
+   "interfaceZ": 4155685996,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1113980113,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 4110024991,
+     "y": 1499955505,
+     "z": 4155685997,
+     "direction": 0,
+     "interfaceZ": 4155685996
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R83",
+   "code": 254,
+   "seed": 3154109006,
+   "mpMax": 0,
+   "x": 235526263,
+   "y": 2368557496,
+   "z": 2330763801,
+   "interfaceZ": 2330763800,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 897982013,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 235526263,
+     "y": 2368557496,
+     "z": 2330763801,
+     "direction": 0,
+     "interfaceZ": 2330763800
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R84",
+   "code": 0,
+   "seed": 0,
+   "mpMax": 1,
+   "x": 539467428,
+   "y": 1223030916,
+   "z": 1535675303,
+   "interfaceZ": 1535675302,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 0,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R85",
+   "code": 0,
+   "seed": 305419896,
+   "mpMax": 1,
+   "x": 2821719840,
+   "y": 278539899,
+   "z": 3882781248,
+   "interfaceZ": 3882781247,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 305419896,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R86",
+   "code": 0,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 2960925089,
+   "y": 2643454132,
+   "z": 666239199,
+   "interfaceZ": 666239198,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 2954348861,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R87",
+   "code": 0,
+   "seed": 4294967295,
+   "mpMax": 1,
+   "x": 2424117700,
+   "y": 774091265,
+   "z": 1323072826,
+   "interfaceZ": 1323072825,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 4294967295,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R88",
+   "code": 0,
+   "seed": 1159193935,
+   "mpMax": 1,
+   "x": 3443194700,
+   "y": 3758093043,
+   "z": 3001165598,
+   "interfaceZ": 3001165597,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 1159193935,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R89",
+   "code": 0,
+   "seed": 1036801146,
+   "mpMax": 1,
+   "x": 1666753435,
+   "y": 862652237,
+   "z": 3445301053,
+   "interfaceZ": 3445301052,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 1036801146,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R90",
+   "code": 36,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 135132843,
+   "y": 860178262,
+   "z": 2936110352,
+   "interfaceZ": 2936110351,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 135132843,
+     "y": 860178262,
+     "z": 2936110352,
+     "direction": 0,
+     "interfaceZ": 2936110351
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R91",
+   "code": 36,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 2527192861,
+   "y": 1484411390,
+   "z": 1623046318,
+   "interfaceZ": 1623046317,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 2527192861,
+     "y": 1484411390,
+     "z": 1623046318,
+     "direction": 0,
+     "interfaceZ": 1623046317
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R92",
+   "code": 36,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 2063505307,
+   "y": 1497519032,
+   "z": 2956864879,
+   "interfaceZ": 2956864878,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 2063505307,
+     "y": 1497519032,
+     "z": 2956864879,
+     "direction": 0,
+     "interfaceZ": 2956864878
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R93",
+   "code": 36,
+   "seed": 4294967295,
+   "mpMax": 0,
+   "x": 1452607262,
+   "y": 2619066747,
+   "z": 840129833,
+   "interfaceZ": 840129832,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 1452607262,
+     "y": 2619066747,
+     "z": 840129833,
+     "direction": 0,
+     "interfaceZ": 840129832
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R94",
+   "code": 36,
+   "seed": 4154842740,
+   "mpMax": 1,
+   "x": 2073846721,
+   "y": 400701593,
+   "z": 2449387224,
+   "interfaceZ": 2449387223,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4154842740,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 2073846721,
+     "y": 400701593,
+     "z": 2449387224,
+     "direction": 0,
+     "interfaceZ": 2449387223
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R95",
+   "code": 36,
+   "seed": 2278875421,
+   "mpMax": 4,
+   "x": 3310180748,
+   "y": 4251416816,
+   "z": 1573272083,
+   "interfaceZ": 1573272082,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2278875421,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 3310180748,
+     "y": 4251416816,
+     "z": 1573272083,
+     "direction": 0,
+     "interfaceZ": 1573272082
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R96",
+   "code": 38,
+   "seed": 0,
+   "mpMax": 4,
+   "x": 3407749509,
+   "y": 2714232177,
+   "z": 2116963710,
+   "interfaceZ": 2116963709,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 68,
+     "x": 3407749509,
+     "y": 2714232177,
+     "z": 2116963710,
+     "direction": 0,
+     "interfaceZ": 2116963709
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R97",
+   "code": 38,
+   "seed": 305419896,
+   "mpMax": 1,
+   "x": 72048656,
+   "y": 1251933946,
+   "z": 3390485490,
+   "interfaceZ": 3390485489,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 68,
+     "x": 72048656,
+     "y": 1251933946,
+     "z": 3390485490,
+     "direction": 0,
+     "interfaceZ": 3390485489
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R98",
+   "code": 38,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 515877976,
+   "y": 3934663703,
+   "z": 1430495898,
+   "interfaceZ": 1430495897,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 68,
+     "x": 515877976,
+     "y": 3934663703,
+     "z": 1430495898,
+     "direction": 0,
+     "interfaceZ": 1430495897
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R99",
+   "code": 38,
+   "seed": 4294967295,
+   "mpMax": 4,
+   "x": 1207037254,
+   "y": 20172106,
+   "z": 1866052007,
+   "interfaceZ": 1866052006,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 68,
+     "x": 1207037254,
+     "y": 20172106,
+     "z": 1866052007,
+     "direction": 0,
+     "interfaceZ": 1866052006
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R100",
+   "code": 38,
+   "seed": 517701413,
+   "mpMax": 4,
+   "x": 3071719110,
+   "y": 1635717121,
+   "z": 1155662367,
+   "interfaceZ": 1155662366,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 517701413,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 68,
+     "x": 3071719110,
+     "y": 1635717121,
+     "z": 1155662367,
+     "direction": 0,
+     "interfaceZ": 1155662366
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R101",
+   "code": 38,
+   "seed": 2904235354,
+   "mpMax": 0,
+   "x": 1281797682,
+   "y": 492950621,
+   "z": 622363082,
+   "interfaceZ": 622363081,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 2904235354,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R102",
+   "code": 69,
+   "seed": 0,
+   "mpMax": 4,
+   "x": 4232351062,
+   "y": 2578878472,
+   "z": 573652246,
+   "interfaceZ": 573652245,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 4232351062,
+     "y": 2578878472,
+     "z": 573652246,
+     "direction": 0,
+     "interfaceZ": 573652245
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R103",
+   "code": 69,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 402726593,
+   "y": 3264500018,
+   "z": 261938303,
+   "interfaceZ": 261938302,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 402726593,
+     "y": 3264500018,
+     "z": 261938303,
+     "direction": 0,
+     "interfaceZ": 261938302
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R104",
+   "code": 69,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 3452730296,
+   "y": 1193824216,
+   "z": 441512121,
+   "interfaceZ": 441512120,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 3452730296,
+     "y": 1193824216,
+     "z": 441512121,
+     "direction": 0,
+     "interfaceZ": 441512120
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R105",
+   "code": 69,
+   "seed": 4294967295,
+   "mpMax": 1,
+   "x": 1267693121,
+   "y": 3209383946,
+   "z": 3883418991,
+   "interfaceZ": 3883418990,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 1267693121,
+     "y": 3209383946,
+     "z": 3883418991,
+     "direction": 0,
+     "interfaceZ": 3883418990
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R106",
+   "code": 69,
+   "seed": 2255048219,
+   "mpMax": 4,
+   "x": 2405397150,
+   "y": 2532399081,
+   "z": 751746192,
+   "interfaceZ": 751746191,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2255048219,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 2405397150,
+     "y": 2532399081,
+     "z": 751746192,
+     "direction": 0,
+     "interfaceZ": 751746191
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R107",
+   "code": 69,
+   "seed": 2339059982,
+   "mpMax": 4,
+   "x": 890207248,
+   "y": 4175352516,
+   "z": 1671019003,
+   "interfaceZ": 1671019002,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2339059982,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 890207248,
+     "y": 4175352516,
+     "z": 1671019003,
+     "direction": 0,
+     "interfaceZ": 1671019002
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R108",
+   "code": 70,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 1575795398,
+   "y": 461108856,
+   "z": 3208732353,
+   "interfaceZ": 3208732352,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 1575795398,
+     "y": 461108856,
+     "z": 3208732353,
+     "direction": 0,
+     "interfaceZ": 3208732352
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R109",
+   "code": 70,
+   "seed": 305419896,
+   "mpMax": 1,
+   "x": 174754597,
+   "y": 2409339062,
+   "z": 3055658240,
+   "interfaceZ": 3055658239,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 174754597,
+     "y": 2409339062,
+     "z": 3055658240,
+     "direction": 0,
+     "interfaceZ": 3055658239
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R110",
+   "code": 70,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 1286001963,
+   "y": 734732415,
+   "z": 1382662939,
+   "interfaceZ": 1382662938,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 1286001963,
+     "y": 734732415,
+     "z": 1382662939,
+     "direction": 0,
+     "interfaceZ": 1382662938
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R111",
+   "code": 70,
+   "seed": 4294967295,
+   "mpMax": 1,
+   "x": 1608450315,
+   "y": 2335999883,
+   "z": 230321651,
+   "interfaceZ": 230321650,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 1608450315,
+     "y": 2335999883,
+     "z": 230321651,
+     "direction": 0,
+     "interfaceZ": 230321650
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R112",
+   "code": 70,
+   "seed": 3376727227,
+   "mpMax": 1,
+   "x": 3427988711,
+   "y": 1554143057,
+   "z": 3773880242,
+   "interfaceZ": 3773880241,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3376727227,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 3427988711,
+     "y": 1554143057,
+     "z": 3773880242,
+     "direction": 0,
+     "interfaceZ": 3773880241
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R113",
+   "code": 70,
+   "seed": 3171276021,
+   "mpMax": 1,
+   "x": 215295495,
+   "y": 440723792,
+   "z": 1504465127,
+   "interfaceZ": 1504465126,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3171276021,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 215295495,
+     "y": 440723792,
+     "z": 1504465127,
+     "direction": 0,
+     "interfaceZ": 1504465126
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R114",
+   "code": 71,
+   "seed": 0,
+   "mpMax": 1,
+   "x": 2849857646,
+   "y": 1557498198,
+   "z": 1567527990,
+   "interfaceZ": 1567527989,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 101,
+     "x": 2849857646,
+     "y": 1557498198,
+     "z": 1567527990,
+     "direction": 0,
+     "interfaceZ": 1567527989
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R115",
+   "code": 71,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 2830174667,
+   "y": 1471036665,
+   "z": 3068054037,
+   "interfaceZ": 3068054036,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 101,
+     "x": 2830174667,
+     "y": 1471036665,
+     "z": 3068054037,
+     "direction": 0,
+     "interfaceZ": 3068054036
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R116",
+   "code": 71,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 158558121,
+   "y": 983341931,
+   "z": 2608258816,
+   "interfaceZ": 2608258815,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 101,
+     "x": 158558121,
+     "y": 983341931,
+     "z": 2608258816,
+     "direction": 0,
+     "interfaceZ": 2608258815
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R117",
+   "code": 71,
+   "seed": 4294967295,
+   "mpMax": 1,
+   "x": 3770451117,
+   "y": 904964368,
+   "z": 370601725,
+   "interfaceZ": 370601724,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 101,
+     "x": 3770451117,
+     "y": 904964368,
+     "z": 370601725,
+     "direction": 0,
+     "interfaceZ": 370601724
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R118",
+   "code": 71,
+   "seed": 633377362,
+   "mpMax": 1,
+   "x": 2208150073,
+   "y": 245413043,
+   "z": 943002655,
+   "interfaceZ": 943002654,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 633377362,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 101,
+     "x": 2208150073,
+     "y": 245413043,
+     "z": 943002655,
+     "direction": 0,
+     "interfaceZ": 943002654
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R119",
+   "code": 71,
+   "seed": 2985041775,
+   "mpMax": 1,
+   "x": 400890876,
+   "y": 265389086,
+   "z": 1441382661,
+   "interfaceZ": 1441382660,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2985041775,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 101,
+     "x": 400890876,
+     "y": 265389086,
+     "z": 1441382661,
+     "direction": 0,
+     "interfaceZ": 1441382660
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R120",
+   "code": 72,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 4176381501,
+   "y": 3890226556,
+   "z": 4125864660,
+   "interfaceZ": 4125864659,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 4176381501,
+     "y": 3890226556,
+     "z": 4125864660,
+     "direction": 0,
+     "interfaceZ": 4125864659
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R121",
+   "code": 72,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 3166278671,
+   "y": 32766390,
+   "z": 993407636,
+   "interfaceZ": 993407635,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 3166278671,
+     "y": 32766390,
+     "z": 993407636,
+     "direction": 0,
+     "interfaceZ": 993407635
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R122",
+   "code": 72,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 3796977129,
+   "y": 1772560614,
+   "z": 3772046551,
+   "interfaceZ": 3772046550,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 3796977129,
+     "y": 1772560614,
+     "z": 3772046551,
+     "direction": 0,
+     "interfaceZ": 3772046550
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R123",
+   "code": 72,
+   "seed": 4294967295,
+   "mpMax": 4,
+   "x": 17792203,
+   "y": 2149317374,
+   "z": 2850424380,
+   "interfaceZ": 2850424379,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 17792203,
+     "y": 2149317374,
+     "z": 2850424380,
+     "direction": 0,
+     "interfaceZ": 2850424379
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R124",
+   "code": 72,
+   "seed": 3687362654,
+   "mpMax": 0,
+   "x": 2736432051,
+   "y": 2727469264,
+   "z": 226249716,
+   "interfaceZ": 226249715,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3687362654,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 2736432051,
+     "y": 2727469264,
+     "z": 226249716,
+     "direction": 0,
+     "interfaceZ": 226249715
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R125",
+   "code": 72,
+   "seed": 3069266060,
+   "mpMax": 1,
+   "x": 3989018390,
+   "y": 1431689813,
+   "z": 1774048721,
+   "interfaceZ": 1774048720,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3069266060,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 3989018390,
+     "y": 1431689813,
+     "z": 1774048721,
+     "direction": 0,
+     "interfaceZ": 1774048720
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R126",
+   "code": 81,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 1191667202,
+   "y": 3931771569,
+   "z": 3473412587,
+   "interfaceZ": 3473412586,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 0,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R127",
+   "code": 81,
+   "seed": 305419896,
+   "mpMax": 4,
+   "x": 3930522044,
+   "y": 976340828,
+   "z": 1229195859,
+   "interfaceZ": 1229195858,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 111,
+     "x": 3930522044,
+     "y": 976340828,
+     "z": 1229195859,
+     "direction": 0,
+     "interfaceZ": 1229195858
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R128",
+   "code": 81,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 2624244413,
+   "y": 4235761931,
+   "z": 2615669069,
+   "interfaceZ": 2615669068,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 111,
+     "x": 2624244413,
+     "y": 4235761931,
+     "z": 2615669069,
+     "direction": 0,
+     "interfaceZ": 2615669068
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R129",
+   "code": 81,
+   "seed": 4294967295,
+   "mpMax": 4,
+   "x": 2210180289,
+   "y": 4242886174,
+   "z": 2837812252,
+   "interfaceZ": 2837812251,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 111,
+     "x": 2210180289,
+     "y": 4242886174,
+     "z": 2837812252,
+     "direction": 0,
+     "interfaceZ": 2837812251
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R130",
+   "code": 81,
+   "seed": 1515708468,
+   "mpMax": 1,
+   "x": 2327286738,
+   "y": 1330337868,
+   "z": 725122700,
+   "interfaceZ": 725122699,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1515708468,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 111,
+     "x": 2327286738,
+     "y": 1330337868,
+     "z": 725122700,
+     "direction": 0,
+     "interfaceZ": 725122699
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R131",
+   "code": 81,
+   "seed": 2745098205,
+   "mpMax": 1,
+   "x": 3253360600,
+   "y": 1099495557,
+   "z": 2064326222,
+   "interfaceZ": 2064326221,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2745098205,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 111,
+     "x": 3253360600,
+     "y": 1099495557,
+     "z": 2064326222,
+     "direction": 0,
+     "interfaceZ": 2064326221
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R132",
+   "code": 82,
+   "seed": 0,
+   "mpMax": 4,
+   "x": 2882677740,
+   "y": 519667045,
+   "z": 540010,
+   "interfaceZ": 540009,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 112,
+     "x": 2882677740,
+     "y": 519667045,
+     "z": 540010,
+     "direction": 0,
+     "interfaceZ": 540009
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R133",
+   "code": 82,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 294646063,
+   "y": 3931225940,
+   "z": 3123743894,
+   "interfaceZ": 3123743893,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 305419896,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R134",
+   "code": 82,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 3885695638,
+   "y": 3703678835,
+   "z": 3299732965,
+   "interfaceZ": 3299732964,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 112,
+     "x": 3885695638,
+     "y": 3703678835,
+     "z": 3299732965,
+     "direction": 0,
+     "interfaceZ": 3299732964
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R135",
+   "code": 82,
+   "seed": 4294967295,
+   "mpMax": 0,
+   "x": 514642135,
+   "y": 232215369,
+   "z": 3838356045,
+   "interfaceZ": 3838356044,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 4294967295,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R136",
+   "code": 82,
+   "seed": 177777475,
+   "mpMax": 0,
+   "x": 2023212837,
+   "y": 102840859,
+   "z": 1332948831,
+   "interfaceZ": 1332948830,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 177777475,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R137",
+   "code": 82,
+   "seed": 3708366678,
+   "mpMax": 4,
+   "x": 1236484791,
+   "y": 104529021,
+   "z": 2449125590,
+   "interfaceZ": 2449125589,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3708366678,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 112,
+     "x": 1236484791,
+     "y": 104529021,
+     "z": 2449125590,
+     "direction": 0,
+     "interfaceZ": 2449125589
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R138",
+   "code": 84,
+   "seed": 0,
+   "mpMax": 1,
+   "x": 1130116677,
+   "y": 382582139,
+   "z": 3654381138,
+   "interfaceZ": 3654381137,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 1130116677,
+     "y": 382582139,
+     "z": 3654381138,
+     "direction": 0,
+     "interfaceZ": 3654381137
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R139",
+   "code": 84,
+   "seed": 305419896,
+   "mpMax": 4,
+   "x": 3497282661,
+   "y": 2973236040,
+   "z": 3119859230,
+   "interfaceZ": 3119859229,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 3497282661,
+     "y": 2973236040,
+     "z": 3119859230,
+     "direction": 0,
+     "interfaceZ": 3119859229
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R140",
+   "code": 84,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 2528541484,
+   "y": 3348874453,
+   "z": 4130420640,
+   "interfaceZ": 4130420639,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 2528541484,
+     "y": 3348874453,
+     "z": 4130420640,
+     "direction": 0,
+     "interfaceZ": 4130420639
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R141",
+   "code": 84,
+   "seed": 4294967295,
+   "mpMax": 1,
+   "x": 614203143,
+   "y": 3332855907,
+   "z": 1945813982,
+   "interfaceZ": 1945813981,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 614203143,
+     "y": 3332855907,
+     "z": 1945813982,
+     "direction": 0,
+     "interfaceZ": 1945813981
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R142",
+   "code": 84,
+   "seed": 3029116492,
+   "mpMax": 0,
+   "x": 1616854064,
+   "y": 1368089316,
+   "z": 3098896800,
+   "interfaceZ": 3098896799,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3029116492,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 1616854064,
+     "y": 1368089316,
+     "z": 3098896800,
+     "direction": 0,
+     "interfaceZ": 3098896799
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R143",
+   "code": 84,
+   "seed": 855344338,
+   "mpMax": 4,
+   "x": 585426400,
+   "y": 495233983,
+   "z": 790352849,
+   "interfaceZ": 790352848,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 855344338,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 585426400,
+     "y": 495233983,
+     "z": 790352849,
+     "direction": 0,
+     "interfaceZ": 790352848
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R144",
+   "code": 85,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 660357028,
+   "y": 2706995984,
+   "z": 932102175,
+   "interfaceZ": 932102174,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 660357028,
+     "y": 2706995984,
+     "z": 932102175,
+     "direction": 0,
+     "interfaceZ": 932102174
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R145",
+   "code": 85,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 1696976009,
+   "y": 166163242,
+   "z": 1318853582,
+   "interfaceZ": 1318853581,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 1696976009,
+     "y": 166163242,
+     "z": 1318853582,
+     "direction": 0,
+     "interfaceZ": 1318853581
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R146",
+   "code": 85,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 2897940887,
+   "y": 681736331,
+   "z": 4048015177,
+   "interfaceZ": 4048015176,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 2897940887,
+     "y": 681736331,
+     "z": 4048015177,
+     "direction": 0,
+     "interfaceZ": 4048015176
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R147",
+   "code": 85,
+   "seed": 4294967295,
+   "mpMax": 0,
+   "x": 207950747,
+   "y": 3540151380,
+   "z": 375172853,
+   "interfaceZ": 375172852,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 207950747,
+     "y": 3540151380,
+     "z": 375172853,
+     "direction": 0,
+     "interfaceZ": 375172852
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R148",
+   "code": 85,
+   "seed": 3922188156,
+   "mpMax": 0,
+   "x": 4004952513,
+   "y": 1565187989,
+   "z": 3696375257,
+   "interfaceZ": 3696375256,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 3922188156,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 4004952513,
+     "y": 1565187989,
+     "z": 3696375257,
+     "direction": 0,
+     "interfaceZ": 3696375256
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R149",
+   "code": 85,
+   "seed": 2443047376,
+   "mpMax": 1,
+   "x": 395082989,
+   "y": 141098446,
+   "z": 674228237,
+   "interfaceZ": 674228236,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2443047376,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 395082989,
+     "y": 141098446,
+     "z": 674228237,
+     "direction": 0,
+     "interfaceZ": 674228236
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R150",
+   "code": 86,
+   "seed": 0,
+   "mpMax": 1,
+   "x": 2614612183,
+   "y": 2639661703,
+   "z": 1687709010,
+   "interfaceZ": 1687709009,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 116,
+     "x": 2614612183,
+     "y": 2639661703,
+     "z": 1687709010,
+     "direction": 0,
+     "interfaceZ": 1687709009
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R151",
+   "code": 86,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 1009268781,
+   "y": 2390165995,
+   "z": 3992473451,
+   "interfaceZ": 3992473450,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 116,
+     "x": 1009268781,
+     "y": 2390165995,
+     "z": 3992473451,
+     "direction": 0,
+     "interfaceZ": 3992473450
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R152",
+   "code": 86,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 2419823947,
+   "y": 2237926431,
+   "z": 594253827,
+   "interfaceZ": 594253826,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 116,
+     "x": 2419823947,
+     "y": 2237926431,
+     "z": 594253827,
+     "direction": 0,
+     "interfaceZ": 594253826
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R153",
+   "code": 86,
+   "seed": 4294967295,
+   "mpMax": 0,
+   "x": 1235832440,
+   "y": 2919941288,
+   "z": 41967491,
+   "interfaceZ": 41967490,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 116,
+     "x": 1235832440,
+     "y": 2919941288,
+     "z": 41967491,
+     "direction": 0,
+     "interfaceZ": 41967490
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R154",
+   "code": 86,
+   "seed": 917308385,
+   "mpMax": 0,
+   "x": 3121922277,
+   "y": 3792110587,
+   "z": 1837087203,
+   "interfaceZ": 1837087202,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 917308385,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 116,
+     "x": 3121922277,
+     "y": 3792110587,
+     "z": 1837087203,
+     "direction": 0,
+     "interfaceZ": 1837087202
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R155",
+   "code": 86,
+   "seed": 1712746499,
+   "mpMax": 4,
+   "x": 3333187307,
+   "y": 1149427665,
+   "z": 3665686237,
+   "interfaceZ": 3665686236,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1712746499,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 116,
+     "x": 3333187307,
+     "y": 1149427665,
+     "z": 3665686237,
+     "direction": 0,
+     "interfaceZ": 3665686236
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R156",
+   "code": 79,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 2697150711,
+   "y": 1362542589,
+   "z": 1211213141,
+   "interfaceZ": 1211213140,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 109,
+     "x": 2697150711,
+     "y": 1362542589,
+     "z": 1211213141,
+     "direction": 0,
+     "interfaceZ": 1211213140
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R157",
+   "code": 79,
+   "seed": 305419896,
+   "mpMax": 1,
+   "x": 671795096,
+   "y": 2198967404,
+   "z": 252349136,
+   "interfaceZ": 252349135,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 109,
+     "x": 671795096,
+     "y": 2198967404,
+     "z": 252349136,
+     "direction": 0,
+     "interfaceZ": 252349135
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R158",
+   "code": 79,
+   "seed": 2954348861,
+   "mpMax": 4,
+   "x": 3891107978,
+   "y": 386735239,
+   "z": 2266271487,
+   "interfaceZ": 2266271486,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 109,
+     "x": 3891107978,
+     "y": 386735239,
+     "z": 2266271487,
+     "direction": 0,
+     "interfaceZ": 2266271486
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R159",
+   "code": 79,
+   "seed": 4294967295,
+   "mpMax": 1,
+   "x": 1117192270,
+   "y": 862655749,
+   "z": 2269660733,
+   "interfaceZ": 2269660732,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 109,
+     "x": 1117192270,
+     "y": 862655749,
+     "z": 2269660733,
+     "direction": 0,
+     "interfaceZ": 2269660732
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R160",
+   "code": 79,
+   "seed": 593332888,
+   "mpMax": 4,
+   "x": 2755159226,
+   "y": 2146166280,
+   "z": 1965092881,
+   "interfaceZ": 1965092880,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 593332888,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 109,
+     "x": 2755159226,
+     "y": 2146166280,
+     "z": 1965092881,
+     "direction": 0,
+     "interfaceZ": 1965092880
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R161",
+   "code": 79,
+   "seed": 1948651968,
+   "mpMax": 4,
+   "x": 541238529,
+   "y": 3786219618,
+   "z": 2704967711,
+   "interfaceZ": 2704967710,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 1948651968,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 109,
+     "x": 541238529,
+     "y": 3786219618,
+     "z": 2704967711,
+     "direction": 0,
+     "interfaceZ": 2704967710
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R162",
+   "code": 97,
+   "seed": 0,
+   "mpMax": 0,
+   "x": 1297753947,
+   "y": 621946883,
+   "z": 3852182708,
+   "interfaceZ": 3852182707,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 0,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 127,
+     "x": 1297753947,
+     "y": 621946883,
+     "z": 3852182708,
+     "direction": 0,
+     "interfaceZ": 3852182707
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R163",
+   "code": 97,
+   "seed": 305419896,
+   "mpMax": 1,
+   "x": 397318775,
+   "y": 3451851901,
+   "z": 3028520230,
+   "interfaceZ": 3028520229,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 305419896,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 127,
+     "x": 397318775,
+     "y": 3451851901,
+     "z": 3028520230,
+     "direction": 0,
+     "interfaceZ": 3028520229
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R164",
+   "code": 97,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 2060381437,
+   "y": 3966850979,
+   "z": 1563356426,
+   "interfaceZ": 1563356425,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2954348861,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 127,
+     "x": 2060381437,
+     "y": 3966850979,
+     "z": 1563356426,
+     "direction": 0,
+     "interfaceZ": 1563356425
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R165",
+   "code": 97,
+   "seed": 4294967295,
+   "mpMax": 4,
+   "x": 1749334730,
+   "y": 1363303819,
+   "z": 1481133601,
+   "interfaceZ": 1481133600,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 4294967295,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 127,
+     "x": 1749334730,
+     "y": 1363303819,
+     "z": 1481133601,
+     "direction": 0,
+     "interfaceZ": 1481133600
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R166",
+   "code": 97,
+   "seed": 2706288744,
+   "mpMax": 4,
+   "x": 2702128926,
+   "y": 996584552,
+   "z": 3714413152,
+   "interfaceZ": 3714413151,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2706288744,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 127,
+     "x": 2702128926,
+     "y": 996584552,
+     "z": 3714413152,
+     "direction": 0,
+     "interfaceZ": 3714413151
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R167",
+   "code": 97,
+   "seed": 2065819255,
+   "mpMax": 1,
+   "x": 385589610,
+   "y": 948958168,
+   "z": 2417798068,
+   "interfaceZ": 2417798067,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 2065819255,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 127,
+     "x": 385589610,
+     "y": 948958168,
+     "z": 2417798068,
+     "direction": 0,
+     "interfaceZ": 2417798067
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R168",
+   "code": 98,
+   "seed": 0,
+   "mpMax": 4,
+   "x": 818890596,
+   "y": 1813540641,
+   "z": 1663278633,
+   "interfaceZ": 1663278632,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 0,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R169",
+   "code": 98,
+   "seed": 305419896,
+   "mpMax": 0,
+   "x": 184859587,
+   "y": 375898072,
+   "z": 514240072,
+   "interfaceZ": 514240071,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 305419896,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R170",
+   "code": 98,
+   "seed": 2954348861,
+   "mpMax": 4,
+   "x": 1716388948,
+   "y": 1386637557,
+   "z": 2181679214,
+   "interfaceZ": 2181679213,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 2954348861,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R171",
+   "code": 98,
+   "seed": 4294967295,
+   "mpMax": 4,
+   "x": 3884758562,
+   "y": 2234444420,
+   "z": 1034617423,
+   "interfaceZ": 1034617422,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 4294967295,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R172",
+   "code": 98,
+   "seed": 2363148292,
+   "mpMax": 1,
+   "x": 362398954,
+   "y": 2485649119,
+   "z": 2520457714,
+   "interfaceZ": 2520457713,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 2363148292,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R173",
+   "code": 98,
+   "seed": 967331961,
+   "mpMax": 4,
+   "x": 1024304886,
+   "y": 480628105,
+   "z": 3679364430,
+   "interfaceZ": 3679364429,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 967331961,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R174",
+   "code": 127,
+   "seed": 0,
+   "mpMax": 4,
+   "x": 167723366,
+   "y": 2439696264,
+   "z": 2782759885,
+   "interfaceZ": 2782759884,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 0,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R175",
+   "code": 127,
+   "seed": 305419896,
+   "mpMax": 4,
+   "x": 2864609571,
+   "y": 2517096357,
+   "z": 1260194614,
+   "interfaceZ": 1260194613,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 305419896,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R176",
+   "code": 127,
+   "seed": 2954348861,
+   "mpMax": 1,
+   "x": 4244182296,
+   "y": 3570312763,
+   "z": 737605198,
+   "interfaceZ": 737605197,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 2954348861,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R177",
+   "code": 127,
+   "seed": 4294967295,
+   "mpMax": 0,
+   "x": 1731747748,
+   "y": 1187103939,
+   "z": 1674417898,
+   "interfaceZ": 1674417897,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 4294967295,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R178",
+   "code": 127,
+   "seed": 617846858,
+   "mpMax": 4,
+   "x": 4229241341,
+   "y": 2090588779,
+   "z": 686937109,
+   "interfaceZ": 686937108,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 617846858,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R179",
+   "code": 127,
+   "seed": 1319971637,
+   "mpMax": 0,
+   "x": 3124923706,
+   "y": 2542051017,
+   "z": 723014726,
+   "interfaceZ": 723014725,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 1319971637,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R180",
+   "code": 256,
+   "seed": 0,
+   "mpMax": 4,
+   "x": 1147487695,
+   "y": 3875969239,
+   "z": 3697190547,
+   "interfaceZ": 3697190546,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 0,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R181",
+   "code": 256,
+   "seed": 305419896,
+   "mpMax": 4,
+   "x": 2408480076,
+   "y": 3017229120,
+   "z": 3780730248,
+   "interfaceZ": 3780730247,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 305419896,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R182",
+   "code": 256,
+   "seed": 2954348861,
+   "mpMax": 0,
+   "x": 2900823349,
+   "y": 1169331827,
+   "z": 2602738380,
+   "interfaceZ": 2602738379,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 2954348861,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R183",
+   "code": 256,
+   "seed": 4294967295,
+   "mpMax": 1,
+   "x": 1738334650,
+   "y": 1061384101,
+   "z": 227099913,
+   "interfaceZ": 227099912,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 4294967295,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R184",
+   "code": 256,
+   "seed": 554783544,
+   "mpMax": 0,
+   "x": 3252472745,
+   "y": 1758595996,
+   "z": 4060638861,
+   "interfaceZ": 4060638860,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 554783544,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "R185",
+   "code": 256,
+   "seed": 3398805042,
+   "mpMax": 1,
+   "x": 1068256015,
+   "y": 43937741,
+   "z": 722021058,
+   "interfaceZ": 722021057,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 3398805042,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV186",
+   "code": 38,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV187",
+   "code": 38,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV188",
+   "code": 38,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 610839776,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 68,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV189",
+   "code": 38,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 68,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV190",
+   "code": 81,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV191",
+   "code": 81,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV192",
+   "code": 81,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 610839776,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 111,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV193",
+   "code": 81,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 111,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV194",
+   "code": 82,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV195",
+   "code": 82,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV196",
+   "code": 82,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 610839776,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 112,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV197",
+   "code": 82,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 112,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV198",
+   "code": 36,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 610839776,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV199",
+   "code": 36,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV200",
+   "code": 36,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 610839776,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV201",
+   "code": 36,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV202",
+   "code": 69,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 610839776,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV203",
+   "code": 69,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV204",
+   "code": 69,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 610839776,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV205",
+   "code": 69,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV206",
+   "code": 84,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 610839776,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV207",
+   "code": 84,
+   "seed": 610839776,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV208",
+   "code": 84,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 610839776,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "random",
+   "id": "RV209",
+   "code": 84,
+   "seed": 610839776,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 610839776,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C0",
+   "item": 0,
+   "flag": 1110,
+   "mpMax": 4,
+   "x": 1859679524,
+   "y": 2526229687,
+   "z": 450314295,
+   "interfaceZ": 450314294,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C1",
+   "item": 1,
+   "flag": 3286675715,
+   "mpMax": 0,
+   "x": 2161105056,
+   "y": 4167266156,
+   "z": 1743776263,
+   "interfaceZ": 1743776262,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 31,
+     "x": 2161105056,
+     "y": 4167266156,
+     "z": 1743776263,
+     "direction": 0,
+     "interfaceZ": 1743776262
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 3286675715,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C2",
+   "item": 2,
+   "flag": 1683497048,
+   "mpMax": 4,
+   "x": 3336207485,
+   "y": 947991374,
+   "z": 3089945863,
+   "interfaceZ": 3089945862,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 32,
+     "x": 3336207485,
+     "y": 947991374,
+     "z": 3089945863,
+     "direction": 0,
+     "interfaceZ": 3089945862
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1683497048,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C3",
+   "item": 3,
+   "flag": 471242426,
+   "mpMax": 0,
+   "x": 858866109,
+   "y": 3669978180,
+   "z": 3603277236,
+   "interfaceZ": 3603277235,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 33,
+     "x": 858866109,
+     "y": 3669978180,
+     "z": 3603277236,
+     "direction": 0,
+     "interfaceZ": 3603277235
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 471242426,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C4",
+   "item": 4,
+   "flag": 0,
+   "mpMax": 4,
+   "x": 303903280,
+   "y": 2146569895,
+   "z": 866585018,
+   "interfaceZ": 866585017,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 34,
+     "x": 303903280,
+     "y": 2146569895,
+     "z": 866585018,
+     "direction": 0,
+     "interfaceZ": 866585017
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C5",
+   "item": 5,
+   "flag": 1110,
+   "mpMax": 4,
+   "x": 165233822,
+   "y": 3307580344,
+   "z": 3608076157,
+   "interfaceZ": 3608076156,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 35,
+     "x": 165233822,
+     "y": 3307580344,
+     "z": 3608076157,
+     "direction": 0,
+     "interfaceZ": 3608076156
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C6",
+   "item": 6,
+   "flag": 1110,
+   "mpMax": 4,
+   "x": 1199333888,
+   "y": 2580665846,
+   "z": 3659727657,
+   "interfaceZ": 3659727656,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 36,
+     "x": 1199333888,
+     "y": 2580665846,
+     "z": 3659727657,
+     "direction": 0,
+     "interfaceZ": 3659727656
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C7",
+   "item": 7,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 3807060923,
+   "y": 3003036282,
+   "z": 1100626194,
+   "interfaceZ": 1100626193,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 37,
+     "x": 3807060923,
+     "y": 3003036282,
+     "z": 1100626194,
+     "direction": 0,
+     "interfaceZ": 1100626193
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C8",
+   "item": 8,
+   "flag": 1991452799,
+   "mpMax": 0,
+   "x": 2940557567,
+   "y": 593248837,
+   "z": 1751819632,
+   "interfaceZ": 1751819631,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 38,
+     "x": 2940557567,
+     "y": 593248837,
+     "z": 1751819632,
+     "direction": 0,
+     "interfaceZ": 1751819631
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1991452799,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C9",
+   "item": 9,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 2761857441,
+   "y": 932251823,
+   "z": 4044354289,
+   "interfaceZ": 4044354288,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 39,
+     "x": 2761857441,
+     "y": 932251823,
+     "z": 4044354289,
+     "direction": 0,
+     "interfaceZ": 4044354288
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C10",
+   "item": 10,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 4227979081,
+   "y": 2780940815,
+   "z": 606045459,
+   "interfaceZ": 606045458,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 40,
+     "x": 4227979081,
+     "y": 2780940815,
+     "z": 606045459,
+     "direction": 0,
+     "interfaceZ": 606045458
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C11",
+   "item": 11,
+   "flag": 1110,
+   "mpMax": 4,
+   "x": 3711310059,
+   "y": 3634692620,
+   "z": 4045295088,
+   "interfaceZ": 4045295087,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 41,
+     "x": 3711310059,
+     "y": 3634692620,
+     "z": 4045295088,
+     "direction": 0,
+     "interfaceZ": 4045295087
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C12",
+   "item": 12,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 470849026,
+   "y": 2640632649,
+   "z": 3722570366,
+   "interfaceZ": 3722570365,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 42,
+     "x": 470849026,
+     "y": 2640632649,
+     "z": 3722570366,
+     "direction": 0,
+     "interfaceZ": 3722570365
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C13",
+   "item": 13,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 1662608317,
+   "y": 454579036,
+   "z": 413150232,
+   "interfaceZ": 413150231,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 43,
+     "x": 1662608317,
+     "y": 454579036,
+     "z": 413150232,
+     "direction": 0,
+     "interfaceZ": 413150231
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C14",
+   "item": 14,
+   "flag": 3499126060,
+   "mpMax": 0,
+   "x": 2957524661,
+   "y": 2218555877,
+   "z": 1292853139,
+   "interfaceZ": 1292853138,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 44,
+     "x": 2957524661,
+     "y": 2218555877,
+     "z": 1292853139,
+     "direction": 0,
+     "interfaceZ": 1292853138
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 3499126060,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C15",
+   "item": 15,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 2764146976,
+   "y": 2500878170,
+   "z": 284719580,
+   "interfaceZ": 284719579,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 45,
+     "x": 2764146976,
+     "y": 2500878170,
+     "z": 284719580,
+     "direction": 0,
+     "interfaceZ": 284719579
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C16",
+   "item": 16,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 3472559022,
+   "y": 1037166954,
+   "z": 933523283,
+   "interfaceZ": 933523282,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 46,
+     "x": 3472559022,
+     "y": 1037166954,
+     "z": 933523283,
+     "direction": 0,
+     "interfaceZ": 933523282
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C17",
+   "item": 17,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 1441286217,
+   "y": 3263164856,
+   "z": 1064130457,
+   "interfaceZ": 1064130456,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 47,
+     "x": 1441286217,
+     "y": 3263164856,
+     "z": 1064130457,
+     "direction": 0,
+     "interfaceZ": 1064130456
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C18",
+   "item": 18,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 3818429239,
+   "y": 1243679158,
+   "z": 1266902876,
+   "interfaceZ": 1266902875,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 48,
+     "x": 3818429239,
+     "y": 1243679158,
+     "z": 1266902876,
+     "direction": 0,
+     "interfaceZ": 1266902875
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C19",
+   "item": 19,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 3653993414,
+   "y": 309926701,
+   "z": 2478642249,
+   "interfaceZ": 2478642248,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 49,
+     "x": 3653993414,
+     "y": 309926701,
+     "z": 2478642249,
+     "direction": 0,
+     "interfaceZ": 2478642248
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C20",
+   "item": 20,
+   "flag": 367446819,
+   "mpMax": 0,
+   "x": 1136536004,
+   "y": 395315912,
+   "z": 1321474226,
+   "interfaceZ": 1321474225,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 50,
+     "x": 1136536004,
+     "y": 395315912,
+     "z": 1321474226,
+     "direction": 0,
+     "interfaceZ": 1321474225
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 367446819,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C21",
+   "item": 21,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 162605789,
+   "y": 3965995727,
+   "z": 3146804716,
+   "interfaceZ": 3146804715,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 51,
+     "x": 162605789,
+     "y": 3965995727,
+     "z": 3146804716,
+     "direction": 0,
+     "interfaceZ": 3146804715
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C22",
+   "item": 22,
+   "flag": 1098567595,
+   "mpMax": 0,
+   "x": 186006447,
+   "y": 2071352774,
+   "z": 549446825,
+   "interfaceZ": 549446824,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 52,
+     "x": 186006447,
+     "y": 2071352774,
+     "z": 549446825,
+     "direction": 0,
+     "interfaceZ": 549446824
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1098567595,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C23",
+   "item": 23,
+   "flag": 1110,
+   "mpMax": 4,
+   "x": 2529222499,
+   "y": 2013901896,
+   "z": 4167906091,
+   "interfaceZ": 4167906090,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 53,
+     "x": 2529222499,
+     "y": 2013901896,
+     "z": 4167906091,
+     "direction": 0,
+     "interfaceZ": 4167906090
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C24",
+   "item": 24,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 1934015856,
+   "y": 1987152376,
+   "z": 3129814503,
+   "interfaceZ": 3129814502,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 54,
+     "x": 1934015856,
+     "y": 1987152376,
+     "z": 3129814503,
+     "direction": 0,
+     "interfaceZ": 3129814502
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C25",
+   "item": 25,
+   "flag": 1901254693,
+   "mpMax": 0,
+   "x": 1156643890,
+   "y": 3362239100,
+   "z": 1123937525,
+   "interfaceZ": 1123937524,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 55,
+     "x": 1156643890,
+     "y": 3362239100,
+     "z": 1123937525,
+     "direction": 0,
+     "interfaceZ": 1123937524
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1901254693,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C26",
+   "item": 26,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 1005014226,
+   "y": 1114743091,
+   "z": 3790688397,
+   "interfaceZ": 3790688396,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 56,
+     "x": 1005014226,
+     "y": 1114743091,
+     "z": 3790688397,
+     "direction": 0,
+     "interfaceZ": 3790688396
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C27",
+   "item": 27,
+   "flag": 3395646389,
+   "mpMax": 4,
+   "x": 350595299,
+   "y": 957083857,
+   "z": 831235858,
+   "interfaceZ": 831235857,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 57,
+     "x": 350595299,
+     "y": 957083857,
+     "z": 831235858,
+     "direction": 0,
+     "interfaceZ": 831235857
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 3395646389,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C28",
+   "item": 28,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 353742779,
+   "y": 3715963916,
+   "z": 2492107537,
+   "interfaceZ": 2492107536,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 58,
+     "x": 353742779,
+     "y": 3715963916,
+     "z": 2492107537,
+     "direction": 0,
+     "interfaceZ": 2492107536
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C29",
+   "item": 29,
+   "flag": 0,
+   "mpMax": 4,
+   "x": 1252002440,
+   "y": 4160624944,
+   "z": 1650285508,
+   "interfaceZ": 1650285507,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 59,
+     "x": 1252002440,
+     "y": 4160624944,
+     "z": 1650285508,
+     "direction": 0,
+     "interfaceZ": 1650285507
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C30",
+   "item": 30,
+   "flag": 3563730761,
+   "mpMax": 0,
+   "x": 3430366505,
+   "y": 1014118011,
+   "z": 2372100243,
+   "interfaceZ": 2372100242,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 60,
+     "x": 3430366505,
+     "y": 1014118011,
+     "z": 2372100243,
+     "direction": 0,
+     "interfaceZ": 2372100242
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 3563730761,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C31",
+   "item": 31,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 2114655559,
+   "y": 3771985076,
+   "z": 2044475065,
+   "interfaceZ": 2044475064,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 61,
+     "x": 2114655559,
+     "y": 3771985076,
+     "z": 2044475065,
+     "direction": 0,
+     "interfaceZ": 2044475064
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C32",
+   "item": 32,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 3343952415,
+   "y": 4187134730,
+   "z": 2680239888,
+   "interfaceZ": 2680239887,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 62,
+     "x": 3343952415,
+     "y": 4187134730,
+     "z": 2680239888,
+     "direction": 0,
+     "interfaceZ": 2680239887
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C33",
+   "item": 33,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 779820012,
+   "y": 3676350833,
+   "z": 820794084,
+   "interfaceZ": 820794083,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 63,
+     "x": 779820012,
+     "y": 3676350833,
+     "z": 820794084,
+     "direction": 0,
+     "interfaceZ": 820794083
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C34",
+   "item": 34,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 571483361,
+   "y": 736081639,
+   "z": 3205152833,
+   "interfaceZ": 3205152832,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 64,
+     "x": 571483361,
+     "y": 736081639,
+     "z": 3205152833,
+     "direction": 0,
+     "interfaceZ": 3205152832
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C35",
+   "item": 35,
+   "flag": 2120231116,
+   "mpMax": 0,
+   "x": 149979445,
+   "y": 2483841368,
+   "z": 1745708300,
+   "interfaceZ": 1745708299,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 65,
+     "x": 149979445,
+     "y": 2483841368,
+     "z": 1745708300,
+     "direction": 0,
+     "interfaceZ": 1745708299
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 2120231116,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C36",
+   "item": 36,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 2190662509,
+   "y": 4270610828,
+   "z": 1690064220,
+   "interfaceZ": 1690064219,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 2190662509,
+     "y": 4270610828,
+     "z": 1690064220,
+     "direction": 0,
+     "interfaceZ": 1690064219
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C37",
+   "item": 36,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 2190662509,
+   "y": 4270610828,
+   "z": 1690064220,
+   "interfaceZ": 1690064219,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 66,
+     "x": 2190662509,
+     "y": 4270610828,
+     "z": 1690064220,
+     "direction": 0,
+     "interfaceZ": 1690064219
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C38",
+   "item": 37,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 843983516,
+   "y": 2122437748,
+   "z": 1085289744,
+   "interfaceZ": 1085289743,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 67,
+     "x": 843983516,
+     "y": 2122437748,
+     "z": 1085289744,
+     "direction": 0,
+     "interfaceZ": 1085289743
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C39",
+   "item": 38,
+   "flag": 243046618,
+   "mpMax": 0,
+   "x": 76271797,
+   "y": 376851457,
+   "z": 2305748998,
+   "interfaceZ": 2305748997,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C40",
+   "item": 38,
+   "flag": 243046618,
+   "mpMax": 0,
+   "x": 76271797,
+   "y": 376851457,
+   "z": 2305748998,
+   "interfaceZ": 2305748997,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C41",
+   "item": 39,
+   "flag": 0,
+   "mpMax": 4,
+   "x": 2753285485,
+   "y": 4035839282,
+   "z": 151682985,
+   "interfaceZ": 151682984,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 69,
+     "x": 2753285485,
+     "y": 4035839282,
+     "z": 151682985,
+     "direction": 0,
+     "interfaceZ": 151682984
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C42",
+   "item": 40,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 2492687710,
+   "y": 3885709277,
+   "z": 3676016016,
+   "interfaceZ": 3676016015,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 70,
+     "x": 2492687710,
+     "y": 3885709277,
+     "z": 3676016016,
+     "direction": 0,
+     "interfaceZ": 3676016015
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C43",
+   "item": 41,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 3298489286,
+   "y": 3256058956,
+   "z": 2441139834,
+   "interfaceZ": 2441139833,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 71,
+     "x": 3298489286,
+     "y": 3256058956,
+     "z": 2441139834,
+     "direction": 0,
+     "interfaceZ": 2441139833
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C44",
+   "item": 42,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 4265315501,
+   "y": 3326986067,
+   "z": 2719960371,
+   "interfaceZ": 2719960370,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 72,
+     "x": 4265315501,
+     "y": 3326986067,
+     "z": 2719960371,
+     "direction": 0,
+     "interfaceZ": 2719960370
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C45",
+   "item": 43,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 3730726472,
+   "y": 267837105,
+   "z": 9960850,
+   "interfaceZ": 9960849,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 73,
+     "x": 3730726472,
+     "y": 267837105,
+     "z": 9960850,
+     "direction": 0,
+     "interfaceZ": 9960849
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C46",
+   "item": 44,
+   "flag": 3427175438,
+   "mpMax": 0,
+   "x": 1918915715,
+   "y": 1763862972,
+   "z": 673903466,
+   "interfaceZ": 673903465,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 74,
+     "x": 1918915715,
+     "y": 1763862972,
+     "z": 673903466,
+     "direction": 0,
+     "interfaceZ": 673903465
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 3427175438,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C47",
+   "item": 45,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 1752243741,
+   "y": 1347240368,
+   "z": 743672678,
+   "interfaceZ": 743672677,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 75,
+     "x": 1752243741,
+     "y": 1347240368,
+     "z": 743672678,
+     "direction": 0,
+     "interfaceZ": 743672677
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C48",
+   "item": 46,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 1945535622,
+   "y": 1199913262,
+   "z": 724975333,
+   "interfaceZ": 724975332,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 76,
+     "x": 1945535622,
+     "y": 1199913262,
+     "z": 724975333,
+     "direction": 0,
+     "interfaceZ": 724975332
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C49",
+   "item": 47,
+   "flag": 1110,
+   "mpMax": 4,
+   "x": 614376316,
+   "y": 2570297018,
+   "z": 3570493431,
+   "interfaceZ": 3570493430,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 77,
+     "x": 614376316,
+     "y": 2570297018,
+     "z": 3570493431,
+     "direction": 0,
+     "interfaceZ": 3570493430
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C50",
+   "item": 48,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 884500372,
+   "y": 50106435,
+   "z": 3710029500,
+   "interfaceZ": 3710029499,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 78,
+     "x": 884500372,
+     "y": 50106435,
+     "z": 3710029500,
+     "direction": 0,
+     "interfaceZ": 3710029499
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C51",
+   "item": 49,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 2662626955,
+   "y": 274749099,
+   "z": 150473281,
+   "interfaceZ": 150473280,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 79,
+     "x": 2662626955,
+     "y": 274749099,
+     "z": 150473281,
+     "direction": 0,
+     "interfaceZ": 150473280
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C52",
+   "item": 50,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 2845727598,
+   "y": 3207737874,
+   "z": 3370552184,
+   "interfaceZ": 3370552183,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 80,
+     "x": 2845727598,
+     "y": 3207737874,
+     "z": 3370552184,
+     "direction": 0,
+     "interfaceZ": 3370552183
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C53",
+   "item": 51,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 19696529,
+   "y": 206030986,
+   "z": 3579390892,
+   "interfaceZ": 3579390891,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 81,
+     "x": 19696529,
+     "y": 206030986,
+     "z": 3579390892,
+     "direction": 0,
+     "interfaceZ": 3579390891
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C54",
+   "item": 52,
+   "flag": 1110,
+   "mpMax": 4,
+   "x": 3535774485,
+   "y": 2184844111,
+   "z": 2971112473,
+   "interfaceZ": 2971112472,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 82,
+     "x": 3535774485,
+     "y": 2184844111,
+     "z": 2971112473,
+     "direction": 0,
+     "interfaceZ": 2971112472
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C55",
+   "item": 53,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 3328588919,
+   "y": 1169097945,
+   "z": 803967693,
+   "interfaceZ": 803967692,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 83,
+     "x": 3328588919,
+     "y": 1169097945,
+     "z": 803967693,
+     "direction": 0,
+     "interfaceZ": 803967692
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C56",
+   "item": 54,
+   "flag": 578297016,
+   "mpMax": 4,
+   "x": 1243340652,
+   "y": 3026900036,
+   "z": 96093345,
+   "interfaceZ": 96093344,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 84,
+     "x": 1243340652,
+     "y": 3026900036,
+     "z": 96093345,
+     "direction": 0,
+     "interfaceZ": 96093344
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 578297016,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C57",
+   "item": 55,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 2622482073,
+   "y": 177812782,
+   "z": 3748021017,
+   "interfaceZ": 3748021016,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 85,
+     "x": 2622482073,
+     "y": 177812782,
+     "z": 3748021017,
+     "direction": 0,
+     "interfaceZ": 3748021016
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C58",
+   "item": 56,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 3127296431,
+   "y": 2733343594,
+   "z": 3549895458,
+   "interfaceZ": 3549895457,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 86,
+     "x": 3127296431,
+     "y": 2733343594,
+     "z": 3549895458,
+     "direction": 0,
+     "interfaceZ": 3549895457
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C59",
+   "item": 57,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 1131820629,
+   "y": 2986458706,
+   "z": 2715377671,
+   "interfaceZ": 2715377670,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 87,
+     "x": 1131820629,
+     "y": 2986458706,
+     "z": 2715377671,
+     "direction": 0,
+     "interfaceZ": 2715377670
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C60",
+   "item": 58,
+   "flag": 3663199575,
+   "mpMax": 0,
+   "x": 1848750017,
+   "y": 3716106956,
+   "z": 981321480,
+   "interfaceZ": 981321479,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 88,
+     "x": 1848750017,
+     "y": 3716106956,
+     "z": 981321480,
+     "direction": 0,
+     "interfaceZ": 981321479
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 3663199575,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C61",
+   "item": 59,
+   "flag": 0,
+   "mpMax": 4,
+   "x": 3820111717,
+   "y": 2827758407,
+   "z": 913876914,
+   "interfaceZ": 913876913,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 89,
+     "x": 3820111717,
+     "y": 2827758407,
+     "z": 913876914,
+     "direction": 0,
+     "interfaceZ": 913876913
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C62",
+   "item": 60,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 2909516324,
+   "y": 1113854970,
+   "z": 2173089654,
+   "interfaceZ": 2173089653,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 90,
+     "x": 2909516324,
+     "y": 1113854970,
+     "z": 2173089654,
+     "direction": 0,
+     "interfaceZ": 2173089653
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C63",
+   "item": 61,
+   "flag": 4264649288,
+   "mpMax": 0,
+   "x": 1701734773,
+   "y": 2999471391,
+   "z": 1049131262,
+   "interfaceZ": 1049131261,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 91,
+     "x": 1701734773,
+     "y": 2999471391,
+     "z": 1049131262,
+     "direction": 0,
+     "interfaceZ": 1049131261
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 4264649288,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C64",
+   "item": 62,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 3147459729,
+   "y": 97981552,
+   "z": 1975437267,
+   "interfaceZ": 1975437266,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 92,
+     "x": 3147459729,
+     "y": 97981552,
+     "z": 1975437267,
+     "direction": 0,
+     "interfaceZ": 1975437266
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C65",
+   "item": 63,
+   "flag": 4240062284,
+   "mpMax": 0,
+   "x": 90770539,
+   "y": 2227993380,
+   "z": 3006807884,
+   "interfaceZ": 3006807883,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 93,
+     "x": 90770539,
+     "y": 2227993380,
+     "z": 3006807884,
+     "direction": 0,
+     "interfaceZ": 3006807883
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 4240062284,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C66",
+   "item": 64,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 1905990877,
+   "y": 1350174900,
+   "z": 4031086132,
+   "interfaceZ": 4031086131,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 94,
+     "x": 1905990877,
+     "y": 1350174900,
+     "z": 4031086132,
+     "direction": 0,
+     "interfaceZ": 4031086131
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C67",
+   "item": 65,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 109534658,
+   "y": 436280423,
+   "z": 2832558691,
+   "interfaceZ": 2832558690,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 95,
+     "x": 109534658,
+     "y": 436280423,
+     "z": 2832558691,
+     "direction": 0,
+     "interfaceZ": 2832558690
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C68",
+   "item": 66,
+   "flag": 11610979,
+   "mpMax": 4,
+   "x": 2918569919,
+   "y": 2133294716,
+   "z": 3822978840,
+   "interfaceZ": 3822978839,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 96,
+     "x": 2918569919,
+     "y": 2133294716,
+     "z": 3822978840,
+     "direction": 0,
+     "interfaceZ": 3822978839
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 11610979,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C69",
+   "item": 67,
+   "flag": 0,
+   "mpMax": 4,
+   "x": 3568152665,
+   "y": 3659408304,
+   "z": 3820040181,
+   "interfaceZ": 3820040180,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 97,
+     "x": 3568152665,
+     "y": 3659408304,
+     "z": 3820040181,
+     "direction": 0,
+     "interfaceZ": 3820040180
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C70",
+   "item": 68,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 1655165508,
+   "y": 2178871218,
+   "z": 735946079,
+   "interfaceZ": 735946078,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 98,
+     "x": 1655165508,
+     "y": 2178871218,
+     "z": 735946079,
+     "direction": 0,
+     "interfaceZ": 735946078
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C71",
+   "item": 69,
+   "flag": 32810997,
+   "mpMax": 0,
+   "x": 412071633,
+   "y": 3143484905,
+   "z": 2618154776,
+   "interfaceZ": 2618154775,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 412071633,
+     "y": 3143484905,
+     "z": 2618154776,
+     "direction": 0,
+     "interfaceZ": 2618154775
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 32810997,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C72",
+   "item": 69,
+   "flag": 32810997,
+   "mpMax": 0,
+   "x": 412071633,
+   "y": 3143484905,
+   "z": 2618154776,
+   "interfaceZ": 2618154775,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 99,
+     "x": 412071633,
+     "y": 3143484905,
+     "z": 2618154776,
+     "direction": 0,
+     "interfaceZ": 2618154775
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C73",
+   "item": 70,
+   "flag": 2648184892,
+   "mpMax": 0,
+   "x": 2925202827,
+   "y": 2991014252,
+   "z": 26654337,
+   "interfaceZ": 26654336,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 100,
+     "x": 2925202827,
+     "y": 2991014252,
+     "z": 26654337,
+     "direction": 0,
+     "interfaceZ": 26654336
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 2648184892,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C74",
+   "item": 71,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 1093200237,
+   "y": 2990396157,
+   "z": 2550320026,
+   "interfaceZ": 2550320025,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 101,
+     "x": 1093200237,
+     "y": 2990396157,
+     "z": 2550320026,
+     "direction": 0,
+     "interfaceZ": 2550320025
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C75",
+   "item": 72,
+   "flag": 1110,
+   "mpMax": 4,
+   "x": 3804107834,
+   "y": 598986163,
+   "z": 2830181541,
+   "interfaceZ": 2830181540,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 102,
+     "x": 3804107834,
+     "y": 598986163,
+     "z": 2830181541,
+     "direction": 0,
+     "interfaceZ": 2830181540
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C76",
+   "item": 73,
+   "flag": 2060058551,
+   "mpMax": 4,
+   "x": 1823287224,
+   "y": 367862535,
+   "z": 414136832,
+   "interfaceZ": 414136831,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 103,
+     "x": 1823287224,
+     "y": 367862535,
+     "z": 414136832,
+     "direction": 0,
+     "interfaceZ": 414136831
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 2060058551,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C77",
+   "item": 74,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 3182908757,
+   "y": 2670534849,
+   "z": 4063518613,
+   "interfaceZ": 4063518612,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 104,
+     "x": 3182908757,
+     "y": 2670534849,
+     "z": 4063518613,
+     "direction": 0,
+     "interfaceZ": 4063518612
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C78",
+   "item": 75,
+   "flag": 4202610475,
+   "mpMax": 4,
+   "x": 277201679,
+   "y": 865411788,
+   "z": 1617355164,
+   "interfaceZ": 1617355163,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 105,
+     "x": 277201679,
+     "y": 865411788,
+     "z": 1617355164,
+     "direction": 0,
+     "interfaceZ": 1617355163
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 4202610475,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C79",
+   "item": 76,
+   "flag": 1110,
+   "mpMax": 4,
+   "x": 3117152761,
+   "y": 3394081115,
+   "z": 1016310566,
+   "interfaceZ": 1016310565,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 106,
+     "x": 3117152761,
+     "y": 3394081115,
+     "z": 1016310566,
+     "direction": 0,
+     "interfaceZ": 1016310565
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C80",
+   "item": 77,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 469285868,
+   "y": 2958737543,
+   "z": 4213931128,
+   "interfaceZ": 4213931127,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 107,
+     "x": 469285868,
+     "y": 2958737543,
+     "z": 4213931128,
+     "direction": 0,
+     "interfaceZ": 4213931127
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C81",
+   "item": 78,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 1944294939,
+   "y": 314294818,
+   "z": 2661667219,
+   "interfaceZ": 2661667218,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 108,
+     "x": 1944294939,
+     "y": 314294818,
+     "z": 2661667219,
+     "direction": 0,
+     "interfaceZ": 2661667218
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C82",
+   "item": 79,
+   "flag": 1110,
+   "mpMax": 4,
+   "x": 176289478,
+   "y": 2981526520,
+   "z": 1868294386,
+   "interfaceZ": 1868294385,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 109,
+     "x": 176289478,
+     "y": 2981526520,
+     "z": 1868294386,
+     "direction": 0,
+     "interfaceZ": 1868294385
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C83",
+   "item": 80,
+   "flag": 1902252919,
+   "mpMax": 4,
+   "x": 1043083559,
+   "y": 1409144738,
+   "z": 48681319,
+   "interfaceZ": 48681318,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 110,
+     "x": 1043083559,
+     "y": 1409144738,
+     "z": 48681319,
+     "direction": 0,
+     "interfaceZ": 48681318
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1902252919,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C84",
+   "item": 81,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 2079682432,
+   "y": 819564803,
+   "z": 1914456390,
+   "interfaceZ": 1914456389,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C85",
+   "item": 81,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 2079682432,
+   "y": 819564803,
+   "z": 1914456390,
+   "interfaceZ": 1914456389,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C86",
+   "item": 82,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 4120658462,
+   "y": 3968862087,
+   "z": 3303191213,
+   "interfaceZ": 3303191212,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C87",
+   "item": 82,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 4120658462,
+   "y": 3968862087,
+   "z": 3303191213,
+   "interfaceZ": 3303191212,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C88",
+   "item": 83,
+   "flag": 3580542534,
+   "mpMax": 4,
+   "x": 959118426,
+   "y": 1112033364,
+   "z": 2572484582,
+   "interfaceZ": 2572484581,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 113,
+     "x": 959118426,
+     "y": 1112033364,
+     "z": 2572484582,
+     "direction": 0,
+     "interfaceZ": 2572484581
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 3580542534,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C89",
+   "item": 84,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 5975529,
+   "y": 3329873796,
+   "z": 2798493073,
+   "interfaceZ": 2798493072,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 5975529,
+     "y": 3329873796,
+     "z": 2798493073,
+     "direction": 0,
+     "interfaceZ": 2798493072
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C90",
+   "item": 84,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 5975529,
+   "y": 3329873796,
+   "z": 2798493073,
+   "interfaceZ": 2798493072,
+   "spawnOk": false,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 114,
+     "x": 5975529,
+     "y": 3329873796,
+     "z": 2798493073,
+     "direction": 0,
+     "interfaceZ": 2798493072
+    },
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C91",
+   "item": 85,
+   "flag": 0,
+   "mpMax": 0,
+   "x": 2634420330,
+   "y": 3797006772,
+   "z": 2788604652,
+   "interfaceZ": 2788604651,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 115,
+     "x": 2634420330,
+     "y": 3797006772,
+     "z": 2788604652,
+     "direction": 0,
+     "interfaceZ": 2788604651
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 0,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C92",
+   "item": 86,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 431553443,
+   "y": 3091966040,
+   "z": 3437591306,
+   "interfaceZ": 3437591305,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 116,
+     "x": 431553443,
+     "y": 3091966040,
+     "z": 3437591306,
+     "direction": 0,
+     "interfaceZ": 3437591305
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C93",
+   "item": 87,
+   "flag": 1110,
+   "mpMax": 4,
+   "x": 3827658672,
+   "y": 1521935441,
+   "z": 2830945710,
+   "interfaceZ": 2830945709,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 117,
+     "x": 3827658672,
+     "y": 1521935441,
+     "z": 2830945710,
+     "direction": 0,
+     "interfaceZ": 2830945709
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C94",
+   "item": 88,
+   "flag": 2592491603,
+   "mpMax": 4,
+   "x": 2844041541,
+   "y": 2860787722,
+   "z": 4203471983,
+   "interfaceZ": 4203471982,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 118,
+     "x": 2844041541,
+     "y": 2860787722,
+     "z": 4203471983,
+     "direction": 0,
+     "interfaceZ": 4203471982
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 2592491603,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C95",
+   "item": 89,
+   "flag": 873728048,
+   "mpMax": 0,
+   "x": 2191106573,
+   "y": 1708706058,
+   "z": 2853619402,
+   "interfaceZ": 2853619401,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 119,
+     "x": 2191106573,
+     "y": 1708706058,
+     "z": 2853619402,
+     "direction": 0,
+     "interfaceZ": 2853619401
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 873728048,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C96",
+   "item": 90,
+   "flag": 2361751435,
+   "mpMax": 0,
+   "x": 742346377,
+   "y": 274176558,
+   "z": 364196670,
+   "interfaceZ": 364196669,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 120,
+     "x": 742346377,
+     "y": 274176558,
+     "z": 364196670,
+     "direction": 0,
+     "interfaceZ": 364196669
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 2361751435,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C97",
+   "item": 91,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 538893703,
+   "y": 3050129929,
+   "z": 2169659110,
+   "interfaceZ": 2169659109,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 121,
+     "x": 538893703,
+     "y": 3050129929,
+     "z": 2169659110,
+     "direction": 0,
+     "interfaceZ": 2169659109
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C98",
+   "item": 92,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 1078942123,
+   "y": 1191632538,
+   "z": 909783768,
+   "interfaceZ": 909783767,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 122,
+     "x": 1078942123,
+     "y": 1191632538,
+     "z": 909783768,
+     "direction": 0,
+     "interfaceZ": 909783767
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C99",
+   "item": 93,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 2429949942,
+   "y": 2784418967,
+   "z": 3273700788,
+   "interfaceZ": 3273700787,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 123,
+     "x": 2429949942,
+     "y": 2784418967,
+     "z": 3273700788,
+     "direction": 0,
+     "interfaceZ": 3273700787
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C100",
+   "item": 94,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 2831415076,
+   "y": 3745456913,
+   "z": 844116750,
+   "interfaceZ": 844116749,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 124,
+     "x": 2831415076,
+     "y": 3745456913,
+     "z": 844116750,
+     "direction": 0,
+     "interfaceZ": 844116749
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C101",
+   "item": 95,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 3349568915,
+   "y": 3453493564,
+   "z": 2975102946,
+   "interfaceZ": 2975102945,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 125,
+     "x": 3349568915,
+     "y": 3453493564,
+     "z": 2975102946,
+     "direction": 0,
+     "interfaceZ": 2975102945
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C102",
+   "item": 96,
+   "flag": 1110,
+   "mpMax": 0,
+   "x": 1854044218,
+   "y": 848403070,
+   "z": 2814958933,
+   "interfaceZ": 2814958932,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 126,
+     "x": 1854044218,
+     "y": 848403070,
+     "z": 2814958933,
+     "direction": 0,
+     "interfaceZ": 2814958932
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 1110,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C103",
+   "item": 97,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 1068605752,
+   "y": 619183525,
+   "z": 2276970685,
+   "interfaceZ": 2276970684,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 127,
+     "x": 1068605752,
+     "y": 619183525,
+     "z": 2276970685,
+     "direction": 0,
+     "interfaceZ": 2276970684
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 4294967295,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C104",
+   "item": 98,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 2566958582,
+   "y": 2025852020,
+   "z": 3606107414,
+   "interfaceZ": 3606107413,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 128,
+     "x": 2566958582,
+     "y": 2025852020,
+     "z": 3606107414,
+     "direction": 0,
+     "interfaceZ": 3606107413
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C105",
+   "item": 127,
+   "flag": 33059,
+   "mpMax": 4,
+   "x": 2355805455,
+   "y": 1979292174,
+   "z": 2395453017,
+   "interfaceZ": 2395453016,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 157,
+     "x": 2355805455,
+     "y": 1979292174,
+     "z": 2395453017,
+     "direction": 0,
+     "interfaceZ": 2395453016
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "C106",
+   "item": 128,
+   "flag": 33059,
+   "mpMax": 0,
+   "x": 1092669288,
+   "y": 2837352723,
+   "z": 1747022154,
+   "interfaceZ": 1747022153,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 158,
+     "x": 1092669288,
+     "y": 2837352723,
+     "z": 1747022154,
+     "direction": 0,
+     "interfaceZ": 1747022153
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 33059,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "CV107",
+   "item": 38,
+   "flag": 119,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "CV108",
+   "item": 38,
+   "flag": 119,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 68,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 119,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "CV109",
+   "item": 81,
+   "flag": 119,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "CV110",
+   "item": 81,
+   "flag": 119,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 111,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 119,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "CV111",
+   "item": 82,
+   "flag": 119,
+   "mpMax": 0,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 0,
+    "seedAfter": 324478056,
+    "sounds": [],
+    "spawn": null,
+    "fields": null
+   }
+  },
+  {
+   "kind": "contents",
+   "id": "CV112",
+   "item": 82,
+   "flag": 119,
+   "mpMax": 1,
+   "x": 6553600,
+   "y": 9830400,
+   "z": 1048576,
+   "interfaceZ": 1048575,
+   "spawnOk": true,
+   "out": {
+    "ret": 1,
+    "seedAfter": 324478056,
+    "sounds": [
+     84
+    ],
+    "spawn": {
+     "parent": 0,
+     "mapPage": 0,
+     "type": 112,
+     "x": 6553600,
+     "y": 9830400,
+     "z": 1048576,
+     "direction": 0,
+     "interfaceZ": 1048575
+    },
+    "fields": {
+     "forceZ": 655360,
+     "word274": 1,
+     "word278": 600,
+     "state27C": 0,
+     "word280": 119,
+     "word284": 655360,
+     "collidableCleared": true
+    }
+   }
+  }
+ ]
+}
