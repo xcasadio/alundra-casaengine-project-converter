@@ -93,11 +93,14 @@ class R5:
                 out[t['old_type']] = t['new_type']
         return out
 
-    def name_ns(self, done):
-        """{simple name as written now: current namespace} of every test type once the domains `done` are complete."""
+    def name_ns(self, done, unrenamed=None):
+        """{simple name as written now: current namespace} of every test type once the domains `done` are complete. `unrenamed` is a domain
+        whose types are already in their new namespace but still carry their old names (between the namespace step and the rename)."""
         res = {}
         for t in self.types:
-            if t['domain'] in done:
+            if t['domain'] == unrenamed:
+                name, ns = t['old_type'], t['new_namespace']
+            elif t['domain'] in done:
                 name, ns = t['new_type'], t['new_namespace']
             else:
                 name, ns = t['old_type'], t['old_namespace']
