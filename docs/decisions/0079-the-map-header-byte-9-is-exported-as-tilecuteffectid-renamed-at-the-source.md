@@ -1,6 +1,6 @@
 # ADR-0079: The map header's byte 9 is exported as `TileCutEffectId`, renamed at the source
 
-- **Status**: Accepted
+- **Status**: Accepted (text corrected on 2026-10-22, the day it was written, before the author's review: the decompilation is left out)
 - **Date**: 2026-10-22
 - **Source**: this chantier: the author's answers of 2026-10-22 to Q-E3 and Q-E3b (`docs/plan-e20-heros.md`, section 2; decisions D-E20-49 and D-E20-60 in section 0.1)
 
@@ -11,10 +11,12 @@
 - E20.e reads it as the index of the tile-break effect played when grass is cut (`docs/plan-e20-heros.md`, section 1.27).
 - `balance.json` has its own `BalanceLevel` field, the power tier of an enemy record. It is a different field, and its name is correct.
 - The author decided to read the byte and to rename the field (Q-E3). Asked for the name and the place, the author chose the source, the analyser, with the proposed name raising no objection (Q-E3b).
+- That proposal also named `GameMapInfo`, but `GameMapInfo` and its reader `GameEngine.cs:2520` live in the decompilation (`AlundraTools/AlundraEngine/`), which the project reads and never corrects. That part is dropped (D-E20-60).
 
 ## Decision
 
-- The map property is renamed `TileCutEffectId` at the source: in the analyser's Tiled exporter, in `GameMapInfo` and in the analyser's format doc.
+- The exported map property is renamed `TileCutEffectId` at the source, in the analyser's Tiled exporter (`TiledMapExporter.cs:275`), and the analyser's format doc notes the exported name.
+- The decompilation's field `GameMapInfo.BalanceLevel` and its readers keep their name.
 - The maps are extracted again, then mirrored into `data-extracted/`, and the converter export follows.
 - `balance.json`'s `BalanceLevel` does not change.
 - A slice, E20.eR, does the rename before E20.e, which then reads `TileCutEffectId` (default 2).
