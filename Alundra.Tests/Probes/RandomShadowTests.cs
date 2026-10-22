@@ -5,7 +5,7 @@ using Alundra.Rng;
 using Alundra.Probes;
 using Alundra.Tests.Rng;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Probes;
 
 /// <summary>
 /// E20.e0b1 T1 (docs/plan-e20-heros.md section 1.17.1, annex docs/plan-e20-annexe/e20-e0b/README.md): the measuring sink of the per-tick advance (<see cref="RandomShadow"/>) is inert without its
@@ -13,9 +13,9 @@ namespace Alundra.Tests;
 /// It is a no-op when the sink is active (the suite launched with <c>ALUNDRA_RNG_SHADOW_LOG</c> to measure), where the sink is supposed to record.
 /// </summary>
 [Collection(RandomStaticStateCollection.Name)]
-public sealed class AlundraRandomShadowTests
+public sealed class RandomShadowTests
 {
-    public AlundraRandomShadowTests()
+    public RandomShadowTests()
     {
         GameRandom.Reset();
     }
