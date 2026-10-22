@@ -12032,7 +12032,7 @@ avant le code.
 
 ---
 
-### 1.4 E19.SM — Les opcodes encore sautés : relevé du corpus entier et découpage proposé ⏳ (2026-10-17, lecture seule ; à approuver)
+### 1.4 E19.SM — Les opcodes encore sautés : relevé du corpus entier et découpage proposé ⏳ (2026-10-17, lecture seule ; à approuver ; sm0 READY ; sm1 à sm4 détaillées le 2026-10-22, §1.4.2 à §1.4.5)
 
 **Origine.** Thème de repli donné par l'auteur le 2026-10-16 (« finir le moteur de script »), pendant la pause du chantier de
 restructuration (aucune tranche de code pendant le chantier). Preuves : `docs/plan-e19-sm-annexe/` (rapport, `opcodes.tsv`,
@@ -12233,6 +12233,331 @@ contrôle « aucun test existant déplacé » (révision 1).
   réponse de l'auteur à Q-E19-SM1 autre que l'accord.
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après.
 - **Retour arrière** : retirer la classe et la liste.
+
+#### Règles communes aux tranches E19.sm1 à sm4 (2026-10-22)
+
+**Provenance.** Une préparation en lecture seule par tranche, chacune avec sa critique adverse (son propre listing, son propre interpréteur MIPS
+et ses propres modèles ; **la critique fait foi**) : `docs/plan-e19-sm-annexe/sm1/` à `sm4/` (`report.md` la préparation, `critic/check.md` la
+critique, les vecteurs gelés, les tests nommés avec leurs valeurs, les outils). Aucun P0 ni P1 ; les P2 et P3 sont appliqués dans chaque tranche.
+
+- **R-SM-1 — Prérequis et ordre.** La fin du chantier (R5 comprise), la garde par règles R7 (Q-R-7), **sm0 exécutée** (la liste du corpus,
+  `ClosedOwners`, les comptes de sa règle 5), l'accord de l'auteur sur Q-E19-SM1. Les quatre tranches touchent `EventProgramRunner.cs` et
+  `EventOpcodeSizeTable.cs` : elles sont **sérialisées** ; ordre proposé sm2, sm3, sm4, sm1 (de la plus indépendante à celle qui dépend le plus
+  des cartes réelles et d'E20.g) ; tout ordre est admis.
+- **R-SM-2 — Le même commit** (règle B11 du §1.4) : le code des opcodes de la tranche, ses libellés, le miroir
+  `IntroTraceHarnessTests.ImplementedOpcodes` (`:332-387`), le retrait de ses lignes de la liste de sm0 (suppression pure : les autres lignes
+  restent identiques à l'octet), l'ajout de son nom à `ClosedOwners`, et les comptes de la règle 5 de sm0 **recalculés depuis la liste du HEAD de
+  départ moins les lignes de la tranche** par le script de conversion de sm0 (les comptes chiffrés de chaque tranche ci-dessous sont ceux de la
+  tranche passée la première, depuis les 510 lignes ; `ClosedOwners` vaut l'ensemble des tranches closes à ce moment). L'ajout du nom à
+  `ClosedOwners` ne rougit rien s'il est oublié (les lignes sont parties) : le verifier le contrôle sur le diff.
+- **R-SM-3 — Noms.** Les fichiers de test suivent le rangement de R5 au HEAD de départ (sans préfixe `Alundra`, dossier du domaine) ; les
+  citations de tests des annexes sont d'avant R5 et se traduisent en T0 par `r5-files.tsv` et `r5-types.tsv` ; `check_names.py --rules` (R7) rend
+  0 sur l'arbre final.
+- **R-SM-4 — Le montage commun** (le runner nu d'`AlundraClassAndBranchOpcodesTests.cs:21-67`, dont le `Context` est une classe privée imbriquée :
+  recopiée ou exposée) : le héros dans `SpawnedEntities[0]` **et** `PlayerEntity`, `IsPlayer`, `EntityRefId = −1` (un proxy nu vaut 0) ; **chaque
+  proxy, héros compris, a un `LogicContextEntity` distinct et non nul** (sinon les types 5, 6, 9 et 10 de `EntitySearchService.cs:171-244` se
+  réduisent à `null == null`) ; `Result` de départ 7 sauf mention ; les tests d'octets réels et les arcs **échouent** quand l'export manque
+  (`FindProjectRoot`, comme `ArcRun`), choix explicite : la suite est rouge dans un worktree sans copie de l'export (critique de sm4, C-9).
+- **R-SM-5 — Les vecteurs** sont lus dans `docs/plan-e19-sm-annexe/smN/vectors/` ; leur empreinte est calculée **après normalisation CRLF → LF**
+  (les fichiers de l'annexe sont normalisés par git ; critique de sm4, C-1) ; une valeur contredite après le code est un arrêt, jamais une
+  ré-épingle (E19.l).
+- **R-SM-6 — Les arcs sont facultatifs** : un arc entre dans l'acceptation seulement si le test de chargement jetable de T0 charge la carte et si
+  sa limite d'images et son signal de fin sont mesurés et écrits avant le code (§1.3) ; sinon les tests d'octets réels le remplacent, et l'arc tombe
+  sans bloquer la tranche. Un arc qui croise d'autres opcodes sautés n'exige pas `SkippedOrExceeded` vide.
+- **R-SM-7 — Les mutations** sont réelles, par script sur le C#, chacune restaurée par une copie sauvegardée et `cmp` (jamais `git checkout`, qui
+  détruirait un port non validé ; critique de sm2, C10) ; les ensembles rouges attendus sont régénérés par script sur les tests finaux ; l'arrêt
+  porte sur « un mutant sans aucun test rouge ».
+- **R-SM-8 — L'acceptation commune** : `dotnet test Alundra.Tests/Alundra.Tests.csproj -c Debug --no-build --blame-hang-timeout 300s --filter <les
+  classes neuves>` rouge avant le code, vert après ; la suite entière en Release à copie neutralisée puis en Debug en dernier, `--blame-hang-timeout
+  300s`, zéro échec ; `cmp` de la DLL ; les six traces inchangées (`git diff --exit-code`) ; la garde R7 à 0 ; un verifier frais.
+- **R-SM-9 — ADR** : le numéro se prend à l'exécution (le prochain libre au HEAD est 0076 ; des collisions ont déjà eu lieu) ; sm3 (le membre
+  d'interface de `0x9E`) et sm4 (`0x97` = `IncreaseMp`, la couture de `0xB3`, la politique de `0x88`) en écrivent un ; sm1 et sm2 aucun (D-E19-2 :
+  le binaire l'emporte déjà).
+
+#### 1.4.2 E19.sm1 — Les prédicats d'appui et de zone : `0x60 0x61 0x3C 0x3D` ⏳ (détaillée le 2026-10-22)
+
+**Prérequis.** R-SM-1 ; les défauts retenus de Q-sm-13 (A : sm1 sans attendre les objets C4), Q-sm-14 (porter `0x3C`) et Q-sm-15 (accepter
+l'attente réelle de la 226).
+
+**But.** Comme le binaire : `0x60` = un membre du groupe de recherche repose sur l'entité logique ; `0x61` = l'entité logique repose sur un membre ;
+`0x3D` = une entité (statut 1 à 3, héros compris) est dans la boîte de cases ; `0x3C` = de même, et sujet éligible (Collidable, bit `0x80` de
+l'animation clair, aucune plateforme), **le contraire de la décompilation**. Vu en jeu : la maison de Lurvy (398) ne boucle plus son dialogue à
+l'arrivée ; la scène d'Inoa (226) attend qu'une entité entre dans sa zone ; les plaques des cartes 27, 29, 30, 113 et 400 ne se déclenchent plus
+à tort mais **restent insolubles** (Q-sm-5) ; la récompense de la 27 (C[36]) ne part plus sans la pile ; l'interrupteur au sol de la 136, la bulle
+de la 159 et le bois flottant des 77 et 78 suivent leur sens binaire.
+
+**Faits** (`sm1/report.md`, la critique `sm1/critic/check.md` faisant foi : D1 à D20 CONFIRMÉS sauf D16 (la table des mutants) en partie RÉFUTÉ ; D22
+RÉFUTÉ ; D21 et D23 NON ÉTABLIS).
+- Les gestionnaires `0x8003F3F8` (`0x60`, taille 2), `0x8003F488` (`0x61`, 2), `0x8003E64C` (`0x3D`, 7), `0x8003E558` (`0x3C`, 7) n'écrivent que
+  `Result` ; `a0` est l'entité logique, `a1` (le propriétaire) n'est jamais lu ; `0x60` ne teste ni statut ni `+0x20` ; `0x61` avec un porteur nul
+  donne 0 ; `0x3D` parcourt les emplacements 0 à N inclus, héros compris, statuts 1 à 3, bornes inclusives, octets lus non signés ; une tuile non
+  signée contre signée est un **mutant équivalent** (preuve exhaustive, `sm1/vectors/equivalent-mutants.txt`).
+- Le corpus : 187 sites dans 11 cartes (172 `0x60`, 14 `0x61`, 1 `0x3D`, 0 `0x3C`), groupes : 178 identifiants bruts (tous des enregistrements
+  activés de leur carte) et 8 `0x81` (le héros) ; leurs formes et leur comportement d'aujourd'hui : `sm1/report.md` §6.1 ; sur 19 sites le
+  `Result` relu aujourd'hui est celui d'un `0x43`, `0x70` ou `0x3B` voisin : la maison de Lurvy boucle (`43 0N` écrit 1, `61 00` sauté, `03 64 00`
+  pris), la pile de la 27 se « résout » seule.
+- En production le héros est `SpawnedEntities[0]` (`WorldProxy.cs` `InsertBySlot(entity, 0)`) ; le faux `Context` des tests ne l'y met pas. Une
+  case recyclée sort de la liste et son `EntityRefId` passe à −1 (aucune case libre n'est retenue par un identifiant brut). `RidingEntity` est
+  recalculé à chaque tick (`WorldProxy.cs:2962-2966`).
+- **Les objets des plaques sont de la famille C4** (sprites 107, 111, 112, 113, et 34, 37, 117 : `ProgramTick = 4`), hors de l'ensemble câblé
+  d'E20.g (les 7 types C23, D-G-8 de `docs/plan-e20-heros.md`) ; aucune tranche ne porte C4 (O-E20-21) : 167 des 187 sites (cartes 27, 29, 30,
+  113, 400) restent insolubles en jeu même après E20.g1b (critique P2-a).
+
+**Décisions.**
+- **D-SM1-1** — Les règles SM1-R1 à R12 de `sm1/report.md` §3 : les quatre `case` entre `:1985` et `case 0x42` (`:1987`) ; la recherche
+  `EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], SpawnedEntities, PlayerEntity)` comme `0x43` ; **ne pas réutiliser
+  `IsRidingTheLogicEntity`** (`:2641-2645`, qui ajoute `IsActive()` et `BlockedByEntity == null` que le binaire n'a pas) ; `0x3C` par
+  `EntitySupport.IsEligibleSubject` (`Alundra/Physics/EntitySupport.cs:73-76`) ; `Result` seul ; deux aides statiques privées ; les libellés `:106`,
+  `:142`, `:143` (R8) ; `PredicateOpcodes` inchangé ; aucun type ni fichier neuf dans `Alundra/`.
+- **D-SM1-2** — `RidingEntity` périmé n'est pas épinglé par sm1 : D5b (l'effacement à la passe des compteurs) et E20.g1a (`PutInHands`) en sont
+  propriétaires ; les tests posent `RidingEntity` à la main (vecteurs, octets réels) ou le calculent par `EntitySupport.UpdateRidingEntities` sur
+  des sujets à jour (CH).
+
+##### Tâches
+
+- ⏳ **T0 — Annexe, sondes** (aucun code) : (a) rejouer depuis une copie `sm1/work/vectors/gen_vectors.py` (le SHA-256 `a8c599c9…2069` des 1 384
+  vecteurs, deux exécutions) ; (b) recompter les 187 sites sur l'export du HEAD de départ ; (c) **sondes** : un test de chargement jetable
+  d'`ArcRun` sur les cartes 27, 400 et 398, en mode nu et en `RealController: true, Prefabs: true` (trois images) ; le héros posé sur
+  l'interrupteur de la 136 (sprite 45) puis `UpdateRidingEntityOfHero` : `RidingEntity` = l'interrupteur (critique P3-c) ; (d) les citations de
+  tests traduites (R-SM-3) ; (e) les mesures de départ des suites.
+- ⏳ **T1 — Tests, rouges d'abord** (`sm1/report.md` §5 et `sm1/tests/tests.tsv`, `real-bytes.tsv` ; montage R-SM-4) : les 21 tests RP de
+  `0x60`/`0x61` et les 34 tests ZP de `0x3C`/`0x3D` avec leurs valeurs, **plus** (critique P2-b, P3-a) **RP-28** (`0x61`, propriétaire = héros,
+  `LogicEntity` = l'objet : 1 puis 0), **RP-29** (`0x61`, porteur ou membre bloqué : la valeur du binaire, `BlockedByEntity` n'est pas lu),
+  **RP-32** (une entité logique de statut 0 ou 4, groupes `0x80` et `0x81` : la valeur du binaire), **ZP-3D-14** et **ZP-3C-14** (le héros seul dans
+  la boîte, statut 0 puis 4 : 0) ; les vecteurs n'ont aucune entité « anon » avec les groupes `0x85`, `0x86`, `0x89`, `0x8A` (critique P4-b) ; le
+  rejeu OV-01 à OV-07 ; les 53 lignes RB d'octets réels (32 rouges aujourd'hui, 21 gardes) ; CH-01 à CH-03 et **CH-04** (le héros sur
+  l'interrupteur de la 136 par la chaîne réelle, puis les octets de 136 C[5] : 1584, rouge 1577) ; les arcs AR-01 à AR-05 sous R-SM-6, AR-01 et
+  AR-03 en `RealController: true, Prefabs: true` (critique P3-b).
+- ⏳ **T2 — Le commit unique de R-SM-2** : les quatre `case`, les trois libellés, le miroir, les 187 lignes retirées, `sm1` dans `ClosedOwners`,
+  les comptes ; seuls `EventProgramRunner.cs` et `EventOpcodeSizeTable.cs` dans `Alundra/`.
+- ⏳ **T3 — Les arcs** retenus par la sonde (R-SM-6). ⏳ **T4 — Plan, verifier frais, recette.**
+
+##### Acceptation
+
+- R-SM-8 ; T1 rouge aux valeurs du plan (sauf les gardes nommées), vert après.
+- **Mutants** (R-SM-7) : les 36 de `sm1/tests/mutants.tsv`, avec la ligne `owner_instead_of_logic` corrigée (tuée par RP-07, RP-28, RB-03 et
+  RB-12 seulement ; critique P2-b), et les 9 de la critique (`critic/work/mutants_eval4.py`) : `hero_status_bypass` (tué par ZP-3D-14, ZP-3C-14),
+  `logic_not_blocked` et `logic_loaded_normal_deact` (tués par RP-29, RP-32) ; équivalent déclaré : la tuile non signée.
+- **Preuve de retrait** : retirer les quatre `case` rend rouges exactement les RP, les ZP, OV-01 à OV-05, les 32 lignes rouges de RB, CH-01, CH-03,
+  CH-04, AR-01, AR-02 (par le `Kind`), AR-03 et AR-04 (ceux que la sonde a retenus), et la règle 1 de sm0 ; restent verts OV-06, OV-07, les 21 gardes
+  RB, CH-02 et AR-05 ; remettre les 187 lignes seules rend rouges les règles 2 et 4 de sm0 et (k1).
+- **La liste de sm0** : −187 lignes ; passée la première : 323 lignes, 321 instructions, 89 cartes (sortent 27, 30, 77, 78, 113, 226, 400), 18
+  opcodes.
+- **Recette de l'auteur** (non bloquante) : la maison de Lurvy sans dialogue en boucle (aucun achat possible : les objets de la boutique sont des
+  sprites globaux à `ProgramTick 255`, non soulevables) ; l'interrupteur de l'église 136 ; une bulle de la 159 ; la scène d'Inoa 226 jusqu'à sa
+  fin ; le bois flottant des 77 et 78 ; la carte 27 après les momies, dont le passage reste fermé ; **aucune plaque résolue** (critique P2-a).
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : R-SM-1 non rempli ; le générateur lève une lecture non classée, ou une empreinte diffère ; un vecteur contredit le modèle de la DLL, ou
+  une valeur écrite est contredite après le code ; un test existant hors de R-SM-2 bouge ; la prémisse `RidingEntity` d'un arc est fausse (à
+  soumettre : la chaîne de production est en cause) ; un fichier de `Alundra/` autre que les deux du runner ; la liste de sm0 ne perd pas exactement
+  les 187 lignes, ou la suppression n'est pas pure ; un abandon par `--blame-hang-timeout`. Une sonde d'`ArcRun` qui échoue retire l'arc, pas la
+  tranche.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : annuler le commit de T2 puis
+  celui de T1.
+
+#### 1.4.3 E19.sm2 — Le mémo de position et ses seuils : `0x6A 0x6B 0x6C 0x6D` ⏳ (détaillée le 2026-10-22)
+
+**Prérequis.** R-SM-1 ; le défaut retenu de Q-sm-16 (le cadre Z de la DLL pour le mémo). Ni E20.g1a, ni D5b, ni E20.c2a (aucune recherche,
+aucun hôte).
+
+**But.** Comme le binaire : `0x6A` copie la position de l'entité logique dans les cellules `Parameters[2..4]` ; `0x6B`/`0x6C`/`0x6D` rendent 1 quand
+l'écart sur X, Y ou Z à la position sauvée est supérieur ou égal au seuil. Vu en jeu : seulement aux cartes **344** et **442** (56 sites
+atteignables) : en Meia Dream (442), les murs à boule de fer se retournent après 72 px au lieu de dériver ; au Lake Shrine (344), les blocs
+invisibles tracent leur parcours (le programme C ne vit que si les drapeaux `{1710}` ou `{1026, 1027}` sont posés) ; les 73 autres sites (cartes
+55 à 60 et 307, des îlots fermés) se ferment sans effet visible.
+
+**Faits** (`sm2/report.md`, la critique `sm2/critic/check.md` faisant foi : F1 à F40, aucun P0 ni P1 ; F5, F34, F39, F40 RÉFUTÉS en partie, des
+erreurs de documentation et de matrice, non de comportement).
+- Les gestionnaires `0x8003F8DC` (`0x6A`, taille 1), `0x8003F908`, `0x8003F94C`, `0x8003F990` (taille 3) sont des feuilles (ni `jal`, ni pile, ni
+  statut) : ni recherche, ni groupe, ni référence nulle. `d = P[k] − pos` en 32 bits qui boucle, `negu` si `d < 0` (`int.MinValue` reste négatif),
+  seuil `(v1 | v2 << 8) << 16` signé, `Result = d ≥ seuil` signé. `Parameters[1]` est remis à 0 par la boucle (`0x8004232C`), pas par le
+  gestionnaire. Le pointeur d'instruction du binaire est à `S + 4` et `S + 0` est `Parameters[0]` (critique C3 : le README de la préparation se
+  trompe de disposition, sans effet sur les valeurs).
+- Le corpus : 129 sites (`6A` 59, `6B` 29, `6C` 12, `6D` 29) dans 45 programmes C de 8 cartes ; seuils de 32 à 256 px, aucun ≥ `0x8000` ; le mémo :
+  70 lectures (X 29, Y 12, Z 29), 59 précédées d'un `0x6A`, 11 sans (état neuf, cartes 55 à 57), 0 écrasement, 4 appels `0x78` intercalés sur la
+  307 ; les 8 sites de la carte 60 ne sont atteints que par le repli `map_alundra` (O-SM0-1). Écrivains des cellules : la DLL a un sous-ensemble du
+  binaire (sans `0x5F` ni `0xBB`).
+
+**Décisions.**
+- **D-SM2-1** — Les règles SM2-R1 à R7 de `sm2/report.md` §1 : les `case` avant `case 0x6E` (`:2025`), l'aide `MovedAtLeastTheThreshold` avant
+  `Wait` (`:2641-2645`) ; un bloc `unchecked` ; **ni `Math.Abs`, ni la forme en pixels `>> 16`** ; les libellés `:153-155` ; aucun type ni fichier
+  neuf dans `Alundra/` ; code proposé non construit : `sm2/proposed/EventProgramRunner.sm2.cs.txt`.
+- **D-SM2-2** — Le test statique du mémo par le flot complet (S1, `sm2/tools/cfg2.py` : états `Init / Saved / Clobbered` par pc et par axe, arêtes
+  d'appel et de retour explicites, écrivains du **binaire**) plutôt que la variante linéaire ; la sonde des écrivains de la DLL (S3) est
+  **obligatoire** (critique C11 : seule garde contre un écrivain neuf côté DLL).
+- **D-SM2-3** — Les arcs (A-442, A-344) sont facultatifs (R-SM-6 ; critique C8) ; aucun arc ni test d'exécution sur la carte 60 (l'épingle S4
+  seulement).
+
+##### Tâches
+
+- ⏳ **T0 — Annexe, sondes** (aucun code) : rejouer depuis une copie `sm2/tools/run_all.py` (le sha256 des 1 114 vecteurs, deux exécutions) ; les
+  tests de chargement jetables des cartes 344 et 442 (R-SM-6) ; les citations de tests traduites (R-SM-3).
+- ⏳ **T1 — Tests, rouges d'abord** (`sm2/report.md` §3, valeurs dans `sm2/evidence/handvalues.txt` et `sm2/proposed/RealBytesExpected.txt`) : V6A à
+  V6D (les quatre fichiers de vecteurs, entité logique ≠ propriétaire, sentinelles ; **`Parameters[1]` de départ à une sentinelle non nulle**,
+  `0xA5A50001`, pour que l'assertion de sa remise à 0 réfute la boucle ; critique C6) ; H1 à H10 ; RB-55, RB-55n, RB-56, RB-56b, RB-59, RB-307,
+  RB-344, RB-442 (la colonne « aujourd'hui » du tick 3 de RB-56 corrigée par la critique F31, non assertée) ; S1f (15 programmes fabriqués) ; **S1**
+  (trois `Fact` écrits : l'état de chaque lecture, la liste des 11 lectures neuves, les comptes par carte : 70, 59, 11, 0, 4 ; critique C7) ; S4 ; S3.
+- ⏳ **T2 — Le commit unique de R-SM-2** : les quatre `case`, l'aide, les trois libellés, le miroir, les 129 lignes retirées, `sm2` dans
+  `ClosedOwners`, les comptes.
+- ⏳ **T3 — Les arcs** retenus (R-SM-6). ⏳ **T4 — Plan, verifier frais.**
+
+##### Acceptation
+
+- R-SM-8 ; et `rg -c "Math\.Abs\(" Alundra/Events/EventProgramRunner.cs` vaut toujours 2 ; `rg -n "state\.Parameters\[4\]"
+  Alundra/Events/EventProgramRunner.cs` donne exactement 2 lignes, le `6A` et le `6D` (critique C2).
+- **Mutants** (R-SM-7) : les 17 de la préparation avec **les ensembles rouges exacts de la critique** (`sm2/critic/evidence/my_killmatrix.txt`,
+  critique C1 : par exemple M9 tué par H1 seul, M10 par H6 seul, M2 par H3a et H3c et 282 lignes de vecteurs, et non 366) ; équivalents déclarés :
+  `position − memo` et `(sbyte)v[2]` ; les mutants de S1 (`sm2/evidence/memo_flow_mutants.txt`).
+- **Preuve de retrait** : retirer le code seul rend rouges exactement les 37 tests de comportement (4 V, 25 H sans H10, 8 RB) et la règle 1 de sm0 ;
+  remettre les libellés seuls, H10 seul ; remettre les 129 lignes seules, les règles 2 et 4 de sm0 et (k1) ; retirer les classes de tests et les
+  vecteurs, rien.
+- **La liste de sm0** : −129 lignes ; passée la première : 381 lignes, 379 instructions, 90 cartes (sortent 55, 56, 57, 59, 307, 344), 17 opcodes.
+- **Recette de l'auteur** : aucune dans sm2 (atteindre 344 et 442 demande un préréglage absent, hors périmètre).
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : R-SM-1 non rempli ; une ligne de vecteur contredite par l'un des deux modèles, ou un octet lu sans membre ; une valeur écrite d'un
+  test H ou RB contredite ; un mutant sans aucun test rouge ; les comptes de S1 ou une empreinte qui changent (`sm2/evidence/export_hashes.txt`) ; un
+  test existant rouge ; un fichier de `Alundra/` autre que les deux du runner ; un nom refusé ; un abandon par `--blame-hang-timeout`.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : `git revert` du commit de code.
+
+#### 1.4.4 E19.sm3 — Les prédicats de contact, de groupe et de `ForceZ` : `0xA9 0xAA 0xB2 0xB4-0xB7 0x9E` ⏳ (détaillée le 2026-10-22)
+
+**Prérequis.** R-SM-1 ; les défauts retenus de Q-sm-4 (A : porter `0xB2` maintenant) et de Q-sm-6 (porter `0xB4` et `0xB7` ; `0x9E` avec son
+lecteur de case et un ADR, dans un commit à part). E20.g1a indépendante (les tests posent `PlatformEntity` à la main).
+
+**But.** Comme le binaire (FAIT, 837 vecteurs) : `0xA9` = la collision de l'entité logique est dans le groupe ; `0xAA` = un membre du groupe a pour
+collision l'entité logique ; `0xB2` = deux groupes s'intersectent (identité de proxy), un groupe 1 vide donne 0 ; `0xB4`/`0xB5`/`0xB6` =
+`ForceZ` du **premier** résultat `> 0`, `< 0`, `== 0`, un groupe vide donnant 0 ; `0xB7` = un membre a `TargetAnimationId` égal à l'octet ; `0x9E`
+= au moins `min` cases du rectangle ont le bit `0x02` de marchabilité. Vu en jeu (INFÉRENCE de décodage) : à Nirude (421, 423 à 426), un bloc
+poussé glisse d'une case dans le bon sens ; dans la grotte des fées (160), la boule de fer roule et rebondit ; au cauchemar d'Elenes (54), la
+montée du saut du héros est attendue ; en Meia Dream (440), Carré loin de Meia ne déclenche plus rien ; à Inoa (258, 298), rien de visible, sauf
+le coin de la case (5, 46) où un `Result` 1 déjà relu change désormais le chemin (critique C5).
+
+**Faits** (`sm3/report.md`, la critique `sm3/critic/check.md` faisant foi : F1 à F22 CONFIRMÉS sauf F13 RÉFUTÉ, les preuves de retrait).
+- Les tailles 2, 2, 3, 2, 2, 2, 3, 6 ; seul `Result` est écrit ; la recherche `0x8003C954` égale `EntitySearchService` ; les libellés justes sont
+  `B4 > 0`, `B5 < 0`, `B6 == 0` du premier résultat.
+- Le corpus : 42 lignes (`AA` 24, `B2` 10, `A9` 4, `B5` 3, `B6` 1) dans 11 cartes, **40 instructions** (les trois programmes C[2], C[3], C[4] de
+  la 440 partagent `@1140`) ; `B4`, `B7` et `9E` : 0 site. `PlatformEntity` n'est jamais écrit par la DLL : `B2` rend 0 en jeu tant qu'E20.g1b et
+  h3 ne font rien porter. Le contact du héros est écrit dans la physique, après les programmes, dans la DLL comme dans le binaire.
+
+**Décisions.**
+- **D-SM3-1** — Les règles R0 à R9 de `sm3/report.md` §1 : les sept prédicats de recherche après `case 0xB8` (`:2054-2076`), `0x9E` après `case
+  0x85` (`:1469-1482`) ; la liste vide ne lit jamais `matches[0]` ; `B7` en mot de 32 bits contre l'octet étendu par zéro ; les libellés de R7 ;
+  `PredicateOpcodes` inchangé.
+- **D-SM3-2** — `0x9E` lit les cases par un membre neuf `bool TryReadWalkability(int column, int row, out int walkability)` de `ICellMutator`,
+  implémenté par `CellStore` (son seul implémenteur ; `CellStore.GetWalkability`, `:136`, n'a pas de garde de bornes) ; hors grille, la case compte
+  0 avec un journal unique ; sans mutateur, `Result` 0 et un journal ; **un commit à part** et un ADR (R-SM-9).
+
+##### Tâches
+
+- ⏳ **T0 — Annexe, sondes** (aucun code) : rejouer depuis une copie les vecteurs (837) ; les mesures P1 à P6 de `sm3/report.md` §4.5 (P7 est
+  réglé statiquement : `EntityRefId` est la propriété `Index`) ; les tests de chargement jetables des 11 cartes (R-SM-6) ; les citations traduites
+  et **les quatre fichiers de test renommés au rangement de R5** (les noms proposés ont le préfixe `Alundra` et seraient refusés ; critique C4).
+- ⏳ **T1 — Tests, rouges d'abord** (`sm3/report.md` §3, `sm3/tests.tsv`) : M1, les tests unitaires U-A9-01 à 14, U-AA-01 à 11, U-B2-01 à 14,
+  U-B4/B5/B6 (18), U-B7-01 à 06, U-ALL-01, U-ALL-02, U-LBL-01, **plus** U-A9-15 et U-AA-12 (deux entités distinctes de même `EntityRefId`, la
+  collision sur celle qui n'est pas dans le groupe : 0 ; critique C2) et U-ALL-03 (propriétaire ≠ entité logique pour A9, AA et B4 à B6 avec le
+  type `0x80` ; critique C7) ; les vecteurs à trou portent `ref_id −1` (critique C8) ; M4, U-9E-01 à 09 (Q-sm-6) ; M2, la `[Theory]` des 40
+  instructions d'octets réels ; M3, les arcs sous R-SM-6, S3-A6a hors de la case (5, 46) ou avec le drapeau `0x81F4` éteint (critique C5).
+- ⏳ **T2 — Le commit unique de R-SM-2** : les sept `case`, les libellés, le miroir, les 42 lignes retirées, `sm3` dans `ClosedOwners`, les
+  comptes, **et (k2) de sm0** (les trois lignes de la 440 qui partagent `@1140` sont des lignes de sm3 : (k2) est retiré ou réécrit dans ce commit ;
+  critique C1). Puis **le commit de `0x9E`** (D-SM3-2) et l'ADR.
+- ⏳ **T3 — Les arcs** retenus (R-SM-6). ⏳ **T4 — Plan, verifier frais, recette.**
+
+##### Acceptation
+
+- R-SM-8.
+- **Mutants** (R-SM-7) : les 56 de `sm3/vectors/mutants.json` et ceux de la critique (`critic/work/extra_mutants.py`), dont l'identité contre
+  `EntityRefId` en A9 et AA (tuée par U-A9-15, U-AA-12) et la lecture du propriétaire (tuée par U-ALL-03) ; équivalents déclarés : la garde de
+  nullité de A9, le court-circuit `n1 == 0` de B2, l'ordre d'itération d'un prédicat « il existe », `_width` au lieu de 52 pour `9E`.
+- **Preuve de retrait** (critique C1) : retirer le code seul (les cas, les libellés, le miroir) rend rouges exactement les tests U de M1 (et de M4 si
+  `9E` est retenu), les 40 lignes de la `[Theory]` M2, les arcs retenus sauf S3-A3b (une garde verte par coïncidence), S3-A6a sur son seul `Kind`, et
+  (c1) de sm0 ; remettre les 42 lignes seules (`ClosedOwners` gardant `sm3`) rend rouges (c2), **(c4)** et (k1).
+- **La liste de sm0** : −42 lignes ; passée la première : 468 lignes, 468 instructions, 91 cartes (sortent 423 à 426 et 440), 16 opcodes ; variante
+  Q-sm-4 (B), `B2` attend E20.g1a : 32 lignes retirées, 10 au propriétaire neuf `g1a` entré dans le vocabulaire (D-SM0-4), 478, 478, 91, 17.
+- **Recette de l'auteur** (non bloquante) : Nirude 421 et 423 à 426 ; la grotte des fées 160 ; le cauchemar d'Elenes 54 ; Meia Dream 440 ; Inoa 258
+  et 298.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : R-SM-1 non rempli ; une valeur contredite par le binaire ou les vecteurs ; une lecture non mappée ; un test vert avant le code (hors
+  gardes nommées) ; un rouge autre que l'ensemble attendu ; une clé du corpus qui change ; E20.g1a fusionnée avant (son recensement des recherches
+  de types 4 et 11 doit nommer `B2`, `docs/plan-e20-heros.md`, g1a) ; un besoin de toucher au moteur, au convertisseur ou aux données ; un nom refusé ;
+  un abandon par `--blame-hang-timeout`.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : le commit unique, puis celui de
+  `0x9E`, chacun se retire seul.
+
+#### 1.4.5 E19.sm4 — Les opcodes d'action : `0x72 0x88 0x96 0x97 0xB3` ⏳ (détaillée le 2026-10-22)
+
+**Prérequis.** R-SM-1 ; les défauts retenus de Q-sm-1 (A : `0x97` ajoute des PM), Q-sm-2 (le montant est l'octet 1), Q-sm-3 (`Overwrite` seul),
+Q-sm-11 (`0x15`, `0x66`, `0x7A` laissés sautés) et Q-sm-12 (`0x88` à indice ≥ 3 : rien d'écrit, un avertissement) ; **sérialisée avec E20.h4a et
+E20.h1** (les trois touchent `PlayerManager.cs` ; critique C-8).
+
+**But.** Comme le binaire : `0x72` copie la cible d'animation et de direction de l'entité logique dans ses champs « derniers » ; `0x88` écrit le
+statut (Normal, Deactivated, FlagToDestroy) des entités trouvées ; `0x96` ajoute à leurs PV l'octet 1, qui sert aussi de type de recherche (l'octet
+2 n'est jamais lu), plafonné au maximum ; `0x97` ajoute des PM (`IncreaseMp`), **pas de l'argent** ; `0xB3` force les quatre mots du pavé. Vu en jeu :
+dans les salles de sauvegarde (452 à 470, et 147, 327, 379, 394, 475), les cœurs puis la magie remontent, l'argent ne bouge pas ; à Stenia (161),
+le héros marche seul vers le nord puis la cinématique commence ; en Meia Dream (442), le mur à boule de fer (sprite 126) désactivé disparaît ; à
+la 306, les deux petites plateformes flottantes (sprite 56) reviennent à l'état normal ; à la 40, les interrupteurs poussoirs (sprite 89) gardent
+leur changement d'orientation (critique C-6 ; l'atteignabilité de 442 et 306 relève de Q-sm-8).
+
+**Faits** (`sm4/report.md`, la critique `sm4/critic/check.md` faisant foi : F1 à F24 CONFIRMÉS, F21 RÉFUTÉ (un compte), F25 NON ÉTABLI (les arcs)).
+- Les gestionnaires `0x8003FA24` (`0x72`, taille 1), `0x8004011C` (`0x88`, 3), `0x800409A8` (`0x96`, 3), `0x80040A2C` (`0x97`, 2), `0x80041750`
+  (`0xB3`, 9) n'écrivent jamais `Result` ; `0x88` lit `{2, 3, 4}` à `0x80023D2C` (l'indice 3 est le texte « No.1 ») ; `0x96` fait `Hp = min(HpMax,
+  Hp + octet1)` en 32 bits ; `0x97` appelle `0x8004DF10` (la disposition des stats : `+4` PM, `+6` PM max, `+8` argent) ; `0xB3` écrit quatre
+  demi-mots du pavé ; l'ordre d'un tick (le pavé, puis les événements de carte, puis le bloc des entités) est celui du binaire.
+- Le corpus : 90 sites dans 50 cartes (`96` ×42, `97` ×24, `72` ×20, `88` ×3, `B3` ×1) ; tous les `96 80` ont le héros comme entité logique ; 50
+  sites couverts par octets réels ou arc, 40 par la forme seule (critique C-5 : « 52 » était faux).
+
+**Décisions.**
+- **D-SM4-1** — Les règles SM4-R1 à R7 de `sm4/report.md` §1 : `0x88` est une écriture simple de `Status` (ni `DestroyEntity`, ni bris, ni butin) ;
+  `0x96` écrit l'entité seule, jamais `PlayerStats`, sans calage du HUD (les stats d'un héros `LifePulledFromStats` suivent par le miroir de fin de
+  `MovePlayer`) ; une aide `PlayerManager.IncreaseMp(GameState, int)` près de `SetPlayerMp` (`:1970`), `ClampToShort` étant privé (`:647`) ; la
+  couture `internal void TickPad.Overwrite(uint hold, uint pressed, uint released, uint interval)` (`Alundra/Hero/TickPad.cs`, entre `Update` et
+  `Reset`) appelée par `Overwrite((uint)(v[1] | (v[2] << 8)), …)` pour chacun des quatre mots (critique C-4 : `v` est un `int[]`, le précédent est
+  `0x2F`, `:1829`) ; les libellés `:184`, `:199` (et, au choix, `:198`, `:227`) ; le témoin `UnknownOpcode_KnownSize_SkipsBySize`
+  (`AlundraEventProgramRunnerTests.cs:331-343`) repointé sur `0xB9` (taille 2), encore sauté ; un ADR (R-SM-9).
+
+##### Tâches
+
+- ⏳ **T0 — Annexe, sondes** (aucun code) : rejouer les vecteurs depuis une copie (370 et 21) et l'interpréteur indépendant de la critique
+  (`sm4/critic/work/cmips.py`, `replay_critic.py`) ; les tests de chargement jetables (R-SM-6) ; le nombre de redéclenchements de l'E de la 306
+  (le sprite 56 porte `DeactivateOnAnimationEnd`, critique C-7) ; les citations traduites (R-SM-3).
+- ⏳ **T1 — La couture puis les tests, rouges d'abord** (`sm4/report.md` §3, `sm4/named-tests-audit.json`) : la couture `Overwrite` et ses tests
+  S-1 à S-3 dans un commit à part ; U72-1 à 6 ; U88-1 à 10 et U88-3b ; U96-1 à 16, **U96-2 réécrit** (propriétaire = un PNJ en case 1, entité logique
+  = le héros en case 0, `96 80 32` : le héros 1/20 → 20, le PNJ inchangé ; critique C-2) et RB-394-C3 monté avec un propriétaire PNJ distinct du héros
+  logique ; U97-1 à 13 et **U97-14** (`97 FF`, PM 0/4 : 4 ; critique C-3) ; UB3-1 à 7 ; le rejeu V-72, V-88, V-96, V-97, V-B3, V-OOT et V-MANIFEST
+  (R-SM-5) ; les 12 tests d'octets réels ; les arcs ARC-40, ARC-306 (attendu : au moins un `0x88` exécuté par programme puis le statut Normal
+  observé après lui), ARC-442, ARC-452, ARC-161a, ARC-161b sous R-SM-6 ; P-WIT ; P-LBL.
+- ⏳ **T2 — Le commit unique de R-SM-2** : les cinq `case`, `IncreaseMp`, les libellés, le miroir, les 90 lignes retirées, `sm4` dans
+  `ClosedOwners`, les comptes ; dans `Alundra/`, seulement `EventProgramRunner.cs`, `EventOpcodeSizeTable.cs`, `PlayerManager.cs` et `TickPad.cs`.
+- ⏳ **T3 — Les arcs** retenus et les mutations réelles. ⏳ **T4 — Plan, ADR.** ⏳ **T5 — Verifier frais.**
+
+##### Acceptation
+
+- R-SM-8.
+- **Mutants** (R-SM-7) : les 25 de `sm4/mutants-matrix.json` (M97d décrit comme « aucun plafond ni plancher, repli 16 bits », sa définition
+  calculée ; critique C-8), **M96h** (la recherche part du propriétaire, tué par U96-2 réécrit) et **M97f** (l'octet lu signé, tué par U97-14) ;
+  MS-1 à MS-8 exécutés pour de bon en T3.
+- **Preuve de retrait** (`sm4/report.md` §5.1, découlant de `sm4/tests-catalog.json`) : retirer un `case` rend rouges exactement ses tests de la
+  table (par exemple `0x97` : U97-1, U97-2, U97-5 à U97-12, **U97-14**, V-97, RB-452-B3, RB-394-C3, RB-475-B2 et ARC-452 s'il est retenu) ; retirer
+  les libellés, P-LBL seul ; retirer tous les tests neufs, rien ; retirer le code seul rend aussi rouge la règle 1 de sm0 ; garder les 90 lignes avec
+  le code, les règles 2 et 4 de sm0.
+- **La liste de sm0** : −90 lignes ; passée la première : 420 lignes, 418 instructions, 53 cartes, 16 opcodes (sept cartes gardent d'autres sites :
+  29, 54, 159, 160, 199, 421, 442).
+- **Recette de l'auteur** (non bloquante) : une salle de sauvegarde (452) ; Stenia (161) ; Meia Dream 442 et la 306 (Q-sm-8) ; la 40.
+
+##### Arrêts, budget, retour arrière
+
+- **Arrêts** : R-SM-1 non rempli ; les empreintes des vecteurs ou du binaire ; une valeur contredite après le code ; un arc bloqué avant l'opcode pour
+  une raison sans rapport (repli sur les octets réels, à soumettre) ; RB-SHAPES ou RB-SAVEROOMS rouge à T0 (l'export a changé) ; un test existant hors
+  de la liste fermée (le témoin, `AlundraTickPadTests`, le miroir, sm0) bouge, ou une trace change ; un besoin de toucher à `WorldProxy` (Q-sm-3
+  autre que le défaut) ; une autre tranche a changé `PlayerManager.cs`, `EventProgramRunner.cs` ou `TickPad.cs` en cours de route ; un abandon par
+  `--blame-hang-timeout`.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : `git revert` du commit unique,
+  puis de celui de la couture.
 
 ## 2. Mesures
 
@@ -12610,15 +12935,21 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-79 | **Clos le 2026-10-09 (E19.m8 M8-d) : prémisse fausse.** `0x43 [0x81]` (240 `@529`, 292 `@423`) pose le héros comme entité logique avant `0x1A [80]` ; le gestionnaire de `0x1A` agit sur l'entité logique (`0x8003D7B4`, relue en `0x80042284`) : l'animation 80 est celle du héros (94 jeux, 80 Hold, 81 Loop), puis `0x43 [0]` ou `0x43 [1]` rend le contexte. Aucune lecture hors table. Texte d'origine, faux : **Animation 80 sur deux préfabs de 19 et 15 jeux** (E19.m8 M8-b, 2026-10-08, hors chaîne) : 240 `@535` (Giles, préfab `9b582582`) et 292 `@429` (Nestus, préfab `bbeba3db`) font `1A [80]` puis attendent par `0x1C`. Le binaire range `v[1]` sans contrôle (`0x8003D7B4`) et `UpdateAnimation` (`0x80038AB4`) indexe la table des jeux sans borne : l'original lit 61 et 65 entrées après la fin de la table, et ce qu'il montre alors n'est pas établi (pour les Flammes, une seule entrée après la table, E19.c2 l'a établi : les images vers le bas de l'animation 0). La DLL applique la même règle qu'aux Flammes (l'animation qui joue repart de son image 0). Question de fait à mesurer plus tard (lecture du binaire et de la mémoire des préfabs), ou écart à consigner si la lecture désigne des données sans sens (défaut de l'original). | à placer |
 | O-E19-80 | **Pose de saut figée possible à une arrivée hors `LoadingMap`** (vérification d'E19.v2, P4, 2026-10-09, non mesuré). Une arrivée par `0x52`/`0x53` recopie l'animation du héros : Idle ou Moving passent par la queue commune, qui lit le contact au sol sans la garde de terrain de V-R4. À la première image d'un pion neuf (contrôleur pas encore au sol), elle donnerait `0x2C` ou `0x2D`, que l'image suivante corrige, sauf si un verrou gèle `MovePlayer`, comme dans le bug du début de partie. Il en va de même d'une arrivée posée sur une entité. Les arrivées `0x53` de la chaîne vers la 476, la 478 et la 416 sont mesurées au sol ou en `0xD`. À mesurer avec le harnais du vrai jeu sur une arrivée `0x52`/`0x53` suivie d'un verrou, puis à corriger par la même règle du plancher si le cas existe. | **E20.a** (2026-10-09 : le passage du héros par tick change ses premières images ; `docs/plan-e20-heros.md` §0.3) |
 | Q-E19-SM1 | (2026-10-17) Le découpage E19.sm0 à sm10 (§1.4) devient-il la suite d'E19 ? Quand : après la restructuration de la DLL (règle du chantier), ou avant, en suspendant le chantier ? Et qui porte les ombres de `0xAC` (32 sites ; rien ne dessine d'ombre aujourd'hui) ? | l'auteur |
-| Q-sm-1 | (2026-10-17) `0x97` ajoute des PM (binaire), alors que la décompilation et la table disent « argent » : le porter comme le binaire et l'acter par ADR ? Recommandé oui | l'auteur |
+| Q-sm-1 | (2026-10-17) `0x97` ajoute des PM (binaire), alors que la décompilation et la table disent « argent » : le porter comme le binaire et l'acter par ADR ? Recommandé oui. **Précisé le 2026-10-22 (sm4)** : dans les 24 salles de sauvegarde, (A, défaut) la magie remonte jusqu'à 4 pastilles et l'argent ne bouge pas ; (B, la décompilation) l'argent baisse de 50 à chaque passage ; (C) laisser sauté : la magie ne revient jamais | l'auteur |
 | Q-sm-2 | (2026-10-17) `0x96` : suivre le binaire à la lettre (montant = octet 1, octet 2 ignoré) ? Aucune différence visible tant que les PV max du héros restent inférieurs ou égaux à 51 (rapport, §6) | l'auteur |
-| Q-sm-3 | (2026-10-17) `0xB3` (pavé forcé, 1 site, carte 161) : une couture dans `AlundraTickPad` suffit-elle, ou faut-il aussi réécrire ce que lit la boîte de dialogue ? | E19.sm4 (T0) |
-| Q-sm-4 | (2026-10-17) `0xB2` : le porter maintenant (rend 0 tant que rien n'est porté) ou attendre E20.g1a ? Attendre laisse 10 sites sautés | l'auteur |
-| Q-sm-5 | (2026-10-17) `0x60`/`0x61` ferment 186 sites d'énigmes à plaques, mais les blocs poussables des cartes 27, 29, 30, 113 et 400 n'ont pas de tranche (O-E20-21) : ces énigmes ne se résoudront pas en jeu même avec sm1 | l'auteur |
-| Q-sm-6 | (2026-10-17) `0x9E` et `0x88` (0 site) : les porter avec des vecteurs seulement, ou les laisser sautés ? **Corrigé le 2026-10-18** : `0x9E` a 0 site, mais `0x88` en a 3 (306 `E[14] @1110`, 306 `E[15] @1122`, 442 `E[1] @1312`) et appartient à sm4 ; la question ne vaut plus que pour `0x9E` (l'annexe parlait d'un indice de `0x88` ≥ 3, sans site) | l'auteur |
+| Q-sm-3 | (2026-10-17) `0xB3` (pavé forcé, 1 site, carte 161) : une couture dans `AlundraTickPad` suffit-elle, ou faut-il aussi réécrire ce que lit la boîte de dialogue ? **Défaut retenu le 2026-10-22 (sm4)** : la couture `TickPad.Overwrite` seule ; le seul site force « Haut » sans bouton ni choix, réécrire les enregistrements de la boîte ne se verrait nulle part | l'auteur |
+| Q-sm-4 | (2026-10-17) `0xB2` : le porter maintenant (rend 0 tant que rien n'est porté) ou attendre E20.g1a ? Attendre laisse 10 sites sautés. **Défaut retenu le 2026-10-22 (sm3)** : A, le porter maintenant (les boutiques d'Inoa demandent « le héros porte-t-il l'article N ? » ; rien ne change en jeu tant que rien n'est porté) | l'auteur |
+| Q-sm-5 | (2026-10-17) `0x60`/`0x61` ferment 186 sites d'énigmes à plaques, mais les blocs poussables des cartes 27, 29, 30, 113 et 400 n'ont pas de tranche (O-E20-21) : ces énigmes ne se résoudront pas en jeu même avec sm1. **Confirmé le 2026-10-22** (critique de la préparation de sm1, P2-a) : les objets des plaques sont de la famille C4 (sprites 107, 111, 112, 113, et 34, 37, 117), hors de l'ensemble câblé d'E20.g ; 167 des 187 sites restent insolubles même après E20.g1b ; voir Q-sm-13 | l'auteur |
+| Q-sm-6 | (2026-10-17) `0x9E` et `0x88` (0 site) : les porter avec des vecteurs seulement, ou les laisser sautés ? **Corrigé le 2026-10-18** : `0x9E` a 0 site, mais `0x88` en a 3 (306 `E[14] @1110`, 306 `E[15] @1122`, 442 `E[1] @1312`) et appartient à sm4 ; la question ne vaut plus que pour `0x9E` (l'annexe parlait d'un indice de `0x88` ≥ 3, sans site). **Défaut retenu le 2026-10-22 (sm3)** : porter `0xB4` et `0xB7` (0 site, même corps que `0xB5`/`0xB6`) ; porter `0x9E` avec un lecteur de case (`ICellMutator.TryReadWalkability`) et un ADR, dans un commit à part, pour qu'E19 se close sur « aucun opcode sauté » ; ou le laisser sauté (sans code mort, mais E19 ne se clôt pas dessus) | l'auteur |
 | Q-sm-7 | (2026-10-17) Les libellés faux de `EventOpcodeSizeTable.cs` (`0x6B`-`0x6D`, `0x88`, `0x97`, `0xA9`, `0xAA`, `0xB4`-`0xB6`) sont corrigés dans la tranche qui porte l'opcode | E19.sm1 à sm4 |
 | Q-sm-8 | (2026-10-17) Les cartes 55 à 57 (11 lectures de `0x6D` sans `0x6A`) sont-elles atteignables dans le jeu livré ? **Élargie le 2026-10-18** (relecture d'état, `check_sm12.md` B8, I3) : les cartes 55 à 60 (65 sites de sm2 : `0x6A` 27, `0x6B` 7, `0x6C` 2, `0x6D` 29), et 307, 344, 442, où sm2 et sm4 proposent leurs arcs | l'auteur |
 | Q-sm-10 | (2026-10-18) `0x5F` (une attente de 8 octets, aucun site dans le corpus) n'a aucune tranche : le porter avec des vecteurs seulement (dans sm3 ou sm4), ou le laisser sauté (le test de l'oracle reste alors vert pour toujours et E19 ne se clôt pas sur « aucun opcode sauté ») ? | l'auteur |
+| Q-sm-11 | (2026-10-22, sm4) `0x15`, `0x66`, `0x7A` (aucun site) : (A, défaut) les laisser sautés, leurs vecteurs versés (`docs/plan-e19-sm-annexe/sm4/vectors/zero-site/`) ; (B) les porter : trois `case`, un ADR sur le repère Z pour `0x15`, un accès à l'état partagé pour `0x66`, aucun effet visible ; le test de l'oracle qui exige un opcode encore sauté resterait alors vert grâce à `0x5F` (Q-sm-10) | l'auteur |
+| Q-sm-12 | (2026-10-22, sm4) `0x88` à indice 3 ou plus (aucun site : les trois sites utilisent 0, 0 et 2) : le binaire écrirait un mot de texte comme statut ; (A, défaut) rien d'écrit et un avertissement, comme D-E19-22 pour `0x40`/`0x41` ; (B) reproduire | l'auteur |
+| Q-sm-13 | (2026-10-22, sm1) L'ordre avec les objets des plaques : (A, défaut) sm1 juste après sm0 : les plaques des cartes 27, 29, 30, 113 et 400 ne se déclenchent plus à tort mais restent insolubles **sans remède planifié** (la famille C4 n'a aucune tranche, Q-sm-5) ; la maison de Lurvy cesse sa boucle ; le passage de la 27 qui s'ouvre aujourd'hui par accident après les momies reste fermé ; (B) une tranche C4 d'abord (O-E20-21), puis sm1 | l'auteur |
+| Q-sm-14 | (2026-10-22, sm1) `0x3C` (aucun site) : (A, défaut) le porter avec ses vecteurs (environ 8 lignes et 19 tests ; rien ne change en jeu, son sens binaire, contraire de la décompilation, est figé) ; (B) le laisser sauté | l'auteur |
+| Q-sm-15 | (2026-10-22, sm1) La scène d'Inoa (226) attend après sm1 qu'une entité entre dans sa zone (aujourd'hui elle se termine trop tôt) : si l'entité attendue (le loup-garou) n'y entre jamais, la scène ne finit pas. (A, défaut) accepter, avec une recette de la scène jusqu'à sa fin ; (B) attendre la scène du loup-garou | l'auteur |
+| Q-sm-16 | (2026-10-22, sm2) Le cadre Z du mémo pour les 11 lectures `0x6D` sans `0x6A` (cartes 55 à 57, inatteignables) : (A, défaut) le cadre de la DLL, rien à faire (au repos le Z binaire n'est jamais un multiple de 65 536, ADR-0026 : aucune différence visible) ; (B) stocker et comparer `PosZ + 1` | l'auteur |
 | O-SM0-1 | (2026-10-18) Huit sites de `0x6A`/`0x6B`/`0x6C` de la carte 60 ne sont atteints que par les enregistrements à bit `0x80` clair (le repli `map_alundra`), dont la table C globale n'a qu'une entrée : le binaire y lit-il un programme ? Lire `0x80098FAC` et le chargement des index C 1, 4 et 10 au binaire ; jusque-là, propriétaire sm2 (D-SM0-4) | E19.sm9 (T0) |
 | O-SM0-2 | (2026-10-18) `0xBB` suspend-il (il écrit la marque d'attente et compte 60 ticks : INFÉRENCE) ? S'il suspend, il entre dans `WaitOpcodes` et la règle 3 rougit sur ses deux sites tant qu'il est sauté | E19.sm8 (T0) |
 | Q-D5B-1 | (2026-10-17) Plateformes qui bougent en Z (D5b) : le héros seul (M1 à M4, plus le plafond des porteurs) ou tous les passagers, caisses comprises ? | l'auteur |
