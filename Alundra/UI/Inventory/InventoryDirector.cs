@@ -422,8 +422,8 @@ public sealed class InventoryDirector
         // in this DLL at all. Declared absent, treated as always 0 (never blocks).
 
         // GameEngine.cs:1572 - (StaticVariables.g_padState1.ButtonsJustPressed & PadState.OpenInventory) != 0.
-        // NOT ByInterval - a straight edge, read from the per-tick pad D1 built (AlundraTickPad), never
-        // AlundraGameState.LastPadState (plan §1.3, D0.10 - the inventory needs the tick-exact edge).
+        // NOT ByInterval - a straight edge, read from the per-tick pad D1 built (TickPad), never
+        // GameState.LastPadState (plan §1.3, D0.10 - the inventory needs the tick-exact edge).
         if ((state.TickPad.ButtonsJustPressed & (PadState.Start | PadState.L2 | PadState.R2)) == 0)
         {
             return false;
@@ -712,7 +712,7 @@ public sealed class InventoryDirector
 
         // :853-859 - L1/R1 (OpenSubInventory): close (same FUN_800556dc/sound 5 as the branch above), but
         // WITHOUT InitializeHudPositionBeforeHide (the gauge stays hidden, plan §1.1) - MenuOpen re-armed
-        // and AlundraInventoryPostProcess.State = 1 instead: AlundraInventoryPostProcess.Run opens the
+        // and InventoryPostProcess.State = 1 instead: InventoryPostProcess.Run opens the
         // sub-inventory once this closing slide settles (this class' own IsCallbackArmed).
         if ((pad.ButtonsJustPressedByInterval & (PadState.L1 | PadState.R1)) != 0)
         {

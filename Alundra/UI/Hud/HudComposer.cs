@@ -22,7 +22,7 @@ public static class HudComposer
     // UIBoxHud = { X = 0, Y = 0x10 } (StaticVariables.cs:12270, HudManager.cs:33-36/52-54). Named
     // constants (not inlined 0/16) so every offset below reads exactly like HudManager.cs's own
     // "UIBoxHud.X + ..." / "UIBoxHud.Y + ..." expressions - X is kept even though it is always 0 for
-    // this box (AlundraHudDirector's own tween-field doc: "the tween's X axis is degenerate for the HUD
+    // this box (HudDirector's own tween-field doc: "the tween's X axis is degenerate for the HUD
     // specifically") so a future non-zero UIBoxHud.X would only need this one constant changed.
     private const int BoxX = 0;
     private const int BoxY = 0x10;
@@ -39,7 +39,7 @@ public static class HudComposer
     };
 
     // g_MpIconSprites (ALUN_CD.EXE 0x801760b8): four pip primitives per display bank, banks 0x50 bytes apart - the
-    // same four as SetPlayerMpMax's ceiling and AlundraHudDirector.MagicPipFrame's length.
+    // same four as SetPlayerMpMax's ceiling and HudDirector.MagicPipFrame's length.
     private const int MagicPipSlots = 4;
 
     private static readonly HudGlyph[] CoinByFrame =
@@ -115,8 +115,8 @@ public static class HudComposer
         // :727-733, ported verbatim - NO upper guard. A third-pass verifier finding clamped this to
         // hpMaxDisplayed, reasoning that hp==hpMaxDisplayed with the preview flag set was unreachable; a
         // fourth-pass review showed that reasoning wrong and the clamp itself a regression. It IS reachable
-        // through the real director: AlundraHudDirector.UpdateHpAndMpCatchUp's HpMax catch-up branch
-        // (AlundraHudDirector.cs:462-473) only starts once Hp==hpTarget==HpMax already (hpTarget itself is
+        // through the real director: HudDirector.UpdateHpAndMpCatchUp's HpMax catch-up branch
+        // (HudDirector.cs:462-473) only starts once Hp==hpTarget==HpMax already (hpTarget itself is
         // bounded to HpMax at :432-435), and HpDisplayPreviewIncrement (:131, "_hpSubStep != 0 ||
         // _hpMaxSubStep != 0") stays true for the 3 sub-steps before HpMax itself is bumped at :471-472 -
         // e.g. picking up a heart container at full HP. The original DOES draw this tick's HUD with

@@ -49,7 +49,7 @@ public sealed class HudScreen : XamlUIScreenBase, IDisposable
     // (g_lifeBigIconSprites, DisplayLife's "3-i" never reaches index 4), 10 small life tiles (g_lifeSmallIconSprites,
     // array slots 5 and 11 never addressed), 4 magic pips (g_MpIconSprites) and 5 money tiles (g_HudMoneySprites,
     // 4 digits + coin): 3 + 4 + 10 + 4 + 5 = 26. The XAML declares exactly these, one element per role. Internal so
-    // AlundraHudComposerTests sizes its own exhaustive grid test against it.
+    // HudComposerTests sizes its own exhaustive grid test against it.
     internal const int MaxTileCount = 26;
 
     private readonly HudDirector _director;
@@ -202,7 +202,7 @@ public sealed class HudScreen : XamlUIScreenBase, IDisposable
     internal bool IsDisposed => _disposed;
 
     /// <summary>Gives back every icon sprite data this screen holds (engine ADR-0037) and the screen asset itself.
-    /// Called by the world proxy that built it, when its world ends (<c>AlundraWorldProxy.OnEndPlay</c>).
+    /// Called by the world proxy that built it, when its world ends (<c>WorldProxy.OnEndPlay</c>).
     /// Idempotent.</summary>
     public override void Dispose()
     {

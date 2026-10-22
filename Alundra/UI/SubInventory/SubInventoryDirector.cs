@@ -482,7 +482,7 @@ public sealed class SubInventoryDirector
             return;
         }
 
-        // D-E13D (same shape as AlundraInventoryDirector's own _hasRunPerFrameSinceSetup): set
+        // D-E13D (same shape as InventoryDirector's own _hasRunPerFrameSinceSetup): set
         // unconditionally on entry, so IsDrawn is true from this tick on - the AND with IsActive alone
         // hides it again at the close-completion tick (see this class' own doc on IsDrawn).
         _hasTickedSinceOpen = true;
@@ -538,7 +538,7 @@ public sealed class SubInventoryDirector
         }
 
         // :364-369 - Start/Triangle/L2/R2 (mask 0x813, the executable's own - plan §1.1/D-E13D-29, same
-        // mask AlundraInventoryDirector.RunInput uses): close, hand the gauge back.
+        // mask InventoryDirector.RunInput uses): close, hand the gauge back.
         if ((pad.ButtonsJustPressedByInterval & (PadState.Start | PadState.Triangle | PadState.L2 | PadState.R2)) != 0)
         {
             RunCloseSetup();

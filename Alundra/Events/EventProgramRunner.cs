@@ -58,7 +58,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     private readonly HashSet<(int Slot, int Code)> _loggedNoOpKeys = new();
 
     /// <summary>
-    /// Trace seam for the headless intro trace harness (Alundra.Tests/IntroTraceHarnessTests.cs) - null
+    /// Trace seam for the headless intro trace harness (Alundra.Tests/Arcs/HeadlessIntroSimulation.cs) - null
     /// by default (zero cost: a single null-check per dispatched opcode, no allocation) and never set by
     /// production code. When non-null, <see cref="RunOneScriptCall"/> reports every dispatched opcode
     /// (after <see cref="Dispatch"/>, so its <see cref="EventTraceKind"/> is known) plus the 0xFF/0x00
@@ -618,16 +618,16 @@ public sealed class EventProgramRunner : IEventProgramRunner
                 return WalkUntilBeyondRadius(entity, v, state);
 
             case 0x0C: // Random cardinal direction - Script_12_00C (E19.c1 T3): one draw of the shared generator
-                       // (AlundraRandom, the original's seed 0x80098708 and constants), then TargetDirection =
+                       // (GameRandom, the original's seed 0x80098708 and constants), then TargetDirection =
                        // cardinal table[seed >> 30]. Size 1.
                 entity.TargetDirection = AnimationTables.CardinalDirectionTable[(int)((uint)GameRandom.Next() >> 30)];
                 return 1;
 
             case 0x10: // Player lose control - Script_16_010 (EntityEventHandlers.cs:680-684). The flag
-                       // store IS the whole port: AlundraPlayerManager.MovePlayer's own InputBlockedMask
+                       // store IS the whole port: PlayerManager.MovePlayer's own InputBlockedMask
                        // gate reads it, at the same site the original tests it (PlayerManager.cs:38).
                        // E6 decision E6-1 deliberately declines an engine-level input cut - see
-                       // AlundraGameState.PlayerControlFlags' own doc.
+                       // GameState.PlayerControlFlags' own doc.
                 _gameState.PlayerControlFlags |= GameState.PlayerControlBits.ControlLocked;
                 return 1;
 
@@ -728,7 +728,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
             case 0x1E: // Walk - Script_30_01E (EntityEventHandlers.cs:793-829): see this case's own doc
                        // on Walk below for the full port + E4.d navigation-detour extension (D5). Sets
                        // NEITHER anim NOR direction by itself (0x5A/0x5B do - free walk comes from the
-                       // permanent physics tick, AlundraScriptedMotion).
+                       // permanent physics tick, ScriptedMotion).
                 return Walk(entity, v, state, allowDetour: true);
 
             case 0x1F: // Walk with collision - Script_31_01F (EntityEventHandlers.cs:832-841): delegates
@@ -736,7 +736,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                        // detour for 0x1F, the original itself just ends on a curtailed movement), but ALSO
                        // ends once ForceAdjusted becomes nonzero this frame - faithful (the original tests
                        // the frame's own ForceAdjusted; this port tests the last completed sub-step's own
-                       // curtailment instead, see AlundraEntityScriptProxy.ForceAdjusted's own doc -
+                       // curtailment instead, see EntityScriptProxy.ForceAdjusted's own doc -
                        // documented deviation, plan §3 E4.d).
                 return Walk(entity, v, state, allowDetour: false) == 0 && entity.ForceAdjusted == 0 ? 0 : 3;
 
@@ -797,7 +797,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
             }
 
             case 0x87: // Check touched by attack type - Script_135_087 @ 0x80040048 (E20.c1b K4), PER THE BINARY: Result = 1 when some entity the search v1 finds is touched (+0x224) by an
-                       // entity with a frame box and an attack of a non-zero attribute whose nibble is byte[0x80098FA4 + v2] (AlundraHitOpcodes.TypeNibbles: sword 0, hammer 1, arrow 2,
+                       // entity with a frame box and an attack of a non-zero attribute whose nibble is byte[0x80098FA4 + v2] (HitOpcodes.TypeNibbles: sword 0, hammer 1, arrow 2,
                        // bomb 3, ...), else 0. 181 of its 182 sites are in programs D, which share one state with A, E and F (the binary's 0x8013D9E8): skipping it left a stale Result. Size 3.
             {
                 var touched = false;
@@ -816,7 +816,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
             case 0x95: // Check entities attacking a box - Script_149_095 @ 0x800407C0 (E20.c1b K4), PER THE BINARY: [x, y, z, wx, hy, unused, maskLo, maskHi, typeIdx]; the rectangle is
                        // (24 x, 16 y, 16 z) px with the sizes (24 wx, 16 hy, 24 wx) px (the Z size is the X size); Result = 1 when an attacker (hero first) whose Flags have a bit of
-                       // the mask, with a frame box and an attack of the type typeIdx, has its STORED HitBox (AlundraEntityScriptProxy.StoreHitBox) in it; a zero mask answers 0. Size 10.
+                       // the mask, with a frame box and an attack of the type typeIdx, has its STORED HitBox (EntityScriptProxy.StoreHitBox) in it; a zero mask answers 0. Size 10.
             {
                 state.Result = HitOpcodes.AnyAttackerInRectangle(
                     _worldContext.SpawnedEntities, _worldContext.PlayerEntity, v[7] | (v[8] << 8), v[9],
@@ -862,12 +862,12 @@ public sealed class EventProgramRunner : IEventProgramRunner
             case 0x1B: // Fly - Script_27_01B (EntityEventHandlers.cs:743-747): ForceZ = (((v2<<8)|v1) *
                        // 0x10000) >> 8, a signed 16.16 vertical impulse. Only the DLL-side struct field is
                        // set here now (root-cause vertical-fidelity fix, gull entity 6 map 389 - see
-                       // AlundraEntityScriptProxy.EvaluateEntitySupport's own doc for the full
+                       // EntityScriptProxy.EvaluateEntitySupport's own doc for the full
                        // investigation): a controller-driven NPC's vertical is driven ENTIRELY by that
                        // method's own per-tick decay + Controller.Move() displacement, read from ForceZ at
                        // the head of the very next EvaluateEntitySupport call this same tick (RunPickedEvent
-                       // runs before AlundraScriptedMotion.TickScriptedNpc/EvaluateEntitySupport in the
-                       // same per-tick loop - see AlundraEntityScriptProxy.Update's own doc). This opcode
+                       // runs before ScriptedMotion.TickScriptedNpc/EvaluateEntitySupport in the
+                       // same per-tick loop - see EntityScriptProxy.Update's own doc). This opcode
                        // used to ALSO push the raw (pre-decay) impulse straight onto
                        // CharacterControllerComponent.SetVerticalVelocity, letting CharacterMotionSystem's
                        // own per-RENDER-FRAME integrator move the entity a SECOND, independent time this
@@ -906,7 +906,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
             case 0x32: // Toggle flag - Script_50_032 @ 0x8003DEFC (EntityEventHandlers.cs:1102-1109):
                        // XorFlag(flag, 1 << (v1 & 0x1f)) - the FIRST caller of
-                       // AlundraGameState.XorFlag (bank chosen by bit 0x8000 of the flag id, as its own
+                       // GameState.XorFlag (bank chosen by bit 0x8000 of the flag id, as its own
                        // BankFor already does). Always returns 3 (instruction size).
             {
                 var flag = (uint)((v[2] << 8) | v[1]);
@@ -1016,7 +1016,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                        // dialogue box. v[1]=textId (bit 0x80 -> LOCAL Strings[textId&0x7F], clear -> the
                        // SHARED dialogue_shared Yarn asset, E15.c T5 - degrades, once warned, when it is
                        // not loaded); v[2]=controlMode (1 -> MessageBox, 0 -> MenuOpen, see
-                       // AlundraDialogueDirector.Open's own doc). Dispatch itself owns the reentrancy
+                       // DialogueDirector.Open's own doc). Dispatch itself owns the reentrancy
                        // guard (T2): a dialogue already open makes this retry (return 0) rather than
                        // stomping a second one open.
                        // E19.f4b: the speaker (name box and portrait) is the LOGIC entity of the program, the one this handler receives.
@@ -1034,7 +1034,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                 }
 
                 // PURE POLL, like the original's Script_IsDialogInProgress_039 - the box's own
-                // advance/close pass runs once per logic tick from AlundraWorldProxy.Update (see the
+                // advance/close pass runs once per logic tick from WorldProxy.Update (see the
                 // F1 comment there), NOT from this opcode: six of the seven sailors open their box
                 // from a program with no 0x39 at all.
                 return waitDirector.IsOpen ? 0 : 1;
@@ -1107,7 +1107,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
             case 0x51: // Get dialog choice (misnomer, §1.3 - really a script-close LATCH) -
                        // Script_GetDialogChoice_51 (E12.a, E19.f2a F2-R4): latched only while the mask's bit2 is set
-                       // (AlundraDialogueDirector.RequestScriptClose's own doc); the box takes the latch once its typing is done.
+                       // (DialogueDirector.RequestScriptClose's own doc); the box takes the latch once its typing is done.
                        // No Result either way.
                 _worldContext.DialogueDirector?.RequestScriptClose();
                 return 1;
@@ -1269,7 +1269,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                 return 7;
 
             case 0xBD: // Play sound 2 - Script_189_0BD (EntityEventHandlers.cs:3597-3610, E11.a,
-                       // docs/plan-e11-audio.md): sfxId = (v[2] << 8) | v[1] - see AlundraSoundPlayer's
+                       // docs/plan-e11-audio.md): sfxId = (v[2] << 8) | v[1] - see SoundPlayer's
                        // own doc for the resolution/playback mechanics. SoundPlayer null (no
                        // AudioSystemComponent for this world, or the intro trace harness's own
                        // neutralization twin) -> degraded no-op, same shape as 0x54 below.
@@ -1332,7 +1332,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                        // sfxId=v[1], mix left=v[2], mix right=v[3]. The original NEVER starts new
                        // playback here - it only remixes (recomputed stereo volume, applied to)
                        // tone-voices ALREADY playing for this id; a non-audible/silent id is a total
-                       // no-op (see AlundraSoundPlayer.RemixVoice's own doc).
+                       // no-op (see SoundPlayer.RemixVoice's own doc).
                 if (_worldContext.SoundPlayer is { } remixVoicePlayer)
                 {
                     remixVoicePlayer.RemixVoice(v[1], v[2], v[3]);
@@ -1350,7 +1350,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                        // stops every live SFX voice and disarms the master fade machine, unconditionally
                        // restores the master volume, then plays the loaded sequence - but ONLY IF it was
                        // silent (B4's own "a live voice is left alone") - see
-                       // AlundraBgmFadeDirector.StopAllSound's own doc for the exact ordering.
+                       // BgmFadeDirector.StopAllSound's own doc for the exact ordering.
                 if (_worldContext.BgmFadeDirector is { } stopAllSoundDirector)
                 {
                     stopAllSoundDirector.StopAllSound();
@@ -1381,7 +1381,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
             case 0xA7: // Play music - Script_167_0A7 (EntityEventHandlers.cs:3141-3145, B12/B13, D8):
                        // v[1] = raw music index, unsigned byte (B12: the "< 0 ignored" branch of B13 is
                        // unreachable from this opcode) - 0 stops and closes, loads and closes otherwise
-                       // (AlundraMusicPlayer.PlayFromRawIndex's own doc; deliberately NOT PlayMapMusic's
+                       // (BgmPlayer.PlayFromRawIndex's own doc; deliberately NOT PlayMapMusic's
                        // per-map guard/remap; NEVER starts a voice either way, B13's own "chargée sans
                        // être jouée"). v[2] = the streaming path's own g_forceStopAllSound (B13's active,
                        // > 0 branch): StopAllSound only runs when v[1] > 0 AND v[2] != 0 - B13's zero
@@ -1438,8 +1438,8 @@ public sealed class EventProgramRunner : IEventProgramRunner
             case 0x54: // Set walkable - Script_84_054 (EntityEventHandlers.cs:1589-1620): OR's
                        // v[3]/v[4] into (Walkability, GroundProperty) of the tile at (v[1],v[2]), clamped
                        // to the original's own hardcoded [0,0x33]x[0,0x3b] - see
-                       // AlundraCellStore.SetCellBits's own doc for the exact clamp/index derivation.
-                       // CellMutator null (no AlundraCellStore installed for this world) -> degraded
+                       // CellStore.SetCellBits's own doc for the exact clamp/index derivation.
+                       // CellMutator null (no CellStore installed for this world) -> degraded
                        // no-op, same shape as 0xBD above.
                 if (_worldContext.CellMutator is { } setBitsMutator)
                 {
@@ -1468,7 +1468,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
             case 0x85: // Set map tiles - Script_133_085 (EntityEventHandlers.cs:2440-2444): port of
                        // GameEngine.ChangeAreaTileProperties(srcX, srcY, width, height, dstX, dstY) - see
-                       // AlundraCellStore.CopyCellRectangle's own doc for the exact field list and the
+                       // CellStore.CopyCellRectangle's own doc for the exact field list and the
                        // documented no-clamp deviation (the original's own bounds check is a debug-only
                        // trap, not a guard).
                 if (_worldContext.CellMutator is { } copyRectMutator)
@@ -1484,7 +1484,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
             case 0xAF: // Begin fade transition with color - Script_175_0AF (E10.b, docs/plan-e10-fondu.md):
                        // machine B (the drawn fade rectangle). v[1]/v[2]/v[3] are (R,G,B) already in
-                       // DISPLAY order (§1.2 - see AlundraScreenFadeDirector's own class doc on the
+                       // DISPLAY order (§1.2 - see ScreenFadeDirector's own class doc on the
                        // channel swap, which this port never re-applies). v[4] = tpage (blend selector),
                        // v[5] = duration (ticks), v[6] = persist (the persistence latch, §1.1 - never
                        // decremented anywhere in this DLL). ScreenFadeDirector null (no world context
@@ -1502,7 +1502,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
                 return 7;
 
             case 0x8C: // If random >= value - Script_140_08C @ 0x80040438 (E19.l1): one draw of the shared generator
-                       // (AlundraRandom, the same constants and initial seed as the binary's 0x80098708);
+                       // (GameRandom, the same constants and initial seed as the binary's 0x80098708);
                        // Result = 1 when (seed >> 24) >= v1, else 0 (the old label said "<", inverted). Size 2.
                 state.Result = (uint)GameRandom.Next() >> 24 >= (uint)v[1] ? 1 : 0;
                 return 2;
@@ -1781,7 +1781,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
             case 0x70: // Is above ground - Script_112_070 (EntityEventHandlers.cs:2161-2165): Result =
                        // logicEntity.IsOnGround, pulled from the controller every frame by
-                       // AlundraEntityScriptProxy.Update's own root pull (E3.d) - 0 (falls) for an entity
+                       // EntityScriptProxy.Update's own root pull (E3.d) - 0 (falls) for an entity
                        // with no controller yet, same default the field already carries.
                 state.Result = entity.IsOnGround;
                 return 1;
@@ -1816,14 +1816,14 @@ public sealed class EventProgramRunner : IEventProgramRunner
                        // (D-E7-7 corrects it - see fact 1, docs/plan-e7-mutation-tuiles.md) - a raw pad-
                        // button test. Result = 1 iff (snapshot & ((v[2] << 8) | v[1])) != 0. v[3] selects
                        // the snapshot: 0 ButtonsHold, 1 ButtonsJustPressed - both read off
-                       // AlundraGameState.LastPadState (D-E7-8's own seam, published by
-                       // AlundraEntityScriptProxy.Update's player branch just before MovePlayer); 2
+                       // GameState.LastPadState (D-E7-8's own seam, published by
+                       // EntityScriptProxy.Update's player branch just before MovePlayer); 2
                        // (ButtonsReleased) and every other value (the original's own default arm,
-                       // ButtonsJustPressedByInterval) have no field behind them on AlundraPadState
+                       // ButtonsJustPressedByInterval) have no field behind them on PadState
                        // (D-E7-9) - degraded no-op (Result = 0, once-logged warning), never an exception,
                        // since this runs on the production dispatch path.
             {
-                // E20.a A1 (D-E20-2): modes 0 and 1 read the pad of the TICK (AlundraGameState.TickPad, advanced at the head of each logic tick), the binary's g_padState1 -
+                // E20.a A1 (D-E20-2): modes 0 and 1 read the pad of the TICK (GameState.TickPad, advanced at the head of each logic tick), the binary's g_padState1 -
                 // not the snapshot of the rendered frame, whose edge a two-tick frame would read twice and a tickless frame never.
                 var padFlag = (uint)((v[2] << 8) | v[1]);
                 var padState = _gameState.TickPad;
@@ -1880,10 +1880,10 @@ public sealed class EventProgramRunner : IEventProgramRunner
                        // v[1]/v[2] = desired map INDEX (v[2]<<8|v[1] - already the internal index, no
                        // MapIdToInternalMapIndexTable lookup, unlike the portal path's own DestMapId), v3/
                        // v4/v5 = destination tile x/y/z, v6 = transition effect id, v7 = warp sound effect
-                       // id. Reuses AlundraWarpDirector (T4) through its additive
+                       // id. Reuses WarpDirector (T4) through its additive
                        // BeginDepartureFromChangeMapOpcode overload, which converges on the SAME core as
                        // the portal path - see that method's own doc. [R8]: IsWarpDisabled is tested
-                       // inside that overload too - 0x53 never goes through AlundraPortalTrigger's
+                       // inside that overload too - 0x53 never goes through PortalTrigger's
                        // predicate. FROZEN (documented, corpus-proven unreachable - T7's own measurement):
                        // the original's own "effect == 3 AND same map" same-map teleport branch - ZERO of
                        // the 329 measured 0x53 occurrences in the corpus use effect 3, so it is not
@@ -1915,8 +1915,8 @@ public sealed class EventProgramRunner : IEventProgramRunner
                 return 8;
 
             case 0x9B: // Set warp disabled = 1 - Script_155_09B (EntityEventHandlers.cs:2924-2929, T7):
-                       // posts AlundraGameState.IsWarpDisabled, already read by AlundraPortalTrigger's
-                       // predicate (T3) and by AlundraWarpDirector.BeginDeparture/
+                       // posts GameState.IsWarpDisabled, already read by PortalTrigger's
+                       // predicate (T3) and by WarpDirector.BeginDeparture/
                        // BeginDepartureFromChangeMapOpcode (T4/T7) - this opcode only gives it its writer.
                 _gameState.IsWarpDisabled = true;
                 return 1;
@@ -2053,7 +2053,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
             case 0xB8: // Check CurrentAnimationId - Script_184_0B8 @ 0x80041988 (EntityEventHandlers.cs:
                        // 3471-3494), PER THE BINARY (D-E16-27): compares each v[1]-matched entity's
-                       // CurrentAnimationId (+0x90, AlundraEntityScriptProxy.cs:87) against v[2]. The
+                       // CurrentAnimationId (+0x90, EntityScriptProxy.cs:87) against v[2]. The
                        // decompilation instead reads TargetAnimationId (+0x88) and both size tables name
                        // this opcode "Check TargetDirection" - both wrong, corrected here and in
                        // EventOpcodeSizeTable (contract 2). Result = 1 if ANY match's CurrentAnimationId
@@ -2663,7 +2663,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     }
 
     // Tile size the whole walk/detour port converts px<->grid-cell with (StaticVariables.MapTileWidth/
-    // Height - same constants AlundraCellsCollisionField/AlundraScriptedMotion already duplicate for the
+    // Height - same constants CellsCollisionField/ScriptedMotion already duplicate for the
     // same reason, see either class' own doc).
     private const int TileWidthPx = 24;
     private const int TileHeightPx = 16;
@@ -3287,7 +3287,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// <see cref="Dispatch"/> for the three binary-vs-decompilation disagreements this corrects
     /// (D-E16-27). Both searches use raw fixed-point <see cref="EntityScriptProxy.PosX"/>/PosY/PosZ
     /// (NOT the tile-quantized TileX/TileY/TileZ 0x07/0x3B use), matching the original's own field
-    /// reads (AlundraEntityScriptProxy.cs:134-136).</summary>
+    /// reads (EntityScriptProxy.cs:134-136).</summary>
     private int CheckEntityInAabb(EntityScriptProxy entity, int[] v, EventProgramState state)
     {
         state.Result = 0;

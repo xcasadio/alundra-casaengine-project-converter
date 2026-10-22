@@ -56,7 +56,7 @@ public sealed class TextBoxViewModel : ViewModelBase
     internal InventoryTextViewModel Row(int r) => _rows[r];
 
     // The cursor sprites, by image 0 to 3 of the box (u 176 + 16 i of the wind sheet), named by the catalogue.
-    // E19.f3b: shared with the choice box's view model (AlundraChoiceViewModel), whose cursor is the same four sprites.
+    // E19.f3b: shared with the choice box's view model (ChoiceViewModel), whose cursor is the same four sprites.
     internal static readonly string[] CursorSprites = { "wind_150", "wind_173", "wind_201", "wind_228" };
 
     private const int TextLeft = 32;      // the clip canvas and the rows start at x 32

@@ -158,7 +158,7 @@ public sealed class SubInventoryViewModel : ViewModelBase
 
     private void ApplySlotIcons(InventoryImageViewModel[] slots, System.Collections.Generic.IReadOnlyList<SubInventorySlotIcon> icons)
     {
-        // Same "decide visibility per slot before setting it" shape as AlundraInventoryViewModel.ApplyIcons -
+        // Same "decide visibility per slot before setting it" shape as InventoryViewModel.ApplyIcons -
         // a slot that stays shown never notifies.
         for (var slot = 0; slot < slots.Length; slot++)
         {

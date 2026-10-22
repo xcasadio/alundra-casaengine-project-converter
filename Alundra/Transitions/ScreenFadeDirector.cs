@@ -125,7 +125,7 @@ public sealed class ScreenFadeDirector : IScreenFadeDirector
     /// pushing the just-armed state here would submit 255 (a full black frame the original never draws,
     /// §1.5) - the first push happens from <see cref="WorldProxy.Update"/>, AFTER
     /// <see cref="Advance"/> has already consumed at least one tick (the first-frame tick floor,
-    /// <c>AlundraWorldProxy._firstFrameStillOpen</c>), so the first value ever pushed is 239.
+    /// <c>WorldProxy._firstFrameStillOpen</c>), so the first value ever pushed is 239.
     /// </summary>
     public void InstallForMapEntry()
     {

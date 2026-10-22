@@ -31,7 +31,7 @@ namespace Alundra.Rendering.Backdrops;
 /// Rendering instance wiring extracted out of <see cref="WorldProxy"/>
 /// (docs/plan-update-caracterisation.md, slice S3), with NO behaviour change - see that plan's §3
 /// "S3" for the extraction rules this class follows (the "règle de preuve étendue" defined ahead of
-/// S2 and reused here) and AlundraWorldProxyUpdateCharacterizationTests for the oracle this move must
+/// S2 and reused here) and WorldProxyUpdateCharacterizationTests for the oracle this move must
 /// keep satisfying with zero assertions changed.
 ///
 /// Owns the one-time background-clear-color lookup (<see cref="ApplyOriginalBackgroundClearColorOnce"/>)
@@ -41,7 +41,7 @@ namespace Alundra.Rendering.Backdrops;
 /// lives in the engine (<c>CasaEngine.Framework.Rendering.ScrollingLayers</c>,
 /// <c>docs/engine/scrolling-layers.md</c>); this class keeps only the Alundra-specific POLICY (D-E9b-8).
 ///
-/// <c>AlundraWorldProxy.InitializeWithWorld</c> calls <see cref="AttachService"/> then <see cref="Load"/>
+/// <c>WorldProxy.InitializeWithWorld</c> calls <see cref="AttachService"/> then <see cref="Load"/>
 /// itself, in that order (D-E9b-2) - <see cref="Load"/> only parses this world's own backdrop companion
 /// and pushes pure data to the engine service; texture resolution happens later, engine-side, in
 /// <see cref="ScrollingLayerComponent.Update"/> (D-E9b-7), so this stage never touches a
@@ -50,9 +50,9 @@ namespace Alundra.Rendering.Backdrops;
 /// The world and the resolved debug camera (owned by <see cref="CameraDirector"/>, S2) are read by
 /// the caller at USE TIME and passed in per frame rather than captured here (extended proof rule
 /// delta (a)): a stage that captured <c>World</c> at construction would predate
-/// <c>AlundraWorldProxy.InitializeWithWorld</c> assigning it, and the resolved camera is this stage's own
+/// <c>WorldProxy.InitializeWithWorld</c> assigning it, and the resolved camera is this stage's own
 /// collaborator's state, not its own - passing it in keeps this class from reaching into
-/// <c>AlundraCameraDirector</c> itself.
+/// <c>CameraDirector</c> itself.
 /// </summary>
 internal sealed class BackdropStage
 {
@@ -61,7 +61,7 @@ internal sealed class BackdropStage
     /// exist yet when <see cref="WorldProxy.InitializeWithWorld"/> runs (<c>GameManager.EndLoadContent</c>
     /// calls <c>World.LoadContent</c>, which drives the proxy, strictly before
     /// <c>IRuntimeViewBootstrapper.BootstrapViews</c>), so the lookup is retried lazily from
-    /// <see cref="WorldProxy.Update"/>, mirroring <c>AlundraCameraDirector</c>'s own
+    /// <see cref="WorldProxy.Update"/>, mirroring <c>CameraDirector</c>'s own
     /// one-time-retry shape for the debug camera lookup.</summary>
     private bool _clearColorApplied;
 
@@ -69,8 +69,8 @@ internal sealed class BackdropStage
     /// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, D-E9b-2) - the engine-side mechanism this stage
     /// pushes frame state to via <see cref="PushFrame"/> and loads layer/tint definitions into via
     /// <see cref="Load"/>. Attached (never constructed here) by
-    /// <c>AlundraWorldProxy.InitializeWithWorld</c>, same acquisition shape as
-    /// <c>AlundraScreenFadeDirector.AttachToWorld</c>, BEFORE <see cref="Load"/> runs (D-E9b-2). A
+    /// <c>WorldProxy.InitializeWithWorld</c>, same acquisition shape as
+    /// <c>ScreenFadeDirector.AttachToWorld</c>, BEFORE <see cref="Load"/> runs (D-E9b-2). A
     /// <see langword="null"/> service (headless montage without <see cref="AttachService"/>, or a
     /// production world whose <c>Game</c> has none) makes both <see cref="Load"/> and
     /// <see cref="PushFrame"/> no-ops - <see cref="Load"/> additionally warns once when the world's
@@ -82,7 +82,7 @@ internal sealed class BackdropStage
     /// <summary>
     /// D-E9d: the engine-side mechanism behind Cellular (mode 2) backdrop layers, sibling to
     /// <see cref="_service"/> - same attach/load/push shape, same null-is-a-no-op contract. Attached
-    /// (never constructed here) by <c>AlundraWorldProxy.InitializeWithWorld</c> alongside
+    /// (never constructed here) by <c>WorldProxy.InitializeWithWorld</c> alongside
     /// <see cref="_service"/>, BEFORE <see cref="Load"/> runs.
     /// </summary>
     private CellularLayerService? _cellularService;
@@ -153,7 +153,7 @@ internal sealed class BackdropStage
     /// <see cref="WorldProxy.InitializeWithWorld"/> is too early to find the view).
     ///
     /// <paramref name="world"/> is read at USE TIME only, never captured (extended proof rule delta (a)) -
-    /// the caller passes <c>AlundraWorldProxy</c>'s own <c>_world</c> field, which this class never
+    /// the caller passes <c>WorldProxy</c>'s own <c>_world</c> field, which this class never
     /// stores.
     /// </summary>
     internal void ApplyOriginalBackgroundClearColorOnce(World? world)
@@ -177,9 +177,9 @@ internal sealed class BackdropStage
     /// <summary>
     /// Loads this map's backdrop companion (if any) and pushes its translation to <see cref="_service"/>
     /// (D-E9b-9: <c>Clear()</c> then <c>SetConfiguration</c>/<c>SetLayers</c>/<c>SetTint</c> from
-    /// <see cref="BuildDefinitions"/> - always in that order, once per <c>AlundraWorldProxy.InitializeWithWorld</c>
+    /// <see cref="BuildDefinitions"/> - always in that order, once per <c>WorldProxy.InitializeWithWorld</c>
     /// call, so a world with no companion at all still clears out whatever the PREVIOUS world left
-    /// behind). Called from <c>AlundraWorldProxy.InitializeWithWorld</c> AFTER <see cref="AttachService"/>,
+    /// behind). Called from <c>WorldProxy.InitializeWithWorld</c> AFTER <see cref="AttachService"/>,
     /// never from the frame path.
     ///
     /// A <see langword="null"/> <see cref="_service"/> is a no-op - EXCEPT that a production world (one
@@ -474,7 +474,7 @@ internal sealed class BackdropStage
     /// <c>Target</c> (or <see cref="Vector3.Zero"/> with no resolved camera), fed to
     /// <see cref="ScrollingLayerService.SetFrame"/> alongside <paramref name="ticksThisFrame"/> and the
     /// UNCONVERTED <c>Target</c> (still needed engine-side to place the covering quads in world space).
-    /// Called from <c>AlundraWorldProxy.Update</c> at the exact site the retired
+    /// Called from <c>WorldProxy.Update</c> at the exact site the retired
     /// <c>UpdateAndDrawBackdrop</c> used to occupy (D-E9b-2, S2): every frame, outside the gameplay
     /// freeze gate, independent of <c>world.Game</c> or of whether this world has any layers at all.
     /// E19.m4 (D-E19-67, ADR-0034): the caller passes 0 ticks while a warp departure is in progress (the binary's

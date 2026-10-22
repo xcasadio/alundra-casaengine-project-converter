@@ -12,7 +12,7 @@ namespace Alundra.Ai;
 
 /// <summary>
 /// E14.a0b T3 (docs/plan-e14-ia-native.md section 1.2): the helpers the native handlers of the enemies share (Beannoid C1, Muruta C10, and later E14.a1's), ported from <c>ALUN_CD.EXE</c> (France) and compared, state by state, with the real code run
-/// in the emulator on 10,000 random states each (<c>docs/plan-e14-annexe/e14a/oracle</c>, tests <c>AlundraEnemyHelpersTests</c>). E14.a1b registers the Beannoid handlers that use them (<see cref="BeannoideAi"/>, <see cref="NativeSpriteRegistry"/>); the Muruta's come with E14.a1c. Every field a helper reads is tied to its DLL field in the table of the plan (section 1.2, "Entrées des aides"): the fields that carry a direction or an animation take the value of the TICK
+/// in the emulator on 10,000 random states each (<c>docs/plan-e14-annexe/e14a/oracle</c>, tests <c>EnemyHelpersTests</c>). E14.a1b registers the Beannoid handlers that use them (<see cref="BeannoideAi"/>, <see cref="NativeSpriteRegistry"/>); the Muruta's come with E14.a1c. Every field a helper reads is tied to its DLL field in the table of the plan (section 1.2, "Entrées des aides"): the fields that carry a direction or an animation take the value of the TICK
 /// (<see cref="EntityScriptProxy.BoxDirection"/>, never the end-of-frame <see cref="EntityScriptProxy.AnimationDirection"/>, D-E14-6); all heights are in the DLL's convention (the binary's minus 1: only differences are read).
 /// </summary>
 internal static class EnemyHelpers

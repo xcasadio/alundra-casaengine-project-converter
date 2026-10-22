@@ -62,13 +62,13 @@ public sealed class WarpDirector
     }
 
     // EntityRecordMapper's own tile constants (StaticVariables.MapTileWidth/Height) - duplicated here,
-    // same precedent as AlundraWorldProxy's own private TileWidth/TileHeight (§1.2.c's own arithmetic
+    // same precedent as WorldProxy's own private TileWidth/TileHeight (§1.2.c's own arithmetic
     // needs both).
     private const int TileWidth = 24;
     private const int TileHeight = 16;
 
     // 80028DCC (StaticVariables.cs:554-559) - g_warpBehaviorTable, indexed by
-    // AlundraPortalRecord.WarpBehaviorId (already masked to 0..0xF there).
+    // PortalRecord.WarpBehaviorId (already masked to 0..0xF there).
     private static readonly int[] WarpBehaviorTable =
     {
         0x0000, 0x0045, 0x0000, 0x0037,
@@ -117,7 +117,7 @@ public sealed class WarpDirector
 
     // ---- The arrival record + transition effect id (D-T-15: CONSERVED across InstallForMapEntry - T5's
     // own AdoptPlayerPawn/InstallScreenFadeSystems are their only readers, both running strictly AFTER
-    // this class' own InstallForMapEntry call in the SAME AlundraWorldProxy.InitializeWithWorld).
+    // this class' own InstallForMapEntry call in the SAME WorldProxy.InitializeWithWorld).
     private uint _arrivalMapIndex;
     private int _arrivalPosX;
     private int _arrivalPosY;
@@ -453,7 +453,7 @@ public sealed class WarpDirector
     /// <paramref name="desiredMapIndex"/>, the save's <c>InitialMapId</c> taken as-is (like opcode 0x53, G1; the
     /// same <c>world-index.json</c> key the validation checked), at the given 16.16/<c>&lt;&lt; 20</c> position.
     /// Converges on <see cref="BeginDepartureCore"/> like the two other departures, with what the original's
-    /// New Game and load both use (<c>AlundraGameState.cs</c>, <c>GameInitializer.cs:414</c>): the animation
+    /// New Game and load both use (<c>GameState.cs</c>, <c>GameInitializer.cs:414</c>): the animation
     /// <see cref="GameState.ResetAnimationId"/> (<c>0x36</c>) and the direction
     /// <see cref="GameState.ResetDirectionId"/> (0) - never the hero's current animation, which
     /// <see cref="BeginDepartureFromChangeMapOpcode"/> would copy (a load pressed mid-attack or mid-jump). Effect
@@ -530,7 +530,7 @@ public sealed class WarpDirector
 
         // [R6] reserve #1 (T2's own closing-verifier note, this class' own remarks): suspend the hero's
         // engine-driven gravity for the duration of the departure - see
-        // AlundraPlayerManager.SuspendGravityForWarpDeparture's own doc for why this, not an engine
+        // PlayerManager.SuspendGravityForWarpDeparture's own doc for why this, not an engine
         // change, closes the gap.
         var previousGravity = PlayerManager.SuspendGravityForWarpDeparture(player);
         if (previousGravity != null)
@@ -615,8 +615,8 @@ public sealed class WarpDirector
         IsTransitionInProgress = true;
         _sequenceTicks += ticks;
 
-        // §1.1.e: "émis seulement une fois le fondu stabilisé" - AlundraScreenFadeDirector.Advance always
-        // runs before this call in AlundraWorldProxy.Update's own frame order, so this reads the SAME
+        // §1.1.e: "émis seulement une fois le fondu stabilisé" - ScreenFadeDirector.Advance always
+        // runs before this call in WorldProxy.Update's own frame order, so this reads the SAME
         // tick's settled state, never a frame-stale one.
         if (!ScreenFadeDirector.Instance.IsSettled || _worldChangeRequested)
         {

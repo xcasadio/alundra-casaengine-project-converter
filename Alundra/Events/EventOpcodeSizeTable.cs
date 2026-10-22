@@ -89,7 +89,7 @@ public static class EventOpcodeSizeTable
         // D-E7-7 (docs/plan-e7-mutation-tuiles.md, slice E7.c): relabeled from "Check moving in dir" - a
         // contresens describing the SCRIPT'S intention (the four real map-389 occurrences all test bit
         // 0x1000 = Up, "the player pushes toward the hatch"), not Script_47_02F's own semantics, which is
-        // a raw pad-button test (see AlundraEventProgramRunner.Dispatch case 0x2F's own doc).
+        // a raw pad-button test (see EventProgramRunner.Dispatch case 0x2F's own doc).
         { 0x2F, new(4, "Check pad buttons") },
         { 0x30, new(5, "If flag on") },
         { 0x31, new(5, "If flag off") },

@@ -32,8 +32,8 @@ public sealed class YarnBindings
     // same string values, same delegate arities and types on each RegisterFunction call below.
     // -----------------------------------------------------------------------------------------
 
-    /// <summary><c>flag n</c>: same write as <c>AlundraDialogueDirector.ShowCurrentPage</c> does today
-    /// for a page's numeric control codes (AlundraDialogueDirector.cs ~:290-300). Exports before E19.f0
+    /// <summary><c>flag n</c>: same write as <c>DialogueDirector.ShowCurrentPage</c> does today
+    /// for a page's numeric control codes (DialogueDirector.cs ~:290-300). Exports before E19.f0
     /// (D-E19-48) wrote every numeric code as this command; the converter now writes the positioned
     /// <see cref="FlagMarkerName"/> marker instead, and this handler stays for older exports and for the
     /// tests that write the command by hand.</summary>
@@ -147,8 +147,8 @@ public sealed class YarnBindings
         return library;
     }
 
-    /// <summary>Port of the write <c>AlundraDialogueDirector.ShowCurrentPage</c> already does for a
-    /// page's numeric control codes (AlundraDialogueDirector.cs ~:290-300):
+    /// <summary>Port of the write <c>DialogueDirector.ShowCurrentPage</c> already does for a
+    /// page's numeric control codes (DialogueDirector.cs ~:290-300):
     /// <c>AddFlag(n | 0x8000, 1 &lt;&lt; (n &amp; 0x1f))</c>.</summary>
     private void HandleFlagCommand(IReadOnlyList<string> arguments)
     {

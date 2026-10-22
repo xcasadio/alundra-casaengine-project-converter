@@ -163,8 +163,8 @@ public sealed class SubInventoryPresenter
     }
 
     // FUN_80052dd8 (SubInventoryManager.cs:1203-1236), INT_ARRAY_800b42dc's own 7 item ids - re-cited here
-    // (not exposed by the director) since this presenter, not the director, is what asks AlundraItemTables
-    // for their icon asset ids (same "presenter asks the item tables" shape AlundraInventoryPresenter
+    // (not exposed by the director) since this presenter, not the director, is what asks ItemTables
+    // for their icon asset ids (same "presenter asks the item tables" shape InventoryPresenter
     // already uses for its own slot icons).
     private const int KeyItemId = 0x3d; // MainInventoryManager.cs:1524 (g_3d) - the key item id.
     private static readonly int[] ArmoryItemIds = { 0x3e, 0x3f, 0x40, 0x41, 0x42, 0x43, 0x44 };

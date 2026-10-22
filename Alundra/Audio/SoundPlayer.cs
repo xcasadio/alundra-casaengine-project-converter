@@ -84,7 +84,7 @@ public sealed class SoundPlayer : ISoundPlayer
     /// own <c>IsSoundEffectAlreadyPlaying</c>/<c>PlaySoundEffectCore</c>. Owned by THIS player (one per
     /// world - the closest equivalent this DLL has to a map-entry reset), flushed by
     /// <see cref="FlushFrameSounds"/> from the world proxy's own frame-close site (D-B-4's own deviation,
-    /// proven and pinned by AlundraWorldProxy's own dispatch-cadence tests).
+    /// proven and pinned by WorldProxy's own dispatch-cadence tests).
     /// </summary>
     private const int FrameAntiDuplicateSlotCount = 64;
     private readonly int[] _frameSoundIds = new int[FrameAntiDuplicateSlotCount];
@@ -120,11 +120,11 @@ public sealed class SoundPlayer : ISoundPlayer
     {
         // B2 (docs/plan-e11b-opcodes-audio.md, D-B-5, fact 8): the master fade machine's own state gate -
         // the ORIGINAL's very first guard in PlaySoundEffectCore (SoundManager.cs:3872-3877), checked
-        // BEFORE the anti-duplicate table below. Armed by 0xA6 (AlundraBgmFadeDirector.LoadBgm) and, since
+        // BEFORE the anti-duplicate table below. Armed by 0xA6 (BgmFadeDirector.LoadBgm) and, since
         // F2/B17 (docs/plan-bgm-demarrage-binaire.md), also by a warp departure with a silent warp sound
-        // (AlundraMusicPlayer.EvaluatePendingWarpDeparture -> AlundraBgmFadeDirector.ArmFadeForWarpDeparture);
+        // (BgmPlayer.EvaluatePendingWarpDeparture -> BgmFadeDirector.ArmFadeForWarpDeparture);
         // disarmed by 0xA5 and by the frame-close site's own StopAllSound call (B9, when ResetSoundFlag
-        // was armed - AlundraWorldProxy.Update) - see AlundraBgmFadeDirector's own doc.
+        // was armed - WorldProxy.Update) - see BgmFadeDirector's own doc.
         if (BgmFadeDirector.Instance.IsArmed)
         {
             return;

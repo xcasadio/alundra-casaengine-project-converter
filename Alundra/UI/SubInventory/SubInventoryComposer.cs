@@ -26,7 +26,7 @@ public static class SubInventoryComposer
 {
     // StaticVariables.cs (INT_ARRAY_800b42f8/800b4314), plan §1.5's own table - the armory's seven crest
     // offsets (Rubis..Diamant), duplicated here so this composer stays a pure function of plain data (same
-    // "duplicated citation, not a cross-file constant" shape AlundraInventoryComposer's own OffsetX/Y use).
+    // "duplicated citation, not a cross-file constant" shape InventoryComposer's own OffsetX/Y use).
     private static readonly int[] ArmoryOffsetX = { 0x30, 0x08, 0x58, 0x08, 0x58, 0x30, 0x30 };
     private static readonly int[] ArmoryOffsetY = { 0x04, 0x14, 0x14, 0x44, 0x44, 0x54, 0x2c };
 

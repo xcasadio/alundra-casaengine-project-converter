@@ -28,18 +28,18 @@ namespace Alundra.Cameras;
 /// Camera instance wiring extracted out of <see cref="WorldProxy"/>
 /// (docs/plan-update-caracterisation.md, slice S2), with NO behaviour change - see that plan's §3
 /// "S2" for the extraction rules this class follows (the "règle de preuve étendue") and
-/// AlundraWorldProxyUpdateCharacterizationTests for the oracle this move must keep satisfying with
+/// WorldProxyUpdateCharacterizationTests for the oracle this move must keep satisfying with
 /// zero assertions changed.
 ///
 /// Owns the one-time debug-camera lookup (<see cref="ResolveDebugCameraOnce"/>), the scripted camera
 /// follow (<see cref="UpdateCameraFollow"/>) and the debug stick pan (<see cref="UpdateDebugCameraPan"/>),
 /// plus every field those three exclusively read or write. Built in <see cref="WorldProxy"/>'s own
 /// FIELD INITIALIZER (never lazily from a <c>World</c>, never static, never handed a back-reference to
-/// the proxy) - the plan's trap 9: <c>AlundraWorldProxy.Clone</c> returns a bare
-/// <c>new AlundraWorldProxy()</c> and copies nothing, which is only safe while every collaborator is
+/// the proxy) - the plan's trap 9: <c>WorldProxy.Clone</c> returns a bare
+/// <c>new WorldProxy()</c> and copies nothing, which is only safe while every collaborator is
 /// constructed exactly that way.
 ///
-/// <c>AlundraWorldProxy.SetForcedCameraLookAt</c> stays on the proxy - it is an
+/// <c>WorldProxy.SetForcedCameraLookAt</c> stays on the proxy - it is an
 /// <c>IEntityWorldContext</c> member and cannot move - and DELEGATES to <see cref="SetForcedLookAt"/>
 /// here. That is not the banned "facade": the ban targets forwarders created to dodge updating call
 /// sites, not an object delegating one of its own members to a collaborator it owns, which is the
@@ -60,7 +60,7 @@ internal sealed class CameraDirector
     /// <summary>Read-only exposure of the resolved <see cref="_debugCamera"/> - "the resolved
     /// <c>Camera2dComponent</c>" is one of the four named substitutions the extended proof rule
     /// (docs/plan-update-caracterisation.md §3) allows a caller to read at use time. Consumed by
-    /// <c>AlundraWorldProxy.UpdateAndDrawBackdrop</c> (a step 6-only member S2 does not move) so it keeps
+    /// <c>WorldProxy.UpdateAndDrawBackdrop</c> (a step 6-only member S2 does not move) so it keeps
     /// reusing the same camera the follow/pan just resolved this frame.</summary>
     internal Camera2dComponent? ResolvedCamera => _debugCamera;
 
@@ -72,7 +72,7 @@ internal sealed class CameraDirector
     /// top of <see cref="_debugCameraBase"/> - <c>Z</c> is always 0 (matching
     /// <see cref="CameraMath.ComputeDebugCameraPanOffset"/>'s own contract). Reset to
     /// <see cref="Vector3.Zero"/> by an R3 (right-stick) click; never touched at all while
-    /// <c>AlundraWorldProxy.DebugCameraPanEnabled</c> is false.
+    /// <c>WorldProxy.DebugCameraPanEnabled</c> is false.
     /// </summary>
     private Vector3 _debugCameraOffset;
 
@@ -116,10 +116,10 @@ internal sealed class CameraDirector
     /// (<c>GraphicManager.cs</c>) - true makes the NEXT <see cref="UpdateCameraFollow"/> call snap the
     /// smoothed target straight to that frame's look-at instead of catching up to it, so the camera never
     /// scrolls in from wherever the engine's own default <c>Target</c> happened to be when a new map
-    /// loads. Set once by <c>AlundraWorldProxy.InitializeWithWorld</c> (requalified field access, S2's
+    /// loads. Set once by <c>WorldProxy.InitializeWithWorld</c> (requalified field access, S2's
     /// own extended proof rule delta (b)), cleared by the first <see cref="UpdateCameraFollow"/> call
     /// that finds the camera. Internal (rather than private) purely so
-    /// <c>AlundraWorldProxy.InitializeWithWorld</c> can requalify that one write to its new owner.</summary>
+    /// <c>WorldProxy.InitializeWithWorld</c> can requalify that one write to its new owner.</summary>
     private bool _cameraNeedsSnap;
 
     /// <summary>E5.a (decision E5-2): the smoothed render-space camera target - this class' own float
@@ -151,7 +151,7 @@ internal sealed class CameraDirector
     /// creation of the view and at every window resize).
     ///
     /// <paramref name="world"/> is read at USE TIME only, never captured (S2's extended proof rule
-    /// delta (a)) - both call sites below pass <c>AlundraWorldProxy</c>'s own <c>_world</c> field, which
+    /// delta (a)) - both call sites below pass <c>WorldProxy</c>'s own <c>_world</c> field, which
     /// this class never stores.
     /// </summary>
     internal void ResolveDebugCameraOnce(World? world)
@@ -195,19 +195,19 @@ internal sealed class CameraDirector
     /// E5.a (docs/plan-e5-camera.md §2): scripted camera follow, faithful port of
     /// <c>GameEngine.UpdateEntities</c>'s own look-at update (<c>GameEngine.cs:1747-1752</c>) plus
     /// <c>GraphicManager</c>'s own scroll smoothing/clamp (<c>GraphicManager.cs:75-122</c>). Runs BEFORE
-    /// <see cref="UpdateDebugCameraPan"/> (see <c>AlundraWorldProxy.Update</c>'s own ordering comment):
+    /// <see cref="UpdateDebugCameraPan"/> (see <c>WorldProxy.Update</c>'s own ordering comment):
     /// this method writes the camera's <c>Target</c> as the new BASE, and
     /// <see cref="UpdateDebugCameraPan"/>'s own <see cref="CameraMath.ResolveDebugCameraBase"/>
     /// call adopts that write as the base a moment later in the SAME frame, then adds the stick offset
     /// back on top - so the scripted follow and the debug pan never fight.
     ///
     /// No-op before <see cref="_debugCamera"/> is resolved (see <see cref="ResolveDebugCameraOnce"/>,
-    /// already called this frame by <c>AlundraWorldProxy.Update</c>).
+    /// already called this frame by <c>WorldProxy.Update</c>).
     ///
     /// <paramref name="followedByCamera"/>, <paramref name="mapWidthPx"/> and <paramref name="mapHeightPx"/>
     /// are all read by the caller at USE TIME and passed in per frame (S2's extended proof rule delta
     /// (a)) rather than captured here - the map bounds in particular MUST stay per-frame: they derive
-    /// from <c>AlundraWorldProxy</c>'s own <c>_tileMapData</c>, which is only assigned in
+    /// from <c>WorldProxy</c>'s own <c>_tileMapData</c>, which is only assigned in
     /// <c>InitializeWithWorld</c> AFTER two early returns, so capturing it any earlier would hold null
     /// forever and silently drop the map-bounds clamp below.
     /// </summary>
@@ -249,9 +249,9 @@ internal sealed class CameraDirector
         var target = CameraMath.ComputeCameraLookAtRenderPosition(_cameraLookAtX, _cameraLookAtY, _cameraLookAtZ);
 
         // Bug fix (docs/plan-camera-premiere-frame.md §3, point 2): a snap must not be spent on a frame
-        // that carried no logic tick - AlundraCameraMath.AdvanceCameraSmoothing's own pure contract
+        // that carried no logic tick - CameraMath.AdvanceCameraSmoothing's own pure contract
         // snaps unconditionally whenever needsSnap is true, REGARDLESS of ticksThisFrame (pinned by
-        // AlundraWorldProxyCameraFollowTests at three call sites - the gate below deliberately does NOT
+        // WorldProxyCameraFollowTests at three call sites - the gate below deliberately does NOT
         // move into that pure function, which would turn those three call sites red). Without this gate,
         // a snap armed on a tick-less frame (today: this world's very first free-time-step frame, before
         // the sticky tick floor above existed at all; tomorrow: any snap armed later, e.g. a map load or
@@ -298,11 +298,11 @@ internal sealed class CameraDirector
     /// <see cref="_debugCameraBase"/> from <c>Target</c> (see <see cref="CameraMath.ResolveDebugCameraBase"/>)
     /// so an external write - the follow's own write - always wins as the base; the stick only ever adds
     /// a debug offset around it. An R3 (right-stick) click resets the offset to 0. While
-    /// <c>AlundraWorldProxy.DebugCameraPanEnabled</c> is false, the stick never changes the offset and R3
+    /// <c>WorldProxy.DebugCameraPanEnabled</c> is false, the stick never changes the offset and R3
     /// is inert - only the base write-through still runs, so the camera simply follows its base.
     ///
     /// <paramref name="world"/> is read at USE TIME only, never captured (S2's extended proof rule
-    /// delta (a)) - the caller passes <c>AlundraWorldProxy</c>'s own <c>_world</c> field, which this
+    /// delta (a)) - the caller passes <c>WorldProxy</c>'s own <c>_world</c> field, which this
     /// class never stores.
     /// </summary>
     internal void UpdateDebugCameraPan(float elapsedTime, World? world)
@@ -328,7 +328,7 @@ internal sealed class CameraDirector
             if (gamePad.IsConnected)
             {
                 // DEBUG ONLY - Back (Select) toggles the engine's physics wireframes, off by default at
-                // world load (see AlundraWorldProxy.InitializeWithWorld), so collision boxes can be
+                // world load (see WorldProxy.InitializeWithWorld), so collision boxes can be
                 // inspected while flying the camera.
                 if (gamePad.BackJustPressed)
                 {
@@ -355,9 +355,9 @@ internal sealed class CameraDirector
 
     /// <summary>
     /// Arms the first-frame snap, so the next <see cref="UpdateCameraFollow"/> jumps straight to the
-    /// followed target instead of scrolling in. Called from <c>AlundraWorldProxy.InitializeWithWorld</c>.
+    /// followed target instead of scrolling in. Called from <c>WorldProxy.InitializeWithWorld</c>.
     /// Exposed as an operation rather than as a writable field, for the reason given on
-    /// <c>AlundraBackdropStage.Load</c>.
+    /// <c>BackdropStage.Load</c>.
     /// </summary>
     internal void ArmFirstFrameSnap() => _cameraNeedsSnap = true;
 }

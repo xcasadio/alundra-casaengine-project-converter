@@ -8,7 +8,7 @@ namespace Alundra.Session;
 /// E16.c C1/C7 (docs/plan-e16-etat-partie.md, F8): port of <c>GetFirstEnabledFlagIndex</c> @ 0x800813B0 -
 /// the story chapter the player is in, which <c>UpdateMenuStatusText</c> (0x80030FC8) stores in the save's
 /// <c>CurrentFlagName</c>. The port writes it into the slot's <c>chapter</c> metadata instead
-/// (<c>AlundraSaveGame.BuildMetadata</c>, C7), so the slot list reads it without decoding the save.
+/// (<c>SaveGame.BuildMetadata</c>, C7), so the slot list reads it without decoding the save.
 ///
 /// <para>The original walks <c>g_flagIdList</c>: records of 0x22 bytes (32 bytes of text, then a
 /// <c>u16</c> flag id), whose first id sits at 0x8002962E (France disc). An id of 0 counts as set (it is

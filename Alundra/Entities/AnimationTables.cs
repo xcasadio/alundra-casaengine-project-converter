@@ -109,7 +109,7 @@ internal static class AnimationTables
     /// <summary>
     /// E20.d1 T1: <c>g_dashDirections</c>, the table at <c>0x80022CAC</c> (16 words, indexed by the direction nibble <c>ButtonsHold &gt;&gt; 12</c>): the direction the run starts in (or resumes in) for a single
     /// cardinal bit, -1 for any other combination (no bit, a diagonal, opposite bits, three or four bits): up (1) 0x10, right (2) 0x18, down (4) 0, left (8) 8. Read at two places only, the preparation
-    /// (<c>0x80031FCC</c>) and the resume (<c>0x8003219C</c>). Checked word by word against the executable by <c>AlundraHeroRunTablesTests</c>.
+    /// (<c>0x80031FCC</c>) and the resume (<c>0x8003219C</c>). Checked word by word against the executable by <c>HeroRunTablesTests</c>.
     /// </summary>
     public static readonly int[] DashDirectionByNibble =
     {
@@ -119,7 +119,7 @@ internal static class AnimationTables
     /// <summary>
     /// E20.d1 T1: the cone of the run, the table at <c>0x80022CEC</c> (12 words, three per facing, <c>0x80022CEC + 12 * facing</c>, facing = <see cref="EntityScriptProxy.AnimationDirection"/>: 0 down, 1 up, 2 left, 3 right):
     /// the eight-way directions the run goes on in. The facing's own direction and its two neighbours (down 0x1C, 0, 4; up 0xC, 0x10, 0x14; left 4, 8, 0xC; right 0x14, 0x18, 0x1C). Read at one place only
-    /// (<c>0x800320A4</c>, the state 0x03). Checked word by word against the executable by <c>AlundraHeroRunTablesTests</c>.
+    /// (<c>0x800320A4</c>, the state 0x03). Checked word by word against the executable by <c>HeroRunTablesTests</c>.
     /// </summary>
     public static readonly uint[] SprintConeRows =
     {

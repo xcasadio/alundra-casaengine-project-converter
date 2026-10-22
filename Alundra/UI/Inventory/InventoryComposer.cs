@@ -35,7 +35,7 @@ public static class InventoryComposer
 
     // StaticVariables.cs:12363-12377 (g_uiBoxesInventoryAnimationOffsetX/Y) - duplicated here so this
     // composer stays a pure function of plain data (same "duplicated citation, not a cross-file
-    // constant" shape AlundraHudPresenter's own BakedBoxY already uses for UIBoxHud.Y).
+    // constant" shape HudPresenter's own BakedBoxY already uses for UIBoxHud.Y).
     private static readonly int[] OffsetX =
     {
         0x08, 0x20, 0x38, 0x50, 0x68, 0x80,
@@ -166,7 +166,7 @@ public static class InventoryComposer
         var descriptionBox = boxPositions[6];
 
         // MainInventoryManager.cs:929-1064: the two description lines exactly as the director says the
-        // original drew them THIS tick (AlundraInventoryDirector.DrawnDescriptionLine0/1) - the name or the
+        // original drew them THIS tick (InventoryDirector.DrawnDescriptionLine0/1) - the name or the
         // first line on line 0, the second line on line 1, and nothing on the ticks and slots that draw
         // nothing.
         var line0 = descriptionLine0;

@@ -38,7 +38,7 @@ public sealed class InventoryScreen : XamlUIScreenBase, IDisposable
     internal const string ScreenAssetId = "d79fc172-1faf-41f2-894d-81d6903484fd";
 
     // AlundraDisplay.cs:32 - re-declared, not referenced (this DLL never depends on the converter
-    // project), same citation AlundraHudScreen.NativeWidth already uses.
+    // project), same citation HudScreen.NativeWidth already uses.
     private const int NativeWidth = 320;
 
     // The font3 BMFont asset the converter already writes (alundra-project/UI/font3.fnt, type fnt) - this
@@ -91,7 +91,7 @@ public sealed class InventoryScreen : XamlUIScreenBase, IDisposable
 
     /// <summary>Gives font3 back, every icon sprite data this screen holds (engine ADR-0037) and the screen asset
     /// itself. Called by the world proxy that built this screen, when its world ends
-    /// (<c>AlundraWorldProxy.OnEndPlay</c>). Idempotent.</summary>
+    /// (<c>WorldProxy.OnEndPlay</c>). Idempotent.</summary>
     public override void Dispose()
     {
         _font3?.Dispose();

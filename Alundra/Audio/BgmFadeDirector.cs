@@ -46,7 +46,7 @@ namespace Alundra.Audio;
 /// <para><b>What <c>InitializeBgm</c> means in this port</b> (B5, docs/plan-bgm-demarrage-binaire.md):
 /// the original's <c>InitializeBgm</c> resets a SEQUENCE STATE structure (position, flags) without
 /// itself choosing a new track OR restarting playback - it is an ARRÊT. This port models that
-/// separation directly: a track is LOADED (<c>AlundraMusicPlayer</c>'s own loaded-track state) or not,
+/// separation directly: a track is LOADED (<c>BgmPlayer</c>'s own loaded-track state) or not,
 /// independently of whether a voice is currently alive, so <c>InitializeBgm</c> maps onto
 /// <see cref="IMusicPlayer.StopSequence"/> (stop the voice, keep the track loaded) and
 /// <c>PlaySeq</c> onto <see cref="IMusicPlayer.PlaySequence"/> (start a voice for the loaded

@@ -66,7 +66,7 @@ internal interface ISaveBookScreen
 /// <c>ControlLocked</c>.</description></item>
 /// </list>
 /// <para>The book does not reuse opcode <c>0x44</c>'s degraded rule, which takes a missing presenter for a OUI
-/// (<c>AlundraEventProgramRunner.cs:704-710</c>): without a presenter the book abandons.</para>
+/// (<c>EventProgramRunner.cs:704-710</c>): without a presenter the book abandons.</para>
 /// </summary>
 public sealed class SaveBook
 {

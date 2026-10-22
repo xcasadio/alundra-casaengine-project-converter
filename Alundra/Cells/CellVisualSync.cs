@@ -332,7 +332,7 @@ public sealed class CellVisualSync
         var visibleCount = stack?.Tiles.Count ?? 0;
 
         // Any (x, y, k) this model still holds beyond the cell's current visible count is stale - either
-        // the whole stack was destroyed (source-less copy, AlundraCellStore.CopyWallTileStack's own doc)
+        // the whole stack was destroyed (source-less copy, CellStore.CopyWallTileStack's own doc)
         // or it shrank. Removed here rather than skipped in the loop below, since the loop only ever walks
         // 0..visibleCount-1.
         List<(int X, int Y, int K)>? staleKeys = null;

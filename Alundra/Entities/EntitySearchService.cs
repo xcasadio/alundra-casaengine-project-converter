@@ -13,7 +13,7 @@ namespace Alundra.Entities;
 /// port returns the matches directly as a list, in the same iteration order.
 ///
 /// Operates over <see cref="EntityScriptProxy"/> instead of the original's <c>Entity</c>, and over
-/// a plain list (<see cref="IEntityWorldContext.SpawnedEntities"/>, ultimately <c>AlundraWorldProxy</c>'s
+/// a plain list (<see cref="IEntityWorldContext.SpawnedEntities"/>, ultimately <c>WorldProxy</c>'s
 /// own <c>_spawnedEntities</c>) instead of the original's flat, index-addressed <c>g_entitySlots</c>
 /// array - both engine-facing seams already exist on the proxy (see the field-by-field doc below), which
 /// is why every search type below could be ported without any new proxy field.
@@ -67,7 +67,7 @@ namespace Alundra.Entities;
 /// Cases 5-10 compare against a proxy's <c>Entity?</c>-typed relationship fields (which point at the
 /// original engine <c>Entity</c>), so the comparison is done through each candidate's own
 /// <see cref="EntityScriptProxy.LogicContextEntity"/> - the one field every spawned proxy carries
-/// back to its own owning <c>Entity</c> (see <c>AlundraWorldProxy.ApplySpawnInitialization</c>).
+/// back to its own owning <c>Entity</c> (see <c>WorldProxy.ApplySpawnInitialization</c>).
 /// Any other <c>functionId</c> (12-127) is the original's "Illegal Destination!" breakpoint trap
 /// (GameEngine.cs:2101-2103) - logged once here instead, no matches.</description></item>
 /// </list>

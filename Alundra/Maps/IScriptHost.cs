@@ -37,7 +37,7 @@ public interface IScriptHost
     IEventProgramRunner Runner { get; }
 
     /// <summary>Port of the original global <c>g_activeCollisionEntity</c> - set by
-    /// <c>AlundraPlayerManager.CheckEntityInteraction</c> on the interact frame (E12.d), consumed (and
+    /// <c>PlayerManager.CheckEntityInteraction</c> on the interact frame (E12.d), consumed (and
     /// cleared) by the slot-F pick in <see cref="EntityScriptProxy.Update"/> - see D-E12D-4's
     /// consume-on-pick doc there. Settable since E12.d: the writer reaches it through this host.</summary>
     EntityScriptProxy? ActiveCollisionEntity { get; set; }
@@ -66,7 +66,7 @@ public interface IScriptHost
     /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): this frame's collidable-entity snapshot
     /// (<see cref="EntitySupport.BuildCollidables"/>'s own criteria, <c>EntityManager.cs:994</c>) - shared,
     /// allocation-free, rebuilt once per frame by whichever host owns the spawned-entity list
-    /// (<c>AlundraWorldProxy</c> in production, <c>HeadlessIntroSimulation</c> in the intro trace harness).
+    /// (<c>WorldProxy</c> in production, <c>HeadlessIntroSimulation</c> in the intro trace harness).
     /// Consumed by <see cref="EntityScriptProxy.EvaluateEntitySupport"/>, called once per entity per
     /// frame from <see cref="EntityScriptProxy.Update"/>. Never mutated by a reader - only ever
     /// rebuilt in place by its owner.
@@ -91,7 +91,7 @@ public interface IScriptHost
     /// E20.a A2 (docs/plan-e20-heros.md section 1.3, D-E20-12): true when the host runs the logic ticks of its entities itself, in the binary's order
     /// (<see cref="WorldProxy.Update"/>: the entity block of each tick, <c>0x8003B388</c>), so that <see cref="EntityScriptProxy.Update"/> only
     /// samples the pad, pulls the root pose and records that it took part in the frame. False (the default) for a rig or a fake host that has no such
-    /// driver: the entity then runs its own loop of ticks (<c>AlundraEntityScriptProxy.RunSelfDrivenTicks</c>), over the same tick passes.
+    /// driver: the entity then runs its own loop of ticks (<c>EntityScriptProxy.RunSelfDrivenTicks</c>), over the same tick passes.
     /// </summary>
     bool DrivesEntityTicks => false;
 
@@ -161,7 +161,7 @@ public interface IScriptHost
     /// call, exactly when <see cref="PortalTrigger.TryGetTrigger"/> returns non-null - the moment
     /// the original's <c>CheckAndExecuteWarp</c> would have called <c>HandleWarpTransition</c>. Default
     /// no-op here: T3 DETECTS, it does not ACT (no fade, no <c>SetWorldToLoad</c> request) - see
-    /// <see cref="PortalTrigger"/>'s own class doc. T4's <c>AlundraWarpDirector</c> overrides this
+    /// <see cref="PortalTrigger"/>'s own class doc. T4's <c>WarpDirector</c> overrides this
     /// on <see cref="WorldProxy"/> to actually start the departure sequence.
     /// </summary>
     void OnPortalTriggerDetected(PortalRecord portal, uint arrivalDirectionId)

@@ -21,7 +21,7 @@ namespace Alundra.UI.Hud;
 ///
 /// <para>Also the reason this interface exists at all rather than the presenter reaching straight into
 /// <see cref="HudScreen"/>'s own <c>MGCanvas</c>: a real <c>MGWindow</c>/<c>MGCanvas</c> is not
-/// constructible headless (<see cref="AlundraDialoguePresenterWiringTests"/>'s own class doc: "a real
+/// constructible headless (<see cref="DialoguePresenterWiringTests"/>'s own class doc: "a real
 /// <c>ScreenStack</c>/<c>UIRoot</c> is NOT constructible headless... <c>Push</c> initializes the pushed
 /// screen against a live graphics stack"). A recording double of THIS interface is what C3's own tests
 /// drive instead - the same shape <see cref="CasaEngine.Framework.UI.IUIViewRuntime"/> already serves for

@@ -39,7 +39,7 @@ internal static class FrameSyncPasses
     /// <summary>
     /// Loops <see cref="SyncAnimation"/> over <paramref name="entities"/> - kept as its own method (rather
     /// than inlined at its one remaining call site) since it is independently unit-tested
-    /// (AlundraWorldProxyAnimationSyncTests). The world's own <see cref="Update"/> no longer calls this: as
+    /// (WorldProxyAnimationSyncTests). The world's own <see cref="Update"/> no longer calls this: as
     /// of decision D2, each entity syncs itself from its own <see cref="EntityScriptProxy.Update"/>
     /// (via <see cref="SyncAnimation"/> directly) - see that method's own doc.
     /// </summary>
@@ -101,8 +101,8 @@ internal static class FrameSyncPasses
         // Destroyed-entity visibility (structural piece for the search-driven destroy opcodes, 0x2E
         // in particular): once an entity is flagged for destruction it stops being drawn and stops
         // being synced here, until the recycling pass of the same tick or the next one takes it out of the world
-        // (AlundraWorldProxy.RecycleDestroyedEntities, E19.r R3). Checked against FlagToDestroy specifically, not
-        // EntityStatus.Destroyed (numeric value 0, the default AlundraEntityScriptProxy.Status a
+        // (WorldProxy.RecycleDestroyedEntities, E19.r R3). Checked against FlagToDestroy specifically, not
+        // EntityStatus.Destroyed (numeric value 0, the default EntityScriptProxy.Status a
         // freshly-constructed-but-never-spawned proxy carries, and the value the recycling gives back).
         if (proxy.Status == EntityStatus.FlagToDestroy)
         {

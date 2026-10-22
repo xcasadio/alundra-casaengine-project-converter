@@ -161,7 +161,7 @@ public sealed class CellStore : ICellMutator
 
         // E7.b (docs/plan-e7-mutation-tuiles.md, deferred item picked up from E7.a): always a fresh copy,
         // never the live backing array (nor an ArraySegment over it, which would still alias it) - a
-        // caller (e.g. AlundraCellVisualSync) must not be able to observe/corrupt this store's own mutable
+        // caller (e.g. CellVisualSync) must not be able to observe/corrupt this store's own mutable
         // state through what looks like a read-only accessor.
         var visibleTiles = new int[stack.Count];
         Array.Copy(stack.Tiles, visibleTiles, stack.Count);

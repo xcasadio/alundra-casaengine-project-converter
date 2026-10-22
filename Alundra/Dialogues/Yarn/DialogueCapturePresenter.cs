@@ -59,7 +59,7 @@ public sealed class DialogueCapturePresenter : IDialoguePresenter
     public IReadOnlyList<string> Choices => WorldPresenter.Choices;
     public bool HasChoices => WorldPresenter.HasChoices;
 
-    // Nobody outside AlundraDialogueDirector observes this capture presenter directly - the world
+    // Nobody outside DialogueDirector observes this capture presenter directly - the world
     // presenter raises its own PresentationChanged/ChoiceSelected for its own subscribers (the engine's
     // DialogueScreen), so these are never actually raised.
     public event EventHandler<DialoguePresentationChangedEventArgs>? PresentationChanged { add { } remove { } }

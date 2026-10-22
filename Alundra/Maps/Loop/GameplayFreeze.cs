@@ -14,7 +14,7 @@ namespace Alundra.Maps.Loop;
 /// <para>While <see cref="GameState.PlayerControlBits.GameplayBlockedMask"/> is posed (an open
 /// inventory, a dialogue box - every MenuOpen, D-E13D-15), the original skips <c>UpdateEntities</c> for
 /// every entity, hero included: no event, no physics, no animation (EntityManager.cs:367-390). The port's
-/// T2 gate already skips the DLL's own passes (AlundraEntityScriptProxy.Update), but two engine systems
+/// T2 gate already skips the DLL's own passes (EntityScriptProxy.Update), but two engine systems
 /// keep going on their own (plan §1.2, measured by D0.3): the character controller integrates gravity on
 /// every rendered frame (CharacterControllerComponent.Update), and sprite animations keep advancing
 /// (AnimatedSpriteComponent.Update). This freezes both, and gives them back untouched when the mask is
@@ -33,7 +33,7 @@ namespace Alundra.Maps.Loop;
 /// it only once per logic tick, so on a thaw frame with zero ticks the controller would run with the
 /// vertical owned externally and a latch of 0 - and UpdateGround would snap to the ground anything within
 /// GroundSnapDistance, the very regression once measured for a hero clinging to a ladder
-/// (AlundraScriptedMotion.cs:117-130). The thaw therefore declares it again right away, with the value its
+/// (ScriptedMotion.cs:117-130). The thaw therefore declares it again right away, with the value its
 /// owner declares every tick (<see cref="OwnerExternalVerticalDisplacement"/>).</para>
 ///
 /// <para><b>The animations</b>: <see cref="AnimatedSpriteComponent.IsPlaybackPaused"/> is posed, and its
@@ -120,8 +120,8 @@ internal static class GameplayFreeze
     }
 
     /// <summary>The value the entity's owner declares every tick as its external vertical displacement:
-    /// the climbing sentinel for a hero clinging to a ladder (AlundraScriptedMotion.cs:140-144) or the airborne sentinel for a hero in the air state (E19.d2c1 R6), this tick's
-    /// resolved vertical force for a controller-driven NPC (AlundraEntityScriptProxy.Update's own trailing
+    /// the climbing sentinel for a hero clinging to a ladder (ScriptedMotion.cs:140-144) or the airborne sentinel for a hero in the air state (E19.d2c1 R6), this tick's
+    /// resolved vertical force for a controller-driven NPC (EntityScriptProxy.Update's own trailing
     /// declaration), and 0 otherwise - the value <c>Stop()</c> itself leaves.</summary>
     internal static float OwnerExternalVerticalDisplacement(EntityScriptProxy proxy)
     {

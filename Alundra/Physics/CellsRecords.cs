@@ -109,10 +109,10 @@ public sealed class CellsRecords
             && records.Slope.Length == count
             && records.Height.Length == count;
 
-        // TileId/WallTilesOffset are NOT checked here on purpose: AlundraCellsCollisionField (the only
+        // TileId/WallTilesOffset are NOT checked here on purpose: CellsCollisionField (the only
         // reader of this well-formed gate) never touches them, and every synthetic document in this
         // codebase's own tests predates E7.a (no tile_id/wall_tiles_offset columns at all) - adding them
-        // here would make those degrade to false. AlundraCellStore.TryCreate below validates their
+        // here would make those degrade to false. CellStore.TryCreate below validates their
         // length against cell_count itself, independently, since it is the one that actually needs them.
     }
 }

@@ -77,7 +77,7 @@ public sealed class CellsCollisionField : ICollisionField
 
         // Precompute every one of the 256 possible SurfaceTag strings once, here, so TrySampleGround
         // never allocates. E7.a (docs/plan-e7-mutation-tuiles.md): pre-filled for every value, not just
-        // the ones present at load time - a live mutation (0x54/0x55/0x85, via AlundraCellStore, which
+        // the ones present at load time - a live mutation (0x54/0x55/0x85, via CellStore, which
         // aliases these SAME arrays) can introduce a GroundProperty byte this map's export never used;
         // before this change such a value would have missed the cache and fallen back to "" (documented
         // micro-deviation, harmless in practice since the string is only a debug-facing SurfaceTag, but

@@ -37,7 +37,7 @@ public interface ISoundPlayer
     /// <summary>
     /// B1 (docs/plan-e11b-opcodes-audio.md, D-B-4): clears this player's per-frame anti-duplicate table
     /// (fact 5) - MUST be called exactly once per RENDERED frame, from the world proxy's own frame-close
-    /// site (next to <c>AlundraLogicClock.CloseFrame</c>), never from inside a dispatch pass. A degraded
+    /// site (next to <c>LogicClock.CloseFrame</c>), never from inside a dispatch pass. A degraded
     /// recorder fake with no table of its own (e.g. the intro trace harness) may leave this a no-op.
     /// </summary>
     void FlushFrameSounds();

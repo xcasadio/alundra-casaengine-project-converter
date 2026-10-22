@@ -67,7 +67,7 @@ public sealed class InventoryPostProcess
     public void Run()
     {
         // :1693-1697 - state 1, main inventory's own rappel free -> open the sub-inventory (StartFadeOut's
-        // body, portrait start included - AlundraSubInventoryDirector.OpenFromPostProcess).
+        // body, portrait start included - SubInventoryDirector.OpenFromPostProcess).
         if (State == 1 && !InventoryDirector.Instance.IsCallbackArmed)
         {
             State = 0;
@@ -76,7 +76,7 @@ public sealed class InventoryPostProcess
 
         // :1699-1704 - state 2, sub-inventory's own rappel free -> the main inventory's HEAD only
         // (DisplayInventory's guards/InitializeHudPosition/icon names/sound 4) - D-E13D-22, the setup
-        // (FUN_80054f1c) runs from the NEXT tick, see AlundraInventoryDirector's own doc.
+        // (FUN_80054f1c) runs from the NEXT tick, see InventoryDirector's own doc.
         if (State == 2 && SubInventoryDirector.Instance.State == 0)
         {
             State = 0;

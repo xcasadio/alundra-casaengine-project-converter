@@ -10,8 +10,8 @@ namespace Alundra.Hero;
 /// main-loop frame (GameEngine.cs:1518).
 ///
 /// <para><b>Why a second pad next to <see cref="GameState.LastPadState"/></b>: that snapshot is
-/// rebuilt once per RENDERED frame (AlundraEntityScriptProxy.Update), and the port runs zero, one or
-/// several logic ticks per rendered frame (AlundraLogicClock). An edge or a repeat counter computed per
+/// rebuilt once per RENDERED frame (EntityScriptProxy.Update), and the port runs zero, one or
+/// several logic ticks per rendered frame (LogicClock). An edge or a repeat counter computed per
 /// rendered frame would depend on the display rate: a consumer ticking twice in one frame would see the
 /// same edge twice, and a frame with no tick would lose it (plan §1.3, measured by D0.10). This pad only
 /// SAMPLES that per-frame hold state, then derives its own edges and repeat once per tick, so one press

@@ -19,7 +19,7 @@ namespace Alundra.UI.Inventory;
 /// one <see cref="Tick"/> call per LOGIC tick, made from
 /// <see cref="WorldProxy.Update(float)"/>'s own pad-tick loop, immediately after
 /// <see cref="InventoryDirector.Tick"/> (same site the director itself already reads its pad edges
-/// from - <c>AlundraWorldProxy.cs</c>'s own comment on why a consumer of those edges must run inside that
+/// from - <c>WorldProxy.cs</c>'s own comment on why a consumer of those edges must run inside that
 /// same per-tick loop).
 ///
 /// <b>Push/remove (dialogue precedent, <see cref="DialoguePresenter"/>, its own class doc and
@@ -32,7 +32,7 @@ namespace Alundra.UI.Inventory;
 public sealed class InventoryPresenter
 {
     // MainInventoryManager.cs:1305 (herbs, g_ItemIdBySlotIndex[6]) and :1524 (g_3d, the key item id) -
-    // re-cited here since this presenter, not the director, is what asks AlundraPlayerManager for their
+    // re-cited here since this presenter, not the director, is what asks PlayerManager for their
     // owned counts (the director's own GItemIdBySlotIndex/SlotIdByInventorySlotIndex tables stay private).
     private const int HerbItemId = 0x24;
     private const int KeyItemId = 0x3d;
@@ -139,8 +139,8 @@ public sealed class InventoryPresenter
         int? currentWeaponItemId = currentWeaponItem == PlayerManager.NoItem ? null : (int)currentWeaponItem;
 
         // MainInventoryManager.cs:1420 (SetItemIdFromCurrentItemId) - has a side effect
-        // (AlundraPlayerManager.SetItemIdFromCurrentItemId's own doc), same "only while drawn" guard
-        // AlundraHudPresenter.Tick already applies to its own equipment-icon lookup for the same reason.
+        // (PlayerManager.SetItemIdFromCurrentItemId's own doc), same "only while drawn" guard
+        // HudPresenter.Tick already applies to its own equipment-icon lookup for the same reason.
         var currentItem = PlayerManager.SetItemIdFromCurrentItemId(_gameState, _itemTables);
         int? currentItemId = currentItem == PlayerManager.NoItem ? null : (int)currentItem;
 

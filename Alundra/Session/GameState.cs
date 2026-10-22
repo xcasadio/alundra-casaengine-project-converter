@@ -33,7 +33,7 @@ public sealed class GameState
     /// docs/plan-transitions-carte.md) - same shape as <see cref="BgmPlayer.Instance"/>/
     /// <see cref="ScreenFadeDirector.Instance"/>/<see cref="DialogueDirector.Instance"/>.
     /// Unlike those three, this class KEEPS its public parameterless constructor (two test harnesses -
-    /// <see cref="AlundraEventProgramRunnerTests"/> and <see cref="IntroTraceHarnessTests"/> among others -
+    /// <see cref="EventProgramRunnerTests"/> and <see cref="IntroTraceHarnessTests"/> among others -
     /// build their own private instance directly, never through this session carrier) - so <see cref="Instance"/>
     /// is just one more instance, reachable through the same public constructor, that <see cref="WorldProxy.GameState"/>
     /// happens to always resolve to.</summary>
@@ -114,7 +114,7 @@ public sealed class GameState
     /// <c>CharacterControlMode</c>: the original has no global input switch - it tests this mask at each
     /// consumer site - and cutting input upstream would silently defeat
     /// <see cref="PlayerManager.DebugIgnoreControlLockEnvVar"/>, since
-    /// <c>AlundraPlayerController.BuildPadState</c> already reads through <c>PlayerInput</c>.</summary>
+    /// <c>HeroController.BuildPadState</c> already reads through <c>PlayerInput</c>.</summary>
     public uint PlayerControlFlags;
 
     /// <summary>
@@ -171,7 +171,7 @@ public sealed class GameState
     /// the original globals' scope (the E11.c lesson: guard state lives where the original's lives).
     /// The position checks invalidate a stale value, but <c>Index2</c> is never assigned in the DLL (the
     /// binary's serial), so a recycled proxy (<c>EntityStatus.Destroyed</c>) is refused by an explicit
-    /// guard in the latch test instead (E19.m12, M-33). Only <c>AlundraPlayerManager.CheckEntityInteraction</c>
+    /// guard in the latch test instead (E19.m12, M-33). Only <c>PlayerManager.CheckEntityInteraction</c>
     /// reads or writes these.
     /// </summary>
     public EntityScriptProxy? InteractLatchEntity;
@@ -314,7 +314,7 @@ public sealed class GameState
     }
 
     /// <summary>E16.c C6/C8: drops the unsaved fraction of a game-time unit - used when a save's
-    /// <see cref="GameTime"/> is applied (<c>AlundraSaveGame.ApplyTo</c>, E16.c C6) and by <see cref="ResetForTests"/>.</summary>
+    /// <see cref="GameTime"/> is applied (<c>SaveGame.ApplyTo</c>, E16.c C6) and by <see cref="ResetForTests"/>.</summary>
     internal void ResetGameTimeFraction()
     {
         _gameTimeFraction = 0d;
@@ -388,7 +388,7 @@ public sealed class GameState
 
     /// <summary>
     /// E16.d K8, step 1 (docs/plan-e16-etat-partie.md, D-E16-19, SC7): the session half of loading a save -
-    /// run by <c>AlundraSaveGameDirector.ApplyPendingLoad</c> on the arrival map, right after
+    /// run by <c>SaveGameDirector.ApplyPendingLoad</c> on the arrival map, right after
     /// <see cref="InstallForMapEntry"/> and BEFORE <see cref="SaveGame.ApplyTo"/>. It puts back what a
     /// fresh process would hold for the fields the save does NOT carry, so nothing of the session in progress
     /// leaks into the loaded game - the original only loads from a fresh process (<c>LOADER.EXE</c>) or after

@@ -14,7 +14,7 @@ namespace Alundra.Rendering.Effects;
 /// Loads the effect data of a world (see <see cref="EffectBank"/>, G3A-R1). The map companion is found like the backdrop one, through
 /// <c>Maps/world-index.json</c> and the trailing "-{mapId}" of the world name (<see cref="BackdropLoader"/>), at
 /// <c>effects/{worldName}.effects.json</c> in the map's folder; the global companion (<c>Data/effects/effects-global.json</c>) is read once per game (static cache, like
-/// <c>AlundraEtcStringTable.EnsureLoaded</c>). A map without companion has no effect and no warning; an unreadable companion has one warning and no effect.
+/// <c>EtcStringTable.EnsureLoaded</c>). A map without companion has no effect and no warning; an unreadable companion has one warning and no effect.
 /// </summary>
 public static class EffectBankLoader
 {

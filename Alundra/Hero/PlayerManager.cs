@@ -46,7 +46,7 @@ namespace Alundra.Hero;
 /// <item><description>The swim (E20.i), binary <c>0x8003260C</c>: on deep water (slope 4) <see cref="SwimTick"/> replaces everything between the pad and the end of the tick: the 80-entry table <c>0x80022E7C</c> in six kinds of handler (<see cref="SwimTable"/>), the floating (0x1D), the swimming (0x0F), the burst on the edge of the Triangle, the Cross or the Square (0x28), the end of the hurt in water (0x3A, 0x3B, entered by E20.c2b); the exits to the land are cases of the state chain. NOT ported: the wall of the deep water without the swim boots (O-E19-22), the currents (O-E20-16), the splash, the wake and the ripple (E20.e).</description></item>
 /// <item><description>LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922): on the ground the
 /// case ends and the hero stays LoadingMap - its exit is then the animation Chain bridge
-/// (<c>AlundraWorldProxy.OnAnimationFinished</c>, 2026-08-23 "Correctif fins d'animation" - anim 54's trailing
+/// (<c>WorldProxy.OnAnimationFinished</c>, 2026-08-23 "Correctif fins d'animation" - anim 54's trailing
 /// control frame chains to anim 0/Idle), matching the original, where the same trailing-control-frame-driven
 /// <c>UpdateAnimation</c> recursion leaves LoadingMap; in the air (E19.v, O-E19-32) it gives 0x2D and leaves the
 /// switch.</description></item>
@@ -205,7 +205,7 @@ public static class PlayerManager
     }
 
     /// <summary>PlayerAnimation.LoadingMap = 0x36 (PlayerAnimation.cs:62) - the animation
-    /// <c>ResetEntityState</c>/<c>AlundraWorldProxy</c>'s own pawn-adoption spawns the hero with
+    /// <c>ResetEntityState</c>/<c>WorldProxy</c>'s own pawn-adoption spawns the hero with
     /// (<see cref="GameState.ResetAnimationId"/>).</summary>
     private const uint LoadingMapAnimationId = 0x36;
 
@@ -301,9 +301,9 @@ public static class PlayerManager
         // gate (:38) below. This is that exact call site: placing it any later would make the "hole"
         // branch unreachable the instant any InputBlockedMask bit is posed (a warp-departure/forced-
         // sequence lock in particular), which is NOT what the original does. DETECTION ONLY (T3's whole
-        // scope) - AlundraPortalTrigger.TryGetTrigger is pure, and IAlundraScriptHost.OnPortalTriggerDetected's
+        // scope) - PortalTrigger.TryGetTrigger is pure, and IScriptHost.OnPortalTriggerDetected's
         // default implementation is a no-op, so this call starts no fade and requests no world change yet;
-        // it only reports a firing trigger through the seam T4's AlundraWarpDirector will fill in. A null
+        // it only reports a firing trigger through the seam T4's WarpDirector will fill in. A null
         // host (the same degraded mode CheckEntityInteraction below documents) skips this entirely - no
         // portal list to scan without a world.
         if (host != null)
@@ -409,7 +409,7 @@ public static class PlayerManager
 
         // LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922; E19.v, O-E19-32): on the ground the case ends and the
         // hero stays LoadingMap - its exit is then the animation Chain bridge (anim 54's trailing control frame chains to anim 0/Idle,
-        // see AlundraWorldProxy.OnAnimationFinished); in the air it sets 0x2D and leaves the switch, so none of the cases below runs in
+        // see WorldProxy.OnAnimationFinished); in the air it sets 0x2D and leaves the switch, so none of the cases below runs in
         // this call (V-R1: no stick direction, no 0x2C). "In the air" is the common tail's predicate (V-R2, IsHeroInTheAir).
         if (player.TargetAnimationId == LoadingMapAnimationId)
         {
@@ -466,7 +466,7 @@ public static class PlayerManager
             // instead - documented deviation, not an oversight. ForceZ is cleared (engine-only addition:
             // the original has no separate "stop climbing" reset because a Jump entry starts its own fresh
             // vertical impulse; this port instead just needs to stop feeding the ladder's per-tick vertical
-            // step to Tick, see AlundraScriptedMotion.TickPlayer's own doc).
+            // step to Tick, see ScriptedMotion.TickPlayer's own doc).
             if (buttonsHold != 0 && dir != 0 && dir != 0x10)
             {
                 player.TargetAnimationId = IdleAnimationId;
@@ -489,9 +489,9 @@ public static class PlayerManager
                     // doc on the Gravity FLAG BIT (distinct from the engine's own
                     // Controller.Settings.Gravity, suspended below). CORRECTED (verifier's own minor
                     // observation): this bit IS read for the player -
-                    // AlundraEntityScriptProxy.UpdateGroundSlope's own gravity gate
+                    // EntityScriptProxy.UpdateGroundSlope's own gravity gate
                     // (`if ((Flags & EntityFlags.Gravity) == 0) { Slope_18c = 0; return; }`), and that
-                    // method only ever runs for IsPlayer (see AlundraEntityScriptProxy.Update's own
+                    // method only ever runs for IsPlayer (see EntityScriptProxy.Update's own
                     // IsPlayer branch) - so clearing this bit here forces Slope_18c to 0 for the whole
                     // climb, matching the original's own "clear the bit before UpdateTileAttributes" order,
                     // but also means MovePlayer's own Slope_18c == 6 re-entry gate needs one extra frame
@@ -527,7 +527,7 @@ public static class PlayerManager
                     // speed pinned at 0 forever (AnimSets[14]/[53].Speed == 0 for that animation pair too,
                     // so the hero could not even walk away). ForceZ = 0 is this port's own engine-only
                     // addition, same rationale as the Climbing/MONT entry above: stop feeding a stale
-                    // per-tick vertical step to AlundraScriptedMotion.TickPlayer now that this is no longer
+                    // per-tick vertical step to ScriptedMotion.TickPlayer now that this is no longer
                     // a climbing animation.
                     else
                     {
@@ -1135,7 +1135,7 @@ public static class PlayerManager
             return;
         }
 
-        // The anchor is the hero itself (explicit IAlundraEffectAnchor of the proxy): the effect starts at its position, follows it and takes its depth key plus AuraDepthOffset.
+        // The anchor is the hero itself (explicit IEffectAnchor of the proxy): the effect starts at its position, follows it and takes its depth key plus AuraDepthOffset.
         var created = stage.CreateAttachedNow(false, AuraEffect, 0, player, AuraDepthOffset, 0, 0, AuraOffsetZ);
         player.AuraSlot = created;
         player.AuraGeneration = created?.Generation ?? 0;
@@ -1697,7 +1697,7 @@ public static class PlayerManager
 
     /// <summary>Puts back what <see cref="SuspendGravityForWarpDeparture"/> took away, for the one path
     /// where no map switch will ever do it: a departure this session cannot finish (see
-    /// <c>AlundraWarpDirector</c>'s own abort guard). Without it the hero would keep walking on the
+    /// <c>WarpDirector</c>'s own abort guard). Without it the hero would keep walking on the
     /// departure map with gravity permanently at zero.</summary>
     internal static void RestoreGravityAfterAbortedWarpDeparture(
         EntityScriptProxy player,
@@ -1742,7 +1742,7 @@ public static class PlayerManager
     /// gate at EntityManager.cs:377 (with a MenuOpen box up, neither MovePlayer nor the pick nor the
     /// physics ran at all there). CORRECTED (E13.d D4, docs/plan-e13d-inventaire.md §1.2): the port DOES
     /// have a global gate for this since T2 - <see cref="EntityScriptProxy.Update"/>'s own
-    /// <c>gameplayBlocked</c> computation (AlundraEntityScriptProxy.cs:828-867) only calls
+    /// <c>gameplayBlocked</c> computation (EntityScriptProxy.cs:828-867) only calls
     /// <c>RunGameplayBlockableUpdate</c> - where <see cref="MovePlayer"/> itself lives - when it is
     /// false; this method's own repeated check just carries the same gate one level deeper, narrowly,
     /// the way D-E12D-5 chose - not because the port lacked one.

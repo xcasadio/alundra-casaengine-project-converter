@@ -34,7 +34,7 @@ public sealed class SaveScreen : XamlUIScreenBase, IDisposable
     /// <summary>The layer this screen lives on, below the dialogue screen's <see cref="UILayer.Modal"/>.</summary>
     internal const UILayer ScreenLayer = UILayer.Menu;
 
-    // AlundraDisplay.cs:32 - re-declared, the same citation AlundraInventoryScreen.NativeWidth uses.
+    // AlundraDisplay.cs:32 - re-declared, the same citation InventoryScreen.NativeWidth uses.
     private const int NativeWidth = 320;
 
     private MGCanvas? _rootCanvas;

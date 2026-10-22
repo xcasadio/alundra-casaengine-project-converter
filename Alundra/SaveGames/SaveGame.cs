@@ -55,18 +55,18 @@ public sealed class SaveGame : ISaveGameData
 
     // ---- Domains of the validation (C3, C4; the E16.c domain table) ------------------------------------
 
-    /// <summary><c>SetPlayerHpMax</c> ceiling, 0x32 (<c>AlundraPlayerManager.cs:660-671</c>).</summary>
+    /// <summary><c>SetPlayerHpMax</c> ceiling, 0x32 (<c>PlayerManager.cs:660-671</c>).</summary>
     internal const int MaxHpMax = 50;
 
-    /// <summary><c>SetPlayerMpMax</c> ceiling (<c>AlundraPlayerManager.cs:704-714</c>); the jauge has 4 magic
-    /// boxes (<c>AlundraHudDirector.cs:164</c>).</summary>
+    /// <summary><c>SetPlayerMpMax</c> ceiling (<c>PlayerManager.cs:704-714</c>); the jauge has 4 magic
+    /// boxes (<c>HudDirector.cs:164</c>).</summary>
     internal const int MaxMpMax = 4;
 
-    /// <summary><c>SetMoney</c> ceiling (<c>AlundraPlayerManager.cs:746-757</c>); a negative amount makes the
-    /// jauge throw (<c>AlundraHudComposer.cs:320-331</c>).</summary>
+    /// <summary><c>SetMoney</c> ceiling (<c>PlayerManager.cs:746-757</c>); a negative amount makes the
+    /// jauge throw (<c>HudComposer.cs:320-331</c>).</summary>
     internal const int MaxMoney = 9999;
 
-    /// <summary><c>SetPlayerWeaponId</c> accepts -1 or a slot 1..6 (<c>AlundraPlayerManager.cs:822-834</c>).</summary>
+    /// <summary><c>SetPlayerWeaponId</c> accepts -1 or a slot 1..6 (<c>PlayerManager.cs:822-834</c>).</summary>
     internal const int MaxWeaponId = 6;
 
     /// <summary><c>IncreaseFalcon2</c> (0x8004E6EC) and <c>UpdateNumberOfFalcon</c> (0x8004E738) cap both
@@ -78,7 +78,7 @@ public sealed class SaveGame : ISaveGameData
     internal const int MaxCameraTileZ = 256;
 
     /// <summary>C3: <c>(X * 24 + 12) &lt;&lt; 16</c> fits an <see cref="int"/> up to X = 1364
-    /// (<c>AlundraWorldProxy.cs:1563-1565</c>).</summary>
+    /// (<c>WorldProxy.cs:1563-1565</c>).</summary>
     internal const int MaxCameraTileX = 1364;
 
     /// <summary>C3: <c>(Y * 16 + 8) &lt;&lt; 16</c> fits an <see cref="int"/> up to Y = 2047.</summary>

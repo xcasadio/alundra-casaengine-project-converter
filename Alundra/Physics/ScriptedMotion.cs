@@ -63,7 +63,7 @@ internal static class ScriptedMotion
     internal const int MaxTicksPerFrame = 4;
 
     // EntityRecordMapper's own tile constants (StaticVariables.MapTileWidth/Height) - see
-    // AlundraPlayerManager's own (former) duplicate of these for the same reasoning.
+    // PlayerManager's own (former) duplicate of these for the same reasoning.
     private const int TileWidth = 24;
     private const int TileHeight = 16;
 
@@ -92,17 +92,17 @@ internal static class ScriptedMotion
             RunOneMotionTick(player, player.TargetAnimationId);
 
             // E4 (docs/plan-echelles-chiffrage.md É4): the hero's vertical is normally the ENGINE's own
-            // continuous Settings.Gravity/MaxFallSpeed integrator (AlundraWorldProxy.AdoptPlayerPawn,
+            // continuous Settings.Gravity/MaxFallSpeed integrator (WorldProxy.AdoptPlayerPawn,
             // E3.d) - deliberately UNCHANGED by this method (see this class' own doc, "no jump/gravity
-            // system"). Climbing is the ONE documented exception: while AlundraPlayerManager.MovePlayer
+            // system"). Climbing is the ONE documented exception: while PlayerManager.MovePlayer
             // set TargetAnimationId to Climbing/ClimbStill THIS frame (it also suspended
             // Controller.Settings.Gravity/MaxFallSpeed to 0 for the same duration, see
-            // AlundraPlayerManager's own SuspendGravityForClimb), the ladder's own vertical step is pushed
+            // PlayerManager's own SuspendGravityForClimb), the ladder's own vertical step is pushed
             // through the controller HERE, once per LOGIC TICK (not once per rendered frame like
             // MovePlayer itself runs) - the exact reason player.ForceZ is a per-tick +-0x10000 (+-1px)
             // quantity, not a per-frame one: a render frame carrying 2 logic ticks climbs 2px this frame,
             // matching how the horizontal RunOneMotionTick call just above already applies its own
-            // per-tick step ticks times. Reuses AlundraEntityScriptProxy.MoveVerticalAndPullPosition - the
+            // per-tick step ticks times. Reuses EntityScriptProxy.MoveVerticalAndPullPosition - the
             // SAME primitive EvaluateEntitySupport's own "not found" tail already uses for every
             // controller-driven scripted NPC's per-tick vertical (proven pattern - see that method's own
             // doc); wasSupportedEnteringThisTick is always false here because EntitySupport/
@@ -119,11 +119,11 @@ internal static class ScriptedMotion
             // CORRECTED (verifier F1/F2): MoveVerticalAndPullPosition's own Controller.Move call alone is
             // NOT enough - it only advances the root along a per-tick displacement, it does not stop
             // CharacterControllerComponent.UpdateGround from re-snapping that same root back to the
-            // ground field on the very next RENDERED frame's Update. AlundraPlayerManager.
+            // ground field on the very next RENDERED frame's Update. PlayerManager.
             // SuspendGravityForClimb now also claims Controller.IsVerticalOwnedExternally for the
             // duration of the climb (see that method's own doc) - the SAME latched declaration every
             // controller-driven scripted NPC already makes each tick
-            // (AlundraEntityScriptProxy.Update's own trailing SetExternalVerticalDisplacement call), so
+            // (EntityScriptProxy.Update's own trailing SetExternalVerticalDisplacement call), so
             // UpdateGround treats the hero as airborne instead of re-grounding it while on the ladder.
             //
             // Declares a FIXED positive sentinel, not player.ForceZ/65536f (measured, verifier F1
@@ -143,7 +143,7 @@ internal static class ScriptedMotion
             // physical value: grep of CharacterControllerComponent.cs confirms the ONLY reader of the
             // latched field this call sets is that single `> 0f` sign check (UpdateGround), never its
             // magnitude - so any positive constant conveys the exact same "airborne, owner-controlled"
-            // signal AlundraPlayerManager.MovePlayer's own explicit FloorHeight/tileHeightAbove guards
+            // signal PlayerManager.MovePlayer's own explicit FloorHeight/tileHeightAbove guards
             // (not this engine field) already own as the SOLE ground-detection authority for the whole
             // climb, matching the original PS1 code's own slope-switch logic (no continuous ground-field
             // physics at all while climbing). The REAL per-tick displacement/direction is still exactly
@@ -589,7 +589,7 @@ internal static class ScriptedMotion
 
     /// <summary>
     /// Gives the engine the values captured at the entry of the air state (its gravity, <c>MaxFallSpeed</c>, vertical ownership and, E19.d2c2 S6,
-    /// <c>StepHeight</c>): the landing, and the adoption of a new pawn while the state is up (<c>AlundraWorldProxy.AdoptPlayerPawn</c>).
+    /// <c>StepHeight</c>): the landing, and the adoption of a new pawn while the state is up (<c>WorldProxy.AdoptPlayerPawn</c>).
     /// </summary>
     internal static void RestoreAirborneEngineValues(EntityScriptProxy hero, CasaEngine.Framework.Scene.Entities.Components.CharacterControllerComponent controller)
     {
@@ -603,7 +603,7 @@ internal static class ScriptedMotion
     /// One 50 Hz kinematic step - port of <c>PhysicsEngine.UpdateEntityPhysics</c> (PhysicsEngine.cs:1579-1598),
     /// the <c>IncrementForce</c> calls (PhysicsEngine.cs:1445-1446/1490-1491), and the flat-ground half of
     /// <c>ApplyEntityForces</c> (PhysicsEngine.cs:1514-1547) plus the position update (PhysicsEngine.cs:421-422) -
-    /// bit-for-bit the former <c>AlundraPlayerManager.RunOneTick</c> body, generalized only by which field
+    /// bit-for-bit the former <c>PlayerManager.RunOneTick</c> body, generalized only by which field
     /// supplies the <c>AnimSetsByAnim</c> lookup key (<paramref name="animSetAnimationId"/> - see this
     /// class' own doc for <see cref="TickPlayer"/> vs <see cref="TickScriptedNpc"/>'s own choice). Same V1
     /// scope as before this extraction: no riding-platform force feed (<c>PreviousAdjustedForceX/Y</c> stay 0), and the
@@ -695,7 +695,7 @@ internal static class ScriptedMotion
 
         // PhysicsEngine.cs:421-422 (position update) - E3.d/E4.b: for a controller-driven entity,
         // FinalForceX/Y is routed through the mover's own Move instead of committed directly (see
-        // AlundraEntityScriptProxy.MoveControllerAndPullPosition's own doc); every other entity (no
+        // EntityScriptProxy.MoveControllerAndPullPosition's own doc); every other entity (no
         // controller) keeps E2's original collision-free integration, unchanged.
         if (entity.Controller != null)
         {
@@ -717,7 +717,7 @@ internal static class ScriptedMotion
         entity.LastTickDeltaX = entity.PosX - startX;
         entity.LastTickDeltaY = entity.PosY - startY;
 
-        // PhysicsEngine.cs:1698-1700, same formula EntityRecordMapper/AlundraWorldProxy already use to seed
+        // PhysicsEngine.cs:1698-1700, same formula EntityRecordMapper/WorldProxy already use to seed
         // TileX/TileY from PosX/PosY elsewhere - kept in sync every tick. TileZ (E4.c deferral, fixed in
         // E4.d - docs/plan-e4-deplacement-scripte.md) was previously refreshed only at spawn; it is now
         // refreshed here every tick too, alongside TileX/TileY, for BOTH callers (TickPlayer/

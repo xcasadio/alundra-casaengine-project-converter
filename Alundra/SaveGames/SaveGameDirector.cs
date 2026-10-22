@@ -64,7 +64,7 @@ public sealed class SaveGameDirector
 
     private const string LogPrefix = "SaveGameDirector: ";
 
-    // The New Game position formula's tile size (AlundraWorldProxy.AdoptPlayerPawn, :1563-1565).
+    // The New Game position formula's tile size (WorldProxy.AdoptPlayerPawn, :1563-1565).
     private const int TileWidth = 24;
     private const int TileHeight = 16;
 
@@ -87,7 +87,7 @@ public sealed class SaveGameDirector
     }
 
     /// <summary>Test-only seam over <see cref="RecipeKeysEnabledByBuild"/>, on the model of
-    /// <c>AlundraPlayerManager.SetDebugIgnoreControlLockOverrideForTests</c> (G10): null (the default) defers to
+    /// <c>PlayerManager.SetDebugIgnoreControlLockOverrideForTests</c> (G10): null (the default) defers to
     /// the build, a value forces it. <c>dotnet test</c> builds the DLL in Debug, so the "off" branch is only
     /// reachable through this seam. Reachable only by code already in the process (SD14).</summary>
     internal static bool? RecipeKeysEnabledOverrideForTests;
@@ -112,8 +112,8 @@ public sealed class SaveGameDirector
 
     /// <summary>
     /// K1 (the closing plan review of 2026-09-28): test-only seam over the validation rules - null (the default)
-    /// builds the production rules, <c>new AlundraSaveGameRules(EngineEnvironment.ProjectPath, path =&gt;
-    /// AssetCatalog.GetByFileName(path) != null, AlundraItemTables.GetOrCreate(EngineEnvironment.ProjectPath))</c>,
+    /// builds the production rules, <c>new SaveGameRules(EngineEnvironment.ProjectPath, path =&gt;
+    /// AssetCatalog.GetByFileName(path) != null, ItemTables.GetOrCreate(EngineEnvironment.ProjectPath))</c>,
     /// the session item tables behind <see cref="WorldProxy.ItemTables"/>. In the test process the asset
     /// catalog is empty, so every validation would refuse <c>initialMapId</c> without this seam. It replaces the
     /// rules only, never the validation itself; reachable only by code already in the process (SD14, SD15).
@@ -332,7 +332,7 @@ public sealed class SaveGameDirector
         }
 
         // K7 step 6: pending, then the departure - the New Game position formula
-        // (AlundraWorldProxy.AdoptPlayerPawn); C3 bounds the tile so every shift fits an int.
+        // (WorldProxy.AdoptPlayerPawn); C3 bounds the tile so every shift fits an int.
         _pendingLoad = save;
         warp.BeginDepartureForLoad(
             (uint)save.InitialMapId,

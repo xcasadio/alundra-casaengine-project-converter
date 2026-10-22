@@ -334,7 +334,7 @@ internal static class EntitySpawnFactory
             // four directions). SyncAnimation alone would not: TryResolveAnimationTarget only fires on a
             // CHANGE of animation id or direction, and a self-chain changes neither, so the sampler stayed
             // parked on its terminal pose - the frozen walk the user reported on 2026-08-26. See
-            // AlundraEntityScriptProxy.PendingChainRestartFlag's own doc.
+            // EntityScriptProxy.PendingChainRestartFlag's own doc.
             proxy.PendingChainRestartFlag = 1;
         }
     }
@@ -437,7 +437,7 @@ internal static class EntitySpawnFactory
 
         if (string.IsNullOrEmpty(entity.GameplayProxyClassName))
         {
-            //The prefab is expected to carry AlundraEntityScriptProxy as its script class; fall back
+            //The prefab is expected to carry EntityScriptProxy as its script class; fall back
             //explicitly rather than spawning an entity with no gameplay proxy at all.
             entity.GameplayProxyClassName = typeof(EntityScriptProxy).FullName!;
         }
@@ -463,7 +463,7 @@ internal static class EntitySpawnFactory
                 // Resolve and cache the root's RenderProjectionComponent once, then re-project
                 // immediately so the very first draw already shows the projected render pose rather
                 // than whatever default position the prefab's projection carried before this spawn
-                // wrote the root (see AlundraEntityScriptProxy.RenderProjection's own doc).
+                // wrote the root (see EntityScriptProxy.RenderProjection's own doc).
                 proxy.RenderProjection = entity.GetComponent<RenderProjectionComponent>();
                 proxy.RenderProjection?.UpdateProjection();
             }
@@ -544,7 +544,7 @@ internal static class EntitySpawnFactory
         ApplyMapDependentState(proxy, tileMapData);
 
         // E20.e0a5 (D-E0A5-4, ADR-0071), HERE and not in the core the record path shares, and BEFORE the balance sheet (the caller's InitializeBalance makes the first switch of the cursor): the creation has made the first switch of the
-        // animation 0 (InitializeEntity, 0x80039EA8), which the clock and the end of the frame take into account (AlundraFrameSyncPasses). Not cloned, not posed by the records or for the hero.
+        // animation 0 (InitializeEntity, 0x80039EA8), which the clock and the end of the frame take into account (FrameSyncPasses). Not cloned, not posed by the records or for the hero.
         proxy.SwitchedAtCreation = true;
 
         // E20.e0a3b (D-E0A-8, ADR-0065), HERE and not in the core the record path shares: the first switch of the creation (0x80038AB4, the block 0x80038B18-0x80038BAC) loads the byte 0xD of the animation set of the
@@ -616,7 +616,7 @@ internal static class EntitySpawnFactory
         // spawned proxy's EventTrigger otherwise defaults to the C# int default 0, which IS
         // ScriptHelper.ProgramALoad, not ScriptHelper.ProgramUnknown(-1) - so a proxy created THIS FRAME
         // by a running script (0x2D/0x8B, via SpawnEntityByRecordId) would look, to
-        // AlundraWorldProxy.RunPendingEventTriggers (called later this SAME frame, after any such
+        // WorldProxy.RunPendingEventTriggers (called later this SAME frame, after any such
         // spawn), exactly like an entity whose pick phase already ran and chose slot A - triggering its
         // Load program immediately, without ever going through PickEventTrigger's own Loaded -> Normal
         // transition. Explicitly seeding ProgramUnknown here keeps the Load program of such a proxy out of the
@@ -655,7 +655,7 @@ internal static class EntitySpawnFactory
         // EntityManager.cs:52: entity.ParentEntity = parentEntity is unconditional, independent of
         // whether the sprite record header resolves below - null for every map-load spawn (the original
         // always passes null there too, GameEngine.cs:629-645 InitializeEntitySlots), non-null only for
-        // the dynamic-spawn opcode 0x2D (AlundraWorldProxy.SpawnEntityByRecordId).
+        // the dynamic-spawn opcode 0x2D (WorldProxy.SpawnEntityByRecordId).
         proxy.ParentEntity = parentEntity;
 
         // E20.e0a2 (carried from E20.e0a1, ADR-0064): +0x08, the root of the chain of parents (0x80039D40-0x80039D5C), is written by the record path too, as the binary's InitializeEntity does for both halves. No reader is known.
@@ -713,7 +713,7 @@ internal static class EntitySpawnFactory
             proxy.Controller.Settings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(proxy.Flags);
 
             // E4.g (docs/plan-e4-deplacement-scripte.md): a scripted NPC's vertical is entirely owned
-            // by AlundraEntityScriptProxy.EvaluateEntitySupport's own per-tick ForceZ, declared through
+            // by EntityScriptProxy.EvaluateEntitySupport's own per-tick ForceZ, declared through
             // Controller.SetExternalVerticalDisplacement - never the engine's own gravity/vertical
             // integration (already zeroed above, belt-and-suspenders). The hero is NEVER spawned through
             // this method (see AdoptPlayerPawn instead) so this flag never touches the hero's own
@@ -782,7 +782,7 @@ internal static class EntitySpawnFactory
         SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
 
         // Resolve this entity's IDSV table once, from the sprite header handed to this method (the caller has resolved it from the catalog), and
-        // stash it on the proxy - see AlundraEntityScriptProxy.IdsvByAnimDirection's doc comment and
+        // stash it on the proxy - see EntityScriptProxy.IdsvByAnimDirection's doc comment and
         // WallPlacementOverlay.ApplyEntitySortKey's frame-0-only deviation note. Only frame 0 of each
         // (anim, direction) pair is kept; the per-frame lists Data/sprite-records.json carries are not
         // needed on this hot-path table.
@@ -791,11 +791,11 @@ internal static class EntitySpawnFactory
 
         // E4.b fix (verifier F1, P2): same source as AdoptPlayerPawn's own hero-only assignment
         // (this file, AdoptPlayerPawn - "proxy.AnimSetsByAnim = header.AnimSets") - without this, every
-        // record-spawned NPC's AnimSetsByAnim stays null, so AlundraScriptedMotion.RunOneKinematicTick's
+        // record-spawned NPC's AnimSetsByAnim stays null, so ScriptedMotion.RunOneKinematicTick's
         // own hasAnimSet lookup always misses (Speed/Acceleration both resolve to 0) and the entity never
         // moves at runtime, regardless of TargetAnimationId/TargetDirection. Null (not empty) when the
         // header carries no AnimSets at all (older export/degraded catalog) - same "0 speed for every
-        // anim" fallback AlundraScriptedMotion already treats a null table as.
+        // anim" fallback ScriptedMotion already treats a null table as.
         proxy.AnimSetsByAnim = header.AnimSets;
 
         SubscribeAnimationEndBridge(entity);

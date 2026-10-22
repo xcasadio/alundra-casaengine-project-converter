@@ -11,7 +11,7 @@ namespace Alundra.Ai.Enemies;
 /// E14.a1c T1 (docs/plan-e14-ia-native.md section 1.3c, D-E14-1): the native handlers of the Muruta (sprite type 347) - A0 (<c>0x8006174C</c>, slot A, code 0), C10 (<c>0x80068154</c>, slot C, code 10) and D9
 /// (<c>0x8007DE04</c>, slot D, code 9) of the master table <c>0x80098F4C</c> - registered in the registry of the native sprite handlers (<see cref="NativeSpriteRegistry"/>) for the type 347 only. E1 (its death) is
 /// <c>DestroyEntity(e, -1)</c> of the host (E14.a1b). They are ported from the real code of <c>ALUN_CD.EXE</c> (France) run in the emulator of the E14.a1 oracle (<c>docs/plan-e14-annexe/e14a/oracle-a1</c>: 4,043 single-call vectors
-/// of C10, 720 of D9, 6 of A0, and the calls of the scenarios MU-*) and compared call by call (<c>AlundraMurutaOracleTests</c>). The fields they read are tied to the DLL's in the table of the plan (section 1.3c): the tile, floor
+/// of C10, 720 of D9, 6 of A0, and the calls of the scenarios MU-*) and compared call by call (<c>MurutaOracleTests</c>). The fields they read are tied to the DLL's in the table of the plan (section 1.3c): the tile, floor
 /// and corner heights of the entity and of the hero, the direction of the TICK (<see cref="EntityScriptProxy.BoxDirection"/>, D-E14-6), the hero's frame box (the FIELD <see cref="EntityScriptProxy.HasFrameBox"/>, never
 /// re-evaluated) and current attack, the generator's word (<see cref="GameRandom"/>) and the sound player.
 /// <para>

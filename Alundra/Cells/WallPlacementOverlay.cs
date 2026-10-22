@@ -340,7 +340,7 @@ public static class WallPlacementOverlay
     /// original's finer <c>depthSortValue &amp; 0xffff</c> tiebreak is a screen-projected z, which this 2D
     /// engine has no equivalent input for at the proxy level - see <see cref="WorldProxy"/>'s class
     /// doc and the deviation note on <c>ApplyEntitySortKey</c> below for how the fine order is handled
-    /// instead. <paramref name="posY"/> is the entity's logical Y (16.16 fixed, <c>AlundraEntityScriptProxy.PosY</c>).
+    /// instead. <paramref name="posY"/> is the entity's logical Y (16.16 fixed, <c>EntityScriptProxy.PosY</c>).
     /// </summary>
     internal static int ComputeEntityElevation(int posY, int idsv)
     {
@@ -362,7 +362,7 @@ public static class WallPlacementOverlay
     /// read-only for this slice) or re-deriving the world transform every frame (out of scope, a separate
     /// follow-up per <see cref="WorldProxy"/>'s class doc). DEVIATION from the original: the fine order
     /// within a row therefore comes from <c>-worldY</c> (which folds in <c>PosZ</c>'s elevation offset via
-    /// <c>AlundraWorldProxy.ResolveLogicalPosition</c> + the policy's render projection) instead of the original's <c>PosZ &gt;&gt; 16</c> screen-elevation low bits (<c>EntityManager.cs:1036</c>) -
+    /// <c>WorldProxy.ResolveLogicalPosition</c> + the policy's render projection) instead of the original's <c>PosZ &gt;&gt; 16</c> screen-elevation low bits (<c>EntityManager.cs:1036</c>) -
     /// both still order correctly by row (the coarse <c>Elevation</c> bucket this method sets), only the
     /// tiebreak among entities sharing one row can diverge slightly from the original.
     ///
@@ -370,7 +370,7 @@ public static class WallPlacementOverlay
     /// AnimationDirection) pair's frame-0 IDSV value (see <see cref="FrameSyncPasses.RunWallInterleaveSortKeyPass"/>),
     /// not the currently-displayed frame's own value. The original's animation player owns exact frame
     /// timing; this proxy does not track "which frame is currently showing" at all (see
-    /// <c>AlundraWorldProxy.RunAnimationSyncPass</c>'s class doc - frame-level state is CasaEngine's own
+    /// <c>WorldProxy.RunAnimationSyncPass</c>'s class doc - frame-level state is CasaEngine's own
     /// <c>Animation2dCompositionSampler</c>'s job). Measured across the full converted corpus (395 unique
     /// banks), 2851 of 9620 (anim, direction) pairs with displayed frames (about 30%) have a non-constant
     /// IDSV between frames, so this approximation can pick the wrong depth bucket mid-animation on almost a

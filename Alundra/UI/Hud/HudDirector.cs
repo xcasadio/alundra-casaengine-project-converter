@@ -40,18 +40,18 @@ public sealed class HudDirector
     {
     }
 
-    // ---- Flag identifiers (AlundraGameState.GetFlag/AddFlag/SetFlag - (word << 5) + bit, both
-    // AlundraGameState.cs:194 IndexOf and AlundraGameState.cs:196 BankFor) ----
+    // ---- Flag identifiers (GameState.GetFlag/AddFlag/SetFlag - (word << 5) + bit, both
+    // GameState.cs:194 IndexOf and GameState.cs:196 BankFor) ----
     //
     // GraphicManager.cs:1646-1673 UpdateUserInterface reads/writes three bits, all in the PERSISTENT
-    // bank (id < 0x8000 = AlundraGameState's TemporaryFlagBit):
+    // bank (id < 0x8000 = GameState's TemporaryFlagBit):
     //   word 0x38 bit 21 (mask 0x200000) -> id (0x38<<5)+21 = 1813 - script's "please appear" request.
     //   word 0x38 bit 22 (mask 0x400000) -> id (0x38<<5)+22 = 1814 - script's "please hide, now" request.
     //   word 0x33 bit 30 (mask 0x40000000) -> id (0x33<<5)+30 = 1662 - the persistent "already armed" latch.
     // 1813 and 1814 share IndexOf (56 = 0x38, same word) - only their mask differs; 1662 is a separate
-    // word (51 = 0x33). All three id < 0x8000, confirmed persistent-bank by AlundraGameState.cs:196.
-    // internal (widened from private, S2's base extraction rule - same shape as AlundraWorldProxy's own
-    // DebugCameraPanEnabled): tests read this exact request (AlundraNewGameEntryTests) - reusing these two
+    // word (51 = 0x33). All three id < 0x8000, confirmed persistent-bank by GameState.cs:196.
+    // internal (widened from private, S2's base extraction rule - same shape as WorldProxy's own
+    // DebugCameraPanEnabled): tests read this exact request (NewGameEntryTests) - reusing these two
     // constants keeps the flag id/mask a single source of truth between the consumer (here) and the tests.
     // In the game only a map script raises it, through opcode 0x05.
     internal const uint ScriptOpenRequestFlag = 1813;
@@ -60,9 +60,9 @@ public sealed class HudDirector
     private const uint ScriptCloseRequestMask = 0x400000;
 
     // internal (widened from private, S2's base extraction rule - same shape as ScriptOpenRequestFlag/
-    // ScriptOpenRequestMask above): tests set this exact latch through AlundraGameState.AddFlag
-    // (AlundraSubInventoryDirectorTests), exactly as a map script's flag opcodes would for id 1662. Clearing
-    // it (opcode 0x06, "Flag off", AlundraEventProgramRunner.cs:443-448) makes RunTriggerMachine's own
+    // ScriptOpenRequestMask above): tests set this exact latch through GameState.AddFlag
+    // (SubInventoryDirectorTests), exactly as a map script's flag opcodes would for id 1662. Clearing
+    // it (opcode 0x06, "Flag off", EventProgramRunner.cs:443-448) makes RunTriggerMachine's own
     // branch (i) re-arm the animated close on the very next Tick(), since it re-reads this SAME flag/mask
     // pair every tick the latch is off (see RunTriggerMachine's own doc).
     internal const uint PersistentLatchFlag = 1662;
@@ -123,7 +123,7 @@ public sealed class HudDirector
     public int FrameCounter { get; private set; }
 
     // ---- Rolled/displayed values - g_playerDataHud[0..9] (StaticVariables.cs:12278-12282) ----
-    public int Hp { get; private set; } = 10; // [0] - New-Game-equivalent default, mirrors AlundraPlayerStats.Hp's own.
+    public int Hp { get; private set; } = 10; // [0] - New-Game-equivalent default, mirrors PlayerStats.Hp's own.
     public int HpMax { get; private set; } = 10; // [1]
 
     /// <summary>E13 C2 (docs/plan-e13-hud.md, mission point 2): the TRUE current HP cap -

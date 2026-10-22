@@ -32,7 +32,7 @@ namespace Alundra.Audio;
 /// <para><b>D-C-6, the point that decided this class's whole shape</b>: the guard state below
 /// (<see cref="_currentMapSoundIndex"/>) is the port of the original's <c>g_currentMapSoundIndex</c>, a
 /// GLOBAL that survives every map change by construction. <see cref="WorldProxy"/> is rebuilt
-/// per world (<c>AlundraWorldProxy.cs</c>, field initializers), and so is its own
+/// per world (<c>WorldProxy.cs</c>, field initializers), and so is its own
 /// <see cref="SoundPlayer"/> (<see cref="WorldProxy.InstallAudioSystems"/>) - porting the
 /// guard into an object built the same way would make it vacuous BY CONSTRUCTION: a fresh instance has
 /// nothing to guard, so the request would fire with or without the guard and the mutation "remove the

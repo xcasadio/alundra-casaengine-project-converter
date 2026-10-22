@@ -27,12 +27,12 @@ namespace Alundra.UI.Hud;
 /// </summary>
 public sealed class HudPresenter
 {
-    // AlundraHudComposer's own private "BoxY = 0x10" (HudManager.cs:33-36/52-54, UIBoxHud.Y) is baked into
-    // EVERY tile's own NativeY that composer emits (AlundraHudComposer.cs, every ComposeXxx method) - this
+    // HudComposer's own private "BoxY = 0x10" (HudManager.cs:33-36/52-54, UIBoxHud.Y) is baked into
+    // EVERY tile's own NativeY that composer emits (HudComposer.cs, every ComposeXxx method) - this
     // presenter re-declares the SAME literal (not a shared constant - the same "duplicated citation, not a
-    // cross-file constant" shape AlundraHudScreen's own NativeWidth already re-declares from the
-    // converter) because it needs to know it too: AlundraHudDirector.Y IS that same UIBoxHud.Y ordinate,
-    // resting at 16 (AlundraHudDirector.OpenTargetY) whenever the jauge is merely Displayed. Since every
+    // cross-file constant" shape HudScreen's own NativeWidth already re-declares from the
+    // converter) because it needs to know it too: HudDirector.Y IS that same UIBoxHud.Y ordinate,
+    // resting at 16 (HudDirector.OpenTargetY) whenever the jauge is merely Displayed. Since every
     // tile position the composer emits is already drawn AS IF Y == 16, this presenter's own translation
     // must carry only the DELTA away from that baked rest value - (Y - 16) * scale, never Y * scale alone -
     // or the jauge would sit twice as far from its resting position at every non-resting Y. Mission item 1's
@@ -85,7 +85,7 @@ public sealed class HudPresenter
 
         // E13.c S3: asked only while the jauge is drawn. The original resolves both boxes inside the HUD's
         // own draw (HudManager.DisplayHudWeaponAndItem), and the accessory lookup has a side effect
-        // (AlundraPlayerManager.SetItemIdFromCurrentItemId), so a hidden jauge must not run it.
+        // (PlayerManager.SetItemIdFromCurrentItemId), so a hidden jauge must not run it.
         var (weapon, accessory) = _director.IsDrawn ? _equipmentSource() : (null, null);
         _view.SetEquipmentIcons(HudComposer.ComposeEquipmentIcons(_director.IsDrawn, weapon, accessory));
     }

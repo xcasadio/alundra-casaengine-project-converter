@@ -134,7 +134,7 @@ internal static class CameraMath
     /// <summary>
     /// E5.c - the whole per-frame camera catch-up, factored out of <see cref="CameraDirector.UpdateCameraFollow"/>
     /// (which needs a live World/Camera2dComponent and so cannot be driven headless - see this class's own
-    /// scope note in <c>AlundraWorldProxyCameraFollowTests</c>) so that every rule it applies is unit-testable.
+    /// scope note in <c>WorldProxyCameraFollowTests</c>) so that every rule it applies is unit-testable.
     ///
     /// Runs <paramref name="ticksThisFrame"/> steps of <see cref="StepCameraScroll"/>, clamping after EACH
     /// one (the original clamps every frame and the clamped value IS the scroll state - see
@@ -196,7 +196,7 @@ internal static class CameraMath
     /// <summary>
     /// FIX (fresh verifier of cc1fc60) - pure state-transition factored out of <see cref="CameraDirector.UpdateCameraFollow"/>
     /// for unit testing (that method itself needs a live World/Camera2dComponent - see this class's own
-    /// scope note in <c>AlundraWorldProxyCameraFollowTests</c>). Snaps to, or takes ONE
+    /// scope note in <c>WorldProxyCameraFollowTests</c>). Snaps to, or takes ONE
     /// <see cref="StepCameraScroll"/> step toward, <paramref name="lookAtRenderTarget"/>, THEN clamps
     /// - and returns the CLAMPED result as the new smoothing state (not just the render output), so the
     /// next call's <paramref name="previousSmoothedTarget"/> already reflects the clamp, exactly like the

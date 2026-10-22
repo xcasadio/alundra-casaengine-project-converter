@@ -30,7 +30,7 @@ namespace Alundra.UI.Speech;
 /// <c>UIRoot</c> that requires the live graphics stack. <see cref="IUIViewRuntime"/> is the interface the
 /// engine's OWN demo (<c>UIOverlayDemo</c>) already consumes for exactly this push/remove pair, so a
 /// recording test double of THIS interface (not of <c>ScreenStack</c>) is what proves the wiring without
-/// needing a live graphics device - see <c>AlundraDialoguePresenterWiringTests</c>.
+/// needing a live graphics device - see <c>DialoguePresenterWiringTests</c>.
 ///
 /// Constructed and wired ENTIRELY inside <see cref="WorldProxy.InstallDialogueSystems"/> (no
 /// separable call site, the M16 lesson every install method in this DLL already follows) - never held
@@ -82,7 +82,7 @@ public sealed class DialoguePresenter : IDialoguePresenter, IDisposable
         }
 
         // No "Close" button: Alundra's boxes are dismissed by the interact button (Square, D-E12-4) or
-        // by the auto-timer, both owned by AlundraDialogueDirector. The engine screen's own generic
+        // by the auto-timer, both owned by DialogueDirector. The engine screen's own generic
         // close affordance is an alien control here, and - as reported in play - shutting the window
         // through it left the box logically OPEN with its MenuOpen flag still posted, so the whole
         // entity pass stayed frozen until the player also pressed the interact button.

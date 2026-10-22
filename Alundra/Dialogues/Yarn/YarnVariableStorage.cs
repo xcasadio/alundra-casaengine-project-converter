@@ -16,8 +16,8 @@ namespace Alundra.Dialogues.Yarn;
 /// tête (D-E16-25). Ce stockage NE GARDE AUCUNE DONNÉE PROPRE (D-E16-15) : chaque lecture/écriture
 /// retombe directement sur <see cref="GameState.GetFlag"/>/<see cref="GameState.AddFlag"/>/
 /// <see cref="GameState.SetFlag"/>, exactement comme les opcodes <c>0x30</c>/<c>0x31</c>
-/// (<c>AlundraEventProgramRunner.cs:1416</c>, test de bit) et <c>0x05</c>/<c>0x06</c>
-/// (<c>AlundraEventProgramRunner.cs:449-457</c>, pose/efface le bit) le font déjà - un drapeau écrit
+/// (<c>EventProgramRunner.cs:1416</c>, test de bit) et <c>0x05</c>/<c>0x06</c>
+/// (<c>EventProgramRunner.cs:449-457</c>, pose/efface le bit) le font déjà - un drapeau écrit
 /// depuis Yarn est donc sauvegardé, ou non, exactement comme un drapeau écrit par un opcode.
 ///
 /// Tout le reste (autre nom, variable interne de Yarn, <c>n</c> hors bornes ou mal écrit, une valeur
@@ -33,7 +33,7 @@ public sealed class YarnVariableStorage : IVariableStorage
 {
     private const string FlagPrefix = "$flag_";
     private const string TemporaryFlagPrefix = "$tmp_flag_";
-    private const uint TemporaryFlagBit = 0x8000; // même bit que AlundraYarnBindings.HandleFlagCommand.
+    private const uint TemporaryFlagBit = 0x8000; // même bit que YarnBindings.HandleFlagCommand.
     private const int MaxFlagId = 2047; // D-E16-25 - les deux banques de 64 mots de l'original.
 
     private readonly GameState _gameState;
@@ -86,7 +86,7 @@ public sealed class YarnVariableStorage : IVariableStorage
     public void SetValue(string variableName, float value) => LogRefusedOnce(variableName);
 
     /// <summary>Contrat item 4 : <c>true</c> pose le bit comme l'opcode <c>0x05</c>
-    /// (<c>AlundraEventProgramRunner.cs:449</c>, <c>AddFlag</c>) ; <c>false</c> ne l'efface que lui comme
+    /// (<c>EventProgramRunner.cs:449</c>, <c>AddFlag</c>) ; <c>false</c> ne l'efface que lui comme
     /// l'opcode <c>0x06</c> (<c>:457</c>, <c>SetFlag(flag, ~mask)</c>) - les autres bits du mot restent
     /// intacts. Refusé, sans écrire, si le nom n'est pas un nom de drapeau valide.</summary>
     public void SetValue(string variableName, bool value)

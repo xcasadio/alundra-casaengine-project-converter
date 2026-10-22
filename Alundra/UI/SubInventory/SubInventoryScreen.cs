@@ -30,7 +30,7 @@ public sealed class SubInventoryScreen : XamlUIScreenBase, IDisposable
     /// <summary>The id of <c>UI/Screens/SubInventoryScreen.uiscreen</c>, fixed in its envelope.</summary>
     internal const string ScreenAssetId = "3314fd4e-d6c7-4316-b55f-c7349911d31a";
 
-    // AlundraDisplay.cs:32 - re-declared, not referenced, same citation AlundraInventoryScreen.NativeWidth
+    // AlundraDisplay.cs:32 - re-declared, not referenced, same citation InventoryScreen.NativeWidth
     // already uses.
     private const int NativeWidth = 320;
 
@@ -69,7 +69,7 @@ public sealed class SubInventoryScreen : XamlUIScreenBase, IDisposable
     internal bool IsDisposed => _font3 == null;
 
     /// <summary>Gives font3 back and the screen asset itself. Called by the world proxy that built this screen, when its world ends
-    /// (<c>AlundraWorldProxy.OnEndPlay</c>). Idempotent.</summary>
+    /// (<c>WorldProxy.OnEndPlay</c>). Idempotent.</summary>
     public override void Dispose()
     {
         _font3?.Dispose();

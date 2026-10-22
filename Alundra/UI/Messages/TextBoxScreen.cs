@@ -27,7 +27,7 @@ public sealed class TextBoxScreen : XamlUIScreenBase, IDisposable
     /// <summary>The id of <c>UI/Screens/TextBoxScreen.uiscreen</c>, fixed in its envelope.</summary>
     internal const string ScreenAssetId = "5a6a4f8c-bcfc-4abf-9581-a687e4ad2228";
 
-    // AlundraDisplay.cs:32 - re-declared, the same citation AlundraSaveScreen uses.
+    // AlundraDisplay.cs:32 - re-declared, the same citation SaveScreen uses.
     private const int NativeWidth = 320;
 
     private MGCanvas? _rootCanvas;

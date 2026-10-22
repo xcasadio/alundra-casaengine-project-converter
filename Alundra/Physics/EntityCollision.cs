@@ -20,7 +20,7 @@ namespace Alundra.Physics;
 /// PhysicsEngine.cs:1183-1186 (both decompile the same predicate; only the debug bypass at :1176-1181
 /// is not ported - no debug flags exist here). Candidates come pre-filtered from the world's own
 /// collidables list, the port of <c>g_collideableEntities</c> (same population rule - see
-/// <c>AlundraWorldProxy</c>'s <c>_collidables</c> doc), and the FIRST match in list order wins,
+/// <c>WorldProxy</c>'s <c>_collidables</c> doc), and the FIRST match in list order wins,
 /// exactly like the original's early <c>return</c>.
 /// </summary>
 public static class EntityCollision

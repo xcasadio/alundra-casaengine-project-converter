@@ -250,7 +250,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// <summary>
     /// Engine-only (E19.d2c1 R2): raised with the animation of an appearance or an arrival (<see cref="SpawnAnimationId"/>) by
     /// <see cref="EntitySpawnFactory.ApplySpawnInitialization"/> (load, <c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>) and
-    /// <c>AlundraWorldProxy.AdoptPlayerPawn</c> (every arrival of the hero): the binary makes that first switch itself in
+    /// <c>WorldProxy.AdoptPlayerPawn</c> (every arrival of the hero): the binary makes that first switch itself in
     /// <c>InitializeEntity</c> and its next <c>UpdateAnimation</c> clears the impulse before the physics, so an entity never takes off at its
     /// appearance. A pending switch whose target is that animation gives no impulse; the flag falls at the first validation of
     /// <see cref="FrameSyncPasses.SyncAnimation"/>. Another animation written by a script before that validation gives the impulse (an ordinary
@@ -555,7 +555,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// converted to the units <see cref="CharacterControllerSettings.Gravity"/>/<see cref="CharacterControllerSettings.MaxFallSpeed"/>
     /// expect (E3.d's own formula: <c>mapGravity*256/65536*2500</c> / <c>mapZViscosity*256/65536*50</c> -
     /// 1250/800 on map 389). Resolved ONCE at spawn (<see cref="EntitySpawnFactory.ApplySpawnInitialization"/>/
-    /// <see cref="WorldProxy.AdoptPlayerPawn"/>, both via <c>AlundraWorldProxy.ResolveMapGravitySettings</c>)
+    /// <see cref="WorldProxy.AdoptPlayerPawn"/>, both via <c>WorldProxy.ResolveMapGravitySettings</c>)
     /// and stashed here so <see cref="ApplyGravitySettingsToController"/> - called again by the 0x16/0x17
     /// opcode bridges every time the script toggles <see cref="Flags"/>' Gravity bit (E4.b,
     /// docs/plan-e4-deplacement-scripte.md) - never has to re-read the map's <c>TileMapData.CustomProperties</c>
@@ -771,7 +771,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         var stepsWithoutController = Controller == null && !immediateAtSpawn && Status.IsActive() && ReadCollisionField() != null;
 
         // Single decay site (verifier A1/A6 follow-up, reconciled with the timing bug fix above): a
-        // controller-driven entity's own ForceZ is never decayed by AlundraScriptedMotion.RunOneKinematicTick
+        // controller-driven entity's own ForceZ is never decayed by ScriptedMotion.RunOneKinematicTick
         // (horizontal-only, shared with the player) - this is the ONE place it decays, port of
         // UpdateEntityPhysics's own IsZForceApplied == 0 branch (PhysicsEngine.cs:1460-1476), same shape as
         // the harness's own RunVerticalPhysicsPass. Gated on ticksThisFrame by this method's only caller
@@ -790,7 +790,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         //
         // E19.h1b2 (H1B2-R4): the same impulse and decay for an entity without a controller that steps its own Z (stepsWithoutController). The impulse is shared as in
         // the binary (inert in production: none of the 6 prefabs without a controller has an animation with one).
-        // E20.e0k2 W2: a marked entity (HasLogicalZ) with a controller takes its law and its TickForceZ from AlundraScriptedMotion.RunLogicalZPreXyStep, before the XY step; applying it here too would decay twice per tick.
+        // E20.e0k2 W2: a marked entity (HasLogicalZ) with a controller takes its law and its TickForceZ from ScriptedMotion.RunLogicalZPreXyStep, before the XY step; applying it here too would decay twice per tick.
         if ((Controller != null || stepsWithoutController) && !immediateAtSpawn && !(HasLogicalZ && Controller != null))
         {
             ApplyVerticalForceLaw();
@@ -807,7 +807,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         // E4.g replaced it with SetExternalVerticalDisplacement at this method's own tail - see that call's
         // own doc) let the ENGINE integrate it over REAL elapsed time every rendered frame - during a real asset-streaming hitch
         // (dt up to ~0.3s) the shared logic clock legitimately capped the HORIZONTAL step at
-        // AlundraScriptedMotion.MaxTicksPerFrame (4 ticks) while the engine kept integrating the vertical
+        // ScriptedMotion.MaxTicksPerFrame (4 ticks) while the engine kept integrating the vertical
         // velocity for the entire 0.3s (~45px, ~15 ticks' worth) - the two axes counted in different units.
         // Landed 606.75 instead of the faithful 594.75 (12px = 8 ticks short of the 209.25px drift); the
         // very first trace sample already showed the vertical 9 ticks ahead of the horizontal (55.94px =
@@ -953,7 +953,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
                         // on a PRIOR tick and nothing has moved it since) skips that same call.
                         //
                         // Bug fix (measured on the real bank-146 spawn's own horizontal-kinematics test):
-                        // AlundraWorldProxy.ResolveLogicalPosition (PushLogicalPositionToRoot's own root
+                        // WorldProxy.ResolveLogicalPosition (PushLogicalPositionToRoot's own root
                         // write) TRUNCATES PosX/PosY/PosZ to whole pixels (`pos &gt;&gt; 16`) - the entity-
                         // support "found" branch already accepts that cost every tick because a
                         // SUPPORT-pinned entity's PosZ genuinely needs re-deriving from a live candidate top
@@ -1300,8 +1300,8 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         // SyncTransform stays OUTSIDE (a pure render-position publish, the original's own
         // UpdateVisibleEntitiesZSort/sprite-publish half that runs after the `else`,
         // EntityManager.cs:394-408) - so it is the one call left unconditional below, after this block.
-        // T4 (docs/plan-transitions-carte.md §3, D-T-6): OR'd with AlundraWarpDirector's own gel gate -
-        // same "third mechanism" note as AlundraWorldProxy.Update's own T4 comment on its sibling
+        // T4 (docs/plan-transitions-carte.md §3, D-T-6): OR'd with WarpDirector's own gel gate -
+        // same "third mechanism" note as WorldProxy.Update's own T4 comment on its sibling
         // gameplayBlocked local.
         var gameplayBlocked = (ScriptHost.GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0
             || WarpDirector.Instance.IsTransitionInProgress;
@@ -1312,7 +1312,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         // (GameEngine.cs:280) - never from UpdateEntities, so the original never freezes it, not even
         // while its own gameplay gate is posed. Publishing it from inside the gated block below froze
         // the very input the dialogue box's own advance/close pass consumes
-        // (AlundraDialogueDirector.Tick reads LastPadState.ButtonsJustPressed, :239): with the snapshot
+        // (DialogueDirector.Tick reads LastPadState.ButtonsJustPressed, :239): with the snapshot
         // stuck on a frame that carried the interact bit the box flushed every page at once, and with
         // one that did not it could never be advanced at all - leaving MenuOpen posted forever, so
         // NPCs stayed frozen and the player stayed uncontrollable. §1.5's own table row is corrected
@@ -1327,7 +1327,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
             }
         }
 
-        // E20.a A2 (docs/plan-e20-heros.md section 1.3, D-E20-12): when the host drives the logic ticks of its entities itself (AlundraWorldProxy.Update, in the binary's
+        // E20.a A2 (docs/plan-e20-heros.md section 1.3, D-E20-12): when the host drives the logic ticks of its entities itself (WorldProxy.Update, in the binary's
         // order: the entity block of each tick, 0x8003B388), this method keeps only what is per RENDERED frame: the pad sample above, the pull of the root pose (the engine
         // moved the controllers at the head of this very frame) and the record that this entity took part in the frame (the engine integrated it: an entity spawned during the
         // frame is not integrated yet and so has no tick until the next one). The ticks, then SyncAnimation and SyncTransform, are the host's: the engine updates the entities
@@ -1514,10 +1514,10 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         var ticksThisFrame = ScriptHost!.LogicTicksThisFrame(elapsedTime);
         if (!IsPlayer)
         {
-            // ONE-CLOCK fix (AlundraScriptedMotion's own class doc, AlundraLogicClock's own class doc): the whole per-entity logic tick - script pick/run, THEN the animation clock,
+            // ONE-CLOCK fix (ScriptedMotion's own class doc, LogicClock's own class doc): the whole per-entity logic tick - script pick/run, THEN the animation clock,
             // THEN kinematic motion, THEN Z support - runs as ONE fused loop over ticksThisFrame, the original's own per-fixed-frame order (EntityManager.UpdateEntitiesEvents THEN
-            // UpdateEntitiesPhysics, EntityManager.cs:367-395). ticksThisFrame is usually 1 but can be 0 (a fast render frame) or up to AlundraScriptedMotion.MaxTicksPerFrame
-            // under catch-up. E20.a: the three passes are the tick body the host also drives, pass by pass, over all the entities (AlundraWorldProxy.RunEntityBlock).
+            // UpdateEntitiesPhysics, EntityManager.cs:367-395). ticksThisFrame is usually 1 but can be 0 (a fast render frame) or up to ScriptedMotion.MaxTicksPerFrame
+            // under catch-up. E20.a: the three passes are the tick body the host also drives, pass by pass, over all the entities (WorldProxy.RunEntityBlock).
             var effectStage = (ScriptHost as IEntityWorldContext)?.EffectStage; // E19.g G3b (G3B-R3): the effect operations of this entity's script carry its tick (rank 1).
             for (var tick = 0; tick < ticksThisFrame; tick++)
             {
@@ -1532,11 +1532,11 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         else
         {
             // E2: port of PlayerManager.MovePlayer, called at the head of the original's own UpdateEntitiesEvents (EntityManager.cs:808) - plus the kinematic integration
-            // PhysicsEngine.UpdateEntitiesPhysics drives for the player. A no-op whenever this world has no AlundraPlayerController possessing a pawn yet (headless test harnesses
+            // PhysicsEngine.UpdateEntitiesPhysics drives for the player. A no-op whenever this world has no HeroController possessing a pawn yet (headless test harnesses
             // construct their own player proxy with no controller at all, by design). E20.a A4: once per TICK, first (0x800386EC), then the animation clock and the physics of the tick.
             // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the hero's animation clock steps at every tick, whether or not a controller possesses the pawn, interleaved with the
             // kinematic tick: a Chain that MovePlayer asked for reserves the tick before the motion reads TargetAnimationId.
-            // E20.f1a: the effects the hero queues in MovePlayer (the hold spark, the burst) carry the tick (rank 1) like the other entities' do; a driven world marks them itself (AlundraWorldProxy.RunEntityBlock).
+            // E20.f1a: the effects the hero queues in MovePlayer (the hold spark, the burst) carry the tick (rank 1) like the other entities' do; a driven world marks them itself (WorldProxy.RunEntityBlock).
             var heroStage = ScriptHost?.EffectStage;
             for (var tick = 0; tick < ticksThisFrame; tick++)
             {
@@ -1936,7 +1936,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// (<see cref="Update"/>'s landed-pose branch, <c>targetPosZ = terrainHeight - ModZ</c>, see the long
     /// comment a few lines above that assignment for why the extra 16.16 unit the original keeps is
     /// silently swallowed the moment <c>root.Z</c> round-trips through
-    /// <c>AlundraWorldProxy.ResolveLogicalPosition</c>'s own integer truncation, <c>posZ &gt;&gt; 16</c>,
+    /// <c>WorldProxy.ResolveLogicalPosition</c>'s own integer truncation, <c>posZ &gt;&gt; 16</c>,
     /// no remainder) and at spawn (<c>ClampToGround</c>: <c>PosZ = groundPosZ;</c>, no <c>+1</c> either).
     /// Porting the original's <c>+1</c> literally here would therefore make this qualification
     /// permanently unsatisfiable in THIS engine - a player standing on ground always has
@@ -2122,15 +2122,15 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// (<c>proxy.PosZ = proxy.PosZ - proxy.ModZ + 1</c>, mirroring the original's own spawn-adjust) relies
     /// on: an entity resting on a platform sits at <c>ModdedPosZ == candidateTop + 1</c>, not
     /// <c>candidateTop</c> (pinned by
-    /// <c>AlundraNpcCharacterControllerMoverTests.Support_SailorElevenOnRealRecordTwoPlatform...</c>). So
+    /// <c>NpcCharacterControllerMoverTests.Support_SailorElevenOnRealRecordTwoPlatform...</c>). So
     /// <see cref="EntitySupport.TryFindSupport"/>'s own <c>supportTopZ</c> (<c>candidateTop + 1</c>) IS
     /// already this port's own entity-resting value - subtracting 1 from it (as a previous version of
     /// this method did) would put <see cref="FloorHeight"/> one unit BELOW an entity actually standing on
     /// the platform, breaking the same "descent test" invariant the terrain branch is built to preserve
-    /// (verified against real record data by <c>AlundraFloorHeightTests</c>' own platform case).
+    /// (verified against real record data by <c>FloorHeightTests</c>' own platform case).
     /// Concretely: on flat ground with no entity underneath, <see cref="FloorHeight"/> ==
     /// <see cref="ComputeTerrainHeight"/>'s own return (the terrain height itself, no offset) - matching
-    /// this port's own resting <c>ModdedPosZ</c> exactly, as verified by <c>AlundraFloorHeightTests</c>'
+    /// this port's own resting <c>ModdedPosZ</c> exactly, as verified by <c>FloorHeightTests</c>'
     /// flat-ground case; standing on an entity, <see cref="FloorHeight"/> == that entity's own
     /// <c>ModdedPosZ + Depth + 1</c> (its top surface, PLUS the port's own entity-resting <c>+1</c>) -
     /// verified by that same suite's platform case.
@@ -2164,7 +2164,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// The DLL's convention is the binary's minus 1 for every height (ADR-0026): the binary stores the raw corners and a floor of terrain + 1, so the corners are stored here MINUS 1, which keeps every difference
     /// <c>FloorHeight - MapHeights[k]</c> (read by <c>HandleAnimationDirection</c> <c>0x80080144</c>) and every difference of floors (the relative position <c>0x8007FE20</c>) equal to the binary's. A corner without ground counts as 0
     /// (the same fallback as <see cref="ComputeTerrainHeight(ICollisionField?)"/>). Does nothing without a collision field, nor for a bare proxy that was never created from a sprite record
-    /// (<see cref="SpriteType"/> is -1: the harnesses' pawns; the E2 pin <c>AlundraFloorHeightTests.ProductionCallSite_BarePawnWithoutSpriteRecord_NeverGetsFloorHeight_StaysZero</c> is such a pawn; no native handler runs for such a pawn, since the registry is keyed by sprite type). Nothing but the native handlers of E14.a reads these fields.
+    /// (<see cref="SpriteType"/> is -1: the harnesses' pawns; the E2 pin <c>FloorHeightTests.ProductionCallSite_BarePawnWithoutSpriteRecord_NeverGetsFloorHeight_StaysZero</c> is such a pawn; no native handler runs for such a pawn, since the registry is keyed by sprite type). Nothing but the native handlers of E14.a reads these fields.
     /// </summary>
     internal void UpdateEnemyGroundHeights() => UpdateEnemyGroundHeights(ReadCollisionField());
 
@@ -2352,7 +2352,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// <summary>
     /// Routes a scripted (post-spawn) write to <see cref="PosX"/>/<see cref="PosY"/>/<see cref="PosZ"/>
     /// onto the CasaEngine root transform - docs/plan-e3-collisions.md E3.d "DLL - propriete de la
-    /// racine par frame" item 4 (grep sites: <c>AlundraEventProgramRunner</c>'s 0x64
+    /// racine par frame" item 4 (grep sites: <c>EventProgramRunner</c>'s 0x64
     /// SetEntitiesPosition/0x65 AddEntitiesPositionOffset/0x8B SpawnEntityNextToEntity). A no-op for
     /// every entity WITHOUT a <see cref="Controller"/> - those keep the deferred per-frame
     /// re-derivation <see cref="FrameSyncPasses.SyncTransform"/> already does every frame (see that

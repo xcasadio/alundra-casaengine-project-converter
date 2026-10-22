@@ -26,7 +26,7 @@ public sealed class ChoiceScreen : XamlUIScreenBase, IDisposable
     /// <summary>The id of <c>UI/Screens/ChoiceScreen.uiscreen</c>, fixed in its envelope.</summary>
     internal const string ScreenAssetId = "a623e495-f197-475c-887d-042140ec7248";
 
-    // AlundraDisplay.cs:32 - re-declared, the same citation AlundraTextBoxScreen uses.
+    // AlundraDisplay.cs:32 - re-declared, the same citation TextBoxScreen uses.
     private const int NativeWidth = 320;
 
     private MGCanvas? _rootCanvas;

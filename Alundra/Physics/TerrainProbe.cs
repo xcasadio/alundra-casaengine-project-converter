@@ -75,7 +75,7 @@ internal static class TerrainProbe
     /// two separate probes instead of one combined method).
     ///
     /// A qualifying corner contributes the FULL reconstituted <c>MapTile.Flags</c>
-    /// (<c>walkability | (groundProperty &lt;&lt; 8)</c>, <c>AlundraCellsCollisionField.cs:295</c>) - NOT
+    /// (<c>walkability | (groundProperty &lt;&lt; 8)</c>, <c>CellsCollisionField.cs:295</c>) - NOT
     /// the masked 0xe00 value <see cref="ProbeSlopeCorner"/> captures - since the caller needs the raw
     /// 0x4 (hole)/0x8000 (portal floor) bits, which live outside that mask. A disqualified corner
     /// contributes 0, exactly like <see cref="ProbeSlopeCorner"/>'s own <c>tempFlags[i] = 0</c> branch

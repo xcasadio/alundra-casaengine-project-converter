@@ -21,8 +21,8 @@ namespace Alundra.UI.Inventory;
 /// </summary>
 public sealed class InventoryViewModel : ViewModelBase
 {
-    // wind_000/002/009/016/023/030/037/045/055/065, the digit glyphs 0-9 (the same ids AlundraHudScreen resolves).
-    // Internal (not private): AlundraSubInventoryViewModel reuses this table as-is for its own money/falcon/key
+    // wind_000/002/009/016/023/030/037/045/055/065, the digit glyphs 0-9 (the same ids HudScreen resolves).
+    // Internal (not private): SubInventoryViewModel reuses this table as-is for its own money/falcon/key
     // digits (E13.d SI4 brief - "reuse the main VM's, make it internal static shared if needed").
     internal static readonly Guid[] DigitAssetIds =
     {

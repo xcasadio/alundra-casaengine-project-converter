@@ -17,7 +17,7 @@ namespace Alundra.Entities;
 /// Bits 24-31 are never produced by the data and are never read by the engine.
 ///
 /// <see cref="EntityScriptProxy.Flags"/> IS populated from the sprite record header at spawn
-/// time (<c>AlundraWorldProxy.CreateEntityFromPrefab</c> ~:894 and <c>AlundraWorldProxy.AdoptPlayerPawn</c>
+/// time (<c>WorldProxy.CreateEntityFromPrefab</c> ~:894 and <c>WorldProxy.AdoptPlayerPawn</c>
 /// ~:1042, both porting <c>EntityManager.cs:92-93</c>'s packing), so every branch that reads a flag
 /// below is live.
 /// </summary>

@@ -73,7 +73,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     private ISoundPlayer? _soundPlayer;
 
     // E15.c T5 (docs/plan-e15-yarn.md, contract item 2): this director's own Yarn runner, built on a
-    // capture presenter (AlundraDialogueCapturePresenter) - NEVER built directly on _presenter, which is
+    // capture presenter (DialogueCapturePresenter) - NEVER built directly on _presenter, which is
     // reattached on every AttachToWorld while these two persist. The capture presenter hands each page the runner delivers to
     // OnPageShown (E19.f2a); _presenter only gets the choices. Rebuilt only when the game state
     // actually changes (a new world/map - InstallForMapEntry resets open/page state right after anyway);
@@ -495,7 +495,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
         _seamChoiceInterval = _seamPad.ButtonsJustPressedByInterval;
     }
 
-    // ---- IAlundraDialogueBoxHost
+    // ---- IDialogueBoxHost
 
     void IDialogueBoxHost.FlagReached(int flag)
     {

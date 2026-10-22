@@ -17,7 +17,7 @@ namespace Alundra.UI.Hud;
 /// <para/>
 /// The magic pips and the coin are UI animations written by the converter (<c>UI/Animations/ui_hud_magic_pip</c> and
 /// <c>ui_hud_coin</c>), played on the UI clock. They start in phase with the original's counters: a pip <c>i</c>
-/// shows frame <c>(FrameCounter / 10 + i) % 4</c> (<c>AlundraHudDirector.UpdateMagicPipPhase</c>), the coin advances
+/// shows frame <c>(FrameCounter / 10 + i) % 4</c> (<c>HudDirector.UpdateMagicPipPhase</c>), the coin advances
 /// every 6 ticks while the money rolls and holds its first frame otherwise. Every full pip is restarted together
 /// whenever the pips change (a pip fills or empties, the maximum changes, the HUD reappears), so the four keep their
 /// 200 ms offsets from one another; the coin is restarted when it starts rolling.
@@ -32,7 +32,7 @@ public sealed class HudViewModel : ViewModelBase, IHudView
     internal const string MagicPipAnimationId = "ca0a227b-1e10-591f-9802-05de254d0492";
     internal const string CoinAnimationId = "aee15589-1e91-5a53-b5d0-6226e12256a9";
 
-    // The wind_NNN sprite of every static glyph (AlundraHudComposer's HudGlyph); the pips and the coin are animations.
+    // The wind_NNN sprite of every static glyph (HudComposer's HudGlyph); the pips and the coin are animations.
     private static readonly Dictionary<HudGlyph, Guid> GlyphSprites = new()
     {
         [HudGlyph.Digit0] = Guid.Parse("bc300193-4244-5138-a27f-f242a150bed7"), // wind_000
@@ -262,7 +262,7 @@ public sealed class HudViewModel : ViewModelBase, IHudView
                 continue;
             }
 
-            // Centred in SCREEN pixels, as the jauge always was (AlundraHudIcon.ScreenLeft's own doc: the one free
+            // Centred in SCREEN pixels, as the jauge always was (HudIcon.ScreenLeft's own doc: the one free
             // native pixel of a 23-wide icon in its 24-wide box is split evenly at an even scale). The canvas is
             // scaled once as a whole, so the whole native part goes to the position and the remainder, finer than a
             // native pixel, to the sub-pixel offset.

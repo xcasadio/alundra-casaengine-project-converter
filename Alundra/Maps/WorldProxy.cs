@@ -590,9 +590,9 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// Camera instance wiring (S2, docs/plan-update-caracterisation.md) - built in this FIELD
     /// INITIALIZER, never lazily and never handed a back-reference to this proxy (trap 9: <see cref="Clone"/>
-    /// returns a bare <c>new AlundraWorldProxy()</c> and copies nothing, which stays safe only while every
+    /// returns a bare <c>new WorldProxy()</c> and copies nothing, which stays safe only while every
     /// collaborator is constructed exactly this way). Internal (rather than private) purely so
-    /// AlundraWorldProxyUpdateCharacterizationTests' <c>SeedDebugCameraOffset</c> helper can reach this
+    /// WorldProxyUpdateCharacterizationTests' <c>SeedDebugCameraOffset</c> helper can reach this
     /// instance directly - the private-&gt;internal widening the plan's base extraction rule already
     /// permits - instead of adding a second reflection hop.
     /// </summary>
@@ -753,7 +753,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// Rendering instance wiring (S3, docs/plan-update-caracterisation.md) - built in this FIELD
     /// INITIALIZER, never lazily and never handed a back-reference to this proxy (trap 9: <see cref="Clone"/>
-    /// returns a bare <c>new AlundraWorldProxy()</c> and copies nothing, which stays safe only while every
+    /// returns a bare <c>new WorldProxy()</c> and copies nothing, which stays safe only while every
     /// collaborator is constructed exactly this way).
     /// </summary>
     internal readonly BackdropStage _backdropStage = new();
@@ -816,7 +816,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <remarks>
     /// True for a world attached to a game (production, and the montages that give the world a <c>Game</c> and update the entities then this proxy, as <c>World.Update</c> does, World.cs:533-584).
     /// False for a bare <c>World</c> with no game (a montage that builds the proxies by hand, in any order): that world has no driver, so its entities keep their own loop of ticks
-    /// (<c>AlundraEntityScriptProxy.RunSelfDrivenTicks</c>) and this proxy keeps the lists and the pending-trigger re-scan once per frame, after them, as before E20.a.
+    /// (<c>EntityScriptProxy.RunSelfDrivenTicks</c>) and this proxy keeps the lists and the pending-trigger re-scan once per frame, after them, as before E20.a.
     /// </remarks>
     public bool DrivesEntityTicks => _world?.Game != null;
 
@@ -896,7 +896,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         // Loads this world's own event-code document (see MapEventProgramLoader's class doc on path
         // resolution) and wires the real slot-A interpreter over it; null document means "not found /
-        // failed to parse" and AlundraEventProgramRunner degrades to a counted no-op for slot A too, the
+        // failed to parse" and EventProgramRunner degrades to a counted no-op for slot A too, the
         // same shape as SpriteRecordCatalog's own degraded mode.
         var eventProgramDocument = MapEventProgramLoader.Load(EngineEnvironment.ProjectPath, world.Name);
         var eventProgramRunner = new EventProgramRunner(eventProgramDocument, GameState, this);
@@ -904,12 +904,12 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         EventProgramRunner = eventProgramRunner;
 
         // E15.c T6 (docs/plan-e15-yarn.md, contract item 5): load the ETC dialogue asset once per game
-        // (idempotent across world reloads, same shape as AlundraPlayerController's own
+        // (idempotent across world reloads, same shape as HeroController's own
         // EnsureInputMappingsRegistered) - OUI/NON and the inventory's item names/descriptions read it
-        // through AlundraEtcStringTable for the rest of the session.
+        // through EtcStringTable for the rest of the session.
         EtcStringTable.EnsureLoaded(world.Game?.AssetContentManager);
 
-        // Scrolling background layers (see AlundraBackdropStage's class doc) - same degraded-mode shape as
+        // Scrolling background layers (see BackdropStage's class doc) - same degraded-mode shape as
         // the event-program document above: a world with no companion file (most of them - Scroll
         // Parameters.Infos.Enabled was false) simply renders nothing extra.
         // S3 (docs/plan-update-caracterisation.md): _backdropRenderer now lives on _backdropStage
@@ -927,7 +927,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         // D-E9d: the sibling cellular mechanism - same attach-before-Load shape. E19.m2 (D-E19-66, ADR-0032):
         // this world's FallRespawn cells (if any) draw from the C library rand() of the original
-        // (AlundraLibcRandom, a stream of its own - not the game's AlundraRandom) - wired here,
+        // (LibcRandom, a stream of its own - not the game's GameRandom) - wired here,
         // unconditionally, so it is never left unwired by the time a FallRespawn cell's Advance() needs it.
         var cellularComponent = world.Game?.CellularLayerComponent;
         _backdropStage.AttachCellularService(cellularComponent?.Service);
@@ -980,7 +980,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             GameState,
             world.Name != null && BackdropLoader.TryParseMapIndex(world.Name, out var arrivalMapId) ? arrivalMapId : null);
 
-        // D-T-13's own point 4: ActiveCollisionEntity does not live on AlundraGameState (no such field
+        // D-T-13's own point 4: ActiveCollisionEntity does not live on GameState (no such field
         // there) - its real owner is THIS proxy (:239), so its map-entry reset lives here instead.
         // Inert by construction today: this proxy is fully reconstructed per world, so the field is
         // already null at this point - kept as an explicit statement (not a silent assumption) so a
@@ -1008,7 +1008,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             + $"{MapEventsLayerName}={mapEventsLayer?.Objects.Count ?? 0}.");
 
         // E2: register the "AlundraButtons" input mappings once per game (idempotent across world
-        // reloads - see AlundraPlayerController.EnsureInputMappingsRegistered's own doc), before any
+        // reloads - see HeroController.EnsureInputMappingsRegistered's own doc), before any
         // entity's first Update ever reads them.
         HeroController.EnsureInputMappingsRegistered(world.Game);
 
@@ -1195,9 +1195,9 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // re-installs it here. Tolerant by design, like the wall/floor placement overlays right below:
         // a missing/malformed "AlundraCells" property (or a cell_count that does not match MapSize)
         // just leaves World.CollisionField null (degraded mode, single warning already logged by
-        // AlundraCellsCollisionField.TryCreate) - E3.c's mover then has no field to sample.
+        // CellsCollisionField.TryCreate) - E3.c's mover then has no field to sample.
         //
-        // E7.a/E7.b: the 4-out overload also hands back the parsed AlundraCellsRecords, so the cell store
+        // E7.a/E7.b: the 4-out overload also hands back the parsed CellsRecords, so the cell store
         // built right below aliases the SAME int[] instances this field reads - a mutation is instantly
         // visible to both.
         CellsRecords? cellRecords = null;
@@ -1220,7 +1220,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         NavigationGrid = TryBuildNavigationGrid(world, tileMapData);
 
         // E7.a: the cell-mutation store, built from the SAME parsed records the collision field above
-        // aliases its arrays from - see AlundraCellStore's own class doc. Degraded (null CellMutator) on
+        // aliases its arrays from - see CellStore's own class doc. Degraded (null CellMutator) on
         // a tile_id/wall_tiles_offset length mismatch, or when the collision field itself never parsed.
         CellMutator = null;
         CellStore? cellStore = null;
@@ -1256,7 +1256,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             submittedFloorIndices = WallPlacementOverlay.ApplyFloor(tileMapComponent, floorPlacements, world.Name);
         }
 
-        // E7.b: the visual + navigation applier - see AlundraCellVisualSync's own class doc. Seeded from
+        // E7.b: the visual + navigation applier - see CellVisualSync's own class doc. Seeded from
         // exactly what was resubmitted above (submittedWallIndices/submittedFloorIndices), never from the
         // documents themselves (plan fact 13). The navigation grid accessor reads THIS property live
         // (`() => NavigationGrid`), not a captured snapshot, so a test injecting a synthetic grid after
@@ -1297,7 +1297,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             // B3 (docs/plan-e11b-opcodes-audio.md, D-B-7): this world's own VAB group id, read off
             // Maps/sound-group-index.json for this world's own map id - the same "trailing -{mapId} of
             // World.Name" parse TriggerMapEntryMusic uses below. No entry (degraded table, or a world
-            // that is not a converted Alundra map) leaves the group null - AlundraSoundPlayer's own
+            // that is not a converted Alundra map) leaves the group null - SoundPlayer's own
             // pre-B3 shape (D-E11-6).
             int? soundGroup = null;
             if (BackdropLoader.TryParseMapIndex(world.Name, out var soundGroupMapId))
@@ -1310,10 +1310,10 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             }
 
             // D-C-5: owner: world, so World.Clear's own StopVoicesOwnedBy(world) actually stops these
-            // voices (fact 1.7's fix - see AlundraSoundPlayer's own constructor doc).
+            // voices (fact 1.7's fix - see SoundPlayer's own constructor doc).
             SoundPlayer = new SoundPlayer(audioService, SoundBank, world, soundGroup);
 
-            // D-C-6: AlundraMusicPlayer.Instance is SESSION-scoped, never rebuilt here - only
+            // D-C-6: BgmPlayer.Instance is SESSION-scoped, never rebuilt here - only
             // re-pointed at this world's own AudioService/project path. See that class's own doc for
             // why (the guard state would be vacuous by construction in a per-world instance).
             BgmPlayer.Instance.AttachToWorld(audioService, EngineEnvironment.ProjectPath);
@@ -1323,14 +1323,14 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // B2 (docs/plan-e11b-opcodes-audio.md, D-B-5): re-points the session-scoped master fade machine
         // at this world's own AudioService/SoundPlayer - called UNCONDITIONALLY (even with audioService
         // null), same "AttachToWorld tolerates null, never touches its own state" contract as
-        // AlundraMusicPlayer.AttachToWorld/AlundraScreenFadeDirector.AttachToWorld above.
+        // BgmPlayer.AttachToWorld/ScreenFadeDirector.AttachToWorld above.
         Audio.BgmFadeDirector.Instance.AttachToWorld(audioService, SoundPlayer);
 
         // The map-entry music TRIGGER lives HERE rather than at a second call site in
         // InitializeWithWorld, and that placement is the point: an outcome-verifier of slice C1 showed
         // that deleting a separate `TriggerMapEntryMusic(world);` line left all 637 tests green - the
         // whole slice would have gone inert in the real game with a fully green suite. This method is
-        // already driven end-to-end by AlundraWorldProxyAudioInstallationTests on the real install
+        // already driven end-to-end by WorldProxyAudioInstallationTests on the real install
         // path, so folding the trigger into it puts the last wiring link under test instead of leaving
         // it to the in-game check alone. This call only loads the destination track and arms
         // ResetSoundFlag (B7); the voice itself starts at the end of the entry's first frame close, when
@@ -1519,7 +1519,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // METHOD - -> (3) RuntimeViewBootstrapper.BootstrapViews creates the Default view and its MGUI
         // UIView -> (5) BeginPlay. So the install phase sits inside the window where the ViewManager is
         // empty by construction, on EVERY world load. The backdrop clear color hit the same window
-        // (AlundraBackdropStage.cs:60-66) and so do the engine's own game scripts (RPGDemo wires UI in
+        // (BackdropStage.cs:60-66) and so do the engine's own game scripts (RPGDemo wires UI in
         // OnBeginPlay, never at load). The eager attempt below still serves hosts that pre-wire a view
         // before install (the wiring test's montage); the real game is wired by
         // TryWireDialoguePresenterOnce's per-frame retry in Update.
@@ -1544,7 +1544,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <see cref="Update"/>, because the UI view this needs is created strictly AFTER
     /// <see cref="InitializeWithWorld"/> ran (see <see cref="InstallDialogueSystems"/>'s own doc for the
     /// proven boot order). Copies the ONE proven lazy-lookup shape in this DLL - the clear-color retry
-    /// (<c>AlundraBackdropStage.ApplyOriginalBackgroundClearColorOnce</c>, guard set ONLY inside the
+    /// (<c>BackdropStage.ApplyOriginalBackgroundClearColorOnce</c>, guard set ONLY inside the
     /// success branch) - and deliberately NOT <c>ResolveDebugCameraOnce</c>'s one-shot-at-first-try
     /// shape, whose first-frame miss is permanent (the exact trap here, since the view's availability
     /// frame is bootstrap-dependent). On success this RE-POINTS the session director via
@@ -1606,7 +1606,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // E13 C3 (D-E13-8): attached in the SAME call as the push, strictly BEFORE this same Update's own
         // hudTick loop runs (Update(float)'s own call order: TryWireHudScreenOnce, then the tick loop) - so
         // the presenter's first Tick() this frame already has a live view to push into, matching
-        // AlundraHudScreen.OnInitialize's own "production call order" doc.
+        // HudScreen.OnInitialize's own "production call order" doc.
         _hudPresenter = new HudPresenter(
             HudDirector.Instance, hudScreen.ViewModel, ResolveHudEquipmentIcons);
         _hudScreenWired = true;
@@ -2045,7 +2045,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// component (logical pose (804, 952, 0) on map 389, equal to <c>ResolveLogicalPosition</c> of this same
     /// New Game tile) - this method's own <see cref="EntitySpawnFactory.ResolveLogicalPosition"/> call below OVERWRITES that
     /// with the logical position instead, which is harmless (same result) but makes explicit that
-    /// <c>AlundraEntityScriptProxy</c>'s logical PosX/PosY/PosZ, not the engine's PlayerStart transform, is
+    /// <c>EntityScriptProxy</c>'s logical PosX/PosY/PosZ, not the engine's PlayerStart transform, is
     /// the field this proxy's own <see cref="FrameSyncPasses.SyncTransform"/> re-derives from every frame going forward
     /// (decision D2's "logical state wins" rule).
     ///
@@ -2112,16 +2112,16 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         proxy.EventTrigger = ScriptHelper.ProgramUnknown; // hygiene only - IsPlayer already excludes it from RunPendingEventTriggers regardless of value.
 
         // E3.d ("DLL - adoption", docs/plan-e3-collisions.md): resolved once here, before the New Game
-        // pose write below, so AlundraEntityScriptProxy.ClampToGround (called right after that write)
-        // and every later per-frame root/controller routing (AlundraEntityScriptProxy.Update,
-        // AlundraPlayerManager.Tick, AlundraEntityScriptProxy.PushLogicalPositionToRoot) all see the
+        // pose write below, so EntityScriptProxy.ClampToGround (called right after that write)
+        // and every later per-frame root/controller routing (EntityScriptProxy.Update,
+        // PlayerManager.Tick, EntityScriptProxy.PushLogicalPositionToRoot) all see the
         // same cached reference. Null on a hero prefab that predates/skips E3.d's converter change -
         // every controller-aware site already falls back to E2's controller-free behaviour on null.
         proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
 
         // T5 (D-T-4, [R9]): consume the warp director's pending arrival record, if this map entry is the
-        // destination of a warp - clears AlundraWarpDirector.HasPendingArrival on the way out, so a LATER,
-        // non-warp map entry never reads this same stale record (see AlundraWarpDirector.ConsumeArrivalRecord's
+        // destination of a warp - clears WarpDirector.HasPendingArrival on the way out, so a LATER,
+        // non-warp map entry never reads this same stale record (see WarpDirector.ConsumeArrivalRecord's
         // own doc). Null falls back to the New Game constants exactly as before this slice.
         var arrivalRecord = WarpDirector.Instance.ConsumeArrivalRecord();
 
@@ -2141,7 +2141,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         proxy.PosZ = arrivalRecord?.PosZ ?? 0;
         // E3.d: raises PosZ onto the actual cell height under the spawn tile before anything else reads it
         // - port of EntityManager.cs:127-136's own spawn-time ground clamp (see
-        // AlundraEntityScriptProxy.ClampToGround's own doc). A no-op without a controller/collision
+        // EntityScriptProxy.ClampToGround's own doc). A no-op without a controller/collision
         // field/Box fixture, so PosZ simply stays at whatever was written above, exactly like before E3.d.
         // T5 (§1.1.f): on a warp arrival this is the step that turns the portal's own ZLevel<<20 (often 0)
         // into the destination cell's real ground height - ClampToGround only ever RAISES PosZ (§1.4.e),
@@ -2163,13 +2163,13 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         proxy.SpawnAnimationActive = true;
         proxy.SpawnAnimationId = proxy.TargetAnimationId;
 
-        // Documented stub for AlundraPlayerManager's LoadingMap(0x36) case (binary 0x800325E8: on the ground the
+        // Documented stub for PlayerManager's LoadingMap(0x36) case (binary 0x800325E8: on the ground the
         // hero stays LoadingMap, in the air it gets 0x2D - E19.v, O-E19-32): it only covers a read before this
-        // frame's own AlundraEntityScriptProxy.Update, which pulls the real Controller.IsGrounded every frame once
+        // frame's own EntityScriptProxy.Update, which pulls the real Controller.IsGrounded every frame once
         // the controller exists (E3.d, see its own doc). Measured on a real arrival 432 px above the ground
-        // (AlundraLoadingMapAirArrivalTests): the pull comes first, so 0x2D is set from the frame 1. On the
+        // (LoadingMapAirArrivalTests): the pull comes first, so 0x2D is set from the frame 1. On the
         // ground the LoadingMap -> Idle exit is the animation Chain bridge (anim 54 -> 0, see
-        // AlundraWorldProxy.OnAnimationFinished), matching the original's own trailing-control-frame-driven
+        // WorldProxy.OnAnimationFinished), matching the original's own trailing-control-frame-driven
         // animation switch.
         proxy.IsOnGround = 1;
 
@@ -2227,9 +2227,9 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // AFTER the position (ClampToGround above) and footprint (Mod*/Width/Height, just set above) are
         // both final, and BEFORE this proxy is added to _spawnedEntities/reachable by any script below -
         // AdoptPlayerPawn's own equivalent of the map-load spawn loop's
-        // `EvaluateEntitySupport(..., immediateAtSpawn: true)` call (AlundraWorldProxy.cs, map-load/dynamic
+        // `EvaluateEntitySupport(..., immediateAtSpawn: true)` call (WorldProxy.cs, map-load/dynamic
         // spawn paths above), which the hero does not go through (it never calls EvaluateEntitySupport at
-        // all - E2 drives it through AlundraPlayerManager instead).
+        // all - E2 drives it through PlayerManager instead).
         proxy.TerrainHeight = proxy.ComputeTerrainHeight();
 
         // E3.d ("DLL - adoption", docs/plan-e3-collisions.md): overrides the converter-exported
@@ -2244,7 +2244,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             var (mapGravity, mapMaxFallSpeed, mapGravityRaw, mapZViscosityRaw) = EntitySpawnFactory.ResolveMapGravitySettings(tileMapData);
             // E4 (docs/plan-echelles-chiffrage.md É4): stash the resolved values on the proxy itself, not
-            // just on the live Controller.Settings below - AlundraPlayerManager's own climbing state
+            // just on the live Controller.Settings below - PlayerManager's own climbing state
             // machine needs a RESERVE to restore the hero's engine-driven gravity to once a climb ends
             // (Controller.Settings.Gravity/MaxFallSpeed are zeroed WHILE climbing, see MovePlayer's own
             // Climbing/ClimbStill case). Before this fix, proxy.MapGravity/MapMaxFallSpeed were left at
@@ -2438,16 +2438,16 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // load's departure or open a box. A no-op, reading no key, unless Alundra.dll is compiled in Debug.
         SaveGameDirector.Instance.UpdateRecipeKeys(_world?.Game?.InputComponent?.KeyboardManager, GameState, _world?.Name, PlayerEntity);
 
-        // Bug fix (AlundraLogicClock's own class doc): this world's ONE shared logic clock. Reads the SAME
+        // Bug fix (LogicClock's own class doc): this world's ONE shared logic clock. Reads the SAME
         // cached value every spawned entity's own Update already advanced/read this frame (this proxy's
         // own Update always runs LAST - World.cs:443-491) - or, for a world with no entities at all (the
-        // `if` further down never ran a single AlundraEntityScriptProxy.Update this frame), becomes the
+        // `if` further down never ran a single EntityScriptProxy.Update this frame), becomes the
         // clock's own first caller this frame, so the clock still advances every frame regardless of
         // entity count.
         //
         // E5.c (docs/plan-e5-camera.md §2 ter): read here, at the very head of the frame, rather than
         // further down where it used to live - UpdateCameraFollow below now needs it. Moving the read
-        // earlier is side-effect-free: it is a memo read (AlundraLogicClock._frameComputed), nothing
+        // earlier is side-effect-free: it is a memo read (LogicClock._frameComputed), nothing
         // between this line and the old site touches the clock, and both CloseFrame() calls still run
         // after it.
         var ticksThisFrame = LogicTicksThisFrame(elapsedTime);
@@ -2463,7 +2463,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // wall interleave and the camera/backdrop/fade/dialogue blocks further down) unconditional; the contact of
         // the dialogue now comes from the movement obstacle probe inside the frozen entity update (E19.d2b).
         //
-        // T4 (D-T-6): OR'd with AlundraWarpDirector's own gel gate - the "third mechanism" (§1.5) that
+        // T4 (D-T-6): OR'd with WarpDirector's own gel gate - the "third mechanism" (§1.5) that
         // freezes the SAME "dedans" passes, at this SAME site, without ever posing a control-flag bit
         // (the original's own AdvanceWarpTransitionFrame short-circuits its whole entity pipeline
         // instead of testing a flag at all - see that class' own doc).
@@ -2476,7 +2476,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // the FIRST thing of each tick of the loop of the passes below (E19.u U-R1, ADR-0050). "Dehors":
         // the original never gates its pad update (PadManager.UpdatePads runs from the main loop), so
         // neither does this. LastPadState was sampled THIS frame by the player's own
-        // AlundraEntityScriptProxy.Update, which runs before this proxy (World.cs:443-491). A consumer of
+        // EntityScriptProxy.Update, which runs before this proxy (World.cs:443-491). A consumer of
         // TickPad's edges must read them inside that same loop, in the tick that advanced them: after the
         // loop, a two-tick frame would have overwritten the first tick's edge. The consumers are the
         // inventory block at the END of each tick (E19.u U-R2, below) and the recordings of the next
@@ -2584,7 +2584,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
             // E19.u U-R2 (docs/plan-e19-opcodes.md section 1.2y, D-E19-103, ADR-0050): the INVENTORY BLOCK, at the end of the tick, after the dialogue pass, the save screen and the map events of the same tick,
             // every tick (no early exit skips it). It is the binary's Update(k) trigger (0x8002BC6C-0x8002BD00, after UpdateWorld) followed by RenderScene(k+1)'s inventory slots 4 and 6, the post-process and the
-            // portrait: the tick k of the port is Update(k) plus RenderScene(k+1) for the inventory (AlundraInventoryDirector's class doc). A box released or a map event run by this very tick is therefore seen by the
+            // portrait: the tick k of the port is Update(k) plus RenderScene(k+1) for the inventory (InventoryDirector's class doc). A box released or a map event run by this very tick is therefore seen by the
             // trigger, and the map events freeze one tick later than the trigger's opening, like the binary.
             TickTraceForTests?.Invoke("inventory");
             UpdateInventoryPortraitHeadPoint();
@@ -2593,7 +2593,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             // E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21/22): the sub-inventory director's own
             // Tick(), then the post-process, run right after - the port's equivalent of the original's own
             // Update-then-render split (plan §1.2): the main inventory's trigger is the "Update" half, the two
-            // directors' per-frame work and AlundraInventoryPostProcess.Run the "render" half, the post-process
+            // directors' per-frame work and InventoryPostProcess.Run the "render" half, the post-process
             // AFTER both directors for THIS tick, as the original runs it after all thirteen of its callbacks
             // (GraphicManager.cs:1677-1706 - its own post-process runs after its own callback-table loop).
             SubInventoryDirector.Instance.Tick();
@@ -2645,7 +2645,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // E7.b (docs/plan-e7-mutation-tuiles.md, "coalescer par frame"): applies at most one overlay
         // reconstruction for however many 0x54/0x55/0x85 opcodes the loop above just dispatched (a map's
         // four-hatch entry alone fires four separate CopyCellRectangle calls) - a no-op when nothing
-        // actually changed the overlay's contents (AlundraCellVisualSync.ReconstructionCount stays put).
+        // actually changed the overlay's contents (CellVisualSync.ReconstructionCount stays put).
         // Invariant (plan §3, point 1): stays immediately after the map-events pass, unmoved by C1.
         _cellVisualSync?.FlushPendingOverlayReconstruction();
 
@@ -2762,7 +2762,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // T4 (docs/plan-transitions-carte.md §3): the departure sequence itself is a "dehors" pass too
         // (this class' own gel gate must keep running WHILE it holds other passes frozen) - placed right
         // after the fade's own Advance so it observes THIS tick's just-updated IsSettled, never a
-        // frame-stale one (see AlundraWarpDirector.Advance's own doc).
+        // frame-stale one (see WarpDirector.Advance's own doc).
         WarpDirector.Instance.Advance(ticksThisFrame);
 
         // E19.f2a F2-R1: the dialogue box's pass no longer lives here: it runs inside the loop of the logic ticks above, BEFORE the map events of each tick
@@ -2771,7 +2771,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         // E13 C1 (docs/plan-e13-hud.md, D-E13-8): the HUD director's own tick, right next to the
         // dialogue pass above and for the exact same reason - it must keep rolling/rattraping while a
-        // modal dialogue box freezes the screens below it (see AlundraHudDirector's own class doc). One
+        // modal dialogue box freezes the screens below it (see HudDirector's own class doc). One
         // Tick() per LOGIC tick, never per rendered frame - D-E13-8, the tick logique owns all of the
         // HUD's time.
         for (var hudTick = 0; hudTick < ticksThisFrame; hudTick++)
@@ -2779,7 +2779,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             HudDirector.Instance.Tick();
 
             // E13 C3 (D-E13-8): the presenter, PER LOGIC TICK, right next to the director's own Tick()
-            // above and never gated behind any screen-stack Update - AlundraHudScreen's own Update is now
+            // above and never gated behind any screen-stack Update - HudScreen's own Update is now
             // empty (see its own doc) precisely so a modal dialogue's screen-stack freeze cannot reach the
             // jauge through it. Null until a view is wired (TryWireHudScreenOnce production path, or
             // AttachHudPresenterForTests in tests) - same tolerated degraded shape as every other
@@ -2789,7 +2789,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         // E12.d (D-E12D-2) had a pass here: the player's overlap probe, once per logic tick, feeding XCollisionEntity (detection only, D-E12D-1). E19.d2b B4
         // (D-E19-27, D-E19-29) removed it: entities now block movement, and the contact of the dialogue is the entity that shortened or cancelled the step,
-        // written by AlundraEntityScriptProxy.MoveControllerAndPullPosition from the blocking report of the controller (the binary's +0x130). The freeze of
+        // written by EntityScriptProxy.MoveControllerAndPullPosition from the blocking report of the controller (the binary's +0x130). The freeze of
         // the old pass (GameplayBlockedMask, D-E12D-5) is kept by construction: no step is taken, so the contact keeps its value.
 
         // E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): the freeze the T2 gate cannot reach - the
@@ -2797,7 +2797,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // GameplayBlockedMask is posed and given back when it is lifted. Here, at the very end of the frame,
         // because the engine updates controllers and sprites BEFORE the gameplay proxies and MenuOpen
         // changes during them: the next engine update already sees the new state. See
-        // AlundraGameplayFreeze's own doc.
+        // GameplayFreeze's own doc.
         var worldFrozen = (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0;
         foreach (var spawnedEntity in _spawnedEntities)
         {
@@ -2807,7 +2807,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             }
         }
 
-        // Closes this frame's logic-clock memo (see AlundraLogicClock's own class doc) - this proxy's own
+        // Closes this frame's logic-clock memo (see LogicClock's own class doc) - this proxy's own
         // Update always runs last (World.cs:443-491), so the next frame's first caller (an entity's own
         // Update, or this proxy again for a zero-entity world) recomputes fresh. C1 (plan §3): the old
         // two-call-site shape (an early return for zero entities, this same call for the rest) collapses
@@ -2820,11 +2820,11 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         // (B9), run right BEFORE FlushFrameSounds below, exactly once per rendered frame. This is the
         // ONLY site that starts the music voice a map entry's own PlayMapMusic armed (B7) - a positive
         // 0xA7 load does NOT arm this flag, it CLEARS it (P8, B13's own second branch: "chargée sans
-        // être jouée", no voice starts from that path at all) - see AlundraMusicPlayer's own class doc.
+        // être jouée", no voice starts from that path at all) - see BgmPlayer's own class doc.
         // T4.2 (docs/plan-bgm-demarrage-binaire.md, S2): extracted to ConsumeMusicResetSoundFlagOnFrameClose
-        // so Alundra.Tests' own frame-close helper (AlundraMusicPlayerTests.SimulateFrameClose) drives this
-        // SAME code instead of a copy of it - the singleton-driven tests pass AlundraMusicPlayer.Instance/
-        // AlundraBgmFadeDirector.Instance directly (no AlundraWorldProxy in scope there).
+        // so Alundra.Tests' own frame-close helper (MusicPlayerTests.SimulateFrameClose) drives this
+        // SAME code instead of a copy of it - the singleton-driven tests pass BgmPlayer.Instance/
+        // BgmFadeDirector.Instance directly (no WorldProxy in scope there).
         ConsumeMusicResetSoundFlagOnFrameClose(MusicPlayer, BgmFadeDirector);
 
         // B1 (docs/plan-e11b-opcodes-audio.md, D-B-4): flushes SoundPlayer's own per-frame anti-duplicate
@@ -2836,11 +2836,11 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         SoundPlayer?.FlushFrameSounds();
 
         // F2 (docs/plan-bgm-demarrage-binaire.md): evaluates whatever warp departure
-        // AlundraMusicPlayer.HandleWarpDeparture recorded this frame - AFTER the reset-flag block above
+        // BgmPlayer.HandleWarpDeparture recorded this frame - AFTER the reset-flag block above
         // (which already consumed ResetSoundFlag, B9) and after FlushFrameSounds, mirroring the binary's
         // own main-loop ordering (the frame function that consumes g_resetSoundFlag runs to completion
         // BEFORE HandleMapSoundEffects, the departure's music half, ever runs). Cast, not an interface
-        // member: only the real AlundraMusicPlayer.Instance is ever installed here (AttachToWorld), and
+        // member: only the real BgmPlayer.Instance is ever installed here (AttachToWorld), and
         // the opcode-runner's own fakes never reach this proxy-level site.
         (MusicPlayer as BgmPlayer)?.EvaluatePendingWarpDeparture();
 
@@ -2919,7 +2919,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         _birthSpawnsThisTick = 0;
         _effectStage.BeginSource(tick, 1); // E19.g G3b (G3B-R3): the effect operations of the entities of this tick carry its tick (rank 1), the pending triggers rank 2.
 
-        // E20.a A4 (D-E20-2): MovePlayer once per tick, first of the block (0x800386EC), on the pad of the tick (AlundraTickPad, with the release edge).
+        // E20.a A4 (D-E20-2): MovePlayer once per tick, first of the block (0x800386EC), on the pad of the tick (TickPad, with the release edge).
         var hero = PlayerEntity;
         TickTraceForTests?.Invoke("movePlayer");
         if (hero is { TookPartInFrame: true })
@@ -3420,7 +3420,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
                 // E20.e0a4 phase A (D-E0A4-1, D-E0A4-2, D-E0A4-4), HERE and not in the core the map load shares (the load, the hero and the gull are not in the slice, D-E20-36), and BEFORE the balance sheet (whose first evaluation
                 // of the box is the first switch of the cursor): the creation by script has made the first switch of the animation 0 (InitializeEntity, 0x80039EA8), exactly as the one by the interface
-                // (AlundraEntitySpawnFactory.CreateEntityFromSpriteIndex, E20.e0a5 and E20.e0a3b): the first clock tick counts and the box exists before the engine integrated the entity; and the byte 0xD of the animation set of
+                // (EntitySpawnFactory.CreateEntityFromSpriteIndex, E20.e0a5 and E20.e0a3b): the first clock tick counts and the box exists before the engine integrated the entity; and the byte 0xD of the animation set of
                 // the animation 0 is in AnimFlags from the creation, as the switch loads it.
                 spawnedProxy.SwitchedAtCreation = true;
                 spawnedProxy.AnimFlags = spawnedProxy.AnimSetsByAnim != null && spawnedProxy.AnimSetsByAnim.TryGetValue((int)spawnedProxy.TargetAnimationId, out var firstAnimationSet) ? firstAnimationSet.Acceleration : 0;
@@ -3603,7 +3603,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     void IEntityWorldContext.DestroyEntity(EntityScriptProxy entity) => DestroyEntity(entity);
 
-    // IAlundraScriptHost - see that interface's own doc. Explicit implementation, same reasoning as
+    // IScriptHost - see that interface's own doc. Explicit implementation, same reasoning as
     // IEntityWorldContext above.
     IEventProgramRunner IScriptHost.Runner => EventProgramRunner;
 
@@ -3629,9 +3629,9 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     ISoundPlayer? IScriptHost.SoundPlayer => SoundPlayer;
 
     // T4 (docs/plan-transitions-carte.md §3): the override T3's own comment (formerly here) named in
-    // advance - AlundraPlayerManager.MovePlayer calls this from INSIDE PlayerEntity's own Update, so
-    // AlundraWarpDirector.IsTransitionInProgress is already true before this SAME frame's
-    // AlundraWorldProxy.Update reads its own gel gate (see AlundraWarpDirector.BeginDeparture's own doc).
+    // advance - PlayerManager.MovePlayer calls this from INSIDE PlayerEntity's own Update, so
+    // WarpDirector.IsTransitionInProgress is already true before this SAME frame's
+    // WorldProxy.Update reads its own gel gate (see WarpDirector.BeginDeparture's own doc).
     void IScriptHost.OnPortalTriggerDetected(PortalRecord portal, uint arrivalDirectionId)
     {
         if (PlayerEntity == null)

@@ -14,7 +14,7 @@ namespace Alundra.Physics;
 /// <c>CheckEntityCollisionDown</c>'s own entity-candidate branch (PhysicsEngine.cs:171-230 detection,
 /// <c>:123-139</c> consumption). Shared between <see cref="EntityScriptProxy.EvaluateEntitySupport"/>
 /// (the DLL's own controller-driven per-frame hook) and the intro trace harness's own simulated
-/// kinematics (<c>Alundra.Tests/IntroTraceHarnessTests.cs</c>, no controller - it consumes
+/// kinematics (<c>Alundra.Tests/Arcs/HeadlessIntroSimulation.cs</c>, no controller - it consumes
 /// <see cref="TryFindSupport"/> directly against <c>Pos*</c>) - "the same shared detection" per the plan's
 /// own wording, so this fidelity-critical arithmetic exists exactly once.
 /// </summary>
@@ -37,7 +37,7 @@ internal static class EntitySupport
     /// scope - see this class' own doc). Fills <paramref name="buffer"/> in place (<c>Clear</c> then
     /// re-add) so callers can reuse the SAME list instance every frame with no per-frame allocation,
     /// exactly like <c>IntroTraceHarnessTests</c>' own <c>entitiesThisFrame</c> snapshot pattern and
-    /// <c>AlundraWorldProxy</c>'s own <c>_updateProxies</c>. Same predicate as <see cref="IsEligibleSubject"/>
+    /// <c>WorldProxy</c>'s own <c>_updateProxies</c>. Same predicate as <see cref="IsEligibleSubject"/>
     /// below - one entity can be both a CANDIDATE (via this list) and a SUBJECT (via that gate) of the
     /// exact same test, since <c>CheckEntityCollisionDown</c> uses the identical criteria for both roles
     /// (PhysicsEngine.cs:189, :994).
@@ -85,7 +85,7 @@ internal static class EntitySupport
     /// <paramref name="platformTopZSeed"/> - the harness's own terrain probe for a bare proxy; for a
     /// controller-driven entity in production there is no DLL-tracked <c>TerrainHeight</c> at all (the
     /// engine's own <c>CharacterControllerComponent</c> ground-snap against the real
-    /// <c>AlundraCellsCollisionField</c> owns terrain separately), so that caller passes the UNCLAMPED
+    /// <c>CellsCollisionField</c> owns terrain separately), so that caller passes the UNCLAMPED
     /// <c>ModdedPosZ + FinalForceZ</c> - see each call site's own doc.
     ///
     /// The candidate conjunct is now BOTH halves of PhysicsEngine.cs:205: <c>candidateTop &lt;
