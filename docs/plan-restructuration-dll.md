@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), son T0a attend les précisions Q-R-3b et Q-R-6 ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), son T0a attend les points (b) et (c) de Q-R-3b, puis une révision (D-R-16 à D-R-18) et sa relecture ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -62,7 +62,19 @@ Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructure
   et R7.
 - **D-R-15** (2026-10-22, réponse à Q-R-7) — La tranche **R7** est validée : `check_names.py --rules`, outil seul, après R5, contrôle
   l'arbre vivant de la DLL et des tests contre les règles de l'ADR-0075, sans la table, et devient la garde des tranches suivantes.
-- Q-R-4 et Q-R-6 : l'auteur a répondu « corriger » le 2026-10-22 sans dire quoi : précisions demandées (§11).
+- Q-R-4 et Q-R-6 : l'auteur a répondu « corriger » le 2026-10-22 sans dire quoi : précisions demandées (§11). Réponses au 2e tour :
+  D-R-17 et D-R-18.
+- **D-R-16** (2026-10-22, 2e tour, Q-R-3b (a)) — Les types partagés déclarés dans un fichier de test (les 5 collections xUnit, les hôtes
+  d'aides) vont **chacun dans son propre fichier**, dans le dossier de leur fichier d'origine, pas dans `Support/` : la coupe de R2,
+  vers le domaine du fichier d'origine. Restent (b), le nom du dossier dédié, et (c), les harnais de traces (Q-R-3b).
+- **D-R-17** (2026-10-22, 2e tour, Q-R-4 « 1 ») — Le choix (1) est corrigé : `docs/intro-roadmap.md` n'est plus traité comme vivant
+  mais comme un document historique ; les corrections que R6 y a faites sont annulées, et R5 (T22) ne touche plus ses lignes 26 et 63.
+  Les choix (2) à (5) de R6 sont validés. Lecture de la session (l'auteur a répondu « 1 » à « lesquels corriger ») : un document
+  vivant se corrige, l'autre choix est historique.
+- **D-R-18** (2026-10-22, 2e tour, Q-R-6 « c ») — Le choix (c) est corrigé : les dossiers temporaires des anciennes exécutions de tests,
+  nommés par les anciens préfixes, sont effacés à la fin de R5 : recensés par chemin exact, envoyés à la Corbeille un par un, chacun
+  vérifié dans la Corbeille (un dossier que la Corbeille refuse est un arrêt et une question, jamais une suppression définitive). Les
+  choix (a) (preuves de fin de R3 et R4 gelées) et (b) (commentaires inchangés en R5, R8 les corrige) sont validés.
 - Règle du moteur (D-R-2), notée aussi en mémoire : « le moteur, quand il crée les objets script, ne doit chercher que dans la DLL ».
 
 ## 1. Faits établis (découverte du 2026-10-16, lecture seule)
@@ -874,7 +886,7 @@ après R6 ; **P4** des commentaires et des `<c>` gardent les anciens noms (≈ 9
 ligne vient du harnais des exécuteurs), ceux de T0 « Claude Opus 5.5 ». Reste la recette de l'auteur : nouvelle partie, les entités bougent,
 F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité sans avertissement.
 
-## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17 ; révision 1 **READY** ; Q-R-3 répondue le 2026-10-22, D-R-13 ; T0a attend les précisions Q-R-3b et Q-R-6)
+## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17 ; révision 1 **READY** ; Q-R-3 répondue le 2026-10-22, D-R-13, D-R-16 ; à réviser (D-R-16 à D-R-18) puis relire ; T0a attend aussi Q-R-3b (b) et (c))
 
 **Relecture (2026-10-17).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) le hachage de `Alundra.dll` ne pouvait pas rester
 égal : la version informative de l'assembly porte le commit (`Alundra/obj/Debug/net9.0-windows/Alundra.AssemblyInfo.cs:16`,
@@ -1246,7 +1258,9 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
   (b) **point 7** : le nom du dossier dédié. Proposé : `ExportGuards/` (namespace `Alundra.Tests.ExportGuards`), d'après les noms des deux
   fichiers (`AlundraCornerTrackExportGuardTests.cs`, `AlundraZeroDurationLoopExportGuardTests.cs`).
   (c) **point 3** : « seulement les 26 scénarios » comprend-il les harnais de traces, que l'option de la question y mettait aussi ?
-- **Q-R-4** (2026-10-17, choix faits en mode autonome pour R6, réversibles) — Valider ou corriger : `docs/intro-roadmap.md` traité comme
+  **Réponse de l'auteur (2026-10-22, 2e tour)** : « chacun dans son propre fichier » : (a) tranché (D-R-16). **(b) et (c) restent sans
+  réponse.**
+- **Q-R-4** — **Tranchée le 2026-10-22 (D-R-17)** : « 1 ». Question d'origine (2026-10-17, choix faits en mode autonome pour R6, réversibles) — Valider ou corriger : `docs/intro-roadmap.md` traité comme
   vivant (ses chemins et noms corrigés) ; `docs/demarrage-nouvelle-partie.md` (daté du 2026-08-08) gardé tel quel ; les numéros de ligne
   cités dans les docs non recalculés (seuls le chemin et le nom changent) ; `docs/editeur-couverture-dll.md:64-66` corrigé (la ligne
   « Script » existe de nouveau) ; le commentaire `PlayerSetupWriter.cs:27` pointé vers la décompilation.
@@ -1258,7 +1272,7 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
   (`AlundraWorldProxy`, `AlundraEventProgramRunner`…) restent dans les commentaires de la DLL (≈ 60 fichiers) et des tests (≈ 90 fichiers),
   plus quelques chemins `Alundra/Scripts/…` (par exemple `HeroController.cs:42`, `AlundraScreenFadeCameraWiringTests.cs:24,29,96`). Les
   corriger dans une tranche dédiée (mécanique, outillée comme R3, commentaires seulement), ou les laisser ?
-- **Q-R-6** (2026-10-17, choix faits en mode autonome pour R5, réversibles) — Valider ou corriger : les preuves de fin de R3 et R4
+- **Q-R-6** — **Tranchée le 2026-10-22 (D-R-18)** : « c ». Question d'origine (2026-10-17, choix faits en mode autonome pour R5, réversibles) — Valider ou corriger : les preuves de fin de R3 et R4
   (`prove_r3.py --all`, `r3_literals.py check --stage after`, `prove_r4.py --kind end`), qui lisent des chemins de `Alundra.Tests/`, sont
   gelées à leur commit de clôture (`a193671`, `ce6d335`) plutôt que remappées après R5 ; les commentaires du code ne changent pas en R5
   (comme en R3 et R4, voir Q-R-5) ; les dossiers temporaires des anciennes exécutions de tests, nommés par les anciens préfixes, restent
