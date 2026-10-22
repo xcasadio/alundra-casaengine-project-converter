@@ -57,14 +57,14 @@ dotnet test Alundra.Tests -c Release --filter IntroTrace
 | Opcode | Handler original | Pourquoi maintenant |
 |---|---|---|
 | 0x36 « Wait until flag on » | `Script_54_036`, `EntityEventHandlers.cs:1166-1176` | primitive de synchronisation inter-entités de toute l'intro (retourne 3 si le bit est posé, 0 = suspension sinon ; le nom « Wait flag off » d'`EventCodeDebugger` est trompeur) |
-| 0x33 « Check flags on » | `Script_51_033`, `:1112-1126` | prédicat pur sur 4 paires (flag, bit) |
-| 0x8B « Spawn entity next to entity » | `Script_139_08B`, `:2557-2575` | spawn du bloc 10 (travelling caméra) par B1 ; port via `IEntityWorldContext.SpawnEntityByRecordId` + `EntitySearchService` ; déviation : null-check du spawn là où l'original déréférence sans test |
+| 0x33 « Check flags on » | `Script_51_033`, `:1112-1129` | prédicat pur sur 4 paires (flag, bit) |
+| 0x8B « Spawn entity next to entity » | `Script_139_08B`, `:2558-2579` | spawn du bloc 10 (travelling caméra) par B1 ; port via `IEntityWorldContext.SpawnEntityByRecordId` + `EntitySearchService` ; déviation : null-check du spawn là où l'original déréférence sans test |
 
 Tests unitaires ajoutés dans `Alundra.Tests/Events/EventProgramRunnerTests.cs` (2 par opcode).
 
 ### Déviations du harnais (toutes documentées dans le code)
 
-- **A. Filtre de spawn au chargement** : `GameEngine.SpawnEntity` (`GameEngine.cs:684-717`) ne spawne un
+- **A. Filtre de spawn au chargement** : `GameEngine.SpawnEntity` (`GameEngine.cs:681-718`) ne spawne un
   record au chargement que si `(SpriteDirection & 0x40) != 0` (et si le joueur est dans sa zone
   `XMin..YMax`). Sur la 389 : 14 entités au chargement, les records 7/8/9/10/18 n'arrivent que par
   0x2D/0x8B. Le harnais réutilise `EntitySpawnFactory.ShouldSpawnRecord`, qui porte déjà cette règle.
@@ -76,7 +76,7 @@ Tests unitaires ajoutés dans `Alundra.Tests/Events/EventProgramRunnerTests.cs` 
   `Result = 1` — 0x07/0x2F/0x70 (physique de déplacement), 0x39/0x44/0x51 (dialogue). Sans cela l'idiome
   « prédicat ; If false goto en arrière » boucle à l'infini (c'est ce qui bloquait le bloc 18 sur
   `0x70 → 0x04`).
-- **D. Prédicat pessimiste** : 0x3B « Check player in area » (`Script_59_03B`, `:1223-1238`, lit
+- **D. Prédicat pessimiste** : 0x3B « Check player in area » (`Script_59_03B`, `:1223-1240`, lit
   `PlayerEntity.TileX/Y/Z`) pose `Result = 0`. Le runner n'a pas encore de joueur (lot 2) ; pendant
   l'intro le joueur est figé par B1 en (444, 920, 80) → tuile (18, 57), et **aucune** des boîtes 0x3B de
   la map — (18,18,38,38,8,8), (15,15,28,28,7,7), (21,21,28,28,7,7), (16,16,42,42,5,5),
@@ -94,7 +94,7 @@ Tests unitaires ajoutés dans `Alundra.Tests/Events/EventProgramRunnerTests.cs` 
 
 Relevées par le verifier ; aucune n'influence la trace car les branches concernées ne s'exécutent jamais
 ici : (1) le reset « joueur hors zone » de `RunMapEventsPass` remet à zéro `EventData.Sp` du map-event au
-lieu du `EventProgramState` du joueur (`GameEngine.cs:1690-1697` zéroe aussi `ChildEntity`,
+lieu du `EventProgramState` du joueur (`GameEngine.cs:1692-1698` zéroe aussi `ChildEntity`,
 `RelativeWarpOffsetX`, `Index`) — les 7 zones couvrent toute la map ; (2) *(corrigé)*
 `RunMapEventsPass` pose désormais `MapEventProgramId = ProgramBMap`, `EventTrigger = mapEvent.Id` (l'index
 d'enregistrement de l'événement, pas sa position dans la liste compactée) et
@@ -185,31 +185,31 @@ Références dans `alundra-datas-analyser/AlundraTools/AlundraEngine/`.
   restaurés depuis `LastTarget*`. Tout autre slot (dont A) réinitialise via `InitializeEventData` sur
   l'état partagé `g_eventProgramState` (`:234`). Fin de programme : `0xFF` ⇒ fin ; `0x00` ⇒
   `Parameters[1] = 0`, `CodeIndex++`, fin (reprise à l'instruction suivante au prochain appel) ; handler
-  renvoyant 0 ⇒ suspension (`:304-377`). `g_clearProgramState` remet `Codes = null` (`:343-358`,
-  `:382-391`).
+  renvoyant 0 ⇒ suspension (`:304-377`). `g_clearProgramState` remet `Codes = null` (`:345-363`,
+  `:380-389`).
 - FAIT (annexe A, trace §0) : le programme B 129 est la cinématique ; B 130-133 sont les quatre portes
   (0x3B zone joueur → 0x85 animation de tuiles → 0x11), B 134 vérifie les flags 861-868 (tous les marins
   interrogés) pour poser 870, B 135 est la boucle d'ambiance sonore (`0xBD` 44 + attentes + `0x49`).
 
 ### 1.2 Ordre d'exécution d'une frame
 
-- FAIT `GameEngine.cs:1500-1592` (`Update`) : scroll-in (`g_mapOffsetX -= 8`, `g_mapOffsetY -= 6`) →
-  `_padManager.UpdatePads()` (`:1517`) → test Select+Start → **`UpdateWorld()`** → `g_warpDelayFrames--` →
+- FAIT `GameEngine.cs:1500-1587` (`Update`) : scroll-in (`g_mapOffsetX -= 8`, `g_mapOffsetY -= 6`) →
+  `_padManager.UpdatePads()` (`:1518`) → test Select+Start → **`UpdateWorld()`** → `g_warpDelayFrames--` →
   test ouverture inventaire → `SoundManager.HandleMapSoundStreaming()` → `Random.Next()`.
 - FAIT `GameEngine.cs:1638-1664` (`UpdateWorld`, 0x8002e058) : `RunMapEvents()` → `UpdateEntities()` →
   `EffectManager.UpdateEffects()`.
-- FAIT `EntityManager.cs:367-395` (`UpdateEntities`) : si `(g_playerControlFlags & GameplayBlockedMask) == 0` :
+- FAIT `EntityManager.cs:367-394` (`UpdateEntities`) : si `(g_playerControlFlags & GameplayBlockedMask) == 0` :
   `UpdateDestroyedEntities` → `UpdateEntitiesEvents` → `UpdateEntitiesCounters` → `UpdateEntityLists` →
   `UpdateEntitiesAnimation` → `PhysicsEngine.UpdateEntitiesPhysics` → `UpdateActiveEffects` →
   `UpdateBalanceRecords` ; sinon seulement `UpdateEntityLists`. Puis `UpdateVisibleEntitiesZSort`.
 - FAIT `EntityManager.cs:808` : **`PlayerManager.MovePlayer()` est la première instruction de
   `UpdateEntitiesEvents`**, avant la passe pick/run des entités 1..n : le « tick » du joueur est
   `MovePlayer` (`PlayerManager.cs:17`), pas un programme.
-- FAIT `GameEngine.cs:222-229` : `RenderScene()` précède `Update(0)`.
+- FAIT `GameEngine.cs:225-229` : `RenderScene()` précède `Update(0)`.
 
 ### 1.3 Ce que l'entrée de map exécute (New Game → 389)
 
-- FAIT `GameEngine.cs:168-219` (bloc `g_isGameEnding != 0` de `MainLoop`) : `InitializeStaticVariable` →
+- FAIT `GameEngine.cs:169-219` (bloc `g_isGameEnding != 0` de `MainLoop`) : `InitializeStaticVariable` →
   `LoadMap(389)` (`:179`) → `ClearTemporaryFlags()` (`:429`, 64 mots à 0) → `ResetCameraAndLoadVRAMAssets()`
   (`:445`, `g_isCameraScrolling = 1`) → `InitializeItems(CurrentMap.Info.D)` →
   **`LoadMapAndInitializeEntities`** (`:466` : `InitializeEntitySlots` → `InitializeMapEvents` →
@@ -217,14 +217,14 @@ Références dans `alundra-datas-analyser/AlundraTools/AlundraEngine/`.
   (`:878` ; effet 0 ⇒ fondu 0xff0000 → 0 en 0x10 frames, `g_warpDelayFrames = 10`) →
   `InitializeScrollingMode()` → `HudManager.InitializeHudPositionBeforeHide()` → `LoadMapSounds(389)` →
   **`Update(1)`** (première frame complète, scripts compris) → `GraphicManager.ResetDebugRenderingState()`.
-- FAIT `GameEngine.cs:621-646` (`InitializeEntitySlots`) : `EntityManager.InitializeEntitySlots()` ;
+- FAIT `GameEngine.cs:621-645` (`InitializeEntitySlots`) : `EntityManager.InitializeEntitySlots()` ;
   `g_numberOfEntities = 0` ; **`ResetEntityState()`** (héros) ; `SpawnEntity(null, i, 0)` pour chaque
   record ; enfin `g_entityFollowedByCamera = PlayerEntity`.
-- FAIT `GameEngine.cs:680-760` (`SpawnEntity`, 0x8003a1b8) : avec `notCheckSpawnZone == 0`, un record n'est
+- FAIT `GameEngine.cs:681-758` (`SpawnEntity`, 0x8003a1b8) : avec `notCheckSpawnZone == 0`, un record n'est
   spawné que si `PlayerEntity.TileX ∈ [XMin, XMax]`, `TileY ∈ [YMin, YMax]` **et `(SpriteDirection & 0x40)
-  != 0`** (`:714-717`) — le héros doit exister avant les records ; 0x2D/0x8B passent `1` et ignorent ces
+  != 0`** (`:715-718`) — le héros doit exister avant les records ; 0x2D/0x8B passent `1` et ignorent ces
   deux gates. Sur la 389, 14 records spawnent au chargement ; 7/8/9/10/18 attendent un spawn scripté.
-  `EntitySpawnFactory.ShouldSpawnRecord` (`Alundra/Entities/Spawning/EntitySpawnFactory.cs`) porte déjà ces
+  `EntitySpawnFactory.ShouldSpawnRecord` (`Alundra/Entities/Spawning/EntitySpawnFactory.cs:59-94`) porte déjà ces
   règles.
 
 ### 1.4 Création du héros et état de jeu
@@ -234,12 +234,12 @@ Références dans `alundra-datas-analyser/AlundraTools/AlundraEngine/`.
   `g_cameraTargetX/Y = (CameraTileX/Y × 24|16 + 12|8) << 16` avec tuile (33, 59), `g_cameraTargetZ = 0 << 20`,
   `g_gameplayTime = 0`. Stats : HP 10/10, MP 0/0, argent 0, arme 1, objets 1/17/25
   (`docs/demarrage-nouvelle-partie.md` §2.1).
-- FAIT `GameEngine.cs:648-670` (`ResetEntityState`, 0x80031974) : `GetSpriteFromSpriteTable(false, 0)` =
+- FAIT `GameEngine.cs:648-672` (`ResetEntityState`, 0x80031974) : `GetSpriteFromSpriteTable(false, 0)` =
   **record 0 de la table globale** (banque `Entities/Alundra`) ; `InitializeEntity(PlayerEntity, null,
   spriteRecord, null, 0, -1, g_cameraTargetX/Y/Z, g_resetAnimationId, g_resetDirectionId, 0xb, 0x60)` ;
   `Status = Normal` (pas `Loaded` : le héros n'a pas de Load) ; `Hp/HpMax` depuis `PlayerManager` ;
   `g_activeCollisionEntity = null` ; timers de warp à 0 ; `g_currentWeaponFlags` depuis l'arme courante.
-- FAIT `StaticVariables.cs:12815` : `g_playerControlFlags` n'est initialisé nulle part explicitement (zéro
+- FAIT `StaticVariables.cs:12814` : `g_playerControlFlags` n'est initialisé nulle part explicitement (zéro
   BSS) ; seul `GameEngine.cs:331` le remet à 0 (sortie de warp effet 10). Au New Game le joueur est libre
   tant qu'aucun script n'a exécuté 0x10 — B1 le fait à la frame 1.
 - FAIT `PlayerControlFlags.cs:58,61` : `GameplayBlockedMask = MenuOpen | Unused40` (0x48) ;
@@ -247,7 +247,7 @@ Références dans `alundra-datas-analyser/AlundraTools/AlundraEngine/`.
   script 0x10 (`ControlLocked`) ne stoppe ni `RunMapEvents` ni `UpdateEntities` ; il ne bloque que
   `MovePlayer`** (`PlayerManager.cs:38`), qui joue alors `CreatePlayerAnimationEffects(1)`,
   `UpdatePlayerCarriedEntity(1)`, `AnimateWarpEffect()` et sort.
-- FAIT `EntityEventHandlers.cs:680-693` : 0x10 `|= ControlLocked`, 0x11 `&= ~ControlLocked`. Critère
+- FAIT `EntityEventHandlers.cs:680-691` : 0x10 `|= ControlLocked`, 0x11 `&= ~ControlLocked`. Critère
   « le joueur prend le contrôle » = exécution de 0x11 par B1 (`g_playerControlFlags` redevient 0) puis
   `MovePlayer` qui lit le pad.
 
@@ -272,18 +272,18 @@ sémantique est lue dans le corps du handler.
 | 1 | 1 | Map-event 0 (B 129) | 0x38 | Set MapIdToInternalMapIndex | `Script_SetSaveMapIdToInternalMapIndex_038` `:1202-1207` | état de jeu | `g_saveData.MapIdToInternalMapIndexTable[v1\|v2<<8] = v3\|v4<<8` | 2 | — |
 | 2 | 1 | Map-event 0 | 0x67 | Camera follow entity | `Script_103_067` `:2070-2075` | caméra | `g_entityFollowedByCamera = premier match de la recherche v1` | 6 | — |
 | 3 | 1 | Map-event 0 | 0x10 | Player lose control | `Script_16_010` `:680-684` | contrôle joueur | `g_playerControlFlags \|= ControlLocked` | 1 | — |
-| 4 | 1 | Map-event 1 (B 130) | 0x55 | Set unwalkable | `Script_85_055` `:1623-1652` | cellules | clamp (x,y) puis `Walkability &= ~v3`, `GroundProperty &= ~v4` sur une cellule | 4 | — |
-| 5 | 1 | Map-event 1 | 0x85 | Set map tiles | `Script_133_085` `:2440-2444` → `GameEngine.ChangeAreaTileProperties` `GameEngine.cs:2239-2300` | cellules + rendu | copie un rectangle (x,y,w,h) de cellules vers (dx,dy) : walkability, ground, slope, height, **TileId, pile de murs** | 9 | — |
-| 6 | 2 | Map-event 1 | 0x3B | Check player in area | `Script_59_03B` `:1223-1238` | test joueur | `Result = joueur.TileX/Y/Z ∈ boîte v1..v6` | 4624 | pessimiste (D) |
+| 4 | 1 | Map-event 1 (B 130) | 0x55 | Set unwalkable | `Script_85_055` `:1623-1654` | cellules | clamp (x,y) puis `Walkability &= ~v3`, `GroundProperty &= ~v4` sur une cellule | 4 | — |
+| 5 | 1 | Map-event 1 | 0x85 | Set map tiles | `Script_133_085` `:2441-2445` → `GameEngine.ChangeAreaTileProperties` `GameEngine.cs:2239-2322` | cellules + rendu | copie un rectangle (x,y,w,h) de cellules vers (dx,dy) : walkability, ground, slope, height, **TileId, pile de murs** | 9 | — |
+| 6 | 2 | Map-event 1 | 0x3B | Check player in area | `Script_59_03B` `:1223-1240` | test joueur | `Result = joueur.TileX/Y/Z ∈ boîte v1..v6` | 4624 | pessimiste (D) |
 | 7 | 2 | Map-event 5 (B 134) | 0x4B | If false restart | `Script_75_04B` `:1476-1486` | flux | si `Result == 0` : `CodeIndex = Parameters[0]` (début du programme) | 3 | — |
 | 8 | 3 | Entité 6 (Tick 134) | 0x1B | Fly | `Script_27_01B` `:743-747` | physique | `ForceZ = ((v2<<8\|v1) << 16) >> 8` (impulsion verticale signée) | 21 | — |
-| 9 | 3 | Entité 6 (Tick 134) | 0x07 | Check entity in area | `Script_7_007` `:539-570` | test entité | `Result = premier match de v1 dans la boîte tuiles v2..v7` | 12 | optimiste (C) |
-| 10 | 3 | Entité 13 (Tick 141) | 0x1E | Walk | `Script_30_01E` `:793-826` | physique | mémorise la position au 1er passage, suspend jusqu'à `\|ΔX\|` ou `\|ΔY\|` ≥ seuil (pixels) | 148 | — |
+| 9 | 3 | Entité 6 (Tick 134) | 0x07 | Check entity in area | `Script_7_007` `:539-582` | test entité | `Result = premier match de v1 dans la boîte tuiles v2..v7` | 12 | optimiste (C) |
+| 10 | 3 | Entité 13 (Tick 141) | 0x1E | Walk | `Script_30_01E` `:793-829` | physique | mémorise la position au 1er passage, suspend jusqu'à `\|ΔX\|` ou `\|ΔY\|` ≥ seuil (pixels) | 148 | — |
 | 11 | 3 | Entité 13 (Tick 141) | 0x0A | Reverse direction | `Script_10_00A` `:599-603` | direction | `TargetDirection = (TargetDirection + 0x10) & 0x1f` | 146 | — |
 | 12 | 3 | Entité 13 (Tick 141) | 0x49 | Restart | `Script_73_049` `:1455-1459` | flux | saut relatif vers `Parameters[0]` (début du programme) | 3 | — |
 | 13 | 371 | Bloc 10 (Tick 138, spawn dyn.) | 0x5B | Turn entity with anim | `Script_91_05B` `:1713-1732` | animation/direction | pour chaque match de v1 : `TargetAnimationId = v2`, `TargetDirection = ResolveDirectionFromParam(v3)` | 29 | — |
 | 14 | 374 | Bloc 10 (Tick 138) | 0x19 | Deactivate entity | `Script_25_019` `:729-733` | statut | `Status = Deactivated` (⇒ slot E à la frame suivante) | 1 | — |
-| 15 | 619 | Marin 11 (Tick 139) | 0x1F | Walk with collision | `Script_31_01F` `:832-843` | physique | comme 0x1E, ou avance si `ForceAdjusted != 0` (collision) | 18 | — |
+| 15 | 619 | Marin 11 (Tick 139) | 0x1F | Walk with collision | `Script_31_01F` `:832-841` | physique | comme 0x1E, ou avance si `ForceAdjusted != 0` (collision) | 18 | — |
 | 16 | 624 | Marin 11 (Tick 139) | 0x16 | High gravity | `Script_22_016` `:715-719` | physique | `Flags \|= Gravity` | 2 | — |
 | 17 | 643 | Marin 11 (Tick 139) | 0x5A | Turn entity | `Script_90_05A` `:1694-1710` | direction | pour chaque match de v1 : `TargetDirection = ResolveDirectionFromParam(v2)` | 1 | — |
 | 18 | 785 | Bloc 18 (Tick 146, spawn dyn.) | 0x70 | Is above ground | `Script_112_070` `:2161-2165` | physique | `Result = IsOnGround` (posé par `UpdateEntitiesPhysics`) | 1 | optimiste (C) |
@@ -322,10 +322,10 @@ gardé par 0x800C du Tick 140), 0x59/0x27 (idem).
 
 | # | 1re frame | Fonction originale | file:line | Rôle | État dans la DLL |
 |---|---|---|---|---|---|
-| 1 | 0 | `GameEngine.ClearTemporaryFlags` | GameEngine.cs:429 | vide `g_temporaryFlags` à l'entrée de map | porté : `GameState.InstallForMapEntry` vide `TemporaryFlags` à chaque entrée de carte (`GameState.cs:275-294`, D-T-13 de `plan-transitions-carte.md`) ; l'original vide 64 mots (`0x8008159C`), la DLL ses 1024 (mesure E16.0, `plan-e16-etat-partie.md` §2) |
+| 1 | 0 | `GameEngine.ClearTemporaryFlags` | GameEngine.cs:429 | vide `g_temporaryFlags` à l'entrée de map | porté : `GameState.InstallForMapEntry` vide `TemporaryFlags` à chaque entrée de carte (`GameState.cs:368-387`, D-T-13 de `plan-transitions-carte.md`) ; l'original vide 64 mots (`0x8008159C`), la DLL ses 1024 (mesure E16.0, `plan-e16-etat-partie.md` §2) |
 | 2 | 0 | `GameEngine.ResetCameraAndLoadVRAMAssets` | GameEngine.cs:445 | reset caméra/scroll | non porté |
 | 3 | 0 | `GameEngine.InitializeItems` | GameEngine.cs:454 | table d'objets de la map | non porté |
-| 4 | 0 | `InitializeEntitySlots` → `ResetEntityState` (joueur slot 0) | GameEngine.cs:621-670 | création du héros | non porté (approximé dans le harnais) |
+| 4 | 0 | `InitializeEntitySlots` → `ResetEntityState` (joueur slot 0) | GameEngine.cs:621-672 | création du héros | non porté (approximé dans le harnais) |
 | 5 | 0 | `GameEngine.InitializeMapEvents` | GameEngine.cs:476-583 | 7 slots `MapEvent` depuis les records | non porté en production (porté dans le harnais) |
 | 6 | 0 | `EffectManager.InitializeEffectSlots` | GameEngine.cs:472 | pool d'effets | non porté |
 | 7 | 0 | `GameEngine.WarpPlayer` | GameEngine.cs:878-973 | fondu d'entrée, `g_warpDelayFrames = 10` | non porté |
@@ -333,7 +333,7 @@ gardé par 0x800C du Tick 140), 0x59/0x27 (idem).
 | 9 | 0 | `HudManager.InitializeHudPositionBeforeHide` | GameEngine.cs:215 | HUD | porté (E19.r R1) : `HudDirector.InstallForMapEntry` arme l'apparition si le verrou 1662 est posé |
 | 10 | 0 | `GameEngine.LoadMapSounds` | GameEngine.cs:216 | BGM/SFX de la map | non porté (audio exporté en Phase 4, non branché) |
 | 11 | 0 | `GraphicManager.ResetDebugRenderingState` | GameEngine.cs:218 | debug | sans objet |
-| 12 | 1 | `PadManager.UpdatePads` | GameEngine.cs:1517 | lecture manette | non branché au proxy |
+| 12 | 1 | `PadManager.UpdatePads` | GameEngine.cs:1518 | lecture manette | non branché au proxy |
 | — | 1 | `RunMapEvents` | GameEngine.cs:1667-1718 | slot B sur le joueur | **porté dans le harnais seulement** |
 | 13 | 1 | `PlayerManager.MovePlayer` | EntityManager.cs:808 / PlayerManager.cs:17 | tick du joueur | non porté (non-goal documenté de `RunEntityEventsPass`) |
 | 14 | 1 | IA native `RunSpriteEvent` (`g_entityEventFunctionsByType`) | SpriteEventHandlers.cs:243 | handlers natifs par sprite | no-op compté ; l'intro n'exige que A0 `SetSpawnFlagFromZPos` (FunctionTypeA.cs:9) et E0 `FUN_8007ed10` = `DestroyEntity` (FunctionTypeE.cs:8) ; C0/D0/F0 sont vides |
@@ -346,9 +346,9 @@ gardé par 0x800C du Tick 140), 0x59/0x27 (idem).
 | 21 | 1 | `EntityManager.UpdateBalanceRecords` | EntityManager.cs:387 | combat | non porté |
 | 22 | 1 | `EntityManager.UpdateVisibleEntitiesZSort` | EntityManager.cs:394 | tri profondeur | partiel (`RunWallInterleaveSortKeyPass`) |
 | 23 | 1 | `EffectManager.UpdateEffects` | GameEngine.cs:1663 | effets | non porté |
-| 24 | 1 | `Update` : `g_warpDelayFrames--`, inventaire | GameEngine.cs:1561-1578 | décompte warp, menu | non porté |
-| 25 | 1 | `SoundManager.HandleMapSoundStreaming` | GameEngine.cs:1580 | streaming son | non porté |
-| 26 | 1 | `Random.Next` | GameEngine.cs:1582 | RNG fidèle | non porté (rien ne consomme d'aléatoire) |
+| 24 | 1 | `Update` : `g_warpDelayFrames--`, inventaire | GameEngine.cs:1562-1577 | décompte warp, menu | non porté |
+| 25 | 1 | `SoundManager.HandleMapSoundStreaming` | GameEngine.cs:1579 | streaming son | non porté |
+| 26 | 1 | `Random.Next` | GameEngine.cs:1581 | RNG fidèle | non porté (rien ne consomme d'aléatoire) |
 | 27 | 1 | suivi caméra `g_cameraLookAt = suivie.Pos >> 16` | EntityManager.cs (UpdateEntities) | caméra | non porté (caméra debug seulement) |
 
 (33 lignes `SYSTEM` dans la trace : les 26 ci-dessus + une par entité passant par `RunSpriteEvent`.)
@@ -375,7 +375,7 @@ ci-dessous, et la correspondance inventaire → étape.
   (`alundra-casaengine-project-converter/Readers/SpriteBankReader.cs`, `ReadAnimSet`) et perd `Speed`,
   `Acceleration`, `Flags|Unknown` (= `IsZForceApplied`) et `Sfx`, présents dans
   `data-extracted/data/map_389.json` (`SpriteInfo.SpriteRecords[].AnimSets[]`).
-- **0x85 copie des cellules** (`ChangeAreaTileProperties`, `GameEngine.cs:2239-2300`) : walkability,
+- **0x85 copie des cellules** (`ChangeAreaTileProperties`, `GameEngine.cs:2239-2322`) : walkability,
   ground, slope, height, `TileId` et pile de murs d'un rectangle source vers une destination — la trappe
   (entité 15) modifie le rendu et les collisions à chaud.
 - **Caméra** : `g_entityFollowedByCamera` change 6 fois pendant l'intro (6 → bloc 10 → 11 → 12 →

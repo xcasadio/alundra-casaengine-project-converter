@@ -91,12 +91,17 @@ def check_texts(texts, rows):
     return out
 
 
-def check_eol(raws):
+def check_eol(raws, rows):
+    """One style of line ending per document; the documents that hold changed ranges were CRLF at the base and stay so."""
     out = []
+    changed = {r['doc'] for r in rows if r['class'] != 'juste'}
     for doc, raw in raws.items():
         lone = len(re.findall(rb'(?<!\r)\n', raw))
-        if lone:
-            out.append(f'B: {doc}: {lone} lone LF (the working tree is CRLF)')
+        crlf = raw.count(b'\r\n')
+        if lone and crlf:
+            out.append(f'B: {doc}: mixed line endings ({crlf} CRLF, {lone} lone LF)')
+        elif lone and doc in changed:
+            out.append(f'B: {doc}: {lone} lone LF (this document is CRLF in the working tree)')
     return out
 
 
@@ -270,8 +275,8 @@ def selftest(rows):
     def wrong_col(rs):
         row(rs, A.R, 288)['col'] = int(row(rs, A.R, 288)['col']) + 1
     case('a column that is not the base column', exp, mut(wrong_col), False)
-    eol_ok = not check_eol({d: t.replace('\n', '\r\n').encode('utf-8') for d, t in exp.items()})
-    eol_bad = bool(check_eol({**{d: t.replace('\n', '\r\n').encode('utf-8') for d, t in exp.items()}, A.R: exp[A.R].encode('utf-8')}))
+    eol_ok = not check_eol({d: t.replace('\n', '\r\n').encode('utf-8') for d, t in exp.items()}, rows)
+    eol_bad = bool(check_eol({**{d: t.replace('\n', '\r\n').encode('utf-8') for d, t in exp.items()}, A.R: exp[A.R].encode('utf-8')}, rows))
     for name, ok in (('CRLF everywhere', eol_ok), ('one document in LF', eol_bad)):
         if not ok:
             bad += 1
@@ -293,7 +298,7 @@ def main():
     if a.selftest:
         sys.exit(0 if selftest(rows) else 1)
     raws = working_raws()
-    findings = check_eol(raws) + prove(working_texts(raws), rows)
+    findings = check_eol(raws, rows) + prove(working_texts(raws), rows)
     if a.files:
         findings += check_files()
     for f in findings:

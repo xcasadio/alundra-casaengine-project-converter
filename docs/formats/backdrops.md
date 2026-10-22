@@ -17,7 +17,7 @@ composant dédiés (`ScrollingLayerService` / `ScrollingLayerComponent`, horloge
 accumulateurs par couche comme l'original) — voir
 `CasaEngineMonogame/docs/engine/scrolling-layers.md`. Aucun changement convertisseur : zéro
 sérialisation ni éditeur en V1, la promotion des compagnons en assets moteur reste le chantier
-différé de `docs/editeur-couverture-dll.md:57-59`.
+différé de `docs/editeur-couverture-dll.md:58-60`.
 
 ## Ce que c'est
 

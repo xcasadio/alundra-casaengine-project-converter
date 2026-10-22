@@ -139,7 +139,7 @@ Alundra bruts, écrite par `EntitySpawnFactory.ResolveLogicalPosition` (les troi
 autrefois `RootComponent.LocalTransform.Position` en pose de rendu). C'est un
 `RenderProjectionComponent` enfant, porté par le sprite, qui applique cette table à chaque frame
 via `SimulationSpacePolicy.DeriveRenderPosition` sous la politique `TopDownElevation` du world
-(`render = (X, -(Y - Z), 0)`, `SimulationSpacePolicy.cs:135-137`) - c'est-à-dire exactement
+(`render = (X, -(Y - Z), 0)`, `SimulationSpacePolicy.cs:159-162`) - c'est-à-dire exactement
 `worldY = -pixelY` avec l'élévation déjà repliée dedans. La règle « `worldY = -pixelY_Alundra` »
 ci-dessus reste donc vraie, mais c'est désormais le travail de la politique de simulation, pas
 celui du code qui écrit la racine. Toute mutation de la pose logique (une entité, un
@@ -226,7 +226,7 @@ map (`TileMapData.CustomProperties`, `ObjectLayers`) : à ce moment le world et 
 
 ### 5.3 bis Répartition world / entités (décision du 2026-08-23)
 
-FAIT (`CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:443-491`) : le moteur met à jour
+FAIT (`CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:552-621`) : le moteur met à jour
 les entités d'abord (`Entity.Update` → composants, enfants, `GameplayProxy.Update`), puis le
 `GameplayProxy` du world. Conséquence pour Alundra ([plan-conversion-totale.md](plan-conversion-totale.md)
 §3) : chaque `EntityScriptProxy.Update` joue son propre programme (A–F) ; `WorldProxy.Update`

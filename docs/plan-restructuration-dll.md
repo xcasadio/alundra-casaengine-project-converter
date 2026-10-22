@@ -1759,6 +1759,59 @@ d'un sous-module qu'il faudrait changer.
 
 **Retour arrière.** `git revert` des commits de la tranche.
 
+### Résultats de l'exécution (2026-10-22)
+
+Mode AUTO (D-R-22), un `executor`, une passe. T0 `546b7be2` (outils et relevé), T1 (documents, README, ce plan). Aucune construction, aucune suite : aucun fichier compilé ne change (`git diff --stat 33528d55 HEAD` ne liste que quatre documents vivants, `tools/dll-structure/` et ce plan ; aucun pointeur de sous-module ne bouge).
+
+- **Relevé** `tools/dll-structure/r6b-citations.tsv` : **113 lignes** = les 105 citations des 21 documents en **112 plages** (le §14 comptait 111 ; la différence est une erreur de décompte de la découverte, les 105 citations sont les mêmes) plus la citation rétablie (P-R6b-4). Par cible : décompilation 108 plages, DLL 1, moteur 2, document 1 (aucune vers les tests ni les outils, comme prévu). Seuls 4 des 21 documents portent des citations : `docs/intro-roadmap.md` (100 plages), `docs/formats/cells-companion.md` (9), `docs/guidelines-runtime-alundra-casaengine.md` (2), `docs/formats/backdrops.md` (1) ; les 17 autres n'en portent aucune.
+- **Classes** : 77 **justes** (numéros gardés, contrôlés sur le contenu aux pointeurs), 10 **recalculées par décalage** (les deux bornes bougent du même écart), 25 **recalculées par contenu**, 1 **rétablie**, **0 indéterminée** (aucun arrêt).
+- **Méthode** (P-R6b-3) : DLL et document cité par l'historique (W par « pickaxe », diff `--histogram`) ; décompilation (`fc16872`) et moteur (`92d8e847`) lus avec `git show` à leur pointeur, jamais dans l'arbre de travail du sous-module (qui porte les changements de l'auteur). Règle de décision : une plage qui nomme un membre commence à sa déclaration et finit à son accolade fermante ou à sa dernière instruction (`whole`) ; une plage « partie » commence à la déclaration et finit sur une ligne de code dans le membre ; un bloc ou une instruction décrits par la phrase commencent et finissent sur des lignes de code (jamais une ligne vide, un commentaire ou le membre suivant).
+- **Constat** : sur les 108 plages de la décompilation, 77 sont justes et 31 sont recalculées (8 par décalage, 23 par contenu) ; les 2 plages du moteur étaient fausses (recalculées par contenu) ; celle de la DLL est décalée de +93 (lignes identiques) ; celle du document de +1. Les écarts par contenu viennent surtout de bornes qui tombaient sur une ligne vide, un commentaire ou le membre suivant, qu'un contrôle de décalage seul ne voit pas. Appui indépendant : les commentaires de `EntitySpawnFactory.cs` citent `GameEngine.cs:715-718`, `690-711` et `648-672`, les numéros retenus ici pour la porte 0x40, la boîte de zone et `ResetEntityState`.
+- **Fidélité aux décisions** : P-R6b-1 (toutes les cibles), P-R6b-2 (aucun autre document), P-R6b-4 (rétablie avec `:59-94`), P-R6b-5 (forme gardée, pas de garde permanente, preuve de R6 gelée : paragraphe au README), P-R6b-6 (relevé, `prove_r6b.py`, 16 verdicts d'auto-test). Écart de lecture à signaler : `:59-94` de P-R6b-4 est repris à la lettre, mais au HEAD cette plage commence dans le commentaire XML de `ShouldSpawnRecord` et s'arrête dans le second `if` (la méthode complète est `:83-100`) ; classée `rétablie`, sondes écrites au relevé, à trancher par l'auteur si l'on veut la plage du membre.
+- **Preuve** : `prove_r6b.py --files` à 0 (A : le relevé couvre les 112 plages de la base ; B : chaque document est la base plus les modifications du relevé et rien d'autre, fins de ligne CRLF gardées ; C : les plages lues sont la colonne `after` ; D : début et fin de chaque plage égalent les sondes aux arbres épinglés, déclaration et accolade fermante pour les membres) ; `prove_r6b.py --selftest` : 16 verdicts attendus (arrivée acceptée ; départ, chiffre hors citation, mot changé, plage changée d'un seul côté, citation en trop ou manquante, ligne vide, sonde fausse, début hors déclaration, fin trop courte ou débordante, ligne ou colonne du relevé manquante, document en LF refusés).
+
+Plages modifiées (36 lignes du relevé sur 113, la citation rétablie comprise ; les 77 autres sont justes et gardent leurs numéros) :
+
+| Document:ligne | Désigné | Avant | Après | Classe |
+|---|---|---|---|---|
+| `formats/backdrops.md:20` | `docs/editeur-couverture-dll.md` (`docs/editeur-couverture-dll.md`) | 57-59 | 58-60 | recalculée (décalage) |
+| `guidelines-runtime-alundra-casaengine.md:142` | `DeriveRenderPosition` (`SimulationSpacePolicy.cs`) | 135-137 | 159-162 | recalculée par contenu |
+| `guidelines-runtime-alundra-casaengine.md:229` | `Update` (`CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs`) | 443-491 | 552-621 | recalculée par contenu |
+| `intro-roadmap.md:60` | `Script_51_033` (`EntityEventHandlers.cs`) | 1112-1126 | 1112-1129 | recalculée par contenu |
+| `intro-roadmap.md:61` | `Script_139_08B` (`EntityEventHandlers.cs`) | 2557-2575 | 2558-2579 | recalculée par contenu |
+| `intro-roadmap.md:67` | `SpawnEntity` (`GameEngine.cs`) | 684-717 | 681-718 | recalculée par contenu |
+| `intro-roadmap.md:79` | `Script_59_03B` (`EntityEventHandlers.cs`) | 1223-1238 | 1223-1240 | recalculée par contenu |
+| `intro-roadmap.md:97` | `GameEngine.cs` (`GameEngine.cs`) | 1690-1697 | 1692-1698 | recalculée par contenu |
+| `intro-roadmap.md:188` | `EntityEventHandlers.cs` (`EntityEventHandlers.cs`) | 343-358 | 345-363 | recalculée par contenu |
+| `intro-roadmap.md:189` | `EntityEventHandlers.cs` (`EntityEventHandlers.cs`) | 382-391 | 380-389 | recalculée (décalage) |
+| `intro-roadmap.md:196` | `Update` (`GameEngine.cs`) | 1500-1592 | 1500-1587 | recalculée par contenu |
+| `intro-roadmap.md:197` | `GameEngine.cs` (`GameEngine.cs`) | 1517 | 1518 | recalculée (décalage) |
+| `intro-roadmap.md:201` | `UpdateEntities` (`EntityManager.cs`) | 367-395 | 367-394 | recalculée par contenu |
+| `intro-roadmap.md:208` | `GameEngine.cs` (`GameEngine.cs`) | 222-229 | 225-229 | recalculée par contenu |
+| `intro-roadmap.md:212` | `GameEngine.cs` (`GameEngine.cs`) | 168-219 | 169-219 | recalculée par contenu |
+| `intro-roadmap.md:220` | `InitializeEntitySlots` (`GameEngine.cs`) | 621-646 | 621-645 | recalculée par contenu |
+| `intro-roadmap.md:223` | `SpawnEntity` (`GameEngine.cs`) | 680-760 | 681-758 | recalculée par contenu |
+| `intro-roadmap.md:225` | `GameEngine.cs` (`GameEngine.cs`) | 714-717 | 715-718 | recalculée (décalage) |
+| `intro-roadmap.md:227` | `EntitySpawnFactory.cs` (`EntitySpawnFactory.cs`) | — | 59-94 | rétablie |
+| `intro-roadmap.md:237` | `ResetEntityState` (`GameEngine.cs`) | 648-670 | 648-672 | recalculée par contenu |
+| `intro-roadmap.md:242` | `StaticVariables.cs` (`StaticVariables.cs`) | 12815 | 12814 | recalculée (décalage) |
+| `intro-roadmap.md:250` | `Script_16_010+Script_17_011` (`EntityEventHandlers.cs`) | 680-693 | 680-691 | recalculée par contenu |
+| `intro-roadmap.md:275` | `Script_85_055` (`EntityEventHandlers.cs`) | 1623-1652 | 1623-1654 | recalculée par contenu |
+| `intro-roadmap.md:276` | `Script_133_085` (`EntityEventHandlers.cs`) | 2440-2444 | 2441-2445 | recalculée (décalage) |
+| `intro-roadmap.md:276` | `ChangeAreaTileProperties` (`GameEngine.cs`) | 2239-2300 | 2239-2322 | recalculée par contenu |
+| `intro-roadmap.md:277` | `Script_59_03B` (`EntityEventHandlers.cs`) | 1223-1238 | 1223-1240 | recalculée par contenu |
+| `intro-roadmap.md:280` | `Script_7_007` (`EntityEventHandlers.cs`) | 539-570 | 539-582 | recalculée par contenu |
+| `intro-roadmap.md:281` | `Script_30_01E` (`EntityEventHandlers.cs`) | 793-826 | 793-829 | recalculée par contenu |
+| `intro-roadmap.md:286` | `Script_31_01F` (`EntityEventHandlers.cs`) | 832-843 | 832-841 | recalculée par contenu |
+| `intro-roadmap.md:325` | `InstallForMapEntry` (`GameState.cs`) | 275-294 | 368-387 | recalculée (décalage) |
+| `intro-roadmap.md:328` | `InitializeEntitySlots+ResetEntityState` (`GameEngine.cs`) | 621-670 | 621-672 | recalculée par contenu |
+| `intro-roadmap.md:336` | `GameEngine.cs` (`GameEngine.cs`) | 1517 | 1518 | recalculée (décalage) |
+| `intro-roadmap.md:349` | `GameEngine.cs` (`GameEngine.cs`) | 1561-1578 | 1562-1577 | recalculée par contenu |
+| `intro-roadmap.md:350` | `GameEngine.cs` (`GameEngine.cs`) | 1580 | 1579 | recalculée (décalage) |
+| `intro-roadmap.md:351` | `GameEngine.cs` (`GameEngine.cs`) | 1582 | 1581 | recalculée (décalage) |
+| `intro-roadmap.md:378` | `ChangeAreaTileProperties` (`GameEngine.cs`) | 2239-2300 | 2239-2322 | recalculée par contenu |
+
+
 ## 15. Fusion finale (D-R-22) ⏳ (relecture du 2026-10-22 avec R6b : REVISE, révision 1 : arrêts, retour arrière et portes de la
 branche d'intégration ajoutés)
 
