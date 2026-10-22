@@ -1,4 +1,4 @@
-9b97aa57938e91e141a4b05e7e0761b680ddc3d6 *./README.md
+9cdb757ed547f407bac0dbe2c15a4119724894e6 *./README.md
 198a4116e11ec61534e88178a5221a15b45e5065 *./probes/ZzT0Probes.cs.txt
 732f2d18744e75954921afbe9558f3af736052a7 *./replays/check_h1_bodies_out.txt
 b3d7d8ba6a19ad6611b4e117be449122a328e3b0 *./replays/replays-work.txt
@@ -6,11 +6,13 @@ b3d7d8ba6a19ad6611b4e117be449122a328e3b0 *./replays/replays-work.txt
 76ce9d4b502741c4e79eef7f7619bec0add704c1 *./scripts/check_h1_bodies.py
 2d4f61a4988625e9626f33bf13c8b0f46a66016b *./scripts/gen_c255.py
 d845fc26d0d1b2144df8acd962a45e8bf61c8178 *./scripts/gen_give.py
+724a3b6569230ceac58f24b89682f47d923af073 *./scripts/gen_itemtable.py
 847780ee4f552682302686596acf05253b3da8d2 *./scripts/gen_jumptable.py
 9921f847a92a1882e2876bc08fcda3856dc4d284 *./scripts/gen_loot.py
 31b2ee250d045a8a919930234768f65689abbcb2 *./scripts/gen_message.py
 fe50016167bdf6c9dff79d7dbd0b3905311595e3 *./vectors/c255.json
 06aa0968b7e67a07850516a1807f2cf85aa7bfdb *./vectors/give-item.json
 2f598f2c428a24cd8df745bf614016b38772e05e *./vectors/give-jump-table.json
+30c148e194c10a1bb1edfad2fbfeb4e64b9d0d43 *./vectors/item-table.json
 32cf85fca1147eceef5b14171d13b3956561d450 *./vectors/loot-spawn.json
 84c8525d2132ba9c7382c1cd4aadc60b990cd1e2 *./vectors/pickup-message.json

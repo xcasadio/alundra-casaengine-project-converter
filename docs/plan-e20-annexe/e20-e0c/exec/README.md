@@ -10,9 +10,10 @@ No DLL code was written by T0.
   - `give-jump-table.json`: the jump table of `GiveItem` over the 53 placed types.
   - `c255.json`: C255 on the real code, `+0x274` 0 and 1 (424 vectors, 1 477 ticks), full journal and journal with the fanfare as a stub.
   - `pickup-message.json`: the raw ETC strings against the compiled ones (the message buffer).
+  - `item-table.json`: the 98 rows of the object table of the binary, octets 4 to 7 (the columns of `item-drop-properties.json`, equal to it).
 - `scripts/`: the generators. They import the harness of `../work/` (`lh.py`, `models.py`, `c255model.py`, `exelib.py`, `emu/`) and read the binary at the path `exelib.py` names; run them from a COPY
   of `../work/` with these files added (they write next to themselves): `python -B gen_loot.py`, `gen_give.py`, `gen_c255.py`, `gen_jumptable.py <posed-rev3/placed.json>`,
-  `gen_message.py <repo root>`, `check_h1_bodies.py vectors/give-item.json <dir of model_h1.py of ../../e20-h1/disc/oracle>`. All are deterministic (fixed seeds).
+  `gen_message.py <repo root>`, `gen_itemtable.py`, `check_h1_bodies.py vectors/give-item.json <dir of model_h1.py of ../../e20-h1/disc/oracle>`. All are deterministic (fixed seeds).
 - `probes/ZzT0Probes.cs.txt`: the DLL probes of (b), (c), (i), (j), (k), as a throwaway xunit file of `Alundra.Tests` (removed after the measurements, never committed as a test).
 - `replays/`: the outputs of the replays of (a) and of `check_h1_bodies.py`.
 - `SHA1SUMS.txt`: SHA-1 of the files above (LF).
