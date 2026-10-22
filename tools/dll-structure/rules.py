@@ -67,7 +67,7 @@ def _extra_externals():
     for line in open(EXTRA_TYPES_FILE, encoding='utf-8'):
         if not line.strip():
             continue
-        label, ns, name = line.rstrip('\n').split('\t')
+        label, ns, name = line.rstrip('\r\n').split('\t')
         found[name.lower()].append(dict(label='pkg:' + label, ns=ns, name=name, nested=False, access='public'))
     decls = scan_types._scan_repo(scan_types.ENGINE, 'HEAD', ['CasaEngine.Compiler/'], scan_types.TEST_RE)
     if not decls:
