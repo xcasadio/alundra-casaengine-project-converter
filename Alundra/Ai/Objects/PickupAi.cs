@@ -15,8 +15,10 @@ namespace Alundra.Ai.Objects;
 /// own file is not changed (D-E20-55, D-E0C-13: the 32-bit accessors are the pickup object's alone; the tomes and E14 make theirs). The words are little-endian, as the binary stores them: <c>+0x274</c> is 0 for an object placed on a
 /// map, 1 for a dropped one and 2 for the chest (not ported); <c>+0x280</c> is the game flag the pickup raises (the container's flag, or -1 for a placed object); <c>+0x284</c> is the speed of the bounce.
 /// <para>Phase B (T2): the registry holds A255 and C255 for the 87 sprite types 31 to 118 but the 72 (the object is <c>type - 0x1E</c>). C255 runs the branch of the DROPPED object (<c>+0x274 == 1</c>): the bounce on the ground, the countdown of
-/// the life (600 ticks, the mark of the last 120 at 120), the wait for the end of the rise, the contact with the hero, <c>GiveItem</c>, the flag, the sound and the light destruction. The placed object (<c>+0x274 == 0</c>, phase D) and the chest
-/// (<c>+0x274 == 2</c>, E14) are NAMED STUBS: C255 and A255 do nothing for them. A255 does nothing in this phase (the A255 of a dropped object returns at once; the placed object's is phase D).</para>
+/// the life (600 ticks, the mark of the last 120 at 120), the wait for the end of the rise, the contact with the hero, <c>GiveItem</c>, the flag, the sound and the light destruction.</para>
+/// <para>Phase D (T4): the PLACED object (<c>+0x274 == 0</c>, an object put on a map whose record has no script of its own at the slot): A255 clears <c>Collidable</c> and writes its words at the load; C255 takes it on contact with the hero - the message
+/// "name gained!" (always, for a placed object), the sound, the effect, then either the state 3 (an ordinary object, message in mode 0) or the state 2 (a KEY object, byte 5 of the table zero: <c>Block</c> of the world, the fanfare, message in mode 1 closable
+/// by script only), and finally <c>Unblock</c> and the light destruction once the box has closed. The chest (<c>+0x274 == 2</c>, E14) and the placed object that holds a flag (D-E0C-3) are NAMED STUBS; the fanfare is a journaled stub (D-E0C-7).</para>
 /// </summary>
 internal static class PickupAi
 {
@@ -32,11 +34,30 @@ internal static class PickupAi
     /// <summary>The (slot, code) keys this class registers: A255 and C255.</summary>
     internal static readonly IReadOnlyList<(int Slot, int Code)> Keys = new[] { (ScriptHelper.ProgramALoad, Code), (ScriptHelper.ProgramCTick, Code) };
 
+    /// <summary>
+    /// Test seam, per thread (the motif of <see cref="Alundra.Hero.PlayerAnimationEffects.StubCallsForTests"/>): when non-null, the stub of the fanfare of the key objects appends "start" (<c>0x80049B7C</c> + <c>0x8005A9E0(0xB)</c>) and "end"
+    /// (<c>StopAllSound</c>, <c>0x80049AF4</c>) to it when it is called.
+    /// </summary>
+    [System.ThreadStatic]
+    internal static List<string>? FanfareStubCallsForTests;
+
     private const int LifeMarkTicks = 0x78;
     private const int LifeMarkValue = 0x78;
     private const int StateRise = 0;
     private const int StatePickup = 1;
+    private const int StateFanfare = 2;
     private const int StateAfterTheFanfare = 3;
+
+    /// <summary>The value of <c>+0x274</c> of an object placed on a map.</summary>
+    internal const uint KindPlaced = 0;
+
+    /// <summary>The control mode of the message of an ordinary object (the entities stop under it) and of a key object (the hero is held, the world goes on).</summary>
+    private const int OrdinaryMessageMode = 0;
+    private const int KeyMessageMode = 1;
+
+    /// <summary>The masks of <c>0x8004507C</c>: 4 (the box is closed by the script only) from the pickup of a key object to the end of the fanfare, 3 (the default) after.</summary>
+    private const int ScriptCloseOnlyMask = 4;
+    private const int DefaultCloseMask = 3;
 
     /// <summary>Registers A255 and C255 for <see cref="SpriteTypes"/>.</summary>
     internal static void Register(NativeSpriteRegistry registry)
@@ -46,19 +67,44 @@ internal static class PickupAi
     }
 
     /// <summary>
-    /// A255 (<c>0x80061BD4</c>) in phase B: nothing. The binary's A255 returns at once for a dropped object (<c>+0x274 == 1</c>); the placed object's branch (<c>+0x6C &amp;= ~0x80</c>, the state, the flag and the life words) is phase D and the chest's is E14:
-    /// both are NAMED STUBS here (D-E0C-2, D-E0C-3).
+    /// A255 (<c>0x80061BD4</c>). A dropped object (<c>+0x274 == 1</c>) returns at once; the chest (<c>+0x274 == 2</c>, E14) is a NAMED STUB (D-E0C-2). A PLACED object (<c>+0x274 == 0</c>, <c>0x80061C60-0x80061D00</c>): <c>+0x6C &amp;= ~0x80</c> first
+    /// (it is no longer a support: the hero crosses it and takes it), then, when it holds a flag (<c>+0x40</c>, which the binary tests against the flag bank and may destroy the object for), a NAMED STUB (D-E0C-3: none of the 152 placed objects has one) that
+    /// writes nothing more; otherwise the state <c>+0x27C = 0</c>, <c>+0x280 = -1</c>, <c>+0x284 = 0</c> and the life <c>+0x278 = +0x40</c> (0: no rule).
     /// </summary>
     internal static void Load(EntityScriptProxy entity)
     {
+        if (ReadWord274(entity) != KindPlaced)
+        {
+            return;
+        }
+
+        entity.Flags &= ~EntityFlags.Collidable;
+        if (entity.ContentsGameFlag != 0)
+        {
+            return; // NAMED STUB (D-E0C-3).
+        }
+
+        entity.ItemState = StateRise;
+        WriteWord280(entity, uint.MaxValue);
+        WriteWord284(entity, 0);
+        entity.DelayOrAngleOrEntityId = entity.ContentsGameFlag;
     }
 
+    /// <summary>The fanfare of the key objects (<c>0x80049B7C(0)</c> then <c>0x8005A9E0(0xB)</c>, the CD track 11): a journaled STUB (D-E0C-7, ADR-0076) until E19.sm7 plays the CD tracks. The music is left alone (Q-E0C-9, default A).</summary>
+    private static void FanfareStart() => FanfareStubCallsForTests?.Add("start");
+
+    /// <summary><c>CdBusy()</c> (<c>0x8005A7D4</c>): the stub of the fanfare is never busy, so the state 2 lasts one tick.</summary>
+    private static bool FanfareIsBusy() => false;
+
+    /// <summary><c>StopAllSound</c> (<c>0x80049AF4</c>), which restarts the music after the fanfare: a journaled STUB.</summary>
+    private static void FanfareEnd() => FanfareStubCallsForTests?.Add("end");
+
     /// <summary>
-    /// C255 (<c>0x8007C174</c>) for a dropped object, one tick (the branch <c>+0x274 != 2</c> of the binary; the state 2, the fanfare of the key objects, is phase D, and a key object is never dropped). The placed object and the chest are named stubs: nothing.
+    /// C255 (<c>0x8007C174</c>), one tick of the branch <c>+0x274 != 2</c> of the binary: a dropped or a placed object. The chest (<c>+0x274 == 2</c>) is a named stub: nothing.
     /// </summary>
     internal static void Tick(EntityScriptProxy entity, IEntityWorldContext world, GameState state)
     {
-        if (ReadWord274(entity) != KindDropped)
+        if (ReadWord274(entity) is not (KindPlaced or KindDropped))
         {
             return;
         }
@@ -107,6 +153,17 @@ internal static class PickupAi
             case StatePickup:
                 Pickup(entity, world, state);
                 return;
+            case StateFanfare:
+                // 0x8007C6F0: wait for the end of the fanfare (CdBusy), then the box may be closed by the player again and the music comes back.
+                if (FanfareIsBusy())
+                {
+                    return;
+                }
+
+                entity.ItemState += 1;
+                world.DialogueDirector?.SetCloseMask(DefaultCloseMask);
+                FanfareEnd();
+                return;
             case StateAfterTheFanfare:
                 if (DialogueIsOpen(world))
                 {
@@ -120,9 +177,9 @@ internal static class PickupAi
     }
 
     /// <summary>
-    /// The state 1 (<c>0x8007C488-0x8007C6EC</c>) of a dropped object: nothing while a dialogue is open; the overlap of the boxes with the hero's on the three axes; then <c>GiveItem</c>, the game flag of the container and, the byte 5 of the table
-    /// not being zero (which no dropped object has), the sound and the jump from the state 1 to 3: a dropped object has no message (its <c>GiveItem</c> answers 0) and never passes by the state 2. The key objects (byte 5 zero: message, fanfare, block of the
-    /// world) are phase D and never dropped: this branch does nothing for them, before the object is given.
+    /// The state 1 (<c>0x8007C488-0x8007C6EC</c>): nothing while a dialogue is open; the overlap of the boxes with the hero's on the three axes; then <c>GiveItem</c>, the text "name gained!" (always for a placed object, never for a dropped one:
+    /// <see cref="ItemEffects.ComposePickupMessage"/>), the game flag of the container (a dropped object; the stray <c>SetGameFlag(-1)</c> of a placed one is not carried, Q-E0C-5, D-E0C-12) and, by the byte 5 of the table of the objects:
+    /// not zero (the sounds 52, 53, 54): the sound, the message in mode 0 and the jump from the state 1 to 3; zero (a KEY object): the state 2, <c>Block(self)</c>, the fanfare (a stub), the message in mode 1 and the mask 4.
     /// </summary>
     private static void Pickup(EntityScriptProxy entity, IEntityWorldContext world, GameState state)
     {
@@ -133,16 +190,42 @@ internal static class PickupAi
 
         var item = entity.SpriteType - 0x1E;
         var tables = world.ItemTables;
-        var sound = tables != null && (uint)item < ItemTables.DropRecordCount ? tables.DropSoundSfxIndex[item] : 0;
-        if (sound == 0)
+        if (tables == null || (uint)item >= ItemTables.DropRecordCount)
         {
-            return; // NAMED STUB (phase D): the key objects.
+            return; // degraded: no table of the objects, nothing to read the byte 5 from.
         }
 
-        ItemEffects.GiveItem(world, state, hero, item);
-        SetGameFlag(state, ReadWord280(entity));
-        world.SoundPlayer?.PlaySfx(sound);
-        entity.ItemState += 2;
+        var kind = ReadWord274(entity);
+        var giveReturn = ItemEffects.GiveItem(world, state, hero, item);
+        var message = ItemEffects.ComposePickupMessage(item, kind, giveReturn);
+        if (kind != KindPlaced)
+        {
+            SetGameFlag(state, ReadWord280(entity));
+        }
+
+        var sound = tables.DropSoundSfxIndex[item];
+        if (sound != 0)
+        {
+            world.SoundPlayer?.PlaySfx(sound);
+            OpenMessage(world, message, OrdinaryMessageMode);
+            entity.ItemState += 2;
+            return;
+        }
+
+        entity.ItemState += 1;
+        world.Block(entity);
+        FanfareStart();
+        OpenMessage(world, message, KeyMessageMode);
+        world.DialogueDirector?.SetCloseMask(ScriptCloseOnlyMask);
+    }
+
+    /// <summary><c>0x800450F0</c> on the text buffer: opens the box on the composed text, unless the buffer is empty (a dropped object).</summary>
+    private static void OpenMessage(IEntityWorldContext world, string message, int controlMode)
+    {
+        if (message.Length != 0)
+        {
+            world.DialogueDirector?.OpenComposed(message, controlMode);
+        }
     }
 
     /// <summary><c>0x80045004</c>: a dialogue box is open (or waits for a choice).</summary>

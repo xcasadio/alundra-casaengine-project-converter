@@ -97,6 +97,19 @@ and the Square start a burst of 42 ticks (0x28), the Circle does not. Known gaps
 no exit at the same level but its south edge, a bank is a wall for the swimmer. Do not go near the cascade of map 416 (currents,
 O-E20-16).
 
+### Pickup presets (E20.e0c)
+
+For the recipes of the objects (docs/plan-e20-heros.md section 1.26). Both carry the new game's kit (the basic sword) with HP 4/10 and MP 2/4, so that a heart, a herb and a crystal show. No flag is posed.
+
+| Preset | Map, tile, z | What is near |
+|---|---|---|
+| `pickup-m11` | 11 (Debug zone), (27, 18), 10 | to the north on the same column the herb (27, 16), the Small Potion (27, 15), the Large Potion (27, 14); the Magic Extract (29, 15), the Brew (29, 14), a key (24, 20); the 22 key objects are in the rows 22 to 30 |
+| `loot-m14` | 14 (Beannoides arena), (19, 34), 3 | a Beannoid 72 pixels to the east at the same height (record 1, tile (22, 34, 3)); kill several, what they let fall depends on the generator |
+
+Walk onto an ordinary object: its name and "gained!" in a box, the world stands still under it, the object is gone when the box closes.
+Take a key object: the same message, the hero and the other entities are held while it is up, the fanfare of the CD is not played yet (E19.sm7) and the music goes on.
+Kill a Beannoid: what it let fall rises, bounces, is taken on contact (money, hearts, magic, herb) with its sound, or goes out after 600 ticks.
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;

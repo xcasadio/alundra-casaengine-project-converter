@@ -39,8 +39,18 @@ internal sealed class FakeDialogueDirector : IDialogueDirector
     {
     }
 
-    public void SetCloseMask(int mask)
+    /// <summary>E20.e0c T4: the close masks asked, in order.</summary>
+    public List<int> CloseMasks { get; } = new();
+
+    public void SetCloseMask(int mask) => CloseMasks.Add(mask);
+
+    /// <summary>E20.e0c T4: the composed lines opened (text and control mode), in order; the box is then open.</summary>
+    public List<(string Text, int Mode)> Opens { get; } = new();
+
+    public void OpenComposed(string font3Text, int controlMode)
     {
+        Opens.Add((font3Text, controlMode));
+        IsOpen = true;
     }
 
     public bool RequestScriptClose() => false;

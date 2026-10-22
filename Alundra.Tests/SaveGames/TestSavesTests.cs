@@ -71,7 +71,10 @@ public sealed class TestSavesTests : IDisposable
     // E20.i T5: the swim preset, then the full list in the order of the table.
     private const string SwimPresetName = "swim-m14";
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName];
+    // E20.e0c T4: the two pickup recipes (docs/plan-e20-heros.md section 1.26, T0 (k)), then the full list in the order of the table.
+    private static readonly string[] PickupPresetNames = ["pickup-m11", "loot-m14"];
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames];
 
     public static TheoryData<string> WeaponNames => new(WeaponPresetNames);
 
@@ -87,9 +90,21 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheNinePresets_AreListed_InTheOrderOfTheTable()
+    public void TheElevenPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
+        Assert.Equal(11, TestSaves.Presets.Count);
+    }
+
+    [Theory]
+    [InlineData("pickup-m11", 11, 27, 18, 10)]
+    [InlineData("loot-m14", 14, 19, 34, 3)]
+    public void ThePickupPresets_ArriveWhereTheRecipeSaysAndHaveTheLifeAndMagicToShowTheHeals(string name, int map, int tileX, int tileY, int tileZ)
+    {
+        var save = Build(name);
+
+        Assert.Equal((map, tileX, tileY, tileZ), (save.InitialMapId, save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.Equal((4, 10, 2, 4), (save.Hp, save.HpMax, save.Mp, save.MpMax)); // hurt and short of magic, so that a heart, a herb and a crystal can be seen.
     }
 
     [Theory]

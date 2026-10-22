@@ -29,3 +29,8 @@ fe50016167bdf6c9dff79d7dbd0b3905311595e3 *./vectors/c255.json
 84c8525d2132ba9c7382c1cd4aadc60b990cd1e2 *./vectors/pickup-message.json
 a25de3cc7bc99387ff22139dc94dfdae874a76a9 *./t3-red-names.txt
 d0d3373721edc01ccec70076f44a24a2f94a241d *./t3-results.md
+b647517898e5297b9fd3c8dfbb05b1b1c58abc87 *./t4-results.md
+d6049d361305ade7589efdfe6e03140c88b45190 *./t4-red-names.txt
+56b3a0d899dd849a1a32f0410e4967969b0fa2ed *./t4-mutants.txt
+ae49d38482c0dbb12f65ab0b3698097e420b967e *./scripts/t4_mutants.py
+20ec4a6a0fede66d9a4ae94e651ef28d632e2ad6 *./scripts/t4_runmut.sh

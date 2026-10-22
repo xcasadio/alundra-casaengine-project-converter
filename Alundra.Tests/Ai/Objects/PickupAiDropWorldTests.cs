@@ -405,15 +405,13 @@ public sealed class PickupAiDropWorldTests : IDisposable
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // (w7) an object placed on a map (+0x274 == 0) and a chest (+0x274 == 2) are named stubs in this phase: C255 and A255 are registered for their type and do nothing; the same object made "dropped" is taken.
+    // (w7) a chest (+0x274 == 2) is a named stub: C255 and A255 are registered for its type and do nothing; the same object made "dropped" is taken. (The placed object, +0x274 == 0, was a stub in phase B: since phase D it is taken, PickupAiPlacedTests and PickupAiPlacedWorldTests.)
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     [Theory]
-    [InlineData(0u, 1)]
     [InlineData(2u, 1)]
-    [InlineData(0u, 3)]
     [InlineData(2u, 3)]
-    public void W7_APlacedObjectAndAChest_DoNothing_WhileTheSameObjectMadeDroppedIsTaken(uint kind, int ticksPerFrame)
+    public void W7_AChest_DoesNothing_WhileTheSameObjectMadeDroppedIsTaken(uint kind, int ticksPerFrame)
     {
         using var run = new PickupDropRun($"w7-{kind}-{ticksPerFrame}", "Debug zone", "Debug zone-11", 54, 30, -1, -1, clearTheWorld: false);
         var item = run.Arc.EntityByRecord(22);

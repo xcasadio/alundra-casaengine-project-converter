@@ -68,6 +68,11 @@ internal sealed class PickupHost : IEntityWorldContext
 
     public void Unblock(EntityScriptProxy self) => Unblocked.Add(self);
 
+    /// <summary>E20.e0c T4: the entities that called <c>Block(self)</c>, in order.</summary>
+    public List<EntityScriptProxy> Blocked { get; } = new();
+
+    public void Block(EntityScriptProxy self) => Blocked.Add(self);
+
     public IDialogueDirector? DialogueDirector => Dialogue;
 
     public NavigationGrid2D? NavigationGrid => null;

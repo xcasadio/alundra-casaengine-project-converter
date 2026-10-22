@@ -65,6 +65,12 @@ public interface IDialogueDirector
     /// </summary>
     void Open(DialogueAsset? asset, string? node, int controlMode);
 
+    /// <summary>
+    /// E20.e0c (docs/plan-e20-heros.md section 1.26, T4, D-E0C-4): opens the box on a line the caller composed (one page of <c>font3</c> text, no Yarn reader) - what the pickup of an object opens, "name gained!". A default member that
+    /// does nothing, so every implementer keeps compiling; <see cref="DialogueDirector"/> implements it.
+    /// </summary>
+    void OpenComposed(string font3Text, int controlMode) { }
+
     /// <summary>Opcode 0x4C - sets the text flags (1 the held button gates a step, 2 the delay does, 4 a 0x4D does, 8 waits for the cursor's press) and
     /// clears a 0x4D in waiting (D-E19-62). Gives the hand back to nobody.</summary>
     void SetTextFlags(int flags);

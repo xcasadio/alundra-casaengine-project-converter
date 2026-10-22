@@ -132,6 +132,12 @@ public static class TestSaves
         // portal floor), with the swim boots (item 0x1B, level 2) on top of the new game's kit. Walk south off the bank into the water. Without the boots the original stops the hero at the edge of the deep water;
         // this port does not port that wall yet (O-E19-22), the hero swims either way.
         new Preset("swim-m14", "test-swim-m14", 14, 40, 48, 1, [], [], [], [(CounterIndex(0x1B), 1)]),
+
+        // E20.e0c T4 (docs/plan-e20-heros.md section 1.26, T0 (k)): the pickup recipes, on the new game's kit (the basic sword) with HP 4/10 and MP 2/4 so that the hearts, the herbs and the crystals show. `pickup-m11`: the Debug zone (map 11),
+        // tile (27, 18, 10), the hero rests on the ground; to the north on the same column the herb (27, 16), the Small Potion (27, 15) and the Large Potion (27, 14); the Magic Extract (29, 15), the Brew (29, 14) and a key (24, 20); the 22 key objects
+        // are in the rows 22 to 30. `loot-m14`: the Beannoides arena (map 14), tile (19, 34, 3), a Beannoid 72 pixels to the east at the same height (record 1, tile (22, 34, 3)); kill several, what they let fall depends on the generator.
+        new Preset("pickup-m11", "test-pickup-m11", 11, 27, 18, 10, [], [], [], [], Weapon: 1, Hp: 4, HpMax: 10, Mp: 2, MpMax: 4),
+        new Preset("loot-m14", "test-loot-m14", 14, 19, 34, 3, [], [], [], [], Weapon: 1, Hp: 4, HpMax: 10, Mp: 2, MpMax: 4),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>

@@ -193,23 +193,28 @@ public sealed class PickupAiDropVectorTests
         Assert.Equal((expected, unchecked((int)expected)), (PickupAi.ReadWord284(entity), entity.ForceZ));
     }
 
-    /// <summary>A key object (byte 5 of the table zero: message, fanfare, block of the world) is phase D and never dropped: C255 leaves it alone before giving it - while an ordinary object on the same spot is taken.</summary>
+    /// <summary>A key object (byte 5 of the table zero: the block of the world, the fanfare, the mask 4) that is dropped - nothing in the loot does it - takes the key branch of C255 all the same, as in the binary (phase D): the state 2, no sound, the world blocked,
+    /// and no box (a dropped object has no message) - while an ordinary object on the same spot is taken to the state 3.</summary>
     [Theory]
-    [InlineData(0x04, false)]
-    [InlineData(0x45, true)]
-    public void ADroppedKeyObject_IsANamedStubOfPhaseD_AnOrdinaryObjectOnTheSameSpotIsTaken(int item, bool taken)
+    [InlineData(0x04, true)]
+    [InlineData(0x45, false)]
+    public void ADroppedKeyObject_TakesTheKeyBranchOfThePickup_WithNoMessage_AnOrdinaryObjectOnTheSameSpotIsTakenToTheState3(int item, bool key)
     {
         var sounds = new RecordingSoundPlayer();
-        var host = new PickupHost { Tables = Tables, Sound = sounds, Hero = new EntityScriptProxy { Width = 1, Height = 1, Depth = 1 } };
+        var dialogue = new FakeDialogueDirector();
+        var host = new PickupHost { Tables = Tables, Sound = sounds, Dialogue = dialogue, Hero = new EntityScriptProxy { Width = 1, Height = 1, Depth = 1 } };
         var entity = new EntityScriptProxy { SpriteType = item + 0x1E, ItemState = 1, DelayOrAngleOrEntityId = -1, Width = 1, Height = 1, Depth = 1 };
         PickupAi.WriteWord274(entity, 1);
         var state = new GameState();
-        Assert.Equal(taken, Tables.DropSoundSfxIndex[item] != 0);
+        Assert.Equal(key, Tables.DropSoundSfxIndex[item] == 0);
 
         PickupAi.Tick(entity, host, state);
 
-        Assert.Equal((taken ? 3 : 1, taken ? 1 : 0), (entity.ItemState, sounds.Requests.Count));
-        Assert.Equal(taken ? 1 : 0, taken ? state.PlayerStats.Money : Alundra.Hero.PlayerManager.GetNumberOfItem(state, item));
+        Assert.Equal((key ? 2 : 3, key ? 0 : 1), (entity.ItemState, sounds.Requests.Count));
+        Assert.Equal(key ? 1 : 0, host.Blocked.Count);
+        Assert.Empty(dialogue.Opens); // a dropped object has no message.
+        Assert.Equal(key ? new[] { 4 } : Array.Empty<int>(), dialogue.CloseMasks); // the mask 4 is written all the same by a key object.
+        Assert.Equal(1, key ? Alundra.Hero.PlayerManager.GetNumberOfItem(state, item) : state.PlayerStats.Money);
     }
 
     [Fact]

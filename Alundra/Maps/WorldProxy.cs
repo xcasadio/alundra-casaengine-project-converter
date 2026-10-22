@@ -2970,7 +2970,11 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         TickTraceForTests?.Invoke("clock");
         for (var i = 0; i < _tickEntities.Count; i++)
         {
-            _tickEntities[i].TickAnimationClock();
+            // E20.e0c (D-E0C-6): an entity that another one blocked (+0x20) is out of the active list the binary's clock walks (T0 (i)).
+            if (_tickEntities[i].BlockedByEntity == null)
+            {
+                _tickEntities[i].TickAnimationClock();
+            }
         }
 
         // E20.e0c (T0 (d)): the binary rewrites the position the contacts read (+0x1D8/+0x1DC/+0x1E0 = Pos + Mod) at the head of 0x80038364, for the active entities that nothing blocks, after the clock and BEFORE the move
@@ -2989,7 +2993,11 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         TickTraceForTests?.Invoke("physics");
         for (var i = 0; i < _tickEntities.Count; i++)
         {
-            _tickEntities[i].TickPhysics();
+            // E20.e0c (D-E0C-6): the physics walks the same active list, so a blocked entity - the hero in the air included - stands still until it is unblocked.
+            if (_tickEntities[i].BlockedByEntity == null)
+            {
+                _tickEntities[i].TickPhysics();
+            }
         }
 
         TickTraceForTests?.Invoke("activeEffects");
