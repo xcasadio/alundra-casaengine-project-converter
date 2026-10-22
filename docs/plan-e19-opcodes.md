@@ -12274,7 +12274,7 @@ critique, les vecteurs gelés, les tests nommés avec leurs valeurs, les outils)
   d'interface de `0x9E`) et sm4 (`0x97` = `IncreaseMp`, la couture de `0xB3`, la politique de `0x88`) en écrivent un ; sm1 et sm2 aucun (D-E19-2 :
   le binaire l'emporte déjà).
 
-#### 1.4.2 E19.sm1 — Les prédicats d'appui et de zone : `0x60 0x61 0x3C 0x3D` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1)
+#### 1.4.2 E19.sm1 — Les prédicats d'appui et de zone : `0x60 0x61 0x3C 0x3D` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1, **READY** à la seconde relecture, `564bef3`)
 
 **Prérequis.** R-SM-1 ; les défauts retenus de Q-sm-13 (A : sm1 sans attendre les objets C4), Q-sm-14 (porter `0x3C`) et Q-sm-15 (accepter
 l'attente réelle de la 226).
@@ -12366,7 +12366,7 @@ RÉFUTÉ ; D21 et D23 NON ÉTABLIS).
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : annuler le commit de T2 puis
   celui de T1.
 
-#### 1.4.3 E19.sm2 — Le mémo de position et ses seuils : `0x6A 0x6B 0x6C 0x6D` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1)
+#### 1.4.3 E19.sm2 — Le mémo de position et ses seuils : `0x6A 0x6B 0x6C 0x6D` ⏳ (détaillée le 2026-10-22 ; REVISE, REVISE, révisions 1 et 2 ; relecture de clôture)
 
 **Prérequis.** R-SM-1 ; le défaut retenu de Q-sm-16 (le cadre Z de la DLL pour le mémo). Ni E20.g1a, ni D5b, ni E20.c2a (aucune recherche,
 aucun hôte).
@@ -12410,40 +12410,46 @@ erreurs de documentation et de matrice, non de comportement).
   (trois `Fact` écrits : l'état de chaque lecture, la liste des 11 lectures neuves, les comptes par carte : 70, 59, 11, 0, 4 ; critique C7) ; S4 et
   S3, définis dans la table de `sm2/report.md` §3 (S4 : les 8 sites de la carte 60 atteints seulement par les enregistrements 0 et 9 à bit `0x80`
   clair ; S3 : la sonde des écrivains de `Parameters[2..4]`, deux appels par opcode sur hôte nu, attendu `{0B 1C 1D 1E 1F 20 21 22 23 37 6A}`, P4
-  par `6A` seul) (révision 1). La sortie de `tools/run_all.py` régénère `proposed/RealBytesExpected.txt` avec la valeur « aujourd'hui » non corrigée
+  par `6A` seul) (révision 1) ; **T0 lance la sonde de S3 sur le code du HEAD de départ** et consigne l'ensemble observé avant le code (un écrivain
+  qui exige un hôte et lève sur hôte nu y est nommé, avec sa raison) : l'attendu de S3 après le code est cet ensemble plus `6A` (révision 2). La sortie de `tools/run_all.py` régénère `proposed/RealBytesExpected.txt` avec la valeur « aujourd'hui » non corrigée
   du tick 3 de RB-56 (critique C5) : non assertée, elle se lit corrigée par la critique.
-- ⏳ **T2 — Le commit unique de R-SM-2** : les quatre `case`, l'aide, les trois libellés, le miroir, les 129 lignes retirées, `sm2` dans
-  `ClosedOwners`, les comptes.
-- ⏳ **T3 — Les arcs** retenus (R-SM-6). ⏳ **T4 — Plan, verifier frais.**
+- ⏳ **T2 — Le commit unique de R-SM-2** : les tests de T1 (leur passage rouge consigné avant le code, dans l'arbre de travail), les quatre `case`,
+  l'aide, les trois libellés, le miroir, les 129 lignes retirées, `sm2` dans `ClosedOwners`, les comptes (révision 2).
+- ⏳ **T3 — Les arcs** retenus (R-SM-6), dans leur propre commit, après celui de T2. ⏳ **T4 — Plan, verifier frais.**
 
 ##### Acceptation
 
 - R-SM-8 ; et `rg -c "Math\.Abs\(" Alundra/Events/EventProgramRunner.cs` vaut toujours 2 ; `rg -n "state\.Parameters\[4\]"
   Alundra/Events/EventProgramRunner.cs` donne exactement 2 lignes, le `6A` et le `6D` (critique C2).
-- **Mutants** (R-SM-7) : les 17 de la préparation et **M18** (`0x6A` écrit aussi `Parameters[5]`, tué par les assertions de sentinelles de V6A ;
-  critique C6) ; **la part H et RB** de leurs ensembles rouges est celle de la critique (`sm2/critic/evidence/my_killmatrix.txt`, critique C1 : par
+- **Mutants** (R-SM-7) : les 17 de la préparation et **M18** (`0x6A` écrit aussi `Parameters[5]`, tué par l'assertion de la sentinelle de
+  `Parameters[5]` de V6A ; critique C6) ; les autres sentinelles (`Parameters[0]`, `Parameters[6..9]`, `_30`, `_34`) sont des gardes qu'aucun mutant
+  ne réfute, déclarées comme telles (révision 2) ; **la part H et RB** de leurs ensembles rouges est celle de la critique (`sm2/critic/evidence/my_killmatrix.txt`, critique C1 : par
   exemple M9 tué par H1 seul, M10 par H6 seul parmi les H et RB, M2 par H3a et H3c et 282 lignes de vecteurs, et non 366) ; **les ensembles complets**
   (les V, S3, et les tests existants que M14 à M16 touchent, puisqu'ils mutent du code existant de `Wait`, `Break` et `InitializeEventData`) sont
   régénérés par le script de R-SM-7 sur les tests finaux, le filtre étant les classes neuves pour M1 à M13, M17 et M18, et la suite entière pour M14
   à M16 ; arrêt : un mutant sans aucun test rouge (révision 1) ; les assertions de positions inchangées sont des gardes qu'aucun mutant ne réfute,
   déclarées comme telles ; équivalents déclarés : `position − memo` et `(sbyte)v[2]` ; les mutants de S1 (`sm2/evidence/memo_flow_mutants.txt`).
 - **Preuve de retrait** : retirer le code seul rend rouges exactement les 37 tests de comportement (4 V, 25 H sans H10, 8 RB), **S3** (`0x6A`
-  n'est plus un écrivain observé : il tombe dans `UnknownOpcode`, et aucun autre code n'écrit `Parameters[4]` ; révision 1) et la règle 1 de sm0 ;
+  n'est plus un écrivain observé : il tombe dans `UnknownOpcode`, et aucun autre code n'écrit `Parameters[4]` ; révision 1), **les arcs que T3 a
+  retenus** (ils exigent de finir sans `UnknownSkipped` sur `6A` à `6D`, `sm2/report.md` §4.3 ; révision 2) et la règle 1 de sm0 ;
   remettre les libellés seuls, H10 seul ; remettre les 129 lignes seules, les règles 2 et 4 de sm0 et (k1) ; retirer les classes de tests et les
   vecteurs, rien.
 - **La liste de sm0** : −129 lignes ; passée la première : 381 lignes, 379 instructions, 90 cartes (sortent 55, 56, 57, 59, 307, 344), 17 opcodes.
 - **Recette de l'auteur** : aucune dans sm2 (atteindre 344 et 442 demande un préréglage absent, hors périmètre).
+- **Disposition de la critique C12** (révision 2) : la seule situation du corpus où l'entité logique diffère du propriétaire (60 C[1] et C[10], une
+  carte inatteignable) est couverte par H6 et les vecteurs ; aucun test d'octets réels n'y est écrit (facultatif, la carte ne se joue pas).
 
 ##### Arrêts, budget, retour arrière
 
 - **Arrêts** : R-SM-1 non rempli ; une ligne de vecteur contredite par l'un des deux modèles, ou un octet lu sans membre ; une valeur écrite d'un
   test H ou RB contredite ; un mutant sans aucun test rouge ; les comptes de S1 ou une empreinte qui changent (`sm2/evidence/export_hashes.txt`) ; un
-  test existant rouge ; un fichier de `Alundra/` autre que les deux du runner ; un nom refusé ; un abandon par `--blame-hang-timeout`.
-- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : `git revert` du commit de code ;
-  **les tests de T1 sont dans ce commit** (leur passage rouge est consigné avant le code, dans l'arbre de travail ; révision 1), si bien que le revert
-  ne laisse aucun test rouge commité.
+  test existant rouge ; un fichier de `Alundra/` autre que les deux du runner ; un nom refusé ; un abandon par `--blame-hang-timeout` ; une réponse de l'auteur autre
+  que le défaut à Q-sm-16 (révision 2).
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : `git revert` du commit des arcs
+  de T3 d'abord (s'il existe), puis du commit de T2 ; **les tests de T1 sont dans le commit de T2** (révisions 1 et 2), si bien que les reverts ne
+  laissent aucun test rouge commité.
 
-#### 1.4.4 E19.sm3 — Les prédicats de contact, de groupe et de `ForceZ` : `0xA9 0xAA 0xB2 0xB4-0xB7 0x9E` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1)
+#### 1.4.4 E19.sm3 — Les prédicats de contact, de groupe et de `ForceZ` : `0xA9 0xAA 0xB2 0xB4-0xB7 0x9E` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1, **READY** à la seconde relecture, `564bef3`)
 
 **Prérequis.** R-SM-1 ; les défauts retenus de Q-sm-4 (A : porter `0xB2` maintenant) et de Q-sm-6 (porter `0xB4` et `0xB7` ; `0x9E` avec son
 lecteur de case et un ADR, dans un commit à part). E20.g1a indépendante (les tests posent `PlatformEntity` à la main).
@@ -12517,7 +12523,7 @@ le coin de la case (5, 46) où un `Result` 1 déjà relu change désormais le ch
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : dans l'ordre inverse, le commit de
   `0x9E` d'abord, puis le commit unique (les deux touchent le runner, la table et le miroir ; révision 1).
 
-#### 1.4.5 E19.sm4 — Les opcodes d'action : `0x72 0x88 0x96 0x97 0xB3` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1)
+#### 1.4.5 E19.sm4 — Les opcodes d'action : `0x72 0x88 0x96 0x97 0xB3` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1, **READY** à la seconde relecture, `564bef3`)
 
 **Prérequis.** R-SM-1 ; les défauts retenus de Q-sm-1 (A : `0x97` ajoute des PM), Q-sm-2 (le montant est l'octet 1), Q-sm-3 (`Overwrite` seul),
 Q-sm-11 (`0x15`, `0x66`, `0x7A` laissés sautés) et Q-sm-12 (`0x88` à indice ≥ 3 : rien d'écrit, un avertissement) ; **sérialisée avec E20.h4a et
