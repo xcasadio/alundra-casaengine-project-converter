@@ -5,7 +5,7 @@ using CasaEngine.Framework.Assets.Animations;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.ExportGuards;
 
 /// <summary>
 /// E19.m7 (O-E19-9) guard on the real export: the five Loop animations whose only displayed frame lasts
@@ -14,7 +14,7 @@ namespace Alundra.Tests;
 /// Visible key at the same instant that hid every part. Throws, naming the missing export, when
 /// alundra-project/ is absent (same pattern as the other export-reading tests).
 /// </summary>
-public class AlundraZeroDurationLoopExportGuardTests
+public class ZeroDurationLoopExportGuardTests
 {
     private static string FindEntitiesDirectory()
     {
@@ -31,7 +31,7 @@ public class AlundraZeroDurationLoopExportGuardTests
         }
 
         throw new InvalidOperationException(
-            $"AlundraZeroDurationLoopExportGuardTests: no 'alundra-project/Entities' directory found above "
+            $"ZeroDurationLoopExportGuardTests: no 'alundra-project/Entities' directory found above "
             + $"'{AppContext.BaseDirectory}' - this guard needs the real converter export.");
     }
 

@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.ExportGuards;
 
 /// <summary>
 /// E19.g G2b-3 guard on the REAL export: the opening of the chest of Anzes (<c>bankalundra_227_anim1_down</c>, chain 163,
@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 /// for with the exact path of line 222 of predicted_anim2d_changes.tsv (typographic apostrophe U+2019 in the folder name
 /// <c>Coffre d’Anzes</c>); a missing file or tsv FAILS the guard, it is never skipped.
 /// </summary>
-public class AlundraCornerTrackExportGuardTests
+public class CornerTrackExportGuardTests
 {
     private const string GuardPath = "Entities/Coffre d’Anzes/bankalundra_227_anim1_down.anim2d";
 
@@ -35,7 +35,7 @@ public class AlundraCornerTrackExportGuardTests
         }
 
         throw new FileNotFoundException(
-            $"AlundraCornerTrackExportGuardTests: fichier introuvable '{relativePath}' above '{AppContext.BaseDirectory}'. "
+            $"CornerTrackExportGuardTests: fichier introuvable '{relativePath}' above '{AppContext.BaseDirectory}'. "
             + "The guard never skips: run the export (alundra-project/) and keep docs/ next to it.");
     }
 
@@ -55,7 +55,7 @@ public class AlundraCornerTrackExportGuardTests
         var file = Path.Combine(root, "Entities", "Coffre d’Anzes", "bankalundra_227_anim1_down.anim2d");
         if (!File.Exists(file))
         {
-            throw new FileNotFoundException($"AlundraCornerTrackExportGuardTests: fichier introuvable '{file}' (guard file of the export).");
+            throw new FileNotFoundException($"CornerTrackExportGuardTests: fichier introuvable '{file}' (guard file of the export).");
         }
 
         var data = new Animation2dData();
