@@ -1,6 +1,6 @@
 # ADR-0080: The test project mirrors the DLL tree by the type each file is named after
 
-- **Status**: Accepted
+- **Status**: Accepted (text corrected on 2026-10-22, the day it was written, before review: "one main type per file" follows ADR-0075's reading of rule (3))
 - **Date**: 2026-10-22
 - **Source**: this chantier: `docs/plan-restructuration-dll.md`, section 0 (D-R-13, D-R-16, D-R-19: the author's answers of 2026-10-22 to Q-R-3 and Q-R-3b) and section 9 (slice R5); R5 discovery of 2026-10-17 (`7ce82c2`, replayed at `211a757`)
 
@@ -22,7 +22,7 @@
 - A test file goes to the domain of the type it is named after, not to the domain it exercises most.
 - A test class named after a renamed type only loses the prefix (`AlundraMusicPlayerTests` → `MusicPlayerTests`, not `BgmPlayerTests`).
 - `Arcs/` holds the 26 end-to-end scenarios and the trace harnesses, nothing else: a file that drives `ArcRun` inside a domain stays in that domain.
-- One main type per file, as in the DLL (rule (3) of ADR-0075): the test files that hold several types are split. A shared type declared in a test file (an xUnit collection, a helper host) goes to its own file in the folder of its original file, not to `Support/`.
+- One main type per file, as in the DLL, under the reading of rule (3) written in ADR-0075. A public secondary type goes to its own file, and an internal secondary type stays with the main type. A shared type declared in a test file (an xUnit collection, a helper host) goes to its own file whatever its visibility, in the arrival folder of its original file, not to `Support/`. A file in which no top-level type carries its name takes the name of its first declared public type (P-R5-1 in the plan, the session's reading).
 - `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` stays where it is.
 - The export guards without a DLL type go to `ExportGuards/` (namespace `Alundra.Tests.ExportGuards`).
 
