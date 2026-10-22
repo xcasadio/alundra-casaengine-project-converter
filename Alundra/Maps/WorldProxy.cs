@@ -3303,7 +3303,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     /// <summary>
     /// E14.a1b (D-E14-9, ADR-0060): port of <c>GameEngine.DestroyEntity(Entity, int)</c> @ 0x8003A59C for ALL its callers (E0/E1, the pick phase's slope destruction <paramref name="effectId"/> 6 and VRAM-flag destruction -1), in the
-    /// order of the binary: (1) the loot <c>0x80032B90</c> - NAMED STUB, E20.e0 (D-E14-3: a destroyed entity drops nothing until then); (2) the status 4 (<c>0x8003A5BC</c>), which the pick phase naturally skips from now on;
+    /// order of the binary: (1) the loot <c>0x80032B90</c> (E20.e0c, phase C: <see cref="LootDrop.SpawnContents"/>, the object the creation drew for this entity appears first, while the entity still has its status and its letter; a content of 0, the veto of the magic and a full table of entities drop nothing); (2) the status 4 (<c>0x8003A5BC</c>), which the pick phase naturally skips from now on;
     /// (3) the branch delay <c>+0x228 = -1</c> (<c>0x8003A5CC</c>, <see cref="EntityScriptProxy.EventTrigger"/>, so a same-frame re-scan does not run what the entity had queued); (4) the release of the active effect
     /// attached to the entity (<c>+0x1B8</c>, <c>0x8003A5D0</c>) - NAMED STUB, E20.e (the passes of the active effects are empty in the DLL and it has no member for the pointer); (5) the break effect: <paramref name="effectId"/> -1 reads the
     /// byte <c>+0x1E</c> of the sprite header (<see cref="EntityScriptProxy.BreakEffect"/>, <c>0x8003A5E0-0x8003A5E8</c>), and when the effect is not 0, <c>0x8003BE74(0, fx, 0, e ; 1, 0, 0, 0)</c> creates it
@@ -3313,7 +3313,8 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// </summary>
     internal void DestroyEntity(EntityScriptProxy entity, int effectId)
     {
-        // (1) loot: E20.e0.
+        // (1) loot: E20.e0c, the first act (0x8003A59C calls 0x80032B90 before it writes the status 4); the single-argument overload below is the light destruction and drops nothing.
+        LootDrop.SpawnContents(this, GameState, entity);
         entity.Status = EntityStatus.FlagToDestroy;
         entity.EventTrigger = ScriptHelper.ProgramUnknown;
 

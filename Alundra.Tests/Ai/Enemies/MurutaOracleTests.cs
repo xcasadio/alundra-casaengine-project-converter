@@ -38,6 +38,7 @@ public sealed class MurutaOracleTests : IDisposable
     private static readonly string[] ForceNames = { "tforcex_BC", "tforcey_C0", "forcex_C4", "forcey_C8", "fstepx_D4", "fstepy_D8" };
     private static readonly Lazy<EffectBank> Bank = new(() => EffectGolden.BankOf(Root, 14));
     private readonly ulong _seed = GameRandom.RandomSeed;
+    private int _drops;
 
     public void Dispose() => GameRandom.RandomSeed = _seed;
 
@@ -421,10 +422,10 @@ public sealed class MurutaOracleTests : IDisposable
 
     /// <summary>Runs E1 through <c>RunPickedEvent</c> (the real path) on a world with a bank, <paramref name="occupied"/> slots taken, and compares C1 to C7.</summary>
     private void RunE1Call(string where, IReadOnlyDictionary<string, long> before, IReadOnlyDictionary<string, long> heroWords, IReadOnlyList<HandlerChange> changed, IReadOnlyList<HandlerJournalEntry> journal,
-        long rngIn, long? fx, int occupied, int status)
+        long rngIn, long? fx, int occupied, int status, PickupDropRun lootWorld)
     {
         var (heroEntity, hero) = NewHero(heroWords, null, false);
-        var world = new WorldProxy();
+        var world = lootWorld.Arc.Proxy;
         world.EffectStage!.Load(Bank.Value);
         for (var i = 0; i < occupied; i++)
         {
@@ -443,6 +444,7 @@ public sealed class MurutaOracleTests : IDisposable
         var platformBefore = entity.PlatformEntity;
         var heroBefore = HeroState(hero);
         GameRandom.RandomSeed = unchecked((ulong)rngIn);
+        var worldBefore = EnemyDeathLoot.Snapshot(lootWorld);
 
         entity.RunPickedEvent(runner);
 
@@ -450,7 +452,7 @@ public sealed class MurutaOracleTests : IDisposable
         AssertFields(entity, expected, where); // C4.
         Assert.Same(platformBefore, entity.PlatformEntity);
         Assert.Equal(heroBefore, HeroState(hero)); // C6.
-        Assert.Empty(((IEntityWorldContext)world).SpawnedEntities); // C7.
+        _drops += EnemyDeathLoot.Compare(where, lootWorld, worldBefore, journal, entity); // C7: the loot of the oracle (spawn_39F58 and the sound 84) against the entities and the sounds the DLL's world got (E20.e0c, phase C).
 
         var effects = journal.Where(j => j.Kind == "effect_3BE74").ToList();
         Assert.True(effects.Count <= 1, $"{where}: more than one effect in the oracle journal");
@@ -484,33 +486,41 @@ public sealed class MurutaOracleTests : IDisposable
         Assert.Equal(144, vectors.Count);
         var effects = 0;
         var excluded = 0;
+        _drops = 0;
+        using var lootWorld = EnemyDeathLoot.NewWorld("muruta-e1-vectors");
         for (var i = 0; i < vectors.Count; i++)
         {
             var v = vectors[i];
-            RunE1Call($"E1 vector {i}", v.Entity, v.Hero, v.Changed, v.Journal, v.RngIn, v.InputFx, i % 2 == 0 ? 0 : 3, (int)v.Entity.GetValueOrDefault("status", 2));
+            RunE1Call($"E1 vector {i}", v.Entity, v.Hero, v.Changed, v.Journal, v.RngIn, v.InputFx, i % 2 == 0 ? 0 : 3, (int)v.Entity.GetValueOrDefault("status", 2), lootWorld);
             effects += v.Journal.Count(j => j.Kind == "effect_3BE74");
             excluded += v.Journal.Count(j => j.Kind != "effect_3BE74");
             Assert.True(v.Draws == 0 && v.RngIn == v.RngOut, $"E1 vector {i}: the oracle drew a number");
         }
 
         Assert.Equal(108, effects);
-        Assert.Equal(160, excluded);
+        Assert.Equal(160, excluded); // 80 drops and their 80 sounds: now compared, call by call, by C7.
+        Assert.Equal(80, _drops);
+        Assert.Equal(16, vectors.Count(v => v.Entity.GetValueOrDefault("contents_3C") == 0)); // nothing to drop.
+        Assert.Equal(48, vectors.Count(v => v.Entity.GetValueOrDefault("contents_3C") is 0x26 or 0x51 or 0x52)); // the veto: the hero has no magic.
     }
 
     [Fact]
     public void E1_TheCallsOfTheScenarios_FollowTheProjectionOfThePlan()
     {
         var done = 0;
+        _drops = 0;
+        using var lootWorld = EnemyDeathLoot.NewWorld("muruta-e1-scenarios");
         foreach (var scenario in EnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("MU-", StringComparison.Ordinal)))
         {
             foreach (var call in scenario.Calls.Where(c => c.Handler == "E1"))
             {
-                RunE1Call($"{scenario.Name} tick {call.Tick} E1", call.Before, HeroOf(call.Hero), call.Changed, call.Journal, call.RngIn, null, done % 2 == 0 ? 0 : 3, (int)call.Before["status"]);
+                RunE1Call($"{scenario.Name} tick {call.Tick} E1", call.Before, HeroOf(call.Hero), call.Changed, call.Journal, call.RngIn, null, done % 2 == 0 ? 0 : 3, (int)call.Before["status"], lootWorld);
                 done++;
             }
         }
 
         Assert.Equal(7, done);
+        Assert.Equal(6, _drops);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

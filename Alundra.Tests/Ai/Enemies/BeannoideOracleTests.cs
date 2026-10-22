@@ -27,7 +27,7 @@ namespace Alundra.Tests.Ai.Enemies;
 /// E14.a1b T4 (docs/plan-e14-ia-native.md section 1.3b): the Beannoid's A1, C1 and D1 (registry, type 335) and E1 (<c>DestroyEntity(e, -1)</c>) against the REAL code of <c>ALUN_CD.EXE</c> (France) run in the E14.a1 oracle
 /// (<c>docs/plan-e14-annexe/e14a/oracle-a1/out</c>): the 2,052 single-call vectors (A1 3, C1 1,185, D1 720, E1 144) and the 3,140 calls of the scenarios BN-* and ARENA-* (A1 12, C1 3,102, D1 22, E1 4), each replayed alone from its
 /// <c>before</c> to its <c>after</c>. For every call: the changed words, the generator's word, the sounds (the three handlers play none), the hero untouched. E1 is compared by the PROJECTION of the plan (compared C1 to C7,
-/// excluded X1 to X6): the loot (<c>spawn_39F58</c>) and its sound are the named stub of E20.e0, the release of the attached effect (<c>+0x1B8</c>) is E20.e's, the carrier clearing E20.g's, the header pointer is replaced by
+/// excluded X1 to X6): the loot (<c>spawn_39F58</c>) and its sound are compared since E20.e0c phase C (C7, <see cref="EnemyDeathLoot"/>), the release of the attached effect (<c>+0x1B8</c>) is E20.e's, the carrier clearing E20.g's, the header pointer is replaced by
 /// <see cref="EntityScriptProxy.BreakEffect"/>. Shares the generator's collection (it sets the word).
 /// </summary>
 [Collection(RandomStaticStateCollection.Name)]
@@ -38,6 +38,7 @@ public sealed class BeannoideOracleTests : IDisposable
     private static readonly string[] ForceNames = { "tforcex_BC", "tforcey_C0", "forcex_C4", "forcey_C8", "fstepx_D4", "fstepy_D8" };
     private static readonly Lazy<EffectBank> Bank = new(() => EffectGolden.BankOf(Root, 14));
     private readonly ulong _seed = GameRandom.RandomSeed;
+    private int _drops;
 
     public void Dispose() => GameRandom.RandomSeed = _seed;
 
@@ -339,10 +340,10 @@ public sealed class BeannoideOracleTests : IDisposable
 
     /// <summary>Runs E1 through <c>RunPickedEvent</c> (the real path) on a world with a bank, <paramref name="occupied"/> slots taken, and compares C1 to C7.</summary>
     private void RunE1Call(string where, IReadOnlyDictionary<string, long> before, IReadOnlyDictionary<string, long> heroWords, IReadOnlyList<HandlerChange> changed, IReadOnlyList<HandlerJournalEntry> journal,
-        long rngIn, long? fx, int occupied, int status)
+        long rngIn, long? fx, int occupied, int status, PickupDropRun lootWorld)
     {
         var (heroEntity, hero) = NewHero(heroWords, null);
-        var world = new WorldProxy();
+        var world = lootWorld.Arc.Proxy;
         world.EffectStage!.Load(Bank.Value);
         for (var i = 0; i < occupied; i++)
         {
@@ -363,6 +364,7 @@ public sealed class BeannoideOracleTests : IDisposable
         var platformBefore = entity.PlatformEntity;
         var heroBefore = HeroState(hero);
         GameRandom.RandomSeed = unchecked((ulong)rngIn);
+        var worldBefore = EnemyDeathLoot.Snapshot(lootWorld);
 
         entity.RunPickedEvent(runner);
 
@@ -370,7 +372,7 @@ public sealed class BeannoideOracleTests : IDisposable
         AssertFields(entity, expected, where); // C4 (the contents, hp, flags, forces, the rest: unchanged).
         Assert.Same(platformBefore, entity.PlatformEntity);
         Assert.Equal(heroBefore, HeroState(hero)); // C6.
-        Assert.Empty(((IEntityWorldContext)world).SpawnedEntities); // C7: no entity from the loot (the stub of E20.e0); the sound 84 and the spawn are the excluded entries X1 and X2.
+        _drops += EnemyDeathLoot.Compare(where, lootWorld, worldBefore, journal, entity); // C7: the loot of the oracle (spawn_39F58 and the sound 84) against the entities and the sounds the DLL's world got (E20.e0c, phase C).
 
         // C5: the break effect, from the journal's effect entries.
         var effects = journal.Where(j => j.Kind == "effect_3BE74").ToList();
@@ -405,33 +407,41 @@ public sealed class BeannoideOracleTests : IDisposable
         Assert.Equal(144, vectors.Count);
         var effects = 0;
         var excluded = 0;
+        _drops = 0;
+        using var lootWorld = EnemyDeathLoot.NewWorld("beannoide-e1-vectors");
         for (var i = 0; i < vectors.Count; i++)
         {
             var v = vectors[i];
-            RunE1Call($"E1 vector {i}", v.Entity, v.Hero, v.Changed, v.Journal, v.RngIn, v.InputFx, i % 2 == 0 ? 0 : 3, (int)v.Entity.GetValueOrDefault("status", 2));
+            RunE1Call($"E1 vector {i}", v.Entity, v.Hero, v.Changed, v.Journal, v.RngIn, v.InputFx, i % 2 == 0 ? 0 : 3, (int)v.Entity.GetValueOrDefault("status", 2), lootWorld);
             effects += v.Journal.Count(j => j.Kind == "effect_3BE74");
             excluded += v.Journal.Count(j => j.Kind != "effect_3BE74");
             Assert.True(v.Draws == 0 && v.RngIn == v.RngOut, $"E1 vector {i}: the oracle drew a number");
         }
 
         Assert.Equal(108, effects);
-        Assert.Equal(160, excluded);
+        Assert.Equal(160, excluded); // 80 drops and their 80 sounds: now compared, call by call, by C7.
+        Assert.Equal(80, _drops);
+        Assert.Equal(16, vectors.Count(v => v.Entity.GetValueOrDefault("contents_3C") == 0)); // nothing to drop.
+        Assert.Equal(48, vectors.Count(v => v.Entity.GetValueOrDefault("contents_3C") is 0x26 or 0x51 or 0x52)); // the veto: the hero has no magic.
     }
 
     [Fact]
     public void E1_TheCallsOfTheScenarios_FollowTheProjectionOfThePlan()
     {
         var done = 0;
+        _drops = 0;
+        using var lootWorld = EnemyDeathLoot.NewWorld("beannoide-e1-scenarios");
         foreach (var scenario in EnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("BN-", StringComparison.Ordinal) || s.Name.StartsWith("ARENA-", StringComparison.Ordinal)))
         {
             foreach (var call in scenario.Calls.Where(c => c.Handler == "E1"))
             {
-                RunE1Call($"{scenario.Name} tick {call.Tick} E1", call.Before, HeroOf(call.Hero), call.Changed, call.Journal, call.RngIn, null, done % 2 == 0 ? 0 : 3, (int)call.Before["status"]);
+                RunE1Call($"{scenario.Name} tick {call.Tick} E1", call.Before, HeroOf(call.Hero), call.Changed, call.Journal, call.RngIn, null, done % 2 == 0 ? 0 : 3, (int)call.Before["status"], lootWorld);
                 done++;
             }
         }
 
         Assert.Equal(4, done);
+        Assert.Equal(3, _drops);
     }
 
     // ---------------------------------------------------------------------------------------------------------------------

@@ -22,3 +22,4 @@ T1 (phase A) and T2 (phase B) results:
 - `t1-results.md`, `t1-red-names*.txt`: phase A (the drop, `GiveItem`, the heals, the composed message, `Block`/`Unblock`).
 - `t2-results.md`: phase B (A255 and C255 for the dropped object, the refresh of `ModdedPos`); `t2-red-names.txt` (the 48 red of the final tests with the registration removed), `t2-red-names-first-draft.txt` (the red of the first draft of the tests), `t2-mutants.txt` (the 21 mutants and the failures each one caused);
   `scripts/t2_mutants.py` and `scripts/t2_runmut.sh` (the mutants, applied and undone byte for byte); `scripts/boundary_c255.py` and `replays/boundary_c255_out.txt` (the REAL code of C255 on the bounds of the bounce threshold; run from a copy of `../work/` like the other generators).
+- `t3-results.md`, `t3-red-names.txt`: phase C (the one line of `DestroyEntity`; the 16 red names before it; (d1) to (d4) and (d3b); the two mutants of the line; the five moved tests).

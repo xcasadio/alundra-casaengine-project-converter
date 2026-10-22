@@ -538,8 +538,8 @@ public sealed class PickupAiDropWorldTests : IDisposable
         }
     }
 
-    /// <summary>The object is made by the program C of an arrow (sprite 3), at its first tick of C, through <see cref="LootDrop.SpawnContents"/>; returns the ticks of the birth, of the first A and of the first C255, and the words C255 saw.</summary>
-    private (int Birth, int FirstA, int FirstC, PickupDropRun.Words FirstIn, int ChildSlot, int CarrierSlot) BornByAnotherEntity(string name, bool childLower, int ticksPerFrame)
+    /// <summary>The object is made by the program C of an arrow (sprite 3), at its first tick of C, through <see cref="LootDrop.SpawnContents"/> (or, with <paramref name="throughDestroyEntity"/>, by the <c>DestroyEntity(e, -1)</c> of a container that holds it: (d3b), the real path); returns the ticks of the birth, of the first A and of the first C255, and the words C255 saw.</summary>
+    private (int Birth, int FirstA, int FirstC, PickupDropRun.Words FirstIn, int ChildSlot, int CarrierSlot) BornByAnotherEntity(string name, bool childLower, int ticksPerFrame, bool throughDestroyEntity = false)
     {
         using var run = PickupDropRun.OnMap14(name);
         var context = run.Context;
@@ -566,7 +566,15 @@ public sealed class PickupAiDropWorldTests : IDisposable
             {
                 birth = run.Tick;
                 var container = new EntityScriptProxy { ContentsItemId = Gildas, PosX = 284 << 16, PosY = 96 << 16, PosZ = 0 };
-                Assert.True(LootDrop.SpawnContents(context, GameState.Instance, container));
+                if (throughDestroyEntity)
+                {
+                    run.Arc.Proxy.DestroyEntity(container, -1); // E20.e0c phase C: the production path, the first act of the destruction.
+                }
+                else
+                {
+                    Assert.True(LootDrop.SpawnContents(context, GameState.Instance, container));
+                }
+
                 run.Drop = context.SpawnedEntities.Last(e => e.SpriteType == Gildas + 0x1E);
             }
         });
@@ -598,6 +606,32 @@ public sealed class PickupAiDropWorldTests : IDisposable
     public void W9_TheObjectOfALowerSlot_RunsItsProgramOneTickAfterTheBirth_AsTheBinary_ItsFirstC255OneTickLater_OnTheGroundFlag0(int ticksPerFrame)
     {
         var born = BornByAnotherEntity("w9-lower-" + ticksPerFrame, childLower: true, ticksPerFrame);
+
+        Assert.True(born.ChildSlot < born.CarrierSlot, "the object has a lower slot than the entity that made it");
+        Assert.Equal((born.Birth + 1, born.Birth + 2), (born.FirstA, born.FirstC));
+        Assert.Equal((0, FirstRise, 0, 600, true), (born.FirstIn.OnGround, born.FirstIn.Bounce, born.FirstIn.State, born.FirstIn.Life, born.FirstIn.ForceZ is > 0 and <= (int)FirstRise));
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void D3b_TheObjectDroppedByDestroyEntityOfAHigherSlot_HasTheFirstTicksOfW9_TheOneTickGapOfQ_E0C_8(int ticksPerFrame)
+    {
+        var born = BornByAnotherEntity("d3b-higher-" + ticksPerFrame, childLower: false, ticksPerFrame, throughDestroyEntity: true);
+
+        Assert.True(born.ChildSlot > born.CarrierSlot, "the object has a higher slot than the entity that made it");
+        Assert.Equal((born.Birth + 1, born.Birth + 2), (born.FirstA, born.FirstC));
+        Assert.Equal((0, FirstRise, 0, 600, true), (born.FirstIn.OnGround, born.FirstIn.Bounce, born.FirstIn.State, born.FirstIn.Life, born.FirstIn.ForceZ is > 0 and <= (int)FirstRise));
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void D3b_TheObjectDroppedByDestroyEntityOfALowerSlot_HasTheFirstTicksOfW9_AsTheBinary(int ticksPerFrame)
+    {
+        var born = BornByAnotherEntity("d3b-lower-" + ticksPerFrame, childLower: true, ticksPerFrame, throughDestroyEntity: true);
 
         Assert.True(born.ChildSlot < born.CarrierSlot, "the object has a lower slot than the entity that made it");
         Assert.Equal((born.Birth + 1, born.Birth + 2), (born.FirstA, born.FirstC));

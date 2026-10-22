@@ -1,7 +1,9 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Alundra.Ai.Objects;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
@@ -15,8 +17,8 @@ namespace Alundra.Tests.Rendering.Effects;
 
 /// <summary>
 /// E14.a1b T3 (docs/plan-e14-ia-native.md section 1.3b, D-E14-9, ADR-0060): <c>DestroyEntity(e, fx)</c> (<c>0x8003A59C</c>), in the order of the binary, for ALL its callers: the status 4, <c>EventTrigger = -1</c>, and the break effect
-/// (<c>fx = -1</c> reads the byte of the sprite header, the slope destruction passes 6) as a mode 1 effect attached to the frozen anchor of the entity. The loot (E20.e0), the release of the attached effect (E20.e) and the clearing
-/// of the carrier (E20.g) are named stubs. Shares the generator's collection: the destruction must draw no number.
+/// (<c>fx = -1</c> reads the byte of the sprite header, the slope destruction passes 6) as a mode 1 effect attached to the frozen anchor of the entity. The release of the attached effect (E20.e) and the clearing
+/// of the carrier (E20.g) are named stubs; the loot (E20.e0c, phase C) is its first act. Shares the generator's collection: the destruction must draw no number.
 /// </summary>
 [Collection(RandomStaticStateCollection.Name)]
 public sealed class DestroyEntityBreakEffectTests : IDisposable
@@ -203,21 +205,130 @@ public sealed class DestroyEntityBreakEffectTests : IDisposable
         Assert.Equal(-1, victim.EventTrigger);
     }
 
-    [Fact]
-    public void TheDestruction_DrawsNoNumber_AndCreatesNoEntity_EvenWithContents()
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // E20.e0c T3 (docs/plan-e20-heros.md section 1.26, phase C, (d1) and (d3)): the loot is the first act of DestroyEntity(e, fx) (0x80032B90 at 0x8003A59C); the light destruction (0x8003A774) drops nothing.
+    // An object appears only in an initialised world with the catalogue: these tests run in the REAL world of the map 14 (real prefabs), emptied of every entity but the hero.
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    private const int Gildas = 0x45;
+    private const int TypeOfItemZero = 0x1E;
+    private const int MagicExtract = 0x26;
+
+    private static List<EntityScriptProxy> Born(PickupDropRun run, HashSet<EntityScriptProxy> before)
+        => run.Context.SpawnedEntities.Where(e => !before.Contains(e)).ToList();
+
+    private static HashSet<EntityScriptProxy> Snapshot(PickupDropRun run)
     {
-        var world = World();
+        run.Sounds.Requests.Clear();
+        return new HashSet<EntityScriptProxy>(run.Context.SpawnedEntities, ReferenceEqualityComparer.Instance);
+    }
+
+    [Fact]
+    public void TheDestruction_DropsTheContents_AtTheEntity_DrawsNoNumber_AndPlaysTheSound84_WhileAContentOfZeroDropsNothing()
+    {
+        using var run = PickupDropRun.OnMap14("destroy-contents");
+        var world = run.Arc.Proxy;
         GameRandom.RandomSeed = 0x12345678;
         var victim = Victim();
-        victim.ContentsItemId = 69;
+        victim.PosZ = 6 << 20; // above the floor of the map at this place, so that the apparition does not lift the object.
+        victim.ContentsItemId = Gildas;
+        var before = Snapshot(run);
 
         world.DestroyEntity(victim, -1);
-        RunFrame(world, 2);
 
+        var drop = Assert.Single(Born(run, before));
+        Assert.Equal(Gildas + TypeOfItemZero, drop.SpriteType);
+        Assert.Equal((victim.PosX, victim.PosY, unchecked(victim.PosZ + 1)), (drop.PosX, drop.PosY, drop.PosZ)); // at the entity, one raw unit up (D-E0A-1).
+        Assert.Equal(1u, PickupAi.ReadWord274(drop));
+        Assert.Equal(0, drop.ItemState);
+        Assert.Equal(600, drop.DelayOrAngleOrEntityId);
+        Assert.Equal(84, run.Sounds.Requests[^1]);
         Assert.Equal(0x12345678UL, GameRandom.RandomSeed);
-        Assert.Empty(((IEntityWorldContext)world).SpawnedEntities);
-        Assert.Equal(69u, victim.ContentsItemId);
-        Assert.Single(Slots(world));
+        Assert.Equal((uint)Gildas, victim.ContentsItemId);
+        Assert.Equal(EntityStatus.FlagToDestroy, victim.Status);
+        Assert.Equal(-1, victim.EventTrigger);
+
+        // The pair: the same destruction with nothing to drop drops nothing and plays nothing.
+        var empty = Victim();
+        empty.ContentsItemId = 0;
+        before = Snapshot(run);
+
+        world.DestroyEntity(empty, -1);
+
+        Assert.Empty(Born(run, before));
+        Assert.Empty(run.Sounds.Requests);
+        Assert.Equal(0x12345678UL, GameRandom.RandomSeed);
+        Assert.Equal(EntityStatus.FlagToDestroy, empty.Status);
+    }
+
+    [Fact]
+    public void TheDestruction_DropsTheObjectsOfTheMagic_OnlyWhenTheHeroHasMagic()
+    {
+        using var run = PickupDropRun.OnMap14("destroy-veto");
+        var world = run.Arc.Proxy;
+        var victim = Victim();
+        victim.ContentsItemId = MagicExtract;
+
+        GameState.Instance.PlayerStats.MpMax = 0;
+        var before = Snapshot(run);
+        world.DestroyEntity(victim, -1);
+        Assert.Empty(Born(run, before));
+        Assert.Empty(run.Sounds.Requests);
+
+        var other = Victim();
+        other.ContentsItemId = MagicExtract;
+        GameState.Instance.PlayerStats.MpMax = 5;
+        before = Snapshot(run);
+        world.DestroyEntity(other, -1);
+        var drop = Assert.Single(Born(run, before));
+        Assert.Equal(MagicExtract + TypeOfItemZero, drop.SpriteType);
+        Assert.Equal(84, run.Sounds.Requests[^1]);
+    }
+
+    [Fact]
+    public void TheDrop_IsTheFirstAct_TheEntityStillHasItsStatusAndItsLetterWhenTheObjectAppears()
+    {
+        using var run = PickupDropRun.OnMap14("destroy-order");
+        var world = run.Arc.Proxy;
+        var victim = Victim();
+        victim.ContentsItemId = Gildas;
+        (EntityStatus Status, int Letter)? seen = null;
+        WorldProxy.CreationFaultHookForTests = (_, _) => seen ??= (victim.Status, victim.EventTrigger);
+        try
+        {
+            world.DestroyEntity(victim, -1);
+        }
+        finally
+        {
+            WorldProxy.CreationFaultHookForTests = null;
+        }
+
+        Assert.Equal((EntityStatus.Normal, ScriptHelper.ProgramEDeactivate), seen);
+        Assert.Equal(EntityStatus.FlagToDestroy, victim.Status);
+    }
+
+    [Fact]
+    public void TheLightDestruction_DropsNothing_WhileTheTwoArgumentDestructionOfTheSameContentsDropsIt()
+    {
+        using var run = PickupDropRun.OnMap14("destroy-light");
+        var world = run.Arc.Proxy;
+        GameRandom.RandomSeed = 0x12345678;
+        var light = Victim();
+        light.ContentsItemId = Gildas;
+        var before = Snapshot(run);
+
+        world.DestroyEntity(light);
+
+        Assert.Empty(Born(run, before));
+        Assert.Empty(run.Sounds.Requests);
+        Assert.Equal(EntityStatus.FlagToDestroy, light.Status);
+
+        // The pair: the same contents through the two-argument destruction.
+        var full = Victim();
+        full.ContentsItemId = Gildas;
+        world.DestroyEntity(full, -1);
+        Assert.Single(Born(run, before));
+        Assert.Equal(0x12345678UL, GameRandom.RandomSeed);
     }
 
     [Fact]
