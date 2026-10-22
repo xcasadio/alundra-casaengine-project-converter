@@ -4179,7 +4179,13 @@ restructuration. Preuves : `docs/plan-e19-d5b-annexe/` (rapport, critique indép
   la recette se fait sur l'ascenseur de la carte 22. D5b est à détailler sur cette base (M1 à M4 et le plafond des porteurs, étendus
   à tous les passagers), puis à relire.
 
-##### 1.2h.3.2b D5b — Tous les passagers suivent leur porteur (détaillée le 2026-10-22, révision 0 ; à relire par un `plan-verifier` frais) ⏳
+##### 1.2h.3.2b D5b — Tous les passagers suivent leur porteur (détaillée le 2026-10-22 ; révision 0 relue : REVISE ; révision 1 du 2026-10-22, à relire par un `plan-verifier` frais) ⏳
+
+**Révision 1 (2026-10-22).** La relecture de la révision 0 a rendu REVISE sur trois points, corrigés ici :
+- M4 n'avait aucun témoin rouge : RIDE-M4 est ajouté (T1, T2, T8).
+- Les témoins n'étaient pas rattachés aux trois chemins de T6. Chaque chemin a maintenant les siens, et l'affirmation qui tient si T6C
+  s'arrête est écrite, avec O-E19-81 pour propriétaire du chemin C.
+- La note promise au plan de g1a manquait. Elle est portée au §1.24.1 du plan d'E20.
 
 **Provenance.** Découverte en lecture seule du 2026-10-22 au HEAD `1d0b6953` (branche `chantier/theme1-porter-plateforme`), sur la
 base de l'étude du 2026-10-17 (§1.2h.3.2a, `docs/plan-e19-d5b-annexe/`) et des réponses de l'auteur (D-E19-117, D-E19-124). Annexe :
@@ -4252,7 +4258,8 @@ retomber (aujourd'hui il traverse et finit au fond du creux). La double force XY
 - **D-D5B-8** — Hors D5b : le statut 4 dans la liste des collidables (Q-D5B-6 reste ouverte) ; D5c ; le chemin des entités de carte vers le
   modèle des marqués (E19.h2).
 - **D-D5B-9** — Ordre : après f6a, avant g1a. g1a écrit alors son (w5) (« plateforme mouvante, modèle UH14 ») en phase 0, l'épingle d'UH-14
-  étant réépinglée par T5 ; le plan de g1a en porte la note.
+  étant réépinglée par T5 ; le plan de g1a en porte la note (`docs/plan-e20-heros.md` §1.24.1, (w5), ajoutée le 2026-10-22 avec cette
+  révision).
 - **D-D5B-10** — Recette sur la carte 22 (D-E19-124) : préréglage `elevator-m22` (carte 22, case (46, 8), niveau 2), au sud du levier de
   droite ; il faut frapper le levier, descendre dans le creux, sauter sur la plateforme et attendre. Un départ déjà sur la plateforme est
   impossible : l'état du levier (drapeaux temporaires `T1`, `T3`) ne se sauvegarde pas.
@@ -4261,6 +4268,10 @@ retomber (aujourd'hui il traverse et finit au fond du creux). La double force XY
 emporte aussi le joueur à cheval entre le sol et son bord (l'original) ; les deux coffres de la 344, posés sur de petites plateformes qui
 bougent de 1 px, et la pierre de la 444, sur une trappe qui descend, suivent leur plateforme au lieu de tomber (conséquence de « tous les
 passagers »).
+
+**Ce que D5b affirme si T6C s'arrête.** Le héros et les passagers des chemins A (entités à contrôleur : caisses, tonneaux, PNJ de la
+carte) et B (entités marquées `HasLogicalZ` : objets lâchés, lancés, projectiles) suivent leur porteur. Le chemin C (les 12 préfabs sans
+contrôleur) passe alors à O-E19-81, dont E19.h2 est propriétaire (le modèle des entités de carte), et l'acceptation se lit sans C.
 
 **Périmètre.** `Alundra/Physics/ScriptedMotion.cs`, `Alundra/Physics/EntitySupport.cs`, `Alundra/Entities/EntityScriptProxy.cs`,
 `Alundra/Maps/WorldProxy.cs`, `Alundra/Maps/IScriptHost.cs` (le membre par défaut) ; `Alundra/SaveGames/TestSaves.cs` (le préréglage) ;
@@ -4289,23 +4300,38 @@ un patch).
     - son `Rebuild` calcule `RidingEntity` des non-héros, **héros exclu**. Le premier essai de la découverte, héros compris, a fait
       passer UH-10, UH-15 et UH-17 au rouge ; l'autre voie est que le test appelle lui-même `EntitySupport.UpdateRidingEntities`.
     - Le montage appelle `EndPhysicsTick` en fin d'image, et les pilotes autonomes appellent `TickPhysicsOnce`.
-  - Témoins, avec les valeurs du binaire rejoué (`vec_d5b_out.txt`, §7 du rapport) :
-    - UH-16, réservé par D5a et absent, écrit en phase 0 ;
-    - UH-19, le héros qui atterrit sur une plateforme qui monte ;
-    - E22 (montée), DESC (descente) ;
-    - CRATE (caisse avant ou après la plateforme dans l'ordre des cases), NPC (drapeaux `0x03A180`) ;
-    - PILE_Z ; PILE_XY à la forme corrigée ;
-    - le quai (héros à cheval) ;
-    - un passager à impulsion ; un passager au repos sur une plateforme sans gravité (contact 0, `IsOnGround` 1) ;
-    - le gel : une plateforme dont la force est non nulle, avec un passager, ne reste pas immobile ;
-    - l'arc A-D5b-22 sur le script de manette du rapport (§6) et un arc de pile (tonneau, `P14`).
+  - Témoins, avec les valeurs du binaire rejoué (`vec_d5b_out.txt`, §7 du rapport), rattachés à la tâche qui les fait passer au vert :
+    - **Héros** (T3 à T5) :
+      - UH-16, réservé par D5a et absent, écrit en phase 0, en montée et en descente ;
+      - UH-19, le héros qui atterrit sur une plateforme qui monte ;
+      - E22 (montée), DESC (descente) ;
+      - le quai (héros à cheval) ;
+      - le gel : une plateforme dont la force est non nulle, avec un passager, ne reste pas immobile ;
+      - l'arc A-D5b-22, sur le script de manette du rapport (§6).
+    - **M4** (T2) : RIDE-M4.
+      - Un passager non héros est posé sur un porteur. On joue la passe des compteurs (`RunCountersPass`, par le chemin du monde ou par un
+        crochet de test que T1 ajoute si la méthode n'est pas atteignable), puis on lit `RidingEntity` avant tout recalcul.
+      - Attendu : nul, comme le binaire, qui efface `+0x12C` en `0x800389DC`. Au HEAD, la valeur du tick précédent reste.
+      - Variante accolée : le porteur est retiré entre deux ticks ; aucune référence périmée n'est lue.
+    - **Chemin A, entités à contrôleur** (T6A) :
+      - CRATE-A : caisse avant ou après la plateforme dans l'ordre des cases, en montée et en descente ;
+      - NPC-A : drapeaux `0x03A180` ;
+      - PILE_Z-A ; PILE_XY-A à la forme corrigée ;
+      - le passager à impulsion ; le passager au repos sur une plateforme sans gravité (contact 0, `IsOnGround` 1) ;
+      - l'arc de pile (tonneau, `P14`).
+    - **Chemin B, entités marquées `HasLogicalZ`** (T6B) :
+      - MARKED-B : le tonneau marqué `HasLogicalZ` (`P13` du rapport) sur la plateforme qui monte, puis qui descend ;
+      - PILE_Z-B : un objet marqué posé sur une caisse posée sur la plateforme.
+    - **Chemin C, sans contrôleur** (T6C) : PREFAB-C, une des 12 préfabs sans contrôleur posée sur une plateforme qui monte. T0 nomme la
+      préfab et le montage qui la fait jouer par `EntityScriptProxy.cs:1092-1149` (lignes du HEAD de départ). Si aucun montage ne la met
+      en jeu, PREFAB-C n'est pas écrit, T6C s'arrête, et D5b affirme la forme écrite plus haut (O-E19-81).
   - Acceptation : tous les témoins sont rouges au HEAD, nommés dans la « liste rouge » de l'annexe, et les gardes restent vertes. Les
     gardes sont listées au §4 du rapport, dont `HeroObjectTopsTests` (UH-6, UH-10, UH-11, UH-15, UH-17, UH-18, SJ-12, SJ-13),
     `AbsoluteZWritesTests.cs:74-104`, les tests de support de `NpcCharacterControllerMoverTests.cs` et `TickStructureTests.cs` (A8).
   - Arrêt : un témoin vert au HEAD sans l'avoir prévu.
 - ⏳ **T2 — M4.**
   - `RunCountersPass` efface `RidingEntity`, et le commentaire périmé est corrigé.
-  - Acceptation : la suite est inchangée, A8 inchangé.
+  - Acceptation : RIDE-M4 passe au vert ; le reste de la suite est inchangé, A8 compris.
 - ⏳ **T3 — M1, la récursion, la règle d'entrée et M3 pour le héros** (D-D5B-2, -3, -5).
   - Acceptation : UH-16 (montée) et E22 sont verts. L'arc A-D5b-22 a un écart nul de l'image 12 à l'image 76. UH-18 est inchangé.
 - ⏳ **T4 — M2 et le plafond des porteurs**, dans le même commit (D-D5B-1, -4), sur les quatre sites verticaux.
@@ -4318,9 +4344,10 @@ un patch).
 - ⏳ **T6 — Passagers non héros**, un commit par chemin : A le contrôleur, B les marqués, C les sans-contrôleur.
   - Pour chaque chemin : la copie de la force, un nouvel essai après le déplacement de la cible, le plafond, `IsOnGround` en passe de fin,
     et le XY transitif, une seule fois par porteur de la chaîne (D-D5B-7).
-  - Acceptation : CRATE, NPC, PILE_Z, PILE_XY corrigée, le passager à impulsion et le passager au repos sont verts.
-  - Le chemin C n'a pas été prototypé. Si aucun témoin ne peut le mettre en jeu par un montage, T6C le dit et s'arrête : pas de code sans
-    témoin rouge.
+  - Acceptation par commit : T6A rend verts les témoins du chemin A, T6B ceux du chemin B, T6C PREFAB-C. Les témoins d'un chemin
+    restent rouges tant que son commit n'est pas fait.
+  - Le chemin C n'a pas été prototypé. Sans PREFAB-C (T0 ou T1), T6C n'écrit pas de code et s'arrête. D5b affirme alors la forme
+    écrite plus haut, sans C, et O-E19-81 garde le chemin C (propriétaire : E19.h2).
 - ⏳ **T7 — Préréglage, arc et documentation.**
   - Le préréglage `elevator-m22` (`new Preset("elevator-m22", "test-elevator-m22", 22, 46, 8, 2, [], [], [], [])`), le test des noms, et
     `docs/test-saves.md`.
@@ -4331,14 +4358,15 @@ un patch).
 - ⏳ **T8 — Mutations et suites.**
   - Une mutation par mécanisme, réelle, par script, chacune annulée après (jamais simulée dans un test). Chacune doit faire passer au rouge
     au moins le témoin indiqué :
-    - copie de la force retirée → UH-16 (montée) ;
+    - copie de la force retirée du chemin du héros → UH-16 (montée) ; du chemin A → CRATE-A ; du chemin B → MARKED-B ; du chemin C →
+      PREFAB-C (s'il existe) ;
     - récursion retirée → PILE_Z ;
     - « déplacer d'abord » retiré → DESC ;
     - plafond retiré → UH-19 ;
     - plafond sans « déplacer d'abord » → le gel ;
     - passe de fin retirée → `IsOnGround` ;
     - règle d'entrée retirée → le quai ;
-    - M4 retiré → le `RidingEntity` périmé ;
+    - M4 retiré → RIDE-M4 ;
     - mémo XY retiré → PILE_XY ;
     - `LastTickDelta` remis → UH-14.
   - Suites : `Alundra.Tests` en Release avec la copie neutralisée, puis en Debug en dernier, zéro échec. Le `cmp` de la DLL. La garde des
@@ -4346,7 +4374,8 @@ un patch).
 - ⏳ **T9 — Verifiers frais**, lancés par la session principale : un sur la tranche entière, un sur les mutations.
 
 ##### Acceptation
-- La liste rouge de T1 est rouge au HEAD de départ et verte à la fin, et les gardes restent vertes de bout en bout.
+- La liste rouge de T1 est rouge au HEAD de départ et verte à la fin, chaque témoin au vert par la tâche qui le porte. Les gardes
+  restent vertes de bout en bout. Si T6C s'est arrêté, l'acceptation se lit sans PREFAB-C et O-E19-81 est ouvert.
 - UH-14 est la seule épingle existante qui bouge, réépinglée à la valeur du binaire.
 - Les quatre traces du héros et la trace d'intro sont identiques à l'octet.
 - L'arc A-D5b-22 a un écart pied − dessus nul à chaque image de la montée.
@@ -13226,6 +13255,7 @@ Réservé aux mesures faites en exécutant les tranches.
 | O-E19-78 | **Tranché le 2026-10-08 (D-E19-103 : à corriger, tranche à part) ; planifié en E19.u (§1.2y) ; fait et CONFIRMED le 2026-10-08 (`cd0f3f3`, ADR-0050), recette U-4 en attente.** **Ordre d'image du déclencheur de l'inventaire** (contre-vérification d'O-E19-77, 2026-10-07, `docs/plan-e19-pad-age-annexe/o77/verify/`) : dans le binaire, le déclencheur (`Update(0)`, `0x8002BCA4`) tourne après `RenderScene(k)` (où la boîte de texte se ferme, `0x8004501C`, et efface les bits 0x18 de `0x800DC4B8` que le déclencheur teste à `0x8002BC70`) et après les événements de carte ; dans le portage, il tourne dans la première boucle de ticks, avant la passe du dialogue, l'écran de sauvegarde et les événements de carte du même tick. **Mesuré** : autour d'un inventaire ouvert à P et fermé à P+19, le binaire saute les événements de carte dans `Update(P+1)` à `Update(P+37)`, le portage aux ticks P à P+36 : un tick trop tôt aux deux bouts. **Non mesuré** (hypothèses) : un Start donné à l'échantillon où une boîte se ferme ouvre l'inventaire dans le binaire, pas dans le portage ; un événement de carte qui ouvre une boîte au même tick que le déclencheur l'emporte dans le binaire, l'inventaire dans le portage. Corriger demanderait de déplacer le déclencheur après la passe du dialogue et les événements de carte (épingles de l'inventaire à reprendre), comme E19.f3c l'a fait pour l'écran de sauvegarde. | Auteur, puis tranche à part |
 | O-E19-79 | **Clos le 2026-10-09 (E19.m8 M8-d) : prémisse fausse.** `0x43 [0x81]` (240 `@529`, 292 `@423`) pose le héros comme entité logique avant `0x1A [80]` ; le gestionnaire de `0x1A` agit sur l'entité logique (`0x8003D7B4`, relue en `0x80042284`) : l'animation 80 est celle du héros (94 jeux, 80 Hold, 81 Loop), puis `0x43 [0]` ou `0x43 [1]` rend le contexte. Aucune lecture hors table. Texte d'origine, faux : **Animation 80 sur deux préfabs de 19 et 15 jeux** (E19.m8 M8-b, 2026-10-08, hors chaîne) : 240 `@535` (Giles, préfab `9b582582`) et 292 `@429` (Nestus, préfab `bbeba3db`) font `1A [80]` puis attendent par `0x1C`. Le binaire range `v[1]` sans contrôle (`0x8003D7B4`) et `UpdateAnimation` (`0x80038AB4`) indexe la table des jeux sans borne : l'original lit 61 et 65 entrées après la fin de la table, et ce qu'il montre alors n'est pas établi (pour les Flammes, une seule entrée après la table, E19.c2 l'a établi : les images vers le bas de l'animation 0). La DLL applique la même règle qu'aux Flammes (l'animation qui joue repart de son image 0). Question de fait à mesurer plus tard (lecture du binaire et de la mémoire des préfabs), ou écart à consigner si la lecture désigne des données sans sens (défaut de l'original). | à placer |
 | O-E19-80 | **Pose de saut figée possible à une arrivée hors `LoadingMap`** (vérification d'E19.v2, P4, 2026-10-09, non mesuré). Une arrivée par `0x52`/`0x53` recopie l'animation du héros : Idle ou Moving passent par la queue commune, qui lit le contact au sol sans la garde de terrain de V-R4. À la première image d'un pion neuf (contrôleur pas encore au sol), elle donnerait `0x2C` ou `0x2D`, que l'image suivante corrige, sauf si un verrou gèle `MovePlayer`, comme dans le bug du début de partie. Il en va de même d'une arrivée posée sur une entité. Les arrivées `0x53` de la chaîne vers la 476, la 478 et la 416 sont mesurées au sol ou en `0xD`. À mesurer avec le harnais du vrai jeu sur une arrivée `0x52`/`0x53` suivie d'un verrou, puis à corriger par la même règle du plancher si le cas existe. | **E20.a** (2026-10-09 : le passage du héros par tick change ses premières images ; `docs/plan-e20-heros.md` §0.3) |
+| O-E19-81 | (2026-10-22, D5b révision 1) Le chemin sans contrôleur des passagers (les 12 préfabs, `EntityScriptProxy.cs:1092-1149` au HEAD `1d0b6953`) : si T6C de D5b s'arrête faute de témoin, ces préfabs ne suivent pas leur porteur | E19.h2 (le modèle des entités de carte) ; ouvert seulement si T6C s'arrête |
 | Q-E19-SM1 | (2026-10-17) Le découpage E19.sm0 à sm10 (§1.4) devient-il la suite d'E19 ? Quand : après la restructuration de la DLL (règle du chantier), ou avant, en suspendant le chantier ? Et qui porte les ombres de `0xAC` (32 sites ; rien ne dessine d'ombre aujourd'hui) ? **Réponse de l'auteur (2026-10-22)** : « après la restructuration de la DLL » : D-E19-108. **Reste sans réponse** : qui porte les ombres de `0xAC` (32 sites ; aujourd'hui ni la DLL ni le moteur ne dessinent d'ombre) ? Proposé : le moteur dessine l'ombre, la DLL lui pousse l'état, sur le modèle des fonds (E9.b). **Réponse de l'auteur (2026-10-22, 2e tour)** : la proposition : le moteur dessine les ombres de `0xAC`, la DLL lui pousse l'état (D-E19-121, ADR-0078). | Tranché le 2026-10-22 (D-E19-108, D-E19-121) |
 | Q-sm-1 | (2026-10-17) `0x97` ajoute des PM (binaire), alors que la décompilation et la table disent « argent » : le porter comme le binaire et l'acter par ADR ? Recommandé oui. **Précisé le 2026-10-22 (sm4)** : dans les 24 salles de sauvegarde, (A, défaut) la magie remonte jusqu'à 4 pastilles et l'argent ne bouge pas ; (B, la décompilation) l'argent baisse de 50 à chaque passage ; (C) laisser sauté : la magie ne revient jamais **Réponse de l'auteur (2026-10-22)** : « oui A » : D-E19-109. | Tranché le 2026-10-22 (D-E19-109) |
 | Q-sm-2 | (2026-10-17) `0x96` : suivre le binaire à la lettre (montant = octet 1, octet 2 ignoré) ? Aucune différence visible tant que les PV max du héros restent inférieurs ou égaux à 51 (rapport, §6) **Réponse de l'auteur (2026-10-22)** : « suivre le binaire à la lettre » : D-E19-110. | Tranché le 2026-10-22 (D-E19-110) |
