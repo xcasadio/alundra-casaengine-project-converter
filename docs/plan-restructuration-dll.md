@@ -97,6 +97,8 @@ Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructure
   pour MGUI) » : R7, R8 et R6b se détaillent et s'exécutent dans cet ordre, en mode AUTO (chacune relue puis vérifiée par des agents
   neufs), puis la fusion locale du §15 ; rien n'est poussé. R6b passe en dernier : ses numéros se recalculent quand plus rien ne bouge.
   Lecture de D-R-20 pour R6b : P-R6b-1 (§14).
+- **Recette de l'auteur, 2026-10-22** : « La recette est ok » : la recette courte (nouvelle partie jusqu'au premier écran jouable, F5,
+  F6, F9) est validée pour l'ensemble du chantier, R0 à R8 et la fusion.
 - Règle du moteur (D-R-2), notée aussi en mémoire : « le moteur, quand il crée les objets script, ne doit chercher que dans la DLL ».
 
 ## 1. Faits établis (découverte du 2026-10-16, lecture seule)
