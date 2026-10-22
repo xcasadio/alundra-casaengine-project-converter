@@ -63,14 +63,15 @@ Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructure
 - **D-R-15** (2026-10-22, réponse à Q-R-7) — La tranche **R7** est validée : `check_names.py --rules`, outil seul, après R5, contrôle
   l'arbre vivant de la DLL et des tests contre les règles de l'ADR-0075, sans la table, et devient la garde des tranches suivantes.
 - Q-R-4 et Q-R-6 : l'auteur a répondu « corriger » le 2026-10-22 sans dire quoi : précisions demandées (§11). Réponses au 2e tour :
-  D-R-17 et D-R-18.
+  D-R-16 à D-R-18.
 - **D-R-16** (2026-10-22, 2e tour, Q-R-3b (a)) — Les types partagés déclarés dans un fichier de test (les 5 collections xUnit, les hôtes
   d'aides) vont **chacun dans son propre fichier**, dans le dossier de leur fichier d'origine, pas dans `Support/` : la coupe de R2,
   vers le domaine du fichier d'origine. Restent (b), le nom du dossier dédié, et (c), les harnais de traces (Q-R-3b).
 - **D-R-17** (2026-10-22, 2e tour, Q-R-4 « 1 ») — Le choix (1) est corrigé : `docs/intro-roadmap.md` n'est plus traité comme vivant
   mais comme un document historique ; les corrections que R6 y a faites sont annulées, et R5 (T22) ne touche plus ses lignes 26 et 63.
   Les choix (2) à (5) de R6 sont validés. Lecture de la session (l'auteur a répondu « 1 » à « lesquels corriger ») : un document
-  vivant se corrige, l'autre choix est historique.
+  vivant se corrige, l'autre choix est historique. **Sous réserve de Q-R-4b** (le « comment » n'a pas de réponse) : rien n'est annulé
+  avant la confirmation ; l'annulation serait la tranche R6b (§3).
 - **D-R-18** (2026-10-22, 2e tour, Q-R-6 « c ») — Le choix (c) est corrigé : les dossiers temporaires des anciennes exécutions de tests,
   nommés par les anciens préfixes, sont effacés à la fin de R5 : recensés par chemin exact, envoyés à la Corbeille un par un, chacun
   vérifié dans la Corbeille (un dossier que la Corbeille refuse est un arrêt et une question, jamais une suppression définitive). Les
@@ -182,10 +183,12 @@ La lecture de la règle (3) (types secondaires publics, types internes, type pri
 | R5 | Tests en miroir | `Alundra.Tests` dans la même arborescence, sans préfixe | R4 (peut suivre R2 et R3 domaine par domaine si la relecture de R1 le préfère) |
 | R6 | Documentation vivante | `docs/formats/`, guides, `stick-probe.md`, scripts de `research/` | R4 |
 | R7 | Garde des règles (D-R-15, 2026-10-22) | `check_names.py --rules` : l'arbre vivant de la DLL et des tests contrôlé contre les règles de l'ADR-0075, sans la table | R5 |
+| R6b | Reprise de R6 (D-R-17, **si Q-R-4b la confirme**) | `docs/intro-roadmap.md` redevient historique : les chemins et noms corrigés par R6 (`542e62c9`) reviennent aux anciens | R5 |
 | R8 | Anciens noms des commentaires (D-R-14, 2026-10-22) | les quelque 300 anciens noms des commentaires de la DLL et des tests corrigés, mécaniquement, commentaires seulement | R5, R7 |
 
 **Règles du programme.**
-- Aucune autre tranche (E20, E14, E19) pendant le chantier : il touche tous les fichiers de la DLL et des tests.
+- Aucune autre tranche (E20, E14, E19) pendant le chantier : il touche tous les fichiers de la DLL et des tests. Depuis le 2026-10-22,
+  le chantier va jusqu'à R8 (R7 et R8 sont dans l'enveloppe, D-R-14, D-R-15 ; R6b si Q-R-4b la confirme).
 - Chaque tranche : suites complètes `Alundra.Tests` en Release (copie neutralisée) et en Debug, zéro échec ; aucun test ne change de
   valeur attendue (seuls les noms, chemins et `using` bougent, plus les valeurs écrites par R0 et R4) ; garde des traces ; `cmp` de la DLL
   Debug ; le contrôle des collisions vert ; une recette courte de l'auteur en jeu (nouvelle partie jusqu'au premier écran jouable, F5, F6,
@@ -1260,7 +1263,7 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
   (c) **point 3** : « seulement les 26 scénarios » comprend-il les harnais de traces, que l'option de la question y mettait aussi ?
   **Réponse de l'auteur (2026-10-22, 2e tour)** : « chacun dans son propre fichier » : (a) tranché (D-R-16). **(b) et (c) restent sans
   réponse.**
-- **Q-R-4** — **Tranchée le 2026-10-22 (D-R-17)** : « 1 ». Question d'origine (2026-10-17, choix faits en mode autonome pour R6, réversibles) — Valider ou corriger : `docs/intro-roadmap.md` traité comme
+- **Q-R-4** — **Tranchée sous réserve de Q-R-4b** (2026-10-22, « 1 », D-R-17). Question d'origine (2026-10-17, choix faits en mode autonome pour R6, réversibles) — Valider ou corriger : `docs/intro-roadmap.md` traité comme
   vivant (ses chemins et noms corrigés) ; `docs/demarrage-nouvelle-partie.md` (daté du 2026-08-08) gardé tel quel ; les numéros de ligne
   cités dans les docs non recalculés (seuls le chemin et le nom changent) ; `docs/editeur-couverture-dll.md:64-66` corrigé (la ligne
   « Script » existe de nouveau) ; le commentaire `PlayerSetupWriter.cs:27` pointé vers la décompilation.
@@ -1268,6 +1271,10 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
   `docs/intro-roadmap.md` traité comme vivant ; (2) `docs/demarrage-nouvelle-partie.md` gardé tel quel ; (3) les numéros de ligne des
   docs non recalculés ; (4) la correction de `docs/editeur-couverture-dll.md:64-66` ; (5) le commentaire `PlayerSetupWriter.cs:27`.
   R6 est faite : la correction sera une petite reprise de R6.
+- **Q-R-4b** (2026-10-22, ouverte) — Ta réponse « 1 » à Q-R-4 : lecture proposée : `docs/intro-roadmap.md` (la feuille de route du
+  2026-08-23 pour l'intro, chantier clos) redevient un **document historique** : les chemins et noms que R6 y a corrigés (commit
+  `542e62c9`, 9 lignes) reviennent aux anciens, et R5 ne touche plus ses lignes 26 et 63 (tranche R6b). Ou voulais-tu autre chose pour
+  ce fichier (par exemple corriger aussi ses numéros de ligne) ? Recommandé : la lecture proposée.
 - **Q-R-5** — **Tranchée le 2026-10-22 (D-R-14)** : « corriger », dans une tranche R8. Question d'origine (2026-10-17) — Les renommages de R3 et R4 n'ont pas touché les **commentaires** du code : environ 300 anciens noms
   (`AlundraWorldProxy`, `AlundraEventProgramRunner`…) restent dans les commentaires de la DLL (≈ 60 fichiers) et des tests (≈ 90 fichiers),
   plus quelques chemins `Alundra/Scripts/…` (par exemple `HeroController.cs:42`, `AlundraScreenFadeCameraWiringTests.cs:24,29,96`). Les
