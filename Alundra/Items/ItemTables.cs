@@ -20,8 +20,10 @@ namespace Alundra.Items;
 /// <see cref="ItemsProperties"/>, so the ported code indexes it exactly as the original does,
 /// <c>[itemId * 5 + column]</c>.</item>
 /// <item><c>item-drop-properties.json</c> - <c>g_itemDropProperties</c> (StaticVariables.cs:841), 98
-/// records. Only <c>Field3</c> is read by anything ported so far, the New Game's unlock loop
-/// (GameInitializer.cs:402), so only it is kept, as <see cref="DropField3"/>.</item>
+/// records. <c>Field3</c> is read by the New Game's unlock loop (GameInitializer.cs:402), kept as
+/// <see cref="DropField3"/>; E20.e0c reads the two columns before it, <c>Field1</c> (<see cref="DropField1"/>, the
+/// 600-tick rule of the dropped objects) and <c>SoundSfxIndex</c> (<see cref="DropSoundSfxIndex"/>, the pickup
+/// sound).</item>
 /// <item><c>item-icon-index.json</c> - each item that has a portrait, mapped to the asset id of the
 /// <c>.sprite</c> the converter already emitted for it (88 items). Read through
 /// <see cref="TryGetIconAssetId"/>.</item>
@@ -52,12 +54,17 @@ public sealed class ItemTables
     /// (GameInitializer.cs:408, <c>0x62</c>).</summary>
     public const int DropRecordCount = 98;
 
-    // The republished drop record holds four bytes (Field1, SoundSfxIndex, Field3, Field4); Field3 is the
-    // third of them.
+    // The republished drop record holds four bytes (Field1, SoundSfxIndex, Field3, Field4): the octets 4 to 7 of the
+    // row of the binary's object table. Field1 (column 0) and SoundSfxIndex (column 1) are read since E20.e0c (the
+    // drop and the pickup of the objects); Field3 (column 2) since the New Game's unlock loop.
     private const int DropColumnCount = 4;
+    private const int DropField1Column = 0;
+    private const int DropSoundColumn = 1;
     private const int DropField3Column = 2;
 
     private readonly ushort[] _itemsProperties = new ushort[ItemRowCount * ItemColumnCount];
+    private readonly byte[] _dropField1 = new byte[DropRecordCount];
+    private readonly byte[] _dropSoundSfxIndex = new byte[DropRecordCount];
     private readonly byte[] _dropField3 = new byte[DropRecordCount];
     private readonly Dictionary<int, Guid> _iconAssetIdByItemId = new();
     private Guid? _inventoryPortraitAssetId;
@@ -82,12 +89,25 @@ public sealed class ItemTables
             Path.Combine(dataPath, DropPropertiesFileName), DropRecordCount, DropColumnCount,
             (row, column, value) =>
             {
-                if (column == DropField3Column)
+                switch (column)
                 {
-                    _dropField3[row] = (byte)value;
+                    case DropField1Column:
+                        _dropField1[row] = (byte)value;
+                        break;
+                    case DropSoundColumn:
+                        _dropSoundSfxIndex[row] = (byte)value;
+                        break;
+                    case DropField3Column:
+                        _dropField3[row] = (byte)value;
+                        break;
                 }
             },
-            () => Array.Clear(_dropField3));
+            () =>
+            {
+                Array.Clear(_dropField1);
+                Array.Clear(_dropSoundSfxIndex);
+                Array.Clear(_dropField3);
+            });
 
         LoadIconIndex(Path.Combine(dataPath, IconIndexFileName));
         LoadInventoryPortrait(Path.Combine(dataPath, InventoryPortraitFileName));
@@ -134,6 +154,19 @@ public sealed class ItemTables
     /// <summary><c>g_itemsProperties</c> flattened, read as <c>[itemId * 5 + column]</c> exactly like the
     /// original (e.g. PlayerManager.cs:4384, GraphicManager.cs:1913). 500 entries, zero where degraded.</summary>
     public IReadOnlyList<ushort> ItemsProperties => _itemsProperties;
+
+    /// <summary>
+    /// E20.e0c (docs/plan-e20-heros.md section 1.26, T1): column 0 of <c>g_itemDropProperties</c> - the octet 4 of the row of the object table of the binary (<c>0x800C5F7C</c>): non-zero for the 14 objects that
+    /// vanish by themselves 600 ticks after they were dropped (<c>0x24</c> to <c>0x27</c>, <c>0x29</c>, <c>0x45</c> to <c>0x48</c>, <c>0x51</c>, <c>0x52</c>, <c>0x54</c> to <c>0x56</c>), and what <c>GiveItem</c> answers (1 when it is zero).
+    /// Zero where degraded.
+    /// </summary>
+    public IReadOnlyList<byte> DropField1 => _dropField1;
+
+    /// <summary>
+    /// E20.e0c T1: column 1 of <c>g_itemDropProperties</c> - the octet 5 of the row of the object table: the sound a pickup of the object plays (52, 53 or 54), zero for a key object (a weapon, a book, an emblem, a vessel: the
+    /// pickup then freezes the world and plays the fanfare). Zero where degraded.
+    /// </summary>
+    public IReadOnlyList<byte> DropSoundSfxIndex => _dropSoundSfxIndex;
 
     /// <summary><c>g_itemDropProperties[itemId].Field3</c> for items 0..97: its high bit unlocks the item at
     /// the start of a New Game, its low seven bits mean something else to the game. Zero where degraded.</summary>

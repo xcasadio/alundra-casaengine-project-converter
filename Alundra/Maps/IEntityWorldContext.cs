@@ -90,6 +90,20 @@ public interface IEntityWorldContext
     void DestroyEntity(EntityScriptProxy entity);
 
     /// <summary>
+    /// E20.e0c (docs/plan-e20-heros.md section 1.26, D-E0C-6): <c>Block(self)</c> (<c>0x8003AD30</c>), what the pickup of a key object does to freeze the world while its message is up: it puts the identity of
+    /// <paramref name="self"/> in <see cref="EntityScriptProxy.BlockedByEntity"/> (<c>+0x20</c>) of every entity of status Normal or Deactivated - the hero included - except <paramref name="self"/> and those already blocked.
+    /// A default interface member that does nothing, so every existing implementer keeps compiling; <see cref="WorldProxy"/> implements it. Not called by any production path in phase A.
+    /// </summary>
+    void Block(EntityScriptProxy self)
+    {
+    }
+
+    /// <summary>E20.e0c: <c>Unblock(self)</c> (<c>0x8003ADAC</c>): clears <see cref="EntityScriptProxy.BlockedByEntity"/> of the entities that <paramref name="self"/> blocked (the ones whose blocker is its identity). A default member that does nothing.</summary>
+    void Unblock(EntityScriptProxy self)
+    {
+    }
+
+    /// <summary>
     /// This world's navigation grid (E4.d, docs/plan-e4-deplacement-scripte.md decision E4-2), built once
     /// by <see cref="WorldProxy.InitializeWithWorld"/> right after <c>World.CollisionField</c> from
     /// the SAME <c>TileMapData</c>, in "cell space" (<c>cellSize = 1</c>) - the DLL, not the engine's own

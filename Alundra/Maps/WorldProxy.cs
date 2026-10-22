@@ -3603,6 +3603,70 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     void IEntityWorldContext.DestroyEntity(EntityScriptProxy entity) => DestroyEntity(entity);
 
+    /// <summary>
+    /// E20.e0c (docs/plan-e20-heros.md section 1.26, D-E0C-6): <c>Block(self)</c> of the binary (<c>0x8003AD30</c>): the identity of <paramref name="self"/> (its entity, else its logic context) goes to
+    /// <see cref="EntityScriptProxy.BlockedByEntity"/> of every entity of the world - the hero first, then the others in the order of the slots - whose status is Normal or Deactivated and that is not blocked yet, except
+    /// <paramref name="self"/>. The field is read by the choice of the programs, the hit pass and the hero; the animation clock and the physics of <c>RunEntityBlock</c> do not read it yet (phase D).
+    /// </summary>
+    internal void Block(EntityScriptProxy self)
+    {
+        if (BlockerOf(self) is not { } blocker)
+        {
+            return;
+        }
+
+        foreach (var proxy in EntitiesForBlocking())
+        {
+            if (!ReferenceEquals(proxy, self) && proxy.Status.IsActive() && proxy.BlockedByEntity == null)
+            {
+                proxy.BlockedByEntity = blocker;
+            }
+        }
+    }
+
+    /// <summary>E20.e0c: <c>Unblock(self)</c> (<c>0x8003ADAC</c>): clears the blocker of every entity that <paramref name="self"/> blocked (whatever its status); one that nobody blocked, or that something else blocked, is left alone.</summary>
+    internal void Unblock(EntityScriptProxy self)
+    {
+        if (BlockerOf(self) is not { } blocker)
+        {
+            return;
+        }
+
+        foreach (var proxy in EntitiesForBlocking())
+        {
+            if (ReferenceEquals(proxy.BlockedByEntity, blocker))
+            {
+                proxy.BlockedByEntity = null;
+            }
+        }
+    }
+
+    /// <summary>The identity that <see cref="Block"/> and <see cref="Unblock"/> store: the entity of the proxy, else its logic context (a bare proxy of a test); null for a proxy with neither (nothing to block with).</summary>
+    private static CasaEngine.Framework.Scene.Entities.Entity? BlockerOf(EntityScriptProxy self) => self.OwnerEntity ?? self.LogicContextEntity;
+
+    /// <summary>The hero first, then the entities of the slots (the hero only once).</summary>
+    private IEnumerable<EntityScriptProxy> EntitiesForBlocking()
+    {
+        var hero = PlayerEntity;
+        if (hero != null)
+        {
+            yield return hero;
+        }
+
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is EntityScriptProxy proxy && !ReferenceEquals(proxy, hero))
+            {
+                yield return proxy;
+            }
+        }
+    }
+
+    void IEntityWorldContext.Block(EntityScriptProxy self) => Block(self);
+
+    void IEntityWorldContext.Unblock(EntityScriptProxy self) => Unblock(self);
+
+
     // IScriptHost - see that interface's own doc. Explicit implementation, same reasoning as
     // IEntityWorldContext above.
     IEventProgramRunner IScriptHost.Runner => EventProgramRunner;

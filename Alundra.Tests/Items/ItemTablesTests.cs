@@ -1,9 +1,11 @@
 #nullable enable
 using System;
 using System.IO;
+using System.Linq;
 using Xunit;
 using Alundra.Items;
 using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests.Items;
 
@@ -124,6 +126,63 @@ public class ItemTablesTests : IDisposable
         {
             Directory.Delete(first, recursive: true);
             Directory.Delete(second, recursive: true);
+        }
+    }
+
+    // ---- E20.e0c T1 (l3): the columns 0 and 1 of g_itemDropProperties --------------------------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void TheColumns0And1_AreTheOctets4And5OfTheObjectTableOfTheBinary_ForTheNinetyEightRowsOfTheRealExport()
+    {
+        var tables = new ItemTables(ProjectRootFinder.Find());
+        using var document = AnnexFiles.ReadVector("item-table.json");
+        var rows = document.RootElement.GetProperty("rows").EnumerateArray().Select(r => r.EnumerateArray().Select(c => c.GetInt32()).ToArray()).ToList();
+        Assert.Equal(ItemTables.DropRecordCount, rows.Count);
+        Assert.Equal(ItemTables.DropRecordCount, tables.DropField1.Count);
+        Assert.Equal(ItemTables.DropRecordCount, tables.DropSoundSfxIndex.Count);
+        for (var item = 0; item < rows.Count; item++)
+        {
+            Assert.True(tables.DropField1[item] == rows[item][0], $"item {item}: column 0 {tables.DropField1[item]}, the binary's octet 4 {rows[item][0]}");
+            Assert.True(tables.DropSoundSfxIndex[item] == rows[item][1], $"item {item}: column 1 {tables.DropSoundSfxIndex[item]}, the binary's octet 5 {rows[item][1]}");
+            Assert.True(tables.DropField3[item] == rows[item][2], $"item {item}: column 2 is still read");
+        }
+    }
+
+    [Fact]
+    public void TheColumn0_IsNonZeroForTheFourteenObjectsThatVanish_AndTheColumn1HoldsThePickupSoundsOrZeroForTheKeyObjects()
+    {
+        var tables = new ItemTables(ProjectRootFinder.Find());
+        var vanishing = new[] { 0x24, 0x25, 0x26, 0x27, 0x29, 0x45, 0x46, 0x47, 0x48, 0x51, 0x52, 0x54, 0x55, 0x56 };
+        Assert.Equal(vanishing, Enumerable.Range(0, ItemTables.DropRecordCount).Where(i => tables.DropField1[i] != 0).ToArray());
+        Assert.Equal(new byte[] { 0, 52, 53, 54 }, tables.DropSoundSfxIndex.Distinct().OrderBy(x => x).ToArray());
+        Assert.Equal(53, tables.DropSoundSfxIndex[0x46]); // the gildas: 53
+        Assert.Equal(54, tables.DropSoundSfxIndex[0x52]); // the big crystal: 54
+        Assert.Equal(52, tables.DropSoundSfxIndex[0x55]); // the hearts: 52
+        Assert.Equal(0, tables.DropSoundSfxIndex[0x04]);  // the sword is a key object.
+    }
+
+    [Fact]
+    public void TheColumns0And1_AreReadFromAFixture_AndReadZeroWhenTheFileIsMissing()
+    {
+        var drops = ItemTablesFixture.RealDrops();
+        drops[5] = new[] { 1, 52, 9, 7 };
+        var projectPath = ItemTablesFixture.Write(ItemTablesFixture.RealProperties(), drops, null);
+        var emptyPath = ItemTablesFixture.Write(null, null, null);
+        try
+        {
+            var tables = new ItemTables(projectPath);
+            Assert.Equal((1, 52, 9), (tables.DropField1[5], tables.DropSoundSfxIndex[5], tables.DropField3[5]));
+            Assert.Equal((0, 0), (tables.DropField1[6], tables.DropSoundSfxIndex[6])); // an untouched row stays at zero.
+
+            var degraded = new ItemTables(emptyPath);
+            Assert.True(degraded.DropField1.All(b => b == 0));
+            Assert.True(degraded.DropSoundSfxIndex.All(b => b == 0));
+            Assert.Equal(ItemTables.DropRecordCount, degraded.DropField1.Count);
+        }
+        finally
+        {
+            Directory.Delete(projectPath, recursive: true);
+            Directory.Delete(emptyPath, recursive: true);
         }
     }
 }

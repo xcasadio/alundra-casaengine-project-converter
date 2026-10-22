@@ -219,16 +219,7 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
     /// <inheritdoc/>
     public void Open(DialogueAsset? asset, string? node, int controlMode)
     {
-        OpenSerial++; // E16.e L4: see the property's own doc.
-        _pageIndex = 0;
-        _pagesDelivered = 0;
-        _pageLine = DialogueLine.Empty;
-        _awaitingChoice = false;
-        _choice.Cancel(); // a choice still waiting is dropped, the machine with it (E19.f3a)
-        _choicePlan = null;
-
-        _box.Open(); // sound 6 and the reset of the text state: the box is open from this tick, its first pass is the next one
-        ApplyControlMode(controlMode);
+        BeginOpening(controlMode);
 
         var pageCount = asset != null && node != null ? CountPages(asset, node) : 0;
         if (pageCount > 0 && _runner != null)
@@ -242,6 +233,35 @@ public sealed class DialogueDirector : IDialogueDirector, IDialogueBoxHost
             // out-of-range/never-loaded local string did before E15.c.
             _pageCount = 1;
         }
+    }
+
+    /// <summary>What both openings do first: counts the opening, drops the page and the choice of a box that was up, opens the box (sound 6) and poses the control bit of <paramref name="controlMode"/>.</summary>
+    private void BeginOpening(int controlMode)
+    {
+        OpenSerial++; // E16.e L4: see the property's own doc.
+        _pageIndex = 0;
+        _pagesDelivered = 0;
+        _pageLine = DialogueLine.Empty;
+        _awaitingChoice = false;
+        _choice.Cancel(); // a choice still waiting is dropped, the machine with it (E19.f3a)
+        _choicePlan = null;
+
+        _box.Open(); // sound 6 and the reset of the text state: the box is open from this tick, its first pass is the next one
+        ApplyControlMode(controlMode);
+    }
+
+    /// <summary>
+    /// E20.e0c (docs/plan-e20-heros.md section 1.26, D-E0C-4, D-E0C-5, T0 (h)): opens the box on a line the caller composed, one page of <paramref name="font3Text"/> (already <c>font3</c> text, no markup), with no Yarn
+    /// reader and no asset: what the pickup of an object opens ("name gained!", the binary's <c>0x800450F0</c> on its text buffer). Like <see cref="Open"/> it counts an opening (<see cref="OpenSerial"/>), plays the sound 6 and
+    /// poses the control bit of <paramref name="controlMode"/> (1 the message box, any other the menu bit); the close mask is the default one, and a caller changes it with <see cref="SetCloseMask"/> (the binary's
+    /// <c>0x8004507C</c>). Additive: <see cref="Open"/> behaves as before (it shares <see cref="BeginOpening"/>, the same statements in the same order).
+    /// </summary>
+    public void OpenComposed(string font3Text, int controlMode)
+    {
+        ArgumentNullException.ThrowIfNull(font3Text);
+        BeginOpening(controlMode);
+        _pageCount = 1;
+        OnPageShown(new DialogueLine(font3Text));
     }
 
     /// <summary>

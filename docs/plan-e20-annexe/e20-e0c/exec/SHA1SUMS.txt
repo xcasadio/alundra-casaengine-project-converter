@@ -10,6 +10,9 @@ d845fc26d0d1b2144df8acd962a45e8bf61c8178 *./scripts/gen_give.py
 847780ee4f552682302686596acf05253b3da8d2 *./scripts/gen_jumptable.py
 9921f847a92a1882e2876bc08fcda3856dc4d284 *./scripts/gen_loot.py
 31b2ee250d045a8a919930234768f65689abbcb2 *./scripts/gen_message.py
+9be451620681c71f612fb17b33d82d8e4b433f1d *./t1-red-names-itemeffects-final.txt
+ca303d348b318c36dc3665a19bf418c7f0230a39 *./t1-red-names.txt
+3cf112cb1c8c1e185143dacee49a7aaf7b953804 *./t1-results.md
 fe50016167bdf6c9dff79d7dbd0b3905311595e3 *./vectors/c255.json
 06aa0968b7e67a07850516a1807f2cf85aa7bfdb *./vectors/give-item.json
 2f598f2c428a24cd8df745bf614016b38772e05e *./vectors/give-jump-table.json

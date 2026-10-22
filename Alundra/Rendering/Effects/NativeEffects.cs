@@ -62,6 +62,66 @@ public static class NativeEffects
         }
     }
 
+    /// <summary>
+    /// E20.e0c T1 (D-E0C-8, D-E0C-10): the glow of the herb and of the medium heart (<c>0x80032E50</c>, <c>0x80032EEC</c>): one global effect 14 of animation 0 at the hero (<paramref name="x"/>, <paramref name="y"/>, <paramref name="z"/>
+    /// in the binary's frame of Z, so the DLL's <c>PosZ + 1</c>, ADR-0026) with z + 0x100000, its z force 0x20000. No number is drawn. A full reservoir creates nothing.
+    /// </summary>
+    public static void CreateHealGlow(EffectReservoir reservoir, int x, int y, int z)
+    {
+        var glow = reservoir.Create(false, LifeVesselEffect, 0, x, y, unchecked(z + 0x100000));
+        if (glow != null)
+        {
+            glow.ForceZ = 0x20000;
+        }
+    }
+
+    /// <summary>
+    /// E20.e0c T1: one spark of the hearts and the potions (<c>0x80033000-0x800330C8</c> and its copies): a global effect 14 of the animation <paramref name="animation"/> at the hero with z + 0x100000. ONLY IF it was created, two
+    /// numbers <c>r1</c>, <c>r2</c> are drawn from <see cref="GameRandom"/> and give its forces: <c>hi(r1 * 0x20001) - 0x10000</c> and <c>hi(r2 * 0x30001) - 0x18000</c> (unsigned products), the z force being
+    /// <paramref name="forceZ"/>. A full reservoir creates nothing and draws nothing.
+    /// </summary>
+    public static void CreateHealSpark(EffectReservoir reservoir, int x, int y, int z, int animation, int forceZ)
+    {
+        unchecked
+        {
+            var spark = reservoir.Create(false, LifeVesselEffect, animation, x, y, z + 0x100000);
+            if (spark == null)
+            {
+                return;
+            }
+
+            var r1 = (uint)GameRandom.Next();
+            var r2 = (uint)GameRandom.Next();
+            spark.ForceZ = forceZ;
+            spark.ForceX = (int)(((ulong)r1 * 0x20001) >> 32) - 0x10000;
+            spark.ForceY = (int)(((ulong)r2 * 0x30001) >> 32) - 0x18000;
+        }
+    }
+
+    /// <summary>
+    /// E20.e0c T1: ring number <paramref name="index"/> (0 to 7) of the big potion, the crystal and the brew (<c>0x800332C8-0x80033378</c> and its copies): a global effect 14 of the animation <paramref name="animation"/> at the hero
+    /// with z + 0x80000, moved by the entry <c>4 index</c> of the two 32-direction tables times 2048 (a 24 x 16 pixel ellipse) and flying, with a z force of 0x30000, along the entry <c>(8 + 4 index) mod 32</c> times 448. A ring that was
+    /// not created (a full reservoir) skips its own writes only. No number is drawn.
+    /// </summary>
+    public static void CreateHealRing(EffectReservoir reservoir, int x, int y, int z, int index, int animation)
+    {
+        unchecked
+        {
+            var ring = reservoir.Create(false, LifeVesselEffect, animation, x, y, z + 0x80000);
+            if (ring == null)
+            {
+                return;
+            }
+
+            ring.X += BurstTableX[4 * index] << 11;
+            ring.Y += BurstTableY[4 * index] << 11;
+            var fly = (8 + 4 * index) & 31;
+            ring.ForceZ = 0x30000;
+            ring.ForceX = BurstTableX[fly] * 448;
+            ring.ForceY = BurstTableY[fly] * 448;
+        }
+    }
+
     /// <summary>The global effect of the charge: the hold spark and the 16 effects of the burst (<c>0x8003BDD8(0, 0x10, 0, x, y, z + 0x100000)</c>, bank 0, effect 16: 7 frames, 14 ticks, ends with <c>Destroy</c>).</summary>
     public const int ChargeEffect = 0x10;
 
