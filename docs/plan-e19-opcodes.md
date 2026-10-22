@@ -12032,7 +12032,7 @@ avant le code.
 
 ---
 
-### 1.4 E19.SM — Les opcodes encore sautés : relevé du corpus entier et découpage proposé ⏳ (2026-10-17, lecture seule ; à approuver ; sm0 READY ; sm1 à sm4 détaillées le 2026-10-22, §1.4.2 à §1.4.5)
+### 1.4 E19.SM — Les opcodes encore sautés : relevé du corpus entier et découpage proposé ⏳ (2026-10-17, lecture seule ; à approuver ; sm0, sm1, sm2, sm3 et sm4 **READY**, §1.4.1 à §1.4.5 ; sm5 à sm10 esquissées)
 
 **Origine.** Thème de repli donné par l'auteur le 2026-10-16 (« finir le moteur de script »), pendant la pause du chantier de
 restructuration (aucune tranche de code pendant le chantier). Preuves : `docs/plan-e19-sm-annexe/` (rapport, `opcodes.tsv`,
@@ -12366,7 +12366,7 @@ RÉFUTÉ ; D21 et D23 NON ÉTABLIS).
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : annuler le commit de T2 puis
   celui de T1.
 
-#### 1.4.3 E19.sm2 — Le mémo de position et ses seuils : `0x6A 0x6B 0x6C 0x6D` ⏳ (détaillée le 2026-10-22 ; REVISE, REVISE, révisions 1 et 2 ; relecture de clôture)
+#### 1.4.3 E19.sm2 — Le mémo de position et ses seuils : `0x6A 0x6B 0x6C 0x6D` ⏳ (détaillée le 2026-10-22 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `89731b8`)
 
 **Prérequis.** R-SM-1 ; le défaut retenu de Q-sm-16 (le cadre Z de la DLL pour le mémo). Ni E20.g1a, ni D5b, ni E20.c2a (aucune recherche,
 aucun hôte).
