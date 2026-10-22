@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), révisée le 2026-10-22 (révision 2 : D-R-16, D-R-18, D-R-19) ; sa relecture attend Q-R-4c (les lignes de `docs/intro-roadmap.md` de T22) ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), révisée le 2026-10-22 (révision 2 : D-R-16, D-R-18, D-R-19), relecture à faire (Q-R-4c tranchée, D-R-20) ; R6b décidée (D-R-20) ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -74,6 +74,11 @@ Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructure
   avant la confirmation ; l'annulation serait la tranche R6b (§3). **Remplacé au 3e tour** : à Q-R-4b, l'auteur répond « corrige les
   documents » : rien n'est annulé, `docs/intro-roadmap.md` reste vivant et se corrige ; la portée (ce fichier seul ou tous les documents
   vivants, numéros de ligne compris) attend Q-R-4c ; R6b porte cette correction.
+- **D-R-20** (2026-10-22, 4e tour, Q-R-4c : « tous les documents vivants ») — R6b corrige **tous les documents vivants** : en plus des
+  chemins et des noms (faits par R6), les **numéros de ligne** qu'ils citent dans la DLL, les tests et les outils sont recalculés partout
+  (le choix (3) de Q-R-4 est corrigé) ; `docs/intro-roadmap.md` en fait partie. Les documents historiques, les audits (en lecture seule)
+  et les annexes figées (D-R-6) ne changent pas. R6b passe après R5 (qui déplace les tests) ; R8 ne change que des noms dans les
+  commentaires, ligne pour ligne, donc les numéros recalculés par R6b restent justes (R8 le vérifie : aucune ligne ajoutée ni retirée).
 - **D-R-19** (2026-10-22, 3e tour, Q-R-3b (b) et (c) : « oui, oui ») — Les gardes d'export sans type de la DLL vont dans **`ExportGuards/`**
   (namespace `Alundra.Tests.ExportGuards`) ; **`Arcs/`** reçoit les 26 scénarios de bout en bout **et les harnais de traces**. Avec D-R-13 et
   D-R-16, Q-R-3 est entièrement tranchée : ADR-0080.
@@ -188,8 +193,8 @@ La lecture de la règle (3) (types secondaires publics, types internes, type pri
 | R5 | Tests en miroir | `Alundra.Tests` dans la même arborescence, sans préfixe | R4 (peut suivre R2 et R3 domaine par domaine si la relecture de R1 le préfère) |
 | R6 | Documentation vivante | `docs/formats/`, guides, `stick-probe.md`, scripts de `research/` | R4 |
 | R7 | Garde des règles (D-R-15, 2026-10-22) | `check_names.py --rules` : l'arbre vivant de la DLL et des tests contrôlé contre les règles de l'ADR-0075, sans la table | R5 |
-| R6b | Reprise de R6 (D-R-17, réponse « corrige les documents » à Q-R-4b) | les documents vivants corrigés au-delà de R6, `docs/intro-roadmap.md` compris ; la portée (ce fichier seul ou tous, numéros de ligne compris) selon Q-R-4c | R5 |
-| R8 | Anciens noms des commentaires (D-R-14, 2026-10-22) | les quelque 300 anciens noms des commentaires de la DLL et des tests corrigés, mécaniquement, commentaires seulement | R5, R7 |
+| R6b | Reprise de R6 (D-R-17, D-R-20) | tous les documents vivants, `docs/intro-roadmap.md` compris : les numéros de ligne qu'ils citent recalculés partout, en plus des chemins et des noms de R6 | R5 |
+| R8 | Anciens noms des commentaires (D-R-14, 2026-10-22) | les quelque 300 anciens noms des commentaires de la DLL et des tests corrigés, mécaniquement, commentaires seulement, ligne pour ligne (aucune ligne ajoutée ni retirée : les numéros de R6b restent justes, D-R-20) | R5, R7 |
 
 **Règles du programme.**
 - Aucune autre tranche (E20, E14, E19) pendant le chantier : il touche tous les fichiers de la DLL et des tests. Depuis le 2026-10-22,
@@ -894,7 +899,7 @@ après R6 ; **P4** des commentaires et des `<c>` gardent les anciens noms (≈ 9
 ligne vient du harnais des exécuteurs), ceux de T0 « Claude Opus 5.5 ». Reste la recette de l'auteur : nouvelle partie, les entités bougent,
 F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité sans avertissement.
 
-## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17 ; révision 1 **READY** ; Q-R-3 tranchée le 2026-10-22, D-R-13, D-R-16, D-R-19, ADR-0080 ; **révision 2** le 2026-10-22 ; sa relecture attend Q-R-4c)
+## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17 ; révision 1 **READY** ; Q-R-3 tranchée le 2026-10-22, D-R-13, D-R-16, D-R-19, ADR-0080 ; **révision 2** le 2026-10-22 ; Q-R-4c tranchée, D-R-20 : relecture à faire)
 
 **Relecture (2026-10-17).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) le hachage de `Alundra.dll` ne pouvait pas rester
 égal : la version informative de l'assembly porte le commit (`Alundra/obj/Debug/net9.0-windows/Alundra.AssemblyInfo.cs:16`,
@@ -908,7 +913,9 @@ autonomes, Q-R-6).
 ADR-0080) : les points 1, 2, 3 (harnais compris) et 7 (`ExportGuards/`) passent par la table ; les points 4 et 5 par la coupe de R2,
 chaque type partagé vers le dossier de son fichier d'origine ; le point 6 ne déplace rien. Q-R-6 tranchée (D-R-18) : (a) et (b) validés,
 (c) corrigé : une tâche T23 envoie à la Corbeille les dossiers temporaires orphelins. Q-R-4 (D-R-17) : les lignes de
-`docs/intro-roadmap.md` de T22 dépendent de Q-R-4c ; la relecture de la révision 2 attend cette réponse.
+`docs/intro-roadmap.md` de T22 dépendent de Q-R-4c ; la relecture de la révision 2 attend cette réponse. **Q-R-4c tranchée (D-R-20)** :
+T22 corrige ses trois lignes T comme prévu (chemins et noms d'après R5) ; les numéros de ligne de tous les documents vivants sont le
+travail de R6b, après R5.
 
 **But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/` et `Support/`, sur le modèle de la DLL (un
 dossier = un namespace) ; les classes de test sans préfixe `Alundra` ; **aucune valeur attendue changée, aucun test ajouté ni retiré** ;
@@ -981,7 +988,7 @@ validés, (c) corrigé par T23).** (a) Les preuves de fin de R3 et R4
 (`r3_literals.py check --stage after`, `prove_r3.py --all`, `prove_r4.py --kind end`) sont **gelées** à leur commit de clôture (`a193671`,
 `ce6d335`) : un paragraphe de `tools/dll-structure/README.md` le dit, rien n'est remappé ; (b) les commentaires du code ne changent pas
 (Q-R-5 ; R8 les corrige, D-R-14) ; les trois lignes T de R6 (`docs/intro-roadmap.md:26,63`, `docs/formats/dialogues-yarn.md:123`) se
-corrigent en T22 (celles d'`intro-roadmap.md` selon Q-R-4c, qui peut élargir la correction à tout le fichier : R6b) ; (c) ~~les dossiers
+corrigent en T22 (Q-R-4c tranchée, D-R-20 : les numéros de ligne de tous les documents vivants sont recalculés ensuite par R6b) ; (c) ~~les dossiers
 temporaires des anciennes exécutions, nommés par les anciens préfixes, restent orphelins (hors du dépôt)~~ **corrigé (D-R-18)** : T23 les
 envoie à la Corbeille.
 
@@ -1306,7 +1313,7 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
   ce fichier (par exemple corriger aussi ses numéros de ligne) ? Recommandé : la lecture proposée.
   **Réponse de l'auteur (2026-10-22, 3e tour)** : « corrige les documents » : la lecture proposée n'est pas retenue, rien n'est annulé ;
   `docs/intro-roadmap.md` reste vivant et se corrige (R6b). La portée : Q-R-4c.
-- **Q-R-4c** (2026-10-22, ouverte ; bloque la relecture de R5 et le détail de R6b) — « Corrige les documents » : est-ce `docs/intro-roadmap.md`
+- **Q-R-4c** — **Tranchée le 2026-10-22 (D-R-20)** : « tous les documents vivants ». Question d'origine (2026-10-22 ; bloquait la relecture de R5 et le détail de R6b) — « Corrige les documents » : est-ce `docs/intro-roadmap.md`
   seul, corrigé entièrement (ses chemins, ses noms et aussi ses numéros de ligne, que R6 n'a pas recalculés), ou **tous les documents
   vivants** (le choix (3) de Q-R-4 : les numéros de ligne cités dans les docs, non recalculés par R6, le seraient partout) ?
 - **Q-R-5** — **Tranchée le 2026-10-22 (D-R-14)** : « corriger », dans une tranche R8. Question d'origine (2026-10-17) — Les renommages de R3 et R4 n'ont pas touché les **commentaires** du code : environ 300 anciens noms
