@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), son T0a attend les points (b) et (c) de Q-R-3b, puis une révision (D-R-16 à D-R-18) et sa relecture ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), révisée le 2026-10-22 (révision 2 : D-R-16, D-R-18, D-R-19) ; sa relecture attend Q-R-4c (les lignes de `docs/intro-roadmap.md` de T22) ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -52,11 +52,11 @@ Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructure
 - **D-R-13** (2026-10-22, réponse à Q-R-3) — Rangement des tests (R5) : (1) un fichier de tests se range **par le type de son nom**,
   pas par le domaine qu'il exerce ; (2) les tests des types renommés perdent **seulement le préfixe** (`AlundraMusicPlayerTests` →
   `MusicPlayerTests`, pas `BgmPlayerTests`) ; (3) `Arcs/` ne reçoit que **les 26 scénarios** de bout en bout (les harnais de traces :
-  Q-R-3b) ; (4) les types partagés déclarés dans un fichier de test **ne vont pas dans `Support/`** : les `using` s'ajoutent ; (5) **un
+  D-R-19) ; (4) les types partagés déclarés dans un fichier de test **ne vont pas dans `Support/`** : les `using` s'ajoutent ; (5) **un
   type principal par fichier**, comme la DLL : les 44 fichiers à plusieurs types sont scindés ; (6)
   `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` **reste à sa place** ; (7) les gardes d'export sans type (`CornerTrack`,
-  `ZeroDurationLoop`) vont dans **un dossier dédié** (son nom : Q-R-3b). Les points 4 et 5 se croisent pour les types partagés : Q-R-3b.
-  L'ADR suit les précisions.
+  `ZeroDurationLoop`) vont dans **un dossier dédié** (`ExportGuards/`, D-R-19). Les points 4 et 5 se croisent pour les types partagés :
+  D-R-16. ADR-0080.
 - **D-R-14** (2026-10-22, réponse à Q-R-5) — Les quelque 300 anciens noms restés dans les commentaires de la DLL et des tests se corrigent
   dans une tranche dédiée, **R8** : mécanique, outillée comme R3, commentaires seulement, après R5 (qui renomme aussi les classes de test)
   et R7.
@@ -71,7 +71,12 @@ Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructure
   mais comme un document historique ; les corrections que R6 y a faites sont annulées, et R5 (T22) ne touche plus ses lignes 26 et 63.
   Les choix (2) à (5) de R6 sont validés. Lecture de la session (l'auteur a répondu « 1 » à « lesquels corriger ») : un document
   vivant se corrige, l'autre choix est historique. **Sous réserve de Q-R-4b** (le « comment » n'a pas de réponse) : rien n'est annulé
-  avant la confirmation ; l'annulation serait la tranche R6b (§3).
+  avant la confirmation ; l'annulation serait la tranche R6b (§3). **Remplacé au 3e tour** : à Q-R-4b, l'auteur répond « corrige les
+  documents » : rien n'est annulé, `docs/intro-roadmap.md` reste vivant et se corrige ; la portée (ce fichier seul ou tous les documents
+  vivants, numéros de ligne compris) attend Q-R-4c ; R6b porte cette correction.
+- **D-R-19** (2026-10-22, 3e tour, Q-R-3b (b) et (c) : « oui, oui ») — Les gardes d'export sans type de la DLL vont dans **`ExportGuards/`**
+  (namespace `Alundra.Tests.ExportGuards`) ; **`Arcs/`** reçoit les 26 scénarios de bout en bout **et les harnais de traces**. Avec D-R-13 et
+  D-R-16, Q-R-3 est entièrement tranchée : ADR-0080.
 - **D-R-18** (2026-10-22, 2e tour, Q-R-6 « c ») — Le choix (c) est corrigé : les dossiers temporaires des anciennes exécutions de tests,
   nommés par les anciens préfixes, sont effacés à la fin de R5 : recensés par chemin exact, envoyés à la Corbeille un par un, chacun
   vérifié dans la Corbeille (un dossier que la Corbeille refuse est un arrêt et une question, jamais une suppression définitive). Les
@@ -183,12 +188,12 @@ La lecture de la règle (3) (types secondaires publics, types internes, type pri
 | R5 | Tests en miroir | `Alundra.Tests` dans la même arborescence, sans préfixe | R4 (peut suivre R2 et R3 domaine par domaine si la relecture de R1 le préfère) |
 | R6 | Documentation vivante | `docs/formats/`, guides, `stick-probe.md`, scripts de `research/` | R4 |
 | R7 | Garde des règles (D-R-15, 2026-10-22) | `check_names.py --rules` : l'arbre vivant de la DLL et des tests contrôlé contre les règles de l'ADR-0075, sans la table | R5 |
-| R6b | Reprise de R6 (D-R-17, **si Q-R-4b la confirme**) | `docs/intro-roadmap.md` redevient historique : les chemins et noms corrigés par R6 (`542e62c9`) reviennent aux anciens | R5 |
+| R6b | Reprise de R6 (D-R-17, réponse « corrige les documents » à Q-R-4b) | les documents vivants corrigés au-delà de R6, `docs/intro-roadmap.md` compris ; la portée (ce fichier seul ou tous, numéros de ligne compris) selon Q-R-4c | R5 |
 | R8 | Anciens noms des commentaires (D-R-14, 2026-10-22) | les quelque 300 anciens noms des commentaires de la DLL et des tests corrigés, mécaniquement, commentaires seulement | R5, R7 |
 
 **Règles du programme.**
 - Aucune autre tranche (E20, E14, E19) pendant le chantier : il touche tous les fichiers de la DLL et des tests. Depuis le 2026-10-22,
-  le chantier va jusqu'à R8 (R7 et R8 sont dans l'enveloppe, D-R-14, D-R-15 ; R6b si Q-R-4b la confirme).
+  le chantier va jusqu'à R8 (R7, R8 et R6b sont dans l'enveloppe, D-R-14, D-R-15, D-R-17).
 - Chaque tranche : suites complètes `Alundra.Tests` en Release (copie neutralisée) et en Debug, zéro échec ; aucun test ne change de
   valeur attendue (seuls les noms, chemins et `using` bougent, plus les valeurs écrites par R0 et R4) ; garde des traces ; `cmp` de la DLL
   Debug ; le contrôle des collisions vert ; une recette courte de l'auteur en jeu (nouvelle partie jusqu'au premier écran jouable, F5, F6,
@@ -889,7 +894,7 @@ après R6 ; **P4** des commentaires et des `<c>` gardent les anciens noms (≈ 9
 ligne vient du harnais des exécuteurs), ceux de T0 « Claude Opus 5.5 ». Reste la recette de l'auteur : nouvelle partie, les entités bougent,
 F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité sans avertissement.
 
-## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17 ; révision 1 **READY** ; Q-R-3 répondue le 2026-10-22, D-R-13, D-R-16 ; à réviser (D-R-16 à D-R-18) puis relire ; T0a attend aussi Q-R-3b (b) et (c))
+## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17 ; révision 1 **READY** ; Q-R-3 tranchée le 2026-10-22, D-R-13, D-R-16, D-R-19, ADR-0080 ; **révision 2** le 2026-10-22 ; sa relecture attend Q-R-4c)
 
 **Relecture (2026-10-17).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) le hachage de `Alundra.dll` ne pouvait pas rester
 égal : la version informative de l'assembly porte le commit (`Alundra/obj/Debug/net9.0-windows/Alundra.AssemblyInfo.cs:16`,
@@ -898,6 +903,12 @@ réponses de Q-R-3 qui demandent une coupe ou un déplacement de fichier n'avaie
 effet écrit sur les outils (« Effet des réponses »), avec la coupe de R2 et le déplacement du fichier de données ; toute autre réponse
 est un arrêt avant T0a. Seconde relecture (révision 1) : **READY**. L'exécution attend les réponses à Q-R-3 (et, pour les choix
 autonomes, Q-R-6).
+
+**Révision 2 (2026-10-22, après les réponses de l'auteur ; nouvelle époque de relecture).** Q-R-3 tranchée (D-R-13, D-R-16, D-R-19,
+ADR-0080) : les points 1, 2, 3 (harnais compris) et 7 (`ExportGuards/`) passent par la table ; les points 4 et 5 par la coupe de R2,
+chaque type partagé vers le dossier de son fichier d'origine ; le point 6 ne déplace rien. Q-R-6 tranchée (D-R-18) : (a) et (b) validés,
+(c) corrigé : une tâche T23 envoie à la Corbeille les dossiers temporaires orphelins. Q-R-4 (D-R-17) : les lignes de
+`docs/intro-roadmap.md` de T22 dépendent de Q-R-4c ; la relecture de la révision 2 attend cette réponse.
 
 **But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/` et `Support/`, sur le modèle de la DLL (un
 dossier = un namespace) ; les classes de test sans préfixe `Alundra` ; **aucune valeur attendue changée, aucun test ajouté ni retiré** ;
@@ -933,9 +944,11 @@ change ; les collections et les remises à zéro existantes protègent les état
 (`BgmPlayer`, `GameRandom`, `SfxBank`, `HeroController`), périmètre d'`Arcs/`, types partagés déclarés dans un fichier de test (collections
 xUnit, hôtes d'aides), un type principal par fichier (44 fichiers), le fichier de `Data/`, les gardes d'export sans type de la DLL. Les onze
 classements contestés par le critique (`check-report.md` §2.B) suivent la règle choisie au point 1 ; une ligne que la règle ne tranche
-pas est une question, pas un choix de l'exécuteur. **Réponses du 2026-10-22 (D-R-13)** : points 1, 2, 3 et 7, la table ; point 5
-« scinder » (la coupe de R2) ; point 4 « garder » (aucune coupe vers `Support/`) ; point 6 « rester » (rien). Le croisement des points 4
-et 5 pour les types partagés, le nom du dossier du point 7 et les harnais de traces du point 3 attendent Q-R-3b : arrêt avant T0a.
+pas est une question, pas un choix de l'exécuteur. **Réponses du 2026-10-22 (D-R-13, D-R-16, D-R-19 ; ADR-0080)** : point 1, par le type
+du nom du fichier ; point 2, seulement le préfixe retiré ; point 3, `Arcs/` reçoit les 26 scénarios de bout en bout et les harnais de
+traces, rien d'autre ; point 4, aucun type partagé dans `Support/` ; point 5, un type principal par fichier : les 44 fichiers à plusieurs
+types sont scindés, et chaque type partagé (les 5 collections xUnit, les hôtes d'aides) va dans son propre fichier, dans le dossier de
+son fichier d'origine ; point 6, le fichier de données reste à sa place ; point 7, les deux gardes d'export dans `ExportGuards/`.
 
 **Effet des réponses de Q-R-3 sur les outils** (T0a les applique ; T0b à T0c doivent couvrir celles que l'auteur a données).
 - Points 1 (nom ou sujet), 2 (noms des tests des types renommés), 3 (périmètre d'`Arcs/`) et 7 (gardes d'export) : **la table seule**
@@ -945,8 +958,11 @@ et 5 pour les types partagés, le nom du dossier du point 7 et les harnais de tr
   documentation, ses attributs et sa ligne vide de tête, copiée à l'octet dans un fichier neuf à son chemin de `r5-files.tsv`, avec
   l'en-tête du fichier où elle se trouve à ce moment (ses `using`, sa directive `#nullable` s'il en a une) et le `namespace` de son
   arrivée ; retirée de ce fichier ; puis les `using` recalculés depuis l'emplacement courant de chaque type, puis l'outil de renommage.
-  Exemple : la collection de la musique, déclarée dans `AlundraMusicPlayerTests.cs`, est coupée vers `Support/` au domaine `Support`
-  (le premier), alors que son fichier d'origine ne part dans `Audio/` qu'au domaine `Audio`. Une classe partielle n'est jamais coupée.
+  Exemple (révision 2, D-R-16) : la collection de la musique, déclarée dans `AlundraMusicPlayerTests.cs`, est coupée dans son propre
+  fichier, à son chemin de `r5-files.tsv` sous `Audio/`, au temps (2) du domaine `Audio`, celui de son fichier d'origine ; les fichiers des
+  domaines passés avant `Audio` la trouvent encore à son ancien emplacement, et les `using` recalculés au temps (2) de chaque domaine
+  suivent son emplacement courant. Une classe partielle n'est jamais coupée. Les réponses « garder » et « déplacer » ci-dessous ne
+  servent plus (révision 2).
   `prove_r5.py --kind code` apparie les fichiers par la table, jamais par la détection de renommage de git : un fichier neuf n'est permis
   que s'il est l'arrivée d'un type coupé de ce domaine et si son contenu est l'en-tête plus le bloc retiré de son fichier source au
   commit parent (renommages de la table, ligne `namespace` et `using` mis à part) ; le fichier source perd exactement ce bloc. Réponse
@@ -960,15 +976,19 @@ et 5 pour les types partagés, le nom du dossier du point 7 et les harnais de tr
 - **Toute autre réponse** (un mécanisme qui n'est ni un changement de table, ni cette coupe, ni ce déplacement) rouvre la tranche pour une
   relecture : arrêt avant T0a.
 
-**Choix de la session principale (mode autonome, réversibles, soumis à l'auteur en Q-R-6).** (a) Les preuves de fin de R3 et R4
+**Choix de la session principale (mode autonome, réversibles, soumis à l'auteur en Q-R-6 ; tranchés le 2026-10-22, D-R-18 : (a) et (b)
+validés, (c) corrigé par T23).** (a) Les preuves de fin de R3 et R4
 (`r3_literals.py check --stage after`, `prove_r3.py --all`, `prove_r4.py --kind end`) sont **gelées** à leur commit de clôture (`a193671`,
 `ce6d335`) : un paragraphe de `tools/dll-structure/README.md` le dit, rien n'est remappé ; (b) les commentaires du code ne changent pas
-(Q-R-5) ; les trois lignes T de R6 (`docs/intro-roadmap.md:26,63`, `docs/formats/dialogues-yarn.md:123`) se corrigent en T22 ; (c) les
-dossiers temporaires des anciennes exécutions, nommés par les anciens préfixes, restent orphelins (hors du dépôt).
+(Q-R-5 ; R8 les corrige, D-R-14) ; les trois lignes T de R6 (`docs/intro-roadmap.md:26,63`, `docs/formats/dialogues-yarn.md:123`) se
+corrigent en T22 (celles d'`intro-roadmap.md` selon Q-R-4c, qui peut élargir la correction à tout le fichier : R6b) ; (c) ~~les dossiers
+temporaires des anciennes exécutions, nommés par les anciens préfixes, restent orphelins (hors du dépôt)~~ **corrigé (D-R-18)** : T23 les
+envoie à la Corbeille.
 
 **Propriétaire, chemins, budget.** Un `executor` (T0 : l'outil et la table s'écrivent avec jugement ; ensuite l'application est
 mécanique). Chemins : `Alundra.Tests/**` (hors `bin/`, `obj/`, `TestResults/`), `tools/dll-structure/` (T0 ; puis les outils pour les
-seules corrections de leurs règles, par un commit d'outil suivi du rejeu), les trois lignes T des docs (T22), ce plan (§9). Aucun fichier de
+seules corrections de leurs règles, par un commit d'outil suivi du rejeu), les trois lignes T des docs (T22), ce plan (§9) ; hors du dépôt,
+seulement les dossiers temporaires orphelins de T23, vers la Corbeille. Aucun fichier de
 `Alundra/`, du convertisseur, des données, d'un sous-module ; aucun export. Le jeu, l'éditeur et le lanceur fermés pendant la tranche
 (vérifié en T0 : `alundra-project/Alundra.dll` s'ouvre en écriture). Release toujours avec la copie neutralisée
 (`-p:CustomAfterMicrosoftCommonTargets=…/e20e0a3b-exec/skipcopy.targets`) ; Debug en dernier. Budget : une passe d'exécution, une passe de
@@ -1023,8 +1043,16 @@ correction au plus ; un verifier frais à la fin.
   Debug la copie ; garde des traces ; `git log --follow` retrouve l'historique d'avant R5 de cinq fichiers tirés de domaines
   différents et des deux classes partielles ; le paragraphe de gel de `tools/dll-structure/README.md` (choix (a)) ; les trois lignes T des
   docs ; ce plan (§9 et résultats).
+- T23 (révision 2, D-R-18) — **Les dossiers temporaires orphelins**, après T22 et toute exécution de tests finie : dans le dossier
+  temporaire de l'utilisateur (`Path.GetTempPath()`, où les tests créent les leurs, par exemple
+  `AlundraBgmFadeDirectorTests.cs:466`), la liste des dossiers dont le nom commence par l'un des 25 préfixes de dossiers temporaires
+  relevés en L1 (`r5-literals.tsv`), dans leur valeur **d'avant** R5, et par aucun préfixe d'après R5, écrite avec chemin, taille et
+  date avant toute action et versée au plan ; puis chacun, **un à la fois**, envoyé à la
+  Corbeille et **vérifié dans la Corbeille** (son nom d'origine y figure) avant le suivant ; jamais de suppression définitive (le
+  piège connu : une suppression « vers la Corbeille » d'un dossier trop gros pour elle l'efface définitivement sans erreur). Aucun
+  autre dossier n'est touché ; aucun commit (hors du dépôt), sauf le compte rendu dans ce plan.
 
-**Acceptation.** Les preuves de T22 ; aucune valeur attendue de test modifiée, aucun test ajouté, retiré ou sauté ; recette courte de
+**Acceptation.** Les preuves de T22 ; la liste de T23 et, pour chacun de ses dossiers, sa présence dans la Corbeille ; aucune valeur attendue de test modifiée, aucun test ajouté, retiré ou sauté ; recette courte de
 l'auteur (nouvelle partie jusqu'au premier écran jouable, F5, F6, F9), demandée par la règle du programme bien qu'aucun source de la DLL
 ne change.
 
@@ -1032,9 +1060,10 @@ ne change.
 question, pas de correction) ; la liste des tests qui diffère autrement que par les noms de la table ; un fichier de `Alundra/` qui change ; une réponse de Q-R-3
 qui demande un mécanisme non décrit dans « Effet des réponses » ; un
 conflit de renommage que Roslyn ne résout pas ; une occurrence changée que `prove_r5.py` n'explique pas ; un fichier hors des chemins ; un
-classement que les réponses de l'auteur ne tranchent pas ; un paquet absent du cache.
+classement que les réponses de l'auteur ne tranchent pas ; un paquet absent du cache ; en T23, un dossier que la Corbeille refuse ou qui n'y
+apparaît pas après l'envoi, ou un dossier dont le nom ne suit pas un ancien préfixe : arrêt et question, rien d'autre n'est envoyé.
 
-**Retour arrière.** `git revert` des commits de la tranche, dans l'ordre inverse.
+**Retour arrière.** `git revert` des commits de la tranche, dans l'ordre inverse ; les dossiers de T23 se restaurent depuis la Corbeille.
 
 ## 10. Tranche R6 — Documentation vivante 🧪 (faite et CONFIRMED le 2026-10-17, `7674ffa` à `2964d9a` ; révision 2 ; restent Q-R-4 et Q-R-5)
 
@@ -1253,7 +1282,7 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
   En attendant, R5 n'est pas exécutée ; sa découverte sera regénérée après R4 (les numéros de ligne changent).
   **Réponse de l'auteur (2026-10-22)** : « 1. Les ranger par le type de leur nom 2. Retirer seulement le préfixe 3. Seulement les 26
   scénarios 4. les laisser 5. Un type principal par fichier 6. rester à sa place 7. dossier dédié ».
-- **Q-R-3b** (2026-10-22, ouverte ; bloque T0a de R5) — Trois précisions sur les réponses à Q-R-3 :
+- **Q-R-3b** — **Tranchée le 2026-10-22 (D-R-16, D-R-19)**. Question d'origine (2026-10-22 ; bloquait T0a de R5) — Trois précisions sur les réponses à Q-R-3 :
   (a) **points 4 et 5 ensemble.** Les types partagés (les 5 collections xUnit, dont celle de la musique déclarée dans
   `AlundraMusicPlayerTests.cs`, et les hôtes d'aides) sont des types secondaires de fichiers à plusieurs types : le point 5 les scinde dans
   leur propre fichier, le point 4 les laisse. Lecture proposée : chacun dans son propre fichier, dans le dossier de son fichier d'origine
@@ -1262,7 +1291,7 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
   fichiers (`AlundraCornerTrackExportGuardTests.cs`, `AlundraZeroDurationLoopExportGuardTests.cs`).
   (c) **point 3** : « seulement les 26 scénarios » comprend-il les harnais de traces, que l'option de la question y mettait aussi ?
   **Réponse de l'auteur (2026-10-22, 2e tour)** : « chacun dans son propre fichier » : (a) tranché (D-R-16). **(b) et (c) restent sans
-  réponse.**
+  réponse.** **3e tour** : « b oui, c oui » : `ExportGuards/`, et les harnais de traces dans `Arcs/` (D-R-19).
 - **Q-R-4** — **Tranchée sous réserve de Q-R-4b** (2026-10-22, « 1 », D-R-17). Question d'origine (2026-10-17, choix faits en mode autonome pour R6, réversibles) — Valider ou corriger : `docs/intro-roadmap.md` traité comme
   vivant (ses chemins et noms corrigés) ; `docs/demarrage-nouvelle-partie.md` (daté du 2026-08-08) gardé tel quel ; les numéros de ligne
   cités dans les docs non recalculés (seuls le chemin et le nom changent) ; `docs/editeur-couverture-dll.md:64-66` corrigé (la ligne
@@ -1271,10 +1300,15 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
   `docs/intro-roadmap.md` traité comme vivant ; (2) `docs/demarrage-nouvelle-partie.md` gardé tel quel ; (3) les numéros de ligne des
   docs non recalculés ; (4) la correction de `docs/editeur-couverture-dll.md:64-66` ; (5) le commentaire `PlayerSetupWriter.cs:27`.
   R6 est faite : la correction sera une petite reprise de R6.
-- **Q-R-4b** (2026-10-22, ouverte) — Ta réponse « 1 » à Q-R-4 : lecture proposée : `docs/intro-roadmap.md` (la feuille de route du
+- **Q-R-4b** — **Tranchée le 2026-10-22 (D-R-17)** : « corrige les documents », portée en Q-R-4c. Question d'origine (2026-10-22) — Ta réponse « 1 » à Q-R-4 : lecture proposée : `docs/intro-roadmap.md` (la feuille de route du
   2026-08-23 pour l'intro, chantier clos) redevient un **document historique** : les chemins et noms que R6 y a corrigés (commit
   `542e62c9`, 9 lignes) reviennent aux anciens, et R5 ne touche plus ses lignes 26 et 63 (tranche R6b). Ou voulais-tu autre chose pour
   ce fichier (par exemple corriger aussi ses numéros de ligne) ? Recommandé : la lecture proposée.
+  **Réponse de l'auteur (2026-10-22, 3e tour)** : « corrige les documents » : la lecture proposée n'est pas retenue, rien n'est annulé ;
+  `docs/intro-roadmap.md` reste vivant et se corrige (R6b). La portée : Q-R-4c.
+- **Q-R-4c** (2026-10-22, ouverte ; bloque la relecture de R5 et le détail de R6b) — « Corrige les documents » : est-ce `docs/intro-roadmap.md`
+  seul, corrigé entièrement (ses chemins, ses noms et aussi ses numéros de ligne, que R6 n'a pas recalculés), ou **tous les documents
+  vivants** (le choix (3) de Q-R-4 : les numéros de ligne cités dans les docs, non recalculés par R6, le seraient partout) ?
 - **Q-R-5** — **Tranchée le 2026-10-22 (D-R-14)** : « corriger », dans une tranche R8. Question d'origine (2026-10-17) — Les renommages de R3 et R4 n'ont pas touché les **commentaires** du code : environ 300 anciens noms
   (`AlundraWorldProxy`, `AlundraEventProgramRunner`…) restent dans les commentaires de la DLL (≈ 60 fichiers) et des tests (≈ 90 fichiers),
   plus quelques chemins `Alundra/Scripts/…` (par exemple `HeroController.cs:42`, `AlundraScreenFadeCameraWiringTests.cs:24,29,96`). Les

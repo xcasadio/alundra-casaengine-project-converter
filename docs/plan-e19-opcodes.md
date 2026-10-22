@@ -12329,7 +12329,7 @@ critique, les vecteurs gelés, les tests nommés avec leurs valeurs, les outils)
 - **R-SM-8 — L'acceptation commune** : `dotnet test Alundra.Tests/Alundra.Tests.csproj -c Debug --no-build --blame-hang-timeout 300s --filter <les
   classes neuves>` rouge avant le code, vert après ; la suite entière en Release à copie neutralisée puis en Debug en dernier, `--blame-hang-timeout
   300s`, zéro échec ; `cmp` de la DLL ; les six traces inchangées (`git diff --exit-code`) ; la garde R7 à 0 ; un verifier frais.
-- **R-SM-9 — ADR** : le numéro se prend à l'exécution (le prochain libre au HEAD est 0080 le 2026-10-22 ; des collisions ont déjà eu lieu) ; sm3 (le membre
+- **R-SM-9 — ADR** : le numéro se prend à l'exécution (le prochain libre au HEAD est 0081 le 2026-10-22 ; des collisions ont déjà eu lieu) ; sm3 (le membre
   d'interface de `0x9E`) et sm4 (`0x97` = `IncreaseMp`, la couture de `0xB3`, la politique de `0x88`) en écrivent un ; sm1 et sm2 aucun (D-E19-2 :
   le binaire l'emporte déjà).
 
