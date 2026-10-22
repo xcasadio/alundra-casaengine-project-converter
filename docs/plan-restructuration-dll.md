@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), révisée le 2026-10-22 (révisions 2, 2b et 3) et **READY** à sa relecture du 2026-10-22, en attente de l'accord d'exécution ; R6b décidée (D-R-20) ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), **R5 faite et CONFIRMED le 2026-10-22** (`61d2d46b` à `613c6c9e`, mode AUTO accordé par l'auteur ; révision 3 ; D-R-21 ; recette de l'auteur à faire) ; R6b décidée (D-R-20) ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -906,7 +906,7 @@ après R6 ; **P4** des commentaires et des `<c>` gardent les anciens noms (≈ 9
 ligne vient du harnais des exécuteurs), ceux de T0 « Claude Opus 5.5 ». Reste la recette de l'auteur : nouvelle partie, les entités bougent,
 F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité sans avertissement.
 
-## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17 ; révision 1 **READY** ; Q-R-3 tranchée le 2026-10-22, D-R-13, D-R-16, D-R-19, ADR-0080 ; révisions 2 et 2b, REVISE, **révision 3** le 2026-10-22, **READY** à la seconde relecture de l'époque ; attend l'accord de l'auteur pour son exécution)
+## 9. Tranche R5 — Tests en miroir 🧪 (faite et CONFIRMED le 2026-10-22, `61d2d46b` à `613c6c9e`, en mode AUTO ; révision 3, **READY** à la seconde relecture de l'époque ; D-R-21 ; reste la recette de l'auteur)
 
 **Relecture (2026-10-17).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) le hachage de `Alundra.dll` ne pouvait pas rester
 égal : la version informative de l'assembly porte le commit (`Alundra/obj/Debug/net9.0-windows/Alundra.AssemblyInfo.cs:16`,
@@ -1133,6 +1133,17 @@ apparaît pas après l'envoi, ou un dossier dont le nom ne suit pas un ancien pr
 - **T23 ✅ (liste vide).** Sélection exacte du plan (enfants directs du dossier temporaire `C:\Users\casad\AppData\Local\Temp`, nom = l'un des anciens préfixes de la classe `temp-folder-prefix` de `r5-literals.tsv` — 14 préfixes distincts pour les 25 entrées —, suivi d'un GUID, dernière écriture, dossier compris, de plus de 24 heures) : le dossier compte 144 508 entrées, **aucune** ne commence par l'un de ces préfixes (les tests nettoient leurs dossiers ; les dossiers « Alundra… » restants, `AlundraBugReports`, `AlundraCasaEngine*Bake`, `AlundraCasaEngineConverterTests`, `alundra-conv-g1-export`, `alundra-font-tests`, ne suivent aucun de ces préfixes et ne sont pas visés). Une liste vide termine T23 : ni essai à blanc, ni envoi à la Corbeille, rien supprimé.
 - **Écarts et suites.** (1) L'ordre d'exécution de xUnit n'a produit aucun échec dans le nouvel ordre (4 exécutions complètes vertes). (2) Les réponses de l'auteur (D-R-21) tranchent les points (1) et (2) de « À soumettre » ; (3) et (4) restent des constats. (3) Restent : la recette courte de l'auteur (nouvelle partie jusqu'au premier écran jouable, F5, F6, F9) et le titre du §9, que la session principale change après sa vérification.
 - **À soumettre à l'auteur (rien n'est tranché à sa place).** (1) Les 77 fichiers dont le nom ne désigne ni un type ni un dossier de la DLL sont rangés par leur sujet (colonne `basis` = `subject` ou `refs`) : la règle « par le type de son nom » ne les tranche pas. (2) `Arcs/` compte 33 fichiers : les 26 scénarios et harnais, `HeadlessIntroSimulation` (coupé de `IntroTraceHarnessTests.cs`, donc dans son dossier, P-R5-1 (iv)) et six fichiers d'aide qui ne servent qu'aux scénarios (`ArcChecks`, `ArcSamples`, `ArcSnap`, `LeverArcs`, `LeverCell`, `LeverStampedSounds`), classés par leurs utilisateurs comme toute aide ; si « rien d'autre » (point 3) exclut ces six, ils vont dans `Support/`. (3) P-R5-1 (iii) donne à 19 fichiers d'aide le nom de leur premier type déclaré (par exemple `AlundraArcSupport.cs` devient `Support/ArcSpec.cs`, `AlundraDialogueSpeakerOracle.cs` devient `Support/SpeakerAnnex.cs`) : les noms de fichier ne disent plus ce qu'ils contiennent. (4) Les suites complètes durent près de 7 minutes (et non 4) : la marge sous les 10 minutes d'une commande est étroite pour T1 à T21.
+
+**Vérification (2026-10-22, verifier neuf) : CONFIRMED.** Rejoué par lui : les 44 preuves `prove_r5.py` (move et code, 81 entrées L1) et
+`prove_r5_nested.py` sur `968e468b` ; une comparaison indépendante des lignes de `Alundra.Tests` avant et après (seuls changent les
+en-têtes `#nullable` des fichiers coupés, la forme courte `[GpuFact]`, les captures et qualifications relevées ; mêmes comptes de
+`Fact`, `Theory`, `GpuFact`, `InlineData`, `MemberData`, un seul `Skip`) ; les listes `--list-tests` de Release et de Debug égales à
+celles de T0d par les tables ; `git diff --quiet ce9c36f0 HEAD -- Alundra/ CasaEngineMonogame` à 0 ; la solution en Release (copie
+neutralisée) puis en Debug sans erreur, `cmp` de la DLL Debug identique ; `Alundra.Tests` 5 097 / 0 en Release et en Debug ;
+`check_names.py --tests` à 0 ; T23 : aucun des 144 669 enfants du dossier temporaire ne suit un ancien préfixe, rien n'a été envoyé ni
+supprimé. Remarques P4 : les suites réécrivent les fins de ligne des traces de héros (contenu inchangé, remis par `git checkout`) ; la
+modification locale de l'auteur dans `CasaEngine.Launcher/Program.cs` entre dans les constructions sans toucher au pointeur. Reste la
+recette courte de l'auteur (nouvelle partie jusqu'au premier écran jouable, F5, F6, F9).
 
 ## 10. Tranche R6 — Documentation vivante 🧪 (faite et CONFIRMED le 2026-10-17, `7674ffa` à `2964d9a` ; révision 2 ; restent Q-R-4 et Q-R-5)
 
