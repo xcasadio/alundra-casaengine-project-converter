@@ -3,6 +3,7 @@ using System.IO;
 using Xunit;
 using Alundra.Maps;
 using Alundra.Events;
+using Alundra.Tests.Cells;
 
 namespace Alundra.Tests;
 
@@ -10,7 +11,7 @@ namespace Alundra.Tests;
 /// T1/T2 of docs/plan-e11-audio.md, slice E11.a: drives the REAL production call site -
 /// <see cref="WorldProxy.RunMapEventsPass"/>/<see cref="EventProgramRunner.Dispatch"/> -
 /// through <see cref="HeadlessIntroSimulation"/> (Alundra.Tests\IntroTraceHarnessTests.cs), not a
-/// synthetic document, exactly like <see cref="AlundraCellStoreProductionTests"/> does for E7.a. The
+/// synthetic document, exactly like <see cref="CellStoreProductionTests"/> does for E7.a. The
 /// exact counts are §1.1's own recount, not <c>&gt; 0</c> assertions (§2.1: the goldens are BLIND to
 /// this work - a wrong or missing dispatch produces the identical trace text, so this test is the only
 /// oracle for "the request happened at all").

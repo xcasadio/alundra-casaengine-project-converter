@@ -21,6 +21,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Hero;
+using Alundra.Tests.Cells;
 
 namespace Alundra.Tests.Maps;
 
@@ -229,7 +230,7 @@ public sealed class WorldProxyGlobalFreezeTests : IDisposable
     }
 
     /// <summary>Same headless (no GraphicsDevice) real-map-389 <see cref="TileMapComponent"/> montage as
-    /// <see cref="AlundraCellVisualSyncTests.BuildHeadlessProxy"/> - built independently here (that
+    /// <see cref="CellVisualSyncTests.BuildHeadlessProxy"/> - built independently here (that
     /// class' own helpers are private) because THIS test needs the raw <see cref="World"/>/<see cref="Entity"/>
     /// BEFORE any proxy touches them, to call <see cref="WorldProxy.InitializeWithWorld"/> directly
     /// instead of <c>InstallCellAndOverlaySystems</c>.</summary>
@@ -301,7 +302,7 @@ public sealed class WorldProxyGlobalFreezeTests : IDisposable
     /// <summary>
     /// [R5]: crosses <see cref="WorldProxy.InitializeWithWorld"/>'s two early returns (a real
     /// "tileMap" entity with loaded <see cref="TileMapData"/>, exactly the montage
-    /// <see cref="AlundraCellVisualSyncTests"/> already proves is reachable headless) and pins the two
+    /// <see cref="CellVisualSyncTests"/> already proves is reachable headless) and pins the two
     /// T1 instructions that sit right after them (AlundraWorldProxy.cs:527/535):
     /// <see cref="GameState.InstallForMapEntry"/> really runs (a stale TemporaryFlags entry and a
     /// non-null InteractLatchEntity, both seeded BEFORE the call, are gone after it), and

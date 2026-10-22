@@ -8,13 +8,13 @@ using Alundra.Physics;
 using Alundra.Cells;
 using Alundra.Tests.Events;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Cells;
 
 /// <summary>
 /// Covers <see cref="CellStore"/> against the REAL map 389 ("Ship Klark (beginning)") cell data.
 /// docs/plan-e7-mutation-tuiles.md, slice E7.a, acceptance 2 and 4. Acceptance 1 (synthetic, per-opcode
 /// dispatch) lives in <see cref="EventProgramRunnerTests"/>; acceptance 3 (the production call
-/// site, via the real headless intro harness) lives in <see cref="AlundraCellStoreProductionTests"/>.
+/// site, via the real headless intro harness) lives in <see cref="CellStoreProductionTests"/>.
 ///
 /// E7.b (docs/plan-e7-mutation-tuiles.md, acceptance item 9, picking up an E7.a deferral): these used to
 /// self-skip silently when alundra-project/ was absent from the checkout - the same pattern every other
@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// this kind of test (a self-skip can hide these 5 tests going silently unrun for a long time). They now
 /// throw, naming the missing export, instead of self-skipping.
 /// </summary>
-public class AlundraCellStoreTests
+public class CellStoreTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 
@@ -41,7 +41,7 @@ public class AlundraCellStoreTests
         }
 
         throw new InvalidOperationException(
-            $"AlundraCellStoreTests: no 'alundra-project/Maps' directory found above '{AppContext.BaseDirectory}' - "
+            $"CellStoreTests: no 'alundra-project/Maps' directory found above '{AppContext.BaseDirectory}' - "
             + "these tests need the real converter export of map 389 and cannot self-skip without one "
             + "(docs/plan-e7-mutation-tuiles.md, slice E7.b, acceptance item 9).");
     }
@@ -57,7 +57,7 @@ public class AlundraCellStoreTests
         if (!File.Exists(tileMapPath))
         {
             throw new InvalidOperationException(
-                $"AlundraCellStoreTests: '{tileMapPath}' not found - the real map 389 export is incomplete "
+                $"CellStoreTests: '{tileMapPath}' not found - the real map 389 export is incomplete "
                 + "in this checkout.");
         }
 

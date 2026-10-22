@@ -13,7 +13,7 @@ using Xunit;
 using Size = CasaEngine.Core.Math.Size;
 using Alundra.Cells;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Cells;
 
 /// <summary>
 /// Covers <see cref="WallPlacementOverlay"/>: parsing the "AlundraWallPlacements" custom property

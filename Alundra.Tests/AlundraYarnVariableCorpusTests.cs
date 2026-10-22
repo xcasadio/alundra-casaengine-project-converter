@@ -9,6 +9,7 @@ using Xunit;
 using Yarn;
 using Alundra.Dialogues.Yarn;
 using Alundra.Tests.Support;
+using Alundra.Tests.Cells;
 
 namespace Alundra.Tests;
 
@@ -27,7 +28,7 @@ namespace Alundra.Tests;
 /// program can touch a variable.
 ///
 /// These used to self-skip silently when <c>alundra-project/</c> was absent - following
-/// <see cref="AlundraCellStoreProductionTests"/>'s own fix (docs/plan-e7-mutation-tuiles.md, E7.b), they
+/// <see cref="CellStoreProductionTests"/>'s own fix (docs/plan-e7-mutation-tuiles.md, E7.b), they
 /// throw instead, naming the missing export.
 /// </summary>
 public sealed class AlundraYarnVariableCorpusTests

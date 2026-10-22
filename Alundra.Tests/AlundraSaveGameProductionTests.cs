@@ -19,6 +19,7 @@ using Alundra.UI.Inventory;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
+using Alundra.Tests.Cells;
 
 namespace Alundra.Tests;
 
@@ -27,7 +28,7 @@ namespace Alundra.Tests;
 /// (<c>alundra-project/</c>): a New Game capture validates, map 389's real <c>.tileMap</c> reads 52 x 60, and a
 /// save at the bounds of every domain, applied, is drawn by the jauge and both inventories without an exception.
 /// These tests need the export and FAIL naming it when it is missing, never self-skip (the convention of
-/// <see cref="AlundraCellStoreProductionTests"/>). The item table is the export's own, loaded once per test and
+/// <see cref="CellStoreProductionTests"/>). The item table is the export's own, loaded once per test and
 /// used both for the state (New Game inventory, counters at their ceiling) and for the validation rules. Nothing
 /// here reads or writes a save file (D-E16-31).
 /// </summary>

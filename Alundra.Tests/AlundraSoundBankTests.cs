@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Xunit;
 using Alundra.Audio;
+using Alundra.Tests.Cells;
 
 namespace Alundra.Tests;
 
@@ -9,7 +10,7 @@ namespace Alundra.Tests;
 /// T3 of docs/plan-e11-audio.md, slice E11.a: <see cref="SfxBank.TryResolve"/> as pure data,
 /// against the real <c>Sounds/sfx-manifest.json</c> export (no synthetic fixture - every fact asserted
 /// here is read straight off the manifest itself, same self-skip-forbidden shape as
-/// <see cref="AlundraCellStoreProductionTests"/>).
+/// <see cref="CellStoreProductionTests"/>).
 /// </summary>
 public class AlundraSoundBankTests
 {

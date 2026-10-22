@@ -25,7 +25,7 @@ using Alundra.Cells;
 using Alundra.Audio;
 using Alundra.Transitions;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Cells;
 
 /// <summary>
 /// E7.b acceptance (docs/plan-e7-mutation-tuiles.md, slice E7.b): the visual + navigation applier
@@ -40,16 +40,16 @@ namespace Alundra.Tests;
 /// <see cref="WallPlacementOverlayTests"/>) - never the DLL-side model, which would stay "correct" even if
 /// the applier stopped calling <c>AddSortedOverlayTile</c>.
 ///
-/// Self-contained, no self-skip (see the E7.a-deferral fix in <see cref="AlundraCellStoreTests"/>): throws,
+/// Self-contained, no self-skip (see the E7.a-deferral fix in <see cref="CellStoreTests"/>): throws,
 /// naming the missing export, when alundra-project/ is absent.
 /// </summary>
-public class AlundraCellVisualSyncTests : IDisposable
+public class CellVisualSyncTests : IDisposable
 {
     private const string WorldName = "Ship Klark (beginning)-389";
     private const string TileMapEntityName = "tileMap";
     private const int RenderLayerCount = 4;
 
-    public AlundraCellVisualSyncTests()
+    public CellVisualSyncTests()
     {
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
@@ -92,7 +92,7 @@ public class AlundraCellVisualSyncTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraCellVisualSyncTests: no 'alundra-project/Maps' directory found above "
+            $"CellVisualSyncTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - these tests need the real converter export of map 389 and "
             + "cannot self-skip without one (docs/plan-e7-mutation-tuiles.md, slice E7.b).");
     }
@@ -104,7 +104,7 @@ public class AlundraCellVisualSyncTests : IDisposable
             "Ship Klark (beginning)-389.tileMap");
         if (!File.Exists(tileMapPath))
         {
-            throw new InvalidOperationException($"AlundraCellVisualSyncTests: '{tileMapPath}' not found.");
+            throw new InvalidOperationException($"CellVisualSyncTests: '{tileMapPath}' not found.");
         }
 
         var tileMapData = new TileMapData();
@@ -1026,6 +1026,6 @@ public class AlundraCellVisualSyncTests : IDisposable
             }
         }
 
-        throw new InvalidOperationException($"AlundraCellVisualSyncTests: no local tile id found for raw id {rawTileId}.");
+        throw new InvalidOperationException($"CellVisualSyncTests: no local tile id found for raw id {rawTileId}.");
     }
 }

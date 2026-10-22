@@ -35,6 +35,7 @@ using Alundra.SaveGames;
 using Alundra.Maps;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Items;
+using Alundra.Tests.Cells;
 
 namespace Alundra.Tests.Support;
 
@@ -50,7 +51,7 @@ internal static class SaveGameDirectorTestSupport
     internal const string Map389WorldName = "Ship Klark (beginning)-389";
 
     /// <summary>The real converter export, with the two files the rules read. Fails naming the export when it is
-    /// missing - never self-skips (the convention of <see cref="AlundraCellStoreProductionTests"/>).</summary>
+    /// missing - never self-skips (the convention of <see cref="CellStoreProductionTests"/>).</summary>
     internal static string FindProjectRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);

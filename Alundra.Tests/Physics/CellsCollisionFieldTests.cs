@@ -9,6 +9,7 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Physics;
 using Alundra.Cells;
+using Alundra.Tests.Cells;
 
 namespace Alundra.Tests.Physics;
 

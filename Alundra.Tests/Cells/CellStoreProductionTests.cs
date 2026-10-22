@@ -6,7 +6,7 @@ using Alundra.Maps;
 using Alundra.Events;
 using Alundra.Physics;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Cells;
 
 /// <summary>
 /// Acceptance 3 of docs/plan-e7-mutation-tuiles.md, slice E7.a: drives the REAL production call site -
@@ -21,9 +21,9 @@ namespace Alundra.Tests;
 ///
 /// E7.b (docs/plan-e7-mutation-tuiles.md, acceptance item 9, picking up an E7.a deferral): these used to
 /// self-skip silently when alundra-project/ was absent - they now throw, naming the missing export,
-/// instead (same fix as <see cref="AlundraCellStoreTests"/>).
+/// instead (same fix as <see cref="CellStoreTests"/>).
 /// </summary>
-public class AlundraCellStoreProductionTests
+public class CellStoreProductionTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 
@@ -42,7 +42,7 @@ public class AlundraCellStoreProductionTests
         }
 
         throw new InvalidOperationException(
-            $"AlundraCellStoreProductionTests: no 'alundra-project/Maps' directory found above "
+            $"CellStoreProductionTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - these tests need the real converter export of map 389 and "
             + "cannot self-skip without one (docs/plan-e7-mutation-tuiles.md, slice E7.b, acceptance item 9).");
     }
