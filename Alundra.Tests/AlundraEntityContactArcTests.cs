@@ -11,6 +11,7 @@ using Alundra.Events;
 using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rendering.Effects;
 
 namespace Alundra.Tests;
 

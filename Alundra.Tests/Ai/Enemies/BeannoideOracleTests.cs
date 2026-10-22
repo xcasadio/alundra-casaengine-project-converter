@@ -19,6 +19,7 @@ using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Tests.Support;
 using Alundra.Tests.Rng;
+using Alundra.Tests.Rendering.Effects;
 
 namespace Alundra.Tests.Ai.Enemies;
 

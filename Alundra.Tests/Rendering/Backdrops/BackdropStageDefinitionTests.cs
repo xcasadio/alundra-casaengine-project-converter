@@ -15,7 +15,7 @@ using Alundra.Rendering.Backdrops;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Backdrops;
 
 /// <summary>
 /// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, §3 "S1"/"S2") - covers

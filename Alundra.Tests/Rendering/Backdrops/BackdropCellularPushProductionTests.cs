@@ -15,7 +15,7 @@ using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Backdrops;
 
 /// <summary>
 /// D-E9d - production-site pin for <see cref="BackdropStage.PushFrame"/> feeding BOTH the

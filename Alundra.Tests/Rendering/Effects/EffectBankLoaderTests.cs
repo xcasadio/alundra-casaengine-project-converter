@@ -6,18 +6,18 @@ using Xunit;
 using Alundra.Rendering.Effects;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Effects;
 
 /// <summary>
 /// E19.g G3a (docs/plan-e19-opcodes.md, section 1.2o.6, G3A-R1): the loader of the effect companions - the map one found through <c>Maps/world-index.json</c> like the
 /// backdrops, the global one cached for the game. A map without companion has no effect and no warning; an unreadable companion has one warning and no effect.
 /// </summary>
-[Collection(AlundraEffectLoaderCollection.Name)]
-public sealed class AlundraEffectBankLoaderTests : IDisposable
+[Collection(EffectLoaderCollection.Name)]
+public sealed class EffectBankLoaderTests : IDisposable
 {
-    private readonly string _projectPath = Path.Combine(Path.GetTempPath(), "AlundraEffectBankLoaderTests_" + Guid.NewGuid());
+    private readonly string _projectPath = Path.Combine(Path.GetTempPath(), "EffectBankLoaderTests_" + Guid.NewGuid());
 
-    public AlundraEffectBankLoaderTests()
+    public EffectBankLoaderTests()
     {
         EffectBankLoader.ResetForTests();
     }
@@ -174,11 +174,4 @@ public sealed class AlundraEffectBankLoaderTests : IDisposable
         var ship = EffectBankLoader.Load(root, EffectGolden.WorldNameOf(root, 391));
         Assert.Equal(5, ship.Records.Count(r => (r.Flags & 0x40) != 0));
     }
-}
-
-/// <summary>The loader keeps a static cache of the global companion: the tests that reset or fill it do not run together.</summary>
-[CollectionDefinition(Name)]
-public sealed class AlundraEffectLoaderCollection
-{
-    public const string Name = "AlundraEffectLoader";
 }

@@ -4,7 +4,7 @@ using Xunit;
 using Alundra.Rendering.Backdrops;
 using Alundra.Tests.Events;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Backdrops;
 
 /// <summary>
 /// Covers <see cref="BackdropLoader"/>'s path resolution and degraded-mode contract (see its class

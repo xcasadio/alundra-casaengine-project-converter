@@ -20,8 +20,9 @@ using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Rendering.Backdrops;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Effects;
 
 /// <summary>
 /// E19.g G3c (docs/plan-e19-opcodes.md, G3C-R1 to G3C-R5, ADR-0049): the DLL pushes the effect quads of the reservoir to the engine's
@@ -31,13 +32,13 @@ namespace Alundra.Tests;
 /// Shares <see cref="AlundraMusicPlayerSingletonCollection"/>: the warp departure arms the real BGM fade director.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraEffectQuadPushTests : IDisposable
+public sealed class EffectQuadPushTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
 
     private static readonly int[] Plain = { -10, -20, 10, -20, -10, 20, 10, 20 };
 
-    public AlundraEffectQuadPushTests()
+    public EffectQuadPushTests()
     {
         BackdropWarpDepartureSupport.ResetSingletons();
     }

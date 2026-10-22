@@ -5,13 +5,13 @@ using Alundra.Entities;
 using Alundra.Rendering.Effects;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Effects;
 
 /// <summary>
 /// E14.a1b T2 (docs/plan-e14-ia-native.md section 1.3b): the frozen anchor of the break effect (<see cref="FrozenEffectAnchor"/>) is a snapshot of the destroyed entity (status 4, X, Y, <c>PosZ + 1</c>, the depth key of
 /// E20.f1b), and an effect created from it in a frame of two or three ticks keeps the position and the key of the entity after the entity was recycled (status 0) and moved.
 /// </summary>
-public sealed class AlundraFrozenAnchorTests
+public sealed class FrozenAnchorTests
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
 

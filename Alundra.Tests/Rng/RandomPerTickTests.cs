@@ -3,6 +3,8 @@ using System;
 using Xunit;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
+using Alundra.Tests.Rendering.Backdrops;
+using Alundra.Tests.Rendering.Effects;
 
 namespace Alundra.Tests.Rng;
 

@@ -8,6 +8,7 @@ using Alundra.Events;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rendering.Effects;
 
 namespace Alundra.Tests;
 
@@ -301,7 +302,7 @@ public sealed class AlundraVisionArcTests
         Assert.Equal(0x93, effects.Sites[^1].Opcode);
         var slot = Assert.Single(effects.Stage.Reservoir.ActiveSlots);
         Assert.Equal((0, 0, 10485760, 3145729), (slot.RecordIndex, slot.X, slot.Y, slot.Z));
-        Assert.Equal(AlundraEffectOpcodeTests.Codes(476)[effects.Sites.Last(t => t.Opcode == 0x92).Pc + 2], slot.TargetAnimation);
+        Assert.Equal(EffectOpcodeTests.Codes(476)[effects.Sites.Last(t => t.Opcode == 0x92).Pc + 2], slot.TargetAnimation);
         Assert.True(aura.AliveSinceCreation, "the aura was freed");
 
         Assert.True(WarpDirector.Instance.HasPendingArrival);

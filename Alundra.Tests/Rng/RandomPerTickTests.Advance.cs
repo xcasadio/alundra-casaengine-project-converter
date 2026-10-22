@@ -13,6 +13,7 @@ using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Rendering.Backdrops;
 
 namespace Alundra.Tests.Rng;
 

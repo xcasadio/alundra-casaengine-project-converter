@@ -13,6 +13,7 @@ using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Rendering.Effects;
+using Alundra.Tests.Rendering.Effects;
 
 namespace Alundra.Tests.Support;
 

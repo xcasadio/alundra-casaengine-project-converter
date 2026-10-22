@@ -4,13 +4,13 @@ using System.Linq;
 using Xunit;
 using Alundra.Rendering.Effects;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Effects;
 
 /// <summary>
 /// E20.f1b B2 (docs/plan-e20-heros.md section 1.9, ADR-0057 D-E20-28, ADR-0059): the stage lets the hero create its effects AT ONCE and release them at their tick. Alone, on a synthetic bank whose effect 0 of the map
 /// table is a loop of 20 one-tick frames, so that <see cref="EffectSlot.FrameIndex"/> counts the updates a slot received.
 /// </summary>
-public sealed class AlundraEffectStageNowTests
+public sealed class EffectStageNowTests
 {
     private sealed class FakeAnchor : IEffectAnchor
     {

@@ -11,7 +11,7 @@ using Alundra.Rendering.Effects;
 using Alundra.Tests.Support;
 using Alundra.Tests.Rng;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Effects;
 
 /// <summary>
 /// E14.a1b T3 (docs/plan-e14-ia-native.md section 1.3b, D-E14-9, ADR-0060): <c>DestroyEntity(e, fx)</c> (<c>0x8003A59C</c>), in the order of the binary, for ALL its callers: the status 4, <c>EventTrigger = -1</c>, and the break effect
@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// of the carrier (E20.g) are named stubs. Shares the generator's collection: the destruction must draw no number.
 /// </summary>
 [Collection(RandomStaticStateCollection.Name)]
-public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
+public sealed class DestroyEntityBreakEffectTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
     private readonly ulong _seed = GameRandom.RandomSeed;

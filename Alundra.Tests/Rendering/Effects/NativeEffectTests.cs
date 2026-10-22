@@ -23,7 +23,7 @@ using Alundra.SaveGames;
 using Alundra.Tests.Support;
 using Alundra.Tests.Rng;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Effects;
 
 /// <summary>
 /// E19.g G3d (docs/plan-e19-opcodes.md, section 1.2o.6, G3D-R1 to R4): the life vessel (opcode <c>0x82</c>, sub-case <c>0x53</c>) through the real interpreter and the effect stage,
@@ -31,12 +31,12 @@ namespace Alundra.Tests;
 /// creators of modes 1 and 3 against <c>g3d-modes13.tsv</c>. Every test that draws from <see cref="GameRandom"/> lives here, in the collection that serialises its static state.
 /// </summary>
 [Collection(RandomStaticStateCollection.Name)]
-public sealed class AlundraNativeEffectTests : IDisposable
+public sealed class NativeEffectTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
     private static readonly int[] VesselProgram = { 0x82, 0x53, 0x1A, 9, 0xFF };
 
-    public AlundraNativeEffectTests()
+    public NativeEffectTests()
     {
         GameRandom.Reset();
         ResetSingletons();
@@ -76,7 +76,7 @@ public sealed class AlundraNativeEffectTests : IDisposable
             directory = directory.Parent;
         }
 
-        throw new InvalidOperationException($"AlundraNativeEffectTests: no 'docs/plan-e19-g3d-annexe/discovery/{folder}/{name}' found above '{AppContext.BaseDirectory}'.");
+        throw new InvalidOperationException($"NativeEffectTests: no 'docs/plan-e19-g3d-annexe/discovery/{folder}/{name}' found above '{AppContext.BaseDirectory}'.");
     }
 
     private static string[][] ReadTable(string name) =>

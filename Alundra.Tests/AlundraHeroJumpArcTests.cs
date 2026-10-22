@@ -9,6 +9,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rendering.Effects;
 
 namespace Alundra.Tests;
 

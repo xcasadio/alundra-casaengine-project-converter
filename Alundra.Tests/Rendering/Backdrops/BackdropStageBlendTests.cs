@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Rendering.Backdrops;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Backdrops;
 
 /// <summary>
 /// E19.g G2c (rule G2c-R3, D-E19-68, ADR-0035) - the backdrop layers render the per-texel PSX semi-transparency like the original

@@ -12,6 +12,7 @@ using Alundra.Hero;
 using Alundra.Cells;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rendering.Effects;
 
 namespace Alundra.Tests;
 

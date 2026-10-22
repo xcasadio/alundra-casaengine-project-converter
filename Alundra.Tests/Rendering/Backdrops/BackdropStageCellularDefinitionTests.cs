@@ -9,7 +9,7 @@ using Xunit;
 using Alundra.Rendering.Backdrops;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Backdrops;
 
 /// <summary>
 /// D-E9d (docs/plan-e9d-mode-cellulaire.md) - covers <see cref="BackdropStage.BuildCellularDefinitions"/>,

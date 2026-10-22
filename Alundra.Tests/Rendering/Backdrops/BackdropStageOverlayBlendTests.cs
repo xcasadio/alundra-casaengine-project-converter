@@ -7,7 +7,7 @@ using Xunit;
 using Alundra.Rendering.Backdrops;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Backdrops;
 
 /// <summary>
 /// E19.g G2d (rule G2d-R3, O-E19-58, ADR-0037): the overlay tint of a map is drawn with the PSX mode of its <c>BGColorA</c> byte

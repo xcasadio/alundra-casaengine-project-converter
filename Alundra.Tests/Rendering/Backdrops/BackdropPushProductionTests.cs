@@ -14,7 +14,7 @@ using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Backdrops;
 
 /// <summary>
 /// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, §3 "S2", D-E9b-2/D-E9b-11) - production-site pins for

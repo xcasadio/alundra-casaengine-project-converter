@@ -6,7 +6,7 @@ using Xunit;
 using Alundra.Rendering.Backdrops;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rendering.Backdrops;
 
 /// <summary>
 /// E19.g G2c (rules G2c-R1 and G2c-R3, D-E19-68, ADR-0035): the backdrop layers of the real companions get the PSX mode of their

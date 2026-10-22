@@ -9,6 +9,7 @@ using Alundra.Cameras;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rendering.Effects;
 
 namespace Alundra.Tests;
 
