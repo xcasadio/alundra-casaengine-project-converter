@@ -20,7 +20,7 @@ using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.SaveGames;
 
 /// <summary>
 /// E16.d T4 (docs/plan-e16-etat-partie.md, K7, SD1 to SD4, SD13): the load key F9 up to the departure - each
@@ -31,7 +31,7 @@ namespace Alundra.Tests;
 /// catalog answering yes); the service is a fake (D-E16-31).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
+public sealed class SaveGameDirectorLoadTests : IDisposable
 {
     private static readonly DateTime T0 = new(2026, 9, 28, 12, 0, 0, DateTimeKind.Utc);
 
@@ -40,7 +40,7 @@ public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
     private readonly GameManager _gameManager;
     private readonly string _root;
 
-    public AlundraSaveGameDirectorLoadTests()
+    public SaveGameDirectorLoadTests()
     {
         ResetSingletons();
         _root = FindProjectRoot();

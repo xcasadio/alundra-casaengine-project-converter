@@ -25,7 +25,7 @@ using Alundra.Tests.Maps;
 using Alundra.Tests.Items;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.SaveGames;
 
 /// <summary>
 /// E16.d T5 (docs/plan-e16-etat-partie.md, K8, D-E16-19, SC7, SD5, SD8, SD9): the pending load applied on its
@@ -35,7 +35,7 @@ namespace Alundra.Tests;
 /// end-to-end test never touches the asset catalog); the service is a fake (D-E16-31).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSaveGameApplyTests : IDisposable
+public sealed class SaveGameApplyTests : IDisposable
 {
     private static readonly DateTime T0 = new(2026, 9, 28, 12, 0, 0, DateTimeKind.Utc);
 
@@ -49,7 +49,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
     private readonly GameManager _gameManager;
     private readonly string _root;
 
-    public AlundraSaveGameApplyTests()
+    public SaveGameApplyTests()
     {
         ResetSingletons();
         _root = FindProjectRoot();

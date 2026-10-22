@@ -14,7 +14,7 @@ using Alundra.SaveGames;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.SaveGames;
 
 /// <summary>
 /// E19.d2a S1 (docs/plan-e19-opcodes.md section 1.2h.1, D-E19-33): the test-save presets of
@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// the preset: new game plus the preset, nothing else.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraTestSavesTests : IDisposable
+public sealed class TestSavesTests : IDisposable
 {
     // Copy of the slot-name rule of the engine's ADR-0044 (SaveGameNames.SlotNameRegex,
     // CasaEngine/Framework/SaveGames/SaveGameNames.cs, internal to the engine): 1 to 32 characters among
@@ -31,7 +31,7 @@ public sealed class AlundraTestSavesTests : IDisposable
 
     private static readonly DateTime T0 = new(2026, 10, 2, 12, 0, 0, DateTimeKind.Utc);
 
-    public AlundraTestSavesTests()
+    public TestSavesTests()
     {
         ResetSingletons();
     }

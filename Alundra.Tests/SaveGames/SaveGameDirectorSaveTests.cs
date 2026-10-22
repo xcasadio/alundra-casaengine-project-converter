@@ -11,7 +11,7 @@ using Alundra.Entities;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.SaveGames;
 
 /// <summary>
 /// E16.d T3 (docs/plan-e16-etat-partie.md, K6, SD4, SD12): the save keys F5 and F6 - each precondition refused
@@ -22,12 +22,12 @@ namespace Alundra.Tests;
 /// (D-E16-31).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSaveGameDirectorSaveTests : IDisposable
+public sealed class SaveGameDirectorSaveTests : IDisposable
 {
     private readonly HeldKeys _keys = new();
     private readonly FakeSaveSlots _slots = new();
 
-    public AlundraSaveGameDirectorSaveTests()
+    public SaveGameDirectorSaveTests()
     {
         ResetSingletons();
         SaveGameDirector.RecipeKeysEnabledOverrideForTests = true;

@@ -12,7 +12,7 @@ using Alundra.Entities;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.SaveGames;
 
 /// <summary>
 /// E16.d T2 (docs/plan-e16-etat-partie.md, K1 to K5, D-E16-33, SD6, SD7, SD13): the debug switch, the recipe keys
@@ -21,9 +21,9 @@ namespace Alundra.Tests;
 /// (D-E16-31).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
+public sealed class SaveGameDirectorKeysTests : IDisposable
 {
-    public AlundraSaveGameDirectorKeysTests()
+    public SaveGameDirectorKeysTests()
     {
         ResetSingletons();
     }

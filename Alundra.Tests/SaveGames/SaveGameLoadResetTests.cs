@@ -12,7 +12,7 @@ using Alundra.UI.SubInventory;
 using Alundra.Entities;
 using Alundra.Tests.Items;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.SaveGames;
 
 /// <summary>
 /// E16.d T1 (docs/plan-e16-etat-partie.md, K8 steps 1, 3 and 4, D-E16-19, SC1, SC7): the session resets a
@@ -20,9 +20,9 @@ namespace Alundra.Tests;
 /// <see cref="HudDirector.ResetDisplayForLoad"/> and the <c>ResetSessionForLoad</c> of both inventory
 /// directors, the post-process and the portrait. Nothing here reads or writes a save file (D-E16-31).
 /// </summary>
-public sealed class AlundraSaveGameLoadResetTests : IDisposable
+public sealed class SaveGameLoadResetTests : IDisposable
 {
-    public AlundraSaveGameLoadResetTests()
+    public SaveGameLoadResetTests()
     {
         ResetSingletons();
     }

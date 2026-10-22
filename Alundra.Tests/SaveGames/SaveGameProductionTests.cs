@@ -21,7 +21,7 @@ using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
 using Alundra.Tests.Cells;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.SaveGames;
 
 /// <summary>
 /// E16.c T4 (docs/plan-e16-etat-partie.md, C3, C4, D-E16-32, SC5) on the REAL converter export
@@ -32,11 +32,11 @@ namespace Alundra.Tests;
 /// used both for the state (New Game inventory, counters at their ceiling) and for the validation rules. Nothing
 /// here reads or writes a save file (D-E16-31).
 /// </summary>
-public sealed class AlundraSaveGameProductionTests : IDisposable
+public sealed class SaveGameProductionTests : IDisposable
 {
     private const string Map389WorldName = "Ship Klark (beginning)-389";
 
-    public AlundraSaveGameProductionTests()
+    public SaveGameProductionTests()
     {
         ResetSingletons();
     }
@@ -76,7 +76,7 @@ public sealed class AlundraSaveGameProductionTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraSaveGameProductionTests: no 'alundra-project/Maps/world-index.json' with "
+            $"SaveGameProductionTests: no 'alundra-project/Maps/world-index.json' with "
             + $"'alundra-project/Data/items-properties.json' found above '{AppContext.BaseDirectory}' - these tests "
             + "need the real converter export and cannot self-skip without one (docs/plan-e16-etat-partie.md, E16.c T4).");
     }

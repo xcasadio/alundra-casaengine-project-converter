@@ -11,7 +11,7 @@ using Alundra.Items;
 using Alundra.SaveGames;
 using Alundra.Tests.Items;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.SaveGames;
 
 /// <summary>
 /// E16.c T4 (docs/plan-e16-etat-partie.md, C3, C4, D-E16-32, SC2, SC6): <see cref="SaveGame.TryValidate"/>,
@@ -19,10 +19,10 @@ namespace Alundra.Tests;
 /// <see cref="Path.GetTempPath"/>, deleted by <see cref="Dispose"/>) holding a <c>world-index.json</c> and test
 /// <c>.tileMap</c> files, a test item table and an injected catalog predicate. Each domain row is checked at its
 /// minimum and maximum (accepted), then one past each end (refused, the message naming the field). The tests on
-/// the real export are in <see cref="AlundraSaveGameProductionTests"/>. Nothing here reads or writes a save
+/// the real export are in <see cref="SaveGameProductionTests"/>. Nothing here reads or writes a save
 /// file (D-E16-31).
 /// </summary>
-public sealed class AlundraSaveGameValidationTests : IDisposable
+public sealed class SaveGameValidationTests : IDisposable
 {
     // ---- Fixture maps: id -> (world path, what the .tileMap holds) -------------------------------------
 
@@ -50,11 +50,11 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     private readonly ItemTables _itemTables;
     private readonly SaveGameRules _rules;
 
-    public AlundraSaveGameValidationTests()
+    public SaveGameValidationTests()
     {
         GameState.Instance.ResetForTests();
 
-        _projectPath = Path.Combine(Path.GetTempPath(), "AlundraSaveGameValidationTests_" + Guid.NewGuid());
+        _projectPath = Path.Combine(Path.GetTempPath(), "SaveGameValidationTests_" + Guid.NewGuid());
         Directory.CreateDirectory(_projectPath);
 
         AddMap(Map389, "Ship-389", SizeJson(52, 60));
@@ -466,7 +466,7 @@ public sealed class AlundraSaveGameValidationTests : IDisposable
     [Fact]
     public void MissingWorldIndex_RefusesEverySave()
     {
-        var emptyProject = Path.Combine(Path.GetTempPath(), "AlundraSaveGameValidationTests_Empty_" + Guid.NewGuid());
+        var emptyProject = Path.Combine(Path.GetTempPath(), "SaveGameValidationTests_Empty_" + Guid.NewGuid());
         Directory.CreateDirectory(emptyProject);
         try
         {

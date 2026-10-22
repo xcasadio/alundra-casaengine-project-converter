@@ -7,14 +7,14 @@ using Alundra.Session;
 using Alundra.SaveGames;
 using Alundra.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.SaveGames;
 
 /// <summary>
 /// E16.c T3 (docs/plan-e16-etat-partie.md, C2, C5, C6, C7): the save-game object, its capture from the live
 /// state and from the live world, its application to a state, and its metadata. Every test builds private
 /// <see cref="GameState"/> instances; nothing here reads or writes a save file (D-E16-31).
 /// </summary>
-public sealed class AlundraSaveGameTests
+public sealed class SaveGameTests
 {
     /// <summary>The real world name of map 389 (F4): the "-{id}" suffix is the current map.</summary>
     private const string Map389WorldName = "Ship Klark (beginning)-389";
