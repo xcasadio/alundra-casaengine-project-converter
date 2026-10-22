@@ -34,6 +34,7 @@ using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
 using Alundra.Maps;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Items;
 
 namespace Alundra.Tests.Support;
 

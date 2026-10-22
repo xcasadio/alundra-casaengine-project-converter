@@ -6,11 +6,11 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Xunit;
-using static Alundra.Tests.AlundraLootOracle;
+using static Alundra.Tests.Items.LootOracle;
 using Alundra.Session;
 using Alundra.Items;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Items;
 
 /// <summary>
 /// E20.e0b2 (docs/plan-e20-heros.md section 1.17.2, T1): the pure loot roll <see cref="LootRoll"/> against EVERY vector of the oracle of the real binary
@@ -18,7 +18,7 @@ namespace Alundra.Tests;
 /// spawner, 6 000 random rolls with flags, two banks, record and header codes. Nothing here computes an expected value from the DLL's own logic: the rows of the oracle are the expected values. The class is pure
 /// (no shared stream, no world), so these tests need no static-state collection.
 /// </summary>
-public sealed class AlundraLootRollTests
+public sealed class LootRollTests
 {
     private const uint PersistentBank = 0x801EB344;
     private const uint TemporaryBank = 0x801EBA40;

@@ -5,22 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Items;
 
 /// <summary>One entity that the load loop of the binary creates in a pair of V8: the record, the slot, the sprite number (<c>+0x68</c>), and what the roll left (<c>+0x3C</c>, <c>+0x40</c>, steps drawn).</summary>
 internal sealed record LoadedEntity(int Record, int Slot, int Sprite, uint Item, int Flag40, int Draws);
 
-/// <summary>One (map, tile) pair of V8 (<c>v8.json</c>): the real load loop of the binary for a map, the hero standing on <see cref="TileX"/>, <see cref="TileY"/> (the tile the DLL hero occupies DURING the load).</summary>
-internal sealed record LoadPair(
-    int Map, string Zone, string World, int TileX, int TileY, int RecordsCalled, IReadOnlyList<LoadedEntity> Entities, int Draws, uint FinalWord)
-{
-    internal bool Rolls => Draws > 0;
-}
-
 /// <summary>
 /// E20.e0b2: the reader of the outputs of the loot-roll oracle (<c>docs/plan-e20-annexe/e20-e0b/oracle/out</c>, found above the test binaries). Nothing here computes an expected value: the rows are the expected values.
 /// </summary>
-internal static class AlundraLootOracle
+internal static class LootOracle
 {
     internal static string OutputFolder()
     {

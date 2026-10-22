@@ -6,7 +6,7 @@ using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
-using static Alundra.Tests.AlundraLootOracle;
+using static Alundra.Tests.Items.LootOracle;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Maps;
 using Alundra.Session;
@@ -15,7 +15,7 @@ using Alundra.Rng;
 using Alundra.Probes;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Items;
 
 /// <summary>
 /// E20.e0b2 (docs/plan-e20-heros.md section 1.17.2, T1): the loot roll of a creation in the REAL world (<see cref="WorldProxy"/>), against the oracle of the binary
@@ -24,13 +24,13 @@ namespace Alundra.Tests;
 /// right after a load that rolls nothing, and the inertness of the helper without the variable of the sink. Every expected value is a row of the oracle; nothing is derived from the DLL.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed partial class AlundraLootRollWorldTests : IDisposable
+public sealed partial class LootRollWorldTests : IDisposable
 {
     private const uint InitialSeed = 0xB017C93D;
     private const int HeroX = 150;
     private const int HeroY = 100;
 
-    public AlundraLootRollWorldTests()
+    public LootRollWorldTests()
     {
         GameRandom.Reset();
     }

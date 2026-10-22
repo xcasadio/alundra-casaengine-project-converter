@@ -13,6 +13,7 @@ using Alundra.UI.Saving;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
 using Alundra.Tests.Support;
+using Alundra.Tests.Items;
 
 namespace Alundra.Tests;
 

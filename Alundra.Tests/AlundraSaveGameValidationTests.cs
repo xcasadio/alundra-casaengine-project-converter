@@ -9,6 +9,7 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Items;
 using Alundra.SaveGames;
+using Alundra.Tests.Items;
 
 namespace Alundra.Tests;
 

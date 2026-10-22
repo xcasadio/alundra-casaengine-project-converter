@@ -83,7 +83,7 @@ public sealed class HeroLifeTests
         }
     }
 
-    private static ItemTables ItemTables() => Items.ItemTables.GetOrCreate(ProjectRootFinder.Find());
+    private static ItemTables ItemTables() => Alundra.Items.ItemTables.GetOrCreate(ProjectRootFinder.Find());
 
     private static BalanceTables BalanceTables() => Alundra.Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
 

@@ -12,7 +12,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Items;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Items;
 
 /// <summary>
 /// E19.l2 L2-1 (docs/plan-e19-opcodes.md, section 1.2m.2): the item, money and chest-flag opcodes 0x82, 0x83, 0x84, 0x98, 0x99,
@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 /// did not suspend). Every value is the binary's (handlers 0x8003FE7C, 0x8003FEC8, 0x8003FF34, 0x80040A58, 0x80040A8C,
 /// 0x80040B00; HandleMapTriggerCommand 0x80034108, AddOneItemIfUnlocked 0x8004E530, UseItem 0x8004E5C4, SetMoney 0x8004DF80).
 /// </summary>
-public sealed class AlundraItemAndMoneyOpcodesTests
+public sealed class ItemAndMoneyOpcodesTests
 {
     private const int ResultBefore = 7;
 

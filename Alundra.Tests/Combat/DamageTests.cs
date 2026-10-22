@@ -64,7 +64,7 @@ public sealed class DamageTests
 
     public static IEnumerable<object[]> InventoryNames() => Inventories.Select(name => new object[] { name });
 
-    private static ItemTables ItemTables() => Items.ItemTables.GetOrCreate(ProjectRootFinder.Find());
+    private static ItemTables ItemTables() => Alundra.Items.ItemTables.GetOrCreate(ProjectRootFinder.Find());
 
     private static BalanceTables BalanceTables() => Alundra.Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
 

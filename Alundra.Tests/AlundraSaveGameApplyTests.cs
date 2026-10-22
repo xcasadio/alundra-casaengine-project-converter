@@ -22,6 +22,7 @@ using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Items;
 
 namespace Alundra.Tests;
 

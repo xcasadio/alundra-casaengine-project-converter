@@ -6,18 +6,18 @@ using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using CasaEngine.Framework.Scene.Entities.Components;
 using Xunit;
-using static Alundra.Tests.AlundraLootOracle;
+using static Alundra.Tests.Items.LootOracle;
 using Alundra.Rng;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Items;
 
 /// <summary>
 /// E20.e0b2 T1, the tests (m1) to (m5) of the loot roll in the real world (see the other part of the class, <c>AlundraLootRollWorldTests.cs</c>): each expects at least one object written or one step of the real stream, so they are
 /// RED on the phase A code (whose helper only rolls on the virtual register of the sink) and go green with phase B (T2).
 /// </summary>
-public sealed partial class AlundraLootRollWorldTests
+public sealed partial class LootRollWorldTests
 {
     [Fact]
     public void M1_TheCreationByTheInterface_OnMap14_RollsTheLootLikeTheBinary_NineVectorsOfTheGlobalNumbers254And230AndTheMapNumber79()

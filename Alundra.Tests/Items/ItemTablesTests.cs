@@ -4,7 +4,7 @@ using System.IO;
 using Xunit;
 using Alundra.Items;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Items;
 
 /// <summary>
 /// E13.c S3 (docs/plan-e13c-icones-hud.md): <see cref="ItemTables"/> reads the three <c>Data/</c>
@@ -12,9 +12,9 @@ namespace Alundra.Tests;
 /// unreadable or short. Driven off fixture directories, the way <see cref="AlundraSoundGroupIndexTableTests"/>
 /// drives its own table.
 /// </summary>
-public class AlundraItemTablesTests : IDisposable
+public class ItemTablesTests : IDisposable
 {
-    public AlundraItemTablesTests() => ItemTables.ResetForTests();
+    public ItemTablesTests() => ItemTables.ResetForTests();
 
     public void Dispose() => ItemTables.ResetForTests();
 
