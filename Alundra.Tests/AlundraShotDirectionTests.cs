@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using Alundra.Hero;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

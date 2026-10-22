@@ -9,6 +9,7 @@ using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Physics;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

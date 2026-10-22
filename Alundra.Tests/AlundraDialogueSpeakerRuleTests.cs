@@ -15,6 +15,7 @@ using Alundra.Cameras;
 using Alundra.Dialogues;
 using Alundra.UI.Shared;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

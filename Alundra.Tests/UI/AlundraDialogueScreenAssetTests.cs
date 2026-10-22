@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.UI.Speech;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests.UI;
 

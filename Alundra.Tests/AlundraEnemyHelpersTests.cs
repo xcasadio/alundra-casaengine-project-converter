@@ -7,6 +7,7 @@ using Alundra.Events;
 using Alundra.Ai;
 using Alundra.Rng;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 
@@ -24,7 +25,7 @@ public sealed class AlundraEnemyHelpersTests
 
     private static void ForEachRow(string helper, Action<EnemyHelperRow, string> check)
     {
-        var rows = AlundraEnemyOracle.Helper(helper);
+        var rows = EnemyOracle.Helper(helper);
         Assert.True(rows.Count >= 10000, $"{helper}: at least 10,000 states in the oracle (found {rows.Count})");
         for (var i = 0; i < rows.Count; i++)
         {

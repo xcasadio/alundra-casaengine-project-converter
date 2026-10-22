@@ -7,6 +7,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Cells;
 using Alundra.Transitions;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

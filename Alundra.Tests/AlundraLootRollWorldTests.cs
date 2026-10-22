@@ -13,6 +13,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Rng;
 using Alundra.Probes;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

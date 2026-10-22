@@ -10,6 +10,7 @@ using Alundra.Events;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Xunit;
 using Alundra.Rendering.Effects;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

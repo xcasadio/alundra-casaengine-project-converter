@@ -5,7 +5,7 @@ using System.IO;
 using CasaEngine.Framework.Audio;
 using Alundra.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Support;
 
 /// <summary>
 /// T5 of docs/plan-e11-audio.md, slice E11.a - the "livrable de test non optionnel" (§4 item 3/§2.2b):
@@ -315,107 +315,5 @@ public sealed class FakeAudioBackend : IAudioBackend
         public AudioVoiceState State;
         public bool IsStreaming;
         public int Pending;
-    }
-}
-
-/// <summary>One streaming voice the backend created (E19.L-b3): the music now plays as a stream, so this is what
-/// the music tests read where they read <see cref="FakeAudioBackend.PlayCalls"/> before.</summary>
-public sealed record FakeStreamVoice(AudioVoiceHandle Voice, int SampleRate, int ChannelCount, AudioVoiceParameters Parameters);
-
-/// <summary>Deterministic <see cref="IAudioClip"/> for T5: no device, no decoding - see
-/// <see cref="FakeAudioBackend"/>'s own doc for why this is re-implemented in this project.
-///
-/// T4.2 (docs/plan-audio-mix-exact-muet.md): also implements <see cref="IAudioClipSamples"/>, exactly
-/// like the engine's own <c>CasaEngine.Tests.Audio.FakeAudioClip</c>, so
-/// <see cref="AudioService.PlayClipStereo"/> can be exercised without a real wav file - pass
-/// <paramref name="monoSamples"/> to expose them, or leave it null/empty for a clip that must fall
-/// back away from the stereo key-on path (T4.2's "clip without samples" cause).</summary>
-public sealed class FakeAudioClip : IAudioClip, IAudioClipSamples
-{
-    public FakeAudioClip(string name = "clip", int sampleRate = 44100, short[] monoSamples = null)
-    {
-        Name = name;
-        SampleRate = sampleRate;
-        MonoSamples = monoSamples ?? Array.Empty<short>();
-    }
-
-    public string Name { get; }
-
-    public int SampleRate { get; }
-
-    public int ChannelCount => 1;
-
-    public TimeSpan Duration => TimeSpan.FromSeconds(1);
-
-    public bool IsDisposed { get; private set; }
-
-    public ReadOnlyMemory<short> MonoSamples { get; }
-
-    public void Dispose() => IsDisposed = true;
-
-    public override string ToString() => Name;
-}
-
-/// <summary>In-memory <see cref="IAudioClipProvider"/> for T5, keyed by the SAME asset guids the
-/// synthetic manifest fixture carries (so <see cref="SoundPlayer"/>'s real
-/// <see cref="SfxBank.TryResolve"/> lookup and this provider's clips line up) - see
-/// <see cref="FakeAudioBackend"/>'s own doc.</summary>
-public sealed class FakeAudioClipProvider : IAudioClipProvider
-{
-    private readonly Dictionary<Guid, IAudioClip> _clips = new();
-
-    private readonly Dictionary<Guid, (string Name, byte[] Wav)> _streams = new();
-
-    public void Register(Guid assetId, IAudioClip clip) => _clips[assetId] = clip;
-
-    /// <summary>Registers a music file served by <see cref="OpenStream"/> (E19.L-b3), a small 16 bit stereo wav by default.</summary>
-    public void RegisterStream(Guid assetId, string name, byte[] wav = null) => _streams[assetId] = (name, wav ?? BuildWav());
-
-    /// <summary>The names of the streams opened so far, in order: which music files were actually started.</summary>
-    public List<string> OpenedStreams { get; } = new();
-
-    public IAudioClip GetClip(Guid audioFileAssetId) => _clips.GetValueOrDefault(audioFileAssetId);
-
-    public Stream OpenStream(Guid audioFileAssetId)
-    {
-        if (!_streams.TryGetValue(audioFileAssetId, out var stream))
-        {
-            return null;
-        }
-
-        OpenedStreams.Add(stream.Name);
-        return new MemoryStream(stream.Wav, writable: false);
-    }
-
-    /// <summary>A canonical 16 bit PCM stereo wav whose frame i holds the value i in both channels.</summary>
-    public static byte[] BuildWav(int frameCount = 64, int sampleRate = 44100)
-    {
-        const int channels = 2;
-        const int blockAlign = channels * 2;
-        var dataLength = frameCount * blockAlign;
-
-        using var stream = new MemoryStream();
-        using var writer = new BinaryWriter(stream);
-        writer.Write(System.Text.Encoding.ASCII.GetBytes("RIFF"));
-        writer.Write(36 + dataLength);
-        writer.Write(System.Text.Encoding.ASCII.GetBytes("WAVE"));
-        writer.Write(System.Text.Encoding.ASCII.GetBytes("fmt "));
-        writer.Write(16);
-        writer.Write((short)1);
-        writer.Write((short)channels);
-        writer.Write(sampleRate);
-        writer.Write(sampleRate * blockAlign);
-        writer.Write((short)blockAlign);
-        writer.Write((short)16);
-        writer.Write(System.Text.Encoding.ASCII.GetBytes("data"));
-        writer.Write(dataLength);
-        for (var frame = 0; frame < frameCount; frame++)
-        {
-            writer.Write((short)frame);
-            writer.Write((short)frame);
-        }
-
-        writer.Flush();
-        return stream.ToArray();
     }
 }

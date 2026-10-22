@@ -12,6 +12,7 @@ using Alundra.Ai.Objects;
 using Alundra.Dialogues;
 using Alundra.UI.Saving;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

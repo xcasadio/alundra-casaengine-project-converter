@@ -7,7 +7,7 @@ using CasaEngine.Framework.UI;
 using MGUI.Core.UI;
 using Microsoft.Xna.Framework;
 using Xunit;
-using static Alundra.Tests.SaveGameDirectorTestSupport;
+using static Alundra.Tests.Support.SaveGameDirectorTestSupport;
 using Alundra.Session;
 using Alundra.Ai.Objects;
 using Alundra.Hero;
@@ -18,6 +18,7 @@ using Alundra.UI.Speech;
 using Alundra.SaveGames;
 using Alundra.Entities;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests.Scripts;
 

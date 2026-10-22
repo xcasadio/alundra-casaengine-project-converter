@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.UI.Messages;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests.UI;
 

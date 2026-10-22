@@ -10,6 +10,7 @@ using Alundra.Session;
 using Alundra.Events;
 using Alundra.Audio;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

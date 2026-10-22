@@ -4,13 +4,14 @@ using System.Linq;
 using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
-using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+using static Alundra.Tests.Support.StoryChainOpcodeAudit;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Items;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

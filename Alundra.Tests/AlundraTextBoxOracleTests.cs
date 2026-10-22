@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

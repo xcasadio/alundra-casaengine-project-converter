@@ -10,6 +10,7 @@ using Alundra.Ai;
 using Alundra.Combat;
 using Alundra.Items;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 
@@ -64,7 +65,7 @@ public sealed class AlundraEnemyHitReactionTests
     [InlineData("d9", 2u)]
     public void HitReaction_EqualsTheBinarysHandler_OnEveryState(string helper, uint animation)
     {
-        var rows = AlundraEnemyOracle.Helper(helper);
+        var rows = EnemyOracle.Helper(helper);
         Assert.True(rows.Count >= 10000);
         for (var i = 0; i < rows.Count; i++)
         {

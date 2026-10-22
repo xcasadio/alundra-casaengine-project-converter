@@ -21,6 +21,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

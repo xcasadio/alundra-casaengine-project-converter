@@ -25,6 +25,7 @@ using Xunit;
 using Alundra.UI.Choice;
 using Alundra.UI.Inventory;
 using Alundra.UI.Messages;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests.UI;
 

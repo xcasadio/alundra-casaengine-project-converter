@@ -9,6 +9,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Dialogues;
 using Alundra.UI.Speech;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

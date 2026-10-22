@@ -9,7 +9,7 @@ using Xunit;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Support;
 
 /// <summary>
 /// E15.c T5 (docs/plan-e15-yarn.md): shared helper that compiles a tiny Yarn asset for tests exercising

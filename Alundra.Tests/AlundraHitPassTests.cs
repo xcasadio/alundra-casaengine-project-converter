@@ -9,6 +9,7 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Rendering.Effects;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

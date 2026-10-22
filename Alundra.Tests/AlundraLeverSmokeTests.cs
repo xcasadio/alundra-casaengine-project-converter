@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using Xunit;
 using Xunit.Abstractions;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

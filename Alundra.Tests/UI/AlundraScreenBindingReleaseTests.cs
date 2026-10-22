@@ -10,6 +10,7 @@ using Xunit;
 using Alundra.UI.Hud;
 using Alundra.UI.Inventory;
 using Alundra.UI.Messages;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests.UI;
 

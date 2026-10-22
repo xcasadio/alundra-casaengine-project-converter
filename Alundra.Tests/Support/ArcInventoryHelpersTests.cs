@@ -5,7 +5,7 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Hero;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Support;
 
 /// <summary>
 /// E20.f0 T4 (docs/plan-e20-heros.md section 1.8): the inventory helpers of <see cref="ArcRun"/> - <c>Give</c>, <c>Equip</c>, <c>SetMp</c>, <c>SetItem</c> - go through the DLL's
@@ -13,7 +13,7 @@ namespace Alundra.Tests;
 /// empty inventory and no weapon (docs/plan-e20-annexe/e20-armes/test-means.md section 0.4).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraArcInventoryHelpersTests
+public sealed class ArcInventoryHelpersTests
 {
     /// <summary>The overworld map 10 from a portal arrival (the arc of the hero attack tests): the hero stands free on open ground, with an empty inventory.</summary>
     private static ArcSpec Spec(string name) => new(

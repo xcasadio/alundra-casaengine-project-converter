@@ -15,6 +15,7 @@ using Alundra.Entities;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
 using Alundra.UI.Messages;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests.UI;
 

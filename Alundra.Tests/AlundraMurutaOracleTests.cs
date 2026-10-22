@@ -17,6 +17,7 @@ using Alundra.Items;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Audio;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

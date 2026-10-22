@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
-using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+using static Alundra.Tests.Support.StoryChainOpcodeAudit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Session;
 using Alundra.Entities;
@@ -13,6 +13,7 @@ using Alundra.Events;
 using Alundra.Cameras;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 
@@ -22,7 +23,7 @@ namespace Alundra.Tests;
 /// exact the ends of the scenes (instruction), the flags set and cleared (with their pc), the destinations of <c>0x53</c> and the contact relations (the
 /// semi-open rule of E19.d2b); +-2.5 px the final positions of the walks, measured by the emulation of the binary before E19.d2c; the absolute images are not
 /// pinned, only the order of the events and the frame limit. The opcodes the interpreter skips in each arc must all be lines of the closed list of E19.e E1
-/// (rule 5, <see cref="AlundraStoryChainOpcodeAudit.Rule5UnlistedArcSites"/>). A value that the measure contradicts is a stop, never a re-pin.
+/// (rule 5, <see cref="StoryChainOpcodeAudit.Rule5UnlistedArcSites"/>). A value that the measure contradicts is a stop, never a re-pin.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraDay3SceneArcTests

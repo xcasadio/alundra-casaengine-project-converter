@@ -6,6 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

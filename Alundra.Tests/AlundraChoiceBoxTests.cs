@@ -10,6 +10,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Dialogues;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

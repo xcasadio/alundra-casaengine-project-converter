@@ -7,7 +7,7 @@ using CasaEngine.Framework.Application;
 using CasaEngine.Framework.Scene.Entities;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
-using static Alundra.Tests.SaveGameDirectorTestSupport;
+using static Alundra.Tests.Support.SaveGameDirectorTestSupport;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Maps;
 using Alundra.Session;
@@ -20,6 +20,7 @@ using Alundra.UI.Inventory;
 using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

@@ -10,6 +10,7 @@ using Alundra.Session;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

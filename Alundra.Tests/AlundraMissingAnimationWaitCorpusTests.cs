@@ -5,9 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using Xunit;
-using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+using static Alundra.Tests.Support.StoryChainOpcodeAudit;
 using Alundra.Entities;
 using Alundra.Events;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 
@@ -62,7 +63,7 @@ public class AlundraMissingAnimationWaitCorpusTests
 
     /// <summary>
     /// The retarget-aware census of the program starting at <paramref name="entry"/>. The control flow follows the rules of
-    /// <see cref="AlundraStoryChainOpcodeAudit"/>'s walk (jumps 0x02, conditionals 0x03/0x04/0x30/0x31/0x74, the directional 0x57/0x58 that never fall
+    /// <see cref="StoryChainOpcodeAudit"/>'s walk (jumps 0x02, conditionals 0x03/0x04/0x30/0x31/0x74, the directional 0x57/0x58 that never fall
     /// through, the return marks of 0x78/0x79/0x7B/0x7C, the roots of 0x40, a stop at 0xFF or at a zero or unknown size); on top of it each pc carries the
     /// set of logic entities the instruction can act on, joined by union. <paramref name="byIndex"/> resolves <c>0x43 [n]</c> for n below 0x80 (null: no
     /// such entity).

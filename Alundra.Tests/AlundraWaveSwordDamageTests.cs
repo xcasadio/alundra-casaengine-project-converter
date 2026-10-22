@@ -2,6 +2,7 @@
 using System.Linq;
 using Xunit;
 using Alundra.Combat;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

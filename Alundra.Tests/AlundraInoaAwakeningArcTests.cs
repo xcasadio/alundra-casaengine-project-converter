@@ -7,6 +7,7 @@ using static Alundra.Tests.ArcChecks;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Dialogues;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

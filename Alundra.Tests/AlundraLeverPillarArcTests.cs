@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using Xunit;
 using Alundra.Events;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.Physics;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 
@@ -60,7 +61,7 @@ public sealed class AlundraEnemyGroundTests
     public void Body_FloorAndCornerHeights_AreTheBinarysMinusOne(int map)
     {
         var field = LoadField(map);
-        var rows = AlundraEnemyOracle.Ground(map);
+        var rows = EnemyOracle.Ground(map);
         Assert.NotEmpty(rows);
         var flat = 0;
         var raised = 0;
@@ -102,7 +103,7 @@ public sealed class AlundraEnemyGroundTests
     public void Hero_FloorHeight_IsTheBinarysMinusOne_AndTheDifferenceOfFloorsIsTheBinarys(int map)
     {
         var field = LoadField(map);
-        var rows = AlundraEnemyOracle.Ground(map);
+        var rows = EnemyOracle.Ground(map);
         foreach (var row in rows)
         {
             var body = Body(row.E);
@@ -143,7 +144,7 @@ public sealed class AlundraEnemyGroundTests
     public void ProductionSpawn_OfTheMap14Beannoids_HoldsTheBinarysCreationValuesMinusOne()
     {
         using var arena = new HitArena("E14a0b-ground", 212, 96, null, 24, 0, naturalTargetCount: 7);
-        var creation = AlundraEnemyOracle.Ground(14).Where(r => r.Variant == 0 && r.HeroDx == 0 && r.HeroDy == 0).ToDictionary(r => r.Record);
+        var creation = EnemyOracle.Ground(14).Where(r => r.Variant == 0 && r.HeroDx == 0 && r.HeroDy == 0).ToDictionary(r => r.Record);
         Assert.Equal(7, arena.Targets.Count);
         for (var record = 0; record < 7; record++)
         {

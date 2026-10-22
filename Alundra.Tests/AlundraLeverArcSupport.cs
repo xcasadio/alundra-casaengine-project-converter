@@ -9,6 +9,7 @@ using Alundra.Entities;
 using Alundra.Cells;
 using Alundra.Audio;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

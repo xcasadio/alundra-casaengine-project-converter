@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.UI.Inventory;
 using Alundra.UI.SubInventory;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests.UI;
 

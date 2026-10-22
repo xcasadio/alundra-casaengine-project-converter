@@ -7,12 +7,13 @@ using CasaEngine.Engine.Environment;
 using CasaEngine.Engine.Physics;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
-using static Alundra.Tests.SaveGameDirectorTestSupport;
+using static Alundra.Tests.Support.SaveGameDirectorTestSupport;
 using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Combat;
 using Alundra.Physics;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

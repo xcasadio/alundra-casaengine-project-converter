@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Alundra.UI.Hud;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests.UI;
 

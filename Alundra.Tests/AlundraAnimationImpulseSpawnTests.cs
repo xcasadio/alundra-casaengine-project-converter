@@ -14,6 +14,7 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Transitions;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

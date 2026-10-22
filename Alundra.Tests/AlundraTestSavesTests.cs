@@ -6,11 +6,12 @@ using System.Text.RegularExpressions;
 using CasaEngine.Framework.Application;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
-using static Alundra.Tests.SaveGameDirectorTestSupport;
+using static Alundra.Tests.Support.SaveGameDirectorTestSupport;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Transitions;
 using Alundra.SaveGames;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

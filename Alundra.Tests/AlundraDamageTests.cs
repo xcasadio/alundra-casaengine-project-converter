@@ -11,6 +11,7 @@ using Alundra.Hero;
 using Alundra.Combat;
 using Alundra.Items;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

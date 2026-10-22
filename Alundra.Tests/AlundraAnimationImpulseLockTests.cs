@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Xunit;
 using Alundra.Events;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

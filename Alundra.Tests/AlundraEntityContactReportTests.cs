@@ -9,6 +9,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Physics;
 using Alundra.Hero;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

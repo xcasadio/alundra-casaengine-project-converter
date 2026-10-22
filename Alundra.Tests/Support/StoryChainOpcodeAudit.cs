@@ -8,19 +8,7 @@ using Alundra.Session;
 using Alundra.Events;
 using Alundra.Entities;
 
-namespace Alundra.Tests;
-
-/// <summary>A program site: the map, the slot letter (A to F), the program index of that slot (<c>index &amp; 0x7F</c>, the key
-/// of the program table) and the pc, an index into the map's <c>Codes</c>. Two programs can share a pc (they share code), so the
-/// program is part of the key.</summary>
-internal readonly record struct ProgramSite(int Map, char Slot, int Program, int Pc);
-
-/// <summary>One instruction the walk reached.</summary>
-internal readonly record struct ReachedSite(ProgramSite Site, int Opcode);
-
-/// <summary>One line of the closed list (<c>Data/story-chain-skipped-opcodes.tsv</c>): the level is S (scene), A (ambient), O
-/// (optional) or X (off the chain).</summary>
-internal sealed record ListedSite(ProgramSite Site, int Opcode, string Class, string Slice, char Tier);
+namespace Alundra.Tests.Support;
 
 /// <summary>
 /// E19.e E1 (docs/plan-e19-opcodes.md §1.2i): the static audit of the opcodes the interpreter skips by their size, on the programs
@@ -33,7 +21,7 @@ internal sealed record ListedSite(ProgramSite Site, int Opcode, string Class, st
 /// plain data so they are tested on made-up input, then applied to the corpus.</description></item>
 /// </list>
 /// </summary>
-internal static class AlundraStoryChainOpcodeAudit
+internal static class StoryChainOpcodeAudit
 {
     /// <summary>The 30 maps of the chain, outside the combat maps (the plan's order).</summary>
     public static readonly int[] ChainMaps =

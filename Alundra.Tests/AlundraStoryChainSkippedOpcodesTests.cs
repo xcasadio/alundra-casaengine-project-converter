@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Xunit;
-using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+using static Alundra.Tests.Support.StoryChainOpcodeAudit;
 using Alundra.Events;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

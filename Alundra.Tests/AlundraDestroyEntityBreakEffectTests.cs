@@ -8,6 +8,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

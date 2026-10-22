@@ -6,6 +6,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

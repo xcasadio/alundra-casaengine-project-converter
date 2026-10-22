@@ -8,6 +8,7 @@ using Xunit;
 using Alundra.Dialogues;
 using Alundra.UI.Shared;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

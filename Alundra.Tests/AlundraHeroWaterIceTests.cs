@@ -7,6 +7,7 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Physics;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

@@ -8,6 +8,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Physics;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

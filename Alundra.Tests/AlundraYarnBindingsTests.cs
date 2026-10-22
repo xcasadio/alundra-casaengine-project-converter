@@ -14,6 +14,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

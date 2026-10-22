@@ -17,6 +17,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

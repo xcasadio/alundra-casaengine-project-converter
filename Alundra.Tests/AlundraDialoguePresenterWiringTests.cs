@@ -11,6 +11,7 @@ using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.UI.Speech;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

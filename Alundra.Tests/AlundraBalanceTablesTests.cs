@@ -6,6 +6,7 @@ using Xunit;
 using Alundra.Maps.Loop;
 using Alundra.Entities;
 using Alundra.Combat;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

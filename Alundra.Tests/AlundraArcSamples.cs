@@ -4,6 +4,7 @@ using System.Linq;
 using Xunit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

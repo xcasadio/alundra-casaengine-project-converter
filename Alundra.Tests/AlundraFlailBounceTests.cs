@@ -11,6 +11,7 @@ using Alundra.Physics;
 using Alundra.Cells;
 using Alundra.Transitions;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

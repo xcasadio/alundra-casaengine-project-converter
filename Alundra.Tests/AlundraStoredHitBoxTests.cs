@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Combat;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

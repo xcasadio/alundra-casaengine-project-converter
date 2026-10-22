@@ -16,6 +16,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Transitions;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

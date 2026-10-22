@@ -18,6 +18,7 @@ using Alundra.Events;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Hero;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

@@ -4,10 +4,11 @@ using System.Linq;
 using CasaEngine.Framework.SaveGames;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
-using static Alundra.Tests.SaveGameDirectorTestSupport;
+using static Alundra.Tests.Support.SaveGameDirectorTestSupport;
 using Alundra.Session;
 using Alundra.SaveGames;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

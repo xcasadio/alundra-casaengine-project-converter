@@ -4,6 +4,7 @@ using Alundra.Session;
 using Alundra.Events;
 using Alundra.Entities;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 
@@ -47,7 +48,7 @@ public sealed class AlundraInitializeEventDataTests
     public void M9b_RealMap392B3_AHeroWhoLeavesTheZoneOnceDuringTheWait_ContinuesTheCount_62TicksInTheZone()
     {
         var root = SaveGameDirectorTestSupport.FindProjectRoot();
-        var (document, _) = AlundraStoryChainOpcodeAudit.LoadMap(root, 392);
+        var (document, _) = StoryChainOpcodeAudit.LoadMap(root, 392);
         const int entry = 156;
         Assert.Equal(entry, document.EventCodesBTable[3]);
         Assert.Equal(0x37, document.Codes[entry]);

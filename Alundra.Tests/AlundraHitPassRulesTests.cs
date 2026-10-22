@@ -14,6 +14,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Combat;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

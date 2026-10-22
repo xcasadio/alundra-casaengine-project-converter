@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using Xunit;
 using Alundra.Rendering.Effects;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

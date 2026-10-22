@@ -2,6 +2,7 @@
 using Xunit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Events;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

@@ -4,6 +4,7 @@ using CasaEngine.Engine.Environment;
 using Xunit;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

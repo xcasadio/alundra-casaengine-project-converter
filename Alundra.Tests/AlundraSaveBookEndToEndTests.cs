@@ -18,7 +18,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
 using Xunit;
-using static Alundra.Tests.SaveGameDirectorTestSupport;
+using static Alundra.Tests.Support.SaveGameDirectorTestSupport;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Maps;
 using Alundra.Session;
@@ -30,6 +30,7 @@ using Alundra.Rendering.Backdrops;
 using Alundra.Dialogues;
 using Alundra.UI.Saving;
 using Alundra.SaveGames;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

@@ -9,6 +9,7 @@ using Xunit;
 using static Alundra.Tests.AlundraLootOracle;
 using Alundra.Rng;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

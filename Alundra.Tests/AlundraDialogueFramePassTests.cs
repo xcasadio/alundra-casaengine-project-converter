@@ -12,6 +12,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

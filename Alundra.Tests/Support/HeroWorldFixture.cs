@@ -17,7 +17,7 @@ using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Physics;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Support;
 
 /// <summary>
 /// Shared headless hero-pawn/world montage, extracted from <see cref="AlundraCharacterControllerAdoptionTests"/>

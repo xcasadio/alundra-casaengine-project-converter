@@ -3,6 +3,7 @@ using System.Linq;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Rendering.Effects;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

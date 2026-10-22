@@ -5,6 +5,7 @@ using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
 using Alundra.Hero;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

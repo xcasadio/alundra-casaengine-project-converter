@@ -12,6 +12,7 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Probes;
 using Alundra.Entities;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

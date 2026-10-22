@@ -12,7 +12,7 @@ using Alundra.Hero;
 using Alundra.Rng;
 using Alundra.Transitions;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Support;
 
 /// <summary>
 /// E19.c1 T1 (docs/plan-e19-opcodes.md §1.2e, D-E19-14): the self-test of the "Prefabs" arc mode. It is the guard against a
@@ -20,11 +20,11 @@ namespace Alundra.Tests;
 /// and <c>World.InternalAddEntities</c> drops an entity whose initialisation throws without a trace but the log.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraPrefabArcSupportTests
+public sealed class PrefabArcSupportTests
 {
     private readonly ITestOutputHelper _output;
 
-    public AlundraPrefabArcSupportTests(ITestOutputHelper output) => _output = output;
+    public PrefabArcSupportTests(ITestOutputHelper output) => _output = output;
 
     private const string Zone = "Inoa";
     private const string Map478 = "Inoa (Vision Event from Lars and Melzas cutscene)-478";

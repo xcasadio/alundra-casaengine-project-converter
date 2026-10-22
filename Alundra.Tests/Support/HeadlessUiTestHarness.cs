@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Alundra.UI.Inventory;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.Support;
 
 /// <summary>
 /// E13.d D5 (docs/plan-e13d-inventaire.md, D-E13D-17, engine ADR-0001): a REDUCED copy of

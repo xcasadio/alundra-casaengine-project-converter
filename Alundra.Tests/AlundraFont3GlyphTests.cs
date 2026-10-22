@@ -22,6 +22,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
+using Alundra.Tests.UI;
 
 namespace Alundra.Tests;
 

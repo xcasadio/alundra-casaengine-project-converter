@@ -4,7 +4,7 @@ using System.IO;
 using CasaEngine.Framework.Assets.TileMap;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
-using static Alundra.Tests.SaveGameDirectorTestSupport;
+using static Alundra.Tests.Support.SaveGameDirectorTestSupport;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Ai.Objects;
@@ -14,6 +14,7 @@ using Alundra.UI.Saving;
 using Alundra.UI.Speech;
 using Alundra.SaveGames;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

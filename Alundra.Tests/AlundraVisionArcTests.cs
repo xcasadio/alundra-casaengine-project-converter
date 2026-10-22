@@ -7,6 +7,7 @@ using Alundra.Session;
 using Alundra.Events;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

@@ -13,6 +13,7 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Maps;
+using Alundra.Tests.Support;
 
 namespace Alundra.Tests;
 

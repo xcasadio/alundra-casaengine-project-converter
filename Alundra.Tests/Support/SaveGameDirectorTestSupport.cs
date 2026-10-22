@@ -34,25 +34,7 @@ using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
-
-/// <summary>E16.d T3/T4 (K6 and K7 step 1): one precondition of the recipe keys, posed on its own by
-/// <see cref="SaveGameDirectorTestSupport.PoseBlocker"/>.</summary>
-public enum SaveGameBlocker
-{
-    NoHero,
-    HeroInTheAir,
-    DialogueOpen,
-    InventoryOpen,
-    SubInventoryOpen,
-    PostProcessPending,
-    PortraitOpening,
-    PortraitAtRest,
-    PortraitReturning,
-    TransitionInProgress,
-    MasterMusicFadeArmed,
-    ControlFlagsNonZero,
-}
+namespace Alundra.Tests.Support;
 
 /// <summary>
 /// E16.d (docs/plan-e16-etat-partie.md, T2 to T5): shared plumbing of the save-game director's tests - a fake
