@@ -324,7 +324,7 @@ gardé par 0x800C du Tick 140), 0x59/0x27 (idem).
 |---|---|---|---|---|---|
 | 1 | 0 | `GameEngine.ClearTemporaryFlags` | GameEngine.cs:429 | vide `g_temporaryFlags` à l'entrée de map | porté : `GameState.InstallForMapEntry` vide `TemporaryFlags` à chaque entrée de carte (`GameState.cs:368-387`, D-T-13 de `plan-transitions-carte.md`) ; l'original vide 64 mots (`0x8008159C`), la DLL ses 1024 (mesure E16.0, `plan-e16-etat-partie.md` §2) |
 | 2 | 0 | `GameEngine.ResetCameraAndLoadVRAMAssets` | GameEngine.cs:445 | reset caméra/scroll | non porté |
-| 3 | 0 | `GameEngine.InitializeItems` | GameEngine.cs:454 | table d'objets de la map | non porté |
+| 3 | 0 | `GameEngine.InitializeItems` | GameEngine.cs:452 | table d'objets de la map | non porté |
 | 4 | 0 | `InitializeEntitySlots` → `ResetEntityState` (joueur slot 0) | GameEngine.cs:621-672 | création du héros | non porté (approximé dans le harnais) |
 | 5 | 0 | `GameEngine.InitializeMapEvents` | GameEngine.cs:476-583 | 7 slots `MapEvent` depuis les records | non porté en production (porté dans le harnais) |
 | 6 | 0 | `EffectManager.InitializeEffectSlots` | GameEngine.cs:472 | pool d'effets | non porté |

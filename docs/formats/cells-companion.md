@@ -217,7 +217,7 @@ Code : même rejeu que ci-dessus, [`Writers/WallPlacementReplayer.cs`](../../alu
 
 Dans l'original, les tuiles de SOL participent au même tri de profondeur unifié que les murs -
 `DepthFloor(cellY, GetTileDepthSlot(tileId)) = cellY*16 + slot(0..5)`
-(AlundraTools/AlundraEngine/Graphics/GraphicManager.cs:275,324-347). Un sol ÉLEVÉ (cellule
+(AlundraTools/AlundraEngine/Graphics/GraphicManager.cs:246,324-347). Un sol ÉLEVÉ (cellule
 `Height > 0`, par exemple le pont supérieur d'un navire) dont la ligne de cellule est **au sud**
 d'une entité (`cellY` de la cellule de sol > ligne d'ancrage de l'entité) se dessine **par-dessus**
 cette entité. Le port initial gardait toutes les tuiles de sol à plat dans la passe Ground, ce qui

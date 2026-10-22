@@ -38,7 +38,7 @@ C|127|0|143|-|-
 C|142|0|287|-|-
 C|142|1|313-321|whole|GetTileDepthSlot
 C|145|0|216-244|whole|CreateTileAnimDescriptors
-C|220|0|275|-|-
+C|220|0|246|-|-
 C|220|1|324-347|-|-
 G|142|0|159-162|whole|DeriveRenderPosition
 G|229|0|552-621|whole|Update
@@ -107,7 +107,7 @@ R|290|0|687-691|whole|Script_17_011
 R|325|0|429|decl|ClearTemporaryFlags
 R|325|1|368-387|whole|InstallForMapEntry
 R|326|0|445|-|-
-R|327|0|454|-|-
+R|327|0|452|decl|InitializeItems
 R|328|0|621-672|whole|InitializeEntitySlots+ResetEntityState
 R|329|0|476-583|whole|InitializeMapEvents
 R|330|0|472|-|-
@@ -202,7 +202,20 @@ def method_of(c, w):
     return f'{sub}@{then[:8]}->{now[:8]}: {state}; range checked against the content at the pointer'
 
 
-def klass(lo, hi, nlo, nhi):
+# corrections found after the first run, by reading the SENSE of the sentence (REFUTED verdict and audit, 2026-10-22): the new number does not
+# come from a shift of the old one but from the line that carries what the sentence names, so the class is by content whatever the delta
+BY_CONTENT = {(C, 220, 0), (R, 327, 0)}
+
+
+SENSE_NOTE = {
+    (C, 220, 0): 'corrected by sense (REFUTED verdict + audit 2026-10-22): the sentence names the call DepthFloor(cellY, GetTileDepthSlot(tileId)), which is line 246 (floor branch); 275 is the base z of the wall block',
+    (R, 327, 0): 'corrected by sense (audit 2026-10-22): the row names GameEngine.InitializeItems, whose declaration is 452; 454 was the first statement of its body',
+}
+
+
+def klass(lo, hi, nlo, nhi, key=None):
+    if key in BY_CONTENT:
+        return 'recalculée par contenu'
     if (lo, hi) == (nlo, nhi):
         return 'juste'
     if nlo - lo == nhi - hi:
@@ -235,8 +248,10 @@ def survey():
             continue
         w = blame(c['doc']).get(c['line'], '')
         method = HAND_METHOD.get(key) or method_of(c, w)
+        if key in SENSE_NOTE:
+            method += '; ' + SENSE_NOTE[key]
         rows.append(dict(doc=c['doc'], line=c['line'], k=c['k'], col=c['col'], cited=c['cited'], target=c['target'], before=c['before'],
-                         after=after, W=w, method=method, **{'class': klass(c['lo'], c['hi'], nlo, nhi)}, scope=scope, members=members,
+                         after=after, W=w, method=method, **{'class': klass(c['lo'], c['hi'], nlo, nhi, key)}, scope=scope, members=members,
                          probe_start=L.probe(lines, nlo), probe_end=L.probe(lines, nhi)))
     for key in dec:
         if key not in seen:

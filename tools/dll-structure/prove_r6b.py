@@ -14,7 +14,11 @@ What is checked
   D  for each range, read at the pinned trees (decompilation and engine at the pointers of the base commit, git show; the parent at the base):
      the lines of start and of end exist and their text equals the probes of the survey; a `whole` range starts at the declaration of the
      first member it names and ends at the closing brace of the last or at its last statement; a `part` starts at the declaration and ends
-     inside the member on a line of code; a `decl` is the declaration line; any other range starts and ends on a line of code of the block.
+     inside the member on a line of code; a `decl` is the declaration line; any other range starts and ends on a line of code of the block;
+  E  a citation that directly follows a code span holding a call (`DepthFloor(cellY, ...)` then `(File.cs:N)`) designates lines of which one contains
+     the name of that call (the sense, not only the shape: 275 was a line of code of the right file, but not the call the sentence names).
+     Not checked, for lack of a rule without judgment: a name without parentheses (`Type.Member`, ligne N) and the sentences that name a member in
+     prose; those stay with the probes of the survey, read by a person.
 Exit 0 = proved, 1 = refused (every finding listed).
 """
 import argparse
@@ -176,8 +180,38 @@ def check_trees(rows):
     return out
 
 
+def call_named_before(doc, line, col):
+    """The name of the call written in code just before a citation, e.g. `DepthFloor(cellY, ...)` then `(File.cs:12)`; None when the citation does not
+    directly follow a code span holding a call.  Read in the document of the base (the text before the column is never edited)."""
+    lines = L.text_at(L.BASE_COMMIT, doc).split(chr(10))
+    s = chr(10).join(lines[:line - 1] + [lines[line - 1][:col]]).rstrip()
+    s = re.sub(r'[\w./-]*:?$', '', s).rstrip().rstrip('(').rstrip()
+    if not s.endswith(chr(96)):
+        return None
+    i = s[:-1].rfind(chr(96))
+    m = re.search(r'([A-Za-z_]\w*)\(', s[i + 1:-1]) if i >= 0 else None
+    return m.group(1) if m else None
+
+
+def check_names(rows):
+    """E: a citation that directly follows a code span naming a call must designate lines that contain that name (the sense, not only the shape:
+    the defect of cells-companion.md:220, where line 275 was a plausible line of code of the right file but not the call the sentence names)."""
+    out = []
+    for r in rows:
+        if r['before'] == '' or r['scope'] in ('whole', 'part', 'decl') or r['target'].endswith('.md'):
+            continue
+        name = call_named_before(r['doc'], int(r['line']), int(r['col']))
+        if not name:
+            continue
+        lines = L.target_lines(r['target'])
+        lo, hi = (int(x) for x in r['after'].split('-')) if '-' in r['after'] else (int(r['after']),) * 2
+        if lines and not any(name in lines[n - 1] for n in range(lo, hi + 1)):
+            out.append(f'E: {r["doc"]}:{r["line"]} [{r["cited"]}:{r["after"]}]: the sentence names the call {name}( and no line of the range contains it')
+    return out
+
+
 def prove(texts, rows):
-    return check_coverage(rows) + check_texts(texts, rows) + check_after(texts, rows) + check_trees(rows)
+    return check_coverage(rows) + check_texts(texts, rows) + check_after(texts, rows) + check_trees(rows) + check_names(rows)
 
 
 # ------------------------------------------------------------------------------------------------------------------ the tree
@@ -270,6 +304,19 @@ def selftest(rows):
         r['probe_end'] = L.probe(L.target_lines(r['target']), 1592)
     rs = mut(past_end)
     case('a range that runs into the next member', expected_with(rs), rs, False)
+    def wall_line(rs):
+        r = row(rs, A.C, 220)
+        r['after'] = '275'
+        r['probe_start'] = r['probe_end'] = L.probe(L.target_lines(r['target']), 275)
+    rs = mut(wall_line)
+    case('a call named by the sentence, a line of code that is not that call (document and survey agree)', expected_with(rs), rs, False)
+
+    def body_line(rs):
+        r = row(rs, A.R, 327)
+        r['after'] = '454'
+        r['probe_start'] = r['probe_end'] = L.probe(L.target_lines(r['target']), 454)
+    rs = mut(body_line)
+    case('a declaration cited at the first line of its body', expected_with(rs), rs, False)
     case('a row missing from the survey', exp, [r for r in rows if not (r['doc'] == A.R and int(r['line']) == 288)], False)
 
     def wrong_col(rs):
