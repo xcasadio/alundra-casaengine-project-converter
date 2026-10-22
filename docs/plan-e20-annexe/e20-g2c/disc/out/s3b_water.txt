@@ -1,0 +1,9 @@
+word 0x0800 (swim water) | tonneau34: dead t85 ; snd24 x0 ; fx [(84, 'fxattach(id=6,target=slot 1)')] ; changes ['t61 anim_t:0>1', 't83 slope18C:0>4', 't84 status:2>4', 't85 status:4>0 anim_t:1>0 slope18C:4>0'] ; final st 0 anim 0 slope18C 0 pos 0.0
+word 0x0800 (swim water) | etoile107: dead t85 ; snd24 x0 ; fx [(84, 'fxattach(id=6,target=slot 1)')] ; changes ['t61 anim_t:0>1', 't83 slope18C:0>4', 't84 status:2>4', 't85 status:4>0 anim_t:1>0 slope18C:4>0'] ; final st 0 anim 0 slope18C 0 pos 0.0
+word 0x0800 (swim water) | tronc117: dead tNone ; snd24 x1 ; fx [] ; changes ['t61 anim_t:0>1', 't83 slope18C:0>4', 't84 anim_t:1>5'] ; final st 2 anim 5 slope18C 4 pos 178.0
+word 0x1801 (water + both wall bits) | tonneau34: dead t85 ; snd24 x0 ; fx [(84, 'fxattach(id=6,target=slot 1)')] ; changes ['t61 anim_t:0>1', 't83 slope18C:0>4', 't84 status:2>4', 't85 status:4>0 anim_t:1>0 slope18C:4>0'] ; final st 0 anim 0 slope18C 0 pos 0.0
+word 0x1801 (water + both wall bits) | etoile107: dead t85 ; snd24 x0 ; fx [(84, 'fxattach(id=6,target=slot 1)')] ; changes ['t61 anim_t:0>1', 't83 slope18C:0>4', 't84 status:2>4', 't85 status:4>0 anim_t:1>0 slope18C:4>0'] ; final st 0 anim 0 slope18C 0 pos 0.0
+word 0x1801 (water + both wall bits) | tronc117: dead tNone ; snd24 x25 ; fx [] ; changes ['t61 anim_t:0>1', 't83 slope18C:0>4', 't101 slope18C:4>0', 't108 anim_t:1>0'] ; final st 2 anim 0 slope18C 0 pos 250.0
+word 0x0200 (pente 1) | tonneau34: dead tNone ; snd24 x1 ; fx [] ; changes ['t61 anim_t:0>1', 't83 slope18C:0>1', 't84 anim_t:1>0'] ; final st 2 anim 0 slope18C 1 pos 178.0
+word 0x0200 (pente 1) | etoile107: dead tNone ; snd24 x1 ; fx [] ; changes ['t61 anim_t:0>1', 't83 slope18C:0>1', 't84 anim_t:1>0'] ; final st 2 anim 0 slope18C 1 pos 178.0
+word 0x0200 (pente 1) | tronc117: dead tNone ; snd24 x1 ; fx [] ; changes ['t61 anim_t:0>1', 't83 slope18C:0>1', 't84 anim_t:1>0'] ; final st 2 anim 0 slope18C 1 pos 178.0

@@ -1,0 +1,6 @@
+etoile107 on plate@160: plate flags6C=60C0 pz=8.00 box depth(+0x1F8)=16.00 ; land t81 ; at t121: obj pos (172.00,100.00,16.00) ground=1 support==plate:True status 2 anim 0 flags 332384 ; end: support==plate:True pz=16.00
+etoile107 on plate@178: plate flags6C=60C0 pz=8.00 box depth(+0x1F8)=16.00 ; land t81 ; at t121: obj pos (172.00,100.00,16.00) ground=1 support==plate:True status 2 anim 0 flags 332384 ; end: support==plate:True pz=16.00
+etoile107 on plate@190: plate flags6C=60C0 pz=8.00 box depth(+0x1F8)=16.00 ; land t81 ; at t121: obj pos (172.00,100.00,16.00) ground=1 support==plate:True status 2 anim 0 flags 332384 ; end: support==plate:True pz=16.00
+tonneau34 on plate@160: plate flags6C=60C0 pz=8.00 box depth(+0x1F8)=16.00 ; land t81 ; at t121: obj pos (172.00,100.00,16.00) ground=1 support==plate:True status 2 anim 0 flags 3323E4 ; end: support==plate:True pz=16.00
+tonneau34 on plate@178: plate flags6C=60C0 pz=8.00 box depth(+0x1F8)=16.00 ; land t81 ; at t121: obj pos (172.00,100.00,16.00) ground=1 support==plate:True status 2 anim 0 flags 3323E4 ; end: support==plate:True pz=16.00
+tonneau34 on plate@190: plate flags6C=60C0 pz=8.00 box depth(+0x1F8)=16.00 ; land t81 ; at t121: obj pos (172.00,100.00,16.00) ground=1 support==plate:True status 2 anim 0 flags 3323E4 ; end: support==plate:True pz=16.00

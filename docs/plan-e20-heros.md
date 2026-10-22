@@ -7098,9 +7098,71 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
 
 ---
 
-#### 1.24.5 E20.g2c — C4 et les autres familles (esquisse, détaillée après un T0 de lecture seule) ⏳ (2026-10-22 : les blocs poussables C4 et les objets des plaques entrent dans le périmètre, D-E20-46)
+#### 1.24.5 E20.g2c — C4 (les objets transportables) et les torches : g2c1 et g2c2 (esquisses ; T0 de lecture seule fait le 2026-10-22) ⏳ (2026-10-22 : les objets C4 et les objets des plaques entrent dans le périmètre, D-E20-46)
 
-**Prérequis.** g2b. **But.** Les pierres, tonneaux, troncs, rochers, blocs de glace et « Objets (transportables) » (C4, 191 placements) et les torches (C70 et E20, 57) : ce qui reste sur le sol après le lancer (les objets de g2a et g2b se brisent, ceux-ci demeurent et peuvent servir de marche, `g18_c4_stone`). **Pourquoi une esquisse.** Le corps de C4 (`0x80066984`, plus de 150 instructions : chute, rebond contre un mur en montée `0x80066A68`, son `0x18`, effet `0x8003BDD8`, le cas du type `0x175`) n'est décodé que dans sa tête ; la casse d'une pierre qui touche une cible (E2, drapeau `0x20`) est une inférence ; la torche lance des flammes (E20, hors de g : E14). **T0 de lecture seule** (avant tout plan détaillé) : décoder le corps de C4 et le rejouer sur la machine (pierre, tonneau, bloc de glace, sprite 117), poser la question de la touche, lister les trois en-têtes que le spawner d'enregistrement refuse (cartes 70 et 27) ; ensuite sous-tranches g2c1 (C4) et g2c2 (torches, avec E14).
+**T0 de lecture seule (2026-10-22, HEAD `1d0b6953`, annexe `docs/plan-e20-annexe/e20-g2c/disc/`, `report.md`).** Désassemblé, modélisé et
+rejoué sur le vrai code ; ce qui n'est qu'inférence est dit.
+- **C4 est décodé.** `0x80066984`-`0x80066BF4`, 157 mots dont 39 de moitié portée. Le modèle égale le vrai code sur 20 000 vecteurs,
+  157/157 instructions. Sur 150 mutants d'un mot, 134 sont tués et les 16 autres sont équivalents. Goldens : `c4_goldens.json`
+  (1 244 vecteurs, SHA-256 `59167009…`).
+- **Aucun objet C4 ne se pousse : tous se portent.** Les 7 en-têtes C4 font 191 placements, dont 135 à C natif au chargement. Ce sont
+  les sprites 34 (tonneau), 37 (pierre), 107, 111, 112 et 113 (objets étoile, lune, eau, soleil) et 117 (tronc). Ils se soulèvent et se
+  lancent. Le héros qui marche contre l'un d'eux ne le déplace pas (36 ticks de poussée, X inchangé). Le mot « poussables » de D-E20-46
+  se lit donc « transportables ». Les blocs de glace (sprite 304) et les rochers tortue (182) ne sont pas C4 mais C23.
+- **O-G-9 est tranchée.** Un tonneau, une pierre ou un tronc lancé blesse une cible de classe A et se brise comme une caisse. Les quatre
+  objets de plaque n'ont pas d'attaque : ils ne touchent rien.
+- **O-G-10 est tranchée.** Les « trois en-têtes refusés » viennent de la zone du spawner (`0x8003A208-0x8003A25C`) : avec la zone
+  élargie, tout naît. Le verrou de contrôle avale tonneau, pierre et tronc à T+21 et laisse les objets de plaque dans les mains.
+- **Les plaques lisent le support** (`+0x12C`, `RidingEntity` dans la DLL). Un objet lancé sur la plaque y reste et sert de support à
+  un deuxième : c'est la pile.
+- **Au sol.** Un objet C4 glisse sur les cases dont le mot de coin vaut `0x1001`, et rebondit contre un mur atteint pendant la montée.
+  Dans l'eau de nage, tonneau, pierre et objets de plaque disparaissent ; le tronc flotte (animation 5). Au repos, 171 des 179
+  placements natifs sont inertes ; les 8 autres sont des troncs posés sur l'eau.
+- **La torche** (C70 portée, E20 au sol) fait naître une flamme de type 12, dont les gestionnaires sont ceux de f6b. Elle ne dépend pas
+  d'E14. D34 (« Ronces enflammées ») lit le type d'attaque 6 ; l'usage, brûler les ronces, est une inférence.
+- **Les cartes de l'histoire.** Aucune des 30 cartes de la chaîne d'histoire ne porte un C4 ou une torche : les arcs de la chaîne ne
+  bougent pas.
+- **Les vrais objets à pousser n'ont aucune tranche** (O-G-12). Ce sont le « Pilier poussable » (C76 natif, `0x8007C024`, 24 placements
+  sur 8 cartes), la « Statue poussable » (62 placements, scriptée), le « Bloc à pousser/attaquer » (9) et l'« Interrupteur poussoir ».
+
+**Découpage.**
+- **E20.g2c1 — C4 (7 types).**
+  - Prérequis : g1b, qui fixe l'ensemble câblé, et g2b.
+  - Contenu : `LiftableAi` (`C4Tick`) ; le lâcher partagé avec C23 (même table, drapeaux propres à C4) ; les clés `(C, 4)` des types 290,
+    293, 363, 367, 368, 369 et 373 ; le verrou `+0x278` ; le lecteur des mots des quatre coins ; l'ensemble câblé porté de 7 à 14 types.
+  - Phases : A, la fonction pure contre les goldens ; B, le registre, le verrou et les coins ; C, l'activation.
+  - Recette : `66-crypte-de-lars.sav` (carte 22) ; `96-ancien-sanctuaire.sav` (carte 27, après E19.sm1) ; `91-ancien-sanctuaire-bug.sav`
+    (carte 29).
+  - Son plan se détaille après g1b, avec les sondes P1 à P4 (Q-G2C-9).
+- **E20.g2c2 — Les torches.**
+  - Prérequis : g1b et f6b. f6b appartient au thème des attaques : g2c2 vient après elle.
+  - Contenu : `(C, 70)` (la moitié portée), `(E, 20)`, le type 393 câblé, et le témoin négatif de g1b (la torche de la carte 86)
+    remplacé. D34 reste à trancher (Q-G2C-7).
+  - Recette : `160-magyscar.sav` (carte 86), `162-magyscar-bug.sav` (carte 93).
+
+**Corrections de l'esquisse du 2026-10-15** (annexe §11).
+1. Les blocs de glace et les rochers ne sont pas C4.
+2. C4 compte 157 mots.
+3. La casse d'une pierre qui touche une cible est un fait, plus une inférence.
+4. « Poussables » se lit « transportables ».
+5. Les torches dépendent de f6b, pas d'E14.
+6. Les « trois en-têtes refusés » sont un artefact de la zone du spawner.
+7. g2c exige g1b, pas seulement g2b.
+8. g2c2 remplace le témoin négatif de g1b.
+
+**Questions du plan, à trancher au détail de g2c1** (défauts proposés).
+- **Q-G2C-1** : `+0x18C` des troncs nés d'un enregistrement. Défaut : alimenté pour le seul type 373 ; l'alternative est toutes les
+  entités à gravité, soit 444 instances (E19.h2).
+- **Q-G2C-2** : les 43 troncs scriptés (patrouille) ne rendent jamais la main à C4. Lire leurs scripts avant le détail.
+- **Q-G2C-3** : le lecteur des quatre coins et O-G-2 forment-ils une seule fonction ?
+- **Q-G2C-4** : g2c1 étend l'ensemble câblé de g1b (défaut) ; g1b n'est pas amendée.
+- **Q-G2C-5** : un objet posé sur un support mobile voyage avec lui dans l'original ; la DLL ne le fait que pour le héros
+  (`ScriptedMotion.cs:677`). Voir O-G-5.
+- **Q-G2C-6** : l'ordre entre g2c1 et E19.sm1, pour la recette des plaques.
+- **Q-G2C-7** : D34 va dans g2c2 ou en E14.
+- **Q-G2C-8** : la DLL doit offrir `+0x80` (code natif E), que C4 lit au lâcher forcé.
+- **Q-G2C-9** : les sondes de la DLL au T0 de g2c1 : P1 `ForceAdjusted` d'un objet lancé contre un mur ; P2 les mots des quatre coins
+  au bord d'une bande `0x1001` ; P3 `HitCounter` à T+21 ; P4 le `RidingEntity` d'un objet posé sur une plaque.
 
 ---
 
@@ -7116,9 +7178,10 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
 | O-G-6 | Torches (C70, E20), C4, graines (C73, E21), bombe (C62, D30, E12) hors de l'ensemble câblé | g2c, E14, E20.h3 |
 | O-G-7 | La racine d'un objet porté ou lancé est à pixel entier, celle du héros est flottante : écart sous le pixel (le binaire dessine à pixel entier) | accepté, documenté |
 | O-G-8 | Portail de la même carte avec un objet porté : l'original décale l'objet avec le héros (`0x80031340`) ; la DLL le suit par la copie de position ; reste à établir si ce téléport pose un verrou qui avalerait l'objet | recette, ou une sonde de l'oracle |
-| O-G-9 | Casse d'une pierre ou d'un tonneau (C4) qui touche une cible : inférence non exécutée | le T0 de g2c |
-| O-G-10 | Le genre 2 (jamais dans le corpus) et les trois en-têtes refusés par le spawner d'enregistrement (`AttackCount` 0 et 7) ne sont couverts que par le fuzz direct | le T0 de g2c |
+| O-G-9 | Casse d'une pierre ou d'un tonneau (C4) qui touche une cible : inférence non exécutée | Tranchée par le T0 de g2c (2026-10-22) : un tonneau, une pierre ou un tronc lancé blesse une cible de classe A et se brise ; les objets de plaque ne touchent rien (§1.24.5) |
+| O-G-10 | Le genre 2 (jamais dans le corpus) et les trois en-têtes refusés par le spawner d'enregistrement (`AttackCount` 0 et 7) ne sont couverts que par le fuzz direct | Tranchée par le T0 de g2c (2026-10-22) pour les trois en-têtes : artefact de la zone du spawner ; le genre 2 reste couvert par le fuzz seul (§1.24.5) |
 | O-G-11 | (2026-10-18) Le placement 231 / enregistrement 3 : l'index 35 désigne la cruche locale (genre 1) dans `data-extracted`, mais l'export y lit « I05_Arc du chasseur » (banque `alundra_35`, genre 0) ; ce qu'il est au spawn dans le binaire est inconnu. Le type 35 n'est pas ajouté à (C, 23) ni (E, 2) | le convertisseur |
+| O-G-12 | (2026-10-22, T0 de g2c) Les vrais objets à pousser : le « Pilier poussable » (C76 natif, 24 placements sur 8 cartes, dont la 26 de la sauvegarde `92-ancien-sanctuaire-bug-pillier.sav`), la « Statue poussable » (62, scriptée, 11 cartes), le « Bloc à pousser/attaquer » (9, 4 cartes), l'« Interrupteur poussoir ». Aucune tranche ; sans elle ils restent immobiles. Ce n'est pas le portage des objets C4 (D-E20-46) | l'auteur (question posée au retour, hors du thème 1 tant qu'il n'a pas répondu) |
 
 **Corrections induites.** (1) **Proposées, non appliquées le 2026-10-15** (elles iront dans une révision ultérieure de l'enveloppe, relue, quand g
 deviendra la tranche suivante) : §1.1, ligne 10 : l'ordre interne g1a, g2a, g2b, g1b ; ligne 11 : h3 exige g1a et g2a ; D-G-14 : retirer

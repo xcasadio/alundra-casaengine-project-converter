@@ -1,0 +1,34 @@
+0x8007b7b0  8c820028  lw        $v0, 0x28($a0)
+0x8007b7b4  00000000  nop       
+0x8007b7b8  1040001c  beqz      $v0, 0x8007b82c
+0x8007b7bc  00000000  nop       
+0x8007b7c0  8c830024  lw        $v1, 0x24($a0)
+0x8007b7c4  00000000  nop       
+0x8007b7c8  10600017  beqz      $v1, 0x8007b828
+0x8007b7cc  2402ffff  addiu     $v0, $zero, -1
+0x8007b7d0  14620003  bne       $v1, $v0, 0x8007b7e0
+0x8007b7d4  3c028003  lui       $v0, 0x8003
+0x8007b7d8  0801edfc  j         0x8007b7f0
+0x8007b7dc  24020003  addiu     $v0, $zero, 3
+0x8007b7e0  244281dc  addiu     $v0, $v0, -0x7e24
+0x8007b7e4  00031880  sll       $v1, $v1, 2
+0x8007b7e8  00621821  addu      $v1, $v1, $v0
+0x8007b7ec  8c620000  lw        $v0, ($v1)
+0x8007b7f0  00000000  nop       
+0x8007b7f4  ac820088  sw        $v0, 0x88($a0)
+0x8007b7f8  8c820028  lw        $v0, 0x28($a0)
+0x8007b7fc  00000000  nop       
+0x8007b800  10400002  beqz      $v0, 0x8007b80c
+0x8007b804  ac800024  sw        $zero, 0x24($a0)
+0x8007b808  ac40002c  sw        $zero, 0x2c($v0)
+0x8007b80c  8c82006c  lw        $v0, 0x6c($a0)
+0x8007b810  2403ff7f  addiu     $v1, $zero, -0x81
+0x8007b814  ac800028  sw        $zero, 0x28($a0)
+0x8007b818  34420034  ori       $v0, $v0, 0x34
+0x8007b81c  00431024  and       $v0, $v0, $v1
+0x8007b820  0801ee0b  j         0x8007b82c
+0x8007b824  ac82006c  sw        $v0, 0x6c($a0)
+0x8007b828  ac800088  sw        $zero, 0x88($a0)
+0x8007b82c  03e00008  jr        $ra
+0x8007b830  00000000  nop       
+0x8007b834  00802821  move      $a1, $a0

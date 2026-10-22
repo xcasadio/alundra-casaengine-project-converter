@@ -1,0 +1,26 @@
+C4 whole function: 20000 vectors, 0 mismatches, instruction coverage 157/157, uncovered 
+model outcome classes (carried/free, anim, status set, journal kinds) over the vectors:
+   ('carried', 'anim!0', '', '') 4061
+   ('carried', 'anim0', '', '') 901
+   ('free', 'anim!0', '', '') 4243
+   ('free', 'anim!0', '', 'effect') 351
+   ('free', 'anim!0', '', 'sound') 3935
+   ('free', 'anim!0', 'status3', '') 3752
+   ('free', 'anim0', '', '') 2757
+mutants 150 killed 134 survivors 16
+  SURVIVOR 80066984 imm+1            addiu $sp, $sp, -0x20        -> addiu $sp, $sp, -0x1f
+  SURVIVOR 80066984 imm-1            addiu $sp, $sp, -0x20        -> addiu $sp, $sp, -0x21
+  SURVIVOR 80066988 off+4            sw $s0, 0x18($sp)            -> sw $s0, 0x1c($sp)
+  SURVIVOR 8006698c addu<->subu      move $s0, $a0                -> subu $s0, $a0, $zero
+  SURVIVOR 80066990 off+4            sw $ra, 0x1c($sp)            -> sw $ra, 0x20($sp)
+  SURVIVOR 80066a64 addu<->subu      move $v1, $zero              -> negu $v1, $zero
+  SURVIVOR 80066a88 addu<->subu      move $a0, $zero              -> negu $a0, $zero
+  SURVIVOR 80066ac4 addu<->subu      move $a2, $a0                -> subu $a2, $a0, $zero
+  SURVIVOR 80066ad8 addu<->subu      move $a0, $s0                -> subu $a0, $s0, $zero
+  SURVIVOR 80066b40 addu<->subu      move $v1, $zero              -> negu $v1, $zero
+  SURVIVOR 80066b48 addu<->subu      move $a0, $s0                -> subu $a0, $s0, $zero
+  SURVIVOR 80066b64 imm+1            addiu $v0, $zero, 4          -> addiu $v0, $zero, 5
+  SURVIVOR 80066be4 off+4            lw $ra, 0x1c($sp)            -> lw $ra, 0x20($sp)
+  SURVIVOR 80066be8 off+4            lw $s0, 0x18($sp)            -> lw $s0, 0x1c($sp)
+  SURVIVOR 80066bec imm+1            addiu $sp, $sp, 0x20         -> addiu $sp, $sp, 0x21
+  SURVIVOR 80066bec imm-1            addiu $sp, $sp, 0x20         -> addiu $sp, $sp, 0x1f

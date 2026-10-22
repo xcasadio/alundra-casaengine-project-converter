@@ -1,0 +1,8 @@
+sprite  34  C4 E2 Load0 Touch0 Inter0 MoreFlags=0xE4 CanPickup=0x23(kind 1) Break=10 Contents=130 size=(21, 15, 16) off=(-10, -7, 0) : 76 enabled placements on 39 maps [22, 23, 28, 29, 30, 32, 33, 38, 39, 43, 53, 67, 71, 72, 86, 87, 90, 93, 107, 113, 114, 116, 122, 148, 149, 151, 339, 341, 343, 344, 351, 423, 424, 425, 426, 429, 430, 441, 442]
+sprite  37  C4 E2 Load0 Touch0 Inter0 MoreFlags=0xE4 CanPickup=0x23(kind 1) Break=10 Contents=130 size=(21, 15, 16) off=(-10, -7, 0) : 27 enabled placements on 14 maps [22, 24, 32, 52, 57, 69, 79, 81, 307, 404, 442, 444, 445, 473]
+sprite 107  C4 E0 Load0 Touch0 Inter0 MoreFlags=0x84 CanPickup=0x23(kind 1) Break=10 Contents=0 size=(20, 12, 14) off=(-10, -6, 0) : 8 enabled placements on 4 maps [27, 29, 30, 400]
+sprite 111  C4 E0 Load0 Touch0 Inter0 MoreFlags=0x84 CanPickup=0x23(kind 1) Break=10 Contents=0 size=(20, 12, 14) off=(-10, -6, 0) : 8 enabled placements on 4 maps [27, 29, 30, 400]
+sprite 112  C4 E0 Load0 Touch0 Inter0 MoreFlags=0x84 CanPickup=0x23(kind 1) Break=10 Contents=0 size=(20, 12, 14) off=(-10, -6, 0) : 8 enabled placements on 4 maps [27, 29, 30, 400]
+sprite 113  C4 E0 Load0 Touch0 Inter0 MoreFlags=0x84 CanPickup=0x23(kind 1) Break=10 Contents=0 size=(20, 12, 14) off=(-10, -6, 0) : 8 enabled placements on 4 maps [27, 29, 30, 400]
+sprite 117  C4 E2 Load0 Touch0 Inter0 MoreFlags=0xE4 CanPickup=0x23(kind 1) Break=10 Contents=0 size=(21, 15, 16) off=(-10, -7, 0) : 56 enabled placements on 6 maps [70, 72, 73, 79, 140, 158]
+sprite 137  C70 E20 Load0 Touch0 Inter0 MoreFlags=0xE2 CanPickup=0x23(kind 1) Break=10 Contents=0 size=(21, 15, 15) off=(-10, -7, 0) : 57 enabled placements on 10 maps [86, 87, 88, 89, 90, 92, 93, 94, 441, 442]

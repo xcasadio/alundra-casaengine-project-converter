@@ -1,0 +1,9 @@
+t85: obj1 (x172.0 z16.0 ground 1 support==plate True carrier 0) | obj2 (x130.0 z0.0 ground 1 support==obj1 False support==plate False carrier 0) | hero carrying False anim 0
+t100: obj1 (x172.0 z16.0 ground 1 support==plate True carrier 0) | obj2 (x130.0 z7.0 ground 0 support==obj1 False support==plate False carrier 80127D30) | hero carrying True anim 5
+t110: obj1 (x172.0 z16.0 ground 1 support==plate True carrier 0) | obj2 (x124.0 z17.0 ground 0 support==obj1 False support==plate False carrier 80127D30) | hero carrying True anim 5
+t120: obj1 (x172.0 z16.0 ground 1 support==plate True carrier 0) | obj2 (x114.0 z27.0 ground 0 support==obj1 False support==plate False carrier 80127D30) | hero carrying True anim 5
+t150: obj1 (x172.0 z16.0 ground 1 support==plate True carrier 0) | obj2 (x109.0 z32.0 ground 0 support==obj1 False support==plate False carrier 80127D30) | hero carrying True anim 12
+t170: obj1 (x172.0 z16.0 ground 1 support==plate True carrier 0) | obj2 (x160.0 z32.0 ground 0 support==obj1 False support==plate False carrier 0) | hero carrying False anim 9
+t180: obj1 (x172.0 z16.0 ground 1 support==plate True carrier 0) | obj2 (x163.0 z30.0 ground 1 support==obj1 True support==plate False carrier 0) | hero carrying False anim 0
+t190: obj1 (x172.0 z16.0 ground 1 support==plate True carrier 0) | obj2 (x163.0 z30.0 ground 1 support==obj1 True support==plate False carrier 0) | hero carrying False anim 0
+t199: obj1 (x172.0 z16.0 ground 1 support==plate True carrier 0) | obj2 (x163.0 z30.0 ground 1 support==obj1 True support==plate False carrier 0) | hero carrying False anim 0

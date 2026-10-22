@@ -1,0 +1,9 @@
+{'inert': 171, 'changed': 8}
+map 70 rec 9 sprite 117 at (696.0,392.0,z 16.0): anim 0->5 status 2->2 z 16.0->16.0 slope18C 4 ground 1 journal ['snd(0)']
+map 70 rec 10 sprite 117 at (744.0,392.0,z 16.0): anim 0->5 status 2->2 z 16.0->16.0 slope18C 4 ground 1 journal ['snd(0)']
+map 70 rec 11 sprite 117 at (792.0,360.0,z 16.0): anim 0->5 status 2->2 z 16.0->16.0 slope18C 4 ground 1 journal ['snd(0)']
+map 70 rec 12 sprite 117 at (840.0,360.0,z 16.0): anim 0->5 status 2->2 z 16.0->16.0 slope18C 4 ground 1 journal ['snd(0)']
+map 70 rec 21 sprite 117 at (636.0,360.0,z 16.0): anim 0->5 status 2->2 z 16.0->16.0 slope18C 4 ground 1 journal ['snd(0)']
+map 73 rec 11 sprite 117 at (396.0,728.0,z 16.0): anim 0->5 status 2->2 z 16.0->16.0 slope18C 4 ground 1 journal ['snd(0)']
+map 73 rec 12 sprite 117 at (396.0,792.0,z 16.0): anim 0->5 status 2->2 z 16.0->16.0 slope18C 4 ground 1 journal ['snd(0)']
+map 73 rec 36 sprite 117 at (996.0,712.0,z 16.0): anim 0->5 status 2->2 z 16.0->16.0 slope18C 4 ground 1 journal ['snd(0)']
