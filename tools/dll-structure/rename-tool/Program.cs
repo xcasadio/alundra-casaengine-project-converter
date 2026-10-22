@@ -2,6 +2,12 @@
 //
 //   RenameTool <repo root> <Domain> [--dry-run] [--table <table.json>]
 //   RenameTool <repo root> --rename Old=New [--rename Old2=New2 ...] [--dry-run]      (proofs: explicit pairs instead of a domain)
+//   RenameTool <repo root> --r5 <Domain> [--types <r5-types.tsv>] [--dry-run]           (R5: the TEST classes of a domain of r5-types.tsv)
+//   (with --rename, --in-tests looks the types up in Alundra.Tests instead of Alundra)
+//
+// R5 (docs/plan-restructuration-dll.md, section 9, T0b): the same guarantees for the classes of Alundra.Tests: the types are looked up in the
+// compilation of the Alundra.Tests project, their pairs are the (old_type, new_type) rows of r5-types.tsv whose `domain` is the one asked;
+// the short form of an attribute class (`[AlundraGpuFact]` for `AlundraGpuFactAttribute`) is renamed with it.
 //
 // Opens Alundra.Tests/Alundra.Tests.csproj (which loads Alundra) and tools/AlundraTestSaves/AlundraTestSaves.csproj in one workspace.
 // For a domain of table.json (old name = stage r2, new name = stage r3), it records every reference of every type to rename, renames the
@@ -38,14 +44,17 @@ static class Program
 
     static int Main(string[] args)
     {
-        string? root = null, domain = null, tablePath = null;
-        bool dry = false;
+        string? root = null, domain = null, tablePath = null, r5Domain = null, typesPath = null;
+        bool dry = false, inTests = false;
         var explicitPairs = new List<(string Old, string New)>();
         for (int i = 0; i < args.Length; i++)
         {
             switch (args[i])
             {
                 case "--dry-run": dry = true; break;
+                case "--in-tests": inTests = true; break;
+                case "--r5": r5Domain = args[++i]; inTests = true; break;
+                case "--types": typesPath = args[++i]; break;
                 case "--table": tablePath = args[++i]; break;
                 case "--rename":
                     var kv = args[++i].Split('=');
@@ -57,12 +66,20 @@ static class Program
                     break;
             }
         }
-        if (root == null || (domain == null) == (explicitPairs.Count == 0)) return Usage();
+        if (root == null || ((domain != null ? 1 : 0) + (r5Domain != null ? 1 : 0) + (explicitPairs.Count > 0 ? 1 : 0)) != 1) return Usage();
         root = Path.GetFullPath(root);
         tablePath ??= Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "table.json");
+        typesPath ??= Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "r5-types.tsv");
 
         List<(string Old, string New)> pairs;
-        if (domain != null)
+        if (r5Domain != null)
+        {
+            try { pairs = R5Pairs(typesPath, r5Domain); }
+            catch (Exception e) { Console.Error.WriteLine("r5 table: " + e.Message); return 2; }
+            if (pairs.Count == 0) { Console.WriteLine($"{r5Domain}: no test class to rename."); return 0; }
+            domain = null;
+        }
+        else if (domain != null)
         {
             try { pairs = DomainPairs(tablePath, domain); }
             catch (Exception e) { Console.Error.WriteLine("table: " + e.Message); return 2; }
@@ -78,13 +95,31 @@ static class Program
         if (pick == null) { Console.Error.WriteLine("no MSBuild instance found"); return 2; }
         MSBuildLocator.RegisterInstance(pick);
         Console.WriteLine($"msbuild {pick.Version}; {pairs.Count} type(s) to rename");
-        return Run(root, domain ?? "(explicit)", pairs, dry).GetAwaiter().GetResult();
+        return Run(root, r5Domain != null ? "R5 " + r5Domain : (domain ?? "(explicit)"), pairs, dry, inTests).GetAwaiter().GetResult();
     }
 
     static int Usage()
     {
-        Console.Error.WriteLine("usage: RenameTool <repo root> <Domain> [--dry-run] [--table <table.json>]\n       RenameTool <repo root> --rename Old=New [--rename ...] [--dry-run]");
+        Console.Error.WriteLine("usage: RenameTool <repo root> <Domain> [--dry-run] [--table <table.json>]\n       RenameTool <repo root> --rename Old=New [--rename ...] [--in-tests] [--dry-run]\n       RenameTool <repo root> --r5 <Domain> [--types <r5-types.tsv>] [--dry-run]");
         return 2;
+    }
+
+    // r5-types.tsv: tab separated, header row; the rows of the domain whose type changes its name (a partial class is listed once per file: distinct pairs).
+    static List<(string, string)> R5Pairs(string typesPath, string domain)
+    {
+        var lines = File.ReadAllLines(typesPath, Encoding.UTF8);
+        var head = lines[0].Split('\t');
+        int iOld = Array.IndexOf(head, "old_type"), iNew = Array.IndexOf(head, "new_type"), iDom = Array.IndexOf(head, "domain");
+        if (iOld < 0 || iNew < 0 || iDom < 0) throw new InvalidDataException("columns old_type, new_type and domain expected");
+        var res = new List<(string, string)>();
+        foreach (var l in lines.Skip(1))
+        {
+            if (l.Length == 0) continue;
+            var c = l.Split('\t');
+            if (c[iDom] != domain || c[iOld] == c[iNew]) continue;
+            if (!res.Contains((c[iOld], c[iNew]))) res.Add((c[iOld], c[iNew]));
+        }
+        return res;
     }
 
     static string DomainOfPath(string p)
@@ -170,7 +205,7 @@ static class Program
         return d;
     }
 
-    static async Task<int> Run(string root, string label, List<(string Old, string New)> pairs, bool dry)
+    static async Task<int> Run(string root, string label, List<(string Old, string New)> pairs, bool dry, bool inTests)
     {
         using var ws = MSBuildWorkspace.Create();
         ws.WorkspaceFailed += (s, e) => { if (e.Diagnostic.Kind == WorkspaceDiagnosticKind.Failure) Console.Error.WriteLine("workspace: " + e.Diagnostic.Message); };
@@ -185,6 +220,9 @@ static class Program
         var oursIds = sol0.Projects.Where(p => IsOurs(root, p)).Select(p => p.Id).ToList();
         var alundra = sol0.Projects.FirstOrDefault(p => p.FilePath != null && string.Equals(Path.GetFullPath(p.FilePath), Path.Combine(root, "Alundra", "Alundra.csproj"), StringComparison.OrdinalIgnoreCase));
         if (alundra == null || oursIds.Count != 3) { Console.Error.WriteLine($"expected the 3 projects Alundra, Alundra.Tests, AlundraTestSaves; found {oursIds.Count}"); return 2; }
+        var tests = sol0.Projects.FirstOrDefault(p => p.FilePath != null && string.Equals(Path.GetFullPath(p.FilePath), Path.Combine(root, "Alundra.Tests", "Alundra.Tests.csproj"), StringComparison.OrdinalIgnoreCase));
+        if (tests == null) { Console.Error.WriteLine("the project Alundra.Tests was not loaded"); return 2; }
+        var searched = inTests ? tests : alundra;   // the project whose top-level types are renamed
         // documentation comments parsed, so that `cref` is structured and renamed
         foreach (var id in oursIds)
         {
@@ -197,7 +235,11 @@ static class Program
         Console.WriteLine($"loaded: {oursDocs.Count} documents in {oursIds.Count} projects");
 
         var map = pairs.ToDictionary(p => p.Old, p => p.New);
-        var mapper = new Regex(@"(?<![A-Za-z0-9_])(" + string.Join("|", pairs.Select(p => Regex.Escape(p.Old)).OrderByDescending(x => x.Length)) + @")(?![A-Za-z0-9_])");
+        // the short form of an attribute class: `[AlundraGpuFact]` names `AlundraGpuFactAttribute`; Roslyn renames it with the class
+        foreach (var (o, n) in pairs)
+            if (o.EndsWith("Attribute") && n.EndsWith("Attribute") && o.Length > 9 && n.Length > 9 && !map.ContainsKey(o[..^9]))
+                map[o[..^9]] = n[..^9];
+        var mapper = new Regex(@"(?<![A-Za-z0-9_])(" + string.Join("|", map.Keys.Select(Regex.Escape).OrderByDescending(x => x.Length)) + @")(?![A-Za-z0-9_])");
         string MapStr(string s) => mapper.Replace(s, m => map[m.Value]);
 
         var errBefore = await Errors(before, oursIds, null, null);
@@ -213,7 +255,7 @@ static class Program
         var renamedDescs = new HashSet<string>();
         foreach (var (o, n) in pairs)
         {
-            var sym = await FindType(before, before.GetProject(alundra.Id)!, o);
+            var sym = await FindType(before, before.GetProject(searched.Id)!, o);
             if (sym == null) continue;
             renamedDescs.Add(Desc(sym.OriginalDefinition));
             var refs = await SymbolFinder.FindReferencesAsync(sym, before, oursDocSet);
@@ -253,7 +295,7 @@ static class Program
         // rename
         foreach (var (o, n) in pairs)
         {
-            var sym = await FindType(cur, cur.GetProject(alundra.Id)!, o);
+            var sym = await FindType(cur, cur.GetProject(searched.Id)!, o);
             if (sym == null) return Refuse(label);
             var opts = new SymbolRenameOptions(RenameOverloads: false, RenameInStrings: false, RenameInComments: false, RenameFile: false);
             cur = await Renamer.RenameSymbolAsync(cur, sym, opts, n);
@@ -293,7 +335,7 @@ static class Program
 
         var nsSegments = new HashSet<string> { "global", "Alundra" };
         {
-            var comp = await after.GetProject(alundra.Id)!.GetCompilationAsync();
+            var comp = await after.GetProject(searched.Id)!.GetCompilationAsync();
             void Walk(INamespaceSymbol ns) { foreach (var m in ns.GetNamespaceMembers()) { nsSegments.Add(m.Name); Walk(m); } }
             Walk(comp!.GlobalNamespace.GetNamespaceMembers().First(x => x.Name == "Alundra"));
         }
