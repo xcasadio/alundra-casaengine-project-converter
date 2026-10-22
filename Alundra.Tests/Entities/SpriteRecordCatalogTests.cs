@@ -6,7 +6,7 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Hero;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// Covers <see cref="SpriteRecordCatalog"/>'s file-backed loading (see its class doc for the degraded

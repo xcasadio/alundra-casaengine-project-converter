@@ -17,7 +17,7 @@ using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// T2 (docs/plan-transitions-carte.md §1.5/§3, "Gel global du monde") - ORACLE 1 (headless), on the
@@ -43,11 +43,11 @@ namespace Alundra.Tests;
 /// method's own doc) with a motion that keeps going every tick until frozen, instead of stopping on its
 /// own after a fixed real distance.
 /// </summary>
-public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
+public sealed class GlobalFreezeEntityUpdateTests : IDisposable
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 
-    public AlundraGlobalFreezeEntityUpdateTests() => DialogueDirector.Instance.ResetForTests();
+    public GlobalFreezeEntityUpdateTests() => DialogueDirector.Instance.ResetForTests();
 
     public void Dispose() => DialogueDirector.Instance.ResetForTests();
 
@@ -66,7 +66,7 @@ public sealed class AlundraGlobalFreezeEntityUpdateTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraGlobalFreezeEntityUpdateTests: no 'alundra-project/Maps' directory found above "
+            $"GlobalFreezeEntityUpdateTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - these tests need the real converter export of map 389.");
     }
 

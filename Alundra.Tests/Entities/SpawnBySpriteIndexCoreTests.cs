@@ -15,64 +15,15 @@ using Alundra.Combat;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
-
-/// <summary>The comparison of the projection of an oracle vector with an entity of the DLL, shared by the tests of the core and of the full path of the interface.</summary>
-internal static class SpawnProjectionAsserts
-{
-    /// <summary>The fields the plan compares (README of the annex). <paramref name="withTerrain"/> false leaves out the ones that depend on the terrain of the field: <c>PosZ</c>, <c>ModdedPosZ</c>, the terrain, the floor and the corner heights.</summary>
-    internal static void Check(string id, SpawnProjection p, EntityScriptProxy proxy, ICollisionField? field, Entity hero, Entity? aux, bool withTerrain)
-    {
-        Assert.True(p.Hp == proxy.Hp, $"{id}: Hp {proxy.Hp} (oracle {p.Hp})");
-        Assert.True(p.HpMax == proxy.HpMax, $"{id}: HpMax {proxy.HpMax} (oracle {p.HpMax})");
-        Assert.True(p.Ref == proxy.EntityRefId, $"{id}: EntityRefId {proxy.EntityRefId} (oracle {p.Ref})");
-        Assert.True(p.Id == proxy.SpriteType, $"{id}: SpriteType {proxy.SpriteType} (oracle {p.Id})");
-        Assert.True(p.Flags == proxy.Flags, $"{id}: Flags {proxy.Flags:X} (oracle {p.Flags:X})");
-        Assert.True(p.SpriteProgram.SequenceEqual(proxy.SpriteProgramIndexes), $"{id}: SpriteProgramIndexes [{string.Join(",", proxy.SpriteProgramIndexes)}] (oracle [{string.Join(",", p.SpriteProgram)}])");
-        Assert.True(p.Program.SequenceEqual(proxy.ProgramIndexes), $"{id}: ProgramIndexes [{string.Join(",", proxy.ProgramIndexes)}] (oracle [{string.Join(",", p.Program)}])");
-        Assert.True(p.AnimTarget == proxy.TargetAnimationId, $"{id}: TargetAnimationId {proxy.TargetAnimationId} (oracle {p.AnimTarget})");
-        Assert.True(p.DirTarget == proxy.TargetDirection, $"{id}: TargetDirection {proxy.TargetDirection} (oracle {p.DirTarget})");
-        Assert.True(p.Px == proxy.PosX && p.Py == proxy.PosY, $"{id}: PosX/PosY {proxy.PosX}/{proxy.PosY} (oracle {p.Px}/{p.Py})");
-        Assert.True(p.ModdedX == proxy.ModdedPosX && p.ModdedY == proxy.ModdedPosY, $"{id}: ModdedPosX/Y {proxy.ModdedPosX}/{proxy.ModdedPosY} (oracle {p.ModdedX}/{p.ModdedY})");
-        Assert.True(p.ModX == proxy.ModX && p.ModY == proxy.ModY && p.ModZ == proxy.ModZ, $"{id}: ModX/Y/Z {proxy.ModX}/{proxy.ModY}/{proxy.ModZ} (oracle {p.ModX}/{p.ModY}/{p.ModZ})");
-        Assert.True(p.Width == proxy.Width && p.Height == proxy.Height && p.Depth == proxy.Depth, $"{id}: Width/Height/Depth {proxy.Width}/{proxy.Height}/{proxy.Depth} (oracle {p.Width}/{p.Height}/{p.Depth})");
-        Assert.True(p.TileX == proxy.TileX && p.TileY == proxy.TileY, $"{id}: TileX/TileY {proxy.TileX}/{proxy.TileY} (oracle {p.TileX}/{p.TileY})");
-        Assert.True((p.HasAttack != 0) == (proxy.CurrentAttack != null), $"{id}: the attack of the animation 0 ({proxy.CurrentAttack != null}; oracle {p.HasAttack})");
-        Assert.True(p.AnimFlags == proxy.HitAnimByte, $"{id}: HitAnimByte {proxy.HitAnimByte} (oracle {p.AnimFlags})");
-        Assert.Same(Resolve(p.Parent, hero, aux), proxy.ParentEntity);
-        Assert.Same(Resolve(p.Root, hero, aux), proxy.ChildEntity);
-        if (!withTerrain)
-        {
-            return;
-        }
-
-        // The binary's Z (and floor, corner heights) is the DLL's plus one raw unit (ADR-0026).
-        Assert.True(p.Pz - 1 == proxy.PosZ, $"{id}: PosZ {proxy.PosZ} (oracle {p.Pz} - 1)");
-        Assert.True(p.ModdedZ - 1 == proxy.ModdedPosZ, $"{id}: ModdedPosZ {proxy.ModdedPosZ} (oracle {p.ModdedZ} - 1)");
-        Assert.True(p.Terrain == proxy.ComputeTerrainHeight(field), $"{id}: terrain {proxy.ComputeTerrainHeight(field)} (oracle {p.Terrain})");
-        Assert.True(p.Floor - 1 == proxy.FloorHeight, $"{id}: FloorHeight {proxy.FloorHeight} (oracle {p.Floor} - 1)");
-        for (var k = 0; k < 4; k++)
-        {
-            Assert.True(p.Corners[k] - 1 == proxy.MapHeights[k], $"{id}: MapHeights[{k}] {proxy.MapHeights[k]} (oracle {p.Corners[k]} - 1)");
-        }
-    }
-
-    private static Entity? Resolve(string who, Entity hero, Entity? aux) => who switch
-    {
-        "none" => null,
-        "hero" => hero,
-        "parent" => aux ?? throw new InvalidOperationException("the vector has no spawned parent"),
-        _ => throw new InvalidOperationException(who),
-    };
-}
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, ADR-0063), the data and the record-less core: the apparition of an entity by sprite index (<c>SpawnWarpEntity</c>, <c>0x80039F58</c>) against the REAL code of <c>ALUN_CD.EXE</c> (France)
-/// run in the oracle of <c>docs/plan-e20-annexe/e20-e0a/oracle</c>. Nothing here computes an expected value of the creation: the rows of the oracle are the expected values (read by <see cref="AlundraSpawnIndexOracle"/>).
+/// run in the oracle of <c>docs/plan-e20-annexe/e20-e0a/oracle</c>. Nothing here computes an expected value of the creation: the rows of the oracle are the expected values (read by <see cref="SpawnIndexOracle"/>).
 /// (a) the 395 bank keys of the export and the valid indices of the 483 maps; (b) the creation image of the 395 vectors and the geometry vectors at the level of the core, without a world; (g) the creation sound;
 /// the frame of Z (D-E0A-1: the binary's argument is the DLL's plus one raw unit, ADR-0026) on the 8 calls the AT9 oracle journals at the real sites of the hero shot.
 /// </summary>
-public sealed class AlundraSpawnBySpriteIndexCoreTests
+public sealed class SpawnBySpriteIndexCoreTests
 {
     private static readonly string Root = ProjectRootFinder.Find();
     private static readonly Lazy<SpriteRecordCatalog> Catalog = new(() => new SpriteRecordCatalog(Root));
@@ -85,7 +36,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     [Fact]
     public void A_Data_TheBankKeysOfTheExport_GiveOnePrefabEachOfTheCatalog_151OnTheGlobalPageAnd244OnTheMapPage()
     {
-        var vectors = AlundraSpawnIndexOracle.Vectors("v1").Concat(AlundraSpawnIndexOracle.Vectors("v2")).ToList();
+        var vectors = SpawnIndexOracle.Vectors("v1").Concat(SpawnIndexOracle.Vectors("v2")).ToList();
         Assert.Equal(151, vectors.Count(v => !v.IsMapPage));
         Assert.Equal(244, vectors.Count(v => v.IsMapPage));
 
@@ -103,7 +54,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     [Fact]
     public void A_Data_AnIndexWithoutBankKey_HasNoPrefab_AndAnAbsentKeyIsTolerated()
     {
-        var global = AlundraSpawnIndexOracle.Vectors("v1").Select(v => v.Index).ToHashSet();
+        var global = SpawnIndexOracle.Vectors("v1").Select(v => v.Index).ToHashSet();
         var absent = Enumerable.Range(0, 256).First(i => !global.Contains(i));
         Assert.False(Catalog.Value.TryGetPrefab(false, absent, out _));
         Assert.False(Catalog.Value.TryGetPrefab(false, -1, out _));
@@ -116,7 +67,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     {
         var indices = MapSpriteIndices.GetOrCreate(Root);
         Assert.True(indices.IsLoaded);
-        var oracle = AlundraSpawnIndexOracle.ValidIndicesByMap();
+        var oracle = SpawnIndexOracle.ValidIndicesByMap();
         Assert.Equal(483, oracle.Count);
         var comparisons = 0;
         var valid = 0;
@@ -205,7 +156,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     public void B_TheCreationImage_OfThe151PrefabsOfTheGlobalPage_IsTheOnesOfTheBinary()
     {
         var field = FieldOf("flat");
-        foreach (var v in AlundraSpawnIndexOracle.Vectors("v1"))
+        foreach (var v in SpawnIndexOracle.Vectors("v1"))
         {
             var c = Create(v, field);
             SpawnProjectionAsserts.Check(v.Id, v.P!, c.Proxy, field, c.Hero, c.Aux, withTerrain: true);
@@ -216,7 +167,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     public void B_TheCreationImage_OfThe244NumbersOfTheMapPage_IsTheOnesOfTheBinary_OneImagePerNumber()
     {
         var field = FieldOf("flat");
-        foreach (var v in AlundraSpawnIndexOracle.Vectors("v2"))
+        foreach (var v in SpawnIndexOracle.Vectors("v2"))
         {
             var c = Create(v, field);
             SpawnProjectionAsserts.Check(v.Id, v.P!, c.Proxy, field, c.Hero, c.Aux, withTerrain: true);
@@ -226,7 +177,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     [Fact]
     public void B_TheGeometryVectors_ZParentDirectionAndTerrain_AreTheOnesOfTheBinary()
     {
-        var vectors = AlundraSpawnIndexOracle.Vectors("v3");
+        var vectors = SpawnIndexOracle.Vectors("v3");
         Assert.True(vectors.Count >= 40);
         Assert.Contains(vectors, v => v.World == "raised");
         Assert.Contains(vectors, v => v.Parent == "spawned");
@@ -243,7 +194,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     public void B_ThePrefabsWithAnOffsetZ_AppearedAboveTheGround_KeepTheirModZ_TheMutantOfZMinusModZWouldSurvive()
     {
         // The vectors that make the subtraction of ModZ visible: OffsetZ is not 0 and the entity is above the ground (the raise to the terrain would hide it at Z 0).
-        var chosen = AlundraSpawnIndexOracle.Vectors("v3").Where(v => v.World == "flat" && v.Z >= 30 << 16 && v.P!.ModZ != 0).ToList();
+        var chosen = SpawnIndexOracle.Vectors("v3").Where(v => v.World == "flat" && v.Z >= 30 << 16 && v.P!.ModZ != 0).ToList();
         Assert.True(chosen.Count >= 6, "the oracle must hold the OffsetZ vectors above the ground");
         Assert.Contains(chosen, v => !v.IsMapPage && v.Index == 20);
         Assert.Contains(chosen, v => v.IsMapPage && v.Index == 153);
@@ -259,7 +210,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     [Fact]
     public void B_TheCaseAndTheSeries_AreNotWrittenYet_E0a2()
     {
-        var v = AlundraSpawnIndexOracle.Vectors("v1").First();
+        var v = SpawnIndexOracle.Vectors("v1").First();
         var c = Create(v, FieldOf("flat"));
         Assert.Equal(0, c.Proxy.Index);  // the slot (+0x00) and the series (+0x04) are e0a2's: pinned absent here, that task changes this line.
         Assert.Equal(0, c.Proxy.Index2);
@@ -298,7 +249,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     {
         var field = FieldOf("flat");
         var withSound = new List<(int Page, int Index, int Sound)>();
-        foreach (var v in AlundraSpawnIndexOracle.Vectors("v1").Concat(AlundraSpawnIndexOracle.Vectors("v2")))
+        foreach (var v in SpawnIndexOracle.Vectors("v1").Concat(SpawnIndexOracle.Vectors("v2")))
         {
             var proxy = Create(v, field, initializeBalance: false).Proxy;
             var sound = proxy.AnimationSoundOf(proxy.SpawnAnimationId);
@@ -322,7 +273,7 @@ public sealed class AlundraSpawnBySpriteIndexCoreTests
     [Fact]
     public void F_TheEightCallsOfTheHeroShotJournalledByTheAt9Oracle_GiveTheBinarysImage_TheInterfaceAddsTheRawUnit()
     {
-        var vectors = AlundraSpawnIndexOracle.Vectors("v7");
+        var vectors = SpawnIndexOracle.Vectors("v7");
         Assert.Equal(8, vectors.Count);
         Assert.Equal(new[] { 3, 4, 11, 14 }, vectors.Select(v => v.Index).Distinct().OrderBy(i => i).ToArray());
         var field = FieldOf("flat");

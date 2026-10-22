@@ -10,7 +10,7 @@ using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.e0a3a T3, the three V5 lines of <c>docs/plan-e20-annexe/e20-e0a/oracle/out/v5.json</c> that no test of the slot table read (reported by the verification of E20.e0a2, ADR-0064 said they were copied):
@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// generator did not move on a refusal: the DLL writes none of the three (no series, D-E0A-7; no generator draw at the creation, D-E0A-3), so the replay checks what it has, the held slots and the entity list.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraEntitySlotV5RowsTests
+public sealed class EntitySlotV5RowsTests
 {
     private const int HeroX = 150;
     private const int HeroY = 100;
@@ -28,7 +28,7 @@ public sealed class AlundraEntitySlotV5RowsTests
 
     private static JsonElement V5Root()
     {
-        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(AlundraSpawnIndexOracle.OutputFolder(), "v5.json")));
+        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(SpawnIndexOracle.OutputFolder(), "v5.json")));
         return document.RootElement.Clone();
     }
 
@@ -52,7 +52,7 @@ public sealed class AlundraEntitySlotV5RowsTests
     {
         var line = V5Root().GetProperty("table").GetProperty("invalid_full");
         var index = line.GetProperty("index").GetInt32();
-        Assert.DoesNotContain(index, AlundraSpawnIndexOracle.Vectors("v1").Select(v => v.Index)); // a null entry of the global page: the DLL's catalog has no prefab there either.
+        Assert.DoesNotContain(index, SpawnIndexOracle.Vectors("v1").Select(v => v.Index)); // a null entry of the global page: the DLL's catalog has no prefab there either.
 
         using var arc = Arc("invalid-full");
         FillTheTable(arc);
@@ -103,8 +103,8 @@ public sealed class AlundraEntitySlotV5RowsTests
     {
         var probes = V5Root().GetProperty("probes").EnumerateArray().ToList();
         Assert.Equal(13, probes.Count);
-        var globalValid = AlundraSpawnIndexOracle.Vectors("v1").Select(v => v.Index).ToHashSet();
-        var mapValid = AlundraSpawnIndexOracle.ValidIndicesByMap()[14].ToHashSet();
+        var globalValid = SpawnIndexOracle.Vectors("v1").Select(v => v.Index).ToHashSet();
+        var mapValid = SpawnIndexOracle.ValidIndicesByMap()[14].ToHashSet();
 
         using var arc = Arc("probes");
         foreach (var probe in probes)

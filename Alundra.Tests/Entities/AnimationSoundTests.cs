@@ -23,7 +23,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.t (docs/plan-e19-opcodes.md section 1.2r, D-E19-57, D-E19-61, ADR-0028), tests T-1: every change of animation of an active entity asks its
@@ -33,7 +33,7 @@ namespace Alundra.Tests;
 /// <c>InitializeEntity</c>) give no second request. Every expected value was written by hand before the code; a value the measure contradicts is a stop.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraAnimationSoundTests
+public sealed class AnimationSoundTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;

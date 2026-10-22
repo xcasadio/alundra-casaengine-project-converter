@@ -10,7 +10,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.d2c1 R1 to R3 (docs/plan-e19-opcodes.md §1.2h.3.1), tests UJ-1 to UJ-10, UJ-DIR, UJ-0x8000 and UJ-CLAMP: an animation of impulse
@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// grids, and bounds its force on both sides. Montage of <see cref="JumpNpcRig"/> (annex A.1 of the plan); every expected value was written by hand
 /// in the plan before the code - a value that the measure contradicts is a stop, never a re-pin.
 /// </summary>
-public sealed class AlundraAnimationImpulseTests
+public sealed class AnimationImpulseTests
 {
     /// <summary>PosZ after the updates 1 to 22 of an NPC with gravity (128) thrown by IZF 1360 (UJ-1).</summary>
     private static readonly int[] Flight1360 =

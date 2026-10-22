@@ -17,6 +17,7 @@ using Alundra.Events;
 using Alundra.Physics;
 using Alundra.Hero;
 using Alundra.Tests.Support;
+using Alundra.Tests.Entities;
 
 namespace Alundra.Tests;
 
@@ -26,7 +27,7 @@ namespace Alundra.Tests;
 /// animation asset, sibling CollisionComponent Box 21x15x32 local_position (0.5,0.5,16), and a
 /// CharacterControllerComponent whose settings are loaded from the real converter export's own
 /// Alundra.entity "settings" node) under a real headless <see cref="World"/> (TopDownElevation policy,
-/// same montage as <see cref="AlundraEntityLogicalRenderPoseTests"/>'s own BuildScene) with the REAL map
+/// same montage as <see cref="EntityLogicalRenderPoseTests"/>'s own BuildScene) with the REAL map
 /// 389 <see cref="CellsCollisionField"/> installed as <c>World.CollisionField</c> - same pattern as
 /// <see cref="AlundraCellsCollisionFieldTests"/>/<see cref="SpriteRecordCatalogTests"/>. Self-skips every
 /// [Fact] when <c>alundra-project/</c> is not present in this checkout (same convention as

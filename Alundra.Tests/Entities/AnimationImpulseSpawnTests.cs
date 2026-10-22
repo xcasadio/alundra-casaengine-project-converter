@@ -16,7 +16,7 @@ using Alundra.Events;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.d2c1 R2 (docs/plan-e19-opcodes.md §1.2h.3.1), tests UJ-6 and UJ-6b: the animation of an appearance never gives its Z impulse (the binary makes
@@ -25,7 +25,7 @@ namespace Alundra.Tests;
 /// (<see cref="EntitySpawnFactory.CreateEntityFromRecord"/>, the call of the map load, <c>0x2D</c>, <c>0x8A</c> and <c>0x8B</c>) with a record written by hand.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraAnimationImpulseSpawnTests : IDisposable
+public sealed class AnimationImpulseSpawnTests : IDisposable
 {
     private const string ArrowLevel1 = "eab8d775";
     private const string ChargedFireball = "67b30f8f";

@@ -3,7 +3,7 @@ using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using Alundra.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// Covers <see cref="EntitySearchService.GetMatchingEntitiesBySearchType"/> - the port of

@@ -19,18 +19,18 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// Covers E2 (docs/plan-echelles-chiffrage.md E2): <see cref="EntityScriptProxy.UpdateFloorHeight"/>'s
 /// composed port of <c>GetCollisionOnZ</c> (PhysicsEngine.cs:1602-1675) against the REAL map 389
 /// ("Ship Klark (beginning)") cell/record data - same fixture/self-skip pattern as
-/// <see cref="AlundraGroundSlopeTests"/> (E1's own sibling slice): a real headless <see cref="World"/>
+/// <see cref="GroundSlopeTests"/> (E1's own sibling slice): a real headless <see cref="World"/>
 /// with the real map 389 <see cref="CellsCollisionField"/> installed as <c>World.CollisionField</c>,
 /// and hero pawns built from the shared <see cref="HeroWorldFixture"/> montage. Tests self-skip (return
 /// early) when <c>alundra-project/</c> is not present in this checkout.
 /// </summary>
-public class AlundraFloorHeightTests
+public class FloorHeightTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 

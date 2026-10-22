@@ -7,7 +7,7 @@ using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.h1b2 (docs/plan-e19-opcodes.md §1.2n.1c, H1B2-R3 and R4): the vertical step of an entity without a controller (a point box or a one-unit box: 12 prefabs,
@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 /// on a flat field, one update = one logic tick, one settling update first (the entity is then put in the state of the scenario).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraControllerlessVerticalStepTests
+public sealed class ControllerlessVerticalStepTests
 {
     private sealed class Rig
     {

@@ -7,15 +7,15 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E14.a1b T1 (docs/plan-e14-ia-native.md section 1.3b, D-E14-9, ADR-0060/0061): the break-effect byte of the sprite header (<c>+0x1E</c>, exported as <c>BreakEffect</c> by E14.a1a) travels from
 /// <c>Data/sprite-records.json</c> to the header, to the entity at its apparition and to its clone. Absent key: 0 (an export that predates E14.a1a).
 /// </summary>
-public sealed class AlundraBreakEffectByteTests : IDisposable
+public sealed class BreakEffectByteTests : IDisposable
 {
-    private readonly string _projectPath = Path.Combine(Path.GetTempPath(), "AlundraBreakEffectByteTests_" + Guid.NewGuid());
+    private readonly string _projectPath = Path.Combine(Path.GetTempPath(), "BreakEffectByteTests_" + Guid.NewGuid());
 
     public void Dispose()
     {

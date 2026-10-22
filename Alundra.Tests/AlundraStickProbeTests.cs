@@ -13,13 +13,14 @@ using Alundra.Transitions;
 using Alundra.Probes;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Entities;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E20.d2a (docs/plan-e20-heros.md, D-E20-32): the stick sample travels in the pad (S1) and the probe journals it (S3). <c>ComputePadState</c> is fed by a fake <c>getButtonState</c> that follows the engine's
 /// semantics (<c>MoveLeftStick.Value = -MoveRightStick.Value</c>, <c>MoveDownStick.Value = -MoveUpStick.Value</c>, pressed only from the 0.5 dead zone); the tick pad carries the frame's sample in the
-/// self-driven mode (here) and in the entity block of a driven world (<see cref="AlundraTickStructureTests"/>); the probe writes nothing without the variable and the written format with it.
+/// self-driven mode (here) and in the entity block of a driven world (<see cref="TickStructureTests"/>); the probe writes nothing without the variable and the written format with it.
 /// </summary>
 public sealed class AlundraStickProbeTests : IDisposable
 {

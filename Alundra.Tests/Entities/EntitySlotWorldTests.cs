@@ -11,7 +11,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.e0a2 (docs/plan-e20-heros.md section 1.16.2, ADR-0064), the table of slots on the REAL world of map 14 (<c>Overworld 3,1-14</c>, built by the production path of <see cref="ArcRun"/> with the export's prefabs): the hero
@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// apparition is refused on the three paths that create entities, and an exception after the addition leaves nothing behind. Also <c>ChildEntity</c> (the root of the chain of parents) on the record path.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraEntitySlotWorldTests
+public sealed class EntitySlotWorldTests
 {
     private const int HeroX = 150;
     private const int HeroY = 100;

@@ -17,7 +17,7 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// Covers E1 (docs/plan-echelles-chiffrage.md É1): <see cref="EntityScriptProxy.UpdateGroundSlope"/>'s
@@ -28,7 +28,7 @@ namespace Alundra.Tests;
 /// installed as <c>World.CollisionField</c>, and a hand-built hero pawn from the shared
 /// <see cref="HeroWorldFixture"/> montage.
 /// </summary>
-public class AlundraGroundSlopeTests
+public class GroundSlopeTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 

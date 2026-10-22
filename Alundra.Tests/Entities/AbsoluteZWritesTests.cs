@@ -12,7 +12,7 @@ using Alundra.Physics;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.h1b1 (docs/plan-e19-opcodes.md §1.2n.1b, D-E19-59, ADR-0026): the absolute writes of Z (the spawn, 0x8A, 0x64) follow the DLL
@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 /// measure contradicts is a stop, never a re-pin.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraAbsoluteZWritesTests
+public sealed class AbsoluteZWritesTests
 {
     private const int C = ScriptHelper.ProgramCTick;
 

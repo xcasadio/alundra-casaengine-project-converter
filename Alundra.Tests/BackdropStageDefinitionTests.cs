@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Xunit;
 using Alundra.Rendering.Backdrops;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Entities;
 
 namespace Alundra.Tests;
 

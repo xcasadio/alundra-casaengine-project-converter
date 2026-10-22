@@ -18,7 +18,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.a A8 (docs/plan-e20-heros.md section 1.3, ADR-0053): the STRUCTURE of one logic tick of a world the engine drives, with frames of 0, 1 and 2 ticks, through a real
@@ -28,7 +28,7 @@ namespace Alundra.Tests;
 /// entity that appears during a frame. The passes are named by the test seam <c>AlundraWorldProxy.TickTraceForTests</c>.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraTickStructureTests : IDisposable
+public sealed class TickStructureTests : IDisposable
 {
     private const float OneTick = 1f / 50f;
     private const float TwoTicks = 2f / 50f;
@@ -39,7 +39,7 @@ public sealed class AlundraTickStructureTests : IDisposable
         "pad", "box", "mapEvents", "movePlayer", "programs", "pending", "counters", "lists", "clock", "physics", "activeEffects", "hit", "inventory",
     };
 
-    public AlundraTickStructureTests() => ResetGlobals();
+    public TickStructureTests() => ResetGlobals();
 
     public void Dispose() => ResetGlobals();
 

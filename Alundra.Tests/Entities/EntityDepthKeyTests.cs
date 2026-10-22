@@ -9,13 +9,13 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.f1b B3 (docs/plan-e20-heros.md section 1.9, D-E20-29, annex <c>docs/plan-e20-annexe/e20-f1/depth-key.md</c>): the depth key <c>+0x1BC</c> of an entity as an effect anchor, <c>((PosY + (IDSV &lt;&lt; 16)) &amp; 0xFFFF0000) +
 /// (short)(PosZ &gt;&gt; 16)</c>. By hand first, then against the oracle (<c>keyprobe.txt</c>: the real sort driver <c>0x800399B8</c> run after each tick of C2-steel), then on the real hero of the world through its anchor.
 /// </summary>
-public sealed class AlundraEntityDepthKeyTests
+public sealed class EntityDepthKeyTests
 {
     [Theory]
     // PosY (16.16), IDSV, PosZ (16.16, binary frame), expected key: written by hand from the formula.

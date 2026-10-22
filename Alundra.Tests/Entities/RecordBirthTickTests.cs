@@ -14,7 +14,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// The oracle of E20.e0a4 phase B (docs/plan-e20-heros.md section 1.16.4, <c>docs/plan-e20-annexe/e20-e0a4/oracle/out/rec_tick.json</c>) read BY KEY: the box the binary holds at the end of every tick of an entity born from a record
@@ -38,16 +38,16 @@ internal static class RecordBirthTickOracle
 /// <summary>
 /// E20.e0a4 phase B (T2, docs/plan-e20-heros.md section 1.16.4, D-E0A4-2, D-E0A4-3, D-E0A4-5): an entity born from a record by a script (the real opcodes <c>0x2D</c>, <c>0x8A</c> and <c>0x8B</c> through the real runner) takes part in the tick that
 /// sees it born (<c>JoinsBirthTick</c>, posed LAST by the opcode): born in the pass of the map events it turns from the tick S, born in the programs of another entity (the loop 2) from S+1, in the same frame when the frame has
-/// another tick. The real world of map 14 (<see cref="ArcRun"/>, real prefabs); the subject is the record of the global sprite 27 added by <see cref="AlundraRecordBirthClockTests.RegisterRecord"/>; the births are made at the
+/// another tick. The real world of map 14 (<see cref="ArcRun"/>, real prefabs); the subject is the record of the global sprite 27 added by <see cref="RecordBirthClockTests.RegisterRecord"/>; the births are made at the
 /// pass <c>mapEvents</c> (just before the map events of the tick, as a map-event program does) or <c>programs</c> (head of the loop of the programs, as a program of another entity does) of
 /// <see cref="WorldProxy.TickTraceForTests"/>. Labels: [R] red on the code of phase A (predicted), [V] green by construction.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraRecordBirthTickTests : IDisposable
+public sealed class RecordBirthTickTests : IDisposable
 {
-    private const int TestRecord = AlundraRecordBirthClockTests.TestRecord;
+    private const int TestRecord = RecordBirthClockTests.TestRecord;
 
-    public AlundraRecordBirthTickTests()
+    public RecordBirthTickTests()
     {
         PlayerManager.WeaponSpawnBirthHookForTests = null;
     }
@@ -175,8 +175,8 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
         /// <summary>The scripted record of the global sprite 27 added to the table of the world, born by <paramref name="make"/> at the pass <paramref name="birthPass"/>.</summary>
         public static ScriptBirth OfTheTestRecord(string name, string birthPass, Func<ArcRun, EntityScriptProxy?> make)
         {
-            var arc = AlundraCreationSwitchClockTests.Arc(name);
-            AlundraRecordBirthClockTests.RegisterRecord(arc, TestRecord, 27);
+            var arc = CreationSwitchClockTests.Arc(name);
+            RecordBirthClockTests.RegisterRecord(arc, TestRecord, 27);
             return new ScriptBirth(arc, birthPass, make);
         }
 
@@ -184,7 +184,7 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
         {
             var b = Born!;
             return new Snap(Arc.Frame, b.Status, b.EventTrigger, b.FrameCounter, Contains(Arc, "_updateProxies", b), Contains(Arc, "_hitList", b), b.BoxTicks, b.ForceResetAnimationFlag,
-                ArcRun.EntityOf(b)!.World != null, _counter.Runs, Reads, AlundraRecordBirthClockTests.DllBox(b), b.PosX, b.PosY, b.PosZ);
+                ArcRun.EntityOf(b)!.World != null, _counter.Runs, Reads, RecordBirthClockTests.DllBox(b), b.PosX, b.PosY, b.PosZ);
         }
 
         public Snap At(int k, string pass) => Samples.Last(s => s.K == k && s.Pass == pass).State;
@@ -195,7 +195,7 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
         /// <summary>One tick settles the world (the first frame has a tick of its own); S is then the <paramref name="position"/>-th tick (1-based) of the next frame of the grouping.</summary>
         public void Settle(int position)
         {
-            AlundraCreationSwitchClockTests.Frame(Arc, 1);
+            CreationSwitchClockTests.Frame(Arc, 1);
             S = Tick + position;
         }
 
@@ -204,7 +204,7 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
             Settle(position);
             while (Tick < S + last)
             {
-                AlundraCreationSwitchClockTests.Frame(Arc, ticksPerFrame);
+                CreationSwitchClockTests.Frame(Arc, ticksPerFrame);
             }
         }
 
@@ -384,7 +384,7 @@ public sealed class AlundraRecordBirthTickTests : IDisposable
         run.Settle(1);
         while (firstTick == null && run.Tick < run.S + 6)
         {
-            AlundraCreationSwitchClockTests.Frame(arc, 1);
+            CreationSwitchClockTests.Frame(arc, 1);
         }
 
         Assert.NotNull(run.Born);

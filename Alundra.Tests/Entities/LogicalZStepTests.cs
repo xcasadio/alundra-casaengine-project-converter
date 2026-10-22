@@ -13,7 +13,7 @@ using Alundra.Entities;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, T1, phase A): the logical Z of an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>. Nothing in the tick calls the step yet (phase B wires it): these tests
@@ -23,7 +23,7 @@ namespace Alundra.Tests;
 /// unit), the impulse of 1 024 (<c>crate-flat-state1</c>), the exact graze, the ceiling, the magnet of 3 px, the stop marker 0x8000, the sentinel and the root that follows.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraLogicalZStepTests
+public sealed class LogicalZStepTests
 {
     private const int Arrow = 3;
     private const int FireBall = 11;

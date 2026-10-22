@@ -11,7 +11,7 @@ using Alundra.Events;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.d2b B2 (docs/plan-e19-opcodes.md §1.2h.2, D-E19-29): what blocking between entities exacts with it. T-R2: an entity flagged for
@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 /// <c>DestroyEntity(e, -1)</c>), nothing else changes. T-R6: <c>AnimFlags</c> is the byte 0xD of the animation set, loaded by the animation
 /// sync (the bit 0x80 of it removes the entity from the collidable list for the duration of the animation).
 /// </summary>
-public sealed class AlundraEntityDestructionTests
+public sealed class EntityDestructionTests
 {
     private static EntityScriptProxy Proxy(EntityStatus status, uint flags = EntityFlags.Collidable)
         => new() { Status = status, Flags = flags };

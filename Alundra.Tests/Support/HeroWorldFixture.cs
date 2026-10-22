@@ -16,6 +16,7 @@ using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Physics;
+using Alundra.Tests.Entities;
 
 namespace Alundra.Tests.Support;
 
@@ -33,7 +34,7 @@ namespace Alundra.Tests.Support;
 /// </summary>
 internal static class HeroWorldFixture
 {
-    /// <summary>Same headless montage as <see cref="AlundraEntityLogicalRenderPoseTests"/>'s own
+    /// <summary>Same headless montage as <see cref="EntityLogicalRenderPoseTests"/>'s own
     /// BuildScene: a real <see cref="World"/> under <see cref="TopDownElevationSimulationSpacePolicy"/>
     /// with a <see cref="PhysicsWorld"/> wired (<see cref="CharacterControllerComponent"/> requires one,
     /// <c>TryResolveCollisionDependencies</c>), plus the real map 389 field installed as

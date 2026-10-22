@@ -6,14 +6,14 @@ using Alundra.Events;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.d2c2 D4, test UJ-LOCK (docs/plan-e19-opcodes.md §1.2h.3.2, hygiene of E19.d2c1): the lock of the impulse taken
 /// (<see cref="EntityScriptProxy.ZImpulseTaken"/>) goes down when nothing is pending at the end of the frame, so a switch seen at a tick then
 /// cancelled by the entity's own script before the validation does not make the next switch lose its impulse (the binary gives one at every switch).
 /// </summary>
-public sealed class AlundraAnimationImpulseLockTests
+public sealed class AnimationImpulseLockTests
 {
     /// <summary>A tick program written by the test: it runs once per logic tick of the NPC and writes the target animation by the plan of the test.</summary>
     private sealed class ScriptedTargets : IEventProgramRunner

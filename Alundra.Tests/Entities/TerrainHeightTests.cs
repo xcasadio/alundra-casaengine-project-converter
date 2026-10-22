@@ -11,7 +11,7 @@ using Alundra.Entities;
 using Alundra.Maps;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// Covers E16.a T3 (docs/plan-e16-etat-partie.md, D-E16-29/D-E16-30):
@@ -20,13 +20,13 @@ namespace Alundra.Tests;
 /// writes it for EVERY entity, at spawn and every tick, regardless of controller). Uses a small synthetic
 /// <see cref="ICollisionField"/> instead of the real map 389 fixture - this write is a pure
 /// "unconditional now" plumbing change, not a terrain-sampling one (<see cref="EntityScriptProxy.ComputeTerrainHeight"/>
-/// itself is untouched and already covered against real map data by <see cref="AlundraFloorHeightTests"/>/
-/// <see cref="AlundraGroundSlopeTests"/>), so a fake flat/positional field is enough to prove WHEN it is
+/// itself is untouched and already covered against real map data by <see cref="FloorHeightTests"/>/
+/// <see cref="GroundSlopeTests"/>), so a fake flat/positional field is enough to prove WHEN it is
 /// written, not what value real terrain would give.
 ///
 /// The player's own equivalent write (<see cref="WorldProxy"/>'s private <c>AdoptPlayerPawn</c>, at
 /// spawn, and <see cref="EntityScriptProxy.UpdateFloorHeight"/>, per tick) is covered instead by
-/// <see cref="AlundraFloorHeightTests"/>'s own production-call-site test (per-tick) - <c>AdoptPlayerPawn</c>
+/// <see cref="FloorHeightTests"/>'s own production-call-site test (per-tick) - <c>AdoptPlayerPawn</c>
 /// itself is not headless-reachable in this test suite (needs a live <c>AlundraPlayerController</c> pawn -
 /// see <see cref="WorldProxyUpdateCharacterizationTests"/>'s own documented limitation), so its
 /// spawn-time write is verified by code inspection only, same as every other of its fields.
@@ -37,7 +37,7 @@ namespace Alundra.Tests;
 /// assigned by this runtime") - there is no live platform relation to inherit TerrainHeight from, so T3.2
 /// leaves this sub-case unimplemented (reported, not invented).
 /// </summary>
-public class AlundraTerrainHeightTests
+public class TerrainHeightTests
 {
     /// <summary>Returns the SAME ground height for every sample - enough to prove TerrainHeight tracks
     /// <see cref="EntityScriptProxy.ComputeTerrainHeight"/>'s own return, regardless of WHERE the

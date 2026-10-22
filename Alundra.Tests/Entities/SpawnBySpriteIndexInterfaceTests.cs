@@ -11,7 +11,7 @@ using Alundra.Rng;
 using Alundra.Audio;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, ADR-0063), the interface <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> on the REAL world of map 14 (<c>Overworld 3,1-14</c>, built by the production path of
@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 /// No production path calls the interface (the shot of the hero is E20.f3's).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSpawnBySpriteIndexInterfaceTests
+public sealed class SpawnBySpriteIndexInterfaceTests
 {
     private const int HeroX = 150;
     private const int HeroY = 100;
@@ -38,15 +38,15 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
     [Fact]
     public void B2_V6_TheMapPageNumbersValidOnMap14_AreFiveOfTheOracle()
     {
-        Assert.Equal(new[] { 79, 136, 144, 153, 199 }, AlundraSpawnIndexOracle.ValidIndicesByMap()[14].ToArray());
+        Assert.Equal(new[] { 79, 136, 144, 153, 199 }, SpawnIndexOracle.ValidIndicesByMap()[14].ToArray());
     }
 
     [Fact]
     public void B2_TheFullPath_On151NumbersOfTheGlobalPage_AndTheNumbersOfTheMapPageValidOnMap14_GivesTheProjectionOfTheOracle_AndAppendsToTheWorld()
     {
         using var arc = Arc("full");
-        var onMap14 = AlundraSpawnIndexOracle.ValidIndicesByMap()[14].ToHashSet();
-        var vectors = AlundraSpawnIndexOracle.Vectors("v1").Concat(AlundraSpawnIndexOracle.Vectors("v2").Where(v => onMap14.Contains(v.Index))).ToList();
+        var onMap14 = SpawnIndexOracle.ValidIndicesByMap()[14].ToHashSet();
+        var vectors = SpawnIndexOracle.Vectors("v1").Concat(SpawnIndexOracle.Vectors("v2").Where(v => onMap14.Contains(v.Index))).ToList();
         Assert.Equal(151 + 5, vectors.Count);
 
         foreach (var v in vectors)
@@ -97,7 +97,7 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
     {
         using var arc = Arc("at9");
         var field = arc.Proxy.CollisionField;
-        foreach (var v in AlundraSpawnIndexOracle.Vectors("v7"))
+        foreach (var v in SpawnIndexOracle.Vectors("v7"))
         {
             // The DLL's call of the shot (the seam of E20.f3a) passes 1 048 576 where the binary's trace has 1 048 577.
             var spawned = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, v.Index, v.X << 16, v.Y << 16, v.Z - 1, v.Direction)!;
@@ -114,7 +114,7 @@ public sealed class AlundraSpawnBySpriteIndexInterfaceTests
     public void C_TheNullContract_AnInvalidIndexAnAbsentPrefabOrAnUnknownMap_AddsNothing_AndLogsOneLine()
     {
         using var arc = Arc("null");
-        var global = AlundraSpawnIndexOracle.Vectors("v1").Select(v => v.Index).ToHashSet();
+        var global = SpawnIndexOracle.Vectors("v1").Select(v => v.Index).ToHashSet();
         var absent = Enumerable.Range(0, 256).First(i => !global.Contains(i));
         var invalid = new (bool IsMapPage, int Index, string Why)[]
         {

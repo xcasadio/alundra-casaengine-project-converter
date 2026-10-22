@@ -11,7 +11,7 @@ using Alundra.Physics;
 using Alundra.Hero;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.d2b B4 (docs/plan-e19-opcodes.md §1.2h.2, D-E19-29, D-E19-30, D-E19-35): the contact of the dialogue comes from the blocking report of the
@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 /// displacement, kept while the world is frozen. T-R8: the navigation detour of <c>0x0B</c> and <c>0x1E</c> engages on a contact of the cells, not on an
 /// entity.
 /// </summary>
-public sealed class AlundraEntityContactReportTests
+public sealed class EntityContactReportTests
 {
     // ---- T-R7 -----------------------------------------------------------------------------------------------------
 

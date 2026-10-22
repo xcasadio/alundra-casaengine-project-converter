@@ -15,13 +15,13 @@ using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// Covers E3 (docs/plan-echelles-chiffrage.md E3): <see cref="EntityScriptProxy.GetTileHeightAtOffset"/>'s
 /// port of <c>GetTileHeightAtOffset</c> (<c>EntityGameplayManager.cs:277-345</c>) against the REAL map 389
 /// ("Ship Klark (beginning)") cell data - same fixture/self-skip pattern as
-/// <see cref="AlundraGroundSlopeTests"/>/<see cref="AlundraFloorHeightTests"/> (E1/E2's own sibling
+/// <see cref="GroundSlopeTests"/>/<see cref="FloorHeightTests"/> (E1/E2's own sibling
 /// slices): a real headless <see cref="World"/> with the real map 389 <see cref="CellsCollisionField"/>
 /// installed as <c>World.CollisionField</c>, and a hand-built hero pawn from the shared
 /// <see cref="HeroWorldFixture"/> montage.
@@ -44,7 +44,7 @@ namespace Alundra.Tests;
 /// <see cref="ZeroOffset_FootprintOnSlopeCell_ReturnsRawHeight_NotSlopeInterpolatedHeight"/> below,
 /// which exercises exactly that).
 /// </summary>
-public class AlundraTileHeightAtOffsetTests
+public class TileHeightAtOffsetTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 

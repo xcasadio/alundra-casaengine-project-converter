@@ -26,7 +26,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Physics;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// Covers E4.b "DLL - les PNJ bougent sur le mover" acceptance (docs/plan-e4-deplacement-scripte.md): a
@@ -44,7 +44,7 @@ namespace Alundra.Tests;
 /// <see cref="PlayerManager"/>. Self-skips every [Fact] when <c>alundra-project/</c> is not present
 /// in this checkout (same convention as <see cref="AlundraCharacterControllerAdoptionTests"/>).
 /// </summary>
-public class AlundraNpcCharacterControllerMoverTests
+public class NpcCharacterControllerMoverTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
     private const string Bank146EntityRelativePath = "Entities/Marin-passager-mouette-146/Marin-passager-mouette-146.entity";

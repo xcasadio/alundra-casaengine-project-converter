@@ -8,7 +8,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.c1b K4/K5 (docs/plan-e20-heros.md section 1.6), the regression E20.c1a introduced and this slice closes: since c1a a sword hit sets the target's <c>TouchingEntity</c>, so the program D of the target runs; 181 of
@@ -18,13 +18,13 @@ namespace Alundra.Tests;
 /// attack type 1, never the fire (6): nothing must be set, whatever a previous program left in the shared <c>Result</c>.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraFireSwitchRegressionTests
+public sealed class FireSwitchRegressionTests
 {
     private const uint Square = 0x80;
 
     private readonly ITestOutputHelper _output;
 
-    public AlundraFireSwitchRegressionTests(ITestOutputHelper output) => _output = output;
+    public FireSwitchRegressionTests(ITestOutputHelper output) => _output = output;
 
     /// <summary>The record, the start of its program D, and where the hero stands (pixels, on the platform of the switch, 22 pixels west of it).</summary>
     public static TheoryData<int, int, int, int> Switches() => new()

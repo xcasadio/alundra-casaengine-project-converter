@@ -11,7 +11,7 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Events;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.c1 T4 (docs/plan-e19-opcodes.md §1.2e): opcodes 0x1C and 0x1D exactly as the binary (<c>0x8003D7FC</c>, <c>0x8003D890</c>),
@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// <c>0x01</c> (size 1): the memorised key of a wait is its pc, and a pc of 0 reads as "already memorised" (no program of the corpus
 /// has a 0x1C or 0x1D at pc 0).
 /// </summary>
-public class AlundraRepeatAnimationOpcodeTests
+public class RepeatAnimationOpcodeTests
 {
     private static EventProgramDocument NewDocument(params int[] codes) => new()
     {

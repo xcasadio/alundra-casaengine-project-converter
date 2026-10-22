@@ -16,40 +16,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
-
-/// <summary>
-/// The oracle of E20.e0a4 (docs/plan-e20-heros.md section 1.16.4, <c>docs/plan-e20-annexe/e20-e0a4/oracle/out/</c>) read BY KEY, never pasted: what an entity born from a RECORD by a script (the real record spawner
-/// <c>0x8003A1B8</c>) does after its birth tick S. <c>rec_birth_clock.json</c> (rows <c>REC-H2</c>, <c>REC-SW*</c>: births in the programs pass of another entity; keys <c>call_no</c>, <c>end_AC</c>, <c>k</c> = tick - S) and
-/// <c>rec_tick.json</c> (row <c>REC-H1</c>, <c>creation_end</c>: the box and the byte <c>animflags_B4</c> at the end of the creation).
-/// </summary>
-internal static class RecordBirthOracle
-{
-    private static JsonElement Row(string file, string label)
-    {
-        using var document = JsonDocument.Parse(File.ReadAllText(BirthClockOracle.Find("docs", "plan-e20-annexe", "e20-e0a4", "oracle", "out", file)));
-        return document.RootElement.GetProperty("rows").EnumerateArray().First(r => r.GetProperty("label").GetString() == label).Clone();
-    }
-
-    private static IEnumerable<JsonElement> Ticks(string label) => Row("rec_birth_clock.json", label).GetProperty("ticks").EnumerateArray();
-
-    /// <summary>The first tick (relative to S) at which the end-of-animation flag of the row is raised.</summary>
-    internal static int FirstEnd(string label) => Ticks(label).First(t => t.GetProperty("end_AC").GetInt32() == 1).GetProperty("k").GetInt32();
-
-    /// <summary>The number of the call of the animation pass (the cursor of the box of the DLL, <c>BoxTicks</c>) at S + <paramref name="k"/>: 0 before the first call.</summary>
-    internal static int CallNo(string label, int k) => Ticks(label).First(t => t.GetProperty("k").GetInt32() == k).GetProperty("call_no").GetInt32();
-
-    /// <summary>The box at the end of the creation (<c>0x80039F30</c>): the offset from the entity and the sizes, raw 16.16 (the sizes are <c>(n &lt;&lt; 16) - 1</c>), or null when the oracle says nothing.</summary>
-    internal static (long Dx, long Dy, long Dz, long W, long D, long H) CreationBox(string label)
-    {
-        var t = Row("rec_tick.json", label).GetProperty("creation_end");
-        return (t.GetProperty("hbx").GetInt64() - t.GetProperty("px").GetInt64(), t.GetProperty("hby").GetInt64() - t.GetProperty("py").GetInt64(), t.GetProperty("hbz").GetInt64() - t.GetProperty("pz").GetInt64(),
-            t.GetProperty("bw").GetInt64(), t.GetProperty("bd").GetInt64(), t.GetProperty("bh").GetInt64());
-    }
-
-    /// <summary>The byte <c>+0xB4</c> (<c>AnimFlags</c>) the binary holds at the end of the creation.</summary>
-    internal static int CreationAnimFlags(string label) => (int)Row("rec_tick.json", label).GetProperty("creation_end").GetProperty("animflags_B4").GetInt64();
-}
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.e0a4 phase A (T1, docs/plan-e20-heros.md section 1.16.4, D-E0A4-1, D-E0A4-2, D-E0A4-4): an entity born from a record by a script (the opcode <c>0x2D</c> through the real runner, <c>SpawnEntityByRecordId</c>) has, from its
@@ -59,12 +26,12 @@ internal static class RecordBirthOracle
 /// (predicted), [V] green by construction, [C] control (its colour on the HEAD is recorded, no stop value; not part of any proof).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraRecordBirthClockTests : IDisposable
+public sealed class RecordBirthClockTests : IDisposable
 {
     /// <summary>The index of the test record (a byte: the operand of <c>0x2D</c>); the records of the world of map 14 are 0 to 24.</summary>
     internal const int TestRecord = 200;
 
-    public AlundraRecordBirthClockTests()
+    public RecordBirthClockTests()
     {
         PlayerManager.WeaponSpawnBirthHookForTests = null;
     }
@@ -111,7 +78,7 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
         public EntityScriptProxy? Born;
         public int Tick;
         public int S = int.MaxValue;
-        public readonly SortedDictionary<int, AlundraCreationSwitchClockTests.Sample> After = new();
+        public readonly SortedDictionary<int, CreationSwitchClockTests.Sample> After = new();
 
         /// <summary>Told at the head of the lists pass of every tick from the birth on (before the clock), with the entity and the tick relative to S: the scripts that ask for another animation or direction.</summary>
         public Action<EntityScriptProxy, int>? AtLists;
@@ -121,7 +88,7 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
 
         public RecordBirth(string name, string birthPass = "programs", int sprite = 27)
         {
-            Arc = AlundraCreationSwitchClockTests.Arc(name);
+            Arc = CreationSwitchClockTests.Arc(name);
             BirthPass = birthPass;
             RegisterRecord(Arc, TestRecord, sprite);
             Arc.Proxy.TickTraceForTests = pass =>
@@ -151,7 +118,7 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
                 }
                 else if (pass == "hit")
                 {
-                    After[Tick - S] = new AlundraCreationSwitchClockTests.Sample(Born.BoxTicks, Born.ForceResetAnimationFlag, Born.AnimCompleteCounter, Born.Status, Born.AnimationSwitchTickOwed,
+                    After[Tick - S] = new CreationSwitchClockTests.Sample(Born.BoxTicks, Born.ForceResetAnimationFlag, Born.AnimCompleteCounter, Born.Status, Born.AnimationSwitchTickOwed,
                         Born.AnimationSwitchTicksReserved, Born.CurrentAnimationId, Born.TargetAnimationId, Born.IsZForceApplied);
                 }
             };
@@ -160,7 +127,7 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
         /// <summary>One tick settles the world (the first frame has a tick of its own); S is then the first tick of the next frame (one tick per frame).</summary>
         public void Settle()
         {
-            AlundraCreationSwitchClockTests.Frame(Arc, 1);
+            CreationSwitchClockTests.Frame(Arc, 1);
             S = Tick + 1;
         }
 
@@ -169,7 +136,7 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
         {
             while (Tick < S + last)
             {
-                AlundraCreationSwitchClockTests.Frame(Arc, 1);
+                CreationSwitchClockTests.Frame(Arc, 1);
             }
         }
 
@@ -197,7 +164,7 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
     [Fact]
     public void A1_R_TheBoxOfTheCreation_OfAnEntityBornBy0x2D_IsTheOneOfTheBinary_BeforeTheIntegration()
     {
-        using var arc = AlundraCreationSwitchClockTests.Arc("rec-a1");
+        using var arc = CreationSwitchClockTests.Arc("rec-a1");
         RegisterRecord(arc, TestRecord, 27);
         var born = Op2D(arc, TestRecord);
         Assert.NotNull(born);
@@ -290,7 +257,7 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
     {
         (int AnimFlags, bool Flag, bool CloneFlag) OfTheTestRecord()
         {
-            using var arc = AlundraCreationSwitchClockTests.Arc("rec-a4");
+            using var arc = CreationSwitchClockTests.Arc("rec-a4");
             RegisterRecord(arc, TestRecord, 27);
             var born = Op2D(arc, TestRecord)!;
             return (born.AnimFlags, born.SwitchedAtCreation, ((EntityScriptProxy)born.Clone()).SwitchedAtCreation); // a clone is never a birth: it does not carry the flag.
@@ -321,7 +288,7 @@ public sealed class AlundraRecordBirthClockTests : IDisposable
     [Fact]
     public void A5_V_TheMapLoadAndTheHero_CarryNeitherTheFlagNorALoadedAnimFlags()
     {
-        using var arc = AlundraCreationSwitchClockTests.Arc("rec-a5");
+        using var arc = CreationSwitchClockTests.Arc("rec-a5");
         var loaded = arc.Entities.Where(e => e.EntityRefId >= 0).ToList();
         Assert.NotEmpty(loaded);
         Assert.Equal((0, false, 0), (loaded.Count(e => e.SwitchedAtCreation || e.AnimFlags != 0), arc.Hero.SwitchedAtCreation, arc.Hero.AnimFlags));

@@ -19,7 +19,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Hero;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.d D2 (docs/plan-e19-opcodes.md §1.2g): the landing defect of <see cref="EntityScriptProxy.EvaluateEntitySupport"/>. An
@@ -33,7 +33,7 @@ namespace Alundra.Tests;
 /// is the value the next tick starts from, the one the defect erased.
 /// </para>
 /// </summary>
-public sealed class AlundraNoGravityLandingTests
+public sealed class NoGravityLandingTests
 {
     private const int WalkAnimation = 5;
 

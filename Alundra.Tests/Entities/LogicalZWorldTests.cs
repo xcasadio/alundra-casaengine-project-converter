@@ -14,7 +14,7 @@ using Alundra.Entities;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, T2): the world tests (z1) to (z10) of the logical Z of an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, in the real world of map 14
@@ -27,7 +27,7 @@ namespace Alundra.Tests;
 /// the key magnet-4px, a step shortened by 4 raw units, is out of reach of any mover that works in whole pixels); (z10) a teleport in flight.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraLogicalZWorldTests
+public sealed class LogicalZWorldTests
 {
     private const int Arrow = 3;
     private const int Bomb = 2;

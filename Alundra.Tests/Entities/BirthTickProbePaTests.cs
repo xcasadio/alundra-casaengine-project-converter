@@ -14,7 +14,7 @@ using Alundra.Physics;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.e0a3a probe P-A (docs/plan-e20-heros.md section 1.16.3a, "Resultat de P-A"). MEASURES, and asserts only what is true today of the production code (nothing here is a requirement
@@ -25,7 +25,7 @@ namespace Alundra.Tests;
 /// No production code is changed by this slice; the interface is not called by any production path.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraBirthTickProbePaTests
+public sealed class BirthTickProbePaTests
 {
     private const int StartX = 150;
     private const int StartY = 100;
@@ -34,7 +34,7 @@ public sealed class AlundraBirthTickProbePaTests
 
     private readonly ITestOutputHelper _output;
 
-    public AlundraBirthTickProbePaTests(ITestOutputHelper output) => _output = output;
+    public BirthTickProbePaTests(ITestOutputHelper output) => _output = output;
 
     private static ArcRun Arc(string name) => new(new ArcSpec("E20e0a3a-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true));
 

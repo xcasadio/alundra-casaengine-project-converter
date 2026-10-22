@@ -7,6 +7,7 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Maps;
+using Alundra.Tests.Entities.Spawning;
 
 namespace Alundra.Tests.Maps;
 

@@ -2,7 +2,7 @@ using Xunit;
 using Alundra.Entities.Spawning;
 using Alundra.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities.Spawning;
 
 public class EntityRecordMapperTests
 {

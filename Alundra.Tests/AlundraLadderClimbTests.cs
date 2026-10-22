@@ -18,6 +18,7 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Entities;
 
 namespace Alundra.Tests;
 
@@ -26,12 +27,12 @@ namespace Alundra.Tests;
 /// ClimbStill(0x35) state machine in <see cref="PlayerManager.MovePlayer"/>, plus the per-tick
 /// vertical step <see cref="ScriptedMotion.TickPlayer"/> now applies while climbing - against the
 /// REAL map 389 ("Ship Klark (beginning)") ladder cell (18, 36). Same fixture/self-skip pattern as
-/// <see cref="AlundraGroundSlopeTests"/>/<see cref="AlundraFloorHeightTests"/>/<see cref="AlundraTileHeightAtOffsetTests"/>
+/// <see cref="GroundSlopeTests"/>/<see cref="FloorHeightTests"/>/<see cref="TileHeightAtOffsetTests"/>
 /// (E1/E2/É3's own sibling slices): a real headless <see cref="World"/> with the real map 389
 /// <see cref="CellsCollisionField"/> installed as <c>World.CollisionField</c>, and a hand-built hero
 /// pawn from the shared <see cref="HeroWorldFixture"/> montage, driven through the SAME production call
 /// site (<see cref="EntityScriptProxy.Update"/>'s own <c>IsPlayer</c> branch) every other slice in
-/// this plan uses (see <see cref="AlundraGroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix"/>'s
+/// this plan uses (see <see cref="GroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix"/>'s
 /// own doc for why that matters - LESSON 2 of this ticket, "le vert inerte").
 /// </summary>
 public class AlundraLadderClimbTests
@@ -156,7 +157,7 @@ public class AlundraLadderClimbTests
     }
 
     /// <summary>Same minimal real-<see cref="HeroController"/> script host as
-    /// <see cref="AlundraGroundSlopeTests"/>'s own sibling class (see that file's own doc) - one logic tick
+    /// <see cref="GroundSlopeTests"/>'s own sibling class (see that file's own doc) - one logic tick
     /// per rendered frame, exactly what these tests need to observe a single +-1px per-tick step.</summary>
     private sealed class PlayerScriptHost : IScriptHost
     {

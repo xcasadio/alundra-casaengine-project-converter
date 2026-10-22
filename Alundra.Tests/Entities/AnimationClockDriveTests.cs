@@ -19,7 +19,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.c2 (docs/plan-e19-opcodes.md §1.2f): the exact ends of the animations as the event programs see them, driven through the
@@ -36,7 +36,7 @@ namespace Alundra.Tests;
 /// <c>0x1A</c> at the first tick of <c>s</c>.
 /// </para>
 /// </summary>
-public sealed class AlundraAnimationClockDriveTests
+public sealed class AnimationClockDriveTests
 {
     /// <summary>The frame that runs the <c>0x1A</c>: a multiple of six, so the 60 Hz pattern starts on it.</summary>
     private const int S = 24;

@@ -1,9 +1,9 @@
 using Xunit;
 using Alundra.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
-public class AlundraEntityScriptProxyCloneTests
+public class EntityScriptProxyCloneTests
 {
     [Fact]
     public void Clone_CopiesScalarFields()

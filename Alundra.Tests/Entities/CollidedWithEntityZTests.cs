@@ -11,7 +11,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Hero;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E19.d2c1 R5 (docs/plan-e19-opcodes.md §1.2h.3.1), test UJ-4: <c>CollidedWithEntityZ</c> (+0x140) is cleared at the head of every motion
@@ -19,7 +19,7 @@ namespace Alundra.Tests;
 /// (<c>moddedPosZ + F &lt; terrainHeight</c>, F read before the grounded reset), by an entity support, and, for the hero outside the
 /// airborne state, on every tick of its rest with gravity.
 /// </summary>
-public sealed class AlundraCollidedWithEntityZTests
+public sealed class CollidedWithEntityZTests
 {
     [Fact]
     public void UJ4_ANpcAtRestWithGravity_HasItRaisedAfterEveryUpdate()

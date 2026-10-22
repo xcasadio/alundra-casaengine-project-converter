@@ -6,17 +6,17 @@ using System.Text.Json;
 using Xunit;
 using Alundra.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// E20.e0a2 (docs/plan-e20-heros.md section 1.16.2, ADR-0064): the table of the entity slots, alone (no engine, no world), against the V5 lines of the oracle of <c>docs/plan-e20-annexe/e20-e0a/oracle/out/v5.json</c>
 /// (the real <c>FindFreeEntitySlot</c> <c>0x80039AD0</c> and the real slot pass <c>0x80038634</c> of the binary). Each test names the V5 line it copies; the numbers of the lines are read from the file, never recomputed.
 /// </summary>
-public sealed class AlundraEntitySlotTableTests
+public sealed class EntitySlotTableTests
 {
     private static JsonElement V5(string line)
     {
-        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(AlundraSpawnIndexOracle.OutputFolder(), "v5.json")));
+        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(SpawnIndexOracle.OutputFolder(), "v5.json")));
         return document.RootElement.GetProperty("table").GetProperty(line).Clone();
     }
 

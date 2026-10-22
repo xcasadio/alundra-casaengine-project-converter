@@ -20,7 +20,7 @@ using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// Covers E3.a (docs/plan-e3-collisions.md): the logical/render pose split introduced on
@@ -45,7 +45,7 @@ namespace Alundra.Tests;
 ///  - Bounds/index: same frame, <see cref="Entity.GetBoundingBox"/> and the world's spatial index follow
 ///    the same corrected render pose.
 /// </summary>
-public class AlundraEntityLogicalRenderPoseTests
+public class EntityLogicalRenderPoseTests
 {
     // AdoptPlayerPawn's own tile-to-pixel formula (AlundraWorldProxy.cs ~1006-1007), duplicated here
     // rather than made public there - see EntityRecordMapper's own class doc for the same convention.
