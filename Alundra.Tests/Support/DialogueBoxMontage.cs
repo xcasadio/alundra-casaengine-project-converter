@@ -16,12 +16,13 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Maps;
+using Alundra.Tests.Dialogues;
 
 namespace Alundra.Tests.Support;
 
 /// <summary>
 /// E19.f2a F2A-3: the production order of a logic tick, at the proxy's own <see cref="WorldProxy.Update"/> (the same headless world as
-/// <see cref="AlundraDialogueFramePassTests"/>), with the scripts as lambdas: the montage runs, each frame, <b>the scripts of the entities first</b> (the engine
+/// <see cref="DialogueFramePassTests"/>), with the scripts as lambdas: the montage runs, each frame, <b>the scripts of the entities first</b> (the engine
 /// updates every entity, scripts included, BEFORE the world's own proxy, <c>World.Update</c>, which is why an entity script sees a box one tick early), under the
 /// gate the entities obey (<c>GameplayBlockedMask</c>), then <see cref="WorldProxy.Update"/> - at each tick the pad pass, the pass of the box, the gate
 /// read again, and the map events (each map-event script is called once per tick the gate lets the map events run: a record whose zone holds the player), and last the inventory block (E19.u).

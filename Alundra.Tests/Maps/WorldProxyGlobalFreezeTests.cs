@@ -22,13 +22,14 @@ using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Hero;
 using Alundra.Tests.Cells;
+using Alundra.Tests.Dialogues;
 
 namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// T2 (docs/plan-transitions-carte.md §1.5/§3, "Gel global du monde") - ORACLE 2 (production site): drives
 /// the real <see cref="WorldProxy.Update"/> itself (same headless montage as
-/// <see cref="WorldProxyUpdateCharacterizationTests"/>/<see cref="AlundraDialogueFramePassTests"/>),
+/// <see cref="WorldProxyUpdateCharacterizationTests"/>/<see cref="DialogueFramePassTests"/>),
 /// proving the gate this slice adds is really exercised at its call site AND that the "dehors" passes keep
 /// running while it is closed.
 ///
@@ -36,7 +37,7 @@ namespace Alundra.Tests.Maps;
 /// own mutation table names both precedents explicitly):
 /// <list type="bullet">
 /// <item><description>"élargir la porte à l'avance de boîte" -&gt;
-/// <see cref="AlundraDialogueFramePassTests.Update_RunsTheDialoguePass_ButtonClosesABoxNoScriptIsWatching"/>
+/// <see cref="DialogueFramePassTests.Update_RunsTheDialoguePass_ButtonClosesABoxNoScriptIsWatching"/>
 /// already opens a box with <c>controlMode: 0</c> (MenuOpen) and proves the SAME <c>proxy.Update</c> call
 /// still advances/closes it - widening the gate to cover the dialogue tick would fail that test.</description></item>
 /// <item><description>the freeze of the contact (no step is taken behind the mask, so the blocking report keeps its value) -&gt;

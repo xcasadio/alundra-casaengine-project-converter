@@ -9,7 +9,7 @@ using Alundra.UI.Shared;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// E19.f4b F4B-1, "corpus" (docs/plan-e19-opcodes.md): the speaker of each site of the real export. <c>docs/plan-e19-f4-annexe/speaker_sites.tsv</c> lists the reachable
@@ -18,7 +18,7 @@ namespace Alundra.Tests;
 /// not decidable statically and are left out. The 2273 others go through the real interpreter, one after the other, and must give the expected class: a name box for the id
 /// of the sprite type (or the operands of <c>0xC4</c>) when the ETC holds a name for it, a portrait when the record carries the flag, nothing else.
 /// </summary>
-public sealed class AlundraDialogueSpeakerCorpusTests
+public sealed class DialogueSpeakerCorpusTests
 {
     private sealed record Site(string Map, string Op, string Pc, string Kind, int? SpriteType, bool HasPortrait, int? C4Name)
     {
@@ -163,6 +163,6 @@ public sealed class AlundraDialogueSpeakerCorpusTests
             directory = directory.Parent;
         }
 
-        throw new InvalidOperationException($"AlundraDialogueSpeakerCorpusTests: no 'alundra-project/Data/sprite-records.json' found above '{AppContext.BaseDirectory}' (the real converter export is needed).");
+        throw new InvalidOperationException($"DialogueSpeakerCorpusTests: no 'alundra-project/Data/sprite-records.json' found above '{AppContext.BaseDirectory}' (the real converter export is needed).");
     }
 }

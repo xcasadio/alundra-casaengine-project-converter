@@ -9,7 +9,7 @@ using Alundra.Dialogues;
 using Alundra.UI.Shared;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>The DLL's two machines (<see cref="DialogueNameBox"/>, <see cref="InventoryPortrait"/> as the dialogue's instance) behind the interface of the raw sequences.</summary>
 internal sealed class DllSpeakerMachines : ISpeakerMachines
@@ -73,7 +73,7 @@ internal sealed class DllSpeakerMachines : ISpeakerMachines
 /// <c>model/f4_model_h.py</c>) reproduces the digests and the coverage counters of <c>sequences-raw-digests.json</c> (40 seeds of 400 images from the SplitMix64 generator
 /// of <c>model/gen_sequences.py</c>, whose first five outputs of seed 1 validate the port); (2) the DLL's machines equal the oracle image by image on the same sequences.
 /// </summary>
-public sealed class AlundraDialogueSpeakerMachineTests
+public sealed class DialogueSpeakerMachineTests
 {
     private static readonly IReadOnlyDictionary<int, (string Name, int Width)> Names = SpeakerAnnex.Names();
 

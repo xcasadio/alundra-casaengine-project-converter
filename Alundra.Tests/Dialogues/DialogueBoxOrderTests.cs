@@ -7,7 +7,7 @@ using Alundra.Hero;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// E19.f2a F2A-3 (docs/plan-e19-opcodes.md section 1.2j.3, F2-R1, F2-R2, F2-R6): the order of a logic tick at the proxy's own <see cref="WorldProxy.Update"/>,
@@ -15,7 +15,7 @@ namespace Alundra.Tests;
 /// <b>map event</b> script runs after the pass of the box of its frame (so its box is first updated at N + 1 and released, for it, at T + 18), an <b>entity</b> script
 /// before it (first update at N, release seen at T + 19: the engine updates the entities before the world's proxy - the named gap of D-E19-64, no dating).
 /// </summary>
-public sealed class AlundraDialogueBoxOrderTests
+public sealed class DialogueBoxOrderTests
 {
     private const uint Square = PadState.Square;
 

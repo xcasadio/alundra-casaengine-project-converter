@@ -11,7 +11,7 @@ using Xunit;
 using Yarn;
 using Alundra.Dialogues.Yarn;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues.Yarn;
 
 /// <summary>
 /// E16.f T1 (docs/plan-e16-etat-partie.md): establishes, on a REAL <see cref="YarnDialogueRunner"/> /
@@ -32,7 +32,7 @@ namespace Alundra.Tests;
 /// is ever thrown) - so these results describe the CONTRACT T2 must satisfy, not one particular
 /// implementation of it.
 /// </summary>
-public sealed class AlundraYarnVariableStorageProbeTests
+public sealed class YarnVariableStorageProbeTests
 {
     private static DialogueAsset CompileAsset(string name, string source)
     {
@@ -274,9 +274,9 @@ public sealed class AlundraYarnVariableStorageProbeTests
             return true;
         }
 
-        public bool ShowChoices(IReadOnlyList<string> labels) => throw new NotSupportedException("Not used by AlundraYarnVariableStorageProbeTests.");
+        public bool ShowChoices(IReadOnlyList<string> labels) => throw new NotSupportedException("Not used by YarnVariableStorageProbeTests.");
 
-        public bool SelectChoice(int index) => throw new NotSupportedException("Not used by AlundraYarnVariableStorageProbeTests.");
+        public bool SelectChoice(int index) => throw new NotSupportedException("Not used by YarnVariableStorageProbeTests.");
 
         public bool Close()
         {

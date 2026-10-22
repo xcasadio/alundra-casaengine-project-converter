@@ -14,7 +14,7 @@ using Alundra.Dialogues.Yarn;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// E19.f0 (docs/plan-e19-opcodes.md, F0-3; D-E19-48, ADR-0025): the DLL reads the positioned
@@ -24,11 +24,11 @@ namespace Alundra.Tests;
 /// <c>&lt;&lt;flag n&gt;&gt;</c> command is still served at the display of the page; the degraded (no-director) path reads the markers too and
 /// stays instantaneous.
 /// </summary>
-public sealed class AlundraDialogueFlagMarkerTests : IDisposable
+public sealed class DialogueFlagMarkerTests : IDisposable
 {
     private static readonly DialogueDirector Director = DialogueDirector.Instance;
 
-    public AlundraDialogueFlagMarkerTests()
+    public DialogueFlagMarkerTests()
     {
         Director.ResetForTests();
         DialogueCapturePresenter.ResetForTests();

@@ -13,7 +13,7 @@ using Alundra.UI.Speech;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests.UI;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// Bound screens slice B4 (engine T6.1): Alundra's dialogue box is the project asset
@@ -22,7 +22,7 @@ namespace Alundra.Tests.UI;
 /// the screen takes that markup; the versioned markup must satisfy the engine screen's element contract, or the
 /// engine would fall back to its built-in box. The window's name, <c>AlundraDialogue</c>, tells the two apart.
 /// </summary>
-public sealed class AlundraDialogueScreenAssetTests
+public sealed class DialogueScreenAssetTests
 {
     private const string AlundraWindowName = "AlundraDialogue";
 
@@ -71,7 +71,7 @@ public sealed class AlundraDialogueScreenAssetTests
         }
 
         throw new FileNotFoundException(
-            $"AlundraDialogueScreenAssetTests: no versioned 'alundra-project/UI/Screens/DialogueScreen.uiscreen' above '{AppContext.BaseDirectory}'.");
+            $"DialogueScreenAssetTests: no versioned 'alundra-project/UI/Screens/DialogueScreen.uiscreen' above '{AppContext.BaseDirectory}'.");
     }
 
     /// <summary>A manager over the real project directory, whose settings name the versioned dialogue screen the

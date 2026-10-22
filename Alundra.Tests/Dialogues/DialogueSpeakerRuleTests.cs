@@ -17,14 +17,14 @@ using Alundra.UI.Shared;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// E19.f4b F4B-1, "règles" (docs/plan-e19-opcodes.md, F4B-R1 to F4B-R4): who the speaker is for each of the three opcodes, the order of the refusals of the name, the
 /// speaker the portrait keeps, the portrait field of the proxy, the scroll of the camera, the close trigger of the box, and what resets the name and the portrait. Every
 /// number written here is derived by hand from the binary's rules (docs/plan-e19-f4-annexe/binary-notes.md), not read back from the code under test.
 /// </summary>
-public sealed class AlundraDialogueSpeakerRuleTests
+public sealed class DialogueSpeakerRuleTests
 {
     // ---- who the speaker is ------------------------------------------------------------------------------------------------
 
@@ -511,7 +511,7 @@ public sealed class AlundraDialogueSpeakerRuleTests
             directory = directory.Parent;
         }
 
-        throw new InvalidOperationException($"AlundraDialogueSpeakerRuleTests: no 'alundra-project/UI/font3.fnt' found above '{AppContext.BaseDirectory}' (the real converter export is needed).");
+        throw new InvalidOperationException($"DialogueSpeakerRuleTests: no 'alundra-project/UI/font3.fnt' found above '{AppContext.BaseDirectory}' (the real converter export is needed).");
     }
 
     [Fact]

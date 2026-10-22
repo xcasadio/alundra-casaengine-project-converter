@@ -15,7 +15,7 @@ using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// The dialogue FRAME PASS at its real production site - written for the E12.a closing verifier's F1
@@ -35,9 +35,9 @@ namespace Alundra.Tests;
 /// the <see cref="DialogueDirector.InstallForMapEntry"/> reset really runs on install, and
 /// <see cref="DialogueDirector.AttachToWorld"/> really does NOT reset.
 /// </summary>
-public sealed class AlundraDialogueFramePassTests : IDisposable
+public sealed class DialogueFramePassTests : IDisposable
 {
-    public AlundraDialogueFramePassTests()
+    public DialogueFramePassTests()
     {
         DialogueDirector.Instance.ResetForTests();
         // Same seam note as AlundraWorldProxyUpdateCharacterizationTests: inert here (world.Game is

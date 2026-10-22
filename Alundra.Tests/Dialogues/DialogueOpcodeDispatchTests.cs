@@ -16,22 +16,22 @@ using Alundra.Dialogues.Yarn;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// Dispatch-level coverage of E12.a's own dialogue opcodes (docs/plan-e12-dialogues.md) on SYNTHETIC
 /// bytecode - T2 (0x0D reentrancy guard), T3 (close-mode masks), T5 (degraded mode never deadlocks), T6
 /// (control-flag gates), plus local-string masking (0x7F) and the numeric-control-code flag application
-/// that T1 (<see cref="AlundraDialogueOpcodesProductionTests"/>) exercises again on the real map 389
+/// that T1 (<see cref="DialogueOpcodesProductionTests"/>) exercises again on the real map 389
 /// production path. Uses the REAL, session-scoped <see cref="DialogueDirector.Instance"/> attached
 /// to a real, headless <see cref="DialogueService"/> - no UI/graphics device needed (D-E12-5's own "the
 /// engine gets the generic mechanism") - so these tests exercise the SAME production singleton
 /// <see cref="WorldProxy.InstallDialogueSystems"/> wires, reset before/after each test
 /// (<see cref="DialogueDirector.ResetForTests"/>) so no state leaks between tests.
 /// </summary>
-public class AlundraDialogueOpcodeDispatchTests : IDisposable
+public class DialogueOpcodeDispatchTests : IDisposable
 {
-    public AlundraDialogueOpcodeDispatchTests()
+    public DialogueOpcodeDispatchTests()
     {
         DialogueDirector.Instance.ResetForTests();
         EtcStringTable.ResetForTests(); // E15.c T6: the 0x44 choice-flow tests inject an ETC asset.

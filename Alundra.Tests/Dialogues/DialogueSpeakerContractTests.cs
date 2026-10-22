@@ -10,7 +10,7 @@ using Alundra.UI.Shared;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// E19.f4b F4B-1, T1 (docs/plan-e19-opcodes.md, "T1, contrat fermé"): the speaker name box and portrait at the level of the DIRECTOR, image by image, against the
@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// mapping), the name (drawn or not, x of its frame and of its text), the portrait (drawn or not, x, y, w, h, rgb, phase) and the events as a set per image; excluded:
 /// the clip of the name (not ported, without effect), the position of the box (the column of E19.f2a) and <c>typing-done</c> (internal to the box, also E19.f2a).
 /// </summary>
-public sealed class AlundraDialogueSpeakerContractTests
+public sealed class DialogueSpeakerContractTests
 {
     private sealed record Dlg(int Opcode, EntityScriptProxy Owner, int[] Codes);
 

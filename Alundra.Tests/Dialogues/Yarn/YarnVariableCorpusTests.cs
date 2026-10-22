@@ -11,7 +11,7 @@ using Alundra.Dialogues.Yarn;
 using Alundra.Tests.Support;
 using Alundra.Tests.Cells;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues.Yarn;
 
 /// <summary>
 /// E16.f (docs/plan-e16-etat-partie.md, acceptance "corpus", 2026-09-28 plan review, P2): proves that
@@ -31,7 +31,7 @@ namespace Alundra.Tests;
 /// <see cref="CellStoreProductionTests"/>'s own fix (docs/plan-e7-mutation-tuiles.md, E7.b), they
 /// throw instead, naming the missing export.
 /// </summary>
-public sealed class AlundraYarnVariableCorpusTests
+public sealed class YarnVariableCorpusTests
 {
     private static string FindProjectRoot()
     {
@@ -48,7 +48,7 @@ public sealed class AlundraYarnVariableCorpusTests
         }
 
         throw new InvalidOperationException(
-            $"AlundraYarnVariableCorpusTests: no 'alundra-project/Maps' directory found above "
+            $"YarnVariableCorpusTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - this test needs the real converter export of the whole "
             + "corpus and cannot self-skip without it (docs/plan-e16-etat-partie.md, slice E16.f).");
     }
@@ -59,7 +59,7 @@ public sealed class AlundraYarnVariableCorpusTests
     {
         var files = Directory.GetFiles(projectRoot, "*.dialogue", SearchOption.AllDirectories);
         Assert.True(files.Length == 485,
-            $"AlundraYarnVariableCorpusTests: found {files.Length} '.dialogue' file(s) under '{projectRoot}', expected 485 (docs/plan-e16-etat-partie.md, slice E16.f).");
+            $"YarnVariableCorpusTests: found {files.Length} '.dialogue' file(s) under '{projectRoot}', expected 485 (docs/plan-e16-etat-partie.md, slice E16.f).");
         return files;
     }
 
@@ -78,11 +78,11 @@ public sealed class AlundraYarnVariableCorpusTests
         }
 
         var yarnPath = Path.ChangeExtension(dialoguePath, ".yarn");
-        Assert.True(File.Exists(yarnPath), $"AlundraYarnVariableCorpusTests: '{dialoguePath}' has no compiled program and no neighbour '{yarnPath}' to recompile.");
+        Assert.True(File.Exists(yarnPath), $"YarnVariableCorpusTests: '{dialoguePath}' has no compiled program and no neighbour '{yarnPath}' to recompile.");
 
         var compiler = new YarnDialogueCompiler();
         var result = compiler.CompileFile(yarnPath, YarnBindings.CreateDeclarations());
-        Assert.True(result.Success, $"AlundraYarnVariableCorpusTests: recompiling '{yarnPath}' failed: " + string.Join(Environment.NewLine, result.Diagnostics.Select(d => d.Message)));
+        Assert.True(result.Success, $"YarnVariableCorpusTests: recompiling '{yarnPath}' failed: " + string.Join(Environment.NewLine, result.Diagnostics.Select(d => d.Message)));
         return Program.Parser.ParseFrom(result.ProgramBytes);
     }
 

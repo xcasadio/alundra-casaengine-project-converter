@@ -2,7 +2,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Dialogues;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// Covers <see cref="TextProgress"/> - the falcon/text-progress state ported from
@@ -12,7 +12,7 @@ namespace Alundra.Tests;
 /// <see cref="GameState.Instance"/>), same pattern as <c>AlundraPlayerManagerTests</c>, so tests
 /// never leak state into each other.
 /// </summary>
-public class AlundraTextProgressTests
+public class TextProgressTests
 {
     // -----------------------------------------------------------------------------------------
     // Initial values (§5.7: TextCategoryIndex and GameVariables are BSS, 0 at boot).

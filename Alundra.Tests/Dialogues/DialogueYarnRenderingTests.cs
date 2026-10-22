@@ -12,7 +12,7 @@ using Alundra.Dialogues.Yarn;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// E15.c T5 (docs/plan-e15-yarn.md, E15.c contract items 1, 2, 4, 6 for dialogue files, 8): the DLL reads
@@ -21,11 +21,11 @@ namespace Alundra.Tests;
 /// resolving by node instead of staying empty, and the degraded (no-director) path running every page's
 /// commands headless.
 /// </summary>
-public sealed class AlundraDialogueYarnRenderingTests : IDisposable
+public sealed class DialogueYarnRenderingTests : IDisposable
 {
     private static readonly DialogueDirector Director = DialogueDirector.Instance;
 
-    public AlundraDialogueYarnRenderingTests()
+    public DialogueYarnRenderingTests()
     {
         Director.ResetForTests();
         DialogueCapturePresenter.ResetForTests();

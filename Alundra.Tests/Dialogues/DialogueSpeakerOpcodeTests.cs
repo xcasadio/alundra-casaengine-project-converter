@@ -17,17 +17,17 @@ using Alundra.Dialogues.Yarn;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// E19.b T1 (docs/plan-e19-opcodes.md §1.2d, D-E19-5): <c>0xC4</c> (dialogue with a speaker search, 6 bytes) and the
 /// first direct test of <c>0x5C</c> (the same box with the name, 4 bytes), on synthetic bytecode and the real
-/// session-scoped <see cref="DialogueDirector"/> (the pattern of <see cref="AlundraDialogueOpcodeDispatchTests"/>),
+/// session-scoped <see cref="DialogueDirector"/> (the pattern of <see cref="DialogueOpcodeDispatchTests"/>),
 /// then the corpus of the real export: the 31 sites of 11 maps, each opening a node that exists.
 /// </summary>
-public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
+public sealed class DialogueSpeakerOpcodeTests : IDisposable
 {
-    public AlundraDialogueSpeakerOpcodeTests()
+    public DialogueSpeakerOpcodeTests()
     {
         DialogueDirector.Instance.ResetForTests();
     }
@@ -197,7 +197,7 @@ public sealed class AlundraDialogueSpeakerOpcodeTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraDialogueSpeakerOpcodeTests: no 'alundra-project/Maps' directory found above '{AppContext.BaseDirectory}' - "
+            $"DialogueSpeakerOpcodeTests: no 'alundra-project/Maps' directory found above '{AppContext.BaseDirectory}' - "
             + "this test needs the real converter export of the whole corpus and cannot self-skip without it "
             + "(docs/plan-e19-opcodes.md, slice E19.b).");
     }

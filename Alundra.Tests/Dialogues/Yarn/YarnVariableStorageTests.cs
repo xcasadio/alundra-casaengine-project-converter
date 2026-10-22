@@ -16,7 +16,7 @@ using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
 using Alundra.SaveGames;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues.Yarn;
 
 /// <summary>
 /// E16.f T2 (docs/plan-e16-etat-partie.md, contrat 1 à 10 ; ADR-0010 ; ADR-0011) : acceptation
@@ -24,9 +24,9 @@ namespace Alundra.Tests;
 /// <see cref="global::Yarn.Dialogue"/>, avec des scripts compilés par
 /// <see cref="YarnBindings.CreateDeclarations"/> (même compilateur que la production).
 /// </summary>
-public sealed class AlundraYarnVariableStorageTests : IDisposable
+public sealed class YarnVariableStorageTests : IDisposable
 {
-    public AlundraYarnVariableStorageTests() => DialogueDirector.Instance.ResetForTests();
+    public YarnVariableStorageTests() => DialogueDirector.Instance.ResetForTests();
 
     public void Dispose() => DialogueDirector.Instance.ResetForTests();
 
@@ -467,9 +467,9 @@ public sealed class AlundraYarnVariableStorageTests : IDisposable
             return true;
         }
 
-        public bool ShowChoices(IReadOnlyList<string> labels) => throw new NotSupportedException("Not used by AlundraYarnVariableStorageTests.");
+        public bool ShowChoices(IReadOnlyList<string> labels) => throw new NotSupportedException("Not used by YarnVariableStorageTests.");
 
-        public bool SelectChoice(int index) => throw new NotSupportedException("Not used by AlundraYarnVariableStorageTests.");
+        public bool SelectChoice(int index) => throw new NotSupportedException("Not used by YarnVariableStorageTests.");
 
         public bool Close()
         {

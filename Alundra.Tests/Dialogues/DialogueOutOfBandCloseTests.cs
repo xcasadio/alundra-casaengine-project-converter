@@ -11,7 +11,7 @@ using Alundra.Dialogues;
 using Alundra.UI.Speech;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// User-reported defect (2026-09-02, while validating T2's world freeze): closing a dialogue box through
@@ -26,9 +26,9 @@ namespace Alundra.Tests;
 /// of the game's control scheme), and any close that does come from the window brings the logical box
 /// down with it.
 /// </summary>
-public sealed class AlundraDialogueOutOfBandCloseTests : IDisposable
+public sealed class DialogueOutOfBandCloseTests : IDisposable
 {
-    public AlundraDialogueOutOfBandCloseTests()
+    public DialogueOutOfBandCloseTests()
     {
         DialogueDirector.Instance.ResetForTests();
         GameState.Instance.ResetForTests();

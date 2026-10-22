@@ -14,6 +14,7 @@ using Alundra.Dialogues.Yarn;
 using Alundra.UI.Messages;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
+using Alundra.Tests.Dialogues;
 
 namespace Alundra.Tests.UI;
 
@@ -59,7 +60,7 @@ public sealed class AlundraTextBoxPixelTests : IDisposable
 
     private static void OpenTheBox(string[] pages)
     {
-        Director.AdvanceProviderForTests = c => AlundraTextBoxOracle.GlyphWidth(OraclePages.ByteOf(c));
+        Director.AdvanceProviderForTests = c => TextBoxOracle.GlyphWidth(OraclePages.ByteOf(c));
         Director.AttachToWorld(new DialogueService(), new GameState());
         Director.InstallForMapEntry();
         Director.Open(DialogueTestAssets.BuildRaw("pixels", "Start", pages), "Start", controlMode: 1);

@@ -12,17 +12,17 @@ using Alundra.Dialogues;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// E19.f2a F2A-2 (docs/plan-e19-opcodes.md section 1.2j.3, "tests unitaires de la boîte contre l'oracle"): the DLL's box, driven at the proxy's own
-/// <see cref="WorldProxy.Update"/> in the production order (<see cref="DialogueBoxMontage"/>), against <see cref="AlundraTextBoxOracle"/> frame by frame - the
+/// <see cref="WorldProxy.Update"/> in the production order (<see cref="DialogueBoxMontage"/>), against <see cref="TextBoxOracle"/> frame by frame - the
 /// state at the end of each frame (phase, glyphs drawn, cursor, MessageBox and MenuOpen, the position of the box where it is comparable), the first frame of each text
 /// flag, and every sound with its frame - on the arcs' pad (<see cref="OracleRulePad.ForArcs"/>, the rule of <c>RunUntilPressingTheButtonOnEveryDialogueFrame</c>, which the
 /// montage applies the same way). Two families: synthetic boxes (opcodes 0x4C to 0x51 at chosen ticks, both origins), and boxes of the real export (the three real texts
 /// of the plan and the nodes of the maps of the arcs), which the oracle reads from the exported pages and the director from the compiled Yarn of the same asset.
 /// </summary>
-public sealed class AlundraDialogueBoxOracleComparisonTests
+public sealed class DialogueBoxOracleComparisonTests
 {
     /// <summary>A box to compare: the text (an asset and its node), the control mode, the origin ("E" an entity script, "M" a map event), the frame of the opening, the
     /// opcodes written at ticks relative to the opening ("4C" and "4E" and "50" take an argument; "4D", "4F" and "51" none), and the pad (the arcs' rule, or no button at all).</summary>

@@ -17,13 +17,14 @@ using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Hero;
+using Alundra.Tests.Dialogues;
 
 namespace Alundra.Tests.Entities;
 
 /// <summary>
 /// T2 (docs/plan-transitions-carte.md §1.5/§3, "Gel global du monde") - ORACLE 1 (headless), on the
 /// REAL map 389 export, driven by the same production call site and montage as
-/// <see cref="AlundraDialogueOpcodesProductionTests"/> (a real sailor's own F(Interact) program opens a
+/// <see cref="DialogueOpcodesProductionTests"/> (a real sailor's own F(Interact) program opens a
 /// box with <see cref="GameState.PlayerControlBits.MenuOpen"/> posed - the SailorThirteen mono-line
 /// program precedent, cheap and deterministic, unlike the full 1704-frame flag chain SailorTwelve needs).
 ///

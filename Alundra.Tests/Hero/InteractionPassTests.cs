@@ -14,6 +14,7 @@ using Alundra.Physics;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Dialogues;
 
 namespace Alundra.Tests.Hero;
 
@@ -23,7 +24,7 @@ namespace Alundra.Tests.Hero;
 /// <see cref="WorldProxy.Update"/> (P-a), the <c>CheckEntityInteraction</c> call inside the real
 /// player branch of <see cref="EntityScriptProxy.Update"/> → <c>MovePlayer</c> (P-b), and the
 /// consume-on-pick cadence at the real slot-F pick (P-c). The full-flow sailor test in
-/// <see cref="AlundraDialogueOpcodesProductionTests"/> may then legitimately mirror these passes in its
+/// <see cref="DialogueOpcodesProductionTests"/> may then legitimately mirror these passes in its
 /// harness - the F1 contract: a harness mirror only stands when the production site carries its own
 /// test (this repo's green-and-inert family).
 /// </summary>

@@ -19,12 +19,13 @@ using Alundra.UI.Inventory;
 using Alundra.UI.Messages;
 using Alundra.UI.Shared;
 using Alundra.Tests.Support;
+using Alundra.Tests.Dialogues;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// E19.f2b1c T2 (docs/plan-e19-opcodes.md, F2B1C-R2): the view model of the text box screen, without any display. For each pass of the six scenarios of the annex
-/// (<c>docs/plan-e19-f2b1-annexe/values/S1.csv</c> to <c>S6.csv</c>, the same tables <see cref="AlundraTextBoxDrawnStateTests"/> pins the box to) the properties
+/// (<c>docs/plan-e19-f2b1-annexe/values/S1.csv</c> to <c>S6.csv</c>, the same tables <see cref="TextBoxDrawnStateTests"/> pins the box to) the properties
 /// <see cref="TextBoxViewModel.Apply"/> writes are the ones the rule deduces from the table: <c>Frame.Top</c> the Y of the frame, <c>Clip</c> the clip of the
 /// pass, <c>Row r</c> the text of the row with <c>Left = x - 32</c> and <c>Top = rowY - ClipTop</c> (relative to the clip canvas), the cursor by its sprite name. The
 /// pass that ends a scroll is read as F2B1B-1 pins it (the rows after the shift at offset 0, D-E19-83).
@@ -131,7 +132,7 @@ public sealed class AlundraTextBoxViewModelTests : IDisposable
 
     private static void OpenTheBox(string name)
     {
-        Director.AdvanceProviderForTests = c => AlundraTextBoxOracle.GlyphWidth(OraclePages.ByteOf(c));
+        Director.AdvanceProviderForTests = c => TextBoxOracle.GlyphWidth(OraclePages.ByteOf(c));
         Director.AttachToWorld(new DialogueService(), new GameState());
         Director.InstallForMapEntry();
         Director.Open(DialogueTestAssets.BuildRaw("vm-" + name, "Start", Of(name).Pages), "Start", controlMode: 1);

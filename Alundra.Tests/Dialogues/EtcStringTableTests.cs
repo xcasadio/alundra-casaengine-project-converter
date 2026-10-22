@@ -6,7 +6,7 @@ using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// E15.c T6 (docs/plan-e15-yarn.md, contract items 5/6): unit coverage of
@@ -14,13 +14,13 @@ namespace Alundra.Tests;
 /// through <see cref="EtcStringTable.SetEtcDialogueAssetForTests"/> - never a raw-file reader.
 /// Integration-level coverage (through the real inventory/sub-inventory directors and the real OUI/NON
 /// dispatch) lives in <see cref="AlundraInventoryDirectorTests"/>, <see cref="AlundraSubInventoryDirectorTests"/>,
-/// <see cref="AlundraDialogueOpcodeDispatchTests"/> and <see cref="AlundraDialogueOpcodesProductionTests"/>.
+/// <see cref="DialogueOpcodeDispatchTests"/> and <see cref="DialogueOpcodesProductionTests"/>.
 /// <c>projectPath</c> is passed as <see cref="EngineEnvironment.ProjectPath"/> throughout, matching every
 /// production call site, even though the table itself no longer reads it (see that class' own doc).
 /// </summary>
-public sealed class AlundraEtcStringTableTests : IDisposable
+public sealed class EtcStringTableTests : IDisposable
 {
-    public AlundraEtcStringTableTests() => EtcStringTable.ResetForTests();
+    public EtcStringTableTests() => EtcStringTable.ResetForTests();
 
     public void Dispose() => EtcStringTable.ResetForTests();
 

@@ -608,7 +608,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             if (_installDialogueDirector)
             {
                 _dialoguePadMirror.Update(_gameState.LastPadState.ButtonsHold);
-                Dialogues.DialogueDirector.Instance.Pass(
+                Alundra.Dialogues.DialogueDirector.Instance.Pass(
                     (_dialoguePadMirror.ButtonsHold & PadState.Square) != 0,
                     (_dialoguePadMirror.ButtonsJustPressed & PadState.Square) != 0);
             }
@@ -1165,7 +1165,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// gates only THIS property's returned value (default false - see that field's own doc on why, unlike
     /// every other <c>_install*</c> flag here).
     /// </summary>
-    public IDialogueDirector? DialogueDirector => _installDialogueDirector ? Dialogues.DialogueDirector.Instance : null;
+    public IDialogueDirector? DialogueDirector => _installDialogueDirector ? Alundra.Dialogues.DialogueDirector.Instance : null;
 
     /// <summary>Fake <see cref="ISoundPlayer"/> implementation (T1, docs/plan-e11-audio.md):
     /// records the request instead of actually playing anything - no live AudioService in this

@@ -16,7 +16,7 @@ using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues.Yarn;
 
 /// <summary>
 /// E15.c T4 (docs/plan-e15-yarn.md): covers <see cref="YarnBindings"/> - the two commands and
@@ -28,9 +28,9 @@ namespace Alundra.Tests;
 /// <see cref="EtcStringTable.SetEtcDialogueAssetForTests"/> (E15.c T6 migration off this class' own
 /// former JSON fixture writer) - never a raw-file reader of this test's own.
 /// </summary>
-public sealed class AlundraYarnBindingsTests : IDisposable
+public sealed class YarnBindingsTests : IDisposable
 {
-    public AlundraYarnBindingsTests() => EtcStringTable.ResetForTests();
+    public YarnBindingsTests() => EtcStringTable.ResetForTests();
 
     public void Dispose() => EtcStringTable.ResetForTests();
 
@@ -468,9 +468,9 @@ public sealed class AlundraYarnBindingsTests : IDisposable
             return true;
         }
 
-        public bool ShowChoices(IReadOnlyList<string> labels) => throw new NotSupportedException("Not used by AlundraYarnBindingsTests.");
+        public bool ShowChoices(IReadOnlyList<string> labels) => throw new NotSupportedException("Not used by YarnBindingsTests.");
 
-        public bool SelectChoice(int index) => throw new NotSupportedException("Not used by AlundraYarnBindingsTests.");
+        public bool SelectChoice(int index) => throw new NotSupportedException("Not used by YarnBindingsTests.");
 
         public bool Close()
         {

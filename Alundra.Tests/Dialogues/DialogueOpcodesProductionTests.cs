@@ -13,7 +13,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Hero;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// T1 (docs/plan-e12-dialogues.md, slice E12.a): drives the REAL production call site - sailor 12's own
@@ -31,7 +31,7 @@ namespace Alundra.Tests;
 /// this harness's own <see cref="GameState"/>, standing in for "the intro just finished AND the
 /// player just interacted" without needing to actually simulate 1704 frames of intro first.
 /// </summary>
-public class AlundraDialogueOpcodesProductionTests : IDisposable
+public class DialogueOpcodesProductionTests : IDisposable
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 
@@ -42,7 +42,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
     private const uint IntroCompletionFlag = 860;
     private const uint InteractArmedFlag = 0x800C;
 
-    public AlundraDialogueOpcodesProductionTests()
+    public DialogueOpcodesProductionTests()
     {
         DialogueDirector.Instance.ResetForTests();
         EtcStringTable.ResetForTests(); // E15.c T6: the OUI/NON flow injects the real ETC asset.
@@ -69,7 +69,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraDialogueOpcodesProductionTests: no 'alundra-project/Maps' directory found above "
+            $"DialogueOpcodesProductionTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - these tests need the real converter export of map 389.");
     }
 
@@ -190,7 +190,7 @@ public class AlundraDialogueOpcodesProductionTests : IDisposable
     /// lived only in 0x39's dispatch: the box never closed, MenuOpen never lifted - six of the seven
     /// sailors were a permanent softlock. The fix runs the pass once per logic tick from the frame loop
     /// (AlundraWorldProxy.Update in production, mirrored by RunFramesForTest here - the production call
-    /// site itself is pinned by <see cref="AlundraDialogueFramePassTests"/>).
+    /// site itself is pinned by <see cref="DialogueFramePassTests"/>).
     /// </summary>
     [Fact]
     public void SailorThirteen_MonoLineInteractProgram_BoxClosesOnButton_NoSoftlock()

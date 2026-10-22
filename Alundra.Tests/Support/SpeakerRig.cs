@@ -12,6 +12,7 @@ using Alundra.Events;
 using Alundra.Audio;
 using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
+using Alundra.Tests.Dialogues;
 
 namespace Alundra.Tests.Support;
 
@@ -61,7 +62,7 @@ internal sealed class SpeakerRig : IDisposable
         Runner = new EventProgramRunner(Document(new[] { 0xFF }), GameState, World) { MapDialogueAsset = MapAsset() };
     }
 
-    public static int Advance(char c) => AlundraTextBoxOracle.GlyphWidth(OraclePages.ByteOf(c));
+    public static int Advance(char c) => TextBoxOracle.GlyphWidth(OraclePages.ByteOf(c));
 
     public DialogueDirector Director => DialogueDirector.Instance;
 

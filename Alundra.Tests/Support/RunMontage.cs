@@ -14,6 +14,7 @@ using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Rendering.Effects;
 using Alundra.Tests.Rendering.Effects;
+using Alundra.Tests.Dialogues;
 
 namespace Alundra.Tests.Support;
 

@@ -4,16 +4,16 @@ using CasaEngine.Framework.Dialogue.Runtime;
 using Xunit;
 using Alundra.Dialogues.Yarn;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues.Yarn;
 
 /// <summary>
 /// E15.c T5 (docs/plan-e15-yarn.md, contract item 4): unit coverage of
 /// <see cref="DialogueCapturePresenter.ToFont3Text"/> itself, built directly from a
 /// <see cref="DialogueLine"/> with hand-placed <see cref="DialogueMarkupAttribute"/> entries - never
-/// through a compiled Yarn asset (<see cref="AlundraDialogueYarnRenderingTests"/> covers the
+/// through a compiled Yarn asset (<see cref="DialogueYarnRenderingTests"/> covers the
 /// end-to-end glyph/br rendering through the real director).
 /// </summary>
-public sealed class AlundraDialogueCapturePresenterTests
+public sealed class DialogueCapturePresenterTests
 {
     private static DialogueMarkupAttribute Glyph(int position, int id) =>
         new("glyph", position, length: 0, new Dictionary<string, object> { ["id"] = id });

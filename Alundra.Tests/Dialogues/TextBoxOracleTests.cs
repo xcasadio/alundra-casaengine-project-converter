@@ -7,7 +7,7 @@ using CasaEngine.Framework.Dialogue.Assets;
 using Xunit;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Dialogues;
 
 /// <summary>
 /// E19.f2a F2A-1 (docs/plan-e19-opcodes.md section 1.2j.3, task F2A-1): the oracle's own tests. Every number below is written in
@@ -15,7 +15,7 @@ namespace Alundra.Tests;
 /// C and K for the synthetic boxes of the director's tests) and was drawn from the binary's model before this oracle ran: a test that goes
 /// red here is a fault of the oracle, never a value to re-pin. N is the tick of the opening.
 /// </summary>
-public sealed class AlundraTextBoxOracleTests
+public sealed class TextBoxOracleTests
 {
     private static OracleHost Production(IOraclePad pad, bool corrected = true) => new(pad, OracleHost.Production, corrected);
 
