@@ -4179,7 +4179,7 @@ restructuration. Preuves : `docs/plan-e19-d5b-annexe/` (rapport, critique indép
   la recette se fait sur l'ascenseur de la carte 22. D5b est à détailler sur cette base (M1 à M4 et le plafond des porteurs, étendus
   à tous les passagers), puis à relire.
 
-##### 1.2h.3.2b D5b — Tous les passagers suivent leur porteur (détaillée le 2026-10-22 ; révision 0 relue : REVISE ; révision 1 du 2026-10-22, à relire par un `plan-verifier` frais) ⏳
+##### 1.2h.3.2b D5b — Tous les passagers suivent leur porteur (détaillée le 2026-10-22 ; révision 0 relue : REVISE ; révision 1 du 2026-10-22, **READY** à la deuxième relecture (`plan-verifier` frais) ; exécutable après E20.f6a, avant E20.g1a) ⏳
 
 **Révision 1 (2026-10-22).** La relecture de la révision 0 a rendu REVISE sur trois points, corrigés ici :
 - M4 n'avait aucun témoin rouge : RIDE-M4 est ajouté (T1, T2, T8).
