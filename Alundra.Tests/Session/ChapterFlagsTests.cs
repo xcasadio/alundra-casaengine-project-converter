@@ -4,7 +4,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.SaveGames;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Session;
 
 /// <summary>
 /// E16.c T2 (docs/plan-e16-etat-partie.md, C7, F6 to F8): the chapter walk
@@ -12,7 +12,7 @@ namespace Alundra.Tests;
 /// (<see cref="SaveGame.BuildSummary"/>, port of <c>UpdateMenuStatusText</c>'s text). The expected
 /// summary is computed here, independently, from F6's formulas.
 /// </summary>
-public sealed class AlundraChapterFlagsTests
+public sealed class ChapterFlagsTests
 {
     /// <summary>The 41 ids read in <c>g_flagIdList</c> (F8), copied here so an edit of the production table
     /// is caught.</summary>

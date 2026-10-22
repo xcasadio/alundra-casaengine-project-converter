@@ -2,7 +2,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Session;
 
 /// <summary>
 /// E13 C0 acceptance (docs/plan-e13-hud.md, tranche "C0 - DLL : l'état joueur"): each bound of §1.5, on
@@ -12,7 +12,7 @@ namespace Alundra.Tests;
 /// instances throughout (same convention as <see cref="AlundraPlayerManagerTests"/>), not the shared
 /// <see cref="GameState.Instance"/> singleton, so no reset-for-tests seam is needed here.
 /// </summary>
-public class AlundraPlayerStatsTests
+public class PlayerStatsTests
 {
     // -----------------------------------------------------------------------------------------
     // HpMax - ceiling 50 (any value >= 51 becomes 50), floor 0 (PlayerManager.cs:1705-1723).

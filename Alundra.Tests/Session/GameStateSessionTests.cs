@@ -9,7 +9,7 @@ using Alundra.Entities;
 using Alundra.Maps;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Session;
 
 /// <summary>
 /// T1 acceptance (docs/plan-transitions-carte.md, slice "T1 - État de partie en session"): the SEVEN rows
@@ -27,9 +27,9 @@ namespace Alundra.Tests;
 /// <see cref="GameState.Instance"/>/<see cref="SfxBank"/>'s session cache in
 /// constructor/Dispose, for the same isolation reason every other session-singleton test class does.
 /// </summary>
-public sealed class AlundraGameStateSessionTests : IDisposable
+public sealed class GameStateSessionTests : IDisposable
 {
-    public AlundraGameStateSessionTests()
+    public GameStateSessionTests()
     {
         GameState.Instance.ResetForTests();
         SfxBank.ResetForTests();
@@ -194,7 +194,7 @@ public sealed class AlundraGameStateSessionTests : IDisposable
 
     private static string BuildTempProjectWithEmptyManifest()
     {
-        var root = Path.Combine(Path.GetTempPath(), "AlundraGameStateSessionTests_" + Guid.NewGuid().ToString("N"));
+        var root = Path.Combine(Path.GetTempPath(), "GameStateSessionTests_" + Guid.NewGuid().ToString("N"));
         var soundsDir = Path.Combine(root, "Sounds");
         Directory.CreateDirectory(soundsDir);
         File.WriteAllText(Path.Combine(soundsDir, "sfx-manifest.json"), "[]");

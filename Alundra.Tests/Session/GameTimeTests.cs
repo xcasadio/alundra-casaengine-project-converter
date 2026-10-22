@@ -8,7 +8,7 @@ using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Maps.Loop;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Session;
 
 /// <summary>
 /// E16.c T1 (docs/plan-e16-etat-partie.md, C1/C8, D-E16-23): the game-time counter
@@ -19,9 +19,9 @@ namespace Alundra.Tests;
 /// production call site, the head of <see cref="WorldProxy.Update"/>, through
 /// <see cref="GameState.Instance"/> - reset around every test, like every session-singleton test class.
 /// </summary>
-public sealed class AlundraGameTimeTests : IDisposable
+public sealed class GameTimeTests : IDisposable
 {
-    public AlundraGameTimeTests()
+    public GameTimeTests()
     {
         ResetSingletons();
     }

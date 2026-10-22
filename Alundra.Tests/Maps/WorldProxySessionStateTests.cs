@@ -7,6 +7,7 @@ using Alundra.Entities;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
+using Alundra.Tests.Session;
 
 namespace Alundra.Tests.Maps;
 
@@ -17,7 +18,7 @@ namespace Alundra.Tests.Maps;
 ///
 /// Why this class exists: the closing verifier of T1 found that this one statement - the most
 /// load-bearing of the whole slice, since it is what actually makes flags survive a map change - was
-/// green but unpinned. <see cref="AlundraGameStateSessionTests"/> drives the session carrier directly
+/// green but unpinned. <see cref="GameStateSessionTests"/> drives the session carrier directly
 /// and would stay green if the proxy went back to <c>= new()</c> per world; the classes that do build
 /// two proxies (<see cref="AlundraMusicPlayerTests"/>, <see cref="AlundraScreenFadeDirectorTests"/>)
 /// never touch <c>GameState</c>. Two bare proxies are enough to close that gap - no world, no tileMap,
