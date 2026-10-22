@@ -413,7 +413,7 @@ public sealed class HudComposerTests
     /// POLY_G4-equivalent background quads, re-derived directly from HudManager.cs's own citations, never
     /// copied from <see cref="HudComposer"/> itself.
     /// </summary>
-    public sealed class AlundraHudComposerEquipmentBackgroundsTests
+    public sealed class HudComposerEquipmentBackgroundsTests
     {
         [Fact]
         public void ComposeEquipmentBackgrounds_ReturnsExactlyTwoQuads()
