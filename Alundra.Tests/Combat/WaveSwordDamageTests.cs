@@ -4,13 +4,13 @@ using Xunit;
 using Alundra.Combat;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Combat;
 
 /// <summary>
 /// E20.f3c phase B, (p7a) [V] green by construction (docs/plan-e20-heros.md section 1.19.3): the damage of the sword wave on a Beannoid, by the pure function <see cref="Damage.ResolveBalanceTarget"/>. The wave attacks with the
 /// attribute 129 (<c>0x81</c>) and the power 10, 20, 38 (steel, demon, holy sword: the balance record 27 to 29); the end-to-end damage stays for the recette. No equipment record is given here (the equipment term needs the hero's inventory).
 /// </summary>
-public sealed class AlundraWaveSwordDamageTests
+public sealed class WaveSwordDamageTests
 {
     [Fact]
     public void P7a_TheWaveAttack129_OnTheBeannoidSheet_DealsThePowerTimesTheResponseOver16_ForThe3Swords()

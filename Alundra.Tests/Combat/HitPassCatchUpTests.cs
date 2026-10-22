@@ -6,26 +6,26 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Combat;
 
 /// <summary>
 /// E20.c1a C5 (docs/plan-e20-heros.md section 1.5), the rendered frames that carry several logic ticks. The DLL validates an animation switch once, at the end of the frame (D-E19-13), while the binary switches, loads the box and
 /// the attack and hits at the tick that sees it: in the rest of a catch-up frame the sprite still holds the old animation. The hit pass reads a cursor of its own (the animation, the direction and the ticks since the switch,
 /// <see cref="EntityScriptProxy.NoteSwitchPendingAtTick"/>), so a hit lands at the tick of the oracle whatever the grouping of the ticks into frames. Each test replays an oracle trace with another grouping and compares every
-/// tick, every column, as <see cref="AlundraHitPassTests"/> does. The pad of a frame is the oracle's pad of its first tick.
+/// tick, every column, as <see cref="HitPassTests"/> does. The pad of a frame is the oracle's pad of its first tick.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHitPassCatchUpTests
+public sealed class HitPassCatchUpTests
 {
     private const uint Square = 0x80;
 
     private static IReadOnlyList<HitTickSample> Replay(string name, int[] frames, out HitOracleTrace trace, Action<HitArena>? configure = null)
     {
         trace = HitOracleTrace.Load(name);
-        using var arena = AlundraHitPassTests.Arena(trace, name + "-catchup");
+        using var arena = HitPassTests.Arena(trace, name + "-catchup");
         configure?.Invoke(arena);
         var samples = arena.Run(trace, frames).ToList();
-        AlundraHitPassTests.AssertEqualToOracle(AlundraHitPassTests.Compare(trace, samples));
+        HitPassTests.AssertEqualToOracle(HitPassTests.Compare(trace, samples));
         return samples;
     }
 
@@ -90,7 +90,7 @@ public sealed class AlundraHitPassCatchUpTests
     public void TheBoxCursor_FollowsTheSpritesLogicalClock_AfterEveryFrame_WhateverTheNumberOfTicks()
     {
         var trace = HitOracleTrace.Load("H1");
-        using var arena = AlundraHitPassTests.Arena(trace, "cursor");
+        using var arena = HitPassTests.Arena(trace, "cursor");
         var frames = new[] { 3, 1, 2, 4, 2, 3, 1, 1, 4, 2, 3, 2, 4, 1 };
         var checkedFrames = 0;
         arena.Arc.OnFrame = () =>
@@ -129,7 +129,7 @@ public sealed class AlundraHitPassCatchUpTests
         // H1: the box of the swing first overlaps the body of the Beannoid at tick 5. The Beannoid is asked for the animation 6 (byte 0x40) at the head of tick 5: the clock of that tick loads the byte (0x80038B68), the hit
         // pass (0x80039444) reads it.
         var trace = HitOracleTrace.Load("H1");
-        using var arena = AlundraHitPassTests.Arena(trace, "byte40-enter");
+        using var arena = HitPassTests.Arena(trace, "byte40-enter");
         arena.BeforeTick = tick =>
         {
             if (tick == 5)
@@ -145,7 +145,7 @@ public sealed class AlundraHitPassCatchUpTests
         Assert.All(samples, s => Assert.Equal(0, s.Hero.HitCounter));
 
         // The control, the same run without the change: the hit of tick 5.
-        using var control = AlundraHitPassTests.Arena(trace, "byte40-control");
+        using var control = HitPassTests.Arena(trace, "byte40-control");
         Assert.Equal(25, control.Run(trace, 1)[4].Targets[0].CooldownTicks);
     }
 
@@ -153,7 +153,7 @@ public sealed class AlundraHitPassCatchUpTests
     public void ATargetThatLeavesAnAnimationWithTheByte0x40_AtTheTickOfTheFirstOverlap_IsHit()
     {
         var trace = HitOracleTrace.Load("H1");
-        using var arena = AlundraHitPassTests.Arena(trace, "byte40-leave");
+        using var arena = HitPassTests.Arena(trace, "byte40-leave");
         arena.Targets[0].TargetAnimationId = 6; // in the animation 6 from tick 1 (as H4b)...
         arena.BeforeTick = tick =>
         {
@@ -178,7 +178,7 @@ public sealed class AlundraHitPassCatchUpTests
         // The switch is written at the end of tick 4 (after its clock): the end of the frame validates it with no tick spent on it (the tick is owed), and the clock of tick 5 - the first tick of the first overlap - is its
         // switch tick, as the binary's UpdateAnimation of tick 5 would see it: the byte 0x40 is there for the hit pass of tick 5.
         var trace = HitOracleTrace.Load("H1");
-        using var arena = AlundraHitPassTests.Arena(trace, "byte40-owed-enter");
+        using var arena = HitPassTests.Arena(trace, "byte40-owed-enter");
         arena.AfterTick = tick =>
         {
             if (tick == 4)
@@ -193,7 +193,7 @@ public sealed class AlundraHitPassCatchUpTests
         Assert.All(samples, s => Assert.Equal(0, s.Targets[0].CooldownTicks));
 
         // The way out: in the animation 6 from tick 1, back to 0 after the clock of tick 4: hit at tick 5.
-        using var leave = AlundraHitPassTests.Arena(trace, "byte40-owed-leave");
+        using var leave = HitPassTests.Arena(trace, "byte40-owed-leave");
         leave.Targets[0].TargetAnimationId = 6;
         leave.AfterTick = tick =>
         {
@@ -216,7 +216,7 @@ public sealed class AlundraHitPassCatchUpTests
         foreach (var switchTick in new[] { 5, 6 })
         {
             var trace = HitOracleTrace.Load("H1");
-            using var arena = AlundraHitPassTests.Arena(trace, "byte40-two-" + switchTick);
+            using var arena = HitPassTests.Arena(trace, "byte40-two-" + switchTick);
             arena.BeforeTick = tick =>
             {
                 if (tick == switchTick)

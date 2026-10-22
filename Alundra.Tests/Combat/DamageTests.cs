@@ -13,7 +13,7 @@ using Alundra.Items;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Combat;
 
 /// <summary>
 /// E20.c1b K1, K2 and K5 (docs/plan-e20-heros.md section 1.6): the damage functions of the binary (<see cref="Damage"/>), the three equipment records (<see cref="EquipmentRecords"/>, filled by
@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// (<c>docs/plan-e20-annexe/d2-oracle-coups/out/cases.txt</c>, cases 3 and 4 and the extra x8): the expected values below are the oracle's, never computed by the code under test.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraDamageTests
+public sealed class DamageTests
 {
     // -----------------------------------------------------------------------------------------
     // The oracle files.
@@ -66,7 +66,7 @@ public sealed class AlundraDamageTests
 
     private static ItemTables ItemTables() => Items.ItemTables.GetOrCreate(ProjectRootFinder.Find());
 
-    private static BalanceTables BalanceTables() => Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
+    private static BalanceTables BalanceTables() => Alundra.Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
 
     // -----------------------------------------------------------------------------------------
     // K1: the equipment records of each inventory, steps 2 to 5 of UpdateItemEffectState.

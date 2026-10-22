@@ -16,16 +16,16 @@ using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Combat;
 
 /// <summary>
 /// E20.c1a C5 (docs/plan-e20-heros.md section 1.5): the rules of the hit pass on small hand-made sets of entities, the validation cases of the D2 oracle (<c>docs/plan-e20-annexe/d2-oracle-coups/</c>, six cases whose
 /// expected values were written by hand from the plan and run on the real code of the binary) that belong to the pass: 1 the reordered class mask, 2 the overlap in raw 16.16, 5 the first attacker, 6 several targets, and the part
 /// of 3 on <c>TouchingEntity</c>, the <c>+0x1D0</c> timer and the attacker's counter (the case 4 and the life of the case 3 are E20.c1b). The expectations below are the ones of <c>tools/cases.py</c>, not computed by the
-/// code under test. Plus the latch of the hero's animation. (The balance tables and the reload at a switch are in <see cref="AlundraBalanceTablesTests"/>.)
+/// code under test. Plus the latch of the hero's animation. (The balance tables and the reload at a switch are in <see cref="BalanceTablesTests"/>.)
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHitPassRulesTests
+public sealed class HitPassRulesTests
 {
     private const uint ClassA = EntityFlags.ClassA;
     private const uint ClassB = EntityFlags.ClassB;

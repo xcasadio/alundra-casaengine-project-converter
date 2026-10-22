@@ -85,7 +85,7 @@ public sealed class HeroLifeTests
 
     private static ItemTables ItemTables() => Items.ItemTables.GetOrCreate(ProjectRootFinder.Find());
 
-    private static BalanceTables BalanceTables() => Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
+    private static BalanceTables BalanceTables() => Alundra.Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
 
     // -----------------------------------------------------------------------------------------
     // The montage: a host with the real tables and a hero that carries its life, an inventory taken from the oracle.

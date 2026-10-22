@@ -10,7 +10,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Combat;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Combat;
 
 /// <summary>
 /// E20.c1b K4/K5 (docs/plan-e20-heros.md section 1.6): the opcodes <c>0x71</c>, <c>0x86</c>, <c>0x87</c> and <c>0x95</c> through the real interpreter, case by case against the oracle
@@ -18,7 +18,7 @@ namespace Alundra.Tests;
 /// every expected value below is a line of that file), then inside real programs D run by the interpreter on the state shared by A, D, E and F. The world is rebuilt by hand with the oracle's flags, attacks and
 /// counters; its boxes are mine, placed to give the geometry of each line (the oracle's own boundary lines move the hero's box by one raw unit around a rectangle, and so do the ones below).
 /// </summary>
-public sealed class AlundraHitOpcodesTests
+public sealed class HitOpcodesTests
 {
     private const int Sentinel = 0x5555;
     private const int Raw = 1 << 16;

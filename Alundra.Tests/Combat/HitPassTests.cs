@@ -11,7 +11,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Rendering.Effects;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Combat;
 
 /// <summary>
 /// E20.c1a C5 (docs/plan-e20-heros.md section 1.5): the hit pass of the DLL against the oracle of E20.c1 (<c>docs/plan-e20-annexe/e20-c1/oracle/out/</c>: the real code of <c>ALUN_CD.EXE</c> (France), the hero of D1 and real
@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// stream and are not compared (E20.e0b1 advances it once per tick). Exclusions are named in the tests that have them.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHitPassTests
+public sealed class HitPassTests
 {
     private const uint Square = 0x80;
 

@@ -11,7 +11,7 @@ using Alundra.Transitions;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Combat;
 
 /// <summary>
 /// E20.f3b T2 (docs/plan-e20-heros.md section 1.19.2, D-F3-9, D-F3-10): the effects 4 and 5 of the hit pass on the REAL world of map 14 (<see cref="HitArena"/>: the production path, the world's own hit pass and effect stage,
@@ -23,7 +23,7 @@ namespace Alundra.Tests;
 /// </para>
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHitEffectWorldTests : IDisposable
+public sealed class HitEffectWorldTests : IDisposable
 {
     private const ulong Seed = 0x2468ACE0UL;
     private const int TotalTicks = 132; // a multiple of 1, 2 and 3.
@@ -31,7 +31,7 @@ public sealed class AlundraHitEffectWorldTests : IDisposable
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
     private readonly ulong _previousSeed = GameRandom.RandomSeed;
 
-    public AlundraHitEffectWorldTests()
+    public HitEffectWorldTests()
     {
         GameState.Instance.ResetForTests();
         WarpDirector.Instance.ResetForTests();

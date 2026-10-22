@@ -8,14 +8,14 @@ using Alundra.Entities;
 using Alundra.Combat;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Combat;
 
 /// <summary>
 /// E20.c1a C1 and C2 (docs/plan-e20-heros.md section 1.5): the balance tables of the export (<c>Data/balance.json</c>: the 512 entries, the remapping of the indexes <c>0x1F</c> to <c>0x7F</c>, the chain of levels up to the threshold
 /// <c>D</c> of the map), what an entity gets from them at its creation (the record, the life and the maximum life, the first switch), and what the animation clock reloads at a switch it sees (the current attack, the animation byte
 /// <c>+0xB4</c>, the cursor of the frame box), at the tick of the switch and not at the end of the frame.
 /// </summary>
-public sealed class AlundraBalanceTablesTests
+public sealed class BalanceTablesTests
 {
     private static BalanceRecord Record(int response = 16, params (int Attribute, int Power)[] attacks)
     {

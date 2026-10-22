@@ -15,7 +15,7 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Combat;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Combat;
 
 /// <summary>
 /// E20.f3b T1 (docs/plan-e20-heros.md section 1.19.2, D-F3-9, D-F3-10): the effects 4 and 5 of the hit pass (<c>0x800395D4-0x80039668</c>) on hand-made actors and a recording callback. The expectations are the keys of the
@@ -23,7 +23,7 @@ namespace Alundra.Tests;
 /// <c>fx</c> (the effects attached), <c>touch</c> (the store of <c>TouchingEntity</c>), <c>sparks</c>, <c>c1d0</c> (the 25 ticks the target is protected), <c>hitc</c> (the attacker's <c>HitCounter</c>).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHitPassEffectTests
+public sealed class HitPassEffectTests
 {
     private sealed class Actor
     {
