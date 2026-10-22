@@ -1,0 +1,457 @@
+--- a/Alundra/Maps/IScriptHost.cs
++++ b/Alundra/Maps/IScriptHost.cs
+@@ -95,6 +95,9 @@
+     /// </summary>
+     bool DrivesEntityTicks => false;
+ 
++    /// <summary>PROTOTYPE (D5b M2): the number of the current physics pass (incremented once per tick by the world before its physics loop); 0 = no tracking (a host that runs the ticks itself).</summary>
++    int PhysicsPassId => 0;
++
+     /// <summary>
+     /// E20.e0a3b (D-E0A-5, ADR-0065): the collision field of the host, which an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> reads (<see cref="EntityScriptProxy.ReadCollisionField"/>)
+     /// in the tick of its birth, while the engine has not integrated it and <c>Owner.World</c> is still null. Null (the default) for every host that has none; <see cref="WorldProxy"/> implements it EXPLICITLY (its own
+--- a/Alundra/Maps/WorldProxy.cs
++++ b/Alundra/Maps/WorldProxy.cs
+@@ -820,6 +820,9 @@
+     /// </remarks>
+     public bool DrivesEntityTicks => _world?.Game != null;
+ 
++    /// <summary>PROTOTYPE (D5b M2).</summary>
++    public int PhysicsPassId { get; private set; }
++
+     /// <summary>E20.e0a3b test seam: told every time an entity reads the collision field of this host by the fallback of <see cref="IScriptHost.CollisionField"/> (an entity that joins the tick of its birth, before the engine integrated it).</summary>
+     internal Action? CollisionFieldFallbackReadForTests;
+ 
+@@ -2974,9 +2977,16 @@
+         }
+ 
+         TickTraceForTests?.Invoke("physics");
++        PhysicsPassId++;
++        for (var i = 0; i < _tickEntities.Count; i++)
++        {
++            _tickEntities[i].TickPhysicsOnce();
++        }
++
++        // PROTOTYPE M3: the end pass of the binary (0x800384A4), after every move.
+         for (var i = 0; i < _tickEntities.Count; i++)
+         {
+-            _tickEntities[i].TickPhysics();
++            _tickEntities[i].EndPhysicsTick();
+         }
+ 
+         TickTraceForTests?.Invoke("activeEffects");
+--- a/Alundra/Entities/EntityScriptProxy.cs
++++ b/Alundra/Entities/EntityScriptProxy.cs
+@@ -794,6 +794,14 @@
+         if ((Controller != null || stepsWithoutController) && !immediateAtSpawn && !(HasLogicalZ && Controller != null))
+         {
+             ApplyVerticalForceLaw();
++
++            // PROTOTYPE M6 (path A): a passenger other than the hero takes the force of the tick of its carrier (0x80037364), unless it has an impulse.
++            if (!IsPlayer && IsZForceApplied == 0 && RidingEntity?.GameplayProxy is EntityScriptProxy carrierOfPassenger)
++            {
++                var carried = carrierOfPassenger.CarrierTickForceZ();
++                ForceZ = carried;
++                FinalForceZ = carried;
++            }
+         }
+ 
+         // E19.d2c2 F2b: the force of this tick as the binary's passes read it, before the landing below resets it (see TickForceZ). The hero carried by this entity copies it.
+@@ -880,8 +888,13 @@
+                 : (PosZ + ModZ) + FinalForceZ;
+ 
+         var supportTopZ = 0;
++        EntityScriptProxy? supportEntityProto = null;
+         var found = eligible
+-            && EntitySupport.TryFindSupport(this, collidables, platformTopZSeed, out _, out supportTopZ);
++            && EntitySupport.TryFindSupport(this, collidables, platformTopZSeed, out supportEntityProto, out supportTopZ);
++        if (found && supportEntityProto != null && EnsureMovedThisPass(supportEntityProto)) // PROTOTYPE M2 (path A)
++        {
++            found = EntitySupport.TryFindSupport(this, collidables, platformTopZSeed, out _, out supportTopZ);
++        }
+         if (found)
+         {
+             WasEntitySupportedLastTick = true;
+@@ -1015,7 +1028,30 @@
+                         // CharacterControllerComponent.UpdateGround from re-pinning a climbing NPC to
+                         // ground every render frame - see this method's own tail doc (E4.g superseded the
+                         // former RisingVelocitySignal workaround this comment used to describe).
+-                        MoveVerticalAndPullPosition(FinalForceZ / 65536f, wasSupportedEnteringThisTick);
++                        // PROTOTYPE (D5b, the ceilings of the risers): a rise stops under the collidable above it, after that collidable has moved first when it had not moved in this pass.
++                        var rise = FinalForceZ;
++                        if (rise > 0 && eligible)
++                        {
++                            while (EntitySupport.TryFindCeiling(this, collidables, rise, out var ceilingPosZ, out var ceilingEntity))
++                            {
++                                if (ceilingEntity != null && EnsureMovedThisPass(ceilingEntity))
++                                {
++                                    continue;
++                                }
++
++                                rise = ceilingPosZ - PosZ;
++                                CollidedWithEntityZ = 1;
++                                if ((Flags & EntityFlags.Gravity) != 0)
++                                {
++                                    ForceZ = 0;
++                                    FinalForceZ = 0;
++                                }
++
++                                break;
++                            }
++                        }
++
++                        MoveVerticalAndPullPosition(rise / 65536f, wasSupportedEnteringThisTick);
+                         IsOnGround = 0;
+                     }
+                 }
+@@ -1050,6 +1086,25 @@
+     /// bits equal <c>0x8000</c>) on an entity without gravity; without an impulse, an entity with gravity decays its force by <c>MapGravity &lt;&lt; 8</c> and the result is bounded on BOTH sides to
+     /// +-(<c>MapZViscosity</c> &lt;&lt; 8); without gravity and without an impulse the force is left as it is (the flight at constant Z). Writes <see cref="ForceZ"/> and <see cref="FinalForceZ"/> together.
+     /// </summary>
++    /// <summary>PROTOTYPE (D5b M1): the vertical force this entity will have for the CURRENT tick, as <see cref="ApplyVerticalForceLaw"/> will compute it, without writing anything.</summary>
++    internal int PeekTickForceZ()
++    {
++        var gravity = (Flags & EntityFlags.Gravity) != 0;
++        if (IsZForceApplied != 0)
++        {
++            return (IsZForceApplied & 0xFFFF) == 0x8000 && !gravity ? 0 : IsZForceApplied << 8;
++        }
++
++        if (gravity)
++        {
++            var force = ForceZ - (MapGravityRaw << 8);
++            var terminal = MapZViscosityRaw << 8;
++            return force > terminal ? terminal : force < -terminal ? -terminal : force;
++        }
++
++        return ForceZ;
++    }
++
+     internal void ApplyVerticalForceLaw()
+     {
+         var gravity = (Flags & EntityFlags.Gravity) != 0;
+@@ -1599,6 +1654,70 @@
+     /// support the SAME tick. E19.d2b (D-E19-29): only an entity that is Normal or Deactivated moves (the binary's physics list takes the statuses 2 and 3); the support runs for all.</description></item>
+     /// </list>
+     /// </summary>
++    /// <summary>PROTOTYPE (D5b M6): the force of the tick this entity gives its passengers: the one it used when it already moved in this pass, else the one its law will give.</summary>
++    internal int CarrierTickForceZ(int depth = 0)
++    {
++        var pass = ScriptHost?.PhysicsPassId ?? 0;
++        if (pass != 0 && PhysicsDoneInPass == pass)
++        {
++            return TickForceZ;
++        }
++
++        // A carrier that is itself carried (a pile) gives what it receives (0x80037388: the recursion on its own carrier comes first), unless it has an impulse.
++        if (!IsPlayer && IsZForceApplied == 0 && depth < 8 && RidingEntity?.GameplayProxy is EntityScriptProxy up)
++        {
++            return up.CarrierTickForceZ(depth + 1);
++        }
++
++        return PeekTickForceZ();
++    }
++
++    /// <summary>PROTOTYPE (D5b M2): the pass in which this entity's physics last ran.</summary>
++    internal int PhysicsDoneInPass = -1;
++
++    /// <summary>PROTOTYPE (D5b M2): <see cref="TickPhysics"/> at most once per physics pass of the world.</summary>
++    internal void TickPhysicsOnce()
++    {
++        var pass = ScriptHost?.PhysicsPassId ?? 0;
++        if (pass != 0)
++        {
++            if (PhysicsDoneInPass == pass)
++            {
++                return;
++            }
++
++            PhysicsDoneInPass = pass;
++        }
++
++        TickPhysics();
++    }
++
++    /// <summary>PROTOTYPE (D5b M2): the binary's "move the target first": runs the physics of <paramref name="target"/> now when it has not run in this pass. Returns true when it ran.</summary>
++    internal bool EnsureMovedThisPass(EntityScriptProxy target)
++    {
++        var pass = ScriptHost?.PhysicsPassId ?? 0;
++        if (pass == 0 || ReferenceEquals(target, this) || target.PhysicsDoneInPass == pass || !target.TookPartInFrame)
++        {
++            return false;
++        }
++
++        target.TickPhysicsOnce();
++        return true;
++    }
++
++    /// <summary>PROTOTYPE (D5b M3): the end pass of the binary (0x80038064, after every move): IsOnGround of the hero held by the tick.</summary>
++    internal void EndPhysicsTick()
++    {
++        if (IsPlayer && ZHeldByTick && (ScriptHost?.DrivesEntityTicks ?? false))
++        {
++            IsOnGround = PosZ + ModZ <= ComputeFloorHeight(ComputeTerrainHeight()) ? 1 : 0;
++        }
++        else if (!IsPlayer && RidingEntity != null && Controller != null && !HasLogicalZ && (ScriptHost?.DrivesEntityTicks ?? false)) // PROTOTYPE M3 for the passengers of path A
++        {
++            IsOnGround = PosZ + ModZ <= ComputeFloorHeight(ComputeTerrainHeight()) ? 1 : 0;
++        }
++    }
++
+     internal void TickPhysics()
+     {
+         if (ScriptHost == null)
+--- a/Alundra/Physics/ScriptedMotion.cs
++++ b/Alundra/Physics/ScriptedMotion.cs
+@@ -224,7 +224,7 @@
+ 
+         // R6: after each tick of the state, IsOnGround is derived from the position after the XY step, not pulled from the engine: PosZ <= the floor (the binary's
+         // !(FloorHeight < PosZ), 0x800380F8, without its +1). E19.d2c2 S3: the floor is the higher of the terrain and the top of an entity under the box.
+-        if (entity.ZHeldByTick)
++        if (entity.ZHeldByTick && !(entity.IsPlayer && (entity.ScriptHost?.DrivesEntityTicks ?? false))) // PROTOTYPE M3: the hero of a driven world gets it at the end pass.
+         {
+             entity.IsOnGround = entity.PosZ + entity.ModZ <= entity.ComputeFloorHeight(entity.ComputeTerrainHeight()) ? 1 : 0;
+         }
+@@ -248,6 +248,24 @@
+     /// displacement of the controller (never a teleport: X and Y keep their fraction).</description></item>
+     /// </list>
+     /// </summary>
++    /// <summary>PROTOTYPE (D5b): the hero's ceiling search with "move the target first".</summary>
++    private static bool HeroCeilingMovingFirst(EntityScriptProxy hero, int force, out int ceilingPosZ)
++    {
++        var collidables = hero.ScriptHost?.Collidables ?? Array.Empty<EntityScriptProxy>();
++        while (EntitySupport.TryFindCeiling(hero, collidables, force, out ceilingPosZ, out var ceilingEntity))
++        {
++            if (ceilingEntity != null && hero.EnsureMovedThisPass(ceilingEntity))
++            {
++                continue;
++            }
++
++            return true;
++        }
++
++        ceilingPosZ = 0;
++        return false;
++    }
++
+     private static bool RunHeroVerticalTick(EntityScriptProxy hero)
+     {
+         var impulse = hero.IsZForceApplied != 0;
+@@ -269,6 +287,12 @@
+         // E19.d2c2 F3: the head-of-frame pull held the hero on the flush top of an entity the engine does not see: the state is entered at rest on it (the same entry as a
+         // fall, ForceZ 0, but the hero is on the ground: IsOnGround 1 was given by the pull).
+         var restOnEntity = !hero.HeroAirborne && !impulse && !hero.HeroFlyMarked && hero.HeadPullFlushOnEntity && (hero.Flags & EntityFlags.Gravity) != 0;
++        // PROTOTYPE (entry rule, the dock): a hero carried by a carrier whose force of the tick is not 0 enters the state held by the tick whatever the engine says of the ground under him.
++        if (!restOnEntity && !hero.HeroAirborne && !impulse && !hero.HeroFlyMarked && (hero.Flags & EntityFlags.Gravity) != 0
++            && hero.RidingEntity?.GameplayProxy is EntityScriptProxy movingCarrier && movingCarrier.CarrierTickForceZ() != 0)
++        {
++            restOnEntity = true;
++        }
+         hero.HeadPullFlushOnEntity = false;
+ 
+         if (!hero.HeroAirborne)
+@@ -316,8 +340,9 @@
+         // gives -(Gravity << 8) and the hero lands on it at every tick, while ForceZ (zeroed by the landing, as in the binary) stays the carrier's.
+         if (!impulse && hero.RidingEntity?.GameplayProxy is EntityScriptProxy carrier)
+         {
+-            hero.ForceZ = carrier.ForceZ;
+-            hero.FinalForceZ = carrier.TickForceZ;
++            var peeked = carrier.CarrierTickForceZ(); // PROTOTYPE M1 (recursive: a pile)
++            hero.ForceZ = peeked;
++            hero.FinalForceZ = peeked;
+         }
+         else
+         {
+@@ -334,10 +359,20 @@
+         if (tickForce <= 0 && hero.ScriptHost != null && EntitySupport.IsEligibleSubject(hero))
+         {
+             var seed = Math.Max(hero.PosZ + hero.ModZ + tickForce, terrain + 1);
+-            if (EntitySupport.TryFindSupport(hero, hero.ScriptHost.Collidables, seed, out _, out var supportTopZ))
++            if (EntitySupport.TryFindSupport(hero, hero.ScriptHost.Collidables, seed, out var supportEntity, out var supportTopZ))
+             {
+-                landingHeight = supportTopZ;
+-                onEntity = true;
++                // PROTOTYPE M2: a target that has not moved in this pass moves first, then the search is redone against its new top.
++                var stillFound = true;
++                if (supportEntity != null && hero.EnsureMovedThisPass(supportEntity))
++                {
++                    stillFound = EntitySupport.TryFindSupport(hero, hero.ScriptHost.Collidables, seed, out _, out supportTopZ);
++                }
++
++                if (stillFound)
++                {
++                    landingHeight = supportTopZ;
++                    onEntity = true;
++                }
+             }
+         }
+ 
+@@ -357,7 +392,7 @@
+             // support is the terrain again.
+             landed = !onEntity;
+         }
+-        else if (tickForce > 0 && EntitySupport.TryFindCeiling(hero, hero.ScriptHost?.Collidables ?? Array.Empty<EntityScriptProxy>(), tickForce, out var ceilingPosZ))
++        else if (tickForce > 0 && HeroCeilingMovingFirst(hero, tickForce, out var ceilingPosZ))
+         {
+             // E19.h3 (H3-R2, binary 0x80036D94): a rise stops under the bottom of a collidable above (or at the absolute ceiling of 1920 px): contact, ForceZ 0 with gravity.
+             hero.PosZ = ceilingPosZ;
+@@ -473,6 +508,14 @@
+         // The force of the tick. Without gravity and without an impulse the law leaves the force as it is (the flight at constant Z), so the force of the tick starts from it.
+         entity.FinalForceZ = entity.ForceZ;
+         entity.ApplyVerticalForceLaw();
++        // PROTOTYPE path B: a passenger takes the force of the tick of its carrier (0x80037364), unless it has an impulse.
++        if (entity.IsZForceApplied == 0 && entity.RidingEntity?.GameplayProxy is EntityScriptProxy carrierB)
++        {
++            var carriedB = carrierB.CarrierTickForceZ();
++            entity.ForceZ = carriedB;
++            entity.FinalForceZ = carriedB;
++        }
++
+         entity.TickForceZ = entity.FinalForceZ;
+ 
+         var tickForce = entity.FinalForceZ;
+@@ -484,9 +527,18 @@
+         if (tickForce <= 0 && entity.ScriptHost != null && EntitySupport.IsEligibleSubject(entity))
+         {
+             var seed = Math.Max(entity.PosZ + entity.ModZ + tickForce, terrain + 1);
+-            if (EntitySupport.TryFindSupport(entity, entity.ScriptHost.Collidables, seed, out _, out var supportTopZ))
++            if (EntitySupport.TryFindSupport(entity, entity.ScriptHost.Collidables, seed, out var supportEntityB, out var supportTopZ))
+             {
+-                landingHeight = supportTopZ;
++                var stillFoundB = true;
++                if (supportEntityB != null && entity.EnsureMovedThisPass(supportEntityB))
++                {
++                    stillFoundB = EntitySupport.TryFindSupport(entity, entity.ScriptHost.Collidables, seed, out _, out supportTopZ);
++                }
++
++                if (stillFoundB)
++                {
++                    landingHeight = supportTopZ;
++                }
+             }
+         }
+ 
+@@ -501,7 +553,7 @@
+ 
+             entity.CollidedWithEntityZ = 1;
+         }
+-        else if (tickForce > 0 && EntitySupport.TryFindCeiling(entity, Array.Empty<EntityScriptProxy>(), tickForce, out var ceilingPosZ))
++        else if (tickForce > 0 && HeroCeilingMovingFirst(entity, tickForce, out var ceilingPosZ))
+         {
+             entity.PosZ = ceilingPosZ;
+             if (gravity)
+@@ -674,10 +726,16 @@
+         entity.FinalForceZ = entity.ForceZ;
+ 
+         // E19.d2c2 S4 (the binary, 0x80037364): the hero carried by an entity adds the displacement that entity realized at its last tick to its own XY step.
+-        if (entity.IsPlayer && entity.RidingEntity?.GameplayProxy is EntityScriptProxy carrier)
++        if (entity.RidingEntity?.GameplayProxy is EntityScriptProxy carrier)
+         {
+-            entity.FinalForceX += carrier.LastTickDeltaX;
+-            entity.FinalForceY += carrier.LastTickDeltaY;
++            // PROTOTYPE M5/M6: the planned adjusted force of every carrier of the chain, once each (the pile is counted once).
++            var depth = 0;
++            for (var up = carrier; up != null && depth < 8; up = up.RidingEntity?.GameplayProxy as EntityScriptProxy, depth++)
++            {
++                PeekAdjustedForce(up, out var plannedX, out var plannedY);
++                entity.FinalForceX += plannedX;
++                entity.FinalForceY += plannedY;
++            }
+         }
+ 
+         // E20.e0k3 (D-E0K-7): an entity marked HasLogicalZ has its step bounded to the grid of the map BEFORE the mover, as the forces pass of the binary (0x800366FC-0x800367E0).
+@@ -727,6 +785,41 @@
+         entity.TileZ = entity.PosZ >> 20;
+     }
+ 
++    /// <summary>PROTOTYPE M5: AdjustedForceX/Y the entity will have at this tick (the target/step caches of RunOneKinematicTick, IncrementForce), without writing anything. Done: the entity already ran its forces in this pass.</summary>
++    internal static void PeekAdjustedForce(EntityScriptProxy entity, out int adjustedX, out int adjustedY)
++    {
++        var pass = entity.ScriptHost?.PhysicsPassId ?? 0;
++        if (pass != 0 && entity.PhysicsDoneInPass == pass)
++        {
++            adjustedX = entity.AdjustedForceX;
++            adjustedY = entity.AdjustedForceY;
++            return;
++        }
++
++        var animId = entity.JoinsBirthTick && entity.CurrentAnimationId == ~0u ? entity.TargetAnimationId : entity.CurrentAnimationId;
++        AnimSetEntry animSet = default;
++        var hasAnimSet = entity.AnimSetsByAnim != null && entity.AnimSetsByAnim.TryGetValue((int)animId, out animSet);
++        var speed = hasAnimSet ? animSet.Speed : 0;
++        var acceleration = (hasAnimSet ? animSet.Acceleration : 0) & 0xf;
++        var targetX = entity.TargetForceX;
++        var targetY = entity.TargetForceY;
++        var stepX = entity.ForceStepX;
++        var stepY = entity.ForceStepY;
++        if (entity.Speed != speed || entity.TargetDirection != entity.CurrentDirection || entity.Acceleration != acceleration)
++        {
++            var dirIndex = (int)entity.TargetDirection;
++            var offsetX = dirIndex >= 0 && dirIndex < AnimationTables.OffsetXList.Length ? AnimationTables.OffsetXList[dirIndex] : (short)0;
++            var offsetY = dirIndex >= 0 && dirIndex < AnimationTables.OffsetYList.Length ? AnimationTables.OffsetYList[dirIndex] : (short)0;
++            targetX = offsetX * speed;
++            targetY = offsetY * speed;
++            stepX = Math.Abs(targetX - entity.ForceX) >> acceleration;
++            stepY = Math.Abs(targetY - entity.ForceY) >> acceleration;
++        }
++
++        adjustedX = IncrementForce(entity.ForceX, targetX, stepX);
++        adjustedY = IncrementForce(entity.ForceY, targetY, stepY);
++    }
++
+     /// <summary>The result of <see cref="ClampStepToMapEdge"/>: the step to take on each axis and whether an edge bounded it.</summary>
+     internal readonly record struct MapEdgeClamp(int StepX, int StepY, bool Adjusted);
+ 
+--- a/Alundra/Physics/EntitySupport.cs
++++ b/Alundra/Physics/EntitySupport.cs
+@@ -199,7 +199,13 @@
+     /// </summary>
+     internal static bool TryFindCeiling(
+         EntityScriptProxy entity, IReadOnlyList<EntityScriptProxy> collidables, int force, out int newPosZ)
++        => TryFindCeiling(entity, collidables, force, out newPosZ, out _);
++
++    /// <summary>PROTOTYPE (D5b): the same search, also giving the collidable that lowered the target (null for the absolute ceiling).</summary>
++    internal static bool TryFindCeiling(
++        EntityScriptProxy entity, IReadOnlyList<EntityScriptProxy> collidables, int force, out int newPosZ, out EntityScriptProxy? ceilingEntity)
+     {
++        ceilingEntity = null;
+         var top = entity.PosZ + entity.ModZ + entity.Depth;
+         var targetTop = top + force;
+ 
+@@ -252,6 +258,7 @@
+ 
+             targetTop = candidateModZ - 1;
+             contact = true;
++            ceilingEntity = candidate;
+         }
+ 
+         if (contact)
+--- a/Alundra.Tests/Support/ContactHost.cs
++++ b/Alundra.Tests/Support/ContactHost.cs
+@@ -106,5 +106,25 @@
+     }
+ 
+     /// <summary>Rebuilds <see cref="Collidables"/> (the end of the frame of the world).</summary>
+-    public void Rebuild() => EntitySupport.BuildCollidables(All, Collidables);
++    public void Rebuild()
++    {
++        EntitySupport.BuildCollidables(All, Collidables);
++        // PROTOTYPE: as WorldProxy.RefreshUpdateProxiesAndCollidables (the lists step): every passenger gets its RidingEntity.
++        foreach (var proxy in All)
++        {
++            if (!proxy.IsPlayer)
++            {
++                proxy.RidingEntity = null;
++            }
++        }
++
++        // The hero keeps what its own tick head computed (UpdateRidingEntityOfHero): the tests observe it at the end of the frame.
++        var hero = All.Find(proxy => proxy.IsPlayer);
++        var heroRiding = hero?.RidingEntity;
++        EntitySupport.UpdateRidingEntities(Collidables);
++        if (hero != null)
++        {
++            hero.RidingEntity = heroRiding;
++        }
++    }
+ }

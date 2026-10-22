@@ -1,0 +1,548 @@
+MAP 83 Lizardman's Lair / Lizardman's Lair-83 codes 1544 size 52 x 60
+CASES 158 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 10 11 12 16 17 19 1A 1B 1C 1D 1E 1F 20 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30 31 32 33 34 35 36 37 38 39 3A 3B 3E 3F 40 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D 4E 4F 50 51 52 53 54 55 57 58 59 5A 5B 5C 5D 5E 62 63 64 65 67 68 69 6E 6F 70 71 73 74 75 78 79 7B 7C 7D 7E 7F 80 81 82 83 84 85 86 87 89 8A 8B 8C 8D 8E 8F 90 91 92 93 94 95 98 99 9A 9B 9C 9F A0 A1 A2 A3 A4 A5 A6 A7 A8 AB AC AD AF B0 B1 B8 BA BC BD BE BF C0 C1 C3 C4
+ table A {12: 432, 25: 436, 57: 440, 72: 444}
+ table B {1: 452, 2: 472, 3: 548, 4: 624, 5: 700, 6: 768}
+ table C {1: 812, 12: 832, 13: 912, 14: 992, 15: 1072, 16: 1152, 22: 1232, 57: 1268, 58: 1332, 59: 1396, 63: 1460, 73: 1484}
+ table D {12: 1504, 13: 1508, 14: 1512, 15: 1516, 16: 1520, 24: 1524, 57: 1532, 58: 1536, 59: 1540}
+ table E {}
+ table F {}
+  ;; entry A[12]
+  432: IMPL 0x1A Set anim                                 [0]
+  434: IMPL 0x2A Set EntityFlags.ClassA                   []
+  435: IMPL 0xFF End script                               []
+  ;; entry A[25]
+  436: IMPL 0x1A Set anim                                 [1]
+  438: IMPL 0xFF End script                               []
+  439: IMPL 0x00 Break                                    []
+  ;; entry A[57]
+  440: IMPL 0x1A Set anim                                 [1]
+  442: IMPL 0x2A Set EntityFlags.ClassA                   []
+  443: IMPL 0xFF End script                               []
+  ;; entry A[72]
+  444: IMPL 0xAC Set entity shadow size                   [128, 3, 3]
+  448: IMPL 0x00 Break                                    []
+  449: IMPL 0x00 Break                                    []
+  450: IMPL 0x00 Break                                    []
+  451: IMPL 0xFF End script                               []
+  ;; entry B[1]
+  452: IMPL 0x02 Goto                                     [19, 0] -> 471
+  455: IMPL 0x00 Break                                    []
+  456: IMPL 0x00 Break                                    []
+  457: IMPL 0x25 Wait until collided with entity Z or on ground []
+  458: IMPL 0x00 Break                                    []
+  459: IMPL 0xBD Play sound 2                             [49, 0]
+  462: ---- 0x96 Restore HP                               [128, 255]
+  465: IMPL 0x0D Dialog                                   [12, 0]
+  468: IMPL 0x39 Wait for dialog                          []
+  469: IMPL 0x00 Break                                    []
+  470: IMPL 0x00 Break                                    []
+  471: IMPL 0xFF End script                               []
+  ;; entry B[2]
+  472: IMPL 0x00 Break                                    []
+  473: IMPL 0x3B Check player in area                     [18, 18, 16, 16, 1, 1]
+  480: IMPL 0x4B If false restart                         []
+  481: IMPL 0x70 Is above ground                          []
+  482: IMPL 0x4B If false restart                         []
+  483: IMPL 0xBD Play sound 2                             [135, 0]
+  486: IMPL 0x59 Set entity anim                          [25, 2]
+  489: IMPL 0x59 Set entity anim                          [26, 2]
+  492: IMPL 0x59 Set entity anim                          [27, 2]
+  495: IMPL 0x59 Set entity anim                          [28, 2]
+  498: IMPL 0x37 Wait                                     [48]
+  500: IMPL 0x00 Break                                    []
+  501: IMPL 0x8B Spawn entity next to entity              [25, 37, 0, 0, 16, 0, 0, 0]
+  510: IMPL 0x8B Spawn entity next to entity              [26, 38, 0, 0, 16, 0, 0, 0]
+  519: IMPL 0x8B Spawn entity next to entity              [27, 39, 0, 0, 16, 0, 0, 0]
+  528: IMPL 0x8B Spawn entity next to entity              [28, 40, 0, 0, 16, 0, 0, 0]
+  537: IMPL 0x2E Destroy entity                           [25]
+  539: IMPL 0x2E Destroy entity                           [26]
+  541: IMPL 0x2E Destroy entity                           [27]
+  543: IMPL 0x2E Destroy entity                           [28]
+  545: IMPL 0xFF End script                               []
+  546: IMPL 0x00 Break                                    []
+  547: IMPL 0x00 Break                                    []
+  ;; entry B[3]
+  548: IMPL 0x00 Break                                    []
+  549: IMPL 0x3B Check player in area                     [25, 25, 19, 19, 1, 1]
+  556: IMPL 0x4B If false restart                         []
+  557: IMPL 0x70 Is above ground                          []
+  558: IMPL 0x4B If false restart                         []
+  559: IMPL 0xBD Play sound 2                             [135, 0]
+  562: IMPL 0x59 Set entity anim                          [29, 2]
+  565: IMPL 0x59 Set entity anim                          [30, 2]
+  568: IMPL 0x59 Set entity anim                          [31, 2]
+  571: IMPL 0x59 Set entity anim                          [32, 2]
+  574: IMPL 0x37 Wait                                     [48]
+  576: IMPL 0x00 Break                                    []
+  577: IMPL 0x8B Spawn entity next to entity              [29, 41, 0, 0, 16, 0, 0, 0]
+  586: IMPL 0x8B Spawn entity next to entity              [30, 42, 0, 0, 16, 0, 0, 0]
+  595: IMPL 0x8B Spawn entity next to entity              [31, 43, 0, 0, 16, 0, 0, 0]
+  604: IMPL 0x8B Spawn entity next to entity              [32, 44, 0, 0, 16, 0, 0, 0]
+  613: IMPL 0x2E Destroy entity                           [29]
+  615: IMPL 0x2E Destroy entity                           [30]
+  617: IMPL 0x2E Destroy entity                           [31]
+  619: IMPL 0x2E Destroy entity                           [32]
+  621: IMPL 0xFF End script                               []
+  622: IMPL 0x00 Break                                    []
+  623: IMPL 0x00 Break                                    []
+  ;; entry B[4]
+  624: IMPL 0x00 Break                                    []
+  625: IMPL 0x3B Check player in area                     [20, 20, 22, 22, 1, 1]
+  632: IMPL 0x4B If false restart                         []
+  633: IMPL 0x70 Is above ground                          []
+  634: IMPL 0x4B If false restart                         []
+  635: IMPL 0xBD Play sound 2                             [135, 0]
+  638: IMPL 0x59 Set entity anim                          [33, 2]
+  641: IMPL 0x59 Set entity anim                          [34, 2]
+  644: IMPL 0x59 Set entity anim                          [35, 2]
+  647: IMPL 0x59 Set entity anim                          [36, 2]
+  650: IMPL 0x37 Wait                                     [48]
+  652: IMPL 0x00 Break                                    []
+  653: IMPL 0x8B Spawn entity next to entity              [33, 45, 0, 0, 16, 0, 0, 0]
+  662: IMPL 0x8B Spawn entity next to entity              [34, 46, 0, 0, 16, 0, 0, 0]
+  671: IMPL 0x8B Spawn entity next to entity              [35, 47, 0, 0, 16, 0, 0, 0]
+  680: IMPL 0x8B Spawn entity next to entity              [36, 48, 0, 0, 16, 0, 0, 0]
+  689: IMPL 0x2E Destroy entity                           [33]
+  691: IMPL 0x2E Destroy entity                           [34]
+  693: IMPL 0x2E Destroy entity                           [35]
+  695: IMPL 0x2E Destroy entity                           [36]
+  697: IMPL 0xFF End script                               []
+  698: IMPL 0x00 Break                                    []
+  699: IMPL 0x00 Break                                    []
+  ;; entry B[5]
+  700: IMPL 0x30 If flag on                               [255, 2, 59, 0] G767 -> 759
+  705: IMPL 0x85 Set map tiles                            [13, 55, 2, 3, 32, 46]
+  712: IMPL 0x00 Break                                    []
+  713: IMPL 0x00 Break                                    []
+  714: IMPL 0x2C Check no entity by function id           [57]
+  716: IMPL 0x04 If false goto                            [253, 255] -> 713
+  719: IMPL 0x2C Check no entity by function id           [58]
+  721: IMPL 0x04 If false goto                            [248, 255] -> 713
+  724: IMPL 0x2C Check no entity by function id           [59]
+  726: IMPL 0x04 If false goto                            [243, 255] -> 713
+  729: IMPL 0x2C Check no entity by function id           [60]
+  731: IMPL 0x04 If false goto                            [238, 255] -> 713
+  734: IMPL 0x2C Check no entity by function id           [61]
+  736: IMPL 0x04 If false goto                            [233, 255] -> 713
+  739: IMPL 0x2C Check no entity by function id           [62]
+  741: IMPL 0x04 If false goto                            [228, 255] -> 713
+  744: IMPL 0x00 Break                                    []
+  745: IMPL 0x05 Flag on                                  [255, 2] G767
+  748: IMPL 0x37 Wait                                     [20]
+  750: IMPL 0xBD Play sound 2                             [2, 0]
+  753: IMPL 0x37 Wait                                     [30]
+  755: IMPL 0xBD Play sound 2                             [45, 0]
+  758: IMPL 0x00 Break                                    []
+  759: IMPL 0x85 Set map tiles                            [11, 55, 2, 3, 32, 46]
+  766: IMPL 0xFF End script                               []
+  767: IMPL 0x00 Break                                    []
+  ;; entry B[6]
+  768: IMPL 0x30 If flag on                               [0, 3, 28, 0] G768 -> 796
+  773: IMPL 0x85 Set map tiles                            [5, 6, 2, 2, 4, 17]
+  780: IMPL 0x85 Set map tiles                            [5, 6, 2, 2, 2, 19]
+  787: IMPL 0x00 Break                                    []
+  788: IMPL 0x00 Break                                    []
+  789: IMPL 0x36 Wait until flag on                       [0, 3] G768
+  792: IMPL 0xBD Play sound 2                             [2, 0]
+  795: IMPL 0x00 Break                                    []
+  796: IMPL 0x85 Set map tiles                            [3, 6, 2, 2, 4, 17]
+  803: IMPL 0x85 Set map tiles                            [3, 6, 2, 2, 2, 19]
+  810: IMPL 0xFF End script                               []
+  811: IMPL 0x00 Break                                    []
+  ;; entry C[1]
+  812: IMPL 0x30 If flag on                               [252, 2, 15, 0] G764 -> 827
+  817: IMPL 0x36 Wait until flag on                       [252, 2] G764
+  820: IMPL 0x1A Set anim                                 [2]
+  822: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+  824: IMPL 0xBD Play sound 2                             [2, 0]
+  827: IMPL 0x1A Set anim                                 [1]
+  829: IMPL 0xFF End script                               []
+  830: IMPL 0x00 Break                                    []
+  831: IMPL 0x00 Break                                    []
+  ;; entry C[12]
+  832: IMPL 0x73 Set loop counter _30                     [4]
+  834: IMPL 0x00 Break                                    []
+  835: IMPL 0x30 If flag on                               [12, 128, 54, 0] T12 -> 889
+  840: IMPL 0x07 Check entity in area                     [17, 23, 51, 5, 14, 0, 10]
+  848: IMPL 0x03 If true goto                             [242, 255] -> 834
+  851: IMPL 0x30 If flag on                               [112, 128, 15, 0] T112 -> 866
+  856: IMPL 0x3B Check player in area                     [29, 33, 4, 8, 0, 10]
+  863: IMPL 0x04 If false goto                            [227, 255] -> 834
+  866: IMPL 0xBD Play sound 2                             [134, 0]
+  869: IMPL 0x1A Set anim                                 [3]
+  871: IMPL 0x37 Wait                                     [48]
+  873: IMPL 0x8B Spawn entity next to entity              [128, 17, 0, 0, 16, 0, 0, 0]
+  882: IMPL 0x05 Flag on                                  [112, 128] T112
+  885: IMPL 0x00 Break                                    []
+  886: IMPL 0x02 Goto                                     [204, 255] -> 834
+  889: IMPL 0x2B Clear EntityFlags.ClassA                 []
+  890: IMPL 0xBD Play sound 2                             [65, 0]
+  893: IMPL 0x37 Wait                                     [15]
+  895: IMPL 0x06 Flag off                                 [12, 128] T12
+  898: IMPL 0x2A Set EntityFlags.ClassA                   []
+  899: IMPL 0x74 Decrement _30 and jump while positive    [191, 255] -> 834
+  902: IMPL 0x1A Set anim                                 [4]
+  904: IMPL 0x37 Wait                                     [30]
+  906: IMPL 0xBD Play sound 2                             [46, 0]
+  909: IMPL 0x19 Deactivate entity                        []
+  910: IMPL 0xFF End script                               []
+  911: IMPL 0x00 Break                                    []
+  ;; entry C[13]
+  912: IMPL 0x73 Set loop counter _30                     [4]
+  914: IMPL 0x00 Break                                    []
+  915: IMPL 0x30 If flag on                               [13, 128, 54, 0] T13 -> 969
+  920: IMPL 0x07 Check entity in area                     [18, 23, 51, 5, 14, 0, 10]
+  928: IMPL 0x03 If true goto                             [242, 255] -> 914
+  931: IMPL 0x30 If flag on                               [113, 128, 15, 0] T113 -> 946
+  936: IMPL 0x3B Check player in area                     [32, 36, 5, 9, 0, 10]
+  943: IMPL 0x04 If false goto                            [227, 255] -> 914
+  946: IMPL 0xBD Play sound 2                             [134, 0]
+  949: IMPL 0x1A Set anim                                 [3]
+  951: IMPL 0x37 Wait                                     [48]
+  953: IMPL 0x8B Spawn entity next to entity              [128, 18, 0, 0, 16, 0, 0, 0]
+  962: IMPL 0x05 Flag on                                  [113, 128] T113
+  965: IMPL 0x00 Break                                    []
+  966: IMPL 0x02 Goto                                     [204, 255] -> 914
+  969: IMPL 0x2B Clear EntityFlags.ClassA                 []
+  970: IMPL 0xBD Play sound 2                             [65, 0]
+  973: IMPL 0x37 Wait                                     [15]
+  975: IMPL 0x06 Flag off                                 [13, 128] T13
+  978: IMPL 0x2A Set EntityFlags.ClassA                   []
+  979: IMPL 0x74 Decrement _30 and jump while positive    [191, 255] -> 914
+  982: IMPL 0x1A Set anim                                 [4]
+  984: IMPL 0x37 Wait                                     [30]
+  986: IMPL 0xBD Play sound 2                             [46, 0]
+  989: IMPL 0x19 Deactivate entity                        []
+  990: IMPL 0xFF End script                               []
+  991: IMPL 0x00 Break                                    []
+  ;; entry C[14]
+  992: IMPL 0x73 Set loop counter _30                     [4]
+  994: IMPL 0x00 Break                                    []
+  995: IMPL 0x30 If flag on                               [14, 128, 54, 0] T14 -> 1049
+ 1000: IMPL 0x07 Check entity in area                     [19, 23, 51, 5, 14, 0, 10]
+ 1008: IMPL 0x03 If true goto                             [242, 255] -> 994
+ 1011: IMPL 0x30 If flag on                               [114, 128, 15, 0] T114 -> 1026
+ 1016: IMPL 0x3B Check player in area                     [37, 41, 6, 10, 0, 10]
+ 1023: IMPL 0x04 If false goto                            [227, 255] -> 994
+ 1026: IMPL 0xBD Play sound 2                             [134, 0]
+ 1029: IMPL 0x1A Set anim                                 [3]
+ 1031: IMPL 0x37 Wait                                     [48]
+ 1033: IMPL 0x8B Spawn entity next to entity              [128, 19, 0, 0, 16, 0, 0, 0]
+ 1042: IMPL 0x05 Flag on                                  [114, 128] T114
+ 1045: IMPL 0x00 Break                                    []
+ 1046: IMPL 0x02 Goto                                     [204, 255] -> 994
+ 1049: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1050: IMPL 0xBD Play sound 2                             [65, 0]
+ 1053: IMPL 0x37 Wait                                     [15]
+ 1055: IMPL 0x06 Flag off                                 [14, 128] T14
+ 1058: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1059: IMPL 0x74 Decrement _30 and jump while positive    [191, 255] -> 994
+ 1062: IMPL 0x1A Set anim                                 [4]
+ 1064: IMPL 0x37 Wait                                     [30]
+ 1066: IMPL 0xBD Play sound 2                             [46, 0]
+ 1069: IMPL 0x19 Deactivate entity                        []
+ 1070: IMPL 0xFF End script                               []
+ 1071: IMPL 0x00 Break                                    []
+  ;; entry C[15]
+ 1072: IMPL 0x73 Set loop counter _30                     [4]
+ 1074: IMPL 0x00 Break                                    []
+ 1075: IMPL 0x30 If flag on                               [15, 128, 54, 0] T15 -> 1129
+ 1080: IMPL 0x07 Check entity in area                     [20, 23, 51, 5, 14, 0, 10]
+ 1088: IMPL 0x03 If true goto                             [242, 255] -> 1074
+ 1091: IMPL 0x30 If flag on                               [115, 128, 15, 0] T115 -> 1106
+ 1096: IMPL 0x3B Check player in area                     [41, 45, 5, 9, 0, 10]
+ 1103: IMPL 0x04 If false goto                            [227, 255] -> 1074
+ 1106: IMPL 0xBD Play sound 2                             [134, 0]
+ 1109: IMPL 0x1A Set anim                                 [3]
+ 1111: IMPL 0x37 Wait                                     [48]
+ 1113: IMPL 0x8B Spawn entity next to entity              [128, 20, 0, 0, 16, 0, 0, 0]
+ 1122: IMPL 0x05 Flag on                                  [115, 128] T115
+ 1125: IMPL 0x00 Break                                    []
+ 1126: IMPL 0x02 Goto                                     [204, 255] -> 1074
+ 1129: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1130: IMPL 0xBD Play sound 2                             [65, 0]
+ 1133: IMPL 0x37 Wait                                     [15]
+ 1135: IMPL 0x06 Flag off                                 [15, 128] T15
+ 1138: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1139: IMPL 0x74 Decrement _30 and jump while positive    [191, 255] -> 1074
+ 1142: IMPL 0x1A Set anim                                 [4]
+ 1144: IMPL 0x37 Wait                                     [30]
+ 1146: IMPL 0xBD Play sound 2                             [46, 0]
+ 1149: IMPL 0x19 Deactivate entity                        []
+ 1150: IMPL 0xFF End script                               []
+ 1151: IMPL 0x00 Break                                    []
+  ;; entry C[16]
+ 1152: IMPL 0x73 Set loop counter _30                     [4]
+ 1154: IMPL 0x00 Break                                    []
+ 1155: IMPL 0x30 If flag on                               [16, 128, 54, 0] T16 -> 1209
+ 1160: IMPL 0x07 Check entity in area                     [21, 23, 51, 5, 14, 0, 10]
+ 1168: IMPL 0x03 If true goto                             [242, 255] -> 1154
+ 1171: IMPL 0x30 If flag on                               [116, 128, 15, 0] T116 -> 1186
+ 1176: IMPL 0x3B Check player in area                     [44, 48, 4, 8, 0, 10]
+ 1183: IMPL 0x04 If false goto                            [227, 255] -> 1154
+ 1186: IMPL 0xBD Play sound 2                             [134, 0]
+ 1189: IMPL 0x1A Set anim                                 [3]
+ 1191: IMPL 0x37 Wait                                     [48]
+ 1193: IMPL 0x8B Spawn entity next to entity              [128, 21, 0, 0, 16, 0, 0, 0]
+ 1202: IMPL 0x05 Flag on                                  [116, 128] T116
+ 1205: IMPL 0x00 Break                                    []
+ 1206: IMPL 0x02 Goto                                     [204, 255] -> 1154
+ 1209: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1210: IMPL 0xBD Play sound 2                             [65, 0]
+ 1213: IMPL 0x37 Wait                                     [15]
+ 1215: IMPL 0x06 Flag off                                 [16, 128] T16
+ 1218: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1219: IMPL 0x74 Decrement _30 and jump while positive    [191, 255] -> 1154
+ 1222: IMPL 0x1A Set anim                                 [4]
+ 1224: IMPL 0x37 Wait                                     [30]
+ 1226: IMPL 0xBD Play sound 2                             [46, 0]
+ 1229: IMPL 0x19 Deactivate entity                        []
+ 1230: IMPL 0xFF End script                               []
+ 1231: IMPL 0x00 Break                                    []
+  ;; entry C[22]
+ 1232: IMPL 0x36 Wait until flag on                       [252, 2] G764
+ 1235: IMPL 0x64 Set entities position                    [128, 188, 1, 184, 0, 16, 0]
+ 1243: IMPL 0x1B Fly                                      [0, 1]
+ 1246: IMPL 0x21 Wait Z distance or Z contact             [32, 0]
+ 1249: IMPL 0x1B Fly                                      [0, 0]
+ 1252: IMPL 0x00 Break                                    []
+ 1253: IMPL 0x1B Fly                                      [0, 255]
+ 1256: IMPL 0x21 Wait Z distance or Z contact             [64, 0]
+ 1259: IMPL 0x1B Fly                                      [0, 0]
+ 1262: IMPL 0x00 Break                                    []
+ 1263: IMPL 0x02 Goto                                     [236, 255] -> 1243
+ 1266: IMPL 0xFF End script                               []
+ 1267: IMPL 0x00 Break                                    []
+  ;; entry C[57]
+ 1268: IMPL 0x37 Wait                                     [120]
+ 1270: IMPL 0x73 Set loop counter _30                     [4]
+ 1272: IMPL 0x00 Break                                    []
+ 1273: IMPL 0x30 If flag on                               [57, 128, 37, 0] T57 -> 1310
+ 1278: IMPL 0x07 Check entity in area                     [60, 17, 34, 44, 59, 0, 10]
+ 1286: IMPL 0x03 If true goto                             [242, 255] -> 1272
+ 1289: IMPL 0xBD Play sound 2                             [134, 0]
+ 1292: IMPL 0x1A Set anim                                 [3]
+ 1294: IMPL 0x37 Wait                                     [48]
+ 1296: IMPL 0x8B Spawn entity next to entity              [128, 60, 0, 0, 16, 0, 0, 0]
+ 1305: IMPL 0x00 Break                                    []
+ 1306: IMPL 0x02 Goto                                     [222, 255] -> 1272
+ 1309: IMPL 0x00 Break                                    []
+ 1310: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1311: IMPL 0xBD Play sound 2                             [65, 0]
+ 1314: IMPL 0x37 Wait                                     [15]
+ 1316: IMPL 0x06 Flag off                                 [57, 128] T57
+ 1319: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1320: IMPL 0x74 Decrement _30 and jump while positive    [208, 255] -> 1272
+ 1323: IMPL 0x1A Set anim                                 [4]
+ 1325: IMPL 0x37 Wait                                     [30]
+ 1327: IMPL 0xBD Play sound 2                             [46, 0]
+ 1330: IMPL 0x19 Deactivate entity                        []
+ 1331: IMPL 0xFF End script                               []
+  ;; entry C[58]
+ 1332: IMPL 0x37 Wait                                     [120]
+ 1334: IMPL 0x73 Set loop counter _30                     [4]
+ 1336: IMPL 0x00 Break                                    []
+ 1337: IMPL 0x30 If flag on                               [58, 128, 37, 0] T58 -> 1374
+ 1342: IMPL 0x07 Check entity in area                     [61, 17, 34, 44, 59, 0, 10]
+ 1350: IMPL 0x03 If true goto                             [242, 255] -> 1336
+ 1353: IMPL 0xBD Play sound 2                             [134, 0]
+ 1356: IMPL 0x1A Set anim                                 [3]
+ 1358: IMPL 0x37 Wait                                     [48]
+ 1360: IMPL 0x8B Spawn entity next to entity              [128, 61, 0, 0, 16, 0, 0, 0]
+ 1369: IMPL 0x00 Break                                    []
+ 1370: IMPL 0x02 Goto                                     [222, 255] -> 1336
+ 1373: IMPL 0x00 Break                                    []
+ 1374: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1375: IMPL 0xBD Play sound 2                             [65, 0]
+ 1378: IMPL 0x37 Wait                                     [15]
+ 1380: IMPL 0x06 Flag off                                 [58, 128] T58
+ 1383: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1384: IMPL 0x74 Decrement _30 and jump while positive    [208, 255] -> 1336
+ 1387: IMPL 0x1A Set anim                                 [4]
+ 1389: IMPL 0x37 Wait                                     [30]
+ 1391: IMPL 0xBD Play sound 2                             [46, 0]
+ 1394: IMPL 0x19 Deactivate entity                        []
+ 1395: IMPL 0xFF End script                               []
+  ;; entry C[59]
+ 1396: IMPL 0x37 Wait                                     [120]
+ 1398: IMPL 0x73 Set loop counter _30                     [4]
+ 1400: IMPL 0x00 Break                                    []
+ 1401: IMPL 0x30 If flag on                               [59, 128, 37, 0] T59 -> 1438
+ 1406: IMPL 0x07 Check entity in area                     [62, 17, 34, 44, 59, 0, 10]
+ 1414: IMPL 0x03 If true goto                             [242, 255] -> 1400
+ 1417: IMPL 0xBD Play sound 2                             [134, 0]
+ 1420: IMPL 0x1A Set anim                                 [3]
+ 1422: IMPL 0x37 Wait                                     [48]
+ 1424: IMPL 0x8B Spawn entity next to entity              [128, 62, 0, 0, 16, 0, 0, 0]
+ 1433: IMPL 0x00 Break                                    []
+ 1434: IMPL 0x02 Goto                                     [222, 255] -> 1400
+ 1437: IMPL 0x00 Break                                    []
+ 1438: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1439: IMPL 0xBD Play sound 2                             [65, 0]
+ 1442: IMPL 0x37 Wait                                     [15]
+ 1444: IMPL 0x06 Flag off                                 [59, 128] T59
+ 1447: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1448: IMPL 0x74 Decrement _30 and jump while positive    [208, 255] -> 1400
+ 1451: IMPL 0x1A Set anim                                 [4]
+ 1453: IMPL 0x37 Wait                                     [30]
+ 1455: IMPL 0xBD Play sound 2                             [46, 0]
+ 1458: IMPL 0x19 Deactivate entity                        []
+ 1459: IMPL 0xFF End script                               []
+  ;; entry C[63]
+ 1460: IMPL 0x30 If flag on                               [0, 3, 20, 0] G768 -> 1480
+ 1465: IMPL 0x00 Break                                    []
+ 1466: IMPL 0x3E Is player riding entity                  []
+ 1467: IMPL 0x04 If false goto                            [254, 255] -> 1465
+ 1470: IMPL 0x05 Flag on                                  [0, 3] G768
+ 1473: IMPL 0x1A Set anim                                 [4]
+ 1475: IMPL 0x37 Wait                                     [20]
+ 1477: IMPL 0xBD Play sound 2                             [46, 0]
+ 1480: IMPL 0x1A Set anim                                 [1]
+ 1482: IMPL 0xFF End script                               []
+ 1483: IMPL 0x00 Break                                    []
+  ;; entry C[73]
+ 1484: IMPL 0x5B Turn entity with anim                    [128, 1, 67]
+ 1488: IMPL 0x1F Walk with collision                      [8, 0]
+ 1491: IMPL 0x00 Break                                    []
+ 1492: IMPL 0x5B Turn entity with anim                    [128, 1, 66]
+ 1496: IMPL 0x1F Walk with collision                      [8, 0]
+ 1499: IMPL 0x00 Break                                    []
+ 1500: IMPL 0x49 Restart                                  []
+ 1501: IMPL 0xFF End script                               []
+ 1502: IMPL 0x00 Break                                    []
+ 1503: IMPL 0x00 Break                                    []
+  ;; entry D[12]
+ 1504: IMPL 0x05 Flag on                                  [12, 128] T12
+ 1507: IMPL 0xFF End script                               []
+  ;; entry D[13]
+ 1508: IMPL 0x05 Flag on                                  [13, 128] T13
+ 1511: IMPL 0xFF End script                               []
+  ;; entry D[14]
+ 1512: IMPL 0x05 Flag on                                  [14, 128] T14
+ 1515: IMPL 0xFF End script                               []
+  ;; entry D[15]
+ 1516: IMPL 0x05 Flag on                                  [15, 128] T15
+ 1519: IMPL 0xFF End script                               []
+  ;; entry D[16]
+ 1520: IMPL 0x05 Flag on                                  [16, 128] T16
+ 1523: IMPL 0xFF End script                               []
+  ;; entry D[24]
+ 1524: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1525: IMPL 0x05 Flag on                                  [252, 2] G764
+ 1528: IMPL 0xFF End script                               []
+ 1529: IMPL 0x00 Break                                    []
+ 1530: IMPL 0x00 Break                                    []
+ 1531: IMPL 0x00 Break                                    []
+  ;; entry D[57]
+ 1532: IMPL 0x05 Flag on                                  [57, 128] T57
+ 1535: IMPL 0xFF End script                               []
+  ;; entry D[58]
+ 1536: IMPL 0x05 Flag on                                  [58, 128] T58
+ 1539: IMPL 0xFF End script                               []
+  ;; entry D[59]
+ 1540: IMPL 0x05 Flag on                                  [59, 128] T59
+ 1543: IMPL 0xFF End script                               []
+Records:
+  {'Index': '0', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '96', 'YPos': '78', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '1', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '94', 'YPos': '78', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '2', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '94', 'YPos': '80', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '3', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '94', 'YPos': '82', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '4', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '100', 'YPos': '84', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '5', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '100', 'YPos': '86', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '6', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '100', 'YPos': '88', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '7', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '100', 'YPos': '90', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '8', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '92', 'YPos': '84', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '9', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '92', 'YPos': '86', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '10', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '82', 'YPos': '92', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '11', 'SpriteTableIndex': '30', 'SpriteDirection': '64', 'IsEnabled': '1', 'XPos': '54', 'YPos': '12', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Coffre au trésor'}
+  {'Index': '12', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '62', 'YPos': '12', 'Height': '4', 'EventCodesA_LoadIndex': '140', 'EventCodesC_TickIndex': '140', 'EventCodesD_TouchIndex': '140', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '13', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '68', 'YPos': '14', 'Height': '4', 'EventCodesA_LoadIndex': '140', 'EventCodesC_TickIndex': '141', 'EventCodesD_TouchIndex': '141', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '14', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '78', 'YPos': '16', 'Height': '4', 'EventCodesA_LoadIndex': '140', 'EventCodesC_TickIndex': '142', 'EventCodesD_TouchIndex': '142', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '15', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '86', 'YPos': '14', 'Height': '4', 'EventCodesA_LoadIndex': '140', 'EventCodesC_TickIndex': '143', 'EventCodesD_TouchIndex': '143', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '16', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '92', 'YPos': '12', 'Height': '4', 'EventCodesA_LoadIndex': '140', 'EventCodesC_TickIndex': '144', 'EventCodesD_TouchIndex': '144', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '17', 'SpriteTableIndex': '106', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '62', 'YPos': '8', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (épée) Niv.1'}
+  {'Index': '18', 'SpriteTableIndex': '106', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '68', 'YPos': '8', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (épée) Niv.1'}
+  {'Index': '19', 'SpriteTableIndex': '106', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '78', 'YPos': '8', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (épée) Niv.1'}
+  {'Index': '20', 'SpriteTableIndex': '106', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '86', 'YPos': '8', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (épée) Niv.1'}
+  {'Index': '21', 'SpriteTableIndex': '106', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '92', 'YPos': '8', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (épée) Niv.1'}
+  {'Index': '22', 'SpriteTableIndex': '57', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '37', 'YPos': '0', 'Height': '3', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '150', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (grande)'}
+  {'Index': '23', 'SpriteTableIndex': '30', 'SpriteDirection': '64', 'IsEnabled': '1', 'XPos': '68', 'YPos': '56', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Coffre au trésor'}
+  {'Index': '24', 'SpriteTableIndex': '49', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '70', 'YPos': '62', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '129', 'EventCodesD_TouchIndex': '152', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (levier)'}
+  {'Index': '25', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '36', 'YPos': '28', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '26', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '32', 'YPos': '32', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '27', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '40', 'YPos': '32', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '28', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '36', 'YPos': '36', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '29', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '50', 'YPos': '34', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '30', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '46', 'YPos': '38', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '31', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '54', 'YPos': '38', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '32', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '50', 'YPos': '42', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '33', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '40', 'YPos': '40', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '34', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '36', 'YPos': '44', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '35', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '44', 'YPos': '44', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '36', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '40', 'YPos': '48', 'Height': '4', 'EventCodesA_LoadIndex': '153', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '37', 'SpriteTableIndex': '106', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '16', 'YPos': '14', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (épée) Niv.1'}
+  {'Index': '38', 'SpriteTableIndex': '106', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '18', 'YPos': '14', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (épée) Niv.1'}
+  {'Index': '39', 'SpriteTableIndex': '106', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '20', 'YPos': '14', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (épée) Niv.1'}
+  {'Index': '40', 'SpriteTableIndex': '106', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '22', 'YPos': '14', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (épée) Niv.1'}
+  {'Index': '41', 'SpriteTableIndex': '109', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '16', 'YPos': '18', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (lance) Niv.1'}
+  {'Index': '42', 'SpriteTableIndex': '109', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '18', 'YPos': '18', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (lance) Niv.1'}
+  {'Index': '43', 'SpriteTableIndex': '109', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '20', 'YPos': '18', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (lance) Niv.1'}
+  {'Index': '44', 'SpriteTableIndex': '109', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '22', 'YPos': '18', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (lance) Niv.1'}
+  {'Index': '45', 'SpriteTableIndex': '115', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '16', 'YPos': '22', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (projectiles) Niv.1'}
+  {'Index': '46', 'SpriteTableIndex': '115', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '18', 'YPos': '22', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (projectiles) Niv.1'}
+  {'Index': '47', 'SpriteTableIndex': '115', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '20', 'YPos': '22', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (projectiles) Niv.1'}
+  {'Index': '48', 'SpriteTableIndex': '115', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '22', 'YPos': '22', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (projectiles) Niv.1'}
+  {'Index': '49', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '56', 'YPos': '94', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '50', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '56', 'YPos': '94', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '51', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '44', 'YPos': '94', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '52', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '44', 'YPos': '94', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '53', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '56', 'YPos': '110', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '54', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '56', 'YPos': '110', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '55', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '44', 'YPos': '110', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '56', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '44', 'YPos': '110', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '57', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '46', 'YPos': '90', 'Height': '2', 'EventCodesA_LoadIndex': '185', 'EventCodesC_TickIndex': '185', 'EventCodesD_TouchIndex': '185', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '58', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '54', 'YPos': '90', 'Height': '2', 'EventCodesA_LoadIndex': '185', 'EventCodesC_TickIndex': '186', 'EventCodesD_TouchIndex': '186', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '59', 'SpriteTableIndex': '128', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '50', 'YPos': '102', 'Height': '2', 'EventCodesA_LoadIndex': '185', 'EventCodesC_TickIndex': '187', 'EventCodesD_TouchIndex': '187', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Statue d’homme-lézard transformé'}
+  {'Index': '60', 'SpriteTableIndex': '109', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '46', 'YPos': '82', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (lance) Niv.1'}
+  {'Index': '61', 'SpriteTableIndex': '109', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '54', 'YPos': '82', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (lance) Niv.1'}
+  {'Index': '62', 'SpriteTableIndex': '106', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '50', 'YPos': '86', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Homme-lézard (épée) Niv.1'}
+  {'Index': '63', 'SpriteTableIndex': '45', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '11', 'YPos': '79', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '191', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '64', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '8', 'YPos': '62', 'Height': '2', 'EventCodesA_LoadIndex': '200', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '65', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '8', 'YPos': '62', 'Height': '4', 'EventCodesA_LoadIndex': '200', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '66', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '8', 'YPos': '62', 'Height': '6', 'EventCodesA_LoadIndex': '200', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '67', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '12', 'YPos': '65', 'Height': '2', 'EventCodesA_LoadIndex': '200', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '68', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '12', 'YPos': '65', 'Height': '4', 'EventCodesA_LoadIndex': '200', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '69', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '12', 'YPos': '65', 'Height': '6', 'EventCodesA_LoadIndex': '200', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '70', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '20', 'YPos': '61', 'Height': '2', 'EventCodesA_LoadIndex': '200', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '71', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '20', 'YPos': '61', 'Height': '4', 'EventCodesA_LoadIndex': '200', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '72', 'SpriteTableIndex': '126', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '24', 'YPos': '58', 'Height': '2', 'EventCodesA_LoadIndex': '200', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Mur à boule de fer (111)'}
+  {'Index': '73', 'SpriteTableIndex': '129', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '6', 'YPos': '74', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '201', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Flotteur d’eau / grande boule de fer'}
+  {'Index': '74', 'SpriteTableIndex': '129', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '14', 'YPos': '83', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '201', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Flotteur d’eau / grande boule de fer'}
+  {'Index': '75', 'SpriteTableIndex': '129', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '8', 'YPos': '86', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '201', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Flotteur d’eau / grande boule de fer'}
+  {'Index': '76', 'SpriteTableIndex': '30', 'SpriteDirection': '64', 'IsEnabled': '1', 'XPos': '15', 'YPos': '32', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Coffre au trésor'}
+  {'Index': '77', 'SpriteTableIndex': '35', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '70', 'YPos': '14', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '78', 'SpriteTableIndex': '35', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '72', 'YPos': '14', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '79', 'SpriteTableIndex': '35', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '94', 'YPos': '12', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '80', 'SpriteTableIndex': '35', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '96', 'YPos': '12', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '81', 'SpriteTableIndex': '35', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '98', 'YPos': '12', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+MapEvents:
+  {'Index': '0', 'X1': '48', 'Y1': '52', 'X2': '49', 'Y2': '52', 'EventCodesBIndex': '129', 'EventCodesBIndexMasked': '1', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '1', 'X1': '15', 'Y1': '6', 'X2': '48', 'Y2': '38', 'EventCodesBIndex': '130', 'EventCodesBIndexMasked': '2', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '2', 'X1': '15', 'Y1': '6', 'X2': '48', 'Y2': '38', 'EventCodesBIndex': '131', 'EventCodesBIndexMasked': '3', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '3', 'X1': '15', 'Y1': '6', 'X2': '48', 'Y2': '38', 'EventCodesBIndex': '132', 'EventCodesBIndexMasked': '4', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '4', 'X1': '17', 'Y1': '44', 'X2': '34', 'Y2': '59', 'EventCodesBIndex': '133', 'EventCodesBIndexMasked': '5', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '5', 'X1': '0', 'Y1': '0', 'X2': '14', 'Y2': '59', 'EventCodesBIndex': '134', 'EventCodesBIndexMasked': '6', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+Portals:
+  {'Index': '0', 'X1': '32', 'Y1': '48', 'X2': '33', 'Y2': '48', 'DestMapId': '84', 'DestTileX': '31', 'DestTileY': '37', 'ZLevel': '0', 'Flags': '2'}
+  {'Index': '1', 'X1': '49', 'Y1': '34', 'X2': '50', 'Y2': '34', 'DestMapId': '82', 'DestTileX': '49', 'DestTileY': '30', 'ZLevel': '0', 'Flags': '20482'}
+  {'Index': '2', 'X1': '38', 'Y1': '46', 'X2': '39', 'Y2': '46', 'DestMapId': '82', 'DestTileX': '31', 'DestTileY': '48', 'ZLevel': '0', 'Flags': '20482'}
+  {'Index': '3', 'X1': '18', 'Y1': '56', 'X2': '18', 'Y2': '57', 'DestMapId': '409', 'DestTileX': '20', 'DestTileY': '56', 'ZLevel': '0', 'Flags': '45058'}
+  {'Index': '4', 'X1': '2', 'Y1': '14', 'X2': '3', 'Y2': '14', 'DestMapId': '409', 'DestTileX': '1', 'DestTileY': '16', 'ZLevel': '0', 'Flags': '20482'}
+  {'Index': '5', 'X1': '24', 'Y1': '8', 'X2': '24', 'Y2': '9', 'DestMapId': '409', 'DestTileX': '33', 'DestTileY': '8', 'ZLevel': '0', 'Flags': '45058'}
+  {'Index': '6', 'X1': '49', 'Y1': '12', 'X2': '50', 'Y2': '12', 'DestMapId': '411', 'DestTileX': '48', 'DestTileY': '17', 'ZLevel': '0', 'Flags': '2'}
+  {'Index': '7', 'X1': '1', 'Y1': '54', 'X2': '1', 'Y2': '55', 'DestMapId': '411', 'DestTileX': '4', 'DestTileY': '56', 'ZLevel': '0', 'Flags': '45058'}
+  {'Index': '8', 'X1': '43', 'Y1': '45', 'X2': '44', 'Y2': '45', 'DestMapId': '82', 'DestTileX': '4', 'DestTileY': '44', 'ZLevel': '0', 'Flags': '20565'}
+  {'Index': '9', 'X1': '43', 'Y1': '44', 'X2': '44', 'Y2': '44', 'DestMapId': '82', 'DestTileX': '4', 'DestTileY': '44', 'ZLevel': '0', 'Flags': '20565'}
+  {'Index': '10', 'X1': '48', 'Y1': '51', 'X2': '49', 'Y2': '51', 'DestMapId': '458', 'DestTileX': '14', 'DestTileY': '15', 'ZLevel': '0', 'Flags': '20565'}
+  {'Index': '11', 'X1': '48', 'Y1': '52', 'X2': '49', 'Y2': '52', 'DestMapId': '458', 'DestTileX': '14', 'DestTileY': '15', 'ZLevel': '0', 'Flags': '20565'}
+cell layers: {'map_index': 83, 'cell_count': 3120, 'walkability': 3120, 'ground_property': 3120, 'slope': 3120, 'height': 3120, 'tile_id': 3120, 'palette': 3120, 'tile': 3120, 'flags': 3120, 'wall_tiles_offset': 3120, 'wall_tiles': {'284': {'offset': 0, 'tiles': [53460, 53470, 53480, 53490]}, '285': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491]}, '286': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492]}, '287': {'offset': 0, 'tiles': [53463, 53473, 53483, 53493]}, '288': {'offset': 0, 'tiles': [53460, 41797, 53480, 53490]}, '289': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491]}, '290': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492]}, '291': {'offset': 0, 'tiles': [53463, 53473, 53483, 53493]}, '292': {'offset': 0, 'tiles': [53460, 53470, 53480, 53490]}, '293': {'offset': -4, 'tiles': [49321]}, '305': {'offset': 0, 'tiles': [53460, 41797, 53480, 53492]}, '306': {'offset': 0, 'tiles': [53461, 53471, 53481]}, '307': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492]}, '308': {'offset': 0, 'tiles': [53463, 53473, 53483, 53493]}, '309': {'offset': 0, 'tiles': [53460, 53470, 53480, 53490]}, '310': {'offset': -2, 'tiles': [53484, 53494, 49321]}, '317': {'offset': 0, 'tiles': [49320, 49330]}, '318': {'offset': 0, 'tiles': [49330, 49333]}, '328': {'offset': 0, 'tiles': [53460]}, '329': {'offset': 0, 'tiles': [53461, 53472]}, '330': {'offset': 0, 'tiles': [53460, 53470, 53482]}, '331': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491]}, '332': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492]}, '343': {'offset': 0, 'tiles': [4137]}, '345': {'offset': 0, 'tiles': [53474, 53484, 53494, 49360]}, '346': {'offset': 0, 'tiles': [53460, 41797, 53480, 53490]}, '347': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491]}, '348': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492]}, '349': {'offset': -2, 'tiles': [53484, 53494, 49321]}, '350': {'offset': 0, 'tiles': [53490]}, '352': {'offset': 0, 'tiles': [53492]}, '353': {'offset': -2, 'tiles': [53479, 53489, 49361]}, '354': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491]}, '355': {'offset': 0, 'tiles': [53462, 53472, 53482]}, '356': {'offset': 0, 'tiles': [53469, 53479, 53489, 49361]}, '358': {'offset': 0, 'tiles': [4137]}, '362': {'offset': 0, 'tiles': [53474, 53484, 8899, 8909]}, '368': {'offset': -2, 'tiles': [53455, 53455]}, '369': {'offset': 0, 'tiles': [53595, 65535, 65535, 53455, 53455]}, '370': {'offset': 0, 'tiles': [53596, 65535, 65535, 53455, 53455]}, '393': {'offset': 2, 'tiles': [25322, 25332]}, '395': {'offset': 2, 'tiles': [25322, 25332]}, '398': {'offset': 0, 'tiles': [4137]}, '401': {'offset': 0, 'tiles': [53474, 53484, 8899, 8909]}, '402': {'offset': 0, 'tiles': [53460, 53470, 8915, 8925]}, '403': {'offset': 0, 'tiles': [53461, 53471, 53481]}, '404': {'offset': 0, 'tiles': [53462, 53472, 8774, 8784]}, '405': {'offset': 0, 'tiles': [53469, 53479, 8775, 8785]}, '407': {'offset': 0, 'tiles': [4137]}, '412': {'offset': 2, 'tiles': [25321, 25331]}, '413': {'offset': 2, 'tiles': [25322, 25332]}, '419': {'offset': 7, 'tiles': [53448, 53448]}, '420': {'offset': 7, 'tiles': [53448, 53448]}, '421': {'offset': 8, 'tiles': [53448, 53448, 53448]}, '422': {'offset': 8, 'tiles': [53448, 53448, 53448]}, '432': {'offset': 0, 'tiles': [45522, 45522]}, '433': {'offset': 0, 'tiles': [45512, 45522]}, '434': {'offset': 0, 'tiles': [45523]}, '439': {'offset': 0, 'tiles': [53508, 53455, 53455]}, '440': {'offset': 0, 'tiles': [45461]}, '441': {'offset': 0, 'tiles': [45502, 45512]}, '442': {'offset': 0, 'tiles': [45513, 45523]}, '443': {'offset': 0, 'tiles': [45513, 45523]}, '447': {'offset': 2, 'tiles': [25321, 25331]}, '448': {'offset': 2, 'tiles': [25322, 25332]}, '451': {'offset': 2, 'tiles': [25321, 25331]}, '455': {'offset': 0, 'tiles': [4137]}, '460': {'offset': 2, 'tiles': [25321, 25331]}, '465': {'offset': 2, 'tiles': [25321, 25331]}, '466': {'offset': 2, 'tiles': [25322, 25332]}, '484': {'offset': 0, 'tiles': [49494]}, '485': {'offset': 0, 'tiles': [49495, 49505]}, '486': {'offset': 0, 'tiles': [49494, 49504]}, '487': {'offset': 0, 'tiles': [49495, 49505]}, '488': {'offset': 0, 'tiles': [49496]}, '507': {'offset': 2, 'tiles': [25322, 25332]}, '510': {'offset': 2, 'tiles': [25321, 25331]}, '511': {'offset': 2, 'tiles': [25322, 25332]}, '536': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '540': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '541': {'offset': 0, 'tiles': [53525]}, '547': {'offset': 0, 'tiles': [49335]}, '569': {'offset': 0, 'tiles': [45579]}, '570': {'offset': 0, 'tiles': [45580]}, '593': {'offset': 0, 'tiles': [53474, 53484, 53494, 49360]}, '596': {'offset': 0, 'tiles': [53455, 53455]}, '597': {'offset': 0, 'tiles': [53455]}, '598': {'offset': 0, 'tiles': [53455]}, '599': {'offset': 0, 'tiles': [53548]}, '603': {'offset': 0, 'tiles': [53455]}, '604': {'offset': 0, 'tiles': [53455]}, '619': {'offset': -1, 'tiles': [49321]}, '646': {'offset': 0, 'tiles': [53474, 53484, 53494, 49360]}, '657': {'offset': 0, 'tiles': [53455]}, '658': {'offset': 0, 'tiles': [53455]}, '659': {'offset': 0, 'tiles': [53455]}, '660': {'offset': 0, 'tiles': [53455]}, '661': {'offset': 0, 'tiles': [53455, 53455]}, '662': {'offset': 0, 'tiles': [53455, 53455]}, '663': {'offset': 0, 'tiles': [53455, 53455]}, '664': {'offset': 0, 'tiles': [53455, 53455]}, '665': {'offset': 0, 'tiles': [53455, 53455]}, '666': {'offset': 0, 'tiles': [53455, 53455]}, '667': {'offset': 0, 'tiles': [53455, 53455]}, '671': {'offset': 0, 'tiles': [45139, 49312]}, '672': {'offset': 0, 'tiles': [45140, 49313]}, '699': {'offset': 0, 'tiles': [53474, 53484, 53494, 49360]}, '700': {'offset': 0, 'tiles': [53460, 53470, 53480, 53490]}, '720': {'offset': 0, 'tiles': [53455, 53455, 53455]}, '721': {'offset': 0, 'tiles': [53455, 53455]}, '727': {'offset': 0, 'tiles': [53525, 53535, 53545, 53693, 53455]}, '746': {'offset': 0, 'tiles': [4137]}, '753': {'offset': 0, 'tiles': [53474, 53484, 53494, 49360]}, '774': {'offset': 0, 'tiles': [53455, 53455]}, '775': {'offset': 0, 'tiles': [53455, 53455]}, '776': {'offset': 0, 'tiles': [53455, 53455]}, '777': {'offset': 0, 'tiles': [53455, 53455]}, '778': {'offset': 0, 'tiles': [53455, 53455]}, '779': {'offset': -2, 'tiles': [53455, 65535, 53455]}, '782': {'offset': 0, 'tiles': [45564]}, '783': {'offset': 0, 'tiles': [45565]}, '786': {'offset': 0, 'tiles': [41797, 53480, 53490]}, '787': {'offset': 0, 'tiles': [53471, 53481, 53491]}, '788': {'offset': 0, 'tiles': [53472, 53482, 53492]}, '789': {'offset': 0, 'tiles': [53473, 53483, 53493]}, '790': {'offset': 0, 'tiles': [41797, 53480, 53490]}, '798': {'offset': 0, 'tiles': [49343]}, '806': {'offset': 0, 'tiles': [53474, 53484, 53494, 49360]}, '807': {'offset': 0, 'tiles': [53460, 53470, 53480, 53490]}, '808': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491]}, '809': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492, 49313]}, '834': {'offset': 0, 'tiles': [45564]}, '835': {'offset': 0, 'tiles': [45565]}, '836': {'offset': 0, 'tiles': [53471, 53481, 53491]}, '837': {'offset': 0, 'tiles': [53479, 53489, 49361]}, '843': {'offset': 0, 'tiles': [53506, 53516, 49360]}, '848': {'offset': 0, 'tiles': [4137]}, '852': {'offset': 0, 'tiles': [4137]}, '862': {'offset': 0, 'tiles': [53474, 53484, 53494, 53504, 53502]}, '863': {'offset': 0, 'tiles': [53460, 53470, 53480, 53490, 53500]}, '864': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491, 53501]}, '865': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492, 53502]}, '886': {'offset': 0, 'tiles': [45564, 65535, 49312]}, '887': {'offset': 0, 'tiles': [45565, 65535, 49313]}, '890': {'offset': 2, 'tiles': [25321, 25331]}, '893': {'offset': 2, 'tiles': [25321, 25331]}, '909': {'offset': 0, 'tiles': [4137]}, '913': {'offset': 0, 'tiles': [49539]}, '918': {'offset': 0, 'tiles': [53474, 53484, 53494, 53504, 53502]}, '919': {'offset': 0, 'tiles': [53464, 53474, 53484, 53516]}, '938': {'offset': 0, 'tiles': [45417]}, '939': {'offset': 0, 'tiles': [45418]}, '943': {'offset': 2, 'tiles': [25321, 25331]}, '944': {'offset': 2, 'tiles': [25322, 25332]}, '946': {'offset': 2, 'tiles': [25321, 25331]}, '954': {'offset': 0, 'tiles': [4137]}, '961': {'offset': 0, 'tiles': [49334]}, '965': {'offset': 0, 'tiles': [49549]}, '971': {'offset': 0, 'tiles': [49360]}, '972': {'offset': 0, 'tiles': [53460, 41797, 53480, 53490]}, '973': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491]}, '974': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492]}, '975': {'offset': 0, 'tiles': [53463, 53473, 53483, 53493]}, '976': {'offset': 0, 'tiles': [53460, 53470, 53480, 53490]}, '977': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491]}, '978': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492]}, '979': {'offset': 0, 'tiles': [53463, 53473, 53483, 53493]}, '980': {'offset': 0, 'tiles': [53460, 41797, 53480, 53490, 45467]}, '981': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491]}, '982': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492]}, '983': {'offset': 0, 'tiles': [53464, 53474, 53484, 53494]}, '984': {'offset': 0, 'tiles': [53465, 53475, 53485]}, '994': {'offset': 2, 'tiles': [25322, 25332]}, '995': {'offset': 2, 'tiles': [25322, 25332]}, '996': {'offset': 2, 'tiles': [25321, 25331]}, '998': {'offset': 2, 'tiles': [25322, 25332]}, '1011': {'offset': 0, 'tiles': [4137]}, '1015': {'offset': 0, 'tiles': [4137]}, '1017': {'offset': 0, 'tiles': [49559, 49549]}, '1023': {'offset': 0, 'tiles': [49538, 49548]}, '1044': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '1047': {'offset': 2, 'tiles': [25321, 25331]}, '1049': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '1060': {'offset': 0, 'tiles': [4137]}, '1069': {'offset': 0, 'tiles': [8856]}, '1070': {'offset': 0, 'tiles': [8857]}, '1071': {'offset': 0, 'tiles': [8858]}, '1072': {'offset': 0, 'tiles': [8857]}, '1073': {'offset': 0, 'tiles': [8858]}, '1074': {'offset': 0, 'tiles': [8857]}, '1075': {'offset': 0, 'tiles': [8859]}, '1078': {'offset': 2, 'tiles': [25321, 25331]}, '1080': {'offset': 2, 'tiles': [25321, 25331]}, '1085': {'offset': 0, 'tiles': [45456]}, '1112': {'offset': 0, 'tiles': [49315]}, '1117': {'offset': 0, 'tiles': [4137]}, '1131': {'offset': 2, 'tiles': [25321, 25331]}, '1132': {'offset': 2, 'tiles': [25322, 25332]}, '1146': {'offset': 2, 'tiles': [25322, 25332]}, '1162': {'offset': 0, 'tiles': [4137]}, '1166': {'offset': 0, 'tiles': [4137]}, '1173': {'offset': 0, 'tiles': [45752]}, '1174': {'offset': 0, 'tiles': [45751]}, '1175': {'offset': 0, 'tiles': [45752]}, '1176': {'offset': 0, 'tiles': [45751]}, '1177': {'offset': 0, 'tiles': [45752]}, '1178': {'offset': 0, 'tiles': [45751]}, '1179': {'offset': 0, 'tiles': [45753]}, '1181': {'offset': 2, 'tiles': [25322, 25332]}, '1185': {'offset': 2, 'tiles': [25321, 25331]}, '1198': {'offset': 2, 'tiles': [25321, 25331]}, '1199': {'offset': 2, 'tiles': [25322, 25332]}, '1200': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '1205': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '1213': {'offset': 0, 'tiles': [49498, 49508]}, '1225': {'offset': -1, 'tiles': [49488]}, '1226': {'offset': 0, 'tiles': [8874, 53502]}, '1227': {'offset': 0, 'tiles': [8875, 53502]}, '1228': {'offset': 0, 'tiles': [8874, 53502]}, '1229': {'offset': 0, 'tiles': [8875, 53502]}, '1230': {'offset': 0, 'tiles': [8874, 53502]}, '1231': {'offset': -1, 'tiles': [49558]}, '1242': {'offset': 0, 'tiles': [49325]}, '1251': {'offset': 2, 'tiles': [25321, 25331]}, '1268': {'offset': 0, 'tiles': [4137]}, '1276': {'offset': 0, 'tiles': [49717]}, '1277': {'offset': 0, 'tiles': [8905, 49680]}, '1283': {'offset': -1, 'tiles': [49538]}, '1285': {'offset': 2, 'tiles': [25322, 25332]}, '1286': {'offset': 2, 'tiles': [25321, 25331]}, '1302': {'offset': 2, 'tiles': [25322, 25332]}, '1323': {'offset': 2, 'tiles': [25322, 25332]}, '1324': {'offset': 2, 'tiles': [25322, 25332]}, '1326': {'offset': 0, 'tiles': [49476]}, '1327': {'offset': 0, 'tiles': [49717]}, '1328': {'offset': 0, 'tiles': [8913, 49680]}, '1335': {'offset': 0, 'tiles': [8936]}, '1337': {'offset': 2, 'tiles': [25321, 25331]}, '1343': {'offset': 0, 'tiles': [53455, 53455]}, '1344': {'offset': 0, 'tiles': [53455, 53455]}, '1345': {'offset': 0, 'tiles': [53455, 53455]}, '1346': {'offset': 0, 'tiles': [53455, 53455]}, '1347': {'offset': 0, 'tiles': [53455, 53555]}, '1348': {'offset': 0, 'tiles': [53455, 53455]}, '1354': {'offset': 2, 'tiles': [25321, 25331]}, '1355': {'offset': 2, 'tiles': [25322, 25332]}, '1356': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '1361': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '1376': {'offset': 2, 'tiles': [25321, 25331]}, '1377': {'offset': 2, 'tiles': [25322, 25332]}, '1378': {'offset': 0, 'tiles': [8913, 49486]}, '1379': {'offset': 0, 'tiles': [8914, 49680]}, '1386': {'offset': 0, 'tiles': [8894]}, '1392': {'offset': 0, 'tiles': [53455, 53455]}, '1393': {'offset': 0, 'tiles': [53455, 53455]}, '1394': {'offset': 0, 'tiles': [53455, 53455]}, '1406': {'offset': 2, 'tiles': [25321, 25331]}, '1409': {'offset': 2, 'tiles': [25322, 25332]}, '1410': {'offset': 2, 'tiles': [25321, 25331]}, '1416': {'offset': -3, 'tiles': [49569]}, '1429': {'offset': 0, 'tiles': [49539, 49549]}, '1437': {'offset': 0, 'tiles': [8894]}, '1438': {'offset': 2, 'tiles': [8338, 8348]}, '1439': {'offset': 2, 'tiles': [8339, 8349]}, '1440': {'offset': 2, 'tiles': [8338, 8348]}, '1441': {'offset': 2, 'tiles': [8339, 8349]}, '1442': {'offset': 2, 'tiles': [8338, 8348]}, '1459': {'offset': 2, 'tiles': [25321, 25331]}, '1461': {'offset': 2, 'tiles': [25321, 25331]}, '1462': {'offset': 2, 'tiles': [25322, 25332]}, '1466': {'offset': -2, 'tiles': [49518, 49518]}, '1467': {'offset': 0, 'tiles': [49485, 49495, 49505]}, '1468': {'offset': 0, 'tiles': [53484, 53494, 53526, 49486, 49496, 49506]}, '1469': {'offset': -6, 'tiles': [49517]}, '1472': {'offset': -3, 'tiles': [53455]}, '1473': {'offset': -1, 'tiles': [53455, 53455]}, '1474': {'offset': -1, 'tiles': [53455, 53455]}, '1475': {'offset': -1, 'tiles': [53455, 53455]}, '1479': {'offset': 0, 'tiles': [49714, 49724]}, '1480': {'offset': 0, 'tiles': [49715, 49725]}, '1481': {'offset': 0, 'tiles': [8856]}, '1482': {'offset': 0, 'tiles': [8857]}, '1483': {'offset': 0, 'tiles': [8858]}, '1484': {'offset': 0, 'tiles': [8857]}, '1485': {'offset': 0, 'tiles': [8858]}, '1486': {'offset': 0, 'tiles': [8857]}, '1487': {'offset': 0, 'tiles': [8857]}, '1488': {'offset': 0, 'tiles': [8893]}, '1514': {'offset': -3, 'tiles': [49518]}, '1515': {'offset': 0, 'tiles': [49484, 49494, 49504]}, '1516': {'offset': 0, 'tiles': [49485, 49495, 49505]}, '1517': {'offset': 0, 'tiles': [49486, 49496, 49506]}, '1518': {'offset': 0, 'tiles': [49680, 49690, 33590]}, '1520': {'offset': 0, 'tiles': [33578]}, '1521': {'offset': 0, 'tiles': [53515, 53464, 53474, 53484, 53494, 33595, 58177]}, '1528': {'offset': 0, 'tiles': [49627]}, '1529': {'offset': 0, 'tiles': [49628, 49618]}, '1530': {'offset': 0, 'tiles': [49498, 49725]}, '1544': {'offset': 2, 'tiles': [25322, 25332]}, '1564': {'offset': 0, 'tiles': [49484, 49494, 49504]}, '1565': {'offset': 0, 'tiles': [49485, 49495, 49505]}, '1566': {'offset': 0, 'tiles': [49680, 49690, 33590]}, '1574': {'offset': 0, 'tiles': [53465, 53475, 53485, 53505, 53515, 53525]}, '1576': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455]}, '1577': {'offset': -2, 'tiles': [53455, 53455]}, '1578': {'offset': 0, 'tiles': [53455, 65535, 53455, 53455]}, '1579': {'offset': 0, 'tiles': [53455, 65535, 53455, 53455]}, '1581': {'offset': 0, 'tiles': [45578]}, '1585': {'offset': 0, 'tiles': [45750]}, '1586': {'offset': 0, 'tiles': [45751]}, '1587': {'offset': 0, 'tiles': [45752]}, '1588': {'offset': 0, 'tiles': [45751]}, '1589': {'offset': 0, 'tiles': [45752]}, '1590': {'offset': 0, 'tiles': [45751]}, '1591': {'offset': 0, 'tiles': [45753]}, '1594': {'offset': 2, 'tiles': [25322, 25332]}, '1595': {'offset': 2, 'tiles': [25321, 25331]}, '1627': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455]}, '1636': {'offset': 2, 'tiles': [25322, 25332]}, '1637': {'offset': 0, 'tiles': [8872]}, '1638': {'offset': 0, 'tiles': [8874, 53502]}, '1639': {'offset': 0, 'tiles': [8875, 53502]}, '1640': {'offset': 0, 'tiles': [8874, 53502]}, '1641': {'offset': 0, 'tiles': [8875, 53502]}, '1642': {'offset': 0, 'tiles': [8874, 53502]}, '1643': {'offset': 0, 'tiles': [8906]}, '1646': {'offset': 2, 'tiles': [25321, 25331]}, '1649': {'offset': 0, 'tiles': [49334]}, '1650': {'offset': 0, 'tiles': [53511]}, '1677': {'offset': 0, 'tiles': [53554, 53555, 53455]}, '1678': {'offset': 0, 'tiles': [53455, 53455]}, '1679': {'offset': 0, 'tiles': [53455, 53455]}, '1689': {'offset': 0, 'tiles': [49539]}, '1695': {'offset': 0, 'tiles': [49538]}, '1702': {'offset': 0, 'tiles': [53521]}, '1703': {'offset': 0, 'tiles': [53555, 53555]}, '1727': {'offset': 0, 'tiles': [53521]}, '1728': {'offset': 0, 'tiles': [53455, 53455]}, '1741': {'offset': 0, 'tiles': [49549]}, '1747': {'offset': 0, 'tiles': [49548]}, '1771': {'offset': -6, 'tiles': [49700]}, '1788': {'offset': -2, 'tiles': [53455, 53455]}, '1793': {'offset': 0, 'tiles': [49559]}, '1799': {'offset': 0, 'tiles': [49568]}, '1805': {'offset': 0, 'tiles': [53533]}, '1806': {'offset': 0, 'tiles': [53455, 53455]}, '1822': {'offset': 0, 'tiles': [53455, 53452, 53462, 53472, 53482, 53492]}, '1823': {'offset': 0, 'tiles': [53528, 53459, 53469, 53479, 53489, 33586]}, '1840': {'offset': 0, 'tiles': [53518, 53548, 65535, 53455]}, '1841': {'offset': 0, 'tiles': [53455, 53455]}, '1842': {'offset': 0, 'tiles': [53455, 53455]}, '1843': {'offset': 0, 'tiles': [53455, 53455]}, '1844': {'offset': 0, 'tiles': [53455, 53455]}, '1845': {'offset': 0, 'tiles': [53455, 53455]}, '1846': {'offset': 0, 'tiles': [53455, 53455]}, '1847': {'offset': 0, 'tiles': [53455, 53455]}, '1848': {'offset': 0, 'tiles': [53455, 53455]}, '1849': {'offset': 0, 'tiles': [53455, 53455]}, '1850': {'offset': 0, 'tiles': [53455, 53455]}, '1851': {'offset': 0, 'tiles': [53455, 53455]}, '1852': {'offset': 0, 'tiles': [53455, 53455]}, '1853': {'offset': 0, 'tiles': [53455, 53455]}, '1854': {'offset': 0, 'tiles': [53455, 53455]}, '1855': {'offset': 0, 'tiles': [53455, 53455]}, '1856': {'offset': 0, 'tiles': [53455, 53455]}, '1857': {'offset': 0, 'tiles': [53455, 53455]}, '1873': {'offset': 0, 'tiles': [53458, 53459, 53469, 53479, 53489, 33583]}, '1879': {'offset': 0, 'tiles': [49581]}, '1921': {'offset': 0, 'tiles': [45574]}, '1922': {'offset': 0, 'tiles': [45575]}, '1934': {'offset': 0, 'tiles': [53521]}, '1935': {'offset': 0, 'tiles': [53455, 53455]}, '1971': {'offset': 0, 'tiles': [53493]}, '1972': {'offset': -2, 'tiles': [53479, 53489, 49361]}, '1973': {'offset': 0, 'tiles': [45574]}, '1974': {'offset': 0, 'tiles': [45575]}, '1982': {'offset': 0, 'tiles': [49579]}, '1983': {'offset': 0, 'tiles': [45140]}, '2023': {'offset': 0, 'tiles': [53462, 53472, 8774, 8784]}, '2024': {'offset': 0, 'tiles': [53469, 53479, 8775, 8785]}, '2025': {'offset': 0, 'tiles': [45574]}, '2026': {'offset': 0, 'tiles': [45575]}, '2085': {'offset': 0, 'tiles': [45139]}, '2086': {'offset': 0, 'tiles': [45140]}, '2089': {'offset': 0, 'tiles': [53509]}, '2090': {'offset': 0, 'tiles': [53455, 53455]}, '2130': {'offset': 2, 'tiles': [25322, 25332]}, '2178': {'offset': 0, 'tiles': [53497, 53507, 53517, 49361]}, '2180': {'offset': 2, 'tiles': [25321, 25331]}, '2181': {'offset': 2, 'tiles': [25322, 25332]}, '2182': {'offset': 2, 'tiles': [25321, 25331]}, '2226': {'offset': 0, 'tiles': [53460, 41797, 53480, 53490, 49313]}, '2227': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491, 49312]}, '2228': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492, 49312]}, '2229': {'offset': 0, 'tiles': [53469, 53479, 53489, 49361, 49330]}, '2231': {'offset': 2, 'tiles': [25321, 25331]}, '2232': {'offset': 2, 'tiles': [25322, 25332, 49334]}, '2239': {'offset': 0, 'tiles': [58182]}, '2240': {'offset': 0, 'tiles': [58183]}, '2255': {'offset': 0, 'tiles': [53490]}, '2256': {'offset': 0, 'tiles': [53491]}, '2278': {'offset': 0, 'tiles': [792]}, '2279': {'offset': 0, 'tiles': [49342]}, '2280': {'offset': 0, 'tiles': [49342]}, '2281': {'offset': 0, 'tiles': [791]}, '2284': {'offset': 2, 'tiles': [25322, 25332]}, '2285': {'offset': 2, 'tiles': [25321, 25331]}, '2288': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455, 53455, 53455]}, '2307': {'offset': 0, 'tiles': [53460, 53470, 8338, 8348]}, '2308': {'offset': 0, 'tiles': [53461, 53471, 8339, 8349]}, '2309': {'offset': 0, 'tiles': [53462, 53472, 53482]}, '2310': {'offset': 0, 'tiles': [53463, 53473, 53483, 53493]}, '2311': {'offset': 0, 'tiles': [53460, 41797, 53480]}, '2312': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491]}, '2313': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492]}, '2314': {'offset': 0, 'tiles': [53463, 53473, 53483, 53493]}, '2315': {'offset': 0, 'tiles': [53460, 41797, 53480, 53490]}, '2316': {'offset': 0, 'tiles': [53461, 53471, 53481, 53491]}, '2317': {'offset': 0, 'tiles': [53462, 53472, 53482, 53492]}, '2318': {'offset': 0, 'tiles': [53463, 53473, 53483, 53493]}, '2319': {'offset': 0, 'tiles': [53469, 53479, 53489]}, '2320': {'offset': 0, 'tiles': [53470, 53480, 53490]}, '2321': {'offset': 0, 'tiles': [53472, 53482, 53492]}, '2331': {'offset': 0, 'tiles': [49344]}, '2332': {'offset': 0, 'tiles': [49344]}, '2334': {'offset': 2, 'tiles': [25321, 25331, 49315]}, '2335': {'offset': 2, 'tiles': [25322, 25332]}, '2336': {'offset': 2, 'tiles': [25321, 25331]}, '2337': {'offset': 2, 'tiles': [25322, 25332]}, '2358': {'offset': -2, 'tiles': [53479, 53489, 49361]}, '2361': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '2363': {'offset': 0, 'tiles': [4137]}, '2365': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '2367': {'offset': 0, 'tiles': [4137]}, '2369': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '2381': {'offset': 0, 'tiles': [53497, 53507, 53517, 49361]}, '2382': {'offset': 0, 'tiles': [49344]}, '2383': {'offset': 0, 'tiles': [49344]}, '2384': {'offset': 0, 'tiles': [49344]}, '2385': {'offset': 0, 'tiles': [49344]}, '2387': {'offset': 2, 'tiles': [25321, 25331]}, '2388': {'offset': 2, 'tiles': [25322, 25332]}, '2393': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455]}, '2410': {'offset': 0, 'tiles': [53469, 53479, 8775, 8785]}, '2424': {'offset': 0, 'tiles': [45579]}, '2425': {'offset': 0, 'tiles': [45580]}, '2426': {'offset': 0, 'tiles': [53484, 53494, 53494]}, '2432': {'offset': 0, 'tiles': [53469, 53479, 53489, 49361]}, '2434': {'offset': 0, 'tiles': [49323]}, '2437': {'offset': 0, 'tiles': [49323]}, '2438': {'offset': 2, 'tiles': [25321, 25331]}, '2440': {'offset': 2, 'tiles': [25321, 25331]}, '2441': {'offset': 2, 'tiles': [25321, 25331]}, '2442': {'offset': 2, 'tiles': [25322, 25332]}, '2449': {'offset': 0, 'tiles': [45456]}, '2450': {'offset': 0, 'tiles': [45456, 45457]}, '2451': {'offset': 0, 'tiles': [45447]}, '2460': {'offset': 0, 'tiles': [53455]}, '2465': {'offset': 2, 'tiles': [25321, 25331]}, '2467': {'offset': 2, 'tiles': [25322, 25332]}, '2486': {'offset': 0, 'tiles': [790]}, '2489': {'offset': 0, 'tiles': [793]}, '2491': {'offset': 2, 'tiles': [25321, 25331]}, '2492': {'offset': 2, 'tiles': [25322, 25332]}, '2493': {'offset': 2, 'tiles': [25322, 25332]}, '2515': {'offset': 2, 'tiles': [25322, 25332]}, '2516': {'offset': 2, 'tiles': [25321, 25331]}, '2517': {'offset': 2, 'tiles': [25322, 25332]}, '2518': {'offset': 2, 'tiles': [25321, 25331]}, '2527': {'offset': 0, 'tiles': [49344, 49344, 49321]}, '2534': {'offset': 0, 'tiles': [45574]}, '2535': {'offset': 0, 'tiles': [45575]}, '2537': {'offset': 2, 'tiles': [25322, 25332]}, '2539': {'offset': 2, 'tiles': [25321, 25331]}, '2540': {'offset': 2, 'tiles': [25322, 25332]}, '2542': {'offset': 2, 'tiles': [25322, 25332]}, '2544': {'offset': 2, 'tiles': [25322, 25332]}, '2568': {'offset': 2, 'tiles': [25322, 25332]}, '2569': {'offset': 2, 'tiles': [25321, 25331]}, '2570': {'offset': 2, 'tiles': [25322, 25332]}, '2571': {'offset': 2, 'tiles': [25321, 25331]}, '2579': {'offset': 0, 'tiles': [49497, 49517]}, '2580': {'offset': 0, 'tiles': [49484, 49628]}, '2581': {'offset': 0, 'tiles': [49485, 49629]}, '2582': {'offset': 0, 'tiles': [49484, 49628]}, '2586': {'offset': 0, 'tiles': [45574]}, '2587': {'offset': 0, 'tiles': [45575]}, '2589': {'offset': 2, 'tiles': [25321, 25331]}, '2590': {'offset': 2, 'tiles': [25321, 25331]}, '2591': {'offset': 2, 'tiles': [25322, 25332]}, '2593': {'offset': 2, 'tiles': [25322, 25332]}, '2595': {'offset': 0, 'tiles': [49344]}, '2598': {'offset': 0, 'tiles': [49314]}, '2620': {'offset': 2, 'tiles': [25321, 25331]}, '2621': {'offset': 2, 'tiles': [25322, 25332]}, '2622': {'offset': 2, 'tiles': [25321, 25331]}, '2623': {'offset': 2, 'tiles': [25322, 25332]}, '2638': {'offset': 0, 'tiles': [45572]}, '2639': {'offset': 0, 'tiles': [45573]}, '2641': {'offset': 2, 'tiles': [25321, 25331]}, '2642': {'offset': 2, 'tiles': [25322, 25332]}, '2647': {'offset': 0, 'tiles': [792]}, '2648': {'offset': 0, 'tiles': [49323]}, '2649': {'offset': 0, 'tiles': [49324]}, '2650': {'offset': 0, 'tiles': [791]}, '2654': {'offset': 0, 'tiles': [53469, 53479, 53489]}, '2673': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '2677': {'offset': 0, 'tiles': [4137]}, '2681': {'offset': 0, 'tiles': [4107, 4126, 4137]}, '2689': {'offset': 0, 'tiles': [53469, 53479, 53489, 49361]}, '2692': {'offset': 2, 'tiles': [25321, 25331]}, '2693': {'offset': 2, 'tiles': [25322, 25332]}, '2694': {'offset': 2, 'tiles': [25321, 25331]}, '2695': {'offset': 2, 'tiles': [25321, 25331]}, '2696': {'offset': 2, 'tiles': [25322, 25332]}, '2697': {'offset': 2, 'tiles': [25321, 25331]}, '2698': {'offset': 2, 'tiles': [25322, 25332]}, '2700': {'offset': 0, 'tiles': [49344]}, '2701': {'offset': 0, 'tiles': [49345]}, '2705': {'offset': 0, 'tiles': [53469, 53479, 53489]}, '2731': {'offset': 2, 'tiles': [25321, 25331]}, '2732': {'offset': 2, 'tiles': [25321, 25331]}, '2745': {'offset': 2, 'tiles': [25321, 25331]}, '2746': {'offset': 2, 'tiles': [25322, 25332]}, '2747': {'offset': 2, 'tiles': [25322, 25332]}, '2748': {'offset': 2, 'tiles': [25321, 25331]}, '2749': {'offset': 2, 'tiles': [25322, 25332]}, '2757': {'offset': 0, 'tiles': [45467]}, '2783': {'offset': 2, 'tiles': [25322, 25332]}, '2784': {'offset': 2, 'tiles': [25321, 25331]}, '2786': {'offset': 2, 'tiles': [25321, 25331]}, '2790': {'offset': 0, 'tiles': [53515, 53525]}, '2794': {'offset': 2, 'tiles': [25322, 25332]}, '2796': {'offset': 2, 'tiles': [25321, 25331]}, '2797': {'offset': 2, 'tiles': [25321, 25331]}, '2798': {'offset': 2, 'tiles': [25322, 25332]}, '2800': {'offset': 2, 'tiles': [25321, 25331]}, '2801': {'offset': 2, 'tiles': [25322, 25332]}, '2802': {'offset': 2, 'tiles': [25322, 25332]}, '2803': {'offset': 0, 'tiles': [49344]}, '2806': {'offset': 0, 'tiles': [49344]}, '2815': {'offset': 2, 'tiles': [25322, 25332]}, '2834': {'offset': 2, 'tiles': [25322, 25332]}, '2836': {'offset': 2, 'tiles': [25322, 25332]}, '2837': {'offset': 2, 'tiles': [25322, 25332]}, '2842': {'offset': 0, 'tiles': [53455, 53455]}, '2844': {'offset': 0, 'tiles': [53469, 53479, 53489, 49361]}, '2845': {'offset': 2, 'tiles': [25321, 25331]}, '2847': {'offset': 2, 'tiles': [25321, 25331]}, '2848': {'offset': 2, 'tiles': [25322, 25332]}, '2849': {'offset': 2, 'tiles': [25321, 25331]}, '2850': {'offset': 2, 'tiles': [25322, 25332]}, '2851': {'offset': 2, 'tiles': [25321, 25331]}, '2852': {'offset': 2, 'tiles': [25321, 25331]}, '2853': {'offset': 2, 'tiles': [25322, 25332]}, '2855': {'offset': 0, 'tiles': [790]}, '2858': {'offset': 0, 'tiles': [793]}, '2862': {'offset': 0, 'tiles': [45457]}, '2866': {'offset': 2, 'tiles': [25321, 25331]}, '2868': {'offset': 2, 'tiles': [25322, 25332]}, '2871': {'offset': 0, 'tiles': [45579]}, '2872': {'offset': 0, 'tiles': [45580]}, '2890': {'offset': 2, 'tiles': [25321, 25331]}, '2898': {'offset': 2, 'tiles': [25321, 25331]}, '2899': {'offset': 2, 'tiles': [25322, 25332]}, '2900': {'offset': 2, 'tiles': [25321, 25331]}, '2901': {'offset': 2, 'tiles': [25322, 25332]}, '2903': {'offset': 2, 'tiles': [25321, 25331]}, '2904': {'offset': 2, 'tiles': [25322, 25332]}, '2919': {'offset': 2, 'tiles': [25321, 25331]}, '2929': {'offset': 0, 'tiles': [53538, 53455, 53455, 53455, 53455]}, '2939': {'offset': 2, 'tiles': [25322, 25332]}, '2941': {'offset': 2, 'tiles': [25321, 25331]}, '2949': {'offset': 2, 'tiles': [25321, 25331]}, '2952': {'offset': 2, 'tiles': [25321, 25331]}, '2953': {'offset': 2, 'tiles': [25322, 25332]}, '2954': {'offset': 2, 'tiles': [25321, 25331]}, '2955': {'offset': 2, 'tiles': [25322, 25332]}, '2997': {'offset': 0, 'tiles': [53455, 53455]}, '3003': {'offset': 2, 'tiles': [25321, 25331]}, '3009': {'offset': 2, 'tiles': [25321, 25331]}, '3013': {'offset': 0, 'tiles': [53455, 53455]}, '3014': {'offset': 0, 'tiles': [53455, 53455]}, '3015': {'offset': 0, 'tiles': [53515, 53525, 53693, 53455, 53455]}, '3025': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455]}, '3026': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455, 53455, 53455]}, '3027': {'offset': 0, 'tiles': [53455, 53455, 53555, 53455, 53455, 53455, 53555]}, '3028': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455, 53455, 53455]}, '3029': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455, 53455, 53455]}, '3030': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455, 53455, 53455]}, '3031': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455, 53455, 53455]}, '3033': {'offset': -3, 'tiles': [53455, 53455]}, '3048': {'offset': 0, 'tiles': [53455, 53455]}, '3064': {'offset': 0, 'tiles': [53455, 53455]}, '3068': {'offset': 0, 'tiles': [53538, 53548, 53455, 53455, 53455, 53455, 53455]}, '3069': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455]}, '3070': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455]}, '3071': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455]}, '3072': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455]}, '3073': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455]}, '3074': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455]}, '3075': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455]}, '3076': {'offset': 0, 'tiles': [53455, 53455, 53455, 53455, 53455]}, '3086': {'offset': 0, 'tiles': [53541, 53455, 53455, 53455, 53455, 53455]}, '3087': {'offset': 0, 'tiles': [53541, 53455, 53455, 53455, 53455]}, '3088': {'offset': 0, 'tiles': [53541, 53455, 53455, 53455]}, '3089': {'offset': 0, 'tiles': [53541, 53455, 53455]}, '3090': {'offset': 0, 'tiles': [53455, 53455]}, '3091': {'offset': 0, 'tiles': [53455, 53455]}, '3092': {'offset': 0, 'tiles': [53455, 53455]}, '3093': {'offset': 0, 'tiles': [53455, 53455]}, '3094': {'offset': 0, 'tiles': [53455, 53455]}, '3095': {'offset': 0, 'tiles': [53455, 53455]}, '3096': {'offset': 0, 'tiles': [53455, 53455]}, '3097': {'offset': 0, 'tiles': [53455, 53455]}, '3098': {'offset': 0, 'tiles': [53455, 53455]}, '3099': {'offset': 0, 'tiles': [53455, 53455]}, '3103': {'offset': 0, 'tiles': [53518, 53538, 53548, 53455, 53455]}, '3104': {'offset': 0, 'tiles': [53455, 53455]}, '3105': {'offset': 0, 'tiles': [53455, 53455]}, '3106': {'offset': 0, 'tiles': [53455, 53455]}, '3107': {'offset': 0, 'tiles': [53455, 53455]}, '3108': {'offset': 0, 'tiles': [53455, 53455]}, '3109': {'offset': 0, 'tiles': [53455, 53455]}, '3110': {'offset': 0, 'tiles': [53455, 53455]}, '3111': {'offset': 0, 'tiles': [53455, 53455]}, '3112': {'offset': 0, 'tiles': [53455, 53455]}, '3113': {'offset': 0, 'tiles': [53455, 53455]}, '3114': {'offset': 0, 'tiles': [53455, 53455]}, '3115': {'offset': 0, 'tiles': [53455, 53455]}}}

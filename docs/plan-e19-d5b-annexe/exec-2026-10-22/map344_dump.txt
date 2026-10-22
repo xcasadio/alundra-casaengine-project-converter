@@ -1,0 +1,1358 @@
+MAP 344 Lake Shrine / Lake Shrine (inner)-344 codes 3080 size 52 x 60
+CASES 158 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 10 11 12 16 17 19 1A 1B 1C 1D 1E 1F 20 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30 31 32 33 34 35 36 37 38 39 3A 3B 3E 3F 40 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D 4E 4F 50 51 52 53 54 55 57 58 59 5A 5B 5C 5D 5E 62 63 64 65 67 68 69 6E 6F 70 71 73 74 75 78 79 7B 7C 7D 7E 7F 80 81 82 83 84 85 86 87 89 8A 8B 8C 8D 8E 8F 90 91 92 93 94 95 98 99 9A 9B 9C 9F A0 A1 A2 A3 A4 A5 A6 A7 A8 AB AC AD AF B0 B1 B8 BA BC BD BE BF C0 C1 C3 C4
+ table A {11: 364, 12: 376, 13: 384, 14: 392, 15: 400, 16: 408, 17: 416, 18: 424, 19: 432, 20: 440, 23: 448, 24: 464, 38: 476, 39: 488, 40: 500, 41: 512, 44: 524, 60: 528}
+ table B {1: 552, 2: 632, 3: 708, 4: 748, 5: 768, 6: 784, 7: 800}
+ table C {1: 840, 7: 872, 8: 888, 9: 932, 10: 976, 11: 1012, 12: 1040, 13: 1076, 14: 1112, 15: 1148, 16: 1184, 17: 1220, 18: 1256, 19: 1292, 20: 1328, 22: 1364, 23: 1408, 24: 1492, 25: 1528, 26: 1564, 27: 1600, 28: 1636, 29: 1672, 31: 1736, 38: 1752, 39: 1788, 40: 1824, 41: 1860, 43: 1896, 44: 1940, 45: 2004, 46: 2024, 47: 2088, 50: 2152, 54: 2196, 56: 2228, 57: 2292, 60: 2356, 61: 2416, 62: 2500, 63: 2560, 64: 2644, 65: 2728, 66: 2788, 67: 2872, 68: 2932}
+ table D {10: 3004, 12: 3012, 13: 3016, 14: 3020, 15: 3024, 16: 3028, 17: 3032, 18: 3036, 19: 3040, 20: 3044, 38: 3048, 39: 3056, 40: 3064, 41: 3072}
+ table E {}
+ table F {}
+  ;; entry A[11]
+  364: IMPL 0x31 If flag off                              [252, 3, 10, 0] G1020 -> 374
+  369: IMPL 0x1A Set anim                                 [1]
+  371: IMPL 0x40 Set program index and clear the program state [2, 0]
+  374: IMPL 0xFF End script                               []
+  375: IMPL 0x00 Break                                    []
+  ;; entry A[12]
+  376: IMPL 0x1A Set anim                                 [0]
+  378: IMPL 0x06 Flag off                                 [121, 128] T121
+  381: IMPL 0xFF End script                               []
+  382: IMPL 0x00 Break                                    []
+  383: IMPL 0x00 Break                                    []
+  ;; entry A[13]
+  384: IMPL 0x1A Set anim                                 [0]
+  386: IMPL 0x06 Flag off                                 [131, 128] T131
+  389: IMPL 0xFF End script                               []
+  390: IMPL 0x00 Break                                    []
+  391: IMPL 0x00 Break                                    []
+  ;; entry A[14]
+  392: IMPL 0x1A Set anim                                 [1]
+  394: IMPL 0x05 Flag on                                  [141, 128] T141
+  397: IMPL 0xFF End script                               []
+  398: IMPL 0x00 Break                                    []
+  399: IMPL 0x00 Break                                    []
+  ;; entry A[15]
+  400: IMPL 0x1A Set anim                                 [0]
+  402: IMPL 0x06 Flag off                                 [151, 128] T151
+  405: IMPL 0xFF End script                               []
+  406: IMPL 0x00 Break                                    []
+  407: IMPL 0x00 Break                                    []
+  ;; entry A[16]
+  408: IMPL 0x1A Set anim                                 [1]
+  410: IMPL 0x05 Flag on                                  [161, 128] T161
+  413: IMPL 0xFF End script                               []
+  414: IMPL 0x00 Break                                    []
+  415: IMPL 0x00 Break                                    []
+  ;; entry A[17]
+  416: IMPL 0x1A Set anim                                 [0]
+  418: IMPL 0x06 Flag off                                 [171, 128] T171
+  421: IMPL 0xFF End script                               []
+  422: IMPL 0x00 Break                                    []
+  423: IMPL 0x00 Break                                    []
+  ;; entry A[18]
+  424: IMPL 0x1A Set anim                                 [1]
+  426: IMPL 0x05 Flag on                                  [181, 128] T181
+  429: IMPL 0xFF End script                               []
+  430: IMPL 0x00 Break                                    []
+  431: IMPL 0x00 Break                                    []
+  ;; entry A[19]
+  432: IMPL 0x1A Set anim                                 [0]
+  434: IMPL 0x06 Flag off                                 [191, 128] T191
+  437: IMPL 0xFF End script                               []
+  438: IMPL 0x00 Break                                    []
+  439: IMPL 0x00 Break                                    []
+  ;; entry A[20]
+  440: IMPL 0x1A Set anim                                 [1]
+  442: IMPL 0x05 Flag on                                  [201, 128] T201
+  445: IMPL 0xFF End script                               []
+  446: IMPL 0x00 Break                                    []
+  447: IMPL 0x00 Break                                    []
+  ;; entry A[23]
+  448: IMPL 0x31 If flag off                              [124, 4, 12, 0] G1148 -> 460
+  453: IMPL 0x1A Set anim                                 [1]
+  455: IMPL 0x40 Set program index and clear the program state [2, 0]
+  458: IMPL 0x2D Activate entity                          [30]
+  460: IMPL 0xFF End script                               []
+  461: IMPL 0x00 Break                                    []
+  462: IMPL 0x00 Break                                    []
+  463: IMPL 0x00 Break                                    []
+  ;; entry A[24]
+  464: IMPL 0x31 If flag off                              [124, 4, 10, 0] G1148 -> 474
+  469: IMPL 0x1A Set anim                                 [1]
+  471: IMPL 0x40 Set program index and clear the program state [2, 0]
+  474: IMPL 0xFF End script                               []
+  475: IMPL 0x00 Break                                    []
+  ;; entry A[38]
+  476: IMPL 0x63 Clear entities flags (low 16 bits)       [128, 0, 64]
+  480: IMPL 0x1A Set anim                                 [0]
+  482: IMPL 0x06 Flag off                                 [125, 129] T381
+  485: IMPL 0xFF End script                               []
+  486: IMPL 0x00 Break                                    []
+  487: IMPL 0x00 Break                                    []
+  ;; entry A[39]
+  488: IMPL 0x63 Clear entities flags (low 16 bits)       [128, 0, 64]
+  492: IMPL 0x1A Set anim                                 [0]
+  494: IMPL 0x06 Flag off                                 [135, 129] T391
+  497: IMPL 0xFF End script                               []
+  498: IMPL 0x00 Break                                    []
+  499: IMPL 0x00 Break                                    []
+  ;; entry A[40]
+  500: IMPL 0x63 Clear entities flags (low 16 bits)       [128, 0, 64]
+  504: IMPL 0x1A Set anim                                 [1]
+  506: IMPL 0x05 Flag on                                  [145, 129] T401
+  509: IMPL 0xFF End script                               []
+  510: IMPL 0x00 Break                                    []
+  511: IMPL 0x00 Break                                    []
+  ;; entry A[41]
+  512: IMPL 0x63 Clear entities flags (low 16 bits)       [128, 0, 64]
+  516: IMPL 0x1A Set anim                                 [0]
+  518: IMPL 0x06 Flag off                                 [155, 129] T411
+  521: IMPL 0xFF End script                               []
+  522: IMPL 0x00 Break                                    []
+  523: IMPL 0x00 Break                                    []
+  ;; entry A[44]
+  524: IMPL 0x2B Clear EntityFlags.ClassA                 []
+  525: IMPL 0xFF End script                               []
+  526: IMPL 0x00 Break                                    []
+  527: IMPL 0x00 Break                                    []
+  ;; entry A[60]
+  528: IMPL 0x30 If flag on                               [174, 6, 15, 0] G1710 -> 543
+  533: IMPL 0x31 If flag off                              [2, 4, 15, 0] G1026 -> 548
+  538: IMPL 0x31 If flag off                              [3, 4, 10, 0] G1027 -> 548
+  543: IMPL 0x63 Clear entities flags (low 16 bits)       [128, 128, 32]
+  547: IMPL 0x00 Break                                    []
+  548: IMPL 0x40 Set program index and clear the program state [2, 0]
+  551: IMPL 0xFF End script                               []
+  ;; entry B[1]
+  552: IMPL 0x30 If flag on                               [89, 4, 74, 0] G1113 -> 626
+  557: IMPL 0x2D Activate entity                          [0]
+  559: IMPL 0x2D Activate entity                          [1]
+  561: IMPL 0x2D Activate entity                          [2]
+  563: IMPL 0x2D Activate entity                          [3]
+  565: IMPL 0x2D Activate entity                          [4]
+  567: IMPL 0x2D Activate entity                          [5]
+  569: IMPL 0x00 Break                                    []
+  570: IMPL 0x2C Check no entity by function id           [0]
+  572: IMPL 0x04 If false goto                            [253, 255] -> 569
+  575: IMPL 0x2C Check no entity by function id           [1]
+  577: IMPL 0x04 If false goto                            [248, 255] -> 569
+  580: IMPL 0x2C Check no entity by function id           [2]
+  582: IMPL 0x04 If false goto                            [243, 255] -> 569
+  585: IMPL 0x2C Check no entity by function id           [3]
+  587: IMPL 0x04 If false goto                            [238, 255] -> 569
+  590: IMPL 0x2C Check no entity by function id           [4]
+  592: IMPL 0x04 If false goto                            [233, 255] -> 569
+  595: IMPL 0x2C Check no entity by function id           [5]
+  597: IMPL 0x04 If false goto                            [228, 255] -> 569
+  600: IMPL 0x00 Break                                    []
+  601: IMPL 0x37 Wait                                     [20]
+  603: IMPL 0xBD Play sound 2                             [2, 0]
+  606: IMPL 0x37 Wait                                     [40]
+  608: IMPL 0x2D Activate entity                          [6]
+  610: IMPL 0x65 Move entity position                     [6, 0, 0, 0, 0, 160, 0]
+  618: IMPL 0x62 Set entities flags (low 16 bits)         [6, 0, 65]
+  622: IMPL 0x02 Goto                                     [6, 0] -> 628
+  625: IMPL 0x00 Break                                    []
+  626: IMPL 0x2D Activate entity                          [6]
+  628: IMPL 0xFF End script                               []
+  629: IMPL 0x00 Break                                    []
+  630: IMPL 0x00 Break                                    []
+  631: IMPL 0x00 Break                                    []
+  ;; entry B[2]
+  632: IMPL 0x00 Break                                    []
+  633: IMPL 0x06 Flag off                                 [252, 131] T1020
+  636: IMPL 0x33 Check flags on                           [121, 128, 131, 128, 141, 128, 151, 128]
+  645: IMPL 0x04 If false goto                            [26, 0] -> 671
+  648: IMPL 0x33 Check flags on                           [161, 128, 171, 128, 181, 128, 191, 128]
+  657: IMPL 0x04 If false goto                            [14, 0] -> 671
+  660: IMPL 0x31 If flag off                              [201, 128, 11, 0] T201 -> 671
+  665: IMPL 0x05 Flag on                                  [252, 131] T1020
+  668: IMPL 0x49 Restart                                  []
+  669: IMPL 0x00 Break                                    []
+  670: IMPL 0x00 Break                                    []
+  671: IMPL 0x34 Check flags off                          [121, 128, 131, 128, 141, 128, 151, 128]
+  680: IMPL 0x04 If false goto                            [208, 255] -> 632
+  683: IMPL 0x34 Check flags off                          [161, 128, 171, 128, 181, 128, 191, 128]
+  692: IMPL 0x04 If false goto                            [196, 255] -> 632
+  695: IMPL 0x30 If flag on                               [201, 128, 193, 255] T201 -> 632
+  700: IMPL 0x05 Flag on                                  [252, 131] T1020
+  703: IMPL 0x49 Restart                                  []
+  704: IMPL 0xFF End script                               []
+  705: IMPL 0x00 Break                                    []
+  706: IMPL 0x00 Break                                    []
+  707: IMPL 0x00 Break                                    []
+  ;; entry B[3]
+  708: IMPL 0x00 Break                                    []
+  709: IMPL 0x06 Flag off                                 [6, 132] T1030
+  712: IMPL 0x33 Check flags on                           [125, 129, 135, 129, 145, 129, 155, 129]
+  721: IMPL 0x04 If false goto                            [9, 0] -> 730
+  724: IMPL 0x05 Flag on                                  [6, 132] T1030
+  727: IMPL 0x49 Restart                                  []
+  728: IMPL 0x00 Break                                    []
+  729: IMPL 0x00 Break                                    []
+  730: IMPL 0x34 Check flags off                          [125, 129, 135, 129, 145, 129, 155, 129]
+  739: IMPL 0x04 If false goto                            [225, 255] -> 708
+  742: IMPL 0x05 Flag on                                  [6, 132] T1030
+  745: IMPL 0x49 Restart                                  []
+  746: IMPL 0xFF End script                               []
+  747: IMPL 0x00 Break                                    []
+  ;; entry B[4]
+  748: IMPL 0x30 If flag on                               [174, 6, 15, 0] G1710 -> 763
+  753: IMPL 0x31 If flag off                              [2, 4, 13, 0] G1026 -> 766
+  758: IMPL 0x31 If flag off                              [3, 4, 8, 0] G1027 -> 766
+  763: IMPL 0xA4 Background layer mask                    [0, 0]
+  766: IMPL 0xFF End script                               []
+  767: IMPL 0x00 Break                                    []
+  ;; entry B[5]
+  768: IMPL 0x36 Wait until flag on                       [252, 131] T1020
+  771: IMPL 0xBD Play sound 2                             [58, 0]
+  774: IMPL 0x35 Wait until flag off                      [252, 131] T1020
+  777: IMPL 0x02 Goto                                     [247, 255] -> 768
+  780: IMPL 0xFF End script                               []
+  781: IMPL 0x00 Break                                    []
+  782: IMPL 0x00 Break                                    []
+  783: IMPL 0x00 Break                                    []
+  ;; entry B[6]
+  784: IMPL 0x36 Wait until flag on                       [6, 132] T1030
+  787: IMPL 0xBD Play sound 2                             [58, 0]
+  790: IMPL 0x35 Wait until flag off                      [6, 132] T1030
+  793: IMPL 0x02 Goto                                     [247, 255] -> 784
+  796: IMPL 0xFF End script                               []
+  797: IMPL 0x00 Break                                    []
+  798: IMPL 0x00 Break                                    []
+  799: IMPL 0x00 Break                                    []
+  ;; entry B[7]
+  800: IMPL 0x31 If flag off                              [174, 6, 36, 0] G1710 -> 836
+  805: IMPL 0xAF Set fade transition with color           [255, 255, 255, 2, 1, 1]
+  812: IMPL 0x2D Activate entity                          [67]
+  814: IMPL 0x67 Camera follow entity                     [67]
+  816: IMPL 0x64 Set entities position                    [129, 228, 3, 48, 2, 0, 0]
+  824: IMPL 0x00 Break                                    []
+  825: IMPL 0xAF Set fade transition with color           [0, 0, 0, 2, 120, 0]
+  832: IMPL 0x00 Break                                    []
+  833: IMPL 0x00 Break                                    []
+  834: IMPL 0x00 Break                                    []
+  835: IMPL 0x00 Break                                    []
+  836: IMPL 0xFF End script                               []
+  837: IMPL 0x00 Break                                    []
+  838: IMPL 0x00 Break                                    []
+  839: IMPL 0x00 Break                                    []
+  ;; entry C[1]
+  840: IMPL 0x1A Set anim                                 [10]
+  842: IMPL 0x62 Set entities flags (low 16 bits)         [128, 128, 0]
+  846: IMPL 0x63 Clear entities flags (low 16 bits)       [128, 3, 0]
+  850: IMPL 0x36 Wait until flag on                       [2, 4] G1026
+  853: IMPL 0x36 Wait until flag on                       [3, 4] G1027
+  856: IMPL 0x63 Clear entities flags (low 16 bits)       [128, 128, 0]
+  860: IMPL 0x62 Set entities flags (low 16 bits)         [128, 3, 0]
+  864: IMPL 0x1A Set anim                                 [0]
+  866: IMPL 0x40 Set program index and clear the program state [2, 0]
+  869: IMPL 0xFF End script                               []
+  870: IMPL 0x00 Break                                    []
+  871: IMPL 0x00 Break                                    []
+  ;; entry C[7]
+  872: IMPL 0x70 Is above ground                          []
+  873: IMPL 0x03 If true goto                             [11, 0] -> 884
+  876: IMPL 0xBD Play sound 2                             [55, 0]
+  879: IMPL 0x00 Break                                    []
+  880: IMPL 0x26 Wait force adjusted or entity collision z []
+  881: IMPL 0xBD Play sound 2                             [24, 0]
+  884: IMPL 0x40 Set program index and clear the program state [2, 0]
+  887: IMPL 0xFF End script                               []
+  ;; entry C[8]
+  888: IMPL 0x36 Wait until flag on                       [105, 128] T105
+  891: IMPL 0x1A Set anim                                 [2]
+  893: IMPL 0x09 Set direction                            [24]
+  895: IMPL 0x00 Break                                    []
+  896: IMPL 0x31 If flag off                              [105, 128, 12, 0] T105 -> 908
+  901: IMPL 0x6E Is force adjusted                        []
+  902: IMPL 0x04 If false goto                            [249, 255] -> 895
+  905: IMPL 0x1A Set anim                                 [0]
+  907: IMPL 0x00 Break                                    []
+  908: IMPL 0x35 Wait until flag off                      [105, 128] T105
+  911: IMPL 0x1A Set anim                                 [2]
+  913: IMPL 0x09 Set direction                            [8]
+  915: IMPL 0x00 Break                                    []
+  916: IMPL 0x30 If flag on                               [105, 128, 228, 255] T105 -> 888
+  921: IMPL 0x6E Is force adjusted                        []
+  922: IMPL 0x04 If false goto                            [249, 255] -> 915
+  925: IMPL 0x1A Set anim                                 [0]
+  927: IMPL 0x49 Restart                                  []
+  928: IMPL 0xFF End script                               []
+  929: IMPL 0x00 Break                                    []
+  930: IMPL 0x00 Break                                    []
+  931: IMPL 0x00 Break                                    []
+  ;; entry C[9]
+  932: IMPL 0x36 Wait until flag on                       [105, 128] T105
+  935: IMPL 0x1A Set anim                                 [2]
+  937: IMPL 0x09 Set direction                            [0]
+  939: IMPL 0x00 Break                                    []
+  940: IMPL 0x31 If flag off                              [105, 128, 12, 0] T105 -> 952
+  945: IMPL 0x6E Is force adjusted                        []
+  946: IMPL 0x04 If false goto                            [249, 255] -> 939
+  949: IMPL 0x1A Set anim                                 [0]
+  951: IMPL 0x00 Break                                    []
+  952: IMPL 0x35 Wait until flag off                      [105, 128] T105
+  955: IMPL 0x1A Set anim                                 [2]
+  957: IMPL 0x09 Set direction                            [16]
+  959: IMPL 0x00 Break                                    []
+  960: IMPL 0x30 If flag on                               [105, 128, 228, 255] T105 -> 932
+  965: IMPL 0x6E Is force adjusted                        []
+  966: IMPL 0x04 If false goto                            [249, 255] -> 959
+  969: IMPL 0x1A Set anim                                 [0]
+  971: IMPL 0x49 Restart                                  []
+  972: IMPL 0xFF End script                               []
+  973: IMPL 0x00 Break                                    []
+  974: IMPL 0x00 Break                                    []
+  975: IMPL 0x00 Break                                    []
+  ;; entry C[10]
+  976: IMPL 0x36 Wait until flag on                       [100, 128] T100
+  979: IMPL 0x06 Flag off                                 [100, 128] T100
+  982: IMPL 0x1A Set anim                                 [2]
+  984: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+  986: IMPL 0x1A Set anim                                 [1]
+  988: IMPL 0x05 Flag on                                  [105, 128] T105
+  991: IMPL 0x2A Set EntityFlags.ClassA                   []
+  992: IMPL 0x00 Break                                    []
+  993: IMPL 0x00 Break                                    []
+  994: IMPL 0x36 Wait until flag on                       [100, 128] T100
+  997: IMPL 0x06 Flag off                                 [100, 128] T100
+ 1000: IMPL 0x1A Set anim                                 [3]
+ 1002: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1004: IMPL 0x1A Set anim                                 [0]
+ 1006: IMPL 0x06 Flag off                                 [105, 128] T105
+ 1009: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1010: IMPL 0x49 Restart                                  []
+ 1011: IMPL 0xFF End script                               []
+  ;; entry C[11]
+ 1012: IMPL 0x00 Break                                    []
+ 1013: IMPL 0x3F If entity riding me                      []
+ 1014: IMPL 0x04 If false goto                            [254, 255] -> 1012
+ 1017: IMPL 0x10 Player lose control                      []
+ 1018: IMPL 0x59 Set entity anim                          [129, 0]
+ 1021: IMPL 0x1A Set anim                                 [4]
+ 1023: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1025: IMPL 0x05 Flag on                                  [90, 4] G1114
+ 1028: IMPL 0x53 Change map                               [81, 1, 11, 17, 2, 0, 0]
+ 1036: IMPL 0x00 Break                                    []
+ 1037: IMPL 0xFF End script                               []
+ 1038: IMPL 0x00 Break                                    []
+ 1039: IMPL 0x00 Break                                    []
+  ;; entry C[12]
+ 1040: IMPL 0x30 If flag on                               [121, 128, 18, 0] T121 -> 1058
+ 1045: IMPL 0x36 Wait until flag on                       [120, 128] T120
+ 1048: IMPL 0x06 Flag off                                 [120, 128] T120
+ 1051: IMPL 0x1A Set anim                                 [2]
+ 1053: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1055: IMPL 0x32 Toggle flag                              [121, 128] T121
+ 1058: IMPL 0x36 Wait until flag on                       [120, 128] T120
+ 1061: IMPL 0x06 Flag off                                 [120, 128] T120
+ 1064: IMPL 0x1A Set anim                                 [3]
+ 1066: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1068: IMPL 0x32 Toggle flag                              [121, 128] T121
+ 1071: IMPL 0x49 Restart                                  []
+ 1072: IMPL 0xFF End script                               []
+ 1073: IMPL 0x00 Break                                    []
+ 1074: IMPL 0x00 Break                                    []
+ 1075: IMPL 0x00 Break                                    []
+  ;; entry C[13]
+ 1076: IMPL 0x30 If flag on                               [131, 128, 18, 0] T131 -> 1094
+ 1081: IMPL 0x36 Wait until flag on                       [130, 128] T130
+ 1084: IMPL 0x06 Flag off                                 [130, 128] T130
+ 1087: IMPL 0x1A Set anim                                 [2]
+ 1089: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1091: IMPL 0x32 Toggle flag                              [131, 128] T131
+ 1094: IMPL 0x36 Wait until flag on                       [130, 128] T130
+ 1097: IMPL 0x06 Flag off                                 [130, 128] T130
+ 1100: IMPL 0x1A Set anim                                 [3]
+ 1102: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1104: IMPL 0x32 Toggle flag                              [131, 128] T131
+ 1107: IMPL 0x49 Restart                                  []
+ 1108: IMPL 0xFF End script                               []
+ 1109: IMPL 0x00 Break                                    []
+ 1110: IMPL 0x00 Break                                    []
+ 1111: IMPL 0x00 Break                                    []
+  ;; entry C[14]
+ 1112: IMPL 0x30 If flag on                               [141, 128, 18, 0] T141 -> 1130
+ 1117: IMPL 0x36 Wait until flag on                       [140, 128] T140
+ 1120: IMPL 0x06 Flag off                                 [140, 128] T140
+ 1123: IMPL 0x1A Set anim                                 [2]
+ 1125: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1127: IMPL 0x32 Toggle flag                              [141, 128] T141
+ 1130: IMPL 0x36 Wait until flag on                       [140, 128] T140
+ 1133: IMPL 0x06 Flag off                                 [140, 128] T140
+ 1136: IMPL 0x1A Set anim                                 [3]
+ 1138: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1140: IMPL 0x32 Toggle flag                              [141, 128] T141
+ 1143: IMPL 0x49 Restart                                  []
+ 1144: IMPL 0xFF End script                               []
+ 1145: IMPL 0x00 Break                                    []
+ 1146: IMPL 0x00 Break                                    []
+ 1147: IMPL 0x00 Break                                    []
+  ;; entry C[15]
+ 1148: IMPL 0x30 If flag on                               [151, 128, 18, 0] T151 -> 1166
+ 1153: IMPL 0x36 Wait until flag on                       [150, 128] T150
+ 1156: IMPL 0x06 Flag off                                 [150, 128] T150
+ 1159: IMPL 0x1A Set anim                                 [2]
+ 1161: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1163: IMPL 0x32 Toggle flag                              [151, 128] T151
+ 1166: IMPL 0x36 Wait until flag on                       [150, 128] T150
+ 1169: IMPL 0x06 Flag off                                 [150, 128] T150
+ 1172: IMPL 0x1A Set anim                                 [3]
+ 1174: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1176: IMPL 0x32 Toggle flag                              [151, 128] T151
+ 1179: IMPL 0x49 Restart                                  []
+ 1180: IMPL 0xFF End script                               []
+ 1181: IMPL 0x00 Break                                    []
+ 1182: IMPL 0x00 Break                                    []
+ 1183: IMPL 0x00 Break                                    []
+  ;; entry C[16]
+ 1184: IMPL 0x30 If flag on                               [161, 128, 18, 0] T161 -> 1202
+ 1189: IMPL 0x36 Wait until flag on                       [160, 128] T160
+ 1192: IMPL 0x06 Flag off                                 [160, 128] T160
+ 1195: IMPL 0x1A Set anim                                 [2]
+ 1197: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1199: IMPL 0x32 Toggle flag                              [161, 128] T161
+ 1202: IMPL 0x36 Wait until flag on                       [160, 128] T160
+ 1205: IMPL 0x06 Flag off                                 [160, 128] T160
+ 1208: IMPL 0x1A Set anim                                 [3]
+ 1210: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1212: IMPL 0x32 Toggle flag                              [161, 128] T161
+ 1215: IMPL 0x49 Restart                                  []
+ 1216: IMPL 0xFF End script                               []
+ 1217: IMPL 0x00 Break                                    []
+ 1218: IMPL 0x00 Break                                    []
+ 1219: IMPL 0x00 Break                                    []
+  ;; entry C[17]
+ 1220: IMPL 0x30 If flag on                               [171, 128, 18, 0] T171 -> 1238
+ 1225: IMPL 0x36 Wait until flag on                       [170, 128] T170
+ 1228: IMPL 0x06 Flag off                                 [170, 128] T170
+ 1231: IMPL 0x1A Set anim                                 [2]
+ 1233: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1235: IMPL 0x32 Toggle flag                              [171, 128] T171
+ 1238: IMPL 0x36 Wait until flag on                       [170, 128] T170
+ 1241: IMPL 0x06 Flag off                                 [170, 128] T170
+ 1244: IMPL 0x1A Set anim                                 [3]
+ 1246: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1248: IMPL 0x32 Toggle flag                              [171, 128] T171
+ 1251: IMPL 0x49 Restart                                  []
+ 1252: IMPL 0xFF End script                               []
+ 1253: IMPL 0x00 Break                                    []
+ 1254: IMPL 0x00 Break                                    []
+ 1255: IMPL 0x00 Break                                    []
+  ;; entry C[18]
+ 1256: IMPL 0x30 If flag on                               [181, 128, 18, 0] T181 -> 1274
+ 1261: IMPL 0x36 Wait until flag on                       [180, 128] T180
+ 1264: IMPL 0x06 Flag off                                 [180, 128] T180
+ 1267: IMPL 0x1A Set anim                                 [2]
+ 1269: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1271: IMPL 0x32 Toggle flag                              [181, 128] T181
+ 1274: IMPL 0x36 Wait until flag on                       [180, 128] T180
+ 1277: IMPL 0x06 Flag off                                 [180, 128] T180
+ 1280: IMPL 0x1A Set anim                                 [3]
+ 1282: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1284: IMPL 0x32 Toggle flag                              [181, 128] T181
+ 1287: IMPL 0x49 Restart                                  []
+ 1288: IMPL 0xFF End script                               []
+ 1289: IMPL 0x00 Break                                    []
+ 1290: IMPL 0x00 Break                                    []
+ 1291: IMPL 0x00 Break                                    []
+  ;; entry C[19]
+ 1292: IMPL 0x30 If flag on                               [191, 128, 18, 0] T191 -> 1310
+ 1297: IMPL 0x36 Wait until flag on                       [190, 128] T190
+ 1300: IMPL 0x06 Flag off                                 [190, 128] T190
+ 1303: IMPL 0x1A Set anim                                 [2]
+ 1305: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1307: IMPL 0x32 Toggle flag                              [191, 128] T191
+ 1310: IMPL 0x36 Wait until flag on                       [190, 128] T190
+ 1313: IMPL 0x06 Flag off                                 [190, 128] T190
+ 1316: IMPL 0x1A Set anim                                 [3]
+ 1318: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1320: IMPL 0x32 Toggle flag                              [191, 128] T191
+ 1323: IMPL 0x49 Restart                                  []
+ 1324: IMPL 0xFF End script                               []
+ 1325: IMPL 0x00 Break                                    []
+ 1326: IMPL 0x00 Break                                    []
+ 1327: IMPL 0x00 Break                                    []
+  ;; entry C[20]
+ 1328: IMPL 0x30 If flag on                               [201, 128, 18, 0] T201 -> 1346
+ 1333: IMPL 0x36 Wait until flag on                       [200, 128] T200
+ 1336: IMPL 0x06 Flag off                                 [200, 128] T200
+ 1339: IMPL 0x1A Set anim                                 [2]
+ 1341: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1343: IMPL 0x32 Toggle flag                              [201, 128] T201
+ 1346: IMPL 0x36 Wait until flag on                       [200, 128] T200
+ 1349: IMPL 0x06 Flag off                                 [200, 128] T200
+ 1352: IMPL 0x1A Set anim                                 [3]
+ 1354: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1356: IMPL 0x32 Toggle flag                              [201, 128] T201
+ 1359: IMPL 0x49 Restart                                  []
+ 1360: IMPL 0xFF End script                               []
+ 1361: IMPL 0x00 Break                                    []
+ 1362: IMPL 0x00 Break                                    []
+ 1363: IMPL 0x00 Break                                    []
+  ;; entry C[22]
+ 1364: IMPL 0x00 Break                                    []
+ 1365: IMPL 0x30 If flag on                               [252, 131, 29, 0] T1020 -> 1394
+ 1370: IMPL 0x07 Check entity in area                     [128, 46, 46, 38, 38, 5, 10]
+ 1378: IMPL 0x03 If true goto                             [242, 255] -> 1364
+ 1381: IMPL 0x1B Fly                                      [0, 1]
+ 1384: IMPL 0x21 Wait Z distance or Z contact             [1, 0]
+ 1387: IMPL 0x1B Fly                                      [0, 0]
+ 1390: IMPL 0x02 Goto                                     [230, 255] -> 1364
+ 1393: IMPL 0x00 Break                                    []
+ 1394: IMPL 0x1B Fly                                      [0, 255]
+ 1397: IMPL 0x21 Wait Z distance or Z contact             [1, 0]
+ 1400: IMPL 0x1B Fly                                      [0, 0]
+ 1403: IMPL 0x02 Goto                                     [217, 255] -> 1364
+ 1406: IMPL 0xFF End script                               []
+ 1407: IMPL 0x00 Break                                    []
+  ;; entry C[23]
+ 1408: IMPL 0x00 Break                                    []
+ 1409: IMPL 0x3F If entity riding me                      []
+ 1410: IMPL 0x04 If false goto                            [254, 255] -> 1408
+ 1413: IMPL 0x1A Set anim                                 [4]
+ 1415: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1417: IMPL 0x05 Flag on                                  [230, 128] T230
+ 1420: IMPL 0x00 Break                                    []
+ 1421: IMPL 0x31 If flag off                              [230, 128, 56, 0] T230 -> 1477
+ 1426: IMPL 0x31 If flag off                              [240, 128, 51, 0] T240 -> 1477
+ 1431: IMPL 0x31 If flag off                              [250, 128, 46, 0] T250 -> 1477
+ 1436: IMPL 0x31 If flag off                              [4, 129, 41, 0] T260 -> 1477
+ 1441: IMPL 0x31 If flag off                              [14, 129, 36, 0] T270 -> 1477
+ 1446: IMPL 0x31 If flag off                              [24, 129, 31, 0] T280 -> 1477
+ 1451: IMPL 0x05 Flag on                                  [124, 4] G1148
+ 1454: IMPL 0xBD Play sound 2                             [2, 0]
+ 1457: IMPL 0x37 Wait                                     [40]
+ 1459: IMPL 0x2D Activate entity                          [30]
+ 1461: IMPL 0x65 Move entity position                     [30, 0, 0, 0, 0, 160, 0]
+ 1469: IMPL 0x62 Set entities flags (low 16 bits)         [30, 0, 65]
+ 1473: IMPL 0x02 Goto                                     [17, 0] -> 1490
+ 1476: IMPL 0x00 Break                                    []
+ 1477: IMPL 0x3F If entity riding me                      []
+ 1478: IMPL 0x03 If true goto                             [198, 255] -> 1420
+ 1481: IMPL 0x06 Flag off                                 [230, 128] T230
+ 1484: IMPL 0x1A Set anim                                 [5]
+ 1486: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1488: IMPL 0x49 Restart                                  []
+ 1489: IMPL 0x00 Break                                    []
+ 1490: IMPL 0xFF End script                               []
+ 1491: IMPL 0x00 Break                                    []
+  ;; entry C[24]
+ 1492: IMPL 0x00 Break                                    []
+ 1493: IMPL 0x3F If entity riding me                      []
+ 1494: IMPL 0x04 If false goto                            [254, 255] -> 1492
+ 1497: IMPL 0x1A Set anim                                 [4]
+ 1499: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1501: IMPL 0x05 Flag on                                  [240, 128] T240
+ 1504: IMPL 0x00 Break                                    []
+ 1505: IMPL 0x30 If flag on                               [124, 4, 19, 0] G1148 -> 1524
+ 1510: IMPL 0x3F If entity riding me                      []
+ 1511: IMPL 0x03 If true goto                             [249, 255] -> 1504
+ 1514: IMPL 0x06 Flag off                                 [240, 128] T240
+ 1517: IMPL 0x1A Set anim                                 [5]
+ 1519: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1521: IMPL 0x49 Restart                                  []
+ 1522: IMPL 0x00 Break                                    []
+ 1523: IMPL 0x00 Break                                    []
+ 1524: IMPL 0xFF End script                               []
+ 1525: IMPL 0x00 Break                                    []
+ 1526: IMPL 0x00 Break                                    []
+ 1527: IMPL 0x00 Break                                    []
+  ;; entry C[25]
+ 1528: IMPL 0x00 Break                                    []
+ 1529: IMPL 0x3F If entity riding me                      []
+ 1530: IMPL 0x04 If false goto                            [254, 255] -> 1528
+ 1533: IMPL 0x1A Set anim                                 [4]
+ 1535: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1537: IMPL 0x05 Flag on                                  [250, 128] T250
+ 1540: IMPL 0x00 Break                                    []
+ 1541: IMPL 0x30 If flag on                               [124, 4, 19, 0] G1148 -> 1560
+ 1546: IMPL 0x3F If entity riding me                      []
+ 1547: IMPL 0x03 If true goto                             [249, 255] -> 1540
+ 1550: IMPL 0x06 Flag off                                 [250, 128] T250
+ 1553: IMPL 0x1A Set anim                                 [5]
+ 1555: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1557: IMPL 0x49 Restart                                  []
+ 1558: IMPL 0x00 Break                                    []
+ 1559: IMPL 0x00 Break                                    []
+ 1560: IMPL 0xFF End script                               []
+ 1561: IMPL 0x00 Break                                    []
+ 1562: IMPL 0x00 Break                                    []
+ 1563: IMPL 0x00 Break                                    []
+  ;; entry C[26]
+ 1564: IMPL 0x00 Break                                    []
+ 1565: IMPL 0x3F If entity riding me                      []
+ 1566: IMPL 0x04 If false goto                            [254, 255] -> 1564
+ 1569: IMPL 0x1A Set anim                                 [4]
+ 1571: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1573: IMPL 0x05 Flag on                                  [4, 129] T260
+ 1576: IMPL 0x00 Break                                    []
+ 1577: IMPL 0x30 If flag on                               [124, 4, 19, 0] G1148 -> 1596
+ 1582: IMPL 0x3F If entity riding me                      []
+ 1583: IMPL 0x03 If true goto                             [249, 255] -> 1576
+ 1586: IMPL 0x06 Flag off                                 [4, 129] T260
+ 1589: IMPL 0x1A Set anim                                 [5]
+ 1591: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1593: IMPL 0x49 Restart                                  []
+ 1594: IMPL 0x00 Break                                    []
+ 1595: IMPL 0x00 Break                                    []
+ 1596: IMPL 0xFF End script                               []
+ 1597: IMPL 0x00 Break                                    []
+ 1598: IMPL 0x00 Break                                    []
+ 1599: IMPL 0x00 Break                                    []
+  ;; entry C[27]
+ 1600: IMPL 0x00 Break                                    []
+ 1601: IMPL 0x3F If entity riding me                      []
+ 1602: IMPL 0x04 If false goto                            [254, 255] -> 1600
+ 1605: IMPL 0x1A Set anim                                 [4]
+ 1607: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1609: IMPL 0x05 Flag on                                  [14, 129] T270
+ 1612: IMPL 0x00 Break                                    []
+ 1613: IMPL 0x30 If flag on                               [124, 4, 19, 0] G1148 -> 1632
+ 1618: IMPL 0x3F If entity riding me                      []
+ 1619: IMPL 0x03 If true goto                             [249, 255] -> 1612
+ 1622: IMPL 0x06 Flag off                                 [14, 129] T270
+ 1625: IMPL 0x1A Set anim                                 [5]
+ 1627: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1629: IMPL 0x49 Restart                                  []
+ 1630: IMPL 0x00 Break                                    []
+ 1631: IMPL 0x00 Break                                    []
+ 1632: IMPL 0xFF End script                               []
+ 1633: IMPL 0x00 Break                                    []
+ 1634: IMPL 0x00 Break                                    []
+ 1635: IMPL 0x00 Break                                    []
+  ;; entry C[28]
+ 1636: IMPL 0x00 Break                                    []
+ 1637: IMPL 0x3F If entity riding me                      []
+ 1638: IMPL 0x04 If false goto                            [254, 255] -> 1636
+ 1641: IMPL 0x1A Set anim                                 [4]
+ 1643: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1645: IMPL 0x05 Flag on                                  [24, 129] T280
+ 1648: IMPL 0x00 Break                                    []
+ 1649: IMPL 0x30 If flag on                               [124, 4, 19, 0] G1148 -> 1668
+ 1654: IMPL 0x3F If entity riding me                      []
+ 1655: IMPL 0x03 If true goto                             [249, 255] -> 1648
+ 1658: IMPL 0x06 Flag off                                 [24, 129] T280
+ 1661: IMPL 0x1A Set anim                                 [5]
+ 1663: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1665: IMPL 0x49 Restart                                  []
+ 1666: IMPL 0x00 Break                                    []
+ 1667: IMPL 0x00 Break                                    []
+ 1668: IMPL 0xFF End script                               []
+ 1669: IMPL 0x00 Break                                    []
+ 1670: IMPL 0x00 Break                                    []
+ 1671: IMPL 0x00 Break                                    []
+  ;; entry C[29]
+ 1672: IMPL 0x37 Wait                                     [240]
+ 1674: IMPL 0x37 Wait                                     [240]
+ 1676: IMPL 0x37 Wait                                     [240]
+ 1678: IMPL 0x37 Wait                                     [240]
+ 1680: IMPL 0x37 Wait                                     [240]
+ 1682: IMPL 0x5E Set forceZ for entities                  [22, 0, 1]
+ 1686: IMPL 0x5E Set forceZ for entities                  [23, 0, 1]
+ 1690: IMPL 0x5E Set forceZ for entities                  [24, 0, 1]
+ 1694: IMPL 0x5E Set forceZ for entities                  [25, 0, 1]
+ 1698: IMPL 0x5E Set forceZ for entities                  [26, 0, 1]
+ 1702: IMPL 0x5E Set forceZ for entities                  [27, 0, 1]
+ 1706: IMPL 0x37 Wait                                     [16]
+ 1708: IMPL 0x5E Set forceZ for entities                  [22, 0, 0]
+ 1712: IMPL 0x5E Set forceZ for entities                  [23, 0, 0]
+ 1716: IMPL 0x5E Set forceZ for entities                  [24, 0, 0]
+ 1720: IMPL 0x5E Set forceZ for entities                  [25, 0, 0]
+ 1724: IMPL 0x5E Set forceZ for entities                  [26, 0, 0]
+ 1728: IMPL 0x5E Set forceZ for entities                  [27, 0, 0]
+ 1732: IMPL 0xFF End script                               []
+ 1733: IMPL 0x00 Break                                    []
+ 1734: IMPL 0x00 Break                                    []
+ 1735: IMPL 0x00 Break                                    []
+  ;; entry C[31]
+ 1736: IMPL 0x70 Is above ground                          []
+ 1737: IMPL 0x03 If true goto                             [11, 0] -> 1748
+ 1740: IMPL 0xBD Play sound 2                             [55, 0]
+ 1743: IMPL 0x00 Break                                    []
+ 1744: IMPL 0x26 Wait force adjusted or entity collision z []
+ 1745: IMPL 0xBD Play sound 2                             [24, 0]
+ 1748: IMPL 0x40 Set program index and clear the program state [2, 0]
+ 1751: IMPL 0xFF End script                               []
+  ;; entry C[38]
+ 1752: IMPL 0x30 If flag on                               [125, 129, 19, 0] T381 -> 1771
+ 1757: IMPL 0x36 Wait until flag on                       [124, 129] T380
+ 1760: IMPL 0x06 Flag off                                 [124, 129] T380
+ 1763: IMPL 0x1A Set anim                                 [2]
+ 1765: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1767: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1768: IMPL 0x32 Toggle flag                              [125, 129] T381
+ 1771: IMPL 0x36 Wait until flag on                       [124, 129] T380
+ 1774: IMPL 0x06 Flag off                                 [124, 129] T380
+ 1777: IMPL 0x1A Set anim                                 [3]
+ 1779: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1781: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1782: IMPL 0x32 Toggle flag                              [125, 129] T381
+ 1785: IMPL 0x49 Restart                                  []
+ 1786: IMPL 0xFF End script                               []
+ 1787: IMPL 0x00 Break                                    []
+  ;; entry C[39]
+ 1788: IMPL 0x30 If flag on                               [135, 129, 19, 0] T391 -> 1807
+ 1793: IMPL 0x36 Wait until flag on                       [134, 129] T390
+ 1796: IMPL 0x06 Flag off                                 [134, 129] T390
+ 1799: IMPL 0x1A Set anim                                 [2]
+ 1801: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1803: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1804: IMPL 0x32 Toggle flag                              [135, 129] T391
+ 1807: IMPL 0x36 Wait until flag on                       [134, 129] T390
+ 1810: IMPL 0x06 Flag off                                 [134, 129] T390
+ 1813: IMPL 0x1A Set anim                                 [3]
+ 1815: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1817: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1818: IMPL 0x32 Toggle flag                              [135, 129] T391
+ 1821: IMPL 0x49 Restart                                  []
+ 1822: IMPL 0xFF End script                               []
+ 1823: IMPL 0x00 Break                                    []
+  ;; entry C[40]
+ 1824: IMPL 0x30 If flag on                               [145, 129, 19, 0] T401 -> 1843
+ 1829: IMPL 0x36 Wait until flag on                       [144, 129] T400
+ 1832: IMPL 0x06 Flag off                                 [144, 129] T400
+ 1835: IMPL 0x1A Set anim                                 [2]
+ 1837: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1839: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1840: IMPL 0x32 Toggle flag                              [145, 129] T401
+ 1843: IMPL 0x36 Wait until flag on                       [144, 129] T400
+ 1846: IMPL 0x06 Flag off                                 [144, 129] T400
+ 1849: IMPL 0x1A Set anim                                 [3]
+ 1851: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1853: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1854: IMPL 0x32 Toggle flag                              [145, 129] T401
+ 1857: IMPL 0x49 Restart                                  []
+ 1858: IMPL 0xFF End script                               []
+ 1859: IMPL 0x00 Break                                    []
+  ;; entry C[41]
+ 1860: IMPL 0x30 If flag on                               [155, 129, 19, 0] T411 -> 1879
+ 1865: IMPL 0x36 Wait until flag on                       [154, 129] T410
+ 1868: IMPL 0x06 Flag off                                 [154, 129] T410
+ 1871: IMPL 0x1A Set anim                                 [2]
+ 1873: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1875: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1876: IMPL 0x32 Toggle flag                              [155, 129] T411
+ 1879: IMPL 0x36 Wait until flag on                       [154, 129] T410
+ 1882: IMPL 0x06 Flag off                                 [154, 129] T410
+ 1885: IMPL 0x1A Set anim                                 [3]
+ 1887: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1889: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1890: IMPL 0x32 Toggle flag                              [155, 129] T411
+ 1893: IMPL 0x49 Restart                                  []
+ 1894: IMPL 0xFF End script                               []
+ 1895: IMPL 0x00 Break                                    []
+  ;; entry C[43]
+ 1896: IMPL 0x00 Break                                    []
+ 1897: IMPL 0x30 If flag on                               [6, 132, 29, 0] T1030 -> 1926
+ 1902: IMPL 0x07 Check entity in area                     [128, 30, 30, 39, 39, 6, 10]
+ 1910: IMPL 0x03 If true goto                             [242, 255] -> 1896
+ 1913: IMPL 0x1B Fly                                      [0, 1]
+ 1916: IMPL 0x21 Wait Z distance or Z contact             [1, 0]
+ 1919: IMPL 0x1B Fly                                      [0, 0]
+ 1922: IMPL 0x02 Goto                                     [230, 255] -> 1896
+ 1925: IMPL 0x00 Break                                    []
+ 1926: IMPL 0x1B Fly                                      [0, 255]
+ 1929: IMPL 0x21 Wait Z distance or Z contact             [1, 0]
+ 1932: IMPL 0x1B Fly                                      [0, 0]
+ 1935: IMPL 0x02 Goto                                     [217, 255] -> 1896
+ 1938: IMPL 0xFF End script                               []
+ 1939: IMPL 0x00 Break                                    []
+  ;; entry C[44]
+ 1940: IMPL 0x37 Wait                                     [40]
+ 1942: IMPL 0x2D Activate entity                          [44]
+ 1944: IMPL 0x5B Turn entity with anim                    [44, 0, 16]
+ 1948: IMPL 0x00 Break                                    []
+ 1949: IMPL 0x2C Check no entity by function id           [44]
+ 1951: IMPL 0x04 If false goto                            [253, 255] -> 1948
+ 1954: IMPL 0x00 Break                                    []
+ 1955: IMPL 0x37 Wait                                     [40]
+ 1957: IMPL 0x2D Activate entity                          [44]
+ 1959: IMPL 0x5B Turn entity with anim                    [44, 0, 8]
+ 1963: IMPL 0x00 Break                                    []
+ 1964: IMPL 0x2C Check no entity by function id           [44]
+ 1966: IMPL 0x04 If false goto                            [253, 255] -> 1963
+ 1969: IMPL 0x00 Break                                    []
+ 1970: IMPL 0x37 Wait                                     [40]
+ 1972: IMPL 0x2D Activate entity                          [44]
+ 1974: IMPL 0x5B Turn entity with anim                    [44, 0, 0]
+ 1978: IMPL 0x00 Break                                    []
+ 1979: IMPL 0x2C Check no entity by function id           [44]
+ 1981: IMPL 0x04 If false goto                            [253, 255] -> 1978
+ 1984: IMPL 0x00 Break                                    []
+ 1985: IMPL 0x37 Wait                                     [40]
+ 1987: IMPL 0x2D Activate entity                          [44]
+ 1989: IMPL 0x5B Turn entity with anim                    [44, 0, 24]
+ 1993: IMPL 0x00 Break                                    []
+ 1994: IMPL 0x2C Check no entity by function id           [44]
+ 1996: IMPL 0x04 If false goto                            [253, 255] -> 1993
+ 1999: IMPL 0x49 Restart                                  []
+ 2000: IMPL 0xFF End script                               []
+ 2001: IMPL 0x00 Break                                    []
+ 2002: IMPL 0x00 Break                                    []
+ 2003: IMPL 0x00 Break                                    []
+  ;; entry C[45]
+ 2004: IMPL 0x37 Wait                                     [30]
+ 2006: IMPL 0x1A Set anim                                 [2]
+ 2008: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 2010: IMPL 0x1A Set anim                                 [1]
+ 2012: IMPL 0x37 Wait                                     [60]
+ 2014: IMPL 0x1A Set anim                                 [3]
+ 2016: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 2018: IMPL 0x2E Destroy entity                           [128]
+ 2020: IMPL 0xFF End script                               []
+ 2021: IMPL 0x00 Break                                    []
+ 2022: IMPL 0x00 Break                                    []
+ 2023: IMPL 0x00 Break                                    []
+  ;; entry C[46]
+ 2024: IMPL 0x37 Wait                                     [40]
+ 2026: IMPL 0x2D Activate entity                          [46]
+ 2028: IMPL 0x5B Turn entity with anim                    [46, 0, 16]
+ 2032: IMPL 0x00 Break                                    []
+ 2033: IMPL 0x2C Check no entity by function id           [46]
+ 2035: IMPL 0x04 If false goto                            [253, 255] -> 2032
+ 2038: IMPL 0x00 Break                                    []
+ 2039: IMPL 0x37 Wait                                     [40]
+ 2041: IMPL 0x2D Activate entity                          [46]
+ 2043: IMPL 0x5B Turn entity with anim                    [46, 0, 24]
+ 2047: IMPL 0x00 Break                                    []
+ 2048: IMPL 0x2C Check no entity by function id           [46]
+ 2050: IMPL 0x04 If false goto                            [253, 255] -> 2047
+ 2053: IMPL 0x00 Break                                    []
+ 2054: IMPL 0x37 Wait                                     [40]
+ 2056: IMPL 0x2D Activate entity                          [46]
+ 2058: IMPL 0x5B Turn entity with anim                    [46, 0, 0]
+ 2062: IMPL 0x00 Break                                    []
+ 2063: IMPL 0x2C Check no entity by function id           [46]
+ 2065: IMPL 0x04 If false goto                            [253, 255] -> 2062
+ 2068: IMPL 0x00 Break                                    []
+ 2069: IMPL 0x37 Wait                                     [40]
+ 2071: IMPL 0x2D Activate entity                          [46]
+ 2073: IMPL 0x5B Turn entity with anim                    [46, 0, 8]
+ 2077: IMPL 0x00 Break                                    []
+ 2078: IMPL 0x2C Check no entity by function id           [46]
+ 2080: IMPL 0x04 If false goto                            [253, 255] -> 2077
+ 2083: IMPL 0x49 Restart                                  []
+ 2084: IMPL 0xFF End script                               []
+ 2085: IMPL 0x00 Break                                    []
+ 2086: IMPL 0x00 Break                                    []
+ 2087: IMPL 0x00 Break                                    []
+  ;; entry C[47]
+ 2088: IMPL 0x37 Wait                                     [60]
+ 2090: IMPL 0x2D Activate entity                          [44]
+ 2092: IMPL 0x5B Turn entity with anim                    [44, 0, 16]
+ 2096: IMPL 0x00 Break                                    []
+ 2097: IMPL 0x2C Check no entity by function id           [44]
+ 2099: IMPL 0x04 If false goto                            [253, 255] -> 2096
+ 2102: IMPL 0x00 Break                                    []
+ 2103: IMPL 0x37 Wait                                     [60]
+ 2105: IMPL 0x2D Activate entity                          [44]
+ 2107: IMPL 0x5B Turn entity with anim                    [44, 0, 8]
+ 2111: IMPL 0x00 Break                                    []
+ 2112: IMPL 0x2C Check no entity by function id           [44]
+ 2114: IMPL 0x04 If false goto                            [253, 255] -> 2111
+ 2117: IMPL 0x00 Break                                    []
+ 2118: IMPL 0x37 Wait                                     [60]
+ 2120: IMPL 0x2D Activate entity                          [44]
+ 2122: IMPL 0x5B Turn entity with anim                    [44, 0, 0]
+ 2126: IMPL 0x00 Break                                    []
+ 2127: IMPL 0x2C Check no entity by function id           [44]
+ 2129: IMPL 0x04 If false goto                            [253, 255] -> 2126
+ 2132: IMPL 0x00 Break                                    []
+ 2133: IMPL 0x37 Wait                                     [60]
+ 2135: IMPL 0x2D Activate entity                          [44]
+ 2137: IMPL 0x5B Turn entity with anim                    [44, 0, 24]
+ 2141: IMPL 0x00 Break                                    []
+ 2142: IMPL 0x2C Check no entity by function id           [44]
+ 2144: IMPL 0x04 If false goto                            [253, 255] -> 2141
+ 2147: IMPL 0x49 Restart                                  []
+ 2148: IMPL 0xFF End script                               []
+ 2149: IMPL 0x00 Break                                    []
+ 2150: IMPL 0x00 Break                                    []
+ 2151: IMPL 0x00 Break                                    []
+  ;; entry C[50]
+ 2152: IMPL 0x00 Break                                    []
+ 2153: IMPL 0x30 If flag on                               [28, 130, 29, 0] T540 -> 2182
+ 2158: IMPL 0x07 Check entity in area                     [128, 21, 28, 35, 35, 5, 8]
+ 2166: IMPL 0x04 If false goto                            [242, 255] -> 2152
+ 2169: IMPL 0x1B Fly                                      [0, 1]
+ 2172: IMPL 0x21 Wait Z distance or Z contact             [1, 0]
+ 2175: IMPL 0x1B Fly                                      [0, 0]
+ 2178: IMPL 0x02 Goto                                     [230, 255] -> 2152
+ 2181: IMPL 0x00 Break                                    []
+ 2182: IMPL 0x1B Fly                                      [0, 255]
+ 2185: IMPL 0x21 Wait Z distance or Z contact             [1, 0]
+ 2188: IMPL 0x1B Fly                                      [0, 0]
+ 2191: IMPL 0x02 Goto                                     [217, 255] -> 2152
+ 2194: IMPL 0xFF End script                               []
+ 2195: IMPL 0x00 Break                                    []
+  ;; entry C[54]
+ 2196: IMPL 0x00 Break                                    []
+ 2197: IMPL 0x3F If entity riding me                      []
+ 2198: IMPL 0x04 If false goto                            [254, 255] -> 2196
+ 2201: IMPL 0x1A Set anim                                 [4]
+ 2203: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 2205: IMPL 0x1A Set anim                                 [1]
+ 2207: IMPL 0x05 Flag on                                  [28, 130] T540
+ 2210: IMPL 0x00 Break                                    []
+ 2211: IMPL 0x3F If entity riding me                      []
+ 2212: IMPL 0x03 If true goto                             [254, 255] -> 2210
+ 2215: IMPL 0x06 Flag off                                 [28, 130] T540
+ 2218: IMPL 0x1A Set anim                                 [5]
+ 2220: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 2222: IMPL 0x1A Set anim                                 [0]
+ 2224: IMPL 0x49 Restart                                  []
+ 2225: IMPL 0xFF End script                               []
+ 2226: IMPL 0x00 Break                                    []
+ 2227: IMPL 0x00 Break                                    []
+  ;; entry C[56]
+ 2228: IMPL 0x37 Wait                                     [40]
+ 2230: IMPL 0x2D Activate entity                          [55]
+ 2232: IMPL 0x5B Turn entity with anim                    [55, 0, 16]
+ 2236: IMPL 0x00 Break                                    []
+ 2237: IMPL 0x2C Check no entity by function id           [55]
+ 2239: IMPL 0x04 If false goto                            [253, 255] -> 2236
+ 2242: IMPL 0x00 Break                                    []
+ 2243: IMPL 0x37 Wait                                     [40]
+ 2245: IMPL 0x2D Activate entity                          [55]
+ 2247: IMPL 0x5B Turn entity with anim                    [55, 0, 8]
+ 2251: IMPL 0x00 Break                                    []
+ 2252: IMPL 0x2C Check no entity by function id           [55]
+ 2254: IMPL 0x04 If false goto                            [253, 255] -> 2251
+ 2257: IMPL 0x00 Break                                    []
+ 2258: IMPL 0x37 Wait                                     [40]
+ 2260: IMPL 0x2D Activate entity                          [55]
+ 2262: IMPL 0x5B Turn entity with anim                    [55, 0, 0]
+ 2266: IMPL 0x00 Break                                    []
+ 2267: IMPL 0x2C Check no entity by function id           [55]
+ 2269: IMPL 0x04 If false goto                            [253, 255] -> 2266
+ 2272: IMPL 0x00 Break                                    []
+ 2273: IMPL 0x37 Wait                                     [40]
+ 2275: IMPL 0x2D Activate entity                          [55]
+ 2277: IMPL 0x5B Turn entity with anim                    [55, 0, 24]
+ 2281: IMPL 0x00 Break                                    []
+ 2282: IMPL 0x2C Check no entity by function id           [55]
+ 2284: IMPL 0x04 If false goto                            [253, 255] -> 2281
+ 2287: IMPL 0x49 Restart                                  []
+ 2288: IMPL 0xFF End script                               []
+ 2289: IMPL 0x00 Break                                    []
+ 2290: IMPL 0x00 Break                                    []
+ 2291: IMPL 0x00 Break                                    []
+  ;; entry C[57]
+ 2292: IMPL 0x37 Wait                                     [40]
+ 2294: IMPL 0x2D Activate entity                          [58]
+ 2296: IMPL 0x5B Turn entity with anim                    [58, 0, 16]
+ 2300: IMPL 0x00 Break                                    []
+ 2301: IMPL 0x2C Check no entity by function id           [58]
+ 2303: IMPL 0x04 If false goto                            [253, 255] -> 2300
+ 2306: IMPL 0x00 Break                                    []
+ 2307: IMPL 0x37 Wait                                     [40]
+ 2309: IMPL 0x2D Activate entity                          [58]
+ 2311: IMPL 0x5B Turn entity with anim                    [58, 0, 24]
+ 2315: IMPL 0x00 Break                                    []
+ 2316: IMPL 0x2C Check no entity by function id           [58]
+ 2318: IMPL 0x04 If false goto                            [253, 255] -> 2315
+ 2321: IMPL 0x00 Break                                    []
+ 2322: IMPL 0x37 Wait                                     [40]
+ 2324: IMPL 0x2D Activate entity                          [58]
+ 2326: IMPL 0x5B Turn entity with anim                    [58, 0, 0]
+ 2330: IMPL 0x00 Break                                    []
+ 2331: IMPL 0x2C Check no entity by function id           [58]
+ 2333: IMPL 0x04 If false goto                            [253, 255] -> 2330
+ 2336: IMPL 0x00 Break                                    []
+ 2337: IMPL 0x37 Wait                                     [40]
+ 2339: IMPL 0x2D Activate entity                          [58]
+ 2341: IMPL 0x5B Turn entity with anim                    [58, 0, 8]
+ 2345: IMPL 0x00 Break                                    []
+ 2346: IMPL 0x2C Check no entity by function id           [58]
+ 2348: IMPL 0x04 If false goto                            [253, 255] -> 2345
+ 2351: IMPL 0x49 Restart                                  []
+ 2352: IMPL 0xFF End script                               []
+ 2353: IMPL 0x00 Break                                    []
+ 2354: IMPL 0x00 Break                                    []
+ 2355: IMPL 0x00 Break                                    []
+  ;; entry C[60]
+ 2356: IMPL 0x1A Set anim                                 [1]
+ 2358: ---- 0x6A Save entity position                     []
+ 2359: IMPL 0x00 Break                                    []
+ 2360: IMPL 0x30 If flag on                               [168, 130, 50, 0] T680 -> 2410
+ 2365: IMPL 0x89 Set matched entities position relative to reference [128, 11, 0, 0, 0, 0, 0, 0]
+ 2374: ---- 0x6C If entity y < threshold                  [64, 0]
+ 2377: IMPL 0x04 If false goto                            [238, 255] -> 2359
+ 2380: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2382: ---- 0x6A Save entity position                     []
+ 2383: IMPL 0x00 Break                                    []
+ 2384: IMPL 0x30 If flag on                               [168, 130, 26, 0] T680 -> 2410
+ 2389: IMPL 0x89 Set matched entities position relative to reference [128, 11, 0, 0, 0, 0, 0, 0]
+ 2398: ---- 0x6B If entity x < threshold                  [96, 0]
+ 2401: IMPL 0x04 If false goto                            [238, 255] -> 2383
+ 2404: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2406: IMPL 0x02 Goto                                     [208, 255] -> 2358
+ 2409: IMPL 0x00 Break                                    []
+ 2410: IMPL 0x1A Set anim                                 [0]
+ 2412: IMPL 0xFF End script                               []
+ 2413: IMPL 0x00 Break                                    []
+ 2414: IMPL 0x00 Break                                    []
+ 2415: IMPL 0x00 Break                                    []
+  ;; entry C[61]
+ 2416: IMPL 0x1A Set anim                                 [1]
+ 2418: ---- 0x6A Save entity position                     []
+ 2419: IMPL 0x00 Break                                    []
+ 2420: IMPL 0x30 If flag on                               [168, 130, 74, 0] T680 -> 2494
+ 2425: IMPL 0x89 Set matched entities position relative to reference [128, 12, 0, 0, 0, 0, 0, 0]
+ 2434: ---- 0x6B If entity x < threshold                  [48, 0]
+ 2437: IMPL 0x04 If false goto                            [238, 255] -> 2419
+ 2440: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2442: ---- 0x6A Save entity position                     []
+ 2443: IMPL 0x00 Break                                    []
+ 2444: IMPL 0x30 If flag on                               [168, 130, 50, 0] T680 -> 2494
+ 2449: IMPL 0x89 Set matched entities position relative to reference [128, 12, 0, 0, 0, 0, 0, 0]
+ 2458: ---- 0x6C If entity y < threshold                  [64, 0]
+ 2461: IMPL 0x04 If false goto                            [238, 255] -> 2443
+ 2464: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2466: ---- 0x6A Save entity position                     []
+ 2467: IMPL 0x00 Break                                    []
+ 2468: IMPL 0x30 If flag on                               [168, 130, 26, 0] T680 -> 2494
+ 2473: IMPL 0x89 Set matched entities position relative to reference [128, 12, 0, 0, 0, 0, 0, 0]
+ 2482: ---- 0x6B If entity x < threshold                  [96, 0]
+ 2485: IMPL 0x04 If false goto                            [238, 255] -> 2467
+ 2488: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2490: IMPL 0x02 Goto                                     [208, 255] -> 2442
+ 2493: IMPL 0x00 Break                                    []
+ 2494: IMPL 0x1A Set anim                                 [0]
+ 2496: IMPL 0xFF End script                               []
+ 2497: IMPL 0x00 Break                                    []
+ 2498: IMPL 0x00 Break                                    []
+ 2499: IMPL 0x00 Break                                    []
+  ;; entry C[62]
+ 2500: IMPL 0x1A Set anim                                 [1]
+ 2502: ---- 0x6A Save entity position                     []
+ 2503: IMPL 0x00 Break                                    []
+ 2504: IMPL 0x30 If flag on                               [168, 130, 50, 0] T680 -> 2554
+ 2509: IMPL 0x89 Set matched entities position relative to reference [128, 13, 0, 0, 0, 0, 0, 0]
+ 2518: ---- 0x6B If entity x < threshold                  [96, 0]
+ 2521: IMPL 0x04 If false goto                            [238, 255] -> 2503
+ 2524: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2526: ---- 0x6A Save entity position                     []
+ 2527: IMPL 0x00 Break                                    []
+ 2528: IMPL 0x30 If flag on                               [168, 130, 26, 0] T680 -> 2554
+ 2533: IMPL 0x89 Set matched entities position relative to reference [128, 13, 0, 0, 0, 0, 0, 0]
+ 2542: ---- 0x6C If entity y < threshold                  [64, 0]
+ 2545: IMPL 0x04 If false goto                            [238, 255] -> 2527
+ 2548: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2550: IMPL 0x02 Goto                                     [208, 255] -> 2502
+ 2553: IMPL 0x00 Break                                    []
+ 2554: IMPL 0x1A Set anim                                 [0]
+ 2556: IMPL 0xFF End script                               []
+ 2557: IMPL 0x00 Break                                    []
+ 2558: IMPL 0x00 Break                                    []
+ 2559: IMPL 0x00 Break                                    []
+  ;; entry C[63]
+ 2560: IMPL 0x1A Set anim                                 [1]
+ 2562: ---- 0x6A Save entity position                     []
+ 2563: IMPL 0x00 Break                                    []
+ 2564: IMPL 0x30 If flag on                               [168, 130, 74, 0] T680 -> 2638
+ 2569: IMPL 0x89 Set matched entities position relative to reference [128, 14, 0, 0, 0, 0, 0, 0]
+ 2578: ---- 0x6C If entity y < threshold                  [32, 0]
+ 2581: IMPL 0x04 If false goto                            [238, 255] -> 2563
+ 2584: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2586: ---- 0x6A Save entity position                     []
+ 2587: IMPL 0x00 Break                                    []
+ 2588: IMPL 0x30 If flag on                               [168, 130, 50, 0] T680 -> 2638
+ 2593: IMPL 0x89 Set matched entities position relative to reference [128, 14, 0, 0, 0, 0, 0, 0]
+ 2602: ---- 0x6B If entity x < threshold                  [96, 0]
+ 2605: IMPL 0x04 If false goto                            [238, 255] -> 2587
+ 2608: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2610: ---- 0x6A Save entity position                     []
+ 2611: IMPL 0x00 Break                                    []
+ 2612: IMPL 0x30 If flag on                               [168, 130, 26, 0] T680 -> 2638
+ 2617: IMPL 0x89 Set matched entities position relative to reference [128, 14, 0, 0, 0, 0, 0, 0]
+ 2626: ---- 0x6C If entity y < threshold                  [64, 0]
+ 2629: IMPL 0x04 If false goto                            [238, 255] -> 2611
+ 2632: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2634: IMPL 0x02 Goto                                     [208, 255] -> 2586
+ 2637: IMPL 0x00 Break                                    []
+ 2638: IMPL 0x1A Set anim                                 [0]
+ 2640: IMPL 0xFF End script                               []
+ 2641: IMPL 0x00 Break                                    []
+ 2642: IMPL 0x00 Break                                    []
+ 2643: IMPL 0x00 Break                                    []
+  ;; entry C[64]
+ 2644: IMPL 0x1A Set anim                                 [1]
+ 2646: ---- 0x6A Save entity position                     []
+ 2647: IMPL 0x00 Break                                    []
+ 2648: IMPL 0x30 If flag on                               [168, 130, 74, 0] T680 -> 2722
+ 2653: IMPL 0x89 Set matched entities position relative to reference [128, 16, 0, 0, 0, 0, 0, 0]
+ 2662: ---- 0x6C If entity y < threshold                  [32, 0]
+ 2665: IMPL 0x04 If false goto                            [238, 255] -> 2647
+ 2668: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2670: ---- 0x6A Save entity position                     []
+ 2671: IMPL 0x00 Break                                    []
+ 2672: IMPL 0x30 If flag on                               [168, 130, 50, 0] T680 -> 2722
+ 2677: IMPL 0x89 Set matched entities position relative to reference [128, 16, 0, 0, 0, 0, 0, 0]
+ 2686: ---- 0x6B If entity x < threshold                  [96, 0]
+ 2689: IMPL 0x04 If false goto                            [238, 255] -> 2671
+ 2692: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2694: ---- 0x6A Save entity position                     []
+ 2695: IMPL 0x00 Break                                    []
+ 2696: IMPL 0x30 If flag on                               [168, 130, 26, 0] T680 -> 2722
+ 2701: IMPL 0x89 Set matched entities position relative to reference [128, 16, 0, 0, 0, 0, 0, 0]
+ 2710: ---- 0x6C If entity y < threshold                  [64, 0]
+ 2713: IMPL 0x04 If false goto                            [238, 255] -> 2695
+ 2716: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2718: IMPL 0x02 Goto                                     [208, 255] -> 2670
+ 2721: IMPL 0x00 Break                                    []
+ 2722: IMPL 0x1A Set anim                                 [0]
+ 2724: IMPL 0xFF End script                               []
+ 2725: IMPL 0x00 Break                                    []
+ 2726: IMPL 0x00 Break                                    []
+ 2727: IMPL 0x00 Break                                    []
+  ;; entry C[65]
+ 2728: IMPL 0x1A Set anim                                 [1]
+ 2730: ---- 0x6A Save entity position                     []
+ 2731: IMPL 0x00 Break                                    []
+ 2732: IMPL 0x30 If flag on                               [168, 130, 50, 0] T680 -> 2782
+ 2737: IMPL 0x89 Set matched entities position relative to reference [128, 17, 0, 0, 0, 0, 0, 0]
+ 2746: ---- 0x6B If entity x < threshold                  [96, 0]
+ 2749: IMPL 0x04 If false goto                            [238, 255] -> 2731
+ 2752: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2754: ---- 0x6A Save entity position                     []
+ 2755: IMPL 0x00 Break                                    []
+ 2756: IMPL 0x30 If flag on                               [168, 130, 26, 0] T680 -> 2782
+ 2761: IMPL 0x89 Set matched entities position relative to reference [128, 17, 0, 0, 0, 0, 0, 0]
+ 2770: ---- 0x6C If entity y < threshold                  [64, 0]
+ 2773: IMPL 0x04 If false goto                            [238, 255] -> 2755
+ 2776: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2778: IMPL 0x02 Goto                                     [208, 255] -> 2730
+ 2781: IMPL 0x00 Break                                    []
+ 2782: IMPL 0x1A Set anim                                 [0]
+ 2784: IMPL 0xFF End script                               []
+ 2785: IMPL 0x00 Break                                    []
+ 2786: IMPL 0x00 Break                                    []
+ 2787: IMPL 0x00 Break                                    []
+  ;; entry C[66]
+ 2788: IMPL 0x1A Set anim                                 [1]
+ 2790: ---- 0x6A Save entity position                     []
+ 2791: IMPL 0x00 Break                                    []
+ 2792: IMPL 0x30 If flag on                               [168, 130, 74, 0] T680 -> 2866
+ 2797: IMPL 0x89 Set matched entities position relative to reference [128, 18, 0, 0, 0, 0, 0, 0]
+ 2806: ---- 0x6B If entity x < threshold                  [48, 0]
+ 2809: IMPL 0x04 If false goto                            [238, 255] -> 2791
+ 2812: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2814: ---- 0x6A Save entity position                     []
+ 2815: IMPL 0x00 Break                                    []
+ 2816: IMPL 0x30 If flag on                               [168, 130, 50, 0] T680 -> 2866
+ 2821: IMPL 0x89 Set matched entities position relative to reference [128, 18, 0, 0, 0, 0, 0, 0]
+ 2830: ---- 0x6C If entity y < threshold                  [64, 0]
+ 2833: IMPL 0x04 If false goto                            [238, 255] -> 2815
+ 2836: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2838: ---- 0x6A Save entity position                     []
+ 2839: IMPL 0x00 Break                                    []
+ 2840: IMPL 0x30 If flag on                               [168, 130, 26, 0] T680 -> 2866
+ 2845: IMPL 0x89 Set matched entities position relative to reference [128, 18, 0, 0, 0, 0, 0, 0]
+ 2854: ---- 0x6B If entity x < threshold                  [96, 0]
+ 2857: IMPL 0x04 If false goto                            [238, 255] -> 2839
+ 2860: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2862: IMPL 0x02 Goto                                     [208, 255] -> 2814
+ 2865: IMPL 0x00 Break                                    []
+ 2866: IMPL 0x1A Set anim                                 [0]
+ 2868: IMPL 0xFF End script                               []
+ 2869: IMPL 0x00 Break                                    []
+ 2870: IMPL 0x00 Break                                    []
+ 2871: IMPL 0x00 Break                                    []
+  ;; entry C[67]
+ 2872: IMPL 0x1A Set anim                                 [1]
+ 2874: ---- 0x6A Save entity position                     []
+ 2875: IMPL 0x00 Break                                    []
+ 2876: IMPL 0x30 If flag on                               [168, 130, 50, 0] T680 -> 2926
+ 2881: IMPL 0x89 Set matched entities position relative to reference [128, 19, 0, 0, 0, 0, 0, 0]
+ 2890: ---- 0x6C If entity y < threshold                  [64, 0]
+ 2893: IMPL 0x04 If false goto                            [238, 255] -> 2875
+ 2896: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2898: ---- 0x6A Save entity position                     []
+ 2899: IMPL 0x00 Break                                    []
+ 2900: IMPL 0x30 If flag on                               [168, 130, 26, 0] T680 -> 2926
+ 2905: IMPL 0x89 Set matched entities position relative to reference [128, 19, 0, 0, 0, 0, 0, 0]
+ 2914: ---- 0x6B If entity x < threshold                  [96, 0]
+ 2917: IMPL 0x04 If false goto                            [238, 255] -> 2899
+ 2920: IMPL 0x08 Add to TargetDirection (modulo 32)       [24]
+ 2922: IMPL 0x02 Goto                                     [208, 255] -> 2874
+ 2925: IMPL 0x00 Break                                    []
+ 2926: IMPL 0x1A Set anim                                 [0]
+ 2928: IMPL 0xFF End script                               []
+ 2929: IMPL 0x00 Break                                    []
+ 2930: IMPL 0x00 Break                                    []
+ 2931: IMPL 0x00 Break                                    []
+  ;; entry C[68]
+ 2932: IMPL 0x63 Clear entities flags (low 16 bits)       [128, 128, 0]
+ 2936: IMPL 0x37 Wait                                     [60]
+ 2938: IMPL 0x5B Turn entity with anim                    [128, 1, 0]
+ 2942: IMPL 0x1E Walk                                     [128, 0]
+ 2945: IMPL 0x1A Set anim                                 [0]
+ 2947: IMPL 0x37 Wait                                     [30]
+ 2949: IMPL 0x00 Break                                    []
+ 2950: IMPL 0xAF Set fade transition with color           [255, 255, 255, 1, 60, 1]
+ 2957: IMPL 0x37 Wait                                     [98]
+ 2959: IMPL 0x00 Break                                    []
+ 2960: IMPL 0xA4 Background layer mask                    [3, 0]
+ 2963: IMPL 0x05 Flag on                                  [168, 130] T680
+ 2966: IMPL 0x00 Break                                    []
+ 2967: IMPL 0xAF Set fade transition with color           [0, 0, 0, 1, 60, 0]
+ 2974: IMPL 0x37 Wait                                     [80]
+ 2976: IMPL 0x00 Break                                    []
+ 2977: IMPL 0x1A Set anim                                 [1]
+ 2979: IMPL 0x1E Walk                                     [48, 0]
+ 2982: IMPL 0xAF Set fade transition with color           [255, 255, 255, 2, 120, 1]
+ 2989: IMPL 0x37 Wait                                     [120]
+ 2991: IMPL 0x1A Set anim                                 [0]
+ 2993: IMPL 0x53 Change map                               [85, 1, 44, 50, 1, 0, 0]
+ 3001: IMPL 0x00 Break                                    []
+ 3002: IMPL 0xFF End script                               []
+ 3003: IMPL 0x00 Break                                    []
+  ;; entry D[10]
+ 3004: IMPL 0x05 Flag on                                  [100, 128] T100
+ 3007: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 3008: IMPL 0xFF End script                               []
+ 3009: IMPL 0x00 Break                                    []
+ 3010: IMPL 0x00 Break                                    []
+ 3011: IMPL 0x00 Break                                    []
+  ;; entry D[12]
+ 3012: IMPL 0x05 Flag on                                  [120, 128] T120
+ 3015: IMPL 0xFF End script                               []
+  ;; entry D[13]
+ 3016: IMPL 0x05 Flag on                                  [130, 128] T130
+ 3019: IMPL 0xFF End script                               []
+  ;; entry D[14]
+ 3020: IMPL 0x05 Flag on                                  [140, 128] T140
+ 3023: IMPL 0xFF End script                               []
+  ;; entry D[15]
+ 3024: IMPL 0x05 Flag on                                  [150, 128] T150
+ 3027: IMPL 0xFF End script                               []
+  ;; entry D[16]
+ 3028: IMPL 0x05 Flag on                                  [160, 128] T160
+ 3031: IMPL 0xFF End script                               []
+  ;; entry D[17]
+ 3032: IMPL 0x05 Flag on                                  [170, 128] T170
+ 3035: IMPL 0xFF End script                               []
+  ;; entry D[18]
+ 3036: IMPL 0x05 Flag on                                  [180, 128] T180
+ 3039: IMPL 0xFF End script                               []
+  ;; entry D[19]
+ 3040: IMPL 0x05 Flag on                                  [190, 128] T190
+ 3043: IMPL 0xFF End script                               []
+  ;; entry D[20]
+ 3044: IMPL 0x05 Flag on                                  [200, 128] T200
+ 3047: IMPL 0xFF End script                               []
+  ;; entry D[38]
+ 3048: IMPL 0x05 Flag on                                  [124, 129] T380
+ 3051: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 3052: IMPL 0xFF End script                               []
+ 3053: IMPL 0x00 Break                                    []
+ 3054: IMPL 0x00 Break                                    []
+ 3055: IMPL 0x00 Break                                    []
+  ;; entry D[39]
+ 3056: IMPL 0x05 Flag on                                  [134, 129] T390
+ 3059: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 3060: IMPL 0xFF End script                               []
+ 3061: IMPL 0x00 Break                                    []
+ 3062: IMPL 0x00 Break                                    []
+ 3063: IMPL 0x00 Break                                    []
+  ;; entry D[40]
+ 3064: IMPL 0x05 Flag on                                  [144, 129] T400
+ 3067: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 3068: IMPL 0xFF End script                               []
+ 3069: IMPL 0x00 Break                                    []
+ 3070: IMPL 0x00 Break                                    []
+ 3071: IMPL 0x00 Break                                    []
+  ;; entry D[41]
+ 3072: IMPL 0x05 Flag on                                  [154, 129] T410
+ 3075: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 3076: IMPL 0xFF End script                               []
+ 3077: IMPL 0x00 Break                                    []
+ 3078: IMPL 0x00 Break                                    []
+ 3079: IMPL 0x00 Break                                    []
+Records:
+  {'Index': '0', 'SpriteTableIndex': '197', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '6', 'YPos': '20', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '129', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆P-Zoldia Niv.2'}
+  {'Index': '1', 'SpriteTableIndex': '197', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '14', 'YPos': '20', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '129', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆P-Zoldia Niv.2'}
+  {'Index': '2', 'SpriteTableIndex': '197', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '22', 'YPos': '20', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '129', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆P-Zoldia Niv.2'}
+  {'Index': '3', 'SpriteTableIndex': '197', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '6', 'YPos': '28', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '129', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆P-Zoldia Niv.2'}
+  {'Index': '4', 'SpriteTableIndex': '197', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '14', 'YPos': '28', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '129', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆P-Zoldia Niv.2'}
+  {'Index': '5', 'SpriteTableIndex': '197', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '22', 'YPos': '28', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '129', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆P-Zoldia Niv.2'}
+  {'Index': '6', 'SpriteTableIndex': '30', 'SpriteDirection': '0', 'IsEnabled': '1', 'XPos': '14', 'YPos': '24', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '135', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Coffre au trésor'}
+  {'Index': '7', 'SpriteTableIndex': '57', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '7', 'YPos': '69', 'Height': '5', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '136', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (grande)'}
+  {'Index': '8', 'SpriteTableIndex': '57', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '3', 'YPos': '73', 'Height': '5', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '137', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (grande)'}
+  {'Index': '9', 'SpriteTableIndex': '49', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '20', 'YPos': '72', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '138', 'EventCodesD_TouchIndex': '138', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (levier)'}
+  {'Index': '10', 'SpriteTableIndex': '45', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '2', 'YPos': '84', 'Height': '6', 'EventCodesA_LoadIndex': '139', 'EventCodesC_TickIndex': '139', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '11', 'SpriteTableIndex': '173', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '88', 'YPos': '86', 'Height': '6', 'EventCodesA_LoadIndex': '140', 'EventCodesC_TickIndex': '140', 'EventCodesD_TouchIndex': '140', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '12', 'SpriteTableIndex': '173', 'SpriteDirection': '194', 'IsEnabled': '1', 'XPos': '92', 'YPos': '86', 'Height': '6', 'EventCodesA_LoadIndex': '141', 'EventCodesC_TickIndex': '141', 'EventCodesD_TouchIndex': '141', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '13', 'SpriteTableIndex': '173', 'SpriteDirection': '194', 'IsEnabled': '1', 'XPos': '96', 'YPos': '86', 'Height': '6', 'EventCodesA_LoadIndex': '142', 'EventCodesC_TickIndex': '142', 'EventCodesD_TouchIndex': '142', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '14', 'SpriteTableIndex': '173', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '88', 'YPos': '90', 'Height': '6', 'EventCodesA_LoadIndex': '143', 'EventCodesC_TickIndex': '143', 'EventCodesD_TouchIndex': '143', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '15', 'SpriteTableIndex': '173', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '92', 'YPos': '90', 'Height': '6', 'EventCodesA_LoadIndex': '144', 'EventCodesC_TickIndex': '144', 'EventCodesD_TouchIndex': '144', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '16', 'SpriteTableIndex': '173', 'SpriteDirection': '193', 'IsEnabled': '1', 'XPos': '96', 'YPos': '90', 'Height': '6', 'EventCodesA_LoadIndex': '145', 'EventCodesC_TickIndex': '145', 'EventCodesD_TouchIndex': '145', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '17', 'SpriteTableIndex': '173', 'SpriteDirection': '195', 'IsEnabled': '1', 'XPos': '88', 'YPos': '94', 'Height': '6', 'EventCodesA_LoadIndex': '146', 'EventCodesC_TickIndex': '146', 'EventCodesD_TouchIndex': '146', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '18', 'SpriteTableIndex': '173', 'SpriteDirection': '195', 'IsEnabled': '1', 'XPos': '92', 'YPos': '94', 'Height': '6', 'EventCodesA_LoadIndex': '147', 'EventCodesC_TickIndex': '147', 'EventCodesD_TouchIndex': '147', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '19', 'SpriteTableIndex': '173', 'SpriteDirection': '193', 'IsEnabled': '1', 'XPos': '96', 'YPos': '94', 'Height': '6', 'EventCodesA_LoadIndex': '148', 'EventCodesC_TickIndex': '148', 'EventCodesD_TouchIndex': '148', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '20', 'SpriteTableIndex': '30', 'SpriteDirection': '64', 'IsEnabled': '1', 'XPos': '92', 'YPos': '76', 'Height': '11', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Coffre au trésor'}
+  {'Index': '21', 'SpriteTableIndex': '56', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '92', 'YPos': '76', 'Height': '10', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '150', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (petite)'}
+  {'Index': '22', 'SpriteTableIndex': '45', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '92', 'YPos': '28', 'Height': '6', 'EventCodesA_LoadIndex': '151', 'EventCodesC_TickIndex': '151', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '23', 'SpriteTableIndex': '45', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '90', 'YPos': '30', 'Height': '6', 'EventCodesA_LoadIndex': '152', 'EventCodesC_TickIndex': '152', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '24', 'SpriteTableIndex': '45', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '92', 'YPos': '30', 'Height': '6', 'EventCodesA_LoadIndex': '152', 'EventCodesC_TickIndex': '153', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '25', 'SpriteTableIndex': '45', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '94', 'YPos': '30', 'Height': '6', 'EventCodesA_LoadIndex': '152', 'EventCodesC_TickIndex': '154', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '26', 'SpriteTableIndex': '45', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '94', 'YPos': '32', 'Height': '6', 'EventCodesA_LoadIndex': '152', 'EventCodesC_TickIndex': '155', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '27', 'SpriteTableIndex': '45', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '96', 'YPos': '30', 'Height': '6', 'EventCodesA_LoadIndex': '152', 'EventCodesC_TickIndex': '156', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '28', 'SpriteTableIndex': '25', 'SpriteDirection': '64', 'IsEnabled': '1', 'XPos': '86', 'YPos': '48', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '157', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Bloc transparent (1×1×2)'}
+  {'Index': '29', 'SpriteTableIndex': '45', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '78', 'YPos': '32', 'Height': '4', 'EventCodesA_LoadIndex': '152', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '30', 'SpriteTableIndex': '30', 'SpriteDirection': '0', 'IsEnabled': '1', 'XPos': '90', 'YPos': '38', 'Height': '8', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '159', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Coffre au trésor'}
+  {'Index': '31', 'SpriteTableIndex': '34', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '98', 'YPos': '20', 'Height': '8', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Tonneau générique'}
+  {'Index': '32', 'SpriteTableIndex': '34', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '100', 'YPos': '20', 'Height': '8', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Tonneau générique'}
+  {'Index': '33', 'SpriteTableIndex': '34', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '100', 'YPos': '20', 'Height': '10', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Tonneau générique'}
+  {'Index': '34', 'SpriteTableIndex': '34', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '98', 'YPos': '20', 'Height': '10', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Tonneau générique'}
+  {'Index': '35', 'SpriteTableIndex': '174', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '86', 'YPos': '26', 'Height': '8', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Pilier poussable (PRG)'}
+  {'Index': '36', 'SpriteTableIndex': '174', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '58', 'YPos': '72', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Pilier poussable (PRG)'}
+  {'Index': '37', 'SpriteTableIndex': '173', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '54', 'YPos': '70', 'Height': '17', 'EventCodesA_LoadIndex': '166', 'EventCodesC_TickIndex': '166', 'EventCodesD_TouchIndex': '166', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '38', 'SpriteTableIndex': '173', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '50', 'YPos': '70', 'Height': '17', 'EventCodesA_LoadIndex': '167', 'EventCodesC_TickIndex': '167', 'EventCodesD_TouchIndex': '167', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '39', 'SpriteTableIndex': '173', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '46', 'YPos': '70', 'Height': '17', 'EventCodesA_LoadIndex': '168', 'EventCodesC_TickIndex': '168', 'EventCodesD_TouchIndex': '168', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '40', 'SpriteTableIndex': '173', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '42', 'YPos': '70', 'Height': '17', 'EventCodesA_LoadIndex': '169', 'EventCodesC_TickIndex': '169', 'EventCodesD_TouchIndex': '169', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur à ballon'}
+  {'Index': '41', 'SpriteTableIndex': '30', 'SpriteDirection': '64', 'IsEnabled': '1', 'XPos': '60', 'YPos': '78', 'Height': '13', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Coffre au trésor'}
+  {'Index': '42', 'SpriteTableIndex': '56', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '60', 'YPos': '78', 'Height': '12', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '171', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (petite)'}
+  {'Index': '43', 'SpriteTableIndex': '86', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '58', 'YPos': '88', 'Height': '2', 'EventCodesA_LoadIndex': '172', 'EventCodesC_TickIndex': '172', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Tourelle à 4 directions'}
+  {'Index': '44', 'SpriteTableIndex': '87', 'SpriteDirection': '129', 'IsEnabled': '1', 'XPos': '58', 'YPos': '88', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '173', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Flammes horizontales'}
+  {'Index': '45', 'SpriteTableIndex': '86', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '48', 'YPos': '88', 'Height': '2', 'EventCodesA_LoadIndex': '172', 'EventCodesC_TickIndex': '174', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Tourelle à 4 directions'}
+  {'Index': '46', 'SpriteTableIndex': '87', 'SpriteDirection': '129', 'IsEnabled': '1', 'XPos': '48', 'YPos': '88', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '173', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Flammes horizontales'}
+  {'Index': '47', 'SpriteTableIndex': '197', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '10', 'YPos': '84', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆P-Zoldia Niv.2'}
+  {'Index': '48', 'SpriteTableIndex': '197', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '13', 'YPos': '78', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆P-Zoldia Niv.2'}
+  {'Index': '49', 'SpriteTableIndex': '197', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '16', 'YPos': '84', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆P-Zoldia Niv.2'}
+  {'Index': '50', 'SpriteTableIndex': '56', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '42', 'YPos': '70', 'Height': '16', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '178', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (petite)'}
+  {'Index': '51', 'SpriteTableIndex': '56', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '46', 'YPos': '70', 'Height': '16', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '178', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (petite)'}
+  {'Index': '52', 'SpriteTableIndex': '56', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '50', 'YPos': '70', 'Height': '16', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '178', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (petite)'}
+  {'Index': '53', 'SpriteTableIndex': '56', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '54', 'YPos': '70', 'Height': '16', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '178', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (petite)'}
+  {'Index': '54', 'SpriteTableIndex': '45', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '46', 'YPos': '84', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '182', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '55', 'SpriteTableIndex': '87', 'SpriteDirection': '129', 'IsEnabled': '1', 'XPos': '48', 'YPos': '76', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '173', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Flammes horizontales'}
+  {'Index': '56', 'SpriteTableIndex': '86', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '48', 'YPos': '76', 'Height': '4', 'EventCodesA_LoadIndex': '172', 'EventCodesC_TickIndex': '184', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Tourelle à 4 directions'}
+  {'Index': '57', 'SpriteTableIndex': '86', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '58', 'YPos': '76', 'Height': '2', 'EventCodesA_LoadIndex': '172', 'EventCodesC_TickIndex': '185', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Tourelle à 4 directions'}
+  {'Index': '58', 'SpriteTableIndex': '87', 'SpriteDirection': '129', 'IsEnabled': '1', 'XPos': '58', 'YPos': '76', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '173', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Flammes horizontales'}
+  {'Index': '59', 'SpriteTableIndex': '25', 'SpriteDirection': '64', 'IsEnabled': '1', 'XPos': '88', 'YPos': '86', 'Height': '6', 'EventCodesA_LoadIndex': '188', 'EventCodesC_TickIndex': '188', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Bloc transparent (1×1×2)'}
+  {'Index': '60', 'SpriteTableIndex': '25', 'SpriteDirection': '66', 'IsEnabled': '1', 'XPos': '92', 'YPos': '86', 'Height': '6', 'EventCodesA_LoadIndex': '188', 'EventCodesC_TickIndex': '189', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Bloc transparent (1×1×2)'}
+  {'Index': '61', 'SpriteTableIndex': '25', 'SpriteDirection': '66', 'IsEnabled': '1', 'XPos': '96', 'YPos': '86', 'Height': '6', 'EventCodesA_LoadIndex': '188', 'EventCodesC_TickIndex': '190', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Bloc transparent (1×1×2)'}
+  {'Index': '62', 'SpriteTableIndex': '25', 'SpriteDirection': '64', 'IsEnabled': '1', 'XPos': '88', 'YPos': '90', 'Height': '6', 'EventCodesA_LoadIndex': '188', 'EventCodesC_TickIndex': '191', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Bloc transparent (1×1×2)'}
+  {'Index': '63', 'SpriteTableIndex': '25', 'SpriteDirection': '65', 'IsEnabled': '1', 'XPos': '96', 'YPos': '90', 'Height': '6', 'EventCodesA_LoadIndex': '188', 'EventCodesC_TickIndex': '192', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Bloc transparent (1×1×2)'}
+  {'Index': '64', 'SpriteTableIndex': '25', 'SpriteDirection': '67', 'IsEnabled': '1', 'XPos': '88', 'YPos': '94', 'Height': '6', 'EventCodesA_LoadIndex': '188', 'EventCodesC_TickIndex': '193', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Bloc transparent (1×1×2)'}
+  {'Index': '65', 'SpriteTableIndex': '25', 'SpriteDirection': '67', 'IsEnabled': '1', 'XPos': '92', 'YPos': '94', 'Height': '6', 'EventCodesA_LoadIndex': '188', 'EventCodesC_TickIndex': '194', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Bloc transparent (1×1×2)'}
+  {'Index': '66', 'SpriteTableIndex': '25', 'SpriteDirection': '65', 'IsEnabled': '1', 'XPos': '96', 'YPos': '94', 'Height': '6', 'EventCodesA_LoadIndex': '188', 'EventCodesC_TickIndex': '195', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Bloc transparent (1×1×2)'}
+  {'Index': '67', 'SpriteTableIndex': '25', 'SpriteDirection': '0', 'IsEnabled': '1', 'XPos': '92', 'YPos': '78', 'Height': '6', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '196', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Bloc transparent (1×1×2)'}
+MapEvents:
+  {'Index': '0', 'X1': '0', 'Y1': '4', 'X2': '17', 'Y2': '22', 'EventCodesBIndex': '129', 'EventCodesBIndexMasked': '1', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '1', 'X1': '39', 'Y1': '35', 'X2': '51', 'Y2': '54', 'EventCodesBIndex': '130', 'EventCodesBIndexMasked': '2', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '2', 'X1': '18', 'Y1': '33', 'X2': '35', 'Y2': '51', 'EventCodesBIndex': '131', 'EventCodesBIndexMasked': '3', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '3', 'X1': '0', 'Y1': '0', 'X2': '51', 'Y2': '59', 'EventCodesBIndex': '132', 'EventCodesBIndexMasked': '4', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '4', 'X1': '0', 'Y1': '0', 'X2': '51', 'Y2': '59', 'EventCodesBIndex': '133', 'EventCodesBIndexMasked': '5', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '5', 'X1': '0', 'Y1': '0', 'X2': '51', 'Y2': '59', 'EventCodesBIndex': '134', 'EventCodesBIndexMasked': '6', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '6', 'X1': '39', 'Y1': '35', 'X2': '51', 'Y2': '59', 'EventCodesBIndex': '135', 'EventCodesBIndexMasked': '7', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+Portals:
+  {'Index': '0', 'X1': '46', 'Y1': '22', 'X2': '47', 'Y2': '22', 'DestMapId': '342', 'DestTileX': '8', 'DestTileY': '30', 'ZLevel': '0', 'Flags': '2'}
+  {'Index': '1', 'X1': '45', 'Y1': '51', 'X2': '46', 'Y2': '51', 'DestMapId': '342', 'DestTileX': '42', 'DestTileY': '30', 'ZLevel': '0', 'Flags': '2'}
+  {'Index': '2', 'X1': '5', 'Y1': '19', 'X2': '6', 'Y2': '19', 'DestMapId': '342', 'DestTileX': '35', 'DestTileY': '47', 'ZLevel': '0', 'Flags': '2'}
+  {'Index': '3', 'X1': '30', 'Y1': '19', 'X2': '31', 'Y2': '19', 'DestMapId': '342', 'DestTileX': '48', 'DestTileY': '47', 'ZLevel': '0', 'Flags': '2'}
+  {'Index': '4', 'X1': '25', 'Y1': '48', 'X2': '26', 'Y2': '48', 'DestMapId': '348', 'DestTileX': '3', 'DestTileY': '8', 'ZLevel': '0', 'Flags': '2'}
+  {'Index': '5', 'X1': '8', 'Y1': '46', 'X2': '9', 'Y2': '46', 'DestMapId': '348', 'DestTileX': '15', 'DestTileY': '8', 'ZLevel': '0', 'Flags': '2'}
+cell layers: {'map_index': 344, 'cell_count': 3120, 'walkability': 3120, 'ground_property': 3120, 'slope': 3120, 'height': 3120, 'tile_id': 3120, 'palette': 3120, 'tile': 3120, 'flags': 3120, 'wall_tiles_offset': 3120, 'wall_tiles': {'233': {'offset': -1, 'tiles': [57914, 57924, 57934, 57944]}, '234': {'offset': -1, 'tiles': [57915, 57925, 57935, 57945]}, '235': {'offset': -1, 'tiles': [57914, 57924, 57934, 57944]}, '236': {'offset': -1, 'tiles': [57915, 57925, 57935, 57945]}, '237': {'offset': -1, 'tiles': [45940]}, '261': {'offset': 0, 'tiles': [45940, 45950, 65535, 65535, 45693]}, '262': {'offset': 0, 'tiles': [45938]}, '263': {'offset': 0, 'tiles': [45940]}, '264': {'offset': 0, 'tiles': [45938]}, '265': {'offset': 0, 'tiles': [41606, 41616, 41626, 65535, 45594]}, '266': {'offset': 0, 'tiles': [41880, 41890, 41900, 41910]}, '268': {'offset': -1, 'tiles': [8576, 8586, 65535, 33149]}, '269': {'offset': 0, 'tiles': [41881, 41891, 41901, 41911]}, '270': {'offset': 0, 'tiles': [41609, 41619, 41629]}, '272': {'offset': 0, 'tiles': [45940, 45950]}, '284': {'offset': 0, 'tiles': [41606, 41616, 41626, 65535, 45674]}, '285': {'offset': 0, 'tiles': [41607, 41617, 41627, 65535, 45574]}, '286': {'offset': -4, 'tiles': [45622]}, '288': {'offset': 0, 'tiles': [41608, 41618, 41628, 41638]}, '289': {'offset': 0, 'tiles': [41609, 45875, 45885, 45895]}, '290': {'offset': 0, 'tiles': [45938, 45948, 65535, 65535, 45623]}, '291': {'offset': 0, 'tiles': [45940, 45950, 65535, 65535, 33158]}, '292': {'offset': 0, 'tiles': [45938]}, '293': {'offset': 0, 'tiles': [45940]}, '313': {'offset': 0, 'tiles': [33651, 33661, 8376]}, '314': {'offset': 0, 'tiles': [8486, 8496, 8506]}, '315': {'offset': 0, 'tiles': [8354, 8364, 8374]}, '316': {'offset': 0, 'tiles': [8355, 8365, 8375]}, '317': {'offset': 3, 'tiles': [37204, 37214, 37224, 8376]}, '320': {'offset': 0, 'tiles': [8371]}, '324': {'offset': 0, 'tiles': [8358, 8368]}, '336': {'offset': 0, 'tiles': [8472]}, '337': {'offset': 0, 'tiles': [8473]}, '338': {'offset': 0, 'tiles': [49455, 49465]}, '341': {'offset': 0, 'tiles': [8421, 8431, 8441]}, '342': {'offset': 0, 'tiles': [8497, 8507]}, '343': {'offset': 0, 'tiles': [8498, 8508]}, '371': {'offset': 0, 'tiles': [33158]}, '374': {'offset': 2, 'tiles': [61932, 65535, 33159]}, '375': {'offset': 2, 'tiles': [61933, 65535, 33159]}, '377': {'offset': 2, 'tiles': [61932, 65535, 33159]}, '378': {'offset': 2, 'tiles': [61933, 65535, 33159]}, '423': {'offset': 3, 'tiles': [8581, 8591, 8601, 8468]}, '426': {'offset': 6, 'tiles': [57824, 57834, 57844, 57856, 57866, 57874, 57884]}, '427': {'offset': 6, 'tiles': [57825, 57835, 57845, 57857, 57867, 57875, 57885]}, '429': {'offset': 6, 'tiles': [57824, 57834, 57844, 57856, 57866, 57874, 57884]}, '430': {'offset': 6, 'tiles': [57825, 57835, 57845, 57857, 57867, 57875, 57885]}, '460': {'offset': 0, 'tiles': [57553, 57563]}, '461': {'offset': 0, 'tiles': [4980, 8650, 8660, 5008]}, '462': {'offset': 0, 'tiles': [4978, 8651, 8661, 5008]}, '463': {'offset': 0, 'tiles': [4978, 8576, 8586, 65535, 8791]}, '464': {'offset': 0, 'tiles': [4978]}, '465': {'offset': 0, 'tiles': [57542]}, '466': {'offset': 0, 'tiles': [4978]}, '496': {'offset': 3, 'tiles': [8576, 8586]}, '500': {'offset': 2, 'tiles': [61932, 65535, 33159]}, '501': {'offset': 2, 'tiles': [61933, 65535, 33159]}, '512': {'offset': 0, 'tiles': [8531, 8541]}, '515': {'offset': 0, 'tiles': [8371]}, '516': {'offset': 0, 'tiles': [8354, 8364, 8374]}, '517': {'offset': 0, 'tiles': [8355, 8365, 8375]}, '518': {'offset': 0, 'tiles': [16989, 16999, 17009, 17019]}, '548': {'offset': 0, 'tiles': [8467]}, '552': {'offset': 6, 'tiles': [57824, 57834, 57844, 57856, 57866, 57874, 57884]}, '553': {'offset': 6, 'tiles': [57825, 57835, 57845, 57857, 57867, 57875, 57885]}, '562': {'offset': 2, 'tiles': [61932, 65535, 8655]}, '563': {'offset': 2, 'tiles': [61933, 65535, 8656]}, '598': {'offset': 0, 'tiles': [8654]}, '599': {'offset': -1, 'tiles': [8656]}, '600': {'offset': -1, 'tiles': [8655]}, '601': {'offset': -1, 'tiles': [8656]}, '602': {'offset': 0, 'tiles': [8647]}, '614': {'offset': 6, 'tiles': [57824, 57834, 57844, 57856, 57866, 57876, 57884]}, '615': {'offset': 6, 'tiles': [57825, 57835, 57845, 57857, 57867, 57877, 57885]}, '624': {'offset': 0, 'tiles': [13]}, '650': {'offset': 3, 'tiles': [8581, 8591, 8601, 8468]}, '651': {'offset': 0, 'tiles': [8472]}, '652': {'offset': 0, 'tiles': [8503]}, '653': {'offset': 0, 'tiles': [8473]}, '722': {'offset': 0, 'tiles': [8548]}, '773': {'offset': 0, 'tiles': [8549]}, '775': {'offset': 0, 'tiles': [8549]}, '776': {'offset': 0, 'tiles': [8547]}, '845': {'offset': 0, 'tiles': [45592]}, '897': {'offset': 3, 'tiles': [8580, 8590, 8600, 8468]}, '1002': {'offset': 0, 'tiles': [8421]}, '1040': {'offset': 0, 'tiles': [13, 18, 17, 17, 17]}, '1041': {'offset': 0, 'tiles': [17, 17, 17]}, '1042': {'offset': 0, 'tiles': [17, 17, 17]}, '1049': {'offset': 0, 'tiles': [17, 17, 17]}, '1050': {'offset': 0, 'tiles': [17, 17, 17]}, '1051': {'offset': 0, 'tiles': [17, 17, 17]}, '1052': {'offset': 0, 'tiles': [17, 17, 17]}, '1053': {'offset': 0, 'tiles': [17, 17, 17]}, '1054': {'offset': 0, 'tiles': [17, 17, 17]}, '1055': {'offset': 0, 'tiles': [14, 19, 17, 17, 17]}, '1056': {'offset': 0, 'tiles': [17, 17, 17, 17, 17]}, '1062': {'offset': 0, 'tiles': [17, 17, 17, 17, 17]}, '1063': {'offset': 0, 'tiles': [13, 18, 17, 17, 17]}, '1064': {'offset': 0, 'tiles': [17, 17, 17]}, '1065': {'offset': 0, 'tiles': [17, 17, 17]}, '1066': {'offset': 0, 'tiles': [17, 17, 17]}, '1067': {'offset': 0, 'tiles': [17, 17, 17]}, '1074': {'offset': 0, 'tiles': [14, 19, 17, 17, 17]}, '1075': {'offset': 0, 'tiles': [17, 17, 17, 17, 17]}, '1095': {'offset': 0, 'tiles': [17, 17, 17]}, '1096': {'offset': 0, 'tiles': [17, 17, 17]}, '1097': {'offset': 0, 'tiles': [17, 17, 17]}, '1098': {'offset': 0, 'tiles': [17, 17, 17]}, '1099': {'offset': 0, 'tiles': [17, 17, 17]}, '1100': {'offset': 0, 'tiles': [17, 17, 17]}, '1120': {'offset': 0, 'tiles': [17, 17, 17]}, '1121': {'offset': 0, 'tiles': [17, 17, 17]}, '1122': {'offset': 0, 'tiles': [17, 17, 17]}, '1123': {'offset': 0, 'tiles': [17, 17, 17]}, '1124': {'offset': 0, 'tiles': [17, 17, 17]}, '1125': {'offset': 0, 'tiles': [17, 17, 17]}, '1236': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17, 17, 17]}, '1237': {'offset': 0, 'tiles': [13, 18, 17, 17, 17, 17, 17, 17]}, '1238': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17]}, '1239': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17]}, '1246': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17]}, '1247': {'offset': 0, 'tiles': [4, 19, 17, 17, 17, 17, 17, 17]}, '1292': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17]}, '1293': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17]}, '1294': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17]}, '1295': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17]}, '1296': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17]}, '1297': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17]}, '1717': {'offset': 0, 'tiles': [41607, 41617]}, '1718': {'offset': 0, 'tiles': [50078, 50088]}, '1719': {'offset': 0, 'tiles': [57553, 57563, 45958, 45968]}, '1720': {'offset': 0, 'tiles': [50077, 50087, 45920, 45930]}, '1721': {'offset': 0, 'tiles': [50078, 50088, 45921, 45931]}, '1722': {'offset': 0, 'tiles': [57553, 57563, 45958, 45968]}, '1723': {'offset': 0, 'tiles': [50077, 50087, 45920, 45930]}, '1724': {'offset': 0, 'tiles': [50078, 50088]}, '1725': {'offset': 0, 'tiles': [57553, 57563]}, '1726': {'offset': 0, 'tiles': [50077, 50087, 45920, 45930]}, '1727': {'offset': 0, 'tiles': [41608, 41618, 41628, 41638, 8739]}, '1769': {'offset': -2, 'tiles': [8329]}, '1770': {'offset': -2, 'tiles': [8330]}, '1776': {'offset': -2, 'tiles': [8330]}, '1777': {'offset': -2, 'tiles': [8330]}, '1779': {'offset': 2, 'tiles': [37223, 37233, 16777, 16787]}, '1789': {'offset': 0, 'tiles': [45940]}, '1790': {'offset': 0, 'tiles': [57954]}, '1791': {'offset': 0, 'tiles': [45938]}, '1792': {'offset': 0, 'tiles': [45940]}, '1793': {'offset': 0, 'tiles': [45940]}, '1794': {'offset': 0, 'tiles': [45938]}, '1795': {'offset': 0, 'tiles': [57954, 65535, 65535, 65535, 8772]}, '1796': {'offset': 0, 'tiles': [41606, 65535, 65535, 65535, 8773]}, '1797': {'offset': 0, 'tiles': [41607, 41617, 41627, 65535, 8772]}, '1798': {'offset': 0, 'tiles': [41608, 41618, 41628, 65535, 53690]}, '1821': {'offset': 0, 'tiles': [16938, 16948]}, '1822': {'offset': 0, 'tiles': [16939, 16949]}, '1828': {'offset': 0, 'tiles': [16918, 65535, 8351]}, '1829': {'offset': 0, 'tiles': [16919, 65535, 8351]}, '1841': {'offset': 0, 'tiles': [16989, 17009, 17019]}, '1842': {'offset': 0, 'tiles': [17274, 17284, 17294]}, '1843': {'offset': 0, 'tiles': [17275, 17285, 17295]}, '1844': {'offset': 0, 'tiles': [17274, 17284, 17294]}, '1845': {'offset': 0, 'tiles': [17275, 17285, 17295]}, '1846': {'offset': 0, 'tiles': [17274, 17284, 17294]}, '1847': {'offset': 0, 'tiles': [17275, 17285, 17295]}, '1848': {'offset': 0, 'tiles': [16986, 17006, 17016]}, '1849': {'offset': 0, 'tiles': [8472]}, '1850': {'offset': 0, 'tiles': [8473]}, '1880': {'offset': 0, 'tiles': [16918]}, '1881': {'offset': 0, 'tiles': [16919]}, '1903': {'offset': 2, 'tiles': [61932, 65535, 53701]}, '1904': {'offset': 2, 'tiles': [61933, 65535, 53702]}, '1914': {'offset': -4, 'tiles': [8739]}, '1915': {'offset': 0, 'tiles': [57553, 57563, 65535, 65535, 8738]}, '1916': {'offset': 0, 'tiles': [41606, 41616, 41626, 41636, 8739]}, '1917': {'offset': 0, 'tiles': [41607, 41617, 41627, 41637]}, '1918': {'offset': 0, 'tiles': [57533, 57543, 4998, 5008]}, '1919': {'offset': 0, 'tiles': [41608, 41618, 41628, 41638]}, '1920': {'offset': 0, 'tiles': [41609, 41619, 41629, 41639, 8739]}, '1921': {'offset': 0, 'tiles': [57553, 57563, 65535, 65535, 8738]}, '1922': {'offset': -4, 'tiles': [8739]}, '1955': {'offset': 6, 'tiles': [57824, 57834, 57844, 57856, 57866, 57874, 57884]}, '1956': {'offset': 6, 'tiles': [57825, 57835, 57845, 57857, 57867, 57875, 57885]}, '1966': {'offset': 0, 'tiles': [16986, 16996, 17006, 17016]}, '1967': {'offset': 0, 'tiles': [16998, 17008, 17018]}, '1968': {'offset': 2, 'tiles': [37223, 37233, 16777, 16787]}, '1972': {'offset': 2, 'tiles': [37223, 37233, 16777, 16787]}, '1973': {'offset': 0, 'tiles': [16997, 17007, 17017]}, '1974': {'offset': 0, 'tiles': [16989, 16999, 17009, 17019]}, '2008': {'offset': 0, 'tiles': [33651, 33661]}, '2153': {'offset': 0, 'tiles': [8511]}, '2154': {'offset': 0, 'tiles': [8511]}, '2155': {'offset': 0, 'tiles': [8511]}, '2156': {'offset': 0, 'tiles': [8511]}, '2157': {'offset': 0, 'tiles': [8511]}, '2158': {'offset': 0, 'tiles': [8511]}, '2159': {'offset': 0, 'tiles': [8511]}, '2160': {'offset': 0, 'tiles': [8511]}, '2161': {'offset': 0, 'tiles': [8511]}, '2162': {'offset': 0, 'tiles': [8511]}, '2163': {'offset': 0, 'tiles': [8511]}, '2164': {'offset': 0, 'tiles': [8511]}, '2237': {'offset': 0, 'tiles': [16938, 16948, 8721]}, '2238': {'offset': 0, 'tiles': [16939, 16949]}, '2247': {'offset': 0, 'tiles': [8738]}, '2289': {'offset': 2, 'tiles': [37223, 37233, 16777, 16787]}, '2299': {'offset': 2, 'tiles': [37223, 37233, 16777, 16787]}, '2444': {'offset': 0, 'tiles': [13, 18, 17, 17, 17]}, '2445': {'offset': 0, 'tiles': [17, 17, 17]}, '2446': {'offset': 0, 'tiles': [17, 17, 17]}, '2447': {'offset': 0, 'tiles': [17, 17, 17]}, '2448': {'offset': 0, 'tiles': [17, 17, 17]}, '2449': {'offset': 0, 'tiles': [17, 17, 17]}, '2451': {'offset': 0, 'tiles': [17, 17, 17]}, '2452': {'offset': 0, 'tiles': [17]}, '2453': {'offset': 0, 'tiles': [17]}, '2454': {'offset': 0, 'tiles': [17, 17, 17]}, '2455': {'offset': 0, 'tiles': [17, 17, 17]}, '2456': {'offset': 0, 'tiles': [14, 19, 17, 17, 17]}, '2457': {'offset': 0, 'tiles': [17, 17, 17, 17, 17]}, '2488': {'offset': 0, 'tiles': [8973, 8983]}, '2489': {'offset': 0, 'tiles': [8974, 8984]}, '2490': {'offset': 0, 'tiles': [8972, 8982]}, '2491': {'offset': 0, 'tiles': [8974, 8984]}, '2492': {'offset': 0, 'tiles': [8975, 8985]}, '2502': {'offset': 0, 'tiles': [17, 17, 17]}, '2503': {'offset': 0, 'tiles': [17, 17, 17]}, '2504': {'offset': 0, 'tiles': [17, 17, 17]}, '2505': {'offset': 0, 'tiles': [17, 17, 17]}, '2506': {'offset': 0, 'tiles': [17, 17, 17]}, '2507': {'offset': 0, 'tiles': [17, 17, 17]}, '2567': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17]}, '2568': {'offset': 0, 'tiles': [13, 13, 18, 17, 17, 17]}, '2569': {'offset': 0, 'tiles': [17, 17, 17]}, '2570': {'offset': 0, 'tiles': [17, 17, 17]}, '2577': {'offset': 0, 'tiles': [17, 17, 17]}, '2578': {'offset': 0, 'tiles': [17, 17, 17]}, '2579': {'offset': 0, 'tiles': [17, 17, 17]}, '2580': {'offset': 0, 'tiles': [17, 17, 17]}, '2581': {'offset': 0, 'tiles': [14, 4, 19, 17, 17, 17]}, '2582': {'offset': 0, 'tiles': [17, 17, 17, 17, 17, 17]}, '2623': {'offset': 0, 'tiles': [17, 17, 17]}, '2624': {'offset': 0, 'tiles': [17, 17, 17]}, '2625': {'offset': 0, 'tiles': [17, 17, 17]}, '2626': {'offset': 0, 'tiles': [17, 17, 17]}, '2627': {'offset': 0, 'tiles': [17, 17, 17]}, '2628': {'offset': 0, 'tiles': [17, 17, 17]}, '2744': {'offset': 0, 'tiles': [17, 17, 17, 17, 17]}, '2745': {'offset': 0, 'tiles': [3, 18, 17, 17, 17]}, '2746': {'offset': 0, 'tiles': [17, 17, 17]}, '2753': {'offset': 0, 'tiles': [17, 17, 17]}, '2754': {'offset': 0, 'tiles': [17, 17, 17]}, '2755': {'offset': 0, 'tiles': [4, 19, 17, 17, 17]}, '2799': {'offset': 0, 'tiles': [17, 17, 17]}, '2800': {'offset': 0, 'tiles': [17, 17, 17]}, '2801': {'offset': 0, 'tiles': [17, 17, 17]}, '2802': {'offset': 0, 'tiles': [17, 17, 17]}, '2803': {'offset': 0, 'tiles': [17, 17, 17]}, '2804': {'offset': 0, 'tiles': [17, 17, 17]}}}

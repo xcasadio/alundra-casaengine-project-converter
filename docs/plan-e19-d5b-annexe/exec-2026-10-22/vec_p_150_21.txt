@@ -1,0 +1,8 @@
+vectors 150, ticks 370, vectors with a mismatch 0, entity-ticks with RidingEntity set 35, features {'coll': 248, 'ground': 395, 'ride': 35}, 2.3s
+Traceback (most recent call last):
+  File "C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\d5b-disc\annex\work\vec_p.py", line 261, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\d5b-disc\annex\work\vec_p.py", line 225, in main
+    import capstone
+ModuleNotFoundError: No module named 'capstone'

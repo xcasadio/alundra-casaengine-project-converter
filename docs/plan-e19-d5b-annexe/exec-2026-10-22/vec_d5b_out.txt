@@ -1,0 +1,145 @@
+t00 plat x=  6553600 afx=      0 ffx=      0 | hero x=  6553600 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t01 plat x=  6553600 afx=      0 ffx=      0 | hero x=  6553600 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t02 plat x=  6553600 afx=      0 ffx=      0 | hero x=  6553600 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t03 plat x=  6619136 afx=  65536 ffx=  65536 | hero x=  6619136 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t04 plat x=  6684672 afx=  65536 ffx=  65536 | hero x=  6684672 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t05 plat x=  6750208 afx=  65536 ffx=  65536 | hero x=  6750208 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t06 plat x=  6815744 afx=  65536 ffx=  65536 | hero x=  6815744 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t07 plat x=  6881280 afx=  65536 ffx=  65536 | hero x=  6881280 (rel        0) afx=      0 ffx=  65536  z-rel 0 ride=1 coll=0 gnd=1
+t08 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t09 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t10 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+t11 plat x=  6881280 afx=      0 ffx=      0 | hero x=  6881280 (rel        0) afx=      0 ffx=      0  z-rel 0 ride=1 coll=0 gnd=1
+== E22 lift of map 22: platform rises +1 px/tick from tick 3 for 64 ticks, hero on it
+t00 plat dz=       0 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t01 plat dz=       0 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t02 plat dz=       0 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t03 plat dz=   65536 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=   65536
+t04 plat dz=  131072 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=   65536
+t05 plat dz=  196608 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=   65536
+t06 plat dz=  262144 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=   65536
+t07 plat dz=  327680 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=   65536
+t66 plat dz= 4194304 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=   65536
+t67 plat dz= 4194304 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t68 plat dz= 4194304 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t69 plat dz= 4194304 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t71 plat dz= 4194304 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+== DESC platform descends -1 px/tick from tick 3 for 24 ticks, hero on it
+t00 plat dz=       0 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t01 plat dz=       0 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t02 plat dz=       0 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t03 plat dz=  -65536 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536
+t04 plat dz= -131072 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536
+t05 plat dz= -196608 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536
+t06 plat dz= -262144 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536
+t07 plat dz= -327680 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536
+t26 plat dz=-1572864 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536
+t27 plat dz=-1572864 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t28 plat dz=-1572864 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t29 plat dz=-1572864 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+t31 plat dz=-1572864 | hero rel=      0 ride=1 coll=0 gnd=1 ffz=       0
+== CRATE rising +1 px/tick t3..t8, crate AFTER the platform in the slot order, hero far
+t00 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t01 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t02 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t03 plat dz=   65536 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t04 plat dz=  131072 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t05 plat dz=  196608 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t06 plat dz=  262144 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t07 plat dz=  327680 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t08 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t09 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t10 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t11 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t12 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t13 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+== CRATE rising +1 px/tick t3..t8, crate BEFORE the platform in the slot order, hero far
+t00 plat dz=       0 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t01 plat dz=       0 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t02 plat dz=       0 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t03 plat dz=   65536 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t04 plat dz=  131072 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t05 plat dz=  196608 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t06 plat dz=  262144 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t07 plat dz=  327680 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t08 plat dz=  393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t09 plat dz=  393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t10 plat dz=  393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t11 plat dz=  393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t12 plat dz=  393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t13 plat dz=  393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+== CRATE descending -1 px/tick t3..t8, crate AFTER the platform in the slot order, hero far
+t00 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t01 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t02 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t03 plat dz=  -65536 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t04 plat dz= -131072 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t05 plat dz= -196608 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t06 plat dz= -262144 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t07 plat dz= -327680 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t08 plat dz= -393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t09 plat dz= -393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t10 plat dz= -393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t11 plat dz= -393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t12 plat dz= -393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t13 plat dz= -393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+== CRATE descending -1 px/tick t3..t8, crate BEFORE the platform in the slot order, hero far
+t00 plat dz=       0 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t01 plat dz=       0 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t02 plat dz=       0 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t03 plat dz=  -65536 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t04 plat dz= -131072 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t05 plat dz= -196608 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t06 plat dz= -262144 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t07 plat dz= -327680 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t08 plat dz= -393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=  -65536 fz=  -65536 | crate dx(plat)=      0 ffx=      0
+t09 plat dz= -393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t10 plat dz= -393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t11 plat dz= -393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t12 plat dz= -393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t13 plat dz= -393216 | pas rel=      0 ride=2 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+== NPC (gravity, 20x14x32) rising +1 px/tick t3..t8, NPC AFTER the platform
+t00 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t01 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t02 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t03 plat dz=   65536 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t04 plat dz=  131072 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t05 plat dz=  196608 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t06 plat dz=  262144 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t07 plat dz=  327680 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t08 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0
+t09 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t10 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t11 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t12 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+t13 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0
+== PILE_Z hero on crate on platform, rising +1 px/tick t3..t8
+t00 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t01 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t02 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t03 plat dz=   65536 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t04 plat dz=  131072 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t05 plat dz=  196608 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t06 plat dz=  262144 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t07 plat dz=  327680 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t08 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t09 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t10 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t11 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t12 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t13 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+== PILE_XY hero on crate on platform, platform east +1 px/tick and rising +1 px/tick t3..t8
+t00 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t01 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t02 plat dz=       0 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)=      0 ffx=      0 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=      0 ffx=      0
+t03 plat dz=   65536 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)=  65536 ffx= 131072 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=-131072 ffx=      0
+t04 plat dz=  131072 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)= 131072 ffx= 131072 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=-262144 ffx=      0
+t05 plat dz=  196608 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)= 196608 ffx= 131072 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=-393216 ffx=      0
+t06 plat dz=  262144 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)= 262144 ffx= 131072 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=-524288 ffx=      0
+t07 plat dz=  327680 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)= 327680 ffx= 131072 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=-655360 ffx=      0
+t08 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=   65536 fz=   65536 | crate dx(plat)= 393216 ffx= 131072 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=-786432 ffx=      0
+t09 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)= 458752 ffx= 131072 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=-917504 ffx=      0
+t10 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)= 524288 ffx= 131072 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=-1048576 ffx=      0
+t11 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)= 589824 ffx= 131072 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=-1179648 ffx=      0
+t12 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)= 655360 ffx= 131072 | hero rel(pas)=      0 ride=2 coll=0 gnd=1 dx(crate)=-1310720 ffx=      0
+t13 plat dz=  393216 | pas rel=      0 ride=1 coll=0 gnd=1 ffz=       0 fz=       0 | crate dx(plat)= 720896 ffx= 131072 | hero rel(pas)=      0 ride=2 coll=0 gnd=0 dx(crate)=-1441792 ffx=      0

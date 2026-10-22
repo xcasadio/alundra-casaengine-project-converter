@@ -1,0 +1,371 @@
+== P3 UH-14 montage: platform ForceX=-65536 (phase of the hero)
+tick 1: platformDX=-1px heroDX=-1px riding=True posZ=1048576
+tick 2: platformDX=-2px heroDX=-2px riding=True posZ=1048576
+tick 3: platformDX=-3px heroDX=-3px riding=True posZ=1048576
+tick 4: platformDX=-4px heroDX=-4px riding=True posZ=1048576
+tick 5: platformDX=-5px heroDX=-5px riding=True posZ=1048576
+tick 6: platformDX=-6px heroDX=-6px riding=True posZ=1048576
+== P7 map 22 (Lars' Crypt): arrival on the platform, T3 on (lever 2 hit), the elevator runs by itself
+records present: platform=True lever0=True lever1=True
+after frame 1: hero=(1008,176,32) platform=(1008,176,24) top=32 riding=True onGround=1 airborne=True
+after 21 frames: hero=(1008,176,32) platform.PosZ=24 riding=True onGround=1 airborne=True
+f  1: platform.PosZ=24 forceZ=0 hero.Z=32 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=False locked=True warping=False
+f  2: platform.PosZ=24 forceZ=0 hero.Z=32 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=False locked=True warping=False
+f  3: platform.PosZ=24 forceZ=0 hero.Z=32 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=False locked=True warping=False
+f  4: platform.PosZ=24 forceZ=0 hero.Z=32 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=False locked=True warping=False
+f  5: platform.PosZ=24 forceZ=0 hero.Z=32 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=False locked=True warping=False
+f  6: platform.PosZ=24 forceZ=0 hero.Z=32 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=False locked=True warping=False
+f  7: platform.PosZ=24 forceZ=0 hero.Z=32 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=False locked=True warping=False
+f  8: platform.PosZ=24 forceZ=0 hero.Z=32 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=False locked=True warping=False
+f  9: platform.PosZ=24 forceZ=0 hero.Z=32 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=False locked=True warping=False
+f 10: platform.PosZ=24 forceZ=0 hero.Z=32 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=False locked=True warping=False
+f 11: platform.PosZ=24 forceZ=0 hero.Z=32 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=False locked=True warping=False
+f 12: platform.PosZ=25 forceZ=65536 hero.Z=33 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 13: platform.PosZ=26 forceZ=65536 hero.Z=34 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 14: platform.PosZ=27 forceZ=65536 hero.Z=35 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 16: platform.PosZ=29 forceZ=65536 hero.Z=37 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 24: platform.PosZ=37 forceZ=65536 hero.Z=45 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 32: platform.PosZ=45 forceZ=65536 hero.Z=53 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 40: platform.PosZ=53 forceZ=65536 hero.Z=61 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 48: platform.PosZ=61 forceZ=65536 hero.Z=69 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 56: platform.PosZ=69 forceZ=65536 hero.Z=77 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 61: platform.PosZ=74 forceZ=65536 hero.Z=82 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 62: platform.PosZ=75 forceZ=65536 hero.Z=83 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 63: platform.PosZ=76 forceZ=65536 hero.Z=84 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 64: platform.PosZ=77 forceZ=65536 hero.Z=85 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 65: platform.PosZ=78 forceZ=65536 hero.Z=86 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 66: platform.PosZ=79 forceZ=65536 hero.Z=87 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 67: platform.PosZ=80 forceZ=65536 hero.Z=88 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 68: platform.PosZ=81 forceZ=65536 hero.Z=89 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 69: platform.PosZ=82 forceZ=65536 hero.Z=90 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 70: platform.PosZ=83 forceZ=65536 hero.Z=91 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 71: platform.PosZ=84 forceZ=65536 hero.Z=92 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 72: platform.PosZ=85 forceZ=65536 hero.Z=93 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 73: platform.PosZ=86 forceZ=65536 hero.Z=94 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 74: platform.PosZ=87 forceZ=65536 hero.Z=95 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 75: platform.PosZ=88 forceZ=65536 hero.Z=96 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=True G129=False locked=True warping=False
+f 76: platform.PosZ=89 forceZ=65536 hero.Z=97 heroFoot-top=0px heroXY=(1008,176) riding=True onGround=1 airborne=True T5=False G129=True locked=True warping=True
+G129 raised at f76 (the program reached its 0x53 just after)
+== P1 hero on a platform (24x16x16 box, no gravity) driven by ForceZ = +65536 from tick 1
+settled: hero.PosZ=1048576 platform.PosZ=0 riding=True onGround=1 airborne=True
+tick  1: platform.PosZ=65536 (+1px) hero.PosZ=1114112 heroFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 airborne=True heroForceZ=65536 heroFinalForceZ=65536 platTickForceZ=65536
+tick  2: platform.PosZ=131072 (+2px) hero.PosZ=1179648 heroFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 airborne=True heroForceZ=65536 heroFinalForceZ=65536 platTickForceZ=65536
+tick  3: platform.PosZ=196608 (+3px) hero.PosZ=1245184 heroFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 airborne=True heroForceZ=65536 heroFinalForceZ=65536 platTickForceZ=65536
+tick  4: platform.PosZ=262144 (+4px) hero.PosZ=1310720 heroFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 airborne=True heroForceZ=65536 heroFinalForceZ=65536 platTickForceZ=65536
+tick  5: platform.PosZ=327680 (+5px) hero.PosZ=1376256 heroFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 airborne=True heroForceZ=65536 heroFinalForceZ=65536 platTickForceZ=65536
+tick  6: platform.PosZ=393216 (+6px) hero.PosZ=1441792 heroFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 airborne=True heroForceZ=65536 heroFinalForceZ=65536 platTickForceZ=65536
+tick  7: platform.PosZ=458752 (+7px) hero.PosZ=1507328 heroFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 airborne=True heroForceZ=65536 heroFinalForceZ=65536 platTickForceZ=65536
+tick  8: platform.PosZ=524288 (+8px) hero.PosZ=1572864 heroFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 airborne=True heroForceZ=65536 heroFinalForceZ=65536 platTickForceZ=65536
+tick  9: platform.PosZ=589824 (+9px) hero.PosZ=1638400 heroFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 airborne=True heroForceZ=65536 heroFinalForceZ=65536 platTickForceZ=65536
+tick 10: platform.PosZ=589824 (+9px) hero.PosZ=1638400 heroFootMinusPlatformTop=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=0 heroFinalForceZ=0 platTickForceZ=0
+tick 11: platform.PosZ=589824 (+9px) hero.PosZ=1638400 heroFootMinusPlatformTop=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=0 heroFinalForceZ=0 platTickForceZ=0
+tick 12: platform.PosZ=589824 (+9px) hero.PosZ=1638400 heroFootMinusPlatformTop=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=0 heroFinalForceZ=0 platTickForceZ=0
+tick 13: platform.PosZ=589824 (+9px) hero.PosZ=1638400 heroFootMinusPlatformTop=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=0 heroFinalForceZ=0 platTickForceZ=0
+tick 14: platform.PosZ=589824 (+9px) hero.PosZ=1638400 heroFootMinusPlatformTop=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=0 heroFinalForceZ=0 platTickForceZ=0
+== P11 map 22: the hero arrives 32 px above the lift (z level 4), the test makes the lift rise +1 px/tick from frame 1 (the script is idle, T3 off): the hero falls onto a RISING platform
+after frame 1: hero.Z=63,5 platform.Z=24 airborne=True onGround=0
+f  1: platZ=25 plat.collZ=0 hero.Z=62,5 heroFoot-top=29,5px riding=False onGround=0 collZ=0 airborne=True heroForceZ=-65536
+f  2: platZ=26 plat.collZ=0 hero.Z=61 heroFoot-top=27px riding=False onGround=0 collZ=0 airborne=True heroForceZ=-98304
+f  3: platZ=27 plat.collZ=0 hero.Z=59 heroFoot-top=24px riding=False onGround=0 collZ=0 airborne=True heroForceZ=-131072
+f  4: platZ=28 plat.collZ=0 hero.Z=56,5 heroFoot-top=20,5px riding=False onGround=0 collZ=0 airborne=True heroForceZ=-163840
+f  5: platZ=29 plat.collZ=0 hero.Z=53,5 heroFoot-top=16,5px riding=False onGround=0 collZ=0 airborne=True heroForceZ=-196608
+f  6: platZ=30 plat.collZ=0 hero.Z=50 heroFoot-top=12px riding=False onGround=0 collZ=0 airborne=True heroForceZ=-229376
+f  7: platZ=31 plat.collZ=0 hero.Z=46 heroFoot-top=7px riding=False onGround=0 collZ=0 airborne=True heroForceZ=-262144
+f  8: platZ=32 plat.collZ=0 hero.Z=41,5 heroFoot-top=1,5px riding=False onGround=0 collZ=0 airborne=True heroForceZ=-294912
+f  9: platZ=33 plat.collZ=0 hero.Z=41 heroFoot-top=0px riding=False onGround=1 collZ=1 airborne=True heroForceZ=0
+f 10: platZ=34 plat.collZ=0 hero.Z=42 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 11: platZ=35 plat.collZ=0 hero.Z=43 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 12: platZ=36 plat.collZ=0 hero.Z=44 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 13: platZ=37 plat.collZ=0 hero.Z=45 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 14: platZ=38 plat.collZ=0 hero.Z=46 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 15: platZ=39 plat.collZ=0 hero.Z=47 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 16: platZ=40 plat.collZ=0 hero.Z=48 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 17: platZ=41 plat.collZ=0 hero.Z=49 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 18: platZ=42 plat.collZ=0 hero.Z=50 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 19: platZ=43 plat.collZ=0 hero.Z=51 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 20: platZ=44 plat.collZ=0 hero.Z=52 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 21: platZ=45 plat.collZ=0 hero.Z=53 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 22: platZ=46 plat.collZ=0 hero.Z=54 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 23: platZ=47 plat.collZ=0 hero.Z=55 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 24: platZ=48 plat.collZ=0 hero.Z=56 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 25: platZ=49 plat.collZ=0 hero.Z=57 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 26: platZ=50 plat.collZ=0 hero.Z=58 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 27: platZ=51 plat.collZ=0 hero.Z=59 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 28: platZ=52 plat.collZ=0 hero.Z=60 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 29: platZ=53 plat.collZ=0 hero.Z=61 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 30: platZ=54 plat.collZ=0 hero.Z=62 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 31: platZ=55 plat.collZ=0 hero.Z=63 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 32: platZ=56 plat.collZ=0 hero.Z=64 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 33: platZ=57 plat.collZ=0 hero.Z=65 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 34: platZ=58 plat.collZ=0 hero.Z=66 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 35: platZ=59 plat.collZ=0 hero.Z=67 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 36: platZ=60 plat.collZ=0 hero.Z=68 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 37: platZ=61 plat.collZ=0 hero.Z=69 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 38: platZ=62 plat.collZ=0 hero.Z=70 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 39: platZ=63 plat.collZ=0 hero.Z=71 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 40: platZ=64 plat.collZ=0 hero.Z=72 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 41: platZ=65 plat.collZ=0 hero.Z=73 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 42: platZ=66 plat.collZ=0 hero.Z=74 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 43: platZ=67 plat.collZ=0 hero.Z=75 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 44: platZ=68 plat.collZ=0 hero.Z=76 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+f 45: platZ=69 plat.collZ=0 hero.Z=77 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True heroForceZ=65536
+== P12 map 22: like P11 with the lift rising +3 px/tick (ForceZ 196608) and the hero arriving at z level 3 (48 px)
+after frame 1: hero.Z=47,5 platform.Z=24
+f  1: platZ=27 plat.collZ=0 hero.Z=46,5 heroFoot-top=11,5px riding=False onGround=0 collZ=0 heroForceZ=-65536
+f  2: platZ=30 plat.collZ=0 hero.Z=45 heroFoot-top=7px riding=False onGround=0 collZ=0 heroForceZ=-98304
+f  3: platZ=33 plat.collZ=0 hero.Z=43 heroFoot-top=2px riding=False onGround=0 collZ=0 heroForceZ=-131072
+f  4: platZ=35 plat.collZ=1 hero.Z=43 heroFoot-top=0px riding=False onGround=1 collZ=1 heroForceZ=0
+f  5: platZ=38 plat.collZ=0 hero.Z=46 heroFoot-top=0px riding=True onGround=1 collZ=0 heroForceZ=196608
+f  6: platZ=41 plat.collZ=0 hero.Z=49 heroFoot-top=0px riding=True onGround=1 collZ=0 heroForceZ=196608
+f  7: platZ=44 plat.collZ=0 hero.Z=52 heroFoot-top=0px riding=True onGround=1 collZ=0 heroForceZ=196608
+f  8: platZ=47 plat.collZ=0 hero.Z=55 heroFoot-top=0px riding=True onGround=1 collZ=0 heroForceZ=196608
+f  9: platZ=50 plat.collZ=0 hero.Z=58 heroFoot-top=0px riding=True onGround=1 collZ=0 heroForceZ=196608
+f 10: platZ=53 plat.collZ=0 hero.Z=61 heroFoot-top=0px riding=True onGround=1 collZ=0 heroForceZ=196608
+f 11: platZ=56 plat.collZ=0 hero.Z=64 heroFoot-top=0px riding=True onGround=1 collZ=0 heroForceZ=196608
+f 12: platZ=59 plat.collZ=0 hero.Z=67 heroFoot-top=0px riding=True onGround=1 collZ=0 heroForceZ=196608
+f 13: platZ=62 plat.collZ=0 hero.Z=70 heroFoot-top=0px riding=True onGround=1 collZ=0 heroForceZ=196608
+f 14: platZ=65 plat.collZ=0 hero.Z=73 heroFoot-top=0px riding=True onGround=1 collZ=0 heroForceZ=196608
+== P10 map 22: the barrel (record 33, gravity crate 21x15x16) is put on the lift next to the hero, T3 on, the lift rises by its script
+barrel present=True
+settled: hero.Z=32 barrel=(1020,176,32) barrel.riding=True barrel.onGround=1 hero.riding=True
+f  1: platZ=24 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0 barrelXY=(1020,176)
+f  2: platZ=24 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0 barrelXY=(1020,176)
+f  3: platZ=24 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0 barrelXY=(1020,176)
+f  4: platZ=24 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0 barrelXY=(1020,176)
+f  5: platZ=24 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0 barrelXY=(1020,176)
+f  6: platZ=24 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0 barrelXY=(1020,176)
+f  7: platZ=24 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0 barrelXY=(1020,176)
+f  8: platZ=24 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0 barrelXY=(1020,176)
+f  9: platZ=24 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0 barrelXY=(1020,176)
+f 10: platZ=24 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0 barrelXY=(1020,176)
+f 11: platZ=24 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0 barrelXY=(1020,176)
+f 12: platZ=25 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 13: platZ=26 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 14: platZ=27 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 15: platZ=28 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 16: platZ=29 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 18: platZ=31 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 24: platZ=37 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 30: platZ=43 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 36: platZ=49 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 42: platZ=55 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 48: platZ=61 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 54: platZ=67 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 60: platZ=73 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 66: platZ=79 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 72: platZ=85 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+f 76: platZ=89 hero.foot-top=0px barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=65536 barrelXY=(1020,176)
+== P13 map 22: like P10 with the barrel marked HasLogicalZ (the path of the dropped items and thrown objects)
+f  1: platZ=24 barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0
+f  2: platZ=24 barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0
+f  3: platZ=24 barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0
+f  4: platZ=24 barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0
+f  5: platZ=24 barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0
+f  6: platZ=24 barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0
+f  7: platZ=24 barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0
+f  8: platZ=24 barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0
+f  9: platZ=24 barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0
+f 10: platZ=24 barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0
+f 11: platZ=24 barrel.foot-top=0px barrel.riding=True barrel.onGround=1 barrel.collZ=0 barrel.ForceZ=0
+f 12: platZ=25 barrel.foot-top=0px barrel.riding=True barrel.onGround=0 barrel.collZ=0 barrel.ForceZ=65536
+f 13: platZ=26 barrel.foot-top=0px barrel.riding=True barrel.onGround=0 barrel.collZ=0 barrel.ForceZ=65536
+f 14: platZ=27 barrel.foot-top=0px barrel.riding=True barrel.onGround=0 barrel.collZ=0 barrel.ForceZ=65536
+f 16: platZ=29 barrel.foot-top=0px barrel.riding=True barrel.onGround=0 barrel.collZ=0 barrel.ForceZ=65536
+f 24: platZ=37 barrel.foot-top=0px barrel.riding=True barrel.onGround=0 barrel.collZ=0 barrel.ForceZ=65536
+f 32: platZ=45 barrel.foot-top=0px barrel.riding=True barrel.onGround=0 barrel.collZ=0 barrel.ForceZ=65536
+f 40: platZ=53 barrel.foot-top=0px barrel.riding=True barrel.onGround=0 barrel.collZ=0 barrel.ForceZ=65536
+== P2 gravity crate (21x15x16) on a platform (48x32x8) ForceZ=+65536 from tick 1, crate AFTER the platform in the world order, no hero action
+settled: platform.PosZ=1048576 crate.PosZ=1572864 crate.RidingEntity==platform:True crate.IsOnGround=0
+tick  1: platform.PosZ=1048576 crate.PosZ=1638400 crateFootMinusPlatformTop=1px riding=False onGround=0 collZ=0 crateForceZ=65536 crateTickForceZ=65536
+tick  2: platform.PosZ=1114112 crate.PosZ=1671168 crateFootMinusPlatformTop=0,5px riding=False onGround=0 collZ=0 crateForceZ=32768 crateTickForceZ=32768
+tick  3: platform.PosZ=1146880 crate.PosZ=1671168 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=0 crateTickForceZ=0
+tick  4: platform.PosZ=1146880 crate.PosZ=1736704 crateFootMinusPlatformTop=1px riding=False onGround=0 collZ=0 crateForceZ=65536 crateTickForceZ=65536
+tick  5: platform.PosZ=1212416 crate.PosZ=1769472 crateFootMinusPlatformTop=0,5px riding=False onGround=0 collZ=0 crateForceZ=32768 crateTickForceZ=32768
+tick  6: platform.PosZ=1245184 crate.PosZ=1769472 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=0 crateTickForceZ=0
+tick  7: platform.PosZ=1245184 crate.PosZ=1835008 crateFootMinusPlatformTop=1px riding=False onGround=0 collZ=0 crateForceZ=65536 crateTickForceZ=65536
+tick  8: platform.PosZ=1310720 crate.PosZ=1867776 crateFootMinusPlatformTop=0,5px riding=False onGround=0 collZ=0 crateForceZ=32768 crateTickForceZ=32768
+tick  9: platform.PosZ=1310720 crate.PosZ=1867776 crateFootMinusPlatformTop=0,5px riding=False onGround=0 collZ=0 crateForceZ=0 crateTickForceZ=0
+tick 10: platform.PosZ=1310720 crate.PosZ=1835008 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=-32768 crateTickForceZ=-32768
+tick 11: platform.PosZ=1310720 crate.PosZ=1835008 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=0 crateTickForceZ=0
+tick 12: platform.PosZ=1310720 crate.PosZ=1835008 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=0 crateTickForceZ=0
+== P2 gravity crate (21x15x16) on a platform (48x32x8) ForceZ=+65536 from tick 1, crate BEFORE the platform in the world order, no hero action
+settled: platform.PosZ=1048576 crate.PosZ=1572864 crate.RidingEntity==platform:True crate.IsOnGround=0
+tick  1: platform.PosZ=1114112 crate.PosZ=1638400 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=65536 crateTickForceZ=65536
+tick  2: platform.PosZ=1179648 crate.PosZ=1703936 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=65536 crateTickForceZ=65536
+tick  3: platform.PosZ=1245184 crate.PosZ=1769472 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=65536 crateTickForceZ=65536
+tick  4: platform.PosZ=1310720 crate.PosZ=1835008 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=65536 crateTickForceZ=65536
+tick  5: platform.PosZ=1376256 crate.PosZ=1900544 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=65536 crateTickForceZ=65536
+tick  6: platform.PosZ=1441792 crate.PosZ=1966080 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=65536 crateTickForceZ=65536
+tick  7: platform.PosZ=1507328 crate.PosZ=2031616 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=65536 crateTickForceZ=65536
+tick  8: platform.PosZ=1572864 crate.PosZ=2097152 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=65536 crateTickForceZ=65536
+tick  9: platform.PosZ=1572864 crate.PosZ=2097152 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=0 crateTickForceZ=0
+tick 10: platform.PosZ=1572864 crate.PosZ=2097152 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=0 crateTickForceZ=0
+tick 11: platform.PosZ=1572864 crate.PosZ=2097152 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=0 crateTickForceZ=0
+tick 12: platform.PosZ=1572864 crate.PosZ=2097152 crateFootMinusPlatformTop=0px riding=True onGround=0 collZ=0 crateForceZ=0 crateTickForceZ=0
+== P9 map 22: arrival on the floor south of the lever 2 (tile 46,8), hit the lever, walk round the recess, jump onto the lift, wait for the ride
+start: hero=(1116,136,32) lever1.pos=(1116,120,32) locked=False
+after 31 frames: hero=(1116,136,32) dir=16 locked=False
+after the hit: T3=True T4=True T1=False lever.touching=False hero=(1116,136,32)
+walked south: hero=(1116,187,1875,32) frames=32
+walked west to the edge: hero=(1092,84375,188,32) frames=10
+jump +1: hero=(1088,04,188,41,5) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump +3: hero=(1083,45,188,49) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump +5: hero=(1078,85,188,54,5) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump +7: hero=(1074,26,188,58) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump +9: hero=(1069,66,188,59,5) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump +11: hero=(1065,07,188,59) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump +13: hero=(1060,48,188,56,5) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump +15: hero=(1055,88,188,52) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump +17: hero=(1051,29,188,45,5) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump +19: hero=(1046,7,188,37) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump +21: hero=(1042,1,188,26,5) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump +23: hero=(1042,188,16) riding=False onGround=1 airborne=False platZ=24 T5=False
+jump +25: hero=(1042,188,16) riding=False onGround=1 airborne=False platZ=24 T5=False
+jump +27: hero=(1042,188,16) riding=False onGround=1 airborne=False platZ=24 T5=False
+jump +29: hero=(1042,188,16) riding=False onGround=1 airborne=False platZ=24 T5=False
+jump +31: hero=(1042,188,16) riding=False onGround=1 airborne=False platZ=24 T5=False
+jump +33: hero=(1042,188,16) riding=False onGround=1 airborne=False platZ=24 T5=False
+jump +35: hero=(1042,188,16) riding=False onGround=1 airborne=False platZ=24 T5=False
+jump +37: hero=(1042,188,16) riding=False onGround=1 airborne=False platZ=24 T5=False
+jump +39: hero=(1042,188,16) riding=False onGround=1 airborne=False platZ=24 T5=False
+-- second jump, from the recess floor onto the lift (16 px up), holding West
+jump2 +1: hero=(1042,188,25,5) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump2 +3: hero=(1039,7,188,33) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump2 +5: hero=(1035,11,188,38,5) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump2 +7: hero=(1030,52,188,42) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump2 +9: hero=(1025,92,188,43,5) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump2 +11: hero=(1021,33,188,43) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump2 +13: hero=(1016,73,188,40,5) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump2 +15: hero=(1012,14,188,36) riding=False onGround=0 airborne=True platZ=24 T5=False
+jump2 +17: hero=(1007,55,188,32) riding=False onGround=1 airborne=True platZ=24 T5=False
+jump2 +18: hero=(1005,18,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +19: hero=(1004,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +20: hero=(1004,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +21: hero=(1004,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +22: hero=(1004,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +23: hero=(1004,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +24: hero=(1004,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +25: hero=(1004,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +26: hero=(1004,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +27: hero=(1004,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +28: hero=(1004,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +29: hero=(1004,188,32) riding=True onGround=1 airborne=True platZ=24 T5=False
+jump2 +30: hero=(1004,188,33) riding=True onGround=1 airborne=True platZ=25 T5=True
+jump2 +31: hero=(1004,188,34) riding=True onGround=1 airborne=True platZ=26 T5=True
+jump2 +32: hero=(1004,188,35) riding=True onGround=1 airborne=True platZ=27 T5=True
+jump2 +33: hero=(1004,188,36) riding=True onGround=1 airborne=True platZ=28 T5=True
+jump2 +34: hero=(1004,188,37) riding=True onGround=1 airborne=True platZ=29 T5=True
+jump2 +35: hero=(1004,188,38) riding=True onGround=1 airborne=True platZ=30 T5=True
+jump2 +36: hero=(1004,188,39) riding=True onGround=1 airborne=True platZ=31 T5=True
+jump2 +37: hero=(1004,188,40) riding=True onGround=1 airborne=True platZ=32 T5=True
+jump2 +38: hero=(1004,188,41) riding=True onGround=1 airborne=True platZ=33 T5=True
+jump2 +39: hero=(1004,188,42) riding=True onGround=1 airborne=True platZ=34 T5=True
+jump2 +40: hero=(1004,188,43) riding=True onGround=1 airborne=True platZ=35 T5=True
+wait   0: hero=(1004,188,44) platZ=36 foot-top=0px riding=True T5=True locked=True warping=False
+wait   1: hero=(1004,188,45) platZ=37 foot-top=0px riding=True T5=True locked=True warping=False
+wait   2: hero=(1004,188,46) platZ=38 foot-top=0px riding=True T5=True locked=True warping=False
+wait   3: hero=(1004,188,47) platZ=39 foot-top=0px riding=True T5=True locked=True warping=False
+wait   4: hero=(1004,188,48) platZ=40 foot-top=0px riding=True T5=True locked=True warping=False
+wait   5: hero=(1004,188,49) platZ=41 foot-top=0px riding=True T5=True locked=True warping=False
+wait   6: hero=(1004,188,50) platZ=42 foot-top=0px riding=True T5=True locked=True warping=False
+wait   7: hero=(1004,188,51) platZ=43 foot-top=0px riding=True T5=True locked=True warping=False
+wait   8: hero=(1004,188,52) platZ=44 foot-top=0px riding=True T5=True locked=True warping=False
+wait   9: hero=(1004,188,53) platZ=45 foot-top=0px riding=True T5=True locked=True warping=False
+wait  10: hero=(1004,188,54) platZ=46 foot-top=0px riding=True T5=True locked=True warping=False
+wait  11: hero=(1004,188,55) platZ=47 foot-top=0px riding=True T5=True locked=True warping=False
+wait  12: hero=(1004,188,56) platZ=48 foot-top=0px riding=True T5=True locked=True warping=False
+wait  13: hero=(1004,188,57) platZ=49 foot-top=0px riding=True T5=True locked=True warping=False
+wait  14: hero=(1004,188,58) platZ=50 foot-top=0px riding=True T5=True locked=True warping=False
+wait  15: hero=(1004,188,59) platZ=51 foot-top=0px riding=True T5=True locked=True warping=False
+wait  16: hero=(1004,188,60) platZ=52 foot-top=0px riding=True T5=True locked=True warping=False
+wait  17: hero=(1004,188,61) platZ=53 foot-top=0px riding=True T5=True locked=True warping=False
+wait  18: hero=(1004,188,62) platZ=54 foot-top=0px riding=True T5=True locked=True warping=False
+wait  19: hero=(1004,188,63) platZ=55 foot-top=0px riding=True T5=True locked=True warping=False
+wait  20: hero=(1004,188,64) platZ=56 foot-top=0px riding=True T5=True locked=True warping=False
+wait  21: hero=(1004,188,65) platZ=57 foot-top=0px riding=True T5=True locked=True warping=False
+wait  22: hero=(1004,188,66) platZ=58 foot-top=0px riding=True T5=True locked=True warping=False
+wait  23: hero=(1004,188,67) platZ=59 foot-top=0px riding=True T5=True locked=True warping=False
+wait  24: hero=(1004,188,68) platZ=60 foot-top=0px riding=True T5=True locked=True warping=False
+wait  25: hero=(1004,188,69) platZ=61 foot-top=0px riding=True T5=True locked=True warping=False
+wait  30: hero=(1004,188,74) platZ=66 foot-top=0px riding=True T5=True locked=True warping=False
+wait  35: hero=(1004,188,79) platZ=71 foot-top=0px riding=True T5=True locked=True warping=False
+wait  40: hero=(1004,188,84) platZ=76 foot-top=0px riding=True T5=True locked=True warping=False
+wait  45: hero=(1004,188,89) platZ=81 foot-top=0px riding=True T5=True locked=True warping=False
+wait  50: hero=(1004,188,94) platZ=86 foot-top=0px riding=True T5=True locked=True warping=False
+wait  53: hero=(1004,188,97) platZ=89 foot-top=0px riding=True T5=False locked=True warping=True
+warp started at wait frame 53
+== P8 map 22: the lift rises 20 px by the real script, then the test writes ForceZ=-65536 for 24 frames (descent), then 0 for 5, then +65536 again for 10
+f 28: phase 0 platform.PosZ=41 forceZ=65536 hero.Z=49 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 29: phase 0 platform.PosZ=42 forceZ=65536 hero.Z=50 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 30: phase 0 platform.PosZ=43 forceZ=65536 hero.Z=51 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 31: phase 1 platform.PosZ=44 forceZ=-65536 hero.Z=52 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 32: phase 1 platform.PosZ=43 forceZ=-65536 hero.Z=51 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 33: phase 1 platform.PosZ=42 forceZ=-65536 hero.Z=50 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 34: phase 1 platform.PosZ=41 forceZ=-65536 hero.Z=49 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 35: phase 1 platform.PosZ=40 forceZ=-65536 hero.Z=48 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 36: phase 1 platform.PosZ=39 forceZ=-65536 hero.Z=47 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 37: phase 1 platform.PosZ=38 forceZ=-65536 hero.Z=46 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 38: phase 1 platform.PosZ=37 forceZ=-65536 hero.Z=45 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 39: phase 1 platform.PosZ=36 forceZ=-65536 hero.Z=44 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 40: phase 1 platform.PosZ=35 forceZ=-65536 hero.Z=43 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 41: phase 1 platform.PosZ=34 forceZ=-65536 hero.Z=42 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 42: phase 1 platform.PosZ=33 forceZ=-65536 hero.Z=41 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 43: phase 1 platform.PosZ=32 forceZ=-65536 hero.Z=40 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 44: phase 1 platform.PosZ=31 forceZ=-65536 hero.Z=39 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 45: phase 1 platform.PosZ=30 forceZ=-65536 hero.Z=38 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 46: phase 1 platform.PosZ=29 forceZ=-65536 hero.Z=37 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 47: phase 1 platform.PosZ=28 forceZ=-65536 hero.Z=36 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 48: phase 1 platform.PosZ=27 forceZ=-65536 hero.Z=35 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 49: phase 1 platform.PosZ=26 forceZ=-65536 hero.Z=34 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 50: phase 1 platform.PosZ=25 forceZ=-65536 hero.Z=33 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 51: phase 1 platform.PosZ=24 forceZ=-65536 hero.Z=32 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 52: phase 1 platform.PosZ=23 forceZ=-65536 hero.Z=31 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 53: phase 1 platform.PosZ=22 forceZ=-65536 hero.Z=30 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 54: phase 1 platform.PosZ=21 forceZ=-65536 hero.Z=29 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 55: phase 2 platform.PosZ=20 forceZ=0 hero.Z=28 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 56: phase 2 platform.PosZ=16 forceZ=0 hero.Z=26,5 heroFoot-top=2,5px riding=False onGround=0 collZ=0 airborne=True
+f 57: phase 2 platform.PosZ=16 forceZ=0 hero.Z=24,5 heroFoot-top=0,5px riding=False onGround=0 collZ=0 airborne=True
+f 58: phase 2 platform.PosZ=16 forceZ=0 hero.Z=24 heroFoot-top=0px riding=False onGround=1 collZ=1 airborne=True
+f 59: phase 2 platform.PosZ=16 forceZ=0 hero.Z=24 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 60: phase 3 platform.PosZ=16 forceZ=65536 hero.Z=24 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 61: phase 3 platform.PosZ=17 forceZ=65536 hero.Z=25 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 62: phase 3 platform.PosZ=18 forceZ=65536 hero.Z=26 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 63: phase 3 platform.PosZ=19 forceZ=65536 hero.Z=27 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 64: phase 3 platform.PosZ=20 forceZ=65536 hero.Z=28 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 65: phase 3 platform.PosZ=21 forceZ=65536 hero.Z=29 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 66: phase 3 platform.PosZ=22 forceZ=65536 hero.Z=30 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 67: phase 3 platform.PosZ=23 forceZ=65536 hero.Z=31 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 68: phase 3 platform.PosZ=24 forceZ=65536 hero.Z=32 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 69: phase 3 platform.PosZ=25 forceZ=65536 hero.Z=33 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 70: phase 3 platform.PosZ=26 forceZ=65536 hero.Z=34 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 71: phase 3 platform.PosZ=27 forceZ=65536 hero.Z=35 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 72: phase 3 platform.PosZ=28 forceZ=65536 hero.Z=36 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 73: phase 3 platform.PosZ=29 forceZ=65536 hero.Z=37 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 74: phase 3 platform.PosZ=30 forceZ=65536 hero.Z=38 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+f 75: phase 3 platform.PosZ=31 forceZ=65536 hero.Z=39 heroFoot-top=0px riding=True onGround=1 collZ=0 airborne=True
+== P15 montage of UH-17: object 24x16x16 flush with the 16 px floor in a hollow (cell 8,6: x 192..216), the hero straddles the floor (cell 7) and the object; the object rises +1 px/tick from tick 1
+settled: hero=(193,16) riding=True onGround=1 airborne=False obj.Z=0
+tick 1: obj.Z=0 hero.Z=17 heroFoot-top=1px riding=True onGround=0 airborne=True
+tick 2: obj.Z=1 hero.Z=18 heroFoot-top=1px riding=True onGround=0 airborne=True
+tick 3: obj.Z=2 hero.Z=19 heroFoot-top=1px riding=True onGround=0 airborne=True
+tick 4: obj.Z=3 hero.Z=20 heroFoot-top=1px riding=True onGround=0 airborne=True
+tick 5: obj.Z=4 hero.Z=21 heroFoot-top=1px riding=True onGround=0 airborne=True
+tick 6: obj.Z=5 hero.Z=22 heroFoot-top=1px riding=True onGround=0 airborne=True
+tick 7: obj.Z=5 hero.Z=22,5 heroFoot-top=1,5px riding=False onGround=0 airborne=True
+tick 8: obj.Z=5 hero.Z=22,5 heroFoot-top=1,5px riding=False onGround=0 airborne=True
+== P14 map 22: hero on the barrel on the lift; the test drives the lift +1 px/tick east and +1 px/tick up for 14 frames (the script is idle, T3 off)
+settled: platform=(1008,176,24) barrel=(1020,32) hero=(1020,48) barrel.riding=True hero.riding=True
+f  1: platform dX=1 dZ=1 | barrel dX=1 foot-top=0px riding=True | hero dX=1 foot-barreltop=0px riding=True
+f  2: platform dX=2 dZ=2 | barrel dX=2 foot-top=0px riding=True | hero dX=2 foot-barreltop=0px riding=True
+f  3: platform dX=3 dZ=3 | barrel dX=3 foot-top=0px riding=True | hero dX=3 foot-barreltop=0px riding=True
+f  4: platform dX=4 dZ=4 | barrel dX=4 foot-top=0px riding=True | hero dX=4 foot-barreltop=0px riding=True
+f  5: platform dX=5 dZ=5 | barrel dX=5 foot-top=0px riding=True | hero dX=5 foot-barreltop=0px riding=True
+f  6: platform dX=6 dZ=6 | barrel dX=6 foot-top=0px riding=True | hero dX=6 foot-barreltop=0px riding=True
+f  7: platform dX=7 dZ=7 | barrel dX=7 foot-top=0px riding=True | hero dX=7 foot-barreltop=0px riding=True
+f  8: platform dX=8 dZ=8 | barrel dX=8 foot-top=0px riding=True | hero dX=8 foot-barreltop=0px riding=True
+f  9: platform dX=9 dZ=9 | barrel dX=9 foot-top=0px riding=True | hero dX=9 foot-barreltop=0px riding=True
+f 10: platform dX=10 dZ=10 | barrel dX=10 foot-top=0px riding=True | hero dX=10 foot-barreltop=0px riding=True
+f 11: platform dX=11 dZ=11 | barrel dX=11 foot-top=0px riding=True | hero dX=11 foot-barreltop=0px riding=True
+f 12: platform dX=12 dZ=12 | barrel dX=12 foot-top=0px riding=True | hero dX=12 foot-barreltop=0px riding=True
+f 13: platform dX=13 dZ=13 | barrel dX=13 foot-top=0px riding=True | hero dX=13 foot-barreltop=0px riding=True
+f 14: platform dX=14 dZ=14 | barrel dX=14 foot-top=0px riding=True | hero dX=14 foot-barreltop=0px riding=True

@@ -1,0 +1,6603 @@
+{
+ "0": {
+  "name": "Test Map-0",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 32
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "1": {
+  "name": "Overworld 0,0-1",
+  "zcarriers": [
+   4
+  ],
+  "xycarriers": [
+   [
+    4,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "2": {
+  "name": "Overworld 0,1-2",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Ronces enflamm\u00e9es 222": 10,
+   "Coffre au tr\u00e9sor": 4,
+   "Ronces enflamm\u00e9es 112": 1,
+   "Porte Muruta": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "3": {
+  "name": "Overworld 0,2-3",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 8,
+   "Ronces enflamm\u00e9es 222": 1,
+   "Pierre tr\u00e8s lourde": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "4": {
+  "name": "Overworld 0,3-4",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Pierre tr\u00e8s lourde": 3,
+   "Ronces enflamm\u00e9es 222": 3,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "5": {
+  "name": "Overworld 1,0-5",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "6": {
+  "name": "Overworld 1,1-6",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "7": {
+  "name": "Overworld 1,2-7",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Ronces enflamm\u00e9es 222": 1,
+   "Pierre tr\u00e8s lourde": 1,
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "8": {
+  "name": "Overworld 1,3-8",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "9": {
+  "name": "Overworld 2,0-9",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 6
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "10": {
+  "name": "Overworld 2,1-10",
+  "zcarriers": [
+   69,
+   81
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "11": {
+  "name": "Debug zone-11",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "I31_Haricots de Jack": 1,
+   "I07_B\u00e2ton magique": 1,
+   "I32_Cape de sable": 1,
+   "I20_Veste en argent": 1,
+   "I28_Bottes magiques": 1,
+   "I35_Bombe explosive": 1,
+   "I39_Breuvage de soin": 1,
+   "I04_\u00c9p\u00e9e sacr\u00e9e Elnard": 1,
+   "I43_Tome de la Terre (haut)": 1,
+   "I44_Tome de la Terre (bas)": 1,
+   "I45_Tome du d\u00e9mon d\u2019eau (haut)": 1,
+   "I46_Tome du d\u00e9mon d\u2019eau (bas)": 1,
+   "I47_Tome du dragon de feu (haut)": 1,
+   "I48_Tome du dragon de feu (bas)": 1,
+   "I49_Tome du dieu du vent (haut)": 1,
+   "I50_Tome du dieu du vent (bas)": 1,
+   "I06_Arc de William": 1,
+   "I10_Le Broyeur": 1,
+   "I14_B\u00e2ton des glaces flottantes": 1,
+   "I16_B\u00e2ton de feu": 1,
+   "I36_Herbe m\u00e9dicinale": 1,
+   "I37_Potion L": 1,
+   "I41_Potion S": 1,
+   "I38_Extrait magique": 1,
+   "I08_Objet 008": 1,
+   "I54_Bracelet d\u2019armure d\u2019argent": 1,
+   "Pierre tr\u00e8s lourde": 1,
+   "I59_Gant de puissance": 1,
+   "Coffre au tr\u00e9sor": 2,
+   "I82_Grand cristal": 1,
+   "I81_Petit cristal": 1,
+   "I33_Armure bris\u00e9e": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Beaumont (chef du village)": 1,
+   "I61_Cl\u00e9": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "12": {
+  "name": "Overworld 2,3-12",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 6
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "13": {
+  "name": "Overworld 3,0-13",
+  "zcarriers": [
+   6,
+   8,
+   22,
+   23,
+   24
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Ronces enflamm\u00e9es 222": 1,
+   "asiba (plateforme)": 5,
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "14": {
+  "name": "Overworld 3,1-14",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 3,
+   "Ronces enflamm\u00e9es 222": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "15": {
+  "name": "Overworld 3,2-15",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 9,
+   "Ronces enflamm\u00e9es 222": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "16": {
+  "name": "Overworld 3,3-16",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    1,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ],
+   [
+    9,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "17": {
+  "name": "Overworld 4,0-17",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "18": {
+  "name": "Overworld 4,1-18",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "19": {
+  "name": "Overworld 4,2-19",
+  "zcarriers": [
+   11
+  ],
+  "xycarriers": [
+   [
+    10,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ],
+   [
+    11,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 4
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "20": {
+  "name": "Overworld 4,3-20",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 9
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "21": {
+  "name": "Lars' Crypt-21",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "22": {
+  "name": "Lars' Crypt-22",
+  "zcarriers": [
+   2
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Tonneau g\u00e9n\u00e9rique": 2,
+   "Cruche g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "23": {
+  "name": "Lars' Crypt-23",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    0,
+    "Trappe d\u2019escalier (grande)"
+   ],
+   [
+    1,
+    "Trappe d\u2019escalier (grande)"
+   ],
+   [
+    2,
+    "Trappe d\u2019escalier (grande)"
+   ],
+   [
+    9,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    11,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    12,
+    "Bloc \u00e0 pousser/attaquer"
+   ]
+  ],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 1,
+   "Coffre au tr\u00e9sor": 1,
+   "Tonneau g\u00e9n\u00e9rique": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "24": {
+  "name": "Lars' Crypt-24",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    21,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    22,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    23,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Pierre g\u00e9n\u00e9rique": 3,
+   "Cruche g\u00e9n\u00e9rique": 7
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "25": {
+  "name": "Lars' Crypt-25",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "26": {
+  "name": "Ancient Shrine-26",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Pilier poussable (PRG)": 1,
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "27": {
+  "name": "Ancient Shrine-27",
+  "zcarriers": [
+   40
+  ],
+  "xycarriers": [
+   [
+    24,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Objet \u00e9toile (transportable)": 2,
+   "Objet lune (transportable)": 2,
+   "Objet eau (transportable)": 2,
+   "Objet soleil (transportable)": 2,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "28": {
+  "name": "Ancient Shrine-28",
+  "zcarriers": [
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "29": {
+  "name": "Ancient Shrine-29",
+  "zcarriers": [
+   28
+  ],
+  "xycarriers": [
+   [
+    7,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 6,
+   "Tonneau g\u00e9n\u00e9rique": 1,
+   "Objet \u00e9toile (transportable)": 2,
+   "Objet lune (transportable)": 2,
+   "Objet eau (transportable)": 2,
+   "Objet soleil (transportable)": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "30": {
+  "name": "Ancient Shrine-30",
+  "zcarriers": [
+   0,
+   1,
+   2
+  ],
+  "xycarriers": [
+   [
+    29,
+    "Statue de roi, serviteur et d\u00e9esse"
+   ],
+   [
+    30,
+    "Statue de roi, serviteur et d\u00e9esse"
+   ],
+   [
+    31,
+    "Statue de roi, serviteur et d\u00e9esse"
+   ],
+   [
+    32,
+    "Statue de roi, serviteur et d\u00e9esse"
+   ],
+   [
+    33,
+    "Statue de roi, serviteur et d\u00e9esse"
+   ],
+   [
+    34,
+    "Statue de roi, serviteur et d\u00e9esse"
+   ],
+   [
+    35,
+    "Statue de roi, serviteur et d\u00e9esse"
+   ],
+   [
+    36,
+    "Statue de roi, serviteur et d\u00e9esse"
+   ]
+  ],
+  "passengers_capable": {
+   "Objet \u00e9toile (transportable)": 1,
+   "Objet lune (transportable)": 1,
+   "Objet eau (transportable)": 1,
+   "Objet soleil (transportable)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Pilier poussable (PRG)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "31": {
+  "name": "Ancient Shrine-31",
+  "zcarriers": [
+   15,
+   17
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "32": {
+  "name": "Ancient Shrine-32",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Coffre au tr\u00e9sor": 1,
+   "Pierre g\u00e9n\u00e9rique": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "33": {
+  "name": "Ancient Shrine-33",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 2,
+   "Cruche g\u00e9n\u00e9rique": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "34": {
+  "name": "Ancient Shrine - Golem-34",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "35": {
+  "name": "Nirude\u2019s Lair-35",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "36": {
+  "name": "Nirude\u2019s Lair-36",
+  "zcarriers": [
+   3
+  ],
+  "xycarriers": [
+   [
+    4,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    7,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    8,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "37": {
+  "name": "Nirude\u2019s Lair-37",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    18,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "38": {
+  "name": "Nirude\u2019s Lair-38",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    8,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1,
+   "Tonneau g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "39": {
+  "name": "Nirude\u2019s Lair-39",
+  "zcarriers": [
+   2
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 1,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "40": {
+  "name": "Nirude\u2019s Lair-40",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "41": {
+  "name": "Surferboy Nightmare (outer)-41",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bonaire & pierre (YM03)": 3,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "42": {
+  "name": "Surferboy Nightmare (inner)-42",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bo\u00eete bicolore rouge/bleu": 5,
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "43": {
+  "name": "Surferboy Nightmare (outer)-43",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "44": {
+  "name": "Wendels Nightmare-44",
+  "zcarriers": [
+   15
+  ],
+  "xycarriers": [
+   [
+    0,
+    "Trappe d\u2019escalier (grande)"
+   ],
+   [
+    1,
+    "Trappe d\u2019escalier (grande)"
+   ],
+   [
+    2,
+    "Trappe d\u2019escalier (grande)"
+   ],
+   [
+    3,
+    "Trappe d\u2019escalier (grande)"
+   ],
+   [
+    4,
+    "Trappe d\u2019escalier (grande)"
+   ],
+   [
+    5,
+    "Trappe d\u2019escalier (grande)"
+   ],
+   [
+    6,
+    "Trappe d\u2019escalier (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Wendell (grand-p\u00e8re)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "45": {
+  "name": "Unused Dream (inner) (Beta Surferboys Dream)_-45",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "46": {
+  "name": "Unused Dream (outer) (Beta Surferboys Dream)_-46",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "47": {
+  "name": "Unused Dream (Boss) (Beta Surferboys Dream)_-47",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "48": {
+  "name": "Elenes Nightmare-48",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "YM08 barri\u00e8re u=eau d=feu l=sable r=glace": 11,
+   "Coffre au tr\u00e9sor": 6,
+   "Meia (pour YM08)": 2
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "49": {
+  "name": "Elenes Nightmare-49",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "YM08 barri\u00e8re u=eau d=feu l=sable r=glace": 3,
+   "Meia (pour YM08)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "50": {
+  "name": "Elenes Nightmare-50",
+  "zcarriers": [
+   14,
+   28,
+   29,
+   30,
+   31
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "YM08 barri\u00e8re u=eau d=feu l=sable r=glace": 3,
+   "Colonne de glace": 18,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "51": {
+  "name": "Elenes Nightmare-51",
+  "zcarriers": [
+   24
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "YM08 barri\u00e8re u=eau d=feu l=sable r=glace": 3,
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "52": {
+  "name": "Elenes Nightmare-52",
+  "zcarriers": [
+   22,
+   27,
+   37,
+   58,
+   59,
+   60,
+   61
+  ],
+  "xycarriers": [
+   [
+    2,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    3,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    4,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    5,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    6,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    7,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    8,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    9,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    10,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    11,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    12,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    13,
+    "Plateforme flottante (petite)"
+   ]
+  ],
+  "passengers_capable": {
+   "YM08 barri\u00e8re u=eau d=feu l=sable r=glace": 3,
+   "Coffre au tr\u00e9sor": 2,
+   "Meia (pour YM08)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "53": {
+  "name": "Elenes Nightmare-53",
+  "zcarriers": [
+   14
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 6,
+   "Tonneau g\u00e9n\u00e9rique": 1,
+   "Meia (pour YM08)": 1,
+   "YM08 barri\u00e8re u=eau d=feu l=sable r=glace": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "54": {
+  "name": "Elenes Nightmare-54",
+  "zcarriers": [
+   1,
+   2,
+   3,
+   4,
+   25,
+   26,
+   39
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 3,
+   "Meia (pour YM08)": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "55": {
+  "name": "Torla Buggy_ with bar music and random texts (early version of Torla)-55",
+  "zcarriers": [
+   11
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "56": {
+  "name": "Torla Buggy_ with bar music and random texts (early version of Torla)-56",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "57": {
+  "name": "Torla Buggy_ with bar music and random texts (early version of Torla)-57",
+  "zcarriers": [
+   9,
+   10
+  ],
+  "xycarriers": [
+   [
+    2,
+    "Plateforme flottante fragile (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Pierre g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "58": {
+  "name": "Torla Buggy_ with bar music and random texts (early version of Torla)-58",
+  "zcarriers": [
+   5,
+   8
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "59": {
+  "name": "Torla Buggy_ with bar music and random texts (early version of Torla)-59",
+  "zcarriers": [
+   18
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "60": {
+  "name": "Torla Buggy_ with bar music and random texts (early version of Torla)-60",
+  "zcarriers": [
+   5,
+   6,
+   7,
+   8
+  ],
+  "xycarriers": [
+   [
+    10,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "61": {
+  "name": "Coal Mine (First Entrance)-61",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Caisse en bois g\u00e9n\u00e9rique": 5,
+   "Lyman (mineur)": 1,
+   "Coffre au tr\u00e9sor": 4
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "62": {
+  "name": "Coal Mine-62",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "63": {
+  "name": "Coal Mine-63",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 3,
+   "Zane (mineur)": 1
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "64": {
+  "name": "Coal Mine (unused)-64",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4,
+   "Jaylen (mineur)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "65": {
+  "name": "Coal Mine (unused_)-65",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "66": {
+  "name": "Coal Mine-66",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Caisse en bois g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "67": {
+  "name": "Coal Mine-67",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Caisse en bois g\u00e9n\u00e9rique": 15,
+   "Tonneau g\u00e9n\u00e9rique": 2,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 5,
+  "piles": [
+   {
+    "map": 67,
+    "top": 24,
+    "chain": [
+     24,
+     22,
+     16
+    ],
+    "names": [
+     "Caisse en bois g\u00e9n\u00e9rique",
+     "Caisse en bois g\u00e9n\u00e9rique",
+     "Coffre au tr\u00e9sor"
+    ],
+    "bottom_zmove": false
+   }
+  ]
+ },
+ "68": {
+  "name": "Coal Mine (unused_)-68",
+  "zcarriers": [
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Zane (mineur)": 1,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "69": {
+  "name": "Coastal Cave-69",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    25,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    26,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Pierre g\u00e9n\u00e9rique": 2,
+   "Coffre au tr\u00e9sor": 2,
+   "Cruche g\u00e9n\u00e9rique": 1,
+   "Rocher tortue non ennemi": 4
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "70": {
+  "name": "Coastal Cave-70",
+  "zcarriers": [
+   17,
+   30
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Tronc (transportable), petite boule de fer": 6,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Rocher tortue non ennemi": 1,
+   "Herbe transportable": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "71": {
+  "name": "Coastal Cave-71",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1,
+   "Cruche g\u00e9n\u00e9rique": 5,
+   "Tonneau g\u00e9n\u00e9rique": 1,
+   "Rocher tortue non ennemi": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "72": {
+  "name": "Coastal Cave-72",
+  "zcarriers": [
+   17
+  ],
+  "xycarriers": [
+   [
+    2,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 1,
+   "Coffre au tr\u00e9sor": 2,
+   "Tronc (transportable), petite boule de fer": 6,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Rocher tortue non ennemi": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "73": {
+  "name": "Coastal Cave-73",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 6,
+   "Tronc (transportable), petite boule de fer": 26,
+   "Coffre au tr\u00e9sor": 2,
+   "Rocher tortue non ennemi": 4
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "74": {
+  "name": "Coastal Cave-74",
+  "zcarriers": [
+   16,
+   22
+  ],
+  "xycarriers": [
+   [
+    26,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 3,
+   "Cruche g\u00e9n\u00e9rique": 8
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "75": {
+  "name": "Coastal Cave-75",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Rocher tortue non ennemi": 8,
+   "Cruche g\u00e9n\u00e9rique": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "76": {
+  "name": "Coastal Cave (Boss)-76",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "77": {
+  "name": "Underground Watercourse-77",
+  "zcarriers": [
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21,
+   24,
+   25,
+   29,
+   30,
+   31,
+   32
+  ],
+  "xycarriers": [
+   [
+    23,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "78": {
+  "name": "Underground Watercourse-78",
+  "zcarriers": [
+   19,
+   20
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "79": {
+  "name": "Underground Watercourse-79",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 4,
+   "Pierre g\u00e9n\u00e9rique": 1,
+   "Tronc (transportable), petite boule de fer": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "80": {
+  "name": "Lizardman's Lair-80",
+  "zcarriers": [
+   5,
+   16
+  ],
+  "xycarriers": [
+   [
+    7,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    8,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    9,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 8,
+   "Statue d\u2019homme-l\u00e9zard transform\u00e9": 10,
+   "Cruche g\u00e9n\u00e9rique": 7
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "81": {
+  "name": "Lizardman's Lair-81",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Statue d\u2019homme-l\u00e9zard transform\u00e9": 6,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "82": {
+  "name": "Lizardman's Lair-82",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Statue d\u2019homme-l\u00e9zard transform\u00e9": 10,
+   "Cruche g\u00e9n\u00e9rique": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "83": {
+  "name": "Lizardman's Lair-83",
+  "zcarriers": [
+   22
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 11,
+   "Coffre au tr\u00e9sor": 3,
+   "Statue d\u2019homme-l\u00e9zard transform\u00e9": 20
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "84": {
+  "name": "Lizardman's Lair-84",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    18,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    19,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Statue d\u2019homme-l\u00e9zard transform\u00e9": 10,
+   "Coffre au tr\u00e9sor": 2,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "85": {
+  "name": "Lizardman's Lair-85",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "86": {
+  "name": "Magyscar-86",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    4,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    18,
+    "Plateforme mobile toutes directions"
+   ],
+   [
+    29,
+    "Plateforme mobile toutes directions"
+   ]
+  ],
+  "passengers_capable": {
+   "Torche": 6,
+   "Coffre au tr\u00e9sor": 1,
+   "Tonneau g\u00e9n\u00e9rique": 2,
+   "Cruche g\u00e9n\u00e9rique": 3,
+   "Ronces enflamm\u00e9es 112": 8,
+   "Ronces enflamm\u00e9es 222": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "87": {
+  "name": "Magyscar-87",
+  "zcarriers": [
+   13,
+   14,
+   15,
+   16
+  ],
+  "xycarriers": [
+   [
+    18,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    19,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Torche": 5,
+   "Ronces enflamm\u00e9es 222": 4,
+   "Tonneau g\u00e9n\u00e9rique": 1,
+   "Ronces enflamm\u00e9es 112": 9
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "88": {
+  "name": "Magyscar-88",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 5,
+   "Torche": 3,
+   "Ronces enflamm\u00e9es 222": 1,
+   "Ronces enflamm\u00e9es 112": 5,
+   "Cruche g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "89": {
+  "name": "Magyscar-89",
+  "zcarriers": [
+   2,
+   27
+  ],
+  "xycarriers": [
+   [
+    19,
+    "Plateforme mobile toutes directions"
+   ]
+  ],
+  "passengers_capable": {
+   "Ronces enflamm\u00e9es 112": 19,
+   "Coffre au tr\u00e9sor": 4,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Torche": 4
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "90": {
+  "name": "Magyscar-90",
+  "zcarriers": [
+   0,
+   1,
+   2,
+   9,
+   10
+  ],
+  "xycarriers": [
+   [
+    15,
+    "Plateforme mobile toutes directions"
+   ]
+  ],
+  "passengers_capable": {
+   "Ronces enflamm\u00e9es 112": 13,
+   "Torche": 3,
+   "Ronces enflamm\u00e9es 222": 1,
+   "Coffre au tr\u00e9sor": 1,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "91": {
+  "name": "Magyscar-91",
+  "zcarriers": [
+   1
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1,
+   "Herbe transportable": 6
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "92": {
+  "name": "Magyscar-92",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    47,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    60,
+    "Plateforme mobile toutes directions"
+   ]
+  ],
+  "passengers_capable": {
+   "Torche": 15,
+   "Ronces enflamm\u00e9es 222": 6,
+   "Ronces enflamm\u00e9es 112": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "93": {
+  "name": "Magyscar-93",
+  "zcarriers": [
+   0,
+   1,
+   2,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   47
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 1,
+   "Torche": 4,
+   "Ronces enflamm\u00e9es 112": 12,
+   "Coffre au tr\u00e9sor": 3,
+   "Ronces enflamm\u00e9es 222": 6
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "94": {
+  "name": "Magyscar (Boss _ Uma)-94",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    48,
+    "Plateforme mobile toutes directions"
+   ],
+   [
+    63,
+    "Plateforme mobile toutes directions"
+   ]
+  ],
+  "passengers_capable": {
+   "Torche": 4,
+   "Coffre au tr\u00e9sor": 1,
+   "Ronces enflamm\u00e9es 112": 17,
+   "Ronces enflamm\u00e9es 222": 6,
+   "Cruche g\u00e9n\u00e9rique": 8
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "95": {
+  "name": "Unused Nightmare-95",
+  "zcarriers": [
+   0
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "96": {
+  "name": "Unused Nightmare-96",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "97": {
+  "name": "Unused Nightmare-97",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "98": {
+  "name": "Unused Nightmare (Boss _ Dream Eater)-98",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "99": {
+  "name": "Giles Nightmare-99",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "100": {
+  "name": "Giles Nightmare-100",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    0,
+    "Bloc \u00e0 pousser/attaquer"
+   ],
+   [
+    1,
+    "Bloc \u00e0 pousser/attaquer"
+   ],
+   [
+    2,
+    "Bloc \u00e0 pousser/attaquer"
+   ],
+   [
+    3,
+    "Bloc \u00e0 pousser/attaquer"
+   ],
+   [
+    4,
+    "Bloc \u00e0 pousser/attaquer"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "101": {
+  "name": "Giles Nightmare-101",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "102": {
+  "name": "Giles Nightmare-102",
+  "zcarriers": [
+   0,
+   9,
+   26
+  ],
+  "xycarriers": [
+   [
+    0,
+    "Bloc \u00e0 pousser/attaquer"
+   ],
+   [
+    9,
+    "Bloc \u00e0 pousser/attaquer"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "103": {
+  "name": "Giles Nightmare-103",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bloc de glace transportable": 1,
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "104": {
+  "name": "Giles Nightmare-104",
+  "zcarriers": [
+   3
+  ],
+  "xycarriers": [
+   [
+    0,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    1,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "105": {
+  "name": "Giles Nightmare-105",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bloc de glace transportable": 1,
+   "Cruche g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "106": {
+  "name": "Giles Nightmare-106",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Herbe transportable": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "107": {
+  "name": "Giles Nightmare-107",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 2,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "108": {
+  "name": "Nestus' Dream (Boss)-108",
+  "zcarriers": [
+   7,
+   8
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bloc de glace transportable": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "109": {
+  "name": "Nestus' Dream-109",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "110": {
+  "name": "Nestus' Dream-110",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "111": {
+  "name": "Nestus' Dream-111",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "112": {
+  "name": "Nestus' Dream-112",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "113": {
+  "name": "Nestus' Dream-113",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "114": {
+  "name": "Tarn's Manor-114",
+  "zcarriers": [
+   0
+  ],
+  "xycarriers": [
+   [
+    5,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    7,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "115": {
+  "name": "Tarn's Manor-115",
+  "zcarriers": [
+   19
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Caisse en bois g\u00e9n\u00e9rique": 13,
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "116": {
+  "name": "Tarn's Manor-116",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 6,
+   "Caisse en bois g\u00e9n\u00e9rique": 3,
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "117": {
+  "name": "Tarn's Manor (unused broken)-117",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "118": {
+  "name": "Old desert entrance (unused)-118",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "119": {
+  "name": "Old desert entrance (unused)-119",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    6,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    7,
+    "Plateforme flottante (petite)"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "120": {
+  "name": "Old desert entrance (unused)-120",
+  "zcarriers": [
+   14,
+   15,
+   16
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "121": {
+  "name": "Old desert entrance (unused)-121",
+  "zcarriers": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "122": {
+  "name": "Kline's Nightmare (Boss)-122",
+  "zcarriers": [
+   9,
+   10,
+   11
+  ],
+  "xycarriers": [
+   [
+    12,
+    "Statue de pierre"
+   ]
+  ],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "123": {
+  "name": "Kline's Nightmare-123",
+  "zcarriers": [
+   9
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bloc de glace transportable": 3,
+   "Klein (r\u00eave uniquement)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "124": {
+  "name": "Kline's Nightmare-124",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bloc de glace transportable": 8,
+   "Cruche g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "125": {
+  "name": "Kline's Nightmare-125",
+  "zcarriers": [
+   20,
+   21
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 6,
+   "Coffre au tr\u00e9sor": 1,
+   "Colonne de glace": 12
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "126": {
+  "name": "Kline's Nightmare-126",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Colonne de glace": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "127": {
+  "name": "Kline's Nightmare-127",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Cruche g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "128": {
+  "name": "Inoa (inner)-128",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Colonne de glace": 13,
+   "Cruche g\u00e9n\u00e9rique": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "129": {
+  "name": "Inoa (inner)-129",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "130": {
+  "name": "Inoa (inner)-130",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "131": {
+  "name": "Inoa (inner)-131",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "132": {
+  "name": "Inoa (inner)-132",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "133": {
+  "name": "Inoa (inner, Merrick)-133",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "134": {
+  "name": "Church (lobby)-134",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Marin-passager-mouette": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "135": {
+  "name": "Church-135",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "136": {
+  "name": "Church-136",
+  "zcarriers": [
+   15
+  ],
+  "xycarriers": [
+   [
+    5,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "137": {
+  "name": "Church (basement, Holy sword)-137",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "138": {
+  "name": "Cave-138",
+  "zcarriers": [
+   2
+  ],
+  "xycarriers": [
+   [
+    2,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "139": {
+  "name": "Cave (Fire manor)-139",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "140": {
+  "name": "Cave-140",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    36,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    37,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 6,
+   "Tronc (transportable), petite boule de fer": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "141": {
+  "name": "Cave-141",
+  "zcarriers": [
+   24
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "142": {
+  "name": "Kohei Tanaka House _ Olen_ house (music house)-142",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "143": {
+  "name": "Coast house (nava's cave entrance)-143",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 1,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "144": {
+  "name": "Magyscar Entrance-144",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "145": {
+  "name": "Cave-145",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "146": {
+  "name": "Murgg Tree Houses-146",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "147": {
+  "name": "Murgg Tree (inner)-147",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Ma\u00eetre des cl\u00e9s": 2,
+   "Cruche g\u00e9n\u00e9rique": 8
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "148": {
+  "name": "Murgg Tree (inner)-148",
+  "zcarriers": [
+   28
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 2,
+   "Coffre au tr\u00e9sor": 3,
+   "Ma\u00eetre des cl\u00e9s": 1,
+   "Cruche g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "149": {
+  "name": "Murgg Tree (inner)-149",
+  "zcarriers": [
+   6
+  ],
+  "xycarriers": [
+   [
+    3,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    13,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Tonneau g\u00e9n\u00e9rique": 1,
+   "Cruche g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "150": {
+  "name": "Murgg Tree (inner)-150",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 9
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "151": {
+  "name": "Murgg Tree (inner)-151",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    21,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Cruche g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "152": {
+  "name": "Murgg Tree (Boss)-152",
+  "zcarriers": [
+   22,
+   23
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "153": {
+  "name": "Murgg Tree (inner)-153",
+  "zcarriers": [
+   1
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "154": {
+  "name": "Murgg Tree (inner)-154",
+  "zcarriers": [
+   22
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Ma\u00eetre des cl\u00e9s": 1,
+   "Coffre au tr\u00e9sor": 1,
+   "Cruche g\u00e9n\u00e9rique": 11
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "155": {
+  "name": "Murgg Tree (elevator)-155",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 4,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "156": {
+  "name": "Fairy cave_ (bugged _ unused_)-156",
+  "zcarriers": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "157": {
+  "name": "Fairy cave-157",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "158": {
+  "name": "Fairy cave-158",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Tronc (transportable), petite boule de fer": 9
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "159": {
+  "name": "Fairy cave (underwater)-159",
+  "zcarriers": [
+   2,
+   13,
+   17,
+   18
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 10,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "160": {
+  "name": "Fairy cave (underwater)-160",
+  "zcarriers": [
+   1,
+   24
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 5,
+   "Cha\u00eene .0 traversable /1 d\u00e9truite /2 attente": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "161": {
+  "name": "Fairy cave (Stenia)-161",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "162": {
+  "name": "Inoa-162",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Kline (somnambule)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Sybill (aux yeux rouges)": 1,
+   "Sierra (m\u00e8re)": 1,
+   "Talis (fils)": 1,
+   "Nadia (femme insomniaque)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "163": {
+  "name": "Inoa (inner)-163",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Jess (armurier)": 1,
+   "I36_Herbe m\u00e9dicinale": 1,
+   "I41_Potion S": 1,
+   "I38_Extrait magique": 1,
+   "I83_R\u00e9cipient de vie": 1,
+   "I20_Veste en argent": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "164": {
+  "name": "Inoa (inner)-164",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Septimus (chercheur)": 2,
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 8,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "165": {
+  "name": "Inoa (inner)-165",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    5,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6,
+   "Kisha (petite s\u0153ur)": 1,
+   "Giles (homme religieux)": 1
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "166": {
+  "name": "Inoa (inner)-166",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Fein (femme du gros)": 1,
+   "Lutas (gros bonhomme)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "167": {
+  "name": "Inoa (inner)-167",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Nadia (femme insomniaque)": 1,
+   "Myra (vieille femme)": 1,
+   "Gustav (ivrogne)": 1,
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "168": {
+  "name": "Inoa (inner)-168",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Kline (somnambule)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "169": {
+  "name": "Inoa-169",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sierra (m\u00e8re)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Talis (fils)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "170": {
+  "name": "Inoa (inner)-170",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Jess (armurier)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "171": {
+  "name": "Inoa (inner)-171",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 8,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "172": {
+  "name": "Inoa (inner)-172",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Giles (homme religieux)": 1
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "173": {
+  "name": "Inoa (inner)-173",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "174": {
+  "name": "Inoa (inner)-174",
+  "zcarriers": [
+   2
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Gustav (ivrogne)": 1,
+   "Nadia (femme insomniaque)": 1,
+   "Myra (vieille femme)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "175": {
+  "name": "Inoa (inner)-175",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1,
+   "Kline (somnambule)": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "176": {
+  "name": "Inoa-176",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Yuri (marchand d\u2019objets)": 1,
+   "Talis (fils)": 1,
+   "Kline (somnambule)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "177": {
+  "name": "Inoa (inner)-177",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "178": {
+  "name": "Inoa (inner)-178",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 8,
+   "Caisse en bois g\u00e9n\u00e9rique": 9,
+   "Septimus (chercheur)": 1
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "179": {
+  "name": "Inoa (inner)-179",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 6,
+   "Kisha (petite s\u0153ur)": 1
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "180": {
+  "name": "Inoa (inner)-180",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "181": {
+  "name": "Inoa (inner)-181",
+  "zcarriers": [
+   2
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Gustav (ivrogne)": 1,
+   "Myra (vieille femme)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "182": {
+  "name": "Inoa (inner)-182",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1,
+   "Sierra (m\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "183": {
+  "name": "Inoa-183",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Septimus (chercheur)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Giles (homme religieux)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Jess (armurier)": 1,
+   "Myra (vieille femme)": 1,
+   "Nadia (femme insomniaque)": 1,
+   "Yuri (marchand d\u2019objets)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "184": {
+  "name": "Inoa (inner)-184",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "185": {
+  "name": "Inoa (inner)-185",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Ronan (pr\u00eatre)": 1,
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Talis (fils)": 1,
+   "Olen (mineur)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "186": {
+  "name": "Inoa-186",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Talis (fils)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Giles (homme religieux)": 1,
+   "Lutas (gros bonhomme)": 1,
+   "Nadia (femme insomniaque)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "187": {
+  "name": "Inoa (inner)-187",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "188": {
+  "name": "Inoa (inner)-188",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 8,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "189": {
+  "name": "Inoa (inner)-189",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "190": {
+  "name": "Inoa (inner)-190",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Fein (femme du gros)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "191": {
+  "name": "Inoa (inner)-191",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Myra (vieille femme)": 1,
+   "Gustav (ivrogne)": 1,
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "192": {
+  "name": "Inoa (inner)-192",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Kline (somnambule)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "193": {
+  "name": "Inoa-193",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "194": {
+  "name": "Inoa (inner)-194",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "195": {
+  "name": "Inoa (inner)-195",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Talis (fils)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 8,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "196": {
+  "name": "Inoa (inner)-196",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Phineas (p\u00e8re)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Kline (somnambule)": 1,
+   "Ronan (pr\u00eatre)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "197": {
+  "name": "Inoa (inner)-197",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Nadia (femme insomniaque)": 1,
+   "Myra (vieille femme)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Septimus (chercheur)": 1,
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "198": {
+  "name": "Inoa-198",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Kisha (petite s\u0153ur)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Sierra (m\u00e8re)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "199": {
+  "name": "Inoa (inner)-199",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "I09_Lancer de cha\u00eene": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "200": {
+  "name": "Inoa (inner)-200",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Talis (fils)": 1,
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 8,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "201": {
+  "name": "Inoa (inner)-201",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Giles (homme religieux)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "202": {
+  "name": "Inoa (inner)-202",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "203": {
+  "name": "Inoa (inner)-203",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Myra (vieille femme)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "204": {
+  "name": "Inoa (inner)-204",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1,
+   "Kline (somnambule)": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "205": {
+  "name": "Inoa-205",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Talis (fils)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Giles (homme religieux)": 1,
+   "Lutas (gros bonhomme)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "206": {
+  "name": "Inoa (inner)-206",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "207": {
+  "name": "Inoa (inner)-207",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "208": {
+  "name": "Inoa (inner)-208",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "209": {
+  "name": "Inoa (inner)-209",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Fein (femme du gros)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "210": {
+  "name": "Inoa (inner)-210",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Myra (vieille femme)": 1,
+   "Gustav (ivrogne)": 1,
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "211": {
+  "name": "Inoa (inner)-211",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1,
+   "Sierra (m\u00e8re)": 1,
+   "Kline (somnambule)": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "212": {
+  "name": "Inoa-212",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Kline (somnambule)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "213": {
+  "name": "Inoa (inner)-213",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "214": {
+  "name": "Inoa (inner)-214",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Thyea (\u00e9pouse)": 1,
+   "Talis (fils)": 1,
+   "Septimus (chercheur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 8,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "215": {
+  "name": "Inoa (inner)-215",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "216": {
+  "name": "Inoa (inner)-216",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Fein (femme du gros)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "217": {
+  "name": "Inoa (inner)-217",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Myra (vieille femme)": 1,
+   "Meia": 1,
+   "Yustel (vieille voyante)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Beaumont (chef du village)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "218": {
+  "name": "Inoa (inner)-218",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1,
+   "Sierra (m\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "219": {
+  "name": "Inoa-219",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Talis (fils)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "220": {
+  "name": "Inoa (inner)-220",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "221": {
+  "name": "Inoa (inner)-221",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 8,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "222": {
+  "name": "Inoa (inner)-222",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Giles (homme religieux)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "223": {
+  "name": "Inoa (inner)-223",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "224": {
+  "name": "Inoa (inner)-224",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Myra (vieille femme)": 1,
+   "Gustav (ivrogne)": 1,
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Meia": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "225": {
+  "name": "Inoa (inner)-225",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1,
+   "Kline (somnambule)": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "226": {
+  "name": "Inoa-226",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    11,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Lutas (gros bonhomme)": 1,
+   "Yuri (marchand d\u2019objets)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "227": {
+  "name": "Inoa (inner)-227",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "228": {
+  "name": "Inoa (inner)-228",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 8,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "229": {
+  "name": "Inoa (inner)-229",
+  "zcarriers": [
+   0
+  ],
+  "xycarriers": [
+   [
+    4,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "Kline (somnambule)": 1,
+   "Beaumont (chef du village)": 1,
+   "Meia": 1,
+   "Septimus (chercheur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "230": {
+  "name": "Inoa-230",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sierra (m\u00e8re)": 1,
+   "Talis (fils)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "231": {
+  "name": "Inoa (inner)-231",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "I05_Arc du chasseur": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "232": {
+  "name": "Inoa (inner)-232",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 5,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "233": {
+  "name": "Inoa (inner)-233",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Giles (homme religieux)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "234": {
+  "name": "Inoa (inner)-234",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "235": {
+  "name": "Inoa (inner)-235",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Myra (vieille femme)": 1,
+   "Gustav (ivrogne)": 1,
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Meia": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "236": {
+  "name": "Inoa (inner)-236",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1,
+   "Meia": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "237": {
+  "name": "Inoa-237",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Jess (armurier)": 1,
+   "Sierra (m\u00e8re)": 1,
+   "Meia": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "238": {
+  "name": "Inoa (inner)-238",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "239": {
+  "name": "Inoa (inner)-239",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "240": {
+  "name": "Inoa (inner)-240",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Giles (homme religieux)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Beaumont (chef du village)": 1,
+   "Septimus (chercheur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "241": {
+  "name": "Inoa-241",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Yuri (marchand d\u2019objets)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Talis (fils)": 1,
+   "Sybill (aux yeux rouges)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "242": {
+  "name": "Inoa (inner)-242",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "243": {
+  "name": "Inoa (inner)-243",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "244": {
+  "name": "Inoa (inner)-244",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "245": {
+  "name": "Inoa (inner)-245",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "246": {
+  "name": "Inoa (inner)-246",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Myra (vieille femme)": 1,
+   "Gustav (ivrogne)": 1,
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Meia": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "247": {
+  "name": "Inoa (inner)-247",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1,
+   "Sierra (m\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "248": {
+  "name": "Inoa-248",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    2,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "Myra (vieille femme)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "249": {
+  "name": "Inoa (inner)-249",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "250": {
+  "name": "Inoa (inner)-250",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Kisha (petite s\u0153ur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "251": {
+  "name": "Inoa (inner)-251",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Fein (femme du gros)": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "252": {
+  "name": "Inoa-252",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Kisha (petite s\u0153ur)": 1,
+   "Talis (fils)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "253": {
+  "name": "Inoa (inner)-253",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "254": {
+  "name": "Inoa (inner)-254",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 5,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "255": {
+  "name": "Inoa (inner)-255",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Giles (homme religieux)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "256": {
+  "name": "Inoa (inner)-256",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "257": {
+  "name": "Inoa (inner)-257",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Myra (vieille femme)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "258": {
+  "name": "Inoa (inner)-258",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "I36_Herbe m\u00e9dicinale": 1,
+   "I41_Potion S": 1,
+   "I38_Extrait magique": 1,
+   "I20_Veste en argent": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "259": {
+  "name": "Inoa-259",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Talis (fils)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "260": {
+  "name": "Inoa (inner)-260",
+  "zcarriers": [
+   16
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "261": {
+  "name": "Inoa (inner)-261",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 5,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "262": {
+  "name": "Inoa (inner)-262",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Giles (homme religieux)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "263": {
+  "name": "Inoa (inner)-263",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "264": {
+  "name": "Inoa (inner)-264",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Myra (vieille femme)": 1,
+   "Gustav (ivrogne)": 1,
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "265": {
+  "name": "Inoa (inner)-265",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sierra (m\u00e8re)": 1,
+   "Meia": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "266": {
+  "name": "Inoa-266",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Kisha (petite s\u0153ur)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Lutas (gros bonhomme)": 1,
+   "Gustav (ivrogne)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "267": {
+  "name": "Inoa (inner)-267",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "268": {
+  "name": "Inoa (inner)-268",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "269": {
+  "name": "Inoa (inner)-269",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Giles (homme religieux)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "270": {
+  "name": "Inoa (inner)-270",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Beaumont (chef du village)": 1,
+   "Gustav (ivrogne)": 1,
+   "Septimus (chercheur)": 1,
+   "Meia": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "271": {
+  "name": "Inoa-271",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "272": {
+  "name": "Inoa (inner)-272",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4,
+   "Coffre d\u2019Anzes": 1
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "273": {
+  "name": "Inoa (inner)-273",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "274": {
+  "name": "Inoa (inner)-274",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Giles (homme religieux)": 1,
+   "Meia": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Septimus (chercheur)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "275": {
+  "name": "Inoa-275",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "276": {
+  "name": "Inoa (inner)-276",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "277": {
+  "name": "Inoa (inner)-277",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Talis (fils)": 1,
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "278": {
+  "name": "Inoa (inner)-278",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Meia": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "279": {
+  "name": "Inoa (inner)-279",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "280": {
+  "name": "Inoa (inner)-280",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Gustav (ivrogne)": 1,
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Myra (vieille femme)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "281": {
+  "name": "Inoa (inner)-281",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sierra (m\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "282": {
+  "name": "Inoa-282",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Meia": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "283": {
+  "name": "Inoa (inner)-283",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "284": {
+  "name": "Inoa (inner)-284",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Talis (fils)": 1,
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "285": {
+  "name": "Inoa (inner)-285",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6,
+   "Kisha (petite s\u0153ur)": 1
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "286": {
+  "name": "Inoa (inner)-286",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "287": {
+  "name": "Inoa (inner)-287",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Myra (vieille femme)": 1,
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3,
+   "Gustav (ivrogne)": 1
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "288": {
+  "name": "Inoa (inner)-288",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sierra (m\u00e8re)": 1,
+   "Meia": 1,
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "289": {
+  "name": "Inoa (night)-289",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "290": {
+  "name": "Inoa (inner, night)-290",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "291": {
+  "name": "Inoa (inner, night)-291",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Septimus (chercheur)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "292": {
+  "name": "Inoa (inner, night)-292",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Meia": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "293": {
+  "name": "Inoa (burning)-293",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bonaire mort": 1,
+   "Myra morte": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "294": {
+  "name": "Inoa (inner, burning)-294",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "295": {
+  "name": "Inoa (inner, burning)-295",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Septimus (chercheur)": 1,
+   "Meia": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Fein (femme du gros)": 1,
+   "Lutas (gros bonhomme)": 1,
+   "Gustav (ivrogne)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Talis (fils)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "296": {
+  "name": "Inoa (inner, burning)-296",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bonaire mort": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "297": {
+  "name": "Inoa (destroyed)-297",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Septimus (chercheur)": 1,
+   "Meia": 1,
+   "Gustav (ivrogne)": 1,
+   "Yustel (vieille voyante)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "298": {
+  "name": "Inoa (inner, destroyed)-298",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "I36_Herbe m\u00e9dicinale": 1,
+   "I41_Potion S": 1,
+   "I38_Extrait magique": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "299": {
+  "name": "Inoa (inner, destroyed)-299",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Talis (fils)": 1,
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "300": {
+  "name": "Inoa (inner, destroyed)-300",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "301": {
+  "name": "Inoa (destroyed)-301",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "302": {
+  "name": "Inoa (inner, destroyed)-302",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Coffre d\u2019Anzes": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "303": {
+  "name": "Olen, Cephas house-303",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "304": {
+  "name": "Ice manor-304",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1,
+   "Colonne de glace": 12
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "305": {
+  "name": "Meia Dream (unused_)-305",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "306": {
+  "name": "Meia Dream-306",
+  "zcarriers": [
+   0,
+   9,
+   13,
+   14
+  ],
+  "xycarriers": [
+   [
+    6,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    7,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    8,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "307": {
+  "name": "Meia Dream-307",
+  "zcarriers": [
+   0,
+   1,
+   4,
+   5
+  ],
+  "xycarriers": [
+   [
+    0,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    1,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 1,
+   "Pierre g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "308": {
+  "name": "Meia Dream (flashback)-308",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jeune Meia": 1,
+   "Homme effondr\u00e9": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "309": {
+  "name": "Meia Dream (flashback)-309",
+  "zcarriers": [
+   2,
+   9,
+   13
+  ],
+  "xycarriers": [
+   [
+    13,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "M\u00e8re du m\u00e9dium": 1,
+   "Jeune Meia": 4
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "310": {
+  "name": "Meia Dream (flashback, Inoa)-310",
+  "zcarriers": [
+   2
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Meia": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "311": {
+  "name": "Well (+Lurvy house unused_)-311",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Ronces enflamm\u00e9es 222": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "312": {
+  "name": "Ship (inner, broken, unused)-312",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "313": {
+  "name": "Ship (inner, broken, unused)-313",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "314": {
+  "name": "Island (unused) probably Nava early-314",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "315": {
+  "name": "Island (unused) probably Nava early-315",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "316": {
+  "name": "Cave (unused) probably Nava entrance early-316",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "317": {
+  "name": "Cave (unused) probably Nava entrance early-317",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "318": {
+  "name": "Cave (unused) probably Nava entrance early-318",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "319": {
+  "name": "Cave (unused) probably Nava entrance early-319",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "320": {
+  "name": "Klark (outer, unused)-320",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "321": {
+  "name": "Arena Zorgia (Boss)-321",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "322": {
+  "name": "Arena Corpse Worm (Boss)-322",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "323": {
+  "name": "Arena Black Dragon (Boss)-323",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "324": {
+  "name": "Arena Nirude (Boss)-324",
+  "zcarriers": [
+   2
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "325": {
+  "name": "Arena Wilda (Boss)-325",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    6,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "326": {
+  "name": "Arena Ronan (Boss)-326",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "327": {
+  "name": "Arena Melzas 1 (Boss)-327",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "328": {
+  "name": "Coal Mine (generator)-328",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "329": {
+  "name": "Coal Mine (Elevator & Zazan & Murgg)-329",
+  "zcarriers": [
+   0,
+   1,
+   2,
+   3,
+   10
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "330": {
+  "name": "Inoa-330",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "331": {
+  "name": "Church _ Graveyard (probably for events)-331",
+  "zcarriers": [
+   69,
+   81
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "332": {
+  "name": "Inoa (inner)-332",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "333": {
+  "name": "Inoa (inner)-333",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "334": {
+  "name": "Inoa (inner)-334",
+  "zcarriers": [
+   2
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "I35_Bombe explosive": 1,
+   "Coffre d\u2019Anzes": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "335": {
+  "name": "Coal Mine outer (exit Event)-335",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "336": {
+  "name": "Inoa (inner)-336",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "337": {
+  "name": "Lake Shrine (inner)-337",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "338": {
+  "name": "Lake Shrine (inner)-338",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    7,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "339": {
+  "name": "Lake Shrine (inner)-339",
+  "zcarriers": [
+   20
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Armure cassable": 3,
+   "Tonneau g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 2,
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "340": {
+  "name": "Lake Shrine (inner)-340",
+  "zcarriers": [
+   15,
+   16,
+   17,
+   18
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Armure cassable": 4,
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "341": {
+  "name": "Lake Shrine (inner)-341",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Armure cassable": 6,
+   "Tonneau g\u00e9n\u00e9rique": 1,
+   "Coffre au tr\u00e9sor": 1,
+   "Pilier poussable (PRG)": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "342": {
+  "name": "Lake Shrine (inner)-342",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Armure cassable": 4
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "343": {
+  "name": "Lake Shrine (inner)-343",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    21,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    22,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    23,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    24,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Armure cassable": 9,
+   "Coffre au tr\u00e9sor": 1,
+   "Tonneau g\u00e9n\u00e9rique": 2,
+   "Cruche g\u00e9n\u00e9rique": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "344": {
+  "name": "Lake Shrine (inner)-344",
+  "zcarriers": [
+   21,
+   42,
+   50,
+   51,
+   52,
+   53
+  ],
+  "xycarriers": [
+   [
+    7,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    8,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    59,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ],
+   [
+    60,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ],
+   [
+    61,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ],
+   [
+    62,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ],
+   [
+    63,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ],
+   [
+    64,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ],
+   [
+    65,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ],
+   [
+    66,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ],
+   [
+    67,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Tonneau g\u00e9n\u00e9rique": 4,
+   "Pilier poussable (PRG)": 2
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "345": {
+  "name": "Lake Shrine (inner)-345",
+  "zcarriers": [
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "346": {
+  "name": "Lake Shrine (inner)-346",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    5,
+    "Trappe d\u2019escalier (petite)"
+   ],
+   [
+    6,
+    "Trappe d\u2019escalier (petite)"
+   ],
+   [
+    7,
+    "Trappe d\u2019escalier (grande)"
+   ],
+   [
+    28,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    29,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    30,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    32,
+    "Trappe d\u2019escalier (petite)"
+   ],
+   [
+    33,
+    "Trappe d\u2019escalier (petite)"
+   ]
+  ],
+  "passengers_capable": {
+   "Pilier poussable (PRG)": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "347": {
+  "name": "Lake Shrine (inner)-347",
+  "zcarriers": [
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Pilier poussable (PRG)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "348": {
+  "name": "Lake Shrine (inner)-348",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "349": {
+  "name": "Lake Shrine (inner)-349",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "350": {
+  "name": "Lake Shrine (inner)-350",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "351": {
+  "name": "Lake Shrine (inner)-351",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 8,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "352": {
+  "name": "Lake Shrine (inner)-352",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Caisse en bois g\u00e9n\u00e9rique": 9,
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "353": {
+  "name": "Lake Shrine (inner)-353",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 4
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "354": {
+  "name": "Lake Shrine (outer, unused)-354",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "355": {
+  "name": "Lake Shrine (roof)-355",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "356": {
+  "name": "Lake Shrine (roof)-356",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "357": {
+  "name": "Inoa (night, Kline Event)-357",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Septimus (chercheur)": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "358": {
+  "name": "Inoa (night, inner, Kline Event)-358",
+  "zcarriers": [
+   1
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4,
+   "Coffre d\u2019Anzes": 1
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "359": {
+  "name": "Inoa (inner)-359",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 8,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "360": {
+  "name": "Inoa (night, inner, Kline Event_)-360",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "361": {
+  "name": "Inoa (inner)-361",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Septimus (chercheur)": 1,
+   "Meia": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Fein (femme du gros)": 1,
+   "Lutas (gros bonhomme)": 1,
+   "Gustav (ivrogne)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Beaumont (chef du village)": 1,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "362": {
+  "name": "Coal Mine _ Olen's Dream-362",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jaylen (mineur)": 1,
+   "Lyman (mineur)": 1,
+   "Olen (mineur)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "363": {
+  "name": "Coal Mine _ Olen's Dream-363",
+  "zcarriers": [
+   0
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Zane (mineur)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "364": {
+  "name": "Inoa-364",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Giles (homme religieux)": 1,
+   "Kisha (petite s\u0153ur)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "365": {
+  "name": "Inoa (inner)-365",
+  "zcarriers": [
+   2
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "I35_Bombe explosive": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "366": {
+  "name": "Inoa (inner)-366",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Ronan (pr\u00eatre)": 1,
+   "Septimus (chercheur)": 1,
+   "Lutas (gros bonhomme)": 1,
+   "Beaumont (chef du village)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Olen (mineur)": 1,
+   "Talis (fils)": 1,
+   "Thyea (\u00e9pouse)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "367": {
+  "name": "Inoa (Kline, Sybil's vision)-367",
+  "zcarriers": [
+   0
+  ],
+  "xycarriers": [
+   [
+    0,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "Kline (somnambule)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "368": {
+  "name": "Arena Zazan (Sybil's vision)-368",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    0,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "369": {
+  "name": "Mrugg House (Sybil's vision_)-369",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "370": {
+  "name": "Inoa (inner)-370",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 9,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "371": {
+  "name": "Inoa-371",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Talis (fils)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Nestus (fr\u00e8re cadet)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "372": {
+  "name": "Inoa (inner)-372",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Coffre d\u2019Anzes": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "373": {
+  "name": "Inoa (inner)-373",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Septimus (chercheur)": 1,
+   "Cruche g\u00e9n\u00e9rique": 8,
+   "Caisse en bois g\u00e9n\u00e9rique": 9
+  },
+  "spawn_edges": 4,
+  "piles": []
+ },
+ "374": {
+  "name": "Inoa (inner)-374",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Giles (homme religieux)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Wendell (grand-p\u00e8re)": 1,
+   "Meade (p\u00e8re des jumeaux)": 1,
+   "Cruche g\u00e9n\u00e9rique": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 3,
+  "piles": []
+ },
+ "375": {
+  "name": "Inoa (inner)-375",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Bonaire (homme endormi \u00e0 jamais)": 1,
+   "Phineas (p\u00e8re)": 1,
+   "Lutas (gros bonhomme)": 1,
+   "Fein (femme du gros)": 1,
+   "Cruche g\u00e9n\u00e9rique": 4,
+   "Cruche n\u00b02": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "376": {
+  "name": "Inoa (inner)-376",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Nadia (femme insomniaque)": 1,
+   "Myra (vieille femme)": 1,
+   "Elene (femme \u00e0 personnalit\u00e9s multiples)": 1,
+   "Gustav (ivrogne)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "377": {
+  "name": "Inoa (inner)-377",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1,
+   "Kline (somnambule)": 1,
+   "Sierra (m\u00e8re)": 1,
+   "Cruche g\u00e9n\u00e9rique": 5,
+   "Caisse en bois g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "378": {
+  "name": "Lake Shrine Bridge (Event)_-378",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "379": {
+  "name": "Lake Shrine teleporter-379",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "380": {
+  "name": "Deep Cave with Mimics-380",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 4,
+   "Cruche n\u00b02": 4,
+   "Ronces enflamm\u00e9es 222": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "381": {
+  "name": "Warp-Zone-381",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "382": {
+  "name": "Murgg Caves-382",
+  "zcarriers": [
+   8
+  ],
+  "xycarriers": [
+   [
+    7,
+    "Bloc \u00e0 pousser/attaquer"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 4
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "383": {
+  "name": "Murgg Caves-383",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 17
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "384": {
+  "name": "Murgg Caves-384",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "385": {
+  "name": "Murgg Caves-385",
+  "zcarriers": [
+   6,
+   7,
+   8
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "386": {
+  "name": "Murgg Caves-386",
+  "zcarriers": [
+   16
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 6
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "387": {
+  "name": "The Klark-387",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Meia": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 20,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 9,
+  "piles": []
+ },
+ "388": {
+  "name": "The Klark - inner-388",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "389": {
+  "name": "Ship Klark (beginning)-389",
+  "zcarriers": [
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   18
+  ],
+  "xycarriers": [
+   [
+    18,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "Marin-passager-mouette": 8
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "390": {
+  "name": "Ship Klark (inner)-390",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Marin-passager-mouette": 4,
+   "Caisse en bois g\u00e9n\u00e9rique": 12
+  },
+  "spawn_edges": 6,
+  "piles": []
+ },
+ "391": {
+  "name": "Ship Klark (night, break, Event)-391",
+  "zcarriers": [
+   0
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Marin-passager-mouette": 6
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "392": {
+  "name": "Ship Klark (night, inner, break)-392",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Caisse en bois g\u00e9n\u00e9rique": 12
+  },
+  "spawn_edges": 5,
+  "piles": []
+ },
+ "393": {
+  "name": "Water Mill-393",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "394": {
+  "name": "Pub Entrance + Floor-394",
+  "zcarriers": [
+   2
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Jess (armurier)": 1,
+   "Marin-passager-mouette": 5,
+   "Phineas (p\u00e8re)": 1,
+   "Yuri (marchand d\u2019objets)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "395": {
+  "name": "Water Mill (inner)-395",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "396": {
+  "name": "Sluice, Berue, Cave-396",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Colonne de glace": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "397": {
+  "name": "Deep Cave with Mimics (unused_)-397",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "398": {
+  "name": "Lurvy House, Well-398",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lurvy": 1,
+   "I36_Herbe m\u00e9dicinale": 1,
+   "I41_Potion S": 1,
+   "I37_Potion L": 1,
+   "I38_Extrait magique": 1,
+   "Ronces enflamm\u00e9es 222": 1,
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "399": {
+  "name": "Murgg Golem (Boss)-399",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1,
+   "Cruche g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "400": {
+  "name": "Desert _ Ancient Shrine-400",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Objet \u00e9toile (transportable)": 2,
+   "Objet lune (transportable)": 2,
+   "Objet eau (transportable)": 2,
+   "Objet soleil (transportable)": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "401": {
+  "name": "Desert Entrance-401",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "402": {
+  "name": "Desert Cave (sand Cape)-402",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "403": {
+  "name": "Desert Mini Puzle to Shrine-403",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "404": {
+  "name": "Desert Mini Puzle to Shrine-404",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Pierre g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "405": {
+  "name": "Desert Mini Puzle to Shrine-405",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "406": {
+  "name": "Desert Mini Puzle to Shrine-406",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "407": {
+  "name": "Coast-407",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 6
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "408": {
+  "name": "Lizardman's Lair-408",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Statue d\u2019homme-l\u00e9zard transform\u00e9": 2,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "409": {
+  "name": "Lizardman's Lair-409",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Statue d\u2019homme-l\u00e9zard transform\u00e9": 10,
+   "Cruche g\u00e9n\u00e9rique": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "410": {
+  "name": "Lizardman's Lair-410",
+  "zcarriers": [
+   22
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 11,
+   "Coffre au tr\u00e9sor": 3,
+   "Statue d\u2019homme-l\u00e9zard transform\u00e9": 20
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "411": {
+  "name": "Lizardman's Lair (Boss)-411",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    18,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    19,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Statue d\u2019homme-l\u00e9zard transform\u00e9": 10,
+   "Coffre au tr\u00e9sor": 2,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "412": {
+  "name": "Lake Shrine Bridge (Event_)-412",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "413": {
+  "name": "Lake Shrine (outer, unused)-413",
+  "zcarriers": [
+   0
+  ],
+  "xycarriers": [
+   [
+    0,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ],
+   [
+    1,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "414": {
+  "name": "Lake Shrine (inner, unused)-414",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "415": {
+  "name": "Lake Shrine Melzas (inner, Beginning Event_)-415",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "416": {
+  "name": "Coast beginning-416",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    0,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "417": {
+  "name": "Inoa (inner)-417",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "418": {
+  "name": "Inoa (inner)-418",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Lutas (gros bonhomme)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "419": {
+  "name": "Inoa (inner)-419",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "I04_\u00c9p\u00e9e sacr\u00e9e Elnard": 1,
+   "Jess (armurier)": 1,
+   "Coffre d\u2019Anzes": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "420": {
+  "name": "Coast house (Nava)-420",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Nava (vieil homme du cap)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "421": {
+  "name": "Nirude (inner)-421",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Mini-Nilude (D12)": 8,
+   "Coffre au tr\u00e9sor": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "422": {
+  "name": "Nirude (inner)-422",
+  "zcarriers": [
+   19,
+   22,
+   24,
+   26,
+   28
+  ],
+  "xycarriers": [
+   [
+    2,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    3,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    4,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    5,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    6,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "423": {
+  "name": "Nirude (inner)-423",
+  "zcarriers": [
+   32,
+   33
+  ],
+  "xycarriers": [
+   [
+    11,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 2,
+   "Pilier poussable (PRG)": 13,
+   "Mini-Nilude (D12)": 2,
+   "Caisse en bois g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "424": {
+  "name": "Nirude (inner)-424",
+  "zcarriers": [
+   28,
+   29
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 3,
+   "Mini-Nilude (D12)": 10,
+   "Tonneau g\u00e9n\u00e9rique": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "425": {
+  "name": "Nirude (inner)-425",
+  "zcarriers": [
+   11
+  ],
+  "xycarriers": [
+   [
+    4,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 1,
+   "Coffre au tr\u00e9sor": 1,
+   "Mini-Nilude (D12)": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "426": {
+  "name": "Nirude (inner)-426",
+  "zcarriers": [
+   23,
+   27
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Mini-Nilude (D12)": 1,
+   "Caisse en bois g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "427": {
+  "name": "Dark Castle (unused)-427",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "428": {
+  "name": "A big mess (unused)-428",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "429": {
+  "name": "Nava''s Entrance Caves-429",
+  "zcarriers": [
+   23,
+   24,
+   25,
+   34
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "430": {
+  "name": "Nava''s Entrance Caves-430",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Tonneau g\u00e9n\u00e9rique": 2,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "431": {
+  "name": "Nava''s Island-431",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "432": {
+  "name": "Nava''s House (inner)-432",
+  "zcarriers": [
+   1
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Nava (vieil homme du cap)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "433": {
+  "name": "Lake Shrine-433",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "434": {
+  "name": "Lake Shrine (garden)-434",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "435": {
+  "name": "Elane Nightmare-435",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "436": {
+  "name": "Elane Nightmare-436",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "437": {
+  "name": "Elane Nightmare-437",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "438": {
+  "name": "Elane Nightmare-438",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "439": {
+  "name": "Nirude (outer, Event, water cape)-439",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 5
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "440": {
+  "name": "Meia Dream-440",
+  "zcarriers": [
+   13,
+   15,
+   20
+  ],
+  "xycarriers": [
+   [
+    11,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    25,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "441": {
+  "name": "Meia Dream-441",
+  "zcarriers": [
+   1,
+   9
+  ],
+  "xycarriers": [
+   [
+    3,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    5,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    6,
+    "Plateforme flottante (grande)"
+   ],
+   [
+    13,
+    "Plateforme flottante (petite)"
+   ],
+   [
+    14,
+    "Plateforme flottante (petite)"
+   ]
+  ],
+  "passengers_capable": {
+   "Torche": 3,
+   "Ronces enflamm\u00e9es 222": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "442": {
+  "name": "Meia Dream-442",
+  "zcarriers": [
+   25,
+   26
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Cruche g\u00e9n\u00e9rique": 1,
+   "Pierre g\u00e9n\u00e9rique": 2,
+   "Tonneau g\u00e9n\u00e9rique": 1,
+   "Torche": 1,
+   "Ronces enflamm\u00e9es 222": 2,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 2,
+  "piles": []
+ },
+ "443": {
+  "name": "Torla (inner)-443",
+  "zcarriers": [
+   3,
+   4,
+   13,
+   14,
+   15
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Colonne de glace": 4,
+   "Coffre au tr\u00e9sor": 2,
+   "Cruche g\u00e9n\u00e9rique": 4
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "444": {
+  "name": "Torla (inner)-444",
+  "zcarriers": [
+   24
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Colonne de glace": 2,
+   "Pierre g\u00e9n\u00e9rique": 1,
+   "Coffre au tr\u00e9sor": 1,
+   "Cruche g\u00e9n\u00e9rique": 2
+  },
+  "spawn_edges": 1,
+  "piles": []
+ },
+ "445": {
+  "name": "Torla (inner)-445",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    3,
+    "Plateforme flottante (grande)"
+   ]
+  ],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 2,
+   "Pierre g\u00e9n\u00e9rique": 2,
+   "Cruche g\u00e9n\u00e9rique": 7
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "446": {
+  "name": "Torla (inner)-446",
+  "zcarriers": [
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16
+  ],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "447": {
+  "name": "Torla (inner)-447",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Colonne de glace": 2,
+   "Ronces enflamm\u00e9es 222": 1,
+   "Ronces enflamm\u00e9es 112": 5,
+   "Coffre au tr\u00e9sor": 1,
+   "Cruche g\u00e9n\u00e9rique": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "448": {
+  "name": "Torla (inner)-448",
+  "zcarriers": [
+   34
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Colonne de glace": 3,
+   "Cruche g\u00e9n\u00e9rique": 7,
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "449": {
+  "name": "Giles Nightmare (Boss)-449",
+  "zcarriers": [
+   2
+  ],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Giles (homme religieux)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "450": {
+  "name": "Desert-450",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 3
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "451": {
+  "name": "Nirude (inner, Event)-451",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "452": {
+  "name": "Save Room (Coal Mine)-452",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "453": {
+  "name": "Save Room (Lars Crypt)-453",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "454": {
+  "name": "Save Room (Coastal Cave_)-454",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "455": {
+  "name": "Save Room (Desert _ Ancient Shrine)-455",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "456": {
+  "name": "Save Room (Magyscar)-456",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "457": {
+  "name": "Save Room (Underground Watercourse)-457",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "458": {
+  "name": "Save Room (Lizardman's Lair)-458",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "459": {
+  "name": "Save Room (Magyscar_)-459",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "460": {
+  "name": "Save Room (Nirude)-460",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "461": {
+  "name": "Save Room (_)-461",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "462": {
+  "name": "Save Room (Murgg Tree)-462",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "463": {
+  "name": "Save Room (Fairy cave)-463",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "464": {
+  "name": "Save Room (Lake Shrine_)-464",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "465": {
+  "name": "Save Room (Nightmare ...)-465",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "466": {
+  "name": "Save Room (Kline's Nightmare)-466",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "467": {
+  "name": "Save Room (Giles Nightmare)-467",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "468": {
+  "name": "Save Room (Meia Dream)-468",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "469": {
+  "name": "Save Room (Elenes Nightmare)-469",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "470": {
+  "name": "Save Room (Nestus' Dream)-470",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "471": {
+  "name": "Arena Melzas 2 (Boss)-471",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "472": {
+  "name": "Pub (Ring)-472",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Ma\u00eetre des cl\u00e9s": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "473": {
+  "name": "Pub (Shooting)-473",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Ma\u00eetre des cl\u00e9s": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "474": {
+  "name": "Pub (Roulette)-474",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Kisha (petite s\u0153ur)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "475": {
+  "name": "Inoa (inner, Yustel, Map)-475",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Yustel (vieille voyante)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "476": {
+  "name": "Lars & Melzas Room (beginning Event)-476",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "477": {
+  "name": "Continue Screen-477",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "478": {
+  "name": "Inoa (Vision Event from Lars and Melzas cutscene)-478",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    11,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {
+   "Nadia (femme insomniaque)": 1,
+   "Myra (vieille femme)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Olen (mineur)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Talis (fils)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Beaumont (chef du village)": 1,
+   "Ronan (pr\u00eatre)": 1,
+   "Giles (homme religieux)": 1,
+   "Jess (armurier)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "479": {
+  "name": "Overworld 0,0 with Lake Shrine Entrance-479",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Coffre au tr\u00e9sor": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "480": {
+  "name": "Lake Shrine (Melzas, Dark Dragon Event)-480",
+  "zcarriers": [],
+  "xycarriers": [
+   [
+    0,
+    "Bloc transparent (1\u00d71\u00d72)"
+   ]
+  ],
+  "passengers_capable": {},
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "481": {
+  "name": "Inoa (night, Sybil crime scene)-481",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Sybill (aux yeux rouges)": 1,
+   "Ronan (pr\u00eatre)": 1,
+   "Sierra (m\u00e8re)": 1,
+   "Lutas (gros bonhomme)": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ },
+ "482": {
+  "name": "Church Basement (Event for final Battle)-482",
+  "zcarriers": [],
+  "xycarriers": [],
+  "passengers_capable": {
+   "Septimus (chercheur)": 1,
+   "Beaumont (chef du village)": 1,
+   "Thyea (\u00e9pouse)": 1,
+   "Talis (fils)": 1,
+   "Bergus (fr\u00e8re a\u00een\u00e9)": 1,
+   "Rumi (m\u00e8re des jumeaux)": 1,
+   "Nestus (fr\u00e8re cadet)": 1,
+   "Gustav (ivrogne)": 1,
+   "Kisha (petite s\u0153ur)": 1,
+   "Yuri (marchand d\u2019objets)": 1,
+   "Naomi (\u00e9pouse courageuse)": 1,
+   "Fein (femme du gros)": 1,
+   "Lutas (gros bonhomme)": 1,
+   "Yustel (vieille voyante)": 1,
+   "Meia": 1
+  },
+  "spawn_edges": 0,
+  "piles": []
+ }
+}

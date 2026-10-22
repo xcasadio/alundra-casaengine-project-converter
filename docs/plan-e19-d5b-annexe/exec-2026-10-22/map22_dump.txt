@@ -1,0 +1,722 @@
+MAP 22 Lars' Crypt / Lars' Crypt-22 codes 1656 size 52 x 60
+CASES 158 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 10 11 12 16 17 19 1A 1B 1C 1D 1E 1F 20 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F 30 31 32 33 34 35 36 37 38 39 3A 3B 3E 3F 40 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D 4E 4F 50 51 52 53 54 55 57 58 59 5A 5B 5C 5D 5E 62 63 64 65 67 68 69 6E 6F 70 71 73 74 75 78 79 7B 7C 7D 7E 7F 80 81 82 83 84 85 86 87 89 8A 8B 8C 8D 8E 8F 90 91 92 93 94 95 98 99 9A 9B 9C 9F A0 A1 A2 A3 A4 A5 A6 A7 A8 AB AC AD AF B0 B1 B8 BA BC BD BE BF C0 C1 C3 C4
+ table A {1: 136, 3: 140, 4: 152, 5: 160, 7: 168, 9: 196, 10: 208, 11: 220, 12: 232}
+ table B {1: 244, 2: 336, 3: 348, 4: 396, 5: 584}
+ table C {1: 632, 2: 676, 3: 720, 4: 768, 5: 772, 6: 784, 7: 900, 9: 1080, 10: 1172, 11: 1264, 12: 1356, 13: 1500, 14: 1508, 15: 1516, 18: 1532, 23: 1544, 35: 1572}
+ table D {1: 1588, 2: 1596, 4: 1604, 5: 1612, 6: 1620, 7: 1628, 8: 1636}
+ table E {}
+ table F {1: 1644}
+  ;; entry A[1]
+  136: IMPL 0x09 Set direction                            [24]
+  138: IMPL 0xFF End script                               []
+  139: IMPL 0x00 Break                                    []
+  ;; entry A[3]
+  140: IMPL 0x31 If flag off                              [130, 0, 9, 0] G130 -> 149
+  145: IMPL 0x1A Set anim                                 [1]
+  147: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+  149: IMPL 0xFF End script                               []
+  150: IMPL 0x00 Break                                    []
+  151: IMPL 0x00 Break                                    []
+  ;; entry A[4]
+  152: IMPL 0x31 If flag off                              [131, 0, 6, 0] G131 -> 158
+  157: IMPL 0x19 Deactivate entity                        []
+  158: IMPL 0xFF End script                               []
+  159: IMPL 0x00 Break                                    []
+  ;; entry A[5]
+  160: IMPL 0x31 If flag off                              [126, 0, 6, 0] G126 -> 166
+  165: IMPL 0x19 Deactivate entity                        []
+  166: IMPL 0xFF End script                               []
+  167: IMPL 0x00 Break                                    []
+  ;; entry A[7]
+  168: IMPL 0x85 Set map tiles                            [31, 25, 4, 4, 12, 37]
+  175: IMPL 0x31 If flag off                              [130, 0, 17, 0] G130 -> 192
+  180: IMPL 0x85 Set map tiles                            [31, 33, 4, 4, 12, 37]
+  187: IMPL 0x40 Set program index and clear the program state [2, 0]
+  190: IMPL 0x1A Set anim                                 [1]
+  192: IMPL 0xFF End script                               []
+  193: IMPL 0x00 Break                                    []
+  194: IMPL 0x00 Break                                    []
+  195: IMPL 0x00 Break                                    []
+  ;; entry A[9]
+  196: IMPL 0x05 Flag on                                  [89, 130] T601
+  199: IMPL 0x31 If flag off                              [131, 0, 8, 0] G131 -> 207
+  204: IMPL 0x1A Set anim                                 [1]
+  206: IMPL 0x2B Clear EntityFlags.ClassA                 []
+  207: IMPL 0xFF End script                               []
+  ;; entry A[10]
+  208: IMPL 0x31 If flag off                              [131, 0, 8, 0] G131 -> 216
+  213: IMPL 0x1A Set anim                                 [1]
+  215: IMPL 0x2B Clear EntityFlags.ClassA                 []
+  216: IMPL 0xFF End script                               []
+  217: IMPL 0x00 Break                                    []
+  218: IMPL 0x00 Break                                    []
+  219: IMPL 0x00 Break                                    []
+  ;; entry A[11]
+  220: IMPL 0x31 If flag off                              [131, 0, 8, 0] G131 -> 228
+  225: IMPL 0x1A Set anim                                 [1]
+  227: IMPL 0x2B Clear EntityFlags.ClassA                 []
+  228: IMPL 0xFF End script                               []
+  229: IMPL 0x00 Break                                    []
+  230: IMPL 0x00 Break                                    []
+  231: IMPL 0x00 Break                                    []
+  ;; entry A[12]
+  232: IMPL 0x31 If flag off                              [131, 0, 8, 0] G131 -> 240
+  237: IMPL 0x1A Set anim                                 [1]
+  239: IMPL 0x2B Clear EntityFlags.ClassA                 []
+  240: IMPL 0xFF End script                               []
+  241: IMPL 0x00 Break                                    []
+  242: IMPL 0x00 Break                                    []
+  243: IMPL 0x00 Break                                    []
+  ;; entry B[1]
+  244: IMPL 0x85 Set map tiles                            [17, 49, 4, 6, 4, 26]
+  251: IMPL 0x30 If flag on                               [109, 2, 83, 0] G621 -> 334
+  256: IMPL 0x85 Set map tiles                            [17, 43, 4, 6, 4, 26]
+  263: IMPL 0x2D Activate entity                          [35]
+  265: IMPL 0x00 Break                                    []
+  266: IMPL 0x3B Check player in area                     [3, 4, 24, 24, 3, 10]
+  273: IMPL 0x03 If true goto                             [18, 0] -> 291
+  276: IMPL 0x3B Check player in area                     [8, 8, 29, 36, 2, 10]
+  283: IMPL 0x03 If true goto                             [8, 0] -> 291
+  286: IMPL 0x02 Goto                                     [235, 255] -> 265
+  289: IMPL 0x00 Break                                    []
+  290: IMPL 0x00 Break                                    []
+  291: IMPL 0x10 Player lose control                      []
+  292: IMPL 0x1A Set anim                                 [0]
+  294: IMPL 0x69 Camera look at                           [144, 0, 208, 1, 16, 0]
+  301: IMPL 0x37 Wait                                     [60]
+  303: IMPL 0x43 Set LogicContextEntity                   [35]
+  305: IMPL 0x16 High gravity                             []
+  306: IMPL 0xBD Play sound 2                             [55, 0]
+  309: IMPL 0x25 Wait until collided with entity Z or on ground []
+  310: IMPL 0xBD Play sound 2                             [45, 0]
+  313: IMPL 0x43 Set LogicContextEntity                   [129]
+  315: IMPL 0x5D Set entity Status = 3                    [35]
+  317: IMPL 0x37 Wait                                     [5]
+  319: IMPL 0x85 Set map tiles                            [17, 49, 4, 6, 4, 26]
+  326: IMPL 0x37 Wait                                     [60]
+  328: IMPL 0x05 Flag on                                  [109, 2] G621
+  331: IMPL 0x67 Camera follow entity                     [129]
+  333: IMPL 0x11 Player gain control                      []
+  334: IMPL 0xFF End script                               []
+  335: IMPL 0x00 Break                                    []
+  ;; entry B[2]
+  336: IMPL 0x31 If flag off                              [129, 0, 11, 0] G129 -> 347
+  341: IMPL 0x2D Activate entity                          [8]
+  343: IMPL 0x06 Flag off                                 [129, 0] G129
+  346: IMPL 0x11 Player gain control                      []
+  347: IMPL 0xFF End script                               []
+  ;; entry B[3]
+  348: IMPL 0x00 Break                                    []
+  349: IMPL 0x2F Check pad buttons                        [0, 16, 0]
+  353: IMPL 0x04 If false goto                            [251, 255] -> 348
+  356: IMPL 0x6E Is force adjusted                        []
+  357: IMPL 0x04 If false goto                            [247, 255] -> 348
+  360: IMPL 0x3B Check player in area                     [23, 24, 16, 16, 3, 3]
+  367: IMPL 0x03 If true goto                             [18, 0] -> 385
+  370: IMPL 0x3B Check player in area                     [9, 10, 16, 16, 3, 3]
+  377: IMPL 0x03 If true goto                             [8, 0] -> 385
+  380: IMPL 0x02 Goto                                     [224, 255] -> 348
+  383: IMPL 0x00 Break                                    []
+  384: IMPL 0x00 Break                                    []
+  385: IMPL 0x0D Dialog                                   [139, 0]
+  388: IMPL 0x39 Wait for dialog                          []
+  389: IMPL 0x02 Goto                                     [215, 255] -> 348
+  392: IMPL 0xFF End script                               []
+  393: IMPL 0x00 Break                                    []
+  394: IMPL 0x00 Break                                    []
+  395: IMPL 0x00 Break                                    []
+  ;; entry B[4]
+  396: IMPL 0x85 Set map tiles                            [35, 41, 1, 5, 35, 50]
+  403: IMPL 0x30 If flag on                               [110, 2, 180, 0] G622 -> 583
+  408: IMPL 0x85 Set map tiles                            [32, 41, 1, 5, 35, 50]
+  415: IMPL 0x31 If flag off                              [131, 0, 168, 0] G131 -> 583
+  420: IMPL 0x85 Set map tiles                            [35, 41, 1, 5, 35, 50]
+  427: IMPL 0x2D Activate entity                          [3]
+  429: IMPL 0x2D Activate entity                          [17]
+  431: IMPL 0x2D Activate entity                          [18]
+  433: IMPL 0x2D Activate entity                          [19]
+  435: IMPL 0x2D Activate entity                          [20]
+  437: IMPL 0x2D Activate entity                          [25]
+  439: IMPL 0x2D Activate entity                          [26]
+  441: IMPL 0x2D Activate entity                          [27]
+  443: IMPL 0x00 Break                                    []
+  444: IMPL 0x3B Check player in area                     [36, 36, 52, 53, 2, 10]
+  451: IMPL 0x04 If false goto                            [248, 255] -> 443
+  454: IMPL 0x10 Player lose control                      []
+  455: IMPL 0x1A Set anim                                 [1]
+  457: IMPL 0x09 Set direction                            [24]
+  459: IMPL 0x1E Walk                                     [24, 0]
+  462: IMPL 0x1A Set anim                                 [0]
+  464: IMPL 0xBD Play sound 2                             [25, 0]
+  467: IMPL 0x85 Set map tiles                            [34, 41, 1, 5, 35, 50]
+  474: IMPL 0x37 Wait                                     [8]
+  476: IMPL 0x85 Set map tiles                            [33, 41, 1, 5, 35, 50]
+  483: IMPL 0x37 Wait                                     [8]
+  485: IMPL 0x85 Set map tiles                            [32, 41, 1, 5, 35, 50]
+  492: IMPL 0x37 Wait                                     [8]
+  494: IMPL 0xBE Play sound 2 (bis)                       [25, 0]
+  497: IMPL 0x37 Wait                                     [10]
+  499: IMPL 0x05 Flag on                                  [16, 132] T1040
+  502: IMPL 0x11 Player gain control                      []
+  503: IMPL 0x00 Break                                    []
+  504: IMPL 0x2C Check no entity by function id           [17]
+  506: IMPL 0x04 If false goto                            [253, 255] -> 503
+  509: IMPL 0x2C Check no entity by function id           [18]
+  511: IMPL 0x04 If false goto                            [248, 255] -> 503
+  514: IMPL 0x2C Check no entity by function id           [19]
+  516: IMPL 0x04 If false goto                            [243, 255] -> 503
+  519: IMPL 0x2C Check no entity by function id           [20]
+  521: IMPL 0x04 If false goto                            [238, 255] -> 503
+  524: IMPL 0x2C Check no entity by function id           [25]
+  526: IMPL 0x04 If false goto                            [233, 255] -> 503
+  529: IMPL 0x2C Check no entity by function id           [26]
+  531: IMPL 0x04 If false goto                            [228, 255] -> 503
+  534: IMPL 0x2C Check no entity by function id           [27]
+  536: IMPL 0x04 If false goto                            [223, 255] -> 503
+  539: IMPL 0x00 Break                                    []
+  540: IMPL 0x05 Flag on                                  [110, 2] G622
+  543: IMPL 0xBD Play sound 2                             [2, 0]
+  546: IMPL 0x37 Wait                                     [40]
+  548: IMPL 0x5D Set entity Status = 3                    [3]
+  550: IMPL 0xBD Play sound 2                             [25, 0]
+  553: IMPL 0x85 Set map tiles                            [33, 41, 1, 5, 35, 50]
+  560: IMPL 0x37 Wait                                     [8]
+  562: IMPL 0x85 Set map tiles                            [34, 41, 1, 5, 35, 50]
+  569: IMPL 0x37 Wait                                     [8]
+  571: IMPL 0x85 Set map tiles                            [35, 41, 1, 5, 35, 50]
+  578: IMPL 0x37 Wait                                     [8]
+  580: IMPL 0xBE Play sound 2 (bis)                       [25, 0]
+  583: IMPL 0xFF End script                               []
+  ;; entry B[5]
+  584: IMPL 0x00 Break                                    []
+  585: IMPL 0x2F Check pad buttons                        [0, 16, 0]
+  589: IMPL 0x04 If false goto                            [251, 255] -> 584
+  592: IMPL 0x6E Is force adjusted                        []
+  593: IMPL 0x04 If false goto                            [247, 255] -> 584
+  596: IMPL 0x3B Check player in area                     [20, 21, 16, 16, 3, 3]
+  603: IMPL 0x03 If true goto                             [18, 0] -> 621
+  606: IMPL 0x3B Check player in area                     [7, 8, 16, 16, 3, 3]
+  613: IMPL 0x03 If true goto                             [8, 0] -> 621
+  616: IMPL 0x02 Goto                                     [224, 255] -> 584
+  619: IMPL 0x00 Break                                    []
+  620: IMPL 0x00 Break                                    []
+  621: IMPL 0x0D Dialog                                   [144, 0]
+  624: IMPL 0x39 Wait for dialog                          []
+  625: IMPL 0x02 Goto                                     [215, 255] -> 584
+  628: IMPL 0xFF End script                               []
+  629: IMPL 0x00 Break                                    []
+  630: IMPL 0x00 Break                                    []
+  631: IMPL 0x00 Break                                    []
+  ;; entry C[1]
+  632: IMPL 0x30 If flag on                               [2, 128, 10, 0] T2 -> 642
+  637: IMPL 0x2A Set EntityFlags.ClassA                   []
+  638: IMPL 0x00 Break                                    []
+  639: IMPL 0x02 Goto                                     [249, 255] -> 632
+  642: IMPL 0x2B Clear EntityFlags.ClassA                 []
+  643: IMPL 0x30 If flag on                               [1, 128, 17, 0] T1 -> 660
+  648: IMPL 0x1A Set anim                                 [3]
+  650: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+  652: IMPL 0x1A Set anim                                 [0]
+  654: IMPL 0x06 Flag off                                 [2, 128] T2
+  657: IMPL 0x02 Goto                                     [231, 255] -> 632
+  660: IMPL 0x1A Set anim                                 [2]
+  662: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+  664: IMPL 0x1A Set anim                                 [1]
+  666: IMPL 0x06 Flag off                                 [2, 128] T2
+  669: IMPL 0x02 Goto                                     [219, 255] -> 632
+  672: IMPL 0xFF End script                               []
+  673: IMPL 0x00 Break                                    []
+  674: IMPL 0x00 Break                                    []
+  675: IMPL 0x00 Break                                    []
+  ;; entry C[2]
+  676: IMPL 0x30 If flag on                               [4, 128, 10, 0] T4 -> 686
+  681: IMPL 0x2A Set EntityFlags.ClassA                   []
+  682: IMPL 0x00 Break                                    []
+  683: IMPL 0x02 Goto                                     [249, 255] -> 676
+  686: IMPL 0x2B Clear EntityFlags.ClassA                 []
+  687: IMPL 0x30 If flag on                               [3, 128, 17, 0] T3 -> 704
+  692: IMPL 0x1A Set anim                                 [3]
+  694: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+  696: IMPL 0x1A Set anim                                 [0]
+  698: IMPL 0x06 Flag off                                 [4, 128] T4
+  701: IMPL 0x02 Goto                                     [231, 255] -> 676
+  704: IMPL 0x1A Set anim                                 [2]
+  706: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+  708: IMPL 0x1A Set anim                                 [1]
+  710: IMPL 0x06 Flag off                                 [4, 128] T4
+  713: IMPL 0x02 Goto                                     [219, 255] -> 676
+  716: IMPL 0xFF End script                               []
+  717: IMPL 0x00 Break                                    []
+  718: IMPL 0x00 Break                                    []
+  719: IMPL 0x00 Break                                    []
+  ;; entry C[3]
+  720: IMPL 0x00 Break                                    []
+  721: IMPL 0x30 If flag on                               [1, 128, 255, 255] T1 -> 720
+  726: IMPL 0x31 If flag off                              [3, 128, 250, 255] T3 -> 720
+  731: IMPL 0x3E Is player riding entity                  []
+  732: IMPL 0x04 If false goto                            [244, 255] -> 720
+  735: IMPL 0x10 Player lose control                      []
+  736: IMPL 0x59 Set entity anim                          [129, 0]
+  739: IMPL 0x37 Wait                                     [10]
+  741: IMPL 0x05 Flag on                                  [5, 128] T5
+  744: IMPL 0x1B Fly                                      [0, 1]
+  747: IMPL 0x20 Wait Z distance                          [64, 0]
+  750: IMPL 0x06 Flag off                                 [5, 128] T5
+  753: IMPL 0x05 Flag on                                  [129, 0] G129
+  756: IMPL 0x53 Change map                               [22, 0, 15, 20, 5, 0, 0]
+  764: IMPL 0x00 Break                                    []
+  765: IMPL 0xFF End script                               []
+  766: IMPL 0x00 Break                                    []
+  767: IMPL 0x00 Break                                    []
+  ;; entry C[4]
+  768: IMPL 0x37 Wait                                     [120]
+  770: IMPL 0x19 Deactivate entity                        []
+  771: IMPL 0xFF End script                               []
+  ;; entry C[5]
+  772: IMPL 0x00 Break                                    []
+  773: IMPL 0x30 If flag on                               [60, 128, 255, 255] T60 -> 772
+  778: IMPL 0x2A Set EntityFlags.ClassA                   []
+  779: IMPL 0x02 Goto                                     [249, 255] -> 772
+  782: IMPL 0xFF End script                               []
+  783: IMPL 0x00 Break                                    []
+  ;; entry C[6]
+  784: IMPL 0x36 Wait until flag on                       [8, 128] T8
+  787: IMPL 0x59 Set entity anim                          [129, 0]
+  790: IMPL 0x0D Dialog                                   [14, 1]
+  793: IMPL 0x39 Wait for dialog                          []
+  794: IMPL 0xBD Play sound 2                             [49, 0]
+  797: IMPL 0xA3 Create effect with entity pos            [1, 129, 0, 0, 0, 0, 8, 0]
+  806: IMPL 0x37 Wait                                     [6]
+  808: IMPL 0xA3 Create effect with entity pos            [1, 129, 0, 0, 0, 0, 12, 0]
+  817: IMPL 0x37 Wait                                     [6]
+  819: IMPL 0xA3 Create effect with entity pos            [1, 129, 0, 0, 252, 255, 16, 0]
+  828: IMPL 0x37 Wait                                     [6]
+  830: IMPL 0xA3 Create effect with entity pos            [1, 129, 0, 0, 4, 0, 20, 0]
+  839: IMPL 0x37 Wait                                     [6]
+  841: IMPL 0xA3 Create effect with entity pos            [1, 129, 0, 0, 8, 0, 24, 0]
+  850: IMPL 0x37 Wait                                     [6]
+  852: IMPL 0xA3 Create effect with entity pos            [1, 129, 0, 0, 248, 255, 28, 0]
+  861: IMPL 0x37 Wait                                     [6]
+  863: ---- 0x96 Restore HP                               [129, 255]
+  866: IMPL 0x11 Player gain control                      []
+  867: IMPL 0x2D Activate entity                          [9]
+  869: IMPL 0x2D Activate entity                          [10]
+  871: IMPL 0x2C Check no entity by function id           [34]
+  873: IMPL 0x04 If false goto                            [5, 0] -> 878
+  876: IMPL 0x2D Activate entity                          [34]
+  878: IMPL 0x37 Wait                                     [180]
+  880: IMPL 0x37 Wait                                     [180]
+  882: IMPL 0x37 Wait                                     [180]
+  884: IMPL 0x37 Wait                                     [180]
+  886: IMPL 0x37 Wait                                     [180]
+  888: IMPL 0x5D Set entity Status = 3                    [9]
+  890: IMPL 0x5D Set entity Status = 3                    [10]
+  892: IMPL 0x06 Flag off                                 [8, 128] T8
+  895: IMPL 0x49 Restart                                  []
+  896: IMPL 0xFF End script                               []
+  897: IMPL 0x00 Break                                    []
+  898: IMPL 0x00 Break                                    []
+  899: IMPL 0x00 Break                                    []
+  ;; entry C[7]
+  900: IMPL 0x00 Break                                    []
+  901: IMPL 0x3E Is player riding entity                  []
+  902: IMPL 0x04 If false goto                            [254, 255] -> 900
+  905: IMPL 0x10 Player lose control                      []
+  906: IMPL 0x59 Set entity anim                          [129, 0]
+  909: IMPL 0x1A Set anim                                 [4]
+  911: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+  913: IMPL 0x1A Set anim                                 [1]
+  915: IMPL 0x37 Wait                                     [20]
+  917: IMPL 0x00 Break                                    []
+  918: IMPL 0x69 Camera look at                           [80, 1, 112, 2, 32, 0]
+  925: IMPL 0x37 Wait                                     [60]
+  927: IMPL 0x00 Break                                    []
+  928: IMPL 0xBD Play sound 2                             [46, 0]
+  931: IMPL 0xA2 Create effect with pos                   [3, 80, 1, 88, 2, 40, 0]
+  939: IMPL 0x37 Wait                                     [5]
+  941: IMPL 0xBD Play sound 2                             [46, 0]
+  944: IMPL 0xA2 Create effect with pos                   [3, 68, 1, 72, 2, 40, 0]
+  952: IMPL 0x37 Wait                                     [10]
+  954: IMPL 0xBD Play sound 2                             [46, 0]
+  957: IMPL 0xA2 Create effect with pos                   [3, 88, 1, 112, 2, 40, 0]
+  965: IMPL 0x37 Wait                                     [5]
+  967: IMPL 0xBD Play sound 2                             [46, 0]
+  970: IMPL 0xA2 Create effect with pos                   [3, 64, 1, 96, 2, 40, 0]
+  978: IMPL 0x37 Wait                                     [5]
+  980: IMPL 0xBD Play sound 2                             [46, 0]
+  983: IMPL 0xA2 Create effect with pos                   [3, 88, 1, 100, 2, 40, 0]
+  991: IMPL 0x37 Wait                                     [5]
+  993: IMPL 0x00 Break                                    []
+  994: IMPL 0x85 Set map tiles                            [31, 33, 4, 4, 12, 37]
+ 1001: IMPL 0x00 Break                                    []
+ 1002: IMPL 0xBD Play sound 2                             [46, 0]
+ 1005: IMPL 0xA2 Create effect with pos                   [3, 92, 1, 128, 2, 40, 0]
+ 1013: IMPL 0x37 Wait                                     [10]
+ 1015: IMPL 0xBD Play sound 2                             [46, 0]
+ 1018: IMPL 0xA2 Create effect with pos                   [3, 68, 1, 120, 2, 40, 0]
+ 1026: IMPL 0x37 Wait                                     [5]
+ 1028: IMPL 0xBD Play sound 2                             [46, 0]
+ 1031: IMPL 0xA2 Create effect with pos                   [3, 64, 1, 96, 2, 40, 0]
+ 1039: IMPL 0x37 Wait                                     [4]
+ 1041: IMPL 0xBD Play sound 2                             [46, 0]
+ 1044: IMPL 0xA2 Create effect with pos                   [3, 88, 1, 88, 2, 40, 0]
+ 1052: IMPL 0x37 Wait                                     [5]
+ 1054: IMPL 0xBD Play sound 2                             [46, 0]
+ 1057: IMPL 0xA2 Create effect with pos                   [3, 60, 1, 112, 2, 40, 0]
+ 1065: IMPL 0x37 Wait                                     [40]
+ 1067: IMPL 0x00 Break                                    []
+ 1068: IMPL 0x67 Camera follow entity                     [129]
+ 1070: IMPL 0x37 Wait                                     [40]
+ 1072: IMPL 0x05 Flag on                                  [130, 0] G130
+ 1075: IMPL 0x11 Player gain control                      []
+ 1076: IMPL 0x00 Break                                    []
+ 1077: IMPL 0xFF End script                               []
+ 1078: IMPL 0x00 Break                                    []
+ 1079: IMPL 0x00 Break                                    []
+  ;; entry C[9]
+ 1080: IMPL 0x36 Wait until flag on                       [97, 130] T609
+ 1083: IMPL 0x31 If flag off                              [89, 130, 70, 0] T601 -> 1153
+ 1088: IMPL 0x06 Flag off                                 [89, 130] T601
+ 1091: IMPL 0x05 Flag on                                  [99, 130] T611
+ 1094: IMPL 0x1A Set anim                                 [2]
+ 1096: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1098: IMPL 0x1A Set anim                                 [1]
+ 1100: IMPL 0x00 Break                                    []
+ 1101: IMPL 0x36 Wait until flag on                       [97, 130] T609
+ 1104: IMPL 0x36 Wait until flag on                       [107, 130] T619
+ 1107: IMPL 0x36 Wait until flag on                       [117, 130] T629
+ 1110: IMPL 0x36 Wait until flag on                       [127, 130] T639
+ 1113: IMPL 0x37 Wait                                     [10]
+ 1115: IMPL 0x30 If flag on                               [120, 130, 54, 0] T632 -> 1169
+ 1120: IMPL 0x37 Wait                                     [40]
+ 1122: IMPL 0x06 Flag off                                 [97, 130] T609
+ 1125: IMPL 0x05 Flag on                                  [89, 130] T601
+ 1128: IMPL 0x00 Break                                    []
+ 1129: IMPL 0x35 Wait until flag off                      [97, 130] T609
+ 1132: IMPL 0x35 Wait until flag off                      [107, 130] T619
+ 1135: IMPL 0x35 Wait until flag off                      [117, 130] T629
+ 1138: IMPL 0x35 Wait until flag off                      [127, 130] T639
+ 1141: IMPL 0x1A Set anim                                 [3]
+ 1143: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1145: IMPL 0x1A Set anim                                 [0]
+ 1147: IMPL 0x37 Wait                                     [10]
+ 1149: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1150: IMPL 0x49 Restart                                  []
+ 1151: IMPL 0x00 Break                                    []
+ 1152: IMPL 0x00 Break                                    []
+ 1153: IMPL 0x06 Flag off                                 [89, 130] T601
+ 1156: IMPL 0x06 Flag off                                 [99, 130] T611
+ 1159: IMPL 0x06 Flag off                                 [109, 130] T621
+ 1162: IMPL 0x06 Flag off                                 [119, 130] T631
+ 1165: IMPL 0x02 Goto                                     [185, 255] -> 1094
+ 1168: IMPL 0x00 Break                                    []
+ 1169: IMPL 0xFF End script                               []
+ 1170: IMPL 0x00 Break                                    []
+ 1171: IMPL 0x00 Break                                    []
+  ;; entry C[10]
+ 1172: IMPL 0x36 Wait until flag on                       [107, 130] T619
+ 1175: IMPL 0x31 If flag off                              [99, 130, 70, 0] T611 -> 1245
+ 1180: IMPL 0x06 Flag off                                 [99, 130] T611
+ 1183: IMPL 0x05 Flag on                                  [109, 130] T621
+ 1186: IMPL 0x1A Set anim                                 [2]
+ 1188: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1190: IMPL 0x1A Set anim                                 [1]
+ 1192: IMPL 0x00 Break                                    []
+ 1193: IMPL 0x36 Wait until flag on                       [97, 130] T609
+ 1196: IMPL 0x36 Wait until flag on                       [107, 130] T619
+ 1199: IMPL 0x36 Wait until flag on                       [117, 130] T629
+ 1202: IMPL 0x36 Wait until flag on                       [127, 130] T639
+ 1205: IMPL 0x37 Wait                                     [10]
+ 1207: IMPL 0x30 If flag on                               [120, 130, 54, 0] T632 -> 1261
+ 1212: IMPL 0x37 Wait                                     [40]
+ 1214: IMPL 0x06 Flag off                                 [107, 130] T619
+ 1217: IMPL 0x06 Flag off                                 [99, 130] T611
+ 1220: IMPL 0x00 Break                                    []
+ 1221: IMPL 0x35 Wait until flag off                      [97, 130] T609
+ 1224: IMPL 0x35 Wait until flag off                      [107, 130] T619
+ 1227: IMPL 0x35 Wait until flag off                      [117, 130] T629
+ 1230: IMPL 0x35 Wait until flag off                      [127, 130] T639
+ 1233: IMPL 0x1A Set anim                                 [3]
+ 1235: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1237: IMPL 0x1A Set anim                                 [0]
+ 1239: IMPL 0x37 Wait                                     [10]
+ 1241: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1242: IMPL 0x49 Restart                                  []
+ 1243: IMPL 0x00 Break                                    []
+ 1244: IMPL 0x00 Break                                    []
+ 1245: IMPL 0x06 Flag off                                 [89, 130] T601
+ 1248: IMPL 0x06 Flag off                                 [99, 130] T611
+ 1251: IMPL 0x06 Flag off                                 [109, 130] T621
+ 1254: IMPL 0x06 Flag off                                 [119, 130] T631
+ 1257: IMPL 0x02 Goto                                     [185, 255] -> 1186
+ 1260: IMPL 0x00 Break                                    []
+ 1261: IMPL 0xFF End script                               []
+ 1262: IMPL 0x00 Break                                    []
+ 1263: IMPL 0x00 Break                                    []
+  ;; entry C[11]
+ 1264: IMPL 0x36 Wait until flag on                       [117, 130] T629
+ 1267: IMPL 0x31 If flag off                              [109, 130, 70, 0] T621 -> 1337
+ 1272: IMPL 0x06 Flag off                                 [109, 130] T621
+ 1275: IMPL 0x05 Flag on                                  [119, 130] T631
+ 1278: IMPL 0x1A Set anim                                 [2]
+ 1280: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1282: IMPL 0x1A Set anim                                 [1]
+ 1284: IMPL 0x00 Break                                    []
+ 1285: IMPL 0x36 Wait until flag on                       [97, 130] T609
+ 1288: IMPL 0x36 Wait until flag on                       [107, 130] T619
+ 1291: IMPL 0x36 Wait until flag on                       [117, 130] T629
+ 1294: IMPL 0x36 Wait until flag on                       [127, 130] T639
+ 1297: IMPL 0x37 Wait                                     [10]
+ 1299: IMPL 0x30 If flag on                               [120, 130, 54, 0] T632 -> 1353
+ 1304: IMPL 0x37 Wait                                     [40]
+ 1306: IMPL 0x06 Flag off                                 [117, 130] T629
+ 1309: IMPL 0x06 Flag off                                 [109, 130] T621
+ 1312: IMPL 0x00 Break                                    []
+ 1313: IMPL 0x35 Wait until flag off                      [97, 130] T609
+ 1316: IMPL 0x35 Wait until flag off                      [107, 130] T619
+ 1319: IMPL 0x35 Wait until flag off                      [117, 130] T629
+ 1322: IMPL 0x35 Wait until flag off                      [127, 130] T639
+ 1325: IMPL 0x1A Set anim                                 [3]
+ 1327: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1329: IMPL 0x1A Set anim                                 [0]
+ 1331: IMPL 0x37 Wait                                     [10]
+ 1333: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1334: IMPL 0x49 Restart                                  []
+ 1335: IMPL 0x00 Break                                    []
+ 1336: IMPL 0x00 Break                                    []
+ 1337: IMPL 0x06 Flag off                                 [89, 130] T601
+ 1340: IMPL 0x06 Flag off                                 [99, 130] T611
+ 1343: IMPL 0x06 Flag off                                 [109, 130] T621
+ 1346: IMPL 0x06 Flag off                                 [119, 130] T631
+ 1349: IMPL 0x02 Goto                                     [185, 255] -> 1278
+ 1352: IMPL 0x00 Break                                    []
+ 1353: IMPL 0xFF End script                               []
+ 1354: IMPL 0x00 Break                                    []
+ 1355: IMPL 0x00 Break                                    []
+  ;; entry C[12]
+ 1356: IMPL 0x36 Wait until flag on                       [127, 130] T639
+ 1359: IMPL 0x31 If flag off                              [119, 130, 70, 0] T631 -> 1429
+ 1364: IMPL 0x06 Flag off                                 [119, 130] T631
+ 1367: IMPL 0x05 Flag on                                  [120, 130] T632
+ 1370: IMPL 0x1A Set anim                                 [2]
+ 1372: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1374: IMPL 0x1A Set anim                                 [1]
+ 1376: IMPL 0x00 Break                                    []
+ 1377: IMPL 0x36 Wait until flag on                       [97, 130] T609
+ 1380: IMPL 0x36 Wait until flag on                       [107, 130] T619
+ 1383: IMPL 0x36 Wait until flag on                       [117, 130] T629
+ 1386: IMPL 0x36 Wait until flag on                       [127, 130] T639
+ 1389: IMPL 0x37 Wait                                     [10]
+ 1391: IMPL 0x30 If flag on                               [120, 130, 55, 0] T632 -> 1446
+ 1396: IMPL 0x37 Wait                                     [40]
+ 1398: IMPL 0x06 Flag off                                 [127, 130] T639
+ 1401: IMPL 0x06 Flag off                                 [119, 130] T631
+ 1404: IMPL 0x00 Break                                    []
+ 1405: IMPL 0x35 Wait until flag off                      [97, 130] T609
+ 1408: IMPL 0x35 Wait until flag off                      [107, 130] T619
+ 1411: IMPL 0x35 Wait until flag off                      [117, 130] T629
+ 1414: IMPL 0x35 Wait until flag off                      [127, 130] T639
+ 1417: IMPL 0x1A Set anim                                 [3]
+ 1419: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1421: IMPL 0x1A Set anim                                 [0]
+ 1423: IMPL 0x37 Wait                                     [10]
+ 1425: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1426: IMPL 0x49 Restart                                  []
+ 1427: IMPL 0x00 Break                                    []
+ 1428: IMPL 0x00 Break                                    []
+ 1429: IMPL 0x06 Flag off                                 [89, 130] T601
+ 1432: IMPL 0x06 Flag off                                 [99, 130] T611
+ 1435: IMPL 0x06 Flag off                                 [109, 130] T621
+ 1438: IMPL 0x06 Flag off                                 [119, 130] T631
+ 1441: IMPL 0x02 Goto                                     [185, 255] -> 1370
+ 1444: IMPL 0x00 Break                                    []
+ 1445: IMPL 0x00 Break                                    []
+ 1446: IMPL 0x05 Flag on                                  [131, 0] G131
+ 1449: IMPL 0xBD Play sound 2                             [2, 0]
+ 1452: IMPL 0x10 Player lose control                      []
+ 1453: IMPL 0x5B Turn entity with anim                    [129, 0, 8]
+ 1457: IMPL 0x69 Camera look at                           [180, 0, 248, 2, 32, 0]
+ 1464: IMPL 0x37 Wait                                     [40]
+ 1466: IMPL 0x90 Create effect                            [0]
+ 1468: IMPL 0xBD Play sound 2                             [240, 0]
+ 1471: IMPL 0x37 Wait                                     [188]
+ 1473: IMPL 0x92 Set effect anim                          [0, 0]
+ 1476: IMPL 0x0D Dialog                                   [156, 1]
+ 1479: IMPL 0x39 Wait for dialog                          []
+ 1480: IMPL 0x92 Set effect anim                          [0, 2]
+ 1483: IMPL 0xBD Play sound 2                             [241, 0]
+ 1486: IMPL 0xBD Play sound 2                             [25, 0]
+ 1489: IMPL 0x37 Wait                                     [32]
+ 1491: IMPL 0xBE Play sound 2 (bis)                       [25, 0]
+ 1494: IMPL 0x67 Camera follow entity                     [129]
+ 1496: IMPL 0x11 Player gain control                      []
+ 1497: IMPL 0xFF End script                               []
+ 1498: IMPL 0x00 Break                                    []
+ 1499: IMPL 0x00 Break                                    []
+  ;; entry C[13]
+ 1500: IMPL 0x00 Break                                    []
+ 1501: IMPL 0x31 If flag off                              [131, 0, 255, 255] G131 -> 1500
+ 1506: IMPL 0x19 Deactivate entity                        []
+ 1507: IMPL 0xFF End script                               []
+  ;; entry C[14]
+ 1508: IMPL 0x36 Wait until flag on                       [88, 128] T88
+ 1511: IMPL 0x37 Wait                                     [10]
+ 1513: IMPL 0x1A Set anim                                 [1]
+ 1515: IMPL 0xFF End script                               []
+  ;; entry C[15]
+ 1516: IMPL 0x00 Break                                    []
+ 1517: IMPL 0x3F If entity riding me                      []
+ 1518: IMPL 0x04 If false goto                            [254, 255] -> 1516
+ 1521: IMPL 0x1A Set anim                                 [4]
+ 1523: IMPL 0x1C Wait for animation ends (Hold flag or end counter) [1]
+ 1525: IMPL 0x1A Set anim                                 [1]
+ 1527: IMPL 0x05 Flag on                                  [88, 128] T88
+ 1530: IMPL 0xFF End script                               []
+ 1531: IMPL 0x00 Break                                    []
+  ;; entry C[18]
+ 1532: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1533: IMPL 0x36 Wait until flag on                       [16, 132] T1040
+ 1536: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1537: IMPL 0x40 Set program index and clear the program state [2, 0]
+ 1540: IMPL 0xFF End script                               []
+ 1541: IMPL 0x00 Break                                    []
+ 1542: IMPL 0x00 Break                                    []
+ 1543: IMPL 0x00 Break                                    []
+  ;; entry C[23]
+ 1544: IMPL 0x00 Break                                    []
+ 1545: IMPL 0x3F If entity riding me                      []
+ 1546: IMPL 0x04 If false goto                            [254, 255] -> 1544
+ 1549: IMPL 0xBD Play sound 2                             [237, 0]
+ 1552: IMPL 0x10 Player lose control                      []
+ 1553: IMPL 0x59 Set entity anim                          [129, 0]
+ 1556: IMPL 0x0D Dialog                                   [150, 1]
+ 1559: IMPL 0x39 Wait for dialog                          []
+ 1560: IMPL 0x2A Set EntityFlags.ClassA                   []
+ 1561: IMPL 0x11 Player gain control                      []
+ 1562: IMPL 0x00 Break                                    []
+ 1563: IMPL 0x3F If entity riding me                      []
+ 1564: IMPL 0x03 If true goto                             [254, 255] -> 1562
+ 1567: IMPL 0x49 Restart                                  []
+ 1568: IMPL 0xFF End script                               []
+ 1569: IMPL 0x00 Break                                    []
+ 1570: IMPL 0x00 Break                                    []
+ 1571: IMPL 0x00 Break                                    []
+  ;; entry C[35]
+ 1572: IMPL 0x70 Is above ground                          []
+ 1573: IMPL 0x03 If true goto                             [11, 0] -> 1584
+ 1576: IMPL 0xBD Play sound 2                             [55, 0]
+ 1579: IMPL 0x00 Break                                    []
+ 1580: IMPL 0x25 Wait until collided with entity Z or on ground []
+ 1581: IMPL 0xBD Play sound 2                             [24, 0]
+ 1584: IMPL 0x40 Set program index and clear the program state [2, 0]
+ 1587: IMPL 0xFF End script                               []
+  ;; entry D[1]
+ 1588: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1589: IMPL 0x32 Toggle flag                              [1, 128] T1
+ 1592: IMPL 0x05 Flag on                                  [2, 128] T2
+ 1595: IMPL 0xFF End script                               []
+  ;; entry D[2]
+ 1596: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1597: IMPL 0x32 Toggle flag                              [3, 128] T3
+ 1600: IMPL 0x05 Flag on                                  [4, 128] T4
+ 1603: IMPL 0xFF End script                               []
+  ;; entry D[4]
+ 1604: IMPL 0x10 Player lose control                      []
+ 1605: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1606: IMPL 0x05 Flag on                                  [50, 128] T50
+ 1609: IMPL 0xFF End script                               []
+ 1610: IMPL 0x00 Break                                    []
+ 1611: IMPL 0x00 Break                                    []
+  ;; entry D[5]
+ 1612: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1613: IMPL 0x05 Flag on                                  [97, 130] T609
+ 1616: IMPL 0xFF End script                               []
+ 1617: IMPL 0x00 Break                                    []
+ 1618: IMPL 0x00 Break                                    []
+ 1619: IMPL 0x00 Break                                    []
+  ;; entry D[6]
+ 1620: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1621: IMPL 0x05 Flag on                                  [107, 130] T619
+ 1624: IMPL 0xFF End script                               []
+ 1625: IMPL 0x00 Break                                    []
+ 1626: IMPL 0x00 Break                                    []
+ 1627: IMPL 0x00 Break                                    []
+  ;; entry D[7]
+ 1628: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1629: IMPL 0x05 Flag on                                  [117, 130] T629
+ 1632: IMPL 0xFF End script                               []
+ 1633: IMPL 0x00 Break                                    []
+ 1634: IMPL 0x00 Break                                    []
+ 1635: IMPL 0x00 Break                                    []
+  ;; entry D[8]
+ 1636: IMPL 0x2B Clear EntityFlags.ClassA                 []
+ 1637: IMPL 0x05 Flag on                                  [127, 130] T639
+ 1640: IMPL 0xFF End script                               []
+ 1641: IMPL 0x00 Break                                    []
+ 1642: IMPL 0x00 Break                                    []
+ 1643: IMPL 0x00 Break                                    []
+  ;; entry F[1]
+ 1644: IMPL 0x30 If flag on                               [8, 128, 9, 0] T8 -> 1653
+ 1649: IMPL 0x10 Player lose control                      []
+ 1650: IMPL 0x05 Flag on                                  [8, 128] T8
+ 1653: IMPL 0xFF End script                               []
+ 1654: IMPL 0x00 Break                                    []
+ 1655: IMPL 0x00 Break                                    []
+Records:
+  {'Index': '0', 'SpriteTableIndex': '49', 'SpriteDirection': '194', 'IsEnabled': '1', 'XPos': '74', 'YPos': '14', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '129', 'EventCodesD_TouchIndex': '129', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (levier)'}
+  {'Index': '1', 'SpriteTableIndex': '49', 'SpriteDirection': '195', 'IsEnabled': '1', 'XPos': '92', 'YPos': '14', 'Height': '4', 'EventCodesA_LoadIndex': '129', 'EventCodesC_TickIndex': '130', 'EventCodesD_TouchIndex': '130', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (levier)'}
+  {'Index': '2', 'SpriteTableIndex': '57', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '83', 'YPos': '21', 'Height': '3', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '131', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (grande)'}
+  {'Index': '3', 'SpriteTableIndex': '72', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '95', 'YPos': '85', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Trappe d’escalier (grande)'}
+  {'Index': '4', 'SpriteTableIndex': '30', 'SpriteDirection': '64', 'IsEnabled': '1', 'XPos': '56', 'YPos': '52', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Coffre au trésor'}
+  {'Index': '5', 'SpriteTableIndex': '45', 'SpriteDirection': '194', 'IsEnabled': '1', 'XPos': '6', 'YPos': '18', 'Height': '10', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '151', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '6', 'SpriteTableIndex': '70', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '7', 'YPos': '31', 'Height': '10', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '142', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Grille de fer (grande)'}
+  {'Index': '7', 'SpriteTableIndex': '43', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '30', 'YPos': '30', 'Height': '10', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '134', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '129', 'EntityName': 'Statue de pierre'}
+  {'Index': '8', 'SpriteTableIndex': '57', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '30', 'YPos': '40', 'Height': '9', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '132', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (grande)'}
+  {'Index': '9', 'SpriteTableIndex': '57', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '39', 'YPos': '41', 'Height': '5', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (grande)'}
+  {'Index': '10', 'SpriteTableIndex': '57', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '21', 'YPos': '41', 'Height': '5', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Plateforme flottante (grande)'}
+  {'Index': '11', 'SpriteTableIndex': '45', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '30', 'YPos': '46', 'Height': '6', 'EventCodesA_LoadIndex': '135', 'EventCodesC_TickIndex': '135', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '12', 'SpriteTableIndex': '0', 'SpriteDirection': '0', 'IsEnabled': '0', 'XPos': '0', 'YPos': '0', 'Height': '0', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Alundra'}
+  {'Index': '13', 'SpriteTableIndex': '142', 'SpriteDirection': '194', 'IsEnabled': '1', 'XPos': '18', 'YPos': '94', 'Height': '6', 'EventCodesA_LoadIndex': '137', 'EventCodesC_TickIndex': '137', 'EventCodesD_TouchIndex': '133', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur de lampe'}
+  {'Index': '14', 'SpriteTableIndex': '142', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '14', 'YPos': '88', 'Height': '6', 'EventCodesA_LoadIndex': '140', 'EventCodesC_TickIndex': '140', 'EventCodesD_TouchIndex': '136', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur de lampe'}
+  {'Index': '15', 'SpriteTableIndex': '142', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '10', 'YPos': '94', 'Height': '6', 'EventCodesA_LoadIndex': '138', 'EventCodesC_TickIndex': '138', 'EventCodesD_TouchIndex': '134', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur de lampe'}
+  {'Index': '16', 'SpriteTableIndex': '142', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '14', 'YPos': '102', 'Height': '6', 'EventCodesA_LoadIndex': '139', 'EventCodesC_TickIndex': '139', 'EventCodesD_TouchIndex': '135', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur de lampe'}
+  {'Index': '17', 'SpriteTableIndex': '73', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '78', 'YPos': '90', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '146', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Slime gélatineux'}
+  {'Index': '18', 'SpriteTableIndex': '73', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '92', 'YPos': '96', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '146', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Slime gélatineux'}
+  {'Index': '19', 'SpriteTableIndex': '73', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '90', 'YPos': '110', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '146', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Slime gélatineux'}
+  {'Index': '20', 'SpriteTableIndex': '73', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '76', 'YPos': '102', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '146', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Slime gélatineux'}
+  {'Index': '21', 'SpriteTableIndex': '34', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '73', 'YPos': '57', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Tonneau générique'}
+  {'Index': '22', 'SpriteTableIndex': '30', 'SpriteDirection': '64', 'IsEnabled': '1', 'XPos': '83', 'YPos': '57', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Coffre au trésor'}
+  {'Index': '23', 'SpriteTableIndex': '45', 'SpriteDirection': '194', 'IsEnabled': '1', 'XPos': '4', 'YPos': '34', 'Height': '6', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '143', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Interrupteur (piétiner) ← à utiliser !'}
+  {'Index': '24', 'SpriteTableIndex': '193', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '88', 'YPos': '46', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Zombie Niv.1'}
+  {'Index': '25', 'SpriteTableIndex': '193', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '86', 'YPos': '84', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '146', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Zombie Niv.1'}
+  {'Index': '26', 'SpriteTableIndex': '193', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '84', 'YPos': '98', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '146', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Zombie Niv.1'}
+  {'Index': '27', 'SpriteTableIndex': '193', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '94', 'YPos': '104', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '146', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Zombie Niv.1'}
+  {'Index': '28', 'SpriteTableIndex': '193', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '78', 'YPos': '46', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Zombie Niv.1'}
+  {'Index': '29', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '74', 'YPos': '80', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '30', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '76', 'YPos': '80', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '31', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '78', 'YPos': '80', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+  {'Index': '32', 'SpriteTableIndex': '193', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '84', 'YPos': '38', 'Height': '2', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': '◆Zombie Niv.1'}
+  {'Index': '33', 'SpriteTableIndex': '34', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '91', 'YPos': '29', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Tonneau générique'}
+  {'Index': '34', 'SpriteTableIndex': '37', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '36', 'YPos': '36', 'Height': '22', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '163', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Pierre générique'}
+  {'Index': '35', 'SpriteTableIndex': '55', 'SpriteDirection': '128', 'IsEnabled': '1', 'XPos': '11', 'YPos': '57', 'Height': '14', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Boule de fer (grande)'}
+  {'Index': '36', 'SpriteTableIndex': '35', 'SpriteDirection': '192', 'IsEnabled': '1', 'XPos': '74', 'YPos': '82', 'Height': '4', 'EventCodesA_LoadIndex': '0', 'EventCodesC_TickIndex': '0', 'EventCodesD_TouchIndex': '0', 'EventCodesE_DeactivateIndex': '0', 'EventCodesF_InteractIndex': '0', 'EntityName': 'Cruche générique'}
+MapEvents:
+  {'Index': '0', 'X1': '0', 'Y1': '0', 'X2': '51', 'Y2': '59', 'EventCodesBIndex': '129', 'EventCodesBIndexMasked': '1', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '1', 'X1': '0', 'Y1': '0', 'X2': '51', 'Y2': '59', 'EventCodesBIndex': '130', 'EventCodesBIndexMasked': '2', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '2', 'X1': '0', 'Y1': '0', 'X2': '51', 'Y2': '59', 'EventCodesBIndex': '131', 'EventCodesBIndexMasked': '3', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '3', 'X1': '21', 'Y1': '40', 'X2': '50', 'Y2': '58', 'EventCodesBIndex': '132', 'EventCodesBIndexMasked': '4', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+  {'Index': '4', 'X1': '0', 'Y1': '0', 'X2': '51', 'Y2': '59', 'EventCodesBIndex': '133', 'EventCodesBIndexMasked': '5', 'Ub1': '0', 'Ub2': '0', 'Ub3': '0'}
+Portals:
+  {'Index': '0', 'X1': '47', 'Y1': '43', 'X2': '48', 'Y2': '43', 'DestMapId': '23', 'DestTileX': '13', 'DestTileY': '7', 'ZLevel': '0', 'Flags': '2'}
+  {'Index': '1', 'X1': '26', 'Y1': '38', 'X2': '26', 'Y2': '39', 'DestMapId': '22', 'DestTileX': '22', 'DestTileY': '54', 'ZLevel': '0', 'Flags': '61442'}
+  {'Index': '2', 'X1': '22', 'Y1': '54', 'X2': '22', 'Y2': '55', 'DestMapId': '22', 'DestTileX': '26', 'DestTileY': '38', 'ZLevel': '0', 'Flags': '40962'}
+  {'Index': '3', 'X1': '50', 'Y1': '27', 'X2': '50', 'Y2': '28', 'DestMapId': '22', 'DestTileX': '25', 'DestTileY': '25', 'ZLevel': '0', 'Flags': '61442'}
+  {'Index': '4', 'X1': '18', 'Y1': '19', 'X2': '21', 'Y2': '22', 'DestMapId': '22', 'DestTileX': '44', 'DestTileY': '11', 'ZLevel': '7', 'Flags': '131'}
+  {'Index': '5', 'X1': '14', 'Y1': '19', 'X2': '16', 'Y2': '21', 'DestMapId': '22', 'DestTileX': '40', 'DestTileY': '11', 'ZLevel': '7', 'Flags': '131'}
+  {'Index': '6', 'X1': '9', 'Y1': '19', 'X2': '12', 'Y2': '22', 'DestMapId': '22', 'DestTileX': '36', 'DestTileY': '11', 'ZLevel': '7', 'Flags': '131'}
+  {'Index': '7', 'X1': '5', 'Y1': '27', 'X2': '6', 'Y2': '30', 'DestMapId': '22', 'DestTileX': '37', 'DestTileY': '18', 'ZLevel': '6', 'Flags': '131'}
+  {'Index': '8', 'X1': '23', 'Y1': '25', 'X2': '23', 'Y2': '26', 'DestMapId': '22', 'DestTileX': '49', 'DestTileY': '27', 'ZLevel': '0', 'Flags': '40967'}
+  {'Index': '9', 'X1': '26', 'Y1': '29', 'X2': '27', 'Y2': '29', 'DestMapId': '453', 'DestTileX': '14', 'DestTileY': '15', 'ZLevel': '0', 'Flags': '20565'}
+  {'Index': '10', 'X1': '26', 'Y1': '30', 'X2': '27', 'Y2': '30', 'DestMapId': '453', 'DestTileX': '14', 'DestTileY': '15', 'ZLevel': '0', 'Flags': '20565'}
+  {'Index': '11', 'X1': '15', 'Y1': '9', 'X2': '15', 'Y2': '9', 'DestMapId': '21', 'DestTileX': '41', 'DestTileY': '56', 'ZLevel': '0', 'Flags': '20482'}
+cell layers: {'map_index': 22, 'cell_count': 3120, 'walkability': 3120, 'ground_property': 3120, 'slope': 3120, 'height': 3120, 'tile_id': 3120, 'palette': 3120, 'tile': 3120, 'flags': 3120, 'wall_tiles_offset': 3120, 'wall_tiles': {'296': {'offset': 0, 'tiles': [16880, 16890, 16900]}, '297': {'offset': 0, 'tiles': [16876, 16886, 16896]}, '298': {'offset': 0, 'tiles': [16877, 16887, 16897]}, '299': {'offset': 0, 'tiles': [16878, 16888, 16898]}, '300': {'offset': 0, 'tiles': [16879, 16889, 16899]}, '301': {'offset': 0, 'tiles': [16876, 16886, 16896]}, '302': {'offset': 0, 'tiles': [16877, 16887, 16897]}, '303': {'offset': 0, 'tiles': [16878, 16888, 16898]}, '304': {'offset': 0, 'tiles': [16879, 16889, 16899]}, '305': {'offset': 0, 'tiles': [16876, 16886, 16896]}, '306': {'offset': 0, 'tiles': [16877, 16887, 16897]}, '307': {'offset': 0, 'tiles': [16882, 16892, 16902]}, '349': {'offset': 2, 'tiles': [49438, 49448]}, '353': {'offset': 2, 'tiles': [49438, 49448]}, '356': {'offset': 2, 'tiles': [49439, 49449]}, '359': {'offset': 2, 'tiles': [49438, 49448]}, '365': {'offset': 0, 'tiles': [8371]}, '367': {'offset': 0, 'tiles': [30, 40, 50]}, '369': {'offset': 0, 'tiles': [30, 40, 50, 51, 8352]}, '370': {'offset': 0, 'tiles': [30, 40, 50, 52, 8353]}, '372': {'offset': 0, 'tiles': [30, 40, 50]}, '374': {'offset': 0, 'tiles': [30, 40, 50, 51, 8352]}, '375': {'offset': 0, 'tiles': [30, 40, 50, 52, 8353]}, '376': {'offset': -3, 'tiles': [52]}, '377': {'offset': 0, 'tiles': [30, 40, 50]}, '381': {'offset': 0, 'tiles': [30, 40, 50]}, '383': {'offset': 0, 'tiles': [30, 40, 50, 51, 8352]}, '384': {'offset': 0, 'tiles': [30, 40, 50, 52, 8353]}, '386': {'offset': 0, 'tiles': [30, 40, 50]}, '387': {'offset': -2, 'tiles': [50]}, '388': {'offset': 0, 'tiles': [30, 40, 50, 51, 8352]}, '389': {'offset': 0, 'tiles': [30, 40, 50, 52, 8353]}, '391': {'offset': 0, 'tiles': [30, 40, 50]}, '393': {'offset': 0, 'tiles': [8369]}, '400': {'offset': 2, 'tiles': [49438, 49448]}, '402': {'offset': 2, 'tiles': [49439, 49449]}, '404': {'offset': 2, 'tiles': [49439, 49449]}, '408': {'offset': 2, 'tiles': [49439, 49449]}, '409': {'offset': 2, 'tiles': [49438, 49448]}, '417': {'offset': 0, 'tiles': [8381]}, '418': {'offset': 0, 'tiles': [40, 50, 51]}, '419': {'offset': 0, 'tiles': [58154, 58174, 52]}, '420': {'offset': 0, 'tiles': [40, 50, 51]}, '423': {'offset': 0, 'tiles': [40, 50, 51]}, '424': {'offset': 0, 'tiles': [58154, 58174, 52]}, '425': {'offset': 0, 'tiles': [40, 50, 51]}, '428': {'offset': 0, 'tiles': [40, 50, 339]}, '429': {'offset': 0, 'tiles': [58154, 58174, 52]}, '430': {'offset': 0, 'tiles': [40, 50, 51]}, '431': {'offset': 0, 'tiles': [8227, 8237, 8247]}, '432': {'offset': 0, 'tiles': [40, 50, 50, 8352]}, '433': {'offset': 0, 'tiles': [58154, 58174, 52]}, '434': {'offset': 0, 'tiles': [40, 50, 51]}, '437': {'offset': 0, 'tiles': [40, 50, 51]}, '438': {'offset': 0, 'tiles': [58154, 58174, 52]}, '439': {'offset': 0, 'tiles': [40, 329, 51]}, '442': {'offset': 0, 'tiles': [40, 50, 51]}, '443': {'offset': 0, 'tiles': [58154, 58174, 52]}, '444': {'offset': 0, 'tiles': [40, 50, 51]}, '445': {'offset': 0, 'tiles': [8369]}, '452': {'offset': 2, 'tiles': [49439, 49449]}, '454': {'offset': 2, 'tiles': [49438, 49448]}, '456': {'offset': 0, 'tiles': [16947]}, '457': {'offset': 0, 'tiles': [16948]}, '458': {'offset': 0, 'tiles': [16947]}, '459': {'offset': 0, 'tiles': [16948]}, '462': {'offset': 2, 'tiles': [49438, 49448]}, '463': {'offset': 2, 'tiles': [49439, 49449]}, '473': {'offset': 0, 'tiles': [96, 106, 116]}, '474': {'offset': 0, 'tiles': [97, 107, 117]}, '478': {'offset': 0, 'tiles': [96, 106, 116]}, '479': {'offset': 0, 'tiles': [97, 107, 117]}, '483': {'offset': 0, 'tiles': [16921, 16931]}, '484': {'offset': 0, 'tiles': [45137, 16922, 16932]}, '487': {'offset': 0, 'tiles': [96, 106, 116]}, '488': {'offset': 0, 'tiles': [97, 107, 117]}, '492': {'offset': 0, 'tiles': [96, 106, 116]}, '493': {'offset': 0, 'tiles': [97, 107, 117]}, '496': {'offset': 0, 'tiles': [16932, 16922, 16932]}, '507': {'offset': 0, 'tiles': [16930, 21087]}, '512': {'offset': 0, 'tiles': [16929]}, '556': {'offset': 2, 'tiles': [49438, 49448]}, '575': {'offset': 2, 'tiles': [49438, 49448]}, '598': {'offset': 2, 'tiles': [49439, 49449]}, '619': {'offset': 2, 'tiles': [49439, 49449]}, '628': {'offset': 2, 'tiles': [49439, 49449]}, '663': {'offset': 2, 'tiles': [49438, 49448]}, '668': {'offset': 2, 'tiles': [49438, 49448]}, '683': {'offset': 0, 'tiles': [259, 269, 279]}, '684': {'offset': 0, 'tiles': [30, 40, 50]}, '685': {'offset': 0, 'tiles': [259, 269, 279]}, '686': {'offset': 0, 'tiles': [30, 40, 50]}, '687': {'offset': -2, 'tiles': [50]}, '696': {'offset': 0, 'tiles': [259, 269, 279]}, '697': {'offset': 0, 'tiles': [30, 40, 50]}, '699': {'offset': 0, 'tiles': [259, 269, 279]}, '700': {'offset': 0, 'tiles': [30, 40, 50]}, '712': {'offset': 2, 'tiles': [49439, 49449]}, '716': {'offset': 2, 'tiles': [49438, 49448]}, '717': {'offset': 2, 'tiles': [49439, 49449]}, '718': {'offset': 2, 'tiles': [49438, 49448]}, '719': {'offset': 2, 'tiles': [49439, 49449]}, '735': {'offset': -1, 'tiles': [259, 45597, 279, 51]}, '736': {'offset': -1, 'tiles': [30, 45598, 50, 51]}, '737': {'offset': -2, 'tiles': [45597, 65535, 51]}, '738': {'offset': -2, 'tiles': [45598, 65535, 51]}, '742': {'offset': 0, 'tiles': [45168]}, '743': {'offset': 0, 'tiles': [45168]}, '744': {'offset': 0, 'tiles': [45168]}, '748': {'offset': -2, 'tiles': [45597, 65535, 51]}, '749': {'offset': -2, 'tiles': [45598, 65535, 51]}, '751': {'offset': -2, 'tiles': [45597, 65535, 51]}, '752': {'offset': -2, 'tiles': [45598, 65535, 51]}, '766': {'offset': 2, 'tiles': [49439, 49449]}, '769': {'offset': 0, 'tiles': [16947]}, '770': {'offset': 0, 'tiles': [16948]}, '771': {'offset': 0, 'tiles': [16953]}, '773': {'offset': 2, 'tiles': [49439, 49449]}, '775': {'offset': 2, 'tiles': [49438, 49448]}, '781': {'offset': 0, 'tiles': [8371, 8381]}, '782': {'offset': 0, 'tiles': [4102, 4112, 4122]}, '783': {'offset': 0, 'tiles': [4122]}, '784': {'offset': 0, 'tiles': [4123]}, '785': {'offset': 0, 'tiles': [4105, 4115, 4125, 65535, 12490]}, '786': {'offset': 0, 'tiles': [30, 40, 50, 51, 12448]}, '787': {'offset': 0, 'tiles': [45587, 54062, 45607, 45617]}, '788': {'offset': 0, 'tiles': [45588, 54063, 45608, 45618]}, '789': {'offset': 0, 'tiles': [45587, 54062, 45607, 45617]}, '790': {'offset': 0, 'tiles': [45588, 54063, 45608, 45618]}, '791': {'offset': 0, 'tiles': [259, 269, 329, 52, 12448]}, '799': {'offset': 0, 'tiles': [30, 40, 50, 51, 12448]}, '800': {'offset': 0, 'tiles': [45587, 54062, 45607, 45617]}, '801': {'offset': 0, 'tiles': [45588, 54063, 45608, 45618]}, '802': {'offset': 0, 'tiles': [259, 269, 279, 52, 12448]}, '803': {'offset': 0, 'tiles': [45587, 54062, 45607, 45617]}, '804': {'offset': 0, 'tiles': [45588, 54063, 45608, 45618]}, '805': {'offset': 0, 'tiles': [30, 40, 50, 51, 12448]}, '807': {'offset': 0, 'tiles': [24779]}, '808': {'offset': 0, 'tiles': [24780]}, '816': {'offset': 2, 'tiles': [49438, 49448]}, '818': {'offset': 0, 'tiles': [16947]}, '819': {'offset': 0, 'tiles': [16948]}, '820': {'offset': 0, 'tiles': [16953]}, '833': {'offset': -1, 'tiles': [8371]}, '834': {'offset': 0, 'tiles': [2, 12, 32, 42]}, '835': {'offset': 0, 'tiles': [31, 41, 12449]}, '836': {'offset': 0, 'tiles': [32, 42]}, '837': {'offset': 0, 'tiles': [9, 19, 29, 39]}, '838': {'offset': 0, 'tiles': [4177]}, '843': {'offset': 0, 'tiles': [4177]}, '844': {'offset': -4, 'tiles': [12470]}, '849': {'offset': 0, 'tiles': [8, 18, 28]}, '850': {'offset': 0, 'tiles': [9, 19, 29, 39, 12490]}, '851': {'offset': 0, 'tiles': [4177]}, '854': {'offset': 0, 'tiles': [4177]}, '857': {'offset': 0, 'tiles': [4177]}, '859': {'offset': 0, 'tiles': [24799, 16921]}, '860': {'offset': 0, 'tiles': [24800, 16922]}, '861': {'offset': 0, 'tiles': [8369, 8379]}, '868': {'offset': 0, 'tiles': [16951]}, '869': {'offset': 0, 'tiles': [16950]}, '876': {'offset': 0, 'tiles': [16949]}, '878': {'offset': 2, 'tiles': [49438, 49448]}, '887': {'offset': 0, 'tiles': [4177]}, '893': {'offset': 2, 'tiles': [49438, 49448]}, '896': {'offset': 0, 'tiles': [8, 18, 28, 38]}, '897': {'offset': 0, 'tiles': [9, 19, 29, 20, 20, 20]}, '898': {'offset': 0, 'tiles': [20]}, '899': {'offset': 0, 'tiles': [20]}, '900': {'offset': 0, 'tiles': [20]}, '901': {'offset': 0, 'tiles': [12449]}, '902': {'offset': 0, 'tiles': [20, 20, 20]}, '903': {'offset': 0, 'tiles': [20]}, '904': {'offset': 2, 'tiles': [49439, 49449, 20]}, '905': {'offset': 0, 'tiles': [20]}, '910': {'offset': 0, 'tiles': [353, 363, 373, 383]}, '913': {'offset': -1, 'tiles': [8369]}, '931': {'offset': 2, 'tiles': [49439, 49449]}, '941': {'offset': 0, 'tiles': [16921, 16921]}, '942': {'offset': 0, 'tiles': [16921, 16931]}, '943': {'offset': 0, 'tiles': [16922, 16932]}, '945': {'offset': 0, 'tiles': [12620, 4116]}, '946': {'offset': 0, 'tiles': [12618, 4116]}, '947': {'offset': 0, 'tiles': [12619, 4116]}, '948': {'offset': 0, 'tiles': [12620, 4116]}, '949': {'offset': -1, 'tiles': [8519, 8529, 8539]}, '950': {'offset': 0, 'tiles': [8522, 4116]}, '951': {'offset': 0, 'tiles': [8523, 4116]}, '952': {'offset': 0, 'tiles': [8524, 4116]}, '954': {'offset': 0, 'tiles': [12620]}, '955': {'offset': 0, 'tiles': [12618, 4116]}, '956': {'offset': 0, 'tiles': [12619, 4116]}, '957': {'offset': 0, 'tiles': [12620, 4116]}, '960': {'offset': 2, 'tiles': [49438, 49448]}, '981': {'offset': 0, 'tiles': [16949]}, '982': {'offset': 0, 'tiles': [16951]}, '991': {'offset': 2, 'tiles': [49439, 49449]}, '997': {'offset': 0, 'tiles': [4116]}, '1005': {'offset': 0, 'tiles': [8840]}, '1035': {'offset': 0, 'tiles': [16949]}, '1050': {'offset': 0, 'tiles': [4116]}, '1051': {'offset': 0, 'tiles': [4116]}, '1052': {'offset': 0, 'tiles': [4116]}, '1067': {'offset': 2, 'tiles': [49439, 49449]}, '1105': {'offset': 0, 'tiles': [4116]}, '1109': {'offset': 0, 'tiles': [4116]}, '1157': {'offset': 0, 'tiles': [45526, 8, 38]}, '1158': {'offset': 0, 'tiles': [45168, 2, 42]}, '1159': {'offset': 0, 'tiles': [45168, 1, 41]}, '1160': {'offset': 0, 'tiles': [45168, 2, 42]}, '1161': {'offset': 0, 'tiles': [45527, 9, 39]}, '1250': {'offset': 0, 'tiles': [19, 29, 42]}, '1251': {'offset': 0, 'tiles': [41]}, '1252': {'offset': 0, 'tiles': [42]}, '1253': {'offset': 0, 'tiles': [18, 28, 41, 65535, 4116]}, '1254': {'offset': 0, 'tiles': [22, 32, 42, 65535, 4116]}, '1255': {'offset': 0, 'tiles': [21, 31, 41]}, '1265': {'offset': 2, 'tiles': [49438, 49448]}, '1268': {'offset': 0, 'tiles': [16921]}, '1269': {'offset': 0, 'tiles': [16922]}, '1271': {'offset': 0, 'tiles': [11, 31, 41, 51]}, '1272': {'offset': 0, 'tiles': [12, 32, 42, 51]}, '1273': {'offset': 0, 'tiles': [16, 26, 36]}, '1274': {'offset': 0, 'tiles': [17, 27, 37]}, '1275': {'offset': 0, 'tiles': [11, 31, 41]}, '1276': {'offset': 0, 'tiles': [12, 32, 4132, 12449]}, '1304': {'offset': -1, 'tiles': [4116]}, '1307': {'offset': -1, 'tiles': [4116]}, '1314': {'offset': 2, 'tiles': [49439, 49449]}, '1328': {'offset': 0, 'tiles': [45137]}, '1357': {'offset': 0, 'tiles': [4116]}, '1358': {'offset': 0, 'tiles': [4116]}, '1360': {'offset': -4, 'tiles': [12470]}, '1374': {'offset': -4, 'tiles': [12490]}, '1400': {'offset': 0, 'tiles': [8490, 8500, 8510]}, '1401': {'offset': 0, 'tiles': [8500, 8510]}, '1402': {'offset': 0, 'tiles': [50, 52, 8352, 8362]}, '1408': {'offset': 0, 'tiles': [4116]}, '1411': {'offset': 0, 'tiles': [4116]}, '1427': {'offset': 0, 'tiles': [45168]}, '1428': {'offset': 0, 'tiles': [45170]}, '1430': {'offset': 2, 'tiles': [49438, 49448]}, '1450': {'offset': 0, 'tiles': [16921]}, '1451': {'offset': 0, 'tiles': [16922]}, '1452': {'offset': 0, 'tiles': [24848]}, '1453': {'offset': 0, 'tiles': [24818]}, '1458': {'offset': 2, 'tiles': [49438, 49448]}, '1460': {'offset': 0, 'tiles': [4116]}, '1463': {'offset': 0, 'tiles': [4116]}, '1464': {'offset': 0, 'tiles': [18, 28, 38]}, '1465': {'offset': 0, 'tiles': [21, 31, 41]}, '1466': {'offset': 0, 'tiles': [22, 32, 42]}, '1467': {'offset': 0, 'tiles': [21, 31, 41]}, '1468': {'offset': 0, 'tiles': [22, 32, 42]}, '1469': {'offset': 0, 'tiles': [21, 31, 41]}, '1470': {'offset': 0, 'tiles': [22, 32, 42]}, '1471': {'offset': 0, 'tiles': [21, 31, 41]}, '1472': {'offset': 0, 'tiles': [22, 32, 42]}, '1473': {'offset': 0, 'tiles': [21, 31, 41]}, '1474': {'offset': 0, 'tiles': [22, 32, 42]}, '1475': {'offset': 0, 'tiles': [21, 31, 41]}, '1476': {'offset': 0, 'tiles': [22, 32, 42]}, '1477': {'offset': 0, 'tiles': [21, 31, 41]}, '1478': {'offset': 0, 'tiles': [19, 29, 39]}, '1482': {'offset': 0, 'tiles': [12458, 12468]}, '1483': {'offset': 0, 'tiles': [12459, 12469]}, '1484': {'offset': 2, 'tiles': [49439, 49449]}, '1487': {'offset': 0, 'tiles': [4116, 4116, 4116, 4116]}, '1488': {'offset': 0, 'tiles': [4116, 4116]}, '1489': {'offset': 0, 'tiles': [4116, 4116]}, '1490': {'offset': 0, 'tiles': [4116, 4116]}, '1512': {'offset': 0, 'tiles': [4116, 4116]}, '1513': {'offset': 0, 'tiles': [4116]}, '1514': {'offset': 0, 'tiles': [4116]}, '1515': {'offset': 0, 'tiles': [4116]}, '1533': {'offset': 2, 'tiles': [49439, 49449]}, '1539': {'offset': 10, 'tiles': [20, 20, 20, 20, 65535, 65535, 20]}, '1540': {'offset': 7, 'tiles': [20]}, '1541': {'offset': 7, 'tiles': [20]}, '1542': {'offset': 7, 'tiles': [20]}, '1543': {'offset': 0, 'tiles': [16904, 16914, 16924, 4116]}, '1549': {'offset': 0, 'tiles': [16921]}, '1550': {'offset': 0, 'tiles': [16922]}, '1556': {'offset': -1, 'tiles': [4116]}, '1559': {'offset': 0, 'tiles': [8380, 4116, 4116, 4116]}, '1562': {'offset': 0, 'tiles': [16921, 16931]}, '1563': {'offset': 0, 'tiles': [16922, 16932]}, '1595': {'offset': 0, 'tiles': [16924, 16934]}, '1598': {'offset': 0, 'tiles': [17128]}, '1600': {'offset': 0, 'tiles': [17128]}, '1609': {'offset': 0, 'tiles': [4116, 4116, 4116]}, '1610': {'offset': 0, 'tiles': [4116, 4116, 4116]}, '1611': {'offset': 0, 'tiles': [8380, 4116, 4116, 4116]}, '1624': {'offset': 2, 'tiles': [49438, 49448]}, '1647': {'offset': 0, 'tiles': [4116, 4116]}, '1648': {'offset': 0, 'tiles': [4116, 4116]}, '1649': {'offset': 0, 'tiles': [4116, 4116]}, '1650': {'offset': 0, 'tiles': [4116, 4116]}, '1651': {'offset': 0, 'tiles': [4116, 4116]}, '1652': {'offset': 0, 'tiles': [4116, 4116]}, '1653': {'offset': 0, 'tiles': [4116, 4116]}, '1654': {'offset': 0, 'tiles': [4116, 4116]}, '1655': {'offset': 0, 'tiles': [4116, 4116]}, '1656': {'offset': 0, 'tiles': [4116, 4116]}, '1657': {'offset': 0, 'tiles': [4116, 4116]}, '1658': {'offset': 0, 'tiles': [4116, 4116]}, '1659': {'offset': 0, 'tiles': [4116, 4116]}, '1660': {'offset': 0, 'tiles': [4116, 4116]}, '1679': {'offset': 2, 'tiles': [49439, 49449]}, '1839': {'offset': 0, 'tiles': [16921, 16931]}, '1840': {'offset': 0, 'tiles': [16922, 16932]}, '1841': {'offset': 0, 'tiles': [12478]}, '1852': {'offset': 0, 'tiles': [8382]}, '1853': {'offset': 0, 'tiles': [8383]}, '1893': {'offset': -3, 'tiles': [12490]}, '1895': {'offset': -1, 'tiles': [259, 269, 279]}, '1897': {'offset': -1, 'tiles': [259, 269, 279]}, '1903': {'offset': 0, 'tiles': [8371, 8381, 8371, 8381]}, '1906': {'offset': 0, 'tiles': [8379]}, '1940': {'offset': 0, 'tiles': [4116, 4116]}, '1942': {'offset': 0, 'tiles': [17000, 17010]}, '1943': {'offset': 0, 'tiles': [17001, 17011]}, '1945': {'offset': 0, 'tiles': [96, 106, 116]}, '1946': {'offset': 0, 'tiles': [30, 40, 50]}, '1947': {'offset': 0, 'tiles': [58144, 58154, 58174]}, '1948': {'offset': 0, 'tiles': [30, 40, 50]}, '1949': {'offset': 0, 'tiles': [58144, 58154, 58174]}, '1950': {'offset': 0, 'tiles': [30, 40, 50, 12449, 12459]}, '1955': {'offset': 10, 'tiles': [20, 20, 20, 20, 20, 20, 20, 20, 20]}, '1956': {'offset': 10, 'tiles': [20, 20, 20, 65535, 20, 20, 20, 20, 20]}, '1957': {'offset': 10, 'tiles': [20, 65535, 20, 65535, 20, 20, 20, 20, 20]}, '1958': {'offset': 10, 'tiles': [20, 20, 20, 20, 20, 20, 20, 20, 20]}, '1989': {'offset': 0, 'tiles': [12478]}, '1990': {'offset': 0, 'tiles': [12479]}, '2003': {'offset': 0, 'tiles': [8379, 8369, 8379]}, '2004': {'offset': 0, 'tiles': [4116, 4116, 4116, 4116]}, '2005': {'offset': 0, 'tiles': [4116, 4116, 4116, 4116]}, '2046': {'offset': 0, 'tiles': [8360]}, '2047': {'offset': 0, 'tiles': [8360]}, '2048': {'offset': 0, 'tiles': [8360]}, '2049': {'offset': 0, 'tiles': [8360]}, '2050': {'offset': 0, 'tiles': [8360]}, '2051': {'offset': 0, 'tiles': [8360]}, '2052': {'offset': 0, 'tiles': [8360]}, '2053': {'offset': 0, 'tiles': [8360]}, '2054': {'offset': 0, 'tiles': [8360]}, '2055': {'offset': 0, 'tiles': [8379, 8369, 8379, 8380]}, '2056': {'offset': -2, 'tiles': [4116, 4116]}, '2057': {'offset': -2, 'tiles': [4116, 4116]}, '2065': {'offset': 0, 'tiles': [40, 339, 51]}, '2066': {'offset': 0, 'tiles': [58154, 58174, 52]}, '2067': {'offset': 0, 'tiles': [40, 50, 51]}, '2068': {'offset': 0, 'tiles': [269, 279, 52]}, '2069': {'offset': 0, 'tiles': [58154, 58174, 51]}, '2070': {'offset': 0, 'tiles': [40, 50, 52]}, '2071': {'offset': 0, 'tiles': [269, 279, 51]}, '2072': {'offset': 0, 'tiles': [58154, 58174, 52]}, '2073': {'offset': 0, 'tiles': [269, 279, 51]}, '2074': {'offset': 0, 'tiles': [40, 50, 52]}, '2075': {'offset': 0, 'tiles': [58154, 58174, 51]}, '2076': {'offset': 0, 'tiles': [40, 50, 52, 16921]}, '2077': {'offset': 0, 'tiles': [269, 279, 51, 16922]}, '2108': {'offset': 0, 'tiles': [4116, 4116]}, '2109': {'offset': 0, 'tiles': [4116, 4116]}, '2149': {'offset': 0, 'tiles': [4116, 4116]}, '2150': {'offset': 0, 'tiles': [4116, 4116]}, '2151': {'offset': 0, 'tiles': [4116, 4116]}, '2152': {'offset': 0, 'tiles': [4116, 4116]}, '2153': {'offset': 0, 'tiles': [4116, 4116]}, '2154': {'offset': 0, 'tiles': [4116, 4116]}, '2155': {'offset': 0, 'tiles': [4116, 4116]}, '2156': {'offset': 0, 'tiles': [4116, 4116]}, '2157': {'offset': 0, 'tiles': [4116, 4116]}, '2158': {'offset': 0, 'tiles': [4116, 4116]}, '2159': {'offset': 0, 'tiles': [4116, 4116]}, '2160': {'offset': 0, 'tiles': [4116, 4116]}, '2161': {'offset': 0, 'tiles': [4116, 4116]}, '2170': {'offset': 2, 'tiles': [49439, 49449]}, '2172': {'offset': 2, 'tiles': [49438, 49448]}, '2175': {'offset': 2, 'tiles': [49439, 49449]}, '2179': {'offset': 0, 'tiles': [24806]}, '2180': {'offset': 0, 'tiles': [24807]}, '2216': {'offset': 0, 'tiles': [257]}, '2217': {'offset': 0, 'tiles': [257]}, '2218': {'offset': 0, 'tiles': [257]}, '2219': {'offset': 0, 'tiles': [40, 50, 51]}, '2222': {'offset': 2, 'tiles': [49438, 49448]}, '2223': {'offset': 2, 'tiles': [49439, 49449]}, '2224': {'offset': 0, 'tiles': [4116]}, '2225': {'offset': 0, 'tiles': [4116]}, '2230': {'offset': 0, 'tiles': [8363]}, '2231': {'offset': 0, 'tiles': [24816]}, '2232': {'offset': 0, 'tiles': [24817]}, '2233': {'offset': 0, 'tiles': [8363]}, '2238': {'offset': 0, 'tiles': [53668, 53678, 53688]}, '2239': {'offset': 0, 'tiles': [53669, 53679, 53689]}, '2240': {'offset': 0, 'tiles': [53670, 53680, 53690]}, '2241': {'offset': 0, 'tiles': [53671, 53681, 53691, 53701]}, '2242': {'offset': 0, 'tiles': [53672, 53682, 53692, 53702]}, '2243': {'offset': 0, 'tiles': [53673, 53683, 53693, 53703]}, '2244': {'offset': 0, 'tiles': [53674, 53684, 53694, 53704]}, '2245': {'offset': 0, 'tiles': [53675, 53685, 53695, 53705]}, '2246': {'offset': 0, 'tiles': [53676, 53686, 53696, 53706]}, '2247': {'offset': 0, 'tiles': [53677, 53687, 53697, 53707]}, '2268': {'offset': 0, 'tiles': [267]}, '2269': {'offset': 0, 'tiles': [267]}, '2270': {'offset': 0, 'tiles': [267]}, '2273': {'offset': 2, 'tiles': [49438, 49448]}, '2274': {'offset': 2, 'tiles': [49439, 49449]}, '2275': {'offset': 2, 'tiles': [49438, 49448]}, '2276': {'offset': 0, 'tiles': [4116]}, '2277': {'offset': 0, 'tiles': [4116]}, '2282': {'offset': 0, 'tiles': [8382]}, '2285': {'offset': 0, 'tiles': [8382]}, '2290': {'offset': 5, 'tiles': [58051, 58061, 58071, 65535, 65535, 32922]}, '2294': {'offset': 0, 'tiles': [37010]}, '2295': {'offset': 0, 'tiles': [37011]}, '2296': {'offset': 0, 'tiles': [37010]}, '2297': {'offset': 0, 'tiles': [37011]}, '2298': {'offset': 0, 'tiles': [37010]}, '2299': {'offset': 6, 'tiles': [58051, 58061, 58071]}, '2320': {'offset': 0, 'tiles': [52, 8352, 8362, 8372, 8382]}, '2321': {'offset': 0, 'tiles': [52, 8352, 8362, 8372, 8382]}, '2322': {'offset': 0, 'tiles': [52, 8352, 8362, 8372, 8382]}, '2326': {'offset': 2, 'tiles': [49438, 49448]}, '2327': {'offset': 2, 'tiles': [49439, 49449]}, '2352': {'offset': 0, 'tiles': [13, 23, 33, 43, 53]}, '2353': {'offset': 6, 'tiles': [8360, 8390, 136]}, '2354': {'offset': 6, 'tiles': [8360, 8390, 137]}, '2372': {'offset': 0, 'tiles': [8709, 8719, 4116, 4116]}, '2373': {'offset': 0, 'tiles': [8703, 8713, 4116, 4116]}, '2374': {'offset': 0, 'tiles': [8871, 65535, 4116, 4116]}, '2375': {'offset': 0, 'tiles': [4116]}, '2378': {'offset': 2, 'tiles': [49439, 49449]}, '2379': {'offset': 2, 'tiles': [49438, 49448]}, '2386': {'offset': 0, 'tiles': [45526]}, '2387': {'offset': 0, 'tiles': [45168]}, '2388': {'offset': 0, 'tiles': [45168, 16990]}, '2389': {'offset': 0, 'tiles': [45527, 16991]}, '2404': {'offset': 0, 'tiles': [8, 18, 28, 38]}, '2424': {'offset': 10, 'tiles': [20, 20, 20, 20, 20, 20, 20]}, '2425': {'offset': 10, 'tiles': [20, 20, 20, 20, 20, 20, 20]}, '2426': {'offset': 10, 'tiles': [20, 20, 20, 20, 20, 20, 20]}, '2427': {'offset': 10, 'tiles': [20, 20, 20, 20, 20, 20, 20]}, '2429': {'offset': 2, 'tiles': [49439, 49449]}, '2432': {'offset': 2, 'tiles': [49439, 49449]}, '2434': {'offset': 0, 'tiles': [16922, 16932]}, '2435': {'offset': 0, 'tiles': [16921, 16931]}, '2436': {'offset': 0, 'tiles': [16922, 16932]}, '2482': {'offset': 2, 'tiles': [49438, 49448]}, '2498': {'offset': -1, 'tiles': [8350]}, '2514': {'offset': 0, 'tiles': [4116]}, '2515': {'offset': 0, 'tiles': [4116]}, '2543': {'offset': 2, 'tiles': [49439, 49449]}, '2550': {'offset': 0, 'tiles': [402]}, '2554': {'offset': 0, 'tiles': [37011]}, '2555': {'offset': 0, 'tiles': [37011]}, '2556': {'offset': 0, 'tiles': [37011]}, '2557': {'offset': 0, 'tiles': [37011]}, '2558': {'offset': 0, 'tiles': [37011]}, '2565': {'offset': 0, 'tiles': [4116, 4116]}, '2566': {'offset': 0, 'tiles': [4116]}, '2567': {'offset': 0, 'tiles': [4116]}, '2568': {'offset': 0, 'tiles': [4116, 4116]}, '2584': {'offset': 0, 'tiles': [8382]}, '2586': {'offset': 2, 'tiles': [49439, 49449]}, '2592': {'offset': 0, 'tiles': [4116, 4116]}, '2593': {'offset': 0, 'tiles': [4116, 4116]}, '2594': {'offset': 2, 'tiles': [49438, 49448]}, '2595': {'offset': 2, 'tiles': [49439, 49449]}, '2596': {'offset': 2, 'tiles': [49438, 49448]}, '2601': {'offset': 0, 'tiles': [8371, 8371, 8371, 8378, 4116]}, '2602': {'offset': -1, 'tiles': [4116]}, '2603': {'offset': -1, 'tiles': [4116]}, '2604': {'offset': -1, 'tiles': [8378]}, '2605': {'offset': 0, 'tiles': [8360]}, '2606': {'offset': 0, 'tiles': [8360]}, '2607': {'offset': 0, 'tiles': [8360]}, '2608': {'offset': 0, 'tiles': [8360]}, '2609': {'offset': 0, 'tiles': [8360]}, '2610': {'offset': 0, 'tiles': [8360]}, '2611': {'offset': 0, 'tiles': [8360]}, '2613': {'offset': 0, 'tiles': [4116, 4116]}, '2614': {'offset': 0, 'tiles': [4116, 4116]}, '2615': {'offset': 0, 'tiles': [4116, 4116]}, '2630': {'offset': 0, 'tiles': [259, 269, 279]}, '2633': {'offset': 0, 'tiles': [259, 269, 279]}, '2636': {'offset': 0, 'tiles': [8383, 8382, 8382, 8374, 8384]}, '2648': {'offset': 2, 'tiles': [49439, 49449]}, '2653': {'offset': 0, 'tiles': [8381, 8381, 8381, 8378, 4116]}, '2654': {'offset': 0, 'tiles': [8360, 4116]}, '2655': {'offset': 0, 'tiles': [8360, 4116]}, '2656': {'offset': -1, 'tiles': [8378]}, '2657': {'offset': 0, 'tiles': [8360]}, '2658': {'offset': 0, 'tiles': [8360]}, '2659': {'offset': 0, 'tiles': [8360]}, '2660': {'offset': 0, 'tiles': [8360]}, '2661': {'offset': 0, 'tiles': [8360]}, '2662': {'offset': 0, 'tiles': [8360]}, '2663': {'offset': 0, 'tiles': [8360]}, '2669': {'offset': 0, 'tiles': [4116]}, '2672': {'offset': 0, 'tiles': [4116]}, '2682': {'offset': 0, 'tiles': [58154, 58174, 51]}, '2683': {'offset': 0, 'tiles': [40, 50, 52]}, '2684': {'offset': 0, 'tiles': [40, 50, 51]}, '2685': {'offset': 0, 'tiles': [58154, 58174, 52]}, '2686': {'offset': 0, 'tiles': [40, 50, 51]}, '2687': {'offset': 0, 'tiles': [257, 267, 52]}, '2688': {'offset': 0, 'tiles': [107, 67, 77]}, '2693': {'offset': 2, 'tiles': [49439, 49449]}, '2699': {'offset': 2, 'tiles': [49439, 49449]}, '2700': {'offset': 2, 'tiles': [49438, 49448]}, '2701': {'offset': 2, 'tiles': [49439, 49449]}, '2721': {'offset': 0, 'tiles': [4116]}, '2724': {'offset': 0, 'tiles': [4116]}, '2733': {'offset': -2, 'tiles': [8352, 8374, 8384]}, '2748': {'offset': 2, 'tiles': [49438, 49448]}, '2750': {'offset': 2, 'tiles': [49439, 49449]}, '2751': {'offset': 2, 'tiles': [49438, 49448]}, '2752': {'offset': 2, 'tiles': [49439, 49449]}, '2753': {'offset': 2, 'tiles': [49438, 49448]}, '2757': {'offset': -4, 'tiles': [4116, 4116]}, '2758': {'offset': -1, 'tiles': [4116, 4116]}, '2759': {'offset': -1, 'tiles': [4116, 4116]}, '2760': {'offset': -1, 'tiles': [4116, 4116]}, '2761': {'offset': 0, 'tiles': [4116, 4116]}, '2762': {'offset': 0, 'tiles': [4116, 4116]}, '2763': {'offset': 0, 'tiles': [4116, 4116]}, '2764': {'offset': 0, 'tiles': [4116, 4116]}, '2765': {'offset': 0, 'tiles': [4116, 4116]}, '2766': {'offset': 0, 'tiles': [4116, 4116]}, '2767': {'offset': 0, 'tiles': [4116, 4116]}, '2768': {'offset': 0, 'tiles': [4116, 4116]}, '2773': {'offset': 0, 'tiles': [4116]}, '2776': {'offset': 0, 'tiles': [4116]}, '2778': {'offset': 0, 'tiles': [40, 50, 52, 8353, 8363]}, '2779': {'offset': 0, 'tiles': [8486, 8496, 8506]}, '2780': {'offset': 0, 'tiles': [8486, 8496, 8506]}, '2781': {'offset': 0, 'tiles': [8486, 8496, 8506]}, '2782': {'offset': 0, 'tiles': [40, 50, 51, 16931]}, '2783': {'offset': 0, 'tiles': [40, 50, 52, 16932]}, '2784': {'offset': 0, 'tiles': [269, 279, 51]}, '2785': {'offset': 0, 'tiles': [107, 67, 77]}, '2786': {'offset': 2, 'tiles': [49438, 49448]}, '2796': {'offset': 2, 'tiles': [49438, 49448]}, '2799': {'offset': 2, 'tiles': [49438, 49448]}, '2800': {'offset': 2, 'tiles': [49439, 49449]}, '2801': {'offset': 2, 'tiles': [49438, 49448]}, '2802': {'offset': 2, 'tiles': [49439, 49449]}, '2803': {'offset': 2, 'tiles': [49438, 49448]}, '2805': {'offset': 2, 'tiles': [49438, 49448]}, '2831': {'offset': -1, 'tiles': [24829]}, '2832': {'offset': -1, 'tiles': [24840]}, '2833': {'offset': -1, 'tiles': [24840]}, '2839': {'offset': 0, 'tiles': [16931]}, '2847': {'offset': 2, 'tiles': [49438, 49448]}, '2848': {'offset': 2, 'tiles': [49439, 49449]}, '2849': {'offset': 2, 'tiles': [49438, 49448]}, '2851': {'offset': 2, 'tiles': [49438, 49448]}, '2853': {'offset': 2, 'tiles': [49438, 49448]}, '2855': {'offset': 2, 'tiles': [49438, 49448]}, '2877': {'offset': 14, 'tiles': [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]}, '2878': {'offset': 14, 'tiles': [20, 20, 20, 20, 20, 20, 20, 65535, 20, 20, 65535, 20, 20, 20]}, '2879': {'offset': 14, 'tiles': [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 4116, 4116, 4116, 4116]}, '2880': {'offset': 14, 'tiles': [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 4116, 4116, 4116, 4116]}, '2881': {'offset': 0, 'tiles': [8381, 8381, 8381, 8378, 4116, 4116, 4116]}, '2882': {'offset': 0, 'tiles': [8360, 4116, 4116, 4116]}, '2883': {'offset': 0, 'tiles': [8495, 8505, 4116, 4116]}, '2884': {'offset': 0, 'tiles': [8495, 8505, 4116]}, '2885': {'offset': 0, 'tiles': [8495]}, '2886': {'offset': 0, 'tiles': [8360]}, '2887': {'offset': 0, 'tiles': [8360]}, '2888': {'offset': 0, 'tiles': [8360]}, '2889': {'offset': 0, 'tiles': [8360]}, '2890': {'offset': 0, 'tiles': [8360]}, '2891': {'offset': 0, 'tiles': [8360]}, '2893': {'offset': 0, 'tiles': [4116, 4116]}, '2894': {'offset': 0, 'tiles': [4116, 4116]}, '2895': {'offset': 0, 'tiles': [4116, 4116]}, '2897': {'offset': 0, 'tiles': [8360]}, '2898': {'offset': 0, 'tiles': [8360]}, '2899': {'offset': 0, 'tiles': [8360]}, '2900': {'offset': 0, 'tiles': [8360]}, '2901': {'offset': 0, 'tiles': [8360]}, '2902': {'offset': 0, 'tiles': [8360]}, '2903': {'offset': 0, 'tiles': [8360]}, '2904': {'offset': 0, 'tiles': [8360]}, '2905': {'offset': 0, 'tiles': [8360]}, '2906': {'offset': 0, 'tiles': [8360]}, '2907': {'offset': 0, 'tiles': [8360]}, '2908': {'offset': 0, 'tiles': [8360]}, '2909': {'offset': 0, 'tiles': [8360]}, '2910': {'offset': 0, 'tiles': [8379, 8379, 8379, 8380]}, '2989': {'offset': 0, 'tiles': [4116, 4116]}, '2990': {'offset': 0, 'tiles': [4116, 4116]}, '2991': {'offset': 0, 'tiles': [4116, 4116]}, '2992': {'offset': 0, 'tiles': [4116, 4116]}, '2993': {'offset': 0, 'tiles': [4116, 4116]}, '2994': {'offset': 0, 'tiles': [4116, 4116]}, '2995': {'offset': 0, 'tiles': [4116, 4116]}, '2996': {'offset': 0, 'tiles': [4116, 4116]}, '3000': {'offset': 0, 'tiles': [4116, 4116]}, '3001': {'offset': 0, 'tiles': [4116, 4116]}, '3002': {'offset': 0, 'tiles': [4116, 4116]}, '3003': {'offset': 0, 'tiles': [4116, 4116]}, '3004': {'offset': 0, 'tiles': [4116, 4116]}, '3005': {'offset': 0, 'tiles': [4116, 4116]}, '3006': {'offset': 0, 'tiles': [4116, 4116]}, '3007': {'offset': 0, 'tiles': [4116, 4116]}, '3008': {'offset': 0, 'tiles': [4116, 4116]}, '3009': {'offset': 0, 'tiles': [4116, 4116]}, '3010': {'offset': 0, 'tiles': [4116, 4116]}, '3011': {'offset': 0, 'tiles': [4116, 4116]}, '3012': {'offset': 0, 'tiles': [4116, 4116]}, '3013': {'offset': 0, 'tiles': [4116, 4116]}, '3014': {'offset': 0, 'tiles': [4116, 4116]}, '3068': {'offset': 0, 'tiles': [4116]}, '3069': {'offset': 0, 'tiles': [4116]}, '3070': {'offset': 0, 'tiles': [4116]}, '3071': {'offset': 0, 'tiles': [4116]}, '3072': {'offset': 0, 'tiles': [4116]}, '3073': {'offset': 0, 'tiles': [4116]}, '3074': {'offset': 0, 'tiles': [4116]}, '3075': {'offset': 0, 'tiles': [4116]}, '3076': {'offset': 0, 'tiles': [4116]}, '3077': {'offset': 0, 'tiles': [4116]}, '3078': {'offset': 0, 'tiles': [4116]}, '3079': {'offset': 0, 'tiles': [4116]}, '3080': {'offset': 0, 'tiles': [4116]}, '3081': {'offset': 0, 'tiles': [4116]}, '3082': {'offset': 0, 'tiles': [4116]}, '3083': {'offset': 0, 'tiles': [4116]}, '3084': {'offset': 0, 'tiles': [4116]}, '3085': {'offset': 0, 'tiles': [4116]}, '3086': {'offset': 0, 'tiles': [4116]}, '3087': {'offset': 0, 'tiles': [4116]}, '3088': {'offset': 0, 'tiles': [4116]}, '3089': {'offset': 0, 'tiles': [4116]}, '3090': {'offset': 0, 'tiles': [4116]}, '3091': {'offset': 0, 'tiles': [4116]}, '3092': {'offset': 0, 'tiles': [4116]}, '3093': {'offset': 0, 'tiles': [4116]}, '3094': {'offset': 0, 'tiles': [4116]}, '3095': {'offset': 0, 'tiles': [4116]}, '3096': {'offset': 0, 'tiles': [4116]}, '3097': {'offset': 0, 'tiles': [4116]}, '3098': {'offset': 0, 'tiles': [4116]}, '3099': {'offset': 0, 'tiles': [4116]}, '3100': {'offset': 0, 'tiles': [4116]}, '3101': {'offset': 0, 'tiles': [4116]}, '3102': {'offset': 0, 'tiles': [4116]}, '3103': {'offset': 0, 'tiles': [4116]}, '3104': {'offset': 0, 'tiles': [4116]}, '3105': {'offset': 0, 'tiles': [4116]}, '3106': {'offset': 0, 'tiles': [4116]}, '3107': {'offset': 0, 'tiles': [4116]}, '3108': {'offset': 0, 'tiles': [4116]}, '3109': {'offset': 0, 'tiles': [4116]}, '3110': {'offset': 0, 'tiles': [4116]}, '3111': {'offset': 0, 'tiles': [4116]}, '3112': {'offset': 0, 'tiles': [4116]}, '3113': {'offset': 0, 'tiles': [4116]}, '3114': {'offset': 0, 'tiles': [4116]}, '3115': {'offset': 0, 'tiles': [4116]}, '3116': {'offset': 0, 'tiles': [4116]}, '3117': {'offset': 0, 'tiles': [4116]}, '3118': {'offset': 0, 'tiles': [4116]}, '3119': {'offset': 0, 'tiles': [4116]}}}

@@ -1,0 +1,21 @@
+
+    [Fact]
+    public void P11_Map22TheHeroFallsOntoTheRisingLift()
+    {
+        Log("== P11 map 22: the hero arrives 32 px above the lift (z level 4), the test makes the lift rise +1 px/tick from frame 1 (the script is idle, T3 off): the hero falls onto a RISING platform");
+        var spec = new ArcSpec("D5b-probe-22e", "Lars' Crypt", "Lars' Crypt-22", Array.Empty<int>(), 0, 0, 0, 900, RealController: true, Prefabs: true,
+            Arrival: new ArcArrival(1008 << 16, 176 << 16, 4 << 20, GameState.ResetAnimationId, 0));
+        using var arc = new ArcRun(spec);
+        arc.OneFrame();
+        var platform = arc.EntityByRecord(2)!;
+        var hero = arc.Hero;
+        Log($"after frame 1: hero.Z={hero.PosZ / 65536.0} platform.Z={platform.PosZ / 65536.0} airborne={hero.HeroAirborne} onGround={hero.IsOnGround}");
+        platform.ForceZ = 65536;
+        for (var f = 1; f <= 45; f++)
+        {
+            arc.OneFrame();
+            var top = platform.PosZ + platform.ModZ + platform.Depth + 1;
+            Log($"f{f,3}: platZ={platform.PosZ / 65536.0} plat.collZ={platform.CollidedWithEntityZ} hero.Z={hero.PosZ / 65536.0} heroFoot-top={(hero.PosZ + hero.ModZ - top) / 65536.0}px riding={ReferenceEquals(hero.RidingEntity, platform.LogicContextEntity)} onGround={hero.IsOnGround} collZ={hero.CollidedWithEntityZ} airborne={hero.HeroAirborne} heroForceZ={hero.ForceZ}");
+        }
+    }
+}

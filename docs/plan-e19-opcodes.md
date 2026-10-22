@@ -2601,7 +2601,7 @@ et une course Debug ; la DLL déployée est la Debug.
   | Le terrain pose `CollidedWithEntityZ` à 0 dans la DLL, à 1 dans le binaire (`0x800376E0`) ; aucun opcode ne le lit aujourd'hui (`0x25`, `0x26`, `0x47` le liront). | P4 | Reporté à E19.h ; avancé en E19.d2c (D-E19-31). |
   | La doc XML de `Dispatch` est passée sur un nouveau champ ; la doc de l'`ArcSpec` décrit encore le héros construit à la main ; « `0x3B @133` rend toujours 0 » d'A5 ne vérifie pas qu'il y a des échantillons ; A8 épingle des effets du retard D-E19-13 ; l'ordre de mise en place du héros des arcs diffère de la production (couvert par TH1) ; le rouge d'A6 et d'A8 n'est pas dans l'historique ; l'ADR-0020 a reçu un amendement au lieu d'une nouvelle ADR. | P4 | Reportés (hygiène d'E19.d2). |
 
-### 1.2h E19.d2 — Après le premier livre : contacts entre entités, saut scripté, sauvegardes de test ⏳ (programme ; E19.d2a et E19.d2b faites ; E19.d2c en deux sous-tranches, E19.d2c1 détaillée, E19.d2c2 esquissée ; état au 2026-10-07 : E19.d2a ✅, E19.d2b ✅, E19.d2c1 ✅ (recette C7 en attente), E19.d2c2 ⏳ (D0 à D4 et D5a faites ; D5b en pause, sa conception est à soumettre de nouveau à l'auteur (**tranchée par l'auteur le 2026-10-22, D-E19-117, D-E19-124 : à détailler**) ; D6 et D7 à venir))
+### 1.2h E19.d2 — Après le premier livre : contacts entre entités, saut scripté, sauvegardes de test ⏳ (programme ; E19.d2a et E19.d2b faites ; E19.d2c en deux sous-tranches, E19.d2c1 détaillée, E19.d2c2 esquissée ; état au 2026-10-07 : E19.d2a ✅, E19.d2b ✅, E19.d2c1 ✅ (recette C7 en attente), E19.d2c2 ⏳ (D0 à D4 et D5a faites ; D5b en pause, sa conception est à soumettre de nouveau à l'auteur (**tranchée par l'auteur le 2026-10-22, D-E19-117, D-E19-124 ; détaillée le 2026-10-22, §1.2h.3.2b**) ; D6 et D7 à venir))
 
 **Cadrage corrigé** (découverte du 2026-10-02, en lecture seule, chaque surface recoupée par une contre-expertise
 indépendante ; notes et scripts dans le scratchpad de la session, `e19d2-disc/` et `e19d2-disc2/`).
@@ -3788,7 +3788,7 @@ transport, course, attaque en l'air, saisie et coups (E14) ; sons des autres cha
   | Textes : commentaire de T-C61 (`0x30 @983` teste G672, `0x05 @990` le pose), doc d'A10 périmée (« returns 1 at its first call »), Meade non écrit dans le test d'A10 ; A12 sans `using` (un arc bloqué laisse l'état global sale) ; UJ-0x8000 avec gravité ne discrimine que le terme `!gravity` ; liste fermée de l'acceptation 2 qui omettait la propriété `SoundPlayer` de `ContactHost` et un commentaire et un `cref` de C5. | P4 | Reportés à l'hygiène d'E19.d2c2 ; la liste incomplète est acceptée (aucune assertion touchée). |
   | L'effacement du drapeau d'apparition par `0x1C` n'a pas de test (aucun site réel). | P4 | Reporté à E19.m (déjà noté). |
 
-##### 1.2h.3.2 E19.d2c2 — Saut à la manette, chutes, dessus d'objets ⏳ (état au 2026-10-07 : D0 à D4 et D5a faites ; D5b (F2) en pause, conception à soumettre de nouveau à l'auteur (**tranchée le 2026-10-22, D-E19-117, D-E19-124 : à détailler**) ; D6 et D7 à venir ; étude de conception de D5b au binaire le 2026-10-17, §1.2h.3.2a)
+##### 1.2h.3.2 E19.d2c2 — Saut à la manette, chutes, dessus d'objets ⏳ (état au 2026-10-07 : D0 à D4 et D5a faites ; D5b (F2) en pause, conception à soumettre de nouveau à l'auteur (**tranchée le 2026-10-22, D-E19-117, D-E19-124 ; détaillée le 2026-10-22, §1.2h.3.2b**) ; D6 et D7 à venir ; étude de conception de D5b au binaire le 2026-10-17, §1.2h.3.2a)
 
 **Résultat** : Alundra saute à la Croix (sur place ou en marchant), se dirige en l'air, retombe ; elle tombe des rebords
 avec la même mécanique ; elle se pose sur les coffres, plateformes et interrupteurs et une plateforme qui bouge la porte ;
@@ -4178,6 +4178,197 @@ restructuration. Preuves : `docs/plan-e19-d5b-annexe/` (rapport, critique indép
   pile XY est corrigée, après mesure dans le corpus ; l'atterrissage non strict des PNJ sur les ascenseurs (D-E19-40) va dans **D5c** ;
   la recette se fait sur l'ascenseur de la carte 22. D5b est à détailler sur cette base (M1 à M4 et le plafond des porteurs, étendus
   à tous les passagers), puis à relire.
+
+##### 1.2h.3.2b D5b — Tous les passagers suivent leur porteur (détaillée le 2026-10-22, révision 0 ; à relire par un `plan-verifier` frais) ⏳
+
+**Provenance.** Découverte en lecture seule du 2026-10-22 au HEAD `1d0b6953` (branche `chantier/theme1-porter-plateforme`), sur la
+base de l'étude du 2026-10-17 (§1.2h.3.2a, `docs/plan-e19-d5b-annexe/`) et des réponses de l'auteur (D-E19-117, D-E19-124). Annexe :
+`docs/plan-e19-d5b-annexe/exec-2026-10-22/` (`report.md`, les valeurs du binaire rejoué, les recensements, les sondes sur la vraie DLL et
+leurs sorties, le prototype). Étiquettes : FAIT (lu), MESURÉ (exécuté sur la vraie DLL ou la machine MIPS), PROTOTYPE (patch jetable
+hors dépôt). Le binaire tranche ; la décompilation se lit, ne se corrige pas.
+
+**Ordre et prérequis.** Après E20.f6a (mêmes fichiers : la région `TickMotion` d'`Alundra/Entities/EntityScriptProxy.cs`) et avant
+E20.g1a (D-D5B-9). Après E20.e0c, qui fait ignorer une entité bloquée par la physique de `RunEntityBlock` (`Alundra/Maps/WorldProxy.cs`) :
+D5b relit cette boucle au HEAD de départ. Les numéros de ligne ci-dessous sont ceux du HEAD `1d0b6953` : T0 les relit par symbole au HEAD
+de départ et les recopie dans l'annexe. D5c (l'atterrissage non strict des PNJ sur les ascenseurs, D-E19-40) est une tranche séparée
+(D-E19-117).
+
+**But.** Comme l'original : toute entité posée sur une plateforme qui bouge, en Z comme en XY, la suit ; le héros, les caisses, les
+tonneaux, les PNJ et les objets marqués `HasLogicalZ`. Sur l'ascenseur de la carte 22, Alundra monte avec la plateforme sans glisser ni
+retomber (aujourd'hui il traverse et finit au fond du creux). La double force XY d'une pile, défaut du binaire, est corrigée (D-E19-117).
+
+**Faits porteurs.**
+- **L'ordre du binaire** (FAIT) : compteurs `0x80038998` (efface `+0x12C` en `0x800389DC`) ; listes ; physique `0x80038364`, qui
+  enchaîne la prépasse, le balayage des passagers `0x800364C8`, les forces de tous `0x80036828`, la copie `0x80037364`, les déplacements
+  `MoveEntity` dans l'ordre des cases, puis la passe de fin `0x80038064`.
+- **Qui est passager** (FAIT) : `(flags & 0x4100) == 0x100` (`Gravity` sans `NoRiders`, `0x800364FC`), dans la liste des collidables
+  (bit `0x80`, `AnimFlags & 0x80 == 0`, `+0x28 == 0`), sans test de statut. Le porteur est le premier autre membre de la liste dont
+  `dessus + 1 == ModdedZ` et dont la boîte XY recouvre (fenêtres à demi-ouvert `+1`, `0x80036554-5C`).
+- **La copie** `0x80037364` (FAIT) : récursion sur le porteur du porteur, sans mémo (`0x80037388`) ; l'`AdjustedForce` XY du porteur
+  s'ajoute à la force finale du passager (`0x8003739C-B0`) ; sans impulsion (`+0xF8 == 0`), `ForceZ` et `FinalForceZ` du passager reçoivent
+  le `FinalForceZ` du porteur (`0x800373BC-C8`). Un atterrissage sur une cible qui n'a pas bougé la déplace d'abord (`0x800376B8-DC`), un
+  plafond de même (`0x80037630-50`) ; le plafond `0x80036D94` bloque une montée sous tout collidable au-dessus, passagers compris.
+- **Les quatre écarts et le plafond, au HEAD `1d0b6953`** (FAIT, §1 du rapport) : M1 la force du tick du porteur lue avec un tick de retard
+  (`Alundra/Physics/ScriptedMotion.cs:313-325`, XY `:676-681` par `LastTickDelta`, qui sert aussi aux portes de l'aimant `:427`, `:569`) ;
+  M2 la cible n'est pas déplacée d'abord, sur quatre sites verticaux (héros `ScriptedMotion.cs:330-342`, `:360` ; marqués `:484-491`, `:504` ;
+  contrôleur `EntityScriptProxy.cs:883-884`, `:1018-1019` ; sans contrôleur `:1100-1115`, `:1121`, `:1143`) ; M3 `IsOnGround` sans passe de
+  fin (rien après la boucle physique `WorldProxy.cs:2977-2980`) ; M4 `RunCountersPass` (`WorldProxy.cs:3000-3023`) n'efface pas
+  `RidingEntity` (son commentaire `:2994-2995` est périmé) ; le plafond des porteurs manque (`ScriptedMotion.cs:504` liste vide,
+  `EntitySupport.TryFindCeiling` `:200-263` ne rend pas l'entité). Aucun identifiant de passe : `IScriptHost.cs:96` n'a que
+  `DrivesEntityTicks`.
+- **La DLL aujourd'hui, par passager** (MESURÉ) : le héros traverse la plateforme qui monte (carte 22 : à fleur à l'image 12, porté perdu à
+  la 13, au fond du creux à la 24) ; une caisse ou un tonneau posé dessus tombe à travers, par le chemin des entités de carte comme par celui
+  des entités marquées ; le XY d'un passager non héros n'est pas suivi.
+- **Le prototype** (PROTOTYPE, `exec-2026-10-22/proto/prototype.diff`, 238 lignes ajoutées, 17 retirées, Debug seulement) : sur la copie
+  du HEAD, la suite complète (environ 5 100 tests) n'a qu'un rouge de plus, UH-14 (l'épingle de phase, accepté : D-E19-117) ; les quatre
+  traces du héros et la trace d'intro sont identiques à l'octet ; sur l'ascenseur, l'écart pied du héros − dessus vaut 0 à chaque image ;
+  le tonneau suit ; une pile héros / tonneau / plateforme qui avance de 1 px par tick en X et en Z suit sans écart.
+- **Quatre précisions de la découverte** (MESURÉ) : (1) la force copiée doit être récursive : le porteur du milieu d'une pile transmet ce
+  qu'il reçoit, pas sa gravité ; sans cela la plateforme ne monte plus ; (2) le plafond des porteurs seul fait **bloquer** la plateforme sous
+  son passager : il exige « déplacer la cible d'abord » et une règle d'entrée pour un héros porté mais au sol du moteur ; (3) les montages
+  `ContactHost` et `JumpHeroRig` sont en mode autonome, sans `RidingEntity` des non-héros ni identifiant de passe ; (4) un passager au repos
+  sur une plateforme sans gravité a `CollidedWithEntityZ` 0 (valeur du binaire) au lieu de 1.
+- **Corpus** (MESURÉ, 483 cartes, 9 741 enregistrements) : 4 591 enregistrements (137 types) sont passagers au sens du binaire ; 102
+  cartes ont un porteur en Z (273 enregistrements) ; une seule pile de trois niveaux au chargement (carte 67, statique) ; aucun passager au
+  chargement sur un porteur XY ; trois passagers au chargement sur des porteurs Z (carte 344 : deux coffres ; carte 444 : une pierre sur
+  une trappe), qui tombent aujourd'hui et suivront après D5b. La correction des piles XY ne se prouve que par des témoins écrits.
+- **Le défaut des piles XY** (MESURÉ sur le binaire rejoué) : héros sur caisse sur plateforme à 1 px par tick en X : la caisse reçoit
+  2 px par tick (`FinalForceX = 131072`), le héros 0. En Z, la copie est une affectation : pas de défaut.
+
+**Décisions de la session** (dans le cadre de D-E19-117 ; défauts tirés du prototype mesuré).
+- **D-D5B-1** — Un identifiant de passe physique : `PhysicsPassId`, membre par défaut d'`IScriptHost` ; `WorldProxy` l'incrémente avant
+  la boucle physique ; `TickPhysicsOnce` dans le monde et dans les deux pilotes autonomes (`EntityScriptProxy.cs:1527`, `:1546`).
+- **D-D5B-2** — La force du tick du porteur se lit par un calcul pur (`PeekTickForceZ`, `PeekAdjustedForce`), récursif sur la chaîne des
+  porteurs (`CarrierTickForceZ`, qui prend le `TickForceZ` de la cible si elle a déjà bougé dans la passe) ; une seule fonction de force,
+  partagée par le tick et le calcul pur, pour qu'ils ne divergent pas. `LastTickDelta` reste pour les portes de l'aimant.
+- **D-D5B-3** — Règle d'entrée : un héros porté mais posé sur le sol du moteur suit un porteur dont la force du tick est non nulle.
+- **D-D5B-4** — « Déplacer la cible d'abord » (`EnsureMovedThisPass`) et le plafond des porteurs vont ensemble, dans le même commit, sur
+  les quatre sites verticaux : jamais le plafond seul.
+- **D-D5B-5** — `IsOnGround` se calcule dans une passe de fin (`EndPhysicsTick`), après la boucle physique, pour le héros et les passagers.
+- **D-D5B-6** — `RunCountersPass` efface `RidingEntity` (M4) ; cela clôt O-E20-9 et la note D-SM1-2.
+- **D-D5B-7** — Piles XY corrigées (D-E19-117) : chaque passager ajoute, une fois, l'`AdjustedForce` planifiée de chaque porteur de sa
+  chaîne (planifiée, comme le binaire, même si le porteur est arrêté par un mur). Profondeur bornée à 8 (le corpus en a 3 au plus). Écart
+  documenté dans l'ADR.
+- **D-D5B-8** — Hors D5b : le statut 4 dans la liste des collidables (Q-D5B-6 reste ouverte) ; D5c ; le chemin des entités de carte vers le
+  modèle des marqués (E19.h2).
+- **D-D5B-9** — Ordre : après f6a, avant g1a. g1a écrit alors son (w5) (« plateforme mouvante, modèle UH14 ») en phase 0, l'épingle d'UH-14
+  étant réépinglée par T5 ; le plan de g1a en porte la note.
+- **D-D5B-10** — Recette sur la carte 22 (D-E19-124) : préréglage `elevator-m22` (carte 22, case (46, 8), niveau 2), au sud du levier de
+  droite ; il faut frapper le levier, descendre dans le creux, sauter sur la plateforme et attendre. Un départ déjà sur la plateforme est
+  impossible : l'état du levier (drapeaux temporaires `T1`, `T3`) ne se sauvegarde pas.
+
+**Effets visibles en jeu** (pour la recette et pour l'auteur) : sur la 22, Alundra monte avec la plateforme ; une plateforme qui monte
+emporte aussi le joueur à cheval entre le sol et son bord (l'original) ; les deux coffres de la 344, posés sur de petites plateformes qui
+bougent de 1 px, et la pierre de la 444, sur une trappe qui descend, suivent leur plateforme au lieu de tomber (conséquence de « tous les
+passagers »).
+
+**Périmètre.** `Alundra/Physics/ScriptedMotion.cs`, `Alundra/Physics/EntitySupport.cs`, `Alundra/Entities/EntityScriptProxy.cs`,
+`Alundra/Maps/WorldProxy.cs`, `Alundra/Maps/IScriptHost.cs` (le membre par défaut) ; `Alundra/SaveGames/TestSaves.cs` (le préréglage) ;
+les montages de test `Alundra.Tests/Support/ContactHost.cs` et `JumpHeroRig.cs` ; les tests (nouveaux fichiers de témoins, UH-14
+réépinglé) ; `docs/test-saves.md` ; l'annexe ; un ADR (« les passagers suivent leur porteur dans l'ordre forces puis déplacements »,
+numéro libre au HEAD de départ, recompté sur toutes les branches) ; `docs/decisions/README.md` ; ce plan.
+
+**Hors périmètre.** Le moteur (`CasaEngineMonogame/`), le convertisseur et les données ; D5c ; le statut 4 (Q-D5B-6) ; E19.h2 ; g1a et le
+portage ; les portes de l'aimant (leur `LastTickDelta` reste) ; l'application telle quelle du diff de prototype (preuve de faisabilité, pas
+un patch).
+
+##### Tâches
+
+- ⏳ **T0 — Annexe et relecture au HEAD de départ** (commit de docs).
+  - L'annexe `exec-2026-10-22/` est versée avec cette révision ; T0 y ajoute `state-T0.md`.
+  - Relever par symbole, au HEAD de départ (après f6a, e0c et E20.e), chaque site des quatre écarts et du plafond. Les recopier avec
+    leurs nouveaux numéros de ligne.
+  - Relancer `vec_d5b.py` depuis une copie : sortie égale à `vec_d5b_out.txt`.
+  - Relever les comptes de tests (Release avec la copie neutralisée, puis Debug).
+  - Relever les préréglages existants de `TestSaves.cs` (`AllPresetNames`, `TestSavesTests.cs:74`, l'ordre `:90`), que d'autres tranches
+    ont pu allonger.
+  - Arrêt : un site introuvable, ou un écart déjà corrigé par une tranche antérieure.
+- ⏳ **T1 — Témoins rouges d'abord** (nouveaux fichiers ; aucune ligne de production).
+  - Aides de test :
+    - `ContactHost` émule `PhysicsPassId` ;
+    - son `Rebuild` calcule `RidingEntity` des non-héros, **héros exclu**. Le premier essai de la découverte, héros compris, a fait
+      passer UH-10, UH-15 et UH-17 au rouge ; l'autre voie est que le test appelle lui-même `EntitySupport.UpdateRidingEntities`.
+    - Le montage appelle `EndPhysicsTick` en fin d'image, et les pilotes autonomes appellent `TickPhysicsOnce`.
+  - Témoins, avec les valeurs du binaire rejoué (`vec_d5b_out.txt`, §7 du rapport) :
+    - UH-16, réservé par D5a et absent, écrit en phase 0 ;
+    - UH-19, le héros qui atterrit sur une plateforme qui monte ;
+    - E22 (montée), DESC (descente) ;
+    - CRATE (caisse avant ou après la plateforme dans l'ordre des cases), NPC (drapeaux `0x03A180`) ;
+    - PILE_Z ; PILE_XY à la forme corrigée ;
+    - le quai (héros à cheval) ;
+    - un passager à impulsion ; un passager au repos sur une plateforme sans gravité (contact 0, `IsOnGround` 1) ;
+    - le gel : une plateforme dont la force est non nulle, avec un passager, ne reste pas immobile ;
+    - l'arc A-D5b-22 sur le script de manette du rapport (§6) et un arc de pile (tonneau, `P14`).
+  - Acceptation : tous les témoins sont rouges au HEAD, nommés dans la « liste rouge » de l'annexe, et les gardes restent vertes. Les
+    gardes sont listées au §4 du rapport, dont `HeroObjectTopsTests` (UH-6, UH-10, UH-11, UH-15, UH-17, UH-18, SJ-12, SJ-13),
+    `AbsoluteZWritesTests.cs:74-104`, les tests de support de `NpcCharacterControllerMoverTests.cs` et `TickStructureTests.cs` (A8).
+  - Arrêt : un témoin vert au HEAD sans l'avoir prévu.
+- ⏳ **T2 — M4.**
+  - `RunCountersPass` efface `RidingEntity`, et le commentaire périmé est corrigé.
+  - Acceptation : la suite est inchangée, A8 inchangé.
+- ⏳ **T3 — M1, la récursion, la règle d'entrée et M3 pour le héros** (D-D5B-2, -3, -5).
+  - Acceptation : UH-16 (montée) et E22 sont verts. L'arc A-D5b-22 a un écart nul de l'image 12 à l'image 76. UH-18 est inchangé.
+- ⏳ **T4 — M2 et le plafond des porteurs**, dans le même commit (D-D5B-1, -4), sur les quatre sites verticaux.
+  - Acceptation : UH-16 (descente), DESC, UH-19 et le gel sont verts.
+  - Arrêt : une plateforme immobile plus de 2 ticks alors que sa `ForceZ` est non nulle et qu'un passager la chevauche.
+- ⏳ **T5 — M5, le XY planifié pour le héros.**
+  - `PeekAdjustedForce` remplace `LastTickDelta` dans la copie du porté.
+  - Acceptation : UH-14 est réépinglé à `−tick × 65536`, valeur du binaire (D-E19-117, Q-D5B-2).
+  - Arrêt : une autre épingle bouge.
+- ⏳ **T6 — Passagers non héros**, un commit par chemin : A le contrôleur, B les marqués, C les sans-contrôleur.
+  - Pour chaque chemin : la copie de la force, un nouvel essai après le déplacement de la cible, le plafond, `IsOnGround` en passe de fin,
+    et le XY transitif, une seule fois par porteur de la chaîne (D-D5B-7).
+  - Acceptation : CRATE, NPC, PILE_Z, PILE_XY corrigée, le passager à impulsion et le passager au repos sont verts.
+  - Le chemin C n'a pas été prototypé. Si aucun témoin ne peut le mettre en jeu par un montage, T6C le dit et s'arrête : pas de code sans
+    témoin rouge.
+- ⏳ **T7 — Préréglage, arc et documentation.**
+  - Le préréglage `elevator-m22` (`new Preset("elevator-m22", "test-elevator-m22", 22, 46, 8, 2, [], [], [], [])`), le test des noms, et
+    `docs/test-saves.md`.
+  - L'arc A-D5b-22 et l'arc de pile sont verts, et les comptes sont vérifiés.
+  - Les commentaires périmés sont corrigés (`EntitySupport.cs:291-296`, `WorldProxy.cs:2994-2995`, `ScriptedMotion.cs:193-194`,
+    `EntityScriptProxy.cs:279-281`, aux lignes du HEAD de départ).
+  - L'ADR et son index ; la garde `python -B tools/dll-structure/check_names.py --rules` est verte.
+- ⏳ **T8 — Mutations et suites.**
+  - Une mutation par mécanisme, réelle, par script, chacune annulée après (jamais simulée dans un test). Chacune doit faire passer au rouge
+    au moins le témoin indiqué :
+    - copie de la force retirée → UH-16 (montée) ;
+    - récursion retirée → PILE_Z ;
+    - « déplacer d'abord » retiré → DESC ;
+    - plafond retiré → UH-19 ;
+    - plafond sans « déplacer d'abord » → le gel ;
+    - passe de fin retirée → `IsOnGround` ;
+    - règle d'entrée retirée → le quai ;
+    - M4 retiré → le `RidingEntity` périmé ;
+    - mémo XY retiré → PILE_XY ;
+    - `LastTickDelta` remis → UH-14.
+  - Suites : `Alundra.Tests` en Release avec la copie neutralisée, puis en Debug en dernier, zéro échec. Le `cmp` de la DLL. La garde des
+    traces du héros (fins de ligne restaurées par `git checkout`, jamais indexées), et les traces identiques à l'octet.
+- ⏳ **T9 — Verifiers frais**, lancés par la session principale : un sur la tranche entière, un sur les mutations.
+
+##### Acceptation
+- La liste rouge de T1 est rouge au HEAD de départ et verte à la fin, et les gardes restent vertes de bout en bout.
+- UH-14 est la seule épingle existante qui bouge, réépinglée à la valeur du binaire.
+- Les quatre traces du héros et la trace d'intro sont identiques à l'octet.
+- L'arc A-D5b-22 a un écart pied − dessus nul à chaque image de la montée.
+- Chaque mutation de T8 fait passer au rouge son témoin.
+- Suites en Release (copie neutralisée) et en Debug, zéro échec ; `check_names.py --rules` vert.
+- Le moteur, le convertisseur et les données sont sans diff.
+- Deux verifiers frais : CONFIRMED.
+- La recette de l'auteur (carte 22, D-D5B-10) ne bloque pas le merge.
+
+##### Arrêts, budget, retour arrière
+- **Arrêts** :
+  - un écart au binaire sur un vecteur de `vec_d5b_out.txt` ;
+  - une trace du héros qui change ;
+  - plus d'un test existant rouge hors d'UH-14 ;
+  - un témoin vert avant son code ;
+  - une plateforme gelée (T4) ;
+  - un besoin de changer le moteur ;
+  - un site de T0 introuvable ;
+  - un nom refusé par `check_names.py --rules`.
+- **Budget** : un `executor` pour T0 et T1, un pour T2 à T5, un pour T6 et T7, un pour T8 ; deux tentatives chacun. Un `plan-verifier`
+  avant ; deux verifiers frais après.
+- **Retour arrière** : chaque tâche se retire seule par `git revert`, en ordre inverse. T4 ne se retire pas sans T5 et T6, qui en dépendent.
 
 ### 1.2i E19.e — La chaîne du jour 3 et du jour 4 prouvée, et un test statique des opcodes sautés ✅ (E0 à E5 faites et CONFIRMED le 2026-10-03 ; recette E6 : point 1 (livre de la 163) validé le 2026-10-06, jours 3 et 4 non atteints (recette du 2026-10-06, §1.2x))
 

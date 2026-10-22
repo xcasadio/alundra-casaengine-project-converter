@@ -1,0 +1,1 @@
+xy vectors 300 entity-ticks with a mismatch 0 {'ride': 1409, 'copied_xy': 829}
