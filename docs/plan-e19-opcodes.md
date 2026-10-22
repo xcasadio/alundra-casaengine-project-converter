@@ -12274,7 +12274,7 @@ critique, les vecteurs gelés, les tests nommés avec leurs valeurs, les outils)
   d'interface de `0x9E`) et sm4 (`0x97` = `IncreaseMp`, la couture de `0xB3`, la politique de `0x88`) en écrivent un ; sm1 et sm2 aucun (D-E19-2 :
   le binaire l'emporte déjà).
 
-#### 1.4.2 E19.sm1 — Les prédicats d'appui et de zone : `0x60 0x61 0x3C 0x3D` ⏳ (détaillée le 2026-10-22)
+#### 1.4.2 E19.sm1 — Les prédicats d'appui et de zone : `0x60 0x61 0x3C 0x3D` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1)
 
 **Prérequis.** R-SM-1 ; les défauts retenus de Q-sm-13 (A : sm1 sans attendre les objets C4), Q-sm-14 (porter `0x3C`) et Q-sm-15 (accepter
 l'attente réelle de la 226).
@@ -12322,9 +12322,14 @@ RÉFUTÉ ; D21 et D23 NON ÉTABLIS).
   tests traduites (R-SM-3) ; (e) les mesures de départ des suites.
 - ⏳ **T1 — Tests, rouges d'abord** (`sm1/report.md` §5 et `sm1/tests/tests.tsv`, `real-bytes.tsv` ; montage R-SM-4) : les 21 tests RP de
   `0x60`/`0x61` et les 34 tests ZP de `0x3C`/`0x3D` avec leurs valeurs, **plus** (critique P2-b, P3-a) **RP-28** (`0x61`, propriétaire = héros,
-  `LogicEntity` = l'objet : 1 puis 0), **RP-29** (`0x61`, porteur ou membre bloqué : la valeur du binaire, `BlockedByEntity` n'est pas lu),
-  **RP-32** (une entité logique de statut 0 ou 4, groupes `0x80` et `0x81` : la valeur du binaire), **ZP-3D-14** et **ZP-3C-14** (le héros seul dans
-  la boîte, statut 0 puis 4 : 0) ; les vecteurs n'ont aucune entité « anon » avec les groupes `0x85`, `0x86`, `0x89`, `0x8A` (critique P4-b) ; le
+  `LogicEntity` = l'objet : 1 puis 0), et ces cas écrits (révision 1 ; les mondes et les valeurs sont déduits des règles confirmées D1 et D2 —
+  ni statut ni `+0x20` testés par `0x60`/`0x61`, la recherche des types `0x80` et `0x81` ne testant pas le statut de la référence,
+  `EntitySearchService.cs:123-133` — et **rejoués en T0 sur l'interpréteur de la critique**, `sm1/critic/work/mymips.py` et `replay_binary.py` :
+  une différence est un arrêt avant T1) : **RP-29** (`0x61`, `61 81` : l'entité logique L repose sur le héros (`L.RidingEntity` = le
+  `LogicContextEntity` du héros), le héros a `BlockedByEntity` posé : 1) ; **RP-32** (`60 81` : le héros repose sur L, L au statut 0 puis 4 : 1,
+  1 ; `61 81` : L repose sur le héros, L au statut 0 puis 4 : 1, 1) ; **RP-33** (`60 81` : le héros repose sur L, **L a `BlockedByEntity` posé** :
+  1 ; `61 81` : L repose sur le héros, L bloqué : 1) ; **ZP-3D-14** et **ZP-3C-14** (le héros seul dans la boîte avec ses drapeaux de production
+  `0x3118C` — Collidable posé, bit `0x80` de l'animation clair, aucune plateforme —, statut 0 puis 4 : 0, 0) ; les vecteurs n'ont aucune entité « anon » avec les groupes `0x85`, `0x86`, `0x89`, `0x8A` (critique P4-b) ; le
   rejeu OV-01 à OV-07 ; les 53 lignes RB d'octets réels (32 rouges aujourd'hui, 21 gardes) ; CH-01 à CH-03 et **CH-04** (le héros sur
   l'interrupteur de la 136 par la chaîne réelle, puis les octets de 136 C[5] : 1584, rouge 1577) ; les arcs AR-01 à AR-05 sous R-SM-6, AR-01 et
   AR-03 en `RealController: true, Prefabs: true` (critique P3-b).
@@ -12337,9 +12342,12 @@ RÉFUTÉ ; D21 et D23 NON ÉTABLIS).
 - R-SM-8 ; T1 rouge aux valeurs du plan (sauf les gardes nommées), vert après.
 - **Mutants** (R-SM-7) : les 36 de `sm1/tests/mutants.tsv`, avec la ligne `owner_instead_of_logic` corrigée (tuée par RP-07, RP-28, RB-03 et
   RB-12 seulement ; critique P2-b), et les 9 de la critique (`critic/work/mutants_eval4.py`) : `hero_status_bypass` (tué par ZP-3D-14, ZP-3C-14),
-  `logic_not_blocked` et `logic_loaded_normal_deact` (tués par RP-29, RP-32) ; équivalent déclaré : la tuile non signée.
+  `member_not_blocked` (tué par RP-29), `logic_not_blocked` (tué par RP-33) et `logic_loaded_normal_deact` (tué par RP-32), en plus des rejeux
+  OV-01 et OV-02 (révision 1) ; les lignes `owner_instead_of_logic` de `sm1/tests/mutants.tsv` **et** de `sm1/tests/real-bytes-kills.tsv` se lisent
+  corrigées par ce plan ; la règle R6 de `0x61` n'est tenue que par RB-12 et RP-28 ; équivalent déclaré : la tuile non signée.
 - **Preuve de retrait** : retirer les quatre `case` rend rouges exactement les RP, les ZP, OV-01 à OV-05, les 32 lignes rouges de RB, CH-01, CH-03,
-  CH-04, AR-01, AR-02 (par le `Kind`), AR-03 et AR-04 (ceux que la sonde a retenus), et la règle 1 de sm0 ; restent verts OV-06, OV-07, les 21 gardes
+  CH-04 (s'il est retenu), AR-01, AR-02 (par le `Kind`), AR-03 et AR-04 (ceux que la sonde a retenus), et la règle 1 de sm0 (les RP comprennent
+  RP-28, RP-29, RP-32 et RP-33, les ZP comprennent ZP-3D-14 et ZP-3C-14 : rouges aujourd'hui, `Result` reste 7) ; restent verts OV-06, OV-07, les 21 gardes
   RB, CH-02 et AR-05 ; remettre les 187 lignes seules rend rouges les règles 2 et 4 de sm0 et (k1).
 - **La liste de sm0** : −187 lignes ; passée la première : 323 lignes, 321 instructions, 89 cartes (sortent 27, 30, 77, 78, 113, 226, 400), 18
   opcodes.
@@ -12352,12 +12360,13 @@ RÉFUTÉ ; D21 et D23 NON ÉTABLIS).
 - **Arrêts** : R-SM-1 non rempli ; le générateur lève une lecture non classée, ou une empreinte diffère ; un vecteur contredit le modèle de la DLL, ou
   une valeur écrite est contredite après le code ; un test existant hors de R-SM-2 bouge ; la prémisse `RidingEntity` d'un arc est fausse (à
   soumettre : la chaîne de production est en cause) ; un fichier de `Alundra/` autre que les deux du runner ; la liste de sm0 ne perd pas exactement
-  les 187 lignes, ou la suppression n'est pas pure ; un abandon par `--blame-hang-timeout`. Une sonde d'`ArcRun` qui échoue retire l'arc, pas la
-  tranche.
+  les 187 lignes, ou la suppression n'est pas pure ; un abandon par `--blame-hang-timeout` ; une réponse de l'auteur autre que le défaut à Q-sm-13,
+  Q-sm-14 ou Q-sm-15 (révision 1). Une sonde d'`ArcRun` qui échoue retire l'arc, pas la tranche ; **la sonde de l'interrupteur de la 136 qui échoue**
+  (`RidingEntity` du héros n'est pas l'interrupteur) retire CH-04, et l'écart de la chaîne de production est consigné et soumis (révision 1).
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : annuler le commit de T2 puis
   celui de T1.
 
-#### 1.4.3 E19.sm2 — Le mémo de position et ses seuils : `0x6A 0x6B 0x6C 0x6D` ⏳ (détaillée le 2026-10-22)
+#### 1.4.3 E19.sm2 — Le mémo de position et ses seuils : `0x6A 0x6B 0x6C 0x6D` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1)
 
 **Prérequis.** R-SM-1 ; le défaut retenu de Q-sm-16 (le cadre Z de la DLL pour le mémo). Ni E20.g1a, ni D5b, ni E20.c2a (aucune recherche,
 aucun hôte).
@@ -12381,8 +12390,8 @@ erreurs de documentation et de matrice, non de comportement).
   binaire (sans `0x5F` ni `0xBB`).
 
 **Décisions.**
-- **D-SM2-1** — Les règles SM2-R1 à R7 de `sm2/report.md` §1 : les `case` avant `case 0x6E` (`:2025`), l'aide `MovedAtLeastTheThreshold` avant
-  `Wait` (`:2641-2645`) ; un bloc `unchecked` ; **ni `Math.Abs`, ni la forme en pixels `>> 16`** ; les libellés `:153-155` ; aucun type ni fichier
+- **D-SM2-1** — Les règles SM2-R1 à R7 de `sm2/report.md` §1 : les `case` avant `case 0x6E` (`:2025`), l'aide `MovedAtLeastTheThreshold` après
+  `IsRidingTheLogicEntity` (`:2641-2645`), avant le résumé de `Wait` (`:2647`) (révision 1) ; un bloc `unchecked` ; **ni `Math.Abs`, ni la forme en pixels `>> 16`** ; les libellés `:153-155` ; aucun type ni fichier
   neuf dans `Alundra/` ; code proposé non construit : `sm2/proposed/EventProgramRunner.sm2.cs.txt`.
 - **D-SM2-2** — Le test statique du mémo par le flot complet (S1, `sm2/tools/cfg2.py` : états `Init / Saved / Clobbered` par pc et par axe, arêtes
   d'appel et de retour explicites, écrivains du **binaire**) plutôt que la variante linéaire ; la sonde des écrivains de la DLL (S3) est
@@ -12398,7 +12407,11 @@ erreurs de documentation et de matrice, non de comportement).
   V6D (les quatre fichiers de vecteurs, entité logique ≠ propriétaire, sentinelles ; **`Parameters[1]` de départ à une sentinelle non nulle**,
   `0xA5A50001`, pour que l'assertion de sa remise à 0 réfute la boucle ; critique C6) ; H1 à H10 ; RB-55, RB-55n, RB-56, RB-56b, RB-59, RB-307,
   RB-344, RB-442 (la colonne « aujourd'hui » du tick 3 de RB-56 corrigée par la critique F31, non assertée) ; S1f (15 programmes fabriqués) ; **S1**
-  (trois `Fact` écrits : l'état de chaque lecture, la liste des 11 lectures neuves, les comptes par carte : 70, 59, 11, 0, 4 ; critique C7) ; S4 ; S3.
+  (trois `Fact` écrits : l'état de chaque lecture, la liste des 11 lectures neuves, les comptes par carte : 70, 59, 11, 0, 4 ; critique C7) ; S4 et
+  S3, définis dans la table de `sm2/report.md` §3 (S4 : les 8 sites de la carte 60 atteints seulement par les enregistrements 0 et 9 à bit `0x80`
+  clair ; S3 : la sonde des écrivains de `Parameters[2..4]`, deux appels par opcode sur hôte nu, attendu `{0B 1C 1D 1E 1F 20 21 22 23 37 6A}`, P4
+  par `6A` seul) (révision 1). La sortie de `tools/run_all.py` régénère `proposed/RealBytesExpected.txt` avec la valeur « aujourd'hui » non corrigée
+  du tick 3 de RB-56 (critique C5) : non assertée, elle se lit corrigée par la critique.
 - ⏳ **T2 — Le commit unique de R-SM-2** : les quatre `case`, l'aide, les trois libellés, le miroir, les 129 lignes retirées, `sm2` dans
   `ClosedOwners`, les comptes.
 - ⏳ **T3 — Les arcs** retenus (R-SM-6). ⏳ **T4 — Plan, verifier frais.**
@@ -12407,10 +12420,15 @@ erreurs de documentation et de matrice, non de comportement).
 
 - R-SM-8 ; et `rg -c "Math\.Abs\(" Alundra/Events/EventProgramRunner.cs` vaut toujours 2 ; `rg -n "state\.Parameters\[4\]"
   Alundra/Events/EventProgramRunner.cs` donne exactement 2 lignes, le `6A` et le `6D` (critique C2).
-- **Mutants** (R-SM-7) : les 17 de la préparation avec **les ensembles rouges exacts de la critique** (`sm2/critic/evidence/my_killmatrix.txt`,
-  critique C1 : par exemple M9 tué par H1 seul, M10 par H6 seul, M2 par H3a et H3c et 282 lignes de vecteurs, et non 366) ; équivalents déclarés :
-  `position − memo` et `(sbyte)v[2]` ; les mutants de S1 (`sm2/evidence/memo_flow_mutants.txt`).
-- **Preuve de retrait** : retirer le code seul rend rouges exactement les 37 tests de comportement (4 V, 25 H sans H10, 8 RB) et la règle 1 de sm0 ;
+- **Mutants** (R-SM-7) : les 17 de la préparation et **M18** (`0x6A` écrit aussi `Parameters[5]`, tué par les assertions de sentinelles de V6A ;
+  critique C6) ; **la part H et RB** de leurs ensembles rouges est celle de la critique (`sm2/critic/evidence/my_killmatrix.txt`, critique C1 : par
+  exemple M9 tué par H1 seul, M10 par H6 seul parmi les H et RB, M2 par H3a et H3c et 282 lignes de vecteurs, et non 366) ; **les ensembles complets**
+  (les V, S3, et les tests existants que M14 à M16 touchent, puisqu'ils mutent du code existant de `Wait`, `Break` et `InitializeEventData`) sont
+  régénérés par le script de R-SM-7 sur les tests finaux, le filtre étant les classes neuves pour M1 à M13, M17 et M18, et la suite entière pour M14
+  à M16 ; arrêt : un mutant sans aucun test rouge (révision 1) ; les assertions de positions inchangées sont des gardes qu'aucun mutant ne réfute,
+  déclarées comme telles ; équivalents déclarés : `position − memo` et `(sbyte)v[2]` ; les mutants de S1 (`sm2/evidence/memo_flow_mutants.txt`).
+- **Preuve de retrait** : retirer le code seul rend rouges exactement les 37 tests de comportement (4 V, 25 H sans H10, 8 RB), **S3** (`0x6A`
+  n'est plus un écrivain observé : il tombe dans `UnknownOpcode`, et aucun autre code n'écrit `Parameters[4]` ; révision 1) et la règle 1 de sm0 ;
   remettre les libellés seuls, H10 seul ; remettre les 129 lignes seules, les règles 2 et 4 de sm0 et (k1) ; retirer les classes de tests et les
   vecteurs, rien.
 - **La liste de sm0** : −129 lignes ; passée la première : 381 lignes, 379 instructions, 90 cartes (sortent 55, 56, 57, 59, 307, 344), 17 opcodes.
@@ -12421,9 +12439,11 @@ erreurs de documentation et de matrice, non de comportement).
 - **Arrêts** : R-SM-1 non rempli ; une ligne de vecteur contredite par l'un des deux modèles, ou un octet lu sans membre ; une valeur écrite d'un
   test H ou RB contredite ; un mutant sans aucun test rouge ; les comptes de S1 ou une empreinte qui changent (`sm2/evidence/export_hashes.txt`) ; un
   test existant rouge ; un fichier de `Alundra/` autre que les deux du runner ; un nom refusé ; un abandon par `--blame-hang-timeout`.
-- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : `git revert` du commit de code.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : `git revert` du commit de code ;
+  **les tests de T1 sont dans ce commit** (leur passage rouge est consigné avant le code, dans l'arbre de travail ; révision 1), si bien que le revert
+  ne laisse aucun test rouge commité.
 
-#### 1.4.4 E19.sm3 — Les prédicats de contact, de groupe et de `ForceZ` : `0xA9 0xAA 0xB2 0xB4-0xB7 0x9E` ⏳ (détaillée le 2026-10-22)
+#### 1.4.4 E19.sm3 — Les prédicats de contact, de groupe et de `ForceZ` : `0xA9 0xAA 0xB2 0xB4-0xB7 0x9E` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1)
 
 **Prérequis.** R-SM-1 ; les défauts retenus de Q-sm-4 (A : porter `0xB2` maintenant) et de Q-sm-6 (porter `0xB4` et `0xB7` ; `0x9E` avec son
 lecteur de case et un ADR, dans un commit à part). E20.g1a indépendante (les tests posent `PlatformEntity` à la main).
@@ -12458,12 +12478,18 @@ le coin de la case (5, 46) où un `Result` 1 déjà relu change désormais le ch
   et **les quatre fichiers de test renommés au rangement de R5** (les noms proposés ont le préfixe `Alundra` et seraient refusés ; critique C4).
 - ⏳ **T1 — Tests, rouges d'abord** (`sm3/report.md` §3, `sm3/tests.tsv`) : M1, les tests unitaires U-A9-01 à 14, U-AA-01 à 11, U-B2-01 à 14,
   U-B4/B5/B6 (18), U-B7-01 à 06, U-ALL-01, U-ALL-02, U-LBL-01, **plus** U-A9-15 et U-AA-12 (deux entités distinctes de même `EntityRefId`, la
-  collision sur celle qui n'est pas dans le groupe : 0 ; critique C2) et U-ALL-03 (propriétaire ≠ entité logique pour A9, AA et B4 à B6 avec le
-  type `0x80` ; critique C7) ; les vecteurs à trou portent `ref_id −1` (critique C8) ; M4, U-9E-01 à 09 (Q-sm-6) ; M2, la `[Theory]` des 40
+  collision sur celle qui n'est pas dans le groupe : 0 ; critique C2) et U-ALL-03 (critique C7 ; propriétaire = un proxy P sans contact et de
+  `ForceZ` 0, entité logique = un PNJ L ; révision 1, valeurs déduites des règles R1, R2 et R4 et rejouées en T0 sur l'interpréteur de la
+  critique, `sm3/critic/work/mymips.py`) : `A9 81` avec `L.XCollisionEntity` = le héros : 1 ; `AA 81` avec `héros.XCollisionEntity` = L : 1 ;
+  `B4 80` avec `L.ForceZ` = 5 : 1 ; `B5 80` avec `L.ForceZ` = −5 : 1 ; `B6 80` avec `L.ForceZ` = 0 et `P.ForceZ` = 5 : 1 (une lecture du
+  propriétaire donne 0 partout) ; les vecteurs à trou portent `ref_id −1` (critique C8) ; M4, U-9E-01 à 09 (Q-sm-6), **écrits dans le commit de `0x9E`** (révision 1) ; M2, la `[Theory]` des 40
   instructions d'octets réels ; M3, les arcs sous R-SM-6, S3-A6a hors de la case (5, 46) ou avec le drapeau `0x81F4` éteint (critique C5).
 - ⏳ **T2 — Le commit unique de R-SM-2** : les sept `case`, les libellés, le miroir, les 42 lignes retirées, `sm3` dans `ClosedOwners`, les
-  comptes, **et (k2) de sm0** (les trois lignes de la 440 qui partagent `@1140` sont des lignes de sm3 : (k2) est retiré ou réécrit dans ce commit ;
-  critique C1). Puis **le commit de `0x9E`** (D-SM3-2) et l'ADR.
+  comptes, **et le retrait de (k2) de sm0** (les trois lignes de la 440 qui partagent `@1140` sont des lignes de sm3 ; après leur retrait, aucune
+  ligne de la liste ne partage son pc ; critique C1 ; révision 1). Le code de test existant touché par ce commit, liste fermée : le miroir de
+  `IntroTraceHarnessTests.cs`, la classe et la liste de sm0 (les 42 lignes, `ClosedOwners`, les comptes de (k1), le retrait de (k2)) ;
+  `AlundraStoryChainOpcodeAudit.cs` n'est pas touché. Puis **le commit de `0x9E`** (D-SM3-2) : le `case`, le membre `TryReadWalkability`, le
+  libellé `:206`, l'entrée `0x9E` du miroir, les tests M4, et l'ADR.
 - ⏳ **T3 — Les arcs** retenus (R-SM-6). ⏳ **T4 — Plan, verifier frais, recette.**
 
 ##### Acceptation
@@ -12472,11 +12498,13 @@ le coin de la case (5, 46) où un `Result` 1 déjà relu change désormais le ch
 - **Mutants** (R-SM-7) : les 56 de `sm3/vectors/mutants.json` et ceux de la critique (`critic/work/extra_mutants.py`), dont l'identité contre
   `EntityRefId` en A9 et AA (tuée par U-A9-15, U-AA-12) et la lecture du propriétaire (tuée par U-ALL-03) ; équivalents déclarés : la garde de
   nullité de A9, le court-circuit `n1 == 0` de B2, l'ordre d'itération d'un prédicat « il existe », `_width` au lieu de 52 pour `9E`.
-- **Preuve de retrait** (critique C1) : retirer le code seul (les cas, les libellés, le miroir) rend rouges exactement les tests U de M1 (et de M4 si
-  `9E` est retenu), les 40 lignes de la `[Theory]` M2, les arcs retenus sauf S3-A3b (une garde verte par coïncidence), S3-A6a sur son seul `Kind`, et
-  (c1) de sm0 ; remettre les 42 lignes seules (`ClosedOwners` gardant `sm3`) rend rouges (c2), **(c4)** et (k1).
-- **La liste de sm0** : −42 lignes ; passée la première : 468 lignes, 468 instructions, 91 cartes (sortent 423 à 426 et 440), 16 opcodes ; variante
-  Q-sm-4 (B), `B2` attend E20.g1a : 32 lignes retirées, 10 au propriétaire neuf `g1a` entré dans le vocabulaire (D-SM0-4), 478, 478, 91, 17.
+- **Preuve de retrait** (critique C1 ; révision 1 : à l'état d'après le commit unique, avant celui de `0x9E`) : retirer le code du commit unique (les
+  sept cas, leurs libellés, leurs entrées du miroir) rend rouges exactement les tests U de M1, les 40 lignes de la `[Theory]` M2, les arcs retenus sauf
+  S3-A3b (une garde verte par coïncidence), S3-A6a sur son seul `Kind`, et (c1) de sm0 ; remettre les 42 lignes seules (`ClosedOwners` gardant `sm3`,
+  (k2) retiré) rend rouges exactement (c2), **(c4)** et (k1) ; après le commit de `0x9E`, retirer son `case` rend rouges exactement U-9E-01 à 09.
+- **La liste de sm0** : −42 lignes ; passée la première : 468 lignes, 468 instructions, 91 cartes (sortent 423 à 426 et 440), 16 opcodes. Une
+  réponse B à Q-sm-4 (`B2` attend E20.g1a) est un arrêt : la tranche est à réviser (les tests U-B2, les lignes M2 et les arcs S3-A6 de `B2` sortent,
+  10 lignes passent à un propriétaire `g1a`) (révision 1).
 - **Recette de l'auteur** (non bloquante) : Nirude 421 et 423 à 426 ; la grotte des fées 160 ; le cauchemar d'Elenes 54 ; Meia Dream 440 ; Inoa 258
   et 298.
 
@@ -12484,12 +12512,12 @@ le coin de la case (5, 46) où un `Result` 1 déjà relu change désormais le ch
 
 - **Arrêts** : R-SM-1 non rempli ; une valeur contredite par le binaire ou les vecteurs ; une lecture non mappée ; un test vert avant le code (hors
   gardes nommées) ; un rouge autre que l'ensemble attendu ; une clé du corpus qui change ; E20.g1a fusionnée avant (son recensement des recherches
-  de types 4 et 11 doit nommer `B2`, `docs/plan-e20-heros.md`, g1a) ; un besoin de toucher au moteur, au convertisseur ou aux données ; un nom refusé ;
+  de types 4 et 11 doit nommer `B2`, `docs/plan-e20-heros.md`, g1a) ; une réponse de l'auteur autre que le défaut à Q-sm-4 ou Q-sm-6 (révision 1) ; un besoin de toucher au moteur, au convertisseur ou aux données ; un nom refusé ;
   un abandon par `--blame-hang-timeout`.
-- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : le commit unique, puis celui de
-  `0x9E`, chacun se retire seul.
+- **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : dans l'ordre inverse, le commit de
+  `0x9E` d'abord, puis le commit unique (les deux touchent le runner, la table et le miroir ; révision 1).
 
-#### 1.4.5 E19.sm4 — Les opcodes d'action : `0x72 0x88 0x96 0x97 0xB3` ⏳ (détaillée le 2026-10-22)
+#### 1.4.5 E19.sm4 — Les opcodes d'action : `0x72 0x88 0x96 0x97 0xB3` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1)
 
 **Prérequis.** R-SM-1 ; les défauts retenus de Q-sm-1 (A : `0x97` ajoute des PM), Q-sm-2 (le montant est l'octet 1), Q-sm-3 (`Overwrite` seul),
 Q-sm-11 (`0x15`, `0x66`, `0x7A` laissés sautés) et Q-sm-12 (`0x88` à indice ≥ 3 : rien d'écrit, un avertissement) ; **sérialisée avec E20.h4a et
@@ -12503,7 +12531,7 @@ le héros marche seul vers le nord puis la cinématique commence ; en Meia Dream
 la 306, les deux petites plateformes flottantes (sprite 56) reviennent à l'état normal ; à la 40, les interrupteurs poussoirs (sprite 89) gardent
 leur changement d'orientation (critique C-6 ; l'atteignabilité de 442 et 306 relève de Q-sm-8).
 
-**Faits** (`sm4/report.md`, la critique `sm4/critic/check.md` faisant foi : F1 à F24 CONFIRMÉS, F21 RÉFUTÉ (un compte), F25 NON ÉTABLI (les arcs)).
+**Faits** (`sm4/report.md`, la critique `sm4/critic/check.md` faisant foi : F1 à F24 CONFIRMÉS (F20 avec réserves) sauf F21 RÉFUTÉ (un compte) ; F25 NON ÉTABLI (les arcs)).
 - Les gestionnaires `0x8003FA24` (`0x72`, taille 1), `0x8004011C` (`0x88`, 3), `0x800409A8` (`0x96`, 3), `0x80040A2C` (`0x97`, 2), `0x80041750`
   (`0xB3`, 9) n'écrivent jamais `Result` ; `0x88` lit `{2, 3, 4}` à `0x80023D2C` (l'indice 3 est le texte « No.1 ») ; `0x96` fait `Hp = min(HpMax,
   Hp + octet1)` en 32 bits ; `0x97` appelle `0x8004DF10` (la disposition des stats : `+4` PM, `+6` PM max, `+8` argent) ; `0xB3` écrit quatre
@@ -12517,15 +12545,17 @@ leur changement d'orientation (critique C-6 ; l'atteignabilité de 442 et 306 re
   `MovePlayer`) ; une aide `PlayerManager.IncreaseMp(GameState, int)` près de `SetPlayerMp` (`:1970`), `ClampToShort` étant privé (`:647`) ; la
   couture `internal void TickPad.Overwrite(uint hold, uint pressed, uint released, uint interval)` (`Alundra/Hero/TickPad.cs`, entre `Update` et
   `Reset`) appelée par `Overwrite((uint)(v[1] | (v[2] << 8)), …)` pour chacun des quatre mots (critique C-4 : `v` est un `int[]`, le précédent est
-  `0x2F`, `:1829`) ; les libellés `:184`, `:199` (et, au choix, `:198`, `:227`) ; le témoin `UnknownOpcode_KnownSize_SkipsBySize`
+  `0x2F`, `:1828`) ; les libellés `:184`, `:199` (et, au choix, `:198`, `:227`) ; le témoin `UnknownOpcode_KnownSize_SkipsBySize`
   (`AlundraEventProgramRunnerTests.cs:331-343`) repointé sur `0xB9` (taille 2), encore sauté ; un ADR (R-SM-9).
 
 ##### Tâches
 
 - ⏳ **T0 — Annexe, sondes** (aucun code) : rejouer les vecteurs depuis une copie (370 et 21) et l'interpréteur indépendant de la critique
-  (`sm4/critic/work/cmips.py`, `replay_critic.py`) ; les tests de chargement jetables (R-SM-6) ; le nombre de redéclenchements de l'E de la 306
+  (`sm4/critic/cmips.py`, `sm4/critic/replay_critic.py`) ; les tests de chargement jetables (R-SM-6) ; le nombre de redéclenchements de l'E de la 306
   (le sprite 56 porte `DeactivateOnAnimationEnd`, critique C-7) ; les citations traduites (R-SM-3).
-- ⏳ **T1 — La couture puis les tests, rouges d'abord** (`sm4/report.md` §3, `sm4/named-tests-audit.json`) : la couture `Overwrite` et ses tests
+- ⏳ **T1 — La couture puis les tests, rouges d'abord** (`sm4/report.md` §3, `sm4/named-tests-audit.json` ; pour U96-2 et U97-14, **le plan
+  prévaut** sur `named-tests-audit.json`, `tests-catalog.json` et `removal-matrix.json`, qui portent l'ancien U96-2 et n'ont pas U97-14 ;
+  révision 1) : la couture `Overwrite` et ses tests
   S-1 à S-3 dans un commit à part ; U72-1 à 6 ; U88-1 à 10 et U88-3b ; U96-1 à 16, **U96-2 réécrit** (propriétaire = un PNJ en case 1, entité logique
   = le héros en case 0, `96 80 32` : le héros 1/20 → 20, le PNJ inchangé ; critique C-2) et RB-394-C3 monté avec un propriétaire PNJ distinct du héros
   logique ; U97-1 à 13 et **U97-14** (`97 FF`, PM 0/4 : 4 ; critique C-3) ; UB3-1 à 7 ; le rejeu V-72, V-88, V-96, V-97, V-B3, V-OOT et V-MANIFEST
@@ -12540,11 +12570,17 @@ leur changement d'orientation (critique C-6 ; l'atteignabilité de 442 et 306 re
 - R-SM-8.
 - **Mutants** (R-SM-7) : les 25 de `sm4/mutants-matrix.json` (M97d décrit comme « aucun plafond ni plancher, repli 16 bits », sa définition
   calculée ; critique C-8), **M96h** (la recherche part du propriétaire, tué par U96-2 réécrit) et **M97f** (l'octet lu signé, tué par U97-14) ;
-  MS-1 à MS-8 exécutés pour de bon en T3.
+  MS-1 à MS-8 exécutés pour de bon en T3, chacun avec une mutation concrète et un tueur qui ne dépend d'aucun arc
+  (révision 1) : MS-1, `0x96` écrit aussi `PlayerStats` (U96-1, U96-12) ; MS-2, `0x96`/`0x97` appellent `SnapDisplayedLifeAndMagic` (U96-15,
+  U97-13) ; MS-3, `0x88` d'indice 2 passe par `DestroyEntity` (U88-3b) ; MS-4, `0xB3` écrit `LastPadState` au lieu de `TickPad` (UB3-1, UB3-6) ;
+  **MS-5**, le `case 0xB3` range les quatre mots dans un champ que `TickPad.Update` applique au tick suivant au lieu d'écrire `TickPad` tout de
+  suite (dans `EventProgramRunner.cs` et `TickPad.cs` : tué par UB3-6, dont le `2F` qui suit dans le même programme lit le mot forcé, et par
+  ARC-161a s'il est retenu) ; MS-6, `Overwrite` remet les compteurs à zéro (S-1, UB3-7) ; MS-7, `Overwrite` recalcule les fronts (S-2, S-3) ;
+  MS-8, `IncreaseMp` coupe en `short` (U97-9).
 - **Preuve de retrait** (`sm4/report.md` §5.1, découlant de `sm4/tests-catalog.json`) : retirer un `case` rend rouges exactement ses tests de la
   table (par exemple `0x97` : U97-1, U97-2, U97-5 à U97-12, **U97-14**, V-97, RB-452-B3, RB-394-C3, RB-475-B2 et ARC-452 s'il est retenu) ; retirer
   les libellés, P-LBL seul ; retirer tous les tests neufs, rien ; retirer le code seul rend aussi rouge la règle 1 de sm0 ; garder les 90 lignes avec
-  le code, les règles 2 et 4 de sm0.
+  le code et les comptes de la règle 5 mis à jour rend rouges les règles 2 et 4 de sm0 et (k1) (révision 1).
 - **La liste de sm0** : −90 lignes ; passée la première : 420 lignes, 418 instructions, 53 cartes, 16 opcodes (sept cartes gardent d'autres sites :
   29, 54, 159, 160, 199, 421, 442).
 - **Recette de l'auteur** (non bloquante) : une salle de sauvegarde (452) ; Stenia (161) ; Meia Dream 442 et la 306 (Q-sm-8) ; la 40.
@@ -12552,7 +12588,7 @@ leur changement d'orientation (critique C-6 ; l'atteignabilité de 442 et 306 re
 ##### Arrêts, budget, retour arrière
 
 - **Arrêts** : R-SM-1 non rempli ; les empreintes des vecteurs ou du binaire ; une valeur contredite après le code ; un arc bloqué avant l'opcode pour
-  une raison sans rapport (repli sur les octets réels, à soumettre) ; RB-SHAPES ou RB-SAVEROOMS rouge à T0 (l'export a changé) ; un test existant hors
+  une raison sans rapport (repli sur les octets réels, à soumettre) ; RB-SHAPES ou RB-SAVEROOMS rouge à leur premier passage en T1 (l'export a changé ; révision 1) ; un test existant hors
   de la liste fermée (le témoin, `AlundraTickPadTests`, le miroir, sm0) bouge, ou une trace change ; un besoin de toucher à `WorldProxy` (Q-sm-3
   autre que le défaut) ; une autre tranche a changé `PlayerManager.cs`, `EventProgramRunner.cs` ou `TickPad.cs` en cours de route ; un abandon par
   `--blame-hang-timeout`.
