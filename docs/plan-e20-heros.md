@@ -5954,7 +5954,7 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
 **f6b.**
 - **État de la relecture (2026-10-18)** : REVISE (`66d86eb`), REVISE (`2fca8c7`), READY à la clôture (`358f2f0`) ; puis, la précision du point 3
   (révision 3) ouvrant une époque neuve, REVISE à sa clôture (`9a2490e`, un P2 : le point de lecture `inventory` précède les tirages d'E9, faits à
-  l'application dans `RunFrame`), corrigé par FIX (point 3, révision 4) ; **f6b est en pause de relecture** (Q-F6B-R, §2).
+  l'application dans `RunFrame`), corrigé par FIX (point 3, révision 4) ; f6b a été en pause de relecture (Q-F6B-R, §2) ; **READY** à la relecture supplémentaire du 2026-10-22.
 - **R et S** : l'oracle des boules relâche à R = 96 et fait naître à S = 107 (`bin/run_balls.py:2`) ; « 112 pour R = 101 de l'arène » est faux (l'arène de
   la charge relâche à 91, `Alundra.Tests/AlundraWaveSwordSupport.cs:18` ; 112 est le S de la vague) : les tests de boule relâchent à R = 96.
 - **Le R de (p1)** (révision 2 ; remplace « R = 101 de l'arène » du (p1) de §1.22.2) : (p1) tourne dans l'arène de la charge de la carte 14, qui
@@ -6329,7 +6329,7 @@ gestionnaires (E14) ; le tir en l'air hors de la sonde.
 
 ---
 
-### 1.22 E20.f6 — Les boules de feu et de glace : C60 et E9 (f6a, f6b) ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; f6a **READY** (`9a2490e`) ; f6b relecture **en pause** après sa clôture, Q-F6B-R ; une relecture de plus accordée le 2026-10-22)
+### 1.22 E20.f6 — Les boules de feu et de glace : C60 et E9 (f6a, f6b) ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; f6a **READY** (`9a2490e`) ; f6b relecture en pause après sa clôture (Q-F6B-R), puis **READY** à la relecture supplémentaire accordée par l'auteur le 2026-10-22)
 
 **Révision au HEAD (2026-10-18).** Le bloc « Révision au HEAD » en tête du §1.20 vaut aussi pour cette section (points communs et puces « f6a » et « f6b ») et fait foi sur son texte où il diffère.
 
@@ -8266,7 +8266,7 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : rendre les cinq entrées à leurs bouchons ; la phase A reste inerte.
 
-### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a, h4b1, h4c1, h4c2, h4d2, h4e1 **READY** ; h4d1 détaillée, relecture en pause ; h4b1b, h4b2, h4e2 à h4f2 esquissées)
+### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a, h4b1, h4c1, h4e1 **READY** ; h4d1 **READY** à sa relecture supplémentaire du 2026-10-22 ; h4c2 et h4d2 READY puis **à réviser** après les réponses du 2026-10-22 ; h4b1b abandonnée ; h4b2, h4e2 à h4f2 esquissées)
 
 **Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-h4/`, `report.md` et `check.md`,
 la critique faisant foi : aucun fait de comportement réfuté ; D13, le sprite 154, la portée de Q-H4-2 et du §6 corrigés ; ses statistiques de
@@ -8776,7 +8776,7 @@ la blessure du héros (E20.c2b).
 
 ---
 
-#### 1.31.5 E20.h4d1 — Le feu 2 : le pilote `0x80035C64`, E28, l'annulation et le tampon du tremblement ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`ae1fe95`, un P2 : la phrase des six vecteurs de (d1)), corrigé (révision 3) ; relecture **en pause**, Q-H4D1-R ; une relecture de plus accordée le 2026-10-22)
+#### 1.31.5 E20.h4d1 — Le feu 2 : le pilote `0x80035C64`, E28, l'annulation et le tampon du tremblement ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`ae1fe95`, un P2 : la phrase des six vecteurs de (d1)), corrigé (révision 3) ; relecture en pause (Q-H4D1-R), puis **READY** à la relecture supplémentaire accordée par l'auteur le 2026-10-22)
 
 **Prérequis.** h0a, h4a ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H4D1-1 (A, l'ordre de la DLL) et Q-H4D1-2 (A, le tampon de
 session) (révision 2). Ni f5, ni f6a (le sprite 21 a une vitesse nulle et pas de gravité), ni h4b.
@@ -9357,9 +9357,9 @@ les trois entrées `0x31`.
 | Q-E5 | (2026-10-18) L'herbe repousse à chaque entrée dans la carte (le binaire ne garde rien) : est-ce voulu ? Défaut retenu : oui **Réponse de l'auteur (2026-10-22)** : le défaut : l'herbe repousse à chaque entrée. | Tranché le 2026-10-22 |
 | O-E-1 | (2026-10-18, relecture d'E20.f4) Les oracles de coupe d'E20.e (`cut_m14`, et `wave_grass` d'E20.f3) ne modélisent pas le pas par image du générateur (le harnais de `bin/fw.py:91-99` d'`e20-f4f6` non plus : `rng0` = `rng1` sur un tick sans tirage) ; la DLL avance d'un pas par tick (ADR-0066) ; le nombre de pas par case coupée dépend de la valeur tirée : sans ce pas dans l'oracle, (w1) et (w2) d'E20.e divergeraient et sa sonde T0 (g2) s'arrêterait. Règle d'f4 à reprendre : la clé refaite avec le pas par image (`_pf`), lue à un tick par image (bloc du §1.20, point 3) | E20.e (T0 (g), à relire à l'exécution) |
 | Q-F4-R | (2026-10-18) E20.f4 : trois relectures (deux REVISE puis la clôture REVISE, un P2 de précision sur la clé `_pf`, corrigé) ; la règle met f4 en pause. Autoriser une relecture de plus après le correctif ? Défaut : non, f4 reste en pause jusqu'à la réponse (son exécution attend de toute façon la fin du chantier) **Réponse de l'auteur (2026-10-22)** : « oui » : une relecture de clôture de plus pour f4, **après** la réponse à O-E0A5-2/4, qui garde ou retire la sonde P-F4-3 (relire avant ce retrait demanderait une autre relecture). | Tranché le 2026-10-22 ; relecture après O-E0A5-2/4 |
-| Q-F6B-R | (2026-10-18) E20.f6b : READY à sa clôture, puis REVISE à la clôture de l'époque ouverte par la précision du point 3 (un P2 sur le point de lecture du générateur, corrigé en révision 4) ; la règle met f6b en pause. Autoriser une relecture de plus après le correctif ? Défaut : non, f6b reste en pause jusqu'à la réponse **Réponse de l'auteur (2026-10-22)** : « oui » : une relecture de clôture de plus, lancée le 2026-10-22 (résultat au §1.22.2). | Tranché le 2026-10-22 |
+| Q-F6B-R | (2026-10-18) E20.f6b : READY à sa clôture, puis REVISE à la clôture de l'époque ouverte par la précision du point 3 (un P2 sur le point de lecture du générateur, corrigé en révision 4) ; la règle met f6b en pause. Autoriser une relecture de plus après le correctif ? Défaut : non, f6b reste en pause jusqu'à la réponse **Réponse de l'auteur (2026-10-22)** : « oui » : une relecture de clôture de plus, lancée le 2026-10-22 (résultat au §1.22.2). **READY** à cette relecture (2026-10-22). | Tranché le 2026-10-22 |
 | Q-H3B-R | (2026-10-18) E20.h3b : deux REVISE puis la clôture REVISE (un P2 : une tolérance d'un tick dans ses arrêts, contraire à son acceptation exacte), corrigé en révision 3 ; la règle met h3b en pause. Autoriser une relecture de plus ? Défaut : non (h3b attend aussi g1a, g2a et la fin du chantier) **Réponse de l'auteur (2026-10-22)** : le défaut : h3b reste en pause ; elle attend aussi E20.c2b (D-E20-52). | Tranché le 2026-10-22 |
-| Q-H4D1-R | (2026-10-18) E20.h4d1 : deux REVISE puis la clôture REVISE (un P2 : une phrase de (d1) contredisait les vecteurs du pilote), corrigé en révision 3 ; la règle met h4d1 en pause. Autoriser une relecture de plus ? Défaut : non **Réponse de l'auteur (2026-10-22)** : « oui » : une relecture de clôture de plus, lancée le 2026-10-22 (résultat au §1.31.5). | Tranché le 2026-10-22 |
+| Q-H4D1-R | (2026-10-18) E20.h4d1 : deux REVISE puis la clôture REVISE (un P2 : une phrase de (d1) contredisait les vecteurs du pilote), corrigé en révision 3 ; la règle met h4d1 en pause. Autoriser une relecture de plus ? Défaut : non **Réponse de l'auteur (2026-10-22)** : « oui » : une relecture de clôture de plus, lancée le 2026-10-22 (résultat au §1.31.5). **READY** à cette relecture (2026-10-22). | Tranché le 2026-10-22 |
 | Q-G3-a | (2026-10-18) Après E20.g3, les tonneaux, troncs, pierres, torches et les quatre objets du sanctuaire (248 placements, hors de l'histoire actuelle) arrêtent Alundra comme des caisses, mais ne se soulèvent qu'avec g2c ; sur la carte 4, les grosses pierres bloquent des chemins jusqu'au Gant, comme l'original. (A, défaut retenu) tous solides, sans code de plus ; (B) les laisser traversables jusqu'à g2c (un nouvel écart, des tests écrits deux fois) ; (C) faire g2c avant g3 (un T0 qui décode C4 d'abord) **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G3-b | (2026-10-18) Entre g3 et g1b, les caisses seraient des murs que l'on ne peut que sauter (sur le navire, il faudrait se caler contre le haut de la porte et sauter sur la seule caisse basse, malgré le roulis). (A, défaut retenu) g3 et g1b fusionnés ensemble ; (B) fusionner g3 d'abord (la recette ne montre que le blocage) **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G3-c | (2026-10-18) Quand on soulève la caisse du bas d'une pile, l'original fait tomber celle du dessus de 16 px en 8 images ; le portage garde l'ancienne règle de chute des objets de carte jusqu'à E19.h2 (la chute peut durer autrement, ou se faire d'un coup). (A, défaut retenu) écart documenté jusqu'à E19.h2, mesuré en g4b ; (B) donner tout de suite la loi du binaire à la caisse qui perd son appui (un nouveau site du marqueur de Z logique) ; (C) attendre E19.h2 pour le critère « pile » **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
