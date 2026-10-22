@@ -611,7 +611,7 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.c2 | Le héros touché : entrée `0x80031A68` (toucheur et cases dangereuses), `0x31`/`0x3A`, invulnérabilité `0x78` et clignotement, PV vers `PlayerStats` et le HUD, `UpdateItemEffectState` (table de défense, bottes, régénération) et le pilote `0x8003634C` en vrai (D-E20-14), chemin `controlFlags == 0x20`, pas de mort (D-E20-5) | oracle de `0x80031A68` ; arcs | Les cœurs baissent au contact, le héros clignote, il ne meurt pas |
 | E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord ; sur l'eau profonde, le héros nage (E20.i, 2026-10-10 : le garde d'E20.d1 a disparu) |
 | E20.e0 | Apparition d'entités et butin (D-E20-17) : `SpawnWarpEntity` (`0x80039F58`, 102 appelants) par indice de sprite global, tirage du butin à l'apparition (`0x80032A40`), lâcher à la mort (`0x80032B90`) avec son veto, objet ramassable (gestionnaire C255), avance du générateur pseudo-aléatoire une fois par tick après la mise à jour du monde (`0x8002BD14`) | oracle ; arcs | Rien de visible seul ; recette avec E20.e |
-| E20.eR | (2026-10-22, D-E20-60 ; détaillée au §1.27a) Renommage de `BalanceLevel` (l'octet 9 de l'en-tête de carte) en `TileCutEffectId` à la source : l'exporteur Tiled de l'analyseur et sa doc, la ré-extraction des cartes, la copie `data-extracted/`, le convertisseur et l'export | export complet, preuve par manifeste | aucune (rien ne change en jeu) |
+| E20.eR | (2026-10-22, D-E20-60 ; détaillée au §1.27a ; **faite et CONFIRMED le 2026-10-22**, analyseur `d687972`, parent `ce7e1ac7`) Renommage de `BalanceLevel` (l'octet 9 de l'en-tête de carte) en `TileCutEffectId` à la source : l'exporteur Tiled de l'analyseur et sa doc, la ré-extraction des cartes, la copie `data-extracted/`, le convertisseur et l'export | export complet, preuve par manifeste | aucune (rien ne change en jeu) |
 | E20.e | Effets du héros et herbe coupée : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage), `CheckAndTriggerTileEffect`, butin tiré par E20.e0 | oracle ; arcs | Pas et poussière ; l'herbe se coupe à l'épée et à la charge ; argent et cœurs tombent et se ramassent |
 | E20.e2 | (2026-10-22, révision 3 d'E20.e ; prérequis E20.e) Effets du héros sortis d'E20.e : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage) ; les bouchons « Stub (E20.e) » de `PlayerAnimationEffects` y renvoient | oracle ; arcs | Pas et poussière |
 | E20.f | Autres armes (D-E20-7) : charge et aura, fléau et rebond, baguettes, arcs, projectiles par l'apparition d'E20.e0 et les gestionnaires propres au héros, vague de l'épée C61 et flèches chargées C94 (D-E20-18), `0xC0`/`0xC1` | oracle ; arcs | Sauvegarde de test avec les armes (à créer) |
@@ -7474,7 +7474,7 @@ composée exige de changer le moteur ; un test hors de la liste prédite bouge ;
 phase B se retire seule (les deux inscriptions et le rafraîchissement) ; la phase A ne change aucun comportement (ses fichiers neufs se retirent, ses
 membres additifs dans `ItemTables`, `NativeEffects`, `DialogueDirector`, `IEntityWorldContext` et `WorldProxy` reviennent par `git revert`).
 
-### 1.27a E20.eR — Le nom de l'octet 9 de l'en-tête de carte : `TileCutEffectId` ⏳ (détaillée le 2026-10-22 ; révision 1 READY le 2026-10-22 ; prérequis d'E20.e ; D-E20-60, ADR-0079)
+### 1.27a E20.eR — Le nom de l'octet 9 de l'en-tête de carte : `TileCutEffectId` ✅ (détaillée le 2026-10-22 ; révision 1 READY le 2026-10-22 ; **faite et CONFIRMED le 2026-10-22** par deux verifiers frais ; prérequis d'E20.e ; D-E20-60, ADR-0079)
 
 Lecture seule du 2026-10-22 au HEAD `1d0b6953`, avec une répétition à blanc complète dans le scratchpad (rien écrit dans le dépôt, le
 remaster ni `data-extracted/`). Risque : données extraites et projet exporté (comme E20.e0x et E19.G0b).
@@ -7568,7 +7568,7 @@ ne lit encore cet octet. Après la tranche, E20.e lit `TileCutEffectId`.
 
 ##### Tâches
 
-- ⏳ **T0 — Relevés de départ** (commit de docs, avant tout changement).
+- ✅ **T0 — Relevés de départ** (commit de docs, avant tout changement).
   - L'annexe `docs/plan-e20-annexe/e20-er/` est versée avec la révision 1 (fichiers et SHA-1 dans son `SHA1SUMS.txt`) :
     - `report.md` (la lecture) ;
     - `dry_run.sh` (la répétition à blanc : `git archive HEAD` de l'analyseur, renommage dans la copie, construction Release,
@@ -7585,9 +7585,9 @@ ne lit encore cet octet. Après la tranche, E20.e lit `TileCutEffectId`.
     - la place libre sur D:.
   - L'exécuteur rejoue la répétition à blanc depuis une copie de `dry_run.sh` dont `S` pointe un dossier neuf du scratchpad.
     Il doit retrouver les mêmes 483 lignes.
-- ⏳ **T1 — Export de référence au HEAD**, avant tout changement : fenêtre calme, commande d'export ci-dessus ; sortie 0,
+- ✅ **T1 — Export de référence au HEAD**, avant tout changement : fenêtre calme, commande d'export ci-dessus ; sortie 0,
   `Verification: PASSED` ; `m1` contre `m0` : `report.json` seul (sinon on explique l'écart et on rebase, comme E14.a1a).
-- ⏳ **T2 — L'analyseur** (un appel Bash par commande git, `git -C <chemin absolu>`). `git switch -c chantier/e20er-tilecuteffectid` ;
+- ✅ **T2 — L'analyseur** (un appel Bash par commande git, `git -C <chemin absolu>`). `git switch -c chantier/e20er-tilecuteffectid` ;
   `TiledMapExporter.cs:275` devient `TiledProperty.Int("TileCutEffectId", gameMap.Info.BalanceLevel)` (CRLF conservé) ; la note du
   nom exporté est ajoutée à la description de la ligne 78 par un remplacement d'octets. Contrôles : `git diff --stat` = ces deux
   fichiers, une ligne chacun ; le blob garde ses 5 lignes à `0xD7` ; construction Release du projet de l'extracteur, 0 erreur ;
@@ -7602,28 +7602,28 @@ ne lit encore cet octet. Après la tranche, E20.e lit `TileCutEffectId`.
   Dans `TiledMapExporter.cs`, `rg -c '"BalanceLevel"'` ne trouve rien et `rg -c '"TileCutEffectId"'` trouve 1. Indexation fichier par fichier,
   un commit (`fix(extractor): export the map header byte 9 as the TileCutEffectId Tiled property (E20.eR, D-E20-60)`). Ensuite
   `MGUI` et `log.txt` sont toujours non indexés.
-- ⏳ **T3 — Ré-extraction en dossier neuf.** Construction Release fraîche du commit de T2 ; lancement **hors du dépôt** vers
+- ✅ **T3 — Ré-extraction en dossier neuf.** Construction Release fraîche du commit de T2 ; lancement **hors du dépôt** vers
   `D:/development/repo/Alundra Remake/remaster-data-extracted-er`. Console attendue (comparée à la répétition à blanc) :
   `BGM 44: rendered SILENT …`, `Extracted BGM: rendered=45 silent=1 failed=0 (of 46)`, `pitch guard hits: sequencer=18 sfx=0 exporter=0`.
   Preuves : 4 536 fichiers ; `diff -rq` contre `data-extracted/` = exactement `expected_extract_changes.txt` (483 lignes, aucun
   « Only in ») ; `verify_extraction_diff.py` = 483 sur 483 égaux une fois le nom remis, une occurrence chacun, valeur 2 ; `diff -rq`
   contre le dossier de la répétition à blanc vide. Le sens de chaque écart est ainsi prouvé par construction, ce qui évite
   l'incident du texte non décodé du 2026-09-19. Tout autre écart arrête la tranche.
-- ⏳ **T4 — Miroir** (hors dépôt, rien n'est supprimé, depuis PowerShell pour `robocopy`) : copie de sauvegarde
+- ✅ **T4 — Miroir** (hors dépôt, rien n'est supprimé, depuis PowerShell pour `robocopy`) : copie de sauvegarde
   `…/Alundra Remake/data-extracted.bak-er` (`robocopy /E`) ; ancien remaster renommé `remaster-data-extracted.bak-er` (identique à
   `data-extracted/` avant : `diff -rq` vide) ; `remaster-data-extracted-er` renommé `remaster-data-extracted` ; `robocopy … /MIR` vers
   `data-extracted/` ; preuve finale `diff -rq` vide (4 536) ; les huit sauvegardes antérieures intactes.
-- ⏳ **T5 — Pointeur du sous-module** : `git add alundra-datas-analyser` seul ; `git diff --cached --submodule=short` ne montre que
+- ✅ **T5 — Pointeur du sous-module** : `git add alundra-datas-analyser` seul ; `git diff --cached --submodule=short` ne montre que
   `fc16872` vers le nouveau commit ; ni `CasaEngineMonogame`, ni `tools/` ne sont indexés ; commit
   (`chore(analyser): export the map header byte 9 as TileCutEffectId (E20.eR)`).
-- ⏳ **T6 — Test rouge, puis les noms** (pas de commit encore). D'abord le test réel de R6 dans `BalanceTablesTests.cs`. Les chemins
+- ✅ **T6 — Test rouge, puis les noms** (pas de commit encore). D'abord le test réel de R6 dans `BalanceTablesTests.cs`. Les chemins
   des cartes sont déjà utilisés par `Alundra.Tests/Hero/FlailBounceTests.cs:306`, `Hero/PadSnapshotFreezeTests.cs:152-158` et
   `Transitions/WarpArrivalTests.cs:111-115`. `Alundra.Tests` en Release (copie neutralisée, voir Commandes) avec
   `--blame-hang-timeout 60s`, au premier plan : le nouveau
   test est **rouge** (export périmé) et rien d'autre ne l'est. Puis la clé de `BalanceTablesTests.cs:155`, les commentaires
   `BalanceTables.cs:27` et `CellMetadataWriter.cs:13`, et `docs/formats/cells-companion.md:73`. Les tests du convertisseur gardent leur
   compte. `check_names.py --rules` vert.
-- ⏳ **T7 — Export 1, puis export 2 tout de suite**, fenêtre calme. `m2` contre `m1` : CHANGED = exactement les 966 chemins de
+- ✅ **T7 — Export 1, puis export 2 tout de suite**, fenêtre calme. `m2` contre `m1` : CHANGED = exactement les 966 chemins de
   `predicted_export_changes.tsv` plus `report.json`, ADDED et REMOVED vides ; le SHA-1 de chacun égal à sa prédiction (un petit script
   compare l'ensemble, la ligne de commande ne porte pas 967 chemins) ; `AssetInfos.json` identique ; `report.json` : `Errors` 0,
   mêmes `Warnings`, mêmes compteurs, `OutputFileCount` inchangé, `OutputSizeBytes` = T1 + 2 898 + l'écart du
@@ -7631,7 +7631,7 @@ ne lit encore cet octet. Après la tranche, E20.e lit `TileCutEffectId`.
   construction ne les a déposés (voir Commandes). `Verification: PASSED`. `rg -l --no-ignore BalanceLevel alundra-project` ne
   montre plus que `Data/balance.json`, et `rg -l --no-ignore TileCutEffectId alundra-project` montre les 966 fichiers prédits. `m3` contre
   `m2` : `report.json` seul.
-- ⏳ **T8 — Suites et commit du parent.**
+- ✅ **T8 — Suites et commit du parent.**
   - `Alundra.Tests` en Release, avec la copie neutralisée.
   - Puis en Debug, en dernier et sans la copie neutralisée : c'est la construction qui dépose `alundra-project/Alundra.dll` et
     `Alundra.pdb`.
@@ -7640,7 +7640,7 @@ ne lit encore cet octet. Après la tranche, E20.e lit `TileCutEffectId`.
   - Garde des traces (`git diff --ignore-cr-at-eol --exit-code`) ; le bruit de fins de ligne des traces est restauré par
     `git checkout --`.
   - Un commit pour le test, les deux commentaires et la doc de format.
-- ⏳ **T9 — Plan et vérification.**
+- ✅ **T9 — Plan et vérification.**
   - Mises à jour du plan : la ligne « E20.eR » du tableau du §1.1, Q-E3b faite, les résultats mesurés de cette section, l'annexe.
     La révision 3 du §1.27 dit déjà qu'E20.e lit `TileCutEffectId` et exige E20.eR faite.
   - Un `verifier` frais (lancé par la session principale) rejoue l'export, les deux listes et le test.
@@ -7682,6 +7682,30 @@ ne lit encore cet octet. Après la tranche, E20.e lit `TileCutEffectId`.
   4. En dernier, un export complet en place, en fenêtre calme.
      - `m` contre `m1` : CHANGED = `report.json` seul.
      - `rg -l --no-ignore TileCutEffectId alundra-project` vide.
+
+##### Résultats (2026-10-22)
+
+Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ `83e990ac`. Mesures complètes :
+`docs/plan-e20-annexe/e20-er/results.md` ; état de départ : `state-T0.md`.
+- **Commits.** Analyseur, branche `chantier/e20er-tilecuteffectid` : `d687972` (`TiledMapExporter.cs:275`, ligne 78 de
+  `datas-bin-structure.md`, octets préservés, 5 lignes à `0xD7`). Parent : `9beac3ca` (T0), `4adf9393` (pointeur `fc16872` →
+  `d687972`), `ce7e1ac7` (le test réel, les deux commentaires, `docs/formats/cells-companion.md`), `85f511e9` (résultats).
+- **Ré-extraction** (79 s, 4 536 fichiers) : 483 lignes de `diff -rq`, l'ensemble de `expected_extract_changes.txt`, 483 sur 483 égaux une
+  fois le nom remis, valeur 2 partout ; `diff -rq` vide contre la répétition à blanc rejouée.
+- **Miroir** : `diff -rq` remaster/`data-extracted/` vide (4 536) ; sauvegardes `data-extracted.bak-er` et `remaster-data-extracted.bak-er`
+  sous `D:/development/repo/Alundra Remake/`, les huit antérieures intactes, rien supprimé. Le texte décodé n'a pas régressé (vérifié
+  par le second verifier sur `data/map_389.json`).
+- **Export** : T1 `report.json` seul ; export 1 : 967 changements = les 966 prédits (0 SHA-1 différent) + `report.json` ; export 2 :
+  `report.json` seul ; `AssetInfos.json` identique ; `OutputSizeBytes` conforme au calcul ; `rg -l --no-ignore BalanceLevel alundra-project`
+  = `Data/balance.json` seul.
+- **Tests** : le nouveau test (`BalanceTablesTests.TheMapHeaderByte9_IsExportedAsTileCutEffectId_AndTheOldNameIsGone_OnTheRealMaps14_389_And_390`)
+  seul rouge avant l'export ; `Alundra.Tests` 5 098 verts en Release (copie neutralisée) et en Debug (5 097 + 1) ; convertisseur 854 ;
+  `cmp` de la DLL Debug identique ; `check_names.py --rules` vert.
+- **Verifiers frais** : le rejeu (un export de plus : `report.json` seul ; les 966 SHA-1 ; `diff -rq` vide ; les tests) et l'adversarial
+  (octets de la doc, sens des écarts, sauvegardes, suites complètes) : **CONFIRMED** tous deux.
+- **Écarts au plan, sans effet** : le `report.json` de T1 n'a pas été gardé (compteurs comparés entre les exports 1 et 2) ; `diff -rq`
+  met entre apostrophes les chemins à espace, retirées avant `verify_extraction_diff.py`.
+- **Remarque** : `docs/demarrage-nouvelle-partie.md:67` cite encore `BalanceLevel` ; c'est une doc historique gardée (R7, D-R-6), non modifiée.
 
 ### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ⏳ (détaillée le 2026-10-18 ; **révision 3 du 2026-10-22** (réponses de l'auteur), nouvelle époque : relue REVISE (ligne d'enveloppe E20.e2 manquante, renvoi de ligne périmé), corrigée, puis READY le 2026-10-22 (`plan-verifier` frais) ; exécutable après E20.eR, E20.e0c révisée et faite)
 
