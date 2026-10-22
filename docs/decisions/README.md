@@ -90,3 +90,6 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0074 | An entity made from a record by a script opcode takes part in the tick that sees it born and makes its first animation switch at its creation | Accepted | 2026-10-16 |
 | ADR-0075 | The Alundra gameplay DLL is restructured: one folder, one namespace, no `Alundra` prefix in type names | Accepted | 2026-10-16 |
 | ADR-0076 | The XA tracks are converted to WAV by the converter and played by the DLL | Accepted | 2026-10-22 |
+| ADR-0077 | Pickup sparks and grass-cut effects go through the effect queue | Accepted | 2026-10-22 |
+| ADR-0078 | The engine draws entity shadows and the DLL pushes their state | Accepted | 2026-10-22 |
+| ADR-0079 | The map header's byte 9 is exported as `TileCutEffectId`, renamed at the source | Accepted | 2026-10-22 |
