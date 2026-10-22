@@ -22,6 +22,7 @@ using Alundra.Events;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -34,7 +35,7 @@ namespace Alundra.Tests;
 /// n/o/p warp-departure tests arm the REAL <see cref="BgmFadeDirector.Instance"/>, which
 /// <see cref="SoundPlayer.PlaySfx"/> reads directly (fact 8) - so this class must never race
 /// <see cref="AlundraBgmFadeDirectorTests"/>/<see cref="AlundraMusicPlayerTests"/> on that shared state
-/// either, same reasoning as <see cref="AlundraWorldProxyAudioInstallationTests"/>.
+/// either, same reasoning as <see cref="WorldProxyAudioInstallationTests"/>.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraWarpDepartureTests : IDisposable
@@ -123,7 +124,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
     /// <c>proxy.Initialize(new Entity())</c>, which only sets <c>Owner</c> and leaves the entity's own
     /// <c>GameplayProxy</c> null - a gap <see cref="FrameSyncPasses.SyncAnimation"/> silently
     /// no-ops on, since it keys off <c>entity.GameplayProxy</c>, not <c>proxy.Owner</c>) - same pattern
-    /// as <see cref="NewNpcEntityWithEventTrigger"/>/<see cref="AlundraWorldProxyEntityManipulationTests.NewEntityWithProxy"/>.</summary>
+    /// as <see cref="NewNpcEntityWithEventTrigger"/>/<see cref="WorldProxyEntityManipulationTests.NewEntityWithProxy"/>.</summary>
     private static EntityScriptProxy NewPlayer(int posXPixels, int posYPixels)
     {
         var entity = new Entity { Name = "player", GameplayProxyClassName = typeof(EntityScriptProxy).FullName! };

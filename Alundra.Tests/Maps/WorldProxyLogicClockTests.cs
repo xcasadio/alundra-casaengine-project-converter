@@ -8,19 +8,19 @@ using Alundra.Events;
 using Alundra.Physics;
 using Alundra.Hero;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Bug fix (user-reported runtime pacing bug - see <see cref="LogicClock"/>'s own class doc): the
 /// integration half of the fix's acceptance - a bare <see cref="EntityScriptProxy"/>, driven
 /// entirely through its own public <see cref="EntityScriptProxy.Update"/> (never calling
 /// <see cref="EntityScriptProxy.PickEventTrigger"/>/<see cref="EntityScriptProxy.RunPickedEvent"/>
-/// directly, unlike <see cref="AlundraWorldProxyEventPassTests"/>), against a host sharing ONE
+/// directly, unlike <see cref="WorldProxyEventPassTests"/>), against a host sharing ONE
 /// <see cref="LogicClock"/> - the same wiring <see cref="Alundra.Maps.WorldProxy"/> uses in
 /// production. Confirms the script pick/run pass now dispatches at 50/s regardless of the caller's own
 /// frame rate, not at whatever rate <see cref="EntityScriptProxy.Update"/> itself is called.
 /// </summary>
-public class AlundraWorldProxyLogicClockTests
+public class WorldProxyLogicClockTests
 {
     private sealed class CountingRunner : IEventProgramRunner
     {
@@ -67,7 +67,7 @@ public class AlundraWorldProxyLogicClockTests
     /// (<c>entity.Initialize()</c>) - needed because <see cref="EntityScriptProxy.Update"/>'s own
     /// tail (<see cref="FrameSyncPasses.SyncAnimation"/>/<see cref="FrameSyncPasses.SyncTransform"/>)
     /// reads <c>Owner</c>, which only a real <c>Initialize(Entity)</c> call sets - a bare
-    /// <c>new AlundraEntityScriptProxy()</c> (as <see cref="AlundraWorldProxyEventPassTests"/> uses) is not
+    /// <c>new AlundraEntityScriptProxy()</c> (as <see cref="WorldProxyEventPassTests"/> uses) is not
     /// enough here since this test drives the full <see cref="EntityScriptProxy.Update"/>, not just
     /// its pick/run half directly.
     /// </summary>

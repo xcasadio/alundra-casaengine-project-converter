@@ -4,7 +4,7 @@ using Xunit;
 using Alundra.Cameras;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Covers the pure math of the DEBUG-only right-stick camera pan
@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 /// <c>CasaEngineGame.InputComponent.GamePadManager</c> and the "camera" entity/<c>Camera2dComponent</c>
 /// lookup in <see cref="WorldProxy.UpdateDebugCameraPan"/> itself.
 /// </summary>
-public class AlundraWorldProxyDebugCameraPanTests
+public class WorldProxyDebugCameraPanTests
 {
     [Fact]
     public void ComputeDebugCameraPanOffset_StickInsideDeadZone_LeavesOffsetUnchanged()

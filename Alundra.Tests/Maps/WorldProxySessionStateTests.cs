@@ -8,7 +8,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Pins the PRODUCTION wiring of D-T-3 (docs/plan-transitions-carte.md, slice T1):
@@ -27,9 +27,9 @@ namespace Alundra.Tests;
 /// class that builds a proxy" criterion and resets the three session carriers in constructor (the
 /// isolation-carrying half: xunit builds a fresh instance per test) and in Dispose (hygiene).
 /// </summary>
-public sealed class AlundraWorldProxySessionStateTests : IDisposable
+public sealed class WorldProxySessionStateTests : IDisposable
 {
-    public AlundraWorldProxySessionStateTests()
+    public WorldProxySessionStateTests()
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -110,7 +110,7 @@ public sealed class AlundraWorldProxySessionStateTests : IDisposable
 
     private static string BuildTempProjectWithEmptySpriteRecords()
     {
-        var root = Path.Combine(Path.GetTempPath(), "AlundraWorldProxySessionStateTests_" + Guid.NewGuid().ToString("N"));
+        var root = Path.Combine(Path.GetTempPath(), "WorldProxySessionStateTests_" + Guid.NewGuid().ToString("N"));
         var dataDir = Path.Combine(root, "Data");
         Directory.CreateDirectory(dataDir);
         File.WriteAllText(Path.Combine(dataDir, "sprite-records.json"), "[]");

@@ -33,6 +33,7 @@ using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
 using Alundra.Maps;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests.Support;
 
@@ -286,7 +287,7 @@ internal static class SaveGameDirectorTestSupport
     internal static void InitializeWithRealProject(WorldProxy proxy, World world)
     {
         var previousProjectPath = EngineEnvironment.ProjectPath;
-        EngineEnvironment.ProjectPath = AlundraWorldProxyGlobalFreezeTests.FindProjectRoot();
+        EngineEnvironment.ProjectPath = WorldProxyGlobalFreezeTests.FindProjectRoot();
         try
         {
             proxy.InitializeWithWorld(world);

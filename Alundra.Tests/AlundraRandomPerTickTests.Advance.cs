@@ -12,6 +12,7 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -146,7 +147,7 @@ public sealed partial class AlundraRandomPerTickTests
     public void AFrameThatDepartsToAWarp_BetweenTwoFramesOfOneTick_MakeExactlyTwoStepsInAll()
     {
         const uint seed = 0x5A5A5A5A;
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         BackdropWarpDepartureSupport.SetPrivateField(proxy._backdropStage, "_clearColorApplied", true); // the headless montage has no view for the clear colour.

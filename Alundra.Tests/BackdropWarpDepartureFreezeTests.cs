@@ -14,6 +14,7 @@ using Alundra.Rendering.Backdrops;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -46,7 +47,7 @@ public sealed class BackdropWarpDepartureFreezeTests : IDisposable
     [Fact]
     public void Update_DuringAWarpDeparture_PushesEveryFrameWithZeroTicks_ThenOneTickAfterTheMapEntry()
     {
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
@@ -96,7 +97,7 @@ public sealed class BackdropWarpDepartureFreezeTests : IDisposable
     [Fact]
     public void RealMap389Sea_DuringAWarpDeparture_AutoScrollAndTimersDoNotAdvance()
     {
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
@@ -104,7 +105,7 @@ public sealed class BackdropWarpDepartureFreezeTests : IDisposable
         var scrolling = new ScrollingLayerService();
         stage.AttachService(scrolling);
         BackdropWarpDepartureSupport.SetPrivateField(stage, "_clearColorApplied", true);
-        stage.Load(world, AlundraWorldProxyGlobalFreezeTests.FindProjectRoot());
+        stage.Load(world, WorldProxyGlobalFreezeTests.FindProjectRoot());
         Assert.True(scrolling.LayerCount > 0);
 
         for (var frame = 0; frame < 10; frame++)
@@ -162,7 +163,7 @@ public sealed class BackdropWarpDepartureRainTests : IDisposable
         string projectRoot;
         try
         {
-            projectRoot = AlundraWorldProxyGlobalFreezeTests.FindProjectRoot();
+            projectRoot = WorldProxyGlobalFreezeTests.FindProjectRoot();
         }
         catch
         {
@@ -249,7 +250,7 @@ internal static class BackdropWarpDepartureSupport
         proxy.PlayerEntity = player;
 
         WarpDirector.Instance.AttachToWorld(
-            new GameManager(null), soundPlayer: null, AlundraWorldProxyGlobalFreezeTests.FindProjectRoot());
+            new GameManager(null), soundPlayer: null, WorldProxyGlobalFreezeTests.FindProjectRoot());
 
         var portal = new PortalRecord
         {

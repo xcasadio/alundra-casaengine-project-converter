@@ -5,7 +5,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Physics;
 using Alundra.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// E20.e0k3 (docs/plan-e20-heros.md section 1.18.3, T1, phase A): the pure clamp of the step to the grid of the map, <see cref="ScriptedMotion.ClampStepToMapEdge"/>, the binary's forces pass (<c>0x800366FC</c>-<c>0x800367E0</c>).
@@ -13,7 +13,7 @@ namespace Alundra.Tests;
 /// (the same on Y with <c>0x3C00000</c>). Each case without effect is set next to a positive case in the same assertion. The comparison is STRICT, as the binary's two <c>slt</c> (<c>0x80036774</c>, <c>0x80036788</c>, <c>0x800367AC</c>,
 /// <c>0x800367C0</c>): a step that arrives exactly on a bound is neither bounded nor flagged (the oracle key <c>edge-exact</c>).
 /// </summary>
-public sealed class AlundraMapEdgeClampTests
+public sealed class MapEdgeClampTests
 {
     private const int HighX = 0x4E00000;
     private const int HighY = 0x3C00000;

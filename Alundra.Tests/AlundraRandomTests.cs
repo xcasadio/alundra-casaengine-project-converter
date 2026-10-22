@@ -1,12 +1,13 @@
 using Xunit;
 using Alundra.Rng;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// xunit collection covering every test class that touches the process-wide static
 /// <see cref="GameRandom.RandomSeed"/> (D7, docs/plan-e9d-mode-cellulaire.md) - today
-/// <see cref="AlundraRandomTests"/> and <see cref="AlundraWorldProxyCellularRandomWiringTests"/>. Classes
+/// <see cref="AlundraRandomTests"/> and <see cref="WorldProxyCellularRandomWiringTests"/>. Classes
 /// sharing a collection never run in parallel with each other, which is what keeps them from racing on
 /// that shared mutable static (xunit runs different test CLASSES in this project in parallel by
 /// default) - same pattern as <see cref="AlundraMusicPlayerSingletonCollection"/>.

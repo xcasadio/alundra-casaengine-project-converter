@@ -7,7 +7,7 @@ using Alundra.Maps.Loop;
 using Alundra.Cameras;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Covers the pure math of E5.a's scripted camera follow (docs/plan-e5-camera.md) -
@@ -21,12 +21,12 @@ namespace Alundra.Tests;
 /// Not covered here (headless-untestable, needs a live World/Camera2dComponent): the thin wiring around
 /// that state transition (<see cref="WorldProxy.UpdateCameraFollow"/>'s own null-guard/field
 /// writes, and <see cref="WorldProxy.ResolveDebugCameraOnce"/>) -
-/// same shape as <see cref="AlundraWorldProxyDebugCameraPanTests"/>'s own doc on
+/// same shape as <see cref="WorldProxyDebugCameraPanTests"/>'s own doc on
 /// <see cref="WorldProxy.UpdateDebugCameraPan"/>. <see cref="AlundraEventProgramRunnerTests"/> covers
 /// opcodes 0x67/0x68/0x69 (the only way <see cref="WorldProxy.EntityFollowedByCamera"/> is written
 /// at runtime, besides pawn adoption).
 /// </summary>
-public class AlundraWorldProxyCameraFollowTests
+public class WorldProxyCameraFollowTests
 {
     // -----------------------------------------------------------------------------------------
     // ResolveCameraLookAt - port of GameEngine.cs:1747-1752's own gate

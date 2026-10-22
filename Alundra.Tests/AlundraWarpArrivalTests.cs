@@ -26,6 +26,7 @@ using Alundra.Transitions;
 using Alundra.Hero;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -37,7 +38,7 @@ namespace Alundra.Tests;
 ///
 /// <c>AdoptPlayerPawn</c> is PRIVATE and only reached past <see cref="WorldProxy.InitializeWithWorld"/>'s
 /// two early returns (a real "tileMap" entity with loaded <see cref="TileMapData"/>) - same montage as
-/// <see cref="AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World"/>, built independently here for the
+/// <see cref="WorldProxyGlobalFreezeTests.BuildRealMap389World"/>, built independently here for the
 /// REAL map 390 export (this chantier's own arrival map, §1.1.d), plus a hand-built hero pawn possessed by
 /// a real <see cref="HeroController"/> registered into <c>World.PlayerControllers</c> by
 /// reflection (the engine's own <c>InitializePlayerControllers</c> needs a full asset-catalog pawn prefab
@@ -187,7 +188,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
     }
 
     /// <summary>Same headless (no GraphicsDevice) real-map <see cref="TileMapComponent"/> montage as
-    /// <see cref="AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World"/>, for map 390 instead of 389 -
+    /// <see cref="WorldProxyGlobalFreezeTests.BuildRealMap389World"/>, for map 390 instead of 389 -
     /// this chantier's own arrival map (§1.1.d).</summary>
     private static World BuildRealMap390World()
     {

@@ -4,15 +4,15 @@ using Alundra.Physics;
 using Alundra.Entities;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps.Loop;
 
 /// <summary>
 /// Bug fix (user-reported runtime pacing bug - see <see cref="LogicClock"/>'s own class doc for the
 /// full diagnosis/log evidence): unit coverage for the shared 50 Hz logic clock in isolation, before any
 /// integration with <see cref="Alundra.Entities.EntityScriptProxy"/>/<see cref="Alundra.Maps.WorldProxy"/>
-/// (see <see cref="AlundraWorldProxyLogicClockTests"/> for that half).
+/// (see <see cref="WorldProxyLogicClockTests"/> for that half).
 /// </summary>
-public class AlundraLogicClockTests
+public class LogicClockTests
 {
     private const float FixedTickSeconds = ScriptedMotion.FixedTickSeconds; // 1/50
 

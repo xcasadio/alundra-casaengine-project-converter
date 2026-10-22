@@ -13,6 +13,7 @@ using Alundra.Rendering.Backdrops;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -52,7 +53,7 @@ public sealed class BackdropCellularPushProductionTests : IDisposable
     [Fact]
     public void Update_PushesFrame_ToBothServices_AtTheSameProductionCallSite()
     {
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
@@ -91,7 +92,7 @@ public sealed class BackdropCellularPushProductionTests : IDisposable
     [Fact]
     public void Update_PushesFrame_WithNoCellularServiceAttached_ScrollingServiceStillPushed()
     {
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 

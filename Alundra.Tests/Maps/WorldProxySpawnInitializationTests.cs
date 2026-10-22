@@ -7,7 +7,7 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Covers the spawn-time entity initialization port added to <see cref="WorldProxy"/>:
@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 /// <see cref="EntitySpawnFactory.ApplySpawnInitialization"/>/<see cref="EntitySpawnFactory.SetEntityDimensions"/>
 /// (ported from <c>EntityManager.InitializeEntity</c>/<c>SetEntityDimensions</c>).
 /// </summary>
-public class AlundraWorldProxySpawnInitializationTests
+public class WorldProxySpawnInitializationTests
 {
     private static TileMapObjectData NewRecord() => new() { Id = 0, Name = "Entity_0" };
 

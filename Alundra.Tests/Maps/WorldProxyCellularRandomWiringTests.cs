@@ -12,7 +12,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// D-E9d, E19.m2 (D-E19-66, ADR-0032) - <c>AlundraWorldProxy.InitializeWithWorld</c> wires
@@ -28,9 +28,9 @@ namespace Alundra.Tests;
 /// and <see cref="LibcRandom.State"/>.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraWorldProxyCellularRandomWiringTests : System.IDisposable
+public sealed class WorldProxyCellularRandomWiringTests : System.IDisposable
 {
-    public AlundraWorldProxyCellularRandomWiringTests()
+    public WorldProxyCellularRandomWiringTests()
     {
         // D-T-14 (docs/plan-transitions-carte.md): this class constructs an AlundraWorldProxy, so it resets the session carriers in its constructor (the
         // isolation-carrying element) and in Dispose (hygiene).
@@ -57,10 +57,10 @@ public sealed class AlundraWorldProxyCellularRandomWiringTests : System.IDisposa
         componentsField!.SetValue(game, new Microsoft.Xna.Framework.GameComponentCollection());
 
         var cellularComponent = new CellularLayerComponent(game);
-        AlundraWorldProxyGlobalFreezeTests.SetProperty(game, nameof(CasaEngineGame.CellularLayerComponent), cellularComponent);
+        WorldProxyGlobalFreezeTests.SetProperty(game, nameof(CasaEngineGame.CellularLayerComponent), cellularComponent);
 
         var world = new World { Name = "TestWorld" };
-        AlundraWorldProxyGlobalFreezeTests.SetProperty(world, nameof(World.Game), game);
+        WorldProxyGlobalFreezeTests.SetProperty(world, nameof(World.Game), game);
 
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // no "tileMap" entity -> early return AFTER the wiring above.

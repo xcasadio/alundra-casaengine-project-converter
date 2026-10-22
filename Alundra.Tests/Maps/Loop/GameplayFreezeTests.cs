@@ -16,7 +16,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps.Loop;
 
 /// <summary>
 /// E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): <see cref="GameplayFreeze"/> - the engine's
@@ -24,9 +24,9 @@ namespace Alundra.Tests;
 /// exactly. The production call sites (a real hero, a real ladder, a real frame with zero logic ticks) are
 /// in <see cref="AlundraLadderClimbTests"/>; the world-level wiring is the last test here.
 /// </summary>
-public sealed class AlundraGameplayFreezeTests : IDisposable
+public sealed class GameplayFreezeTests : IDisposable
 {
-    public AlundraGameplayFreezeTests()
+    public GameplayFreezeTests()
     {
         WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
         GameState.Instance.ResetForTests();
@@ -201,7 +201,7 @@ public sealed class AlundraGameplayFreezeTests : IDisposable
 
     /// <summary>The production site: the end of <see cref="WorldProxy.Update"/> freezes every
     /// spawned entity while MenuOpen is posed, and thaws it once MenuOpen is lifted. Same headless montage as
-    /// <see cref="AlundraWorldProxyGlobalFreezeTests"/>'s own camera test; the spawned entity is placed in
+    /// <see cref="WorldProxyGlobalFreezeTests"/>'s own camera test; the spawned entity is placed in
     /// the world proxy's own spawned list, where every real spawn path puts it.</summary>
     [Fact]
     public void WorldUpdate_MenuOpen_FreezesASpawnedEntity_LiftingItThawsIt()

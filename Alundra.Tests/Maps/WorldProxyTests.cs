@@ -8,7 +8,7 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Covers <see cref="WorldProxy"/>'s per-record entity creation, split into
@@ -28,7 +28,7 @@ namespace Alundra.Tests;
 /// <see cref="World"/> (<c>World.AddEntity</c> / <c>InternalAddEntities</c> calling
 /// <c>Entity.InitializeWithWorld</c>).
 /// </summary>
-public class AlundraWorldProxyTests
+public class WorldProxyTests
 {
     /// <summary>
     /// Builds a synthetic "Entities" object-layer record the same way the converter's

@@ -19,13 +19,14 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
 /// <summary>
 /// xunit collection covering every test class that touches the SESSION-scoped
 /// <see cref="BgmPlayer.Instance"/> singleton (D-C-6, docs/plan-e11c-musique.md, slice C1) -
-/// today <see cref="AlundraMusicPlayerTests"/> and <see cref="AlundraWorldProxyAudioInstallationTests"/>
+/// today <see cref="AlundraMusicPlayerTests"/> and <see cref="WorldProxyAudioInstallationTests"/>
 /// (whose <c>InstallAudioSystems</c> call now re-points that same instance). Classes sharing a
 /// collection never run in parallel with each other, which is what keeps them from racing on that
 /// shared mutable state (xunit runs different test CLASSES in this project in parallel by default).

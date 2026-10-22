@@ -9,6 +9,7 @@ using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Physics;
 using Alundra.Entities;
 using Alundra.Maps;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -27,7 +28,7 @@ namespace Alundra.Tests;
 /// spawn, and <see cref="EntityScriptProxy.UpdateFloorHeight"/>, per tick) is covered instead by
 /// <see cref="AlundraFloorHeightTests"/>'s own production-call-site test (per-tick) - <c>AdoptPlayerPawn</c>
 /// itself is not headless-reachable in this test suite (needs a live <c>AlundraPlayerController</c> pawn -
-/// see <see cref="AlundraWorldProxyUpdateCharacterizationTests"/>'s own documented limitation), so its
+/// see <see cref="WorldProxyUpdateCharacterizationTests"/>'s own documented limitation), so its
 /// spawn-time write is verified by code inspection only, same as every other of its fields.
 ///
 /// Platform inheritance (<c>PlatformEntity</c>, MoveEntity 0x80037E88-0x80037E90) has no test here:

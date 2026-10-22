@@ -15,7 +15,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// E20.e0k1 (docs/plan-e20-heros.md section 1.18.1, T3, phase B): the state that reads the map reaches an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, in the real world of map 14 (<see cref="ArcRun"/>,
@@ -24,7 +24,7 @@ namespace Alundra.Tests;
 /// born by the interface are the ones of an entity of the same sprite created from a record.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraMapStateWorldTests
+public sealed class MapStateWorldTests
 {
     private const int Arrow = 3;
     private const int FireBall = 11;

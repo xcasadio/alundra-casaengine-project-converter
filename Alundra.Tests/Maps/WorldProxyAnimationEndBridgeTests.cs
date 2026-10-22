@@ -7,7 +7,7 @@ using Alundra.Maps.Loop;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Covers the "Alundra's animation is too fast" fix's DLL-side bridge: reading End/ChainTo off
@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 /// back to the original's Hold ("freeze") / Chain ("play this other animation next") semantics,
 /// EntityManager.cs:257-281.
 /// </summary>
-public class AlundraWorldProxyAnimationEndBridgeTests
+public class WorldProxyAnimationEndBridgeTests
 {
     // -----------------------------------------------------------------------------------------
     // BuildAnimationEndByAnimDirection

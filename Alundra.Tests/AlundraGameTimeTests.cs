@@ -6,6 +6,7 @@ using Alundra.Entities;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
+using Alundra.Tests.Maps.Loop;
 
 namespace Alundra.Tests;
 
@@ -185,7 +186,7 @@ public sealed class AlundraGameTimeTests : IDisposable
     }
 
     /// <summary>The production call site: the head of <see cref="WorldProxy.Update"/>. Same headless
-    /// montage as <see cref="AlundraGameplayFreezeTests"/>' world-level test ("TestWorld" has no tileMap
+    /// montage as <see cref="GameplayFreezeTests"/>' world-level test ("TestWorld" has no tileMap
     /// entity, so <see cref="WorldProxy.InitializeWithWorld"/> returns before the real install). The
     /// frame durations are exact binary fractions, so four quarter-second frames are exactly one second.</summary>
     [Fact]

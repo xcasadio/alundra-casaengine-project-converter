@@ -24,6 +24,7 @@ using Alundra.UI.Speech;
 using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
 using Alundra.Tests.Support;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -801,7 +802,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.True(Director.IsBookFlowActive);
         Assert.NotEqual(0u, State.PlayerControlFlags & GameState.PlayerControlBits.ControlLocked);
 
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         AddHeroPawn(world);
         InitializeWithRealProject(new WorldProxy(), world);
 

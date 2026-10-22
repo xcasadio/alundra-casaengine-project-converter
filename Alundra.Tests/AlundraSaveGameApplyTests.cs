@@ -21,6 +21,7 @@ using Alundra.UI.Shared;
 using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
 using Alundra.Tests.Support;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -177,7 +178,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         WarpDirector.Instance.ConsumeArrivalRecord(); // the load's own arrival is over.
         Assert.False(WarpDirector.Instance.HasPendingArrival);
 
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         AddHeroPawn(world);
         InitializeWithRealProject(new WorldProxy(), world);
 
@@ -199,7 +200,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         ArmLoad(save);
         Assert.Equal(HudDirector.HudPhase.Idle, HudDirector.Instance.Phase);
 
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         AddHeroPawn(world);
         InitializeWithRealProject(new WorldProxy(), world);
 
@@ -365,7 +366,7 @@ public sealed class AlundraSaveGameApplyTests : IDisposable
         Assert.Equal(0u, State.GetFlag(Flag860) & Flag860Mask); // nothing applied before the arrival.
 
         // The arrival: the real map 389 installation.
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         var heroEntity = AddHeroPawn(world);
         var proxy = new WorldProxy();
         InitializeWithRealProject(proxy, world);

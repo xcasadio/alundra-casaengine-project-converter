@@ -10,6 +10,7 @@ using CasaEngine.Framework.Rendering.ScrollingLayers;
 using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Rendering.Backdrops;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -46,7 +47,7 @@ public sealed class BackdropStageLoadTests : IDisposable
         var stage = new BackdropStage(); // AttachService never called - _service stays null.
         var game = (CasaEngineGame)RuntimeHelpers.GetUninitializedObject(typeof(CasaEngineGame));
         var world = new World { Name = "TestWorld" };
-        AlundraWorldProxyGlobalFreezeTests.SetProperty(world, nameof(World.Game), game);
+        WorldProxyGlobalFreezeTests.SetProperty(world, nameof(World.Game), game);
 
         stage.Load(world, _projectPath);
 

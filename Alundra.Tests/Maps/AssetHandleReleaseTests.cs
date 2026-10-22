@@ -6,14 +6,14 @@ using Xunit;
 using Alundra.UI.Hud;
 using Alundra.Maps;
 
-namespace Alundra.Tests.Scripts;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Plan docs/plan-migration-handles.md, M1 (engine ADR-0037): the DLL holds what it uses through the engine's
 /// counted handles and gives it back when its owner goes away, so a map's assets can be freed at the next
 /// world change.
 /// </summary>
-public sealed class AlundraAssetHandleReleaseTests
+public sealed class AssetHandleReleaseTests
 {
     private static readonly Guid FirstTileSetId = Guid.Parse("a1a1a1a1-0000-0000-0000-000000000001");
     private static readonly Guid SecondTileSetId = Guid.Parse("a1a1a1a1-0000-0000-0000-000000000002");

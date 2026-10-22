@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using System.IO.Compression;
 using Xunit;
 using Alundra.Rendering.Backdrops;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -80,7 +81,7 @@ public class BackdropStagePsxSemiTransparencyTests
     [Fact]
     public void ExportedSheets_CarryTheStpTexelsAtAlpha128_AndTheOtherTexelsAtAlpha255()
     {
-        var projectRoot = AlundraWorldProxyGlobalFreezeTests.FindProjectRoot();
+        var projectRoot = WorldProxyGlobalFreezeTests.FindProjectRoot();
 
         // The sea of map 389, layer 0: the texel (46, 23) has the colour word 0x94C5, whose bit 15 is set.
         Assert.Equal(128, AlphaAt(projectRoot, "Ship Klark (beginning)-389-layer0.png", 46, 23));
@@ -98,7 +99,7 @@ public class BackdropStagePsxSemiTransparencyTests
 
     private static BackdropDocument LoadRealCompanion(string worldName)
     {
-        var projectRoot = AlundraWorldProxyGlobalFreezeTests.FindProjectRoot();
+        var projectRoot = WorldProxyGlobalFreezeTests.FindProjectRoot();
         var document = BackdropLoader.Load(projectRoot, worldName);
         Assert.NotNull(document);
         return document!;

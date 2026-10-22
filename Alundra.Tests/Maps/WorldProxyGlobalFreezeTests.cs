@@ -21,12 +21,12 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// T2 (docs/plan-transitions-carte.md §1.5/§3, "Gel global du monde") - ORACLE 2 (production site): drives
 /// the real <see cref="WorldProxy.Update"/> itself (same headless montage as
-/// <see cref="AlundraWorldProxyUpdateCharacterizationTests"/>/<see cref="AlundraDialogueFramePassTests"/>),
+/// <see cref="WorldProxyUpdateCharacterizationTests"/>/<see cref="AlundraDialogueFramePassTests"/>),
 /// proving the gate this slice adds is really exercised at its call site AND that the "dehors" passes keep
 /// running while it is closed.
 ///
@@ -43,9 +43,9 @@ namespace Alundra.Tests;
 /// This file adds the one T2 mutation with no existing coverage - "mettre le suivi caméra dedans" - plus
 /// the [R5] debt test.
 /// </summary>
-public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
+public sealed class WorldProxyGlobalFreezeTests : IDisposable
 {
-    public AlundraWorldProxyGlobalFreezeTests()
+    public WorldProxyGlobalFreezeTests()
     {
         WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
@@ -159,7 +159,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraWorldProxyGlobalFreezeTests: no 'alundra-project/Maps' directory found above "
+            $"WorldProxyGlobalFreezeTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - the [R5] test needs the real converter export of map 389.");
     }
 
@@ -170,7 +170,7 @@ public sealed class AlundraWorldProxyGlobalFreezeTests : IDisposable
             "Ship Klark (beginning)-389.tileMap");
         if (!File.Exists(tileMapPath))
         {
-            throw new InvalidOperationException($"AlundraWorldProxyGlobalFreezeTests: '{tileMapPath}' not found.");
+            throw new InvalidOperationException($"WorldProxyGlobalFreezeTests: '{tileMapPath}' not found.");
         }
 
         var tileMapData = new TileMapData();

@@ -14,7 +14,7 @@ using Alundra.Cells;
 using Alundra.Audio;
 using Alundra.Transitions;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Covers the structural pieces the entity search/manipulation opcodes need on
@@ -24,14 +24,14 @@ namespace Alundra.Tests;
 /// <c>ParentEntity</c> threading through the shared spawn path, transform re-derivation
 /// (<see cref="FrameSyncPasses.RunTransformSyncPass"/>) and destroyed-entity visibility/skip in the
 /// per-frame passes. <see cref="WorldProxy.SpawnEntityByRecordId"/>'s live-<c>World</c> path is
-/// intentionally not exercised here for the same reason <see cref="AlundraWorldProxyTests"/> does not
+/// intentionally not exercised here for the same reason <see cref="WorldProxyTests"/> does not
 /// cover <see cref="WorldProxy.InitializeWithWorld"/>'s live prefab loader - it needs a running
 /// <c>CasaEngineGame</c>; its build path is the exact same <see cref="EntitySpawnFactory.CreateEntityFromRecord"/>
-/// covered directly below and by <see cref="AlundraWorldProxyTests"/>.
+/// covered directly below and by <see cref="WorldProxyTests"/>.
 /// </summary>
-public class AlundraWorldProxyEntityManipulationTests : IDisposable
+public class WorldProxyEntityManipulationTests : IDisposable
 {
-    public AlundraWorldProxyEntityManipulationTests()
+    public WorldProxyEntityManipulationTests()
     {
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the

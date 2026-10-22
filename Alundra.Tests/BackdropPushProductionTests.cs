@@ -12,6 +12,7 @@ using Alundra.Rendering.Backdrops;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -19,7 +20,7 @@ namespace Alundra.Tests;
 /// Plan E9.b (docs/plan-e9b-backdrops-moteur.md, §3 "S2", D-E9b-2/D-E9b-11) - production-site pins for
 /// <see cref="BackdropStage.PushFrame"/>, replacing the retired <c>BackdropAnimationReplayProductionTests</c>
 /// (the animation-counter pin it used to carry now lives engine-side, S0). Reuses the real map 389
-/// headless montage (<see cref="AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World"/>) with the
+/// headless montage (<see cref="WorldProxyGlobalFreezeTests.BuildRealMap389World"/>) with the
 /// SAME "recipe B3" accommodation that montage always needs: <c>_clearColorApplied</c> posed by
 /// reflection before the first <c>proxy.Update</c> (<see cref="BackdropStage.ApplyOriginalBackgroundClearColorOnce"/>
 /// would otherwise dereference <c>world.Game.GameManager.ViewManager.Views</c> on this uninitialized
@@ -69,7 +70,7 @@ public sealed class BackdropPushProductionTests : IDisposable
     [Fact]
     public void Update_PushesFrame_AtTheProductionCallSite_PendingTicksReflectsTheLatestPush()
     {
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 
@@ -101,13 +102,13 @@ public sealed class BackdropPushProductionTests : IDisposable
     /// BEFORE the very same <c>Update(0.04f)</c> as the test above must NOT change the result -
     /// <c>PendingTicks</c> is still 2, proving <see cref="BackdropStage.PushFrame"/>'s call site
     /// sits outside the gameplay freeze gate (a MenuOpen dialogue box does not also freeze the backdrop
-    /// push, exactly like the camera follow - <see cref="AlundraWorldProxyGlobalFreezeTests"/>'s own
+    /// push, exactly like the camera follow - <see cref="WorldProxyGlobalFreezeTests"/>'s own
     /// "mettre le suivi caméra dedans" pin).
     /// </summary>
     [Fact]
     public void Update_PushesFrame_WhileGameplayBlockedMaskIsPosed_PendingTicksStillReflectsThePush()
     {
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
 

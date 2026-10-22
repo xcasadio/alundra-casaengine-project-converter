@@ -8,7 +8,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Hero;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Covers the E1 replacement for the old manager-level <c>AlundraWorldProxy.RunEntityEventsPass</c>
@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 /// recording every RunScript/RunSpriteEvent call, and a fake <see cref="IScriptHost"/> instead of a
 /// live <see cref="WorldProxy"/>/<see cref="CasaEngine.Framework.Scene.World.World"/>.
 /// </summary>
-public class AlundraWorldProxyEventPassTests
+public class WorldProxyEventPassTests
 {
     private sealed record RunCall(EntityScriptProxy Entity, int? ProgramSlot);
 
@@ -707,7 +707,7 @@ public class AlundraWorldProxyEventPassTests
         }
 
         throw new InvalidOperationException(
-            $"AlundraWorldProxyEventPassTests: no 'alundra-project/Maps' directory found above "
+            $"WorldProxyEventPassTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - the J1-g test needs the real converter export of map 445.");
     }
 

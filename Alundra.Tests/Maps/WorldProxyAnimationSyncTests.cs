@@ -9,7 +9,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Entities;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Covers the animation-sync port added to <see cref="WorldProxy"/>: the target-resolution part
@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 /// as CasaEngine.Tests's own animation tests do), not a fake/spy - the component only needs asset loading
 /// for sprites, which this proxy never touches.
 /// </summary>
-public class AlundraWorldProxyAnimationSyncTests
+public class WorldProxyAnimationSyncTests
 {
     // -----------------------------------------------------------------------------------------
     // TryResolveAnimationTarget

@@ -15,6 +15,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -27,7 +28,7 @@ namespace Alundra.Tests;
 ///
 /// No assertion on the player, the camera or rendering anywhere in this file - <c>HeadlessIntroSimulation</c>
 /// makes none of them vary (its own class doc says so), so any such assertion would be vacuous. That half
-/// of T2's acceptance belongs to ORACLE 2 (<see cref="AlundraWorldProxyGlobalFreezeTests"/>), which drives
+/// of T2's acceptance belongs to ORACLE 2 (<see cref="WorldProxyGlobalFreezeTests"/>), which drives
 /// the real <see cref="WorldProxy.Update"/> instead.
 ///
 /// The frozen NPC's own pose/force fields are SEEDED directly (same technique as

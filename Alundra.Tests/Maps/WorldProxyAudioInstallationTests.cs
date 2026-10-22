@@ -20,7 +20,7 @@ using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// The end-to-end recette point of docs/plan-e11-audio.md, slice E11.a's own acceptance (§4): on the
@@ -45,11 +45,11 @@ namespace Alundra.Tests;
 /// <see cref="AlundraMusicPlayerTests"/>, the only other class touching that same shared instance,
 /// keeping them from racing (xunit runs different test CLASSES in parallel by default).
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public class AlundraWorldProxyAudioInstallationTests : IDisposable
+public class WorldProxyAudioInstallationTests : IDisposable
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 
-    public AlundraWorldProxyAudioInstallationTests()
+    public WorldProxyAudioInstallationTests()
     {
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
@@ -91,7 +91,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraWorldProxyAudioInstallationTests: no 'alundra-project/Sounds' directory found above "
+            $"WorldProxyAudioInstallationTests: no 'alundra-project/Sounds' directory found above "
             + $"'{AppContext.BaseDirectory}' (docs/plan-e11-audio.md, slice E11.a).");
     }
 
@@ -220,7 +220,7 @@ public class AlundraWorldProxyAudioInstallationTests : IDisposable
     [Fact]
     public void InstallAudioSystems_LoadsTheMapsOwnSoundGroup_SoPlaySfxRedirectsThroughRefSfxIdChain()
     {
-        var projectPath = Path.Combine(Path.GetTempPath(), "AlundraWorldProxyAudioInstallationTests_Group_" + Guid.NewGuid());
+        var projectPath = Path.Combine(Path.GetTempPath(), "WorldProxyAudioInstallationTests_Group_" + Guid.NewGuid());
         var soundsDir = Path.Combine(projectPath, "Sounds");
         var mapsDir = Path.Combine(projectPath, "Maps");
         Directory.CreateDirectory(soundsDir);

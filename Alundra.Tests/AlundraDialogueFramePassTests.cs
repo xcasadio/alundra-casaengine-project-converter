@@ -13,6 +13,7 @@ using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -26,7 +27,7 @@ namespace Alundra.Tests;
 /// pass in <see cref="WorldProxy.Update"/>, next to the fade pass.
 ///
 /// The first two tests below drive <see cref="WorldProxy.Update"/> ITSELF (the same headless
-/// montage as <see cref="AlundraWorldProxyUpdateCharacterizationTests"/>: no <see cref="World.Game"/>, a
+/// montage as <see cref="WorldProxyUpdateCharacterizationTests"/>: no <see cref="World.Game"/>, a
 /// name with no trailing map id, a camera entity added directly) so the pass is pinned at its production
 /// call site - the harness's own mirror tick in <c>HeadlessIntroSimulation.RunFramesForTest</c> cannot
 /// stand in for it (the green-and-inert family: fade trigger, audio install, backdrop textures,
@@ -66,7 +67,7 @@ public sealed class AlundraDialogueFramePassTests : IDisposable
     }
 
     /// <summary>Headless proxy whose <c>Update</c> is drivable - the exact montage
-    /// <see cref="AlundraWorldProxyUpdateCharacterizationTests"/> documents line by line (its class doc
+    /// <see cref="WorldProxyUpdateCharacterizationTests"/> documents line by line (its class doc
     /// owns the reasoning; not restated here). The director is then attached to THIS proxy's own
     /// <see cref="WorldProxy.GameState"/>, production's wiring shape
     /// (<c>InstallDialogueSystems</c> passes <c>GameState</c>) - "TestWorld" has no tileMap entity, so

@@ -15,7 +15,7 @@ using Alundra.Hero;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// R0 (engine ADR-0075, docs/plan-restructuration-dll.md section 4): the names the converter writes in the data are the FULL names of the
@@ -23,7 +23,7 @@ namespace Alundra.Tests;
 /// gameplay assembly. These cases lock the data to the types, and the creation catches of the world proxy to the engine's dedicated exception.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraScriptNamesInTheDataTests
+public sealed class ScriptNamesInTheDataTests
 {
     private const string WorldRelativePath = "Maps/Overworld/Overworld 3,1-14/Overworld 3,1-14.world";
 

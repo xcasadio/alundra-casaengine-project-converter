@@ -19,6 +19,7 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -500,7 +501,7 @@ public sealed class AlundraEffectQuadPushTests : IDisposable
     [Fact]
     public void Update_PushesTheFrame_DuringAWarpDeparture_Which_GivesTheEffectsNoTick()
     {
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
         BackdropWarpDepartureSupport.SetPrivateField(proxy._backdropStage, "_clearColorApplied", true); // the headless montage has no view for the clear colour.

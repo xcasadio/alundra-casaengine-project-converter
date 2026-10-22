@@ -14,7 +14,7 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// E20.e0k3 (docs/plan-e20-heros.md section 1.18.3, T2): the world tests (b1) to (b4) of the map edge for an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> (marked <see cref="EntityScriptProxy.HasLogicalZ"/>),
@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// (b4) the hero, pushed east past its own bound, goes past it at the tick that its speed gives.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraMapEdgeWorldTests
+public sealed class MapEdgeWorldTests
 {
     private const int Arrow = 3;
     private const int Beannoid = 79; // the walker of the oracle (map 14, sprite 79).

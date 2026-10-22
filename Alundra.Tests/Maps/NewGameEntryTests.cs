@@ -20,7 +20,7 @@ using Alundra.UI.Hud;
 using Alundra.Hero;
 using Alundra.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// The New Game entry in <see cref="WorldProxy.AdoptPlayerPawn"/> (no pending warp arrival): the
@@ -30,7 +30,7 @@ namespace Alundra.Tests;
 ///
 /// Drives the real <see cref="WorldProxy.InitializeWithWorld"/> through its full installation
 /// block against map 389 (the New Game map) - same real-map/hand-built-pawn montage as
-/// <see cref="AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World"/> (reused directly, internal in
+/// <see cref="WorldProxyGlobalFreezeTests.BuildRealMap389World"/> (reused directly, internal in
 /// the same assembly) and <see cref="AlundraWarpArrivalTests"/>'s own hero-pawn/player-controller
 /// fixtures (re-built here, since those are private to that class).
 ///
@@ -40,9 +40,9 @@ namespace Alundra.Tests;
 /// that same shared instance, and resets <see cref="BgmFadeDirector.Instance"/> too.</para>
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraNewGameEntryTests : IDisposable
+public sealed class NewGameEntryTests : IDisposable
 {
-    public AlundraNewGameEntryTests()
+    public NewGameEntryTests()
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -129,13 +129,13 @@ public sealed class AlundraNewGameEntryTests : IDisposable
     /// from it.</summary>
     private static WorldProxy InitializeNewGameEntryOnMap389()
     {
-        var (world, _) = AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World();
+        var (world, _) = WorldProxyGlobalFreezeTests.BuildRealMap389World();
         var hero = BuildHeroPawnEntity(world);
         RegisterPlayerController(world, hero);
 
         var proxy = new WorldProxy();
         var previousProjectPath = EngineEnvironment.ProjectPath;
-        EngineEnvironment.ProjectPath = AlundraWorldProxyGlobalFreezeTests.FindProjectRoot();
+        EngineEnvironment.ProjectPath = WorldProxyGlobalFreezeTests.FindProjectRoot();
         try
         {
             proxy.InitializeWithWorld(world);

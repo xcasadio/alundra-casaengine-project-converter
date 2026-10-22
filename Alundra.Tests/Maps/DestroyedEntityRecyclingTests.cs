@@ -14,7 +14,7 @@ using Alundra.Events;
 using Alundra.Audio;
 using Alundra.Transitions;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// E19.r R3-1 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): the recycling of the destroyed entities, as the binary does it
@@ -22,9 +22,9 @@ namespace Alundra.Tests;
 /// map events). Driven through the world's own <c>Update</c> on the headless montage of the freeze tests: a hero, an NPC of record 2 and a runner that
 /// stands for the map event program and asks the search of <c>0x2C [2]</c> (<c>Result</c> = no entity of record 2) at every pass.
 /// </summary>
-public sealed class AlundraDestroyedEntityRecyclingTests : IDisposable
+public sealed class DestroyedEntityRecyclingTests : IDisposable
 {
-    public AlundraDestroyedEntityRecyclingTests()
+    public DestroyedEntityRecyclingTests()
     {
         // D-T-14 (docs/plan-transitions-carte.md): this class constructs an AlundraWorldProxy, so it resets the session carriers in its constructor (the
         // isolation-carrying element) and in Dispose (hygiene).

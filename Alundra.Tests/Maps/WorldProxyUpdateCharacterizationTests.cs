@@ -21,7 +21,7 @@ using Alundra.Hero;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Characterization test for <see cref="WorldProxy.Update"/> (docs/plan-update-caracterisation.md
@@ -75,9 +75,9 @@ namespace Alundra.Tests;
 /// entity - <c>InitializeWithWorld</c> takes its own early return right after the (harmless, degraded)
 /// backdrop load, before ever touching <c>AdoptPlayerPawn</c>/the entity-spawn loop.</para>
 /// </summary>
-public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
+public sealed class WorldProxyUpdateCharacterizationTests : IDisposable
 {
-    public AlundraWorldProxyUpdateCharacterizationTests()
+    public WorldProxyUpdateCharacterizationTests()
     {
         // Trap 7 (plan §1): the env-var-backed static is unreliable under a shared xunit host - go
         // through the test seam explicitly instead. The value itself is inert for every scenario below
@@ -503,7 +503,7 @@ public sealed class AlundraWorldProxyUpdateCharacterizationTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            "AlundraWorldProxyUpdateCharacterizationTests: no 'alundra-project/Maps' directory found above "
+            "WorldProxyUpdateCharacterizationTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - the camera-premiere-frame reproduction needs the real "
             + "converter export of map 389 and cannot self-skip without one (docs/plan-camera-premiere-frame.md §4).");
     }

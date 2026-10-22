@@ -18,6 +18,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Entities;
 using Alundra.Hero;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -30,7 +31,7 @@ namespace Alundra.Tests;
 ///    <see cref="TopDownElevationSimulationSpacePolicy.DeriveRenderPosition"/> must reproduce, bit for
 ///    bit, the OLD single-step formula this slice replaced (kept below as <see cref="OldResolveWorldPosition"/>),
 ///    for every one of map 389's own 19 "Entities" layer records (XPos/YPos/Height read from the real
-///    converter export, see <see cref="AlundraWorldProxySpawnInitializationTests.ShouldSpawnRecord_Map389EntitiesLayer_Keeps14Of19"/>'s
+///    converter export, see <see cref="WorldProxySpawnInitializationTests.ShouldSpawnRecord_Map389EntitiesLayer_Keeps14Of19"/>'s
 ///    own doc for the sibling SpriteDirection list) and the hero's own New Game spawn
 ///    (<see cref="WorldProxy.AdoptPlayerPawn"/>).
 ///  - Ordering: a real <see cref="Entity"/> (TransformComponent -&gt; RenderProjectionComponent -&gt;
@@ -77,7 +78,7 @@ public class AlundraEntityLogicalRenderPoseTests
 
     /// <summary>
     /// Map 389's own "Entities" layer, all 19 enabled records (XPos, YPos, Height), read from the real
-    /// converter export - the same corpus <see cref="AlundraWorldProxySpawnInitializationTests.ShouldSpawnRecord_Map389EntitiesLayer_Keeps14Of19"/>
+    /// converter export - the same corpus <see cref="WorldProxySpawnInitializationTests.ShouldSpawnRecord_Map389EntitiesLayer_Keeps14Of19"/>
     /// covers for spawn gating.
     /// </summary>
     public static IEnumerable<object[]> Map389RecordPositions()

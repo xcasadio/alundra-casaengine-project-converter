@@ -31,6 +31,7 @@ using Alundra.Dialogues;
 using Alundra.UI.Saving;
 using Alundra.SaveGames;
 using Alundra.Tests.Support;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -355,7 +356,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         return (entity, controller);
     }
 
-    /// <summary>The headless real-map montage of <see cref="AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World"/>
+    /// <summary>The headless real-map montage of <see cref="WorldProxyGlobalFreezeTests.BuildRealMap389World"/>
     /// for map 17, with a game whose active render view carries <paramref name="uiView"/> (the recipe of
     /// <see cref="SaveScreenTestWorlds.WorldWithUIView"/>), so the real install wires a dialogue presenter.</summary>
     private static World BuildRealMap17World(AlundraSaveBookTests.RecordingUIViewRuntime uiView)
@@ -365,34 +366,34 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         Assert.True(File.Exists(tileMapPath), $"the real export of map 17 is missing: '{tileMapPath}'");
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapPath)));
-        var tileSetData = AlundraWorldProxyGlobalFreezeTests.LoadRealVisualTileSet(projectRoot, tileMapData);
+        var tileSetData = WorldProxyGlobalFreezeTests.LoadRealVisualTileSet(projectRoot, tileMapData);
 
         var world = SaveScreenTestWorlds.WorldWithUIView(Map17WorldName, uiView);
 
         var tileMapEntity = new Entity { Name = "tileMap" };
-        AlundraWorldProxyGlobalFreezeTests.SetProperty(tileMapEntity, nameof(Entity.World), world);
+        WorldProxyGlobalFreezeTests.SetProperty(tileMapEntity, nameof(Entity.World), world);
 
         var component = new TileMapComponent();
         tileMapEntity.RootComponent = component;
         component.TileMapData = tileMapData;
         component.TileSetData = tileSetData;
 
-        AlundraWorldProxyGlobalFreezeTests.GetPrivateList<TileSetData>(component, "_tileSets").Add(tileSetData);
-        AlundraWorldProxyGlobalFreezeTests.GetPrivateList<Texture2D>(component, "_tileSetTextures").Add(null!);
+        WorldProxyGlobalFreezeTests.GetPrivateList<TileSetData>(component, "_tileSets").Add(tileSetData);
+        WorldProxyGlobalFreezeTests.GetPrivateList<Texture2D>(component, "_tileSetTextures").Add(null!);
 
-        var runtimeLayers = AlundraWorldProxyGlobalFreezeTests.GetLayers(component);
+        var runtimeLayers = WorldProxyGlobalFreezeTests.GetLayers(component);
         for (var layerIndex = 0; layerIndex < 4; layerIndex++)
         {
             var layer = new TileMapLayer(tileMapData.Layers[layerIndex]);
             var cellCount = tileMapData.MapSize.Width * tileMapData.MapSize.Height;
             for (var i = 0; i < cellCount; i++)
             {
-                layer.Tiles.Add(new AlundraWorldProxyGlobalFreezeTests.StubTile());
+                layer.Tiles.Add(new WorldProxyGlobalFreezeTests.StubTile());
                 layer.CollisionObjects.Add(null);
             }
 
             runtimeLayers.Add(layer);
-            AlundraWorldProxyGlobalFreezeTests.InvokeBuildChunks(component, layer, layerIndex);
+            WorldProxyGlobalFreezeTests.InvokeBuildChunks(component, layer, layerIndex);
         }
 
         world.Entities.Add(tileMapEntity);

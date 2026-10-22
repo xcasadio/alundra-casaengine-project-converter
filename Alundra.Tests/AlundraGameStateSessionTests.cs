@@ -7,6 +7,7 @@ using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Entities;
 using Alundra.Maps;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -17,7 +18,7 @@ namespace Alundra.Tests;
 /// singleton" shape T7 already established (<see cref="AlundraScreenFadeDirectorTests"/>:370-412), driven
 /// here through <see cref="GameState.InstallForMapEntry"/> directly rather than a full
 /// <see cref="WorldProxy.InitializeWithWorld"/> montage - that method needs a live CasaEngineGame
-/// asset catalog just to REACH this call (see <see cref="AlundraWorldProxyTests"/>' own class doc for why
+/// asset catalog just to REACH this call (see <see cref="WorldProxyTests"/>' own class doc for why
 /// the whole method is never exercised end-to-end in this test host), and <see cref="GameState"/>'s
 /// own map-entry behaviour has no such dependency.
 ///

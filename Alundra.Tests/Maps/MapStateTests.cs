@@ -11,7 +11,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// E20.e0k1 (docs/plan-e20-heros.md section 1.18.1, D-E0K-2): the state that reads the map (the two raw words of gravity and viscosity, the walkability mask, the vertical ownership and the minimum move distance of the
@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 /// the same values as before the extraction (green by construction). (c) the pin P3 of E20.e0a3b (D-E0A-8): the marked entity whose first animation is validated keys its kinematics on its CURRENT animation, never on a
 /// target that changed after the validation.
 /// </summary>
-public sealed class AlundraMapStateTests
+public sealed class MapStateTests
 {
     private const int MapGravity = 128;
     private const int MapViscosity = 4096;

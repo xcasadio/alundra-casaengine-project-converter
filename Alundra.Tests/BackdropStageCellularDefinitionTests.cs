@@ -7,6 +7,7 @@ using CasaEngine.Framework.Rendering.Depth;
 using Microsoft.Xna.Framework;
 using Xunit;
 using Alundra.Rendering.Backdrops;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -337,7 +338,7 @@ public class BackdropStageCellularDefinitionTests
 
     private static BackdropDocument LoadRealCompanion(string worldName)
     {
-        var projectRoot = AlundraWorldProxyGlobalFreezeTests.FindProjectRoot();
+        var projectRoot = WorldProxyGlobalFreezeTests.FindProjectRoot();
         var document = BackdropLoader.Load(projectRoot, worldName);
         Assert.NotNull(document);
         return document!;

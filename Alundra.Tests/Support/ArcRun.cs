@@ -35,6 +35,7 @@ using Alundra.Rng;
 using Alundra.Rendering.Backdrops;
 using Alundra.Transitions;
 using Alundra.Dialogues;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests.Support;
 
@@ -589,34 +590,34 @@ internal sealed class ArcRun : IDisposable
         Assert.True(File.Exists(tileMapPath), $"the real export of map '{spec.WorldName}' is missing: '{tileMapPath}'");
         var tileMapData = new TileMapData();
         tileMapData.Load(JObject.Parse(File.ReadAllText(tileMapPath)));
-        var tileSetData = AlundraWorldProxyGlobalFreezeTests.LoadRealVisualTileSet(root, tileMapData);
+        var tileSetData = WorldProxyGlobalFreezeTests.LoadRealVisualTileSet(root, tileMapData);
 
         var world = SaveScreenTestWorlds.WorldWithUIView(spec.WorldName, uiView);
 
         var tileMapEntity = new Entity { Name = "tileMap" };
-        AlundraWorldProxyGlobalFreezeTests.SetProperty(tileMapEntity, nameof(Entity.World), world);
+        WorldProxyGlobalFreezeTests.SetProperty(tileMapEntity, nameof(Entity.World), world);
 
         var component = new TileMapComponent();
         tileMapEntity.RootComponent = component;
         component.TileMapData = tileMapData;
         component.TileSetData = tileSetData;
 
-        AlundraWorldProxyGlobalFreezeTests.GetPrivateList<TileSetData>(component, "_tileSets").Add(tileSetData);
-        AlundraWorldProxyGlobalFreezeTests.GetPrivateList<Texture2D>(component, "_tileSetTextures").Add(null!);
+        WorldProxyGlobalFreezeTests.GetPrivateList<TileSetData>(component, "_tileSets").Add(tileSetData);
+        WorldProxyGlobalFreezeTests.GetPrivateList<Texture2D>(component, "_tileSetTextures").Add(null!);
 
-        var runtimeLayers = AlundraWorldProxyGlobalFreezeTests.GetLayers(component);
+        var runtimeLayers = WorldProxyGlobalFreezeTests.GetLayers(component);
         for (var layerIndex = 0; layerIndex < tileMapData.Layers.Count; layerIndex++)
         {
             var layer = new TileMapLayer(tileMapData.Layers[layerIndex]);
             var cellCount = tileMapData.MapSize.Width * tileMapData.MapSize.Height;
             for (var i = 0; i < cellCount; i++)
             {
-                layer.Tiles.Add(new AlundraWorldProxyGlobalFreezeTests.StubTile());
+                layer.Tiles.Add(new WorldProxyGlobalFreezeTests.StubTile());
                 layer.CollisionObjects.Add(null);
             }
 
             runtimeLayers.Add(layer);
-            AlundraWorldProxyGlobalFreezeTests.InvokeBuildChunks(component, layer, layerIndex);
+            WorldProxyGlobalFreezeTests.InvokeBuildChunks(component, layer, layerIndex);
         }
 
         world.Entities.Add(tileMapEntity);

@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Xunit;
 using Alundra.Rendering.Backdrops;
+using Alundra.Tests.Maps;
 
 namespace Alundra.Tests;
 
@@ -29,7 +30,7 @@ namespace Alundra.Tests;
 /// The three real-companion tests read <c>alundra-project/</c> (the converter's own export) and FAIL,
 /// rather than skip, when it is absent - the local convention documented at
 /// <see cref="SpriteRecordCatalogTests"/>'s own <c>FindProjectRoot</c>, reused here via
-/// <see cref="AlundraWorldProxyGlobalFreezeTests.FindProjectRoot"/> (same "no 'alundra-project/Maps'
+/// <see cref="WorldProxyGlobalFreezeTests.FindProjectRoot"/> (same "no 'alundra-project/Maps'
 /// directory found" message).
 /// </summary>
 public class BackdropStageDefinitionTests
@@ -316,7 +317,7 @@ public class BackdropStageDefinitionTests
 
     private static BackdropDocument LoadRealCompanion(string worldName, string zoneFolderIgnored)
     {
-        var projectRoot = AlundraWorldProxyGlobalFreezeTests.FindProjectRoot();
+        var projectRoot = WorldProxyGlobalFreezeTests.FindProjectRoot();
         var document = BackdropLoader.Load(projectRoot, worldName);
         Assert.NotNull(document);
         return document!;
