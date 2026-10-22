@@ -1425,7 +1425,7 @@ n'est pas dans le graphe de construction du convertisseur) : sans effet. Les deu
   contient tout E20, non fusionné dans `main`), ou fusionner d'abord `chantier/e20-heros` dans `main` (votre décision) et partir de `main` ?
   Recommandation : fusionner E20 d'abord, sinon toute reprise d'E20 sur l'ancienne arborescence entrera en conflit.
 
-## 12. Tranche R7 — La garde des règles : `check_names.py --rules` ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22 ; **READY** à la première relecture)
+## 12. Tranche R7 — La garde des règles : `check_names.py --rules` ✅ (faite et CONFIRMED le 2026-10-22, `354982f3` à `08aff8e7`, ADR-0081 ; READY à la première relecture ; mode AUTO, D-R-22)
 
 **But.** Une garde permanente, **sans table**, de l'arbre vivant de la DLL (`Alundra/`) et des tests (`Alundra.Tests/`) contre les règles
 de l'ADR-0075 et de l'ADR-0080, qui prend le relais des modes à table quand le chantier est fini (D-R-15) : une tranche qui ajoute un
@@ -1534,7 +1534,17 @@ Mode AUTO (D-R-22), un `executor`, trois commits d'outil et de documents : T1 `3
 - **Décisions de l'exécution.** (a) Les types des 13 paquets sont versés en instantané (`rules-extra-types.tsv`, à régénérer quand un paquet du projet de tests change) plutôt que lus à chaque exécution : `pwsh` ne devient pas une dépendance de la garde. (b) La règle (3) lit `Nom.Partie.cs` comme une partie de classe partielle : le type qui porte le nom doit être `partial` (un constat `[principal]` sinon). (c) `--root` passe par `git ls-files` quand le dossier est un dépôt, par un parcours du dossier sinon.
 - **Écart.** Aucun. Le README ne décrivait pas `apply_r6.py` : sa ligne est ajoutée (P-R7-8).
 
-## 13. Tranche R8 — Les anciens noms des commentaires ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22 ; REVISE, révision 1)
+**Vérification (2026-10-22, verifier neuf) : CONFIRMED.** Rejoué par lui : `--rules` sur l'arbre vivant (0 constat, l'avertissement
+`Session`) ; `selftest_rules.py` (39 cas, 0 inattendu) ; 21 violations de sa main sur des copies jetables (préfixe sur un imbriqué de la
+DLL, namespace hors dossier, types publics secondaires, collisions avec xunit et la BCL, dossiers, miroir, doublon, lecture), toutes
+refusées, et des fichiers neufs conformes acceptés ; le lecteur égal à la table `TypeDef` des DLL Debug ; `scan_types.py` inchangé et,
+dans `check_names.py`, seuls la docstring, l'option et l'aiguillage ; aucune source de `Alundra/`, `Alundra.Tests/` ni des sous-modules
+changée. Avis P4 (reportés) : A1 la suite `Alundra.Tests` en Release n'est pas relancée par lui (consignée par l'exécuteur ; aucun fichier
+compilé ne change ; elle repasse avec R8) ; A2 une ligne ancienne du README de `tools/dll-structure` cite encore `TextBoxGpuHarness.cs` pour
+l'avertissement `Session` (`UI/Shared/TextBoxGpu.cs:266` aujourd'hui) ; A3 `selftest_rules.py` accepte un refus dont les étiquettes
+contiennent celles attendues, même si d'autres s'y ajoutent.
+
+## 13. Tranche R8 — Les anciens noms des commentaires ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22 ; REVISE, révision 1, **READY** à la seconde relecture)
 
 **Relecture (2026-10-22, relecteur neuf) : REVISE**, deux blocages corrigés (FIX, révision 1) : (1) les deux fichiers qui ne sont pas
 des `.cs` n'avaient ni mode d'application ni preuve (le lexeur et Roslyn ne lisent que du C#) : un mode propre et sa preuve (P-R8-5) ;
@@ -1641,7 +1651,7 @@ change ; un octet de code ou de chaîne qui change ; un test qui échoue.
 **Retour arrière.** `git revert` des commits de la tranche.
 
 ## 14. Tranche R6b — Les numéros de ligne des documents vivants ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22 ; relue avec le §15 :
-REVISE sur le §15 seulement, révision 1)
+REVISE sur le §15 seulement, révision 1, **READY** à la seconde relecture)
 
 **But.** Dans **les 21 documents vivants**, chaque citation de ligne désigne au HEAD ce que sa phrase cite (D-R-17, D-R-20) ; les
 documents historiques, les audits, les annexes figées et les plans ne changent pas.
@@ -1731,6 +1741,11 @@ Après R7, R8 et R6b faites et CONFIRMED :
   les outils non suivis) ne sont ni touchées ni indexées.
 - Après la fusion : la branche du chantier reste ; la recette courte de l'auteur (nouvelle partie jusqu'au premier écran jouable, F5, F6,
   F9) reste due pour R2 à R8.
+- **Tâche suivante, demandée par l'auteur le 2026-10-22** : renommer les 122 sauvegardes `.sav` de `tools/Saves/` (fichiers de l'auteur,
+  non suivis) pour que leur nom suive la règle des emplacements du moteur (`[a-z0-9_-]`, 32 caractères au plus, hors noms réservés de
+  Windows : `CasaEngineMonogame/CasaEngine/Framework/SaveGames/SaveGameNames.cs:18`) ; un nom hors règle est sauté en silence par
+  l'énumération des emplacements (`SaveGameFileStorage.cs:281`), d'où « on ne peut pas les charger ». Le fichier ne contient pas son
+  nom : renommer suffit, sans rien indexer ; la table ancien → nouveau est gardée.
 - **Arrêts** : un conflit de fusion (code, documents ou pointeur de sous-module) ; une erreur de construction ; un test qui échoue ; une
   porte qui ne passe pas ; un pointeur de sous-module que sa branche ne contient pas et dont elle n'est pas l'ancêtre. Dans chaque cas :
   arrêt et question à l'auteur, aucune résolution par jugement (en AUTO, ce serait sortir du périmètre).
