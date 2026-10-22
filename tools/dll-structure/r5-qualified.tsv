@@ -1,0 +1,46 @@
+file	kind	text	rank	domain	new_text	line	context
+Alundra.Tests/AlundraArcSamples.cs	static-using	Alundra.Tests.ArcChecks	1	Arcs	Alundra.Tests.Arcs	5	using static Alundra.Tests.ArcChecks;
+Alundra.Tests/AlundraArcSupport.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	25	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/AlundraBergusJumpArcTests.cs	static-using	Alundra.Tests.ArcChecks	1	Arcs	Alundra.Tests.Arcs	5	using static Alundra.Tests.ArcChecks;
+Alundra.Tests/AlundraDamageTests.cs	capture	Items.ItemTables	1	Items	Alundra.Items.ItemTables	66	private static ItemTables ItemTables() => Items.ItemTables.GetOrCreate(ProjectRootFinder.Find());
+Alundra.Tests/AlundraDamageTests.cs	capture	Combat.BalanceTables	1	Combat	Alundra.Combat.BalanceTables	68	private static BalanceTables BalanceTables() => Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
+Alundra.Tests/AlundraDay3SceneArcTests.cs	static-using	Alundra.Tests.AlundraStoryChainOpcodeAudit	1	Support	Alundra.Tests.Support	8	using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+Alundra.Tests/AlundraDay3SceneArcTests.cs	static-using	Alundra.Tests.ArcChecks	1	Arcs	Alundra.Tests.Arcs	9	using static Alundra.Tests.ArcChecks;
+Alundra.Tests/AlundraEntityContactArcTests.cs	static-using	Alundra.Tests.ArcChecks	1	Arcs	Alundra.Tests.Arcs	6	using static Alundra.Tests.ArcChecks;
+Alundra.Tests/AlundraFont3GlyphTests.cs	inline	Alundra.Tests.UI.TextBoxGpu	1	UI	Alundra.Tests.UI.Shared	138	public GraphicsDevice GraphicsDevice => Alundra.Tests.UI.TextBoxGpu.Device;
+Alundra.Tests/AlundraFont3GlyphTests.cs	inline	Alundra.Tests.UI.TextBoxGpu	2	UI	Alundra.Tests.UI.Shared	142	if (!Alundra.Tests.UI.TextBoxGpu.IsAvailable)
+Alundra.Tests/AlundraFont3GlyphTests.cs	inline	Alundra.Tests.UI.TextBoxGpu	3	UI	Alundra.Tests.UI.Shared	144	throw new InvalidOperationException(Alundra.Tests.UI.TextBoxGpu.UnavailableReason);
+Alundra.Tests/AlundraFont3GlyphTests.cs	inline	Alundra.Tests.UI.TextBoxGpu	4	UI	Alundra.Tests.UI.Shared	148	public void Invoke(Action action) => Alundra.Tests.UI.TextBoxGpu.Invoke(action);
+Alundra.Tests/AlundraFont3GlyphTests.cs	inline	Alundra.Tests.UI.TextBoxGpu	5	UI	Alundra.Tests.UI.Shared	150	public T Invoke<T>(Func<T> func) => Alundra.Tests.UI.TextBoxGpu.Invoke(func);
+Alundra.Tests/AlundraHeroAuraTests.cs	static-using	Alundra.Tests.AlundraHeroChargeTests	1	Hero	Alundra.Tests.Hero	9	using static Alundra.Tests.AlundraHeroChargeTests;
+Alundra.Tests/AlundraHeroJumpArcTests.cs	static-using	Alundra.Tests.ArcChecks	1	Arcs	Alundra.Tests.Arcs	6	using static Alundra.Tests.ArcChecks;
+Alundra.Tests/AlundraHeroLifeTests.cs	capture	Items.ItemTables	1	Items	Alundra.Items.ItemTables	85	private static ItemTables ItemTables() => Items.ItemTables.GetOrCreate(ProjectRootFinder.Find());
+Alundra.Tests/AlundraHeroLifeTests.cs	capture	Combat.BalanceTables	1	Combat	Alundra.Combat.BalanceTables	87	private static BalanceTables BalanceTables() => Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
+Alundra.Tests/AlundraInoaAwakeningArcTests.cs	static-using	Alundra.Tests.ArcChecks	1	Arcs	Alundra.Tests.Arcs	6	using static Alundra.Tests.ArcChecks;
+Alundra.Tests/AlundraInoaDayOneArcTests.cs	static-using	Alundra.Tests.ArcChecks	1	Arcs	Alundra.Tests.Arcs	6	using static Alundra.Tests.ArcChecks;
+Alundra.Tests/AlundraLootRollTests.cs	static-using	Alundra.Tests.AlundraLootOracle	1	Items	Alundra.Tests.Items	9	using static Alundra.Tests.AlundraLootOracle;
+Alundra.Tests/AlundraLootRollWorldTests.Rolls.cs	static-using	Alundra.Tests.AlundraLootOracle	1	Items	Alundra.Tests.Items	9	using static Alundra.Tests.AlundraLootOracle;
+Alundra.Tests/AlundraLootRollWorldTests.cs	static-using	Alundra.Tests.AlundraLootOracle	1	Items	Alundra.Tests.Items	9	using static Alundra.Tests.AlundraLootOracle;
+Alundra.Tests/AlundraMissingAnimationWaitCorpusTests.cs	static-using	Alundra.Tests.AlundraStoryChainOpcodeAudit	1	Support	Alundra.Tests.Support	8	using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+Alundra.Tests/AlundraSaveBookEndToEndTests.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	21	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/AlundraSaveBookTests.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	9	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/AlundraSaveGameApplyTests.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	10	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/AlundraSaveGameDirectorKeysTests.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	8	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/AlundraSaveGameDirectorLoadTests.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	12	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/AlundraSaveGameDirectorSaveTests.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	7	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/AlundraSaveScreenDirectorTests.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	10	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/AlundraSaveScreenTickOrderTests.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	7	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/AlundraShipBlockArcTests.cs	static-using	Alundra.Tests.ArcChecks	1	Arcs	Alundra.Tests.Arcs	6	using static Alundra.Tests.ArcChecks;
+Alundra.Tests/AlundraShipCorridorArcTests.cs	static-using	Alundra.Tests.ArcChecks	1	Arcs	Alundra.Tests.Arcs	6	using static Alundra.Tests.ArcChecks;
+Alundra.Tests/AlundraSpawnBySpriteIndexTests.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	10	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/AlundraStoryChainSkippedOpcodesTests.cs	static-using	Alundra.Tests.AlundraStoryChainOpcodeAudit	1	Support	Alundra.Tests.Support	7	using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+Alundra.Tests/AlundraTarnMurggArcTests.cs	static-using	Alundra.Tests.ArcChecks	1	Arcs	Alundra.Tests.Arcs	3	using static Alundra.Tests.ArcChecks;
+Alundra.Tests/AlundraTestSavesTests.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	9	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/AlundraTextBoxWiringTests.cs	namespace-using	Alundra.Tests.UI	1	UI		7	using Alundra.Tests.UI;
+Alundra.Tests/AlundraWeaponLockOpcodesTests.cs	static-using	Alundra.Tests.AlundraStoryChainOpcodeAudit	1	Support	Alundra.Tests.Support	7	using static Alundra.Tests.AlundraStoryChainOpcodeAudit;
+Alundra.Tests/IntroTraceHarnessTests.cs	capture	Dialogues.DialogueDirector	1	Dialogues	Alundra.Dialogues.DialogueDirector	611	Dialogues.DialogueDirector.Instance.Pass(
+Alundra.Tests/IntroTraceHarnessTests.cs	capture	Dialogues.DialogueDirector	2	Dialogues	Alundra.Dialogues.DialogueDirector	1168	public IDialogueDirector? DialogueDirector => _installDialogueDirector ? Dialogues.DialogueDirector.Instance : null;
+Alundra.Tests/Scripts/AlundraSaveScreenPresenterTests.cs	static-using	Alundra.Tests.SaveGameDirectorTestSupport	1	Support	Alundra.Tests.Support	10	using static Alundra.Tests.SaveGameDirectorTestSupport;
+Alundra.Tests/UI/AlundraChoicePixelTests.cs	static-using	Alundra.Tests.UI.TextBoxGpu	1	UI	Alundra.Tests.UI.Shared	12	using static Alundra.Tests.UI.TextBoxGpu;
+Alundra.Tests/UI/AlundraSpeakerPixelTests.cs	static-using	Alundra.Tests.UI.TextBoxGpu	1	UI	Alundra.Tests.UI.Shared	13	using static Alundra.Tests.UI.TextBoxGpu;
+Alundra.Tests/UI/AlundraTextBoxPixelTests.cs	static-using	Alundra.Tests.UI.TextBoxGpu	1	UI	Alundra.Tests.UI.Shared	10	using static Alundra.Tests.UI.TextBoxGpu;
