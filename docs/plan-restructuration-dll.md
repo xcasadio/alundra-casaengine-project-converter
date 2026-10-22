@@ -899,7 +899,7 @@ après R6 ; **P4** des commentaires et des `<c>` gardent les anciens noms (≈ 9
 ligne vient du harnais des exécuteurs), ceux de T0 « Claude Opus 5.5 ». Reste la recette de l'auteur : nouvelle partie, les entités bougent,
 F5, F6, F9 ; dans l'éditeur, la ligne « Script » d'un monde et d'une entité sans avertissement.
 
-## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17 ; révision 1 **READY** ; Q-R-3 tranchée le 2026-10-22, D-R-13, D-R-16, D-R-19, ADR-0080 ; **révision 2** le 2026-10-22 ; Q-R-4c tranchée, D-R-20 : relecture à faire)
+## 9. Tranche R5 — Tests en miroir ⚠️ (détaillée le 2026-10-17 ; révision 1 **READY** ; Q-R-3 tranchée le 2026-10-22, D-R-13, D-R-16, D-R-19, ADR-0080 ; révisions 2 et 2b, REVISE, **révision 3** le 2026-10-22 ; relecture neuve à faire)
 
 **Relecture (2026-10-17).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) le hachage de `Alundra.dll` ne pouvait pas rester
 égal : la version informative de l'assembly porte le commit (`Alundra/obj/Debug/net9.0-windows/Alundra.AssemblyInfo.cs:16`,
@@ -921,6 +921,13 @@ numéros de ligne de tous les documents vivants sont le travail de R6b, après R
 type à leur nom (P-R5-1) ; `ExportGuards` a son pas (T20b) ; les réponses « garder » et « déplacer » et les conditionnels des tâches
 sont retirés ; T23 ne prend que des dossiers vieux de plus de 24 heures, avec ses préconditions, un essai à blanc et sa méthode ; les
 scripts de la découverte et le relevé des littéraux d'avant R5 sont versés en T0a ; les comptes des faits sont marqués provisoires.
+
+**Relecture de la révision 2b (2026-10-22, relecteur neuf) : REVISE**, un blocage, reproduit (FIX) : un littéral du relevé L1 peut être
+dans un bloc que P-R5-1 coupe au même commit (`AlundraSoundBankTests.cs:187` et `:279`, dans les classes publiques
+`AlundraSoundBankAttributeTests` et `AlundraSoundBankChainTests`), ou sous un bloc coupé (`AlundraMusicPlayerTests.cs:107`, `:164`, sous
+la collection de la musique) ; la règle du fichier neuf ne permettait pas ces changements et les entrées se repéraient par leur ligne.
+**Révision 3** : les entrées Q1, L1 et de capture se repèrent par leur occurrence au commit parent ; une entrée d'un bloc coupé le suit
+dans le fichier neuf ; deux preuves de T0c de plus. Prochaine relecture : un relecteur neuf (second de l'époque).
 
 **But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/`, `Support/` et `ExportGuards/`, sur le modèle de la DLL (un
 dossier = un namespace) ; les classes de test sans préfixe `Alundra` ; **aucune valeur attendue changée, aucun test ajouté ni retiré** ;
@@ -986,8 +993,14 @@ d'arrivée de son fichier d'origine ; point 6, le fichier de données reste à s
   suivent son emplacement courant. Une classe partielle n'est jamais coupée.
   `prove_r5.py --kind code` apparie les fichiers par la table, jamais par la détection de renommage de git : un fichier neuf n'est permis
   que s'il est l'arrivée d'un type coupé de ce domaine et si son contenu est l'en-tête plus le bloc retiré de son fichier source au
-  commit parent (renommages de la table, ligne `namespace` et `using` mis à part) ; le fichier source perd exactement ce bloc, et
-  un fichier qui perd tous ses types sauf un est renommé par le `git mv` du temps (1) selon (iii), jamais supprimé.
+  commit parent (renommages de la table, ligne `namespace`, `using` et entrées Q1, L1 et de capture du bloc mis à part) ; le fichier
+  source perd exactement ce bloc, et un fichier qui perd tous ses types sauf un est renommé par le `git mv` du temps (1) selon (iii),
+  jamais supprimé. **Repérage des entrées** (révision 3) : une entrée Q1, L1 ou de capture se repère par son **occurrence au commit
+  parent** (son fichier, son texte exact et son rang parmi les occurrences de ce texte dans ce fichier), jamais par son numéro de ligne ;
+  une entrée prise dans un bloc coupé suit ce bloc dans son fichier neuf et y est acceptée exactement comme le relevé le dit ; une coupe
+  qui retire des lignes au-dessus d'une entrée ne l'invalide pas. Cas connus : `AlundraSoundBankTests.cs:187` et `:279` (dans les blocs
+  coupés `AlundraSoundBankAttributeTests` et `AlundraSoundBankChainTests`), `AlundraMusicPlayerTests.cs:107` et `:164` (sous la collection
+  coupée).
 - Point 6 : la réponse est **« rester »** (D-R-13) : `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` et son littéral
   (`AlundraStoryChainOpcodeAudit.cs:369`) ne changent pas, et `prove_r5.py` refuse tout changement de l'un ou de l'autre.
 - **Un cas que ces règles ne tranchent pas** (un mécanisme qui n'est ni un changement de table ni cette coupe) rouvre la tranche pour une
@@ -1032,12 +1045,16 @@ correction au plus ; un verifier frais à la fin.
   renommage. `tools/dll-structure/prove_r5.py`, sur le
   modèle de `prove_r3.py` (lexeur de R2, occurrence par occurrence) : un commit (1) ne contient que des renommages à 100 % selon la table ;
   un commit (2) ne change que la ligne `namespace`, des `using` ajoutés ou retirés, les noms selon `r5-types.tsv` (avec au plus une
-  qualification ajoutée par Roslyn), les entrées Q1, L1 et de capture de son domaine, exactement comme le relevé le dit, et, s'il coupe, les
+  qualification ajoutée par Roslyn), les entrées Q1, L1 et de capture de son domaine, exactement comme le relevé le dit (repérées par leur
+  occurrence au commit parent, pas par leur ligne : une entrée d'un bloc coupé est acceptée dans le fichier neuf), et, s'il coupe, les
   fichiers neufs et les blocs retirés que « Effet des réponses » permet ; chaque entrée du domaine doit changer ; tout autre changement
   est refusé. Preuves de T0 : une mutation d'une valeur attendue, d'un littéral hors relevé et
   d'un commentaire, chacune refusée ; une entrée L1 omise refusée ; pour la coupe : un bloc coupé modifié d'un octet, une
   coupe faite à un autre domaine, un type coupé deux fois et un type interne non partagé coupé, chacun refusé ; le fichier de données
-  déplacé ou son littéral changé, refusé.
+  déplacé ou son littéral changé, refusé ; **un bloc coupé qui porte une entrée L1** (sur une copie du domaine `Audio` : la coupe de
+  `AlundraSoundBankTests.cs`, lignes 187 et 279) accepté quand le littéral change comme le relevé le dit, refusé quand il reste
+  inchangé ou change autrement ; **une entrée L1 sous un bloc coupé** (`AlundraMusicPlayerTests.cs:107`, `:164`) acceptée à sa nouvelle
+  ligne (révision 3).
 - T0d — **comptes de départ** : aucun processus du jeu ; solution en Release (copie neutralisée) et en Debug, 0 erreur ; `Alundra.Tests`
   Release et Debug, 5 097 réussis / 0 échec, **deux exécutions complètes** chacune ; `dotnet test --list-tests` (la liste des noms complets
   des tests, gardée hors du dépôt) ; le commit de base (`git rev-parse HEAD`) ; l'absence de `Directory.Build.props` et
@@ -1066,7 +1083,7 @@ correction au plus ; un verifier frais à la fin.
   docs ; ce plan (§9 et résultats).
 - T23 (révision 2b, D-R-18) — **Les dossiers temporaires orphelins**, après T22.
   (1) **Sélection** : les enfants directs du dossier temporaire de l'utilisateur (`Path.GetTempPath()`, où les tests créent les leurs, par
-  exemple `AlundraBgmFadeDirectorTests.cs:466` avant R5) dont le nom est l'un des 25 préfixes de dossiers temporaires du
+  exemple `AlundraBgmFadeDirectorTests.cs:466` avant R5) dont le nom est l'un des 25 préfixes de la classe `temp-folder-prefix` du
   `r5-literals.tsv` versé en T0a (valeurs d'avant R5) **suivi d'un GUID** (la forme `Guid.NewGuid()` ou `.ToString("N")` des sites), et
   dont la **dernière écriture date de plus de 24 heures** : les autres branches et les cinq autres worktrees du dépôt portent encore les
   anciens noms et peuvent créer ces dossiers à tout moment, et aucune exécution de tests ne dure 24 heures. Les autres dossiers
