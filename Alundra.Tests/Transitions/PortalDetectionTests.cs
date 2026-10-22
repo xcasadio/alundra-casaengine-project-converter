@@ -19,7 +19,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Transitions;
 
 /// <summary>
 /// T3 (docs/plan-transitions-carte.md §3) - DETECTION ONLY: the tile-flag probe
@@ -30,14 +30,14 @@ namespace Alundra.Tests;
 /// <see cref="PlayerManager.MovePlayer"/> call site. No transition is ever started here - see
 /// <see cref="PortalTrigger"/>'s own class doc.
 /// </summary>
-public class AlundraPortalDetectionTests : IDisposable
+public class PortalDetectionTests : IDisposable
 {
     // D-T-14: this class constructs AlundraWorldProxy, so it meets the operational criterion and resets
     // the session carriers in the constructor (the isolation-carrying half - xunit builds a fresh
     // instance per test) and in Dispose (hygiene). Its own tests build private AlundraGameState
     // instances rather than touching the session one, so nothing leaks today; the block is here so the
     // criterion stays mechanical rather than something each new class has to re-reason about.
-    public AlundraPortalDetectionTests() => ResetSessionCarriers();
+    public PortalDetectionTests() => ResetSessionCarriers();
 
     public void Dispose() => ResetSessionCarriers();
 

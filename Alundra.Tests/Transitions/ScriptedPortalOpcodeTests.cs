@@ -12,7 +12,7 @@ using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Transitions;
 
 /// <summary>
 /// E19.l1 L1-1 (docs/plan-e19-opcodes.md, section 1.2m.1): opcode 0x52 (<c>0x8003EB20</c>), the portal under the hero taken by
@@ -21,9 +21,9 @@ namespace Alundra.Tests;
 /// animation 0x36 (the existing director tests).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
+public sealed class ScriptedPortalOpcodeTests : IDisposable
 {
-    public AlundraScriptedPortalOpcodeTests() => ResetSessionState();
+    public ScriptedPortalOpcodeTests() => ResetSessionState();
 
     public void Dispose() => ResetSessionState();
 

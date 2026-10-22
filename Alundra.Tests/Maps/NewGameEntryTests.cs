@@ -20,6 +20,7 @@ using Alundra.UI.Hud;
 using Alundra.Hero;
 using Alundra.Maps;
 using Alundra.Tests.Audio;
+using Alundra.Tests.Transitions;
 
 namespace Alundra.Tests.Maps;
 
@@ -32,7 +33,7 @@ namespace Alundra.Tests.Maps;
 /// Drives the real <see cref="WorldProxy.InitializeWithWorld"/> through its full installation
 /// block against map 389 (the New Game map) - same real-map/hand-built-pawn montage as
 /// <see cref="WorldProxyGlobalFreezeTests.BuildRealMap389World"/> (reused directly, internal in
-/// the same assembly) and <see cref="AlundraWarpArrivalTests"/>'s own hero-pawn/player-controller
+/// the same assembly) and <see cref="WarpArrivalTests"/>'s own hero-pawn/player-controller
 /// fixtures (re-built here, since those are private to that class).
 ///
 /// <para>F5 (docs/plan-bgm-demarrage-binaire.md): the real map 389 install below writes the
@@ -81,7 +82,7 @@ public sealed class NewGameEntryTests : IDisposable
 
     /// <summary>Hand-built hero pawn - root <see cref="TransformComponent"/> plus sibling
     /// <see cref="CollisionComponent"/>, same fixture shape as
-    /// <see cref="AlundraWarpArrivalTests.BuildHeroPawnEntity"/> - AdoptPlayerPawn only needs a box
+    /// <see cref="WarpArrivalTests.BuildHeroPawnEntity"/> - AdoptPlayerPawn only needs a box
     /// fixture for ClampToGround to sample, no CharacterControllerComponent.</summary>
     private static Entity BuildHeroPawnEntity(World world)
     {
@@ -110,7 +111,7 @@ public sealed class NewGameEntryTests : IDisposable
 
     /// <summary>Possesses <paramref name="pawn"/> with a real <see cref="HeroController"/> and
     /// registers it into <paramref name="world"/>'s own private <c>World.PlayerControllers</c> backing
-    /// list - same reflection precedent as <see cref="AlundraWarpArrivalTests.RegisterPlayerController"/>
+    /// list - same reflection precedent as <see cref="WarpArrivalTests.RegisterPlayerController"/>
     /// (private there).</summary>
     private static void RegisterPlayerController(World world, Entity pawn)
     {
@@ -126,7 +127,7 @@ public sealed class NewGameEntryTests : IDisposable
     /// <summary>Builds map 389 (the New Game map) with a real player
     /// controller adopted, then runs <see cref="WorldProxy.InitializeWithWorld"/> end to end -
     /// <c>EngineEnvironment.ProjectPath</c> is set/restored around the call exactly like
-    /// <see cref="AlundraWarpArrivalTests"/>'s own acceptance tests, since map events/dialogue strings load
+    /// <see cref="WarpArrivalTests"/>'s own acceptance tests, since map events/dialogue strings load
     /// from it.</summary>
     private static WorldProxy InitializeNewGameEntryOnMap389()
     {

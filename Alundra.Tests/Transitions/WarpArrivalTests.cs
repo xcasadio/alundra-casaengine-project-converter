@@ -29,7 +29,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Transitions;
 
 /// <summary>
 /// T5 (docs/plan-transitions-carte.md §3 T5, D-T-4/D-T-7): <c>AlundraWorldProxy.AdoptPlayerPawn</c>
@@ -56,9 +56,9 @@ namespace Alundra.Tests;
 /// ordered parallel run must never leak in).</para>
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraWarpArrivalTests : IDisposable
+public sealed class WarpArrivalTests : IDisposable
 {
-    public AlundraWarpArrivalTests()
+    public WarpArrivalTests()
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -104,7 +104,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraWarpArrivalTests: no 'alundra-project/Maps' directory found above "
+            $"WarpArrivalTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - this test needs the real converter export of map 390.");
     }
 
@@ -319,7 +319,7 @@ public sealed class AlundraWarpArrivalTests : IDisposable
     /// <summary>Arms the warp director's pending arrival exactly like a real departure through portal 0 of
     /// map 389 would (§1.2.c arithmetic - player standing on the source tile's own centre, so
     /// deltaX/deltaY reduce to (DestTileX*24, DestTileY*16)), without needing the full T4 departure-world
-    /// montage (<see cref="AlundraWarpDepartureTests"/> already covers that arithmetic end to end).</summary>
+    /// montage (<see cref="WarpDepartureTests"/> already covers that arithmetic end to end).</summary>
     private static void ArmPendingArrival(int transitionEffectId = 0)
     {
         var departurePlayer = NewDeparturePlayer(posXPixels: 18 * 24 + 12, posYPixels: 38 * 16 + 8);

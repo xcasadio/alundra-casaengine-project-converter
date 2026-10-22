@@ -16,30 +16,17 @@ using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
-
-/// <summary>
-/// xunit collection covering every test class that touches the SESSION-scoped
-/// <see cref="ScreenFadeDirector.Instance"/> singleton (D-E10-6, docs/plan-e10-fondu.md, slice
-/// E10.b) - same rationale as <see cref="MusicPlayerSingletonCollection"/>: classes sharing a
-/// collection never run in parallel with each other, which is what keeps them from racing on that
-/// shared mutable state (xunit runs different test CLASSES in this project in parallel by default).
-/// </summary>
-[CollectionDefinition(Name)]
-public class AlundraScreenFadeDirectorSingletonCollection
-{
-    public const string Name = "AlundraScreenFadeDirector singleton";
-}
+namespace Alundra.Tests.Transitions;
 
 /// <summary>
 /// T1-T7 of docs/plan-e10-fondu.md, slice E10.b. Every test resets
 /// <see cref="ScreenFadeDirector.Instance"/> first/last (the "moyen de le réinitialiser en test"
 /// D-E10-6 asks the slice to name, same shape as <see cref="BgmPlayer.ResetForTests"/>).
 /// </summary>
-[Collection(AlundraScreenFadeDirectorSingletonCollection.Name)]
-public class AlundraScreenFadeDirectorTests : IDisposable
+[Collection(ScreenFadeDirectorSingletonCollection.Name)]
+public class ScreenFadeDirectorTests : IDisposable
 {
-    public AlundraScreenFadeDirectorTests()
+    public ScreenFadeDirectorTests()
     {
         ScreenFadeDirector.Instance.ResetForTests();
 

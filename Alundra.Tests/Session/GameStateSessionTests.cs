@@ -8,6 +8,7 @@ using Alundra.Audio;
 using Alundra.Entities;
 using Alundra.Maps;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Transitions;
 
 namespace Alundra.Tests.Session;
 
@@ -15,7 +16,7 @@ namespace Alundra.Tests.Session;
 /// T1 acceptance (docs/plan-transitions-carte.md, slice "T1 - État de partie en session"): the SEVEN rows
 /// of D-T-13's own field-by-field disposition table, each asserted across two CONSECUTIVE map entries
 /// sharing the same session carrier (<see cref="GameState.Instance"/>) - the "two worlds share the
-/// singleton" shape T7 already established (<see cref="AlundraScreenFadeDirectorTests"/>:370-412), driven
+/// singleton" shape T7 already established (<see cref="ScreenFadeDirectorTests"/>:370-412), driven
 /// here through <see cref="GameState.InstallForMapEntry"/> directly rather than a full
 /// <see cref="WorldProxy.InitializeWithWorld"/> montage - that method needs a live CasaEngineGame
 /// asset catalog just to REACH this call (see <see cref="WorldProxyTests"/>' own class doc for why

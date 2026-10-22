@@ -17,7 +17,7 @@ using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Transitions;
 
 /// <summary>
 /// The camera-wiring assertion docs/plan-e10-fondu.md, slice E10.b makes mandatory (blocage de
@@ -38,9 +38,9 @@ namespace Alundra.Tests;
 /// not a different camera) - so no STOP is warranted here; the assertion is a passing test, not a
 /// silent workaround.
 /// </summary>
-public class AlundraScreenFadeCameraWiringTests : IDisposable
+public class ScreenFadeCameraWiringTests : IDisposable
 {
-    public AlundraScreenFadeCameraWiringTests()
+    public ScreenFadeCameraWiringTests()
     {
         // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the

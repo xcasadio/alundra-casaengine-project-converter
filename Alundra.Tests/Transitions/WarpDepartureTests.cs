@@ -25,7 +25,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Transitions;
 
 /// <summary>
 /// T4 (docs/plan-transitions-carte.md §3 T4) - <see cref="WarpDirector"/>: the departure
@@ -39,9 +39,9 @@ namespace Alundra.Tests;
 /// either, same reasoning as <see cref="WorldProxyAudioInstallationTests"/>.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraWarpDepartureTests : IDisposable
+public sealed class WarpDepartureTests : IDisposable
 {
-    public AlundraWarpDepartureTests()
+    public WarpDepartureTests()
     {
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -935,7 +935,7 @@ public sealed class AlundraWarpDepartureTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraWarpDepartureTests: no 'alundra-project/Maps' directory found above "
+            $"WarpDepartureTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - this test needs the real converter export.");
     }
 }
