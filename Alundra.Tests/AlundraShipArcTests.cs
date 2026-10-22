@@ -9,6 +9,7 @@ using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -18,7 +19,7 @@ namespace Alundra.Tests;
 /// it FAILS naming where each program stopped (<see cref="ArcRun"/>). Expected values are written by hand from the
 /// decoded bytecode of map 390 before the code that satisfies them.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraShipArcTests
 {
     private const string Zone = "The Klark";

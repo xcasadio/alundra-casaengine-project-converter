@@ -7,6 +7,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -17,7 +18,7 @@ namespace Alundra.Tests.Hero;
 /// south), swims on and stops against the bank at the south end of the pond. Written before the first run (the numbers are the oracle's: the swim 73728 south, the burst 90112, the float then the swim after a fall).
 /// The same arc without boots is pinned as a deviation: the original stops a hero without the swim boots at the edge of the deep water (O-E19-22, not ported), this one swims.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeroSwimArenaTests : IDisposable
 {
     private const uint Triangle = PadState.Triangle;

@@ -13,6 +13,7 @@ using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Maps;
 
@@ -25,7 +26,7 @@ namespace Alundra.Tests.Maps;
 /// east (<c>edge-push-east</c>) and north-east (<c>edge-push-diag</c>: X bounded while Y goes on, the flag kept through the slide along the wall); (b3) a walker from a record at the same place is not bounded (O-E19-17, D-E19-25);
 /// (b4) the hero, pushed east past its own bound, goes past it at the tick that its speed gives.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class MapEdgeWorldTests
 {
     private const int Arrow = 3;

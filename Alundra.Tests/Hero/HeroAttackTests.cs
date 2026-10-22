@@ -15,6 +15,7 @@ using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -27,7 +28,7 @@ namespace Alundra.Tests.Hero;
 /// Z absolute in the DLL convention, without the +1 of the binary), <c>IsOnGround</c>, the pending-spawn pointer and its counter, the sounds asked and the spawn calls. The
 /// charge timer (E20.f), the frame box and the attack pointer (E20.c1) are not compared.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeroAttackTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;

@@ -6,6 +6,7 @@ using static Alundra.Tests.ArcChecks;
 using Alundra.Session;
 using Alundra.Events;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -15,7 +16,7 @@ namespace Alundra.Tests;
 /// (<c>0x25 @415</c>), then comes back (<c>1A [0] @416</c>); the boxes then close and <c>0x53 @451</c> leaves the map. The arc starts like the
 /// preset <c>day3-after-dream</c> (G203, G1651, G1660, arrival at the tile (17, 7), z 1).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraBergusJumpArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

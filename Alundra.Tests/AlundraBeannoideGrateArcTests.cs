@@ -10,6 +10,7 @@ using Alundra.Ai.Enemies;
 using Alundra.Combat;
 using Alundra.Cells;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -20,7 +21,7 @@ namespace Alundra.Tests;
 /// other Beannoids left alone and the two break effects (one per death, at the entity). Not asserted: the loot and the sound 84 (E20.e0) and the trajectories after the apparition (the DLL draws no number at the apparition, so its flow
 /// differs from the oracle's). The arc runs outside the generator's collection: it reads no number of it.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraBeannoideGrateArcTests
 {
     private const int C = ScriptHelper.ProgramCTick;

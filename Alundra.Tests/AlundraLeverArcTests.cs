@@ -7,6 +7,7 @@ using Xunit.Abstractions;
 using Alundra.Events;
 using Alundra.Cells;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -18,7 +19,7 @@ namespace Alundra.Tests;
 /// the plan (the pass of <c>0x1C [1]</c> at s + L + 1, the walk of the doors) is an expectation too: a run that disagrees stops the task, the expectation
 /// is never re-fitted. H is <c>arc.Frame</c> before the press; the trace frames are absolute and the checks compare ticks.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraLeverArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

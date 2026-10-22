@@ -12,6 +12,7 @@ using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Physics;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -22,7 +23,7 @@ namespace Alundra.Tests.Entities;
 /// (a) the marker <see cref="EntityScriptProxy.HasLogicalZ"/> is posed by the interface and by it alone; (b) the step: the ball (<c>arrows-ball-fire</c>), the arrow (Z constant, <c>IsOnGround</c> with and without the
 /// unit), the impulse of 1 024 (<c>crate-flat-state1</c>), the exact graze, the ceiling, the magnet of 3 px, the stop marker 0x8000, the sentinel and the root that follows.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class LogicalZStepTests
 {
     private const int Arrow = 3;

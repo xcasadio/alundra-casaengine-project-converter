@@ -20,6 +20,7 @@ using Alundra.UI.Speech;
 using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Ai.Objects;
 
@@ -31,7 +32,7 @@ namespace Alundra.Tests.Ai.Objects;
 /// normal end are followed by <see cref="AssertReleased"/>: the whole <c>PlayerControlFlags</c> at 0, no box, no
 /// choice, then the hero walks and the inventory opens (SE1).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class SaveBookTests : IDisposable
 {
     private const int Wait = SaveBook.WaitTicks + 1; // 0x3C counted down to -1: 61 ticks.

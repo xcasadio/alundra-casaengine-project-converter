@@ -16,6 +16,7 @@ using Alundra.SaveGames;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Ai.Objects;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -27,7 +28,7 @@ namespace Alundra.Tests;
 /// and the memory-card process all run in RenderScene, before the pad sampler of the frame's Update(0), and read the previous frame's sample. The helpers of the
 /// director tests (<c>AlundraSaveScreenDirectorTests</c>) keep presenting their words at age 0 by design: the age is proved here, at the proxy.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSaveScreenTickOrderTests : IDisposable
 {
     private readonly SaveBookTests.RecordingUIViewRuntime _uiView = new();

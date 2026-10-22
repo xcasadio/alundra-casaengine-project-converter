@@ -5,6 +5,7 @@ using System.Linq;
 using Xunit;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Combat;
 
@@ -14,7 +15,7 @@ namespace Alundra.Tests.Combat;
 /// <see cref="EntityScriptProxy.NoteSwitchPendingAtTick"/>), so a hit lands at the tick of the oracle whatever the grouping of the ticks into frames. Each test replays an oracle trace with another grouping and compares every
 /// tick, every column, as <see cref="HitPassTests"/> does. The pad of a frame is the oracle's pad of its first tick.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HitPassCatchUpTests
 {
     private const uint Square = 0x80;

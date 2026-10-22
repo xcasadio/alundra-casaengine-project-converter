@@ -10,6 +10,7 @@ using Alundra.Ai.Enemies;
 using Alundra.Combat;
 using Alundra.Cells;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -21,7 +22,7 @@ namespace Alundra.Tests;
 /// Muruta (2 per hit), the timeline of each death (D9 at H+1, status 4 at H+23, recycled at H+24), the door of B[2] at the latest E1 + 2 and its fixed gaps, the flags, the cells and the four break effects. Not asserted: the positions of the
 /// Muruta (the generator decides their walk), the loot, the sound 84 (E20.e0). The arc runs outside the generator's collection: it reads no number of it.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraMurutaHallArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

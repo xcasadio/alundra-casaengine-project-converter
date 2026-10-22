@@ -10,6 +10,7 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Physics;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Maps;
 
@@ -128,7 +129,7 @@ public sealed class MapStateTests
     // (c) P3 of E20.e0a3b, green by construction since E20.e0a3b: the guard of D-E0A-8 has TWO conditions.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    [Collection(AlundraMusicPlayerSingletonCollection.Name)]
+    [Collection(MusicPlayerSingletonCollection.Name)]
     public sealed class MarkedEntityPins
     {
         private static ArcRun Arc(string name) => new(new ArcSpec("E20e0k1-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true));

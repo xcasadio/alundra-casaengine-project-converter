@@ -27,6 +27,7 @@ using Alundra.Hero;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -49,12 +50,12 @@ namespace Alundra.Tests;
 ///
 /// <para>F5 (docs/plan-bgm-demarrage-binaire.md): <see cref="WorldProxy.InitializeWithWorld"/>
 /// writes the SESSION-scoped <see cref="BgmPlayer.Instance"/> (map entry arms its reset flag,
-/// B7) - so this class shares <see cref="AlundraMusicPlayerSingletonCollection"/> with every other class
+/// B7) - so this class shares <see cref="MusicPlayerSingletonCollection"/> with every other class
 /// touching that same shared instance, and resets <see cref="BgmFadeDirector.Instance"/> too
 /// (nothing in this file drives it directly, but a stray armed state left over from a differently-
 /// ordered parallel run must never leak in).</para>
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraWarpArrivalTests : IDisposable
 {
     public AlundraWarpArrivalTests()

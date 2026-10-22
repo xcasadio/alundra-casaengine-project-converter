@@ -5,6 +5,7 @@ using System.Linq;
 using Xunit;
 using Alundra.Hero;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -19,7 +20,7 @@ namespace Alundra.Tests.Hero;
 /// are in the same frame, so Square is still held at the shot tick (the oracle releases it): the binary does not read the Square again on that tick, and the test asserts the shot all the same.
 /// </para>
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class ShotDirectionTests : IDisposable
 {
     private const uint Square = PadState.Square;

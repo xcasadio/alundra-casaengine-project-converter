@@ -9,6 +9,7 @@ using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -24,7 +25,7 @@ namespace Alundra.Tests;
 /// naming its last instruction, never a sample.
 /// </para>
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraVisionArcTests
 {
     private const string Zone = "Lars & Melzas Room";

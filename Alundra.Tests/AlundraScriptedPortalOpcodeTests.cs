@@ -10,6 +10,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Entities;
 using Alundra.Hero;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -19,7 +20,7 @@ namespace Alundra.Tests;
 /// <c>HandleWarpTransition</c> the hero's <c>TargetAnimationId</c> and <c>TargetDirection</c>); the walk onto a portal keeps
 /// animation 0x36 (the existing director tests).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraScriptedPortalOpcodeTests : IDisposable
 {
     public AlundraScriptedPortalOpcodeTests() => ResetSessionState();

@@ -12,6 +12,7 @@ using Alundra.Combat;
 using Alundra.Items;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Combat;
 
@@ -21,7 +22,7 @@ namespace Alundra.Tests.Combat;
 /// <c>docs/plan-e20-annexe/e20-c1b/oracle/out/</c> (<c>K1.json</c>, <c>K2.json</c>: the real code of <c>ALUN_CD.EXE</c> (France), twelve inventories built by the real new-game code) and the HP cases of the D2 oracle
 /// (<c>docs/plan-e20-annexe/d2-oracle-coups/out/cases.txt</c>, cases 3 and 4 and the extra x8): the expected values below are the oracle's, never computed by the code under test.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class DamageTests
 {
     // -----------------------------------------------------------------------------------------

@@ -15,6 +15,7 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -25,7 +26,7 @@ namespace Alundra.Tests.Hero;
 /// plan's own. One tick per frame. The entities of the montages carry their <see cref="EntityScriptProxy.LogicContextEntity"/> (what
 /// <c>RidingEntity</c> holds, S4).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeroObjectTopsTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;

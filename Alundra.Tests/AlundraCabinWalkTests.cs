@@ -17,6 +17,7 @@ using Alundra.Physics;
 using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -29,7 +30,7 @@ namespace Alundra.Tests;
 /// blocked step stops 78.8 px from its start and the script's <c>0x1E @658</c> waits forever. The arcs of
 /// <see cref="ArcRun"/> and the A1c arc test the same scene through the script; this one isolates the physics.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraCabinWalkTests
 {
     private const string WorldName = "Ship Klark (inner)-390";

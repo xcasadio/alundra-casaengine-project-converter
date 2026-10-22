@@ -20,6 +20,7 @@ using Alundra.Entities;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Ai.Objects;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Scripts;
 
@@ -31,7 +32,7 @@ namespace Alundra.Tests.Scripts;
 /// <see cref="IUIViewRuntime"/> shared with the real dialogue presenter - so the order of the two screens on the
 /// view is observed. The save service is a fake (D-E16-31).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSaveScreenPresenterTests : IDisposable
 {
     private readonly SaveBookTests.RecordingUIViewRuntime _uiView = new();

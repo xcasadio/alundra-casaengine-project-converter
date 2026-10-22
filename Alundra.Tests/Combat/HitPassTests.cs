@@ -10,6 +10,7 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Rendering.Effects;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Combat;
 
@@ -21,7 +22,7 @@ namespace Alundra.Tests.Combat;
 /// (<c>0x80146DF8</c>), the sparks of the tick (their centres, three per hit; the DLL's Z is the binary's minus 1, ADR-0026) and the programs the events pass ran (2 = C, 3 = D). The speeds of the sparks come from the random
 /// stream and are not compared (E20.e0b1 advances it once per tick). Exclusions are named in the tests that have them.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HitPassTests
 {
     private const uint Square = 0x80;

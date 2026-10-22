@@ -12,12 +12,12 @@ using Alundra.Audio;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Audio;
 
 /// <summary>
 /// B2 of docs/plan-e11b-opcodes-audio.md, model rewritten by T2.1 of docs/plan-bgm-demarrage-binaire.md:
 /// the master BGM fade machine (<see cref="BgmFadeDirector"/>, opcodes 0xA5/0xA6/0xA7). Joins
-/// <see cref="AlundraMusicPlayerSingletonCollection"/> (rather than a new collection) because every test
+/// <see cref="MusicPlayerSingletonCollection"/> (rather than a new collection) because every test
 /// here also touches <see cref="BgmPlayer.Instance"/> - the fade machine's own
 /// <c>StopSequence</c>/<c>PlaySequence</c> calls go straight through to it (D-B-5) - so the two session
 /// singletons must never run in parallel with each other either; classes sharing a collection never do
@@ -25,10 +25,10 @@ namespace Alundra.Tests;
 /// doc, and note the project's own <c>xunit.runner.json</c> already disables cross-collection
 /// parallelism entirely, kept here purely for hygiene/documentation).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public class AlundraBgmFadeDirectorTests : IDisposable
+[Collection(MusicPlayerSingletonCollection.Name)]
+public class BgmFadeDirectorTests : IDisposable
 {
-    public AlundraBgmFadeDirectorTests()
+    public BgmFadeDirectorTests()
     {
         BgmFadeDirector.Instance.ResetForTests();
         BgmPlayer.Instance.ResetForTests();
@@ -464,7 +464,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
 
     private string BuildFixtureProjectWithInitialTrackAndTrack42(out Guid assetInitial, out Guid asset42)
     {
-        var root = Path.Combine(Path.GetTempPath(), "AlundraBgmFadeDirectorTests_Corpus_" + Guid.NewGuid());
+        var root = Path.Combine(Path.GetTempPath(), "BgmFadeDirectorTests_Corpus_" + Guid.NewGuid());
         _tempDirs.Add(root);
 
         var musicsDir = Path.Combine(root, "Musics");
@@ -693,7 +693,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
 
     private string BuildFixtureProjectWithTwoTracks(out Guid asset7, out Guid asset5)
     {
-        var root = Path.Combine(Path.GetTempPath(), "AlundraBgmFadeDirectorTests_Two_" + Guid.NewGuid());
+        var root = Path.Combine(Path.GetTempPath(), "BgmFadeDirectorTests_Two_" + Guid.NewGuid());
         _tempDirs.Add(root);
 
         var musicsDir = Path.Combine(root, "Musics");
@@ -712,7 +712,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
 
     private string BuildFixtureProjectWithNegativeMapEntry()
     {
-        var root = Path.Combine(Path.GetTempPath(), "AlundraBgmFadeDirectorTests_Neg_" + Guid.NewGuid());
+        var root = Path.Combine(Path.GetTempPath(), "BgmFadeDirectorTests_Neg_" + Guid.NewGuid());
         _tempDirs.Add(root);
 
         var musicsDir = Path.Combine(root, "Musics");
@@ -752,7 +752,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
 
     private string BuildFixtureProjectWithOneTrack(out Guid assetId)
     {
-        var root = Path.Combine(Path.GetTempPath(), "AlundraBgmFadeDirectorTests_" + Guid.NewGuid());
+        var root = Path.Combine(Path.GetTempPath(), "BgmFadeDirectorTests_" + Guid.NewGuid());
         _tempDirs.Add(root);
 
         var musicsDir = Path.Combine(root, "Musics");
@@ -775,7 +775,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
     /// (which clears the flag itself, P8, and so cannot be used to arm it).</summary>
     private string BuildFixtureProjectWithOneMapEntry(out Guid assetId)
     {
-        var root = Path.Combine(Path.GetTempPath(), "AlundraBgmFadeDirectorTests_Map_" + Guid.NewGuid());
+        var root = Path.Combine(Path.GetTempPath(), "BgmFadeDirectorTests_Map_" + Guid.NewGuid());
         _tempDirs.Add(root);
 
         var musicsDir = Path.Combine(root, "Musics");
@@ -793,7 +793,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
 
     private string BuildSfxFixtureProject(out Guid assetId)
     {
-        var root = Path.Combine(Path.GetTempPath(), "AlundraBgmFadeDirectorTests_Sfx_" + Guid.NewGuid());
+        var root = Path.Combine(Path.GetTempPath(), "BgmFadeDirectorTests_Sfx_" + Guid.NewGuid());
         _tempDirs.Add(root);
 
         var soundsDir = Path.Combine(root, "Sounds");
@@ -816,7 +816,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
     [Fact]
     public void D2_ATrackTheManifestSaysDoesNotLoop_IsAStreamThatDoesNotLoop()
     {
-        var root = Path.Combine(Path.GetTempPath(), "AlundraBgmFadeDirectorTests_OneShot_" + Guid.NewGuid());
+        var root = Path.Combine(Path.GetTempPath(), "BgmFadeDirectorTests_OneShot_" + Guid.NewGuid());
         _tempDirs.Add(root);
         Directory.CreateDirectory(Path.Combine(root, "Musics"));
         Directory.CreateDirectory(Path.Combine(root, "Maps"));
@@ -845,7 +845,7 @@ public class AlundraBgmFadeDirectorTests : IDisposable
         Assert.False(stream.Parameters.IsLooped);
         Assert.Equal(new[] { "bgm_042" }, provider.OpenedStreams);
 
-        var asset = AlundraMusicPlayerTests.CurrentAssetOf(BgmPlayer.Instance);
+        var asset = MusicPlayerTests.CurrentAssetOf(BgmPlayer.Instance);
         Assert.NotNull(asset);
         Assert.True(asset!.IsStreaming);
         Assert.False(asset.IsLooped);

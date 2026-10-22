@@ -12,6 +12,7 @@ using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Audio;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -20,7 +21,7 @@ namespace Alundra.Tests.Entities;
 /// pass), at 1, 2 and 3 ticks per frame and wherever in the frame the entity is born. The real world of map 14 (<see cref="ArcRun"/>, real prefabs), the birth by the test seam of <c>MovePlayer</c>
 /// (<see cref="PlayerManager.WeaponSpawnBirthHookForTests"/>) or, for "born in the native program of another entity", by a call of the interface from the programs pass. Labels: [R] red on the HEAD (predicted), [V] green by construction.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class CreationSwitchClockTests : IDisposable
 {
     private readonly ITestOutputHelper _output;

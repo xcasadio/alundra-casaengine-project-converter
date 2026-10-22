@@ -28,6 +28,7 @@ using Alundra.Entities;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Ai.Objects;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -37,7 +38,7 @@ namespace Alundra.Tests;
 /// after each pass of the box, whether or not the hero exists; the screen is given back at the end of the world; the retry builds it once the view appears; with a choice, the
 /// text box screen is pushed first and the choice screen (E19.f3b) above it, which goes when the answer is taken.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraTextBoxWiringTests : IDisposable
 {
     private static readonly DialogueDirector Director = DialogueDirector.Instance;

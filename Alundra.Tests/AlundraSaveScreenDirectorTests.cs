@@ -26,6 +26,7 @@ using Alundra.SaveGames;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Ai.Objects;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -36,7 +37,7 @@ namespace Alundra.Tests;
 /// a fake save service behind <see cref="SaveGameDirector.SaveSlots"/> (D-E16-31: the real save folder is
 /// never reached).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSaveScreenDirectorTests : IDisposable
 {
     private const string Examine = "Examen de la Carte Mémoire . . .";

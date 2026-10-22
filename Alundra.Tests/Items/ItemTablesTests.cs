@@ -3,13 +3,14 @@ using System;
 using System.IO;
 using Xunit;
 using Alundra.Items;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Items;
 
 /// <summary>
 /// E13.c S3 (docs/plan-e13c-icones-hud.md): <see cref="ItemTables"/> reads the three <c>Data/</c>
 /// item tables the converter republishes, and degrades to zeros - never an exception - when one is missing,
-/// unreadable or short. Driven off fixture directories, the way <see cref="AlundraSoundGroupIndexTableTests"/>
+/// unreadable or short. Driven off fixture directories, the way <see cref="SoundGroupIndexTableTests"/>
 /// drives its own table.
 /// </summary>
 public class ItemTablesTests : IDisposable

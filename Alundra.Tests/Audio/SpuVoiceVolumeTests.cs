@@ -1,7 +1,7 @@
 using Xunit;
 using Alundra.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Audio;
 
 /// <summary>
 /// T4.2 (docs/plan-audio-mix-exact-muet.md): every row of the plan's own key-on volume table, straight
@@ -9,7 +9,7 @@ namespace Alundra.Tests;
 /// a regression in the port (wrong operation order, wrong truncation, a missing pan branch) fails a
 /// concrete assertion instead of a description.
 /// </summary>
-public class AlundraSpuVoiceVolumeTests
+public class SpuVoiceVolumeTests
 {
     // VAB 127, program 127, program pan 64 - every sound 300/301/302/162 row of the plan's table.
     [Theory]

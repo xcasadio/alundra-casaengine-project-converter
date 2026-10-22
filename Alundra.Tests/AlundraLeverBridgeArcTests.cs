@@ -6,6 +6,7 @@ using Xunit;
 using Alundra.Events;
 using Alundra.Cells;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -14,7 +15,7 @@ namespace Alundra.Tests;
 /// lever 40 then makes the bridge program take the hand for 45 ticks and write the five rows of the bridge from the source rectangles; a new hit on the
 /// lever 40 retracts it. Every expected value was written by hand before the code from the plan and check.md.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraLeverBridgeArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

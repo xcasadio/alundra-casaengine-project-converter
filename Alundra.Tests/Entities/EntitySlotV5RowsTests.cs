@@ -9,6 +9,7 @@ using Xunit;
 using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -18,7 +19,7 @@ namespace Alundra.Tests.Entities;
 /// <c>probes</c> (the 13 invalid indices of the oracle, replayed on the world). The numbers are read from the file, never recomputed. The binary also reports that the series number, the slot count word and the
 /// generator did not move on a refusal: the DLL writes none of the three (no series, D-E0A-7; no generator draw at the creation, D-E0A-3), so the replay checks what it has, the held slots and the entity list.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class EntitySlotV5RowsTests
 {
     private const int HeroX = 150;

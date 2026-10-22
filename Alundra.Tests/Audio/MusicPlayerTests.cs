@@ -21,38 +21,24 @@ using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
-
-/// <summary>
-/// xunit collection covering every test class that touches the SESSION-scoped
-/// <see cref="BgmPlayer.Instance"/> singleton (D-C-6, docs/plan-e11c-musique.md, slice C1) -
-/// today <see cref="AlundraMusicPlayerTests"/> and <see cref="WorldProxyAudioInstallationTests"/>
-/// (whose <c>InstallAudioSystems</c> call now re-points that same instance). Classes sharing a
-/// collection never run in parallel with each other, which is what keeps them from racing on that
-/// shared mutable state (xunit runs different test CLASSES in this project in parallel by default).
-/// </summary>
-[CollectionDefinition(Name)]
-public class AlundraMusicPlayerSingletonCollection
-{
-    public const string Name = "AlundraMusicPlayer singleton";
-}
+namespace Alundra.Tests.Audio;
 
 /// <summary>
 /// T1/T1 bis/T2/T4/T5 of docs/plan-e11c-musique.md, slice C1. All in ONE class (rather than split like
 /// E11.a's own tests) because every one of them drives <see cref="BgmPlayer.Instance"/> - a
 /// SESSION-scoped singleton by design (D-C-6) - and xunit runs different test CLASSES in this project in
 /// parallel by default (methods within one class do not run concurrently), so sharing that singleton
-/// across classes would race; see <see cref="AlundraMusicPlayerSingletonCollection"/> for the other
+/// across classes would race; see <see cref="MusicPlayerSingletonCollection"/> for the other
 /// class it shares this concern with. Every test calls <see cref="BgmPlayer.ResetForTests"/>
 /// first (the "moyen de le réinitialiser en test" D-C-6 asks the slice to name).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public class AlundraMusicPlayerTests : IDisposable
+[Collection(MusicPlayerSingletonCollection.Name)]
+public class MusicPlayerTests : IDisposable
 {
     private const string WorldName = "Ship Klark (beginning)-389";
     private readonly List<string> _tempDirs = new();
 
-    public AlundraMusicPlayerTests()
+    public MusicPlayerTests()
     {
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests(); // T2.1: the frame-close site drives this too now.
@@ -106,7 +92,7 @@ public class AlundraMusicPlayerTests : IDisposable
     /// covers both.</summary>
     private string BuildFixtureProject(IReadOnlyDictionary<int, int> rawByMapId, IReadOnlySet<int> playableIndices, bool withSfx = false)
     {
-        var root = Path.Combine(Path.GetTempPath(), "AlundraMusicPlayerTests_" + Guid.NewGuid());
+        var root = Path.Combine(Path.GetTempPath(), "MusicPlayerTests_" + Guid.NewGuid());
         _tempDirs.Add(root);
 
         var mapsDir = Path.Combine(root, "Maps");
@@ -163,7 +149,7 @@ public class AlundraMusicPlayerTests : IDisposable
         }
 
         throw new InvalidOperationException(
-            $"AlundraMusicPlayerTests: no 'alundra-project/Musics' directory found above "
+            $"MusicPlayerTests: no 'alundra-project/Musics' directory found above "
             + $"'{AppContext.BaseDirectory}' - T1 needs the real converter export (docs/plan-e11c-musique.md, slice C1).");
     }
 

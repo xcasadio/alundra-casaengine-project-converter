@@ -10,6 +10,7 @@ using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Items;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -20,7 +21,7 @@ namespace Alundra.Tests.Hero;
 /// (<see cref="PlayerManager.WiredWeaponTypesForTests"/>). The world is map 14 (<see cref="ArcRun"/>, real prefabs): a "no effect" case is always set next to the positive case in the same test, so a seam that
 /// never works cannot pass. The shot is the one of Hunter's Bow (record 8, ground): the pointer is armed with its counter at the delay, so that the next tick of <c>MovePlayer</c> reaches the spawn.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class WeaponSpawnSeamTests : IDisposable
 {
     private const int Arrow = 3;

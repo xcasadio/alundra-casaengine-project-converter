@@ -13,6 +13,7 @@ using Alundra.Maps.Loop;
 using Alundra.Physics;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -24,7 +25,7 @@ namespace Alundra.Tests.Entities;
 /// and with <c>Current = Target</c> posed by hand. Every measured value is also written to the test output with the prefix <c>PA:</c> (the plan copies them).
 /// No production code is changed by this slice; the interface is not called by any production path.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class BirthTickProbePaTests
 {
     private const int StartX = 150;

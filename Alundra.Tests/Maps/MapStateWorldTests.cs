@@ -14,6 +14,7 @@ using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Physics;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Maps;
 
@@ -23,7 +24,7 @@ namespace Alundra.Tests.Maps;
 /// witness in the same assertion. (k1) an arrow against a wall that ONLY the walkability mask blocks; (k2) a ball falls and lands; (k3) the same ball on the gravity of maps 159 and 160 barely falls; (k4) the fields of the entity
 /// born by the interface are the ones of an entity of the same sprite created from a record.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class MapStateWorldTests
 {
     private const int Arrow = 3;

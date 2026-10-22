@@ -15,6 +15,7 @@ using Alundra.Combat;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Combat;
 
@@ -24,7 +25,7 @@ namespace Alundra.Tests.Combat;
 /// of 3 on <c>TouchingEntity</c>, the <c>+0x1D0</c> timer and the attacker's counter (the case 4 and the life of the case 3 are E20.c1b). The expectations below are the ones of <c>tools/cases.py</c>, not computed by the
 /// code under test. Plus the latch of the hero's animation. (The balance tables and the reload at a switch are in <see cref="BalanceTablesTests"/>.)
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HitPassRulesTests
 {
     private const uint ClassA = EntityFlags.ClassA;

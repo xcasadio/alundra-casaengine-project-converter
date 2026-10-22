@@ -15,6 +15,7 @@ using Alundra.Entities.Spawning;
 using Alundra.Events;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -24,7 +25,7 @@ namespace Alundra.Tests.Entities;
 /// written by a script before the first validation does. The entities are the export's REAL prefabs, spawned by the production factory
 /// (<see cref="EntitySpawnFactory.CreateEntityFromRecord"/>, the call of the map load, <c>0x2D</c>, <c>0x8A</c> and <c>0x8B</c>) with a record written by hand.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AnimationImpulseSpawnTests : IDisposable
 {
     private const string ArrowLevel1 = "eab8d775";

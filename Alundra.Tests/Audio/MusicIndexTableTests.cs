@@ -3,7 +3,7 @@ using System.IO;
 using Xunit;
 using Alundra.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Audio;
 
 /// <summary>
 /// T3 of docs/plan-e11c-musique.md, slice C1: drives <see cref="MusicIndexTable.ResolvePlaybackDirective(int, out int)"/> -
@@ -14,7 +14,7 @@ namespace Alundra.Tests;
 /// mutation that hard-codes 25 at the resolution site is actually caught (see the plan's own mutation
 /// table).
 /// </summary>
-public class AlundraMusicIndexTableTests
+public class MusicIndexTableTests
 {
     private static string FindProjectRoot()
     {
@@ -31,7 +31,7 @@ public class AlundraMusicIndexTableTests
         }
 
         throw new InvalidOperationException(
-            $"AlundraMusicIndexTableTests: no 'alundra-project/Maps' directory found above "
+            $"MusicIndexTableTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' (docs/plan-e11c-musique.md, slice C1).");
     }
 
@@ -100,7 +100,7 @@ public class AlundraMusicIndexTableTests
     [Fact]
     public void MissingMusicIndexFile_EveryLookupMisses_ResolvesToNoOp_NoException()
     {
-        var emptyProjectPath = Path.Combine(Path.GetTempPath(), "AlundraMusicIndexTableTests_Missing_" + Guid.NewGuid());
+        var emptyProjectPath = Path.Combine(Path.GetTempPath(), "MusicIndexTableTests_Missing_" + Guid.NewGuid());
         Directory.CreateDirectory(emptyProjectPath); // no Maps/music-index.json inside
 
         try
@@ -123,7 +123,7 @@ public class AlundraMusicIndexTableTests
     [Fact]
     public void MalformedMusicIndexFile_EveryLookupMisses_ResolvesToNoOp_NoException()
     {
-        var projectPath = Path.Combine(Path.GetTempPath(), "AlundraMusicIndexTableTests_Malformed_" + Guid.NewGuid());
+        var projectPath = Path.Combine(Path.GetTempPath(), "MusicIndexTableTests_Malformed_" + Guid.NewGuid());
         var mapsDir = Path.Combine(projectPath, "Maps");
         Directory.CreateDirectory(mapsDir);
         File.WriteAllText(Path.Combine(mapsDir, "music-index.json"), "{ not valid json ][");

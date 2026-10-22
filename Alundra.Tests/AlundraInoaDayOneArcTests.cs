@@ -13,6 +13,7 @@ using Alundra.Cells;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -24,7 +25,7 @@ namespace Alundra.Tests;
 /// pinned frames (+/- 3) come from the first measurement. Order of the checks: the end signal, the skipped or exceeded set, then
 /// the rest in the order of the plan. The positions that depend on contacts between entities are not pinned here (E19.d2b).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraInoaDayOneArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

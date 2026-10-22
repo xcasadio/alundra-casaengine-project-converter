@@ -15,6 +15,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -25,7 +26,7 @@ namespace Alundra.Tests.Entities;
 /// births are made at the pass <c>programs</c> of <see cref="WorldProxy.TickTraceForTests"/> (inside the entity block: a birth in the programs of another entity, the loop 2 of the binary, at one tick per frame). Labels: [R] red on the HEAD
 /// (predicted), [V] green by construction, [C] control (its colour on the HEAD is recorded, no stop value; not part of any proof).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class RecordBirthClockTests : IDisposable
 {
     /// <summary>The index of the test record (a byte: the operand of <c>0x2D</c>); the records of the world of map 14 are 0 to 24.</summary>

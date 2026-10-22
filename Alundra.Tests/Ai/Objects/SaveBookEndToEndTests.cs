@@ -32,6 +32,7 @@ using Alundra.UI.Saving;
 using Alundra.SaveGames;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Ai.Objects;
 
@@ -52,7 +53,7 @@ namespace Alundra.Tests.Ai.Objects;
 /// placed at that very y without pushing writes no contact.
 /// </para>
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class SaveBookEndToEndTests : IDisposable
 {
     private const string Map17WorldName = "Overworld 4,0-17";

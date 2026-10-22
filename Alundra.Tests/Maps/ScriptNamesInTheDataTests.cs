@@ -14,6 +14,7 @@ using Alundra.Entities;
 using Alundra.Hero;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Maps;
 
@@ -22,7 +23,7 @@ namespace Alundra.Tests.Maps;
 /// gameplay classes (<c>Alundra.Scripts.AlundraEntityScriptProxy</c>, ...), because the engine creates a script object only by full name from the
 /// gameplay assembly. These cases lock the data to the types, and the creation catches of the world proxy to the engine's dedicated exception.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class ScriptNamesInTheDataTests
 {
     private const string WorldRelativePath = "Maps/Overworld/Overworld 3,1-14/Overworld 3,1-14.world";

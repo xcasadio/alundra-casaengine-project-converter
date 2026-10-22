@@ -12,6 +12,7 @@ using Alundra.Cells;
 using Alundra.Transitions;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -25,7 +26,7 @@ namespace Alundra.Tests.Hero;
 /// oracle says the function asked them (<c>F-sound-callers.txt</c>, the return address of each call). The <c>sound(0)</c> of the animation switches (return address <c>0x80038BD0</c>, <c>UpdateAnimation</c>) are not
 /// the function's: the DLL asks no sound for an animation set with no sound.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class FlailBounceTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;

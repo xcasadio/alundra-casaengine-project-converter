@@ -23,6 +23,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -31,13 +32,13 @@ namespace Alundra.Tests;
 /// sequence, its own gel gate, and the map-entry disposition (D-T-15) that ends it. Every test resets
 /// the FOUR session singletons this class' own montages touch, plus the three T1 introduced (D-T-14) -
 /// same shape as every other class that constructs an <see cref="WorldProxy"/>. Joins
-/// <see cref="AlundraMusicPlayerSingletonCollection"/> (T2.1, docs/plan-bgm-demarrage-binaire.md): the
+/// <see cref="MusicPlayerSingletonCollection"/> (T2.1, docs/plan-bgm-demarrage-binaire.md): the
 /// n/o/p warp-departure tests arm the REAL <see cref="BgmFadeDirector.Instance"/>, which
 /// <see cref="SoundPlayer.PlaySfx"/> reads directly (fact 8) - so this class must never race
-/// <see cref="AlundraBgmFadeDirectorTests"/>/<see cref="AlundraMusicPlayerTests"/> on that shared state
+/// <see cref="BgmFadeDirectorTests"/>/<see cref="MusicPlayerTests"/> on that shared state
 /// either, same reasoning as <see cref="WorldProxyAudioInstallationTests"/>.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraWarpDepartureTests : IDisposable
 {
     public AlundraWarpDepartureTests()

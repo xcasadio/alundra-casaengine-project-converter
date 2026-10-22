@@ -14,6 +14,7 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
 using Alundra.Combat;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Combat;
 
@@ -22,7 +23,7 @@ namespace Alundra.Tests.Combat;
 /// oracle of E20.f3a T0 (<c>docs/plan-e20-annexe/e20-f3/oracle/out/hitfx_table.json</c>: the real code of <c>ALUN_CD.EXE</c> (France), 160 pairs of an attack nibble and a response byte, read by key, never recomputed here):
 /// <c>fx</c> (the effects attached), <c>touch</c> (the store of <c>TouchingEntity</c>), <c>sparks</c>, <c>c1d0</c> (the 25 ticks the target is protected), <c>hitc</c> (the attacker's <c>HitCounter</c>).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HitPassEffectTests
 {
     private sealed class Actor

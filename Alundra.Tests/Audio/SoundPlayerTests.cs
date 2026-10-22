@@ -6,7 +6,7 @@ using Xunit;
 using Alundra.Audio;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Audio;
 
 /// <summary>
 /// T5 of docs/plan-e11-audio.md, slice E11.a - the readback blocker of the plan's own §2.2b: without
@@ -21,9 +21,9 @@ namespace Alundra.Tests;
 /// A synthetic <c>Sounds/sfx-manifest.json</c> fixture (not the real export - T3/T1/T2 already cover the
 /// real one) keeps every id/guid/MaxVoices value under this test's own control.
 /// </summary>
-public class AlundraSoundPlayerTests : IDisposable
+public class SoundPlayerTests : IDisposable
 {
-    private readonly string _projectPath = Path.Combine(Path.GetTempPath(), "AlundraSoundPlayerTests_" + Guid.NewGuid());
+    private readonly string _projectPath = Path.Combine(Path.GetTempPath(), "SoundPlayerTests_" + Guid.NewGuid());
 
     private static readonly Guid Id300Tone0 = Guid.Parse("00000000-0000-0000-0000-000000000300");
     private static readonly Guid Id302Tone0 = Guid.Parse("00000000-0000-0000-0000-000000030200");
@@ -36,7 +36,7 @@ public class AlundraSoundPlayerTests : IDisposable
     private static readonly Guid Id500Tone0 = Guid.Parse("00000000-0000-0000-0000-000000000500");
     private static readonly Guid Id501Tone0 = Guid.Parse("00000000-0000-0000-0000-000000000501");
 
-    public AlundraSoundPlayerTests()
+    public SoundPlayerTests()
     {
         var soundsDirectory = Path.Combine(_projectPath, "Sounds");
         Directory.CreateDirectory(soundsDirectory);
@@ -215,7 +215,7 @@ public class AlundraSoundPlayerTests : IDisposable
     /// isolated project directory, never shared with <see cref="NewPlayer"/>'s fixture above.</summary>
     private static SoundPlayer NewPlayerWithManyIds(int idCount, out FakeAudioBackend backend, out string projectPath)
     {
-        projectPath = Path.Combine(Path.GetTempPath(), "AlundraSoundPlayerTests_Overflow_" + Guid.NewGuid());
+        projectPath = Path.Combine(Path.GetTempPath(), "SoundPlayerTests_Overflow_" + Guid.NewGuid());
         var soundsDirectory = Path.Combine(projectPath, "Sounds");
         Directory.CreateDirectory(soundsDirectory);
 

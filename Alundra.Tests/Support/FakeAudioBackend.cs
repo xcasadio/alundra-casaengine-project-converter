@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using CasaEngine.Framework.Audio;
 using Alundra.Audio;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Support;
 
@@ -14,7 +15,7 @@ namespace Alundra.Tests.Support;
 /// (CasaEngineMonogame\CasaEngine.Tests\Audio\FakeAudioBackend.cs), which this project does not
 /// reference - so they are re-implemented here, in the same shape, for a real
 /// <see cref="AudioService"/>(this backend) { ClipProvider = &lt;the provider below&gt; } to be built
-/// against in <see cref="AlundraSoundPlayerTests"/>, exactly the form the engine's own
+/// against in <see cref="SoundPlayerTests"/>, exactly the form the engine's own
 /// AudioServicePlaySoundTests.cs uses.
 /// </summary>
 public sealed class FakeAudioBackend : IAudioBackend

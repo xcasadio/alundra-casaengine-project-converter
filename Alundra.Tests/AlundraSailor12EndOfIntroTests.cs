@@ -22,6 +22,7 @@ using Alundra.Events;
 using Alundra.Physics;
 using Alundra.Hero;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -37,7 +38,7 @@ namespace Alundra.Tests;
 /// column 17 to 23 at the sailor's height, advances 1.875 px per tick (speed 160 on X) and ends by distance on its 39th
 /// tick, at x = 467.75.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSailor12EndOfIntroTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";

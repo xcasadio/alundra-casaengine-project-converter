@@ -10,6 +10,7 @@ using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -26,7 +27,7 @@ namespace Alundra.Tests;
 /// (D-E19-15).
 /// </para>
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraShipBlockArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

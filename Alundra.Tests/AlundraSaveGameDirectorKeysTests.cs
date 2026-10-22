@@ -10,6 +10,7 @@ using Alundra.Session;
 using Alundra.SaveGames;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -19,7 +20,7 @@ namespace Alundra.Tests;
 /// service is always a fake, or the adapter over a service that throws: no test reaches the real save folder
 /// (D-E16-31).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSaveGameDirectorKeysTests : IDisposable
 {
     public AlundraSaveGameDirectorKeysTests()

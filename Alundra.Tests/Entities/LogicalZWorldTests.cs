@@ -13,6 +13,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Physics;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -26,7 +27,7 @@ namespace Alundra.Tests.Entities;
 /// (z8) the same series at 1, 2 and 3 ticks per frame; (z9) the magnet of 3 px, on the descending side where the oracle tells it from the engine (the keys magnet-down-3px and magnet-down-4px of the annex: on the ascending side the engine already steps 3 px, the key magnet-3px is green before the wiring and
 /// the key magnet-4px, a step shortened by 4 raw units, is out of reach of any mover that works in whole pixels); (z10) a teleport in flight.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class LogicalZWorldTests
 {
     private const int Arrow = 3;

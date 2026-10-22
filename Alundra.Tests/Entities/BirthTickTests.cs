@@ -17,6 +17,7 @@ using Alundra.Items;
 using Alundra.Physics;
 using Alundra.Audio;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -27,7 +28,7 @@ namespace Alundra.Tests.Entities;
 /// <c>0x2D</c>, <c>0x8A</c> and <c>0x8B</c> too, see <see cref="RecordBirthTickTests"/>; the map load and the direct call of <c>SpawnEntityByRecordId</c> never pose it). The real world
 /// of map 14 (<see cref="ArcRun"/>, real prefabs), the passes of the tick named by <see cref="WorldProxy.TickTraceForTests"/> (the state seen at the head of a pass is the state after the pass before it).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class BirthTickTests : IDisposable
 {
     private const int Arrow = 3;

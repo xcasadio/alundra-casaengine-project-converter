@@ -10,6 +10,7 @@ using Alundra.Events;
 using Alundra.Rng;
 using Alundra.Audio;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -20,7 +21,7 @@ namespace Alundra.Tests.Entities;
 /// the terrain (<c>PosZ</c>, <c>ModdedPosZ</c>, the terrain, the floor and the corner heights): the oracle ran on a flat field and map 14 has its own, those are proved by the core tests on the field of the oracle.
 /// No production path calls the interface (the shot of the hero is E20.f3's).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class SpawnBySpriteIndexInterfaceTests
 {
     private const int HeroX = 150;

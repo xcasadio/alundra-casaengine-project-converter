@@ -13,6 +13,7 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -23,7 +24,7 @@ namespace Alundra.Tests.Hero;
 /// leaves it at 0), the box of the hero -10, -7, 21 x 15, Gravity, flat ground. Positions in 16.16; one tick per update. The values are those of the plan (checked against a line by
 /// line port of the binary's routine on the same grid).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeroSlideTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;

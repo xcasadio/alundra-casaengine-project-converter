@@ -5,6 +5,7 @@ using Xunit;
 using Xunit.Sdk;
 using Alundra.Maps;
 using Alundra.Session;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Support;
 
@@ -12,7 +13,7 @@ namespace Alundra.Tests.Support;
 /// E19.d2c2 D4 (docs/plan-e19-opcodes.md §1.2h.3.2, hygiene of E19.d2c1): the permanent test of the guard T-REG-0 of <see cref="ArcRun"/>, and the one of the
 /// production branch of the sound player of the script host (<see cref="WorldProxy"/> hands its player out through <see cref="IScriptHost.SoundPlayer"/>).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class ArcGuardAndSoundHostTests
 {
     // The arc "A5" is one of those that must meet no entity (T-REG-0); the montage is the one of the arc of the tests of the air state (the real map 179).

@@ -10,6 +10,7 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Combat;
 
@@ -22,7 +23,7 @@ namespace Alundra.Tests.Combat;
 /// boundary: the stage applies the operations a tick queued at the end of the frame that contains it, so a slot is first SEEN at the end of the frame that contains the hit tick.
 /// </para>
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HitEffectWorldTests : IDisposable
 {
     private const ulong Seed = 0x2468ACE0UL;

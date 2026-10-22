@@ -16,6 +16,7 @@ using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Rng;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Rendering.Backdrops;
 
@@ -25,9 +26,9 @@ namespace Alundra.Tests.Rendering.Backdrops;
 /// the only road to the backdrop driver. The frame is still pushed (camera target and scroll), with 0 ticks, from the arming
 /// frame F0 to the frame that ends the fade, F15. The values below were written before the code (audit
 /// <c>e19o55-disc</c>, scripts <c>values.py</c> and <c>census.py</c>) and measured red on the code before the change.
-/// Shares <see cref="AlundraMusicPlayerSingletonCollection"/>: <c>BeginDeparture</c> arms the real BGM fade director.
+/// Shares <see cref="MusicPlayerSingletonCollection"/>: <c>BeginDeparture</c> arms the real BGM fade director.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class BackdropWarpDepartureFreezeTests : IDisposable
 {
     public BackdropWarpDepartureFreezeTests()

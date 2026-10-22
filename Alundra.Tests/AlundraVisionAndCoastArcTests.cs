@@ -9,6 +9,7 @@ using Alundra.Events;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -27,7 +28,7 @@ namespace Alundra.Tests;
 /// instruction: the trace carries no handler result and the first execution of a <c>0x0B</c> is its suspended call.
 /// </para>
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraVisionAndCoastArcTests
 {
     private const int BProgram = ScriptHelper.ProgramBMap;

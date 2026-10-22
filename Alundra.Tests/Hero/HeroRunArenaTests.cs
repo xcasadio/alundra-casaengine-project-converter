@@ -7,6 +7,7 @@ using Alundra.Session;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -20,7 +21,7 @@ namespace Alundra.Tests.Hero;
 /// states 0x31 and 0x1C) is E20.c2b;</description></item>
 /// </list>
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeroRunArenaTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;

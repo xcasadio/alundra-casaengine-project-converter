@@ -12,6 +12,7 @@ using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -24,7 +25,7 @@ namespace Alundra.Tests;
 /// measure contradicts is a stop, never a re-pin. Every position is read at the first instruction that follows the walk it belongs to
 /// (<see cref="ArcSamples"/>): the effects of the walk are then applied, as the script sees them.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraEntityContactArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

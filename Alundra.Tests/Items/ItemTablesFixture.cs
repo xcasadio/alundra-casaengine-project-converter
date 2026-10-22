@@ -6,12 +6,13 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Items;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Items;
 
 /// <summary>
 /// Writes a temporary project directory holding the three <c>Data/</c> item tables, the way
-/// <see cref="AlundraSoundGroupIndexTableTests"/> writes its own fixture. The default rows are the real ones
+/// <see cref="SoundGroupIndexTableTests"/> writes its own fixture. The default rows are the real ones
 /// (alundra-datas-analyser ItemsProperties.csv and ItemDropProperties.csv) for every item the New Game
 /// touches: item 0, the four slot-1 weapons 1..4, and the two other items it unlocks, 17 and 25. Every other
 /// row is zero, which the loader and the ported code read as "no such item".

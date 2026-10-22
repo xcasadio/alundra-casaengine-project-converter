@@ -3,6 +3,7 @@ using Xunit;
 using static Alundra.Tests.ArcChecks;
 using Alundra.Events;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -12,7 +13,7 @@ namespace Alundra.Tests;
 /// (<c>0x2C [2]</c>: no entity of record 2) for the Murgg of record 2 to be gone, and that Murgg destroys itself at the end of its script
 /// (<c>C[8] 0x2E [0x80] @890</c>). Without the recycling of the destroyed entities the corpse stays found by the search and the scene never ends.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraTarnMurggArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

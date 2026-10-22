@@ -22,6 +22,7 @@ using Alundra.Events;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -32,7 +33,7 @@ namespace Alundra.Tests.Entities;
 /// export), nothing when it is not positive. A loop turn, a hold, the same animation asked again and the animation of an appearance (R2: the first switch of
 /// <c>InitializeEntity</c>) give no second request. Every expected value was written by hand before the code; a value the measure contradicts is a stop.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AnimationSoundTests
 {
     private const int B = ScriptHelper.ProgramBMap;

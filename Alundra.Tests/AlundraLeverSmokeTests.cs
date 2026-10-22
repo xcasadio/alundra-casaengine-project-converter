@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Xunit;
 using Xunit.Abstractions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -13,7 +14,7 @@ namespace Alundra.Tests;
 /// load, section 1.7 "Faits porteurs"), and run six frames. The records that must be there are there, the records whose bit 0x40 is clear are not, and the
 /// log holds no error. Every expected value was written by hand before the code, from the plan and from check.md.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraLeverSmokeTests
 {
     private readonly ITestOutputHelper _output;

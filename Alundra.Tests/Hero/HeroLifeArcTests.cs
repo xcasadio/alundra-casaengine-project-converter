@@ -14,6 +14,7 @@ using Alundra.Items;
 using Alundra.Audio;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -21,7 +22,7 @@ namespace Alundra.Tests.Hero;
 /// E20.c2a, the parts that need a real world: the life pulled at the adoption (group E3 of the oracle), kept across a first tick, a load and a second map, the sheet and boots computed at the adoption without the
 /// side effects of the fill. The ArcRun montage resets and shares the session singletons, hence the collection.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeroLifeArcTests
 {
     private static ArcSpec Map14(string name) =>

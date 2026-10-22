@@ -10,6 +10,7 @@ using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -18,7 +19,7 @@ namespace Alundra.Tests.Hero;
 /// Two things the montage of <see cref="HeroChargeTests"/> cannot show: the effects reach the WORLD's reservoir through the stage the world drives (the world marks the hero's operations itself, rank 1), and the
 /// charged swing 0x18 touches a Beannoid.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeroChargeArenaTests : IDisposable
 {
     private const uint Square = PadState.Square;

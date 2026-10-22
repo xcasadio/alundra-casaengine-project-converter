@@ -10,6 +10,7 @@ using Alundra.Events;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -20,7 +21,7 @@ namespace Alundra.Tests;
 /// convention (no +1 of the binary on PosZ); Giles's are relational (D-E19-13 and D-E19-40: +-1 image, +-1 px). The arc starts from the portal arrival the
 /// plan writes, with the real controller and the real prefabs; F0 is the image of the first execution of <c>0x0B @2441</c>.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraHeroJumpArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

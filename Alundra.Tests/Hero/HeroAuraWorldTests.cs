@@ -12,6 +12,7 @@ using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -20,7 +21,7 @@ namespace Alundra.Tests.Hero;
 /// several ticks (the aura is created at once and read at the tick, the release is in the order of the ticks, the renewal at three ticks per frame), and the draw order of the aura against the hero's sprite with the engine's own
 /// <see cref="DepthSortable2DComponent.BuildSortKey(Vector3)"/>.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeroAuraWorldTests : IDisposable
 {
     private const uint Square = PadState.Square;

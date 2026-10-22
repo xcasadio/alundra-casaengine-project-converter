@@ -12,6 +12,7 @@ using Xunit;
 using Alundra.Entities;
 using Alundra.Combat;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -19,7 +20,7 @@ namespace Alundra.Tests.Entities;
 /// E20.c1b K3 (docs/plan-e20-heros.md section 1.6): the stored HitBox (<c>+0x1FC/+0x200/+0x204</c>) of the helper <c>0x80038064</c>: <c>Pos + CollisionOffset</c>, written when the frame shown has a box, at the creation
 /// (<c>0x80039F30</c>) and after the movement of every tick (<c>0x80038364</c>) for every entity, whether or not it can attack. The results of the hit pass of E20.c1a do not move (their own tests stay green unchanged).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class StoredHitBoxTests
 {
     private const int Unset = 0x5A5A5A5A;

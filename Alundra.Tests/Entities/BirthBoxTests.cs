@@ -15,6 +15,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -23,7 +24,7 @@ namespace Alundra.Tests.Entities;
 /// has no <c>Animations</c> yet), from the animation data of the prefab, and is never frozen at null. Read by key from the oracle (<c>birth_clock.json</c> rows <c>SW0</c>, <c>WAVE</c>; <c>wave_steel_*.json</c> of E20.f3; <c>v1.json</c>
 /// and <c>v2.json</c> of E20.e0a, <c>p.has_box</c>), never pasted. S is the first tick of the entity. Labels: [R] red on the code of phase A (predicted), [V] green by construction.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class BirthBoxTests : IDisposable
 {
     private readonly ITestOutputHelper _output;

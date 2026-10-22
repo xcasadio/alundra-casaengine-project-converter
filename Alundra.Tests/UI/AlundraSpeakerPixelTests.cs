@@ -16,6 +16,7 @@ using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
 using Alundra.UI.Messages;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.UI;
 
@@ -28,7 +29,7 @@ namespace Alundra.Tests.UI;
 /// the reference, the rows and columns on a tie of the centre rule excluded; D-E19-100, D-E19-101). The PS1's own texel rule is not a reference. Skipped without a GPU
 /// (<see cref="AlundraGpuFactAttribute"/>): running them on a machine with a GPU is the evidence. Needs the exported <c>alundra-project</c> (<c>UI/Portraits</c>).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSpeakerPixelTests : IDisposable
 {
     private static readonly DialogueDirector Director = DialogueDirector.Instance;

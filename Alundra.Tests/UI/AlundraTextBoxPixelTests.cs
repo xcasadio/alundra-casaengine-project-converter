@@ -13,6 +13,7 @@ using Alundra.Dialogues;
 using Alundra.Dialogues.Yarn;
 using Alundra.UI.Messages;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.UI;
 
@@ -25,7 +26,7 @@ namespace Alundra.Tests.UI;
 /// (<see cref="AlundraGpuFactAttribute"/>). The harness is <see cref="TextBoxGpu"/>; the caveats of the discovery stand (a stand-in asset provider, one GPU, the production
 /// <c>UIRoot</c> chain only proved by the recipe).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraTextBoxPixelTests : IDisposable
 {
     private static readonly DialogueDirector Director = DialogueDirector.Instance;

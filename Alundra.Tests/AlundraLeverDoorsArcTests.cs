@@ -7,6 +7,7 @@ using Xunit.Abstractions;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -18,7 +19,7 @@ namespace Alundra.Tests;
 /// check.md (the corrected timeline, section b.1) and maps-117-44.md section 3.1; the values marked INFERENCE (the pass of <c>0x1C</c>, the 64 ticks of the
 /// doors) are expectations too.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraLeverDoorsArcTests
 {
     private const int C = ScriptHelper.ProgramCTick;

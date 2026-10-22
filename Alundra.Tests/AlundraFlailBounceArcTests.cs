@@ -8,6 +8,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -25,7 +26,7 @@ namespace Alundra.Tests;
 /// (non-zero at the tick before the rebound: the post; zero: a wall), and the rebound's own relations hold in both cases.</description></item>
 /// </list>
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraFlailBounceArcTests : IDisposable
 {
     private const int IronFlail = 9;

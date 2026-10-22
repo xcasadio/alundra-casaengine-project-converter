@@ -12,6 +12,7 @@ using Alundra.Hero;
 using Alundra.Transitions;
 using Alundra.SaveGames;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -20,7 +21,7 @@ namespace Alundra.Tests;
 /// <see cref="TestSaves"/>. Expected values are written by hand from the plan's table, never read from
 /// the preset: new game plus the preset, nothing else.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraTestSavesTests : IDisposable
 {
     // Copy of the slot-name rule of the engine's ADR-0044 (SaveGameNames.SlotNameRegex,

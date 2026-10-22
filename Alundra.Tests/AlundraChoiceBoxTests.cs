@@ -11,6 +11,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -182,7 +183,7 @@ public sealed class AlundraChoiceBoxMachineTests
 /// E19.f3a F3A-1: the choice box at the director (<see cref="DialogueDirector"/>): the opener, the hook of the tests, the answer 37 (OUI) or 38 (NON) passes
 /// after the opener, the cancels, and the real pad through the world proxy (<see cref="DialogueBoxMontage"/>, five sequences).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraChoiceBoxDirectorTests : IDisposable
 {
     private readonly GameState _state = new();

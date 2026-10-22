@@ -8,6 +8,7 @@ using Alundra.Hero;
 using Alundra.Cells;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -19,7 +20,7 @@ namespace Alundra.Tests.Hero;
 /// stands at X 107 to 128 and Y 94 to 104 - are rewritten through the store of the world (the opcode 0x85 and 0x54 primitives, E7) with the same properties: a copy of a real cell of height 1 (33, 41) or 2 (34, 48) with
 /// walkability 0 from the same map, and the bit 0x40 set on a flat cell. The animation the DLL gives is compared with the oracle's at every tick, and no hit is ever registered: the bounces here are the walls'.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class FlailBounceWallProbeTests : IDisposable
 {
     private const uint Square = PadState.Square;

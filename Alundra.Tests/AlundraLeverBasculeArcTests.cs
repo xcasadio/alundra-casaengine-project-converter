@@ -6,6 +6,7 @@ using Xunit;
 using Alundra.Events;
 using Alundra.Cells;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -14,7 +15,7 @@ namespace Alundra.Tests;
 /// C rewrites the three platforms S0, S1, S2 (2 x 4 cells at (21,4), (25,4), (29,4)) from the four frames F0 to F3 (2 x 4 cells at x 42, 44, 46, 48, y 4).
 /// Every expected value was written by hand before the code from the plan, check.md and maps-117-44.md section 2.1.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraLeverBasculeArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

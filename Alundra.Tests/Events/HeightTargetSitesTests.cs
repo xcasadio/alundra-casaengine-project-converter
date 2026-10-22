@@ -6,6 +6,7 @@ using System.Linq;
 using Xunit;
 using Alundra.Session;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Events;
 
@@ -18,7 +19,7 @@ namespace Alundra.Tests.Events;
 /// map 36 C[4]: flag 32774 bit 6 set after the load, then cleared at frame 3, the hero placed on the platform once it has landed; map 115: the hero in
 /// the zone and the dialogue button pressed on every dialogue frame.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeightTargetSitesTests
 {
     internal sealed record Site(string Id, int Map, int HeroX, int HeroY, int HeroZ, int Rec, int Slot, int Pc, int Opcode, int Frames,

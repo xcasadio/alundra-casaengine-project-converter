@@ -9,6 +9,7 @@ using Alundra.Session;
 using Alundra.SaveGames;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -20,7 +21,7 @@ namespace Alundra.Tests;
 /// yes, the export's own item tables; the test fails naming the export when it is missing. The service is a fake
 /// (D-E16-31).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSaveGameDirectorSaveTests : IDisposable
 {
     private readonly HeldKeys _keys = new();

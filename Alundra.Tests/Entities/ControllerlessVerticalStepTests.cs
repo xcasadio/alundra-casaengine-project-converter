@@ -6,6 +6,7 @@ using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Maps;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -16,7 +17,7 @@ namespace Alundra.Tests.Entities;
 /// a value the measure contradicts is a stop, never a re-pin. The montage is <see cref="ContactWorld.AddEntity"/> with <c>withController: false</c> in a real world
 /// on a flat field, one update = one logic tick, one settling update first (the entity is then put in the state of the scenario).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class ControllerlessVerticalStepTests
 {
     private sealed class Rig

@@ -17,6 +17,7 @@ using Alundra.Hero;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -27,7 +28,7 @@ namespace Alundra.Tests.Entities;
 /// physics, hits, then the inventory), the hit-pass hook read one tick later and cleared by the counters pass, the closed gate, the freshness of the published state and the first tick of an
 /// entity that appears during a frame. The passes are named by the test seam <c>AlundraWorldProxy.TickTraceForTests</c>.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class TickStructureTests : IDisposable
 {
     private const float OneTick = 1f / 50f;

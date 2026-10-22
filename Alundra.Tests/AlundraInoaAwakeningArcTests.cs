@@ -8,6 +8,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -25,7 +26,7 @@ namespace Alundra.Tests;
 /// will shift them, not the gaps.
 /// </para>
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraInoaAwakeningArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

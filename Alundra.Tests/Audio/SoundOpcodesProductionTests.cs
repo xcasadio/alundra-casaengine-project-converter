@@ -5,7 +5,7 @@ using Alundra.Maps;
 using Alundra.Events;
 using Alundra.Tests.Cells;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Audio;
 
 /// <summary>
 /// T1/T2 of docs/plan-e11-audio.md, slice E11.a: drives the REAL production call site -
@@ -21,7 +21,7 @@ namespace Alundra.Tests;
 /// forced null, must produce ZERO requests and trace 0xBD as Degraded - proving the main test's requests
 /// come from this exact seam, not some other accidental code path.
 /// </summary>
-public class AlundraSoundOpcodesProductionTests
+public class SoundOpcodesProductionTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
 
@@ -40,7 +40,7 @@ public class AlundraSoundOpcodesProductionTests
         }
 
         throw new InvalidOperationException(
-            $"AlundraSoundOpcodesProductionTests: no 'alundra-project/Maps' directory found above "
+            $"SoundOpcodesProductionTests: no 'alundra-project/Maps' directory found above "
             + $"'{AppContext.BaseDirectory}' - these tests need the real converter export of map 389 and "
             + "cannot self-skip without one (docs/plan-e11-audio.md, slice E11.a).");
     }

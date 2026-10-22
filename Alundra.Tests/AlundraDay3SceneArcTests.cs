@@ -15,6 +15,7 @@ using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -26,7 +27,7 @@ namespace Alundra.Tests;
 /// pinned, only the order of the events and the frame limit. The opcodes the interpreter skips in each arc must all be lines of the closed list of E19.e E1
 /// (rule 5, <see cref="StoryChainOpcodeAudit.Rule5UnlistedArcSites"/>). A value that the measure contradicts is a stop, never a re-pin.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraDay3SceneArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

@@ -11,6 +11,7 @@ using Alundra.Physics;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Hero;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -20,7 +21,7 @@ namespace Alundra.Tests;
 /// <see cref="EntityScriptProxy.Update"/> -&gt; <c>PickEventTrigger</c> -&gt; <c>RunPickedEvent</c>,
 /// in a FRAME LOOP crossing the pick phase every iteration (<see cref="HeadlessIntroSimulation.RunFramesForTest"/>'s
 /// own per-entity <c>entity.Update</c> call - NOT <c>AlundraWorldProxy.RunPendingEventTriggers</c>'s D3
-/// catch-up), exactly like <see cref="AlundraSoundOpcodesProductionTests"/> does for E11.a.
+/// catch-up), exactly like <see cref="SoundOpcodesProductionTests"/> does for E11.a.
 ///
 /// SAILOR-12 ENTRY GUARD (§1.4): the Tick program's own first instruction (offset 1356, <c>0x30 If flag
 /// on 0x35C(=860)</c>) only reaches the dialogue body when flag 860 - the intro-completion flag the golden

@@ -14,6 +14,7 @@ using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -22,7 +23,7 @@ namespace Alundra.Tests.Hero;
 /// (the real hero controller settings, a field of synthetic cells, the animation sets of the export: 1 walking 208, 2 walking jump 208 with the impulse 1280,
 /// 43 standing jump, 44 in the air 196, 45 in the air still). Values of annex B.1 (tables S-A to S-I) as the plan restates them: one tick per frame unless said.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeroFallAndPadJumpTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;

@@ -3,22 +3,22 @@ using System.IO;
 using Xunit;
 using Alundra.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Audio;
 
 /// <summary>
 /// B3 of docs/plan-e11b-opcodes-audio.md, D-B-7: drives <see cref="SoundGroupIndexTable"/>
 /// directly off small synthetic fixtures - the real linked <c>Maps/sound-group-index.json</c> is not
 /// re-exported by this slice (full export is out of scope here), so the real-project positive-lookup
 /// coverage lives on the converter side (<c>WorldWriterTests.ConvertWorlds_WritesSoundGroupIndex_AllEntries_Map389Is56</c>)
-/// and on the redirection tests in <see cref="AlundraSoundPlayerTests"/>, which construct their own
+/// and on the redirection tests in <see cref="SoundPlayerTests"/>, which construct their own
 /// player with an explicit <c>soundGroup</c> instead of loading this table from disk.
 /// </summary>
-public class AlundraSoundGroupIndexTableTests
+public class SoundGroupIndexTableTests
 {
     [Fact]
     public void TryGetGroup_LoadsEveryEntry()
     {
-        var projectPath = Path.Combine(Path.GetTempPath(), "AlundraSoundGroupIndexTableTests_" + Guid.NewGuid());
+        var projectPath = Path.Combine(Path.GetTempPath(), "SoundGroupIndexTableTests_" + Guid.NewGuid());
         var mapsDir = Path.Combine(projectPath, "Maps");
         Directory.CreateDirectory(mapsDir);
         File.WriteAllText(Path.Combine(mapsDir, "sound-group-index.json"), """{"0":0,"1":46,"389":56}""");
@@ -42,7 +42,7 @@ public class AlundraSoundGroupIndexTableTests
     [Fact]
     public void MissingSoundGroupIndexFile_EveryLookupMisses_NoException()
     {
-        var emptyProjectPath = Path.Combine(Path.GetTempPath(), "AlundraSoundGroupIndexTableTests_Missing_" + Guid.NewGuid());
+        var emptyProjectPath = Path.Combine(Path.GetTempPath(), "SoundGroupIndexTableTests_Missing_" + Guid.NewGuid());
         Directory.CreateDirectory(emptyProjectPath); // no Maps/sound-group-index.json inside
 
         try
@@ -62,7 +62,7 @@ public class AlundraSoundGroupIndexTableTests
     [Fact]
     public void MalformedSoundGroupIndexFile_EveryLookupMisses_NoException()
     {
-        var projectPath = Path.Combine(Path.GetTempPath(), "AlundraSoundGroupIndexTableTests_Malformed_" + Guid.NewGuid());
+        var projectPath = Path.Combine(Path.GetTempPath(), "SoundGroupIndexTableTests_Malformed_" + Guid.NewGuid());
         var mapsDir = Path.Combine(projectPath, "Maps");
         Directory.CreateDirectory(mapsDir);
         File.WriteAllText(Path.Combine(mapsDir, "sound-group-index.json"), "{ not valid json ][");

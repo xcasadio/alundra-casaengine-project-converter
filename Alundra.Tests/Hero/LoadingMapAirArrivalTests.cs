@@ -6,6 +6,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -15,7 +16,7 @@ namespace Alundra.Tests.Hero;
 /// through portal 4 of map 20 the hero arrives on the Well (311) 432 px above the ground; through portal 3 of map 6 he arrives on the ground of
 /// map 10 (the witness). Real controller and prefabs, no input.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class LoadingMapAirArrivalTests
 {
     private const uint LoadingMap = 0x36;

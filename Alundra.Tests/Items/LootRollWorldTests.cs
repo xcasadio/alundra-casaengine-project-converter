@@ -14,6 +14,7 @@ using Alundra.Entities;
 using Alundra.Rng;
 using Alundra.Probes;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Items;
 
@@ -23,7 +24,7 @@ namespace Alundra.Tests.Items;
 /// <c>ContentsItemId</c>, no <c>ContentsGameFlag</c>, no draw of the real stream): each of them expects at least one object written or one step of the real stream. Two tests are green from phase A on: the word of the stream
 /// right after a load that rolls nothing, and the inertness of the helper without the variable of the sink. Every expected value is a row of the oracle; nothing is derived from the DLL.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed partial class LootRollWorldTests : IDisposable
 {
     private const uint InitialSeed = 0xB017C93D;

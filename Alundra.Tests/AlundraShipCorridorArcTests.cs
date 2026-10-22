@@ -12,6 +12,7 @@ using Alundra.Cameras;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -25,7 +26,7 @@ namespace Alundra.Tests;
 /// plays once, then does the same. The end signal is the departure through the portal, which is not an instruction: the arrival record
 /// of the warp director is the exception to the rule of the trace (§1.3). Every expected value is written by hand before the code.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraShipCorridorArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;

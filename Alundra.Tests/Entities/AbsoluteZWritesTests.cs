@@ -11,6 +11,7 @@ using Alundra.Events;
 using Alundra.Physics;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -20,7 +21,7 @@ namespace Alundra.Tests.Entities;
 /// spawn support without reach is gone from production. Every expected value is written by hand before the code: a value the
 /// measure contradicts is a stop, never a re-pin.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AbsoluteZWritesTests
 {
     private const int C = ScriptHelper.ProgramCTick;

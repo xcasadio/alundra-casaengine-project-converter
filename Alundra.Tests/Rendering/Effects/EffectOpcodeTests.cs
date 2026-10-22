@@ -21,6 +21,7 @@ using Alundra.Hero;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Rendering.Backdrops;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Rendering.Effects;
 
@@ -29,7 +30,7 @@ namespace Alundra.Tests.Rendering.Effects;
 /// real operands of the real event programs of the export (read at their pcs), against <c>g3b-golden.tsv</c> (the binary's model, cross-checked with the real code). Each handler queues its
 /// operation on the effect stage of the host; the stage applies it at the tick that emitted it. Written red on today's code, where the nine opcodes are skipped by their size.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class EffectOpcodeTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();

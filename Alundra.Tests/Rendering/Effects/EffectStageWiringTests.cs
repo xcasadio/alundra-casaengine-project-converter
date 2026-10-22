@@ -13,15 +13,16 @@ using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Rendering.Backdrops;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Rendering.Effects;
 
 /// <summary>
 /// E19.g G3a (docs/plan-e19-opcodes.md, section 1.2o.6, G3A-R5 to R7): the effect stage - load-time spawn once the hero is on its arrival tile and before the first tick, the
 /// queue of operations, the per-tick loop and its gate - alone, then wired in <see cref="WorldProxy.Update"/>. The values come from <c>g3a-golden.tsv</c> (the binary) and were
-/// measured red on empty types first. Shares <see cref="AlundraMusicPlayerSingletonCollection"/>: the warp departure arms the real BGM fade director.
+/// measured red on empty types first. Shares <see cref="MusicPlayerSingletonCollection"/>: the warp departure arms the real BGM fade director.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class EffectStageWiringTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();

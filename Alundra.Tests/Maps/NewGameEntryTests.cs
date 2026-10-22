@@ -19,6 +19,7 @@ using Alundra.Transitions;
 using Alundra.UI.Hud;
 using Alundra.Hero;
 using Alundra.Maps;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Maps;
 
@@ -36,10 +37,10 @@ namespace Alundra.Tests.Maps;
 ///
 /// <para>F5 (docs/plan-bgm-demarrage-binaire.md): the real map 389 install below writes the
 /// SESSION-scoped <see cref="BgmPlayer.Instance"/> (map entry arms its reset flag, B7) - so
-/// this class shares <see cref="AlundraMusicPlayerSingletonCollection"/> with every other class touching
+/// this class shares <see cref="MusicPlayerSingletonCollection"/> with every other class touching
 /// that same shared instance, and resets <see cref="BgmFadeDirector.Instance"/> too.</para>
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class NewGameEntryTests : IDisposable
 {
     public NewGameEntryTests()

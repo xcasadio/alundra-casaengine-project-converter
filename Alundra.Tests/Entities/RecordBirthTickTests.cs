@@ -13,6 +13,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Hero;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -42,7 +43,7 @@ internal static class RecordBirthTickOracle
 /// pass <c>mapEvents</c> (just before the map events of the tick, as a map-event program does) or <c>programs</c> (head of the loop of the programs, as a program of another entity does) of
 /// <see cref="WorldProxy.TickTraceForTests"/>. Labels: [R] red on the code of phase A (predicted), [V] green by construction.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class RecordBirthTickTests : IDisposable
 {
     private const int TestRecord = RecordBirthClockTests.TestRecord;

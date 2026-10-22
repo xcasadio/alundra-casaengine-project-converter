@@ -14,6 +14,7 @@ using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Ai.Projectiles;
 
@@ -22,7 +23,7 @@ namespace Alundra.Tests.Ai.Projectiles;
 /// keeps them; <see cref="ArcRun"/> for the shots). Labels: [R] red before the wiring AND under the removal (the production set emptied), [V] green by construction. Every [R] test here is built on
 /// <c>WiredWeaponTypes =&gt; WiredWeaponTypesForTests ?? ProductionWiredWeaponTypes</c>: with the production set empty the shot of a sword creates nothing, so each of them fails on a missing entity.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class WaveSwordWiringTests : IDisposable
 {
     private const int SteelItem = 2;

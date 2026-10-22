@@ -14,6 +14,7 @@ using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Ai.Projectiles;
 
@@ -24,7 +25,7 @@ namespace Alundra.Tests.Ai.Projectiles;
 /// Nothing is born in production in this phase (the set of wired types stays empty). (v1) E10 destroys the wave at S+26; (v2) C61 calls the named stub at S+1 to S+25; (v3) the registry and the header; (v4) the whole life
 /// of the wave, at 1, 2 and 3 ticks per frame, for the three swords.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class WaveSwordLifeTests : IDisposable
 {
     private const int SteelItem = 2;

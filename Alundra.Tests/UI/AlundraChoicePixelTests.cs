@@ -14,6 +14,7 @@ using Alundra.Hero;
 using Alundra.Dialogues;
 using Alundra.UI.Choice;
 using Alundra.UI.Messages;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.UI;
 
@@ -26,7 +27,7 @@ namespace Alundra.Tests.UI;
 /// inverse order; and in a view that is offset (the window is not 4:3). Skipped without a GPU (<see cref="AlundraGpuFactAttribute"/>); the harness is <see cref="TextBoxGpu"/>
 /// and the caveats of the discovery stand (a stand-in asset provider, one GPU, the production <c>UIRoot</c> chain only proved by the recipe).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraChoicePixelTests
 {
     private static readonly (int R, int G, int B) Background = (ClearR, ClearG, ClearB);

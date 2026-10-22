@@ -10,6 +10,7 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Hero;
 
@@ -18,7 +19,7 @@ namespace Alundra.Tests.Hero;
 /// hero in the air state, on <see cref="JumpHeroRig"/> with a free pad (real hero controller settings, synthetic cells) and on the montage of SJ-12 (<c>AddObject</c>).
 /// The boxes are laid by <see cref="ContactWorld.AddEntity"/> (the DLL's convention: the floor is the height, without the binary's +1). Positions in 16.16.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeroApexAndCeilingTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;

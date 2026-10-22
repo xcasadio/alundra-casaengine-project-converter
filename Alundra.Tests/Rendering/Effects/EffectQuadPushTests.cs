@@ -21,6 +21,7 @@ using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Rendering.Backdrops;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Rendering.Effects;
 
@@ -29,9 +30,9 @@ namespace Alundra.Tests.Rendering.Effects;
 /// <see cref="EffectQuadService"/> every rendered frame. The pure construction (<see cref="EffectQuadBuilder"/>), the stage (<see cref="EffectStage.AttachService"/>,
 /// <see cref="EffectStage.PushFrame"/>) and the proxy wiring (<see cref="WorldProxy.Update"/>), against the values of the prediction
 /// <c>docs/plan-e19-g3c-annexe/g3c_model.py</c> (the value at the pixel is proved by the out-of-repo harness, G3c-3, not here). Written red first on stub bodies.
-/// Shares <see cref="AlundraMusicPlayerSingletonCollection"/>: the warp departure arms the real BGM fade director.
+/// Shares <see cref="MusicPlayerSingletonCollection"/>: the warp departure arms the real BGM fade director.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class EffectQuadPushTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();

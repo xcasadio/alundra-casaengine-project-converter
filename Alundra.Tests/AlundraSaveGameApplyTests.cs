@@ -23,6 +23,7 @@ using Alundra.SaveGames;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Items;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -33,7 +34,7 @@ namespace Alundra.Tests;
 /// loaded flag 860. The rules are injected (K1: the real export, a catalog predicate that answers yes; the
 /// end-to-end test never touches the asset catalog); the service is a fake (D-E16-31).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSaveGameApplyTests : IDisposable
 {
     private static readonly DateTime T0 = new(2026, 9, 28, 12, 0, 0, DateTimeKind.Utc);

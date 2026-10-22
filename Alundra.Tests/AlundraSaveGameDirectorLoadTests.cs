@@ -18,6 +18,7 @@ using Alundra.Transitions;
 using Alundra.SaveGames;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -29,7 +30,7 @@ namespace Alundra.Tests;
 /// animation, while the game state stays untouched until the arrival. The rules are injected (K1: real export,
 /// catalog answering yes); the service is a fake (D-E16-31).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSaveGameDirectorLoadTests : IDisposable
 {
     private static readonly DateTime T0 = new(2026, 9, 28, 12, 0, 0, DateTimeKind.Utc);

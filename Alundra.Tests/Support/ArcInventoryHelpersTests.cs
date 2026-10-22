@@ -4,6 +4,7 @@ using Xunit;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Support;
 
@@ -12,7 +13,7 @@ namespace Alundra.Tests.Support;
 /// real setters. Values are written by hand: the Hunter's Bow is item 5 (slot 2, rank 0, maximum count 1), its counter index is 11, and an arc with an arrival starts with an
 /// empty inventory and no weapon (docs/plan-e20-annexe/e20-armes/test-means.md section 0.4).
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class ArcInventoryHelpersTests
 {
     /// <summary>The overworld map 10 from a portal arrival (the arc of the hero attack tests): the hero stands free on open ground, with an empty inventory.</summary>

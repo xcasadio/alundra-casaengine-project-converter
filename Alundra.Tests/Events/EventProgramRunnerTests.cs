@@ -16,6 +16,7 @@ using Alundra.Cells;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Events;
 
@@ -102,7 +103,7 @@ public class EventProgramRunnerTests
 
     /// <summary>B2 (docs/plan-e11b-opcodes-audio.md): records every <see cref="PlayFromRawIndex"/> call,
     /// in order - the dispatch-level oracle for opcode 0xA7's own operand extraction, isolated from the
-    /// REAL <see cref="BgmPlayer"/> singleton (see <see cref="AlundraBgmFadeDirectorTests"/> for
+    /// REAL <see cref="BgmPlayer"/> singleton (see <see cref="BgmFadeDirectorTests"/> for
     /// tests against the real one).</summary>
     private sealed class FakeMusicPlayer : IMusicPlayer
     {
@@ -137,7 +138,7 @@ public class EventProgramRunnerTests
     /// <summary>B2 (docs/plan-e11b-opcodes-audio.md): records every <see cref="StopAllSound"/>/
     /// <see cref="LoadBgm"/> call, in order - the dispatch-level oracle for opcodes 0xA5/0xA6/0xA7's own
     /// orchestration, isolated from the REAL <see cref="BgmFadeDirector"/> singleton (see
-    /// <see cref="AlundraBgmFadeDirectorTests"/> for tests against the real one).</summary>
+    /// <see cref="BgmFadeDirectorTests"/> for tests against the real one).</summary>
     private sealed class FakeBgmFadeDirector : IBgmFadeDirector
     {
         private readonly List<string>? _callOrder;

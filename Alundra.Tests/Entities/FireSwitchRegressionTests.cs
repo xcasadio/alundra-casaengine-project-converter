@@ -7,6 +7,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -17,7 +18,7 @@ namespace Alundra.Tests.Entities;
 /// D of the record 4 sits at code <c>700</c> and is <c>0x87 [128, 6]</c> (is the thing that touches me a fire attack), a jump when <c>Result</c> is 0, then a flag and <c>0x2B</c> (clear class A). A sword is the
 /// attack type 1, never the fire (6): nothing must be set, whatever a previous program left in the shared <c>Result</c>.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class FireSwitchRegressionTests
 {
     private const uint Square = 0x80;

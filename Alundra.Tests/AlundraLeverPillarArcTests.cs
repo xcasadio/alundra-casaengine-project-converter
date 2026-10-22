@@ -4,6 +4,7 @@ using System.Linq;
 using Xunit;
 using Alundra.Events;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests;
 
@@ -12,7 +13,7 @@ namespace Alundra.Tests;
 /// clears the class A and raises T230, its program C turns it (animation 2, then 1) and raises T231, which starts the program of the pillar. Every expected
 /// value was written by hand before the code from the plan, check.md and maps-117-44.md section 2.2.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class AlundraLeverPillarArcTests
 {
     private const int C = ScriptHelper.ProgramCTick;

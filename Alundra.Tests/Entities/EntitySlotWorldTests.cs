@@ -10,6 +10,7 @@ using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Entities;
 
@@ -18,7 +19,7 @@ namespace Alundra.Tests.Entities;
 /// holds slot 0, the other entities the lowest free slot of 1 to 63, <c>_spawnedEntities</c> follows the order of the slots, a destroyed entity keeps its slot until <see cref="WorldProxy.RecycleDestroyedEntities"/>, the 64th
 /// apparition is refused on the three paths that create entities, and an exception after the addition leaves nothing behind. Also <c>ChildEntity</c> (the root of the chain of parents) on the record path.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class EntitySlotWorldTests
 {
     private const int HeroX = 150;

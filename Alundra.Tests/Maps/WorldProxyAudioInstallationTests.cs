@@ -19,6 +19,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Maps;
 
@@ -41,10 +42,10 @@ namespace Alundra.Tests.Maps;
 /// </summary>
 /// docs/plan-e11c-musique.md, slice C1: <see cref="InstallAudioSystems"/> now also re-points the
 /// SESSION-scoped <see cref="BgmPlayer.Instance"/> singleton (D-C-6) - so this class shares
-/// the <see cref="AlundraMusicPlayerSingletonCollection"/> xunit collection with
-/// <see cref="AlundraMusicPlayerTests"/>, the only other class touching that same shared instance,
+/// the <see cref="MusicPlayerSingletonCollection"/> xunit collection with
+/// <see cref="MusicPlayerTests"/>, the only other class touching that same shared instance,
 /// keeping them from racing (xunit runs different test CLASSES in parallel by default).
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public class WorldProxyAudioInstallationTests : IDisposable
 {
     private const string WorldName = "Ship Klark (beginning)-389";

@@ -6,22 +6,22 @@ using Xunit;
 using Alundra.Audio;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Audio;
 
 /// <summary>
 /// T4.2 (docs/plan-audio-mix-exact-muet.md): <see cref="SoundPlayer.PlaySfx"/> starting a real
 /// stereo voice through <see cref="AudioService.PlayClipStereo"/>, with the exact key-on left/right SPU
 /// volumes (<see cref="SpuVoiceVolume.ComputeKeyOn"/>) - and its two fallback causes (a record
 /// without the ADR-0003 attributes, a clip without samples), which must still start a mono voice exactly
-/// as before T4.2 (never silence). Same shape as <see cref="AlundraSoundPlayerTests"/>, split into its
+/// as before T4.2 (never silence). Same shape as <see cref="SoundPlayerTests"/>, split into its
 /// own file because it needs its own synthetic manifest fixture (the VAB/program/tone attributes T4.2
 /// reads) and its own <see cref="FakeAudioClip"/> flavours (with/without <see cref="IAudioClipSamples"/>
 /// samples).
 /// </summary>
-public sealed class AlundraSoundPlayerStereoVolumeTests : IDisposable
+public sealed class SoundPlayerStereoVolumeTests : IDisposable
 {
     private readonly string _projectPath =
-        Path.Combine(Path.GetTempPath(), "AlundraSoundPlayerStereoVolumeTests_" + Guid.NewGuid());
+        Path.Combine(Path.GetTempPath(), "SoundPlayerStereoVolumeTests_" + Guid.NewGuid());
 
     // Id 302: real values (docs/plan-audio-mix-exact-muet.md, T4.2 table) - VAB 127, program 127,
     // program pan 64, tone 0 (100, 34) -> (10157, 2957), tone 1 (100, 94) -> (2786, 10157).
@@ -42,7 +42,7 @@ public sealed class AlundraSoundPlayerStereoVolumeTests : IDisposable
     // Id 401: no attributes at all in the manifest (fallback cause 1).
     private static readonly Guid Id401Tone0 = Guid.Parse("00000000-0000-0000-0000-000000000401");
 
-    public AlundraSoundPlayerStereoVolumeTests()
+    public SoundPlayerStereoVolumeTests()
     {
         var soundsDirectory = Path.Combine(_projectPath, "Sounds");
         Directory.CreateDirectory(soundsDirectory);

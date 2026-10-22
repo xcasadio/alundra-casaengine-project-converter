@@ -11,6 +11,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Rng;
 using Alundra.Transitions;
+using Alundra.Tests.Audio;
 
 namespace Alundra.Tests.Support;
 
@@ -19,7 +20,7 @@ namespace Alundra.Tests.Support;
 /// SILENT fallback: without a working asset manager the production spawn path logs a warning and builds a bare entity,
 /// and <c>World.InternalAddEntities</c> drops an entity whose initialisation throws without a trace but the log.
 /// </summary>
-[Collection(AlundraMusicPlayerSingletonCollection.Name)]
+[Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class PrefabArcSupportTests
 {
     private readonly ITestOutputHelper _output;
