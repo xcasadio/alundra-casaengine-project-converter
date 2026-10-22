@@ -86,6 +86,13 @@ Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructure
   nommés par les anciens préfixes, sont effacés à la fin de R5 : recensés par chemin exact, envoyés à la Corbeille un par un, chacun
   vérifié dans la Corbeille (un dossier que la Corbeille refuse est un arrêt et une question, jamais une suppression définitive). Les
   choix (a) (preuves de fin de R3 et R4 gelées) et (b) (commentaires inchangés en R5, R8 les corrige) sont validés.
+- **D-R-21** (2026-10-22, pendant l'exécution de R5, réponses de l'auteur) — (1) Les six fichiers d'aide qui ne servent qu'aux scénarios
+  (`ArcChecks`, `ArcSamples`, `ArcSnap`, `LeverArcs`, `LeverCell`, `LeverStampedSounds`) restent dans `Arcs/` avec eux. (2) Les 77 fichiers
+  dont le nom ne désigne ni un type de la DLL ni un dossier, rangés par l'exécution d'après leur sujet (24) ou d'après les types
+  qu'ils utilisent (53), gardent ce rangement (`tools/dll-structure/r5-files.tsv`, colonne `basis`). (3) Décision de la session, par la
+  règle de D-R-13 (point 2) : la classe imbriquée `AlundraHudComposerEquipmentBackgroundsTests` (dans `HudComposerTests`), que la table
+  des types de premier niveau ne couvrait pas, perd seulement son préfixe (`HudComposerEquipmentBackgroundsTests`), dans un commit à part
+  avant la clôture.
 - Règle du moteur (D-R-2), notée aussi en mémoire : « le moteur, quand il crée les objets script, ne doit chercher que dans la DLL ».
 
 ## 1. Faits établis (découverte du 2026-10-16, lecture seule)
