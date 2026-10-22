@@ -9,7 +9,7 @@ using Alundra.Physics;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Ai.Enemies;
 
 /// <summary>
 /// E14.a0b T2 (docs/plan-e14-ia-native.md section 1.2): the floor (<c>FloorHeight</c>) and the four corner heights (<c>MapHeights</c>) of the entities other than the hero
@@ -18,7 +18,7 @@ namespace Alundra.Tests;
 /// The single formula under test: every height of the DLL is the binary's minus 1 (ADR-0026), so <c>FloorHeight(DLL) = floor(binary) - 1</c> and <c>MapHeights[k](DLL) = corner(binary)[k] - 1</c>; hence
 /// <c>FloorHeight - MapHeights[k]</c> and the difference of the floors of a body and of the hero are the binary's. The expected values are the oracle's, never computed by the code under test.
 /// </summary>
-public sealed class AlundraEnemyGroundTests
+public sealed class EnemyGroundTests
 {
     private static string MapFolder(int map) => map switch
     {

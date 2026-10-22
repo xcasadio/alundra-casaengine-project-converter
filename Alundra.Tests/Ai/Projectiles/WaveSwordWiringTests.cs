@@ -15,7 +15,7 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Ai.Projectiles;
 
 /// <summary>
 /// E20.f3c phase B (docs/plan-e20-heros.md section 1.19.3, T3): the sword wave born by the PRODUCTION seam (no hook, no test set), in the real world of map 14 (<see cref="HitArena"/>, the native handlers off as the arena
@@ -23,7 +23,7 @@ namespace Alundra.Tests;
 /// <c>WiredWeaponTypes =&gt; WiredWeaponTypesForTests ?? ProductionWiredWeaponTypes</c>: with the production set empty the shot of a sword creates nothing, so each of them fails on a missing entity.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraWaveSwordWiringTests : IDisposable
+public sealed class WaveSwordWiringTests : IDisposable
 {
     private const int SteelItem = 2;
     private const int DemonItem = 3;
@@ -36,7 +36,7 @@ public sealed class AlundraWaveSwordWiringTests : IDisposable
     private readonly ulong _previousSeed = GameRandom.RandomSeed;
     private readonly ITestOutputHelper _output;
 
-    public AlundraWaveSwordWiringTests(ITestOutputHelper output)
+    public WaveSwordWiringTests(ITestOutputHelper output)
     {
         _output = output;
         Reset();

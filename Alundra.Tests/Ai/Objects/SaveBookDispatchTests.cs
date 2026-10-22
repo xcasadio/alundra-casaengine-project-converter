@@ -14,7 +14,7 @@ using Alundra.UI.Saving;
 using Alundra.Maps;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Ai.Objects;
 
 /// <summary>
 /// E16.e T1 (docs/plan-e16-etat-partie.md, L1, L6, SE6): the generic ETC text access
@@ -22,9 +22,9 @@ namespace Alundra.Tests;
 /// the dispatch of <see cref="EventProgramRunner.RunSpriteEvent"/> to the save book - only for sprite type
 /// 237, a native slot, and (F, 1) or (C, 72) - with the sprite type retained by both spawn paths.
 /// </summary>
-public sealed class AlundraSaveBookDispatchTests : IDisposable
+public sealed class SaveBookDispatchTests : IDisposable
 {
-    public AlundraSaveBookDispatchTests()
+    public SaveBookDispatchTests()
     {
         Reset();
     }

@@ -19,6 +19,7 @@ using Alundra.SaveGames;
 using Alundra.Entities;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Ai.Objects;
 
 namespace Alundra.Tests.Scripts;
 
@@ -33,7 +34,7 @@ namespace Alundra.Tests.Scripts;
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSaveScreenPresenterTests : IDisposable
 {
-    private readonly AlundraSaveBookTests.RecordingUIViewRuntime _uiView = new();
+    private readonly SaveBookTests.RecordingUIViewRuntime _uiView = new();
     private readonly DialoguePresenter _dialoguePresenter;
     private readonly FakeSaveScreen _screen = new();
     private readonly FakeSaveScreen _choiceScreen = new();
@@ -191,7 +192,7 @@ public sealed class AlundraSaveScreenPresenterTests : IDisposable
         Director.AttachToWorld(worldProxy.GameState, null);
 
         var screen = new FakeSaveScreen();
-        var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
+        var uiView = new SaveBookTests.RecordingUIViewRuntime();
         worldProxy.AttachSaveScreenPresenterForTests(new SaveScreenViewModel(), screen, uiView);
 
         Assert.True(Director.Start(ValidSave()));

@@ -19,17 +19,17 @@ using Alundra.Rendering.Effects;
 using Alundra.Audio;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Ai.Enemies;
 
 /// <summary>
 /// E14.a1c T1 (docs/plan-e14-ia-native.md section 1.3c): the Muruta's A0, C10 and D9 (registry, type 347) and E1 (<c>DestroyEntity(e, -1)</c>) against the REAL code of <c>ALUN_CD.EXE</c> (France) run in the E14.a1 oracle
 /// (<c>docs/plan-e14-annexe/e14a/oracle-a1/out</c>): the 4,913 single-call vectors (A0 6, C10 4,043, D9 720, E1 144) and the 3,675 calls of the scenarios MU-* (A0 16, C10 3,637, D9 15, E1 7), each replayed alone from its
 /// <c>before</c> to its <c>after</c>. For every call: the changed words, the generator's word, the sounds (the claw sound <c>0xCD</c> of C10 is compared, in order), the hero untouched. E1 is compared by the projection of the plan
-/// (section 1.3b). The montage is that of <see cref="AlundraBeannoideOracleTests"/> with the fields of the Muruta (<c>+0x98</c> <see cref="EntityScriptProxy.BoxDirection"/>, the four corner heights, <c>+0x274</c>, <c>+0x280</c>) and the
+/// (section 1.3b). The montage is that of <see cref="BeannoideOracleTests"/> with the fields of the Muruta (<c>+0x98</c> <see cref="EntityScriptProxy.BoxDirection"/>, the four corner heights, <c>+0x274</c>, <c>+0x280</c>) and the
 /// hero's frame box (the FIELD <see cref="EntityScriptProxy.HasFrameBox"/>) and current attack. Shares the generator's collection (it sets the word).
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraMurutaOracleTests : IDisposable
+public sealed class MurutaOracleTests : IDisposable
 {
     private const long Marker = 0x5A5A5A5A;
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
@@ -137,7 +137,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
 
     private static EquipmentRecords? _kit;
 
-    /// <summary>The new-game kit as the oracle's D-calls had it (armour item 17 without attack, weapon item 1 with the attack (1, 1)), checked against the oracle by <see cref="AlundraBeannoideOracleTests"/>.</summary>
+    /// <summary>The new-game kit as the oracle's D-calls had it (armour item 17 without attack, weapon item 1 with the attack (1, 1)), checked against the oracle by <see cref="BeannoideOracleTests"/>.</summary>
     private static EquipmentRecords Kit()
     {
         if (_kit != null)
@@ -239,7 +239,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
 
         foreach (var change in changed)
         {
-            Assert.True(AlundraEnemyHandlerOracle.MurutaClosure.Contains(change.Name), $"the oracle changed '{change.Name}', outside the closure set of the Muruta");
+            Assert.True(EnemyHandlerOracle.MurutaClosure.Contains(change.Name), $"the oracle changed '{change.Name}', outside the closure set of the Muruta");
             if (Fields.ContainsKey(change.Name))
             {
                 expected[change.Name] = change.After;
@@ -334,7 +334,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     [InlineData("D9", 720)]
     public void TheVectors_OfTheRegistryHandlers_HaveNoDifference(string handler, int count)
     {
-        var vectors = AlundraEnemyHandlerOracle.Vectors("muruta").Where(v => v.Handler == handler).ToList();
+        var vectors = EnemyHandlerOracle.Vectors("muruta").Where(v => v.Handler == handler).ToList();
         Assert.Equal(count, vectors.Count);
 
         for (var i = 0; i < vectors.Count; i++)
@@ -352,7 +352,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     public void TheCallsOfTheScenarios_OfTheRegistryHandlers_ReplayedOneByOne_HaveNoDifference(string handler, int count)
     {
         var done = 0;
-        foreach (var scenario in AlundraEnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("MU-", StringComparison.Ordinal)))
+        foreach (var scenario in EnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("MU-", StringComparison.Ordinal)))
         {
             foreach (var call in scenario.Calls.Where(c => c.Handler == handler))
             {
@@ -478,7 +478,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     [Fact]
     public void E1_TheVectors_FollowTheProjectionOfThePlan()
     {
-        var vectors = AlundraEnemyHandlerOracle.Vectors("muruta").Where(v => v.Handler == "E1").ToList();
+        var vectors = EnemyHandlerOracle.Vectors("muruta").Where(v => v.Handler == "E1").ToList();
         Assert.Equal(144, vectors.Count);
         var effects = 0;
         var excluded = 0;
@@ -499,7 +499,7 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     public void E1_TheCallsOfTheScenarios_FollowTheProjectionOfThePlan()
     {
         var done = 0;
-        foreach (var scenario in AlundraEnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("MU-", StringComparison.Ordinal)))
+        foreach (var scenario in EnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("MU-", StringComparison.Ordinal)))
         {
             foreach (var call in scenario.Calls.Where(c => c.Handler == "E1"))
             {
@@ -518,16 +518,16 @@ public sealed class AlundraMurutaOracleTests : IDisposable
     [Fact]
     public void TheReader_CountsTheMurutaVectorsAndCallsOfThePlan()
     {
-        var vectors = AlundraEnemyHandlerOracle.Vectors("muruta");
+        var vectors = EnemyHandlerOracle.Vectors("muruta");
         Assert.Equal(4913, vectors.Count);
         Assert.Equal(new[] { ("A0", 6), ("C10", 4043), ("D9", 720), ("E1", 144) }, vectors.GroupBy(v => v.Handler).OrderBy(g => g.Key, StringComparer.Ordinal).Select(g => (g.Key, g.Count())).ToArray());
 
-        var calls = AlundraEnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("MU-", StringComparison.Ordinal)).SelectMany(s => s.Calls).ToList();
+        var calls = EnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("MU-", StringComparison.Ordinal)).SelectMany(s => s.Calls).ToList();
         Assert.Equal(3675, calls.Count);
         Assert.Equal(new[] { ("A0", 16), ("C10", 3637), ("D9", 15), ("E1", 7) }, calls.GroupBy(c => c.Handler).OrderBy(g => g.Key, StringComparer.Ordinal).Select(g => (g.Key, g.Count())).ToArray());
-        Assert.All(vectors, v => Assert.All(v.Changed, c => Assert.Contains(c.Name, AlundraEnemyHandlerOracle.MurutaClosure)));
-        Assert.All(calls, c => Assert.All(c.Changed, ch => Assert.Contains(ch.Name, AlundraEnemyHandlerOracle.MurutaClosure)));
-        Assert.Equal(18, AlundraEnemyHandlerOracle.MurutaClosure.Count);
+        Assert.All(vectors, v => Assert.All(v.Changed, c => Assert.Contains(c.Name, EnemyHandlerOracle.MurutaClosure)));
+        Assert.All(calls, c => Assert.All(c.Changed, ch => Assert.Contains(ch.Name, EnemyHandlerOracle.MurutaClosure)));
+        Assert.Equal(18, EnemyHandlerOracle.MurutaClosure.Count);
 
         // The hero's attack pointer of the C10 calls: 615 strike calls with the frame box, the others never dereferenced.
         var c10 = calls.Where(c => c.Handler == "C10").ToList();

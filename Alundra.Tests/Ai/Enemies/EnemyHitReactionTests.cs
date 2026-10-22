@@ -12,14 +12,14 @@ using Alundra.Items;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Ai.Enemies;
 
 /// <summary>
 /// E14.a0b T4 (docs/plan-e14-ia-native.md section 1.2): the skeleton of the hit handlers D1 (Beannoid, animation 5) and D9 (Muruta, animation 2) (<see cref="EnemyHelpers.HitReaction"/>) against the real code of <c>ALUN_CD.EXE</c> (France)
 /// run in the emulator on 10,000 random states each (<c>out/h1/d1.txt.gz</c>, <c>d9.txt.gz</c>; <c>ComputeNewHp</c> stubbed there, its result the state's <c>killed</c>), and the hero's animation latch on the entity context
 /// (<see cref="IEntityWorldContext.HeroAnimationLatch"/>) that the damage calculation reads.
 /// </summary>
-public sealed class AlundraEnemyHitReactionTests
+public sealed class EnemyHitReactionTests
 {
     private sealed class HitContext : IEntityWorldContext
     {

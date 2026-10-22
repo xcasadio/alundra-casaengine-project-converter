@@ -36,12 +36,13 @@ using Alundra.Rendering.Backdrops;
 using Alundra.Transitions;
 using Alundra.Dialogues;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Ai.Objects;
 
 namespace Alundra.Tests.Support;
 
 /// <summary>
 /// E19.a T5 (docs/plan-e19-opcodes.md §0.2.6, §1.2 T5): the shared support of the chain arcs, built on the montage
-/// of <see cref="AlundraSaveBookEndToEndTests"/> - the real <see cref="WorldProxy.InitializeWithWorld"/>
+/// of <see cref="SaveBookEndToEndTests"/> - the real <see cref="WorldProxy.InitializeWithWorld"/>
 /// over a real exported map, a hero possessed by a real <see cref="HeroController"/> with a pad seam, a
 /// real dialogue presenter over a recording UI view, one logic tick per <c>Update(0.02f)</c>. On top of it:
 /// <list type="bullet">
@@ -170,7 +171,7 @@ internal sealed class ArcRun : IDisposable
                 State.AddFlag((uint)flag, 1u << (flag & 0x1f));
             }
 
-            var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
+            var uiView = new SaveBookTests.RecordingUIViewRuntime();
             var world = BuildWorld(root, spec, uiView);
             Entity heroEntity;
             if (spec.Prefabs)
@@ -582,9 +583,9 @@ internal sealed class ArcRun : IDisposable
         return Guid.Parse((string)entry["id"]!);
     }
 
-    /// <summary>The headless real-map montage of <see cref="AlundraSaveBookEndToEndTests"/>, generalised to a map's folder
+    /// <summary>The headless real-map montage of <see cref="SaveBookEndToEndTests"/>, generalised to a map's folder
     /// path: all the layers of its tile map, a game whose active render view carries <paramref name="uiView"/>.</summary>
-    private static World BuildWorld(string root, ArcSpec spec, AlundraSaveBookTests.RecordingUIViewRuntime uiView)
+    private static World BuildWorld(string root, ArcSpec spec, SaveBookTests.RecordingUIViewRuntime uiView)
     {
         var tileMapPath = Path.Combine(root, "Maps", spec.Zone, spec.WorldName, "tilemap", spec.WorldName + ".tileMap");
         Assert.True(File.Exists(tileMapPath), $"the real export of map '{spec.WorldName}' is missing: '{tileMapPath}'");

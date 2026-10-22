@@ -15,6 +15,7 @@ using Alundra.UI.Speech;
 using Alundra.SaveGames;
 using Alundra.Maps;
 using Alundra.Tests.Support;
+using Alundra.Tests.Ai.Objects;
 
 namespace Alundra.Tests;
 
@@ -29,7 +30,7 @@ namespace Alundra.Tests;
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
 public sealed class AlundraSaveScreenTickOrderTests : IDisposable
 {
-    private readonly AlundraSaveBookTests.RecordingUIViewRuntime _uiView = new();
+    private readonly SaveBookTests.RecordingUIViewRuntime _uiView = new();
     private readonly AlundraSaveScreenDirectorTests.SlotsBySlot _slots = new();
     private readonly WorldProxy _proxy;
 

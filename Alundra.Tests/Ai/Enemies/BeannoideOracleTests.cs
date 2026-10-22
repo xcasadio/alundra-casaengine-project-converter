@@ -19,7 +19,7 @@ using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Ai.Enemies;
 
 /// <summary>
 /// E14.a1b T4 (docs/plan-e14-ia-native.md section 1.3b): the Beannoid's A1, C1 and D1 (registry, type 335) and E1 (<c>DestroyEntity(e, -1)</c>) against the REAL code of <c>ALUN_CD.EXE</c> (France) run in the E14.a1 oracle
@@ -29,7 +29,7 @@ namespace Alundra.Tests;
 /// <see cref="EntityScriptProxy.BreakEffect"/>. Shares the generator's collection (it sets the word).
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraBeannoideOracleTests : IDisposable
+public sealed class BeannoideOracleTests : IDisposable
 {
     private const long Marker = 0x5A5A5A5A;
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();
@@ -208,7 +208,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
 
         foreach (var change in changed)
         {
-            Assert.True(AlundraEnemyHandlerOracle.BeannoideClosure.Contains(change.Name), $"the oracle changed '{change.Name}', outside the closure set of the Beannoid");
+            Assert.True(EnemyHandlerOracle.BeannoideClosure.Contains(change.Name), $"the oracle changed '{change.Name}', outside the closure set of the Beannoid");
             if (Fields.ContainsKey(change.Name))
             {
                 expected[change.Name] = change.After;
@@ -274,7 +274,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
     [InlineData("D1", 720)]
     public void TheVectors_OfTheRegistryHandlers_HaveNoDifference(string handler, int count)
     {
-        var vectors = AlundraEnemyHandlerOracle.Vectors("beannoide").Where(v => v.Handler == handler).ToList();
+        var vectors = EnemyHandlerOracle.Vectors("beannoide").Where(v => v.Handler == handler).ToList();
         Assert.Equal(count, vectors.Count);
 
         for (var i = 0; i < vectors.Count; i++)
@@ -291,7 +291,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
     public void TheCallsOfTheScenarios_OfTheRegistryHandlers_ReplayedOneByOne_HaveNoDifference(string handler, int count)
     {
         var done = 0;
-        foreach (var scenario in AlundraEnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("BN-", StringComparison.Ordinal) || s.Name.StartsWith("ARENA-", StringComparison.Ordinal)))
+        foreach (var scenario in EnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("BN-", StringComparison.Ordinal) || s.Name.StartsWith("ARENA-", StringComparison.Ordinal)))
         {
             foreach (var call in scenario.Calls.Where(c => c.Handler == handler))
             {
@@ -399,7 +399,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
     [Fact]
     public void E1_TheVectors_FollowTheProjectionOfThePlan()
     {
-        var vectors = AlundraEnemyHandlerOracle.Vectors("beannoide").Where(v => v.Handler == "E1").ToList();
+        var vectors = EnemyHandlerOracle.Vectors("beannoide").Where(v => v.Handler == "E1").ToList();
         Assert.Equal(144, vectors.Count);
         var effects = 0;
         var excluded = 0;
@@ -420,7 +420,7 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
     public void E1_TheCallsOfTheScenarios_FollowTheProjectionOfThePlan()
     {
         var done = 0;
-        foreach (var scenario in AlundraEnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("BN-", StringComparison.Ordinal) || s.Name.StartsWith("ARENA-", StringComparison.Ordinal)))
+        foreach (var scenario in EnemyHandlerOracle.Scenarios().Where(s => s.Name.StartsWith("BN-", StringComparison.Ordinal) || s.Name.StartsWith("ARENA-", StringComparison.Ordinal)))
         {
             foreach (var call in scenario.Calls.Where(c => c.Handler == "E1"))
             {
@@ -439,17 +439,17 @@ public sealed class AlundraBeannoideOracleTests : IDisposable
     [Fact]
     public void TheReader_CountsTheVectorsAndTheCallsOfThePlan()
     {
-        var vectors = AlundraEnemyHandlerOracle.Vectors("beannoide");
+        var vectors = EnemyHandlerOracle.Vectors("beannoide");
         Assert.Equal(2052, vectors.Count);
         Assert.Equal(new[] { ("A1", 3), ("C1", 1185), ("D1", 720), ("E1", 144) }, vectors.GroupBy(v => v.Handler).OrderBy(g => g.Key, StringComparer.Ordinal).Select(g => (g.Key, g.Count())).ToArray());
 
-        var scenarios = AlundraEnemyHandlerOracle.Scenarios();
+        var scenarios = EnemyHandlerOracle.Scenarios();
         Assert.Equal(21, scenarios.Count);
         var calls = scenarios.Where(s => s.Name.StartsWith("BN-", StringComparison.Ordinal) || s.Name.StartsWith("ARENA-", StringComparison.Ordinal)).SelectMany(s => s.Calls).ToList();
         Assert.Equal(3140, calls.Count);
         Assert.Equal(new[] { ("A1", 12), ("C1", 3102), ("D1", 22), ("E1", 4) }, calls.GroupBy(c => c.Handler).OrderBy(g => g.Key, StringComparer.Ordinal).Select(g => (g.Key, g.Count())).ToArray());
-        Assert.All(vectors.Concat(Array.Empty<HandlerVector>()), v => Assert.All(v.Changed, c => Assert.Contains(c.Name, AlundraEnemyHandlerOracle.BeannoideClosure)));
-        Assert.All(calls, c => Assert.All(c.Changed, ch => Assert.Contains(ch.Name, AlundraEnemyHandlerOracle.BeannoideClosure)));
+        Assert.All(vectors.Concat(Array.Empty<HandlerVector>()), v => Assert.All(v.Changed, c => Assert.Contains(c.Name, EnemyHandlerOracle.BeannoideClosure)));
+        Assert.All(calls, c => Assert.All(c.Changed, ch => Assert.Contains(ch.Name, EnemyHandlerOracle.BeannoideClosure)));
     }
 
     [Fact]

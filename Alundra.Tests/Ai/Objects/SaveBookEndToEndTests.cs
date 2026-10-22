@@ -33,7 +33,7 @@ using Alundra.SaveGames;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Ai.Objects;
 
 /// <summary>
 /// E16.e T5 (docs/plan-e16-etat-partie.md, L1 to L5): the save book end to end on the REAL map 17 (one of the 65
@@ -53,7 +53,7 @@ namespace Alundra.Tests;
 /// </para>
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSaveBookEndToEndTests : IDisposable
+public sealed class SaveBookEndToEndTests : IDisposable
 {
     private const string Map17WorldName = "Overworld 4,0-17";
     private const int BookTileX = 6;
@@ -62,7 +62,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
     private readonly EchoSlots _slots = new();
     private uint _hold;
 
-    public AlundraSaveBookEndToEndTests()
+    public SaveBookEndToEndTests()
     {
         ResetAll();
         WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
@@ -120,9 +120,9 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
     /// his centre): 343 px.</summary>
     private const int FlushWithTheBookPosY = 22478848;
 
-    private void WithTheMap17Montage(Action<AlundraSaveBookTests.RecordingUIViewRuntime, World, Entity> body)
+    private void WithTheMap17Montage(Action<SaveBookTests.RecordingUIViewRuntime, World, Entity> body)
     {
-        var uiView = new AlundraSaveBookTests.RecordingUIViewRuntime();
+        var uiView = new SaveBookTests.RecordingUIViewRuntime();
         var world = BuildRealMap17World(uiView);
         var (heroEntity, controller) = AddHeroPawn(world);
         controller.PadStateProviderForTests = () => new PadState { ButtonsHold = _hold, ButtonsJustPressed = _hold };
@@ -140,7 +140,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
         }
     }
 
-    private void RunTheFlow(AlundraSaveBookTests.RecordingUIViewRuntime uiView, World world, Entity heroEntity)
+    private void RunTheFlow(SaveBookTests.RecordingUIViewRuntime uiView, World world, Entity heroEntity)
     {
         var (proxy, hero, book) = PrepareTheBookScene(uiView, world, heroEntity);
 
@@ -218,7 +218,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
     /// <summary>The map 17 montage up to the point where the hero is a spawned pawn adopted with its sprite header, the book spawned from the export, the
     /// chapter reached: what both facts share.</summary>
     private (WorldProxy Proxy, EntityScriptProxy Hero, EntityScriptProxy Book) PrepareTheBookScene(
-        AlundraSaveBookTests.RecordingUIViewRuntime uiView, World world, Entity heroEntity)
+        SaveBookTests.RecordingUIViewRuntime uiView, World world, Entity heroEntity)
     {
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world);
@@ -359,7 +359,7 @@ public sealed class AlundraSaveBookEndToEndTests : IDisposable
     /// <summary>The headless real-map montage of <see cref="WorldProxyGlobalFreezeTests.BuildRealMap389World"/>
     /// for map 17, with a game whose active render view carries <paramref name="uiView"/> (the recipe of
     /// <see cref="SaveScreenTestWorlds.WorldWithUIView"/>), so the real install wires a dialogue presenter.</summary>
-    private static World BuildRealMap17World(AlundraSaveBookTests.RecordingUIViewRuntime uiView)
+    private static World BuildRealMap17World(SaveBookTests.RecordingUIViewRuntime uiView)
     {
         var projectRoot = FindProjectRoot();
         var tileMapPath = Path.Combine(projectRoot, "Maps", "Overworld", Map17WorldName, "tilemap", Map17WorldName + ".tileMap");

@@ -9,14 +9,14 @@ using Alundra.Rng;
 using Alundra.Entities;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Ai;
 
 /// <summary>
 /// E14.a0b T3 (docs/plan-e14-ia-native.md section 1.2): the shared helpers of the enemy AI (<see cref="EnemyHelpers"/>) against the real code of <c>ALUN_CD.EXE</c> (France) run in the emulator on 10,000 random states each
 /// (<c>docs/plan-e14-annexe/e14a/oracle/out/h1/&lt;helper&gt;.txt.gz</c>): every state, value by value. The expected values are the oracle's, never computed by the code under test.
 /// </summary>
 [Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraEnemyHelpersTests
+public sealed class EnemyHelpersTests
 {
     private const int MarkAnim = 0x7777;
     private const int MarkDir = 0x5555;

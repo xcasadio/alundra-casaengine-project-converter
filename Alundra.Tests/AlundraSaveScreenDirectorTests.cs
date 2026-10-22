@@ -25,6 +25,7 @@ using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Ai.Objects;
 
 namespace Alundra.Tests;
 
@@ -51,7 +52,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
     private const int TicksToSettledPicker = 1 + 20 + 20 + 1 + 18;
 
     private readonly SlotsBySlot _slots = new();
-    private readonly AlundraSaveBookTests.RecordingUIViewRuntime _uiView = new();
+    private readonly SaveBookTests.RecordingUIViewRuntime _uiView = new();
     private readonly DialoguePresenter _presenter;
     private readonly RecordingSound _sound = new();
 
@@ -766,7 +767,7 @@ public sealed class AlundraSaveScreenDirectorTests : IDisposable
         Assert.True(Dialogue.IsAwaitingChoice);
 
         // The new world's install, in InitializeWithWorld's order: the dialogue systems, then the save screen.
-        var newView = new AlundraSaveBookTests.RecordingUIViewRuntime();
+        var newView = new SaveBookTests.RecordingUIViewRuntime();
         var world = SaveScreenTestWorlds.WorldWithUIView("NextWorld", newView);
         var proxy = new WorldProxy();
         using var logs = LogCapture.Install();

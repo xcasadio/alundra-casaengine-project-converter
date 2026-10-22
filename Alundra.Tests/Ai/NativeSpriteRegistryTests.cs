@@ -8,7 +8,7 @@ using Alundra.Events;
 using Alundra.Ai.Objects;
 using Alundra.UI.Saving;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Ai;
 
 /// <summary>
 /// E14.a0 T2 (docs/plan-e14-ia-native.md section 1.1a, D-E14-1, D-E14-5): the registry of the native sprite handlers
@@ -16,12 +16,12 @@ namespace Alundra.Tests;
 /// the sprite types it lists and not for another, an absent key stays a counted no-op, the switch turns everything off,
 /// and the book and E0/E1 never go through it. In production it holds the Beannoid's three handlers (E14.a1b) and the Muruta's three (E14.a1c).
 /// </summary>
-public sealed class AlundraNativeSpriteRegistryTests : IDisposable
+public sealed class NativeSpriteRegistryTests : IDisposable
 {
     private const int TypeA = 335;
     private const int TypeB = 347;
 
-    public AlundraNativeSpriteRegistryTests()
+    public NativeSpriteRegistryTests()
     {
         Reset();
     }

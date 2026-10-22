@@ -15,7 +15,7 @@ using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Ai.Projectiles;
 
 /// <summary>
 /// E20.f3c phase A (docs/plan-e20-heros.md section 1.19.3, T1; D-F3-5, D-F3-6): the life of the sword wave (the sprite types 27, 28, 29 of the global page) born by the TEST HOOK
@@ -25,7 +25,7 @@ namespace Alundra.Tests;
 /// of the wave, at 1, 2 and 3 ticks per frame, for the three swords.
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraWaveSwordLifeTests : IDisposable
+public sealed class WaveSwordLifeTests : IDisposable
 {
     private const int SteelItem = 2;
     private const int DemonItem = 3;
@@ -39,7 +39,7 @@ public sealed class AlundraWaveSwordLifeTests : IDisposable
     private readonly ulong _previousSeed = GameRandom.RandomSeed;
     private readonly ITestOutputHelper _output;
 
-    public AlundraWaveSwordLifeTests(ITestOutputHelper output)
+    public WaveSwordLifeTests(ITestOutputHelper output)
     {
         _output = output;
         Reset();

@@ -21,7 +21,7 @@ using Alundra.UI.SubInventory;
 using Alundra.SaveGames;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Ai.Objects;
 
 /// <summary>
 /// E16.e T2 (docs/plan-e16-etat-partie.md, L4, H1, H2, SE1, SE2, SE7, SE8): the save book, driven through the real
@@ -32,7 +32,7 @@ namespace Alundra.Tests;
 /// choice, then the hero walks and the inventory opens (SE1).
 /// </summary>
 [Collection(AlundraMusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSaveBookTests : IDisposable
+public sealed class SaveBookTests : IDisposable
 {
     private const int Wait = SaveBook.WaitTicks + 1; // 0x3C counted down to -1: 61 ticks.
 
@@ -43,7 +43,7 @@ public sealed class AlundraSaveBookTests : IDisposable
     private readonly EventProgramRunner _runner;
     private readonly EntityScriptProxy _book;
 
-    public AlundraSaveBookTests()
+    public SaveBookTests()
     {
         ResetSingletons();
         EtcStringTable.ResetForTests();

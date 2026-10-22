@@ -6,31 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 
-namespace Alundra.Tests;
-
-/// <summary>One word the handler changed in the oracle (<c>changed</c>): its name and its value before and after (raw words, 64-bit as read).</summary>
-internal sealed record HandlerChange(string Name, long Before, long After);
-
-/// <summary>One entry of the oracle's call journal (<c>spawn_39F58</c>, <c>sound</c>, <c>effect_3BE74</c>): its kind and its arguments (a sound has its number as the only argument).</summary>
-internal sealed record HandlerJournalEntry(string Kind, long[] Arguments);
-
-/// <summary>
-/// One single-call vector of <c>vectors-beannoide.json</c> / <c>vectors-muruta.json</c> (E14.a1 oracle): the handler, the generator's word in and out, the 27 decoded fields of the entity and 7 of the hero before the call, the
-/// attack of the toucher, what changed, the journal, and of the inputs only the break-effect byte (<see cref="InputFx"/>, null for the sprite's own), the platform flag and the active-effect flag.
-/// </summary>
-internal sealed record HandlerVector(
-    string Handler, long RngIn, long RngOut, int Draws, long Latch,
-    IReadOnlyDictionary<string, long> Entity, IReadOnlyDictionary<string, long> Hero, long[]? HeroAttack, long[]? AttackerAttack,
-    IReadOnlyList<HandlerChange> Changed, IReadOnlyList<HandlerJournalEntry> Journal, long? InputFx, long InputPlat, long InputAe);
-
-/// <summary>
-/// One call of a scenario (<c>calls[]</c>): the entity before and after (53 decoded fields each), the hero's seven fields, the generator, the latch, what changed and the journal of THIS call. <see cref="HeroAttackPointer"/> is the
-/// hero's <c>curattack_1C8</c> of the per-tick column of the row BEFORE the call (the rows are valid call inputs, D-E14-6): <c>0x80144229</c> is the attack <c>(0x81, 1)</c>, <c>0x80144209</c> one the handler never reads.
-/// </summary>
-internal sealed record HandlerCall(
-    int Tick, string Handler, int Slot, long Letter, long RngIn, long RngOut, long Latch,
-    IReadOnlyDictionary<string, long> Before, IReadOnlyDictionary<string, long> After, IReadOnlyDictionary<string, long> Hero,
-    IReadOnlyList<HandlerChange> Changed, IReadOnlyList<HandlerJournalEntry> Journal, long HeroAttackPointer = 0);
+namespace Alundra.Tests.Ai.Enemies;
 
 /// <summary>One scenario file of the oracle: its name and its calls (the per-tick columns are not read).</summary>
 internal sealed record HandlerScenario(string Name, IReadOnlyList<HandlerCall> Calls);
@@ -39,7 +15,7 @@ internal sealed record HandlerScenario(string Name, IReadOnlyList<HandlerCall> C
 /// E14.a1b T4 (docs/plan-e14-ia-native.md section 1.3b, "Lecteur de l'oracle"): the reader of the outputs of the E14.a1 oracle (<c>docs/plan-e14-annexe/e14a/oracle-a1/out</c>, found above the test binaries). Every number is
 /// read as a 64-bit integer (pointers and the generator's word exceed <see cref="int"/>); each file is parsed once. Nothing here computes an expected value: the rows are the expected values.
 /// </summary>
-internal static class AlundraEnemyHandlerOracle
+internal static class EnemyHandlerOracle
 {
     /// <summary>The 16 names a Beannoid handler may change (plan section 1.3b, "Clôture"); the Muruta's set adds <c>ai0_280</c> and <c>b0_274</c>.</summary>
     internal static readonly IReadOnlySet<string> BeannoideClosure = new HashSet<string>
