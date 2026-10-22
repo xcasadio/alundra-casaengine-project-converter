@@ -53,7 +53,7 @@ Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructure
   pas par le domaine qu'il exerce ; (2) les tests des types renommés perdent **seulement le préfixe** (`AlundraMusicPlayerTests` →
   `MusicPlayerTests`, pas `BgmPlayerTests`) ; (3) `Arcs/` ne reçoit que **les 26 scénarios** de bout en bout (les harnais de traces :
   D-R-19) ; (4) les types partagés déclarés dans un fichier de test **ne vont pas dans `Support/`** : les `using` s'ajoutent ; (5) **un
-  type principal par fichier**, comme la DLL : les 44 fichiers à plusieurs types sont scindés ; (6)
+  type principal par fichier**, comme la DLL, selon la lecture de la règle (3) de l'ADR-0075 (appliquée aux tests par P-R5-1, §9) ; (6)
   `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` **reste à sa place** ; (7) les gardes d'export sans type (`CornerTrack`,
   `ZeroDurationLoop`) vont dans **un dossier dédié** (`ExportGuards/`, D-R-19). Les points 4 et 5 se croisent pour les types partagés :
   D-R-16. ADR-0080.
@@ -73,7 +73,7 @@ Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructure
   vivant se corrige, l'autre choix est historique. **Sous réserve de Q-R-4b** (le « comment » n'a pas de réponse) : rien n'est annulé
   avant la confirmation ; l'annulation serait la tranche R6b (§3). **Remplacé au 3e tour** : à Q-R-4b, l'auteur répond « corrige les
   documents » : rien n'est annulé, `docs/intro-roadmap.md` reste vivant et se corrige ; la portée (ce fichier seul ou tous les documents
-  vivants, numéros de ligne compris) attend Q-R-4c ; R6b porte cette correction.
+  vivants, numéros de ligne compris) attend Q-R-4c ; R6b porte cette correction (tranché par D-R-20).
 - **D-R-20** (2026-10-22, 4e tour, Q-R-4c : « tous les documents vivants ») — R6b corrige **tous les documents vivants** : en plus des
   chemins et des noms (faits par R6), les **numéros de ligne** qu'ils citent dans la DLL, les tests et les outils sont recalculés partout
   (le choix (3) de Q-R-4 est corrigé) ; `docs/intro-roadmap.md` en fait partie. Les documents historiques, les audits (en lecture seule)
@@ -169,7 +169,7 @@ Alundra/
   UI/            Hud/, Inventory/, SubInventory/, Messages/ (les écrans TextBox), Choice/, Speech/ (DialoguePresenter), Saving/ (les écrans de sauvegarde), Shared/
   SaveGames/     SaveGame, SaveGameDirector, SaveGameRules, EngineSaveSlots, ISaveSlots, TestSaves
   Probes/        RandomShadow, SlotShadow, StickProbe
-Alundra.Tests/   la même arborescence par domaine, plus Arcs/ (scénarios de bout en bout) et Support/ (outillage partagé)
+Alundra.Tests/   la même arborescence par domaine, plus Arcs/ (scénarios de bout en bout et harnais de traces), Support/ (outillage partagé) et ExportGuards/ (gardes d'export sans type de la DLL ; D-R-19)
 ```
 
 Règles : (1) un dossier = un namespace ; (2) plus de préfixe `Alundra` ; (3) un type principal par fichier, les types secondaires publics
@@ -913,11 +913,16 @@ autonomes, Q-R-6).
 ADR-0080) : les points 1, 2, 3 (harnais compris) et 7 (`ExportGuards/`) passent par la table ; les points 4 et 5 par la coupe de R2,
 chaque type partagé vers le dossier de son fichier d'origine ; le point 6 ne déplace rien. Q-R-6 tranchée (D-R-18) : (a) et (b) validés,
 (c) corrigé : une tâche T23 envoie à la Corbeille les dossiers temporaires orphelins. Q-R-4 (D-R-17) : les lignes de
-`docs/intro-roadmap.md` de T22 dépendent de Q-R-4c ; la relecture de la révision 2 attend cette réponse. **Q-R-4c tranchée (D-R-20)** :
-T22 corrige ses trois lignes T comme prévu (chemins et noms d'après R5) ; les numéros de ligne de tous les documents vivants sont le
-travail de R6b, après R5.
+`docs/intro-roadmap.md` : Q-R-4c tranchée (D-R-20), T22 corrige ses trois lignes T comme prévu (chemins et noms d'après R5), et les
+numéros de ligne de tous les documents vivants sont le travail de R6b, après R5.
 
-**But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/` et `Support/`, sur le modèle de la DLL (un
+**Révision 2b (2026-10-22, après une critique indépendante de la révision 2, avant sa première relecture).** Un P1 et cinq P2 corrigés :
+« un type principal par fichier, comme la DLL » suit la lecture de la règle (3) de l'ADR-0075, avec une règle pour les fichiers sans
+type à leur nom (P-R5-1) ; `ExportGuards` a son pas (T20b) ; les réponses « garder » et « déplacer » et les conditionnels des tâches
+sont retirés ; T23 ne prend que des dossiers vieux de plus de 24 heures, avec ses préconditions, un essai à blanc et sa méthode ; les
+scripts de la découverte et le relevé des littéraux d'avant R5 sont versés en T0a ; les comptes des faits sont marqués provisoires.
+
+**But.** `Alundra.Tests/<Domaine>/…`, namespaces `Alundra.Tests.<Domaine>`, plus `Arcs/`, `Support/` et `ExportGuards/`, sur le modèle de la DLL (un
 dossier = un namespace) ; les classes de test sans préfixe `Alundra` ; **aucune valeur attendue changée, aucun test ajouté ni retiré** ;
 aucun fichier de `Alundra/` touché (la DLL ne diffère de celle d'avant que par le commit inscrit dans sa version informative).
 
@@ -946,6 +951,8 @@ clôture. **Capture de namespace** (prouvée par une compilation jetable) : dès
 à l'application (le critique en compte 368 paires dans 221 fichiers, la découverte 356 dans 219 : la colonne ne sert pas d'entrée).
 **Inconnu** : l'ordre d'exécution des classes par xUnit peut dépendre de leurs noms complets ; R5 est la première tranche qui les
 change ; les collections et les remises à zéro existantes protègent les états partagés connus, sans preuve contre un nouvel ordre.
+**Ces comptes sont ceux de la classification d'avant les réponses de l'auteur** (révision 2b) : T0a les recalcule avec les règles
+tranchées (le recomptage de la critique trouve, sur les 44 fichiers à plusieurs types, 19 sans type à leur nom, et non 15).
 
 **Choix de l'auteur (Q-R-3, §11).** Sept choix de structure : nom ou sujet (79 fichiers, 593 tests), noms des tests des types renommés
 (`BgmPlayer`, `GameRandom`, `SfxBank`, `HeroController`), périmètre d'`Arcs/`, types partagés déclarés dans un fichier de test (collections
@@ -953,14 +960,22 @@ xUnit, hôtes d'aides), un type principal par fichier (44 fichiers), le fichier 
 classements contestés par le critique (`check-report.md` §2.B) suivent la règle choisie au point 1 ; une ligne que la règle ne tranche
 pas est une question, pas un choix de l'exécuteur. **Réponses du 2026-10-22 (D-R-13, D-R-16, D-R-19 ; ADR-0080)** : point 1, par le type
 du nom du fichier ; point 2, seulement le préfixe retiré ; point 3, `Arcs/` reçoit les 26 scénarios de bout en bout et les harnais de
-traces, rien d'autre ; point 4, aucun type partagé dans `Support/` ; point 5, un type principal par fichier : les 44 fichiers à plusieurs
-types sont scindés, et chaque type partagé (les 5 collections xUnit, les hôtes d'aides) va dans son propre fichier, dans le dossier de
-son fichier d'origine ; point 6, le fichier de données reste à sa place ; point 7, les deux gardes d'export dans `ExportGuards/`.
+traces, rien d'autre ; point 4, aucun type partagé dans `Support/` ; point 5, un type principal par fichier, comme la DLL (P-R5-1 ci-dessous) ; chaque type
+partagé (les collections xUnit qui ne sont pas seules dans leur fichier, les hôtes d'aides) va dans son propre fichier, dans le dossier
+d'arrivée de son fichier d'origine ; point 6, le fichier de données reste à sa place ; point 7, les deux gardes d'export dans `ExportGuards/`.
 
 **Effet des réponses de Q-R-3 sur les outils** (T0a les applique ; T0b à T0c doivent couvrir celles que l'auteur a données).
 - Points 1 (nom ou sujet), 2 (noms des tests des types renommés), 3 (périmètre d'`Arcs/`) et 7 (gardes d'export) : **la table seule**
   (`r5-files.tsv`, `r5-types.tsv`) ; aucun outil ne change.
-- Points 4 (types partagés vers `Support/`) et 5 (un type principal par fichier), réponse **« scinder »** : la coupe de R2 (§6, temps 2),
+- **P-R5-1 — lecture de « un type principal par fichier, comme la DLL »** (révision 2b ; précision de la session, à partir de la lecture
+  de la règle (3) écrite dans l'ADR-0075 ; l'auteur peut la contester) : (i) dans un fichier de tests, chaque type secondaire **public**
+  va dans son propre fichier, un type secondaire **interne** reste avec le type principal ; (ii) chaque type **partagé** (utilisé par un
+  autre fichier) va dans son propre fichier, quelle que soit sa visibilité (D-R-16) ; (iii) un fichier où aucun type de premier niveau
+  ne porte son nom prend le nom de son **premier type public déclaré** (à défaut, de son premier type déclaré), par le `git mv` du temps
+  (1), et ses autres types suivent (i) et (ii) ; T0a liste ces fichiers et le type choisi pour chacun ; (iv) un type coupé va dans le
+  dossier d'arrivée de son fichier d'origine ; un type déjà seul dans son fichier (par exemple `UI/MguiDataBindingCollection.cs`) n'est
+  pas coupé. Un cas que (i) à (iv) ne tranchent pas est un arrêt.
+- Points 4 et 5 (D-R-13, D-R-16, P-R5-1) : la coupe de R2 (§6, temps 2),
   reprise par `apply_r5.py --code` : au temps (2) du domaine du fichier d'arrivée du type coupé, sa déclaration, avec ses commentaires de
   documentation, ses attributs et sa ligne vide de tête, copiée à l'octet dans un fichier neuf à son chemin de `r5-files.tsv`, avec
   l'en-tête du fichier où elle se trouve à ce moment (ses `using`, sa directive `#nullable` s'il en a une) et le `namespace` de son
@@ -968,19 +983,14 @@ son fichier d'origine ; point 6, le fichier de données reste à sa place ; poin
   Exemple (révision 2, D-R-16) : la collection de la musique, déclarée dans `AlundraMusicPlayerTests.cs`, est coupée dans son propre
   fichier, à son chemin de `r5-files.tsv` sous `Audio/`, au temps (2) du domaine `Audio`, celui de son fichier d'origine ; les fichiers des
   domaines passés avant `Audio` la trouvent encore à son ancien emplacement, et les `using` recalculés au temps (2) de chaque domaine
-  suivent son emplacement courant. Une classe partielle n'est jamais coupée. Les réponses « garder » et « déplacer » ci-dessous ne
-  servent plus (révision 2).
+  suivent son emplacement courant. Une classe partielle n'est jamais coupée.
   `prove_r5.py --kind code` apparie les fichiers par la table, jamais par la détection de renommage de git : un fichier neuf n'est permis
   que s'il est l'arrivée d'un type coupé de ce domaine et si son contenu est l'en-tête plus le bloc retiré de son fichier source au
-  commit parent (renommages de la table, ligne `namespace` et `using` mis à part) ; le fichier source perd exactement ce bloc. Réponse
-  **« garder »** : aucune coupe ; la table range le fichier entier.
-- Point 6, réponse **« déplacer »** : `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` part par `git mv` (`R100`) au commit (1) du
-  domaine de son dossier d'arrivée ; au commit (2) du même domaine, le seul littéral
-  `const string relative = "Data/story-chain-skipped-opcodes.tsv";` (`AlundraStoryChainOpcodeAudit.cs:369`) devient le nouveau chemin
-  relatif à `Alundra.Tests/` (une entrée du relevé des littéraux, classe « chemin de données », que `prove_r5.py` ne permet que là ;
-  `FindListPath` essaie `<dossier>/<relatif>` et `<dossier>/Alundra.Tests/<relatif>` en remontant depuis `AppContext.BaseDirectory`, ce qui
-  reste vrai) ; les commentaires `:21` et `:366` qui citent l'ancien chemin restent (choix (b), Q-R-5). Réponse **« rester »** : rien.
-- **Toute autre réponse** (un mécanisme qui n'est ni un changement de table, ni cette coupe, ni ce déplacement) rouvre la tranche pour une
+  commit parent (renommages de la table, ligne `namespace` et `using` mis à part) ; le fichier source perd exactement ce bloc, et
+  un fichier qui perd tous ses types sauf un est renommé par le `git mv` du temps (1) selon (iii), jamais supprimé.
+- Point 6 : la réponse est **« rester »** (D-R-13) : `Alundra.Tests/Data/story-chain-skipped-opcodes.tsv` et son littéral
+  (`AlundraStoryChainOpcodeAudit.cs:369`) ne changent pas, et `prove_r5.py` refuse tout changement de l'un ou de l'autre.
+- **Un cas que ces règles ne tranchent pas** (un mécanisme qui n'est ni un changement de table ni cette coupe) rouvre la tranche pour une
   relecture : arrêt avant T0a.
 
 **Choix de la session principale (mode autonome, réversibles, soumis à l'auteur en Q-R-6 ; tranchés le 2026-10-22, D-R-18 : (a) et (b)
@@ -994,8 +1004,8 @@ envoie à la Corbeille.
 
 **Propriétaire, chemins, budget.** Un `executor` (T0 : l'outil et la table s'écrivent avec jugement ; ensuite l'application est
 mécanique). Chemins : `Alundra.Tests/**` (hors `bin/`, `obj/`, `TestResults/`), `tools/dll-structure/` (T0 ; puis les outils pour les
-seules corrections de leurs règles, par un commit d'outil suivi du rejeu), les trois lignes T des docs (T22), ce plan (§9) ; hors du dépôt,
-seulement les dossiers temporaires orphelins de T23, vers la Corbeille. Aucun fichier de
+seules corrections de leurs règles, par un commit d'outil suivi du rejeu), les trois lignes T des docs (T22), ce plan (§9) ; hors du dépôt, on
+n'efface que les dossiers temporaires orphelins de T23, vers la Corbeille (les copies et listes de travail hors du dépôt de T0b et T0d restent). Aucun fichier de
 `Alundra/`, du convertisseur, des données, d'un sous-module ; aucun export. Le jeu, l'éditeur et le lanceur fermés pendant la tranche
 (vérifié en T0 : `alundra-project/Alundra.dll` s'ouvre en écriture). Release toujours avec la copie neutralisée
 (`-p:CustomAfterMicrosoftCommonTargets=…/e20e0a3b-exec/skipcopy.targets`) ; Debug en dernier. Budget : une passe d'exécution, une passe de
@@ -1004,8 +1014,11 @@ correction au plus ; un verifier frais à la fin.
 **Tâches.**
 - T0a (aucun test touché) — **les réponses de l'auteur à Q-R-3** appliquées aux règles de la découverte (`classify.py`, `decisions.py`),
   la découverte rejouée au HEAD, la table versée : `tools/dll-structure/r5-files.tsv` (une ligne par fichier : ancien chemin, nouveau
-  chemin, namespace, domaine du commit) et `tools/dll-structure/r5-types.tsv` (ancien nom complet → nouveau nom complet, une ligne par type
-  de premier niveau ; les scissions de fichiers si le point 5 les demande, avec le fichier d'arrivée de chaque type) ; contrôles : chaque
+  chemin, namespace, domaine du commit ; un fichier neuf issu d'une coupe y a une ligne sans ancien chemin, avec son fichier source) et
+  `tools/dll-structure/r5-types.tsv` (ancien nom complet → nouveau nom complet, une ligne par type de premier niveau ; les scissions de
+  P-R5-1, avec le fichier d'arrivée de chaque type, et la liste des fichiers renommés par (iii)) ; versés aussi, comme en R2 à R4, les
+  scripts de la découverte (`common.py`, `evidence.py`, `classify.py`, `decisions.py`, `couplings.py`, `build.py`, `extras.py`) et
+  `tools/dll-structure/r5-literals.tsv`, **dans ses valeurs d'avant R5** (T0c et T23 le lisent) ; contrôles : chaque
   `.cs` couvert une fois, chaque type une fois, aucun chemin en double (insensible à la casse), aucune collision
   (`check_names.collision_findings`), aucun type au nom d'un segment ; un commit d'outil.
 - T0b — **l'outil de renommage** étendu : `FindType` cherche aussi dans le projet `Alundra.Tests` (aujourd'hui la seule compilation
@@ -1014,16 +1027,17 @@ correction au plus ; un verifier frais à la fin.
   renommé, solution construite, et un conflit fabriqué refusé.
 - T0c — `tools/dll-structure/apply_r5.py` : pour un domaine, (1) `git mv` des fichiers vers leur chemin de `r5-files.tsv` (nom de fichier
   compris) ; (2) la ligne `namespace`, les `using` recalculés depuis l'emplacement courant de chaque type de test (comme `apply_r2.py`), les
-  39 références Q1, les 81 littéraux L1 de `r5-literals.tsv` regénéré, les six sites de capture au pas du domaine qui crée leur
-  namespace, et, selon les réponses aux points 4, 5 et 6, la coupe et le littéral du chemin de données décrits ci-dessus (le `git mv` du
-  fichier de données au temps (1)) ; puis l'outil de renommage. `tools/dll-structure/prove_r5.py`, sur le
+  39 références Q1, les littéraux L1 de `r5-literals.tsv` (81 à la découverte), les six sites de capture au pas du domaine qui crée leur
+  namespace, et la coupe des points 4 et 5 (P-R5-1) décrite ci-dessus (le fichier de données ne bouge pas, point 6) ; puis l'outil de
+  renommage. `tools/dll-structure/prove_r5.py`, sur le
   modèle de `prove_r3.py` (lexeur de R2, occurrence par occurrence) : un commit (1) ne contient que des renommages à 100 % selon la table ;
   un commit (2) ne change que la ligne `namespace`, des `using` ajoutés ou retirés, les noms selon `r5-types.tsv` (avec au plus une
-  qualification ajoutée par Roslyn), les entrées Q1, L1 et de capture de son domaine, exactement comme le relevé le dit ; chaque entrée du
-  domaine doit changer ; tout autre changement est refusé. Preuves de T0 : une mutation d'une valeur attendue, d'un littéral hors relevé et
-  d'un commentaire, chacune refusée ; une entrée L1 omise refusée ; si une coupe est demandée : un bloc coupé modifié d'un octet, une
-  coupe faite à un autre domaine et un type coupé deux fois, chacun refusé ; si le déplacement est demandé : le littéral du chemin de
-  données changé à un autre commit, refusé.
+  qualification ajoutée par Roslyn), les entrées Q1, L1 et de capture de son domaine, exactement comme le relevé le dit, et, s'il coupe, les
+  fichiers neufs et les blocs retirés que « Effet des réponses » permet ; chaque entrée du domaine doit changer ; tout autre changement
+  est refusé. Preuves de T0 : une mutation d'une valeur attendue, d'un littéral hors relevé et
+  d'un commentaire, chacune refusée ; une entrée L1 omise refusée ; pour la coupe : un bloc coupé modifié d'un octet, une
+  coupe faite à un autre domaine, un type coupé deux fois et un type interne non partagé coupé, chacun refusé ; le fichier de données
+  déplacé ou son littéral changé, refusé.
 - T0d — **comptes de départ** : aucun processus du jeu ; solution en Release (copie neutralisée) et en Debug, 0 erreur ; `Alundra.Tests`
   Release et Debug, 5 097 réussis / 0 échec, **deux exécutions complètes** chacune ; `dotnet test --list-tests` (la liste des noms complets
   des tests, gardée hors du dépôt) ; le commit de base (`git rev-parse HEAD`) ; l'absence de `Directory.Build.props` et
@@ -1032,14 +1046,14 @@ correction au plus ; un verifier frais à la fin.
 - T1 à T21 — par domaine, dans l'ordre de la découverte (`Support` en premier ; `Maps` avec `Loop`, `Session`, `Entities` avec
   `Spawning`, `Events`, `Ai` et ses trois sous-dossiers, `Hero`, `Combat`, `Items` avec la classe partielle `LootRollWorldTests`, `Rng` avec
   `RandomPerTickTests`, `Physics`, `Cells`, `Cameras`, `Rendering` avec `Backdrops` et `Effects`, `Audio`, `Transitions`, `Dialogues` avec
-  `Yarn`, `UI` et ses huit sous-dossiers d'un coup, `SaveGames`, `Probes` ; `Arcs` en dernier), **deux commits** : (1) `apply_r5.py
+  `Yarn`, `UI` et ses huit sous-dossiers d'un coup, `SaveGames`, `Probes`, puis **T20b** `ExportGuards` (les deux gardes d'export, D-R-19 ; révision 2b) ; `Arcs` en dernier), **deux commits** : (1) `apply_r5.py
   <Domaine> --move`, construction de la solution en Release (copie neutralisée), `prove_r5.py --kind move`, commit
   `refactor(tests): move the <domaine> tests into their folder (R5, git mv only)` ; (2) `apply_r5.py <Domaine> --code`, construction,
   `prove_r5.py --kind code` vert, `Alundra.Tests` Release 5 097 / 0, commit `refactor(tests): <domaine> tests in their namespace, without
   the Alundra prefix (R5)`. Une erreur de construction ne se corrige que par une règle de l'outil (commit d'outil, rejeu du temps (2)
   depuis l'état du commit (1)) : sinon arrêt.
 - T22 — Clôture : plus de dossier `Alundra.Tests/Scripts/`, plus de fichier directement sous `Alundra.Tests/UI/` (seulement ses
-  sous-dossiers), plus de `.cs` à la racine de `Alundra.Tests/` (y restent le projet, `xunit.runner.json` et `Data/` selon le point 6) ; plus aucun type `Alundra*` ni `IAlundra*` déclaré dans
+  sous-dossiers), plus de `.cs` à la racine de `Alundra.Tests/` (y restent le projet, `xunit.runner.json` et `Data/`, point 6) ; plus aucun type `Alundra*` ni `IAlundra*` déclaré dans
   `Alundra.Tests/` (recherche) ; un mode `check_names.py --tests` (chaque fichier à son chemin de `r5-files.tsv`, namespace = dossier,
   aucun préfixe, aucune collision), sortie 0 ; la solution en Release (copie neutralisée) puis en Debug, 0 erreur ; `Alundra.Tests`
   Release et Debug, 5 097 / 0, **deux exécutions complètes** chacune ; la liste `--list-tests` égale à celle de T0d par `r5-types.tsv`
@@ -1050,14 +1064,25 @@ correction au plus ; un verifier frais à la fin.
   Debug la copie ; garde des traces ; `git log --follow` retrouve l'historique d'avant R5 de cinq fichiers tirés de domaines
   différents et des deux classes partielles ; le paragraphe de gel de `tools/dll-structure/README.md` (choix (a)) ; les trois lignes T des
   docs ; ce plan (§9 et résultats).
-- T23 (révision 2, D-R-18) — **Les dossiers temporaires orphelins**, après T22 et toute exécution de tests finie : dans le dossier
-  temporaire de l'utilisateur (`Path.GetTempPath()`, où les tests créent les leurs, par exemple
-  `AlundraBgmFadeDirectorTests.cs:466`), la liste des dossiers dont le nom commence par l'un des 25 préfixes de dossiers temporaires
-  relevés en L1 (`r5-literals.tsv`), dans leur valeur **d'avant** R5, et par aucun préfixe d'après R5, écrite avec chemin, taille et
-  date avant toute action et versée au plan ; puis chacun, **un à la fois**, envoyé à la
-  Corbeille et **vérifié dans la Corbeille** (son nom d'origine y figure) avant le suivant ; jamais de suppression définitive (le
-  piège connu : une suppression « vers la Corbeille » d'un dossier trop gros pour elle l'efface définitivement sans erreur). Aucun
-  autre dossier n'est touché ; aucun commit (hors du dépôt), sauf le compte rendu dans ce plan.
+- T23 (révision 2b, D-R-18) — **Les dossiers temporaires orphelins**, après T22.
+  (1) **Sélection** : les enfants directs du dossier temporaire de l'utilisateur (`Path.GetTempPath()`, où les tests créent les leurs, par
+  exemple `AlundraBgmFadeDirectorTests.cs:466` avant R5) dont le nom est l'un des 25 préfixes de dossiers temporaires du
+  `r5-literals.tsv` versé en T0a (valeurs d'avant R5) **suivi d'un GUID** (la forme `Guid.NewGuid()` ou `.ToString("N")` des sites), et
+  dont la **dernière écriture date de plus de 24 heures** : les autres branches et les cinq autres worktrees du dépôt portent encore les
+  anciens noms et peuvent créer ces dossiers à tout moment, et aucune exécution de tests ne dure 24 heures. Les autres dossiers
+  temporaires « Alundra… » ou « alundra-… », dont R5 ne change pas le préfixe, ne sont pas visés.
+  (2) **La liste** (chemin, taille, nombre de fichiers, plus long chemin, date) s'écrit avant toute action et se verse au plan ; une liste
+  vide termine T23 (c'était le cas au relevé du 2026-10-22).
+  (3) **Préconditions**, sinon le dossier reste et c'est une question : moins de 10 Mo, aucun chemin de plus de 200 caractères, la Corbeille
+  active sur le volume (`NukeOnDelete` à 0, lu dans `HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\BitBucket\Volume`) et sa
+  capacité libre suffisante.
+  (4) **Essai à blanc d'abord** : un dossier jetable de la même forme, créé pour l'essai sous le dossier temporaire, envoyé par la même
+  méthode, retrouvé dans la Corbeille (`Shell.Application`, `NameSpace(10)`, son nom et son emplacement d'origine), puis restauré et
+  renvoyé ; une méthode qui échoue à l'essai n'est pas utilisée.
+  (5) **Envoi** : chaque dossier, **un à la fois**, par cette méthode, puis **vérifié dans la Corbeille** avant le suivant. Jamais de
+  suppression définitive (mémoire « Corbeille : suppression silencieuse » : une suppression « vers la Corbeille » d'un arbre que Windows
+  ne sait pas recycler l'efface sans message ; les préconditions et l'essai à blanc écartent ce cas, la vérification le détecte).
+  Aucun autre dossier n'est touché ; aucun commit (hors du dépôt), sauf le compte rendu dans ce plan.
 
 **Acceptation.** Les preuves de T22 ; la liste de T23 et, pour chacun de ses dossiers, sa présence dans la Corbeille ; aucune valeur attendue de test modifiée, aucun test ajouté, retiré ou sauté ; recette courte de
 l'auteur (nouvelle partie jusqu'au premier écran jouable, F5, F6, F9), demandée par la règle du programme bien qu'aucun source de la DLL
