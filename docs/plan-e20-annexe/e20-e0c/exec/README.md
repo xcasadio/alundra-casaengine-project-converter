@@ -17,3 +17,8 @@ No DLL code was written by T0.
 - `probes/ZzT0Probes.cs.txt`: the DLL probes of (b), (c), (i), (j), (k), as a throwaway xunit file of `Alundra.Tests` (removed after the measurements, never committed as a test).
 - `replays/`: the outputs of the replays of (a) and of `check_h1_bodies.py`.
 - `SHA1SUMS.txt`: SHA-1 of the files above (LF).
+
+T1 (phase A) and T2 (phase B) results:
+- `t1-results.md`, `t1-red-names*.txt`: phase A (the drop, `GiveItem`, the heals, the composed message, `Block`/`Unblock`).
+- `t2-results.md`: phase B (A255 and C255 for the dropped object, the refresh of `ModdedPos`); `t2-red-names.txt` (the 48 red of the final tests with the registration removed), `t2-red-names-first-draft.txt` (the red of the first draft of the tests), `t2-mutants.txt` (the 21 mutants and the failures each one caused);
+  `scripts/t2_mutants.py` and `scripts/t2_runmut.sh` (the mutants, applied and undone byte for byte); `scripts/boundary_c255.py` and `replays/boundary_c255_out.txt` (the REAL code of C255 on the bounds of the bounce threshold; run from a copy of `../work/` like the other generators).

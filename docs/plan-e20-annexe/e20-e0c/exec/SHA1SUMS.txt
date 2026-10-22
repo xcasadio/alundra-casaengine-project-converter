@@ -1,8 +1,10 @@
-9cdb757ed547f407bac0dbe2c15a4119724894e6 *./README.md
+1aeaf23212b60b3a23e54d0d7eb04831a1b52264 *./README.md
 198a4116e11ec61534e88178a5221a15b45e5065 *./probes/ZzT0Probes.cs.txt
+51a49d424f451d1aa46b77fcb701fa988e146421 *./replays/boundary_c255_out.txt
 732f2d18744e75954921afbe9558f3af736052a7 *./replays/check_h1_bodies_out.txt
 b3d7d8ba6a19ad6611b4e117be449122a328e3b0 *./replays/replays-work.txt
 9a8e7059da1f32da10ccc23889af0351e8427923 *./results.md
+28d9c934ff79e85b485c3f6fcf19b949d1644aef *./scripts/boundary_c255.py
 76ce9d4b502741c4e79eef7f7619bec0add704c1 *./scripts/check_h1_bodies.py
 2d4f61a4988625e9626f33bf13c8b0f46a66016b *./scripts/gen_c255.py
 d845fc26d0d1b2144df8acd962a45e8bf61c8178 *./scripts/gen_give.py
@@ -10,9 +12,15 @@ d845fc26d0d1b2144df8acd962a45e8bf61c8178 *./scripts/gen_give.py
 847780ee4f552682302686596acf05253b3da8d2 *./scripts/gen_jumptable.py
 9921f847a92a1882e2876bc08fcda3856dc4d284 *./scripts/gen_loot.py
 31b2ee250d045a8a919930234768f65689abbcb2 *./scripts/gen_message.py
+322634c4784bbb8826b16f71314e3e2745ff85af *./scripts/t2_mutants.py
+0f78e2e80a13974c1ad64ec36c92cf6f4a26c269 *./scripts/t2_runmut.sh
 9be451620681c71f612fb17b33d82d8e4b433f1d *./t1-red-names-itemeffects-final.txt
 ca303d348b318c36dc3665a19bf418c7f0230a39 *./t1-red-names.txt
 3cf112cb1c8c1e185143dacee49a7aaf7b953804 *./t1-results.md
+1382e9d2de6f79001ad36b2356c428e5b84052ab *./t2-mutants.txt
+53a9d7ac0896b65cfd2fbb043695df3555b110e2 *./t2-red-names-first-draft.txt
+d4db41ad7d089320b1fd9d83db1de0013f6650f2 *./t2-red-names.txt
+49458347043fd4cedcd93db67f3e1a0472e138f4 *./t2-results.md
 fe50016167bdf6c9dff79d7dbd0b3905311595e3 *./vectors/c255.json
 06aa0968b7e67a07850516a1807f2cf85aa7bfdb *./vectors/give-item.json
 2f598f2c428a24cd8df745bf614016b38772e05e *./vectors/give-jump-table.json

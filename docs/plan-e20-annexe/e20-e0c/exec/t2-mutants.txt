@@ -1,0 +1,21 @@
+noregister            48 red (46 world tests + the 2 pins)
+threshold_le          3 red
+bounce_noreset        9 red
+bounce_13             12 red
+destroy_at_1          4 red
+mark_omitted          4 red
+life_neg_counts       9 red
+overlap_hero_le       7 red
+overlap_item_le       5 red
+pickup_in_dialogue    4 red
+state3_ignores_dialogue 2 red
+rise_ge               7 red
+state_plus1           15 red
+sound_omitted         17 red
+flag_omitted          1 red
+give_omitted          13 red
+unblock_omitted       1 red
+placed_runs           2 red
+no_moddedpos          27 red
+registered_for_chest  1 red
+sound_zero_proceeds   1 red

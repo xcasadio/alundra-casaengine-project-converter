@@ -2973,6 +2973,19 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             _tickEntities[i].TickAnimationClock();
         }
 
+        // E20.e0c (T0 (d)): the binary rewrites the position the contacts read (+0x1D8/+0x1DC/+0x1E0 = Pos + Mod) at the head of 0x80038364, for the active entities that nothing blocks, after the clock and BEFORE the move
+        // (0x800383C0-0x800383E0): the pickup of a dropped object reads the positions of the end of the previous tick, the hero's included.
+        for (var i = 0; i < _tickEntities.Count; i++)
+        {
+            var entity = _tickEntities[i];
+            if (entity.Status.IsActive() && entity.BlockedByEntity == null)
+            {
+                entity.ModdedPosX = entity.PosX + entity.ModX;
+                entity.ModdedPosY = entity.PosY + entity.ModY;
+                entity.ModdedPosZ = entity.PosZ + entity.ModZ;
+            }
+        }
+
         TickTraceForTests?.Invoke("physics");
         for (var i = 0; i < _tickEntities.Count; i++)
         {

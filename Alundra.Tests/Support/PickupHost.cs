@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CasaEngine.Framework.AI.Navigation;
 using Alundra.Audio;
+using Alundra.Dialogues;
 using Alundra.Entities;
 using Alundra.Items;
 using Alundra.Maps;
@@ -31,6 +32,15 @@ internal sealed class PickupHost : IEntityWorldContext
 
     public EntityScriptProxy? Hero { get; set; }
 
+    /// <summary>E20.e0c T2: the dialogue box the pickup asks whether it is open (null: no director).</summary>
+    public IDialogueDirector? Dialogue { get; set; }
+
+    /// <summary>E20.e0c T2: the entities handed to the light destruction, in order.</summary>
+    public List<EntityScriptProxy> Destroyed { get; } = new();
+
+    /// <summary>E20.e0c T2: the entities that called <c>Unblock(self)</c>, in order.</summary>
+    public List<EntityScriptProxy> Unblocked { get; } = new();
+
     public IReadOnlyList<EntityScriptProxy> SpawnedEntities => Spawned;
 
     public EntityScriptProxy? PlayerEntity => Hero;
@@ -54,9 +64,11 @@ internal sealed class PickupHost : IEntityWorldContext
         return entity;
     }
 
-    public void DestroyEntity(EntityScriptProxy entity)
-    {
-    }
+    public void DestroyEntity(EntityScriptProxy entity) => Destroyed.Add(entity);
+
+    public void Unblock(EntityScriptProxy self) => Unblocked.Add(self);
+
+    public IDialogueDirector? DialogueDirector => Dialogue;
 
     public NavigationGrid2D? NavigationGrid => null;
 
