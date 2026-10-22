@@ -1,7 +1,7 @@
 # Plan — Restructuration de la DLL de gameplay Alundra
 
 Statut : 🚧 ; enveloppe READY ; **R0 faite et CONFIRMED le 2026-10-17** (recettes de l'auteur à faire) ; **R1 faite et CONFIRMED le
-2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), **R5 faite et CONFIRMED le 2026-10-22** (`61d2d46b` à `613c6c9e`, mode AUTO accordé par l'auteur ; révision 3 ; D-R-21 ; recette de l'auteur à faire) ; R6b décidée (D-R-20) ; **R7, R8 et R6b détaillées le 2026-10-22 (§12 à §14), puis la fusion finale (§15), en mode AUTO (D-R-22)** ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
+2026-10-17** (`1c5b741` à `e188a58`, ADR-0075) ; **R2 faite et CONFIRMED le 2026-10-17** (`7a15453` à `27eca9b`, recette de l'auteur à faire) ; **R3 faite et CONFIRMED le 2026-10-17** (`8e1adeb` à `a193671`, recette de l'auteur à faire) ; **R4 faite et CONFIRMED le 2026-10-17** (`6032da0` à `ce6d335`, recette de l'auteur à faire) ; R5 détaillée et READY ; Q-R-3 répondue le 2026-10-22 (D-R-13), **R5 faite et CONFIRMED le 2026-10-22** (`61d2d46b` à `613c6c9e`, mode AUTO accordé par l'auteur ; révision 3 ; D-R-21 ; recette de l'auteur à faire) ; R6b décidée (D-R-20) ; **R7, R8 et R6b faites et CONFIRMED le 2026-10-22 (§12 à §14), puis la fusion finale (§15), en mode AUTO (D-R-22)** ; R7 et R8 validées par l'auteur le 2026-10-22 (D-R-15, D-R-14), à détailler ; **R6 faite et CONFIRMED le 2026-10-17** (`7674ffa` à `2964d9a`). Démarre après E20.e0a4 (plan E20, §1.16.4).
 
 Décisions : voir ADR-0075 (`docs/decisions/0075-the-gameplay-dll-is-restructured-one-folder-one-namespace-no-alundra-prefix.md`) ; table des noms : `tools/dll-structure/table.md`.
 
@@ -1544,7 +1544,7 @@ compilé ne change ; elle repasse avec R8) ; A2 une ligne ancienne du README de 
 l'avertissement `Session` (`UI/Shared/TextBoxGpu.cs:266` aujourd'hui) ; A3 `selftest_rules.py` accepte un refus dont les étiquettes
 contiennent celles attendues, même si d'autres s'y ajoutent.
 
-## 13. Tranche R8 — Les anciens noms des commentaires ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22 ; REVISE, révision 1, **READY** à la seconde relecture)
+## 13. Tranche R8 — Les anciens noms des commentaires ✅ (faite et CONFIRMED le 2026-10-22, `621c7581` à `33528d55` ; révision 1, READY à la seconde relecture ; mode AUTO, D-R-22)
 
 **Relecture (2026-10-22, relecteur neuf) : REVISE**, deux blocages corrigés (FIX, révision 1) : (1) les deux fichiers qui ne sont pas
 des `.cs` n'avaient ni mode d'application ni preuve (le lexeur et Roslyn ne lisent que du C#) : un mode propre et sa preuve (P-R8-5) ;
@@ -1684,8 +1684,16 @@ Mesure de la découverte (48 citations mesurables contre la base `5434cf6`) : 1 
 
 Statut : R8 faite et prouvée par `prove_r8.py` et Roslyn ; reste le verifier frais de fin de tranche (hors de cette exécution) et la recette de l'auteur.
 
-## 14. Tranche R6b — Les numéros de ligne des documents vivants ⏳ (détaillée le 2026-10-22 ; mode AUTO, D-R-22 ; relue avec le §15 :
-REVISE sur le §15 seulement, révision 1, **READY** à la seconde relecture)
+**Vérification (2026-10-22, verifier neuf) : CONFIRMED.** Rejoué par lui : `prove_r8.py` (et `--other`) et `comment-xcheck` sur chaque
+commit et sur toute la plage (192 fichiers, 889 événements, 845 lignes, 0 non équivalent) ; son propre lexeur C# (aucun octet hors
+commentaire changé) ; `git diff --numstat` symétrique sur 194 fichiers ; plus aucun ancien nom en commentaire hors des 9 gardés et de
+l'alias `EventProgramRunner.cs` ; les cas de P-R8-3 un par un et un échantillon des remplacements, dont les 4 renommages qui ne sont pas
+« le préfixe en moins » ; la solution en Release (copie neutralisée) puis en Debug, `cmp` identique ; `Alundra.Tests` 5 097 / 0 en Release
+et en Debug ; `check_names.py --rules` à 0. Avis P4 : `--other` ne s'applique qu'au commit T2 ; les traces de héros réécrites par les
+suites (fins de ligne).
+
+## 14. Tranche R6b — Les numéros de ligne des documents vivants ✅ (faite et CONFIRMED le 2026-10-22, `546b7be2` à `3fafa3be`, après un REFUTED corrigé ;
+révision 1, READY à la seconde relecture ; mode AUTO, D-R-22)
 
 **But.** Dans **les 21 documents vivants**, chaque citation de ligne désigne au HEAD ce que sa phrase cite (D-R-17, D-R-20) ; les
 documents historiques, les audits, les annexes figées et les plans ne changent pas.
@@ -1820,6 +1828,17 @@ Plages modifiées (36 lignes du relevé sur 113, la citation rétablie comprise 
 
 Outils : `apply_r6b.py` (décisions 220/0 et 327/0, ensemble `BY_CONTENT` et notes de sens au relevé), relevé régénéré (2 lignes changent), `prove_r6b.py` renforcé d'un contrôle **E** : une citation qui suit directement un extrait de code contenant un appel (`` `DepthFloor(...)` `` puis `(Fichier.cs:N)`) doit désigner des lignes dont l'une contient le nom de cet appel ; il aurait refusé `275` (mutation ajoutée à l'auto-test, avec « une déclaration citée à la première ligne de son corps »), et il s'applique à deux citations du relevé (`cells-companion.md:142`, `:220`). Limite : il ne voit ni un nom sans parenthèses (`Type.Membre`, ligne N), ni un membre nommé en prose (les écarts 127 et 327 restent à la lecture des sondes par une personne). Preuve rejouée : `prove_r6b.py --files` à 0 (113 plages), `--selftest` : 19 verdicts attendus (17 + 2). Le chiffre de 17 verdicts ci-dessus est celui de la première passe.
 
+**Vérification (2026-10-22).** Premier verifier neuf : **REFUTED** (P2) : `docs/formats/cells-companion.md:220` citait
+`GraphicManager.cs:275`, classée juste, alors que la phrase nomme l'appel `DepthFloor(cellY, GetTileDepthSlot(tileId))`, à la ligne 246
+(la 275 est dans le bloc des murs). Disposition : FIX ; un audit indépendant des 113 plages a trouvé un second écart
+(`docs/intro-roadmap.md:327`, `GameEngine.cs:454` au lieu de la déclaration 452) et une question pour l'auteur ; le correctif `3fafa3be`
+corrige les deux et ajoute à `prove_r6b.py` le contrôle E (une citation qui suit un appel en code doit viser une ligne qui le contient).
+Second verifier neuf : **CONFIRMED** (113 plages ; seuls des chiffres changent, plus la citation rétablie ; aucun fichier de code, de
+données ni des sous-modules). Points pour l'auteur (non bloquants) : `docs/formats/cells-companion.md:127` nomme `CreateTilesetJson` alors
+que la ligne 143 est dans `CreateTileJson` (un mot à changer, hors de la règle des chiffres) ; la citation rétablie
+`EntitySpawnFactory.cs:59-94` reprend les lignes de l'original (la méthode entière est `:83-100`) ; `docs/intro-roadmap.md:326` vise une
+ligne interne de `ResetCameraAndLoadVRAMAssets` (cohérente avec sa phrase).
+
 ## 15. Fusion finale (D-R-22) ⏳ (relecture du 2026-10-22 avec R6b : REVISE, révision 1 : arrêts, retour arrière et portes de la
 branche d'intégration ajoutés)
 
@@ -1832,6 +1851,11 @@ Après R7, R8 et R6b faites et CONFIRMED :
 - **Sous-modules** : le `main` du moteur, le `master` de l'analyseur et le `develop` de MGUI doivent contenir les pointeurs du parent
   (`git merge-base --is-ancestor <pointeur> <branche>`) ; au 2026-10-22 c'est le cas (`92d8e847`, `fc16872`, `3db3c769`). Un pointeur qui
   ne serait pas contenu : avance rapide de la branche s'il en est le descendant, sinon arrêt et question.
+- **SHA relevés avant la fusion (2026-10-22)** : parent `main` `11cc63e35a1c456fcaf7933e6f36610729c02454` ; moteur `main`
+  `92d8e847f2e0abd7a7fe0b077eb7d554beef2b51` (= pointeur du parent) ; analyseur `master` `fc1687295c199d9a5b99db5f201b6e571390a644`
+  (= pointeur) ; MGUI `develop` `3db3c769f5f6be3e6a746291a41245a996c13506` dans le clone du moteur (= pointeur du moteur) et dans celui
+  de l'analyseur (qui contient son pointeur `d3e0cd12`). Les sous-modules n'ont donc rien à fusionner ; le parent avance par avance
+  rapide (`main` est ancêtre du chantier).
 - Rien n'est poussé. Les modifications locales de l'auteur (le lanceur du moteur, le pointeur MGUI de l'analyseur, `AlundraTools/log.txt`,
   les outils non suivis) ne sont ni touchées ni indexées.
 - Après la fusion : la branche du chantier reste ; la recette courte de l'auteur (nouvelle partie jusqu'au premier écran jouable, F5, F6,
