@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using static Alundra.Tests.ArcChecks;
+using static Alundra.Tests.Arcs.ArcChecks;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
@@ -12,7 +12,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.d2c1 A10J (docs/plan-e19-opcodes.md section 1.2h.3.1, C4): map 10 (<c>Overworld 2,1-10</c>), B[20] (the hero walks through the basin, jumps the cliff with
@@ -22,7 +22,7 @@ namespace Alundra.Tests;
 /// plan writes, with the real controller and the real prefabs; F0 is the image of the first execution of <c>0x0B @2441</c>.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraHeroJumpArcTests
+public sealed class HeroJumpArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;

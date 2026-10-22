@@ -10,7 +10,7 @@ using Alundra.Transitions;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E20.f2 T3 (docs/plan-e20-heros.md section 1.10): the arcs of the flail bounce on the real worlds, with the real hit pass.
@@ -27,7 +27,7 @@ namespace Alundra.Tests;
 /// </list>
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraFlailBounceArcTests : IDisposable
+public sealed class FlailBounceArcTests : IDisposable
 {
     private const int IronFlail = 9;
     private const int SteelFlail = 10;
@@ -36,7 +36,7 @@ public sealed class AlundraFlailBounceArcTests : IDisposable
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
     private readonly ITestOutputHelper _output;
 
-    public AlundraFlailBounceArcTests(ITestOutputHelper output)
+    public FlailBounceArcTests(ITestOutputHelper output)
     {
         _output = output;
         GameState.Instance.ResetForTests();

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using static Alundra.Tests.ArcChecks;
+using static Alundra.Tests.Arcs.ArcChecks;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
@@ -15,7 +15,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.d2a S4 (docs/plan-e19-opcodes.md section 1.2h.1, section 1.3): the arcs of the first day after the book, on the real
@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// the rest in the order of the plan. The positions that depend on contacts between entities are not pinned here (E19.d2b).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraInoaDayOneArcTests
+public sealed class InoaDayOneArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;

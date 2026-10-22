@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using static Alundra.Tests.ArcChecks;
+using static Alundra.Tests.Arcs.ArcChecks;
 using Alundra.Session;
 using Alundra.Events;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.d2c1 A12 (docs/plan-e19-opcodes.md section 1.2h.3.1): map 179, B[2] (program @328), the first scripted jump of the day 3 chain -
@@ -17,7 +17,7 @@ namespace Alundra.Tests;
 /// preset <c>day3-after-dream</c> (G203, G1651, G1660, arrival at the tile (17, 7), z 1).
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraBergusJumpArcTests
+public sealed class BergusJumpArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;

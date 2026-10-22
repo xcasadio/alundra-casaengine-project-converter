@@ -23,6 +23,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
+using Alundra.Tests.Arcs;
 
 namespace Alundra.Tests.Entities;
 
@@ -249,7 +250,7 @@ public sealed class AnimationSoundTests
         Assert.True(bank.TryResolve(219, soundGroup: 62, out var resolution));
         Assert.Equal(864, resolution.ResolvedId);
 
-        using var arc = new ArcRun(AlundraVisionArcTests.A4pSpec);
+        using var arc = new ArcRun(VisionArcTests.A4pSpec);
         var sounds = Inject(arc);
         var asked219Before = -1;
         var asked219At = -1;
@@ -405,7 +406,7 @@ public sealed class AnimationSoundTests
             provider.Register(tone.AssetId, new FakeAudioClip("own219"));
         }
 
-        using var arc = new ArcRun(AlundraVisionArcTests.A4pSpec, world =>
+        using var arc = new ArcRun(VisionArcTests.A4pSpec, world =>
         {
             var audioComponent = (AudioSystemComponent)RuntimeHelpers.GetUninitializedObject(typeof(AudioSystemComponent));
             typeof(AudioSystemComponent).GetField("<Service>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!

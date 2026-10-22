@@ -6,7 +6,7 @@ using System.Linq;
 using CasaEngine.Framework.Scene.Entities;
 using Xunit;
 using static Alundra.Tests.Support.StoryChainOpcodeAudit;
-using static Alundra.Tests.ArcChecks;
+using static Alundra.Tests.Arcs.ArcChecks;
 using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
@@ -17,7 +17,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.e E2 and E3 (docs/plan-e19-opcodes.md section 1.2i): the scripted scenes of the day 3 that need no combat, as arcs on the real exported maps with the
@@ -28,7 +28,7 @@ namespace Alundra.Tests;
 /// (rule 5, <see cref="StoryChainOpcodeAudit.Rule5UnlistedArcSites"/>). A value that the measure contradicts is a stop, never a re-pin.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraDay3SceneArcTests
+public sealed class Day3SceneArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;

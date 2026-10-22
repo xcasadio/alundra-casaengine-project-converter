@@ -10,6 +10,7 @@ using Alundra.Entities;
 using Alundra.Physics;
 using Alundra.Cells;
 using Alundra.Tests.Cells;
+using Alundra.Tests.Arcs;
 
 namespace Alundra.Tests.Physics;
 

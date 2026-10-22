@@ -12,6 +12,7 @@ using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Hero;
 using Alundra.Tests.Audio;
+using Alundra.Tests.Arcs;
 
 namespace Alundra.Tests.Dialogues;
 

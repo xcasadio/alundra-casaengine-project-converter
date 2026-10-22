@@ -18,6 +18,7 @@ using Alundra.Physics;
 using Alundra.Hero;
 using Alundra.Tests.Support;
 using Alundra.Tests.Entities;
+using Alundra.Tests.Arcs;
 
 namespace Alundra.Tests.Physics;
 

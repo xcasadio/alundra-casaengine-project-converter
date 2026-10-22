@@ -19,7 +19,7 @@ using Alundra.Hero;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.a2 T3 (docs/plan-e19-opcodes.md §1.2b, ADR-0016 D-E19-8): the four walks of the cabin of map 390 (B2, 80 px
@@ -31,7 +31,7 @@ namespace Alundra.Tests;
 /// <see cref="ArcRun"/> and the A1c arc test the same scene through the script; this one isolates the physics.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraCabinWalkTests
+public sealed class CabinWalkTests
 {
     private const string WorldName = "Ship Klark (inner)-390";
 

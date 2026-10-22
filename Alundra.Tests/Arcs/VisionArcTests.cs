@@ -11,7 +11,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.b T0/T3 (docs/plan-e19-opcodes.md §1.2d, §1.3): the two arcs of the vision of Lars and Melzas, on the real
@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// </para>
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraVisionArcTests
+public sealed class VisionArcTests
 {
     private const string Zone = "Lars & Melzas Room";
     private const string Map476 = "Lars & Melzas Room (beginning Event)-476";

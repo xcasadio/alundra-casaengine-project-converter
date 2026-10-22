@@ -18,6 +18,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 using Alundra.Tests.Hero;
 using Alundra.Tests.Dialogues;
+using Alundra.Tests.Arcs;
 
 namespace Alundra.Tests.Entities;
 

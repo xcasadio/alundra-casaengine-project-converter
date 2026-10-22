@@ -8,7 +8,7 @@ using Alundra.Cells;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E20.c1b-2 L2 (docs/plan-e20-heros.md section 1.7, arc B): map 116, the levers 39 and 40 and the bridge. The lever 39 alone moves nothing; the
@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 /// lever 40 retracts it. Every expected value was written by hand before the code from the plan and check.md.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraLeverBridgeArcTests
+public sealed class LeverBridgeArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;

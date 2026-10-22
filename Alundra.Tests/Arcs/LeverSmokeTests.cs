@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E20.c1b-2 L0 (docs/plan-e20-heros.md section 1.7): the smoke of the five lever rooms. Each room is built through <see cref="ArcRun"/> on the real
@@ -15,11 +15,11 @@ namespace Alundra.Tests;
 /// log holds no error. Every expected value was written by hand before the code, from the plan and from check.md.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraLeverSmokeTests
+public sealed class LeverSmokeTests
 {
     private readonly ITestOutputHelper _output;
 
-    public AlundraLeverSmokeTests(ITestOutputHelper output) => _output = output;
+    public LeverSmokeTests(ITestOutputHelper output) => _output = output;
 
     private (long Constructed, long SixFrames) Smoke(ArcSpec spec, int[] present, int[] absent, params (int Record, int X, int Y)[] positions)
     {

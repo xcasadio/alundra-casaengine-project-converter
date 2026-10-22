@@ -23,7 +23,7 @@ using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// Golden-trace oracle for the Alundra hero on the real map 389 (Ship Klark (beginning)), docs/plan-oracle-heros.md.

@@ -11,7 +11,7 @@ using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.a T5 (docs/plan-e19-opcodes.md §1.2 T5, §1.3): the arcs of the ship chain that E19.a owns, on the real
@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 /// decoded bytecode of map 390 before the code that satisfies them.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraShipArcTests
+public sealed class ShipArcTests
 {
     private const string Zone = "The Klark";
     private const string Map390 = "Ship Klark (inner)-390";

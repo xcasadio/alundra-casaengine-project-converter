@@ -6,7 +6,7 @@ using Xunit;
 using Alundra.Events;
 using Alundra.Tests.Support;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.d: the checks the chain arcs of E19.d share (A5, A6, A8). Same conventions as the arcs of E19.c1 (docs/plan-e19-opcodes.md

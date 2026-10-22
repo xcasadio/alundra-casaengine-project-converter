@@ -5,6 +5,7 @@ using Xunit;
 using Alundra.Maps;
 using Alundra.Events;
 using Alundra.Physics;
+using Alundra.Tests.Arcs;
 
 namespace Alundra.Tests.Cells;
 

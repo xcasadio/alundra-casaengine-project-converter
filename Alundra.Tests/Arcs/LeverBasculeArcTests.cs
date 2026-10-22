@@ -8,7 +8,7 @@ using Alundra.Cells;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E20.c1b-2 L3 (docs/plan-e20-heros.md section 1.7, arc C): map 117, the bascule (record 0). It is a four-state machine of the flags T1 to T4 whose program
@@ -16,7 +16,7 @@ namespace Alundra.Tests;
 /// Every expected value was written by hand before the code from the plan, check.md and maps-117-44.md section 2.1.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraLeverBasculeArcTests
+public sealed class LeverBasculeArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;

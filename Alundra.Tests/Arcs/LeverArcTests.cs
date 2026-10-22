@@ -9,7 +9,7 @@ using Alundra.Cells;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E20.c1b-2 (docs/plan-e20-heros.md section 1.7, "Acceptation", arcs A to E): a sword hit on a lever makes the lever react exactly as its programs
@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 /// is never re-fitted. H is <c>arc.Frame</c> before the press; the trace frames are absolute and the checks compare ticks.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraLeverArcTests
+public sealed class LeverArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;
@@ -28,7 +28,7 @@ public sealed class AlundraLeverArcTests
 
     private readonly ITestOutputHelper _output;
 
-    public AlundraLeverArcTests(ITestOutputHelper output) => _output = output;
+    public LeverArcTests(ITestOutputHelper output) => _output = output;
 
     private static void AssertCells(CellStore store, int x, int y, int walkability, int height, int groundProperty, int tileLeft, int tileRight)
     {

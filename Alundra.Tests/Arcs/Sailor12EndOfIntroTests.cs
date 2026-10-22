@@ -24,7 +24,7 @@ using Alundra.Hero;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.a3 T0/T2 (docs/plan-e19-opcodes.md §1.2c, ADR-0017 D-E19-12): the eight walks of sailor 12 of map 389 at the end
@@ -39,7 +39,7 @@ namespace Alundra.Tests;
 /// tick, at x = 467.75.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraSailor12EndOfIntroTests
+public sealed class Sailor12EndOfIntroTests
 {
     private const string WorldName = "Ship Klark (beginning)-389";
     private const string Bank146 = "Entities/Marin-passager-mouette-146/Marin-passager-mouette-146.entity";

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using static Alundra.Tests.ArcChecks;
+using static Alundra.Tests.Arcs.ArcChecks;
 using Alundra.Session;
 using Alundra.Events;
 using Alundra.Hero;
@@ -14,7 +14,7 @@ using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.d D3 (docs/plan-e19-opcodes.md §1.2g, §1.3, D-E19-23): arcs A5 and A5r on the real exported map 392 (Ship Klark, night, inner),
@@ -27,7 +27,7 @@ namespace Alundra.Tests;
 /// of the warp director is the exception to the rule of the trace (§1.3). Every expected value is written by hand before the code.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraShipCorridorArcTests
+public sealed class ShipCorridorArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
 

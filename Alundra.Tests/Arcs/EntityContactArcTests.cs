@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using static Alundra.Tests.ArcChecks;
+using static Alundra.Tests.Arcs.ArcChecks;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
@@ -14,7 +14,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.d2b B6 (docs/plan-e19-opcodes.md section 1.2h.2, section 1.3, D-E19-27 to D-E19-37, ADR-0022): the four scenes that the entity
@@ -26,7 +26,7 @@ namespace Alundra.Tests;
 /// (<see cref="ArcSamples"/>): the effects of the walk are then applied, as the script sees them.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraEntityContactArcTests
+public sealed class EntityContactArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;

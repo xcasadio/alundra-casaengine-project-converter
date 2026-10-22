@@ -4,6 +4,7 @@ using Xunit;
 using Alundra.Maps;
 using Alundra.Events;
 using Alundra.Tests.Cells;
+using Alundra.Tests.Arcs;
 
 namespace Alundra.Tests.Audio;
 

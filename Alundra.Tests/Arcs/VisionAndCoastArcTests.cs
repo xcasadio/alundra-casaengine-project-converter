@@ -11,11 +11,11 @@ using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.c1 T2 (docs/plan-e19-opcodes.md §1.2e, §1.3): the arcs of the vision of Lars and Melzas on map 478 (A3), of the
-/// walk of Jess on map 416 (A7) and A4 on the real prefabs (A4p, in <see cref="AlundraVisionArcTests"/>). A3 and A7 run
+/// walk of Jess on map 416 (A7) and A4 on the real prefabs (A4p, in <see cref="VisionArcTests"/>). A3 and A7 run
 /// on the export's real prefabs (<see cref="ArcSpec.Prefabs"/>, D-E19-14): the NPCs have their real controller, so the
 /// rise of the camera block and the walks meet the production code. Every expected value is written by hand before the
 /// code (two independent models of the plan), and includes the kept animation lag (D-E19-13): a contradicted value is a
@@ -29,7 +29,7 @@ namespace Alundra.Tests;
 /// </para>
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraVisionAndCoastArcTests
+public sealed class VisionAndCoastArcTests
 {
     private const int BProgram = ScriptHelper.ProgramBMap;
     private const int CProgram = ScriptHelper.ProgramCTick;

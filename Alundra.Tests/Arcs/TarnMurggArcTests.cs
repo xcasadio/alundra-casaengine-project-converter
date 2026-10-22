@@ -1,11 +1,11 @@
 #nullable enable
 using Xunit;
-using static Alundra.Tests.ArcChecks;
+using static Alundra.Tests.Arcs.ArcChecks;
 using Alundra.Events;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.r R3-2 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): the scene of the three Murggs in front of Tarn's manor, map 15, as an arc on
@@ -14,7 +14,7 @@ namespace Alundra.Tests;
 /// (<c>C[8] 0x2E [0x80] @890</c>). Without the recycling of the destroyed entities the corpse stays found by the search and the scene never ends.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraTarnMurggArcTests
+public sealed class TarnMurggArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;

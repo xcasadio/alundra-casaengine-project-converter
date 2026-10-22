@@ -12,7 +12,7 @@ using Alundra.Cells;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E14.a1b T5 (docs/plan-e14-ia-native.md section 1.3b, "Arc G116"): the grate of map 116, with the natives live. The two Beannoids of the records 0 and 1 (A1, C1, D1 and E1 of the registry and of the host) are killed with the sword by a
@@ -22,12 +22,12 @@ namespace Alundra.Tests;
 /// differs from the oracle's). The arc runs outside the generator's collection: it reads no number of it.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraBeannoideGrateArcTests
+public sealed class BeannoideGrateArcTests
 {
     private const int C = ScriptHelper.ProgramCTick;
     private readonly ITestOutputHelper _output;
 
-    public AlundraBeannoideGrateArcTests(ITestOutputHelper output) => _output = output;
+    public BeannoideGrateArcTests(ITestOutputHelper output) => _output = output;
 
     private sealed class Sample
     {

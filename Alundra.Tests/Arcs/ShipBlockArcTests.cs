@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using static Alundra.Tests.ArcChecks;
+using static Alundra.Tests.Arcs.ArcChecks;
 using Alundra.Events;
 using Alundra.Cameras;
 using Alundra.Transitions;
@@ -12,7 +12,7 @@ using Alundra.Tests.Support;
 using Alundra.Tests.Rendering.Effects;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.d D0/D7 (docs/plan-e19-opcodes.md §1.2g, §1.3): arc A6 on the real exported map 391 (Ship Klark, night, break, Event), with
@@ -28,7 +28,7 @@ namespace Alundra.Tests;
 /// </para>
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraShipBlockArcTests
+public sealed class ShipBlockArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;

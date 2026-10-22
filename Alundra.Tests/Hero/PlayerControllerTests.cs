@@ -7,6 +7,7 @@ using CasaEngine.Framework.Input;
 using Xunit;
 using Alundra.Hero;
 using Alundra.Maps;
+using Alundra.Tests.Arcs;
 
 namespace Alundra.Tests.Hero;
 

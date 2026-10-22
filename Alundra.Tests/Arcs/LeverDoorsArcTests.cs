@@ -9,7 +9,7 @@ using Alundra.Events;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E20.c1b-2 L4 (docs/plan-e20-heros.md section 1.7, arc E): map 44 (Wendels Nightmare), the six levers (records 7 to 12) and the seven doors (records 0
@@ -20,7 +20,7 @@ namespace Alundra.Tests;
 /// doors) are expectations too.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraLeverDoorsArcTests
+public sealed class LeverDoorsArcTests
 {
     private const int C = ScriptHelper.ProgramCTick;
     private const int D = ScriptHelper.ProgramDTouch;
@@ -42,7 +42,7 @@ public sealed class AlundraLeverDoorsArcTests
 
     private readonly ITestOutputHelper _output;
 
-    public AlundraLeverDoorsArcTests(ITestOutputHelper output) => _output = output;
+    public LeverDoorsArcTests(ITestOutputHelper output) => _output = output;
 
     private static ArcRun Build(string name, int[] flags) =>
         new(LeverArcs.Spec(name, LeverArcs.Zone44, LeverArcs.World44, flags, 120, 440, 8, 24, 3000));

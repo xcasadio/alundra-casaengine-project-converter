@@ -9,7 +9,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Tests.Events;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// Runs the real map 389 ("Ship Klark (beginning)") Load programs end to end, off the converter's own

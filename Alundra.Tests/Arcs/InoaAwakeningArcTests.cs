@@ -3,14 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using static Alundra.Tests.ArcChecks;
+using static Alundra.Tests.Arcs.ArcChecks;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Dialogues;
 using Alundra.Tests.Support;
 using Alundra.Tests.Audio;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Arcs;
 
 /// <summary>
 /// E19.d D0/D7 (docs/plan-e19-opcodes.md §1.2g, §1.3): arc A8 on the real exported map 163 (Inoa, inner), with the export's real
@@ -27,7 +27,7 @@ namespace Alundra.Tests;
 /// </para>
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
-public sealed class AlundraInoaAwakeningArcTests
+public sealed class InoaAwakeningArcTests
 {
     private const int B = ScriptHelper.ProgramBMap;
     private const int C = ScriptHelper.ProgramCTick;
