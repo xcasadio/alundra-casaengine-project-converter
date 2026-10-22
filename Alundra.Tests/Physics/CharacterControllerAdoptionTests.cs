@@ -147,7 +147,7 @@ public class CharacterControllerAdoptionTests
         }
     }
 
-    /// <summary>Same shape as AlundraEntityLogicalRenderPoseTests own FakeScriptHost -
+    /// <summary>Same shape as EntityLogicalRenderPoseTests own FakeScriptHost -
     /// <see cref="PlayerController"/> null means <see cref="EntityScriptProxy.Update"/> own
     /// player branch (MovePlayer/Tick) never runs, so a direct <see cref="CharacterControllerComponent.Move"/>
     /// call from the test is the only source of horizontal motion, matching how E3.c own acceptance
@@ -164,8 +164,8 @@ public class CharacterControllerAdoptionTests
         {
         }
 
-        // Bug fix (AlundraLogicClock's own class doc): the player branch this file exercises never reads
-        // this (out of this fix's scope - the player's own AlundraPlayerManager.Tick keeps its own
+        // Bug fix (LogicClock's own class doc): the player branch this file exercises never reads
+        // this (out of this fix's scope - the player's own PlayerManager.Tick keeps its own
         // pre-existing 50 Hz accumulator, untouched). Auto-closes its own clock each call (own frame per
         // call), same pattern as every other FakeScriptHost in this test project.
         private readonly LogicClock _logicClock = new();
@@ -197,16 +197,16 @@ public class CharacterControllerAdoptionTests
         Assert.Equal(32f, settings.Height);
         Assert.Equal(0.5f, settings.SkinWidth);
         Assert.Equal(4f, settings.GroundSnapDistance);
-        // Exported as 0 - runtime-overridden by AlundraWorldProxy.AdoptPlayerPawn (see next test).
+        // Exported as 0 - runtime-overridden by WorldProxy.AdoptPlayerPawn (see next test).
         Assert.Equal(0f, settings.Gravity);
         Assert.Equal(0f, settings.MaxFallSpeed);
         Assert.Equal(0u, settings.WalkabilityMask);
     }
 
     // -----------------------------------------------------------------------------------------
-    // Overrides (headless equivalent of AlundraWorldProxy.AdoptPlayerPawn own override block -
-    // AdoptPlayerPawn itself needs a live World.PlayerControllers/AlundraPlayerController possessing a
-    // pawn, which this headless harness cannot construct any more than AlundraPlayerControllerTests can
+    // Overrides (headless equivalent of WorldProxy.AdoptPlayerPawn own override block -
+    // AdoptPlayerPawn itself needs a live World.PlayerControllers/HeroController possessing a
+    // pawn, which this headless harness cannot construct any more than PlayerControllerTests can
     // build a live BuildPadState - see that file own doc).
     // -----------------------------------------------------------------------------------------
 
@@ -231,7 +231,7 @@ public class CharacterControllerAdoptionTests
         var settings = LoadHeroControllerSettings(projectRoot)!;
         var flags = EntityFlags.ClassB; // nonzero, exercises WalkabilityMaskFor's real folding.
 
-        // Same formula as AlundraWorldProxy.AdoptPlayerPawn own override block, applied AFTER Flags -
+        // Same formula as WorldProxy.AdoptPlayerPawn own override block, applied AFTER Flags -
         // docs/plan-e3-collisions.md "DLL - adoption".
         settings.Gravity = mapGravity * 256f / 65536f * 2500f;
         settings.MaxFallSpeed = mapZViscosity * 256f / 65536f * 50f;

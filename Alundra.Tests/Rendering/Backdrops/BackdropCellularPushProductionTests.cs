@@ -44,7 +44,7 @@ public sealed class BackdropCellularPushProductionTests : IDisposable
     }
 
     /// <summary>
-    /// The ONE production push site (<c>AlundraWorldProxy.Update</c> -&gt;
+    /// The ONE production push site (<c>WorldProxy.Update</c> -&gt;
     /// <see cref="BackdropStage.PushFrame"/>) feeds a real <see cref="CellularLayerService"/>
     /// exactly like it already feeds a real <see cref="ScrollingLayerService"/> - same
     /// <c>FramesPushed</c>/<c>PendingTicks</c> progression on both, same camera target, proving there is

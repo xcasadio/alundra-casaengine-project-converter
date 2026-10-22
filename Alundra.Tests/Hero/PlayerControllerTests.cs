@@ -43,7 +43,7 @@ public class PlayerControllerTests
         "MoveUp", "MoveDown", "MoveLeft", "MoveRight",
         // Left stick (user report, 2026-08-26: the stick moved nothing because only the D-pad was bound).
         // Four SEPARATE analog actions, because an InputMapping is either digital or analog and never
-        // both - they alias onto the same four PSX bits in AlundraPlayerController.ActionBits.
+        // both - they alias onto the same four PSX bits in HeroController.ActionBits.
         "MoveUpStick", "MoveDownStick", "MoveRightStick", "MoveLeftStick",
         "Jump", "Attack", "UseItem", "Sprint", "Menu",
         // E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-11): the shoulder buttons and Select.

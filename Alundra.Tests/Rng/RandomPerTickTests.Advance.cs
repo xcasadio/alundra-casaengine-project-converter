@@ -178,7 +178,7 @@ public sealed partial class RandomPerTickTests
     // ---------------------------------------------------------------------------------------------------------------------
 
     /// <summary>
-    /// The steel sword held 90 ticks on the real world of map 14 (<see cref="HitArena"/>, the scenario of <c>AlundraHeroChargeArenaTests</c>): the hold sparks of the cadence of 4 (measured: ticks 83, 87 and 91 of the scenario, the
+    /// The steel sword held 90 ticks on the real world of map 14 (<see cref="HitArena"/>, the scenario of <c>HeroChargeArenaTests</c>): the hold sparks of the cadence of 4 (measured: ticks 83, 87 and 91 of the scenario, the
     /// last one on the tick of the release, which also creates the burst of 16 effects, no number drawn) each draw two numbers when the stage applies their operation, at their tick, BEFORE the advance of that tick (the advance ends
     /// the tick). So, from a seed set after the construction, the stream stands after the second draw of the spark of tick T, the k-th, at (T - 1) advances + 2k draws, and at the end of the 96 ticks at 96 advances + 6 draws;
     /// the same in frames of 1, 2 and 3 ticks (the grouping changes neither the order of the draws nor that of the advances).

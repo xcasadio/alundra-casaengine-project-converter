@@ -70,7 +70,7 @@ public sealed class InventoryPortraitWiringTests : IDisposable
             PosZ = 8 << 16,
         };
 
-        // Same direct attach as AlundraInventoryDirectorTests' own world test: a bare headless world never reaches
+        // Same direct attach as InventoryDirectorTests' own world test: a bare headless world never reaches
         // InstallInventorySystems (no TileMap entity).
         var tables = ItemTablesFixture.LoadReal();
         InventoryDirector.Instance.AttachToWorld(worldProxy.GameState, tables, worldProxy.SoundPlayer);

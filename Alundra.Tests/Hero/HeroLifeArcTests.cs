@@ -28,7 +28,7 @@ public sealed class HeroLifeArcTests
     private static ArcSpec Map14(string name) =>
         new("E20c2a-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true);
 
-    /// <summary>A real arrival on the map 179 (the preset of AlundraAnimationImpulseSpawnTests UJ-7): the new-game kit does not run, the inventory is the one the test gives.</summary>
+    /// <summary>A real arrival on the map 179 (the preset of AnimationImpulseSpawnTests UJ-7): the new-game kit does not run, the inventory is the one the test gives.</summary>
     private static ArcSpec Inoa179(string name) =>
         new("E20c2a-" + name, "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 100, RealController: true, Prefabs: true,
             Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0));

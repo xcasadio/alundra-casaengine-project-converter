@@ -50,7 +50,7 @@ public sealed class HudViewModelTests
     };
 
     /// <summary>The sprite of every static glyph, as the screen resolved it before the program
-    /// (<c>AlundraHudScreen.LoadSprites</c> at <c>79c0099</c>), copied here so the view model's own table is checked
+    /// (<c>HudScreen.LoadSprites</c> at <c>79c0099</c>), copied here so the view model's own table is checked
     /// against it rather than against itself.</summary>
     private static string SpriteOf(HudGlyph glyph) => glyph switch
     {

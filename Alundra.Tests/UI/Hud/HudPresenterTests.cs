@@ -33,7 +33,7 @@ namespace Alundra.Tests.UI.Hud;
 public sealed class HudPresenterTests : IDisposable
 {
     // word 0x38 bit 21 -> (0x38 &lt;&lt; 5) + 21 = 1813, mask 0x200000 - "please appear" (same constants
-    // AlundraHudDirectorTests re-derives independently from AlundraGameState's own IndexOf arithmetic).
+    // HudDirectorTests re-derives independently from GameState's own IndexOf arithmetic).
     private const uint ScriptOpenRequestFlag = 1813;
     private const uint ScriptOpenRequestMask = 0x200000;
 
@@ -101,7 +101,7 @@ public sealed class HudPresenterTests : IDisposable
     {
         var expectedY = new[] { -41, -38, -34, -30, -26, -22, -19, -15, -11, -7, -3, 0, 4, 8, 12, 16, 16, 16 };
         const int scale = 3; // arbitrary, non-1 factor - proves the multiplication actually happens.
-        const int bakedBoxY = 0x10; // AlundraHudComposer's own baked UIBoxHud.Y - see AlundraHudPresenter's own doc.
+        const int bakedBoxY = 0x10; // HudComposer's own baked UIBoxHud.Y - see HudPresenter's own doc.
 
         var state = new GameState();
         var director = ArmedOpening(state);
@@ -154,7 +154,7 @@ public sealed class HudPresenterTests : IDisposable
         var view = new RecordingHudView(scale);
         var presenter = new HudPresenter(director, view);
 
-        for (var i = 0; i < 18; i++) // reach Displayed(1) at Y = 16, same setup as AlundraHudDirectorTests's own.
+        for (var i = 0; i < 18; i++) // reach Displayed(1) at Y = 16, same setup as HudDirectorTests's own.
         {
             director.Tick();
             presenter.Tick();
@@ -163,7 +163,7 @@ public sealed class HudPresenterTests : IDisposable
         Assert.Equal(HudDirector.HudPhase.Displayed, director.Phase);
         view.TranslationCalls.Clear(); // isolate the CLOSING sequence only.
 
-        // Same simulated external latch clear AlundraHudDirectorTests's own closing test uses.
+        // Same simulated external latch clear HudDirectorTests's own closing test uses.
         state.SetFlag(PersistentLatchFlag, ~PersistentLatchMask);
 
         for (var i = 0; i < 18; i++)
@@ -185,7 +185,7 @@ public sealed class HudPresenterTests : IDisposable
 
     // -----------------------------------------------------------------------------------------
     // Mission item 4.b - image indices over 40 ticks, as the composer actually receives them: the
-    // presenter's every pushed tile list must equal what AlundraHudComposer.Compose itself returns for
+    // presenter's every pushed tile list must equal what HudComposer.Compose itself returns for
     // the director's CURRENT (already-ticked) state, on EVERY one of the 40 ticks - a stale or
     // out-of-order push would desync this pass-through and fail immediately.
     // -----------------------------------------------------------------------------------------
@@ -218,7 +218,7 @@ public sealed class HudPresenterTests : IDisposable
         }
 
         // Targeted check tying the pass-through above to §1.4's own magic-pip cadence (1 image / 10,
-        // cycle of 4): tick index 18 -> FrameCounter 19, phase (19/10)%4 == 1 (AlundraHudDirectorTests's
+        // cycle of 4): tick index 18 -> FrameCounter 19, phase (19/10)%4 == 1 (HudDirectorTests's
         // own already-proven MagicPipFrame_AdvancesOnce_EveryTenActiveTicks_CycleOfFour_Unison test), read
         // here through the tiles the PRESENTER pushed rather than the bare director field.
         Assert.Contains(view.TileCalls[18], t => t.Glyph == HudGlyph.MagicPipFull1);
@@ -363,8 +363,8 @@ public sealed class HudPresenterTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------
-    // Mission item 4.c - "la jauge continue de se rafraichir alors que AlundraDialogueDirector.Instance
-    // est ouvert", driven through the REAL AlundraWorldProxy.Update per-tick loop (the patron of C1's own
+    // Mission item 4.c - "la jauge continue de se rafraichir alors que DialogueDirector.Instance
+    // est ouvert", driven through the REAL WorldProxy.Update per-tick loop (the patron of C1's own
     // Update_AdvancesTheHudDirector_EvenWhileAModalDialogueIsOpen), never through a manually-ticked
     // presenter - so a regression that re-gates the presenter behind a screen-stack Update would be caught.
     // -----------------------------------------------------------------------------------------
@@ -377,7 +377,7 @@ public sealed class HudPresenterTests : IDisposable
 
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // "TestWorld" has no tileMap entity - early-returns before the
-                                           // real install, same seam AlundraHudDirectorTests documents.
+                                           // real install, same seam HudDirectorTests documents.
 
         DialogueDirector.Instance.AttachToWorld(new DialogueService(), proxy.GameState);
         HudDirector.Instance.AttachToWorld(proxy.GameState);
@@ -394,8 +394,8 @@ public sealed class HudPresenterTests : IDisposable
 
         proxy.GameState.AddFlag(ScriptOpenRequestFlag, ScriptOpenRequestMask); // arm the HUD open.
 
-        // controlMode 0 = MenuOpen (AlundraGameState.PlayerControlBits.MenuOpen) - the strictest freeze,
-        // same choice as AlundraHudDirectorTests's own Update_AdvancesTheHudDirector_... test.
+        // controlMode 0 = MenuOpen (GameState.PlayerControlBits.MenuOpen) - the strictest freeze,
+        // same choice as HudDirectorTests's own Update_AdvancesTheHudDirector_... test.
         dialogue.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         Assert.True(dialogue.IsOpen);
         Assert.Empty(view.VisibleCalls);
@@ -404,7 +404,7 @@ public sealed class HudPresenterTests : IDisposable
 
         Assert.True(dialogue.IsOpen); // unaffected either way - not this test's own point.
         Assert.Single(view.VisibleCalls);
-        Assert.True(view.VisibleCalls[0]); // AlundraHudDirector.Instance.IsDrawn became true this same tick (Opening).
+        Assert.True(view.VisibleCalls[0]); // HudDirector.Instance.IsDrawn became true this same tick (Opening).
         Assert.Single(view.TranslationCalls);
         Assert.Single(view.TileCalls);
 

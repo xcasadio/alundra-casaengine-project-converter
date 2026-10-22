@@ -27,7 +27,7 @@ namespace Alundra.Tests.Entities;
 /// The player's own equivalent write (<see cref="WorldProxy"/>'s private <c>AdoptPlayerPawn</c>, at
 /// spawn, and <see cref="EntityScriptProxy.UpdateFloorHeight"/>, per tick) is covered instead by
 /// <see cref="FloorHeightTests"/>'s own production-call-site test (per-tick) - <c>AdoptPlayerPawn</c>
-/// itself is not headless-reachable in this test suite (needs a live <c>AlundraPlayerController</c> pawn -
+/// itself is not headless-reachable in this test suite (needs a live <c>HeroController</c> pawn -
 /// see <see cref="WorldProxyUpdateCharacterizationTests"/>'s own documented limitation), so its
 /// spawn-time write is verified by code inspection only, same as every other of its fields.
 ///
@@ -124,7 +124,7 @@ public class TerrainHeightTests
 
     // -----------------------------------------------------------------------------------------
     // Per tick (immediateAtSpawn: false) - the NPC per-tick loop's own call site
-    // (AlundraEntityScriptProxy.Update, ~:1001), which runs unconditionally on Controller for every
+    // (EntityScriptProxy.Update, ~:1001), which runs unconditionally on Controller for every
     // non-player entity.
     // -----------------------------------------------------------------------------------------
 
@@ -140,7 +140,7 @@ public class TerrainHeightTests
         proxy.EvaluateEntitySupport(Array.Empty<EntityScriptProxy>());
         Assert.Equal((int)Math.Round(50.0 * 65536.0), proxy.TerrainHeight);
 
-        // A later tick's own final position (moved between ticks, e.g. by AlundraScriptedMotion) is what
+        // A later tick's own final position (moved between ticks, e.g. by ScriptedMotion) is what
         // the NEXT EvaluateEntitySupport call samples - proving this is a live per-tick write, not a
         // spawn-only one.
         proxy.PosX = 80 << 16;

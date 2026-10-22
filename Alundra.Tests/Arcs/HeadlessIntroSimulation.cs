@@ -51,7 +51,7 @@ namespace Alundra.Tests.Arcs;
 /// loop in engine order, then <see cref="WorldProxy.RunPendingEventTriggers"/> for decision D3's
 /// catch-up re-scan), then <c>UpdateDestroyedEntities</c>/<c>Counters</c>/<c>Lists</c>/<c>Animation</c>,
 /// <c>PhysicsEngine.UpdateEntitiesPhysics</c> (E4.e: horizontal integration now runs per-entity inside
-/// <see cref="EntityScriptProxy.Update"/> via the production <c>AlundraScriptedMotion.TickScriptedNpc</c>,
+/// <see cref="EntityScriptProxy.Update"/> via the production <c>ScriptedMotion.TickScriptedNpc</c>,
 /// vertical gravity/ground-clamp now runs here via <see cref="RunVerticalPhysicsPass"/>, both flat-ground
 /// and no-entity-collision only - see that method's own doc for the exact scope), <c>UpdateActiveEffects</c>,
 /// <c>UpdateBalanceRecords</c>, <c>UpdateVisibleEntitiesZSort</c>.</description></item>
@@ -78,7 +78,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
 
     // D-E7-11 (docs/plan-e7-mutation-tuiles.md): same tile-size constants every TileX/TileY derivation in
     // this DLL already carries its own private copy of (EntityRecordMapper.cs:107-108,
-    // AlundraScriptedMotion.cs:60-61, AlundraWorldProxy.cs:55-56).
+    // ScriptedMotion.cs:60-61, WorldProxy.cs:55-56).
     private const int TileWidthPx = 24;
     private const int TileHeightPx = 16;
 
@@ -111,19 +111,19 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         // comparing every Dispatch case label with this set: they are now equal.
         // E16.a (docs/plan-e16-etat-partie.md): 0x32/0x34/0x35 (T1), 0x2C/0x3E/0x6E/0xAD/0xB8 (T2), 0x8D
         // (T3) and 0x78/0x79/0x7B/0x7C/0x7D/0x7E/0x7F/0x80/0x81 (T4, D-E16-21 - the "stored choice param"
-        // family) newly implemented (AlundraEventProgramRunner.Dispatch) - added here together since none
+        // family) newly implemented (EventProgramRunner.Dispatch) - added here together since none
         // of T1-T3 had touched this hand-maintained mirror yet.
         // E5.a: 0x67/0x68/0x69 (camera follow/stop/forced look-at) newly implemented - the six real
         // map-389 0x67 occurrences (docs/intro-programs-389.txt) now trace as [implemented].
         // E4.e correction: 0x1E/0x1F (Walk / Walk with collision) were already ported by E4.d
-        // (AlundraEventProgramRunner.Dispatch cases 0x1E/0x1F) but were missing here, so the static
+        // (EventProgramRunner.Dispatch cases 0x1E/0x1F) but were missing here, so the static
         // disassembly annex kept tagging them [NOT IMPLEMENTED] a whole tranche after they stopped being
         // so - a stale label with no effect on the trace itself (the real EventTraceKind the runner
         // reports was always correct), fixed in passing.
-        // E7.a (docs/plan-e7-mutation-tuiles.md): 0x54/0x55/0x85 newly implemented (AlundraCellStore).
+        // E7.a (docs/plan-e7-mutation-tuiles.md): 0x54/0x55/0x85 newly implemented (CellStore).
         // 0x33 correction: this HashSet is the SAME "provenance" the plan asked E7.a to establish for the
         // dump's [NOT IMPLEMENTED]/[implemented] tag (BuildProgramsDisassemblyText below, NOT
-        // AlundraEventProgramRunner.Dispatch, which has had a 0x33 case since before E7 - see
+        // EventProgramRunner.Dispatch, which has had a 0x33 case since before E7 - see
         // Script_51_033/CheckFlagsOn) - it is a hand-maintained mirror of Dispatch's real opcode coverage,
         // independent of it by construction, exactly the same class of staleness the 0x1E/0x1F note above
         // already documents. 0x33 was simply never added here when its Dispatch case landed - fixed in
@@ -131,7 +131,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         // already touches (not a re-litigation of any E7 decision - 0x33 itself is untouched, only its
         // label in this disassembly annex).
         // E7.c (docs/plan-e7-mutation-tuiles.md): 0x3B (Check player in area) and 0x2F (Check pad
-        // buttons, D-E7-7 relabel) newly implemented (AlundraEventProgramRunner.Dispatch cases 0x3B/0x2F)
+        // buttons, D-E7-7 relabel) newly implemented (EventProgramRunner.Dispatch cases 0x3B/0x2F)
         // - see PessimisticPredicateOpcodes/OptimisticPredicateOpcodes' own updated docs above for why
         // this changes only labels, never a Result, on map 389.
         // E19.a (docs/plan-e19-opcodes.md T2): 0x42/0x43 (logic entity) newly implemented; map 389 has no
@@ -148,21 +148,21 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     private readonly TraceAwareEntityRunner _wrapperRunner;
 
     // E4.e simulated kinematics (docs/plan-e4-deplacement-scripte.md, decision E4-1): _catalog feeds
-    // AlundraEntitySpawnFactory.ApplySpawnInitialization (real AnimSetsByAnim/Flags/Width/Height/Depth/ModX/Y/Z off
+    // EntitySpawnFactory.ApplySpawnInitialization (real AnimSetsByAnim/Flags/Width/Height/Depth/ModX/Y/Z off
     // the real Data/sprite-records.json - see BuildInitialState/SpawnEntityByRecordId, same seam
-    // AlundraNpcCharacterControllerMoverTests' own end-to-end spawn test already uses headless);
+    // NpcCharacterControllerMoverTests' own end-to-end spawn test already uses headless);
     // _tileMapData/_groundField/_mapGravityRaw/_mapZViscosityRaw feed RunVerticalPhysicsPass's own ground
-    // probe and gravity integration (real AlundraCellsCollisionField/Gravity/ZViscosity of map 389, not
+    // probe and gravity integration (real CellsCollisionField/Gravity/ZViscosity of map 389, not
     // synthetic data). _groundField null means "AlundraCells missing or malformed" (degraded mode, already
-    // warned by AlundraCellsCollisionField.TryCreate itself) - RunVerticalPhysicsPass is then a no-op.
+    // warned by CellsCollisionField.TryCreate itself) - RunVerticalPhysicsPass is then a no-op.
     private SpriteRecordCatalog? _catalog;
     private TileMapData? _tileMapData;
     private CellsCollisionField? _groundField;
     private int _mapGravityRaw;
     private int _mapZViscosityRaw;
 
-    // E7.a (docs/plan-e7-mutation-tuiles.md): built from the SAME AlundraCellsRecords instance
-    // _groundField above aliases its own arrays from (AlundraCellsCollisionField.TryCreate's 4-out
+    // E7.a (docs/plan-e7-mutation-tuiles.md): built from the SAME CellsRecords instance
+    // _groundField above aliases its own arrays from (CellsCollisionField.TryCreate's 4-out
     // overload) - see CellMutator's own doc for why this matters. _installCellMutator gates
     // CellMutator's returned value only (never whether the store itself gets built), so the
     // neutralization twin (acceptance 3) still builds a real, working store - it just never hands it to
@@ -172,7 +172,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     private CellStore? _cellStore;
 
     // E11.a (docs/plan-e11-audio.md): T1's own "production call site" fake - this harness IMPLEMENTS
-    // IAlundraSoundPlayer itself (rather than a separate class) since it already tracks its own Frame
+    // ISoundPlayer itself (rather than a separate class) since it already tracks its own Frame
     // property, so PlaySfx just records (Frame, sfxId) directly - see SoundRequests' own doc.
     // _installSoundPlayer gates only IEntityWorldContext.SoundPlayer's returned value, same "install a
     // real thing but only sometimes hand it to the interpreter" shape as _installCellMutator above (T2's
@@ -181,10 +181,10 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     private readonly List<(int Frame, int SfxId)> _soundRequests = new();
 
     // E12.a (docs/plan-e12-dialogues.md): unlike every OTHER _install* flag above, this one defaults to
-    // FALSE - AlundraDialogueDirector.Instance is a SESSION-scoped singleton (not a per-harness fake like
-    // IAlundraSoundPlayer above), so wiring it by default would leak across every OTHER pre-existing test
+    // FALSE - DialogueDirector.Instance is a SESSION-scoped singleton (not a per-harness fake like
+    // ISoundPlayer above), so wiring it by default would leak across every OTHER pre-existing test
     // built on this harness that never anticipated a dialogue system being present. Only
-    // AlundraDialogueOpcodesProductionTests (T1) passes true, and resets/attaches the singleton itself
+    // DialogueOpcodesProductionTests (T1) passes true, and resets/attaches the singleton itself
     // before driving frames - see OptimisticPredicateOpcodes' own updated doc (item ⑦) for why removing
     // 0x39/0x44/0x51 from that set is still behaviourally inert for every OTHER test.
     private readonly bool _installDialogueDirector;
@@ -193,7 +193,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// rising edge, derived from <c>LastPadState.ButtonsHold</c> the way <see cref="TickPad"/> derives it in production.</summary>
     private readonly TickPad _dialoguePadMirror = new();
 
-    // Includes the player (index 0) - mirrors AlundraWorldProxy's own _spawnedEntities, which also holds
+    // Includes the player (index 0) - mirrors WorldProxy's own _spawnedEntities, which also holds
     // the player (SpawnPlayerEntity adds it before any record) - see IEntityWorldContext.SpawnedEntities's
     // own doc for why that matters (a search opcode must be able to find the player too).
     private readonly List<EntityScriptProxy> _spawnedEntities = new();
@@ -268,7 +268,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         _runner = new EventProgramRunner(document, _gameState, this)
         {
             TraceSink = OnOpcodeTraced,
-            // Safety valve, diagnostic only (see AlundraEventProgramRunner.MaxIterationsPerCall's own
+            // Safety valve, diagnostic only (see EventProgramRunner.MaxIterationsPerCall's own
             // doc): a B/C program that loops on an unimplemented SUSPENDING opcode (e.g. 0x35/0x36
             // wait-flag - skipped by this V1 interpreter instead of suspending, see its class doc) would
             // otherwise spin forever inside one RunOneScriptCall, since this harness's own frame-level
@@ -277,7 +277,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             MaxIterationsPerCall = 20000,
             // E4.e: no more HarnessForceImmediateWalkCompletion / kind-Implemented forcing for 0x1E/0x1F/
             // 0x70/0x07 - this harness now drives real per-entity kinematics (RunVerticalPhysicsPass below
-            // + the production AlundraScriptedMotion.TickScriptedNpc horizontal integration every entity's
+            // + the production ScriptedMotion.TickScriptedNpc horizontal integration every entity's
             // own Update already runs), so these opcodes suspend/resolve for real, exactly like production.
         };
         _wrapperRunner = new TraceAwareEntityRunner(this);
@@ -351,7 +351,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         for (Frame = 1; Frame <= frameCount; Frame++)
         {
             RunFrame();
-            // Mirrors AlundraWorldProxy.Update's own per-tick dialogue pass (the F1 fix: the box's
+            // Mirrors WorldProxy.Update's own per-tick dialogue pass (the F1 fix: the box's
             // advance/close belongs to the frame loop, not to opcode 0x39) - the harness IS the frame
             // owner here, exactly as it mirrors the other world-level passes. One tick per simulated
             // frame (the harness runs one logic tick per frame, per its own class doc).
@@ -379,9 +379,9 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     private void BuildInitialState()
     {
         // New Game hero spawn (GameEngine.cs ResetEntityState / map-entry block, port of
-        // AlundraWorldProxy.SpawnPlayerEntity's own logical-field half - this harness has no engine
+        // WorldProxy.SpawnPlayerEntity's own logical-field half - this harness has no engine
         // AssetCatalog/prefab to clone, so it builds the proxy directly): tile (33,59,0), anim 0x36
-        // ("idle"), direction 0 - AlundraGameState's own New Game constants. Position is the tile-centre
+        // ("idle"), direction 0 - GameState's own New Game constants. Position is the tile-centre
         // 16.16 fixed-point form (TileWidth=24, TileHeight=16 - see EntityRecordMapper's own class doc for
         // the same constants).
         _player = new EntityScriptProxy
@@ -406,7 +406,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         _player.ScriptHost = this;
         _player.Initialize(playerOwnerEntity); // gives Owner a value so Update's SyncAnimation/SyncTransform are no-ops instead of throwing
         _entityNames[_player] = "PlayerEntity";
-        _spawnedEntities.Add(_player); // mirrors AlundraWorldProxy's own _spawnedEntities, which also holds the player
+        _spawnedEntities.Add(_player); // mirrors WorldProxy's own _spawnedEntities, which also holds the player
 
         var tileMapFile = Directory.GetFiles(
             Path.Combine(_projectRoot, "Maps"), $"{_worldName}.tileMap", SearchOption.AllDirectories).FirstOrDefault();
@@ -421,18 +421,18 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         _tileMapData = tileMapData;
 
         // E4.e (docs/plan-e4-deplacement-scripte.md): the real catalog/ground field/gravity constants of
-        // map 389, same seam AlundraEntitySpawnFactory.ApplySpawnInitialization/ResolveMapGravitySettings already
-        // use in production and AlundraNpcCharacterControllerMoverTests' own end-to-end spawn test already
+        // map 389, same seam EntitySpawnFactory.ApplySpawnInitialization/ResolveMapGravitySettings already
+        // use in production and NpcCharacterControllerMoverTests' own end-to-end spawn test already
         // exercises headless (new SpriteRecordCatalog(projectRoot), reading the real Data/sprite-records.json).
-        // AlundraCellsCollisionField.TryCreate logs its own warning and leaves _groundField null on any
+        // CellsCollisionField.TryCreate logs its own warning and leaves _groundField null on any
         // failure (missing/malformed AlundraCells, size mismatch) - RunVerticalPhysicsPass then no-ops,
         // same degraded-mode shape as every other missing-system fallback in this harness.
         _catalog = new SpriteRecordCatalog(_projectRoot);
 
-        // E7.a: the 4-out overload hands back the SAME parsed AlundraCellsRecords _groundField itself
-        // aliases its arrays from, so AlundraCellStore's mutations (0x54/0x55/0x85, via CellMutator below)
+        // E7.a: the 4-out overload hands back the SAME parsed CellsRecords _groundField itself
+        // aliases its arrays from, so CellStore's mutations (0x54/0x55/0x85, via CellMutator below)
         // are instantly visible to _groundField's own TrySampleGround/SampleGroundProperty/
-        // SampleRawCellHeight - no separate parse, no copy (see AlundraCellStore's own class doc).
+        // SampleRawCellHeight - no separate parse, no copy (see CellStore's own class doc).
         CellsCollisionField.TryCreate(tileMapData, _worldName, out _groundField, out var cellRecords);
         if (cellRecords != null)
         {
@@ -448,9 +448,9 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         var entitiesLayer = tileMapData.ObjectLayers.First(l => l.Name == "Entities");
         var mapEventsLayer = tileMapData.ObjectLayers.First(l => l.Name == "MapEvents");
 
-        // InitializeMapEvents (GameEngine.cs:476-583), reusing AlundraWorldProxy.BuildMapEvents' own
+        // InitializeMapEvents (GameEngine.cs:476-583), reusing WorldProxy.BuildMapEvents' own
         // record shape by hand (that method is private and takes a live World-resolved layer type - this
-        // harness has no World): one AlundraMapEvent per record with EventCodesBIndex != 0, in record
+        // harness has no World): one MapEvent per record with EventCodesBIndex != 0, in record
         // order, Entity=PlayerEntity, fresh EventData.
         foreach (var record in mapEventsLayer.Objects)
         {
@@ -475,13 +475,13 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             _referencedBMap.Add(programBMap & 0x7F);
         }
 
-        // Entity spawn: AlundraEntitySpawnFactory.ApplyRecord (EntityRecordMapper.Map + Status=Loaded +
+        // Entity spawn: EntitySpawnFactory.ApplyRecord (EntityRecordMapper.Map + Status=Loaded +
         // EventTrigger=ProgramUnknown, reused verbatim), gated the same way GameEngine.SpawnEntity(null, i, 0)
         // gates InitializeEntitySlots' own map-load spawn pass (GameEngine.cs:684-717, notCheckSpawnZone=0):
         // the player-tile spawn-zone box (XMin/XMax/YMin/YMax vs the player's OWN tile) AND
-        // AlundraEntitySpawnFactory.ShouldSpawnRecord's own two gates (IsEnabled==0, (SpriteDirection & 0x40) == 0) -
-        // now the SAME production overload AlundraWorldProxy.InitializeWithWorld itself calls once a player
-        // exists (AlundraEntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone, playerTileX, playerTileY,
+        // EntitySpawnFactory.ShouldSpawnRecord's own two gates (IsEnabled==0, (SpriteDirection & 0x40) == 0) -
+        // now the SAME production overload WorldProxy.InitializeWithWorld itself calls once a player
+        // exists (EntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone, playerTileX, playerTileY,
         // out reason)), reused here instead of this harness's own former hand-rolled box check. On map 389
         // this drops the load-time spawn count from 19 to 14 (records 7/8/9 have SpriteDirection 128,
         // records 10/18 have SpriteDirection 0 - all four values have bit 0x40 clear).
@@ -500,20 +500,20 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
                 continue;
             }
 
-            // E4.e: AlundraEntitySpawnFactory.CreateBareEntityFromRecord instead of hand-wiring a proxy - this is
+            // E4.e: EntitySpawnFactory.CreateBareEntityFromRecord instead of hand-wiring a proxy - this is
             // the SAME production seam CreateEntityFromRecord's own bare-fallback path uses (Entity with
             // GameplayProxyClassName -> entity.Initialize(), which resolves the proxy via ElementFactory
             // AND wires entity.GameplayProxy back to it - Entity.GameplayProxy has no public setter, so a
             // hand-built proxy/Entity pair the harness used to wire itself left entity.GameplayProxy null,
-            // which made AlundraWorldProxy.SyncAnimation(Owner) - called every frame from this proxy's own
+            // which made WorldProxy.SyncAnimation(Owner) - called every frame from this proxy's own
             // Update - a silent no-op: CurrentAnimationId never advanced off its spawn-time bit-complement,
-            // so AlundraScriptedMotion's own hasAnimSet lookup (keyed off CurrentAnimationId) always missed.
+            // so ScriptedMotion's own hasAnimSet lookup (keyed off CurrentAnimationId) always missed.
             // A latent bug invisible before E4.e (nothing depended on CurrentAnimationId actually changing
             // while every entity stood still), found via a real 0x1F walk that suspended forever. Real
             // Flags/AnimSetsByAnim/header body box (Width/Height/Depth/ModX/Y/Z) come along for free from
             // ApplySpawnInitialization, same as before - see this method's own doc, above, on _catalog.
             // Controller/RenderProjection stay null (the bare entity carries no components), which is
-            // exactly the "bare-fallback" case AlundraScriptedMotion.RunOneKinematicTick's own
+            // exactly the "bare-fallback" case ScriptedMotion.RunOneKinematicTick's own
             // Controller-null branch and RunVerticalPhysicsPass below are built to drive directly.
             var entity = EntitySpawnFactory.CreateBareEntityFromRecord(record, _catalog, tileMapData: tileMapData);
             var proxy = (EntityScriptProxy)entity.GameplayProxy!;
@@ -525,7 +525,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             RegisterReferencedPrograms(proxy);
 
             // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): ONE support evaluation right at
-            // spawn, same as production's own AlundraWorldProxy spawn loop - platform records (0-5) are
+            // spawn, same as production's own WorldProxy spawn loop - platform records (0-5) are
             // already in _spawnedEntities by the time a rider record (11+) is processed, in this SAME
             // sequential loop, over the SAME record order verified against the real export.
             EntitySupport.BuildCollidables(_spawnedEntities, _collidables);
@@ -534,14 +534,14 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
 
         // E15.c T5/T7 (docs/plan-e15-yarn.md): opcode 0x0D/0x5C's own text resolution (both the real
         // dispatch AND this harness's own TryResolveDialogText trace annotation, T7) goes through the
-        // REAL AlundraEventProgramRunner.MapDialogueAsset/SharedDialogueAsset seam - production wiring is
-        // AlundraWorldProxy.InitializeWithWorld's own InstallDialogueAssets (AssetCatalog + the game's
+        // REAL EventProgramRunner.MapDialogueAsset/SharedDialogueAsset seam - production wiring is
+        // WorldProxy.InitializeWithWorld's own InstallDialogueAssets (AssetCatalog + the game's
         // asset manager); this harness has neither, so it loads the SAME compiled `.dialogue` files the
         // real export already wrote next to the map's own directory, directly off disk, with the
         // engine's own loader (no AssetCatalog/AssetContentManager needed for a single known file path).
         // No more best-effort `{world}.strings.json`/`_dialogueStrings` read here (T7 removed it): the
         // degraded path (contract item 8, no director) already plays this SAME asset headless through
-        // AlundraEventProgramRunner.OpenDialog/PlayNodeHeadlessToEnd, so the trace annotation now reads
+        // EventProgramRunner.OpenDialog/PlayNodeHeadlessToEnd, so the trace annotation now reads
         // the identical Yarn text instead of a second, now-nonexistent source.
         _runner.MapDialogueAsset = LoadDialogueAssetBestEffort(
             Directory.GetFiles(Path.Combine(_projectRoot, "Maps"), $"{_worldName}.dialogue", SearchOption.AllDirectories).FirstOrDefault());
@@ -598,7 +598,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     {
         // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): rebuild the shared collidables
         // snapshot BEFORE any entity's own Update runs this frame - fresher than production's own
-        // AlundraWorldProxy (which can only refresh at the END of its own per-frame pass, one frame stale
+        // WorldProxy (which can only refresh at the END of its own per-frame pass, one frame stale
         // for the entity Update loop that runs before it) since this harness fully owns its frame
         // ordering. EntitySupport.UpdateRidingEntities (search 5/6 fidelity) runs off the SAME snapshot.
         EntitySupport.BuildCollidables(_spawnedEntities, _collidables);
@@ -612,22 +612,22 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         // harness-side artifact of reusing the mutable master list directly, not an engine bug (the
         // original never runs a same-frame pick/run pass over an entity spawned mid-pass either -
         // InitializeEntitySlots only picks up a new Loaded entity on ITS OWN next frame's pick phase, see
-        // AlundraEntitySpawnFactory.ApplyRecord's own EventTrigger=ProgramUnknown seeding). A frozen snapshot
+        // EntitySpawnFactory.ApplyRecord's own EventTrigger=ProgramUnknown seeding). A frozen snapshot
         // reproduces that: newly spawned entities join the simulation starting next frame, exactly like
         // the original.
         var entitiesThisFrame = _spawnedEntities.ToList();
 
         RecordSystemOnce("PlayerManager.MovePlayer()", "EntityManager.cs:808 / PlayerManager.cs:17", "player movement/input/physics - no player controller yet (E2's own scope); EntityScriptProxy.Update excludes the player from its own pick/run half, same as the original's own loop starting at slot index 1");
 
-        // Bug fix (AlundraLogicClock's own class doc): this harness's own shared logic clock - advanced
+        // Bug fix (LogicClock's own class doc): this harness's own shared logic clock - advanced
         // here (this call becomes the frame's first caller; every entity's own Update below reads back the
         // SAME cached value) so ticksThisFrame is available for the world-level passes further down too,
         // without needing entitiesThisFrame to be non-empty. At this harness's fixed dt
-        // (AlundraScriptedMotion.FixedTickSeconds exactly, see below) this always yields exactly 1 - see
+        // (ScriptedMotion.FixedTickSeconds exactly, see below) this always yields exactly 1 - see
         // this class' own _logicClock doc.
         var ticksThisFrame = LogicTicksThisFrame(ScriptedMotion.FixedTickSeconds);
 
-        // E4.e: AlundraScriptedMotion.FixedTickSeconds (1/50 s), not 0f - the harness is frame-locked at
+        // E4.e: ScriptedMotion.FixedTickSeconds (1/50 s), not 0f - the harness is frame-locked at
         // 50 Hz (1 frame = 1 tick, matching the original's own fixed physics rate), so this must feed
         // TickScriptedNpc's own accumulator exactly one whole tick's worth of elapsed time every frame;
         // 0f never crosses the accumulator's >= FixedTickSeconds threshold, so RunOneKinematicTick would
@@ -654,7 +654,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             WorldProxy.RunPendingEventTriggers(entitiesThisFrame, _wrapperRunner);
         }
 
-        // Closes this frame's logic-clock memo (see AlundraLogicClock's own class doc) so the NEXT
+        // Closes this frame's logic-clock memo (see LogicClock's own class doc) so the NEXT
         // RunFrame call's own LogicTicksThisFrame call recomputes fresh instead of reading this frame's
         // now-stale cached count.
         _logicClock.CloseFrame();
@@ -695,7 +695,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// <see cref="EntityStatus.Destroyed"/>/<see cref="EntityStatus.FlagToDestroy"/> - a no-op for the
     /// player (whose <see cref="EntityScriptProxy.Flags"/> stays 0, so the gravity branch below
     /// never applies to it, and whose <see cref="EntityScriptProxy.ForceZ"/> never becomes non-zero
-    /// either) and for <see cref="_groundField"/> == null (degraded mode - AlundraCellsCollisionField
+    /// either) and for <see cref="_groundField"/> == null (degraded mode - CellsCollisionField
     /// missing/malformed for this world, already warned by <see cref="CellsCollisionField.TryCreate"/>
     /// itself).
     ///
@@ -704,7 +704,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// <c>ComputeEntityGroundHeight</c> (see <see cref="CellsCollisionField"/>'s own class doc) -
     /// reused here directly against the entity's real header body box
     /// (<see cref="EntityScriptProxy.Width"/>/<c>Height</c>/<c>ModX</c>/<c>ModY</c>, populated by
-    /// <c>AlundraEntitySpawnFactory.ApplySpawnInitialization</c> at spawn - see <see cref="BuildInitialState"/>'s
+    /// <c>EntitySpawnFactory.ApplySpawnInitialization</c> at spawn - see <see cref="BuildInitialState"/>'s
     /// own doc on <see cref="_catalog"/>) rather than an engine <c>CollisionComponent</c> Box fixture (this
     /// harness's proxies carry no engine components at all).
     ///
@@ -814,7 +814,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             // spawn seed (33,59) forever, even after the intro's own two 0x64 calls (offsets 318/327)
             // moved it to its real (18,57) - a mismatch opcode 0x3B's real box tests would have silently
             // computed "just for the wrong reason". Mirrors production's own derivation
-            // (EntityRecordMapper.cs:181-190 / AlundraScriptedMotion.cs:248-249), alongside TileZ below,
+            // (EntityRecordMapper.cs:181-190 / ScriptedMotion.cs:248-249), alongside TileZ below,
             // which this pass already refreshed correctly - see this method's own class doc.
             entity.TileX = (entity.PosX >> 16) / TileWidthPx;
             entity.TileY = (entity.PosY >> 16) / TileHeightPx;
@@ -933,7 +933,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
 
     /// <summary>B1 (docs/plan-e11b-opcodes-audio.md): deliberately a no-op - this harness's own fake is a
     /// plain recorder with NO 64-slot anti-duplicate table of its own (the production table lives in the
-    /// real <see cref="Audio.SoundPlayer"/>, exercised by <c>AlundraWorldProxyAudioInstallationTests</c>
+    /// real <see cref="Audio.SoundPlayer"/>, exercised by <c>WorldProxyAudioInstallationTests</c>
     /// instead - see this DLL's own plan for why duplicating it here would be pointless).</summary>
     public void FlushFrameSounds()
     {
@@ -948,16 +948,16 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// <summary>
     /// Dynamic spawn-by-record-id (opcodes 0x2D ActivateEntity, 0x8A SpawnEntityAtPosition, 0x8B SpawnEntityNextToEntity) - mirrors
     /// GameEngine.SpawnEntity (GameEngine.cs:684-760) called with notCheckSpawnZone=1, i.e. only
-    /// AlundraEntitySpawnFactory.ShouldSpawnRecord's IsEnabled gate still applies (the 0x40 SpriteDirection gate
+    /// EntitySpawnFactory.ShouldSpawnRecord's IsEnabled gate still applies (the 0x40 SpriteDirection gate
     /// and the player-tile spawn-zone box are both skipped, exactly like the original). Builds a fresh
-    /// proxy from the same record BuildInitialState already indexed, via AlundraEntitySpawnFactory.ApplyRecord
+    /// proxy from the same record BuildInitialState already indexed, via EntitySpawnFactory.ApplyRecord
     /// (EntityRecordMapper.Map + Status=Loaded + EventTrigger=ProgramUnknown) the load-time spawn path
     /// also uses, then seeds TargetAnimationId/TargetDirection/CurrentAnimationId/CurrentDirection exactly
-    /// like AlundraWorldProxy's own ApplySpawnInitialization (AlundraWorldProxy.cs:645-654: animationId
+    /// like WorldProxy's own ApplySpawnInitialization (WorldProxy.cs:645-654: animationId
     /// always 0, direction off AnimationTables.CardinalDirectionTable[SpriteDirection &amp; 0x3], Current*
     /// bit-complemented so the next animation sync always fires). Status=Loaded so its own next Update
     /// runs its Load slot (record 18's Load index is 0, so it goes through RunSpriteEvent's native-AI path
-    /// instead - see AlundraEntityScriptProxy.RunPickedEvent's own programIndex==0 branch).
+    /// instead - see EntityScriptProxy.RunPickedEvent's own programIndex==0 branch).
     ///
     /// Deviation: <see cref="EntityScriptProxy.ParentEntity"/> is left null - it is a live
     /// CasaEngine <c>Entity</c> reference and this harness's proxies are never wrapped in one (no engine
@@ -975,7 +975,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             return null;
         }
 
-        // E4.e: AlundraEntitySpawnFactory.CreateBareEntityFromRecord instead of hand-wiring a proxy - see the
+        // E4.e: EntitySpawnFactory.CreateBareEntityFromRecord instead of hand-wiring a proxy - see the
         // load-time spawn loop's own doc, above (BuildInitialState), on why. Block 18 (record 18) is
         // spawned this way (opcode 0x2D) and needs its real header box for RunVerticalPhysicsPass's own
         // ground probe, plus a proxy whose CurrentAnimationId actually advances via SyncAnimation.
@@ -1008,8 +1008,8 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     public void DestroyEntity(EntityScriptProxy entity) => entity.Status = EntityStatus.FlagToDestroy;
 
     // ------------------------------------------------------------------------------------------------
-    // IAlundraScriptHost - what each entity's own Update reaches for pick/run (see that interface's own
-    // doc). ActiveCollisionEntity stays null (no collision system in V1, same as AlundraWorldProxy's own
+    // IScriptHost - what each entity's own Update reaches for pick/run (see that interface's own
+    // doc). ActiveCollisionEntity stays null (no collision system in V1, same as WorldProxy's own
     // field); DestroyEntity(entity, effectId) is the pick phase's own two-argument overload, distinct
     // from IEntityWorldContext.DestroyEntity(entity) above (the search-driven one-argument overload).
     // ------------------------------------------------------------------------------------------------
@@ -1021,9 +1021,9 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     public void DestroyEntity(EntityScriptProxy entity, int effectId) => entity.Status = EntityStatus.FlagToDestroy;
 
     // E2: this harness builds its own player proxy directly (see BuildInitialState) with no
-    // AlundraPlayerController/World behind it - GameState is still the same shared flag store every other
+    // HeroController/World behind it - GameState is still the same shared flag store every other
     // pass here already reads (_gameState), but PlayerController stays null so
-    // AlundraEntityScriptProxy.Update's own player branch (AlundraPlayerManager.MovePlayer/Tick) is a
+    // EntityScriptProxy.Update's own player branch (PlayerManager.MovePlayer/Tick) is a
     // documented no-op, exactly like "no player controller yet" used to read before E2 (see RunFrame's own
     // comment) - keeps this trace's frame count/opcode sequence unchanged.
     public GameState GameState => _gameState;
@@ -1033,7 +1033,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// <summary>
     /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): this harness's own reused, per-frame
     /// collidables buffer - rebuilt at the top of every <see cref="RunFrame"/> (see that method's own
-    /// doc), fresher than production's own one-frame-stale <c>AlundraWorldProxy._collidables</c> since the
+    /// doc), fresher than production's own one-frame-stale <c>WorldProxy._collidables</c> since the
     /// harness fully owns its own frame ordering (no external engine loop to contend with). Also rebuilt
     /// once in <see cref="BuildInitialState"/> right after the load-time spawn loop, and consulted
     /// directly (not through this property) by <see cref="ApplyImmediateSupportAtSpawn"/> for the
@@ -1044,7 +1044,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     private readonly List<EntityScriptProxy> _collidables = new();
 
     /// <summary>
-    /// Bug fix (AlundraLogicClock's own class doc): this harness's own shared logic clock - same one
+    /// Bug fix (LogicClock's own class doc): this harness's own shared logic clock - same one
     /// instance every spawned entity's own <see cref="EntityScriptProxy.Update"/> AND
     /// <see cref="RunFrame"/> itself read/advance, mirroring production's <see cref="WorldProxy"/>.
     /// This harness runs at a FIXED dt (<see cref="ScriptedMotion.FixedTickSeconds"/> exactly) one
@@ -1079,8 +1079,8 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     }
 
     // ------------------------------------------------------------------------------------------------
-    // Trace-aware IEventProgramRunner wrapper - what each entity's own AlundraEntityScriptProxy.Update
-    // (pick/run) and AlundraWorldProxy.RunMapEventsPass/RunPendingEventTriggers drive
+    // Trace-aware IEventProgramRunner wrapper - what each entity's own EntityScriptProxy.Update
+    // (pick/run) and WorldProxy.RunMapEventsPass/RunPendingEventTriggers drive
     // ------------------------------------------------------------------------------------------------
 
     internal sealed class TraceAwareEntityRunner : IEventProgramRunner
@@ -1169,7 +1169,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// Trace-mode-only deviation (documented, see IntroTraceHarnessTests's own class doc, section 0):
     /// opcodes whose original handler is a pure PREDICATE that writes <c>EventProgramState.Result</c> off
     /// state this V1 interpreter does not have (absent dialog system for 0x39/0x44/0x51) are SKIPPED
-    /// (UnknownSkipped), not suspended - see AlundraEventProgramRunner's own class doc. A skipped
+    /// (UnknownSkipped), not suspended - see EventProgramRunner's own class doc. A skipped
     /// predicate leaves <c>Result</c> untouched (defaults to 0/"false"), which is exactly backwards for
     /// the extremely common original idiom "predicate; If false goto back": since the predicate can never
     /// become true without the missing system driving it, that idiom would spin in place FOREVER in this
@@ -1180,14 +1180,14 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     ///
     /// E4.e retraits (docs/plan-e4-deplacement-scripte.md): 0x07 (Check entity in area) and 0x70 (Is above
     /// ground) are REMOVED from this set - both are now genuinely <c>Implemented</c> opcodes
-    /// (AlundraEventProgramRunner.Dispatch cases 0x07/0x70) driven by this harness's own real per-entity
+    /// (EventProgramRunner.Dispatch cases 0x07/0x70) driven by this harness's own real per-entity
     /// kinematics (<see cref="RunVerticalPhysicsPass"/> for 0x70's <c>IsOnGround</c>; the entities' own
     /// real <see cref="EntityScriptProxy.TileX"/>/<c>TileY</c>/<c>TileZ</c>, refreshed every tick,
     /// for 0x07's tile-box search) - their <c>Result</c> is computed for real now, not assumed.
     ///
     /// E7.c retrait (2026-08-28, docs/plan-e7-mutation-tuiles.md, acceptance item 6): 0x2F ("Check moving
     /// in dir", D-E7-7 relabels it "Check pad buttons") is REMOVED too - now a genuinely
-    /// <c>Implemented</c> opcode (AlundraEventProgramRunner.Dispatch case 0x2F) reading this harness's own
+    /// <c>Implemented</c> opcode (EventProgramRunner.Dispatch case 0x2F) reading this harness's own
     /// real <see cref="GameState.LastPadState"/> (D-E7-8). Inert on map 389: fact 3 established
     /// 0x2F is dispatched ZERO times in this trace's own window (it always sits behind 0x3B, which stays
     /// false throughout - see <see cref="PessimisticPredicateOpcodes"/>'s own updated doc below), so this
@@ -1195,7 +1195,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// </summary>
     /// <summary>
     /// E12.a retrait (docs/plan-e12-dialogues.md, item ⑦): 0x39/0x44/0x51 are REMOVED - all three are now
-    /// genuinely <c>Implemented</c>/<c>Degraded</c> opcodes (AlundraEventProgramRunner.Dispatch cases
+    /// genuinely <c>Implemented</c>/<c>Degraded</c> opcodes (EventProgramRunner.Dispatch cases
     /// 0x39/0x44/0x51, backed by <see cref="Dialogues.DialogueDirector"/>) rather than <c>UnknownSkipped</c>,
     /// so this forcing set - which only ever applies to <c>UnknownSkipped</c> dispatches - self-neutralized
     /// for them the moment their real case landed (§1.6: "retirer les entrées du set est un nettoyage, pas
@@ -1205,7 +1205,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// already document for a null <see cref="IEntityWorldContext.DialogueDirector"/>, which is
     /// BEHAVIOURALLY IDENTICAL to the old forced-optimistic skip (Result=1 for 0x44, size-only advance
     /// for 0x39/0x51/0x0D/0x50/0x5C either way) - see each opcode's own dispatch doc. Only
-    /// <c>AlundraDialogueOpcodesProductionTests</c> (E12.a's own T1) opts into a REAL, session-scoped
+    /// <c>DialogueOpcodesProductionTests</c> (E12.a's own T1) opts into a REAL, session-scoped
     /// <see cref="Dialogues.DialogueDirector"/> (<c>installDialogueDirector: true</c>), since that singleton
     /// must not leak into every OTHER pre-existing test built on this same harness.
     /// </summary>
@@ -1217,7 +1217,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
     /// Trace-mode-only deviation, the PESSIMISTIC counterpart to <see cref="OptimisticPredicateOpcodes"/>.
     /// E7.c retrait (2026-08-28, docs/plan-e7-mutation-tuiles.md, acceptance item 6): 0x3B "Check player in
     /// area" (Script_59_03B, EntityEventHandlers.cs:1223-1238) is REMOVED from this set - now a genuinely
-    /// <c>Implemented</c> opcode (AlundraEventProgramRunner.Dispatch case 0x3B) testing the real
+    /// <c>Implemented</c> opcode (EventProgramRunner.Dispatch case 0x3B) testing the real
     /// <see cref="PlayerEntity"/>'s own <c>TileX</c>/<c>TileY</c>/<c>TileZ</c>, D-E7-11's own harness tile
     /// fix included (see <see cref="RunVerticalPhysicsPass"/>). Fact 4 (docs/plan-e7-mutation-tuiles.md):
     /// a real 0x3B still returns 0 (false) across this trace's own window - none of the five boxes map
@@ -1253,7 +1253,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             }
         }
         // E4.e: no more kind-Implemented Result forcing for 0x70/0x07 - RunVerticalPhysicsPass now
-        // maintains a real AlundraEntityScriptProxy.IsOnGround (0x70) and TileX/TileY/TileZ (0x07) every
+        // maintains a real EntityScriptProxy.IsOnGround (0x70) and TileX/TileY/TileZ (0x07) every
         // tick, so both opcodes compute their real Result off real state (same as production).
 
         // Stop condition (b) is progress-based: a NEW (context, pc) pair - reaching an instruction for
@@ -1362,9 +1362,9 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
         // FIRST parameter byte. Script_OpenDialogWithChoice_05C: variables[1] is a search type, the
         // dialog id is the SECOND parameter byte (best-effort - see this file's own class doc caveat).
         // E12.a fix (docs/plan-e12-dialogues.md, item ⑥): parameters[0]/[1] is the RAW textId operand,
-        // whose bit 0x80 selects local vs shared text (see AlundraEventProgramRunner's own dispatch case
+        // whose bit 0x80 selects local vs shared text (see EventProgramRunner's own dispatch case
         // 0x0D) - kept RAW here (not masked) since T7 (docs/plan-e15-yarn.md, contract item 1) needs that
-        // same bit to resolve the SAME asset/node AlundraEventProgramRunner.ResolveDialogNode resolves for
+        // same bit to resolve the SAME asset/node EventProgramRunner.ResolveDialogNode resolves for
         // the real dispatch.
         var textId = opcode switch
         {
@@ -1379,7 +1379,7 @@ internal sealed class HeadlessIntroSimulation : IEntityWorldContext, IScriptHost
             return null;
         }
 
-        // T7: mirrors AlundraEventProgramRunner.ResolveDialogNode's own bit test and node-name formulas
+        // T7: mirrors EventProgramRunner.ResolveDialogNode's own bit test and node-name formulas
         // (contract item 1), off the SAME MapDialogueAsset/SharedDialogueAsset BuildInitialState above
         // loaded - the same two assets the degraded path (contract item 8) plays headless - so this trace
         // annotation always names the node the real dispatch actually resolves and plays.

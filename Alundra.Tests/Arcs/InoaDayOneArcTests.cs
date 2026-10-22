@@ -390,7 +390,7 @@ public sealed class InoaDayOneArcTests
             Assert.Equal(0, arc.SkippedOrExceeded.Count(t => t.Opcode == opcode && t.Pc == pc));
         }
 
-        // Beaumont and Thyea appear facing down (direction 0, AlundraEntitySpawnFactory.cs:667-669) and only the 0x27 @470/@498 (guarded by T4 and
+        // Beaumont and Thyea appear facing down (direction 0, EntitySpawnFactory.cs:667-669) and only the 0x27 @470/@498 (guarded by T4 and
         // T5) can turn them: while none runs, the branch @110 takes its direction-0 target @124 and never the fall-through @119 the old skip took.
         Assert.DoesNotContain(arc.Trace, t => t.Slot == C && t.Opcode == 0x27 && t.Pc is 470 or 498);
         Assert.True(arc.Trace.Count(t => t.Slot == C && t.Pc == 110 && t.Opcode == 0x58) > 0, "0x58 @110 never executed");

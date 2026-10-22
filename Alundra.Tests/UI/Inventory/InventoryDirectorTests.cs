@@ -97,7 +97,7 @@ public sealed class InventoryDirectorTests : IDisposable
     }
 
     /// <summary>Portal 0 of map 389 (mono-cell (18,38) to map 390) - same record as
-    /// <c>AlundraWarpDepartureTests.Map389Portal0</c>.</summary>
+    /// <c>WarpDepartureTests.Map389Portal0</c>.</summary>
     private static PortalRecord Map389Portal0() => new()
     {
         Index = 0,
@@ -476,7 +476,7 @@ public sealed class InventoryDirectorTests : IDisposable
         Tick(state, director, PadState.Down); // edge - one move.
         Assert.Equal(6, director.SelectedSlotId);
 
-        // AlundraTickPad.Update: the edge tick above took the "ButtonsHold == 0 before" branch (does not
+        // TickPad.Update: the edge tick above took the "ButtonsHold == 0 before" branch (does not
         // count toward NumberOfFrameHold at all); the NEXT 20 held ticks each see NumberOfFrameHold < 20
         // and stay silent (NumberOfFrameHold reaches 20 on the 20th) - only the 21st held tick finds
         // NumberOfFrameHold == MaxNbFrameHeld and repeats.
@@ -774,7 +774,7 @@ public sealed class InventoryDirectorTests : IDisposable
         // Re-open, close again, this time WITH the latch set.
         var director2 = NewDirector(state);
         OpenAndSettle(state, director2);
-        state.AddFlag(1662, 0x40000000); // the persistent latch - see AlundraHudDirector's own doc.
+        state.AddFlag(1662, 0x40000000); // the persistent latch - see HudDirector's own doc.
 
         Tick(state, director2, PadState.Start);
 
@@ -951,7 +951,7 @@ public sealed class InventoryDirectorTests : IDisposable
 
         // InstallInventorySystems only runs from InitializeWithWorld's own tile-map-gated installation
         // block (same gate InstallHudSystems/InstallDialogueSystems share) - a bare headless world (no
-        // TileMap entity) never reaches it, same reason AlundraHudDirectorTests wires its own view
+        // TileMap entity) never reaches it, same reason HudDirectorTests wires its own view
         // directly for a headless montage. Attach directly here: this test's own subject is the TICK
         // WIRING inside Update (the per-tick loop next to the dialogue/HUD ones), not the attach path.
         InventoryDirector.Instance.AttachToWorld(worldProxy.GameState, ItemTablesFixture.LoadReal(), worldProxy.SoundPlayer);
@@ -1007,7 +1007,7 @@ public sealed class InventoryDirectorTests : IDisposable
 
         // A non-degraded departure (real world index, a GameManager to hand the world path to), so the gate
         // stays posted through the world-change request instead of being lifted by the abort guard - same
-        // montage as AlundraWarpDepartureTests' own freeze test. Departs through the production trigger site.
+        // montage as WarpDepartureTests' own freeze test. Departs through the production trigger site.
         WarpDirector.Instance.AttachToWorld(new GameManager(null), soundPlayer: null, projectRoot);
         ((IScriptHost)worldProxy).OnPortalTriggerDetected(Map389Portal0(), 0x10);
         Assert.True(WarpDirector.Instance.IsTransitionInProgress);
@@ -1017,7 +1017,7 @@ public sealed class InventoryDirectorTests : IDisposable
 
         for (var frame = 1; frame <= 24; frame++)
         {
-            // A fresh Start edge every other frame, published the way AlundraEntityScriptProxy.Update keeps
+            // A fresh Start edge every other frame, published the way EntityScriptProxy.Update keeps
             // publishing the pad during the fade.
             worldProxy.GameState.LastPadState = new PadState { ButtonsHold = frame % 2 == 1 ? PadState.Start : 0u };
             worldProxy.Update(0.02f);

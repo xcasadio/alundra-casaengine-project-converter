@@ -31,7 +31,7 @@ public class DialoguePresenterWiringTests : IDisposable
 {
     public DialoguePresenterWiringTests()
     {
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
@@ -198,7 +198,7 @@ public class DialoguePresenterWiringTests : IDisposable
     /// In a real run the engine's boot order guarantees GetActiveUIView() is null during
     /// InitializeWithWorld (GameManager.cs:93-108: ViewManager.Clear -> World.LoadContent [which runs
     /// the install] -> BootstrapViews [which creates the view+UIView]), so the eager install above can
-    /// never wire anything there - the per-frame retry at the head of AlundraWorldProxy.Update
+    /// never wire anything there - the per-frame retry at the head of WorldProxy.Update
     /// (TryWireDialoguePresenterOnce) is what actually wires the game. This test reproduces that exact
     /// timing: install first with NO view (presenter null, degraded), THEN the view appears, then one
     /// real Update - the presenter must come live and push on open. Deleting the Update call site (or

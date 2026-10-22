@@ -30,7 +30,7 @@ public class ScreenFadeDirectorTests : IDisposable
     {
         ScreenFadeDirector.Instance.ResetForTests();
 
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
@@ -55,7 +55,7 @@ public class ScreenFadeDirectorTests : IDisposable
 
     /// <summary>Real <see cref="CasaEngineGame"/> + real <see cref="ScreenEffectComponent"/>/
     /// <see cref="ScreenEffectService"/> - same headless-construction technique as
-    /// <c>AlundraMusicPlayerTests.BuildGameWithAudio</c>: the component's constructor never touches a
+    /// <c>MusicPlayerTests.BuildGameWithAudio</c>: the component's constructor never touches a
     /// <see cref="Microsoft.Xna.Framework.Graphics.GraphicsDevice"/>, only lazily via
     /// <c>GetOrCreatePixelTexture</c>, which this DLL's own director never calls.</summary>
     private static CasaEngineGame BuildGameWithScreenEffects()
@@ -179,7 +179,7 @@ public class ScreenFadeDirectorTests : IDisposable
     public void T3_Mutation_FollowDecompNames_WouldSwapRAndB()
     {
         // Mutation for T3: routing v[1]/v[3] through the decomp's own inverted "B"/"R" variable names
-        // (instead of storing DISPLAY order directly, see AlundraScreenFadeDirector's own class doc)
+        // (instead of storing DISPLAY order directly, see ScreenFadeDirector's own class doc)
         // would swap the R and B channels - documented here as the exact delta the real T3 above guards
         // against: (10,20,30) pushed vs. the swapped (30,20,10) a "corrected" swap would produce.
         Assert.NotEqual((10, 20, 30), (30, 20, 10));
@@ -363,7 +363,7 @@ public class ScreenFadeDirectorTests : IDisposable
     {
         // Mutation for T6 (dispatched via the interpreter, not the director directly): routing 0xB1
         // through UnknownOpcode's own no-touch fallback leaves a STALE Result from whatever the PREVIOUS
-        // predicate wrote - unlike the real Dispatch case (AlundraEventProgramRunner.cs), which always
+        // predicate wrote - unlike the real Dispatch case (EventProgramRunner.cs), which always
         // writes Result explicitly (see that case's own doc). Documented delta: a stale Result=1 would
         // survive a skipped 0xB1 even while mid-fade, which the real dispatch case (writing
         // IsSettled ? 1 : 0 unconditionally) never allows.
@@ -424,7 +424,7 @@ public class ScreenFadeDirectorTests : IDisposable
     {
         // Mutation for T7 (docs/plan-e10-fondu.md): applied directly against the director's own private
         // persistence-latch field, mirroring "delete only the three preamble lines of
-        // AlundraScreenFadeDirector.InstallForMapEntry, keep the re-arm" - the re-arm never touches the
+        // ScreenFadeDirector.InstallForMapEntry, keep the re-arm" - the re-arm never touches the
         // latch, so a leaked non-zero value survives into the second world's own fully-settled state.
         var game1 = BuildGameWithScreenEffects();
         ScreenFadeDirector.Instance.AttachToWorld(game1.ScreenEffectComponent.Service);
@@ -509,7 +509,7 @@ public class ScreenFadeDirectorTests : IDisposable
         var service = BuildGameWithScreenEffects().ScreenEffectComponent.Service;
         ScreenFadeDirector.Instance.AttachToWorld(service);
 
-        // Exactly what AlundraWarpDirector issues when a portal is taken.
+        // Exactly what WarpDirector issues when a portal is taken.
         ScreenFadeDirector.Instance.BeginWarpDepartureFade(0xff, 0xff, 0xff, tpage: 2, duration: 16, persistLock: 1);
         ScreenFadeDirector.Instance.Advance(1);
         ScreenFadeDirector.Instance.PushToAttachedService();

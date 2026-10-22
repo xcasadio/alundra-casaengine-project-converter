@@ -31,7 +31,7 @@ using Alundra.Tests.UI.Inventory;
 namespace Alundra.Tests.UI.Shared;
 
 /// <summary>E19.f2b1c: the asset manager of the tests that build the real <see cref="Alundra.UI.Messages.TextBoxScreen"/> (and, E19.f3b, <see cref="Alundra.UI.Choice.ChoiceScreen"/>: the envelopes of the exported project and the
-/// font3 of the registry, loaded on the CPU), as <c>AlundraScreensFollowTheWindowTests</c> builds it.</summary>
+/// font3 of the registry, loaded on the CPU), as <c>ScreensFollowTheWindowTests</c> builds it.</summary>
 internal static class TextBoxScreenAssets
 {
     private sealed class ScreenEnvelopeLoader : CasaEngine.Framework.Assets.IAssetLoader

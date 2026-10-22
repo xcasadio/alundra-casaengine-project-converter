@@ -347,8 +347,8 @@ public class BgmFadeDirectorTests : IDisposable
     // -----------------------------------------------------------------------------------------------
     // T2.2 (docs/plan-bgm-demarrage-binaire.md): the corpus's own MOST FREQUENT BGM sequence - 22
     // sites, every boss/dream ending (corpus report, "Enchaînements relevés") - A6(1) / A7(42,0) / A5 /
-    // A7(0,0), driven end to end through the REAL runner and the REAL AlundraMusicPlayer.Instance /
-    // AlundraBgmFadeDirector.Instance session singletons, precedent: ProductionSite_SyntheticProgram
+    // A7(0,0), driven end to end through the REAL runner and the REAL BgmPlayer.Instance /
+    // BgmFadeDirector.Instance session singletons, precedent: ProductionSite_SyntheticProgram
     // above.
     // -----------------------------------------------------------------------------------------------
 
@@ -363,11 +363,11 @@ public class BgmFadeDirectorTests : IDisposable
         // retry; A5 is where track 42 ACTUALLY starts; A7(0,0) stops and closes it again. Ticks
         // between opcodes come from the corpus's own 0x37 Wait instructions (140, 30, 10), driven the
         // same way production drives both the runner and the fade director every rendered frame
-        // (AlundraWorldProxy.cs:2136-2148: AlundraBgmFadeDirector.Instance.Advance(ticksThisFrame) runs
+        // (WorldProxy.cs:2136-2148: BgmFadeDirector.Instance.Advance(ticksThisFrame) runs
         // alongside the event program) - so the swap (60 ticks after arm) and the master-restore (117
         // ticks after arm) both land while the 140-tick Wait is still suspended, proving the initial
         // track is stopped and NEVER restarted underneath it. Exact tick counts below were derived from
-        // AlundraEventProgramRunner.Wait's own contract (suspends until v[1] additional calls have
+        // EventProgramRunner.Wait's own contract (suspends until v[1] additional calls have
         // elapsed since the first time a given CodeIndex is reached) and cross-checked against a live
         // run of this exact program before being written into the assertions.
         var projectPath = BuildFixtureProjectWithInitialTrackAndTrack42(out var assetInitial, out var asset42);

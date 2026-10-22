@@ -16,7 +16,7 @@ namespace Alundra.Tests.Support;
 /// <see cref="DialogueDirector"/>'s open/close/paging mechanics, which no longer take raw text
 /// directly (contract item 2) - same compiler and function declarations the DLL registers in production
 /// (<see cref="YarnBindings.CreateDeclarations"/>, same pattern as
-/// <c>AlundraYarnBindingsTests.CompileAsset</c>). Every page is tagged with an explicit
+/// <c>YarnBindingsTests.CompileAsset</c>). Every page is tagged with an explicit
 /// <c>#line:{node}_p{k}</c> id, because <see cref="DialogueDirector"/> counts pages by that exact
 /// convention (docs/plan-e15-yarn.md, E15.c contract item 2) - Yarn's own auto-generated line ids would
 /// not match it.

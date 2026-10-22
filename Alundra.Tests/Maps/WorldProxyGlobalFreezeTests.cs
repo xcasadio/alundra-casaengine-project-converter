@@ -52,7 +52,7 @@ public sealed class WorldProxyGlobalFreezeTests : IDisposable
     {
         WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
@@ -135,12 +135,12 @@ public sealed class WorldProxyGlobalFreezeTests : IDisposable
     // -----------------------------------------------------------------------------------------
     // [R5] debt inherited from T1: no test today crosses InitializeWithWorld's real installation block
     // (every existing caller uses a world with no "tileMap" entity and exits through the early return,
-    // AlundraWorldProxy.cs:506-518 - see AlundraGameStateSessionTests/AlundraWorldProxySessionStateTests'
+    // WorldProxy.cs:506-518 - see GameStateSessionTests/WorldProxySessionStateTests'
     // own class docs, which say so explicitly). GameState.InstallForMapEntry() and the ActiveCollisionEntity
-    // reset (both posed by T1, AlundraWorldProxy.cs:527/535) are green but unpinned. This montage reuses
-    // AlundraCellVisualSyncTests' own real-map-389 headless TileMapComponent fixture (built directly, not
+    // reset (both posed by T1, WorldProxy.cs:527/535) are green but unpinned. This montage reuses
+    // CellVisualSyncTests' own real-map-389 headless TileMapComponent fixture (built directly, not
     // shared, since that class' own helpers are private) but drives the FULL
-    // <see cref="AlundraWorldProxy.InitializeWithWorld"/>, not just <c>InstallCellAndOverlaySystems</c>.
+    // <see cref="WorldProxy.InitializeWithWorld"/>, not just <c>InstallCellAndOverlaySystems</c>.
     // -----------------------------------------------------------------------------------------
 
     private const string WorldName = "Ship Klark (beginning)-389";
@@ -304,7 +304,7 @@ public sealed class WorldProxyGlobalFreezeTests : IDisposable
     /// [R5]: crosses <see cref="WorldProxy.InitializeWithWorld"/>'s two early returns (a real
     /// "tileMap" entity with loaded <see cref="TileMapData"/>, exactly the montage
     /// <see cref="CellVisualSyncTests"/> already proves is reachable headless) and pins the two
-    /// T1 instructions that sit right after them (AlundraWorldProxy.cs:527/535):
+    /// T1 instructions that sit right after them (WorldProxy.cs:527/535):
     /// <see cref="GameState.InstallForMapEntry"/> really runs (a stale TemporaryFlags entry and a
     /// non-null InteractLatchEntity, both seeded BEFORE the call, are gone after it), and
     /// <see cref="WorldProxy.ActiveCollisionEntity"/> really gets reset to null. The call is made

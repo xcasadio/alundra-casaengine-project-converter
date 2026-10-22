@@ -34,7 +34,7 @@ public sealed class InteractionPassTests : System.IDisposable
     {
         WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
@@ -120,8 +120,8 @@ public sealed class InteractionPassTests : System.IDisposable
 
     // -----------------------------------------------------------------------------------------
     // P-a - the contact at its production site (mutations №2 and №7). E19.d2b B4 (T-REG-E12D-2, D-E19-29): the overlap pass of the end of
-    // AlundraWorldProxy.Update is gone; the contact is the entity that shortened or cancelled the hero's step, written by his controller's blocking
-    // report in his own tick (AlundraEntityScriptProxy.MoveControllerAndPullPosition), through the real player branch: pad -> MovePlayer -> TickPlayer.
+    // WorldProxy.Update is gone; the contact is the entity that shortened or cancelled the hero's step, written by his controller's blocking
+    // report in his own tick (EntityScriptProxy.MoveControllerAndPullPosition), through the real player branch: pad -> MovePlayer -> TickPlayer.
     // -----------------------------------------------------------------------------------------
 
     private sealed class HeroAndSailor

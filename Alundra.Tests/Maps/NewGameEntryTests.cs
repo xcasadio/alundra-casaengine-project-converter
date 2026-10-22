@@ -69,8 +69,8 @@ public sealed class NewGameEntryTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------------
-    // Fixture plumbing - hero pawn + real AlundraPlayerController, same shape as
-    // AlundraWarpArrivalTests.BuildHeroPawnEntity/RegisterPlayerController (private there, rebuilt here).
+    // Fixture plumbing - hero pawn + real HeroController, same shape as
+    // WarpArrivalTests.BuildHeroPawnEntity/RegisterPlayerController (private there, rebuilt here).
     // -----------------------------------------------------------------------------------------------
 
     private static void SetProperty<TTarget, TValue>(TTarget target, string propertyName, TValue value)

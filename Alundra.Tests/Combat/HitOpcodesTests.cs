@@ -187,7 +187,7 @@ public sealed class HitOpcodesTests
     {
         var world = new K3World();
         Run(world, world.T, 0x86, 0, 3, 0);
-        Assert.Equal(3, world.T.DamagedTickCounter); // the hit pass skips a target whose +0x1CC is not 0 (AlundraHitPass); its own tests pin that rule.
+        Assert.Equal(3, world.T.DamagedTickCounter); // the hit pass skips a target whose +0x1CC is not 0 (HitPass); its own tests pin that rule.
     }
 
     // -----------------------------------------------------------------------------------------

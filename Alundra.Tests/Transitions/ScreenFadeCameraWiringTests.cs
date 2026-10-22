@@ -22,12 +22,12 @@ namespace Alundra.Tests.Transitions;
 /// <summary>
 /// The camera-wiring assertion docs/plan-e10-fondu.md, slice E10.b makes mandatory (blocage de
 /// relecture): E10.a's own <see cref="CasaEngine.Framework.Application.Components.ScreenEffectComponent"/>
-/// reads the camera off <c>ViewManager.ActiveView.Camera</c>, but nothing under <c>Alundra/Scripts</c>
+/// reads the camera off <c>ViewManager.ActiveView.Camera</c>, but nothing under <c>Alundra/</c>
 /// references <c>ActiveView</c> anywhere - <see cref="BackdropStage"/> instead reuses whatever
 /// <see cref="CameraDirector"/> resolved (the FIRST <see cref="Camera2dComponent"/> found in
 /// <c>World.Entities</c>, by component - see that class's own doc). This test proves, on the REAL
 /// installation path (<see cref="DefaultRuntimeViewBootstrapper"/>, the same bootstrapper
-/// <see cref="CasaEngineGame"/> always uses - nothing under <c>Alundra/Scripts</c> overrides
+/// <see cref="CasaEngineGame"/> always uses - nothing under <c>Alundra/</c> overrides
 /// <c>RuntimeViewBootstrapper</c>), that both resolve the SAME <see cref="Camera2dComponent"/> instance:
 /// <see cref="DefaultRuntimeViewBootstrapper.BootstrapViews"/> picks its camera the exact same way
 /// (<c>world.Entities.Select(e =&gt; e.GetComponent&lt;CameraComponent&gt;()).FirstOrDefault(...)</c>) as
@@ -42,7 +42,7 @@ public class ScreenFadeCameraWiringTests : IDisposable
 {
     public ScreenFadeCameraWiringTests()
     {
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
@@ -94,14 +94,14 @@ public class ScreenFadeCameraWiringTests : IDisposable
         HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
         // The REAL production bootstrapper - CasaEngineGame's own constructor always wires this one
-        // (DefaultRuntimeViewBootstrapper.Instance), and nothing under Alundra/Scripts overrides it.
+        // (DefaultRuntimeViewBootstrapper.Instance), and nothing under Alundra/ overrides it.
         DefaultRuntimeViewBootstrapper.Instance.BootstrapViews(game, world, viewManager);
 
         Assert.NotNull(viewManager.ActiveView);
         Assert.Same(camera, viewManager.ActiveView!.Camera);
 
         // The real install path: InitializeWithWorld arms the camera resolve lazily, consumed by the
-        // first Update (ResolveDebugCameraOnce, called from AlundraCameraDirector).
+        // first Update (ResolveDebugCameraOnce, called from CameraDirector).
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // no "tileMap" entity -> early return, harmless for this proof.
         proxy.Update(0.02f);

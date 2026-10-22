@@ -31,7 +31,7 @@ namespace Alundra.Tests.Support;
 /// <summary>
 /// A script host with a real logic clock (one tick per 0.02 s update), a no-op interpreter (or the one given), the destroy of the world
 /// (the status goes to <see cref="EntityStatus.FlagToDestroy"/>) and a collidable list rebuilt by <see cref="Rebuild"/> from
-/// <see cref="All"/> with <see cref="EntitySupport.BuildCollidables"/>, as <c>AlundraWorldProxy.RefreshUpdateProxiesAndCollidables</c>.
+/// <see cref="All"/> with <see cref="EntitySupport.BuildCollidables"/>, as <c>WorldProxy.RefreshUpdateProxiesAndCollidables</c>.
 /// </summary>
 internal sealed class ContactHost : IScriptHost
 {

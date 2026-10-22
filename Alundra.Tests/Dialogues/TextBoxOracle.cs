@@ -12,7 +12,7 @@ namespace Alundra.Tests.Dialogues;
 /// E19.f2a F2A-1 (docs/plan-e19-opcodes.md section 1.2j.3, docs/plan-e19-f2a-valeurs.md section B): the oracle of the dialogue text box,
 /// a C# port of the tick-exact model drawn from the binary (ALUN_CD.EXE, France: <c>MsgBoxRender</c> 0x80046EF0 and its callees; the
 /// addresses are in the comments of the model, <c>e19f2-disc/model/model.py</c> of the discovery) with the two corrections of the author,
-/// D-E19-62 and D-E19-63. It is written from the rules of the plan and from that model, NEVER from <c>AlundraDialogueDirector</c>: the
+/// D-E19-62 and D-E19-63. It is written from the rules of the plan and from that model, NEVER from <c>DialogueDirector</c>: the
 /// director's tests compare the director against these values, so a shared mistake would not show.
 /// <para/>
 /// Three parts: <see cref="TextBoxOracle"/> (the box: one <see cref="TextBoxOracle.Render"/> is one pass of the binary's

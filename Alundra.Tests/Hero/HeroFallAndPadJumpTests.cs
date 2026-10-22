@@ -386,7 +386,7 @@ public sealed class HeroFallAndPadJumpTests : IDisposable
     }
 
     // UH-7b (E19.m10, M-16): a hero WALKING east from a flat cell of 16 px onto a cell of slope kind 1 meets a constant step fixed by its y (the ground of the slope is
-    // height * 16 - (y mod 16), without a term in x: AlundraCellsCollisionField.cs:382-391, binary 0x8003722C-0x80037264). The binary glues a descent of 3 px or less back to the
+    // height * 16 - (y mod 16), without a term in x: CellsCollisionField.cs:382-391, binary 0x8003722C-0x80037264). The binary glues a descent of 3 px or less back to the
     // ground when Gravity is set, ForceZ is 0 and the XY step is not null (0x80037848, 0x800377A0-0x800377A8); the montage gives the step 3 px at y 107.5 and 5 px at y 109.5.
     // 4 px is never tested: it is the gap O-E19-40 between the engine snap and the binary.
     private static JumpHeroRig DescentRig(int drop, float groundSnapDistance)

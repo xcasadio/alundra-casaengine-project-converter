@@ -296,7 +296,7 @@ public sealed class HudComposerTests
     {
         // E13 C2 fourth-pass finding: a third-pass clamp made Compose(hp:50, hpMax:50, hpMaxTrue:50,
         // hpCatchUpPreview:true, ...) collapse to the ordinary steady 50/50 picture, reasoning this input
-        // combination was unreachable. It IS reachable (AlundraHudDirector.cs:462-473's HpMax catch-up
+        // combination was unreachable. It IS reachable (HudDirector.cs:462-473's HpMax catch-up
         // branch previews one tick past HpMaxDisplayed at full HP - see ComposeLife's own doc), so the
         // clamp was itself a regression: this test now fixes what HudManager.cs:727-782 actually DRAWS at
         // that tick, index by index, not what a caller-side guard would prevent.
@@ -363,18 +363,18 @@ public sealed class HudComposerTests
 
         // Exactly one tile fewer than the 27 the pre-fourth-pass unclamped code would have produced (the
         // dropped slot -1 write): 3 (HpMaxNumber) + 4 (big full) + 0 (big empty) + 1 (small full) +
-        // 9 (small empty) + 4 (mp full, mp==mpMax==4) + 5 (money) = 26 - exactly AlundraHudScreen.MaxTileCount.
+        // 9 (small empty) + 4 (mp full, mp==mpMax==4) + 5 (money) = 26 - exactly HudScreen.MaxTileCount.
         Assert.Equal(HudScreen.MaxTileCount, tiles.Count);
     }
 
     [Fact]
     public void Compose_NeverExceedsMaxTileCount_AcrossAGridOfHpHpMaxAndPreviewCombinations()
     {
-        // E13 C2 fourth pass, mission item 5's second test: AlundraHudScreen's pool (MaxTileCount, sized
-        // and derived in AlundraHudScreen.cs's own comment from the original's five HUD sprite arrays)
+        // E13 C2 fourth pass, mission item 5's second test: HudScreen's pool (MaxTileCount, sized
+        // and derived in HudScreen.cs's own comment from the original's five HUD sprite arrays)
         // must never receive more tiles than it has slots for, for ANY hp x hpMax x hpMaxTrue x preview
         // combination this pure function can be called with - not just the one transitory tick above.
-        // hpMax(True) is bounded to [0,50]: AlundraPlayerManager.SetPlayerHpMax (:656-669, ported from
+        // hpMax(True) is bounded to [0,50]: PlayerManager.SetPlayerHpMax (:656-669, ported from
         // PlayerManager.cs:1705-1731) ceilings any value >= 0x33 down to 0x32=50, so the true cap this
         // grid exercises never exceeds the game's own real ceiling.
         for (var hpMax = 0; hpMax <= 50; hpMax += 5)
@@ -384,7 +384,7 @@ public sealed class HudComposerTests
                 foreach (var hpCatchUpPreview in new[] { false, true })
                 {
                     // hpMaxTrue >= hpMax: the director only ever previews growth (HpMax < trueHpMax,
-                    // AlundraHudDirector.cs:462), never shrink. Capped at 50 for the same reason as the
+                    // HudDirector.cs:462), never shrink. Capped at 50 for the same reason as the
                     // outer hpMax loop.
                     foreach (var hpMaxTrue in new[] { hpMax, System.Math.Min(hpMax + 1, 50) })
                     {
@@ -469,8 +469,8 @@ public sealed class HudComposerTests
         public void ComposeEquipmentBackgrounds_QuadsAreNotCountedInMaxTileCount()
         {
             // C6's own mission item 1: "MaxTileCount ne change pas : ce ne sont pas des tuiles" - this
-            // pure function returns its own separate list type (AlundraHudBackgroundQuad, not
-            // AlundraHudTile), so it can never contribute to a Compose() tile-overflow count.
+            // pure function returns its own separate list type (HudBackgroundQuad, not
+            // HudTile), so it can never contribute to a Compose() tile-overflow count.
             var quads = HudComposer.ComposeEquipmentBackgrounds();
 
             Assert.All(quads, quad => Assert.IsType<HudBackgroundQuad>(quad));

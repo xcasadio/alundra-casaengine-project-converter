@@ -356,7 +356,7 @@ public sealed class SaveGameValidationTests : IDisposable
     [Fact]
     public void TileCaps_KeepTheSpawnArithmeticInsideAnInt()
     {
-        // AlundraWorldProxy's spawn: (tile * TileWidth + TileWidth / 2) << 16, TileWidth 24, TileHeight 16.
+        // WorldProxy's spawn: (tile * TileWidth + TileWidth / 2) << 16, TileWidth 24, TileHeight 16.
         Assert.True((SaveGame.MaxCameraTileX * 24L + 12) << 16 <= int.MaxValue);
         Assert.True(((SaveGame.MaxCameraTileX + 1) * 24L + 12) << 16 > int.MaxValue);
         Assert.True((SaveGame.MaxCameraTileY * 16L + 8) << 16 <= int.MaxValue);

@@ -12,8 +12,8 @@ namespace Alundra.Tests.Support;
 /// <summary>
 /// E19.f4b (docs/plan-e19-opcodes.md, F4B-1, "oracle et suites"): the oracle of the speaker name box and of the speaker portrait of the dialogue, a C# port of
 /// <c>docs/plan-e19-f4-annexe/model/f4_model.py</c> (the model validated against the real binary code: ALUN_CD.EXE, France) and of its height extension
-/// <c>model/f4_model_h.py</c> (D-E19-90). It is written from those two files, NEVER from the DLL's own machines (<c>AlundraDialogueNameBox</c>,
-/// <c>AlundraInventoryPortrait</c>): the DLL is compared against it, so a shared mistake would not show. The generator of the random sequences
+/// <c>model/f4_model_h.py</c> (D-E19-90). It is written from those two files, NEVER from the DLL's own machines (<c>DialogueNameBox</c>,
+/// <c>InventoryPortrait</c>): the DLL is compared against it, so a shared mistake would not show. The generator of the random sequences
 /// (<see cref="SpeakerRawRun"/>) is a port of <c>model/gen_sequences.py</c> (SplitMix64, fed to both the oracle and the DLL's machines).
 /// </summary>
 internal static class SpeakerAnnex

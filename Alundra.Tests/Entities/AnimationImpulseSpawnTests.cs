@@ -234,7 +234,7 @@ public sealed class AnimationImpulseSpawnTests : IDisposable
         Assert.Equal(1280, hero.AnimSetsByAnim![2].IsZForceApplied); // the jump of the hero (the animation 2) carries an impulse in the export.
 
         // The real opcode 0x53 of a program, launched while the hero plays the animation 2: it copies the animation into the arrival record
-        // (AlundraEventProgramRunner case 0x53 -> BeginDepartureFromChangeMapOpcode, PlayerManager's own constants are not used).
+        // (EventProgramRunner case 0x53 -> BeginDepartureFromChangeMapOpcode, PlayerManager's own constants are not used).
         hero.TargetAnimationId = 2;
         var document = new EventProgramDocument { MapIndex = 179, EventCodesATable = new[] { 0, 0 }, Codes = new[] { 0x53, 179, 0, 17, 7, 1, 0, 0, 0xFF } };
         var runner = new EventProgramRunner(document, ArcRun.State, new HeroWorldContext(hero));

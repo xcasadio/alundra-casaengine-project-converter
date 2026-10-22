@@ -198,7 +198,7 @@ public class WorldProxyTests
         Assert.Equal(25u, proxy.SpriteTableIndex);
         Assert.Equal(new[] { 133, 5, 9, 13, 17, 21 }, proxy.ProgramIndexes);
 
-        // Map 389 / Entity_0 anchor: root transform must match AlundraEntitySpawnFactory.ResolveLogicalPosition
+        // Map 389 / Entity_0 anchor: root transform must match EntitySpawnFactory.ResolveLogicalPosition
         // fed with the proxy's own PosX/PosY/PosZ (E3.a - the root now carries the LOGICAL pose, not a
         // render pose) - this is the clone path exercising the same conversion covered directly by
         // ResolveLogicalPosition_* below.
@@ -272,7 +272,7 @@ public class WorldProxyTests
         // (PosZ>>16 = 368 px) - the render policy (SimulationSpacePolicy.DeriveRenderPosition under
         // TopDownElevation) is what later turns this into the same render position the old single-step
         // formula used to compute directly: -(584-368) = -216 (see
-        // AlundraEntityLogicalRenderPoseTests.RenderPoseFormula_* for that full round-trip check).
+        // EntityLogicalRenderPoseTests.RenderPoseFormula_* for that full round-trip check).
         var position = EntitySpawnFactory.ResolveLogicalPosition(420 * 0x10000, 584 * 0x10000, 46 << 19);
 
         Assert.Equal(new Vector3(420, 584, 368f), position);

@@ -273,7 +273,7 @@ public sealed class SaveGameProductionTests : IDisposable
             hudPresenter.Tick();
         }
 
-        const int SettleTicks = 40; // AlundraSubInventoryPresenterTests: close slide + handoff + opening slide.
+        const int SettleTicks = 40; // SubInventoryPresenterTests: close slide + handoff + opening slide.
 
         OneTick(PadState.Start);
         for (var i = 0; i < SettleTicks; i++)

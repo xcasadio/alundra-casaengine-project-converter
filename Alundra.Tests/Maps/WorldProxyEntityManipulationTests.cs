@@ -33,7 +33,7 @@ public class WorldProxyEntityManipulationTests : IDisposable
 {
     public WorldProxyEntityManipulationTests()
     {
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
@@ -150,7 +150,7 @@ public class WorldProxyEntityManipulationTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------
-    // DestroyEntity(AlundraEntityScriptProxy) - single-arg overload (0x2E's search-driven destroy)
+    // DestroyEntity(EntityScriptProxy) - single-arg overload (0x2E's search-driven destroy)
     // -----------------------------------------------------------------------------------------
 
     [Fact]

@@ -159,15 +159,15 @@ public class PlayerManagerTests
 
     // -----------------------------------------------------------------------------------------
     // LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922): on the ground it stays
-    // LoadingMap - the exit is then the animation Chain bridge (AlundraWorldProxy.OnAnimationFinished,
-    // hero anim 54 -> 0/Idle, see AlundraWorldProxyAnimationEndBridgeTests); in the air it gives 0x2D
+    // LoadingMap - the exit is then the animation Chain bridge (WorldProxy.OnAnimationFinished,
+    // hero anim 54 -> 0/Idle, see WorldProxyAnimationEndBridgeTests); in the air it gives 0x2D
     // and leaves the switch (E19.v, O-E19-32, docs/plan-e19-opcodes.md section 1.2z).
     // -----------------------------------------------------------------------------------------
 
     [Fact]
     public void MovePlayer_LoadingMapGrounded_StaysLoadingMap_RegardlessOfPad()
     {
-        // IsOnGround stub = 1 (AlundraWorldProxy.AdoptPlayerPawn's own documented stub until E3):
+        // IsOnGround stub = 1 (WorldProxy.AdoptPlayerPawn's own documented stub until E3):
         // the original's "break" branch - stays LoadingMap.
         var player = new EntityScriptProxy { TargetAnimationId = 0x36, TargetDirection = 0, IsOnGround = 1 };
         var pad = new PadState { ButtonsHold = PadState.Up };
@@ -328,7 +328,7 @@ public class PlayerManagerTests
     // -----------------------------------------------------------------------------------------
     // Decision E4-3 debug flag (docs/plan-e4-deplacement-scripte.md): ALUNDRA_DEBUG_IGNORE_CONTROL_LOCK
     // neutralizes MovePlayer's InputBlockedMask gate. Driven through the test-only
-    // SetDebugIgnoreControlLockOverrideForTests seam (see AlundraPlayerManager's own doc on why - the
+    // SetDebugIgnoreControlLockOverrideForTests seam (see PlayerManager's own doc on why - the
     // real static-readonly env-var read cannot be exercised deterministically once some other test in
     // the shared xunit host may already have forced this type's one-time static initialization).
     // -----------------------------------------------------------------------------------------

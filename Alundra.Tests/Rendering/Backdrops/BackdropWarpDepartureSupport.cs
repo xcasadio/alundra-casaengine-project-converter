@@ -32,7 +32,7 @@ internal static class BackdropWarpDepartureSupport
         BgmFadeDirector.Instance.ResetForTests();
     }
 
-    /// <summary>Arms a departure through portal 0 of map 389 (the pattern of <c>AlundraWarpDepartureTests</c>), on a
+    /// <summary>Arms a departure through portal 0 of map 389 (the pattern of <c>WarpDepartureTests</c>), on a
     /// non-degraded montage: the director is attached to a real <see cref="GameManager"/> so that the gate stays posted
     /// through the 16 frames.</summary>
     internal static EntityScriptProxy BeginDeparture(WorldProxy proxy)

@@ -11,7 +11,7 @@ namespace Alundra.Tests.Audio;
 /// <summary>
 /// T1/T2 of docs/plan-e11-audio.md, slice E11.a: drives the REAL production call site -
 /// <see cref="WorldProxy.RunMapEventsPass"/>/<see cref="EventProgramRunner.Dispatch"/> -
-/// through <see cref="HeadlessIntroSimulation"/> (Alundra.Tests\IntroTraceHarnessTests.cs), not a
+/// through <see cref="HeadlessIntroSimulation"/> (Alundra.Tests\Arcs\HeadlessIntroSimulation.cs), not a
 /// synthetic document, exactly like <see cref="CellStoreProductionTests"/> does for E7.a. The
 /// exact counts are §1.1's own recount, not <c>&gt; 0</c> assertions (§2.1: the goldens are BLIND to
 /// this work - a wrong or missing dispatch produces the identical trace text, so this test is the only
@@ -107,7 +107,7 @@ public class SoundOpcodesProductionTests
         Assert.NotNull(document);
 
         // Same drive as the main test above, but SoundPlayer forced null (installSoundPlayer: false) -
-        // the SAME production RunMapEventsPass call now takes AlundraEventProgramRunner's degraded
+        // the SAME production RunMapEventsPass call now takes EventProgramRunner's degraded
         // "SoundPlayer null" fallback for 0xBD (skip by size, no request). Proves the main test's
         // requests are actually caused by this seam, not some other accidental code path.
         var sim = new HeadlessIntroSimulation(projectRoot, WorldName, document!, installSoundPlayer: false);

@@ -34,7 +34,7 @@ public class GroundSlopeTests
     private const string WorldName = "Ship Klark (beginning)-389";
 
     // 24x16 px cells (StaticVariables.MapTileWidth/MapTileHeight) - same constants
-    // AlundraCellsCollisionFieldTests uses for its own real-map assertions.
+    // CellsCollisionFieldTests uses for its own real-map assertions.
     private const int CellWidthPx = 24;
     private const int CellHeightPx = 16;
 
@@ -75,7 +75,7 @@ public class GroundSlopeTests
 
     /// <summary>F4 fix (docs/plan-echelles-chiffrage.md, adversarial review): the hero's own real
     /// converter-exported bank header (<c>alundra-project/Data/sprite-records.json</c>, hero asset
-    /// <c>4158f0d7-c5f0-4f6a-a48f-e73d0dd2250b</c>) - <c>AlundraEntitySpawnFactory.SetEntityDimensions</c>'s own
+    /// <c>4158f0d7-c5f0-4f6a-a48f-e73d0dd2250b</c>) - <c>EntitySpawnFactory.SetEntityDimensions</c>'s own
     /// formula (<c>Width = (sizeX &lt;&lt; 16) - 1</c>, <c>ModX = offsetX &lt;&lt; 16</c>, etc.) applied to
     /// these exact values is what every real player entity carries in production.</summary>
     private const int HeroOffsetX = -10;
@@ -103,7 +103,7 @@ public class GroundSlopeTests
         var settings = new CharacterControllerSettings();
         var (_, proxy) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(0f, 0f, 0f), new NoOpScriptHost());
 
-        // AlundraCharacterControllerAdoptionTests' own pattern: World.AddEntity only QUEUES the entity
+        // CharacterControllerAdoptionTests' own pattern: World.AddEntity only QUEUES the entity
         // (World.cs's own _baseObjectsToAdd) - Owner.World stays null (so UpdateGroundSlope's own
         // Owner?.World?.CollisionField read would too) until one World.Update flushes the queue and
         // registers the pawn with CharacterMotionSystem. Done BEFORE the scripted PosX/PosY/PosZ/Flags
@@ -199,7 +199,7 @@ public class GroundSlopeTests
 
         var world = HeroWorldFixture.BuildWorld(field);
 
-        // Cell (18, 57): ground_property 0, height 5 (AlundraCellsCollisionFieldTests' own flat-cell
+        // Cell (18, 57): ground_property 0, height 5 (CellsCollisionFieldTests' own flat-cell
         // fixture) - height matches exactly like the scale cells above, but ground_property is 0.
         var x1 = 18 * CellWidthPx + 1;
         var y1 = 57 * CellHeightPx;
@@ -241,7 +241,7 @@ public class GroundSlopeTests
     {
         // No self-skip needed - this test does not touch the real map data at all, it only exercises the
         // "no field installed" branch (the same degraded-mode world a headless test harness with no
-        // AlundraCellsCollisionField would produce - see AlundraCellsCollisionField's own class doc).
+        // CellsCollisionField would produce - see CellsCollisionField's own class doc).
         // HeroWorldFixture.BuildWorld itself only stores whatever field it is given as World.CollisionField
         // (see its own doc) - passing null reproduces that degraded-mode world exactly, without
         // duplicating its Game/GameManager reflection plumbing here.
@@ -285,7 +285,7 @@ public class GroundSlopeTests
     // 0, slope 4 (flat), height 13 -&gt; ground height 208px, a DIFFERENT height, so it cannot qualify for
     // the same ModdedPosZ as the scale cell above it. (18, 37) also carries walkability 1, but that is NOT
     // what disqualifies it here - measured, walkability 1 is not blocking under the hero's own base mask
-    // 0x40 (AlundraCellsCollisionField.cs:135/:210-213, the 0x01 bit only blocks ClassB entities); the
+    // 0x40 (CellsCollisionField.cs:135/:210-213, the 0x01 bit only blocks ClassB entities); the
     // HEIGHT mismatch (13 vs 11) is the sole disqualifying fact.
     // -----------------------------------------------------------------------------------------
 
@@ -348,14 +348,14 @@ public class GroundSlopeTests
 
     // -----------------------------------------------------------------------------------------
     // F1 corollary (adversarial review, THE critical gap): every test above calls
-    // <see cref="AlundraEntityScriptProxy.UpdateGroundSlope"/> DIRECTLY - never through the real
-    // production call site (<see cref="AlundraEntityScriptProxy.Update"/>'s own <c>IsPlayer</c> branch,
-    // AFTER <c>AlundraPlayerManager.MovePlayer</c>/<c>Tick</c>, see that method's own E1 comment). That
+    // <see cref="EntityScriptProxy.UpdateGroundSlope"/> DIRECTLY - never through the real
+    // production call site (<see cref="EntityScriptProxy.Update"/>'s own <c>IsPlayer</c> branch,
+    // AFTER <c>PlayerManager.MovePlayer</c>/<c>Tick</c>, see that method's own E1 comment). That
     // gap is exactly what let F1 (the unsatisfiable <c>+1</c>) ship green: every direct-call test built
     // its own <c>ModdedPosZ</c> by hand and could silently bake in a Z the real player never occupies.
     // This test goes through the SAME real <see cref="World"/>/<see cref="CasaEngine.Framework.Application.Components.Physics.PhysicsWorld"/>/
-    // <see cref="AlundraCellsCollisionField"/> montage (<see cref="HeroWorldFixture"/>), a REAL
-    // <see cref="AlundraPlayerController"/> (not a stub), and one real <c>World.Update</c> frame - the
+    // <see cref="CellsCollisionField"/> montage (<see cref="HeroWorldFixture"/>), a REAL
+    // <see cref="HeroController"/> (not a stub), and one real <c>World.Update</c> frame - the
     // exact call chain a live player frame takes.
     //
     // Seeded placement, documented as such (same pattern as HeroTraceHarnessTests' own "highground"
@@ -398,7 +398,7 @@ public class GroundSlopeTests
         }
 
         // One logic tick per rendered frame - this test only runs a single frame, and
-        // AlundraPlayerManager.Tick's own per-tick work (animation advance) is irrelevant to Slope_18c,
+        // PlayerManager.Tick's own per-tick work (animation advance) is irrelevant to Slope_18c,
         // which UpdateGroundSlope computes from PosX/PosY/PosZ alone (already pulled from the root by the
         // time the IsPlayer branch runs - see Update's own E3.d paragraph).
         public int LogicTicksThisFrame(float elapsedTime) => 1;
@@ -443,13 +443,13 @@ public class GroundSlopeTests
         var (_, proxy) = HeroWorldFixture.BuildHeroPawn(
             world, settings, new Vector3(rootX, rootY, groundHeightPx), host);
 
-        // Production footprint (F4 fix) - AlundraEntitySpawnFactory.SetEntityDimensions is the SAME method the
+        // Production footprint (F4 fix) - EntitySpawnFactory.SetEntityDimensions is the SAME method the
         // real AdoptPlayerPawn calls with the hero's own real header (SizeX=21, SizeY=15, OffsetX=-10,
         // OffsetY=-7, OffsetZ=0); SizeZ=32 matches the CollisionComponent Box HeroWorldFixture builds.
         EntitySpawnFactory.SetEntityDimensions(proxy, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
 
         // One real production frame: CharacterMotionSystem runs first (root stays put - already exactly
-        // on real ground, no pad input), then AlundraEntityScriptProxy.Update's IsPlayer branch runs
+        // on real ground, no pad input), then EntityScriptProxy.Update's IsPlayer branch runs
         // MovePlayer (sets Flags |= Gravity, BlockedByEntity/InputBlockedMask both clear) then
         // UpdateGroundSlope - the exact live call chain.
         world.Update(1f / 50f);
@@ -458,7 +458,7 @@ public class GroundSlopeTests
     }
 
     // -----------------------------------------------------------------------------------------
-    // F8 (adversarial review): out-of-map footprint - AlundraCellsCollisionField.TrySampleGround/
+    // F8 (adversarial review): out-of-map footprint - CellsCollisionField.TrySampleGround/
     // SampleGroundProperty clamp any coordinate to the nearest edge cell rather than failing (documented
     // deviation on that class), so an out-of-map probe always resolves to a real cell's own data. Both
     // directions exercised: fully negative (clamps to cell (0,0)) and fully beyond the map's own 1248x960

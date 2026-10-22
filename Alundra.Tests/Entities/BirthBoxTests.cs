@@ -110,7 +110,7 @@ public sealed class BirthBoxTests : IDisposable
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // [R] (b2) The box of the creation (0x80039F30): HasFrameBox right after the creation is the has_box of the oracle, for the 151 prefabs of the global page and the numbers of the map page valid on map 14 that B2 of
-    // AlundraSpawnBySpriteIndexInterfaceTests replays; the vectors at 0 stay false in the same assertion.
+    // SpawnBySpriteIndexInterfaceTests replays; the vectors at 0 stay false in the same assertion.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     private static Dictionary<string, bool> HasBoxByVector(string file)

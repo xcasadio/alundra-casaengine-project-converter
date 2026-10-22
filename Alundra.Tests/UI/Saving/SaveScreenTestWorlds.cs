@@ -31,7 +31,7 @@ using Alundra.Tests.Audio;
 namespace Alundra.Tests.UI.Saving;
 
 /// <summary>E16.e T3/T4: a headless world with a game whose active render view carries a given UI runtime - the
-/// recipe of <c>AlundraDialoguePresenterWiringTests</c>.</summary>
+/// recipe of <c>DialoguePresenterWiringTests</c>.</summary>
 internal static class SaveScreenTestWorlds
 {
     internal static World WorldWithUIView(string name, IUIViewRuntime uiView)

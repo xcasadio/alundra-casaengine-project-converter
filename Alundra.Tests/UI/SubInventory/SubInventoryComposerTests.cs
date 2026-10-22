@@ -247,7 +247,7 @@ public sealed class SubInventoryComposerTests
     }
 
     // Cursor reference table (plan §1.5): box index (this class' own RestBoxPositions order) and offset per
-    // position 0..13 - CursorBoxByPosition/CursorOffsetX/CursorOffsetY of AlundraSubInventoryDirector.
+    // position 0..13 - CursorBoxByPosition/CursorOffsetX/CursorOffsetY of SubInventoryDirector.
     private static readonly int[] CursorBoxByPosition = { 0, 0, 0, 0, 0, 0, 0, 4, 4, 1, 1, 1, 1, 1 };
     private static readonly int[] CursorOffsetX = { 0x42, 0x1A, 0x6A, 0x1A, 0x6A, 0x42, 0x42, 0x1C, 0x1C, 0x1C, 0x3C, 0x5C, 0x72, 0x92 };
     private static readonly int[] CursorOffsetY = { -4, 0x0C, 0x0C, 0x3C, 0x3C, 0x4C, 0x24, 0x10, 0x34, 0x00, 0x00, 0x00, 0x00, 0x00 };

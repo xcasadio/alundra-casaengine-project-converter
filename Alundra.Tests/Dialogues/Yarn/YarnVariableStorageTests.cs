@@ -53,7 +53,7 @@ public sealed class YarnVariableStorageTests : IDisposable
     public void Read_BitSetByOpcode0x05_IsTrueInIf()
     {
         var gameState = new GameState();
-        gameState.AddFlag(42, 1u << (42 & 0x1f)); // AlundraEventProgramRunner.cs:449 (0x05)
+        gameState.AddFlag(42, 1u << (42 & 0x1f)); // EventProgramRunner.cs:449 (0x05)
         var (runner, presenter) = NewRunner(gameState);
         DialogueAsset asset = CompileAsset("ReadFlag", """
             title: Start
@@ -134,7 +134,7 @@ public sealed class YarnVariableStorageTests : IDisposable
 
         runner.Start(asset);
 
-        // Same bit test as FlagBranch (AlundraEventProgramRunner.cs:1416, opcodes 0x30/0x31).
+        // Same bit test as FlagBranch (EventProgramRunner.cs:1416, opcodes 0x30/0x31).
         var mask = 1u << (100 & 0x1f);
         Assert.Equal(mask, gameState.GetFlag(100) & mask);
     }
@@ -187,7 +187,7 @@ public sealed class YarnVariableStorageTests : IDisposable
                 """));
 
             var viaOpcode = new GameState();
-            viaOpcode.AddFlag(flagId, 1u << (n & 0x1f)); // opcode 0x05 (AlundraEventProgramRunner.cs:449)
+            viaOpcode.AddFlag(flagId, 1u << (n & 0x1f)); // opcode 0x05 (EventProgramRunner.cs:449)
 
             Assert.Equal(viaOpcode.GameFlags, viaYarn.GameFlags);
             Assert.Equal(viaOpcode.TemporaryFlags, viaYarn.TemporaryFlags);
@@ -219,14 +219,14 @@ public sealed class YarnVariableStorageTests : IDisposable
 
             var viaOpcode = new GameState();
             (isTemporary ? viaOpcode.TemporaryFlags : viaOpcode.GameFlags)[IndexOf(n)] = 0xFFFFFFFF;
-            viaOpcode.SetFlag(flagId, ~(1u << (n & 0x1f))); // opcode 0x06 (AlundraEventProgramRunner.cs:457)
+            viaOpcode.SetFlag(flagId, ~(1u << (n & 0x1f))); // opcode 0x06 (EventProgramRunner.cs:457)
 
             Assert.Equal(viaOpcode.GameFlags, viaYarn.GameFlags);
             Assert.Equal(viaOpcode.TemporaryFlags, viaYarn.TemporaryFlags);
         }
     }
 
-    private static int IndexOf(int n) => (n >> 5) & 0x3ff; // AlundraGameState.IndexOf, mirrored (private there).
+    private static int IndexOf(int n) => (n >> 5) & 0x3ff; // GameState.IndexOf, mirrored (private there).
 
     // -----------------------------------------------------------------------------------------
     // Refus (contrat item 5, D-E16-18/D-E16-25) : une ligne de journal par nom, aucun changement d'état.
@@ -486,7 +486,7 @@ public sealed class YarnVariableStorageTests : IDisposable
         }
     }
 
-    /// <summary>Same reflection precedent as <c>AlundraYarnBindingsTests.CapturingWarningLogger</c>.</summary>
+    /// <summary>Same reflection precedent as <c>YarnBindingsTests.CapturingWarningLogger</c>.</summary>
     private sealed class CapturingWarningLogger : ILogger, IDisposable
     {
         public List<string> WarningMessages { get; } = new();

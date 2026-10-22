@@ -78,7 +78,7 @@ internal sealed class JumpNpcRig
 
     /// <summary>
     /// The montage of <see cref="Build"/> with an animated sprite on the logical clock of the entity (the montage of
-    /// <c>AlundraAnimationClockDriveTests</c>, on the entity of the NPC): the animations <paramref name="anims"/> (each with the impulse it carries),
+    /// <c>AnimationClockDriveTests</c>, on the entity of the NPC): the animations <paramref name="anims"/> (each with the impulse it carries),
     /// the animation 0 current and target. The interpreter is <paramref name="runner"/> (null: no program), the tick program (C) enabled when it is given.
     /// One settling update at rest is run.
     /// </summary>

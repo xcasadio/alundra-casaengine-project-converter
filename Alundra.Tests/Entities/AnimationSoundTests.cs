@@ -354,7 +354,7 @@ public sealed class AnimationSoundTests
     public void T1_TheHeroArrivingByAdoptPlayerPawnInTheAnimation43_AsksSound10_AndTheFirstSwitchAsksNoSecond()
     {
         // Seam: the sound player of the world proxy (a recorder written over its backing field after the montage, the way
-        // AlundraArcGuardAndSoundHostTests does) and the arrival adoption invoked again, as UJ-7 does. The animation 43 carries an impulse and the sound 10
+        // ArcGuardAndSoundHostTests does) and the arrival adoption invoked again, as UJ-7 does. The animation 43 carries an impulse and the sound 10
         // (system bank); the default arrival animation, 0x36, has no sound and would prove nothing.
         var spec = new ArcSpec("E19t-arrival", "Inoa", "Inoa (inner)-179", new[] { 203, 1651, 1660 }, 0, 0, 0, 100, RealController: true, Prefabs: true,
             Arrival: new ArcArrival((17 * 24 + 12) << 16, (7 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0));

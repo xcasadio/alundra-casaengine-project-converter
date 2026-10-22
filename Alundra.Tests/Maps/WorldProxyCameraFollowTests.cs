@@ -64,8 +64,8 @@ public class WorldProxyCameraFollowTests
 
     /// <summary>
     /// Pinned test (plan acceptance): hand-computed at the hero's own New Game logical position, (804,
-    /// 952, 0) - AlundraWorldProxy.AdoptPlayerPawn: PosX = (33*24+12)&lt;&lt;16 = 804&lt;&lt;16, PosY =
-    /// (59*16+8)&lt;&lt;16 = 952&lt;&lt;16, PosZ = 0 (AlundraGameState.CameraTileX/Y = 33/59, TileWidth/
+    /// 952, 0) - WorldProxy.AdoptPlayerPawn: PosX = (33*24+12)&lt;&lt;16 = 804&lt;&lt;16, PosY =
+    /// (59*16+8)&lt;&lt;16 = 952&lt;&lt;16, PosZ = 0 (GameState.CameraTileX/Y = 33/59, TileWidth/
     /// Height = 24/16). By-hand arithmetic:
     /// <list type="bullet">
     /// <item><description>renderX = X = 804 (no X bias - 0xa0 is exactly half of 320).</description></item>
@@ -199,7 +199,7 @@ public class WorldProxyCameraFollowTests
     // overshot past an edge) must clamp on THIS call - proven by feeding the clamped result back in as
     // "current" for a second call and checking the position no longer moves at all once already pinned,
     // and moves immediately (not gradually) once the look-at target moves back inside bounds. This is a
-    // pure-math analogue of AlundraWorldProxyCameraFollowTests's own scope note: UpdateCameraFollow
+    // pure-math analogue of WorldProxyCameraFollowTests's own scope note: UpdateCameraFollow
     // itself needs a live World/Camera2dComponent and is out of reach here, but the exact sequence it
     // performs - smooth, then clamp, then feed the clamp back into next frame's smoothing input - is
     // fully exercised by chaining StepCameraScroll -> ClampCameraTargetToMap -> (next call) by hand,
@@ -263,7 +263,7 @@ public class WorldProxyCameraFollowTests
     // E5.c - AdvanceCameraSmoothing: the camera catches up once per LOGIC TICK, never per rendered
     // frame. Root cause of the reported vibration was that mismatch: a followed sprite only moves on a
     // 50Hz tick, so a camera that kept creeping between ticks crossed whole-pixel boundaries on its own
-    // and slid the sprite around the screen. See AlundraWorldProxy.UpdateCameraFollow's own doc.
+    // and slid the sprite around the screen. See WorldProxy.UpdateCameraFollow's own doc.
     // -----------------------------------------------------------------------------------------
 
     /// <summary>

@@ -128,7 +128,7 @@ public sealed class GameplayFreezeTests : IDisposable
     [Fact]
     public void Thaw_ControllerDrivenNpc_DeclaresItsOwnVerticalForceAgain()
     {
-        // AlundraEntityScriptProxy.Update declares FinalForceZ / 65536 once per tick; Stop() and
+        // EntityScriptProxy.Update declares FinalForceZ / 65536 once per tick; Stop() and
         // RestoreStateSnapshot both zero the latch, and a thaw frame may carry no tick.
         var proxy = NewProxyWithController(MidJump);
         proxy.Controller!.IsVerticalOwnedExternally = true;

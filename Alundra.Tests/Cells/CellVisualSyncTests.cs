@@ -51,7 +51,7 @@ public class CellVisualSyncTests : IDisposable
 
     public CellVisualSyncTests()
     {
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
@@ -74,7 +74,7 @@ public class CellVisualSyncTests : IDisposable
 
     // -----------------------------------------------------------------------------------------
     // Fixture: real map 389 data + records/tileset, headless World/Entity/TileMapComponent (no
-    // CasaEngineGame/GraphicsDevice), production wiring via AlundraWorldProxy.InstallCellAndOverlaySystems.
+    // CasaEngineGame/GraphicsDevice), production wiring via WorldProxy.InstallCellAndOverlaySystems.
     // -----------------------------------------------------------------------------------------
 
     private static string FindProjectRoot()

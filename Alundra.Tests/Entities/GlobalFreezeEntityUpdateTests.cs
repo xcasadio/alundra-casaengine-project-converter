@@ -41,8 +41,8 @@ namespace Alundra.Tests.Entities;
 /// would make this file depend on the WHOLE 1704-frame flag chain just to reach it. Seeding
 /// <see cref="EntityScriptProxy.TargetForceX"/>/<see cref="EntityScriptProxy.ForceX"/>
 /// directly exercises the exact same production code
-/// (<c>AlundraScriptedMotion.TickScriptedNpc</c>'s <see cref="EntityScriptProxy.Controller"/>-null
-/// branch, AlundraScriptedMotion.cs:233-241 - "production-safe... what the pre-E3 hero used", per that
+/// (<c>ScriptedMotion.TickScriptedNpc</c>'s <see cref="EntityScriptProxy.Controller"/>-null
+/// branch, ScriptedMotion.cs:233-241 - "production-safe... what the pre-E3 hero used", per that
 /// method's own doc) with a motion that keeps going every tick until frozen, instead of stopping on its
 /// own after a fixed real distance.
 /// </summary>
@@ -75,7 +75,7 @@ public sealed class GlobalFreezeEntityUpdateTests : IDisposable
 
     /// <summary>
     /// Mutations caught here (docs/plan-transitions-carte.md §3, T2's own mutation table):
-    /// "retirer la porte" and "omettre les passes de motion de AlundraEntityScriptProxy.Update du côté
+    /// "retirer la porte" and "omettre les passes de motion de EntityScriptProxy.Update du côté
     /// gelé" both surface as the SAME symptom - the NPC's pose/program-pick state changes while the box
     /// is open - so one test covers both. "mettre SyncAnimation dehors" is covered by the SAME run (a
     /// third, independent field on the SAME entity), since a mismatched TargetAnimationId/CurrentAnimationId
@@ -87,7 +87,7 @@ public sealed class GlobalFreezeEntityUpdateTests : IDisposable
         var projectRoot = FindProjectRoot();
         var document = MapEventProgramLoader.Load(projectRoot, WorldName);
         Assert.NotNull(document);
-        // Ground truth reused from AlundraDialogueOpcodesProductionTests' own SailorThirteen test: masked
+        // Ground truth reused from DialogueOpcodesProductionTests' own SailorThirteen test: masked
         // F index 13 -> code offset 1660, the real mono-line "0x27 ; 0x0D ; 0x05 ; 0xFF" program.
         Assert.Equal(1660, document!.EventCodesFTable[13]);
 
@@ -130,7 +130,7 @@ public sealed class GlobalFreezeEntityUpdateTests : IDisposable
                     Assert.True(director.IsOpen);
                     Assert.NotEqual(0u, s.GameState.PlayerControlFlags & GameState.PlayerControlBits.MenuOpen);
 
-                    // Seed a deterministic, script-independent walk (AlundraScriptedMotion.cs:233-241's own
+                    // Seed a deterministic, script-independent walk (ScriptedMotion.cs:233-241's own
                     // Controller-null branch: PosX/PosY += FinalForceX/Y every tick once Force is already
                     // at TargetForce, no ramp) - "pose" half of the assertion.
                     sailorEleven!.Controller = null;
@@ -147,17 +147,17 @@ public sealed class GlobalFreezeEntityUpdateTests : IDisposable
                     // unrelated RunPendingEventTriggers catch-up pass (called straight from RunFrame,
                     // below - a mirror of the D3 rescan, not itself gated by T2, and not the site T2
                     // touches) skips this entity outright (its own "continue" guard,
-                    // AlundraWorldProxy.cs:1539) regardless of whether the freeze holds - isolating the
+                    // WorldProxy.cs:1539) regardless of whether the freeze holds - isolating the
                     // assertion to entity.Update()'s OWN PickEventTrigger/RunPickedEvent call. Freeze
                     // means PickEventTrigger never re-picks a slot and RunPickedEvent never dispatches
                     // real bytecode, so the REAL interpreter's own per-entity resume state
                     // (EventProgramState.CodeIndex, EventProgramState.cs:39 - Tick is one of the two
-                    // slots the original ever resumes across calls off this, see AlundraEventProgramRunner's
+                    // slots the original ever resumes across calls off this, see EventProgramRunner's
                     // own class doc) never moves either.
                     sailorEleven.EventTrigger = ScriptHelper.ProgramUnknown;
 
                     // Seed an animation mismatch directly (R4/R3's own SyncAnimation correction,
-                    // AlundraFrameSyncPasses.cs:241): TryResolveAnimationTarget fires unconditionally
+                    // FrameSyncPasses.cs:241): TryResolveAnimationTarget fires unconditionally
                     // whenever CurrentAnimationId != TargetAnimationId, regardless of any
                     // AnimatedSpriteComponent - exactly what this bare-fallback proxy needs.
                     sailorEleven.CurrentAnimationId = 1;
@@ -207,7 +207,7 @@ public sealed class GlobalFreezeEntityUpdateTests : IDisposable
     /// [R4] mutation "mettre SyncTransform dedans" (docs/plan-transitions-carte.md §3, T2's own mutation
     /// table): the root position of an entity carrying a <see cref="Entity.RootComponent"/> and NO
     /// <see cref="EntityScriptProxy.Controller"/> - the only shape <see cref="FrameSyncPasses.SyncTransform"/>
-    /// actually writes to (AlundraFrameSyncPasses.cs:168-183: it is a no-op whenever a controller owns the
+    /// actually writes to (FrameSyncPasses.cs:168-183: it is a no-op whenever a controller owns the
     /// root) - must keep publishing the entity's CURRENT logical position every frame, even while
     /// <see cref="GameState.PlayerControlBits.GameplayBlockedMask"/> is posed. Deliberately headless
     /// and minimal (no <see cref="HeadlessIntroSimulation"/>, no map data needed for this specific

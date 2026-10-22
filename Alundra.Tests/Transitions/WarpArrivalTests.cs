@@ -32,7 +32,7 @@ using Alundra.Tests.Audio;
 namespace Alundra.Tests.Transitions;
 
 /// <summary>
-/// T5 (docs/plan-transitions-carte.md §3 T5, D-T-4/D-T-7): <c>AlundraWorldProxy.AdoptPlayerPawn</c>
+/// T5 (docs/plan-transitions-carte.md §3 T5, D-T-4/D-T-7): <c>WorldProxy.AdoptPlayerPawn</c>
 /// consuming <see cref="WarpDirector"/>'s pending arrival record instead of always writing the New
 /// Game constants, and <c>InstallScreenFadeSystems</c> transporting the arrival's own transition effect
 /// id into the log (D-T-7: reduced to effect 0 regardless).
@@ -44,7 +44,7 @@ namespace Alundra.Tests.Transitions;
 /// a real <see cref="HeroController"/> registered into <c>World.PlayerControllers</c> by
 /// reflection (the engine's own <c>InitializePlayerControllers</c> needs a full asset-catalog pawn prefab
 /// this headless montage does not have - same reflection-into-a-private-field precedent already used by
-/// this project's own <c>AlundraWarpDepartureTests.GetPendingWorldToLoad</c>).
+/// this project's own <c>WarpDepartureTests.GetPendingWorldToLoad</c>).
 ///
 /// Every test resets the FOUR session singletons this class' own montages touch (D-T-14).
 ///
@@ -82,7 +82,7 @@ public sealed class WarpArrivalTests : IDisposable
 
     // -----------------------------------------------------------------------------------------------
     // Fixture plumbing - real map 390 (this chantier's own arrival map, §1.1.d), same montage shape as
-    // AlundraWorldProxyGlobalFreezeTests.BuildRealMap389World (that class' own helpers are private).
+    // WorldProxyGlobalFreezeTests.BuildRealMap389World (that class' own helpers are private).
     // -----------------------------------------------------------------------------------------------
 
     private const string WorldName = "Ship Klark (inner)-390";
@@ -271,7 +271,7 @@ public sealed class WarpArrivalTests : IDisposable
     /// registers it into <paramref name="world"/>'s own <c>World.PlayerControllers</c> by reflection on
     /// the private backing list (<c>World.InitializePlayerControllers</c> needs a full asset-catalog pawn
     /// prefab this headless montage does not build) - <c>AdoptPlayerPawn</c>'s own
-    /// <c>world.PlayerControllers.OfType&lt;AlundraPlayerController&gt;().FirstOrDefault()</c> lookup then
+    /// <c>world.PlayerControllers.OfType&lt;HeroController&gt;().FirstOrDefault()</c> lookup then
     /// finds it exactly as it would the engine-spawned one.</summary>
     private static void RegisterPlayerController(World world, Entity pawn)
     {
@@ -297,7 +297,7 @@ public sealed class WarpArrivalTests : IDisposable
         DestTileX = 10,
         DestTileY = 40,
         ZLevel = 0,
-        // Flags 0x5001 carries TransitionEffect 0 (bits 4-6, AlundraPortalRecord.TransitionEffectId) - a
+        // Flags 0x5001 carries TransitionEffect 0 (bits 4-6, PortalRecord.TransitionEffectId) - a
         // non-zero id (domain 0..7) is injected separately by ORing it in, keeping
         // RequiredFacing/ArrivalDirection/WarpBehavior identical to the real record.
         Flags = 0x5001 | (transitionEffectId << 4),
@@ -444,7 +444,7 @@ public sealed class WarpArrivalTests : IDisposable
 
         // §1.4.f/D-T-15: InstallScreenFadeSystems (called from InitializeWithWorld, before AdoptPlayerPawn)
         // arms the incoming fade unconditionally on every map entry, warp arrival or not - subtractive,
-        // 0xff0000 -> 0, 16 ticks (AlundraScreenFadeDirector.InstallForMapEntry's own doc).
+        // 0xff0000 -> 0, 16 ticks (ScreenFadeDirector.InstallForMapEntry's own doc).
         Assert.False(ScreenFadeDirector.Instance.IsSettled);
         for (var tick = 0; tick < 15; tick++)
         {

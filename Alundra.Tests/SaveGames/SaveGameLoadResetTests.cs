@@ -44,7 +44,7 @@ public sealed class SaveGameLoadResetTests : IDisposable
         WarpDirector.Instance.ResetForTests();
     }
 
-    // ---- AlundraGameState.ResetSessionForLoad (K8 step 1) ------------------------------------------------
+    // ---- GameState.ResetSessionForLoad (K8 step 1) ------------------------------------------------
 
     [Fact]
     public void GameState_ResetSessionForLoad_ResetsEverySessionField_AndKeepsEveryFieldTheSaveCarries()
@@ -119,7 +119,7 @@ public sealed class SaveGameLoadResetTests : IDisposable
         Assert.Equal(0x77u, state.TemporaryFlags[2]); // the map entry's own job (InstallForMapEntry), not this one.
     }
 
-    // ---- AlundraHudDirector.ResetDisplayForLoad (K8 step 3, SC1) --------------------------------------------
+    // ---- HudDirector.ResetDisplayForLoad (K8 step 3, SC1) --------------------------------------------
 
     private static void TickHud(HudDirector hud, HudPresenter presenter, int ticks)
     {

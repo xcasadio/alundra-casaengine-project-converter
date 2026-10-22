@@ -130,7 +130,7 @@ public sealed class Font3GlyphTests
     // than referenced) purely to satisfy StaticSpriteFont.FromBMFont's non-null-Texture2D requirement.
     // E19.f2b1c: MonoGame records the thread that first touches it as its "UI thread" and a second hidden Game
     // on another thread cannot create a device, so the pixel test of the text box screen and this file share ONE
-    // dedicated thread and device (Alundra.Tests.UI.TextBoxGpu, UI/TextBoxGpuHarness.cs); this shim keeps the
+    // dedicated thread and device (Alundra.Tests.UI.Shared.TextBoxGpu, UI/Shared/TextBoxGpu.cs); this shim keeps the
     // shape the tests below use.
 
     private sealed class GpuThread

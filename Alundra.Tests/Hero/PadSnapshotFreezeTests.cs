@@ -28,7 +28,7 @@ namespace Alundra.Tests.Hero;
 /// original never freezes its pad global: <c>PadManager.UpdatePads</c> runs from the main loop
 /// (GameEngine.cs:1518) and even from inside the warp transition loop (GameEngine.cs:280), both outside
 /// <c>UpdateEntities</c>. Freezing it froze the very input the dialogue box's own advance/close pass
-/// consumes (<c>AlundraDialogueDirector.Tick</c> reads <c>LastPadState.ButtonsJustPressed</c>), so the box
+/// consumes (<c>DialogueDirector.Tick</c> reads <c>LastPadState.ButtonsJustPressed</c>), so the box
 /// could never be advanced by a fresh press - and MenuOpen, which only that close path clears, stayed
 /// posted forever, keeping the whole entity pass frozen.
 ///

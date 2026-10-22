@@ -368,7 +368,7 @@ public sealed class CreationSwitchClockTests : IDisposable
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // [V] (a6) Zero change: an entity of the MAP LOAD keeps its first clock tick uncounted (the known deviation Q-E0A5-1 and D-E0A5-5: the cursor shows 0, 1, 2 at its first three clock ticks), without the flag. Since E20.e0a4 (D-E0A4-6)
-    // the pin is on an entity of the load: the entities born from a record by a script carry the rule (AlundraRecordBirthClockTests); the creation sound of an entity born by the interface is requested once and no impulse is given
+    // the pin is on an entity of the load: the entities born from a record by a script carry the rule (RecordBirthClockTests); the creation sound of an entity born by the interface is requested once and no impulse is given
     // in its window.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

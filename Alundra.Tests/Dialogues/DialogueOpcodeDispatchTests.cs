@@ -453,7 +453,7 @@ public class DialogueOpcodeDispatchTests : IDisposable
     public void Choice_0x44_FirstEntry_OpensRealOuiNonLabels_ThenBlocksUntilSelected_ThenWritesResult()
     {
         // E15.c T6: OUI/NON now come from the real exported dialogue_etc asset, injected directly -
-        // AlundraEtcStringTable no longer reads Dialogues/etc-index.json/global-strings.json off
+        // EtcStringTable no longer reads Dialogues/etc-index.json/global-strings.json off
         // EngineEnvironment.ProjectPath.
         EtcStringTable.SetEtcDialogueAssetForTests(
             DialogueTestAssets.LoadFromDisk(Path.Combine(FindProjectRoot(), "Dialogues", "Etc.dialogue")));

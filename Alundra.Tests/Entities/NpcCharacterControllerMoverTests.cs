@@ -51,7 +51,7 @@ public class NpcCharacterControllerMoverTests
     private const string Bank146EntityRelativePath = "Entities/Marin-passager-mouette-146/Marin-passager-mouette-146.entity";
 
     // -----------------------------------------------------------------------------------------
-    // Fixture plumbing - same shape as AlundraCharacterControllerAdoptionTests's own private helpers.
+    // Fixture plumbing - same shape as CharacterControllerAdoptionTests's own private helpers.
     // -----------------------------------------------------------------------------------------
 
     private static string? FindProjectRoot()
@@ -93,7 +93,7 @@ public class NpcCharacterControllerMoverTests
     /// AssetContentManager" constraint <see cref="LoadMap389TileMapData"/> itself works under (no
     /// GraphicsDevice/content pipeline in this headless test process). Feeds
     /// <see cref="NavigationGrid2D.TryCreateFromTileMap"/> in EXACTLY the order
-    /// <c>AlundraWorldProxy.TryBuildNavigationGrid</c> resolves them at runtime (position-indexed by
+    /// <c>WorldProxy.TryBuildNavigationGrid</c> resolves them at runtime (position-indexed by
     /// <see cref="TileMapData.TileSetDataAssetIds"/>).
     /// </summary>
     private static List<TileSetData> LoadMap389TileSets(string projectRoot, TileMapData tileMapData)
@@ -235,7 +235,7 @@ public class NpcCharacterControllerMoverTests
 
         var controllerComponent = new CharacterControllerComponent { Settings = settings };
         controllerComponent.SetControlMode(CharacterControlMode.Script);
-        // E4.g: mirrors AlundraEntitySpawnFactory.ApplySpawnInitialization's own real spawn path - this bare
+        // E4.g: mirrors EntitySpawnFactory.ApplySpawnInitialization's own real spawn path - this bare
         // test pawn bypasses that method entirely, so it must set the flag itself, the same way every
         // real scripted NPC gets it at spawn.
         controllerComponent.IsVerticalOwnedExternally = true;
@@ -294,7 +294,7 @@ public class NpcCharacterControllerMoverTests
         {
         }
 
-        // Bug fix (AlundraLogicClock's own class doc): this file drives world.Update(1/50) in a loop, one
+        // Bug fix (LogicClock's own class doc): this file drives world.Update(1/50) in a loop, one
         // call per test-frame - a single-frame auto-closed clock reproduces the pre-fix "always exactly 1
         // tick per world.Update call" behaviour these tests already assume, since every call passes the
         // SAME dt as the clock's own fixed-tick constant. Same pattern as every other FakeScriptHost in
@@ -329,7 +329,7 @@ public class NpcCharacterControllerMoverTests
         {
         }
 
-        // Bug fix (AlundraLogicClock's own class doc): see FakeScriptHost's own doc on this same member,
+        // Bug fix (LogicClock's own class doc): see FakeScriptHost's own doc on this same member,
         // above - identical rationale.
         private readonly LogicClock _logicClock = new();
         public int LogicTicksThisFrame(float elapsedTime)
@@ -381,7 +381,7 @@ public class NpcCharacterControllerMoverTests
     // (1) Walk kinematics: real bank-146 anim 10 (Speed 128, Acceleration 6 - a genuine non-zero
     // acceleration, unlike anim 1's Speed 160/Acceleration 0) + cardinal direction 24 (0x18, the third
     // CardinalDirectionTable entry - AnimationTables.OffsetXList[24]=0x300/768, OffsetYList[24]=0, pure
-    // +X). Transient ramp AND steady state, like the E2 scenario 208/1 (AlundraPlayerManagerTests).
+    // +X). Transient ramp AND steady state, like the E2 scenario 208/1 (PlayerManagerTests).
     // -----------------------------------------------------------------------------------------
 
     [Fact]
@@ -401,7 +401,7 @@ public class NpcCharacterControllerMoverTests
         }
 
         var world = BuildWorld(field);
-        // Flat row 57, columns 23+ (height 0, sol 80px) - same open stretch AlundraCharacterControllerAdoptionTests
+        // Flat row 57, columns 23+ (height 0, sol 80px) - same open stretch CharacterControllerAdoptionTests
         // own RootOwnership tests use for the hero.
         var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(564f, 920f, 80f), new FakeScriptHost());
 
@@ -416,12 +416,12 @@ public class NpcCharacterControllerMoverTests
 
         const int frames = 70;
 
-        // Hand-computed reference (bit-for-bit AlundraScriptedMotion.RunOneKinematicTick/IncrementForce,
+        // Hand-computed reference (bit-for-bit ScriptedMotion.RunOneKinematicTick/IncrementForce,
         // PhysicsEngine.cs:1579-1598/1551-1576): World.Update call #1 has proxy.CurrentAnimationId still at
         // its spawn-time bit-complement (~0, guaranteed != 10) - AnimSetsByAnim[~0] misses, so tick 1's
         // Speed/TargetForce/ForceStep all resolve to 0 (zero contribution; SyncAnimation only sets
         // CurrentAnimationId=10 at the END of that same frame - E4.b's own documented one-frame latency,
-        // see AlundraEntityScriptProxy.Update's own E4.b doc). From World.Update call #2 on,
+        // see EntityScriptProxy.Update's own E4.b doc). From World.Update call #2 on,
         // CurrentAnimationId=10 (a real AnimSet hit): TargetForceX = OffsetXList[24]*128 = 0x300*128 =
         // 98304; ForceStepX = |98304-0| >> 6 = 1536 (recomputed exactly once, since Speed/TargetDirection/
         // Acceleration then stay unchanged every following tick); IncrementForce ramps ForceX by exactly
@@ -453,7 +453,7 @@ public class NpcCharacterControllerMoverTests
     // impulse applied the same tick as a horizontal step-up - isolating to a standstill impulse avoids it).
     // ForceZ = SignExtend16((255<<8)|0) * 0x10000 >> 8 = -256 * 0x10000 >> 8 = -65536 (16.16), i.e. a
     // constant -50 px/s (-1 px/tick, applied every logic tick through
-    // AlundraEntityScriptProxy.EvaluateEntitySupport's own Controller.Move() displacement - root-cause
+    // EntityScriptProxy.EvaluateEntitySupport's own Controller.Move() displacement - root-cause
     // vertical-fidelity fix, see that method's own doc) - the real block-18 program
     // clears gravity (0x17) BEFORE this impulse, so this is a linear (non-accelerated) fall, not a
     // jump/liftoff: "IsOnGround 0 during flight, 1 after" per the plan's own acceptance wording, without a
@@ -477,7 +477,7 @@ public class NpcCharacterControllerMoverTests
             return;
         }
 
-        // Cell (18,57): flat, sol 80px (same cell AlundraCharacterControllerAdoptionTests's own Fall test
+        // Cell (18,57): flat, sol 80px (same cell CharacterControllerAdoptionTests's own Fall test
         // uses for the hero). Spawn 50px above it, matching the real impulse's own fall distance/time.
         var world = BuildWorld(field);
         var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(444f, 920f, 130f), new FakeScriptHost());
@@ -492,7 +492,7 @@ public class NpcCharacterControllerMoverTests
 
         // 0x1B: real block-18 params [0,255] - SignExtend16((v2<<8)|v1) * 0x10000 >> 8. Only the DLL-side
         // ForceZ struct field is set (matching the real opcode handler post-fix - see
-        // AlundraEventProgramRunner's own 0x1B doc): EvaluateEntitySupport reads it from here every tick,
+        // EventProgramRunner's own 0x1B doc): EvaluateEntitySupport reads it from here every tick,
         // never a manually pre-poked Controller.Velocity (which real production code never sets directly
         // for a scripted NPC any more either).
         proxy.ForceZ = unchecked((short)(0 | (255 << 8))) * 0x10000 >> 8;
@@ -653,14 +653,14 @@ public class NpcCharacterControllerMoverTests
     // -----------------------------------------------------------------------------------------
     // (3c) THE user-visible regression - sailor 12 stuck at the intro's own last staircase (map 389,
     // after commit 1d460f0): real stair cell (13,27), slope 5 height 10, the SAME fixture
-    // AlundraCharacterControllerAdoptionTests.Stairs_SteppingDownTheSlope_FollowsEachStepInTurn uses for
+    // CharacterControllerAdoptionTests.Stairs_SteppingDownTheSlope_FollowsEachStepInTurn uses for
     // the hero's own direct-Move stair-following test ((324,439,160) -&gt; (324,443,156) -&gt;
     // (324,447,152), walking +Y/south = descending). This NPC spawns at the BOTTOM of that same slope
     // ((324,447,152)) and walks NORTH (TargetDirection 16: OffsetXList[16]=0/OffsetYList[16]=-512, pure
     // -Y, the reverse of the hero's own descending direction) - i.e. it must CLIMB the same slope the
     // hero descends, and onto the real flat deck at the slope's own documented top-corner height (160,
     // per the hero test's own comment) - a scripted mover, not a direct Controller.Move, so this
-    // exercises the SAME AlundraScriptedMotion.TickScriptedNpc + EvaluateEntitySupport path the real
+    // exercises the SAME ScriptedMotion.TickScriptedNpc + EvaluateEntitySupport path the real
     // sailor 12 walks through.
     //
     // Fidelity note (verified empirically, both with and without the fix, real map/settings): this
@@ -673,7 +673,7 @@ public class NpcCharacterControllerMoverTests
     // and worth fixing regardless (see EvaluateEntitySupport's own doc for the full citation/rationale,
     // and TerrainLanding_.../VerticalImpulse_... above for the state-level regression coverage that DOES
     // discriminate cleanly) - this test additionally proves the SAME missing reset on the EXACT real
-    // stair cells the user hit: <see cref="AlundraEntityScriptProxy.ForceZ"/> must recover to 0 on every
+    // stair cells the user hit: <see cref="EntityScriptProxy.ForceZ"/> must recover to 0 on every
     // grounded tick while climbing, not merely decay unboundedly underneath a trajectory this engine's
     // own snap happens to still render correctly.
     // -----------------------------------------------------------------------------------------
@@ -696,7 +696,7 @@ public class NpcCharacterControllerMoverTests
 
         var world = BuildWorld(field);
         // Bottom of the real stair cell (13,27) - the hero's own final position in
-        // AlundraCharacterControllerAdoptionTests.Stairs_SteppingDownTheSlope_FollowsEachStepInTurn.
+        // CharacterControllerAdoptionTests.Stairs_SteppingDownTheSlope_FollowsEachStepInTurn.
         var (entity, proxy) = BuildNpcPawn(world, settings, new Vector3(324f, 447f, 152f), new FakeScriptHost());
         world.Update(1f / 50f); // register with CharacterMotionSystem first.
 
@@ -879,7 +879,7 @@ public class NpcCharacterControllerMoverTests
         // i.e. +3.5 px/tick/+175 px/s) reissued every tick for 10 ticks, exactly the real gull program's own
         // Wait(N)-gated 0x1B loop before the 0x63/apex.
         //
-        // Root-cause vertical-fidelity fix (see AlundraEntityScriptProxy.EvaluateEntitySupport's own doc):
+        // Root-cause vertical-fidelity fix (see EntityScriptProxy.EvaluateEntitySupport's own doc):
         // 0x1B's own handler now ONLY sets the DLL-side ForceZ struct field (no longer pokes
         // Controller.SetVerticalVelocity directly - that used to let CharacterMotionSystem's own per-
         // RENDER-FRAME integrator apply the RAW pre-decay impulse as a SECOND, independent source of motion
@@ -975,7 +975,7 @@ public class NpcCharacterControllerMoverTests
     }
 
     // -----------------------------------------------------------------------------------------
-    // (4) Root-ownership replay of the E3.d pattern (AlundraCharacterControllerAdoptionTests
+    // (4) Root-ownership replay of the E3.d pattern (CharacterControllerAdoptionTests
     // .RootOwnership_OneHundredFramesFlatWalk...) on an NPC: 100 frames of flat walking via a direct
     // Controller.Move (bypassing the scripted mover, isolating root-pull correctness), |Pos16.16 - pure
     // integration| bounded, no monotonic growth.
@@ -1031,18 +1031,18 @@ public class NpcCharacterControllerMoverTests
     // (5) End-to-end spawn regression (verifier finding F1, P2): ApplySpawnInitialization must itself
     // populate AnimSetsByAnim, not just a hand-built test fixture. Drives a REAL "Entities" record (bank
     // 146, pulled straight out of the real map 389 tileMapData) through the REAL spawn path -
-    // AlundraEntitySpawnFactory.CreateEntityFromRecord -&gt; CreateEntityFromPrefab -&gt; ApplySpawnInitialization -
+    // EntitySpawnFactory.CreateEntityFromRecord -&gt; CreateEntityFromPrefab -&gt; ApplySpawnInitialization -
     // with a REAL SpriteRecordCatalog reading the real Data/sprite-records.json (so the AnimSets asserted
     // below come straight off the converter export, not a value this test transcribed by hand). Only the
     // "prefab" argument itself is a hand-built in-memory Entity: the headless test process has no live
     // AssetContentManager to Load&lt;Entity&gt; a real .entity file from disk (same constraint
     // CreateEntityFromRecord's own doc comment states, and the same pattern
-    // AlundraWorldProxySpawnInitializationTests's own "Creation-flow integration" test already uses) - this
+    // WorldProxySpawnInitializationTests's own "Creation-flow integration" test already uses) - this
     // is the closest reachable seam to a genuinely full spawn (world's own InitializeWithWorld spawn loop)
     // short of a live GraphicsDevice/content pipeline. Without ApplySpawnInitialization's own
     // "proxy.AnimSetsByAnim = header.AnimSets" line, the first assertion below (AnimSetsByAnim non-null)
     // fails outright, and the walk-kinematics assertion after it would fail too (Speed resolves to 0 -
-    // AlundraScriptedMotion.RunOneKinematicTick's own hasAnimSet miss).
+    // ScriptedMotion.RunOneKinematicTick's own hasAnimSet miss).
     // -----------------------------------------------------------------------------------------
 
     [Fact]
@@ -1122,7 +1122,7 @@ public class NpcCharacterControllerMoverTests
         // (23,57) with no ground at Z=80 (the real terrain there is far below), only ever safe for this
         // file's OTHER (564,920,80) fixtures because BuildNpcPawn leaves Flags at 0 (Gravity never set) -
         // this test's entity goes through the REAL spawn path instead
-        // (AlundraEntitySpawnFactory.CreateEntityFromRecord -&gt; ApplySpawnInitialization), which DOES carry the
+        // (EntitySpawnFactory.CreateEntityFromRecord -&gt; ApplySpawnInitialization), which DOES carry the
         // real header's own Gravity flag/MapGravityRaw, so a genuinely resting spawn location matters here.
         proxy.PosX = 444 * 65536;
         proxy.PosY = 920 * 65536;
@@ -1198,8 +1198,8 @@ public class NpcCharacterControllerMoverTests
         WireRealTickProgram(proxy, new[] { 0x1F, 24, 0, 0x1A, 254, 0xFF });
 
         // Hand-computed reference: the 0x1F's own dispatch at World.Update call N reads PosX as of the
-        // END of call N-1's own physics tick (AlundraEntityScriptProxy.Update runs pick/run BEFORE this
-        // frame's own AlundraScriptedMotion tick). Call #1's own tick contributes 0 (CurrentAnimationId
+        // END of call N-1's own physics tick (EntityScriptProxy.Update runs pick/run BEFORE this
+        // frame's own ScriptedMotion tick). Call #1's own tick contributes 0 (CurrentAnimationId
         // still the spawn-time bit-complement, AnimSetsByAnim miss - E4.b's own documented one-frame
         // latency). From call #2's own tick on, Acceleration 0 jumps ForceX straight to TargetForceX =
         // OffsetXList[24]*160 = 0x300*160 = 122880 (16.16) EVERY tick (no ramp) = 1.875 px/tick exactly.
@@ -1222,7 +1222,7 @@ public class NpcCharacterControllerMoverTests
 
     // -----------------------------------------------------------------------------------------
     // (7) E4.d, item 7(2)/(3): a REAL map-389 wall (cell (24,39), walkability 1 - same cell/mask
-    // AlundraCharacterControllerAdoptionTests.Mask_ClassBMaskOnEqualHeightCells_StopsAtContact already
+    // CharacterControllerAdoptionTests.Mask_ClassBMaskOnEqualHeightCells_StopsAtContact already
     // proves blocks under a ClassB mask 0x41) curtails a due-east walk. 0x1E gets a synthetic navigation
     // grid (map 389 itself has 0 blocked cells - E4.a's own finding) with the SAME cell blocked and
     // detours around it without ending; 0x1F has NO grid and ends immediately instead (D5: no detour for
@@ -1499,7 +1499,7 @@ public class NpcCharacterControllerMoverTests
         Assert.True(hitFrame > 0, "the wall should eventually curtail the eastward walk.");
 
         // Turn away from the wall - nothing curtails a westward move here, so ForceAdjusted must clear
-        // again at the very next frame's own top-of-tick reset (AlundraScriptedMotion.TickScriptedNpc).
+        // again at the very next frame's own top-of-tick reset (ScriptedMotion.TickScriptedNpc).
         proxy.TargetDirection = 8; // reverse of 24 ((24+0x10)&0x1f), matching opcode 0x0A's own formula.
         world.Update(1f / 50f);
 
@@ -1691,7 +1691,7 @@ public class NpcCharacterControllerMoverTests
         }
 
         var world = BuildWorld(field);
-        // Cell (18,57): flat, sol 80px (same cell/spawn AlundraNpcCharacterControllerMoverTests' own
+        // Cell (18,57): flat, sol 80px (same cell/spawn NpcCharacterControllerMoverTests' own
         // VerticalImpulse_RealBlockEighteen0x1BValue... test uses) - 50px fall, same constant-velocity
         // shape (0x17 clears gravity: Flags carries no Gravity bit, so ApplyGravitySettingsToController
         // zeroes both Settings.Gravity/MaxFallSpeed - a clean, non-accelerated fall).
@@ -1706,9 +1706,9 @@ public class NpcCharacterControllerMoverTests
         // clean, non-accelerated fall, matching this test's own "0x1B-equivalent" doc).
         proxy.ForceZ = -65536;
 
-        // Root-cause vertical-fidelity fix (see AlundraEntityScriptProxy.EvaluateEntitySupport's own doc):
+        // Root-cause vertical-fidelity fix (see EntityScriptProxy.EvaluateEntitySupport's own doc):
         // TileZ is refreshed twice this same tick while falling - once by
-        // AlundraScriptedMotion.RunOneKinematicTick (from THIS tick's own PRE-vertical-step PosZ, since
+        // ScriptedMotion.RunOneKinematicTick (from THIS tick's own PRE-vertical-step PosZ, since
         // that call runs before EvaluateEntitySupport in the same fused per-tick loop - see Update's own
         // doc), and no further refresh happens until EITHER the entity lands (EvaluateEntitySupport's own
         // landing branch explicitly sets TileZ = PosZ &gt;&gt; 20 again) or the NEXT tick's own
@@ -1858,7 +1858,7 @@ public class NpcCharacterControllerMoverTests
         // Engine-integration fix (coordinator-dispositioned FIX after the finding this test itself first
         // surfaced): record 2/11's real authored margin is exactly ONE 16.16 unit (the STRICT comparator's
         // own edge, verified above) - below float32's own representable precision at ~400px magnitude
-        // (ULP ~1/32 px, i.e. ~2048 16.16 units). Without AlundraEntityScriptProxy.Update's own
+        // (ULP ~1/32 px, i.e. ~2048 16.16 units). Without EntityScriptProxy.Update's own
         // WasEntitySupportedLastTick pull-preservation (see that field's own doc), the FIRST real
         // World.Update would collapse PosZ from 26214401 (a margin of one unit) to 26214400 by re-quantizing it through the
         // engine's float Vector3 root transform, permanently defeating the strict comparator one tick after
@@ -2160,7 +2160,7 @@ public class NpcCharacterControllerMoverTests
         proxy.ApplyGravitySettingsToController();
 
         // 0x1B [0,255] - real value, -1 px/tick. Only the DLL-side ForceZ struct field is set (matching
-        // the real opcode handler post-fix - see AlundraEventProgramRunner's own 0x1B doc);
+        // the real opcode handler post-fix - see EventProgramRunner's own 0x1B doc);
         // EvaluateEntitySupport's own Controller.Move() reads it every tick, so a redundant manual
         // Controller.SetVerticalVelocity call here would double this tick's own displacement instead of
         // matching it (root-cause vertical-fidelity fix - see that method's own doc).
@@ -2249,7 +2249,7 @@ public class NpcCharacterControllerMoverTests
 
     // -----------------------------------------------------------------------------------------
     // Vertical fidelity fix (user-reported runtime timing bug, gull entity 6 of map 389): a controller-
-    // driven NPC's vertical is now entirely owned by AlundraEntityScriptProxy.EvaluateEntitySupport's own
+    // driven NPC's vertical is now entirely owned by EntityScriptProxy.EvaluateEntitySupport's own
     // per-tick decay + SetVerticalVelocity, never by the engine's own continuous Settings.Gravity/
     // MaxFallSpeed (see that method's own doc and ApplyGravitySettingsToController's own doc for the full
     // measured numbers: ~158 px/s vs the faithful 150 px/s, 179.25 px vs 209.25 px westward drift).
@@ -2281,7 +2281,7 @@ public class NpcCharacterControllerMoverTests
             // Fresh throwaway state every call (never resumed) - deliberately: this stand-in for program
             // 134's own real bytecode only needs to dispatch ONE instruction (0x1B) per call, so it always
             // starts back at CodeIndex 0, same shape the non-resuming A/D/E/F slots already use (see
-            // AlundraEventProgramRunner.RunScript's own class doc on _slotAScratchState).
+            // EventProgramRunner.RunScript's own class doc on _slotAScratchState).
             var state = new EventProgramState { Codes = ClimbBytes };
             _opcodeRunner.RunOneScriptCall(entity, state, programSlot);
         }
@@ -2742,8 +2742,8 @@ public class NpcCharacterControllerMoverTests
 
     // -----------------------------------------------------------------------------------------
     // ONE-CLOCK fix (user-reported stall, sailor entity 12 of map 389 stuck on opcode 0x1F at pc 1470):
-    // AlundraScriptedMotion used to run its own SEPARATE per-entity 50 Hz accumulator, fed raw elapsedTime
-    // every RENDERED frame, completely independent of the shared AlundraLogicClock that already gates the
+    // ScriptedMotion used to run its own SEPARATE per-entity 50 Hz accumulator, fed raw elapsedTime
+    // every RENDERED frame, completely independent of the shared LogicClock that already gates the
     // script (pick/run) pass. At the user's own real frame rate (dt=1/123, NOT an exact divisor of 1/50)
     // the two accumulators phase-drifted: ForceAdjusted was cleared on a render frame that carried no
     // motion sub-step and set only on a frame that did, so a 0x1F's own script-side read of ForceAdjusted
@@ -3038,7 +3038,7 @@ public class NpcCharacterControllerMoverTests
             if (sawForceAdjustedSet && !tickHappenedThisFrame)
             {
                 // THE invariant this fix guarantees: a render frame that carried NO logic tick must never
-                // change ForceAdjusted - only a tick's own clear-then-maybe-set (AlundraScriptedMotion's
+                // change ForceAdjusted - only a tick's own clear-then-maybe-set (ScriptedMotion's
                 // RunOneMotionTick) may touch it. Pre-fix, TickScriptedNpc ran unconditionally every
                 // RENDER frame and unconditionally cleared ForceAdjusted at its own top regardless of
                 // whether its OWN separate accumulator actually ran a motion sub-step that frame - so a
@@ -3064,7 +3064,7 @@ public class NpcCharacterControllerMoverTests
     // E4.g invariant (A): EvaluateEntitySupport declares this tick's own resolved vertical
     // displacement EXACTLY ONCE, at the very end of the method, regardless of which branch ran -
     // never only from the "still moving" tail. Both tests below directly drive
-    // AlundraEntityScriptProxy.EvaluateEntitySupport (same technique
+    // EntityScriptProxy.EvaluateEntitySupport (same technique
     // Support_SailorElevenOnRealRecordTwoPlatform... above already uses) so the RISING tick (k) and
     // the LANDING tick (k+1) are exact, not dependent on a realistic ballistic trajectory happening
     // to land on a particular real tick. CharacterMotionSystem updates every controller at the HEAD

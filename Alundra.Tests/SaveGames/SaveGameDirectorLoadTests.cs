@@ -340,7 +340,7 @@ public sealed class SaveGameDirectorLoadTests : IDisposable
     }
 
     /// <summary>A departure aborted by the warp director's abort guard (forced here by re-attaching it without a
-    /// GameManager after the departure is armed, <c>AlundraWarpDirector.cs</c> Advance) abandons the pending load:
+    /// GameManager after the departure is armed, <c>WarpDirector.cs</c> Advance) abandons the pending load:
     /// no later arrival applies it.</summary>
     [Fact]
     public void ADepartureAbortedByTheAbortGuard_AbandonsThePendingLoad()

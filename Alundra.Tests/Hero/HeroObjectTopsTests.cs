@@ -497,7 +497,7 @@ public sealed class HeroObjectTopsTests : IDisposable
         var obj = AddObject(rig.World, rig.Host, "Object", 100, 92, 24, 16, 16, offsetX: 44);
         if (objectGravity)
         {
-            // The decay of the force reads the raw fields of the entity (AlundraEntityScriptProxy.EvaluateEntitySupport), as AlundraCollidedWithEntityZTests posts them.
+            // The decay of the force reads the raw fields of the entity (EntityScriptProxy.EvaluateEntitySupport), as CollidedWithEntityZTests posts them.
             obj.Flags |= EntityFlags.Gravity;
             obj.MapGravityRaw = 128;
             obj.MapZViscosityRaw = 4096;

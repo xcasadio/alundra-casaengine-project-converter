@@ -16,7 +16,7 @@ using Alundra.Tests.Rng;
 namespace Alundra.Tests.Maps;
 
 /// <summary>
-/// D-E9d, E19.m2 (D-E19-66, ADR-0032) - <c>AlundraWorldProxy.InitializeWithWorld</c> wires
+/// D-E9d, E19.m2 (D-E19-66, ADR-0032) - <c>WorldProxy.InitializeWithWorld</c> wires
 /// <see cref="CellularLayerComponent.RandomSource"/> to <see cref="LibcRandom.Next"/> (the C library
 /// <c>rand()</c> of the original, not the game's shared <see cref="GameRandom"/> stream). Before the wiring
 /// <see cref="CellularLayerComponent.RandomSource"/> defaults to a delegate that warns once and returns 0 - this
@@ -33,7 +33,7 @@ public sealed class WorldProxyCellularRandomWiringTests : System.IDisposable
 {
     public WorldProxyCellularRandomWiringTests()
     {
-        // D-T-14 (docs/plan-transitions-carte.md): this class constructs an AlundraWorldProxy, so it resets the session carriers in its constructor (the
+        // D-T-14 (docs/plan-transitions-carte.md): this class constructs an WorldProxy, so it resets the session carriers in its constructor (the
         // isolation-carrying element) and in Dispose (hygiene).
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();

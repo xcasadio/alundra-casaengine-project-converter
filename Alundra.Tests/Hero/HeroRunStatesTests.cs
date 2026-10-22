@@ -480,7 +480,7 @@ public sealed class HeroRunStatesTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------
-    // The deep water (E20.i: the swim branch replaced the stand-in guard of E20.d1; the swim itself is in AlundraHeroSwimTests).
+    // The deep water (E20.i: the swim branch replaced the stand-in guard of E20.d1; the swim itself is in HeroSwimTests).
     // -----------------------------------------------------------------------------------------
 
     [Theory]

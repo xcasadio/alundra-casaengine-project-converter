@@ -141,7 +141,7 @@ public class SoundPlayerTests : IDisposable
         // MaxVoices lets both requests succeed (2 for id 300) - but B1's own per-frame anti-duplicate
         // table (docs/plan-e11b-opcodes-audio.md, D-B-4, fact 5) now refuses the SAME id requested twice
         // in the SAME frame, so this asserts the MaxVoices ceiling across two DIFFERENT frames (a
-        // FlushFrameSounds between the two requests, standing in for AlundraWorldProxy's own frame-close
+        // FlushFrameSounds between the two requests, standing in for WorldProxy's own frame-close
         // call) rather than the same-frame case, which the anti-duplicate test below covers instead.
         var player = NewPlayer(out var backend, out _);
 
@@ -165,7 +165,7 @@ public class SoundPlayerTests : IDisposable
         player.PlaySfx(300); // same frame, same id - refused by the table, not by MaxVoices.
         Assert.Single(backend.PlayCalls);
 
-        player.FlushFrameSounds(); // next rendered frame - AlundraWorldProxy's own frame-close call.
+        player.FlushFrameSounds(); // next rendered frame - WorldProxy's own frame-close call.
         player.PlaySfx(300);
         Assert.Equal(2, backend.PlayCalls.Count); // the id plays again once the table is flushed.
     }
@@ -312,7 +312,7 @@ public class SoundPlayerTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------------
-    // B3 (docs/plan-e11b-opcodes-audio.md, D-B-7): the sound group reaches AlundraSoundBank.TryResolve,
+    // B3 (docs/plan-e11b-opcodes-audio.md, D-B-7): the sound group reaches SfxBank.TryResolve,
     // the RefSfxId chain redirects for a foreign VabId, and the polyphony ceiling filters by the
     // REQUESTED record's own VabId (fact 7 corrected) - inoperative under redirection, still biting
     // without it.

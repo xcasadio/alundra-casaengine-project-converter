@@ -12,7 +12,7 @@ namespace Alundra.Tests.Rng;
 /// E20.e0b1 T2 (docs/plan-e20-heros.md section 1.17.1, annex docs/plan-e20-annexe/e20-e0b/README.md): the shared random stream advances once per logic tick, at the end of the tick, as the binary's frame function does
 /// (<c>0x8002BD0C-0x8002BD34</c>). This file holds the tests that pin the WIRING of the callback and are green from phase A on: <see cref="EffectStage.RunFrame"/> calls the optional callback exactly once per tick,
 /// after the update of the reservoir, on a frozen tick too, never for a frame of 0 tick (b), and a direct call without callback advances nothing (e). The tests of the advance itself (the six words, the world, the order in the tick)
-/// are in the other part of the class (<c>AlundraRandomPerTickTests.Advance.cs</c>), written red before phase B.
+/// are in the other part of the class (<c>RandomPerTickTests.Advance.cs</c>), written red before phase B.
 /// </summary>
 [Collection(RandomStaticStateCollection.Name)]
 public sealed partial class RandomPerTickTests : IDisposable

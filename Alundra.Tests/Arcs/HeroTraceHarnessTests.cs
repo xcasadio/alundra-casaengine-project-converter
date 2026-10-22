@@ -42,7 +42,7 @@ namespace Alundra.Tests.Arcs;
 /// replaced).</description></item>
 /// <item><description><b>Scenario B "highground"</b>: starts DELIBERATELY seeded on an elevated, non-slope
 /// landing tile directly adjacent to a slope cell, then walks down the ramp - same technique the
-/// pre-existing <c>AlundraCharacterControllerAdoptionTests.Stairs_SteppingDownTheSlope</c> uses, and the
+/// pre-existing <c>CharacterControllerAdoptionTests.Stairs_SteppingDownTheSlope</c> uses, and the
 /// only vertical movement the terrain allows (descent). Covers predicates 2 (pente), 3 (marche).</description></item>
 /// </list>
 ///
@@ -55,10 +55,10 @@ namespace Alundra.Tests.Arcs;
 /// scripted vertical-only bump therefore never came back down (no engine gravity was ever really applied),
 /// producing 57 "chute" frames of pure aerial stasis - confirmed by an isolated repro (since deleted) that
 /// fell and landed correctly ONLY when Gravity was set BEFORE construction, matching every pre-existing
-/// <c>AlundraCharacterControllerAdoptionTests</c> test's own ordering. Fixed here by mutating
+/// <c>CharacterControllerAdoptionTests</c> test's own ordering. Fixed here by mutating
 /// <c>proxy.Controller!.Settings</c> (the LIVE, already-cloned instance - its getter returns
 /// <c>_settings</c> directly, no further clone) AFTER construction, exactly like
-/// <c>AlundraWorldProxy.AdoptPlayerPawn</c>'s own real production code does (<c>var settings =
+/// <c>WorldProxy.AdoptPlayerPawn</c>'s own real production code does (<c>var settings =
 /// proxy.Controller.Settings; settings.Gravity = ...;</c>).
 /// </summary>
 public class HeroTraceHarnessTests
@@ -99,7 +99,7 @@ public class HeroTraceHarnessTests
         "   cell is reachable means no cliff-top tile is either. See the \"chute\" note below.\n";
 
     // -----------------------------------------------------------------------------------------
-    // Fixture plumbing (mirrors AlundraCharacterControllerAdoptionTests's own FindProjectRoot).
+    // Fixture plumbing (mirrors CharacterControllerAdoptionTests's own FindProjectRoot).
     // -----------------------------------------------------------------------------------------
 
     private static string? FindProjectRoot()
@@ -175,7 +175,7 @@ public class HeroTraceHarnessTests
 
     /// <summary>§2.2: the hero's own sprite-record header (Flags/AnimSetsByAnim source) - keyed by the hero
     /// prefab's own asset id (<c>Entities/Alundra/Alundra.entity</c>'s "id" field), same catalog the real
-    /// <c>AlundraWorldProxy.AdoptPlayerPawn</c> reads via <c>AssetCatalog.Get("Alundra")</c> - this harness
+    /// <c>WorldProxy.AdoptPlayerPawn</c> reads via <c>AssetCatalog.Get("Alundra")</c> - this harness
     /// has no live <c>AssetCatalog</c>, so it reads the prefab's own id directly off the JSON instead. FAILS
     /// (does not silently skip) when the header is missing - §2.2's own explicit requirement, since a
     /// missing header means AnimSetsByAnim stays null and the hero would never move (a green, motionless
@@ -198,8 +198,8 @@ public class HeroTraceHarnessTests
     }
 
     // -----------------------------------------------------------------------------------------
-    // No-op event program runner / dedicated script host (§2.4) - unlike AlundraCharacterControllerAdoptionTests's
-    // own FakeScriptHost, PlayerController here is a REAL AlundraPlayerController instance, seeded via the
+    // No-op event program runner / dedicated script host (§2.4) - unlike CharacterControllerAdoptionTests's
+    // own FakeScriptHost, PlayerController here is a REAL HeroController instance, seeded via the
     // §2.4 production field so MovePlayer is actually exercised.
     // -----------------------------------------------------------------------------------------
 
@@ -247,7 +247,7 @@ public class HeroTraceHarnessTests
     }
 
     // -----------------------------------------------------------------------------------------
-    // §2.2 New Game state recipe (scenario A) - hand port of AlundraWorldProxy.AdoptPlayerPawn:1442-1518,
+    // §2.2 New Game state recipe (scenario A) - hand port of WorldProxy.AdoptPlayerPawn:1442-1518,
     // field by field, per §1.3 point 5's own documented "no live link to production" caveat.
     // -----------------------------------------------------------------------------------------
 
@@ -331,14 +331,14 @@ public class HeroTraceHarnessTests
 
     // -----------------------------------------------------------------------------------------
     // §2.5 cadence burst - shared by every scenario/campaign: proves dllTicks=0, dllTicks>=2, and
-    // dllTicks=AlundraScriptedMotion.MaxTicksPerFrame (4) all appear, and (fixedstep only)
+    // dllTicks=ScriptedMotion.MaxTicksPerFrame (4) all appear, and (fixedstep only)
     // engineStepsDelta>=2 and =CharacterMotionSystem.MaxStepsPerFrame (also 4, same dt drives both clocks)
     // and, on freestep, engineStepsDelta stays identically 0 throughout (CharacterMotionSystem.Update's own
     // early-out never increments ExecutedFixedStepCount when FixedTimeStep <= 0).
     //
     // A3 fix (verifier, 2026-08-26): the "0 ticks" cases below use 1/240s, NOT 0f - a zero-duration frame
     // never happens in real play. 1/240s (~4.17ms) is still short enough to round down to 0 ticks of
-    // AlundraScriptedMotion.FixedTickSeconds (1/50s = 20ms) and 0 fixed steps of CharacterMotionSystem's own
+    // ScriptedMotion.FixedTickSeconds (1/50s = 20ms) and 0 fixed steps of CharacterMotionSystem's own
     // FixedTimeStep (also 1/50s in the fixedstep campaign) - the same "0" case, reached plausibly instead of
     // via a duration that cannot occur.
     // -----------------------------------------------------------------------------------------
@@ -393,7 +393,7 @@ public class HeroTraceHarnessTests
     /// <summary>Scenario A's own mid-trace reposition target (§2.6 bis amendment / F1 fix): tile (24,56),
     /// pixel (588,904,32) - a non-slope, height-2 (32px) tile whose EAST neighbor, tile (25,56), is
     /// height-0 (flat room floor, this map's own global height minimum) - a real 32px cliff (well past
-    /// GroundSnapDistance=4px), confirmed by direct AlundraCellsRecords inspection. Walking east off it is
+    /// GroundSnapDistance=4px), confirmed by direct CellsRecords inspection. Walking east off it is
     /// a genuine, uninterrupted gravity-driven fall - no scripted vertical bump.</summary>
     private const float RepositionX = 588f;
     private const float RepositionY = 904f;
@@ -753,7 +753,7 @@ public class HeroTraceHarnessTests
         Assert.Equal(99, firstWallFrame);
 
         var wallPosX = spawnLines.First(l => l.ForceAdjusted == 1).PosX;
-        // Frozen against the wall - see AlundraCellsCollisionField's own tx22/23 boundary. E19.a2 (ADR-0045 of the
+        // Frozen against the wall - see CellsCollisionField's own tx22/23 boundary. E19.a2 (ADR-0045 of the
         // engine): the blocked step now advances to the contact, so the hero stops at 36831232 (562 px) instead of
         // 36956160 (563.9 px), where the whole step used to be rejected. The flag rises one frame later (99), on the first frame with no advance at all, as
         // the binary does (E19.a3, D-E19-12): frame 98 reaches the contact with a shortened step that still advances, so the flag stays 0.

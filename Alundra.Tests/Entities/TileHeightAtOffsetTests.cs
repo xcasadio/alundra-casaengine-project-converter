@@ -49,11 +49,11 @@ public class TileHeightAtOffsetTests
     private const string WorldName = "Ship Klark (beginning)-389";
 
     // 24x16 px cells (StaticVariables.MapTileWidth/MapTileHeight) - same constants
-    // AlundraGroundSlopeTests/AlundraFloorHeightTests/AlundraCellsCollisionFieldTests use.
+    // GroundSlopeTests/FloorHeightTests/CellsCollisionFieldTests use.
     private const int CellWidthPx = 24;
     private const int CellHeightPx = 16;
 
-    // Same production hero footprint as AlundraGroundSlopeTests/AlundraFloorHeightTests (F4 fix - real
+    // Same production hero footprint as GroundSlopeTests/FloorHeightTests (F4 fix - real
     // converter-exported bank header, alundra-project/Data/sprite-records.json, hero asset
     // 4158f0d7-c5f0-4f6a-a48f-e73d0dd2250b).
     private const int HeroOffsetX = -10;
@@ -165,19 +165,19 @@ public class TileHeightAtOffsetTests
         public int LogicTicksThisFrame(float elapsedTime) => 0;
     }
 
-    /// <summary>Same shape as <c>AlundraGroundSlopeTests.BuildProbe</c> - installs a real hero pawn with
+    /// <summary>Same shape as <c>GroundSlopeTests.BuildProbe</c> - installs a real hero pawn with
     /// the production footprint, positioned so <c>(PosX + ModX) &gt;&gt; 16 == x1</c> and
     /// <c>(PosY + ModY) &gt;&gt; 16 == y1</c> hold, so callers can reason about the footprint's own
     /// top-left pixel directly. <see cref="EntityScriptProxy.GetTileHeightAtOffset"/> reads no
     /// other field (not <see cref="EntityScriptProxy.PosZ"/>, not <see cref="EntityScriptProxy.Flags"/>),
-    /// so this probe leaves those at their defaults, unlike <c>AlundraGroundSlopeTests.BuildProbe</c>.</summary>
+    /// so this probe leaves those at their defaults, unlike <c>GroundSlopeTests.BuildProbe</c>.</summary>
     private static EntityScriptProxy BuildProbe(World world, int x1, int y1)
     {
         var settings = new CharacterControllerSettings();
         var (_, proxy) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(0f, 0f, 0f), new NoOpScriptHost());
 
         // Register with CharacterMotionSystem (Owner.World populated) before the scripted PosX/PosY
-        // writes below - same ordering AlundraGroundSlopeTests.BuildProbe/AlundraCharacterControllerAdoptionTests
+        // writes below - same ordering GroundSlopeTests.BuildProbe/CharacterControllerAdoptionTests
         // use, and for the same reason (World.AddEntity only queues; nothing here calls world.Update
         // again afterward, so the later root-pull never overwrites these fields).
         world.Update(1f / 50f);
@@ -194,7 +194,7 @@ public class TileHeightAtOffsetTests
     // -----------------------------------------------------------------------------------------
     // (1) Zero offset, footprint fully inside one of the four real ladder cells: GetTileHeightAtOffset
     // must reproduce that cell's own real RAW ground height (measured off the raw AlundraCells JSON, not
-    // hand-picked) - the same values established for E1 (AlundraGroundSlopeTests.ScaleCell_HeroFootprintFullyInsideCell_Slope18cIsSix):
+    // hand-picked) - the same values established for E1 (GroundSlopeTests.ScaleCell_HeroFootprintFullyInsideCell_Slope18cIsSix):
     // (18,36)=11 units=176px, (19,38)=8 units=128px, (15,55)=5 units=80px, (21,55)=5 units=80px. All four
     // are flat (slope&3==0), so raw and slope-interpolated heights coincide here - this test alone cannot
     // distinguish the two (see test (4) below, which specifically picks a SLOPED cell).
@@ -222,7 +222,7 @@ public class TileHeightAtOffsetTests
 
         var world = HeroWorldFixture.BuildWorld(field);
 
-        // Same flush-against-top-left placement as AlundraGroundSlopeTests's own scale-cell test: a
+        // Same flush-against-top-left placement as GroundSlopeTests's own scale-cell test: a
         // 21x15 footprint fits entirely inside one 24x16 cell.
         var x1 = cellX * CellWidthPx + 1;
         var y1 = cellY * CellHeightPx;
@@ -308,7 +308,7 @@ public class TileHeightAtOffsetTests
 
     // -----------------------------------------------------------------------------------------
     // (3) Mutation-killer for BOTH "maximum -> minimum" and "sample one corner instead of four", on the Y
-    // axis: the same footprint straddling the (18,36)/(18,37) row boundary AlundraGroundSlopeTests's own
+    // axis: the same footprint straddling the (18,36)/(18,37) row boundary GroundSlopeTests's own
     // DivergentCase_HeroFootprintStraddlesWallBoundary_... test uses (x1=434, y1=578, zero offset). Real,
     // measured RAW heights: (18,36)=176px=11534336 (16.16), (18,37)=208px=13631488 (16.16) - two DIFFERENT
     // real heights across the same footprint's own y1/y2 corners (both cells flat, slope&3==0, so raw and
@@ -339,7 +339,7 @@ public class TileHeightAtOffsetTests
 
         const int scaleCellX = 18;
         const int scaleCellY = 36;
-        var x1 = scaleCellX * CellWidthPx + 2; // 434 - same geometry as AlundraGroundSlopeTests's own
+        var x1 = scaleCellX * CellWidthPx + 2; // 434 - same geometry as GroundSlopeTests's own
         var y1 = scaleCellY * CellHeightPx + 2; // 578 - DivergentCase test (F3 fix).
         var proxy = BuildProbe(world, x1, y1);
 
@@ -347,7 +347,7 @@ public class TileHeightAtOffsetTests
         var y2 = (proxy.PosY + proxy.ModY + proxy.Height) >> 16;
 
         // Sanity check: the footprint really does straddle the row boundary (y1 in row 36, y2 in row 37),
-        // both x-corners stay in column 18 - same geometry AlundraGroundSlopeTests's own DivergentCase
+        // both x-corners stay in column 18 - same geometry GroundSlopeTests's own DivergentCase
         // test already verified for Slope_18c.
         Assert.Equal(scaleCellY, y1 / CellHeightPx);
         Assert.Equal(scaleCellY + 1, y2 / CellHeightPx);
@@ -373,7 +373,7 @@ public class TileHeightAtOffsetTests
     // probe, so this isolates the raw-vs-interpolated question from the four-corner-max question tests
     // (1)-(3) and (5) already cover):
     //   RAW (what the original's tile.Height actually is): 10 units = 160px = 10485760 (16.16).
-    //   SLOPE-INTERPOLATED (what AlundraCellsCollisionField.TrySampleGround/ComputeGroundHeight would
+    //   SLOPE-INTERPOLATED (what CellsCollisionField.TrySampleGround/ComputeGroundHeight would
     //   give at these same two y positions - the WRONG grandeur this slice's first implementation
     //   imported from ComputeTerrainHeight/ComputeEntityGroundHeight, a DIFFERENT original function):
     //   (10-1)*16+16-1=159px at yMod=1, (10-1)*16+16-15=145px at yMod=15, max=159px=10420224.
@@ -495,7 +495,7 @@ public class TileHeightAtOffsetTests
     // g_tileToWorldXTable (1248 entries) directly off the pixel offset with no clamp, so an out-of-range
     // corner is UNDEFINED in the original (EntityGameplayManager.cs:289-292's table has no bounds check
     // visible in the decompiled body). This port clamps to the nearest edge cell instead (the same
-    // pre-existing E1 convention AlundraCellsCollisionField.TrySampleGround/SampleRawCellHeight already
+    // pre-existing E1 convention CellsCollisionField.TrySampleGround/SampleRawCellHeight already
     // use) - a deliberate, DIFFERENT behaviour, not "the same thing the original does". This test proves
     // the clamp lands on the CORRECT edge cell (not just "some edge cell of height 0", which the map's
     // four grid corners all happen to share): column x=0 carries DIFFERENT non-zero raw heights at

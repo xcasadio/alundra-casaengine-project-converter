@@ -357,7 +357,7 @@ public sealed class RecordBirthTickTests : IDisposable
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // [R] (b6) The key ~0u of AlundraScriptedMotion (the pin P3 that e0a3b reported): an entity born by a script, marked, whose animation 0 has a non-zero speed, takes the speed of its TARGET animation at its first tick of
+    // [R] (b6) The key ~0u of ScriptedMotion (the pin P3 that e0a3b reported): an entity born by a script, marked, whose animation 0 has a non-zero speed, takes the speed of its TARGET animation at its first tick of
     // physics, while its current animation is still ~0 (not validated): the real record 1 of map 321 (sprite 469, speed 160). The code of phase A (entity not marked) reads the animation ~0 at its first tick, which
     // has no animation set: speed 0.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

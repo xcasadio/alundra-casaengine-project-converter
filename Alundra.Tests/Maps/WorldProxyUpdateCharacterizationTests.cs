@@ -85,7 +85,7 @@ public sealed class WorldProxyUpdateCharacterizationTests : IDisposable
         // but the plan requires calling it anyway rather than relying on the static's own initial state.
         WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
@@ -391,7 +391,7 @@ public sealed class WorldProxyUpdateCharacterizationTests : IDisposable
     //  - The shared montage above (no "tileMap" entity) cannot reach the map-event pass on its own:
     //    without one, InitializeWithWorld returns before AdoptPlayerPawn, PlayerEntity stays null, and
     //    Update's own "if (PlayerEntity != null)" gate around RunMapEventsPass is never entered.
-    //    AdoptPlayerPawn itself is not headless-reachable (needs a live AlundraPlayerController) - so
+    //    AdoptPlayerPawn itself is not headless-reachable (needs a live HeroController) - so
     //    this test seeds PlayerEntity/_mapEvents directly through the two members C1 widened to
     //    internal for exactly this reason (PlayerEntity's setter, BuildMapEvents).
     //  - ONE AND THE SAME proxy is moved and followed: PlayerEntity and EntityFollowedByCamera are set
@@ -428,7 +428,7 @@ public sealed class WorldProxyUpdateCharacterizationTests : IDisposable
         // RunMapEventsPass's own "out-of-zone reset" branch, which would otherwise skip the program
         // entirely instead of running it. EventCodesBIndex=0x81 (masked 0x7F=1 != 0, passes
         // RunMapEventsPass's own "not a dud slot" gate; the SAME masked value then selects
-        // EventCodesBTable[1] - see AlundraEventProgramRunnerTests's own
+        // EventCodesBTable[1] - see EventProgramRunnerTests's own
         // "RunScript_SlotB_ResumesAcrossCalls" comment for this exact masking - 0x80 alone masks to 0
         // and would be skipped by the dud-slot gate before ever reaching the interpreter).
         var record = new TileMapObjectData();
@@ -443,7 +443,7 @@ public sealed class WorldProxyUpdateCharacterizationTests : IDisposable
         proxy.BuildMapEvents(mapEventsLayer);
 
         // The program: 0x64 SetEntitiesPosition(v1=0x80 "owner", x=0x234, y=0x178, z=0xa0), then 0xFF
-        // End - the exact operand encoding AlundraEventProgramRunnerTests.
+        // End - the exact operand encoding EventProgramRunnerTests.
         // SetEntitiesPosition_0x64_SetsPosXYZ_FromRealMap389Operands uses (real map 389 bytes), so the
         // resulting PosX/PosY/PosZ are 0x234<<16 / 0x178<<16 / 0xa0<<16. Table[1]=0 points slot B's
         // resolved index (masked 1, see above) at code offset 0, the program's own start.
@@ -456,7 +456,7 @@ public sealed class WorldProxyUpdateCharacterizationTests : IDisposable
         // Replaces InitializeWithWorld's own degraded runner (world "TestWorld" has no trailing map id,
         // so MapEventProgramLoader.Load returns null and the wired runner is a permanent no-op) with a
         // real, document-backed one - proxy itself is the IEntityWorldContext, exactly like production
-        // wiring (InitializeWithWorld: "new AlundraEventProgramRunner(eventProgramDocument, GameState,
+        // wiring (InitializeWithWorld: "new EventProgramRunner(eventProgramDocument, GameState,
         // this)").
         proxy.EventProgramRunner = new EventProgramRunner(document, proxy.GameState, proxy);
 
@@ -512,7 +512,7 @@ public sealed class WorldProxyUpdateCharacterizationTests : IDisposable
     /// that carry no test-only accessor: <c>_tileMapData</c> (plan §4 needs the REAL map-389 tilemap
     /// installed there, exactly as <c>InitializeWithWorld</c> itself does, so the camera's map-bounds
     /// clamp and the map-events/record-spawn loops below all see real data) and <c>_world</c> - without
-    /// it, <c>AlundraCameraDirector.ResolveDebugCameraOnce(_world)</c> (called at the top of every
+    /// it, <c>CameraDirector.ResolveDebugCameraOnce(_world)</c> (called at the top of every
     /// <c>Update</c>) sees a null world and never resolves the camera entity this montage already added,
     /// which would make every later <c>UpdateCameraFollow</c> call an unconditional no-op
     /// (<c>if (_debugCamera == null) return;</c>) - not the defect this montage exists to reproduce.</summary>
@@ -564,7 +564,7 @@ public sealed class WorldProxyUpdateCharacterizationTests : IDisposable
     /// <c>Entity.Initialize()</c>'s own <c>ElementFactory</c> resolution - actually round-trips back to
     /// the SAME proxy instance this method configures, exactly like the engine-spawned pawn
     /// <c>AdoptPlayerPawn</c> adopts in production. Without that, <c>Update</c>'s own
-    /// <c>RefreshUpdateProxiesAndCollidables</c> (reads <c>entity.GameplayProxy is AlundraEntityScriptProxy</c>)
+    /// <c>RefreshUpdateProxiesAndCollidables</c> (reads <c>entity.GameplayProxy is EntityScriptProxy</c>)
     /// would silently drop the player out of <c>_updateProxies</c>.
     /// </summary>
     private static (WorldProxy Proxy, Camera2dComponent Camera) BuildMap389Montage()
@@ -699,7 +699,7 @@ public sealed class WorldProxyUpdateCharacterizationTests : IDisposable
 
         // The bug this test guards against: an unconditional _cameraNeedsSnap consumption would snap
         // camera.Target straight to the new look-at even though zero ticks ran this frame. The fix gates
-        // the snap on ticksThisFrame > 0 in AlundraCameraDirector.UpdateCameraFollow (plan §3.2) - so on a
+        // the snap on ticksThisFrame > 0 in CameraDirector.UpdateCameraFollow (plan §3.2) - so on a
         // zero-tick frame Target must stay exactly at baseline, and the snap must stay armed.
         Assert.Equal(baseline, camera.Target);
 

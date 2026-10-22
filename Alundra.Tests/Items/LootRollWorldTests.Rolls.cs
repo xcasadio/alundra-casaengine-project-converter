@@ -14,7 +14,7 @@ using Alundra.Tests.Support;
 namespace Alundra.Tests.Items;
 
 /// <summary>
-/// E20.e0b2 T1, the tests (m1) to (m5) of the loot roll in the real world (see the other part of the class, <c>AlundraLootRollWorldTests.cs</c>): each expects at least one object written or one step of the real stream, so they are
+/// E20.e0b2 T1, the tests (m1) to (m5) of the loot roll in the real world (see the other part of the class, <c>LootRollWorldTests.cs</c>): each expects at least one object written or one step of the real stream, so they are
 /// RED on the phase A code (whose helper only rolls on the virtual register of the sink) and go green with phase B (T2).
 /// </summary>
 public sealed partial class LootRollWorldTests

@@ -187,7 +187,7 @@ public sealed class SoundPlayerStereoVolumeTests : IDisposable
 
     // -----------------------------------------------------------------------------------------------
     // T4.3 (docs/plan-audio-mix-exact-muet.md): RemixVoice (0xAB/0xBF) over a real AudioService, the
-    // exact stereo gains AlundraSpuVoiceVolume.ComputeRemix computes for each tone.
+    // exact stereo gains SpuVoiceVolume.ComputeRemix computes for each tone.
     // -----------------------------------------------------------------------------------------------
 
     [Fact]

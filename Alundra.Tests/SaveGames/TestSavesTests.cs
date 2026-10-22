@@ -545,7 +545,7 @@ public sealed class TestSavesTests : IDisposable
         Assert.Contains(field, error);
     }
 
-    // ---- The existing application path (the pattern of AlundraSaveGameApplyTests) ----------------------------
+    // ---- The existing application path (the pattern of SaveGameApplyTests) ----------------------------
 
     [Theory]
     [MemberData(nameof(PresetNames))]

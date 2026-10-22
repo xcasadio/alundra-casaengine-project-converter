@@ -63,7 +63,7 @@ public sealed class YarnBindingsTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------
-    // "flag" command - AlundraDialogueDirector.ShowCurrentPage's own write (~:290-300).
+    // "flag" command - DialogueDirector.ShowCurrentPage's own write (~:290-300).
     // -----------------------------------------------------------------------------------------
 
     [Theory]

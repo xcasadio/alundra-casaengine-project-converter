@@ -52,7 +52,7 @@ public class WorldProxyAudioInstallationTests : IDisposable
 
     public WorldProxyAudioInstallationTests()
     {
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
@@ -106,8 +106,8 @@ public class WorldProxyAudioInstallationTests : IDisposable
         // AudioSystemComponent's real constructor needs a live AssetContentManager (for its
         // AssetContentManagerAudioClipProvider) that this headless game never has - so the component
         // itself is built uninitialized too, with its own real AudioService wired directly onto its
-        // backing field. Everything downstream of THAT (AlundraWorldProxy.InstallAudioSystems,
-        // AlundraSoundPlayer, AlundraSoundBank) runs unmodified production code.
+        // backing field. Everything downstream of THAT (WorldProxy.InstallAudioSystems,
+        // SoundPlayer, SfxBank) runs unmodified production code.
         var audioComponent = (AudioSystemComponent)RuntimeHelpers.GetUninitializedObject(typeof(AudioSystemComponent));
         var serviceField = typeof(AudioSystemComponent).GetField("<Service>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!;
         serviceField.SetValue(audioComponent, new AudioService(backend) { ClipProvider = provider });
@@ -132,7 +132,7 @@ public class WorldProxyAudioInstallationTests : IDisposable
         Assert.NotNull(proxy.SoundPlayer);
         Assert.IsType<SoundPlayer>(proxy.SoundPlayer);
 
-        // The exact seam AlundraSoundPlayer itself resolves through - all four intro ids (§1.1) must be
+        // The exact seam SoundPlayer itself resolves through - all four intro ids (§1.1) must be
         // playable on the real install path.
         foreach (var (sfxId, expectedFirstToneFile) in new[]
                  {
@@ -153,7 +153,7 @@ public class WorldProxyAudioInstallationTests : IDisposable
     /// production decision itself, not just the constructor plumbing.
     ///
     /// <para>Found in main-session verification of slice C1: the ownership test in
-    /// <c>AlundraSoundPlayerTests</c> builds the player DIRECTLY with an explicit owner, so it proves
+    /// <c>SoundPlayerTests</c> builds the player DIRECTLY with an explicit owner, so it proves
     /// the parameter is honoured but is blind to what <see cref="WorldProxy.InstallAudioSystems"/>
     /// actually passes. Changing that one call site to any non-world object left the whole suite green
     /// — the "no slice without a test traversing the production call site" rule, unsatisfied.</para>
@@ -205,15 +205,15 @@ public class WorldProxyAudioInstallationTests : IDisposable
 
         // The bank itself would still resolve the ids (it's a plain file read) - but PROVING the
         // installation matters: without it, the interpreter's own seam (IEntityWorldContext.SoundPlayer)
-        // is null, so 0xBD/0xBE/0x12/0x75 can never reach AlundraSoundPlayer.PlaySfx at all, regardless
+        // is null, so 0xBD/0xBE/0x12/0x75 can never reach SoundPlayer.PlaySfx at all, regardless
         // of what the bank could resolve.
         Assert.Null(proxy.SoundPlayer);
     }
 
     // -----------------------------------------------------------------------------------------------
-    // B3 (docs/plan-e11b-opcodes-audio.md, D-B-7): the sound group reaches AlundraSoundBank.TryResolve
+    // B3 (docs/plan-e11b-opcodes-audio.md, D-B-7): the sound group reaches SfxBank.TryResolve
     // through the REAL InstallAudioSystems install site (not the direct-constructor tests in
-    // AlundraSoundPlayerTests) - a synthetic project fixture, isolated from the real "alundra-project"
+    // SoundPlayerTests) - a synthetic project fixture, isolated from the real "alundra-project"
     // one every other test in this class reads, since Maps/sound-group-index.json is not re-exported by
     // this slice.
     // -----------------------------------------------------------------------------------------------
@@ -229,7 +229,7 @@ public class WorldProxyAudioInstallationTests : IDisposable
 
         // Id 700's own vab_id (99) is foreign to map 389's own group (56, below) - InstallAudioSystems
         // must resolve that group off Maps/sound-group-index.json and hand it to the real
-        // AlundraSoundPlayer it installs, so PlaySfx(700) follows RefSfxId to id 701 (vab_id 56).
+        // SoundPlayer it installs, so PlaySfx(700) follows RefSfxId to id 701 (vab_id 56).
         var id701Tone0 = Guid.Parse("00000000-0000-0000-0000-000000000701");
         File.WriteAllText(Path.Combine(soundsDir, "sfx-manifest.json"), $$"""
         [
@@ -284,17 +284,17 @@ public class WorldProxyAudioInstallationTests : IDisposable
 
     // -----------------------------------------------------------------------------------------------
     // B1 (docs/plan-e11b-opcodes-audio.md, D-B-4): the anti-duplicate table's own frame ownership,
-    // exercised through the REAL AlundraWorldProxy.Update path (not AlundraSoundPlayer directly) - the
-    // observable is the fake backend's own voices. Every setup below installs a REAL AlundraSoundPlayer
+    // exercised through the REAL WorldProxy.Update path (not SoundPlayer directly) - the
+    // observable is the fake backend's own voices. Every setup below installs a REAL SoundPlayer
     // over a REAL AudioService(FakeAudioBackend) and drives dispatch through a REAL
-    // AlundraEventProgramRunner, exactly like production.
+    // EventProgramRunner, exactly like production.
     // -----------------------------------------------------------------------------------------------
 
     /// <summary>
     /// One slot-B (map-event) program that plays <paramref name="sfxId"/> via 0x12 (PlaySound1) then
     /// ends - wired as <paramref name="proxy"/>'s own <see cref="WorldProxy.EventProgramRunner"/>,
     /// with <see cref="WorldProxy.PlayerEntity"/> seeded inside the map event's own zone (same
-    /// montage as <c>AlundraWorldProxyUpdateCharacterizationTests.MapEventTeleport_IsVisibleToCameraTarget_SameFrame</c>).
+    /// montage as <c>WorldProxyUpdateCharacterizationTests.MapEventTeleport_IsVisibleToCameraTarget_SameFrame</c>).
     /// </summary>
     private static EntityScriptProxy WireMapEventSoundTrigger(WorldProxy proxy, int sfxId)
     {
@@ -380,7 +380,7 @@ public class WorldProxyAudioInstallationTests : IDisposable
     {
         // D-B-4 cadence (a): the deviation ASSUMED (a same-tick, i.e. per-Update, anti-duplicate window
         // instead of the original's own per-50Hz-frame one) and PROVEN here - RunMapEventsPass runs
-        // ONCE PER TICK (AlundraWorldProxy.Update's own ticksThisFrame loop), so a rendered frame
+        // ONCE PER TICK (WorldProxy.Update's own ticksThisFrame loop), so a rendered frame
         // carrying 2 logic ticks dispatches the SAME map event's 0x12 twice. The anti-duplicate table
         // must still refuse the second dispatch: the mutation "flush at the head of RunMapEventsPass"
         // (called once per TICK, not once per Update) fails this test by producing 2 voices.

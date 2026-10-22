@@ -35,11 +35,11 @@ public class FloorHeightTests
     private const string WorldName = "Ship Klark (beginning)-389";
 
     // 24x16 px cells (StaticVariables.MapTileWidth/MapTileHeight) - same constants
-    // AlundraGroundSlopeTests/AlundraCellsCollisionFieldTests use for their own real-map assertions.
+    // GroundSlopeTests/CellsCollisionFieldTests use for their own real-map assertions.
     private const int CellWidthPx = 24;
     private const int CellHeightPx = 16;
 
-    // Same production hero footprint as AlundraGroundSlopeTests's own ProductionCallSite test (F4 fix -
+    // Same production hero footprint as GroundSlopeTests's own ProductionCallSite test (F4 fix -
     // real converter-exported bank header, alundra-project/Data/sprite-records.json, hero asset
     // 4158f0d7-c5f0-4f6a-a48f-e73d0dd2250b).
     private const int HeroOffsetX = -10;
@@ -87,7 +87,7 @@ public class FloorHeightTests
     }
 
     /// <summary>Same real-record fixture shape as
-    /// <c>AlundraNpcCharacterControllerMoverTests.BuildRealRecordProxy</c> - a pure logic-side collidable
+    /// <c>NpcCharacterControllerMoverTests.BuildRealRecordProxy</c> - a pure logic-side collidable
     /// (no root/physics component at all, matching how that class' own sailor-11/record-2 platform test
     /// builds its own support candidate): <see cref="EntitySpawnFactory.ApplyRecord"/> then
     /// <see cref="EntitySpawnFactory.ApplySpawnInitialization"/> against the REAL map 389 record data, so
@@ -119,10 +119,10 @@ public class FloorHeightTests
         }
     }
 
-    /// <summary>Same shape as <c>AlundraGroundSlopeTests.PlayerScriptHost</c>, plus a MUTABLE
+    /// <summary>Same shape as <c>GroundSlopeTests.PlayerScriptHost</c>, plus a MUTABLE
     /// <see cref="Collidables"/> so a test can seed the entity-support candidate
     /// <see cref="EntityScriptProxy.UpdateFloorHeight"/> reads (see
-    /// <c>AlundraNpcCharacterControllerMoverTests.FakeScriptHost</c>'s own identical addition for E4.f).</summary>
+    /// <c>NpcCharacterControllerMoverTests.FakeScriptHost</c>'s own identical addition for E4.f).</summary>
     private sealed class PlayerScriptHost : IScriptHost
     {
         public IEventProgramRunner Runner { get; } = new NoOpRunner();
@@ -139,14 +139,14 @@ public class FloorHeightTests
         // One logic tick per rendered frame - every test below runs a single frame; FloorHeight is
         // computed from PosX/PosY/PosZ alone (already pulled from the root by the time the IsPlayer
         // branch runs - see Update's own E3.d paragraph), so LogicTicksThisFrame's own animation-advance
-        // side effect is irrelevant here, same rationale as AlundraGroundSlopeTests's own host.
+        // side effect is irrelevant here, same rationale as GroundSlopeTests's own host.
         public int LogicTicksThisFrame(float elapsedTime) => 1;
     }
 
     // -----------------------------------------------------------------------------------------
     // (1) MANDATORY acceptance: production call site, flat ground. Same scale cell as
-    // AlundraGroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix: (18, 36), height 11
-    // -> ground height 176px - real World.Update -> AlundraEntityScriptProxy.Update's IsPlayer branch ->
+    // GroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix: (18, 36), height 11
+    // -> ground height 176px - real World.Update -> EntityScriptProxy.Update's IsPlayer branch ->
     // MovePlayer + Tick + UpdateGroundSlope + UpdateFloorHeight, no direct method call.
     // -----------------------------------------------------------------------------------------
 
@@ -271,7 +271,7 @@ public class FloorHeightTests
         // (1)'s own (18,36) cell), floating 8px above the platform's real top so the strict
         // "candidateTop < moddedPosZ" comparator (EntitySupport.cs:129, verifier A1) is satisfied without
         // relying on any engine-side vertical physics (default CharacterControllerSettings carries zero
-        // gravity - see AlundraGroundSlopeTests's own ProductionCallSite test for the same zero-drift
+        // gravity - see GroundSlopeTests's own ProductionCallSite test for the same zero-drift
         // precedent).
         var x1 = cellX * CellWidthPx + 1; // 433 - same footprint origin as test (1).
         var y1 = cellY * CellHeightPx; // 576
@@ -292,7 +292,7 @@ public class FloorHeightTests
 
         // Real hero header (sprite-records.json, asset 4158f0d7-...) carries MoreFlags 140 (0x8C), which
         // includes the Collidable bit (0x80) - EntitySupport.IsEligibleSubject's own SUBJECT gate
-        // (GetCollisionOnZ:1606-1619's exact conjunct). AlundraEntitySpawnFactory.SetEntityDimensions does not
+        // (GetCollisionOnZ:1606-1619's exact conjunct). EntitySpawnFactory.SetEntityDimensions does not
         // itself set Flags (that is AdoptPlayerPawn's own job, out of this bare-fixture pawn's path), so
         // this test sets it directly rather than assume it - matching the real production value, not
         // inventing one.
@@ -340,7 +340,7 @@ public class FloorHeightTests
 
     // -----------------------------------------------------------------------------------------
     // (3) Defined out-of-map / no-field behaviour (contract's own "comportement hors carte defini et
-    // teste"): AlundraEntityScriptProxy.ComputeTerrainHeight returns 0 without an installed
+    // teste"): EntityScriptProxy.ComputeTerrainHeight returns 0 without an installed
     // World.CollisionField (its own documented "sea level" fallback) - UpdateFloorHeight must not throw,
     // and must fall back to that same 0, since IsEligibleSubject is false by default (Flags carries no
     // Collidable bit on a bare proxy) so the entity-search half never runs either.
@@ -370,7 +370,7 @@ public class FloorHeightTests
     }
 
     // -----------------------------------------------------------------------------------------
-    // (4) Restriction (player only, same rationale as AlundraGroundSlopeTests's own NPC restriction):
+    // (4) Restriction (player only, same rationale as GroundSlopeTests's own NPC restriction):
     // UpdateFloorHeight's only call site is the IsPlayer branch of Update. Since E14.a0b T2 an entity
     // created from a sprite record gets its floor from UpdateEnemyGroundHeights; a bare pawn that was
     // never created from a sprite record (SpriteType -1, no native handler can run for it) keeps the

@@ -21,7 +21,7 @@ namespace Alundra.Tests.Dialogues;
 /// Tick program (map 389, masked index 12, offset 1356) via
 /// <see cref="EntityScriptProxy.Update"/> -&gt; <c>PickEventTrigger</c> -&gt; <c>RunPickedEvent</c>,
 /// in a FRAME LOOP crossing the pick phase every iteration (<see cref="HeadlessIntroSimulation.RunFramesForTest"/>'s
-/// own per-entity <c>entity.Update</c> call - NOT <c>AlundraWorldProxy.RunPendingEventTriggers</c>'s D3
+/// own per-entity <c>entity.Update</c> call - NOT <c>WorldProxy.RunPendingEventTriggers</c>'s D3
 /// catch-up), exactly like <see cref="SoundOpcodesProductionTests"/> does for E11.a.
 ///
 /// SAILOR-12 ENTRY GUARD (§1.4): the Tick program's own first instruction (offset 1356, <c>0x30 If flag
@@ -37,7 +37,7 @@ public class DialogueOpcodesProductionTests : IDisposable
     private const string WorldName = "Ship Klark (beginning)-389";
 
     // Flags 860 (0x35C) and 0x800C - see this class's own doc. Masks/indices match
-    // AlundraGameState.GetFlag's own (flag>>5)&0x3ff / 1<<(flag&0x1f) formula exactly (the SAME formula
+    // GameState.GetFlag's own (flag>>5)&0x3ff / 1<<(flag&0x1f) formula exactly (the SAME formula
     // opcodes 0x30/0x36 themselves use against these exact raw operand bytes - docs/intro-programs-389.txt
     // offset 1356/1365).
     private const uint IntroCompletionFlag = 860;
@@ -190,7 +190,7 @@ public class DialogueOpcodesProductionTests : IDisposable
     /// opening). No script is left running, so nothing ever pumped the box's advance/close while that
     /// lived only in 0x39's dispatch: the box never closed, MenuOpen never lifted - six of the seven
     /// sailors were a permanent softlock. The fix runs the pass once per logic tick from the frame loop
-    /// (AlundraWorldProxy.Update in production, mirrored by RunFramesForTest here - the production call
+    /// (WorldProxy.Update in production, mirrored by RunFramesForTest here - the production call
     /// site itself is pinned by <see cref="DialogueFramePassTests"/>).
     /// </summary>
     [Fact]
@@ -346,7 +346,7 @@ public class DialogueOpcodesProductionTests : IDisposable
                         e => (e.ProgramIndexes[ScriptHelper.ProgramFInteract] & 0x7f) == 13);
 
                     // The sim builds its own bare player proxy (it never goes through AdoptPlayerPawn,
-                    // which adopts the hero record header in production - AlundraWorldProxy.cs:1018-1037)
+                    // which adopts the hero record header in production - WorldProxy.cs:1018-1037)
                     // so this montage adopts the SAME real record values here: Flags 0x3118c
                     // (MoreFlags 0x8c | CanPickup 0x11 << 8 | 0x3 << 16 - Collidable set, no
                     // InteractRequiresButton) and the 21/15/32 box at offsets -10/-7/0.
@@ -377,15 +377,15 @@ public class DialogueOpcodesProductionTests : IDisposable
                 s.GameState.LastPadState = pad; // the production player branch publishes it likewise.
 
                 // Mirror 1 - the player branch's MovePlayer call (production site pinned by
-                // AlundraInteractionPassTests P-b), consuming LAST frame's contact.
+                // InteractionPassTests P-b), consuming LAST frame's contact.
                 PlayerManager.MovePlayer(player!, in pad, s.GameState, s);
 
                 // Mirror 2 - the contact of the hero's step, feeding NEXT frame's MovePlayer. E19.d2b B4 (D-E19-29): in
                 // production this contact is the entity that shortened or cancelled the hero's controller step
-                // (AlundraEntityScriptProxy.MoveControllerAndPullPosition, pinned by AlundraEntityContactReportTests T-R7 and
-                // AlundraInteractionPassTests P-a). This harness has no controller, so the report is the one the controller would get from the
+                // (EntityScriptProxy.MoveControllerAndPullPosition, pinned by EntityContactReportTests T-R7 and
+                // InteractionPassTests P-a). This harness has no controller, so the report is the one the controller would get from the
                 // production probe for the hero kept ON sailor 13: the same rule, at the hero's own position, with the soulevables skipped
-                // (AlundraMovementObstacleProbe.TryFindObstacle). Gated like production (D-E12D-5: no step is taken behind the mask).
+                // (MovementObstacleProbe.TryFindObstacle). Gated like production (D-E12D-5: no step is taken behind the mask).
                 if ((s.GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) == 0)
                 {
                     player!.XCollisionEntity = EntityCollision.FindEntityCollisionCandidate(

@@ -120,7 +120,7 @@ public sealed class BackdropStageLoadTests : IDisposable
 
     /// <summary>Captures every <see cref="Logs.WriteWarning"/> call for one test, then unregisters
     /// itself (<see cref="Logs"/> has no public removal API - same private-field reflection precedent
-    /// as <c>AlundraWarpArrivalTests.CapturingLogger</c>) so it does not leak into later tests.</summary>
+    /// as <c>WarpArrivalTests.CapturingLogger</c>) so it does not leak into later tests.</summary>
     private sealed class CapturingWarningLogger : ILogger, IDisposable
     {
         public List<string> WarningMessages { get; } = new();

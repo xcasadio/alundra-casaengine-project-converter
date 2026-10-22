@@ -282,7 +282,7 @@ public sealed class InventoryComposerTests
     }
 
     /// <summary>Which text the original drew on each line this tick is the director's to say
-    /// (AlundraInventoryDirector.DrawnDescriptionLine0/1, pinned by AlundraInventoryDirectorTests); the
+    /// (InventoryDirector.DrawnDescriptionLine0/1, pinned by InventoryDirectorTests); the
     /// composer shows exactly that, nothing more.</summary>
     [Fact]
     public void DescriptionLines_ShowExactlyWhatTheDirectorDrew()

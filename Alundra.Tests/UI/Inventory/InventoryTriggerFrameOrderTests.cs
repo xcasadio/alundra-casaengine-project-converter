@@ -20,7 +20,7 @@ namespace Alundra.Tests.UI.Inventory;
 /// <summary>
 /// E19.u (docs/plan-e19-opcodes.md section 1.2y, D-E19-103, open point O-E19-78, ADR-0050): the inventory's trigger runs in the binary's Update(k), AFTER RenderScene(k)
 /// (the text box's release 0x8004501C clears bits 0x18 of 0x800DC4B8) and after UpdateWorld(k) (map events 0x8003C67C, entities 0x8003B388, effects 0x8003C410);
-/// the port's tick k is Update(k) followed by RenderScene(k+1) for the inventory (AlundraInventoryDirector's class doc), so the inventory block runs at the end of
+/// the port's tick k is Update(k) followed by RenderScene(k+1) for the inventory (InventoryDirector's class doc), so the inventory block runs at the end of
 /// the tick, after the dialogue pass, the save screen and the map events of the same tick. The expected values were measured on ALUN_CD.EXE (France) by its real
 /// code; the measurements and the disassembly are in docs/plan-e19-u-annexe/ (bin-out.txt, notes.md, verify/verify.md). The montage is the dialogue one
 /// (map-event script as a lambda, one tick per 0.02 s frame).

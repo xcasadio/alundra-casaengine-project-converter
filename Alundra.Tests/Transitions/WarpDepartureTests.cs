@@ -96,7 +96,7 @@ public sealed class WarpDepartureTests : IDisposable
     }
 
     /// <summary>Same shape as <see cref="BuildGameWithGameManager"/>, plus a real
-    /// <see cref="AudioSystemComponent"/> (same recipe as <c>AlundraMusicPlayerTests.BuildGameWithAudio</c>)
+    /// <see cref="AudioSystemComponent"/> (same recipe as <c>MusicPlayerTests.BuildGameWithAudio</c>)
     /// - T2.1's own warp-departure tests (n/o/p) need BOTH <see cref="WorldProxy.InstallAudioSystems"/>
     /// (the music) and <see cref="WorldProxy.InstallWarpSystems"/> (the departure, off the SAME
     /// <see cref="GameManager"/>) on one world.</summary>
@@ -172,9 +172,9 @@ public sealed class WarpDepartureTests : IDisposable
             var world = new World { Name = "TestWorld" };
             HeroWorldFixture.SetProperty(world, nameof(World.Game), game);
 
-            // InstallWarpSystems directly (same precedent as AlundraScreenFadeDirectorTests' own
+            // InstallWarpSystems directly (same precedent as ScreenFadeDirectorTests' own
             // InstallScreenFadeSystems calls): this world has no "tileMap" entity, so the full
-            // InitializeWithWorld would exit through its early return (AlundraWorldProxy.cs:515-520)
+            // InitializeWithWorld would exit through its early return (WorldProxy.cs:515-520)
             // before ever reaching the install block this test needs.
             var proxy = new WorldProxy();
             proxy.InstallWarpSystems(world);
@@ -214,7 +214,7 @@ public sealed class WarpDepartureTests : IDisposable
             Assert.False(ScreenFadeDirector.Instance.IsSettled);
 
             // [R6] reserve #1: the hero's engine-driven gravity is suspended for the departure - see
-            // AlundraPlayerManager.SuspendGravityForWarpDeparture's own doc.
+            // PlayerManager.SuspendGravityForWarpDeparture's own doc.
             Assert.Equal(0f, player.Controller.Settings.Gravity);
             Assert.Equal(0f, player.Controller.Settings.MaxFallSpeed);
             Assert.True(player.Controller.IsVerticalOwnedExternally);
@@ -316,7 +316,7 @@ public sealed class WarpDepartureTests : IDisposable
 
     // -----------------------------------------------------------------------------------------------
     // Dégel, reformulated on what a two-world montage can actually refute (R4) - style
-    // AlundraScreenFadeDirectorTests' own T7 (:370-412).
+    // ScreenFadeDirectorTests' own T7 (:370-412).
     // -----------------------------------------------------------------------------------------------
 
     [Fact]
@@ -337,12 +337,12 @@ public sealed class WarpDepartureTests : IDisposable
         var recordBeforeArrival = WarpDirector.Instance.ArrivalRecordForTests;
 
         // Same singleton, second world - the montage T7 already proves is the real cross-world shape
-        // (AlundraScreenFadeDirectorTests:370-412). InstallWarpSystems directly (this world has no
+        // (ScreenFadeDirectorTests:370-412). InstallWarpSystems directly (this world has no
         // "tileMap" entity either - see the previous test's own comment on InitializeWithWorld's early
         // return).
         var world2 = new World { Name = "ArrivalWorld" };
         var proxy2 = new WorldProxy();
-        proxy2.InstallWarpSystems(world2); // runs AlundraWarpDirector.InstallForMapEntry (D-T-15).
+        proxy2.InstallWarpSystems(world2); // runs WarpDirector.InstallForMapEntry (D-T-15).
 
         Assert.False(WarpDirector.Instance.IsTransitionInProgress);
         Assert.False(WarpDirector.Instance.IsDepartureArmedForTests);
@@ -382,7 +382,7 @@ public sealed class WarpDepartureTests : IDisposable
         Assert.Equal(before + 1, runner.SpriteEventRunCount); // resumed - the site of production test.
     }
 
-    // ---- shared project-root lookup (same precedent as AlundraDialogueOpcodesProductionTests) --------
+    // ---- shared project-root lookup (same precedent as DialogueOpcodesProductionTests) --------
 
     [Fact]
     public void InstallForMapEntry_ClearsAPendingWorldPathThatIsActuallyThere()
@@ -455,9 +455,9 @@ public sealed class WarpDepartureTests : IDisposable
 
     // -----------------------------------------------------------------------------------------------
     // T2.1 acceptance (docs/plan-bgm-demarrage-binaire.md, D8/P7): the BGM half of the departure -
-    // (n)/(o)/(p). Real project data (music-index.json/sfx-manifest.json), real AlundraMusicPlayer/
-    // AlundraBgmFadeDirector singletons, on the fake audio backend - same precedent as
-    // AlundraMusicPlayerTests' own T1.
+    // (n)/(o)/(p). Real project data (music-index.json/sfx-manifest.json), real BgmPlayer/
+    // BgmFadeDirector singletons, on the fake audio backend - same precedent as
+    // MusicPlayerTests' own T1.
     // -----------------------------------------------------------------------------------------------
 
     /// <summary>Portal from map 389 to <paramref name="destMapId"/>, WarpBehaviorId
@@ -728,7 +728,7 @@ public sealed class WarpDepartureTests : IDisposable
 
     // -----------------------------------------------------------------------------------------------
     // T4.3 (docs/plan-bgm-demarrage-binaire.md, S3): the SAME music half as (n)/(o) above, but through
-    // the 0x53 path (BeginDepartureFromChangeMapOpcode, AlundraWarpDirector.cs:387) instead of the
+    // the 0x53 path (BeginDepartureFromChangeMapOpcode, WarpDirector.cs:387) instead of the
     // portal path (:466, PlayDepartureSound). The 0x53 path has no WarpBehaviorTable - sfxId is the raw
     // v[7] operand, so 69/55 are passed directly (silent/audible, same real manifest fixtures as (n)/(o)).
     // A mutation that swaps :387's own HandleWarpDeparture call for a direct PlayMapMusic must fail these
@@ -851,7 +851,7 @@ public sealed class WarpDepartureTests : IDisposable
     }
 
     /// <summary>Records every <see cref="ISoundPlayer.PlaySfx"/> request - same shape as
-    /// <c>AlundraEventProgramRunnerTests.FakeWarpSoundPlayer</c>, local to this class since T4.4's own
+    /// <c>EventProgramRunnerTests.FakeWarpSoundPlayer</c>, local to this class since T4.4's own
     /// test needs it here too.</summary>
     private sealed class FakeWarpSoundPlayer : ISoundPlayer
     {
@@ -898,7 +898,7 @@ public sealed class WarpDepartureTests : IDisposable
     }
 
     /// <summary>The real <c>Musics/bgm-manifest.json</c>'s own asset id for sound index 25 (389/390's
-    /// own track) - same lookup T1 (<c>AlundraMusicPlayerTests</c>) performs.</summary>
+    /// own track) - same lookup T1 (<c>MusicPlayerTests</c>) performs.</summary>
     private static Guid Track25AssetId(string projectRoot)
     {
         var manifestJson = System.IO.File.ReadAllText(System.IO.Path.Combine(projectRoot, "Musics", "bgm-manifest.json"));

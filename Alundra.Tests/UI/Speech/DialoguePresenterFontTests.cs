@@ -104,7 +104,7 @@ public sealed class DialoguePresenterFontTests
 
     // ── A minimal headless IUIDesktopRuntime, CPU-only (no GraphicsDevice) ──────────────────────────
     // CpuFont3Loader wraps a TTF (FontStashSharp.FontSystem), never a bitmap page texture, so - unlike
-    // AlundraFont3GlyphTests's own real-font3.png coverage - this needs no live GraphicsDevice at all:
+    // Font3GlyphTests's own real-font3.png coverage - this needs no live GraphicsDevice at all:
     // a plain in-process MGDesktop is enough to run DialogueScreen's real BuildWindow/Show/SetText path.
 
     private class PlaceholderImageResource : IUIImageResource

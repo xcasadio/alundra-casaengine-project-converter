@@ -277,7 +277,7 @@ public sealed class MurutaHallArcTests
 
         _output.WriteLine("break effects: " + string.Join("; ", slotsSeen));
 
-        // The door of B[2]: @434 (0x05 [57, 2], G569) passes at the latest E1 + 2; the sounds and the waits then fix the gates: N + 1 frames per Wait N (pinned by A115 of AlundraLeverArcTests).
+        // The door of B[2]: @434 (0x05 [57, 2], G569) passes at the latest E1 + 2; the sounds and the waits then fix the gates: N + 1 frames per Wait N (pinned by A115 of LeverArcTests).
         var x = ArcChecks.FrameOf(arc, B, 434);
         _output.WriteLine($"@434 = {x} (latest E1 {e1Ticks.Values.Max()}); @442 = {ArcChecks.FrameOf(arc, B, 442)}; @461 = {ArcChecks.FrameOf(arc, B, 461)}; @477 = {ArcChecks.FrameOf(arc, B, 477)}; @493 = {ArcChecks.FrameOf(arc, B, 493)}");
         Assert.Equal(e1Ticks.Values.Max() + 2, x);

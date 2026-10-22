@@ -156,7 +156,7 @@ public sealed class HeroAttackTests : IDisposable
             Check("rec_ptr", hero.WeaponRecordPointer, row.RecPtr);
             Check("rec_cnt", hero.WeaponStepCounter, row.RecCnt);
             Check("spawns", PlayerManager.WeaponSpawnCallCountForTests - spawnsBefore, row.Spawns);
-            // The landing sound 11 (and its dust, the effect 0x8003BDD8) is asked by the binary's landing code, which the DLL has as a named stub (E20.f2: AlundraPlayerAnimationEffects.PlayerLandingEffects, E20.e fills it): outside E20.b.
+            // The landing sound 11 (and its dust, the effect 0x8003BDD8) is asked by the binary's landing code, which the DLL has as a named stub (E20.f2: PlayerAnimationEffects.PlayerLandingEffects, E20.e fills it): outside E20.b.
             var dllSounds = string.Join(",", sounds.Requests.Where(s => s != LandingSound).OrderBy(s => s));
             var oracleSounds = string.Join(",", row.Sounds.Where(s => s != LandingSound).OrderBy(s => s));
             if (dllSounds != oracleSounds)

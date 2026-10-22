@@ -282,8 +282,8 @@ public sealed class RecordBirthClockTests : IDisposable
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // [V] (a5) Zero change outside the births by script: the entities of the map load and the hero carry neither the flag nor a loaded AnimFlags (the deviation of E20.e0a5, Q-E0A5-1 and D-E0A5-5, is pinned on an entity of
-    // the map load by A6_V of AlundraCreationSwitchClockTests and B6_V of AlundraBirthBoxTests; the entity born by the interface and the hero are guarded by their own tests, the gull by
-    // AlundraNpcCharacterControllerMoverTests). The positive side (a birth by script carries the flag, its clone does not) is in (a4).
+    // the map load by A6_V of CreationSwitchClockTests and B6_V of BirthBoxTests; the entity born by the interface and the hero are guarded by their own tests, the gull by
+    // NpcCharacterControllerMoverTests). The positive side (a birth by script carries the flag, its clone does not) is in (a4).
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     [Fact]

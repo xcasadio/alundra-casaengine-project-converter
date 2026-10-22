@@ -220,7 +220,7 @@ public class WallPlacementOverlayTests
     public void ComputeEntityElevation_UsesBlocTransparentAnchor()
     {
         // Reuses the "Bloc transparent (1x1x2)" map-389 record anchor from EntityRecordMapperTests /
-        // AlundraWorldProxyTests: PosY = 584 * 0x10000 (584 pixels), tile row 584 >> 4 = 36.
+        // WorldProxyTests: PosY = 584 * 0x10000 (584 pixels), tile row 584 >> 4 = 36.
         const int posY = 584 * 0x10000;
 
         var elevation = WallPlacementOverlay.ComputeEntityElevation(posY, idsv: 0);

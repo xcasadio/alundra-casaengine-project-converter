@@ -16,8 +16,8 @@ namespace Alundra.Tests.Cameras;
 
 /// <summary>
 /// E19.k1 K2b (docs/plan-e19-opcodes.md, section 1.2k.1): the sway through the real <see cref="WorldProxy.Update"/>
-/// - one site (<c>AlundraCameraDirector.UpdateCameraFollow</c>), exactly <c>ticksThisFrame</c> steps, with or without a
-/// camera, and none during a transition. Montage of <c>AlundraWorldProxyUpdateCharacterizationTests</c>: headless world, a
+/// - one site (<c>CameraDirector.UpdateCameraFollow</c>), exactly <c>ticksThisFrame</c> steps, with or without a
+/// camera, and none during a transition. Montage of <c>WorldProxyUpdateCharacterizationTests</c>: headless world, a
 /// camera entity added to <c>World.Entities</c>, a still followed entity, <c>proxy.Update(0.02f)</c> = one 50 Hz tick.
 /// </summary>
 public sealed class CameraSwayWiringTests : IDisposable

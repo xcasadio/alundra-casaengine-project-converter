@@ -11,7 +11,7 @@ using Alundra.Hero;
 namespace Alundra.Tests.Maps;
 
 /// <summary>
-/// Covers the E1 replacement for the old manager-level <c>AlundraWorldProxy.RunEntityEventsPass</c>
+/// Covers the E1 replacement for the old manager-level <c>WorldProxy.RunEntityEventsPass</c>
 /// (removed - see docs/plan-conversion-totale.md §2 decision D2/D3): per-entity pick/run
 /// (<see cref="EntityScriptProxy.PickEventTrigger"/>/<see cref="EntityScriptProxy.RunPickedEvent"/>,
 /// exercised directly - this is what each entity's own <c>Update</c> now calls) plus the world's own
@@ -53,8 +53,8 @@ public class WorldProxyEventPassTests
             Runner = runner;
         }
 
-        // Bug fix (AlundraLogicClock's own class doc): this file exercises PickEventTrigger/RunPickedEvent
-        // directly, never through AlundraEntityScriptProxy.Update, so nothing here ever calls this - kept
+        // Bug fix (LogicClock's own class doc): this file exercises PickEventTrigger/RunPickedEvent
+        // directly, never through EntityScriptProxy.Update, so nothing here ever calls this - kept
         // only to satisfy the interface. Auto-closes its own clock each call (own frame per call) in case
         // a future test does call Update, same pattern as every other FakeScriptHost in this test project.
         private readonly LogicClock _logicClock = new();
@@ -292,7 +292,7 @@ public class WorldProxyEventPassTests
     }
 
     // ------------------------------------------------------------------------------------------------
-    // AlundraWorldProxy.RunPendingEventTriggers - decision D3's catch-up re-scan
+    // WorldProxy.RunPendingEventTriggers - decision D3's catch-up re-scan
     // ------------------------------------------------------------------------------------------------
 
     [Fact]
@@ -365,7 +365,7 @@ public class WorldProxyEventPassTests
     }
 
     // ------------------------------------------------------------------------------------------------
-    // AlundraWorldProxy.RunMapEventsPass - port of RunMapEvents (GameEngine.cs:1667-1718)
+    // WorldProxy.RunMapEventsPass - port of RunMapEvents (GameEngine.cs:1667-1718)
     // ------------------------------------------------------------------------------------------------
 
     private static MapEvent NewMapEvent(
@@ -409,7 +409,7 @@ public class WorldProxyEventPassTests
         var player = new EntityScriptProxy { IsPlayer = true, TileX = 5, TileY = 5 };
 
         // BuildMapEvents would never actually add a ProgramBMap==0 entry (it skips it outright before
-        // ever constructing an AlundraMapEvent) - this stands in for one anyway, purely to prove
+        // ever constructing an MapEvent) - this stands in for one anyway, purely to prove
         // RunMapEventsPass itself does not rely on list position even when it DOES see one (its own
         // "(ProgramBMap & 0x7F) == 0 -> continue" guard covers that case independently of A3).
         var skipped = NewMapEvent(0, 0, 10, 10, 0, player, id: 0);

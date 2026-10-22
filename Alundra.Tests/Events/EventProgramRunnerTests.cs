@@ -415,7 +415,7 @@ public class EventProgramRunnerTests
     {
         // flag = v1 + v2*0x100 = 92 + 3*256 = 860; jump = sign16(v4<<8|v3) = 6 -> target @6 (SetAnim(1)).
         var document = NewDocument(0x31, 92, 3, 6, 0, 0, 0x1A, 1, 0xFF);
-        var runner = NewRunner(document); // fresh AlundraGameState: flag 860 starts clear
+        var runner = NewRunner(document); // fresh GameState: flag 860 starts clear
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
@@ -448,9 +448,9 @@ public class EventProgramRunnerTests
         // Script_54_036 (0x36) - despite EventCodeDebugger naming it "Wait flag off" (EventOpcodeSizeTable swaps it
         // back since E19.m8 M-02), it suspends
         // (returns 0) while the flag bit is CLEAR and only advances once it is SET - see the case 0x36
-        // comment on AlundraEventProgramRunner.Dispatch. flag = v2<<8|v1 = 1<<8|44 = 300; bit = 44&0x1f = 12.
+        // comment on EventProgramRunner.Dispatch. flag = v2<<8|v1 = 1<<8|44 = 300; bit = 44&0x1f = 12.
         var document = NewDocument(0x36, 44, 1, 0x1A, 9, 0xFF);
-        var runner = NewRunner(document); // fresh AlundraGameState: flag 300 bit 12 starts clear
+        var runner = NewRunner(document); // fresh GameState: flag 300 bit 12 starts clear
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
@@ -807,7 +807,7 @@ public class EventProgramRunnerTests
     [Fact]
     public void ToggleFlag_0x32_TogglesClearBitOnThenOff_TemporaryBank()
     {
-        // flag id | 0x8000 selects the session-only temporary bank (AlundraGameState's own doc);
+        // flag id | 0x8000 selects the session-only temporary bank (GameState's own doc);
         // v2=0x81 -> flag = 44 + 0x81*0x100 = 0x8100 + 44 = 0x812C; bit = 44&0x1f = 12.
         var document = NewDocument(0x32, 44, 0x81, 0xFF);
         var gameState = new GameState();
@@ -925,7 +925,7 @@ public class EventProgramRunnerTests
     public void WaitUntilFlagOff_0x35_FlagClear_AdvancesByThree()
     {
         var document = NewDocument(0x35, 44, 1, 0x1A, 9, 0xFF);
-        var runner = NewRunner(document); // fresh AlundraGameState: flag 300 bit 12 starts clear
+        var runner = NewRunner(document); // fresh GameState: flag 300 bit 12 starts clear
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
@@ -1032,8 +1032,8 @@ public class EventProgramRunnerTests
         // Bug fix follow-up (gull entity 6, map 389, measured ~158 px/s vs the faithful 150 px/s): the
         // engine's own Settings.Gravity/MaxFallSpeed now stay permanently pinned at 0 for every
         // controller-driven NPC, at every Flags.Gravity state - see
-        // AlundraEntityScriptProxy.ApplyGravitySettingsToController's own doc. The Gravity bit this opcode
-        // sets still matters: it now gates AlundraEntityScriptProxy.EvaluateEntitySupport's own per-tick
+        // EntityScriptProxy.ApplyGravitySettingsToController's own doc. The Gravity bit this opcode
+        // sets still matters: it now gates EntityScriptProxy.EvaluateEntitySupport's own per-tick
         // ForceZ decay instead of the controller's settings.
         Assert.Equal(EntityFlags.Gravity, target.Flags & EntityFlags.Gravity);
         Assert.Equal(0f, target.Controller.Settings.Gravity);
@@ -1366,7 +1366,7 @@ public class EventProgramRunnerTests
         // allowed to keep counting) - if RunScript resumed instead of re-initializing, enough calls would
         // eventually reach past it; since it always re-initializes and runs the 0x01 first, every call
         // restarts Wait's own counter, so SetAnim(3) is never reached no matter how many calls are made.
-        // (A first-instruction Wait keeps counting across re-initializations: E19.m9, AlundraInitializeEventDataTests.)
+        // (A first-instruction Wait keeps counting across re-initializations: E19.m9, InitializeEventDataTests.)
         var document = new EventProgramDocument
         {
             EventCodesATable = new[] { 0 },
@@ -1446,7 +1446,7 @@ public class EventProgramRunnerTests
     public void HighGravity_0x16_SetsFlagAndKeepsControllerGravityAtZero()
     {
         // Bug fix (gull entity 6, map 389): a controller-driven NPC's vertical is now entirely owned by
-        // the DLL's own per-tick decay (AlundraEntityScriptProxy.EvaluateEntitySupport), never by the
+        // the DLL's own per-tick decay (EntityScriptProxy.EvaluateEntitySupport), never by the
         // engine's own continuous Settings.Gravity/MaxFallSpeed (which used to integrate at render rate,
         // not the original's 50 Hz tick rate - see ApplyGravitySettingsToController's own doc for the
         // measured numbers). 0x16 still sets the Flags Gravity bit - it now gates EvaluateEntitySupport's
@@ -1511,7 +1511,7 @@ public class EventProgramRunnerTests
         // ForceZ = SignExtend16((255<<8)|0) * 0x10000 >> 8 = SignExtend16(0xFF00) * 0x10000 >> 8
         //        = -256 * 0x10000 >> 8 = -65536 (16.16 -> -1.0 px/tick, i.e. -50 px/s at the 50 Hz tick rate).
         //
-        // Root-cause vertical-fidelity fix (see AlundraEntityScriptProxy.EvaluateEntitySupport's own doc):
+        // Root-cause vertical-fidelity fix (see EntityScriptProxy.EvaluateEntitySupport's own doc):
         // 0x1B no longer pushes this impulse onto Controller.SetVerticalVelocity directly - only the DLL-
         // side ForceZ struct field is set here; EvaluateEntitySupport reads it (after its own per-tick
         // decay) and drives the entity through Controller.Move() every logic tick instead, so the
@@ -1660,7 +1660,7 @@ public class EventProgramRunnerTests
         var runner = NewRunner(document);
         var entity = NewEntity();
         // Parameters[0] pinned to 0 - reproduces InitializeEventData's own "program start" bookkeeping
-        // (AlundraEventProgramRunner.InitializeEventData: state.Parameters[0] = state.CodeIndex) by hand,
+        // (EventProgramRunner.InitializeEventData: state.Parameters[0] = state.CodeIndex) by hand,
         // since this test drives RunOneScriptCall directly rather than through RunScript/InitializeEventData.
         var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, Parameters = { [0] = 0 } };
 
@@ -1945,7 +1945,7 @@ public class EventProgramRunnerTests
         Assert.Equal(5u, runner.ResolveDirectionFromParam(entity, 0xE5));
     }
 
-    // Modes 4 and 5 (random) are covered by AlundraRandomDirectionModesTests (E19.m0), in the collection that
+    // Modes 4 and 5 (random) are covered by RandomDirectionModesTests (E19.m0), in the collection that
     // serialises the shared generator's static state.
 
     [Fact]
@@ -2008,7 +2008,7 @@ public class EventProgramRunnerTests
 
     // ---------------------------------------------------------------------------------------------
     // E4.d: 0x1E "Walk" / 0x1F "Walk with collision" - core suspend/complete logic (opcode-level,
-    // synthetic PosX/PosY - see AlundraNpcCharacterControllerMoverTests for the real-mover integration
+    // synthetic PosX/PosY - see NpcCharacterControllerMoverTests for the real-mover integration
     // scenarios: real program-139 walk, real wall + navigation detour, degraded no-grid mode over the
     // real map).
     // ---------------------------------------------------------------------------------------------
@@ -2168,7 +2168,7 @@ public class EventProgramRunnerTests
 
     // -----------------------------------------------------------------------------------------
     // E19.c1 T3 (docs/plan-e19-opcodes.md §1.2e): the motion opcodes 0x08, 0x0B, 0x3A, 0x5E, 0x73, 0x74, 0x89
-    // (0x0C is in AlundraRandomOpcodeTests: it consumes the static shared generator). Values are the binary's.
+    // (0x0C is in RandomOpcodeTests: it consumes the static shared generator). Values are the binary's.
     // -----------------------------------------------------------------------------------------
 
     private static List<EventTraceRecord> TraceOf(EventProgramRunner runner)
@@ -2537,8 +2537,8 @@ public class EventProgramRunnerTests
 
     // -----------------------------------------------------------------------------------------
     // Cell mutation opcodes (0x54/0x55/0x85) - E7.a, docs/plan-e7-mutation-tuiles.md. A tiny 2x2
-    // synthetic AlundraCellStore (built through the real TryCreate/TryCreate factories, not a hand-rolled
-    // fake) exercises the real production mutation code, exactly like AlundraCellsCollisionFieldTests'
+    // synthetic CellStore (built through the real TryCreate/TryCreate factories, not a hand-rolled
+    // fake) exercises the real production mutation code, exactly like CellsCollisionFieldTests'
     // own synthetic-grid tests do for the field. Cell (0,0) starts with walkability=1/groundProperty=2/
     // slope=3/height=4/tileId=1000/wallTilesOffset=10, wall stack {offset:5, tiles:[11,22]}; cell (1,0)
     // starts with walkability=9/groundProperty=8/slope=7/height=6/tileId=2000/wallTilesOffset=20, wall
@@ -2861,7 +2861,7 @@ public class EventProgramRunnerTests
     {
         // Real map-389 params [0,16,0]: flag = (v2<<8)|v1 = (16<<8)|0 = 0x1000 = Up, snapshot 0 (Hold).
         var document = NewDocument(0x2F, 0, 16, 0, 0xFF);
-        // E20.a A1: 0x2F modes 0 and 1 read the pad of the TICK (AlundraGameState.TickPad), not the snapshot of the rendered frame.
+        // E20.a A1: 0x2F modes 0 and 1 read the pad of the TICK (GameState.TickPad), not the snapshot of the rendered frame.
         var gameState = new GameState();
         gameState.TickPad.Update(PadState.Up);
         var runner = NewRunner(document, gameState: gameState);
@@ -2959,8 +2959,8 @@ public class EventProgramRunnerTests
     }
 
     // -----------------------------------------------------------------------------------------
-    // D-E7-8 pad seam, production site: AlundraEntityScriptProxy.Update's player branch publishes
-    // AlundraGameState.LastPadState just before MovePlayer - see that write site's own doc.
+    // D-E7-8 pad seam, production site: EntityScriptProxy.Update's player branch publishes
+    // GameState.LastPadState just before MovePlayer - see that write site's own doc.
     // -----------------------------------------------------------------------------------------
 
     private sealed class PadSeamScriptHost : IScriptHost
@@ -3000,7 +3000,7 @@ public class EventProgramRunnerTests
 
         player.Update(1f / 50f); // real production frame - the player branch runs MovePlayer for real.
 
-        // E20.a A1: the world's tick pad pass (AlundraWorldProxy.Update, head of each tick) samples the hold state this Update published into the pad 0x2F reads.
+        // E20.a A1: the world's tick pad pass (WorldProxy.Update, head of each tick) samples the hold state this Update published into the pad 0x2F reads.
         host.GameState.TickPad.Update(host.GameState.LastPadState.ButtonsHold);
 
         // A real 0x2F dispatch now reads what THIS Update call published (through the tick pad), not a hand-set gameState.
@@ -3028,7 +3028,7 @@ public class EventProgramRunnerTests
 
     // -----------------------------------------------------------------------------------------
     // 0x3B, production call site (item 2 bis - the item that decides the tranche, docs/plan-e7-mutation-
-    // tuiles.md): drives the REAL AlundraWorldProxy.RunMapEventsPass over the REAL map-389 door program
+    // tuiles.md): drives the REAL WorldProxy.RunMapEventsPass over the REAL map-389 door program
     // (masked index 2, program id 130, offset 400 in docs/intro-programs-389.txt), with the harness
     // player placed exactly inside program B130's own real box [18,18,38,38,8,8]. A stubbed-0x3B ("always
     // false") or a null-PlayerEntity implementation would both loop the program back onto its own Break
@@ -3381,8 +3381,8 @@ public class EventProgramRunnerTests
     // -----------------------------------------------------------------------------------------
     // BGM fade-machine opcodes (0xA5/0xA6/0xA7) - B2, docs/plan-e11b-opcodes-audio.md. Dispatch-level
     // only (operand extraction/orchestration against FakeBgmFadeDirector/FakeMusicPlayer) - the real
-    // 120-tick ramp machine and AlundraMusicPlayer.StopSequence/PlaySequence/PlayFromRawIndex semantics
-    // are covered by AlundraBgmFadeDirectorTests instead.
+    // 120-tick ramp machine and BgmPlayer.StopSequence/PlaySequence/PlayFromRawIndex semantics
+    // are covered by BgmFadeDirectorTests instead.
     // -----------------------------------------------------------------------------------------
 
     [Fact]
@@ -3423,7 +3423,7 @@ public class EventProgramRunnerTests
     public void LoadBgm_0xA6_Implemented_ForwardsOperandVerbatim(int operand)
     {
         // Fact 2: the operand's value beyond zero/non-zero is unused by the ORIGINAL, but this port
-        // still forwards it verbatim to AlundraBgmFadeDirector.LoadBgm, which is itself the seam that
+        // still forwards it verbatim to BgmFadeDirector.LoadBgm, which is itself the seam that
         // only distinguishes zero from non-zero (see that class's own doc/tests) - the dispatch site
         // must not pre-collapse the value.
         var fadeDirector = new FakeBgmFadeDirector();
@@ -3633,8 +3633,8 @@ public class EventProgramRunnerTests
 
     // -----------------------------------------------------------------------------------------------
     // T7 (docs/plan-transitions-carte.md, section "T7 - Opcodes 0x53, 0x9B, 0x9C"): opcode 0x53 (Change
-    // map, reuses AlundraWarpDirector, T4) and 0x9B/0x9C (warp-disabled writers). AlundraWarpDirector.
-    // Instance is a session-scoped singleton (same shape as AlundraWarpDepartureTests' own montages) - every
+    // map, reuses WarpDirector, T4) and 0x9B/0x9C (warp-disabled writers). WarpDirector.
+    // Instance is a session-scoped singleton (same shape as WarpDepartureTests' own montages) - every
     // test here resets it before AND after, so no state leaks into another test in this assembly.
     // -----------------------------------------------------------------------------------------------
 
@@ -3755,7 +3755,7 @@ public class EventProgramRunnerTests
     public void ChangeMap_0x53_WithIsWarpDisabled_DoesNothing()
     {
         // [R8]: the IsWarpDisabled test applies to 0x53 too, even though it never goes through
-        // AlundraPortalTrigger's predicate (which is what would normally test this upstream).
+        // PortalTrigger's predicate (which is what would normally test this upstream).
         WarpDirector.Instance.ResetForTests();
         try
         {
@@ -3796,7 +3796,7 @@ public class EventProgramRunnerTests
             Assert.Equal(1, state.CodeIndex);
             Assert.True(gameState.IsWarpDisabled);
 
-            // A subsequent departure through the SAME AlundraWarpDirector this flag already gates (T4's
+            // A subsequent departure through the SAME WarpDirector this flag already gates (T4's
             // own [R8] test) must now do nothing.
             var player = NewPlayerForWarp(targetAnimationId: 0, targetDirection: 0);
             WarpDirector.Instance.BeginDepartureFromChangeMapOpcode(
@@ -4494,7 +4494,7 @@ public class EventProgramRunnerTests
     {
         // v1=0x81 -> functionId 1 ("get player"). The "+1" in the original's own test is ONE RAW 16.16
         // UNIT (the resting-on-terrain invariant, ModdedPosZ == TerrainHeight + 1 - see
-        // AlundraEntityScriptProxy.ComputeTerrainHeight's own doc), never one pixel. PosZ ==
+        // EntityScriptProxy.ComputeTerrainHeight's own doc), never one pixel. PosZ ==
         // TerrainHeight + 1 satisfies "<=" exactly at its own upper bound -> Result = 1.
         var document = NewDocument(0x8D, 0x81, 0xFF);
         var player = new EntityScriptProxy { IsPlayer = true, TerrainHeight = 5 << 16, PosZ = (5 << 16) + 1 };
@@ -4592,7 +4592,7 @@ public class EventProgramRunnerTests
     {
         // D-E16-30/T3.1: InitializeEntity (0x80039D04) writes TerrainHeight at spawn, before any script
         // ever runs - a Load program can test 0x8D on an entity that has never ticked. This test does not
-        // re-exercise EvaluateEntitySupport's own spawn write (covered by AlundraTerrainHeightTests) - it
+        // re-exercise EvaluateEntitySupport's own spawn write (covered by TerrainHeightTests) - it
         // simulates its OUTCOME directly (TerrainHeight already carries the spawn-time value, PosZ still
         // at its spawn pose, no tick has run) and checks 0x8D reads exactly that value, matching a
         // loading program's own testable moment.
@@ -4736,7 +4736,7 @@ public class EventProgramRunnerTests
     public void JumpIfFlagSet_0x7B_FlagClear_AdvancesBySize_MarkUntouched()
     {
         var document = NewDocument(0x7B, 7, 0, 6, 0, 0xFF);
-        var runner = NewRunner(document); // fresh AlundraGameState -> flag clear
+        var runner = NewRunner(document); // fresh GameState -> flag clear
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes() };
 
@@ -4861,7 +4861,7 @@ public class EventProgramRunnerTests
     public void JumpFromParamIfFlagSet_0x80_FlagClear_AdvancesBySize()
     {
         var document = NewDocument(0x01, 0x01, 0xFF, 0x01, 0x01, /*5*/ 0x80, 7, 0x80, /*8*/ 0xFF);
-        var runner = NewRunner(document); // fresh AlundraGameState -> flag clear
+        var runner = NewRunner(document); // fresh GameState -> flag clear
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, _34 = 2 };
 
@@ -4874,7 +4874,7 @@ public class EventProgramRunnerTests
     public void JumpFromParamIfFlagClear_0x81_FlagClear_ReturnsToMark_GameBank()
     {
         var document = NewDocument(0x01, 0x01, /*2*/ 0xFF, 0x01, 0x01, /*5*/ 0x81, 7, 0, /*8*/ 0xFF);
-        var runner = NewRunner(document); // fresh AlundraGameState -> flag clear -> taken
+        var runner = NewRunner(document); // fresh GameState -> flag clear -> taken
         var entity = NewEntity();
         var state = new EventProgramState { Codes = document.CodesAsBytes(), CodeIndex = 5, _34 = 2 };
 
@@ -5012,7 +5012,7 @@ public class EventProgramRunnerTests
             if (i > 0)
             {
                 // Drive the 0x1E walk (threshold 24px) forward once it starts memorizing its own start
-                // position - same "advance PosX between calls" shape AlundraNpcCharacterControllerMoverTests'
+                // position - same "advance PosX between calls" shape NpcCharacterControllerMoverTests'
                 // own real-walk scenarios use.
                 entity.PosX += 30 << 16;
             }

@@ -222,7 +222,7 @@ internal static class SaveGameDirectorTestSupport
     }
 
     /// <summary>A headless game with a real <see cref="GameManager"/> - same recipe as
-    /// <c>AlundraWarpDepartureTests.BuildGameWithGameManager</c> (G3: the warp director needs one attached to hand
+    /// <c>WarpDepartureTests.BuildGameWithGameManager</c> (G3: the warp director needs one attached to hand
     /// a world change to).</summary>
     internal static GameManager BuildGameManager()
     {
@@ -237,7 +237,7 @@ internal static class SaveGameDirectorTestSupport
     }
 
     /// <summary>The world path the engine was asked to load, read from the manager's private field (same
-    /// reflection as <c>AlundraWarpDepartureTests.GetPendingWorldToLoad</c>).</summary>
+    /// reflection as <c>WarpDepartureTests.GetPendingWorldToLoad</c>).</summary>
     internal static string? GetPendingWorldToLoad(GameManager gameManager)
     {
         var field = typeof(GameManager).GetField("_worldToLoad", BindingFlags.Instance | BindingFlags.NonPublic)!;
@@ -253,7 +253,7 @@ internal static class SaveGameDirectorTestSupport
     }
 
     /// <summary>Hand-built hero pawn possessed by a real <see cref="HeroController"/> registered into the
-    /// world's private controller list - the fixture of <c>AlundraNewGameEntryTests</c>/<c>AlundraWarpArrivalTests</c>
+    /// world's private controller list - the fixture of <c>NewGameEntryTests</c>/<c>WarpArrivalTests</c>
     /// (private there), so <see cref="WorldProxy.InitializeWithWorld"/> adopts it as the hero.</summary>
     internal static Entity AddHeroPawn(World world)
     {
@@ -285,7 +285,7 @@ internal static class SaveGameDirectorTestSupport
     }
 
     /// <summary>Runs <see cref="WorldProxy.InitializeWithWorld"/> with <c>EngineEnvironment.ProjectPath</c>
-    /// on the real export, restored afterwards (the convention of <c>AlundraNewGameEntryTests</c>).</summary>
+    /// on the real export, restored afterwards (the convention of <c>NewGameEntryTests</c>).</summary>
     internal static void InitializeWithRealProject(WorldProxy proxy, World world)
     {
         var previousProjectPath = EngineEnvironment.ProjectPath;
@@ -354,7 +354,7 @@ internal static class SaveGameDirectorTestSupport
     }
 
     /// <summary>Captures every log line for one test, then unregisters itself (<see cref="Logs"/> has no public
-    /// removal API - same reflection precedent as <c>AlundraWarpArrivalTests.CapturingLogger</c>).</summary>
+    /// removal API - same reflection precedent as <c>WarpArrivalTests.CapturingLogger</c>).</summary>
     internal sealed class LogCapture : ILogger, IDisposable
     {
         public readonly List<string> Infos = new();

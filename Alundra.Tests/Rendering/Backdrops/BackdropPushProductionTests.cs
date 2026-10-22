@@ -25,7 +25,7 @@ namespace Alundra.Tests.Rendering.Backdrops;
 /// reflection before the first <c>proxy.Update</c> (<see cref="BackdropStage.ApplyOriginalBackgroundClearColorOnce"/>
 /// would otherwise dereference <c>world.Game.GameManager.ViewManager.Views</c> on this uninitialized
 /// <c>CasaEngineGame</c>), plus a priming <c>proxy.Update(0.02f)</c> (the sticky first-frame floor,
-/// <c>AlundraLogicClock</c>'s own first-call memo) so the FOLLOWING frame's tick count is exactly
+/// <c>LogicClock</c>'s own first-call memo) so the FOLLOWING frame's tick count is exactly
 /// <c>elapsedTime * 50</c>. A real <see cref="ScrollingLayerService"/> (no
 /// <see cref="CasaEngine.Framework.Application.Components.ScrollingLayerComponent"/> - nothing here
 /// calls <see cref="ScrollingLayerService.Advance"/>) is injected via
@@ -39,9 +39,9 @@ public sealed class BackdropPushProductionTests : IDisposable
 {
     public BackdropPushProductionTests()
     {
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy
         // and drives proxy.Update over the real map 389 montage - reset the session carriers, same as
-        // every other class exercising this montage (AlundraWorldProxyGlobalFreezeTests, ...).
+        // every other class exercising this montage (WorldProxyGlobalFreezeTests, ...).
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
         SfxBank.ResetForTests();

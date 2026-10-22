@@ -41,7 +41,7 @@ public class Map389LoadProgramsTests
     }
 
     /// <summary>Runs one entity's slot-A Load program to completion and returns its final
-    /// TargetAnimationId, mirroring what AlundraWorldProxy's pick phase does on the frame it spawns.</summary>
+    /// TargetAnimationId, mirroring what WorldProxy's pick phase does on the frame it spawns.</summary>
     private static uint RunLoad(EventProgramRunner runner, int loadIndex)
     {
         var entity = new EntityScriptProxy();
@@ -80,7 +80,7 @@ public class Map389LoadProgramsTests
     }
 
     /// <summary>Records SpawnEntityByRecordId/DestroyEntity calls and hands back a fixed spawned-entity
-    /// list - drives loads 139/140/143's real 0x64/0x2E path exactly the way AlundraWorldProxy would,
+    /// list - drives loads 139/140/143's real 0x64/0x2E path exactly the way WorldProxy would,
     /// without a live World.</summary>
     private sealed class RecordingWorldContext : IEntityWorldContext
     {

@@ -58,7 +58,7 @@ namespace Alundra.Tests.Support;
 /// </list>
 /// A missing export FAILS the test naming it, never skips it. The session singletons are reset at the start and at
 /// the end, as the E16.e montage does; a class using this support carries
-/// <c>[Collection(AlundraMusicPlayerSingletonCollection.Name)]</c>.
+/// <c>[Collection(MusicPlayerSingletonCollection.Name)]</c>.
 /// </summary>
 internal sealed class ArcRun : IDisposable
 {

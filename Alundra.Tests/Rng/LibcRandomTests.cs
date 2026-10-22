@@ -59,7 +59,7 @@ public sealed class LibcRandomTests : System.IDisposable
 
     /// <summary>
     /// Map 391 (the ship in the storm, on the story chain), the real export: its 55 rain cells (type 2) built the way
-    /// <c>AlundraBackdropStage</c> builds them, the generator at state 0 and the camera at 0, three ticks one by one.
+    /// <c>BackdropStage</c> builds them, the generator at state 0 and the camera at 0, three ticks one by one.
     /// Tick 1: every cell that has crossed the bottom draws once, in cell order (cells 2, 30 and 47 here), and is drawn
     /// at its position BEFORE the respawn; the respawn abscissa is <c>rand() / 102</c> (0, 210, 97). Self-skips when the
     /// export is absent.

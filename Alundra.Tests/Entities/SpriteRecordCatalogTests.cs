@@ -247,7 +247,7 @@ public class SpriteRecordCatalogTests : IDisposable
         }
 
         // Entities/Alundra/Alundra.entity's own "id" - the same prefab asset id sprite-records.json keys
-        // this header by (see AlundraWorldProxy.AdoptPlayerPawn's own AssetCatalog.Get(HeroAssetName) ->
+        // this header by (see WorldProxy.AdoptPlayerPawn's own AssetCatalog.Get(HeroAssetName) ->
         // SpriteRecordCatalog.TryGet(assetInfo.Id, ...) lookup chain). Read from the .entity file itself,
         // not hardcoded: asset ids are NOT deterministic across converter runs (SpriteWriter's own class
         // doc, "Asset ids are NOT forced deterministic here") - re-running the converter changes it.

@@ -449,7 +449,7 @@ public sealed class BirthTickTests : IDisposable
     public void AnEntityWithoutTheMarker_KeysItsKinematicsOnItsCurrentAnimation_NeverOnTheTarget_EvenWithCurrentStillNotValidated()
     {
         // The line of D-E0A-8 is guarded by the marker: the same entity without it does not move (the measurement of P-A: X = 150, 150, 150). The entities of the map load never carry the marker; an entity made
-        // from a record by a script opcode does since E20.e0a4 and takes the speed of its target (B6 of AlundraRecordBirthTickTests).
+        // from a record by a script opcode does since E20.e0a4 and takes the speed of its target (B6 of RecordBirthTickTests).
         using var arc = Arc("guard");
         var proxy = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, Arrow, 150 << 16, 100 << 16, 0, Direction)!;
         proxy.JoinsBirthTick = false;

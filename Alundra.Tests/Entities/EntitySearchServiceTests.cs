@@ -16,7 +16,7 @@ public class EntitySearchServiceTests
     {
         var entity = new Entity { Name = "e" };
         var proxy = new EntityScriptProxy { Status = status };
-        // Mirrors AlundraWorldProxy.ApplySpawnInitialization: every spawned proxy carries this back-link.
+        // Mirrors WorldProxy.ApplySpawnInitialization: every spawned proxy carries this back-link.
         proxy.LogicContextEntity = entity;
         return proxy;
     }

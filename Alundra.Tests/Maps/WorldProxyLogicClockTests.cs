@@ -49,10 +49,10 @@ public class WorldProxyLogicClockTests
         {
         }
 
-        // Production shape (AlundraWorldProxy.Update): the clock is advanced/read once per real engine
+        // Production shape (WorldProxy.Update): the clock is advanced/read once per real engine
         // frame and explicitly closed by whichever caller runs last. This test drives ONE bare entity with
         // no separate "world" caller, so it plays both roles itself - CloseFrame right after reading,
-        // exactly like AlundraWorldProxy.Update does at the tail of its own per-frame pass.
+        // exactly like WorldProxy.Update does at the tail of its own per-frame pass.
         public int LogicTicksThisFrame(float elapsedTime)
         {
             var ticks = _logicClock.TicksThisFrame(elapsedTime);
@@ -67,7 +67,7 @@ public class WorldProxyLogicClockTests
     /// (<c>entity.Initialize()</c>) - needed because <see cref="EntityScriptProxy.Update"/>'s own
     /// tail (<see cref="FrameSyncPasses.SyncAnimation"/>/<see cref="FrameSyncPasses.SyncTransform"/>)
     /// reads <c>Owner</c>, which only a real <c>Initialize(Entity)</c> call sets - a bare
-    /// <c>new AlundraEntityScriptProxy()</c> (as <see cref="WorldProxyEventPassTests"/> uses) is not
+    /// <c>new EntityScriptProxy()</c> (as <see cref="WorldProxyEventPassTests"/> uses) is not
     /// enough here since this test drives the full <see cref="EntityScriptProxy.Update"/>, not just
     /// its pick/run half directly.
     /// </summary>

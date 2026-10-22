@@ -15,7 +15,7 @@ namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// Pins the PRODUCTION wiring of D-T-3 (docs/plan-transitions-carte.md, slice T1):
-/// <c>AlundraWorldProxy.GameState</c> resolves to <see cref="GameState.Instance"/> instead of a
+/// <c>WorldProxy.GameState</c> resolves to <see cref="GameState.Instance"/> instead of a
 /// per-world field initializer.
 ///
 /// Why this class exists: the closing verifier of T1 found that this one statement - the most

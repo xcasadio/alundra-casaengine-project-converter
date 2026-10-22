@@ -47,7 +47,7 @@ namespace Alundra.Tests.Entities;
 /// </summary>
 public class EntityLogicalRenderPoseTests
 {
-    // AdoptPlayerPawn's own tile-to-pixel formula (AlundraWorldProxy.cs ~1006-1007), duplicated here
+    // AdoptPlayerPawn's own tile-to-pixel formula (WorldProxy.cs ~1006-1007), duplicated here
     // rather than made public there - see EntityRecordMapper's own class doc for the same convention.
     private const int TileWidth = 24;
     private const int TileHeight = 16;
@@ -57,7 +57,7 @@ public class EntityLogicalRenderPoseTests
     // -----------------------------------------------------------------------------------------
 
     /// <summary>
-    /// The formula this slice replaced (<c>AlundraWorldProxy.ResolveWorldPosition</c> before E3.a),
+    /// The formula this slice replaced (<c>WorldProxy.ResolveWorldPosition</c> before E3.a),
     /// kept here purely as the reference the new two-step (logical write + policy projection) path must
     /// reproduce exactly.
     /// </summary>
@@ -118,7 +118,7 @@ public class EntityLogicalRenderPoseTests
     [Fact]
     public void RenderPoseFormula_HeroNewGameSpawn_MatchesTheOldFormula()
     {
-        // AdoptPlayerPawn's own New Game spawn (AlundraWorldProxy.cs ~1006-1008).
+        // AdoptPlayerPawn's own New Game spawn (WorldProxy.cs ~1006-1008).
         var posX = (GameState.CameraTileX * TileWidth + TileWidth / 2) << 16;
         var posY = (GameState.CameraTileY * TileHeight + TileHeight / 2) << 16;
         const int posZ = 0;
@@ -183,7 +183,7 @@ public class EntityLogicalRenderPoseTests
         {
         }
 
-        // Bug fix (AlundraLogicClock's own class doc): this file drives entities through one
+        // Bug fix (LogicClock's own class doc): this file drives entities through one
         // World.Update(1/50) call per test, so a single-frame auto-closed clock reproduces the pre-fix
         // "always exactly 1 tick" behaviour these tests already assume - same pattern as every other
         // FakeScriptHost in this test project.
@@ -306,7 +306,7 @@ public class EntityLogicalRenderPoseTests
         var sprite = new AnimatedSpriteComponent();
         projection.AddChildComponent(sprite);
 
-        // Resolve/cache once, exactly like AlundraEntitySpawnFactory.CreateEntityFromPrefab does at spawn time -
+        // Resolve/cache once, exactly like EntitySpawnFactory.CreateEntityFromPrefab does at spawn time -
         // a no-op here since the entity is not in a world yet (Owner.World is still null).
         proxy.RenderProjection = entity.GetComponent<RenderProjectionComponent>();
         proxy.RenderProjection?.UpdateProjection();

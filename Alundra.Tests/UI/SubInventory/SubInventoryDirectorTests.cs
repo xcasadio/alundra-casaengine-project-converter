@@ -92,7 +92,7 @@ public sealed class SubInventoryDirectorTests : IDisposable
 
     /// <summary>The real project's own <c>Dialogues/</c> - for the New Game names test (D-E13D's own "use
     /// the real exported tables" instruction), same lookup shape
-    /// <c>AlundraWorldProxyAudioInstallationTests.FindProjectRoot</c> uses for <c>Sounds/</c>.</summary>
+    /// <c>WorldProxyAudioInstallationTests.FindProjectRoot</c> uses for <c>Sounds/</c>.</summary>
     private static string FindAlundraProjectPath()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
@@ -440,7 +440,7 @@ public sealed class SubInventoryDirectorTests : IDisposable
     private static readonly int[] AllKeyItemIds = { 33, 57, 60, 73, 74, 75, 76, 77, 78, 87, 88, 89 };
 
     // Gives one of each item outright (the count lives at NumberOfItems[id * 2 + 1], the same field the tests
-    // of AlundraItemInventoryTests write): AddOneItemIfUnlocked would refuse every key item, none of them
+    // of ItemInventoryTests write): AddOneItemIfUnlocked would refuse every key item, none of them
     // carries the new-game unlock bit.
     private static void Own(GameState state, ItemTables tables, params int[] itemIds)
     {
@@ -708,7 +708,7 @@ public sealed class SubInventoryDirectorTests : IDisposable
     }
 
     // -----------------------------------------------------------------------------------------
-    // 9: wiring through the real AlundraWorldProxy.Update.
+    // 9: wiring through the real WorldProxy.Update.
     // -----------------------------------------------------------------------------------------
 
     [Fact]

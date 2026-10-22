@@ -9,13 +9,13 @@ namespace Alundra.Tests.UI.Inventory;
 /// The inventory cursor as the screen plays it since the bound screens program (parent ADR-0002): the converter's
 /// <c>UI/Animations/ui_inventory_cursor.anim2d</c>, sampled on the UI clock by the engine's 2D animation sampler, the
 /// same one the UI asset provider drives. The original steps it every 10 ticks of 20 ms
-/// (<c>AlundraInventoryDirector.cs:520-524</c>); the program allows 20 ms of drift against that, since the UI no longer
+/// (<c>InventoryDirector.cs:520-524</c>); the program allows 20 ms of drift against that, since the UI no longer
 /// runs at 50 Hz. Played here at 60 frames per second, the way a display refreshes.
 /// </summary>
 public sealed class CursorAnimationTimingTests
 {
     // wind_159/182/210/237, the cursor's four phases, and the pixel offset of each (ALUN_CD.EXE 0x800a82c8/0x800a82d8,
-    // AlundraInventoryComposer's CursorPhaseX/Y).
+    // InventoryComposer's CursorPhaseX/Y).
     private static readonly Guid[] PhaseSprites =
     {
         Guid.Parse("6ed4380a-ba9c-5d0b-84db-22e1ddf61361"),

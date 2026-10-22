@@ -69,7 +69,7 @@ internal sealed class DllSpeakerMachines : ISpeakerMachines
 }
 
 /// <summary>
-/// E19.f4b F4B-1, "oracle et suites" (docs/plan-e19-opcodes.md): (1) the C# oracle of <see cref="AlundraDialogueSpeakerOracle"/> (a port of <c>model/f4_model.py</c> and
+/// E19.f4b F4B-1, "oracle et suites" (docs/plan-e19-opcodes.md): (1) the C# oracle of <c>Alundra.Tests/Support/SpeakerAnnex.cs</c> (a port of <c>model/f4_model.py</c> and
 /// <c>model/f4_model_h.py</c>) reproduces the digests and the coverage counters of <c>sequences-raw-digests.json</c> (40 seeds of 400 images from the SplitMix64 generator
 /// of <c>model/gen_sequences.py</c>, whose first five outputs of seed 1 validate the port); (2) the DLL's machines equal the oracle image by image on the same sequences.
 /// </summary>

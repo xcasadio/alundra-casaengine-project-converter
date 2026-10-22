@@ -9,7 +9,7 @@ namespace Alundra.Tests.Dialogues;
 /// <c>UpdateNumberOfFalcon</c> (0x8004e738) and <c>UpdatePlayerProgressState</c> (0x8004754c), per the
 /// binary facts of docs/plan-e15-yarn.md §5.7 (T2, 2026-09-28), authoritative over the decompilation.
 /// Each test cites the exact §5.7 fact it checks. Instances are built directly (never through
-/// <see cref="GameState.Instance"/>), same pattern as <c>AlundraPlayerManagerTests</c>, so tests
+/// <see cref="GameState.Instance"/>), same pattern as <c>PlayerManagerTests</c>, so tests
 /// never leak state into each other.
 /// </summary>
 public class TextProgressTests
@@ -325,7 +325,7 @@ public class TextProgressTests
     // -----------------------------------------------------------------------------------------
     // Process-lifetime state: nothing in PRODUCTION resets TextCategoryIndex or GameVariables, same
     // as the original's BSS (§5.7: "jamais remis à zéro ... hors de la sauvegarde") - see their own
-    // field docs on AlundraGameState. AlundraGameState.ResetForTests IS a reset seam for both, but it
+    // field docs on GameState. GameState.ResetForTests IS a reset seam for both, but it
     // is a TEST-ONLY seam (it must leave Instance clean between tests, unlike any production code
     // path), so there is nothing to assert here about the binary's own behavior.
     // -----------------------------------------------------------------------------------------

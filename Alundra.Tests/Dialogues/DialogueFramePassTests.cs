@@ -40,11 +40,11 @@ public sealed class DialogueFramePassTests : IDisposable
     public DialogueFramePassTests()
     {
         DialogueDirector.Instance.ResetForTests();
-        // Same seam note as AlundraWorldProxyUpdateCharacterizationTests: inert here (world.Game is
+        // Same seam note as WorldProxyUpdateCharacterizationTests: inert here (world.Game is
         // always null below), set explicitly anyway rather than relying on the env-var-backed static.
         WorldProxy.SetDebugCameraPanEnabledOverrideForTests(true);
 
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
@@ -225,7 +225,7 @@ public sealed class DialogueFramePassTests : IDisposable
     {
         // F4: collapsing AttachToWorld into a reset (the tempting "simplification") used to stay green
         // too. The AttachToWorld/InstallForMapEntry split is the session-singleton contract shared with
-        // AlundraMusicPlayer/AlundraScreenFadeDirector: re-point WITHOUT resetting.
+        // BgmPlayer/ScreenFadeDirector: re-point WITHOUT resetting.
         var gameState = new GameState();
         var director = DialogueDirector.Instance;
         director.AttachToWorld(new DialogueService(), gameState);

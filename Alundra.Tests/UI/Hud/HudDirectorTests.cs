@@ -21,7 +21,7 @@ namespace Alundra.Tests.UI.Hud;
 /// <summary>
 /// E13 C1 acceptance (docs/plan-e13-hud.md, tranche "C1 - DLL : le directeur de session du HUD"). Every
 /// flag constant below is re-derived independently from <see cref="GameState"/>'s own arithmetic
-/// (<c>IndexOf(flag) = (flag &gt;&gt; 5) &amp; 0x3ff</c>, AlundraGameState.cs:194/196 - see the mission's
+/// (<c>IndexOf(flag) = (flag &gt;&gt; 5) &amp; 0x3ff</c>, GameState.cs:194/196 - see the mission's
 /// own item 4) rather than copied from <see cref="HudDirector"/>'s private constants, so a
 /// regression in one cannot silently pass the other's test.
 /// </summary>
@@ -45,8 +45,8 @@ public sealed class HudDirectorTests : IDisposable
         DialogueDirector.Instance.ResetForTests();
 
         // The last test in this file (Update_AdvancesTheHudDirector_EvenWhileAModalDialogueIsOpen)
-        // drives AlundraWorldProxy, which reads the SESSION-scoped AlundraGameState.Instance (not a
-        // fresh instance) - reset every session carrier AlundraDialogueFramePassTests also resets, so no
+        // drives WorldProxy, which reads the SESSION-scoped GameState.Instance (not a
+        // fresh instance) - reset every session carrier DialogueFramePassTests also resets, so no
         // earlier test's state leaks in here and this class leaks none out either.
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();
@@ -519,7 +519,7 @@ public sealed class HudDirectorTests : IDisposable
 
     // -----------------------------------------------------------------------------------------
     // Mission item 6.d - the director advances at its production call site
-    // (AlundraWorldProxy.Update) even while a modal dialogue box is open.
+    // (WorldProxy.Update) even while a modal dialogue box is open.
     // -----------------------------------------------------------------------------------------
 
     private static WorldProxy BuildProxyWithBothDirectorsAttached()
@@ -530,7 +530,7 @@ public sealed class HudDirectorTests : IDisposable
 
         var proxy = new WorldProxy();
         proxy.InitializeWithWorld(world); // "TestWorld" has no tileMap entity - early-returns before the
-                                           // real install, same seam AlundraDialogueFramePassTests documents.
+                                           // real install, same seam DialogueFramePassTests documents.
 
         DialogueDirector.Instance.AttachToWorld(new DialogueService(), proxy.GameState);
         HudDirector.Instance.AttachToWorld(proxy.GameState);
@@ -546,7 +546,7 @@ public sealed class HudDirectorTests : IDisposable
 
         proxy.GameState.AddFlag(ScriptOpenRequestFlag, ScriptOpenRequestMask); // arm the HUD open.
 
-        // controlMode 0 = MenuOpen (AlundraGameState.PlayerControlBits.MenuOpen) - the original's own
+        // controlMode 0 = MenuOpen (GameState.PlayerControlBits.MenuOpen) - the original's own
         // "map events/world updates pause too" mode, the STRICTEST kind of dialogue freeze there is.
         dialogue.Open(DialogueTestAssets.SinglePage("Bonjour", "bonjour"), "Start", controlMode: 0);
         Assert.True(dialogue.IsOpen);

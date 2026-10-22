@@ -690,7 +690,7 @@ public sealed class HeroRunTests : IDisposable
     public void G9_OnDeepWater_TheRunGoesToTheFloatAtTheTickAfterTheSlope4_ThenTheHeroSwims_TheWholeTrace()
     {
         // E20.i: the binary goes to 0x1D (force 258048 - 258048 >> 3 = 225792) at tick 90, then to 0x0F at tick 91; the stand-in guard of E20.d1 (Idle, then the walk) is gone. The whole trace is compared; the positions
-        // within the float allowance of the mover (see AlundraHeroSwimTests).
+        // within the float allowance of the mover (see HeroSwimTests).
         var trace = RunOracleTrace.Load("g9/R9-deepwater-boots2");
         var slope4 = trace.FirstTick("slope", 4);
         Assert.Equal(89, slope4);

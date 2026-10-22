@@ -281,7 +281,7 @@ public sealed class SpawnBySpriteIndexCoreTests
         {
             var c = Create(v, field);
             SpawnProjectionAsserts.Check(v.Id, v.P!, c.Proxy, field, c.Hero, c.Aux, withTerrain: true);
-            // The DLL's call of the shot (the seam of E20.f3a) passes Z = PosZ + (ptr[3] << 16) in the DLL's frame: the binary's argument minus one raw unit (AlundraHeroAttackTests, the AT9 traces).
+            // The DLL's call of the shot (the seam of E20.f3a) passes Z = PosZ + (ptr[3] << 16) in the DLL's frame: the binary's argument minus one raw unit (HeroAttackTests, the AT9 traces).
             var dllZ = v.Z - 1;
             Assert.Equal(v.Z, dllZ + 1);
         }

@@ -103,7 +103,7 @@ public sealed class TextBoxViewModelTests : IDisposable
         return rows;
     }
 
-    // ---- the scenarios (the pages of AlundraTextBoxDrawnStateTests) ---------------------------------------------------------------
+    // ---- the scenarios (the pages of TextBoxDrawnStateTests) ---------------------------------------------------------------
 
     private sealed record Scenario(string[] Pages, Func<int, (bool Held, bool Pressed)> Pad);
 

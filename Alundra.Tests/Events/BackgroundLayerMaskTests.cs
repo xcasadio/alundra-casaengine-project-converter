@@ -30,7 +30,7 @@ public sealed class BackgroundLayerMaskTests : IDisposable
 {
     public BackgroundLayerMaskTests()
     {
-        // D-T-14 (docs/plan-transitions-carte.md): this class constructs an AlundraWorldProxy, so it resets the session carriers in its constructor (the
+        // D-T-14 (docs/plan-transitions-carte.md): this class constructs an WorldProxy, so it resets the session carriers in its constructor (the
         // isolation-carrying element) and in Dispose (hygiene).
         GameState.Instance.ResetForTests();
         SpriteRecordCatalog.ResetForTests();

@@ -32,9 +32,9 @@ namespace Alundra.Tests.Transitions;
 /// </summary>
 public class PortalDetectionTests : IDisposable
 {
-    // D-T-14: this class constructs AlundraWorldProxy, so it meets the operational criterion and resets
+    // D-T-14: this class constructs WorldProxy, so it meets the operational criterion and resets
     // the session carriers in the constructor (the isolation-carrying half - xunit builds a fresh
-    // instance per test) and in Dispose (hygiene). Its own tests build private AlundraGameState
+    // instance per test) and in Dispose (hygiene). Its own tests build private GameState
     // instances rather than touching the session one, so nothing leaks today; the block is here so the
     // criterion stays mechanical rather than something each new class has to re-reason about.
     public PortalDetectionTests() => ResetSessionCarriers();
@@ -50,7 +50,7 @@ public class PortalDetectionTests : IDisposable
     }
 
     // ---------------------------------------------------------------------------------------
-    // Section A - AlundraPortalScanner.FindPortalAtTile (§1.2.b), pure, no map data needed.
+    // Section A - PortalScanner.FindPortalAtTile (§1.2.b), pure, no map data needed.
     // ---------------------------------------------------------------------------------------
 
     private static PortalRecord Portal(int index, int x1, int y1, int x2, int y2, int destMapId, int arrivalDirectionIndex = 0, int requiredFacing = 0)
@@ -114,7 +114,7 @@ public class PortalDetectionTests : IDisposable
     }
 
     // ---------------------------------------------------------------------------------------
-    // Section B - AlundraPortalTrigger.TryGetTrigger (§1.2.a), pure, synthetic proxy fields (no real
+    // Section B - PortalTrigger.TryGetTrigger (§1.2.a), pure, synthetic proxy fields (no real
     // map data needed - CombinedVramFlagsAND/TileX/TileY/AnimationDirection are set directly).
     // ---------------------------------------------------------------------------------------
 
@@ -249,7 +249,7 @@ public class PortalDetectionTests : IDisposable
     [Fact]
     public void IsWarpDisabled_SuppressesBothBranches()
     {
-        // Point 5 of the ticket: the predicate folds in AlundraGameState.IsWarpDisabled itself (the
+        // Point 5 of the ticket: the predicate folds in GameState.IsWarpDisabled itself (the
         // original only tests g_isWarpDisabled downstream, in HandleWarpTransition - T4's own scope).
         var portals = new List<PortalRecord>
         {
@@ -269,14 +269,14 @@ public class PortalDetectionTests : IDisposable
     // ---------------------------------------------------------------------------------------
     // Section C - real map 389 data: the four-corner probe (D-T-10) feeding the trigger predicate, on
     // the ACTUAL portal 0 acceptance pair (§1.1.d: mono-cell, tile (18,38) -> map 390 (10,40)).
-    // Same fixture/self-skip pattern as AlundraGroundSlopeTests.
+    // Same fixture/self-skip pattern as GroundSlopeTests.
     // ---------------------------------------------------------------------------------------
 
     private const string WorldName = "Ship Klark (beginning)-389";
     private const int CellWidthPx = 24;
     private const int CellHeightPx = 16;
 
-    // Same real converter-exported hero footprint AlundraGroundSlopeTests uses.
+    // Same real converter-exported hero footprint GroundSlopeTests uses.
     private const int HeroOffsetX = -10;
     private const int HeroOffsetY = -7;
     private const int HeroSizeX = 21;
@@ -319,10 +319,10 @@ public class PortalDetectionTests : IDisposable
 
     private static int QualifyingPosZ(int cellHeightUnits) => cellHeightUnits * CellHeightPx << 16;
 
-    /// <summary>Same shape as AlundraGroundSlopeTests' own BuildProbe - see that method's own doc for the
+    /// <summary>Same shape as GroundSlopeTests' own BuildProbe - see that method's own doc for the
     /// F4 footprint-derivation rationale. Duplicated rather than shared: each test file owns its own
-    /// minimal fixture, matching this project's existing convention (AlundraFloorHeightTests/
-    /// AlundraLadderClimbTests each keep their own copy too).</summary>
+    /// minimal fixture, matching this project's existing convention (FloorHeightTests/
+    /// LadderClimbTests each keep their own copy too).</summary>
     private static EntityScriptProxy BuildProbe(World world, int x1, int y1, int posZ, int tileX, int tileY)
     {
         var settings = new CharacterControllerSettings();
@@ -381,7 +381,7 @@ public class PortalDetectionTests : IDisposable
 
         // §1.1.f: tile (18,38) height = 8 cell units, ground_property = 128 (0x80 -> bit 0x8000 once
         // shifted <<8). Footprint fully inside the cell (same "flush against top-left corner" recipe as
-        // AlundraGroundSlopeTests' own ScaleCell test) - all four corners land on (18,38).
+        // GroundSlopeTests' own ScaleCell test) - all four corners land on (18,38).
         var x1 = 18 * CellWidthPx + 1;
         var y1 = 38 * CellHeightPx;
         var proxy = BuildProbe(world, x1, y1, QualifyingPosZ(8), tileX: 18, tileY: 38);
@@ -448,7 +448,7 @@ public class PortalDetectionTests : IDisposable
 
     // ---------------------------------------------------------------------------------------
     // Section D - D-T-12 non-regression: DestroyOnVramFlags must stay untouched for NPCs (the probe is
-    // PLAYER ONLY, wired from a single call site in AlundraEntityScriptProxy.Update's IsPlayer branch).
+    // PLAYER ONLY, wired from a single call site in EntityScriptProxy.Update's IsPlayer branch).
     // ---------------------------------------------------------------------------------------
 
     [Fact]
@@ -476,7 +476,7 @@ public class PortalDetectionTests : IDisposable
         // (not post-hoc PosX/PosY/PosZ writes) - Update's own pose-repatriation block re-pulls PosX/Y/Z
         // from Owner.RootComponent every call whenever a Controller is attached (E3.d), so the ROOT
         // itself must already sit at the qualifying pose before Update runs, exactly like
-        // ProductionCallSite_HeroSeededOnScaleCell (AlundraGroundSlopeTests) does for its own player case.
+        // ProductionCallSite_HeroSeededOnScaleCell (GroundSlopeTests) does for its own player case.
         var x1 = 18 * CellWidthPx + 1;
         var y1 = 38 * CellHeightPx;
         var rootX = x1 - HeroOffsetX;
@@ -491,7 +491,7 @@ public class PortalDetectionTests : IDisposable
         proxy.Flags = EntityFlags.Gravity | EntityFlags.DestroyOnVramFlags;
 
         // One real production frame: CharacterMotionSystem runs first (root stays put - already exactly
-        // on real ground, no pad input), then AlundraEntityScriptProxy.Update's own NPC branch runs -
+        // on real ground, no pad input), then EntityScriptProxy.Update's own NPC branch runs -
         // the exact live call chain, never IsPlayer's own branch since IsPlayer is false here.
         world.Update(1f / 50f);
 
@@ -500,7 +500,7 @@ public class PortalDetectionTests : IDisposable
     }
 
     // ---------------------------------------------------------------------------------------
-    // Section E - AlundraWorldProxy.BuildPortals (§1.1/§3): real-data parse of the "Portals" layer.
+    // Section E - WorldProxy.BuildPortals (§1.1/§3): real-data parse of the "Portals" layer.
     // ---------------------------------------------------------------------------------------
 
     [Fact]
@@ -584,7 +584,7 @@ public class PortalDetectionTests : IDisposable
     }
 
     // ---------------------------------------------------------------------------------------
-    // Section F - AlundraPlayerManager.MovePlayer's own call site (§1.2.a/point 4 of the ticket): the
+    // Section F - PlayerManager.MovePlayer's own call site (§1.2.a/point 4 of the ticket): the
     // hole branch must fire even with an InputBlockedMask bit posed - proof the trigger predicate is
     // wired BEFORE that gate, not after (a required mutation: "placer la sonde après la porte
     // InputBlockedMask -> le test de la branche trou tombe").

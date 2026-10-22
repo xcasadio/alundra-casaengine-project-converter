@@ -9,7 +9,7 @@ namespace Alundra.Tests.Session;
 /// E13 C0 acceptance (docs/plan-e13-hud.md, tranche "C0 - DLL : l'état joueur"): each bound of §1.5, on
 /// both sides, transcribed from <c>PlayerManager.cs</c>'s own <c>SetPlayerHpMax</c>/<c>SetPlayerHp</c>/
 /// <c>SetPlayerMpMax</c>/<c>SetPlayerMp</c>/<c>SetMoney</c> - see <see cref="PlayerManager"/>'s
-/// own doc for the exact line ranges each setter ports. Uses fresh <c>new AlundraGameState()</c>
+/// own doc for the exact line ranges each setter ports. Uses fresh <c>new GameState()</c>
 /// instances throughout (same convention as <see cref="PlayerManagerTests"/>), not the shared
 /// <see cref="GameState.Instance"/> singleton, so no reset-for-tests seam is needed here.
 /// </summary>

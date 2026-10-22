@@ -73,7 +73,7 @@ internal static class HeroWorldFixture
     /// <summary>Hand-built hero pawn per the plan's own Acceptation 3 recipe (see class doc). Added to
     /// <paramref name="world"/> (queued - the caller's first <see cref="World.Update"/> registers it with
     /// CharacterMotionSystem, which always runs before this same frame's GameplayProxy.Update - see
-    /// AlundraEntityScriptProxy.Update's own E3.d doc).</summary>
+    /// EntityScriptProxy.Update's own E3.d doc).</summary>
     internal static (Entity Entity, EntityScriptProxy Proxy) BuildHeroPawn(
         World world, CharacterControllerSettings settings, Vector3 startPosition, IScriptHost scriptHost)
     {

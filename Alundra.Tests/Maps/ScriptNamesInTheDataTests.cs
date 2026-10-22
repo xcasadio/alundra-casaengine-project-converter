@@ -20,7 +20,7 @@ namespace Alundra.Tests.Maps;
 
 /// <summary>
 /// R0 (engine ADR-0075, docs/plan-restructuration-dll.md section 4): the names the converter writes in the data are the FULL names of the
-/// gameplay classes (<c>Alundra.Scripts.AlundraEntityScriptProxy</c>, ...), because the engine creates a script object only by full name from the
+/// gameplay classes (<c>Alundra.Entities.EntityScriptProxy</c>, ...), because the engine creates a script object only by full name from the
 /// gameplay assembly. These cases lock the data to the types, and the creation catches of the world proxy to the engine's dedicated exception.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
@@ -63,7 +63,7 @@ public sealed class ScriptNamesInTheDataTests
         Assert.Equal(typeof(WorldProxy), type);
     }
 
-    // The creation catches of AlundraWorldProxy (the map-load loop, SpawnEntityByRecordId, SpawnEntityBySpriteIndex): a script type name that
+    // The creation catches of WorldProxy (the map-load loop, SpawnEntityByRecordId, SpawnEntityBySpriteIndex): a script type name that
     // does not resolve is a fault of the data and stops the load; every other fault keeps the log, skip and finish.
 
     /// <summary>Gives every prefab loaded after the hero's the SIMPLE name of the entity proxy (the form that no longer resolves), as a stale export would.</summary>

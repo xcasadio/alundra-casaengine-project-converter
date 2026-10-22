@@ -43,7 +43,7 @@ public class LadderClimbTests
     private const int CellWidthPx = 24;
     private const int CellHeightPx = 16;
 
-    // Same production hero footprint as AlundraGroundSlopeTests/AlundraFloorHeightTests/AlundraTileHeightAtOffsetTests
+    // Same production hero footprint as GroundSlopeTests/FloorHeightTests/TileHeightAtOffsetTests
     // (F4 fix - real converter-exported bank header, alundra-project/Data/sprite-records.json).
     private const int HeroOffsetX = -10;
     private const int HeroOffsetY = -7;
@@ -51,18 +51,18 @@ public class LadderClimbTests
     private const int HeroSizeY = 15;
 
     // Ladder cell (18, 36) - one of the four real map 389 scale cells (GroundProperty 12, height 11 units
-    // -> 176px), same cell AlundraGroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix
-    // and AlundraTileHeightAtOffsetTests use.
+    // -> 176px), same cell GroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix
+    // and TileHeightAtOffsetTests use.
     private const int LadderCellX = 18;
     private const int LadderCellY = 36;
     private const int LadderGroundHeightPx = 176;
 
     // E3's own measured value for this cell's north neighbor (18, 35) - a wall/ceiling cell, real ground
-    // height 576px (see AlundraTileHeightAtOffsetTests' own class comment) - far above any Z this test
+    // height 576px (see TileHeightAtOffsetTests' own class comment) - far above any Z this test
     // reaches, so the climb-up guard never blocks these tests.
     private const int NorthNeighborHeightPx = 576;
 
-    // Map 389's own real Gravity/ZViscosity converted per AlundraWorldProxy.ResolveMapGravitySettings'
+    // Map 389's own real Gravity/ZViscosity converted per WorldProxy.ResolveMapGravitySettings'
     // own formula (mapGravity*256/65536*2500 / mapZViscosity*256/65536*50) - 1250/800, the SAME numbers
     // that formula's own doc cites. Used here to stand in for what AdoptPlayerPawn would have resolved and
     // stashed on MapGravity/MapMaxFallSpeed (E4's own fix to that method) before the hero ever entered a
@@ -181,7 +181,7 @@ public class LadderClimbTests
     /// with a real <see cref="CharacterControllerComponent"/> whose <see cref="CharacterControllerSettings.Gravity"/>/
     /// <see cref="CharacterControllerSettings.MaxFallSpeed"/> AND <see cref="EntityScriptProxy.MapGravity"/>/
     /// <see cref="EntityScriptProxy.MapMaxFallSpeed"/> are pre-set to the SAME map-389 values
-    /// (standing in for what AlundraWorldProxy.AdoptPlayerPawn's own E4 fix now does at real adoption
+    /// (standing in for what WorldProxy.AdoptPlayerPawn's own E4 fix now does at real adoption
     /// time) - the RESERVE <see cref="PlayerManager.RestoreGravityAfterClimb"/> reads from.</summary>
     private static (World World, Entity Entity, EntityScriptProxy Proxy, HeroController Controller) BuildLadderHero(
         Func<PadState> padProvider)
@@ -201,7 +201,7 @@ public class LadderClimbTests
         var rootY = y1 - HeroOffsetY;
 
         // F1 fix: load the REAL exported hero settings (GroundSnapDistance=4.0/StepHeight=3.0, not the C#
-        // defaults) - see LoadHeroControllerSettings' own doc. AlundraWorldProxy.AdoptPlayerPawn overrides
+        // defaults) - see LoadHeroControllerSettings' own doc. WorldProxy.AdoptPlayerPawn overrides
         // ONLY Gravity/MaxFallSpeed/WalkabilityMask post-load (the three map/flags-dependent settings the
         // converter cannot bake in) - mirror that same override here so this fixture matches real
         // adoption exactly instead of just matching it on two fields.
@@ -219,9 +219,9 @@ public class LadderClimbTests
 
         // SETTLE FRAME (neutral pad, no ladder input yet): lets the REAL production pipeline compute
         // Slope_18c (E1's own UpdateGroundSlope) and FloorHeight (E2's own UpdateFloorHeight) for this
-        // exact real position, exactly the way AlundraGroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix
+        // exact real position, exactly the way GroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix
         // proves reads 6 here - NOT hand-set, so a broken Slope_18c/FloorHeight computation would fail
-        // these tests too, not just AlundraGroundSlopeTests/AlundraFloorHeightTests' own. ComputeTerrainHeight
+        // these tests too, not just GroundSlopeTests/FloorHeightTests' own. ComputeTerrainHeight
         // (FloorHeight's own terrain half) depends only on PosX/PosY, never PosZ (see that method's own
         // body) - so this settle frame's own FloorHeight stays correct for every later frame in this test,
         // even once PosZ is bumped up/down by climbing, as long as PosX/PosY never change (true here - no
@@ -232,7 +232,7 @@ public class LadderClimbTests
         Assert.Equal(6, proxy.Slope_18c); // sanity: this really is a real ladder cell, computed for real.
 
         // Seeded "already walked up to the ladder, facing it, holding into it" state - same seeding
-        // convention AlundraGroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix uses
+        // convention GroundSlopeTests.ProductionCallSite_HeroSeededOnScaleCell_Slope18cIsSix uses
         // for its own no-step-up caveat: a real hero cannot walk any FURTHER onto this cell than flat
         // ground allows, so the actual wall-bump that sets ForceAdjusted (this port's own equivalent of
         // the original's "movement was curtailed" signal) is pinned directly rather than staged through a
@@ -361,15 +361,15 @@ public class LadderClimbTests
 
     // -----------------------------------------------------------------------------------------
     // E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): the world freeze of a MenuOpen, through the
-    // production pipeline. AlundraWorldProxy applies it at the end of its own Update, which this fixture has
-    // not got - the tests call AlundraGameplayFreeze.Apply at that same point of the frame, after World.Update.
+    // production pipeline. WorldProxy applies it at the end of its own Update, which this fixture has
+    // not got - the tests call GameplayFreeze.Apply at that same point of the frame, after World.Update.
     // -----------------------------------------------------------------------------------------
 
     /// <summary>
     /// The closing review's regression: RestoreStateSnapshot zeroes the controller's external vertical
     /// latch, which the DLL declares only once per logic tick. A hero clinging to the ladder 3px above its
     /// ground, thawed on a rendered frame that carries no tick, would otherwise be snapped to the ground by
-    /// UpdateGround (GroundSnapDistance 4px) - the very F1 regression AlundraScriptedMotion.cs:117-130 records.
+    /// UpdateGround (GroundSnapDistance 4px) - the very F1 regression ScriptedMotion.cs:117-130 records.
     /// </summary>
     [Fact]
     public void GameplayFreeze_ThawOnAZeroTickFrame_ClimbStillNearTheGround_KeepsItsHeight()

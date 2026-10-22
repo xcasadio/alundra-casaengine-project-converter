@@ -204,7 +204,7 @@ public sealed class InventoryPresenterTests : IDisposable
     /// <c>_inventoryPresenter?.Tick()</c> from <see cref="WorldProxy.Update(float)"/>'s loop of the passes (the inventory block at the end of each tick, E19.u)
     /// left them all green (docs/plan-e13d-sous-inventaire.md §6 point 6). This one goes through that real loop -
     /// the main inventory's version of
-    /// <c>AlundraSubInventoryPresenterTests.WorldUpdate_StartThenR1_PushesTheSubInventoryScreenThroughTheRealLoop</c>.
+    /// <c>SubInventoryPresenterTests.WorldUpdate_StartThenR1_PushesTheSubInventoryScreenThroughTheRealLoop</c>.
     /// </summary>
     [Fact]
     public void WorldUpdate_Start_PushesTheInventoryScreenThroughTheRealLoop()

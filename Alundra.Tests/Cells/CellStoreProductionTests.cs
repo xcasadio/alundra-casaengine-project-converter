@@ -12,7 +12,7 @@ namespace Alundra.Tests.Cells;
 /// <summary>
 /// Acceptance 3 of docs/plan-e7-mutation-tuiles.md, slice E7.a: drives the REAL production call site -
 /// <see cref="WorldProxy.RunMapEventsPass"/>/<see cref="EventProgramRunner.Dispatch"/> -
-/// through <see cref="HeadlessIntroSimulation"/> (Alundra.Tests\IntroTraceHarnessTests.cs), not a
+/// through <see cref="HeadlessIntroSimulation"/> (Alundra.Tests\Arcs\HeadlessIntroSimulation.cs), not a
 /// synthetic document, and proves the mutation actually flows end-to-end from opcode dispatch down to
 /// <see cref="CellsCollisionField"/>'s own read side. Twinned with a NEUTRALIZATION run
 /// (<c>installCellMutator: false</c>) per the plan's own "rule 2" (production or neutralization proof):
@@ -62,9 +62,9 @@ public class CellStoreProductionTests
         Assert.NotNull(sim.GroundField);
         Assert.NotNull(sim.CellStore);
 
-        // Same map-entry mutation as AlundraCellStoreTests.CopyCellRectangle_HatchTemplateOntoDoor_18_37 -
+        // Same map-entry mutation as CellStoreTests.CopyCellRectangle_HatchTemplateOntoDoor_18_37 -
         // here reached through the REAL 0x85/0x55 dispatch inside RunMapEventsPass's own map-entry pass on
-        // frame 1, not a direct AlundraCellStore call.
+        // frame 1, not a direct CellStore call.
         Assert.Equal(0, sim.GroundField!.SampleGroundProperty(new Vector3(18 * 24, 38 * 16, 0f)));
 
         var stack1837 = sim.CellStore!.GetWallTileStack(18, 37);
@@ -81,7 +81,7 @@ public class CellStoreProductionTests
         Assert.NotNull(document);
 
         // Same drive as the main test above, but CellMutator forced null (installCellMutator: false) -
-        // the SAME production RunMapEventsPass call now takes AlundraEventProgramRunner's degraded
+        // the SAME production RunMapEventsPass call now takes EventProgramRunner's degraded
         // "CellMutator null" fallback for 0x54/0x55/0x85 (skip by size, no mutation). Proves the main
         // test's mutation is actually caused by this seam - not some other, accidental code path
         // (docs/plan-e7-mutation-tuiles.md's own "rule 2": production or neutralization proof).

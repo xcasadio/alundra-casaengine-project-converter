@@ -26,7 +26,7 @@ namespace Alundra.Tests.UI.Saving;
 /// choice box) then slot 10 (the file menu, the save screen's question) in the same frame: the screen ticks after the dialogue pass,
 /// in the second loop. D-E19-99: on the pad words of the tick BEFORE (the last tick of the previous frame at tick 0), like the pass: slots 0, 3 and 10
 /// and the memory-card process all run in RenderScene, before the pad sampler of the frame's Update(0), and read the previous frame's sample. The helpers of the
-/// director tests (<c>AlundraSaveScreenDirectorTests</c>) keep presenting their words at age 0 by design: the age is proved here, at the proxy.
+/// director tests (<c>SaveScreenDirectorTests</c>) keep presenting their words at age 0 by design: the age is proved here, at the proxy.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class SaveScreenTickOrderTests : IDisposable

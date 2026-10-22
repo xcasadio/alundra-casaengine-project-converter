@@ -43,7 +43,7 @@ public class MusicPlayerTests : IDisposable
         BgmPlayer.Instance.ResetForTests();
         BgmFadeDirector.Instance.ResetForTests(); // T2.1: the frame-close site drives this too now.
 
-        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an AlundraWorldProxy,
+        // D-T-14 (docs/plan-transitions-carte.md, slice T1): this class constructs an WorldProxy,
         // so it shares the three session carriers T1 introduces - reset them here (constructor, the
         // isolation-carrying element) so no earlier test's state leaks in.
         GameState.Instance.ResetForTests();
@@ -77,7 +77,7 @@ public class MusicPlayerTests : IDisposable
     /// <see cref="WorldProxy.ConsumeMusicResetSoundFlagOnFrameClose"/> - the exact block
     /// <see cref="WorldProxy.Update"/> runs right before <c>SoundPlayer.FlushFrameSounds</c>, P3)
     /// against the session singletons directly, for tests that drive them without a real
-    /// AlundraWorldProxy.Update tick.</summary>
+    /// WorldProxy.Update tick.</summary>
     private static void SimulateFrameClose()
     {
         WorldProxy.ConsumeMusicResetSoundFlagOnFrameClose(BgmPlayer.Instance, BgmFadeDirector.Instance);
@@ -88,7 +88,7 @@ public class MusicPlayerTests : IDisposable
     /// <summary>Builds a temp project with Maps/music-index.json (the given raw entries) and
     /// Musics/bgm-manifest.json (one entry per DISTINCT resolved index, asset id deterministic from the
     /// index) - and, when <paramref name="withSfx"/>, a Sounds/sfx-manifest.json with a single id-300
-    /// record (T5's own sfx half), all under the SAME root so one AttachToWorld/AlundraSoundBank call
+    /// record (T5's own sfx half), all under the SAME root so one AttachToWorld/SfxBank call
     /// covers both.</summary>
     private string BuildFixtureProject(IReadOnlyDictionary<int, int> rawByMapId, IReadOnlySet<int> playableIndices, bool withSfx = false)
     {
@@ -177,7 +177,7 @@ public class MusicPlayerTests : IDisposable
     {
         // Acceptance items (a)/(b) of docs/plan-bgm-demarrage-binaire.md, T2.1: loading a map's own BGM
         // never plays it (B6/B7) - the voice only starts at the entry's first frame-close (P3), through
-        // AlundraWorldProxy.Update's own real path (not a simulated frame close, unlike T1 bis below).
+        // WorldProxy.Update's own real path (not a simulated frame close, unlike T1 bis below).
         var projectRoot = FindProjectRoot();
         var manifestJson = File.ReadAllText(Path.Combine(projectRoot, "Musics", "bgm-manifest.json"));
         using var manifestDoc = JsonDocument.Parse(manifestJson);
@@ -214,10 +214,10 @@ public class MusicPlayerTests : IDisposable
             Assert.Equal(AudioVoiceParameters.MaxVolume * service.Mixer.GetEffectiveGain(AudioBusNames.Music), backend.StreamVoices[0].Parameters.Volume);
 
             // D-C-6's own guarantee, exercised through the REAL per-world wiring (not the singleton
-            // directly, unlike T1 bis): a SECOND, independently constructed AlundraWorldProxy - exactly
+            // directly, unlike T1 bis): a SECOND, independently constructed WorldProxy - exactly
             // how a real map change rebuilds it - installing world "...-390" (same raw index 25, fact
             // 1.1) must NOT produce a second request, and the original voice must still be the one
-            // playing. This is what would break if AlundraMusicPlayer.Instance were a per-world
+            // playing. This is what would break if BgmPlayer.Instance were a per-world
             // instance instead of the session singleton D-C-6 requires.
             var world390 = new World { Name = "Some Other Map (beginning)-390" };
             HeroWorldFixture.SetProperty(world390, nameof(World.Game), game);
@@ -399,7 +399,7 @@ public class MusicPlayerTests : IDisposable
         var soundPlayer = new SoundPlayer(service, new SfxBank(projectPath), world);
         soundPlayer.PlaySfx(300);
 
-        // D-C-5/D-C-6: music owns the session (AlundraMusicPlayer.Instance itself), never the world.
+        // D-C-5/D-C-6: music owns the session (BgmPlayer.Instance itself), never the world.
         BgmPlayer.Instance.AttachToWorld(service, projectPath);
         BgmFadeDirector.Instance.AttachToWorld(service, null);
         BgmPlayer.Instance.PlayMapMusic(389);

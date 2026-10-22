@@ -392,7 +392,7 @@ public class WorldProxySpawnInitializationTests
         var expectedPosition = EntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
         Assert.Equal(expectedPosition, entity.RootComponent!.LocalTransform.Position);
         // PosZ carries the header's -ModZ adjustment ((46<<19) - 0), unlike the no-catalog case
-        // covered by AlundraWorldProxyTests.CreateEntityFromRecord_ValidPrefabLink_ClonesPrefabAndMapsProxy.
+        // covered by WorldProxyTests.CreateEntityFromRecord_ValidPrefabLink_ClonesPrefabAndMapsProxy.
         Assert.Equal(46 << 19, proxy.PosZ);
     }
 }

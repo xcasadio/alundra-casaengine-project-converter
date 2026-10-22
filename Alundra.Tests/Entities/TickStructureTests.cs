@@ -26,7 +26,7 @@ namespace Alundra.Tests.Entities;
 /// <c>World.Update</c> (the entities of the engine's loop, then the gameplay proxy of the world): the number of calls of <c>MovePlayer</c>, the order of the passes of a tick
 /// (<c>UpdateWorld</c> of the binary: pad, box, map events <c>0x8003C67C</c>, then <c>UpdateEntities</c> <c>0x8003B388</c>: <c>MovePlayer</c>, programs, counters, lists, animation clock,
 /// physics, hits, then the inventory), the hit-pass hook read one tick later and cleared by the counters pass, the closed gate, the freshness of the published state and the first tick of an
-/// entity that appears during a frame. The passes are named by the test seam <c>AlundraWorldProxy.TickTraceForTests</c>.
+/// entity that appears during a frame. The passes are named by the test seam <c>WorldProxy.TickTraceForTests</c>.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class TickStructureTests : IDisposable
@@ -377,7 +377,7 @@ public sealed class TickStructureTests : IDisposable
     public void AnEntityWithoutTheBirthTickMarker_ThatAppearsDuringAFrame_HasItsFirstTickAtTheFirstTickOfTheNextFrame()
     {
         // The rig adds the entity as the map load would: without JoinsBirthTick. An entity a script opcode made from a record (0x2D, 0x8A, 0x8B), or the interface of the sprite index, takes part in the tick that
-        // sees it born instead (E20.e0a3b, E20.e0a4: AlundraBirthTickTests, AlundraRecordBirthTickTests).
+        // sees it born instead (E20.e0a3b, E20.e0a4: BirthTickTests, RecordBirthTickTests).
         var rig = BuildWarmRig();
         EntityScriptProxy? newcomer = null;
         var spawnTick = -1;

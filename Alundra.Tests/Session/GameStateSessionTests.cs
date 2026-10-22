@@ -107,7 +107,7 @@ public sealed class GameStateSessionTests : IDisposable
     {
         var state = GameState.Instance;
 
-        // "World 1"'s last published pad snapshot (AlundraEntityScriptProxy.Update's own player branch).
+        // "World 1"'s last published pad snapshot (EntityScriptProxy.Update's own player branch).
         var pad = new PadState { ButtonsJustPressed = PadState.Square };
         state.LastPadState = pad;
 
@@ -165,7 +165,7 @@ public sealed class GameStateSessionTests : IDisposable
             var world2Bank = SfxBank.GetOrCreate(projectRoot); // "world 2" install, same project.
 
             // Same instance back both times: the manifest file behind it was parsed only once, at the
-            // first request - a fresh AlundraSoundBank(projectRoot) would re-read it every time.
+            // first request - a fresh SfxBank(projectRoot) would re-read it every time.
             Assert.Same(world1Bank, world2Bank);
         }
         finally

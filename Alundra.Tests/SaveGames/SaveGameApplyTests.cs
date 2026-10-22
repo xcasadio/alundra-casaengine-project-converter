@@ -140,7 +140,7 @@ public sealed class SaveGameApplyTests : IDisposable
         State.InteractLatchEntity = new EntityScriptProxy();
         State.InteractLatchFacing = 2;
 
-        // The arrival map's own order (AlundraWorldProxy.InitializeWithWorld): map entry, then the load.
+        // The arrival map's own order (WorldProxy.InitializeWithWorld): map entry, then the load.
         State.InstallForMapEntry();
         Director.ApplyPendingLoad(State, 389);
 
@@ -340,7 +340,7 @@ public sealed class SaveGameApplyTests : IDisposable
     /// the first frame. The load programs that test flag 860 with <c>0x31</c> (<c>docs/intro-programs-389.txt</c>:
     /// load 134 at offset 143, load 139 at offset 234; load 135 at offset 180 is spawned by load 134's own
     /// <c>0x2D</c>) take the LOADED flag's branch - <c>0x31</c> skips when the flag is off
-    /// (<c>AlundraEventProgramRunner.cs:1416</c>), so with it on their <c>0x64</c> placement runs and each entity
+    /// (<c>EventProgramRunner.cs:1416</c>), so with it on their <c>0x64</c> placement runs and each entity
     /// ends at the position that placement gives. The hero is at the saved tile, the New Game one (33, 59, 0),
     /// where those entities spawn (checked first), and the New Game inventory does not run.
     /// <para>Two mutations of the production code, made and undone by a script, each fail this test: removing

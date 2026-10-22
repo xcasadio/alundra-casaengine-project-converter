@@ -103,7 +103,7 @@ public class CellStoreTests
         // (18,38) is the SECOND row of the same rectangle (dstY=37, height=2 -> rows 37 and 38) - its
         // ground_property closes from 128 (checked above, pre-mutation) to 0 (template row (0,21)'s own
         // gp), read through the SAME shared field instance (proves aliasing, not a copy - see
-        // AlundraCellStore's own class doc).
+        // CellStore's own class doc).
         Assert.Equal(0, field.SampleGroundProperty(doorRow2Position));
     }
 
@@ -138,7 +138,7 @@ public class CellStoreTests
     {
         var (field, store) = LoadMap389();
 
-        // Cell (18,15): walkability 1, ground_property 0 (AlundraCellsCollisionFieldTests' own
+        // Cell (18,15): walkability 1, ground_property 0 (CellsCollisionFieldTests' own
         // Map389_Walkability_... fixture) - untouched by any other E7.a rectangle/bit test above.
         var position = new Vector3(18 * 24, 15 * 16, 0f);
         var walkabilityBefore = field.SampleRawWalkability(position);
@@ -163,7 +163,7 @@ public class CellStoreTests
         var (field, store) = LoadMap389();
 
         // (60,70) clamps to (0x33,0x3b) = (51,59) - map 389's own last row/column, NOT re-derived from its
-        // actual 52x60 size (see AlundraCellStore.ApplyCellBits's own doc on why the two coincide here).
+        // actual 52x60 size (see CellStore.ApplyCellBits's own doc on why the two coincide here).
         var clampedPosition = new Vector3(0x33 * 24, 0x3b * 16, 0f);
         var before = field.SampleRawWalkability(clampedPosition);
 
@@ -180,7 +180,7 @@ public class CellStoreTests
         var (field, store) = LoadMap389();
 
         // (18,15): height 11, walkability 1. (17,16): height 12, walkability 0 - both flat (slope 4,
-        // slope&3==0), untouched by every other E7.a test in this file/AlundraEventProgramRunnerTests.
+        // slope&3==0), untouched by every other E7.a test in this file/EventProgramRunnerTests.
         var position = new Vector3(17 * 24, 16 * 16, 0f);
 
         var foundBefore = field.TrySampleGround(position, 0f, out var sampleBefore);
@@ -221,7 +221,7 @@ public class CellStoreTests
 
     /// <summary>
     /// A "wall_tiles" key that is not a valid cell index used to be silently dropped (E7.a). It now also
-    /// logs a warning (AlundraCellStore's own constructor) - this codebase has no test-capturable log
+    /// logs a warning (CellStore's own constructor) - this codebase has no test-capturable log
     /// sink to assert the message text against, so this test covers the BEHAVIOR the warning documents:
     /// the malformed entry is dropped (no stack for cell (0,0)) and construction never throws.
     /// </summary>

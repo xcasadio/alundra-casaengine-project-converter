@@ -20,7 +20,7 @@ namespace Alundra.Tests.Events;
 /// <c>0x1A</c> acts on the LOGIC entity (owner + 0x230, read before every instruction, <c>0x80042284</c>), which is the owner until <c>0x42</c> or <c>0x43</c>
 /// retargets it. The set of possible logic entities is therefore propagated forward over the program's control flow (join = union, entry = the owner):
 /// <c>0x42</c> and <c>0x43 [0x81]</c> give the hero, <c>0x43 [0x80]</c> changes nothing, <c>0x43 [n &lt; 0x80]</c> gives the object of the <c>Entities</c>
-/// layer whose <c>Index</c> is n, any other search is a named failure. The behaviour is pinned by T-D16 (AlundraAnimationClockDriveTests); this pins the
+/// layer whose <c>Index</c> is n, any other search is a named failure. The behaviour is pinned by T-D16 (AnimationClockDriveTests); this pins the
 /// extent. A site is keyed by (map, pc of the wait opcode). A missing export FAILS the test naming it, never skips it. A change of the measured set is
 /// settled by evidence, never by re-pinning the list. Limit: the word owner + 0x230 is shared by the slots A to F and never reset (plan section 0.2.3), so
 /// a retarget made by another program could reach a <c>0x1A</c> with no retarget visible in its own program; the census assumes a program starts on its
@@ -279,7 +279,7 @@ public class MissingAnimationWaitCorpusTests
         return new CensusTarget(prefabId.ToString("D")[..8], entity, header.AnimSets.Count);
     }
 
-    /// <summary>The hero, resolved the way <c>AlundraArcSupport</c> resolves its prefab: the entry named 'Alundra' of type entity of AssetInfos.json.</summary>
+    /// <summary>The hero, resolved the way <c>ArcPrefabAssets</c> resolves its prefab: the entry named 'Alundra' of type entity of AssetInfos.json.</summary>
     private static CensusTarget HeroTarget(string root, SpriteRecordCatalog catalog)
     {
         using var infos = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "AssetInfos.json")));

@@ -184,7 +184,7 @@ public sealed class HeroChargeArenaTests : IDisposable
         return (slots, (uint)GameRandom.RandomSeed, creations);
     }
 
-    // The 16 effects of the burst at the hero (6553600, 6553600): (X, Y, ForceX, ForceY), the table of AlundraHeroChargeTests (hand-written from the two tables of the binary).
+    // The 16 effects of the burst at the hero (6553600, 6553600): (X, Y, ForceX, ForceY), the table of HeroChargeTests (hand-written from the two tables of the binary).
     private static readonly (int X, int Y, int ForceX, int ForceY)[] Burst =
     {
         (6553600, 8126464, 344064, 0), (5650432, 8006656, 318080, 87808), (4885504, 7665664, 243264, 162176), (4372480, 7155712, 131712, 211904),

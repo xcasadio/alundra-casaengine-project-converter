@@ -9,8 +9,8 @@ namespace Alundra.Tests.UI.Hud;
 /// The HUD's magic pips and coin as the screen plays them since the bound screens program (parent ADR-0002): the
 /// converter's <c>UI/Animations/ui_hud_magic_pip.anim2d</c> and <c>ui_hud_coin.anim2d</c>, started where
 /// <see cref="HudViewModel"/> says, then sampled on the UI clock at 60 frames per second. The original steps a
-/// pip every 10 ticks of 20 ms, pip <c>i</c> one frame ahead of pip 0 (<c>AlundraHudDirector.UpdateMagicPipPhase</c>),
-/// and the coin every 6 ticks while the money rolls (<c>AlundraHudDirector.UpdateMoneyRoll</c>). The program allows
+/// pip every 10 ticks of 20 ms, pip <c>i</c> one frame ahead of pip 0 (<c>HudDirector.UpdateMagicPipPhase</c>),
+/// and the coin every 6 ticks while the money rolls (<c>HudDirector.UpdateMoneyRoll</c>). The program allows
 /// 20 ms of drift against those.
 /// </summary>
 public sealed class HudAnimationTimingTests
