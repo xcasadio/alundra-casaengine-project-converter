@@ -28,6 +28,13 @@ always run with `python -B`. Read-only on the repository except `gen_table.py` (
 
 Finding tags: `[collision]`, `[segment]`, `[nom]`, `[namespace]`, `[fichier]`, `[absent]`, `[hors table]`; warnings: `[avertissement]`.
 
+## Frozen proofs (after R5)
+
+R5 moved and renamed the files of `Alundra.Tests/` (every `.cs`, every test class), and the end-of-tranche proofs of R3 and R4 read paths of that folder
+(`r3-literals.tsv`, `r4-literals.tsv`). They are therefore **frozen at the commit of their tranche**: `r3_literals.py check --stage after`,
+`prove_r3.py --all` and `prove_r4.py --kind end` only replay at `a193671` (end of R3) and `ce6d335` (end of R4); on a later tree they would read paths that no
+longer exist, and nothing in those tables is remapped. From R5 on, the tests tree is checked by `check_names.py --tests` and `prove_r5.py`.
+
 ## Where the data comes from
 
 - DLL files for the table: `git ls-tree` at `BASE_REVISION` (the parent HEAD at the end of R0, `5434cf6`), so the table does not move when R2 to R4
@@ -40,7 +47,7 @@ Finding tags: `[collision]`, `[segment]`, `[nom]`, `[namespace]`, `[fichier]`, `
 ## Limits
 
 - Declarations are read by a regular-expression reader, not a compiler; nested types are ignored by the name checks (they never collide with an
-  imported name).
+  imported name), except that `check_names.py --tests` flags a nested type that keeps the `Alundra` prefix.
 - `Portable.Xaml` ships no XML documentation (`scan_types.PACKAGES_WITHOUT_XML`, named explicitly): its types are not checked by the script. A
   clash there would be an ambiguous reference (`CS0104`) and the build is the judge.
 - Warnings, not failures: a type nested in `Alundra.Tests` named like a namespace segment (today `Session` in `TextBoxGpuHarness.cs`) only masks the

@@ -120,7 +120,7 @@ crée.
   `GameFlags` est gardée, et sauvegardée sur 64 mots par `SaveGame` (ADR-0012). Rien de propre
   à Yarn n'est sauvegardé.
 - **Corpus exporté** : aucun des 485 `.dialogue` ne lit ni n'écrit de variable
-  (`AlundraYarnVariableCorpusTests`).
+  (`YarnVariableCorpusTests`).
 - **Limite** : le chemin dégradé de l'interpréteur, qui joue un nœud sans boîte
   (`EventProgramRunner.PlayNodeHeadlessToEnd`), crée son propre runner sans ce stockage. C'est
   sans effet tant que le corpus n'a pas de variable.

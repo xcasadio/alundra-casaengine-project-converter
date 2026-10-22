@@ -23,7 +23,7 @@ déplacements des PNJ y sont de durée nulle, faute de physique).**
 
 ### Le harnais
 
-`Alundra.Tests/IntroTraceHarnessTests.cs` (test `IntroTrace_Map389_ProducesOrderedOpcodeAndSystemTrace`)
+`Alundra.Tests/Arcs/IntroTraceHarnessTests.cs` (test `IntroTrace_Map389_ProducesOrderedOpcodeAndSystemTrace`)
 rejoue headless (sans rendu) la structure de frame de l'original, en utilisant :
 
 - le vrai interpréteur (`Alundra/Events/EventProgramRunner.cs`), étendu d'une sonde de trace
@@ -60,7 +60,7 @@ dotnet test Alundra.Tests -c Release --filter IntroTrace
 | 0x33 « Check flags on » | `Script_51_033`, `:1112-1126` | prédicat pur sur 4 paires (flag, bit) |
 | 0x8B « Spawn entity next to entity » | `Script_139_08B`, `:2557-2575` | spawn du bloc 10 (travelling caméra) par B1 ; port via `IEntityWorldContext.SpawnEntityByRecordId` + `EntitySearchService` ; déviation : null-check du spawn là où l'original déréférence sans test |
 
-Tests unitaires ajoutés dans `Alundra.Tests/AlundraEventProgramRunnerTests.cs` (2 par opcode).
+Tests unitaires ajoutés dans `Alundra.Tests/Events/EventProgramRunnerTests.cs` (2 par opcode).
 
 ### Déviations du harnais (toutes documentées dans le code)
 
