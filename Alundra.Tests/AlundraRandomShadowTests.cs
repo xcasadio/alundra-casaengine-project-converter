@@ -3,6 +3,7 @@ using System;
 using Xunit;
 using Alundra.Rng;
 using Alundra.Probes;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests;
 
@@ -11,7 +12,7 @@ namespace Alundra.Tests;
 /// environment variable. It says NOTHING about <see cref="GameRandom.RandomSeed"/> (the real state, which phase B makes advance): it only looks at the sink, so it is the same test in phase A and in phase B.
 /// It is a no-op when the sink is active (the suite launched with <c>ALUNDRA_RNG_SHADOW_LOG</c> to measure), where the sink is supposed to record.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class AlundraRandomShadowTests
 {
     public AlundraRandomShadowTests()

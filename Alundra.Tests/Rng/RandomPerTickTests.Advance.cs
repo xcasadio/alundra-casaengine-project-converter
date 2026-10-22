@@ -14,14 +14,14 @@ using Alundra.Maps;
 using Alundra.Tests.Support;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rng;
 
 /// <summary>
 /// E20.e0b1 T2, the tests of the advance itself (red until phase B, T3): (a) the six words of the advance, (c) the world drives one step per logic tick, (d) the order in the tick. Every test here expects at least one
 /// REAL step: written red on the phase A code (where <see cref="GameRandom.AdvanceFrame"/> only feeds the virtual word of the measuring sink), green once phase B makes it write the real state. Each expected word is
 /// computed by a step written locally (<see cref="Step"/>) from the seed and the counts of ticks and draws, never pasted.
 /// </summary>
-public sealed partial class AlundraRandomPerTickTests
+public sealed partial class RandomPerTickTests
 {
     private const uint Square = PadState.Square;
 

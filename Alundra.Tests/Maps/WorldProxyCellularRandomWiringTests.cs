@@ -11,6 +11,7 @@ using Alundra.Rng;
 using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests.Maps;
 
@@ -23,11 +24,11 @@ namespace Alundra.Tests.Maps;
 /// <c>0x12345678</c> gives 2929 and leaves the state at <c>0x0B719151</c>) and leaves the game's stream untouched
 /// (proving it is that generator, not the unwired default, without relying on the process-wide "already warned
 /// once" static that would make a missing-warning assertion unreliable across the whole test run). Shares
-/// <see cref="AlundraRandomStaticStateCollection"/> with <see cref="AlundraRandomTests"/> and
-/// <see cref="AlundraLibcRandomTests"/> - they touch the process-wide statics <see cref="GameRandom.RandomSeed"/>
+/// <see cref="RandomStaticStateCollection"/> with <see cref="RandomTests"/> and
+/// <see cref="LibcRandomTests"/> - they touch the process-wide statics <see cref="GameRandom.RandomSeed"/>
 /// and <see cref="LibcRandom.State"/>.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class WorldProxyCellularRandomWiringTests : System.IDisposable
 {
     public WorldProxyCellularRandomWiringTests()

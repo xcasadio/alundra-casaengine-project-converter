@@ -8,17 +8,17 @@ using Alundra.Events;
 using Alundra.Rng;
 using Alundra.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rng;
 
 /// <summary>
 /// E19.c1 T3 (docs/plan-e19-opcodes.md §1.2e): opcode 0x0C ("random cardinal direction"), which draws from the process-wide
 /// <see cref="GameRandom"/> stream. The class is in the collection that serialises the generator's static state and
 /// resets it before and after every test.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraRandomOpcodeTests : IDisposable
+[Collection(RandomStaticStateCollection.Name)]
+public sealed class RandomOpcodeTests : IDisposable
 {
-    public AlundraRandomOpcodeTests() => GameRandom.Reset();
+    public RandomOpcodeTests() => GameRandom.Reset();
 
     public void Dispose() => GameRandom.Reset();
 

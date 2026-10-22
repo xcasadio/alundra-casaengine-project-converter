@@ -21,6 +21,7 @@ using Alundra.Dialogues;
 using Alundra.UI.Hud;
 using Alundra.SaveGames;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests;
 
@@ -29,7 +30,7 @@ namespace Alundra.Tests;
 /// against <c>docs/plan-e19-g3d-annexe/discovery/lib/g3d-golden.tsv</c> (rows <c>V</c>, <c>S</c>, <c>T</c>, <c>F</c>, <c>P</c>: produced by the real code of the binary in an interpreter), then the native
 /// creators of modes 1 and 3 against <c>g3d-modes13.tsv</c>. Every test that draws from <see cref="GameRandom"/> lives here, in the collection that serialises its static state.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class AlundraNativeEffectTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();

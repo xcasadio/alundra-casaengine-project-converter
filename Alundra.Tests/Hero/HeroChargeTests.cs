@@ -11,6 +11,7 @@ using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests.Hero;
 
@@ -30,7 +31,7 @@ namespace Alundra.Tests.Hero;
 /// the sound of the animation switch); the binary plays it before. At the ticks that carry a spark and other sounds, the expected DLL list is the oracle's with the spark's sound last.
 /// </para>
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class HeroChargeTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();

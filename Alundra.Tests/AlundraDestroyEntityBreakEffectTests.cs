@@ -9,6 +9,7 @@ using Alundra.Events;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests;
 
@@ -17,7 +18,7 @@ namespace Alundra.Tests;
 /// (<c>fx = -1</c> reads the byte of the sprite header, the slope destruction passes 6) as a mode 1 effect attached to the frozen anchor of the entity. The loot (E20.e0), the release of the attached effect (E20.e) and the clearing
 /// of the carrier (E20.g) are named stubs. Shares the generator's collection: the destruction must draw no number.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class AlundraDestroyEntityBreakEffectTests : IDisposable
 {
     private static readonly string Root = SaveGameDirectorTestSupport.FindProjectRoot();

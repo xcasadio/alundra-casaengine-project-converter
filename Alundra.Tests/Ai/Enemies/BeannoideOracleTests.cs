@@ -18,6 +18,7 @@ using Alundra.Items;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests.Ai.Enemies;
 
@@ -28,7 +29,7 @@ namespace Alundra.Tests.Ai.Enemies;
 /// excluded X1 to X6): the loot (<c>spawn_39F58</c>) and its sound are the named stub of E20.e0, the release of the attached effect (<c>+0x1B8</c>) is E20.e's, the carrier clearing E20.g's, the header pointer is replaced by
 /// <see cref="EntityScriptProxy.BreakEffect"/>. Shares the generator's collection (it sets the word).
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class BeannoideOracleTests : IDisposable
 {
     private const long Marker = 0x5A5A5A5A;

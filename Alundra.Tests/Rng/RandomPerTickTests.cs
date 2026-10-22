@@ -4,7 +4,7 @@ using Xunit;
 using Alundra.Rng;
 using Alundra.Rendering.Effects;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rng;
 
 /// <summary>
 /// E20.e0b1 T2 (docs/plan-e20-heros.md section 1.17.1, annex docs/plan-e20-annexe/e20-e0b/README.md): the shared random stream advances once per logic tick, at the end of the tick, as the binary's frame function does
@@ -12,10 +12,10 @@ namespace Alundra.Tests;
 /// after the update of the reservoir, on a frozen tick too, never for a frame of 0 tick (b), and a direct call without callback advances nothing (e). The tests of the advance itself (the six words, the world, the order in the tick)
 /// are in the other part of the class (<c>AlundraRandomPerTickTests.Advance.cs</c>), written red before phase B.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed partial class AlundraRandomPerTickTests : IDisposable
+[Collection(RandomStaticStateCollection.Name)]
+public sealed partial class RandomPerTickTests : IDisposable
 {
-    public AlundraRandomPerTickTests()
+    public RandomPerTickTests()
     {
         GameRandom.Reset();
         BackdropWarpDepartureSupport.ResetSingletons();

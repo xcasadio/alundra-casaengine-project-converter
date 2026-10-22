@@ -6,17 +6,17 @@ using Alundra.Events;
 using Alundra.Rng;
 using Alundra.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rng;
 
 /// <summary>
 /// E19.l1 L1-1 (docs/plan-e19-opcodes.md, section 1.2m.1): opcode 0x8C (<c>0x80040438</c>), one draw of the shared generator,
 /// <c>Result</c> = 1 when <c>(seed &gt;&gt; 24) &gt;= v1</c>. The class is in the collection that serialises the generator's
 /// static state and resets it before and after every test.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraRandomBranchOpcodeTests : IDisposable
+[Collection(RandomStaticStateCollection.Name)]
+public sealed class RandomBranchOpcodeTests : IDisposable
 {
-    public AlundraRandomBranchOpcodeTests() => GameRandom.Reset();
+    public RandomBranchOpcodeTests() => GameRandom.Reset();
 
     public void Dispose() => GameRandom.Reset();
 

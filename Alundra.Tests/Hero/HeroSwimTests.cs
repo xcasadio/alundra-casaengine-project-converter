@@ -8,6 +8,7 @@ using Alundra.Hero;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests.Hero;
 
@@ -23,7 +24,7 @@ namespace Alundra.Tests.Hero;
 /// boots level 0 and 1 are information; the east wall stops one unit short in the binary (O-E19-42); the clamp at the border of the map (O-E19-17).
 /// </para>
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class HeroSwimTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;

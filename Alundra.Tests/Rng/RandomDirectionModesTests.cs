@@ -7,7 +7,7 @@ using Alundra.Events;
 using Alundra.Rng;
 using Alundra.Entities;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rng;
 
 /// <summary>
 /// E19.m0 (docs/plan-e19-opcodes.md, section 1.2s.1): modes 4 and 5 of <c>ResolveDirectionFromParam</c> (binary <c>0x8003CFC8</c>) draw
@@ -15,13 +15,13 @@ namespace Alundra.Tests;
 /// bits of the parameter are ignored. The class is in the collection that serialises the generator's static state; every test pins
 /// the seed itself and compares the state as <c>(uint)RandomSeed</c> (the DLL state is an unmasked ulong).
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraRandomDirectionModesTests : IDisposable
+[Collection(RandomStaticStateCollection.Name)]
+public sealed class RandomDirectionModesTests : IDisposable
 {
     private const uint Mode4 = 0x80;
     private const uint Mode5 = 0xA0;
 
-    public AlundraRandomDirectionModesTests() => GameRandom.Reset();
+    public RandomDirectionModesTests() => GameRandom.Reset();
 
     public void Dispose() => GameRandom.Reset();
 

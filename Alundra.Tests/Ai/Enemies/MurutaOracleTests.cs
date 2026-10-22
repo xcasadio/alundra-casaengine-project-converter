@@ -18,6 +18,7 @@ using Alundra.Rng;
 using Alundra.Rendering.Effects;
 using Alundra.Audio;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests.Ai.Enemies;
 
@@ -28,7 +29,7 @@ namespace Alundra.Tests.Ai.Enemies;
 /// (section 1.3b). The montage is that of <see cref="BeannoideOracleTests"/> with the fields of the Muruta (<c>+0x98</c> <see cref="EntityScriptProxy.BoxDirection"/>, the four corner heights, <c>+0x274</c>, <c>+0x280</c>) and the
 /// hero's frame box (the FIELD <see cref="EntityScriptProxy.HasFrameBox"/>) and current attack. Shares the generator's collection (it sets the word).
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class MurutaOracleTests : IDisposable
 {
     private const long Marker = 0x5A5A5A5A;

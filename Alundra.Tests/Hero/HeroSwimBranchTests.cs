@@ -7,6 +7,7 @@ using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Entities;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests.Hero;
 
@@ -16,7 +17,7 @@ namespace Alundra.Tests.Hero;
 /// <c>0x80032690</c>, <c>0x800326FC</c>, <c>0x80032758</c>, the land exits <c>0x80031DD0</c> and <c>0x80031DB4</c>). The 240 traces of the group W8 (80 states, three pads, three ticks) are replayed state by state: the state
 /// the oracle holds at the end of tick t-1 is posed, one <c>MovePlayer</c> runs with the pad of tick t, and what it writes (the target animation, the direction) is the oracle's of tick t.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class HeroSwimBranchTests : IDisposable
 {
     private const uint Triangle = PadState.Triangle;

@@ -2,21 +2,7 @@ using Xunit;
 using Alundra.Rng;
 using Alundra.Tests.Maps;
 
-namespace Alundra.Tests;
-
-/// <summary>
-/// xunit collection covering every test class that touches the process-wide static
-/// <see cref="GameRandom.RandomSeed"/> (D7, docs/plan-e9d-mode-cellulaire.md) - today
-/// <see cref="AlundraRandomTests"/> and <see cref="WorldProxyCellularRandomWiringTests"/>. Classes
-/// sharing a collection never run in parallel with each other, which is what keeps them from racing on
-/// that shared mutable static (xunit runs different test CLASSES in this project in parallel by
-/// default) - same pattern as <see cref="AlundraMusicPlayerSingletonCollection"/>.
-/// </summary>
-[CollectionDefinition(Name)]
-public class AlundraRandomStaticStateCollection
-{
-    public const string Name = "AlundraRandom static state";
-}
+namespace Alundra.Tests.Rng;
 
 /// <summary>
 /// D-E9d - <see cref="GameRandom"/>, the original engine's ONE shared random stream, ported
@@ -29,10 +15,10 @@ public class AlundraRandomStaticStateCollection
 /// seed2        = (seed1 * 0x7d2b89dd + 0xe06a02e7) mod 2^64 -> low32 = 0xC81B4C37 (3357232183)
 /// seed3        = (seed2 * 0x7d2b89dd + 0xe06a02e7) mod 2^64 -> low32 = 0xE4013D62 (3825286498)
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraRandomTests
+[Collection(RandomStaticStateCollection.Name)]
+public sealed class RandomTests
 {
-    public AlundraRandomTests()
+    public RandomTests()
     {
         GameRandom.Reset();
     }

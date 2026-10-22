@@ -5,7 +5,7 @@ using Xunit;
 using Alundra.Rng;
 using Alundra.Rendering.Backdrops;
 
-namespace Alundra.Tests;
+namespace Alundra.Tests.Rng;
 
 /// <summary>
 /// E19.m2 (docs/plan-e19-opcodes.md, §1.2s.3, D-E19-66, ADR-0032) - <see cref="LibcRandom"/>, the C library
@@ -15,12 +15,12 @@ namespace Alundra.Tests;
 /// from state 0: 0, 21468, 9988, 22117, 3498 (states 0x00003039, 0xD3DC167E, 0xA70427DF, 0xD6651C2C, 0x0DAA96F5);
 /// from 0x12345678: 2929 (state 0x0B719151), 28487, 11805.
 ///
-/// The generator is a process-wide static: this class shares <see cref="AlundraRandomStaticStateCollection"/> with the
+/// The generator is a process-wide static: this class shares <see cref="RandomStaticStateCollection"/> with the
 /// other tests that touch static random state, so none of them runs in parallel with it, and every test restores the
 /// state it found.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
-public sealed class AlundraLibcRandomTests : System.IDisposable
+[Collection(RandomStaticStateCollection.Name)]
+public sealed class LibcRandomTests : System.IDisposable
 {
     private readonly uint _savedState = LibcRandom.State;
 

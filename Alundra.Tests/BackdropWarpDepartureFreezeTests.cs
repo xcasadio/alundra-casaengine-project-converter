@@ -15,6 +15,7 @@ using Alundra.Audio;
 using Alundra.Transitions;
 using Alundra.Maps;
 using Alundra.Tests.Maps;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests;
 
@@ -139,9 +140,9 @@ public sealed class BackdropWarpDepartureFreezeTests : IDisposable
 /// <summary>
 /// E19.m4 T-55c (docs/plan-e19-opcodes.md, section 1.2s.5) - the rain of map 391 and the C library generator: a departure
 /// draws no <c>rand()</c> value. Own class because the generator is a process-wide static (<see cref="LibcRandom"/>):
-/// <see cref="AlundraRandomStaticStateCollection"/>. Self-skips when the export is absent.
+/// <see cref="RandomStaticStateCollection"/>. Self-skips when the export is absent.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class BackdropWarpDepartureRainTests : IDisposable
 {
     private readonly uint _savedLibcState = LibcRandom.State;

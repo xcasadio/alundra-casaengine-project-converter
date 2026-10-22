@@ -4,6 +4,7 @@ using Xunit;
 using Alundra.Session;
 using Alundra.Hero;
 using Alundra.Entities;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests.Hero;
 
@@ -13,7 +14,7 @@ namespace Alundra.Tests.Hero;
 /// <c>0x80032118</c> the slide, <c>0x80032558</c> the bounce, the common tail <c>0x80031EA8</c>). The answer 0 of the item driver (<see cref="PlayerManager.TryUseItemResultForTests"/>) is the one thing the
 /// stubs of E20.a cannot give. The lines of the plan's "facts" section are the expectations.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class HeroRunStatesTests : IDisposable
 {
     private const uint Triangle = PadState.Triangle;

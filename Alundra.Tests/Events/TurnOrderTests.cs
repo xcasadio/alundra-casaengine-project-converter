@@ -8,6 +8,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Rng;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests.Events;
 
@@ -17,7 +18,7 @@ namespace Alundra.Tests.Events;
 /// the modes that draw from the shared generator (4 and 5: the last found takes the first draw) and for mode 6 (reads the hero direction
 /// the loop writes). The class is in the collection that serialises the generator's static state.
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class TurnOrderTests : IDisposable
 {
     private const ulong Seed = 0xB017C93D;

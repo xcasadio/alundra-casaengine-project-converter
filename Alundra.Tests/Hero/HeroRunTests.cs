@@ -8,6 +8,7 @@ using Alundra.Hero;
 using Alundra.Rendering.Effects;
 using Alundra.Transitions;
 using Alundra.Tests.Support;
+using Alundra.Tests.Rng;
 
 namespace Alundra.Tests.Hero;
 
@@ -24,7 +25,7 @@ namespace Alundra.Tests.Hero;
 /// of the map (O-E19-17) are not ported (the swim is E20.i's: see <see cref="HeroSwimTests"/>).
 /// </para>
 /// </summary>
-[Collection(AlundraRandomStaticStateCollection.Name)]
+[Collection(RandomStaticStateCollection.Name)]
 public sealed class HeroRunTests : IDisposable
 {
     private readonly string _previousProjectPath = CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath;
