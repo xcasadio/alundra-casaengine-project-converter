@@ -189,7 +189,8 @@ def main():
         return bom, body.replace('YarnBindingsTests', 'YarnBindingTests', 1)
     res.append(run_case('--other: the XML comment with a wrong name', A, edit(Bot, cf, x_com), 'refused', other=True))
     res.append(run_case('--other: departure -> departure', A, A, 'refused', other=True))
-    res.append(run_case('--other: a .cs changed', A, edit(Bot, f, m_code), 'refused', other=True, why='outside the scope'))
+    res.append(run_case('--other: a .cs changed is the business of the cs run', A, edit(Bot, f, m_code), 'accepted', other=True))
+    res.append(run_case('the cs run: an other file changed is not its business', A, B, 'accepted'))
 
     # the independent reader (Roslyn), when built: accepts the arrival, refuses a string literal changed
     if os.path.exists(P.XCHECK_DLL):

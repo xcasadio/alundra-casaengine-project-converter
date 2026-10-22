@@ -2,11 +2,11 @@
 
     python -B tools/dll-structure/prove_r8.py [--scope dll|tests|all] [--other] [--xcheck] (--commit REV | --worktree | --before-dir X --after-dir Y)
 
-  --commit REV      before = REV^, after = REV (blobs)
+  --commit REV      before = REV^ (or --from FROM: a whole range), after = REV (blobs)
   --worktree        before = HEAD (blobs), after = the working tree (CRLF folded to LF, as the index stores it)
   --before-dir/--after-dir   two folders that hold `Alundra/` and `Alundra.Tests/`
-  --scope           the files that must change: the DLL, the tests, or both (default: all); every other file must be byte for byte identical
-  --other           the two files that are not C# instead of the `.cs`: `Alundra.Tests/xunit.runner.json` (only the value of `_comment`) and
+  --scope           the files that must change: the DLL, the tests, or both (default: all); every other `.cs` must be byte for byte identical
+  --other           the two files that are not C# INSTEAD of the `.cs` (a commit that holds both is proved by the two runs): `Alundra.Tests/xunit.runner.json` (only the value of `_comment`) and
                     `Alundra.Tests/Alundra.Tests.csproj` (only the content of its XML comment); the JSON stays valid with the same keys, the XML
                     well-formed with the same tree
   --xcheck          also the independent reader: Roslyn (comment-xcheck/, built with `dotnet build -c Debug`) compares the stream of tokens and
@@ -33,10 +33,11 @@ XCHECK_DLL = L.HERE + '/comment-xcheck/bin/Debug/net9.0/CommentXcheck.dll'
 
 
 # ------------------------------------------------------------------------------------------------------------------ the two sides
-def read_commit(rev, want_other):
-    paths_b = set(L.list_cs_git(rev + '^')) | set(L.OTHER_FILES)
+def read_commit(rev, frm=None):
+    frm = frm or rev + '^'
+    paths_b = set(L.list_cs_git(frm)) | set(L.OTHER_FILES)
     paths_a = set(L.list_cs_git(rev)) | set(L.OTHER_FILES)
-    return L.blobs_at(rev + '^', sorted(paths_b)), L.blobs_at(rev, sorted(paths_a))
+    return L.blobs_at(frm, sorted(paths_b)), L.blobs_at(rev, sorted(paths_a))
 
 
 def read_worktree():
@@ -85,10 +86,9 @@ def prove(before, after, scope, other, stats):
                     (sorted(set(before) - set(after))[:5], sorted(set(after) - set(before))[:5]))
     in_scope_files = set()
     for path in sorted(set(before) & set(after)):
-        if other:
-            in_scope = path in L.OTHER_FILES
-        else:
-            in_scope = path.endswith('.cs') and L.scope_ok(path, scope)
+        if (path in L.OTHER_FILES) != bool(other):
+            continue  # the other mode proves these files (a commit that holds both is proved by the two runs)
+        in_scope = True if other else L.scope_ok(path, scope)
         if not in_scope:
             if before[path] != after[path]:
                 errs.append('%s: changed but outside the scope' % path)
@@ -183,13 +183,14 @@ def main():
     ap.add_argument('--work')
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument('--commit')
+    ap.add_argument('--from', dest='frm', help='with --commit: the state before is REV instead of the parent (a whole range)')
     g.add_argument('--worktree', action='store_true')
     g.add_argument('--before-dir')
     ap.add_argument('--after-dir')
     a = ap.parse_args()
     try:
         if a.commit:
-            before, after = read_commit(a.commit, a.other)
+            before, after = read_commit(a.commit, a.frm)
         elif a.worktree:
             before, after = read_worktree()
         else:

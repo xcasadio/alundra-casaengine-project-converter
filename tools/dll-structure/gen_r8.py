@@ -2,10 +2,10 @@
 
     python -B tools/dll-structure/gen_r8.py [--rev REV] [--check]
 
-Reads the `.cs` of `Alundra/` and `Alundra.Tests/` (and the two files that are not C#) at REV (default HEAD) and writes one row per candidate
+Reads the `.cs` of `Alundra/` and `Alundra.Tests/` (and the two files that are not C#) at REV (default 55fac9af, the state of departure) and writes one row per candidate
 (file, line, rank, kind, old, new, class, reason).  Refuses to write when a candidate falls outside the rules and the written cases of P-R8-3
 (class `stop`).  `--check` compares what it would write with the file instead of writing it.
-Replayed at the state of departure (commit 55fac9af, or any later commit that does not touch a comment), it gives the same bytes.
+Replayed at the state of departure (the default REV), it gives the same bytes; at a later commit the comments are rewritten and it would not.
 """
 import argparse
 import collections
@@ -16,7 +16,7 @@ import r8_lib as L
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--rev', default='HEAD')
+    ap.add_argument('--rev', default='55fac9af')
     ap.add_argument('--check', action='store_true')
     a = ap.parse_args()
     paths = L.list_cs_git(a.rev)
@@ -37,7 +37,7 @@ def main():
     text = '\t'.join(L.COLS) + '\n' + ''.join('\t'.join(r) + '\n' for r in rows)
     data = text.encode('utf-8')
     if a.check:
-        same = open(L.SURVEY, 'rb').read() == data
+        same = open(L.SURVEY, 'rb').read().replace(b'\r\n', b'\n') == data
         print('survey identical' if same else 'survey DIFFERS')
         return 0 if same else 1
     with open(L.SURVEY, 'wb') as f:

@@ -105,7 +105,7 @@ def blobs_at(rev, paths):
 # ------------------------------------------------------------------------------------------------------------------ tables
 def read_tsv(path):
     with open(path, encoding='utf-8', newline='') as f:
-        lines = f.read().split('\n')
+        lines = f.read().replace('\r\n', '\n').split('\n')
     head = lines[0].split('\t')
     rows = []
     for ln in lines[1:]:
