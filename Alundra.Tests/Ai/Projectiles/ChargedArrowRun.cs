@@ -29,10 +29,13 @@ internal sealed class ChargedArrowRun : IDisposable
     private const int WilliamBow = 6;
     private const int BowSlot = 2;
     internal const uint Seed = 0x12345678;
+    private const int FillerType = 3;
 
     private int _frameEnd;
     private uint _frameStartState;
     private int _frameSize = 1;
+    private readonly bool _production;
+    private readonly int? _freeSlotsAtBirth;
 
     internal readonly HitArena Arena;
     internal readonly CutBench Bench;
@@ -72,8 +75,21 @@ internal sealed class ChargedArrowRun : IDisposable
 
     private readonly List<EntityScriptProxy> _stubJournal = new();
 
-    internal ChargedArrowRun(string name, Func<int, int, CutBench.Cell>? cell, int heroX = 100, IReadOnlyList<int[]>? targets = null)
+    /// <summary>Production path only: the calls of the spawn seam of the shot (<see cref="PlayerManager.WeaponSpawnCallsForTests"/>), the sprite types of the entities the hero fathered (seen at the end of any tick), the held slots just before the birth tick (once filled), the pointer of the shot record of the hero after each tick, and per tick whether the first target touches the arrow.</summary>
+    internal readonly List<PlayerManager.WeaponSpawnCall> SpawnCalls = new();
+    internal readonly HashSet<int> TypesFatheredByTheHero = new();
+    internal int HeldBeforeBirthTick = -1;
+    internal readonly Dictionary<int, uint> PointerAfter = new();
+    internal readonly Dictionary<int, bool> TargetTouchedByTheArrow = new();
+
+    /// <summary>
+    /// <paramref name="production"/>: the shot goes through the PRODUCTION path (E20.f4 T2, phase B): no birth hook and no test set of wired types, so the arrow is born only if <see cref="PlayerManager.ProductionWiredWeaponTypes"/> holds its type.
+    /// <paramref name="freeSlotsAtBirth"/> (production only): the entity table is filled with arrows of type 3 just before the birth tick, down to that number of free slots (0: full).
+    /// </summary>
+    internal ChargedArrowRun(string name, Func<int, int, CutBench.Cell>? cell, int heroX = 100, IReadOnlyList<int[]>? targets = null, bool production = false, int? freeSlotsAtBirth = null)
     {
+        _production = production;
+        _freeSlotsAtBirth = freeSlotsAtBirth;
         Arena = new HitArena("f4-" + name, 100, 100, targets?.ToList() ?? new List<int[]>(), 24, 0);
         try
         {
@@ -141,14 +157,21 @@ internal sealed class ChargedArrowRun : IDisposable
     {
         _frameSize = ticksPerFrame;
         ChargedArrowAi.StubCallsForTests = _stubJournal;
-        PlayerManager.WiredWeaponTypesForTests = new HashSet<int> { ChargedArrowAi.SpriteTypes[0] };
-        PlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
+        if (_production)
         {
-            if (call.Type == ChargedArrowAi.SpriteTypes[0])
+            PlayerManager.WeaponSpawnCallsForTests = SpawnCalls;
+        }
+        else
+        {
+            PlayerManager.WiredWeaponTypesForTests = new HashSet<int> { ChargedArrowAi.SpriteTypes[0] };
+            PlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
             {
-                ((IEntityWorldContext)Arena.Arc.Proxy).SpawnEntityBySpriteIndex(hero, false, call.Type, call.X, call.Y, call.Z, call.Direction);
-            }
-        };
+                if (call.Type == ChargedArrowAi.SpriteTypes[0])
+                {
+                    ((IEntityWorldContext)Arena.Arc.Proxy).SpawnEntityBySpriteIndex(hero, false, call.Type, call.X, call.Y, call.Z, call.Direction);
+                }
+            };
+        }
         NativeEffects.CreatedForTests = slot =>
         {
             if (!slot.TargetMapTable)
@@ -173,6 +196,20 @@ internal sealed class ChargedArrowRun : IDisposable
                 _frameStartState = unchecked((uint)GameRandom.RandomSeed);
             }
 
+            if (_freeSlotsAtBirth is { } free && tick == ChargedArrowOracle.Birth)
+            {
+                var world = (IEntityWorldContext)Arena.Arc.Proxy;
+                while (EntitySlotTable.SlotCount - Arena.Arc.Proxy.SlotTable.HeldCount > free)
+                {
+                    if (world.SpawnEntityBySpriteIndex(Arena.Hero, false, FillerType, 100 << 16, 100 << 16, 0, 0x10) is null)
+                    {
+                        throw new InvalidOperationException("the filler arrow was not born");
+                    }
+                }
+
+                HeldBeforeBirthTick = Arena.Arc.Proxy.SlotTable.HeldCount;
+            }
+
             if (Born is null)
             {
                 LowestFreeSlotBeforeBirth = Enumerable.Range(0, EntitySlotTable.SlotCount).FirstOrDefault(i => !Arena.Arc.Proxy.SlotTable.IsHeld(i), -1);
@@ -192,6 +229,13 @@ internal sealed class ChargedArrowRun : IDisposable
                 }
             }
 
+            foreach (var fathered in Arena.Arc.Entities.Where(e => ReferenceEquals(e.ParentEntity, Arena.Arc.HeroEntity)))
+            {
+                TypesFatheredByTheHero.Add(fathered.SpriteType);
+            }
+
+            PointerAfter[tick] = Arena.Hero.WeaponRecordPointer;
+            TargetTouchedByTheArrow[tick] = Born is not null && Arena.Targets.FirstOrDefault()?.TouchingEntity is { } touching && ReferenceEquals(touching, Born);
             var present = Born is not null && Arena.Arc.Entities.Contains(Born);
             Lines[tick] = Line(Born, present);
             var sample = Arena.Samples[^1];
@@ -248,6 +292,7 @@ internal sealed class ChargedArrowRun : IDisposable
     {
         PlayerManager.WeaponSpawnBirthHookForTests = null;
         PlayerManager.WiredWeaponTypesForTests = null;
+        PlayerManager.WeaponSpawnCallsForTests = null;
         EventProgramRunner.NativeSpriteTypeFilterForTests = null;
         ChargedArrowAi.StubCallsForTests = null;
         NativeEffects.CreatedForTests = null;
