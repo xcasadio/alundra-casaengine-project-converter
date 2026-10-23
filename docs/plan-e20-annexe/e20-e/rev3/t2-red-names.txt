@@ -1,0 +1,15 @@
+# E20.e T2: the world tests run on the tree at HEAD ddd81aff (phase A, no production caller). 2026-10-23, Release, filter TileEffectCutWorldTests|TileCutEffectIdExportGuard.
+# 13 tests: 7 red, 6 green.
+RED  Alundra.Tests.Cells.TileEffectCutWorldTests.W1_TheSwordOfTheHero_CutsTheBushesOfTheCornersOfItsBox_AtTheTicksCellsAndPositionsOfTheOracle
+RED  Alundra.Tests.Cells.TileEffectCutWorldTests.W2_TheSwordWave_CutsTheBushesItCrosses_AfterTheHeroOwnCuts_AtTheTicksCellsAndPositionsOfTheOracle
+RED  Alundra.Tests.Cells.TileEffectCutWorldTests.W5_TheGrassGrowsBack_WhenTheMapIsEnteredAgain
+RED  Alundra.Tests.Cells.TileEffectCutWorldTests.W6_ACutByTheSword_ThatGivesAnObject_BirthsItAtTheCell_SoundsAreEightyFourThenThirtyOne_TheGeneratorIsTheOracles
+RED  Alundra.Tests.Cells.TileEffectCutWorldTests.W6_ACutByTheWave_ThatGivesAnObject_BirthsItAtTheCell_SoundsAreEightyFourThenThirtyOne_TheGeneratorIsTheOracles
+RED  Alundra.Tests.Cells.TileEffectCutWorldTests.W7_ACellWithoutAStackOfTiles_IsCutAsAnyOther_EffectLootAndSound_WithoutAReconstruction
+RED  Alundra.Tests.Cells.TileEffectCutWorldTests.W8_TheEffectOfTheCut_IsTheOneTheRealPropertyOfTheMapNames_TheGlobalEffectTwo
+GREEN (twin, nothing is cut) Alundra.Tests.Cells.TileEffectCutWorldTests.W3_ASwingBesideTheBushes_CutsNothing_TheGeneratorMovesAsTheOracle(scenario: "nograss")
+GREEN (twin, nothing is cut) Alundra.Tests.Cells.TileEffectCutWorldTests.W3_ASwingBesideTheBushes_CutsNothing_TheGeneratorMovesAsTheOracle(scenario: "beside")
+GREEN (twin, nothing is cut) Alundra.Tests.Cells.TileEffectCutWorldTests.W4_AStateOutsideTheFifteen_CutsNothing_AtTheSamePlaceWhereTheSwingCuts
+GREEN (guard on the export, E20.eR done) Alundra.Tests.ExportGuards.TileCutEffectIdExportGuardTests.TheTileMapOfTheMap_CarriesTileCutEffectId_AndNoBalanceLevel(name: "Overworld 2,1-10")
+GREEN (guard on the export, E20.eR done) Alundra.Tests.ExportGuards.TileCutEffectIdExportGuardTests.TheTileMapOfTheMap_CarriesTileCutEffectId_AndNoBalanceLevel(name: "Overworld 3,1-14")
+GREEN (guard on the export, E20.eR done) Alundra.Tests.ExportGuards.TileCutEffectIdExportGuardTests.TheTileMapOfTheMap_CarriesTileCutEffectId_AndNoBalanceLevel(name: "Overworld 3,3-16")

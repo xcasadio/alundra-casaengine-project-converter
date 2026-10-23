@@ -15,4 +15,5 @@ The earlier reading (`../report.md`, `../check.md`, `../work/`, `../check/`, `..
   - `heroattack_m10.py` (1 s): the existing test `HeroAttackTests` of the map 10, run on the binary.
 - `vectors/cate-vectors.json`: the oracle read by the tests of T1 (`Alundra.Tests/Support/CateVectors.cs`).
 - `probes/`: the DLL probes and their outputs (the visual completeness of the maps 14, 10 and 16; the generator tick by tick in the emptied bench).
+- `t1-results.md`, `t1-red-names.txt`: T1 (phase A). `t2-results.md`, `t2-red-names.txt` (2026-10-23): T2, the world tests of the cut on the real map 14 (`Alundra.Tests/Cells/TileEffectCutWorldTests.cs`), red before T3, and the two scenarios `beside` and `idle` added to `oracle/cut_m14.py`.
 - `SHA1SUMS.txt`: SHA-1 of every file above (LF).

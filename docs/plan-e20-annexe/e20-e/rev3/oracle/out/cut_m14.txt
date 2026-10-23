@@ -57,6 +57,12 @@
   hero states: t1:10 t22:0
   order t001: snd(29)
   order t022: snd(0)
+# beside: map 14 hero [744, 696] east basic seed 00001002, 40 ticks, 0 cuts, 0 objects born
+  hero states: t1:10 t22:0
+  order t001: snd(29)
+  order t022: snd(0)
+# idle: map 14 hero [732, 696] west basic seed 00001002, 40 ticks, 0 cuts, 0 objects born
+  hero states: t1:0
 # sword_obj: map 14 hero [732, 696] west basic seed 00001006, 5 ticks, 1 cuts, 1 objects born
   hero states: t1:10
   t002 hero cell(29,43) h=1 fx(id=2 x=708.0 y=696.0 z=16.0) loot rng 880D0E15 -> CBAB19CF ret=1 model(item=70 draws=2)

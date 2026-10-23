@@ -1,12 +1,12 @@
-76eb796cdc75d8e2588af1f9d01390258c5a3939 *./README.md
-16b5325df4644d5f56362245a9cb59d58efabc6b *./oracle/cut_m14.py
+bc60d6251850cba7123f97d9b10cc216ee0efb9d *./README.md
+fffd37ba4a0304f25d57f717f95b6fbbb36b7cfd *./oracle/cut_m14.py
 acc1708f99347b991b36ab0638d25807e24053e6 *./oracle/cutlib.py
 f92cf0aa12a26884312a82c2827be433e2d206bd *./oracle/export_vectors.py
 fbacd2788b562dea48dcc8ad952aaac80ea88c17 *./oracle/heroattack_m10.py
 ac8b39098737158e8c97a42b6a0360652ec6fd34 *./oracle/latency.py
 b6a228907b5b5e41dba28e24438f8cf47ba3b7c2 *./oracle/loot_check.py
-43400c0da3a2bb8cebce69e3b2a0f600874d331c *./oracle/out/cut_m14.json
-10ccf6dea0aa4517b9cc0db8159472dc627d7d5a *./oracle/out/cut_m14.txt
+6c0d09f5dce55280b4abd2ab96fae0f70dd719cd *./oracle/out/cut_m14.json
+f602b145102e6508e4364b4291fada71a09e7810 *./oracle/out/cut_m14.txt
 c74939714adac6a2d30e1895354a9289b81750cf *./oracle/out/heroattack_m10.json
 cb9553d5893bfc8aa4b4765dea429d2c96d7c087 *./oracle/out/heroattack_m10.txt
 3e2e88e3c5fecdc2041884faf41842953fb5a81c *./oracle/out/latency.json
@@ -33,3 +33,5 @@ e057750837c98bac08685d6d96b7d8554bbbbe96 *./results.md
 5a2d1fd3b1cb69781fc80ff656519aed7f59a687 *./t1-red-names.txt
 1b77825f972cca17977680abee4bbbcbe6375c6c *./t1-results.md
 fec73c882b29f2092c86dcf764d82a9084335a3c *./vectors/cate-vectors.json
+798cca44f835f2e8b09198cfd19cd4369f442737 *./t2-red-names.txt
+474103c1b917622d109aeed54134f45b45f0e116 *./t2-results.md

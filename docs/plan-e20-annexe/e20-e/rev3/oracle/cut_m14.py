@@ -28,12 +28,14 @@ SCENARIOS = {
     'wave_none': dict(map=14, hero=(744, 696), direction='west', wave=True, n=150),
     'nostack_none': dict(map=14, hero=(708, 728), direction='west', wave=False, n=40),
     'nograss': dict(map=14, hero=(212, 96), direction='east', wave=False, n=40),
+    'beside': dict(map=14, hero=(744, 696), direction='east', wave=False, n=40),
+    'idle': dict(map=14, hero=(732, 696), direction='west', wave=False, n=40, press=False),
 }
 
 
 def run(sc, seed, n=None, types=WEAPON_TYPES):
     log = L.Log()
-    holds = {t: L.SQUARE for t in range(1, 96)} if sc['wave'] else {1: L.SQUARE}
+    holds = {t: L.SQUARE for t in range(1, 96)} if sc['wave'] else ({1: L.SQUARE} if sc.get('press', True) else {})
     spec = dict(item=2 if sc['wave'] else None, n=n or sc['n'], holds=holds, after=0, hero_px=sc['hero'], direction=L.DIRS[sc['direction']], cells=L.cells_fn(sc['map']),
                 seed=seed, init=[L.fill_extra(sc['map']), L.install_spies(log, True)], ticker=L.ticker_with_step, types=types)
     return L.P.run(spec), log
