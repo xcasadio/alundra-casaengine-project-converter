@@ -5782,7 +5782,7 @@ démon). **Reportés (P4)** :
 | O-F3-6 | La libération des effets 4 et 5 (et des étincelles, même rang) tombe un tick avant ce que le binaire donnerait probablement (touche + 41 au lieu de + 42) ; à rejouer sur le binaire, puis exactitude ou écart documenté | **Fermé le 2026-10-16, aucun écart** : sur la machine MIPS (vraies passes `0x8003BE74`, `0x80038E84`, `0x80039300`, `0x8003C410`), le binaire libère l'effet 4 à touche + 41 et l'effet 5 à + 96 (étincelles + 26), comme la DLL ; la passe qui fait avancer les effets est `0x8003C410`, appelée en `0x8002E110` après le tick du monde `0x8003B388`, et `0x80038E84` n'en fait avancer aucun ; deux harnais indépendants concordent (`docs/plan-e20-annexe/e20-f3/oracle/of36/`) ; aucun changement de la DLL |
 | O-F3-7 | **Bloquant pour E20.f3c (T1 en ⚠️).** Une entité née par l'interface n'a ni boîte de frame (chronologie figée à nul à la création) ni horloge d'animation alignée sur le binaire (un tick de retard) ; la vague de l'épée (boîtes balayantes, mort par fin d'animation à S+26) est la première à en dépendre. Fourche : (A) une tranche préalable qui corrige la DLL (ne pas figer une chronologie nulle avant l'intégration ; tick de naissance compté, ou création qui bascule l'animation comme le binaire) puis f3c reprend ; (B) intégrer l'entité née dès la création (côté moteur : arrêt de la tranche) ; (C) accepter un tick de retard et réécrire les clés (refusée : l'oracle est la vérité). Recommandation : (A), tests de naissance de e0a3b/e0k à relire en premier **FERMÉ le 2026-10-16 par E20.e0a5 (§1.16.5, option A, ADR-0071) : l'horloge et la boîte du tick de naissance sont corrigées pour les entités nées par l'interface ; la preuve de suffisance (T3) est verte.** | auteur / session principale |
 
-### 1.20 E20.f4 — La flèche chargée de William : C94 et E1 avec l'effet de bris 8 ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; relecture **en pause** après sa clôture, Q-F4-R ; une relecture de plus accordée le 2026-10-22, après O-E0A5-2/4 ; O-E0A5-2/4 fermés et P-F4-3 retirée le 2026-10-22, D-E20-58 : **READY** à cette relecture)
+### 1.20 E20.f4 — La flèche chargée de William : C94 et E1 avec l'effet de bris 8 ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; relecture **en pause** après sa clôture, Q-F4-R ; une relecture de plus accordée le 2026-10-22, après O-E0A5-2/4 ; O-E0A5-2/4 fermés et P-F4-3 retirée le 2026-10-22, D-E20-58 : **READY** à cette relecture ; **faite et CONFIRMED le 2026-10-23** par deux verifiers frais, §1.20.1, ADR-0084)
 
 #### Révision au HEAD (2026-10-18) — à lire avant §1.20 à §1.22 ; fait foi sur leur texte où il diffère
 
@@ -6106,7 +6106,7 @@ f5 exige f4 ; f6b exige f4 et f5 (éléments partagés ci-dessus) ; f6a ne dépe
 
 ---
 
-#### 1.20.1 E20.f4 — La flèche chargée (C94, E1, effet 8) ⏳
+#### 1.20.1 E20.f4 — La flèche chargée (C94, E1, effet 8) ✅
 
 **Prérequis.** Voir ci-dessus. **À relire à l'exécution** (ajout du 2026-10-22, révision 3 d'E20.e) : le banc de coupe de (c8) est celui que
 E20.e pose (S-E5, §1.27) et l'effet de la coupe vient de la file d'effets (ADR-0077) ; aucune aide de test neuve en double ; le nom du bouchon de f3c et son fichier, le marqueur `HasLogicalZ` et l'état de carte d'e0k1 à e0k3, la liste des
@@ -6146,7 +6146,7 @@ Autres clés : `charged7_free_{west,north,south}`, `charged7_map_edge`, `charged
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code). Annexe commune `docs/plan-e20-annexe/e20-f4f6/` (créée par f4 ; f5, f6a et f6b l'étendent sans
+- ✅ **T0 — Prédiction et oracle** (commit de docs, avant tout code). Annexe commune `docs/plan-e20-annexe/e20-f4f6/` (créée par f4 ; f5, f6a et f6b l'étendent sans
   toucher aux outils) :
   - les outils de la machine copiés octet pour octet depuis `docs/plan-e20-annexe/e20-f3/oracle/tools` avec leurs sommes de contrôle ;
   - un script par tranche ; sorties en texte **et** en JSON avec les clés ci-dessus, plus `.draws`, `.rng0`, `.rng1`, `.effects[]` (objets `{id, dir, x, y, z, vx, vy, vz}`
@@ -6161,7 +6161,7 @@ Autres clés : `charged7_free_{west,north,south}`, `charged7_map_edge`, `charged
     recomptée au HEAD de départ.
   - **Sondes de la DLL** (écrites, lancées au HEAD de départ, versées au README, puis retirées ; prédiction écrite avant) : P-F4-1, indice de direction de l'effet aux quatre
     directions ; P-F4-2, la boîte de la flèche au tick S (résultat de la sonde v4 de f3c).
-- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile, puis le code). Chaque cas « sans effet » est accolé à un cas positif dans la même assertion :
+- ✅ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile, puis le code). Chaque cas « sans effet » est accolé à un cas positif dans la même assertion :
   - (c1) C94 direct, entité faite à la main : à `FrameCounter` 4 une traînée (id, direction aux quatre indices, position, Z + `0x80000`, forces `−F >> 1` pour 393216 et pour
     1, qui donne −1), à 3 et 5 aucune ; le bouchon est appelé aux trois ticks ; réservoir plein : aucun effet, bouchon appelé, aucune exception ; le mot du flux est inchangé ;
   - (c2) registre : (C, 94) pour 7 seulement (pas pour 3, 4, 11) ; épingle par dérivation ; (c3) S5 réécrit (D-F4-8) ;
@@ -6172,13 +6172,13 @@ Autres clés : `charged7_free_{west,north,south}`, `charged7_map_edge`, `charged
     (O-F4-1 épinglé) ;
   - (c9) l'interrupteur d'arène : un type de projectile s'exécute, un Beannoïde reste inerte, dans la même arène.
   Puis le code de la phase A. Verts à la fin de T1.
-- ⏳ **T2 — Tests de production**, crochet nul, **rouges avant T3** :
+- ✅ **T2 — Tests de production**, crochet nul, **rouges avant T3** :
   - (p1) la charge de William (arène de la charge) : une entité de type 7, fille du héros, à la plus basse case libre mesurée avant le tir, au tick R+9 ; sa vie suit le tableau.
     Dans la même assertion, le tir normal du début de la prise crée une entité de type 4 **si et seulement si** `ProductionWiredWeaponTypes` contient 4 (dérivation) ;
   - (p2) table pleine : aucune entité, pointeur effacé ; une case libre : une entité ;
   - (p3) dégâts : `AlundraDamage.ResolveBalanceTarget` pour (attribut 131, puissance 5) contre la fiche du Beannoïde ; `TouchingEntity` = la flèche au tick de la touche.
-- ⏳ **T3 — Phase B** : la ligne `7`. Verts ; la suite complète.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 12, tous tués : C94 absent ;
+- ✅ **T3 — Phase B** : la ligne `7`. Verts ; la suite complète.
+- ✅ **T4 — ADR, plan, verifiers frais** (deux, l'un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 12, tous tués : C94 absent ;
   période 8 ; traînée aussi à S ; traînée en statut 3 ; mauvaise animation ; forces non décalées ; décalage de Z de 4 px ; bouchon appelé seulement toutes les 4 ticks ;
   bouchon jamais ; 7 oublié dans le registre ; 7 absent de l'ensemble ; 4 présent dans l'ensemble ; E1 sans effet de bris.
 
@@ -6191,7 +6191,7 @@ Autres clés : `charged7_free_{west,north,south}`, `charged7_map_edge`, `charged
 - **Preuve de retrait** : retirer la ligne `7` rend rouges exactement (p1) à (p3) ; retirer l'appel du bouchon rend rouge (c1) et (c8) seulement ; retirer la clé (C, 94)
   rend rouges (c2) et (c4) ; aucun autre test ne change.
 - **Recette de l'auteur** (non bloquante) : `arsenal-b-m14` (F9), l'arc de William en emplacement 2. Charger environ 90 ticks, relâcher : la flèche part 9 ticks plus tard avec une
-  traînée, blesse un Beannoïde sans s'arrêter, meurt au mur avec l'effet de bris. Elle ne coupe pas l'herbe (E20.e).
+  traînée, blesse un Beannoïde sans s'arrêter, meurt au mur avec l'effet de bris. Elle coupe l'herbe sur son passage (E20.e est faite).
 
 ##### Arrêts, budget, retour arrière
 
@@ -6200,7 +6200,7 @@ Autres clés : `charged7_free_{west,north,south}`, `charged7_map_edge`, `charged
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B se retire seule (retirer `7`). La phase A reste inerte en production.
 
-##### Résultats de l'exécution (2026-10-22) — ARRÊT, aucune tâche commencée
+##### Résultats de l'exécution (2026-10-22) — ARRÊT, aucune tâche commencée (levé le 2026-10-23 : E20.e0c et E20.e faites)
 
 Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ `6fc550f6`. Aucun code, aucun ADR, aucune construction.
 
@@ -6210,6 +6210,38 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
 - **Suite demandée à la session principale.** Exécuter d'abord E20.eR, E20.e0c puis E20.e (révisions « à réviser » du 2026-10-22 comprises), puis relancer f4.
 
 ---
+
+##### Résultats (2026-10-23)
+
+Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ `c7c77eed`, un `executor` par phase. Mesures complètes :
+`docs/plan-e20-annexe/e20-f4f6/f4/` (`results.md`, `t1/` à `t4/`, l'oracle et les sondes).
+- **Commits.** `dc29fde6` (T0, annexe commune `e20-f4f6/`) ; `9fcc46ad` (phase A : `Alundra/Ai/Projectiles/ChargedArrowAi.cs`,
+  `NativeEffects.CreateChargedArrowTrail`, la clé `(C, 94)`) ; `90cae02d` (T2) ; `cf5e5a3d` (phase B : `ProductionWiredWeaponTypes` =
+  `{7, 27, 28, 29}`) ; `fe8f8df4` (T4, ADR-0084, commun à f4, f5 et f6).
+- **T0.** Les neuf clés `charged7_*` et leurs traces rejouées à l'octet ; quatre clés `_pf` ; 13 mutants de l'oracle tués. Sondes de la DLL :
+  lâcher à 96, naissance à 105, emplacement libre le plus bas 1 ; drapeau de mur à S+42, bord de carte à S+14 (X = 1237) ; générateur 0
+  écart ; P-F4-1 et P-F4-2 tiennent ; l'effet 25 est dans la banque du monde.
+- **Tests.** T1 : 32 rouges sur 37 sur le squelette (les 5 verts sont des caractérisations). T2 : (p1) à (p3) rouges avant la ligne `7`,
+  verts après. `Alundra.Tests` : 5 330 au départ, 5 369 à la fin, zéro échec en Release (copie neutralisée) et en Debug. 15 mutants du code
+  de la DLL, tous tués (M04, la traînée en statut 3, a d'abord survécu ; un cas de théorie l'a tué).
+- **Tests existants déplacés** : les trois prédits (les deux épingles du registre et S5), réécrits par dérivation ;
+  `BirthTickTests.TheSoundOfTheCreation_…`, surveillé, est resté vert.
+- **Gardes.** `check_names.py --rules` vert ; `cmp` de la DLL Debug identique ; le moteur, l'analyseur, le convertisseur et les données
+  sans diff.
+- **Verifiers frais** (le premier rejoue les suites, des mutations, l'oracle et les décisions ; le second les épingles) : **CONFIRMED** tous
+  deux.
+- **Écarts acceptés.**
+  - Le son 0 des clés est celui d'une autre entité : le lecteur de l'oracle l'ignore.
+  - Le son 84 n'existe pas sur la machine de l'oracle, qui n'a pas d'enregistrements de butin. Les tests comptent le 84 par les tirages de
+    la clé, à un tick par image (ADR-0066).
+  - L'effet de bris est accepté en mode 1 ou 2, selon la mise à jour de la pile dans la même image.
+  - La traînée n'est faite qu'en statut Normal (D-F4-2), fixé par (c1).
+  - Retirer la ligne `7` rend rouge S5 en plus de (p1) à (p3) : S5 est dérivé des classes (point 6 de la Révision au HEAD, qui fait foi).
+  - Retirer l'appel du port dans C94 rend rouges aussi deux tests neufs, (c2) et (c9), qui observent C94 par le même journal : aucun test
+    existant ne bouge. La formulation « (c1) et (c8) seulement » de la preuve de retrait est trop étroite.
+- **Reporté** : le commentaire de `Alundra/Hero/PlayerManager.cs` vers la ligne 1208 (« the three waves of the sword since E20.f3c ») ne cite
+  pas le type 7. P4, à corriger par f5, qui touche le même ensemble d'armes.
+- **Recette de l'auteur, à faire** : la sauvegarde `arsenal-b-m14`, voir plus haut.
 
 ### 1.21 E20.f5 — Les flèches du chasseur et de William : E17 ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; **READY** à sa relecture de clôture, `f81304b`)
 
