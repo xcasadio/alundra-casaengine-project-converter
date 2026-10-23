@@ -88,6 +88,7 @@ public sealed class WeaponSpawnSeamTests : IDisposable
     {
         using (var arc = Arc("s1-empty"))
         {
+            Wire(); // E20.f5: the EMPTY set of the test (the production set holds the type 3 since the phase B), so this block does not depend on production.
             var shot = Fire(arc);
 
             Assert.Equal(1, shot.CounterDelta);
@@ -244,7 +245,7 @@ public sealed class WeaponSpawnSeamTests : IDisposable
         var catalog = new SpriteRecordCatalog(ProjectRootFinder.Find());
         var registry = new EventProgramRunner(null, GameState.Instance).NativeSprites;
 
-        Assert.Equal(WaveSwordAi.SpriteTypes.Concat(ChargedArrowAi.SpriteTypes).OrderBy(t => t), PlayerManager.ProductionWiredWeaponTypes.OrderBy(t => t)); // E20.f3c wires the three waves of the sword, E20.f4 the charged arrow (derived from the classes that register the handlers); C61 and C94 are registered and E10, E1 handled in line, so the checker stays empty.
+        Assert.Equal(WaveSwordAi.SpriteTypes.Concat(ChargedArrowAi.SpriteTypes).Concat(ArrowAi.SpriteTypes.Where(t => t is 3 or 4)).OrderBy(t => t), PlayerManager.ProductionWiredWeaponTypes.OrderBy(t => t)); // E20.f3c wires the three waves of the sword, E20.f4 the charged arrow, E20.f5 the normal arrows 3 and 4 (the types 5 and 6 of the same class carry no attack and are not shot) (derived from the classes that register the handlers); C61 and C94 are registered and E10, E1 handled in line, so the checker stays empty.
         Assert.Empty(PlayerManager.UnhandledWeaponSpriteCodes(PlayerManager.ProductionWiredWeaponTypes, catalog, registry));
 
         // E20.f5 (D-F4-8 again): the negative clause of the arrow takes an EMPTY registry, so it does not depend on what production registers (E17 is registered by E20.f5 for the types 3 to 6; the checker finds it unhandled in an empty registry all the same),

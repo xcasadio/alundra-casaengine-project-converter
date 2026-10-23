@@ -85,7 +85,7 @@ public sealed class ChargedArrowProductionTests : IDisposable
         Assert.Equal(Birth, run.BirthTick);
         Assert.Equal(Arrow, run.Born!.SpriteType);
         Assert.Same(run.Arena.Arc.HeroEntity, run.Born.ParentEntity);
-        Assert.Equal(1, run.LowestFreeSlotBeforeBirth);
+        Assert.Equal(PlayerManager.ProductionWiredWeaponTypes.Contains(StartHoldType) ? 2 : 1, run.LowestFreeSlotBeforeBirth); // E20.f5: the arrow of the start of the hold (type 4) holds the slot 1 when it is born, so the charged arrow takes the next free one (derived from the production set).
         Assert.Equal(run.LowestFreeSlotBeforeBirth, run.BirthSlot);
 
         // The line of the arrow at every tick of S to S+44: the status 2 to S+42, the wall flag at S+42, the status 4 at S+43, absent at S+44.

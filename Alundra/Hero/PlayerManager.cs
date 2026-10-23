@@ -1221,9 +1221,9 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.f3a (docs/plan-e20-heros.md section 1.19.1, D-F3-3): the sprite types of the global page whose shot is wired to <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, one type after the other and never before its
-    /// handlers exist (the invariant of <see cref="UnhandledWeaponSpriteCodes"/>, D-F3-4). {27, 28, 29} since E20.f3c (the wave of the sword, C61 and E10), 7 since E20.f4 (the charged arrow of William, C94 and E1); E20.f5 and E20.f6 wire the others, one type after the other.
+    /// handlers exist (the invariant of <see cref="UnhandledWeaponSpriteCodes"/>, D-F3-4). {27, 28, 29} since E20.f3c (the wave of the sword, C61 and E10), 7 since E20.f4 (the charged arrow of William, C94 and E1), {3, 4} since E20.f5 (the normal arrows, E17); E20.f6 wires the others, one type after the other.
     /// </summary>
-    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredWeaponTypes = new System.Collections.Generic.HashSet<int> { 7, 27, 28, 29 };
+    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredWeaponTypes = new System.Collections.Generic.HashSet<int> { 3, 4, 7, 27, 28, 29 };
 
     /// <summary>E20.f3a test seam, per thread: when set, replaces <see cref="ProductionWiredWeaponTypes"/> (a test wires a type, or none, to prove the seam).</summary>
     [ThreadStatic]
