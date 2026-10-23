@@ -7240,7 +7240,7 @@ rejoué sur le vrai code ; ce qui n'est qu'inférence est dit.
   au bord d'une bande `0x1001` ; P3 `HitCounter` à T+21 ; P4 le `RidingEntity` d'un objet posé sur une plaque.
 
 
-#### 1.24.6 E20.g5 — Les vrais objets à pousser : g5a (piliers), g5b (les opcodes des boutons), g5c (l'arrêt du son), g5d (les objets scriptés) ⏳ (2026-10-23, D-E20-63 ; g5a détaillée, révision 0, à relire par un `plan-verifier` frais ; g5b, g5c, g5d esquissées)
+#### 1.24.6 E20.g5 — Les vrais objets à pousser : g5a (piliers), g5b (les opcodes des boutons), g5c (l'arrêt du son), g5d (les objets scriptés) ⏳ (2026-10-23, D-E20-63 ; g5a détaillée, révision 0, **READY** à la première relecture (`plan-verifier` frais), exécutable après E20.e0c2 ; g5b, g5c, g5d esquissées)
 
 **Lecture seule du 2026-10-23** (HEAD `46589b86`, annexe `docs/plan-e20-annexe/e20-g5/disc/`, `report.md`). Les étiquettes sont celles
 de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYPE, INFÉRENCE.
@@ -7291,7 +7291,7 @@ de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYP
   g5b), un test statique « aucun opcode sauté dans les programmes des quatre familles », l'épingle du gel du héros après un programme F
   (Q-G5-A2). Les blocs des cartes 102 et 382 se déclenchent au coup de fléau : un test synthétique en g5d, la recette au thème 2.
 
-##### E20.g5a — Les piliers poussables (C76) ⏳ (révision 0)
+##### E20.g5a — Les piliers poussables (C76) ⏳ (révision 0, READY)
 
 **But.** Comme l'original : le héros qui pousse un pilier pendant 32 ticks le met en marche, puis il avance tant que le héros pousse,
 s'arrête au mur, tombe d'une corniche et bouche une fosse ; les 13 piliers de la 423 restent inertes. Le son de la poussée (25) joue ;
