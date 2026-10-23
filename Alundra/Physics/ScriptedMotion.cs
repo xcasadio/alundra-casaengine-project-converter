@@ -646,7 +646,11 @@ internal static class ScriptedMotion
 
         // E19.d2c2 S4 (the binary, 0x80037364): the hero carried by an entity adds the AdjustedForce of that entity to its own XY step (D5b M5: the one the carrier has at THIS tick, planned, whether or not it has moved
         // yet; S4 had read the displacement it realized at its previous tick, one tick of phase late).
-        if (entity.IsPlayer && entity.RidingEntity?.GameplayProxy is EntityScriptProxy carrier)
+        // E19.d2c2 D5b T6 (D-D5B-7): every passenger, not only the hero, and every carrier of its chain, once each: the binary's recursion (0x80037388) re-adds the force of the carrier of the carrier to the
+        // carrier itself, so the middle of a pile received it twice and its passenger none (the defect of the binary, corrected: D-E19-117); here the passenger adds the planned force of each carrier above it
+        // (planned, as the binary, even for a carrier a wall then stops). The depth is bounded to 8 (the corpus has 3 levels at most).
+        var carrierDepth = 0;
+        for (var carrier = entity.RidingEntity?.GameplayProxy as EntityScriptProxy; carrier != null && carrierDepth < 8; carrier = carrier.RidingEntity?.GameplayProxy as EntityScriptProxy, carrierDepth++)
         {
             PeekAdjustedForce(carrier, out var carriedX, out var carriedY);
             entity.FinalForceX += carriedX;

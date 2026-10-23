@@ -794,6 +794,10 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         if ((Controller != null || stepsWithoutController) && !immediateAtSpawn && !(HasLogicalZ && Controller != null))
         {
             ApplyVerticalForceLaw();
+            if (Controller != null)
+            {
+                CopyCarrierForceZ(); // D5b path A
+            }
         }
 
         // E19.d2c2 F2b: the force of this tick as the binary's passes read it, before the landing below resets it (see TickForceZ). The hero carried by this entity copies it.
@@ -1115,6 +1119,21 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         }
 
         return PeekTickForceZ();
+    }
+
+    /// <summary>
+    /// E19.d2c2 D5b T6 (the copy <c>0x80037364</c>, <c>0x800373BC-C8</c>): a passenger other than the hero without an impulse (<c>+0xF8 == 0</c>) takes the vertical force its carrier hands over at this tick
+    /// (<see cref="CarrierTickForceZ"/>) for both <see cref="ForceZ"/> and <see cref="FinalForceZ"/>; with an impulse it keeps its own. The hero has its own site (<see cref="ScriptedMotion"/>, <c>RunHeroVerticalTick</c>).
+    /// Called after <see cref="ApplyVerticalForceLaw"/> by each vertical site of the entities that are not the hero.
+    /// </summary>
+    internal void CopyCarrierForceZ()
+    {
+        if (!IsPlayer && IsZForceApplied == 0 && RidingEntity?.GameplayProxy is EntityScriptProxy carrier)
+        {
+            var carried = carrier.CarrierTickForceZ();
+            ForceZ = carried;
+            FinalForceZ = carried;
+        }
     }
 
     /// <summary>E19.d2c2 D5b (D-D5B-1): the physics pass (<see cref="IScriptHost.PhysicsPassId"/>) in which the physics of this entity last ran; -1 before the first. Not copied by <see cref="Clone"/>.</summary>
@@ -1748,6 +1767,11 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     {
         if (IsPlayer && ZHeldByTick && ScriptHost != null && ScriptHost.PhysicsPassId != 0 && ScriptHost.PlayerController != null)
         {
+            IsOnGround = PosZ + ModZ <= ComputeFloorHeight(ComputeTerrainHeight()) ? 1 : 0;
+        }
+        else if (!IsPlayer && Controller != null && !HasLogicalZ && RidingEntity != null && ScriptHost != null && ScriptHost.PhysicsPassId != 0 && PhysicsDoneInPass == ScriptHost.PhysicsPassId)
+        {
+            // D5b T6A: a passenger with a controller that moved in this pass (path A; the marked entities have their own post step, the others no controller).
             IsOnGround = PosZ + ModZ <= ComputeFloorHeight(ComputeTerrainHeight()) ? 1 : 0;
         }
     }

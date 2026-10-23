@@ -171,3 +171,18 @@ Real mutation (restore `LastTickDelta` in the passenger line, script, then undon
 
 Release, the three partitions: 1 216 tests / 1 red (`A_D5b_22_ThePile...`, T6), 2 665 / 13 red (the `PassengerPlatformFollowTests` witnesses: CrateA x4, PileZA, RestA, MarkedB x2, ImpulseA, PileZB, PileXYA, PrefabC, NpcA), 1 785 / 0.
 Total 5 666 tests, 14 red, all T6 witnesses (the same red list as after T4). `check_names.py --rules`: 0 finding. The four traces of the hero were restored by `git checkout`. Debug build (last): 0 errors.
+
+## T6A - the passengers with a controller (path A, D-D5B-7)
+
+Production (no engine file touched):
+- `EntityScriptProxy.CopyCarrierForceZ` (the copy `0x80037364`, `0x800373BC-C8`): a passenger other than the hero without an impulse takes `CarrierTickForceZ()` of its carrier for `ForceZ` and `FinalForceZ`; with an impulse it keeps
+  its own. Called by `EvaluateEntitySupport` right after `ApplyVerticalForceLaw`, for an entity with a controller (the marked entities have their own site, T6B; the entities without a controller, T6C). `TickForceZ` is taken after it.
+- The rest of path A needed no new line: the "move the target first" and the ceiling of the carriers (T4) already sit on the support and the rise of `EvaluateEntitySupport`. The T4 finding 2 (the guard `ImpulseA_*` red because the
+  crate with an impulse stays a ceiling for the platform) is closed by the copy alone: the impulse crate is moved first by the ceiling search of the platform and the guard is green again.
+- `EntityScriptProxy.EndPhysicsTick` re-reads `IsOnGround` of a passenger with a controller that moved in the pass (not marked, `RidingEntity` set), on a host that tracks the passes.
+- `ScriptedMotion.RunOneKinematicTick`: the XY step of EVERY passenger (not only the hero) adds the planned adjusted force of each carrier of its chain, once each (`PeekAdjustedForce`, depth bounded to 8), D-D5B-7. This line is shared by
+  the three paths (the XY step is one function for all the entities that are not the hero's own tick); it lands here with the path whose witnesses pin it (`PileXYA_*`, the barrel of the map 22 pile arc).
+
+Red before, green after (Release, neutralised copy), 10 witnesses: `CrateA_*` x4, `NpcA_*`, `RestA_*`, `PileZA_*`, `PileXYA_*`, `A_D5b_22_ThePile...`, and `ImpulseA_*` (the planned negative guard, red since T4, green again). Still red (T6B, T6C): `MarkedB_*` x2, `PileZB_*`, `PrefabC_*` = 4.
+Existing tests moved: none. Release, the three partitions: 1 216 tests / 0 red; 2 665 / 4 red (the T6B and T6C witnesses); 1 785 / 0 red. The traces of the hero and the intro trace are identical (their guards are in the partitions);
+the four `docs/hero-trace-389-*.txt` restored by `git checkout`.
