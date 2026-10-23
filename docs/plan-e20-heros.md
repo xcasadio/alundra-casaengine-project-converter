@@ -6255,7 +6255,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
   pas le type 7. P4, à corriger par f5, qui touche le même ensemble d'armes.
 - **Recette de l'auteur, à faire** : la sauvegarde `arsenal-b-m14`, voir plus haut.
 
-### 1.21 E20.f5 — Les flèches du chasseur et de William : E17 ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; **READY** à sa relecture de clôture, `f81304b`)
+### 1.21 E20.f5 — Les flèches du chasseur et de William : E17 ✅ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; **READY** à sa relecture de clôture, `f81304b` ; **faite et CONFIRMED le 2026-10-23** par deux verifiers frais, §1.21.1, ADR-0084 étendu)
 
 **Révision au HEAD (2026-10-18).** Le bloc « Révision au HEAD » en tête du §1.20 vaut aussi pour cette section (points communs et puces « f5 ») et fait foi sur son texte où il diffère.
 
@@ -6336,7 +6336,7 @@ E20.f6b (règle de vitesse D-F5-5) ; aucun autre avant E14 (flèches des ennemis
 
 ---
 
-#### 1.21.1 E20.f5 — Les flèches (E17) et la règle de vitesse ⏳
+#### 1.21.1 E20.f5 — Les flèches (E17) et la règle de vitesse ✅
 
 **Prérequis.** Voir ci-dessus, et **E20.f4** (ordre ferme de la révision 9 : l'interrupteur d'arène D-F4-7, les témoins négatifs D-F4-8 et l'annexe commune viennent d'f4). **À relire à l'exécution** : la garde de D-E0A-8 dans `TickScriptedNpc`, l'épingle P3 d'e0k1, le marqueur d'e0k2, l'interrupteur d'arène de f4.
 
@@ -6371,14 +6371,14 @@ gestionnaires (E14) ; le tir en l'air hors de la sonde.
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction et oracle** (commit de docs). Annexe commune (§1.20, T0). Scénarios de f5 : les quatorze des relevés (`arrow3_east_wall`, `arrow4_east_wall`,
+- ✅ **T0 — Prédiction et oracle** (commit de docs). Annexe commune (§1.20, T0). Scénarios de f5 : les quatorze des relevés (`arrow3_east_wall`, `arrow4_east_wall`,
   `arrow3_free_*`, `arrow3_wall_*`, `arrow3_map_edge`, `arrow3_point_blank`, `arrow3_target`, `arrow3_target_low`, `arrow4_target`, `arrow3_target_invulnerable_after_hit` avec la
   colonne 15, `arrow3_target_1AD`, `arrow3_two_targets`) plus les nouveaux : `arrow3_target_filter_b4` et `arrow3_target_filter_class` (injection après la touche),
   `arrow3_target_dead_same_dispatch`, `arrow3_target_higher_slot`, `arrow3_zreach_16` et `arrow3_zreach_17`, `arrow3_target_sprite136` (corps réel 14×16×17), le tir en l'air
   du chasseur (S = P+1). Au moins 12 mutants : E17-1 à E17-12 (tués ou équivalents), la borne de la boucle, le délai de l'arc, l'octet z de la fiche. Sondes de la DLL : tick du
   rebond et position à 1, 2 et 3 ticks par image **avant** la règle (prédiction écrite : 1,875 px d'écart à 1 tick) ; le tick du drapeau sur les 12 départs. README : valeurs,
   liste prédite des tests qui bougent (registre, S5, S1, (p5), P3, les tests nés par l'interface qui font tourner des images, recomptée au HEAD de départ).
-- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette, puis le code). Chaque « sans effet » est accolé à un positif :
+- ✅ **T1 — Phase A** (tests d'abord, rouges sur un squelette, puis le code). Chaque « sans effet » est accolé à un positif :
   - (e1) E17 direct : touche avec une cible valide → `FlagToDestroy`, aucun effet ; sans touche → rebond aux quatre directions (24→8, 8→24, 16→0, 0→16), cible d'animation 1,
     `Flags` 0x12144, bit de gravité posé, masque de marche et gravité du contrôleur inchangés ;
   - (e2) un filtre par cas, chacun accolé à la cible valide : `DamagedTickCounter ≠ 0` (statut 2, la flèche vit), `HitAnimByte & 0x40`, sans bit de classe, `SpriteType 429`, soi-même,
@@ -6390,11 +6390,11 @@ gestionnaires (E14) ; le tir en l'air hors de la sonde.
   - (e7) vie par le crochet : tableau ci-dessus, mur, bord, tir en l'air ; groupements 1, 2, 3 ; la case libre à S+61 ; cible haute (touche S+30, mort S+31) ; cible de 16 ratée,
     de 17 touchée ; invulnérable après la touche ; `0x1AD` ; deux cibles ; la flèche dans une case plus basse que sa cible : le D de la cible lit encore la flèche (attaque 131, puissance 1).
   Puis le code de la phase A. Verts à la fin de T1.
-- ⏳ **T2 — Tests de production**, crochet nul, **rouges avant T3** : (p1) le tir du chasseur au sol : une entité de type 3 à P+9 (case la plus basse), puis sa vie ; William normal :
+- ✅ **T2 — Tests de production**, crochet nul, **rouges avant T3** : (p1) le tir du chasseur au sol : une entité de type 3 à P+9 (case la plus basse), puis sa vie ; William normal :
   type 4 ; (p2) table pleine ; (p3) les témoins négatifs utilisent l'ensemble vide de test ; (p4) la fermeture : l'ensemble de production égale les octets de type non nuls des fiches
   d'arme **si** f3c, f4 et f6 sont faites (sinon ce test est ajouté par la dernière des quatre).
-- ⏳ **T3 — Phase B** : l'ensemble {3, 4}. Verts.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants du code de la DLL, au moins 16, tous tués : filtres retirés (un par un), type 429 changé, héros inclus ou exclu, balayage
+- ✅ **T3 — Phase B** : l'ensemble {3, 4}. Verts.
+- ✅ **T4 — ADR, plan, verifiers frais** (deux). Mutants du code de la DLL, au moins 16, tous tués : filtres retirés (un par un), type 429 changé, héros inclus ou exclu, balayage
   arrêté une case trop tôt, filtre de statut ajouté, recouvrement exclusif, direction +8, gravité oubliée, phase de rebond non reconnue, fin sans drapeau, statut 3 au repli, destruction
   avec effet, clé de vitesse sur l'animation courante, E17 enregistré pour 7, ensemble contenant 5, `Resync` appelé deux fois.
 
@@ -6416,6 +6416,35 @@ gestionnaires (E14) ; le tir en l'air hors de la sonde.
 - **Retour arrière** : la phase B se retire seule (retirer {3, 4}). La phase A reste inerte, sauf la ligne de la clé de vitesse, qui ne touche que les entités marquées.
 
 ---
+
+##### Résultats (2026-10-23)
+
+Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ `b0116485`, un `executor` par phase. Mesures complètes :
+`docs/plan-e20-annexe/e20-f4f6/f5/` (`results.md`, `t1/`, `t2/`, `t4/`).
+- **Commits.** `0de20e19` (T0) ; `a96c1b20` (phase A : `Alundra/Ai/Projectiles/ArrowAi.cs`, la clé `(E, 17)`, la règle de vitesse dans
+  `ScriptedMotion.cs`, le commentaire de `PlayerManager.cs` reporté de f4) ; `20946187` (T2) ; `19751cc6` (phase B :
+  `ProductionWiredWeaponTypes` = `{3, 4, 7, 27, 28, 29}`) ; `b25c09e9` (T4, ADR-0084 étendu).
+- **T0.** Les 17 clés gelées et `sweep_wall.txt` rejoués à l'octet ; 10 clés neuves ; 15 mutants de l'oracle, 14 tués, 1 équivalent.
+  Sondes : naissance à S = 10 ; tirs en l'air à S = 9 (chasseur) et S = 17 (William, confirmé par l'oracle) ; générateur 0 écart ;
+  drapeau de mur à l'arrivée + 1.
+- **Tests.** T1 : 50 rouges sur le squelette (49 neufs et `MapStateTests.P3` réécrit). T2 : (p1) et (p2), deux fois chacun, rouges
+  avant l'ensemble {3, 4}, verts après. `Alundra.Tests` : 5 369 au départ, 5 428 à la fin, zéro échec en Release (copie neutralisée) et en
+  Debug. 27 mutants du code de la DLL : 25 tués, 2 équivalents (`ResyncControllerFromFlags` retiré ou doublé).
+- **Tests existants déplacés** : les 9 de la liste mesurée en T0, et aucun autre. Ce sont les trois épingles du registre, S5, S1
+  (premier bloc), `MapStateTests.P3`, `BirthTickTests.AnEntityWithoutTheMarker…`, `LogicalZWorldTests.Z5` et
+  `ChargedArrowProductionTests.P1`. La liste du plan en nommait cinq ; T0 l'a complétée avant le code.
+- **Gardes.** `check_names.py --rules` vert ; le moteur, l'analyseur, le convertisseur et les données sans diff.
+- **Verifiers frais** (le premier : suites, mutations, décisions contre le code ; le second : les épingles) : **CONFIRMED** tous deux.
+- **Écarts acceptés.**
+  - Retirer {3, 4} rend rouge S5 en plus de (p1) et (p2), comme en f4 (S5 est dérivé des classes).
+  - Les lignes d'une flèche morte (statut 4) se comparent sans direction, animation ni drapeaux : le binaire tombe de la destruction dans
+    les écritures du rebond, E17 rend la main avant.
+  - Les tests à cible posent le mot du générateur de la clé : le générateur de cibles de l'oracle tire deux fois.
+  - Le générateur d'un tir en l'air n'est pas comparé : la clé compte 6 tirages à l'atterrissage du héros, que la DLL ne fait pas. La vie
+    de la flèche l'est.
+  - `CutBench` enregistre maintenant chaque `DestroyEntity` de son hôte. Les tests qui l'emploient n'ont pas changé.
+- **Ouvert** : O-E20-24 (le tir à bout portant contre un mur, scénario `arrow3_point_blank`, non testé).
+- **Recette de l'auteur, à faire** : l'arc du chasseur et celui de William, au sol et en l'air, contre un mur et contre une cible.
 
 ### 1.22 E20.f6 — Les boules de feu et de glace : C60 et E9 (f6a, f6b) ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; f6a **READY** (`9a2490e`) ; f6b relecture en pause après sa clôture (Q-F6B-R), puis **READY** à la relecture supplémentaire accordée par l'auteur le 2026-10-22)
 
@@ -9978,6 +10007,7 @@ les trois entrées `0x31`.
 | O-E20-21 | (2026-10-16) Les blocs poussables : aucune tranche ; la tête de C4 (« pierres, tonneaux, blocs ») seule est décodée (g2c). Font-ils partie du portage ou des plateformes ? **Réponse de l'auteur (2026-10-22)** : « oui » : les blocs poussables (C4) font partie du portage ; E20.g2c les porte (D-E20-46 ; Q-sm-5 du plan d'E19). (« oui » à « portage ou plateformes ? » est lu comme « ils sont à porter » ; leur tranche, g2c, est un choix de la session, la famille C4 y étant déjà.) | Tranché le 2026-10-22 (D-E20-46) |
 | O-E20-22 | (2026-10-16) Le nettoyage de `PlatformEntity.CarriedEntity` au recyclage d'une entité n'est pas porté (`AlundraWorldProxy.cs:3290`, commentaire) : sans effet tant que rien ne porte, à reprendre dans g1a | E20.g1a |
 | O-E20-23 | (2026-10-23, E20.e0c T0 (i)) Au tick où un objet-clé posé bloque les entités (`Block(soi)`), une entité de rang supérieur au bloqueur ne joue pas son programme dans la DLL (choix puis exécution entité par entité), alors que le binaire la laisse jouer (il choisit tous les programmes avant d'en exécuter un, `0x8003871C-0x80038728`) : un tick d'écart, non épinglé | à placer (l'ordre choix / exécution de la passe des programmes) ; P3, sans effet visible connu |
+| O-E20-24 | (2026-10-23, E20.f5) Une flèche tirée avec le héros à 12 px d'un mur : l'oracle borne le pas de naissance (x = 109), la DLL pose la flèche à 111, dans le mur, où elle ne bouge plus. Le défaut est le bornage du premier pas d'une entité marquée dans le déplaceur (e0a3b, e0k), pas E17. Scénario `arrow3_point_blank`, non testé | à placer (le déplaceur des entités marquées) ; P2, visible en jeu (flèche figée contre un mur) |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
 | Q-G1A-3 | (2026-10-17) Un objet lancé ne blesse, avant E14.b, que les cibles dont le gestionnaire D est porté (Beannoïde, Muruta) : confirmer **Réponse de l'auteur (2026-10-22)** : « oui » : confirmé. | Tranché le 2026-10-22 |
