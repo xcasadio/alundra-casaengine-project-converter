@@ -96,6 +96,12 @@ public interface IScriptHost
     bool DrivesEntityTicks => false;
 
     /// <summary>
+    /// E19.d2c2 D5b (D-D5B-1): the number of the current physics pass, the one the binary walks once per tick (<c>0x80038364</c>). <see cref="WorldProxy"/> increments it before its physics loop; a host that
+    /// emulates the passes (a test montage that plays one tick per frame) gives its own. 0 (the default) means the host does not track the passes: an entity then has no "already moved in this pass".
+    /// </summary>
+    int PhysicsPassId => 0;
+
+    /// <summary>
     /// E20.e0a3b (D-E0A-5, ADR-0065): the collision field of the host, which an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> reads (<see cref="EntityScriptProxy.ReadCollisionField"/>)
     /// in the tick of its birth, while the engine has not integrated it and <c>Owner.World</c> is still null. Null (the default) for every host that has none; <see cref="WorldProxy"/> implements it EXPLICITLY (its own
     /// <see cref="WorldProxy.CollisionField"/> has another type, so the default would answer null).

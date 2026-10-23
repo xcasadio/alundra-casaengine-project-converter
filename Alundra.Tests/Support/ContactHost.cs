@@ -108,13 +108,22 @@ internal sealed class ContactHost : IScriptHost
     /// <summary>
     /// E19.d2c2 D5b T1 (docs/plan-e19-opcodes.md §1.2h.3.2b): the number of the current physics pass, which the world increments once per tick before its physics loop
     /// (<c>WorldProxy.PhysicsPassId</c>, D-D5B-1). A montage is self-driven (each entity plays all its ticks in its own update, one tick per frame at 0.02 s), so a
-    /// pass is a frame: <see cref="BeginPhysicsPass"/> is called once per frame by the montages before the update of the world. Not yet read by the production code
-    /// (it will be, as a default member of <see cref="IScriptHost"/>, in T4); this property then implements it.
+    /// pass is a frame: <see cref="BeginPhysicsPass"/> is called once per frame by the montages before the update of the world. It implements the default member
+    /// <see cref="IScriptHost.PhysicsPassId"/> (added by T3).
     /// </summary>
     public int PhysicsPassId { get; private set; }
 
     /// <summary>Opens the next physics pass (one per frame of a self-driven montage, before the update of the world).</summary>
     public void BeginPhysicsPass() => PhysicsPassId++;
+
+    /// <summary>The end pass of the frame (<c>EntityScriptProxy.EndPhysicsTick</c>, D-D5B-5): called by the montages after the update of the world, as <c>WorldProxy.RunEntityBlock</c> does after its physics loop.</summary>
+    public void EndPhysicsPass()
+    {
+        foreach (var proxy in All)
+        {
+            proxy.EndPhysicsTick();
+        }
+    }
 
     /// <summary>
     /// Rebuilds <see cref="Collidables"/> (the end of the frame of the world) and, as <c>WorldProxy.RefreshUpdateProxiesAndCollidables</c> does at the lists step, gives every

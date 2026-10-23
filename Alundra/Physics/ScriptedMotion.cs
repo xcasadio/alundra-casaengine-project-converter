@@ -226,6 +226,8 @@ internal static class ScriptedMotion
 
         // R6: after each tick of the state, IsOnGround is derived from the position after the XY step, not pulled from the engine: PosZ <= the floor (the binary's
         // !(FloorHeight < PosZ), 0x800380F8, without its +1). E19.d2c2 S3: the floor is the higher of the terrain and the top of an entity under the box.
+        // E19.d2c2 D5b M3: a host that tracks the physics passes reads it AGAIN at the end pass (EntityScriptProxy.EndPhysicsTick), once the carrier has moved; the value of the tick is what the later ticks of a
+        // self-driven frame and the rest of this tick read.
         if (entity.ZHeldByTick)
         {
             entity.IsOnGround = entity.PosZ + entity.ModZ <= entity.ComputeFloorHeight(entity.ComputeTerrainHeight()) ? 1 : 0;
@@ -271,6 +273,14 @@ internal static class ScriptedMotion
         // E19.d2c2 F3: the head-of-frame pull held the hero on the flush top of an entity the engine does not see: the state is entered at rest on it (the same entry as a
         // fall, ForceZ 0, but the hero is on the ground: IsOnGround 1 was given by the pull).
         var restOnEntity = !hero.HeroAirborne && !impulse && !hero.HeroFlyMarked && hero.HeadPullFlushOnEntity && (hero.Flags & EntityFlags.Gravity) != 0;
+        // E19.d2c2 D5b M1 (D-D5B-3, the entry rule): a hero carried by an entity whose force of the tick is not 0 enters the state held by the tick whatever the engine says of the ground under it (a block that rises
+        // under a hero straddling the floor: the engine's ground is the terrain, the carrier is above it).
+        if (!restOnEntity && !hero.HeroAirborne && !impulse && !hero.HeroFlyMarked && (hero.Flags & EntityFlags.Gravity) != 0
+            && hero.RidingEntity?.GameplayProxy is EntityScriptProxy movingCarrier && movingCarrier.CarrierTickForceZ() != 0)
+        {
+            restOnEntity = true;
+        }
+
         hero.HeadPullFlushOnEntity = false;
 
         if (!hero.HeroAirborne)
@@ -314,12 +324,14 @@ internal static class ScriptedMotion
 
         // E19.d2c2 S4 (the binary, 0x80037364): carried and without impulse this tick, the force of the hero is the platform's (0 for an object at rest), taken BEFORE the
         // landing test. The platform is the entity whose logic entity the hero's RidingEntity holds (recalculated at the head of this tick). F2b: the force of the tick it
-        // copies is the one the carrier had BEFORE its own landing (TickForceZ): the binary computes the forces of all the entities first, so a carrier with gravity at rest
-        // gives -(Gravity << 8) and the hero lands on it at every tick, while ForceZ (zeroed by the landing, as in the binary) stays the carrier's.
+        // copies is the one the carrier had BEFORE its own landing: the binary computes the forces of all the entities first, so a carrier with gravity at rest
+        // gives -(Gravity << 8) and the hero lands on it at every tick. D5b M1 (D-D5B-2): that force is the one of THIS tick even when the carrier has not moved yet (the hero is
+        // updated before it), recursive on a pile; the hero's ForceZ and FinalForceZ both take it (the copy of 0x800373BC-C8 is one assignment of the two).
         if (!impulse && hero.RidingEntity?.GameplayProxy is EntityScriptProxy carrier)
         {
-            hero.ForceZ = carrier.ForceZ;
-            hero.FinalForceZ = carrier.TickForceZ;
+            var carried = carrier.CarrierTickForceZ();
+            hero.ForceZ = carried;
+            hero.FinalForceZ = carried;
         }
         else
         {

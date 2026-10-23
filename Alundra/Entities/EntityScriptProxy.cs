@@ -1052,30 +1052,60 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// </summary>
     internal void ApplyVerticalForceLaw()
     {
-        var gravity = (Flags & EntityFlags.Gravity) != 0;
-        if (IsZForceApplied != 0)
+        if (IsZForceApplied != 0 || (Flags & EntityFlags.Gravity) != 0)
         {
-            var impulse = (IsZForceApplied & 0xFFFF) == 0x8000 && !gravity ? 0 : IsZForceApplied << 8;
-            ForceZ = impulse;
-            FinalForceZ = impulse;
-        }
-        else if (gravity)
-        {
-            var force = ForceZ - (MapGravityRaw << 8);
-            var terminal = MapZViscosityRaw << 8;
-            if (force > terminal)
-            {
-                force = terminal;
-            }
-            else if (force < -terminal)
-            {
-                force = -terminal;
-            }
-
+            var force = PeekTickForceZ();
             ForceZ = force;
             FinalForceZ = force;
         }
     }
+
+    /// <summary>
+    /// E19.d2c2 D5b (D-D5B-2): the vertical force this entity has for the CURRENT tick under the law of <see cref="ApplyVerticalForceLaw"/>, without writing anything. The ONE function of the law: the tick writes
+    /// its result and a passenger reads it before this entity has moved (the binary computes the forces of all the entities first, <c>0x80036828</c>, then each passenger copies its carrier's, <c>0x80037364</c>).
+    /// Without gravity and without an impulse the force is left as it is.
+    /// </summary>
+    internal int PeekTickForceZ()
+    {
+        var gravity = (Flags & EntityFlags.Gravity) != 0;
+        if (IsZForceApplied != 0)
+        {
+            return (IsZForceApplied & 0xFFFF) == 0x8000 && !gravity ? 0 : IsZForceApplied << 8;
+        }
+
+        if (gravity)
+        {
+            var force = ForceZ - (MapGravityRaw << 8);
+            var terminal = MapZViscosityRaw << 8;
+            return force > terminal ? terminal : force < -terminal ? -terminal : force;
+        }
+
+        return ForceZ;
+    }
+
+    /// <summary>
+    /// E19.d2c2 D5b (D-D5B-2, the copy <c>0x80037364</c>): the vertical force this entity gives the passengers it carries at the CURRENT tick. When it has already moved in this pass, the force it used
+    /// (<see cref="TickForceZ"/>); else the force its law will give, which a carrier that is itself carried and has no impulse takes from ITS carrier first (the recursion on the carrier of the carrier, <c>0x80037388</c>,
+    /// without memo: the middle of a pile passes on what it receives, not its gravity). The depth is bounded to 8 (the corpus has 3 levels at most).
+    /// </summary>
+    internal int CarrierTickForceZ(int depth = 0)
+    {
+        var pass = ScriptHost?.PhysicsPassId ?? 0;
+        if (pass != 0 && PhysicsDoneInPass == pass)
+        {
+            return TickForceZ;
+        }
+
+        if (!IsPlayer && IsZForceApplied == 0 && depth < 8 && RidingEntity?.GameplayProxy is EntityScriptProxy up)
+        {
+            return up.CarrierTickForceZ(depth + 1);
+        }
+
+        return PeekTickForceZ();
+    }
+
+    /// <summary>E19.d2c2 D5b (D-D5B-1): the physics pass (<see cref="IScriptHost.PhysicsPassId"/>) in which the physics of this entity last ran; -1 before the first. Not copied by <see cref="Clone"/>.</summary>
+    internal int PhysicsDoneInPass = -1;
 
     /// <summary>
     /// E19.h1b2 (H1B2-R4, docs/plan-e19-opcodes.md §1.2n.1c): the vertical step of an entity without a controller, the rules of the binary (<c>ComputeZPosition
@@ -1524,7 +1554,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
                 effectStage?.BeginSource(tick, 1);
                 TickPrograms();
                 TickAnimationClock();
-                TickPhysics();
+                TickSelfDrivenPhysics(tick);
             }
 
             effectStage?.EndSource();
@@ -1543,10 +1573,26 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
                 heroStage?.BeginSource(tick, 1);
                 MovePlayerOnTickPad(_selfDrivenPadOfTick[Math.Min(tick, _selfDrivenPadOfTick.Length - 1)]);
                 TickAnimationClock();
-                TickPhysics();
+                TickSelfDrivenPhysics(tick);
             }
 
             heroStage?.EndSource();
+        }
+    }
+
+    /// <summary>
+    /// E19.d2c2 D5b (D-D5B-1): the physics of tick <paramref name="tick"/> of a self-driven frame. The identifier of the pass a host gives (<see cref="IScriptHost.PhysicsPassId"/>) names the FRAME of such a host (a montage that plays
+    /// one tick per frame): it guards the first tick only; the later ticks of a frame of several ticks (each entity plays its whole frame alone) are outside any pass and run plainly.
+    /// </summary>
+    private void TickSelfDrivenPhysics(int tick)
+    {
+        if (tick == 0)
+        {
+            TickPhysicsOnce();
+        }
+        else
+        {
+            TickPhysics();
         }
     }
 
@@ -1608,6 +1654,39 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
 
         TickMotion();
         StoreHitBox(); // E20.c1b K3: 0x80038364 ends the pass of every entity with the helper 0x80038064, which stores the HitBox the opcode 0x95 reads.
+    }
+
+    /// <summary>
+    /// E19.d2c2 D5b (D-D5B-1): <see cref="TickPhysics"/> at most once per physics pass of the host (<see cref="IScriptHost.PhysicsPassId"/>), and the pass in which it ran is recorded for the passengers that read
+    /// the force of this entity (<see cref="CarrierTickForceZ"/>). A host that does not track the passes (identifier 0) gets the plain tick.
+    /// </summary>
+    internal void TickPhysicsOnce()
+    {
+        var pass = ScriptHost?.PhysicsPassId ?? 0;
+        if (pass != 0)
+        {
+            if (PhysicsDoneInPass == pass)
+            {
+                return;
+            }
+
+            PhysicsDoneInPass = pass;
+        }
+
+        TickPhysics();
+    }
+
+    /// <summary>
+    /// E19.d2c2 D5b M3 (D-D5B-5): the end pass of the binary (<c>0x80038064</c>, after every move of the pass). The hero whose vertical the tick held reads its ground flag AGAIN here
+    /// (<c>PosZ</c> at or under the floor: the higher of the terrain and the top of an entity under the box), once the entity that carries it has moved: the value of its own tick, read before its carrier moved, is
+    /// replaced. Only on a host that tracks the passes (<see cref="IScriptHost.PhysicsPassId"/> not 0: <see cref="WorldProxy"/>, or a montage that calls this method at the end of its frame).
+    /// </summary>
+    internal void EndPhysicsTick()
+    {
+        if (IsPlayer && ZHeldByTick && ScriptHost != null && ScriptHost.PhysicsPassId != 0 && ScriptHost.PlayerController != null)
+        {
+            IsOnGround = PosZ + ModZ <= ComputeFloorHeight(ComputeTerrainHeight()) ? 1 : 0;
+        }
     }
 
     /// <summary>The movement half of <see cref="TickPhysics"/> (the hero's tick and probes, the scripted movement, for a marked entity its tile attributes, and the support of the others).</summary>

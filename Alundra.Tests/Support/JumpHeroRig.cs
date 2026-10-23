@@ -71,6 +71,7 @@ internal sealed class JumpHeroRig
         Host.Rebuild();
         Host.BeginPhysicsPass();
         World.Update(elapsed);
+        Host.EndPhysicsPass();
         Host.Rebuild();
     }
 

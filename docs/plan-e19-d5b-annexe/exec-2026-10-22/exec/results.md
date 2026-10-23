@@ -98,3 +98,29 @@ One production line (`proxy.RidingEntity = null;` in `WorldProxy.RunCountersPass
 Red before, green after: `RideM4_APassengerOnItsCarrier_HasNoCarrierRightAfterTheCountersPass_...` and `RideM4_TheCarrierRemovedBetweenTwoTicks_...` (2 tests). Red list after T2: 24 (26 - 2), the planned negative
 witness (`ImpulseA_...`) stays green. Existing tests moved: none. Release with the neutralised copy: the three partitions give 24 failures, exactly the red list minus RIDE-M4 (the partitions by name overlap, as the counts
 of T0 showed); `Hero`/`Entities` partition 2 886 tests (24 red), `Arcs` etc. 1 317 (3 red, the new arcs), the rest 1 564 (0 red). The traces of the hero were restored by `git checkout`.
+
+## T3 - M1, the recursion, the entry rule and M3 for the hero (D-D5B-2, -3, -5)
+
+Production (Release and Debug, no engine file touched):
+- `EntityScriptProxy.PeekTickForceZ` is the ONE function of the vertical law (`ApplyVerticalForceLaw` now writes its result); `CarrierTickForceZ(depth)` gives the force a carrier hands its passengers at the current tick: its
+  `TickForceZ` when it already moved in this pass, else, for a carrier that is itself carried and has no impulse, the force of ITS carrier (recursion, bounded to 8), else its own peeked law.
+- `ScriptedMotion.RunHeroVerticalTick`: the carried hero takes `CarrierTickForceZ()` for both `ForceZ` and `FinalForceZ` (M1); the entry rule (D-D5B-3): a hero carried by an entity whose force of the tick is not 0 enters the
+  state held by the tick (`restOnEntity`), whatever the engine says of the ground.
+- M3: `EntityScriptProxy.EndPhysicsTick` re-reads the hero's `IsOnGround` after the physics loop (`WorldProxy.RunEntityBlock`, after every move, same `BlockedByEntity` filter as the loop); the value computed by the tick stays
+  (it is what the later ticks of a self-driven frame and the rest of the tick read) and the end pass overwrites it on a host that tracks the passes (`IScriptHost.PhysicsPassId != 0`).
+
+Deviations from the plan's split (all in the same task, none changes an acceptance):
+1. D-D5B-1 (`IScriptHost.PhysicsPassId`, `WorldProxy.PhysicsPassId`, `EntityScriptProxy.TickPhysicsOnce` at the world loop and the two pilots) lands in T3, not T4: `CarrierTickForceZ` needs "the carrier already moved in this
+   pass" to give the same value before and after the carrier moved. T4 adds `EnsureMovedThisPass`, the ceiling of the carriers and the `out` entity of `TryFindCeiling`.
+2. The pilots (`RunSelfDrivenTicks`) guard only the FIRST tick of a self-driven frame with `TickPhysicsOnce` (`TickSelfDrivenPhysics`): the pass identifier of a montage names a frame, and the later ticks of a frame of several
+   ticks (each entity plays its whole frame alone) are outside any pass. A first attempt guarded every tick and turned four existing tests red (`HeroWaterIceTests.UW6`, `HeroJumpTests.UJSND`,
+   `HeroFallAndPadJumpTests.SJ6`, `SJ6b`: the second tick of a two-tick frame was skipped); SJ6b also showed the in-tick `IsOnGround` must stay (the second tick reads the first's), hence the "read again" form of M3.
+3. Test aids: `ContactHost.EndPhysicsPass()` (calls `EndPhysicsTick` on every proxy), called by `JumpHeroRig.Update` and `ContactWorld.Integrate` after the update of the world (the T1 plan of the aids).
+4. `DockMontage` (T1 witness `Dock_*`): the block is now added AFTER the hero, like the platform of `Montage()`. With the block added first (the `configure` callback) it ticks before the hero, which then finds its carrier already moved
+   at the head of its tick (the binary's prepass `0x800364C8` runs before every move; the world also ticks the hero first, `WorldProxy._tickEntities`); the probe of the discovery (P15) shows the same 1 px artefact. The
+   assertions are unchanged. Class doc of `HeroPlatformRideTests` corrected (the dock rising is made green by T3).
+
+Red before, green after (Release, neutralised copy): `UH16_APlatformRisingByOnePixelPerTick_...`, `E22_TheLiftRisingByOnePixelPerTickFromTick3For64Ticks_...`, `Dock_ABlockRisingByOnePixelPerTick_...`,
+`Freeze_APlatformWithANonZeroForceAndARider_...` (green from T3, as planned, since there is no ceiling yet), `A_D5b_22_FromTheLiftItself_...` (the arc A-D5b-22: zero gap from image 12 to the warning),
+`A_D5b_22_TheRecipeOfTheAuthor_...` (6 tests). Red list after T3: 18. Existing tests moved: none (UH-14 still green until T5; UH-18 unchanged).
+Release, the three partitions: 2 886 tests / 18 red (the 18 witnesses), 1 317 / 1 red (the pile arc), 1 564 / 0. The four traces of the hero and the intro trace (their guard tests are in the partitions) are identical; the files restored by `git checkout`.

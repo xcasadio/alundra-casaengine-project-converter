@@ -825,6 +825,9 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// </remarks>
     public bool DrivesEntityTicks => _world?.Game != null;
 
+    /// <summary>E19.d2c2 D5b (D-D5B-1): the number of the physics pass in progress, incremented once per tick before the physics loop of <see cref="RunEntityBlock"/> (see <see cref="IScriptHost.PhysicsPassId"/>).</summary>
+    public int PhysicsPassId { get; private set; }
+
     /// <summary>E20.e0a3b test seam: told every time an entity reads the collision field of this host by the fallback of <see cref="IScriptHost.CollisionField"/> (an entity that joins the tick of its birth, before the engine integrated it).</summary>
     internal Action? CollisionFieldFallbackReadForTests;
 
@@ -2997,12 +3000,22 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         }
 
         TickTraceForTests?.Invoke("physics");
+        PhysicsPassId++;
         for (var i = 0; i < _tickEntities.Count; i++)
         {
             // E20.e0c (D-E0C-6): the physics walks the same active list, so a blocked entity - the hero in the air included - stands still until it is unblocked.
             if (_tickEntities[i].BlockedByEntity == null)
             {
-                _tickEntities[i].TickPhysics();
+                _tickEntities[i].TickPhysicsOnce();
+            }
+        }
+
+        // E19.d2c2 D5b M3 (D-D5B-5): the end pass of the binary (0x80038064, after every move of the pass): the ground flag is read once every entity, the carriers included, has moved.
+        for (var i = 0; i < _tickEntities.Count; i++)
+        {
+            if (_tickEntities[i].BlockedByEntity == null)
+            {
+                _tickEntities[i].EndPhysicsTick();
             }
         }
 

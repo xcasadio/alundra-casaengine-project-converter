@@ -135,6 +135,7 @@ internal static class ContactWorld
         host.Rebuild();
         host.BeginPhysicsPass();
         world.Update(0.02f);
+        host.EndPhysicsPass();
         host.Rebuild();
     }
 }

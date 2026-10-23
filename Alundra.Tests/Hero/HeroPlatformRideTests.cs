@@ -19,7 +19,7 @@ namespace Alundra.Tests.Hero;
 /// binary replayed (<c>docs/plan-e19-d5b-annexe/exec-2026-10-22/vec_d5b_out.txt</c>, <c>docs/plan-e19-d5b-annexe/check/t_land_on_rising.py</c>, <c>work/out/t5_dock_real.txt</c>).
 /// Every value is relative: the hero's foot minus the top of its carrier (<c>rel</c>), which is the same in the DLL's convention as in the binary's. In the binary the hero
 /// moves in the very tick of its carrier (rel 0 at every tick: phase 0), where the DLL reads the force of the carrier with a tick of delay (M1) and does not move the target first (M2).
-/// The witnesses are red at the head of D5b and are made green by the tasks named in the plan: UH-16 and E22 by T3, DESC, UH-19, the dock and the freeze by T4.
+/// The witnesses are red at the head of D5b and are made green by the tasks named in the plan: UH-16 (rising), E22, the dock rising (the entry rule) and the freeze by T3, UH-16 (descending), DESC, UH-19 and the dock descending by T4.
 /// The montage is the one of UH-14 (<see cref="JumpHeroRig"/> with a free pad, the platform added after the hero); the object boxes are offset from their roots so that their physical
 /// boxes never meet the hero's body.
 /// </summary>
@@ -230,14 +230,15 @@ public sealed class HeroPlatformRideTests : IDisposable
     {
         // The montage of UH-17: cells of 16 px (height 1) with one hollow cell at 0 (cx 8, x 192..216, row 6); the block (24 x 16 x 16) is in the hollow, its top flush with the floor when blockZ is 0.
         var field = FlatCells.Create(cell: (cx, cy) => (0, cx == 8 && cy == 6 ? 0 : 1));
+        // The block is added AFTER the hero, as in the world (the hero is the first of the physics list, WorldProxy._tickEntities): a montage that ticks the carrier before the hero would
+        // have the hero find its carrier already moved at the head of its tick (the binary's prepass, 0x800364C8, runs before every move; the montage has none).
         var rig = JumpHeroRig.Build(
             field,
-            configure: (world, host) => AddObject(world, host, "Switch", 148, 96, 24, 16, 16, offsetX: 44, z: blockZ),
             x: 193f,
             y: 103.5f,
             z: 16f + blockZ,
             freePad: true);
-        var block = rig.Host.All.Single(e => !ReferenceEquals(e, rig.Hero));
+        var block = AddObject(rig.World, rig.Host, "Switch", 148, 96, 24, 16, 16, offsetX: 44, z: blockZ);
         rig.Hero.PosZ = (16 + blockZ) << 16; // the block joins the world with the first update: the hero is put on it afterwards, as in UH-14.
         rig.Hero.PushLogicalPositionToRoot();
         for (var i = 0; i < 4; i++)
