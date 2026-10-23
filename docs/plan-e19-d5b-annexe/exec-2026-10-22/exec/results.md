@@ -153,3 +153,21 @@ Deviations and findings:
    of every entity precede the physics, as in the binary.
 
 Release, the three partitions: 2 886 tests / 14 red, 1 317 / 1 red, 1 564 / 0. The traces of the hero and of the intro are identical; the four files restored by `git checkout`.
+
+## T5 - M5, the planned force of the carrier for the hero (D-D5B-2, -7, -11)
+
+Production (`Alundra/Physics/ScriptedMotion.cs`, no engine file touched):
+- `PlanForce` is the ONE function of the horizontal force of a tick (target and step of the animation, then the increment); `RunOneKinematicTick` calls it with `commit: true` and writes the force, `PeekAdjustedForce` calls it
+  with `commit: false` (writes nothing). `KeyAnimationOf` is the animation key of the tick of an entity that is not the hero, shared by `TickScriptedNpc` and the peek.
+- `PeekAdjustedForce(carrier)`: the force the carrier used when it already moved in this pass, else its planned force (0 for a carrier that is not active or blocked by another entity).
+- The hero carried by an entity adds `PeekAdjustedForce` of its carrier instead of `LastTickDeltaX/Y` (the binary, 0x80037364-0x800373B0): phase 0.
+
+Tests: `UH14_...` re-pinned to the binary (`hero.PosX - heroStart == -tick * 65536`, was `-(tick - 1) * 65536`, D-E20-40), renamed `..._CarriesTheHeroInPhase0_...`; new `UH14b_...` (4 directions: the peeked force equals the force the carrier then uses,
+over 12 ticks through a recompute, the acceleration and the arrival). `PillarAiPitWorldTests.W6_PushedEast_...`: `over.Count` 16 -> 15 (D-D5B-11), comment citing the decision and the cause, nothing else in the test.
+
+Red before, green after (Release, neutralised copy): `UH14_...` (re-pinned to phase 0; red at the T4 HEAD with the new pin, green with the planned force), `UH14b_...` x4 (new). Existing tests moved: exactly two, `UH14_...` and
+`W6_PushedEast_...`, both predicted (plan T5 and D-D5B-11); none else.
+Real mutation (restore `LastTickDelta` in the passenger line, script, then undone, `git diff` of the file unchanged): UH14 and W6_PushedEast red; restored, green.
+
+Release, the three partitions: 1 216 tests / 1 red (`A_D5b_22_ThePile...`, T6), 2 665 / 13 red (the `PassengerPlatformFollowTests` witnesses: CrateA x4, PileZA, RestA, MarkedB x2, ImpulseA, PileZB, PileXYA, PrefabC, NpcA), 1 785 / 0.
+Total 5 666 tests, 14 red, all T6 witnesses (the same red list as after T4). `check_names.py --rules`: 0 finding. The four traces of the hero were restored by `git checkout`. Debug build (last): 0 errors.

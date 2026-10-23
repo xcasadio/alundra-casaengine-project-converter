@@ -51,7 +51,9 @@ public sealed class PillarAiPitWorldTests
         Assert.Equal(373.0, run.At(260).HeroX);
         // over the pit (the pillar's own column, x 259 to 296), the hero's support is the pillar, at every frame.
         var over = run.Samples.Skip(144).Where(s => s.HeroX >= 259.0 && s.HeroX <= 296.0).ToList();
-        Assert.Equal(16, over.Count);
+        // E19.d2c2 D5b T5 (D-D5B-11): 15 frames, was 16. The binary resets the push animation of the pillar at tick 145, the DLL one frame later (146, the accepted one-tick delay, D-E19-13, D-G5-4); during that frame the hero rests on
+        // the pillar, which still carries its planned push of 0.75 px per tick, and the binary's rule (the planned force of the carrier, D-D5B-7) hands it over: the hero gains 0.75 px once, enters the column one frame earlier. The final x (373) is unchanged.
+        Assert.Equal(15, over.Count);
         Assert.All(over, s => Assert.Equal(PillarRecord, s.SupportedBy));
     }
 

@@ -174,8 +174,12 @@ internal static class ScriptedMotion
         // animation set from the target: the binary's creation has switched to it already (0x80038AB4). Guarded by the marker, so no entity of the map load ever sees this line; the entities from a record made by the script opcodes 0x2D, 0x8A and 0x8B do since E20.e0a4.
         // E20.f5 (D-F5-5): an entity born by the interface of the sprite index (marked by its logical Z, E20.e0k1) takes the speed of the animation asked, the one the tick's clock loads (the binary's UpdateAnimation switches at the tick that sees the request), not of the one the end of the frame validated;
         // the motion of the tick is then exact at the tick of a switch (the bounce of an arrow, the explosion of a ball) whatever the number of ticks per frame. The entities of the map load keep the key of the last frame (D-E19-13).
-        RunOneMotionTick(entity, (entity.JoinsBirthTick && entity.CurrentAnimationId == ~0u) || entity.HasLogicalZ ? entity.TargetAnimationId : entity.CurrentAnimationId);
+        RunOneMotionTick(entity, KeyAnimationOf(entity));
     }
+
+    /// <summary>The animation whose set the kinematic tick of an entity that is not the hero reads (see <see cref="TickScriptedNpc"/>): shared with <see cref="PeekAdjustedForce"/>, which plans the tick of a carrier before it runs.</summary>
+    private static uint KeyAnimationOf(EntityScriptProxy entity)
+        => entity.IsPlayer || (entity.JoinsBirthTick && entity.CurrentAnimationId == ~0u) || entity.HasLogicalZ ? entity.TargetAnimationId : entity.CurrentAnimationId;
 
     /// <summary>One logic tick's worth of motion for either caller - PhysicsEngine.cs:17 (top of
     /// UpdateEntitiesPhysics): <see cref="EntityScriptProxy.ForceAdjusted"/> is cleared exactly once
@@ -628,57 +632,9 @@ internal static class ScriptedMotion
     /// </summary>
     private static void RunOneKinematicTick(EntityScriptProxy entity, uint animSetAnimationId)
     {
-        AnimSetEntry animSet = default;
-        var hasAnimSet = entity.AnimSetsByAnim != null
-            && entity.AnimSetsByAnim.TryGetValue((int)animSetAnimationId, out animSet);
-        var speed = hasAnimSet ? animSet.Speed : 0;
-        var acceleration = (hasAnimSet ? animSet.Acceleration : 0) & 0xf;
-
-        // PhysicsEngine.UpdateEntityPhysics (PhysicsEngine.cs:1579-1597): only recompute the target
-        // force/step when speed, direction or acceleration actually changed since the last tick - exactly
-        // the original's own early-out.
-        if (entity.Speed != speed || entity.TargetDirection != entity.CurrentDirection || entity.Acceleration != acceleration)
-        {
-            entity.CurrentDirection = entity.TargetDirection;
-            entity.Speed = speed;
-            entity.Acceleration = acceleration;
-
-            var dirIndex = (int)entity.TargetDirection;
-            var offsetX = dirIndex >= 0 && dirIndex < AnimationTables.OffsetXList.Length ? AnimationTables.OffsetXList[dirIndex] : (short)0;
-            var offsetY = dirIndex >= 0 && dirIndex < AnimationTables.OffsetYList.Length ? AnimationTables.OffsetYList[dirIndex] : (short)0;
-
-            entity.TargetForceX = offsetX * speed;
-            entity.TargetForceY = offsetY * speed;
-            entity.ForceStepX = Math.Abs(entity.TargetForceX - entity.ForceX) >> entity.Acceleration;
-            entity.ForceStepY = Math.Abs(entity.TargetForceY - entity.ForceY) >> entity.Acceleration;
-        }
-
-        // E19.d2c1 R7 (the binary, 0x80036954-0x80036A50), the hero alone: on LOCAL copies of the target and of the step (the caches above stay those of the
-        // animation), the ice (VramOR & 0x20) divides the step by 16 and the water (VramOR & 0x08, without boots) halves the target, both with the signed
-        // arithmetic shift of the binary (rounded down). The boots level is read only when the water asks for it.
-        var targetX = entity.TargetForceX;
-        var targetY = entity.TargetForceY;
-        var stepX = entity.ForceStepX;
-        var stepY = entity.ForceStepY;
-        if (entity.IsPlayer)
-        {
-            var vramFlags = entity.CombinedVramFlagsOR;
-            if ((vramFlags & 0x20) != 0)
-            {
-                stepX = (int)(((long)stepX * 0x1000) >> 16);
-                stepY = (int)(((long)stepY * 0x1000) >> 16);
-            }
-
-            if ((vramFlags & 0x08) != 0 && BootsLevel(entity) <= 0)
-            {
-                targetX = (int)(((long)targetX * 0x8000) >> 16);
-                targetY = (int)(((long)targetY * 0x8000) >> 16);
-            }
-        }
-
-        // PhysicsEngine.cs:1445-1446/1490-1491.
-        entity.ForceX = IncrementForce(entity.ForceX, targetX, stepX);
-        entity.ForceY = IncrementForce(entity.ForceY, targetY, stepY);
+        PlanForce(entity, animSetAnimationId, commit: true, out var plannedX, out var plannedY);
+        entity.ForceX = plannedX;
+        entity.ForceY = plannedY;
 
         // PhysicsEngine.ApplyEntityForces (PhysicsEngine.cs:1514-1547), flat-ground-only - see this
         // method's own doc for what stays out.
@@ -688,11 +644,13 @@ internal static class ScriptedMotion
         entity.FinalForceY = entity.AdjustedForceY;
         entity.FinalForceZ = entity.ForceZ;
 
-        // E19.d2c2 S4 (the binary, 0x80037364): the hero carried by an entity adds the displacement that entity realized at its last tick to its own XY step.
+        // E19.d2c2 S4 (the binary, 0x80037364): the hero carried by an entity adds the AdjustedForce of that entity to its own XY step (D5b M5: the one the carrier has at THIS tick, planned, whether or not it has moved
+        // yet; S4 had read the displacement it realized at its previous tick, one tick of phase late).
         if (entity.IsPlayer && entity.RidingEntity?.GameplayProxy is EntityScriptProxy carrier)
         {
-            entity.FinalForceX += carrier.LastTickDeltaX;
-            entity.FinalForceY += carrier.LastTickDeltaY;
+            PeekAdjustedForce(carrier, out var carriedX, out var carriedY);
+            entity.FinalForceX += carriedX;
+            entity.FinalForceY += carriedY;
         }
 
         // E20.e0k3 (D-E0K-7): an entity marked HasLogicalZ has its step bounded to the grid of the map BEFORE the mover, as the forces pass of the binary (0x800366FC-0x800367E0).
@@ -740,6 +698,99 @@ internal static class ScriptedMotion
         entity.TileX = (entity.PosX >> 16) / TileWidth;
         entity.TileY = (entity.PosY >> 16) / TileHeight;
         entity.TileZ = entity.PosZ >> 20;
+    }
+
+    /// <summary>
+    /// The ONE function of the horizontal force of a tick: the target and the step of the animation, then the increment of the force, as the original's UpdateEntityPhysics does. <paramref name="commit"/> true
+    /// (<see cref="RunOneKinematicTick"/>) writes the caches of the target and of the step; false (<see cref="PeekAdjustedForce"/>) writes nothing, so a passenger can read the force a carrier is going to have this
+    /// tick before the carrier has moved (D-D5B-2: the tick and the calculation cannot diverge). The force returned is the one AFTER the increment; the caller writes <see cref="EntityScriptProxy.ForceX"/>/<see cref="EntityScriptProxy.ForceY"/>.
+    /// </summary>
+    private static void PlanForce(EntityScriptProxy entity, uint animSetAnimationId, bool commit, out int forceX, out int forceY)
+    {
+        AnimSetEntry animSet = default;
+        var hasAnimSet = entity.AnimSetsByAnim != null
+            && entity.AnimSetsByAnim.TryGetValue((int)animSetAnimationId, out animSet);
+        var speed = hasAnimSet ? animSet.Speed : 0;
+        var acceleration = (hasAnimSet ? animSet.Acceleration : 0) & 0xf;
+
+        var targetX = entity.TargetForceX;
+        var targetY = entity.TargetForceY;
+        var stepX = entity.ForceStepX;
+        var stepY = entity.ForceStepY;
+
+        // PhysicsEngine.UpdateEntityPhysics (PhysicsEngine.cs:1579-1597): only recompute the target
+        // force/step when speed, direction or acceleration actually changed since the last tick - exactly
+        // the original's own early-out.
+        if (entity.Speed != speed || entity.TargetDirection != entity.CurrentDirection || entity.Acceleration != acceleration)
+        {
+            var dirIndex = (int)entity.TargetDirection;
+            var offsetX = dirIndex >= 0 && dirIndex < AnimationTables.OffsetXList.Length ? AnimationTables.OffsetXList[dirIndex] : (short)0;
+            var offsetY = dirIndex >= 0 && dirIndex < AnimationTables.OffsetYList.Length ? AnimationTables.OffsetYList[dirIndex] : (short)0;
+
+            targetX = offsetX * speed;
+            targetY = offsetY * speed;
+            stepX = Math.Abs(targetX - entity.ForceX) >> acceleration;
+            stepY = Math.Abs(targetY - entity.ForceY) >> acceleration;
+
+            if (commit)
+            {
+                entity.CurrentDirection = entity.TargetDirection;
+                entity.Speed = speed;
+                entity.Acceleration = acceleration;
+                entity.TargetForceX = targetX;
+                entity.TargetForceY = targetY;
+                entity.ForceStepX = stepX;
+                entity.ForceStepY = stepY;
+            }
+        }
+
+        // E19.d2c1 R7 (the binary, 0x80036954-0x80036A50), the hero alone: on LOCAL copies of the target and of the step (the caches above stay those of the
+        // animation), the ice (VramOR & 0x20) divides the step by 16 and the water (VramOR & 0x08, without boots) halves the target, both with the signed
+        // arithmetic shift of the binary (rounded down). The boots level is read only when the water asks for it.
+        if (entity.IsPlayer)
+        {
+            var vramFlags = entity.CombinedVramFlagsOR;
+            if ((vramFlags & 0x20) != 0)
+            {
+                stepX = (int)(((long)stepX * 0x1000) >> 16);
+                stepY = (int)(((long)stepY * 0x1000) >> 16);
+            }
+
+            if ((vramFlags & 0x08) != 0 && BootsLevel(entity) <= 0)
+            {
+                targetX = (int)(((long)targetX * 0x8000) >> 16);
+                targetY = (int)(((long)targetY * 0x8000) >> 16);
+            }
+        }
+
+        // PhysicsEngine.cs:1445-1446/1490-1491.
+        forceX = IncrementForce(entity.ForceX, targetX, stepX);
+        forceY = IncrementForce(entity.ForceY, targetY, stepY);
+    }
+
+    /// <summary>
+    /// E19.d2c2 D5b M5 (D-D5B-2, D-E19-117): the planned horizontal force of <paramref name="carrier"/> at the CURRENT tick (<see cref="EntityScriptProxy.AdjustedForceX"/>/<see cref="EntityScriptProxy.AdjustedForceY"/>, the force
+    /// the binary's passenger adds to its own, <c>0x8003739C-B0</c>, planned and not realized: a carrier stopped by a wall still hands it over). When the carrier has already moved in this pass it is the one it used; else it is
+    /// calculated by <see cref="PlanForce"/> without writing anything, with the animation key of its own tick. A carrier that does not move at this tick (not active, or blocked by another entity) hands over 0.
+    /// </summary>
+    internal static void PeekAdjustedForce(EntityScriptProxy carrier, out int adjustedX, out int adjustedY)
+    {
+        var pass = carrier.ScriptHost?.PhysicsPassId ?? 0;
+        if (pass != 0 && carrier.PhysicsDoneInPass == pass)
+        {
+            adjustedX = carrier.AdjustedForceX;
+            adjustedY = carrier.AdjustedForceY;
+            return;
+        }
+
+        if (!carrier.Status.IsActive() || carrier.BlockedByEntity != null)
+        {
+            adjustedX = 0;
+            adjustedY = 0;
+            return;
+        }
+
+        PlanForce(carrier, KeyAnimationOf(carrier), commit: false, out adjustedX, out adjustedY);
     }
 
     /// <summary>The result of <see cref="ClampStepToMapEdge"/>: the step to take on each axis and whether an edge bounded it.</summary>

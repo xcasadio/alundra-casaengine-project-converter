@@ -446,7 +446,7 @@ public sealed class HeroObjectTopsTests : IDisposable
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void UH14_APlatformMovingByOnePixelPerTick_CarriesTheHeroOneTickOfPhaseLater_AndDoesNotLetItSlideOffIn50Ticks()
+    public void UH14_APlatformMovingByOnePixelPerTick_CarriesTheHeroInPhase0_AndDoesNotLetItSlideOffIn50Ticks()
     {
         var rig = JumpHeroRig.Build(x: 156.25f, freePad: true);
         // The platform joins the world after the hero (as in production: the hero is updated before it), under the hero: the top of 16 px. Its logical box
@@ -476,11 +476,44 @@ public sealed class HeroObjectTopsTests : IDisposable
             rig.Step();
             var label = $"tick {tick}";
             Assert.True(platform.PosX - platformStart == -tick * 65536, $"{label}: platform {platform.PosX - platformStart}");
-            Assert.True(hero.PosX - heroStart == -(tick - 1) * 65536, $"{label}: hero {hero.PosX - heroStart}");
+            // E19.d2c2 D5b M5 (D-E19-117, Q-D5B-2): the hero adds the planned force of its carrier of THIS tick, as the binary (phase 0). The pin was -(tick - 1) * 65536 (the displacement of the previous tick, D-E20-40).
+            Assert.True(hero.PosX - heroStart == -tick * 65536, $"{label}: hero {hero.PosX - heroStart}");
             Assert.True(hero.PosZ == 1048576, $"{label}: posZ {hero.PosZ}");
             Assert.True(hero.IsOnGround == 1, $"{label}: onGround {hero.IsOnGround}");
             Assert.True(ReferenceEquals(platform.LogicContextEntity, hero.RidingEntity), $"{label}: riding");
         }
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(2)]
+    [InlineData(4)]
+    [InlineData(6)]
+    public void UH14b_ThePlannedForceOfACarrierBeforeItMoves_IsTheForceItUsesAtItsTick_WhileTheSpeedAndTheDirectionChange(int direction)
+    {
+        // D5b M5: ScriptedMotion.PeekAdjustedForce is the same function as the tick (PlanForce): read BEFORE the carrier moves in a pass, it equals the AdjustedForce the carrier then uses, tick after tick, through the recompute of the
+        // target (a direction change), the acceleration (the force climbs by steps) and the arrival at the target.
+        var rig = JumpHeroRig.Build(x: 156.25f, freePad: true);
+        var platform = AddObject(rig.World, rig.Host, "Platform", 100, 92, 24, 16, 16, offsetX: 44);
+        platform.AnimSetsByAnim = new Dictionary<int, AnimSetEntry> { [0] = new AnimSetEntry { Anim = 0, Speed = 200, Acceleration = 3 } };
+        platform.CurrentAnimationId = 0;
+        platform.TargetAnimationId = 0;
+        rig.Hero.PosZ = 1048576;
+        rig.Hero.PushLogicalPositionToRoot();
+        rig.Step();
+        platform.TargetDirection = (uint)direction;
+
+        var anyForce = false;
+        for (var tick = 1; tick <= 12; tick++)
+        {
+            rig.Host.BeginPhysicsPass(); // a fresh pass: the platform has not moved in it, so the force is planned, not read back.
+            ScriptedMotion.PeekAdjustedForce(platform, out var plannedX, out var plannedY);
+            rig.Step();
+            Assert.True(plannedX == platform.AdjustedForceX && plannedY == platform.AdjustedForceY, $"tick {tick}: planned ({plannedX}, {plannedY}) used ({platform.AdjustedForceX}, {platform.AdjustedForceY})");
+            anyForce |= plannedX != 0 || plannedY != 0;
+        }
+
+        Assert.True(anyForce, "the direction asks for a movement");
     }
 
     // -----------------------------------------------------------------------------------------
