@@ -7567,7 +7567,7 @@ frais après.
   à regarder à part.
 - **Recette de l'auteur, à faire** : `234-torla.sav` (carte 426), le bouton de droite par le nord.
 
-##### E20.g5d — Les objets à pousser scriptés : statues, blocs, boutons (tests seuls) ⏳ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, **READY** à la deuxième relecture, `plan-verifier` frais ; exécutable après E20.g5b)
+##### E20.g5d — Les objets à pousser scriptés : statues, blocs, boutons (tests seuls) ✅ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, **READY** à la deuxième relecture, `plan-verifier` frais ; **faite et CONFIRMED le 2026-10-24**)
 
 **Révision 1 (2026-10-23).** La relecture de la révision 0 (REVISE) a relevé deux points, corrigés ici.
 - Le but annonçait le bloc de la carte 40, que g5d ne teste pas : il est retiré, car g5b le prouve (T3, ARC-40).
@@ -7621,7 +7621,7 @@ l'annexe `docs/plan-e20-annexe/e20-g5/g5d/` ; ce plan. Aucun fichier de `Alundra
 **Hors périmètre.** Tout code de production ; `0xBE` (g5c) ; le gel du héros (sa correction, si l'auteur la demande) ; le fléau.
 
 **Tâches.**
-- ⏳ **T0 — Mesures au HEAD de départ** (commit de docs).
+- ✅ **T0 — Mesures au HEAD de départ** (commit de docs).
   - Rejouer les sondes sur la vraie DLL du HEAD de départ, dans une copie, et comparer à leur référence :
     - `cases1.json` à `probe_out/statue2_east.txt` ;
     - `cases10.json` à `probe_out_proto/statue352_east.txt` ;
@@ -7631,7 +7631,7 @@ l'annexe `docs/plan-e20-annexe/e20-g5/g5d/` ; ce plan. Aucun fichier de `Alundra
   - Mesurer le gel F sur la statue de la carte 2.
   - Établir si D-G5D-4 a un montage.
   - Lister ce que le test statique trouve au HEAD de départ : il doit être vide, sinon arrêt et liste.
-- ⏳ **T1 — Les tests.**
+- ✅ **T1 — Les tests.**
   - (s1) Statue de la carte 2 : contact à l'image 2, x de 420 à 445,5, le drapeau posé. Accolé : sans poussée, la statue ne bouge pas.
   - (s2) Statue de la carte 352 : x de 204 à 229,5.
   - (s3) Bloc de la carte 23 : x de 768 à 720, puis z de 32 à 16.
@@ -7640,7 +7640,7 @@ l'annexe `docs/plan-e20-annexe/e20-g5/g5d/` ; ce plan. Aucun fichier de `Alundra
   - (s6) Le test synthétique des blocs 102 et 382, s'il a un montage (D-G5D-4).
   - Ces tests sont verts au HEAD de départ : ils épinglent un comportement qui marche déjà. Chacun est accolé à un cas qui le rendrait
     rouge (sans poussée, sans le drapeau, un opcode retiré du runner pour (s5)), joué une fois par une mutation réelle annulée.
-- ⏳ **T2 — Suites et preuves.**
+- ✅ **T2 — Suites et preuves.**
   - Mutations réelles, appliquées par script puis annulées, chacune doit rendre rouge son test :
     - le drapeau du programme F non posé → (s1) ;
     - un opcode des familles retiré du dispatch → (s5) ;
@@ -7649,7 +7649,7 @@ l'annexe `docs/plan-e20-annexe/e20-g5/g5d/` ; ce plan. Aucun fichier de `Alundra
   - `Alundra.Tests` en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `check_names.py --rules` vert ; les traces du héros
     intactes ; `Alundra/` sans diff.
   - Les résultats dans l'annexe.
-- ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche.
+- ✅ **T3 — Verifiers frais** (la session principale) : un sur la tranche.
 
 **Acceptation.**
 - (s1) à (s5), et (s6) s'il est écrit, sont verts.
@@ -7663,6 +7663,23 @@ besoin de toucher `Alundra/`.
 **Budget.** Un `executor` pour T0 à T2 ; deux tentatives. Un `plan-verifier` avant ; un verifier frais après.
 
 **Retour arrière.** Retirer les tests neufs.
+
+**Résultats (2026-10-24).** Exécution en mode AUTO, HEAD de départ `a27c4ffb`. Mesures : `docs/plan-e20-annexe/e20-g5/g5d/README.md`.
+- **Commits.** `66eb5eb8` (T0) ; `e360d4e5` (T1 : `Alundra.Tests/Events/ScriptedPushObjectsTests.cs`, `PushObjectProgramsOpcodesTests.cs`) ;
+  `382bb80e` (T2).
+- **T0.** Les sondes redonnent leurs références sur la vraie DLL. Le gel F : le héros reste figé à x 399 depuis le contact (image 2) tant que
+  Droite est tenue ; relâchée cinq images puis ré-enfoncée, il repart aussitôt. D-G5D-4 a un montage (`WorldProxy.HitPassHookForTests`
+  pose un attaquant d'indice 1 dans `TouchingEntity` pour un tick) : (s6) est écrit. Le test statique est vide au départ : 139 placements
+  sur 26 cartes (229 : 9, 298 : 62, 345 : 16, 430 : 24, 433 : 28), 75 programmes sur 19 cartes, 890 sites, tous portés.
+- **Tests.** Dix, verts au départ (ils épinglent ce qui marche déjà) : (s1) statue de la carte 2 (x 420 → 445,5) ; (s2) statue de la 352
+  (x 204 → 229,5) ; (s3) bloc de la 23 (x 768 → 720, puis z 32 → 16 ; son contact est à l'image 1 sans attente, à l'image 31 avec trente images
+  d'attente, les deux épinglés) ; (s4) le gel F ; (s5) le test statique et ses gardes ; (s6) les blocs des cartes 102 et 382 frappés par une
+  attaque d'indice 1. Cinq mutations réelles, chacune rend rouge son test.
+- **Suites.** `Alundra.Tests` : 5 596 au départ, 5 606 à la fin, zéro échec en Release (copie neutralisée) et en Debug ; `cmp` de la DLL
+  identique ; aucun test existant déplacé ; `Alundra/` sans diff.
+- **Verifier frais** : **CONFIRMED** (ses propres mutations ; le recensement des cinq types refait en Python) ; un second verifier, sur les
+  épingles, aussi.
+- **Recette de l'auteur, à faire** : `280-murgg.sav` (carte 2) et `351-lake-castle.sav` (carte 352), pousser la statue.
 
 ---
 
