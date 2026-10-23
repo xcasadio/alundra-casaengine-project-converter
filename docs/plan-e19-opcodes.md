@@ -409,6 +409,10 @@ décisions suivantes ont été prises avec l'auteur le 2026-09-29.
   - **D-E19-124** — (Q-D5B-4) La recette de D5b se fait sur l'ascenseur de la carte 22 ; une sauvegarde de test y mènera.
   - **D-E19-125** — (O-E19-65, O-E19-70 : « pas de correction, c'est à peine visible ») L'image de retard des écrans et l'image périmée
     d'une fenêtre remise restent des écarts acceptés ; G12 et G13 restent consignés au rapport des manques du moteur, sans tranche.
+  - **D-E19-126** — (D5b, questions de jeu du 2026-10-23, « ok ») La recette de D5b part au sud du levier de droite de la carte 22 (le
+    frapper, descendre dans le creux, sauter sur la plateforme, attendre) ; un joueur à cheval entre le sol et le bord d'une plateforme
+    qui monte est emporté avec elle, comme l'original ; les deux coffres de la carte 344 et la pierre de la carte 444 suivent leur
+    plateforme au lieu de tomber au travers. D-D5B-10 et les effets visibles du §1.2h.3.2b sont confirmés.
   - **Règle de conduite R-BR** (2026-10-06, de la session, après les relectures de G2b et d'E19.h1b3 ; O-E19-74 tranchée le 2026-10-06 :
     G2d a pris 0066, 0061 étant pris sur le main du moteur) — **Branches et numéros d'ADR des sous-modules.** (1) Base : toute nouvelle branche du moteur (ou de
     MGUI) part du commit que le parent épingle au moment de l'exécution (aujourd'hui `33324030`, pointe de G2d, qui n'est pas dans le
