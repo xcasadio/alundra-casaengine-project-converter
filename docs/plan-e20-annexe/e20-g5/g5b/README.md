@@ -145,3 +145,61 @@ The arcs of sm3 whose geometry T0 did not find (S3-A1, S3-A2 on 421, S3-A3a, S3-
 
 Total 5 596 = 5 484 (g5a) + 112, zero failure. **No existing test moved** (the T0 prediction: none). `check_names.py --rules`: 215 DLL files, 465 test files, 0 finding, the same 1 warning. The four
 `docs/hero-trace-389-*.txt` rewritten by the suite are equal but for the line endings (`git diff --ignore-cr-at-eol --quiet` clean) and were restored. The mutants, the Debug suite and the `cmp` of the DLL come with T4.
+
+## T4 - mutants and suites
+
+### Mutants (real edits of `Alundra/Events/EventProgramRunner.cs` applied by script, then undone by `git checkout`; `git diff -- Alundra` empty after each run)
+
+Driver: `t4-mutants.py` (it edits only inside the `case` block of the opcode, and asserts the number of occurrences it replaces); full output: `t4-mutants.log`. Each run: Release, neutralised copy, `--filter` on the four T1 classes
+(`ContactGroupOpcodesTests`, `LastTargetOpcodeTests`, `ButtonAndBlockOpcodesRealBytesTests`, `ButtonAndBlockSitesTests`: 112 tests, all green unmutated). 28 runs, 28 killed, no compile error.
+The rules of sm3 are the Python model's mutants (`sm3/vectors/mutants.json`) and the extra ones of the critic (`sm3/critic/work/extra_mutants.py`), transposed to the C# lines of the two cases.
+
+| mutant | what is changed | failures of 112 |
+|---|---|---|
+| S3-A9-swapped / S3-AA-swapped | the comparison crossed (sm3 `swapped`) | 19 / 37 |
+| S3-A9-first_only / S3-AA-first_only | only the first entity of the search is looked at | 5 / 4 |
+| S3-A9-hero_ref / S3-AA-hero_ref | the reference is the hero, not the logic entity | 18 / 38 |
+| S3-A9-keep_stale_on_false / S3-AA-keep_stale_on_false | `Result` not cleared | 16 / 34 |
+| S3-A9-keep_stale_on_true / S3-AA-keep_stale_on_true | `Result` not set to 1 | 21 / 39 |
+| S3-A9-by_ref_id / S3-AA-by_ref_id (critic) | `EntityRefId` compared instead of the reference | 2 / 2 |
+| S3-A9-excl_player / S3-AA-excl_player (critic) | the hero dropped from the group | 10 / 33 |
+| M72a | the direction is not copied | 28 |
+| M72b | `0x72` acts on the owner | 2 |
+| M72c | copies the other way (Target := Last) | 41 |
+| M72d | guarded by a status 1..3 | 2 (`SetLastTarget_0x72_HasNoStatusGuard`, the 67-vector replay) |
+| added: `0x72` copies only the direction (animation line removed) | | 41 |
+| added: `0x72` fields crossed | | 39 |
+| added: `0xA9` and `0xAA` exchanged (both comparisons crossed) | | 54 |
+| added: `Result` not reset to 0 when nothing is found (both) | | 50 |
+| added: `0xA9` of size 1 | | 27 |
+| added: `0xAA` of size 1 | | 46 |
+| added: `0xA9` reads the owner, not the logic entity | | 1 (`TheTwoOpcodesReadTheLogicEntity_NotTheOwner`) |
+| added: `0xAA` reads the owner, not the logic entity | | 1 (same test) |
+| extra: `0x72` of size 2 / `0x72` also clears `Result` | | 27 / 27 |
+
+The plan's six added mutants: "`0x72` copies only the animation" is M72a; "the two fields crossed", "`0xA9` and `0xAA` exchanged", "`Result` not reset", "size 1 instead of 2" (run on each of the two opcodes) and "the owner read instead of the logic entity" (on each of the two opcodes) are the rows "added". Three more were run: `0x72` copies only the direction, `0x72` of size 2 and `0x72` clearing `Result`.
+The weakest kills are by one or two tests (by_ref_id, M72b, M72d, the two owner mutants): each has a test of its own that names it, and the two vector replays catch M72b and M72d too.
+
+### Suites (foreground, `--blame-hang-timeout 60s`, three runs per configuration: the Arcs/Ai/.../Dialogues partition, the Entities/Events/ExportGuards/Hero/Items partition and the rest; the T3 table put the Arcs partition together with the first)
+
+| configuration | Arcs, Ai, Audio, Cameras, Cells, Combat, Data, Dialogues | Entities, Events, ExportGuards, Hero, Items | the rest | total |
+|---|---|---|---|---|
+| Release (neutralised copy) | 1 210 / 0 failed (4 min) | 2 597 / 0 (3 min 50) | 1 789 / 0 (44 s) | 5 596, 0 failed |
+| Debug (last, copies the DLL) | 1 210 / 0 (4 min 30) | 2 597 / 0 (3 min 55) | 1 789 / 0 (44 s) | 5 596, 0 failed |
+
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: identical (exit 0).
+- `python -B tools/dll-structure/check_names.py --rules`: 215 DLL files, 465 test files, 0 finding, 1 warning (`TextBoxGpu.cs:266`, the one at the start).
+- The four `docs/hero-trace-389-*.txt` rewritten by the suites are equal but for the line endings (`git diff --ignore-cr-at-eol --quiet -- docs/` clean) and were restored by `git checkout`.
+- `git diff --name-only 39b5c2e7 HEAD`: only `Alundra/` (2 files), `Alundra.Tests/` (9) and `docs/` (38). The engine pointer, the converter, `data-extracted/`, `alundra-project/` and `alundra-datas-analyser`: no committed diff.
+
+### Existing tests that moved: measured against the predicted list
+
+Predicted (T0, T2): none. Measured by `git diff --name-status 39b5c2e7 HEAD` on `Alundra.Tests`: two existing files modified, `Arcs/HeadlessIntroSimulation.cs` (the mirror `ImplementedOpcodes`, a helper the plan names) and `Support/AnnexFiles.cs`
+(gains `ButtonAnnex`, a helper); neither is a test. No existing test changed and none failed in any run. Equal to the prediction.
+
+### The headers of E19.sm0, sm3 and sm4 (`docs/plan-e19-opcodes.md`, read, not modified)
+
+- sm0 (line 12404): "à réviser", cites E20.g5b, D-G5B-1 and D-G5B-2, "environ 48 lignes (28 de sm3, 20 de sm4)", the 510 lines, the counts per owner of rule 5 and the stop on the 510 lines. Matches the plan (D-G5B-1, D-G5B-2).
+- sm3 (line 12735): "`0xA9` et `0xAA` prélevés le 2026-10-23 par E20.g5b ... la révision les retire et recalcule les comptes, R-SM-2". Matches.
+- sm4 (line 12809): "`0x72` prélevé le 2026-10-23 par E20.g5b ... la révision le retire et recalcule les comptes, R-SM-2". Matches.
+- No gap found. One remark: the T3 and T4 tests no longer match the file names of the sm3 and sm4 tests plans (`ContactGroupOpcodesTests`, `LastTargetOpcodeTests` instead of the pre-R5 names), which their revisions will have to take into account.

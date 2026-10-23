@@ -1,0 +1,172 @@
+### S3-A9-swapped | sm3 0xA9:swapped | failed=19 | passed=93
+### S3-AA-swapped | sm3 0xAA:swapped | failed=37 | passed=75
+(the two lines above are the first run, done before the log was kept; the other 26 runs follow, full output)
+### S3-A9-first_only | sm3 0xA9:first_only | compile_error=False | failed=5 | passed=107 | diff_clean_after=True
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_RawId_ContactIsTheSecondOfTwoEntities
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_Type2_ContactStatus(vector:
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_Type3_ExcludesTheHero
+     Alundra.Tests.Events.ContactGroupOpcodesTests.TheVectorsOfTheOpcode_0xA9_ReplayOnTheDll
+### S3-AA-first_only | sm3 0xAA:first_only | compile_error=False | failed=4 | passed=108 | diff_clean_after=True
+     Alundra.Tests.Events.ContactGroupOpcodesTests.GroupBlockedByMe_0xAA_MemberStatus(vector:
+     Alundra.Tests.Events.ContactGroupOpcodesTests.GroupBlockedByMe_0xAA_Type2_AnyMemberCounts(vector:
+     Alundra.Tests.Events.ContactGroupOpcodesTests.TheVectorsOfTheOpcode_0xAA_ReplayOnTheDll
+### S3-A9-hero_ref | sm3 0xA9:hero_ref (the reference is the hero, not the logic entity) | compile_error=False | failed=18 | passed=94 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_FreeSlotsBetweenAreAbsent
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_HeroGroup_ContactIsTheHero_GivesOne
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_RawId_ContactIsTheSecondOfTwoEntities
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_RawId_ReferenceMustBeLoadedNormalOrDeactivated(vector:
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_RawId_TheCandidateStatusIsNotTested
+     ... +8
+### S3-AA-hero_ref | sm3 0xAA:hero_ref | compile_error=False | failed=38 | passed=74 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map424_ABlockPushedFromTheEastOrTheSouth_CountsFortyAnswers_ThenIsSentBackToTheReload
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AFortyTickPushFromTheNorth_SlidesTheRightButtonBy80Pixels_RaisesItsFlag_AndBuildsTheBridge
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AnInterruptedPush_StartsOverFromZero_AndThePushFromTheWrongSideDoesNothing
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_TheSecondButtonNeedsTheFlagOfTheFirst
+     Alundra.Tests.Events.ContactGroupOpcodesTests.GroupBlockedByMe_0xAA_HeroContactIsMe_GivesOne
+     ... +9
+### S3-A9-keep_stale_on_false | sm3 0xA9:keep_stale_on_false (Result not cleared) | compile_error=False | failed=16 | passed=96 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_ContactOutsideTheGroup_GivesZero
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_HeroIsTheLogicEntity
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_NullContact_GivesZero_AndOverwritesAStaleOne
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_OnlyTheHeroExists_Type3Empty
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_RawId24_HeroIsTheReference_Real440B9Shape
+     ... +7
+### S3-AA-keep_stale_on_false | sm3 0xAA:keep_stale_on_false | compile_error=False | failed=34 | passed=78 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AnInterruptedPush_StartsOverFromZero_AndThePushFromTheWrongSideDoesNothing
+     Alundra.Tests.Events.ContactGroupOpcodesTests.GroupBlockedByMe_0xAA_HeroContactIsAnotherEntity
+     Alundra.Tests.Events.ContactGroupOpcodesTests.GroupBlockedByMe_0xAA_HeroNullContact_GivesZero_AndOverwritesAStaleOne
+     Alundra.Tests.Events.ContactGroupOpcodesTests.GroupBlockedByMe_0xAA_MemberStatus(vector:
+     Alundra.Tests.Events.ContactGroupOpcodesTests.GroupBlockedByMe_0xAA_RawId_ReferenceAndCandidateStatus
+     ... +7
+### S3-A9-keep_stale_on_true | sm3 0xA9:keep_stale_on_true (Result not set to 1) | compile_error=False | failed=21 | passed=91 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_FreeSlotsBetweenAreAbsent
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_HeroGroup_ContactIsTheHero_GivesOne
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_HeroIsTheLogicEntity
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_RawId24_HeroIsTheReference_Real440B9Shape
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_RawId_ContactIsTheSecondOfTwoEntities
+     ... +10
+### S3-AA-keep_stale_on_true | sm3 0xAA:keep_stale_on_true | compile_error=False | failed=39 | passed=73 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map424_ABlockPushedFromTheEastOrTheSouth_CountsFortyAnswers_ThenIsSentBackToTheReload
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AFortyTickPushFromTheNorth_SlidesTheRightButtonBy80Pixels_RaisesItsFlag_AndBuildsTheBridge
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AnInterruptedPush_StartsOverFromZero_AndThePushFromTheWrongSideDoesNothing
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_TheSecondButtonNeedsTheFlagOfTheFirst
+     Alundra.Tests.Events.ContactGroupOpcodesTests.GroupBlockedByMe_0xAA_HeroContactIsMe_GivesOne
+     ... +10
+### S3-A9-by_ref_id | sm3 critic 0xA9:by_ref_id (EntityRefId compared instead of the reference) | compile_error=False | failed=2 | passed=110 | diff_clean_after=True
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_TwoDistinctEntitiesWithTheSameEntityRefId_TheCollisionIsOnTheOneOutsideTheGroup_GivesZero
+     Alundra.Tests.Events.ContactGroupOpcodesTests.TheVectorsOfTheOpcode_0xA9_ReplayOnTheDll
+### S3-AA-by_ref_id | sm3 critic 0xAA:by_ref_id | compile_error=False | failed=2 | passed=110 | diff_clean_after=True
+     Alundra.Tests.Events.ContactGroupOpcodesTests.GroupBlockedByMe_0xAA_TheHeroIsBlockedByADistinctEntityOfTheSameEntityRefId_GivesZero
+     Alundra.Tests.Events.ContactGroupOpcodesTests.TheVectorsOfTheOpcode_0xAA_ReplayOnTheDll
+### S3-A9-excl_player | sm3 critic 0xA9:excl_player (the hero is dropped from the group) | compile_error=False | failed=10 | passed=102 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_FreeSlotsBetweenAreAbsent
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_HeroGroup_ContactIsTheHero_GivesOne
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_HeroIsTheLogicEntity
+     Alundra.Tests.Events.ContactGroupOpcodesTests.TheSearchRunsFromTheLogicEntity_NotFromTheHero
+     Alundra.Tests.Events.ContactGroupOpcodesTests.TheTwoOpcodesReadTheLogicEntity_NotTheOwner
+     ... +2
+### S3-AA-excl_player | sm3 critic 0xAA:excl_player | compile_error=False | failed=33 | passed=79 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map424_ABlockPushedFromTheEastOrTheSouth_CountsFortyAnswers_ThenIsSentBackToTheReload
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AFortyTickPushFromTheNorth_SlidesTheRightButtonBy80Pixels_RaisesItsFlag_AndBuildsTheBridge
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AnInterruptedPush_StartsOverFromZero_AndThePushFromTheWrongSideDoesNothing
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_TheSecondButtonNeedsTheFlagOfTheFirst
+     Alundra.Tests.Events.ContactGroupOpcodesTests.GroupBlockedByMe_0xAA_HeroContactIsMe_GivesOne
+     ... +6
+### M72a | sm4 M72a the direction is not copied | compile_error=False | failed=28 | passed=84 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ATouchProgramEndingWithIt_SurvivesTheResumeOfTheTickProgram
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ActsOnTheLogicEntity_NotOnTheOwner
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_CopiesMaxUnsignedValuesVerbatim
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_CopiesTheTargetOntoLastTarget
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_HasNoStatusGuard
+     ... +3
+### M72b | sm4 M72b acts on the owner, not on the logic entity | compile_error=False | failed=2 | passed=110 | diff_clean_after=True
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ActsOnTheLogicEntity_NotOnTheOwner
+     Alundra.Tests.Events.LastTargetOpcodeTests.TheVectorsOfTheOpcode_0x72_ReplayOnTheDll
+### M72c | sm4 M72c copies the other way (Target := Last) | compile_error=False | failed=41 | passed=71 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map40_ABlockTouchedFromTheNorthOrTheEast_SlidesToTheSouth_AndTouchedFromTheSouthItDoesNotMove
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map40_TheSlideIsTheRestOfTheWaitOfTheBlock_ItDependsOnTheInstantOfTheContact(k:
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ATouchProgramEndingWithIt_SurvivesTheResumeOfTheTickProgram
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ActsOnTheLogicEntity_NotOnTheOwner
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_CopiesMaxUnsignedValuesVerbatim
+     ... +5
+### M72d | sm4 M72d guarded by a status 1..3 | compile_error=False | failed=2 | passed=110 | diff_clean_after=True
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_HasNoStatusGuard
+     Alundra.Tests.Events.LastTargetOpcodeTests.TheVectorsOfTheOpcode_0x72_ReplayOnTheDll
+### X72-animation-only-removed | added: 0x72 copies only the direction (the animation line removed) | compile_error=False | failed=41 | passed=71 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map40_ABlockTouchedFromTheNorthOrTheEast_SlidesToTheSouth_AndTouchedFromTheSouthItDoesNotMove
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map40_TheSlideIsTheRestOfTheWaitOfTheBlock_ItDependsOnTheInstantOfTheContact(k:
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ATouchProgramEndingWithIt_SurvivesTheResumeOfTheTickProgram
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ActsOnTheLogicEntity_NotOnTheOwner
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_CopiesMaxUnsignedValuesVerbatim
+     ... +5
+### X72-fields-inverted | added: 0x72 fields crossed (animation into direction, direction into animation) | compile_error=False | failed=39 | passed=73 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map40_ABlockTouchedFromTheNorthOrTheEast_SlidesToTheSouth_AndTouchedFromTheSouthItDoesNotMove
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map40_TheSlideIsTheRestOfTheWaitOfTheBlock_ItDependsOnTheInstantOfTheContact(k:
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ATouchProgramEndingWithIt_SurvivesTheResumeOfTheTickProgram
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ActsOnTheLogicEntity_NotOnTheOwner
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_CopiesTheTargetOntoLastTarget
+     ... +3
+### X-A9-AA-exchanged | added: 0xA9 and 0xAA exchanged (both comparisons crossed) | compile_error=False | failed=54 | passed=58 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map424_ABlockPushedFromTheEastOrTheSouth_CountsFortyAnswers_ThenIsSentBackToTheReload
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AFortyTickPushFromTheNorth_SlidesTheRightButtonBy80Pixels_RaisesItsFlag_AndBuildsTheBridge
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AnInterruptedPush_StartsOverFromZero_AndThePushFromTheWrongSideDoesNothing
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_TheSecondButtonNeedsTheFlagOfTheFirst
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_FreeSlotsBetweenAreAbsent
+     ... +19
+### X-result-not-reset | added: Result not reset to 0 when nothing is found (both opcodes) | compile_error=False | failed=50 | passed=62 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AnInterruptedPush_StartsOverFromZero_AndThePushFromTheWrongSideDoesNothing
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_ContactOutsideTheGroup_GivesZero
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_HeroIsTheLogicEntity
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_NullContact_GivesZero_AndOverwritesAStaleOne
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_OnlyTheHeroExists_Type3Empty
+     ... +19
+### X-A9-size1 | added: 0xA9 of size 1 instead of 2 | compile_error=False | failed=27 | passed=85 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_ContactOutsideTheGroup_GivesZero
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_FreeSlotsBetweenAreAbsent
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_HeroGroup_ContactIsTheHero_GivesOne
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_HeroIsTheLogicEntity
+     Alundra.Tests.Events.ContactGroupOpcodesTests.BlockedByGroup_0xA9_NullContact_GivesZero_AndOverwritesAStaleOne
+     ... +14
+### X-AA-size1 | added: 0xAA of size 1 instead of 2 | compile_error=False | failed=46 | passed=66 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map424_ABlockPushedFromTheEastOrTheSouth_CountsFortyAnswers_ThenIsSentBackToTheReload
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AFortyTickPushFromTheNorth_SlidesTheRightButtonBy80Pixels_RaisesItsFlag_AndBuildsTheBridge
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_AnInterruptedPush_StartsOverFromZero_AndThePushFromTheWrongSideDoesNothing
+     Alundra.Tests.Events.ButtonAndBlockSitesTests.Map426_TheSecondButtonNeedsTheFlagOfTheFirst
+     Alundra.Tests.Events.ContactGroupOpcodesTests.GroupBlockedByMe_0xAA_HeroContactIsAnotherEntity
+     ... +15
+### X72-size2 | added: 0x72 of size 2 instead of 1 | compile_error=False | failed=27 | passed=85 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ActsOnTheLogicEntity_NotOnTheOwner
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_CopiesMaxUnsignedValuesVerbatim
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_CopiesTheTargetOntoLastTarget
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_HasNoStatusGuard
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ReturnsItsTableSize1_AndLeavesResultAlone
+     ... +2
+### X-A9-owner | added: 0xA9 reads the owner instead of the logic entity | compile_error=False | failed=1 | passed=111 | diff_clean_after=True
+     Alundra.Tests.Events.ContactGroupOpcodesTests.TheTwoOpcodesReadTheLogicEntity_NotTheOwner
+### X-AA-owner | added: 0xAA reads the owner instead of the logic entity | compile_error=False | failed=1 | passed=111 | diff_clean_after=True
+     Alundra.Tests.Events.ContactGroupOpcodesTests.TheTwoOpcodesReadTheLogicEntity_NotTheOwner
+### X72-result-cleared | added: 0x72 also clears Result | compile_error=False | failed=27 | passed=85 | diff_clean_after=True
+     Alundra.Tests.Events.ButtonAndBlockOpcodesRealBytesTests.TheRealBytesOfTheSite_AreTheOpcode_AndRunAsImplementedOnTheShapeOfTheSite(id:
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ActsOnTheLogicEntity_NotOnTheOwner
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_CopiesMaxUnsignedValuesVerbatim
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_CopiesTheTargetOntoLastTarget
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_HasNoStatusGuard
+     Alundra.Tests.Events.LastTargetOpcodeTests.SetLastTarget_0x72_ReturnsItsTableSize1_AndLeavesResultAlone
+     ... +2
