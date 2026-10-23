@@ -276,6 +276,18 @@ public sealed class TileEffectTests : IDisposable
         Assert.Equal(0xC0000, slot.X);
     }
 
+    [Fact]
+    public void C2_PastTheTable_TheCellIsTheLastColumn_ButTheEffectKeepsTheUnclampedColumn_Q_E7()
+    {
+        // 1250 px is past the table of 1248 (the binary reads memory it does not define there): the DLL keeps the formula for the position and clamps the cell, like the rows below the map.
+        var bench = BenchWith(new HashSet<(int, int)> { (51, 10) }, 1250 << 16, (10 * 16 + 4) << 16, 1 << 20, (4 << 16) - 1, (4 << 16) - 1, 0xEFFFF);
+        WithStage(bench);
+        TileEffect.Trigger(bench.Entity);
+        var slot = Assert.Single(RunTheStage(bench));
+        Assert.Equal(0, bench.Read(51, 10).Walkability & Grass);
+        Assert.Equal((52 * 0x180000) + 0xC0000, slot.X);
+    }
+
     // ---- (c3) a box narrower than a cell cuts once ------------------------------------------------------------------------------------------------------------------
 
     [Fact]

@@ -17,4 +17,5 @@ The earlier reading (`../report.md`, `../check.md`, `../work/`, `../check/`, `..
 - `probes/`: the DLL probes and their outputs (the visual completeness of the maps 14, 10 and 16; the generator tick by tick in the emptied bench).
 - `t1-results.md`, `t1-red-names.txt`: T1 (phase A). `t2-results.md`, `t2-red-names.txt` (2026-10-23): T2, the world tests of the cut on the real map 14 (`Alundra.Tests/Cells/TileEffectCutWorldTests.cs`), red before T3, and the two scenarios `beside` and `idle` added to `oracle/cut_m14.py`.
 - `t3-results.md` (2026-10-23): T3, phase B (the two production calls, the preset `herbe-m14`), the tests that moved against the predicted list, the suites.
+- `t4-results.md` (2026-10-23): T4, ADR-0083, the 34 mutants (`mutants/mutate.py`, `mutants/mutants.tsv`), the suites, the moved tests against the predicted list.
 - `SHA1SUMS.txt`: SHA-1 of every file above (LF).

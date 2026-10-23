@@ -96,3 +96,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0080 | The test project mirrors the DLL tree by the type each file is named after | Accepted | 2026-10-22 |
 | ADR-0081 | The structure of the DLL and its tests is guarded by rules, not by a table | Accepted | 2026-10-22 |
 | ADR-0082 | The loot drop and the pickup of objects are ported, with named stubs for the fanfare, the chest and flagged objects | Accepted | 2026-10-23 |
+| ADR-0083 | The cut of the grass keeps the binary's draws and order and queues only the effect | Accepted | 2026-10-23 |

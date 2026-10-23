@@ -1,6 +1,6 @@
 # ADR-0077: Pickup sparks and grass-cut effects go through the effect queue
 
-- **Status**: Accepted (text corrected on 2026-10-22, the day it was written, before the author's review: the order of the loot and the sound is left to E20.e)
+- **Status**: Accepted (text corrected on 2026-10-22, the day it was written, before the author's review: the order of the loot and the sound is left to E20.e; refined by ADR-0083 for the cut of the grass)
 - **Date**: 2026-10-22
 - **Source**: this chantier: the author's answers of 2026-10-22 to Q-E0C-2 and Q-E2 (`docs/plan-e20-heros.md`, section 2; decision D-E20-59 in section 0.1)
 
