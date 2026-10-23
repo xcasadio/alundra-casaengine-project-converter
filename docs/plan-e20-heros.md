@@ -7577,7 +7577,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
   `alundra-project/`. La DLL Debug a été recopiée aussitôt, puis redéposée par la construction Debug finale.
 - Trois commits (T1, T2, `ac3cae7c`) portent la ligne `Co-Authored-By: Claude Sonnet 5.5`. P4, sans réécriture de l'historique.
 
-#### 1.26.1 E20.e0c2 — La musique coupée puis relancée du début au ramassage d'un objet-clé (fanfare B) ⏳ (détaillée le 2026-10-23, révision 0 ; D-E20-65 ; à relire par un `plan-verifier` frais)
+#### 1.26.1 E20.e0c2 — La musique coupée puis relancée du début au ramassage d'un objet-clé (fanfare B) ⏳ (détaillée le 2026-10-23, révision 0 ; D-E20-65 ; **READY** à la première relecture, `plan-verifier` frais ; exécutable après E20.f5)
 
 **Provenance.** Réponse de l'auteur du 2026-10-23 à Q-E0C-9 (« B », D-E20-65). Lecture du HEAD `55cff3df` par la session principale ;
 les faits du binaire sont ceux de la révision 3.1 d'e0c (§1.26, `docs/plan-e20-annexe/e20-e0c/posed-rev3/report.md` §1.2), relus.
