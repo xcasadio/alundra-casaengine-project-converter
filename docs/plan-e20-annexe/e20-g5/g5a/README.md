@@ -68,3 +68,36 @@ All through `ArcRun` with `ArcSpec(... RealController: true, Prefabs: true ...)`
 | (w5) a plate or a switch on the ground blocks, two aligned pillars do not chain | map 26 and a built bench | a plate (type 108) or a switch (type 45) spawned on the path; a second pillar beyond the first |
 | (w6) the pit | map 347 (`Lake Shrine (inner)-347`), pillar record 16 | the blockers, records 6 and 11, removed by a write of the harness (`DestroyEntity`), hero at (168, 232, 48) east or (240, 232, 48) west; plus one test with no removal (the pillar stays blocked) |
 | (w7) the 13 inert pillars | map 423 (`Nirude (inner)-423`), records of type 430 | the hero pushes against each; no native run, no motion |
+
+## T1 - phase A, the pure functions (tests first)
+
+Files: `Alundra/Ai/Objects/PillarAi.cs` (new; no production caller, the key is not registered before T2), `Alundra.Tests/Ai/Objects/PillarAiStepTests.cs` (a1),
+`PillarAiDirectionTests.cs` (a2), `PillarAiWordTests.cs` (a3), `PillarAiGoldenTests.cs` (the 14 goldens through `PillarAi.Tick`), and `AnnexFiles.PillarAnnex`
+in `Alundra.Tests/Support/AnnexFiles.cs` (finds `docs/plan-e20-annexe/e20-g5/disc/c76_goldens.json` above the test binaries).
+
+Design: `PillarAi.Step(counter, contact, animation)` returns a `CounterStep` (the counter after the tick and four flags: sound, animate, stop, clear);
+`PillarAi.Direction(pillar, hero)` is `GetPushablePillarPushDirection` (it reads `ModdedPosX`, `Width`, `PosX`, `PosY`, as the binary reads `+0x1D8`, `+0x1F0`,
+`+0x114`, `+0x118`); `ReadCounter` and `WriteCounter` hold the signed word `+0x274` little-endian on `Bytes[0..3]`; `Tick` is the thin handler (the contact is
+`hero.XCollisionEntity == pillar`). The stop of the sound is the named stub `StopSoundEffect`, journalled in `StopSoundStubCallsForTests` (thread-static).
+
+Red on the skeleton (the signatures compile and throw `NotImplementedException`; Release, neutralised copy, `--filter FullyQualifiedName~PillarAi`):
+11 tests, 10 failed, 1 passed (the one that pins the SHA-256 of the golden file, which needs no code).
+
+| red before | green after |
+|---|---|
+| `PillarAiStepTests.A1_WithTheContactUnderTheThreshold_TheCounterGoesUpByOne_AndNothingElseHappens_AtTheThresholdTheSoundAndTheAnimationStart` | green |
+| `PillarAiStepTests.A1_TheThresholdIs31Exactly_30IsStillCounting_32AndMoreAreAlreadyPushing_NoOverflowAtTheTop` | green |
+| `PillarAiStepTests.A1_WithoutTheContact_TheCounterIsReset_TheAnimationIsCleared_AndTheStopOfTheSoundIsAskedOnlyIfTheAnimationWas1` | green |
+| `PillarAiDirectionTests.A2_TheFourSides_EastWestNorthSouth_AreTheValues_0x18_8_16_0` | green |
+| `PillarAiDirectionTests.A2_TheWidthBounds_AtTheWidthTheColumnsStillOverlap_OneMoreIsTheHorizontalSide_ForBothSigns` | green |
+| `PillarAiDirectionTests.A2_TheAxisIsPickedOnTheModdedPositions_TheSenseOnThePositions_AndAnEqualPositionTakesTheSecondValue` | green |
+| `PillarAiDirectionTests.A2_TheWrapOfTheOffset_MinusTheMinimumStaysTheMinimum_SoTheColumnsOverlap_NextToTheOrdinaryHorizontalSide` | green |
+| `PillarAiWordTests.A3_TheWordRoundTrips_ForZero_31_MinusOne_AndTheLimits` | green |
+| `PillarAiWordTests.A3_TheBytesAreLittleEndian_AndOnlyTheFirstFourAreTouched` | green |
+| `PillarAiGoldenTests.TheGoldens_AreFollowedWordForWord_TheCounterTheAnimationTheDirectionTheSoundAndItsStop` | green |
+| `PillarAiGoldenTests.TheGoldenFile_IsTheOneTheDiscoveryPinned_14Vectors_10WithTheContactAnd4Without` (green before and after) | green |
+
+After the implementation: 11 tests, 0 failed. The golden test plays the 14 vectors (10 with the contact, 4 without) through `Tick`: the three written words, the sound
+journal (8 sounds) and the stop journal (2 stops) equal the machine's, the four directions 0, 8, 16, 24 all appear, and the read-only fields are unchanged.
+`python -B tools/dll-structure/check_names.py --rules`: 215 DLL files, 452 test files, 0 finding, 1 warning (the one at the start, `TextBoxGpu.cs:266`).
+No existing test moved (nothing registers the key yet); the mutants of the plan are run in T3 once the registration exists.
