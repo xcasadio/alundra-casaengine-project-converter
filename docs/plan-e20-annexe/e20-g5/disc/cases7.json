@@ -1,0 +1,31 @@
+[
+ {
+  "name": "pillar347_west_pit",
+  "arrival": true,
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-347",
+  "hero": [
+   240,
+   232,
+   48
+  ],
+  "segments": [
+   [
+    "L",
+    230
+   ],
+   [
+    "",
+    10
+   ],
+   [
+    "L",
+    90
+   ]
+  ],
+  "watch": [
+   16
+  ],
+  "settle": 6
+ }
+]

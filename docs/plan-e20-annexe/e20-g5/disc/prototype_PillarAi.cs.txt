@@ -1,0 +1,56 @@
+#nullable enable
+using Alundra.Maps;
+using Alundra.Events;
+using Alundra.Session;
+using Alundra.Entities;
+
+namespace Alundra.Ai.Objects;
+
+/// <summary>PROTOTYPE (E20.g5 discovery, scratch copy only): C76 0x8007C024 of the pushable pillar (sprite type 430) and its helper 0x8003AC9C, from the disassembly checked against the real code (c76_full.py).</summary>
+internal static class PillarAi
+{
+    internal const int SpriteType = 430;
+    internal const int Code = 76;
+    internal const int PushSfx = 0x19;
+
+    internal static void Register(NativeSpriteRegistry registry)
+        => registry.Register(ScriptHelper.ProgramCTick, Code, new[] { SpriteType }, (entity, context, state) => Tick(entity, context));
+
+    internal static void Tick(EntityScriptProxy e, IEntityWorldContext context)
+    {
+        if (context.PlayerEntity is not { } hero)
+        {
+            return;
+        }
+
+        if (ReferenceEquals(hero.XCollisionEntity, e))
+        {
+            if (e.Bytes[0] < 0x1f)
+            {
+                e.Bytes[0]++;
+                return;
+            }
+
+            context.SoundPlayer?.PlaySfx(PushSfx);
+            e.TargetAnimationId = 1;
+            e.TargetDirection = (uint)((PushDirection(e, hero) + 0x10) & 0x1f);
+            return;
+        }
+
+        e.Bytes[0] = 0;
+        e.TargetAnimationId = 0;
+    }
+
+    /// <summary>0x8003AC9C: the axis is picked by the offset of the centres against the widths, the sense by the positions.</summary>
+    internal static int PushDirection(EntityScriptProxy pillar, EntityScriptProxy hero)
+    {
+        var dx = (hero.PosX + hero.ModX) - (pillar.PosX + pillar.ModX);
+        var side = dx < 0 ? hero.Width < -dx : pillar.Width < dx;
+        if (!side)
+        {
+            return (hero.PosY < pillar.PosY ? 1 : 0) << 4;
+        }
+
+        return hero.PosX < pillar.PosX ? 8 : 0x18;
+    }
+}

@@ -1,0 +1,10 @@
+--- /dev/fd/63	2026-10-23 12:57:10.000000000 +0200
++++ probe/Alundra/Ai/NativeSpriteRegistry.cs	2026-10-23 12:36:15.340643800 +0200
+@@ -42,6 +42,7 @@
+         PickupAi.Register(registry);
+         ChargedArrowAi.Register(registry);
+         ArrowAi.Register(registry);
++        PillarAi.Register(registry);
+         return registry;
+     }
+ 

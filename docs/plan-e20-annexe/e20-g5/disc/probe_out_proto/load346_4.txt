@@ -1,0 +1,9 @@
+case load346_4: map Lake Shrine (inner)-346 ; hero placed at (204,808,16) ; flags set 
+entities of the map (record, sprite type, pos, status, program indexes A..F, sprite program indexes A..F, flags):
+  rec  24 type  430 pos (132,728,48) status Normal idx [0,0,0,0,0,0] sprite [0,0,76,0,0,0] flags 0x330180 collidable True
+frame hold | hero x y z anim xcoll adj | per watched rec: x y z anim dir status fx fy adj xcoll ground
+   1 -  | H 204 808 16 a0 d16 f0,0 ctl0 xc=- adj0 | [rec24 132 728 48 a0 d0 s2 f0,0 adj0 xc=- g1]
+   2 -  | H 204 808 16 a0 d16 f0,0 ctl0 xc=- adj0 | [rec24 132 728 48 a0 d0 s2 f0,0 adj0 xc=- g1]
+   3 -  | H 204 808 16 a0 d16 f0,0 ctl0 xc=- adj0 | [rec24 132 728 48 a0 d0 s2 f0,0 adj0 xc=- g1]
+native handler runs during the case: 3
+skipped or exceeded instructions (frame slot pc opcode kind):

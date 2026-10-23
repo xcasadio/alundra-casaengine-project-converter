@@ -1,0 +1,5 @@
+exported maps read: 483 ; placements of the 4 families in the export: 111 ; in data-extracted: 111
+identical sets: True
+Counter({'STATUE': 62, 'PILIER': 24, 'POUSSOIR': 16, 'BLOC': 9})
+sprite-records.json entries: 395
+entry shape: {"BankKey": "0", "MoreFlags": 128, "CanPickup": 161, "FlagsPortraitShadowType": 131, "ProgramLoad": 0, "ProgramTick": 0, "ProgramTouch": 0, "ProgramDeactivate": 0, "ProgramInteract": 0, "OffsetX": -10, "OffsetY": -7, "OffsetZ": 0, "SizeX": 20, "SizeY": 14, "SizeZ": 32, "BreakEffect": 0, "Contents": 

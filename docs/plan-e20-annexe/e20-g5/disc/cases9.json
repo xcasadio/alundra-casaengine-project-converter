@@ -1,0 +1,68 @@
+[
+ {
+  "name": "pillar347_east_pit_open",
+  "arrival": true,
+  "destroy": [
+   6,
+   11
+  ],
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-347",
+  "hero": [
+   168,
+   232,
+   48
+  ],
+  "segments": [
+   [
+    "R",
+    260
+   ],
+   [
+    "",
+    10
+   ],
+   [
+    "R",
+    120
+   ]
+  ],
+  "watch": [
+   16
+  ],
+  "settle": 6
+ },
+ {
+  "name": "pillar347_west_pit_open",
+  "arrival": true,
+  "destroy": [
+   6,
+   11
+  ],
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-347",
+  "hero": [
+   240,
+   232,
+   48
+  ],
+  "segments": [
+   [
+    "L",
+    240
+   ],
+   [
+    "",
+    10
+   ],
+   [
+    "L",
+    120
+   ]
+  ],
+  "watch": [
+   16
+  ],
+  "settle": 6
+ }
+]

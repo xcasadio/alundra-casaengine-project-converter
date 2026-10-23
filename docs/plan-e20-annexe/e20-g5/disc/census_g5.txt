@@ -1,0 +1,123 @@
+BLOC header: {'Sector5Id': 229, 'BinOffset': 2048, 'MemoryAddress': 1606260, 'SpriteInfoMemoryAddress': 1391712, 'AnimationOffsetsPointer': 214580, 'AnimationsPointer': 214652, 'FrameCollisionPointer': 215072, 'FramesPointer': 215072, 'MoreFlags': 128, 'CanPickup': 32, 'FlagsPortraitShadowType': 3, 'ProgramLoad': 0, 'ProgramTick': 0, 'ProgramTouch': 0, 'ProgramDeactivate': 0, 'ProgramInteract': 0, 'OffsetX': -24, 'OffsetY': -16, 'OffsetZ': 0, 'SizeX': 48, 'SizeY': 32, 'SizeZ': 32, 'BreakEffect': 0, 'Contents': 0}
+STATUE header: {'Sector5Id': 42, 'BinOffset': 13210176, 'MemoryAddress': 1557952, 'SpriteInfoMemoryAddress': 1554080, 'AnimationOffsetsPointer': 3904, 'AnimationsPointer': 3932, 'FrameCollisionPointer': 3980, 'FramesPointer': 3980, 'MoreFlags': 128, 'CanPickup': 32, 'FlagsPortraitShadowType': 3, 'ProgramLoad': 0, 'ProgramTick': 0, 'ProgramTouch': 0, 'ProgramDeactivate': 0, 'ProgramInteract': 0, 'OffsetX': -10, 'OffsetY': -6, 'OffsetZ': 0, 'SizeX': 20, 'SizeY': 14, 'SizeZ': 32, 'BreakEffect': 10, 'Contents': 0}
+PILIER header: {'Sector5Id': 174, 'BinOffset': 96289568, 'MemoryAddress': 1554512, 'SpriteInfoMemoryAddress': 1527680, 'AnimationOffsetsPointer': 26864, 'AnimationsPointer': 26892, 'FrameCollisionPointer': 26940, 'FramesPointer': 26940, 'MoreFlags': 128, 'CanPickup': 1, 'FlagsPortraitShadowType': 51, 'ProgramLoad': 0, 'ProgramTick': 76, 'ProgramTouch': 0, 'ProgramDeactivate': 0, 'ProgramInteract': 0, 'OffsetX': -10, 'OffsetY': -6, 'OffsetZ': 0, 'SizeX': 20, 'SizeY': 14, 'SizeZ': 32, 'BreakEffect': 10, 'Contents': 0}
+POUSSOIR header: {'Sector5Id': 89, 'BinOffset': 96945888, 'MemoryAddress': 1544764, 'SpriteInfoMemoryAddress': 1528640, 'AnimationOffsetsPointer': 16156, 'AnimationsPointer': 16184, 'FrameCollisionPointer': 16252, 'FramesPointer': 16252, 'MoreFlags': 128, 'CanPickup': 32, 'FlagsPortraitShadowType': 3, 'ProgramLoad': 0, 'ProgramTick': 0, 'ProgramTouch': 0, 'ProgramDeactivate': 0, 'ProgramInteract': 0, 'OffsetX': -12, 'OffsetY': -8, 'OffsetZ': 0, 'SizeX': 24, 'SizeY': 16, 'SizeZ': 16, 'BreakEffect': 0, 'Contents': 0}
+
+== BLOC: 9 records (9 enabled) on 4 maps (enabled): [23, 100, 102, 382]
+  map 100 rec   0 en=1 dir=0x40 (spawn@load=1 dirbits=0) pos( 39, 55,h 4) zone[0..51]x[0..59] idx A0 B0 C129 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 100 rec   1 en=1 dir=0x40 (spawn@load=1 dirbits=0) pos( 39, 23,h 4) zone[0..51]x[0..59] idx A0 B0 C130 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 100 rec   2 en=1 dir=0x40 (spawn@load=1 dirbits=0) pos( 59, 41,h 4) zone[0..51]x[0..59] idx A0 B0 C131 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 100 rec   3 en=1 dir=0x40 (spawn@load=1 dirbits=0) pos( 61, 59,h 4) zone[0..51]x[0..59] idx A0 B0 C132 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 100 rec   4 en=1 dir=0x40 (spawn@load=1 dirbits=0) pos( 69, 37,h 4) zone[0..51]x[0..59] idx A0 B0 C133 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 102 rec   0 en=1 dir=0x40 (spawn@load=1 dirbits=0) pos( 29, 98,h 8) zone[0..51]x[0..59] idx A129 B0 C129 D129 E0 F0 u10=0 contents=0 scripted=ACD
+  map 102 rec   9 en=1 dir=0x40 (spawn@load=1 dirbits=0) pos( 49, 98,h 8) zone[0..51]x[0..59] idx A138 B0 C138 D138 E0 F0 u10=0 contents=0 scripted=ACD
+  map  23 rec  12 en=1 dir=0x42 (spawn@load=1 dirbits=2) pos( 63,103,h 4) zone[28..51]x[28..55] idx A130 B0 C139 D0 E0 F129 u10=0 contents=0 scripted=ACF
+  map 382 rec   7 en=1 dir=0x40 (spawn@load=1 dirbits=0) pos( 59, 87,h 6) zone[0..34]x[30..59] idx A136 B0 C136 D136 E0 F0 u10=0 contents=0 scripted=ACD
+
+== STATUE: 62 records (62 enabled) on 11 maps (enabled): [2, 37, 51, 102, 115, 117, 149, 152, 351, 352, 382]
+  map 102 rec   1 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 30, 94,h 8) zone[0..51]x[0..59] idx A130 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 102 rec   2 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 33, 94,h 8) zone[0..51]x[0..59] idx A130 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 102 rec   3 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 34, 96,h 8) zone[0..51]x[0..59] idx A130 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 102 rec   4 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 34, 99,h 8) zone[0..51]x[0..59] idx A130 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 102 rec   5 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 34,103,h 8) zone[0..51]x[0..59] idx A130 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 102 rec   6 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 48, 94,h 8) zone[0..51]x[0..59] idx A130 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 102 rec   7 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 45, 94,h 8) zone[0..51]x[0..59] idx A130 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 102 rec   8 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 44, 96,h 8) zone[0..51]x[0..59] idx A130 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 102 rec  10 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 44, 99,h 8) zone[0..51]x[0..59] idx A130 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 102 rec  11 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 44,103,h 8) zone[0..51]x[0..59] idx A130 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 115 rec   0 en=1 dir=0x83 (spawn@load=0 dirbits=3) pos(  6,  8,h 2) zone[0..51]x[0..59] idx A0 B0 C130 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 115 rec   1 en=1 dir=0x82 (spawn@load=0 dirbits=2) pos( 14,  8,h 2) zone[0..51]x[0..59] idx A0 B0 C131 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 117 rec  17 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 74, 56,h 4) zone[33..51]x[26..59] idx A0 B0 C146 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 149 rec  21 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 43,102,h10) zone[0..51]x[0..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 152 rec  12 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 54, 88,h10) zone[0..51]x[0..59] idx A141 B0 C141 D0 E0 F141 u10=0 contents=0 scripted=ACF
+  map 152 rec  13 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 66, 72,h10) zone[0..51]x[0..59] idx A0 B0 C142 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 152 rec  14 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 54, 62,h10) zone[0..51]x[0..59] idx A0 B0 C143 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 152 rec  15 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 60, 86,h10) zone[0..51]x[0..59] idx A0 B0 C144 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 152 rec  16 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 76, 94,h10) zone[0..51]x[0..59] idx A0 B0 C145 D0 E0 F0 u10=0 contents=0 scripted=C
+  map   2 rec   9 en=1 dir=0xC3 (spawn@load=1 dirbits=3) pos( 34, 48,h26) zone[0..51]x[0..59] idx A138 B0 C138 D0 E0 F138 u10=0 contents=0 scripted=ACF
+  map 351 rec  19 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 48, 86,h10) zone[0..32]x[36..59] idx A0 B0 C148 D0 E0 F148 u10=0 contents=0 scripted=CF
+  map 351 rec  20 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 58, 86,h10) zone[0..32]x[36..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 351 rec  21 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 48, 94,h10) zone[0..32]x[36..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 351 rec  22 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 58, 94,h10) zone[0..32]x[36..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 352 rec   8 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 16,100,h 4) zone[0..20]x[42..59] idx A137 B0 C137 D0 E0 F137 u10=0 contents=0 scripted=ACF
+  map  37 rec   0 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 24, 22,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec   1 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 26, 22,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec   2 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 28, 22,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec   3 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 30, 22,h 8) zone[0..31]x[0..27] idx A0 B0 C129 D0 E0 F129 u10=0 contents=0 scripted=CF
+  map  37 rec   4 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 32, 22,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec   5 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 34, 22,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec   6 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 36, 22,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec   7 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 22, 22,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec   8 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 22, 24,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec   9 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 22, 26,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec  10 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 22, 28,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec  11 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 38, 22,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec  12 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 38, 24,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec  13 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 38, 26,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec  14 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 38, 28,h 8) zone[0..31]x[0..27] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  37 rec  17 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 84, 26,h 8) zone[30..51]x[0..35] idx A0 B0 C132 D0 E0 F131 u10=0 contents=0 scripted=CF
+  map 382 rec  40 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 59, 84,h 6) zone[0..34]x[30..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  51 rec  27 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 32, 70,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  28 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 34, 70,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  29 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 36, 70,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  30 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 38, 70,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  31 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 32, 72,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  32 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 34, 72,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  33 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 36, 72,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  34 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 38, 72,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  35 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 32, 74,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  36 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 34, 74,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  37 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 36, 74,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  38 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 38, 74,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  39 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 32, 76,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  40 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 34, 76,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  41 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 36, 76,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  42 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 38, 76,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  43 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 32, 78,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  44 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 34, 78,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  45 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 36, 78,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+  map  51 rec  46 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 38, 78,h 8) zone[3..14]x[34..56] idx A0 B0 C155 D0 E0 F155 u10=0 contents=0 scripted=CF
+
+== PILIER: 24 records (24 enabled) on 8 maps (enabled): [26, 30, 341, 343, 344, 346, 347, 423]
+  map  26 rec  29 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 26, 52,h 2) zone[0..51]x[0..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map  30 rec  50 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 15, 14,h 0) zone[0..15]x[0..34] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 341 rec  21 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 94, 96,h 2) zone[36..51]x[34..59] idx A151 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 341 rec  22 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 92, 98,h 2) zone[36..51]x[34..59] idx A151 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 341 rec  23 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 96, 98,h 2) zone[36..51]x[34..59] idx A151 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=A
+  map 343 rec  40 en=1 dir=0x80 (spawn@load=0 dirbits=0) pos( 92, 64,h 0) zone[0..51]x[0..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 344 rec  35 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 86, 26,h 8) zone[39..51]x[0..25] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 344 rec  36 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 58, 72,h 2) zone[18..35]x[33..51] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 346 rec  24 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 10, 90,h 6) zone[0..15]x[40..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 346 rec  34 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 22, 26,h 8) zone[0..15]x[0..26] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 347 rec  16 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 16, 28,h 6) zone[0..21]x[0..23] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 423 rec  12 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 22, 28,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  13 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 22, 26,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  14 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 22, 24,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  15 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 24, 22,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  16 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 26, 22,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  17 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 28, 22,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  18 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 32, 22,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  19 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 34, 22,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  20 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 36, 22,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  21 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 38, 24,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  22 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 38, 26,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  23 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 38, 28,h 8) zone[3..28]x[8..23] idx A0 B0 C140 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 423 rec  24 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 30, 22,h 8) zone[3..28]x[8..23] idx A152 B0 C152 D0 E0 F0 u10=0 contents=0 scripted=AC
+
+== POUSSOIR: 16 records (16 enabled) on 2 maps (enabled): [40, 426]
+  map  40 rec   0 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos(  8,104,h 2) zone[0..15]x[32..59] idx A0 B0 C130 D0 E0 F130 u10=0 contents=0 scripted=CF
+  map  40 rec   1 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 12,104,h 2) zone[0..15]x[32..59] idx A0 B0 C131 D0 E0 F129 u10=0 contents=0 scripted=CF
+  map  40 rec   2 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 16,108,h 2) zone[0..15]x[32..59] idx A0 B0 C132 D0 E0 F131 u10=0 contents=0 scripted=CF
+  map  40 rec   3 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 20,106,h 2) zone[0..15]x[32..59] idx A0 B0 C129 D0 E0 F129 u10=0 contents=0 scripted=CF
+  map  40 rec   4 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 82,106,h 2) zone[36..51]x[32..59] idx A0 B0 C133 D0 E0 F132 u10=0 contents=0 scripted=CF
+  map  40 rec   5 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 86,104,h 2) zone[36..51]x[32..59] idx A0 B0 C133 D0 E0 F132 u10=0 contents=0 scripted=CF
+  map  40 rec   6 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 90,104,h 2) zone[36..51]x[32..59] idx A0 B0 C133 D0 E0 F132 u10=0 contents=0 scripted=CF
+  map  40 rec   7 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 94,104,h 2) zone[36..51]x[32..59] idx A0 B0 C133 D0 E0 F132 u10=0 contents=0 scripted=CF
+  map 426 rec  14 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos(  8,102,h 2) zone[0..12]x[32..59] idx A0 B0 C142 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 426 rec  15 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 12,102,h 2) zone[0..12]x[32..59] idx A0 B0 C143 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 426 rec  16 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 16,102,h 2) zone[0..12]x[32..59] idx A0 B0 C144 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 426 rec  17 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 20,102,h 2) zone[0..12]x[32..59] idx A0 B0 C145 D0 E0 F0 u10=0 contents=0 scripted=C
+  map 426 rec  29 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 82, 98,h 2) zone[40..48]x[32..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 426 rec  30 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 86, 98,h 2) zone[40..48]x[32..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 426 rec  31 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 90, 98,h 2) zone[40..48]x[32..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-
+  map 426 rec  32 en=1 dir=0xC0 (spawn@load=1 dirbits=0) pos( 94, 98,h 2) zone[40..48]x[32..59] idx A0 B0 C0 D0 E0 F0 u10=0 contents=0 scripted=-

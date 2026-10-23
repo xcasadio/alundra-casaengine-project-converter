@@ -1,0 +1,174 @@
+[
+ {
+  "name": "load30_0",
+  "arrival": true,
+  "zone": "Ancient Shrine",
+  "world": "Ancient Shrine-30",
+  "hero": [
+   204,
+   280,
+   16
+  ],
+  "segments": [
+   [
+    "",
+    3
+   ]
+  ],
+  "watch": [
+   50
+  ],
+  "settle": 6
+ },
+ {
+  "name": "load341_1",
+  "arrival": true,
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-341",
+  "hero": [
+   1068,
+   728,
+   80
+  ],
+  "segments": [
+   [
+    "",
+    3
+   ]
+  ],
+  "watch": [
+   21,
+   22,
+   23
+  ],
+  "settle": 6
+ },
+ {
+  "name": "load344_2",
+  "arrival": true,
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-344",
+  "hero": [
+   1092,
+   200,
+   64
+  ],
+  "segments": [
+   [
+    "",
+    3
+   ]
+  ],
+  "watch": [
+   35
+  ],
+  "settle": 6
+ },
+ {
+  "name": "load344_3",
+  "arrival": true,
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-344",
+  "hero": [
+   636,
+   680,
+   16
+  ],
+  "segments": [
+   [
+    "",
+    3
+   ]
+  ],
+  "watch": [
+   36
+  ],
+  "settle": 6
+ },
+ {
+  "name": "load346_4",
+  "arrival": true,
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-346",
+  "hero": [
+   204,
+   808,
+   16
+  ],
+  "segments": [
+   [
+    "",
+    3
+   ]
+  ],
+  "watch": [
+   24
+  ],
+  "settle": 6
+ },
+ {
+  "name": "load346_5",
+  "arrival": true,
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-346",
+  "hero": [
+   204,
+   216,
+   16
+  ],
+  "segments": [
+   [
+    "",
+    3
+   ]
+  ],
+  "watch": [
+   34
+  ],
+  "settle": 6
+ },
+ {
+  "name": "load347_6",
+  "arrival": true,
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-347",
+  "hero": [
+   252,
+   200,
+   48
+  ],
+  "segments": [
+   [
+    "",
+    3
+   ]
+  ],
+  "watch": [
+   16
+  ],
+  "settle": 6
+ },
+ {
+  "name": "load423_7",
+  "arrival": true,
+  "zone": "Nirude",
+  "world": "Nirude (inner)-423",
+  "hero": [
+   372,
+   184,
+   64
+  ],
+  "segments": [
+   [
+    "",
+    3
+   ]
+  ],
+  "watch": [
+   12,
+   13,
+   24
+  ],
+  "settle": 6
+ }
+]

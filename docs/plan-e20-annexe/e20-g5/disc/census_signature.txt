@@ -1,0 +1,22 @@
+== PILIER 24 placements, 24 enabled
+   scripted slots -    born by load   :  7 placements ; maps {26: 1, 30: 1, 344: 2, 346: 2, 347: 1}
+   scripted slots -    born by script :  1 placements ; maps {343: 1}
+   scripted slots A    born by load   :  3 placements ; maps {341: 3}
+   scripted slots AC   born by load   :  1 placements ; maps {423: 1}
+   scripted slots C    born by load   : 12 placements ; maps {423: 12}
+== STATUE 62 placements, 62 enabled
+   scripted slots -    born by load   : 19 placements ; maps {37: 14, 149: 1, 351: 3, 382: 1}
+   scripted slots A    born by script : 10 placements ; maps {102: 10}
+   scripted slots ACF  born by load   :  3 placements ; maps {2: 1, 152: 1, 352: 1}
+   scripted slots C    born by load   :  5 placements ; maps {117: 1, 152: 4}
+   scripted slots C    born by script :  2 placements ; maps {115: 2}
+   scripted slots CF   born by load   :  3 placements ; maps {37: 2, 351: 1}
+   scripted slots CF   born by script : 20 placements ; maps {51: 20}
+== BLOC 9 placements, 9 enabled
+   scripted slots ACD  born by load   :  3 placements ; maps {102: 2, 382: 1}
+   scripted slots ACF  born by load   :  1 placements ; maps {23: 1}
+   scripted slots C    born by load   :  5 placements ; maps {100: 5}
+== POUSSOIR 16 placements, 16 enabled
+   scripted slots -    born by load   :  4 placements ; maps {426: 4}
+   scripted slots C    born by load   :  4 placements ; maps {426: 4}
+   scripted slots CF   born by load   :  8 placements ; maps {40: 8}

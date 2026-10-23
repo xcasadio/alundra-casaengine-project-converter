@@ -1,0 +1,9 @@
+case load30_0: map Ancient Shrine-30 ; hero placed at (204,280,16) ; flags set 
+entities of the map (record, sprite type, pos, status, program indexes A..F, sprite program indexes A..F, flags):
+  rec  50 type  430 pos (192,120,16) status Normal idx [0,0,0,0,0,0] sprite [0,0,76,0,0,0] flags 0x330180 collidable True
+frame hold | hero x y z anim xcoll adj | per watched rec: x y z anim dir status fx fy adj xcoll ground
+   1 -  | H 204 280 16 a0 d16 f0,0 ctl0 xc=- adj0 | [rec50 192 120 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+   2 -  | H 204 280 16 a0 d16 f0,0 ctl0 xc=- adj0 | [rec50 192 120 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+   3 -  | H 204 280 16 a0 d16 f0,0 ctl0 xc=- adj0 | [rec50 192 120 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+native handler runs during the case: 3
+skipped or exceeded instructions (frame slot pc opcode kind):

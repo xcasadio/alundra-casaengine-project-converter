@@ -1,0 +1,5 @@
+[
+ {"name":"pillar26_east","zone":"Ancient Shrine","world":"Ancient Shrine-26","hero":[300,424,16],"segments":[["R",160]],"watch":[29],"settle":6},
+ {"name":"pillar26_north","zone":"Ancient Shrine","world":"Ancient Shrine-26","hero":[324,452,16],"segments":[["U",160]],"watch":[29],"settle":6},
+ {"name":"statue2_east","zone":"Overworld","world":"Overworld 0,1-2","hero":[396,392,208],"segments":[["R",260],["",60]],"watch":[9],"settle":6}
+]

@@ -1,0 +1,483 @@
+=== map 2 (2) size 52x60
+   rec   2 G 30 Coffre au trésor                     pos( 50,108,h 4) scripted= dir=0x40
+   rec   3 G 30 Coffre au trésor                     pos( 44,116,h 4) scripted= dir=0x40
+   rec   9 M 42 Statue poussable (événement)         pos( 34, 48,h26) scripted=ACF dir=0xC3
+   rec  10 G 30 Coffre au trésor                     pos( 70, 62,h10) scripted= dir=0x40
+   rec  17 G 30 Coffre au trésor                     pos( 52, 66,h22) scripted= dir=0x00
+   rec  28 M165 Porte Muruta                         pos( 89,110,h 4) scripted=ACF dir=0xC0
+   rec  35 G 30 Coffre au trésor                     pos( 80, 38,h28) scripted= dir=0x40
+   opcode missing 0x00: 188 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@4', 'A[0]@5']
+   opcode missing 0xFF: 28 sites: ['A[10]@221', 'A[12]@237', 'A[21]@272', 'A[29]@283', 'B[1]@302', 'B[2]@394']
+   opcode 0x5E: 1 sites: ['C[33]@1363 [137, 0, 32]']
+=== map 23 (23) size 52x60
+   rec   0 M 72 Trappe d’escalier (grande)           pos( 67, 17,h 4) scripted=AC dir=0xC0
+   rec   1 M 72 Trappe d’escalier (grande)           pos( 59, 17,h 4) scripted=C dir=0xC0
+   rec   2 M 72 Trappe d’escalier (grande)           pos( 51, 17,h 4) scripted=AC dir=0xC0
+   rec   3 M 49 Interrupteur (levier)                pos( 51, 29,h 4) scripted=ACD dir=0xC0
+   rec   4 M 49 Interrupteur (levier)                pos( 59, 29,h 4) scripted=CD dir=0xC0
+   rec   5 M 49 Interrupteur (levier)                pos( 67, 29,h 4) scripted=ACD dir=0xC0
+   rec   7 M 70 Grille de fer (grande)               pos( 37, 63,h 6) scripted=C dir=0xC2
+   rec   8 G 30 Coffre au trésor                     pos( 42, 62,h 6) scripted= dir=0x40
+   rec   9 M 57 Plateforme flottante (grande)        pos( 11,107,h 3) scripted=AC dir=0xC1
+   rec  11 M 57 Plateforme flottante (grande)        pos( 75, 93,h 3) scripted=C dir=0xC0
+   rec  12 G229 Bloc à pousser/attaquer              pos( 63,103,h 4) scripted=ACF dir=0x42
+   rec  14 M 43 Statue de pierre                     pos( 68, 60,h 4) scripted=CF dir=0xC0
+   rec  19 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 32, 58,h 2) scripted=C dir=0xC0
+   rec  20 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 32, 66,h 2) scripted=C dir=0xC0
+   rec  21 M 67 Porte (petite)                       pos(  8, 16,h 4) scripted=ACF dir=0xC0
+   opcode missing 0x00: 111 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@7', 'A[2]@178']
+   opcode missing 0xFF: 37 sites: ['A[2]@177', 'A[3]@197', 'A[4]@217', 'A[6]@228', 'A[9]@244', 'A[12]@267']
+   opcode missing 0x96: 1 sites: ['C[15]@1241']
+=== map 26 (26) size 52x60
+   rec   1 M 63 Flamme                               pos( 17, 61,h 4) scripted=AC dir=0x80
+   rec   2 M 63 Flamme                               pos( 15, 59,h 4) scripted=AC dir=0x82
+   rec   3 M 63 Flamme                               pos( 17, 57,h 4) scripted=AC dir=0x81
+   rec   4 M 63 Flamme                               pos( 19, 59,h 4) scripted=AC dir=0x83
+   rec  19 M 70 Grille de fer (grande)               pos( 48, 33,h 2) scripted=C dir=0x82
+   rec  20 M 49 Interrupteur (levier)                pos( 10, 26,h 2) scripted=CD dir=0xC0
+   rec  21 M 49 Interrupteur (levier)                pos( 20, 26,h 2) scripted=CD dir=0xC0
+   rec  22 M 49 Interrupteur (levier)                pos( 30, 26,h 2) scripted=CD dir=0xC0
+   rec  23 M 70 Grille de fer (grande)               pos( 72, 85,h 2) scripted=C dir=0x82
+   rec  27 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 98, 88,h 2) scripted=AC dir=0xC0
+   rec  29 M174 Pilier poussable (PRG)               pos( 26, 52,h 2) scripted= dir=0xC0
+   rec  30 M114 Statue de roi, serviteur et déesse   pos( 51, 72,h 2) scripted=ACF dir=0x80
+   rec  31 G 30 Coffre au trésor                     pos(  7, 59,h 2) scripted= dir=0x40
+   rec  32 G 30 Coffre au trésor                     pos( 78, 66,h 2) scripted= dir=0x40
+   rec  34 M 63 Flamme                               pos( 68, 32,h 2) scripted=AC dir=0x80
+   rec  35 M 63 Flamme                               pos( 66, 30,h 2) scripted=AC dir=0x82
+   rec  36 M 63 Flamme                               pos( 68, 28,h 2) scripted=AC dir=0x81
+   rec  37 M 63 Flamme                               pos( 70, 30,h 2) scripted=AC dir=0x83
+   rec  39 M 63 Flamme                               pos( 88, 32,h 2) scripted=AC dir=0x80
+   rec  40 M 63 Flamme                               pos( 86, 30,h 2) scripted=AC dir=0x82
+   rec  41 M 63 Flamme                               pos( 88, 28,h 2) scripted=AC dir=0x81
+   rec  42 M 63 Flamme                               pos( 90, 30,h 2) scripted=AC dir=0x83
+   opcode missing 0x00: 125 sites: ['A[0]@0', 'A[0]@1', 'A[1]@226', 'A[1]@227', 'A[2]@242', 'A[2]@243']
+   opcode missing 0xFF: 35 sites: ['A[1]@225', 'A[2]@241', 'A[3]@257', 'A[28]@326', 'A[31]@330', 'B[1]@367']
+=== map 30 (30) size 52x60
+   rec   0 M 57 Plateforme flottante (grande)        pos( 61, 11,h 2) scripted=C dir=0x80
+   rec   1 M 57 Plateforme flottante (grande)        pos( 77, 13,h 5) scripted=C dir=0xC0
+   rec   2 M 57 Plateforme flottante (grande)        pos( 97, 13,h 2) scripted=C dir=0xC0
+   rec   3 M 57 Plateforme flottante (grande)        pos( 15, 97,h 3) scripted= dir=0xC0
+   rec  13 M 49 Interrupteur (levier)                pos( 87, 21,h 4) scripted=CD dir=0xC0
+   rec  17 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 58, 24,h 8) scripted=AC dir=0xC0
+   rec  18 M108 Plaque à motif                       pos(  9, 91,h 2) scripted=C dir=0xC0
+   rec  19 M108 Plaque à motif                       pos( 21, 91,h 2) scripted=C dir=0xC1
+   rec  20 M108 Plaque à motif                       pos(  9,103,h 2) scripted=C dir=0xC2
+   rec  21 M108 Plaque à motif                       pos( 21,103,h 2) scripted=C dir=0xC3
+   rec  26 M 72 Trappe d’escalier (grande)           pos( 13, 83,h 2) scripted=AC dir=0x80
+   rec  27 G 30 Coffre au trésor                     pos( 15, 93,h20) scripted=C dir=0x00
+   rec  28 M114 Statue de roi, serviteur et déesse   pos( 61, 57,h 2) scripted=CF dir=0x80
+   rec  29 M114 Statue de roi, serviteur et déesse   pos( 56, 66,h 2) scripted=AC dir=0x83
+   rec  30 M114 Statue de roi, serviteur et déesse   pos( 56, 70,h 2) scripted=AC dir=0x83
+   rec  31 M114 Statue de roi, serviteur et déesse   pos( 56, 74,h 2) scripted=AC dir=0x83
+   rec  32 M114 Statue de roi, serviteur et déesse   pos( 56, 78,h 2) scripted=AC dir=0x83
+   rec  33 M114 Statue de roi, serviteur et déesse   pos( 66, 66,h 2) scripted=AC dir=0x82
+   rec  34 M114 Statue de roi, serviteur et déesse   pos( 66, 70,h 2) scripted=AC dir=0x82
+   rec  35 M114 Statue de roi, serviteur et déesse   pos( 66, 74,h 2) scripted=AC dir=0x82
+   rec  36 M114 Statue de roi, serviteur et déesse   pos( 66, 78,h 2) scripted=AC dir=0x82
+   rec  39 G 30 Coffre au trésor                     pos( 61, 64,h24) scripted=C dir=0x00
+   rec  43 G 30 Coffre au trésor                     pos( 58, 64,h24) scripted=C dir=0x00
+   rec  44 G 30 Coffre au trésor                     pos( 64, 64,h24) scripted=C dir=0x00
+   rec  47 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 10, 56,h 0) scripted=AC dir=0xC0
+   rec  48 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 20, 56,h 0) scripted=AC dir=0xC0
+   rec  50 M174 Pilier poussable (PRG)               pos( 15, 14,h 0) scripted= dir=0xC0
+   opcode missing 0x00: 627 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@4', 'A[0]@5']
+   opcode 0x60: 10 sites: ['A[0]@96 [1]', 'B[0]@96 [1]', 'C[0]@96 [1]', 'C[19]@1686 [22]', 'C[20]@1730 [23]', 'C[21]@1774 [24]']
+   opcode missing 0x60: 10 sites: ['A[0]@96', 'B[0]@96', 'C[0]@96', 'C[19]@1686', 'C[20]@1730', 'C[21]@1774']
+   opcode missing 0x6C: 6 sites: ['A[0]@98', 'B[0]@98', 'C[0]@98', 'D[0]@98', 'E[0]@98', 'F[0]@98']
+   opcode missing 0xFF: 47 sites: ['A[16]@313', 'A[18]@328', 'A[27]@336', 'A[30]@342', 'A[38]@346', 'A[39]@350']
+=== map 37 (37) size 52x60
+   rec   0 M 42 Statue poussable (événement)         pos( 24, 22,h 8) scripted= dir=0xC0
+   rec   1 M 42 Statue poussable (événement)         pos( 26, 22,h 8) scripted= dir=0xC0
+   rec   2 M 42 Statue poussable (événement)         pos( 28, 22,h 8) scripted= dir=0xC0
+   rec   3 M 42 Statue poussable (événement)         pos( 30, 22,h 8) scripted=CF dir=0xC0
+   rec   4 M 42 Statue poussable (événement)         pos( 32, 22,h 8) scripted= dir=0xC0
+   rec   5 M 42 Statue poussable (événement)         pos( 34, 22,h 8) scripted= dir=0xC0
+   rec   6 M 42 Statue poussable (événement)         pos( 36, 22,h 8) scripted= dir=0xC0
+   rec   7 M 42 Statue poussable (événement)         pos( 22, 22,h 8) scripted= dir=0xC0
+   rec   8 M 42 Statue poussable (événement)         pos( 22, 24,h 8) scripted= dir=0xC0
+   rec   9 M 42 Statue poussable (événement)         pos( 22, 26,h 8) scripted= dir=0xC0
+   rec  10 M 42 Statue poussable (événement)         pos( 22, 28,h 8) scripted= dir=0xC0
+   rec  11 M 42 Statue poussable (événement)         pos( 38, 22,h 8) scripted= dir=0xC0
+   rec  12 M 42 Statue poussable (événement)         pos( 38, 24,h 8) scripted= dir=0xC0
+   rec  13 M 42 Statue poussable (événement)         pos( 38, 26,h 8) scripted= dir=0xC0
+   rec  14 M 42 Statue poussable (événement)         pos( 38, 28,h 8) scripted= dir=0xC0
+   rec  15 M 44 Interrupteur (monter) inutilisable   pos( 52, 80,h 4) scripted=C dir=0xC0
+   rec  16 G 30 Coffre au trésor                     pos(  8, 80,h 4) scripted=ACF dir=0x00
+   rec  17 M 42 Statue poussable (événement)         pos( 84, 26,h 8) scripted=CF dir=0xC0
+   rec  18 M 57 Plateforme flottante (grande)        pos( 77, 43,h 8) scripted=C dir=0xC0
+   opcode missing 0x00: 69 sites: ['A[0]@0', 'A[0]@1', 'A[0]@3', 'A[0]@4', 'A[0]@5', 'A[0]@11']
+   opcode missing 0xFF: 14 sites: ['A[1]@47', 'B[1]@76', 'C[1]@100', 'C[2]@199', 'C[3]@246', 'C[4]@271']
+=== map 40 (40) size 52x60
+   rec   0 M 89 Interrupteur poussoir                pos(  8,104,h 2) scripted=CF dir=0xC0
+   rec   1 M 89 Interrupteur poussoir                pos( 12,104,h 2) scripted=CF dir=0xC0
+   rec   2 M 89 Interrupteur poussoir                pos( 16,108,h 2) scripted=CF dir=0xC0
+   rec   3 M 89 Interrupteur poussoir                pos( 20,106,h 2) scripted=CF dir=0xC0
+   rec   4 M 89 Interrupteur poussoir                pos( 82,106,h 2) scripted=CF dir=0xC0
+   rec   5 M 89 Interrupteur poussoir                pos( 86,104,h 2) scripted=CF dir=0xC0
+   rec   6 M 89 Interrupteur poussoir                pos( 90,104,h 2) scripted=CF dir=0xC0
+   rec   7 M 89 Interrupteur poussoir                pos( 94,104,h 2) scripted=CF dir=0xC0
+   rec   8 G 30 Coffre au trésor                     pos( 92, 90,h 2) scripted=ACF dir=0x00
+   rec   9 M 50 Interrupteur (mur)                   pos( 50, 56,h 6) scripted=CD dir=0xC0
+   rec  39 M 70 Grille de fer (grande)               pos( 13, 88,h 2) scripted=C dir=0xC0
+   rec  42 M 70 Grille de fer (grande)               pos( 87, 88,h 2) scripted=C dir=0xC0
+   opcode missing 0x00: 99 sites: ['A[0]@0', 'A[0]@1', 'A[0]@4', 'A[0]@5', 'B[0]@0', 'B[0]@1']
+   opcode missing 0xFF: 33 sites: ['A[1]@87', 'B[1]@224', 'B[2]@290', 'B[3]@343', 'B[4]@465', 'B[5]@503']
+   opcode missing 0x72: 4 sites: ['F[1]@1141', 'F[2]@1153', 'F[3]@1165', 'F[4]@1177']
+=== map 51 (51) size 52x60
+   rec   4 G 30 Coffre au trésor                     pos( 54, 22,h10) scripted= dir=0x40
+   rec   5 G 30 Coffre au trésor                     pos( 56, 22,h10) scripted= dir=0x40
+   rec  20 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 17, 96,h 2) scripted=C dir=0xC0
+   rec  22 M 45 Interrupteur (piétiner) ← à utiliser ! pos(  8, 80,h 8) scripted=C dir=0xC0
+   rec  23 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 26, 80,h 2) scripted=C dir=0xC0
+   rec  24 M 72 Trappe d’escalier (grande)           pos( 17, 77,h 8) scripted=C dir=0xC0
+   rec  25 M 56 Plateforme flottante (petite)        pos(  8, 98,h 4) scripted= dir=0x80
+   rec  26 M 56 Plateforme flottante (petite)        pos( 10, 98,h 2) scripted= dir=0x80
+   rec  27 M 42 Statue poussable (événement)         pos( 32, 70,h 8) scripted=CF dir=0x80
+   rec  28 M 42 Statue poussable (événement)         pos( 34, 70,h 8) scripted=CF dir=0x80
+   rec  29 M 42 Statue poussable (événement)         pos( 36, 70,h 8) scripted=CF dir=0x80
+   rec  30 M 42 Statue poussable (événement)         pos( 38, 70,h 8) scripted=CF dir=0x80
+   rec  31 M 42 Statue poussable (événement)         pos( 32, 72,h 8) scripted=CF dir=0x80
+   rec  32 M 42 Statue poussable (événement)         pos( 34, 72,h 8) scripted=CF dir=0x80
+   rec  33 M 42 Statue poussable (événement)         pos( 36, 72,h 8) scripted=CF dir=0x80
+   rec  34 M 42 Statue poussable (événement)         pos( 38, 72,h 8) scripted=CF dir=0x80
+   rec  35 M 42 Statue poussable (événement)         pos( 32, 74,h 8) scripted=CF dir=0x80
+   rec  36 M 42 Statue poussable (événement)         pos( 34, 74,h 8) scripted=CF dir=0x80
+   rec  37 M 42 Statue poussable (événement)         pos( 36, 74,h 8) scripted=CF dir=0x80
+   rec  38 M 42 Statue poussable (événement)         pos( 38, 74,h 8) scripted=CF dir=0x80
+   rec  39 M 42 Statue poussable (événement)         pos( 32, 76,h 8) scripted=CF dir=0x80
+   rec  40 M 42 Statue poussable (événement)         pos( 34, 76,h 8) scripted=CF dir=0x80
+   rec  41 M 42 Statue poussable (événement)         pos( 36, 76,h 8) scripted=CF dir=0x80
+   rec  42 M 42 Statue poussable (événement)         pos( 38, 76,h 8) scripted=CF dir=0x80
+   rec  43 M 42 Statue poussable (événement)         pos( 32, 78,h 8) scripted=CF dir=0x80
+   rec  44 M 42 Statue poussable (événement)         pos( 34, 78,h 8) scripted=CF dir=0x80
+   rec  45 M 42 Statue poussable (événement)         pos( 36, 78,h 8) scripted=CF dir=0x80
+   rec  46 M 42 Statue poussable (événement)         pos( 38, 78,h 8) scripted=CF dir=0x80
+   opcode missing 0x00: 666 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@7', 'A[0]@25']
+   opcode missing 0x88: 6 sites: ['A[0]@4', 'B[0]@4', 'C[0]@4', 'D[0]@4', 'E[0]@4', 'F[0]@4']
+   opcode missing 0x3C: 6 sites: ['A[0]@8', 'B[0]@8', 'C[0]@8', 'D[0]@8', 'E[0]@8', 'F[0]@8']
+   opcode missing 0xFF: 16 sites: ['B[1]@242', 'B[2]@315', 'B[3]@338', 'B[4]@398', 'B[5]@458', 'B[6]@561']
+   opcode missing 0x72: 1 sites: ['F[21]@856']
+=== map 100 (100) size 52x60
+   rec   0 G229 Bloc à pousser/attaquer              pos( 39, 55,h 4) scripted=C dir=0x40
+   rec   1 G229 Bloc à pousser/attaquer              pos( 39, 23,h 4) scripted=C dir=0x40
+   rec   2 G229 Bloc à pousser/attaquer              pos( 59, 41,h 4) scripted=C dir=0x40
+   rec   3 G229 Bloc à pousser/attaquer              pos( 61, 59,h 4) scripted=C dir=0x40
+   rec   4 G229 Bloc à pousser/attaquer              pos( 69, 37,h 4) scripted=C dir=0x40
+   rec   5 M 72 Trappe d’escalier (grande)           pos( 17, 79,h 2) scripted=A dir=0xC0
+   rec   6 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 56,106,h 0) scripted=AC dir=0xC0
+   opcode missing 0x00: 138 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@4', 'A[0]@5']
+   opcode missing 0x3C: 6 sites: ['A[0]@12', 'B[0]@12', 'C[0]@12', 'D[0]@12', 'E[0]@12', 'F[0]@12']
+   opcode missing 0x88: 6 sites: ['A[0]@20', 'B[0]@20', 'C[0]@20', 'D[0]@20', 'E[0]@20', 'F[0]@20']
+   opcode missing 0xFF: 18 sites: ['A[6]@66', 'A[7]@78', 'B[1]@135', 'B[2]@191', 'B[3]@247', 'B[4]@283']
+=== map 102 (102) size 52x60
+   rec   0 G229 Bloc à pousser/attaquer              pos( 29, 98,h 8) scripted=ACD dir=0x40
+   rec   1 M 42 Statue poussable (événement)         pos( 30, 94,h 8) scripted=A dir=0x80
+   rec   2 M 42 Statue poussable (événement)         pos( 33, 94,h 8) scripted=A dir=0x80
+   rec   3 M 42 Statue poussable (événement)         pos( 34, 96,h 8) scripted=A dir=0x80
+   rec   4 M 42 Statue poussable (événement)         pos( 34, 99,h 8) scripted=A dir=0x80
+   rec   5 M 42 Statue poussable (événement)         pos( 34,103,h 8) scripted=A dir=0x80
+   rec   6 M 42 Statue poussable (événement)         pos( 48, 94,h 8) scripted=A dir=0x80
+   rec   7 M 42 Statue poussable (événement)         pos( 45, 94,h 8) scripted=A dir=0x80
+   rec   8 M 42 Statue poussable (événement)         pos( 44, 96,h 8) scripted=A dir=0x80
+   rec   9 G229 Bloc à pousser/attaquer              pos( 49, 98,h 8) scripted=ACD dir=0x40
+   rec  10 M 42 Statue poussable (événement)         pos( 44, 99,h 8) scripted=A dir=0x80
+   rec  11 M 42 Statue poussable (événement)         pos( 44,103,h 8) scripted=A dir=0x80
+   rec  12 M142 Interrupteur de lampe                pos( 34, 28,h14) scripted=ACD dir=0xC0
+   rec  13 M142 Interrupteur de lampe                pos( 44, 28,h14) scripted=ACD dir=0xC0
+   rec  14 M142 Interrupteur de lampe                pos( 30, 36,h10) scripted=ACD dir=0xC0
+   rec  15 M142 Interrupteur de lampe                pos( 48, 36,h10) scripted=ACD dir=0xC0
+   rec  16 M142 Interrupteur de lampe                pos( 26, 20,h 6) scripted=ACD dir=0xC0
+   rec  17 M142 Interrupteur de lampe                pos( 52, 20,h 6) scripted=ACD dir=0xC0
+   rec  18 M 50 Interrupteur (mur)                   pos( 70, 82,h 6) scripted=ACD dir=0xC0
+   rec  19 M 50 Interrupteur (mur)                   pos(  8, 82,h 6) scripted=ACD dir=0xC0
+   rec  24 M142 Interrupteur de lampe                pos( 26, 40,h 6) scripted=ACD dir=0xC0
+   rec  25 M142 Interrupteur de lampe                pos( 52, 40,h 6) scripted=ACD dir=0xC0
+   rec  26 M 57 Plateforme flottante (grande)        pos( 91, 19,h 2) scripted=C dir=0xC0
+   rec  31 G 30 Coffre au trésor                     pos( 56,112,h 8) scripted= dir=0x40
+   rec  32 G 30 Coffre au trésor                     pos( 22,112,h 8) scripted= dir=0x40
+   opcode missing 0x00: 235 sites: ['A[0]@0', 'A[0]@1', 'A[0]@3', 'A[0]@9', 'A[0]@10', 'A[0]@11']
+   opcode missing 0xFF: 38 sites: ['A[1]@172', 'A[2]@180', 'A[10]@188', 'A[13]@214', 'A[14]@224', 'A[19]@247']
+   opcode missing 0x96: 1 sites: ['B[4]@522']
+=== map 115 (115) size 52x60
+   rec   0 M 42 Statue poussable (événement)         pos(  6,  8,h 2) scripted=C dir=0x83
+   rec   1 M 42 Statue poussable (événement)         pos( 14,  8,h 2) scripted=C dir=0x82
+   rec   2 M 49 Interrupteur (levier)                pos(  4, 14,h 3) scripted=CD dir=0xC0
+   rec  10 G 30 Coffre au trésor                     pos( 78, 18,h 0) scripted= dir=0x40
+   rec  11 G 30 Coffre au trésor                     pos( 86, 92,h 2) scripted= dir=0x40
+   rec  21 G 30 Coffre au trésor                     pos( 41, 21,h22) scripted=C dir=0x00
+   opcode missing 0x00: 302 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@4', 'A[0]@5']
+   opcode missing 0xFF: 24 sites: ['A[16]@124', 'B[1]@169', 'B[2]@508', 'B[3]@680', 'B[4]@837', 'B[5]@913']
+=== map 117 (117) size 52x60
+   rec   0 M 52 Interrupteur (bascule)               pos( 43, 23,h 2) scripted=ACD dir=0xC1
+   rec   1 G 30 Coffre au trésor                     pos( 48, 84,h 8) scripted= dir=0x40
+   rec   2 M 70 Grille de fer (grande)               pos( 13, 86,h 2) scripted=C dir=0xC0
+   rec  17 M 42 Statue poussable (événement)         pos( 74, 56,h 4) scripted=C dir=0xC0
+   rec  19 G 30 Coffre au trésor                     pos( 84, 82,h 4) scripted= dir=0x40
+   rec  22 M 49 Interrupteur (levier)                pos(  7, 79,h 4) scripted=CD dir=0xC0
+   rec  23 M 56 Plateforme flottante (petite)        pos( 84, 88,h 4) scripted= dir=0xC0
+   rec  24 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 74, 98,h 2) scripted=C dir=0xC0
+   rec  25 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 94, 98,h 2) scripted=C dir=0xC0
+   rec  26 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 74, 64,h 2) scripted=C dir=0xC0
+   rec  27 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 94, 64,h 2) scripted=C dir=0xC0
+   rec  30 G 30 Coffre au trésor                     pos(  8, 12,h 0) scripted= dir=0x40
+   rec  31 G 30 Coffre au trésor                     pos( 14, 12,h 0) scripted= dir=0x40
+   opcode missing 0x00: 390 sites: ['A[0]@0', 'A[0]@1', 'A[0]@4', 'A[0]@5', 'A[0]@18', 'A[0]@19']
+   opcode missing 0xFF: 35 sites: ['A[1]@148', 'B[1]@283', 'B[2]@381', 'B[3]@385', 'B[4]@416', 'B[5]@428']
+   opcode missing 0xB9: 1 sites: ['B[1]@171']
+=== map 149 (149) size 52x60
+   rec   3 M 57 Plateforme flottante (grande)        pos( 27, 61,h13) scripted=C dir=0xC3
+   rec   6 M 57 Plateforme flottante (grande)        pos( 43,109,h10) scripted=C dir=0xC0
+   rec   7 M 49 Interrupteur (levier)                pos( 10, 90,h 6) scripted=ACD dir=0xC0
+   rec  11 M 49 Interrupteur (levier)                pos( 46, 46,h10) scripted=ACD dir=0xC0
+   rec  13 M 57 Plateforme flottante (grande)        pos( 43, 67,h15) scripted=C dir=0xC0
+   rec  14 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 43,102,h14) scripted=C dir=0xC0
+   rec  20 G 30 Coffre au trésor                     pos( 43, 34,h14) scripted= dir=0x40
+   rec  21 M 42 Statue poussable (événement)         pos( 43,102,h10) scripted= dir=0xC0
+   rec  23 G 30 Coffre au trésor                     pos( 74, 20,h24) scripted= dir=0x00
+   rec  27 G 30 Coffre au trésor                     pos( 72, 20,h10) scripted= dir=0x40
+   opcode missing 0x00: 221 sites: ['A[0]@0', 'A[0]@1', 'A[0]@4', 'A[0]@5', 'A[0]@6', 'A[0]@7']
+   opcode missing 0xFF: 29 sites: ['A[1]@139', 'A[5]@147', 'A[6]@155', 'A[8]@164', 'A[12]@187', 'A[13]@193']
+=== map 152 (152) size 52x60
+   rec   1 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 11, 86,h14) scripted=C dir=0xC0
+   rec   2 M 57 Plateforme flottante (grande)        pos( 17, 93,h13) scripted= dir=0x80
+   rec   3 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 21, 80,h14) scripted=AC dir=0xC0
+   rec   8 M 63 Flamme                               pos( 65, 38,h10) scripted=AC dir=0x80
+   rec   9 M 63 Flamme                               pos( 65, 34,h10) scripted=AC dir=0x81
+   rec  10 M 63 Flamme                               pos( 62, 36,h10) scripted=AC dir=0x82
+   rec  11 M 63 Flamme                               pos( 66, 36,h10) scripted=AC dir=0x83
+   rec  12 M 42 Statue poussable (événement)         pos( 54, 88,h10) scripted=ACF dir=0xC0
+   rec  13 M 42 Statue poussable (événement)         pos( 66, 72,h10) scripted=C dir=0xC0
+   rec  14 M 42 Statue poussable (événement)         pos( 54, 62,h10) scripted=C dir=0xC0
+   rec  15 M 42 Statue poussable (événement)         pos( 60, 86,h10) scripted=C dir=0xC0
+   rec  16 M 42 Statue poussable (événement)         pos( 76, 94,h10) scripted=C dir=0xC0
+   rec  21 M 68 Porte (grande)                       pos( 43, 68,h10) scripted=ACF dir=0x80
+   rec  22 M 57 Plateforme flottante (grande)        pos( 43, 25,h 0) scripted=AC dir=0xC0
+   rec  23 M 57 Plateforme flottante (grande)        pos( 43, 53,h 0) scripted=AC dir=0xC0
+   rec  26 G 30 Coffre au trésor                     pos( 76, 24,h10) scripted= dir=0x40
+   opcode missing 0x00: 282 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@4', 'A[0]@5']
+   opcode missing 0xFF: 26 sites: ['A[4]@174', 'A[9]@186', 'A[11]@192', 'A[13]@220', 'A[22]@231', 'A[23]@265']
+=== map 341 (341) size 52x60
+   rec   6 G 30 Coffre au trésor                     pos( 14, 86,h 0) scripted= dir=0x00
+   rec  13 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 78, 78,h14) scripted=C dir=0xC0
+   rec  17 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 98, 72,h28) scripted=C dir=0xC0
+   rec  19 G 30 Coffre au trésor                     pos(  6, 14,h 8) scripted= dir=0x40
+   rec  20 M 49 Interrupteur (levier)                pos( 30, 36,h 2) scripted=ACD dir=0xC0
+   rec  21 M174 Pilier poussable (PRG)               pos( 94, 96,h 2) scripted=A dir=0xC0
+   rec  22 M174 Pilier poussable (PRG)               pos( 92, 98,h 2) scripted=A dir=0xC0
+   rec  23 M174 Pilier poussable (PRG)               pos( 96, 98,h 2) scripted=A dir=0xC0
+   opcode missing 0x00: 396 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@4', 'A[0]@5']
+   opcode missing 0xFF: 32 sites: ['A[21]@182', 'A[23]@188', 'B[1]@282', 'B[2]@303', 'B[3]@356', 'B[4]@378']
+   opcode 0x5E: 1 sites: ['C[25]@1342 [128, 128, 0]']
+=== map 343 (343) size 52x60
+   rec   6 M 51 Interrupteur (allumage)              pos( 81,  5,h 2) scripted=ACD dir=0x80
+   rec   7 M 51 Interrupteur (allumage)              pos( 89,  5,h 2) scripted=ACD dir=0x80
+   rec   8 M 51 Interrupteur (allumage)              pos( 97,  5,h 2) scripted=ACD dir=0x80
+   rec   9 M 51 Interrupteur (allumage)              pos( 81,  9,h 2) scripted=ACD dir=0x80
+   rec  10 M 51 Interrupteur (allumage)              pos( 89,  9,h 2) scripted=ACD dir=0x80
+   rec  11 M 51 Interrupteur (allumage)              pos( 97,  9,h 2) scripted=ACD dir=0x80
+   rec  12 G 30 Coffre au trésor                     pos( 74,  8,h 0) scripted=C dir=0x00
+   rec  15 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 50, 12,h 0) scripted=AC dir=0xC0
+   rec  16 G 30 Coffre au trésor                     pos( 58, 68,h 8) scripted= dir=0x40
+   rec  17 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 58, 80,h10) scripted=AC dir=0xC0
+   rec  21 M 57 Plateforme flottante (grande)        pos( 19, 77,h 8) scripted=C dir=0xC2
+   rec  22 M 57 Plateforme flottante (grande)        pos(  7, 77,h 8) scripted=C dir=0xC0
+   rec  23 M 57 Plateforme flottante (grande)        pos(  7, 89,h 8) scripted=C dir=0xC3
+   rec  24 M 57 Plateforme flottante (grande)        pos( 19, 89,h 8) scripted=C dir=0xC1
+   rec  26 M 45 Interrupteur (piétiner) ← à utiliser ! pos(  4, 68,h 8) scripted=AC dir=0xC0
+   rec  27 M173 Interrupteur à ballon                pos( 14, 12,h 8) scripted=CD dir=0xC0
+   rec  28 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 22, 12,h 4) scripted=AC dir=0xC0
+   rec  29 M 53 Plateforme lance-flammes             pos(  6, 18,h 4) scripted=A dir=0xC0
+   rec  30 M 53 Plateforme lance-flammes             pos(  6, 24,h 4) scripted=A dir=0xC0
+   rec  31 M 53 Plateforme lance-flammes             pos(  6, 30,h 4) scripted=A dir=0xC0
+   rec  32 M 53 Plateforme lance-flammes             pos( 14, 18,h 4) scripted=A dir=0xC0
+   rec  33 M 53 Plateforme lance-flammes             pos( 14, 24,h 4) scripted=A dir=0xC0
+   rec  34 M 53 Plateforme lance-flammes             pos( 14, 30,h 4) scripted=A dir=0xC0
+   rec  35 M 53 Plateforme lance-flammes             pos( 22, 18,h 4) scripted=A dir=0xC0
+   rec  36 M 53 Plateforme lance-flammes             pos( 22, 24,h 4) scripted=A dir=0xC0
+   rec  37 M 53 Plateforme lance-flammes             pos( 22, 30,h 4) scripted=A dir=0xC0
+   rec  40 M174 Pilier poussable (PRG)               pos( 92, 64,h 0) scripted= dir=0x80
+   rec  41 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 96, 76,h 0) scripted=AC dir=0xC0
+   rec  42 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 96, 86,h 0) scripted=AC dir=0xC0
+   opcode missing 0x00: 201 sites: ['A[0]@0', 'A[0]@1', 'A[7]@309', 'A[7]@310', 'A[7]@311', 'A[18]@369']
+   opcode missing 0xFF: 58 sites: ['A[1]@299', 'A[7]@308', 'A[15]@331', 'A[16]@339', 'A[18]@368', 'A[19]@388']
+=== map 344 (344) size 52x60
+   rec   6 G 30 Coffre au trésor                     pos( 14, 24,h 2) scripted=C dir=0x00
+   rec   7 M 57 Plateforme flottante (grande)        pos(  7, 69,h 5) scripted=C dir=0xC0
+   rec   8 M 57 Plateforme flottante (grande)        pos(  3, 73,h 5) scripted=C dir=0xC0
+   rec   9 M 49 Interrupteur (levier)                pos( 20, 72,h 2) scripted=CD dir=0xC0
+   rec  10 M 45 Interrupteur (piétiner) ← à utiliser ! pos(  2, 84,h 6) scripted=AC dir=0xC0
+   rec  11 M173 Interrupteur à ballon                pos( 88, 86,h 6) scripted=ACD dir=0xC0
+   rec  12 M173 Interrupteur à ballon                pos( 92, 86,h 6) scripted=ACD dir=0xC2
+   rec  13 M173 Interrupteur à ballon                pos( 96, 86,h 6) scripted=ACD dir=0xC2
+   rec  14 M173 Interrupteur à ballon                pos( 88, 90,h 6) scripted=ACD dir=0xC0
+   rec  15 M173 Interrupteur à ballon                pos( 92, 90,h 6) scripted=ACD dir=0xC0
+   rec  16 M173 Interrupteur à ballon                pos( 96, 90,h 6) scripted=ACD dir=0xC1
+   rec  17 M173 Interrupteur à ballon                pos( 88, 94,h 6) scripted=ACD dir=0xC3
+   rec  18 M173 Interrupteur à ballon                pos( 92, 94,h 6) scripted=ACD dir=0xC3
+   rec  19 M173 Interrupteur à ballon                pos( 96, 94,h 6) scripted=ACD dir=0xC1
+   rec  20 G 30 Coffre au trésor                     pos( 92, 76,h11) scripted= dir=0x40
+   rec  21 M 56 Plateforme flottante (petite)        pos( 92, 76,h10) scripted=C dir=0xC0
+   rec  22 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 92, 28,h 6) scripted=AC dir=0xC0
+   rec  23 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 90, 30,h 6) scripted=AC dir=0xC0
+   rec  24 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 92, 30,h 6) scripted=AC dir=0xC0
+   rec  25 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 94, 30,h 6) scripted=AC dir=0xC0
+   rec  26 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 94, 32,h 6) scripted=AC dir=0xC0
+   rec  27 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 96, 30,h 6) scripted=AC dir=0xC0
+   rec  29 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 78, 32,h 4) scripted=A dir=0x80
+   rec  30 G 30 Coffre au trésor                     pos( 90, 38,h 8) scripted=C dir=0x00
+   rec  35 M174 Pilier poussable (PRG)               pos( 86, 26,h 8) scripted= dir=0xC0
+   rec  36 M174 Pilier poussable (PRG)               pos( 58, 72,h 2) scripted= dir=0xC0
+   rec  37 M173 Interrupteur à ballon                pos( 54, 70,h17) scripted=ACD dir=0xC0
+   rec  38 M173 Interrupteur à ballon                pos( 50, 70,h17) scripted=ACD dir=0xC0
+   rec  39 M173 Interrupteur à ballon                pos( 46, 70,h17) scripted=ACD dir=0xC0
+   rec  40 M173 Interrupteur à ballon                pos( 42, 70,h17) scripted=ACD dir=0xC0
+   rec  41 G 30 Coffre au trésor                     pos( 60, 78,h13) scripted= dir=0x40
+   rec  42 M 56 Plateforme flottante (petite)        pos( 60, 78,h12) scripted=C dir=0xC0
+   rec  44 M 87 Flammes horizontales                 pos( 58, 88,h 2) scripted=C dir=0x81
+   rec  46 M 87 Flammes horizontales                 pos( 48, 88,h 2) scripted=C dir=0x81
+   rec  50 M 56 Plateforme flottante (petite)        pos( 42, 70,h16) scripted=C dir=0xC0
+   rec  51 M 56 Plateforme flottante (petite)        pos( 46, 70,h16) scripted=C dir=0xC0
+   rec  52 M 56 Plateforme flottante (petite)        pos( 50, 70,h16) scripted=C dir=0xC0
+   rec  53 M 56 Plateforme flottante (petite)        pos( 54, 70,h16) scripted=C dir=0xC0
+   rec  54 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 46, 84,h 0) scripted=C dir=0xC0
+   rec  55 M 87 Flammes horizontales                 pos( 48, 76,h 2) scripted=C dir=0x81
+   rec  58 M 87 Flammes horizontales                 pos( 58, 76,h 4) scripted=C dir=0x81
+   opcode missing 0x00: 450 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@4', 'A[0]@5']
+   opcode missing 0x6C: 16 sites: ['A[0]@22', 'B[0]@22', 'C[0]@22', 'C[60]@2374', 'C[61]@2458', 'C[62]@2542']
+   opcode missing 0xFF: 85 sites: ['A[11]@374', 'A[12]@381', 'A[13]@389', 'A[14]@397', 'A[15]@405', 'A[16]@413']
+   opcode 0x5E: 12 sites: ['C[29]@1682 [22, 0, 1]', 'C[29]@1686 [23, 0, 1]', 'C[29]@1690 [24, 0, 1]', 'C[29]@1694 [25, 0, 1]', 'C[29]@1698 [26, 0, 1]', 'C[29]@1702 [27, 0, 1]']
+   opcode missing 0x6A: 20 sites: ['C[60]@2358', 'C[60]@2382', 'C[61]@2418', 'C[61]@2442', 'C[61]@2466', 'C[62]@2502']
+   opcode missing 0x6B: 10 sites: ['C[60]@2398', 'C[61]@2434', 'C[61]@2482', 'C[62]@2518', 'C[63]@2602', 'C[64]@2686']
+=== map 346 (346) size 52x60
+   rec   0 M150 Porte rotative 45°                   pos( 88, 22,h 4) scripted=AC dir=0xC0
+   rec   1 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 88, 16,h 4) scripted=AC dir=0xC0
+   rec   2 M150 Porte rotative 45°                   pos( 76,100,h 4) scripted=AC dir=0xC0
+   rec   3 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 70, 82,h 4) scripted=AC dir=0xC0
+   rec   4 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 14, 98,h 0) scripted=AC dir=0xC0
+   rec   5 M 71 Trappe d’escalier (petite)           pos( 14, 86,h 6) scripted=AC dir=0xC0
+   rec   6 M 71 Trappe d’escalier (petite)           pos( 16, 86,h 6) scripted=AC dir=0xC0
+   rec   7 M 72 Trappe d’escalier (grande)           pos(  7, 93,h 2) scripted=AC dir=0xC0
+   rec  24 M174 Pilier poussable (PRG)               pos( 10, 90,h 6) scripted= dir=0xC0
+   rec  26 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 15, 84,h 2) scripted=AC dir=0xC0
+   rec  27 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 15, 16,h 6) scripted=AC dir=0xC0
+   rec  28 M 57 Plateforme flottante (grande)        pos( 23, 37,h 7) scripted=C dir=0xC1
+   rec  29 M 57 Plateforme flottante (grande)        pos(  7, 37,h 7) scripted=C dir=0xC1
+   rec  30 M 57 Plateforme flottante (grande)        pos(  7, 41,h 7) scripted=C dir=0xC3
+   rec  31 M 45 Interrupteur (piétiner) ← à utiliser ! pos(  6, 24,h 6) scripted=AC dir=0xC0
+   rec  32 M 71 Trappe d’escalier (petite)           pos( 14, 18,h 6) scripted=AC dir=0xC2
+   rec  33 M 71 Trappe d’escalier (petite)           pos( 16, 18,h 6) scripted=AC dir=0xC3
+   rec  34 M174 Pilier poussable (PRG)               pos( 22, 26,h 8) scripted= dir=0xC0
+   opcode missing 0x00: 98 sites: ['A[0]@0', 'A[0]@1', 'A[0]@5', 'A[1]@204', 'A[3]@278', 'A[3]@302']
+   opcode missing 0xFF: 31 sites: ['A[1]@227', 'A[2]@235', 'A[3]@301', 'A[4]@311', 'A[5]@322', 'A[6]@340']
+=== map 347 (347) size 52x60
+   rec   2 M 45 Interrupteur (piétiner) ← à utiliser ! pos(  2, 26,h 8) scripted=AC dir=0xC0
+   rec   3 M 45 Interrupteur (piétiner) ← à utiliser ! pos(  2, 30,h 8) scripted=AC dir=0xC0
+   rec   4 M 45 Interrupteur (piétiner) ← à utiliser ! pos(  6, 22,h 8) scripted=AC dir=0xC0
+   rec   5 M 45 Interrupteur (piétiner) ← à utiliser ! pos(  6, 34,h 6) scripted=AC dir=0xC0
+   rec   6 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 10, 28,h 8) scripted=AC dir=0xC0
+   rec   7 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 14, 22,h 8) scripted=AC dir=0xC0
+   rec   8 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 14, 34,h 8) scripted=AC dir=0xC0
+   rec   9 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 18, 22,h 8) scripted=AC dir=0xC0
+   rec  10 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 18, 34,h 8) scripted=AC dir=0xC0
+   rec  11 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 22, 28,h 8) scripted=AC dir=0xC0
+   rec  12 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 26, 22,h 8) scripted=AC dir=0xC0
+   rec  13 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 26, 34,h 8) scripted=AC dir=0xC0
+   rec  14 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 30, 26,h 8) scripted=AC dir=0xC0
+   rec  15 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 30, 30,h 8) scripted=AC dir=0xC0
+   rec  16 M174 Pilier poussable (PRG)               pos( 16, 28,h 6) scripted= dir=0xC0
+   opcode missing 0x00: 144 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@4', 'A[0]@5']
+   opcode missing 0xFF: 25 sites: ['A[3]@90', 'A[6]@110', 'B[1]@216', 'B[2]@326', 'B[3]@351', 'B[4]@470']
+   opcode missing 0xBB: 1 sites: ['B[6]@837']
+   opcode missing 0xB9: 2 sites: ['C[2]@924', 'C[2]@953']
+=== map 351 (351) size 52x60
+   rec   7 G 30 Coffre au trésor                     pos( 18, 28,h 4) scripted= dir=0x40
+   rec   8 M 45 Interrupteur (piétiner) ← à utiliser ! pos(  6, 28,h 4) scripted=AC dir=0xC0
+   rec  15 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 48, 80,h10) scripted=AC dir=0xC0
+   rec  16 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 58, 80,h10) scripted=AC dir=0xC0
+   rec  18 G 30 Coffre au trésor                     pos( 53, 90,h10) scripted=C dir=0x00
+   rec  19 M 42 Statue poussable (événement)         pos( 48, 86,h10) scripted=CF dir=0xC0
+   rec  20 M 42 Statue poussable (événement)         pos( 58, 86,h10) scripted= dir=0xC0
+   rec  21 M 42 Statue poussable (événement)         pos( 48, 94,h10) scripted= dir=0xC0
+   rec  22 M 42 Statue poussable (événement)         pos( 58, 94,h10) scripted= dir=0xC0
+   rec  23 M 49 Interrupteur (levier)                pos( 26,100,h 4) scripted=ACD dir=0xC0
+   rec  26 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 82, 82,h 2) scripted=AC dir=0xC0
+   rec  27 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 88, 82,h 2) scripted=AC dir=0xC0
+   opcode missing 0x00: 150 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@4', 'A[0]@5']
+   opcode missing 0xFF: 16 sites: ['A[9]@256', 'A[16]@272', 'A[17]@286', 'A[24]@310', 'A[27]@322', 'B[1]@367']
+=== map 352 (352) size 52x60
+   rec   8 M 42 Statue poussable (événement)         pos( 16,100,h 4) scripted=ACF dir=0xC0
+   rec  17 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 62, 20,h 4) scripted=AC dir=0xC0
+   rec  18 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 40, 50,h 4) scripted=AC dir=0xC0
+   rec  24 M 63 Flamme                               pos( 80, 24,h 0) scripted=C dir=0x80
+   rec  30 G 30 Coffre au trésor                     pos( 96, 14,h 6) scripted= dir=0x40
+   rec  31 G 30 Coffre au trésor                     pos(  6, 14,h 6) scripted= dir=0x40
+   opcode missing 0x00: 245 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'A[0]@4', 'A[0]@5']
+   opcode missing 0xFF: 43 sites: ['A[9]@238', 'A[16]@321', 'A[17]@405', 'A[18]@429', 'A[19]@453', 'A[20]@464']
+=== map 382 (382) size 52x60
+   rec   0 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 84,112,h 4) scripted=AC dir=0xC0
+   rec   1 M 57 Plateforme flottante (grande)        pos( 89, 61,h15) scripted= dir=0x80
+   rec   2 M 57 Plateforme flottante (grande)        pos( 91, 53,h20) scripted= dir=0x80
+   rec   3 M 57 Plateforme flottante (grande)        pos( 93, 51,h22) scripted= dir=0x80
+   rec   7 G229 Bloc à pousser/attaquer              pos( 59, 87,h 6) scripted=ACD dir=0x40
+   rec   8 M 72 Trappe d’escalier (grande)           pos( 43, 83,h 6) scripted=AC dir=0xC0
+   rec   9 M 53 Plateforme lance-flammes             pos( 63, 96,h 2) scripted=C dir=0xC0
+   rec  10 M 53 Plateforme lance-flammes             pos( 63, 92,h 2) scripted=C dir=0xC0
+   rec  11 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 24, 22,h 2) scripted=AC dir=0xC0
+   rec  14 G 30 Coffre au trésor                     pos( 25, 12,h 8) scripted= dir=0x40
+   rec  19 M 50 Interrupteur (mur)                   pos(  6, 72,h 2) scripted=ACD dir=0xC0
+   rec  32 M 71 Trappe d’escalier (petite)           pos( 19, 20,h20) scripted=AC dir=0x80
+   rec  36 G 30 Coffre au trésor                     pos( 63, 12,h 4) scripted= dir=0x40
+   rec  37 G 30 Coffre au trésor                     pos( 60, 16,h 4) scripted= dir=0x40
+   rec  38 G 30 Coffre au trésor                     pos( 66, 16,h 4) scripted= dir=0x40
+   rec  40 M 42 Statue poussable (événement)         pos( 59, 84,h 6) scripted= dir=0xC0
+   opcode missing 0x00: 93 sites: ['A[0]@0', 'A[0]@1', 'A[1]@219', 'A[8]@239', 'A[9]@253', 'A[9]@254']
+   opcode missing 0xFF: 36 sites: ['A[1]@218', 'A[8]@238', 'A[9]@252', 'A[12]@266', 'A[13]@272', 'A[20]@284']
+=== map 423 (423) size 52x60
+   rec   3 M 63 Flamme                               pos( 96, 80,h 2) scripted=C dir=0x80
+   rec   8 M 66 Plateforme flottante fragile (grande) pos( 72, 40,h 6) scripted=C dir=0x80
+   rec   9 M 66 Plateforme flottante fragile (grande) pos( 72, 44,h 6) scripted=C dir=0xC0
+   rec  10 M 66 Plateforme flottante fragile (grande) pos( 78, 55,h 6) scripted=C dir=0xC0
+   rec  11 M 57 Plateforme flottante (grande)        pos( 82, 45,h 6) scripted=C dir=0xC1
+   rec  12 M174 Pilier poussable (PRG)               pos( 22, 28,h 8) scripted=C dir=0xC0
+   rec  13 M174 Pilier poussable (PRG)               pos( 22, 26,h 8) scripted=C dir=0xC0
+   rec  14 M174 Pilier poussable (PRG)               pos( 22, 24,h 8) scripted=C dir=0xC0
+   rec  15 M174 Pilier poussable (PRG)               pos( 24, 22,h 8) scripted=C dir=0xC0
+   rec  16 M174 Pilier poussable (PRG)               pos( 26, 22,h 8) scripted=C dir=0xC0
+   rec  17 M174 Pilier poussable (PRG)               pos( 28, 22,h 8) scripted=C dir=0xC0
+   rec  18 M174 Pilier poussable (PRG)               pos( 32, 22,h 8) scripted=C dir=0xC0
+   rec  19 M174 Pilier poussable (PRG)               pos( 34, 22,h 8) scripted=C dir=0xC0
+   rec  20 M174 Pilier poussable (PRG)               pos( 36, 22,h 8) scripted=C dir=0xC0
+   rec  21 M174 Pilier poussable (PRG)               pos( 38, 24,h 8) scripted=C dir=0xC0
+   rec  22 M174 Pilier poussable (PRG)               pos( 38, 26,h 8) scripted=C dir=0xC0
+   rec  23 M174 Pilier poussable (PRG)               pos( 38, 28,h 8) scripted=C dir=0xC0
+   rec  24 M174 Pilier poussable (PRG)               pos( 30, 22,h 8) scripted=AC dir=0xC0
+   rec  28 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 22, 58,h 2) scripted=C dir=0xC0
+   rec  29 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 28, 58,h 2) scripted=C dir=0xC0
+   rec  30 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 32, 58,h 2) scripted=C dir=0xC0
+   rec  31 M 45 Interrupteur (piétiner) ← à utiliser ! pos( 38, 58,h 2) scripted=C dir=0xC0
+   rec  32 M 72 Trappe d’escalier (grande)           pos(  9, 65,h 2) scripted=C dir=0xC0
+   rec  33 M 72 Trappe d’escalier (grande)           pos( 51, 65,h 2) scripted=C dir=0xC0
+   rec  34 M 63 Flamme                               pos( 98, 80,h 2) scripted=C dir=0x80
+   opcode missing 0x00: 366 sites: ['A[0]@0', 'A[0]@1', 'A[0]@10', 'A[0]@11', 'A[0]@12', 'A[0]@13']
+   opcode missing 0xFF: 24 sites: ['A[1]@195', 'A[2]@203', 'A[24]@212', 'B[1]@252', 'B[2]@268', 'B[3]@307']
+   opcode missing 0xAA: 2 sites: ['C[25]@971', 'C[26]@1039']
+=== map 426 (426) size 52x60
+   rec   1 M 50 Interrupteur (mur)                   pos( 48, 56,h 6) scripted=C dir=0xC0
+   rec   2 M 50 Interrupteur (mur)                   pos( 54, 56,h 6) scripted=C dir=0xC0
+   rec  14 M 89 Interrupteur poussoir                pos(  8,102,h 2) scripted=C dir=0xC0
+   rec  15 M 89 Interrupteur poussoir                pos( 12,102,h 2) scripted=C dir=0xC0
+   rec  16 M 89 Interrupteur poussoir                pos( 16,102,h 2) scripted=C dir=0xC0
+   rec  17 M 89 Interrupteur poussoir                pos( 20,102,h 2) scripted=C dir=0xC0
+   rec  19 M 70 Grille de fer (grande)               pos( 13, 88,h 2) scripted=CF dir=0xC0
+   rec  23 M 57 Plateforme flottante (grande)        pos( 83, 29,h 8) scripted=C dir=0xC0
+   rec  25 M 63 Flamme                               pos( 89, 27,h11) scripted=C dir=0x80
+   rec  29 M 89 Interrupteur poussoir                pos( 82, 98,h 2) scripted= dir=0xC0
+   rec  30 M 89 Interrupteur poussoir                pos( 86, 98,h 2) scripted= dir=0xC0
+   rec  31 M 89 Interrupteur poussoir                pos( 90, 98,h 2) scripted= dir=0xC0
+   rec  32 M 89 Interrupteur poussoir                pos( 94, 98,h 2) scripted= dir=0xC0
+   rec  39 G 30 Coffre au trésor                     pos( 88, 64,h 2) scripted=C dir=0x00
+   rec  40 M 69 Grille de fer (petite)               pos( 50, 78,h 6) scripted=CF dir=0xC0
+   opcode missing 0x00: 230 sites: ['A[0]@0', 'A[0]@1', 'A[0]@2', 'A[0]@3', 'B[0]@0', 'B[0]@1']
+   opcode missing 0xFF: 34 sites: ['B[1]@290', 'B[2]@442', 'B[3]@599', 'B[4]@844', 'B[5]@978', 'B[6]@1304']
+   opcode missing 0xAA: 5 sites: ['C[13]@1484', 'C[14]@1551', 'C[15]@1619', 'C[16]@1687', 'C[17]@1752']

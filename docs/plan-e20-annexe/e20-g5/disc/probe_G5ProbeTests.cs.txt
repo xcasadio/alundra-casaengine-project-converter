@@ -1,0 +1,183 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Newtonsoft.Json.Linq;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Maps;
+using Alundra.Hero;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>
+/// E20.g5 discovery probe (read-only discovery, scratch copy of HEAD 46589b86, NEVER part of the repository): plays a real exported map with the production
+/// pipeline (ArcRun: real controller, real prefabs), places the hero, holds directions and records, frame by frame, the hero and the watched records. The cases
+/// are read from the JSON file named by G5_CASES, the CSV/trace files go to the folder named by G5_OUT.
+/// </summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G5ProbeTests
+{
+    private static uint Pad(char c) => c switch
+    {
+        'U' => PadState.Up, 'D' => PadState.Down, 'L' => PadState.Left, 'R' => PadState.Right,
+        'X' => PadState.Cross, 'S' => PadState.Square, _ => 0u,
+    };
+
+    private static string F(int fixedPoint) => (fixedPoint / 65536.0).ToString("0.###", CultureInfo.InvariantCulture);
+
+    [Fact]
+    public void Run()
+    {
+        var casesPath = Environment.GetEnvironmentVariable("G5_CASES");
+        var outDir = Environment.GetEnvironmentVariable("G5_OUT");
+        if (string.IsNullOrEmpty(casesPath) || string.IsNullOrEmpty(outDir) || !File.Exists(casesPath))
+        {
+            return; // inert without its environment
+        }
+
+        Directory.CreateDirectory(outDir);
+        var only = Environment.GetEnvironmentVariable("G5_ONLY");
+        foreach (var c in JArray.Parse(File.ReadAllText(casesPath)))
+        {
+            var name = (string)c["name"]!;
+            if (!string.IsNullOrEmpty(only) && !only.Split(',').Contains(name))
+            {
+                continue;
+            }
+
+            var sb = new StringBuilder();
+            try
+            {
+                RunCase(c, sb, outDir, name);
+            }
+            catch (Exception e)
+            {
+                sb.AppendLine("EXCEPTION " + e.GetType().Name + ": " + e.Message);
+                sb.AppendLine(e.StackTrace);
+            }
+
+            File.WriteAllText(Path.Combine(outDir, name + ".txt"), sb.ToString());
+        }
+    }
+
+    private static void RunCase(JToken c, StringBuilder sb, string outDir, string name)
+    {
+        var flags = c["flags"]?.Select(t => (int)t).ToArray() ?? Array.Empty<int>();
+        var hero = c["hero"]!.Select(t => (int)t).ToArray();
+        var tileX = hero[0] / 24;
+        var tileY = hero[1] / 16;
+        var watch = c["watch"]!.Select(t => (int)t).ToArray();
+        var settle = (int?)c["settle"] ?? 6;
+        var arrivalFlag = (bool?)c["arrival"] == true;
+        var spec = new ArcSpec(name, (string)c["zone"]!, (string)c["world"]!, flags, tileX, tileY, hero[2] / 16, 100000, RealController: true, Prefabs: true,
+            Arrival: arrivalFlag ? new ArcArrival(hero[0] << 16, hero[1] << 16, (hero[2] / 16) << 20, Alundra.Session.GameState.ResetAnimationId, 16) : null);
+        using var arc = new ArcRun(spec);
+        for (var i = 0; i < settle; i++)
+        {
+            arc.OneFrame();
+        }
+
+        arc.PlaceHero(hero[0], hero[1], hero[2]);
+        for (var i = 0; i < 3; i++)
+        {
+            arc.OneFrame();
+        }
+
+        sb.AppendLine($"case {name}: map {(string)c["world"]!} ; hero placed at ({hero[0]},{hero[1]},{hero[2]}) ; flags set {string.Join(",", flags)}");
+        sb.AppendLine("entities of the map (record, sprite type, pos, status, program indexes A..F, sprite program indexes A..F, flags):");
+        foreach (var e in arc.Entities.OrderBy(e => e.EntityRefId))
+        {
+            if ((bool?)c["listAll"] == true || watch.Contains(e.EntityRefId) || e.SpriteType is 430 or 298 or 229 or 345)
+            {
+                sb.AppendLine($"  rec {e.EntityRefId,3} type {e.SpriteType,4} pos ({F(e.PosX)},{F(e.PosY)},{F(e.PosZ)}) status {e.Status} idx [{string.Join(",", e.ProgramIndexes)}] sprite [{string.Join(",", e.SpriteProgramIndexes)}] flags 0x{e.Flags:X} collidable {((IScriptHost)arc.Proxy).Collidables.Contains(e)}");
+            }
+        }
+
+        if (c["destroy"] is JArray destroy)
+        {
+            foreach (var d in destroy.Select(t => (int)t))
+            {
+                if (arc.EntityByRecord(d) is { } victim)
+                {
+                    ((IScriptHost)arc.Proxy).DestroyEntity(victim, -1);
+                    sb.AppendLine($"harness: record {d} destroyed (blocker of the puzzle removed)");
+                }
+            }
+
+            for (var i = 0; i < 3; i++)
+            {
+                arc.OneFrame();
+            }
+        }
+
+        var traceStart = arc.Trace.Count;
+        var nativeBefore = arc.Runner.NativeHandlerRunCount;
+        sb.AppendLine("frame hold | hero x y z anim xcoll adj | per watched rec: x y z anim dir status fx fy adj xcoll ground");
+        var frame = 0;
+        foreach (var seg in c["segments"]!)
+        {
+            var hold = (string)seg[0]!;
+            var n = (int)seg[1]!;
+            uint pad = 0;
+            foreach (var ch in hold)
+            {
+                pad |= Pad(ch);
+            }
+
+            arc.HoldDirections(pad & 0xF000);
+            for (var i = 0; i < n; i++)
+            {
+                var press = (pad & ~0xF000u) != 0 && i == 0;
+                if (press)
+                {
+                    arc.Press(pad & ~0xF000u);
+                }
+                else
+                {
+                    arc.OneFrame();
+                }
+
+                frame++;
+                var h = arc.Hero;
+                var line = new StringBuilder();
+                line.Append($"{frame,4} {(hold.Length == 0 ? "-" : hold),-3}| H {F(h.PosX)} {F(h.PosY)} {F(h.PosZ)} a{h.TargetAnimationId} d{h.TargetDirection} f{F(h.ForceX)},{F(h.ForceY)} ctl{(uint)Alundra.Session.GameState.Instance.PlayerControlFlags:X} xc={(h.XCollisionEntity?.EntityRefId.ToString() ?? "-")} adj{h.ForceAdjusted} |");
+                foreach (var r in watch)
+                {
+                    var e = arc.EntityByRecord(r);
+                    if (e == null)
+                    {
+                        line.Append($" [rec{r} absent]");
+                    }
+                    else
+                    {
+                        line.Append($" [rec{r} {F(e.PosX)} {F(e.PosY)} {F(e.PosZ)} a{e.TargetAnimationId} d{e.TargetDirection} s{(int)e.Status} f{F(e.ForceX)},{F(e.ForceY)} adj{e.ForceAdjusted} xc={(e.XCollisionEntity?.EntityRefId.ToString() ?? "-")} g{e.IsOnGround}]");
+                    }
+                }
+
+                sb.AppendLine(line.ToString());
+            }
+        }
+
+        sb.AppendLine($"native handler runs during the case: {arc.Runner.NativeHandlerRunCount - nativeBefore}");
+        sb.AppendLine("skipped or exceeded instructions (frame slot pc opcode kind):");
+        foreach (var s in arc.SkippedOrExceeded.GroupBy(s => (s.Slot, s.Pc, s.Opcode, s.Kind)))
+        {
+            sb.AppendLine($"  slot {s.Key.Slot} pc {s.Key.Pc} op 0x{s.Key.Opcode:X2} {s.Key.Kind} x{s.Count()} first frame {s.Min(x => x.Frame)}");
+        }
+
+        var tr = new StringBuilder();
+        foreach (var t in arc.Trace.Skip(traceStart))
+        {
+            tr.AppendLine($"{t.Frame} slot{t.Slot} prog@{t.ProgramStart} pc{t.Pc} op0x{t.Opcode:X2} {t.Kind}");
+        }
+
+        File.WriteAllText(Path.Combine(outDir, name + ".trace.txt"), tr.ToString());
+    }
+}

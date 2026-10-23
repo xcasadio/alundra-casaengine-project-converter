@@ -1,0 +1,26 @@
+[
+ {
+  "name": "pillar347_switch_info",
+  "arrival": true,
+  "listAll": true,
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-347",
+  "hero": [
+   168,
+   232,
+   48
+  ],
+  "segments": [
+   [
+    "R",
+    5
+   ]
+  ],
+  "watch": [
+   16,
+   11,
+   6
+  ],
+  "settle": 6
+ }
+]

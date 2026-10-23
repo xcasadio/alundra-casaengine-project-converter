@@ -7239,6 +7239,148 @@ rejoué sur le vrai code ; ce qui n'est qu'inférence est dit.
 - **Q-G2C-9** : les sondes de la DLL au T0 de g2c1 : P1 `ForceAdjusted` d'un objet lancé contre un mur ; P2 les mots des quatre coins
   au bord d'une bande `0x1001` ; P3 `HitCounter` à T+21 ; P4 le `RidingEntity` d'un objet posé sur une plaque.
 
+
+#### 1.24.6 E20.g5 — Les vrais objets à pousser : g5a (piliers), g5b (les opcodes des boutons), g5c (l'arrêt du son), g5d (les objets scriptés) ⏳ (2026-10-23, D-E20-63 ; g5a détaillée, révision 0, à relire par un `plan-verifier` frais ; g5b, g5c, g5d esquissées)
+
+**Lecture seule du 2026-10-23** (HEAD `46589b86`, annexe `docs/plan-e20-annexe/e20-g5/disc/`, `report.md`). Les étiquettes sont celles
+de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYPE, INFÉRENCE.
+- **Recensement** (FAIT, identique sur `data-extracted/` et sur l'export) : 111 placements.
+  - Pilier poussable : type 430, C76, boîte 20×14×32, 24 placements sur 8 cartes ; 11 à C natif actif (26, 30, 341 ×3, 343, 344 ×2,
+    346 ×2, 347), 13 inertes sur la 423 (un programme C scripté remplace le natif, comme dans l'original).
+  - Statue poussable : type 298, 62 placements, toutes scriptées.
+  - Bloc à pousser ou attaquer : type 229, 9 placements (cartes 23, 100, 102, 382).
+  - Interrupteur poussoir : type 345, 16 placements (cartes 40 et 426).
+- **Seul le pilier manque de code** (MESURÉ au HEAD). Le héros bute dessus dès la 2e image et le pilier reste immobile, car sa clé
+  `(C, 76)` n'est pas au registre. Les statues, le bloc de la carte 23 et le bouton de la carte 40 bougent déjà : le moteur d'événements
+  joue leurs scripts.
+- **C76** (`0x8007C024-0x8007C0D4`, 43 mots, FAIT puis MESURÉ : 6 000 vecteurs, 0 écart, 82/82 instructions ; 73 mutants d'un mot, 56
+  tués, 17 équivalents ; goldens `c76_goldens.json`, 14 classes) :
+  - si le héros est bloqué en X par le pilier (`hero.+0x130 == pilier`) : le compteur `+0x274` (mot signé de 32 bits) monte jusqu'à 31 ;
+    à 31, `PlaySoundEffect(0x19)`, `+0x88 = 1`, et `+0x8C = (Direction(pilier, héros) + 0x10) & 0x1F` ;
+  - sinon : si `+0x88 == 1`, `StopSoundEffect(0x19)` (`0x80049634`) ; puis `+0x274 = 0`, `+0x88 = 0`.
+  - L'aide `Direction` (`0x8003AC9C`, 37 mots) compare les `+0x1D8` et les largeurs `(taille << 16) - 1` : côté horizontal → 8 ou `0x18`,
+    sinon `(hero.Y < pil.Y) << 4`.
+  - La décompilation (`FunctionTypeC.cs:7161`) est fidèle pour la direction ; elle rend la fin par `PlaySoundEffect`, le binaire par
+    `StopSoundEffect`.
+- **La poussée sur la machine** (MESURÉ, scénarios P1 à P11) : la poussée démarre 32 ticks après le contact (0,64 s) ; `Speed 64` donne
+  0,75 px par tick en X et 0,5 en Y, sans rampe ; le pilier avance au pixel et s'arrête 1 à 2 ticks après le relâchement ; un nouvel
+  appui refait les 32 ticks ; il s'arrête à ras d'un mur ; les quatre côtés sont symétriques (contact pour un décalage `|dy| ≤ 12`) ; une
+  plaque (108) ou un interrupteur (45) posés au sol le bloquent ; deux piliers alignés ne se poussent pas ensemble ; il tombe d'une
+  corniche et sert de marche, de pont, de bouchon de fosse (carte 347) ; `MovePlayer` n'a aucun code de poussée (le héros garde
+  l'animation de marche sur place).
+- **La vraie DLL avec un prototype** (PROTOTYPE, 40 lignes, hors dépôt) : carte 26, mêmes positions finales que la machine vers l'est
+  (pilier à 350, héros à 329) et vers le nord (406). Le premier pas vient un tick plus tard (la latence de D-E19-13), et l'atterrissage de
+  la carte 347 deux ou trois ticks plus tard (l'intégrateur de gravité de la DLL, INFÉRENCE), avec le même état final.
+- **Sans lien avec la chaîne d'histoire** : aucune des 30 cartes de la chaîne ne porte une de ces familles. sm1 n'est pas requis.
+- **Le son de fin, une erreur de la décompilation** (FAIT, binaire) : l'opcode `0xBE` appelle `StopSoundEffect`, pas « jouer le son ».
+  La DLL rejoue le son là où le binaire l'arrête : 392 sites sur 119 cartes, dont 12 sur la chaîne ; `ISoundPlayer` n'a que
+  `StopAllSfx`.
+- **Deux opcodes manquent pour les boutons** : `0x72` (24 sites sur 12 cartes ; il recopie `TargetAnimationId` et `TargetDirection` dans
+  leurs champs `Last*`) et `0xAA` (22 sites sur 8 cartes). `0xA9` a 4 sites, sur la carte 440, hors des quatre familles.
+
+**Découpage et ordre** (Q-G5-1, Q-G5-7, défauts de la session).
+- **g5a, les piliers** : détaillée ci-dessous, exécutable dès maintenant, sans lien avec g1a à g4b (seul le registre est partagé).
+  Ordre retenu : juste après E20.e0c2.
+- **g5b, les opcodes `0x72` et `0xAA`** (et `0xA9` si sa lecture le rattache à la même famille) : esquisse. Son T0 lit au binaire les trois
+  gestionnaires, puis la tranche se détaille. Le thème 3 (le moteur de script) recouvre ces opcodes ; g5b les prend parce que les boutons
+  sont du thème 1 (D-E20-63).
+- **g5c, l'arrêt du son** (`0xBE` = `StopSoundEffect`, `ISoundPlayer.StopSfx`, l'arrêt de C76) : esquisse, **en attente de la réponse de
+  l'auteur à A1** (§2, Q-G5-A1). Son T0 établit si le moteur sait arrêter un bruitage précis ; sinon le manque se consigne au rapport des
+  manques du moteur, sans contournement.
+- **g5d, les objets scriptés** : esquisse ; des arcs pour la statue (cartes 2 et 352), le bloc de la 23 et le bouton de la 40 (après
+  g5b), un test statique « aucun opcode sauté dans les programmes des quatre familles », l'épingle du gel du héros après un programme F
+  (Q-G5-A2). Les blocs des cartes 102 et 382 se déclenchent au coup de fléau : un test synthétique en g5d, la recette au thème 2.
+
+##### E20.g5a — Les piliers poussables (C76) ⏳ (révision 0)
+
+**But.** Comme l'original : le héros qui pousse un pilier pendant 32 ticks le met en marche, puis il avance tant que le héros pousse,
+s'arrête au mur, tombe d'une corniche et bouche une fosse ; les 13 piliers de la 423 restent inertes. Le son de la poussée (25) joue ;
+son arrêt à la fin est un bouchon nommé jusqu'à g5c.
+
+**Prérequis.** Le HEAD de départ (après E20.e0c2) ; rien d'autre. La garde `check_names.py --rules` (ADR-0081) ; les tests neufs suivent
+l'ADR-0080.
+
+**Décisions de la session.**
+- **D-G5-1** — `Alundra/Ai/Objects/PillarAi.cs` porte C76 et `Direction`, en deux fonctions pures (le pas du compteur et la direction)
+  et un `Tick` ; la clé `(C, 76)` est inscrite pour le seul type 430 ; le registre de production gagne `PillarAi.Keys`.
+- **D-G5-2** — Le compteur `+0x274` est un mot signé de 32 bits, lu et écrit par des aides propres à g5a sur `Bytes[0..3]`, en
+  petit-boutiste (D-E20-55 ; le motif de D-E0C-13). `EntityScriptProxy` ne change pas.
+- **D-G5-3** — Le son : `PlaySfx(0x19)` à chaque tick où le compteur est à 31 et que le héros pousse (le binaire le demande à chaque
+  tick ; la table anti-doublon de `PlaySfx` fait le reste). `StopSoundEffect(0x19)` est un bouchon nommé et journalisé
+  (`StubCallsForTests`), branché par g5c (Q-G5-2).
+- **D-G5-4** — Les tests de monde épinglent les valeurs mesurées de la DLL ; les valeurs de la machine sont dans l'annexe. Les écarts
+  sont nommés : un tick de plus au premier pas (D-E19-13), deux ou trois ticks de plus à l'atterrissage dans une fosse (l'intégrateur de
+  gravité), même état final (Q-G5-3).
+- **D-G5-5** — Les piliers de la 423 restent inertes : leur programme C scripté passe avant le natif, comme dans l'original (Q-G5-4).
+- **D-G5-6** — Le héros n'a pas de pose de poussée : il garde l'animation de marche sur place, comme `MovePlayer` le fait.
+
+**Périmètre.** `Alundra/Ai/Objects/PillarAi.cs` (neuf) ; `Alundra/Ai/NativeSpriteRegistry.cs` (l'inscription) ; les tests neufs sous
+`Alundra.Tests/Ai/Objects/` ; l'épingle du registre (`Alundra.Tests/Ai/NativeSpriteRegistryTests.cs:58`, la formule, et les épingles
+qui la recopient : `WaveSwordLifeTests.V3`, `ChargedArrowAiTests.C2`, à relire au HEAD de départ) ; un préréglage de recette s'il en
+faut un ; l'annexe `docs/plan-e20-annexe/e20-g5/g5a/` ; un ADR (numéro libre au moment de l'écrire) ; `docs/decisions/README.md`.
+
+**Hors périmètre.** `0xBE`, `StopSfx` et le moteur (g5c) ; les opcodes `0x72`, `0xAA`, `0xA9` (g5b) ; les statues, les blocs et les
+boutons (scriptés, g5d) ; une pose de poussée du héros ; D5b.
+
+**Tâches.**
+- ⏳ **T0 — Relecture, oracle, prédiction** (commit de docs).
+  - Rejouer depuis une copie `c76_full.py` (6 000 vecteurs, mutants, goldens) et `g5_scen.py` : sorties égales à celles de l'annexe.
+  - Relire au HEAD de départ le registre, ses épingles et la sonde de mouvement qui fait buter le héros (`XCollisionEntity`).
+  - Prédire les tests existants qui bougent. Défaut : les épingles du registre seules. `ArrowAiTests.cs:186` emploie le type 430 comme
+    valeur neutre sur des proxies nus ; l'arc TN-3 de la carte 346 porte un pilier où le héros reste garé. Les mesurer par un câblage
+    temporaire, annulé ensuite.
+  - Choisir les montages des tests de monde (cartes 26 et 347 ; pour la 347, les entités qui bloquent, enregistrements 6 et 11, retirées
+    par écriture du harnais, plus un test sans retrait).
+- ⏳ **T1 — Phase A, les fonctions pures** (tests d'abord, rouges sur un squelette qui compile).
+  - (a1) Le pas du compteur contre les goldens : sous 31, plus 1 ; à 31, le son et l'animation 1 ; sans contact, la remise à zéro, le
+    bouchon d'arrêt du son appelé seulement si l'animation valait 1.
+  - (a2) `Direction` contre les goldens : les quatre côtés, les deux bornes de largeur (« à ras » tombe côté horizontal), le décalage
+    vertical.
+  - (a3) Les aides de 32 bits : aller-retour de 0, 31, -1.
+  - Chaque cas « sans effet » est accolé à un cas positif.
+- ⏳ **T2 — Phase B, l'inscription et les tests de monde** (rouges avant l'inscription, verts après).
+  - (w1) Carte 26, poussée vers l'est : contact, animation 1 au 32e tick de contact, premier pas, arrêt à 350 au mur de la colonne 15, le
+    héros à 329. (w2) Vers le nord : arrêt à 406.
+  - (w3) La vitesse : 0,75 px par tick en X et 0,5 en Y ; l'arrêt 1 à 2 ticks après le relâchement ; un nouvel appui refait les 32 ticks.
+  - (w4) Le décalage vertical : contact et poussée à `|dy| = 12`, rien à 14.
+  - (w5) Une plaque ou un interrupteur au sol bloque le pilier ; deux piliers alignés ne se poussent pas ensemble.
+  - (w6) Carte 347 : le pilier tombe dans la fosse et s'y pose ; le héros passe ensuite dessus (son `support` est le pilier).
+  - (w7) Carte 423 : les 13 piliers restent inertes sous la poussée.
+  - (w8) Le son : `PlaySfx(25)` à chaque tick de poussée, le bouchon d'arrêt une fois au relâchement.
+  - Les épingles du registre réécrites par dérivation (`+ PillarAi.Keys.Count`).
+- ⏳ **T3 — ADR, mutants, suites.**
+  - L'ADR : « the pushable pillar is ported from C76; its stop of the sound is a named stub until g5c ».
+  - Mutants réels, appliqués par script puis annulés, tous tués :
+    - le seuil 31 en 30, puis en 32 ;
+    - le compteur jamais remis à zéro ;
+    - la direction `+ 0x10` en `+ 0x08` ;
+    - la borne de largeur `<` en `<=` ;
+    - le test « bloqué par le pilier » remplacé par « bloqué par n'importe quelle entité » ;
+    - l'animation 1 non posée ;
+    - le son 25 changé ;
+    - le bouchon d'arrêt appelé sans condition ;
+    - la clé inscrite aussi pour le type 298 ;
+    - la clé non inscrite.
+  - `Alundra.Tests` en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `cmp` de la DLL ; `check_names.py --rules`
+    vert ; les traces du héros intactes ; le moteur, le convertisseur et les données sans diff.
+  - Les résultats vont dans l'annexe.
+- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.**
+- (a1) à (a3) verts ; (w1) à (w8) rouges avant l'inscription et verts après.
+- Les tests existants déplacés sont inclus dans la liste prédite de T0.
+- Les mutants sont tous tués ; les suites Release et Debug, zéro échec.
+- **Recette de l'auteur** (non bloquante) : `92-ancien-sanctuaire-bug-pillier.sav` (carte 26). Pousser le pilier : il démarre après un
+  court instant, avance au pixel, s'arrête au mur et quand on lâche.
+
+**Arrêts.** Un écart avec les goldens ; un écart de position finale avec la machine sur la carte 26 ; un écart de temps autre que ceux de
+D-G5-4 ; un test existant hors de la liste prédite ; un besoin de changer le moteur ou `MovePlayer`.
+
+**Budget.** Un `executor` pour T0 et T1, un pour T2, un pour T3 ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais
+après.
+
+**Retour arrière.** La phase B se retire seule (l'inscription) ; la phase A n'a aucun appelant de production.
+
 ---
 
 **Points ouverts ajoutés.**
@@ -7256,7 +7398,7 @@ rejoué sur le vrai code ; ce qui n'est qu'inférence est dit.
 | O-G-9 | Casse d'une pierre ou d'un tonneau (C4) qui touche une cible : inférence non exécutée | Tranchée par le T0 de g2c (2026-10-22) : un tonneau, une pierre ou un tronc lancé blesse une cible de classe A et se brise ; les objets de plaque ne touchent rien (§1.24.5) |
 | O-G-10 | Le genre 2 (jamais dans le corpus) et les trois en-têtes refusés par le spawner d'enregistrement (`AttackCount` 0 et 7) ne sont couverts que par le fuzz direct | Tranchée par le T0 de g2c (2026-10-22) pour les trois en-têtes : artefact de la zone du spawner ; le genre 2 reste couvert par le fuzz seul (§1.24.5) |
 | O-G-11 | (2026-10-18) Le placement 231 / enregistrement 3 : l'index 35 désigne la cruche locale (genre 1) dans `data-extracted`, mais l'export y lit « I05_Arc du chasseur » (banque `alundra_35`, genre 0) ; ce qu'il est au spawn dans le binaire est inconnu. Le type 35 n'est pas ajouté à (C, 23) ni (E, 2) | le convertisseur |
-| O-G-12 | (2026-10-22, T0 de g2c) Les vrais objets à pousser : le « Pilier poussable » (C76 natif, 24 placements sur 8 cartes, dont la 26 de la sauvegarde `92-ancien-sanctuaire-bug-pillier.sav`), la « Statue poussable » (62, scriptée, 11 cartes), le « Bloc à pousser/attaquer » (9, 4 cartes), l'« Interrupteur poussoir ». Aucune tranche ; sans elle ils restent immobiles. Ce n'est pas le portage des objets C4 (D-E20-46) **Réponse de l'auteur (2026-10-23)** : « dans le thème 1 » (D-E20-63 ; E20.g5). | Tranché le 2026-10-23 (D-E20-63) ; E20.g5 |
+| O-G-12 | (2026-10-22, T0 de g2c) Les vrais objets à pousser : le « Pilier poussable » (C76 natif, 24 placements sur 8 cartes, dont la 26 de la sauvegarde `92-ancien-sanctuaire-bug-pillier.sav`), la « Statue poussable » (62, scriptée, 11 cartes), le « Bloc à pousser/attaquer » (9, 4 cartes), l'« Interrupteur poussoir ». Aucune tranche ; sans elle ils restent immobiles. Ce n'est pas le portage des objets C4 (D-E20-46) **Réponse de l'auteur (2026-10-23)** : « dans le thème 1 » (D-E20-63 ; E20.g5, §1.24.6 ; la lecture seule du 2026-10-23 montre que seul le pilier manque de code). | Tranché le 2026-10-23 (D-E20-63) ; E20.g5 |
 
 **Corrections induites.** (1) **Proposées, non appliquées le 2026-10-15** (elles iront dans une révision ultérieure de l'enveloppe, relue, quand g
 deviendra la tranche suivante) : §1.1, ligne 10 : l'ordre interne g1a, g2a, g2b, g1b ; ligne 11 : h3 exige g1a et g2a ; D-G-14 : retirer
@@ -10008,6 +10150,8 @@ les trois entrées `0x31`.
 | O-E20-22 | (2026-10-16) Le nettoyage de `PlatformEntity.CarriedEntity` au recyclage d'une entité n'est pas porté (`AlundraWorldProxy.cs:3290`, commentaire) : sans effet tant que rien ne porte, à reprendre dans g1a | E20.g1a |
 | O-E20-23 | (2026-10-23, E20.e0c T0 (i)) Au tick où un objet-clé posé bloque les entités (`Block(soi)`), une entité de rang supérieur au bloqueur ne joue pas son programme dans la DLL (choix puis exécution entité par entité), alors que le binaire la laisse jouer (il choisit tous les programmes avant d'en exécuter un, `0x8003871C-0x80038728`) : un tick d'écart, non épinglé | à placer (l'ordre choix / exécution de la passe des programmes) ; P3, sans effet visible connu |
 | O-E20-24 | (2026-10-23, E20.f5) Une flèche tirée avec le héros à 12 px d'un mur : l'oracle borne le pas de naissance (x = 109), la DLL pose la flèche à 111, dans le mur, où elle ne bouge plus. Le défaut est le bornage du premier pas d'une entité marquée dans le déplaceur (e0a3b, e0k), pas E17. Scénario `arrow3_point_blank`, non testé | à placer (le déplaceur des entités marquées) ; P2, visible en jeu (flèche figée contre un mur) |
+| Q-G5-A1 | (2026-10-23, E20.g5, posée à l'auteur en termes de jeu) Le raclement de pierre des statues, blocs, boutons et piliers : l'original l'arrête quand le mouvement finit (l'opcode `0xBE` et la fin de C76 appellent `StopSoundEffect`) ; la DLL le rejoue (une erreur de la décompilation). Le corriger (g5c) touche 119 cartes, dont 12 passages de l'histoire, et change des tests audio ; sinon le défaut reste. Défaut de la session : corriger (le binaire tranche) | l'auteur |
+| Q-G5-A2 | (2026-10-23, E20.g5, posée à l'auteur en termes de jeu) Après avoir touché un objet à événement (statue, bloc, bouton), le héros s'arrête net et ne repart que si l'on relâche puis ré-enfonce la direction : c'est le comportement mesuré de l'original, pour toute interaction par contact (le programme F remet à zéro quatre mots du héros, `0x80042150`). Le garder (défaut de la session) ou le corriger, ce qui change toutes les interactions par contact | l'auteur |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
 | Q-G1A-3 | (2026-10-17) Un objet lancé ne blesse, avant E14.b, que les cibles dont le gestionnaire D est porté (Beannoïde, Muruta) : confirmer **Réponse de l'auteur (2026-10-22)** : « oui » : confirmé. | Tranché le 2026-10-22 |

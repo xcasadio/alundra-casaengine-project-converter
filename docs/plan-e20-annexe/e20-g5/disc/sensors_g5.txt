@@ -1,0 +1,297 @@
+=== map 2
+   B[2]@310 player-in-area [35, 36, 37, 37, 3, 10]  users: 
+   B[3]@402 player-in-area [28, 31, 30, 30, 7, 10]  users: 
+   B[3]@413 player-in-area [30, 31, 30, 30, 7, 10]  users: 
+   B[4]@490 player-in-area [20, 20, 28, 28, 13, 59]  users: 
+   C[10]@786 player-in-area [16, 16, 24, 24, 13, 13]  users: rec9:Statue poussable (
+   C[21]@1250 player-in-area [47, 48, 48, 48, 5, 5]  users: rec20:Rocher roulant (gr
+=== map 23
+   B[1]@277 player-in-area [9, 9, 31, 31, 2, 2]  users: 
+   B[3]@393 player-in-area [2, 2, 56, 56, 2, 2]  users: 
+   B[3]@403 player-in-area [4, 4, 47, 47, 2, 2]  users: 
+   B[3]@413 player-in-area [4, 4, 53, 53, 2, 2]  users: 
+   B[3]@449 player-in-area [5, 5, 53, 53, 2, 2]  users: 
+   B[6]@541 player-in-area [14, 15, 53, 53, 2, 2]  users: 
+   B[7]@614 player-in-area [7, 7, 22, 24, 2, 8]  users: 
+   C[9]@837 player-riding []  users: rec9:Plateforme flottan
+   C[20]@1249 player-riding []  users: rec19:Interrupteur (piét
+   C[21]@1265 player-riding []  users: rec20:Interrupteur (piét
+=== map 26
+   A[2]@228 player-in-area [3, 14, 25, 37, 1, 59]  users: rec1:Flamme, rec2:Flamme, rec3:Flamme, rec4:Flamme
+   A[3]@244 player-in-area [29, 49, 10, 23, 0, 59]  users: rec34:Flamme, rec35:Flamme, rec36:Flamme, rec37:Flamme (+4)
+   B[1]@332 player-in-area [2, 22, 10, 23, 1, 1]  users: 
+   C[1]@501 player-in-area [2, 15, 24, 38, 0, 59]  users: rec0:Rampe de lancement
+   C[1]@517 player-in-area [2, 15, 24, 38, 0, 59]  users: rec0:Rampe de lancement
+   C[1]@533 player-in-area [2, 15, 24, 38, 0, 59]  users: rec0:Rampe de lancement
+   C[1]@549 player-in-area [2, 15, 24, 38, 0, 59]  users: rec0:Rampe de lancement
+   C[11]@633 player-in-area [2, 11, 10, 23, 1, 1]  users: rec10:Boule de fer (gran
+   C[14]@749 player-in-area [7, 17, 10, 23, 1, 1]  users: rec13:Boule de fer (gran
+   C[17]@865 player-in-area [13, 22, 10, 23, 1, 1]  users: rec16:Boule de fer (gran
+   C[24]@1149 no-entity-by-fn [5]  users: rec23:Grille de fer (gra
+   C[24]@1154 no-entity-by-fn [6]  users: rec23:Grille de fer (gra
+   C[24]@1159 no-entity-by-fn [7]  users: rec23:Grille de fer (gra
+   C[24]@1164 no-entity-by-fn [8]  users: rec23:Grille de fer (gra
+   C[24]@1169 no-entity-by-fn [9]  users: rec23:Grille de fer (gra
+   C[28]@1189 player-riding []  users: rec27:Interrupteur (piét
+   C[34]@1321 player-in-area [29, 49, 10, 20, 0, 59]  users: rec33:Rampe de lancement
+   C[34]@1344 player-in-area [29, 49, 10, 20, 0, 59]  users: rec33:Rampe de lancement
+   C[34]@1367 player-in-area [29, 49, 10, 20, 0, 59]  users: rec33:Rampe de lancement
+   C[34]@1390 player-in-area [29, 49, 10, 20, 0, 59]  users: rec33:Rampe de lancement
+   C[39]@1433 player-in-area [29, 49, 10, 20, 0, 59]  users: rec38:Rampe de lancement
+   C[39]@1456 player-in-area [29, 49, 10, 20, 0, 59]  users: rec38:Rampe de lancement
+   C[39]@1479 player-in-area [29, 49, 10, 20, 0, 59]  users: rec38:Rampe de lancement
+   C[39]@1502 player-in-area [29, 49, 10, 20, 0, 59]  users: rec38:Rampe de lancement
+=== map 30
+   A[0]@96 riding [1]  users: 
+   B[0]@96 riding [1]  users: 
+   B[3]@527 no-entity-by-fn [28]  users: 
+   B[4]@636 no-entity-by-fn [40]  users: 
+   B[4]@641 no-entity-by-fn [41]  users: 
+   B[4]@646 no-entity-by-fn [42]  users: 
+   B[6]@736 no-entity-by-fn [40]  users: 
+   B[6]@741 no-entity-by-fn [41]  users: 
+   B[6]@746 no-entity-by-fn [42]  users: 
+   C[0]@96 riding [1]  users: 
+   C[1]@910 player-riding []  users: rec0:Plateforme flottan
+   C[2]@957 player-riding []  users: rec1:Plateforme flottan
+   C[3]@1001 player-riding []  users: rec2:Plateforme flottan
+   C[5]@1045 player-in-area [2, 11, 7, 17, 1, 1]  users: rec4:Boule de fer (gran
+   C[8]@1161 player-in-area [4, 13, 12, 22, 1, 1]  users: rec7:Boule de fer (gran
+   C[11]@1277 player-in-area [2, 11, 17, 27, 1, 1]  users: rec10:Boule de fer (gran
+   C[19]@1686 riding [22]  users: rec18:Plaque à motif
+   C[20]@1730 riding [23]  users: rec19:Plaque à motif
+   C[21]@1774 riding [24]  users: rec20:Plaque à motif
+   C[22]@1818 riding [25]  users: rec21:Plaque à motif
+   C[29]@1955 no-entity-by-fn [37]  users: rec28:Statue de roi, ser
+   C[29]@1960 no-entity-by-fn [38]  users: rec28:Statue de roi, ser
+   D[0]@96 riding [1]  users: 
+   E[0]@96 riding [1]  users: 
+   F[0]@96 riding [1]  users: 
+=== map 37
+=== map 40
+   B[2]@234 entity-in-area [3, 10, 10, 56, 56, 1, 1]  users: 
+   B[3]@293 entity-in-area [4, 41, 41, 55, 55, 1, 1]  users: 
+   B[3]@304 entity-in-area [5, 43, 43, 55, 55, 1, 1]  users: 
+   B[3]@315 entity-in-area [6, 45, 45, 55, 55, 1, 1]  users: 
+   B[3]@326 entity-in-area [7, 47, 47, 55, 55, 1, 1]  users: 
+   B[5]@472 no-entity-by-fn [10]  users: 
+   B[5]@479 no-entity-by-fn [11]  users: 
+   B[5]@486 no-entity-by-fn [12]  users: 
+   B[5]@493 no-entity-by-fn [13]  users: 
+   B[6]@506 player-in-area [32, 32, 30, 31, 1, 10]  users: 
+   C[18]@1071 no-entity-by-fn [40]  users: rec39:Grille de fer (gra
+   C[18]@1076 no-entity-by-fn [41]  users: rec39:Grille de fer (gra
+   C[19]@1099 no-entity-by-fn [43]  users: rec42:Grille de fer (gra
+   C[19]@1104 no-entity-by-fn [44]  users: rec42:Grille de fer (gra
+=== map 51
+   B[3]@321 entity-in-area [21, 4, 13, 44, 46, 4, 4]  users: 
+   B[4]@346 no-entity-by-fn [50]  users: 
+   B[4]@349 no-entity-by-fn [51]  users: 
+   B[4]@352 no-entity-by-fn [52]  users: 
+   B[5]@406 no-entity-by-fn [53]  users: 
+   B[5]@409 no-entity-by-fn [54]  users: 
+   B[5]@412 no-entity-by-fn [55]  users: 
+   B[6]@473 player-in-area [26, 27, 35, 35, 3, 3]  users: 
+   B[7]@570 player-in-area [26, 27, 35, 35, 3, 3]  users: 
+   C[20]@675 player-in-area [4, 13, 50, 51, 1, 1]  users: rec20:Interrupteur (piét
+   C[24]@831 player-in-area [4, 6, 48, 50, 1, 1]  users: rec24:Trappe d’escalier 
+=== map 100
+   B[1]@89 player-in-area [18, 18, 27, 28, 2, 2]  users: 
+   B[1]@114 player-in-area [19, 20, 29, 29, 2, 2]  users: 
+   B[2]@145 player-in-area [18, 18, 11, 12, 2, 2]  users: 
+   B[2]@170 player-in-area [19, 20, 10, 10, 2, 2]  users: 
+   B[3]@201 player-in-area [28, 28, 20, 21, 2, 2]  users: 
+   B[3]@226 player-in-area [29, 30, 19, 19, 2, 2]  users: 
+   B[4]@257 player-in-area [29, 29, 29, 30, 2, 2]  users: 
+   B[5]@293 player-in-area [36, 36, 18, 19, 2, 2]  users: 
+   B[5]@318 player-in-area [34, 35, 20, 20, 2, 2]  users: 
+   B[7]@368 no-entity-by-fn [7]  users: 
+   B[8]@384 player-in-area [3, 8, 52, 56, 1, 10]  users: 
+   C[7]@709 player-riding []  users: rec6:Interrupteur (piét
+=== map 102
+   B[1]@262 player-in-area [15, 24, 29, 34, 2, 10]  users: 
+   B[1]@317 no-entity-by-fn [20]  users: 
+   B[1]@322 no-entity-by-fn [21]  users: 
+   B[1]@327 no-entity-by-fn [22]  users: 
+   B[1]@332 no-entity-by-fn [23]  users: 
+   B[2]@382 player-in-area [13, 26, 10, 22, 2, 10]  users: 
+   B[3]@471 no-entity-by-fn [27]  users: 
+   B[3]@476 no-entity-by-fn [28]  users: 
+   B[3]@481 no-entity-by-fn [29]  users: 
+   B[3]@486 no-entity-by-fn [30]  users: 
+   B[4]@505 player-in-area [19, 20, 46, 47, 5, 5]  users: 
+   B[4]@530 player-in-area [19, 20, 46, 47, 5, 5]  users: 
+   C[1]@558 player-in-area [18, 21, 47, 51, 4, 5]  users: rec0:Bloc à pousser/att
+   C[1]@568 player-in-area [15, 17, 46, 46, 4, 5]  users: rec0:Bloc à pousser/att
+   C[10]@710 player-in-area [18, 21, 47, 51, 4, 5]  users: rec9:Bloc à pousser/att
+   C[10]@720 player-in-area [22, 24, 46, 46, 4, 5]  users: rec9:Bloc à pousser/att
+=== map 115
+   B[2]@183 player-in-area [10, 10, 55, 55, 0, 10]  users: 
+   B[2]@414 no-entity-by-fn [24]  users: 
+   B[2]@419 no-entity-by-fn [25]  users: 
+   B[2]@424 no-entity-by-fn [26]  users: 
+   B[2]@429 no-entity-by-fn [27]  users: 
+   B[3]@620 no-entity-by-fn [6]  users: 
+   B[3]@625 no-entity-by-fn [7]  users: 
+   B[3]@630 no-entity-by-fn [8]  users: 
+   B[3]@635 no-entity-by-fn [9]  users: 
+   B[5]@852 player-in-area [5, 5, 42, 42, 0, 0]  users: 
+   B[5]@862 player-in-area [10, 11, 44, 44, 0, 0]  users: 
+   B[5]@872 player-in-area [16, 16, 42, 42, 0, 0]  users: 
+   B[6]@961 player-in-area [37, 38, 49, 49, 1, 1]  users: 
+   B[8]@1104 player-in-area [10, 10, 56, 56, 0, 0]  users: 
+   B[9]@1125 player-in-area [38, 41, 7, 9, 0, 0]  users: 
+   C[13]@1362 player-in-area [30, 32, 41, 42, 1, 10]  users: rec12:◆Muruta (griffes) 
+   C[17]@1402 player-in-area [30, 32, 45, 46, 1, 10]  users: rec13:◆Muruta (griffes) 
+   C[18]@1426 player-in-area [30, 34, 49, 52, 1, 10]  users: rec14:◆Muruta (griffes) 
+=== map 117
+   B[1]@192 player-in-area [5, 6, 19, 20, 0, 10]  users: 
+   C[4]@721 player-in-area [35, 38, 32, 35, 2, 2]  users: rec3:Boule de fer (gran
+   C[5]@761 player-in-area [24, 25, 43, 47, 0, 0]  users: rec4:Boule de fer (gran
+   C[11]@897 player-in-area [35, 38, 46, 49, 2, 2]  users: rec10:Boule de fer (gran
+   C[12]@913 player-in-area [46, 49, 32, 35, 2, 2]  users: rec11:Boule de fer (gran
+   C[13]@929 player-in-area [46, 49, 46, 49, 2, 2]  users: rec12:Boule de fer (gran
+   C[24]@1121 player-riding []  users: rec24:Interrupteur (piét
+   C[25]@1137 player-riding []  users: rec25:Interrupteur (piét
+   C[26]@1153 player-riding []  users: rec26:Interrupteur (piét
+   C[27]@1169 player-riding []  users: rec27:Interrupteur (piét
+=== map 149
+   B[1]@231 player-in-area [5, 16, 10, 22, 2, 5]  users: 
+   B[1]@246 no-entity-by-fn [1]  users: 
+   B[1]@251 no-entity-by-fn [2]  users: 
+   B[2]@322 player-in-area [5, 13, 44, 44, 5, 5]  users: 
+   B[2]@393 no-entity-by-fn [8]  users: 
+   B[2]@400 no-entity-by-fn [9]  users: 
+   B[2]@407 no-entity-by-fn [10]  users: 
+   B[3]@524 player-in-area [27, 38, 26, 39, 5, 10]  users: 
+   B[3]@596 no-entity-by-fn [16]  users: 
+   B[3]@601 no-entity-by-fn [17]  users: 
+   B[3]@606 no-entity-by-fn [18]  users: 
+   B[4]@680 no-entity-by-fn [22]  users: 
+   C[2]@737 player-in-area [5, 12, 16, 22, 5, 5]  users: rec1:◆Muruta (arc) Niv., rec2:◆Muruta (arc) Niv.
+   C[6]@786 player-in-area [5, 13, 43, 43, 5, 10]  users: 
+   C[15]@969 player-riding []  users: rec14:Interrupteur (piét
+   C[15]@980 player-riding []  users: rec14:Interrupteur (piét
+=== map 152
+   B[1]@293 player-in-area [12, 16, 27, 36, 5, 10]  users: 
+   B[1]@360 no-entity-by-fn [4]  users: 
+   B[1]@365 no-entity-by-fn [5]  users: 
+   B[1]@370 no-entity-by-fn [6]  users: 
+   B[2]@456 player-in-area [21, 22, 36, 36, 5, 5]  users: 
+   C[2]@657 player-riding []  users: rec1:Interrupteur (piét
+   C[4]@682 player-riding []  users: rec3:Interrupteur (piét
+   C[8]@739 player-in-area [27, 38, 10, 27, 5, 5]  users: rec7:Tourelle à 4 direc
+   C[13]@814 player-in-area [27, 27, 45, 45, 5, 5]  users: rec12:Statue poussable (
+   C[14]@877 no-entity-by-fn [17]  users: rec13:Statue poussable (
+   C[15]@893 no-entity-by-fn [18]  users: rec14:Statue poussable (
+   C[16]@909 no-entity-by-fn [19]  users: rec15:Statue poussable (
+   C[17]@925 no-entity-by-fn [20]  users: rec16:Statue poussable (
+   C[23]@1069 player-riding []  users: rec22:Plateforme flottan
+   C[24]@1157 player-riding []  users: rec23:Plateforme flottan
+=== map 341
+   B[1]@212 player-in-area [11, 12, 45, 45, 3, 3]  users: 
+   B[3]@316 player-in-area [13, 14, 11, 11, 1, 1]  users: 
+   B[3]@326 player-in-area [20, 21, 20, 20, 1, 1]  users: 
+   C[8]@736 no-entity-by-fn [3]  users: rec7:◆Homme momie Niv.2
+   C[25]@1380 entity-in-area [128, 44, 45, 50, 50, 32, 32]  users: rec24:Bloc transparent (
+=== map 343
+=== map 344
+   B[1]@570 no-entity-by-fn [0]  users: 
+   B[1]@575 no-entity-by-fn [1]  users: 
+   B[1]@580 no-entity-by-fn [2]  users: 
+   B[1]@585 no-entity-by-fn [3]  users: 
+   B[1]@590 no-entity-by-fn [4]  users: 
+   B[1]@595 no-entity-by-fn [5]  users: 
+   C[22]@1370 entity-in-area [128, 46, 46, 38, 38, 5, 10]  users: rec21:Plateforme flottan
+   C[43]@1902 entity-in-area [128, 30, 30, 39, 39, 6, 10]  users: rec42:Plateforme flottan
+   C[44]@1949 no-entity-by-fn [44]  users: rec43:Tourelle à 4 direc
+   C[44]@1964 no-entity-by-fn [44]  users: rec43:Tourelle à 4 direc
+   C[44]@1979 no-entity-by-fn [44]  users: rec43:Tourelle à 4 direc
+   C[44]@1994 no-entity-by-fn [44]  users: rec43:Tourelle à 4 direc
+   C[46]@2033 no-entity-by-fn [46]  users: rec45:Tourelle à 4 direc
+   C[46]@2048 no-entity-by-fn [46]  users: rec45:Tourelle à 4 direc
+   C[46]@2063 no-entity-by-fn [46]  users: rec45:Tourelle à 4 direc
+   C[46]@2078 no-entity-by-fn [46]  users: rec45:Tourelle à 4 direc
+   C[47]@2097 no-entity-by-fn [44]  users: 
+   C[47]@2112 no-entity-by-fn [44]  users: 
+   C[47]@2127 no-entity-by-fn [44]  users: 
+   C[47]@2142 no-entity-by-fn [44]  users: 
+   C[50]@2158 entity-in-area [128, 21, 28, 35, 35, 5, 8]  users: rec50:Plateforme flottan, rec51:Plateforme flottan, rec52:Plateforme flottan, rec53:Plateforme flottan
+   C[56]@2237 no-entity-by-fn [55]  users: rec56:Tourelle à 4 direc
+   C[56]@2252 no-entity-by-fn [55]  users: rec56:Tourelle à 4 direc
+   C[56]@2267 no-entity-by-fn [55]  users: rec56:Tourelle à 4 direc
+   C[56]@2282 no-entity-by-fn [55]  users: rec56:Tourelle à 4 direc
+   C[57]@2301 no-entity-by-fn [58]  users: rec57:Tourelle à 4 direc
+   C[57]@2316 no-entity-by-fn [58]  users: rec57:Tourelle à 4 direc
+   C[57]@2331 no-entity-by-fn [58]  users: rec57:Tourelle à 4 direc
+   C[57]@2346 no-entity-by-fn [58]  users: rec57:Tourelle à 4 direc
+=== map 346
+   B[1]@475 player-in-area [7, 7, 42, 42, 3, 10]  users: 
+   B[2]@496 player-in-area [7, 7, 8, 8, 3, 10]  users: 
+   C[2]@606 player-riding []  users: rec1:Interrupteur (piét
+   C[2]@626 player-riding []  users: rec1:Interrupteur (piét
+   C[2]@632 player-riding []  users: rec1:Interrupteur (piét
+   C[2]@652 player-riding []  users: rec1:Interrupteur (piét
+   C[4]@750 player-riding []  users: rec3:Interrupteur (piét
+   C[4]@770 player-riding []  users: rec3:Interrupteur (piét
+   C[4]@776 player-riding []  users: rec3:Interrupteur (piét
+   C[4]@796 player-riding []  users: rec3:Interrupteur (piét
+=== map 347
+   B[1]@135 player-in-area [31, 48, 44, 44, 1, 1]  users: 
+   B[3]@328 player-in-area [28, 51, 45, 59, 0, 10]  users: 
+   B[4]@420 no-entity-by-fn [1]  users: 
+   B[6]@760 player-in-area [39, 40, 56, 56, 0, 10]  users: 
+   B[6]@777 no-entity-by-fn [1]  users: 
+   C[1]@848 entity-in-area [0, 34, 45, 25, 25, 0, 10]  users: rec0:Bloc transparent (
+=== map 351
+=== map 352
+   B[1]@537 player-in-area [39, 40, 50, 50, 2, 2]  users: 
+   B[2]@646 player-in-area [11, 12, 50, 50, 2, 2]  users: 
+   B[5]@800 player-in-area [24, 24, 11, 12, 2, 2]  users: 
+   B[6]@896 player-in-area [25, 25, 11, 12, 2, 2]  users: 
+   C[9]@978 player-in-area [7, 7, 50, 51, 2, 2]  users: rec8:Statue poussable (
+=== map 382
+   B[1]@330 player-in-area [29, 30, 58, 58, 2, 10]  users: 
+   B[2]@393 no-entity-by-fn [15]  users: 
+   B[2]@398 no-entity-by-fn [16]  users: 
+   B[2]@403 no-entity-by-fn [17]  users: 
+   B[2]@408 no-entity-by-fn [18]  users: 
+   B[3]@435 player-in-area [30, 33, 21, 22, 2, 10]  users: 
+   B[3]@473 player-in-area [31, 32, 24, 24, 2, 10]  users: 
+   C[1]@537 player-riding []  users: rec0:Interrupteur (piét
+   C[8]@614 player-in-area [29, 30, 40, 41, 3, 10]  users: rec7:Bloc à pousser/att
+   C[12]@765 player-riding []  users: rec11:Interrupteur (piét
+   C[32]@1210 no-entity-by-fn [33]  users: rec31:Bloc transparent (
+=== map 423
+   B[1]@219 no-entity-by-fn [3]  users: 
+   B[1]@235 no-entity-by-fn [34]  users: 
+   B[2]@256 player-in-area [23, 23, 14, 14, 4, 4]  users: 
+   B[3]@272 no-entity-by-fn [3]  users: 
+   B[3]@277 no-entity-by-fn [34]  users: 
+   B[3]@291 no-entity-by-fn [3]  users: 
+   B[3]@296 no-entity-by-fn [34]  users: 
+   C[1]@324 player-in-area [36, 38, 42, 46, 0, 5]  users: rec1:◆Mimming (faux) Ni
+   C[1]@546 entity-in-area [0, 35, 49, 41, 51, 0, 8]  users: rec1:◆Mimming (faux) Ni
+   C[1]@569 player-in-area [41, 46, 42, 44, 0, 6]  users: rec1:◆Mimming (faux) Ni
+   C[1]@585 player-in-area [41, 46, 42, 46, 0, 6]  users: rec1:◆Mimming (faux) Ni
+   C[4]@857 player-in-area [34, 48, 9, 33, 1, 1]  users: rec4:Boule de fer (gran
+   C[24]@905 player-in-area [15, 15, 10, 10, 4, 4]  users: rec24:Pilier poussable (
+   C[24]@924 player-in-area [15, 15, 10, 10, 4, 4]  users: rec24:Pilier poussable (
+=== map 426
+   B[1]@284 no-entity-by-fn [0]  users: 
+   B[4]@606 player-in-area [4, 10, 47, 50, 1, 1]  users: 
+   B[4]@622 no-entity-by-fn [20]  users: 
+   B[4]@654 player-in-area [4, 10, 45, 46, 1, 1]  users: 
+   B[5]@889 player-in-area [41, 48, 14, 15, 1, 4]  users: 
+   B[5]@899 player-in-area [41, 48, 16, 17, 1, 4]  users: 
+   B[5]@909 player-in-area [41, 48, 18, 19, 1, 4]  users: 
+   B[5]@919 player-in-area [41, 48, 20, 21, 1, 4]  users: 
+   C[7]@1435 entity-in-area [128, 6, 6, 14, 21, 1, 1]  users: rec7:Boule de fer (peti, rec8:Boule de fer (peti, rec9:Boule de fer (peti, rec10:Boule de fer (peti (+2)
+   C[7]@1446 entity-in-area [128, 10, 10, 14, 21, 1, 1]  users: rec7:Boule de fer (peti, rec8:Boule de fer (peti, rec9:Boule de fer (peti, rec10:Boule de fer (peti (+2)
+   C[23]@1948 player-in-area [35, 37, 10, 14, 0, 8]  users: rec23:Plateforme flottan
+   C[28]@2212 player-in-area [35, 37, 10, 14, 0, 8]  users: rec28:◆Mimming (faux) Ni
+   C[33]@2282 no-entity-by-fn [35]  users: rec33:Panneau générique
+   C[33]@2285 no-entity-by-fn [36]  users: rec33:Panneau générique
+   C[33]@2288 no-entity-by-fn [37]  users: rec33:Panneau générique
+   C[33]@2291 no-entity-by-fn [38]  users: rec33:Panneau générique
+   C[33]@2297 player-in-area [41, 47, 43, 55, 1, 1]  users: rec33:Panneau générique

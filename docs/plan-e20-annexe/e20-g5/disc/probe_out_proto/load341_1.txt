@@ -1,0 +1,11 @@
+case load341_1: map Lake Shrine (inner)-341 ; hero placed at (1068,728,80) ; flags set 
+entities of the map (record, sprite type, pos, status, program indexes A..F, sprite program indexes A..F, flags):
+  rec  21 type  430 pos (1140,776,16) status Normal idx [151,0,0,0,0,0] sprite [0,0,76,0,0,0] flags 0x332180 collidable True
+  rec  22 type  430 pos (1116,792,16) status Normal idx [151,0,0,0,0,0] sprite [0,0,76,0,0,0] flags 0x332180 collidable True
+  rec  23 type  430 pos (1164,792,16) status Normal idx [151,0,0,0,0,0] sprite [0,0,76,0,0,0] flags 0x332180 collidable True
+frame hold | hero x y z anim xcoll adj | per watched rec: x y z anim dir status fx fy adj xcoll ground
+   1 -  | H 1068 728 80 a0 d16 f0,0 ctl0 xc=- adj0 | [rec21 1140 776 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec22 1116 792 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec23 1164 792 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+   2 -  | H 1068 728 80 a0 d16 f0,0 ctl0 xc=- adj0 | [rec21 1140 776 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec22 1116 792 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec23 1164 792 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+   3 -  | H 1068 728 80 a0 d16 f0,0 ctl0 xc=- adj0 | [rec21 1140 776 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec22 1116 792 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec23 1164 792 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+native handler runs during the case: 9
+skipped or exceeded instructions (frame slot pc opcode kind):

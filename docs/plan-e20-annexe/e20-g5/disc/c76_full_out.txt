@@ -1,0 +1,35 @@
+C76 + helper: 6000 vectors, 0 mismatches, instruction coverage 82/82, uncovered 
+model outcome classes: 14
+   ('contact', 'cnt<31', 'anim!1', '', '') 1017
+   ('contact', 'cnt<31', 'anim1', '', '') 533
+   ('contact', 'cnt>=31', 'anim!1', 'sound25', 'dir=0') 161
+   ('contact', 'cnt>=31', 'anim!1', 'sound25', 'dir=16') 241
+   ('contact', 'cnt>=31', 'anim!1', 'sound25', 'dir=24') 136
+   ('contact', 'cnt>=31', 'anim!1', 'sound25', 'dir=8') 202
+   ('contact', 'cnt>=31', 'anim1', 'sound25', 'dir=0') 64
+   ('contact', 'cnt>=31', 'anim1', 'sound25', 'dir=16') 114
+   ('contact', 'cnt>=31', 'anim1', 'sound25', 'dir=24') 69
+   ('contact', 'cnt>=31', 'anim1', 'sound25', 'dir=8') 106
+   ('no-contact', 'cnt<31', 'anim!1', '', '') 1315
+   ('no-contact', 'cnt<31', 'anim1', 'stop25', '') 668
+   ('no-contact', 'cnt>=31', 'anim!1', '', '') 932
+   ('no-contact', 'cnt>=31', 'anim1', 'stop25', '') 442
+mutants 73 killed 56 survivors 17
+  SURVIVOR 8007c024 imm+1            addiu $sp, $sp, -0x20        -> addiu $sp, $sp, -0x1f
+  SURVIVOR 8007c024 imm-1            addiu $sp, $sp, -0x20        -> addiu $sp, $sp, -0x21
+  SURVIVOR 8007c02c off+4            sw $s1, 0x14($sp)            -> sw $s1, 0x18($sp)
+  SURVIVOR 8007c034 off+4            sw $ra, 0x18($sp)            -> sw $ra, 0x1c($sp)
+  SURVIVOR 8007c038 off+4            sw $s0, 0x10($sp)            -> sw $s0, 0x14($sp)
+  SURVIVOR 8007c040 addu<->subu      move $s0, $a0                -> subu $s0, $a0, $zero
+  SURVIVOR 8007c070 addu<->subu      move $a0, $s0                -> subu $a0, $s0, $zero
+  SURVIVOR 8007c078 addu<->subu      move $a1, $s1                -> subu $a1, $s1, $zero
+  SURVIVOR 8007c07c addu<->subu      move $v1, $v0                -> subu $v1, $v0, $zero
+  SURVIVOR 8007c080 imm-1            addiu $v0, $zero, -1         -> addiu $v0, $zero, -2
+  SURVIVOR 8007c0c0 off+4            lw $ra, 0x18($sp)            -> lw $ra, 0x1c($sp)
+  SURVIVOR 8007c0c4 off+4            lw $s1, 0x14($sp)            -> lw $s1, 0x18($sp)
+  SURVIVOR 8007c0c8 off+4            lw $s0, 0x10($sp)            -> lw $s0, 0x14($sp)
+  SURVIVOR 8007c0cc imm+1            addiu $sp, $sp, 0x20         -> addiu $sp, $sp, 0x21
+  SURVIVOR 8007c0cc imm-1            addiu $sp, $sp, 0x20         -> addiu $sp, $sp, 0x1f
+  SURVIVOR 8003aca8 imm+1            addiu $v0, $zero, -1         -> addiu $v0, $zero, 0
+  SURVIVOR 8003aca8 imm-1            addiu $v0, $zero, -1         -> addiu $v0, $zero, -2
+goldens: 14 vectors over 14 classes, sha256 c80ffbe3def37599c6671f32bf2020153c6b782c235707eceecce09f4ad90d5a

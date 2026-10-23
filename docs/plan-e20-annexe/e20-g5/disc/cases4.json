@@ -1,0 +1,53 @@
+[
+ {
+  "name": "poussoir40_rec0_from_north",
+  "arrival": true,
+  "zone": "Nirude\u2019s Lair",
+  "world": "Nirude\u2019s Lair-40",
+  "hero": [
+   108,
+   792,
+   16
+  ],
+  "segments": [
+   [
+    "D",
+    120
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0,
+   1
+  ],
+  "settle": 6
+ },
+ {
+  "name": "poussoir40_rec3_from_north",
+  "arrival": true,
+  "zone": "Nirude\u2019s Lair",
+  "world": "Nirude\u2019s Lair-40",
+  "hero": [
+   252,
+   800,
+   16
+  ],
+  "segments": [
+   [
+    "D",
+    120
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   3
+  ],
+  "settle": 6
+ }
+]

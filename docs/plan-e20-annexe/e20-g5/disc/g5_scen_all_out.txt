@@ -1,0 +1,95 @@
+== p1_flat_east
+P1 flat east: first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (253.000,100.000) moved (123.000,0.000) anim 1 dir 24 cnt 31 ; hero (231.250,100.000)
+== p2_directions
+P2 west->east (RIGHT, dir 24): first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (193.000,100.000) moved (63.000,0.000) anim 1 dir 24 cnt 31 ; hero (171.250,100.000)
+P2 east->west (LEFT, dir 8): first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (67.000,100.000) moved (-63.000,0.000) anim 1 dir 8 cnt 31 ; hero (87.750,100.000)
+P2 north->south (DOWN, dir 0): first hero.xcoll==pillar t11 ; counter reaches 31 / first anim1 t43 ; first snd(25) t43 ; first pillar displacement t43 ; end: pillar (130.000,139.000) moved (0.000,39.000) anim 1 dir 0 cnt 31 ; hero (130.000,124.500)
+P2 south->north (UP, dir 16): first hero.xcoll==pillar t10 ; counter reaches 31 / first anim1 t42 ; first snd(25) t42 ; first pillar displacement t42 ; end: pillar (130.000,60.500) moved (0.000,-39.500) anim 1 dir 16 cnt 31 ; hero (130.000,76.000)
+== p3_release
+P3 release at t80, press again at t111: first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (207.250,100.000) moved (77.250,0.000) anim 1 dir 24 cnt 31 ; hero (185.500,100.000)
+t001 pad=2000 | H anim=1 px=101.219 py=100.000 pz=0.000 fx=79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t005 pad=2000 | H anim=1 px=109.000 py=100.000 pz=0.000 fx=159744 adj=0 xcoll=PIL | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t006 pad=2000 | H anim=1 px=109.000 py=100.000 pz=0.000 fx=159744 adj=0 xcoll=PIL | P anim=0 dir=0 cnt=1 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t037 pad=2000 | H anim=1 px=109.000 py=100.000 pz=0.000 fx=159744 adj=1 xcoll=PIL | P anim=1 dir=24 cnt=31 px=130.750 py=100.000 pz=0.000 fx=49152 fy=0 adj=0 gnd=1 | J snd(25) snd(0)
+t082 pad=0000 | H anim=0 px=142.000 py=100.000 pz=0.000 fx=0 adj=0 xcoll=0 | P anim=1 dir=24 cnt=31 px=164.500 py=100.000 pz=0.000 fx=49152 fy=0 adj=0 gnd=1 | J snd(25)
+t083 pad=0000 | H anim=0 px=142.000 py=100.000 pz=0.000 fx=0 adj=0 xcoll=0 | P anim=0 dir=24 cnt=0 px=164.500 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 | J stopsnd25 snd(0)
+t112 pad=2000 | H anim=1 px=143.500 py=100.000 pz=0.000 fx=159744 adj=0 xcoll=PIL | P anim=0 dir=24 cnt=0 px=164.500 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t113 pad=2000 | H anim=1 px=143.500 py=100.000 pz=0.000 fx=159744 adj=1 xcoll=PIL | P anim=0 dir=24 cnt=1 px=164.500 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t144 pad=2000 | H anim=1 px=143.500 py=100.000 pz=0.000 fx=159744 adj=1 xcoll=PIL | P anim=1 dir=24 cnt=31 px=165.250 py=100.000 pz=0.000 fx=49152 fy=0 adj=0 gnd=1 | J snd(25) snd(0)
+== p4_wall
+P4 wall column 7 (x 168..191): first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (158.000,100.000) moved (28.000,0.000) anim 1 dir 24 cnt 31 ; hero (137.000,100.000)
+   last rows: t149 pad=2000 | H anim=1 px=137.000 py=100.000 pz=0.000 fx=159744 adj=1 xcoll=PIL | P anim=1 dir=24 cnt=31 px=158.000 py=100.000 pz=0.000 fx=49152 fy=0 adj=1 gnd=1 | J snd(25) || t150 pad=2000 | H anim=1 px=137.000 py=100.000 pz=0.000 fx=159744 adj=1 xcoll=PIL | P anim=1 dir=24 cnt=31 px=158.000 py=100.000 pz=0.000 fx=49152 fy=0 adj=1 gnd=1 | J snd(25)
+   snd(25) in t101..150: 50 ; pillar anim at t150 1 ; hero.xcoll==pillar at t150: True
+P4 wall column 8 (x 192..215): first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (182.000,100.000) moved (52.000,0.000) anim 1 dir 24 cnt 31 ; hero (161.000,100.000)
+   last rows: t149 pad=2000 | H anim=1 px=161.000 py=100.000 pz=0.000 fx=159744 adj=1 xcoll=PIL | P anim=1 dir=24 cnt=31 px=182.000 py=100.000 pz=0.000 fx=49152 fy=0 adj=1 gnd=1 | J snd(25) || t150 pad=2000 | H anim=1 px=161.000 py=100.000 pz=0.000 fx=159744 adj=1 xcoll=PIL | P anim=1 dir=24 cnt=31 px=182.000 py=100.000 pz=0.000 fx=49152 fy=0 adj=1 gnd=1 | J snd(25)
+   snd(25) in t101..150: 50 ; pillar anim at t150 1 ; hero.xcoll==pillar at t150: True
+P4 wall column 9 (x 216..239): first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (206.000,100.000) moved (76.000,0.000) anim 1 dir 24 cnt 31 ; hero (185.000,100.000)
+   last rows: t149 pad=2000 | H anim=1 px=185.000 py=100.000 pz=0.000 fx=159744 adj=1 xcoll=PIL | P anim=1 dir=24 cnt=31 px=206.000 py=100.000 pz=0.000 fx=49152 fy=0 adj=1 gnd=1 | J snd(25) || t150 pad=2000 | H anim=1 px=185.000 py=100.000 pz=0.000 fx=159744 adj=1 xcoll=PIL | P anim=1 dir=24 cnt=31 px=206.000 py=100.000 pz=0.000 fx=49152 fy=0 adj=1 gnd=1 | J snd(25)
+   snd(25) in t101..150: 50 ; pillar anim at t150 1 ; hero.xcoll==pillar at t150: True
+== p5_offset_and_diagonal
+P5 dy=-14 RIGHT: first hero.xcoll==pillar tNone ; counter reaches 31 / first anim1 tNone ; first snd(25) tNone ; first pillar displacement tNone ; end: pillar (130.000,100.000) moved (0.000,0.000) anim 0 dir 0 cnt 0 ; hero (391.281,86.000)
+P5 dy=-12 RIGHT: first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (193.000,100.000) moved (63.000,0.000) anim 1 dir 24 cnt 31 ; hero (171.250,88.000)
+P5 dy=-8 RIGHT: first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (193.000,100.000) moved (63.000,0.000) anim 1 dir 24 cnt 31 ; hero (171.250,92.000)
+P5 dy=-4 RIGHT: first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (193.000,100.000) moved (63.000,0.000) anim 1 dir 24 cnt 31 ; hero (171.250,96.000)
+P5 dy=+0 RIGHT: first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (193.000,100.000) moved (63.000,0.000) anim 1 dir 24 cnt 31 ; hero (171.250,100.000)
+P5 dy=+4 RIGHT: first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (193.000,100.000) moved (63.000,0.000) anim 1 dir 24 cnt 31 ; hero (171.250,104.000)
+P5 dy=+8 RIGHT: first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (193.000,100.000) moved (63.000,0.000) anim 1 dir 24 cnt 31 ; hero (171.250,108.000)
+P5 dy=+12 RIGHT: first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (193.000,100.000) moved (63.000,0.000) anim 1 dir 24 cnt 31 ; hero (171.250,112.000)
+P5 dy=+14 RIGHT: first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (193.000,100.000) moved (63.000,0.000) anim 1 dir 24 cnt 31 ; hero (171.250,114.000)
+P5 RIGHT|DOWN from (100,88): first hero.xcoll==pillar t6 ; counter reaches 31 / first anim1 t38 ; first snd(25) t38 ; first pillar displacement t38 ; end: pillar (161.500,100.000) moved (31.500,0.000) anim 0 dir 24 cnt 0 ; hero (211.382,162.255)
+P5 RIGHT|UP from (100,112): first hero.xcoll==pillar t6 ; counter reaches 31 / first anim1 t38 ; first snd(25) t38 ; first pillar displacement t38 ; end: pillar (160.000,100.000) moved (30.000,0.000) anim 0 dir 24 cnt 0 ; hero (213.329,36.443)
+== p6_real_map26
+P6 map26 from the west (the save tile (12,26)), RIGHT: first hero.xcoll==pillar t2 ; counter reaches 31 / first anim1 t34 ; first snd(25) t34 ; first pillar displacement t34 ; end: pillar (350.000,424.000) moved (26.000,0.000) anim 1 dir 24 cnt 31 ; hero (329.000,424.000)
+P6 map26 from the east, LEFT: first hero.xcoll==pillar tNone ; counter reaches 31 / first anim1 tNone ; first snd(25) tNone ; first pillar displacement tNone ; end: pillar (324.000,424.000) moved (0.000,0.000) anim 0 dir 0 cnt 0 ; hero (82.000,424.000)
+P6 map26 from the north, DOWN: first hero.xcoll==pillar tNone ; counter reaches 31 / first anim1 tNone ; first snd(25) tNone ; first pillar displacement tNone ; end: pillar (324.000,424.000) moved (0.000,0.000) anim 0 dir 0 cnt 0 ; hero (324.000,396.000)
+P6 map26 from the south, UP: first hero.xcoll==pillar t9 ; counter reaches 31 / first anim1 t41 ; first snd(25) t41 ; first pillar displacement t41 ; end: pillar (324.000,406.000) moved (0.000,-18.000) anim 1 dir 16 cnt 31 ; hero (324.000,421.000)
+== p7_freeze_after_f_start
+t028 hero px=167.031 fx=159744 izf=0 anim=1 adir=3
+t029 hero px=169.469 fx=159744 izf=0 anim=1 adir=3
+t030 hero px=169.469 fx=0 izf=0 anim=1 adir=3
+t031 hero px=169.469 fx=0 izf=0 anim=1 adir=3
+t032 hero px=169.469 fx=0 izf=0 anim=1 adir=3
+t033 hero px=169.469 fx=0 izf=0 anim=1 adir=3
+t040 hero px=169.469 fx=0 izf=0 anim=1 adir=3
+t060 hero px=169.469 fx=0 izf=0 anim=1 adir=3
+t100 hero px=169.469 fx=0 izf=0 anim=1 adir=3
+final hero x 169.469 (walking would give ~338.9)
+== p8_onto_plate_and_switch
+P8 plate 108: flags6C=60C0 size(w,h,d)=(48.00,32.00,16.00) pz=8.00 ; end: pillar (156.000,100.000,0.000) support==0 ground 1 adj 1 anim 1 ; hero (135.000) xcoll==PIL
+P8 switch 45: flags6C=32080 size(w,h,d)=(24.00,16.00,16.00) pz=0.00 ; end: pillar (168.000,100.000,0.000) support==0 ground 1 adj 1 anim 1 ; hero (147.000) xcoll==PIL
+== p9_two_pillars_in_line
+t36 first (130.00,anim 0,cnt 31) second (156.00,anim 0,cnt 0,xcoll==first False)
+t40 first (133.00,anim 1,cnt 31) second (156.00,anim 0,cnt 0,xcoll==first False)
+t60 first (136.00,anim 1,cnt 31) second (156.00,anim 0,cnt 0,xcoll==first False)
+t100 first (136.00,anim 1,cnt 31) second (156.00,anim 0,cnt 0,xcoll==first False)
+t160 first (136.00,anim 1,cnt 31) second (156.00,anim 0,cnt 0,xcoll==first False)
+t220 first (136.00,anim 1,cnt 31) second (156.00,anim 0,cnt 0,xcoll==first False)
+== p10_ledge_drop
+P10 ledge: first hero.xcoll==pillar t5 ; counter reaches 31 / first anim1 t37 ; first snd(25) t37 ; first pillar displacement t37 ; end: pillar (211.000,100.000) moved (81.000,0.000) anim 0 dir 24 cnt 0 ; hero (472.141,100.000)
+t001 pillar (130.00,100.00,z 32.00) ground 1 adj 0 anim 0 | hero (101.22, z 32.00, ground 1)
+t037 pillar (130.75,100.00,z 32.00) ground 1 adj 0 anim 1 | hero (109.00, z 32.00, ground 1)
+t040 pillar (133.00,100.00,z 32.00) ground 1 adj 0 anim 1 | hero (111.25, z 32.00, ground 1)
+t080 pillar (163.00,100.00,z 32.00) ground 1 adj 0 anim 1 | hero (141.25, z 32.00, ground 1)
+t120 pillar (193.00,100.00,z 32.00) ground 1 adj 0 anim 1 | hero (171.25, z 32.00, ground 1)
+t132 pillar (202.00,100.00,z 32.00) ground 0 adj 0 anim 1 | hero (180.25, z 32.00, ground 1)
+t143 pillar (210.25,100.00,z 0.00) ground 1 adj 0 anim 1 | hero (188.50, z 32.00, ground 1)
+t145 pillar (211.00,100.00,z 0.00) ground 1 adj 0 anim 0 | hero (193.38, z 32.00, ground 1)
+t160 pillar (211.00,100.00,z 0.00) ground 1 adj 0 anim 0 | hero (229.94, z 32.00, ground 1)
+t200 pillar (211.00,100.00,z 0.00) ground 1 adj 0 anim 0 | hero (325.89, z 0.00, ground 1)
+t240 pillar (211.00,100.00,z 0.00) ground 1 adj 0 anim 0 | hero (423.39, z 0.00, ground 1)
+== p11_pit_fill_map347
+P11 west to the pit (5,14): first hero.xcoll==pillar t8 ; counter reaches 31 / first anim1 t40 ; first snd(25) t40 ; first pillar displacement t40 ; end: pillar (130.000,232.000) moved (-74.000,0.000) anim 0 dir 8 cnt 0 ; hero (34.000,232.000)
+   t037 pillar (204.00,232.00,z 48.00) ground 1 adj 0 anim 0 | hero (224.00, z 48.00, ground 1, support==pillar False)
+   t040 pillar (203.25,232.00,z 48.00) ground 1 adj 0 anim 1 | hero (224.00, z 48.00, ground 1, support==pillar False)
+   t133 pillar (133.50,232.00,z 48.00) ground 0 adj 0 anim 1 | hero (154.25, z 48.00, ground 1, support==pillar False)
+   t139 pillar (130.00,232.00,z 37.50) ground 0 adj 1 anim 1 | hero (150.00, z 48.00, ground 1, support==pillar False)
+   t144 pillar (130.00,232.00,z 16.00) ground 1 adj 1 anim 1 | hero (150.00, z 48.00, ground 1, support==pillar False)
+   t146 pillar (130.00,232.00,z 16.00) ground 1 adj 0 anim 0 | hero (145.12, z 48.00, ground 1, support==pillar True)
+P11 east to the pit (11,14): first hero.xcoll==pillar t7 ; counter reaches 31 / first anim1 t39 ; first snd(25) t39 ; first pillar displacement t39 ; end: pillar (278.000,232.000) moved (74.000,0.000) anim 0 dir 24 cnt 0 ; hero (373.000,232.000)
+   t037 pillar (204.00,232.00,z 48.00) ground 1 adj 0 anim 0 | hero (183.00, z 48.00, ground 1, support==pillar False)
+   t039 pillar (204.75,232.00,z 48.00) ground 1 adj 0 anim 1 | hero (183.00, z 48.00, ground 1, support==pillar False)
+   t132 pillar (274.50,232.00,z 48.00) ground 0 adj 0 anim 1 | hero (252.75, z 48.00, ground 1, support==pillar False)
+   t139 pillar (278.00,232.00,z 34.00) ground 0 adj 1 anim 1 | hero (257.00, z 48.00, ground 1, support==pillar False)
+   t143 pillar (278.00,232.00,z 16.00) ground 1 adj 1 anim 1 | hero (257.00, z 48.00, ground 1, support==pillar False)
+   t145 pillar (278.00,232.00,z 16.00) ground 1 adj 0 anim 0 | hero (261.88, z 48.00, ground 1, support==pillar True)
+done

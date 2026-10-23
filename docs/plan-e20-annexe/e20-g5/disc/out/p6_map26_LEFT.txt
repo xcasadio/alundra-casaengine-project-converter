@@ -1,0 +1,200 @@
+t001 pad=8000 | H anim=1 px=348.781 py=424.000 pz=80.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t002 pad=8000 | H anim=44 px=347.023 py=424.000 pz=79.500 fx=-115200 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t003 pad=8000 | H anim=44 px=344.727 py=424.000 pz=78.500 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t004 pad=8000 | H anim=44 px=342.430 py=424.000 pz=77.000 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t005 pad=8000 | H anim=44 px=340.133 py=424.000 pz=75.000 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t006 pad=8000 | H anim=44 px=337.836 py=424.000 pz=72.500 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t007 pad=8000 | H anim=44 px=335.539 py=424.000 pz=69.500 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t008 pad=8000 | H anim=44 px=333.242 py=424.000 pz=66.000 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t009 pad=8000 | H anim=44 px=330.945 py=424.000 pz=62.000 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t010 pad=8000 | H anim=44 px=328.648 py=424.000 pz=57.500 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t011 pad=8000 | H anim=44 px=326.352 py=424.000 pz=52.500 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t012 pad=8000 | H anim=44 px=324.055 py=424.000 pz=48.000 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t013 pad=8000 | H anim=1 px=321.688 py=424.000 pz=48.000 fx=-155136 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(11) fx(id=7,a2=0,x=324.055,y=424.000,z=48.000) fx(id=7,a2=0,x=324.055,y=424.000,z=48.000) fx(id=7,a2=0,x=324.055,y=424.000,z=48.000) snd(0)
+t014 pad=8000 | H anim=1 px=319.250 py=424.000 pz=48.000 fx=-159744 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t015 pad=8000 | H anim=1 px=316.812 py=424.000 pz=48.000 fx=-159744 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t016 pad=8000 | H anim=1 px=314.375 py=424.000 pz=48.000 fx=-159744 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t017 pad=8000 | H anim=1 px=311.938 py=424.000 pz=48.000 fx=-159744 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t018 pad=8000 | H anim=1 px=309.500 py=424.000 pz=48.000 fx=-159744 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t019 pad=8000 | H anim=1 px=307.062 py=424.000 pz=48.000 fx=-159744 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t020 pad=8000 | H anim=1 px=304.625 py=424.000 pz=48.000 fx=-159744 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t021 pad=8000 | H anim=1 px=302.188 py=424.000 pz=48.000 fx=-159744 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t022 pad=8000 | H anim=44 px=299.820 py=424.000 pz=47.500 fx=-155136 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t023 pad=8000 | H anim=44 px=297.523 py=424.000 pz=46.500 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t024 pad=8000 | H anim=44 px=295.227 py=424.000 pz=45.000 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t025 pad=8000 | H anim=44 px=292.930 py=424.000 pz=43.000 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t026 pad=8000 | H anim=44 px=290.633 py=424.000 pz=40.500 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t027 pad=8000 | H anim=44 px=288.336 py=424.000 pz=37.500 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t028 pad=8000 | H anim=44 px=286.039 py=424.000 pz=34.000 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t029 pad=8000 | H anim=44 px=283.742 py=424.000 pz=30.000 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t030 pad=8000 | H anim=44 px=281.445 py=424.000 pz=25.500 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t031 pad=8000 | H anim=44 px=279.148 py=424.000 pz=20.500 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t032 pad=8000 | H anim=44 px=276.852 py=424.000 pz=16.000 fx=-150528 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t033 pad=8000 | H anim=1 px=274.625 py=424.000 pz=16.000 fx=-145920 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(17) fx(id=7,a2=0,x=276.852,y=424.000,z=16.000) fx(id=7,a2=0,x=276.852,y=424.000,z=16.000) fx(id=7,a2=0,x=276.852,y=424.000,z=16.000) snd(0)
+t034 pad=8000 | H anim=1 px=272.469 py=424.000 pz=16.000 fx=-141312 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t035 pad=8000 | H anim=1 px=270.383 py=424.000 pz=16.000 fx=-136704 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t036 pad=8000 | H anim=1 px=268.367 py=424.000 pz=16.000 fx=-132096 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t037 pad=8000 | H anim=1 px=266.422 py=424.000 pz=16.000 fx=-127488 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t038 pad=8000 | H anim=1 px=264.547 py=424.000 pz=16.000 fx=-122880 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t039 pad=8000 | H anim=1 px=262.742 py=424.000 pz=16.000 fx=-118272 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t040 pad=8000 | H anim=1 px=261.008 py=424.000 pz=16.000 fx=-113664 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t041 pad=8000 | H anim=1 px=259.344 py=424.000 pz=16.000 fx=-109056 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t042 pad=8000 | H anim=1 px=257.750 py=424.000 pz=16.000 fx=-104448 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t043 pad=8000 | H anim=1 px=256.227 py=424.000 pz=16.000 fx=-99840 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t044 pad=8000 | H anim=1 px=254.773 py=424.000 pz=16.000 fx=-95232 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t045 pad=8000 | H anim=1 px=253.391 py=424.000 pz=16.000 fx=-90624 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t046 pad=8000 | H anim=1 px=252.078 py=424.000 pz=16.000 fx=-86016 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t047 pad=8000 | H anim=1 px=250.836 py=424.000 pz=16.000 fx=-81408 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t048 pad=8000 | H anim=1 px=249.617 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t049 pad=8000 | H anim=1 px=248.398 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(16)
+t050 pad=8000 | H anim=1 px=247.180 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t051 pad=8000 | H anim=1 px=245.961 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t052 pad=8000 | H anim=1 px=244.742 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t053 pad=8000 | H anim=1 px=243.523 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t054 pad=8000 | H anim=1 px=242.305 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t055 pad=8000 | H anim=1 px=241.086 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t056 pad=8000 | H anim=1 px=239.867 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t057 pad=8000 | H anim=1 px=238.648 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t058 pad=8000 | H anim=1 px=237.430 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t059 pad=8000 | H anim=1 px=236.211 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t060 pad=8000 | H anim=1 px=234.992 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t061 pad=8000 | H anim=1 px=233.773 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t062 pad=8000 | H anim=1 px=232.555 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t063 pad=8000 | H anim=1 px=231.336 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t064 pad=8000 | H anim=1 px=230.117 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t065 pad=8000 | H anim=1 px=228.898 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(16)
+t066 pad=8000 | H anim=1 px=227.680 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t067 pad=8000 | H anim=1 px=226.461 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t068 pad=8000 | H anim=1 px=225.242 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t069 pad=8000 | H anim=1 px=224.023 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t070 pad=8000 | H anim=1 px=222.805 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t071 pad=8000 | H anim=1 px=221.586 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t072 pad=8000 | H anim=1 px=220.367 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t073 pad=8000 | H anim=1 px=219.148 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t074 pad=8000 | H anim=1 px=217.930 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t075 pad=8000 | H anim=1 px=216.711 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t076 pad=8000 | H anim=1 px=215.492 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t077 pad=8000 | H anim=1 px=214.273 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t078 pad=8000 | H anim=1 px=213.055 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t079 pad=8000 | H anim=1 px=211.836 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t080 pad=8000 | H anim=1 px=210.617 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t081 pad=8000 | H anim=1 px=209.398 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(16)
+t082 pad=8000 | H anim=1 px=208.180 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t083 pad=8000 | H anim=1 px=206.961 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t084 pad=8000 | H anim=1 px=205.742 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t085 pad=8000 | H anim=1 px=204.523 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t086 pad=8000 | H anim=1 px=203.305 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t087 pad=8000 | H anim=1 px=202.086 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t088 pad=8000 | H anim=1 px=200.867 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t089 pad=8000 | H anim=1 px=199.648 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t090 pad=8000 | H anim=1 px=198.430 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t091 pad=8000 | H anim=1 px=197.211 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t092 pad=8000 | H anim=1 px=195.992 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t093 pad=8000 | H anim=1 px=194.773 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t094 pad=8000 | H anim=1 px=193.555 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t095 pad=8000 | H anim=1 px=192.336 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t096 pad=8000 | H anim=1 px=191.117 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t097 pad=8000 | H anim=1 px=189.898 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(16)
+t098 pad=8000 | H anim=1 px=188.680 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t099 pad=8000 | H anim=1 px=187.461 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t100 pad=8000 | H anim=1 px=186.242 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t101 pad=8000 | H anim=1 px=185.023 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t102 pad=8000 | H anim=1 px=183.805 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t103 pad=8000 | H anim=1 px=182.586 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t104 pad=8000 | H anim=1 px=181.367 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t105 pad=8000 | H anim=1 px=180.148 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t106 pad=8000 | H anim=1 px=178.930 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t107 pad=8000 | H anim=1 px=177.711 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t108 pad=8000 | H anim=1 px=176.492 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t109 pad=8000 | H anim=1 px=175.273 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t110 pad=8000 | H anim=1 px=174.055 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t111 pad=8000 | H anim=1 px=172.836 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t112 pad=8000 | H anim=1 px=171.617 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t113 pad=8000 | H anim=1 px=170.398 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(16)
+t114 pad=8000 | H anim=1 px=169.180 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t115 pad=8000 | H anim=1 px=167.961 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t116 pad=8000 | H anim=1 px=166.742 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t117 pad=8000 | H anim=1 px=165.523 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t118 pad=8000 | H anim=1 px=164.305 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t119 pad=8000 | H anim=1 px=163.086 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t120 pad=8000 | H anim=1 px=161.867 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t121 pad=8000 | H anim=1 px=160.648 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t122 pad=8000 | H anim=1 px=159.430 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t123 pad=8000 | H anim=1 px=158.211 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t124 pad=8000 | H anim=1 px=156.992 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t125 pad=8000 | H anim=1 px=155.773 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t126 pad=8000 | H anim=1 px=154.555 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t127 pad=8000 | H anim=1 px=153.336 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t128 pad=8000 | H anim=1 px=152.117 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t129 pad=8000 | H anim=1 px=150.898 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(16)
+t130 pad=8000 | H anim=1 px=149.680 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t131 pad=8000 | H anim=1 px=148.461 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t132 pad=8000 | H anim=1 px=147.242 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t133 pad=8000 | H anim=1 px=146.023 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t134 pad=8000 | H anim=1 px=144.805 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t135 pad=8000 | H anim=1 px=143.586 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t136 pad=8000 | H anim=1 px=142.367 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t137 pad=8000 | H anim=1 px=141.148 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t138 pad=8000 | H anim=1 px=139.930 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t139 pad=8000 | H anim=1 px=138.711 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t140 pad=8000 | H anim=1 px=137.492 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t141 pad=8000 | H anim=1 px=136.273 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t142 pad=8000 | H anim=1 px=135.055 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t143 pad=8000 | H anim=1 px=133.836 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t144 pad=8000 | H anim=1 px=132.617 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t145 pad=8000 | H anim=1 px=131.398 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(16)
+t146 pad=8000 | H anim=1 px=130.180 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t147 pad=8000 | H anim=1 px=128.961 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t148 pad=8000 | H anim=1 px=127.742 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t149 pad=8000 | H anim=1 px=126.523 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t150 pad=8000 | H anim=1 px=125.305 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t151 pad=8000 | H anim=1 px=124.086 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t152 pad=8000 | H anim=1 px=122.867 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t153 pad=8000 | H anim=1 px=121.648 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t154 pad=8000 | H anim=1 px=120.430 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t155 pad=8000 | H anim=1 px=119.211 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t156 pad=8000 | H anim=1 px=117.992 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t157 pad=8000 | H anim=1 px=116.773 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t158 pad=8000 | H anim=1 px=115.555 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t159 pad=8000 | H anim=1 px=114.336 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t160 pad=8000 | H anim=1 px=113.117 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t161 pad=8000 | H anim=1 px=111.898 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(16)
+t162 pad=8000 | H anim=1 px=110.680 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t163 pad=8000 | H anim=1 px=109.461 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t164 pad=8000 | H anim=1 px=108.242 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t165 pad=8000 | H anim=1 px=107.023 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t166 pad=8000 | H anim=1 px=105.805 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t167 pad=8000 | H anim=1 px=104.586 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t168 pad=8000 | H anim=1 px=103.367 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t169 pad=8000 | H anim=1 px=102.148 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t170 pad=8000 | H anim=1 px=100.930 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t171 pad=8000 | H anim=1 px=99.711 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t172 pad=8000 | H anim=1 px=98.492 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t173 pad=8000 | H anim=1 px=97.273 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t174 pad=8000 | H anim=1 px=96.055 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t175 pad=8000 | H anim=1 px=94.836 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t176 pad=8000 | H anim=1 px=93.617 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t177 pad=8000 | H anim=1 px=92.398 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(16)
+t178 pad=8000 | H anim=1 px=91.180 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t179 pad=8000 | H anim=1 px=89.961 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t180 pad=8000 | H anim=1 px=88.742 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t181 pad=8000 | H anim=1 px=87.523 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t182 pad=8000 | H anim=1 px=86.305 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t183 pad=8000 | H anim=1 px=85.086 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t184 pad=8000 | H anim=1 px=83.867 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t185 pad=8000 | H anim=1 px=82.648 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t186 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t187 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t188 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t189 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t190 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t191 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t192 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t193 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 | J snd(16)
+t194 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t195 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t196 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t197 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t198 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t199 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 
+t200 pad=8000 | H anim=1 px=82.000 py=424.000 pz=16.000 fx=-79872 adj=1 xcoll=0 | P anim=0 dir=0 cnt=0 px=324.000 py=424.000 pz=16.000 fx=0 fy=0 adj=0 gnd=1 

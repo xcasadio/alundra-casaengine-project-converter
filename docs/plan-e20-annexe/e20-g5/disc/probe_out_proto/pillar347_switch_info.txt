@@ -1,0 +1,26 @@
+case pillar347_switch_info: map Lake Shrine (inner)-347 ; hero placed at (168,232,48) ; flags set 
+entities of the map (record, sprite type, pos, status, program indexes A..F, sprite program indexes A..F, flags):
+  rec  -1 type    0 pos (168,232,48) status Normal idx [0,134,0,0,0,0] sprite [0,0,0,0,0,0] flags 0x3118C collidable True
+  rec   2 type  301 pos (36,216,64) status Normal idx [131,0,131,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec   3 type  301 pos (36,248,64) status Normal idx [131,0,132,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec   4 type  301 pos (84,184,64) status Normal idx [131,0,133,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec   5 type  301 pos (84,280,48) status Normal idx [134,0,134,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec   6 type  301 pos (132,232,64) status Normal idx [131,0,135,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec   7 type  301 pos (180,184,64) status Normal idx [131,0,136,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec   8 type  301 pos (180,280,64) status Normal idx [131,0,137,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec   9 type  301 pos (228,184,64) status Normal idx [131,0,138,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec  10 type  301 pos (228,280,64) status Normal idx [131,0,139,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec  11 type  301 pos (276,232,64) status Normal idx [131,0,140,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec  12 type  301 pos (324,184,64) status Normal idx [131,0,141,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec  13 type  301 pos (324,280,64) status Normal idx [131,0,142,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec  14 type  301 pos (372,216,64) status Normal idx [131,0,143,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec  15 type  301 pos (372,248,64) status Normal idx [131,0,144,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec  16 type  430 pos (204,232,48) status Normal idx [0,0,0,0,0,0] sprite [0,0,76,0,0,0] flags 0x330180 collidable True
+frame hold | hero x y z anim xcoll adj | per watched rec: x y z anim dir status fx fy adj xcoll ground
+   1 R  | H 169.219 232 48 a1 d24 f1.219,0 ctl0 xc=- adj0 | [rec16 204 232 48 a0 d0 s2 f0,0 adj0 xc=- g1] [rec11 276 232 64 a0 d0 s2 f0,0 adj0 xc=- g0] [rec6 132 232 64 a0 d0 s2 f0,0 adj0 xc=- g0]
+   2 R  | H 171.656 232 48 a1 d24 f2.438,0 ctl0 xc=- adj0 | [rec16 204 232 48 a0 d0 s2 f0,0 adj0 xc=- g1] [rec11 276 232 64 a0 d0 s2 f0,0 adj0 xc=- g0] [rec6 132 232 64 a0 d0 s2 f0,0 adj0 xc=- g0]
+   3 R  | H 174.094 232 48 a1 d24 f2.438,0 ctl0 xc=- adj0 | [rec16 204 232 48 a0 d0 s2 f0,0 adj0 xc=- g1] [rec11 276 232 64 a0 d0 s2 f0,0 adj0 xc=- g0] [rec6 132 232 64 a0 d0 s2 f0,0 adj0 xc=- g0]
+   4 R  | H 176.531 232 48 a1 d24 f2.438,0 ctl0 xc=- adj0 | [rec16 204 232 48 a0 d0 s2 f0,0 adj0 xc=- g1] [rec11 276 232 64 a0 d0 s2 f0,0 adj0 xc=- g0] [rec6 132 232 64 a0 d0 s2 f0,0 adj0 xc=- g0]
+   5 R  | H 178.969 232 48 a1 d24 f2.438,0 ctl0 xc=- adj0 | [rec16 204 232 48 a0 d0 s2 f0,0 adj0 xc=- g1] [rec11 276 232 64 a0 d0 s2 f0,0 adj0 xc=- g0] [rec6 132 232 64 a0 d0 s2 f0,0 adj0 xc=- g0]
+native handler runs during the case: 5
+skipped or exceeded instructions (frame slot pc opcode kind):

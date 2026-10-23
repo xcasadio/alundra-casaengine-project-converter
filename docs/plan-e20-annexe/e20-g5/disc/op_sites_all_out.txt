@@ -1,0 +1,6 @@
+opcode 0x72: 24 sites on 12 maps; in chain: []
+   maps: {40: 4, 51: 1, 53: 1, 54: 1, 139: 1, 140: 2, 159: 1, 160: 6, 199: 1, 394: 2, 444: 2, 446: 2}
+opcode 0xA9: 4 sites on 1 maps; in chain: []
+   maps: {440: 4}
+opcode 0xAA: 22 sites on 8 maps; in chain: []
+   maps: {159: 1, 160: 1, 421: 3, 423: 2, 424: 8, 425: 1, 426: 5, 440: 1}

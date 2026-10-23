@@ -1,0 +1,31 @@
+[
+ {
+  "name": "statue352_east",
+  "arrival": true,
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-352",
+  "hero": [
+   168,
+   808,
+   32
+  ],
+  "segments": [
+   [
+    "R",
+    50
+   ],
+   [
+    "",
+    3
+   ],
+   [
+    "R",
+    120
+   ]
+  ],
+  "watch": [
+   8
+  ],
+  "settle": 6
+ }
+]

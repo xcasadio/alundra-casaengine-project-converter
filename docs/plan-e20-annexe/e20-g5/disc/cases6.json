@@ -1,0 +1,27 @@
+[
+ {
+  "name": "pillar346_south_push",
+  "arrival": true,
+  "zone": "Lake Shrine",
+  "world": "Lake Shrine (inner)-346",
+  "hero": [
+   276,
+   184,
+   48
+  ],
+  "segments": [
+   [
+    "D",
+    220
+   ],
+   [
+    "",
+    20
+   ]
+  ],
+  "watch": [
+   34
+  ],
+  "settle": 6
+ }
+]

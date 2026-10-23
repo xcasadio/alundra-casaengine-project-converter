@@ -1,0 +1,86 @@
+[
+ {
+  "name": "block23_from_east",
+  "arrival": true,
+  "zone": "Lars' Crypt",
+  "world": "Lars' Crypt-23",
+  "hero": [
+   800,
+   832,
+   32
+  ],
+  "segments": [
+   [
+    "L",
+    200
+   ],
+   [
+    "",
+    60
+   ]
+  ],
+  "watch": [
+   12
+  ],
+  "settle": 6
+ },
+ {
+  "name": "poussoir40_rec0_from_north",
+  "arrival": true,
+  "zone": "Nirude\u00e2\u20ac\u2122s Lair",
+  "world": "Nirude\u00e2\u20ac\u2122s Lair-40",
+  "hero": [
+   108,
+   792,
+   16
+  ],
+  "segments": [
+   [
+    "D",
+    120
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0,
+   1
+  ],
+  "settle": 6
+ },
+ {
+  "name": "block23_from_east_waited",
+  "arrival": true,
+  "zone": "Lars' Crypt",
+  "world": "Lars' Crypt-23",
+  "hero": [
+   800,
+   832,
+   32
+  ],
+  "segments": [
+   [
+    "",
+    30
+   ],
+   [
+    "L",
+    60
+   ],
+   [
+    "",
+    10
+   ],
+   [
+    "L",
+    100
+   ]
+  ],
+  "watch": [
+   12
+  ],
+  "settle": 6
+ }
+]

@@ -1,0 +1,120 @@
+t001 pad=1000 | H anim=1 px=130.000 py=129.188 pz=0.000 fx=0 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t002 pad=1000 | H anim=1 px=130.000 py=127.562 pz=0.000 fx=0 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t003 pad=1000 | H anim=1 px=130.000 py=125.938 pz=0.000 fx=0 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t004 pad=1000 | H anim=1 px=130.000 py=124.312 pz=0.000 fx=0 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t005 pad=1000 | H anim=1 px=130.000 py=122.688 pz=0.000 fx=0 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t006 pad=1000 | H anim=1 px=130.000 py=121.062 pz=0.000 fx=0 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t007 pad=1000 | H anim=1 px=130.000 py=119.438 pz=0.000 fx=0 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t008 pad=1000 | H anim=1 px=130.000 py=117.812 pz=0.000 fx=0 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t009 pad=1000 | H anim=1 px=130.000 py=116.188 pz=0.000 fx=0 adj=0 xcoll=0 | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t010 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=0 dir=0 cnt=0 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t011 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=1 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t012 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=2 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t013 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=3 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t014 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=4 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t015 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=5 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t016 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=6 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t017 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=7 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t018 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=8 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t019 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=9 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t020 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=10 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t021 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=11 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t022 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=12 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t023 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=13 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t024 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=14 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t025 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=15 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t026 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=16 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t027 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=17 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t028 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=18 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t029 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=19 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t030 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=20 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t031 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=21 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t032 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=22 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t033 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=23 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 | J snd(0)
+t034 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=24 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t035 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=25 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t036 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=26 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t037 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=27 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t038 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=28 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t039 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=29 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t040 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=30 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t041 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=0 dir=0 cnt=31 px=130.000 py=100.000 pz=0.000 fx=0 fy=0 adj=0 gnd=1 
+t042 pad=1000 | H anim=1 px=130.000 py=115.000 pz=0.000 fx=0 adj=1 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=99.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25) snd(0)
+t043 pad=1000 | H anim=1 px=130.000 py=114.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=99.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t044 pad=1000 | H anim=1 px=130.000 py=114.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=98.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t045 pad=1000 | H anim=1 px=130.000 py=113.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=98.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t046 pad=1000 | H anim=1 px=130.000 py=113.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=97.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t047 pad=1000 | H anim=1 px=130.000 py=112.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=97.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t048 pad=1000 | H anim=1 px=130.000 py=112.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=96.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t049 pad=1000 | H anim=1 px=130.000 py=111.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=96.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(0) snd(25)
+t050 pad=1000 | H anim=1 px=130.000 py=111.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=95.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t051 pad=1000 | H anim=1 px=130.000 py=110.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=95.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t052 pad=1000 | H anim=1 px=130.000 py=110.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=94.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t053 pad=1000 | H anim=1 px=130.000 py=109.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=94.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t054 pad=1000 | H anim=1 px=130.000 py=109.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=93.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t055 pad=1000 | H anim=1 px=130.000 py=108.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=93.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t056 pad=1000 | H anim=1 px=130.000 py=108.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=92.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t057 pad=1000 | H anim=1 px=130.000 py=107.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=92.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t058 pad=1000 | H anim=1 px=130.000 py=107.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=91.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t059 pad=1000 | H anim=1 px=130.000 py=106.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=91.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t060 pad=1000 | H anim=1 px=130.000 py=106.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=90.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t061 pad=1000 | H anim=1 px=130.000 py=105.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=90.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25) snd(0)
+t062 pad=1000 | H anim=1 px=130.000 py=105.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=89.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t063 pad=1000 | H anim=1 px=130.000 py=104.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=89.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t064 pad=1000 | H anim=1 px=130.000 py=104.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=88.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t065 pad=1000 | H anim=1 px=130.000 py=103.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=88.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(0) snd(25)
+t066 pad=1000 | H anim=1 px=130.000 py=103.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=87.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t067 pad=1000 | H anim=1 px=130.000 py=102.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=87.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t068 pad=1000 | H anim=1 px=130.000 py=102.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=86.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t069 pad=1000 | H anim=1 px=130.000 py=101.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=86.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t070 pad=1000 | H anim=1 px=130.000 py=101.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=85.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t071 pad=1000 | H anim=1 px=130.000 py=100.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=85.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t072 pad=1000 | H anim=1 px=130.000 py=100.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=84.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t073 pad=1000 | H anim=1 px=130.000 py=99.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=84.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t074 pad=1000 | H anim=1 px=130.000 py=99.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=83.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t075 pad=1000 | H anim=1 px=130.000 py=98.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=83.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t076 pad=1000 | H anim=1 px=130.000 py=98.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=82.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t077 pad=1000 | H anim=1 px=130.000 py=97.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=82.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t078 pad=1000 | H anim=1 px=130.000 py=97.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=81.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t079 pad=1000 | H anim=1 px=130.000 py=96.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=81.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t080 pad=1000 | H anim=1 px=130.000 py=96.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=80.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t081 pad=1000 | H anim=1 px=130.000 py=95.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=80.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(0) snd(25)
+t082 pad=1000 | H anim=1 px=130.000 py=95.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=79.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t083 pad=1000 | H anim=1 px=130.000 py=94.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=79.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t084 pad=1000 | H anim=1 px=130.000 py=94.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=78.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t085 pad=1000 | H anim=1 px=130.000 py=93.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=78.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t086 pad=1000 | H anim=1 px=130.000 py=93.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=77.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t087 pad=1000 | H anim=1 px=130.000 py=92.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=77.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t088 pad=1000 | H anim=1 px=130.000 py=92.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=76.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t089 pad=1000 | H anim=1 px=130.000 py=91.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=76.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t090 pad=1000 | H anim=1 px=130.000 py=91.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=75.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t091 pad=1000 | H anim=1 px=130.000 py=90.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=75.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25) snd(0)
+t092 pad=1000 | H anim=1 px=130.000 py=90.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=74.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t093 pad=1000 | H anim=1 px=130.000 py=89.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=74.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t094 pad=1000 | H anim=1 px=130.000 py=89.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=73.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t095 pad=1000 | H anim=1 px=130.000 py=88.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=73.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t096 pad=1000 | H anim=1 px=130.000 py=88.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=72.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t097 pad=1000 | H anim=1 px=130.000 py=87.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=72.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(0) snd(25)
+t098 pad=1000 | H anim=1 px=130.000 py=87.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=71.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t099 pad=1000 | H anim=1 px=130.000 py=86.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=71.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t100 pad=1000 | H anim=1 px=130.000 py=86.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=70.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t101 pad=1000 | H anim=1 px=130.000 py=85.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=70.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t102 pad=1000 | H anim=1 px=130.000 py=85.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=69.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t103 pad=1000 | H anim=1 px=130.000 py=84.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=69.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t104 pad=1000 | H anim=1 px=130.000 py=84.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=68.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t105 pad=1000 | H anim=1 px=130.000 py=83.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=68.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t106 pad=1000 | H anim=1 px=130.000 py=83.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=67.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t107 pad=1000 | H anim=1 px=130.000 py=82.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=67.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t108 pad=1000 | H anim=1 px=130.000 py=82.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=66.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t109 pad=1000 | H anim=1 px=130.000 py=81.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=66.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t110 pad=1000 | H anim=1 px=130.000 py=81.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=65.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t111 pad=1000 | H anim=1 px=130.000 py=80.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=65.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t112 pad=1000 | H anim=1 px=130.000 py=80.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=64.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t113 pad=1000 | H anim=1 px=130.000 py=79.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=64.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(0) snd(25)
+t114 pad=1000 | H anim=1 px=130.000 py=79.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=63.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t115 pad=1000 | H anim=1 px=130.000 py=78.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=63.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t116 pad=1000 | H anim=1 px=130.000 py=78.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=62.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t117 pad=1000 | H anim=1 px=130.000 py=77.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=62.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t118 pad=1000 | H anim=1 px=130.000 py=77.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=61.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t119 pad=1000 | H anim=1 px=130.000 py=76.500 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=61.000 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
+t120 pad=1000 | H anim=1 px=130.000 py=76.000 pz=0.000 fx=0 adj=0 xcoll=PIL | P anim=1 dir=16 cnt=31 px=130.000 py=60.500 pz=0.000 fx=0 fy=-32768 adj=0 gnd=1 | J snd(25)
