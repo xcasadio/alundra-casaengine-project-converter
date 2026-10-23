@@ -7382,7 +7382,7 @@ après.
 **Retour arrière.** La phase B se retire seule (l'inscription) ; la phase A n'a aucun appelant de production.
 
 
-##### E20.g5b — Les opcodes des boutons et des blocs scriptés : `0x72`, `0xA9`, `0xAA`, prélevés sur E19.sm3 et E19.sm4 ⏳ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, à relire par un `plan-verifier` frais)
+##### E20.g5b — Les opcodes des boutons et des blocs scriptés : `0x72`, `0xA9`, `0xAA`, prélevés sur E19.sm3 et E19.sm4 ⏳ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, **READY** à la deuxième relecture, `plan-verifier` frais ; exécutable après E20.g5a)
 
 **Révision 1 (2026-10-23).** La relecture de la révision 0 (REVISE) a relevé trois points, corrigés ici.
 - Le prélèvement change les comptes de sm0 : c'est désormais dit, et l'en-tête de sm0 l'annonce.
