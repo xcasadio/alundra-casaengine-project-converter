@@ -1,0 +1,15 @@
+E17-1    HitCounter gate beqz -> bnez (0x8007F470)                                      wall                     KILLED
+E17-2    bounce direction +0x10 -> +0x08 (0x8007F628)                                   wall                     KILLED
+E17-3    bounce gravity bit ori 0x140 -> 0x040 (0x8007F630)                             wall                     KILLED
+E17-4    bounce flag ori 0x140 -> 0x100 (0x8007F630): 0x40 is already set (equivalent?) wall                     SURVIVED
+E17-5    bounce mask andi -0x31 -> -0x01 (0x8007F638): a dead write, seen by flags6C only wall                     KILLED
+E17-6    status 2 on not-found -> 3 (0x8007F600)                                        invuln                   KILLED
+E17-7    skip rule +0x1CC != 0 removed (0x8007F510 bnez -> nop)                         invuln                   KILLED
+E17-8    skip rule +0xB4 & 0x40 removed (0x8007F500 bnez -> nop)                        filter_b4                KILLED
+E17-9    skip rule (flags & mask) == 0 removed (0x8007F524 beqz -> nop)                 filter_class             KILLED
+E17-10   type 0x1AD -> 0x1AC (0x8007F5D4)                                               1ad                      KILLED
+E17-11   phase compare +0x88 == 1 -> == 2 (0x8007F434)                                  wall                     KILLED
+E17-12   phase end +0xAC test -> always skip the destroy (0x8007F448 bne -> b)          wall                     KILLED
+E17-13   the scan stops one slot early: move t3,v0 -> addiu t3,v0,-1 (0x8007F4E4)       higher_slot              KILLED
+DELAY-1  delay of the arc in the fiche w8, 8 -> 9 (0x80028CE3)                          wall                     KILLED
+ZBYTE-1  z byte of the fiche w8, 0x10 -> 0x11 (0x80028CE4)                              wall                     KILLED

@@ -1,0 +1,195 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Xunit;
+using Alundra.Ai.Projectiles;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Rng;
+using Alundra.Tests.Ai.Projectiles;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>E20.f5 T0: the probes of the DLL (throwaway; the text is kept in the annex as ZzF5T0Probes.cs.txt, the file is removed before the commit). They run with E17 (ArrowAi) present and the rule of the speed key (D-F5-5) ABSENT.</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class ZzF5T0Probes : IDisposable
+{
+    private const string Out = @"C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\f5t0\probes-out.txt";
+    private static readonly StringBuilder Log = new();
+
+    public ZzF5T0Probes() => Reset();
+
+    public void Dispose()
+    {
+        Reset();
+        File.AppendAllText(Out, Log.ToString());
+        Log.Clear();
+    }
+
+    private static void Reset()
+    {
+        PlayerManager.WiredWeaponTypesForTests = null;
+        PlayerManager.WeaponSpawnBirthHookForTests = null;
+        PlayerManager.WeaponSpawnCallsForTests = null;
+        EventProgramRunner.NativeSpriteTypeFilterForTests = null;
+    }
+
+    private static CutBench.Cell Wall15(int c, int r) => c == 15 ? new CutBench.Cell(0x40, 0) : default;
+
+    [Fact]
+    public void P1_Bench_Birth_Slot_Parent_AndTheAirShots()
+    {
+        foreach (var (item, name) in new[] { (5, "arrow3_east_wall"), (6, "arrow4_east_wall") })
+        {
+            var key = ArrowOracle.Load(name);
+            using var run = new ArrowRun("p1-" + item, item, Wall15);
+            run.Go(1, 80);
+            Log.AppendLine($"P1 item {item}: born at tick {run.BirthTick} (key {key.FirstTick}), slot {run.BirthSlot}, lowest free before {run.LowestFreeSlotBeforeBirth}, parent hero {ReferenceEquals(run.Born?.ParentEntity, run.Arena.Arc.HeroEntity)}, statics {run.BirthStatics}");
+            Log.AppendLine($"   line S+0: {run.Line(run.BirthTick)} | key: {key.Line(key.FirstTick)}");
+        }
+
+        foreach (var (item, key) in new[] { (5, "arrow3_air_east"), (6, "arrow4_air_east") })
+        {
+            var oracle = ArrowOracle.Load(key);
+            using var run = new ArrowRun("p1-air-" + item, item, Wall15, pad: t => t == 1 ? PadState.Cross : t == 8 ? PadState.Square : 0u);
+            run.Go(1, 90);
+            Log.AppendLine($"P1 air item {item}: born at tick {run.BirthTick} (key {oracle.FirstTick}); first lines:");
+            for (var k = 0; k <= 2; k++)
+            {
+                Log.AppendLine($"   S+{k}: {run.Line(run.BirthTick + k)} | key: {oracle.Line(oracle.FirstTick + k)}");
+            }
+        }
+    }
+
+    [Fact]
+    public void P2_EmptyBench_NoTouchNoSpark_OnTheKeys()
+    {
+        foreach (var (name, item, cell, hx, hy, dir, ticks) in new (string, int, Func<int, int, CutBench.Cell>?, int, int, uint, int)[]
+        {
+            ("arrow3_east_wall", 5, Wall15, 100, 100, 24u, 90),
+            ("arrow3_map_edge", 5, null, 1150, 100, 24u, 80),
+            ("arrow3_free_north", 5, null, 100, 100, 16u, 80),
+            ("arrow3_free_west", 5, null, 100, 100, 8u, 80),
+        })
+        {
+            using var run = new ArrowRun("p2-" + name, item, cell, hx, hy, dir);
+            run.Go(1, ticks);
+            var touches = run.Hits.Values.Count(h => h.Touching || h.HitCounter != 0);
+            var sparks = run.Hits.Values.Sum(h => h.Sparks);
+            var key = ArrowOracle.Load(name);
+            var mism = Enumerable.Range(0, Math.Min(70, key.Ticks - key.FirstTick)).Count(k => run.Line(run.BirthTick + k) != key.Line(key.FirstTick + k));
+            Log.AppendLine($"P2 {name}: born {run.BirthTick}, touches {touches}, sparks {sparks}, lines different from the key over S..S+69 (before the rule): {mism}");
+        }
+    }
+
+    [Fact]
+    public void P3_Generator_AfterEachFrame_EqualsTheKeyWithTheStepByImage()
+    {
+        foreach (var (name, item, cell, targets) in new (string, int, Func<int, int, CutBench.Cell>?, IReadOnlyList<int[]>?)[]
+        {
+            ("arrow3_east_wall", 5, Wall15, null),
+            ("arrow3_target", 5, null, new List<int[]> { new[] { 300, 104 } }),
+        })
+        {
+            var key = ArrowOracle.Load(name, stepByImage: true);
+            using var run = new ArrowRun("p3-" + name, 5, cell, targets: targets, generatorAtTick1: key.Rng0(1));
+            if (targets is not null)
+            {
+                run.Arena.Targets[0].Depth = (32 << 16) - 1;
+            }
+
+            run.Go(1, key.Ticks);
+            var bad = new List<string>();
+            for (var t = 1; t < key.Ticks; t++)
+            {
+                if (run.StateAfter[t] != key.Rng0(t + 1) || run.StepsDuring[t] != key.Draws(t) + 1)
+                {
+                    bad.Add($"t{t}: state 0x{run.StateAfter[t]:X8} (key 0x{key.Rng0(t + 1):X8}), steps {run.StepsDuring[t]} (key draws {key.Draws(t)} + 1)");
+                }
+            }
+
+            Log.AppendLine($"P3 {name}: generator mismatches {bad.Count}" + (bad.Count > 0 ? ": " + string.Join(" | ", bad.Take(6)) : string.Empty));
+        }
+    }
+
+    [Fact]
+    public void P4_TheWallFlag_OverThe12Starts()
+    {
+        var starts = ArrowOracle.WallStarts();
+        var sb = new StringBuilder();
+        foreach (var x0 in starts.Keys.OrderBy(x => x))
+        {
+            using var run = new ArrowRun("p4-" + x0, 5, Wall15, x0);
+            run.Go(1, 80);
+            var flag = Enumerable.Range(0, 70).FirstOrDefault(k => run.Ticks.TryGetValue(run.BirthTick + k, out var t) && t.Adjusted != 0, -1);
+            sb.Append($" x0={x0}:{flag}(key {starts[x0]})");
+        }
+
+        Log.AppendLine("P4 tick of ForceAdjusted relative to S on the DLL (key in brackets):" + sb);
+    }
+
+    [Fact]
+    public void P5_TheBounce_AtOneTwoThreeTicksPerFrame_BeforeTheSpeedRule()
+    {
+        var key = ArrowOracle.Load("arrow3_east_wall");
+        foreach (var cadence in new[] { 1, 2, 3 })
+        {
+            using var run = new ArrowRun("p5-" + cadence, 5, Wall15);
+            run.Go(cadence, 90);
+            var bounceTick = Enumerable.Range(0, 80).FirstOrDefault(k => run.Ticks.TryGetValue(run.BirthTick + k, out var t) && t.Animation == 1, -1);
+            Log.AppendLine($"P5 cadence {cadence}: born {run.BirthTick}, bounce (animation 1) first seen at S+{bounceTick} (key: S+{key.FirstTickWhere("anim_t")}), last present S+{Enumerable.Range(0, 80).Where(k => run.Ticks.TryGetValue(run.BirthTick + k, out var t) && t.Present).Max()} (key S+{key.LastTickPresent()})");
+            var sb = new StringBuilder("   dx(DLL-key, px) from S+40:");
+            for (var k = 40; k <= 62; k++)
+            {
+                if (run.Ticks.TryGetValue(run.BirthTick + k, out var t) && t.Present && key.Arrow(key.FirstTick + k) is { } a)
+                {
+                    sb.Append($" {k}:{(t.X - a.GetProperty("px").GetInt32()) / 65536.0:F3}");
+                }
+            }
+
+            Log.AppendLine(sb.ToString());
+        }
+    }
+
+    private static void Describe(string label, ArrowRun run, ArrowOracle key)
+    {
+        var s = run.BirthTick;
+        var hit = run.Hits.Where(h => h.Value.HitCounter != 0).Select(h => h.Key - s).DefaultIfEmpty(-1).Min();
+        var gone = Enumerable.Range(0, 80).Where(k => !run.Ticks.TryGetValue(s + k, out var t) || !t.Present).Select(k => k).DefaultIfEmpty(-1).Min();
+        var dead = Enumerable.Range(0, 80).Where(k => run.Ticks.TryGetValue(s + k, out var t) && t.Status == EntityStatus.FlagToDestroy).Select(k => k).DefaultIfEmpty(-1).Min();
+        var sparks = run.Hits.Values.Sum(h => h.Sparks);
+        Log.AppendLine($"P6 {label}: born {s}, first hit S+{hit} (key S+{key.FirstTickWhere("hitc")}), first status 4 S+{dead}, first absent S+{gone} (key last present S+{key.LastTickPresent()}), spark sets {sparks}, target touched at {string.Join(",", run.TargetTouchedTicks.Select(t => "S+" + (t - s)))}");
+    }
+
+    [Fact]
+    public void P6_TheTargets_BeforeTheRule()
+    {
+        foreach (var (name, depth) in new[] { ("arrow3_target", 32), ("arrow3_zreach_16", 16), ("arrow3_zreach_17", 17), ("arrow3_target_low", 8) })
+        {
+            using var run = new ArrowRun("p6-" + name, 5, null, targets: new List<int[]> { new[] { 300, 104 } });
+            run.Arena.Targets[0].Depth = (depth << 16) - 1;
+            run.Go(1, 80);
+            Describe(name + " (body depth " + depth + ")", run, ArrowOracle.Load(name));
+        }
+
+        using (var run = new ArrowRun("p6-136", 5, null, alsoKeep: e => e.SpriteType == 0x100 + 136))
+        {
+            var kept = run.Kept;
+            Log.AppendLine($"P6 sprite 136 kept: {kept is not null}; body (w,h,d) = ({kept?.Width},{kept?.Height},{kept?.Depth}) mod=({kept?.ModX},{kept?.ModY},{kept?.ModZ}) flags=0x{kept?.Flags:X} animation {kept?.TargetAnimationId} hasBox {kept?.HasFrameBox}");
+            if (kept is not null)
+            {
+                HitArena.Place(kept, 300, 104);
+                kept.TargetAnimationId = 3;
+                run.Go(1, 80);
+                Describe("arrow3_target_sprite136", run, ArrowOracle.Load("arrow3_target_sprite136"));
+                Log.AppendLine($"   after: animation {kept.TargetAnimationId} hasBox {kept.HasFrameBox} box=({kept.CollisionWidth},{kept.CollisionDepth},{kept.CollisionHeight}) frameCollisionCounter {kept.FrameCollisionTickCounter}");
+            }
+        }
+    }
+}

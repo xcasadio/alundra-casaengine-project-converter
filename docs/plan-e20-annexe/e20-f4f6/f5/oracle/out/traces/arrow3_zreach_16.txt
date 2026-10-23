@@ -1,0 +1,19 @@
+# arrow3_zreach_16 (spawn tick S=10)  Beannoid SizeZ patched to 16: the arrow (box z 16 to 27) misses it
+# columns: status prog228 anim_t anim_c dir_t adir cnt1c px py pz fx fy fz adj_13C coll_140 ground_144 terr_138 slope_18C reset_AC hitc touch_slot c1d0 flags6C atk_attr atk_pow box1d4 hbx hby hbz bw bd bh
+# px,py,pz,hbx,hby,hbz in pixels; bw,bd,bh box size in pixels; fx,fy,fz = ForceX/Y/Z raw 16.16 (65536 = 1 px/tick); flags6C hex
+t001 slot2 absent
+t001 (S-9) slot1 status=2 prog228=-1 anim_t=0 anim_c=0 dir_t=0 adir=0 cnt1c=1 px=300.0000 py=104.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=103 atk_attr=1 atk_pow=1 box1d4=1 hbx=290.0000 hby=97.0000 hbz=0.0000 bw=19 bd=13 bh=13
+t001   >> snd(32)
+t002 (S-8) slot1 status=2 prog228=-1 anim_t=0 anim_c=0 dir_t=0 adir=0 cnt1c=2 px=300.0000 py=104.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=103 atk_attr=1 atk_pow=1 box1d4=1 hbx=290.0000 hby=97.0000 hbz=0.0000 bw=19 bd=13 bh=13
+t010 (S+0) slot2 status=2 prog228=-1 anim_t=0 anim_c=0 dir_t=24 adir=3 cnt1c=1 px=103.0000 py=100.0000 pz=16.0000 fx=196608 fy=0 fz=0 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=12074 atk_attr=131 atk_pow=1 box1d4=1 hbx=91.0000 hby=92.0000 hbz=16.0000 bw=24 bd=16 bh=11
+      ... 7 ticks uniform (previous step repeated)
+t010 (S+0) slot1 status=2 prog228=-1 anim_t=0 anim_c=0 dir_t=0 adir=0 cnt1c=10 px=300.0000 py=104.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=103 atk_attr=1 atk_pow=1 box1d4=1 hbx=290.0000 hby=97.0000 hbz=0.0000 bw=19 bd=13 bh=13
+t010   >> snd(0)
+t011 (S+1) slot2 status=2 prog228=-1 anim_t=0 anim_c=0 dir_t=24 adir=3 cnt1c=2 px=109.0000 py=100.0000 pz=16.0000 fx=393216 fy=0 fz=0 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=12074 atk_attr=131 atk_pow=1 box1d4=1 hbx=97.0000 hby=92.0000 hbz=16.0000 bw=24 bd=16 bh=11
+      ... 12 ticks uniform (previous step repeated)
+t024 (S+14) slot2 status=2 prog228=-1 anim_t=0 anim_c=0 dir_t=24 adir=3 cnt1c=15 px=187.0000 py=100.0000 pz=16.0000 fx=393216 fy=0 fz=0 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=12074 atk_attr=131 atk_pow=1 box1d4=1 hbx=175.0000 hby=92.0000 hbz=16.0000 bw=24 bd=16 bh=11
+      ... 13 ticks uniform (previous step repeated)
+t024 (S+14) slot1 status=2 prog228=-1 anim_t=0 anim_c=0 dir_t=0 adir=0 cnt1c=24 px=300.0000 py=104.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=103 atk_attr=1 atk_pow=1 box1d4=1 hbx=290.0000 hby=97.0000 hbz=0.0000 bw=19 bd=13 bh=13
+t024   >> snd(0)
+      ... 51 ticks uniform (previous step repeated)
+      ... 51 ticks uniform (previous step repeated)

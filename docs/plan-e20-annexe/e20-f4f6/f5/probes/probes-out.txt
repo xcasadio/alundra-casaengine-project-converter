@@ -1,0 +1,32 @@
+P6 arrow3_target (body depth 32): born 10, first hit S+30 (key S+30), first status 4 S+31, first absent S+32 (key last present S+31), spark sets 1, target touched at S+30
+P6 arrow3_zreach_16 (body depth 16): born 10, first hit S+-1 (key S+-1), first status 4 S+-1, first absent S+71 (key last present S+65), spark sets 0, target touched at 
+P6 arrow3_zreach_17 (body depth 17): born 10, first hit S+30 (key S+30), first status 4 S+31, first absent S+32 (key last present S+31), spark sets 1, target touched at S+30
+P6 arrow3_target_low (body depth 8): born 10, first hit S+-1 (key S+-1), first status 4 S+-1, first absent S+71 (key last present S+60), spark sets 0, target touched at 
+P6 sprite 136 kept: True; body (w,h,d) = (917503,1048575,1114111) mod=(-458752,-524288,0) flags=0x103 animation 0 hasBox False
+P6 arrow3_target_sprite136: born 10, first hit S+30 (key S+30), first status 4 S+31, first absent S+32 (key last present S+31), spark sets 1, target touched at 
+   after: animation 5 hasBox True box=(589823,589823,327679) frameCollisionCounter 0
+P1 item 5: born at tick 10 (key 10), slot 1, lowest free before 1, parent hero True, statics flags=0x12074 atk=(131,1) box=(1572863,1048575,720895) hbz=16
+   line S+0: st=2 x=6750208 y=6553600 z=1048577 fx=196608 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0 | key: st=2 x=6750208 y=6553600 z=1048577 fx=196608 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0
+P1 item 6: born at tick 10 (key 10), slot 1, lowest free before 1, parent hero True, statics flags=0x12074 atk=(131,2) box=(1572863,1048575,720895) hbz=16
+   line S+0: st=2 x=6750208 y=6553600 z=1048577 fx=196608 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0 | key: st=2 x=6750208 y=6553600 z=1048577 fx=196608 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0
+P1 air item 5: born at tick 9 (key 9); first lines:
+   S+0: st=2 x=6750208 y=6553600 z=2752513 fx=196608 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0 | key: st=2 x=6750208 y=6553600 z=2752513 fx=196608 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0
+   S+1: st=2 x=7143424 y=6553600 z=2752513 fx=393216 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0 | key: st=2 x=7143424 y=6553600 z=2752513 fx=393216 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0
+   S+2: st=2 x=7536640 y=6553600 z=2752513 fx=393216 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0 | key: st=2 x=7536640 y=6553600 z=2752513 fx=393216 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0
+P1 air item 6: born at tick 17 (key 17); first lines:
+   S+0: st=2 x=6750208 y=6553600 z=2359297 fx=196608 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0 | key: st=2 x=6750208 y=6553600 z=2359297 fx=196608 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0
+   S+1: st=2 x=7143424 y=6553600 z=2359297 fx=393216 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0 | key: st=2 x=7143424 y=6553600 z=2359297 fx=393216 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0
+   S+2: st=2 x=7536640 y=6553600 z=2359297 fx=393216 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0 | key: st=2 x=7536640 y=6553600 z=2359297 fx=393216 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0
+P4 tick of ForceAdjusted relative to S on the DLL (key in brackets): x0=96:43(key 43) x0=97:43(key 43) x0=98:43(key 44) x0=99:43(key 43) x0=100:42(key 42) x0=101:42(key 43) x0=102:42(key 42) x0=103:42(key 42) x0=104:42(key 43) x0=105:42(key 42) x0=106:41(key 41) x0=107:41(key 42)
+P2 arrow3_east_wall: born 10, touches 0, sparks 0, lines different from the key over S..S+69 (before the rule): 18
+P2 arrow3_map_edge: born 10, touches 0, sparks 0, lines different from the key over S..S+69 (before the rule): 18
+P2 arrow3_free_north: born 10, touches 0, sparks 0, lines different from the key over S..S+69 (before the rule): 6
+P2 arrow3_free_west: born 10, touches 0, sparks 0, lines different from the key over S..S+69 (before the rule): 14
+P5 cadence 1: born 10, bounce (animation 1) first seen at S+43 (key: S+43), last present S+60 (key S+60)
+   dx(DLL-key, px) from S+40: 40:0,000 41:0,000 42:0,000 43:1,875 44:1,875 45:1,875 46:1,875 47:1,875 48:1,875 49:1,875 50:1,875 51:1,875 52:1,875 53:1,875 54:1,875 55:1,875 56:1,875 57:1,875 58:1,875 59:1,875 60:1,875
+P5 cadence 2: born 10, bounce (animation 1) first seen at S+43 (key: S+43), last present S+60 (key S+60)
+   dx(DLL-key, px) from S+40: 40:0,000 41:0,000 42:0,000 43:1,875 44:-2,250 45:-2,250 46:-2,250 47:-2,250 48:-2,250 49:-2,250 50:-2,250 51:-2,250 52:-2,250 53:-2,250 54:-2,250 55:-2,250 56:-2,250 57:-2,250 58:-2,250 59:-2,250 60:-2,250
+P5 cadence 3: born 10, bounce (animation 1) first seen at S+43 (key: S+43), last present S+60 (key S+60)
+   dx(DLL-key, px) from S+40: 40:0,000 41:0,000 42:0,000 43:1,875 44:-2,250 45:-2,250 46:-2,250 47:-2,250 48:-2,250 49:-2,250 50:-2,250 51:-2,250 52:-2,250 53:-2,250 54:-2,250 55:-2,250 56:-2,250 57:-2,250 58:-2,250 59:-2,250 60:-2,250
+P3 arrow3_east_wall: generator mismatches 0
+P3 arrow3_target: generator mismatches 0
