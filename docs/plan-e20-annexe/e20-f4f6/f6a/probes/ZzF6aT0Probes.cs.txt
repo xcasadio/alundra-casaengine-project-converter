@@ -1,0 +1,67 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Xunit;
+using Alundra.Entities;
+
+namespace Alundra.Tests.Ai.Projectiles;
+
+/// <summary>E20.f6a T0 probes (throwaway, removed before the commit): the ball of the DLL, born by the hook, on every slope of the oracle.</summary>
+public class ZzF6aT0Probes
+{
+    private const string Out = @"C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\f6a-probes-out.txt";
+
+    private static Func<int, int, Alundra.Tests.Support.CutBench.Cell> Dry(params (int C, int R)[] dry)
+        => BallRun.Field((c, r) => c >= 5 && c <= 9 && !dry.Contains((c, r)) ? (0, 8) : (0, 0));
+
+    [Fact]
+    public void Probe()
+    {
+        var log = new List<string>();
+        var scenarios = new (string Key, int Item, Func<int, int, Alundra.Tests.Support.CutBench.Cell> Cells, int Ticks)[]
+        {
+            ("fire11_gp8_deepwater", 16, BallRun.Columns(5, 9, 0x08), 40),
+            ("fire11_gp2_slope1", 16, BallRun.Columns(5, 9, 0x02), 40),
+            ("fire11_gp4_slope2", 16, BallRun.Columns(5, 9, 0x04), 70),
+            ("fire11_gp6_slope3", 16, BallRun.Columns(5, 9, 0x06), 70),
+            ("ice14_gp8_deepwater", 14, BallRun.Columns(5, 9, 0x08), 40),
+            ("fire11_mixed_footprint_water", 16, BallRun.Columns(7, 9, 0x08), 60),
+            ("fire11_dry_corner_c6r5", 16, Dry((6, 5)), 40),
+            ("fire11_dry_corner_c7r5", 16, Dry((7, 5)), 40),
+            ("fire11_dry_corner_c6r6", 16, Dry((6, 6)), 40),
+            ("fire11_dry_corner_c7r6", 16, Dry((7, 6)), 40),
+            ("fire11_step16_water", 16, BallRun.Field((c, r) => c >= 5 && c <= 9 ? (c >= 6 ? 1 : 0, 8) : (0, 0)), 60),
+            ("ice14_step16_water", 14, BallRun.Field((c, r) => c >= 5 && c <= 9 ? (c >= 6 ? 1 : 0, 8) : (0, 0)), 60),
+        };
+        foreach (var (key, item, cells, ticks) in scenarios)
+        {
+            using var run = new BallRun(key, item, cells);
+            var oracle = BallOracle.Load(key);
+            EntityScriptProxy? ball = null;
+            var rest = new Dictionary<int, int>();
+            run.AfterEachTick = tick =>
+            {
+                ball ??= run.Born;
+                if (ball is not null && run.Arena.Arc.Entities.Contains(ball) && ball.IsOnGround != 0)
+                {
+                    var before = ball.Slope_18c;
+                    ball.UpdateGroundSlope();
+                    rest[tick] = ball.Slope_18c;
+                    ball.Slope_18c = before;
+                }
+            };
+            run.Go(1, Math.Min(oracle.Ticks, ticks));
+            log.Add($"== {key}: weaponId slot item {item}, born at {run.BirthTick} (key {BallOracle.Birth}), type {run.BallType}, flags 0x{run.Born?.Flags:X}");
+            for (var t = BallOracle.Birth; t <= Math.Min(oracle.Ticks, BallOracle.Birth + 14); t++)
+            {
+                log.Add($"  t={t} dll[{run.Line(t)}] key[{oracle.Line(t)}] restRule={(rest.TryGetValue(t, out var r) ? r.ToString() : "-")} steps={run.StepsDuring.GetValueOrDefault(t)} keyDraws={oracle.Draws(t)}");
+            }
+
+            log.Add($"  break6 seen at frame end: [{string.Join(",", run.SlopeBreakSeenAtFrameEnd)}]");
+        }
+
+        File.WriteAllLines(Out, log);
+    }
+}

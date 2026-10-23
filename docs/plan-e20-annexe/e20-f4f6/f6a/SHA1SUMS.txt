@@ -1,0 +1,9 @@
+84271c2084df8ef074d4604071f653791ac18558 *./README.md
+720f2eae63657eb4f2a3804a901ac008a21b0436 *./oracle/manifest.py
+25390116efbe7948d4279a3e312aae52543659a2 *./oracle/manifest.txt
+042108ab05b5d47bd73d581edb5fab1f7a6ad213 *./oracle/mutants_f6a.py
+e1bd842ab4e0f2f9d636b7057b8d96ca99f39e5a *./oracle/run_all.sh
+d1476794984f9e51a64cf577cb0354842c533656 *./oracle/run_f6a.py
+a350e1f82777942ca00ddbdd10d6a9a6944079b1 *./probes/ZzF6aT0Probes.cs.txt
+9272735fd595f3bd599a4483d420b59dce9feff0 *./probes/probes-out.txt
+6c7f7e6efc346c4b06d03e5e07daa2fac8631e8a *./results.md

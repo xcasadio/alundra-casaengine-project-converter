@@ -1,0 +1,204 @@
+== fire11_gp8_deepwater: weaponId slot item 16, born at 12 (key 12), type 11, flags 0x132154
+  t=12 dll[st=2 x=6946816 z=2064385 slope=0 grounded=0] key[st=2 x=6946816 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7340032 z=1998849 slope=0 grounded=0] key[st=2 x=7340032 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7733248 z=1900545 slope=0 grounded=0] key[st=2 x=7733248 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=8126464 z=1769473 slope=0 grounded=0] key[st=2 x=8126464 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8519680 z=1605633 slope=0 grounded=0] key[st=2 x=8519680 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8912896 z=1409025 slope=0 grounded=0] key[st=2 x=8912896 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9306112 z=1179649 slope=0 grounded=0] key[st=2 x=9306112 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9699328 z=917505 slope=0 grounded=0] key[st=2 x=9699328 z=917505 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=20 dll[st=2 x=10092544 z=622593 slope=0 grounded=0] key[st=2 x=10092544 z=622593 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=21 dll[st=2 x=10485760 z=294913 slope=0 grounded=0] key[st=2 x=10485760 z=294913 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=22 dll[st=2 x=10878976 z=0 slope=0 grounded=1] key[st=2 x=10878976 z=0 slope=4 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11272192 z=0 slope=0 grounded=1] key[st=4 x=10878976 z=0 slope=4 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=24 dll[st=3 x=11665408 z=0 slope=0 grounded=1] key[absent] restRule=4 steps=1 keyDraws=0
+  t=25 dll[st=3 x=12058624 z=0 slope=0 grounded=1] key[absent] restRule=4 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12451840 z=0 slope=0 grounded=1] key[absent] restRule=4 steps=1 keyDraws=0
+  break6 seen at frame end: []
+== fire11_gp2_slope1: weaponId slot item 16, born at 12 (key 12), type 11, flags 0x132154
+  t=12 dll[st=2 x=6946816 z=2064385 slope=0 grounded=0] key[st=2 x=6946816 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7340032 z=1998849 slope=0 grounded=0] key[st=2 x=7340032 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7733248 z=1900545 slope=0 grounded=0] key[st=2 x=7733248 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=8126464 z=1769473 slope=0 grounded=0] key[st=2 x=8126464 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8519680 z=1605633 slope=0 grounded=0] key[st=2 x=8519680 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8912896 z=1409025 slope=0 grounded=0] key[st=2 x=8912896 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9306112 z=1179649 slope=0 grounded=0] key[st=2 x=9306112 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9699328 z=917505 slope=0 grounded=0] key[st=2 x=9699328 z=917505 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=20 dll[st=2 x=10092544 z=622593 slope=0 grounded=0] key[st=2 x=10092544 z=622593 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=21 dll[st=2 x=10485760 z=294913 slope=0 grounded=0] key[st=2 x=10485760 z=294913 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=22 dll[st=2 x=10878976 z=0 slope=0 grounded=1] key[st=2 x=10878976 z=0 slope=1 grounded=1] restRule=1 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11272192 z=0 slope=0 grounded=1] key[st=4 x=10878976 z=0 slope=1 grounded=1] restRule=1 steps=1 keyDraws=0
+  t=24 dll[st=3 x=11665408 z=0 slope=0 grounded=1] key[absent] restRule=1 steps=1 keyDraws=0
+  t=25 dll[st=3 x=12058624 z=0 slope=0 grounded=1] key[absent] restRule=1 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12451840 z=0 slope=0 grounded=1] key[absent] restRule=1 steps=1 keyDraws=0
+  break6 seen at frame end: []
+== fire11_gp4_slope2: weaponId slot item 16, born at 12 (key 12), type 11, flags 0x132154
+  t=12 dll[st=2 x=6946816 z=2064385 slope=0 grounded=0] key[st=2 x=6946816 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7340032 z=1998849 slope=0 grounded=0] key[st=2 x=7340032 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7733248 z=1900545 slope=0 grounded=0] key[st=2 x=7733248 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=8126464 z=1769473 slope=0 grounded=0] key[st=2 x=8126464 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8519680 z=1605633 slope=0 grounded=0] key[st=2 x=8519680 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8912896 z=1409025 slope=0 grounded=0] key[st=2 x=8912896 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9306112 z=1179649 slope=0 grounded=0] key[st=2 x=9306112 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9699328 z=917505 slope=0 grounded=0] key[st=2 x=9699328 z=917505 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=20 dll[st=2 x=10092544 z=622593 slope=0 grounded=0] key[st=2 x=10092544 z=622593 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=21 dll[st=2 x=10485760 z=294913 slope=0 grounded=0] key[st=2 x=10485760 z=294913 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=22 dll[st=2 x=10878976 z=0 slope=0 grounded=1] key[st=2 x=10878976 z=0 slope=2 grounded=1] restRule=2 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11272192 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=2 grounded=1] restRule=2 steps=1 keyDraws=10
+  t=24 dll[st=3 x=11665408 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=2 grounded=1] restRule=2 steps=1 keyDraws=0
+  t=25 dll[st=3 x=12058624 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=2 grounded=1] restRule=2 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12451840 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=2 grounded=1] restRule=2 steps=1 keyDraws=0
+  break6 seen at frame end: []
+== fire11_gp6_slope3: weaponId slot item 16, born at 12 (key 12), type 11, flags 0x132154
+  t=12 dll[st=2 x=6946816 z=2064385 slope=0 grounded=0] key[st=2 x=6946816 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7340032 z=1998849 slope=0 grounded=0] key[st=2 x=7340032 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7733248 z=1900545 slope=0 grounded=0] key[st=2 x=7733248 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=8126464 z=1769473 slope=0 grounded=0] key[st=2 x=8126464 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8519680 z=1605633 slope=0 grounded=0] key[st=2 x=8519680 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8912896 z=1409025 slope=0 grounded=0] key[st=2 x=8912896 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9306112 z=1179649 slope=0 grounded=0] key[st=2 x=9306112 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9699328 z=917505 slope=0 grounded=0] key[st=2 x=9699328 z=917505 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=20 dll[st=2 x=10092544 z=622593 slope=0 grounded=0] key[st=2 x=10092544 z=622593 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=21 dll[st=2 x=10485760 z=294913 slope=0 grounded=0] key[st=2 x=10485760 z=294913 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=22 dll[st=2 x=10878976 z=0 slope=0 grounded=1] key[st=2 x=10878976 z=0 slope=3 grounded=1] restRule=3 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11272192 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=3 grounded=1] restRule=3 steps=1 keyDraws=10
+  t=24 dll[st=3 x=11665408 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=3 grounded=1] restRule=3 steps=1 keyDraws=0
+  t=25 dll[st=3 x=12058624 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=3 grounded=1] restRule=3 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12451840 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=3 grounded=1] restRule=3 steps=1 keyDraws=0
+  break6 seen at frame end: []
+== ice14_gp8_deepwater: weaponId slot item 14, born at 12 (key 12), type 14, flags 0x132154
+  t=12 dll[st=2 x=6750208 z=2064385 slope=0 grounded=0] key[st=2 x=6750208 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7143424 z=1998849 slope=0 grounded=0] key[st=2 x=7143424 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7536640 z=1900545 slope=0 grounded=0] key[st=2 x=7536640 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=7929856 z=1769473 slope=0 grounded=0] key[st=2 x=7929856 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8323072 z=1605633 slope=0 grounded=0] key[st=2 x=8323072 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8716288 z=1409025 slope=0 grounded=0] key[st=2 x=8716288 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9109504 z=1179649 slope=0 grounded=0] key[st=2 x=9109504 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9502720 z=917505 slope=0 grounded=0] key[st=2 x=9502720 z=917505 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=20 dll[st=2 x=9895936 z=622593 slope=0 grounded=0] key[st=2 x=9895936 z=622593 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=21 dll[st=2 x=10289152 z=294913 slope=0 grounded=0] key[st=2 x=10289152 z=294913 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=22 dll[st=2 x=10682368 z=0 slope=0 grounded=1] key[st=2 x=10682368 z=0 slope=4 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11075584 z=0 slope=0 grounded=1] key[st=4 x=10682368 z=0 slope=4 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=24 dll[st=3 x=11468800 z=0 slope=0 grounded=1] key[absent] restRule=4 steps=1 keyDraws=0
+  t=25 dll[st=3 x=11862016 z=0 slope=0 grounded=1] key[absent] restRule=4 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12255232 z=0 slope=0 grounded=1] key[absent] restRule=4 steps=1 keyDraws=0
+  break6 seen at frame end: []
+== fire11_mixed_footprint_water: weaponId slot item 16, born at 12 (key 12), type 11, flags 0x132154
+  t=12 dll[st=2 x=6946816 z=2064385 slope=0 grounded=0] key[st=2 x=6946816 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7340032 z=1998849 slope=0 grounded=0] key[st=2 x=7340032 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7733248 z=1900545 slope=0 grounded=0] key[st=2 x=7733248 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=8126464 z=1769473 slope=0 grounded=0] key[st=2 x=8126464 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8519680 z=1605633 slope=0 grounded=0] key[st=2 x=8519680 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8912896 z=1409025 slope=0 grounded=0] key[st=2 x=8912896 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9306112 z=1179649 slope=0 grounded=0] key[st=2 x=9306112 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9699328 z=917505 slope=0 grounded=0] key[st=2 x=9699328 z=917505 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=20 dll[st=2 x=10092544 z=622593 slope=0 grounded=0] key[st=2 x=10092544 z=622593 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=21 dll[st=2 x=10485760 z=294913 slope=0 grounded=0] key[st=2 x=10485760 z=294913 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=22 dll[st=2 x=10878976 z=0 slope=0 grounded=1] key[st=2 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11272192 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=10
+  t=24 dll[st=3 x=11665408 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=25 dll[st=3 x=12058624 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12451840 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  break6 seen at frame end: []
+== fire11_dry_corner_c6r5: weaponId slot item 16, born at 12 (key 12), type 11, flags 0x132154
+  t=12 dll[st=2 x=6946816 z=2064385 slope=0 grounded=0] key[st=2 x=6946816 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7340032 z=1998849 slope=0 grounded=0] key[st=2 x=7340032 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7733248 z=1900545 slope=0 grounded=0] key[st=2 x=7733248 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=8126464 z=1769473 slope=0 grounded=0] key[st=2 x=8126464 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8519680 z=1605633 slope=0 grounded=0] key[st=2 x=8519680 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8912896 z=1409025 slope=0 grounded=0] key[st=2 x=8912896 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9306112 z=1179649 slope=0 grounded=0] key[st=2 x=9306112 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9699328 z=917505 slope=0 grounded=0] key[st=2 x=9699328 z=917505 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=20 dll[st=2 x=10092544 z=622593 slope=0 grounded=0] key[st=2 x=10092544 z=622593 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=21 dll[st=2 x=10485760 z=294913 slope=0 grounded=0] key[st=2 x=10485760 z=294913 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=22 dll[st=2 x=10878976 z=0 slope=0 grounded=1] key[st=2 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11272192 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=10
+  t=24 dll[st=3 x=11665408 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=25 dll[st=3 x=12058624 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12451840 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  break6 seen at frame end: []
+== fire11_dry_corner_c7r5: weaponId slot item 16, born at 12 (key 12), type 11, flags 0x132154
+  t=12 dll[st=2 x=6946816 z=2064385 slope=0 grounded=0] key[st=2 x=6946816 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7340032 z=1998849 slope=0 grounded=0] key[st=2 x=7340032 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7733248 z=1900545 slope=0 grounded=0] key[st=2 x=7733248 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=8126464 z=1769473 slope=0 grounded=0] key[st=2 x=8126464 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8519680 z=1605633 slope=0 grounded=0] key[st=2 x=8519680 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8912896 z=1409025 slope=0 grounded=0] key[st=2 x=8912896 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9306112 z=1179649 slope=0 grounded=0] key[st=2 x=9306112 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9699328 z=917505 slope=0 grounded=0] key[st=2 x=9699328 z=917505 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=20 dll[st=2 x=10092544 z=622593 slope=0 grounded=0] key[st=2 x=10092544 z=622593 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=21 dll[st=2 x=10485760 z=294913 slope=0 grounded=0] key[st=2 x=10485760 z=294913 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=22 dll[st=2 x=10878976 z=0 slope=0 grounded=1] key[st=2 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11272192 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=10
+  t=24 dll[st=3 x=11665408 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  t=25 dll[st=3 x=12058624 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12451840 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  break6 seen at frame end: []
+== fire11_dry_corner_c6r6: weaponId slot item 16, born at 12 (key 12), type 11, flags 0x132154
+  t=12 dll[st=2 x=6946816 z=2064385 slope=0 grounded=0] key[st=2 x=6946816 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7340032 z=1998849 slope=0 grounded=0] key[st=2 x=7340032 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7733248 z=1900545 slope=0 grounded=0] key[st=2 x=7733248 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=8126464 z=1769473 slope=0 grounded=0] key[st=2 x=8126464 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8519680 z=1605633 slope=0 grounded=0] key[st=2 x=8519680 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8912896 z=1409025 slope=0 grounded=0] key[st=2 x=8912896 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9306112 z=1179649 slope=0 grounded=0] key[st=2 x=9306112 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9699328 z=917505 slope=0 grounded=0] key[st=2 x=9699328 z=917505 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=20 dll[st=2 x=10092544 z=622593 slope=0 grounded=0] key[st=2 x=10092544 z=622593 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=21 dll[st=2 x=10485760 z=294913 slope=0 grounded=0] key[st=2 x=10485760 z=294913 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=22 dll[st=2 x=10878976 z=0 slope=0 grounded=1] key[st=2 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11272192 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=10
+  t=24 dll[st=3 x=11665408 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=25 dll[st=3 x=12058624 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12451840 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  break6 seen at frame end: []
+== fire11_dry_corner_c7r6: weaponId slot item 16, born at 12 (key 12), type 11, flags 0x132154
+  t=12 dll[st=2 x=6946816 z=2064385 slope=0 grounded=0] key[st=2 x=6946816 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7340032 z=1998849 slope=0 grounded=0] key[st=2 x=7340032 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7733248 z=1900545 slope=0 grounded=0] key[st=2 x=7733248 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=8126464 z=1769473 slope=0 grounded=0] key[st=2 x=8126464 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8519680 z=1605633 slope=0 grounded=0] key[st=2 x=8519680 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8912896 z=1409025 slope=0 grounded=0] key[st=2 x=8912896 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9306112 z=1179649 slope=0 grounded=0] key[st=2 x=9306112 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9699328 z=917505 slope=0 grounded=0] key[st=2 x=9699328 z=917505 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=20 dll[st=2 x=10092544 z=622593 slope=0 grounded=0] key[st=2 x=10092544 z=622593 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=21 dll[st=2 x=10485760 z=294913 slope=0 grounded=0] key[st=2 x=10485760 z=294913 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=22 dll[st=2 x=10878976 z=0 slope=0 grounded=1] key[st=2 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11272192 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=10
+  t=24 dll[st=3 x=11665408 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  t=25 dll[st=3 x=12058624 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12451840 z=0 slope=0 grounded=1] key[st=3 x=10878976 z=0 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  break6 seen at frame end: []
+== fire11_step16_water: weaponId slot item 16, born at 12 (key 12), type 11, flags 0x132154
+  t=12 dll[st=2 x=6946816 z=2064385 slope=0 grounded=0] key[st=2 x=6946816 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7340032 z=1998849 slope=0 grounded=0] key[st=2 x=7340032 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7733248 z=1900545 slope=0 grounded=0] key[st=2 x=7733248 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=8126464 z=1769473 slope=0 grounded=0] key[st=2 x=8126464 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8519680 z=1605633 slope=0 grounded=0] key[st=2 x=8519680 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8912896 z=1409025 slope=0 grounded=0] key[st=2 x=8912896 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9306112 z=1179649 slope=0 grounded=0] key[st=2 x=9306112 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9699328 z=1048576 slope=0 grounded=1] key[st=2 x=9699328 z=1048576 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  t=20 dll[st=3 x=10092544 z=1048576 slope=0 grounded=1] key[st=3 x=9699328 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=10
+  t=21 dll[st=3 x=10485760 z=1048576 slope=0 grounded=1] key[st=3 x=9699328 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=22 dll[st=3 x=10878976 z=1048576 slope=0 grounded=1] key[st=3 x=9699328 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11272192 z=1048576 slope=0 grounded=1] key[st=3 x=9699328 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=24 dll[st=3 x=11665408 z=1048576 slope=0 grounded=1] key[st=3 x=9699328 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=25 dll[st=3 x=12058624 z=1048576 slope=0 grounded=1] key[st=3 x=9699328 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12451840 z=1048576 slope=0 grounded=1] key[st=3 x=9699328 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  break6 seen at frame end: []
+== ice14_step16_water: weaponId slot item 14, born at 12 (key 12), type 14, flags 0x132154
+  t=12 dll[st=2 x=6750208 z=2064385 slope=0 grounded=0] key[st=2 x=6750208 z=2064385 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=13 dll[st=2 x=7143424 z=1998849 slope=0 grounded=0] key[st=2 x=7143424 z=1998849 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=14 dll[st=2 x=7536640 z=1900545 slope=0 grounded=0] key[st=2 x=7536640 z=1900545 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=15 dll[st=2 x=7929856 z=1769473 slope=0 grounded=0] key[st=2 x=7929856 z=1769473 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=16 dll[st=2 x=8323072 z=1605633 slope=0 grounded=0] key[st=2 x=8323072 z=1605633 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=17 dll[st=2 x=8716288 z=1409025 slope=0 grounded=0] key[st=2 x=8716288 z=1409025 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=18 dll[st=2 x=9109504 z=1179649 slope=0 grounded=0] key[st=2 x=9109504 z=1179649 slope=0 grounded=0] restRule=- steps=1 keyDraws=0
+  t=19 dll[st=2 x=9502720 z=1048576 slope=0 grounded=1] key[st=2 x=9502720 z=1048576 slope=0 grounded=1] restRule=0 steps=1 keyDraws=0
+  t=20 dll[st=3 x=9895936 z=1048576 slope=0 grounded=1] key[st=3 x=9502720 z=1048576 slope=0 grounded=1] restRule=0 steps=1 keyDraws=10
+  t=21 dll[st=3 x=10289152 z=1048576 slope=0 grounded=1] key[st=3 x=9502720 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=22 dll[st=3 x=10682368 z=1048576 slope=0 grounded=1] key[st=3 x=9502720 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=23 dll[st=3 x=11075584 z=1048576 slope=0 grounded=1] key[st=3 x=9502720 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=24 dll[st=3 x=11468800 z=1048576 slope=0 grounded=1] key[st=3 x=9502720 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=25 dll[st=3 x=11862016 z=1048576 slope=0 grounded=1] key[st=3 x=9502720 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  t=26 dll[st=3 x=12255232 z=1048576 slope=0 grounded=1] key[st=3 x=9502720 z=1048576 slope=0 grounded=1] restRule=4 steps=1 keyDraws=0
+  break6 seen at frame end: []

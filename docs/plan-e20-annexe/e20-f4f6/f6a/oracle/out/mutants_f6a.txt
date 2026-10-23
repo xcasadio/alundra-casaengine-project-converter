@@ -1,0 +1,10 @@
+SL-1   corner posed test bne -> beq (0x80038138): posed and not posed swapped                     KILLED   deepwater
+SL-2   minimum -> maximum: slt $v0,$v1,$t1 -> slt $v0,$t1,$v1 (0x80038140)                        KILLED   mixed,dry_c6r5,dry_c7r5,dry_c6r6,dry_c7r6
+SL-3   the corner loop stops after three corners: slti $v0,$t0,4 -> 3 (0x80038164)                KILLED   dry_c6r5,dry_c7r5,dry_c6r6,dry_c7r6
+SL-4   a corner not posed no longer sets t1 to 0: move $t1,$zero -> nop (0x80038158)              KILLED   step
+SL-5   the slope is t1 >> 8 instead of >> 9 (0x80038344)                                          KILLED   deepwater
+SL-6   the sentinel 0xE00 -> 0x600 (0x80038110)                                                   KILLED   deepwater
+SL-7   the posed height +1 -> +0 (0x80038128)                                                     KILLED   deepwater
+SL-8   the gravity gate andi 0x100 -> 0x200 (0x80038104): the slope branch is never taken         KILLED   deepwater
+SL-9   the mask andi 0xE00 -> 0x600 on the cell (0x8003813C)                                      KILLED   deepwater
+SL-10  the slope-1 case: mask andi 0xE00 -> 0xC00 (0x8003813C)                                    KILLED   slope1
