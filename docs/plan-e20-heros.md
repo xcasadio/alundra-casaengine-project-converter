@@ -6446,7 +6446,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
 - **Ouvert** : O-E20-24 (le tir à bout portant contre un mur, scénario `arrow3_point_blank`, non testé).
 - **Recette de l'auteur, à faire** : l'arc du chasseur et celui de William, au sol et en l'air, contre un mur et contre une cible.
 
-### 1.22 E20.f6 — Les boules de feu et de glace : C60 et E9 (f6a, f6b) ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; f6a **READY** (`9a2490e`) ; f6b relecture en pause après sa clôture (Q-F6B-R), puis **READY** à la relecture supplémentaire accordée par l'auteur le 2026-10-22)
+### 1.22 E20.f6 — Les boules de feu et de glace : C60 et E9 (f6a, f6b) ⏳ (détaillée le 2026-10-15 ; révisée au HEAD le 2026-10-18 ; f6a **READY** (`9a2490e`), **faite et CONFIRMED le 2026-10-24** (§1.22.1, ADR-0087) ; f6b relecture en pause après sa clôture (Q-F6B-R), puis **READY** à la relecture supplémentaire accordée par l'auteur le 2026-10-22)
 
 **Révision au HEAD (2026-10-18).** Le bloc « Révision au HEAD » en tête du §1.20 vaut aussi pour cette section (points communs et puces « f6a » et « f6b ») et fait foi sur son texte où il diffère.
 
@@ -6533,7 +6533,7 @@ posé ») sont sans objet.
 
 ---
 
-#### 1.22.1 E20.f6a — Attributs de tuile des entités marquées ⏳
+#### 1.22.1 E20.f6a — Attributs de tuile des entités marquées ✅
 
 **Ajout de la révision 9 (O-E0K-2).** Le T0 recense aussi les lecteurs de `+0x180`, `+0x184`, `+0x190` et les types qui portent
 `DestroyOnVramFlags` (`0x200000`), et nomme leur propriétaire dans le plan ; f6a ne nourrit que `+0x18C` (D-F6-2).
@@ -6548,12 +6548,12 @@ posé ») sont sans objet.
 
 ##### Tâches
 
-- ⏳ **T0 — Oracle** : dans l'annexe commune, scénarios `fire11_gp8_deepwater`, `fire11_gp2_slope1`, `fire11_gp4_slope2`, `fire11_gp6_slope3`, `fire11_mixed_footprint_water`, `ice14_gp8_deepwater`,
+- ✅ **T0 — Oracle** : dans l'annexe commune, scénarios `fire11_gp8_deepwater`, `fire11_gp2_slope1`, `fire11_gp4_slope2`, `fire11_gp6_slope3`, `fire11_mixed_footprint_water`, `ice14_gp8_deepwater`,
   avec les clés `slope_18C`, `status`, `effects` ; mutants du test des quatre coins ; sonde de la DLL : `Slope_18c` d'une boule marquée posée sur chaque pente.
-- ⏳ **T1 — Tests puis code.** (s1) boule marquée au repos sur une case `0x08` sous tout le pied : `Slope_18c` 4, accolée à la même boule sur `0x02` (1), `0x04` (2), `0x06` (3), pied moitié sur l'eau (0), boule
+- ✅ **T1 — Tests puis code.** (s1) boule marquée au repos sur une case `0x08` sous tout le pied : `Slope_18c` 4, accolée à la même boule sur `0x02` (1), `0x04` (2), `0x06` (3), pied moitié sur l'eau (0), boule
   en l'air (0), sans gravité (0) ; (s2) la même boule née par enregistrement garde 0 ; (s3) par le crochet, la boule née sur l'eau profonde est détruite à S+11 avec l'effet 6, libre à S+12, aucun tirage, accolée
   à la même boule sur la terre ferme qui vit ; groupements 1, 2 et 3.
-- ⏳ **T2 — ADR, plan, verifiers frais.** Mutants : appel pour tous les gravitaires, appel sans marqueur, minimum remplacé par maximum, égalité de Z décalée d'une unité, coin ignoré.
+- ✅ **T2 — ADR, plan, verifiers frais.** Mutants : appel pour tous les gravitaires, appel sans marqueur, minimum remplacé par maximum, égalité de Z décalée d'une unité, coin ignoré.
 
 ##### Acceptation
 
@@ -6561,6 +6561,32 @@ posé ») sont sans objet.
 - **Arrêts** : une entité par enregistrement change de pente ; un test existant bouge ; un besoin de changer le moteur. **Budget** : un `executor`, deux tentatives. **Retour arrière** : retirer l'appel.
 
 ---
+
+Decisions: see ADR-0087.
+
+##### Résultats (2026-10-24)
+
+Exécution en mode AUTO, HEAD de départ `e295875a`. Mesures : `docs/plan-e20-annexe/e20-f4f6/f6a/` (`results.md`, `t1/`, `t2/`).
+- **Commits.** `96ca9001` (T0) ; `f6788006` (T1 : l'appel `UpdateGroundSlope()` dans `TickMotion`, branche `IsActive`, après
+  `TickScriptedNpc`, pour les seules entités marquées `HasLogicalZ` ; `Alundra.Tests/Entities/MarkedEntityGroundSlopeTests.cs`) ;
+  `b8e9b07e` (T2, ADR-0087).
+- **T0.** Les six scénarios du plan et les clés `fire*`, `ice*`, `flames*` rejoués à l'octet ; six clés neuves ; dix mutants d'un mot de la
+  passe `0x80038064`, tous tués sur la machine. Sondes avant le code : le vol de la boule égale la clé jusqu'à l'atterrissage sur les
+  douze scénarios, et `Slope_18c` reste à 0.
+- **Recensement des lecteurs et leurs propriétaires** (puce de T0, `results.md` §3) : `+0x18C` d'une boule, f6a (l'alimentation) et f6b
+  (E9, qui le lit) ; `+0x184`, C61 et E10 (f3) et E1 (fait), que f6a ne nourrit pas (il reste 0 pour une entité marquée) ; `+0x180`,
+  `UpdateVramFlags` pour le héros seul, et la branche `DestroyOnVramFlags` du choix du programme, qui ne joue pour une entité marquée que si
+  son type porte `0x200000`. Les types à `0x100000` avec gravité (globaux 1, 2, 10 à 16, 234 ; 17 et 23 sont sans gravité ; locaux 34 à 38,
+  48, 107, 111 à 113, 134, 137, 174, 182) n'ont aucune intersection avec les types nés par l'interface en production hors des boules : le
+  changement est inerte en production.
+- **Tests.** 21 cas : sans l'appel, 20 rouges et (s2) vert (le témoin négatif : le Beannoïde de la carte 14, né d'un enregistrement, aucun
+  enregistrement ne portant un type 10 à 15) ; tous verts avec l'appel. (s4) rougit aussi sans l'appel, en plus de (s1) et (s3) : la preuve
+  de retrait du plan était trop étroite. Neuf mutants réels, tous tués. `Alundra.Tests` : 5 606 au départ, 5 627 à la fin, zéro échec en
+  Release (copie neutralisée) et en Debug ; aucun test existant déplacé ; `cmp` de la DLL identique ; `check_names.py --rules` vert.
+- **Verifiers frais** : **CONFIRMED** tous deux.
+- **Écarts acceptés** : la boule n'a pas de gestionnaire avant f6b, donc les comparaisons à la clé s'arrêtent à l'atterrissage (S+10 à
+  plat, S+7 sur la marche), sauf la mort dans l'eau profonde (S+11) et la case libre (S+12), comparées ; `CutBench.Cell` reçoit un champ
+  optionnel `GroundProperty`.
 
 #### 1.22.2 E20.f6b — C60, E9, les flammes de la 309 et le branchement ⏳
 
