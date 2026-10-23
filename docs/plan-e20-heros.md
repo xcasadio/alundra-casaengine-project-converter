@@ -612,7 +612,7 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord ; sur l'eau profonde, le héros nage (E20.i, 2026-10-10 : le garde d'E20.d1 a disparu) |
 | E20.e0 | Apparition d'entités et butin (D-E20-17 ; **E20.e0c faite le 2026-10-23**, §1.26) : `SpawnWarpEntity` (`0x80039F58`, 102 appelants) par indice de sprite global, tirage du butin à l'apparition (`0x80032A40`), lâcher à la mort (`0x80032B90`) avec son veto, objet ramassable (gestionnaire C255), avance du générateur pseudo-aléatoire une fois par tick après la mise à jour du monde (`0x8002BD14`) | oracle ; arcs | Rien de visible seul ; recette avec E20.e |
 | E20.eR | (2026-10-22, D-E20-60 ; détaillée au §1.27a ; **faite et CONFIRMED le 2026-10-22**, analyseur `d687972`, parent `ce7e1ac7`) Renommage de `BalanceLevel` (l'octet 9 de l'en-tête de carte) en `TileCutEffectId` à la source : l'exporteur Tiled de l'analyseur et sa doc, la ré-extraction des cartes, la copie `data-extracted/`, le convertisseur et l'export | export complet, preuve par manifeste | aucune (rien ne change en jeu) |
-| E20.e | Effets du héros et herbe coupée : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage), `CheckAndTriggerTileEffect`, butin tiré par E20.e0 | oracle ; arcs | Pas et poussière ; l'herbe se coupe à l'épée et à la charge ; argent et cœurs tombent et se ramassent |
+| E20.e | Herbe coupée : `CheckAndTriggerTileEffect`, butin tiré par E20.e0 (les pas et la poussière passent à E20.e2, révision 3 ; **faite et CONFIRMED le 2026-10-23**, §1.27) | oracle ; arcs | L'herbe se coupe à l'épée et à la vague ; argent et cœurs tombent et se ramassent |
 | E20.e2 | (2026-10-22, révision 3 d'E20.e ; prérequis E20.e) Effets du héros sortis d'E20.e : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage) ; les bouchons « Stub (E20.e) » de `PlayerAnimationEffects` y renvoient | oracle ; arcs | Pas et poussière |
 | E20.f | Autres armes (D-E20-7) : charge et aura, fléau et rebond, baguettes, arcs, projectiles par l'apparition d'E20.e0 et les gestionnaires propres au héros, vague de l'épée C61 et flèches chargées C94 (D-E20-18), `0xC0`/`0xC1` | oracle ; arcs | Sauvegarde de test avec les armes (à créer) |
 | E20.g | Porter, poser, lancer (`PlayerTryAction`, `UpdatePlayerCarriedEntity`) ; caisses et jarres redeviennent des obstacles (fin de l'écart D-E19-28/D-E19-46) ; barricade de la 392 (O-E20-5) | oracle ; arcs | Soulever et lancer une caisse ; la 392 |
@@ -7766,7 +7766,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
   met entre apostrophes les chemins à espace, retirées avant `verify_extraction_diff.py`.
 - **Remarque** : `docs/demarrage-nouvelle-partie.md:67` cite encore `BalanceLevel` ; c'est une doc historique gardée (R7, D-R-6), non modifiée.
 
-### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ⏳ (détaillée le 2026-10-18 ; **révision 3 du 2026-10-22** (réponses de l'auteur), nouvelle époque : relue REVISE (ligne d'enveloppe E20.e2 manquante, renvoi de ligne périmé), corrigée, puis READY le 2026-10-22 (`plan-verifier` frais) ; exécutable après E20.eR, E20.e0c révisée et faite)
+### 1.27 E20.e — L'herbe coupée : `CheckAndTriggerTileEffect` ✅ (détaillée le 2026-10-18 ; **révision 3 du 2026-10-22** (réponses de l'auteur), nouvelle époque : relue REVISE (ligne d'enveloppe E20.e2 manquante, renvoi de ligne périmé), corrigée, puis READY le 2026-10-22 (`plan-verifier` frais) ; **faite et CONFIRMED le 2026-10-23** par deux verifiers frais ; ADR-0083 ; exécutable après E20.eR, E20.e0c révisée et faite)
 
 **Révision 3 (2026-10-22).** Elle applique les réponses de l'auteur sans en ajouter :
 - **D-E20-49 et D-E20-60** : l'octet 9 de l'en-tête de carte est lu sous le nom `TileCutEffectId`, avec repli sur 2. E20.eR le renomme d'abord, à la source.
@@ -7864,7 +7864,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
 - **Phase B** (T3) : les deux appels et le préréglage. Visible en jeu.
 
 **Tâches.**
-- ⏳ **T0 — Annexe, oracle, mesures** (aucun code de la DLL) :
+- ✅ **T0 — Annexe, oracle, mesures** (aucun code de la DLL) :
   - (a) Rejouer depuis une copie `work/emu_cate.py`, `check/emu2.py`, `check/emu3.py` et `e20-f3/oracle/out/wave_grass*.txt` (contrôle d'outillage). Exporter en JSON les vecteurs : boîte, cases avant / après, positions, Z, tirages **par coin**, ordre coupe / effet / butin / son.
   - (b) **Q-E6** : le repère de Z, sur la machine MIPS, aux trois valeurs de bord.
   - (c) La latence d'une image de la boîte.
@@ -7879,7 +7879,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
   - (i) **Complétude du visuel** : sur les cartes 14, 10 et 16, le journal « N of M wall placements did not match » vaut 0 ; les 354 tuiles de la 14 sont retirables ; le coût d'une reconstruction est mesuré (carte 16).
   - (j) La propriété exportée des `.tileMap` 10, 14, 16 : `TileCutEffectId = "2"` et plus de `BalanceLevel` ; sinon arrêt (E20.eR pas faite).
   - (k) La forme en deux temps (S-E3) donne les mêmes résultats que l'entrelacement sur les 4 000 vecteurs.
-- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette) :
+- ✅ **T1 — Phase A** (tests d'abord, rouges sur un squelette) :
   - (c1) `CutCell` : bit, pile, mot `-1`, sol et hauteur gardés, une reconstruction de l'overlay par image (plusieurs coupes coalescées), collision et navigation inchangées. Sur la 14, couper (13, 11) retire exactement 2 entrées de l'overlay. Une case sans pile ne reconstruit rien. Chaque cas est accolé à son contraire.
   - (c2) Le cœur contre les vecteurs : les 4 coins et leur ordre, les bornes, la bande de Z aux trois valeurs de bord, la position non bornée, la rangée −1 (D9).
   - (c3) **Une boîte plus étroite qu'une case coupe une seule fois** (coin par coin).
@@ -7893,7 +7893,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
     - sans stage, l'effet est sauté et le reste suit.
   - (c6) `ResolveCutEffectIndex` : propriété présente, absente, non numérique (repli sur 2) ; `WorldProxy` la lit une fois au chargement ; l'id émis suit la valeur lue.
   - **Code A** : `CutCell`, `TileEffect.cs`, `NativeEffects.CreateTileCutEffect`, `IScriptHost.TileCutEffectIndex`, la lecture au chargement, le banc. Aucun appelant de production.
-- ⏳ **T2 — Tests de monde, rouges avant T3** (la vraie carte 14 du banc `HitArena`, sans cible ; les autres entités retirées par `Status = FlagToDestroy` puis `RecycleDestroyedEntities()` ; `Runner.NativeHandlersEnabled = true` ; le générateur posé à `s0` en tête du tick de la frappe) :
+- ✅ **T2 — Tests de monde, rouges avant T3** (la vraie carte 14 du banc `HitArena`, sans cible ; les autres entités retirées par `Status = FlagToDestroy` puis `RecycleDestroyedEntities()` ; `Runner.NativeHandlersEnabled = true` ; le générateur posé à `s0` en tête du tick de la frappe) :
   - (w1) Le coup d'épée : chaque coupe de `cut_m14` à son tick, sa case, la position et le Z de l'effet 2, le son 31, l'état du générateur.
   - (w2) La vague, de même.
   - (w3) Une frappe à côté d'un buisson ne coupe rien.
@@ -7903,8 +7903,8 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
   - (w7) Une case sans pile ((31, 30) ou (27, 45)) : effet, butin et son, aucune reconstruction (Q-E4).
   - (w8) La vraie propriété lue sur la 14 : l'effet émis porte l'id 2.
   - Test de garde d'export (`ExportGuards`) : les cartes 10, 14 et 16 portent `TileCutEffectId` et pas `BalanceLevel`.
-- ⏳ **T3 — Phase B** : `PlayerGrassCut` et `WaveSwordAi.CheckAndTriggerTileEffect` appellent `TileEffect.Trigger` (journal d'abord, port ensuite). Le préréglage `herbe-m14` est ajouté (`TestSaves.cs`, `TestSavesTests`). Les tests de la liste prédite sont réécrits par dérivation ; `TheNinePresets_AreListed…` devient « TheTenPresets… ». Verts.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). L'ADR (skill `adr`, prochain numéro libre) raffine ADR-0077 pour la coupe : aucun tirage dans l'effet, ordre S-E1, repère de Z (Q-E6), borne hors table (Q-E7), cases sans pile (Q-E4), pas de persistance (Q-E5). Le statut d'ADR-0077 gagne « refined by ADR-00NN for the cut ». Mutants, au moins 16, tous tués :
+- ✅ **T3 — Phase B** : `PlayerGrassCut` et `WaveSwordAi.CheckAndTriggerTileEffect` appellent `TileEffect.Trigger` (journal d'abord, port ensuite). Le préréglage `herbe-m14` est ajouté (`TestSaves.cs`, `TestSavesTests`). Les tests de la liste prédite sont réécrits par dérivation ; `TheNinePresets_AreListed…` devient « TheTenPresets… ». Verts.
+- ✅ **T4 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). L'ADR (skill `adr`, prochain numéro libre) raffine ADR-0077 pour la coupe : aucun tirage dans l'effet, ordre S-E1, repère de Z (Q-E6), borne hors table (Q-E7), cases sans pile (Q-E4), pas de persistance (Q-E5). Le statut d'ADR-0077 gagne « refined by ADR-00NN for the cut ». Mutants, au moins 16, tous tués :
   - rangée sud divisée deux fois (D3) ;
   - `+0x80000` ajouté au Z de l'effet (D4) ;
   - division tronquée (D9) ;
@@ -7940,6 +7940,38 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
 **Budget.** Un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 
 **Retour arrière.** La phase B se retire seule (les deux appels et le préréglage). La phase A ne change aucun comportement.
+
+Decisions: see ADR-0083 (refines ADR-0077 for the cut of the grass).
+
+##### Résultats (2026-10-23)
+
+Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ `9c1f6fe3`, un `executor` par phase. Mesures complètes :
+`docs/plan-e20-annexe/e20-e/rev3/` (`results.md` pour T0, `t1-` à `t4-results.md`, les listes de rouges, `mutants/mutants.tsv`).
+- **Commits.** `35695ef3` (T0) ; `ddd81aff` (phase A) ; `881bf7c5` (T2) ; `009bbbcb` (phase B) ; `1a633350` (T4, ADR-0083).
+- **T0.** 4 000 vecteurs et 460 coupes, 0 écart ; la forme en deux temps (S-E3) égale l'entrelacement du binaire sur tous. Q-E6 tranchée par
+  la machine MIPS : une case est coupée si `HitBoxZ + 1 <= zc <= HitBoxZ + 1 + bh` (S-E7 tenue). La boîte lue est celle de la fin du tick
+  précédent (21 sur 21 pour le héros, 92 sur 92 pour la vague). Carte 14 : 16 buissons (colonnes 26 à 29, rangées 40 à 44). Oracle
+  `cut_m14` (8 scénarios) ; générateur égal à l'oracle tick par tick (40 sur 40). P-E1 : un objet né dans `MovePlayer` joue A le même tick ;
+  né de la vague, A deux ticks de suite puis C255 au troisième.
+- **Tests.** T1 : 38 neufs, 29 rouges sur le squelette (les 10 verts sont les « rien ne se passe », accolés à un positif). T2 : 7 tests de
+  monde rouges avant le câblage, verts après. `Alundra.Tests` : 5 273 au départ, 5 330 à la fin, zéro échec en Release (copie neutralisée) et
+  en Debug. 34 mutants réels : 33 tués ; M32 (retrait d'un `(short)` sur la colonne ouest) est équivalent. M04 avait d'abord survécu ; un
+  test de la borne de colonne hors table l'a tué.
+- **Tests existants déplacés** : exactement les 2 prédits. `HeroAttackTests.RealPrefab_TheHeroOfTheExport_…` (les sons `[29]` deviennent
+  `[29, 31]`, valeur de l'oracle `heroattack_m10.txt`, versé avant le câblage) et le test des préréglages (`TheTwelvePresets_…`, préréglage
+  `herbe-m14`). Aucun arc, aucune trace ne bouge.
+- **Gardes.** `check_names.py --rules` vert ; `cmp` de la DLL Debug identique ; le moteur, l'analyseur, le convertisseur et les données sans
+  diff.
+- **Verifiers frais.** Le premier (vecteurs et oracle régénérés depuis une copie ; suites Release et Debug ; 9 mutants de plus, tous tués ;
+  S-E1 à S-E7, D-E20-49, -59, -60 contre le code) et le second (épingles : liste mesurée ⊂ liste prédite, valeurs dérivées de l'oracle) :
+  **CONFIRMED** tous deux.
+- **Écarts au plan, sans effet sur le but** : les tests de monde sont dans `TileEffectCutWorldTests.cs` (il leur faut la collection du
+  singleton musique) ; le banc de la vague chargée pose `FrameCounter = 12` en tête du tick 1 pour aligner la phase des étincelles de la
+  charge (alignement de banc, pas un défaut de la DLL) ; les effets et les sons se comparent en deux listes (l'effet passe par la file en
+  fin d'image, ADR-0077) ; le Z de l'objet né d'une coupe de vague égale l'oracle moins un (ADR-0026) ; le préréglage ajoute 5 cas aux
+  théories existantes de `TestSavesTests` sans changer leurs corps.
+- **Recette de l'auteur, à faire** : la sauvegarde `herbe-m14` (carte 14, tuile (31, 43, 1), Steel Edge) ; couper un buisson à l'épée,
+  puis avec la vague : le buisson disparaît, l'éclat, parfois un objet, les sons. Les pas et la poussière restent à E20.e2.
 
 ### 1.28 E20.g3 — Les soulevables redeviennent solides ⏳ (détaillée le 2026-10-18, **READY** à la première relecture ; exécutable après g1a, g2a, g2b et la fin du chantier de restructuration)
 
