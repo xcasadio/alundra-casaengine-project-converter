@@ -348,7 +348,7 @@ internal static class ScriptedMotion
         if (tickForce <= 0 && hero.ScriptHost != null && EntitySupport.IsEligibleSubject(hero))
         {
             var seed = Math.Max(hero.PosZ + hero.ModZ + tickForce, terrain + 1);
-            if (EntitySupport.TryFindSupport(hero, hero.ScriptHost.Collidables, seed, out _, out var supportTopZ))
+            if (hero.TryFindSupportMovingFirst(hero.ScriptHost.Collidables, seed, out var supportTopZ)) // D5b M2: the support moves first when it has not moved in this pass.
             {
                 landingHeight = supportTopZ;
                 onEntity = true;
@@ -371,9 +371,10 @@ internal static class ScriptedMotion
             // support is the terrain again.
             landed = !onEntity;
         }
-        else if (tickForce > 0 && EntitySupport.TryFindCeiling(hero, hero.ScriptHost?.Collidables ?? Array.Empty<EntityScriptProxy>(), tickForce, out var ceilingPosZ))
+        else if (tickForce > 0 && hero.TryFindCeilingMovingFirst(hero.ScriptHost?.Collidables ?? Array.Empty<EntityScriptProxy>(), tickForce, out var ceilingPosZ))
         {
             // E19.h3 (H3-R2, binary 0x80036D94): a rise stops under the bottom of a collidable above (or at the absolute ceiling of 1920 px): contact, ForceZ 0 with gravity.
+            // D5b M2: the collidable above moves first when it has not moved in this pass.
             hero.PosZ = ceilingPosZ;
             if (gravity)
             {
@@ -498,7 +499,7 @@ internal static class ScriptedMotion
         if (tickForce <= 0 && entity.ScriptHost != null && EntitySupport.IsEligibleSubject(entity))
         {
             var seed = Math.Max(entity.PosZ + entity.ModZ + tickForce, terrain + 1);
-            if (EntitySupport.TryFindSupport(entity, entity.ScriptHost.Collidables, seed, out _, out var supportTopZ))
+            if (entity.TryFindSupportMovingFirst(entity.ScriptHost.Collidables, seed, out var supportTopZ)) // D5b M2: the support moves first when it has not moved in this pass.
             {
                 landingHeight = supportTopZ;
             }
@@ -515,7 +516,7 @@ internal static class ScriptedMotion
 
             entity.CollidedWithEntityZ = 1;
         }
-        else if (tickForce > 0 && EntitySupport.TryFindCeiling(entity, Array.Empty<EntityScriptProxy>(), tickForce, out var ceilingPosZ))
+        else if (tickForce > 0 && entity.TryFindCeilingMovingFirst(entity.ScriptHost?.Collidables ?? Array.Empty<EntityScriptProxy>(), tickForce, out var ceilingPosZ)) // D5b M2 (D-D5B-4): the ceilings of the other collidables are ported (O-E0K-6).
         {
             entity.PosZ = ceilingPosZ;
             if (gravity)

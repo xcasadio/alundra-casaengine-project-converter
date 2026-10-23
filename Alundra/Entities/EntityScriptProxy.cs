@@ -881,7 +881,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
 
         var supportTopZ = 0;
         var found = eligible
-            && EntitySupport.TryFindSupport(this, collidables, platformTopZSeed, out _, out supportTopZ);
+            && TryFindSupportMovingFirst(collidables, platformTopZSeed, out supportTopZ);
         if (found)
         {
             WasEntitySupportedLastTick = true;
@@ -1015,7 +1015,20 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
                         // CharacterControllerComponent.UpdateGround from re-pinning a climbing NPC to
                         // ground every render frame - see this method's own tail doc (E4.g superseded the
                         // former RisingVelocitySignal workaround this comment used to describe).
-                        MoveVerticalAndPullPosition(FinalForceZ / 65536f, wasSupportedEnteringThisTick);
+                        // E19.d2c2 D5b M2 (D-D5B-4): a rise stops under the collidable above (after it has moved first when it had not moved in this pass) or at the absolute ceiling.
+                        var rise = FinalForceZ;
+                        if (rise > 0 && eligible && TryFindCeilingMovingFirst(collidables, rise, out var ceilingPosZ))
+                        {
+                            rise = ceilingPosZ - PosZ;
+                            CollidedWithEntityZ = 1;
+                            if ((Flags & EntityFlags.Gravity) != 0)
+                            {
+                                ForceZ = 0;
+                                FinalForceZ = 0;
+                            }
+                        }
+
+                        MoveVerticalAndPullPosition(rise / 65536f, wasSupportedEnteringThisTick);
                         IsOnGround = 0;
                     }
                 }
@@ -1108,6 +1121,55 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     internal int PhysicsDoneInPass = -1;
 
     /// <summary>
+    /// E19.d2c2 D5b M2 (D-D5B-4, the binary's "move the target first", <c>0x800376B8-DC</c> at a landing and <c>0x80037630-50</c> at a ceiling): runs the physics of <paramref name="target"/> now when it has not run in
+    /// this pass and belongs to it (a host that drives the ticks: it takes part in the frame or joins at its birth; a self-driven montage: every entity; and it is not blocked by another entity, nor this entity). Returns true when
+    /// it ran, so the caller searches again against the position the target now has. False on a host that does not track the passes.
+    /// </summary>
+    internal bool EnsureMovedThisPass(EntityScriptProxy target)
+    {
+        var pass = ScriptHost?.PhysicsPassId ?? 0;
+        if (pass == 0 || ReferenceEquals(target, this) || target.PhysicsDoneInPass == pass || target.BlockedByEntity != null
+            || (ScriptHost!.DrivesEntityTicks && !(target.TookPartInFrame || target.JoinsBirthTick)))
+        {
+            return false;
+        }
+
+        target.TickPhysicsOnce();
+        return true;
+    }
+
+    /// <summary>E19.d2c2 D5b M2: <see cref="EntitySupport.TryFindSupport"/>, repeated against the new top while the support found has not moved in this pass and is moved first (<see cref="EnsureMovedThisPass"/>).</summary>
+    internal bool TryFindSupportMovingFirst(IReadOnlyList<EntityScriptProxy> collidables, int platformTopZSeed, out int supportTopZ)
+    {
+        bool found;
+        EntityScriptProxy? support;
+        do
+        {
+            found = EntitySupport.TryFindSupport(this, collidables, platformTopZSeed, out support, out supportTopZ);
+        }
+        while (found && support != null && EnsureMovedThisPass(support));
+
+        return found;
+    }
+
+    /// <summary>
+    /// E19.d2c2 D5b M2 and the ceiling of the carriers (D-D5B-4): <see cref="EntitySupport.TryFindCeiling"/>, repeated while the collidable above that lowers the target has not moved in this pass and is moved first. The two
+    /// go together on every vertical site: a ceiling alone would stop a platform under the passenger that has not followed yet.
+    /// </summary>
+    internal bool TryFindCeilingMovingFirst(IReadOnlyList<EntityScriptProxy> collidables, int force, out int newPosZ)
+    {
+        bool contact;
+        EntityScriptProxy? ceilingEntity;
+        do
+        {
+            contact = EntitySupport.TryFindCeiling(this, collidables, force, out newPosZ, out ceilingEntity);
+        }
+        while (contact && ceilingEntity != null && EnsureMovedThisPass(ceilingEntity));
+
+        return contact;
+    }
+
+    /// <summary>
     /// E19.h1b2 (H1B2-R4, docs/plan-e19-opcodes.md §1.2n.1c): the vertical step of an entity without a controller, the rules of the binary (<c>ComputeZPosition
     /// 0x800375E0</c>, the end pass <c>0x80038064</c>) in the DLL's convention (the binary's <c>PosZ - 1</c>: <c>docs/plan-e19-h1b2-annexe/binary-notes.md</c> §2.3 to §2.7),
     /// run after the decay of <see cref="EvaluateEntitySupport"/> and after this tick's script and XY step, from <see cref="TerrainHeight"/> (the probe of the box at
@@ -1129,9 +1191,10 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         var supportedByEntity = false;
         if (force > 0)
         {
-            if (PosZ + ModZ + Depth + 1 + force > EntitySupport.AbsoluteCeiling)
+            // E19.d2c2 D5b M2 (D-D5B-4): the ceiling of the other collidables (moved first when they had not moved in this pass) and the absolute ceiling, the one search (TryFindCeiling gives both).
+            if (TryFindCeilingMovingFirst(collidables, force, out var ceilingPosZ))
             {
-                PosZ = EntitySupport.AbsoluteCeiling - 2 - ModZ - Depth;
+                PosZ = ceilingPosZ;
                 CollidedWithEntityZ = 1;
                 if (gravity)
                 {
@@ -1148,7 +1211,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
             var moddedPosZ = PosZ + ModZ;
             var supportTopZ = 0;
             var landsOnEntity = eligible
-                && EntitySupport.TryFindSupport(this, collidables, Math.Max(moddedPosZ + force, terrain), out _, out supportTopZ);
+                && TryFindSupportMovingFirst(collidables, Math.Max(moddedPosZ + force, terrain), out supportTopZ);
             if (landsOnEntity || moddedPosZ + force < terrain)
             {
                 PosZ = (landsOnEntity ? supportTopZ : terrain) - ModZ;

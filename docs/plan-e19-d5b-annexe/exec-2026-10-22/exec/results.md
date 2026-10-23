@@ -124,3 +124,32 @@ Red before, green after (Release, neutralised copy): `UH16_APlatformRisingByOneP
 `Freeze_APlatformWithANonZeroForceAndARider_...` (green from T3, as planned, since there is no ceiling yet), `A_D5b_22_FromTheLiftItself_...` (the arc A-D5b-22: zero gap from image 12 to the warning),
 `A_D5b_22_TheRecipeOfTheAuthor_...` (6 tests). Red list after T3: 18. Existing tests moved: none (UH-14 still green until T5; UH-18 unchanged).
 Release, the three partitions: 2 886 tests / 18 red (the 18 witnesses), 1 317 / 1 red (the pile arc), 1 564 / 0. The four traces of the hero and the intro trace (their guard tests are in the partitions) are identical; the files restored by `git checkout`.
+
+## T4 - M2 and the ceiling of the carriers, one commit, the four vertical sites (D-D5B-1, -4)
+
+Production:
+- `EntityScriptProxy.EnsureMovedThisPass(target)` (the binary's "move the target first", `0x800376B8-DC` and `0x80037630-50`): runs `target.TickPhysicsOnce()` when the target has not moved in the pass, belongs to it (a host that
+  drives the ticks: `TookPartInFrame` or `JoinsBirthTick`; a self-driven montage: every entity), is not blocked by another entity (`BlockedByEntity`, E20.e0c) and is not the caller. `TryFindSupportMovingFirst` and
+  `TryFindCeilingMovingFirst` repeat the search while the entity found is moved first. `EntitySupport.TryFindCeiling` gives the collidable that lowered the target (new overload; the old signature is kept).
+- The four sites: the hero (`RunHeroVerticalTick`, support and ceiling), the marked entities (`RunLogicalZPreXyStep`, support and ceiling; the ceiling used to see an empty list, O-E0K-6, and now sees the collidables),
+  the entities with a controller (`EvaluateEntitySupport`, support and the rise of the "not found" tail), the entities without a controller (`StepVerticalWithoutController`, support and rise; the absolute ceiling is the same
+  search, `TryFindCeiling` gives both).
+
+Red before, green after (Release, neutralised copy): `UH16_APlatformDescendingByOnePixelPerTick_...`, `DESC_TheLiftDescendingByOnePixelPerTickFromTick3For24Ticks_...`, both rows of `UH19_...`,
+`Dock_ABlockDescendingByOnePixelPerTickToTheDock_...` (the 9 hero witnesses are green: with `Freeze_...`, `UH16` rising, `E22`, `Dock` rising, T3). Existing tests moved: none (partitions: 14 / 1 / 0 red, all witnesses of T1).
+
+Deviations and findings:
+1. `Dock_ABlockDescending...` could not turn green in the T1 montage: the block's physical box is over the 16 px floor, so `PushLogicalPositionToRoot -> ClampToGround` lifts the block back to 16 px at its landing at the bottom of the hollow
+   (measured: the block went 1 -> 16 inside the nested move), and the engine snaps a block within `GroundSnapDistance` (4 px) of the ground under its root. `DockMontage(hollowUnderRoot: true)` (descending only) puts the cells under the root
+   box (cells 5 and 6, rows 5 and 6; the hero at x 193 never meets them) in the hollow too and sets the block's `GroundSnapDistance` to 0. The assertions are unchanged; the rising dock keeps the original field (at rest in the air over a
+   hollow ground under its root the engine would snap the block down).
+2. STOP CONDITION OF THE PLAN, met by design until T6A: with the ceiling of the carriers, a platform whose `ForceZ` is not 0 and which carries a NON-HERO passenger stands still, because that passenger does not follow yet (the copy of
+   the force of the path A is T6A, of the path B T6B, of the path C T6C; the prototype had the path A copy in the same patch). Witnesses concerned, all red since T1 and still red: `CrateA_*` (the 2 rising rows: `platform 0`),
+   `PileZA`, `PileXYA`, `NpcA`, `MarkedB(+65536)`, `PileZB`, `PrefabC`; and the NEGATIVE guard `ImpulseA_*`, green until T3, red now with `tick 3: platform 0`: the crate takes its impulse at the tick 3 but the DLL's pull of a supported
+   entity that takes off keeps `PosZ` pinned to the support (`EvaluateEntitySupport`, found branch, one tick of delay), so the crate is still a ceiling for the platform. T6A must therefore also stop the found branch from pinning an entity whose
+   force of the tick is positive (the binary searches a support only for `F <= 0`), or the guard stays red. The hero case (the plan's "gel") is green: `Freeze_*` passes, no hero stands still more than 2 ticks.
+   Judgement: the plan lists the crate witnesses as red after T4 and T6 as the task that follows, so I did not treat this transient as the plan's stop (which names the freeze witness); it is flagged for the reader, T4 and T6A are to be merged together.
+3. `EnsureMovedThisPass` in a self-driven montage runs the target's physics before its own programs and clock of the tick (the target's own loop then skips the physics of the first tick of the frame). In a world the programs and clocks
+   of every entity precede the physics, as in the binary.
+
+Release, the three partitions: 2 886 tests / 14 red, 1 317 / 1 red, 1 564 / 0. The traces of the hero and of the intro are identical; the four files restored by `git checkout`.

@@ -226,10 +226,14 @@ public sealed class HeroPlatformRideTests : IDisposable
     // The dock (t5_dock_real.txt): the hero straddles the 16 px floor and an object flush with it in a hollow; the object moves, the hero goes with it.
     // -----------------------------------------------------------------------------------------
 
-    private static (JumpHeroRig Rig, EntityScriptProxy Block) DockMontage(int blockZ)
+    private static (JumpHeroRig Rig, EntityScriptProxy Block) DockMontage(int blockZ, bool hollowUnderRoot = false)
     {
         // The montage of UH-17: cells of 16 px (height 1) with one hollow cell at 0 (cx 8, x 192..216, row 6); the block (24 x 16 x 16) is in the hollow, its top flush with the floor when blockZ is 0.
-        var field = FlatCells.Create(cell: (cx, cy) => (0, cx == 8 && cy == 6 ? 0 : 1));
+        // hollowUnderRoot: the physical box of the block (18 x 12 around its root at x 148, y 96: cells 5 and 6, rows 5 and 6) is in a hollow too. The root of a body that lands is clamped to the engine's ground under
+        // that box (PushLogicalPositionToRoot, ClampToGround) while the logical box (x 192 to 216, cell 8) is what the logic reads: with a 16 px floor under the root a block that descends to the bottom of the hollow
+        // is lifted back to the floor at its landing. Without it (the rising block) the root stays over the floor: at rest in the air the engine would snap a block to a hollow ground under its root. The hero
+        // (x 193, cells 7 and 8) never meets cells 5 and 6.
+        var field = FlatCells.Create(cell: (cx, cy) => (0, (cx == 8 && cy == 6) || (hollowUnderRoot && cx is 5 or 6 && cy is 5 or 6) ? 0 : 1));
         // The block is added AFTER the hero, as in the world (the hero is the first of the physics list, WorldProxy._tickEntities): a montage that ticks the carrier before the hero would
         // have the hero find its carrier already moved at the head of its tick (the binary's prepass, 0x800364C8, runs before every move; the montage has none).
         var rig = JumpHeroRig.Build(
@@ -239,6 +243,11 @@ public sealed class HeroPlatformRideTests : IDisposable
             z: 16f + blockZ,
             freePad: true);
         var block = AddObject(rig.World, rig.Host, "Switch", 148, 96, 24, 16, 16, offsetX: 44, z: blockZ);
+        if (hollowUnderRoot)
+        {
+            block.Controller!.Settings.GroundSnapDistance = 0f; // the engine would snap a block within 4 px of the ground under its root; the logic owns its Z.
+        }
+
         rig.Hero.PosZ = (16 + blockZ) << 16; // the block joins the world with the first update: the hero is put on it afterwards, as in UH-14.
         rig.Hero.PushLogicalPositionToRoot();
         for (var i = 0; i < 4; i++)
@@ -282,7 +291,7 @@ public sealed class HeroPlatformRideTests : IDisposable
     [Fact]
     public void Dock_ABlockDescendingByOnePixelPerTickToTheDock_CarriesTheHeroDown_RelZero_AndTheContactIsRaisedAtTheArrival()
     {
-        var (rig, block) = DockMontage(blockZ: 8);
+        var (rig, block) = DockMontage(blockZ: 8, hollowUnderRoot: true);
         var hero = rig.Hero;
         block.ForceZ = -65536;
         for (var tick = 1; tick <= 12; tick++)

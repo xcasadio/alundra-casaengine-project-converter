@@ -199,7 +199,16 @@ internal static class EntitySupport
     /// </summary>
     internal static bool TryFindCeiling(
         EntityScriptProxy entity, IReadOnlyList<EntityScriptProxy> collidables, int force, out int newPosZ)
+        => TryFindCeiling(entity, collidables, force, out newPosZ, out _);
+
+    /// <summary>
+    /// E19.d2c2 D5b (D-D5B-4): the same search, which also gives the collidable that lowered the target last (the lowest wins), null when only the absolute ceiling (or nothing) did. A rider that rises needs it:
+    /// the binary moves that target first when it has not moved in the pass (<see cref="EntityScriptProxy.TryFindCeilingMovingFirst"/>).
+    /// </summary>
+    internal static bool TryFindCeiling(
+        EntityScriptProxy entity, IReadOnlyList<EntityScriptProxy> collidables, int force, out int newPosZ, out EntityScriptProxy? ceilingEntity)
     {
+        ceilingEntity = null;
         var top = entity.PosZ + entity.ModZ + entity.Depth;
         var targetTop = top + force;
 
@@ -252,6 +261,7 @@ internal static class EntitySupport
 
             targetTop = candidateModZ - 1;
             contact = true;
+            ceilingEntity = candidate;
         }
 
         if (contact)
