@@ -72,3 +72,38 @@ So (s6) is written: the montage exists with no production change. (The map 102 c
 ### Files
 
 `t0-cases/` (`cases_gel.json`, `cases_list.json`), `t0-out/` (the outputs above).
+
+## T1 - the tests
+
+Two new files in the mirror folder `Alundra.Tests/Events/` (ADR-0080; the plan says `Arcs/` for the arcs, but g5b settled that a file that drives `ArcRun` through `ScriptedPushRun` stays in the domain of the scripts it
+exercises, and `ScriptedPushRun` is in `Events/`; `check_names.py --rules`: 215 DLL files, 467 test files, 0 finding, the same 1 warning). `ScriptedPushRun` itself is not touched.
+
+| file | content |
+|---|---|
+| `ScriptedPushObjectsTests.cs` | (s1) the statue of the map 2, (s2) the statue of the map 352, (s3) the block of the map 23 (plus the waited variant and the fall tick by tick), (s4) the freeze of the hero after a program F, (s6) the blocks of the maps 102 (records 0 and 9, three hero zones) and 382 through the montage of the hit pass |
+| `PushObjectProgramsOpcodesTests.cs` | (s5) the static test (D-G5D-2): the corpus test, the guard of the counts (9 + 62 + 16 + 24 + 28 placements, 26 maps, 19 maps with programs, 75 programs), the rule on made-up input, the recognition of a placement by type and map-page bit |
+
+Names (6 + 4 = 10 tests):
+- `ScriptedPushObjectsTests.Map2_AStatuePushedFromTheWest_WalksSeventeenStepsOfOnePointFivePixels_AndRaisesItsFlag_WithoutThePushNothingMoves` (s1)
+- `ScriptedPushObjectsTests.Map352_AStatuePushedFromTheWestWithTheCrossHeld_WalksTo229Point5_AndRaisesItsFlag_WithoutThePushNothingMoves` (s2)
+- `ScriptedPushObjectsTests.Map23_ABlockPushedFromTheEast_SlidesFortyEightPixelsWest_ThenFallsOneFloor_AndTheContactInstantOnlyShiftsIt_WithoutThePushItStays` (s3)
+- `ScriptedPushObjectsTests.Map2_TheHeroWhoKeepsPushingAfterTheContactIsFrozen_UntilHeReleasesAndPressesAgain` (s4)
+- `PushObjectProgramsOpcodesTests.EveryProgramOfAPushableObject_ReachesOnlyOpcodesTheRunnerPorts`, `TheCorpusIsTheFiveFamilies_...`, `TheRule_FlagsASiteWhoseOpcodeTheOracleSkips_AndOnlyThat`, `ThePlacementsOfATileMap_AreRecognisedByTheirTypeAndTheMapPageBit` (s5)
+- `ScriptedPushObjectsTests.Map102_ABlockHitByAnAttackOfIndexOne_WalksAccordingToTheHeroZone_AndWithoutTheHitNothingHappens` and `Map382_ABlockHitByAnAttackOfIndexOne_SlidesSouthWithTheHeroInTheZone_AndWithoutTheHitOrOutsideTheZoneItStays` (s6)
+
+Green at the start HEAD (Release, the neutralised copy, `--filter` on the two classes): **10 tests, 0 failures**. They pin a behaviour that already works (no red phase, as the plan says); each is made red once by a real mutation
+of the production code (applied by `t1/g5d-mut.py`, undone by `git checkout`, `git diff -- Alundra` empty after each; full output `t1/mutants.log`):
+
+| mutation | file | tests red |
+|---|---|---|
+| M1 the flag of a program F not raised (`case 0x05` skipped while the program running is the F slot) | `EventProgramRunner.cs` | (s1), (s2), (s3), (s4) |
+| M2 the opcode `0x3A` (used by the statues and the buttons) removed from the dispatch (`case 0x13A`) | `EventProgramRunner.cs` | (s5) corpus test alone |
+| M3 the start of the program F at the contact removed (`false && ...` on the pick) | `EntityScriptProxy.cs` | (s1), (s2), (s3), (s4) |
+| M4 the four force words of the hero no longer zeroed at the start of a program F | `EventProgramRunner.cs` | (s4), and (s1), (s2), (s3) |
+| M5 `0x87` never answers 1 | `EventProgramRunner.cs` | both (s6) tests |
+
+(The first four are the four mutations of the plan's T2; they are run here for T1 and counted there. T2 runs them again on the final tree only if the code changed, which it does not: `Alundra/` has no diff.)
+
+Facts measured while writing, not in the plan:
+- the statue of the map 352 program F runs a second time, on the frame 65, in the sequence of the probe (the hero, who followed the statue after the release, touches it again): pinned (`FramesOf(5, 1900, 0x05)` is `[8, 65]`);
+- the block of the map 102 with the hero in the east zone falls to z 0 (the floor of the map there), the one with the hero in the north zone to z 32; the block of the record 9 walks east.

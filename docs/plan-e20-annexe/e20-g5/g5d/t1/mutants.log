@@ -1,0 +1,30 @@
+== M1-flag-of-F-not-set
+  summary: Échoué!  - échec :     4, réussite :     6, ignorée(s) :     0, total :    10, durée : 10 s - Alundra.Tests.dll (net9.0) | compile errors: 0
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map23_ABlockPushedFromTheEast_SlidesFortyEightPixelsWest_ThenFallsOneFloor_AndTheContactInstantOnlyShiftsIt_WithoutThePushItStays
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map2_AStatuePushedFromTheWest_WalksSeventeenStepsOfOnePointFivePixels_AndRaisesItsFlag_WithoutThePushNothingMoves
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map2_TheHeroWhoKeepsPushingAfterTheContactIsFrozen_UntilHeReleasesAndPressesAgain
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map352_AStatuePushedFromTheWestWithTheCrossHeld_WalksTo229Point5_AndRaisesItsFlag_WithoutThePushNothingMoves
+  git diff -- Alundra after revert: ''
+== M2-opcode-0x3A-removed-from-dispatch
+  summary: Échoué!  - échec :     1, réussite :     9, ignorée(s) :     0, total :    10, durée : 12 s - Alundra.Tests.dll (net9.0) | compile errors: 0
+  RED Alundra.Tests.Events.PushObjectProgramsOpcodesTests.EveryProgramOfAPushableObject_ReachesOnlyOpcodesTheRunnerPorts
+  git diff -- Alundra after revert: ''
+== M3-start-of-F-at-contact-removed
+  summary: Échoué!  - échec :     4, réussite :     6, ignorée(s) :     0, total :    10, durée : 10 s - Alundra.Tests.dll (net9.0) | compile errors: 0
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map23_ABlockPushedFromTheEast_SlidesFortyEightPixelsWest_ThenFallsOneFloor_AndTheContactInstantOnlyShiftsIt_WithoutThePushItStays
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map2_AStatuePushedFromTheWest_WalksSeventeenStepsOfOnePointFivePixels_AndRaisesItsFlag_WithoutThePushNothingMoves
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map2_TheHeroWhoKeepsPushingAfterTheContactIsFrozen_UntilHeReleasesAndPressesAgain
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map352_AStatuePushedFromTheWestWithTheCrossHeld_WalksTo229Point5_AndRaisesItsFlag_WithoutThePushNothingMoves
+  git diff -- Alundra after revert: ''
+== M4-four-force-words-of-hero-not-zeroed
+  summary: Échoué!  - échec :     4, réussite :     6, ignorée(s) :     0, total :    10, durée : 10 s - Alundra.Tests.dll (net9.0) | compile errors: 0
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map23_ABlockPushedFromTheEast_SlidesFortyEightPixelsWest_ThenFallsOneFloor_AndTheContactInstantOnlyShiftsIt_WithoutThePushItStays
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map2_AStatuePushedFromTheWest_WalksSeventeenStepsOfOnePointFivePixels_AndRaisesItsFlag_WithoutThePushNothingMoves
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map2_TheHeroWhoKeepsPushingAfterTheContactIsFrozen_UntilHeReleasesAndPressesAgain
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map352_AStatuePushedFromTheWestWithTheCrossHeld_WalksTo229Point5_AndRaisesItsFlag_WithoutThePushNothingMoves
+  git diff -- Alundra after revert: ''
+== M5-0x87-never-touched
+  summary: Échoué!  - échec :     2, réussite :     8, ignorée(s) :     0, total :    10, durée : 9 s - Alundra.Tests.dll (net9.0) | compile errors: 0
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map102_ABlockHitByAnAttackOfIndexOne_WalksAccordingToTheHeroZone_AndWithoutTheHitNothingHappens
+  RED Alundra.Tests.Events.ScriptedPushObjectsTests.Map382_ABlockHitByAnAttackOfIndexOne_SlidesSouthWithTheHeroInTheZone_AndWithoutTheHitOrOutsideTheZoneItStays
+  git diff -- Alundra after revert: ''
