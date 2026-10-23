@@ -1,0 +1,13 @@
+E20.f6a T1: real mutations of the DLL (applied by t1mut.py, built in Release with the neutralised copy, the 21 tests of MarkedEntityGroundSlopeTests and the hero's GroundSlopeTests run, the files restored byte for byte; `git diff` of the mutated files empty after).
+
+M1  the call for every entity with the gravity, in any status (outside the IsActive branch)      KILLED: S2, S4
+M2  the call inside IsActive without the marker                                                   KILLED: S2
+M3  minimum replaced by maximum (TerrainProbe.ProbeSlopeCorner: masked > bestFlagMask)          KILLED: S1a, S1b, S1c, S2, S3a, S3b, S4 (24 failures in all, of which 8 tests of the hero's GroundSlopeTests)
+M4  the equality of Z shifted by one 16.16 unit (height == moddedPosZ + 65536)                    KILLED: S1a, S1b, S1c, S2, S3a, S3b, S4 (21 failures in all, of which 5 tests of the hero's GroundSlopeTests)
+M5a the corner (x1, y1) ignored                                                                   KILLED: S1b (exactly one of the four dry-corner keys)
+M5b the corner (x2, y1) ignored                                                                   KILLED: S1b (exactly one of the four dry-corner keys)
+M5c the corner (x1, y2) ignored                                                                   KILLED: S1b (exactly one of the four dry-corner keys)
+M5d the corner (x2, y2) ignored                                                                   KILLED: S1b (exactly one of the four dry-corner keys)
+M6  the call limited to the status 2 (Status == Normal)                                           KILLED: S4
+
+Proof of withdrawal: with the call absent (the skeleton, before the code) exactly S1a x5, S1b x7, S1c, S3a x3, S3b x3 and S4 are red (20 red) and S2 is green (t1-red-names.txt); with the call, 21 of 21 green.

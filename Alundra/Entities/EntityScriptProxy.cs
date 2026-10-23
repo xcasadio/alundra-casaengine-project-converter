@@ -1593,7 +1593,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// <list type="bullet">
     /// <item><description>The hero: <see cref="PlayerManager.Tick"/> (the kinematic integration), then the probes <see cref="RunHeroProbes"/> inside the tick, as the binary's
     /// <c>UpdateTileAttributes</c> ends each physics pass (E19.d2c1 R7: the water, ice and x160 rules read the VRAM flags at the next tick). Nothing without a controller.</description></item>
-    /// <item><description>Another entity: E4.b scripted mover (port of <c>PhysicsEngine.UpdateEntityPhysics</c>, restricted to the flat-ground half already ported for the hero), keyed off
+    /// <item><description>Another entity: E4.b scripted mover (port of <c>PhysicsEngine.UpdateEntityPhysics</c>, restricted to the flat-ground half already ported for the hero; E20.f6a: for an entity with the marker <see cref="HasLogicalZ"/>, followed by the tile attributes <see cref="UpdateGroundSlope"/>), keyed off
     /// <see cref="CurrentAnimationId"/> as the last SyncAnimation left it (D-E19-13: the animation a script asks for is applied to the sprite at the end of the frame, so the motion of the
     /// ticks of a frame reads the animation as the previous frame left it); then E4.f entity-vs-entity Z support, AFTER the motion so a walk that just left a platform's footprint loses
     /// support the SAME tick. E19.d2b (D-E19-29): only an entity that is Normal or Deactivated moves (the binary's physics list takes the statuses 2 and 3); the support runs for all.</description></item>
@@ -1610,7 +1610,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         StoreHitBox(); // E20.c1b K3: 0x80038364 ends the pass of every entity with the helper 0x80038064, which stores the HitBox the opcode 0x95 reads.
     }
 
-    /// <summary>The movement half of <see cref="TickPhysics"/> (the hero's tick and probes, the scripted movement and the support of the others).</summary>
+    /// <summary>The movement half of <see cref="TickPhysics"/> (the hero's tick and probes, the scripted movement, for a marked entity its tile attributes, and the support of the others).</summary>
     private void TickMotion()
     {
         if (IsPlayer)
@@ -1629,6 +1629,13 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         if (Status.IsActive())
         {
             ScriptedMotion.TickScriptedNpc(this);
+
+            // E20.f6a (D-F6-2, Q-K1 option A): the tile attributes of the binary's physics pass (0x80038064, the end of 0x80038364) for an entity born during play (the marker of the interface) that has the gravity: the same
+            // code as the hero's, after the step of the tick, in the statuses 2 and 3 only (the physics list of the binary). It feeds Slope_18c, which the pick phase reads (DestroyOnSlidingSlope). An entity placed by the map keeps 0 (E19.h2).
+            if (HasLogicalZ)
+            {
+                UpdateGroundSlope();
+            }
         }
 
         EvaluateEntitySupport(ScriptHost!.Collidables);
@@ -1914,8 +1921,8 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// four-corner qualification rule that feeds the ladder/water slope switch in
     /// <c>PlayerManager.MovePlayer</c> (that switch is NOT ported yet - see
     /// <see cref="PlayerManager"/>'s own class doc; this method only ALIMENTS the field, nothing
-    /// reads it yet besides the pre-existing <c>DestroyOnSlidingSlope</c>/<c>Slope_18c == 4</c> check -
-    /// see the restriction paragraph below). Samples the SAME four corners as
+    /// reads it yet besides the pre-existing <c>DestroyOnSlidingSlope</c>/<c>Slope_18c == 4</c> check of
+    /// the pick phase - see the restriction paragraph below). Samples the SAME four corners as
     /// <see cref="ComputeTerrainHeight"/> (identical <see cref="PosX"/>/<see cref="PosY"/>/
     /// <see cref="ModX"/>/<see cref="ModY"/>/<see cref="Width"/>/<see cref="Height"/> footprint,
     /// PhysicsEngine.cs:960-971/1187-1190) instead of a single center point - the divergence between the
@@ -1953,13 +1960,15 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// only when ALL FOUR corners qualify, and is then the MINIMUM <c>(GroundProperty &gt;&gt; 1) &amp; 7</c>
     /// across them (PhysicsEngine.cs:1819-1820).
     ///
-    /// RESTRICTION (E1 scope, documented deviation): called for the PLAYER ONLY - see the single call
-    /// site in <see cref="Update"/>'s <c>IsPlayer</c> branch. Every NPC's <see cref="Slope_18c"/> stays
-    /// the C# default 0. Reason: <see cref="Slope_18c"/> already has one live consumer,
+    /// RESTRICTION (E1 scope, documented deviation; E20.f6a widened it): called for the PLAYER (<see cref="RunHeroProbes"/>)
+    /// and, since E20.f6a (D-F6-2, Q-K1 option A), for the entities born during play (the marker
+    /// <see cref="HasLogicalZ"/>, the interface of the sprite index) in the statuses 2 and 3 - see
+    /// <see cref="TickMotion"/>. Every other NPC's, the ones the map places, <see cref="Slope_18c"/> stays
+    /// the C# default 0. Reason: <see cref="Slope_18c"/> has one live consumer besides the hero,
     /// <see cref="PickEventTrigger"/>'s <c>DestroyOnSlidingSlope</c> check (<c>Slope_18c == 4</c>, water) -
-    /// alimenting it for NPCs too could change their observable behaviour (and the intro trace). Map 389
-    /// carries no water cell, so nothing could actually trigger that branch today even without this
-    /// restriction, but the restriction is kept for this slice regardless, per the ticket.
+    /// alimenting it for the placed NPCs too would change the observable behaviour of 444 map instances
+    /// (14 local and 12 global sprites carry that flag; E19.h2 / Q-K1). The entities born during play that
+    /// carry the flag with the gravity are the fire and ice balls (E20.f6b) and nothing the game fathers today.
     ///
     /// No-op (<see cref="Slope_18c"/> forced to 0) without <see cref="EntityFlags.Gravity"/> set
     /// (PhysicsEngine.cs:1706's own gravity gate) or without an installed

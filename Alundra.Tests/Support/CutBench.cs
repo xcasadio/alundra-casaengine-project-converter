@@ -45,8 +45,8 @@ internal sealed class CutBench
         Entity = entity;
     }
 
-    /// <summary>One cell of the bench: its walkability byte, its height byte and the tiles of its stack of wall tiles (null: no stack).</summary>
-    public readonly record struct Cell(int Walkability, int Height, int[]? Stack = null);
+    /// <summary>One cell of the bench: its walkability byte, its height byte, the tiles of its stack of wall tiles (null: no stack) and its ground property (E20.f6a: 0x08 is deep water, 0x02 the slope 1; default 0).</summary>
+    public readonly record struct Cell(int Walkability, int Height, int[]? Stack = null, int GroundProperty = 0);
 
     /// <summary>
     /// A 52 x 60 map of the cells that <paramref name="cell"/> gives (default: all zero), the field and the store on the same records, a host with a sound recorder and a (bank-less) effect stage, and an entity with a frame box:
@@ -58,12 +58,14 @@ internal sealed class CutBench
         var walk = new int[count];
         var heights = new int[count];
         var offsets = new int[count];
+        var ground = new int[count];
         var stacks = new StringBuilder();
         for (var i = 0; i < count; i++)
         {
             var c = cell?.Invoke(i % Width, i / Width) ?? default;
             walk[i] = c.Walkability;
             heights[i] = c.Height;
+            ground[i] = c.GroundProperty;
             offsets[i] = c.Stack == null ? -1 : 2;
             if (c.Stack != null)
             {
@@ -75,7 +77,7 @@ internal sealed class CutBench
         var zeros = Col(new int[count]);
         var tileMapData = new TileMapData { MapSize = new CasaEngine.Core.Math.Size(Width, Height) };
         tileMapData.CustomProperties["AlundraCells"] =
-            "{\"map_index\":14,\"cell_count\":" + count + ",\"walkability\":" + Col(walk) + ",\"ground_property\":" + zeros + ",\"slope\":" + zeros + ",\"height\":" + Col(heights)
+            "{\"map_index\":14,\"cell_count\":" + count + ",\"walkability\":" + Col(walk) + ",\"ground_property\":" + Col(ground) + ",\"slope\":" + zeros + ",\"height\":" + Col(heights)
             + ",\"tile_id\":" + zeros + ",\"wall_tiles_offset\":" + Col(offsets) + ",\"wall_tiles\":{" + stacks + "}}";
         Assert.True(CellsCollisionField.TryCreate(tileMapData, "cut_bench", out var field, out var records));
         Assert.True(CellStore.TryCreate(records!, Width, Height, "cut_bench", out var store));
