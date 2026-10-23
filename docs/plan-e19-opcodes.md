@@ -4183,7 +4183,7 @@ restructuration. Preuves : `docs/plan-e19-d5b-annexe/` (rapport, critique indép
   la recette se fait sur l'ascenseur de la carte 22. D5b est à détailler sur cette base (M1 à M4 et le plafond des porteurs, étendus
   à tous les passagers), puis à relire.
 
-##### 1.2h.3.2b D5b — Tous les passagers suivent leur porteur (détaillée le 2026-10-22 ; révision 0 relue : REVISE ; révision 1 du 2026-10-22, **READY** à la deuxième relecture (`plan-verifier` frais) ; exécutable après E20.f6a, avant E20.g1a) ⏳
+##### 1.2h.3.2b D5b — Tous les passagers suivent leur porteur (détaillée le 2026-10-22 ; révision 0 relue : REVISE ; révision 1 du 2026-10-22, **READY** à la deuxième relecture (`plan-verifier` frais) ; exécutable après E20.f6a, avant E20.g1a ; **faite et CONFIRMED le 2026-10-24** par deux verifiers frais ; ADR-0088) ✅
 
 **Révision 1 (2026-10-22).** La relecture de la révision 0 a rendu REVISE sur trois points, corrigés ici :
 - M4 n'avait aucun témoin rouge : RIDE-M4 est ajouté (T1, T2, T8).
@@ -4275,6 +4275,11 @@ retomber (aujourd'hui il traverse et finit au fond du creux). La double force XY
   - Disposition : l'épingle est réépinglée à 15, et l'écart est nommé dans le test et dans les résultats de g5a. La règle de T5 reste
     celle du binaire ; le retard de remise de l'animation reste celui de D-E19-13. C'est la seule épingle existante autre qu'UH-14 qui
     bouge.
+- **D-D5B-12** (2026-10-24, écart de T8 tranché par la session principale) — Pour la mutation « plafond sans déplacer d'abord », le témoin
+  du gel est l'ensemble des passagers non héros qu'elle rend rouges, tous sur la condition même du gel (« tick 3: platform 0 ») : CRATE-A,
+  NPC-A, MARKED-B, PILE_Z-A, PILE_Z-B, PILE_XY-A, PREFAB-C et l'arc de pile. Le test du héros (le quai gelé) n'y rougit pas : dans tous les
+  montages, le héros joue avant sa plateforme et l'a déjà suivie quand elle cherche un plafond. Un témoin « héros après sa plateforme »
+  demanderait un montage que le dépôt n'a pas ; il n'est pas nécessaire au but.
 - **D-D5B-10** — Recette sur la carte 22 (D-E19-124) : préréglage `elevator-m22` (carte 22, case (46, 8), niveau 2), au sud du levier de
   droite ; il faut frapper le levier, descendre dans le creux, sauter sur la plateforme et attendre. Un départ déjà sur la plateforme est
   impossible : l'état du levier (drapeaux temporaires `T1`, `T3`) ne se sauvegarde pas.
@@ -4300,7 +4305,7 @@ un patch).
 
 ##### Tâches
 
-- ⏳ **T0 — Annexe et relecture au HEAD de départ** (commit de docs).
+- ✅ **T0 — Annexe et relecture au HEAD de départ** (commit de docs).
   - L'annexe `exec-2026-10-22/` est versée avec cette révision ; T0 y ajoute `state-T0.md`.
   - Relever par symbole, au HEAD de départ (après f6a, e0c et E20.e), chaque site des quatre écarts et du plafond. Les recopier avec
     leurs nouveaux numéros de ligne.
@@ -4309,7 +4314,7 @@ un patch).
   - Relever les préréglages existants de `TestSaves.cs` (`AllPresetNames`, `TestSavesTests.cs:74`, l'ordre `:90`), que d'autres tranches
     ont pu allonger.
   - Arrêt : un site introuvable, ou un écart déjà corrigé par une tranche antérieure.
-- ⏳ **T1 — Témoins rouges d'abord** (nouveaux fichiers ; aucune ligne de production).
+- ✅ **T1 — Témoins rouges d'abord** (nouveaux fichiers ; aucune ligne de production).
   - Aides de test :
     - `ContactHost` émule `PhysicsPassId` ;
     - son `Rebuild` calcule `RidingEntity` des non-héros, **héros exclu**. Le premier essai de la découverte, héros compris, a fait
@@ -4344,33 +4349,33 @@ un patch).
     gardes sont listées au §4 du rapport, dont `HeroObjectTopsTests` (UH-6, UH-10, UH-11, UH-15, UH-17, UH-18, SJ-12, SJ-13),
     `AbsoluteZWritesTests.cs:74-104`, les tests de support de `NpcCharacterControllerMoverTests.cs` et `TickStructureTests.cs` (A8).
   - Arrêt : un témoin vert au HEAD sans l'avoir prévu.
-- ⏳ **T2 — M4.**
+- ✅ **T2 — M4.**
   - `RunCountersPass` efface `RidingEntity`, et le commentaire périmé est corrigé.
   - Acceptation : RIDE-M4 passe au vert ; le reste de la suite est inchangé, A8 compris.
-- ⏳ **T3 — M1, la récursion, la règle d'entrée et M3 pour le héros** (D-D5B-2, -3, -5).
+- ✅ **T3 — M1, la récursion, la règle d'entrée et M3 pour le héros** (D-D5B-2, -3, -5).
   - Acceptation : UH-16 (montée) et E22 sont verts. L'arc A-D5b-22 a un écart nul de l'image 12 à l'image 76. UH-18 est inchangé.
-- ⏳ **T4 — M2 et le plafond des porteurs**, dans le même commit (D-D5B-1, -4), sur les quatre sites verticaux.
+- ✅ **T4 — M2 et le plafond des porteurs**, dans le même commit (D-D5B-1, -4), sur les quatre sites verticaux.
   - Acceptation : UH-16 (descente), DESC, UH-19 et le gel sont verts.
   - Arrêt : une plateforme immobile plus de 2 ticks alors que sa `ForceZ` est non nulle et qu'un passager la chevauche.
-- ⏳ **T5 — M5, le XY planifié pour le héros.**
+- ✅ **T5 — M5, le XY planifié pour le héros.**
   - `PeekAdjustedForce` remplace `LastTickDelta` dans la copie du porté.
   - Acceptation : UH-14 est réépinglé à `−tick × 65536`, valeur du binaire (D-E19-117, Q-D5B-2).
   - Arrêt : une autre épingle bouge.
-- ⏳ **T6 — Passagers non héros**, un commit par chemin : A le contrôleur, B les marqués, C les sans-contrôleur.
+- ✅ **T6 — Passagers non héros**, un commit par chemin : A le contrôleur, B les marqués, C les sans-contrôleur.
   - Pour chaque chemin : la copie de la force, un nouvel essai après le déplacement de la cible, le plafond, `IsOnGround` en passe de fin,
     et le XY transitif, une seule fois par porteur de la chaîne (D-D5B-7).
   - Acceptation par commit : T6A rend verts les témoins du chemin A, T6B ceux du chemin B, T6C PREFAB-C. Les témoins d'un chemin
     restent rouges tant que son commit n'est pas fait.
   - Le chemin C n'a pas été prototypé. Sans PREFAB-C (T0 ou T1), T6C n'écrit pas de code et s'arrête. D5b affirme alors la forme
     écrite plus haut, sans C, et O-E19-81 garde le chemin C (propriétaire : E19.h2).
-- ⏳ **T7 — Préréglage, arc et documentation.**
+- ✅ **T7 — Préréglage, arc et documentation.**
   - Le préréglage `elevator-m22` (`new Preset("elevator-m22", "test-elevator-m22", 22, 46, 8, 2, [], [], [], [])`), le test des noms, et
     `docs/test-saves.md`.
   - L'arc A-D5b-22 et l'arc de pile sont verts, et les comptes sont vérifiés.
   - Les commentaires périmés sont corrigés (`EntitySupport.cs:291-296`, `WorldProxy.cs:2994-2995`, `ScriptedMotion.cs:193-194`,
     `EntityScriptProxy.cs:279-281`, aux lignes du HEAD de départ).
   - L'ADR et son index ; la garde `python -B tools/dll-structure/check_names.py --rules` est verte.
-- ⏳ **T8 — Mutations et suites.**
+- ✅ **T8 — Mutations et suites.**
   - Une mutation par mécanisme, réelle, par script, chacune annulée après (jamais simulée dans un test). Chacune doit faire passer au rouge
     au moins le témoin indiqué :
     - copie de la force retirée du chemin du héros → UH-16 (montée) ; du chemin A → CRATE-A ; du chemin B → MARKED-B ; du chemin C →
@@ -4386,7 +4391,7 @@ un patch).
     - `LastTickDelta` remis → UH-14.
   - Suites : `Alundra.Tests` en Release avec la copie neutralisée, puis en Debug en dernier, zéro échec. Le `cmp` de la DLL. La garde des
     traces du héros (fins de ligne restaurées par `git checkout`, jamais indexées), et les traces identiques à l'octet.
-- ⏳ **T9 — Verifiers frais**, lancés par la session principale : un sur la tranche entière, un sur les mutations.
+- ✅ **T9 — Verifiers frais**, lancés par la session principale : un sur la tranche entière, un sur les mutations.
 
 ##### Acceptation
 - La liste rouge de T1 est rouge au HEAD de départ et verte à la fin, chaque témoin au vert par la tâche qui le porte. Les gardes
@@ -4414,6 +4419,30 @@ un patch).
 - **Budget** : un `executor` pour T0 et T1, un pour T2 à T5, un pour T6 et T7, un pour T8 ; deux tentatives chacun. Un `plan-verifier`
   avant ; deux verifiers frais après.
 - **Retour arrière** : chaque tâche se retire seule par `git revert`, en ordre inverse. T4 ne se retire pas sans T5 et T6, qui en dépendent.
+
+Decisions: see ADR-0088.
+
+**Résultats (2026-10-24).** Exécution en mode AUTO, HEAD de départ `a24273b3`. Mesures : `docs/plan-e19-d5b-annexe/exec-2026-10-22/exec/`
+(`state-T0.md`, `results.md`).
+- **Commits.** `e9618ebe` (T0) ; `9a8c4972` (T1 : 26 témoins rouges, chacun sur son mécanisme ; le témoin négatif de l'impulsion vert) ;
+  `d8f74a2b` (T2, M4) ; `9ea685ba` (T3) ; `7804daa0` (T4) ; arrêt de T5 tranché par D-D5B-11 (`f293ca1f`) ; `04d31aa8` (T5) ; `925c9eb8`,
+  `bdadbeef`, `6ba6c02b` (T6, chemins A, B et C : PREFAB-C est vert, la forme avec C tient, O-E19-81 ne s'ouvre pas) ; `567d8080` (T7 : le
+  préréglage `elevator-m22`, `docs/test-saves.md`, ADR-0088) ; `7bc43e75` (T8).
+- **T0.** Les sites des quatre écarts et du plafond relus par symbole, aucun absent, aucun déjà corrigé ; `vec_d5b.py` rejoué, égal à sa
+  sortie ; PREFAB-C : l'armure brisée I33, sans contrôleur.
+- **Tests.** La liste rouge de T1 est verte à la fin, chaque témoin par sa tâche. Les seuls tests existants qui bougent sont UH-14
+  (réépinglé à −tick × 65536, valeur du binaire) et `PillarAiPitWorldTests.W6_PushedEast` (16 → 15, D-D5B-11). Le test d'ordre de
+  `TestSavesTests` reçoit le treizième préréglage et un nom neuf (T7). 15 mutations réelles, chacune rend rouge son témoin, avec la lecture de
+  D-D5B-12 pour le gel. `Alundra.Tests` : 5 627 au départ, 5 662 à la fin (compte de `--list-tests`), zéro échec en Release (copie
+  neutralisée) et en Debug, en partitions disjointes ; `cmp` de la DLL identique ; les quatre traces du héros et la trace d'intro identiques ;
+  le moteur, le convertisseur et les données sans diff ; `check_names.py --rules` vert.
+- **L'ascenseur de la carte 22** (l'arc A-D5b-22) : l'écart pied du héros − dessus de la plateforme est nul à chaque image de la montée.
+- **Verifiers frais** (la tranche, avec sept mutations rejouées ; les épingles, avec la cause de D-D5B-11 relue sur la trace de la machine) :
+  **CONFIRMED** tous deux.
+- **Non vérifié en jeu** : les coffres de la carte 344 et la pierre de la carte 444 qui suivent leur plateforme (attendu d'après le
+  recensement).
+- **Recette de l'auteur, à faire** (D-D5B-10, D-E19-126) : `elevator-m22`, au sud du levier de droite de la carte 22 : frapper le levier,
+  descendre dans le creux, sauter sur la plateforme, attendre : Alundra monte avec elle.
 
 ### 1.2i E19.e — La chaîne du jour 3 et du jour 4 prouvée, et un test statique des opcodes sautés ✅ (E0 à E5 faites et CONFIRMED le 2026-10-03 ; recette E6 : point 1 (livre de la 163) validé le 2026-10-06, jours 3 et 4 non atteints (recette du 2026-10-06, §1.2x))
 
