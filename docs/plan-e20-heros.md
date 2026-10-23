@@ -7525,7 +7525,7 @@ frais après.
 **Retour arrière.** `git revert` du commit de code : les trois opcodes redeviennent sautés par leur taille.
 
 
-##### E20.g5d — Les objets à pousser scriptés : statues, blocs, boutons (tests seuls) ⏳ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, à relire par un `plan-verifier` frais)
+##### E20.g5d — Les objets à pousser scriptés : statues, blocs, boutons (tests seuls) ⏳ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, **READY** à la deuxième relecture, `plan-verifier` frais ; exécutable après E20.g5b)
 
 **Révision 1 (2026-10-23).** La relecture de la révision 0 (REVISE) a relevé deux points, corrigés ici.
 - Le but annonçait le bloc de la carte 40, que g5d ne teste pas : il est retiré, car g5b le prouve (T3, ARC-40).
