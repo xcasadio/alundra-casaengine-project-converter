@@ -235,15 +235,15 @@ public sealed class ArrowAiTests
         withTarget.Run();
         Assert.True(withTarget.Destroyed);
 
-        // E20.f5 (e2b): the hero is in the list like any entity (its flags 0x3118C hold none of the classes of the mask 1): it is not found; with the class A posed by the test it is, as the target of (e1).
+        // E20.f5 (e2b): the hero is in the list like any entity (its flags 0x3118C hold none of the classes of the mask 1): it is not found; with the class A posed by the test it is, as the target of (e1): the hero is not excluded as such (marked IsPlayer in both scenes, T4 mutant A07).
         var heroless = new Scene();
-        heroless.Target(t => t.Flags = 0x3118C);
+        heroless.Target(t => { t.Flags = 0x3118C; t.IsPlayer = true; });
         heroless.Run();
         Assert.Empty(heroless.Host.Destroyed);
         Assert.Equal(EntityStatus.Normal, heroless.Arrow.Status);
 
         var classA = new Scene();
-        classA.Target(t => t.Flags = 0x3118C | 1);
+        classA.Target(t => { t.Flags = 0x3118C | 1; t.IsPlayer = true; });
         classA.Run();
         Assert.True(classA.Destroyed);
     }

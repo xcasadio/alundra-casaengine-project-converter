@@ -1,0 +1,199 @@
+A01 DamagedTickCounter filter removed: KILLED summary=[('3', '216')] (names not captured, first run)
+   diff after revert: ''
+A02 HitAnimByte 0x40 filter removed: KILLED summary=[('2', '217')] (names not captured, first run)
+   diff after revert: ''
+A03 class mask filter removed: KILLED summary=[('3', '216')] nfail=0
+   diff after revert: ''
+A04 type 429 filter removed: KILLED summary=[('2', '217')] nfail=0
+   diff after revert: ''
+A05 type 429 changed (0x1AC): KILLED summary=[('2', '217')] nfail=0
+   diff after revert: ''
+A06 self filter removed: KILLED summary=[('1', '218')] nfail=1
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheArrowItselfIsSkipped_NextToAValidTargetFound_AndTheHeroIsOneOfTheEntitiesWithItsOwnClasses
+   diff after revert: ''
+A07 hero excluded from the sweep: SURVIVED summary=[('0', '219')] nfail=0
+   diff after revert: ''
+A08 sweep stops one slot early: KILLED summary=[('20', '199')] nfail=20
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_ATouchWithAValidTarget_DestroysTheArrowWithTheHeadersBreakEffect_NothingElseLives_WithoutAValidTargetTheArrowGoesBackToNormalAndFliesOn
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 0, expected: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 16, expected: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 24, expected: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 8, expected: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "DamagedTickCounter != 0 (+0x1CC)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "HitAnimByte & 0x40 (+0xB4)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "no class of the arrow's mask (+0x6C)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "type 429 (the balloon switch)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheArrowItselfIsSkipped_NextToAValidTargetFound_AndTheHeroIsOneOfTheEntitiesWithItsOwnClasses
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheOverlapIsInclusive_OnEachAxis_AtTheContactOfTheHighSideAndOfTheLowSide_AndMissedByOneRawUnitMore(axis: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheOverlapIsInclusive_OnEachAxis_AtTheContactOfTheHighSideAndOfTheLowSide_AndMissedByOneRawUnitMore(axis: 1)
+   diff after revert: ''
+A07 hero excluded from the sweep: KILLED summary=[('1', '218')] nfail=1
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheArrowItselfIsSkipped_NextToAValidTargetFound_AndTheHeroIsOneOfTheEntitiesWithItsOwnClasses
+   diff after revert: ''
+A09 status filter added (FlagToDestroy skipped): KILLED summary=[('2', '217')] nfail=2
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E3_NoFilterOfStatus_ATargetInAnyStatusStillInTheWorldIsFound(status: FlagToDestroy)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_ATargetInALowerSlotThanItsArrowIsFoundToo_AndTheDOfTheTargetStillReadsTheArrow_ATargetDestroyedInTheSameTourIsStillFound
+   diff after revert: ''
+A10 overlap exclusive on X: KILLED summary=[('1', '218')] nfail=1
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheOverlapIsInclusive_OnEachAxis_AtTheContactOfTheHighSideAndOfTheLowSide_AndMissedByOneRawUnitMore(axis: 0)
+   diff after revert: ''
+A11 overlap exclusive on Z (vertical reach): KILLED summary=[('1', '218')] nfail=1
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheOverlapIsInclusive_OnEachAxis_AtTheContactOfTheHighSideAndOfTheLowSide_AndMissedByOneRawUnitMore(axis: 2)
+   diff after revert: ''
+A12 bounce direction +8: KILLED summary=[('28', '191')] nfail=28
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 0, expected: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 16, expected: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 24, expected: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 8, expected: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_north", item: 5, wall: "", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_west", item: 5, wall: "", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge", item: 5, wall: "", heroX: 1150, heroY: 100, direction: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge_south", item: 5, wall: "", heroX: 100, heroY: 900, direction: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_north", item: 5, wall: "row2", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_south", item: 5, wall: "row12", heroX: 100, heroY: 100, direction: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_west", item: 5, wall: "col2", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_free_north", item: 5, wall: "", heroX: 100, heroY: 100, direction: 16)
+   diff after revert: ''
+A13 gravity bit forgotten: KILLED summary=[('28', '191')] nfail=28
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 0, expected: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 16, expected: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 24, expected: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 8, expected: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_north", item: 5, wall: "", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_west", item: 5, wall: "", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge", item: 5, wall: "", heroX: 1150, heroY: 100, direction: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge_south", item: 5, wall: "", heroX: 100, heroY: 900, direction: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_north", item: 5, wall: "row2", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_south", item: 5, wall: "row12", heroX: 100, heroY: 100, direction: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_west", item: 5, wall: "col2", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_free_north", item: 5, wall: "", heroX: 100, heroY: 100, direction: 16)
+   diff after revert: ''
+A14 bounce phase not recognised: KILLED summary=[('25', '194')] nfail=25
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E4_InThePhaseOfTheBounce_WithoutTheEndOfTheAnimationNothingHappens_WithItTheArrowIsDestroyed_NoSearchEvenWithATouch
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_north", item: 5, wall: "", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_west", item: 5, wall: "", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge", item: 5, wall: "", heroX: 1150, heroY: 100, direction: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge_south", item: 5, wall: "", heroX: 100, heroY: 900, direction: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_north", item: 5, wall: "row2", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_south", item: 5, wall: "row12", heroX: 100, heroY: 100, direction: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_west", item: 5, wall: "col2", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_free_north", item: 5, wall: "", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_free_west", item: 5, wall: "", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_map_edge", item: 5, wall: "", heroX: 1150, heroY: 100, direction: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_map_edge_south", item: 5, wall: "", heroX: 100, heroY: 900, direction: 0)
+   diff after revert: ''
+A15 end without the animation-end flag: KILLED summary=[('25', '194')] nfail=25
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E4_InThePhaseOfTheBounce_WithoutTheEndOfTheAnimationNothingHappens_WithItTheArrowIsDestroyed_NoSearchEvenWithATouch
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_north", item: 5, wall: "", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_west", item: 5, wall: "", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge", item: 5, wall: "", heroX: 1150, heroY: 100, direction: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge_south", item: 5, wall: "", heroX: 100, heroY: 900, direction: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_north", item: 5, wall: "row2", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_south", item: 5, wall: "row12", heroX: 100, heroY: 100, direction: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_west", item: 5, wall: "col2", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_free_north", item: 5, wall: "", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_free_west", item: 5, wall: "", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_map_edge", item: 5, wall: "", heroX: 1150, heroY: 100, direction: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_map_edge_south", item: 5, wall: "", heroX: 100, heroY: 900, direction: 0)
+   diff after revert: ''
+A16 status 3 at the fallback: KILLED summary=[('12', '207')] nfail=12
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_ATouchWithAValidTarget_DestroysTheArrowWithTheHeadersBreakEffect_NothingElseLives_WithoutAValidTargetTheArrowGoesBackToNormalAndFliesOn
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "DamagedTickCounter != 0 (+0x1CC)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "HitAnimByte & 0x40 (+0xB4)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "no class of the arrow's mask (+0x6C)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "type 429 (the balloon switch)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheArrowItselfIsSkipped_NextToAValidTargetFound_AndTheHeroIsOneOfTheEntitiesWithItsOwnClasses
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheOverlapIsInclusive_OnEachAxis_AtTheContactOfTheHighSideAndOfTheLowSide_AndMissedByOneRawUnitMore(axis: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheOverlapIsInclusive_OnEachAxis_AtTheContactOfTheHighSideAndOfTheLowSide_AndMissedByOneRawUnitMore(axis: 1)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheOverlapIsInclusive_OnEachAxis_AtTheContactOfTheHighSideAndOfTheLowSide_AndMissedByOneRawUnitMore(axis: 2)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E3_ATargetInTheLastSlotIsFound_ASlotNoLongerInTheWorldIsNot_TheSearchStopsAtNothingBefore
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_ATargetMadeInvulnerableAfterTheTouch_IsNotFound_TheArrowGoesBackToTheStatus2AndFliesOn_TheSameArrowWithoutTheChangeDies
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheBalloonSwitch_Type0x1AD_IsTouchedOnce_ButNeverFound_TheArrowFliesThrough_TheSameTargetOfAnotherTypeKillsIt
+   diff after revert: ''
+A17 destruction with an effect (touch): KILLED summary=[('20', '199')] nfail=20
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_ATouchWithAValidTarget_DestroysTheArrowWithTheHeadersBreakEffect_NothingElseLives_WithoutAValidTargetTheArrowGoesBackToNormalAndFliesOn
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 0, expected: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 16, expected: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 24, expected: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 8, expected: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "DamagedTickCounter != 0 (+0x1CC)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "HitAnimByte & 0x40 (+0xB4)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "no class of the arrow's mask (+0x6C)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "type 429 (the balloon switch)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheArrowItselfIsSkipped_NextToAValidTargetFound_AndTheHeroIsOneOfTheEntitiesWithItsOwnClasses
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheOverlapIsInclusive_OnEachAxis_AtTheContactOfTheHighSideAndOfTheLowSide_AndMissedByOneRawUnitMore(axis: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheOverlapIsInclusive_OnEachAxis_AtTheContactOfTheHighSideAndOfTheLowSide_AndMissedByOneRawUnitMore(axis: 1)
+   diff after revert: ''
+A18 destruction with an effect (end of the bounce): KILLED summary=[('7', '212')] nfail=7
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E4_InThePhaseOfTheBounce_WithoutTheEndOfTheAnimationNothingHappens_WithItTheArrowIsDestroyed_NoSearchEvenWithATouch
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheWholeLifeAgainstTheWall_FromSToSPlus61_EqualsTheKey_TheBounceAndTheSeriesOfXToo_WhateverTheGrouping(item: 5, name: "arrow3_east_wall", ticksPerFrame: 1)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheWholeLifeAgainstTheWall_FromSToSPlus61_EqualsTheKey_TheBounceAndTheSeriesOfXToo_WhateverTheGrouping(item: 5, name: "arrow3_east_wall", ticksPerFrame: 2)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheWholeLifeAgainstTheWall_FromSToSPlus61_EqualsTheKey_TheBounceAndTheSeriesOfXToo_WhateverTheGrouping(item: 5, name: "arrow3_east_wall", ticksPerFrame: 3)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheWholeLifeAgainstTheWall_FromSToSPlus61_EqualsTheKey_TheBounceAndTheSeriesOfXToo_WhateverTheGrouping(item: 6, name: "arrow4_east_wall", ticksPerFrame: 1)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheWholeLifeAgainstTheWall_FromSToSPlus61_EqualsTheKey_TheBounceAndTheSeriesOfXToo_WhateverTheGrouping(item: 6, name: "arrow4_east_wall", ticksPerFrame: 2)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheWholeLifeAgainstTheWall_FromSToSPlus61_EqualsTheKey_TheBounceAndTheSeriesOfXToo_WhateverTheGrouping(item: 6, name: "arrow4_east_wall", ticksPerFrame: 3)
+   diff after revert: ''
+A19 bounce on a hit (HitCounter test inverted): KILLED summary=[('51', '168')] nfail=51
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_ATouchWithAValidTarget_DestroysTheArrowWithTheHeadersBreakEffect_NothingElseLives_WithoutAValidTargetTheArrowGoesBackToNormalAndFliesOn
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 0, expected: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 16, expected: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 24, expected: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E1_WithoutATouch_TheArrowBounces_TheAnimation1_TheDirectionHalfATurnOn_TheFlags0x12144_TheStatusStays3_NothingIsDestroyed_AWitnessTouchedTheSameTickDies(direction: 8, expected: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "DamagedTickCounter != 0 (+0x1CC)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "HitAnimByte & 0x40 (+0xB4)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "no class of the arrow's mask (+0x6C)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_EachFilterSkipsItsTarget_TheSameTargetWithoutTheMarkIsFound(filter: "type 429 (the balloon switch)")
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheArrowItselfIsSkipped_NextToAValidTargetFound_AndTheHeroIsOneOfTheEntitiesWithItsOwnClasses
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheOverlapIsInclusive_OnEachAxis_AtTheContactOfTheHighSideAndOfTheLowSide_AndMissedByOneRawUnitMore(axis: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E2_TheOverlapIsInclusive_OnEachAxis_AtTheContactOfTheHighSideAndOfTheLowSide_AndMissedByOneRawUnitMore(axis: 1)
+   diff after revert: ''
+B01 speed key on the current animation: KILLED summary=[('24', '195')] nfail=24
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_north", item: 5, wall: "", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_west", item: 5, wall: "", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge", item: 5, wall: "", heroX: 1150, heroY: 100, direction: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge_south", item: 5, wall: "", heroX: 100, heroY: 900, direction: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_north", item: 5, wall: "row2", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_south", item: 5, wall: "row12", heroX: 100, heroY: 100, direction: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_wall_west", item: 5, wall: "col2", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_free_north", item: 5, wall: "", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_free_west", item: 5, wall: "", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_map_edge", item: 5, wall: "", heroX: 1150, heroY: 100, direction: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_map_edge_south", item: 5, wall: "", heroX: 100, heroY: 900, direction: 0)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtThreeTicksPerFrame(name: "arrow3_wall_north", item: 5, wall: "row2", heroX: 100, heroY: 100, direction: 16)
+   diff after revert: ''
+B02 E17 registered for 7: KILLED summary=[('1', '218')] nfail=1
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E5_TheProductionRegistryHoldsTheKeyE17ForTheTypes3To6_NotForTheTypes7And11_AndTheKeysOfTheClassAreTheOnlyOnesItAdds
+   diff after revert: ''
+B03 E17 not registered: KILLED summary=[('37', '182')] nfail=37
+     Alundra.Tests.Ai.NativeSpriteRegistryTests.ProductionRunner_RegistryHoldsTheHandlersOfTheBeannoidTheMurutaTheSwordWaveAndThePickupObjects_AndTheSwitchIsOn
+     Alundra.Tests.Ai.Projectiles.ArrowAiTests.E5_TheProductionRegistryHoldsTheKeyE17ForTheTypes3To6_NotForTheTypes7And11_AndTheKeysOfTheClassAreTheOnlyOnesItAdds
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_AHighTarget_IsTouchedOnceAtSPlus30_ThreeSparksNineDraws_TheArrowDiesAtSPlus31_TheSlotIsFreeAtSPlus32_TheSameArrowWithoutTargetTouchesNothing(item: 5, name: "arrow3_target")
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_AHighTarget_IsTouchedOnceAtSPlus30_ThreeSparksNineDraws_TheArrowDiesAtSPlus31_TheSlotIsFreeAtSPlus32_TheSameArrowWithoutTargetTouchesNothing(item: 6, name: "arrow4_target")
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_ATargetInALowerSlotThanItsArrowIsFoundToo_AndTheDOfTheTargetStillReadsTheArrow_ATargetDestroyedInTheSameTourIsStillFound
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_ATargetMadeInvulnerableAfterTheTouch_IsNotFound_TheArrowGoesBackToTheStatus2AndFliesOn_TheSameArrowWithoutTheChangeDies
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheBalloonSwitch_Type0x1AD_IsTouchedOnce_ButNeverFound_TheArrowFliesThrough_TheSameTargetOfAnotherTypeKillsIt
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheFlagOfTheWall_ComesOneTickAfterTheArrival_OnTheTwelveStarts_TheKeyEqualsItFor8StartsAndIsOneTickLaterFor4_TheArrowBouncesTheTickAfterTheFlag
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_north", item: 5, wall: "", heroX: 100, heroY: 100, direction: 16)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_free_west", item: 5, wall: "", heroX: 100, heroY: 100, direction: 8)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge", item: 5, wall: "", heroX: 1150, heroY: 100, direction: 24)
+     Alundra.Tests.Ai.Projectiles.ArrowLifeTests.E7_TheOtherWallsAndTheEdgesOfTheMap_EqualTheKey_AtOneTickPerFrame(name: "arrow3_map_edge_south", item: 5, wall: "", heroX: 100, heroY: 900, direction: 0)
+   diff after revert: ''
+B04 set contains 5: KILLED summary=[('1', '218')] nfail=1
+     Alundra.Tests.Hero.WeaponSpawnSeamTests.S5_TheProductionSetPassesTheInvariant_TheArrowFailsOnE17InARegistryWithoutIt_AndPassesInTheProductionRegistry
+   diff after revert: ''
+B05 set without 3 and 4 (removal proof): KILLED summary=[('5', '214')] nfail=5
+     Alundra.Tests.Ai.Projectiles.ArrowProductionTests.P1_TheNormalShotBirthsTheArrowAtS_DaughterOfTheHeroAtTheLowestFreeSlot_ItsLifeEqualsTheKey_IfAndOnlyIfTheProductionSetHoldsItsType(item: 5, type: 3, name: "arrow3_east_wall")
+     Alundra.Tests.Ai.Projectiles.ArrowProductionTests.P1_TheNormalShotBirthsTheArrowAtS_DaughterOfTheHeroAtTheLowestFreeSlot_ItsLifeEqualsTheKey_IfAndOnlyIfTheProductionSetHoldsItsType(item: 6, type: 4, name: "arrow4_east_wall")
+     Alundra.Tests.Ai.Projectiles.ArrowProductionTests.P2_WithNoFreeSlotTheShotOfTheArrowCreatesNothing_WithExactlyOneFreeSlotItCreatesOneArrow(item: 5, type: 3)
+     Alundra.Tests.Ai.Projectiles.ArrowProductionTests.P2_WithNoFreeSlotTheShotOfTheArrowCreatesNothing_WithExactlyOneFreeSlotItCreatesOneArrow(item: 6, type: 4)
+     Alundra.Tests.Hero.WeaponSpawnSeamTests.S5_TheProductionSetPassesTheInvariant_TheArrowFailsOnE17InARegistryWithoutIt_AndPassesInTheProductionRegistry
+   diff after revert: ''
+B06 set without 4: KILLED summary=[('3', '216')] nfail=3
+     Alundra.Tests.Ai.Projectiles.ArrowProductionTests.P1_TheNormalShotBirthsTheArrowAtS_DaughterOfTheHeroAtTheLowestFreeSlot_ItsLifeEqualsTheKey_IfAndOnlyIfTheProductionSetHoldsItsType(item: 6, type: 4, name: "arrow4_east_wall")
+     Alundra.Tests.Ai.Projectiles.ArrowProductionTests.P2_WithNoFreeSlotTheShotOfTheArrowCreatesNothing_WithExactlyOneFreeSlotItCreatesOneArrow(item: 6, type: 4)
+     Alundra.Tests.Hero.WeaponSpawnSeamTests.S5_TheProductionSetPassesTheInvariant_TheArrowFailsOnE17InARegistryWithoutIt_AndPassesInTheProductionRegistry
+   diff after revert: ''
+E01 Resync removed (equivalent expected): SURVIVED summary=[('0', '219')] nfail=0
+   diff after revert: ''
+E02 Resync called twice (equivalent expected): SURVIVED summary=[('0', '219')] nfail=0
+   diff after revert: ''
