@@ -66,6 +66,24 @@ internal static class AnnexFiles
         throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/e20-g5/disc/{relative}' found above '{AppContext.BaseDirectory}'.");
     }
 
+    /// <summary>E20.g5b T1: a file of the annex <c>docs/plan-e20-annexe/e20-g5/g5b/</c> (the value vectors of the opcodes 0x72, 0xA9 and 0xAA taken from the annexes of E19.sm3 and E19.sm4), found above the test binaries.</summary>
+    public static string ButtonAnnex(string relative)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "docs/plan-e20-annexe/e20-g5/g5b", relative);
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/e20-g5/g5b/{relative}' found above '{AppContext.BaseDirectory}'.");
+    }
+
     /// <summary>The parsed vector file; the caller disposes it.</summary>
     public static JsonDocument ReadVector(string name) => JsonDocument.Parse(File.ReadAllText(Vector(name)));
 }

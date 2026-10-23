@@ -76,3 +76,45 @@ The 14 environment failures of the copy: `MusicPlayerTests` x2, `WarpDepartureTe
 ### Scratch outputs kept here
 
 `t0-cases/` (the four case files written in T0), `t0-out/` (the text output of each case; the traces only for `h424_east_L` and `h424_south2_U`).
+
+## T1 - the red tests, the real-bytes theory, the arcs
+
+Seven new files and one edit, in the mirror folder `Alundra.Tests/Events/` (ADR-0080; the plan's "Arcs/" is the folder of the 26 end-to-end scenarios only, and a file that drives `ArcRun` inside a domain stays in
+that domain, as `HeightTargetSitesTests` does):
+
+| file | content |
+|---|---|
+| `OpcodeWorld.cs` | the bare runner world (M1 of E19.sm3, R-SM-4): the hero first in `SpawnedEntities` and `PlayerEntity`, `IsPlayer`, `EntityRefId` -1; every proxy with its own non-null `LogicContextEntity`; `Result` 7 before; the program is the instruction then `0xFF` |
+| `ContactVectors.cs` | the loader of the 202 `0xA9`/`0xAA` vectors (SHA-256 pinned), the world of a vector, `Check(id, expected)` |
+| `ContactGroupOpcodesTests.cs` | U-A9-01 to 14 and U-AA-01 to 11 (named as in `sm3/tests.tsv`, the three `[Theory]` kept), U-A9-15 and U-AA-12 (the sm3 critic C2, in prose in the plan), U-ALL-01 reduced to A9-01 and AA-01, U-ALL-02, U-ALL-03 reduced to `A9 81` and `AA 81`, and the replay of the 103 vectors of `0xA9` and the 99 of `0xAA` |
+| `LastTargetOpcodeTests.cs` | U72-1 to 6 (`sm4/report.md` 3.2; U72-6 through `RunScript` C, F, C), the new test of the size (the next instruction `1A 09` is reached, `Result` intact, the trace implemented), and the replay of the 67 vectors of `0x72` |
+| `ButtonAndBlockOpcodesRealBytesTests.cs` | the theory on the real bytes: the 46 sites (20 `0x72`, 22 `0xAA`, 4 `0xA9`; bytes checked in the exported map at the pc, then run on a world deduced from the shape), and the guard of the counts that also asks the real runner (the oracle `IsPorted`) for the three opcodes |
+| `ScriptedPushRun.cs` | the world of the arcs (`ArcRun`, real controller and prefabs, the discovery probe's set-up and numbering) |
+| `ButtonAndBlockSitesTests.cs` | the arcs of T3, written now: the map 40 (north, east, south; the 12 instants of contact), the map 426 (the full push of the right button, the interrupted push and the wrong side, the second button with and without the flag of the first), the map 424 (S3-A1b and the south) |
+| `Alundra.Tests/Support/AnnexFiles.cs` | `ButtonAnnex(relative)`, which finds `docs/plan-e20-annexe/e20-g5/g5b/` above the test binaries |
+
+Annex: `vectors/` (the two vector files, `vectors/README.md`), `t1-red-names.txt` (the 112 red rows).
+
+**Checked before they were committed.** (1) With the discovery's prototype installed in the copy of T0 the 95 unit and real-bytes tests and the 17 arc rows are all green: the expected values are right. (2) On the
+real tree at the start HEAD (Release, the neutralised copy, `--filter` on the four classes): **112 tests, 112 red, 0 green**; every failure is a value mismatch (`Assert.Equal` 107, `Assert.True` 2, two messages of the
+replays), none is an exception of the harness. The arcs take their numbers from the DLL with the prototype (D-G5B-5): see the doc comments of each test. `python -B tools/dll-structure/check_names.py --rules`:
+215 DLL files, 465 test files, 0 finding, the same 1 warning.
+
+**The "no effect" cases are never alone.** Each `Result`-0 vector starts from 7 (neither 0 nor 1), so it is red; each arc holds a positive effect beside its negative one (the map 40 south beside north and east, the
+interrupted push and the wrong side beside the push that works, the second button without the flag beside the one with it, the map 424 whose counter of 40 never completes at the start HEAD).
+
+### Red before, green after
+
+| test (class) | rows | red before | green after |
+|---|---|---|---|
+| `ContactGroupOpcodesTests` (U-A9, U-AA, U-ALL, the two replays) | 40 | 40 | at T2 |
+| `LastTargetOpcodeTests` (U72-1 to 6, size, replay) | 8 | 8 | at T2 |
+| `ButtonAndBlockOpcodesRealBytesTests` (1 guard, 46 sites) | 47 | 47 | at T2 |
+| `ButtonAndBlockSitesTests` (arcs of T3: the map 40 x1, its 12 phases, the map 426 x3, the map 424 x1) | 17 | 17 | at T2 (the arcs run on the same code) |
+
+(The rows are those of `t1-red-names.txt`; the arcs of the map 40 phases are 12 rows of one theory.)
+
+### What T0 settled for the arcs of E19.sm3
+
+S3-A1b (the east push of the 424) is in. S3-A1 (the west push of the 424) and S3-A2 (the 421) are not: the geometry was not found (T0), so they stay optional (R-SM-6). S3-A3a, A3b and A7 (the map 440) were out of
+T0's search; none is written (the plan: "sinon rien").
