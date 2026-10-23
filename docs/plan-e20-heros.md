@@ -7382,12 +7382,26 @@ après.
 **Retour arrière.** La phase B se retire seule (l'inscription) ; la phase A n'a aucun appelant de production.
 
 
-##### E20.g5b — Les opcodes des boutons et des blocs scriptés : `0x72`, `0xA9`, `0xAA`, prélevés sur E19.sm3 et E19.sm4 ⏳ (détaillée le 2026-10-23, révision 0 ; à relire par un `plan-verifier` frais)
+##### E20.g5b — Les opcodes des boutons et des blocs scriptés : `0x72`, `0xA9`, `0xAA`, prélevés sur E19.sm3 et E19.sm4 ⏳ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, à relire par un `plan-verifier` frais)
+
+**Révision 1 (2026-10-23).** La relecture de la révision 0 (REVISE) a relevé trois points, corrigés ici.
+- Le prélèvement change les comptes de sm0 : c'est désormais dit, et l'en-tête de sm0 l'annonce.
+- T1 ne reprend que des cas qui portent sur les trois opcodes, chacun avec sa source.
+- La tranche a un « But » et des « Prérequis ».
 
 **Provenance.** Lecture au binaire du 2026-10-23 (HEAD `e49cce2b`, sans changement de code jusqu'à `2eff6b46` ; annexe
 `docs/plan-e20-annexe/e20-g5/g5b-disc/`, `report.md`). Les tranches du thème 3 qui portaient déjà ces opcodes, avec leurs preuves :
 E19.sm3 (§1.4.4 du plan d'E19, `0xA9` et `0xAA`, annexe `docs/plan-e19-sm-annexe/sm3/`) et E19.sm4 (§1.4.5, `0x72`, annexe
 `docs/plan-e19-sm-annexe/sm4/`), toutes deux READY puis marquées « à réviser » le 2026-10-22 pour d'autres opcodes.
+
+**But.** Comme le binaire : `0x72` recopie la cible d'animation et de direction de l'entité logique dans ses champs « derniers » ;
+`0xA9` et `0xAA` rendent dans `Result` les prédicats de collision avec un groupe d'entités. En jeu, un bloc du repaire de Nirude
+(carte 40) touché glisse vers le sud. Un bouton de Torla (carte 426) poussé 40 ticks du côté nord glisse de 80 px et pose son drapeau,
+puis le pont se construit.
+
+**Prérequis.** Le HEAD de départ vient après E20.g5a, qui ne touche ni le runner ni la table des tailles. L'ordre est e0c2, g5a, g5b,
+puis g5d. Les tranches du thème 3 sur le runner (sm1 à sm4, et sm0) ne commencent pas avant la fin du thème 1. g5b tient donc seule
+`EventProgramRunner.cs` et `EventOpcodeSizeTable.cs` pendant son exécution ; voir les « Arrêts ».
 
 **Faits** (FAIT, MESURÉ ; la lecture du 2026-10-23 confirme les règles R1 et R2 de sm3 et le corps de `0x72` de sm4).
 - **Les gestionnaires** (table `0x80098FAC + 4 × opcode`) :
@@ -7422,12 +7436,16 @@ E19.sm3 (§1.4.4 du plan d'E19, `0xA9` et `0xAA`, annexe `docs/plan-e19-sm-annex
   consécutifs » ; les blocs Mini-Nilude sont aussi clients de `0xAA` ; `0x72` compte 20 sites atteignables.
 
 **Décisions de la session.**
-- **D-G5B-1** (Q-G5B-1) — g5b prélève `0xA9` et `0xAA` sur E19.sm3 et `0x72` sur E19.sm4, en reprenant leurs annexes, leurs tests et leurs
-  mutants tels quels. sm3 et sm4 sont déjà « à réviser » et sm0 n'est pas exécutée : le prélèvement ne casse rien. Leurs révisions (thème 3)
-  retireront ces opcodes et recalculeront leurs comptes (R-SM-2) ; ce plan l'écrit dans leurs en-têtes.
-- **D-G5B-2** — R-SM-1 ne s'applique pas à g5b : sa liste du corpus et `ClosedOwners` appartiennent à sm0, non exécutée. g5b ne touche ni
-  sm0 ni son test ; le test statique de la chaîne (`StoryChainSkippedOpcodesTests`) dérive son oracle du vrai runner et reste inchangé
-  (aucun site sur la chaîne).
+- **D-G5B-1** (Q-G5B-1) — g5b prélève `0xA9` et `0xAA` sur E19.sm3 et `0x72` sur E19.sm4. Elle reprend leurs annexes, leurs vecteurs,
+  leurs mutants et ceux de leurs tests qui portent sur ces trois opcodes seuls (T1).
+  - Le prélèvement change trois tranches du thème 3. sm3 et sm4 étaient déjà « à réviser ». sm0 est READY mais non exécutée.
+  - Environ 48 lignes du corpus des opcodes sautés sortent de la liste : 28 de sm3 (`0xAA` 24, `0xA9` 4), 20 de sm4 (`0x72`).
+  - Leurs révisions, au thème 3, recalculeront depuis le HEAD de leur départ les 510 lignes de sm0, les comptes par propriétaire (règle 5,
+    R-SM-2) et l'arrêt de sm0 « le parcours C# ne redonne pas exactement les 510 lignes ».
+  - Ce plan l'écrit dans les en-têtes de sm0, de sm3 et de sm4.
+- **D-G5B-2** — R-SM-1 ne s'applique pas à g5b : sa liste du corpus et `ClosedOwners` appartiennent à sm0, non exécutée. g5b n'écrit ni le
+  code ni le test de sm0, mais sm0 change (D-G5B-1) : son en-tête passe « à réviser ». Le test statique de la chaîne
+  (`StoryChainSkippedOpcodesTests`, `:30`) dérive son oracle `IsPorted` du vrai runner ; sans site sur la chaîne, il reste inchangé.
 - **D-G5B-3** (Q-G5B-2) — `0xA9` va avec `0xAA` : même gestionnaire à la comparaison près, même recherche, même montage de test.
 - **D-G5B-4** — La place des `case` suit sm3 et sm4 : `0xA9` et `0xAA` après `case 0xB8` (règle R0 de sm3), `0x72` près de `case 0x71` ;
   l'entité logique (calculée à `EventProgramRunner.cs:431`) et non le propriétaire.
@@ -7439,8 +7457,8 @@ E19.sm3 (§1.4.4 du plan d'E19, `0xA9` et `0xAA`, annexe `docs/plan-e19-sm-annex
 
 **Périmètre.** `Alundra/Events/EventProgramRunner.cs` (trois `case`) ; `Alundra/Events/EventOpcodeSizeTable.cs` (les deux libellés) ;
 `Alundra.Tests/Arcs/HeadlessIntroSimulation.cs` (le miroir) ; des tests neufs (fichier selon l'ADR-0080 ; précédent `WeaponLockOpcodesTests`) ;
-des arcs neufs sous `Alundra.Tests/Arcs/` ; l'annexe `docs/plan-e20-annexe/e20-g5/g5b/` ; les en-têtes de sm3 et sm4 dans le plan d'E19 ; ce
-plan.
+des arcs neufs sous `Alundra.Tests/Arcs/` ; l'annexe `docs/plan-e20-annexe/e20-g5/g5b/` ; les en-têtes de sm0, sm3 et sm4 dans le plan
+d'E19 (posés par la session principale) ; ce plan.
 
 **Hors périmètre.** Les autres opcodes de sm3 et sm4 ; sm0, `ClosedOwners`, R-SM-1 ; `0xBE` et l'arrêt du son (g5c) ; le gel du héros
 après un programme F (Q-G5-A2) ; le moteur et les données.
@@ -7455,9 +7473,17 @@ après un programme F (Q-G5-A2) ; le moteur et les données.
     elle n'est pas trouvée, ces arcs restent facultatifs (R-SM-6, Q-G5B-3).
   - Prédire les tests existants qui bougent (défaut : aucun, mesuré par le prototype).
 - ⏳ **T1 — Tests rouges d'abord.**
-  - Les tests unitaires de sm3 et sm4 pour ces trois opcodes : U-A9-01 à 15, U-AA-01 à 12, U-ALL-01 à 03
-    (`docs/plan-e19-sm-annexe/sm3/tests.tsv`), U72-1 à 6 (`docs/plan-e19-sm-annexe/sm4/tests-catalog.json`), avec leurs montages nus
-    (R-SM-4).
+  - Les tests de sm3 et sm4 repris, rien que ceux dont les attendus portent sur `0x72`, `0xA9` ou `0xAA`, avec leurs montages nus
+    (R-SM-4) :
+    - U-A9-01 à 14, U-AA-01 à 11 et U-ALL-02 (`docs/plan-e19-sm-annexe/sm3/tests.tsv`) ;
+    - U-A9-15 et U-AA-12, définis en prose au §1.4.4, T1 (`docs/plan-e19-opcodes.md:12768-12774`) ;
+    - U-ALL-01, réduit à ses lignes `A9-01` et `AA-01` ;
+    - U-ALL-03 (même source que U-A9-15), réduit à `A9 81` et `AA 81` ;
+    - U72-1 à 6 (`docs/plan-e19-sm-annexe/sm4/tests-catalog.json`).
+  - Un test neuf de `0x72`, sur le motif d'U-ALL-01 : la taille 1 du binaire, et `Result` laissé intact.
+  - Aucun test ne vérifie un opcode hors des trois.
+  - Les fichiers de test de sm3 et sm4 portent des noms d'avant R5. g5b prend des noms conformes à l'ADR-0080 et à
+    `check_names.py --rules`.
   - Une théorie sur les octets réels des sites : les 20 instructions `0x72` atteignables, les 22 `0xAA`, les 4 `0xA9`.
   - Tous rouges au HEAD de départ et nommés dans l'annexe ; les cas « sans effet » accolés à un positif.
 - ⏳ **T2 — Le code.**
@@ -7477,7 +7503,8 @@ après un programme F (Q-G5-A2) ; le moteur et les données.
       trouvé ; la taille 1 au lieu de 2 ; la lecture du propriétaire au lieu de l'entité logique.
   - `Alundra.Tests` en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `cmp` de la DLL ; les traces du héros intactes ;
     le moteur, le convertisseur et les données sans diff.
-  - Les résultats dans l'annexe ; les en-têtes de sm3 et sm4 mis à jour (D-G5B-1) par la session principale.
+  - Les résultats dans l'annexe. Les en-têtes de sm0, sm3 et sm4 (D-G5B-1, D-G5B-2) sont posés par la session principale avec ce
+    plan ; T4 les relit et note tout écart.
 - ⏳ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.**
@@ -7489,7 +7516,8 @@ après un programme F (Q-G5-A2) ; le moteur et les données.
   (`241-mare-enchantee.sav`, `242-mare-enchantee.sav`), le rêve de Meia (`180-meiadream-bug.sav`).
 
 **Arrêts.** Un vecteur contredit le binaire ; la sonde de T0 ne redonne pas les sorties du prototype ; un test existant hors de la liste
-prédite bouge ; un besoin de toucher sm0 ou le moteur.
+prédite bouge ; un besoin de toucher le code ou le test de sm0, ou le moteur ; une autre tranche a modifié `EventProgramRunner.cs` ou
+`EventOpcodeSizeTable.cs` entre le HEAD de départ et le commit de code ; un test repris porte sur un opcode hors des trois.
 
 **Budget.** Un `executor` pour T0 et T1, un pour T2 et T3, un pour T4 ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers
 frais après.

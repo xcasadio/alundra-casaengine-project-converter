@@ -12401,7 +12401,7 @@ comportement n'a touché le périmètre depuis l'annexe. Le recomptage à HEAD r
   tant que ses lignes restent : le code d'un opcode et le retrait de ses lignes vont dans **le même commit** (précédent : L2-1 et L2-2
   fusionnés).
 
-#### 1.4.1 E19.sm0 — Le filet : la liste fermée des opcodes sautés sur le corpus entier ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `61db1e8`)
+#### 1.4.1 E19.sm0 — Le filet : la liste fermée des opcodes sautés sur le corpus entier ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `61db1e8` ; **à réviser** : E20.g5b (plan d'E20 §1.24.6, D-G5B-1, D-G5B-2) porte `0x72`, `0xA9` et `0xAA`, dont environ 48 lignes (28 de sm3, 20 de sm4) sortent de la liste ; les 510 lignes, les comptes par propriétaire de la règle 5 et l'arrêt « le parcours C# ne redonne pas exactement les 510 lignes » se recalculent au HEAD de départ de la révision)
 
 **Prérequis.** La fin du chantier de restructuration, **R5 comprise** (un fichier de test ajouté avant R5 désynchronise sa table de 336 lignes
 et son compte « 5 097 / 0 », `docs/plan-restructuration-dll.md`, §9 ; la règle du programme du §3 de ce plan interdit toute tranche
