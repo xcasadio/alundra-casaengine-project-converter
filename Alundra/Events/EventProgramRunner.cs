@@ -792,6 +792,12 @@ public sealed class EventProgramRunner : IEventProgramRunner
                 state.Result = entity.HitCounter;
                 return 1;
 
+            case 0x72: // Set last target animation and direction - Script_114_072 @ 0x8003FA24 (E20.g5b), PER THE BINARY: on the LOGIC entity, LastTargetAnimationId (+0x26C) =
+                       // TargetAnimationId (+0x88) and LastTargetDirection (+0x270) = TargetDirection (+0x8C); Result untouched. Size 1.
+                entity.LastTargetAnimationId = entity.TargetAnimationId;
+                entity.LastTargetDirection = entity.TargetDirection;
+                return 1;
+
             case 0x86: // Set DamagedTickCounter - Script_134_086 @ 0x8003FFD4 (E20.c1b K4), PER THE BINARY: +0x1CC = v2 | v3 << 8 on every entity the search v1 finds. A SET, not
                        // an add (the size table used to say "Add"); Result untouched. The counters pass decrements it, the hit pass skips a target whose counter is not 0. Size 4.
             {
@@ -2098,6 +2104,38 @@ public sealed class EventProgramRunner : IEventProgramRunner
                 foreach (var groundCheckMatch in groundCheckMatches)
                 {
                     if (groundCheckMatch.PosZ <= groundCheckMatch.TerrainHeight + 1)
+                    {
+                        state.Result = 1;
+                        break;
+                    }
+                }
+
+                return 2;
+            }
+
+            case 0xA9: // Is blocked by a group - Script_169_0A9 @ 0x80041174 (E20.g5b), PER THE BINARY: Result = 1 when the LOGIC entity's XCollisionEntity (+0x130) is one of the
+                       // entities the search v[1] finds, else 0 (Result is written on every path). Size 2.
+            {
+                state.Result = 0;
+                foreach (var found in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
+                {
+                    if (entity.XCollisionEntity != null && ReferenceEquals(entity.XCollisionEntity, found))
+                    {
+                        state.Result = 1;
+                        break;
+                    }
+                }
+
+                return 2;
+            }
+
+            case 0xAA: // Is pushed by a group - Script_170_0AA @ 0x80041200 (E20.g5b), PER THE BINARY: Result = 1 when one of the entities the search v[1] finds has its
+                       // XCollisionEntity (+0x130) equal to the LOGIC entity, else 0. With v[1] = 129 (the player) it reads "the hero is blocked in X by me". Size 2.
+            {
+                state.Result = 0;
+                foreach (var found in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
+                {
+                    if (ReferenceEquals(found.XCollisionEntity, entity))
                     {
                         state.Result = 1;
                         break;
