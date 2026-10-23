@@ -610,7 +610,7 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | *E14.a* (autre étape) | Muruta et Beannoïde (D-E20-4), planifiée après E20.c1 | plan d'E14 | Le hall de la 115 |
 | E20.c2 | Le héros touché : entrée `0x80031A68` (toucheur et cases dangereuses), `0x31`/`0x3A`, invulnérabilité `0x78` et clignotement, PV vers `PlayerStats` et le HUD, `UpdateItemEffectState` (table de défense, bottes, régénération) et le pilote `0x8003634C` en vrai (D-E20-14), chemin `controlFlags == 0x20`, pas de mort (D-E20-5) | oracle de `0x80031A68` ; arcs | Les cœurs baissent au contact, le héros clignote, il ne meurt pas |
 | E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord ; sur l'eau profonde, le héros nage (E20.i, 2026-10-10 : le garde d'E20.d1 a disparu) |
-| E20.e0 | Apparition d'entités et butin (D-E20-17) : `SpawnWarpEntity` (`0x80039F58`, 102 appelants) par indice de sprite global, tirage du butin à l'apparition (`0x80032A40`), lâcher à la mort (`0x80032B90`) avec son veto, objet ramassable (gestionnaire C255), avance du générateur pseudo-aléatoire une fois par tick après la mise à jour du monde (`0x8002BD14`) | oracle ; arcs | Rien de visible seul ; recette avec E20.e |
+| E20.e0 | Apparition d'entités et butin (D-E20-17 ; **E20.e0c faite le 2026-10-23**, §1.26) : `SpawnWarpEntity` (`0x80039F58`, 102 appelants) par indice de sprite global, tirage du butin à l'apparition (`0x80032A40`), lâcher à la mort (`0x80032B90`) avec son veto, objet ramassable (gestionnaire C255), avance du générateur pseudo-aléatoire une fois par tick après la mise à jour du monde (`0x8002BD14`) | oracle ; arcs | Rien de visible seul ; recette avec E20.e |
 | E20.eR | (2026-10-22, D-E20-60 ; détaillée au §1.27a ; **faite et CONFIRMED le 2026-10-22**, analyseur `d687972`, parent `ce7e1ac7`) Renommage de `BalanceLevel` (l'octet 9 de l'en-tête de carte) en `TileCutEffectId` à la source : l'exporteur Tiled de l'analyseur et sa doc, la ré-extraction des cartes, la copie `data-extracted/`, le convertisseur et l'export | export complet, preuve par manifeste | aucune (rien ne change en jeu) |
 | E20.e | Effets du héros et herbe coupée : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage), `CheckAndTriggerTileEffect`, butin tiré par E20.e0 | oracle ; arcs | Pas et poussière ; l'herbe se coupe à l'épée et à la charge ; argent et cœurs tombent et se ramassent |
 | E20.e2 | (2026-10-22, révision 3 d'E20.e ; prérequis E20.e) Effets du héros sortis d'E20.e : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage) ; les bouchons « Stub (E20.e) » de `PlayerAnimationEffects` y renvoient | oracle ; arcs | Pas et poussière |
@@ -7258,7 +7258,7 @@ les orbes et la tornade n'avancent que par la **poussée** `+0xCC/+0xD0`, que la
 pendant un sort, le menu Start est refusé ; E3 est partagé avec 98 sprites d'ennemis (clé commune avec E14) ; le départ lance une piste XA
 (comme `0xB9`, O-E19-36) ; les tomes n'exigent pas E20.g. Questions Q-H4-1 à Q-H4-8 (§2).
 
-### 1.26 E20.e0c — Le butin et l'objet ramassable, lâché ou posé ⏳ (détaillée le 2026-10-18, révision 2 READY du 2026-10-18 ; révision 3 du 2026-10-22 après les réponses de l'auteur, relue : REVISE ; révision 3.1 du 2026-10-22, READY le 2026-10-22 (plan-verifier frais) ; exécutable : le chantier de restructuration est fini, R8 comprise)
+### 1.26 E20.e0c — Le butin et l'objet ramassable, lâché ou posé ✅ (détaillée le 2026-10-18, révision 2 READY du 2026-10-18 ; révision 3 du 2026-10-22 après les réponses de l'auteur, relue : REVISE ; révision 3.1 du 2026-10-22, READY le 2026-10-22 (plan-verifier frais) ; **faite le 2026-10-23** : deux verifiers frais, tous les points d'acceptation tiennent, la liste prédite des tests déplacés amendée par D-E0C-14 ; ADR-0082)
 
 **Révision 3 (2026-10-22).** Les réponses de l'auteur (§0.1) changent la tranche en six points. (1) Le ramassage des objets posés sur les cartes
 entre dans e0c (D-E20-47) : phase D. (2) Les étincelles du ramassage passent par la file d'effets (D-E20-59, ADR-0077) : les clés de l'oracle se
@@ -7400,7 +7400,7 @@ la branche d'A255 à drapeau ; `Alundra/Entities/EntityScriptProxy.cs` (D-E20-55
 - **Phase D** (T4) : la branche posée (A255, C255, message, son, blocage, bouchon de la fanfare). Effet visible : les 59 objets natifs se ramassent.
 
 **Tâches.**
-- ⏳ **T0 — Annexe, oracle, mesures** (aucun code de la DLL).
+- ✅ **T0 — Annexe, oracle, mesures** (aucun code de la DLL).
   (a) Rejouer depuis une copie les modèles et harnais (`work/`), sortie égale au manifeste ; rejouer de même `posed-rev3/` (versée avec la révision 3.1),
   sorties égales à celles versées.
   (b) **P-L1** : le premier tick où tourne un objet lâché à la mort d'un ennemi (case plus haute et plus basse), mesuré sur la DLL ; attendu : un tick après la mort (défaut Q-E0C-8) ;
@@ -7417,7 +7417,7 @@ la branche d'A255 à drapeau ; `Alundra/Entities/EntityScriptProxy.cs` (D-E20-55
   (i) Mesurer où la DLL lit `BlockedByEntity` et où elle ne le lit pas ; le héros bloqué en l'air ; les entités de rang inférieur et supérieur au bloqueur dans le tick.
   (j) Mesurer si le héros peut se tenir sur un objet posé aujourd'hui (`Collidable`, `EntitySupport`) et ce qu'A255 y change.
   (k) Choisir les préréglages de recette (Debug zone, carte 11, près de (54, 30) ; carte 1, Cœur moyen, entité 24).
-- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile).
+- ✅ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile).
   (l1) `SpawnContents` et `SpawnRandomLoot` contre les vecteurs (les sept écritures, le son 84, le Z moins 1, le veto qui consomme quand même le générateur, la table pleine sans son), chaque
   cas « sans effet » accolé à un cas positif.
   (l2) `GiveItem` : argent et plafond, les trois cœurs, PM, herbe et potions avec l'inventaire plein ou non, cristaux, vase de vie, ajout simple ; les étincelles sont émises dans la file : avant son
@@ -7427,16 +7427,16 @@ la branche d'A255 à drapeau ; `Alundra/Entities/EntityScriptProxy.cs` (D-E20-55
   dont les deux moitiés diffèrent ; `EntityScriptProxy.cs` sans diff.
   (l5) Le message composé, vide pour un lâché.
   (l6) `Block`/`Unblock` purs : état 2 ou 3 seulement, soi exclu, déjà bloqué exclu, remise à zéro par bloqueur.
-- ⏳ **T2 — Phase B** (tests de monde rouges avant le code B : monde initialisé avec le catalogue ; 1, 2 et 3 ticks par image).
+- ✅ **T2 — Phase B** (tests de monde rouges avant le code B : monde initialisé avec le catalogue ; 1, 2 et 3 ticks par image).
   (w1) montée et rebond tick par tick à la gravité 128 et 3 ; (w2) ramassage aux bornes exactes du recouvrement (taille + 1) ; (w3) rien pendant un dialogue ouvert ; (w4) extinction à 600 ticks,
   `+0x1CC = 0x78` à 120 ; (w5) un objet sans règle des 600 ticks reste ; (w6) l'effet du ramassage sur le héros et le son de l'octet 5 ; (w7) un objet posé à bouchon ne fait rien ;
   (w8) **corrigé** : du ramassage d'un objet lâché à sa destruction, tick par tick : états 1 puis 3, jamais 2, le registre jamais écrit, aucun message, l'objet dessiné jusqu'à la
   destruction, accolé à un dialogue ouvert qui retient l'état 3 ; (w9) le premier tick de l'objet lâché (écart de Q-E0C-8 nommé, case plus basse égale au binaire).
   Code B ; le compte du registre passe de 7 à 9 (les deux épingles, réécrites par dérivation). Verts.
-- ⏳ **T3 — Phase C**. Tests de production rouges avant la ligne : (d1) le test du bouchon réécrit (contenu 69 lâche le type 99, le générateur n'avance pas, contenu 0 ne lâche rien) ;
+- ✅ **T3 — Phase C**. Tests de production rouges avant la ligne : (d1) le test du bouchon réécrit (contenu 69 lâche le type 99, le générateur n'avance pas, contenu 0 ne lâche rien) ;
   (d2) les oracles Beannoïde et Muruta comparent `spawn_39F58` et le son 84 au lieu de les exclure (80 lâchers, 48 vetos, 16 contenus nuls) ; (d3) la destruction légère ne lâche rien ;
   (d3b) le tick de naissance de (w9) sur le vrai chemin ; (d4) un arc réel : tuer un Beannoïde de la carte 14 (code `0xFC`) jusqu'au ramassage ou à l'extinction.
-- ⏳ **T4 — Phase D** (tests rouges avant le code D).
+- ✅ **T4 — Phase D** (tests rouges avant le code D).
   (p1) A255 posé : `~0x80`, `+0x27C = 0`, `+0x280 = -1`, `+0x284 = 0`, `+0x278 = +0x40`.
   (p2) Objet non-clé (cœur, gildas, herbe, potion) : message « nom gagné! » en mode 0, le bloc des entités s'arrête sous le message, son 52, 53 ou 54, effet sur le héros, objet détruit après la
   fermeture, jamais d'état 2.
@@ -7451,7 +7451,7 @@ la branche d'A255 à drapeau ; `Alundra/Entities/EntityScriptProxy.cs` (D-E20-55
   (p10) La garde de données : 152/53, 59/36/57, `_10 = 0`, `Contents = 0`, A255 sur 87 types et C255 sur 87 (les mêmes sauf le 30 pour A), F255 sur le seul type 30.
   (p11) Le héros ne peut plus se tenir sur un objet posé si T0 (j) l'a mesuré possible aujourd'hui.
   (p12) Dans le même tick, deux objets posés côte à côte : le second attend la fermeture du premier.
-- ⏳ **T5 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 24, tous tués :
+- ✅ **T5 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 24, tous tués :
   veto oublié ; veto avant le tirage ; `+0x278` toujours 600 ; seuil du rebond `<` pour `<=` ; rebond sans remise à 0 ; décompte qui détruit à 1 ; marque à 120 oubliée ; recouvrement `<=` pour `<`
   (chaque sens) ; positions du tick courant ; ramassage pendant un dialogue ; état 3 qui n'attend pas la fermeture ; plafond d'argent ; cœur moyen à `PVmax/2` ; **retourné** : étincelles créées tout de
   suite au lieu de la file ; lâcher à la destruction légère ; lâcher après l'état 4 ; message omis pour un posé (ou présent pour un lâché) ; clé et non-clé permutées ; modes 0 et 1 permutés ; masque 4
@@ -7473,6 +7473,65 @@ composée exige de changer le moteur ; un test hors de la liste prédite bouge ;
 **Retour arrière.** La phase D se retire seule (la branche posée, `Block`/`Unblock`, le membre de dialogue, le bouchon de la fanfare) ; la phase C se retire seule (la ligne de `DestroyEntity`) ; la
 phase B se retire seule (les deux inscriptions et le rafraîchissement) ; la phase A ne change aucun comportement (ses fichiers neufs se retirent, ses
 membres additifs dans `ItemTables`, `NativeEffects`, `DialogueDirector`, `IEntityWorldContext` et `WorldProxy` reviennent par `git revert`).
+
+Decisions: see ADR-0082.
+
+##### Résultats (2026-10-22 et 2026-10-23)
+
+Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ `916f0374`, un `executor` par phase. Mesures complètes :
+`docs/plan-e20-annexe/e20-e0c/exec/` (`results.md`, `t1-` à `t4-results.md`, les listes de rouges, les vecteurs, les scripts de mutants).
+- **Commits.** `32cd82ad`, `84f140b9` (T0, vecteurs) ; `9e43e464` (phase A) ; `173ffdb9` (phase B) ; `d99df16e` (phase C) ; `f4eb9429` (phase D) ;
+  `a41b4c0e` (ADR-0082) ; `6fc9b2fd` (T5) ; `ac3cae7c` (reprise : compte dérivé du test des préréglages).
+- **T0.** P-L1 : l'objet lâché joue A un tick après la mort et son premier C au tick suivant, case plus haute comme plus basse (Q-E0C-8
+  confirmée, V6 tenue) ; P-L2 : `IsOnGround` 0 au premier C, comme le binaire ; vecteurs : `c255.json` (424 vecteurs, 1 477 ticks),
+  `give-item.json` (228 vecteurs de 19 objets, 0 écart avec le modèle d'h1 sur les 40 corps de soin), table des sauts sur les 53 types ;
+  (h) l'ETC `0x45` brut est « gagné! » précédé d'une espace, que le compilateur Yarn rogne : le message est « nom » + espace + « gagné! » ;
+  (j) le héros se tenait sur un objet posé (`Collidable`), plus après A255 ; préréglages `pickup-m11` (carte 11, (27, 18, 10)) et
+  `loot-m14` (carte 14, (19, 34, 3)).
+- **Tests.** Rouges avant, verts après, nommés par phase (`t1-red-names*.txt` 48, `t2-red-names.txt`, `t3-red-names.txt` 16,
+  `t4-red-names.txt` 27 sur 29 ; les deux verts d'emblée épinglent des faits déjà vrais). `Alundra.Tests` : 5 098 au départ, 5 273 à la fin,
+  zéro échec en Release (copie neutralisée) et en Debug. 37 mutants réels, tous tués.
+- **Tests existants déplacés** : 8, sous le plafond de 10 : les 7 prédits (les deux comptes du registre, le test du bouchon de
+  `DestroyEntity`, les quatre `E1_*` de Beannoïde et de Muruta) et `TestSavesTests.TheNinePresets_…` (D-E0C-14). Les arcs
+  `BeannoideGrateArcTests` et `MurutaHallArcTests` n'ont pas bougé ; aucune trace n'a bougé.
+- **Gardes.** `check_names.py --rules` vert ; `EntityScriptProxy.cs`, le moteur, l'analyseur, le convertisseur et les données sans diff.
+- **Verifiers frais.** Le premier : tous les points tiennent (suites Release et Debug, 13 mutants rejoués, D-E0C-1 à D-E0C-13 contre le code)
+  sauf « tests déplacés ⊂ liste prédite » (F1, P2). Reprise : le compte du test est dérivé (`ac3cae7c`, mutant tué). Le second, après la reprise :
+  tout tient, et le seul point restant est la décision écrite sur la liste prédite, que donne D-E0C-14. Suite Debug rejouée par la session
+  principale au HEAD `ac3cae7c` après la reprise : 5 273 tests, zéro échec ; la DLL déposée est identique à la sortie Debug.
+
+**Décision de la session principale (2026-10-23).**
+- **D-E0C-14** (écart F1 de la vérification ; P2 tranché par la session principale) — La liste prédite des tests déplacés de T0 (e) passe à
+  8 tests. Elle ajoute `TestSavesTests.TheNinePresets_AreListed_InTheOrderOfTheTable`, renommé
+  `TheElevenPresets_AreListed_InTheOrderOfTheTable`.
+  - Ce déplacement est forcé par les deux préréglages de recette de T0 (k), qui sont dans le périmètre. La prédiction l'avait manqué.
+  - Son compte est désormais dérivé (`AllPresetNames.Length`), et un mutant réel le tue.
+  - L'arrêt « un test hors de la liste prédite bouge » protège d'un effet non prévu du code. Ici le déplacement vient du périmètre lui-même :
+    l'écart est accepté, ce n'est pas un arrêt.
+
+**Écarts acceptés ou reportés** (constatés par les executors et les verifiers ; aucun ne change le comportement visé).
+- Deux noms d'objet (`0x06`, `0x39`) perdent leur espace de fin à la compilation Yarn : leur message a une espace de moins que le binaire.
+  P4, reporté à E15, le texte en Yarn.
+- Les créateurs d'effets neufs et le vase de `GiveItem` prennent le Z du binaire (`PosZ` + 1). `UseLifeVessel` de l'opcode `0x82` passe
+  `PosZ` tel quel, une unité brute d'écart invisible. P4, reporté à h1 et O-E19-39.
+- L'objet `0x4F` est porté en entier (compteur plafonné à 50, drapeau 1450, comme l'opcode `0x82`). L'objet `0x50` est un bouchon nommé :
+  son corps `0x8003382C` n'est pas lu. P4, reporté à h1.
+- Un objet hors de la table (98 et plus, qu'aucun tirage ne produit) vit sans fin (`+0x278 = -1`), là où le binaire lit 600 au-delà de sa
+  table. L'écart est épinglé par un test et accepté.
+- `IDialogueDirector` reçoit un membre par défaut `OpenComposed`. Le fichier ne figurait pas dans la liste du périmètre, mais D-E0C-4 le
+  demande : accepté.
+- La garde de données (p10) épingle A255 sur 88 types dans l'export (les 87 de C255 et le coffre 30). La DLL n'inscrit A255 que sur les 87
+  (D-E0C-2) : conforme.
+- (p9) se joue en forçant les enregistrements 0 et 16 de la carte 5 (voie `0x2D`), car les 36 objets « A natif, C script » sont à
+  apparition forcée : accepté.
+- Le vase de vie passe par `IncreaseHpMaxAndFill`, qui garde un repli sur les stats, jamais pris en production (`WorldProxy.cs:2022`).
+  C'est un écart de forme avec D-E0C-10. P4, reporté à h1, qui reprend `HeroHeals`.
+- Ordre au tick du blocage (risque 2, mesuré en T0 (i)) : une entité de rang supérieur à l'objet-clé bloqueur ne joue pas son programme
+  au tick du blocage, alors que le binaire la laisse jouer (il choisit tous les programmes avant d'en exécuter un). Un tick d'écart, non
+  épinglé. P3, reporté : O-E20-23.
+- Incident de T3 : une construction Release lancée avec un chemin de copie neutralisée mal tapé a déposé la DLL Release dans
+  `alundra-project/`. La DLL Debug a été recopiée aussitôt, puis redéposée par la construction Debug finale.
+- Trois commits (T1, T2, `ac3cae7c`) portent la ligne `Co-Authored-By: Claude Sonnet 5.5`. P4, sans réécriture de l'historique.
 
 ### 1.27a E20.eR — Le nom de l'octet 9 de l'en-tête de carte : `TileCutEffectId` ✅ (détaillée le 2026-10-22 ; révision 1 READY le 2026-10-22 ; **faite et CONFIRMED le 2026-10-22** par deux verifiers frais ; prérequis d'E20.e ; D-E20-60, ADR-0079)
 
@@ -9745,6 +9804,7 @@ les trois entrées `0x31`.
 | O-E20-20 | (2026-10-16) E20.h (h0 cadre de l'usage d'un objet, h1 soins, h3 bombe et graines, h4 magies) n'a pas de section détaillée ; les corps de C63, C65, C75, E3, E13 et E28 ne sont pas lus (`docs/plan-e20-annexe/e20-armes/h-g-deps.md:111`) | E20.h (T0) |
 | O-E20-21 | (2026-10-16) Les blocs poussables : aucune tranche ; la tête de C4 (« pierres, tonneaux, blocs ») seule est décodée (g2c). Font-ils partie du portage ou des plateformes ? **Réponse de l'auteur (2026-10-22)** : « oui » : les blocs poussables (C4) font partie du portage ; E20.g2c les porte (D-E20-46 ; Q-sm-5 du plan d'E19). (« oui » à « portage ou plateformes ? » est lu comme « ils sont à porter » ; leur tranche, g2c, est un choix de la session, la famille C4 y étant déjà.) | Tranché le 2026-10-22 (D-E20-46) |
 | O-E20-22 | (2026-10-16) Le nettoyage de `PlatformEntity.CarriedEntity` au recyclage d'une entité n'est pas porté (`AlundraWorldProxy.cs:3290`, commentaire) : sans effet tant que rien ne porte, à reprendre dans g1a | E20.g1a |
+| O-E20-23 | (2026-10-23, E20.e0c T0 (i)) Au tick où un objet-clé posé bloque les entités (`Block(soi)`), une entité de rang supérieur au bloqueur ne joue pas son programme dans la DLL (choix puis exécution entité par entité), alors que le binaire la laisse jouer (il choisit tous les programmes avant d'en exécuter un, `0x8003871C-0x80038728`) : un tick d'écart, non épinglé | à placer (l'ordre choix / exécution de la passe des programmes) ; P3, sans effet visible connu |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
 | Q-G1A-3 | (2026-10-17) Un objet lancé ne blesse, avant E14.b, que les cibles dont le gestionnaire D est porté (Beannoïde, Muruta) : confirmer **Réponse de l'auteur (2026-10-22)** : « oui » : confirmé. | Tranché le 2026-10-22 |
