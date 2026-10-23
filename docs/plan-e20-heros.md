@@ -7577,6 +7577,103 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
   `alundra-project/`. La DLL Debug a été recopiée aussitôt, puis redéposée par la construction Debug finale.
 - Trois commits (T1, T2, `ac3cae7c`) portent la ligne `Co-Authored-By: Claude Sonnet 5.5`. P4, sans réécriture de l'historique.
 
+#### 1.26.1 E20.e0c2 — La musique coupée puis relancée du début au ramassage d'un objet-clé (fanfare B) ⏳ (détaillée le 2026-10-23, révision 0 ; D-E20-65 ; à relire par un `plan-verifier` frais)
+
+**Provenance.** Réponse de l'auteur du 2026-10-23 à Q-E0C-9 (« B », D-E20-65). Lecture du HEAD `55cff3df` par la session principale ;
+les faits du binaire sont ceux de la révision 3.1 d'e0c (§1.26, `docs/plan-e20-annexe/e20-e0c/posed-rev3/report.md` §1.2), relus.
+
+**But.** Tant que les pistes XA ne sont pas jouées (E19.sm7), ramasser un objet-clé posé coupe la musique net, puis la relance du début
+au tick suivant, comme le font les deux appels du binaire autour de la fanfare. La piste 11 du CD reste un bouchon journalisé. Rien ne
+change pour un objet ordinaire, un objet lâché ou un coffre.
+
+**Faits** (FAIT, lus au HEAD `55cff3df`).
+- **Binaire** (C255, branche objet-clé, `0x8007C648-0x8007C694`) : au ramassage, `Block(soi)`, `0x80049B7C(0)`, piste CD 11
+  (`0x8005A9E0(0xB)`), message en mode 1, masque 4. À l'état 2 (`0x8007C6F4`), quand `CdBusy()` est faux : état 3, masque 3, puis
+  `0x80049AF4`.
+- **Les deux routines** : `0x80049B7C` est `LoadBgm`, appelée par le gestionnaire de l'opcode `0xA6` ; `0x80049AF4` est `StopAllSound`,
+  appelée par celui de `0xA5` (`docs/plan-e19-sm-annexe/sm2/critic/evidence/my_writers_scan2.txt:76-77` ;
+  `docs/plan-bgm-demarrage-binaire.md:75`, `:141`).
+- **La DLL porte déjà ces deux routines.**
+  - `IBgmFadeDirector.LoadBgm(0)` (`Alundra/Audio/BgmFadeDirector.cs:128-142`) efface le drapeau de remise du son, puis arrête la voix
+    (`BgmPlayer.StopSequence`, `Alundra/Audio/BgmPlayer.cs:192-195`). La piste reste chargée, rembobinée.
+  - `IBgmFadeDirector.StopAllSound()` (`BgmFadeDirector.cs:104-125`) ne fait rien si `CurrentMapSoundIndex` est négatif. Sinon, il
+    arrête les bruitages si la machine de fondu est armée, remet le volume maître et appelle `BgmPlayer.PlaySequence`
+    (`BgmPlayer.cs:198-211`), qui relance du début une piste chargée et muette.
+  - La couture est `IEntityWorldContext.BgmFadeDirector` (`Alundra/Maps/IEntityWorldContext.cs:189`, défaut nul ;
+    `Alundra/Maps/WorldProxy.cs:690`, le singleton de session). Les opcodes `0xA5` et `0xA6` l'emploient
+    (`Alundra/Events/EventProgramRunner.cs:1355-1385`).
+- **Le bouchon d'e0c** : `PickupAi.FanfareStart` (`Alundra/Ai/Objects/PickupAi.cs:93-94`, appelé au ramassage `:217`),
+  `FanfareIsBusy` (`:96-97`, toujours faux) et `FanfareEnd` (`:99-100`, appelé à l'état 2 `:165`). Seul le journal de test
+  `FanfareStubCallsForTests` (`:42`) les observe ; la musique n'est pas touchée (défaut A, D-E0C-7).
+- **Tests qui lisent le bouchon** : `Alundra.Tests/Ai/Objects/PickupAiPlacedTests.cs` (les vecteurs posés `:175`, dont le journal
+  `fanfareStart` / `fanfareEnd` `:239` ; P3 `:367-400` ; l'objet ordinaire, sans fanfare, `:344`, `:356`) et
+  `Alundra.Tests/Ai/Objects/PickupAiPlacedWorldTests.cs:165-209`. Ces tests gardent leur journal : ils ne doivent pas bouger.
+
+**Décisions de la session.**
+- **D-E0C2-1** — `FanfareStart` appelle `world.BgmFadeDirector?.LoadBgm(0)` (comme `0xA6` d'opérande 0), puis garde son journal
+  « start » (la piste 11 reste un bouchon, la couture qu'E19.sm7 branchera). `FanfareEnd` appelle
+  `world.BgmFadeDirector?.StopAllSound()` (comme `0xA5`) et garde son journal « end ». `FanfareIsBusy` reste faux : l'état 2 dure un
+  tick, donc la musique se tait un tick puis repart du début.
+- **D-E0C2-2** — Sans `BgmFadeDirector` (hôte de test), rien ne se passe et rien ne lève, comme le reste de `PickupAi` avec ses
+  coutures nulles.
+- **D-E0C2-3** — L'ordre du binaire est gardé au ramassage : `Block`, puis l'arrêt de la musique, puis le message.
+- **D-E0C2-4** — Un ADR neuf (numéro libre au moment de l'écrire) amende l'ADR-0082 pour la fanfare ; l'ADR-0082 reçoit la ligne de
+  statut « amended by ADR-NNNN (the music of the key objects) ».
+
+**Périmètre.** `Alundra/Ai/Objects/PickupAi.cs` (les deux bouchons et leurs commentaires) ; des tests neufs (fichier neuf dans
+`Alundra.Tests/Ai/Objects/`, selon l'ADR-0080) et, si un test l'exige, un enregistreur d'`IBgmFadeDirector` dans
+`Alundra.Tests/Support/` ; l'annexe `docs/plan-e20-annexe/e20-e0c/exec2/` ; l'ADR et `docs/decisions/README.md` ; ce plan.
+
+**Hors périmètre.** Les pistes XA (E19.sm7) ; `CdBusy` ; `BgmFadeDirector`, `BgmPlayer` et le moteur ; les objets ordinaires, lâchés,
+et le coffre.
+
+**Tâches.**
+- ⏳ **T0 — Mesures** (commit de docs, avant tout code).
+  - Relire au HEAD de départ les sites ci-dessus.
+  - Prédire les tests existants qui bougent. Défaut attendu : aucun. Les hôtes de test sans directeur ne changent pas, et le monde réel
+    sans piste chargée ne joue rien.
+  - Mesurer cette prédiction par un câblage temporaire, annulé ensuite (`git diff` vide), sur les classes `PickupAi*`, `BgmFadeDirector*`
+    et `MusicPlayer*`.
+  - Choisir le montage des tests (m2) (la voix vivante et rembobinée de `BgmPlayer` est-elle observable sans moteur audio ?) et l'écrire
+    dans l'annexe. Arrêt si (m2) ne peut pas observer le redémarrage : (m1) seul ne suffit pas.
+- ⏳ **T1 — Tests rouges, puis le code** (D-E0C2-1 à -3).
+  - (m1) Hôte à directeur enregistreur. Pour un objet-clé posé, `LoadBgm(0)` est appelé une fois au tick du ramassage, après `Block` et
+    avant l'ouverture du message, et `StopAllSound()` une fois au tick de l'état 2, rien entre les deux. Accolé : un objet ordinaire et un
+    objet lâché n'appellent ni l'un ni l'autre. Le journal « start », « end » est inchangé.
+  - (m2) Monde réel, une piste chargée qui joue. Au tick du ramassage, la voix s'arrête ; au tick suivant, une voix neuve repart du début.
+    Accolé : sans objet-clé, la voix continue sans redémarrer.
+  - (m3) Hôte sans directeur : le ramassage d'un objet-clé se déroule comme avant, sans exception.
+  - Rouges avant le code, nommés dans l'annexe ; verts après.
+- ⏳ **T2 — ADR, mutants, suites.**
+  - L'ADR (D-E0C2-4).
+  - Mutants réels, appliqués par script puis annulés, tous tués :
+    - `LoadBgm(0)` retiré ;
+    - `StopAllSound()` retiré ;
+    - `LoadBgm(1)` au lieu de `LoadBgm(0)` ;
+    - `StopAllSound()` au tick du ramassage au lieu de l'état 2 ;
+    - l'arrêt de la musique aussi pour un objet ordinaire ;
+    - l'arrêt après l'ouverture du message.
+  - `Alundra.Tests` en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `cmp` de la DLL ; `check_names.py --rules`
+    vert ; les traces du héros intactes.
+  - Les résultats vont dans l'annexe.
+- ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.**
+- (m1) à (m3) sont rouges avant le code et verts après.
+- Les tests existants déplacés sont inclus dans la liste prédite de T0.
+- Les mutants sont tous tués.
+- Suites Release et Debug : zéro échec.
+- Le moteur, le convertisseur et les données sont sans diff.
+- **Recette de l'auteur** (non bloquante) : `pickup-m11` (Debug zone). Prendre un objet-clé : la musique se coupe net, puis repart du
+  début aussitôt.
+
+**Arrêts.** (m2) ne peut pas observer le redémarrage ; un test existant hors de la liste prédite bouge ; un besoin de changer
+`BgmFadeDirector`, `BgmPlayer` ou le moteur.
+
+**Budget.** Un `executor` pour T0 et T1, un pour T2 ; deux tentatives chacun ; un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** `git revert` du commit de code : le bouchon redevient muet (défaut A).
+
 ### 1.27a E20.eR — Le nom de l'octet 9 de l'en-tête de carte : `TileCutEffectId` ✅ (détaillée le 2026-10-22 ; révision 1 READY le 2026-10-22 ; **faite et CONFIRMED le 2026-10-22** par deux verifiers frais ; prérequis d'E20.e ; D-E20-60, ADR-0079)
 
 Lecture seule du 2026-10-22 au HEAD `1d0b6953`, avec une répétition à blanc complète dans le scratchpad (rien écrit dans le dépôt, le
