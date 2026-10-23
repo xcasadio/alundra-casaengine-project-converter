@@ -7748,7 +7748,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
   `alundra-project/`. La DLL Debug a été recopiée aussitôt, puis redéposée par la construction Debug finale.
 - Trois commits (T1, T2, `ac3cae7c`) portent la ligne `Co-Authored-By: Claude Sonnet 5.5`. P4, sans réécriture de l'historique.
 
-#### 1.26.1 E20.e0c2 — La musique coupée puis relancée du début au ramassage d'un objet-clé (fanfare B) ⏳ (détaillée le 2026-10-23, révision 0 ; D-E20-65 ; **READY** à la première relecture, `plan-verifier` frais ; exécutable après E20.f5)
+#### 1.26.1 E20.e0c2 — La musique coupée puis relancée du début au ramassage d'un objet-clé (fanfare B) ✅ (détaillée le 2026-10-23, révision 0 ; D-E20-65 ; **READY** à la première relecture, `plan-verifier` frais ; **faite et CONFIRMED le 2026-10-23** par deux verifiers frais ; ADR-0085)
 
 **Provenance.** Réponse de l'auteur du 2026-10-23 à Q-E0C-9 (« B », D-E20-65). Lecture du HEAD `55cff3df` par la session principale ;
 les faits du binaire sont ceux de la révision 3.1 d'e0c (§1.26, `docs/plan-e20-annexe/e20-e0c/posed-rev3/report.md` §1.2), relus.
@@ -7799,7 +7799,7 @@ change pour un objet ordinaire, un objet lâché ou un coffre.
 et le coffre.
 
 **Tâches.**
-- ⏳ **T0 — Mesures** (commit de docs, avant tout code).
+- ✅ **T0 — Mesures** (commit de docs, avant tout code).
   - Relire au HEAD de départ les sites ci-dessus.
   - Prédire les tests existants qui bougent. Défaut attendu : aucun. Les hôtes de test sans directeur ne changent pas, et le monde réel
     sans piste chargée ne joue rien.
@@ -7807,7 +7807,7 @@ et le coffre.
     et `MusicPlayer*`.
   - Choisir le montage des tests (m2) (la voix vivante et rembobinée de `BgmPlayer` est-elle observable sans moteur audio ?) et l'écrire
     dans l'annexe. Arrêt si (m2) ne peut pas observer le redémarrage : (m1) seul ne suffit pas.
-- ⏳ **T1 — Tests rouges, puis le code** (D-E0C2-1 à -3).
+- ✅ **T1 — Tests rouges, puis le code** (D-E0C2-1 à -3).
   - (m1) Hôte à directeur enregistreur. Pour un objet-clé posé, `LoadBgm(0)` est appelé une fois au tick du ramassage, après `Block` et
     avant l'ouverture du message, et `StopAllSound()` une fois au tick de l'état 2, rien entre les deux. Accolé : un objet ordinaire et un
     objet lâché n'appellent ni l'un ni l'autre. Le journal « start », « end » est inchangé.
@@ -7815,7 +7815,7 @@ et le coffre.
     Accolé : sans objet-clé, la voix continue sans redémarrer.
   - (m3) Hôte sans directeur : le ramassage d'un objet-clé se déroule comme avant, sans exception.
   - Rouges avant le code, nommés dans l'annexe ; verts après.
-- ⏳ **T2 — ADR, mutants, suites.**
+- ✅ **T2 — ADR, mutants, suites.**
   - L'ADR (D-E0C2-4).
   - Mutants réels, appliqués par script puis annulés, tous tués :
     - `LoadBgm(0)` retiré ;
@@ -7827,7 +7827,7 @@ et le coffre.
   - `Alundra.Tests` en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `cmp` de la DLL ; `check_names.py --rules`
     vert ; les traces du héros intactes.
   - Les résultats vont dans l'annexe.
-- ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.**
 - (m1) à (m3) sont rouges avant le code et verts après.
@@ -7844,6 +7844,24 @@ et le coffre.
 **Budget.** Un `executor` pour T0 et T1, un pour T2 ; deux tentatives chacun ; un `plan-verifier` avant ; deux verifiers frais après.
 
 **Retour arrière.** `git revert` du commit de code : le bouchon redevient muet (défaut A).
+
+Decisions: see ADR-0085 (amends ADR-0082 for the music of the key objects).
+
+##### Résultats (2026-10-23)
+
+Exécution en mode AUTO, HEAD de départ `6fa6bf81`. Mesures : `docs/plan-e20-annexe/e20-e0c/exec2/` (`README.md` pour T0, `results.md`).
+- **Commits.** `03dfc698` (T0) ; `35329bfc` (le code : `FanfareStart` appelle `BgmFadeDirector.LoadBgm(0)`, `FanfareEnd` appelle
+  `StopAllSound()`, les journaux gardés ; tests `Alundra.Tests/Ai/Objects/PickupAiFanfareMusicTests.cs`, enregistreur
+  `Alundra.Tests/Support/RecordingBgmFadeDirector.cs`) ; `cf098941` (ADR-0085, l'ADR-0082 amendé, mutants, suites).
+- **T0.** L'ordre du binaire (`Block`, la musique, le message) était déjà celui du code. Aucun test existant ne bouge (prédit et mesuré par
+  un câblage temporaire : 161 sur 161). (m2) s'observe sur les vrais `BgmPlayer` et `BgmFadeDirector`, avec le faux moteur audio de
+  `MusicPlayerTests.T1bis`.
+- **Tests.** (m1) et (m2) de l'objet-clé, rouges avant le code et verts après ; les gardes (objet ordinaire, objet lâché, hôte sans
+  directeur) verts de bout en bout, par nature, chacune tuée par un mutant. Six mutants réels, tous tués. `Alundra.Tests` : 5 428 au départ,
+  5 434 à la fin, zéro échec en Release (copie neutralisée) et en Debug ; `cmp` de la DLL identique ; `check_names.py --rules` vert.
+- **Verifiers frais** (le premier rejoue les tests, des mutants et le redémarrage de la voix sur le vrai `BgmPlayer` ; le second les
+  épingles) : **CONFIRMED** tous deux.
+- **Recette de l'auteur, à faire** : `pickup-m11`, prendre un objet-clé : la musique se coupe net, puis repart du début.
 
 ### 1.27a E20.eR — Le nom de l'octet 9 de l'en-tête de carte : `TileCutEffectId` ✅ (détaillée le 2026-10-22 ; révision 1 READY le 2026-10-22 ; **faite et CONFIRMED le 2026-10-22** par deux verifiers frais ; prérequis d'E20.e ; D-E20-60, ADR-0079)
 
