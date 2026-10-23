@@ -7402,7 +7402,7 @@ Decisions: see ADR-0086.
   sur un test existant).
 - **Recette de l'auteur, à faire** : `92-ancien-sanctuaire-bug-pillier.sav` (carte 26).
 
-##### E20.g5b — Les opcodes des boutons et des blocs scriptés : `0x72`, `0xA9`, `0xAA`, prélevés sur E19.sm3 et E19.sm4 ⏳ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, **READY** à la deuxième relecture, `plan-verifier` frais ; exécutable après E20.g5a)
+##### E20.g5b — Les opcodes des boutons et des blocs scriptés : `0x72`, `0xA9`, `0xAA`, prélevés sur E19.sm3 et E19.sm4 ✅ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, **READY** à la deuxième relecture, `plan-verifier` frais ; **faite et CONFIRMED le 2026-10-24** par deux verifiers frais)
 
 **Révision 1 (2026-10-23).** La relecture de la révision 0 (REVISE) a relevé trois points, corrigés ici.
 - Le prélèvement change les comptes de sm0 : c'est désormais dit, et l'en-tête de sm0 l'annonce.
@@ -7484,7 +7484,7 @@ d'E19 (posés par la session principale) ; ce plan.
 après un programme F (Q-G5-A2) ; le moteur et les données.
 
 **Tâches.**
-- ⏳ **T0 — Rejeu et mesures** (commit de docs).
+- ✅ **T0 — Rejeu et mesures** (commit de docs).
   - Rejouer depuis des copies `ops_full.py` (sortie égale à `ops_full_out.txt`) et les vecteurs de sm3 (837) et de sm4 (`0x72`).
   - Relire au HEAD de départ les sites de la DLL cités ci-dessus.
   - Rejouer la sonde de la carte 40 et de la 426 (`cases_a.json`) sur le HEAD de départ avec le prototype dans une copie : mêmes sorties
@@ -7492,7 +7492,7 @@ après un programme F (Q-G5-A2) ; le moteur et les données.
   - Chercher pour les cartes 421 et 424 la hauteur de départ du héros devant un bloc Mini-Nilude (arcs S3-A1, S3-A1b, S3-A2 de sm3). Si
     elle n'est pas trouvée, ces arcs restent facultatifs (R-SM-6, Q-G5B-3).
   - Prédire les tests existants qui bougent (défaut : aucun, mesuré par le prototype).
-- ⏳ **T1 — Tests rouges d'abord.**
+- ✅ **T1 — Tests rouges d'abord.**
   - Les tests de sm3 et sm4 repris, rien que ceux dont les attendus portent sur `0x72`, `0xA9` ou `0xAA`, avec leurs montages nus
     (R-SM-4) :
     - U-A9-01 à 14, U-AA-01 à 11 et U-ALL-02 (`docs/plan-e19-sm-annexe/sm3/tests.tsv`) ;
@@ -7506,16 +7506,16 @@ après un programme F (Q-G5-A2) ; le moteur et les données.
     `check_names.py --rules`.
   - Une théorie sur les octets réels des sites : les 20 instructions `0x72` atteignables, les 22 `0xAA`, les 4 `0xA9`.
   - Tous rouges au HEAD de départ et nommés dans l'annexe ; les cas « sans effet » accolés à un positif.
-- ⏳ **T2 — Le code.**
+- ✅ **T2 — Le code.**
   - Les trois `case` (D-G5B-4), les deux libellés, le miroir `ImplementedOpcodes`.
   - Verts ; la suite complète ; `check_names.py --rules` vert.
-- ⏳ **T3 — Arcs** (rouges avant T2, verts après ; à écrire en T1 et à faire passer ici).
+- ✅ **T3 — Arcs** (rouges avant T2, verts après ; à écrire en T1 et à faire passer ici).
   - Carte 40 (ARC-40 de sm4) : un bloc touché par le nord, par l'est, par le sud ; la glissade selon l'instant du contact, épinglée sur
     les valeurs mesurées (`phase40_summary.txt`).
   - Carte 426 : la poussée nord complète (le bouton de droite, 80 px, son drapeau, le pont) ; la poussée interrompue ; le mauvais côté ; le
     deuxième bouton avec et sans le drapeau du premier.
   - Les arcs de sm3 dont T0 a trouvé la géométrie (S3-A1, A1b, A2, A3a, A3b, A7), sinon rien (R-SM-6).
-- ⏳ **T4 — Mutants et suites.**
+- ✅ **T4 — Mutants et suites.**
   - Mutants réels, appliqués par script puis annulés, tous tués :
     - ceux de sm3 qui portent sur `0xA9` et `0xAA` (`docs/plan-e19-sm-annexe/sm3/vectors/mutants.json` et la critique) ;
     - M72a à M72d de sm4 (`mutants-matrix.json`) ;
@@ -7525,7 +7525,7 @@ après un programme F (Q-G5-A2) ; le moteur et les données.
     le moteur, le convertisseur et les données sans diff.
   - Les résultats dans l'annexe. Les en-têtes de sm0, sm3 et sm4 (D-G5B-1, D-G5B-2) sont posés par la session principale avec ce
     plan ; T4 les relit et note tout écart.
-- ⏳ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.**
 - Les tests de T1 et les arcs de T3 sont rouges avant le code et verts après.
@@ -7544,6 +7544,28 @@ frais après.
 
 **Retour arrière.** `git revert` du commit de code : les trois opcodes redeviennent sautés par leur taille.
 
+**Résultats (2026-10-24).** Exécution en mode AUTO, HEAD de départ `39b5c2e7`. Mesures : `docs/plan-e20-annexe/e20-g5/g5b/README.md`.
+- **Commits.** `ec86516c` (T0) ; `3799f0af` (T1, 112 lignes de tests, toutes rouges au départ) ; `3786b5ef` (le code : les trois `case`, les
+  deux libellés, le miroir `ImplementedOpcodes`) ; `96e696aa` (T3) ; `4fdb3d29` (T4).
+- **T0.** `ops_full.py` rejoué depuis une copie : 0 écart, goldens identiques à l'octet ; vecteurs de sm3 (837) et de sm4 (67 pour `0x72`)
+  régénérés, égaux. La sonde du prototype redonne `probe_out_proto/` (8 cas de `cases_a.json`, 12 de `cases_phase.json`). Hauteur devant un
+  bloc Mini-Nilude : sur la 424, le bloc est dans une fosse à z 16, d'où S3-A1b (par l'est) ; S3-A1 (par l'ouest) est inaccessible à pied
+  (le sol y est à z 48 ou 64) ; sur la 421, le héros reste figé par ses drapeaux de contrôle à chaque départ essayé : S3-A2 reste
+  facultatif (R-SM-6). Les arcs de la 440 n'ont pas été regardés.
+- **Tests.** 112 lignes : `ContactGroupOpcodesTests` (40), `LastTargetOpcodeTests` (8), `ButtonAndBlockOpcodesRealBytesTests` (47, les 46 sites
+  et un garde qui interroge `IsPorted`), `ButtonAndBlockSitesTests` (17 arcs : carte 40 par le nord 5,0 px, par l'est 5,5 px, par le sud 0 ;
+  carte 426 : contact à l'image 12, 40 `0x74`, drapeau 1266 à l'image 52, 80 px de glissade, le pont aux images 53, 94, 135, 176 ; la
+  poussée interrompue, le mauvais côté, le second bouton avec et sans drapeau ; carte 424 par l'est et par le sud). Toutes rouges au départ,
+  vertes après le code sans changer un attendu. Les vecteurs de sm3 et sm4 sont copiés dans l'annexe et épinglés par SHA-256.
+- **Suites.** `Alundra.Tests` : 5 484 au départ, 5 596 à la fin, zéro échec en Release (copie neutralisée) et en Debug ; aucun test
+  existant déplacé ; `cmp` de la DLL identique ; `check_names.py --rules` vert. 28 mutants réels (sm3, sm4, ceux du plan et trois de plus),
+  tous tués.
+- **Verifiers frais** (la tranche ; les épingles) : **CONFIRMED** tous deux.
+- **Écarts acceptés.** Les arcs sont sous `Alundra.Tests/Events/`, pas `Arcs/` : l'ADR-0080 réserve `Arcs/` aux scénarios de bout en bout. Les
+  `case` de `0xA9` et `0xAA` sont juste avant `default`, le switch n'étant pas trié (D-G5B-4 disait « après `case 0xB8` »), sans effet.
+- **Signalé, non traité** : sur la 424, le script ne fait glisser le bloc 3 que poussé par l'ouest, où le sol du héros est au-dessus du bloc ;
+  à regarder à part.
+- **Recette de l'auteur, à faire** : `234-torla.sav` (carte 426), le bouton de droite par le nord.
 
 ##### E20.g5d — Les objets à pousser scriptés : statues, blocs, boutons (tests seuls) ⏳ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, **READY** à la deuxième relecture, `plan-verifier` frais ; exécutable après E20.g5b)
 
