@@ -118,3 +118,30 @@ interrupted push and the wrong side beside the push that works, the second butto
 
 S3-A1b (the east push of the 424) is in. S3-A1 (the west push of the 424) and S3-A2 (the 421) are not: the geometry was not found (T0), so they stay optional (R-SM-6). S3-A3a, A3b and A7 (the map 440) were out of
 T0's search; none is written (the plan: "sinon rien").
+
+## T2 - the code (commit `3786b5ef`)
+
+`EventProgramRunner.Dispatch`: `case 0x72` after `case 0x71` (the LOGIC entity's `LastTargetAnimationId` and `LastTargetDirection` take `TargetAnimationId` and `TargetDirection`; `Result`
+untouched; size 1), `case 0xA9` and `case 0xAA` after the `case 0x8D` block that closes the `0xB8`-`0x8D` group, before `default` (D-G5B-4: the plan says "after `case 0xB8`"; the
+cases of this switch are not in numeric order, `0x8D` follows `0xB8` there, so they sit at the end of that group). Both set `Result = 0` first, then walk the entities of the search `v[1]`: `0xA9` sets 1
+when the logic entity's `XCollisionEntity` is one of them, `0xAA` when one of them has `XCollisionEntity` equal to the logic entity; size 2. Labels in `EventOpcodeSizeTable`: `0xA9` "Is blocked by a group",
+`0xAA` "Is pushed by a group". Mirror: `0x72, 0xA9, 0xAA` added to `ImplementedOpcodes` (`HeadlessIntroSimulation.cs`).
+
+Green after (Release, neutralised copy, `--filter` on the four T1 classes): **112 tests, 0 failures** (the 112 red rows of `t1-red-names.txt`). Same code as the discovery's prototype (measured equal values).
+
+## T3 - the arcs
+
+The arcs were written in T1 (`ButtonAndBlockSitesTests`, 17 rows) and were red at the start HEAD; they pass on the T2 code without any change of expected value: the map 40 (north, east, south, the 12
+instants of contact), the map 426 (full push of the right button, the interrupted push, the wrong side, the second button with and without the flag of the first), the map 424 (S3-A1b and the south push).
+The arcs of sm3 whose geometry T0 did not find (S3-A1, S3-A2 on 421, S3-A3a, S3-A3b, S3-A7 on 440) are not written (R-SM-6, Q-G5B-3).
+
+### The suite (Release, neutralised copy, four partitions as in g5a; `--blame-hang-timeout 60s`)
+
+| partition | tests | failures |
+|---|---|---|
+| `Alundra.Tests.Arcs.` + `Ai.`, `Audio.`, `Cameras.`, `Cells.`, `Combat.`, `Data.`, `Dialogues.` | 1 210 (76 + 1 134) | 0 |
+| `Entities.`, `Events.`, `ExportGuards.`, `Hero.`, `Items.` | 2 597 (2 485 + the 112 new) | 0 |
+| everything else | 1 789 | 0 |
+
+Total 5 596 = 5 484 (g5a) + 112, zero failure. **No existing test moved** (the T0 prediction: none). `check_names.py --rules`: 215 DLL files, 465 test files, 0 finding, the same 1 warning. The four
+`docs/hero-trace-389-*.txt` rewritten by the suite are equal but for the line endings (`git diff --ignore-cr-at-eol --quiet` clean) and were restored. The mutants, the Debug suite and the `cmp` of the DLL come with T4.
