@@ -171,3 +171,44 @@ with nothing on the path it runs to 350. Over the pit of the map 347 the hero ke
 - **w7, the thirteenth pillar.** The pillar 24 of the map 423 has its own scripted A and C: pushed from the north side it is moved by that script (about 12 pixels in 70 ticks), never by C76 (no native run, counter 0, no sound). The twelve others (records 12 to 23, a program C that does nothing) do not move.
   "The 13 pillars stay inert" is true of the native handler for all 13, and of the motion for 12.
 - Inert and negative cases cannot be red before the registration (see above); each is paired with a positive case that is.
+
+## T3 - ADR, mutants, suites
+
+ADR: `docs/decisions/0086-the-pushable-pillar-is-ported-from-c76-and-its-stop-of-the-sound-is-a-named-stub-until-g5c.md` (the last number taken on any branch was 0085) and its line in `docs/decisions/README.md`.
+
+### Mutants (real edits applied by script, then undone by `git checkout`; `git diff` empty after each)
+
+Each run: Release, neutralised copy, `--filter` on `PillarAi`, `NativeSpriteRegistryTests`, `WaveSwordLifeTests`, `ChargedArrowAiTests` (109 tests, all green unmutated). Twelve runs for the ten mutants of the plan (the width bound is mutated on each of its two comparisons).
+
+| mutant | killed by (failures of 109) |
+|---|---|
+| threshold 31 to 30 | 8: A1 x2 (`PillarAiStepTests`), W1, W2, W3, W8, W6 x2 |
+| threshold 31 to 32 | 10: the same plus the golden test and `W6_WithTheBlockers...` |
+| counter never reset | 3: golden, A1 `WithoutTheContact...`, W3 |
+| direction `+ 0x10` to `+ 0x08` | 11: golden, W1, W2, W3, W8 side, W5 x3, W6 x3 |
+| width bound `<` to `<=` on `hero.Width` | 2: A2 `TheWidthBounds...`, golden |
+| width bound `<` to `<=` on `pillar.Width` | 2: A2 `TheWidthBounds...`, golden |
+| blocked by the pillar replaced by blocked by any entity | 2: W5 `TwoAlignedPillars...`, golden |
+| animation 1 not posed | 11: golden, W1, W2, W3, W5 x3, W6 x3, W8 |
+| sound 25 to 26 | 2: golden, W8 |
+| stop of the sound called unconditionally | 5: golden, A1 `WithoutTheContact...`, W8, W4 (dy 16 and -14) |
+| key also registered for the type 298 | 1: `PillarAiRegistrationTests.TheKeyIsNotRegisteredForAnyOtherSpriteType(298)` |
+| key not registered | 17: the 3 pins, `TheKeyIsC76...`, and 13 world cases (W1, W2, W3, W4 x3, W5 x3, W6 x3, W8) |
+
+All killed.
+
+### Suites (foreground, `--blame-hang-timeout 60s`, four partitions as in T0 because a full run is over the 10 minute limit)
+
+| configuration | Arcs | Ai, Audio, Cameras, Cells, Combat, Data, Dialogues | Entities, Events, ExportGuards, Hero, Items | the rest | total |
+|---|---|---|---|---|---|
+| Release (neutralised copy) | 76 / 0 failed | 1 134 / 0 | 2 485 / 0 | 1 789 / 0 | 5 484, 0 failed |
+| Debug (last, copies the DLL) | 76 / 0 | 1 134 / 0 | 2 485 / 0 | 1 789 / 0 | 5 484, 0 failed |
+
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: identical (exit 0).
+- `python -B tools/dll-structure/check_names.py --rules`: 215 DLL files, 458 test files, 0 finding, 1 warning (`TextBoxGpu.cs:266`, the one at the start).
+- The four `docs/hero-trace-389-*.txt` rewritten by the suites are equal but for the line endings (`git diff --ignore-cr-at-eol --quiet` clean) and were restored.
+- The engine (`CasaEngineMonogame`), the converter (`alundra-casaengine-project-converter` and its tests), `data-extracted/`, `alundra-project/` and `alundra-datas-analyser`: no committed diff `2eff6b46..HEAD`.
+
+### Existing tests that moved: measured against the predicted list
+
+Predicted (T0): the three pins of the production registry. Measured by `git diff --name-status 2eff6b46 HEAD`: `NativeSpriteRegistryTests.cs`, `WaveSwordLifeTests.cs`, `ChargedArrowAiTests.cs` modified (plus `Support/AnnexFiles.cs`, which gains `PillarAnnex`, a helper and not a test). No other existing test file changed and no other existing test failed in any run. Equal to the prediction.
