@@ -107,3 +107,44 @@ of the production code (applied by `t1/g5d-mut.py`, undone by `git checkout`, `g
 Facts measured while writing, not in the plan:
 - the statue of the map 352 program F runs a second time, on the frame 65, in the sequence of the probe (the hero, who followed the statue after the release, touches it again): pinned (`FramesOf(5, 1900, 0x05)` is `[8, 65]`);
 - the block of the map 102 with the hero in the east zone falls to z 0 (the floor of the map there), the one with the hero in the north zone to z 32; the block of the record 9 walks east.
+
+## T2 - mutations, suites, proofs
+
+### The four mutations of the plan, and the fifth of (s6)
+
+Run in T1 (above, `t1/mutants.log`), real edits of `Alundra/` applied by `t1/g5d-mut.py` then undone by `git checkout`; the production code did not change between that run and the suites below (`git diff a27c4ffb -- Alundra` is empty),
+so they are not run again.
+
+| mutation of the plan | test the plan expects | red (measured) |
+|---|---|---|
+| the flag of the program F not raised (M1) | (s1) | (s1), (s2), (s3), (s4) |
+| an opcode of the families removed from the dispatch (M2, `0x3A`) | (s5) | (s5) corpus test |
+| the start of the program F at the contact removed (M3) | (s1), (s2), (s3) | (s1), (s2), (s3), (s4) |
+| the reset of the four words of the hero removed (M4) | (s4) | (s4), (s1), (s2), (s3) |
+| added: `0x87` never touched (M5) | (s6) | both (s6) tests |
+
+### Suites (foreground, `--blame-hang-timeout 60s`, three partitions as in g5a and g5b)
+
+| configuration | Arcs, Ai, Audio, Cameras, Cells, Combat, Data, Dialogues | Entities, Events, ExportGuards, Hero, Items | the rest | total |
+|---|---|---|---|---|
+| Release (neutralised copy) | 1 210 / 0 failed (4 min 23) | 2 607 / 0 (3 min 52) | 1 789 / 0 (45 s) | 5 606, 0 failed |
+| Debug (last, copies the DLL) | 1 210 / 0 (4 min 39) | 2 607 / 0 (4 min 07) | 1 789 / 0 (46 s) | 5 606, 0 failed |
+
+5 606 = 5 596 (g5b) + 10 new tests. The partition "Entities ... Items" went from 2 597 to 2 607 (the 10 new tests are in `Events.`).
+
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: identical.
+- `python -B tools/dll-structure/check_names.py --rules`: 215 DLL files, 467 test files, 0 finding, 1 warning (`TextBoxGpu.cs:266`, the one at the start).
+- `git diff a27c4ffb -- Alundra` empty; `git diff --name-only a27c4ffb HEAD` lists only `Alundra.Tests/Events/` (2 new files) and `docs/plan-e20-annexe/e20-g5/g5d/`. The engine, the analyser, `data-extracted/`,
+  `alundra-project/` and `tools/`: nothing committed (the two submodule entries `CasaEngineMonogame` and `alundra-datas-analyser` were already modified in the working tree at the start of the session and are not touched).
+- The four `docs/hero-trace-389-*.txt` rewritten by each suite are equal but for the line endings (`git diff --ignore-cr-at-eol --quiet -- docs/` clean after each run) and were restored by `git checkout`; never indexed.
+
+### Existing tests that moved: measured against the predicted list
+
+Predicted (the plan: "Aucun test existant ne bouge"): none. Measured: `git diff --name-status a27c4ffb HEAD -- Alundra.Tests` shows two added files and no modified one; no existing test failed in any run. Equal to the prediction.
+
+### Deviations from the plan
+
+- The probes of T0 were replayed in the real tree through a temporary untracked probe file instead of "in a copy" (see T0).
+- The plan's "contact à l'image 31" for the block of the map 23 is the waited variant; the unwaited probe has the contact at the frame 1. Both are pinned (T0).
+- The tests are in `Alundra.Tests/Events/`, not `Arcs/` (the precedent of g5b, ADR-0080: the scripts' domain).
+- Nothing else; no `Alundra/` file, no stop.
