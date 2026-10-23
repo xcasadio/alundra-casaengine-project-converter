@@ -1,0 +1,9 @@
+case g424_-24_+16: map Nirude (inner)-424 ; hero placed at (888,464,16) ; flags set 
+entities of the map (record, sprite type, pos, status, program indexes A..F, sprite program indexes A..F, flags):
+  rec   3 type  433 pos (912,448,16) status Normal idx [0,0,131,0,0,0] sprite [0,0,0,0,0,0] flags 0x32180 collidable True
+frame hold | hero x y z anim xcoll adj | per watched rec: x y z anim dir status fx fy adj xcoll ground
+   1 -  | H 888 464 16 a0 d16 f0,0 ctl0 xc=- adj0 | [rec3 912 448 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+   2 -  | H 888 464 16 a0 d16 f0,0 ctl0 xc=- adj0 | [rec3 912 448 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+   3 -  | H 888 464 16 a0 d16 f0,0 ctl0 xc=- adj0 | [rec3 912 448 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+native handler runs during the case: 0
+skipped or exceeded instructions (frame slot pc opcode kind):
