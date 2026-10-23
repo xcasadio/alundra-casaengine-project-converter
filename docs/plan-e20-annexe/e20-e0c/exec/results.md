@@ -138,3 +138,99 @@ Prochain numéro d'ADR libre sur toutes les branches : **0082** (le plus haut pr
 3. Le premier tick C d'un objet lâché est T + 2 (A à T + 1) dans les deux cas de case (b) ; le plan disait « un tick après la mort » pour le premier tick qui tourne : c'est A (qui rend la main), C255 vient au suivant.
 4. Le héros bloqué tombe encore, l'horloge d'animation d'une entité bloquée compte encore (i) : la phase D les corrige (D-E0C-6).
 5. Un test de carte posée par A255 natif : le héros ne se tient plus sur l'objet (j).
+
+## Synthèse par tâche (mesurée)
+
+| tâche | commit | tests de la suite (Release, copie neutralisée) | échecs | fichier |
+|---|---|---|---|---|
+| départ (HEAD `916f0374`) | | 5 098 | 0 | |
+| T1 phase A | `9e43e464` | 5 153 | 0 | `t1-results.md` |
+| T2 phase B | `173ffdb9` | 5 224 | 0 | `t2-results.md` |
+| T3 phase C | `d99df16e` | 5 235 | 0 | `t3-results.md` |
+| T4 phase D | `f4eb9429` | 5 273 | 0 | `t4-results.md` |
+| T5 (aucun code de la DLL) | voir les commits de T5 | 5 273 | 0 | cette section |
+
+## T5 : ADR, mutants, suites, gardes (2026-10-23)
+
+HEAD de départ `f4eb9429`, branche `chantier/theme1-porter-plateforme`. Aucun code de la DLL n'est écrit par T5 : `git diff` de `Alundra/` et d'`Alundra.Tests/` vide à la fin (les mutants sont annulés octet pour octet).
+Les deux verifiers frais (dont celui sur les épingles) ne sont pas lancés ici : c'est la session principale.
+
+### ADR
+
+Numéro libre recompté sur toutes les branches locales et les `refs/` (`git ls-tree` de chaque ref) et sur les worktrees : le plus haut est 0081, aucun 0082 nulle part. L'ADR est
+`docs/decisions/0082-the-loot-drop-and-the-pickup-of-objects-are-ported-with-named-stubs-for-the-fanfare-the-chest-and-flagged-objects.md` (Accepted, 2026-10-23), avec sa ligne dans l'index `docs/decisions/README.md`.
+Commit `a41b4c0e`. La ligne « Decisions: see ADR-0082 » du plan n'est pas ajoutée : `docs/plan-e20-heros.md` ne se modifie pas dans cette tâche (à faire par la session principale).
+
+### Mutants du code de la DLL
+
+37 mutants (la liste du plan est couverte en entier, plus `drop_z_not_minus_one`, `drop_sound_omitted`, `life_mark_omitted`, `bounce_without_reset`, `block_without_the_hero` etc.), **tous tués** : `t5-mutants.txt` (nom, nombre de tests en échec, deux premiers noms),
+`scripts/t5_mutants.py` (les mutations, appliquées et annulées par copie de sauvegarde, plusieurs remplacements possibles par mutant) et `scripts/t5_runmut.sh` (applique, construit en Release avec la copie neutralisée, lance les 12 familles de tests de la tranche, annule).
+Filtre : `PickupAi`, `LootDrop`, `ItemEffects`, `HeroHeals`, `WorldProxyBlock`, `DestroyEntityBreakEffect`, `NativeSpriteRegistry`, `BeannoideLootArc`, `DialogueDirectorTests`, `ItemTablesTests`, `BeannoideOracleTests`, `MurutaOracleTests`.
+Correspondance avec la liste du plan :
+
+| liste du plan | mutant |
+|---|---|
+| veto oublié | `veto_forgotten_contents`, `veto_forgotten_random` |
+| veto avant le tirage | `veto_before_the_roll` |
+| `+0x278` toujours 600 | `life_always_600` |
+| seuil du rebond `<` pour `<=` | `bounce_threshold_le` |
+| rebond sans remise à 0 | `bounce_without_reset` |
+| décompte qui détruit à 1 | `life_destroys_at_1` |
+| marque à 120 oubliée | `life_mark_omitted` |
+| recouvrement `<=` pour `<` (chaque sens) | `overlap_hero_le`, `overlap_object_le` |
+| positions du tick courant | `overlap_positions_of_the_current_tick` |
+| ramassage pendant un dialogue | `pickup_during_a_dialogue` |
+| état 3 qui n'attend pas la fermeture | `state3_does_not_wait_for_the_box` |
+| plafond d'argent | `money_cap_removed` |
+| cœur moyen à `PVmax/2` | `medium_heart_at_half_of_hp_max` |
+| étincelles créées tout de suite (retourné) | `sparks_created_at_once` |
+| lâcher à la destruction légère | `drop_in_the_light_destruction` |
+| lâcher après l'état 4 | `drop_after_the_status_4` |
+| message omis pour un posé / présent pour un lâché | `message_omitted_for_the_placed`, `message_present_for_the_dropped` |
+| clé et non-clé permutées | `key_and_ordinary_swapped` |
+| modes 0 et 1 permutés | `modes_0_and_1_swapped` |
+| masque 4 non écrit / masque 3 non écrit | `mask_4_not_written`, `mask_3_not_written` |
+| état 2 atteint par un non-clé | `ordinary_reaches_the_state_2` |
+| `Block` oublié / sans le héros | `block_forgotten`, `block_without_the_hero` |
+| `Unblock` oublié | `unblock_forgotten` |
+| entité bloquée qui tourne son horloge / sa physique | `blocked_entity_runs_its_clock`, `blocked_entity_runs_its_physics` |
+| `SetGameFlag(-1)` porté | `set_game_flag_minus_1_ported` |
+| A255 posé sans `~0x80` | `a255_without_not_0x80` |
+| A255 inscrit sur le type 30 | `a255_registered_for_the_chest` (la liste `SpriteTypes` sert A255 et C255 ; tué par le registre et P8) |
+| inventaire d'abord inversé | `inventory_first_inverted` |
+| bouchon de la fanfare qui attend | `fanfare_waits_for_cd_busy` |
+
+Mutants du plan sans mutant propre : aucun. Écart de lecture : « veto avant le tirage » est lu comme un veto qui annule avant que le générateur ne bouge (le veto dépend de l'objet tiré, il ne peut venir avant le tirage autrement) ; « plafond d'argent » est mesuré sur le chemin de `GiveItem` (l'objet `0x47` ajouté sans le plafond de `AddMoney`, qui n'est pas du code d'e0c).
+
+### Suites
+
+| suite | tests | échecs |
+|---|---|---|
+| Release, copie neutralisée (build puis test, `--blame-hang-timeout 60s`) | 5 273 | 0 |
+| Debug, en dernier | 5 273 | 0 |
+
+5 273 = 5 098 + 55 (T1) + 71 (T2) + 11 (T3) + 38 (T4). `docs/hero-trace-389-*.txt` (4 fichiers) réécrits en fins de ligne par les suites : `git diff --ignore-cr-at-eol --quiet -- docs/` rend 0 ; restaurés par `git checkout --` (après chaque suite), jamais indexés.
+
+### Gardes
+
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll` : identiques (construction Debug de 02:38 le 2026-10-23, après les mutants).
+- `python -B tools/dll-structure/check_names.py --rules` : 211 fichiers de DLL, 428 de tests, 0 trouvaille, 1 avertissement (celui du départ, `TextBoxGpu.cs:266`).
+- `git diff 916f0374 HEAD` : `Alundra/Entities/EntityScriptProxy.cs`, le moteur (`CasaEngineMonogame`, pointeur de sous-module), `alundra-datas-analyser`, `data-extracted/`, `alundra-project/` et le convertisseur : aucun changement (les seuls chemins touchés sont sous `Alundra/`, `Alundra.Tests/` et `docs/`).
+
+### Tests existants déplacés, contre la liste prédite de T0 (e)
+
+Mesure : les tests présents à `916f0374` dont le texte a changé entre `916f0374` et `HEAD` (signature ou corps), `git diff 916f0374 HEAD` sur les sept fichiers de test modifiés.
+
+| test (à `916f0374`) | prédit | mesuré |
+|---|---|---|
+| `NativeSpriteRegistryTests.ProductionRunner_RegistryHoldsTheSevenHandlers…` (renommé `…HoldsTheHandlersOfTheBeannoid…AndThePickupObjects…`) | phase B | oui |
+| `WaveSwordLifeTests.V3_TheProductionRegistryHoldsSevenKeys…` (renommé `…NineKeys…`) | phase B | oui |
+| `DestroyEntityBreakEffectTests.TheDestruction_DrawsNoNumber_AndCreatesNoEntity_EvenWithContents` (réécrit, renommé) | phase C | oui |
+| `BeannoideOracleTests.E1_TheVectors_FollowTheProjectionOfThePlan` | phase C | oui |
+| `BeannoideOracleTests.E1_TheCallsOfTheScenarios_FollowTheProjectionOfThePlan` | phase C | oui |
+| `MurutaOracleTests.E1_TheVectors_FollowTheProjectionOfThePlan` | phase C | oui |
+| `MurutaOracleTests.E1_TheCallsOfTheScenarios_FollowTheProjectionOfThePlan` | phase C | oui |
+| `TestSavesTests.TheNinePresets_AreListed_InTheOrderOfTheTable` (renommé `TheElevenPresets_…`) | **non prédit** | oui (T4 : les deux préréglages de recette de T0 (k) allongent la liste) |
+
+Les arcs `BeannoideGrateArcTests` et `MurutaHallArcTests` (« à mesurer ») n'ont pas bougé : aucun changement dans le diff. 8 tests existants bougent, 7 prédits + 1 non prédit (plafond du plan : 10, non atteint). Aucun arc ni trace ne bouge.
+Le compte des tests déplacés de `t4-results.md` (« trois ») comptait deux tests nés en T2 (`W7_…`, `ADroppedKeyObject_…`), absents de `916f0374` : ils ne sont pas des tests existants au sens de cette mesure ; le seul test existant de T4 est celui des préréglages.
