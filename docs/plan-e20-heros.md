@@ -7427,6 +7427,9 @@ Decisions: see ADR-0086.
   (w7) sont reportées ci-dessus. `Alundra.Tests/Support/AnnexFiles.cs` reçoit une aide de plus, hors de la liste du périmètre (sans effet
   sur un test existant).
 - **Recette de l'auteur, à faire** : `92-ancien-sanctuaire-bug-pillier.sav` (carte 26).
+- **Après D5b (2026-10-24, D-D5B-11 du plan d'E19)** : (w6) vers l'est compte 15 images au-dessus de la fosse au lieu de 16. Le héros
+  qui repose sur le pilier y reçoit une fois sa poussée planifiée (0,75 px), pendant l'image où la DLL, en retard d'un tick sur le
+  binaire (D-E19-13), garde encore l'animation de poussée. La position finale est inchangée.
 
 ##### E20.g5b — Les opcodes des boutons et des blocs scriptés : `0x72`, `0xA9`, `0xAA`, prélevés sur E19.sm3 et E19.sm4 ✅ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, **READY** à la deuxième relecture, `plan-verifier` frais ; **faite et CONFIRMED le 2026-10-24** par deux verifiers frais)
 

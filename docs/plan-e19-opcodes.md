@@ -4264,6 +4264,17 @@ retomber (aujourd'hui il traverse et finit au fond du creux). La double force XY
 - **D-D5B-9** — Ordre : après f6a, avant g1a. g1a écrit alors son (w5) (« plateforme mouvante, modèle UH14 ») en phase 0, l'épingle d'UH-14
   étant réépinglée par T5 ; le plan de g1a en porte la note (`docs/plan-e20-heros.md` §1.24.1, (w5), ajoutée le 2026-10-22 avec cette
   révision).
+- **D-D5B-11** (2026-10-24, arrêt de T5 tranché par la session principale) — Le XY planifié du porteur (T5, D-D5B-7) déplace une
+  épingle de g5a : `PillarAiPitWorldTests.W6_PushedEast_…`, dont le décompte des images où le héros passe au-dessus de la fosse sur le
+  pilier tombe de 16 à 15. La cause est mesurée sur la trace de la machine (`docs/plan-e20-annexe/e20-g5/disc/out/p11_east.txt`).
+  - Le binaire remet l'animation de poussée du pilier à 0 au tick 145. La DLL le fait une image plus tard (image 146) : c'est le retard
+    d'un tick déjà accepté (D-E19-13, D-G5-4).
+  - Pendant cette image, le héros repose sur le pilier, qui porte encore sa poussée planifiée de 0,75 px par tick. T5 la lui transmet
+    selon la règle du binaire.
+  - Le héros gagne donc 0,75 px une fois ; sa position finale (x 373) est inchangée.
+  - Disposition : l'épingle est réépinglée à 15, et l'écart est nommé dans le test et dans les résultats de g5a. La règle de T5 reste
+    celle du binaire ; le retard de remise de l'animation reste celui de D-E19-13. C'est la seule épingle existante autre qu'UH-14 qui
+    bouge.
 - **D-D5B-10** — Recette sur la carte 22 (D-E19-124) : préréglage `elevator-m22` (carte 22, case (46, 8), niveau 2), au sud du levier de
   droite ; il faut frapper le levier, descendre dans le creux, sauter sur la plateforme et attendre. Un départ déjà sur la plateforme est
   impossible : l'état du levier (drapeaux temporaires `T1`, `T3`) ne se sauvegarde pas.
@@ -4380,7 +4391,8 @@ un patch).
 ##### Acceptation
 - La liste rouge de T1 est rouge au HEAD de départ et verte à la fin, chaque témoin au vert par la tâche qui le porte. Les gardes
   restent vertes de bout en bout. Si T6C s'est arrêté, l'acceptation se lit sans PREFAB-C et O-E19-81 est ouvert.
-- UH-14 est la seule épingle existante qui bouge, réépinglée à la valeur du binaire.
+- UH-14 est la seule épingle existante qui bouge, réépinglée à la valeur du binaire, avec l'exception tranchée par D-D5B-11
+  (`PillarAiPitWorldTests.W6_PushedEast_…`, 16 → 15).
 - Les quatre traces du héros et la trace d'intro sont identiques à l'octet.
 - L'arc A-D5b-22 a un écart pied − dessus nul à chaque image de la montée.
 - Chaque mutation de T8 fait passer au rouge son témoin.
