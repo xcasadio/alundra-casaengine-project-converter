@@ -1,0 +1,2 @@
+rolls=12016 mismatches=0 cost(steps)={1: 10464, 2: 1552} items={0: 10464, 69: 437, 70: 237, 71: 94, 84: 591, 85: 193}
+every roll costs 1 or 2 steps: True

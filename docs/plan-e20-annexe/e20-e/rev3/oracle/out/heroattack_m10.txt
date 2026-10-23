@@ -1,0 +1,5 @@
+hero states (tick, state): [(1, 16), (22, 0), (27, 43), (28, 45), (31, 20), (41, 45)]
+CATE calls made: 31
+cuts: [{'tick': 2, 'col': 10, 'row': 56, 'z': 0, 'rng_before': 2472470177, 'rng_after': 1020151012, 'ret': 0}]
+sounds: [(1, 'snd(29)'), (2, 'snd(31)'), (22, 'snd(0)'), (27, 'snd(10)'), (28, 'snd(0)'), (31, 'snd(29)'), (41, 'snd(0)')]
+hero pz min/max: [1, 1802241]

@@ -1,0 +1,119 @@
+#nullable enable
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using CasaEngine.Core.Logging;
+using Xunit;
+using Alundra.Cells;
+using Alundra.Maps;
+using Alundra.Tests.Support;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Rng;
+
+namespace Alundra.Tests.Probes;
+
+// THROWAWAY (E20.e rev3 T0): measurement probes, removed after the run; the text is kept in docs/plan-e20-annexe/e20-e/rev3/probes/.
+public class ZzT0Probes
+{
+    private sealed class Cap : ILogger
+    {
+        public readonly List<string> All = new();
+        public void Close() { }
+        public void WriteTrace(string msg) { }
+        public void WriteDebug(string msg) { }
+        public void WriteInfo(string msg) { }
+        public void WriteWarning(string msg) => All.Add("W " + msg);
+        public void WriteError(string msg) => All.Add("E " + msg);
+    }
+
+    private static int Count(object model) => ((ICollection)model).Count;
+
+    [Theory]
+    [InlineData("Overworld", "Overworld 2,1-10", 10)]
+    [InlineData("Overworld", "Overworld 3,1-14", 14)]
+    [InlineData("Overworld", "Overworld 3,3-16", 16)]
+    public void I_TheVisualIsComplete(string zone, string world, int mapNo)
+    {
+        var cap = new Cap();
+        Logs.AddLogger(cap);
+        var lines = new List<string>();
+        using (var arc = new ArcRun(new ArcSpec("T0-i-" + mapNo, zone, world, Array.Empty<int>(), 0, 0, 0, 10, RealController: true, Prefabs: true)))
+        {
+            arc.OneFrame();
+            var sync = arc.Proxy.CellVisualSync!;
+            var store = (CellStore)((IEntityWorldContext)arc.Proxy).CellMutator!;
+            var wallModel = (IDictionary)typeof(CellVisualSync).GetField("_wallModel", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(sync)!;
+            var floorModel = (IDictionary)typeof(CellVisualSync).GetField("_floorModel", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(sync)!;
+            var keyType = wallModel.Keys.Cast<object>().First().GetType();
+            int cuttable = 0, withStack = 0, tiles = 0, missing = 0;
+            for (var y = 0; y < 60; y++)
+            {
+                for (var x = 0; x < 52; x++)
+                {
+                    if ((store.GetWalkability(x, y) & 2) == 0) { continue; }
+                    cuttable++;
+                    var st = store.GetWallTileStack(x, y);
+                    if (st == null) { continue; }
+                    withStack++;
+                    for (var k = 0; k < st.Value.Tiles.Count; k++)
+                    {
+                        if (st.Value.Tiles[k] == 0xffff) { continue; }
+                        tiles++;
+                        var key = Activator.CreateInstance(keyType, x, y, k);
+                        if (!wallModel.Contains(key!)) { missing++; }
+                    }
+                }
+            }
+            lines.Add($"map {mapNo} ({world}): cuttable cells {cuttable}, with a stack {withStack}, visible tiles of those stacks {tiles}, not in the live overlay model {missing}; overlay model: {Count(wallModel)} wall + {Count(floorModel)} floor entries");
+            lines.Add($"   log lines mentioning 'did not match': {cap.All.Count(l => l.Contains("did not match"))} -> [{string.Join(" | ", cap.All.Where(l => l.Contains("did not match")))}]");
+            // the cost of one reconstruction: cut one bush the way a stack destruction goes (copy an empty source cell over it), then flush
+            for (var y = 0; y < 60; y++)
+            {
+                for (var x = 0; x < 52; x++)
+                {
+                    if ((store.GetWalkability(x, y) & 2) == 0 || store.GetWallTileStack(x, y) == null) { continue; }
+                    var before = Count(wallModel);
+                    var rec = sync.ReconstructionCount;
+                    store.CopyCellRectangle(0, 0, 1, 1, x, y);   // cell (0,0) has no stack: the destination's stack is destroyed
+                    var sw = Stopwatch.StartNew();
+                    sync.FlushPendingOverlayReconstruction();
+                    sw.Stop();
+                    lines.Add($"   first bush with a stack ({x},{y}): wall model {before} -> {Count(wallModel)}, reconstructions {rec} -> {sync.ReconstructionCount}, one flush {sw.Elapsed.TotalMilliseconds:F2} ms");
+                    goto done;
+                }
+            }
+        done:;
+        }
+        ;
+        File.AppendAllText(Path.Combine(Path.GetTempPath(), "t0-probe-i.txt"), string.Join("\n", lines) + "\n");
+    }
+
+    [Fact]
+    public void G2_TheGeneratorInTheEmptiedBench_TickByTick()
+    {
+        var lines = new List<string>();
+        using var arena = new HitArena("t0-g2", 212, 96, new List<int[]>(), 24);
+        foreach (var e in arena.Arc.Entities.Where(e => !ReferenceEquals(e, arena.Hero)).ToList())
+        {
+            e.Status = EntityStatus.FlagToDestroy;
+        }
+
+        arena.Arc.Proxy.RecycleDestroyedEntities();
+        ((EventProgramRunner)arena.Arc.Runner).NativeHandlersEnabled = true;
+        var words = new List<ulong>();
+        arena.BeforeTick = tick =>
+        {
+            if (tick == 1) { GameRandom.RandomSeed = 0x1002; }
+        };
+        arena.AfterTick = tick => words.Add(GameRandom.RandomSeed);
+        arena.RunSwing(40);
+        lines.Add("G2 words after each tick (seed 0x1002 at the head of tick 1): " + string.Join(" ", words.Select(w => w.ToString("X8"))));
+        lines.Add($"G2 entities other than the hero: {arena.Arc.Entities.Count(e => !ReferenceEquals(e, arena.Hero))}");
+        File.AppendAllText(Path.Combine(Path.GetTempPath(), "t0-probe-g2.txt"), string.Join(Environment.NewLine, lines) + Environment.NewLine);
+    }
+}

@@ -1,0 +1,42 @@
+# cell height byte 0: zc = 0x80000
+  lower edge  bz = zc-1   (HitBoxZ_DLL = zc-2)   top = zc + 0x100000 : CUT
+  lower edge  bz = zc+0   (HitBoxZ_DLL = zc-1)   top = zc + 0x100000 : CUT
+  lower edge  bz = zc+1   (HitBoxZ_DLL = zc+0)   top = zc + 0x100000 : skip
+  upper edge  bz + bh = zc-1  (bz = zc - 0x100000) : skip
+  upper edge  bz + bh = zc+0  (bz = zc - 0x100000) : CUT
+  upper edge  bz + bh = zc+1  (bz = zc - 0x100000) : CUT
+# cell height byte 1: zc = 0x180000
+  lower edge  bz = zc-1   (HitBoxZ_DLL = zc-2)   top = zc + 0x100000 : CUT
+  lower edge  bz = zc+0   (HitBoxZ_DLL = zc-1)   top = zc + 0x100000 : CUT
+  lower edge  bz = zc+1   (HitBoxZ_DLL = zc+0)   top = zc + 0x100000 : skip
+  upper edge  bz + bh = zc-1  (bz = zc - 0x100000) : skip
+  upper edge  bz + bh = zc+0  (bz = zc - 0x100000) : CUT
+  upper edge  bz + bh = zc+1  (bz = zc - 0x100000) : CUT
+# cell height byte 2: zc = 0x280000
+  lower edge  bz = zc-1   (HitBoxZ_DLL = zc-2)   top = zc + 0x100000 : CUT
+  lower edge  bz = zc+0   (HitBoxZ_DLL = zc-1)   top = zc + 0x100000 : CUT
+  lower edge  bz = zc+1   (HitBoxZ_DLL = zc+0)   top = zc + 0x100000 : skip
+  upper edge  bz + bh = zc-1  (bz = zc - 0x100000) : skip
+  upper edge  bz + bh = zc+0  (bz = zc - 0x100000) : CUT
+  upper edge  bz + bh = zc+1  (bz = zc - 0x100000) : CUT
+# the real hero, basic sword east, flat ground g, cuttable cells of height H (cuts in 30 ticks, first box (tick, bz, bh))
+  g=0 H=0 : 5 cuts  first call box (tick, bz, bh) = [(2, 1, 983039)]
+  g=0 H=1 : 0 cuts  first call box (tick, bz, bh) = [(2, 1, 983039)]
+  g=0 H=2 : 0 cuts  first call box (tick, bz, bh) = [(2, 1, 983039)]
+  g=0 H=3 : 0 cuts  first call box (tick, bz, bh) = [(2, 1, 983039)]
+  g=0 H=4 : 0 cuts  first call box (tick, bz, bh) = [(2, 1, 983039)]
+  g=1 H=0 : 0 cuts  first call box (tick, bz, bh) = [(2, 1048577, 983039)]
+  g=1 H=1 : 5 cuts  first call box (tick, bz, bh) = [(2, 1048577, 983039)]
+  g=1 H=2 : 0 cuts  first call box (tick, bz, bh) = [(2, 1048577, 983039)]
+  g=1 H=3 : 0 cuts  first call box (tick, bz, bh) = [(2, 1048577, 983039)]
+  g=1 H=4 : 0 cuts  first call box (tick, bz, bh) = [(2, 1048577, 983039)]
+  g=2 H=0 : 0 cuts  first call box (tick, bz, bh) = [(2, 2097153, 983039)]
+  g=2 H=1 : 0 cuts  first call box (tick, bz, bh) = [(2, 2097153, 983039)]
+  g=2 H=2 : 5 cuts  first call box (tick, bz, bh) = [(2, 2097153, 983039)]
+  g=2 H=3 : 0 cuts  first call box (tick, bz, bh) = [(2, 2097153, 983039)]
+  g=2 H=4 : 0 cuts  first call box (tick, bz, bh) = [(2, 2097153, 983039)]
+  g=3 H=0 : 0 cuts  first call box (tick, bz, bh) = [(2, 3145729, 983039)]
+  g=3 H=1 : 0 cuts  first call box (tick, bz, bh) = [(2, 3145729, 983039)]
+  g=3 H=2 : 0 cuts  first call box (tick, bz, bh) = [(2, 3145729, 983039)]
+  g=3 H=3 : 5 cuts  first call box (tick, bz, bh) = [(2, 3145729, 983039)]
+  g=3 H=4 : 0 cuts  first call box (tick, bz, bh) = [(2, 3145729, 983039)]

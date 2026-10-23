@@ -1,0 +1,9 @@
+map 14 (Overworld 3,1-14): cuttable cells 179, with a stack 177, visible tiles of those stacks 354, not in the live overlay model 0; overlay model: 2137 wall + 1931 floor entries
+   log lines mentioning 'did not match': 0 -> []
+   first bush with a stack (13,11): wall model 2137 -> 2135, reconstructions 0 -> 1, one flush 1,23 ms
+map 10 (Overworld 2,1-10): cuttable cells 133, with a stack 133, visible tiles of those stacks 266, not in the live overlay model 0; overlay model: 1884 wall + 1774 floor entries
+   log lines mentioning 'did not match': 0 -> []
+   first bush with a stack (9,15): wall model 1884 -> 1882, reconstructions 0 -> 1, one flush 0,62 ms
+map 16 (Overworld 3,3-16): cuttable cells 266, with a stack 261, visible tiles of those stacks 519, not in the live overlay model 0; overlay model: 1816 wall + 2360 floor entries
+   log lines mentioning 'did not match': 0 -> []
+   first bush with a stack (7,7): wall model 1816 -> 1814, reconstructions 0 -> 1, one flush 1,86 ms
