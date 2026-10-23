@@ -440,6 +440,11 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
     int IScriptHost.BalanceThreshold => BalanceThreshold;
 
+    /// <summary>E20.e (S-E6): the effect the cut of the grass creates, the property <c>TileCutEffectId</c> of the map (<see cref="TileEffect.ResolveCutEffectIndex"/>), read once at the map load; 2 when it is missing.</summary>
+    internal int TileCutEffectIndex = TileEffect.DefaultCutEffectIndex;
+
+    int IScriptHost.TileCutEffectIndex => TileCutEffectIndex;
+
     /// <summary>
     /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): the three equipment records (<c>0x80146E00-0x80146E14</c>), one set per world. The hero's tick fills them (<see cref="PlayerManager"/>, <c>UpdateItemEffectState</c>
     /// steps 2 to 5); they are emptied when the map is loaded (<c>InitializeItems</c> <c>0x80044520</c>), here with the threshold.
@@ -963,6 +968,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
         _tileMapData = tileMapData;
         BalanceThreshold = BalanceTables.ResolveThreshold(tileMapData); // E20.c1a C1: the threshold of the balance chain, before any entity is created.
+        TileCutEffectIndex = TileEffect.ResolveCutEffectIndex(tileMapData); // E20.e S-E6: the byte 9 of the header, read once.
         EquipmentRecords.Clear(); // E20.c1b K2: 0x80044520 zeroes the three equipment pointers at every map load.
 
         // D-T-3 (docs/plan-transitions-carte.md, slice T1): the session carrier's own map-entry

@@ -35,4 +35,11 @@ public interface ICellMutator
     /// Walkability/GroundProperty (bit clear). See <see cref="CellStore.ClearCellBits"/> for the
     /// hardcoded clamp.</summary>
     void ClearCellBits(int x, int y, int walkabilityMask, int groundPropertyMask);
+
+    /// <summary>
+    /// E20.e (docs/plan-e20-heros.md section 1.27, <c>0x8003A924-0x8003A938</c>): the cut of a grass cell. Clears the bit <c>0x02</c> of the cell's walkability, sets its wall-stack word to -1 (the binary's
+    /// <c>0xFFFF</c>) and destroys its stack of wall tiles; the height, the slope, the ground property and the floor tile id stay. Distinct from <see cref="ClearCellBits"/>, which never touches the stack.
+    /// <paramref name="column"/> and <paramref name="row"/> are the already clamped cell of the binary (0 to <c>0x33</c>, 0 to <c>0x3B</c>) inside the field. Fires <see cref="CellStore.CellsMutated"/> once.
+    /// </summary>
+    void CutCell(int column, int row);
 }

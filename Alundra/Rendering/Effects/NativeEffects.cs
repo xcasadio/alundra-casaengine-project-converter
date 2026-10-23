@@ -122,6 +122,20 @@ public static class NativeEffects
         }
     }
 
+    /// <summary>
+    /// E20.e (docs/plan-e20-heros.md section 1.27, S-E1; <c>0x8003A974</c>): the effect of a cut cell, <c>CreateEffectEntity(0, effect, 0, x, y, z)</c>: the global table (never the map's), animation 0, at the centre of the cell
+    /// (<paramref name="x"/>, <paramref name="y"/>) and at <paramref name="z"/> = the cell's height byte shifted by 20, WITHOUT the +0x80000 of the band test (the decompilation adds it, the binary does not). No number is drawn and no
+    /// sound is played; a full reservoir creates nothing. The slot is handed to <see cref="CreatedForTests"/>.
+    /// </summary>
+    public static void CreateTileCutEffect(EffectReservoir reservoir, int effect, int x, int y, int z)
+    {
+        var slot = reservoir.Create(false, effect, 0, x, y, z);
+        if (slot != null)
+        {
+            CreatedForTests?.Invoke(slot);
+        }
+    }
+
     /// <summary>The global effect of the charge: the hold spark and the 16 effects of the burst (<c>0x8003BDD8(0, 0x10, 0, x, y, z + 0x100000)</c>, bank 0, effect 16: 7 frames, 14 ticks, ends with <c>Destroy</c>).</summary>
     public const int ChargeEffect = 0x10;
 

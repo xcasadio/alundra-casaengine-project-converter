@@ -337,6 +337,27 @@ public sealed class CellStore : ICellMutator
         }
     }
 
+    /// <summary>The bit of the walkability that makes a cell cuttable grass (<c>andi 2</c>, <c>0x8003A8F4</c>).</summary>
+    public const int CuttableWalkabilityBit = 0x02;
+
+    /// <summary>
+    /// E20.e (<c>0x8003A924-0x8003A938</c>): the cut of one cell, see <see cref="ICellMutator.CutCell"/>. The walkability loses the bit <see cref="CuttableWalkabilityBit"/> (the others stay), the wall-stack word
+    /// becomes -1 and the stack is destroyed (the visual then drops its tiles at the next flush); the ground property, the slope, the height and the floor tile id are not touched. A cell already cut is cut again
+    /// without harm (the caller never does: the bit is its gate).
+    /// </summary>
+    public void CutCell(int column, int row)
+    {
+        var index = column + row * _width;
+        _walkability[index] &= ~CuttableWalkabilityBit;
+        _wallTilesOffset[index] = -1;
+        _wallTiles[index] = null;
+
+        if (CellsMutated != null)
+        {
+            CellsMutated(new[] { index });
+        }
+    }
+
     /// <summary>Mutable counterpart of the immutable, JSON-parsed <see cref="WallTileStack"/> - this
     /// store's own private working copy, never shared with <see cref="CellsRecords"/> itself (see
     /// class doc on why wall stacks are not aliased). Unlike the parsed record it carries the original's

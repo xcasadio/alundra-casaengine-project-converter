@@ -30,6 +30,24 @@ internal static class AnnexFiles
         throw new InvalidOperationException($"AnnexFiles: no '{VectorsFolder}/{name}' found above '{AppContext.BaseDirectory}'.");
     }
 
+    /// <summary>E20.e T1: a file of the annex <c>docs/plan-e20-annexe/e20-e/rev3/</c> (the vectors and the outputs of the oracle of the cut of the grass), found above the test binaries.</summary>
+    public static string CutAnnex(string relative)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "docs/plan-e20-annexe/e20-e/rev3", relative);
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/e20-e/rev3/{relative}' found above '{AppContext.BaseDirectory}'.");
+    }
+
     /// <summary>The parsed vector file; the caller disposes it.</summary>
     public static JsonDocument ReadVector(string name) => JsonDocument.Parse(File.ReadAllText(Vector(name)));
 }

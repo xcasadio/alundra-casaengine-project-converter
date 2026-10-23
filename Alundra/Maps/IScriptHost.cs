@@ -143,6 +143,12 @@ public interface IScriptHost
     int BalanceThreshold => 0;
 
     /// <summary>
+    /// E20.e (docs/plan-e20-heros.md section 1.27, S-E6, D-E20-49): the global effect the cut of the grass creates, the byte 9 of the map header (<c>[[0x800E4334] + 9]</c>, <c>0x8003A974</c>), read once at the map load under the
+    /// name <c>TileCutEffectId</c> (<see cref="Cells.TileEffect.ResolveCutEffectIndex"/>). 2 by default, as on the 483 maps. A default interface member, like <see cref="BalanceThreshold"/>.
+    /// </summary>
+    int TileCutEffectIndex => 2;
+
+    /// <summary>
     /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): this world's three equipment records (<c>0x80146E00-0x80146E14</c>), which the hero's <see cref="PlayerManager.MovePlayer"/> fills at every tick
     /// (<c>UpdateItemEffectState</c> steps 2 to 5). A default interface member, null like <see cref="BalanceTables"/>: a host without the seam keeps no equipment.
     /// </summary>

@@ -30,4 +30,6 @@ caa9028275ce5bd0e77591069e41288516915f62 *./oracle/vec/emu_cate.py
 66f1ec0c61902296c71154e0b7a82a58117f1e30 *./probes/probe-g2-output.txt
 695acf2c24d3f163d020f4d8de4afe918ae0eb17 *./probes/probe-i-output.txt
 e057750837c98bac08685d6d96b7d8554bbbbe96 *./results.md
+5a2d1fd3b1cb69781fc80ff656519aed7f59a687 *./t1-red-names.txt
+1b77825f972cca17977680abee4bbbcbe6375c6c *./t1-results.md
 fec73c882b29f2092c86dcf764d82a9084335a3c *./vectors/cate-vectors.json
