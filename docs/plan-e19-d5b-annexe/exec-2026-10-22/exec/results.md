@@ -197,3 +197,17 @@ Production (no engine file touched):
 
 Red before, green after (Release, neutralised copy): `MarkedB_*` x2 (rising and descending), `PileZB_*` (a marked object on a crate on the platform; the crate is T6A's). Existing tests moved: none.
 Release, the three partitions: 1 216 tests / 0 red; 2 665 / 1 red (`PrefabC_*`, T6C); 1 785 / 0 red. The four traces of the hero restored by `git checkout`.
+
+## T6C - the entities without a controller (path C, PREFAB-C)
+
+PREFAB-C exists (T0 section 5, T1): I33 broken armour on the montage of `ControllerlessVerticalStepTests`, so T6C does not stop and D5b affirms the form with C (O-E19-81 is not needed for the vertical).
+
+Production (no engine file touched):
+- `EntityScriptProxy.EvaluateEntitySupport`: `CopyCarrierForceZ()` is called for the entities that step their own Z without a controller too (the condition of the call already covered `stepsWithoutController`); `StepVerticalWithoutController`
+  reads `ForceZ` for its force of the tick, so the copy is the force the carrier hands over. The "move the target first" and the ceiling of this site were done by T4.
+- `ReadGroundWithoutController`: the end-of-step ground rule of `StepVerticalWithoutController` extracted unchanged (the terrain raised to the top of the entity below, `PosZ <=` it), shared with `EndPhysicsTick`, which reads it again for
+  a passenger without a controller that stepped in the pass (`Status.IsActive()`, a collision field), once its carrier has moved. Without it the passenger that comes before its carrier in the order of the cases kept `IsOnGround` 0
+  (measured: `PrefabC_*` failed `tick 3: onGround 0` with the copy alone).
+
+Red before, green after (Release, neutralised copy): `PrefabC_ABrokenArmourI33WithNoController_OnARisingPlatform_FollowsItInTheSameTick`. Existing tests moved: none (`ControllerlessVerticalStepTests` green).
+Release, the three partitions: 1 216 / 0 red, 2 665 / 0 red, 1 785 / 0 red: 5 666 tests, 0 failure; the red list of T1 is empty (26 red at the start, 27 witnesses, the planned negative guard green). The four traces of the hero restored by `git checkout`.

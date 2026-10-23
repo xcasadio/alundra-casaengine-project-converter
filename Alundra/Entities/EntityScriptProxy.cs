@@ -794,10 +794,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         if ((Controller != null || stepsWithoutController) && !immediateAtSpawn && !(HasLogicalZ && Controller != null))
         {
             ApplyVerticalForceLaw();
-            if (Controller != null)
-            {
-                CopyCarrierForceZ(); // D5b path A
-            }
+            CopyCarrierForceZ(); // D5b paths A and C (the marked entities with a controller: ScriptedMotion.RunLogicalZPreXyStep, path B)
         }
 
         // E19.d2c2 F2b: the force of this tick as the binary's passes read it, before the landing below resets it (see TickForceZ). The hero carried by this entity copies it.
@@ -1250,14 +1247,22 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         WasEntitySupportedLastTick = supportedByEntity;
         TileZ = PosZ >> 20;
 
-        // The end pass of the binary: the floor of the box after the step, the terrain raised to the top + 1 of the highest entity below (a subject only).
-        var floor = terrain;
-        if (eligible && EntitySupport.TryFindSupport(this, collidables, terrain, out _, out var floorTopZ) && floorTopZ > floor)
+        IsOnGround = ReadGroundWithoutController(collidables, eligible);
+    }
+
+    /// <summary>
+    /// The end pass of the binary for an entity without a controller: the floor of the box after the step, the terrain raised to the top + 1 of the highest entity below (a subject only); 1 when <see cref="PosZ"/> is at or under it.
+    /// Read by <see cref="StepVerticalWithoutController"/> after its step and again by <see cref="EndPhysicsTick"/> (E19.d2c2 D5b T6C) once the carrier has moved.
+    /// </summary>
+    private int ReadGroundWithoutController(IReadOnlyList<EntityScriptProxy> collidables, bool eligible)
+    {
+        var floor = TerrainHeight;
+        if (eligible && EntitySupport.TryFindSupport(this, collidables, floor, out _, out var floorTopZ) && floorTopZ > floor)
         {
             floor = floorTopZ;
         }
 
-        IsOnGround = PosZ <= floor ? 1 : 0;
+        return PosZ <= floor ? 1 : 0;
     }
 
     /// <summary>
@@ -1773,6 +1778,11 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         {
             // D5b T6A/T6B: a passenger with a controller (marked HasLogicalZ or not) that moved in this pass reads it again once its carrier has moved; the ones without a controller are T6C's.
             IsOnGround = PosZ + ModZ <= ComputeFloorHeight(ComputeTerrainHeight()) ? 1 : 0;
+        }
+        else if (!IsPlayer && Controller == null && RidingEntity != null && Status.IsActive() && ScriptHost != null && ScriptHost.PhysicsPassId != 0 && PhysicsDoneInPass == ScriptHost.PhysicsPassId && ReadCollisionField() != null)
+        {
+            // D5b T6C: the same for a passenger without a controller that steps its own Z (the prefabs without a controller), by the rule of its own step.
+            IsOnGround = ReadGroundWithoutController(ScriptHost.Collidables, EntitySupport.IsEligibleSubject(this));
         }
     }
 
