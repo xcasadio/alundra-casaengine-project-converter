@@ -1,0 +1,5 @@
+[
+ {"name":"statue2_gel","zone":"Overworld","world":"Overworld 0,1-2","hero":[396,392,208],"segments":[["R",40],["",5],["R",30]],"watch":[9],"settle":6},
+ {"name":"statue2_nopush","zone":"Overworld","world":"Overworld 0,1-2","hero":[380,392,208],"segments":[["",60]],"watch":[9],"settle":6},
+ {"name":"statue2_gel_arrival","arrival":true,"zone":"Overworld","world":"Overworld 0,1-2","hero":[396,392,208],"segments":[["R",40],["",5],["R",30]],"watch":[9],"settle":6}
+]

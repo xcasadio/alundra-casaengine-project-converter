@@ -1,0 +1,9 @@
+placements=139 maps=26
+type 229: 9 placements on 4 maps
+type 298: 62 placements on 11 maps
+type 345: 16 placements on 2 maps
+type 430: 24 placements on 8 maps
+type 433: 28 placements on 5 maps
+reached sites=890 programs=75 maps=19
+opcodes: 00 02 03 04 05 06 09 0A 16 17 19 1A 1B 1E 1F 20 25 27 2A 2B 2C 2D 2E 2F 30 31 36 37 3A 3B 40 49 4A 4B 57 58 5A 5B 62 63 64 65 70 72 73 74 85 87 8D AA AD BD BE FF
+unported: 
