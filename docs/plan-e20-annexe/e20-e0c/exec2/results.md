@@ -24,3 +24,27 @@ Code (D-E0C2-1 to -3), `Alundra/Ai/Objects/PickupAi.cs` only: `FanfareStart(worl
 Run after the code: the 6 tests green; the broader filter of T0 (`PickupAi*`, `BgmFadeDirector*`, `MusicPlayer*`, `LootDrop*`, `PickupObjects*`): 167 tests (161 + 6), 0 failed. `python -B tools/dll-structure/check_names.py --rules`: 0 finding(s) (1 warning, in `Alundra.Tests/UI/Shared/TextBoxGpu.cs`, not ours).
 
 Existing tests that moved: none (the predicted list is empty).
+
+## T2: ADR, mutants, suites
+
+ADR: `docs/decisions/0085-the-pickup-of-a-key-object-cuts-the-music-and-restarts-it-from-the-top-through-the-bgm-fade-director.md` (number recounted on every local branch: the last taken was 0084; no ADR-0085 on any branch). `docs/decisions/README.md` indexed. ADR-0082 status line: "Accepted; amended by ADR-0085 (the music of the key objects)".
+
+Mutants of `Alundra/Ai/Objects/PickupAi.cs`, applied by script (`mutate.py` in the scratchpad), run on `PickupAiFanfareMusicTests` (6 tests, Release, neutralised copy), reverted after each (`git diff -- Alundra` empty). All killed:
+
+| Mutant | Failed tests (of 6) |
+|---|---|
+| 1 `LoadBgm(0)` removed | M1 key object, M2 key object |
+| 2 `StopAllSound()` removed | M1 key object, M2 key object |
+| 3 `LoadBgm(1)` instead of `LoadBgm(0)` | M1 key object, M2 key object |
+| 4 `StopAllSound()` at the pickup tick instead of state 2 | M1 key object, M2 key object |
+| 5 ordinary object also stops the music | M1 ordinary/dropped (both cases), M2 ordinary/dropped |
+| 6 stop after the opening of the message | M1 key object |
+
+Suites (foreground, `--blame-hang-timeout 60s`):
+- `Alundra.Tests` Release with the neutralised copy: 5434 passed, 0 failed (9 min 5 s).
+- `Alundra.Tests` Debug, last, without the neutralised copy: 5434 passed, 0 failed (10 min 2 s). `cmp alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll`: identical.
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding(s), 1 warning (`Alundra.Tests/UI/Shared/TextBoxGpu.cs`, not ours).
+- Engine, converter, analyser pointer, data and project: `git diff 6fa6bf81 HEAD` empty on `CasaEngineMonogame`, `alundra-casaengine-project-converter`, `alundra-datas-analyser`, `data-extracted`, `alundra-project`.
+- The hero traces `docs/hero-trace-389-*.txt` were rewritten (line endings only, `diff --ignore-cr-at-eol` empty) and restored by `git checkout`; not indexed.
+
+Existing tests moved: none; predicted (T0): none. Prediction holds.

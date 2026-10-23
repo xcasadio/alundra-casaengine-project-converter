@@ -1,6 +1,6 @@
 # ADR-0082: The loot drop and the pickup of objects are ported, with named stubs for the fanfare, the chest and flagged objects
 
-- **Status**: Accepted
+- **Status**: Accepted; amended by ADR-0085 (the music of the key objects)
 - **Date**: 2026-10-23
 - **Source**: this chantier: `docs/plan-e20-heros.md` section 1.26 (E20.e0c, revision 3.1), decisions D-E0C-1 to D-E0C-13, D-E20-47, D-E20-55, D-E20-59 and the author's answer of 2026-10-22 to Q-E0C-5; reading of `ALUN_CD.EXE` (France) in `docs/plan-e20-annexe/e20-e0c/`
 

@@ -98,3 +98,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0082 | The loot drop and the pickup of objects are ported, with named stubs for the fanfare, the chest and flagged objects | Accepted | 2026-10-23 |
 | ADR-0083 | The cut of the grass keeps the binary's draws and order and queues only the effect | Accepted | 2026-10-23 |
 | ADR-0084 | The charged arrow of William is born in production with C94 as a native handler, E1 in line and the cut of the grass called at every tick | Accepted | 2026-10-23 |
+| ADR-0085 | The pickup of a key object cuts the music and restarts it from the top through the BGM fade director | Accepted | 2026-10-23 |
