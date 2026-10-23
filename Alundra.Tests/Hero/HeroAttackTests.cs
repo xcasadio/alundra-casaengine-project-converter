@@ -464,7 +464,8 @@ public sealed class HeroAttackTests : IDisposable
 
         Assert.Equal(Enumerable.Repeat(0x10u, 21).Concat(new[] { 0u }).ToArray(), swing.ToArray());
         Assert.Equal(0u, hero.CurrentAnimationId);
-        Assert.Equal(new[] { 29 }, sounds.Requests.ToArray()); // nothing else asked during the swing.
+        // E20.e: the swing cuts the bush of the cell (10, 56) at the tick 2 (the sound 31 after the 29 of the press); nothing else is asked during the swing. Value of the binary: docs/plan-e20-annexe/e20-e/rev3/oracle/out/heroattack_m10.txt.
+        Assert.Equal(new[] { 29, 31 }, sounds.Requests.ToArray());
         Assert.Equal(0u, hero.WeaponRecordPointer);
 
         // In the air: the jump, then the Square at the 5th tick of the jump (AT3): 0x14 for 10 ticks, then the air state 0x2D.

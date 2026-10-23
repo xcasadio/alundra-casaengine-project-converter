@@ -1,4 +1,4 @@
-bc60d6251850cba7123f97d9b10cc216ee0efb9d *./README.md
+a58b5e864ca3a646c84882b1ee9b0c8e8df9badb *./README.md
 fffd37ba4a0304f25d57f717f95b6fbbb36b7cfd *./oracle/cut_m14.py
 acc1708f99347b991b36ab0638d25807e24053e6 *./oracle/cutlib.py
 f92cf0aa12a26884312a82c2827be433e2d206bd *./oracle/export_vectors.py
@@ -35,3 +35,4 @@ e057750837c98bac08685d6d96b7d8554bbbbe96 *./results.md
 fec73c882b29f2092c86dcf764d82a9084335a3c *./vectors/cate-vectors.json
 798cca44f835f2e8b09198cfd19cd4369f442737 *./t2-red-names.txt
 474103c1b917622d109aeed54134f45b45f0e116 *./t2-results.md
+49b8cad37adcae16aa169c8be452906670ddb67a *./t3-results.md

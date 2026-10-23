@@ -74,9 +74,12 @@ public sealed class TestSavesTests : IDisposable
     // E20.e0c T4: the two pickup recipes (docs/plan-e20-heros.md section 1.26, T0 (k)), then the full list in the order of the table.
     private static readonly string[] PickupPresetNames = ["pickup-m11", "loot-m14"];
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames];
+    // E20.e T3: the cut-of-the-grass preset (docs/plan-e20-heros.md section 1.27), the last of the table: the weapon loadout (the Steel Edge in the slot 1) at the bushes of map 14.
+    private const string GrassPresetName = "herbe-m14";
 
-    public static TheoryData<string> WeaponNames => new(WeaponPresetNames);
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName];
+
+    public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName]);
 
     public static TheoryData<string> EveryPresetName => new(AllPresetNames);
 
@@ -90,7 +93,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheElevenPresets_AreListed_InTheOrderOfTheTable()
+    public void TheTwelvePresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -392,6 +395,7 @@ public sealed class TestSavesTests : IDisposable
         new("demon-m14", 14, 8, 6, 0, 1, [(7, 1)], 3), // item 3.
         new("fire-m303", 303, 38, 11, 1, 5, ArsenalAWeapons, 16),
         new("arrow-m16", 16, 34, 31, 3, 2, ArsenalAWeapons, 5),
+        new(GrassPresetName, 14, 31, 43, 1, 1, [(5, 1)], 2), // E20.e: the Steel Edge (item 2) at the bushes of the map 14, tile (31, 43, 1).
     ];
 
     private static WeaponExpected Row(string name) => WeaponRows.Single(r => r.Name == name);

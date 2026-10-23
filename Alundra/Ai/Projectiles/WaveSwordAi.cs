@@ -8,7 +8,7 @@ namespace Alundra.Ai.Projectiles;
 
 /// <summary>
 /// E20.f3c (docs/plan-e20-heros.md section 1.19.3, D-F3-6): the native handler C61 (<c>0x8007A958</c>) of the sword wave, the sprite types 27 (steel), 28 (demon) and 29 (holy) of the global page. C61 calls
-/// <c>CheckAndTriggerTileEffect</c> (<c>0x8003A7B0</c>) and nothing else; the death of the wave (E10, <c>0x8007F23C</c>, the body of E1) is handled in line by the runner (<see cref="EventProgramRunner.IsInlineDeactivateCode"/>,
+/// <c>CheckAndTriggerTileEffect</c> (<c>0x8003A7B0</c>, the cut of the grass, <see cref="Alundra.Cells.TileEffect"/>, E20.e) and nothing else; the death of the wave (E10, <c>0x8007F23C</c>, the body of E1) is handled in line by the runner (<see cref="EventProgramRunner.IsInlineDeactivateCode"/>,
 /// D-F3-5). The program A0 of these types only writes <c>AIValues[0]</c>, which no code of the wave reads: it is not registered (D-F3-7, section 1.20).
 /// </summary>
 internal static class WaveSwordAi
@@ -30,12 +30,16 @@ internal static class WaveSwordAi
     internal static void Register(NativeSpriteRegistry registry)
         => registry.Register(ScriptHelper.ProgramCTick, TickCode, SpriteTypes, (entity, context, state) => Tick(entity));
 
-    /// <summary>C61 (<c>0x8007A958</c>), one tick of the wave: the call of the cutting of the grass, a named stub until E20.e.</summary>
+    /// <summary>C61 (<c>0x8007A958</c>), one tick of the wave: the call of the cutting of the grass.</summary>
     internal static void Tick(EntityScriptProxy entity) => CheckAndTriggerTileEffect(entity);
 
     /// <summary>
-    /// <c>CheckAndTriggerTileEffect</c> (<c>0x8003A7B0</c>), named stub. The binary cuts the grass cells under the entity's box and draws at least one word of the generator per cell cut (it may drop an item); the cutting is E20.e
-    /// (Q-F3-2). Until then the stub cuts nothing and draws nothing, so the generator drifts after any wave over grass (O-F3-1).
+    /// <c>CheckAndTriggerTileEffect</c> (<c>0x8003A7B0</c>) for the wave: the journal of the call (<see cref="StubCallsForTests"/>, kept from the time it was a stub), then the port (E20.e, docs/plan-e20-heros.md section 1.27,
+    /// <see cref="Alundra.Cells.TileEffect.Trigger"/>): the bushes under the box of the wave are cut, with the effect, the loot and the sound of each cut. The charged arrow (E20.f4) and the bomb (E20.h3) make this same call.
     /// </summary>
-    internal static void CheckAndTriggerTileEffect(EntityScriptProxy entity) => StubCallsForTests?.Add(entity);
+    internal static void CheckAndTriggerTileEffect(EntityScriptProxy entity)
+    {
+        StubCallsForTests?.Add(entity);
+        Alundra.Cells.TileEffect.Trigger(entity);
+    }
 }

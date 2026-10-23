@@ -110,6 +110,18 @@ Walk onto an ordinary object: its name and "gained!" in a box, the world stands 
 Take a key object: the same message, the hero and the other entities are held while it is up, the fanfare of the CD is not played yet (E19.sm7) and the music goes on.
 Kill a Beannoid: what it let fall rises, bounces, is taken on contact (money, hearts, magic, herb) with its sound, or goes out after 600 ticks.
 
+### Cut-of-the-grass preset (E20.e)
+
+For the cut of the grass (docs/plan-e20-heros.md section 1.27). The loadout of the weapon presets with the Steel Edge in the slot 1 (life 4/10, magic 4/4, no flag).
+
+| Preset | Map, tile, z | Owned | Equipped |
+|---|---|---|---|
+| `herbe-m14` | 14, (31, 43), 1 | the kit, the weapon loadout, item 2 (Steel Edge) | 1, item 2 |
+
+The arrival tile is on the flat ground (height 1) east of the 16 bushes of the cells 26 to 29, rows 40 to 44. A save does not carry the direction (always south): walk west, then tap the Square: the sword cuts the bushes under its
+box (the bush goes, the global effect 2 flashes at the middle of the cell, the sound 31; one time in eight a coin or a heart appears, with the sound 84 first). Hold the Square and let go: the wave crosses the bushes of the same rows and cuts them
+too. A cut bush grows back when the map is entered again. The steps, the dust and the landing are E20.e2.
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;

@@ -19,9 +19,9 @@ namespace Alundra.Hero;
 /// <item><description>The third, on <c>state - 2</c> (table <c>0x80022A74</c>, <c>0x800301D8-0x800303D0</c>): the landing (<c>0x8003020C</c>), and the latch <c>0x800A8F30</c> that the other states clear (<c>0x800303D0</c>).</description></item>
 /// <item><description>The end (<c>0x800303D8</c>), mode 0 only (<c>bnez $s5</c>): the alarm of the low life (<c>0x800303DC-0x80030430</c>), then the flail bounce (<c>0x80030434-0x80030654</c>).</description></item>
 /// </list>
-/// <b>Ported for real</b>: the dispatch (which part runs for which state, with the guards of the landing) and the flail bounce. <b>Named stubs</b> (empty bodies, each records its call for the tests; the alarm records its call too but is no stub): the steps and
-/// the walk cycle (<see cref="PlayerRunStepEffects"/>, <see cref="PlayerWalkStepEffects"/>, whose own phase gates on <c>+0x1C</c> and the slope tables are inside the stub), the landing sound and dust
-/// (<see cref="PlayerLandingEffects"/>) and the grass cut (<see cref="PlayerGrassCut"/>), all four for E20.e; the alarm of the low life (<see cref="PlayerLowHpAlarm"/>) is ported for real by E20.c2a T4, with the life of the hero entity.
+/// <b>Ported for real</b>: the dispatch (which part runs for which state, with the guards of the landing), the flail bounce and the grass cut (<see cref="PlayerGrassCut"/>, E20.e: it records its call, then calls <see cref="Alundra.Cells.TileEffect.Trigger"/>). <b>Named stubs</b> (empty bodies, each records its call for the tests; the alarm records its call too but is no stub): the steps and
+/// the walk cycle (<see cref="PlayerRunStepEffects"/>, <see cref="PlayerWalkStepEffects"/>, whose own phase gates on <c>+0x1C</c> and the slope tables are inside the stub) and the landing sound and dust
+/// (<see cref="PlayerLandingEffects"/>), the three for E20.e2; the alarm of the low life (<see cref="PlayerLowHpAlarm"/>) is ported for real by E20.c2a T4, with the life of the hero entity.
 /// </summary>
 internal static class PlayerAnimationEffects
 {
@@ -205,17 +205,23 @@ internal static class PlayerAnimationEffects
     // The named stubs.
     // -----------------------------------------------------------------------------------------
 
-    /// <summary>Stub (E20.e) of the run's steps and dust, <c>0x8002FB6C-0x8002FDC4</c> (state <c>0x29</c>): the sound of the slope every 8 ticks (<c>+0x1C</c> and 7) and the dust effects. Not ported.</summary>
+    /// <summary>Stub (E20.e2) of the run's steps and dust, <c>0x8002FB6C-0x8002FDC4</c> (state <c>0x29</c>): the sound of the slope every 8 ticks (<c>+0x1C</c> and 7) and the dust effects. Not ported.</summary>
     private static void PlayerRunStepEffects(EntityScriptProxy player, int mode) => Record(mode, RunStepStubName, player);
 
-    /// <summary>Stub (E20.e) of the steps and the walk cycle, <c>0x8002FE24-0x800301D4</c> (a force on X or Y, the states of <see cref="IsWalkStepState"/>): the sound of the slope, the dust, their phase gates on <c>+0x1C</c>. Called at every tick that reaches it; the gates are inside. Not ported.</summary>
+    /// <summary>Stub (E20.e2) of the steps and the walk cycle, <c>0x8002FE24-0x800301D4</c> (a force on X or Y, the states of <see cref="IsWalkStepState"/>): the sound of the slope, the dust, their phase gates on <c>+0x1C</c>. Called at every tick that reaches it; the gates are inside. Not ported.</summary>
     private static void PlayerWalkStepEffects(EntityScriptProxy player, int mode) => Record(mode, WalkStepStubName, player);
 
-    /// <summary>Stub (E20.e) of the landing, <c>0x80030224-0x800303CC</c>: the sound of the slope (11 on a flat ground) and the dust effect 7 (<c>0x8003BDD8</c>, which draws in the generator). Called only when the hero lands (the guards are ported in <see cref="Create"/>). Not ported.</summary>
+    /// <summary>Stub (E20.e2) of the landing, <c>0x80030224-0x800303CC</c>: the sound of the slope (11 on a flat ground) and the dust effect 7 (<c>0x8003BDD8</c>, which draws in the generator). Called only when the hero lands (the guards are ported in <see cref="Create"/>). Not ported.</summary>
     private static void PlayerLandingEffects(EntityScriptProxy player, int mode) => Record(mode, LandingStubName, player);
 
-    /// <summary>Stub (E20.e) of the grass cut, <c>0x8002FDC0</c> (the call <c>0x8003A7B0</c> with the hero), called at every tick of an attack state. Not ported.</summary>
-    private static void PlayerGrassCut(EntityScriptProxy player, int mode) => Record(mode, GrassCutStubName, player);
+    /// <summary>
+    /// The grass cut, <c>0x8002FDC0</c> (the call <c>0x8003A7B0</c> with the hero), called at every tick of an attack state (the 15 states of <see cref="IsGrassCutState"/>, both modes): the journal of the call, then the port
+    /// (E20.e, docs/plan-e20-heros.md section 1.27, <see cref="Alundra.Cells.TileEffect.Trigger"/>). No longer a stub.</summary>
+    private static void PlayerGrassCut(EntityScriptProxy player, int mode)
+    {
+        Record(mode, GrassCutStubName, player);
+        Alundra.Cells.TileEffect.Trigger(player);
+    }
 
     /// <summary>The sound of the alarm of the low life (<c>0x80030424</c>: <c>PlaySound(0x190)</c>).</summary>
     internal const int LowHpAlarmSfx = 0x190;

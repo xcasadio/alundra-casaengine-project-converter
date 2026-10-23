@@ -138,6 +138,11 @@ public static class TestSaves
         // are in the rows 22 to 30. `loot-m14`: the Beannoides arena (map 14), tile (19, 34, 3), a Beannoid 72 pixels to the east at the same height (record 1, tile (22, 34, 3)); kill several, what they let fall depends on the generator.
         new Preset("pickup-m11", "test-pickup-m11", 11, 27, 18, 10, [], [], [], [], Weapon: 1, Hp: 4, HpMax: 10, Mp: 2, MpMax: 4),
         new Preset("loot-m14", "test-loot-m14", 14, 19, 34, 3, [], [], [], [], Weapon: 1, Hp: 4, HpMax: 10, Mp: 2, MpMax: 4),
+
+        // E20.e T3 (docs/plan-e20-heros.md section 1.27): the cut of the grass. Map 14, tile (31, 43, 1), on the flat ground (height 1) east of the 16 bushes of the cells 26 to 29, rows 40 to 44 (the rows 43 and 44 are walkable up to the
+        // bushes; row 42 is a wall to the east). The kit with the Steel Edge in the slot 1 (a tap of the Square cuts with the swing 0x3F, a held Square cuts with the wave when it is released). A save cannot carry the direction
+        // (always 0, south): walk west first, then swing.
+        WeaponPreset("herbe-m14", 14, 31, 43, 1, 1, 2),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>
