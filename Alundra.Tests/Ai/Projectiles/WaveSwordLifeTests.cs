@@ -163,11 +163,11 @@ public sealed class WaveSwordLifeTests : IDisposable
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // (v3) the registry: 9 keys (the 6 of the Beannoid and the Muruta, (C, 61), and the 2 of the pickup objects); the type 27 has (C, 61) and (E, 10 in line) and no other program; the invariant of D-F3-4 holds for {27, 28, 29}.
+    // (v3) the registry: the keys of its classes (the 6 of the Beannoid and the Muruta, (C, 61), the 2 of the pickup objects and, since E20.f4, the (C, 94) of the charged arrow); the type 27 has (C, 61) and (E, 10 in line) and no other program; the invariant of D-F3-4 holds for {27, 28, 29}.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     [Fact]
-    public void V3_TheProductionRegistryHoldsNineKeys_TheWaveTypesHaveC61AndE10InLineAndNoOtherProgram_TheInvariantHoldsForThem()
+    public void V3_TheProductionRegistryHoldsTheKeysOfItsClasses_TheWaveTypesHaveC61AndE10InLineAndNoOtherProgram_TheInvariantHoldsForThem()
     {
         var runner = new EventProgramRunner(null, GameState.Instance);
         var registry = runner.NativeSprites;
@@ -182,7 +182,7 @@ public sealed class WaveSwordLifeTests : IDisposable
         var types = WaveSwordAi.SpriteTypes;
 
         Assert.Equal(
-            (3 + 3 + 1 + PickupAi.Keys.Count, true, true, true, false, 0),
+            (3 + 3 + 1 + PickupAi.Keys.Count + ChargedArrowAi.Keys.Count, true, true, true, false, 0),
             (registry.Count,
              types.All(t => registry.TryGet(ScriptHelper.ProgramCTick, 61, t, out _)),
              headers.All(h => h.ProgramTick == 61 && h.ProgramDeactivate == 10),

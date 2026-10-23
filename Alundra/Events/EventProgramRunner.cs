@@ -46,7 +46,8 @@ public sealed class EventProgramRunner : IEventProgramRunner
     private readonly Dictionary<(int Slot, int Code), int> _nativeHandlerRunCounts = new();
 
     /// <summary>E14.a0 (D-E14-1): the registry of the native sprite handlers by (slot, code) and sprite type. In production it holds the
-    /// Beannoid's A1, C1 and D1 for the type 335 (E14.a1b, <see cref="BeannoideAi"/>) and the Muruta's A0, C10 and D9 for the type 347 (E14.a1c, <see cref="MurutaAi"/>). Consulted after
+    /// Beannoid's A1, C1 and D1 for the type 335 (E14.a1b, <see cref="BeannoideAi"/>), the Muruta's A0, C10 and D9 for the type 347 (E14.a1c, <see cref="MurutaAi"/>), the C61 of the sword wave (E20.f3c, <see cref="WaveSwordAi"/>),
+    /// the A255 and C255 of the pickup objects (E20.e0c, <see cref="PickupAi"/>) and the C94 of the charged arrow (E20.f4, <see cref="ChargedArrowAi"/>). Consulted after
     /// the save book and E0/E1, which stay outside it.</summary>
     internal NativeSpriteRegistry NativeSprites { get; } = NativeSpriteRegistry.CreateForProduction();
 
@@ -54,6 +55,13 @@ public sealed class EventProgramRunner : IEventProgramRunner
     /// no-op again. Set by the arenas of the hit-pass oracles (E20.c1a, E20.c1b), whose runs expect the Beannoids to stay
     /// still as the oracle's stubs.</summary>
     internal bool NativeHandlersEnabled { get; set; } = true;
+
+    /// <summary>
+    /// E20.f4 (docs/plan-e20-heros.md section 1.20, D-F4-7), test seam, per thread, null in production: when non-null, a native handler runs for an entity whose <see cref="EntityScriptProxy.SpriteType"/> (the index, plus <c>0x100</c> for a page of the map) is in the set EVEN WHEN
+    /// <see cref="NativeHandlersEnabled"/> is false, and not for the other types while it is false. An arena of the hit passes keeps the switch off, so that the Beannoids stay inert as the oracle's stubs, and names the types of the projectiles it wants to see run. With the switch on the set changes nothing.
+    /// </summary>
+    [ThreadStatic]
+    internal static IReadOnlySet<int>? NativeSpriteTypeFilterForTests;
 
     private readonly HashSet<(int Slot, int Code)> _loggedNoOpKeys = new();
 
@@ -297,7 +305,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
         if (nativeSlot >= 0 && nativeSlot < entity.ProgramIndexes.Length && (entity.ProgramIndexes[nativeSlot] & 0x7f) == 0)
         {
             var nativeCode = entity.SpriteProgramIndexes[nativeSlot];
-            if (NativeHandlersEnabled
+            if ((NativeHandlersEnabled || NativeSpriteTypeFilterForTests?.Contains(entity.SpriteType) == true)
                 && NativeSprites.TryGet(nativeSlot, nativeCode, entity.SpriteType, out var nativeHandler))
             {
                 NativeHandlerRunCount++;

@@ -6,6 +6,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Ai.Objects;
+using Alundra.Ai.Projectiles;
 using Alundra.UI.Saving;
 
 namespace Alundra.Tests.Ai;
@@ -54,7 +55,7 @@ public sealed class NativeSpriteRegistryTests : IDisposable
 
         // E14.a1b: A1, C1 and D1 of the Beannoid (335); E14.a1c: A0, C10 and D9 of the Muruta (347); E20.f3c (D-F3-6): (C, 61) of the sword wave (27 to 29); E20.e0c: A255 and C255 of the pickup objects (31 to 118 but 72), the keys
         // being read from PickupAi so that the pin follows the handlers it counts.
-        Assert.Equal(6 + 1 + PickupAi.Keys.Count, runner.NativeSprites.Count);
+        Assert.Equal(6 + 1 + PickupAi.Keys.Count + ChargedArrowAi.Keys.Count, runner.NativeSprites.Count); // E20.f4: and the (C, 94) of the charged arrow.
         Assert.Equal(2, PickupAi.Keys.Count);
         Assert.All(PickupAi.Keys, key => Assert.All(PickupAi.SpriteTypes, type => Assert.True(runner.NativeSprites.TryGet(key.Slot, key.Code, type, out _), $"key {key} type {type}")));
         Assert.False(runner.NativeSprites.TryGet(ScriptHelper.ProgramCTick, PickupAi.Code, 30, out _)); // the chest (type 30) has no handler: it stays a named stub (D-E0C-2).

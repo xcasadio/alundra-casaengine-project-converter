@@ -259,6 +259,30 @@ public static class NativeEffects
     /// <summary>The depth offset of the break effect, the first of the four stack arguments of <c>0x8003BE74</c> that <c>DestroyEntity</c> writes (<c>0x8003A5F8-0x8003A618</c>; the three offsets after it are 0): one above the key of the destroyed entity.</summary>
     public const int BreakEffectDepthOffset = 1;
 
+    /// <summary>The global effect of the trail of the charged arrow (<c>0x8007C128</c>: <c>0x8003BDD8(0, 0x19, +0x98, x, y, z)</c>, bank 0, effect 25: four animations, one per direction, no sound).</summary>
+    public const int ChargedArrowTrailEffect = 0x19;
+
+    /// <summary>
+    /// E20.f4 (D-F4-2): the trail of the charged arrow (<c>C94</c>, <c>0x8007C0F8-0x8007C15C</c>): one global effect <see cref="ChargedArrowTrailEffect"/> of the animation <paramref name="direction"/> (the index of the direction of the arrow, <c>+0x98</c>) at (<paramref name="x"/>, <paramref name="y"/>,
+    /// <paramref name="z"/> + <c>0x80000</c>) - the position of the arrow at the end of the previous tick, <paramref name="z"/> in the binary's frame of Z (<c>PosZ + 1</c>, ADR-0026) - and, ONLY IF it was created, the forces <c>(-forceX) &gt;&gt; 1</c> and <c>(-forceY) &gt;&gt; 1</c> (the negation then the
+    /// arithmetic shift of the binary: <c>negu</c>, <c>sra 1</c>, so -1 stays -1), no force in Z. No number is drawn and no sound is played; a full reservoir creates nothing. The slot is handed to <see cref="CreatedForTests"/>.
+    /// </summary>
+    public static EffectSlot? CreateChargedArrowTrail(EffectReservoir reservoir, int direction, int x, int y, int z, int forceX, int forceY)
+    {
+        unchecked
+        {
+            var slot = reservoir.Create(false, ChargedArrowTrailEffect, direction, x, y, z + 0x80000);
+            if (slot != null)
+            {
+                slot.ForceX = -forceX >> 1;
+                slot.ForceY = -forceY >> 1;
+                CreatedForTests?.Invoke(slot);
+            }
+
+            return slot;
+        }
+    }
+
     /// <summary>The global effect of a hit: the spark (<c>0x8003BDD8(0, 9, 0, x, y, z)</c>, bank 0, effect 9).</summary>
     private const int HitSparkEffect = 9;
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Alundra.Ai;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
@@ -255,9 +256,12 @@ public sealed class WeaponSpawnSeamTests : IDisposable
             Assert.Empty(PlayerManager.UnhandledWeaponSpriteCodes(new[] { Arrow }, catalog, registry));
         }
 
-        var seven = PlayerManager.UnhandledWeaponSpriteCodes(new[] { 7 }, catalog, registry);
+        // E20.f4 (D-F4-8): the negative clause takes an EMPTY registry, so it does not depend on what production registers (C94 is registered by E20.f4, the checker finds it unhandled in an empty registry all the same),
+        // and the positive clause takes the production registry: the type 7 passes the invariant.
+        var seven = PlayerManager.UnhandledWeaponSpriteCodes(new[] { 7 }, catalog, new NativeSpriteRegistry());
         Assert.Contains((ScriptHelper.ProgramCTick, 94), seven);
         Assert.DoesNotContain((ScriptHelper.ProgramEDeactivate, 1), seven);
+        Assert.Empty(PlayerManager.UnhandledWeaponSpriteCodes(new[] { 7 }, catalog, registry));
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -17,3 +17,5 @@ ddcb6bc42d6027019343ec1df3aae1493252385b  oracle/run_all.sh
 b58a71b67ac55fea61d5dfa1b6f1c0eb9d9d9ce7  probes/ZzF4T0Probes.cs.txt
 c56d04d5ed7fcd6a177e1a5ba7b3480caae8b0f5  probes/probes-out.txt
 564418493dacee169867a2fe57787cb7200375bf  results.md
+fc2ee981ddee8f9c7d7e2bc38e13a1623724042e  t1/t1-red-names.txt
+646ab86a5c697ceff3abfe838d19294d06978615  t1/t1-results.md
