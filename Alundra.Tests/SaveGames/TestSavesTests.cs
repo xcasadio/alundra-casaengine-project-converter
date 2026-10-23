@@ -93,7 +93,7 @@ public sealed class TestSavesTests : IDisposable
     public void TheElevenPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
-        Assert.Equal(11, TestSaves.Presets.Count);
+        Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
     }
 
     [Theory]

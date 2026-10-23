@@ -234,3 +234,13 @@ Mesure : les tests présents à `916f0374` dont le texte a changé entre `916f03
 
 Les arcs `BeannoideGrateArcTests` et `MurutaHallArcTests` (« à mesurer ») n'ont pas bougé : aucun changement dans le diff. 8 tests existants bougent, 7 prédits + 1 non prédit (plafond du plan : 10, non atteint). Aucun arc ni trace ne bouge.
 Le compte des tests déplacés de `t4-results.md` (« trois ») comptait deux tests nés en T2 (`W7_…`, `ADroppedKeyObject_…`), absents de `916f0374` : ils ne sont pas des tests existants au sens de cette mesure ; le seul test existant de T4 est celui des préréglages.
+
+## Correction after the fresh verification (F1)
+
+F1 (P2): `TestSavesTests.TheNinePresets_AreListed_InTheOrderOfTheTable` moved (renamed `TheElevenPresets_…`) while absent from the predicted list (e) of T0, and kept the literal `Assert.Equal(11, …Count)`.
+
+- Cause: the two recipe presets of T0 (k) (`pickup-m11`, `loot-m14`), which are in the approved perimeter, necessarily lengthen the preset list; the prediction (e) missed this test.
+- Correction: the count is now derived (`Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count)`), so the test no longer pins a literal. The test is still renamed; the move itself is not undone.
+- Proof: `TestSavesTests` 89/89 green in Release (neutralised copy). Real mutant (the `loot-m14` row removed from `TestSaves.cs`, applied by script, then restored): 5 red, killed; `git status` shows only the test edit afterwards.
+- Open point for the main session: (e) is amended by this evidence to add `TestSavesTests.TheElevenPresets_…` (8 moved tests, 7 predicted + 1 forced by T0 (k)); the plan's stop rule ("a test outside the predicted list moves") was not applied at the time. A written ruling by the main session accepts or refuses this amendment.
+- A2 (P4) noted, not changed: `IncreaseHpMaxAndFill` falls back on the stats if `LifePulledFromStats` is false; the hero always carries it in production (`WorldProxy.cs:2022`), so no behaviour change. A1 (P4): `Alundra.dll` of the project differs from the current Debug build only by the embedded commit and derived identifiers (PE timestamp, MVID); the code is the same.
