@@ -277,8 +277,8 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
 
     /// <summary>
     /// Engine-only (E19.d2c2 S4): the horizontal displacement REALIZED by the last kinematic tick of this entity (the position after the step minus the position
-    /// before it, 16.16): what a rider takes along (the hero it carries adds it to its own XY step, the binary adds the carrier's <c>AdjustedForce</c>). The hero
-    /// is updated before the entities that carry it, so what it reads is the displacement of the carrier's previous tick (one tick of phase). Not copied by <see cref="Clone"/>.
+    /// before it, 16.16). Since D5b a rider no longer reads it (it adds the planned adjusted force of its carriers, <see cref="ScriptedMotion.PeekAdjustedForce"/>, with no phase): the magnet gates of the
+    /// apex (<c>SnapHeroAtApex</c>, <c>SnapAtApex</c>) still read the displacement the entity itself realized at its tick. Not copied by <see cref="Clone"/>.
     /// </summary>
     internal int LastTickDeltaX;
 
@@ -1195,7 +1195,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// <c>PosZ + ModZ + F &lt; T</c> (STRICT: reaching <c>T</c> exactly is not a landing, the contact comes one tick later), else adds <c>F</c>; a landing raises
     /// <see cref="CollidedWithEntityZ"/> and zeroes <see cref="ForceZ"/> with the gravity only (<see cref="FinalForceZ"/> keeps the force of the tick: at rest with the
     /// gravity it is -G &lt;&lt; 8 and the contact is raised at every tick). <see cref="IsOnGround"/> is positional, <c>PosZ &lt;= floor</c>, the floor being <c>T</c> or the top
-    /// of the highest entity below plus one. Not ported (no case in the corpus): the ceilings that other entities form during a rise, and the binary's order Z before XY.
+    /// of the highest entity below plus one. The ceilings that other entities form during a rise are ported (E19.d2c2 D5b); not ported (no case in the corpus): the binary's order Z before XY.
     /// </summary>
     private void StepVerticalWithoutController(IReadOnlyList<EntityScriptProxy> collidables, bool eligible)
     {

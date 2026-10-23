@@ -122,6 +122,17 @@ The arrival tile is on the flat ground (height 1) east of the 16 bushes of the c
 box (the bush goes, the global effect 2 flashes at the middle of the cell, the sound 31; one time in eight a coin or a heart appears, with the sound 84 first). Hold the Square and let go: the wave crosses the bushes of the same rows and cuts them
 too. A cut bush grows back when the map is entered again. The steps, the dust and the landing are E20.e2.
 
+### Lift preset (E19.d2c2 D5b)
+
+For the recipe of the lift of the map 22 (docs/plan-e19-opcodes.md section 1.2h.3.2b, D-D5B-10). The new game's kit, no flag.
+
+| Preset | Map, tile, z | Owned | Equipped |
+|---|---|---|---|
+| `elevator-m22` | 22, (46, 8), 2 | the kit's items 1, 17, 25 | the basic sword |
+
+The arrival tile is south of the right-hand lever. A start already on the platform is impossible: the state of the lever (the temporary flags T1 and T3) is not saved. Strike the lever, go down into the hollow, jump onto the platform and wait:
+Alundra rises with the platform, with no slide and no fall (before D5b he went through it and ended at the bottom of the hollow). On the way up, a barrel or a crate put on the platform rises with it too.
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;

@@ -274,9 +274,10 @@ internal static class EntitySupport
 
     /// <summary>
     /// Port of <c>CheckRidingEntities</c> (PhysicsEngine.cs:1288-1358) - a SEPARATE, EXACT-match test (not
-    /// <see cref="TryFindSupport"/>'s own strict-below/highest-wins one) that only feeds
-    /// <see cref="EntityScriptProxy.RidingEntity"/> for <see cref="EntitySearchService"/>'s own
-    /// search types 5/6 (who is riding whom) - completely independent of the actual Z clamp above. Runs
+    /// <see cref="TryFindSupport"/>'s own strict-below/highest-wins one) that feeds
+    /// <see cref="EntityScriptProxy.RidingEntity"/>: the carrier whose force every passenger copies and whose planned XY force it adds
+    /// (E19.d2c2 D5b, <see cref="EntityScriptProxy.CopyCarrierForceZ"/>, <see cref="EntityScriptProxy.CarrierTickForceZ"/>), and who is riding whom for <see cref="EntitySearchService"/>'s own
+    /// search types 5/6. The landing on a support above stays the strict test of <see cref="TryFindSupport"/>. Runs
     /// over every <paramref name="collidables"/> entry that carries <see cref="EntityFlags.Gravity"/> and
     /// NOT <see cref="EntityFlags.NoRiders"/> (<c>(Flags &amp; (Gravity|NoRiders)) == Gravity</c>,
     /// PhysicsEngine.cs:1290); for each such entity, finds another collidable whose top sits EXACTLY at

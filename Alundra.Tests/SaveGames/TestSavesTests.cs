@@ -77,7 +77,10 @@ public sealed class TestSavesTests : IDisposable
     // E20.e T3: the cut-of-the-grass preset (docs/plan-e20-heros.md section 1.27), the last of the table: the weapon loadout (the Steel Edge in the slot 1) at the bushes of map 14.
     private const string GrassPresetName = "herbe-m14";
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName];
+    // E19.d2c2 D5b T7: the lift of the map 22 (docs/plan-e19-opcodes.md section 1.2h.3.2b, D-D5B-10), the last of the table.
+    private const string ElevatorPresetName = "elevator-m22";
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName];
 
     public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName]);
 
@@ -93,7 +96,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheTwelvePresets_AreListed_InTheOrderOfTheTable()
+    public void TheThirteenPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -420,6 +423,23 @@ public sealed class TestSavesTests : IDisposable
         var reloaded = new GameState();
         save.ApplyTo(reloaded);
         Assert.Equal(1, reloaded.NumberOfItems[2 * 0x1B + 1]);
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    [Fact]
+    public void TheElevatorPreset_IsTheNewGameAtTheRightHandLeverOfMap22()
+    {
+        var rules = RealRules();
+        var save = Build(ElevatorPresetName);
+
+        Assert.Equal(22, save.InitialMapId);
+        Assert.Equal((46, 8, 2), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word)); // the state of the lever (T1, T3) is temporary and not saved: nothing is posed.
+
+        // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), nothing else.
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
         Assert.True(save.TryValidate(rules, out var error), error);
     }
 

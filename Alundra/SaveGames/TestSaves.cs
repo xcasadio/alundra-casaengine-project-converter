@@ -143,6 +143,10 @@ public static class TestSaves
         // bushes; row 42 is a wall to the east). The kit with the Steel Edge in the slot 1 (a tap of the Square cuts with the swing 0x3F, a held Square cuts with the wave when it is released). A save cannot carry the direction
         // (always 0, south): walk west first, then swing.
         WeaponPreset("herbe-m14", 14, 31, 43, 1, 1, 2),
+
+        // E19.d2c2 D5b T7 (docs/plan-e19-opcodes.md section 1.2h.3.2b, D-D5B-10, D-E19-124): the lift of the map 22. Tile (46, 8), level 2, south of the right-hand lever, on the new game's kit. A start already on the platform is
+        // impossible (the state of the lever, the temporary flags T1 and T3, is not saved): strike the lever, go down into the hollow, jump onto the platform and wait; Alundra rises with it.
+        new Preset("elevator-m22", "test-elevator-m22", 22, 46, 8, 2, [], [], [], []),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>

@@ -197,7 +197,8 @@ internal static class ScriptedMotion
         entity.ZHeldByTick = false;
 
         // E19.d2c2 S4 (the binary resets the field at 0x80038998 and sets it again at 0x800364C8, at the head of the tick): what carries the hero is recalculated
-        // at the head of EVERY tick of the hero from the position it has before this tick's movement, never kept.
+        // at the head of EVERY tick of the hero from the position it has before this tick's movement, never kept. The other passengers' is cleared by the counters pass and recomputed at the lists step
+        // (WorldProxy.RefreshUpdateProxiesAndCollidables), before any entity moves (D5b M4).
         if (entity.IsPlayer)
         {
             EntitySupport.UpdateRidingEntityOfHero(entity);
@@ -472,7 +473,7 @@ internal static class ScriptedMotion
     /// <list type="bullet">
     /// <item><description>Force: the law of the binary, <see cref="EntityScriptProxy.ApplyVerticalForceLaw"/> (the ONE decay site, shared with the support block of the controller); the force of the tick is kept in
     /// <see cref="EntityScriptProxy.TickForceZ"/> before any landing resets it.</description></item>
-    /// <item><description>Step: <c>F &gt; 0</c> rises and stops at the absolute ceiling of 1 920 px (<see cref="EntitySupport.TryFindCeiling"/> without the other entities: the ceilings they form are not ported, O-E0K-6; contact,
+    /// <item><description>Step: <c>F &gt; 0</c> rises and stops at the absolute ceiling of 1 920 px (<see cref="EntitySupport.TryFindCeiling"/> with the other collidables since E19.d2c2 D5b, moved first when they had not moved in the pass; contact,
     /// <c>ForceZ</c> to 0 with gravity); otherwise the STRICT test <c>PosZ + ModZ + F &lt; T</c>, <c>T</c> being the terrain under the box at the position before the XY step, computed here (never the stale field), or the top
     /// of the entity under the box for a subject (the very call of the binary's support, <see cref="EntitySupport.TryFindSupport"/>): landed means <c>PosZ = T - ModZ</c>, <c>ForceZ</c> and the force of the tick to 0 with
     /// gravity, <see cref="EntityScriptProxy.CollidedWithEntityZ"/> 1; not landed, <c>PosZ += F</c>. Reaching <c>T</c> exactly is not a landing: the contact comes one tick later.</description></item>

@@ -211,3 +211,16 @@ Production (no engine file touched):
 
 Red before, green after (Release, neutralised copy): `PrefabC_ABrokenArmourI33WithNoController_OnARisingPlatform_FollowsItInTheSameTick`. Existing tests moved: none (`ControllerlessVerticalStepTests` green).
 Release, the three partitions: 1 216 / 0 red, 2 665 / 0 red, 1 785 / 0 red: 5 666 tests, 0 failure; the red list of T1 is empty (26 red at the start, 27 witnesses, the planned negative guard green). The four traces of the hero restored by `git checkout`.
+
+## T7 - preset, documentation, stale comments, ADR
+
+- `Alundra/SaveGames/TestSaves.cs`: `new Preset("elevator-m22", "test-elevator-m22", 22, 46, 8, 2, [], [], [], [])`, the 13th, after `herbe-m14`. `TestSavesTests`: `ElevatorPresetName` in `AllPresetNames`, the order test renamed
+  `TheThirteenPresets_AreListed_InTheOrderOfTheTable`, and `TheElevatorPreset_IsTheNewGameAtTheRightHandLeverOfMap22` (map, tile, no flag, the new game's counters, the rules accept it); the theories over every preset gain a row each.
+  `docs/test-saves.md`: the "Lift preset" section with the recipe of D-D5B-10 (a start already on the platform is impossible: the lever state is temporary).
+- The arcs `A_D5b_22_FromTheLiftItself_...`, `A_D5b_22_TheRecipeOfTheAuthor_...` and `A_D5b_22_ThePile...` are green since T3 and T6A; the pile arc is the one of the barrel of the map 22.
+- Stale comments corrected: the doc of `EntitySupport.UpdateRidingEntities` (`RidingEntity` no longer feeds only the search types 5/6), the head-of-tick comment of `ScriptedMotion.RunOneMotionTick` (the other passengers' carrier is cleared by the counters
+  pass and recomputed at the lists step), the doc of `EntityScriptProxy.LastTickDeltaX/Y` (a rider no longer reads it), the doc of `RunLogicalZPreXyStep` and of `StepVerticalWithoutController` (the ceilings of the other entities are ported). The doc of
+  `WorldProxy.RunCountersPass` was done in T2.
+- ADR-0088 (the highest number on any branch was 0087; `main` and `origin/main` stop at 0081) and its index row. `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 warning, existing: `TextBoxGpu.cs`).
+- Counts, Release with the neutralised copy, the three partitions: 1 216 / 0 failure, 2 665 / 0, 1 789 / 0: 5 670 tests (the 5 666 counted at the end of T6C plus 4 of the preset: its test and the three rows it adds to the theories over every preset), 0 failure. The four traces of the hero and the intro trace identical
+  (`git diff --ignore-cr-at-eol` of `docs/hero-trace-389-*` is empty; the files restored by `git checkout`). Debug (built last, no neutralised copy): the SaveGames, passenger, lift, hero-ride and pillar tests, 377 / 0 failure.
