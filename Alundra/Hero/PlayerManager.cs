@@ -1195,7 +1195,7 @@ public static class PlayerManager
     }
 
     /// <summary>E20.b B4 seam of the spawn call <c>0x80039F58</c> of <c>UpdateWeaponStepProgression</c> (<c>0x8002F818</c>): the projectile of a bow or a wand, at the hero's X and Y, at his Z plus the
-    /// height <c>ptr[3]</c> of the record. Counted and journaled for the tests; since E20.f3a it calls the apparition of an entity by sprite index for the types of <see cref="WiredWeaponTypes"/> (the three waves of the sword since E20.f3c; the other projectiles come with E20.f4 to E20.f6). The direction is the one of the tick (<see cref="EntityScriptProxy.BoxDirection"/>), read before the tick writes anything, as the binary reads <c>+0x98</c>.</summary>
+    /// height <c>ptr[3]</c> of the record. Counted and journaled for the tests; since E20.f3a it calls the apparition of an entity by sprite index for the types of <see cref="WiredWeaponTypes"/> (the three waves of the sword since E20.f3c, the charged arrow since E20.f4; the other projectiles come with E20.f5 and E20.f6). The direction is the one of the tick (<see cref="EntityScriptProxy.BoxDirection"/>), read before the tick writes anything, as the binary reads <c>+0x98</c>.</summary>
     internal static void SpawnWeaponProjectile(EntityScriptProxy player, uint recordPointer, IScriptHost? host)
     {
         WeaponSpawnCallCountForTests++;
@@ -1221,9 +1221,9 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.f3a (docs/plan-e20-heros.md section 1.19.1, D-F3-3): the sprite types of the global page whose shot is wired to <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, one type after the other and never before its
-    /// handlers exist (the invariant of <see cref="UnhandledWeaponSpriteCodes"/>, D-F3-4). {27, 28, 29} since E20.f3c (the wave of the sword, C61 and E10); E20.f4 (the charged arrow, type 7) to E20.f6 wire the others, one type after the other.
+    /// handlers exist (the invariant of <see cref="UnhandledWeaponSpriteCodes"/>, D-F3-4). {27, 28, 29} since E20.f3c (the wave of the sword, C61 and E10), 7 since E20.f4 (the charged arrow of William, C94 and E1); E20.f5 and E20.f6 wire the others, one type after the other.
     /// </summary>
-    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredWeaponTypes = new System.Collections.Generic.HashSet<int> { 27, 28, 29 };
+    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredWeaponTypes = new System.Collections.Generic.HashSet<int> { 7, 27, 28, 29 };
 
     /// <summary>E20.f3a test seam, per thread: when set, replaces <see cref="ProductionWiredWeaponTypes"/> (a test wires a type, or none, to prove the seam).</summary>
     [ThreadStatic]

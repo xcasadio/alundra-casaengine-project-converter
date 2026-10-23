@@ -117,16 +117,16 @@ public sealed class ChargedArrowProductionTests : IDisposable
             full = (run.HeldBeforeBirthTick, run.SpawnCalls.Any(c => c.Type == Arrow), run.Born is not null, run.PointerAfter[Birth]);
         }
 
-        (int Held, bool Asked, bool Born, uint Pointer, int Count) one;
+        (int Held, bool Asked, bool Born, uint Pointer, int Tick, int Type) one;
         using (var run = new ChargedArrowRun("p2-one", WallColumn15, production: true, freeSlotsAtBirth: 1))
         {
             run.Go(1, 150);
-            one = (run.HeldBeforeBirthTick, run.SpawnCalls.Any(c => c.Type == Arrow), run.Born is not null, run.PointerAfter[Birth], run.Arena.Arc.Entities.Count(e => e.SpriteType == Arrow));
+            one = (run.HeldBeforeBirthTick, run.SpawnCalls.Any(c => c.Type == Arrow), run.Born is not null, run.PointerAfter[Birth], run.BirthTick, run.Born?.SpriteType ?? -1);
         }
 
         Assert.Equal(
-            ((EntitySlotTable.SlotCount, true, false, 0u), (EntitySlotTable.SlotCount - 1, true, true, 0u, 1)),
-            ((full.Held, full.Asked, full.Born, full.Pointer), (one.Held, one.Asked, one.Born, one.Pointer, one.Count)));
+            ((EntitySlotTable.SlotCount, true, false, 0u), (EntitySlotTable.SlotCount - 1, true, true, 0u, Birth, Arrow)),
+            ((full.Held, full.Asked, full.Born, full.Pointer), (one.Held, one.Asked, one.Born, one.Pointer, one.Tick, one.Type)));
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using Alundra.Ai;
+using Alundra.Ai.Projectiles;
 using Alundra.Maps;
 using Alundra.Session;
 using Alundra.Entities;
@@ -243,7 +244,7 @@ public sealed class WeaponSpawnSeamTests : IDisposable
         var catalog = new SpriteRecordCatalog(ProjectRootFinder.Find());
         var registry = new EventProgramRunner(null, GameState.Instance).NativeSprites;
 
-        Assert.Equal(new[] { 27, 28, 29 }.OrderBy(t => t), PlayerManager.ProductionWiredWeaponTypes.OrderBy(t => t)); // E20.f3c wires the three waves of the sword; C61 is registered and E10 handled in line, so the checker stays empty.
+        Assert.Equal(WaveSwordAi.SpriteTypes.Concat(ChargedArrowAi.SpriteTypes).OrderBy(t => t), PlayerManager.ProductionWiredWeaponTypes.OrderBy(t => t)); // E20.f3c wires the three waves of the sword, E20.f4 the charged arrow (derived from the classes that register the handlers); C61 and C94 are registered and E10, E1 handled in line, so the checker stays empty.
         Assert.Empty(PlayerManager.UnhandledWeaponSpriteCodes(PlayerManager.ProductionWiredWeaponTypes, catalog, registry));
 
         var unhandled = PlayerManager.UnhandledWeaponSpriteCodes(new[] { Arrow }, catalog, registry);

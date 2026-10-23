@@ -235,7 +235,7 @@ internal sealed class ChargedArrowRun : IDisposable
             }
 
             PointerAfter[tick] = Arena.Hero.WeaponRecordPointer;
-            TargetTouchedByTheArrow[tick] = Born is not null && Arena.Targets.FirstOrDefault()?.TouchingEntity is { } touching && ReferenceEquals(touching, Born);
+            TargetTouchedByTheArrow[tick] = Born is not null && Arena.Targets.FirstOrDefault()?.TouchingEntity is { } touching && ReferenceEquals(touching, Born.SelfEntity);
             var present = Born is not null && Arena.Arc.Entities.Contains(Born);
             Lines[tick] = Line(Born, present);
             var sample = Arena.Samples[^1];
