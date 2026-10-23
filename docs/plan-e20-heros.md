@@ -7240,7 +7240,7 @@ rejoué sur le vrai code ; ce qui n'est qu'inférence est dit.
   au bord d'une bande `0x1001` ; P3 `HitCounter` à T+21 ; P4 le `RidingEntity` d'un objet posé sur une plaque.
 
 
-#### 1.24.6 E20.g5 — Les vrais objets à pousser : g5a (piliers), g5b (les opcodes des boutons), g5c (l'arrêt du son), g5d (les objets scriptés) ⏳ (2026-10-23, D-E20-63 ; g5a détaillée, révision 0, **READY** à la première relecture (`plan-verifier` frais), exécutable après E20.e0c2 ; g5b, g5c, g5d esquissées)
+#### 1.24.6 E20.g5 — Les vrais objets à pousser : g5a (piliers), g5b (les opcodes des boutons), g5c (l'arrêt du son), g5d (les objets scriptés) ⏳ (2026-10-23, D-E20-63 ; g5a **faite et CONFIRMED le 2026-10-23** (ADR-0086) ; g5b, g5c, g5d esquissées)
 
 **Lecture seule du 2026-10-23** (HEAD `46589b86`, annexe `docs/plan-e20-annexe/e20-g5/disc/`, `report.md`). Les étiquettes sont celles
 de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYPE, INFÉRENCE.
@@ -7291,7 +7291,7 @@ de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYP
   glissants de la carte 40 sont prouvés par g5b, T3, ARC-40), un test statique « aucun opcode sauté dans les programmes des quatre familles », l'épingle du gel du héros après un programme F
   (Q-G5-A2). Les blocs des cartes 102 et 382 se déclenchent au coup de fléau : un test synthétique en g5d, la recette au thème 2.
 
-##### E20.g5a — Les piliers poussables (C76) ⏳ (révision 0, READY)
+##### E20.g5a — Les piliers poussables (C76) ✅ (révision 0, READY ; faite et CONFIRMED le 2026-10-23 par deux verifiers frais ; ADR-0086)
 
 **But.** Comme l'original : le héros qui pousse un pilier pendant 32 ticks le met en marche, puis il avance tant que le héros pousse,
 s'arrête au mur, tombe d'une corniche et bouche une fosse ; les 13 piliers de la 423 restent inertes. Le son de la poussée (25) joue ;
@@ -7309,8 +7309,8 @@ l'ADR-0080.
   tick ; la table anti-doublon de `PlaySfx` fait le reste). `StopSoundEffect(0x19)` est un bouchon nommé et journalisé
   (`StubCallsForTests`), branché par g5c (Q-G5-2).
 - **D-G5-4** — Les tests de monde épinglent les valeurs mesurées de la DLL ; les valeurs de la machine sont dans l'annexe. Les écarts
-  sont nommés : un tick de plus au premier pas (D-E19-13), deux ou trois ticks de plus à l'atterrissage dans une fosse (l'intégrateur de
-  gravité), même état final (Q-G5-3).
+  sont nommés : un tick de plus au premier pas (D-E19-13), un tick de plus à l'atterrissage dans une fosse (mesuré en T2 : images 144 et 145
+  contre t143 et t144 ; la lecture disait à tort deux ou trois), même état final (Q-G5-3).
 - **D-G5-5** — Les piliers de la 423 restent inertes : leur programme C scripté passe avant le natif, comme dans l'original (Q-G5-4).
 - **D-G5-6** — Le héros n'a pas de pose de poussée : il garde l'animation de marche sur place, comme `MovePlayer` le fait.
 
@@ -7323,7 +7323,7 @@ faut un ; l'annexe `docs/plan-e20-annexe/e20-g5/g5a/` ; un ADR (numéro libre au
 boutons (scriptés, g5d) ; une pose de poussée du héros ; D5b.
 
 **Tâches.**
-- ⏳ **T0 — Relecture, oracle, prédiction** (commit de docs).
+- ✅ **T0 — Relecture, oracle, prédiction** (commit de docs).
   - Rejouer depuis une copie `c76_full.py` (6 000 vecteurs, mutants, goldens) et `g5_scen.py` : sorties égales à celles de l'annexe.
   - Relire au HEAD de départ le registre, ses épingles et la sonde de mouvement qui fait buter le héros (`XCollisionEntity`).
   - Prédire les tests existants qui bougent. Défaut : les épingles du registre seules. `ArrowAiTests.cs:186` emploie le type 430 comme
@@ -7331,24 +7331,27 @@ boutons (scriptés, g5d) ; une pose de poussée du héros ; D5b.
     temporaire, annulé ensuite.
   - Choisir les montages des tests de monde (cartes 26 et 347 ; pour la 347, les entités qui bloquent, enregistrements 6 et 11, retirées
     par écriture du harnais, plus un test sans retrait).
-- ⏳ **T1 — Phase A, les fonctions pures** (tests d'abord, rouges sur un squelette qui compile).
+- ✅ **T1 — Phase A, les fonctions pures** (tests d'abord, rouges sur un squelette qui compile).
   - (a1) Le pas du compteur contre les goldens : sous 31, plus 1 ; à 31, le son et l'animation 1 ; sans contact, la remise à zéro, le
     bouchon d'arrêt du son appelé seulement si l'animation valait 1.
   - (a2) `Direction` contre les goldens : les quatre côtés, les deux bornes de largeur (« à ras » tombe côté horizontal), le décalage
     vertical.
   - (a3) Les aides de 32 bits : aller-retour de 0, 31, -1.
   - Chaque cas « sans effet » est accolé à un cas positif.
-- ⏳ **T2 — Phase B, l'inscription et les tests de monde** (rouges avant l'inscription, verts après).
+- ✅ **T2 — Phase B, l'inscription et les tests de monde** (rouges avant l'inscription, verts après).
   - (w1) Carte 26, poussée vers l'est : contact, animation 1 au 32e tick de contact, premier pas, arrêt à 350 au mur de la colonne 15, le
     héros à 329. (w2) Vers le nord : arrêt à 406.
   - (w3) La vitesse : 0,75 px par tick en X et 0,5 en Y ; l'arrêt 1 à 2 ticks après le relâchement ; un nouvel appui refait les 32 ticks.
-  - (w4) Le décalage vertical : contact et poussée à `|dy| = 12`, rien à 14.
-  - (w5) Une plaque ou un interrupteur au sol bloque le pilier ; deux piliers alignés ne se poussent pas ensemble.
+  - (w4) Le décalage vertical : poussée à -12, +12, +14 (et -13), rien à -14 ni à +16. Le décalage n'est pas symétrique, sur la machine
+    (P5) comme dans la DLL ; la révision 0 disait « rien à 14 », vrai seulement à -14.
+  - (w5) Une dalle collidable au sol bloque le pilier ; deux piliers alignés ne se poussent pas ensemble. La plaque (sprite 108) n'est pas
+    dans la page de la carte 26 : l'interrupteur à piétiner (sprite 45, même dalle) la remplace dans le banc.
   - (w6) Carte 347 : le pilier tombe dans la fosse et s'y pose ; le héros passe ensuite dessus (son `support` est le pilier).
-  - (w7) Carte 423 : les 13 piliers restent inertes sous la poussée.
+  - (w7) Carte 423 : le C76 natif ne tourne pour aucun des 13 piliers. Douze ne bougent pas ; le treizième (enregistrement 24) bouge
+    d'environ 12 px par son propre script, sans le natif.
   - (w8) Le son : `PlaySfx(25)` à chaque tick de poussée, le bouchon d'arrêt une fois au relâchement.
   - Les épingles du registre réécrites par dérivation (`+ PillarAi.Keys.Count`).
-- ⏳ **T3 — ADR, mutants, suites.**
+- ✅ **T3 — ADR, mutants, suites.**
   - L'ADR : « the pushable pillar is ported from C76; its stop of the sound is a named stub until g5c ».
   - Mutants réels, appliqués par script puis annulés, tous tués :
     - le seuil 31 en 30, puis en 32 ;
@@ -7364,7 +7367,7 @@ boutons (scriptés, g5d) ; une pose de poussée du héros ; D5b.
   - `Alundra.Tests` en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `cmp` de la DLL ; `check_names.py --rules`
     vert ; les traces du héros intactes ; le moteur, le convertisseur et les données sans diff.
   - Les résultats vont dans l'annexe.
-- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.**
 - (a1) à (a3) verts ; (w1) à (w8) rouges avant l'inscription et verts après.
@@ -7381,6 +7384,23 @@ après.
 
 **Retour arrière.** La phase B se retire seule (l'inscription) ; la phase A n'a aucun appelant de production.
 
+Decisions: see ADR-0086.
+
+**Résultats (2026-10-23).** Exécution en mode AUTO, HEAD de départ `2eff6b46`. Mesures : `docs/plan-e20-annexe/e20-g5/g5a/README.md`.
+- **Commits.** `5a843849` (T0) ; `ad3a708e` (phase A : `Alundra/Ai/Objects/PillarAi.cs`, les fonctions pures contre les 14 goldens) ;
+  `6efaf6be` (phase B : la clé `(C, 76)` pour le seul type 430, les tests de monde, les trois épingles du registre dérivées) ; `2a7f9b94`
+  (T3, ADR-0086).
+- **T0.** L'oracle rejoué depuis une copie : 6 000 vecteurs, 0 écart, goldens identiques à l'octet. Tests déplacés prédits et mesurés par
+  un câblage temporaire : les trois épingles du registre seules.
+- **Tests.** Phase A : 11 tests, 10 rouges sur le squelette (le onzième épingle le SHA-256 des goldens). Phase B : 14 rouges sans
+  l'inscription, verts avec ; les cas « sans effet » verts de bout en bout. `Alundra.Tests` : 5 434 au départ, 5 484 à la fin, zéro échec en
+  Release (copie neutralisée) et en Debug ; `cmp` de la DLL identique au moment de T3. Dix mutants (douze passages), tous tués.
+- **Ce qui est mesuré sur la vraie DLL** : carte 26 vers l'est, contact au tick 2, animation 1 au tick 34, arrêt du pilier à 350 et du héros
+  à 329 ; vers le nord, arrêt à 406 ; carte 347, chute dans la fosse aux images 144 (est) et 145 (ouest).
+- **Verifiers frais** (la tranche ; les épingles) : **CONFIRMED** tous deux. Leurs remarques P4 sur la formulation de D-G5-4, (w4), (w5) et
+  (w7) sont reportées ci-dessus. `Alundra.Tests/Support/AnnexFiles.cs` reçoit une aide de plus, hors de la liste du périmètre (sans effet
+  sur un test existant).
+- **Recette de l'auteur, à faire** : `92-ancien-sanctuaire-bug-pillier.sav` (carte 26).
 
 ##### E20.g5b — Les opcodes des boutons et des blocs scriptés : `0x72`, `0xA9`, `0xAA`, prélevés sur E19.sm3 et E19.sm4 ⏳ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, **READY** à la deuxième relecture, `plan-verifier` frais ; exécutable après E20.g5a)
 
