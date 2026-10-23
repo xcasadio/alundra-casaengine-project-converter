@@ -7287,7 +7287,7 @@ de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYP
 - **g5c, l'arrêt du son** (`0xBE` = `StopSoundEffect`, `ISoundPlayer.StopSfx`, l'arrêt de C76) : esquisse, **en attente de la réponse de
   l'auteur à A1** (§2, Q-G5-A1). Son T0 établit si le moteur sait arrêter un bruitage précis ; sinon le manque se consigne au rapport des
   manques du moteur, sans contournement.
-- **g5d, les objets scriptés** : esquisse ; des arcs pour la statue (cartes 2 et 352), le bloc de la 23 et le bouton de la 40 (après
+- **g5d, les objets scriptés** : détaillée ci-dessous (révision 0) ; des arcs pour la statue (cartes 2 et 352), le bloc de la 23 et le bouton de la 40 (après
   g5b), un test statique « aucun opcode sauté dans les programmes des quatre familles », l'épingle du gel du héros après un programme F
   (Q-G5-A2). Les blocs des cartes 102 et 382 se déclenchent au coup de fléau : un test synthétique en g5d, la recette au thème 2.
 
@@ -7523,6 +7523,92 @@ prédite bouge ; un besoin de toucher le code ou le test de sm0, ou le moteur ; 
 frais après.
 
 **Retour arrière.** `git revert` du commit de code : les trois opcodes redeviennent sautés par leur taille.
+
+
+##### E20.g5d — Les objets à pousser scriptés : statues, blocs, boutons (tests seuls) ⏳ (détaillée le 2026-10-23, révision 0 ; à relire par un `plan-verifier` frais)
+
+**Provenance.** La lecture seule du 2026-10-23 (`docs/plan-e20-annexe/e20-g5/disc/report.md`, §2, §3.3, §5 ; sondes `cases1.json`,
+`cases2.json`, `cases3.json`, `cases10.json`, sorties `probe_out/`), et E20.g5b, qui porte les opcodes des boutons.
+
+**But.** Prouver par des tests que les objets à pousser déjà scriptés bougent comme leurs scripts le disent, et que le reste tient
+ensemble après g5a et g5b. Aucun code de production : le moteur d'événements les joue déjà. Ce qui se voit :
+- une statue de la carte 2 ou de la carte 352 qu'on pousse marche de 24 px ;
+- le bloc de la carte 23 glisse de 48 px vers l'ouest, puis tombe d'un étage ;
+- un bouton de la carte 40 glisse vers le sud.
+
+**Prérequis.** E20.g5a et E20.g5b faites. Le HEAD de départ vient après g5b.
+
+**Faits** (MESURÉ au HEAD `46589b86` sur la vraie DLL, dans une copie, sauf mention).
+- **Statue de la carte 2** (`cases1.json`, `statue2_east`, héros en (396, 392, 208), Droite tenue) : contact à l'image 2. Le programme F
+  pose le drapeau, et la statue marche à 1,5 px par tick de x 420 à 445,5 : le script demande 24 px, et le dernier pas dépasse.
+- **Statue de la carte 352** (`cases10.json`, `statue352_east`) : de x 204 à 229,5, avec la zone de départ et la touche de croix.
+- **Bloc de la carte 23** (`cases3.json`, `block23_from_east`) : contact à l'image 31, puis le bloc marche 48 px vers l'ouest à 2,06 px
+  par tick (x 768 → 720) et tombe de z 32 à 16.
+- **Le gel du héros après un programme F** (FAIT dans le binaire, MESURÉ dans la DLL) : au départ d'un programme F (`0x80042150`), le
+  binaire remet à zéro `+0xD8`, `+0xD4`, `+0xC8` et `+0xC4` du héros. Tant que la croix reste enfoncée, le héros est figé ; il faut
+  relâcher puis ré-enfoncer. La DLL fait de même. La question Q-G5-A2 est posée à l'auteur ; le défaut est de garder.
+- **Les opcodes** (FAIT) : les programmes des quatre familles (types 298, 229, 345, 430) et des blocs Mini-Nilude (433) n'emploient que des
+  opcodes que la DLL dispatche, une fois g5b faite (`progs_g5.txt`, `opcode_hist_g5.json`, et la lecture de g5b). `0xBE` est dispatché mais
+  rejoue le son au lieu de l'arrêter : c'est g5c.
+- **Les blocs des cartes 102 et 382** : leur programme D appelle `0x87 [128,1]`, l'attaque d'indice 1 (nibble 2 : le marteau ou le fléau).
+  Leur mouvement dépend donc d'un coup de fléau, pas d'une poussée.
+- **Les tests existants** (FAIT) : aucun ne nomme ces familles. Le test statique de la chaîne (`StoryChainSkippedOpcodesTests`) ne porte que
+  sur les 30 cartes de l'histoire, et son oracle `IsPorted` (`:30`) dérive du vrai runner.
+
+**Décisions de la session.**
+- **D-G5D-1** — Les arcs épinglent les valeurs mesurées de la DLL (le motif de D-G5-4) ; le binaire n'exécute pas les scripts
+  d'événements sur la machine, donc il n'a pas de valeur de référence pour eux.
+- **D-G5D-2** — Le test statique est un test neuf, sur le motif de `StoryChainSkippedOpcodesTests` : même parcours, même oracle `IsPorted`,
+  restreint aux programmes des placements des types 229, 298, 345, 430 et 433. Il échoue dès qu'un opcode qu'ils atteignent n'est pas porté.
+- **D-G5D-3** (Q-G5-A2, défaut) — Le gel du héros après un programme F est épinglé tel quel. Si l'auteur choisit de le corriger, la
+  correction aura sa propre tranche, et cette épingle bougera avec elle.
+- **D-G5D-4** (Q-G5-6) — Les blocs des cartes 102 et 382 : un test synthétique pose directement le coup d'indice 1 sur le bloc, si un
+  montage existant le permet sans le système d'attaque ; sinon la preuve passe au thème 2 (le fléau), avec une ligne au plan.
+
+**Périmètre.** Des tests neufs (arcs sous `Alundra.Tests/Arcs/`, le test statique sous `Alundra.Tests/Events/`), selon l'ADR-0080 ;
+l'annexe `docs/plan-e20-annexe/e20-g5/g5d/` ; ce plan. Aucun fichier de `Alundra/`.
+
+**Hors périmètre.** Tout code de production ; `0xBE` (g5c) ; le gel du héros (sa correction, si l'auteur la demande) ; le fléau.
+
+**Tâches.**
+- ⏳ **T0 — Mesures au HEAD de départ** (commit de docs).
+  - Rejouer les sondes `cases1.json`, `cases3.json` et `cases10.json` sur la vraie DLL du HEAD de départ, dans une copie : mêmes sorties que
+    `probe_out/`, ou les écarts expliqués (g5a et g5b sont passées entre-temps).
+  - Mesurer le gel F sur la statue de la carte 2.
+  - Établir si D-G5D-4 a un montage.
+  - Lister ce que le test statique trouve au HEAD de départ : il doit être vide, sinon arrêt et liste.
+- ⏳ **T1 — Les tests.**
+  - (s1) Statue de la carte 2 : contact à l'image 2, x de 420 à 445,5, le drapeau posé. Accolé : sans poussée, la statue ne bouge pas.
+  - (s2) Statue de la carte 352 : x de 204 à 229,5.
+  - (s3) Bloc de la carte 23 : x de 768 à 720, puis z de 32 à 16.
+  - (s4) Le gel F : la croix tenue après le contact ne fait plus avancer le héros ; relâchée puis ré-enfoncée, elle le fait repartir.
+  - (s5) Le test statique de D-G5D-2.
+  - (s6) Le test synthétique des blocs 102 et 382, s'il a un montage (D-G5D-4).
+  - Ces tests sont verts au HEAD de départ : ils épinglent un comportement qui marche déjà. Chacun est accolé à un cas qui le rendrait
+    rouge (sans poussée, sans le drapeau, un opcode retiré du runner pour (s5)), joué une fois par une mutation réelle annulée.
+- ⏳ **T2 — Suites et preuves.**
+  - Mutations réelles, appliquées par script puis annulées, chacune doit rendre rouge son test :
+    - le drapeau du programme F non posé → (s1) ;
+    - un opcode des familles retiré du dispatch → (s5) ;
+    - le départ du programme F au contact retiré → (s1), (s2), (s3) ;
+    - la remise à zéro des quatre mots du héros retirée → (s4).
+  - `Alundra.Tests` en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `check_names.py --rules` vert ; les traces du héros
+    intactes ; `Alundra/` sans diff.
+  - Les résultats dans l'annexe.
+- ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche.
+
+**Acceptation.**
+- (s1) à (s5), et (s6) s'il est écrit, sont verts.
+- Chaque mutation de T2 rend rouge son test.
+- Aucun test existant ne bouge ; `Alundra/` est sans diff.
+- **Recette de l'auteur** (non bloquante) : `280-murgg.sav` (carte 2), pousser la statue ; `351-lake-castle.sav` (carte 352).
+
+**Arrêts.** Le test statique trouve un opcode non porté au HEAD de départ ; une sonde de T0 contredit le rapport sans explication ; un
+besoin de toucher `Alundra/`.
+
+**Budget.** Un `executor` pour T0 à T2 ; deux tentatives. Un `plan-verifier` avant ; un verifier frais après.
+
+**Retour arrière.** Retirer les tests neufs.
 
 ---
 
