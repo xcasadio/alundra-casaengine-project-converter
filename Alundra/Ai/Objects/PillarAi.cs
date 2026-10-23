@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Alundra.Entities;
+using Alundra.Events;
 using Alundra.Maps;
 
 namespace Alundra.Ai.Objects;
@@ -29,6 +30,13 @@ internal static class PillarAi
 
     /// <summary>The value of the counter at which the push starts (<c>slti 0x1F</c>: strictly under it the counter goes up).</summary>
     internal const int PushTicks = 31;
+
+    /// <summary>The keys the class registers, for the pins of the production registry (D-G5-1): C76, for the type <see cref="SpriteType"/> only.</summary>
+    internal static readonly IReadOnlyList<(int Slot, int Code)> Keys = new[] { (ScriptHelper.ProgramCTick, Code) };
+
+    /// <summary>Registers C76 for the type <see cref="SpriteType"/> (430) only: the other sprite types that carry the code 76 in their record are not ported yet.</summary>
+    internal static void Register(NativeSpriteRegistry registry)
+        => registry.Register(ScriptHelper.ProgramCTick, Code, new[] { SpriteType }, (entity, context, state) => Tick(entity, context));
 
     /// <summary>The animation asked while the pillar is pushed (<c>+0x88 = 1</c>): the one that carries the speed.</summary>
     internal const uint PushAnimationId = 1;
