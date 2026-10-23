@@ -492,6 +492,7 @@ internal static class ScriptedMotion
         // The force of the tick. Without gravity and without an impulse the law leaves the force as it is (the flight at constant Z), so the force of the tick starts from it.
         entity.FinalForceZ = entity.ForceZ;
         entity.ApplyVerticalForceLaw();
+        entity.CopyCarrierForceZ(); // D5b T6B: a passenger without an impulse takes the force its carrier hands over (0x80037364).
         entity.TickForceZ = entity.FinalForceZ;
 
         var tickForce = entity.FinalForceZ;

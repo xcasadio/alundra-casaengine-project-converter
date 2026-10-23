@@ -186,3 +186,14 @@ Production (no engine file touched):
 Red before, green after (Release, neutralised copy), 10 witnesses: `CrateA_*` x4, `NpcA_*`, `RestA_*`, `PileZA_*`, `PileXYA_*`, `A_D5b_22_ThePile...`, and `ImpulseA_*` (the planned negative guard, red since T4, green again). Still red (T6B, T6C): `MarkedB_*` x2, `PileZB_*`, `PrefabC_*` = 4.
 Existing tests moved: none. Release, the three partitions: 1 216 tests / 0 red; 2 665 / 4 red (the T6B and T6C witnesses); 1 785 / 0 red. The traces of the hero and the intro trace are identical (their guards are in the partitions);
 the four `docs/hero-trace-389-*.txt` restored by `git checkout`.
+
+## T6B - the marked entities (`HasLogicalZ`, path B)
+
+Production (no engine file touched):
+- `ScriptedMotion.RunLogicalZPreXyStep`: `CopyCarrierForceZ()` right after `ApplyVerticalForceLaw()` and before `TickForceZ` is taken (the same copy as path A, no impulse; with an impulse the entity keeps its own).
+  The "move the target first" and the ceiling of the carriers of this site were done by T4 (`TryFindSupportMovingFirst`, `TryFindCeilingMovingFirst`).
+- `EntityScriptProxy.EndPhysicsTick` no longer skips the marked entities: the end pass re-reads `IsOnGround` of every passenger with a controller that moved in the pass (the post step of the marked entity read it before its
+  carrier had moved when the carrier comes later in the order of the cases). The call `UpdateGroundSlope()` of E20.f6a did not move.
+
+Red before, green after (Release, neutralised copy): `MarkedB_*` x2 (rising and descending), `PileZB_*` (a marked object on a crate on the platform; the crate is T6A's). Existing tests moved: none.
+Release, the three partitions: 1 216 tests / 0 red; 2 665 / 1 red (`PrefabC_*`, T6C); 1 785 / 0 red. The four traces of the hero restored by `git checkout`.

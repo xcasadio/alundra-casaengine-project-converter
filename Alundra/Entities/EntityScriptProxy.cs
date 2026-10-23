@@ -1769,9 +1769,9 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         {
             IsOnGround = PosZ + ModZ <= ComputeFloorHeight(ComputeTerrainHeight()) ? 1 : 0;
         }
-        else if (!IsPlayer && Controller != null && !HasLogicalZ && RidingEntity != null && ScriptHost != null && ScriptHost.PhysicsPassId != 0 && PhysicsDoneInPass == ScriptHost.PhysicsPassId)
+        else if (!IsPlayer && Controller != null && RidingEntity != null && ScriptHost != null && ScriptHost.PhysicsPassId != 0 && PhysicsDoneInPass == ScriptHost.PhysicsPassId)
         {
-            // D5b T6A: a passenger with a controller that moved in this pass (path A; the marked entities have their own post step, the others no controller).
+            // D5b T6A/T6B: a passenger with a controller (marked HasLogicalZ or not) that moved in this pass reads it again once its carrier has moved; the ones without a controller are T6C's.
             IsOnGround = PosZ + ModZ <= ComputeFloorHeight(ComputeTerrainHeight()) ? 1 : 0;
         }
     }
