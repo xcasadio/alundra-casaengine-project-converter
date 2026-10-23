@@ -136,6 +136,7 @@ public sealed class ChargedArrowAiTests : IDisposable
 
     [Theory]
     [InlineData(EntityStatus.Normal, 1)]
+    [InlineData(EntityStatus.Deactivated, 0)]
     [InlineData(EntityStatus.FlagToDestroy, 0)]
     public void C1_TheTrailIsMadeInTheStatusNormalOnly_TheStubIsCalledAllTheSame(EntityStatus status, int expectedTrails)
     {

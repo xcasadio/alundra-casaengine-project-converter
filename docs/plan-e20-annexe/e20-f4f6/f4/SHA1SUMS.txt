@@ -21,3 +21,6 @@ fc2ee981ddee8f9c7d7e2bc38e13a1623724042e  t1/t1-red-names.txt
 646ab86a5c697ceff3abfe838d19294d06978615  t1/t1-results.md
 786f4431b819b545c75f7a1cb3aac938b11f91e1  t2/t2-results.md
 ce2781eef3b0c593c47fadfa909f6185be76ca84  t3/t3-results.md
+548bd3478674b8395d891b76e79b4e5e03f2abff  t4/t4-results.md
+81d013af88a42f64864db961609fa7ba13506b62  t4/mutants.txt
+370034e5007ee4252e0e92dd440bcaef70bf7f15  t4/t4mut.py

@@ -1,0 +1,18 @@
+# T4 mutants of the DLL code (Release, filter ChargedArrow|WeaponSpawnSeam|NativeSpriteRegistry|NativeSpriteTypeFilter|WaveSword|BirthTick; summary = (failed, passed))
+# M01-M03, M05 from the first corrected run; M04 re-run after the status-3 case was added to the C1 theory (first run: SURVIVED, 134 passed)
+M01 C94 absent (Tick does nothing): KILLED summary=[('26', '108')] nfail=0
+M02 trail period 8 (& 3 -> & 7): KILLED summary=[('20', '114')] nfail=0
+M03 trail also at S (counter 1): KILLED summary=[('4', '130')] nfail=0
+M04 trail also in status 3: SURVIVED summary=[('0', '134')] nfail=0
+M05 wrong animation (0): KILLED summary=[('14', '120')] nfail=0
+M04 trail also in status 3: KILLED summary=[('1', '134')] nfail=0
+M06a force X not shifted: KILLED summary=[('12', '123')] nfail=0
+M06b force Y not shifted: KILLED summary=[('4', '131')] nfail=0
+M07 Z offset 4 px (0x40000): KILLED summary=[('16', '119')] nfail=0
+M08 plug called only every 4 ticks: KILLED summary=[('17', '118')] nfail=0
+M09 plug never called: KILLED summary=[('23', '112')] nfail=0
+M09b port call removed (journal kept): KILLED summary=[('3', '132')] nfail=0
+M10 7 forgotten in the registry: KILLED summary=[('13', '122')] nfail=0
+M11 7 absent from the production set: KILLED summary=[('4', '131')] nfail=0
+M12 4 present in the production set: KILLED summary=[('2', '133')] nfail=0
+M13 E1 without break effect: KILLED summary=[('4', '131')] nfail=0
