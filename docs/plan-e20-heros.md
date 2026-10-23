@@ -7276,14 +7276,14 @@ de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYP
   La DLL rejoue le son là où le binaire l'arrête : 392 sites sur 119 cartes, dont 12 sur la chaîne ; `ISoundPlayer` n'a que
   `StopAllSfx`.
 - **Deux opcodes manquent pour les boutons** : `0x72` (24 sites sur 12 cartes ; il recopie `TargetAnimationId` et `TargetDirection` dans
-  leurs champs `Last*`) et `0xAA` (22 sites sur 8 cartes). `0xA9` a 4 sites, sur la carte 440, hors des quatre familles.
+  leurs champs `Last*`) et `0xAA` (22 sites sur 8 cartes). `0xA9` a 4 sites, sur la carte 440, hors des quatre familles. La lecture de g5b
+  précise ces chiffres et corrige deux valeurs de cette lecture (voir g5b, « Corrections au §1.24.6 »).
 
 **Découpage et ordre** (Q-G5-1, Q-G5-7, défauts de la session).
 - **g5a, les piliers** : détaillée ci-dessous, exécutable dès maintenant, sans lien avec g1a à g4b (seul le registre est partagé).
   Ordre retenu : juste après E20.e0c2.
-- **g5b, les opcodes `0x72` et `0xAA`** (et `0xA9` si sa lecture le rattache à la même famille) : esquisse. Son T0 lit au binaire les trois
-  gestionnaires, puis la tranche se détaille. Le thème 3 (le moteur de script) recouvre ces opcodes ; g5b les prend parce que les boutons
-  sont du thème 1 (D-E20-63).
+- **g5b, les opcodes `0x72`, `0xA9` et `0xAA`** : détaillée ci-dessous (révision 0, lecture au binaire du 2026-10-23), prélevée sur
+  E19.sm3 et E19.sm4 du thème 3, qui les portaient déjà avec leurs preuves (D-G5B-1). Elle débloque aussi les blocs Mini-Nilude.
 - **g5c, l'arrêt du son** (`0xBE` = `StopSoundEffect`, `ISoundPlayer.StopSfx`, l'arrêt de C76) : esquisse, **en attente de la réponse de
   l'auteur à A1** (§2, Q-G5-A1). Son T0 établit si le moteur sait arrêter un bruitage précis ; sinon le manque se consigne au rapport des
   manques du moteur, sans contournement.
@@ -7380,6 +7380,121 @@ D-G5-4 ; un test existant hors de la liste prédite ; un besoin de changer le mo
 après.
 
 **Retour arrière.** La phase B se retire seule (l'inscription) ; la phase A n'a aucun appelant de production.
+
+
+##### E20.g5b — Les opcodes des boutons et des blocs scriptés : `0x72`, `0xA9`, `0xAA`, prélevés sur E19.sm3 et E19.sm4 ⏳ (détaillée le 2026-10-23, révision 0 ; à relire par un `plan-verifier` frais)
+
+**Provenance.** Lecture au binaire du 2026-10-23 (HEAD `e49cce2b`, sans changement de code jusqu'à `2eff6b46` ; annexe
+`docs/plan-e20-annexe/e20-g5/g5b-disc/`, `report.md`). Les tranches du thème 3 qui portaient déjà ces opcodes, avec leurs preuves :
+E19.sm3 (§1.4.4 du plan d'E19, `0xA9` et `0xAA`, annexe `docs/plan-e19-sm-annexe/sm3/`) et E19.sm4 (§1.4.5, `0x72`, annexe
+`docs/plan-e19-sm-annexe/sm4/`), toutes deux READY puis marquées « à réviser » le 2026-10-22 pour d'autres opcodes.
+
+**Faits** (FAIT, MESURÉ ; la lecture du 2026-10-23 confirme les règles R1 et R2 de sm3 et le corps de `0x72` de sm4).
+- **Les gestionnaires** (table `0x80098FAC + 4 × opcode`) :
+  - `0x72` (`0x8003FA24`, 6 mots, taille 1) recopie, sur l'entité logique, `+0x88` dans `+0x26C` et `+0x8C` dans `+0x270` (la cible
+    d'animation et de direction dans leurs champs « derniers »), sans toucher `Result`.
+  - `0xA9` (`0x80041174`, 35 mots, taille 2) et `0xAA` (`0x80041200`, 36 mots, taille 2) appellent la recherche `0x8003C954(logique, v1)`,
+    puis parcourent le tampon de `n - 1` à 0. `0xA9` : `Result = 1` si la collision X de l'entité logique (`+0x130`) est l'une des entités
+    trouvées. `0xAA` : `Result = 1` si l'une d'elles a `+0x130 == logique`. `Result` est écrit sur toutes les voies.
+  - Avec l'opérande 129 (`0x81`, « le joueur »), `0xAA [129]` veut dire « le héros est bloqué en X par moi » : c'est le prédicat de la poussée.
+  - La décompilation est fidèle pour les trois ; l'écart nommé de la recherche (types `0x82`, `0x83` à bornes incluses) est déjà suivi par
+    la DLL.
+  - Preuves : 9 000 vecteurs des gestionnaires et 8 899 de la recherche contre le vrai code, 0 écart ; couverture 6/6, 35/35, 36/36 mots ;
+    78 mutants d'un mot, 72 tués, 6 équivalents ; goldens `ops_goldens.json` (70 classes).
+- **Les sites** (FAIT) : `0x72`, 24 sites linéaires, 20 atteignables, sur 12 cartes ; `0xAA`, 22 sites : 4 boutons de la 426, 15 blocs
+  « Mini-Nilude (D12) » (type 433) des cartes 421 et 423 à 426, 2 bulles de la grotte des fées, 1 bloc de la 440 ; `0xA9`, 4 sites sur la
+  440. Aucun site sur les 30 cartes de la chaîne d'histoire.
+- **La DLL au HEAD** (FAIT) : les trois sont envoyés à `UnknownOpcode` (`Alundra/Events/EventProgramRunner.cs:2110-2111`, `:3073`) et
+  sautés par leur taille, avec un avertissement unique ; `Result` reste périmé. Les champs existent déjà : `TargetAnimationId`,
+  `TargetDirection` (`EntityScriptProxy.cs:158-159`), `LastTargetAnimationId`, `LastTargetDirection` (`:1225-1226`), `XCollisionEntity`
+  (`:364`). `EntitySearchService` fait déjà les douze fonctions de recherche. `0xA9` et `0xAA` n'ont pas de libellé dans
+  `EventOpcodeSizeTable` (lignes 217, 218). Le miroir `ImplementedOpcodes` est à `Alundra.Tests/Arcs/HeadlessIntroSimulation.cs:85`.
+  Aucun test ne nomme ces trois opcodes.
+- **Le prototype** (PROTOTYPE, hors dépôt) ne déplace aucun test existant : la suite complète de la copie a les mêmes 5 426 réussites et
+  les mêmes 9 échecs d'environnement avant et après.
+- **Ce qui se voit, mesuré sur la copie avec le prototype.**
+  - Carte 40 (le repaire de Nirude) : un bloc touché glisse de 1,5 à 5,5 px, toujours vers le sud (le programme F impose la direction 0),
+    selon l'instant du contact ; touché par le sud, il ne bouge pas. Au HEAD, il ne glisse que de 0,5 px.
+  - Carte 426 (Torla) : un bouton exige 40 vrais `0xAA` consécutifs, poussé du côté nord seulement. Il glisse alors de 80 px en 160 ticks,
+    pose son drapeau, et le pont se construit. Une poussée interrompue repart de zéro ; les boutons s'enchaînent de droite à gauche, chacun
+    exigeant le drapeau du précédent. Au HEAD, rien ne bouge.
+- **Corrections au §1.24.6** (Q-G5B-4) : « 7,5 px » devient « de 1,5 à 5,5 px vers le sud » ; « au plus 40 ticks » devient « 40 ticks
+  consécutifs » ; les blocs Mini-Nilude sont aussi clients de `0xAA` ; `0x72` compte 20 sites atteignables.
+
+**Décisions de la session.**
+- **D-G5B-1** (Q-G5B-1) — g5b prélève `0xA9` et `0xAA` sur E19.sm3 et `0x72` sur E19.sm4, en reprenant leurs annexes, leurs tests et leurs
+  mutants tels quels. sm3 et sm4 sont déjà « à réviser » et sm0 n'est pas exécutée : le prélèvement ne casse rien. Leurs révisions (thème 3)
+  retireront ces opcodes et recalculeront leurs comptes (R-SM-2) ; ce plan l'écrit dans leurs en-têtes.
+- **D-G5B-2** — R-SM-1 ne s'applique pas à g5b : sa liste du corpus et `ClosedOwners` appartiennent à sm0, non exécutée. g5b ne touche ni
+  sm0 ni son test ; le test statique de la chaîne (`StoryChainSkippedOpcodesTests`) dérive son oracle du vrai runner et reste inchangé
+  (aucun site sur la chaîne).
+- **D-G5B-3** (Q-G5B-2) — `0xA9` va avec `0xAA` : même gestionnaire à la comparaison près, même recherche, même montage de test.
+- **D-G5B-4** — La place des `case` suit sm3 et sm4 : `0xA9` et `0xAA` après `case 0xB8` (règle R0 de sm3), `0x72` près de `case 0x71` ;
+  l'entité logique (calculée à `EventProgramRunner.cs:431`) et non le propriétaire.
+- **D-G5B-5** — Les arcs épinglent les valeurs mesurées de la DLL ; celles du binaire sont dans l'annexe. Le décompte des 40 ticks voit le
+  contact du tick précédent, comme le binaire (`+0x130` n'est écrit que par le déplacement `0x80037E34`).
+- **D-G5B-6** (Q-G5B-A1, A2, défauts) — Les comportements du script sont reproduits tels quels : la glissade de la 40, toujours vers le sud
+  et de longueur variable ; les boutons de la 426, à poussée continue de 40 ticks du côté nord, dans l'ordre. L'arrêt du son de fin reste à
+  g5c, en attente de Q-G5-A1.
+
+**Périmètre.** `Alundra/Events/EventProgramRunner.cs` (trois `case`) ; `Alundra/Events/EventOpcodeSizeTable.cs` (les deux libellés) ;
+`Alundra.Tests/Arcs/HeadlessIntroSimulation.cs` (le miroir) ; des tests neufs (fichier selon l'ADR-0080 ; précédent `WeaponLockOpcodesTests`) ;
+des arcs neufs sous `Alundra.Tests/Arcs/` ; l'annexe `docs/plan-e20-annexe/e20-g5/g5b/` ; les en-têtes de sm3 et sm4 dans le plan d'E19 ; ce
+plan.
+
+**Hors périmètre.** Les autres opcodes de sm3 et sm4 ; sm0, `ClosedOwners`, R-SM-1 ; `0xBE` et l'arrêt du son (g5c) ; le gel du héros
+après un programme F (Q-G5-A2) ; le moteur et les données.
+
+**Tâches.**
+- ⏳ **T0 — Rejeu et mesures** (commit de docs).
+  - Rejouer depuis des copies `ops_full.py` (sortie égale à `ops_full_out.txt`) et les vecteurs de sm3 (837) et de sm4 (`0x72`).
+  - Relire au HEAD de départ les sites de la DLL cités ci-dessus.
+  - Rejouer la sonde de la carte 40 et de la 426 (`cases_a.json`) sur le HEAD de départ avec le prototype dans une copie : mêmes sorties
+    que `probe_out_proto/`.
+  - Chercher pour les cartes 421 et 424 la hauteur de départ du héros devant un bloc Mini-Nilude (arcs S3-A1, S3-A1b, S3-A2 de sm3). Si
+    elle n'est pas trouvée, ces arcs restent facultatifs (R-SM-6, Q-G5B-3).
+  - Prédire les tests existants qui bougent (défaut : aucun, mesuré par le prototype).
+- ⏳ **T1 — Tests rouges d'abord.**
+  - Les tests unitaires de sm3 et sm4 pour ces trois opcodes : U-A9-01 à 15, U-AA-01 à 12, U-ALL-01 à 03
+    (`docs/plan-e19-sm-annexe/sm3/tests.tsv`), U72-1 à 6 (`docs/plan-e19-sm-annexe/sm4/tests-catalog.json`), avec leurs montages nus
+    (R-SM-4).
+  - Une théorie sur les octets réels des sites : les 20 instructions `0x72` atteignables, les 22 `0xAA`, les 4 `0xA9`.
+  - Tous rouges au HEAD de départ et nommés dans l'annexe ; les cas « sans effet » accolés à un positif.
+- ⏳ **T2 — Le code.**
+  - Les trois `case` (D-G5B-4), les deux libellés, le miroir `ImplementedOpcodes`.
+  - Verts ; la suite complète ; `check_names.py --rules` vert.
+- ⏳ **T3 — Arcs** (rouges avant T2, verts après ; à écrire en T1 et à faire passer ici).
+  - Carte 40 (ARC-40 de sm4) : un bloc touché par le nord, par l'est, par le sud ; la glissade selon l'instant du contact, épinglée sur
+    les valeurs mesurées (`phase40_summary.txt`).
+  - Carte 426 : la poussée nord complète (le bouton de droite, 80 px, son drapeau, le pont) ; la poussée interrompue ; le mauvais côté ; le
+    deuxième bouton avec et sans le drapeau du premier.
+  - Les arcs de sm3 dont T0 a trouvé la géométrie (S3-A1, A1b, A2, A3a, A3b, A7), sinon rien (R-SM-6).
+- ⏳ **T4 — Mutants et suites.**
+  - Mutants réels, appliqués par script puis annulés, tous tués :
+    - ceux de sm3 qui portent sur `0xA9` et `0xAA` (`docs/plan-e19-sm-annexe/sm3/vectors/mutants.json` et la critique) ;
+    - M72a à M72d de sm4 (`mutants-matrix.json`) ;
+    - `0x72` ne recopie que l'animation ; les deux champs inversés ; `0xA9` et `0xAA` échangés ; `Result` non remis à 0 quand rien n'est
+      trouvé ; la taille 1 au lieu de 2 ; la lecture du propriétaire au lieu de l'entité logique.
+  - `Alundra.Tests` en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `cmp` de la DLL ; les traces du héros intactes ;
+    le moteur, le convertisseur et les données sans diff.
+  - Les résultats dans l'annexe ; les en-têtes de sm3 et sm4 mis à jour (D-G5B-1) par la session principale.
+- ⏳ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.**
+- Les tests de T1 et les arcs de T3 sont rouges avant le code et verts après.
+- Les tests existants déplacés sont inclus dans la liste prédite de T0.
+- Les mutants sont tous tués ; les suites Release et Debug, zéro échec.
+- **Recette de l'auteur** (non bloquante) : `234-torla.sav` (carte 426) : pousser le bouton de droite par le nord en maintenant la direction
+  environ 0,7 s ; il glisse, puis le pont se construit. Plus tard : les blocs (`231-torla.sav`, `232-torla.sav`, `235-torla.sav`), les bulles
+  (`241-mare-enchantee.sav`, `242-mare-enchantee.sav`), le rêve de Meia (`180-meiadream-bug.sav`).
+
+**Arrêts.** Un vecteur contredit le binaire ; la sonde de T0 ne redonne pas les sorties du prototype ; un test existant hors de la liste
+prédite bouge ; un besoin de toucher sm0 ou le moteur.
+
+**Budget.** Un `executor` pour T0 et T1, un pour T2 et T3, un pour T4 ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers
+frais après.
+
+**Retour arrière.** `git revert` du commit de code : les trois opcodes redeviennent sautés par leur taille.
 
 ---
 

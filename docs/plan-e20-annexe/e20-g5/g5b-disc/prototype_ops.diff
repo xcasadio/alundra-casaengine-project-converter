@@ -1,0 +1,51 @@
+--- C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/g5b-disc/EventProgramRunner.cs.head	2026-10-23 14:22:57.588651700 +0200
++++ Alundra/Events/EventProgramRunner.cs	2026-10-23 14:22:57.638948000 +0200
+@@ -1,4 +1,4 @@
+-﻿#nullable enable
++#nullable enable
+ using System;
+ using System.Collections.Generic;
+ using CasaEngine.Core.Logging;
+@@ -792,6 +792,42 @@
+                 state.Result = entity.HitCounter;
+                 return 1;
+ 
++            case 0x72: // PROTOTYPE (g5b discovery, never part of the repository): Script_114_072 @ 0x8003FA24 - LastTargetAnimationId (+0x26C) = TargetAnimationId (+0x88),
++                       // LastTargetDirection (+0x270) = TargetDirection (+0x8C), the LOGIC entity's; Result untouched. Size 1.
++                entity.LastTargetAnimationId = entity.TargetAnimationId;
++                entity.LastTargetDirection = entity.TargetDirection;
++                return 1;
++
++            case 0xA9: // PROTOTYPE: Script_169_0A9 @ 0x80041174 - Result = 1 when the logic entity's XCollisionEntity (+0x130) is one of the entities the search v1 finds. Size 2.
++            {
++                state.Result = 0;
++                foreach (var m in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
++                {
++                    if (entity.XCollisionEntity != null && ReferenceEquals(entity.XCollisionEntity, m))
++                    {
++                        state.Result = 1;
++                        break;
++                    }
++                }
++
++                return 2;
++            }
++
++            case 0xAA: // PROTOTYPE: Script_170_0AA @ 0x80041200 - Result = 1 when one of the entities the search v1 finds has XCollisionEntity (+0x130) == the logic entity. Size 2.
++            {
++                state.Result = 0;
++                foreach (var m in EntitySearchService.GetMatchingEntitiesBySearchType(entity, v[1], _worldContext.SpawnedEntities, _worldContext.PlayerEntity))
++                {
++                    if (ReferenceEquals(m.XCollisionEntity, entity))
++                    {
++                        state.Result = 1;
++                        break;
++                    }
++                }
++
++                return 2;
++            }
++
+             case 0x86: // Set DamagedTickCounter - Script_134_086 @ 0x8003FFD4 (E20.c1b K4), PER THE BINARY: +0x1CC = v2 | v3 << 8 on every entity the search v1 finds. A SET, not
+                        // an add (the size table used to say "Add"); Result untouched. The counters pass decrements it, the hit pass skips a target whose counter is not 0. Size 4.
+             {

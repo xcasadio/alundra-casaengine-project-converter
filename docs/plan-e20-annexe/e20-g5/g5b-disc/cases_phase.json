@@ -1,0 +1,302 @@
+[
+ {
+  "name": "b40_phase_00",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   818,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ },
+ {
+  "name": "b40_phase_01",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   817,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ },
+ {
+  "name": "b40_phase_02",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   816,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ },
+ {
+  "name": "b40_phase_03",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   815,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ },
+ {
+  "name": "b40_phase_04",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   814,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ },
+ {
+  "name": "b40_phase_05",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   813,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ },
+ {
+  "name": "b40_phase_06",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   812,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ },
+ {
+  "name": "b40_phase_07",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   811,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ },
+ {
+  "name": "b40_phase_08",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   810,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ },
+ {
+  "name": "b40_phase_09",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   809,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ },
+ {
+  "name": "b40_phase_10",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   808,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ },
+ {
+  "name": "b40_phase_11",
+  "zone": "Nirude’s Lair",
+  "world": "Nirude’s Lair-40",
+  "hero": [
+   108,
+   807,
+   32
+  ],
+  "segments": [
+   [
+    "D",
+    40
+   ],
+   [
+    "",
+    40
+   ]
+  ],
+  "watch": [
+   0
+  ],
+  "settle": 6,
+  "arrival": true
+ }
+]

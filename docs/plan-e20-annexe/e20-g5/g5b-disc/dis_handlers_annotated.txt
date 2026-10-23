@@ -1,0 +1,54 @@
+dis_handlers_annotated.txt - the three handlers of ALUN_CD.EXE (France, SHA-1 a705f8dab665645af5dfaf8fb348c7926b5caa58), decoded by hand from dis_handlers_raw.txt
+(produced by disasm_range.py, capstone MIPS32 little endian). Handler table: 0x80098FAC + 4 * opcode (tab.py, tab_out.txt).
+
+Calling convention (RunScript loop 0x80042280-0x8004233C, see dis_dispatch.txt):
+  a0 = LOGIC entity   (s1 = [owner + 0x230], re-read BEFORE every instruction, 0x80042284; the owner itself until 0x42/0x43 retarget it)
+  a1 = owner entity   (s4)
+  a2 = &PC            (s2: a2 points at the word that holds the pointer to the current instruction's bytes; the handler reads its operand bytes through it)
+  a3 = program state  (s3; Result is the word at state + 0x2C, 0x8013DA14 for the shared A/D/E/F state)
+  v0 = the instruction length in bytes; 0 ends the call (suspends); otherwise state+8 := 0 and PC += v0.
+
+==== opcode 0x72  handler 0x8003FA24  (6 words, 24 bytes; next handler 0x8003FA3C)   decompilation: Script_114_072 (EntityEventHandlers.cs:2175)
+0x8003FA24  lw  v0, 0x88(a0)        ; v0 = logic.TargetAnimationId   (32-bit word)
+0x8003FA28  lw  v1, 0x8C(a0)        ; v1 = logic.TargetDirection     (32-bit word)
+0x8003FA2C  sw  v0, 0x26C(a0)       ; logic.LastTargetAnimationId = v0
+0x8003FA30  li  v0, 1               ; return value = instruction length 1
+0x8003FA34  jr  ra
+0x8003FA38  sw  v1, 0x270(a0)       ; (delay slot) logic.LastTargetDirection = v1
+  Reads: +0x88 +0x8C of a0.  Writes: +0x26C +0x270 of a0.  Operands: none.  Never touches Result (a3), never calls anything, never branches, never returns 0.
+  Decompilation: identical (same fields, same widths, same return).
+
+==== opcode 0xA9  handler 0x80041174  (35 words, 140 bytes; next handler 0x80041200)             decompilation: Script_169_0A9 (EntityEventHandlers.cs:3159)
+  prologue: sp -= 0x20, save s0 (0x10), s1 (0x14), ra (0x18);  s0 = a0 (logic);  s1 = a3 (state)
+  a1 = lbu 1([a2])                  ; the operand v1, an UNSIGNED byte, read straight from the code stream
+  v0 = jal 0x8003C954(a0 = logic, a1 = v1)      ; GetMatchingEntityBySearchType: fills the global buffer at 0x8013D8D8 (0-based) and returns the count n
+  a0 = n
+  if n <= 0 goto none
+  loop (a1 = &buffer[n-1], walking BACKWARD, a0 = n down to 1):
+      if [s0 + 0x130] (logic.XCollisionEntity) == buffer[i] : state.Result = 1 ; goto done
+  none: state.Result = 0
+  done: return 2 (instruction length 2) ; epilogue restores s0, s1, ra, sp
+  => Result = 1 iff the logic entity's XCollisionEntity is one of the entities found by the search v1; else 0.  Always written (never stale).
+  Side effects besides Result: the buffer (and the "Illegal ..." error logger 0x8003C840 for a search id 12-127 with bit 0x80, CheckEntityRecord 0x8003C914 for ids < 0x80).
+  Decompilation: same, except nothing (it also walks the buffer backward: --count).
+
+==== opcode 0xAA  handler 0x80041200  (36 words, 144 bytes; next handler 0x80041290)            decompilation: Script_170_0AA (EntityEventHandlers.cs:3182)
+  same prologue / search call / count as 0xA9
+  loop (v1 = &buffer[n-1], walking BACKWARD):
+      if [ buffer[i] + 0x130 ] (that entity's XCollisionEntity) == s0 (logic) : state.Result = 1 ; goto done
+  none: state.Result = 0
+  done: return 2
+  => Result = 1 iff one of the entities found by the search v1 has the logic entity as its XCollisionEntity.
+  With v1 = 129 (0x81, function id 1 "get player": buffer[0] = 0x80127D30, count 1, 0x8003CA38) it reads: "the HERO is blocked in X by me" - the push predicate.
+  Decompilation: same.
+
+  0xA9 and 0xAA are twins: the same 35 / 36 words, the comparison is mirrored (logic.+0x130 == match, versus match.+0x130 == logic).
+
+Search helper 0x8003C954 (371 words to 0x8003CF20), the cases the sites use:
+  v1 & 0x80 == 0 : record id v1 - CheckEntityRecord(v1) (log only), then slots 1..g_numberOfEntities INCLUSIVE whose [+0x48] == v1; the gate tests the OWNER's state ([a0+0x10] - 1 < 3), not the entity's.
+  v1 == 0x81     : buffer[0] = 0x80127D30 (the hero), count 1.
+  ids 0x82 / 0x83: slots 0..n / 1..n INCLUSIVE (the decompilation loops i < n: one short, GameEngine.cs:1965-1988; 523 of 766 vectors differ).
+  ids 12..127 with bit 0x80: the error logger 0x8003C840, count 0.
+
+Entity +0x130 (XCollisionEntity) is written by the per-entity move 0x80037E34 only: 0x80037E80 clears it for an entity that rides a platform ([+0x28] != 0),
+0x80037F08 stores the return value of the second collision helper 0x80037730 (the obstacle of the tick) for the others (scan130.py, scan130_out.txt).

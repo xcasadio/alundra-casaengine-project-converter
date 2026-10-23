@@ -1,0 +1,15 @@
+Série de tests pour C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\g5b-disc\probe\Alundra.Tests\bin\Debug\net9.0-windows\Alundra.Tests.dll (.NETCoreApp,Version=v9.0)
+Au total, 1 fichiers de test ont correspondu au modèle spécifié.
+[xUnit.net 00:03:48.30]     Alundra.Tests.Audio.MusicPlayerTests.D4_TheRealExport_GivesTrack25ItsLoopPoint [FAIL]
+[xUnit.net 00:03:48.34]     Alundra.Tests.Audio.MusicPlayerTests.T1_Intro_RealMusicPlayer_LoadsWithoutPlaying_ThenFirstFrameCloseStartsIndex25_Looped_FullVolume_MusicBus [FAIL]
+[xUnit.net 00:10:00.52]     Alundra.Tests.Transitions.WarpDepartureTests.WarpDeparture_SameRawMusicIndexAsDestination_TouchesNeitherFadeNorVoice [FAIL]
+[xUnit.net 00:10:00.52]     Alundra.Tests.Transitions.WarpDepartureTests.WarpDeparture_SilentWarpSound_ArmsFadeOnly_NeverLoadsDestination_ThenArrivalPlaysIt [FAIL]
+[xUnit.net 00:10:00.53]     Alundra.Tests.Transitions.WarpDepartureTests.WarpDeparture_WarpSoundWithNoTonesButARealSeqNum_IsNotSilent_StopsTheDepartingBgm [FAIL]
+[xUnit.net 00:10:00.53]     Alundra.Tests.Transitions.WarpDepartureTests.WarpDeparture_AudibleWarpSound_StopsTheDepartingBgm_NeverArmsTheFade_ThenArrivalPlaysDestination [FAIL]
+[xUnit.net 00:10:00.53]     Alundra.Tests.Transitions.WarpDepartureTests.Warp0x53Departure_SilentWarpSound_ArmsFadeOnly_NeverLoadsDestination_ThenArrivalPlaysIt [FAIL]
+[xUnit.net 00:10:00.53]     Alundra.Tests.Transitions.WarpDepartureTests.WarpDeparture_SameFrameAsMapEntry_TrackStartsFirst_ThenFadeArmsAfter [FAIL]
+[xUnit.net 00:10:00.54]     Alundra.Tests.Transitions.WarpDepartureTests.Warp0x53Departure_AudibleWarpSound_StopsTheDepartingBgm_NeverArmsTheFade_ThenArrivalPlaysDestination [FAIL]
+Fichier de résultats : C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/g5b-disc/full_head.trx
+
+Échoué!  - échec :     9, réussite :  5426, ignorée(s) :     0, total :  5435, durée : 10 m 22 s - Alundra.Tests.dll (net9.0)
+exit 1

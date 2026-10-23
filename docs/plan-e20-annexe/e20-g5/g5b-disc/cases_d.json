@@ -1,0 +1,6 @@
+[
+ {"name":"b426_chain_rec16","zone":"Nirude","world":"Nirude (inner)-426","hero":[204,790,32],"flags":[1253,1254,1267,1269,1266],"segments":[["D",90],["",20]],"watch":[16,17],"settle":6,"arrival":true},
+ {"name":"b426_chain_rec15","zone":"Nirude","world":"Nirude (inner)-426","hero":[156,790,32],"flags":[1253,1254,1267,1269,1266,1265],"segments":[["D",90],["",20]],"watch":[15,16],"settle":6,"arrival":true},
+ {"name":"b426_chain_rec14","zone":"Nirude","world":"Nirude (inner)-426","hero":[108,790,32],"flags":[1253,1254,1267,1269,1266,1265,1264],"segments":[["D",90],["",20]],"watch":[14,15],"settle":6,"arrival":true},
+ {"name":"b426_rec16_without_flag","zone":"Nirude","world":"Nirude (inner)-426","hero":[204,790,32],"flags":[1253,1254,1267,1269],"segments":[["D",90],["",20]],"watch":[16],"settle":6,"arrival":true}
+]

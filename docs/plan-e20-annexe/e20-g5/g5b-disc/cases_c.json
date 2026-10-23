@@ -1,0 +1,6 @@
+[
+ {"name":"m421_west_R","zone":"Nirude","world":"Nirude (inner)-421","hero":[118,704,64],"segments":[["R",100],["",100]],"watch":[8],"settle":6,"arrival":true,"listAll":true},
+ {"name":"m421_north_D","zone":"Nirude","world":"Nirude (inner)-421","hero":[156,676,64],"segments":[["D",100],["",100]],"watch":[8],"settle":6,"arrival":true},
+ {"name":"m421_east_L","zone":"Nirude","world":"Nirude (inner)-421","hero":[194,704,64],"segments":[["L",100],["",100]],"watch":[8],"settle":6,"arrival":true},
+ {"name":"m421_south_U","zone":"Nirude","world":"Nirude (inner)-421","hero":[156,732,64],"segments":[["U",100],["",100]],"watch":[8],"settle":6,"arrival":true}
+]

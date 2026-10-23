@@ -1,0 +1,4 @@
+[
+ {"name":"list40","zone":"Nirude’s Lair","world":"Nirude’s Lair-40","hero":[108,862,32],"segments":[["",3]],"watch":[0,1,2,3,4,5,6,7],"settle":6,"listAll":true,"arrival":true},
+ {"name":"list426","zone":"Nirude","world":"Nirude (inner)-426","hero":[108,830,32],"segments":[["",3]],"watch":[13,14,15,16,17],"settle":6,"listAll":true,"arrival":true}
+]

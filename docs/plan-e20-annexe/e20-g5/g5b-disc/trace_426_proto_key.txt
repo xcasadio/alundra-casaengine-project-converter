@@ -1,0 +1,30 @@
+# b426_north_D with the prototype: key trace lines (trace frame = probe frame + 8 settle frames)
+# button C[17] (prog@1744): 0xAA x52, 0x74 x40 (the counter), 0x57 once, flag 0x05 [242,4] once, Walk 0x1E x162, 0xBE once
+  pc1749 op0x73 12
+  pc1751 op0x00 51
+  pc1752 op0xAA 52
+  pc1754 op0x04 52
+  pc1757 op0x74 40
+  pc1760 op0x57 1
+  pc1770 op0x05 1
+  pc1773 op0xBD 1
+  pc1776 op0x00 1
+  pc1777 op0x5B 1
+  pc1781 op0x1E 162
+  pc1784 op0x1A 1
+  pc1786 op0x00 1
+  pc1787 op0xBE 1
+  pc1790 op0x02 1
+  pc1806 op0xFF 96
+# first and last frames of each key instruction
+60 slot2 prog@1744 pc1760 op0x57 Implemented
+60 slot2 prog@1744 pc1770 op0x05 Implemented
+61 slot2 prog@1744 pc1777 op0x5B Implemented
+223 slot2 prog@1744 pc1787 op0xBE Degraded
+# B[6] (prog@980): the bridge reacts to the flag 1266 (242,4)
+61 slot1 prog@980 pc1105 op0x10 Implemented
+61 slot1 prog@980 pc1110 op0x85 Implemented
+102 slot1 prog@980 pc1119 op0x85 Implemented
+143 slot1 prog@980 pc1128 op0x85 Implemented
+184 slot1 prog@980 pc1137 op0x85 Implemented
+184 slot1 prog@980 pc1148 op0x11 Implemented

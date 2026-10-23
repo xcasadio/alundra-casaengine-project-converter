@@ -12732,7 +12732,7 @@ erreurs de documentation et de matrice, non de comportement).
   de T3 d'abord (s'il existe), puis du commit de T2 ; **les tests de T1 sont dans le commit de T2** (révisions 1 et 2), si bien que les reverts ne
   laissent aucun test rouge commité.
 
-#### 1.4.4 E19.sm3 — Les prédicats de contact, de groupe et de `ForceZ` : `0xA9 0xAA 0xB2 0xB4-0xB7 0x9E` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1, **READY** à la seconde relecture, `564bef3` ; **à réviser** : `0xB2` en sort, D-E19-111)
+#### 1.4.4 E19.sm3 — Les prédicats de contact, de groupe et de `ForceZ` : `0xA9 0xAA 0xB2 0xB4-0xB7 0x9E` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1, **READY** à la seconde relecture, `564bef3` ; **à réviser** : `0xB2` en sort, D-E19-111 ; **`0xA9` et `0xAA` prélevés le 2026-10-23 par E20.g5b**, D-G5B-1 du plan d'E20 §1.24.6 : la révision les retire et recalcule les comptes, R-SM-2)
 
 **Prérequis.** R-SM-1 ; les défauts retenus de Q-sm-4 (A : porter `0xB2` maintenant) et de Q-sm-6 (porter `0xB4` et `0xB7` ; `0x9E` avec son
 lecteur de case et un ADR, dans un commit à part). E20.g1a indépendante (les tests posent `PlatformEntity` à la main).
@@ -12806,7 +12806,7 @@ le coin de la case (5, 46) où un `Result` 1 déjà relu change désormais le ch
 - **Budget** : un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après. **Retour arrière** : dans l'ordre inverse, le commit de
   `0x9E` d'abord, puis le commit unique (les deux touchent le runner, la table et le miroir ; révision 1).
 
-#### 1.4.5 E19.sm4 — Les opcodes d'action : `0x72 0x88 0x96 0x97 0xB3` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1, **READY** à la seconde relecture, `564bef3` ; **à réviser** : `0x5F`, `0x15`, `0x66`, `0x7A` y entrent, D-E19-113 ; `0x88` à indice 3 ou plus reproduit, D-E19-114)
+#### 1.4.5 E19.sm4 — Les opcodes d'action : `0x72 0x88 0x96 0x97 0xB3` ⏳ (détaillée le 2026-10-22 ; REVISE, révision 1, **READY** à la seconde relecture, `564bef3` ; **à réviser** : `0x5F`, `0x15`, `0x66`, `0x7A` y entrent, D-E19-113 ; `0x88` à indice 3 ou plus reproduit, D-E19-114 ; **`0x72` prélevé le 2026-10-23 par E20.g5b**, D-G5B-1 du plan d'E20 §1.24.6 : la révision le retire et recalcule les comptes, R-SM-2)
 
 **Prérequis.** R-SM-1 ; les défauts retenus de Q-sm-1 (A : `0x97` ajoute des PM), Q-sm-2 (le montant est l'octet 1), Q-sm-3 (`Overwrite` seul),
 Q-sm-11 (`0x15`, `0x66`, `0x7A` laissés sautés) et Q-sm-12 (`0x88` à indice ≥ 3 : rien d'écrit, un avertissement) ; **sérialisée avec E20.h4a et

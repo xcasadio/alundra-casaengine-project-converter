@@ -1,0 +1,10 @@
+[
+ {"name":"b40_south_U","zone":"Nirude’s Lair","world":"Nirude’s Lair-40","hero":[108,862,32],"segments":[["U",40],["",60]],"watch":[0],"settle":6,"arrival":true},
+ {"name":"b40_west_R","zone":"Nirude’s Lair","world":"Nirude’s Lair-40","hero":[84,840,32],"segments":[["R",50],["",60]],"watch":[0],"settle":6,"arrival":true},
+ {"name":"b40_north_D","zone":"Nirude’s Lair","world":"Nirude’s Lair-40","hero":[108,818,32],"segments":[["D",50],["",60]],"watch":[0],"settle":6,"arrival":true},
+ {"name":"b40_east_L","zone":"Nirude’s Lair","world":"Nirude’s Lair-40","hero":[144,840,32],"segments":[["L",50],["",60]],"watch":[0],"settle":6,"arrival":true},
+ {"name":"b40_tap_U","zone":"Nirude’s Lair","world":"Nirude’s Lair-40","hero":[108,862,32],"segments":[["U",6],["",3],["U",6],["",60]],"watch":[0],"settle":6,"arrival":true},
+ {"name":"b426_north_D","zone":"Nirude","world":"Nirude (inner)-426","hero":[252,790,32],"flags":[1253,1254,1267,1269],"segments":[["D",130],["",180]],"watch":[17,16],"settle":6,"arrival":true},
+ {"name":"b426_north_D_short","zone":"Nirude","world":"Nirude (inner)-426","hero":[252,790,32],"flags":[1253,1254,1267,1269],"segments":[["D",30],["",20],["D",30],["",60]],"watch":[17],"settle":6,"arrival":true},
+ {"name":"b426_west_R","zone":"Nirude","world":"Nirude (inner)-426","hero":[216,824,32],"flags":[1253,1254,1267,1269],"segments":[["R",130],["",60]],"watch":[17],"settle":6,"arrival":true}
+]

@@ -1,0 +1,4 @@
+[
+ {"name":"m424_west_R","zone":"Nirude","world":"Nirude (inner)-424","hero":[880,448,32],"segments":[["R",100],["",100]],"watch":[3],"settle":6,"arrival":true},
+ {"name":"m424_north_D","zone":"Nirude","world":"Nirude (inner)-424","hero":[912,420,32],"segments":[["D",100],["",60]],"watch":[3],"settle":6,"arrival":true}
+]

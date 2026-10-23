@@ -1,0 +1,16 @@
+case list426: map Nirude (inner)-426 ; hero placed at (108,830,32) ; flags set 
+entities of the map (record, sprite type, pos, status, program indexes A..F, sprite program indexes A..F, flags):
+  rec  -1 type    0 pos (108,830,32) status Normal idx [0,134,0,0,0,0] sprite [0,0,0,0,0,0] flags 0x3118C collidable True
+  rec  14 type  345 pos (108,824,16) status Normal idx [0,0,142,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec  15 type  345 pos (156,824,16) status Normal idx [0,0,143,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec  16 type  345 pos (204,824,16) status Normal idx [0,0,144,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec  17 type  345 pos (252,824,16) status Normal idx [0,0,145,0,0,0] sprite [0,0,0,0,0,0] flags 0x32080 collidable True
+  rec  18 type  377 pos (168,616,16) status Normal idx [0,0,146,0,0,0] sprite [0,0,13,11,1,0] flags 0x32103 collidable False
+  rec  46 type  254 pos (252,728,16) status Normal idx [0,0,0,0,0,174] sprite [0,0,0,0,0,0] flags 0x3A080 collidable True
+frame hold | hero x y z anim xcoll adj | per watched rec: x y z anim dir status fx fy adj xcoll ground
+   1 -  | H 108 830 32 a0 d16 f0,0 ctl4 xc=- adj0 | [rec13 absent] [rec14 108 824 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec15 156 824 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec16 204 824 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec17 252 824 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+   2 -  | H 108 830 32 a0 d16 f0,0 ctl4 xc=- adj0 | [rec13 absent] [rec14 108 824 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec15 156 824 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec16 204 824 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec17 252 824 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+   3 -  | H 108 830 32 a0 d16 f0,0 ctl4 xc=- adj0 | [rec13 absent] [rec14 108 824 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec15 156 824 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec16 204 824 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec17 252 824 16 a0 d0 s2 f0,0 adj0 xc=- g1]
+native handler runs during the case: 0
+skipped or exceeded instructions (frame slot pc opcode kind):
+  slot 2 pc 1752 op 0xAA UnknownSkipped x10 first frame 2

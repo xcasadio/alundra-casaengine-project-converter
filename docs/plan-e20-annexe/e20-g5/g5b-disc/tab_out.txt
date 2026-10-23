@@ -1,0 +1,10 @@
+op 0x71  table slot 0x80099170 -> handler 0x8003FA10  next handler 0x8003FA24  span 20 bytes (5 words)
+op 0x72  table slot 0x80099174 -> handler 0x8003FA24  next handler 0x8003FA3C  span 24 bytes (6 words)
+op 0x73  table slot 0x80099178 -> handler 0x8003FA3C  next handler 0x8003FA58  span 28 bytes (7 words)
+op 0xA8  table slot 0x8009924C -> handler 0x80041144  next handler 0x80041174  span 48 bytes (12 words)
+op 0xA9  table slot 0x80099250 -> handler 0x80041174  next handler 0x80041200  span 140 bytes (35 words)
+op 0xAA  table slot 0x80099254 -> handler 0x80041200  next handler 0x80041290  span 144 bytes (36 words)
+op 0xAB  table slot 0x80099258 -> handler 0x80041290  next handler 0x800412C4  span 52 bytes (13 words)
+sharing 0x8003FA24: ['0x72']
+sharing 0x80041174: ['0xA9']
+sharing 0x80041200: ['0xAA']

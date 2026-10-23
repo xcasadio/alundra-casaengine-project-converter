@@ -1,0 +1,16 @@
+case list40: map Nirude’s Lair-40 ; hero placed at (108,862,32) ; flags set 
+entities of the map (record, sprite type, pos, status, program indexes A..F, sprite program indexes A..F, flags):
+  rec  -1 type    0 pos (108,862,20) status Normal idx [0,130,0,0,0,0] sprite [0,0,0,0,0,0] flags 0x3118C collidable True
+  rec   0 type  345 pos (108,840,16) status Normal idx [0,0,130,0,0,130] sprite [0,0,0,0,0,0] flags 0x32081 collidable True
+  rec   1 type  345 pos (156,840,16) status Normal idx [0,0,131,0,0,129] sprite [0,0,0,0,0,0] flags 0x32081 collidable True
+  rec   2 type  345 pos (204,872,16) status Normal idx [0,0,132,0,0,131] sprite [0,0,0,0,0,0] flags 0x32081 collidable True
+  rec   3 type  345 pos (252,856,16) status Normal idx [0,0,129,0,0,129] sprite [0,0,0,0,0,0] flags 0x32081 collidable True
+  rec  39 type  326 pos (168,712,16) status Normal idx [0,0,146,0,0,0] sprite [0,0,0,0,0,0] flags 0x36080 collidable True
+  rec  40 type  386 pos (132,632,16) status Normal idx [0,0,0,0,0,0] sprite [0,0,14,11,1,0] flags 0x32103 collidable False
+  rec  41 type  386 pos (228,632,16) status Normal idx [0,0,0,0,0,0] sprite [0,0,14,11,1,0] flags 0x32103 collidable False
+frame hold | hero x y z anim xcoll adj | per watched rec: x y z anim dir status fx fy adj xcoll ground
+   1 -  | H 108 862 16 a45 d16 f0,0 ctl0 xc=- adj0 | [rec0 108 840 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec1 156 840 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec2 204 872 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec3 252 856 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec4 absent] [rec5 absent] [rec6 absent] [rec7 absent]
+   2 -  | H 108 862 16 a0 d16 f0,0 ctl0 xc=- adj0 | [rec0 108 840 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec1 156 840 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec2 204 872 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec3 252 856 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec4 absent] [rec5 absent] [rec6 absent] [rec7 absent]
+   3 -  | H 108 862 16 a0 d16 f0,0 ctl0 xc=- adj0 | [rec0 108 840 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec1 156 840 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec2 204 872 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec3 252 856 16 a0 d0 s2 f0,0 adj0 xc=- g1] [rec4 absent] [rec5 absent] [rec6 absent] [rec7 absent]
+native handler runs during the case: 0
+skipped or exceeded instructions (frame slot pc opcode kind):

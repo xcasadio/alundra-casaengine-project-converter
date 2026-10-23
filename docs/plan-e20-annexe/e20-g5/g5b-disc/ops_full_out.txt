@@ -1,0 +1,87 @@
+decompilation literal bound (i < n) for the types 0x82 and 0x83: 766 vectors, 523 differ from the real helper (which loops 0..n / 1..n INCLUSIVE)
+0x72   0x8003FA24..0x8003FA3C   6 words, executed   6, never executed -
+0xA9   0x80041174..0x80041200  35 words, executed  35, never executed -
+0xAA   0x80041200..0x80041290  36 words, executed  36, never executed -
+helper 0x8003C954..0x8003CF20 371 words, executed 356, never executed 8003cb80 8003cb84 8003cb88 8003cbf4 8003cbf8 8003cbfc 8003cc6c 8003cc70 8003cc74 8003cdd4 8003cdd8 8003cddc 8003ce48 8003ce4c 8003ce50
+layer A (handlers, 9000 vectors, 256 operands drawn): 0 mismatches
+layer B (helper, 8899 vectors of modelled types): 0 mismatches
+operand coverage: 256 distinct values of the 256 drawn
+model outcome classes: 70
+   ('0x72',) 3000
+   ('0xA9', 'fn00', 'buf=1', 'Result=0') 115
+   ('0xA9', 'fn00', 'buf=1', 'Result=1') 12
+   ('0xA9', 'fn02', 'buf=1', 'Result=0') 15
+   ('0xA9', 'fn02', 'buf=1', 'Result=1') 3
+   ('0xA9', 'fn02', 'buf=empty', 'Result=0') 5
+   ('0xA9', 'fn02', 'buf=many', 'Result=0') 49
+   ('0xA9', 'fn02', 'buf=many', 'Result=1') 52
+   ('0xA9', 'fn03', 'buf=1', 'Result=0') 7
+   ('0xA9', 'fn03', 'buf=1', 'Result=1') 2
+   ('0xA9', 'fn03', 'buf=empty', 'Result=0') 17
+   ('0xA9', 'fn03', 'buf=many', 'Result=0') 82
+   ('0xA9', 'fn03', 'buf=many', 'Result=1') 21
+   ('0xA9', 'fn04', 'buf=empty', 'Result=0') 6
+   ('0xA9', 'fn05', 'buf=empty', 'Result=0') 3
+   ('0xA9', 'fn06', 'buf=empty', 'Result=0') 5
+   ('0xA9', 'fn07', 'buf=1', 'Result=1') 33
+   ('0xA9', 'fn07', 'buf=empty', 'Result=0') 94
+   ('0xA9', 'fn08', 'buf=1', 'Result=0') 22
+   ('0xA9', 'fn08', 'buf=1', 'Result=1') 7
+   ('0xA9', 'fn08', 'buf=empty', 'Result=0') 98
+   ('0xA9', 'fn08', 'buf=many', 'Result=0') 3
+   ('0xA9', 'fn08', 'buf=many', 'Result=1') 2
+   ('0xA9', 'fn09', 'buf=empty', 'Result=0') 6
+   ('0xA9', 'fn0A', 'buf=empty', 'Result=0') 6
+   ('0xA9', 'fn0B', 'buf=1', 'Result=0') 2
+   ('0xA9', 'fn0B', 'buf=many', 'Result=0') 3
+   ('0xA9', 'fn0B', 'buf=many', 'Result=1') 1
+   ('0xA9', 'illegal', 'buf=empty', 'Result=0') 630
+   ('0xA9', 'player', 'buf=1', 'Result=0') 216
+   ('0xA9', 'player', 'buf=1', 'Result=1') 127
+   ('0xA9', 'record', 'buf=1', 'Result=0') 122
+   ('0xA9', 'record', 'buf=1', 'Result=1') 69
+   ('0xA9', 'record', 'buf=empty', 'Result=0') 957
+   ('0xA9', 'record', 'buf=many', 'Result=0') 119
+   ('0xA9', 'record', 'buf=many', 'Result=1') 89
+   ('0xAA', 'fn00', 'buf=1', 'Result=0') 107
+   ('0xAA', 'fn00', 'buf=1', 'Result=1') 11
+   ('0xAA', 'fn02', 'buf=1', 'Result=0') 16
+   ('0xAA', 'fn02', 'buf=1', 'Result=1') 5
+   ('0xAA', 'fn02', 'buf=empty', 'Result=0') 10
+   ('0xAA', 'fn02', 'buf=many', 'Result=0') 51
+   ('0xAA', 'fn02', 'buf=many', 'Result=1') 59
+   ('0xAA', 'fn03', 'buf=1', 'Result=0') 16
+   ('0xAA', 'fn03', 'buf=1', 'Result=1') 3
+   ('0xAA', 'fn03', 'buf=empty', 'Result=0') 16
+   ('0xAA', 'fn03', 'buf=many', 'Result=0') 61
+   ('0xAA', 'fn03', 'buf=many', 'Result=1') 36
+   ('0xAA', 'fn04', 'buf=empty', 'Result=0') 8
+   ('0xAA', 'fn05', 'buf=empty', 'Result=0') 8
+   ('0xAA', 'fn06', 'buf=empty', 'Result=0') 9
+   ('0xAA', 'fn07', 'buf=1', 'Result=0') 26
+   ('0xAA', 'fn07', 'buf=1', 'Result=1') 6
+   ('0xAA', 'fn07', 'buf=empty', 'Result=0') 105
+   ('0xAA', 'fn08', 'buf=1', 'Result=1') 22
+   ('0xAA', 'fn08', 'buf=empty', 'Result=0') 83
+   ('0xAA', 'fn08', 'buf=many', 'Result=1') 6
+   ('0xAA', 'fn09', 'buf=empty', 'Result=0') 2
+   ('0xAA', 'fn0A', 'buf=empty', 'Result=0') 6
+   ('0xAA', 'fn0B', 'buf=1', 'Result=0') 1
+   ('0xAA', 'fn0B', 'buf=many', 'Result=0') 3
+   ('0xAA', 'fn0B', 'buf=many', 'Result=1') 1
+   ('0xAA', 'illegal', 'buf=empty', 'Result=0') 601
+   ('0xAA', 'player', 'buf=1', 'Result=0') 211
+   ('0xAA', 'player', 'buf=1', 'Result=1') 154
+   ('0xAA', 'record', 'buf=1', 'Result=0') 149
+   ('0xAA', 'record', 'buf=1', 'Result=1') 55
+   ('0xAA', 'record', 'buf=empty', 'Result=0') 931
+   ('0xAA', 'record', 'buf=many', 'Result=0') 119
+   ('0xAA', 'record', 'buf=many', 'Result=1') 103
+mutants 78 killed 72 survivors 6
+  SURVIVOR 0xA9 8004117c addu<->subu      move $s0, $a0                  -> subu $s0, $a0, $zero
+  SURVIVOR 0xA9 80041198 addu<->subu      move $s1, $a3                  -> subu $s1, $a3, $zero
+  SURVIVOR 0xA9 8004119c addu<->subu      move $a0, $v0                  -> subu $a0, $v0, $zero
+  SURVIVOR 0xAA 80041208 addu<->subu      move $s0, $a0                  -> subu $s0, $a0, $zero
+  SURVIVOR 0xAA 80041224 addu<->subu      move $s1, $a3                  -> subu $s1, $a3, $zero
+  SURVIVOR 0xAA 80041228 addu<->subu      move $a0, $v0                  -> subu $a0, $v0, $zero
+goldens: 70 vectors over 70 classes, sha256 c4c75a9146eaa239e8d8b3cb38cb4a2c3da82b6f369f080d0a6acc5ae0027dba
