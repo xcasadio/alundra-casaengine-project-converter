@@ -89,3 +89,12 @@ Release with the neutralised copy, three partitions (`--blame-hang-timeout 60s`)
 
 The 26 are exactly the red list; the 5 627 existing tests are green. `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 warning, existing: `TextBoxGpu.cs`).
 The four `docs/hero-trace-389-*.txt` files were rewritten by the suite with other line endings and restored by `git checkout` (never indexed).
+
+## T2 - M4 (`RunCountersPass` clears `RidingEntity`, D-D5B-6)
+
+One production line (`proxy.RidingEntity = null;` in `WorldProxy.RunCountersPass`, `0x800389DC`) and the stale doc of the method corrected. The carrier is recomputed right after at the lists step
+(`RefreshUpdateProxiesAndCollidables`) and the hero's at the head of its own tick, so no reader sees the cleared value outside RIDE-M4.
+
+Red before, green after: `RideM4_APassengerOnItsCarrier_HasNoCarrierRightAfterTheCountersPass_...` and `RideM4_TheCarrierRemovedBetweenTwoTicks_...` (2 tests). Red list after T2: 24 (26 - 2), the planned negative
+witness (`ImpulseA_...`) stays green. Existing tests moved: none. Release with the neutralised copy: the three partitions give 24 failures, exactly the red list minus RIDE-M4 (the partitions by name overlap, as the counts
+of T0 showed); `Hero`/`Entities` partition 2 886 tests (24 red), `Arcs` etc. 1 317 (3 red, the new arcs), the rest 1 564 (0 red). The traces of the hero were restored by `git checkout`.

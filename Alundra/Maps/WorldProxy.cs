@@ -3018,8 +3018,8 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// E20.a A5 (D-E20-13): the counters pass of the binary (<c>0x80038998</c>, once per tick after the programs, over the slots 0 to the highest, hero included, NO status filter):
     /// <c>+0x1C</c> + 1 (<see cref="EntityScriptProxy.FrameCounter"/>), <c>+0x1CC</c> and <c>+0x1D0</c> (<see cref="EntityScriptProxy.DamagedTickCounter"/>,
     /// <see cref="EntityScriptProxy.FrameCollisionTickCounter"/>) decremented when non-zero, <c>+0x224</c> (<see cref="EntityScriptProxy.TouchingEntity"/>) and
-    /// <c>+0x220</c> (<see cref="EntityScriptProxy.HitCounter"/>) cleared. <c>+0x12C</c> (<c>RidingEntity</c>) is NOT cleared: the DLL recomputes the carrier once per frame
-    /// (<see cref="RefreshUpdateProxiesAndCollidables"/>), D-E20-13 (documented deviation until the riding is recomputed in the tick).
+    /// <c>+0x220</c> (<see cref="EntityScriptProxy.HitCounter"/>) cleared. <c>+0x12C</c> (<c>RidingEntity</c>, <c>0x800389DC</c>) is cleared too (D5b M4, D-D5B-6): the carrier is recomputed
+    /// right after, at the lists step (<see cref="RefreshUpdateProxiesAndCollidables"/>), and the hero's at the head of its own tick.
     /// Readers of these fields in the DLL (inventory of E20.a): <c>HitCounter</c> by opcodes 0x47/0x48 and by the pick of the Deactivate slot (<c>DeactivateOnHit</c>);
     /// <c>TouchingEntity</c> by the pick (slot D instead of C) and by the opcode 0x87; <c>DamagedTickCounter</c> is written by the opcode 0x86 (E20.c1b) and read by the hit pass, <c>HitCounter</c> is read by 0x71 too.
     /// Writers: the hit pass (E20.c1a: <c>TouchingEntity</c>, <c>FrameCollisionTickCounter</c>, <c>HitCounter</c>) and 0x86.
@@ -3046,6 +3046,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
 
             proxy.TouchingEntity = null;
             proxy.HitCounter = 0;
+            proxy.RidingEntity = null;
         }
     }
 
