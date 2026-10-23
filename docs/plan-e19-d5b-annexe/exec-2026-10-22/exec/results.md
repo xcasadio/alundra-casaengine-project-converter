@@ -224,3 +224,57 @@ Release, the three partitions: 1 216 / 0 red, 2 665 / 0 red, 1 785 / 0 red: 5 66
 - ADR-0088 (the highest number on any branch was 0087; `main` and `origin/main` stop at 0081) and its index row. `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 warning, existing: `TextBoxGpu.cs`).
 - Counts, Release with the neutralised copy, the three partitions: 1 216 / 0 failure, 2 665 / 0, 1 789 / 0: 5 670 tests (the 5 666 counted at the end of T6C plus 4 of the preset: its test and the three rows it adds to the theories over every preset), 0 failure. The four traces of the hero and the intro trace identical
   (`git diff --ignore-cr-at-eol` of `docs/hero-trace-389-*` is empty; the files restored by `git checkout`). Debug (built last, no neutralised copy): the SaveGames, passenger, lift, hero-ride and pillar tests, 377 / 0 failure.
+
+## T8 - mutations and suites
+
+### The mutations (real, by script, undone after; `git diff` of `Alundra/` and `Alundra.Tests/` empty after each and at the end)
+
+Method: a script replaces one exact line of production code (the replacement asserts the pattern occurs once), builds Release with the neutralised copy and runs the witness classes (`HeroPlatformRideTests`, `PassengerPlatformFollowTests`, `RidingEntityCountersPassTests`,
+`LiftMap22ArcTests`, `HeroObjectTopsTests`, `PillarAiPitWorldTests`), lists the failures, then writes the original bytes back. Each run is a real build of the mutated code, no mutation is simulated in a test.
+
+| mutation (production line changed) | red (names shortened; theory rows counted once) | the witness of the plan |
+|---|---|---|
+| copy of the force removed, hero (`ScriptedMotion.RunHeroVerticalTick`: the two assignments of `carried`) | 19: UH16 rising and descending, E22, DESC, UH19, Dock x2, Freeze, 3 arcs A_D5b_22, PileXYA, PileZA, and the guards UH10, UH15, UH17, UH18 x2, SJ12 | UH-16 rising: red |
+| copy removed, path A (`CopyCarrierForceZ()` of `EvaluateEntitySupport` only when `Controller == null`) | 8: CrateA, NpcA, RestA, ImpulseA, PileZA, PileXYA, PileZB, arc pile | CRATE-A: red |
+| copy removed, path B (`ScriptedMotion.RunLogicalZPreXyStep`) | 2: MarkedB, PileZB | MARKED-B: red |
+| copy removed, path C (same call, only when `Controller != null`) | 1: PrefabC | PREFAB-C: red |
+| recursion removed (`CarrierTickForceZ`, `depth < 0`) | 3: PileZA, PileXYA, arc pile | PILE_Z: red |
+| "move the target first" removed (`EnsureMovedThisPass` returns false) | 12: DESC, UH16 descending, Dock descending, UH19 (1 test, 2 rows), CrateA, NpcA, MarkedB, PileZA, PileZB, PileXYA, PrefabC, arc pile | DESC: red |
+| ceiling of the carriers removed (`TryFindCeilingMovingFirst` keeps only the absolute ceiling) | 1: UH19 | UH-19: red |
+| ceiling without "move first" (`TryFindCeilingMovingFirst` never moves the entity found) | 8: CrateA, NpcA, MarkedB, PileZA, PileZB, PileXYA, PrefabC, arc pile, all with `tick 3: platform 0` (the platform stands still) | the gel: see the deviation below |
+| end pass removed (`WorldProxy`, the loop of `EndPhysicsTick`) | 2: the arcs `A_D5b_22_FromTheLiftItself` and `A_D5b_22_TheRecipeOfTheAuthor` (`IsOnGround`) | IsOnGround: red |
+| entry rule removed (`movingCarrier.CarrierTickForceZ() == int.MinValue`) | 1: Dock rising | the dock: red |
+| M4 removed (`RunCountersPass` no longer clears `RidingEntity`) | 2: both RIDE-M4 | RIDE-M4: red |
+| XY memo/once-per-carrier: chain cut to one carrier | 2: PileXYA, arc pile | PILE_XY: red |
+| XY memo/once-per-carrier: the second carrier counted twice (the binary's defect back) | 2: PileXYA, arc pile | PILE_XY: red |
+| `LastTickDelta` put back in the hero's/passenger's XY line | 4: UH-14, W6_PushedEast, PileXYA, arc pile | UH-14: red |
+| extra, impulse guard: the copy no longer tests `IsZForceApplied == 0` | 1: ImpulseA | the negative witness: red |
+
+Deviation from the plan, to be read by the main session: for "ceiling without move first -> the gel", the witness named by the plan, `Freeze_...` (the hero rides), stays GREEN under this mutation and under "move first removed". The hero of the montages and of the world
+ticks before its platform (`WorldProxy._tickEntities`, `JumpHeroRig`, `RunSelfDrivenTicks`: hero first), so it has already followed (its copy of the force, T3) when the platform looks for a ceiling: it is never an unmoved ceiling. `Freeze_...` goes red
+only when the hero does not follow (the first mutation above). The gel itself is witnessed, red with the message `tick 3: platform 0`, by the non-hero passengers whose order can be after the platform (CrateA with `crateAfterPlatform: True`, NpcA, MarkedB, PileZA, PileZB, PileXYA,
+PrefabC). No test was added or changed for this (T8 writes no production line and no witness); if the main session wants a hero-after-platform witness, it needs a montage with the hero ticking after the platform, which the repository does not have.
+
+### The suites
+
+Disjoint partitions by test namespace (`FullyQualifiedName~Alundra.Tests.<ns>.`; the partitions of T7 by bare substring overlapped, so their sum, 5 670, over-counted): 1 = Arcs, Ai, Audio, Cameras, Cells, Combat, Dialogues; 2 = Entities, Events,
+ExportGuards, Hero, Items; 3 = everything else (the negation of the twelve). `--blame-hang-timeout 60s`.
+
+| partition | tests | failures Release (neutralised copy) | failures Debug (built last) |
+|---|---|---|---|
+| 1 | 1 213 | 0 | 0 |
+| 2 | 2 656 | 0 | 0 |
+| 3 | 1 793 | 0 | 0 |
+| total | 5 662 (equal to `--list-tests`) | 0 | 0 |
+
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 warning, existing: `TextBoxGpu.cs`).
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal (665 088 bytes), after the last Debug build.
+- The four `docs/hero-trace-389-*.txt` files were rewritten by the suites (line endings); `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0 after the Release and after the Debug suites (identical to the byte, line endings aside), then restored by
+  `git checkout`, never indexed. `docs/intro-trace-389.txt` is untouched by the suites (no diff at all).
+- Engine, converter and data without diff since `a24273b3`: `git diff --name-only a24273b3 HEAD` lists only `Alundra/`, `Alundra.Tests/` and `docs/` (the submodule pointer `CasaEngineMonogame` and `alundra-datas-analyser` do not appear; their local modifications in the work tree are the author's, not touched).
+
+### The existing tests that moved (all the slice, against the plan's prediction)
+
+Moved in behaviour: `HeroObjectTopsTests.UH14_...` (re-pinned to phase 0, `-tick x 65536`, renamed `..._CarriesTheHeroInPhase0_...`) and `PillarAiPitWorldTests.W6_PushedEast_...` (`over.Count` 16 to 15, D-D5B-11). Exactly the predicted two (plan, acceptance).
+Edited without a change of what they pin: `TestSavesTests` (T7: the preset `elevator-m22` joins the lists, the order test is renamed `TheThirteenPresets_...`), and the test aids `ContactHost`, `ContactWorld`, `JumpHeroRig` (the pass emulation).
+No other existing test moved or was red at any point after its task.
