@@ -30,6 +30,9 @@ internal sealed class PickupHost : IEntityWorldContext
 
     public ItemTables? Tables { get; set; }
 
+    /// <summary>E20.e0c2: the director of the music the fanfare of a key object stops and restarts (null: none, as for a test host).</summary>
+    public IBgmFadeDirector? BgmFadeDirector { get; set; }
+
     public EntityScriptProxy? Hero { get; set; }
 
     /// <summary>E20.e0c T2: the dialogue box the pickup asks whether it is open (null: no director).</summary>

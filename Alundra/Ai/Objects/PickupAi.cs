@@ -90,14 +90,25 @@ internal static class PickupAi
         entity.DelayOrAngleOrEntityId = entity.ContentsGameFlag;
     }
 
-    /// <summary>The fanfare of the key objects (<c>0x80049B7C(0)</c> then <c>0x8005A9E0(0xB)</c>, the CD track 11): a journaled STUB (D-E0C-7, ADR-0076) until E19.sm7 plays the CD tracks. The music is left alone (Q-E0C-9, default A).</summary>
-    private static void FanfareStart() => FanfareStubCallsForTests?.Add("start");
+    /// <summary>
+    /// The fanfare of the key objects (<c>0x80049B7C(0)</c> then <c>0x8005A9E0(0xB)</c>, the CD track 11). <c>0x80049B7C</c> is <c>LoadBgm</c>: <c>LoadBgm(0)</c> stops the music, as the opcode <c>0xA6</c> does (D-E0C2-1, D-E20-65).
+    /// The track 11 stays a journaled STUB (D-E0C-7, ADR-0076) until E19.sm7 plays the CD tracks. A host without a director of the music does nothing more (D-E0C2-2).
+    /// </summary>
+    private static void FanfareStart(IEntityWorldContext world)
+    {
+        world.BgmFadeDirector?.LoadBgm(0);
+        FanfareStubCallsForTests?.Add("start");
+    }
 
     /// <summary><c>CdBusy()</c> (<c>0x8005A7D4</c>): the stub of the fanfare is never busy, so the state 2 lasts one tick.</summary>
     private static bool FanfareIsBusy() => false;
 
-    /// <summary><c>StopAllSound</c> (<c>0x80049AF4</c>), which restarts the music after the fanfare: a journaled STUB.</summary>
-    private static void FanfareEnd() => FanfareStubCallsForTests?.Add("end");
+    /// <summary><c>StopAllSound</c> (<c>0x80049AF4</c>, as the opcode <c>0xA5</c>), which restarts the loaded music from the top after the fanfare (D-E0C2-1); the journal of the stub keeps its "end".</summary>
+    private static void FanfareEnd(IEntityWorldContext world)
+    {
+        world.BgmFadeDirector?.StopAllSound();
+        FanfareStubCallsForTests?.Add("end");
+    }
 
     /// <summary>
     /// C255 (<c>0x8007C174</c>), one tick of the branch <c>+0x274 != 2</c> of the binary: a dropped or a placed object. The chest (<c>+0x274 == 2</c>) is a named stub: nothing.
@@ -162,7 +173,7 @@ internal static class PickupAi
 
                 entity.ItemState += 1;
                 world.DialogueDirector?.SetCloseMask(DefaultCloseMask);
-                FanfareEnd();
+                FanfareEnd(world);
                 return;
             case StateAfterTheFanfare:
                 if (DialogueIsOpen(world))
@@ -214,7 +225,7 @@ internal static class PickupAi
 
         entity.ItemState += 1;
         world.Block(entity);
-        FanfareStart();
+        FanfareStart(world);
         OpenMessage(world, message, KeyMessageMode);
         world.DialogueDirector?.SetCloseMask(ScriptCloseOnlyMask);
     }
