@@ -1,0 +1,91 @@
+# E19.d2c2 D5b: measured results (task by task)
+
+Plan: `docs/plan-e19-opcodes.md` section 1.2h.3.2b. Start HEAD `a24273b3`. T0 is `state-T0.md`. This file is written task by task; this first version is T1.
+
+## T1 - the witnesses, red first (no production line)
+
+### The test aids
+
+| aid | where | what |
+|---|---|---|
+| `ContactHost.PhysicsPassId`, `ContactHost.BeginPhysicsPass()` | `Alundra.Tests/Support/ContactHost.cs` | the emulation of the pass number of D-D5B-1. A montage is self-driven (one tick per frame, hero first), so a pass is a frame: `JumpHeroRig.Update` and `ContactWorld.Integrate` call `BeginPhysicsPass()` once per frame before the update of the world. Nothing reads it yet: T4 adds the default member of `IScriptHost` that this property then implements. |
+| `ContactHost.Rebuild` computes `RidingEntity` of the non-heroes, the hero excluded | same file | as `WorldProxy.RefreshUpdateProxiesAndCollidables` at the lists step: the passengers are cleared, `EntitySupport.UpdateRidingEntities(Collidables)` runs, the hero keeps the value of its own tick head (the first attempt of the discovery, hero included, turned UH-10, UH-15 and UH-17 red; none moved here). |
+| `EndPhysicsTick` called at the end of the frame by the montage; `TickPhysicsOnce` called by the self-driven pilots | **not written in T1** | both methods are production code that does not exist before T3 and T4 (the plan forbids production lines in T1). The call from the montage (`JumpHeroRig.Update`, `ContactWorld.Integrate`, one line each) comes with the task that adds the method; the pilots (`EntityScriptProxy.RunSelfDrivenTicks`) are production code and are T4's. |
+
+Existing tests that moved because of the aids: none (the three partitions below, 5 627 existing tests, 0 failure, Release and Debug).
+
+### The new files
+
+| file | tests |
+|---|---|
+| `Alundra.Tests/Hero/HeroPlatformRideTests.cs` | 9 (theory rows counted): `UH16_...Rising`, `UH16_...Descending`, `E22_...`, `DESC_...`, `UH19_...` (2 rows), `Dock_...Rising`, `Dock_...Descending`, `Freeze_...` |
+| `Alundra.Tests/Entities/PassengerPlatformFollowTests.cs` | 13 (theory rows counted): `CrateA_...` (4 rows: before or after the platform, rising or descending), `NpcA_...`, `RestA_...`, `ImpulseA_...`, `PileZA_...`, `PileXYA_...`, `MarkedB_...` (2 rows), `PileZB_...`, `PrefabC_...` |
+| `Alundra.Tests/Entities/RidingEntityCountersPassTests.cs` | 2: `RideM4_...` (the carrier read right after the counters pass; the carrier removed between two ticks) |
+| `Alundra.Tests/Arcs/LiftMap22ArcTests.cs` | 3: `A_D5b_22_FromTheLiftItself_...`, `A_D5b_22_TheRecipeOfTheAuthor_...`, `A_D5b_22_ThePile...` |
+
+27 tests (rows counted), written with the values of `vec_d5b_out.txt` (E22, DESC, CRATE, NPC, PILE_Z), of `check/t_land_on_rising.py` (UH-19), of `work/out/t5_dock_real.txt` (dock) and, for the pile in XY, the corrected
+form of D-D5B-7 (no binary value: the binary has the double force). The relations are all relative (`rel`: the foot minus the top of the carrier), the same in the DLL's convention as in the binary's.
+
+### The red list (26) and the task that makes each green
+
+All 26 fail at the start HEAD, each on the assertion of its own mechanism (the message of the first failure is in the last column). "Assigned" is the plan's assignment; a witness can turn green earlier
+(it then stays green as a guard).
+
+| witness | assigned | first failure at the start HEAD |
+|---|---|---|
+| `RideM4_APassengerOnItsCarrier_HasNoCarrierRightAfterTheCountersPass_...` | T2 | tick 0: the barrel still has its carrier of the previous tick |
+| `RideM4_TheCarrierRemovedBetweenTwoTicks_...` | T2 | the barrel's `RidingEntity` read at `"lists"` is not null |
+| `UH16_APlatformRisingByOnePixelPerTick_...` | T3 | tick 1: foot minus top -65536 |
+| `E22_TheLiftRisingByOnePixelPerTickFromTick3For64Ticks_...` | T3 | tick 3: foot minus top -65536 |
+| `A_D5b_22_FromTheLiftItself_...` | T3 | f12 (rise 1): foot minus top -65536 |
+| `A_D5b_22_TheRecipeOfTheAuthor_...` | T3 | wait 0 (rise 1): foot minus top -1835008 (the hero is at the bottom of the hollow) |
+| `Dock_ABlockRisingByOnePixelPerTick_...` | T3 (the entry rule, D-D5B-3) | tick 1: foot minus top -65536 |
+| `Freeze_APlatformWithANonZeroForceAndARider_...` | T4 (guard of the ceiling; it can be green from T3, before the ceiling exists) | the final foot minus top -2359296 (the platform never stood still, the hero is left behind) |
+| `UH16_APlatformDescendingByOnePixelPerTick_...` | T4 | tick 1: foot minus top +65536 |
+| `DESC_TheLiftDescendingByOnePixelPerTickFromTick3For24Ticks_...` | T4 | tick 3: foot minus top +65536 |
+| `Dock_ABlockDescendingByOnePixelPerTickToTheDock_...` | T4 | tick 1: foot minus top +32768 |
+| `UH19_...(gap: 65536, rise: 196608, ...)` | T4 | tick 0: the platform rose 196608 (it must stop under the foot: 32768) |
+| `UH19_...(gap: 16384, rise: 65536, ...)` | T4 | tick 0: the platform rose 65536 (16384 expected, with the contact 1) |
+| `CrateA_...(crateAfterPlatform: True, force: 65536)` | T6A | tick 3: foot minus top -65536 |
+| `CrateA_...(crateAfterPlatform: False, force: 65536)` | T6A | tick 3: foot minus top -65536 |
+| `CrateA_...(crateAfterPlatform: True, force: -65536)` | T6A | tick 3: foot minus top +65536 |
+| `CrateA_...(crateAfterPlatform: False, force: -65536)` | T6A | tick 3: foot minus top +65536 |
+| `NpcA_AnNpcOf20By14By32WithGravityOnARisingPlatform_...` | T6A | tick 3: foot minus top -65536 |
+| `RestA_ACrateAtRestOnAPlatformWithNoGravity_...` | T6A | tick 0: collided 1 (the binary: 0, the crate copies the zero force of its carrier) |
+| `PileZA_TheHeroOnTheCrateOnTheRisingPlatform_...` | T6A (the hero's copy is T3; the middle crate is T6A) | tick 3 crate: foot minus top -65536 |
+| `PileXYA_ThePlatformMovingEastAndUp_...` | T6A (+ T5 for the hero's XY) | tick 3: crate dx to the platform -65536 |
+| `A_D5b_22_ThePile...` (real barrel, map 22) | T6A (+ T3, T5) | f1: barrel dx 0 |
+| `MarkedB_...(force: 65536)` | T6B | tick 3: foot minus top -98304 |
+| `MarkedB_...(force: -65536)` | T6B | tick 3: foot minus top +32768 |
+| `PileZB_AMarkedObjectOnACrateOnTheRisingPlatform_...` | T6B (needs T6A for the crate under it) | tick 3 crate: foot minus top -65536 |
+| `PrefabC_ABrokenArmourI33WithNoController_...` | T6C | tick 3: foot minus top -98304 |
+
+`UH-14` is not in the list: it is an existing test, green at the start HEAD, re-pinned by T5 (`-tick x 65536`).
+
+### The planned negative witness (green at the start HEAD)
+
+`PassengerPlatformFollowTests.ImpulseA_APassengerThatTakesAnImpulse_DoesNotCopyTheForceOfItsCarrier_ItFliesByItsOwnImpulse` is green before the code: the passenger ignores its carrier today, and the binary also
+ignores it when the passenger has an impulse (`+0xF8 != 0`; `vec_d5b.py` with `impulse=True`: `fz = ffz = 327680`, never the carrier's 65536). It is the guard that T6A must keep green (a copy of the force that
+overwrote the impulse would turn it red). It is the only test of the new files that is green. Only the force of the tick is pinned: the DLL's root pull of a supported entity that takes off comes one tick late
+(`EvaluateEntitySupport`, `wasSupportedEnteringThisTick`), a quirk outside D5b.
+
+### The guards (existing tests, green at the start HEAD and to stay so)
+
+The plan's section 4 of the discovery report lists them; all ran green with the new aids, in Release and in Debug: `HeroObjectTopsTests` (UH-6, UH-10, UH-11, UH-14 until T5, UH-15, UH-17, UH-18 x2, SJ-12,
+SJ-13), `AbsoluteZWritesTests`, `NpcCharacterControllerMoverTests`, `TickStructureTests` (A8), `LogicalZStepTests`, `LogicalZWorldTests`, `ControllerlessVerticalStepTests`, `FloorHeightTests`,
+`TerrainHeightTests`, `NoGravityLandingTests`, `AnimationImpulseTests`, `HeroApexAndCeilingTests`, `HeroFallAndPadJumpTests`, `LadderClimbTests`, `EventProgramRunnerTests`, `ClassAndBranchOpcodesTests`,
+`EntitySearchServiceTests`. No existing test is red: the "predicted list of moving tests" of T1 is empty, and the one test that the discovery's prototype moved (UH-14) moves with T5.
+
+### The runs
+
+Release with the neutralised copy, three partitions (`--blame-hang-timeout 60s`), then Debug (built last, without the copy neutralised), same partitions:
+
+| partition | tests | failures (Release) | failures (Debug) |
+|---|---|---|---|
+| `Arcs`, `Ai.`, `Audio`, `Cameras`, `Cells`, `Combat`, `Data`, `Dialogues` | 1 213 (1 210 + 3 new) | 3 (the three new arcs) | 3 |
+| `Entities`, `Events`, `ExportGuards`, `Hero`, `Items` | 2 652 (2 628 + 24 new) | 23 (all new) | 23 |
+| everything else | 1 789 | 0 | 0 |
+| total | 5 654 (5 627 + 27 new) | 26 | 26 |
+
+The 26 are exactly the red list; the 5 627 existing tests are green. `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 warning, existing: `TextBoxGpu.cs`).
+The four `docs/hero-trace-389-*.txt` files were rewritten by the suite with other line endings and restored by `git checkout` (never indexed).

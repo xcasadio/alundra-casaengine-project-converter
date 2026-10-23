@@ -69,6 +69,7 @@ internal sealed class JumpHeroRig
     public void Update(float elapsed = 0.02f)
     {
         Host.Rebuild();
+        Host.BeginPhysicsPass();
         World.Update(elapsed);
         Host.Rebuild();
     }

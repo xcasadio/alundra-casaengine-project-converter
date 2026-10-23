@@ -133,6 +133,7 @@ internal static class ContactWorld
     public static void Integrate(World world, ContactHost host)
     {
         host.Rebuild();
+        host.BeginPhysicsPass();
         world.Update(0.02f);
         host.Rebuild();
     }
