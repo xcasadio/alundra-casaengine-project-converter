@@ -239,7 +239,7 @@ public sealed class WeaponSpawnSeamTests : IDisposable
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     [Fact]
-    public void S5_TheProductionSetPassesTheInvariant_TheFakeSetWithTheArrowFailsOnE17()
+    public void S5_TheProductionSetPassesTheInvariant_TheArrowFailsOnE17InARegistryWithoutIt_AndPassesInTheProductionRegistry()
     {
         var catalog = new SpriteRecordCatalog(ProjectRootFinder.Find());
         var registry = new EventProgramRunner(null, GameState.Instance).NativeSprites;
@@ -247,14 +247,18 @@ public sealed class WeaponSpawnSeamTests : IDisposable
         Assert.Equal(WaveSwordAi.SpriteTypes.Concat(ChargedArrowAi.SpriteTypes).OrderBy(t => t), PlayerManager.ProductionWiredWeaponTypes.OrderBy(t => t)); // E20.f3c wires the three waves of the sword, E20.f4 the charged arrow (derived from the classes that register the handlers); C61 and C94 are registered and E10, E1 handled in line, so the checker stays empty.
         Assert.Empty(PlayerManager.UnhandledWeaponSpriteCodes(PlayerManager.ProductionWiredWeaponTypes, catalog, registry));
 
-        var unhandled = PlayerManager.UnhandledWeaponSpriteCodes(new[] { Arrow }, catalog, registry);
-        Assert.Contains((ScriptHelper.ProgramEDeactivate, 17), unhandled); // the arrow's deactivation program (E17) has no handler yet.
+        // E20.f5 (D-F4-8 again): the negative clause of the arrow takes an EMPTY registry, so it does not depend on what production registers (E17 is registered by E20.f5 for the types 3 to 6; the checker finds it unhandled in an empty registry all the same),
+        // and the positive clause takes the production registry: the arrows pass the invariant.
+        var empty = new NativeSpriteRegistry();
+        var unhandled = PlayerManager.UnhandledWeaponSpriteCodes(new[] { Arrow }, catalog, empty);
+        Assert.Contains((ScriptHelper.ProgramEDeactivate, 17), unhandled); // the arrow's deactivation program (E17) has no handler in a registry without the class.
         Assert.DoesNotContain(unhandled, u => u.Slot == ScriptHelper.ProgramCTick); // its C code is 0.
+        Assert.Empty(PlayerManager.UnhandledWeaponSpriteCodes(new[] { Arrow, 4 }, catalog, registry)); // E20.f5: the production registry holds (E, 17) for the type 3 and for William's normal arrow (4).
 
         // The same checker holds a handled code as handled: a registered key clears (E, 17) for the arrow only, and the inline code E1 of the type 7 is handled by the runner itself (its C94 is not).
-        using (registry.Register(ScriptHelper.ProgramEDeactivate, 17, new[] { Arrow }, (_, _, _) => { }))
+        using (empty.Register(ScriptHelper.ProgramEDeactivate, 17, new[] { Arrow }, (_, _, _) => { }))
         {
-            Assert.Empty(PlayerManager.UnhandledWeaponSpriteCodes(new[] { Arrow }, catalog, registry));
+            Assert.Empty(PlayerManager.UnhandledWeaponSpriteCodes(new[] { Arrow }, catalog, empty));
         }
 
         // E20.f4 (D-F4-8): the negative clause takes an EMPTY registry, so it does not depend on what production registers (C94 is registered by E20.f4, the checker finds it unhandled in an empty registry all the same),

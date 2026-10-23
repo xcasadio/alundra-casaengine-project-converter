@@ -135,32 +135,44 @@ public sealed class MapStateTests
         private static ArcRun Arc(string name) => new(new ArcSpec("E20e0k1-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true));
 
         /// <summary>The horizontal displacement of one scripted tick of a marked arrow, given the animation the entity says is its current one and the one it asks for.</summary>
-        private static int OneTick(ArcRun arc, uint current, uint target)
+        private static int OneTick(ArcRun arc, uint current, uint target, bool marked = true)
         {
             var proxy = ((IEntityWorldContext)arc.Proxy).SpawnEntityBySpriteIndex(arc.Hero, false, 3, 150 << 16, 100 << 16, 0, 0x18)!;
             Assert.True(proxy.JoinsBirthTick);
+            Assert.True(proxy.HasLogicalZ);
             arc.OneFrame(); // the first frame validates the pending switch: the current animation is 0 from here on.
             Assert.Equal(0u, proxy.CurrentAnimationId);
             proxy.CurrentAnimationId = current;
             proxy.TargetAnimationId = target;
+            if (!marked)
+            {
+                proxy.JoinsBirthTick = false; // an entity of the map load carries neither marker.
+                proxy.HasLogicalZ = false;
+            }
+
             var before = proxy.PosX;
             ScriptedMotion.TickScriptedNpc(proxy);
             return proxy.PosX - before;
         }
 
         [Fact]
-        public void P3_AMarkedEntityWhoseFirstAnimationIsValidated_KeysItsKinematicsOnItsCurrentAnimation_NotOnAnAskedOne()
+        public void P3_AMarkedEntity_KeysItsKinematicsOnTheAnimationItAsks_AnUnmarkedEntityOnItsCurrentAnimation_NotOnAnAskedOne()
         {
+            // E20.f5 (D-F5-5): the pin of E20.e0k1 is rewritten. The binary switches the animation at the tick that sees the request (UpdateAnimation), so the motion of that tick (the bounce of an arrow, the explosion of a ball) already has the speed
+            // of the animation asked, whatever the number of ticks of the frame (docs/plan-e20-annexe/e20-f4f6/f5: the bounce of the arrow at S+43): a marked entity keys on its TARGET; an entity of the map load keeps the key the last frame validated (D-E19-13).
+            // The pin discriminates both ways: the control and the witness move differently.
             using var arc = Arc("p3");
             var sets = ((IEntityWorldContext)arc.Proxy).SpawnEntityBySpriteIndex(arc.Hero, false, 3, 150 << 16, 100 << 16, 0, 0x18)!.AnimSetsByAnim!;
             var otherAnimation = sets.Where(kv => kv.Key != 0 && kv.Value.Speed != sets[0].Speed).Select(kv => (uint)kv.Key).First();
 
             var kept = OneTick(arc, current: 0, target: 0);            // control: current and target agree.
-            var asked = OneTick(arc, current: 0, target: otherAnimation); // the target changed after the validation: the speed of the CURRENT animation still applies.
+            var asked = OneTick(arc, current: 0, target: otherAnimation); // marked, the target changed after the validation: the speed of the animation ASKED applies.
             var witness = OneTick(arc, current: otherAnimation, target: otherAnimation); // the other animation really moves at another speed.
+            var unmarkedAsked = OneTick(arc, current: 0, target: otherAnimation, marked: false); // the same request on an entity of the map load: the speed of the CURRENT animation still applies.
 
             Assert.NotEqual(kept, witness); // the pin discriminates (otherwise it would pass whatever the guard).
-            Assert.Equal(kept, asked);
+            Assert.Equal(witness, asked);
+            Assert.Equal(kept, unmarkedAsked);
         }
     }
 }

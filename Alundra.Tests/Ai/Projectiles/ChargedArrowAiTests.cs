@@ -226,11 +226,12 @@ public sealed class ChargedArrowAiTests : IDisposable
         WaveSwordAi.Register(sum);
         PickupAi.Register(sum);
         ChargedArrowAi.Register(sum);
+        ArrowAi.Register(sum); // E20.f5
 
         Assert.True(production.TryGet(ScriptHelper.ProgramCTick, 94, 7, out _));
         Assert.False(production.TryGet(ScriptHelper.ProgramCTick, 94, 3, out _));
         Assert.Equal(sum.Count, production.Count);
-        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChargedArrowAi.Keys.Count, production.Count);
+        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count, production.Count);
     }
 
     [Fact]

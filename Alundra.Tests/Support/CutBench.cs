@@ -135,8 +135,13 @@ internal sealed class CutBench
 
         public int LogicTicksThisFrame(float elapsedTime) => 1;
 
+        /// <summary>E20.f5: the calls of <c>DestroyEntity(entity, effectId)</c>, in order (the status of the entity goes to <see cref="EntityStatus.FlagToDestroy"/>, as the world does).</summary>
+        public List<(EntityScriptProxy Entity, int EffectId)> Destroyed { get; } = new();
+
         public void DestroyEntity(EntityScriptProxy entity, int effectId)
         {
+            Destroyed.Add((entity, effectId));
+            entity.Status = EntityStatus.FlagToDestroy;
         }
 
         public void DestroyEntity(EntityScriptProxy entity)

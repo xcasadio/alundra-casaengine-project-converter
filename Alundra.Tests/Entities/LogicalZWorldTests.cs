@@ -323,6 +323,7 @@ public sealed class LogicalZWorldTests
         var companionAtRest = (companion.PosZ, companion.IsOnGround);
         var ball = Born(arc, false, FireBall, 100, 32 << 16);
         var flush = Born(arc, false, Arrow, 100, 0); // 1 raw unit above the floor: the engine would anchor it down at the thaw.
+        flush.Flags &= ~(EntityFlags.DeactivateOnImpact | EntityFlags.DeactivateOnHit); // E20.f5: the arrow has its handler E17 now (it bounces when it meets something); this witness only has to stay flush, so it cannot be deactivated.
         var terrain = flush.ComputeTerrainHeight();
         Assert.Equal(terrain + 1, flush.PosZ);
 

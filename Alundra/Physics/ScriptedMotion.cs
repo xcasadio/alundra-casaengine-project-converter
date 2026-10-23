@@ -172,7 +172,9 @@ internal static class ScriptedMotion
     {
         // E20.e0a3b (D-E0A-8, ADR-0065): an entity born by the interface of the sprite index (and, since E20.e0a4, by a script opcode from a record) whose first animation is not validated yet (CurrentAnimationId still ~0, as the creation leaves it) takes its
         // animation set from the target: the binary's creation has switched to it already (0x80038AB4). Guarded by the marker, so no entity of the map load ever sees this line; the entities from a record made by the script opcodes 0x2D, 0x8A and 0x8B do since E20.e0a4.
-        RunOneMotionTick(entity, entity.JoinsBirthTick && entity.CurrentAnimationId == ~0u ? entity.TargetAnimationId : entity.CurrentAnimationId);
+        // E20.f5 (D-F5-5): an entity born by the interface of the sprite index (marked by its logical Z, E20.e0k1) takes the speed of the animation asked, the one the tick's clock loads (the binary's UpdateAnimation switches at the tick that sees the request), not of the one the end of the frame validated;
+        // the motion of the tick is then exact at the tick of a switch (the bounce of an arrow, the explosion of a ball) whatever the number of ticks per frame. The entities of the map load keep the key of the last frame (D-E19-13).
+        RunOneMotionTick(entity, (entity.JoinsBirthTick && entity.CurrentAnimationId == ~0u) || entity.HasLogicalZ ? entity.TargetAnimationId : entity.CurrentAnimationId);
     }
 
     /// <summary>One logic tick's worth of motion for either caller - PhysicsEngine.cs:17 (top of

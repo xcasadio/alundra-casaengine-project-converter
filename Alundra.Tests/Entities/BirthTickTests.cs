@@ -446,13 +446,25 @@ public sealed class BirthTickTests : IDisposable
     }
 
     [Fact]
-    public void AnEntityWithoutTheMarker_KeysItsKinematicsOnItsCurrentAnimation_NeverOnTheTarget_EvenWithCurrentStillNotValidated()
+    public void AnEntityWithoutTheMarkers_KeysItsKinematicsOnItsCurrentAnimation_NeverOnTheTarget_EvenWithCurrentStillNotValidated_TheMarkedOneTakesTheSpeedOfItsTarget()
     {
-        // The line of D-E0A-8 is guarded by the marker: the same entity without it does not move (the measurement of P-A: X = 150, 150, 150). The entities of the map load never carry the marker; an entity made
-        // from a record by a script opcode does since E20.e0a4 and takes the speed of its target (B6 of RecordBirthTickTests).
+        // The line of D-E0A-8 is guarded by the markers: the same entity without them does not move (the measurement of P-A: X = 150, 150, 150). The entities of the map load never carry a marker; an entity made
+        // from a record by a script opcode does since E20.e0a4 and takes the speed of its target (B6 of RecordBirthTickTests). E20.f5 (D-F5-5): the second marker is the logical Z (HasLogicalZ), which an entity born by the interface carries for good:
+        // while it is set the speed key is the animation asked, not only at the first tick; the pin clears BOTH markers to prove the guard, and the marked entity next to it moves at the oracle's pace (3 pixels at the tick of the birth, then 6).
         using var arc = Arc("guard");
+        var marked = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, Arrow, 150 << 16, 100 << 16, 0, Direction)!;
+        var movedMarked = new List<int>();
+        for (var t = 0; t < 3; t++)
+        {
+            ScriptedMotion.TickScriptedNpc(marked);
+            movedMarked.Add(marked.PosX >> 16);
+        }
+
+        Assert.Equal(new[] { 153, 159, 165 }, movedMarked);
+
         var proxy = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, Arrow, 150 << 16, 100 << 16, 0, Direction)!;
         proxy.JoinsBirthTick = false;
+        proxy.HasLogicalZ = false;
         Assert.Equal(~0u, proxy.CurrentAnimationId);
         var x = new List<int>();
         for (var t = 0; t < 3; t++)
