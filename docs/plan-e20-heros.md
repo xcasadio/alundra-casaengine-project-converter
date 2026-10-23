@@ -7287,8 +7287,8 @@ de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYP
 - **g5c, l'arrêt du son** (`0xBE` = `StopSoundEffect`, `ISoundPlayer.StopSfx`, l'arrêt de C76) : esquisse, **en attente de la réponse de
   l'auteur à A1** (§2, Q-G5-A1). Son T0 établit si le moteur sait arrêter un bruitage précis ; sinon le manque se consigne au rapport des
   manques du moteur, sans contournement.
-- **g5d, les objets scriptés** : détaillée ci-dessous (révision 0) ; des arcs pour la statue (cartes 2 et 352), le bloc de la 23 et le bouton de la 40 (après
-  g5b), un test statique « aucun opcode sauté dans les programmes des quatre familles », l'épingle du gel du héros après un programme F
+- **g5d, les objets scriptés** : détaillée ci-dessous (révision 1) ; des arcs pour la statue (cartes 2 et 352) et le bloc de la 23 (les blocs
+  glissants de la carte 40 sont prouvés par g5b, T3, ARC-40), un test statique « aucun opcode sauté dans les programmes des quatre familles », l'épingle du gel du héros après un programme F
   (Q-G5-A2). Les blocs des cartes 102 et 382 se déclenchent au coup de fléau : un test synthétique en g5d, la recette au thème 2.
 
 ##### E20.g5a — Les piliers poussables (C76) ⏳ (révision 0, READY)
@@ -7525,24 +7525,32 @@ frais après.
 **Retour arrière.** `git revert` du commit de code : les trois opcodes redeviennent sautés par leur taille.
 
 
-##### E20.g5d — Les objets à pousser scriptés : statues, blocs, boutons (tests seuls) ⏳ (détaillée le 2026-10-23, révision 0 ; à relire par un `plan-verifier` frais)
+##### E20.g5d — Les objets à pousser scriptés : statues, blocs, boutons (tests seuls) ⏳ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, à relire par un `plan-verifier` frais)
+
+**Révision 1 (2026-10-23).** La relecture de la révision 0 (REVISE) a relevé deux points, corrigés ici.
+- Le but annonçait le bloc de la carte 40, que g5d ne teste pas : il est retiré, car g5b le prouve (T3, ARC-40).
+- T0 renvoyait à des sorties de sonde absentes de `probe_out/` : chaque sonde a maintenant son fichier de référence, et l'origine de
+  chaque mesure est dite.
 
 **Provenance.** La lecture seule du 2026-10-23 (`docs/plan-e20-annexe/e20-g5/disc/report.md`, §2, §3.3, §5 ; sondes `cases1.json`,
-`cases2.json`, `cases3.json`, `cases10.json`, sorties `probe_out/`), et E20.g5b, qui porte les opcodes des boutons.
+`cases2.json`, `cases3.json`, `cases10.json`, sorties `probe_out/` et `probe_out_proto/`), et E20.g5b, qui porte les opcodes des boutons et prouve les blocs glissants de la carte 40.
 
 **But.** Prouver par des tests que les objets à pousser déjà scriptés bougent comme leurs scripts le disent, et que le reste tient
 ensemble après g5a et g5b. Aucun code de production : le moteur d'événements les joue déjà. Ce qui se voit :
 - une statue de la carte 2 ou de la carte 352 qu'on pousse marche de 24 px ;
-- le bloc de la carte 23 glisse de 48 px vers l'ouest, puis tombe d'un étage ;
-- un bouton de la carte 40 glisse vers le sud.
+- le bloc de la carte 23 glisse de 48 px vers l'ouest, puis tombe d'un étage.
+Les blocs glissants de la carte 40 et les boutons de la carte 426 sont prouvés par g5b (T3).
 
 **Prérequis.** E20.g5a et E20.g5b faites. Le HEAD de départ vient après g5b.
 
-**Faits** (MESURÉ au HEAD `46589b86` sur la vraie DLL, dans une copie, sauf mention).
+**Faits** (MESURÉ sur la vraie DLL du HEAD `46589b86`, dans une copie, sauf mention ; le dossier de chaque mesure est dit).
 - **Statue de la carte 2** (`cases1.json`, `statue2_east`, héros en (396, 392, 208), Droite tenue) : contact à l'image 2. Le programme F
   pose le drapeau, et la statue marche à 1,5 px par tick de x 420 à 445,5 : le script demande 24 px, et le dernier pas dépasse.
-- **Statue de la carte 352** (`cases10.json`, `statue352_east`) : de x 204 à 229,5, avec la zone de départ et la touche de croix.
-- **Bloc de la carte 23** (`cases3.json`, `block23_from_east`) : contact à l'image 31, puis le bloc marche 48 px vers l'ouest à 2,06 px
+- **Statue de la carte 352** (`cases10.json`, `statue352_east`) : de x 204 à 229,5, avec la zone de départ et la touche de croix. Mesuré
+  avec le prototype du pilier installé (`probe_out_proto/statue352_east.txt`) ; ce prototype n'ajoute que le gestionnaire C76, que la
+  statue n'a pas.
+- **Bloc de la carte 23** (`cases3.json`, `block23_from_east`, mesuré avec le même prototype, `probe_out_proto/block23_from_east.txt`) :
+  contact à l'image 31, puis le bloc marche 48 px vers l'ouest à 2,06 px
   par tick (x 768 → 720) et tombe de z 32 à 16.
 - **Le gel du héros après un programme F** (FAIT dans le binaire, MESURÉ dans la DLL) : au départ d'un programme F (`0x80042150`), le
   binaire remet à zéro `+0xD8`, `+0xD4`, `+0xC8` et `+0xC4` du héros. Tant que la croix reste enfoncée, le héros est figé ; il faut
@@ -7572,8 +7580,12 @@ l'annexe `docs/plan-e20-annexe/e20-g5/g5d/` ; ce plan. Aucun fichier de `Alundra
 
 **Tâches.**
 - ⏳ **T0 — Mesures au HEAD de départ** (commit de docs).
-  - Rejouer les sondes `cases1.json`, `cases3.json` et `cases10.json` sur la vraie DLL du HEAD de départ, dans une copie : mêmes sorties que
-    `probe_out/`, ou les écarts expliqués (g5a et g5b sont passées entre-temps).
+  - Rejouer les sondes sur la vraie DLL du HEAD de départ, dans une copie, et comparer à leur référence :
+    - `cases1.json` à `probe_out/statue2_east.txt` ;
+    - `cases10.json` à `probe_out_proto/statue352_east.txt` ;
+    - `cases3.json` à `probe_out_proto/block23_from_east.txt`.
+  - g5a (le gestionnaire C76) et g5b (`0x72`, `0xA9`, `0xAA`) sont passées entre-temps ; aucune de ces trois entités ne les emploie. Les
+    sorties attendues sont donc celles des références, ou un écart expliqué par g5a ou g5b, nommé dans l'annexe.
   - Mesurer le gel F sur la statue de la carte 2.
   - Établir si D-G5D-4 a un montage.
   - Lister ce que le test statique trouve au HEAD de départ : il doit être vide, sinon arrêt et liste.
