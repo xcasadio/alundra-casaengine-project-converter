@@ -1,0 +1,233 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Text.Json;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Maps;
+using Alundra.Rng;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>E20.f4 T0: the probes of the DLL at the starting HEAD (throwaway; the text is kept in the annex as ZzF4T0Probes.cs.txt, the file is removed before the commit).</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class ZzF4T0Probes : IDisposable
+{
+    private const string Out = @"C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\f4t0\probes-out.txt";
+    private const uint Square = PadState.Square;
+    private const int WilliamBow = 6;
+    private const int BowSlot = 2;
+    private static readonly StringBuilder Log = new();
+
+    public ZzF4T0Probes() => Reset();
+
+    public void Dispose()
+    {
+        Reset();
+        File.AppendAllText(Out, Log.ToString());
+        Log.Clear();
+    }
+
+    private static void Reset()
+    {
+        PlayerManager.WiredWeaponTypesForTests = null;
+        PlayerManager.WeaponSpawnBirthHookForTests = null;
+        PlayerManager.WeaponSpawnCallsForTests = null;
+    }
+
+    private static string Key(string file)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "docs", "plan-e20-annexe", "e20-f4f6", file);
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException(file);
+    }
+
+    private static JsonElement Json(string file)
+    {
+        using var d = JsonDocument.Parse(File.ReadAllText(Key(file)));
+        return d.RootElement.Clone();
+    }
+
+    private static HitArena Bench(string name, Func<int, int, CutBench.Cell>? cell, int heroX = 100)
+    {
+        var arena = new HitArena("f4t0-" + name, 100, 100, new List<int[]>(), 24, 0);
+        var arc = arena.Arc;
+        var bench = CutBench.Create(cell);
+        typeof(WorldProxy).GetProperty(nameof(WorldProxy.CollisionField))!.SetValue(arc.Proxy, bench.Field);
+        arc.RealWorld!.CollisionField = bench.Field;
+        typeof(WorldProxy).GetProperty(nameof(WorldProxy.CellMutator))!.SetValue(arc.Proxy, bench.Store);
+        foreach (var other in arc.Entities.Where(x => !ReferenceEquals(x, arena.Hero)).ToList())
+        {
+            other.Status = EntityStatus.FlagToDestroy;
+        }
+
+        arc.Proxy.RecycleDestroyedEntities();
+        ((EventProgramRunner)arc.Runner).NativeHandlersEnabled = true;
+        if (heroX != 100)
+        {
+            arc.PlaceHero(heroX, 100, 0);
+        }
+
+        arc.Give(WilliamBow);
+        arc.Equip(BowSlot);
+        return arena;
+    }
+
+    private static int Steps(uint from, uint to)
+    {
+        var s = from;
+        for (var k = 0; k <= 64; k++)
+        {
+            if (s == to)
+            {
+                return k;
+            }
+
+            s = unchecked(s * 0x7D2B89DDu + 0xE06A02E7u);
+        }
+
+        return -1;
+    }
+
+    private static EntityScriptProxy? Arrow(HitArena a) => a.Arc.Entities.FirstOrDefault(e => e.SpriteType == 7);
+
+    /// <summary>The charged shot on the bench: Square held 1..95, released at 96, the generator at the seed of the key at the head of the tick 1, one tick per frame; compares the generator after each frame with the key.</summary>
+    private static void Charge(string name, string keyFile, Func<int, int, CutBench.Cell>? cell, int heroX, int ticks, int printFrom, int printTo)
+    {
+        var key = Json("f4/oracle/out/json/" + keyFile);
+        using var arena = Bench(name, cell, heroX);
+        PlayerManager.WiredWeaponTypesForTests = new HashSet<int> { 7 };
+        var spawnCalls = new List<PlayerManager.WeaponSpawnCall>();
+        PlayerManager.WeaponSpawnCallsForTests = spawnCalls;
+        var lowest = -1;
+        var born = -1;
+        var stateBefore = 0u;
+        var mismatches = new List<string>();
+        var sparks = 0;
+        var touches = 0;
+        arena.BeforeTick = t =>
+        {
+            if (t == 1)
+            {
+                GameRandom.RandomSeed = 0x12345678;
+                arena.Hero.FrameCounter = 12;
+            }
+
+            stateBefore = unchecked((uint)GameRandom.RandomSeed);
+            if (born < 0)
+            {
+                lowest = Enumerable.Range(0, EntitySlotTable.SlotCount).FirstOrDefault(i => !arena.Arc.Proxy.SlotTable.IsHeld(i), -1);
+            }
+        };
+        arena.AfterTick = t =>
+        {
+            var a = Arrow(arena);
+            if (a is not null && born < 0)
+            {
+                born = t;
+                Log.AppendLine($"{name}: type 7 born at tick {t}, slot {a.Slot}, lowest free slot before {lowest}, parent hero {ReferenceEquals(a.ParentEntity, arena.Arc.HeroEntity)}");
+            }
+
+            sparks = arena.Samples.Sum(s => s.Sparks.Count);
+            touches += a?.TouchingEntity is not null ? 1 : 0;
+        };
+        arena.Begin();
+        var rows = key.EnumerateArray().ToList();
+        for (var t = 1; t <= ticks; t++)
+        {
+            arena.Frame(t <= 95 ? Square : 0, 1);
+            var after = unchecked((uint)GameRandom.RandomSeed);
+            var draws = rows[t - 1].GetProperty("draws").GetInt32();
+            var steps = Steps(stateBefore, after);
+            // the state at the head of tick t+1 in the key is rng0(t+1) = step(rng1(t)); the state after the frame t in the DLL should be that.
+            if (t < rows.Count)
+            {
+                var expected = rows[t].GetProperty("rng0").GetUInt32();
+                if (expected != after || steps != draws + 1)
+                {
+                    mismatches.Add($"t{t}: state 0x{after:X8} (key rng0(t+1) 0x{expected:X8}), steps {steps} (key draws {draws} + 1)");
+                }
+            }
+
+            var arrow = Arrow(arena);
+            if (t >= printFrom && t <= printTo)
+            {
+                Log.AppendLine($"  t{t} arrow={(arrow is null ? "absent" : $"st={(int)arrow.Status} x={arrow.PosX / 65536.0:F3} y={arrow.PosY / 65536.0:F3} z={arrow.PosZ / 65536.0:F3} fx={arrow.ForceX} adj={arrow.ForceAdjusted} cnt={arrow.FrameCounter} flags=0x{arrow.Flags:X} box=({arrow.CollisionWidth},{arrow.CollisionDepth},{arrow.CollisionHeight}) hbz={arrow.HitBoxZ / 65536.0:F3} dir={arrow.TargetDirection}/{arrow.BoxDirection}")} rngsteps={steps} keydraws={draws}");
+            }
+        }
+
+        Log.AppendLine($"{name}: release/birth: spawn calls = {string.Join(",", spawnCalls.Select(c => c.Type))}; hero sparks total = {sparks}; frames with arrow touching = {touches}; rng mismatches = {mismatches.Count}");
+        foreach (var m in mismatches.Take(8))
+        {
+            Log.AppendLine("   " + m);
+        }
+    }
+
+    [Fact]
+    public void P_Bench_EastWall()
+    {
+        Charge("east_wall", "charged7_east_wall_pf.json", (c, r) => c == 15 ? new CutBench.Cell(0x40, 0) : default, 100, 150, 100, 150);
+    }
+
+    [Fact]
+    public void P_Bench_Grass()
+    {
+        Charge("grass", "charged7_grass_pf.json", (c, r) => c is >= 5 and <= 12 && r is 5 or 6 ? new CutBench.Cell(0x02, 0) : default, 100, 135, 104, 112);
+    }
+
+    [Fact]
+    public void P_Bench_MapEdge()
+    {
+        Charge("map_edge", "charged7_map_edge_pf.json", null, 1150, 135, 104, 125);
+    }
+
+
+    [Fact]
+    public void P_SharedArraysAndTheBankOfTheEffect25()
+    {
+        using var arena = Bench("shared", (c, r) => c is >= 5 and <= 12 && r is 5 or 6 ? new CutBench.Cell(0x02, 0) : default);
+        var world = (IEntityWorldContext)arena.Arc.Proxy;
+        var field = (Alundra.Physics.CellsCollisionField)arena.Arc.Proxy.CollisionField!;
+        Assert.True(field.TryReadBinaryCell(7, 5, out _, out var before));
+        world.CellMutator!.CutCell(7, 5);
+        Assert.True(field.TryReadBinaryCell(7, 5, out _, out var after));
+        Log.AppendLine($"P-bench shared arrays: walkability of (7,5) read by the field before the cut 0x{before:X}, after the cut through the world's CellMutator 0x{after:X}; entities of the world: {arena.Arc.Entities.Count}; mutator is the bench store: {world.CellMutator is Alundra.Cells.CellStore}");
+        var slot = arena.Arc.Proxy.EffectStage!.Reservoir.Create(false, 25, 3, 100 << 16, 100 << 16, 0);
+        Log.AppendLine($"P-bank effect 25 (global table) created in the world's stage: {slot is not null}");
+    }
+
+    [Fact]
+    public void P_BoxAndDirections()
+    {
+        foreach (var (word, expected) in new[] { (0, 0), (0x10, 1), (8, 2), (0x18, 3) })
+        {
+            using var arena = Bench("dir" + word, null);
+            var born = ((IEntityWorldContext)arena.Arc.Proxy).SpawnEntityBySpriteIndex(arena.Hero, false, 7, 100 << 16, 100 << 16, 8 << 16, word)!;
+            arena.Arc.OneFrame();
+            born.EvaluateFrameBox();
+            Log.AppendLine($"P-F4-1 word 0x{word:X} -> TargetDirection {born.TargetDirection} BoxDirection {born.BoxDirection} AnimationDirection {born.AnimationDirection} (inverse table index {expected}) FrameCounter {born.FrameCounter}");
+            if (word == 0x18)
+            {
+                Log.AppendLine($"P-F4-2 box at birth+1: w={born.CollisionWidth} d={born.CollisionDepth} h={born.CollisionHeight} off=({born.CollisionOffsetX},{born.CollisionOffsetY},{born.CollisionOffsetZ}) hasBox={born.HasFrameBox} flags=0x{born.Flags:X} break={born.BreakEffect}");
+            }
+        }
+    }
+}

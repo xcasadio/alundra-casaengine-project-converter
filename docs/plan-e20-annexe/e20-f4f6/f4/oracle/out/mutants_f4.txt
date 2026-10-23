@@ -1,0 +1,13 @@
+C94-1      trail period andi 3 -> 7 (0x8007C0F4)                                          wall east              KILLED
+C94-2      trail effect id 0x19 -> 0x18 (0x8007C128)                                      wall east              KILLED
+C94-3      trail velocity X sra 1 -> sra 0 (0x8007C144)                                   wall east              KILLED
+C94-3b     trail velocity Y sra 1 -> sra 0 (0x8007C158), hero facing north                free north             KILLED
+C94-4      trail Z offset lui 8 -> 4 (0x8007C110)                                         wall east              KILLED
+C94-5      trail direction a2 = +0x98 -> 0 (0x8007C11C)                                   wall east              KILLED
+C94-5b     trail direction a2 -> 0, hero facing NORTH (0x8007C11C)                        free north             KILLED
+C94-6      CheckAndTriggerTileEffect call removed (0x8007C0E4 jal -> nop)                 grass strip            KILLED
+E1-1       DestroyEntity fx -1 -> 0 (0x8007ED1C): no break effect                         wall east              KILLED
+HDR-1      flag 0x20 set in the header of the type 7: the arrow no longer passes through (record +0x10) vs target + wall       KILLED
+HDR-2      BreakEffect 8 -> 0 in the header (record +0x1E)                                wall east              KILLED
+FICHE-1    z byte of the fiche of William charged 8 -> 16 (record pointer +3)             wall east              KILLED
+SPAWN-1    +1 of the creation Z removed (0x80039EA4 addiu 1 -> 0)                         wall east              KILLED

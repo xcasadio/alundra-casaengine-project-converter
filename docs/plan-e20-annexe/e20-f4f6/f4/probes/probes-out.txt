@@ -1,0 +1,103 @@
+  t104 arrow=absent rngsteps=1 keydraws=0
+grass: type 7 born at tick 105, slot 1, lowest free slot before 1, parent hero True
+  t105 arrow=st=2 x=106,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=1 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t106 arrow=st=2 x=112,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=2 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t107 arrow=st=2 x=118,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=3 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=2
+  t108 arrow=st=2 x=124,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=4 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t109 arrow=st=2 x=130,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=5 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t110 arrow=st=2 x=136,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=6 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t111 arrow=st=2 x=142,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=7 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=2
+  t112 arrow=st=2 x=148,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=8 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+grass: release/birth: spawn calls = 4,7; hero sparks total = 0; frames with arrow touching = 0; rng mismatches = 28
+   t107: state 0xA64659EF (key rng0(t+1) 0x5994F7F9), steps 1 (key draws 2 + 1)
+   t108: state 0xDF6B8D3A (key rng0(t+1) 0x2A8B55DC), steps 1 (key draws 0 + 1)
+   t109: state 0x5994F7F9 (key rng0(t+1) 0x0399DDD3), steps 1 (key draws 0 + 1)
+   t110: state 0x2A8B55DC (key rng0(t+1) 0x9D656D0E), steps 1 (key draws 0 + 1)
+   t111: state 0x0399DDD3 (key rng0(t+1) 0x996D9EF7), steps 1 (key draws 2 + 1)
+   t112: state 0x9D656D0E (key rng0(t+1) 0x4C9B6D22), steps 1 (key draws 0 + 1)
+   t113: state 0x2FAFA5FD (key rng0(t+1) 0x1EB46B41), steps 1 (key draws 0 + 1)
+   t114: state 0x755FB350 (key rng0(t+1) 0xB07B6304), steps 1 (key draws 0 + 1)
+  t100 arrow=absent rngsteps=1 keydraws=0
+  t101 arrow=absent rngsteps=1 keydraws=0
+  t102 arrow=absent rngsteps=1 keydraws=0
+  t103 arrow=absent rngsteps=1 keydraws=0
+  t104 arrow=absent rngsteps=1 keydraws=0
+east_wall: type 7 born at tick 105, slot 1, lowest free slot before 1, parent hero True
+  t105 arrow=st=2 x=106,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=1 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t106 arrow=st=2 x=112,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=2 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t107 arrow=st=2 x=118,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=3 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t108 arrow=st=2 x=124,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=4 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t109 arrow=st=2 x=130,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=5 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t110 arrow=st=2 x=136,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=6 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t111 arrow=st=2 x=142,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=7 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t112 arrow=st=2 x=148,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=8 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t113 arrow=st=2 x=154,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=9 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t114 arrow=st=2 x=160,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=10 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t115 arrow=st=2 x=166,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=11 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t116 arrow=st=2 x=172,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=12 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t117 arrow=st=2 x=178,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=13 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t118 arrow=st=2 x=184,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=14 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t119 arrow=st=2 x=190,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=15 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t120 arrow=st=2 x=196,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=16 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t121 arrow=st=2 x=202,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=17 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t122 arrow=st=2 x=208,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=18 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t123 arrow=st=2 x=214,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=19 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t124 arrow=st=2 x=220,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=20 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t125 arrow=st=2 x=226,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=21 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t126 arrow=st=2 x=232,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=22 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t127 arrow=st=2 x=238,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=23 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t128 arrow=st=2 x=244,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=24 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t129 arrow=st=2 x=250,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=25 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t130 arrow=st=2 x=256,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=26 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t131 arrow=st=2 x=262,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=27 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t132 arrow=st=2 x=268,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=28 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t133 arrow=st=2 x=274,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=29 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t134 arrow=st=2 x=280,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=30 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t135 arrow=st=2 x=286,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=31 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t136 arrow=st=2 x=292,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=32 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t137 arrow=st=2 x=298,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=33 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t138 arrow=st=2 x=304,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=34 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t139 arrow=st=2 x=310,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=35 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t140 arrow=st=2 x=316,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=36 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t141 arrow=st=2 x=322,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=37 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t142 arrow=st=2 x=328,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=38 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t143 arrow=st=2 x=334,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=39 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t144 arrow=st=2 x=340,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=40 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t145 arrow=st=2 x=346,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=41 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t146 arrow=st=2 x=349,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=42 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t147 arrow=st=2 x=349,000 y=100,000 z=8,000 fx=393216 adj=1 cnt=43 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t148 arrow=st=4 x=349,000 y=100,000 z=8,000 fx=393216 adj=1 cnt=44 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t149 arrow=absent rngsteps=1 keydraws=0
+  t150 arrow=absent rngsteps=1 keydraws=0
+east_wall: release/birth: spawn calls = 4,7; hero sparks total = 0; frames with arrow touching = 0; rng mismatches = 0
+  t104 arrow=absent rngsteps=1 keydraws=0
+map_edge: type 7 born at tick 105, slot 1, lowest free slot before 1, parent hero True
+  t105 arrow=st=2 x=1156,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=1 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t106 arrow=st=2 x=1162,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=2 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t107 arrow=st=2 x=1168,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=3 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t108 arrow=st=2 x=1174,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=4 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t109 arrow=st=2 x=1180,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=5 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t110 arrow=st=2 x=1186,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=6 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t111 arrow=st=2 x=1192,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=7 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t112 arrow=st=2 x=1198,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=8 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t113 arrow=st=2 x=1204,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=9 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t114 arrow=st=2 x=1210,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=10 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t115 arrow=st=2 x=1216,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=11 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t116 arrow=st=2 x=1222,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=12 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t117 arrow=st=2 x=1228,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=13 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t118 arrow=st=2 x=1234,000 y=100,000 z=8,000 fx=393216 adj=0 cnt=14 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t119 arrow=st=2 x=1237,000 y=100,000 z=8,000 fx=393216 adj=1 cnt=15 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t120 arrow=st=4 x=1237,000 y=100,000 z=8,000 fx=393216 adj=1 cnt=16 flags=0x32054 box=(1572863,1048575,983039) hbz=0,000 dir=24/3 rngsteps=1 keydraws=0
+  t121 arrow=absent rngsteps=1 keydraws=0
+  t122 arrow=absent rngsteps=1 keydraws=0
+  t123 arrow=absent rngsteps=1 keydraws=0
+  t124 arrow=absent rngsteps=1 keydraws=0
+  t125 arrow=absent rngsteps=1 keydraws=0
+map_edge: release/birth: spawn calls = 4,7; hero sparks total = 0; frames with arrow touching = 0; rng mismatches = 0
+P-F4-1 word 0x0 -> TargetDirection 0 BoxDirection 0 AnimationDirection 0 (inverse table index 0) FrameCounter 1
+P-F4-1 word 0x10 -> TargetDirection 16 BoxDirection 1 AnimationDirection 1 (inverse table index 1) FrameCounter 1
+P-F4-1 word 0x8 -> TargetDirection 8 BoxDirection 2 AnimationDirection 2 (inverse table index 2) FrameCounter 1
+P-F4-1 word 0x18 -> TargetDirection 24 BoxDirection 3 AnimationDirection 3 (inverse table index 3) FrameCounter 1
+P-F4-2 box at birth+1: w=1572863 d=1048575 h=983039 off=(-786432,-524288,-524288) hasBox=True flags=0x32054 break=8
+P-bench shared arrays: walkability of (7,5) read by the field before the cut 0x2, after the cut through the world's CellMutator 0x0; entities of the world: 1; mutator is the bench store: True
+P-bank effect 25 (global table) created in the world's stage: True
