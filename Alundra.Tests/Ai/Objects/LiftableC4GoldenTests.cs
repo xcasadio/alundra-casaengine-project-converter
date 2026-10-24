@@ -160,6 +160,10 @@ public sealed class LiftableC4GoldenTests
             entity.RidingEntity = hero.LogicContextEntity;
             hero.CarriedEntity = entity.LogicContextEntity;
         }
+        else if (v.Json.GetProperty("hero_carried_before").GetInt64() != 0)
+        {
+            hero.CarriedEntity = CarryBench.Make("something else").LogicContextEntity; // the hero carries another object: a free object must leave that link alone.
+        }
 
         return (entity, hero);
     }
@@ -178,6 +182,11 @@ public sealed class LiftableC4GoldenTests
         void Check(string name, uint actual, uint offset)
         {
             var expected = v.Written(offset, out var written) ? written : v.In(offset);
+            if (offset == 0x28)
+            {
+                expected = expected != 0 ? 1u : 0u; // the carrier is a pointer in the machine: only "is there one" is compared.
+            }
+
             if (actual != expected)
             {
                 diffs.Add($"{name} (0x{offset:X}): expected {expected}, got {actual}");

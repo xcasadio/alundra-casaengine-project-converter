@@ -1,4 +1,5 @@
 #nullable enable
+using System.Numerics;
 using Alundra.Entities;
 
 namespace Alundra.Physics;
@@ -15,8 +16,24 @@ internal static class CornerTileWords
     /// <summary>The four corner words of <paramref name="entity"/> (x1 y1, x2 y1, x1 y2, x2 y2, the geometry of <c>UpdateGroundSlope</c>); zeros without a cells field.</summary>
     internal static uint[] Read(EntityScriptProxy entity)
     {
-        // E20.g2c1 phase A skeleton: filled in by the next commit.
-        return new uint[4];
+        var words = new uint[4];
+        if (entity.ReadCollisionField() is not CellsCollisionField field)
+        {
+            return words;
+        }
+
+        var x1 = (entity.PosX + entity.ModX) >> 16;
+        var x2 = (entity.PosX + entity.ModX + entity.Width) >> 16;
+        var y1 = (entity.PosY + entity.ModY) >> 16;
+        var y2 = (entity.PosY + entity.ModY + entity.Height) >> 16;
+        var corners = new[] { (x1, y1), (x2, y1), (x1, y2), (x2, y2) };
+        for (var i = 0; i < corners.Length; i++)
+        {
+            var point = new Vector3(corners[i].Item1, corners[i].Item2, 0f);
+            words[i] = (uint)((field.SampleRawWalkability(point) & 0xFF) | (field.SampleGroundProperty(point) << 8));
+        }
+
+        return words;
     }
 
     /// <summary>True when one of the words has both bits of <see cref="Mask"/>.</summary>

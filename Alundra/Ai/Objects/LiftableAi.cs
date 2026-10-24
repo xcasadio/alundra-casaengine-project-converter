@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Maps;
+using Alundra.Physics;
 
 namespace Alundra.Ai.Objects;
 
@@ -106,29 +107,7 @@ internal static class LiftableAi
             return;
         }
 
-        if (entity.Flags2 == 0)
-        {
-            entity.TargetAnimationId = 0;
-            return;
-        }
-
-        if (ReleaseAnimation(entity.Flags2) is not { } animation)
-        {
-            return;
-        }
-
-        entity.TargetAnimationId = animation;
-        entity.Flags2 = 0;
-
-        // the carrier's link (the binary writes 0 there without looking at it); a carrier without a proxy has none to clear.
-        if (entity.PlatformEntity.GameplayProxy is EntityScriptProxy carrier)
-        {
-            carrier.CarriedEntity = null;
-        }
-
-        entity.PlatformEntity = null;
-        entity.RidingEntity = null;
-        entity.Flags = ReleasedFlags(entity.Flags);
+        TickCarried(entity, ReleaseFlagsPolicy.C23);
     }
 
     /// <summary>
@@ -140,6 +119,29 @@ internal static class LiftableAi
         C23,
         C4,
     }
+
+    /// <summary>The bit C4 raises (<c>| 0x10</c>) when it releases the code -1 of an object whose native E code is <see cref="C4DeathFlagsNativeCode"/>; it clears <see cref="ReleaseClearBits"/> as C23 does.</summary>
+    private const uint C4DeathSetBits = 0x10;
+
+    /// <summary>The native E code (<c>+0x80</c>) of the barrel, the stone and the trunk (E2): C4 writes the flags for the code -1 only for them, not for the objects of the plates (E0).</summary>
+    private const int C4DeathFlagsNativeCode = 2;
+
+    /// <summary>The type of the trunk (sprite 117, 0x175): the only C4 object that floats.</summary>
+    private const int TrunkType = 373;
+
+    /// <summary>The animation of the floating trunk, and the ground slope (<see cref="EntityScriptProxy.Slope_18c"/>) of the water that gives it.</summary>
+    private const uint TrunkFloatAnimation = 5;
+
+    private const int TrunkWaterSlope = 4;
+
+    /// <summary>The sound of the landing or the touch (0x18), the effect of the bounce (9), its lift above the object (8 px in raw units) and the half turn of the direction (0x10 of 0x20).</summary>
+    private const int LandingSfx = 0x18;
+
+    private const int BounceEffect = 9;
+
+    private const int BounceEffectLift = 8 << 16;
+
+    private const uint BounceDirectionStep = 0x10;
 
     /// <summary>The program code of C4 in slot C (<c>0x80066984</c>): the barrel, the stone, the trunk and the four objects of the plates.</summary>
     internal const int C4Code = 4;
@@ -157,12 +159,103 @@ internal static class LiftableAi
     /// <summary>The carried half of C23 and C4 (the same release table), for an entity that is carried: the animation, the links, the code of the throw, the flags by <paramref name="policy"/>.</summary>
     internal static void TickCarried(EntityScriptProxy entity, ReleaseFlagsPolicy policy)
     {
-        // E20.g2c1 phase A skeleton: filled in by the next commit.
+        if (entity.Flags2 == 0)
+        {
+            entity.TargetAnimationId = 0;
+            return;
+        }
+
+        if (ReleaseAnimation(entity.Flags2) is not { } animation)
+        {
+            return;
+        }
+
+        var throwKind = entity.Flags2;
+        entity.TargetAnimationId = animation;
+        entity.Flags2 = 0;
+
+        // the carrier's link (the binary writes 0 there without looking at it); a carrier without a proxy has none to clear.
+        if (entity.PlatformEntity?.GameplayProxy is EntityScriptProxy carrier)
+        {
+            carrier.CarriedEntity = null;
+        }
+
+        entity.PlatformEntity = null;
+        entity.RidingEntity = null;
+        entity.Flags = policy switch
+        {
+            ReleaseFlagsPolicy.C23 => ReleasedFlags(entity.Flags),
+            _ => throwKind == -1 && entity.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] == C4DeathFlagsNativeCode ? (entity.Flags | C4DeathSetBits) & ~ReleaseClearBits : entity.Flags,
+        };
     }
 
     /// <summary>One tick of C4 (see the class); <paramref name="readCorners"/> and <paramref name="createEffect"/> are the seams of the tests.</summary>
     internal static void C4Tick(EntityScriptProxy entity, IEntityWorldContext context, Func<EntityScriptProxy, uint[]>? readCorners = null, Action<int, int, int>? createEffect = null)
     {
-        // E20.g2c1 phase A skeleton: filled in by the next commit.
+        if (entity.PlatformEntity != null)
+        {
+            TickCarried(entity, ReleaseFlagsPolicy.C4);
+            return;
+        }
+
+        readCorners ??= CornerTileWords.Read;
+        var animation = entity.TargetAnimationId;
+        if (animation != 0 && !(entity.SpriteType == TrunkType && animation == TrunkFloatAnimation))
+        {
+            if (entity.ForceAdjusted != 0)
+            {
+                if (entity.IsOnGround == 0)
+                {
+                    // blocked in the air: the first time it goes up, the object bounces (the lock, the direction half a turn, the effect 9 8 px above).
+                    if (entity.ForceZ > 0 && entity.DelayOrAngleOrEntityId == 0)
+                    {
+                        entity.DelayOrAngleOrEntityId = 1;
+                        entity.TargetDirection = (entity.TargetDirection + BounceDirectionStep) & 0x1F;
+                        var z = entity.PosZ + BounceEffectLift;
+                        if (createEffect != null)
+                        {
+                            createEffect(entity.PosX, entity.PosY, z);
+                        }
+                        else
+                        {
+                            context.EffectStage?.Reservoir.Create(false, BounceEffect, 0, entity.PosX, entity.PosY, z);
+                        }
+                    }
+                }
+                else
+                {
+                    // blocked on the ground: a corner on a band deactivates it (the status 3), then the animation 0.
+                    if (CornerTileWords.AnyHasMask(readCorners(entity)))
+                    {
+                        entity.Status = EntityStatus.Deactivated;
+                    }
+
+                    entity.TargetAnimationId = 0;
+                }
+            }
+            else if (entity.IsOnGround != 0 || entity.HitCounter != 0)
+            {
+                // on the ground or touching: the sound, the lock cleared, the animation 0 unless a corner is on a band (it glides).
+                context.SoundPlayer?.PlaySfx(LandingSfx);
+                entity.DelayOrAngleOrEntityId = 0;
+                if (!CornerTileWords.AnyHasMask(readCorners(entity)))
+                {
+                    entity.TargetAnimationId = 0;
+                }
+            }
+        }
+
+        if (entity.SpriteType == TrunkType)
+        {
+            // the trunk floats (the animation 5) while the slope is 4 (the water), and stops floating when it leaves it.
+            if (entity.TargetAnimationId == 0 && entity.Slope_18c == TrunkWaterSlope)
+            {
+                entity.TargetAnimationId = TrunkFloatAnimation;
+            }
+            else if (entity.TargetAnimationId == TrunkFloatAnimation && entity.Slope_18c != TrunkWaterSlope)
+            {
+                entity.TargetAnimationId = 0;
+            }
+        }
     }
 }

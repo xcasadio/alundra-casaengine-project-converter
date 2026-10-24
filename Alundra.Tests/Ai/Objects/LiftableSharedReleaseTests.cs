@@ -65,7 +65,7 @@ public sealed class LiftableSharedReleaseTests
     }
 
     [Theory]
-    [InlineData(2, 0x3323E4u, 0x332364u)]
+    [InlineData(2, 0x3323E4u, 0x332374u)]
     [InlineData(2, 0x80u, 0x10u)]
     [InlineData(2, 0xFFFFFFFFu, 0xFFFFFF7Fu)]
     [InlineData(0, 0x3323E4u, 0x3323E4u)]
