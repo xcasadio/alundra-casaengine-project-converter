@@ -1,6 +1,6 @@
 # ADR-0022: Native-destruction obstacles stay solid, the walk detour waits on entities, and overlaps stay faithful
 
-- **Status**: Accepted
+- **Status**: Partially superseded by [ADR-0091](0091-the-soulevables-are-solid-obstacles-like-every-other-collidable-and-the-movement-probe-skips-no-flag.md) (the exclusion of the liftable entities, D-E19-28, is lifted; the rest stays Accepted)
 - **Date**: 2026-10-02
 - **Source**: this chantier: `docs/plan-e19-opcodes.md` §0.1 (decisions D-E19-34 to D-E19-37, taken with the author on 2026-10-02 before the plan of slice E19.d2b), §1.2h.2 (E19.d2b). Refines D-E19-28 and D-E19-30 (ADR-0021); amends the E4.d detour of opcode `0x1E` (deviation E4-D5, `docs/plan-e4-deplacement-scripte.md`) for entity contacts only.
 

@@ -1,0 +1,2 @@
+Alundra.Tests.Hero.HeroSlideTests.TSL9_ACornerBehindAnEntity_NeverSlides_ForceAdjustedFromTheNextTick [FAIL]
+Échoué!  - échec :     1, réussite :   115, ignorée(s) :     0, total :   116, durée : 16 s - Alundra.Tests.dll (net9.0)

@@ -1,0 +1,10 @@
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR3_NestusWalksNorthAndStopsAtMeade_ThePositionIsTheContact [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR3_WhenMeadeClearsCollidable_NestusIsNotStoppedAtTheFrameFollowingTheRebuildOfTheList [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR4_AMoverPushingEastEndsFlushAgainstTheObstacle_ReportsItAndRaisesForceAdjustedTheTickAfter [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR9_AHeroPushingObliquelyAgainstAVillager_SlidesAlongHim_TheBinaryKeepsHimStill [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRCarried_ACrateInTheHandsAndAThrownCrateBlockNothing_TheCrateOnTheGroundNextToThemDoes [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRH2_TwoEntitiesShortenXAndYInTheSameTick_TheContactIsTheObstacleOfTheSecondAxis [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRId_TwoObstaclesOnThePath_TheOneReportedIsTheNearestToTheContact [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRLift_ACrateOnThePathBlocksLikeAnIronBallWall_AndTheTwoStopFlush [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRNpc_ACollidableVillagerIsStoppedByACrate_ANonCollidableOneCrossesIt [FAIL]
+Échoué!  - échec :     9, réussite :    45, ignorée(s) :     0, total :    54, durée : 15 s - Alundra.Tests.dll (net9.0)

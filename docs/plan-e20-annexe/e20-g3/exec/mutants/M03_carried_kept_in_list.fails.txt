@@ -1,0 +1,2 @@
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRCarried_ACrateInTheHandsAndAThrownCrateBlockNothing_TheCrateOnTheGroundNextToThemDoes [FAIL]
+Échoué!  - échec :     1, réussite :    53, ignorée(s) :     0, total :    54, durée : 14 s - Alundra.Tests.dll (net9.0)

@@ -1,0 +1,5 @@
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR1_AMobilThatIsNotEligible_FindsNoObstacle [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR3_WhenMeadeClearsCollidable_NestusIsNotStoppedAtTheFrameFollowingTheRebuildOfTheList [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRCarried_ACrateInTheHandsAndAThrownCrateBlockNothing_TheCrateOnTheGroundNextToThemDoes [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRNpc_ACollidableVillagerIsStoppedByACrate_ANonCollidableOneCrossesIt [FAIL]
+Échoué!  - échec :     4, réussite :    50, ignorée(s) :     0, total :    54, durée : 14 s - Alundra.Tests.dll (net9.0)

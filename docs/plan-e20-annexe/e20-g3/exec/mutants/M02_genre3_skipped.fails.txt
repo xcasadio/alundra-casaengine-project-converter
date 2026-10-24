@@ -1,0 +1,2 @@
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRKinds_EveryPickupKindOfTheHeaderStopsTheWalkerFlush(pickupKind: 3) [FAIL]
+Échoué!  - échec :     1, réussite :    56, ignorée(s) :     0, total :    57, durée : 13 s - Alundra.Tests.dll (net9.0)

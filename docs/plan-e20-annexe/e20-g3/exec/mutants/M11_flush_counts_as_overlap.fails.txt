@@ -1,0 +1,8 @@
+Alundra.Tests.Physics.CrateSolidityMap392Tests.S1_AlundraWalkingEastIsStoppedFlushAtTheWestFaceOfRec5_X615 [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR1_TheSemiOpenRule_FlushContactDoesNotBlock_OneUnitLessBlocks(heroX: 31457280, heroY: 19660800, heroZ: 3145729, blocked: False) [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR4_AMoverPushingEastEndsFlushAgainstTheObstacle_ReportsItAndRaisesForceAdjustedTheTickAfter [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR9_AHeroPushingObliquelyAgainstAVillager_SlidesAlongHim_TheBinaryKeepsHimStill [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRCarried_ACrateInTheHandsAndAThrownCrateBlockNothing_TheCrateOnTheGroundNextToThemDoes [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRLift_ACrateOnThePathBlocksLikeAnIronBallWall_AndTheTwoStopFlush [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRNpc_ACollidableVillagerIsStoppedByACrate_ANonCollidableOneCrossesIt [FAIL]
+Échoué!  - échec :     7, réussite :    47, ignorée(s) :     0, total :    54, durée : 15 s - Alundra.Tests.dll (net9.0)

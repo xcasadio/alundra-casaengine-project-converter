@@ -125,3 +125,35 @@ Compared by name, the g5c final trx (5 994 passed, the T0 base) against the T2 R
 - `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal (Debug built last).
 - `python -B tools/dll-structure/check_names.py --rules`: 0 finding, 1 existing warning (`TextBoxGpu.cs`).
 - Engine, converter, data, `alundra-datas-analyser`: no diff since `d23804cf`.
+
+## T3 - mutants, ADR, checks (measured)
+
+Start HEAD of T3: `4f1ad619` (T2). Mutants: `mutants/mut.py` (exact text replacement of one site, `dotnet test` in Release with the neutralised copy, `--blame-hang-timeout 60s`, then the file is restored by `git checkout --` and `git diff -- Alundra` is checked empty); the failing tests of each run are in `mutants/<id>.fails.txt`. Filter of the runs: `CrateSolidityMap392Tests | MovementObstacleProbeTests` (57 tests after the test added below), widened where the killer is elsewhere (M04: Physics, Ai, Hero, Entities, Items; M07, M08: with `HeroSlideTests`, `EntityContactReportTests`, `NpcCharacterControllerMoverTests`).
+
+| # | Mutant of the plan (site) | Killed | By (first ones) |
+|---|---|---|---|
+| M01 | mask kept for kind 1 only (`FindEntityCollisionCandidate` skips `Liftable`) | yes, 21 tests | S1 east and west, S2 (5 rows), TRLift, TRNpc, TRCarried |
+| M02 | kind 3 skipped (`LiftableHeavy`) | yes, 1 test | `TRKinds_EveryPickupKindOfTheHeaderStopsTheWalkerFlush(pickupKind: 3)` (added by T3: the first run of this mutant SURVIVED the 54 tests of the narrow filter) |
+| M03 | crate in the hands kept in the list (`BuildCollidables` without `PlatformEntity == null`) | yes, 1 test | `TRCarried_...` |
+| M04 | thrown crate keeps `0x80` (`LiftableAi.ReleaseClearBits = 0`) | yes, 40 tests | `LiftableAiTests.C4_TheReleasedFlags_...`, `LiftableBreakWorldTests.B2_...` (the narrow filter does not reach them: run on the wide filter, 8 min) |
+| M05 | non-null contact on an accepted flush step (DLL side: `MoveControllerAndPullPosition` probes one 16.16 unit ahead when nothing refused) | yes, 2 tests | `S3_...ExceptWhenTheFullStepIsAcceptedAndEndsExactlyFlush`, `TR3_NestusWalksNorthAndStopsAtMeade` |
+| M06 | nearest candidate instead of the first of the list (sum of the three deltas, ties to the later) | yes, 1 test | `TR1_TheSubjectIsNeverItsOwnObstacle_AndTheFirstOverlappingOfTheListWins` |
+| M07 | slide allowed after an entity contact (`SlideAlongWall`: `forbidden` without `XCollisionEntity`) | yes, 1 test | `HeroSlideTests.TSL9_ACornerBehindAnEntity_NeverSlides_...` (not reached by the narrow filter) |
+| M08 | terrain tested before the entity (see below) | yes, 1 test | `HeroSlideTests.TSL9_...` (not reached by the narrow filter) |
+| M09 | a collidable NPC crosses (the probe answers only for the player) | yes, 9 tests | TR3, TR4, TR9, TRH2, TRId, TRLift, TRCarried, ... |
+| M10 | a non-collidable one is stopped (`IsEligibleSubject` without the `Collidable` conjunct) | yes, 4 tests | TRNpc, TRCarried, TR3_WhenMeade..., TR1_AMobilThatIsNotEligible |
+| M11 | extra: a flush contact counts as an overlap (`>` instead of `>=` on X) | yes, 7 tests | S1 east, TR1 semi-open, TR4, TR9, TRLift, TRNpc |
+| M12 | extra: the Z axis is ignored | yes, 6 tests | S2 from the top of rec5, TR1 semi-open rows, TRegZ |
+
+12 real mutants (10 of the plan, 2 extra), 12 killed, 0 equivalent survivor. The one survivor met on the way (M02) was a gap of the tests, not an equivalent mutant: no test used a kind 3 header (the very heavy stone of the map 4); T3 adds `TRKinds_EveryPickupKindOfTheHeaderStopsTheWalkerFlush` (theory over the kinds 1, 2, 3; green on the real code, red on M02) and the M01 and M02 runs were done again with it.
+
+**Two mutants are written on the DLL side because the real site is in the engine**, which T3 must not touch: M05 (the contact `LastContact` of a flush accepted step is built by `CharacterControllerComponent`) and M08 (the order "entity probe, then the field" is `IsCandidateBlocked`, ADR-0047 of the engine). M05 reports a contact when nothing refused the step and an entity overlaps one 16.16 unit further; M08 makes the probe answer "no obstacle" when a cell of the box at the candidate blocks (the engine then reports a terrain block with no entity contact, which is the observable result of "terrain first"). The engine itself was never modified.
+
+Equivalence note: M07 is observable only where the table of the corners of the cells gives a slide next to an entity (a wall corner behind a crate); without a cell wall the table gives no slide and `ForceAdjusted` is the same (`TSL9` builds the case).
+
+### Other checks of T3
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding, 1 existing warning (`TextBoxGpu.cs`), after the test added.
+- Debug built last (without the neutralised copy): `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll` equal; `CrateSolidityMap392Tests`, `MovementObstacleProbeTests`, `HeroSlideTests` in Debug: 69 tests, 0 failure (Release: 57 for the first two, 0 failure).
+- Engine (`CasaEngineMonogame`: pointer `92d8e847` unchanged), converter (`alundra-casaengine-project-converter*`), data (`data-extracted/`), `alundra-project/` (except the Debug DLL, `cmp`-equal to the build) and `alundra-datas-analyser`: no diff between `73c05530` and HEAD (`git diff --stat 73c05530..HEAD` on these paths is empty). `git diff -- Alundra` is empty after every mutant.
+- ADR-0091 written (next free number counted on all the branches: the highest is 0090); ADR-0021 and ADR-0022 become `Partially superseded by ADR-0091` (the plan says "en partie"), the index follows. O-G3-1 and O-G3-2 are recorded in it, and the one-tick gap of the contact from the top of a crate (flagged in T0, item 1) as O-G3-3.
+- Whole suite not rerun in T3: the only change to the tests is one added theory (3 cases) in `MovementObstacleProbeTests`; the 6 015 tests of T2 plus 3 give 6 018.

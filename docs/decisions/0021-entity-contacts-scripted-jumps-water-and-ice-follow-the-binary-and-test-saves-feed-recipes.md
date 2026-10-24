@@ -1,6 +1,6 @@
 # ADR-0021: Entity contacts, scripted jumps and the hero's water and ice rules follow the binary, and test saves feed the recipes
 
-- **Status**: Accepted
+- **Status**: Partially superseded by [ADR-0091](0091-the-soulevables-are-solid-obstacles-like-every-other-collidable-and-the-movement-probe-skips-no-flag.md) (D-E19-28 and D-E19-46 lifted; the rest stays Accepted)
 - **Date**: 2026-10-02
 - **Source**: this chantier: `docs/plan-e19-opcodes.md` §0.1 (decisions D-E19-27 to D-E19-33, taken with the author on 2026-10-02 before the plan of slice E19.d2), §1.2h (E19.d2). Refines D-E19-6 (ADR-0015) and D-E19-26; lifts the deferral of entity blocking recorded as D-E12D-1 (`docs/plan-e12d-interaction-joueur.md`); amends E3.d (`docs/plan-e3-collisions.md`) for the hero's airborne state.
 

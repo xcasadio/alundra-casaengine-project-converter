@@ -1,0 +1,7 @@
+Alundra.Tests.Physics.CrateSolidityMap392Tests.S2_FromTheTopOfRec5_TheNeighbouringCrateOfTheTopLimitsTheStep_AndIsTheContact [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR1_TheSemiOpenRule_FlushContactDoesNotBlock_OneUnitLessBlocks(heroX: 32768000, heroY: 19660800, heroZ: 1048577, blocked: False) [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR1_TheSemiOpenRule_FlushContactDoesNotBlock_OneUnitLessBlocks(heroX: 32768000, heroY: 19660800, heroZ: 5242881, blocked: False) [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TR1_TheVillagerAboveTheHero_OneUnitOfMarginFreesHim(villagerZ: 5242880, blocked: False) [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRegZ_APlatformAndAMoverOneUnitAbove_TheRuleKeepsTheOneUnitMargin(moverPosZ: 26214401, blocked: False) [FAIL]
+Alundra.Tests.Physics.MovementObstacleProbeTests.TRegZ_ASupportedSailorWalksOverItsPlatform_TheOneUnitMarginIsKeptAndNothingBlocks [FAIL]
+Échoué!  - échec :     6, réussite :    48, ignorée(s) :     0, total :    54, durée : 15 s - Alundra.Tests.dll (net9.0)

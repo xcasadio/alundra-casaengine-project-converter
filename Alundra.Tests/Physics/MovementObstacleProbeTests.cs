@@ -396,6 +396,29 @@ public sealed class MovementObstacleProbeTests
         Assert.Null(beannoid.XCollisionEntity);
     }
 
+    // ---- E20.g3 T3: every pickup kind of the header is an obstacle (mutants "mask kept for kind 1 only" and "kind 3 skipped"), the very heavy stone (kind 3, the glove required) included ------------------
+
+    [Theory]
+    [InlineData(1)] // Liftable: the crate, the jar.
+    [InlineData(2)] // LiftableUnlessItem3B.
+    [InlineData(3)] // LiftableHeavy: the very heavy stone of the map 4 (the glove is needed to lift it, not to be stopped by it).
+    public void TRKinds_EveryPickupKindOfTheHeaderStopsTheWalkerFlush(int pickupKind)
+    {
+        var rig = NewRig();
+        var obstacle = AddOriginalCrate(rig, "Obstacle", 140, 100);
+        obstacle.Flags = (obstacle.Flags & ~EntityFlags.PickupKindMask) | ((uint)pickupKind << EntityFlags.PickupKindShift);
+        Assert.Equal((EntityPickupKind)pickupKind, EntityFlags.GetPickupKind(obstacle.Flags));
+        var walker = rig.Add("Walker", 60, 100, sizeX: 20, sizeY: 14);
+        rig.Integrate();
+        Assert.Contains(obstacle, rig.Host.Collidables);
+
+        WalkEast(walker, 40);
+
+        var ulp = MathF.BitIncrement(120f) - 120f;
+        Assert.InRange(ContactWorld.Root(walker).X, 120f - ulp, 120f + ulp);
+        Assert.Same(obstacle, walker.XCollisionEntity);
+    }
+
     // ---- (s5) E20.g3: a crate in the hands (PutInHands) and a crate thrown (0x80 cleared by the release of C23) block nothing, next to a crate on the ground that does -----------------------
 
     [Fact]
