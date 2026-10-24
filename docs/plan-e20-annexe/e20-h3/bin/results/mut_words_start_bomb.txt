@@ -1,0 +1,15 @@
+start_bomb    mutants   96 killed   83 survivors  13
+TOTAL mutants 96 killed 83 survivors 13
+SURVIVOR start_bomb    8003453C imm+1          addiu $sp, $sp, -0x28              -> addiu $sp, $sp, -0x27
+SURVIVOR start_bomb    8003453C imm-1          addiu $sp, $sp, -0x28              -> addiu $sp, $sp, -0x29
+SURVIVOR start_bomb    8003454C store removed  sw $s0, 0x20($sp)                  -> nop 
+SURVIVOR start_bomb    8003457C addu<->subu    move $v1, $zero                    -> negu $v1, $zero
+SURVIVOR start_bomb    80034580 addu<->subu    move $a0, $v1                      -> subu $a0, $v1, $zero
+SURVIVOR start_bomb    800345AC slti<->sltiu   slti $v0, $a0, 3                   -> sltiu $v0, $a0, 3
+SURVIVOR start_bomb    800345BC addu<->subu    move $a0, $s0                      -> subu $a0, $s0, $zero
+SURVIVOR start_bomb    800345C8 addu<->subu    move $a1, $zero                    -> negu $a1, $zero
+SURVIVOR start_bomb    800345E4 addu<->subu    move $a1, $v0                      -> subu $a1, $v0, $zero
+SURVIVOR start_bomb    80034650 addu<->subu    move $v0, $zero                    -> negu $v0, $zero
+SURVIVOR start_bomb    80034670 offset+4       lw $s0, 0x20($sp)                  -> lw $s0, 0x24($sp)
+SURVIVOR start_bomb    80034674 imm+1          addiu $sp, $sp, 0x28               -> addiu $sp, $sp, 0x29
+SURVIVOR start_bomb    80034674 imm-1          addiu $sp, $sp, 0x28               -> addiu $sp, $sp, 0x27

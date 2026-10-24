@@ -1,0 +1,31 @@
+C62           mutants  190 killed  161 survivors  29
+TOTAL mutants 190 killed 161 survivors 29
+SURVIVOR C62           8007A978 imm+1          addiu $sp, $sp, -0x28              -> addiu $sp, $sp, -0x27
+SURVIVOR C62           8007A978 imm-1          addiu $sp, $sp, -0x28              -> addiu $sp, $sp, -0x29
+SURVIVOR C62           8007A97C offset+4       sw $s0, 0x20($sp)                  -> sw $s0, 0x24($sp)
+SURVIVOR C62           8007A97C store removed  sw $s0, 0x20($sp)                  -> nop 
+SURVIVOR C62           8007A980 addu<->subu    move $s0, $a0                      -> subu $s0, $a0, $zero
+SURVIVOR C62           8007A9B4 addu<->subu    move $v1, $v0                      -> subu $v1, $v0, $zero
+SURVIVOR C62           8007A9C4 imm+1          slti $v0, $v1, 0x3c                -> slti $v0, $v1, 0x3d
+SURVIVOR C62           8007A9C4 imm-1          slti $v0, $v1, 0x3c                -> slti $v0, $v1, 0x3b
+SURVIVOR C62           8007A9D4 addu<->subu    move $a0, $zero                    -> negu $a0, $zero
+SURVIVOR C62           8007A9FC addu<->subu    move $a2, $a0                      -> subu $a2, $a0, $zero
+SURVIVOR C62           8007AA00 addu<->subu    move $t2, $v0                      -> subu $t2, $v0, $zero
+SURVIVOR C62           8007AA58 store removed  sw $v1, -0x78f8($t0)               -> nop 
+SURVIVOR C62           8007AA60 offset+4       sw $t4, 0x18($sp)                  -> sw $t4, 0x1c($sp)
+SURVIVOR C62           8007AA60 store removed  sw $t4, 0x18($sp)                  -> nop 
+SURVIVOR C62           8007AA68 offset+4       lw $t4, 0x18($sp)                  -> lw $t4, 0x1c($sp)
+SURVIVOR C62           8007AA7C shamt+1        sra $v1, $t5, 0x1f                 -> sra $a0, $t5, 0
+SURVIVOR C62           8007AA94 shamt+1        sra $v1, $a3, 0x1f                 -> sra $a0, $a3, 0
+SURVIVOR C62           8007AB28 addu<->subu    move $v1, $zero                    -> negu $v1, $zero
+SURVIVOR C62           8007AB48 addu<->subu    move $a0, $zero                    -> negu $a0, $zero
+SURVIVOR C62           8007AB88 addu<->subu    move $a2, $a0                      -> subu $a2, $a0, $zero
+SURVIVOR C62           8007AB9C addu<->subu    move $a0, $s0                      -> subu $a0, $s0, $zero
+SURVIVOR C62           8007ABC4 slti<->sltiu   slti $v0, $v1, 4                   -> sltiu $v0, $v1, 4
+SURVIVOR C62           8007AC04 addu<->subu    move $v1, $zero                    -> negu $v1, $zero
+SURVIVOR C62           8007AC0C addu<->subu    move $a0, $s0                      -> subu $a0, $s0, $zero
+SURVIVOR C62           8007AC28 imm+1          addiu $v0, $zero, 4                -> addiu $v0, $zero, 5
+SURVIVOR C62           8007AC30 slti<->sltiu   slti $v0, $v1, 4                   -> sltiu $v0, $v1, 4
+SURVIVOR C62           8007AC50 offset+4       lw $s0, 0x20($sp)                  -> lw $s0, 0x24($sp)
+SURVIVOR C62           8007AC54 imm+1          addiu $sp, $sp, 0x28               -> addiu $sp, $sp, 0x29
+SURVIVOR C62           8007AC54 imm-1          addiu $sp, $sp, 0x28               -> addiu $sp, $sp, 0x27

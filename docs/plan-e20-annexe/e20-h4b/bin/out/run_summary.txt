@@ -1,0 +1,103 @@
+##### b1_push.py 3000 20261018
+vectors 3000 seed 20261018 mismatches 0
+coverage 0x800366FC..0x800367E4: 58/58 instructions
+mutants killed (vectors that distinguish):  {'noshift': 1100, 'pushbefore': 1139, 'nopush': 2179, 'swap_push': 2090, 'swapbounds': 2996, 'noflag': 1839, 'nozero': 2914, 'idx7': 538, 'mask15': 458, 'maxfirst': 164, 'unsigned': 2459, 'tablefirst_shift': 990}
+vectors with ForceAdjusted newly set: {'x': 1273, 'y': 0, 'none': 1161}
+replay from empty memory: 200/200 vectors reproduce the writes
+
+##### b1b_physpass.py 600 20261018
+physics pass 0x80036828: vectors 600 mismatches 0 | entities that consumed the push: others 941, hero 312 ; platform case (+0x28 != 0) 220 | coverage 153/244
+  entity-results that depend on the push being added: {'nopush': 1226}
+  replay from empty memory: 40/40
+
+##### b2_slots.py 600 20261018
+slot pass: vectors 600 seed 20261018 mismatches 0
+  coverage 0x80038634..0x800386D0: 39/39
+  mutants distinguished (of 600 vectors): {'four_counts': 234, 'status123': 316, 'recycle_not': 555}
+  replay from empty memory: 40/40
+lists pass: vectors 600 seed 20261018 mismatches 0
+  coverage 0x800384F4..0x80038634: 80/80
+  mutants distinguished: {'exclusive': 359, 'status2only': 319}
+  replay from empty memory: 60/60
+birth raise: vectors 600 mismatches 0 (model: count = max(count, slot index), strict <)
+  replay from empty memory: 30/30
+
+##### b3_query.py 1500 20261018
+vectors 1500 seed 20261018 mismatches 0 | vectors with tied keys 202 | count>=20 408
+coverage query 0x8003AF70..0x8003B0E8: 94/94
+coverage sort  0x8003AE04..0x8003AF70: 91/91
+mutants distinguished by the vectors (of 1500): {'inclusive': 257, 'sort_from2': 64, 'status2only': 585, 'ign20': 299, 'ign1d0': 292, 'ign1cc': 289, 'ignb4': 278, 'mask_eq': 196, 'immune_any': 534, 'signed_cmp': 0, 'nodist_shift': 866, 'stable': 135, 'caller_in': 12}
+mutants never distinguished: ['signed_cmp']
+replay from empty memory: 120/120 vectors reproduce the writes and the return value
+
+##### b3_firstpick.py
+n= 1 grid= 1 px: first result is NOT the nearest:   0.0 % | the nearest is tied:   0.0 % | among ties, differs from a stable sort:   0.0 %
+n= 1 grid=16 px: first result is NOT the nearest:   0.0 % | the nearest is tied:   0.0 % | among ties, differs from a stable sort:   0.0 %
+n= 2 grid= 1 px: first result is NOT the nearest:  47.6 % | the nearest is tied:   4.3 % | among ties, differs from a stable sort:   0.0 %
+n= 2 grid=16 px: first result is NOT the nearest:  47.6 % | the nearest is tied:   4.3 % | among ties, differs from a stable sort:   0.0 %
+n= 3 grid= 1 px: first result is NOT the nearest:   0.0 % | the nearest is tied:   6.3 % | among ties, differs from a stable sort:  68.1 %
+n= 3 grid=16 px: first result is NOT the nearest:   0.0 % | the nearest is tied:   6.3 % | among ties, differs from a stable sort:  67.6 %
+n= 4 grid= 1 px: first result is NOT the nearest:   0.0 % | the nearest is tied:   7.8 % | among ties, differs from a stable sort:  52.1 %
+n= 4 grid=16 px: first result is NOT the nearest:   0.0 % | the nearest is tied:   7.8 % | among ties, differs from a stable sort:  51.2 %
+n= 6 grid= 1 px: first result is NOT the nearest:   0.0 % | the nearest is tied:  10.5 % | among ties, differs from a stable sort:  47.6 %
+n= 6 grid=16 px: first result is NOT the nearest:   0.0 % | the nearest is tied:  10.5 % | among ties, differs from a stable sort:  46.9 %
+n=10 grid= 1 px: first result is NOT the nearest:   0.0 % | the nearest is tied:  14.6 % | among ties, differs from a stable sort:  51.8 %
+n=10 grid=16 px: first result is NOT the nearest:   0.0 % | the nearest is tied:  14.6 % | among ties, differs from a stable sort:  51.8 %
+
+##### b4_tables.py
+cos256[i] == sin256[(i+64)&255] for all i: True
+sin256 odd symmetry sin[i+128] == -sin[i]: True
+sin256 mirror sin[128-i]... sin[64+k]==sin[64-k]: True
+sin256[i] == trunc(256*sin(2*pi*i/256)): True
+sin256[i] == round(256*sin(2*pi*i/256)): False
+   mismatches 120 first [2, 3, 6, 7, 8, 16, 17, 20] [(12, 13), (18, 19), (37, 38), (43, 44)]
+sin256[i] == floor(256*sin(2*pi*i/256)): False
+   mismatches 126 first [129, 130, 131, 132, 133, 134, 135, 136] [(-6, -7), (-12, -13), (-18, -19), (-25, -26)]
+dir32 x == trunc(-768 sin(2 pi d/32)): False ; y == trunc(512 cos): False
+dir32 x == round(-768 sin(2 pi d/32)): False ; y == round(512 cos): True
+slide tables: X nonzero idx [4, 5, 6, 7, 8, 9, 10, 11] Y nonzero idx [1, 2, 5, 6, 9, 10, 13, 14]
+DLL AnimationTables.OffsetXList: found 32 values equal to the binary table: True
+DLL AnimationTables.OffsetYList: found 32 values equal to the binary table: True
+
+##### b5_camera_shake.py 1500 20261018
+(A) sway step 0x8002C894: vectors 1500 mismatches 0 coverage 83/83 mutants distinguished {'y_zero_speed_clears': 100}
+    replay from empty memory: 80/80
+(B) camera scroll 0x8002CDA0..0x8002CF38: vectors 1500 mismatches 0 mutants distinguished {'nokick': 638}
+    replay from empty memory: 100/100
+    kick life (model; scrollY starts at 300, target centred, kick +2 at t0): [302, 301, 300, 300, 300, 300]
+(C) E13 0x8007F30C: vectors 1500 mismatches 0 (kick = 2 written only when TargetAnim != 1; destroy via 0x8003A59C when anim==1 and AnimEnd==1)
+(D) fire 2 driver 0x80035C64 (+guard 0x800351B8 + cancel 0x800350C0/0x80034E08): vectors 1500 mismatches 0, mutants distinguished {'no_restore_on_guard': 173}
+    coverage driver 145/147, guard 19/19, cancel dispatcher 28/62, cancel 0x80034E08 47/47
+
+##### b7_corpus.py
+C39  global records [] | map-page records 2 (in 2 maps) | placements 2 (in 2 maps)
+C40  global records [] | map-page records 3 (in 3 maps) | placements 3 (in 3 maps)
+C43  global records [] | map-page records 3 (in 3 maps) | placements 3 (in 3 maps)
+C49  global records [] | map-page records 2 (in 2 maps) | placements 2 (in 2 maps)
+C50  global records [] | map-page records 1 (in 1 maps) | placements 2 (in 1 maps)
+C51  global records [] | map-page records 1 (in 1 maps) | placements 1 (in 1 maps)
+C63  global records [23] | map-page records 0 (in 0 maps) | placements 0 (in 0 maps)
+C65  global records [24, 154] | map-page records 0 (in 0 maps) | placements 0 (in 0 maps)
+C75  global records [19] | map-page records 0 (in 0 maps) | placements 0 (in 0 maps)
+C88  global records [] | map-page records 1 (in 1 maps) | placements 1 (in 1 maps)
+C89  global records [] | map-page records 1 (in 1 maps) | placements 0 (in 0 maps)
+C90  global records [] | map-page records 1 (in 1 maps) | placements 0 (in 0 maps)
+D43  global records [] | map-page records 1 (in 1 maps) | placements 0 (in 0 maps)
+E3   global records [16, 23, 150, 151, 152, 153] | map-page records 98 (in 75 maps) | placements 19 (in 5 maps)
+E13  global records [17] | map-page records 1 (in 1 maps) | placements 1 (in 1 maps)
+E24  global records [] | map-page records 3 (in 3 maps) | placements 0 (in 0 maps)
+E28  global records [21] | map-page records 0 (in 0 maps) | placements 0 (in 0 maps)
+
+##### replay_all.py
+vec_birthraise.json                0x80039D04     30 vectors  reads=120 words  writes=12 words  replay: all ok
+vec_camera_8002CDA0.json           0x8002CDA0    100 vectors  reads=990 words  writes=911 words  replay: all ok
+vec_e13_8007F30C.json              0x8007F30C     40 vectors  reads=80 words  writes=60 words  replay: all ok
+vec_fire2_80035C64.json            0x80035C64     60 vectors  reads=659 words  writes=371 words  replay: all ok
+vec_listspass.json                 0x800384F4     60 vectors  reads=4332 words  writes=1222 words  replay: all ok
+vec_physpass_80036828.json         0x80036828     40 vectors  reads=2431 words  writes=871 words  replay: all ok
+vec_push_800366FC.json             0x800366FC    200 vectors  reads=2832 words  writes=963 words  replay: all ok
+vec_query_8003AF70.json            0x8003AF70    120 vectors  reads=6568 words  writes=581 words  replay: all ok
+vec_slotpass.json                  0x80038634     40 vectors  reads=8995 words  writes=31885 words  replay: all ok
+vec_sway_8002C894.json             0x8002C894     80 vectors  reads=527 words  writes=294 words  replay: all ok
+TOTAL 770 vectors, 0 failures
+

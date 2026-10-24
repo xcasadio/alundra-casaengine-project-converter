@@ -1,0 +1,13 @@
+start_beans   mutants   71 killed   60 survivors  11
+TOTAL mutants 71 killed 60 survivors 11
+SURVIVOR start_beans   80034224 imm+1          addiu $sp, $sp, -0x28              -> addiu $sp, $sp, -0x27
+SURVIVOR start_beans   80034224 imm-1          addiu $sp, $sp, -0x28              -> addiu $sp, $sp, -0x29
+SURVIVOR start_beans   8003422C offset+4       sw $s0, 0x20($sp)                  -> sw $s0, 0x24($sp)
+SURVIVOR start_beans   8003422C store removed  sw $s0, 0x20($sp)                  -> nop 
+SURVIVOR start_beans   80034264 addu<->subu    move $a0, $s0                      -> subu $a0, $s0, $zero
+SURVIVOR start_beans   80034270 addu<->subu    move $a1, $zero                    -> negu $a1, $zero
+SURVIVOR start_beans   8003428C addu<->subu    move $a1, $v0                      -> subu $a1, $v0, $zero
+SURVIVOR start_beans   800342F0 addu<->subu    move $v0, $zero                    -> negu $v0, $zero
+SURVIVOR start_beans   80034310 offset+4       lw $s0, 0x20($sp)                  -> lw $s0, 0x24($sp)
+SURVIVOR start_beans   80034314 imm+1          addiu $sp, $sp, 0x28               -> addiu $sp, $sp, 0x29
+SURVIVOR start_beans   80034314 imm-1          addiu $sp, $sp, 0x28               -> addiu $sp, $sp, 0x27

@@ -1,0 +1,10 @@
+item 0x1f start returned 0; RNG 0x12345678 -> 0x12345678 (unchanged)
+  hero: 2C=0x80127fc4 anim(+0x88)=0x5 offsets=(0,0,1) use=0x0
+  born: slot1 status=1 type(+0x68)=1 flags=0x332380 c28=0x80127d30 fuse(+0x274)=0 dir(+0x8C)=0 pos=(200.00,200.00,0.0000) sheet=0x801442a1 curAtk=0x0 hp=0
+  records: id(+4)=2 spriteRecord(+0x64)=0x801bd000 progIdx A..F=[0, 0, 0, 0, 0, 0] sprIdx=[0, 0, 73, 0, 21, 0] contents(+0x3C)=0
+  sounds journal: [('sound', 0)]
+item 0x23 start returned 0; RNG 0x12345678 -> 0x12345678 (unchanged)
+  hero: 2C=0x80127fc4 anim(+0x88)=0x5 offsets=(0,0,1) use=0x0
+  born: slot1 status=1 type(+0x68)=2 flags=0x13234e c28=0x80127d30 fuse(+0x274)=240 dir(+0x8C)=0 pos=(200.00,200.00,0.0000) sheet=0x801442b0 curAtk=0x801442bf hp=0
+  records: id(+4)=2 spriteRecord(+0x64)=0x801be000 progIdx A..F=[0, 0, 0, 0, 0, 0] sprIdx=[0, 0, 62, 30, 12, 0] contents(+0x3C)=0
+  sounds journal: [('sound', 0)]

@@ -1,0 +1,15 @@
+CAUGHT   beans start: carried test removed | vectors 2500 seed 7 mismatches 10
+CAUGHT   bomb start: counts only status 2 | vectors 2500 seed 7 mismatches 87
+CAUGHT   start: carrier link not stored | vectors 2500 seed 7 mismatches 138
+CAUGHT   cancel: hero link not cleared | vectors 2500 seed 7 mismatches 50
+MISSED   c62: spark window 60 -> 64 | vectors 2500 seed 7 mismatches 0
+CAUGHT   c62: fuse end does not free the hero | vectors 2500 seed 7 mismatches 2
+CAUGHT   c62: landing sound 0x18 -> 0x19 | vectors 2500 seed 7 mismatches 32
+CAUGHT   d30: attribute 4 only | vectors 2500 seed 7 mismatches 92
+CAUGHT   e12: grass cut omitted | ad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\disc-h\h3bin\run\mutdir_0\h3_models.py", line 226
+    pass : the grass cut, on the box stored at the end of the previous image
+         ^
+SyntaxError: invalid syntax
+
+CAUGHT   c73: release does not clear +0x24 | vectors 2500 seed 7 mismatches 93
+SHARD 0/8: 9/10 mutations caught; not found 0; missed: ['c62: spark window 60 -> 64']

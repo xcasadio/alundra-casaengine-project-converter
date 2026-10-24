@@ -1,0 +1,10 @@
+CAUGHT   bomb start: limit 3 -> 2 | vectors 2500 seed 7 mismatches 28
+CAUGHT   start: offset z uses y | vectors 2500 seed 7 mismatches 138
+CAUGHT   cancel: release (+0x24) test removed | vectors 2500 seed 7 mismatches 62
+CAUGHT   c62: spark period 7 -> 15 | vectors 2500 seed 7 mismatches 16
+CAUGHT   c62: status 3 at fuse end -> 2 | vectors 2500 seed 7 mismatches 8
+CAUGHT   c62: wall bounce without the once-only mark | vectors 2500 seed 7 mismatches 15
+CAUGHT   c62: idle anim of a free bomb at anim 0 does not return | vectors 2500 seed 7 mismatches 2
+CAUGHT   e12: no 0x40 flag | vectors 2500 seed 7 mismatches 39
+CAUGHT   c73: landing without the ground test | vectors 2500 seed 7 mismatches 32
+SHARD 7/8: 9/9 mutations caught; not found 0; missed: []

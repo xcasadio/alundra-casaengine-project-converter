@@ -1,0 +1,11 @@
+CAUGHT   bomb start: limit 3 -> 4 | vectors 2500 seed 7 mismatches 78
+CAUGHT   start: offset x not stored | vectors 2500 seed 7 mismatches 138
+CAUGHT   drv bomb: type 2 -> 1 | vectors 2500 seed 7 mismatches 115
+CAUGHT   c62: fuse decrement removed | vectors 2500 seed 7 mismatches 195
+PATTERN NOT FOUND c62: only one draw step
+CAUGHT   c62: wall bounce without the ForceZ test | vectors 2500 seed 7 mismatches 20
+CAUGHT   c62: hole bit +0x184 & 4 -> & 8 | vectors 2500 seed 7 mismatches 27
+CAUGHT   e12: flags keep 0x30 | vectors 2500 seed 7 mismatches 70
+CAUGHT   c73: landing sets status 4 | vectors 2500 seed 7 mismatches 25
+CAUGHT   e21: destroys on anim end only | vectors 2500 seed 7 mismatches 55
+SHARD 6/8: 9/9 mutations caught; not found 1; missed: []

@@ -1,0 +1,14 @@
+--- item 0x23 thrown into deep water
+t050 H ta=0x9 c2c=0x0 hp=10 inuse=0x23 x=181.0 y=200.0 | E1(ty2) st=2 ta=2 c28=0x0 gr=0 fl=1254222 pos=(182.5,200.0,36.0) | snd 26
+t051 H ta=0x9 c2c=0x0 hp=10 inuse=0x0 x=181.0 y=200.0
+t069 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=181.0 y=200.0
+t072 E1(ty2) st=2 ta=2 c28=0x0 gr=1 fl=1254222 pos=(215.5,200.0,0.0)
+t073 E1(ty2) st=4 ta=2 c28=0x0 gr=1 fl=1254222 pos=(215.5,200.0,0.0) | fx [0, 6, 0, 2148696004, 1, 0]
+t074 E1 gone
+--- item 0x1f thrown into deep water
+t050 H ta=0x9 c2c=0x0 hp=10 inuse=0x1f x=181.0 y=200.0 | E1(ty1) st=2 ta=2 c28=0x0 gr=0 fl=3351440 pos=(182.5,200.0,36.0) | snd 26
+t051 H ta=0x9 c2c=0x0 hp=10 inuse=0x0 x=181.0 y=200.0
+t069 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=181.0 y=200.0
+t072 E1(ty1) st=2 ta=2 c28=0x0 gr=1 fl=3351440 pos=(215.5,200.0,0.0)
+t073 E1(ty1) st=4 ta=2 c28=0x0 gr=1 fl=3351440 pos=(215.5,200.0,0.0) | fx [0, 6, 0, 2148696004, 1, 0]
+t074 E1 gone

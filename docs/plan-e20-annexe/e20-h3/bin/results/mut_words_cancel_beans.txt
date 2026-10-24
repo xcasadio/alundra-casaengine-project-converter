@@ -1,0 +1,11 @@
+cancel_beans  mutants   34 killed   25 survivors   9
+TOTAL mutants 34 killed 25 survivors 9
+SURVIVOR cancel_beans  80034ACC imm+1          addiu $sp, $sp, -0x20              -> addiu $sp, $sp, -0x1f
+SURVIVOR cancel_beans  80034ACC imm-1          addiu $sp, $sp, -0x20              -> addiu $sp, $sp, -0x21
+SURVIVOR cancel_beans  80034ADC store removed  sw $s0, 0x18($sp)                  -> nop 
+SURVIVOR cancel_beans  80034B18 addu<->subu    move $a0, $zero                    -> negu $a0, $zero
+SURVIVOR cancel_beans  80034B34 addu<->subu    move $a2, $a0                      -> subu $a2, $a0, $zero
+SURVIVOR cancel_beans  80034B3C addu<->subu    move $a0, $s0                      -> subu $a0, $s0, $zero
+SURVIVOR cancel_beans  80034B44 offset+4       lw $s0, 0x18($sp)                  -> lw $s0, 0x1c($sp)
+SURVIVOR cancel_beans  80034B48 imm+1          addiu $sp, $sp, 0x20               -> addiu $sp, $sp, 0x21
+SURVIVOR cancel_beans  80034B48 imm-1          addiu $sp, $sp, 0x20               -> addiu $sp, $sp, 0x1f

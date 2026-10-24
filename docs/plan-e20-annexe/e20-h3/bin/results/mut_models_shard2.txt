@@ -1,0 +1,11 @@
+CAUGHT   beans start: in-use test removed | vectors 2500 seed 7 mismatches 37
+CAUGHT   bomb start: only 63 slots | vectors 2500 seed 7 mismatches 9
+CAUGHT   driver: type test removed | vectors 2500 seed 7 mismatches 168
+CAUGHT   cancel beans: effect 8 -> 12 | vectors 2500 seed 7 mismatches 29
+CAUGHT   c62: spark x range 0x30001 -> 0x30000 | vectors 2500 seed 7 mismatches 18
+CAUGHT   c62: flight anim 2 -> 3 | vectors 2500 seed 7 mismatches 26
+CAUGHT   c62: landing test needs ground only | vectors 2500 seed 7 mismatches 20
+CAUGHT   d30: attribute 10 -> 11 | vectors 2500 seed 7 mismatches 63
+CAUGHT   e12: hole destroy omitted | vectors 2500 seed 7 mismatches 21
+CAUGHT   e21: pot anim test removed | vectors 2500 seed 7 mismatches 11
+SHARD 2/8: 10/10 mutations caught; not found 0; missed: []

@@ -1,0 +1,91 @@
+CAUGHT   beans start: carried test removed | vectors 2500 seed 7 mismatches 10
+CAUGHT   bomb start: counts only status 2 | vectors 2500 seed 7 mismatches 87
+CAUGHT   start: carrier link not stored | vectors 2500 seed 7 mismatches 138
+CAUGHT   cancel: hero link not cleared | vectors 2500 seed 7 mismatches 50
+MISSED   c62: spark window 60 -> 64 | vectors 2500 seed 7 mismatches 0
+CAUGHT   c62: fuse end does not free the hero | vectors 2500 seed 7 mismatches 2
+CAUGHT   c62: landing sound 0x18 -> 0x19 | vectors 2500 seed 7 mismatches 32
+CAUGHT   d30: attribute 4 only | vectors 2500 seed 7 mismatches 92
+CAUGHT   e12: grass cut omitted | ad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\disc-h\h3bin\run\mutdir_0\h3_models.py", line 226
+    pass : the grass cut, on the box stored at the end of the previous image
+         ^
+SyntaxError: invalid syntax
+
+CAUGHT   c73: release does not clear +0x24 | vectors 2500 seed 7 mismatches 93
+SHARD 0/8: 9/10 mutations caught; not found 0; missed: ['c62: spark window 60 -> 64']
+CAUGHT   beans start: slope 4 -> 3 | vectors 2500 seed 7 mismatches 30
+CAUGHT   bomb start: the hero slot is not counted | vectors 2500 seed 7 mismatches 12
+CAUGHT   start: bomb sprite 2 -> 1 | vectors 2500 seed 7 mismatches 47
+CAUGHT   cancel: type test removed | vectors 2500 seed 7 mismatches 93
+CAUGHT   c62: spark effect 9 -> 8 | vectors 2500 seed 7 mismatches 36
+CAUGHT   c62: carried anim 0 -> 1 | vectors 2500 seed 7 mismatches 16
+CAUGHT   c62: landing leaves the mark | vectors 2500 seed 7 mismatches 10
+CAUGHT   d30: attribute 6 -> 7 | vectors 2500 seed 7 mismatches 45
+CAUGHT   e12: destroys on anim end only | vectors 2500 seed 7 mismatches 40
+CAUGHT   e21: pot type 0x199 -> 0x198 | vectors 2500 seed 7 mismatches 19
+SHARD 1/8: 10/10 mutations caught; not found 0; missed: []
+CAUGHT   beans start: in-use test removed | vectors 2500 seed 7 mismatches 37
+CAUGHT   bomb start: only 63 slots | vectors 2500 seed 7 mismatches 9
+CAUGHT   driver: type test removed | vectors 2500 seed 7 mismatches 168
+CAUGHT   cancel beans: effect 8 -> 12 | vectors 2500 seed 7 mismatches 29
+CAUGHT   c62: spark x range 0x30001 -> 0x30000 | vectors 2500 seed 7 mismatches 18
+CAUGHT   c62: flight anim 2 -> 3 | vectors 2500 seed 7 mismatches 26
+CAUGHT   c62: landing test needs ground only | vectors 2500 seed 7 mismatches 20
+CAUGHT   d30: attribute 10 -> 11 | vectors 2500 seed 7 mismatches 63
+CAUGHT   e12: hole destroy omitted | vectors 2500 seed 7 mismatches 21
+CAUGHT   e21: pot anim test removed | vectors 2500 seed 7 mismatches 11
+SHARD 2/8: 10/10 mutations caught; not found 0; missed: []
+CAUGHT   beans start: sprite 1 -> 2 | vectors 2500 seed 7 mismatches 108
+CAUGHT   bomb start: fuse 0xF0 -> 0xEF | vectors 2500 seed 7 mismatches 43
+CAUGHT   driver: slope 4 -> 3 | vectors 2500 seed 7 mismatches 46
+CAUGHT   cancel bomb: effect 12 -> 8 | vectors 2500 seed 7 mismatches 37
+CAUGHT   c62: spark y range 0x20001 -> 0x20000 | vectors 2500 seed 7 mismatches 16
+CAUGHT   c62: release does not clear +0x24 | vectors 2500 seed 7 mismatches 26
+CAUGHT   c62: pit mask 0x1001 -> 0x1000 | vectors 2500 seed 7 mismatches 10
+CAUGHT   d30: full byte instead of low nibble | vectors 2500 seed 7 mismatches 81
+CAUGHT   c73: carried anim 0 -> 1 | vectors 2500 seed 7 mismatches 52
+CAUGHT   e21: pot anim 1 -> 2 | vectors 2500 seed 7 mismatches 6
+SHARD 3/8: 10/10 mutations caught; not found 0; missed: []
+CAUGHT   beans start: no sound on a null spawn becomes sound 3 | vectors 2500 seed 7 mismatches 13
+CAUGHT   bomb start: fuse written on the hero | vectors 2500 seed 7 mismatches 43
+CAUGHT   driver: returns 0 after the cancel | vectors 2500 seed 7 mismatches 32
+CAUGHT   cancel: effect z offset | vectors 2500 seed 7 mismatches 66
+CAUGHT   c62: spark x offset -0x18000 -> -0x10000 | vectors 2500 seed 7 mismatches 30
+CAUGHT   c62: release keeps the hero link | vectors 2500 seed 7 mismatches 15
+CAUGHT   c62: blocked on the ground over a pit does not explode | vectors 2500 seed 7 mismatches 22
+CAUGHT   d30: status 3 -> 4 | vectors 2500 seed 7 mismatches 130
+CAUGHT   c73: flight anim 2 -> 3 | vectors 2500 seed 7 mismatches 93
+CAUGHT   e21: the bean is not destroyed on the pot | vectors 2500 seed 7 mismatches 8
+SHARD 4/8: 10/10 mutations caught; not found 0; missed: []
+CAUGHT   beans start: y and z swapped | vectors 2500 seed 7 mismatches 108
+CAUGHT   start: anim 5 <-> 0xB swapped | vectors 2500 seed 7 mismatches 138
+CAUGHT   driver: nothing carried returns 0 | vectors 2500 seed 7 mismatches 140
+CAUGHT   cancel: destroy omitted | vectors 2500 seed 7 mismatches 66
+CAUGHT   c62: spark y offset -0x10000 -> -0x8000 | vectors 2500 seed 7 mismatches 30
+CAUGHT   c62: wall bounce quarter turn | vectors 2500 seed 7 mismatches 36
+CAUGHT   c62: landing over a pit still goes idle | vectors 2500 seed 7 mismatches 23
+CAUGHT   e12: anim 1 -> 2 | vectors 2500 seed 7 mismatches 128
+CAUGHT   c73: release flag 0x10 -> 0x20 | vectors 2500 seed 7 mismatches 89
+CAUGHT   e21: support read at +0x128 | vectors 2500 seed 7 mismatches 8
+SHARD 5/8: 10/10 mutations caught; not found 0; missed: []
+CAUGHT   bomb start: limit 3 -> 4 | vectors 2500 seed 7 mismatches 78
+CAUGHT   start: offset x not stored | vectors 2500 seed 7 mismatches 138
+CAUGHT   drv bomb: type 2 -> 1 | vectors 2500 seed 7 mismatches 115
+CAUGHT   c62: fuse decrement removed | vectors 2500 seed 7 mismatches 195
+PATTERN NOT FOUND c62: only one draw step
+CAUGHT   c62: wall bounce without the ForceZ test | vectors 2500 seed 7 mismatches 20
+CAUGHT   c62: hole bit +0x184 & 4 -> & 8 | vectors 2500 seed 7 mismatches 27
+CAUGHT   e12: flags keep 0x30 | vectors 2500 seed 7 mismatches 70
+CAUGHT   c73: landing sets status 4 | vectors 2500 seed 7 mismatches 25
+CAUGHT   e21: destroys on anim end only | vectors 2500 seed 7 mismatches 55
+SHARD 6/8: 9/9 mutations caught; not found 1; missed: []
+CAUGHT   bomb start: limit 3 -> 2 | vectors 2500 seed 7 mismatches 28
+CAUGHT   start: offset z uses y | vectors 2500 seed 7 mismatches 138
+CAUGHT   cancel: release (+0x24) test removed | vectors 2500 seed 7 mismatches 62
+CAUGHT   c62: spark period 7 -> 15 | vectors 2500 seed 7 mismatches 16
+CAUGHT   c62: status 3 at fuse end -> 2 | vectors 2500 seed 7 mismatches 8
+CAUGHT   c62: wall bounce without the once-only mark | vectors 2500 seed 7 mismatches 15
+CAUGHT   c62: idle anim of a free bomb at anim 0 does not return | vectors 2500 seed 7 mismatches 2
+CAUGHT   e12: no 0x40 flag | vectors 2500 seed 7 mismatches 39
+CAUGHT   c73: landing without the ground test | vectors 2500 seed 7 mismatches 32
+SHARD 7/8: 9/9 mutations caught; not found 0; missed: []

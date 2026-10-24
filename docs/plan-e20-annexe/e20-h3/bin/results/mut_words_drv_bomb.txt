@@ -1,0 +1,7 @@
+drv_bomb      mutants   24 killed   19 survivors   5
+TOTAL mutants 24 killed 19 survivors 5
+SURVIVOR drv_bomb      800352C4 imm+1          addiu $sp, $sp, -0x18              -> addiu $sp, $sp, -0x17
+SURVIVOR drv_bomb      800352C4 imm-1          addiu $sp, $sp, -0x18              -> addiu $sp, $sp, -0x19
+SURVIVOR drv_bomb      80035300 addu<->subu    move $v0, $zero                    -> negu $v0, $zero
+SURVIVOR drv_bomb      80035314 imm+1          addiu $sp, $sp, 0x18               -> addiu $sp, $sp, 0x19
+SURVIVOR drv_bomb      80035314 imm-1          addiu $sp, $sp, 0x18               -> addiu $sp, $sp, 0x17

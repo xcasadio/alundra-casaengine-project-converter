@@ -1,0 +1,13 @@
+== charged arrow 7 (William) wall col 15, hero x0 sweep; S = first tick of the type-7 entity (release R=96)
+  hero x0=96 : S=105 ForceAdjusted at S+43 (x=349.000), status 4 at S+44
+  hero x0=97 : S=105 ForceAdjusted at S+42 (x=349.000), status 4 at S+43
+  hero x0=98 : S=105 ForceAdjusted at S+43 (x=349.000), status 4 at S+44
+  hero x0=99 : S=105 ForceAdjusted at S+42 (x=349.000), status 4 at S+43
+  hero x0=100 : S=105 ForceAdjusted at S+42 (x=349.000), status 4 at S+43
+  hero x0=101 : S=105 ForceAdjusted at S+43 (x=349.000), status 4 at S+44
+  hero x0=102 : S=105 ForceAdjusted at S+42 (x=349.000), status 4 at S+43
+  hero x0=103 : S=105 ForceAdjusted at S+41 (x=349.000), status 4 at S+42
+  hero x0=104 : S=105 ForceAdjusted at S+42 (x=349.000), status 4 at S+43
+  hero x0=105 : S=105 ForceAdjusted at S+41 (x=349.000), status 4 at S+42
+  hero x0=106 : S=105 ForceAdjusted at S+41 (x=349.000), status 4 at S+42
+  hero x0=107 : S=105 ForceAdjusted at S+42 (x=349.000), status 4 at S+43

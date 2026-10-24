@@ -1,0 +1,2 @@
+C73           mutants   29 killed   29 survivors   0
+TOTAL mutants 29 killed 29 survivors 0

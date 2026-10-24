@@ -1,0 +1,29 @@
+vectors 20000 seed 100 mismatches 0
+   1671 C62
+   1639 C73
+   1619 D30
+   1644 E12
+   1651 E21
+   1748 cancel_beans
+   1618 cancel_bomb
+   1648 dispatch
+   385 drv_beans result=0
+   1330 drv_beans result=1
+   351 drv_bomb result=0
+   1361 drv_bomb result=1
+   865 start_beans result=0
+   813 start_beans result=1
+   353 start_bomb result=0
+   1304 start_bomb result=1
+coverage start_beans    63/ 63  never executed: 
+coverage start_bomb     81/ 81  never executed: 
+coverage drv_beans      23/ 23  never executed: 
+coverage drv_bomb       23/ 23  never executed: 
+coverage cancel_beans   34/ 34  never executed: 
+coverage cancel_bomb    34/ 34  never executed: 
+coverage dispatch       50/ 62  never executed: 80035148 8003514C 80035150 80035154 80035158 8003515C 80035160 80035164 80035168 8003516C 80035170 80035174
+coverage C62           186/186  never executed: 
+coverage D30            18/ 18  never executed: 
+coverage E12            36/ 36  never executed: 
+coverage C73            27/ 27  never executed: 
+coverage E21            43/ 43  never executed: 

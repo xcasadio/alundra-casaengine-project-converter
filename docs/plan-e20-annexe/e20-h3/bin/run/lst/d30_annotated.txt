@@ -1,0 +1,21 @@
+; function 0x8007E79C..0x8007E7E4 (18 words)
+8007E79C  8c820224  lw       $v0, 0x224($a0)               ; a0.TouchingEntity
+8007E7A0  00000000  nop      
+8007E7A4  8c4201c8  lw       $v0, 0x1c8($v0)               ; v0.CurAttack
+8007E7A8  00000000  nop      
+8007E7AC  90420000  lbu      $v0, ($v0)
+8007E7B0  00000000  nop      
+8007E7B4  3043000f  andi     $v1, $v0, 0xf
+8007E7B8  24020004  addiu    $v0, $zero, 4
+8007E7BC  10620005  beq      $v1, $v0, 0x8007e7d4   -> L_8007E7D4
+8007E7C0  24020006  addiu    $v0, $zero, 6
+8007E7C4  10620003  beq      $v1, $v0, 0x8007e7d4   -> L_8007E7D4
+8007E7C8  2402000a  addiu    $v0, $zero, 0xa
+8007E7CC  14620003  bne      $v1, $v0, 0x8007e7dc   -> L_8007E7DC
+8007E7D0  00000000  nop      
+L_8007E7D4:
+8007E7D4  24020003  addiu    $v0, $zero, 3
+8007E7D8  ac820010  sw       $v0, 0x10($a0)                ; a0.Status
+L_8007E7DC:
+8007E7DC  03e00008  jr       $ra
+8007E7E0  00000000  nop      

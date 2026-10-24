@@ -1,0 +1,11 @@
+CAUGHT   beans start: slope 4 -> 3 | vectors 2500 seed 7 mismatches 30
+CAUGHT   bomb start: the hero slot is not counted | vectors 2500 seed 7 mismatches 12
+CAUGHT   start: bomb sprite 2 -> 1 | vectors 2500 seed 7 mismatches 47
+CAUGHT   cancel: type test removed | vectors 2500 seed 7 mismatches 93
+CAUGHT   c62: spark effect 9 -> 8 | vectors 2500 seed 7 mismatches 36
+CAUGHT   c62: carried anim 0 -> 1 | vectors 2500 seed 7 mismatches 16
+CAUGHT   c62: landing leaves the mark | vectors 2500 seed 7 mismatches 10
+CAUGHT   d30: attribute 6 -> 7 | vectors 2500 seed 7 mismatches 45
+CAUGHT   e12: destroys on anim end only | vectors 2500 seed 7 mismatches 40
+CAUGHT   e21: pot type 0x199 -> 0x198 | vectors 2500 seed 7 mismatches 19
+SHARD 1/8: 10/10 mutations caught; not found 0; missed: []

@@ -1,0 +1,14 @@
+dispatch      mutants   29 killed   17 survivors  12
+TOTAL mutants 29 killed 17 survivors 12
+SURVIVOR dispatch      800350C8 imm+1          addiu $sp, $sp, -0x18              -> addiu $sp, $sp, -0x17
+SURVIVOR dispatch      800350C8 imm-1          addiu $sp, $sp, -0x18              -> addiu $sp, $sp, -0x19
+SURVIVOR dispatch      800350D8 imm-1          sltiu $v0, $v1, 0x14               -> sltiu $v0, $v1, 0x13
+SURVIVOR dispatch      80035104 offset+4       lw $a0, 0x7164($v0)                -> lw $a0, 0x7168($v0)
+SURVIVOR dispatch      8003511C offset+4       lw $a0, 0x7164($v0)                -> lw $a0, 0x7168($v0)
+SURVIVOR dispatch      80035134 offset+4       lw $a0, 0x7164($v0)                -> lw $a0, 0x7168($v0)
+SURVIVOR dispatch      8003514C offset+4       lw $a0, 0x7164($v0)                -> lw $a0, 0x7168($v0)
+SURVIVOR dispatch      80035164 offset+4       lw $a0, 0x7164($v0)                -> lw $a0, 0x7168($v0)
+SURVIVOR dispatch      8003517C offset+4       lw $a0, 0x7164($v0)                -> lw $a0, 0x7168($v0)
+SURVIVOR dispatch      80035194 offset+4       lw $a0, 0x7164($v0)                -> lw $a0, 0x7168($v0)
+SURVIVOR dispatch      800351AC imm+1          addiu $sp, $sp, 0x18               -> addiu $sp, $sp, 0x19
+SURVIVOR dispatch      800351AC imm-1          addiu $sp, $sp, 0x18               -> addiu $sp, $sp, 0x17

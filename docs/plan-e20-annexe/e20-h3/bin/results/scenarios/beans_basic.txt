@@ -1,0 +1,13 @@
+t001 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=201.2 y=200.0
+t004 H ta=0x5 c2c=0x80127fc4 hp=10 inuse=0x1f x=206.1 y=200.0 | E1(ty1) st=1 ta=0 c28=0x80127d30 gr=0 aend=0 t24=0 fl=3351424 pos=(206.1,200.0,0.0) | snd 44
+t005 E1(ty1) st=2 ta=0 c28=0x80127d30 gr=0 aend=0 t24=0 fl=3351424 pos=(206.1,200.0,1.0)
+t040 H ta=0xc c2c=0x80127fc4 hp=10 inuse=0x1f x=206.1 y=200.0
+t050 H ta=0x9 c2c=0x0 hp=10 inuse=0x1f x=206.1 y=200.0 | E1(ty1) st=2 ta=2 c28=0x0 gr=0 aend=0 t24=0 fl=3351440 pos=(207.6,200.0,36.0) | snd 26
+t051 H ta=0x9 c2c=0x0 hp=10 inuse=0x0 x=206.1 y=200.0
+t069 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=206.1 y=200.0
+t072 E1(ty1) st=2 ta=2 c28=0x0 gr=1 aend=0 t24=0 fl=3351440 pos=(240.6,200.0,0.0)
+t073 E1(ty1) st=3 ta=1 c28=0x0 gr=1 aend=0 t24=0 fl=3351488 pos=(240.6,200.0,0.0)
+t074 E1(ty1) st=3 ta=1 c28=0x0 gr=1 aend=1 t24=0 fl=3351488 pos=(240.6,200.0,0.0)
+t075 E1(ty1) st=4 ta=1 c28=0x0 gr=1 aend=1 t24=0 fl=3351488 pos=(240.6,200.0,0.0) | fx [0, 8, 0, 2148696004, 1, 0]
+t076 E1 gone
+journal (non-sound): [(75, 'effect_3BE74', [0, 8, 0, 2148696004, 1, 0, 0])]

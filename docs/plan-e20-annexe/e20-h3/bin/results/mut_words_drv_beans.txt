@@ -1,0 +1,7 @@
+drv_beans     mutants   22 killed   17 survivors   5
+TOTAL mutants 22 killed 17 survivors 5
+SURVIVOR drv_beans     80035204 imm+1          addiu $sp, $sp, -0x18              -> addiu $sp, $sp, -0x17
+SURVIVOR drv_beans     80035204 imm-1          addiu $sp, $sp, -0x18              -> addiu $sp, $sp, -0x19
+SURVIVOR drv_beans     80035240 addu<->subu    move $v0, $zero                    -> negu $v0, $zero
+SURVIVOR drv_beans     80035254 imm+1          addiu $sp, $sp, 0x18               -> addiu $sp, $sp, 0x19
+SURVIVOR drv_beans     80035254 imm-1          addiu $sp, $sp, 0x18               -> addiu $sp, $sp, 0x17

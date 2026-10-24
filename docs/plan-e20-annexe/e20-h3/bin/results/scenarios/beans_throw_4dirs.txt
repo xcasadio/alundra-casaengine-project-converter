@@ -1,0 +1,64 @@
+=== item 0x1f facing right standing
+  t004 bomb st=1 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=0 hitc=0 pos=(206.09,200.00,0.00) | hero ta=0x5 pos=(206.09,200.00,0.00) c2c=0x80127fc4
+  t005 bomb st=2 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=1 hitc=0 pos=(206.09,200.00,1.00) | hero ta=0x5 pos=(206.09,200.00,0.00) c2c=0x80127fc4
+  t050 bomb st=2 ta=2 dr=24 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(207.59,200.00,36.00) | hero ta=0x9 pos=(206.09,200.00,0.00) c2c=0x0
+  t072 bomb st=2 ta=2 dr=24 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(240.59,200.00,0.00) | hero ta=0x0 pos=(206.09,200.00,0.00) c2c=0x0
+  t073 bomb st=3 ta=1 dr=24 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(240.59,200.00,0.00) | hero ta=0x0 pos=(206.09,200.00,0.00) c2c=0x0
+  t075 bomb st=4 ta=1 dr=24 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(240.59,200.00,0.00) | hero ta=0x0 pos=(206.09,200.00,0.00) c2c=0x0
+  t076 bomb st=0 ta=0 dr=0 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(0.00,0.00,0.00) | hero ta=0x0 pos=(206.09,200.00,0.00) c2c=0x0
+=== item 0x1f facing right walking
+  t004 bomb st=1 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=0 hitc=0 pos=(206.09,200.00,0.00) | hero ta=0x5 pos=(206.09,200.00,0.00) c2c=0x80127fc4
+  t005 bomb st=2 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=1 hitc=0 pos=(206.09,200.00,1.00) | hero ta=0x5 pos=(206.09,200.00,0.00) c2c=0x80127fc4
+  t050 bomb st=2 ta=2 dr=24 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(207.59,200.00,36.00) | hero ta=0x9 pos=(206.09,200.00,0.00) c2c=0x0
+  t072 bomb st=2 ta=2 dr=24 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(240.59,200.00,0.00) | hero ta=0x1 pos=(212.19,200.00,0.00) c2c=0x0
+  t073 bomb st=3 ta=1 dr=24 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(240.59,200.00,0.00) | hero ta=0x1 pos=(214.62,200.00,0.00) c2c=0x0
+  t075 bomb st=4 ta=1 dr=24 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(240.59,200.00,0.00) | hero ta=0x1 pos=(219.50,200.00,0.00) c2c=0x0
+  t076 bomb st=0 ta=0 dr=0 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(0.00,0.00,0.00) | hero ta=0x1 pos=(221.94,200.00,0.00) c2c=0x0
+=== item 0x1f facing left standing
+  t004 bomb st=1 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=0 hitc=0 pos=(193.91,200.00,0.00) | hero ta=0x5 pos=(193.91,200.00,0.00) c2c=0x80127fc4
+  t005 bomb st=2 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=1 hitc=0 pos=(193.91,200.00,1.00) | hero ta=0x5 pos=(193.91,200.00,0.00) c2c=0x80127fc4
+  t050 bomb st=2 ta=2 dr=8 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(192.41,200.00,36.00) | hero ta=0x9 pos=(193.91,200.00,0.00) c2c=0x0
+  t072 bomb st=2 ta=2 dr=8 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(159.41,200.00,0.00) | hero ta=0x0 pos=(193.91,200.00,0.00) c2c=0x0
+  t073 bomb st=3 ta=1 dr=8 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(159.41,200.00,0.00) | hero ta=0x0 pos=(193.91,200.00,0.00) c2c=0x0
+  t075 bomb st=4 ta=1 dr=8 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(159.41,200.00,0.00) | hero ta=0x0 pos=(193.91,200.00,0.00) c2c=0x0
+  t076 bomb st=0 ta=0 dr=0 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(0.00,0.00,0.00) | hero ta=0x0 pos=(193.91,200.00,0.00) c2c=0x0
+=== item 0x1f facing left walking
+  t004 bomb st=1 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=0 hitc=0 pos=(193.91,200.00,0.00) | hero ta=0x5 pos=(193.91,200.00,0.00) c2c=0x80127fc4
+  t005 bomb st=2 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=1 hitc=0 pos=(193.91,200.00,1.00) | hero ta=0x5 pos=(193.91,200.00,0.00) c2c=0x80127fc4
+  t050 bomb st=2 ta=2 dr=8 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(192.41,200.00,36.00) | hero ta=0x9 pos=(193.91,200.00,0.00) c2c=0x0
+  t072 bomb st=2 ta=2 dr=8 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(159.41,200.00,0.00) | hero ta=0x1 pos=(187.81,200.00,0.00) c2c=0x0
+  t073 bomb st=3 ta=1 dr=8 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(159.41,200.00,0.00) | hero ta=0x1 pos=(185.38,200.00,0.00) c2c=0x0
+  t075 bomb st=4 ta=1 dr=8 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(159.41,200.00,0.00) | hero ta=0x1 pos=(180.50,200.00,0.00) c2c=0x0
+  t076 bomb st=0 ta=0 dr=0 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(0.00,0.00,0.00) | hero ta=0x1 pos=(178.06,200.00,0.00) c2c=0x0
+=== item 0x1f facing up standing
+  t004 bomb st=1 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=0 hitc=0 pos=(200.00,195.94,0.00) | hero ta=0x5 pos=(200.00,195.94,0.00) c2c=0x80127fc4
+  t005 bomb st=2 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=1 hitc=0 pos=(200.00,195.94,1.00) | hero ta=0x5 pos=(200.00,195.94,0.00) c2c=0x80127fc4
+  t050 bomb st=2 ta=2 dr=16 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(200.00,194.94,36.00) | hero ta=0x9 pos=(200.00,195.94,0.00) c2c=0x0
+  t072 bomb st=2 ta=2 dr=16 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,172.94,0.00) | hero ta=0x0 pos=(200.00,195.94,0.00) c2c=0x0
+  t073 bomb st=3 ta=1 dr=16 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,172.94,0.00) | hero ta=0x0 pos=(200.00,195.94,0.00) c2c=0x0
+  t075 bomb st=4 ta=1 dr=16 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,172.94,0.00) | hero ta=0x0 pos=(200.00,195.94,0.00) c2c=0x0
+  t076 bomb st=0 ta=0 dr=0 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(0.00,0.00,0.00) | hero ta=0x0 pos=(200.00,195.94,0.00) c2c=0x0
+=== item 0x1f facing up walking
+  t004 bomb st=1 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=0 hitc=0 pos=(200.00,195.94,0.00) | hero ta=0x5 pos=(200.00,195.94,0.00) c2c=0x80127fc4
+  t005 bomb st=2 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=1 hitc=0 pos=(200.00,195.94,1.00) | hero ta=0x5 pos=(200.00,195.94,0.00) c2c=0x80127fc4
+  t050 bomb st=2 ta=2 dr=16 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(200.00,194.94,36.00) | hero ta=0x9 pos=(200.00,195.94,0.00) c2c=0x0
+  t072 bomb st=2 ta=2 dr=16 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,172.94,0.00) | hero ta=0x1 pos=(200.00,191.88,0.00) c2c=0x0
+  t073 bomb st=3 ta=1 dr=16 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,172.94,0.00) | hero ta=0x1 pos=(200.00,190.25,0.00) c2c=0x0
+  t075 bomb st=4 ta=1 dr=16 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,172.94,0.00) | hero ta=0x1 pos=(200.00,187.94,0.00) c2c=0x0
+  t076 bomb st=0 ta=0 dr=0 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(0.00,0.00,0.00) | hero ta=0x1 pos=(200.00,186.31,0.00) c2c=0x0
+=== item 0x1f facing down standing
+  t004 bomb st=1 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=0 hitc=0 pos=(200.00,204.06,0.00) | hero ta=0x5 pos=(200.00,204.06,0.00) c2c=0x80127fc4
+  t005 bomb st=2 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=1 hitc=0 pos=(200.00,204.06,1.00) | hero ta=0x5 pos=(200.00,204.06,0.00) c2c=0x80127fc4
+  t050 bomb st=2 ta=2 dr=0 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(200.00,205.06,36.00) | hero ta=0x9 pos=(200.00,204.06,0.00) c2c=0x0
+  t072 bomb st=2 ta=2 dr=0 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,227.06,0.00) | hero ta=0x0 pos=(200.00,204.06,0.00) c2c=0x0
+  t073 bomb st=3 ta=1 dr=0 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,227.06,0.00) | hero ta=0x0 pos=(200.00,204.06,0.00) c2c=0x0
+  t075 bomb st=4 ta=1 dr=0 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,227.06,0.00) | hero ta=0x0 pos=(200.00,204.06,0.00) c2c=0x0
+  t076 bomb st=0 ta=0 dr=0 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(0.00,0.00,0.00) | hero ta=0x0 pos=(200.00,204.06,0.00) c2c=0x0
+=== item 0x1f facing down walking
+  t004 bomb st=1 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=0 hitc=0 pos=(200.00,204.06,0.00) | hero ta=0x5 pos=(200.00,204.06,0.00) c2c=0x80127fc4
+  t005 bomb st=2 ta=0 dr=0 c28=0x80127d30 t24=0 gr=0 adj=1 hitc=0 pos=(200.00,204.06,1.00) | hero ta=0x5 pos=(200.00,204.06,0.00) c2c=0x80127fc4
+  t050 bomb st=2 ta=2 dr=0 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(200.00,205.06,36.00) | hero ta=0x9 pos=(200.00,204.06,0.00) c2c=0x0
+  t072 bomb st=2 ta=2 dr=0 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,227.06,0.00) | hero ta=0x1 pos=(200.00,208.12,0.00) c2c=0x0
+  t073 bomb st=3 ta=1 dr=0 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,227.06,0.00) | hero ta=0x1 pos=(200.00,209.75,0.00) c2c=0x0
+  t075 bomb st=4 ta=1 dr=0 c28=0x0 t24=0 gr=1 adj=0 hitc=0 pos=(200.00,227.06,0.00) | hero ta=0x1 pos=(200.00,212.06,0.00) c2c=0x0
+  t076 bomb st=0 ta=0 dr=0 c28=0x0 t24=0 gr=0 adj=0 hitc=0 pos=(0.00,0.00,0.00) | hero ta=0x1 pos=(200.00,213.69,0.00) c2c=0x0

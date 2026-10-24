@@ -1,0 +1,8 @@
+arrow3_wall            two interpreters identical over 75 ticks: True  (2.1s)
+arrow4_target          two interpreters identical over 60 ticks: True  (1.9s)
+charged7_grass_wall    two interpreters identical over 160 ticks: True  (3.7s)
+fire11_step32          two interpreters identical over 80 ticks: True  (2.0s)
+fire11_step16          two interpreters identical over 80 ticks: True  (2.0s)
+ice14_target           two interpreters identical over 80 ticks: True  (2.3s)
+fire11_water           two interpreters identical over 40 ticks: True  (1.2s)
+fire12_wall            two interpreters identical over 140 ticks: True  (3.2s)

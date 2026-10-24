@@ -1,0 +1,202 @@
+8003BCD8: 30620080  andi   $v0, $v1, 0x80
+8003BCDC: 10400018  beqz   $v0, 0x8003bd40
+8003BCE0: 24820003  addiu  $v0, $a0, 3
+8003BCE4: AE020074  sw     $v0, 0x74($s0)
+8003BCE8: 3062007F  andi   $v0, $v1, 0x7f
+8003BCEC: A202007C  sb     $v0, 0x7c($s0)
+8003BCF0: 90820002  lbu    $v0, 2($a0)
+8003BCF4: 90830001  lbu    $v1, 1($a0)
+8003BCF8: 00021200  sll    $v0, $v0, 8
+8003BCFC: 00431821  addu   $v1, $v0, $v1
+8003BD00: 3402FFFF  ori    $v0, $zero, 0xffff
+8003BD04: 1062000A  beq    $v1, $v0, 0x8003bd30
+8003BD08: 00031040  sll    $v0, $v1, 1
+8003BD0C: 00A21021  addu   $v0, $a1, $v0
+8003BD10: 24430002  addiu  $v1, $v0, 2
+8003BD14: AE430000  sw     $v1, ($s2)
+8003BD18: 90430000  lbu    $v1, ($v0)
+8003BD1C: 00000000  nop    
+8003BD20: AE430014  sw     $v1, 0x14($s2)
+8003BD24: 90420001  lbu    $v0, 1($v0)
+8003BD28: 0800EF6E  j      0x8003bdb8
+8003BD2C: AE420018  sw     $v0, 0x18($s2)
+8003BD30: AE400000  sw     $zero, ($s2)
+8003BD34: AE400014  sw     $zero, 0x14($s2)
+8003BD38: 0800EF6E  j      0x8003bdb8
+8003BD3C: AE400018  sw     $zero, 0x18($s2)
+8003BD40: 10600005  beqz   $v1, 0x8003bd58
+8003BD44: 24020001  addiu  $v0, $zero, 1
+8003BD48: 10620008  beq    $v1, $v0, 0x8003bd6c
+8003BD4C: 3C048002  lui    $a0, 0x8002
+8003BD50: 0800EF5E  j      0x8003bd78
+8003BD54: 00000000  nop    
+8003BD58: 240200FF  addiu  $v0, $zero, 0xff
+8003BD5C: A202007C  sb     $v0, 0x7c($s0)
+8003BD60: 24020001  addiu  $v0, $zero, 1
+8003BD64: 0800EF6E  j      0x8003bdb8
+8003BD68: A202007D  sb     $v0, 0x7d($s0)
+8003BD6C: 8E020078  lw     $v0, 0x78($s0)
+8003BD70: 0800EF32  j      0x8003bcc8
+8003BD74: AE020074  sw     $v0, 0x74($s0)
+8003BD78: 0C02057B  jal    0x800815ec
+8003BD7C: 24843B28  addiu  $a0, $a0, 0x3b28   ; =0x80023B28
+8003BD80: 3C048002  lui    $a0, 0x8002
+8003BD84: 8E050000  lw     $a1, ($s0)
+8003BD88: 0C02057F  jal    0x800815fc
+8003BD8C: 24843B44  addiu  $a0, $a0, 0x3b44   ; =0x80023B44
+8003BD90: 3C048002  lui    $a0, 0x8002
+8003BD94: 9205006E  lbu    $a1, 0x6e($s0)
+8003BD98: 0C02057F  jal    0x800815fc
+8003BD9C: 24843B50  addiu  $a0, $a0, 0x3b50   ; =0x80023B50
+8003BDA0: 3C048002  lui    $a0, 0x8002
+8003BDA4: 92050070  lbu    $a1, 0x70($s0)
+8003BDA8: 0C02057F  jal    0x800815fc
+8003BDAC: 24843B5C  addiu  $a0, $a0, 0x3b5c   ; =0x80023B5C
+8003BDB0: 0C020C78  jal    0x800831e0
+8003BDB4: 24040001  addiu  $a0, $zero, 1
+8003BDB8: 8FBF0028  lw     $ra, 0x28($sp)
+8003BDBC: 8FB30024  lw     $s3, 0x24($sp)
+8003BDC0: 8FB20020  lw     $s2, 0x20($sp)
+8003BDC4: 8FB1001C  lw     $s1, 0x1c($sp)
+8003BDC8: 8FB00018  lw     $s0, 0x18($sp)
+8003BDCC: 27BD0030  addiu  $sp, $sp, 0x30
+8003BDD0: 03E00008  jr     $ra
+8003BDD4: 00000000  nop    
+8003BDD8: 27BDFFC0  addiu  $sp, $sp, -0x40
+8003BDDC: AFB1002C  sw     $s1, 0x2c($sp)
+8003BDE0: 00808821  move   $s1, $a0
+8003BDE4: AFB20030  sw     $s2, 0x30($sp)
+8003BDE8: 00A09021  move   $s2, $a1
+8003BDEC: AFB30034  sw     $s3, 0x34($sp)
+8003BDF0: 00C09821  move   $s3, $a2
+8003BDF4: AFB40038  sw     $s4, 0x38($sp)
+8003BDF8: 00E0A021  move   $s4, $a3
+8003BDFC: AFBF003C  sw     $ra, 0x3c($sp)
+8003BE00: 0C00EE71  jal    0x8003b9c4
+8003BE04: AFB00028  sw     $s0, 0x28($sp)
+8003BE08: 00408021  move   $s0, $v0
+8003BE0C: 1200000F  beqz   $s0, 0x8003be4c
+8003BE10: 02002021  move   $a0, $s0
+8003BE14: 00002821  move   $a1, $zero
+8003BE18: 8FA20050  lw     $v0, 0x50($sp)
+8003BE1C: 2406FFFF  addiu  $a2, $zero, -1
+8003BE20: AFA20020  sw     $v0, 0x20($sp)
+8003BE24: 8FA20054  lw     $v0, 0x54($sp)
+8003BE28: 00A03821  move   $a3, $a1
+8003BE2C: AFB10010  sw     $s1, 0x10($sp)
+8003BE30: AFB20014  sw     $s2, 0x14($sp)
+8003BE34: AFB30018  sw     $s3, 0x18($sp)
+8003BE38: AFB4001C  sw     $s4, 0x1c($sp)
+8003BE3C: 0C00EEC5  jal    0x8003bb14
+8003BE40: AFA20024  sw     $v0, 0x24($sp)
+8003BE44: 0800EF94  j      0x8003be50
+8003BE48: 02001021  move   $v0, $s0
+8003BE4C: 00001021  move   $v0, $zero
+8003BE50: 8FBF003C  lw     $ra, 0x3c($sp)
+8003BE54: 8FB40038  lw     $s4, 0x38($sp)
+8003BE58: 8FB30034  lw     $s3, 0x34($sp)
+8003BE5C: 8FB20030  lw     $s2, 0x30($sp)
+8003BE60: 8FB1002C  lw     $s1, 0x2c($sp)
+8003BE64: 8FB00028  lw     $s0, 0x28($sp)
+8003BE68: 27BD0040  addiu  $sp, $sp, 0x40
+8003BE6C: 03E00008  jr     $ra
+8003BE70: 00000000  nop    
+8003BE74: 27BDFFC0  addiu  $sp, $sp, -0x40
+8003BE78: AFB20030  sw     $s2, 0x30($sp)
+8003BE7C: 00809021  move   $s2, $a0
+8003BE80: AFB30034  sw     $s3, 0x34($sp)
+8003BE84: 00A09821  move   $s3, $a1
+8003BE88: AFB40038  sw     $s4, 0x38($sp)
+8003BE8C: 00C0A021  move   $s4, $a2
+8003BE90: AFB1002C  sw     $s1, 0x2c($sp)
+8003BE94: 00E08821  move   $s1, $a3
+8003BE98: AFBF003C  sw     $ra, 0x3c($sp)
+8003BE9C: 0C00EE71  jal    0x8003b9c4
+8003BEA0: AFB00028  sw     $s0, 0x28($sp)
+8003BEA4: 00408021  move   $s0, $v0
+8003BEA8: 1200001C  beqz   $s0, 0x8003bf1c
+8003BEAC: 02002021  move   $a0, $s0
+8003BEB0: AFB20010  sw     $s2, 0x10($sp)
+8003BEB4: AFB30014  sw     $s3, 0x14($sp)
+8003BEB8: AFB40018  sw     $s4, 0x18($sp)
+8003BEBC: 8E220114  lw     $v0, 0x114($s1)
+8003BEC0: 00002821  move   $a1, $zero
+8003BEC4: AFA2001C  sw     $v0, 0x1c($sp)
+8003BEC8: 8E220118  lw     $v0, 0x118($s1)
+8003BECC: 2406FFFF  addiu  $a2, $zero, -1
+8003BED0: AFA20020  sw     $v0, 0x20($sp)
+8003BED4: 8E22011C  lw     $v0, 0x11c($s1)
+8003BED8: 24070001  addiu  $a3, $zero, 1
+8003BEDC: 0C00EEC5  jal    0x8003bb14
+8003BEE0: AFA20024  sw     $v0, 0x24($sp)
+8003BEE4: 02001021  move   $v0, $s0
+8003BEE8: AC510038  sw     $s1, 0x38($v0)
+8003BEEC: 8FA30050  lw     $v1, 0x50($sp)
+8003BEF0: 00000000  nop    
+8003BEF4: AC430060  sw     $v1, 0x60($v0)
+8003BEF8: 8FA30054  lw     $v1, 0x54($sp)
+8003BEFC: 00000000  nop    
+8003BF00: AC430048  sw     $v1, 0x48($v0)
+8003BF04: 8FA30058  lw     $v1, 0x58($sp)
+8003BF08: 00000000  nop    
+8003BF0C: AC43004C  sw     $v1, 0x4c($v0)
+8003BF10: 8FA3005C  lw     $v1, 0x5c($sp)
+8003BF14: 0800EFC8  j      0x8003bf20
+8003BF18: AC430050  sw     $v1, 0x50($v0)
+8003BF1C: 00001021  move   $v0, $zero
+8003BF20: 8FBF003C  lw     $ra, 0x3c($sp)
+8003BF24: 8FB40038  lw     $s4, 0x38($sp)
+8003BF28: 8FB30034  lw     $s3, 0x34($sp)
+8003BF2C: 8FB20030  lw     $s2, 0x30($sp)
+8003BF30: 8FB1002C  lw     $s1, 0x2c($sp)
+8003BF34: 8FB00028  lw     $s0, 0x28($sp)
+8003BF38: 27BD0040  addiu  $sp, $sp, 0x40
+8003BF3C: 03E00008  jr     $ra
+8003BF40: 00000000  nop    
+8003BF44: 27BDFFC0  addiu  $sp, $sp, -0x40
+8003BF48: AFB1002C  sw     $s1, 0x2c($sp)
+8003BF4C: 00808821  move   $s1, $a0
+8003BF50: AFB20030  sw     $s2, 0x30($sp)
+8003BF54: 00A09021  move   $s2, $a1
+8003BF58: AFB30034  sw     $s3, 0x34($sp)
+8003BF5C: 00C09821  move   $s3, $a2
+8003BF60: AFB40038  sw     $s4, 0x38($sp)
+8003BF64: 00E0A021  move   $s4, $a3
+8003BF68: AFBF003C  sw     $ra, 0x3c($sp)
+8003BF6C: 0C00EE71  jal    0x8003b9c4
+8003BF70: AFB00028  sw     $s0, 0x28($sp)
+8003BF74: 00408021  move   $s0, $v0
+8003BF78: 12000011  beqz   $s0, 0x8003bfc0
+8003BF7C: 02002021  move   $a0, $s0
+8003BF80: 8FA20050  lw     $v0, 0x50($sp)
+8003BF84: 00002821  move   $a1, $zero
+8003BF88: AFA2001C  sw     $v0, 0x1c($sp)
+8003BF8C: 8FA20054  lw     $v0, 0x54($sp)
+8003BF90: 2406FFFF  addiu  $a2, $zero, -1
+8003BF94: AFA20020  sw     $v0, 0x20($sp)
+8003BF98: 8FA20058  lw     $v0, 0x58($sp)
+8003BF9C: 24070002  addiu  $a3, $zero, 2
+8003BFA0: AFB10010  sw     $s1, 0x10($sp)
+8003BFA4: AFB20014  sw     $s2, 0x14($sp)
+8003BFA8: AFB30018  sw     $s3, 0x18($sp)
+8003BFAC: 0C00EEC5  jal    0x8003bb14
+8003BFB0: AFA20024  sw     $v0, 0x24($sp)
+8003BFB4: 02001021  move   $v0, $s0
+8003BFB8: 0800EFF1  j      0x8003bfc4
+8003BFBC: AC540064  sw     $s4, 0x64($v0)
+8003BFC0: 00001021  move   $v0, $zero
+8003BFC4: 8FBF003C  lw     $ra, 0x3c($sp)
+8003BFC8: 8FB40038  lw     $s4, 0x38($sp)
+8003BFCC: 8FB30034  lw     $s3, 0x34($sp)
+8003BFD0: 8FB20030  lw     $s2, 0x30($sp)
+8003BFD4: 8FB1002C  lw     $s1, 0x2c($sp)
+8003BFD8: 8FB00028  lw     $s0, 0x28($sp)
+8003BFDC: 27BD0040  addiu  $sp, $sp, 0x40
+8003BFE0: 03E00008  jr     $ra
+8003BFE4: 00000000  nop    
+8003BFE8: 27BDFFC0  addiu  $sp, $sp, -0x40
+8003BFEC: AFB1002C  sw     $s1, 0x2c($sp)
+8003BFF0: 00808821  move   $s1, $a0
+8003BFF4: AFB20030  sw     $s2, 0x30($sp)
+8003BFF8: 00A09021  move   $s2, $a1
+8003BFFC: AFB30034  sw     $s3, 0x34($sp)

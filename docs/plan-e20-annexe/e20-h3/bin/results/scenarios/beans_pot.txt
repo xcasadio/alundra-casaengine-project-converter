@@ -1,0 +1,12 @@
+pot flags 0x6180 size [192, 0]
+t001 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=201.2 y=200.0 | E1(ty409) st=2 ta=0 c28=0x0 gr=1 aend=0 sup=0 pos=(241.0,200.0,0.0)
+t004 H ta=0x5 c2c=0x80128258 hp=10 inuse=0x1f x=206.1 y=200.0 | E2(ty1) st=1 ta=0 c28=0x80127d30 gr=0 aend=0 sup=0 pos=(206.1,200.0,0.0) | snd 44
+t005 E2(ty1) st=2 ta=0 c28=0x80127d30 gr=0 aend=0 sup=0 pos=(206.1,200.0,1.0)
+t040 H ta=0xc c2c=0x80128258 hp=10 inuse=0x1f x=206.1 y=200.0
+t050 H ta=0x9 c2c=0x0 hp=10 inuse=0x1f x=206.1 y=200.0 | E2(ty1) st=2 ta=2 c28=0x0 gr=0 aend=0 sup=2148695344 pos=(207.6,200.0,36.0) | snd 26
+t051 H ta=0x9 c2c=0x0 hp=10 inuse=0x0 x=206.1 y=200.0 | E2(ty1) st=2 ta=2 c28=0x0 gr=0 aend=0 sup=0 pos=(209.1,200.0,39.5)
+t066 E2(ty1) st=2 ta=2 c28=0x0 gr=1 aend=0 sup=0 pos=(231.6,200.0,32.0)
+t067 E2(ty1) st=3 ta=1 c28=0x0 gr=1 aend=0 sup=2148696004 pos=(231.6,200.0,32.0)
+t068 E1(ty409) st=2 ta=1 c28=0x0 gr=1 aend=0 sup=0 pos=(241.0,200.5,0.0) | E2(ty1) st=4 ta=1 c28=0x0 gr=1 aend=0 sup=2148696004 pos=(231.6,200.0,32.0)
+t069 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=206.1 y=200.0 | E2 gone
+pot anim 1 pot status 2

@@ -1,0 +1,285 @@
+===== 0x8002ef48 8C624360  lw $v0, 0x4360($v1)
+   guard    8002EF50: 0440001D  bltz $v0, 0x8002efc8   -> target 0x8002efc8
+   (no backward branch to near the load before function end)
+===== 0x800343c8 8C424360  lw $v0, 0x4360($v0)
+   guard    800343D0: 1840004E  blez $v0, 0x8003450c   -> target 0x8003450c
+   (no backward branch to near the load before function end)
+===== 0x800344f8 8C424360  lw $v0, 0x4360($v0)
+   guard    80034504: 1040FFB5  beqz $v0, 0x800343dc   -> target 0x800343dc
+   loopend  800344F4: 3C028013  lui $v0, 0x8013
+   loopend  800344F8: 8C424360  lw $v0, 0x4360($v0)
+   loopend  800344FC: 00000000  nop 
+   loopend  80034500: 0045102A  slt $v0, $v0, $a1
+   loopend  80034504: 1040FFB5  beqz $v0, 0x800343dc
+   loopend  80034508: 24840294  addiu $a0, $a0, 0x294
+===== 0x80034be8 8C424360  lw $v0, 0x4360($v0)
+   guard    80034BF0: 18400016  blez $v0, 0x80034c4c   -> target 0x80034c4c
+   (no backward branch to near the load before function end)
+===== 0x80034c64 8C824360  lw $v0, 0x4360($a0)
+   guard    80034C84: 1840001F  blez $v0, 0x80034d04   -> target 0x80034d04
+   (no backward branch to near the load before function end)
+===== 0x80034d3c 8C634360  lw $v1, 0x4360($v1)
+   guard    80034D54: 18600024  blez $v1, 0x80034de8   -> target 0x80034de8
+   (no backward branch to near the load before function end)
+===== 0x80034dd4 8C424360  lw $v0, 0x4360($v0)
+   guard    80034DE0: 1040FFE0  beqz $v0, 0x80034d64   -> target 0x80034d64
+   loopend  80034DD0: 3C028013  lui $v0, 0x8013
+   loopend  80034DD4: 8C424360  lw $v0, 0x4360($v0)
+   loopend  80034DD8: 00000000  nop 
+   loopend  80034DDC: 0052102A  slt $v0, $v0, $s2
+   loopend  80034DE0: 1040FFE0  beqz $v0, 0x80034d64
+   loopend  80034DE4: 26310294  addiu $s1, $s1, 0x294
+===== 0x80034e60 8C424360  lw $v0, 0x4360($v0)
+   guard    80034E68: 18400014  blez $v0, 0x80034ebc   -> target 0x80034ebc
+   (no backward branch to near the load before function end)
+===== 0x80034ed8 8C634360  lw $v1, 0x4360($v1)
+   guard    80034EFC: 18600064  blez $v1, 0x80035090   -> target 0x80035090
+   (no backward branch to near the load before function end)
+===== 0x8003507c 8C424360  lw $v0, 0x4360($v0)
+   guard    80035088: 1040FFA4  beqz $v0, 0x80034f1c   -> target 0x80034f1c
+   loopend  80035078: 3C028013  lui $v0, 0x8013
+   loopend  8003507C: 8C424360  lw $v0, 0x4360($v0)
+   loopend  80035080: 00000000  nop 
+   loopend  80035084: 0056102A  slt $v0, $v0, $s6
+   loopend  80035088: 1040FFA4  beqz $v0, 0x80034f1c
+   loopend  8003508C: 26100294  addiu $s0, $s0, 0x294
+===== 0x80035a0c 8C424360  lw $v0, 0x4360($v0)
+   guard    80035A14: 1840FFD2  blez $v0, 0x80035960   -> target 0x80035960
+   loopend  80035A04: 10620016  beq $v1, $v0, 0x80035a60
+   loopend  80035A08: 3C028013  lui $v0, 0x8013
+   loopend  80035A0C: 8C424360  lw $v0, 0x4360($v0)
+   loopend  80035A10: 00000000  nop 
+   loopend  80035A14: 1840FFD2  blez $v0, 0x80035960
+   loopend  80035A18: 24040001  addiu $a0, $zero, 1
+===== 0x80038524 8D224360  lw $v0, 0x4360($t1)
+   guard    80038534: 0440003D  bltz $v0, 0x8003862c   -> target 0x8003862c
+   (no backward branch to near the load before function end)
+===== 0x80038618 8D224360  lw $v0, 0x4360($t1)
+   guard    80038624: 1040FFC8  beqz $v0, 0x80038548   -> target 0x80038548
+   loopend  80038614: 24630294  addiu $v1, $v1, 0x294
+   loopend  80038618: 8D224360  lw $v0, 0x4360($t1)
+   loopend  8003861C: 00000000  nop 
+   loopend  80038620: 0045102A  slt $v0, $v0, $a1
+   loopend  80038624: 1040FFC8  beqz $v0, 0x80038548
+   loopend  80038628: 24840294  addiu $a0, $a0, 0x294
+===== 0x800386cc AC4A4360  sw $t2, 0x4360($v0)
+   WRITE
+===== 0x80038700 8C634360  lw $v1, 0x4360($v1)
+   guard    80038708: 1860006A  blez $v1, 0x800388b4   -> target 0x800388b4
+   (no backward branch to near the load before function end)
+===== 0x800388a0 8C424360  lw $v0, 0x4360($v0)
+   guard    800388AC: 1040FF9B  beqz $v0, 0x8003871c   -> target 0x8003871c
+   loopend  8003889C: 3C028013  lui $v0, 0x8013
+   loopend  800388A0: 8C424360  lw $v0, 0x4360($v0)
+   loopend  800388A4: 00000000  nop 
+   loopend  800388A8: 0052102A  slt $v0, $v0, $s2
+   loopend  800388AC: 1040FF9B  beqz $v0, 0x8003871c
+   loopend  800388B0: 26310294  addiu $s1, $s1, 0x294
+===== 0x800388d0 8E834360  lw $v1, 0x4360($s4)
+   guard    800388D8: 18600023  blez $v1, 0x80038968   -> target 0x80038968
+   loopend  80038958: 00000000  nop 
+   loopend  8003895C: 0052102A  slt $v0, $v0, $s2
+   loopend  80038960: 1040FFE0  beqz $v0, 0x800388e4
+   loopend  80038964: 26310294  addiu $s1, $s1, 0x294
+   loopend  80038968: 1480FFD7  bnez $a0, 0x800388c8
+   loopend  8003896C: 00002021  move $a0, $zero
+===== 0x80038954 8E824360  lw $v0, 0x4360($s4)
+   guard    80038960: 1040FFE0  beqz $v0, 0x800388e4   -> target 0x800388e4
+   loopend  80038950: 26100294  addiu $s0, $s0, 0x294
+   loopend  80038954: 8E824360  lw $v0, 0x4360($s4)
+   loopend  80038958: 00000000  nop 
+   loopend  8003895C: 0052102A  slt $v0, $v0, $s2
+   loopend  80038960: 1040FFE0  beqz $v0, 0x800388e4
+   loopend  80038964: 26310294  addiu $s1, $s1, 0x294
+===== 0x800389ac 8C424360  lw $v0, 0x4360($v0)
+   guard    800389C0: 04400016  bltz $v0, 0x80038a1c   -> target 0x80038a1c
+   (no backward branch to near the load before function end)
+===== 0x80038e94 8C634360  lw $v1, 0x4360($v1)
+   guard    80038EBC: 046000A6  bltz $v1, 0x80039158   -> target 0x80039158
+   (no backward branch to near the load before function end)
+===== 0x80039144 8C424360  lw $v0, 0x4360($v0)
+   guard    80039150: 1040FF60  beqz $v0, 0x80038ed4   -> target 0x80038ed4
+   loopend  80039140: 3C028013  lui $v0, 0x8013
+   loopend  80039144: 8C424360  lw $v0, 0x4360($v0)
+   loopend  80039148: 00000000  nop 
+   loopend  8003914C: 0055102A  slt $v0, $v0, $s5
+   loopend  80039150: 1040FF60  beqz $v0, 0x80038ed4
+   loopend  80039154: 26940294  addiu $s4, $s4, 0x294
+===== 0x80039d24 8C824360  lw $v0, 0x4360($a0)
+   guard    80039D34: 10400002  beqz $v0, 0x80039d40   -> target 0x80039d40
+   (no backward branch to near the load before function end)
+===== 0x80039d3c AC834360  sw $v1, 0x4360($a0)
+   WRITE
+===== 0x8003a668 8C824360  lw $v0, 0x4360($a0)
+   guard    8003A67C: 04400014  bltz $v0, 0x8003a6d0   -> target 0x8003a6d0
+   (no backward branch to near the load before function end)
+===== 0x8003ad40 8C424360  lw $v0, 0x4360($v0)
+   guard    8003AD48: 04400016  bltz $v0, 0x8003ada4   -> target 0x8003ada4
+   (no backward branch to near the load before function end)
+===== 0x8003adbc 8C424360  lw $v0, 0x4360($v0)
+   guard    8003ADC4: 0440000D  bltz $v0, 0x8003adfc   -> target 0x8003adfc
+   (no backward branch to near the load before function end)
+===== 0x8003af8c 8C634360  lw $v1, 0x4360($v1)
+   guard    8003AF9C: 10400045  beqz $v0, 0x8003b0b4   -> target 0x8003b0b4
+   (no backward branch to near the load before function end)
+===== 0x8003b1e4 8C424360  lw $v0, 0x4360($v0)
+   guard    8003B1EC: 04400007  bltz $v0, 0x8003b20c   -> target 0x8003b20c
+   (no backward branch to near the load before function end)
+===== 0x8003b2d8 AC404360  sw $zero, 0x4360($v0)
+   WRITE
+===== 0x8003b590 8C424360  lw $v0, 0x4360($v0)
+   guard    8003B598: 04400065  bltz $v0, 0x8003b730   -> target 0x8003b730
+   (no backward branch to near the load before function end)
+===== 0x8003b71c 8C424360  lw $v0, 0x4360($v0)
+   guard    8003B728: 1040FFA3  beqz $v0, 0x8003b5b8   -> target 0x8003b5b8
+   loopend  8003B718: 3C028013  lui $v0, 0x8013
+   loopend  8003B71C: 8C424360  lw $v0, 0x4360($v0)
+   loopend  8003B720: 00000000  nop 
+   loopend  8003B724: 0051102A  slt $v0, $v0, $s1
+   loopend  8003B728: 1040FFA3  beqz $v0, 0x8003b5b8
+   loopend  8003B72C: 25EF0294  addiu $t7, $t7, 0x294
+===== 0x8003b750 8C424360  lw $v0, 0x4360($v0)
+   guard    8003B758: 0440007E  bltz $v0, 0x8003b954   -> target 0x8003b954
+   (no backward branch to near the load before function end)
+===== 0x8003b940 8C424360  lw $v0, 0x4360($v0)
+   guard    8003B94C: 1040FF8A  beqz $v0, 0x8003b778   -> target 0x8003b778
+   loopend  8003B93C: 3C028013  lui $v0, 0x8013
+   loopend  8003B940: 8C424360  lw $v0, 0x4360($v0)
+   loopend  8003B944: 00000000  nop 
+   loopend  8003B948: 0051102A  slt $v0, $v0, $s1
+   loopend  8003B94C: 1040FF8A  beqz $v0, 0x8003b778
+   loopend  8003B950: 258C0294  addiu $t4, $t4, 0x294
+===== 0x8003c99c 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003C9A4: 18400155  blez $v0, 0x8003cefc   -> target 0x8003cefc
+   loopend  8003C9E0: 24840001  addiu $a0, $a0, 1
+   loopend  8003C9E4: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003C9E8: 00000000  nop 
+   loopend  8003C9EC: 0044102A  slt $v0, $v0, $a0
+   loopend  8003C9F0: 1040FFEE  beqz $v0, 0x8003c9ac
+   loopend  8003C9F4: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003c9e4 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003C9F0: 1040FFEE  beqz $v0, 0x8003c9ac   -> target 0x8003c9ac
+   loopend  8003C9E0: 24840001  addiu $a0, $a0, 1
+   loopend  8003C9E4: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003C9E8: 00000000  nop 
+   loopend  8003C9EC: 0044102A  slt $v0, $v0, $a0
+   loopend  8003C9F0: 1040FFEE  beqz $v0, 0x8003c9ac
+   loopend  8003C9F4: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003ca58 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CA60: 04400126  bltz $v0, 0x8003cefc   -> target 0x8003cefc
+   loopend  8003CA8C: 24840001  addiu $a0, $a0, 1
+   loopend  8003CA90: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003CA94: 00000000  nop 
+   loopend  8003CA98: 0044102A  slt $v0, $v0, $a0
+   loopend  8003CA9C: 1040FFF2  beqz $v0, 0x8003ca68
+   loopend  8003CAA0: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003ca90 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CA9C: 1040FFF2  beqz $v0, 0x8003ca68   -> target 0x8003ca68
+   loopend  8003CA8C: 24840001  addiu $a0, $a0, 1
+   loopend  8003CA90: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003CA94: 00000000  nop 
+   loopend  8003CA98: 0044102A  slt $v0, $v0, $a0
+   loopend  8003CA9C: 1040FFF2  beqz $v0, 0x8003ca68
+   loopend  8003CAA0: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003cab8 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CAC0: 1840010E  blez $v0, 0x8003cefc   -> target 0x8003cefc
+   loopend  8003CAEC: 24840001  addiu $a0, $a0, 1
+   loopend  8003CAF0: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003CAF4: 00000000  nop 
+   loopend  8003CAF8: 0044102A  slt $v0, $v0, $a0
+   loopend  8003CAFC: 1040FFF2  beqz $v0, 0x8003cac8
+   loopend  8003CB00: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003caf0 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CAFC: 1040FFF2  beqz $v0, 0x8003cac8   -> target 0x8003cac8
+   loopend  8003CAEC: 24840001  addiu $a0, $a0, 1
+   loopend  8003CAF0: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003CAF4: 00000000  nop 
+   loopend  8003CAF8: 0044102A  slt $v0, $v0, $a0
+   loopend  8003CAFC: 1040FFF2  beqz $v0, 0x8003cac8
+   loopend  8003CB00: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003cb18 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CB20: 044000F6  bltz $v0, 0x8003cefc   -> target 0x8003cefc
+   (no backward branch to near the load before function end)
+===== 0x8003cbbc 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CBC4: 184000CD  blez $v0, 0x8003cefc   -> target 0x8003cefc
+   loopend  8003CC00: 24840001  addiu $a0, $a0, 1
+   loopend  8003CC04: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003CC08: 00000000  nop 
+   loopend  8003CC0C: 0044102A  slt $v0, $v0, $a0
+   loopend  8003CC10: 1040FFEE  beqz $v0, 0x8003cbcc
+   loopend  8003CC14: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003cc04 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CC10: 1040FFEE  beqz $v0, 0x8003cbcc   -> target 0x8003cbcc
+   loopend  8003CC00: 24840001  addiu $a0, $a0, 1
+   loopend  8003CC04: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003CC08: 00000000  nop 
+   loopend  8003CC0C: 0044102A  slt $v0, $v0, $a0
+   loopend  8003CC10: 1040FFEE  beqz $v0, 0x8003cbcc
+   loopend  8003CC14: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003cc2c 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CC34: 184000B1  blez $v0, 0x8003cefc   -> target 0x8003cefc
+   (no backward branch to near the load before function end)
+===== 0x8003cca8 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CCB0: 18400092  blez $v0, 0x8003cefc   -> target 0x8003cefc
+   loopend  8003CCEC: 24840001  addiu $a0, $a0, 1
+   loopend  8003CCF0: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003CCF4: 00000000  nop 
+   loopend  8003CCF8: 0044102A  slt $v0, $v0, $a0
+   loopend  8003CCFC: 1040FFEE  beqz $v0, 0x8003ccb8
+   loopend  8003CD00: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003ccf0 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CCFC: 1040FFEE  beqz $v0, 0x8003ccb8   -> target 0x8003ccb8
+   loopend  8003CCEC: 24840001  addiu $a0, $a0, 1
+   loopend  8003CCF0: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003CCF4: 00000000  nop 
+   loopend  8003CCF8: 0044102A  slt $v0, $v0, $a0
+   loopend  8003CCFC: 1040FFEE  beqz $v0, 0x8003ccb8
+   loopend  8003CD00: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003cd18 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CD20: 18400076  blez $v0, 0x8003cefc   -> target 0x8003cefc
+   (no backward branch to near the load before function end)
+===== 0x8003cd94 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CD9C: 18400057  blez $v0, 0x8003cefc   -> target 0x8003cefc
+   (no backward branch to near the load before function end)
+===== 0x8003ce10 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CE18: 18400038  blez $v0, 0x8003cefc   -> target 0x8003cefc
+   loopend  8003CE54: 24840001  addiu $a0, $a0, 1
+   loopend  8003CE58: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003CE5C: 00000000  nop 
+   loopend  8003CE60: 0044102A  slt $v0, $v0, $a0
+   loopend  8003CE64: 1040FFEE  beqz $v0, 0x8003ce20
+   loopend  8003CE68: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003ce58 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CE64: 1040FFEE  beqz $v0, 0x8003ce20   -> target 0x8003ce20
+   loopend  8003CE54: 24840001  addiu $a0, $a0, 1
+   loopend  8003CE58: 8CA24360  lw $v0, 0x4360($a1)
+   loopend  8003CE5C: 00000000  nop 
+   loopend  8003CE60: 0044102A  slt $v0, $v0, $a0
+   loopend  8003CE64: 1040FFEE  beqz $v0, 0x8003ce20
+   loopend  8003CE68: 24630294  addiu $v1, $v1, 0x294
+===== 0x8003ce80 8CA24360  lw $v0, 0x4360($a1)
+   guard    8003CE88: 1840001C  blez $v0, 0x8003cefc   -> target 0x8003cefc
+   (no backward branch to near the load before function end)
+===== 0x8003e568 8C634360  lw $v1, 0x4360($v1)
+   guard    8003E584: 0460002E  bltz $v1, 0x8003e640   -> target 0x8003e640
+   (no backward branch to near the load before function end)
+===== 0x8003e65c 8C634360  lw $v1, 0x4360($v1)
+   guard    8003E678: 04600020  bltz $v1, 0x8003e6fc   -> target 0x8003e6fc
+   (no backward branch to near the load before function end)
+===== 0x8003e740 8C424360  lw $v0, 0x4360($v0)
+   guard    8003E748: 04400018  bltz $v0, 0x8003e7ac   -> target 0x8003e7ac
+   (no backward branch to near the load before function end)
+===== 0x8004083c 8C424360  lw $v0, 0x4360($v0)
+   guard    80040844: 04400055  bltz $v0, 0x8004099c   -> target 0x8004099c
+   (no backward branch to near the load before function end)
+===== 0x80064ed0 8C424360  lw $v0, 0x4360($v0)
+   guard    80064ED8: 0440000B  bltz $v0, 0x80064f08   -> target 0x80064f08
+   (no backward branch to near the load before function end)
+===== 0x8007f4cc 8C424360  lw $v0, 0x4360($v0)
+   guard    8007F4D4: 04400049  bltz $v0, 0x8007f5fc   -> target 0x8007f5fc
+   loopend  8007F5D0: 10400005  beqz $v0, 0x8007f5e8
+   loopend  8007F5D4: 240201AD  addiu $v0, $zero, 0x1ad
+   loopend  8007F5D8: 8C830000  lw $v1, ($a0)
+   loopend  8007F5DC: 00000000  nop 
+   loopend  8007F5E0: 1462FF9F  bne $v1, $v0, 0x8007f460
+   loopend  8007F5E4: 00000000  nop 

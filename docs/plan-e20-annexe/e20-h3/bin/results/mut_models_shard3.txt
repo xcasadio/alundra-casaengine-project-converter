@@ -1,0 +1,11 @@
+CAUGHT   beans start: sprite 1 -> 2 | vectors 2500 seed 7 mismatches 108
+CAUGHT   bomb start: fuse 0xF0 -> 0xEF | vectors 2500 seed 7 mismatches 43
+CAUGHT   driver: slope 4 -> 3 | vectors 2500 seed 7 mismatches 46
+CAUGHT   cancel bomb: effect 12 -> 8 | vectors 2500 seed 7 mismatches 37
+CAUGHT   c62: spark y range 0x20001 -> 0x20000 | vectors 2500 seed 7 mismatches 16
+CAUGHT   c62: release does not clear +0x24 | vectors 2500 seed 7 mismatches 26
+CAUGHT   c62: pit mask 0x1001 -> 0x1000 | vectors 2500 seed 7 mismatches 10
+CAUGHT   d30: full byte instead of low nibble | vectors 2500 seed 7 mismatches 81
+CAUGHT   c73: carried anim 0 -> 1 | vectors 2500 seed 7 mismatches 52
+CAUGHT   e21: pot anim 1 -> 2 | vectors 2500 seed 7 mismatches 6
+SHARD 3/8: 10/10 mutations caught; not found 0; missed: []

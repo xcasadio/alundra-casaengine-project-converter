@@ -1,0 +1,12 @@
+E21           mutants   44 killed   34 survivors  10
+TOTAL mutants 44 killed 34 survivors 10
+SURVIVOR E21           8007F7CC imm+1          addiu $sp, $sp, -0x18              -> addiu $sp, $sp, -0x17
+SURVIVOR E21           8007F7CC imm-1          addiu $sp, $sp, -0x18              -> addiu $sp, $sp, -0x19
+SURVIVOR E21           8007F7D0 offset+4       sw $s0, 0x10($sp)                  -> sw $s0, 0x14($sp)
+SURVIVOR E21           8007F7D0 store removed  sw $s0, 0x10($sp)                  -> nop 
+SURVIVOR E21           8007F7D4 addu<->subu    move $s0, $a0                      -> subu $s0, $a0, $zero
+SURVIVOR E21           8007F814 addu<->subu    move $a0, $s0                      -> subu $a0, $s0, $zero
+SURVIVOR E21           8007F834 addu<->subu    move $a0, $s0                      -> subu $a0, $s0, $zero
+SURVIVOR E21           8007F868 offset+4       lw $s0, 0x10($sp)                  -> lw $s0, 0x14($sp)
+SURVIVOR E21           8007F86C imm+1          addiu $sp, $sp, 0x18               -> addiu $sp, $sp, 0x19
+SURVIVOR E21           8007F86C imm-1          addiu $sp, $sp, 0x18               -> addiu $sp, $sp, 0x17

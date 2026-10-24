@@ -1,0 +1,11 @@
+cancel_bomb   mutants   34 killed   25 survivors   9
+TOTAL mutants 34 killed 25 survivors 9
+SURVIVOR cancel_bomb   80034B54 imm+1          addiu $sp, $sp, -0x20              -> addiu $sp, $sp, -0x1f
+SURVIVOR cancel_bomb   80034B54 imm-1          addiu $sp, $sp, -0x20              -> addiu $sp, $sp, -0x21
+SURVIVOR cancel_bomb   80034B64 store removed  sw $s0, 0x18($sp)                  -> nop 
+SURVIVOR cancel_bomb   80034BA0 addu<->subu    move $a0, $zero                    -> negu $a0, $zero
+SURVIVOR cancel_bomb   80034BBC addu<->subu    move $a2, $a0                      -> subu $a2, $a0, $zero
+SURVIVOR cancel_bomb   80034BC4 addu<->subu    move $a0, $s0                      -> subu $a0, $s0, $zero
+SURVIVOR cancel_bomb   80034BCC offset+4       lw $s0, 0x18($sp)                  -> lw $s0, 0x1c($sp)
+SURVIVOR cancel_bomb   80034BD0 imm+1          addiu $sp, $sp, 0x20               -> addiu $sp, $sp, 0x21
+SURVIVOR cancel_bomb   80034BD0 imm-1          addiu $sp, $sp, 0x20               -> addiu $sp, $sp, 0x1f

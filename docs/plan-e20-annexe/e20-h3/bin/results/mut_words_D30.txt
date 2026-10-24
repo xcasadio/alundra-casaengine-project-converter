@@ -1,0 +1,2 @@
+D30           mutants   18 killed   18 survivors   0
+TOTAL mutants 18 killed 18 survivors 0

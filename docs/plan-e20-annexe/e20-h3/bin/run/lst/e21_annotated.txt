@@ -1,0 +1,47 @@
+; function 0x8007F7CC..0x8007F878 (43 words)
+8007F7CC  27bdffe8  addiu    $sp, $sp, -0x18
+8007F7D0  afb00010  sw       $s0, 0x10($sp)                ; sp+0x10
+8007F7D4  00808021  move     $s0, $a0
+8007F7D8  afbf0014  sw       $ra, 0x14($sp)                ; sp+0x14
+8007F7DC  8e04012c  lw       $a0, 0x12c($s0)
+8007F7E0  00000000  nop      
+8007F7E4  1080000c  beqz     $a0, 0x8007f818   -> L_8007F818
+8007F7E8  24020199  addiu    $v0, $zero, 0x199
+8007F7EC  8c830068  lw       $v1, 0x68($a0)                ; a0.ptr68
+8007F7F0  00000000  nop      
+8007F7F4  14620008  bne      $v1, $v0, 0x8007f818   -> L_8007F818
+8007F7F8  00000000  nop      
+8007F7FC  8c820088  lw       $v0, 0x88($a0)                ; a0.TargetAnim
+8007F800  00000000  nop      
+8007F804  14400004  bnez     $v0, 0x8007f818   -> L_8007F818
+8007F808  24020001  addiu    $v0, $zero, 1
+8007F80C  ac820088  sw       $v0, 0x88($a0)                ; a0.TargetAnim
+8007F810  0c00e9dd  jal      0x8003a774                    ; FUN_8003A774
+8007F814  02002021  move     $a0, $s0
+L_8007F818:
+8007F818  8e030088  lw       $v1, 0x88($s0)                ; s0.TargetAnim
+8007F81C  24020001  addiu    $v0, $zero, 1
+8007F820  14620009  bne      $v1, $v0, 0x8007f848   -> L_8007F848
+8007F824  00000000  nop      
+8007F828  8e0200ac  lw       $v0, 0xac($s0)                ; s0.AnimEndFlag
+8007F82C  00000000  nop      
+8007F830  14430005  bne      $v0, $v1, 0x8007f848   -> L_8007F848
+8007F834  02002021  move     $a0, $s0
+8007F838  0c00e967  jal      0x8003a59c                    ; DestroyEntity
+8007F83C  2405ffff  addiu    $a1, $zero, -1
+8007F840  0801fe19  j        0x8007f864   -> L_8007F864
+8007F844  00000000  nop      
+L_8007F848:
+8007F848  8e02006c  lw       $v0, 0x6c($s0)                ; s0.Flags
+8007F84C  24030001  addiu    $v1, $zero, 1
+8007F850  ae030088  sw       $v1, 0x88($s0)                ; s0.TargetAnim
+8007F854  2403ffcf  addiu    $v1, $zero, -0x31
+8007F858  34420040  ori      $v0, $v0, 0x40
+8007F85C  00431024  and      $v0, $v0, $v1
+8007F860  ae02006c  sw       $v0, 0x6c($s0)                ; s0.Flags
+L_8007F864:
+8007F864  8fbf0014  lw       $ra, 0x14($sp)                ; sp+0x14
+8007F868  8fb00010  lw       $s0, 0x10($sp)                ; sp+0x10
+8007F86C  27bd0018  addiu    $sp, $sp, 0x18
+8007F870  03e00008  jr       $ra
+8007F874  00000000  nop      

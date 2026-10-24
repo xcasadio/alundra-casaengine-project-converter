@@ -19,6 +19,8 @@ x86/
 [Aa][Rr][Mm]64/
 bld/
 [Bb]in/
+# D-E20-76: the bin/ folders of the plan annexes are evidence (scripts and outputs), not build output.
+!docs/**/[Bb]in/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/

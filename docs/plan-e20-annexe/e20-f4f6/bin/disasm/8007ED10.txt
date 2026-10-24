@@ -1,0 +1,12 @@
+8007ED10: 27BDFFE8  addiu  $sp, $sp, -0x18
+8007ED14: AFBF0010  sw     $ra, 0x10($sp)
+8007ED18: 0C00E967  jal    0x8003a59c
+8007ED1C: 2405FFFF  addiu  $a1, $zero, -1
+8007ED20: 8FBF0010  lw     $ra, 0x10($sp)
+8007ED24: 27BD0018  addiu  $sp, $sp, 0x18
+8007ED28: 03E00008  jr     $ra
+8007ED2C: 00000000  nop    
+8007ED30: 27BDFFE8  addiu  $sp, $sp, -0x18
+8007ED34: AFBF0010  sw     $ra, 0x10($sp)
+8007ED38: 8C820088  lw     $v0, 0x88($a0)
+8007ED3C: 24050002  addiu  $a1, $zero, 2

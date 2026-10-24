@@ -1,0 +1,11 @@
+CAUGHT   beans start: no sound on a null spawn becomes sound 3 | vectors 2500 seed 7 mismatches 13
+CAUGHT   bomb start: fuse written on the hero | vectors 2500 seed 7 mismatches 43
+CAUGHT   driver: returns 0 after the cancel | vectors 2500 seed 7 mismatches 32
+CAUGHT   cancel: effect z offset | vectors 2500 seed 7 mismatches 66
+CAUGHT   c62: spark x offset -0x18000 -> -0x10000 | vectors 2500 seed 7 mismatches 30
+CAUGHT   c62: release keeps the hero link | vectors 2500 seed 7 mismatches 15
+CAUGHT   c62: blocked on the ground over a pit does not explode | vectors 2500 seed 7 mismatches 22
+CAUGHT   d30: status 3 -> 4 | vectors 2500 seed 7 mismatches 130
+CAUGHT   c73: flight anim 2 -> 3 | vectors 2500 seed 7 mismatches 93
+CAUGHT   e21: the bean is not destroyed on the pot | vectors 2500 seed 7 mismatches 8
+SHARD 4/8: 10/10 mutations caught; not found 0; missed: []

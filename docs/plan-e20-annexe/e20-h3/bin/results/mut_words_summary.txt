@@ -1,0 +1,30 @@
+per function:
+  C62           mutants  190 killed  161 survivors  29
+  C73           mutants   29 killed   29 survivors   0
+  D30           mutants   18 killed   18 survivors   0
+  E12           mutants   38 killed   25 survivors  13
+  E21           mutants   44 killed   34 survivors  10
+  cancel_beans  mutants   34 killed   25 survivors   9
+  cancel_bomb   mutants   34 killed   25 survivors   9
+  dispatch      mutants   29 killed   17 survivors  12
+  drv_beans     mutants   22 killed   17 survivors   5
+  drv_bomb      mutants   24 killed   19 survivors   5
+  start_beans   mutants   71 killed   60 survivors  11
+  start_bomb    mutants   96 killed   83 survivors  13
+TOTAL mutants 629 killed 513 survivors 116
+survivors by reason:
+   40  stack frame size
+   36  register copy written addu/subu with $zero
+   20  callee-saved register save/restore slot
+    7  argument of the cancel handlers, never read by them
+    2  dead spill of the high/low product
+    2  sra by 31: the sign extension of a 32-bit product, never read
+    2  loop counter 0..4
+    1  the spark rule is v < 60 and v % 8 == 0: v < 61 gives the same set
+    1  v < 59 gives the same set (59 is not a multiple of 8)
+    1  intermediate store of the random word, overwritten by the final store 0x8007AA74 before any read
+    1  dead reload of the spill
+    1  delay-slot constant 4 only compared with the loop index, which is < 4 when a corner matched
+    1  tome entry 0x32 of the cancel table (h4 domain, the effect of its cancel needs an entity of type 0x18 that these vectors do not place)
+    1  slti on a counter in 0..64: signed and unsigned compares agree
+UNEXPLAINED survivors: 0

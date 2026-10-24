@@ -1,0 +1,15 @@
+E12           mutants   38 killed   25 survivors  13
+TOTAL mutants 38 killed 25 survivors 13
+SURVIVOR E12           8007F27C imm+1          addiu $sp, $sp, -0x20              -> addiu $sp, $sp, -0x1f
+SURVIVOR E12           8007F27C imm-1          addiu $sp, $sp, -0x20              -> addiu $sp, $sp, -0x21
+SURVIVOR E12           8007F280 offset+4       sw $s0, 0x10($sp)                  -> sw $s0, 0x14($sp)
+SURVIVOR E12           8007F280 store removed  sw $s0, 0x10($sp)                  -> nop 
+SURVIVOR E12           8007F284 addu<->subu    move $s0, $a0                      -> subu $s0, $a0, $zero
+SURVIVOR E12           8007F28C store removed  sw $s1, 0x14($sp)                  -> nop 
+SURVIVOR E12           8007F2AC addu<->subu    move $a0, $s0                      -> subu $a0, $s0, $zero
+SURVIVOR E12           8007F2C0 addu<->subu    move $a0, $s0                      -> subu $a0, $s0, $zero
+SURVIVOR E12           8007F2D8 addu<->subu    move $a0, $s0                      -> subu $a0, $s0, $zero
+SURVIVOR E12           8007F2F8 offset+4       lw $s1, 0x14($sp)                  -> lw $s1, 0x18($sp)
+SURVIVOR E12           8007F2FC offset+4       lw $s0, 0x10($sp)                  -> lw $s0, 0x14($sp)
+SURVIVOR E12           8007F300 imm+1          addiu $sp, $sp, 0x20               -> addiu $sp, $sp, 0x21
+SURVIVOR E12           8007F300 imm-1          addiu $sp, $sp, 0x20               -> addiu $sp, $sp, 0x1f

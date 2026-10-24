@@ -1,0 +1,196 @@
+{
+ "C39": {
+  "global_records": [],
+  "map_records": 2,
+  "distinct_map_record_indices": [
+   238
+  ],
+  "maps_with_map_record": 2,
+  "placements": 2,
+  "maps_with_placement": 2
+ },
+ "C40": {
+  "global_records": [],
+  "map_records": 3,
+  "distinct_map_record_indices": [
+   241
+  ],
+  "maps_with_map_record": 3,
+  "placements": 3,
+  "maps_with_placement": 3
+ },
+ "C43": {
+  "global_records": [],
+  "map_records": 3,
+  "distinct_map_record_indices": [
+   250
+  ],
+  "maps_with_map_record": 3,
+  "placements": 3,
+  "maps_with_placement": 3
+ },
+ "C49": {
+  "global_records": [],
+  "map_records": 2,
+  "distinct_map_record_indices": [
+   223
+  ],
+  "maps_with_map_record": 2,
+  "placements": 2,
+  "maps_with_placement": 2
+ },
+ "C50": {
+  "global_records": [],
+  "map_records": 1,
+  "distinct_map_record_indices": [
+   239
+  ],
+  "maps_with_map_record": 1,
+  "placements": 2,
+  "maps_with_placement": 1
+ },
+ "C51": {
+  "global_records": [],
+  "map_records": 1,
+  "distinct_map_record_indices": [
+   156
+  ],
+  "maps_with_map_record": 1,
+  "placements": 1,
+  "maps_with_placement": 1
+ },
+ "C63": {
+  "global_records": [
+   23
+  ],
+  "map_records": 0,
+  "distinct_map_record_indices": [],
+  "maps_with_map_record": 0,
+  "placements": 0,
+  "maps_with_placement": 0
+ },
+ "C65": {
+  "global_records": [
+   24,
+   154
+  ],
+  "map_records": 0,
+  "distinct_map_record_indices": [],
+  "maps_with_map_record": 0,
+  "placements": 0,
+  "maps_with_placement": 0
+ },
+ "C75": {
+  "global_records": [
+   19
+  ],
+  "map_records": 0,
+  "distinct_map_record_indices": [],
+  "maps_with_map_record": 0,
+  "placements": 0,
+  "maps_with_placement": 0
+ },
+ "C88": {
+  "global_records": [],
+  "map_records": 1,
+  "distinct_map_record_indices": [
+   207
+  ],
+  "maps_with_map_record": 1,
+  "placements": 1,
+  "maps_with_placement": 1
+ },
+ "C89": {
+  "global_records": [],
+  "map_records": 1,
+  "distinct_map_record_indices": [
+   208
+  ],
+  "maps_with_map_record": 1,
+  "placements": 0,
+  "maps_with_placement": 0
+ },
+ "C90": {
+  "global_records": [],
+  "map_records": 1,
+  "distinct_map_record_indices": [
+   209
+  ],
+  "maps_with_map_record": 1,
+  "placements": 0,
+  "maps_with_placement": 0
+ },
+ "D43": {
+  "global_records": [],
+  "map_records": 1,
+  "distinct_map_record_indices": [
+   208
+  ],
+  "maps_with_map_record": 1,
+  "placements": 0,
+  "maps_with_placement": 0
+ },
+ "E3": {
+  "global_records": [
+   16,
+   23,
+   150,
+   151,
+   152,
+   153
+  ],
+  "map_records": 98,
+  "distinct_map_record_indices": [
+   74,
+   95,
+   101,
+   110,
+   116,
+   155,
+   176,
+   188,
+   206,
+   212,
+   218,
+   219,
+   227,
+   242,
+   254
+  ],
+  "maps_with_map_record": 75,
+  "placements": 19,
+  "maps_with_placement": 5
+ },
+ "E13": {
+  "global_records": [
+   17
+  ],
+  "map_records": 1,
+  "distinct_map_record_indices": [
+   213
+  ],
+  "maps_with_map_record": 1,
+  "placements": 1,
+  "maps_with_placement": 1
+ },
+ "E24": {
+  "global_records": [],
+  "map_records": 3,
+  "distinct_map_record_indices": [
+   251
+  ],
+  "maps_with_map_record": 3,
+  "placements": 0,
+  "maps_with_placement": 0
+ },
+ "E28": {
+  "global_records": [
+   21
+  ],
+  "map_records": 0,
+  "distinct_map_record_indices": [],
+  "maps_with_map_record": 0,
+  "placements": 0,
+  "maps_with_placement": 0
+ }
+}

@@ -1,0 +1,113 @@
+8003BB14: 00804021  move   $t0, $a0
+8003BB18: 00A06021  move   $t4, $a1
+8003BB1C: 01005021  move   $t2, $t0
+8003BB20: 3C028014  lui    $v0, 0x8014
+8003BB24: 2449C608  addiu  $t1, $v0, -0x39f8   ; =0x8013C608
+8003BB28: 252D0080  addiu  $t5, $t1, 0x80
+8003BB2C: 8FAE0014  lw     $t6, 0x14($sp)
+8003BB30: 8FAF0018  lw     $t7, 0x18($sp)
+8003BB34: 8D0B0000  lw     $t3, ($t0)
+8003BB38: 8D220000  lw     $v0, ($t1)
+8003BB3C: 8D230004  lw     $v1, 4($t1)
+8003BB40: 8D240008  lw     $a0, 8($t1)
+8003BB44: 8D25000C  lw     $a1, 0xc($t1)
+8003BB48: AD420000  sw     $v0, ($t2)
+8003BB4C: AD430004  sw     $v1, 4($t2)
+8003BB50: AD440008  sw     $a0, 8($t2)
+8003BB54: AD45000C  sw     $a1, 0xc($t2)
+8003BB58: 25290010  addiu  $t1, $t1, 0x10
+8003BB5C: 152DFFF6  bne    $t1, $t5, 0x8003bb38
+8003BB60: 254A0010  addiu  $t2, $t2, 0x10
+8003BB64: AD0B0000  sw     $t3, ($t0)
+8003BB68: 11800003  beqz   $t4, 0x8003bb78
+8003BB6C: AD0C0004  sw     $t4, 4($t0)
+8003BB70: 0800EEE0  j      0x8003bb80
+8003BB74: AD060030  sw     $a2, 0x30($t0)
+8003BB78: 2402FFFF  addiu  $v0, $zero, -1
+8003BB7C: AD020030  sw     $v0, 0x30($t0)
+8003BB80: 24020002  addiu  $v0, $zero, 2
+8003BB84: AD070034  sw     $a3, 0x34($t0)
+8003BB88: AD020068  sw     $v0, 0x68($t0)
+8003BB8C: 8FA20010  lw     $v0, 0x10($sp)
+8003BB90: A10E006E  sb     $t6, 0x6e($t0)
+8003BB94: A10F0070  sb     $t7, 0x70($t0)
+8003BB98: 0002102B  sltu   $v0, $zero, $v0
+8003BB9C: A102006C  sb     $v0, 0x6c($t0)
+8003BBA0: 38420001  xori   $v0, $v0, 1
+8003BBA4: A102006D  sb     $v0, 0x6d($t0)
+8003BBA8: 000E1027  nor    $v0, $zero, $t6
+8003BBAC: A102006F  sb     $v0, 0x6f($t0)
+8003BBB0: 000F1027  nor    $v0, $zero, $t7
+8003BBB4: A1020071  sb     $v0, 0x71($t0)
+8003BBB8: 8FA2001C  lw     $v0, 0x1c($sp)
+8003BBBC: 00000000  nop    
+8003BBC0: AD02003C  sw     $v0, 0x3c($t0)
+8003BBC4: 8FA20020  lw     $v0, 0x20($sp)
+8003BBC8: 00000000  nop    
+8003BBCC: AD020040  sw     $v0, 0x40($t0)
+8003BBD0: 8FA20024  lw     $v0, 0x24($sp)
+8003BBD4: 03E00008  jr     $ra
+8003BBD8: AD020044  sw     $v0, 0x44($t0)
+8003BBDC: 27BDFFD0  addiu  $sp, $sp, -0x30
+8003BBE0: AFB00018  sw     $s0, 0x18($sp)
+8003BBE4: 00808021  move   $s0, $a0
+8003BBE8: AFB20020  sw     $s2, 0x20($sp)
+8003BBEC: AFBF0028  sw     $ra, 0x28($sp)
+8003BBF0: AFB30024  sw     $s3, 0x24($sp)
+8003BBF4: AFB1001C  sw     $s1, 0x1c($sp)
+8003BBF8: 8E050008  lw     $a1, 8($s0)
+8003BBFC: 9213006E  lbu    $s3, 0x6e($s0)
+8003BC00: 9202006F  lbu    $v0, 0x6f($s0)
+8003BC04: 9211006C  lbu    $s1, 0x6c($s0)
+8003BC08: 16620005  bne    $s3, $v0, 0x8003bc20
+8003BC0C: 2612000C  addiu  $s2, $s0, 0xc
+8003BC10: 9202006D  lbu    $v0, 0x6d($s0)
+8003BC14: 00000000  nop    
+8003BC18: 12220016  beq    $s1, $v0, 0x8003bc74
+8003BC1C: 00000000  nop    
+8003BC20: 02202021  move   $a0, $s1
+8003BC24: 02602821  move   $a1, $s3
+8003BC28: 27A60010  addiu  $a2, $sp, 0x10
+8003BC2C: 0C00EE7F  jal    0x8003b9fc
+8003BC30: 27A70014  addiu  $a3, $sp, 0x14
+8003BC34: 00402821  move   $a1, $v0
+8003BC38: 14A00004  bnez   $a1, 0x8003bc4c
+8003BC3C: 24020001  addiu  $v0, $zero, 1
+8003BC40: A202007D  sb     $v0, 0x7d($s0)
+8003BC44: 0800EF4D  j      0x8003bd34
+8003BC48: AE00000C  sw     $zero, 0xc($s0)
+8003BC4C: 8FA20010  lw     $v0, 0x10($sp)
+8003BC50: 8FA30014  lw     $v1, 0x14($sp)
+8003BC54: AE050008  sw     $a1, 8($s0)
+8003BC58: AE42001C  sw     $v0, 0x1c($s2)
+8003BC5C: AE430020  sw     $v1, 0x20($s2)
+8003BC60: 92020070  lbu    $v0, 0x70($s0)
+8003BC64: A211006D  sb     $s1, 0x6d($s0)
+8003BC68: A213006F  sb     $s3, 0x6f($s0)
+8003BC6C: 00021027  nor    $v0, $zero, $v0
+8003BC70: A2020071  sb     $v0, 0x71($s0)
+8003BC74: 92030070  lbu    $v1, 0x70($s0)
+8003BC78: 92020071  lbu    $v0, 0x71($s0)
+8003BC7C: 00000000  nop    
+8003BC80: 1062000A  beq    $v1, $v0, 0x8003bcac
+8003BC84: 00031040  sll    $v0, $v1, 1
+8003BC88: 00451021  addu   $v0, $v0, $a1
+8003BC8C: 94420000  lhu    $v0, ($v0)   ; [0x80140000]
+8003BC90: A2030071  sb     $v1, 0x71($s0)
+8003BC94: A200007C  sb     $zero, 0x7c($s0)
+8003BC98: A200007D  sb     $zero, 0x7d($s0)
+8003BC9C: 00A21021  addu   $v0, $a1, $v0
+8003BCA0: AE020078  sw     $v0, 0x78($s0)
+8003BCA4: 0800EF32  j      0x8003bcc8
+8003BCA8: AE020074  sw     $v0, 0x74($s0)
+8003BCAC: 9202007C  lbu    $v0, 0x7c($s0)
+8003BCB0: 00000000  nop    
+8003BCB4: 2442FFFF  addiu  $v0, $v0, -1   ; =0x8013FFFF
+8003BCB8: A202007C  sb     $v0, 0x7c($s0)
+8003BCBC: 304200FF  andi   $v0, $v0, 0xff
+8003BCC0: 1440003D  bnez   $v0, 0x8003bdb8
+8003BCC4: 00000000  nop    
+8003BCC8: 8E040074  lw     $a0, 0x74($s0)
+8003BCCC: 00000000  nop    
+8003BCD0: 90830000  lbu    $v1, ($a0)
+8003BCD4: 00000000  nop    
