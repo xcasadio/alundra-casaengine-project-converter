@@ -38,6 +38,46 @@ internal static class LiftableAi
 
     private const uint ReleaseClearBits = 0x80;
 
+    /// <summary>The bits E2 raises (<c>| 0x40</c>) and clears (<c>&amp; ~0x30</c>) in the flags of the object it does not destroy.</summary>
+    private const uint BreakSetBits = 0x40;
+
+    private const uint BreakClearBits = 0x30;
+
+    /// <summary>The program code of E2 in slot E (<c>0x8007ED30</c>): the break of the crates, the jars and the other objects thrown, called once the object left the hands and met something.</summary>
+    internal const int BreakCode = 2;
+
+    /// <summary>
+    /// The sprite types whose header holds E2 in the export (docs/plan-e20-annexe/e20-g1a/report.md, "Types a enregistrer"): the seven types of C23 (<see cref="SpriteTypes"/>) plus the stone (index 34, type 290), the barrel (index 37, type 293) and the trunk
+    /// (index 117, type 373) of the family C4. Guarded against the export by the tests.
+    /// </summary>
+    internal static readonly IReadOnlyList<int> BreakSpriteTypes = new[] { 234, 290, 291, 292, 293, 294, 297, 304, 373, 438 };
+
+    /// <summary>The keys <see cref="RegisterBreak"/> registers, for the pins of the production registry: E2, for the ten types (kept apart from <see cref="Keys"/>, the C23 of g1a).</summary>
+    internal static readonly IReadOnlyList<(int Slot, int Code)> BreakKeys = new[] { (ScriptHelper.ProgramEDeactivate, BreakCode) };
+
+    /// <summary>Registers E2 for the ten types of <see cref="BreakSpriteTypes"/> only; the disposable removes the key (for the tests that register it themselves when the registry of the runner does not hold it).</summary>
+    internal static IDisposable RegisterBreak(NativeSpriteRegistry registry)
+        => registry.Register(ScriptHelper.ProgramEDeactivate, BreakCode, BreakSpriteTypes, (entity, context, state) => Break(entity));
+
+    /// <summary>
+    /// One tick of E2 (<c>0x8007ED30</c>, E20.g2b) for <paramref name="entity"/>, run at every tick of the state Deactivated (slot E): the break of the object that met something. Once the animation 2 (the break) asked for is at its end
+    /// (<c>+0xAC</c>, <see cref="EntityScriptProxy.ForceResetAnimationFlag"/>, is 1) or the four corners of the entity stand on the ground property 4 (<c>+0x184 &amp; 4</c>, <see cref="EntityScriptProxy.CombinedVramFlagsAND"/>), the object is destroyed with the break effect of its
+    /// header: <c>DestroyEntity(e, -1)</c> (<c>0x8003A59C</c>: the loot, the status 4, the break effect, the carrier). Otherwise it asks for the animation 2 (<c>+0x88</c>, <see cref="EntityScriptProxy.TargetAnimationId"/>: the binary reads the animation ASKED, not the
+    /// one validated) and the flags become <c>(flags | 0x40) &amp; ~0x30</c> (the crate <c>0x332374</c> becomes <c>0x332344</c>: no longer a subject of the deactivation on impact or on a hit, the animation end stays). The destruction is the one of the world the entity belongs to
+    /// (<see cref="EntityScriptProxy.ScriptHost"/>, as the in-line E0/E1 of the runner reach it); none for an entity without a host.
+    /// </summary>
+    internal static void Break(EntityScriptProxy entity)
+    {
+        if ((entity.TargetAnimationId == 2 && entity.ForceResetAnimationFlag == 1) || (entity.CombinedVramFlagsAND & 4) != 0)
+        {
+            entity.ScriptHost?.DestroyEntity(entity, -1);
+            return;
+        }
+
+        entity.TargetAnimationId = 2;
+        entity.Flags = (entity.Flags | BreakSetBits) & ~BreakClearBits;
+    }
+
     /// <summary>Registers C23 for the seven types of <see cref="SpriteTypes"/> only.</summary>
     internal static void Register(NativeSpriteRegistry registry)
         => registry.Register(ScriptHelper.ProgramCTick, Code, SpriteTypes, (entity, context, state) => Tick(entity, context));

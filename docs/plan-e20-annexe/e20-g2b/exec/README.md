@@ -58,3 +58,94 @@ Phase A (T1) registers nothing in production: its predicted list is **empty**.
 ## Start counts
 
 `dotnet test --list-tests` at the start HEAD (Release): 5 913 tests. Partitions as g1a/g2a (`part.sh`): by test namespace, disjoint, partition 3 the exact negation of the other two.
+
+## T1 (phase A) - measured
+
+Start HEAD of T1: `bca3ade1` (the T0 docs commit). Files: `Alundra/Ai/Objects/LiftableAi.cs` (`BreakCode`, `BreakSpriteTypes`, `BreakKeys`, `RegisterBreak`, `Break`; `Register` and `Keys` of C23 untouched), `Alundra.Tests/Ai/Objects/BreakRun.cs` (the bench and `BreakHook`),
+`Alundra.Tests/Ai/Objects/LiftableBreakTests.cs` (7 tests), `Alundra.Tests/Ai/Objects/LiftableBreakWorldTests.cs` (30 cases). `NativeSpriteRegistry.CreateForProduction`, the runner, `WorldProxy`, `PlayerManager`, `CarryRules`: untouched, so phase A changes no behaviour
+(`CreateForProduction` does not call `RegisterBreak`: that line is phase B).
+
+### The bench
+
+A real exported map through the arcs' production path (`ArcRun`: real prefabs, effect stage, sound player, slot table), emptied of every entity but the hero, on a synthetic field (`SyntheticField`), native handlers off and the arena switch of D-F4-7
+(`NativeSpriteTypeFilterForTests`) on for the ten types of E2 only (a Beannoid stays inert). The crate (map-page index 36, map 67 "Coal Mine"; the jar, index 41, map 70 "Coastal Cave") is born by `SpawnEntityBySpriteIndex` on the head of the hero and put in his hands by `PutInHands`; the
+real hero throws it with the Square (T = the tick 1 of the run), at 1, 2 and 3 ticks per frame. The hook of E2: `BreakHook.Install` registers (E, 2) in the runner's registry only when no type of the ten has the key (the same tests hold after phase B).
+
+### Chronology measured (the plan's table, flat ground, no direction): identical at 1, 2 and 3 ticks per frame
+
+| K | crate (type 292) | jar (type 297) |
+|---|---|---|
+| T+21 | Normal, 4.5 px up, E2 not called | same |
+| T+22 | Normal, z 0, on the ground, flags 0x332374, E2 not called | same (0x232374) |
+| T+23 | Deactivated, animation asked 2, flags 0x332344, E2 1st call, sound 27 at this tick | 0x232344, sound 31 |
+| T+24 | validated animation 2, end flag (+0xAC) 1, E2 2nd call | same |
+| T+25 | status 4 (still in the world), E2 3rd call, the break effect attached at the end of the frame that holds this tick: 10 | effect 2 |
+| T+26 | out of the world, slot -1 | same |
+
+The sounds of the run: the throw (26) at T, the break animation's at T+23, and (a content other than 0) the drop sound 84 at T+25. The table matches the plan (arrival T+22, E2 T+23, status 4 T+25, free T+26, effects 10 and 2): no stop.
+
+### The other rows of the table
+
+- Beannoid at x = 165, thrown with a direction held (3 px a tick): hit counter 1 and one spark at T+21, E2 first call at T+22, status 4 at T+24, free at T+25 (1, 2, 3 ticks per frame). Beannoid at x = 150: flown over (36 to 50 px), no hit and no spark in the whole run, arrival T+22, E2 at T+23, status 4 at T+25.
+  The plan's two rows are those of the throw WITH a direction (the crate is at 178 px at T+22 in the free flight); without a direction the crate lands at 143.5 and touches a Beannoid at 150 at T+21 (measured while exploring, not pinned).
+- Wall (direction held, column 6): X 133 from T+8, E2 first call at T+9, status 4 at T+11, free at T+12 (1 and 2 ticks per frame).
+- Step of 16 px: on the top (z 16) at T+20, E2 at T+21, status 4 at T+23, free at T+24 (1 and 2 ticks per frame). Step of 48 px: measured, pinned relative to the tick it first stands on the top (E2 the next tick, destroyed 2 ticks later).
+- Deep water under the arrival (a cell of ground property 8 from the column 5): lands at T+22 (Normal), destroyed at T+23 by the pick phase itself (DestroyOnSlidingSlope, effect 6), the program E never runs, no effect 10.
+- Loot: the object of ContentsItemId is born at the break (type item + 0x1E, at the crate's whole pixel, the sound 84 at the tick of the destruction); ContentsItemId 0 drops nothing and plays no 84. As e0c is done, the "e0c not done" half of (b5) (nothing born, next to Contents 130) does not apply and is not written.
+- A crate at rest (a second one, far from the first) stays Normal with the flags and the animation it had for 100 ticks while the thrown crate makes the 3 calls of E2 counted by the runner.
+
+### Deviation measured (not a stop): 3 ticks per frame shifts the wall and step rows by one tick when the first call is not on the last tick of its frame
+
+The DLL validates the animations at the END OF THE FRAME (the engine's frame clock) and +0xAC (the end of the animation 2) comes from the engine's end-of-animation event, as the plan notes ("pas de l'horloge du tick"). The oracle runs one tick per frame. For the flat landing (first call at T+23, the last tick of its frame at 1, 2 and 3 ticks)
+the destruction is at T+25 as the oracle at every rate. When the first call falls on the first tick of a frame of 3 (the wall: T+9, the step of 16 px: T+21) the animation is validated one frame end later and E2 makes a 4th call: the destruction is at T+12 (wall) and T+24 (step) instead of T+11 and T+23, the slot free a tick later. The rule, measured and applied
+to every rate by the tests: destroy K = max(first call K + 2, last tick of the frame of the first call); equal to the plan's K at 1 and 2 ticks per frame (asserted), one tick later at 3 for the two rows whose first call is the first tick of its frame. The first call of E2 itself is at the plan's tick at every rate. This is the existing frame clock, not E2's code (E2 only reads the flag):
+the plan's stop line names the flat chronology (T+22, T+23, T+25, T+26), which holds.
+
+### Red before, green after
+
+Skeleton (Break throwing NotImplementedException at its first line, same signature): 35 red, 2 green of the 37. The 2 green (they do not call Break): `B1_TheCodeIsE2_TheSlotIsTheDeactivation_AndTheTenTypesAreTheOnesOfTheExport` and `B1_RegisteredInARegistryOfATest_TheKeyIsE2_ForTheTenTypesAlone_AndOnlyInTheSlotE_AndTheDisposableTakesItOut`
+(the constants and the key). On the code: 37 green.
+
+| Test | Cases | What it pins |
+|---|---|---|
+| LiftableBreakTests.B1_TheAnimation2AtItsEnd_Destroys_... | 1 (7 vectors) | the first line next to six vectors one step short (+0xAC 0, 2, -1; another animation asked) |
+| B1_TheBit4OfTheGroundPropertyOfTheFourCorners_Destroys_... | 1 | the second line, whatever the animation, next to eight other values of +0x184 |
+| B1_Otherwise_TheAnimation2IsAsked_AndTheFlagsBecomeOr0x40AndNot0x30_... | 1 (10 vectors) | the third line (a vector with the bit 0: ~0x31 is not equivalent), next to the call that destroys |
+| B1_AnEntityWithoutAHost_... | 1 | no host, no exception |
+| B1_TheCodeIsE2_..., B1_RegisteredInARegistryOfATest_..., B1_TheHandlerOfTheRegistryIsTheBreak_... | 3 | the ten types derived from the export, the key (E, 2) alone, the runner path |
+| LiftableBreakWorldTests.B2_* | 3 + 3 | the chronology of a crate (effect 10, sound 27) and a jar (effect 2) |
+| B3_* | 3 + 3 | the touch at x = 165, the flight over x = 150 |
+| B4_* | 3 + 3 + 3 | the wall, the steps of 16 and 48 px |
+| B5_* | 3 | the loot derived from ContentsItemId, next to a content of 0 |
+| B6_* | 3 | deep water (effect 6, no E2) next to the dry landing (effect 10) |
+| B7_* | 3 | the object at rest never runs E2, next to the thrown one that does |
+
+### Real mutations of the code (script g2b-exec/mut.py in the session scratchpad: apply, build Release, run the 37 tests, restore the bytes; the file is the phase A edit alone afterwards)
+
+18 mutants, 18 killed, plus the skeleton (35 red): ~0x30 to ~0x31 (1 red: the vector with the bit 0, so it is not equivalent); |0x40 forgotten (1); ~0x30 forgotten (11); +0xAC ignored (31); +0xAC != 0 (1); the validated animation read instead of the asked one (3); +0x184 & 4 forgotten (1), read as & 8 (1), as
+any bit (1); destruction with the effect 6 (24); the animation 3 asked (35); the destruction falling through to the writes (1); || to && (34); the type 373 left out (1); a type outside the ten added (2); the key registered in the code 3 (32), in the slot C (32), for the types of C23 only (1).
+
+### Suites
+
+Release with the neutralised copy (-p:CustomAfterMicrosoftCommonTargets=.../skipcopy.targets on build and test), then Debug last without it; --blame-hang-timeout 60s; the three partitions of g2a by test-name substring (part.sh; 3 = the exact negation of 1 and 2).
+
+| partition | tests | failures Release | failures Debug |
+|---|---|---|---|
+| 1 | 1 282 | 0 | 0 |
+| 2 | 2 878 | 0 | 0 |
+| 3 | 1 798 | 0 | 0 |
+| sum | 5 958 | 0 | 0 |
+
+The sum is 8 above the 5 950 tests of the suite for the reason the g2a record gives (eight tests carry both Tests.Ai./Tests.Arcs and Tests.Hero in their name and run in both partitions 1 and 2). `--list-tests`: 5 913 names before, 5 950 after, none missing, 37 added (the new ones). Zero failure everywhere.
+
+- Existing tests moved: none. Predicted list for phase A: empty; measured: empty.
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 warning, existing: TextBoxGpu.cs).
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal after the last Debug build.
+- The four docs/hero-trace-389-*.txt files were rewritten by the suites (line endings): `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, then restored by `git checkout`, never indexed.
+- The engine, the converter, the data and alundra-datas-analyser are untouched.
+
+### Choices of the executor
+
+- RegisterBreak, BreakKeys and BreakSpriteTypes are separate from Register, Keys and SpriteTypes of C23 so that phase A moves no pin; phase B adds the line to CreateForProduction and BreakKeys.Count to the four pins.
+- The loot test does not paste the object: it fixes ContentsItemId (Gildas, 0x45) and derives the type from LootDrop's own rule (item + 0x1E).
+- The spark positions are never read (D-E0B-8: they draw random words); the tests count the hit counter and the sparks.
