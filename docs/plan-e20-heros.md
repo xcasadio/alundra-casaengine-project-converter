@@ -7315,7 +7315,8 @@ rejoué sur le vrai code ; ce qui n'est qu'inférence est dit.
   - Phases : A, la fonction pure contre les goldens ; B, le registre, le verrou et les coins ; C, l'activation.
   - Recette : `66-crypte-de-lars.sav` (carte 22) ; `96-ancien-sanctuaire.sav` (carte 27, après E19.sm1) ; `91-ancien-sanctuaire-bug.sav`
     (carte 29).
-  - Son plan se détaille après g1b, avec les sondes P1 à P4 (Q-G2C-9).
+  - Son plan se détaille après g1b, avec les sondes P1 à P4 (Q-G2C-9). **Détaillée le 2026-10-24** ci-dessous (révision 0), après deux
+    lectures au binaire (C4 et les boutiques) ; la chute dans un trou (O-G-2) en est sortie dans une tranche à part, E20.g2b2, avant elle.
 - **E20.g2c2 — Les torches.**
   - Prérequis : g1b et f6b. f6b appartient au thème des attaques : g2c2 vient après elle.
   - Contenu : `(C, 70)` (la moitié portée), `(E, 20)`, le type 393 câblé, et le témoin négatif de g1b (la torche de la carte 86)
@@ -7345,6 +7346,222 @@ rejoué sur le vrai code ; ce qui n'est qu'inférence est dit.
 - **Q-G2C-8** : la DLL doit offrir `+0x80` (code natif E), que C4 lit au lâcher forcé.
 - **Q-G2C-9** : les sondes de la DLL au T0 de g2c1 : P1 `ForceAdjusted` d'un objet lancé contre un mur ; P2 les mots des quatre coins
   au bord d'une bande `0x1001` ; P3 `HitCounter` à T+21 ; P4 le `RidingEntity` d'un objet posé sur une plaque.
+
+##### E20.g2b2 — Les objets lancés tombent dans les trous (O-G-2) ⏳ (détaillée le 2026-10-24, révision 0 ; à relire par un `plan-verifier` frais)
+
+**Provenance.** Lecture seule du 2026-10-24 (HEAD `73c05530` ; rapports `report-main.md` §3 et `critic-main.md` Q3 et Manque 3, versés par T0 à
+`docs/plan-e20-annexe/e20-g2c1-disc/` avec les scripts et les sorties). O-G-2 n'avait pas de propriétaire : ni f6a ni g2b ne l'ont porté.
+
+**But.** Comme l'original : une caisse, une jarre, un tonneau, une pierre, un tronc ou un objet de plaque lancé sur une case de trou ou de sol de
+sortie disparaît à l'atterrissage, avec l'effet de casse de son en-tête. Aujourd'hui il reste posé sur la case.
+
+**Faits** (FAIT, MESURÉ).
+- **Le binaire.** `UpdateEntityTiles` (`0x80038064`-`0x80038360`) tourne pour chaque entité de la liste physique (statuts 2 et 3, `+0x20` nul) qui
+  a la gravité (`+0x6C & 0x100`) ; pour chacun des 4 coins qualifié par la hauteur (`+0x158[i] + 1 == +0x1E0`), il range le mot 32 bits, et
+  écrit `+0x180` (le OU des mots), `+0x184` (le ET) et `+0x18C` (la pente). La phase de choix (`0x800387A0`-`0x800387C8`) détruit l'entité qui
+  porte `0x200000` (`DestroyOnVramFlags`) quand le mot combiné a `0x8004` (le trou, `0x0004`, et le sol de sortie, `0x8000`) :
+  `DestroyEntity(e, -1)`, l'effet de casse de l'en-tête. T0 relit lequel des deux mots, OU ou ET, la phase de choix lit (la DLL lit le OU,
+  `EntityScriptProxy.cs:1941`).
+- **MESURÉ** (`q3_pit.py`) : tonneau, tronc et objet étoile lancés sur des cases `wk 0x04` ou `gp 0x80` : le mot vaut 4 ou `0x8000` **à
+  l'atterrissage** (T+22), le statut passe à 4 à T+23 sans passer par 3, avec l'effet 10, libération à T+24. Le plan disait « pendant le vol » :
+  c'est faux, en vol les coins ne sont pas qualifiés.
+- **La DLL au HEAD.** `UpdateVramFlags` (`EntityScriptProxy.cs`, le port de cette moitié, mêmes portes que `UpdateGroundSlope` : la gravité et
+  le champ de cases) n'est appelée que pour le héros (D-T-12 : la restriction évitait de détruire des PNJ sur des portails). Le crochet de f6a
+  (`if (HasLogicalZ) UpdateGroundSlope();`, dans `Update`, statuts actifs) n'en nourrit que la pente. La phase de choix est vivante pour
+  toute entité mais ne voit que des zéros hors héros ; la branche `CombinedVramFlagsAND & 4` d'E2 (`LiftableAi.cs`) est morte hors héros.
+- **Les entités marquées** (`HasLogicalZ`) sont celles que `PutInHands` a mises dans les mains (`PlayerManager.cs`) et celles qui naissent en
+  jeu (`WorldProxy.cs`, le bloc des marqueurs, D-E0K-1). Les types à gravité qui portent `0x200000` : les 7 C4, les 6 C23, la torche, les
+  sprites 134 et 174 (le pilier, posé par la carte, jamais marqué).
+
+**Décisions de la session.**
+- **D-G2B2-1** (Q-G2B2-1, la question G-1 de la lecture, défaut fidèle) — Le crochet de f6a appelle aussi `UpdateVramFlags()` pour une entité
+  marquée, après `UpdateGroundSlope()` : la même règle que le binaire, bornée aux entités marquées (la restriction D-T-12 reste pour les
+  entités posées par la carte, qui ne sont jamais marquées). Aucun autre site.
+- **D-G2B2-2** — Ce que cela change pour les entités nées en jeu (un butin, une flèche, un projectile à gravité et `0x200000` au-dessus d'un
+  trou ou d'une sortie) est fidèle ; T0 en dresse la liste par type, depuis l'export, et la suite entière dit quels tests bougent. Un test
+  qui bouge pour une entité qui n'a jamais été dans les mains est un arrêt : il faut revenir au plan, pas l'accepter.
+- **D-G2B2-3** — La branche `CombinedVramFlagsAND & 4` d'E2 devient vivante pour les objets marqués : T0 rejoue au binaire une caisse posée
+  par lancer dont les 4 coins ont la propriété 4, et compare (dans g2b, l'eau profonde détruit l'objet par la pente, effet 6, et E2 n'est jamais appelé) ; un écart est un arrêt.
+
+**Périmètre.** `Alundra/Entities/EntityScriptProxy.cs` (le crochet de f6a, et la doc de `UpdateVramFlags` et de D-T-12) ; les tests ; l'annexe
+`docs/plan-e20-annexe/e20-g2b2/` ; l'ADR-0089 amendé (ou un ADR neuf, au choix de T3 selon la taille, numéro libre recompté) ; ce plan.
+
+**Hors périmètre.** Les entités posées par la carte (D-T-12 gardée) ; les PNJ ; le moteur ; l'export.
+
+**Tâches.**
+- ⏳ **T0 — Rejeu, recensement, sondes** (commit de docs). (a) Verser à `docs/plan-e20-annexe/e20-g2c1-disc/` les deux rapports, les scripts et
+  les sorties de la lecture (depuis le scratchpad de la session, `scratchpad/g2c1-disc/`), avec un `SHA1SUMS.txt` ; rejouer `q3_pit.py` depuis
+  une copie, sortie identique. (b) Relire au binaire le mot que lit la phase de choix (OU ou ET) et la qualification des coins ; (c) le
+  recensement, depuis l'export, des types qui portent la gravité et `0x200000`, et de ceux qui peuvent être marqués (mis dans les mains ou nés en
+  jeu) ; (d) sur une copie de travail où seule la ligne du crochet change, jamais commitée : une caisse (type 291) et un tonneau (290) mis dans
+  les mains par `PutInHands` et lancés sur une case de trou puis sur une case de sortie, la chronologie relevée par tick contre `q3_pit.txt` ;
+  la suite entière : la liste des tests qui bougent. Arrêt si un test bouge pour une entité jamais mise dans les mains (D-G2B2-2), ou si la
+  chronologie diffère du binaire.
+- ⏳ **T1 — Tests d'abord** (rouges avant la ligne) : (p1) la caisse lancée sur un trou disparaît à T+23 avec son effet ; (p2) la même sur
+  une case de sortie ; (p3) le tonneau et le tronc sur un trou ; (p4) accolés : la même caisse lancée sur une case pleine reste posée ; (p5) une
+  entité posée par la carte sur une case de trou reste en vie (D-T-12, vert avant et après) ; (p6) D-G2B2-3 selon T0.
+- ⏳ **T2 — La ligne**, les docs corrigées ; verts. La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec,
+  partitions disjointes ; les traces de la 389 inchangées ; `cmp` ; `check_names.py --rules`.
+- ⏳ **T3 — Mutants, ADR** : au moins 6 mutants réels, tous tués (le OU au lieu du ET ou l'inverse, selon T0 ; le masque `0x8004` réduit à
+  `0x0004` ; le crochet sans la porte de la gravité ; le crochet pour toute entité au lieu des marquées ; l'appel avant le pas au lieu
+  d'après ; l'effet de casse perdu).
+- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** (p1) à (p4) rouges avant la ligne et verts après, (p5) vert avant et après ; les tests déplacés ⊂ la liste de T0 (d), chacun
+réécrit par dérivation ; la suite en Release et en Debug, zéro échec ; le moteur, le convertisseur et les données sans diff. **Recette de
+l'auteur** (après g1b, non bloquante) : lancer une caisse dans un trou.
+
+**Arrêts.** Un test bouge pour une entité jamais mise dans les mains ; la chronologie diffère du binaire ; un besoin de toucher au moteur.
+
+**Budget.** Un `executor` pour T0, un pour T1 à T3 ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** `git revert` de la ligne : les objets lancés restent posés sur les trous, comme avant.
+
+##### E20.g2c1 — C4 : les objets transportables (tonneau, pierre, tronc, objets des plaques, et les objets qui passent à C4 en jeu) ⏳ (détaillée le 2026-10-24, révision 0 ; à relire par un `plan-verifier` frais ; exécutable après E20.g1b et E20.g2b2)
+
+**Provenance.** Le T0 de lecture seule du 2026-10-22 (`docs/plan-e20-annexe/e20-g2c/disc/`, `report.md`), puis deux lectures du
+2026-10-24 au HEAD `73c05530` (C4 et ses questions : `report-main.md`, `critic-main.md` ; les boutiques : `shop-disc/report-main.md`,
+`critic-main.md`), chacune recoupée par un critique frais, CONFIRMÉES ; versées par le T0 de g2b2 et par celui de g2c1 à
+`docs/plan-e20-annexe/e20-g2c1-disc/`.
+
+**Prérequis.**
+- E20.g1b faite (l'ensemble câblé `ProductionWiredLiftableTypes` existe avec les 7 types C23, `PlayerTryAction` est branché) ; E20.g2b2 faite
+  (les objets lancés tombent dans les trous). g2c1 travaille dans le même checkout, après elles.
+- Le HEAD de départ suit la clôture de g2b2 au plan ; l'arbre de travail y est propre sur `Alundra/`, `Alundra.Tests/` et
+  `docs/plan-e20-annexe/`. Les chiffres de base (comptes de tests, épingles du registre) datent de la lecture ; T0 les re-mesure.
+
+**But.** Comme l'original : le tonneau, la pierre, le tronc et les quatre objets des plaques se soulèvent, se portent, se lancent ; un tonneau,
+une pierre ou un tronc lancé blesse un ennemi et se brise ; un objet lancé contre un mur pendant sa montée rebondit ; sur l'eau de nage,
+tonneau, pierre et objets disparaissent, le tronc flotte ; posé sur une plaque ou sur un autre objet, il y reste ; les blocs de glace et les
+articles de boutique que le script fait passer à C4 se relâchent. Aujourd'hui, ces objets sont des blocs solides qu'on ne peut pas soulever.
+
+**Faits** (FAIT, MESURÉ ; les sources ci-dessus).
+- **C4** (`0x80066984`-`0x80066BF4`, 157 mots, dont 39 de moitié portée) : le modèle du 2026-10-22 égale le vrai code sur 20 000 vecteurs,
+  157/157 instructions ; 150 mutants d'un mot, 134 tués, 16 équivalents ; goldens `c4_goldens.json` (1 244 vecteurs, SHA-256 `59167009…`).
+  Le corps est au §2 du rapport du 2026-10-22 ; les points qui portent la DLL :
+  - **La moitié portée** est celle de C23 (`LiftableAi.Tick`) avec la même table de lâcher (`0x800270C0`, `0x80027400`, `0x800281DC` sont
+    identiques aux indices 0 à 3 : 0, 3, 1, 4), **sauf les drapeaux** : C4 n'y touche pas pour les codes 1 à 3 ; pour le code -1 (une
+    blessure, la nage, une mort), si `+0x80 == 2`, il écrit `(f | 0x10) & ~0x80`. C23 écrit toujours `(f | 0x30) & ~0x80`. **Un objet C4
+    lancé reste donc collisionnable** : il bouche un couloir et se ramasse de nouveau, comme dans l'original.
+  - **`+0x80`** est le code natif E de l'en-tête (`SpriteProgramIndexes[ProgramEDeactivate]` dans la DLL, déjà exposé, variable à l'exécution
+    par `0x41`) : 2 pour 290, 293, 373 ; 0 pour 363 à 369. C4 lit la valeur vive.
+  - **La moitié libre** : bloqué en l'air en montant (`ForceZ > 0`) avec le verrou `+0x278` nul : le verrou passe à 1, la direction tourne de
+    `0x10`, l'effet 9 naît à la position plus 8 px en Z ; bloqué au sol : statut 3 si un des 4 coins a `(mot & 0x1001) == 0x1001`, puis
+    animation 0 ; non bloqué, au sol ou touché (`+0x220`) : son `0x18`, verrou à 0, animation 0 si aucun coin ne vaut `0x1001` (sinon il
+    glisse) ; le tronc (type 373) : animation 5 sur la pente 4 (il flotte), 0 sinon.
+- **Le verrou `+0x278` existe déjà** dans la DLL : `EntityScriptProxy.DelayOrAngleOrEntityId`, cloné ; ses autres écrivains (`PickupAi`,
+  `LootDrop`, `SaveBook`) visent d'autres entités. Le T0 et l'esquisse le disaient nouveau.
+- **Le lecteur des coins de C4 est une seconde fonction**, distincte de `UpdateEntityTiles` (D-G2B2) : il lit 16 bits par coin (`lhu`) aux
+  pointeurs que range `0x800370C4`, **sans** qualification de hauteur, et teste `& 0x1001`. MESURÉ : les pointeurs désignent toujours les 4
+  coins de la position finale du tick (183 ticks sur 183) ; les coins sont X − 10 et X + 10, Y − 7 et Y + 7, la géométrie de
+  `UpdateGroundSlope` (`EntitySpawnFactory.cs`). La DLL a les briques (`CellsCollisionField.SampleRawWalkability`, `SampleGroundProperty`),
+  pas le lecteur.
+- **`+0x18C`** (la pente) n'a qu'un écrivain (`0x80038348`) ; C4 ne le lit que pour le tronc. La DLL le nourrit pour les entités marquées
+  (f6a) : un tronc mis dans les mains l'a déjà ; il manque aux 8 troncs posés sur l'eau par la carte (70 recs 9, 10, 11, 12, 21 ; 73 recs 11,
+  12, 36), qui flottent (animation 5) **dès le premier tick** dans le binaire (MESURÉ, `q8_p5.txt`). Aucune sauvegarde n'arrive sur la 70 ni
+  la 73.
+- **Qui exécute C4.** Les 7 en-têtes C4 (types 290 tonneau, 293 pierre, 363, 367, 368, 369 objets, 373 tronc ; 191 placements) ; les 43 troncs
+  scriptés n'exécutent jamais C4 et leur programme A efface `Collidable` : ils ne se soulèvent pas (ce sont des obstacles qui patrouillent et
+  blessent) ; à l'exécution, `0x41 [C, 4]` fait passer à C4 **4 blocs de glace** (type 304, cartes 103 recs 7 et 22, 105 rec 2, 108 rec 6, qui
+  passent aussi en E0) et **26 articles de boutique** (11 types globaux : 48, 50, 66, 67, 68, 69, 71, 81, 83, 85, 113 ; cartes 134, 163,
+  258, 298, 398 ; leur genre de ramassage 1 est posé par leur programme C, `0x62 [128,128,3]`, pas par l'en-tête). Deux objets passent à
+  d'autres natifs non portés (113 rec 11, un tonneau, en C64 ; 473 rec 0, une pierre, en C96).
+- **Les boutiques** : l'achat est un transport. On monte sur l'étagère, on soulève l'article, on le **jette sur le comptoir** ; le programme
+  B de la carte voit l'article posé dans la zone du comptoir (`0x07`, puis `0x70` ou `0x8D`), annonce le prix (Oui ou Non), encaisse (`0x9A`,
+  `0x82`, `0x99`), puis l'article réapparaît sur l'étagère (stock infini). Les boutiques qui servent : 258 et 298 (Inoa), 398 (Lurvy), 134
+  (l'église, un gag) ; la « boutique » de la 163 (la maison de Jess) est un reste de gabarit inaccessible. **Aucune n'est requise par la chaîne
+  d'histoire.** Il manque deux opcodes au runner sur ces cartes : `0xB2` (la garde qui empêche de sortir avec un article non payé, 258 et 298,
+  propriétaire E19.sm3b) et `0x61` (398, la réprimande y boucle au HEAD, propriétaire E19.sm1).
+- **Les supports mobiles** : un objet posé sur un support qui bouge le suit depuis D5b (`ScriptedMotion.cs`, la boucle des passagers ;
+  ADR-0088). Cas réel : la pierre de la 444 (rec 25) sur une trappe qui descend.
+- **Les plaques** (sprite 108) lisent `RidingEntity` par `0x60`/`0x61` (E19.sm1, non exécutée) : sans sm1 elles sont inertes ; poser, empiler,
+  mesurer le support n'en dépendent pas (MESURÉ, P4 : le support apparaît un tick après l'atterrissage ; une pile de deux).
+- **Les sondes de la DLL à faire** (valeurs du binaire rejouées, `q8_p1.txt`, `q3_corners`, `s6_touch`, `q8_p4.txt`, `q8_p5.txt`) : P1 le rebond
+  (tonneau, pierre, tronc en marche : `ForceAdjusted` 1 à T, direction 24 → 8 et verrou 1 à T+1, effet 9 en (109,0 ; 100,0 ; 44,0) ; les
+  objets, plus étroits, un tick plus tard ; mur en colonne 6 : aucun rebond) ; P2 la glissade sur une bande `0x1001` (3 px par tick de T+22 à
+  T+46, arrêt à x = 250,0, animation 0 à T+47) ; P3 la touche (T+21 : `HitCounter` 1, la cible meurt ; T+22 : statut 3 ; T+24 : statut 4) ;
+  P4 la plaque et la pile ; P5 les troncs flottants.
+
+**Décisions de la session** (défauts réversibles en mode autonome ; ceux qui se voient en jeu sont posés à l'auteur, §2).
+- **D-G2C1-1** (Q-G2C-1) — `+0x18C` est nourri en plus pour le seul type 373 posé par la carte (`LiftableAi.FeedsGroundSlope`, lu par le crochet
+  de f6a : `HasLogicalZ || FeedsGroundSlope(SpriteType)`). Ce qui se voit : les 8 troncs posés sur l'eau des cartes 70 et 73 flottent dès le
+  chargement, comme l'original.
+- **D-G2C1-2** (Q-G2C-2) — Les 43 troncs scriptés : rien à porter ; un témoin (ils ne se soulèvent pas).
+- **D-G2C1-3** (Q-G2C-3) — Un lecteur neuf des mots des 4 coins, non qualifié, à la position courante (la géométrie de `UpdateGroundSlope`),
+  dans `Alundra/Physics/` ; O-G-2 est g2b2.
+- **D-G2C1-4** (Q-G2C-8) — `+0x80` est `SpriteProgramIndexes[ProgramEDeactivate]`, lu vif ; rien à ajouter.
+- **D-G2C1-5** (Q-G2C-4) — g2c1 étend l'ensemble câblé de g1b ; le texte de g1b n'est pas amendé.
+- **D-G2C1-6** (Q-G2C-5) — Le transport par un support mobile est déjà porté (D5b) : un test de monde (la pierre de la 444), pas de code.
+- **D-G2C1-7** (Q-G2C-6) — g2c1 ne dépend pas d'E19.sm1 ; la réaction des plaques et sa recette (`96-ancien-sanctuaire.sav`, carte 27 ;
+  `91-ancien-sanctuaire-bug.sav`, carte 29) attendent sm1.
+- **D-G2C1-8** — Le lâcher : une fonction partagée par C23 et C4, la table commune et une politique de drapeaux par gestionnaire ; le
+  comportement de C23 ne change pas (ses épingles restent vertes sans réécriture).
+- **D-G2C1-9** (Q-SHOP, défaut A) — La clé `(C, 4)` est enregistrée pour les 7 types C4, le 304 (les 4 blocs de glace) et les 11 types
+  d'articles ; l'ensemble câblé gagne les 7 types C4 et les 11 types d'articles (le 304 y est déjà, par C23). Un type n'est jamais câblé sans
+  `(C, 4)` (l'objet resterait collé aux mains). Câbler un type d'article ne rend pas soulevable le même objet lâché par un ennemi (son genre est
+  0). L'achat marche de bout en bout sur la 258 si les opcodes de son programme B sont portés (T0 le vérifie) ; la garde de sortie (`0xB2`) et
+  la boucle de Lurvy (`0x61`) restent au thème 3.
+- **D-G2C1-10** — Les deux objets qui passent à C64 et C96 (113 rec 11, 473 rec 0) ne sont pas portés ici (O-G2C1-1) ; leurs types restent
+  câblés (290, 293) ; T0 dit ce que fait l'original quand on soulève le tonneau de la 113 rec 11.
+- **D-G2C1-11** — L'effet 9 du rebond et le son `0x18` passent par les services existants (`EffectReservoir.Create`, le repère de la DLL ;
+  `ISoundPlayer.PlaySfx`).
+
+**Périmètre.** `Alundra/Ai/Objects/LiftableAi.cs` (`C4Tick`, le lâcher partagé, `RegisterC4` et ses types, `FeedsGroundSlope`, le commentaire
+qui inverse tonneau et pierre) ; `Alundra/Ai/NativeSpriteRegistry.cs` (`CreateForProduction`) ; `Alundra/Physics/` (le lecteur des coins) ;
+`Alundra/Entities/EntityScriptProxy.cs` (le crochet de f6a : `FeedsGroundSlope`) ; `Alundra/Hero/PlayerManager.cs`
+(`ProductionWiredLiftableTypes`) ; `Alundra/Entities/EntityFlags.cs` (la doc inversée de `Gravity`) ; `Alundra/SaveGames/TestSaves.cs` (un
+préréglage `c4-m22`, et `c4-m70` pour les troncs) avec ses tables de test et `docs/test-saves.md` ; les tests ; l'annexe
+`docs/plan-e20-annexe/e20-g2c1/` ; un ADR neuf (numéro libre recompté) et l'ADR-0089 amendé ; ce plan.
+
+**Hors périmètre.** E19.sm1 (`0x60`, `0x61`), E19.sm3b (`0xB2`), `0xB9` ; C64, C96 ; les torches (g2c2) ; le moteur ; l'export et le
+convertisseur.
+
+**Tâches.**
+- ⏳ **T0 — Prérequis, rejeu, sondes** (commit de docs). (a) Les prérequis (g1b et g2b2 closes au plan, l'arbre propre) ; (b) verser à
+  `docs/plan-e20-annexe/e20-g2c1-disc/` les rapports et scripts de la lecture des boutiques (`scratchpad/shop-disc/`), s'ils n'y sont pas, avec
+  un `SHA1SUMS.txt` ; (c) rejouer depuis une copie `c4_full.py` (goldens, SHA-256 égal), `q8_p1.py`, `q3_corners.py`, `q8_p4.py`, `q8_p5.py`,
+  `q9_swaps.py` et `shop_replay.py` (scénarios B, D, G, H), sorties identiques ; (d) relire au HEAD de départ l'ensemble câblé de g1b, les
+  épingles du registre et de l'ensemble câblé, les sites du crochet de f6a ; (e) **les sondes P1 à P5 de la DLL** sur une copie de travail où
+  C4 est câblé par un test jetable (jamais commité, versé en `.txt`), avec les vrais enregistrements (tonneau 22 rec 21, pierre 24 rec 24, objet
+  27 rec 5, tronc 70 rec 8 et recs 9 à 12, 21) contre les valeurs du binaire ; (f) le chemin de l'achat sur la 258 : la liste des opcodes du
+  programme B[2] et de ceux des articles, et ceux qui manquent au runner ; (g) le tonneau de la 113 rec 11 soulevé au binaire (C64) ; (h) la
+  liste prédite des tests déplacés, mesurée par un câblage temporaire annulé ensuite. Arrêt : une sonde qui diffère du binaire à un tick
+  listé ; un besoin de toucher au moteur ; plus de 10 tests existants déplacés.
+- ⏳ **T1 — Phase A, tests d'abord** (rouges sur un squelette qui compile, `C4Tick` vide) : (l1) `C4Tick` contre les 1 244 goldens, par classe
+  (porté, libre sans effet, son, effet 9, statut 3), chaque « sans effet » accolé à un positif ; (l2) le lâcher partagé : C23 inchangé (ses
+  épingles), C4 sans drapeaux aux codes 1 à 3, `(f | 0x10) & ~0x80` au code -1 avec `+0x80 == 2` seulement ; (l3) le lecteur des coins sur un
+  champ synthétique (une bande `0x1001`, un mur `0x1041`). Puis le corps ; verts. Aucun changement de comportement en production.
+- ⏳ **T2 — Phase B, tests de monde rouges avant la ligne** (le vrai contrôleur, `PutInHands` pour mettre l'objet dans les mains) :
+  (m1) le lancer à plat des 7 types (la chronologie du binaire : contact au sol à T+22, son 24 et animation 0 à T+23, drapeaux inchangés) ;
+  (m2) le rebond (P1), accolé au mur en colonne 6 sans rebond ; (m3) la glissade (P2) ; (m4) l'eau de nage : tonneau et objets disparaissent, le
+  tronc flotte ; (m5) la touche (P3) : tonneau, pierre, tronc tuent et se brisent, l'objet étoile ne touche pas ; (m6) la plaque et la pile
+  (P4) ; (m7) les 8 troncs flottants au chargement (P5), accolés au tronc hors de l'eau ; (m8) la pierre de la 444 sur la trappe qui descend ;
+  (m9) le bloc de glace de la 103 rec 7, soulevé et lancé, se relâche ; (m10) l'article de la 258 jeté sur le comptoir : le dialogue du prix
+  s'ouvre (si T0 (f) dit le chemin porté ; sinon le test s'arrête à l'opcode manquant et l'écart est consigné) ; (m11) au repos, les 171
+  placements natifs inertes restent inertes 6 ticks. Puis la ligne de la phase B : `(C, 4)` enregistré pour les 19 types, le lecteur des coins,
+  l'effet et le son, `FeedsGroundSlope` ; verts.
+- ⏳ **T3 — Phase C, l'activation** : l'ensemble câblé gagne les 18 types (D-G2C1-9) ; (a1) Carré contre un tonneau de la 22 le soulève,
+  rouge avant ; (a2) le préréglage `c4-m22` ; la suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions
+  disjointes ; les traces de la 389 ; `cmp` ; `check_names.py --rules` ; le moteur, le convertisseur et les données sans diff.
+- ⏳ **T4 — Mutants, ADR.** Au moins 14 mutants réels, tous tués : `ForceZ > 0` en `>= 0` ; le verrou non posé ; la direction `+0x10` en
+  `+0x08` ; le Z de l'effet 8 px en 16 ; le masque `0x1001` en `0x1000` ; une boucle sur 3 coins ; `HitCounter` ignoré ; le son `0x18` en un
+  autre ; la pente 4 en 1 ; l'animation 5 en 4 ; le test `+0x80 == 2` retiré ; `| 0x10` en `| 0x30` ; C23 qui prend la politique de C4 ;
+  `FeedsGroundSlope` pour toute entité ; un type câblé sans `(C, 4)`.
+- ⏳ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (c) identiques ; P1 à P5 égales au binaire ; (l1) à (l3) rouges sur le squelette et verts après ; (m1) à
+(m11) rouges avant la phase B (nommés) et verts après ; (a1) rouge avant la phase C ; la suite en Release et en Debug, zéro échec ; les tests
+déplacés ⊂ la liste de T0 (h), chacun réécrit par dérivation ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur**
+(non bloquante) : `66-crypte-de-lars.sav` (carte 22 : soulever un tonneau, le lancer contre un ennemi, le voir se briser) ; `c4-m70` (les troncs
+flottent) ; la boutique d'Inoa (soulever une herbe, la jeter sur le comptoir : le prix s'annonce).
+
+**Arrêts.** Un prérequis non rempli ; une sonde qui diffère du binaire à un tick listé ; un test hors de la liste prédite bouge ; plus de 10
+tests existants bougent ; un test qui boucle ; un besoin de toucher au moteur.
+
+**Budget.** Un `executor` par phase (T0, T1, T2, T3 et T4) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** La phase C se retire seule (les 18 types hors de l'ensemble câblé : rien ne se soulève de plus) ; puis la phase B (la clé
+`(C, 4)` retirée : les objets redeviennent inertes) ; la phase A ne change aucun comportement.
 
 
 #### 1.24.6 E20.g5 — Les vrais objets à pousser : g5a (piliers), g5b (les opcodes des boutons), g5c (l'arrêt du son), g5d (les objets scriptés) ✅ (2026-10-23, D-E20-63 ; g5a **faite et CONFIRMED le 2026-10-23** (ADR-0086) ; g5b, g5c, g5d **faites et CONFIRMED le 2026-10-24** (g5c : ADR-0090))
@@ -10767,6 +10984,8 @@ les trois entrées `0x31`.
 | Q-G5-A2 | (2026-10-23, E20.g5, posée à l'auteur en termes de jeu) Après avoir touché un objet à événement (statue, bloc, bouton), le héros s'arrête net et ne repart que si l'on relâche puis ré-enfonce la direction : c'est le comportement mesuré de l'original, pour toute interaction par contact (le programme F remet à zéro quatre mots du héros, `0x80042150`). Le garder (défaut de la session) ou le corriger, ce qui change toutes les interactions par contact **Réponse de l'auteur (2026-10-24)** : « garder » (D-E20-68). | Tranché le 2026-10-24 (D-E20-68) |
 | Q-G5C-QA1 | (2026-10-24, E20.g5c, à l'auteur en termes de jeu) Après g5c, le raclement de pierre s'arrête net à la fin du mouvement ; l'original le laisse mourir sur environ 0,2 s (les autres sons, de 0,01 à 0,7 s). Garder l'arrêt net, ou ajouter plus tard une extinction fidèle, qui demande d'exporter le temps d'extinction de chaque son (un chantier de plus : l'extracteur, le convertisseur, la DLL) ? Défaut de la session : l'arrêt net (D-G5C-4), le manque G1 consigné | l'auteur ; non bloquant |
 | Q-G5C-QA2 | (2026-10-24, E20.g5c, à l'auteur en termes de jeu) Quand deux objets demandent le raclement en même temps, un seul son joue (le second bouge en silence) et il se coupe dès que le premier s'arrête, comme dans l'original. Garder ? Défaut de la session : oui, fidèle (D-G5C-5) | l'auteur ; non bloquant |
+| Q-G2B2-1 | (2026-10-24, E20.g2b2, à l'auteur en termes de jeu) Dans l'original, une caisse, une jarre, un tonneau ou une pierre lancé sur un trou ou sur un sol de sortie disparaît à l'atterrissage, avec son effet de casse ; dans le portage il reste posé sur la case (les puzzles à trous seraient plus faciles). (A, défaut) faire comme l'original (une ligne, bornée aux objets passés dans les mains et aux entités nées en jeu) ; (B) garder l'écart | l'auteur ; non bloquant |
+| Q-SHOP | (2026-10-24, E20.g2c1, à l'auteur en termes de jeu) Dans l'original, on achète en boutique en soulevant l'article sur l'étagère et en le jetant sur le comptoir (Inoa, avant et après sa destruction ; Lurvy ; l'église, un gag). Aujourd'hui rien ne se soulève : aucun achat n'est possible. Aucune boutique n'est requise par l'histoire. (A, défaut) g2c1 rend les 11 types d'articles transportables avec le tonneau et la pierre (presque sans coût) ; l'achat marche à Inoa si les opcodes de la boutique sont portés ; la garde qui empêche de sortir sans payer et la boutique de Lurvy (qui relance la réprimande en boucle au HEAD) attendent le thème 3 ; (B) laisser les articles immobiles, un écart documenté | l'auteur ; non bloquant |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
 | Q-G1A-3 | (2026-10-17) Un objet lancé ne blesse, avant E14.b, que les cibles dont le gestionnaire D est porté (Beannoïde, Muruta) : confirmer **Réponse de l'auteur (2026-10-22)** : « oui » : confirmé. | Tranché le 2026-10-22 |
@@ -10801,6 +11020,7 @@ les trois entrées `0x31`.
 | O-G3-1 | (2026-10-18) Une entité détruite reste un obstacle jusqu'à la fin de la physique de son tick dans le binaire ; la DLL la retire tout de suite (le filtre `FlagToDestroy`, D-E19-29, dont la prémisse est réfutée) : un tick, toutes les entités | une tranche à part |
 | O-G3-2 | (2026-10-18) L'octet d'animation (`+0xB4`) est lu par la liste avant l'horloge et par la porte du sujet après dans le binaire ; la DLL lit `AnimFlags`, écrit en fin d'image (un tick ou plus) ; l'équivalent exact existe (`HitAnimByte`) | une tranche à part |
 | O-ANX-1 | (2026-10-24, relevé par g3) La règle `[Bb]in/` du `.gitignore` (ligne 21, pour les sorties de construction) écarte aussi les dossiers `bin/` des annexes : `e20-f4f6/bin` (273 fichiers), `e20-f4f6/critic/bin` (180), `e20-h3/bin` (143), `e20-h4b/bin` (81), `plan-e19-pad-age-annexe/o77/bin` (9) ne sont pas dans le dépôt, alors que les plans les citent comme preuves ; celui de g3 a été ajouté à sa clôture. Proposition : une exception `!docs/**/[Bb]in/` au `.gitignore` et l'ajout des cinq dossiers (14 Mo environ), par un commit de docs | l'auteur ; non bloquant |
+| O-G2C1-1 | (2026-10-24, lecture de g2c1) Deux objets passent par script à des natifs non portés : le tonneau de la 113 rec 11 en C64 (`0x8007ADDC`, il copie la hauteur du héros et inverse ses forces ; d'après la lecture, il ne gère pas le lâcher), la pierre de la 473 rec 0 en C96 (`0x800647B0`, un projectile qui rebondit, non soulevable). Le T0 de g2c1 dit ce que fait l'original quand on soulève le tonneau de la 113 rec 11 | g2c1 T0 (g), puis le thème des IA |
 | Q-H4-1 | (2026-10-17) Les pistes XA lancées par les sorts : les jouer (décodage du `.bin`, O-E19-36) ou un bouchon journalisé comme `0xB9` ? **Réponse de l'auteur (2026-10-22)** : « les jouer » : les pistes XA seront jouées, converties en WAV par le convertisseur (O-E19-36, ADR-0076, D-E20-53) ; le bouchon journalisé de h4a devient provisoire, jusqu'à E19.sm7. | Tranché le 2026-10-22 (D-E20-53) |
 | Q-H4-2 | (2026-10-17) Défauts avérés de l'original (la règle : un bug avéré se corrige) : le dernier emplacement utilisé n'est jamais visé par les sorts ; la première frappe du vent 1 est perdue (7 frappes au lieu de 8) ; le guidage de C63 tourne dans le sens numérique et non par le plus court ; le tri de la requête est instable. Corriger lesquels ? **Réponse de l'auteur (2026-10-22)** : « corrige le tri » : le tri de la requête est corrigé (stable). Les trois autres défauts de la liste sont tranchés par leurs questions détaillées : la borne du dernier emplacement corrigée (Q-H4B-2), la première frappe du vent 1 corrigée (Q-H4E1-1, B), le tour des boules du feu 1 reproduit (Q-H4D2-1, B) ; D-E20-54. **Lecture du tri contestée le 2026-10-22** (critique) : voir Q-H4-2b. **3e tour (Q-H4-2b, B)** : « le tri » = le tri dès deux cibles (Q-H4B-3) ; l'instabilité n'est pas corrigée (D-E20-62). | Tranché le 2026-10-22 (D-E20-54) |
 | Q-H4-2b | (2026-10-22) Ta réponse « corrige le tri » (Q-H4-2) a deux lectures. (A) Le tri devient **stable** : quand deux ennemis sont exactement à la même distance, l'orbe, la tornade ou la boule vise celui de l'emplacement le plus bas ; aujourd'hui l'original prend celui que son algorithme laisse devant, toujours le même dans la même situation, mais sans règle simple. Effet visible : presque aucun, l'égalité exacte des distances est rare. Coût : h4b1, prête, est à réviser (son tri, un réglage de plus, un mutant retourné), et les clés de h4d2 et h4e1 qui dépendent de l'ordre des égalités. (B) « Le tri » voulait dire le tri dès deux cibles (Q-H4B-3, déjà corrigé) : rien d'autre ne change, h4b1 reste prête. Recommandé : (B), puisque rien ne se voit **Réponse de l'auteur (2026-10-22, 3e tour)** : « B » : le tri dès deux cibles ; le tri du binaire est gardé, h4b1 reste prête (D-E20-62). | Tranché le 2026-10-22 (D-E20-62) |
