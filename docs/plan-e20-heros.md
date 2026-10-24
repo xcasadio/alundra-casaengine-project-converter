@@ -1350,7 +1350,7 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.b.
 
-#### 1.4.1 E20.b2 — L'Épée légendaire (objet 8) et l'opcode `0xC2` ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-45 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
+#### 1.4.1 E20.b2 — L'Épée légendaire (objet 8) et l'opcode `0xC2` ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-45 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
 
 **Provenance.** Lecture seule du 2026-10-24 (`report-main.md` partie B et le critique frais `critic-main.md`, CONFIRMÉ avec des ajouts repris ici,
 dans le scratchpad de la session principale `scratchpad/t2-proj/`, à verser par T0 à `docs/plan-e20-annexe/e20-b2-disc/`). D-E20-45 disait l'objet
