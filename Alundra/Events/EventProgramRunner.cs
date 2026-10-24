@@ -1298,12 +1298,11 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
                 return 3;
 
-            case 0xBE: // Play sound 2 (bis) - Script_190_0BE (E11.a, docs/plan-e11-audio.md): same
-                       // derivation and dispatch shape as 0xBD above - the decompilation never gives
-                       // 0xBE an id derivation distinct from 0xBD's.
+            case 0xBE: // Stop sound 2 - Script_190_0BE (E20.g5c, D-G5C-1): the handler 0x80041C6C calls StopSoundEffect (0x80049634) with the same two-byte id as 0xBD's
+                       // (v[2] << 8) | v[1]; the decompilation renders it as a second PlaySoundEffect, an error not ported (the label of the size table stays, D-G5C-7).
                 if (_worldContext.SoundPlayer is { } playSound2BisPlayer)
                 {
-                    playSound2BisPlayer.PlaySfx((v[2] << 8) | v[1]);
+                    playSound2BisPlayer.StopSfx((v[2] << 8) | v[1]);
                 }
                 else
                 {
@@ -1327,12 +1326,11 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
                 return 2;
 
-            case 0x75: // Play sound effect - Script_117_075 (EntityEventHandlers.cs:2208-2212, E11.a,
-                       // docs/plan-e11-audio.md): same single-byte v[1] derivation as 0x12 above, on its
-                       // own 2-byte instruction.
+            case 0x75: // Stop sound effect - Script_117_075 (E20.g5c, D-G5C-3): the handler 0x8003FA9C calls StopSoundEffect (0x80049634) with the same single-byte v[1] id as 0x12 above,
+                       // on its own 2-byte instruction; the decompilation renders it as a play, an error not ported.
                 if (_worldContext.SoundPlayer is { } playSoundEffectPlayer)
                 {
-                    playSoundEffectPlayer.PlaySfx(v[1]);
+                    playSoundEffectPlayer.StopSfx(v[1]);
                 }
                 else
                 {

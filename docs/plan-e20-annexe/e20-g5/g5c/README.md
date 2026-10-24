@@ -86,3 +86,49 @@ world test (stop at the frame 103). That wiring is not committed; phase B (T2) w
 
 5 990 = 5 966 + 24. Compared by name with the T0 trx: **no existing test moved** (the two of the predicted list, `PlaySound2Bis_0xBE_...` and `PlaySoundEffect_0x75_...`, are still green on the skeleton because the opcodes still call `PlaySfx`; they move in T2).
 `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 existing warning, `TextBoxGpu.cs`). The four `docs/hero-trace-389-*.txt` rewritten by the suites (line endings): `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, restored by `git checkout`, never indexed.
+
+## T2 - phase B, the code (measured)
+
+Start HEAD of T2: `370bdeef` (T1). Written: `SoundPlayer.StopSfx` (every live voice of the REQUESTED id stopped by `AudioService.Stop` and forgotten; nothing for the id 0, an unknown id or a finished voice; not gated by the armed state; the
+anti-duplicate table untouched), `case 0xBE` (`StopSfx((v[2] << 8) | v[1])`, 3 bytes) and `case 0x75` (`StopSfx(v[1])`, 2 bytes) of `EventProgramRunner.Dispatch`, the pillar calling `context.SoundPlayer?.StopSfx(PushSfx)` in place of its
+named stub (the stub and its test seam `StopSoundStubCallsForTests` removed; the comments of `PillarAi.cs` corrected: the sound of the push loops). `ISoundPlayer.StopSfx` (default member) was already in the T1 skeleton. The prototypes of the
+discovery were read, not applied; the code is written by hand.
+
+### Existing tests that move
+
+Exactly the two of the predicted list, rewritten by derivation (same bytes and same expected id, the assertion moves from the play list to the stop list, and the play list must be empty); renamed because the old names said "Play":
+
+| before | after |
+|---|---|
+| `EventProgramRunnerTests.PlaySound2Bis_0xBE_Implemented_SameTwoByteDerivationAs0xBD` | `EventProgramRunnerTests.StopSound2Bis_0xBE_Implemented_SameTwoByteDerivationAs0xBD_AsAStop` (`StopRequests == [301]`, `Requests` empty) |
+| `EventProgramRunnerTests.PlaySoundEffect_0x75_Implemented_DerivesIdFromSingleByte_NotTwo` | `EventProgramRunnerTests.StopSoundEffect_0x75_Implemented_DerivesIdFromSingleByte_NotTwo_AsAStop` (`StopRequests == [42]`, `Requests` empty) |
+
+The two pillar files adapted without a changed expected value: `PillarRun.cs` (`Stops` now reads `Sounds.StopRequests`) and `PillarAiGoldenTests.cs` (the stop journal read from the `RecordingSoundPlayer`). No other existing test moved (by name, all green).
+`PillarAiStopSoundTests.cs`: its summary comment only (the stub is gone).
+
+### World tests (real `SoundPlayer` over the real manifest, `FakeAudioBackend`; helper `Alundra.Tests/Audio/RealSoundWorld.cs`, with `IgnoreStop`, the player of the HEAD before g5c)
+
+| Test | Result |
+|---|---|
+| `Ai.Objects.PillarSoundWorldTests.TheScrapeLivesFromTheStartOfThePushToItsRelease_AndStopsAtTheFrame103` (map 26: silent 33 frames, one looping voice at frame 34, alive through the push, one play only, 0 voice after the frame 103) | red on the skeleton, green |
+| `Ai.Objects.PillarSoundWorldTests.WithoutTheStop_TheSameScrapeNeverEnds_TenSecondsAfterTheRelease` (the contrast: 1 voice 500 frames after the release) | green (by design) |
+| `Events.ButtonStopSoundWorldTests.Torla_TheBE25AtTheFrame215_EndsTheScrapeOfTheButton` (map 426, record 17: 1 voice at 214, 0 at 216 and at the end) | red on the skeleton, green |
+| `Events.ButtonStopSoundWorldTests.Torla_WithoutTheStop_TheSameScrapeNeverEnds` (the contrast: 1 voice at 214, 216 and the end) | green (by design) |
+
+Red check: `SoundPlayer.cs` put back to its T1 skeleton (empty `StopSfx`), the four tests run: the two positives fail, the two contrasts pass; the file restored (`git diff` shows the T2 body only).
+
+### Red before, green after (T1 tests)
+
+The 22 tests red in T1 on the skeleton are green now (the 24 of T1 all green); the two pins were green before and after.
+
+### Suites (Release with the neutralised copy, then Debug last without it; `--blame-hang-timeout 60s`; the partitions of T0, 3 = the exact negation of 1 and 2)
+
+| partition | tests Release | failures | tests Debug | failures |
+|---|---|---|---|---|
+| 1 | 1 313 | 0 | 1 313 | 0 |
+| 2 | 2 879 | 0 | 2 879 | 0 |
+| 3 | 1 802 | 0 | 1 802 | 0 |
+| sum | 5 994 | 0 | 5 994 | 0 |
+
+5 994 = 5 990 (T1) + 4 (the world tests above). `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal. `check_names.py --rules`: 0 finding (1 existing warning, `TextBoxGpu.cs`).
+The four `docs/hero-trace-389-*.txt` rewritten by the suites (line endings): `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, restored by `git checkout`, never indexed. Engine, converter, data and `alundra-datas-analyser` untouched.

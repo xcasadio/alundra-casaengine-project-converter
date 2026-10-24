@@ -14,7 +14,7 @@ namespace Alundra.Tests.Ai.Objects;
 
 /// <summary>
 /// E20.g5a T2 (docs/plan-e20-heros.md section 1.24.6, phase B): the world of the pushable pillar tests - the REAL world of an exported map with real prefabs and the production registry (<see cref="ArcRun"/>), the hero placed
-/// at a pixel and holding a direction, the sounds recorded and the stop of the sound journalled by the named stub of <see cref="PillarAi"/>. One <see cref="Frame"/> is one logic tick (0.02 s); the frame counter starts at 1 on the first frame
+/// at a pixel and holding a direction, the sounds recorded and the stop of the sound received by the recording sound player. One <see cref="Frame"/> is one logic tick (0.02 s); the frame counter starts at 1 on the first frame
 /// the direction is held, the way the discovery's probe numbered them (<c>docs/plan-e20-annexe/e20-g5/disc/probe_G5ProbeTests.cs.txt</c>).
 /// </summary>
 internal sealed class PillarRun : IDisposable
@@ -42,8 +42,8 @@ internal sealed class PillarRun : IDisposable
     /// <summary>The frames run since the hero was placed.</summary>
     public int Frame { get; private set; }
 
-    /// <summary>The sounds the stub of the stop was asked to stop, in order.</summary>
-    public List<int> Stops { get; } = new();
+    /// <summary>The sounds the sound player was asked to stop (<see cref="Alundra.Audio.ISoundPlayer.StopSfx"/>), in order.</summary>
+    public List<int> Stops => Sounds.StopRequests;
 
     /// <param name="zone">The folder of the map under <c>Maps/</c>.</param>
     /// <param name="world">The name of the world.</param>
@@ -51,7 +51,6 @@ internal sealed class PillarRun : IDisposable
     /// <param name="destroy">The records removed by a write of the harness before the run (the blockers of a puzzle).</param>
     public PillarRun(string name, string zone, string world, int heroX, int heroY, int heroZ, bool arrival = false, params int[] destroy)
     {
-        PillarAi.StopSoundStubCallsForTests = Stops;
         var spec = new ArcSpec("E20g5a-" + name, zone, world, Array.Empty<int>(), heroX / 24, heroY / 16, heroZ / 16, 100000, RealController: true, Prefabs: true,
             Arrival: arrival ? new ArcArrival(heroX << 16, heroY << 16, (heroZ / 16) << 20, GameState.ResetAnimationId, 16) : null);
         Arc = new ArcRun(spec);
@@ -94,7 +93,6 @@ internal sealed class PillarRun : IDisposable
     public void Dispose()
     {
         Arc.Dispose();
-        PillarAi.StopSoundStubCallsForTests = null;
     }
 
     /// <summary>The entity of the record <paramref name="record"/>, present in the map.</summary>

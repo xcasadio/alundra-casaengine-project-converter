@@ -83,16 +83,8 @@ public sealed class PillarAiGoldenTests
             hero.XCollisionEntity = xCollision == PillarAddress ? pillar : xCollision == 0 ? null : other;
 
             var sound = new RecordingSoundPlayer();
-            var stubCalls = new List<int>();
-            PillarAi.StopSoundStubCallsForTests = stubCalls;
-            try
-            {
-                PillarAi.Tick(pillar, new PickupHost { Hero = hero, Sound = sound });
-            }
-            finally
-            {
-                PillarAi.StopSoundStubCallsForTests = null;
-            }
+            PillarAi.Tick(pillar, new PickupHost { Hero = hero, Sound = sound });
+            var stubCalls = sound.StopRequests;
 
             uint Expected(string name) => pillarOut.TryGetProperty(name, out var value) ? U(value) : Word(pillarIn, name);
 

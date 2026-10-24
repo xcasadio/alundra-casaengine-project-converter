@@ -379,7 +379,19 @@ public sealed class SoundPlayer : ISoundPlayer
     /// <inheritdoc cref="ISoundPlayer.StopSfx"/>
     public void StopSfx(int sfxId)
     {
-        // Phase A skeleton (E20.g5c T1): the body is phase B.
+        // StopSoundEffect (0x80049634): every live voice of the REQUESTED id, whichever object started it, is stopped (net: AudioService.Stop, D-G5C-4) and forgotten, so the cap is free again at once.
+        // Not gated by the armed state of the fade machine, and the per-frame anti-duplicate table is neither read nor written. The id 0, an unknown id and a finished voice have nothing to stop.
+        if (!_liveVoicesBySfxId.TryGetValue(sfxId, out var voices))
+        {
+            return;
+        }
+
+        foreach (var voice in voices)
+        {
+            _audioService.Stop(voice.Handle);
+        }
+
+        voices.Clear();
     }
 
     /// <inheritdoc cref="ISoundPlayer.StopAllSfx"/>

@@ -11,8 +11,8 @@ namespace Alundra.Tests.Ai.Objects;
 
 /// <summary>
 /// E20.g5c T1 (docs/plan-e20-heros.md section 1.24.6, D-G5C-1, D-G5C-5), phase A: the end of C76 (<c>0x8007C024-0x8007C0D4</c>) asks the sound player for the stop of the sound 25 through <see cref="Alundra.Audio.ISoundPlayer.StopSfx"/> - the call the
-/// binary makes (<c>StopSoundEffect</c> <c>0x80049634</c>) where the decompilation has a second play. The tests read the STOP the player receives (<see cref="RecordingSoundPlayer.StopRequests"/>), not the named stub of g5a (<see cref="PillarAi.StopSoundStubCallsForTests"/>),
-/// so they are red as long as the pillar calls the stub. Each "no stop" assertion sits in a test that also holds the stop that does happen.
+/// binary makes (<c>StopSoundEffect</c> <c>0x80049634</c>) where the decompilation has a second play. The tests read the STOP the player receives (<see cref="RecordingSoundPlayer.StopRequests"/>).
+/// They were red while the pillar called the named stub of g5a (since removed). Each "no stop" assertion sits in a test that also holds the stop that does happen.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class PillarAiStopSoundTests

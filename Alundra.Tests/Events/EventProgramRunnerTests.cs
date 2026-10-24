@@ -3184,7 +3184,7 @@ public class EventProgramRunnerTests
     }
 
     [Fact]
-    public void PlaySound2Bis_0xBE_Implemented_SameTwoByteDerivationAs0xBD()
+    public void StopSound2Bis_0xBE_Implemented_SameTwoByteDerivationAs0xBD_AsAStop()
     {
         var soundPlayer = new FakeSoundPlayer();
         var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
@@ -3198,7 +3198,8 @@ public class EventProgramRunnerTests
 
         Assert.Equal(EventTraceKind.Implemented, kind);
         Assert.Equal(3, state.CodeIndex);
-        Assert.Equal(new[] { 301 }, soundPlayer.Requests);
+        Assert.Equal(new[] { 301 }, soundPlayer.StopRequests);
+        Assert.Empty(soundPlayer.Requests);
     }
 
     // T6 (docs/plan-e11-audio.md, blocker P2 of the second relecture): 0x12/0x75 derive sfxId from
@@ -3243,7 +3244,7 @@ public class EventProgramRunnerTests
     }
 
     [Fact]
-    public void PlaySoundEffect_0x75_Implemented_DerivesIdFromSingleByte_NotTwo()
+    public void StopSoundEffect_0x75_Implemented_DerivesIdFromSingleByte_NotTwo_AsAStop()
     {
         var soundPlayer = new FakeSoundPlayer();
         var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
@@ -3256,7 +3257,8 @@ public class EventProgramRunnerTests
 
         Assert.Equal(EventTraceKind.Implemented, kind);
         Assert.Equal(2, state.CodeIndex);
-        Assert.Equal(new[] { 42 }, soundPlayer.Requests);
+        Assert.Equal(new[] { 42 }, soundPlayer.StopRequests);
+        Assert.Empty(soundPlayer.Requests);
     }
 
     // E20.g5c (docs/plan-e20-heros.md section 1.24.6, D-G5C-1, D-G5C-3): 0xBE and 0x75 are the STOP of a sound (StopSoundEffect, 0x80049634), not a second play - the decompilation renders them

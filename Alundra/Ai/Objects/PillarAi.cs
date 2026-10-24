@@ -13,7 +13,7 @@ namespace Alundra.Ai.Objects;
 /// <list type="bullet">
 /// <item><description>the hero is blocked by the pillar (<c>hero.+0x130 == pillar</c>, <see cref="EntityScriptProxy.XCollisionEntity"/>): a counter (<c>+0x274</c>, a signed 32-bit word) goes up to <see cref="PushTicks"/>; at that value, at every tick, the sound <see cref="PushSfx"/> is asked,
 /// the animation 1 is posed (<c>+0x88</c>) and the direction (<c>+0x8C</c>) is the side of the hero plus half a turn (<see cref="Direction"/>);</description></item>
-/// <item><description>otherwise, the stop of the sound is asked if the animation was 1 (<see cref="StopSoundEffect"/>, a named stub: <c>ISoundPlayer</c> has no stop of one sound yet, g5c), then the counter and the animation go back to 0.</description></item>
+/// <item><description>otherwise, the stop of the sound is asked if the animation was 1 (<see cref="Audio.ISoundPlayer.StopSfx"/>, E20.g5c: the sound of the push LOOPS, so the stop is what ends it), then the counter and the animation go back to 0.</description></item>
 /// </list>
 /// The decompilation renders that stop as a second <c>PlaySoundEffect</c>; the binary calls <c>StopSoundEffect</c> (<c>0x80049634</c>, see the discovery of 2026-10-23).
 /// </summary>
@@ -44,15 +44,11 @@ internal static class PillarAi
     /// <summary>The direction added to the side of the hero: half a turn of the 32 (<c>+ 0x10</c>, then <c>&amp; 0x1F</c>).</summary>
     private const int HalfTurn = 0x10;
 
-    /// <summary>Test seam, per thread (the motif of <see cref="Alundra.Hero.PlayerAnimationEffects.StubCallsForTests"/>): when non-null, every call of the named stub <see cref="StopSoundEffect"/> appends the sound it was asked to stop.</summary>
-    [ThreadStatic]
-    internal static List<int>? StopSoundStubCallsForTests;
-
     /// <summary>What one tick of C76 does, as a function of the counter, the contact and the animation asked.</summary>
     /// <param name="Counter">The counter after the tick.</param>
     /// <param name="PlaySound">The sound of the push is asked (<see cref="PushSfx"/>).</param>
     /// <param name="Animate">The animation 1 is posed and the direction is written.</param>
-    /// <param name="StopSound">The stop of the sound is asked (<see cref="StopSoundEffect"/>).</param>
+    /// <param name="StopSound">The stop of the sound is asked (<see cref="Audio.ISoundPlayer.StopSfx"/>).</param>
     /// <param name="ClearAnimation">The animation asked goes back to 0.</param>
     internal readonly record struct CounterStep(int Counter, bool PlaySound, bool Animate, bool StopSound, bool ClearAnimation);
 
@@ -107,7 +103,7 @@ internal static class PillarAi
 
         if (step.StopSound)
         {
-            StopSoundEffect(PushSfx);
+            context.SoundPlayer?.StopSfx(PushSfx);
         }
 
         if (step.Animate)
@@ -125,10 +121,4 @@ internal static class PillarAi
             }
         }
     }
-
-    /// <summary>
-    /// <c>StopSoundEffect</c> (<c>0x80049634</c>): a named stub. <see cref="Audio.ISoundPlayer"/> can stop every sound (<c>StopAllSfx</c>) but not one, so the stop at the end of the push is not made (the sound of the push is short); it is journalled
-    /// (<see cref="StopSoundStubCallsForTests"/>) for the slice that gives the engine its stop of one sound (g5c, Q-G5-2).
-    /// </summary>
-    private static void StopSoundEffect(int sfxId) => StopSoundStubCallsForTests?.Add(sfxId);
 }
