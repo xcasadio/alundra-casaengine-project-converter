@@ -1,0 +1,24 @@
+0xBD (play16): 3312 sites on 310 maps; on the 30 chain maps: 119 sites on 19 maps; distinct ids 239; top ids {2: 233, 55: 231, 45: 224, 25: 194, 24: 149, 18: 146, 60: 131, 46: 131, 47: 127, 49: 74, 3: 65, 85: 63, 134: 62, 39: 57}
+0xBE (stop16): 392 sites on 119 maps; on the 30 chain maps: 12 sites on 4 maps; distinct ids 43; top ids {25: 204, 85: 54, 353: 31, 229: 17, 341: 6, 349: 6, 360: 6, 316: 5, 123: 5, 226: 4, 283: 4, 391: 4, 162: 3, 57: 3}
+0x75 (stop8): 0 sites on 0 maps; on the 30 chain maps: 0 sites on 0 maps; distinct ids 0; top ids {}
+0x12 (play8): 0 sites on 0 maps; on the 30 chain maps: 0 sites on 0 maps; distinct ids 0; top ids {}
+0xBE by slot: {'C': 251, 'B': 140, 'A': 1}
+0x75 by slot: {}
+stops (0xBE and 0x75) preceded in the same program by a play of the same id: 327 ; not preceded: 65
+unpaired by id: {229: 17, 353: 12, 25: 10, 85: 6, 226: 4, 57: 3, 391: 2, 123: 2, 306: 2, 205: 1, 147: 1, 436: 1, 64: 1, 493: 1, 232: 1}
+--- chain maps: every 0xBE/0x75 site
+  map 10  B[5] pc 885  op 0xBE id 25   program sound ops: [('BD', 25), ('BD', 46), ('BD', 46), ('BE', 25)]
+  map 10  C[7] pc 2873  op 0xBE id 85   program sound ops: [('BD', 85), ('BD', 46), ('BD', 46), ('BE', 85)]
+  map 135  C[6] pc 1475  op 0xBE id 316   program sound ops: [('BD', 60), ('BD', 316), ('BE', 316), ('BD', 60), ('BD', 25), ('BE', 25), ('BD', 309), ('BD', 60), ('BD', 25), ('BD', 46), ('BE', 25)]
+  map 135  C[6] pc 1658  op 0xBE id 25   program sound ops: [('BD', 60), ('BD', 316), ('BE', 316), ('BD', 60), ('BD', 25), ('BE', 25), ('BD', 309), ('BD', 60), ('BD', 25), ('BD', 46), ('BE', 25)]
+  map 135  C[6] pc 2061  op 0xBE id 25   program sound ops: [('BD', 60), ('BD', 316), ('BE', 316), ('BD', 60), ('BD', 25), ('BE', 25), ('BD', 309), ('BD', 60), ('BD', 25), ('BD', 46), ('BE', 25)]
+  map 178  C[6] pc 680  op 0xBE id 85   program sound ops: [('BD', 45), ('BD', 85), ('BE', 85)]
+  map 391  B[1] pc 531  op 0xBE id 306   program sound ops: [('BD', 46), ('BD', 45), ('BD', 304), ('BD', 305), ('BE', 306), ('BE', 85), ('BE', 57)]
+  map 391  B[1] pc 534  op 0xBE id 85   program sound ops: [('BD', 46), ('BD', 45), ('BD', 304), ('BD', 305), ('BE', 306), ('BE', 85), ('BE', 57)]
+  map 391  B[1] pc 537  op 0xBE id 57   program sound ops: [('BD', 46), ('BD', 45), ('BD', 304), ('BD', 305), ('BE', 306), ('BE', 85), ('BE', 57)]
+  map 391  B[2] pc 552  op 0xBE id 306   program sound ops: [('BE', 306), ('BE', 85), ('BE', 57), ('BD', 306), ('BD', 85), ('BD', 57), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303)]
+  map 391  B[2] pc 555  op 0xBE id 85   program sound ops: [('BE', 306), ('BE', 85), ('BE', 57), ('BD', 306), ('BD', 85), ('BD', 57), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303)]
+  map 391  B[2] pc 558  op 0xBE id 57   program sound ops: [('BE', 306), ('BE', 85), ('BE', 57), ('BD', 306), ('BD', 85), ('BD', 57), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303), ('BD', 303)]
+--- id 25 (the stone scraping): plays per map (0xBD)
+maps with a 0xBD 25: 74  top: {44: 15, 424: 14, 343: 11, 100: 10, 102: 8, 17: 6, 385: 6, 439: 6, 23: 5, 28: 5, 426: 5, 136: 4}
+maps with a 0xBE 25: 75  top: {44: 15, 424: 15, 343: 11, 100: 10, 102: 8, 17: 6, 385: 6, 439: 6, 23: 5, 28: 5, 426: 5, 126: 4}

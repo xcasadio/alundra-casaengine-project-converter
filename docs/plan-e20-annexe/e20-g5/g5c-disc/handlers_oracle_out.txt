@@ -1,0 +1,5 @@
+vectors 400 x 4 handlers, mismatches 0
+  0xBD @0x80041C38: PlaySoundEffect(id from (b2<<8)|b1), returns 3
+  0xBE @0x80041C6C: StopSoundEffect(id from (b2<<8)|b1), returns 3
+  0x12 @0x8003D6C0: PlaySoundEffect(id from b1), returns 2
+  0x75 @0x8003FA9C: StopSoundEffect(id from b1), returns 2

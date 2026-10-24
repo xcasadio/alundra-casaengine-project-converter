@@ -1,0 +1,149 @@
+#nullable enable
+using System;
+using System.IO;
+using System.Reflection;
+using CasaEngine.Framework.Audio;
+using Xunit;
+using Alundra.Audio;
+using Alundra.Hero;
+using Alundra.Maps;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Ai.Objects;
+
+/// <summary>
+/// PROBE of the g5c discovery (scratch copy, never committed): the pillar of the map 26 pushed in the REAL world (PillarRun, the production registry) with the REAL SoundPlayer over the REAL export manifest (record 25: looping tone, MaxVoices 1) and a FakeAudioBackend,
+/// to MEASURE how long the scrape lives (a) as at the HEAD (the stop of the sound is not made: a decorator that ignores StopSfx) and (b) with the stop wired (SoundPlayer.StopSfx, C76 calling it at the release).
+/// </summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G5cWorldProbeTests
+{
+    private sealed class IgnoreStop : ISoundPlayer
+    {
+        private readonly ISoundPlayer _inner;
+        public IgnoreStop(ISoundPlayer inner) => _inner = inner;
+        public void PlaySfx(int sfxId) => _inner.PlaySfx(sfxId);
+        public void RemixVoice(int sfxId, int left, int right) => _inner.RemixVoice(sfxId, left, right);
+        public void FlushFrameSounds() => _inner.FlushFrameSounds();
+        public void StopAllSfx() => _inner.StopAllSfx();
+        public void StopSfx(int sfxId) { /* HEAD: C76's stop is a journalled stub, nothing reaches the player */ }
+    }
+
+    private static string ProjectPath()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, "alundra-project", "Sounds")))
+        {
+            dir = dir.Parent;
+        }
+
+        return Path.Combine(dir!.FullName, "alundra-project");
+    }
+
+    private static (SoundPlayer Player, FakeAudioBackend Backend, AudioService Service) RealPlayer(object owner)
+    {
+        var backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        provider.Register(Guid.Parse("3f12a63d-5824-5103-9141-57002bbffb7b"), new FakeAudioClip("sfx_0025", 10401)); // record 25, tone 0, as exported
+        var service = new AudioService(backend) { ClipProvider = provider };
+        return (new SoundPlayer(service, new SfxBank(ProjectPath()), owner), backend, service);
+    }
+
+    private static void Install(PillarRun run, ISoundPlayer player)
+        => typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(run.Arc.Proxy, player);
+
+    [Fact]
+    public void AtTheHead_ThePillarScrapeStartsOnce_LoopsThroughThePush_AndNeverEnds_EvenLongAfterTheRelease()
+    {
+        using var run = new PillarRun("g5c-head", "Ancient Shrine", "Ancient Shrine-26", 300, 424, 16);
+        var (player, backend, service) = RealPlayer(new object());
+        Install(run, new IgnoreStop(player));
+
+        run.Hold(PadState.Right, 100);
+        Assert.Single(backend.PlayCalls);                 // PlaySfx(25) was asked at every tick of push (67 times); one voice only (MaxVoices 1)
+        Assert.True(backend.PlayCalls[0].Parameters.IsLooped);
+        Assert.Equal(1, backend.ActiveVoiceCount);
+
+        run.Release(500);                                // 10 s after the release
+        service.Update(0.016f);
+        Assert.Equal(1, backend.ActiveVoiceCount);        // the scrape is STILL playing
+    }
+
+    [Fact]
+    public void WithTheStopWired_TheScrapeLivesExactlyFromTheStartOfThePushToItsRelease()
+    {
+        using var run = new PillarRun("g5c-stop", "Ancient Shrine", "Ancient Shrine-26", 300, 424, 16);
+        var (player, backend, service) = RealPlayer(new object());
+        Install(run, player);
+
+        run.Hold(PadState.Right, 33);
+        Assert.Empty(backend.PlayCalls);                  // the first 32 ticks of contact are silent
+        run.Hold(PadState.Right, 1);                      // frame 34: the animation 1 and the first PlaySfx(25)
+        Assert.Single(backend.PlayCalls);
+        Assert.Equal(1, backend.ActiveVoiceCount);
+        run.Hold(PadState.Right, 66);
+        Assert.Equal(1, backend.ActiveVoiceCount);        // alive through the whole push
+        Assert.Single(backend.PlayCalls);
+
+        run.Release(1);                                   // frame 101: still pushing one tick after the release
+        run.Release(2);
+        service.Update(0.016f);
+        Assert.Equal(0, backend.ActiveVoiceCount);        // stopped at the frame 103 (the tick the animation goes 1 -> 0, as W8 pins)
+    }
+
+    // ---- the SCRIPT path: the right button of Torla (map 426, record 17): a push of 130 frames, the slide of 80 px on the frames 54 to 213, the 0xBE 25 at the frame 215 (ButtonAndBlockSitesTests) ----
+
+    private static void RunTorla(bool stopWired, out int aliveAt214, out int aliveAt216, out int aliveAtTheEnd, out int playCalls, out int firstPlayFrame)
+    {
+        var flags = new[] { 1253, 1254, 1267, 1269 };
+        using var run = new Alundra.Tests.Events.ScriptedPushRun("g5c-b426", "Nirude", "Nirude (inner)-426", flags, 252, 790, 32, 17);
+        var (player, backend, service) = RealPlayer(new object());
+        typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(run.Arc.Proxy, stopWired ? player : new IgnoreStop(player));
+        firstPlayFrame = -1;
+        aliveAt214 = -1;
+        aliveAt216 = -1;
+        for (var f = 1; f <= 310; f++)
+        {
+            if (f <= 130)
+            {
+                run.Hold(Alundra.Tests.Events.ScriptedPushRun.Pad('D'), 1);
+            }
+            else
+            {
+                run.Release(1);
+            }
+
+            if (firstPlayFrame < 0 && backend.PlayCalls.Count > 0)
+            {
+                firstPlayFrame = f;
+            }
+
+            if (f == 214) { aliveAt214 = backend.ActiveVoiceCount; }
+            if (f == 216) { aliveAt216 = backend.ActiveVoiceCount; }
+        }
+
+        service.Update(0.016f);
+        aliveAtTheEnd = backend.ActiveVoiceCount;
+        playCalls = backend.PlayCalls.Count;
+    }
+
+    [Fact]
+    public void Torla_AtTheHead_TheButtonScrapeIsStartedByBD25_AndTheBE25AtTheEndOfTheSlide_ChangesNothing_TheScrapeNeverEnds()
+    {
+        RunTorla(false, out var a214, out var a216, out var end, out var plays, out var first);
+        Console.WriteLine($"G5C-TORLA-HEAD firstPlayFrame={first} alive@214={a214} alive@216={a216} alive@end={end} playCalls={plays}");
+        Assert.True(plays >= 1);
+        Assert.Equal(1, end);
+    }
+
+    [Fact]
+    public void Torla_WithTheStopWired_TheBE25AtTheFrame215_EndsTheScrape()
+    {
+        RunTorla(true, out var a214, out var a216, out var end, out var plays, out var first);
+        Console.WriteLine($"G5C-TORLA-STOP firstPlayFrame={first} alive@214={a214} alive@216={a216} alive@end={end} playCalls={plays}");
+        Assert.Equal(1, a214);
+        Assert.Equal(0, a216);
+        Assert.Equal(0, end);
+    }
+}

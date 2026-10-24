@@ -1,0 +1,61 @@
+--- a/Alundra/Audio/ISoundPlayer.cs	2026-10-24 08:45:18.000000000 +0200
++++ b/Alundra/Audio/ISoundPlayer.cs	2026-10-24 09:07:40.097665800 +0200
+@@ -51,4 +51,7 @@
+     /// (<see cref="FlushFrameSounds"/>'s own concern, fact 5 - a distinct mechanism from this one).
+     /// </summary>
+     void StopAllSfx();
++
++    /// <summary>PROBE (g5c discovery): the stop of ONE sound, by requested id (StopSoundEffect 0x80049634).</summary>
++    void StopSfx(int sfxId) { }
+ }
+--- a/Alundra/Audio/SoundPlayer.cs	2026-10-24 08:45:18.000000000 +0200
++++ b/Alundra/Audio/SoundPlayer.cs	2026-10-24 09:07:40.104182300 +0200
+@@ -376,6 +376,22 @@
+         _frameSoundCount = 0;
+     }
+ 
++    /// <summary>PROBE (g5c discovery): StopSoundEffect 0x80049634 - every live voice of the REQUESTED id is stopped and forgotten; not gated by the BGM-change countdown, the anti-duplicate table is left alone.</summary>
++    public void StopSfx(int sfxId)
++    {
++        if (!_liveVoicesBySfxId.TryGetValue(sfxId, out var voices))
++        {
++            return;
++        }
++
++        foreach (var voice in voices)
++        {
++            _audioService.Stop(voice.Handle);
++        }
++
++        voices.Clear();
++    }
++
+     /// <inheritdoc cref="ISoundPlayer.StopAllSfx"/>
+     public void StopAllSfx()
+     {
+--- a/Alundra/Events/EventProgramRunner.cs	2026-10-24 08:45:18.000000000 +0200
++++ b/Alundra/Events/EventProgramRunner.cs	2026-10-24 09:07:40.128229400 +0200
+@@ -1,4 +1,4 @@
+-﻿#nullable enable
++#nullable enable
+ using System;
+ using System.Collections.Generic;
+ using CasaEngine.Core.Logging;
+@@ -1303,7 +1303,7 @@
+                        // 0xBE an id derivation distinct from 0xBD's.
+                 if (_worldContext.SoundPlayer is { } playSound2BisPlayer)
+                 {
+-                    playSound2BisPlayer.PlaySfx((v[2] << 8) | v[1]);
++                    playSound2BisPlayer.StopSfx((v[2] << 8) | v[1]);
+                 }
+                 else
+                 {
+@@ -1332,7 +1332,7 @@
+                        // own 2-byte instruction.
+                 if (_worldContext.SoundPlayer is { } playSoundEffectPlayer)
+                 {
+-                    playSoundEffectPlayer.PlaySfx(v[1]);
++                    playSoundEffectPlayer.StopSfx(v[1]);
+                 }
+                 else
+                 {

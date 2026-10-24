@@ -1,0 +1,96 @@
+--- a/Alundra/Ai/Objects/PillarAi.cs	2026-10-24 08:45:18.000000000 +0200
++++ b/Alundra/Ai/Objects/PillarAi.cs	2026-10-24 09:33:32.180551100 +0200
+@@ -44,10 +44,6 @@
+     /// <summary>The direction added to the side of the hero: half a turn of the 32 (<c>+ 0x10</c>, then <c>&amp; 0x1F</c>).</summary>
+     private const int HalfTurn = 0x10;
+ 
+-    /// <summary>Test seam, per thread (the motif of <see cref="Alundra.Hero.PlayerAnimationEffects.StubCallsForTests"/>): when non-null, every call of the named stub <see cref="StopSoundEffect"/> appends the sound it was asked to stop.</summary>
+-    [ThreadStatic]
+-    internal static List<int>? StopSoundStubCallsForTests;
+-
+     /// <summary>What one tick of C76 does, as a function of the counter, the contact and the animation asked.</summary>
+     /// <param name="Counter">The counter after the tick.</param>
+     /// <param name="PlaySound">The sound of the push is asked (<see cref="PushSfx"/>).</param>
+@@ -107,7 +103,7 @@
+ 
+         if (step.StopSound)
+         {
+-            StopSoundEffect(PushSfx);
++            context.SoundPlayer?.StopSfx(PushSfx);
+         }
+ 
+         if (step.Animate)
+@@ -125,10 +121,4 @@
+             }
+         }
+     }
+-
+-    /// <summary>
+-    /// <c>StopSoundEffect</c> (<c>0x80049634</c>): a named stub. <see cref="Audio.ISoundPlayer"/> can stop every sound (<c>StopAllSfx</c>) but not one, so the stop at the end of the push is not made (the sound of the push is short); it is journalled
+-    /// (<see cref="StopSoundStubCallsForTests"/>) for the slice that gives the engine its stop of one sound (g5c, Q-G5-2).
+-    /// </summary>
+-    private static void StopSoundEffect(int sfxId) => StopSoundStubCallsForTests?.Add(sfxId);
+ }
+--- a/Alundra.Tests/Support/RecordingSoundPlayer.cs	2026-10-24 08:45:18.000000000 +0200
++++ b/Alundra.Tests/Support/RecordingSoundPlayer.cs	2026-10-24 09:33:32.187175500 +0200
+@@ -29,8 +29,12 @@
+ {
+     public List<int> Requests { get; } = new();
+ 
++    public List<int> StopRequests { get; } = new();
++
+     public void PlaySfx(int sfxId) => Requests.Add(sfxId);
+ 
++    public void StopSfx(int sfxId) => StopRequests.Add(sfxId);
++
+     public void RemixVoice(int sfxId, int left, int right)
+     {
+     }
+--- a/Alundra.Tests/Ai/Objects/PillarRun.cs	2026-10-24 08:45:18.000000000 +0200
++++ b/Alundra.Tests/Ai/Objects/PillarRun.cs	2026-10-24 09:33:32.212642900 +0200
+@@ -43,7 +43,7 @@
+     public int Frame { get; private set; }
+ 
+     /// <summary>The sounds the stub of the stop was asked to stop, in order.</summary>
+-    public List<int> Stops { get; } = new();
++    public List<int> Stops => Sounds.StopRequests;
+ 
+     /// <param name="zone">The folder of the map under <c>Maps/</c>.</param>
+     /// <param name="world">The name of the world.</param>
+@@ -51,7 +51,6 @@
+     /// <param name="destroy">The records removed by a write of the harness before the run (the blockers of a puzzle).</param>
+     public PillarRun(string name, string zone, string world, int heroX, int heroY, int heroZ, bool arrival = false, params int[] destroy)
+     {
+-        PillarAi.StopSoundStubCallsForTests = Stops;
+         var spec = new ArcSpec("E20g5a-" + name, zone, world, Array.Empty<int>(), heroX / 24, heroY / 16, heroZ / 16, 100000, RealController: true, Prefabs: true,
+             Arrival: arrival ? new ArcArrival(heroX << 16, heroY << 16, (heroZ / 16) << 20, GameState.ResetAnimationId, 16) : null);
+         Arc = new ArcRun(spec);
+@@ -94,7 +93,6 @@
+     public void Dispose()
+     {
+         Arc.Dispose();
+-        PillarAi.StopSoundStubCallsForTests = null;
+     }
+ 
+     /// <summary>The entity of the record <paramref name="record"/>, present in the map.</summary>
+--- a/Alundra.Tests/Ai/Objects/PillarAiGoldenTests.cs	2026-10-24 08:45:18.000000000 +0200
++++ b/Alundra.Tests/Ai/Objects/PillarAiGoldenTests.cs	2026-10-24 09:33:32.222686200 +0200
+@@ -83,16 +83,8 @@
+             hero.XCollisionEntity = xCollision == PillarAddress ? pillar : xCollision == 0 ? null : other;
+ 
+             var sound = new RecordingSoundPlayer();
+-            var stubCalls = new List<int>();
+-            PillarAi.StopSoundStubCallsForTests = stubCalls;
+-            try
+-            {
+-                PillarAi.Tick(pillar, new PickupHost { Hero = hero, Sound = sound });
+-            }
+-            finally
+-            {
+-                PillarAi.StopSoundStubCallsForTests = null;
+-            }
++            PillarAi.Tick(pillar, new PickupHost { Hero = hero, Sound = sound });
++            var stubCalls = sound.StopRequests;
+ 
+             uint Expected(string name) => pillarOut.TryGetProperty(name, out var value) ? U(value) : Word(pillarIn, name);
+ 

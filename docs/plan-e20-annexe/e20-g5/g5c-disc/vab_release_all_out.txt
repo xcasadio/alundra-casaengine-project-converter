@@ -1,0 +1,43 @@
+id  25  sites 204  vab -1 repeat=[True] secs=[0]                       release: RR 12 lin -> 0.186 s
+id  85  sites  54  vab -1 repeat=[True, True] secs=[0]                 release: RR 14 lin -> 0.743 s
+id 353  sites  31  vab 42 repeat=[True, True] secs=[43]                release: RR 10 exp -> 0.046 s; RR 11 exp -> 0.093 s
+id 229  sites  17  vab 4 repeat=[True] secs=[5]                        release: RR 12 lin -> 0.186 s
+id 341  sites   6  vab 40 repeat=[True] secs=[41]                      release: RR 7 exp -> 0.006 s
+id 349  sites   6  vab 24 repeat=[True] secs=[25]                      release: RR 13 lin -> 0.372 s
+id 360  sites   6  vab 46 repeat=[True, True] secs=[47]                release: RR 11 exp -> 0.093 s
+id 316  sites   5  vab 52 repeat=[True] secs=[53]                      release: RR 11 exp -> 0.093 s
+id 123  sites   5  vab 11 repeat=[False] secs=[12]                     release: RR 16 lin -> 2.972 s
+id 226  sites   4  vab 3 repeat=[True] secs=[4]                        release: RR 11 lin -> 0.093 s
+id 283  sites   4  vab 35 repeat=[True] secs=[36]                      release: RR 13 lin -> 0.372 s
+id 391  sites   4  vab 52 repeat=[True] secs=[53]                      release: RR 11 exp -> 0.093 s
+id 162  sites   3  vab 12 repeat=[True, False] secs=[13]               release: RR 0 lin -> 0.000 s; RR 13 lin -> 0.372 s
+id  57  sites   3  vab 11 repeat=[True, True] secs=[12]                release: RR 13 lin -> 0.372 s
+id 309  sites   3  vab 52 repeat=[False] secs=[53]                     release: RR 16 exp -> 2.972 s
+id 499  sites   2  vab 17 repeat=[True, True] secs=[18]                release: RR 13 lin -> 0.372 s
+id 156  sites   2  vab 20 repeat=[True, True] secs=[21]                release: RR 14 lin -> 0.743 s
+id 216  sites   2  vab 16 repeat=[True, True] secs=[17]                release: RR 13 lin -> 0.372 s
+id 227  sites   2  vab 4 repeat=[True] secs=[5]                        release: RR 12 lin -> 0.186 s
+id 119  sites   2  vab 10 repeat=[True] secs=[11]                      release: RR 11 lin -> 0.093 s
+id 176  sites   2  vab 22 repeat=[True, True] secs=[23]                release: RR 13 lin -> 0.372 s
+id 126  sites   2  vab 11 repeat=[True] secs=[12]                      release: RR 11 lin -> 0.093 s
+id 232  sites   2  vab 1 repeat=[False] secs=[2]                       release: RR 17 lin -> 5.944 s
+id 306  sites   2  vab 56 repeat=[True, True] secs=[57]                release: RR 13 exp -> 0.372 s
+id 205  sites   1  vab 1 repeat=[False] secs=[2]                       release: RR 15 lin -> 1.486 s
+id  55  sites   1  vab -1 repeat=[False] secs=[0]                      release: RR 16 lin -> 2.972 s
+id 363  sites   1  vab 46 repeat=[False] secs=[47]                     release: RR 30 exp -> 48695.774 s
+id 257  sites   1  no tones / unknown id                               release: -
+id 256  sites   1  no tones / unknown id                               release: -
+id 258  sites   1  no tones / unknown id                               release: -
+id 259  sites   1  no tones / unknown id                               release: -
+id 159  sites   1  vab 17 repeat=[True] secs=[18]                      release: RR 13 lin -> 0.372 s
+id 102  sites   1  vab 6 repeat=[False] secs=[7]                       release: RR 18 lin -> 11.889 s
+id 251  sites   1  vab 12 repeat=[True, True] secs=[13]                release: RR 14 lin -> 0.743 s
+id 147  sites   1  vab 17 repeat=[True, True] secs=[18]                release: RR 13 lin -> 0.372 s
+id 141  sites   1  vab 14 repeat=[True, True] secs=[15]                release: RR 13 lin -> 0.372 s
+id 382  sites   1  vab 51 repeat=[True, True] secs=[52]                release: RR 12 exp -> 0.186 s
+id 436  sites   1  vab 74 repeat=[True] secs=[75]                      release: RR 13 exp -> 0.372 s
+id  64  sites   1  vab -1 repeat=[False] secs=[0]                      release: RR 17 lin -> 5.944 s
+id 195  sites   1  vab 28 repeat=[True, True] secs=[29]                release: RR 13 lin -> 0.372 s
+id 493  sites   1  vab 70 repeat=[True] secs=[71]                      release: RR 13 lin -> 0.372 s
+id 337  sites   1  vab 40 repeat=[False] secs=[41]                     release: RR 16 exp -> 2.972 s
+id   0  sites   1  no tones / unknown id                               release: -

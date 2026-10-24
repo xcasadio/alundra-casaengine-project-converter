@@ -7354,7 +7354,7 @@ de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYP
 - **Sans lien avec la chaîne d'histoire** : aucune des 30 cartes de la chaîne ne porte une de ces familles. sm1 n'est pas requis.
 - **Le son de fin, une erreur de la décompilation** (FAIT, binaire) : l'opcode `0xBE` appelle `StopSoundEffect`, pas « jouer le son ».
   La DLL rejoue le son là où le binaire l'arrête : 392 sites sur 119 cartes, dont 12 sur la chaîne ; `ISoundPlayer` n'a que
-  `StopAllSfx`.
+  `StopAllSfx`. La lecture de g5c précise que pour 371 sites, ceux des sons qui bouclent, le rejeu est refusé et le son ne s'arrête jamais.
 - **Deux opcodes manquent pour les boutons** : `0x72` (24 sites sur 12 cartes ; il recopie `TargetAnimationId` et `TargetDirection` dans
   leurs champs `Last*`) et `0xAA` (22 sites sur 8 cartes). `0xA9` a 4 sites, sur la carte 440, hors des quatre familles. La lecture de g5b
   précise ces chiffres et corrige deux valeurs de cette lecture (voir g5b, « Corrections au §1.24.6 »).
@@ -7364,8 +7364,8 @@ de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYP
   Ordre retenu : juste après E20.e0c2.
 - **g5b, les opcodes `0x72`, `0xA9` et `0xAA`** : détaillée ci-dessous (révision 0, lecture au binaire du 2026-10-23), prélevée sur
   E19.sm3 et E19.sm4 du thème 3, qui les portaient déjà avec leurs preuves (D-G5B-1). Elle débloque aussi les blocs Mini-Nilude.
-- **g5c, l'arrêt du son** (`0xBE` = `StopSoundEffect`, `ISoundPlayer.StopSfx`, l'arrêt de C76) : esquisse ; l'auteur a répondu « corriger »
-  le 2026-10-24 (D-E20-67), la lecture au binaire est lancée pour la détailler. Son T0 établit si le moteur sait arrêter un bruitage précis ; sinon le manque se consigne au rapport des
+- **g5c, l'arrêt du son** (`0xBE` = `StopSoundEffect`, `ISoundPlayer.StopSfx`, l'arrêt de C76) : l'auteur a répondu « corriger » le
+  2026-10-24 (D-E20-67) ; détaillée ci-dessous (révision 0) après une lecture au binaire. Son T0 établit si le moteur sait arrêter un bruitage précis ; sinon le manque se consigne au rapport des
   manques du moteur, sans contournement.
 - **g5d, les objets scriptés** : détaillée ci-dessous (révision 1) ; des arcs pour la statue (cartes 2 et 352) et le bloc de la 23 (les blocs
   glissants de la carte 40 sont prouvés par g5b, T3, ARC-40), un test statique « aucun opcode sauté dans les programmes des quatre familles », l'épingle du gel du héros après un programme F
@@ -7649,6 +7649,125 @@ frais après.
 - **Signalé, non traité** : sur la 424, le script ne fait glisser le bloc 3 que poussé par l'ouest, où le sol du héros est au-dessus du bloc ;
   à regarder à part.
 - **Recette de l'auteur, à faire** : `234-torla.sav` (carte 426), le bouton de droite par le nord.
+
+##### E20.g5c — L'arrêt du son : `StopSoundEffect` (opcodes `0xBE`, `0x75`, et la fin de C76) ⏳ (détaillée le 2026-10-24, révision 0 ; D-E20-67 ; à relire par un `plan-verifier` frais)
+
+**Provenance.** Lecture seule du 2026-10-24 (HEAD `b36a78a7`, le code du son inchangé jusqu'à `1a98ef5d` ; annexe
+`docs/plan-e20-annexe/e20-g5/g5c-disc/`, `report.md`), après la réponse de l'auteur D-E20-67.
+
+**But.** Comme l'original : un son arrêté par le script ou par le pilier s'arrête. Le raclement de pierre (id 25) cesse à la fin de chaque
+mouvement : la glissade d'une statue, d'un bloc ou d'un bouton, la poussée d'un pilier. Aujourd'hui il tourne en boucle jusqu'à ce qu'on
+quitte la salle.
+
+**Faits** (FAIT, MESURÉ).
+- **Le défaut est plus grave que « la DLL rejoue ».** 371 des 392 sites `0xBE` visent un son qui boucle. Le rejeu est refusé par le plafond de
+  voix (`MaxVoices` 1), donc le son ne s'arrête jamais. Les 16 sites sur des sons non bouclés rejouent le son ; 5 visent un id sans tonalité.
+  Mesuré sur la vraie DLL : le raclement du pilier de la carte 26 joue encore 10 s après le relâchement ; celui du bouton de Torla, encore à
+  l'image 310, après le `0xBE` de l'image 215.
+- **Les gestionnaires** (rejoués contre le vrai code, 400 vecteurs chacun, 0 écart) : `0xBD` (`0x80041C38`) appelle `PlaySoundEffect`
+  (`0x800490FC`) et `0xBE` (`0x80041C6C`) appelle `StopSoundEffect` (`0x80049634`), tous deux avec l'id `(b2 << 8) | b1` et une longueur 3 ;
+  `0x12` (`0x8003D6C0`) joue et `0x75` (`0x8003FA9C`) arrête, avec l'id `b1` et une longueur 2. La DLL a déjà les longueurs et les ids : seule la
+  fonction appelée change. `0x75` n'a aucun site dans les données.
+- **`StopSoundEffect(id)`** (`0x80049634`, 36 mots, plus le chercheur de voix `0x80049714`) : rien si l'id vaut 0 ; sinon, si la banque n'est pas
+  en chargement (`(rang.drapeaux & 2) == 0`), toutes les voix de l'id **demandé** sont éteintes (key-off) et libérées tout de suite, quel que
+  soit l'objet qui les a lancées ; puis `rang.drapeaux = 0`. Il ne lit ni le compte à rebours qui bloque `Play`, ni la table anti-doublon, ni la
+  machine de fondu. Modèle rejoué : 3 000 séquences, 0 écart, 70/70 instructions ; 88 mutants d'un mot, 69 tués, 19 équivalents ; 7 goldens.
+- **Le binaire a sept appels à `StopSoundEffect`** : `0xBE`, `0x75`, la fin de C76 (le pilier, id 25), C39 et C40 (id `0x55`), C49 (deux, id
+  `0x62`). La décompilation définit la fonction (`SoundManager.cs:4111`) mais rend les sept par `PlaySoundEffect` : c'est l'erreur portée par la
+  DLL (`Script_190_0BE`, `EntityEventHandlers.cs:3627-3632` ; `Script_117_075`, `:2208-2212` ; la fin de C76, `FunctionTypeC.cs:7189-7192`).
+- **La DLL au HEAD** : `ISoundPlayer` (`PlaySfx`, `RemixVoice`, `FlushFrameSounds`, `StopAllSfx`) n'a pas d'arrêt d'un son précis ; il a 25
+  implémenteurs (1 de production, 24 de test). `SoundPlayer` (`Alundra/Audio/SoundPlayer.cs`) range déjà ses voix vivantes par id demandé
+  (`_liveVoicesBySfxId`, une poignée par voix), la même clé que le binaire.
+- **Le moteur sait arrêter une voix** (`AudioService.Stop(handle)`, arrêt net ; `StopWithFade` ; lecture seule) : aucune branche du moteur
+  n'est nécessaire.
+- **Manques du moteur, à consigner, pas à contourner.** G1 : pas de key-off avec relâchement par tonalité. L'original laisse mourir le son sur
+  0,006 à 0,74 s selon l'id (0,186 s pour le raclement 25, 0,743 s pour l'id 85) ; ce relâchement n'est ni dans `sfx.json` ni dans
+  `Sounds/sfx-manifest.json`. G2, déjà connu et hors g5c : le mixeur reboucle sur tout le clip, sans la fenêtre `loop_start`/`loop_end`.
+- **Les sites** (`sites_stop_summary.txt`) : 392 `0xBE` sur 119 cartes, 43 ids ; 12 sur la chaîne d'histoire (cartes 10, 135, 178, 391), tous
+  sur des sons bouclés ; 0 `0x75`, 0 `0x12`. Les quatre familles de g5 en portent 85, dont 60 pour l'id 25.
+- **Les tests qui bougent** (MESURÉ par un câblage temporaire sur une copie, toute la suite) : `EventProgramRunnerTests.PlaySound2Bis_0xBE_…`
+  et `EventProgramRunnerTests.PlaySoundEffect_0x75_…`, et rien d'autre ; aucun arc. Le pilier demande d'adapter `PillarRun.cs` et
+  `PillarAiGoldenTests.cs`, qui lisent le bouchon `PillarAi.StopSoundStubCallsForTests`, sans changer leurs attendus.
+- **Correction de la lecture de g5** : le son 25 du pilier n'est pas « court », il boucle ; l'ADR-0086 et le commentaire de `PillarAi.cs` le
+  disaient.
+
+**Décisions de la session.**
+- **D-G5C-1** (Q-G5C-2) — `ISoundPlayer.StopSfx(int sfxId)` est un membre par défaut qui ne fait rien, comme le précédent
+  d'`IEntityWorldContext`, pour ne pas casser les 25 implémenteurs. `SoundPlayer` et les enregistreurs de test qui l'observent le
+  surchargent.
+- **D-G5C-2** — La sémantique de `SoundPlayer.StopSfx` est celle du binaire : il arrête toutes les voix de l'id demandé (la redirection par
+  `RefSfxId` comprise), libère le plafond, ne dépend pas de l'état « armé », ne touche pas la table anti-doublon, ne fait rien pour l'id 0, un
+  id inconnu ou une voix déjà finie.
+- **D-G5C-3** (Q-G5C-1) — `0x75` est porté avec `0xBE` : même défaut, une ligne, aucun site.
+- **D-G5C-4** (Q-G5C-3, Q-G5-A1 défaut QA-1) — L'arrêt est net (`AudioService.Stop`). L'extinction fidèle est le manque G1, consigné dans
+  `docs/plan-e20-annexe/e20-g5/g5c/engine-gaps.md` (Q-G5C-4) ; elle demanderait un chantier de plus (l'export du relâchement par tonalité,
+  puis `StopWithFade`).
+- **D-G5C-5** (QA-2, défaut) — Un seul raclement à la fois (plafond 1), comme l'original : un second objet qui le demande bouge en silence, et
+  l'arrêt du premier coupe le son de l'autre.
+- **D-G5C-6** (Q-G5C-6) — Les arrêts des gestionnaires natifs C39, C40 et C49 restent au thème des IA ennemies, qui les portera avec ces
+  gestionnaires ; l'API leur servira.
+- **D-G5C-7** (Q-G5C-7) — Les libellés de `EventOpcodeSizeTable.cs` (« Play sound 2 (bis) », « Play sound effect ») viennent de la
+  décompilation, qu'on ne corrige pas : ils restent ; les commentaires du code sont corrigés.
+- **D-G5C-8** (Q-G5C-5) — L'ADR neuf de g5c corrige l'ADR-0086 sur le son du pilier (il boucle) ; l'ADR-0086 reçoit la ligne « amended by
+  ADR-NNNN ».
+
+**Périmètre.** `Alundra/Audio/ISoundPlayer.cs` (le membre par défaut), `Alundra/Audio/SoundPlayer.cs` (`StopSfx`) ;
+`Alundra/Events/EventProgramRunner.cs` (`case 0xBE`, `case 0x75`) ; `Alundra/Ai/Objects/PillarAi.cs` (le bouchon retiré, l'appel à `StopSfx`,
+les commentaires) ; les commentaires d'`IEntityWorldContext` ; les tests (neufs, et les deux tests déplacés, `FakeSoundPlayer`,
+`RecordingSoundPlayer`, `PillarRun.cs`, `PillarAiGoldenTests.cs`) ; l'annexe `docs/plan-e20-annexe/e20-g5/g5c/` avec `engine-gaps.md` ; un
+ADR et l'ADR-0086 amendé ; `docs/decisions/README.md` ; ce plan.
+
+**Hors périmètre.** Le moteur (G1, G2) ; l'export et le convertisseur ; les gestionnaires C39, C40, C49 ; les libellés de la table des tailles.
+
+**Tâches.**
+- ⏳ **T0 — Relecture et rejeu** (commit de docs).
+  - Relire au HEAD de départ les sites ci-dessus, les deux tests, le nombre d'implémenteurs d'`ISoundPlayer`.
+  - Rejouer depuis une copie `stop_oracle.py` et `handlers_oracle.py` (sorties égales à celles de l'annexe).
+  - Relever les comptes de tests et la liste prédite des tests déplacés.
+- ⏳ **T1 — Phase A, tests d'abord** (rouges sur un squelette qui compile : `StopSfx` vide, les opcodes encore en `PlaySfx`).
+  - `SoundPlayer` : arrête les voix de l'id et pas les autres ; les deux tonalités du son 85 ; le plafond libéré ; Play après Stop dans la même
+    image refusé par l'anti-doublon ; rien pour l'id 0, un id inconnu, une voix finie ; non bloqué par l'état « armé » ; la redirection par
+    `RefSfxId` ; un seul arrêt coupe le son d'un autre objet (D-G5C-5).
+  - Le dispatch : `0xBE` appelle `StopSfx((b2 << 8) | b1)` avec `b2 != 0` ; `0x75` appelle `StopSfx(b1)` ; `0xBD` et `0x12` inchangés ;
+    sans lecteur, rien ne lève.
+  - Le pilier : l'arrêt de l'id 25 une fois, à la fin de la poussée.
+  - Un test statique : les 392 sites `0xBE` sur 119 cartes et 0 `0x75`.
+  - Chaque cas « sans effet » accolé à un positif.
+- ⏳ **T2 — Phase B** (verte).
+  - `SoundPlayer.StopSfx`, `case 0xBE`, `case 0x75`, l'appel du pilier (le bouchon retiré), les tests déplacés réécrits par dérivation.
+  - Des tests de monde avec le vrai `SoundPlayer` sur le faux moteur audio (`FakeAudioBackend`) : le pilier de la carte 26 (la voix vivante
+    pendant la poussée, arrêtée au relâchement, image 103) ; le bouton de Torla, carte 426 (`0xBE` à l'image 215 ; la voix vivante à 214,
+    éteinte à 216). Les sondes de l'annexe donnent les montages et les valeurs.
+- ⏳ **T3 — Mutants, suites, ADR.**
+  - Mutants réels, appliqués par script puis annulés, tous tués :
+    - `0xBE` encore en `PlaySfx` ;
+    - `0xBE` en `StopAllSfx` ;
+    - `StopSfx` qui coupe aussi les autres ids ;
+    - `StopSfx` qui ne libère pas le plafond ;
+    - une seule tonalité arrêtée ;
+    - l'id de `0xBE` sur 8 bits ;
+    - `StopSfx` bloqué par l'état « armé » ;
+    - `StopSfx` qui enregistre l'id dans l'anti-doublon ;
+    - `0x75` oublié ;
+    - C76 qui arrête sans condition, n'arrête jamais, ou arrête un autre id.
+  - `Alundra.Tests` en Release (copie neutralisée) puis en Debug en dernier, zéro échec, en partitions disjointes ; `cmp` de la DLL ;
+    `check_names.py --rules` ; les traces du héros intactes ; le moteur, le convertisseur et les données sans diff.
+  - L'ADR (D-G5C-8) ; `engine-gaps.md` (G1, G2).
+- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.**
+- Les tests de T1 sont rouges sur le squelette et verts après ; les tests de monde de T2 aussi.
+- Les seuls tests existants déplacés sont les deux de la liste prédite (et les deux fichiers du pilier, sans changer d'attendu).
+- Les mutants sont tous tués ; les suites Release et Debug, zéro échec ; aucun arc ne bouge.
+- **Recette de l'auteur** (non bloquante) : `92-ancien-sanctuaire-bug-pillier.sav` (pousser le pilier, le raclement cesse au relâchement) ;
+  `234-torla.sav` (le raclement finit avec la glissade du bouton) ; `280-murgg.sav` (la statue de la carte 2).
+
+**Arrêts.** Un test existant hors de la liste prédite bouge ; le recensement ne redonne pas 392, 119 et 12 ; un besoin de changer le moteur ou
+les données ; un test qui boucle.
+
+**Budget.** Un `executor` pour T0 et T1, un pour T2, un pour T3 ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** `git revert` du commit de code : le son redevient en boucle, le pilier retrouve son bouchon.
 
 ##### E20.g5d — Les objets à pousser scriptés : statues, blocs, boutons (tests seuls) ✅ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, **READY** à la deuxième relecture, `plan-verifier` frais ; **faite et CONFIRMED le 2026-10-24**)
 
@@ -10553,6 +10672,8 @@ les trois entrées `0x31`.
 | O-E20-24 | (2026-10-23, E20.f5) Une flèche tirée avec le héros à 12 px d'un mur : l'oracle borne le pas de naissance (x = 109), la DLL pose la flèche à 111, dans le mur, où elle ne bouge plus. Le défaut est le bornage du premier pas d'une entité marquée dans le déplaceur (e0a3b, e0k), pas E17. Scénario `arrow3_point_blank`, non testé | à placer (le déplaceur des entités marquées) ; P2, visible en jeu (flèche figée contre un mur) |
 | Q-G5-A1 | (2026-10-23, E20.g5, posée à l'auteur en termes de jeu) Le raclement de pierre des statues, blocs, boutons et piliers : l'original l'arrête quand le mouvement finit (l'opcode `0xBE` et la fin de C76 appellent `StopSoundEffect`) ; la DLL le rejoue (une erreur de la décompilation). Le corriger (g5c) touche 119 cartes, dont 12 passages de l'histoire, et change des tests audio ; sinon le défaut reste. Défaut de la session : corriger (le binaire tranche) **Réponse de l'auteur (2026-10-24)** : « corriges » (D-E20-67 ; E20.g5c). | Tranché le 2026-10-24 (D-E20-67) |
 | Q-G5-A2 | (2026-10-23, E20.g5, posée à l'auteur en termes de jeu) Après avoir touché un objet à événement (statue, bloc, bouton), le héros s'arrête net et ne repart que si l'on relâche puis ré-enfonce la direction : c'est le comportement mesuré de l'original, pour toute interaction par contact (le programme F remet à zéro quatre mots du héros, `0x80042150`). Le garder (défaut de la session) ou le corriger, ce qui change toutes les interactions par contact **Réponse de l'auteur (2026-10-24)** : « garder » (D-E20-68). | Tranché le 2026-10-24 (D-E20-68) |
+| Q-G5C-QA1 | (2026-10-24, E20.g5c, à l'auteur en termes de jeu) Après g5c, le raclement de pierre s'arrête net à la fin du mouvement ; l'original le laisse mourir sur environ 0,2 s (les autres sons, de 0,01 à 0,7 s). Garder l'arrêt net, ou ajouter plus tard une extinction fidèle, qui demande d'exporter le temps d'extinction de chaque son (un chantier de plus : l'extracteur, le convertisseur, la DLL) ? Défaut de la session : l'arrêt net (D-G5C-4), le manque G1 consigné | l'auteur ; non bloquant |
+| Q-G5C-QA2 | (2026-10-24, E20.g5c, à l'auteur en termes de jeu) Quand deux objets demandent le raclement en même temps, un seul son joue (le second bouge en silence) et il se coupe dès que le premier s'arrête, comme dans l'original. Garder ? Défaut de la session : oui, fidèle (D-G5C-5) | l'auteur ; non bloquant |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
 | Q-G1A-3 | (2026-10-17) Un objet lancé ne blesse, avant E14.b, que les cibles dont le gestionnaire D est porté (Beannoïde, Muruta) : confirmer **Réponse de l'auteur (2026-10-22)** : « oui » : confirmé. | Tranché le 2026-10-22 |

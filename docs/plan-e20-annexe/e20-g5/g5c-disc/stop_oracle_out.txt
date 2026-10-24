@@ -1,0 +1,50 @@
+vectors 3000  mismatches 0  ops {'stop': 7314, 'end': 2125, 'play': 7071, 'frame': 2088, 'countdown': 2036}
+Stop+find instructions covered: 70 / 70
+missing: []
+Play front (0x800490FC..0x80049320) instructions covered: 120 / 137
+--- named scenarios on the REAL code
+# the pillar of g5a: Play(25) every tick of the push, then the end of the push (C76: Stop(25))
+  ('play', 25)               journal+ [('keyon', 2, 1, 15, 75, 0, 127, 127)]                       live voices (slot,id,state) [(0, 25, 128)]
+  ('frame',)                 journal+ []                                                           live voices (slot,id,state) [(0, 25, 128)]
+  ('play', 25)               journal+ []                                                           live voices (slot,id,state) [(0, 25, 1)]
+  ('frame',)                 journal+ []                                                           live voices (slot,id,state) [(0, 25, 1)]
+  ('play', 25)               journal+ []                                                           live voices (slot,id,state) [(0, 25, 1)]
+  ('frame',)                 journal+ []                                                           live voices (slot,id,state) [(0, 25, 1)]
+  ('stop', 25)               journal+ [('keyoff', 0)]                                              live voices (slot,id,state) []
+  ('frame',)                 journal+ []                                                           live voices (slot,id,state) []
+  ('play', 25)               journal+ [('keyon', 2, 1, 15, 75, 0, 127, 127)]                       live voices (slot,id,state) [(1, 25, 128)]
+# two objects playing 25 (cap 1): the second Play is refused, then ONE Stop(25) silences both
+  ('play', 25)               journal+ [('keyon', 2, 1, 15, 75, 0, 127, 127)]                       live voices (slot,id,state) [(0, 25, 128)]
+  ('frame',)                 journal+ []                                                           live voices (slot,id,state) [(0, 25, 128)]
+  ('play', 25)               journal+ []                                                           live voices (slot,id,state) [(0, 25, 1)]
+  ('frame',)                 journal+ []                                                           live voices (slot,id,state) [(0, 25, 1)]
+  ('stop', 25)               journal+ [('keyoff', 0)]                                              live voices (slot,id,state) []
+  ('frame',)                 journal+ []                                                           live voices (slot,id,state) []
+  ('stop', 25)               journal+ []                                                           live voices (slot,id,state) []
+# id 85 (two tones, cap 1): Stop keys off both tones
+  ('play', 85)               journal+ [('keyon', 2, 5, 10, 67, 0, 127, 127), ('keyon', 2, 5, 11, 67, 0, 127, 127)] live voices (slot,id,state) [(0, 85, 128), (1, 85, 128)]
+  ('frame',)                 journal+ []                                                           live voices (slot,id,state) [(0, 85, 128), (1, 85, 128)]
+  ('play', 85)               journal+ []                                                           live voices (slot,id,state) [(0, 85, 1), (1, 85, 1)]
+  ('stop', 85)               journal+ [('keyoff', 0), ('keyoff', 1)]                               live voices (slot,id,state) []
+# Stop of an id that is not playing, and Stop(0)
+  ('stop', 25)               journal+ []                                                           live voices (slot,id,state) []
+  ('stop', 0)                journal+ []                                                           live voices (slot,id,state) []
+  ('play', 25)               journal+ [('keyon', 2, 1, 15, 75, 0, 127, 127)]                       live voices (slot,id,state) [(0, 25, 128)]
+# Play then Stop in the SAME frame, then Play again in that frame: the anti-duplicate table refuses the second Play (Stop does not touch the table)
+  ('play', 25)               journal+ [('keyon', 2, 1, 15, 75, 0, 127, 127)]                       live voices (slot,id,state) [(0, 25, 128)]
+  ('stop', 25)               journal+ [('keyoff', 0)]                                              live voices (slot,id,state) []
+  ('play', 25)               journal+ []                                                           live voices (slot,id,state) []
+  ('frame',)                 journal+ []                                                           live voices (slot,id,state) []
+  ('play', 25)               journal+ [('keyon', 2, 1, 15, 75, 0, 127, 127)]                       live voices (slot,id,state) [(1, 25, 128)]
+# Stop while the countdown (g_soundEffectState) is armed: the Stop is NOT gated (the Play is)
+  ('play', 25)               journal+ [('keyon', 2, 1, 15, 75, 0, 127, 127)]                       live voices (slot,id,state) [(0, 25, 128)]
+  ('frame',)                 journal+ []                                                           live voices (slot,id,state) [(0, 25, 128)]
+  ('countdown', 5)           journal+ []                                                           live voices (slot,id,state) [(0, 25, 128)]
+  ('play', 85)               journal+ []                                                           live voices (slot,id,state) [(0, 25, 128)]
+  ('stop', 25)               journal+ [('keyoff', 0)]                                              live voices (slot,id,state) []
+  ('play', 25)               journal+ []                                                           live voices (slot,id,state) []
+# a voice that ended naturally (SPU off) but not yet refreshed: Stop still finds the id and keys it off
+  ('play', 25)               journal+ [('keyon', 2, 1, 15, 75, 0, 127, 127)]                       live voices (slot,id,state) [(0, 25, 128)]
+  ('end', 0)                 journal+ []                                                           live voices (slot,id,state) [(0, 25, 128)]
+  ('stop', 25)               journal+ [('keyoff', 0)]                                              live voices (slot,id,state) []
+goldens: 7 scenarios, sha256 f75208112cbd5b0dba1635b0544d2ed7e63734c89c14de1f8fdb1023908d3e06

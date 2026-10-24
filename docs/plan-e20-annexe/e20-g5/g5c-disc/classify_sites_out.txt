@@ -1,0 +1,8 @@
+0xBE sites by what the DLL does today with the id: {'one-shot': 16, 'looping': 371, 'no tone (not playable)': 5} total 392
+  looping                  ids 29, sites 371, top {25: 204, 85: 54, 353: 31, 229: 17, 341: 6, 349: 6, 360: 6, 316: 5}
+  one-shot                 ids 9, sites 16, top {123: 5, 309: 3, 232: 2, 205: 1, 55: 1, 363: 1, 102: 1, 64: 1}
+  no tone (not playable)   ids 5, sites 5, top {257: 1, 256: 1, 258: 1, 259: 1, 0: 1}
+chain sites by kind: {'looping': 12}
+sites on the 23 maps of the four families of g5: 85 on 18 maps; of which id 25: 60
+maps with >=1 0xBE: 119 ; of them with a looping id: 116
+0xBD sites of a looping id with no 0xBE of that id anywhere in the map (the stop, if any, comes from elsewhere): 152 {200: 28, 203: 27, 352: 14, 233: 13, 216: 10, 85: 9, 349: 8, 57: 6, 161: 5, 149: 4}

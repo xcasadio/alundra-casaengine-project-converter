@@ -1,0 +1,8 @@
+base: 5913 tests, {'Passed': 5878, 'Failed': 35}
+wired: 5918 tests, {'Passed': 5881, 'Failed': 37}
+only in base: 0 []
+only in wired: 5 ['Alundra.Tests.Audio.G5cProbeTests.Prototype_AOneShotThatEndedByItself_IsNotFoundByStop_Harmless', 'Alundra.Tests.Audio.G5cProbeTests.Prototype_StopSfx_DoesNotTouchTheAntiDuplicateTable_ThePlayAfterAStopInTheSameFrameIsRefused', 'Alundra.Tests.Audio.G5cProbeTests.Prototype_StopSfx_StopsTheVoice_FreesTheCap_AndLeavesTheOtherIdsAlone', 'Alundra.Tests.Audio.G5cProbeTests.Prototype_TwoObjectsOneSound_ASingleStopSilencesBoth_LikeTheOriginal', 'Alundra.Tests.Audio.G5cProbeTests.Today_ALoopingId_PlaysOnce_ThenEveryLaterRequest_ThePlayOfOxBE_IsRefused_AndTheVoiceNeverEnds']
+--- passed in base, NOT passed in wired (2):
+   Alundra.Tests.Events.EventProgramRunnerTests.PlaySound2Bis_0xBE_Implemented_SameTwoByteDerivationAs0xBD | Assert.Equal() Failure: Collections differ                      ↓ (pos 0) Expected: int[]     [301] Actual:   List<int> []
+   Alundra.Tests.Events.EventProgramRunnerTests.PlaySoundEffect_0x75_Implemented_DerivesIdFromSingleByte_NotTwo | Assert.Equal() Failure: Collections differ                      ↓ (pos 0) Expected: int[]     [42] Actual:   List<int> []
+--- not passed in base, passed in wired (0):

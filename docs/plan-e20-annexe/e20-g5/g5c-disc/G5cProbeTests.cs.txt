@@ -1,0 +1,151 @@
+using System;
+using System.IO;
+using System.Linq;
+using CasaEngine.Framework.Audio;
+using Xunit;
+using Alundra.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Audio;
+
+/// <summary>
+/// PROBE of the g5c discovery (scratch copy, never committed): the REAL records 25 and 85 of the export (looping tones, MaxVoices 1) through the real SoundPlayer over a FakeAudioBackend, to MEASURE (1) what the DLL does today
+/// with a looping id and (2) what a StopSfx prototype (SoundPlayer.StopSfx, 12 lines) does. Same fixture shape as SoundPlayerTests.
+/// </summary>
+public class G5cProbeTests : IDisposable
+{
+    private readonly string _projectPath = Path.Combine(Path.GetTempPath(), "G5cProbe_" + Guid.NewGuid());
+    private static readonly Guid Id25 = Guid.Parse("00000000-0000-0000-0000-000000002500");
+    private static readonly Guid Id85a = Guid.Parse("00000000-0000-0000-0000-000000008500");
+    private static readonly Guid Id85b = Guid.Parse("00000000-0000-0000-0000-000000008501");
+    private static readonly Guid Id123 = Guid.Parse("00000000-0000-0000-0000-000000012300");
+
+    public G5cProbeTests()
+    {
+        var dir = Path.Combine(_projectPath, "Sounds");
+        Directory.CreateDirectory(dir);
+        // records 25, 85 and 123 as exported (alundra-project/Sounds/sfx-manifest.json): 25 and 85 loop (repeat true, MaxVoices 1), 123 is a one-shot of a map bank
+        var json = $$"""
+        [
+          { "id": 25, "vab_id": -1, "program_number": 1, "tone_number": 15, "note": 75, "seq_num": -1, "ref_sfx_id": 0, "max_voices": 1, "num_tones": 1, "skip_reason": null,
+            "tones": [ { "tone_index": 0, "file": "sfx_0025.wav", "sample_rate": 10401, "loop_start": 2772, "loop_end": 11815, "repeat": true, "asset_id": "{{Id25}}", "volume": 120, "pan": 64 } ],
+            "vab_master_volume": 127, "program_volume": 127, "program_pan": 64 },
+          { "id": 85, "vab_id": -1, "program_number": 5, "tone_number": 10, "note": 67, "seq_num": -1, "ref_sfx_id": 0, "max_voices": 1, "num_tones": 2, "skip_reason": null,
+            "tones": [ { "tone_index": 0, "file": "sfx_0085_0.wav", "sample_rate": 10110, "loop_start": 56, "loop_end": 10807, "repeat": true, "asset_id": "{{Id85a}}", "volume": 127, "pan": 0 },
+                       { "tone_index": 1, "file": "sfx_0085_1.wav", "sample_rate": 9539, "loop_start": 56, "loop_end": 10807, "repeat": true, "asset_id": "{{Id85b}}", "volume": 127, "pan": 127 } ],
+            "vab_master_volume": 127, "program_volume": 127, "program_pan": 64 },
+          { "id": 123, "vab_id": -1, "program_number": 0, "tone_number": 1, "note": 61, "seq_num": -1, "ref_sfx_id": 0, "max_voices": 1, "num_tones": 1, "skip_reason": null,
+            "tones": [ { "tone_index": 0, "file": "sfx_0123.wav", "sample_rate": 9604, "loop_start": 28, "loop_end": 14615, "repeat": false, "asset_id": "{{Id123}}", "volume": 100, "pan": 64 } ],
+            "vab_master_volume": 127, "program_volume": 127, "program_pan": 64 }
+        ]
+        """;
+        File.WriteAllText(Path.Combine(dir, "sfx-manifest.json"), json);
+    }
+
+    public void Dispose()
+    {
+        if (Directory.Exists(_projectPath))
+        {
+            Directory.Delete(_projectPath, recursive: true);
+        }
+    }
+
+    private SoundPlayer NewPlayer(out FakeAudioBackend backend, out AudioService service)
+    {
+        backend = new FakeAudioBackend();
+        var provider = new FakeAudioClipProvider();
+        provider.Register(Id25, new FakeAudioClip("sfx_0025", 10401));
+        provider.Register(Id85a, new FakeAudioClip("sfx_0085_0", 10110));
+        provider.Register(Id85b, new FakeAudioClip("sfx_0085_1", 9539));
+        provider.Register(Id123, new FakeAudioClip("sfx_0123", 9604));
+        service = new AudioService(backend) { ClipProvider = provider };
+        return new SoundPlayer(service, new SfxBank(_projectPath), new object());
+    }
+
+    [Fact]
+    public void Today_ALoopingId_PlaysOnce_ThenEveryLaterRequest_ThePlayOfOxBE_IsRefused_AndTheVoiceNeverEnds()
+    {
+        var player = NewPlayer(out var backend, out var service);
+
+        player.PlaySfx(25);                       // 0xBD 25: the scrape starts, looped
+        Assert.Single(backend.PlayCalls);
+        Assert.True(backend.PlayCalls[0].Parameters.IsLooped);
+
+        for (var frame = 0; frame < 3000; frame++) // 60 s of ticks: a looped voice does not end by itself
+        {
+            player.FlushFrameSounds();
+            service.Update(0.016f);
+        }
+
+        Assert.Equal(1, backend.ActiveVoiceCount);   // still alive
+        player.PlaySfx(25);                       // what 0xBE does TODAY (PlaySfx): refused by MaxVoices 1, a silent no-op ...
+        Assert.Single(backend.PlayCalls);
+        Assert.Equal(1, backend.ActiveVoiceCount);   // ... and the scrape is still playing
+    }
+
+    [Fact]
+    public void Prototype_StopSfx_StopsTheVoice_FreesTheCap_AndLeavesTheOtherIdsAlone()
+    {
+        var player = NewPlayer(out var backend, out var service);
+        player.PlaySfx(25);
+        player.PlaySfx(85);                       // two tones
+        Assert.Equal(3, backend.ActiveVoiceCount);
+
+        player.StopSfx(25);
+        service.Update(0.016f);
+        Assert.Equal(2, backend.ActiveVoiceCount);   // only the 85 voices remain
+
+        player.FlushFrameSounds();
+        player.PlaySfx(25);                       // the cap is free again, in the next frame
+        Assert.Equal(4, backend.PlayCalls.Count);
+
+        player.StopSfx(85);
+        service.Update(0.016f);
+        Assert.Equal(1, backend.ActiveVoiceCount);   // both tones of 85 stopped, the new 25 left
+
+        player.StopSfx(85);                       // not playing: a no-op
+        player.StopSfx(0);                        // id 0: a no-op (the binary returns at once)
+        player.StopSfx(999);                      // unknown: a no-op
+        Assert.Equal(1, backend.ActiveVoiceCount);
+    }
+
+    [Fact]
+    public void Prototype_StopSfx_DoesNotTouchTheAntiDuplicateTable_ThePlayAfterAStopInTheSameFrameIsRefused()
+    {
+        var player = NewPlayer(out var backend, out var service);
+        player.PlaySfx(25);
+        player.StopSfx(25);
+        player.PlaySfx(25);                       // same frame: the binary refuses it (the table is cleared once per frame, Stop does not touch it)
+        Assert.Single(backend.PlayCalls);
+        player.FlushFrameSounds();
+        player.PlaySfx(25);
+        Assert.Equal(2, backend.PlayCalls.Count);
+    }
+
+    [Fact]
+    public void Prototype_TwoObjectsOneSound_ASingleStopSilencesBoth_LikeTheOriginal()
+    {
+        var player = NewPlayer(out var backend, out var service);
+        player.PlaySfx(25);                       // object A starts its scrape
+        player.FlushFrameSounds();
+        player.PlaySfx(25);                       // object B asks the same id: refused by the cap, nothing new plays
+        Assert.Single(backend.PlayCalls);
+        player.StopSfx(25);                       // A finishes: B's scrape (the same single voice) is cut as well
+        service.Update(0.016f);
+        Assert.Equal(0, backend.ActiveVoiceCount);
+    }
+
+    [Fact]
+    public void Prototype_AOneShotThatEndedByItself_IsNotFoundByStop_Harmless()
+    {
+        var player = NewPlayer(out var backend, out var service);
+        player.PlaySfx(123);
+        backend.CompleteAllVoices();
+        service.Update(0.016f);
+        Assert.Equal(0, backend.ActiveVoiceCount);
+        player.StopSfx(123);                      // nothing to stop, no exception
+        player.FlushFrameSounds();
+        player.PlaySfx(123);
+        Assert.Equal(2, backend.PlayCalls.Count);
+    }
+}
