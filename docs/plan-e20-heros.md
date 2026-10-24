@@ -9317,7 +9317,7 @@ après le chargement (`GameRandom.Reset()`, `:255-261`) : un arc est déterminis
 et du soulèvement de g1b) : g4a avec g3, g4b avec g1b. Q-G3-c (la chute de la caisse du dessus) : l'écart documenté jusqu'à E19.h2, mesuré
 en g4b.
 
-#### 1.29.1 E20.g4a — La barricade par le saut ⏳ (révision 2, **READY** à la relecture de clôture)
+#### 1.29.1 E20.g4a — La barricade par le saut ✅ (révision 2, **READY** à la relecture de clôture ; **faite et CONFIRMED le 2026-10-24** par deux verifiers frais)
 
 **Relecture (2026-10-18).** REVISE, deux blocages corrigés (FIX, révision 1) : (1) les règles du pilote s'ancraient sur `0x11 @124`, qui ne
 s'exécute qu'après un roulis, comptaient en images sans dire comment trouver le tick du sondage à 2 et 3 ticks par image, et reposaient sur
@@ -9345,7 +9345,7 @@ entrées de `ArcsThatSlide`, `:342`, pour les arcs neufs ; la garde de `Dispose`
 code de la DLL hors du préréglage.
 
 **Tâches.**
-- ⏳ **T0** : (a) **la cadence de B1** mesurée sur la DLL, à 1, 2 et 3 ticks par image, dans un arc sans aucune direction tenue : les
+- ✅ **T0** : (a) **la cadence de B1** mesurée sur la DLL, à 1, 2 et 3 ticks par image, dans un arc sans aucune direction tenue : les
   images où s'exécutent `0x11 @104` puis chaque `0x2F @107` (par `OnInstruction`, qui donne l'image de chaque instruction) ; attendu, à
   1 tick par image : 204 puis 220, puis tous les 16 (A5r) ; aux autres cadences, la mesure dit si l'attente `0x37 [15]` compte des ticks ou
   des images, et donne `C`, le nombre d'images entre deux sondages (ou les deux valeurs possibles si le sondage tombe à cheval) ; un
@@ -9367,12 +9367,12 @@ code de la DLL hors du préréglage.
   297,0, `PosX` balayé de 650 à 700 par pas de 0,5 px ; la fenêtre retenue est l'intersection des cadences (la plage du binaire, 657,0 à
   694,4 Gauche tenue, sert de contrôle : la fenêtre mesurée doit y être incluse) ; une fenêtre vide à une cadence est un arrêt. Les arcs
   neufs portent un nom par cadence (`ArcsThatSlide` est indexé par `Spec.Name`), pour que T0 (d) épingle chacun.
-- ⏳ **T1 — Arcs** (sous B1, les 12 enregistrements, à 1, 2 et 3 ticks par image) : (a1) le calage au mur nord (les valeurs de T0 (b)) ; (a2)
+- ✅ **T1 — Arcs** (sous B1, les 12 enregistrements, à 1, 2 et 3 ticks par image) : (a1) le calage au mur nord (les valeurs de T0 (b)) ; (a2)
   la route du saut de bout en bout par le pilote de T0 (c) : depuis l'arrivée de B1, les phases de T0 (b), le saut, la descente à l'ouest, le
   contournement de rec9, jusqu'au portail 0 (`WarpDirector.Instance.HasPendingArrival`, la cellule (22, 23)) ; aucun roulis ; (a3) une entrée en cardinal à y0 > 297,0 : le saut se refuse (le héros reste à
   l'est de la colonne), accolée à (a2) ; (a4) l'arc A5 inchangé (le téléport) et sa doc corrigée ; les nouveaux arcs hors de
   `ArcsWithoutEntityContact` (ils touchent des caisses).
-- ⏳ **T2 — Plan, verifier frais.**
+- ✅ **T2 — Plan, verifier frais.**
 
 **Acceptation.** (a1) à (a3) verts sous B1, à 1, 2 et 3 ticks par image, avec la garde des glissements de `Dispose` (leurs entrées de
 `ArcsThatSlide`, T0 (d)) ; la suite verte ; recette de l'auteur avec `barricade-m392` : se caler
@@ -9381,6 +9381,33 @@ contre le haut de la porte, sauter sur la caisse basse, rejoindre le portail.
 **Arrêts.** T0 (a) montre un roulis ou une cadence irrégulière ; la fenêtre de T0 (f) est vide à une cadence, ou sort de celle du binaire ; T0 (d) un compte de glissements que la loi n'explique pas ; T0 (e)
 contredit le binaire ; un roulis pendant un arc ; le pilote doit lire autre chose que l'état du jeu (aucune valeur écrite par le test pendant l'arc) ;
 un besoin de toucher au moteur.
+
+**Résultats (2026-10-24).** Exécution en mode AUTO, HEAD de départ `cf56e063`. Mesures : `docs/plan-e20-annexe/e20-g3/g4a-route/` (`README.md`,
+`pilot-rules.md`, `t1-results.md`).
+- **Commits.** `eaad128e` (T0 : la cadence de B1, la route du binaire avec les 12 enregistrements, les règles du pilote, les glissements, le calage,
+  la fenêtre du saut) ; `4a4d5bd8` (T1 : le préréglage `barricade-m392`, `Alundra.Tests/Arcs/ShipBarricadeArcTests.cs`, les entrées de
+  `ArcsThatSlide`, la doc d'A5).
+- **La cadence de B1** (T0 (a)) : `0x11 @104` au tick 204 aux trois cadences, puis un sondage `0x2F @107` tous les 16 **ticks** (l'attente compte des
+  ticks) ; l'image du m-ième sondage est `A + floor(16m/k)` à k ticks par image ; aucun roulis dans l'arc sans direction tenue.
+- **La route du binaire** (T0 (b), les 12 enregistrements, rec9 compris) : bas jusqu'à `PosY >= 288`, gauche, le saut au premier tick où `PosY` est
+  dans [295 ; 297] et `PosX <= 687,5`, gauche jusqu'à l'arrêt par rec9 (597,0), bas, gauche jusqu'à 541, bas jusqu'à la cellule (22, 23).
+- **La fenêtre du saut sous la règle du pilote** : [657,0 ; 687,5] (l'intersection des trois cadences, pas de 0,5 px), incluse dans celle du binaire
+  (657,0 à 694,4) ; sans lâcher en vol, la DLL redonne la borne du binaire (694,0). L'atterrissage sur rec5 vient toujours 18 ticks après la Croix.
+- **Le calage au mur nord** : égal au binaire sur 145 départs sur 145 aux trois cadences, et à la loi `295 + ((y0 − 295) mod 0,5)` ; les arcs a1 et a2
+  glissent 10, 9 et 12 fois (1, 2, 3 ticks par image), épinglés dans `ArcsThatSlide` (`A5j-a1-k1..k3`, `A5j-a2-k1..k3`) ; a3 ne glisse pas.
+- **Les arcs** (9 tests) : a1 le calage ; a2 la route de l'arrivée de B1 au portail 0 (départ vers la 391 aux images 427, 221 et 155), sans roulis,
+  sans aucune écriture du test dans l'état du jeu, les sondages réels égaux aux prédits ; a3 l'entrée à y = 304 : le saut se refuse, Alundra reste
+  collé à x = 657,0.
+- **Tests.** `Alundra.Tests` : 6 018 au départ, 6 031 à la fin, zéro échec en Release (copie neutralisée) et en Debug ; `cmp` de la DLL identique ;
+  `check_names.py --rules` sans constat. Tests existants déplacés : la liste des noms de `TestSavesTests` (le préréglage ajouté), la doc d'A5 ; la
+  table `WeaponRows` (la seconde « table » du plan) ne bouge pas, le préréglage a son propre Fact. Mutations des exécuteurs et d'un verifier, toutes
+  tuées (le pilote sans lâcher, la fenêtre élargie, un compte de glissements, le second pas ouest de la DLL, l'entrée de a3 dans la bande, le drapeau
+  du préréglage).
+- **Seul code de la DLL touché** : la ligne du préréglage. Le moteur, le convertisseur et les données sans diff.
+- **Verifiers frais** : **CONFIRMED** tous deux. Remarques P4 : la comparaison des sondages ne regarde que le début de la liste (le compteur des
+  roulis couvre le risque) ; le Fact `TheThirteenPresets_AreListed_…` garde son nom alors que la liste compte 14 noms.
+- **Recette de l'auteur** (après la fusion avec g1b) : `barricade-m392`, se caler contre le haut de la porte, sauter sur la caisse basse, rejoindre le
+  portail.
 
 #### 1.29.2 E20.g4b — La barricade en soulevant ⏳ (détaillée le 2026-10-18 ; révision 2, **READY** à la relecture de clôture)
 
