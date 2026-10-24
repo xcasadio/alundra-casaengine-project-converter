@@ -1,6 +1,6 @@
 # ADR-0086: The pushable pillar is ported from C76 and its stop of the sound is a named stub until g5c
 
-- **Status**: Accepted
+- **Status**: Accepted; the stub of the stop and the claim that the push sound is short amended by ADR-0090 (E20.g5c)
 - **Date**: 2026-10-23
 - **Source**: this chantier: `docs/plan-e20-heros.md` section 1.24.6, sub-section E20.g5a (revision 0, D-G5-1 to D-G5-6, D-E20-63); reading of `ALUN_CD.EXE` (France): C76 `0x8007C024-0x8007C0D4` and `GetPushablePillarPushDirection` `0x8003AC9C`, replayed on the MIPS machine (`docs/plan-e20-annexe/e20-g5/disc/report.md`, `c76_full.py`, 6 000 vectors, 14 goldens); measured results in `docs/plan-e20-annexe/e20-g5/g5a/README.md`
 

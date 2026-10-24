@@ -132,3 +132,64 @@ The 22 tests red in T1 on the skeleton are green now (the 24 of T1 all green); t
 
 5 994 = 5 990 (T1) + 4 (the world tests above). `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal. `check_names.py --rules`: 0 finding (1 existing warning, `TextBoxGpu.cs`).
 The four `docs/hero-trace-389-*.txt` rewritten by the suites (line endings): `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, restored by `git checkout`, never indexed. Engine, converter, data and `alundra-datas-analyser` untouched.
+
+## T3 - mutants, suites, ADR (measured)
+
+Start HEAD of T3: `31de49ee` (T2). The two fresh verifiers are launched by the main session.
+
+### Real mutants (script `mut.py` of this folder: apply the bytes to the file, build Release with the neutralised copy, run the filter on the seven test classes of the slice
+(`SoundPlayerStopTests`, `EventProgramRunnerTests`, `PillarAiStopSoundTests`, `PillarAiGoldenTests`, `PillarSoundWorldTests`, `ButtonStopSoundWorldTests`, `StopSoundSitesTests`; 277 tests), restore the bytes; `git diff -- Alundra Alundra.Tests` empty after every batch, "RESTORED True")
+
+19 mutants, **18 killed**, 1 survivor shown equivalent:
+
+| # | Mutant | Red of 277 |
+|---|---|---|
+| 0 | `0xBE` still `PlaySfx` | 6 |
+| 1 | `0xBE` as `StopAllSfx` | 6 |
+| 2 | `StopSfx` cuts the other ids too | 5 |
+| 3 | `StopSfx` does not forget the voices (`voices.Clear()` removed) | **0, EQUIVALENT** (see below) |
+| 4 | `StopSfx` forgets the voices but does not stop them (the cap stays taken, the sound goes on) | 14 |
+| 5 | only one tone stopped | 2 |
+| 6 | `0xBE` id on 8 bits | 4 |
+| 7 | `StopSfx` gated by the armed state | 1 |
+| 8 | `StopSfx` registers the id in the anti-duplicate table | 1 |
+| 9 | `0x75` forgotten (no call) | 3 |
+| 10 | `0x75` still `PlaySfx` | 3 |
+| 11 | `0x75` id on 16 bits | 3 |
+| 12 | C76 stops unconditionally (call site) | 6 |
+| 13 | C76 never stops (call site) | 6 |
+| 14 | C76 stops another id (`PushSfx + 1`) | 6 |
+| 15 | C76 `Step`: stop whatever the animation | 5 |
+| 16 | C76 `Step`: stop only for the animation 0 | 6 |
+| 17 | C76 `Step`: stop also in the push branch | 6 |
+| 18 | `StopSfx` on an unknown id (`TryGetValue` replaced by the indexer) | 3 |
+
+Deviation from the plan ("tous tués"), mutant 3 ("`StopSfx` qui ne libère pas le plafond"): removing `voices.Clear()` is behaviourally equivalent. `AudioService.Stop` releases the entry, so `IsAlive` is false and
+`SoundPlayer.PlaySfx` prunes the dead voice (`PruneFinishedVoices`) before it counts the cap: the cap is freed by the stop itself, and `Clear` is redundant bookkeeping. The non-equivalent forms of "the cap stays taken"
+are mutants 4 (the voice is forgotten but alive) and 5 (a tone left alive), both killed; the cap test is among the red ones of mutant 4.
+
+### Suites (Release with the neutralised copy, then Debug last without it; `--blame-hang-timeout 60s`; partitions by test namespace of T0, 3 = the exact negation of 1 and 2; `part.sh` of the executor's scratchpad)
+
+| partition | tests Release | failures | tests Debug | failures |
+|---|---|---|---|---|
+| 1 (`Arcs Ai Audio Cameras Cells Combat Dialogues`) | 1 313 | 0 | 1 313 | 0 |
+| 2 (`Entities Events ExportGuards Hero Items`) | 2 879 | 0 | 2 879 | 0 |
+| 3 (the rest) | 1 802 | 0 | 1 802 | 0 |
+| sum | 5 994 | 0 | 5 994 | 0 |
+
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal (Debug built last).
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding, 1 existing warning (`TextBoxGpu.cs`).
+- The four `docs/hero-trace-389-*.txt` rewritten by the suites (line endings): `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, restored by `git checkout`, never indexed: the hero traces are intact.
+- Engine (`CasaEngineMonogame`), converter, data (`data-extracted`, `alundra-project`), `alundra-datas-analyser`, `tools/`: no diff since `de1861a2` (`git diff de1861a2 HEAD --stat` over these paths is empty).
+
+### Predicted list of the moved tests against the measured one
+
+Compared by name, all `trx` of the T0 base (5 966, all passed) against the final Release trx (5 994, all passed) and the Debug trx (5 994, all passed): **2 names disappear, 30 appear** (28 new tests of T1 and T2 plus the 2 renamed).
+The 2 that disappear are exactly the predicted ones, renamed by derivation (`PlaySound2Bis_0xBE_...` to `StopSound2Bis_0xBE_..._AsAStop`, `PlaySoundEffect_0x75_...` to `StopSoundEffect_0x75_..._AsAStop`); the two pillar files (`PillarRun.cs`,
+`PillarAiGoldenTests.cs`) are adapted without a changed expected value. No other existing test moved; no arc moved. Prediction and measure are equal.
+
+### ADR and gaps
+
+- ADR number recounted on all branches (`git branch -a`, `ls-tree docs/decisions/` of each): the last taken is 0089, so the new one is **ADR-0090** (`docs/decisions/0090-...md`, indexed in `docs/decisions/README.md`).
+  ADR-0086 carries "amended by ADR-0090" on its status line.
+- `engine-gaps.md` (this folder): G1 (no release per tone, the stop is net) and G2 (the mixer loop window, known, out of g5c).
