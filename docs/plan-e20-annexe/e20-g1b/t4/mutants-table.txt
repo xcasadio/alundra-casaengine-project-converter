@@ -1,0 +1,25 @@
+01_genre23_without_glove | 4 red | first: Arcs.LiftArcTests.M3_TheVeryHeavyStone_GenreThree_IsNotLiftedWithoutTheObject3B_TheSwordIs
+02_glove_inverted | 9 red | first: Arcs.LiftArcTests.M3_TheVeryHeavyStone_GenreThree_IsLiftedByAHeroWhoOwnsTheObject3B
+03_square_mask | 28 red | first: Arcs.LiftArcTests.M3_TheVeryHeavyStone_GenreThree_IsLiftedByAHeroWhoOwnsTheObject3B
+04_loop_with_button | 9 red | first: Hero.LiftPureTests.PlayerTryAction_AHeroWithoutALogicContext_LiftsNothing_AndTheSameHeroWi
+05_riding_ignored | 71 red | first: Arcs.LiftArcTests.M3_TheVeryHeavyStone_GenreThree_IsLiftedByAHeroWhoOwnsTheObject3B
+06_status_widened | 1 red | first: Hero.LiftPureTests.PlayerTryAction_TheLoop_IgnoresAStatusOutsideTwoAndThree(status: FlagTo
+07_contact_return_lost | 25 red | first: Arcs.LiftArcTests.M3_TheVeryHeavyStone_GenreThree_IsLiftedByAHeroWhoOwnsTheObject3B
+08a_set_extended_barrel34 | 1 red | first: Hero.LiftPureTests.TheProductionSet_IsTheSevenTypesOfC23_AndTheTestSeamReplacesIt
+08b_set_extended_torch393 | 1 red | first: Hero.LiftPureTests.TheProductionSet_IsTheSevenTypesOfC23_AndTheTestSeamReplacesIt
+09_contact_never_cleared | 8 red | first: Hero.LiftWorldTests.M1_TheGroundChronology_TheSquareLiftsOnlyWithTheContactOfThePreviousTi
+10_nil_equals_nil_guard_removed | 1 red | first: Hero.LiftPureTests.PlayerTryAction_AHeroWithoutALogicContext_LiftsNothing_AndTheSameHeroWi
+11_interaction_before_lift | 1 red | first: Hero.LiftWorldTests.M6_AnObjectThatIsBothLiftableAndInteractive_IsLiftedFirst_TheLiftComes
+12_climb_calls_removed | 2 red | first: Hero.LiftWorldTests.M8_TheClimbState_TheSquareWithTheContactLifts_AnimationElevenInTheAir(
+13_empty_set | 26 red | first: Arcs.LiftArcTests.M3_TheVeryHeavyStone_GenreThree_IsLiftedByAHeroWhoOwnsTheObject3B
+14_stub_body | 25 red | first: Arcs.LiftArcTests.M3_TheVeryHeavyStone_GenreThree_IsLiftedByAHeroWhoOwnsTheObject3B
+15_wired_check_removed | 7 red | first: Arcs.LiftMap72ArcTests.M5_TheBarrelOfTheFamilyC4_GivesTheSword_TheJarOfTheSameSceneLifts
+16_notliftable_check_removed | 3 red | first: Hero.LiftPureTests.PlayerTryAction_ContactAndFront_ReturnsTheZeroOfTryLiftDirectly_Without
+17_carried_returns_0 | 2 red | first: Hero.LiftPureTests.PlayerTryAction_Carrying_Gives1_AndTheCarryingState(air: False, state: 
+18_wrong_item_id | 1 red | first: Arcs.LiftArcTests.M3_TheVeryHeavyStone_GenreThree_IsLiftedByAHeroWhoOwnsTheObject3B
+19_blocked_by_ignored | 1 red | first: Hero.LiftPureTests.PlayerTryAction_TheLoop_IgnoresABlockedObject_NextToTheFreeOne
+20_genre_threshold | 2 red | first: Hero.LiftPureTests.PlayerTryAction_TheLoop_AGenre2OnTheHead_NeedsTheObject3B [< 1 ms]
+21_jump_states_call_removed | 2 red | first: Hero.LiftWorldTests.M7_TheLiftInTheAir_TheContactOfTheCrateAtT5AndT6GivesTwoLiftsThenTheSw
+22_idle_call_removed | 21 red | first: Arcs.LiftArcTests.M3_TheVeryHeavyStone_GenreThree_IsLiftedByAHeroWhoOwnsTheObject3B
+23_loop_lifts_without_trylift_answer | 8 red | first: Hero.LiftPureTests.PlayerTryAction_AHeroWithoutALogicContext_LiftsNothing_AndTheSameHeroWi
+24_air_carry_state_swapped | 1 red | first: Hero.LiftPureTests.PlayerTryAction_Carrying_Gives1_AndTheCarryingState(air: True, state: 4

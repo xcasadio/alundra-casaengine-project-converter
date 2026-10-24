@@ -1,0 +1,1 @@
+  Échoué Alundra.Tests.Hero.LiftPureTests.PlayerTryAction_TheLoop_IgnoresABlockedObject_NextToTheFreeOne

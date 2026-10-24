@@ -236,3 +236,34 @@ The reference patch `t2/t3-reference.patch` was applied then refined (comments, 
 ### Gaps from the plan
 - The pin of the production set is red with the empty set too (the plan says "exactly (m1) to (m8)"): by construction of that pin; named here.
 - The m8 test was changed in T3 (above).
+
+## T4 - mutants, ADR (2026-10-24): DONE (the fresh verifiers are launched by the main session)
+
+Start HEAD `97ef36a3`. Scripts: `t4/mut.py` (24 real mutants, a text replacement asserted to match once, applied to the working tree), `t4/run.sh` (apply, Release build with the neutralised copy, `--filter`, undo by `git checkout` of the two source files); the red names of each mutant: `t4/out/<mutant>.narrow.red`, the table `t4/mutants-table.txt`. The mutated run uses the narrow filter (the lift families: `Hero.Lift*`, `Arcs.Lift*`, `CrateSolidityMap392Tests`, `Hero.Carry*`, `PutInHandsTests`, `ShipBarricadeArcTests`, `TestSavesTests`; 433 tests green on the clean tree): a kill there is a kill in the suite. `git diff` of `Alundra/` empty after each mutant (checked at the end).
+
+### Result: 24 mutants, 24 killed (12 of the plan's list + 12 more)
+| Plan item | Mutant | Red |
+|---|---|---|
+| genre 2 or 3 without `0x3B` | 01 | 4 |
+| `0x3B` inverted | 02 | 9 |
+| mask of the Square | 03 | 28 |
+| loop with a button | 04 | 9 |
+| `+0x12C` ignored | 05 | 71 |
+| status 2 or 3 widened | 06 | 1 |
+| return of `TryLift` of the contact lost | 07 | 25 |
+| wired set extended to an unregistered type | 08a (barrel 34), 08b (torch 393) | 1, 1 |
+| contact of the previous tick | 09 (the contact never cleared: a stale contact) | 8 |
+| "nil equals nil" guard removed | 10 | 1 |
+| priority of the interaction inverted | 11 | 1 (after the new test, below) |
+| call of the climb state forgotten | 12 | 2 |
+| more | 13 empty set (26), 14 stub body (25), 15 wired check removed (7), 16 NotLiftable check removed (3), 17 carried returns 0 (2), 18 wrong item id (1), 19 blocked-by ignored (1), 20 genre threshold (2), 21 call of the jump states removed (2), 22 call of the idle states removed (21), 23 loop test inverted (8), 24 air carrying state swapped (1) | |
+
+**One mutant first survived: 11 (the interaction before the lift).** Not equivalent: the order matters for an entity that is both a wired liftable and holds a button F program (the binary lifts first and the interaction never runs; the mutant latches it). The tests had a person (not liftable) and a crate (no program). Fix: the test `LiftWorldTests.M6_AnObjectThatIsBothLiftableAndInteractive_IsLiftedFirst_TheLiftComesBeforeTheInteraction` (red on mutant 11, green on the real code). No production change.
+
+**Mutant "contact of the current tick"**: not expressible as a line of the DLL: the contact is written by the mover at the step and read by the next tick's `PlayerTryAction`; the rule holds by the order of the tick. The nearest mutant (09, the contact never cleared) is killed by the M1 chronology (the line B, a Square after the release).
+
+### Suite after the new test (Release, neutralised copy, three disjoint partitions by full namespace with the final dot, `--blame-hang-timeout 60s`)
+1327 + 2956 + 1835 = **6118 tests, 0 failure** (6117 + the new test). Debug (last, with the copy): 1327 + 2956 + 1835, 0 failure (`t4/out-debug/`). `docs/hero-trace-389-*`: line endings only, restored. `check_names.py --rules`: see the commit. Existing tests moved by T4: none.
+
+### ADR
+`docs/decisions/0089-...md` amended (section "Amendment (E20.g1b, 2026-10-24): the lift": the activation, the rules, the map 72, the pin of O-G3-3 and D-E20-77, the erratum of the montage, the verification). Next free number recounted on all branches: 0092 (not used: no new ADR needed). No change of the index (an amendment, no new row).

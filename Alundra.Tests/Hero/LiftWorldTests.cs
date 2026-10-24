@@ -326,6 +326,22 @@ public sealed class LiftWorldTests : IDisposable
         Assert.Null(crate.Host.GameState.InteractLatchEntity);
     }
 
+    [Fact]
+    public void M6_AnObjectThatIsBothLiftableAndInteractive_IsLiftedFirst_TheLiftComesBeforeTheInteraction()
+    {
+        // The order of the binary at 0x80031E38 is TryUseItem, PlayerTryAction, then CheckEntityInteraction: a wired liftable that also carries a button F program is lifted, and the interaction
+        // (which would latch the entity) never runs. Pins the priority against an inverted order (T4 mutant 11).
+        var rig = Scene(1, Script((2, 0u), (1, SQ), (6, 0u)));
+        rig.Crate.Flags |= EntityFlags.InteractRequiresButton;
+        rig.Crate.ProgramIndexes[ScriptHelper.ProgramFInteract] = 0x8D;
+        rig.Run(2);
+        rig.Hero.XCollisionEntity = rig.Crate;
+        rig.Run(1);
+        Assert.True(Carries(rig));
+        Assert.Equal(LiftOnTheGround, rig.Hero.TargetAnimationId);
+        Assert.Null(rig.Host.GameState.InteractLatchEntity);
+    }
+
     // ---- (m8) the climb ---------------------------------------------------------------------------------------------------------------------------------------
 
     [Theory]

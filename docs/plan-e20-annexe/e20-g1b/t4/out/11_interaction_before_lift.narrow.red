@@ -1,0 +1,1 @@
+  Échoué Alundra.Tests.Hero.LiftWorldTests.M6_AnObjectThatIsBothLiftableAndInteractive_IsLiftedFirst_TheLiftComesBeforeTheInteraction

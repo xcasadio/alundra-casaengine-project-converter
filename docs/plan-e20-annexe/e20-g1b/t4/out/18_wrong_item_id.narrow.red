@@ -1,0 +1,1 @@
+  Échoué Alundra.Tests.Arcs.LiftArcTests.M3_TheVeryHeavyStone_GenreThree_IsLiftedByAHeroWhoOwnsTheObject3B
