@@ -10228,7 +10228,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2` ; révision 3 du 2026-10-25 (D-E20-50, D-E20-78, e0c faite) : nouvelle époque, une seule relecture de clôture)
+#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2` ; révision 3 du 2026-10-25 (D-E20-50, D-E20-78, e0c faite), relue à la clôture de la nouvelle époque : REVISE ; ⚠️ **en pause de relecture** : la révision 4 ci-dessous corrige les deux blocages mais n'est pas relue ; une nouvelle relecture ne s'ouvre que sur décision de l'auteur, Q-H1-P)
 
 **Révision 3 (2026-10-25).** Trois faits ont changé depuis la relecture de clôture du 2026-10-18 :
 - **D-E20-78** (Q-H1-3 rouverte, l'erratum de D-E20-51) : un soin donné par `0x82` s'ajoute au sac sans être bu, et un coffre refuse l'objet sac
@@ -10244,8 +10244,14 @@ plan, l'index des ADR et un ADR.
   (le Fact de liste se renomme d'après le compte réel, recompté en T0), `AlundraArcSupport.cs` est `Alundra.Tests/Support/ArcRun.cs`,
   `AlundraItemAndMoneyOpcodesTests` a perdu son préfixe ; T0 relocalise chaque site par son contenu.
 
+**Révision 4 (2026-10-25, non relue : la tranche est en pause).** La relecture de clôture de la révision 3 a relevé deux blocages : (1) les
+prérequis et les arrêts citaient « les défauts » de Q-H1-2 et Q-H1-3, alors que l'auteur a répondu autrement à Q-H1-2 (D-E20-50) et que Q-H1-3 a
+été rouverte (D-E20-78) : ils citent maintenant les réponses ; (2) D-H1-1, le périmètre et la preuve de retrait nommaient des membres qui
+n'existent pas au HEAD (`Half`, `Full`, `Magic`, `Both`) et déclaraient `HeroHeals.cs` neuf : ils reprennent les membres réels.
+
 **Prérequis.** h0a (la table de départ, les mots de l'objet, la couture `ItemStartForTests`, le refus par le son 3) ; E20.c2a ✅ (les PV de
-l'entité du héros et leur miroir) ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H1-1, Q-H1-2 et Q-H1-3. Ni g1a, ni g2a, ni f4 à
+l'entité du héros et leur miroir) ; la fin du chantier et Q-R-7 ; les réponses de l'auteur : Q-H1-1 (le défaut), Q-H1-2 (D-E20-50 : Start + Select non porté), Q-H1-3 (D-E20-78 : rien
+à changer). Ni g1a, ni g2a, ni f4 à
 f6, ni e0c : h1 n'en dépend pas, mais **l'ordre ferme** du bloc du §1.20 (point 4 : f4, f5, f6a, f6b, puis h0 et h1) reste (critique C-16).
 
 **But.** Comme l'original : Rond avec l'un des cinq objets équipé soigne **dans le même tick**, avec ses effets, son son et un exemplaire de
@@ -10283,9 +10289,10 @@ propre interpréteur et son propre modèle, aucun P0 ni P1).
   du rapport, deux défauts de la décompilation, pas de l'original) ; le binaire tranche. Aucun défaut avéré de l'original dans la tranche.
 
 **Décisions.**
-- **D-H1-1** — Deux fichiers neufs (Q-R-7) : `Alundra/Hero/HeroHeals.cs` (les soins publics : `Herb`, `Half(minimum)` pour la Potion S (10) et
-  l'eau 1 (5), `Full` pour la Potion L et l'eau 2, `Magic`, `Both` ; ils prennent **le héros seul** : les vecteurs synthétiques où `a0` n'est pas le
-  héros sont classés « binaire seul » ; critique C-8) et `Alundra/Hero/InstantItems.cs` (les cinq départs `(EntityScriptProxy, uint) → int`,
+- **D-H1-1** (révision 4) — `Alundra/Hero/HeroHeals.cs` **existe** (E20.e0c, D-E0C-10) : l'Herbe est `Herb`, la Potion L `LargePotion`, l'Extrait
+  `LargeCrystal`, le Breuvage `Brew`, la Potion S `SmallPotion`, l'eau 1 `LargeHeart` (deux membres distincts, chacun son appel d'effets) ; ils
+  prennent **le héros seul** (les vecteurs synthétiques où `a0` n'est pas le héros sont classés « binaire seul » ; critique C-8) ; h1 ne les renomme
+  ni ne les fusionne ; un seul fichier neuf (Q-R-7) : `Alundra/Hero/InstantItems.cs` (les cinq départs `(EntityScriptProxy, uint) → int`,
   toujours 1) ; les créateurs d'effets dans `NativeEffects.cs` (l'herbe ; les anneaux, l'animation en paramètre ; les étincelles, le nombre,
   l'animation et `ForceZ` en paramètres ; le Breuvage) ; les tables `BurstTableX/Y` rendues internes ; la fiole de vie
   (`CreateLifeVesselEffects`, `:31`) ne change pas de comportement, épinglée (critique C-15). Les additions de PV en `unchecked` (enroulement 32
@@ -10304,7 +10311,7 @@ propre interpréteur et son propre modèle, aucun P0 ni P1).
   `ItemsCount = 99` en constante, `PlayerManager.cs:2033` ; le chemin d'erreur de `UseItem` est déjà épinglé,
   `Alundra.Tests/AlundraItemAndMoneyOpcodesTests.cs:126-129`) et ceux où `a0` n'est pas le héros (D-H1-1).
 
-**Périmètre.** `HeroHeals.cs`, `InstantItems.cs` (neufs) ; `NativeEffects.cs` ; les cinq entrées de h0a dans `PlayerManager.cs` (phase B) ;
+**Périmètre.** `InstantItems.cs` (neuf) ; `HeroHeals.cs` (existant : seulement un corps manquant, si T0 en trouve un) ; `NativeEffects.cs` ; les cinq entrées de h0a dans `PlayerManager.cs` (phase B) ;
 `Alundra/SaveGames/TestSaves.cs` (le préréglage de Q-H1-1) ; `Alundra.Tests/` ; l'annexe `docs/plan-e20-annexe/e20-h1/` ; ce plan, l'index des
 ADR et un ADR. **Hors périmètre** : le cadre (h0a) ; Start + Select et la mort (E18) ; le ramassage (e0c) ; la résurrection (E18) ; les tomes
 (h4) ; les sons eux-mêmes ; le moteur, le convertisseur et les données.
@@ -10325,8 +10332,8 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   tests de monde, le générateur lu après l'image égale `rng0(t+1)` de la clé et le nombre de pas `draws + 1` (le bloc du §1.20, point 3) ; P2, le
   Z d'un effet créé au repos vaut `PosZ + 1 + 0x100000` ou `+ 0x80000` (les `z44` des clés) ; P3, un réservoir rempli de 128 − K effets donne K
   créations puis `null` ; P4, le miroir donne le même PVmax aux stats et à l'entité, 24 et 30 compris ; P5, les sons 48, 49 et 50 résolus par
-  `alundra-project/Sounds/sfx-manifest.json` (assertion de non-régression, critique C-13) ; (e) la liste prédite : aucun test existant pour le
-  code ; avec le préréglage de Q-H1-1, `AlundraTestSavesTests.TheNinePresets_AreListed_InTheOrderOfTheTable` et les lignes de la théorie
+  `alundra-project/Sounds/sfx-manifest.json` (assertion de non-régression, critique C-13) ; (e) la liste prédite : les tests existants qui appellent déjà
+  ces corps (`HeroHealsTests`, les tests d'`ItemEffects` d'e0c) ne doivent pas bouger, et s'ils bougent c'est un arrêt ; avec le préréglage de Q-H1-1, `AlundraTestSavesTests.TheNinePresets_AreListed_InTheOrderOfTheTable` et les lignes de la théorie
   `EveryPresetName` ; recomptée au HEAD de départ ; (f) h0a faite (la table, les trois coutures, `ItemInUse`) ; (g) les noms passent la garde ; (h) les traces
   d'oracle que h0a T0 (b) laisse « en attente de la tranche de leur objet » pour les cinq objets (`docs/plan-e20-annexe/e20-d/oracle/out*/w9/`,
   `W9-item24`, `-25`, `-26`, `-27`, `-29` ; `0x28` est un trou, déjà exact avec h0a) : pour chacune, la prédiction écrite avant (un soin, ou un
@@ -10383,7 +10390,7 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   réussi et le (p) de X, et laisse verts (r-X−), (r-nu), (r-hud), les clés de refus de X et tout ce qui touche les autres objets ; **retirer l'appel
   de `PlaySfx` du succès de X** rend rouges exactement (v2) de X (le journal des sons), (r-X+), (r-ordre-X) (le faux n'est jamais appelé), les clés
   de X qui ont un usage réussi et le (p) de X, avec les mêmes verts ; **faire que le soin H ne crée plus ses effets** rend rouges exactement (v1)
-  de H — et, pour `Half`, partagé, (v1) de la Potion S **et** de l'eau 1 —, (v2) des départs qui appellent H, (e1) et (e2) de leurs objets, (g1) si
+  de H (un corps, un (v1) : `SmallPotion` et `LargeHeart` sont deux membres distincts), (v2) des départs qui appellent H, (e1) et (e2) de leurs objets, (g1) si
   H crée des étincelles (Potion S, Breuvage), les clés de monde de leurs objets où un effet est obtenu (toutes sauf les refus et les
   `*_pool_full`) et le (p) de leurs objets, et laisse verts les (r), (r-ordre), les clés de refus et les `*_pool_full` (le test compare les effets
   créés) (révision 1).
@@ -10394,7 +10401,7 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 
 - **Arrêts** : un test hors de la liste prédite bouge ; un vecteur ou une clé diffère d'un octet ou d'un tick ; une sonde P1 à P5 contredite ; une
   adresse sans membre hors des vecteurs « binaire seul » ; une des six clés ajoutées de T0 (b) que la machine ne sait pas faire ; h0a sans ses trois coutures ; un
-  besoin de toucher au moteur ; un nom refusé ; une réponse de l'auteur autre que le défaut à Q-H1-1, Q-H1-2 ou Q-H1-3.
+  besoin de toucher au moteur ; un nom refusé ; une réponse de l'auteur autre que le défaut à Q-H1-1 (Q-H1-2 et Q-H1-3 sont tranchées : D-E20-50, D-E20-78).
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : rendre les cinq entrées à leurs bouchons ; la phase A reste inerte.
 
@@ -11632,6 +11639,7 @@ les trois entrées `0x31`.
 | Q-H2-4 | (2026-10-25, E20.h2) Le sable des cartes 403 à 405 et 19 a des courants ; ils ne font pas encore dériver Alundra (E20.i2). (A, défaut) la cape sans les courants, ils viennent avec E20.i2 ; (B) faire E20.i2 d'abord | l'auteur ; non bloquant |
 | Q-H2-5 | (2026-10-25, E20.h2) Si un dialogue ou une scène commence pendant qu'Alundra est sous le sable, l'original la fait remonter d'un coup, sans l'animation de sortie. Comme l'original ? Défaut : oui (D-H2-5) | l'auteur ; non bloquant |
 | Q-H2-P | (2026-10-25, E20.h2, à l'auteur) La tranche de la cape de sable a eu trois relectures REVISE (la dernière, de clôture, a trouvé que le recalcul du masque proposé aurait mis la gravité d'Alundra à zéro) ; la règle du dépôt arrête là les relectures automatiques. Une révision 3 est écrite au plan. Ouvrir une nouvelle relecture (une époque neuve) au début du thème 2, après h0a ? Défaut proposé : oui | l'auteur ; non bloquant (après h0a) |
+| Q-H1-P | (2026-10-25, E20.h1, à l'auteur) La tranche des cinq soins (Herbe, Potions, Extrait, Breuvage), READY depuis le 2026-10-18, a été révisée pour D-E20-50, D-E20-78 et le code d'e0c ; sa relecture de clôture a rendu REVISE (deux corrections de texte : citer vos réponses, et les vrais noms des corps de soin) ; la règle arrête là. Une révision 4 est écrite. Ouvrir une relecture au début du thème 2 ? Défaut proposé : oui | l'auteur ; non bloquant (après h0a) |
 | O-H2-1 | (2026-10-25, relevé par la clôture de h2) `ResyncControllerFromFlags` commence par `ApplyGravitySettingsToController`, qui met la gravité et la vitesse de chute à 0 : quand un opcode de drapeaux (`0x16`/`0x17`, `0x62`/`0x63`) vise le héros, sa chute serait coupée ; à vérifier au T0 de h2 (un écart préexistant, hors cape) | E20.h2 T0 |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
