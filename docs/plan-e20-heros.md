@@ -9508,7 +9508,7 @@ un besoin de toucher au moteur.
 - **Recette de l'auteur** (après la fusion avec g1b) : `barricade-m392`, se caler contre le haut de la porte, sauter sur la caisse basse, rejoindre le
   portail.
 
-#### 1.29.2 E20.g4b — La barricade en soulevant ⏳ (détaillée le 2026-10-18 ; révision 2, **READY** à la relecture de clôture)
+#### 1.29.2 E20.g4b — La barricade en soulevant ✅ (détaillée le 2026-10-18 ; révision 2, **READY** à la relecture de clôture ; **faite et CONFIRMED le 2026-10-24** par deux verifiers frais)
 
 **Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : chaque arc (b2) à (b5) a son départ, ses seuils (mesurés au
 binaire en T0, avec un arrêt) et sa règle de Croix et de Carré ; l'assertion de (b1) se lit par image, à chaque cadence, avec la règle du
@@ -9538,7 +9538,7 @@ comptent sans écrire, un 6ᵉ ferait descendre l'objet (INFÉRENCE ; la durée 
 (les seules entrées de `ArcsThatSlide` de ces arcs) ; l'annexe (`docs/plan-e20-annexe/e20-g3/g4b-route/`) ; ce plan. Aucun code de la DLL.
 
 **Tâches.**
-- ⏳ **T0** : (a) **les routes et départs du binaire refaits avec les 12 enregistrements** sur la machine MIPS (le harnais de
+- ✅ **T0** : (a) **les routes et départs du binaire refaits avec les 12 enregistrements** sur la machine MIPS (le harnais de
   `critic/my392.py`), versés dans `docs/plan-e20-annexe/e20-g3/g4b-route/` avec leurs traces ; un scénario qui n'atteint pas l'issue écrite
   ci-dessous est un arrêt : (a1) la route « soulever » de bout en bout depuis l'arrivée de B1 (se caler, pousser jusqu'au contact rec5, Carré,
   porter à l'ouest jusqu'au seuil du lancer, lancer, attendre le bris, contourner rec9, le portail) : ses phases et seuils ; (a2) le départ de
@@ -9562,7 +9562,7 @@ comptent sans écrire, un 6ᵉ ferait descendre l'objet (INFÉRENCE ; la durée 
   à 1, 2 et 3 ticks par image, contre la série du binaire (80 ; 79,5 ; 78,5 ; 77 ; 75 ; 72,5 ; 69,5 ; 66 ; 64) ; égale : (b2) l'épingle ;
   différente : l'écart Q-G3-c (défaut A) consigné et épinglé par un test nommé d'après lui ; (d) les glissements de chaque arc neuf, mesurés,
   expliqués et épinglés dans `ArcsThatSlide` (un nom par cadence).
-- ⏳ **T1 — Arcs** (sous B1, les 12 enregistrements, à 1, 2 et 3 ticks par image ; départs et seuils de T0 (a), règles de T0 (b)) : (b1) la
+- ✅ **T1 — Arcs** (sous B1, les 12 enregistrements, à 1, 2 et 3 ticks par image ; départs et seuils de T0 (a), règles de T0 (b)) : (b1) la
   route « soulever » de bout en bout : **à l'image `F` du Carré, la caisse est portée dès le premier tick de `F`** (le contact rec5 présent à
   la fin du tick qui précède), puis le port, le lancer, le bris et le portail 0 (`WarpDirector.Instance.HasPendingArrival`) ; (b2) depuis (a2) :
   la caisse portée est **rec6**, puis la chute de rec10 selon T0 (c) ; (b3) depuis (a3) : y = 297,0, la caisse portée est **rec10** ; (b4)
@@ -9570,7 +9570,7 @@ comptent sans écrire, un 6ᵉ ferait descendre l'objet (INFÉRENCE ; la durée 
   portée est **rec5** ; (b6) **le roulis en portant** : le pilote tient une direction à un sondage alors qu'il porte rec5 : le verrou de B1, le
   mode 1 qui compte ; l'objet reste en main tant que le verrou ne dépasse pas 5 ticks (A5r) ; la valeur mesurée épinglée ; un objet qui
   descend ou se perd est un arrêt et une question (la durée du verrou dans le binaire est inconnue).
-- ⏳ **T2 — Plan, verifier frais.**
+- ✅ **T2 — Plan, verifier frais.**
 
 **Acceptation.** (b1) à (b6) verts sous B1, à 1, 2 et 3 ticks par image, avec la garde des glissements ; la suite verte ; recette de l'auteur
 avec `barricade-m392` : se caler contre le haut de la porte, pousser la caisse basse, la soulever, la lancer, passer.
@@ -9579,6 +9579,34 @@ avec `barricade-m392` : se caler contre le haut de la porte, pousser la caisse b
 (b6) : l'objet descend ou se perd ; un besoin de toucher au moteur ou à la DLL.
 
 **Budget.** Un `executor`, deux tentatives ; `plan-verifier` avant ; un verifier frais après.
+
+**Résultats (2026-10-24).** Exécution en mode AUTO, HEAD de départ `4c219541`. Mesures : `docs/plan-e20-annexe/e20-g3/g4b-route/` (`README.md`,
+`pilot-rules.md`, `t1-results.md`).
+- **Commits.** `2add401a` (D-E20-79 : le préréglage `porter-plateforme-m72`, carte 72, tuile (22, 15), niveau 5, et l'arc M9 de
+  `LiftMap72ArcTests` : Alundra attend la plateforme à sa pointe ouest et y monte à pied) ; `2a8b60ce` (T0) ; `8371d889` (T1 : 21 tests neufs dans
+  `ShipBarricadeArcTests`) ; `48f475c2` (le Fact de liste des préréglages renommé d'après son compte, la phrase de `docs/test-saves.md`).
+- **Au binaire, avec les 12 enregistrements** : la route « soulever » arrive à la cellule (22, 23) au tick 260 (contact rec5 à x = 657 au tick 107,
+  Carré au 108, le geste de 36 ticks, porté jusqu'à x ≤ 615, lancer au tick 163 ; tout seuil de lancer de 598 à 654 donne la même issue) ; les
+  départs (b2) à (b5) atteignent leur issue (rec6, rec10 à y = 297,0, rec10 en l'air pour toute Croix des ticks 12 à 24, rec5 à y = 295,0).
+- **Les arcs** (sous B1, aux trois cadences) : (b1) de l'arrivée de B1 au portail 0, rec5 portée dès le premier tick de l'image du Carré, sans
+  roulis, les sondages réels égaux aux prédits ; (b2) rec6 portée ; (b3) rec10 portée depuis le dessus de rec5 (l'arc vérifie la caisse portée,
+  pas le tick du contact : O-G3-3) ; (b4) rec10 portée en l'air ; (b5) rec5 portée depuis le cas C ; (b6) le roulis en portant : un roulis au
+  tick 268, rec5 reste en main. Les glissements épinglés dans `ArcsThatSlide` (`A5l-b1`, `A5l-b5`, `A5l-b6`).
+- **L'écart Q-G3-c (A), consigné et épinglé** par `QG3c_TheCrateAboveALiftedCrate_FallsWithoutTheHalfPixelOfTheFirstTick_TheGapToTheBinary` :
+  quand on soulève rec6, rec10 tombe dans la DLL selon la série 80 ; 80 ; 78,5 ; 77 ; … ; 64, le binaire 80 ; 79,5 ; 78,5 ; … ; 64 : seul le
+  demi-pixel du tick du soulèvement diffère, l'arrivée au sol (z 64, L+7) est la même.
+- **Écarts acceptés.** (1) La Croix de (b4) est au tick 19, pas au tick 12 du plan : avec 12, la porte du contact ne s'ouvre pas sous les
+  sondages à 2 et 3 ticks par image ; 19 est dans la fenêtre du binaire [12 ; 24] et l'ouvre aux trois cadences (`pilot-rules.md`, règle 5).
+  (2) À 3 ticks par image, rec5 se brise 25 ticks après le lancer (24 ailleurs et au binaire) et, en (b6), Alundra n'est pas immobilisé 5 ticks :
+  épinglés tels que mesurés, cause non établie (O-G4B-1). (3) À 3 ticks par image, deux glissements de (b5) et (b6) (ticks 223 et 224) sont
+  épinglés par la mesure, avec une hypothèse de mécanisme (le contact effacé puis reposé dans le même tick), non dérivés (O-G4B-1).
+- **Tests.** `Alundra.Tests` : 6 118 au départ, 6 144 à la fin, zéro échec en Release (copie neutralisée) et en Debug ; `cmp` égal ;
+  `check_names.py --rules` sans constat. Tests existants déplacés : les entrées neuves de `ArcsThatSlide` et les tables du préréglage, comme prédit.
+  Mutations des exécuteurs et des verifiers, toutes tuées.
+- **Seul code de la DLL touché** : la ligne du préréglage. Le moteur, le convertisseur et les données sans diff.
+- **Verifiers frais** : **CONFIRMED** tous deux.
+- **Recette de l'auteur** (non bloquante) : `barricade-m392` : se caler contre le haut de la porte, pousser la caisse basse, la soulever, la
+  lancer, passer ; `porter-plateforme-m72` : attendre la plateforme et y monter.
 
 ### 1.30 E20.h0 et E20.h3 — Le cadre de l'usage d'un objet, la bombe et les haricots ⏳ (détaillée le 2026-10-18 ; h0a, h3a et h1 (§1.30.5) **READY**, h3b en pause de relecture)
 
@@ -11191,6 +11219,7 @@ les trois entrées `0x31`.
 | O-G3-1 | (2026-10-18) Une entité détruite reste un obstacle jusqu'à la fin de la physique de son tick dans le binaire ; la DLL la retire tout de suite (le filtre `FlagToDestroy`, D-E19-29, dont la prémisse est réfutée) : un tick, toutes les entités | une tranche à part |
 | O-G3-2 | (2026-10-18) L'octet d'animation (`+0xB4`) est lu par la liste avant l'horloge et par la porte du sujet après dans le binaire ; la DLL lit `AnimFlags`, écrit en fin d'image (un tick ou plus) ; l'équivalent exact existe (`HitAnimByte`) | une tranche à part |
 | O-G3-3 | (2026-10-24, g3 puis g1b T0) Debout sur le dessus d'une caisse (ou en l'air), en marchant contre une caisse voisine plus haute, la DLL pose le contact `XCollisionEntity` au tick où le pas est raccourci ; le binaire, hors de la branche « marche au sol » de `ComputeXYPosition` (`0x80037730`, `0x80037834`-`0x80037884`), rend le candidat de l'avant-dernière tentative de sa recherche binaire du pas, ce qui dépend de la phase sous-pixel (`walk-release-disc/critic-main.md`, W4). Un Carré au tick exact de l'arrivée soulèverait la caisse voisine là où l'original donne l'épée. D-E20-77 : g1b l'épingle par un test nommé ; une tranche du moteur à part émulera la queue de la recherche du pas (un plan et un ADR du moteur) | une tranche du moteur, après g1b (D-E20-77) |
+| O-G4B-1 | (2026-10-24, E20.g4b) À 3 ticks par image seulement : rec5 se brise 25 ticks après le lancer (24 aux autres cadences et au binaire) ; en (b6), Alundra n'est pas immobilisé 5 ticks par le roulis ; deux glissements de (b5) et (b6) (ticks 223 et 224) tombent avec un contact rec5 déjà tenu. Épinglés tels que mesurés dans `ShipBarricadeArcTests`, cause non établie (l'ordre des passes à plusieurs ticks par image ?) | plus tard (une lecture de la cadence à 3 ticks par image) |
 | Q-STEP | (2026-10-24, lecture seule `docs/plan-e20-annexe/e20-step-search/`, CONFIRMÉE par un critique frais ; à l'auteur en termes de jeu) Le binaire cherche la longueur de chaque pas par moitiés successives, sur X et Y à la fois (`ComputeXYPosition` `0x80037730`) ; le moteur avance jusqu'au contact exact, axe par axe, en flottants. Ce qui se voit : (1) une flèche tirée à bout portant contre un mur reste plantée dans le mur au lieu de rebondir tout de suite (O-E20-24, le seul écart visible à l'œil) ; (2) debout sur une caisse ou en l'air, un Carré au tick exact de l'arrivée soulève la caisse voisine au lieu de donner l'épée (O-G3-3) ; (3) une flèche ou un objet qui touche un mur à l'est ou au sud déclenche son rebond un tick plus tard dans l'original, une fois sur trois environ (`ForceAdjusted`) ; (4) en poussant en diagonale contre une caisse, l'original s'arrête net, le portage glisse le long (Q-G3-d, gardé par l'auteur le 2026-10-22). Options : (A) porter la recherche du binaire en entier, dans un déplaceur de la DLL en entiers bruts (le moteur ne peut pas être exact : sa position est en float32 ; il faut aussi une API moteur de pose exacte, avec son plan et son ADR), par étapes (les projectiles et objets lancés, puis le héros) ; cela renverse D-E19-58, D-E20-38, Q-H4C1-5 et Q-G3-d, que l'auteur avait gardés ; plusieurs tranches, des arcs réécrits par dérivation ; (B) le minimum visible : corriger O-E20-24 seul (le premier pas d'un projectile, porté avec la boucle par moitiés), et une « ombre » du contact du binaire pour O-G3-3 (une copie pure de la recherche qui ne fait qu'écrire le contact) ; le reste des écarts (3) et (4) gardé ; (C) ne rien changer : O-E20-24 et O-G3-3 restent consignés. Défaut de la session : (B), qui ne renverse aucune réponse de l'auteur | l'auteur ; non bloquant (thème 2 pour O-E20-24) |
 | O-ANX-1 | (2026-10-24, relevé par g3) La règle `[Bb]in/` du `.gitignore` (ligne 21, pour les sorties de construction) écarte aussi les dossiers `bin/` des annexes : `e20-f4f6/bin` (273 fichiers), `e20-f4f6/critic/bin` (180), `e20-h3/bin` (143), `e20-h4b/bin` (81), `plan-e19-pad-age-annexe/o77/bin` (9) ne sont pas dans le dépôt, alors que les plans les citent comme preuves ; celui de g3 a été ajouté à sa clôture. Proposition : une exception `!docs/**/[Bb]in/` au `.gitignore` et l'ajout des cinq dossiers (14 Mo environ), par un commit de docs **Réponse de l'auteur (2026-10-24)** : « prendre toutes les réponses par défaut » : la proposition (D-E20-76). | Tranché le 2026-10-24 (D-E20-76) |
 | O-G2C1-1 | (2026-10-24, lecture de g2c1) Deux objets passent par script à des natifs non portés : le tonneau de la 113 rec 11 en C64 (`0x8007ADDC`, il copie la hauteur du héros et inverse ses forces ; d'après la lecture, il ne gère pas le lâcher), la pierre de la 473 rec 0 en C96 (`0x800647B0`, un projectile qui rebondit, non soulevable). Le T0 de g2c1 dit ce que fait l'original quand on soulève le tonneau de la 113 rec 11 | g2c1 T0 (g), puis le thème des IA |
