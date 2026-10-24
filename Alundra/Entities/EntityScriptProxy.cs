@@ -100,6 +100,11 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     public int Flags2;//24
     public Entity? PlatformEntity; //28
     public Entity? CarriedEntity;
+    /// <summary>
+    /// E20.g1a (docs/plan-e20-heros.md section 1.24.1, D-G-4): the counter of the locked branch of the hero (the binary's global word <c>[0x80098F28]</c>, read and written only by <c>UpdatePlayerCarriedEntity</c>): in mode 1 it counts the five ticks
+    /// before the carried object is drawn in or destroyed, it is reset to 0 by modes 0 and 2 and when nothing is carried, and it is kept after a destruction. Only the hero's is read. Not copied by <see cref="Clone"/>.
+    /// </summary>
+    internal int CarryLockCounter;
     public int RelativeWarpOffsetX;
     public int RelativeWarpOffsetY;
     public int RelativeWarpOffsetZ;

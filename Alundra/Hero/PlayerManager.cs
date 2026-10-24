@@ -1281,6 +1281,26 @@ public static class PlayerManager
     /// <summary>The table <c>0x80023644</c>, indexed by the hero's direction of the sprite at the tick of the shot (<see cref="EntityScriptProxy.BoxDirection"/>, never the end-of-frame <see cref="EntityScriptProxy.AnimationDirection"/>, D-F3-2; the order of <see cref="AnimationTables.DirectionNames"/>).</summary>
     private static readonly int[] SpawnDirections = { 0, 0x10, 8, 0x18 };
 
+    /// <summary>
+    /// E20.g1a (docs/plan-e20-heros.md section 1.24.1, D-G-2, D-G-12, D-G-13): the single seam that puts <paramref name="item"/> in the hands of <paramref name="hero"/> - the core of <c>TryLift</c> (<c>0x8002EE0C-0x8002EE1C</c>), which the seeds and the bomb
+    /// of E20.h3 will call as well. The two links are the logic entities (D-G-15: <see cref="EntityScriptProxy.CarriedEntity"/> of the hero, <see cref="EntityScriptProxy.PlatformEntity"/> of the object); the offset (<c>+0x30/+0x34/+0x38</c>) is the object's
+    /// raw position minus the hero's on the three axes; the object stops riding what it rode and takes the marker of the logical Z (<see cref="EntityScriptProxy.HasLogicalZ"/>, never removed); the hero takes the state of <see cref="CarryRules.LiftAnimation"/>:
+    /// the plain carrying state when the object stood on his head (its <see cref="EntityScriptProxy.RidingEntity"/> is the hero, and a null is never the hero), otherwise the lift gesture; on the ground or in the air as <see cref="IsHeroInTheAir"/> says.
+    /// No production path calls it in phase A (the trigger is g1b).
+    /// </summary>
+    internal static void PutInHands(EntityScriptProxy hero, EntityScriptProxy item)
+    {
+        var wasOnHead = item.RidingEntity != null && ReferenceEquals(item.RidingEntity, hero.LogicContextEntity);
+        hero.CarriedEntity = item.LogicContextEntity;
+        item.PlatformEntity = hero.LogicContextEntity;
+        hero.TargetAnimationId = CarryRules.LiftAnimation(wasOnHead, !IsHeroInTheAir(hero));
+        hero.RelativeWarpOffsetX = unchecked(item.PosX - hero.PosX);
+        hero.RelativeWarpOffsetY = unchecked(item.PosY - hero.PosY);
+        hero.RelativeWarpOffsetZ = unchecked(item.PosZ - hero.PosZ);
+        item.RidingEntity = null;
+        item.HasLogicalZ = true;
+    }
+
     /// <summary>E20.a A4 stub of <c>UpdatePlayerCarriedEntity</c> (<c>0x8002F884</c>, called with 0 at <c>0x80031D78</c> and, E20.i, with 2 by the swim branch): nothing is carried yet (E20.g).</summary>
     private static void UpdatePlayerCarriedEntity(EntityScriptProxy player, int mode)
     {
