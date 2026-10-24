@@ -7347,7 +7347,7 @@ rejoué sur le vrai code ; ce qui n'est qu'inférence est dit.
 - **Q-G2C-9** : les sondes de la DLL au T0 de g2c1 : P1 `ForceAdjusted` d'un objet lancé contre un mur ; P2 les mots des quatre coins
   au bord d'une bande `0x1001` ; P3 `HitCounter` à T+21 ; P4 le `RidingEntity` d'un objet posé sur une plaque.
 
-##### E20.g2c1 — C4 : les objets transportables (tonneau, pierre, tronc, objets des plaques, et les objets qui passent à C4 en jeu) ⏳ (détaillée le 2026-10-24 ; révision 0 relue : REVISE ; révision 1 du 2026-10-24, **READY** à la deuxième relecture, `plan-verifier` frais ; révision 2 du 2026-10-24 (g2b2 passe après elle), une seule relecture de clôture ; exécutable après E20.g1b et E20.g4b)
+##### E20.g2c1 — C4 : les objets transportables (tonneau, pierre, tronc, objets des plaques, et les objets qui passent à C4 en jeu) ⏳ (détaillée le 2026-10-24 ; révision 0 relue : REVISE ; révision 1 du 2026-10-24, **READY** à la deuxième relecture, `plan-verifier` frais ; révision 2 du 2026-10-24 (g2b2 passe après elle), **READY** à la relecture de clôture, `plan-verifier` frais ; exécutable après E20.g1b et E20.g4b)
 
 **Provenance.** Le T0 de lecture seule du 2026-10-22 (`docs/plan-e20-annexe/e20-g2c/disc/`, `report.md`), puis deux lectures du
 2026-10-24 au HEAD `73c05530` (C4 et ses questions : `report-main.md`, `critic-main.md` ; les boutiques : `shop-disc/report-main.md`,
@@ -7503,7 +7503,7 @@ tests existants bougent ; un test qui boucle ; un besoin de toucher au moteur.
 **Retour arrière.** La phase C se retire seule (les 18 types hors de l'ensemble câblé : rien ne se soulève de plus) ; puis la phase B (la clé
 `(C, 4)` retirée : les objets redeviennent inertes) ; la phase A ne change aucun comportement.
 
-##### E20.g2b2 — Les objets lancés tombent dans les trous (O-G-2) ⏳ (détaillée le 2026-10-24 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-24 après disposition, une seule relecture de clôture ; exécutable après E20.g2c1)
+##### E20.g2b2 — Les objets lancés tombent dans les trous (O-G-2) ⏳ (détaillée le 2026-10-24 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-24 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; exécutable après E20.g2c1)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `73c05530` ; rapports `report-main.md` §3 et `critic-main.md` Q3 et Manque 3, versés à
 `docs/plan-e20-annexe/e20-g2c1-disc/` par le T0 de g2c1, avec les scripts et les sorties). O-G-2 n'avait pas de propriétaire : ni f6a ni g2b ne
