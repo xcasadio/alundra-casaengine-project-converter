@@ -1,0 +1,5 @@
+trace files scanned (hero rows with an animation and a force column): 68
+e20-c1\oracle\out                             scanned  12  with a change to Idle under force:   2  [('H1-both.json', (17, 28, -61440, 0, -30720, 0)), ('H3.json', (33, 28, -61440, 0, -30720, 0))]
+e20-h4e1\critic\critic_keys                   scanned  12  with a change to Idle under force:   6  [('wind1_hurt102_gateoff_pf.json', (117, 28, 61440, 0, 30720, 0)), ('wind1_hurt103_gateoff_pf.json', (118, 28, 61440, 0, 30720, 0)), ('wind1_hurt33_gateoff_pf.json', (48, 28, 61440, 0, 30720, 0))]
+e20-h4e1\disc\keys                            scanned  42  with a change to Idle under force:   8  [('wind1_hurt102_pf.json', (117, 28, 61440, 0, 30720, 0)), ('wind1_hurt103_pf.json', (118, 28, 61440, 0, 30720, 0)), ('wind1_hurt20_pf.json', (35, 28, 61440, 0, 30720, 0))]
+e20-h4e1\disc\stale                           scanned   2  with a change to Idle under force:   0  []

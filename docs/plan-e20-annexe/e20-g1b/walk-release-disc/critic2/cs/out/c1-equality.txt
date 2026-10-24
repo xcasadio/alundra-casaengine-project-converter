@@ -1,0 +1,18 @@
+MODE 0 (stale hero offsets 0x12345,0x23456,0x34567 must be overwritten; counter reset)
+  dx=dz-err (21px, 0, 11px): zerr=21px                 off=(21.0, 0.0, 11.0) -> (20.0, 0.0, 12.0) ctr=0  X eased=True
+  one raw unit less: max 21px-1 < zerr 21px            off=(20.99998, 0.0, 11.0) -> (20.99998, 0.0, 12.0) ctr=0  X eased=False
+  one raw unit more: max 21px+1 > zerr 21px            off=(21.00002, 0.0, 11.0) -> (20.00002, 0.0, 12.0) ctr=0  X eased=True
+  dy only (0, -21px, 11px) equality on Y               off=(0.0, -21.0, 11.0) -> (0.0, -20.0, 12.0) ctr=0  X eased=False
+  dz above target (0x200000+5px): zerr=5px, dx=5px     off=(5.0, 0.0, 37.0) -> (4.0, 0.0, 36.0) ctr=0  X eased=True
+  dz above target, dx=5px-1                            off=(4.99998, 0.0, 37.0) -> (4.99998, 0.0, 36.0) ctr=0  X eased=False
+  at target (0,0,32px): nothing to ease                off=(0.0, 0.0, 32.0) -> (0.0, 0.0, 32.0) ctr=0  X eased=False
+MODE 1, counter 5 (AttackCount of the crate sheet is 1 in this run: real sheet)
+  (0x1FFFF,0,0)                        -> hero off=('0x12345', '0x23456', '0x34567') ctr=5 status=4 (4 = destroyed)
+  (0x20000,0,0)                        -> hero off=('0x0', '0x0', '0x0') ctr=5 status=2 (4 = destroyed)
+  (0,0x1FFFF,0x1FFFF)                  -> hero off=('0x12345', '0x23456', '0x34567') ctr=5 status=4 (4 = destroyed)
+  (0,0,0x20000)                        -> hero off=('0x0', '0x0', '0x0') ctr=5 status=2 (4 = destroyed)
+  (-0x1FFFF,-0x1FFFF,-0x1FFFF)         -> hero off=('0x12345', '0x23456', '0x34567') ctr=5 status=4 (4 = destroyed)
+  (-0x20000,0,0)                       -> hero off=('0x0', '0x0', '0x0') ctr=5 status=2 (4 = destroyed)
+  (0,0,32px) start of the easing       -> hero off=('0x0', '0x0', '0x1e0000') ctr=5 status=2 (4 = destroyed)
+MODE 1 counter ticks: counter 4 -> (5, 2) ; counter 0 -> (1, 2)
+MODE 0 easing trace from (21,0,0) px (call k reads the previous call output): first calls (21,0,0) (21,0,1) (21,0,2) ... Z reaches 21 at call 21, XY first move at call 12, done at call 32

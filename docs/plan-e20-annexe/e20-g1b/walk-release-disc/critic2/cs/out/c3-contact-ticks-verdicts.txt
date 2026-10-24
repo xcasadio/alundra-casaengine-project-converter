@@ -1,0 +1,9 @@
+A hold RIGHT t1-9, release+Square at t10                                             LIFT
+B hold RIGHT t1-9, release at t10, Square at t11                                     LIFT
+C hold RIGHT t1-9, Square at t10 still holding RIGHT                                 LIFT
+D release t10-14, RIGHT again t15, Square at t15 (first tick of the 2nd hold)        no lift (anim after: [16, 16, 16, 16])
+D2 same with Square at t16                                                           LIFT
+E Square at t5 (first tick touching: contact appears after the physics of t5)        no lift (anim after: [16, 16, 16, 16])
+E2 Square at t6                                                                      LIFT
+F Square HELD from t1 with RIGHT                                                     no lift (anim after: [16, 16, 16, 16])
+G UP held (not pushing the crate), Square at t10                                     no lift (anim after: [16, 16, 16, 16])

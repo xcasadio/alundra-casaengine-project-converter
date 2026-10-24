@@ -1,0 +1,18 @@
+== the base run (DOWN from t37, no Square): contact by tick
+t036 pad=0000 y=296.000 z=80.0 anim=0 xcoll=- adj=0
+t037 pad=4000 y=296.812 z=80.0 anim=1 xcoll=- adj=0
+t038 pad=4000 y=297.000 z=80.0 anim=1 xcoll=- adj=0
+t039 pad=4000 y=297.000 z=80.0 anim=1 xcoll=rec10 adj=1
+t040 pad=4000 y=297.000 z=80.0 anim=1 xcoll=rec10 adj=1
+t041 pad=4000 y=297.000 z=80.0 anim=1 xcoll=rec10 adj=1
+t042 pad=4000 y=297.000 z=80.0 anim=1 xcoll=rec10 adj=1
+t043 pad=4000 y=297.000 z=80.0 anim=1 xcoll=rec10 adj=1
+t044 pad=4000 y=297.000 z=80.0 anim=1 xcoll=rec10 adj=1
+arrival at y = 297.000: t038 ; contact first set after t039
+Square at t037 (contact read by that MovePlayer = the one after t036: -): sword (no lift) ; anim by tick [(37, 16), (38, 16), (39, 16)]
+Square at t038 (contact read by that MovePlayer = the one after t037: -): sword (no lift) ; anim by tick [(38, 16), (39, 16), (40, 16)]
+Square at t039 (contact read by that MovePlayer = the one after t038: -): sword (no lift) ; anim by tick [(39, 16), (40, 16), (41, 16)]
+Square at t040 (contact read by that MovePlayer = the one after t039: rec10): LIFT rec10 ; anim by tick [(40, 5), (41, 5), (42, 5)]
+Square at t041 (contact read by that MovePlayer = the one after t040: rec10): LIFT rec10 ; anim by tick [(41, 5), (42, 5), (43, 5)]
+Square at t042 (contact read by that MovePlayer = the one after t041: rec10): LIFT rec10 ; anim by tick [(42, 5), (43, 5), (44, 5)]
+Square at t043 (contact read by that MovePlayer = the one after t042: rec10): LIFT rec10 ; anim by tick [(43, 5), (44, 5), (45, 5)]

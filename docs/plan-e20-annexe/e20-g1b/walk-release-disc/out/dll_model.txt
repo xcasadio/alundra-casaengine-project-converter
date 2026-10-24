@@ -1,0 +1,17 @@
+release_open       oracle == model(REAL: Idle acc 1): True  | oracle vs model(RIG: Idle acc 0) differs at ticks [10, 11, 12, 13]
+   tick  oracle(fx, x)            REAL(fx, x)              RIG(fx, x)
+   t08    2.4375   118.2812     2.4375   118.2812     2.4375   118.2812
+   t09    2.4375   120.7188     2.4375   120.7188     2.4375   120.7188
+   t10    1.2188   121.9375     1.2188   121.9375     0.0000   120.7188
+   t11    0.0000   121.9375     0.0000   121.9375     0.0000   120.7188
+   t12    0.0000   121.9375     0.0000   121.9375     0.0000   120.7188
+   t13    0.0000   121.9375     0.0000   121.9375     0.0000   120.7188
+release_open_left  oracle == model(REAL: Idle acc 1): True  | oracle vs model(RIG: Idle acc 0) differs at ticks [10, 11, 12, 13]
+release_open_down  oracle == model(REAL: Idle acc 1): True  | oracle vs model(RIG: Idle acc 0) differs at ticks [10, 11, 12, 13]
+release_open_up    oracle == model(REAL: Idle acc 1): True  | oracle vs model(RIG: Idle acc 0) differs at ticks [10, 11, 12, 13]
+release_diag       oracle == model(REAL: Idle acc 1): True  | oracle vs model(RIG: Idle acc 0) differs at ticks [10, 11, 12, 13]
+tap1               oracle == model(REAL: Idle acc 1): True  | oracle vs model(RIG: Idle acc 0) differs at ticks [2, 3, 4, 5, 6]
+tap2               oracle == model(REAL: Idle acc 1): True  | oracle vs model(RIG: Idle acc 0) differs at ticks [3, 4, 5, 6, 7]
+reversal           oracle == model(REAL: Idle acc 1): True  | oracle vs model(RIG: Idle acc 0) differs at ticks [16, 17, 18]
+release_regrab     oracle == model(REAL: Idle acc 1): True  | oracle vs model(RIG: Idle acc 0) differs at ticks [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+ALL oracle == REAL model: True

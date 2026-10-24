@@ -1,0 +1,10 @@
+hero sheet base in RAM: 801A0020 ; animations compared: 94 ; mismatches: 0
+  anim  0  binary Speed    0  Acceleration byte   1 (& 0xF = 1)
+  anim  1  binary Speed  208  Acceleration byte   1 (& 0xF = 1)
+  anim  3  binary Speed  336  Acceleration byte   2 (& 0xF = 2)
+  anim  7  binary Speed  208  Acceleration byte   0 (& 0xF = 0)
+  anim 12  binary Speed    0  Acceleration byte   1 (& 0xF = 1)
+  anim 29  binary Speed    0  Acceleration byte   3 (& 0xF = 3)
+  anim 42  binary Speed    0  Acceleration byte   5 (& 0xF = 5)
+  anim 44  binary Speed  196  Acceleration byte   1 (& 0xF = 1)
+  anim 45  binary Speed    0  Acceleration byte   1 (& 0xF = 1)
