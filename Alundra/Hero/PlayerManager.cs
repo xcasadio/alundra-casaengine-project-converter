@@ -954,6 +954,29 @@ public static class PlayerManager
     /// <summary>E20.a A4 stub of <c>PlayerTryAction</c> (<c>0x8002EEAC</c>): 0 means "no action, carry on" (<c>0x8002EFC8</c>: nothing carried and nothing to lift). Lifting, carrying and throwing are E20.g.</summary>
     private static int PlayerTryAction(EntityScriptProxy player, in PadState pad) => 0;
 
+    /// <summary>
+    /// E20.g1b phase A (docs/plan-e20-heros.md section 1.24.4): the sprite types whose lift is wired to <see cref="TryLift"/>, one type after the other (the model of <see cref="ProductionWiredWeaponTypes"/>, D-G-8). Empty in production until the
+    /// activation (phase B, T3): the stub <see cref="PlayerTryAction"/> still answers 0 and nothing reads this set in production.
+    /// </summary>
+    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredLiftableTypes = new System.Collections.Generic.HashSet<int>();
+
+    /// <summary>E20.g1b test seam, per thread: when set, replaces <see cref="ProductionWiredLiftableTypes"/>.</summary>
+    [ThreadStatic]
+    internal static System.Collections.Generic.IReadOnlySet<int>? WiredLiftableTypesForTests;
+
+    /// <summary>The set the lift reads: the one of the test when a test posed it, otherwise <see cref="ProductionWiredLiftableTypes"/>.</summary>
+    internal static System.Collections.Generic.IReadOnlySet<int> WiredLiftableTypes => WiredLiftableTypesForTests ?? ProductionWiredLiftableTypes;
+
+    /// <summary>
+    /// E20.g1b phase A: <c>TryLift</c> (<c>0x8002EDBC</c>) as a pure function over an explicit context. Placeholder of the red tests.
+    /// </summary>
+    internal static int TryLift(EntityScriptProxy hero, EntityScriptProxy contact, bool ownsPowerGlove, System.Collections.Generic.IReadOnlySet<int> wiredTypes) => 0;
+
+    /// <summary>
+    /// E20.g1b phase A: <c>PlayerTryAction</c> (<c>0x8002EEAC</c>) as a pure function over an explicit context. Placeholder of the red tests.
+    /// </summary>
+    internal static int PlayerTryActionCore(EntityScriptProxy hero, in PadState pad, System.Collections.Generic.IReadOnlyList<EntityScriptProxy> entities, bool ownsPowerGlove, System.Collections.Generic.IReadOnlySet<int> wiredTypes) => 0;
+
     /// <summary>The bit of <see cref="EntityScriptProxy.CombinedVramFlagsOR"/> (a ground property of 0x20 under a corner of the footprint) on which the Square does not strike (<c>0x8002EB24</c>).</summary>
     internal const uint NoAttackVramFlag = 0x2000;
 
