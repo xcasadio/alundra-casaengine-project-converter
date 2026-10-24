@@ -1,0 +1,8 @@
+## I: kind 1 + C4 but Collidable cleared
+header read by the REAL InitializeEntity: flags +0x6C = 0x230300, native C code +0x78 = 4, native A +0x70 = 255, E +0x80 = 0, +0x68 = 66, box (0,0,0)
+after the harness equivalent of the script: flags = 0x230300, C code = 4
+first tick with +0x28 (carrier) set: None ; hero +0x2C at that tick: -
+final: item status 2 t24 0 carrier28 0 anim_t 0 flags 0x230300 pos (130.00, 100.00, 0.00) ground 1 ; hero anim_t 0 +0x2C 0 pos (124.38, 100.00)
+changes of (status, t24, carrier, anim, flags, ground):
+   t001 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230300 ground=1 pos=(130.0,100.0,0.0)
+journal (non-stub): [(1, ['snd(0)']), (11, ['snd(29)']), (32, ['snd(0)'])]

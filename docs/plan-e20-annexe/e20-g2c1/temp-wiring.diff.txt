@@ -1,0 +1,38 @@
+diff --git a/Alundra/Ai/NativeSpriteRegistry.cs b/Alundra/Ai/NativeSpriteRegistry.cs
+index 71943eee..03d292f2 100644
+--- a/Alundra/Ai/NativeSpriteRegistry.cs
++++ b/Alundra/Ai/NativeSpriteRegistry.cs
+@@ -45,6 +45,7 @@ internal sealed class NativeSpriteRegistry
+         PillarAi.Register(registry);
+         LiftableAi.Register(registry);
+         LiftableAi.RegisterBreak(registry);
++        TempC4.Register(registry);
+         return registry;
+     }
+ 
+diff --git a/Alundra/Entities/EntityScriptProxy.cs b/Alundra/Entities/EntityScriptProxy.cs
+index a51aae17..3b7c87f4 100644
+--- a/Alundra/Entities/EntityScriptProxy.cs
++++ b/Alundra/Entities/EntityScriptProxy.cs
+@@ -1821,7 +1821,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
+ 
+             // E20.f6a (D-F6-2, Q-K1 option A): the tile attributes of the binary's physics pass (0x80038064, the end of 0x80038364) for an entity born during play (the marker of the interface) that has the gravity: the same
+             // code as the hero's, after the step of the tick, in the statuses 2 and 3 only (the physics list of the binary). It feeds Slope_18c, which the pick phase reads (DestroyOnSlidingSlope). An entity placed by the map keeps 0 (E19.h2).
+-            if (HasLogicalZ)
++            if (HasLogicalZ || SpriteType == 373)
+             {
+                 UpdateGroundSlope();
+             }
+diff --git a/Alundra/Hero/PlayerManager.cs b/Alundra/Hero/PlayerManager.cs
+index 0bfd925a..6ec7afe1 100644
+--- a/Alundra/Hero/PlayerManager.cs
++++ b/Alundra/Hero/PlayerManager.cs
+@@ -967,7 +967,7 @@ public static class PlayerManager
+     /// E20.g1b phase A (docs/plan-e20-heros.md section 1.24.4): the sprite types whose lift is wired to <see cref="TryLift"/>, one type after the other (the model of <see cref="ProductionWiredWeaponTypes"/>, D-G-8). Phase B (T3), the activation: the seven
+     /// types of C23 (<see cref="Alundra.Ai.Objects.LiftableAi.SpriteTypes"/>); <see cref="PlayerTryAction"/> reads it.
+     /// </summary>
+-    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredLiftableTypes = new System.Collections.Generic.HashSet<int>(Alundra.Ai.Objects.LiftableAi.SpriteTypes);
++    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredLiftableTypes = new System.Collections.Generic.HashSet<int>(System.Linq.Enumerable.Concat(Alundra.Ai.Objects.LiftableAi.SpriteTypes, Alundra.Ai.Objects.TempC4.AllTypes));
+ 
+     /// <summary>E20.g1b test seam, per thread: when set, replaces <see cref="ProductionWiredLiftableTypes"/>.</summary>
+     [ThreadStatic]

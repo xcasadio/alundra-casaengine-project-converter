@@ -1,0 +1,90 @@
+== map 72
+   A[12] @122 0x62 set flags      [98, 128, 2, 1]
+   A[12] @126 0x63 clear flags    [99, 128, 241, 64]
+   A[18] @132 0x62 set flags      [98, 128, 0, 64]
+   A[26] @142 0x62 set flags      [98, 128, 2, 1]
+   A[26] @146 0x63 clear flags    [99, 128, 241, 64]
+   C[18] @337 0x16 gravity high   [22]   <== search type -1 (not self)
+   C[18] @347 0x17 gravity low    [23]   <== search type -1 (not self)
+   C[22] @384 0x16 gravity high   [22]   <== search type -1 (not self)
+   C[22] @391 0x17 gravity low    [23]   <== search type -1 (not self)
+   C[23] @424 0x16 gravity high   [22]   <== search type -1 (not self)
+   C[23] @431 0x17 gravity low    [23]   <== search type -1 (not self)
+   C[24] @464 0x16 gravity high   [22]   <== search type -1 (not self)
+   C[24] @471 0x17 gravity low    [23]   <== search type -1 (not self)
+== map 73
+   A[2] @120 0x41 sprite prog index [65, 2, 66]   <== search type 2 (not self)
+   A[3] @124 0x41 sprite prog index [65, 2, 67]   <== search type 2 (not self)
+   A[4] @128 0x62 set flags      [98, 128, 2, 0]
+   A[4] @132 0x63 clear flags    [99, 128, 241, 65]
+   A[4] @138 0x41 sprite prog index [65, 2, 68]   <== search type 2 (not self)
+   A[4] @141 0x41 sprite prog index [65, 3, 45]   <== search type 3 (not self)
+   A[15] @150 0x62 set flags      [98, 128, 2, 0]
+   A[15] @154 0x63 clear flags    [99, 128, 241, 64]
+   A[22] @162 0x62 set flags      [98, 128, 2, 0]
+   A[22] @166 0x63 clear flags    [99, 128, 241, 64]
+== map 79
+   A[12] @128 0x62 set flags      [98, 128, 2, 65]
+   A[12] @132 0x63 clear flags    [99, 128, 241, 0]
+   A[13] @144 0x62 set flags      [98, 128, 2, 65]
+   A[13] @148 0x63 clear flags    [99, 128, 241, 0]
+   A[14] @158 0x62 set flags      [98, 128, 2, 65]
+   A[14] @162 0x63 clear flags    [99, 128, 241, 0]
+   A[15] @170 0x62 set flags      [98, 128, 2, 65]
+   A[15] @174 0x63 clear flags    [99, 128, 241, 0]
+   A[20] @180 0x62 set flags      [98, 128, 2, 1]
+   A[20] @184 0x63 clear flags    [99, 128, 240, 0]
+   A[26] @200 0x62 set flags      [98, 128, 0, 1]
+== map 140
+   A[3] @231 0x63 clear flags    [99, 128, 9, 0]
+   A[3] @238 0x62 set flags      [98, 128, 8, 0]
+   A[3] @242 0x63 clear flags    [99, 128, 1, 0]
+   A[4] @255 0x63 clear flags    [99, 128, 9, 0]
+   A[4] @262 0x62 set flags      [98, 128, 8, 0]
+   A[4] @266 0x63 clear flags    [99, 128, 1, 0]
+   A[5] @279 0x63 clear flags    [99, 128, 9, 0]
+   A[5] @286 0x62 set flags      [98, 128, 8, 0]
+   A[5] @290 0x63 clear flags    [99, 128, 1, 0]
+   A[6] @303 0x63 clear flags    [99, 128, 9, 0]
+   A[6] @310 0x62 set flags      [98, 128, 8, 0]
+   A[6] @314 0x63 clear flags    [99, 128, 1, 0]
+   A[7] @327 0x63 clear flags    [99, 128, 9, 0]
+   A[7] @334 0x62 set flags      [98, 128, 8, 0]
+   A[7] @338 0x63 clear flags    [99, 128, 1, 0]
+   A[8] @351 0x63 clear flags    [99, 128, 9, 0]
+   A[8] @358 0x62 set flags      [98, 128, 8, 0]
+   A[8] @362 0x63 clear flags    [99, 128, 1, 0]
+   A[12] @375 0x63 clear flags    [99, 128, 9, 0]
+   A[12] @382 0x62 set flags      [98, 128, 8, 0]
+   A[12] @386 0x63 clear flags    [99, 128, 1, 0]
+   A[29] @394 0x62 set flags      [98, 128, 2, 0]
+   A[29] @398 0x63 clear flags    [99, 128, 241, 64]
+   B[2] @634 0x62 set flags      [98, 128, 0, 1]
+   B[2] @638 0x63 clear flags    [99, 128, 3, 0]
+   C[2] @1640 0x62 set flags      [98, 128, 1, 0]
+   C[3] @1683 0x63 clear flags    [99, 128, 8, 0]
+   C[4] @1699 0x63 clear flags    [99, 128, 8, 0]
+   C[5] @1715 0x63 clear flags    [99, 128, 8, 0]
+   C[6] @1731 0x63 clear flags    [99, 128, 8, 0]
+   C[7] @1747 0x63 clear flags    [99, 128, 8, 0]
+   C[8] @1763 0x63 clear flags    [99, 128, 8, 0]
+   C[11] @1776 0x63 clear flags    [99, 128, 128, 0]
+   C[12] @1843 0x63 clear flags    [99, 128, 8, 0]
+   C[13] @1859 0x63 clear flags    [99, 128, 8, 0]
+   C[14] @1875 0x63 clear flags    [99, 128, 8, 0]
+   C[15] @1891 0x63 clear flags    [99, 128, 8, 0]
+   C[16] @1907 0x62 set flags      [98, 128, 1, 1]
+   D[28] @2130 0x2B classA off     [43]   <== search type -1 (not self)
+== map 158
+   A[2] @224 0x63 clear flags    [99, 128, 128, 0]
+   A[2] @228 0x16 gravity high   [22]   <== search type -1 (not self)
+   A[2] @229 0x41 sprite prog index [65, 4, 0]   <== search type 4 (not self)
+   A[8] @236 0x62 set flags      [98, 128, 2, 0]
+   A[8] @240 0x63 clear flags    [99, 128, 244, 0]
+   A[9] @252 0x62 set flags      [98, 128, 2, 0]
+   A[9] @256 0x63 clear flags    [99, 128, 244, 0]
+   A[20] @276 0x62 set flags      [98, 128, 2, 0]
+   A[20] @280 0x63 clear flags    [99, 128, 240, 0]
+   A[24] @288 0x62 set flags      [98, 128, 128, 1]
+   A[33] @296 0x62 set flags      [98, 128, 2, 0]
+   A[33] @300 0x63 clear flags    [99, 128, 244, 0]

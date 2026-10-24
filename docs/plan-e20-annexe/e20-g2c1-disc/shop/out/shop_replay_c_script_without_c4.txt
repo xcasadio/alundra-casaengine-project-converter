@@ -1,0 +1,11 @@
+## C: flags 0x380 set but no C4 (native code stays 255, inert): the item stays in the hands
+header read by the REAL InitializeEntity: flags +0x6C = 0x230180, native C code +0x78 = 255, native A +0x70 = 255, E +0x80 = 0, +0x68 = 66, box (0,0,0)
+after the harness equivalent of the script: flags = 0x230380, C code = 255
+first tick with +0x28 (carrier) set: 11 ; hero +0x2C at that tick: 80127FC4
+final: item status 2 t24 2 carrier28 80127D30 anim_t 0 flags 0x230380 pos (109.00, 100.00, 32.00) ground 0 ; hero anim_t 12 +0x2C 80127FC4 pos (109.00, 100.00)
+changes of (status, t24, carrier, anim, flags, ground):
+   t001 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230380 ground=1 pos=(130.0,100.0,0.0)
+   t011 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=1 pos=(130.0,100.0,0.0)
+   t012 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=0 pos=(130.0,100.0,1.0)
+   t061 status=2 t24=2 carrier28=80127D30 anim_t=0 flags=0x230380 ground=0 pos=(109.0,100.0,32.0)
+journal (non-stub): [(1, ['snd(0)']), (11, ['snd(44)']), (47, ['snd(0)']), (61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (81, ['snd(0)'])]

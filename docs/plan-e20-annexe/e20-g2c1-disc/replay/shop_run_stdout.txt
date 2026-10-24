@@ -1,0 +1,52 @@
+## B: C4 real after the script (lift, walk, throw east, flat ground)
+header read by the REAL InitializeEntity: flags +0x6C = 0x230180, native C code +0x78 = 255, native A +0x70 = 255, E +0x80 = 0, +0x68 = 66, box (0,0,0)
+after the harness equivalent of the script: flags = 0x230380, C code = 4
+first tick with +0x28 (carrier) set: 11 ; hero +0x2C at that tick: 80127FC4
+final: item status 2 t24 0 carrier28 0 anim_t 0 flags 0x230380 pos (178.00, 100.00, 0.00) ground 1 ; hero anim_t 0 +0x2C 0 pos (109.00, 100.00)
+changes of (status, t24, carrier, anim, flags, ground):
+   t001 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230380 ground=1 pos=(130.0,100.0,0.0)
+   t011 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=1 pos=(130.0,100.0,0.0)
+   t012 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=0 pos=(130.0,100.0,1.0)
+   t061 status=2 t24=0 carrier28=0 anim_t=1 flags=0x230380 ground=0 pos=(112.0,100.0,36.0)
+   t083 status=2 t24=0 carrier28=0 anim_t=1 flags=0x230380 ground=1 pos=(178.0,100.0,0.0)
+   t084 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230380 ground=1 pos=(178.0,100.0,0.0)
+journal (non-stub): [(1, ['snd(0)']), (11, ['snd(44)']), (47, ['snd(0)']), (61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+
+## D: thrown onto a hole (walkability 0x04, columns 7-8)
+header read by the REAL InitializeEntity: flags +0x6C = 0x230180, native C code +0x78 = 255, native A +0x70 = 255, E +0x80 = 0, +0x68 = 66, box (0,0,0)
+after the harness equivalent of the script: flags = 0x230380, C code = 4
+first tick with +0x28 (carrier) set: 11 ; hero +0x2C at that tick: 80127FC4
+final: item status 0 t24 0 carrier28 0 anim_t 0 flags 0x0 pos (0.00, 0.00, 0.00) ground 0 ; hero anim_t 0 +0x2C 0 pos (109.00, 100.00)
+changes of (status, t24, carrier, anim, flags, ground):
+   t001 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230380 ground=1 pos=(130.0,100.0,0.0)
+   t011 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=1 pos=(130.0,100.0,0.0)
+   t012 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=0 pos=(130.0,100.0,1.0)
+   t061 status=2 t24=0 carrier28=0 anim_t=1 flags=0x230380 ground=0 pos=(112.0,100.0,36.0)
+   t083 status=2 t24=0 carrier28=0 anim_t=1 flags=0x230380 ground=1 pos=(178.0,100.0,0.0)
+   t084 status=4 t24=0 carrier28=0 anim_t=1 flags=0x230380 ground=1 pos=(178.0,100.0,0.0)
+   t085 status=0 t24=0 carrier28=0 anim_t=0 flags=0x0 ground=0 pos=(0.0,0.0,0.0)
+journal (non-stub): [(1, ['snd(0)']), (11, ['snd(44)']), (47, ['snd(0)']), (61, ['snd(26)', 'snd(0)']), (80, ['snd(0)'])]
+
+## G: item on a 16 px ledge, hero on the floor walks into the ledge and presses Square
+header read by the REAL InitializeEntity: flags +0x6C = 0x230380, native C code +0x78 = 4, native A +0x70 = 255, E +0x80 = 0, +0x68 = 66, box (0,0,0)
+after the harness equivalent of the script: flags = 0x230380, C code = 4
+first tick with +0x28 (carrier) set: None ; hero +0x2C at that tick: -
+final: item status 2 t24 0 carrier28 0 anim_t 0 flags 0x230380 pos (132.00, 100.00, 16.00) ground 1 ; hero anim_t 0 +0x2C 0 pos (109.00, 100.00)
+changes of (status, t24, carrier, anim, flags, ground):
+   t001 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230380 ground=1 pos=(132.0,100.0,16.0)
+journal (non-stub): [(1, ['snd(0)']), (15, ['snd(29)']), (36, ['snd(0)'])]
+
+## H: hero jumps onto a 16 px ledge, lifts the item, throws it
+header read by the REAL InitializeEntity: flags +0x6C = 0x230380, native C code +0x78 = 4, native A +0x70 = 255, E +0x80 = 0, +0x68 = 66, box (0,0,0)
+after the harness equivalent of the script: flags = 0x230380, C code = 4
+first tick with +0x28 (carrier) set: 40 ; hero +0x2C at that tick: 80127FC4
+final: item status 2 t24 0 carrier28 0 anim_t 0 flags 0x230380 pos (188.00, 100.00, 16.00) ground 1 ; hero anim_t 0 +0x2C 0 pos (119.00, 100.00)
+changes of (status, t24, carrier, anim, flags, ground):
+   t001 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230380 ground=1 pos=(140.0,100.0,16.0)
+   t040 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=1 pos=(140.0,100.0,16.0)
+   t041 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=0 pos=(140.0,100.0,17.0)
+   t081 status=2 t24=0 carrier28=0 anim_t=1 flags=0x230380 ground=0 pos=(122.0,100.0,52.0)
+   t103 status=2 t24=0 carrier28=0 anim_t=1 flags=0x230380 ground=1 pos=(188.0,100.0,16.0)
+   t104 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230380 ground=1 pos=(188.0,100.0,16.0)
+journal (non-stub): [(1, ['snd(0)']), (9, ['snd(10)']), (10, ['snd(0)']), (27, ['snd(11)', 'fx(id=7,a2=0,x=119.000,y=100.000,z=16.000)', 'fx(id=7,a2=0,x=119.000,y=100.000,z=16.000)', 'fx(id=7,a2=0,x=119.000,y=100.000,z=16.000)', 'snd(0)']), (33, ['snd(0)']), (40, ['snd(44)']), (76, ['snd(0)']), (81, ['snd(26)', 'snd(0)']), (100, ['snd(0)']), (104, ['snd(24)', 'snd(0)'])]
+

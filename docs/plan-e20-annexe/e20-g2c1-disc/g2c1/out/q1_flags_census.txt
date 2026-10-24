@@ -1,0 +1,9 @@
+keys of one header: ['AnimationOffsetsPointer', 'AnimationsPointer', 'BinOffset', 'BreakEffect', 'CanPickup', 'Contents', 'FlagsPortraitShadowType', 'FrameCollisionPointer', 'FramesPointer', 'MemoryAddress', 'MoreFlags', 'OffsetX', 'OffsetY', 'OffsetZ', 'ProgramDeactivate', 'ProgramInteract', 'ProgramLoad', 'ProgramTick', 'ProgramTouch', 'Sector5Id', 'SizeX', 'SizeY', 'SizeZ', 'SpriteInfoMemoryAddress', 'Ubuff']
+DestroyOnSlidingSlope 0x100000 sprite types (map pages): 14 placements: 2277
+   of which with Gravity 0x100: 14 placements 2277
+   with Gravity, C4 family (C4): [34, 37, 107, 111, 112, 113]  C23: [35, 36, 38, 48, 182]  C70: [137]
+   others with Gravity (index, C, E, flags): [(134, 69, 0, '0x332181'), (174, 76, 0, '0x330180')]
+DestroyOnVramFlags    0x200000 sprite types (map pages): 17 placements: 2342
+   of which with Gravity 0x100: 16 placements 2341
+   with Gravity, C4 family (C4): [34, 37, 107, 111, 112, 113, 117]  C23: [35, 36, 38, 41, 48, 182]  C70: [137]
+   others with Gravity (index, C, E, flags): [(134, 69, 0, '0x332181'), (174, 76, 0, '0x330180')]

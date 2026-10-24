@@ -1,0 +1,80 @@
+== B[1]  (hero on the ground, item resting on its shelf cell (10, 21, 2), with 0x61 implemented)
+   @80 Wait
+   @83 If false goto Result=1 -> falls through
+   @88 0x61 IMPLEMENTED -> Result 0
+   @91 If true goto Result=0 -> falls through
+   @96 If false goto Result=1 -> falls through
+   @107 If true goto Result=1 -> JUMP to 80
+   @80 Wait
+   @83 If false goto Result=1 -> falls through
+   @88 0x61 IMPLEMENTED -> Result 0
+   @91 If true goto Result=0 -> falls through
+   @96 If false goto Result=1 -> falls through
+   @107 If true goto Result=1 -> JUMP to 80
+   @80 Wait
+   @83 If false goto Result=1 -> falls through
+   @88 0x61 IMPLEMENTED -> Result 0
+   @91 If true goto Result=0 -> falls through
+   @96 If false goto Result=1 -> falls through
+   @107 If true goto Result=1 -> JUMP to 80
+   @80 Wait
+== B[2]  (hero on the ground, item resting on its shelf cell (8, 21, 2), with 0x61 implemented)
+   @260 Wait
+   @263 If false goto Result=1 -> falls through
+   @268 0x61 IMPLEMENTED -> Result 0
+   @271 If true goto Result=0 -> falls through
+   @276 If false goto Result=1 -> falls through
+   @287 If true goto Result=1 -> JUMP to 260
+   @260 Wait
+   @263 If false goto Result=1 -> falls through
+   @268 0x61 IMPLEMENTED -> Result 0
+   @271 If true goto Result=0 -> falls through
+   @276 If false goto Result=1 -> falls through
+   @287 If true goto Result=1 -> JUMP to 260
+   @260 Wait
+   @263 If false goto Result=1 -> falls through
+   @268 0x61 IMPLEMENTED -> Result 0
+   @271 If true goto Result=0 -> falls through
+   @276 If false goto Result=1 -> falls through
+   @287 If true goto Result=1 -> JUMP to 260
+   @260 Wait
+== B[3]  (hero on the ground, item resting on its shelf cell (6, 21, 2), with 0x61 implemented)
+   @440 Wait
+   @443 If false goto Result=1 -> falls through
+   @448 0x61 IMPLEMENTED -> Result 0
+   @451 If true goto Result=0 -> falls through
+   @456 If false goto Result=1 -> falls through
+   @467 If true goto Result=1 -> JUMP to 440
+   @440 Wait
+   @443 If false goto Result=1 -> falls through
+   @448 0x61 IMPLEMENTED -> Result 0
+   @451 If true goto Result=0 -> falls through
+   @456 If false goto Result=1 -> falls through
+   @467 If true goto Result=1 -> JUMP to 440
+   @440 Wait
+   @443 If false goto Result=1 -> falls through
+   @448 0x61 IMPLEMENTED -> Result 0
+   @451 If true goto Result=0 -> falls through
+   @456 If false goto Result=1 -> falls through
+   @467 If true goto Result=1 -> JUMP to 440
+   @440 Wait
+== B[4]  (hero on the ground, item resting on its shelf cell (5, 23, 2), with 0x61 implemented)
+   @620 Wait
+   @623 If false goto Result=1 -> falls through
+   @628 0x61 IMPLEMENTED -> Result 0
+   @631 If true goto Result=0 -> falls through
+   @636 If false goto Result=1 -> falls through
+   @647 If true goto Result=1 -> JUMP to 620
+   @620 Wait
+   @623 If false goto Result=1 -> falls through
+   @628 0x61 IMPLEMENTED -> Result 0
+   @631 If true goto Result=0 -> falls through
+   @636 If false goto Result=1 -> falls through
+   @647 If true goto Result=1 -> JUMP to 620
+   @620 Wait
+   @623 If false goto Result=1 -> falls through
+   @628 0x61 IMPLEMENTED -> Result 0
+   @631 If true goto Result=0 -> falls through
+   @636 If false goto Result=1 -> falls through
+   @647 If true goto Result=1 -> JUMP to 620
+   @620 Wait

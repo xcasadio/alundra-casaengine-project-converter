@@ -1,0 +1,145 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Linq;
+using Alundra.Ai;
+using Alundra.Ai.Objects;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Maps;
+using Alundra.Physics;
+using Alundra.Rendering.Effects;
+
+namespace Alundra.Ai.Objects;
+
+/// <summary>E20.g2c1 T0 THROWAWAY (never committed, kept as .txt): a try-out of C4 (0x80066984), the corners reader and the registration, to probe the DLL against the binary.</summary>
+internal static class TempC4
+{
+    internal static readonly int[] Types = { 290, 293, 363, 367, 368, 369, 373 };
+    internal static bool FeedSlope = true;
+
+    internal static readonly int[] Articles = { 48, 50, 66, 67, 68, 69, 71, 81, 83, 85, 113 };
+
+    internal static IEnumerable<int> AllTypes => Types.Concat(new[] { 304 }).Concat(Articles);
+
+    internal static void Register(NativeSpriteRegistry registry)
+        => registry.Register(ScriptHelper.ProgramCTick, 4, AllTypes, (entity, context, state) => Tick(entity, context));
+
+    private static uint[] Corners(EntityScriptProxy e)
+    {
+        var words = new uint[4];
+        if (e.ReadCollisionField() is not CellsCollisionField field)
+        {
+            return words;
+        }
+
+        var x1 = (e.PosX + e.ModX) >> 16;
+        var x2 = (e.PosX + e.ModX + e.Width) >> 16;
+        var y1 = (e.PosY + e.ModY) >> 16;
+        var y2 = (e.PosY + e.ModY + e.Height) >> 16;
+        var pts = new[] { (x1, y1), (x2, y1), (x1, y2), (x2, y2) };
+        for (var i = 0; i < 4; i++)
+        {
+            var p = new Vector3(pts[i].Item1, pts[i].Item2, 0f);
+            words[i] = (uint)((field.SampleRawWalkability(p) & 0xFF) | (field.SampleGroundProperty(p) << 8));
+        }
+
+        return words;
+    }
+
+    private static bool AnyCornerIs1001(EntityScriptProxy e)
+    {
+        foreach (var w in Corners(e))
+        {
+            if ((w & 0x1001) == 0x1001)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    internal static void Tick(EntityScriptProxy e, IEntityWorldContext context)
+    {
+        if (e.PlatformEntity != null)
+        {
+            var t = e.Flags2;
+            if (t == 0)
+            {
+                e.TargetAnimationId = 0;
+                return;
+            }
+
+            if (LiftableAi.ReleaseAnimation(t) is not { } animation)
+            {
+                return;
+            }
+
+            e.TargetAnimationId = animation;
+            if (t == -1 && e.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] == 2)
+            {
+                e.Flags = (e.Flags | 0x10) & ~0x80u;
+            }
+
+            e.Flags2 = 0;
+            if (e.PlatformEntity.GameplayProxy is EntityScriptProxy carrier)
+            {
+                carrier.CarriedEntity = null;
+            }
+
+            e.PlatformEntity = null;
+            e.RidingEntity = null;
+            return;
+        }
+
+        var a = e.TargetAnimationId;
+        if (a != 0 && !(e.SpriteType == 373 && a == 5))
+        {
+            if (e.ForceAdjusted != 0)
+            {
+                if (e.IsOnGround == 0)
+                {
+                    if (e.ForceZ > 0 && e.DelayOrAngleOrEntityId == 0)
+                    {
+                        e.DelayOrAngleOrEntityId = 1;
+                        e.TargetDirection = (e.TargetDirection + 0x10) & 0x1F;
+                        var stage = (context as WorldProxy)?.EffectStage;
+                        stage?.Reservoir.Create(false, 9, 0, e.PosX, e.PosY, e.PosZ + 0x80000);
+                    }
+                }
+                else
+                {
+                    if (AnyCornerIs1001(e))
+                    {
+                        e.Status = EntityStatus.Deactivated;
+                    }
+
+                    e.TargetAnimationId = 0;
+                }
+            }
+            else if (e.IsOnGround != 0 || e.HitCounter != 0)
+            {
+                context.SoundPlayer?.PlaySfx(0x18);
+                e.DelayOrAngleOrEntityId = 0;
+                if (!AnyCornerIs1001(e))
+                {
+                    e.TargetAnimationId = 0;
+                }
+            }
+        }
+
+        if (e.SpriteType == 373)
+        {
+            if (e.TargetAnimationId == 0 && e.Slope_18c == 4)
+            {
+                e.TargetAnimationId = 5;
+            }
+            else if (e.TargetAnimationId == 5 && e.Slope_18c != 4)
+            {
+                e.TargetAnimationId = 0;
+            }
+        }
+    }
+}

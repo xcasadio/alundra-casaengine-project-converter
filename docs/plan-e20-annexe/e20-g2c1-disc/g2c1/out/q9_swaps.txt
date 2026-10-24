@@ -1,0 +1,27 @@
+sprite  34 header C4   in A program: SpriteProgramIndexes[2] = 64       x 1
+sprite  34 header C4   in C program: ProgramIndexes[C] = 0              x 6
+sprite  34 header C4   in C program: SpriteProgramIndexes[2] = 4        x 1
+sprite  35 header C23  in C program: ProgramIndexes[C] = 0              x 6
+sprite  37 header C4   in A program: SpriteProgramIndexes[2] = 96       x 1
+sprite  37 header C4   in C program: ProgramIndexes[C] = 0              x 2
+sprite  48 header C23  in A program: SpriteProgramIndexes[2] = 4        x 4
+sprite  48 header C23  in A program: SpriteProgramIndexes[4] = 0        x 4
+sprite  48 header C23  in C program: ProgramIndexes[C] = 0              x 1
+sprite 107 header C4   in C program: ProgramIndexes[C] = 0              x 1
+sprite 111 header C4   in C program: ProgramIndexes[C] = 0              x 1
+sprite 112 header C4   in C program: ProgramIndexes[C] = 0              x 1
+sprite 113 header C4   in C program: ProgramIndexes[C] = 0              x 1
+sprite 137 header C70  in C program: ProgramIndexes[C] = 0              x 8
+
+  sprite  48 C23 map 103 rec 7 slot A idx 136 : SpriteProgramIndexes[2] = 4
+  sprite  48 C23 map 103 rec 7 slot A idx 136 : SpriteProgramIndexes[4] = 0
+  sprite  48 C23 map 103 rec 22 slot A idx 136 : SpriteProgramIndexes[2] = 4
+  sprite  48 C23 map 103 rec 22 slot A idx 136 : SpriteProgramIndexes[4] = 0
+  sprite  48 C23 map 103 rec 22 slot C idx 136 : ProgramIndexes[C] = 0
+  sprite  48 C23 map 105 rec 2 slot A idx 131 : SpriteProgramIndexes[2] = 4
+  sprite  48 C23 map 105 rec 2 slot A idx 131 : SpriteProgramIndexes[4] = 0
+  sprite  48 C23 map 108 rec 6 slot A idx 135 : SpriteProgramIndexes[2] = 4
+  sprite  48 C23 map 108 rec 6 slot A idx 135 : SpriteProgramIndexes[4] = 0
+  sprite  34 C4 map 113 rec 11 slot A idx 140 : SpriteProgramIndexes[2] = 64
+  sprite  34 C4 map 441 rec 33 slot C idx 144 : SpriteProgramIndexes[2] = 4
+  sprite  37 C4 map 473 rec 0 slot A idx 129 : SpriteProgramIndexes[2] = 96

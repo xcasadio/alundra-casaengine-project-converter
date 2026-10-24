@@ -1,0 +1,32 @@
+tonneau34 moving: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>1 dir_t:0>24', 't84 anim_t:1>0'] ; final status 2 anim 0 flags 3323E4 pos (178.00,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+tonneau34 still: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>3 dir_t:0>24', 't84 anim_t:3>0'] ; final status 2 anim 0 flags 3323E4 pos (143.50,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+pierre37 moving: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>1 dir_t:0>24', 't84 anim_t:1>0'] ; final status 2 anim 0 flags 3323E4 pos (178.00,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+pierre37 still: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>3 dir_t:0>24', 't84 anim_t:3>0'] ; final status 2 anim 0 flags 3323E4 pos (143.50,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+etoile107 moving: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>1 dir_t:0>24', 't84 anim_t:1>0'] ; final status 2 anim 0 flags 332384 pos (178.00,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+etoile107 still: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>3 dir_t:0>24', 't84 anim_t:3>0'] ; final status 2 anim 0 flags 332384 pos (143.50,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+lune111 moving: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>1 dir_t:0>24', 't84 anim_t:1>0'] ; final status 2 anim 0 flags 332384 pos (178.00,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+lune111 still: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>3 dir_t:0>24', 't84 anim_t:3>0'] ; final status 2 anim 0 flags 332384 pos (143.50,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+eau112 moving: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>1 dir_t:0>24', 't84 anim_t:1>0'] ; final status 2 anim 0 flags 332384 pos (178.00,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+eau112 still: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>3 dir_t:0>24', 't84 anim_t:3>0'] ; final status 2 anim 0 flags 332384 pos (143.50,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+soleil113 moving: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>1 dir_t:0>24', 't84 anim_t:1>0'] ; final status 2 anim 0 flags 332384 pos (178.00,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+soleil113 still: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>3 dir_t:0>24', 't84 anim_t:3>0'] ; final status 2 anim 0 flags 332384 pos (143.50,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+tronc117 moving: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>1 dir_t:0>24', 't84 anim_t:1>0'] ; final status 2 anim 0 flags 2323E4 pos (178.00,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+tronc117 still: land t83 ; first status 0 tNone ; changes ['t61 anim_t:0>3 dir_t:0>24', 't84 anim_t:3>0'] ; final status 2 anim 0 flags 2323E4 pos (143.50,100.00,0.00) ground 1 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+glace304_c23 moving: land t83 ; first status 0 t87 ; changes ['t61 anim_t:0>1 flags6C:3323C4>332374 dir_t:0>24', 't84 status:2>3 anim_t:1>2 flags6C:332374>332344', 't86 status:3>4', 't87 status:4>0 anim_t:2>0 flags6C:332344>0 dir_t:24>0'] ; final status 0 anim 0 flags 0 pos (0.00,0.00,0.00) ground 0 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(128)']), (86, ['fxattach(id=10,target=slot 1)'])]
+glace304_c23 still: land t83 ; first status 0 t87 ; changes ['t61 anim_t:0>3 flags6C:3323C4>332374 dir_t:0>24', 't84 status:2>3 anim_t:3>2 flags6C:332374>332344', 't86 status:3>4', 't87 status:4>0 anim_t:2>0 flags6C:332344>0 dir_t:24>0'] ; final status 0 anim 0 flags 0 pos (0.00,0.00,0.00) ground 0 hitc 0 bounced 0
+   journal(t>=58): [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(128)']), (86, ['fxattach(id=10,target=slot 1)'])]

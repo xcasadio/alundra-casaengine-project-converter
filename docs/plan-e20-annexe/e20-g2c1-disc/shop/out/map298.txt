@@ -1,0 +1,30 @@
+map 298 size 52 60
+rec   0 en=1 G249 Bloc transparent (minuscule)   pos(  8, 84,h 2)=px( 108, 680,z 16) dir= 64 zone[0..51]x[0..59] A132 B0 C0 D0 E0 F130
+rec   1 en=1 M28  M28                            pos(  8, 81,h 2)=px( 108, 656,z 16) dir=192 zone[0..51]x[0..59] A0 B0 C133 D0 E0 F130
+rec   2 en=1 M27  M27                            pos( 74, 84,h 4)=px( 900, 680,z 32) dir=192 zone[0..51]x[0..59] A0 B0 C134 D0 E0 F135
+rec   3 en=1 G66  I36_Herbe médicinale           pos( 20, 78,h 4)=px( 252, 632,z 32) dir= 64 zone[0..51]x[0..59] A131 B0 C132 D0 E0 F0
+rec   4 en=1 G71  I41_Potion S                   pos( 24, 78,h 4)=px( 300, 632,z 32) dir= 64 zone[0..51]x[0..59] A131 B0 C132 D0 E0 F0
+rec   5 en=1 G68  I38_Extrait magique            pos( 28, 82,h 4)=px( 348, 664,z 32) dir= 64 zone[0..51]x[0..59] A131 B0 C132 D0 E0 F0
+rec   6 en=1 G113 I83_Récipient de vie           pos( 28, 86,h 4)=px( 348, 696,z 32) dir=  0 zone[0..51]x[0..59] A131 B0 C132 D0 E0 F0
+rec   7 en=1 G237 SaveBook (Ne pas toucher !)    pos( 72, 16,h 6)=px( 876, 136,z 48) dir= 64 zone[0..51]x[0..59] A0 B0 C0 D0 E0 F0
+rec   8 en=1 G50  I20_Veste en argent            pos( 16, 78,h 4)=px( 204, 632,z 32) dir=  0 zone[0..51]x[0..59] A131 B0 C132 D0 E0 F0
+rec   9 en=1 G227 Coffre d’Anzes                 pos( 14, 14,h 2)=px( 180, 120,z 16) dir= 64 zone[0..51]x[0..59] A133 B0 C0 D0 E0 F136
+rec  10 en=1 M35  M35                            pos( 20, 48,h 2)=px( 252, 392,z 16) dir=192 zone[0..51]x[0..59] A0 B0 C0 D0 E0 F0
+rec  11 en=1 M35  M35                            pos( 22, 48,h 2)=px( 276, 392,z 16) dir=192 zone[0..51]x[0..59] A0 B0 C0 D0 E0 F0
+rec  12 en=1 M35  M35                            pos( 78, 86,h 6)=px( 948, 696,z 48) dir=192 zone[28..51]x[36..59] A0 B0 C0 D0 E0 F0
+rec  13 en=1 M35  M35                            pos( 78, 88,h 6)=px( 948, 712,z 48) dir=192 zone[28..51]x[36..59] A0 B0 C0 D0 E0 F0
+rec  14 en=1 M36  M36                            pos( 74,106,h 6)=px( 900, 856,z 48) dir=192 zone[28..51]x[36..59] A0 B0 C0 D0 E0 F0
+rec  15 en=1 M36  M36                            pos( 74,108,h 4)=px( 900, 872,z 32) dir=192 zone[28..51]x[36..59] A0 B0 C0 D0 E0 F0
+rec  16 en=1 M36  M36                            pos( 76,106,h 4)=px( 924, 856,z 32) dir=192 zone[28..51]x[36..59] A0 B0 C0 D0 E0 F0
+rec  17 en=1 M36  M36                            pos( 74,106,h 4)=px( 900, 856,z 32) dir=192 zone[28..51]x[36..59] A0 B0 C0 D0 E0 F0
+MapEvents:
+   0 {'X1': 23, 'Y1': 6, 'X2': 44, 'Y2': 31, 'EventCodesBIndex': 129, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   1 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 130, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   2 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 131, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   3 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 132, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   4 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 133, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   5 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 134, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   6 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 135, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   7 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 136, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   8 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 137, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   9 {'X1': 0, 'Y1': 37, 'X2': 18, 'Y2': 59, 'EventCodesBIndex': 138, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}

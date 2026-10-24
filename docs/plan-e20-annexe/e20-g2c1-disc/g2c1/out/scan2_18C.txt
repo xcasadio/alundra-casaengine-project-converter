@@ -1,0 +1,26 @@
+8003024c lw  $v0, 0x18c($s0)  [direct]  fn~800981a8
+80030268 lw  $v1, 0x18c($s0)  [direct]  fn~800981a8
+80031b98 lw  $s2, 0x18c($s0)  [direct]  fn~80031b50
+80034248 lw  $v1, 0x18c($s0)  [direct]  fn~80034224
+8003433c lw  $v1, 0x18c($a0)  [direct]  fn~80034328
+80034560 lw  $v1, 0x18c($a1)  [direct]  fn~8003453c
+800351cc lw  $v1, 0x18c($v0)  [direct]  fn~800351b8
+80035234 lw  $v1, 0x18c($a0)  [direct]  fn~80035204
+80035298 lw  $v1, 0x18c($v1)  [direct]  fn~80035260
+800352f4 lw  $v1, 0x18c($a0)  [direct]  fn~800352c4
+80038340 lw  $v1, 0x18c($s0)  [direct]  fn~80038064
+80038348 sw  $v0, 0x18c($s0)  [direct]  fn~80038064
+80038778 lw  $v1, -0x9c($s0)  [biased(+0x228 via $s0, $s1, 0x228)]  fn~800386d0
+80038fa0 lw  $s2, 0x58($s0)  [biased(+0x134 via $s0, $s4, 0x134)]  fn~80038e84
+80066ba8 lw  $v1, 0x18c($s0)  [direct]  fn~80066984
+80066bd0 lw  $v1, 0x18c($s0)  [direct]  fn~80066984
+8007e994 lw  $v0, 0x6c($a0)  [biased(+0x120 via $a0, $zero, 0x120)]  fn~8007e8f0
+8007e9a8 sw  $v0, 0x6c($a0)  [biased(+0x120 via $a0, $zero, 0x120)]  fn~8007e8f0
+8007ef84 lw  $v1, 0x18c($s0)  [direct]  fn~8007ef50
+8007f0f0 lw  $v1, 0x18c($s0)  [direct]  fn~8007ef50
+8007f578 lw  $v0, 0x18c($a0)  [direct]  fn~8007f420
+80093480 sh  $t0, 0x18c($v0)  [direct]  fn~8009311c
+80095994 sh  $v0, 0x18c($v1)  [direct]  fn~80095808
+80095b94 lhu $v0, 0x18c($v1)  [direct]  fn~80095808
+80095b9c sh  $v0, 0x18c($v1)  [direct]  fn~80095808
+80097f48 sh  $a2, 0x18c($v0)  [direct]  fn~80097d44

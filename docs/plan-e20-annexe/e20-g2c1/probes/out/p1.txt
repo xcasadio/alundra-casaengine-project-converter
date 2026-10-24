@@ -1,0 +1,304 @@
+== tonneau22r21 moving wall column 5 (type 290, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=109.00 y=100.0 z=36.00 adj=1 ground=0 anim_t=1 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=106.00 y=100.0 z=40.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  fx(9,109.000,100.000,44.000) 
+   T+2 present=True x=103.00 y=100.0 z=43.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=100.00 y=100.0 z=46.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=97.00 y=100.0 z=49.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=94.00 y=100.0 z=51.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=91.00 y=100.0 z=52.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=88.00 y=100.0 z=53.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=85.00 y=100.0 z=54.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+== tonneau22r21 moving wall column 6 (type 290, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=112.00 y=100.0 z=36.00 adj=0 ground=0 anim_t=1 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=115.00 y=100.0 z=39.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+2 present=True x=118.00 y=100.0 z=42.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=121.00 y=100.0 z=45.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=124.00 y=100.0 z=47.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=127.00 y=100.0 z=48.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=130.00 y=100.0 z=49.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=133.00 y=100.0 z=50.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=133.00 y=100.0 z=50.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+9 present=True x=133.00 y=100.0 z=49.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+10 present=True x=133.00 y=100.0 z=48.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+11 present=True x=133.00 y=100.0 z=47.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+12 present=True x=133.00 y=100.0 z=45.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+13 present=True x=133.00 y=100.0 z=42.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+14 present=True x=133.00 y=100.0 z=39.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+15 present=True x=133.00 y=100.0 z=36.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+16 present=True x=133.00 y=100.0 z=32.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+17 present=True x=133.00 y=100.0 z=27.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=133.00 y=100.0 z=22.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=133.00 y=100.0 z=17.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+20 present=True x=133.00 y=100.0 z=11.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+21 present=True x=133.00 y=100.0 z=4.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+22 present=True x=133.00 y=100.0 z=0.00 adj=1 ground=1 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+23 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+24 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=0 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+== tonneau22r21 still wall column 5 (type 290, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=109.00 y=100.0 z=36.00 adj=1 ground=0 anim_t=3 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=107.50 y=100.0 z=40.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  fx(9,109.000,100.000,44.000) 
+   T+2 present=True x=106.00 y=100.0 z=43.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=104.50 y=100.0 z=46.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=103.00 y=100.0 z=49.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=101.50 y=100.0 z=51.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=100.00 y=100.0 z=52.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=98.50 y=100.0 z=53.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=97.00 y=100.0 z=54.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+== tonneau22r21 still wall column 6 (type 290, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=110.50 y=100.0 z=36.00 adj=0 ground=0 anim_t=3 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=112.00 y=100.0 z=39.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+2 present=True x=113.50 y=100.0 z=42.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=115.00 y=100.0 z=45.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=116.50 y=100.0 z=47.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=118.00 y=100.0 z=48.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=119.50 y=100.0 z=49.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=121.00 y=100.0 z=50.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=122.50 y=100.0 z=50.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+9 present=True x=124.00 y=100.0 z=49.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+10 present=True x=125.50 y=100.0 z=48.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+11 present=True x=127.00 y=100.0 z=47.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+12 present=True x=128.50 y=100.0 z=45.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+13 present=True x=130.00 y=100.0 z=42.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+14 present=True x=131.50 y=100.0 z=39.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+15 present=True x=133.00 y=100.0 z=36.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+16 present=True x=133.00 y=100.0 z=32.00 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+17 present=True x=133.00 y=100.0 z=27.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=133.00 y=100.0 z=22.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=133.00 y=100.0 z=17.00 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+20 present=True x=133.00 y=100.0 z=11.00 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+21 present=True x=133.00 y=100.0 z=4.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+22 present=True x=133.00 y=100.0 z=0.00 adj=1 ground=1 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+23 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+24 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=0 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+== pierre24r24 moving wall column 5 (type 293, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=109.00 y=100.0 z=36.00 adj=1 ground=0 anim_t=1 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=106.00 y=100.0 z=40.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  fx(9,109.000,100.000,44.000) 
+   T+2 present=True x=103.00 y=100.0 z=43.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=100.00 y=100.0 z=46.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=97.00 y=100.0 z=49.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=94.00 y=100.0 z=51.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=91.00 y=100.0 z=52.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=88.00 y=100.0 z=53.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=85.00 y=100.0 z=54.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+== pierre24r24 moving wall column 6 (type 293, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=112.00 y=100.0 z=36.00 adj=0 ground=0 anim_t=1 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=115.00 y=100.0 z=39.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+2 present=True x=118.00 y=100.0 z=42.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=121.00 y=100.0 z=45.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=124.00 y=100.0 z=47.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=127.00 y=100.0 z=48.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=130.00 y=100.0 z=49.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=133.00 y=100.0 z=50.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=133.00 y=100.0 z=50.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+9 present=True x=133.00 y=100.0 z=49.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+10 present=True x=133.00 y=100.0 z=48.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+11 present=True x=133.00 y=100.0 z=47.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+12 present=True x=133.00 y=100.0 z=45.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+13 present=True x=133.00 y=100.0 z=42.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+14 present=True x=133.00 y=100.0 z=39.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+15 present=True x=133.00 y=100.0 z=36.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+16 present=True x=133.00 y=100.0 z=32.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+17 present=True x=133.00 y=100.0 z=27.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=133.00 y=100.0 z=22.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=133.00 y=100.0 z=17.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+20 present=True x=133.00 y=100.0 z=11.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+21 present=True x=133.00 y=100.0 z=4.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+22 present=True x=133.00 y=100.0 z=0.00 adj=1 ground=1 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+23 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+24 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=0 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+== pierre24r24 still wall column 5 (type 293, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=109.00 y=100.0 z=36.00 adj=1 ground=0 anim_t=3 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=107.50 y=100.0 z=40.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  fx(9,109.000,100.000,44.000) 
+   T+2 present=True x=106.00 y=100.0 z=43.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=104.50 y=100.0 z=46.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=103.00 y=100.0 z=49.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=101.50 y=100.0 z=51.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=100.00 y=100.0 z=52.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=98.50 y=100.0 z=53.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=97.00 y=100.0 z=54.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+== pierre24r24 still wall column 6 (type 293, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=110.50 y=100.0 z=36.00 adj=0 ground=0 anim_t=3 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=112.00 y=100.0 z=39.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+2 present=True x=113.50 y=100.0 z=42.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=115.00 y=100.0 z=45.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=116.50 y=100.0 z=47.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=118.00 y=100.0 z=48.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=119.50 y=100.0 z=49.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=121.00 y=100.0 z=50.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=122.50 y=100.0 z=50.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+9 present=True x=124.00 y=100.0 z=49.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-32768 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+10 present=True x=125.50 y=100.0 z=48.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-65536 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+11 present=True x=127.00 y=100.0 z=47.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-98304 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+12 present=True x=128.50 y=100.0 z=45.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-131072 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+13 present=True x=130.00 y=100.0 z=42.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-163840 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+14 present=True x=131.50 y=100.0 z=39.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-196608 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+15 present=True x=133.00 y=100.0 z=36.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-229376 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+16 present=True x=133.00 y=100.0 z=32.00 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-262144 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+17 present=True x=133.00 y=100.0 z=27.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=133.00 y=100.0 z=22.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=133.00 y=100.0 z=17.00 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+20 present=True x=133.00 y=100.0 z=11.00 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+21 present=True x=133.00 y=100.0 z=4.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+22 present=True x=133.00 y=100.0 z=0.00 adj=1 ground=1 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+23 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+24 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=0 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+== objet27r5 moving wall column 5 (type 363, header E code 0)
+   T-1 (no sample)
+   T+0 present=True x=110.00 y=100.0 z=36.00 adj=0 ground=0 anim_t=1 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=110.00 y=100.0 z=39.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=229376 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+2 present=True x=107.00 y=100.0 z=43.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=262144 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  fx(9,110.000,100.000,47.500) 
+   T+3 present=True x=104.00 y=100.0 z=47.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=229376 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=101.00 y=100.0 z=50.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=196608 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=98.00 y=100.0 z=52.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=163840 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=95.00 y=100.0 z=54.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=131072 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=92.00 y=100.0 z=56.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=98304 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=89.00 y=100.0 z=57.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=65536 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+== objet27r5 moving wall column 6 (type 363, header E code 0)
+   T-1 (no sample)
+   T+0 present=True x=112.00 y=100.0 z=36.00 adj=0 ground=0 anim_t=1 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=115.00 y=100.0 z=39.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=229376 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+2 present=True x=118.00 y=100.0 z=42.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=196608 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=121.00 y=100.0 z=45.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=163840 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=124.00 y=100.0 z=47.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=131072 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=127.00 y=100.0 z=48.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=98304 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=130.00 y=100.0 z=49.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=65536 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=133.00 y=100.0 z=50.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=32768 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=134.00 y=100.0 z=50.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+9 present=True x=134.00 y=100.0 z=49.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-32768 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+10 present=True x=134.00 y=100.0 z=48.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-65536 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+11 present=True x=134.00 y=100.0 z=47.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-98304 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+12 present=True x=134.00 y=100.0 z=45.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-131072 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+13 present=True x=134.00 y=100.0 z=42.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-163840 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+14 present=True x=134.00 y=100.0 z=39.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-196608 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+15 present=True x=134.00 y=100.0 z=36.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-229376 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+16 present=True x=134.00 y=100.0 z=32.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-262144 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+17 present=True x=134.00 y=100.0 z=27.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=134.00 y=100.0 z=22.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=134.00 y=100.0 z=17.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+20 present=True x=134.00 y=100.0 z=11.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+21 present=True x=134.00 y=100.0 z=4.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+22 present=True x=134.00 y=100.0 z=0.00 adj=1 ground=1 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+23 present=True x=134.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+24 present=True x=134.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=0 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+== objet27r5 still wall column 5 (type 363, header E code 0)
+   T-1 (no sample)
+   T+0 present=True x=110.00 y=100.0 z=36.00 adj=0 ground=0 anim_t=3 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=110.00 y=100.0 z=39.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=229376 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+2 present=True x=108.50 y=100.0 z=43.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=262144 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  fx(9,110.000,100.000,47.500) 
+   T+3 present=True x=107.00 y=100.0 z=47.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=229376 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=105.50 y=100.0 z=50.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=196608 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=104.00 y=100.0 z=52.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=163840 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=102.50 y=100.0 z=54.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=131072 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=101.00 y=100.0 z=56.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=98304 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=99.50 y=100.0 z=57.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=65536 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+== objet27r5 still wall column 6 (type 363, header E code 0)
+   T-1 (no sample)
+   T+0 present=True x=110.50 y=100.0 z=36.00 adj=0 ground=0 anim_t=3 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=112.00 y=100.0 z=39.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=229376 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+2 present=True x=113.50 y=100.0 z=42.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=196608 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=115.00 y=100.0 z=45.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=163840 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=116.50 y=100.0 z=47.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=131072 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=118.00 y=100.0 z=48.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=98304 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=119.50 y=100.0 z=49.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=65536 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=121.00 y=100.0 z=50.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=32768 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=122.50 y=100.0 z=50.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+9 present=True x=124.00 y=100.0 z=49.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-32768 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+10 present=True x=125.50 y=100.0 z=48.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-65536 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+11 present=True x=127.00 y=100.0 z=47.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-98304 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+12 present=True x=128.50 y=100.0 z=45.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-131072 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+13 present=True x=130.00 y=100.0 z=42.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-163840 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+14 present=True x=131.50 y=100.0 z=39.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-196608 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+15 present=True x=133.00 y=100.0 z=36.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-229376 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+16 present=True x=134.00 y=100.0 z=32.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-262144 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+17 present=True x=134.00 y=100.0 z=27.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=134.00 y=100.0 z=22.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=134.00 y=100.0 z=17.00 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+20 present=True x=134.00 y=100.0 z=11.00 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+21 present=True x=134.00 y=100.0 z=4.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+22 present=True x=134.00 y=100.0 z=0.00 adj=1 ground=1 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+23 present=True x=134.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+   T+24 present=True x=134.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=0 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x332384 carried=False onplate=False hit=0 e2=0  
+== tronc70r8 moving wall column 5 (type 373, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=109.00 y=100.0 z=36.00 adj=1 ground=0 anim_t=1 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=106.00 y=100.0 z=40.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=262144 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  fx(9,109.000,100.000,44.000) 
+   T+2 present=True x=103.00 y=100.0 z=43.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=229376 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=100.00 y=100.0 z=46.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=196608 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=97.00 y=100.0 z=49.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=163840 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=94.00 y=100.0 z=51.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=131072 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=91.00 y=100.0 z=52.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=98304 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=88.00 y=100.0 z=53.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=65536 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=85.00 y=100.0 z=54.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=8 lock=1 forceZ=32768 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+== tronc70r8 moving wall column 6 (type 373, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=112.00 y=100.0 z=36.00 adj=0 ground=0 anim_t=1 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=115.00 y=100.0 z=39.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=229376 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+2 present=True x=118.00 y=100.0 z=42.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=196608 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=121.00 y=100.0 z=45.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=163840 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=124.00 y=100.0 z=47.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=131072 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=127.00 y=100.0 z=48.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=98304 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=130.00 y=100.0 z=49.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=65536 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=133.00 y=100.0 z=50.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=32768 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=133.00 y=100.0 z=50.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+9 present=True x=133.00 y=100.0 z=49.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-32768 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+10 present=True x=133.00 y=100.0 z=48.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-65536 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+11 present=True x=133.00 y=100.0 z=47.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-98304 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+12 present=True x=133.00 y=100.0 z=45.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-131072 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+13 present=True x=133.00 y=100.0 z=42.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-163840 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+14 present=True x=133.00 y=100.0 z=39.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-196608 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+15 present=True x=133.00 y=100.0 z=36.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-229376 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+16 present=True x=133.00 y=100.0 z=32.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-262144 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+17 present=True x=133.00 y=100.0 z=27.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=133.00 y=100.0 z=22.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=133.00 y=100.0 z=17.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+20 present=True x=133.00 y=100.0 z=11.00 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+21 present=True x=133.00 y=100.0 z=4.50 adj=1 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+22 present=True x=133.00 y=100.0 z=0.00 adj=1 ground=1 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+23 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+24 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=0 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+== tronc70r8 still wall column 5 (type 373, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=109.00 y=100.0 z=36.00 adj=1 ground=0 anim_t=3 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=107.50 y=100.0 z=40.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=262144 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  fx(9,109.000,100.000,44.000) 
+   T+2 present=True x=106.00 y=100.0 z=43.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=229376 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=104.50 y=100.0 z=46.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=196608 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=103.00 y=100.0 z=49.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=163840 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=101.50 y=100.0 z=51.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=131072 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=100.00 y=100.0 z=52.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=98304 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=98.50 y=100.0 z=53.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=65536 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=97.00 y=100.0 z=54.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=8 lock=1 forceZ=32768 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+== tronc70r8 still wall column 6 (type 373, header E code 2)
+   T-1 (no sample)
+   T+0 present=True x=110.50 y=100.0 z=36.00 adj=0 ground=0 anim_t=3 anim_c=0 dir_t=24 lock=0 forceZ=262144 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0 snd(26) 
+   T+1 present=True x=112.00 y=100.0 z=39.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=229376 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+2 present=True x=113.50 y=100.0 z=42.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=196608 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+3 present=True x=115.00 y=100.0 z=45.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=163840 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+4 present=True x=116.50 y=100.0 z=47.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=131072 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+5 present=True x=118.00 y=100.0 z=48.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=98304 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+6 present=True x=119.50 y=100.0 z=49.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=65536 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+7 present=True x=121.00 y=100.0 z=50.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=32768 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+8 present=True x=122.50 y=100.0 z=50.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+9 present=True x=124.00 y=100.0 z=49.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-32768 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+10 present=True x=125.50 y=100.0 z=48.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-65536 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+11 present=True x=127.00 y=100.0 z=47.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-98304 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+12 present=True x=128.50 y=100.0 z=45.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-131072 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+13 present=True x=130.00 y=100.0 z=42.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-163840 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+14 present=True x=131.50 y=100.0 z=39.50 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-196608 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+15 present=True x=133.00 y=100.0 z=36.00 adj=0 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-229376 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+16 present=True x=133.00 y=100.0 z=32.00 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-262144 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+17 present=True x=133.00 y=100.0 z=27.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=133.00 y=100.0 z=22.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=133.00 y=100.0 z=17.00 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+20 present=True x=133.00 y=100.0 z=11.00 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+21 present=True x=133.00 y=100.0 z=4.50 adj=1 ground=0 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+22 present=True x=133.00 y=100.0 z=0.00 adj=1 ground=1 anim_t=3 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+23 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=3 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+24 present=True x=133.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=0 anim_c=0 dir_t=24 lock=0 forceZ=0 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  

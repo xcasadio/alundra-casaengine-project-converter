@@ -1,0 +1,32 @@
+== tonneau34 on the plate (X 178, Y 100) : plate pos (178.0,100.0,8.00), plate depth(+0x1F8) 16.00, width/height words
+   t076 (T+15) x=157.00 z=36.00 ground=0 adj=0 collz=0 support==plate:False support=0 status=2 anim=1
+   t077 (T+16) x=160.00 z=32.00 ground=0 adj=0 collz=0 support==plate:False support=0 status=2 anim=1
+   t078 (T+17) x=163.00 z=27.50 ground=0 adj=0 collz=0 support==plate:False support=0 status=2 anim=1
+   t079 (T+18) x=166.00 z=22.50 ground=0 adj=0 collz=0 support==plate:False support=0 status=2 anim=1
+   t080 (T+19) x=169.00 z=17.00 ground=0 adj=0 collz=0 support==plate:False support=0 status=2 anim=1
+   t081 (T+20) x=172.00 z=16.00 ground=1 adj=0 collz=1 support==plate:False support=0 status=2 anim=1
+   t082 (T+21) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t083 (T+22) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t084 (T+23) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t085 (T+24) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t086 (T+25) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t087 (T+26) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t088 (T+27) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t089 (T+28) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   end t111 x=172.00 z=16.00 ground=1 support==plate:True
+== etoile107 on the plate (X 178, Y 100) : plate pos (178.0,100.0,8.00), plate depth(+0x1F8) 16.00, width/height words
+   t076 (T+15) x=157.00 z=36.00 ground=0 adj=0 collz=0 support==plate:False support=0 status=2 anim=1
+   t077 (T+16) x=160.00 z=32.00 ground=0 adj=0 collz=0 support==plate:False support=0 status=2 anim=1
+   t078 (T+17) x=163.00 z=27.50 ground=0 adj=0 collz=0 support==plate:False support=0 status=2 anim=1
+   t079 (T+18) x=166.00 z=22.50 ground=0 adj=0 collz=0 support==plate:False support=0 status=2 anim=1
+   t080 (T+19) x=169.00 z=17.00 ground=0 adj=0 collz=0 support==plate:False support=0 status=2 anim=1
+   t081 (T+20) x=172.00 z=16.00 ground=1 adj=0 collz=1 support==plate:False support=0 status=2 anim=1
+   t082 (T+21) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t083 (T+22) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t084 (T+23) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t085 (T+24) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t086 (T+25) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t087 (T+26) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t088 (T+27) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   t089 (T+28) x=172.00 z=16.00 ground=1 adj=0 collz=0 support==plate:True support=80128258 status=2 anim=0
+   end t111 x=172.00 z=16.00 ground=1 support==plate:True

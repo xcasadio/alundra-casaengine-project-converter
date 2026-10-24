@@ -1,0 +1,36 @@
+== B[1]  (hero on the ground, item resting on its shelf cell (10, 21, 2), 0x61 not implemented, as at HEAD)
+   @80 Wait
+   @83 If false goto Result=1 -> falls through
+   @88 0x61 NOT IMPLEMENTED: skipped, Result stays 1
+   @91 If true goto Result=1 -> JUMP to 191
+   @191 Flag on
+   @194 Player lose control
+   @195 Set anim
+   @197 DIALOG Dialog with entity (id 166)  <-- first dialog of the pass
+== B[2]  (hero on the ground, item resting on its shelf cell (8, 21, 2), 0x61 not implemented, as at HEAD)
+   @260 Wait
+   @263 If false goto Result=1 -> falls through
+   @268 0x61 NOT IMPLEMENTED: skipped, Result stays 1
+   @271 If true goto Result=1 -> JUMP to 371
+   @371 Flag on
+   @374 Player lose control
+   @375 Set anim
+   @377 DIALOG Dialog with entity (id 166)  <-- first dialog of the pass
+== B[3]  (hero on the ground, item resting on its shelf cell (6, 21, 2), 0x61 not implemented, as at HEAD)
+   @440 Wait
+   @443 If false goto Result=1 -> falls through
+   @448 0x61 NOT IMPLEMENTED: skipped, Result stays 1
+   @451 If true goto Result=1 -> JUMP to 551
+   @551 Flag on
+   @554 Player lose control
+   @555 Set anim
+   @557 DIALOG Dialog with entity (id 166)  <-- first dialog of the pass
+== B[4]  (hero on the ground, item resting on its shelf cell (5, 23, 2), 0x61 not implemented, as at HEAD)
+   @620 Wait
+   @623 If false goto Result=1 -> falls through
+   @628 0x61 NOT IMPLEMENTED: skipped, Result stays 1
+   @631 If true goto Result=1 -> JUMP to 731
+   @731 Flag on
+   @734 Player lose control
+   @735 Set anim
+   @737 DIALOG Dialog with entity (id 166)  <-- first dialog of the pass

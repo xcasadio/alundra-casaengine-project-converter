@@ -1,0 +1,13 @@
+## B: C4 real after the script (lift, walk, throw east, flat ground)
+header read by the REAL InitializeEntity: flags +0x6C = 0x230180, native C code +0x78 = 255, native A +0x70 = 255, E +0x80 = 0, +0x68 = 66, box (0,0,0)
+after the harness equivalent of the script: flags = 0x230380, C code = 4
+first tick with +0x28 (carrier) set: 11 ; hero +0x2C at that tick: 80127FC4
+final: item status 2 t24 0 carrier28 0 anim_t 0 flags 0x230380 pos (178.00, 100.00, 0.00) ground 1 ; hero anim_t 0 +0x2C 0 pos (109.00, 100.00)
+changes of (status, t24, carrier, anim, flags, ground):
+   t001 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230380 ground=1 pos=(130.0,100.0,0.0)
+   t011 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=1 pos=(130.0,100.0,0.0)
+   t012 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=0 pos=(130.0,100.0,1.0)
+   t061 status=2 t24=0 carrier28=0 anim_t=1 flags=0x230380 ground=0 pos=(112.0,100.0,36.0)
+   t083 status=2 t24=0 carrier28=0 anim_t=1 flags=0x230380 ground=1 pos=(178.0,100.0,0.0)
+   t084 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230380 ground=1 pos=(178.0,100.0,0.0)
+journal (non-stub): [(1, ['snd(0)']), (11, ['snd(44)']), (47, ['snd(0)']), (61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]

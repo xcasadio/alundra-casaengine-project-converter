@@ -1,0 +1,160 @@
+== tonneau22r21 thrown at target index 49 x=165 (type 290, header E code 2)
+   T+17 present=True x=163.00 y=100.0 z=27.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=166.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=169.00 y=100.0 z=17.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=1 e2=0  
+   T+20 present=True x=169.00 y=100.0 z=11.00 adj=0 ground=0 anim_t=2 anim_c=1 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Deactivated flags=0x3323C4 carried=False onplate=False hit=0 e2=1 snd(27) 
+   T+21 present=True x=169.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Deactivated flags=0x3323C4 carried=False onplate=False hit=0 e2=2  
+   T+22 present=True x=169.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-425984 slope=0 status=FlagToDestroy flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+23 present=False x=169.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+24 present=False x=169.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+25 present=False x=169.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+26 present=False x=169.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+27 present=False x=169.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+28 present=False x=169.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+29 present=False x=169.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+30 present=False x=169.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   sparks: T19:1 target type 305 status Normal hp 0
+-- tonneau22r21 target index 57: no spark
+-- tonneau22r21 target index 72: no spark
+-- tonneau22r21 target index 30: the target was not born
+-- tonneau22r21 target index 45: no spark
+-- tonneau22r21 target index 70: no spark
+-- tonneau22r21 target index 43: no spark
+== tonneau22r21 thrown at target index 142 x=165 (type 290, header E code 2)
+   T+17 present=True x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Deactivated flags=0x3323C4 carried=False onplate=False hit=0 e2=1 snd(27) 
+   T+18 present=True x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Deactivated flags=0x3323C4 carried=False onplate=False hit=0 e2=2  
+   T+19 present=True x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=FlagToDestroy flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+20 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+21 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+22 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+23 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+24 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+25 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+26 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+27 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+28 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+29 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+30 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   sparks: T16:1 target type 398 status Normal hp 0
+== tonneau22r21 thrown at target index 73 x=165 (type 290, header E code 2)
+   T+17 present=True x=163.00 y=100.0 z=27.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=166.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=169.00 y=100.0 z=17.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+20 present=True x=172.00 y=100.0 z=11.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=1 e2=0  
+   T+21 present=True x=172.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=1 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Deactivated flags=0x3323C4 carried=False onplate=False hit=0 e2=1 snd(27) 
+   T+22 present=True x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Deactivated flags=0x3323C4 carried=False onplate=False hit=0 e2=2  
+   T+23 present=True x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=FlagToDestroy flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+24 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+25 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+26 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+27 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+28 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+29 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+30 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   sparks: T20:1 target type 329 status Normal hp 0
+== tonneau22r21 thrown at target index 193 x=165 (type 290, header E code 2)
+   T+17 present=True x=160.00 y=100.0 z=27.50 adj=0 ground=0 anim_t=2 anim_c=1 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Deactivated flags=0x3323C4 carried=False onplate=False hit=0 e2=1 snd(27) 
+   T+18 present=True x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Deactivated flags=0x3323C4 carried=False onplate=False hit=0 e2=2  
+   T+19 present=True x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=FlagToDestroy flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+20 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+21 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+22 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+23 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+24 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+25 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+26 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+27 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+28 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+29 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+30 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   sparks: T16:1 target type 449 status Normal hp 0
+-- tonneau22r21 target index 35: no spark
+-- tonneau22r21 target index 37: no spark
+-- tonneau22r21 target index 55: no spark
+-- tonneau22r21 target index 34: no spark
+== pierre24r24 thrown at target index 79 x=165 (type 293, header E code 2)
+   T+17 present=True x=163.00 y=100.0 z=27.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=166.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=169.00 y=100.0 z=17.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+20 present=True x=172.00 y=100.0 z=11.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=0 e2=0  
+   T+21 present=True x=175.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Normal flags=0x3323E4 carried=False onplate=False hit=1 e2=0  
+   T+22 present=True x=175.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Deactivated flags=0x3323C4 carried=False onplate=False hit=0 e2=1 snd(27) 
+   T+23 present=True x=175.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Deactivated flags=0x3323C4 carried=False onplate=False hit=0 e2=2  
+   T+24 present=True x=175.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=FlagToDestroy flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+25 present=False x=175.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+26 present=False x=175.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+27 present=False x=175.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+28 present=False x=175.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+29 present=False x=175.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   T+30 present=False x=175.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x3323C4 carried=False onplate=False hit=0 e2=3  
+   sparks: T21:1 target type 335 status Normal hp 0
+-- objet27r5 target index 72: no spark
+-- objet27r5 target index 111: no spark
+-- objet27r5 target index 112: no spark
+-- objet27r5 target index 113: no spark
+-- objet27r5 target index 35: no spark
+-- objet27r5 target index 154: no spark
+-- objet27r5 target index 70: no spark
+-- objet27r5 target index 169: no spark
+-- objet27r5 target index 57: no spark
+-- objet27r5 target index 49: no spark
+-- objet27r5 target index 45: no spark
+-- objet27r5 target index 254: the target was not born
+-- objet27r5 target index 107: no spark
+-- objet27r5 target index 108: no spark
+-- tronc70r8 target index 62: no spark
+-- tronc70r8 target index 30: the target was not born
+-- tronc70r8 target index 45: no spark
+-- tronc70r8 target index 57: no spark
+== tronc70r8 thrown at target index 118 x=165 (type 373, header E code 2)
+   T+17 present=True x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=1 dir_t=24 lock=0 forceZ=0 slope=0 status=Deactivated flags=0x2323C4 carried=False onplate=False hit=0 e2=1 snd(27) 
+   T+18 present=True x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Deactivated flags=0x2323C4 carried=False onplate=False hit=0 e2=2  
+   T+19 present=True x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=FlagToDestroy flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+20 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+21 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+22 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+23 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+24 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+25 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+26 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+27 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+28 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+29 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+30 present=False x=160.00 y=100.0 z=32.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   sparks: T16:1 target type 374 status Normal hp 0
+== tronc70r8 thrown at target index 175 x=165 (type 373, header E code 2)
+   T+17 present=True x=160.00 y=100.0 z=27.50 adj=0 ground=0 anim_t=2 anim_c=1 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Deactivated flags=0x2323C4 carried=False onplate=False hit=0 e2=1 snd(27) 
+   T+18 present=True x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Deactivated flags=0x2323C4 carried=False onplate=False hit=0 e2=2  
+   T+19 present=True x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=FlagToDestroy flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+20 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+21 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+22 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+23 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+24 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+25 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+26 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+27 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+28 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+29 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+30 present=False x=160.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   sparks: T16:1 target type 431 status Normal hp 0
+-- tronc70r8 target index 35: no spark
+-- tronc70r8 target index 182: no spark
+== tronc70r8 thrown at target index 181 x=165 (type 373, header E code 2)
+   T+17 present=True x=163.00 y=100.0 z=27.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-294912 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+18 present=True x=166.00 y=100.0 z=22.50 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-327680 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+19 present=True x=169.00 y=100.0 z=17.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-360448 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=0 e2=0  
+   T+20 present=True x=172.00 y=100.0 z=11.00 adj=0 ground=0 anim_t=1 anim_c=1 dir_t=24 lock=0 forceZ=-393216 slope=0 status=Normal flags=0x2323E4 carried=False onplate=False hit=1 e2=0  
+   T+21 present=True x=172.00 y=100.0 z=4.50 adj=0 ground=0 anim_t=2 anim_c=1 dir_t=24 lock=0 forceZ=-425984 slope=0 status=Deactivated flags=0x2323C4 carried=False onplate=False hit=0 e2=1 snd(27) 
+   T+22 present=True x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Deactivated flags=0x2323C4 carried=False onplate=False hit=0 e2=2  
+   T+23 present=True x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=FlagToDestroy flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+24 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+25 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+26 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+27 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+28 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+29 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   T+30 present=False x=172.00 y=100.0 z=0.00 adj=0 ground=1 anim_t=2 anim_c=2 dir_t=24 lock=0 forceZ=0 slope=0 status=Destroyed flags=0x2323C4 carried=False onplate=False hit=0 e2=3  
+   sparks: T20:1 target type 437 status Normal hp 0
+-- tronc70r8 target index 41: no spark
+-- tronc70r8 target index 117: no spark

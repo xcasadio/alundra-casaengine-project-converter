@@ -1,0 +1,59 @@
+0x02 Goto                                          implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B6', 'B7'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B9']}
+0x03 If true goto                                  implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B6', 'C4'], 298: ['B2', 'B3', 'B4', 'B5', 'B6', 'C4'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C1', 'C4', 'C5', 'C6']}
+0x04 If false goto                                 implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B6', 'B7'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B10', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B9']}
+0x05 Flag on                                       implemented  used in {258: ['B2', 'B3', 'B4', 'B5', 'B6'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B10', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B9', 'C3']}
+0x06 Flag off                                      implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B6'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B9']}
+0x07 Check entity in area                          implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B7'], 298: ['B2', 'B3', 'B4', 'B5'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B9']}
+0x09 Set direction                                 implemented  used in {398: ['C3']}
+0x0B Wait until entity moves beyond radius         implemented  used in {398: ['C3']}
+0x0D Dialog                                        implemented  used in {298: ['B5', 'B6']}
+0x10 Player lose control                           implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B6', 'B7'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x11 Player gain control                           implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B6', 'B7'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x1A Set anim                                      implemented  used in {398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x25 Wait until collided with entity Z or on ground implemented  used in {258: ['C4'], 298: ['C4'], 398: ['C1', 'C4', 'C5', 'C6']}
+0x27 Face player                                   implemented  used in {398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x2D Activate entity                               implemented  used in {258: ['B2', 'B3', 'B4', 'B5', 'B7'], 298: ['B2', 'B3', 'B4', 'B5', 'B7'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x2E Destroy entity                                implemented  used in {258: ['B2', 'B3', 'B4', 'B5', 'B7'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C3']}
+0x2F Check pad buttons                             implemented  used in {258: ['B6'], 298: ['B6']}
+0x30 If flag on                                    implemented  used in {258: ['B6'], 298: ['B6', 'B7'], 398: ['B5', 'B6', 'B9']}
+0x31 If flag off                                   implemented  used in {258: ['B6'], 298: ['B6'], 398: ['B10', 'B6', 'B7']}
+0x36 Wait until flag on                            implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5'], 298: ['B2', 'B3', 'B4', 'B5'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x37 Wait                                          implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B6', 'B7'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B9']}
+0x39 Wait for dialog                               implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B6', 'B7'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x3B Check player in area                          implemented  used in {258: ['B6'], 298: ['B6'], 398: ['B10']}
+0x40 Set program index and clear the program state implemented  used in {163: ['C4'], 258: ['C4'], 298: ['C4'], 398: ['C1', 'C4', 'C5', 'C6']}
+0x41 Set sprite program index                      implemented  used in {163: ['A3', 'C4'], 258: ['A3', 'C4'], 298: ['A3', 'C4'], 398: ['A1', 'A2', 'A3', 'A4', 'C1', 'C4', 'C5', 'C6']}
+0x42 SetLogicContextEntity = PlayerEntity          implemented  used in {258: ['B2', 'B3', 'B4', 'B5', 'B7'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B9']}
+0x43 Set LogicContextEntity                        implemented  used in {258: ['B2', 'B3', 'B4', 'B5', 'B7'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B9']}
+0x44 Wait dialog choice                            implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5'], 298: ['B2', 'B3', 'B4', 'B5'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x50 Set dialog choice                             implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x51 Get dialog choice                             implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x53 Change map                                    implemented  used in {258: ['B6'], 298: ['B6']}
+0x55 Set unwalkable                                implemented  used in {258: ['B6'], 298: ['B6']}
+0x58 Goto by animation direction                   implemented  used in {398: ['B9']}
+0x59 Set entity anim                               implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B6', 'B7'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B9']}
+0x5A Turn entity                                   implemented  used in {258: ['B6'], 298: ['B6']}
+0x5C Dialog with entity                            implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B6', 'B7'], 298: ['B2', 'B3', 'B4', 'B5'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x5D Set entity Status = 3                         implemented  used in {258: ['B5'], 298: ['B5']}
+0x61 Is riding entity 2                            NO CASE  used in {398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x62 Set entities flags (low 16 bits)              implemented  used in {163: ['C4'], 258: ['C4'], 298: ['C4'], 398: ['C1', 'C4', 'C5', 'C6']}
+0x64 Set entities position                         implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5', 'B7'], 298: ['B2', 'B3', 'B4', 'B5'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x65 Move entity position                          implemented  used in {258: ['A3'], 298: ['A3'], 398: ['A4']}
+0x67 Camera follow entity                          implemented  used in {398: ['C3']}
+0x69 Camera look at                                implemented  used in {398: ['C3']}
+0x6E Is force adjusted                             implemented  used in {258: ['B6'], 298: ['B6']}
+0x70 Is above ground                               implemented  used in {258: ['B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C4'], 298: ['C4'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'C1', 'C4', 'C5', 'C6']}
+0x82 Give item or pickup by id                     implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5'], 298: ['B2', 'B3', 'B4', 'B5', 'B6'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x85 Set map tiles                                 implemented  used in {398: ['B10']}
+0x8A Spawn entity at position                      implemented  used in {398: ['B5', 'B6', 'B7']}
+0x8D Check PosZ <= TerrainHeight + 1               implemented  used in {163: ['B2', 'B3', 'B4'], 298: ['B2', 'B3', 'B4', 'B5'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x99 Try spend money                               implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5'], 298: ['B2', 'B3', 'B4', 'B5'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0x9A Enough money?                                 implemented  used in {163: ['B2', 'B3', 'B4'], 258: ['B2', 'B3', 'B4', 'B5'], 298: ['B2', 'B3', 'B4', 'B5'], 398: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7']}
+0xA5 Stop all sound                                implemented  used in {258: ['B5'], 298: ['B5', 'B6'], 398: ['B5', 'B6']}
+0xA6 Load bgm                                      implemented  used in {258: ['B5'], 298: ['B5', 'B6'], 398: ['B5', 'B6']}
+0xB2 Compare entity groups                         NO CASE  used in {258: ['B6'], 298: ['B6']}
+0xB8 Check CurrentAnimationId                      implemented  used in {258: ['B6'], 398: ['B9']}
+0xB9 Start CD streaming                            NO CASE  used in {258: ['B5'], 298: ['B5', 'B6'], 398: ['B5', 'B6']}
+0xBA Check if loading from CD                      implemented  used in {258: ['B5'], 298: ['B5', 'B6'], 398: ['B5', 'B6']}
+0xBD Play sound 2                                  implemented  used in {258: ['C4'], 298: ['C4'], 398: ['C1', 'C4', 'C5', 'C6']}
+missing ['0x61', '0xB2', '0xB9']

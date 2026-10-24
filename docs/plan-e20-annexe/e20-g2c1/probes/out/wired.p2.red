@@ -1,0 +1,2 @@
+  Échoué Alundra.Tests.Hero.LiftPureTests.TheProductionSet_IsTheSevenTypesOfC23_AndTheTestSeamReplacesIt
+  Échoué Alundra.Tests.Hero.LiftWorldTests.M5_AnObjectOutsideTheSet_GivesTheSword_NextToTheCrateOfTheSameSceneThatLifts

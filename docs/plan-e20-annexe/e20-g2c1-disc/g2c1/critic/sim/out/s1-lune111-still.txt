@@ -1,0 +1,54 @@
+lune111 still
+t058 pad=0000 | H anim_t=12 carried2C=80127FC4 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=109.0000 py=100.0000 pz=32.0000 ground=0 adj=1 hitc=0 bounced=0 support=0
+t059 pad=0000 | H anim_t=12 carried2C=80127FC4 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=109.0000 py=100.0000 pz=32.0000 ground=0 adj=1 hitc=0 bounced=0 support=0
+t060 pad=0000 | H anim_t=12 carried2C=80127FC4 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=109.0000 py=100.0000 pz=32.0000 ground=0 adj=1 hitc=0 bounced=0 support=0
+t061 pad=0080 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=110.5000 py=100.0000 pz=36.0000 ground=0 adj=0 hitc=0 bounced=0 support=80127D30 | J snd(26) snd(0)
+t062 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=112.0000 py=100.0000 pz=39.5000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t063 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=113.5000 py=100.0000 pz=42.5000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t064 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=115.0000 py=100.0000 pz=45.0000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t065 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=116.5000 py=100.0000 pz=47.0000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t066 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=118.0000 py=100.0000 pz=48.5000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t067 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=119.5000 py=100.0000 pz=49.5000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t068 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=121.0000 py=100.0000 pz=50.0000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t069 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=122.5000 py=100.0000 pz=50.0000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t070 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=124.0000 py=100.0000 pz=49.5000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t071 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=125.5000 py=100.0000 pz=48.5000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t072 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=127.0000 py=100.0000 pz=47.0000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t073 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=128.5000 py=100.0000 pz=45.0000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t074 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=130.0000 py=100.0000 pz=42.5000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t075 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=131.5000 py=100.0000 pz=39.5000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t076 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=133.0000 py=100.0000 pz=36.0000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t077 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=134.5000 py=100.0000 pz=32.0000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t078 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=136.0000 py=100.0000 pz=27.5000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t079 pad=0000 | H anim_t=9 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=137.5000 py=100.0000 pz=22.5000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t080 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=139.0000 py=100.0000 pz=17.0000 ground=0 adj=0 hitc=0 bounced=0 support=0 | J snd(0)
+t081 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=140.5000 py=100.0000 pz=11.0000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t082 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=142.0000 py=100.0000 pz=4.5000 ground=0 adj=0 hitc=0 bounced=0 support=0
+t083 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=3 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t084 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0 | J snd(24) snd(0)
+t085 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t086 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t087 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t088 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t089 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t090 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t091 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t092 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t093 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t094 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t095 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t096 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t097 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t098 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t099 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t100 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t101 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t102 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t103 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t104 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t105 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t106 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t107 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t108 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t109 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0
+t110 pad=0000 | H anim_t=0 carried2C=0 px=109.0000 pz=0.0000 ground=1 | C1 status=2 t24=0 anim_t=0 flags6C=332384 px=143.5000 py=100.0000 pz=0.0000 ground=1 adj=0 hitc=0 bounced=0 support=0

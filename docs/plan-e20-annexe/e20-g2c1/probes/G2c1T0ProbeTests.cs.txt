@@ -1,0 +1,281 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Hero;
+using Alundra.Maps;
+using Alundra.Session;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+using Alundra.Transitions;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>E20.g2c1 T0 THROWAWAY probes P1 to P4 (never committed; kept as .txt in the annex).</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G2c1T0ProbeTests : IDisposable
+{
+    private const uint Square = PadState.Square;
+    private const uint Right = PadState.Right;
+    private static readonly string Out = Environment.GetEnvironmentVariable("G2C1_OUT") ?? Path.GetTempPath();
+
+    public G2c1T0ProbeTests()
+    {
+        System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private static readonly (string Name, string Zone, string World, int Rec)[] Objects =
+    {
+        ("tonneau22r21", "Lars' Crypt", "Lars' Crypt-22", 21),
+        ("pierre24r24", "Lars' Crypt", "Lars' Crypt-24", 24),
+        ("objet27r5", "Ancient Shrine", "Ancient Shrine-27", 5),
+        ("tronc70r8", "Coastal Cave", "Coastal Cave-70", 8),
+    };
+
+    private static string Dump(string title, C4ProbeRun run, int from, int to)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"== {title} (type {run.Crate.SpriteType}, header E code {run.Crate.SpriteProgramIndexes[4]})");
+        for (var k = from; k <= to; k++)
+        {
+            if (!run.Ticks.TryGetValue(k + 1, out var t))
+            {
+                sb.AppendLine($"   T{k:+0;-0;+0} (no sample)");
+                continue;
+            }
+
+            var snd = string.Join(",", run.Heard.Played.Where(p => p.Tick == k + 1).Select(p => "snd(" + p.Sfx + ")"));
+            sb.AppendLine(
+                $"   T{k:+0;-0;+0} present={t.Present} x={t.X / 65536.0:F2} y={t.Y / 65536.0:F1} z={t.Z / 65536.0:F2} adj={t.Adj} ground={t.OnGround} anim_t={t.Target} anim_c={t.Current} dir_t={t.Dir} lock={t.Lock} forceZ={t.ForceZ} slope={t.Slope} status={t.Status} flags=0x{t.Flags:X} carried={t.Carried} onplate={t.OnPlate} hit={t.HitCounter} e2={t.E2Calls} {snd} {t.Journal}");
+        }
+
+        return sb.ToString();
+    }
+
+    private static void Save(string name, string text) => File.WriteAllText(Path.Combine(Out, name), text);
+
+    [Fact]
+    public void P0_Where()
+    {
+        var sb = new StringBuilder();
+        foreach (var o in Objects)
+        {
+            using var run = new C4ProbeRun(o.Name, o.Zone, o.World, 0, recordId: o.Rec, contents: 0);
+            sb.AppendLine($"{o.Name}: type {run.Crate.SpriteType} hero=({run.Arc.Hero.PosX / 65536.0:F2},{run.Arc.Hero.PosY / 65536.0:F2},{run.Arc.Hero.PosZ / 65536.0:F2}) obj=({run.Crate.PosX / 65536.0:F2},{run.Crate.PosY / 65536.0:F2},{run.Crate.PosZ / 65536.0:F2}) carried={run.Arc.Hero.CarriedEntity != null} plat={run.Crate.PlatformEntity != null} flags=0x{run.Crate.Flags:X} W/H/D={run.Crate.Width}/{run.Crate.Height}/{run.Crate.Depth} mod={run.Crate.ModX},{run.Crate.ModY},{run.Crate.ModZ} status={run.Crate.Status} ctrl={run.Crate.Controller != null}");
+        }
+
+        Save("p0.txt", sb.ToString());
+    }
+
+    [Fact]
+    public void P1_Wall()
+    {
+        var all = new StringBuilder();
+        foreach (var o in Objects)
+        {
+            foreach (var moving in new[] { true, false })
+            {
+                foreach (var wallCol in new[] { 5, 6 })
+                {
+                    using var run = new C4ProbeRun(o.Name, o.Zone, o.World, 0, cell: (cx, _) => new CutBench.Cell(cx == wallCol ? 0x40 : 0, 0), recordId: o.Rec, contents: 0);
+                    run.Go(1, 30, tick => tick == 1 ? (moving ? Square | Right : Square) : 0u);
+                    all.Append(Dump($"{o.Name} {(moving ? "moving" : "still")} wall column {wallCol}", run, -1, wallCol == 5 ? 8 : 24));
+                }
+            }
+        }
+
+        Save("p1.txt", all.ToString());
+    }
+
+    [Fact]
+    public void P2_Glide()
+    {
+        var all = new StringBuilder();
+        foreach (var o in Objects)
+        {
+            using var run = new C4ProbeRun(o.Name, o.Zone, o.World, 0, cell: (cx, _) => cx >= 6 && cx <= 9 ? new CutBench.Cell(0x01, 0, null, 0x10) : new CutBench.Cell(0, 0), recordId: o.Rec, contents: 0);
+            run.Go(1, 60, tick => tick == 1 ? Square | Right : 0u);
+            all.Append(Dump($"{o.Name} band 0x1001 columns 6-9", run, 17, 52));
+        }
+
+        Save("p2.txt", all.ToString());
+    }
+
+    [Fact]
+    public void P2c_Water()
+    {
+        var all = new StringBuilder();
+        foreach (var o in Objects)
+        {
+            using var run = new C4ProbeRun(o.Name, o.Zone, o.World, 0, cell: (cx, _) => cx >= 6 && cx <= 9 ? new CutBench.Cell(0x00, 0, null, 0x08) : new CutBench.Cell(0, 0), recordId: o.Rec, contents: 0);
+            run.Go(1, 40, tick => tick == 1 ? Square | Right : 0u);
+            all.Append(Dump($"{o.Name} water 0x0800 columns 6-9", run, 17, 30));
+        }
+
+        Save("p2c.txt", all.ToString());
+    }
+
+    private static readonly Dictionary<string, int[]> Candidates = new()
+    {
+        ["tonneau22r21"] = new[] { 49, 57, 72, 30, 45, 70, 43, 142, 73, 193, 35, 37, 55, 34 },
+        ["pierre24r24"] = new[] { 79 },
+        ["objet27r5"] = new[] { 72, 111, 112, 113, 35, 154, 70, 169, 57, 49, 45, 254, 107, 108 },
+        ["tronc70r8"] = new[] { 62, 30, 45, 57, 118, 175, 35, 182, 181, 41, 117 },
+    };
+
+    [Fact]
+    public void P3_Touch()
+    {
+        var all = new StringBuilder();
+        foreach (var o in Objects)
+        {
+            foreach (var target in Candidates[o.Name])
+            {
+                try
+                {
+                    using var run = new C4ProbeRun(o.Name, o.Zone, o.World, 0, targetX: 165, targetIndex: target, recordId: o.Rec, contents: 0);
+                    run.Go(1, 40, tick => tick == 1 ? Square | Right : 0u);
+                    var sparks = run.Sparks.Where(p => p.Value != 0).ToList();
+                    if (sparks.Count == 0 && o.Name != "pierre24r24")
+                    {
+                        all.AppendLine($"-- {o.Name} target index {target}: no spark");
+                        continue;
+                    }
+
+                    all.Append(Dump($"{o.Name} thrown at target index {target} x=165", run, 17, 30));
+                    all.AppendLine("   sparks: " + string.Join(",", sparks.Select(p => $"T{p.Key - 1}:{p.Value}")) + $" target type {run.Target?.SpriteType} status {run.Target?.Status} hp {run.Target?.HitCounter}");
+                }
+                catch (Exception ex)
+                {
+                    all.AppendLine($"-- {o.Name} target index {target}: {ex.Message}");
+                }
+            }
+        }
+
+        Save("p3.txt", all.ToString());
+    }
+
+    [Fact]
+    public void P4b_Pile()
+    {
+        var sb = new StringBuilder();
+        using var run = new C4ProbeRun("pile", "Ancient Shrine", "Ancient Shrine-27", 0, recordId: 5, restRecord: 31, plate: (108, 178, 100), contents: 0);
+        run.Go(
+            1, 120,
+            tick => tick == 1 ? Square | Right : (tick == 90 ? Square | Right : 0u),
+            tick =>
+            {
+                if (tick == 80)
+                {
+                    var rest = run.Rest!;
+                    rest.PosX = run.Arc.Hero.PosX;
+                    rest.PosY = run.Arc.Hero.PosY;
+                    rest.PosZ = 32 << 16;
+                    rest.PushLogicalPositionToRoot();
+                    rest.RidingEntity = run.Arc.Hero.LogicContextEntity;
+                    PlayerManager.PutInHands(run.Arc.Hero, rest);
+                }
+            });
+        sb.AppendLine("== pile: obj1 (rec 5) thrown at T onto the plate; obj2 (rec 31) put in the hands at tick 80, thrown at tick 90");
+        for (var t = 1; t <= 120; t += 1)
+        {
+            if (t is >= 15 and <= 25 or >= 78 and <= 82 or >= 90 and <= 120)
+            {
+                var o = run.Ticks[t];
+                var r = run.RestTicks[t];
+                sb.AppendLine($"   tick {t} obj1 x={o.X / 65536.0:F1} z={o.Z / 65536.0:F2} ground={o.OnGround} onplate={o.OnPlate} | obj2 x={r.X:F1} z={r.Z:F2} ground={r.Ground} onObj1={r.OnCrate} carried={r.Carried} anim_t={r.Anim} | hero anim {run.Hero[t].State}");
+            }
+        }
+
+        Save("p4b.txt", sb.ToString());
+    }
+
+    [Fact]
+    public void P5_FloatingTrunks()
+    {
+        var sb = new StringBuilder();
+        foreach (var (zone, world, rec) in new[] { ("Coastal Cave", "Coastal Cave-70", 9), ("Coastal Cave", "Coastal Cave-70", 10), ("Coastal Cave", "Coastal Cave-70", 11), ("Coastal Cave", "Coastal Cave-70", 12), ("Coastal Cave", "Coastal Cave-70", 21), ("Coastal Cave", "Coastal Cave-73", 11), ("Coastal Cave", "Coastal Cave-73", 12), ("Coastal Cave", "Coastal Cave-73", 36), ("Coastal Cave", "Coastal Cave-70", 8) })
+        {
+            var spec = new ArcSpec("g2c1-p5-" + world + "-" + rec, zone, world, Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true);
+            using var arc = new ArcRun(spec);
+            for (var i = 0; i < 4; i++)
+            {
+                arc.HoldDirections(0);
+                arc.OneFrame();
+            }
+
+            using var hook = C4Throwaway.Install(arc.Runner);
+            var trunk = ((IEntityWorldContext)arc.Proxy).SpawnEntityByRecordId(arc.Hero, rec);
+            if (trunk == null)
+            {
+                sb.AppendLine($"== {world} rec {rec}: not born");
+                continue;
+            }
+
+            sb.AppendLine($"== {world} rec {rec} type {trunk.SpriteType} at ({trunk.PosX / 65536.0:F1},{trunk.PosY / 65536.0:F1},z {trunk.PosZ / 65536.0:F1}) flags=0x{trunk.Flags:X} marker={trunk.HasLogicalZ}");
+            for (var tick = 1; tick <= 6; tick++)
+            {
+                arc.HoldDirections(0);
+                arc.OneFrame();
+                sb.AppendLine($"   t{tick} anim_t={trunk.TargetAnimationId} anim_c={trunk.CurrentAnimationId} slope18C={trunk.Slope_18c} ground={trunk.IsOnGround} status={trunk.Status} z={trunk.PosZ / 65536.0:F1}");
+            }
+        }
+
+        Save(Environment.GetEnvironmentVariable("G2C1_P5NAME") ?? "p5.txt", sb.ToString());
+    }
+
+    [Fact]
+    public void P5b_FloatingTrunksAtTheMapLoad()
+    {
+        var sb = new StringBuilder();
+        foreach (var (zone, world, tx, ty) in new[] { ("Coastal Cave", "Coastal Cave-70", 29, 24), ("Coastal Cave", "Coastal Cave-70", 31, 22), ("Coastal Cave", "Coastal Cave-73", 16, 45), ("Coastal Cave", "Coastal Cave-73", 41, 44) })
+        {
+            var spec = new ArcSpec("g2c1-p5b-" + world + "-" + tx, zone, world, Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true, Arrival: new ArcArrival((tx * 24 + 12) << 16, (ty * 16 + 8) << 16, 3 << 20, GameState.ResetAnimationId, 0));
+            using var arc = new ArcRun(spec);
+            using var hook = C4Throwaway.Install(arc.Runner);
+            sb.AppendLine($"== {world} hero arrival tile ({tx},{ty}); trunks (type 373) present at load: {arc.Entities.Count(e => e.SpriteType == 373)}");
+            for (var tick = 0; tick <= 8; tick++)
+            {
+                if (tick > 0)
+                {
+                    arc.HoldDirections(0);
+                    arc.OneFrame();
+                }
+
+                sb.AppendLine($"   f{tick} C4 calls so far: {arc.Runner.NativeHandlerRunCounts.GetValueOrDefault((Alundra.Events.ScriptHelper.ProgramCTick, 4))}");
+                foreach (var t in arc.Entities.Where(e => e.SpriteType == 373).OrderBy(e => e.PosX))
+                {
+                    sb.AppendLine($"   f{tick} trunk ({t.PosX / 65536.0:F0},{t.PosY / 65536.0:F0},z {t.PosZ / 65536.0:F0}) status={t.Status} anim_t={t.TargetAnimationId} anim_c={t.CurrentAnimationId} slope18C={t.Slope_18c} ground={t.IsOnGround}");
+                }
+            }
+        }
+
+        Save(Environment.GetEnvironmentVariable("G2C1_P5NAME") ?? "p5b.txt", sb.ToString());
+    }
+
+    [Fact]
+    public void P4_Plate()
+    {
+        var all = new StringBuilder();
+        foreach (var o in Objects.Where(x => x.Name.StartsWith("objet")))
+        {
+            using var run = new C4ProbeRun(o.Name, "Ancient Shrine", "Ancient Shrine-27", 0, recordId: o.Rec, plate: (108, 178, 100), contents: 0);
+            run.Go(1, 45, tick => tick == 1 ? Square | Right : 0u);
+            all.Append(Dump($"{o.Name} onto the plate (178,100)", run, 15, 35));
+        }
+
+        Save("p4.txt", all.ToString());
+    }
+}

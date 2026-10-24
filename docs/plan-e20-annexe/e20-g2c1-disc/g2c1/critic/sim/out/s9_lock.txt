@@ -1,0 +1,7 @@
+caisse392_c23 AttackCount=1: object changes ['t81 status:2>4', 't82 status:4>0 carrier28:80127D30>0'] ; hero changes ['t81 carried2C:80127FC4>0'] ; end status 0 carrier 0
+tonneau34 AttackCount=1: object changes ['t81 status:2>4', 't82 status:4>0 carrier28:80127D30>0'] ; hero changes ['t81 carried2C:80127FC4>0'] ; end status 0 carrier 0
+pierre37 AttackCount=1: object changes ['t81 status:2>4', 't82 status:4>0 carrier28:80127D30>0'] ; hero changes ['t81 carried2C:80127FC4>0'] ; end status 0 carrier 0
+tronc117 AttackCount=7: object changes ['t81 status:2>4', 't82 status:4>0 carrier28:80127D30>0'] ; hero changes ['t81 carried2C:80127FC4>0'] ; end status 0 carrier 0
+etoile107 AttackCount=0: object changes [] ; hero changes [] ; end status 2 carrier 80127D30
+lune111 AttackCount=0: object changes [] ; hero changes [] ; end status 2 carrier 80127D30
+herbe41_c23 AttackCount=0: object changes [] ; hero changes [] ; end status 2 carrier 80127D30

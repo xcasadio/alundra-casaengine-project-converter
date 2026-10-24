@@ -1,0 +1,13 @@
+## H: hero jumps onto a 16 px ledge, lifts the item, throws it
+header read by the REAL InitializeEntity: flags +0x6C = 0x230380, native C code +0x78 = 4, native A +0x70 = 255, E +0x80 = 0, +0x68 = 66, box (0,0,0)
+after the harness equivalent of the script: flags = 0x230380, C code = 4
+first tick with +0x28 (carrier) set: 40 ; hero +0x2C at that tick: 80127FC4
+final: item status 2 t24 0 carrier28 0 anim_t 0 flags 0x230380 pos (188.00, 100.00, 16.00) ground 1 ; hero anim_t 0 +0x2C 0 pos (119.00, 100.00)
+changes of (status, t24, carrier, anim, flags, ground):
+   t001 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230380 ground=1 pos=(140.0,100.0,16.0)
+   t040 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=1 pos=(140.0,100.0,16.0)
+   t041 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=0x230380 ground=0 pos=(140.0,100.0,17.0)
+   t081 status=2 t24=0 carrier28=0 anim_t=1 flags=0x230380 ground=0 pos=(122.0,100.0,52.0)
+   t103 status=2 t24=0 carrier28=0 anim_t=1 flags=0x230380 ground=1 pos=(188.0,100.0,16.0)
+   t104 status=2 t24=0 carrier28=0 anim_t=0 flags=0x230380 ground=1 pos=(188.0,100.0,16.0)
+journal (non-stub): [(1, ['snd(0)']), (9, ['snd(10)']), (10, ['snd(0)']), (27, ['snd(11)', 'fx(id=7,a2=0,x=119.000,y=100.000,z=16.000)', 'fx(id=7,a2=0,x=119.000,y=100.000,z=16.000)', 'fx(id=7,a2=0,x=119.000,y=100.000,z=16.000)', 'snd(0)']), (33, ['snd(0)']), (40, ['snd(44)']), (76, ['snd(0)']), (81, ['snd(26)', 'snd(0)']), (100, ['snd(0)']), (104, ['snd(24)', 'snd(0)'])]

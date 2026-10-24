@@ -1,0 +1,4 @@
+tonneau22r21: type 290 hero=(109.00,100.00,0.00) obj=(109.00,100.00,32.00) carried=True plat=True flags=0x3323E4 W/H/D=1376255/983039/1048575 mod=-655360,-458752,0 status=Normal ctrl=True
+pierre24r24: type 293 hero=(109.00,100.00,0.00) obj=(109.00,100.00,32.00) carried=True plat=True flags=0x3323E4 W/H/D=1376255/983039/1048575 mod=-655360,-458752,0 status=Normal ctrl=True
+objet27r5: type 363 hero=(109.00,100.00,0.00) obj=(109.00,100.00,32.00) carried=True plat=True flags=0x332384 W/H/D=1310719/786431/917503 mod=-655360,-393216,0 status=Normal ctrl=True
+tronc70r8: type 373 hero=(109.00,100.00,0.00) obj=(109.00,100.00,32.00) carried=True plat=True flags=0x2323E4 W/H/D=1376255/983039/1048575 mod=-655360,-458752,0 status=Normal ctrl=True

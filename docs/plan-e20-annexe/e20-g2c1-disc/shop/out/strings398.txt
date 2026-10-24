@@ -1,0 +1,39 @@
+128 (0x80)  Ouh là là ! Voici une heureuse surprise ! / On dirait que j'ai enfin un client qui / paie !
+129 (0x81)  T'vas ach'ter quelqu'chose ou t'vas / t'contenter de rester là comme un idiot ?
+130 (0x82)  J'crois qu'arbre qui bloque pont / doit avoir disparu, j'crois. J'pense / qu'les affaires vont reprendre !
+131 (0x83)  Tout chez Lurvy est unique / euh, heu. Vous pouvez pas / avoir de meilleurs prix aut'part !
+132 (0x84)  Que diable fais-tu ? T'essaies quand même / pas d'm'avoir, toi p'tit pervers / sans scrupules ? ! !  // Sors de ma chambre ! Ne m'oblige pas / à remonter jusqu'ici ! / 
+133 (0x85)  Toi\T...\T... T'as rien vu, / hein ? / 
+134 (0x86)  T'as raconté mon secret à personne, / et j'apprécie. Merci / mon pote. // J'crois que j'dois garder tes secrets, / aussi, euh, heu, j'crois. / 
+135 (0x87)  Cette Herbe médicinale que tu vois là te / coûtera 4 florins. D'accord ?\0100\Y
+136 (0x88)  Un Fortifiant te reviendra à 12 florins / ces jours-ci. T'fais affaire ?\0100\Y
+137 (0x89)  Un Elixir de magie coûte 24 florins. / T'jours intéressé ?\0100\Y
+138 (0x8A)  J'crois que j'devrais demander 600 florins / pour c'te Essence magique, mais j'te la fais / à 500. T'la veux ?\0100\Y
+139 (0x8B)  Qu'est-c'qui s'passe ? T'es têtu ou quoi ? / T'as pas la place dans ton sac pour / un truc comme ça, mon p'tit bonhomme.
+140 (0x8C)  T'as pas assez d'florins, et ce machin / n'est pas gratuit. Impossible, sans façon.
+141 (0x8D)  Où que tu vas ? ! ! T'essaies pas d'me voler, / hein ?
+142 (0x8E)  Qu'est-ce que t'fais, fiston ? ! ! Sors de / mes quartiers privés !
+143 (0x8F)  Ben merci bien !
+144 (0x90)  J'suis pas étonné, fiston.
+145 (0x91)  Bon coup d'œil. C'te Veste en cuir, c'est une / armure. N'a plus autant de succès d'puis / que les Village Boys sont plus à la mode\W2 // C'est une super affaire, à seulement 120 / florins, surtout d'puis que la folie rétro est / revenue. Marché conclu ?\0100\Y
+146 (0x92)  J'ai plus b'soin de ce truc\W2 / J'suis trop vieux ! 400 florins et / ce foutu truc est à toi. T'l'veux ?\0100\Y
+147 (0x93)  De l'Essence magique, hum ? Qu'est-ce / que tu dis de 200 florins ?\0100\Y
+148 (0x94)  T'es vraiment un bon marchandeur, fiston. / J't'ai fait faire d'bonnes affaires. Euh, heu.
+149 (0x95)  J'ai vu b'coup d'choses, fiston, mais ça / jamais. Euh, heu. Est-ce qu'la porte / était trop difficile à ouvrir ? Hum, hum ?
+150 (0x96)  J'suppose que t'as compris ce qu'j'faisais / ici. Heu, euh. J'fais l'tour de la ville / et j'ramasse les ordures... // J'les répare puis j'les revends. J'suis pas fier / de ça. /  // Et j'apprécierais si tu disais ça à personne, / vu que j'vais beaucoup mieux dans / ma caboche.
+151 (0x97)  T'sais quoi. Si t'as besoin de faire / réparer quelque chose, amène-le ici. J'le / remettrai sur pied pour rien\W2
+152 (0x98)  J'apprécierais vraiment si désormais / tu passais par la porte / de devant !
+153 (0x99)  Bizarres les choses que tu vends.\0101 / Voyons voir\T\W2\T\W2C'est vieux, / mais je peux tout réparer. J'commence ?\0100\Y
+154 (0x9A)  \W2\T\W2\TT'veux pas toucher à ces vieilleries ? / J'suppose que tu peux bien faire comme t'as / envie !
+155 (0x9B)  Peux pas t'le donner comme ça. Non, non. / Que dirais-tu de 2 163 misérables florins ?\0100\Y
+156 (0x9C)  Laisse-moi faire.
+157 (0x9D)  Cela fait longtemps que j'ai pas bossé sur / une armure. Du super boulot, en plus. / Euh, heu, ouais. // \0101 Pas mal, hein \T\W2\T\W2 J'en suis / fier.
+158 (0x9E)  \BLurvy s'empare avec empressement / de la vieille armure en piteux état.
+159 (0x9F)  \BLurvy remet l'Armure / ancienne.
+160 (0xA0)  Retourne au magasin, p'tit / malin ! / 
+161 (0xA1)  Gratuit, comme j't'ai dit.
+162 (0xA2)  \W2\T\W2\TUn Elixir de force coûte / 18 florins par ici.\0100\Y
+163 (0xA3)  \BArmure en cuir chic reçue.
+164 (0xA4)  \BVaisseau de vie reçu.
+165 (0xA5)  Qu'est-ce que t'fais ? ! ! N'mets pas la / pagaille, fiston ! Ou bien je te mets mon / pied au derrière !
+166 (0xA6)  J'te conseille d'arrêter tes bêtises avant / que je ne t'corrige !

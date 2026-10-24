@@ -1,0 +1,4 @@
+5 ('0x2323e4', '0x232302', 'NOT collidable', 'Gravity', 'kind1', 'riders ok')
+36 ('0x2323e4', '0x232306', 'NOT collidable', 'Gravity', 'kind1', 'riders ok')
+2 ('0x2323e4', '0x236306', 'NOT collidable', 'Gravity', 'kind1', 'NoRiders')
+distinct A programs: 12 all non collidable: True

@@ -1,0 +1,38 @@
+80039e04 sw  $v0, 0x80($s0)  [direct]  fn~80039d04
+80042630 lw  $v1, 0x80($a0)  [direct]  fn~80042610
+80042644 sw  $v0, 0x80($a0)  [direct]  fn~80042610
+80042774 sw  $zero, 0x80($v1)  [direct]  fn~80042748
+800427d4 lw  $v1, 0x80($v0)  [direct]  fn~80042798
+8004285c sw  $zero, 0x80($v0)  [direct]  fn~80042798
+80048e5c sw  $s2, 0x80($sp)  [direct]  fn~80048e44
+80048fb4 lw  $s2, 0x80($sp)  [direct]  fn~80048e44
+8004a328 sw  $s0, 0x80($sp)  [direct]  fn~8004a31c
+8004a898 lw  $s0, 0x80($sp)  [direct]  fn~8004a31c
+8004a9f0 sw  $s6, 0x80($sp)  [direct]  fn~8004a9e0
+8004afc0 lw  $s6, 0x80($sp)  [direct]  fn~8004a9e0
+8004f7d0 sb  $s0, 0x80($s1)  [direct]  fn~8004f628
+80057c04 sw  $v0, 0x80($t0)  [direct]  fn~80057964
+80057e6c sw  $v1, 0x80($v0)  [direct]  fn~80057cf0
+80057edc lw  $a3, 0x80($t0)  [direct]  fn~80057cf0
+8005809c lw  $v0, 0x80($v1)  [direct]  fn~80057cf0
+800580a8 sw  $v0, 0x80($v1)  [direct]  fn~80057cf0
+80058590 sh  $v0, 0xc($a2)  [biased(+0x74 via $a2, $v1, 0x74)]  fn~800583ec
+80058594 sh  $v1, 0xc($a2)  [biased(+0x74 via $a2, $v1, 0x74)]  fn~800583ec
+80058678 sh  $v0, 0xc($a2)  [biased(+0x74 via $a2, $v1, 0x74)]  fn~800583ec
+8005867c sh  $v1, 0xc($a2)  [biased(+0x74 via $a2, $v1, 0x74)]  fn~800583ec
+80058760 sh  $v0, 0xc($a2)  [biased(+0x74 via $a2, $v1, 0x74)]  fn~800583ec
+80058764 sh  $v1, 0xc($a2)  [biased(+0x74 via $a2, $v1, 0x74)]  fn~800583ec
+800669bc lw  $v1, 0x80($s0)  [direct]  fn~80066984
+800725fc sw  $v0, 0x80($v1)  [direct]  fn~80072534
+80073314 sw  $v0, 0x80($a0)  [direct]  fn~80072728
+8007336c sw  $v0, 0x80($a0)  [direct]  fn~80072728
+80082198 sw  $fp, 0x80($sp)  [direct]  fn~80082188
+800827e4 lw  $fp, 0x80($sp)  [direct]  fn~80082188
+8008b924 sw  $zero, 0x80($s0)  [direct]  fn~8008b8c8
+8008d794 sw  $zero, 0x80($s0)  [direct]  fn~8008d568
+8008d7c4 sw  $zero, 0x80($s0)  [direct]  fn~8008d568
+8008d96c lw  $v1, 0x80($a1)  [direct]  fn~8008d568
+8008d97c sw  $v1, 0x80($a1)  [direct]  fn~8008d568
+8008f3a8 sw  $zero, 0x80($s0)  [direct]  fn~8008f2e8
+800972e4 sw  $s6, 0x80($sp)  [direct]  fn~800972c8
+800977b0 lw  $s6, 0x80($sp)  [direct]  fn~800972c8

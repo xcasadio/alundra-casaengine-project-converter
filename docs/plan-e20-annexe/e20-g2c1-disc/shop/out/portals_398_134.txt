@@ -1,0 +1,12 @@
+src 134 portal 0 (10,55)-(10,55) -> map 11 tile (46,52) z 0 flags 1
+src 134 portal 1 (48,7)-(48,8) -> map 134 tile (11,6) z 0 flags 61447
+src 134 portal 2 (41,55)-(41,55) -> map 407 tile (36,33) z 0 flags 1
+src 407 portal 6 (36,33)-(36,33) -> map 134 tile (41,55) z 0 flags 20481
+src  11 portal 13 (46,52)-(46,52) -> map 134 tile (10,55) z 0 flags 20481
+src  11 portal 15 (46,18)-(46,18) -> map 134 tile (39,8) z 0 flags 3
+src  11 portal 16 (46,21)-(46,21) -> map 134 tile (6,25) z 0 flags 20481
+src 398 portal 0 (7,31)-(7,31) -> map 20 tile (47,49) z 0 flags 1
+src 398 portal 1 (33,44)-(33,44) -> map 20 tile (48,52) z 0 flags 16386
+src 398 portal 2 (6,58)-(7,59) -> map 379 tile (30,9) z 0 flags 85
+src 398 portal 3 (7,56)-(7,56) -> map 162 tile (17,41) z 0 flags 16386
+src  20 portal 1 (47,49)-(47,49) -> map 398 tile (7,31) z 0 flags 20481

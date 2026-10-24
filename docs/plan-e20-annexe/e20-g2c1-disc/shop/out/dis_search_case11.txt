@@ -1,0 +1,24 @@
+0x8003ce74  24040001  addiu     $a0, $zero, 1
+0x8003ce78  3c038012  lui       $v1, 0x8012
+0x8003ce7c  3c058013  lui       $a1, 0x8013
+0x8003ce80  8ca24360  lw        $v0, 0x4360($a1)
+0x8003ce84  00000000  nop       
+0x8003ce88  1840001c  blez      $v0, 0x8003cefc
+0x8003ce8c  24637fc4  addiu     $v1, $v1, 0x7fc4
+0x8003ce90  00a03021  move      $a2, $a1
+0x8003ce94  24650028  addiu     $a1, $v1, 0x28
+0x8003ce98  8ca2ffe8  lw        $v0, -0x18($a1)
+0x8003ce9c  00000000  nop       
+0x8003cea0  2442ffff  addiu     $v0, $v0, -1
+0x8003cea4  2c420003  sltiu     $v0, $v0, 3
+0x8003cea8  10400008  beqz      $v0, 0x8003cecc
+0x8003ceac  00000000  nop       
+0x8003ceb0  8ca20000  lw        $v0, ($a1)
+0x8003ceb4  00000000  nop       
+0x8003ceb8  10400004  beqz      $v0, 0x8003cecc
+0x8003cebc  00000000  nop       
+0x8003cec0  ae030000  sw        $v1, ($s0)
+0x8003cec4  26100004  addiu     $s0, $s0, 4
+0x8003cec8  26310001  addiu     $s1, $s1, 1
+0x8003cecc  24840001  addiu     $a0, $a0, 1
+0x8003ced0  24a50294  addiu     $a1, $a1, 0x294

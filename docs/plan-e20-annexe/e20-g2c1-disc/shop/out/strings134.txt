@@ -1,0 +1,25 @@
+128 (0x80)  Hé, le gamin. Je suis étonné de voir / que tu as survécu. Je sentais bien / que tu retomberais sur tes pieds\W2 // Qu'est-ce que je fais ici ? J'ai investi / dans ce magasin les trésors rassemblés / tout au long de mes années d'aventure. // Un naufrage presque fatal était tout ce dont / j'avais besoin pour réfléchir longuement / et sérieusement à une reconversion\W2
+129 (0x81)  Bon, tu ne vas donc rien / acheter, gamin ?
+130 (0x82)  Le Vaisseau de vie ? Il coûte 10 000 florins. / Tu le veux ?\0100\Y
+131 (0x83)  L'Anneau d'Olga, hein ? Il est très joli, / mais il va te coûter la peau des fesses. / Je te le fais à 10 000 florins. Tu le veux ?\0100\Y
+132 (0x84)  Ce Super bracelet est un trésor / très rare ! Je m'en sépare en échange de / 10 000 florins. Marché conclu ?\0100\Y
+133 (0x85)  Le Super anneau ? 10 000 florins. / Dois-je te l'emballer ?\0100\Y
+134 (0x86)  Ah ! Je vois que tu as craqué pour / le Bâton magique. Ça te reviendra à 10 000 / florins. Tu as les moyens ?\0100\Y
+135 (0x87)  Eh, gamin, soit tu essaies d'amuser lagalerie / soit tu tentes juste ta chance. Dans les / deux cas, j'en ai plus que marre.
+136 (0x88)  As-tu mentionné les Faucons dorés ? Oui, / j'ai entendu parler de ces trésors. D'ailleurs, / qui n'en a pas entendu parler ? // Il y a longtemps, j'ai parcouru les océans / à la recherche des Faucons qui, d'après la / légende, seraient éparpillés de par le monde... // Si j'avais pu tous les retrouver, je serais / moi-même devenu une légende et je serais / riche comme Crésus !
+137 (0x89)  Toi le môme, si tu mets la main sur l'un de / ces Faucons dorés et me le ramènes, / je te l'échangerai contre des éléments. // C'est plutôt un bon marché. Tu me ramènes / ce que je veux, et je te donne en échange / ce dont tu as besoin. Affaire conclue ?\0100\Y
+138 (0x8A)  Quand tu auras changé d'avis\W2 et / je sais que tu en changeras\W2 reviens me voir.
+139 (0x8B)  C'est... c'est vrai ça, le môme ?
+140 (0x8C)  Ah, Alundra ! Dès que j'ai posé / mes yeux sur ton visage verdâtre / en mer, j'ai su que tu étais spécial ! // Je suis un homme heureux. Merci, / Alundra ! / 
+141 (0x8D)  Laisse-moi voir combien de Faucons tu / m'échanges là\W2 Hum\W2 Tu m'en as / rapporté \X0 aujourd'hui.
+142 (0x8E)  Bon, voyons voir. Ça veut dire qu'à ce jour / tu m'as rapporté \X1 Faucons / dorés.
+143 (0x8F)  Tu m'as présenté \X1 / Faucons dorés. Accepte ceci / en remerciement, Alundra.
+144 (0x90)  Je pense que tu trouveras ce(t) \X2 / tout à fait utile. Fais-en bon usage, / Alundra !
+145 (0x91)  \BRéception de : \X2.
+146 (0x92)  Aucun Faucon doré pour me requinquer / aujourd'hui, Alundra ? Ma déception / est indéniable\W2
+147 (0x93)  Ramène-moi \X3 Statuettes de faucons / et je te récompenserai avec cela : / \X4.\0100\Y
+148 (0x94)  Tu ne disposes pas de suffisamment de / Faucons pour avoir droit à ta récompense, / Alundra. Je pense qu'il ne t'en manque que \X5.
+149 (0x95)  Regarde le prochain cadeau que je me / propose de te remettre contre des / Faucons dorés cachés, Alundra !
+150 (0x96)  Je pense que je vais arrêter d'amasser / des statuettes, le môme. // Ma diseuse de bonne aventure / m'a dit que ma cupidité avait peut-être / provoqué la colère des dieux. // Je préférerais ne pas rester dans une / position aussi inconfortable.
+151 (0x97)  Tu me rends nerveux, gamin. Achète / quelque chose ou pars.
+152 (0x98)  \BVaisseau de vie reçu.

@@ -1,0 +1,16 @@
+== wall in column 5, thrown east (contact while rising) : tonneau34 ==
+t058 pos=(109.0,100.0,32.0) adj=1 ground=0 anim=0 status=2 carrier=80127D30 | pointers LAST(cells [(5, 5), (5, 5), (5, 6), (5, 6)] words ['0x40', '0x40', '0x40', '0x40']) CURRENT(cells [(4, 5), (4, 5), (4, 6), (4, 6)]) DIFFER
+t059 pos=(109.0,100.0,32.0) adj=1 ground=0 anim=0 status=2 carrier=80127D30 | pointers LAST(cells [(5, 5), (5, 5), (5, 6), (5, 6)] words ['0x40', '0x40', '0x40', '0x40']) CURRENT(cells [(4, 5), (4, 5), (4, 6), (4, 6)]) DIFFER
+t060 pos=(109.0,100.0,32.0) adj=1 ground=0 anim=0 status=2 carrier=80127D30 | pointers LAST(cells [(5, 5), (5, 5), (5, 6), (5, 6)] words ['0x40', '0x40', '0x40', '0x40']) CURRENT(cells [(4, 5), (4, 5), (4, 6), (4, 6)]) DIFFER
+t061 pos=(109.0,100.0,36.0) adj=1 ground=0 anim=1 status=2 carrier=0 | pointers LAST(cells [(4, 5), (4, 5), (4, 6), (4, 6)] words ['0x0', '0x0', '0x0', '0x0']) CURRENT(cells [(4, 5), (4, 5), (4, 6), (4, 6)]) SAME
+t062 pos=(106.0,100.0,40.0) adj=0 ground=0 anim=1 status=2 carrier=0 | pointers LAST(cells [(4, 5), (4, 5), (4, 6), (4, 6)] words ['0x0', '0x0', '0x0', '0x0']) CURRENT(cells [(4, 5), (4, 5), (4, 6), (4, 6)]) SAME
+t063 pos=(103.0,100.0,43.5) adj=0 ground=0 anim=1 status=2 carrier=0 | pointers LAST(cells [(3, 5), (4, 5), (3, 6), (4, 6)] words ['0x0', '0x0', '0x0', '0x0']) CURRENT(cells [(3, 5), (4, 5), (3, 6), (4, 6)]) SAME
+t064 pos=(100.0,100.0,46.5) adj=0 ground=0 anim=1 status=2 carrier=0 | pointers LAST(cells [(3, 5), (4, 5), (3, 6), (4, 6)] words ['0x0', '0x0', '0x0', '0x0']) CURRENT(cells [(3, 5), (4, 5), (3, 6), (4, 6)]) SAME
+t065 pos=(97.0,100.0,49.0) adj=0 ground=0 anim=1 status=2 carrier=0 | pointers LAST(cells [(3, 5), (4, 5), (3, 6), (4, 6)] words ['0x0', '0x0', '0x0', '0x0']) CURRENT(cells [(3, 5), (4, 5), (3, 6), (4, 6)]) SAME
+t066 pos=(94.0,100.0,51.0) adj=0 ground=0 anim=1 status=2 carrier=0 | pointers LAST(cells [(3, 5), (4, 5), (3, 6), (4, 6)] words ['0x0', '0x0', '0x0', '0x0']) CURRENT(cells [(3, 5), (4, 5), (3, 6), (4, 6)]) SAME
+t067 pos=(91.0,100.0,52.5) adj=0 ground=0 anim=1 status=2 carrier=0 | pointers LAST(cells [(3, 5), (4, 5), (3, 6), (4, 6)] words ['0x0', '0x0', '0x0', '0x0']) CURRENT(cells [(3, 5), (4, 5), (3, 6), (4, 6)]) SAME
+t068 pos=(88.0,100.0,53.5) adj=0 ground=0 anim=1 status=2 carrier=0 | pointers LAST(cells [(3, 5), (4, 5), (3, 6), (4, 6)] words ['0x0', '0x0', '0x0', '0x0']) CURRENT(cells [(3, 5), (4, 5), (3, 6), (4, 6)]) SAME
+t069 pos=(85.0,100.0,54.0) adj=0 ground=0 anim=1 status=2 carrier=0 | pointers LAST(cells [(3, 5), (3, 5), (3, 6), (3, 6)] words ['0x0', '0x0', '0x0', '0x0']) CURRENT(cells [(3, 5), (3, 5), (3, 6), (3, 6)]) SAME
+t070 pos=(82.0,100.0,54.0) adj=0 ground=0 anim=1 status=2 carrier=0 | pointers LAST(cells [(3, 5), (3, 5), (3, 6), (3, 6)] words ['0x0', '0x0', '0x0', '0x0']) CURRENT(cells [(3, 5), (3, 5), (3, 6), (3, 6)]) SAME
+   ticks 61..121: pointers == current-position pointers on 61 ticks ; differ on 0 ticks: []
+   ticks with ForceAdjusted != 0: [61] ; of those, pointers differ from the current position on: []

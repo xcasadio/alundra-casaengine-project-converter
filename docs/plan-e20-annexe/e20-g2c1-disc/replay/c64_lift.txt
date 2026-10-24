@@ -1,0 +1,47 @@
+== barrel with the native C code 4 : C4 (rec 10 of the map 113 and every other barrel) ; header flags +0x6C=3323E4
+   t001 status=2 t24=0 carrier28=0 anim_t=0 flags=3323E4 ground=1 hit=0 pos=(130.0,100.0,0.0) hero: anim_t=1 +0x2C=0
+   t011 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=3323E4 ground=1 hit=0 pos=(130.0,100.0,0.0) hero: anim_t=5 +0x2C=80127FC4
+   t012 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=3323E4 ground=0 hit=0 pos=(130.0,100.0,1.0) hero: anim_t=5 +0x2C=80127FC4
+   t061 status=2 t24=0 carrier28=0 anim_t=1 flags=3323E4 ground=0 hit=0 pos=(112.0,100.0,36.0) hero: anim_t=9 +0x2C=0
+   t083 status=2 t24=0 carrier28=0 anim_t=1 flags=3323E4 ground=1 hit=0 pos=(178.0,100.0,0.0) hero: anim_t=0 +0x2C=0
+   t084 status=2 t24=0 carrier28=0 anim_t=0 flags=3323E4 ground=1 hit=0 pos=(178.0,100.0,0.0) hero: anim_t=0 +0x2C=0
+   final t149: status 2 carrier28 0 anim_t 0 pos (178.00,100.00,0.00) ground 1 ; hero anim_t 0 +0x2C 0
+     t011 pos=(130.0,100.0,0.0) carrier28=80127D30 t24=0 anim_t=0 flags=3323E4 adj=1 ground=1
+     t030 pos=(122.0,100.0,19.0) carrier28=80127D30 t24=0 anim_t=0 flags=3323E4 adj=1 ground=0
+     t060 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=0 anim_t=0 flags=3323E4 adj=1 ground=0
+     t061 pos=(112.0,100.0,36.0) carrier28=0 t24=0 anim_t=1 flags=3323E4 adj=0 ground=0
+     t062 pos=(115.0,100.0,39.5) carrier28=0 t24=0 anim_t=1 flags=3323E4 adj=0 ground=0
+     t070 pos=(139.0,100.0,49.5) carrier28=0 t24=0 anim_t=1 flags=3323E4 adj=0 ground=0
+     t090 pos=(178.0,100.0,0.0) carrier28=0 t24=0 anim_t=0 flags=3323E4 adj=0 ground=1
+     t120 pos=(178.0,100.0,0.0) carrier28=0 t24=0 anim_t=0 flags=3323E4 adj=0 ground=1
+   journal (non-stub): [(1, ['snd(0)']), (11, ['snd(44)']), (47, ['snd(0)']), (61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(24)', 'snd(0)'])]
+== barrel with the native C code 64 : C64, search 0x8003C954 (group 10 of the entities) finds nothing ; header flags +0x6C=3323E4
+   t001 status=2 t24=0 carrier28=0 anim_t=0 flags=3323E4 ground=1 hit=0 pos=(130.0,100.0,0.0) hero: anim_t=1 +0x2C=0
+   t011 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=3323E4 ground=1 hit=0 pos=(130.0,100.0,0.0) hero: anim_t=5 +0x2C=80127FC4
+   t012 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=3323E4 ground=0 hit=0 pos=(130.0,100.0,1.0) hero: anim_t=5 +0x2C=80127FC4
+   t061 status=2 t24=2 carrier28=80127D30 anim_t=0 flags=3323E4 ground=0 hit=0 pos=(109.0,100.0,32.0) hero: anim_t=9 +0x2C=80127FC4
+   final t149: status 2 carrier28 80127D30 anim_t 0 pos (109.00,100.00,32.00) ground 0 ; hero anim_t 12 +0x2C 80127FC4
+     t011 pos=(130.0,100.0,0.0) carrier28=80127D30 t24=0 anim_t=0 flags=3323E4 adj=1 ground=1
+     t030 pos=(122.0,100.0,19.0) carrier28=80127D30 t24=0 anim_t=0 flags=3323E4 adj=1 ground=0
+     t060 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=0 anim_t=0 flags=3323E4 adj=1 ground=0
+     t061 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=2 anim_t=0 flags=3323E4 adj=1 ground=0
+     t062 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=2 anim_t=0 flags=3323E4 adj=1 ground=0
+     t070 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=2 anim_t=0 flags=3323E4 adj=1 ground=0
+     t090 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=2 anim_t=0 flags=3323E4 adj=1 ground=0
+     t120 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=2 anim_t=0 flags=3323E4 adj=1 ground=0
+   journal (non-stub): [(1, ['snd(0)']), (11, ['snd(44)']), (47, ['snd(0)']), (61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (81, ['snd(0)'])]
+== barrel with the native C code 64 : C64, search finds the barrel itself (the hero carries it) ; header flags +0x6C=3323E4
+   t001 status=2 t24=0 carrier28=0 anim_t=0 flags=3323E4 ground=1 hit=0 pos=(130.0,100.0,0.0) hero: anim_t=1 +0x2C=0
+   t011 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=3322E4 ground=1 hit=0 pos=(130.0,100.0,0.0) hero: anim_t=5 +0x2C=80127FC4
+   t012 status=2 t24=0 carrier28=80127D30 anim_t=0 flags=3322E4 ground=0 hit=0 pos=(130.0,100.0,1.0) hero: anim_t=5 +0x2C=80127FC4
+   t061 status=2 t24=2 carrier28=80127D30 anim_t=0 flags=3322E4 ground=0 hit=0 pos=(109.0,100.0,32.0) hero: anim_t=9 +0x2C=80127FC4
+   final t149: status 2 carrier28 80127D30 anim_t 0 pos (109.00,100.00,32.00) ground 0 ; hero anim_t 12 +0x2C 80127FC4
+     t011 pos=(130.0,100.0,0.0) carrier28=80127D30 t24=0 anim_t=0 flags=3322E4 adj=1 ground=1
+     t030 pos=(122.0,100.0,19.0) carrier28=80127D30 t24=0 anim_t=0 flags=3322E4 adj=1 ground=0
+     t060 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=0 anim_t=0 flags=3322E4 adj=1 ground=0
+     t061 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=2 anim_t=0 flags=3322E4 adj=1 ground=0
+     t062 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=2 anim_t=0 flags=3322E4 adj=1 ground=0
+     t070 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=2 anim_t=0 flags=3322E4 adj=1 ground=0
+     t090 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=2 anim_t=0 flags=3322E4 adj=1 ground=0
+     t120 pos=(109.0,100.0,32.0) carrier28=80127D30 t24=2 anim_t=0 flags=3322E4 adj=1 ground=0
+   journal (non-stub): [(1, ['snd(0)']), (11, ['snd(44)']), (47, ['snd(0)']), (61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (81, ['snd(0)'])]

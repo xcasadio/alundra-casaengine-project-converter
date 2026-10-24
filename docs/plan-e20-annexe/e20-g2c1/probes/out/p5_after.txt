@@ -1,0 +1,63 @@
+== Coastal Cave-70 rec 9 type 373 at (696.0,392.0,z 16.0) flags=0x2323E4 marker=False
+   t1 anim_t=0 anim_c=0 slope18C=4 ground=1 status=Normal z=16.0
+   t2 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t3 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t4 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t5 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t6 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+== Coastal Cave-70 rec 10 type 373 at (744.0,392.0,z 16.0) flags=0x2323E4 marker=False
+   t1 anim_t=0 anim_c=0 slope18C=4 ground=1 status=Normal z=16.0
+   t2 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t3 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t4 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t5 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t6 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+== Coastal Cave-70 rec 11 type 373 at (792.0,360.0,z 16.0) flags=0x2323E4 marker=False
+   t1 anim_t=0 anim_c=0 slope18C=4 ground=1 status=Normal z=16.0
+   t2 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t3 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t4 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t5 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t6 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+== Coastal Cave-70 rec 12 type 373 at (840.0,360.0,z 16.0) flags=0x2323E4 marker=False
+   t1 anim_t=0 anim_c=0 slope18C=4 ground=1 status=Normal z=16.0
+   t2 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t3 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t4 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t5 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t6 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+== Coastal Cave-70 rec 21 type 373 at (636.0,360.0,z 16.0) flags=0x2323E4 marker=False
+   t1 anim_t=0 anim_c=0 slope18C=4 ground=1 status=Normal z=16.0
+   t2 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t3 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t4 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t5 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t6 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+== Coastal Cave-73 rec 11 type 373 at (396.0,728.0,z 16.0) flags=0x2323E4 marker=False
+   t1 anim_t=0 anim_c=0 slope18C=4 ground=1 status=Normal z=16.0
+   t2 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t3 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t4 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t5 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t6 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+== Coastal Cave-73 rec 12 type 373 at (396.0,792.0,z 16.0) flags=0x2323E4 marker=False
+   t1 anim_t=0 anim_c=0 slope18C=4 ground=1 status=Normal z=16.0
+   t2 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t3 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t4 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t5 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t6 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+== Coastal Cave-73 rec 36 type 373 at (996.0,712.0,z 16.0) flags=0x2323E4 marker=False
+   t1 anim_t=0 anim_c=0 slope18C=4 ground=1 status=Normal z=16.0
+   t2 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t3 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t4 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t5 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+   t6 anim_t=5 anim_c=5 slope18C=4 ground=1 status=Normal z=16.0
+== Coastal Cave-70 rec 8 type 373 at (780.0,456.0,z 48.0) flags=0x2323E4 marker=False
+   t1 anim_t=0 anim_c=0 slope18C=0 ground=1 status=Normal z=48.0
+   t2 anim_t=0 anim_c=0 slope18C=0 ground=1 status=Normal z=48.0
+   t3 anim_t=0 anim_c=0 slope18C=0 ground=1 status=Normal z=48.0
+   t4 anim_t=0 anim_c=0 slope18C=0 ground=1 status=Normal z=48.0
+   t5 anim_t=0 anim_c=0 slope18C=0 ground=1 status=Normal z=48.0
+   t6 anim_t=0 anim_c=0 slope18C=0 ground=1 status=Normal z=48.0

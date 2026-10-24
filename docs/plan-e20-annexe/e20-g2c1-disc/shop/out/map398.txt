@@ -1,0 +1,27 @@
+map 398 size 52 60
+rec   0 en=1 M98  M98                            pos( 20, 30,h 2)=px( 252, 248,z 16) dir=192 zone[0..51]x[0..59] A0 B0 C130 D0 E0 F129
+rec   1 en=1 G66  I36_Herbe médicinale           pos( 20, 42,h 4)=px( 252, 344,z 32) dir= 64 zone[0..51]x[0..59] A129 B0 C129 D0 E0 F0
+rec   2 en=1 G71  I41_Potion S                   pos( 16, 42,h 4)=px( 204, 344,z 32) dir= 64 zone[0..51]x[0..59] A130 B0 C132 D0 E0 F0
+rec   3 en=1 G67  I37_Potion L                   pos( 12, 42,h 4)=px( 156, 344,z 32) dir= 64 zone[0..51]x[0..59] A131 B0 C133 D0 E0 F0
+rec   4 en=1 G68  I38_Extrait magique            pos( 10, 46,h 4)=px( 132, 376,z 32) dir= 64 zone[0..51]x[0..59] A132 B0 C134 D0 E0 F0
+rec   5 en=1 G48  I18_Veste en cuir              pos(  0, 42,h 0)=px(  12, 344,z  0) dir=  0 zone[0..51]x[0..59] A132 B0 C129 D0 E0 F0
+rec   6 en=1 G113 I83_Récipient de vie           pos(  0, 44,h 0)=px(  12, 360,z  0) dir=  0 zone[0..51]x[0..59] A132 B0 C129 D0 E0 F0
+rec   7 en=1 G69  I39_Breuvage de soin           pos(  0, 46,h 0)=px(  12, 376,z  0) dir=  0 zone[0..51]x[0..59] A132 B0 C129 D0 E0 F0
+rec   8 en=1 G244 Déclencheur clé invisible (trè pos(  0, 28,h 0)=px(  12, 232,z  0) dir=  1 zone[0..51]x[0..59] A0 B0 C131 D0 E0 F0
+rec   9 en=1 G63  I33_Armure brisée              pos( 27, 48,h 4)=px( 336, 392,z 32) dir=  0 zone[0..51]x[0..59] A0 B0 C135 D0 E0 F0
+rec  10 en=1 G49  I19_Veste en acier             pos( 27, 48,h 4)=px( 336, 392,z 32) dir=  0 zone[0..51]x[0..59] A0 B0 C135 D0 E0 F0
+rec  11 en=1 G238 Ronces enflammées 222          pos( 79, 91,h30)=px( 960, 736,z240) dir= 64 zone[30..51]x[40..59] A0 B0 C0 D0 E0 F0
+rec  12 en=1 G30  Coffre au trésor               pos( 88, 90,h30)=px(1068, 728,z240) dir= 64 zone[30..51]x[40..59] A0 B0 C0 D0 E0 F0
+rec  13 en=1 G30  Coffre au trésor               pos( 94,102,h 4)=px(1140, 824,z 32) dir= 64 zone[30..51]x[40..59] A0 B0 C0 D0 E0 F0
+rec  14 en=1 G30  Coffre au trésor               pos( 92,  8,h 0)=px(1116,  72,z  0) dir= 64 zone[0..51]x[0..59] A0 B0 C0 D0 E0 F0
+MapEvents:
+   0 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 129, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   1 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 130, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   2 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 131, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   3 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 132, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   4 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 133, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   5 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 134, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   6 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 135, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   7 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 136, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   8 {'X1': 0, 'Y1': 0, 'X2': 51, 'Y2': 59, 'EventCodesBIndex': 137, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
+   9 {'X1': 4, 'Y1': 54, 'X2': 10, 'Y2': 59, 'EventCodesBIndex': 138, 'Ub1': 0, 'Ub2': 0, 'Ub3': 0}
