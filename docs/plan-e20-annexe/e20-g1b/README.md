@@ -211,3 +211,28 @@ Predicted: `TestSavesTests` (the list of names, the 3 theories of `EveryPresetNa
 - (m6) uses the contact word as the one poke of the scene (as the oracle `c4_climb_lift` does for the climb): the contact of a person cannot be produced by the pad in the bench; the talk is read from the latch of the interaction (`GameState.InteractLatchEntity`) because the programs pass of the same tick releases `ActiveCollisionEntity`.
 - (m8): the bench has no ladder; the hero is put in the climb state (0x0E) with his feet off the ground (z 6 and 14 px over a floor at 0, `IsOnGround` 0) and the contact poked at the Square tick, as the oracle's rows A and C do. The row B ("same Square without the contact") is asserted as "nothing lifted" only: the climb itself cannot go on without ladder cells.
 - `t2/probes/Map72ExploreProbe.cs.txt` (a temporary exploration test driven by a pad script) and `explore-recipe-script.txt` are kept for the record; they are not tests.
+
+## T3 - Phase B, the activation (2026-10-24): DONE
+
+Start HEAD `42cd834a`. Branch `chantier/theme1-porter-plateforme`.
+
+### Commits
+1. `e151f997` `feat(e20-g1b)`: the three lines together in `Alundra/Hero/PlayerManager.cs` (the body of the stub `PlayerTryAction` replaced by `PlayerTryActionCore(player, pad, IEntityWorldContext.SpawnedEntities, GetNumberOfItem(state, 0x3B) != 0, WiredLiftableTypes)`; the climb state (0x0E, 0x35) calls `TryUseItem` then `PlayerTryAction`, a non-zero retval ends the tick; `ProductionWiredLiftableTypes` = `LiftableAi.SpriteTypes`, the seven C23 types 234, 291, 292, 294, 297, 304, 438). The T1 pin `TheProductionSet_IsEmpty_...` became `TheProductionSet_IsTheSevenTypesOfC23_...` (it asserted the phase A state by design).
+2. test fix `(m8)`: the T2 version of `M8_...Lifts` set the climb state BEFORE two UP ticks; the bench has no ladder, so the hero left the climb state (animation 44) and the lift went through the air-state call: the test stayed green with the climb calls retired (found by the removal proof). The state is now put right before the Square tick. Green with the real code, red (2 rows) with the climb calls retired.
+
+The reference patch `t2/t3-reference.patch` was applied then refined (comments, the set read from `LiftableAi.SpriteTypes`).
+
+### Tests (Release, neutralised copy, partitions disjoint by full namespace with the final dot, `--blame-hang-timeout 60s`)
+- (m1) to (m8) (25 test rows red in T2) are green: partition 1 = 1327, partition 2 = 2955, partition 3 (exact negation) = 1835: **6117 tests, 0 failure**; Debug (last, with the copy to `alundra-project`): 1327 + 2955 + 1835, 0 failure. `cmp` of `Alundra/bin/Debug/net9.0-windows/Alundra.dll` and `alundra-project/Alundra.dll`: equal.
+- Count: T2 reported 6118 (partition 3 = 1836); the three partitions and `--list-tests` now give 6117 = 6068 + 49 new tests identified; the T2 figure was a one-off miscount of partition 3 (nothing else changed in T3 but test renaming; no test added or removed).
+- `docs/hero-trace-389-*.txt`: `git diff --ignore-cr-at-eol --quiet -- docs/` rc 0 (line endings only), restored. `check_names.py --rules`: 0 finding. Engine, converter, data: no diff from `5eccf614` (`git diff --stat 5eccf614 HEAD` on `CasaEngineMonogame`, `alundra-datas-analyser`, `data-extracted`, `alundra-project`, `tools`: empty).
+- Existing tests moved by T3: only `LiftPureTests.TheProductionSet_...` (renamed, its assertion is the point of phase B) and the T2 `M8` setup. Predicted list of T0 (c) (`TestSavesTests`) moved in T2 only.
+
+### Removal proofs (real mutations applied by `t3/mut.py`, run by `t3/run.sh`, undone by `git checkout`; outputs `t3/out/`)
+- Empty `ProductionWiredLiftableTypes` (`empty`): 26 red = the 25 rows of (m1) to (m8) of T2 (partition 1: `LiftArcTests.M3`, `LiftMap72ArcTests.M2`, `M5`; partition 2: 22 rows of `LiftWorldTests` M1, M4, M5, M6, M7, M8) **plus** the pin of the production set (`LiftPureTests.TheProductionSet_IsTheSevenTypesOfC23_...`, which asserts the set itself, by construction); partition 3: 0.
+- Stub back (`stub`, the body returns 0, the set kept): exactly the 25 rows (the same names as above, without the set pin); partition 3: 0.
+- Climb calls retired (`climb`, after the m8 fix): exactly the 2 rows of `M8_...Lifts_AnimationElevenInTheAir` (6 and 14 px); partitions 1 and 3: 0. (Before the m8 fix this mutation turned nothing red: the finding above.) The mutations 1 and 2 were run before the m8 fix; m8 was red in both (no lift without the set or the body).
+
+### Gaps from the plan
+- The pin of the production set is red with the empty set too (the plan says "exactly (m1) to (m8)"): by construction of that pin; named here.
+- The m8 test was changed in T3 (above).

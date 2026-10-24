@@ -1,0 +1,3 @@
+  Échoué Alundra.Tests.Arcs.LiftArcTests.M3_TheVeryHeavyStone_GenreThree_IsLiftedByAHeroWhoOwnsTheObject3B
+  Échoué Alundra.Tests.Arcs.LiftMap72ArcTests.M2_TheRecipe_LiftTheJar_CarryIt_JumpOntoTheBarrel_RideThePlatform_ThrowItAndItBreaks
+  Échoué Alundra.Tests.Arcs.LiftMap72ArcTests.M5_TheBarrelOfTheFamilyC4_GivesTheSword_TheJarOfTheSameSceneLifts
