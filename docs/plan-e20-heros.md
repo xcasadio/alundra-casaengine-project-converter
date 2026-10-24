@@ -7086,7 +7086,7 @@ avec la ligne, 110,5 ; une autre valeur est un arrêt.
     défaut), et `HeroAttackClock.Table` reçoit les états 9 et 10 du lancer.
 - **D-E20-39 tenue** : rien ne met un objet dans les mains en production avant g3 et g1b.
 
-#### 1.24.3 E20.g2b — Briser ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi ; **READY** à la relecture de clôture)
+#### 1.24.3 E20.g2b — Briser ✅ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi ; **READY** à la relecture de clôture ; **faite et CONFIRMED le 2026-10-24** par deux verifiers frais ; ADR-0089 amendé)
 
 **Relecture (2026-10-18).** REVISE, six blocages corrigés (FIX) : l'arrêt vise les tests hors de la liste prédite, qui nomme les deux épingles
 du registre ; l'inscription de E2 dans les tests de phase A est nommée ; le butin dépend de l'état d'E20.e0c au début de la tranche ; f4 et f6a
@@ -7120,11 +7120,11 @@ cartes et sa table, un arrêt par type non couvert ; le point 4 du bloc aligné)
 
 ##### Tâches
 
-- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette, puis le code). Chaque « sans effet » est accolé à un positif.
+- ✅ **T1 — Phase A** (tests d'abord, rouges sur un squelette, puis le code). Chaque « sans effet » est accolé à un positif.
   - (b1) E2 direct, table : (animation 2 et `+0xAC` 1) → `DestroyEntity(e, −1)` ; `(+0x184 & 4)` → idem ; sinon animation 2 et `(drapeaux | 0x40) & ~0x30`, `0x332374` → `0x332344` ; les trois lignes accolées deux à deux ; (b2) la vie par le crochet : la chronologie du tableau pour une caisse (effet 10) et pour une jarre (effet 2) ; (b3) la touche (arène : caisses vivantes, Beannoïde inerte, D-F4-7) à x = 165, accolée au Beannoïde à x = 150 ; (b4) mur, marches de 16 et de 48 px ; (b5) le butin selon l'état d'e0c (But) : e0c non faite, aucune entité née, accolé à `Contents` 130 (le bouchon documenté) ; e0c faite, l'objet dérivé d'e0c naît au bris ; (b6) l'eau profonde (f6a) : effet 6 ; (b7) un objet au repos n'exécute jamais E2 ; les étincelles de la touche sont **dérivées** (D-E0B-8).
-- ⏳ **T2 — Tests de production**, crochet nul, **rouges avant T3** : (p1) un objet lancé (par `PutInHands` et `ThrowCarried`) se brise en production à T+23, effet 10 ; (p2) l'épingle du registre, (E, 2) pour les 10 types, pas pour les autres ; (p3) **l'inertie au repos des 10 types** : T0 choisit, dans les recensements de l'annexe `e20-g1a/work/` (`lst/census_maps2.json`), **un ensemble de cartes** qui, ensemble, portent au repos des entités de chacun des 10 types (dont 34, 37 et 117, de programme C 4 ; la pierre très lourde, type 234, n'est que sur les cartes 3, 4, 7 et 11, `e20-g1a/report.md:297`) et remplit la table type → carte ; un type sans placement au repos chargeable est un arrêt ; chaque carte tourne 100 ticks au repos, natifs allumés : aucun appel de E2 (journal du runner), accolé à un objet lancé qui l'appelle ; si E2 est appelé au repos (`DeactivateOnHit` et `HitCounter`, ou `DeactivateOnAnimationEnd` et `ForceResetAnimationFlag`, `Alundra/Entities/EntityScriptProxy.cs:1718-1723`), T0 compare aux drapeaux du binaire et un écart est un arrêt.
-- ⏳ **T3 — Phase B** : l'enregistrement. Verts.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : `~0x30` changé en `~0x31` (équivalent si aucun test ne lit le bit 0 : à prouver) ; `|0x40` oublié ; `+0xAC` ignoré ; `+0x184 & 4` oublié ; destruction avec un autre effet ; E2 enregistré pour un type hors des 10 ; clé (E, 2) oubliée.
+- ✅ **T2 — Tests de production**, crochet nul, **rouges avant T3** : (p1) un objet lancé (par `PutInHands` et `ThrowCarried`) se brise en production à T+23, effet 10 ; (p2) l'épingle du registre, (E, 2) pour les 10 types, pas pour les autres ; (p3) **l'inertie au repos des 10 types** : T0 choisit, dans les recensements de l'annexe `e20-g1a/work/` (`lst/census_maps2.json`), **un ensemble de cartes** qui, ensemble, portent au repos des entités de chacun des 10 types (dont 34, 37 et 117, de programme C 4 ; la pierre très lourde, type 234, n'est que sur les cartes 3, 4, 7 et 11, `e20-g1a/report.md:297`) et remplit la table type → carte ; un type sans placement au repos chargeable est un arrêt ; chaque carte tourne 100 ticks au repos, natifs allumés : aucun appel de E2 (journal du runner), accolé à un objet lancé qui l'appelle ; si E2 est appelé au repos (`DeactivateOnHit` et `HitCounter`, ou `DeactivateOnAnimationEnd` et `ForceResetAnimationFlag`, `Alundra/Entities/EntityScriptProxy.cs:1718-1723`), T0 compare aux drapeaux du binaire et un écart est un arrêt.
+- ✅ **T3 — Phase B** : l'enregistrement. Verts.
+- ✅ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : `~0x30` changé en `~0x31` (équivalent si aucun test ne lit le bit 0 : à prouver) ; `|0x40` oublié ; `+0xAC` ignoré ; `+0x184 & 4` oublié ; destruction avec un autre effet ; E2 enregistré pour un type hors des 10 ; clé (E, 2) oubliée.
 
 ##### Acceptation
 
@@ -7133,6 +7133,26 @@ cartes et sa table, un arrêt par type non couvert ; le point 4 du bloc aligné)
 - **Arrêts** : la chronologie T+22, T+23, T+25, T+26 diffère (mesurée en T0 à 1, 2 et 3 ticks par image, bloc « Révision au HEAD ») ; un butin différent de l'attendu de l'état d'e0c ; un test hors de la liste prédite bouge ; f4 ou f6a non faite ; un besoin de changer le moteur. **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après. **Retour arrière** : la phase B se retire seule.
 
 ---
+
+**Résultats (2026-10-24).** Exécution en mode AUTO, HEAD de départ `5d63c6d8`. Mesures : `docs/plan-e20-annexe/e20-g2b/exec/README.md`.
+- **Commits.** `bca3ade1` (T0, la liste prédite) ; `3961b38d` (phase A : `LiftableAi.Break`, `RegisterBreak`, la clé `(E, 2)` pour les dix types
+  234, 290, 291, 292, 293, 294, 297, 304, 373, 438, lus dans l'export) ; `1a98ef5d` (T2) ; `7f66ec9b` (phase B : `CreateForProduction` appelle
+  `RegisterBreak`) ; `bddaf149` (mesures) ; `0ec1060c` (T4, l'ADR-0089 amendé).
+- **La chronologie à plat** (aux 1, 2 et 3 ticks par image) : arrivée à T+22, premier E2 à T+23 (animation 2, drapeaux `0x332344`, son 27),
+  statut 4 à T+25 (effet 10 pour la caisse, 2 pour la jarre), case libre à T+26. Les autres lignes du plan aussi : le Beannoïde touché en
+  x 165 (touche à T+21, E2 à T+22), survolé en x 150 (E2 à T+23) ; le mur (x 133, E2 à T+9) ; la marche de 16 px ; l'eau profonde (effet 6,
+  E2 jamais) ; une caisse au repos n'appelle jamais E2. Le butin tombe au pixel entier de la caisse (E20.e0c).
+- **Tests.** Phase A : 37 tests, 35 rouges sur le squelette. T2 : 16 tests de production, 15 rouges avant la phase B ; (p3) : les dix types au
+  repos sur huit vraies cartes, aucun appel d'E2 en 100 ticks. `Alundra.Tests` : 5 913 au départ, 5 966 à la fin, zéro échec en Release
+  (copie neutralisée) et en Debug ; `cmp` de la DLL identique à l'export (aux champs d'identité de construction près, après une
+  reconstruction). 20 mutants réels, tous tués.
+- **Tests existants déplacés** : quatre épingles du compte du registre (le plan en nommait deux ; T0 a trouvé `ChargedArrowAiTests.C2` et
+  `LiftableAiRegistrationTests.R1`), réécrites par dérivation.
+- **Écarts acceptés** : à 3 ticks par image, la ligne du mur finit à T+12 et la marche de 16 px à T+24, un tick après le plan (le moteur valide
+  les animations en fin d'image) ; la chronologie à plat, que nomme l'arrêt, tient à toutes les cadences. Retirer l'enregistrement rend rouges
+  (p1), (p2), les huit lignes de (p3) et les quatre épingles : la formulation « exactement (p1) et (p2) » était trop étroite.
+- **Verifiers frais** : **CONFIRMED** tous deux.
+- **D-E20-39 tenue** : rien ne met un objet dans les mains en production avant g3 et g1b.
 
 #### 1.24.4 E20.g1b — Soulever (l'activation) ⏳ (réécrite le 2026-10-18 après E20.g3 ; révision 2, **READY** à la relecture de clôture ; le texte du 2026-10-15 est remplacé)
 
