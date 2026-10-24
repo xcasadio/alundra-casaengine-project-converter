@@ -10279,7 +10279,7 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : rendre les cinq entrées à leurs bouchons ; la phase A reste inerte.
 
-#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⏳ (détaillée le 2026-10-25 ; thème 2 ; ferme O-H-1 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
+#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⏳ (détaillée le 2026-10-25 ; thème 2 ; ferme O-H-1 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `86d421b5` ; `report-main.md` et le critique frais `critic-main.md`, CONFIRMÉ avec des
 corrections reprises ici, dans le scratchpad de la session principale `scratchpad/t2-cape/`, à verser par T0 à
@@ -10290,6 +10290,12 @@ posée au départ et retirée à l'annulation seule, restait active après une s
 l'objet) et après un changement de carte : elle se lit maintenant à chaque tick dans `ItemInUse`, comme le binaire lit `[0x80127164]`, avec un
 test et un mutant ; (2) E20.e0d était un prérequis justifié par un fait réfuté : c'est une préférence d'ordre, la phrase des sources est
 corrigée et le renvoi à une question absente retiré ; (3) l'arrêt général « un besoin de toucher au moteur » manquait.
+
+**Révision 2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé que la règle,
+mise dans le champ de cases commun à tout le monde (un seul champ par carte, échantillonné par chaque contrôleur avec son propre masque, sans
+savoir quelle entité le demande), aurait confiné au sable tous les PNJ et ennemis de la carte pendant qu'Alundra est sous le sable, alors que le
+binaire ne l'applique qu'au test de murs du héros (`0x80037488`). D-H2-6 la réserve au héros par un bit de son seul masque, recalculé à chaque
+tick ; un test de monde et un mutant le gardent.
 
 **Prérequis.** E20.h0a faite (le cadre de l'usage d'un objet : `ItemInUse`, le compteur, la table de départ, de pilote et d'annulation, la
 garde du menu Start, la branche verrouillée) ; même branche du thème 2. La tranche ne dépend ni de g1a ni de g1b (la cape ne porte rien), ni
@@ -10339,12 +10345,14 @@ avec la cape ne fait rien.
 - **D-H2-3** — L'ordre : après E20.e0d de préférence (le coffre de la 402) ; les tests et la recette passent par des préréglages.
 - **D-H2-4** (Q-H2-4) — Le sable à courant (cartes 403 à 405 et 19) ne dérive pas avant E20.i2 : hors tranche.
 - **D-H2-5** (Q-H2-5) — Un verrou du contrôle (un dialogue, une scène) remonte Alundra sans l'animation de sortie, comme l'original.
-- **D-H2-6** — La règle de terrain se lit **à chaque tick** dans `ItemInUse == 0x20` (comme le binaire lit `[0x80127164]` dans son test de murs) :
-  aucun état propre à poser ni à retirer, si bien qu'elle tombe sur tous les chemins de libération (l'enveloppe qui libère l'objet quand le
-  pilote rend 1, à la sortie normale ; l'annulation par un verrou ; `Skip` ; la reconstruction du héros au chargement d'une carte, qui remet
-  l'objet à 0, `0x80032964`). Elle passe par le champ de cases de la DLL, qui lit `ItemInUse` du héros, si T0 prouve qu'il peut dire « bloqué si
-  pas du sable » et « plus bas est un mur » avec le pied que donne le moteur (pied + `StepHeight`) ; sinon c'est un manque du moteur, consigné,
-  et un arrêt.
+- **D-H2-6** — La règle de terrain ne vaut **que pour le héros** et se lit **à chaque tick** dans `ItemInUse == 0x20` (comme le binaire lit
+  `[0x80127164]` dans le seul test de murs du héros) : un bit « cape » du masque de marche **du contrôleur du héros seul**, recalculé à chaque
+  tick depuis `ItemInUse` par la resynchronisation du masque (`EntityScriptProxy`, `ResyncControllerFromFlags`, qui réécrit le masque depuis
+  `Flags` : le bit y est ajouté pour le héros, jamais pour une autre entité), si bien qu'il tombe sur tous les chemins de libération (la sortie
+  normale, quand l'enveloppe libère l'objet ; l'annulation par un verrou ; `Skip` ; la reconstruction du héros au chargement d'une carte) ; le
+  champ de cases de la DLL l'interprète (« bloqué si pas du sable », « plus bas est un mur », avec le pied que donne le moteur, pied +
+  `StepHeight`). T0 prouve les trois points : le bit survit à la resynchronisation et n'atteint que le héros, le champ l'interprète, les autres
+  contrôleurs ne le voient pas. Si l'un des trois exige le moteur : le manque se consigne, et c'est un arrêt.
 - **D-H2-7** — La boucle de la sortie est une fonction dédiée sur les entités du monde, avec les filtres du binaire et `HitAnimByte`.
 - **D-H2-8** — Les exemples « état non porté » de `PlayerManagerTests` et de h0a (a6) prennent un autre état non porté (recompté au HEAD).
 
@@ -10361,7 +10369,8 @@ l'invulnérabilité se teste à la passe de coups) ; le moteur.
   sortie et ses bornes, le pilote, les chronologies C1 à C5, les vitesses, les terrains F1 à F4) ; plus : le coin mixte (un coin de sable contre
   de l'eau profonde au même niveau), le son 11 de chaque cycle de `0x23`, les deux escaliers de la carte 402 que la cape ne franchit pas ; (d)
   sondes de la DLL (tests jetables, jamais commités, versés en `.txt`) : la règle de terrain par le champ (D-H2-6) sur F1 à F4 et le coin mixte
-  (arrêt si elle n'est pas exprimable) ; l'horloge des animations (72, 72, 16, 32) ; la traversée d'une entité par le balayage du contrôleur
+  (arrêt si elle n'est pas exprimable) ; le bit « cape » réservé au héros (D-H2-6 : il survit à la resynchronisation du masque, un PNJ et un ennemi
+  sur le même sable ne le voient pas) ; l'horloge des animations (72, 72, 16, 32) ; la traversée d'une entité par le balayage du contrôleur
   (pas seulement la sonde de l'ADR-0047 du moteur) ; l'écart O-G3-2 au premier tick ; (e) les cases des préréglages : carte 402 (9, 16, 1),
   carte 450 (20, 46, 2), carte 19 (44, 40, 2 : un bloc sans courant ; pas (46, 30), qui est sur un courant), carte 26 (7, 34, 1), carte 406
   (12, 10, 1) ; (f) la liste prédite des tests déplacés.
@@ -10371,14 +10380,17 @@ l'invulnérabilité se teste à la passe de coups) ; le moteur.
 - ⏳ **T2 — Phase B, tests de monde rouges avant** (le vrai contrôleur) : le plongeon (72 ticks, son 15) ; la marche et la ruée (vitesses, avec et
   sans bottes) ; l'arrêt au bord du sable (F1), devant une marche descendante (F2) et montante (F3) ; la sortie (72 ticks, puis l'attente,
   l'objet libéré au tick suivant) ; **après la sortie, Alundra marche du sable sur l'herbe sans être arrêtée** ; **après un changement de carte
-  sous le sable, aucun confinement** ; le refus (Rond sur l'herbe, pendant la ruée, quand une entité recouvre la boîte : le son 3) ; le verrou du
+  sous le sable, aucun confinement** ; **pendant qu'Alundra est sous le sable, un PNJ (ou un ennemi) qui a un contrôleur, sur le même sable,
+  passe du sable à une case qui n'en est pas et descend une marche sans être arrêté**, et Alundra reste arrêtée aux bords F1 à F3 ; le refus (Rond
+  sur l'herbe, pendant la ruée, quand une entité recouvre la boîte : le son 3) ; le verrou du
   contrôle qui remonte Alundra sans l'animation de sortie ; l'eau profonde ; l'invulnérabilité et la traversée d'une entité ; puis le
   câblage (les entrées de table, les cinq états, la règle de terrain) ; verts. Les exemples « état non porté » réécrits (D-H2-8).
 - ⏳ **T3 — Préréglages, suites, mutants, ADR** : les préréglages de T0 (e) et leurs tables ; la suite entière en Release (copie neutralisée) puis
   en Debug en dernier, zéro échec, partitions disjointes ; les traces de la 389 ; `cmp` ; `check_names.py --rules` ; au moins 12 mutants réels,
   tous tués (la pente 3 en 2 ; l'état < 2 en ≤ 2 ; la sortie qui teste la pente ; un filtre de la boucle retiré ; `AnimFlags` au lieu de
   `HitAnimByte` ; le recouvrement symétrique ; le pilote qui n'annule pas en l'air ; la règle de terrain attachée à l'état au lieu de l'objet ;
-  « plus bas » accepté ; la règle levée seulement à l'annulation (tué par le test « après la sortie, sur l'herbe ») ; la ruée sans le front ; la vitesse sans la division par deux ; le son 3 oublié) ; un ADR neuf ; O-H-1 fermé.
+  « plus bas » accepté ; la règle levée seulement à l'annulation (tué par le test « après la sortie, sur l'herbe ») ; la règle appliquée à toute entité (tué par le test
+  du PNJ sur le même sable) ; la ruée sans le front ; la vitesse sans la division par deux ; le son 3 oublié) ; un ADR neuf ; O-H-1 fermé.
 - ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.** Les sorties de T0 (c) identiques ; les tests de T1 et T2 rouges avant leur phase et verts après (nommés) ; la suite en Release et
