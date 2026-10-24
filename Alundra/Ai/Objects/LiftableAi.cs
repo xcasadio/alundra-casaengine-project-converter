@@ -130,4 +130,39 @@ internal static class LiftableAi
         entity.RidingEntity = null;
         entity.Flags = ReleasedFlags(entity.Flags);
     }
+
+    /// <summary>
+    /// E20.g2c1 (docs/plan-e20-heros.md section 1.24.5, D-G2C1-8): the flags policy of the shared release. C23 always writes <c>(flags | 0x30) &amp; ~0x80</c>; C4 leaves the flags for the codes 1 to 3 and, for the code -1, writes <c>(flags | 0x10) &amp; ~0x80</c> when its native E code
+    /// (<c>+0x80</c>, <see cref="EntityScriptProxy.SpriteProgramIndexes"/> at <see cref="ScriptHelper.ProgramEDeactivate"/>) is 2: a thrown C4 object stays collidable.
+    /// </summary>
+    internal enum ReleaseFlagsPolicy
+    {
+        C23,
+        C4,
+    }
+
+    /// <summary>The program code of C4 in slot C (<c>0x80066984</c>): the barrel, the stone, the trunk and the four objects of the plates.</summary>
+    internal const int C4Code = 4;
+
+    /// <summary>The sprite types whose header holds C4 in the export (docs/plan-e20-annexe/e20-g2c/disc/report.md, section 1): 290 barrel, 293 stone, 363 to 369 the objects, 373 the trunk.</summary>
+    internal static readonly IReadOnlyList<int> C4SpriteTypes = new[] { 290, 293, 363, 367, 368, 369, 373 };
+
+    /// <summary>The keys <see cref="RegisterC4"/> registers, for the pins of the production registry.</summary>
+    internal static readonly IReadOnlyList<(int Slot, int Code)> C4Keys = new[] { (ScriptHelper.ProgramCTick, C4Code) };
+
+    /// <summary>Registers C4 for the types given (phase A: nothing in production calls it).</summary>
+    internal static IDisposable RegisterC4(NativeSpriteRegistry registry, IEnumerable<int> types)
+        => registry.Register(ScriptHelper.ProgramCTick, C4Code, types, (entity, context, state) => C4Tick(entity, context));
+
+    /// <summary>The carried half of C23 and C4 (the same release table), for an entity that is carried: the animation, the links, the code of the throw, the flags by <paramref name="policy"/>.</summary>
+    internal static void TickCarried(EntityScriptProxy entity, ReleaseFlagsPolicy policy)
+    {
+        // E20.g2c1 phase A skeleton: filled in by the next commit.
+    }
+
+    /// <summary>One tick of C4 (see the class); <paramref name="readCorners"/> and <paramref name="createEffect"/> are the seams of the tests.</summary>
+    internal static void C4Tick(EntityScriptProxy entity, IEntityWorldContext context, Func<EntityScriptProxy, uint[]>? readCorners = null, Action<int, int, int>? createEffect = null)
+    {
+        // E20.g2c1 phase A skeleton: filled in by the next commit.
+    }
 }
