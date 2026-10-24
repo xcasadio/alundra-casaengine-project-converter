@@ -33,8 +33,16 @@ namespace Alundra.Tests.Support;
 /// (the status goes to <see cref="EntityStatus.FlagToDestroy"/>) and a collidable list rebuilt by <see cref="Rebuild"/> from
 /// <see cref="All"/> with <see cref="EntitySupport.BuildCollidables"/>, as <c>WorldProxy.RefreshUpdateProxiesAndCollidables</c>.
 /// </summary>
-internal sealed class ContactHost : IScriptHost
+internal class ContactHost : IScriptHost
 {
+    /// <summary>
+    /// E20.g1a T2: true while a montage plays a frame TICK BY TICK (<see cref="Alundra.Tests.Hero.CarryRig"/>): the host then drives the ticks of its entities, as <c>WorldProxy</c> does (the entities only pull their pose at the
+    /// frame, and the montage runs the passes of each tick over all of them). False (the default) is the self-driven mode every other montage uses, where each entity plays all its ticks of a frame in its own update.
+    /// </summary>
+    public bool DrivesTicks { get; set; }
+
+    bool IScriptHost.DrivesEntityTicks => DrivesTicks;
+
     private readonly LogicClock _clock = new();
 
     private sealed class NoOpRunner : IEventProgramRunner

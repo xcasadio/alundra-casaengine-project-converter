@@ -238,6 +238,11 @@ internal static class HeroAttackClock
         // E20.i T3: the five states of the swim (the hero record of the export, `swim-dll.md` section 3; the same length in the four directions): floating 0x1D (36 ticks, loops), swimming 0x0F (speed 144, shift 4, sound 22,
         // 42 ticks, chained to itself), the burst 0x28 (speed 176, sound 21, 42 ticks, then 0x1D), the hurt 0x3A (speed 256, byte 64, sound 23, 4 ticks, then 0x3B) and its end 0x3B (byte 68, 8 ticks, holds its last frame).
         new(0x1D, 0, 3, 0, -1, 36), new(0x0F, 144, 4, 22, 0x0F, 42), new(0x28, 176, 0, 21, 0x1D, 42), new(0x3A, 256, 64, 23, 0x3B, 4), new(0x3B, 0, 68, 0, -1, 8, Hold: true),
+        // E20.g1a T2: the eight states of the carrying (the hero record of the export, `sprite-records.json` AnimSets and IdsvAnimDirs, and the exported animations, the same length in the four directions): the lift gesture on the ground 0x05 (sound 44,
+        // 36 ticks, then 0x0C), the walking jump with an object 0x06 (speed 208, impulse 1280, sound 10, 1 tick, then 0x2F), the walk 0x07 (speed 208, 30 ticks, loops), the lift gesture in the air 0x0B (sound 44, acceleration 15, 28 ticks, then 0x30), the stand 0x0C
+        // (60 ticks, loops), the jump on the spot 0x2E (impulse 1280, sound 10, 1 tick, then 0x30), the air in walk 0x2F (speed 208, 28 ticks, loops) and the air on the spot 0x30 (28 ticks, loops); the acceleration of the sets 5 to 7 and 46 to 48 is 0 (the walk with an object starts at full speed).
+        new(0x05, 0, 0, 44, 0x0C, 36), new(0x06, 208, 0, 10, 0x2F, 1, Impulse: 1280), new(0x07, 208, 0, 0, -1, 30), new(0x0B, 0, 15, 44, 0x30, 28), new(0x0C, 0, 1, 0, -1, 60),
+        new(0x2E, 0, 0, 10, 0x30, 1, Impulse: 1280), new(0x2F, 208, 0, 0, -1, 28), new(0x30, 0, 0, 0, -1, 28),
     };
 
     private static Animation2d Make(int id, string direction, float seconds, AnimationType type)

@@ -97,11 +97,13 @@ internal sealed class JumpHeroRig
         float groundSnapDistance = -1f,
         bool gravityFlag = true,
         bool freePad = false,
-        bool attackClock = false)
+        bool attackClock = false,
+        Func<uint, HeroController, ContactHost>? hostFactory = null)
     {
         var pad = new HeroPad();
         var controller = new HeroController { PadStateProviderForTests = () => freePad ? pad.State : default };
-        var host = new ContactHost(playerControlFlags: freePad ? 0 : GameState.PlayerControlBits.ControlLocked, playerController: controller);
+        var controlFlags = freePad ? 0 : GameState.PlayerControlBits.ControlLocked;
+        var host = hostFactory?.Invoke(controlFlags, controller) ?? new ContactHost(playerControlFlags: controlFlags, playerController: controller);
         var world = ContactWorld.BuildWorld(field ?? FlatCells.Create(), probeFactory?.Invoke(host));
         configure?.Invoke(world, host);
 
