@@ -1,0 +1,99 @@
+######## map 72
+  arrival from map 70 portal 4 -> (36, 160) flags 61442
+  arrival from map 70 portal 6 -> (60, 472) flags 20482
+  arrival from map 72 portal 1 -> (144, 88) flags 2
+  arrival from map 72 portal 2 -> (432, 464) flags 20482
+  arrival from map 72 portal 3 -> (408, 96) flags 40962
+  arrival from map 72 portal 4 -> (480, 128) flags 61442
+  PLATFORM         ent  0 Plateforme flottante fragile ( pos (1104,304,104) box off (-24,-16,0) size (48,32,8) coll True prog [0, 0, 137, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  lift-other kind1 ent  1 Tonneau générique              pos (180,200,48) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 4, 0, 2, 0)
+  PLATFORM         ent  2 Plateforme flottante (grande)  pos (576,240,64) box off (-24,-16,0) size (48,32,8) coll True prog [0, 0, 131, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  PLATFORM         ent  3 Plateforme flottante fragile ( pos (1104,352,104) box off (-24,-16,0) size (48,32,8) coll True prog [0, 0, 137, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  PLATFORM         ent  7 Plateforme flottante fragile ( pos (1104,400,104) box off (-24,-16,0) size (48,32,8) coll True prog [0, 0, 137, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  PLATFORM         ent  8 Plateforme flottante fragile ( pos (1104,256,104) box off (-24,-16,0) size (48,32,8) coll True prog [0, 0, 137, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent  9 Coffre au trésor               pos (1056,512,40) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (255, 0, 0, 0, 255)
+  PLATFORM         ent 10 Plateforme flottante fragile ( pos (1104,448,104) box off (-24,-16,0) size (48,32,8) coll True prog [0, 0, 137, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  lift-other kind1 ent 11 Tronc (transportable), petite  pos (948,424,16) box off (-10,-7,0) size (21,15,16) coll True prog [140, 0, 140, 0, 0, 0] hdr (0, 4, 0, 2, 0)
+  lift-other kind1 ent 12 Tronc (transportable), petite  pos (996,600,16) box off (-10,-7,0) size (21,15,16) coll True prog [140, 0, 140, 0, 0, 0] hdr (0, 4, 0, 2, 0)
+  lift-other kind1 ent 13 Tronc (transportable), petite  pos (1188,456,16) box off (-10,-7,0) size (21,15,16) coll True prog [140, 0, 140, 0, 0, 0] hdr (0, 4, 0, 2, 0)
+  top16            ent 16 Interrupteur (piétiner) ← à ut pos (204,808,16) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 145, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  lift-other kind1 ent 25 Tronc (transportable), petite  pos (144,320,16) box off (-10,-7,0) size (21,15,16) coll True prog [154, 0, 154, 0, 0, 0] hdr (0, 4, 0, 2, 0)
+  lift-other kind1 ent 26 Tronc (transportable), petite  pos (180,320,16) box off (-10,-7,0) size (21,15,16) coll True prog [154, 0, 155, 0, 0, 0] hdr (0, 4, 0, 2, 0)
+  lift-other kind1 ent 29 Tronc (transportable), petite  pos (1116,360,16) box off (-10,-7,0) size (21,15,16) coll True prog [140, 0, 140, 0, 0, 0] hdr (0, 4, 0, 2, 0)
+  LIFT-C23 kind1   ent 37 Cruche générique               pos (204,200,48) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 38 Cruche générique               pos (396,200,48) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 39 Cruche générique               pos (876,856,16) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 40 Cruche générique               pos (828,840,16) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 41 Cruche générique               pos (804,840,16) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 42 Cruche générique               pos (780,840,16) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 43 Rocher tortue non ennemi       pos (996,200,112) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 44 Cruche générique               pos (1020,200,112) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  PLATFORM         ent 48 Plateforme flottante (grande)  pos (864,576,40) box off (-24,-16,0) size (48,32,8) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent 49 Coffre au trésor               pos (1080,560,48) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (255, 0, 0, 0, 255)
+  lock/gain ops in the programs: []
+######## map 74
+  arrival from map 76 portal 0 -> (600, 448) flags 40962
+  arrival from map 71 portal 2 -> (96, 104) flags 2
+  arrival from map 74 portal 1 -> (216, 272) flags 40962
+  arrival from map 74 portal 2 -> (36, 448) flags 61442
+  arrival from map 75 portal 9 -> (444, 272) flags 61442
+  arrival from map 454 portal 0 -> (60, 112) flags 85
+  arrival from map 454 portal 1 -> (60, 112) flags 85
+  top16            ent  0 Interrupteur (piétiner) ← à ut pos (876,184,32) box off (-12,-8,0) size (24,16,16) coll True prog [129, 0, 129, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent  1 Interrupteur (piétiner) ← à ut pos (852,360,32) box off (-12,-8,0) size (24,16,16) coll True prog [129, 0, 130, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent  2 Interrupteur (piétiner) ← à ut pos (1092,360,32) box off (-12,-8,0) size (24,16,16) coll True prog [129, 0, 131, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent  3 Interrupteur (piétiner) ← à ut pos (1116,184,32) box off (-12,-8,0) size (24,16,16) coll True prog [129, 0, 132, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  PLATFORM         ent 16 Plateforme flottante (grande)  pos (984,360,16) box off (-24,-16,0) size (48,32,8) coll True prog [0, 0, 145, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  PLATFORM         ent 18 Plateforme flottante (petite)  pos (1044,120,88) box off (-12,-8,0) size (24,16,8) coll True prog [147, 0, 0, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent 19 Coffre au trésor               pos (1044,120,96) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (255, 0, 0, 0, 255)
+  top16            ent 21 Coffre au trésor               pos (108,552,112) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (255, 0, 0, 0, 255)
+  PLATFORM         ent 23 Plateforme flottante fragile ( pos (168,896,72) box off (-24,-16,0) size (48,32,8) coll True prog [152, 0, 152, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent 25 Interrupteur (piétiner) ← à ut pos (240,872,32) box off (-12,-8,0) size (24,16,16) coll True prog [154, 0, 154, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  PLATFORM         ent 26 Plateforme flottante (grande)  pos (504,896,64) box off (-24,-16,0) size (48,32,8) coll True prog [155, 0, 155, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent 28 Interrupteur (piétiner) ← à ut pos (1116,896,80) box off (-12,-8,0) size (24,16,16) coll True prog [158, 0, 158, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent 29 Coffre au trésor               pos (108,424,96) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (255, 0, 0, 0, 255)
+  LIFT-C23 kind1   ent 31 Cruche générique               pos (204,216,112) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 32 Cruche générique               pos (228,216,112) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 33 Cruche générique               pos (108,408,96) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 34 Cruche générique               pos (132,408,96) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 36 Cruche générique               pos (84,520,96) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 37 Cruche générique               pos (84,536,96) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 38 Cruche générique               pos (1044,504,0) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  LIFT-C23 kind1   ent 39 Cruche générique               pos (1068,504,0) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  lock/gain ops in the programs: []
+######## map 346
+  arrival from map 348 portal 6 -> (108, 192) flags 20482
+  arrival from map 348 portal 8 -> (588, 336) flags 2
+  arrival from map 348 portal 9 -> (300, 72) flags 2
+  arrival from map 348 portal 10 -> (72, 464) flags 20482
+  arrival from map 355 portal 3 -> (348, 168) flags 20482
+  arrival from map 355 portal 4 -> (420, 168) flags 20482
+  arrival from map 355 portal 5 -> (564, 168) flags 20482
+  arrival from map 356 portal 4 -> (336, 432) flags 20482
+  arrival from map 356 portal 5 -> (480, 432) flags 20482
+  arrival from map 356 portal 6 -> (552, 432) flags 20482
+  top16            ent  1 Interrupteur (piétiner) ← à ut pos (1068,136,32) box off (-12,-8,0) size (24,16,16) coll True prog [130, 0, 130, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent  3 Interrupteur (piétiner) ← à ut pos (852,664,32) box off (-12,-8,0) size (24,16,16) coll True prog [132, 0, 132, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent  4 Interrupteur (piétiner) ← à ut pos (180,792,0) box off (-12,-8,0) size (24,16,16) coll True prog [133, 0, 133, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent  8 Mur à boule de fer (111)       pos (60,680,16) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent  9 Mur à boule de fer (111)       pos (84,680,16) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 12 Mur à boule de fer (111)       pos (108,904,16) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 13 Mur à boule de fer (111)       pos (108,904,32) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 14 Mur à boule de fer (111)       pos (204,888,16) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 15 Mur à boule de fer (111)       pos (228,904,16) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 16 Mur à boule de fer (111)       pos (204,888,32) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 17 Mur à boule de fer (111)       pos (228,904,32) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 18 Mur à boule de fer (111)       pos (276,904,16) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 19 Mur à boule de fer (111)       pos (276,904,32) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 20 Mur à boule de fer (111)       pos (300,888,16) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 21 Mur à boule de fer (111)       pos (300,888,32) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 22 Mur à boule de fer (111)       pos (276,808,16) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  top16            ent 23 Mur à boule de fer (111)       pos (276,808,32) box off (-12,-8,0) size (24,16,16) coll True prog [0, 0, 0, 0, 0, 0] hdr (0, 0, 31, 15, 0)
+  LIFT-C23 kind1   ent 25 Cruche générique               pos (300,792,176) box off (-10,-7,0) size (21,15,16) coll True prog [0, 0, 154, 0, 0, 0] hdr (0, 23, 0, 2, 0)
+  top16            ent 26 Interrupteur (piétiner) ← à ut pos (192,680,16) box off (-12,-8,0) size (24,16,16) coll True prog [155, 0, 155, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent 27 Interrupteur (piétiner) ← à ut pos (192,136,48) box off (-12,-8,0) size (24,16,16) coll True prog [156, 0, 156, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  PLATFORM         ent 28 Plateforme flottante (grande)  pos (288,304,56) box off (-24,-16,0) size (48,32,8) coll True prog [0, 0, 157, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  PLATFORM         ent 29 Plateforme flottante (grande)  pos (96,304,56) box off (-24,-16,0) size (48,32,8) coll True prog [0, 0, 157, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  PLATFORM         ent 30 Plateforme flottante (grande)  pos (96,336,56) box off (-24,-16,0) size (48,32,8) coll True prog [0, 0, 159, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  top16            ent 31 Interrupteur (piétiner) ← à ut pos (84,200,48) box off (-12,-8,0) size (24,16,16) coll True prog [160, 0, 160, 0, 0, 0] hdr (0, 0, 0, 0, 0)
+  lock/gain ops in the programs: ['C27@985:10', 'C28@1013:10']

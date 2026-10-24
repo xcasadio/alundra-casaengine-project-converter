@@ -1,0 +1,8 @@
+== ent 2 Plateforme flottante (grande) pos (576, 240, 64) size (48, 32, 8) SpriteDirection=195 (facing 3) ABCDEF=[0, 0, 131, 0, 0, 0]
+  C[3] @248..260
+     @248 0x1A Set anim                           [2]
+     @250 0x1E Walk                               [96, 0]
+     @253 0x08 Add to TargetDirection (modulo 32) [16]
+     @255 0x02 Goto                               [251, 255]
+     @258 0xFF End script                         []
+     @259 0x00 Break                              []

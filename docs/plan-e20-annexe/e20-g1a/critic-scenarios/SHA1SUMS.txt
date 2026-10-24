@@ -48,3 +48,6 @@ f035e68d2a96928ceffaeb6de36b9a3dee8bb8c1 *./oracle/startstate.py
 73d37e19b31fd7f933b68a406af3f8e7ef7aaac3 *./out/c1-equality.txt
 0344c302174b8c408dd31e81a7cab49bbf01fd47 *./out/c2-platform.txt
 0b9ab49307d06f47e099092c60f4089c0590b98d *./out/c3-contact.txt
+5547be8c7fea4079a9105aa206e1db923051af7e *./c3_contact_ticks.py
+2ed48e55dd6453893359fb192706ad3215f3a31d *./out/c3-contact-ticks.txt
+0b9ab49307d06f47e099092c60f4089c0590b98d *./out/c3-contact-ticks-verdicts.txt

@@ -1,0 +1,5 @@
+map  23 ent 12 Bloc à pousser/attaquer            pos (768, 832, 32)   liftables  1 segs [('left', 48)] PURE-HORIZONTAL gates ['ifFlagOn', 'waitCollideZ']
+map  72 ent  2 Plateforme flottante (grande)      pos (576, 240, 64)   liftables  8 segs [('right', 96)] PURE-HORIZONTAL gates []
+map  74 ent 26 Plateforme flottante (grande)      pos (504, 896, 64)   liftables  8 segs [('left', 192)] PURE-HORIZONTAL gates []
+map 100 ent  3 Bloc à pousser/attaquer            pos (744, 480, 32)   liftables  1 segs [('right', 48)] PURE-HORIZONTAL gates ['ifFlagOn']
+map 346 ent 30 Plateforme flottante (grande)      pos (96, 336, 56)    liftables  1 segs [('right', 192)] PURE-HORIZONTAL gates ['op37']

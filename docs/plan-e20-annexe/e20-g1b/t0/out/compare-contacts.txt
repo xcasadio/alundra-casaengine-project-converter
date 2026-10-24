@@ -1,0 +1,30 @@
+line A   1 tick(s)/frame: ticks t1..t9 compared, EQUAL
+line A   2 tick(s)/frame: ticks t1..t9 compared, EQUAL
+line A   3 tick(s)/frame: ticks t1..t9 compared, EQUAL
+line B   1 tick(s)/frame: ticks t1..t10 compared, DIFFERENT at [10]
+line B   2 tick(s)/frame: ticks t1..t10 compared, DIFFERENT at [10]
+line B   3 tick(s)/frame: ticks t1..t10 compared, DIFFERENT at [10]
+line C   1 tick(s)/frame: ticks t1..t9 compared, EQUAL
+line C   2 tick(s)/frame: ticks t1..t9 compared, EQUAL
+line C   3 tick(s)/frame: ticks t1..t9 compared, EQUAL
+line D   1 tick(s)/frame: ticks t1..t16 compared, DIFFERENT at [10]
+line D   2 tick(s)/frame: ticks t1..t16 compared, DIFFERENT at [10]
+line D   3 tick(s)/frame: ticks t1..t16 compared, DIFFERENT at [10]
+line D2  1 tick(s)/frame: ticks t1..t15 compared, DIFFERENT at [10]
+line D2  2 tick(s)/frame: ticks t1..t15 compared, DIFFERENT at [10]
+line D2  3 tick(s)/frame: ticks t1..t15 compared, DIFFERENT at [10]
+line E   1 tick(s)/frame: ticks t1..t15 compared, EQUAL
+line E   2 tick(s)/frame: ticks t1..t15 compared, EQUAL
+line E   3 tick(s)/frame: ticks t1..t15 compared, EQUAL
+line E2  1 tick(s)/frame: ticks t1..t5 compared, EQUAL
+line E2  2 tick(s)/frame: ticks t1..t5 compared, EQUAL
+line E2  3 tick(s)/frame: ticks t1..t5 compared, EQUAL
+line F   1 tick(s)/frame: ticks t1..t16 compared, EQUAL
+line F   2 tick(s)/frame: ticks t1..t16 compared, EQUAL
+line F   3 tick(s)/frame: ticks t1..t16 compared, EQUAL
+line G   1 tick(s)/frame: ticks t1..t16 compared, EQUAL
+line G   2 tick(s)/frame: ticks t1..t16 compared, EQUAL
+line G   3 tick(s)/frame: ticks t1..t16 compared, EQUAL
+air, no Square, 1 tick(s)/frame: t4..t9 (contact, z, anim) EQUAL
+air, no Square, 2 tick(s)/frame: t4..t9 (contact, z, anim) EQUAL
+air, no Square, 3 tick(s)/frame: t4..t9 (contact, z, anim) EQUAL

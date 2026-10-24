@@ -1,0 +1,53 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Text;
+using Xunit;
+using Alundra.Hero;
+using Alundra.Physics;
+using Alundra.Session;
+using Alundra.Transitions;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Hero;
+
+namespace Alundra.Tests.Probes;
+
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G1bT0ReleaseProbeTests : IDisposable
+{
+    public G1bT0ReleaseProbeTests()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private static void Out(string line) => File.AppendAllText(Environment.GetEnvironmentVariable("G1BT0_OUT")!, line + "\n", new UTF8Encoding(false));
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Release_InTheOpen_AndAgainstTheCrate(bool crate)
+    {
+        var rig = CarryRig.Build(1, t => t <= 9 ? PadState.Right : 0u, probeFactory: host => new MovementObstacleProbe(host), heroX: 100f, heroY: 100f);
+        if (crate)
+        {
+            rig.AddCrate(130, 100, 0, sizeX: 21, sizeY: 15, sizeZ: 16, offsetX: -10, offsetY: -7, prefabBody: true);
+        }
+        else
+        {
+            rig.AddCrate(330, 100, 0, sizeX: 21, sizeY: 15, sizeZ: 16, offsetX: -10, offsetY: -7, prefabBody: true);
+        }
+
+        Out(crate ? "== release against the crate (x=130)" : "== release in the open (crate far away at x=330)");
+        rig.Run(13, t => Out($"t{t:D2} x={rig.Hero.PosX / 65536.0:F4} fx={rig.Hero.ForceX / 65536.0:F4} adj={rig.Hero.ForceAdjusted} xcoll={(rig.Hero.XCollisionEntity == null ? "-" : "crate")} anim={rig.Hero.TargetAnimationId}"));
+    }
+}
