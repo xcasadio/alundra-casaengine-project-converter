@@ -7154,7 +7154,7 @@ cartes et sa table, un arrêt par type non couvert ; le point 4 du bloc aligné)
 - **Verifiers frais** : **CONFIRMED** tous deux.
 - **D-E20-39 tenue** : rien ne met un objet dans les mains en production avant g3 et g1b.
 
-#### 1.24.4 E20.g1b — Soulever (l'activation) ⏳ (réécrite le 2026-10-18 après E20.g3 ; révision 2, **READY** à la relecture de clôture ; le texte du 2026-10-15 est remplacé)
+#### 1.24.4 E20.g1b — Soulever (l'activation) ⚠️ (réécrite le 2026-10-18 après E20.g3 ; révision 2, **READY** à la relecture de clôture ; le texte du 2026-10-15 est remplacé ; **T0 fait le 2026-10-24 : arrêt sur deux écarts de contact, questions Q-G1B-1 à Q-G1B-3 à l'auteur** ; la phase A (T1) continue, T2 et la suite attendent)
 
 **Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : la mesure du contact en l'air n'était pas exécutable en T0 (le
 bouchon rend 0) : T0 (b) est une sonde jetable qui relève le contact par tick, en l'air (g15 a), contact en t5 **et** t6) et au sol (c3, lignes
@@ -7221,7 +7221,7 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
 
 ##### Tâches
 
-- ⏳ **T0** (aucun commit de code) : (a) **la carte de la recette** (Q-G1A-5) : une carte avec un soulevable câblé, un dessus de 16 px et
+- ⚠️ **T0** (aucun commit de code) : (a) **la carte de la recette** (Q-G1A-5) : une carte avec un soulevable câblé, un dessus de 16 px et
   une plateforme qui se déplace **d'elle-même** à l'horizontale, libre à l'arrivée ; les candidates viennent des recensements de
   `e20-g1a/work/` (`census_platforms.py`, `census_maps2.py`) ; le mouvement propre de la plateforme se prouve en **décodant les programmes**
   de la carte (les décodeurs de `docs/plan-e20-annexe/e20-g3/dll/decode_events.py` et `critic-complet/c5_dump_prog.py`) : une boucle de
@@ -7259,6 +7259,30 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
   Carré ; boucle avec bouton ; `+0x12C` ignoré ; statut 2 ou 3 élargi ; retour de `TryLift` du contact perdu ; ensemble câblé étendu à un
   type non enregistré ; contact du tick courant au lieu du précédent ; garde « nul égale nul » retirée ; priorité de l'interaction inversée ;
   appel de l'état d'escalade oublié.
+
+
+**Résultat de T0 (2026-10-24, `1e74146a`, `docs/plan-e20-annexe/e20-g1b/README.md`) : ARRÊT.**
+- **(a) La carte de la recette : la 72** (Coastal Cave, préréglage prévu `porter-m72`). La plateforme (entité 2, en (576, 240), z 64) fait 96 px
+  vers l'est puis 96 px vers l'ouest, sans fin et sans aucun test (programme C[3] décodé) ; 8 soulevables C23 (jarres et un rocher tortue) ;
+  le tonneau (entité 1, C4, non câblé) offre un dessus de 16 px à 24 px de la jarre 37 et sert aussi de témoin (m5) ; aucun verrou du contrôle.
+  Les autres candidates (74, 346, 27, 69, 343, 86, 140, 23, 100) manquent l'une des trois conditions. Le trajet à pied de l'arrivée à la
+  plateforme avec une jarre n'est pas encore joué (l'arc (m2)).
+- **(b1) En l'air** : la DLL égale l'oracle (le contact en t5 et t6, nul en t7 à t9 ; Z ; animations), aux trois cadences.
+- **(b2) Au sol** : les lignes A, C, E, E2, F, G égalent l'oracle ; **les lignes B, D et D2 diffèrent au tick t10, celui où la direction est
+  lâchée.** Dans le binaire, la force de la marche passe de 2,4375 à 1,2188 px pendant un tick, ce demi-pas est refusé par la caisse et le
+  contact reste la caisse ; un Carré en t11 soulève (ligne B). Dans la DLL la force tombe à 0, aucun pas n'est essayé, le contact est nul : un
+  Carré en t11 donnerait l'épée. **La cause n'est pas le contact mais le lâcher de la marche, général** : sans caisse, le binaire avance
+  encore d'un demi-pas au tick du lâcher (x 120,7188 vers 121,9375), la DLL non. C'est exactement la ligne « la force résiduelle garde le
+  contact un tick » des valeurs attendues.
+- **O-G3-3**, rejoué au binaire (la route R7, un Carré à chaque tick) : Carré en t37, t38 ou t39 donne l'épée, à partir de t40 il soulève rec10 (le
+  contact apparaît en t39) ; la DLL pose le contact un tick plus tôt : un Carré au tick qui suit l'arrivée soulèverait rec10 dans la DLL, l'épée
+  dans le binaire.
+- **(c) La liste prédite** : `TestSavesTests` (la liste des noms, trois théories de `EveryPresetName` gagnent une ligne, un Fact neuf pour
+  `porter-m72`, le Fact `TheThirteenPresets_…` à renommer) ; sept fichiers de test qui mêlent Carré et soulevable sont à surveiller.
+- **Disposition de la session principale** : les valeurs attendues ne changent pas pour suivre la DLL ; T2 à T4 attendent les réponses de
+  l'auteur (Q-G1B-1, Q-G1B-2, Q-G1B-3, §2). La phase A (T1 : `TryLift` et `PlayerTryAction` en fonctions pures, le bouchon de production rendant
+  toujours 0) ne dépend d'aucun des deux écarts : elle continue. Une lecture au binaire du lâcher de la marche (son gestionnaire, ses états, ce
+  qu'il changerait aux tests et aux arcs) est lancée en lecture seule pour chiffrer l'option (A) de Q-G1B-1.
 
 ##### Acceptation
 
@@ -11055,6 +11079,9 @@ les trois entrées `0x31`.
 | Q-G5C-QA2 | (2026-10-24, E20.g5c, à l'auteur en termes de jeu) Quand deux objets demandent le raclement en même temps, un seul son joue (le second bouge en silence) et il se coupe dès que le premier s'arrête, comme dans l'original. Garder ? Défaut de la session : oui, fidèle (D-G5C-5) | l'auteur ; non bloquant |
 | Q-G2B2-1 | (2026-10-24, E20.g2b2, à l'auteur en termes de jeu) Dans l'original, un tonneau, une pierre, un tronc ou un objet de plaque lancé sur un trou ou sur un sol de sortie disparaît à l'atterrissage, avec son effet de casse ; dans le portage il resterait posé sur la case (les puzzles à trous seraient plus faciles). Les caisses et les jarres se brisent déjà en touchant le sol. (A, défaut) faire comme l'original (une ligne, bornée aux objets passés dans les mains et aux entités nées en jeu) ; (B) garder l'écart | l'auteur ; non bloquant |
 | Q-SHOP | (2026-10-24, E20.g2c1, à l'auteur en termes de jeu) Dans l'original, on achète en boutique en soulevant l'article sur l'étagère et en le jetant sur le comptoir (Inoa, avant et après sa destruction ; Lurvy ; l'église, un gag). Aujourd'hui rien ne se soulève : aucun achat n'est possible. Aucune boutique n'est requise par l'histoire. (A, défaut) g2c1 rend les 11 types d'articles transportables avec le tonneau et la pierre (presque sans coût) ; l'achat marche à Inoa si les opcodes de la boutique sont portés ; la garde qui empêche de sortir sans payer et la boutique de Lurvy (qui relance la réprimande en boucle au HEAD) attendent le thème 3 ; (B) laisser les articles immobiles, un écart documenté | l'auteur ; non bloquant |
+| Q-G1B-1 | (2026-10-24, E20.g1b T0, à l'auteur en termes de jeu) Dans l'original, quand on lâche la direction, Alundra glisse encore d'un demi-pas (environ 1,2 px) avant de s'arrêter ; dans le portage il s'arrête net. Pour le soulèvement : si on pousse une caisse, qu'on lâche la direction et qu'on appuie sur Carré au tick suivant, l'original soulève, le portage donnerait l'épée (un tick, 1/50 s). (A, défaut proposé) corriger d'abord le lâcher de la marche, dans une tranche à part (chaque arrêt d'Alundra change d'environ 1,2 px : des traces et des arcs qui épinglent un arrêt bougeront, réécrits par dérivation), puis reprendre g1b ; (B) accepter et consigner l'écart d'un tick ; (C) retirer les lignes B, D, D2 de la comparaison | l'auteur ; **bloque T2 à T4 de g1b** |
+| Q-G1B-2 | (2026-10-24, E20.g1b T0, O-G3-3, à l'auteur en termes de jeu) Sur le dessus d'une caisse, en marchant vers la caisse voisine du haut, le portage la « touche » un tick plus tôt que l'original : un Carré à ce tick précis soulèverait la caisse voisine là où l'original donne un coup d'épée. (A, défaut proposé) retarder le contact d'un tick dans ce cas (la sonde de mouvement, le domaine de g3), avec Q-G1B-1 (A) si les deux ont la même cause ; (B) accepter et consigner | l'auteur ; **bloque T2 à T4 de g1b** |
+| Q-G1B-3 | (2026-10-24, E20.g1b T0) La carte de la recette du soulèvement : la 72 (Coastal Cave) : des jarres, un tonneau de 16 px de haut à côté, une plateforme qui fait l'aller-retour d'est en ouest toute seule, aucun verrou. Garder la 72 ? Défaut : oui | l'auteur ; non bloquant |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
 | Q-G1A-3 | (2026-10-17) Un objet lancé ne blesse, avant E14.b, que les cibles dont le gestionnaire D est porté (Beannoïde, Muruta) : confirmer **Réponse de l'auteur (2026-10-22)** : « oui » : confirmé. | Tranché le 2026-10-22 |
