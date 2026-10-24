@@ -149,3 +149,41 @@ The sum is 8 above the 5 950 tests of the suite for the reason the g2a record gi
 - RegisterBreak, BreakKeys and BreakSpriteTypes are separate from Register, Keys and SpriteTypes of C23 so that phase A moves no pin; phase B adds the line to CreateForProduction and BreakKeys.Count to the four pins.
 - The loot test does not paste the object: it fixes ContentsItemId (Gildas, 0x45) and derives the type from LootDrop's own rule (item + 0x1E).
 - The spark positions are never read (D-E0B-8: they draw random words); the tests count the hit counter and the sparks.
+
+## T2 (production tests, null hook) - measured
+
+Start HEAD of T2: `3961b38d` (T1). File: `Alundra.Tests/Ai/Objects/LiftableBreakProductionTests.cs` (16 tests); `BreakRun(hook: false)` registers nothing, the production registry of the runner alone decides.
+
+| Test | Cases | What it pins |
+|---|---|---|
+| P1_ACrateThrownByTheHero_..._Effect10, P1_AJarThrownByTheHero_..._Effect2 | 3 + 3 (1, 2, 3 ticks per frame) | the thrown object (PutInHands, then the real hero's Square) is Normal at T+22 with E2 never called, Deactivated at T+23 with the first call, status 4 at T+25 after the third call, slot free at T+26, the effect 10 (crate) or 2 (jar) attached at the end of the frame |
+| P2_TheProductionRegistryHoldsTheKeyE2_... | 1 | (E, 2) for exactly the ten types read from the export (every header with E2, both pages), no other type of 0..511, no other code or slot |
+| P3_TheSetOfMapsHoldsAnEntityAtRestOfEachOfTheTenTypes | 1 | the table type -> map covers the ten types and no other (pure table: green before and after phase B) |
+| P3_TheTypesAtRestOfARealMap_NeverCallE2_In100Ticks_... | 8 maps | rest entities of the ten types exist in the loaded world (asserted), stay Normal with the same flags and animation for 100 ticks, the runner's journal holds zero call of (E, 2), E2 is registered in the production registry (so the zero is a measure), next to a crate thrown on Coal Mine whose journal holds 3 calls |
+
+The set of maps (census of `data-extracted/data/map_N.json`; a record spawns at load only with `SpriteDirection & 0x40` and the hero's tile in its box, so the arc starts from a real portal arrival at the tile named): 4 (234) tile (8, 6); 24 (291, 293) tile (28, 29); 38 (290) tile (30, 45); 67 (290, 292) tile (35, 43); 70 (373, 438) tile (22, 0); 91 (297) tile (0, 0); 124 (291, 304) tile (8, 6); 380 (294) tile (8, 6). All ten types are covered at rest (234 also exists on maps 3, 7, 11). The family C4 types 290, 293 and 373 are at rest only (no C4 handler yet: g2c), the positive control is the C23 crate for every map. The 293 of map 52 is not at load (SpriteDirection bit 0x40 clear), hence map 24.
+
+Red before phase B (skeleton of the registration absent), nothing registered by the tests: 15 of the 16 red (the 6 P1, the P2, the 8 P3 theory rows); the green one is the pure table test. For the P3 rows the red comes at the registration assertion, AFTER the 100 rest ticks passed (no rest entity moved, journal 0): the rest part holds on its own, so E2 is never called at rest (no comparison to the binary's flags was needed, no stop).
+
+## T3 (phase B) - measured
+
+Start HEAD of T3: `1a98ef5d`. `NativeSpriteRegistry.CreateForProduction` calls `LiftableAi.RegisterBreak(registry)`; docs of the registry (`NativeSpriteRegistry.cs`, `EventProgramRunner.cs`) and of `LiftableAi` updated. The four pins of the predicted list rewritten by derivation (the count before plus `LiftableAi.BreakKeys.Count`; the two sums also register `RegisterBreak`): `NativeSpriteRegistryTests.ProductionRunner_...`, `WaveSwordLifeTests.V3_...`, `ChargedArrowAiTests.C2_TheProductionRegistry_...`, `LiftableAiRegistrationTests.R1_TheKeyIsInTheSlotCOnly_...` (the last two are the plan's two extra pins found at T0). No other existing test moved: the loot test (`DestroyEntityBreakEffectTests`), the arcs, `EntityDestructionTests`, `LiftableAiTests`, `Carry*` stay green unmodified.
+
+Tests with the null hook, green after: the 16 of T2; the 37 of phase A stay green (their hook installs nothing now: the key is present).
+
+### Suites
+
+Release with the neutralised copy, then Debug last without it; `--blame-hang-timeout 60s`; partitions of `part.sh` (3 = exact negation of 1 and 2).
+
+| partition | tests | failures Release | failures Debug |
+|---|---|---|---|
+| 1 | 1 298 | 0 | 0 |
+| 2 | 2 878 | 0 | 0 |
+| 3 | 1 798 | 0 | 0 |
+| sum | 5 974 | 0 | 0 |
+
+5 974 = 5 966 tests (5 950 after T1, plus the 16 of T2) + the 8 that run in both partitions 1 and 2 (as g1a, g2a, T1). `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal. `check_names.py --rules`: 0 finding (1 existing warning). The four `docs/hero-trace-389-*.txt` rewritten by the suites (line endings): `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, restored by `git checkout`, never indexed. Engine, converter, data, alundra-datas-analyser untouched.
+
+### Proof of removal (real, by script: the line deleted, Release build with the neutralised copy, the 141 tests of the registry, the break and the liftable objects, the line restored; `git diff` empty after)
+
+Without `LiftableAi.RegisterBreak(registry)` in `CreateForProduction`: 19 red of 141: the 6 P1, the P2, the 8 rows of P3, and the four pins (which count the keys). The plan says "exactly (p1) and (p2)"; the P3 rows (they assert the key is registered, which is what makes their zero a measure) and the four pins (they count the key) are red too, by construction: deviation of the plan's sentence, not of a behaviour. The 37 tests of phase A stay green (their hook registers the key itself). The removal of the `~0x30` mask line is T4's mutant (done in T1: killed).
