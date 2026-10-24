@@ -485,7 +485,6 @@ public sealed class EntityContactArcTests
 
         var collidables = ((IScriptHost)arc.Proxy).Collidables;
         Assert.Null(EntityCollision.FindEntityCollisionCandidate(arc.Hero, collidables));
-        Assert.Null(EntityCollision.FindEntityCollisionCandidate(arc.Hero, arc.Hero.PosX, arc.Hero.PosY, arc.Hero.PosZ, collidables, EntityFlags.PickupKindMask));
     }
 
     // ----------------------------------------------------------------------------------------------------------

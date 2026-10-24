@@ -21,8 +21,8 @@ namespace Alundra.Tests.Arcs;
 /// with the export's real prefabs and the real hero. B1 puts the hero at (720, 216, 64) px, walks him 48 px east, gives him the hand
 /// (<c>0x11 @104</c>), then rolls him in a random direction whenever a direction is held (the ship's roll, <c>0x0C</c>, the stream of
 /// <see cref="GameRandom"/> reset by the arc). The only exit is the portal 0 at tile (22, 23): the player holds Down, facing down,
-/// with the control free. A5 puts the hero back in the corridor of the portal at frame 205 (D-E19-23: the crates between the hero and
-/// the portal do not block in the DLL, a known gap kept for E14), then holds Down; A5r holds Down in place first, so that the roll
+/// with the control free. A5 puts the hero back in the corridor of the portal at frame 205 (D-E19-23: the hero is placed past the crates
+/// of the barricade, which block him since E20.g3 as in the original; crossing them is E20.g4), then holds Down; A5r holds Down in place first, so that the roll
 /// plays once, then does the same. The end signal is the departure through the portal, which is not an instruction: the arrival record
 /// of the warp director is the exception to the rule of the trace (§1.3). Every expected value is written by hand before the code.
 /// </summary>

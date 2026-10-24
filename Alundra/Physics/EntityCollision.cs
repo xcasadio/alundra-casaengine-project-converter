@@ -29,14 +29,14 @@ public static class EntityCollision
     /// The same rule as <see cref="FindEntityCollisionCandidate(EntityScriptProxy, IReadOnlyList{EntityScriptProxy})"/> (asymmetric AABB on the three axes, the
     /// semi-open edge corrected by E19.d2b B5) with the position of the SUBJECT given (E19.d2b B3, D-E19-27): the movement obstacle probe asks it for the
     /// candidate position of the root of a controller step, in the 16.16 fields (the subject's own <c>Pos*</c> are not read). The
-    /// subject gate and the candidate order are unchanged; a candidate whose flags intersect <paramref name="skippedCandidateFlags"/>
-    /// is skipped (the probe passes <see cref="EntityFlags.PickupKindMask"/>: the soulevables are not obstacles until E14, D-E19-28).
+    /// subject gate and the candidate order are unchanged, and no flag of the candidate is read (the binary's rule has none; E20.g3 removed the
+    /// parameter that let the probe skip the soulevables, D-E19-28).
     /// The edge is semi-open, the binary's: <c>Width = (size &lt;&lt; 16) - 1</c> and an overlap needs <c>delta &lt; Width + 1</c>, so a
     /// flush contact does NOT overlap and one 16.16 unit less does.
     /// </summary>
     public static EntityScriptProxy? FindEntityCollisionCandidate(
         EntityScriptProxy entity, int subjectPosX, int subjectPosY, int subjectPosZ,
-        IReadOnlyList<EntityScriptProxy> collidables, uint skippedCandidateFlags = 0)
+        IReadOnlyList<EntityScriptProxy> collidables)
     {
         if (!EntitySupport.IsEligibleSubject(entity) || collidables.Count == 0)
         {
@@ -50,7 +50,7 @@ public static class EntityCollision
         for (var i = 0; i < collidables.Count; i++)
         {
             var candidate = collidables[i];
-            if (ReferenceEquals(candidate, entity) || (candidate.Flags & skippedCandidateFlags) != 0)
+            if (ReferenceEquals(candidate, entity))
             {
                 continue;
             }

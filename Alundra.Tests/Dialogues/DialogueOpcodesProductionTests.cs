@@ -384,12 +384,12 @@ public class DialogueOpcodesProductionTests : IDisposable
                 // production this contact is the entity that shortened or cancelled the hero's controller step
                 // (EntityScriptProxy.MoveControllerAndPullPosition, pinned by EntityContactReportTests T-R7 and
                 // InteractionPassTests P-a). This harness has no controller, so the report is the one the controller would get from the
-                // production probe for the hero kept ON sailor 13: the same rule, at the hero's own position, with the soulevables skipped
+                // production probe for the hero kept ON sailor 13: the same rule, at the hero's own position, no candidate skipped
                 // (MovementObstacleProbe.TryFindObstacle). Gated like production (D-E12D-5: no step is taken behind the mask).
                 if ((s.GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) == 0)
                 {
                     player!.XCollisionEntity = EntityCollision.FindEntityCollisionCandidate(
-                        player, player.PosX, player.PosY, player.PosZ, s.Collidables, EntityFlags.PickupKindMask);
+                        player, player.PosX, player.PosY, player.PosZ, s.Collidables);
                 }
 
                 // Frame 11: the press of frame 10 assigned the sailor; THIS frame's real pick chose F,

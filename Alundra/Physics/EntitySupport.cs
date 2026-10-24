@@ -50,8 +50,9 @@ internal static class EntitySupport
         {
             var candidate = spawnedEntities[i];
 
-            // E19.d2b (D-E19-29): the binary's list takes no entity flagged for destruction (its status is not 2 or 3 once
-            // flagged); the soulevables STAY in the list, their exclusion as obstacles belongs to the movement obstacle probe.
+            // E19.d2b (D-E19-29): the DLL takes no entity flagged for destruction out of the list at once. A GAP with the binary, recorded by E20.g3 (docs/plan-e20-heros.md section 1.28, O-G3-1): the binary's list reads no
+            // status (a destroyed entity stays in it until the end of the physics of the tick, bin/report.md of e20-g3), so this filter is one tick early; it is kept (it also
+            // concerns what is not a soulevable: O-G3-1). The soulevables STAY in the list and are obstacles like every other candidate (E20.g3).
             if (candidate.Status != EntityStatus.FlagToDestroy && IsEligibleSubject(candidate))
             {
                 buffer.Add(candidate);
@@ -66,9 +67,8 @@ internal static class EntitySupport
     /// called (from <c>MoveEntity</c>) for an entity that itself passes
     /// <c>(entity.Flags &amp; Collidable) != 0 &amp;&amp; (entity.AnimFlags &amp; NoEntityCollision) == 0
     /// &amp;&amp; entity.PlatformEntity == null</c>. <see cref="EntityScriptProxy.PlatformEntity"/>
-    /// is always null in this runtime's current scope (the "carried/thrown" relation, out of scope - see
-    /// this class' own doc), so this gate's third conjunct is checked anyway (faithfully, not assumed)
-    /// rather than special-cased away.
+    /// is written since E20.g1a (<see cref="PlayerManager.PutInHands"/>: an object in the hands of the hero is out of the
+    /// list, so it blocks nothing, E20.g3), so this gate's third conjunct is checked, not assumed.
     /// </summary>
     internal static bool IsEligibleSubject(EntityScriptProxy entity)
         => (entity.Flags & EntityFlags.Collidable) != 0

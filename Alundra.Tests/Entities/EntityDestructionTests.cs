@@ -16,7 +16,7 @@ namespace Alundra.Tests.Entities;
 /// <summary>
 /// E19.d2b B2 (docs/plan-e19-opcodes.md §1.2h.2, D-E19-29): what blocking between entities exacts with it. T-R2: an entity flagged for
 /// destruction leaves the collidable list and stops moving (the binary excludes it from both lists), the soulevables stay in the list
-/// (the exclusion is the probe's, D-E19-28). T-R5: the native handler of slot E of index 0 and 1 destroys the entity (<c>0x8007ED10</c> =
+/// and are obstacles like the others (E20.g3). T-R5: the native handler of slot E of index 0 and 1 destroys the entity (<c>0x8007ED10</c> =
 /// <c>DestroyEntity(e, -1)</c>), nothing else changes. T-R6: <c>AnimFlags</c> is the byte 0xD of the animation set, loaded by the animation
 /// sync (the bit 0x80 of it removes the entity from the collidable list for the duration of the animation).
 /// </summary>
@@ -43,7 +43,7 @@ public sealed class EntityDestructionTests
 
         Assert.Equal(new[] { normal, deactivated, loaded, liftable }, buffer);
         Assert.DoesNotContain(destroyed, buffer);
-        Assert.Contains(liftable, buffer); // a soulevable IS in the list: its exclusion belongs to the probe (D-E19-28).
+        Assert.Contains(liftable, buffer); // a soulevable IS in the list, and an obstacle like the others (E20.g3).
     }
 
     [Fact]

@@ -124,16 +124,6 @@ public sealed class MovementObstacleProbeTests
             noEntityCollisionAnimation, noEntityCollisionAnimation.PosX, noEntityCollisionAnimation.PosY, noEntityCollisionAnimation.PosZ, new[] { villager }));
     }
 
-    [Fact]
-    public void TR1_SkippedCandidateFlags_LeaveTheSoulevablesOutOfTheSearch()
-    {
-        var hero = Box(32768000, HeroY, VillagerZ, 21, 15, 32);
-        var crate = Box(32768000, HeroY, VillagerZ, 20, 14, 32, EntityFlags.Collidable | 0x200u);
-
-        Assert.Same(crate, EntityCollision.FindEntityCollisionCandidate(hero, hero.PosX, hero.PosY, hero.PosZ, new[] { crate }));
-        Assert.Null(EntityCollision.FindEntityCollisionCandidate(hero, hero.PosX, hero.PosY, hero.PosZ, new[] { crate }, EntityFlags.PickupKindMask));
-    }
-
     // ---- T-REG-Z: the Z of the mover is the logical integer, never the float root -----------------------------------
 
     [Theory]
