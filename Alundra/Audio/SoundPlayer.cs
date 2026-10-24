@@ -376,6 +376,12 @@ public sealed class SoundPlayer : ISoundPlayer
         _frameSoundCount = 0;
     }
 
+    /// <inheritdoc cref="ISoundPlayer.StopSfx"/>
+    public void StopSfx(int sfxId)
+    {
+        // Phase A skeleton (E20.g5c T1): the body is phase B.
+    }
+
     /// <inheritdoc cref="ISoundPlayer.StopAllSfx"/>
     public void StopAllSfx()
     {

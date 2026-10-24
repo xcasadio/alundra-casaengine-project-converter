@@ -191,6 +191,11 @@ public class EventProgramRunnerTests
 
         public void PlaySfx(int sfxId) => Requests.Add(sfxId);
 
+        /// <summary>E20.g5c: every <see cref="StopSfx"/> call, in order - the dispatch-level oracle for the id 0xBE and 0x75 derived.</summary>
+        public readonly List<int> StopRequests = new();
+
+        public void StopSfx(int sfxId) => StopRequests.Add(sfxId);
+
         public void RemixVoice(int sfxId, int left, int right) => RemixCalls.Add((sfxId, left, right));
 
         public void FlushFrameSounds()
@@ -3252,6 +3257,126 @@ public class EventProgramRunnerTests
         Assert.Equal(EventTraceKind.Implemented, kind);
         Assert.Equal(2, state.CodeIndex);
         Assert.Equal(new[] { 42 }, soundPlayer.Requests);
+    }
+
+    // E20.g5c (docs/plan-e20-heros.md section 1.24.6, D-G5C-1, D-G5C-3): 0xBE and 0x75 are the STOP of a sound (StopSoundEffect, 0x80049634), not a second play - the decompilation renders them
+    // as PlaySoundEffect, the binary calls the stop (handlers 0x80041C6C and 0x8003FA9C replayed on the real code, docs/plan-e20-annexe/e20-g5/g5c-disc/handlers_oracle_out.txt). The ids and
+    // the lengths are the ones of 0xBD and 0x12 (3 bytes with the two-byte id, 2 bytes with the one-byte id). Every "nothing else happens" assertion sits next to the positive one.
+
+    [Fact]
+    public void StopSound2Bis_0xBE_AsksTheStopOfTheTwoByteId_AndNeverPlays()
+    {
+        var soundPlayer = new FakeSoundPlayer();
+        var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
+        // id = (v[2] << 8) | v[1] = (0x01 << 8) | 0x2D = 301: the high byte is non-zero, so an id read on 8 bits (0x2D = 45) is a different sound.
+        var document = NewDocument(0xBE, 0x2D, 0x01, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 9 };
+
+        var kind = CaptureKindForOpcode(runner, 0xBE, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(3, state.CodeIndex);
+        Assert.Equal(9, state.Result);
+        Assert.Equal(new[] { 301 }, soundPlayer.StopRequests); // the stop, with the 16-bit id ...
+        Assert.Empty(soundPlayer.Requests);                    // ... and no play of that sound (the defect: the DLL replayed it).
+    }
+
+    [Fact]
+    public void StopSound2Bis_0xBE_TheScrapeOfTheStatues_Id25_HighByteZero_IsAskedAsTheStopOf25()
+    {
+        var soundPlayer = new FakeSoundPlayer();
+        var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
+        var document = NewDocument(0xBE, 0x19, 0x00, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(3, state.CodeIndex);
+        Assert.Equal(new[] { 25 }, soundPlayer.StopRequests);
+        Assert.Empty(soundPlayer.Requests);
+    }
+
+    [Fact]
+    public void StopSound2Bis_0xBE_NullSoundPlayer_DegradedNoOp_SkipsBySize_AndWithAPlayerTheSameProgramStops()
+    {
+        var document = NewDocument(0xBE, 0x2D, 0x01, 0xFF);
+
+        var withoutPlayer = NewRunner(document);
+        var entity = NewEntity();
+        var stateWithout = new EventProgramState { Codes = document.CodesAsBytes() };
+        var kindWithout = CaptureKindForOpcode(withoutPlayer, 0xBE, () => withoutPlayer.RunOneScriptCall(entity, stateWithout));
+
+        Assert.Equal(EventTraceKind.Degraded, kindWithout);
+        Assert.Equal(3, stateWithout.CodeIndex); // still skipped by its own real size, nothing thrown.
+
+        var soundPlayer = new FakeSoundPlayer();
+        var withPlayer = NewRunner(document, worldContext: new FakeEntityWorldContext { SoundPlayer = soundPlayer });
+        var stateWith = new EventProgramState { Codes = document.CodesAsBytes() };
+        withPlayer.RunOneScriptCall(entity, stateWith);
+
+        Assert.Equal(new[] { 301 }, soundPlayer.StopRequests); // the positive: the same bytes DO ask the stop once a player is there.
+    }
+
+    [Fact]
+    public void StopSoundEffect_0x75_AsksTheStopOfTheOneByteId_NotTwo_AndNeverPlays()
+    {
+        var soundPlayer = new FakeSoundPlayer();
+        var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
+        var document = NewDocument(0x75, 0x2A, 0xFF); // operand 0x2A (42); the byte after it is 0xFF, so a two-byte derivation (0xFF2A = 65322) is a different id.
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes(), Result = 7 };
+
+        var kind = CaptureKindForOpcode(runner, 0x75, () => runner.RunOneScriptCall(entity, state));
+
+        Assert.Equal(EventTraceKind.Implemented, kind);
+        Assert.Equal(2, state.CodeIndex);
+        Assert.Equal(7, state.Result);
+        Assert.Equal(new[] { 42 }, soundPlayer.StopRequests);
+        Assert.Empty(soundPlayer.Requests);
+    }
+
+    [Fact]
+    public void StopSoundEffect_0x75_NullSoundPlayer_DegradedNoOp_SkipsBySize_AndWithAPlayerTheSameProgramStops()
+    {
+        var document = NewDocument(0x75, 0x2A, 0xFF);
+
+        var withoutPlayer = NewRunner(document);
+        var entity = NewEntity();
+        var stateWithout = new EventProgramState { Codes = document.CodesAsBytes() };
+        var kindWithout = CaptureKindForOpcode(withoutPlayer, 0x75, () => withoutPlayer.RunOneScriptCall(entity, stateWithout));
+
+        Assert.Equal(EventTraceKind.Degraded, kindWithout);
+        Assert.Equal(2, stateWithout.CodeIndex);
+
+        var soundPlayer = new FakeSoundPlayer();
+        var withPlayer = NewRunner(document, worldContext: new FakeEntityWorldContext { SoundPlayer = soundPlayer });
+        var stateWith = new EventProgramState { Codes = document.CodesAsBytes() };
+        withPlayer.RunOneScriptCall(entity, stateWith);
+
+        Assert.Equal(new[] { 42 }, soundPlayer.StopRequests);
+    }
+
+    [Fact]
+    public void Play0xBD_And0x12_StayPlays_TheyAskNoStop()
+    {
+        var soundPlayer = new FakeSoundPlayer();
+        var context = new FakeEntityWorldContext { SoundPlayer = soundPlayer };
+        // 0xBD 0x2D 0x01 (301), 0x12 0x2A (42), 0xFF.
+        var document = NewDocument(0xBD, 0x2D, 0x01, 0x12, 0x2A, 0xFF);
+        var runner = NewRunner(document, worldContext: context);
+        var entity = NewEntity();
+        var state = new EventProgramState { Codes = document.CodesAsBytes() };
+
+        runner.RunOneScriptCall(entity, state);
+        runner.RunOneScriptCall(entity, state);
+
+        Assert.Equal(new[] { 301, 42 }, soundPlayer.Requests); // the plays are still plays ...
+        Assert.Empty(soundPlayer.StopRequests);                // ... and ask no stop.
     }
 
     // B1 (docs/plan-e11b-opcodes-audio.md) - 0xAB/0xBF (RemixVoice).

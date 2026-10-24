@@ -29,7 +29,12 @@ internal sealed class RecordingSoundPlayer : ISoundPlayer
 {
     public List<int> Requests { get; } = new();
 
+    /// <summary>E20.g5c: the sounds the stop of one sound (<see cref="ISoundPlayer.StopSfx"/>) was asked for, in order.</summary>
+    public List<int> StopRequests { get; } = new();
+
     public void PlaySfx(int sfxId) => Requests.Add(sfxId);
+
+    public void StopSfx(int sfxId) => StopRequests.Add(sfxId);
 
     public void RemixVoice(int sfxId, int left, int right)
     {

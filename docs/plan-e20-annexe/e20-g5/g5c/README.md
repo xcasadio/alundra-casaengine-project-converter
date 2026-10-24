@@ -54,3 +54,35 @@ The pillar tests (`PillarAiGoldenTests`, the `PillarRun` ones) stay green with t
 
 Other facts: the four `docs/hero-trace-389-*.txt` were rewritten by the suites (line endings), `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, restored by `git checkout`, never indexed.
 The engine, the converter, the data and `alundra-datas-analyser` are untouched.
+
+## T1 - phase A, the tests first (measured)
+
+Start HEAD of T1: `fd8caaab` (the T0 docs commit). The skeleton that compiles: `ISoundPlayer.StopSfx(int)` as a default member that does nothing (D-G5C-1) and `SoundPlayer.StopSfx` with an empty body; `case 0xBE` and `case 0x75`
+still call `PlaySfx`, `PillarAi` still calls its named stub. Test recorders: `RecordingSoundPlayer.StopRequests` / `StopSfx` (support) and `FakeSoundPlayer.StopRequests` / `StopSfx` (in `EventProgramRunnerTests`), both additive.
+
+### The 24 new tests
+
+| File | Tests | Red on the skeleton |
+|---|---|---|
+| `Alundra.Tests/Audio/SoundPlayerStopTests.cs` | 12: the voices of the id and no other (25 / 85, both tones of 85); the cap freed; the anti-duplicate table not written nor cleared (the play after a stop in the same frame refused; a stop alone does not register the id); id 0, an unknown id, an id not playing, a one-shot already finished (each next to a stop that acts on the same player); not gated by the armed state of the fade machine (where the play is); the redirection by `RefSfxId` (500 to 501); one stop cuts the sound of the other object (D-G5C-5) | 12 / 12 |
+| `Alundra.Tests/Events/EventProgramRunnerTests.cs` (6 added) | `0xBE` asks `StopSfx((b2 << 8) | b1)` with `b2 != 0` and never plays; `0xBE` with the id 25 (`b2 == 0`); `0xBE` and `0x75` without a player (degraded, skipped by size) next to the same bytes with a player; `0x75` asks `StopSfx(b1)` (the byte after it is non-zero) and never plays; `0xBD` and `0x12` stay plays and ask no stop | 5 / 6 |
+| `Alundra.Tests/Ai/Objects/PillarAiStopSoundTests.cs` | 4: the stop of the 25 once when the contact ends after a push, none while pushing, none on the next idle tick; none for a pillar never touched, next to the one pushed; the pillar of the map 26 in the real world (`PillarRun`): the player receives the stop once at the frame 103, none at 101 and 102, none after, the stop is not a play; a hero that walks past stops nothing, next to the one that pushed | 4 / 4 |
+| `Alundra.Tests/Events/StopSoundSitesTests.cs` | 2: the census read from the export (392 `0xBE` on 119 maps, 12 on the chain maps 10, 135, 178, 391, 43 ids, 204 on the id 25, no `0x75`); each of the 392 sites through the real runner asks the stop of its id (3 bytes, no play, some ids above 255) | 1 / 2 |
+
+Red on the skeleton: **22 of 24**. The two that are green from the start are pins by design, not new behaviour: the census of the data (it cannot be red on code) and "`0xBD` and `0x12` stay plays" (the plan asks them unchanged).
+The 22 red tests name the missing behaviour (`StopRequests` empty, the voice still alive), none a compile or set-up failure.
+
+Proof that the 24 are right and not only red: with the prototype body of the discovery wired by hand (the 12 lines of `SoundPlayer.StopSfx`, the two runner lines, the pillar's call; restored byte for byte from a backup, SHA-1 checked) the 24 are **green**, in particular the pillar
+world test (stop at the frame 103). That wiring is not committed; phase B (T2) writes the real one.
+
+### Suites on the skeleton (Release, neutralised copy, the same partitions)
+
+| partition | tests | failures | of which new |
+|---|---|---|---|
+| 1 | 1 311 | 16 | 16 |
+| 2 | 2 877 | 6 | 6 |
+| 3 | 1 802 | 0 | 0 |
+| sum | 5 990 | 22 | 22 |
+
+5 990 = 5 966 + 24. Compared by name with the T0 trx: **no existing test moved** (the two of the predicted list, `PlaySound2Bis_0xBE_...` and `PlaySoundEffect_0x75_...`, are still green on the skeleton because the opcodes still call `PlaySfx`; they move in T2).
+`python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 existing warning, `TextBoxGpu.cs`). The four `docs/hero-trace-389-*.txt` rewritten by the suites (line endings): `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, restored by `git checkout`, never indexed.

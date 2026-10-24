@@ -51,4 +51,12 @@ public interface ISoundPlayer
     /// (<see cref="FlushFrameSounds"/>'s own concern, fact 5 - a distinct mechanism from this one).
     /// </summary>
     void StopAllSfx();
+
+    /// <summary>
+    /// E20.g5c (docs/plan-e20-heros.md section 1.24.6, D-G5C-1, D-G5C-2): <c>StopSoundEffect</c> (<c>0x80049634</c>), the stop of ONE sound - backs opcodes 0xBE and 0x75 and the end of the push of the pillar (C76): every live voice of the
+    /// REQUESTED <paramref name="sfxId"/> is stopped and forgotten, whichever object started it, so the cap of the sound is free again at once. A no-op for the id 0, an unknown id or a voice already finished; not gated by the master fade
+    /// machine's armed state; never touches the per-frame anti-duplicate table (<see cref="FlushFrameSounds"/>'s own concern). A default member that does nothing, like the precedent of <c>IEntityWorldContext</c>, so that the recorders of the
+    /// tests that do not care are not forced to write it; <see cref="SoundPlayer"/> and the recorders that observe the stop override it.
+    /// </summary>
+    void StopSfx(int sfxId) { }
 }
