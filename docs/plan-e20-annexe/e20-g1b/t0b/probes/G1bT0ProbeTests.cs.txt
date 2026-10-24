@@ -1,0 +1,185 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Microsoft.Xna.Framework;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Physics;
+using Alundra.Session;
+using Alundra.Transitions;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Hero;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>
+/// E20.g1b T0 (docs/plan-e20-annexe/e20-g1b/t0/): the DLL probes of the contact of the hero per tick (b1 in the air, b2 on the ground, b3 O-G3-3 on the map 392), a MEASUREMENT: never committed as a test, never an assertion on a value.
+/// They write their lines to the file named by the environment variable G1BT0_OUT.
+/// </summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G1bT0ProbeTests : IDisposable
+{
+    private const int B = ScriptHelper.ProgramBMap;
+    private const int FirstWindow = 221;
+    private const uint R = PadState.Right;
+    private const uint SQ = PadState.Square;
+    private const uint UP = PadState.Up;
+    private const uint CROSS = PadState.Cross;
+
+    public G1bT0ProbeTests()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private static readonly string OutPath = Environment.GetEnvironmentVariable("G1BT0_OUT") ?? Path.Combine(Path.GetTempPath(), "g1bt0.txt");
+
+    private static void Out(string line) => File.AppendAllText(OutPath, line + "\n", new UTF8Encoding(false));
+
+    /// <summary>The pad word of each tick (1-based) from a list of (ticks, hold), like gl.pad_script of the oracle.</summary>
+    private static Func<int, uint> Script(params (int N, uint Hold)[] seq)
+    {
+        var d = new Dictionary<int, uint>();
+        var t = 1;
+        foreach (var (n, h) in seq)
+        {
+            for (var i = 0; i < n; i++)
+            {
+                d[t++] = h;
+            }
+        }
+
+        return tick => d.TryGetValue(tick, out var v) ? v : 0u;
+    }
+
+    private static CarryRig Scene(int ticksPerFrame, Func<int, uint> hold)
+    {
+        var rig = CarryRig.Build(ticksPerFrame, hold, probeFactory: host => new MovementObstacleProbe(host), heroX: 100f, heroY: 100f);
+        rig.Rig.SetAnimSet(new AnimSetEntry { Anim = 0, Speed = 0, Acceleration = 1 }); // T0b: the idle at the acceleration byte 1, as RunMontage
+        rig.AddCrate(130, 100, 0, sizeX: 21, sizeY: 15, sizeZ: 16, offsetX: -10, offsetY: -7, prefabBody: true);
+        return rig;
+    }
+
+    private static string Row(CarryRig rig, int tick)
+    {
+        var h = rig.Hero;
+        return $"t{tick:D2} x={h.PosX / 65536.0:F4} z={h.PosZ / 65536.0:F1} xcoll={(h.XCollisionEntity == null ? "-" : "crate")} anim={h.TargetAnimationId} adj={h.ForceAdjusted} fx={h.ForceX / 65536.0:F4} carried={(h.CarriedEntity != null ? 1 : 0)}";
+    }
+
+    // ---- (b1) in the air: the script of g15 a), without Square ---------------------------------------------------------------------------------
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void B1_TheContactInTheAir_NoSquare(int tpf)
+    {
+        var rig = Scene(tpf, Script((3, R), (1, R | CROSS), (14, R)));
+        Out($"== b1 air, no Square, {tpf} tick(s) per frame (oracle: contact crate at t5 and t6, nil t7 t8 t9; z 5.0 9.5 13.5 17.0 20.0 22.5 for t4..t9; anim 2, 44, 44 for t4..t6)");
+        rig.Run(14, tick => Out(Row(rig, tick)));
+    }
+
+    [Theory]
+    [InlineData(1, 6)]
+    [InlineData(1, 7)]
+    [InlineData(1, 8)]
+    public void B1_TheAirWithSquare_TheStubReturnsNothing(int tpf, int edge)
+    {
+        var rig = Scene(tpf, Script((3, R), (1, R | CROSS), (edge - 5, R), (1, R | SQ), (14, R)));
+        Out($"== b1 air, Square edge t{edge}, {tpf} tick(s) per frame (the stub PlayerTryAction lifts nothing: only the contact of the ticks before the Square is comparable)");
+        rig.Run(12, tick => Out(Row(rig, tick)));
+    }
+
+    // ---- (b2) on the ground: the lines A to G of c3 ----------------------------------------------------------------------------------------------
+
+    private static readonly (string Name, (int, uint)[] Seq, int Compared)[] Lines =
+    {
+        ("A hold RIGHT t1-9, release+Square at t10", new[] { (9, R), (1, SQ), (10, 0u) }, 9),
+        ("B hold RIGHT t1-9, release at t10, Square at t11", new[] { (9, R), (1, 0u), (1, SQ), (10, 0u) }, 10),
+        ("C hold RIGHT t1-9, Square at t10 still holding RIGHT", new[] { (9, R), (1, R | SQ), (10, R) }, 9),
+        ("D release t10-14, RIGHT again t15, Square at t15", new[] { (9, R), (5, 0u), (1, R | SQ), (10, R) }, 16),
+        ("D2 same with Square at t16", new[] { (9, R), (5, 0u), (1, R), (1, R | SQ), (10, R) }, 15),
+        ("E Square at t5", new[] { (4, R), (1, R | SQ), (10, R) }, 16),
+        ("E2 Square at t6", new[] { (5, R), (1, R | SQ), (10, R) }, 5),
+        ("F Square HELD from t1 with RIGHT", new[] { (20, R | SQ) }, 16),
+        ("G UP held, Square at t10", new[] { (9, UP), (1, UP | SQ), (10, 0u) }, 16),
+    };
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void B2_TheContactOnTheGround_LinesAToG(int tpf)
+    {
+        foreach (var (name, seq, compared) in Lines)
+        {
+            var rig = Scene(tpf, Script(seq));
+            Out($"== b2 ground {name}, {tpf} tick(s) per frame (compared ticks t1..t{compared})");
+            rig.Run(20, tick => Out(Row(rig, tick)));
+        }
+    }
+
+    // ---- (b3) O-G3-3: the map 392, the hero on rec5 pushing south into the pile ---------------------------------------------------------------------
+
+    private static ArcSpec Spec(string name) => new(
+        name, "The Klark", "Ship Klark (night, inner, break)-392", new[] { 1641 }, 29, 13, 4, 6000, RealController: true, Prefabs: true);
+
+    private static ArcRun Open(string name)
+    {
+        var arc = new ArcRun(Spec(name));
+        arc.RunUntil(() => arc.Has(B, 104, 0x11), "B1 executes 0x11 @104 (the hero takes the hand)");
+        while (arc.Frame < FirstWindow)
+        {
+            arc.OneFrame();
+        }
+
+        return arc;
+    }
+
+    private static void ToNextWindow(ArcRun arc)
+    {
+        arc.ReleaseDirections();
+        arc.OneFrame();
+        while ((arc.Frame - FirstWindow) % 16 != 0)
+        {
+            arc.OneFrame();
+        }
+    }
+
+    [Fact]
+    public void B3_OG33_FromTheTopOfRec5_ContactPerTick()
+    {
+        using var arc = Open("g1bt0-b3");
+        ToNextWindow(arc);
+        arc.PlaceHero(636, 296, 80);
+        for (var i = 0; i < 3; i++)
+        {
+            arc.OneFrame();
+        }
+
+        Out("== b3 O-G3-3 map 392: hero placed (636, 296, 80), idle 3 frames, then DOWN x10 (binary R7: t37 y=296.812, t38 y=297.000 contact none, t39 contact rec10; here tick 1 = t37)");
+        arc.HoldDirections(PadState.Down);
+        for (var t = 1; t <= 10; t++)
+        {
+            arc.OneFrame();
+            var h = arc.Hero;
+            Out($"t{t:D2} y={h.PosY / 65536.0:F4} z={h.PosZ / 65536.0:F3} xcoll={(h.XCollisionEntity == null ? "-" : "rec" + h.XCollisionEntity.EntityRefId)} adj={h.ForceAdjusted} anim={h.TargetAnimationId}");
+        }
+
+        arc.ReleaseDirections();
+    }
+}

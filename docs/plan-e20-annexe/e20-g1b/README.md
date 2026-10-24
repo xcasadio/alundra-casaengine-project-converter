@@ -131,3 +131,40 @@ Start HEAD `8fde4404`. Production does not change: the stub `PlayerTryAction(pla
 
 ### Gaps
 None found in phase A. The T0 stop (Q-G1B-1, Q-G1B-2) still blocks T2 to T4; phase B (T3) is not started.
+
+## T0b - T0 (b) replayed on the montage aligned on the real sheet (2026-10-24): DONE, no stop
+
+Plan: section 1.24.4 "Correction (2026-10-24)". The reading of the release (`walk-release-disc/`) found that the T0 probe montage (`CarryRig`, by `JumpNpcRig.HeroAttackClock`) gave the idle animation (0) the
+acceleration byte 0, where the real hero sheet has 1 (the Idle of `RunMontage`, `Alundra.Tests/Support/RunMontage.cs:65`).
+
+**Correction of the T0 text above ("in the port he stops dead", "Dans la DLL la force tombe a 0", question 1 of the T0 stop):** it was the montage that stopped dead, not the game. With the idle at the byte 1 the DLL makes the binary's
+half step at the release (see below). The lines B, D, D2 were never a difference of the game.
+
+### What was run (probes temporary, never committed)
+The two T0 probe classes (`t0/probes/*.cs.txt`) copied as `Alundra.Tests/Probes/*.cs`, with ONE line added right after `CarryRig.Build` (`rig.Rig.SetAnimSet(new AnimSetEntry { Anim = 0, Speed = 0, Acceleration = 1 })`; the files with
+the line are `t0b/probes/*.cs.txt`), run in Release with the neutralised copy (`--filter FullyQualifiedName~G1bT0ProbeTests`: 10 tests, 0 failure; then `G1bT0ReleaseProbeTests`: 2 tests, 0 failure; they assert nothing),
+then the copies removed (`git status`: no change under `Alundra/` or `Alundra.Tests/`). Outputs: `t0b/probes/dll-probe-b.txt`, `t0b/probes/dll-release-probe-b.txt`. The oracle outputs are those of T0 (`t0/out/`,
+`../e20-g1a/critic-scenarios/out/c3-contact-ticks.txt`, unchanged). The comparison: `t0b/compare_contacts_b.py` (the T0 script reading `dll-probe-b.txt`), output `t0b/out/compare-contacts-b.txt`, exit code 0.
+
+### Result (contact per tick at 1, 2 and 3 ticks per frame)
+| Line | Ticks compared | T0 | T0b |
+|---|---|---|---|
+| A, C, E, E2, F, G | as the plan | equal | equal |
+| **B** (Square t11) | t1..t10 | different at t10 | **equal** |
+| **D** (Square t15) | t1..t16 | different at t10 | **equal** |
+| **D2** (Square t16) | t1..t15 | different at t10 | **equal** |
+| air (b1), t4..t9 (contact, z, animation) | | equal | equal |
+
+All 27 ground comparisons and the 3 air comparisons are equal. At t10 of the line B the DLL has the contact of the crate, `fx` 1.2188, `adj` 1 (the binary: the same), and the contact clears at t11 (`xcoll=-`), where a Square at t11 lifts in the oracle (line B).
+The release without crate (`dll-release-probe-b.txt`, "in the open"): t10 x 121.9375, `fx` 1.2188, equal to the oracle (`t0/out/oracle-release-open-vs-crate.txt`) line by line (was 120.7188 and 0 with the idle at 0).
+The release against the crate: x, `fx`, contact and animation equal to the oracle at every tick t1..t13; **one remark, not a difference of the compared field**: `adj` (`ForceAdjusted`) is 1 at t6 in the DLL and 0 in the oracle (the oracle
+shows 1 from t7); the contact is the same at t5 and t6, `adj` is not compared by the plan and not read by `PlayerTryAction` (it reads `XCollisionEntity`). Same in T0 (`t0/probes/dll-release-probe.txt`).
+
+### O-G3-3 on the aligned montage
+The case is a map 392 arc (`ArcRun`, `RealController`), whose hero is the real one, not a `CarryRig`: the probe `B3_OG33_FromTheTopOfRec5_ContactPerTick` is unchanged by the line and was replayed in the same run: **identical to T0, line by line**
+(`dll-probe-b.txt`, section b3: tick 1 y 296.8125 contact nil, **tick 2 y 297.0 contact rec10**, `ForceAdjusted` from tick 3), against the binary (`t0/out/og33-square.txt`: t38 contact nil, t39 contact rec10). So O-G3-3 stays the gap of one tick
+consigned by D-E20-77 (the contact is set one tick earlier in the DLL; a Square on that tick would lift rec10 where the binary swings the sword); to be pinned by a named test, the code unchanged (engine slice later). It does not depend on the montage.
+
+### Consequence for the plan
+T0 (b2) holds: no stop remains. The expected values are not changed. T2 to T4 may start; every `CarryRig` test of the lifting (m1, m7 and the others) must run on the idle at the byte 1, i.e. the line is to be put in `CarryRig.Build` (the one line of
+`walk-release-disc/report-main.md` section 5, 0 existing test moved according to that reading, to be re-measured when it is done) - not done here (no code commit in T0b).
