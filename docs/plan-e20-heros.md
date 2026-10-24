@@ -10266,6 +10266,110 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : rendre les cinq entrées à leurs bouchons ; la phase A reste inerte.
 
+#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2 ; ferme O-H-1 ; à relire par un `plan-verifier` frais)
+
+**Provenance.** Lecture seule du 2026-10-24 (HEAD `86d421b5` ; `report-main.md` et le critique frais `critic-main.md`, CONFIRMÉ avec des
+corrections reprises ici, dans le scratchpad de la session principale `scratchpad/t2-cape/`, à verser par T0 à
+`docs/plan-e20-annexe/e20-h2-disc/`). O-H-1 n'avait pas de propriétaire.
+
+**Prérequis.** E20.h0a faite (le cadre de l'usage d'un objet : `ItemInUse`, le compteur, la table de départ, de pilote et d'annulation, la
+garde du menu Start, la branche verrouillée) ; E20.e0d faite (le coffre : la seule source normale de la cape est le coffre de la carte 402) ;
+même branche du thème 2. La tranche ne dépend ni de g1a ni de g1b (la cape ne porte rien).
+
+**But.** Comme l'original : sur le sable, Rond (avec la cape de sable choisie) fait plonger Alundra sous le sable (72 ticks) ; elle s'y déplace
+(une marche, et une ruée au front de Triangle, Croix ou Carré), invulnérable, hors des collisions d'entités, sans ombre ; elle ne peut avancer
+que sur du sable à son niveau ; Rond, immobile et au sol, la fait sortir (72 ticks) si rien ne la recouvre ; sinon le son 3. Aujourd'hui, Rond
+avec la cape ne fait rien.
+
+**Faits** (FAIT, MESURÉ ; `t2-cape/report-main.md` §2 à §5, corrigé par `critic-main.md`).
+- **Le départ** (`0x80034320`) a deux branches. (1) Aucun objet en cours : la pente du héros (`+0x18C`, `Slope_18c`) doit valoir 3 et l'état être
+  0 ou 1 ; sinon le son 3 ; succès : l'état `0x20`. (2) La cape en cours (`0x8003436C`-`0x80034520`) : l'état `0x22`, `+0xE4` et `+0xE8` nuls, au
+  sol, et aucune entité ne recouvre la boîte du héros ; succès : l'état `0x21` ; tout échec : le son 3. La pente n'est pas testée en sortie.
+- **La boucle de la sortie** parcourt les emplacements 1 à `[0x80134360]` et ne compte une entité que si son statut est 2 ou 3, `+0x20` nul,
+  `Flags & 0x80`, l'octet d'animation `& 0x80` nul, `+0x28` nul ; le recouvrement utilise la position modifiée des deux côtés, asymétrique par
+  axe (bornes rejouées). La DLL ne peut pas réutiliser `EntityCollision.FindEntityCollisionCandidate` (sa porte de sujet rend toujours null
+  pour un héros sous le sable) ni la liste `Collidables` (sans le filtre de statut ni `BlockedByEntity`) : une boucle dédiée, qui lit
+  `HitAnimByte` (l'octet du tick, pas `AnimFlags`, qui a une image de retard : O-G3-2).
+- **Le pilote** (`0x80035260`) : hors des états `0x20`-`0x24`, il rend 1 (l'enveloppe libère l'objet) ; en l'air ou sur la pente 4, il annule ;
+  sinon il rend 0. L'enveloppe (`0x8003634C`) incrémente le compteur après le pilote. L'annulation par défaut met l'objet à 0 sans toucher
+  l'état : un verrou du contrôle libère l'objet, l'état reste `0x22`, puis Alundra passe en attente sans l'animation de sortie.
+- **Les états** (table `0x80022D3C`) : `0x20` et `0x24` (`0x8003251C`), `0x22` et `0x23` (`0x800324B8` : le front de Triangle, Croix ou Carré
+  donne `0x24`, une direction tenue `0x23`, sinon `0x22`), `0x21` (`0x80032680`, `TryUseItem` seul). Ni attaque, ni `PlayerTryAction`, ni
+  interaction. En eau profonde, la table de nage envoie les cinq états à `0x1D`.
+- **Les animations** (la fiche du héros) : `0x20` 72 ticks puis `0x22` ; `0x21` 72 ticks puis l'attente ; `0x22` en boucle ; `0x23` 32 ticks par
+  cycle, son 11 à chaque cycle ; `0x24` 16 ticks, son 17 ; l'octet `0xD0` (ou `0xD4`, `0xD1`) : invulnérable (`0x40`), hors des collisions
+  d'entités (`0x80`), sans ombre (`0x10`). Vitesses sans bottes : marche 49152 par tick (0,75 px), ruée 110592 ; avec les bottes (#26 à #28), le
+  double (le bit `0x08` des cases de sable divise la cible par deux sans bottes).
+- **Le confinement au sable** (`0x80037488`, le test de murs du héros, rejoué sur quatre terrains) : tant que la cape est en cours (`ItemInUse
+  == 0x20`, pas l'état), un coin est un mur s'il n'est pas du sable (`(case & 0xE00) != 0x600`) ou pas exactement au niveau du héros (`Z !=
+  hauteur + 1` : plus haut ou plus bas). Alundra ne sort du sable qu'au Rond.
+- **La pente 3** est le minimum des propriétés des quatre coins (`ProbeSlopeCorner`, déjà porté) : un coin de sable suffit si les autres ont une
+  propriété ≥ 3 à la même hauteur (le sable contre l'eau profonde : cartes 4, 8, 18, 314, 416) ; le départ passe alors avec un coin que le test
+  de murs bloque. Les cases de sable ont les propriétés 6, 22, 134, 150, 70 et la walkabilité `0x18` ; 30 cartes, 10 331 cases.
+- **Les sources** : le coffre de la carte 402 (entité 0, contenu 32) ; deux ramassages créés par `0x8A` (type 62, l'objet 32) sur les cartes 10 et
+  331 (B[13] pc 1597), dont la chaîne est gardée par un drapeau qu'une scène de la carte 17 pose (rôle dans l'histoire non établi) ; les sites
+  `0x82 [32]` sont des chargements d'équipement de test. Aucun script ne lit ni n'écrit les états `0x20` à `0x24`.
+- **La cape aquatique #40** : refusée au Rond (h0a), son seul usage est le script de la carte 7 (`0x83 [40, 1]`, déjà porté) ; rien à porter ici.
+- **La DLL au HEAD** : rien de la cape (`TryUseItem` est un bouchon, le pilote et l'annulation vides, les cinq états absents) ; `PlayerManagerTests`
+  prend `0x20` comme exemple d'état non porté, et h0a (a6) aussi.
+
+**Décisions de la session** (défauts réversibles, comme l'original ; §2, Q-H2-*).
+- **D-H2-1** (Q-H2-1) — Le confinement au sable comme l'original : sous le sable, Alundra n'avance que sur du sable à son niveau.
+- **D-H2-2** — Le menu Start refusé tant que la cape est en cours : déjà tranché pour tout objet en cours (Q-H3-4, « fidèle ») ; rien de neuf.
+- **D-H2-3** (Q-H2-3) — La source : la tranche vient après E20.e0d (le coffre de la 402) ; les recettes passent aussi par des préréglages.
+- **D-H2-4** (Q-H2-4) — Le sable à courant (cartes 403 à 405 et 19) ne dérive pas avant E20.i2 : hors tranche.
+- **D-H2-5** (Q-H2-5) — Un verrou du contrôle (un dialogue, une scène) remonte Alundra sans l'animation de sortie, comme l'original.
+- **D-H2-6** — La règle de terrain s'attache à `ItemInUse == 0x20` ; elle passe par le champ de cases de la DLL (un bit « cape » que le champ
+  interprète, posé au départ et retiré à l'annulation), si T0 prouve qu'il peut dire « bloqué si pas du sable » et « plus bas est un mur » avec
+  le pied que donne le moteur (pied + `StepHeight`) ; sinon c'est un manque du moteur, consigné, et un arrêt.
+- **D-H2-7** — La boucle de la sortie est une fonction dédiée sur les entités du monde, avec les filtres du binaire et `HitAnimByte`.
+- **D-H2-8** — Les exemples « état non porté » de `PlayerManagerTests` et de h0a (a6) prennent un autre état non porté (recompté au HEAD).
+
+**Périmètre.** `Alundra/Hero/` (le départ à deux branches, la boucle de la sortie, les entrées de table de h0a pour `0x20`, les cinq états dans
+`MovePlayer`) ; le champ de cases de la DLL (`Alundra/Cells/` ou `Alundra/Physics/`, la règle de terrain) ; `Alundra/SaveGames/TestSaves.cs` et
+ses tables, `docs/test-saves.md` ; les tests ; l'annexe `docs/plan-e20-annexe/e20-h2/` ; un ADR neuf ; ce plan (O-H-1 fermé).
+
+**Hors périmètre.** La poussière du pas (E20.e2) et l'ombre (aucun rendu) ; les courants (E20.i2) ; la blessure du héros (E20.c2b :
+l'invulnérabilité se teste à la passe de coups) ; le moteur.
+
+**Tâches.**
+- ⏳ **T0 — Versement, oracle, sondes** (commit de docs). (a) Les prérequis ; (b) verser la lecture (`scratchpad/t2-cape/`, sans les copies
+  d'annexes et les `__pycache__`) à `docs/plan-e20-annexe/e20-h2-disc/` ; (c) les clés de l'oracle rejouées depuis une copie (le départ, la
+  sortie et ses bornes, le pilote, les chronologies C1 à C5, les vitesses, les terrains F1 à F4) ; plus : le coin mixte (un coin de sable contre
+  de l'eau profonde au même niveau), le son 11 de chaque cycle de `0x23`, les deux escaliers de la carte 402 que la cape ne franchit pas ; (d)
+  sondes de la DLL (tests jetables, jamais commités, versés en `.txt`) : la règle de terrain par le champ (D-H2-6) sur F1 à F4 et le coin mixte
+  (arrêt si elle n'est pas exprimable) ; l'horloge des animations (72, 72, 16, 32) ; la traversée d'une entité par le balayage du contrôleur
+  (pas seulement la sonde de l'ADR-0047 du moteur) ; l'écart O-G3-2 au premier tick ; (e) les cases des préréglages : carte 402 (9, 16, 1),
+  carte 450 (20, 46, 2), carte 19 (44, 40, 2 : un bloc sans courant ; pas (46, 30), qui est sur un courant), carte 26 (7, 34, 1), carte 406
+  (12, 10, 1) ; (f) la liste prédite des tests déplacés.
+- ⏳ **T1 — Phase A, tests d'abord** (rouges avant, puis verts ; aucun changement de production) : le départ (la grille pente 0 à 7 × états 0, 1, 2,
+  `0x2B`) ; la sortie (les 12 lignes d'état et de force ; la pente non testée) ; la boucle (les bornes de X, Y, Z ; les filtres ; les bornes de
+  boucle) ; le pilote.
+- ⏳ **T2 — Phase B, tests de monde rouges avant** (le vrai contrôleur) : le plongeon (72 ticks, son 15) ; la marche et la ruée (vitesses, avec et
+  sans bottes) ; l'arrêt au bord du sable (F1), devant une marche descendante (F2) et montante (F3) ; la sortie (72 ticks, puis l'attente,
+  l'objet libéré au tick suivant) ; le refus (Rond sur l'herbe, pendant la ruée, quand une entité recouvre la boîte : le son 3) ; le verrou du
+  contrôle qui remonte Alundra sans l'animation de sortie ; l'eau profonde ; l'invulnérabilité et la traversée d'une entité ; puis le
+  câblage (les entrées de table, les cinq états, la règle de terrain) ; verts. Les exemples « état non porté » réécrits (D-H2-8).
+- ⏳ **T3 — Préréglages, suites, mutants, ADR** : les préréglages de T0 (e) et leurs tables ; la suite entière en Release (copie neutralisée) puis
+  en Debug en dernier, zéro échec, partitions disjointes ; les traces de la 389 ; `cmp` ; `check_names.py --rules` ; au moins 12 mutants réels,
+  tous tués (la pente 3 en 2 ; l'état < 2 en ≤ 2 ; la sortie qui teste la pente ; un filtre de la boucle retiré ; `AnimFlags` au lieu de
+  `HitAnimByte` ; le recouvrement symétrique ; le pilote qui n'annule pas en l'air ; la règle de terrain attachée à l'état au lieu de l'objet ;
+  « plus bas » accepté ; la ruée sans le front ; la vitesse sans la division par deux ; le son 3 oublié) ; un ADR neuf ; O-H-1 fermé.
+- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (c) identiques ; les tests de T1 et T2 rouges avant leur phase et verts après (nommés) ; la suite en Release et
+en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (f), chacun réécrit par dérivation ; le moteur, le convertisseur et les données sans
+diff. **Recette de l'auteur** (non bloquante) : sur `cape-m402` (ou la sauvegarde `cape-de-sable.sav`) : plonger, marcher, ruer, viser le bord
+(l'arrêt), sortir, Rond sur l'herbe (le son 3), Start refusé sous le sable, les bottes de sable (la vitesse pleine).
+
+**Arrêts.** Un prérequis non rempli ; la règle de terrain non exprimable par le champ de la DLL (un manque du moteur, consigné) ; un scénario de
+l'oracle qui diverge au-delà d'une épingle de tick ; un test hors de la liste prédite bouge ; un test qui boucle.
+
+**Budget.** Un `executor` par phase ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** La phase B se retire seule (les entrées de table et les états : la cape ne fait plus rien) ; la phase A ne change aucun
+comportement.
+
 ### 1.31 E20.h4 — Les magies des tomes ⏳ (h4a, h4b1, h4c1, h4e1 **READY** ; h4d1 **READY** à sa relecture supplémentaire du 2026-10-22 ; h4c2 et h4d2 READY puis **à réviser** après les réponses du 2026-10-22 ; h4b1b abandonnée ; h4b2 fondue dans E20.i2 ; h4e2 à h4f2 esquissées)
 
 **Provenance.** Lecture au binaire du cadre et des tomes du 2026-10-17 et sa critique (`docs/plan-e20-annexe/e20-h4/`, `report.md` et `check.md`,
@@ -11352,6 +11456,9 @@ les trois entrées `0x31`.
 | Q-E0D-4 | (2026-10-25, E20.e0d) L'objet n'apparaît qu'une fois le couvercle ouvert (61 images invisibles), puis monte. Comme l'original ? Défaut : oui (D-E0D-5) | l'auteur ; non bloquant |
 | Q-E0D-5 | (2026-10-25, E20.e0d) 20 coffres sont vides dans les données ; l'original les dessine ouverts (le portage les dessine fermés aujourd'hui). Faire comme l'original ? Défaut : oui (D-E0D-7) | l'auteur ; non bloquant |
 | Q-E0D-6 | (2026-10-25, E20.e0d) Quatre sauvegardes de test pour essayer les coffres : la carte 15 (la Graine magique, l'argent, des herbes), la carte 11 (un vase sans drapeau, réouvrable), la carte 0 (les armes de la carte de test), la carte 117 (la clé qui ouvre la porte de la 115). Défaut : les quatre (D-E0D-11) | l'auteur ; non bloquant |
+| Q-H2-1 | (2026-10-25, E20.h2, à l'auteur en termes de jeu) Sous le sable, l'original ne laisse Alundra avancer que sur du sable à son niveau : le bord du sable, une marche (vers le haut ou vers le bas) ou une case qui n'est pas du sable l'arrête ; elle ne ressort qu'avec Rond. (A, défaut) comme l'original ; (B) la laisser sortir du sable en marchant | l'auteur ; non bloquant |
+| Q-H2-4 | (2026-10-25, E20.h2) Le sable des cartes 403 à 405 et 19 a des courants ; ils ne font pas encore dériver Alundra (E20.i2). (A, défaut) la cape sans les courants, ils viennent avec E20.i2 ; (B) faire E20.i2 d'abord | l'auteur ; non bloquant |
+| Q-H2-5 | (2026-10-25, E20.h2) Si un dialogue ou une scène commence pendant qu'Alundra est sous le sable, l'original la fait remonter d'un coup, sans l'animation de sortie. Comme l'original ? Défaut : oui (D-H2-5) | l'auteur ; non bloquant |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
 | Q-G1A-3 | (2026-10-17) Un objet lancé ne blesse, avant E14.b, que les cibles dont le gestionnaire D est porté (Beannoïde, Muruta) : confirmer **Réponse de l'auteur (2026-10-22)** : « oui » : confirmé. | Tranché le 2026-10-22 |
@@ -11426,7 +11533,7 @@ les trois entrées `0x31`.
 | Q-H3-6 | (2026-10-18) h3a en tête de h3 (D30, E12, `(E, 19)`) et l'arc A362 avant h3a ? Défaut : oui (la critique : le couvercle réagit sans D30 ni E12) **Réponse de l'auteur (2026-10-22)** : le défaut : confirmé. | Tranché le 2026-10-22 |
 | Q-H3-7 | (2026-10-18) La racine destructible (D32, sprite 253, deux placements, carte 8, hors chaîne) : dans h3a ou à E14 ? Défaut : la laisser **Réponse de l'auteur (2026-10-22)** : le défaut : confirmé. | Tranché le 2026-10-22 |
 | Q-H3-8 | (2026-10-18) Les sons éventuels des effets 2, 6, 8, 9, 12 ne sont pas décodés (comme Q-H4-5) ; h3b compare les sons du code seuls (T0 (f)) | le portage de l'interpréteur d'effets (hors E20.h) |
-| O-H-1 | (2026-10-18) La cape de sable (objet `0x20`, états `0x20` à `0x24`, pilote `0x80035260`) n'est dans aucune tranche ; ses deux sites `jal 0x8002ED64` attendent son port | à placer |
+| O-H-1 | (2026-10-18) La cape de sable (objet `0x20`, états `0x20` à `0x24`, pilote `0x80035260`) n'est dans aucune tranche ; ses deux sites `jal 0x8002ED64` attendent son port | E20.h2 (§1.30.6, détaillée le 2026-10-25) |
 | O-H-2 | (2026-10-18) La case de sortie (`+0x188 & 0x80`, l'annulation `0x80032770` puis le mode 1) n'est pas portée : `TileAttributes` n'est jamais écrit | à placer (E19 ou E20.c2b) |
 | O-H-3 | (2026-10-18) Le second site de garde `0x8002BB94` (Start + Select, la potion de secours) n'a pas d'équivalent dans la DLL. **Lu au binaire le 2026-10-18 (E20.h1)** : ce n'est pas une potion de secours mais le geste Start + Select tenu 121 images, qui consomme un Breuvage de soin s'il y en a un puis tue le héros ; il relève d'E18 (Q-H1-2) ; la décompilation commente l'écriture de `+0x1CC = 0x78` **Fermé le 2026-10-22** : le geste n'est pas porté (Q-H1-2, D-E20-50). | Tranché le 2026-10-22 (D-E20-50) |
 | O-H-5 | (2026-10-18) Un soin ramassé que le sac refuse (Herbe à 9, potions à 1) est bu sur place dans l'original (`0x80033F00`, C255) : à ajouter à E20.e0c à sa prochaine révision (Q-H1-3) **Précisé le 2026-10-22** : Q-H1-3 (B) ajoute le coffre (`0x82`) à h1 (D-E20-51) ; le ramassage (C255) reste à e0c, qui le porte déjà avec `GiveItem` (l'Herbe « utilisée si l'inventaire est plein », §1.26) et l'étend aux objets posés à sa révision (D-E20-47). **Révision 3 d'e0c (2026-10-22)** : D-E0C-10 couvre le soin sur place de tous les objets posés ; la ligne se ferme avec l'exécution d'e0c. | E20.e0c |
