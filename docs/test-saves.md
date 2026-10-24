@@ -133,6 +133,18 @@ For the recipe of the lift of the map 22 (docs/plan-e19-opcodes.md section 1.2h.
 The arrival tile is south of the right-hand lever. A start already on the platform is impossible: the state of the lever (the temporary flags T1 and T3) is not saved. Strike the lever, go down into the hollow, jump onto the platform and wait:
 Alundra rises with the platform, with no slide and no fall (before D5b he went through it and ended at the bottom of the hollow). On the way up, a barrel or a crate put on the platform rises with it too.
 
+### Barricade preset (E20.g4a)
+
+For the barricade of the ship Klark (docs/plan-e20-heros.md section 1.29.1): the way out of the corridor of the portal is shut by crates, and the hero passes them by the jump. The new game's kit, the flag G1641 posed (the start of the arc A5).
+
+| Preset | Map, tile, z | Owned | Equipped |
+|---|---|---|---|
+| `barricade-m392` | 392 (Ship Klark, night, inner), (29, 13), 4 | the kit's items 1, 17, 25 | the basic sword |
+
+The map program walks the hero 48 pixels east and then gives him the hand. Hold Down, then Left along the north wall of the door (the game lines the hero up on y = 295 plus a multiple of half a pixel), and when he is flush against the crates
+(x = 657, y between 295 and 297) press Cross and Left together: he lands on the low crate, walks off its west edge, goes round the crate in his way by the south and reaches the portal. Entering the door further south (y above 297) refuses the jump.
+Do not hold a direction when the ship polls the pad (every 16 ticks): the hero rolls in a random direction.
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;

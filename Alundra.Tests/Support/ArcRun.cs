@@ -308,7 +308,14 @@ internal sealed class ArcRun : IDisposable
     /// gives (0 for an arc absent from it) when it ends. The arcs that slide are the hero, without <c>NoObstacleSlide</c>, against a cell corner, as the binary does: A10J at (47827968 ; 51838976) going north (corner [0] alone),
     /// A14 going south (direction 0, corner [2]) twice since E20.a; A18 slid once at (62312448 ; 9895936) before E20.a and no longer does.
     /// </summary>
-    private static readonly Dictionary<string, int> ArcsThatSlide = new() { ["A10J"] = 1, ["A14"] = 2 };
+    private static readonly Dictionary<string, int> ArcsThatSlide = new()
+    {
+        ["A10J"] = 1, ["A14"] = 2,
+        // E20.g4a T1 (docs/plan-e20-annexe/e20-g3/g4a-route/README.md (d)): the calage against the north wall of the door of the map 392 is a run of second steps of half a pixel (the law 295 + ((y0 - 295) mod 0.5)),
+        // one name per cadence (1, 2, 3 ticks per image); the arc a3 has no calage (absent: 0).
+        ["A5j-a1-k1"] = 10, ["A5j-a1-k2"] = 9, ["A5j-a1-k3"] = 12,
+        ["A5j-a2-k1"] = 10, ["A5j-a2-k2"] = 9, ["A5j-a2-k3"] = 12,
+    };
     // E20.a (D-E20-11): A14 makes 2 second steps (the hero walks one tick earlier against the map programs: a second corner contact, measured, a0-mesure.md) and A18 none (a map event
     // spawns an entity at frame 278 that the lists, now refreshed before the physics of the tick, already count as an obstacle: no second step along the wall).
 

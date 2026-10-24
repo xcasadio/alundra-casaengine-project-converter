@@ -80,7 +80,10 @@ public sealed class TestSavesTests : IDisposable
     // E19.d2c2 D5b T7: the lift of the map 22 (docs/plan-e19-opcodes.md section 1.2h.3.2b, D-D5B-10), the last of the table.
     private const string ElevatorPresetName = "elevator-m22";
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName];
+    // E20.g4a T1: the barricade of the ship Klark (docs/plan-e20-heros.md section 1.29.1), the last of the table.
+    private const string BarricadePresetName = "barricade-m392";
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName];
 
     public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName]);
 
@@ -435,6 +438,27 @@ public sealed class TestSavesTests : IDisposable
         Assert.Equal(22, save.InitialMapId);
         Assert.Equal((46, 8, 2), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
         Assert.All(save.GameFlags, word => Assert.Equal(0u, word)); // the state of the lever (T1, T3) is temporary and not saved: nothing is posed.
+
+        // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), nothing else.
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    [Fact]
+    public void TheBarricadePreset_IsTheNewGameAtTheShipKlarksStart_WithOnlyTheFlagG1641()
+    {
+        var rules = RealRules();
+        var save = Build(BarricadePresetName);
+
+        // The ArcSpec of the arc A5 (ShipCorridorArcTests): map 392, tile (29, 13), level 4, flag 1641 = word 51 (1641 >> 5), bit 9 (1641 & 31) = 0x200.
+        Assert.Equal(392, save.InitialMapId);
+        Assert.Equal((29, 13, 4), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        for (var word = 0; word < save.GameFlags.Length; word++)
+        {
+            Assert.Equal(word == 51 ? 0x200u : 0u, save.GameFlags[word]);
+        }
 
         // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), nothing else.
         var expectedCounts = new int[256];

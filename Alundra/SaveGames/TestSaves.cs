@@ -147,6 +147,12 @@ public static class TestSaves
         // E19.d2c2 D5b T7 (docs/plan-e19-opcodes.md section 1.2h.3.2b, D-D5B-10, D-E19-124): the lift of the map 22. Tile (46, 8), level 2, south of the right-hand lever, on the new game's kit. A start already on the platform is
         // impossible (the state of the lever, the temporary flags T1 and T3, is not saved): strike the lever, go down into the hollow, jump onto the platform and wait; Alundra rises with it.
         new Preset("elevator-m22", "test-elevator-m22", 22, 46, 8, 2, [], [], [], []),
+
+        // E20.g4a T1 (docs/plan-e20-heros.md section 1.29.1): the barricade of the ship Klark (map 392). Tile (29, 13), level 4, with the flag G1641 posed (the same start as the arc A5: the ArcSpec of
+        // ShipCorridorArcTests). The map program B1 walks the hero 48 pixels east to (775, 216), then leaves him the hand: hold Down, then Left along the north wall of the door (the hero is aligned
+        // on y = 295 + a multiple of 0.5), jump (Cross + Left) when he is flush against the crates (x = 657), land on the low crate, walk off its west edge and go round the crate rec9 by the south.
+        // Do not hold a direction when the ship polls the pad (every 16 ticks): the hero rolls in a random direction.
+        new Preset("barricade-m392", "test-barricade-m392", 392, 29, 13, 4, [1641u], [], [], []),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>
