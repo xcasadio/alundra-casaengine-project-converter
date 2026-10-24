@@ -16,8 +16,8 @@ namespace Alundra.Ai.Objects;
 /// <item><description>carried with a code of throw (1, 2, 3 or -1 through the table <c>0x80027400</c>, <see cref="ReleaseAnimation"/>): the animation of the flight, the code back to 0, the two links cleared (the carrier's <c>+0x2C</c> and its own
 /// <c>+0x28</c>), the riding relation cleared (D-G-12), and the flags <see cref="ReleasedFlags"/>.</description></item>
 /// </list>
-/// The code -1 is written by mode 2 of <c>UpdatePlayerCarriedEntity</c> (a wound, deep water, a death), the codes 1 to 3 by the throw of the hero (g2a). E2, the destruction on arrival, is g2b's. Not registered by <see cref="NativeSpriteRegistry.CreateForProduction"/> in
-/// phase A: <see cref="Register"/> is called by the tests, and by the production registry from phase C.
+/// The code -1 is written by mode 2 of <c>UpdatePlayerCarriedEntity</c> (a wound, deep water, a death), the codes 1 to 3 by the throw of the hero (g2a). E2, the destruction on arrival, is g2b's. Registered by <see cref="NativeSpriteRegistry.CreateForProduction"/> since
+/// phase C (inert while nothing is carried); the tests of the world register it themselves only when the key is absent.
 /// </summary>
 internal static class LiftableAi
 {

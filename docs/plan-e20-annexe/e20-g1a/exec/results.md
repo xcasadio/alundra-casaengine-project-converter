@@ -189,3 +189,34 @@ power glove, item 0x3B; kind 3 is the heavy one that keeps the stand), the stub 
 ### Left for the next tasks
 
 T4 (phase C): `CreateForProduction` registers (C, 23) for the seven types; the pins of the registry (`NativeSpriteRegistryTests`, `WaveSwordLifeTests`) move there by derivation; (r1) and (r2). T5: the ADR, the mutants of the DLL code (the list of 18), the two fresh verifiers, and the plan's commun T0 owed.
+
+## T4 - phase C, the registration
+
+Start HEAD `b0a627f2` (T3). Files: `Alundra/Ai/NativeSpriteRegistry.cs` (one line, `LiftableAi.Register(registry);` in `CreateForProduction`, and its doc), `Alundra/Events/EventProgramRunner.cs` (doc of `NativeSprites`, which listed only five of the nine classes), `Alundra/Ai/Objects/LiftableAi.cs` (class doc: registered since phase C); tests `Alundra.Tests/Ai/Objects/LiftableAiRegistrationTests.cs` (r1) and `LiftableAiMap392Tests.cs` (r2).
+
+### The tests, written before the line
+
+- **(r1)** `LiftableAiRegistrationTests` (16 cases): `R1_TheProductionRegistryHoldsC23_ForEachOfTheSevenTypes`, `R1_TheRunnerOfProduction_HoldsTheKeyToo`, `R1_TheKeyIsInTheSlotCOnly_AndTheCountOfTheProductionRegistryIsTheSumOfTheCountsOfTheClasses` (the sum of the `Register` of the nine classes, derived), and `R1_TheKeyIsNotRegisteredForAnyOtherSpriteType` (13 neighbour types, green before and after, each next to the three red positive cases).
+- **(r2)** `LiftableAiMap392Tests` (2 cases), on the real map 392 (Ship Klark, night, inner; the arc spec of `ShipCorridorArcTests`, real prefabs, real controller): `R2_TheCratesAtRestOfTheMap392_KeepEveryFieldFor100Frames_WhileTheHandlerRunsForThem` (every primitive/enum property and field of every liftable object of the map equal after 100 frames but the six clocks every entity advances - `AnimCompleteCounter`, `BoxTicks`, `FrameCounter`, `MotionTickCount`, `PhysicsDoneInPass`, `SupportTickCount`, measured as the only six that differ - and `NativeHandlerRunCounts[(C, 23)]` at least crates x frames / 2), next to `R2_ACarriedCrateOfTheSameMap_IsReleasedByTheCodeOfTheThrow_WhichChangesItsFields` (`PutInHands`, code -1: animation 3, code 0, links cleared, flags changed).
+
+### Red before the line, green after
+
+Measured on the production without the line (full suite, Release, neutralised copy): **8 red, nothing else**: the five new ones (`R1_TheRunnerOfProduction_HoldsTheKeyToo`, `R1_TheProductionRegistryHoldsC23_ForEachOfTheSevenTypes`, `R1_TheKeyIsInTheSlotCOnly_...`, `R2_TheCratesAtRest..._` (C23 never ran), `R2_ACarriedCrate...`) and the three pins, which are already rewritten (they expect +1): so the same 8 are red with the line removed from the final tree, which is the plan's removal proof (r1 and r2 exactly, plus the pins). (w8) and every world test of T2 stay green without the line (they register C23 themselves only when the key is absent).
+
+### Existing tests moved: three, all in the predicted list, rewritten by derivation (the old count plus `LiftableAi.Keys.Count`)
+
+| Test | Rewrite |
+|---|---|
+| `Ai/NativeSpriteRegistryTests : ProductionRunner_RegistryHoldsTheHandlersOf...` | `+ LiftableAi.Keys.Count` |
+| `Ai/Projectiles/WaveSwordLifeTests : V3_TheProductionRegistryHoldsTheKeysOfItsClasses...` | `+ LiftableAi.Keys.Count` |
+| `Ai/Projectiles/ChargedArrowAiTests : C2_TheProductionRegistry_HoldsTheKeyForTheType7...` | `LiftableAi.Register(sum)` and `+ LiftableAi.Keys.Count` |
+
+Deviation from the predicted colour: `ChargedArrowAiTests.C2_` was listed "own-class count, expected green"; it asserts the sum of the classes (a third pin of the registry), so it moved. It was named in the list, so the stop "a test outside the list moves" does not apply. `PillarAiRegistrationTests` and `ArrowAiTests.E5_` stayed green as predicted. No other existing test moved (arcs on maps with crates, `EntityDestructionTests.TR2_`, `LootRollWorldTests.Rolls.M3_`, `EntityContactArcTests.TH4_`, `VisionAndCoastArcTests.A3_` green).
+
+### Measured
+
+Suite in three disjoint partitions by test namespace (as T1 and T3), `--blame-hang-timeout 60s`, Release with the neutralised copy then Debug built last: 1 242 + 2 757 + 1 802 = **5 801 tests, 0 failure** in both (5 783 at the end of T3 + 18). `docs/hero-trace-389-*.txt` rewritten by the suites (line endings) and restored, `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0 after both; `cmp` of `Alundra/bin/Debug/net9.0-windows/Alundra.dll` and `alundra-project/Alundra.dll`: equal. `check_names.py --rules`: 0 finding. No diff of `RunHeroVerticalTick`, `SnapHeroAtApex`, the engine, the converter or the data.
+
+### Left for T5
+
+The ADR (next free number to recount over the branches), the mutants of the DLL code, the two fresh verifiers, and the commun T0 owed (`docs/plan-e20-annexe/e20-g/`).
