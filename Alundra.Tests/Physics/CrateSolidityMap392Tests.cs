@@ -172,6 +172,27 @@ public sealed class CrateSolidityMap392Tests : IDisposable
         Assert.Equal(10, rows[^1].Contact);
     }
 
+    /// <summary>
+    /// E20.g1b T2 (D-E20-77, O-G3-3): PINNED, NOT FOLLOWED. Seen from the top of rec5, the DLL sets the contact of the neighbouring crate of the pile (rec10) on the tick that shortens the step; the binary sets it ONE TICK LATER
+    /// (the route R7 replayed on the machine of the oracle, <c>docs/plan-e20-annexe/e20-g1b/t0/out/og33-square.txt</c>: t37 y = 296.812 no contact, t38 y = 297.000 no contact, t39 contact rec10; here the tick 1 is t37). The consequence once
+    /// <c>PlayerTryAction</c> reads that contact (the activation, T3): a Square pressed on the tick that follows the arrival lifts rec10 in the DLL where the binary swings the sword (a Square at t37, t38 or t39 gives the sword; from t40 the lift).
+    /// The value below is the DLL's, with the binary's value beside it: a slice of the engine will correct the contact (the probe of the movement) and then this test is rewritten to the binary's rows, [1] = -1 and [2] = 10.
+    /// </summary>
+    [Fact]
+    public void OG33_FromTheTopOfRec5_TheDllSetsTheContactOfRec10OneTickBeforeTheBinary_PinnedNotFollowed()
+    {
+        using var arc = Open("g1b-og33");
+
+        var rows = Walk(arc, 636, 296, 80, PadState.Down, 10, settleFrames: 3);
+
+        Assert.Equal(296.8125, rows[0].Y, 4);
+        Assert.Equal(-1, rows[0].Contact);   // the binary: no contact at t37 either.
+        Assert.Equal(297.0, rows[1].Y, 4);
+        Assert.Equal(10, rows[1].Contact);   // THE DLL's VALUE. The binary (t38): no contact (-1).
+        Assert.Equal(297.0, rows[2].Y, 4);
+        Assert.Equal(10, rows[2].Contact);   // the binary (t39): rec10, from here on both agree.
+    }
+
     // ---- (s3) P-G3-3: the flush case ---------------------------------------------------------------------------------
 
     [Fact]

@@ -83,7 +83,10 @@ public sealed class TestSavesTests : IDisposable
     // E20.g4a T1: the barricade of the ship Klark (docs/plan-e20-heros.md section 1.29.1), the last of the table.
     private const string BarricadePresetName = "barricade-m392";
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName];
+    // E20.g1b T2: the recipe of the lifting on the map 72 (docs/plan-e20-heros.md section 1.24.4, D-E20-71), the last of the table.
+    private const string LiftPresetName = "porter-m72";
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName];
 
     public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName]);
 
@@ -99,7 +102,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheThirteenPresets_AreListed_InTheOrderOfTheTable()
+    public void TheFifteenPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -459,6 +462,24 @@ public sealed class TestSavesTests : IDisposable
         {
             Assert.Equal(word == 51 ? 0x200u : 0u, save.GameFlags[word]);
         }
+
+        // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), nothing else.
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    [Fact]
+    public void TheLiftPreset_IsTheNewGameOnTheWestBankOfTheCoastalCave_WithNoFlag()
+    {
+        var rules = RealRules();
+        var save = Build(LiftPresetName);
+
+        // Map 72 (Coastal Cave), tile (10, 12), level 3 (the bank, 48 px): the jar of the record 37 is 48 px to the west, the barrel of the record 1 behind it (docs/plan-e20-annexe/e20-g1b/README.md, T0 (a)).
+        Assert.Equal(72, save.InitialMapId);
+        Assert.Equal((10, 12, 3), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word));
 
         // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), nothing else.
         var expectedCounts = new int[256];

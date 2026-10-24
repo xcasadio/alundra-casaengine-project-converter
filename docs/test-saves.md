@@ -145,6 +145,19 @@ The map program walks the hero 48 pixels east and then gives him the hand. Hold 
 (x = 657, y between 295 and 297) press Cross and Left together: he lands on the low crate, walks off its west edge, goes round the crate in his way by the south and reaches the portal. Entering the door further south (y above 297) refuses the jump.
 Do not hold a direction when the ship polls the pad (every 16 ticks): the hero rolls in a random direction.
 
+### Lifting preset (E20.g1b)
+
+For the lifting of jars, crates and stones (docs/plan-e20-heros.md section 1.24.4, D-E20-71): the map 72 (Coastal Cave) has the three things of the recipe within a few steps. The new game's kit, no flag.
+
+| Preset | Map, tile, z | Owned | Equipped |
+|---|---|---|---|
+| `porter-m72` | 72 (Coastal Cave), (10, 12), 3 | the kit's items 1, 17, 25 | the basic sword |
+
+The arrival tile is on the west bank (48 px high). A save does not carry the direction (always south): walk west into the jar 48 px away (the "Cruche generique" of the record 37) and press the Square: Alundra lifts it over her head (36 images), then carries it.
+Carry it west and jump (Cross + Left) onto the barrel behind it, a top of 16 px (the barrel itself is not liftable: the Square against it swings the sword). Throw the jar with the Square: it flies and breaks.
+The platform "Plateforme flottante (grande)" shuttles 96 px east and west by itself over the lagoon, at 64 px (its top is at 72); the 80 px peninsula that touches its west end is not reachable on foot from the bank (it is 32 px up), so riding it with a jar
+is shown by the arc of the tests, not by this save.
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;

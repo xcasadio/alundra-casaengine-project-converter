@@ -153,6 +153,12 @@ public static class TestSaves
         // on y = 295 + a multiple of 0.5), jump (Cross + Left) when he is flush against the crates (x = 657), land on the low crate, walk off its west edge and go round the crate rec9 by the south.
         // Do not hold a direction when the ship polls the pad (every 16 ticks): the hero rolls in a random direction.
         new Preset("barricade-m392", "test-barricade-m392", 392, 29, 13, 4, [1641u], [], [], []),
+
+        // E20.g1b T2 (docs/plan-e20-heros.md section 1.24.4, D-E20-71): the recipe of the lifting, on the map 72 (Coastal Cave). Tile (10, 12), level 3 (the west bank, 48 px high), on the new game's kit with no flag: the jar "Cruche generique" of the record 37 stands
+        // 48 px to the west of the arrival, at (204, 200), the barrel (record 1, a top of 16 px) at (180, 200) 24 px behind it; walk west into the jar and press the Square (a save cannot carry the direction, always south). Carry the jar west, jump onto the barrel (Cross + Left),
+        // and throw it with the Square: it breaks. The platform "Plateforme flottante (grande)" (record 2) shuttles 96 px east and west by itself over the lagoon at 64 px (top 72); the peninsula of 80 px that touches its west end is not reachable on foot from the bank
+        // (32 px up), so the ride of the platform is a recipe of the arc and not of the save.
+        new Preset("porter-m72", "test-porter-m72", 72, 10, 12, 3, [], [], [], []),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>

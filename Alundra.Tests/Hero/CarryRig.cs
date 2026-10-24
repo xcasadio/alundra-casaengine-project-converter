@@ -188,6 +188,9 @@ internal sealed class CarryRig
             attackClock: true,
             hostFactory: (flags, controller) => host = new CarryHost(flags, controller),
             kineticBody: kineticHero);
+        // E20.g1b T2 (docs/plan-e20-annexe/e20-g1b/walk-release-disc/report-main.md section 5): the idle of the real sheet of the hero has the acceleration byte 1 (94 animations of 94 equal to the binary), the bench of JumpHeroRig gives it 0,
+        // which stopped the hero dead at the release of the walk where the binary makes a half step (the force 2.4375 -> 1.2188 -> 0). The carrying montage takes the byte of the real sheet.
+        rig.SetAnimSet(new AnimSetEntry { Anim = 0, Speed = 0, Acceleration = 1 });
         var carry = new CarryRig(rig, host!, ticksPerFrame, hold ?? (_ => 0u));
         rig.Hero.TargetDirection = 24; // east, as the oracle.
         rig.Hero.LogicContextEntity = rig.HeroEntity; // what the world sets on every entity: the link of an object in the hands is the logic entity of the hero.
