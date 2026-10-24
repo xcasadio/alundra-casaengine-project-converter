@@ -7340,7 +7340,7 @@ rejoué sur le vrai code ; ce qui n'est qu'inférence est dit.
   au bord d'une bande `0x1001` ; P3 `HitCounter` à T+21 ; P4 le `RidingEntity` d'un objet posé sur une plaque.
 
 
-#### 1.24.6 E20.g5 — Les vrais objets à pousser : g5a (piliers), g5b (les opcodes des boutons), g5c (l'arrêt du son), g5d (les objets scriptés) ⏳ (2026-10-23, D-E20-63 ; g5a **faite et CONFIRMED le 2026-10-23** (ADR-0086) ; g5b, g5c, g5d esquissées)
+#### 1.24.6 E20.g5 — Les vrais objets à pousser : g5a (piliers), g5b (les opcodes des boutons), g5c (l'arrêt du son), g5d (les objets scriptés) ✅ (2026-10-23, D-E20-63 ; g5a **faite et CONFIRMED le 2026-10-23** (ADR-0086) ; g5b, g5c, g5d **faites et CONFIRMED le 2026-10-24** (g5c : ADR-0090))
 
 **Lecture seule du 2026-10-23** (HEAD `46589b86`, annexe `docs/plan-e20-annexe/e20-g5/disc/`, `report.md`). Les étiquettes sont celles
 de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYPE, INFÉRENCE.
@@ -7385,7 +7385,7 @@ de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYP
 - **g5b, les opcodes `0x72`, `0xA9` et `0xAA`** : détaillée ci-dessous (révision 0, lecture au binaire du 2026-10-23), prélevée sur
   E19.sm3 et E19.sm4 du thème 3, qui les portaient déjà avec leurs preuves (D-G5B-1). Elle débloque aussi les blocs Mini-Nilude.
 - **g5c, l'arrêt du son** (`0xBE` = `StopSoundEffect`, `ISoundPlayer.StopSfx`, l'arrêt de C76) : l'auteur a répondu « corriger » le
-  2026-10-24 (D-E20-67) ; détaillée ci-dessous (révision 0) après une lecture au binaire. Son T0 établit si le moteur sait arrêter un bruitage précis ; sinon le manque se consigne au rapport des
+  2026-10-24 (D-E20-67) ; détaillée ci-dessous après une lecture au binaire, **faite et CONFIRMED le 2026-10-24**. Son T0 établit si le moteur sait arrêter un bruitage précis ; sinon le manque se consigne au rapport des
   manques du moteur, sans contournement.
 - **g5d, les objets scriptés** : détaillée ci-dessous (révision 1) ; des arcs pour la statue (cartes 2 et 352) et le bloc de la 23 (les blocs
   glissants de la carte 40 sont prouvés par g5b, T3, ARC-40), un test statique « aucun opcode sauté dans les programmes des quatre familles », l'épingle du gel du héros après un programme F
@@ -7670,7 +7670,7 @@ frais après.
   à regarder à part.
 - **Recette de l'auteur, à faire** : `234-torla.sav` (carte 426), le bouton de droite par le nord.
 
-##### E20.g5c — L'arrêt du son : `StopSoundEffect` (opcodes `0xBE`, `0x75`, et la fin de C76) ⏳ (détaillée le 2026-10-24 ; D-E20-67 ; révision 0 relue : REVISE ; révision 1 du 2026-10-24, **READY** à la deuxième relecture, `plan-verifier` frais ; exécutable après E20.g2b)
+##### E20.g5c — L'arrêt du son : `StopSoundEffect` (opcodes `0xBE`, `0x75`, et la fin de C76) ✅ (détaillée le 2026-10-24 ; D-E20-67 ; révision 0 relue : REVISE ; révision 1 du 2026-10-24, **READY** à la deuxième relecture, `plan-verifier` frais ; exécutable après E20.g2b ; **faite et CONFIRMED le 2026-10-24** par deux verifiers frais ; ADR-0090)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `b36a78a7`, le code du son inchangé jusqu'à `1a98ef5d` ; annexe
 `docs/plan-e20-annexe/e20-g5/g5c-disc/`, `report.md`), après la réponse de l'auteur D-E20-67.
@@ -7752,7 +7752,7 @@ ADR et l'ADR-0086 amendé ; `docs/decisions/README.md` ; ce plan.
 **Hors périmètre.** Le moteur (G1, G2) ; l'export et le convertisseur ; les gestionnaires C39, C40, C49 ; les libellés de la table des tailles.
 
 **Tâches.**
-- ⏳ **T0 — Relecture et rejeu** (commit de docs).
+- ✅ **T0 — Relecture et rejeu** (commit de docs).
   - Vérifier les prérequis : E20.g2b close au plan, l'arbre de travail propre sur `Alundra/`, `Alundra.Tests/` et `docs/plan-e20-annexe/`.
     Arrêt sinon.
   - Relire au HEAD de départ les sites ci-dessus, les deux tests, le nombre d'implémenteurs d'`ISoundPlayer` (dont ceux qu'ont ajoutés les
@@ -7760,7 +7760,7 @@ ADR et l'ADR-0086 amendé ; `docs/decisions/README.md` ; ce plan.
   - Rejouer depuis une copie `stop_oracle.py` et `handlers_oracle.py` (sorties égales à celles de l'annexe).
   - Relever les comptes de tests, et re-mesurer la liste prédite des tests déplacés par un câblage temporaire annulé ensuite (le motif de
     la lecture, `cmp_trx_out.txt`). Arrêt si un test autre que les deux de la lecture bouge ; il faut alors revenir au plan.
-- ⏳ **T1 — Phase A, tests d'abord** (rouges sur un squelette qui compile : `StopSfx` vide, les opcodes encore en `PlaySfx`).
+- ✅ **T1 — Phase A, tests d'abord** (rouges sur un squelette qui compile : `StopSfx` vide, les opcodes encore en `PlaySfx`).
   - `SoundPlayer` : arrête les voix de l'id et pas les autres ; les deux tonalités du son 85 ; le plafond libéré ; Play après Stop dans la même
     image refusé par l'anti-doublon ; rien pour l'id 0, un id inconnu, une voix finie ; non bloqué par l'état « armé » ; la redirection par
     `RefSfxId` ; un seul arrêt coupe le son d'un autre objet (D-G5C-5).
@@ -7769,12 +7769,12 @@ ADR et l'ADR-0086 amendé ; `docs/decisions/README.md` ; ce plan.
   - Le pilier : l'arrêt de l'id 25 une fois, à la fin de la poussée.
   - Un test statique : les 392 sites `0xBE` sur 119 cartes et 0 `0x75`.
   - Chaque cas « sans effet » accolé à un positif.
-- ⏳ **T2 — Phase B** (verte).
+- ✅ **T2 — Phase B** (verte).
   - `SoundPlayer.StopSfx`, `case 0xBE`, `case 0x75`, l'appel du pilier (le bouchon retiré), les tests déplacés réécrits par dérivation.
   - Des tests de monde avec le vrai `SoundPlayer` sur le faux moteur audio (`FakeAudioBackend`) : le pilier de la carte 26 (la voix vivante
     pendant la poussée, arrêtée au relâchement, image 103) ; le bouton de Torla, carte 426 (`0xBE` à l'image 215 ; la voix vivante à 214,
     éteinte à 216). Les sondes de l'annexe donnent les montages et les valeurs.
-- ⏳ **T3 — Mutants, suites, ADR.**
+- ✅ **T3 — Mutants, suites, ADR.**
   - Mutants réels, appliqués par script puis annulés, tous tués :
     - `0xBE` encore en `PlaySfx` ;
     - `0xBE` en `StopAllSfx` ;
@@ -7789,7 +7789,7 @@ ADR et l'ADR-0086 amendé ; `docs/decisions/README.md` ; ce plan.
   - `Alundra.Tests` en Release (copie neutralisée) puis en Debug en dernier, zéro échec, en partitions disjointes ; `cmp` de la DLL ;
     `check_names.py --rules` ; les traces du héros intactes ; le moteur, le convertisseur et les données sans diff.
   - L'ADR (D-G5C-8) ; `engine-gaps.md` (G1, G2).
-- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.**
 - Les tests de T1 sont rouges sur le squelette et verts après ; les tests de monde de T2 aussi.
@@ -7804,6 +7804,28 @@ liste prédite bouge ; le recensement ne redonne pas 392, 119 et 12 ; un besoin 
 **Budget.** Un `executor` pour T0 et T1, un pour T2, un pour T3 ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
 
 **Retour arrière.** `git revert` du commit de code : le son redevient en boucle, le pilier retrouve son bouchon.
+
+**Résultats (2026-10-24).** Exécution en mode AUTO, HEAD de départ `de1861a2`. Mesures : `docs/plan-e20-annexe/e20-g5/g5c/README.md`.
+- **Commits.** `fd8caaab` (T0 : les prérequis, 392 sites sur 119 cartes dont 12 sur la chaîne, les deux oracles rejoués sans écart, la liste
+  prédite re-mesurée) ; `370bdeef` (T1 : 24 tests, 22 rouges sur le squelette, les 2 verts sont des épingles) ; `31de49ee` (T2 :
+  `SoundPlayer.StopSfx`, `case 0xBE` et `case 0x75` en arrêt, le pilier sans son bouchon, quatre tests de monde sur le vrai `SoundPlayer`) ;
+  `5e3b53a5` (T3 : mutants, suites, ADR-0090, l'ADR-0086 amendé, `engine-gaps.md` avec G1 et G2).
+- **Sur le vrai `SoundPlayer`** (le vrai manifeste, le faux moteur audio) : le pilier de la carte 26 a une voix en boucle de l'image 34 au
+  relâchement, aucune après l'image 103 ; le bouton de Torla (carte 426) a une voix à l'image 214, aucune à 216. Sans l'arrêt (le contraste),
+  la voix vit encore 500 images après le relâchement.
+- **Tests.** `Alundra.Tests` : 5 966 au départ, 5 994 à la fin, zéro échec en Release (copie neutralisée) et en Debug. Les seuls tests
+  existants déplacés sont les deux de la liste prédite, réécrits par dérivation et renommés (`StopSound2Bis_0xBE_…_AsAStop`,
+  `StopSoundEffect_0x75_…_AsAStop`) ; `PillarRun.cs` et `PillarAiGoldenTests.cs` lisent `StopRequests` sans changer d'attendu ; aucun arc ne
+  bouge. Les épingles de `0xBD` et `0x12` tiennent.
+- **Mutants.** 19 réels (les 12 du plan et 7 variantes), 18 tués. **Écart accepté** : le retrait de `voices.Clear()` dans `StopSfx` survit
+  et il est équivalent — `AudioService.Stop` libère l'entrée (`IsAlive` devient faux) et `PlaySfx` élague les voix mortes avant de compter le
+  plafond (`PruneFinishedVoices`) ; les formes non équivalentes (voix oubliée mais vivante, une seule tonalité arrêtée) sont tuées. Un
+  verifier a rejoué six mutations indépendantes, toutes tuées.
+- **Le moteur, le convertisseur et les données** : sans diff depuis `de1861a2`. Les manques G1 (pas d'extinction : l'arrêt est net, Q-G5C-QA1)
+  et G2 sont consignés, sans contournement.
+- **Verifiers frais** : **CONFIRMED** tous deux. Remarques P4 : le `cmp` de la DLL n'est égal qu'au commit de T2 (le commit de docs de T3
+  change l'empreinte de construction, le code est identique) ; une variable locale `stubCalls` garde son ancien nom dans
+  `PillarAiGoldenTests.cs`.
 
 ##### E20.g5d — Les objets à pousser scriptés : statues, blocs, boutons (tests seuls) ✅ (détaillée le 2026-10-23 ; révision 0 relue : REVISE ; révision 1 du 2026-10-23, **READY** à la deuxième relecture, `plan-verifier` frais ; **faite et CONFIRMED le 2026-10-24**)
 
