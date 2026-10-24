@@ -7650,10 +7650,22 @@ frais après.
   à regarder à part.
 - **Recette de l'auteur, à faire** : `234-torla.sav` (carte 426), le bouton de droite par le nord.
 
-##### E20.g5c — L'arrêt du son : `StopSoundEffect` (opcodes `0xBE`, `0x75`, et la fin de C76) ⏳ (détaillée le 2026-10-24, révision 0 ; D-E20-67 ; à relire par un `plan-verifier` frais)
+##### E20.g5c — L'arrêt du son : `StopSoundEffect` (opcodes `0xBE`, `0x75`, et la fin de C76) ⏳ (détaillée le 2026-10-24 ; D-E20-67 ; révision 0 relue : REVISE ; révision 1 du 2026-10-24, à relire par un `plan-verifier` frais)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `b36a78a7`, le code du son inchangé jusqu'à `1a98ef5d` ; annexe
 `docs/plan-e20-annexe/e20-g5/g5c-disc/`, `report.md`), après la réponse de l'auteur D-E20-67.
+
+**Révision 1 (2026-10-24).** La relecture de la révision 0 (REVISE) a relevé l'absence de prérequis : la tranche partage des fichiers avec
+E20.g2b, encore en cours. Les prérequis ci-dessous fixent le HEAD de départ, et T0 les vérifie.
+
+**Prérequis.**
+- E20.g2b est faite et commitée, et ses verifiers ont rendu leur verdict. g5c travaille dans le même checkout, après elle, jamais en
+  même temps : g2b touche `Alundra/Events/EventProgramRunner.cs` et ajoute un implémenteur d'`ISoundPlayer` (`BreakRun.Sounds`).
+- Le HEAD de départ est celui qui suit la clôture de g2b au plan. L'arbre de travail y est propre sur `Alundra/`, `Alundra.Tests/` et
+  `docs/plan-e20-annexe/` (hors les marques connues des sous-modules et les fichiers non suivis de l'auteur sous `tools/`).
+- L'ordre : g2b, puis g5c, puis g3. g5c ne dépend d'aucune autre tranche de la série g.
+- Les chiffres de base cités ci-dessous (la suite de 5 913 tests, les deux tests déplacés, les 25 implémenteurs) datent de la lecture ;
+  T0 les re-mesure au HEAD de départ.
 
 **But.** Comme l'original : un son arrêté par le script ou par le pilier s'arrête. Le raclement de pierre (id 25) cesse à la fin de chaque
 mouvement : la glissade d'une statue, d'un bloc ou d'un bouton, la poussée d'un pilier. Aujourd'hui il tourne en boucle jusqu'à ce qu'on
@@ -7721,9 +7733,13 @@ ADR et l'ADR-0086 amendé ; `docs/decisions/README.md` ; ce plan.
 
 **Tâches.**
 - ⏳ **T0 — Relecture et rejeu** (commit de docs).
-  - Relire au HEAD de départ les sites ci-dessus, les deux tests, le nombre d'implémenteurs d'`ISoundPlayer`.
+  - Vérifier les prérequis : E20.g2b close au plan, l'arbre de travail propre sur `Alundra/`, `Alundra.Tests/` et `docs/plan-e20-annexe/`.
+    Arrêt sinon.
+  - Relire au HEAD de départ les sites ci-dessus, les deux tests, le nombre d'implémenteurs d'`ISoundPlayer` (dont ceux qu'ont ajoutés les
+    tranches faites depuis la lecture).
   - Rejouer depuis une copie `stop_oracle.py` et `handlers_oracle.py` (sorties égales à celles de l'annexe).
-  - Relever les comptes de tests et la liste prédite des tests déplacés.
+  - Relever les comptes de tests, et re-mesurer la liste prédite des tests déplacés par un câblage temporaire annulé ensuite (le motif de
+    la lecture, `cmp_trx_out.txt`). Arrêt si un test autre que les deux de la lecture bouge ; il faut alors revenir au plan.
 - ⏳ **T1 — Phase A, tests d'abord** (rouges sur un squelette qui compile : `StopSfx` vide, les opcodes encore en `PlaySfx`).
   - `SoundPlayer` : arrête les voix de l'id et pas les autres ; les deux tonalités du son 85 ; le plafond libéré ; Play après Stop dans la même
     image refusé par l'anti-doublon ; rien pour l'id 0, un id inconnu, une voix finie ; non bloqué par l'état « armé » ; la redirection par
@@ -7762,8 +7778,8 @@ ADR et l'ADR-0086 amendé ; `docs/decisions/README.md` ; ce plan.
 - **Recette de l'auteur** (non bloquante) : `92-ancien-sanctuaire-bug-pillier.sav` (pousser le pilier, le raclement cesse au relâchement) ;
   `234-torla.sav` (le raclement finit avec la glissade du bouton) ; `280-murgg.sav` (la statue de la carte 2).
 
-**Arrêts.** Un test existant hors de la liste prédite bouge ; le recensement ne redonne pas 392, 119 et 12 ; un besoin de changer le moteur ou
-les données ; un test qui boucle.
+**Arrêts.** Un prérequis non rempli (g2b pas close, un arbre de travail sale sur les fichiers de la tranche) ; un test existant hors de la
+liste prédite bouge ; le recensement ne redonne pas 392, 119 et 12 ; un besoin de changer le moteur ou les données ; un test qui boucle.
 
 **Budget.** Un `executor` pour T0 et T1, un pour T2, un pour T3 ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
 
