@@ -110,3 +110,24 @@ To watch in T1/T3 (outside the preset list, not predicted as moving but they pre
    stop, so your decision). Recommendation: A only if (1) is done, since both are "the contact follows the force of the tick".
 3. **The recipe map**: map 72 (Coastal Cave) is proposed; a pure east-west shuttle platform, jars and a barrel on the same bank, no lock. If you prefer a map where the platform links the jars to a goal the hero reaches by walking,
    say so; the arc (m2) will tell if the walk from the arrival to the platform with a jar is feasible.
+
+## T1 - Phase A (2026-10-24): `TryLift` and `PlayerTryAction` as pure functions, DONE
+
+Start HEAD `8fde4404`. Production does not change: the stub `PlayerTryAction(player, pad)` (`Alundra/Hero/PlayerManager.cs`, called after `TryUseItem`) still answers 0, nothing reads the new set, the climb state is untouched.
+
+### Commits
+1. `6fce52a8` `test(e20-g1b)`: the red tests (`Alundra.Tests/Hero/LiftPureTests.cs`, 37 cases) on a compiling skeleton (`TryLift` and `PlayerTryActionCore` answering 0, `ProductionWiredLiftableTypes`, `WiredLiftableTypesForTests`, `WiredLiftableTypes`). Run before the code: **23 red, 14 green** (the 14 are the "nothing happens" cases that a skeleton answering 0 satisfies; each is next to a positive case that is red). Red: the TryLift eight cases (genre 1 with and without the object, genres 2 and 3 with it), the target animation in the four ground/air x head/not-head cases, the offset on three axes, the wired set (genres 1 to 3 in the set), carried (ground, air), contact and front, contact without front to the loop, the loop (no button, air, status 3, blocked, first lift wins, genre 2 with `0x3B`), the hero without a logic entity.
+2. `af05ff2d` `feat(e20-g1b)`: the bodies. `TryLift(hero, contact, ownsPowerGlove, wiredTypes)` and `PlayerTryActionCore(hero, pad, entities, ownsPowerGlove, wiredTypes)` (internal static, explicit context, D-G-6); `ProductionWiredLiftableTypes` created EMPTY (model of `ProductionWiredWeaponTypes`), `WiredLiftableTypesForTests` (ThreadStatic) and `WiredLiftableTypes`. The 37 tests are green.
+
+### Decisions
+- The genre is `EntityFlags.GetPickupKind(contact.Flags)` (bits `0x600`); genre 0 or a type outside the set gives 0 (the same 0 for both); genres 2 and 3 give 0 without `ownsPowerGlove` (the sense of the binary, `0x8002EDF8`); a lift is `PutInHands` and 1.
+- `PlayerTryActionCore` order as `0x8002EEAC`: carried -> state `0x0C`/`0x30` and 1; `XCollisionEntity` set and `ButtonsJustPressed & Square` -> the answer of `TryLift`, even 0, the loop not run; otherwise the loop over the entities with no button: status 2 or 3, `BlockedByEntity` (`+0x20`) null, `RidingEntity` (`+0x12C`) the hero's `LogicContextEntity`; the first non-zero wins. A hero with a null `LogicContextEntity` returns 0 before the loop (the "null equals null" trap). The count `[0x80134360]` of the binary is the length of the list passed by the caller (phase B passes `IEntityWorldContext.SpawnedEntities`).
+- Expected values come from the plan's binary facts (g1a report 1.1 and 1.2), never from the DLL output. `ownsPowerGlove` and the set are explicit parameters; phase B computes the first from `GetNumberOfItem(state, 0x3B)`.
+
+### Results
+- Suite `Alundra.Tests`, Release, `skipcopy.targets`, partitions disjoint by full namespace with the final dot (1 = Arcs Ai Audio Cameras Cells Combat Dialogues; 2 = Entities Events ExportGuards Hero Items; 3 = the exact negation of the 12), `--blame-hang-timeout 60s`: **1 322 + 2 916 + 1 830 = 6 068 tests, 0 failure** (the previous count 6 031 + the 37 new). Debug not built (the main session does it at the end of the slice).
+- `docs/hero-trace-389-*.txt`: `git diff --ignore-cr-at-eol --quiet -- docs/` rc 0 (line endings only), restored by `git checkout --`.
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 pre-existing warning, `TextBoxGpu.cs`).
+
+### Gaps
+None found in phase A. The T0 stop (Q-G1B-1, Q-G1B-2) still blocks T2 to T4; phase B (T3) is not started.
