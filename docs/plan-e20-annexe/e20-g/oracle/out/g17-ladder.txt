@@ -1,0 +1,2 @@
+carry=False: slope seen [0, 6] ; hero anim changes after t60 ['t61 anim_t:0>1', 't66 anim_t:1>14'] ; hero Z max 35.00 ; y end 103.00
+carry=True: slope seen [6] ; hero anim changes after t60 ['t61 anim_t:12>7'] ; hero Z max 0.00 ; y end 103.00

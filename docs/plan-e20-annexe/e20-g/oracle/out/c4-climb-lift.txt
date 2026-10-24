@@ -1,0 +1,4 @@
+A climb, contact: Square edge t72, poke=True ; before: anim_t 14 z 6.00 ; lifted at tick 72 ; hero anim_t at t72 11, at t75 11 ; hero.+0x2C 80127FC4 ; changes ['t72 anim_t:14>11 carried2C:0>80127FC4', 't79 anim_t:11>12', 't80 anim_t:12>7']
+B climb, no contact: Square edge t72, poke=False ; before: anim_t 14 z 6.00 ; lifted at tick None ; hero anim_t at t72 14, at t75 14 ; hero.+0x2C 0 ; changes []
+C climb later, contact: Square edge t80, poke=True ; before: anim_t 14 z 14.00 ; lifted at tick 80 ; hero anim_t at t80 11, at t83 11 ; hero.+0x2C 80127FC4 ; changes ['t80 anim_t:14>11 carried2C:0>80127FC4']
+D idle on the ladder, contact: Square edge t62, poke=True ; before: anim_t 0 z 0.00 ; lifted at tick 62 ; hero anim_t at t62 5, at t65 5 ; hero.+0x2C 80127FC4 ; changes ['t62 anim_t:0>5 carried2C:0>80127FC4']

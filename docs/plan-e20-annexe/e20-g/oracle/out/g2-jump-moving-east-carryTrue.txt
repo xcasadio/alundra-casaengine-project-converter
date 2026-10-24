@@ -1,0 +1,54 @@
+JUMP moving-east carry=True
+t058 pad=0000 | H anim_t=12 anim_c=12 off38=32.0000 px=109.0000 pz=0.0000 fx=0.0000 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=109.0000 pz=32.0000 status=2 ground=0
+t059 pad=0000 | H anim_t=12 anim_c=12 off38=32.0000 px=109.0000 pz=0.0000 fx=0.0000 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=109.0000 pz=32.0000 status=2 ground=0
+t060 pad=0000 | H anim_t=12 anim_c=12 off38=32.0000 px=109.0000 pz=0.0000 fx=0.0000 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=109.0000 pz=32.0000 status=2 ground=0
+t061 pad=2040 | H anim_t=6 anim_c=6 off38=32.0000 px=111.4375 pz=5.0000 fx=2.4375 fz=5.0000 izf=1280 ground=0 collz=0 adj=0 | C1 px=111.4375 pz=37.0000 status=2 ground=0 | J snd(10)
+t062 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=113.8750 pz=9.5000 fx=2.4375 fz=4.5000 izf=0 ground=0 collz=0 adj=0 | C1 px=113.8750 pz=41.5000 status=2 ground=0 | J snd(0)
+t063 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=116.3125 pz=13.5000 fx=2.4375 fz=4.0000 izf=0 ground=0 collz=0 adj=0 | C1 px=116.3125 pz=45.5000 status=2 ground=0
+t064 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=118.7500 pz=17.0000 fx=2.4375 fz=3.5000 izf=0 ground=0 collz=0 adj=0 | C1 px=118.7500 pz=49.0000 status=2 ground=0
+t065 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=121.1875 pz=20.0000 fx=2.4375 fz=3.0000 izf=0 ground=0 collz=0 adj=0 | C1 px=121.1875 pz=52.0000 status=2 ground=0
+t066 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=123.6250 pz=22.5000 fx=2.4375 fz=2.5000 izf=0 ground=0 collz=0 adj=0 | C1 px=123.6250 pz=54.5000 status=2 ground=0
+t067 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=126.0625 pz=24.5000 fx=2.4375 fz=2.0000 izf=0 ground=0 collz=0 adj=0 | C1 px=126.0625 pz=56.5000 status=2 ground=0
+t068 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=128.5000 pz=26.0000 fx=2.4375 fz=1.5000 izf=0 ground=0 collz=0 adj=0 | C1 px=128.5000 pz=58.0000 status=2 ground=0
+t069 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=130.9375 pz=27.0000 fx=2.4375 fz=1.0000 izf=0 ground=0 collz=0 adj=0 | C1 px=130.9375 pz=59.0000 status=2 ground=0
+t070 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=133.3750 pz=27.5000 fx=2.4375 fz=0.5000 izf=0 ground=0 collz=0 adj=0 | C1 px=133.3750 pz=59.5000 status=2 ground=0
+t071 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=135.8125 pz=27.5000 fx=2.4375 fz=0.0000 izf=0 ground=0 collz=0 adj=0 | C1 px=135.8125 pz=59.5000 status=2 ground=0
+t072 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=138.2500 pz=27.0000 fx=2.4375 fz=-0.5000 izf=0 ground=0 collz=0 adj=0 | C1 px=138.2500 pz=59.0000 status=2 ground=0
+t073 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=140.6875 pz=26.0000 fx=2.4375 fz=-1.0000 izf=0 ground=0 collz=0 adj=0 | C1 px=140.6875 pz=58.0000 status=2 ground=0
+t074 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=143.1250 pz=24.5000 fx=2.4375 fz=-1.5000 izf=0 ground=0 collz=0 adj=0 | C1 px=143.1250 pz=56.5000 status=2 ground=0
+t075 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=145.5625 pz=22.5000 fx=2.4375 fz=-2.0000 izf=0 ground=0 collz=0 adj=0 | C1 px=145.5625 pz=54.5000 status=2 ground=0
+t076 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=148.0000 pz=20.0000 fx=2.4375 fz=-2.5000 izf=0 ground=0 collz=0 adj=0 | C1 px=148.0000 pz=52.0000 status=2 ground=0
+t077 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=150.4375 pz=17.0000 fx=2.4375 fz=-3.0000 izf=0 ground=0 collz=0 adj=0 | C1 px=150.4375 pz=49.0000 status=2 ground=0
+t078 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=152.8750 pz=13.5000 fx=2.4375 fz=-3.5000 izf=0 ground=0 collz=0 adj=0 | C1 px=152.8750 pz=45.5000 status=2 ground=0
+t079 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=155.3125 pz=9.5000 fx=2.4375 fz=-4.0000 izf=0 ground=0 collz=0 adj=0 | C1 px=155.3125 pz=41.5000 status=2 ground=0
+t080 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=157.7500 pz=5.0000 fx=2.4375 fz=-4.5000 izf=0 ground=0 collz=0 adj=0 | C1 px=157.7500 pz=37.0000 status=2 ground=0
+t081 pad=2000 | H anim_t=47 anim_c=47 off38=32.0000 px=160.1875 pz=0.0000 fx=2.4375 fz=-5.0000 izf=0 ground=1 collz=0 adj=0 | C1 px=160.1875 pz=32.0000 status=2 ground=0
+t082 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=162.6250 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=162.6250 pz=32.0000 status=2 ground=0 | J snd(11) fx(id=7,a2=0,x=160.188,y=100.000,z=0.000) fx(id=7,a2=0,x=160.188,y=100.000,z=0.000) fx(id=7,a2=0,x=160.188,y=100.000,z=0.000) snd(0)
+t083 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=165.0625 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=165.0625 pz=32.0000 status=2 ground=0
+t084 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=167.5000 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=167.5000 pz=32.0000 status=2 ground=0
+t085 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=169.9375 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=169.9375 pz=32.0000 status=2 ground=0
+t086 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=172.3750 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=172.3750 pz=32.0000 status=2 ground=0
+t087 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=174.8125 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=174.8125 pz=32.0000 status=2 ground=0
+t088 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=177.2500 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=177.2500 pz=32.0000 status=2 ground=0
+t089 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=179.6875 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=179.6875 pz=32.0000 status=2 ground=0
+t090 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=182.1250 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=182.1250 pz=32.0000 status=2 ground=0
+t091 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=184.5625 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=184.5625 pz=32.0000 status=2 ground=0
+t092 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=187.0000 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=187.0000 pz=32.0000 status=2 ground=0
+t093 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=189.4375 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=189.4375 pz=32.0000 status=2 ground=0
+t094 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=191.8750 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=191.8750 pz=32.0000 status=2 ground=0
+t095 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=194.3125 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=194.3125 pz=32.0000 status=2 ground=0
+t096 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=196.7500 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=196.7500 pz=32.0000 status=2 ground=0
+t097 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=199.1875 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=199.1875 pz=32.0000 status=2 ground=0 | J snd(0)
+t098 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=201.6250 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=201.6250 pz=32.0000 status=2 ground=0
+t099 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=204.0625 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=204.0625 pz=32.0000 status=2 ground=0
+t100 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=206.5000 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=206.5000 pz=32.0000 status=2 ground=0
+t101 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=208.9375 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=208.9375 pz=32.0000 status=2 ground=0
+t102 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=211.3750 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=211.3750 pz=32.0000 status=2 ground=0
+t103 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=213.8125 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=213.8125 pz=32.0000 status=2 ground=0
+t104 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=216.2500 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=216.2500 pz=32.0000 status=2 ground=0
+t105 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=218.6875 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=218.6875 pz=32.0000 status=2 ground=0
+t106 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=221.1250 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=221.1250 pz=32.0000 status=2 ground=0
+t107 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=223.5625 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=223.5625 pz=32.0000 status=2 ground=0
+t108 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=226.0000 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=226.0000 pz=32.0000 status=2 ground=0
+t109 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=228.4375 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=228.4375 pz=32.0000 status=2 ground=0
+t110 pad=2000 | H anim_t=7 anim_c=7 off38=32.0000 px=230.8750 pz=0.0000 fx=2.4375 fz=0.0000 izf=0 ground=1 collz=1 adj=0 | C1 px=230.8750 pz=32.0000 status=2 ground=0

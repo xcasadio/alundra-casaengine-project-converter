@@ -1,0 +1,20 @@
+M01 8002edd4 30420600->30420400 genre test: andi 0x600 -> 0x400                      KILLED by 10 scenario(s), first c3_contact.py: DIFF c3-contact.txt
+M02 8002ede0 10620009->14620009 genre test: beq (genre == 1) -> bne                  KILLED by 10 scenario(s), first c3_contact.py: DIFF c3-contact.txt
+M03 8002edfc 2404003b->2404003a GetNumberOfItem(0x3B) -> 0x3A                        KILLED by 1 scenario(s), first g9_lift_rules.py: DIFF g9-lift-rules.txt
+M04 8002ee00 10400024->14400024 branch of GetNumberOfItem: beqz -> bnez              KILLED by 1 scenario(s), first g9_lift_rules.py: DIFF g9-lift-rules.txt
+M05 8002ef20 30420080->30420040 Square mask 0x80 -> 0x40                             KILLED by 9 scenario(s), first c3_contact.py: DIFF c3-contact.txt
+M06 8002ef70 2c420002->2c420003 status test of the loop: sltiu 2 -> 3                KILLED by 1 scenario(s), first c5_status4.py: DIFF c5-status4.txt
+M07 8002ef94 14540005->10540005 +0x12C == hero: bne -> beq                           KILLED by 9 scenario(s), first c3_contact.py: DIFF c3-contact.txt
+M08 8002f98c 3c060001->3c060002 step 0x10000 of mode 0 (Z axis) -> 0x20000           KILLED by 2 scenario(s), first c1_equality.py: CRASH StopIteration
+M09 8002fa68 3c060002->3c060001 step 0x20000 of mode 1 (X axis) -> 0x10000           KILLED by 1 scenario(s), first c1_equality.py: DIFF c1-equality.txt
+M10 8002f9e4 34c6ffff->34c6fffe threshold 0x1FFFF -> 0x1FFFE                         KILLED by 1 scenario(s), first c1_equality.py: DIFF c1-equality.txt
+M11 8002f9cc 28620005->28620004 counter 5 -> 4                                       KILLED by 1 scenario(s), first c1_equality.py: DIFF c1-equality.txt
+M12 8002f94c 0064102a->0083102a slt of the equality of mode 0: operands swapped      KILLED by 1 scenario(s), first g10_upce_fuzz.py: DIFF g10-upce-fuzz.txt
+M13 8002f984 3c050020->3c050021 target 0x200000 -> 0x210000                          KILLED by 7 scenario(s), first c1_equality.py: DIFF c1-equality.txt
+M14 8007ed68 2403ffcf->2403ffef E2 mask ~0x30 -> ~0x10                               KILLED by 1 scenario(s), first g4_throw.py: DIFF g4-throw-moving-east.txt,g4-throw-still.txt,g4-throw-summary.txt
+M15 8006b8a8 2403ff7f->2403ffbf C23 mask ~0x80 -> ~0x40                              KILLED by 1 scenario(s), first g4_throw.py: DIFF g4-throw-moving-east.txt,g4-throw-still.txt,g4-throw-summary.txt
+M16 8006b8b0 34420030->34420020 C23 |0x30 -> |0x20                                   KILLED by 1 scenario(s), first g4_throw.py: DIFF g4-throw-moving-east.txt,g4-throw-still.txt,g4-throw-summary.txt
+M17 8006b878 24427400->24427404 table 0x80027400 -> 0x80027404                       KILLED by 2 scenario(s), first g4_throw.py: DIFF g4-throw-moving-east.txt,g4-throw-still.txt,g4-throw-summary.txt
+M18 80032370 30422000->30421000 guard 0x2000 -> 0x1000                               KILLED by 1 scenario(s), first g16_noaction.py: DIFF g16-noaction.txt
+M19 80032458 30424000->30428000 guard 0x4000 -> 0x8000                               KILLED by 1 scenario(s), first g16_noaction.py: DIFF g16-noaction.txt
+M20 8003237c 8e020098->8e02008c +0x98 read as +0x8C (throw table index)              KILLED by 2 scenario(s), first g4_throw.py: CRASH RuntimeError: access outside the 2 MB RAM at 7f3a3654 (pc 80036650)

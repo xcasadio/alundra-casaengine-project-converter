@@ -1,0 +1,40 @@
+== STATIONARY platform at x=300
+  [top 8.00 px] carry=False jump t100: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 208.9 platform X end 300.0
+  [top 8.00 px] carry=False jump t103: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 216.2 platform X end 300.0
+  [top 8.00 px] carry=False jump t106: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 223.6 platform X end 300.0
+  [top 8.00 px] carry=False jump t109: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 230.9 platform X end 300.0
+  [top 8.00 px] carry=False jump t112: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 238.2 platform X end 300.0
+  [top 8.00 px] carry=False jump t115: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 245.5 platform X end 300.0
+  [top 8.00 px] carry=False jump t118: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 252.8 platform X end 300.0
+  [top 8.00 px] carry=False jump t121: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 260.1 platform X end 300.0
+  [top 8.00 px] carry=False jump t124: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 267.4 platform X end 300.0
+  [top 8.00 px] carry=False jump t127: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 274.8 platform X end 300.0
+  [top 8.00 px] carry=True jump t100: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 208.9 platform X end 300.0
+  [top 8.00 px] carry=True jump t103: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 216.2 platform X end 300.0
+  [top 8.00 px] carry=True jump t106: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 223.6 platform X end 300.0
+  [top 8.00 px] carry=True jump t109: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 230.9 platform X end 300.0
+  [top 8.00 px] carry=True jump t112: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 238.2 platform X end 300.0
+  [top 8.00 px] carry=True jump t115: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 245.5 platform X end 300.0
+  [top 8.00 px] carry=True jump t118: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 252.8 platform X end 300.0
+  [top 8.00 px] carry=True jump t121: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 260.1 platform X end 300.0
+  [top 8.00 px] carry=True jump t124: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 267.4 platform X end 300.0
+  [top 8.00 px] carry=True jump t127: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 274.8 platform X end 300.0
+== platform WALKING WEST (anim 7) from x=420
+  [top 8.00 px] carry=False jump t76: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 150.4 platform X end 171.4
+  [top 8.00 px] carry=False jump t79: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 157.8 platform X end 178.8
+  [top 8.00 px] carry=False jump t82: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 165.1 platform X end 186.1
+  [top 8.00 px] carry=False jump t85: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 172.4 platform X end 193.4
+  [top 8.00 px] carry=False jump t88: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 179.7 platform X end 200.7
+  [top 8.00 px] carry=False jump t91: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z None ; crate-hero X None ; hero X end 187.0 platform X end 208.0
+  [top 8.00 px] carry=False jump t94: support==platform ticks 115..164 (50) ; hero-platform X offsets [-11.94] ; hero Z [8.0] ; crate-hero Z None ; crate-hero X None ; hero X end 100.6 platform X end 112.5
+  [top 8.00 px] carry=False jump t97: support==platform ticks 118..167 (50) ; hero-platform X offsets [1.0] ; hero Z [8.0] ; crate-hero Z None ; crate-hero X None ; hero X end 107.9 platform X end 106.9
+  [top 8.00 px] carry=True jump t76: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 150.4 platform X end 171.4
+  [top 8.00 px] carry=True jump t79: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 157.8 platform X end 178.8
+  [top 8.00 px] carry=True jump t82: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 165.1 platform X end 186.1
+  [top 8.00 px] carry=True jump t85: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 172.4 platform X end 193.4
+  [top 8.00 px] carry=True jump t88: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 179.7 platform X end 200.7
+  [top 8.00 px] carry=True jump t91: support==platform ticks None..None (0) ; hero-platform X offsets [] ; hero Z [] ; crate-hero Z [] ; crate-hero X [] ; hero X end 187.0 platform X end 208.0
+  [top 8.00 px] carry=True jump t94: support==platform ticks 115..164 (50) ; hero-platform X offsets [-11.94] ; hero Z [8.0] ; crate-hero Z [32.0] ; crate-hero X [0.0] ; hero X end 100.6 platform X end 112.5
+  [top 8.00 px] carry=True jump t97: support==platform ticks 118..167 (50) ; hero-platform X offsets [1.0] ; hero Z [8.0] ; crate-hero Z [32.0] ; crate-hero X [0.0] ; hero X end 107.9 platform X end 106.9
+walk into the stationary platform, no jump, carry=False: hero X end 279.00, Z 5.00, blocked(adj) ticks 19
+walk into the stationary platform, no jump, carry=True: hero X end 279.00, Z 5.00, blocked(adj) ticks 24

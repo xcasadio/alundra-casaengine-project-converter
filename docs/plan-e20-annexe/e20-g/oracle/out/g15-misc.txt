@@ -1,0 +1,14 @@
+a) air lift, Square edge t6: lifted at 6 ; hero anim changes ['t4 anim_t:1>2', 't5 anim_t:2>44', 't6 anim_t:44>11 carried2C:0>80127FC4'] ; (tick,anim,Z,xcoll) [(4, 2, 5.0, '0x0'), (5, 44, 9.5, '0x80127fc4'), (6, 11, 13.5, '0x0'), (7, 11, 17.0, '0x0'), (8, 11, 20.0, '0x0'), (9, 11, 22.5, '0x0')]
+a) air lift, Square edge t7: lifted at 7 ; hero anim changes ['t4 anim_t:1>2', 't5 anim_t:2>44', 't7 anim_t:44>11 carried2C:0>80127FC4'] ; (tick,anim,Z,xcoll) [(4, 2, 5.0, '0x0'), (5, 44, 9.5, '0x80127fc4'), (6, 44, 13.5, '0x80127fc4'), (7, 11, 17.0, '0x0'), (8, 11, 20.0, '0x0'), (9, 11, 22.5, '0x0')]
+a) air lift, Square edge t8: lifted at None ; hero anim changes ['t4 anim_t:1>2', 't5 anim_t:2>44', 't8 anim_t:44>20', 't18 anim_t:20>45', 't19 anim_t:45>44', 't22 anim_t:44>1'] ; (tick,anim,Z,xcoll) [(4, 2, 5.0, '0x0'), (5, 44, 9.5, '0x80127fc4'), (6, 44, 13.5, '0x80127fc4'), (7, 44, 17.0, '0x0'), (8, 20, 20.0, '0x0'), (9, 20, 22.5, '0x0')]
+b) deep water, boots item None: : hero changes ['t60 anim_t:12>7'] ; crate changes [] ; end: hero.+0x2C=80127FC4 crate status 2 pos (133.00,100.00,32.00)
+b) deep water, boots item 27: : hero changes ['t60 anim_t:12>7', 't78 slope:0>4', 't79 anim_t:7>29 carried2C:80127FC4>0', 't80 anim_t:29>15'] ; crate changes ['t79 anim_t:0>3 carrier28:80127D30>0 flags6C:3323E4>332374', 't102 status:2>4', 't103 status:4>0 anim_t:3>0 flags6C:332374>0'] ; end: hero.+0x2C=0 crate status 0 pos (0.00,0.00,0.00)
+c) stair/exit cell slope byte 0xC4 for col>=6: : hero changes ['t60 anim_t:12>7', 't74 p188:0>81', 't75 anim_t:7>0', 't96 carried2C:80127FC4>0'] ; crate changes ['t96 status:2>4', 't97 status:4>0 carrier28:80127D30>0 flags6C:3323E4>0'] ; end: hero.+0x2C=0 crate status 0 pos (0.00,0.00,0.00) ; +0x188 values ['0x0', '0x81']
+d) thrown crate over cells wk=0x04: crate changes ['t84 status:2>4', 't85 status:4>0 anim_t:1>0 flags6C:332374>0'] ; fx [(84, ['fxattach(id=10,target=slot 1)'])]
+d) thrown crate over cells gp=0x80: crate changes ['t84 status:2>4', 't85 status:4>0 anim_t:1>0 flags6C:332374>0'] ; fx [(84, ['fxattach(id=10,target=slot 1)'])]
+d) thrown crate over cells water gp=0x08: crate changes ['t84 status:2>4', 't85 status:4>0 anim_t:1>0 flags6C:332374>0'] ; fx [(84, ['fxattach(id=6,target=slot 1)'])]
+e) ComputeNewHp(Beannoid) by hand at t82 after the thrown crate touched it: {'t82': {'hp_before': 9, 'hp_after': 0, 'ret': 1, 'touch_is_crate': True}}
+f) Square edge at t4 (first contact: +0x130 set at the end of t5): lifted at None ; hero anim changes ['t4 anim_t:1>16']
+f) Square edge at t5 (first contact: +0x130 set at the end of t5): lifted at None ; hero anim changes ['t5 anim_t:1>16']
+f) Square edge at t6 (first contact: +0x130 set at the end of t5): lifted at 6 ; hero anim changes ['t6 anim_t:1>5']
+f) Square edge at t7 (first contact: +0x130 set at the end of t5): lifted at 7 ; hero anim changes ['t7 anim_t:1>5']

@@ -1,0 +1,8 @@
+direct call, status 2: returns 1 ; hero.+0x2C 80127FC4 (crate entity 80127FC4)
+direct call, status 3: returns 1 ; hero.+0x2C 80127FC4 (crate entity 80127FC4)
+direct call, status 4: returns 0 ; hero.+0x2C 0 (crate entity 80127FC4)
+direct call, status 5: returns 0 ; hero.+0x2C 0 (crate entity 80127FC4)
+whole tick, status 2: support per tick ['0x80127d30', '0x0', '0x0'] ; lifted at 2
+whole tick, status 3: support per tick ['0x80127d30', '0x0', '0x0'] ; lifted at 2
+whole tick, status 4: support per tick ['0x0', '0x0', '0x0'] ; lifted at None
+whole tick, status 5: support per tick ['0x80127d30', '0x80127d30', '0x80127d30'] ; lifted at None

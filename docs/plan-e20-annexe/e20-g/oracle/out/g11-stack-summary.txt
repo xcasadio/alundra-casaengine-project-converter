@@ -1,0 +1,6 @@
+order LU (slot of lower=1 upper=2): hero xcoll at t10 80127FC4 ; lifted at t11: ['L'] ; support of U per tick ['0x80127fc4', '0x80127fc4', '0x80127fc4']
+   L: Z per 5 ticks [0.0, 0.0, 0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 32.0, 32.0, 32.0, 32.0, 32.0] ; status changes [] ; carrier 80127D30 at t30
+   U: Z per 5 ticks [16.0, 16.0, 15.5, 5.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] ; status changes [] ; carrier 0 at t30
+order UL (slot of lower=2 upper=1): hero xcoll at t10 80127FC4 ; lifted at t11: ['U'] ; support of U per tick ['0x80128258', '0x80128258', '0x80128258']
+   L: Z per 5 ticks [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] ; status changes [] ; carrier 0 at t30
+   U: Z per 5 ticks [16.0, 16.0, 16.0, 21.0, 26.0, 31.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0, 32.0] ; status changes [] ; carrier 80127D30 at t30

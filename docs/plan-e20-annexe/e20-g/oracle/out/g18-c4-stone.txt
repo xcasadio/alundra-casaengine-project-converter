@@ -1,0 +1,32 @@
+C4 stone thrown then used as a step
+t080 pad=0000 | H anim_t=0 px=109.0000 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=169.0000 pz=17.0000 status=2 anim_t=1 flags6C=3323E4 ground=0 | J snd(0)
+t083 pad=0000 | H anim_t=0 px=109.0000 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=1 flags6C=3323E4 ground=1
+t086 pad=0000 | H anim_t=0 px=109.0000 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t089 pad=0000 | H anim_t=0 px=109.0000 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t092 pad=2000 | H anim_t=1 px=110.2188 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1 | J snd(0)
+t095 pad=2000 | H anim_t=1 px=117.5312 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t098 pad=2000 | H anim_t=1 px=124.8438 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t101 pad=2000 | H anim_t=1 px=132.1562 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t104 pad=2000 | H anim_t=1 px=139.4688 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t107 pad=2000 | H anim_t=1 px=146.7812 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t110 pad=2000 | H anim_t=1 px=154.0938 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t113 pad=2000 | H anim_t=1 px=157.0000 pz=0.0000 support=0 xcoll=80127FC4 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1 | J snd(0)
+t116 pad=2000 | H anim_t=1 px=157.0000 pz=0.0000 support=0 xcoll=80127FC4 adj=1 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t119 pad=2000 | H anim_t=1 px=157.0000 pz=0.0000 support=0 xcoll=80127FC4 adj=1 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t122 pad=2000 | H anim_t=1 px=157.0000 pz=0.0000 support=0 xcoll=80127FC4 adj=1 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1 | J snd(0)
+t125 pad=2000 | H anim_t=1 px=157.0000 pz=0.0000 support=0 xcoll=80127FC4 adj=1 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t128 pad=2000 | H anim_t=1 px=157.0000 pz=0.0000 support=0 xcoll=80127FC4 adj=1 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t131 pad=2000 | H anim_t=1 px=157.0000 pz=0.0000 support=0 xcoll=80127FC4 adj=1 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t134 pad=2000 | H anim_t=44 px=157.0000 pz=13.5000 support=0 xcoll=80127FC4 adj=1 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t137 pad=2000 | H anim_t=44 px=163.8906 pz=22.5000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t140 pad=2000 | H anim_t=44 px=170.7812 pz=27.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t143 pad=2000 | H anim_t=44 px=177.6719 pz=27.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t146 pad=2000 | H anim_t=44 px=184.5625 pz=22.5000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t149 pad=2000 | H anim_t=44 px=191.4531 pz=16.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t152 pad=2000 | H anim_t=1 px=198.6953 pz=16.0000 support=80127FC4 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t155 pad=2000 | H anim_t=44 px=205.7969 pz=14.5000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t158 pad=2000 | H anim_t=44 px=212.6875 pz=8.5000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t161 pad=2000 | H anim_t=44 px=219.5781 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t164 pad=2000 | H anim_t=1 px=226.8203 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t167 pad=2000 | H anim_t=1 px=234.1328 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1
+t170 pad=2000 | H anim_t=1 px=241.4453 pz=0.0000 support=0 xcoll=0 adj=0 | C1 px=178.0000 pz=0.0000 status=2 anim_t=0 flags6C=3323E4 ground=1

@@ -1,0 +1,13 @@
+A idle at contact: Square alone at t16 -> hero.+0x2C=0 xcoll=0 anim=16 ; Square+RIGHT at t22 -> lifted at tick None
+B Square held from t1 while walking into the crate (no new edge at contact t5): lifted at None
+B2 Square edge at t5 = the tick the hero reaches the crate (xcoll set during t5 physics): hero xcoll per tick ['0x0', '0x0', '0x0', '0x0', '0x80127fc4', '0x0', '0x0'] ; lifted at None
+B3 Square edge at t6: lifted at 6
+C north: lifted at 11 ; hero adir 1 ; crate offset after lift (off30,off34) (0.0, -15.0)
+C south: lifted at 11 ; hero adir 0 ; crate offset after lift (off30,off34) (0.0, 15.0)
+C west: lifted at 11 ; hero adir 2 ; crate offset after lift (off30,off34) (-21.0, 0.0)
+C2 diagonal RIGHT+UP into the crate at (130,100): hero path y [99.43, 97.13, 94.83, 94.0, 94.0, 94.0] ; xcoll at t10 80127FC4 ; lifted at 11
+D heavy stone without item 0x3B: slot 1 size/flags 3427E4 ; lifted at None ; hero anim changes ['t13 anim_t:1>16', 't34 anim_t:16>0', 't35 anim_t:0>1', 't64 anim_t:1>2', 't65 anim_t:2>44', 't85 anim_t:44>1'] ; hero X t20 100.00 t60 100.00 t90 100.00 ; max hero Z 27.50 ; stone offsets at t60 (0.00,0.00,0.00)
+D heavy stone with item 0x3B: slot 1 size/flags 3427E4 ; lifted at 13 ; hero anim changes ['t13 anim_t:1>5', 't49 anim_t:5>12'] ; hero X t20 100.00 t60 100.00 t90 100.00 ; max hero Z 0.00 ; stone offsets at t60 (0.00,0.00,32.00)
+E air: hero anim/Z/xcoll per tick t4..t20 [(4, 2, 5.0, '0x0'), (6, 44, 13.5, '0x80127fc4'), (8, 44, 20.0, '0x0'), (10, 44, 24.5, '0x0'), (12, 44, 27.0, '0x0'), (14, 44, 27.5, '0x0'), (16, 44, 26.0, '0x0'), (18, 20, 22.5, '0x0'), (20, 20, 17.0, '0x0')] ; lifted at None ; hero anim after ['t4 anim_t:1>2', 't5 anim_t:2>44', 't17 anim_t:44>20']
+F kind 0 (Beannoid made Collidable): hero xcoll at t10 80127FC4 ; lifted at None ; hero anim t11 16
+G crate dropped on the hero head at Z=32.00: crate support (+0x12C) per tick ['0x80127d30', '0x0', '0x0', '0x0'] ; lifted at 2 ; hero anim changes ['t2 anim_t:0>12'] ; crate Z [32.0, 32.0, 32.0, 32.0, 32.0, 32.0]
