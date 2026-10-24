@@ -8788,12 +8788,18 @@ Exécution en mode AUTO, HEAD de départ `6fa6bf81`. Mesures : `docs/plan-e20-an
   épingles) : **CONFIRMED** tous deux.
 - **Recette de l'auteur, à faire** : `pickup-m11`, prendre un objet-clé : la musique se coupe net, puis repart du début.
 
-#### 1.26.2 E20.e0d — Le coffre au trésor et la Graine magique ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2 ; à relire par un `plan-verifier` frais)
+#### 1.26.2 E20.e0d — Le coffre au trésor et la Graine magique ⏳ (détaillée le 2026-10-25 ; thème 2 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `43a47432` ; rapport `report-main.md` et critique frais `critic-main.md`, CONFIRMÉ, dans le
 scratchpad de la session principale `scratchpad/t2-chest/`, à verser par T0 à `docs/plan-e20-annexe/e20-e0d-disc/` avec les scripts et les
 sorties), à partir de l'inventaire du thème 2 (`scratchpad/theme2-disc/`, à verser à `docs/plan-e20-annexe/e20-theme2/`). Le plan renvoyait le
 coffre à « E14 » (§1.26, « Hors périmètre ») ; aucun plan d'E14 ne le porte : cette tranche le prend.
+
+**Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé trois blocages, tous corrigés (FIX) : (1) la musique d'un coffre à
+objet-clé repartait « à la fermeture du message » ; le binaire la relance à l'état 1 de C255, dès que `CdBusy` est faux, la boîte encore ouverte
+(D-E0D-2 réécrite, (c3) fixe les ticks, un mutant de plus) ; (2) D-E0D-4 et D-E0D-5 demandaient des changements hors du périmètre et sans test :
+les fichiers sont nommés et chacune a son test ; (3) l'acceptation comptait rouges avant leur phase deux tests qui sont des gardes par nature
+((a2), (c2)) : ils sont classés avec (b7), chacun tué par un mutant nommé.
 
 **Prérequis.** Le thème 1 fusionné dans `main` et la branche du thème 2 créée depuis `main` ; E20.e0c et E20.e0c2 (faites : `PickupAi`, A255 et
 C255 des objets, `GiveItem`, la fanfare B) ; E20.g1b (faite : `PlayerTryAction` rend 0 pour un coffre, genre 0, et la priorité de l'interaction
@@ -8851,14 +8857,21 @@ qui ouvre la porte de la 115, et le coffre de la 115 qui ouvre un passage, ne s'
 
 **Décisions de la session** (défauts réversibles, comme l'original ; ceux qui se voient en jeu sont posés à l'auteur, §2, Q-E0D-*).
 - **D-E0D-1** — Une tranche en trois phases (A l'affichage, B l'ouverture ordinaire, C la Graine, les objets-clés et `0x82`).
-- **D-E0D-2** (Q-E0D-1) — La fanfare d'un coffre suit la fanfare B d'e0c2 (D-E20-65) : la musique coupée au tick de F255, relancée du début
-  quand le message de l'objet-clé se ferme ; la piste CD 11 reste le bouchon journalisé d'E19.sm7.
+- **D-E0D-2** (Q-E0D-1) — La fanfare d'un coffre suit l'ordre du binaire et le bouchon de la fanfare B d'e0c2 (D-E20-65, D-E0C2-1) :
+  `LoadBgm(0)` coupe la musique au tick de F255 ; la piste CD 11 reste le bouchon journalisé quand A255 libère l'objet (l'animation 1 du
+  coffre) ; à l'état 1 de C255, après l'ouverture du message, dès que `CdBusy` est faux (toujours faux avec le bouchon : le tick qui suit
+  l'ouverture du message), le masque 3 et `StopAllSound` relancent la musique du début, **la boîte encore ouverte** ; le masque 4 empêchait
+  le joueur de la fermer avant (`t2-chest/chest_sequence.out` : au binaire, le masque 3 et `StopAllSound` à t = 212, la fermeture par le joueur
+  à t = 243, avec un CD simulé de 150 ticks).
 - **D-E0D-3** (Q-E0D-2) — Les 4 coffres sans drapeau gardent leur comportement (une donnée du jeu, pas un défaut de code) ; les doublons de la
   carte 80 aussi.
-- **D-E0D-4** (Q-E0D-3) — Pendant l'ouverture, le monde bloqué par `Block` garde ses sprites dessinés (le binaire gèle les mises à jour, pas
-  le dessin) ; T0 mesure ce que la DLL dessine et anime, et un écart se corrige dans la tranche s'il est dans la DLL, se consigne s'il est
-  dans le moteur.
-- **D-E0D-5** (Q-E0D-4) — L'objet est invisible les 61 ticks de l'animation du coffre (Loaded), comme l'original.
+- **D-E0D-4** (Q-E0D-3) — Pendant l'ouverture, le monde bloqué par `Block` garde ses sprites dessinés et son animation gelée (le binaire ôte
+  les entités de la liste active : programmes, physique et animations s'arrêtent ; la liste visible ne teste pas `+0x20`) ; T0 mesure ce que la
+  DLL dessine et anime ; un écart dans la DLL se corrige dans `Alundra/Maps/Loop/FrameSyncPasses.cs` (la passe d'animation) ou
+  `Alundra/Maps/Loop/GameplayFreeze.cs`, par le test (b8) ; un écart dans le moteur est un arrêt (le manque se consigne).
+- **D-E0D-5** (Q-E0D-4) — L'objet est invisible les 61 ticks de l'animation du coffre (Loaded), comme l'original (les listes du binaire,
+  `0x800384F4`, ne prennent que les statuts 2 et 3) ; la DLL ne cache aujourd'hui qu'un `FlagToDestroy` (`FrameSyncPasses.cs`) : le correctif
+  est dans `FrameSyncPasses.cs` (ou là où T0 le situe dans la DLL), par le test (b9).
 - **D-E0D-6** — Les textes restaurent l'espace avant « gagné! » et après « garder » (le binaire les a ; le compilateur Yarn les perd), comme e0c
   l'a fait pour ETC `0x45`.
 - **D-E0D-7** — Enregistrer A255 sur le type 30 dessine ouverts les 20 coffres à contenu 0 (16 scriptés et 4 natifs de la carte 325) : fidèle,
@@ -8875,7 +8888,8 @@ qui ouvre la porte de la 115, et le coffre de la 115 qui ouvre un passage, ne s'
 **Périmètre.** `Alundra/Ai/Objects/` (un `ChestAi` neuf pour `(F, 255)` sur le type 30 ; `PickupAi.cs` : A255 étendu au type 30, les branches
 « coffre » d'A255 et de C255) ; `Alundra/Ai/NativeSpriteRegistry.cs` ; `Alundra/Items/ItemEffects.cs` (`CanTake`, `ApplyItem`, la Graine) ;
 `Alundra/Items/ItemTables.cs` (le plafond) ; `Alundra/Rendering/Effects/NativeEffects.cs` (l'animation paramétrée) ;
-`Alundra/Events/EventProgramRunner.cs` (`0x82` pour `0x50`) ; les textes ETC si la restauration des espaces passe par eux ;
+`Alundra/Events/EventProgramRunner.cs` (`0x82` pour `0x50`) ; `Alundra/Maps/Loop/FrameSyncPasses.cs` et `Alundra/Maps/Loop/GameplayFreeze.cs`
+(D-E0D-4, D-E0D-5) ; les textes ETC si la restauration des espaces passe par eux ;
 `Alundra/SaveGames/TestSaves.cs` et ses tables, `docs/test-saves.md` ; les tests ; l'annexe `docs/plan-e20-annexe/e20-e0d/` ; un ADR neuf ; ce
 plan (dont les renvois « E14 » du §1.26 corrigés).
 
@@ -8900,21 +8914,29 @@ CD (E19.sm7) ; le moteur.
   message « Herbes gagné! » et le son 52, la fermeture, `ApplyItem`, le drapeau, `Unblock`), les ticks épinglés par dérivation des rejeux et des
   mesures de T0 ; (b4) le sac plein : le message, rien de donné, le coffre refermé et qui se rouvre ; (b5) un coffre ouvert puis rechargé
   (sauvegarde et chargement) : dessiné ouvert, F255 répond ETC `0x48` ; (b6) la chaîne : la clé de la 117 ouvre la porte de la 115, le vase de
-  la 115 ouvre le passage (`0x9F`) ; (b7) témoins : un coffre scripté inchangé, Carré contre une caisse soulève toujours ; puis le code de la
-  phase B.
+  la 115 ouvre le passage (`0x9F`) ; (b7) témoins : un coffre scripté inchangé, Carré contre une caisse soulève toujours ; (b8) pendant
+  l'ouverture, un ennemi bloqué reste dessiné et son image d'animation n'avance pas (D-E0D-4 ; rouge avant si T0 mesure l'écart, témoin vert
+  sinon) ; (b9) l'objet né n'est pas dessiné pendant les 61 ticks de l'animation du coffre, puis l'est (D-E0D-5 ; rouge avant si T0 mesure
+  l'écart, témoin vert sinon) ; puis le code de la phase B.
 - ⏳ **T3 — Phase C, tests d'abord** (rouges avant) : (c1) la Graine par ses trois entrées (le coffre, le ramassage, `0x82`) : la table de
   `seed_oracle.out` (MpMax et Mp avant et après), 12 effets en animation 2, 8 tirages, son `0x36` ; (c2) le vase de vie inchangé (animation 0) ;
-  (c3) un objet-clé d'un coffre : la fanfare B (la musique coupée puis relancée), la boîte fermée par le masque ; (c4) les quatre préréglages
+  (c3) un objet-clé d'un coffre : la musique coupée au tick de F255, le bouchon de la piste 11 au tick où A255 libère l'objet, le masque 3 et
+  `StopAllSound` au tick qui suit l'ouverture du message, la boîte encore ouverte (les ticks épinglés par dérivation de `chest_sequence.out` et
+  des mesures de T0, D-E0D-2) ; (c4) les quatre préréglages
   et leurs tables ; puis le code. La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
   les traces de la 389 ; `cmp` ; `check_names.py --rules` ; le moteur, le convertisseur et les données sans diff.
 - ⏳ **T4 — Mutants, ADR.** Au moins 15 mutants réels, tous tués (les quatre gardes de F255 une à une ; `+0x88 != 0` ignoré ; `CanTake` sans
   plafond ; le sac plein qui donne quand même ; le drapeau posé au sac plein ; `ApplyItem` avec la règle de `GiveItem` ; l'objet visible pendant
   les 61 ticks ; le décompte de 64 en 63 ; le son de l'octet 5 en un autre ; la Graine sans plafond ; Mp non rempli ; l'animation 0 pour la
-  graine ; A255 du type 30 qui dessine ouvert un coffre plein ; le drapeau en banque temporaire) ; un ADR neuf (numéro libre recompté) ; les
+  graine ; A255 du type 30 qui dessine ouvert un coffre plein ; le drapeau en banque temporaire ; `StopAllSound` déplacé à la fermeture de la
+  boîte ; l'objet dessiné pendant les 61 ticks ; les entités bloquées qui s'animent ; une garde des données qui compte 403 natifs au lieu de
+  404, qui tue (a2) ; le vase de vie en animation 2, qui tue (c2)) ; un ADR neuf (numéro libre recompté) ; les
   renvois « E14 » du §1.26 corrigés.
 - ⏳ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
-**Acceptation.** Les sorties de T0 (c) identiques ; (a1) à (c4) rouges avant leur phase et verts après (nommés) ; (b7) vert avant et après ; la
+**Acceptation.** Les sorties de T0 (c) identiques ; (a1), (b1) à (b6), (c1), (c3) et (c4) rouges avant leur phase et verts après (nommés) ; (b8)
+et (b9) rouges avant si T0 a mesuré l'écart, verts avant et après sinon ; les gardes (a2), (c2) et (b7) vertes avant et après, chacune tuée
+par un mutant nommé de T4 ; la
 suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (f), chacun réécrit par dérivation ; le moteur, le convertisseur et
 les données sans diff. **Recette de l'auteur** (non bloquante) : `coffre-m15` (ouvrir la graine : les PM montent ; ouvrir des herbes jusqu'à 9,
 puis le message du sac plein) ; `coffre-m117` (la clé, puis la porte de la 115).
@@ -11324,7 +11346,7 @@ les trois entrées `0x31`.
 | Q-G1B-1 | (2026-10-24, E20.g1b T0, à l'auteur en termes de jeu) Dans l'original, quand on lâche la direction, Alundra glisse encore d'un demi-pas (environ 1,2 px) avant de s'arrêter ; dans le portage il s'arrête net. Pour le soulèvement : si on pousse une caisse, qu'on lâche la direction et qu'on appuie sur Carré au tick suivant, l'original soulève, le portage donnerait l'épée (un tick, 1/50 s). (A, défaut proposé) corriger d'abord le lâcher de la marche, dans une tranche à part (chaque arrêt d'Alundra change d'environ 1,2 px : des traces et des arcs qui épinglent un arrêt bougeront, réécrits par dérivation), puis reprendre g1b ; (B) accepter et consigner l'écart d'un tick ; (C) retirer les lignes B, D, D2 de la comparaison **Réponse de l'auteur (2026-10-24)** : « prendre toutes les réponses par défaut » : le défaut (A) (D-E20-69). **Erratum (2026-10-24)** : la prémisse était fausse, le jeu fait déjà le demi-pas ; c'était le montage de test de la sonde (D-E20-69 caduque, voir §1.0). | Caduque le 2026-10-24 (erratum de D-E20-69) |
 | Q-G1B-2 | (2026-10-24, E20.g1b T0, O-G3-3, à l'auteur en termes de jeu) Sur le dessus d'une caisse, en marchant vers la caisse voisine du haut, le portage la « touche » un tick plus tôt que l'original : un Carré à ce tick précis soulèverait la caisse voisine là où l'original donne un coup d'épée. (A, défaut proposé) retarder le contact d'un tick dans ce cas (la sonde de mouvement, le domaine de g3), avec Q-G1B-1 (A) si les deux ont la même cause ; (B) accepter et consigner **Réponse de l'auteur (2026-10-24)** : « prendre toutes les réponses par défaut » : le défaut (A) (D-E20-70). **Réponse de l'auteur (2026-10-24, après l'erratum)** : « continuer, corriger après » (D-E20-77 remplace D-E20-70). | Tranché le 2026-10-24 (D-E20-77) |
 | Q-G1B-3 | (2026-10-24, E20.g1b T0) La carte de la recette du soulèvement : la 72 (Coastal Cave) : des jarres, un tonneau de 16 px de haut à côté, une plateforme qui fait l'aller-retour d'est en ouest toute seule, aucun verrou. Garder la 72 ? Défaut : oui **Réponse de l'auteur (2026-10-24)** : « prendre toutes les réponses par défaut » : la 72 (D-E20-71). | Tranché le 2026-10-24 (D-E20-71) |
-| Q-E0D-1 | (2026-10-25, E20.e0d, à l'auteur en termes de jeu) Ouvrir un coffre qui contient un objet-clé (une arme, un vase, une graine, un tome : 78 coffres) joue une fanfare sur le CD dans l'original ; tant que les pistes CD ne sont pas portées (E19.sm7), le portage fait comme pour les objets-clés posés (votre réponse B d'e0c2) : la musique se coupe à l'ouverture et repart du début à la fermeture du message. Garder ? Défaut : oui (D-E0D-2) | l'auteur ; non bloquant |
+| Q-E0D-1 | (2026-10-25, E20.e0d, à l'auteur en termes de jeu) Ouvrir un coffre qui contient un objet-clé (une arme, un vase, une graine, un tome : 78 coffres) joue une fanfare sur le CD dans l'original ; tant que les pistes CD ne sont pas portées (E19.sm7), le portage fait comme pour les objets-clés posés (votre réponse B d'e0c2) : la musique se coupe à l'ouverture du coffre et repart du début juste après l'apparition du message, comme l'original la relance dès la fin de la fanfare. Garder ? Défaut : oui (D-E0D-2) | l'auteur ; non bloquant |
 | Q-E0D-2 | (2026-10-25, E20.e0d) Quatre coffres n'ont pas de drapeau dans les données du jeu (carte 11 idx 30, 161, 362, 398) : ils se remplissent à chaque entrée dans la carte, dans l'original aussi. Garder ? Défaut : oui, une donnée du jeu (D-E0D-3) | l'auteur ; non bloquant |
 | Q-E0D-3 | (2026-10-25, E20.e0d) Pendant l'ouverture d'un coffre (environ 2,5 s plus la lecture du message), l'original fige le monde : les ennemis et les objets ne bougent plus, mais restent dessinés. Faire de même ? Défaut : oui, comme l'original (D-E0D-4) | l'auteur ; non bloquant |
 | Q-E0D-4 | (2026-10-25, E20.e0d) L'objet n'apparaît qu'une fois le couvercle ouvert (61 images invisibles), puis monte. Comme l'original ? Défaut : oui (D-E0D-5) | l'auteur ; non bloquant |
