@@ -195,3 +195,69 @@ Release with the neutralised copy, then Debug built last without it; `--blame-ha
 | total | 5 913 (= 5 829 + 84) | 0 | 0 |
 
 `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal. `check_names.py --rules`: 0 finding. The four `docs/hero-trace-389-*.txt` files were rewritten by the suites (line endings): `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, then restored by `git checkout`, never indexed.
+
+## T4 - ADR, mutants, suites, guards (the two fresh verifiers are run by the main session)
+
+Start HEAD of T4: `94f53813` (T3).
+
+### ADR
+
+No new ADR: the plan's perimeter names "l'ADR de g1a". ADR-0089 is amended (section "Amendment (E20.g2a)": the call of the Square branch, the direction of the previous tick, the order of the writes, the guard `0x2000`, the speed key already at the HEAD, the gliding without E2, the F1 gap). The last ADR number taken is still 0089 (no new file, so no recount needed).
+
+### Mutants (real edits applied by script `g2a-mut-t4.py` in the session scratchpad: apply, build Release, run, restore the bytes; `git diff` of `Alundra/` empty afterwards)
+
+Filter: the Carry throw families (`CarryThrow*`, `CarryRulesThrow*`, `CarryGuard*`, `CarryGroup*`: 118 tests, 84 + 19 world and direct cases, plus the guard and group tables); for M16 the wider Carry, `MapStateTests`, `RecordBirthTickTests` and `LogicalZ` families (270 tests).
+
+| # | Mutant | Result |
+|---|---|---|
+| M1 | table index permuted (`BoxDirection ^ 1`) | killed, 68 red |
+| M2 | the pad's direction word (the binary's `+0x8C`) read in place of `+0x98` | killed, 20 red |
+| M3 | end-of-frame `AnimationDirection` read | killed, 5 red |
+| M4 | `t24` of the ground swapped | killed, 50 red |
+| M5 | `t24` of the air swapped | killed, 8 red |
+| M6 | Z without the `0x200000` | killed, 64 red |
+| M7 | guard `0x2000` inverted | killed, 102 red |
+| M8 | `0x4000` applied to the throw | killed, 4 red |
+| M9 | hero states `0x09` and `0x0A` swapped (ground takes 10) | killed, 23 red |
+| M10 | air state 9 | killed, 8 red |
+| M11 | gesture unprotected (the Square throws during the lift gestures `0x05` and `0x0B`) | killed, 7 red |
+| M12 | `ground` inverted at the call | killed, 63 red |
+| M13 | `directionHeld` inverted at the call | killed, 51 red |
+| M14 | the `0x4000` guard of the jump dropped | killed, 3 red |
+| M15 | the branch of phase B removed (the stub back) | killed, 84 red (exactly the 84 cases of `CarryThrowWorldTests`) |
+| M16 | the speed key read on `CurrentAnimationId` (the `HasLogicalZ` clause removed, the plan's "ligne de couverture de D-F5-5") | killed, 47 red (the T3 retirement with its v8 case at 3 ticks per frame; the two pins stay green) |
+| M17 | X of the object not written | killed, 1 red |
+
+17 mutants, 17 killed, 0 survivor (plan: at least 12). Together with the 18 mutants of `ThrowCarried` of T1, which also stay killed.
+
+### Suites
+
+Release with the neutralised copy (`-p:CustomAfterMicrosoftCommonTargets=.../skipcopy.targets` on build and test), then Debug built last without it; `--blame-hang-timeout 60s`; the partitions of g1a by test-name substring (`part.sh`: 1 = `Tests.Arcs|Tests.Ai.|Tests.Audio|Tests.Cameras|Tests.Cells|Tests.Combat|Tests.Data|Tests.Dialogues`, 2 = `Tests.Entities|Tests.Events|Tests.ExportGuards|Tests.Hero|Tests.Items`, 3 = the negation of both).
+
+| partition | tests | failures Release | failures Debug |
+|---|---|---|---|
+| 1 | 1 245 | 0 | 0 |
+| 2 | 2 878 | 0 | 0 |
+| 3 | 1 798 | 0 | 0 |
+| sum | 5 921 | 0 | 0 |
+
+The sum is 8 above the 5 913 tests of the suite because the substring filters overlap: eight tests (seven names; the theory rows of `EnemyGroundTests.Hero_FloorHeight_...`, `EnemyHitReactionTests.HeroAnimationLatch_...`, `SaveBookDispatchTests.HeroHeader_...`, `HeroTraceHarnessTests.HeroTrace_...`, `HeroSlideTests.ArcsWithoutSlide_...`) carry both `Tests.Ai.`/`Tests.Arcs` and `Tests.Hero` in their full name and run in both 1 and 2. Every test of the suite ran at least once (partition 3 is the exact negation); `--list-tests` (Release, no build) gives 5 913 names. Zero failure everywhere.
+
+### Guards
+
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal (after the last Debug build).
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding, 1 warning (existing: `TextBoxGpu.cs`).
+- The four `docs/hero-trace-389-*.txt` files (the "traces" of the plan) were rewritten by the suites (line endings): `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, then restored by `git checkout`, never indexed.
+- `git diff --name-only 44ce16c8..HEAD` (before this commit): only `Alundra/Hero/` (2 files), `Alundra.Tests/Hero` and `Alundra.Tests/Support` (8 files) and the annexe: the engine (`CasaEngineMonogame`), the converter (`alundra-casaengine-project-converter*`), `alundra-datas-analyser`, `alundra-project`, `data-extracted` and `tools` have no diff since `44ce16c8`.
+
+### Existing tests moved: predicted against measured
+
+Predicted (T0 list): W12 of g1a and the Square rows of (c6) of g1a, rewritten, in phase B; everything else none. Measured at T3 and again here: `--list-tests` of T4 equals the 5 913 names of T3 (no name missing, none added), and no existing test turned red: **none moved**. Deviation from the plan, already noted at T3: W12 and the (c6) rows stay green unchanged (W12's Square never reaches the branch because `PutInHands` from 21 px gives the lift gesture; the (c6) rows are pure table rows). Nothing outside the predicted list moved.
+
+### Red before, green after (recap)
+
+T1: 18 of the 19 cases of `CarryRulesThrowTests` red on the skeleton, green on the code. T2/T3: the 84 cases of `CarryThrowWorldTests` (v1 to v9 at 1, 2 and 3 ticks per frame) red on the named stub, 84 green after the branch.
+
+### Left to the main session
+
+The two fresh verifiers (plan T4) and the update of `docs/plan-e20-heros.md`. Findings F1 and F2 above stay flagged, not fixed.
