@@ -10279,15 +10279,22 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : rendre les cinq entrées à leurs bouchons ; la phase A reste inerte.
 
-#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2 ; ferme O-H-1 ; à relire par un `plan-verifier` frais)
+#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⏳ (détaillée le 2026-10-25 ; thème 2 ; ferme O-H-1 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `86d421b5` ; `report-main.md` et le critique frais `critic-main.md`, CONFIRMÉ avec des
 corrections reprises ici, dans le scratchpad de la session principale `scratchpad/t2-cape/`, à verser par T0 à
 `docs/plan-e20-annexe/e20-h2-disc/`). O-H-1 n'avait pas de propriétaire.
 
+**Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé trois blocages, tous corrigés (FIX) : (1) la règle de terrain,
+posée au départ et retirée à l'annulation seule, restait active après une sortie normale (le pilote rend 1 sans annuler, l'enveloppe libère
+l'objet) et après un changement de carte : elle se lit maintenant à chaque tick dans `ItemInUse`, comme le binaire lit `[0x80127164]`, avec un
+test et un mutant ; (2) E20.e0d était un prérequis justifié par un fait réfuté : c'est une préférence d'ordre, la phrase des sources est
+corrigée et le renvoi à une question absente retiré ; (3) l'arrêt général « un besoin de toucher au moteur » manquait.
+
 **Prérequis.** E20.h0a faite (le cadre de l'usage d'un objet : `ItemInUse`, le compteur, la table de départ, de pilote et d'annulation, la
-garde du menu Start, la branche verrouillée) ; E20.e0d faite (le coffre : la seule source normale de la cape est le coffre de la carte 402) ;
-même branche du thème 2. La tranche ne dépend ni de g1a ni de g1b (la cape ne porte rien).
+garde du menu Start, la branche verrouillée) ; même branche du thème 2. La tranche ne dépend ni de g1a ni de g1b (la cape ne porte rien), ni
+d'E20.e0d : ses tests et sa recette passent par des préréglages. **Préférence d'ordre** (pas un prérequis) : après E20.e0d, pour que la cape
+s'obtienne aussi en jeu par le coffre de la carte 402.
 
 **But.** Comme l'original : sur le sable, Rond (avec la cape de sable choisie) fait plonger Alundra sous le sable (72 ticks) ; elle s'y déplace
 (une marche, et une ruée au front de Triangle, Croix ou Carré), invulnérable, hors des collisions d'entités, sans ombre ; elle ne peut avancer
@@ -10319,9 +10326,9 @@ avec la cape ne fait rien.
 - **La pente 3** est le minimum des propriétés des quatre coins (`ProbeSlopeCorner`, déjà porté) : un coin de sable suffit si les autres ont une
   propriété ≥ 3 à la même hauteur (le sable contre l'eau profonde : cartes 4, 8, 18, 314, 416) ; le départ passe alors avec un coin que le test
   de murs bloque. Les cases de sable ont les propriétés 6, 22, 134, 150, 70 et la walkabilité `0x18` ; 30 cartes, 10 331 cases.
-- **Les sources** : le coffre de la carte 402 (entité 0, contenu 32) ; deux ramassages créés par `0x8A` (type 62, l'objet 32) sur les cartes 10 et
-  331 (B[13] pc 1597), dont la chaîne est gardée par un drapeau qu'une scène de la carte 17 pose (rôle dans l'histoire non établi) ; les sites
-  `0x82 [32]` sont des chargements d'équipement de test. Aucun script ne lit ni n'écrit les états `0x20` à `0x24`.
+- **Les sources** : le coffre de la carte 402 (entité 0, contenu 32) et deux ramassages créés par `0x8A` (type 62, l'objet 32) sur les cartes 10 et
+  331 (B[13] pc 1597), dont la chaîne est gardée par un drapeau qu'une scène de la carte 17 pose ; laquelle est la source « normale » dans
+  l'histoire n'est pas établi ; les sites `0x82 [32]` sont des chargements d'équipement de test (INFÉRENCE). Aucun script ne lit ni n'écrit les états `0x20` à `0x24`.
 - **La cape aquatique #40** : refusée au Rond (h0a), son seul usage est le script de la carte 7 (`0x83 [40, 1]`, déjà porté) ; rien à porter ici.
 - **La DLL au HEAD** : rien de la cape (`TryUseItem` est un bouchon, le pilote et l'annulation vides, les cinq états absents) ; `PlayerManagerTests`
   prend `0x20` comme exemple d'état non porté, et h0a (a6) aussi.
@@ -10329,12 +10336,15 @@ avec la cape ne fait rien.
 **Décisions de la session** (défauts réversibles, comme l'original ; §2, Q-H2-*).
 - **D-H2-1** (Q-H2-1) — Le confinement au sable comme l'original : sous le sable, Alundra n'avance que sur du sable à son niveau.
 - **D-H2-2** — Le menu Start refusé tant que la cape est en cours : déjà tranché pour tout objet en cours (Q-H3-4, « fidèle ») ; rien de neuf.
-- **D-H2-3** (Q-H2-3) — La source : la tranche vient après E20.e0d (le coffre de la 402) ; les recettes passent aussi par des préréglages.
+- **D-H2-3** — L'ordre : après E20.e0d de préférence (le coffre de la 402) ; les tests et la recette passent par des préréglages.
 - **D-H2-4** (Q-H2-4) — Le sable à courant (cartes 403 à 405 et 19) ne dérive pas avant E20.i2 : hors tranche.
 - **D-H2-5** (Q-H2-5) — Un verrou du contrôle (un dialogue, une scène) remonte Alundra sans l'animation de sortie, comme l'original.
-- **D-H2-6** — La règle de terrain s'attache à `ItemInUse == 0x20` ; elle passe par le champ de cases de la DLL (un bit « cape » que le champ
-  interprète, posé au départ et retiré à l'annulation), si T0 prouve qu'il peut dire « bloqué si pas du sable » et « plus bas est un mur » avec
-  le pied que donne le moteur (pied + `StepHeight`) ; sinon c'est un manque du moteur, consigné, et un arrêt.
+- **D-H2-6** — La règle de terrain se lit **à chaque tick** dans `ItemInUse == 0x20` (comme le binaire lit `[0x80127164]` dans son test de murs) :
+  aucun état propre à poser ni à retirer, si bien qu'elle tombe sur tous les chemins de libération (l'enveloppe qui libère l'objet quand le
+  pilote rend 1, à la sortie normale ; l'annulation par un verrou ; `Skip` ; la reconstruction du héros au chargement d'une carte, qui remet
+  l'objet à 0, `0x80032964`). Elle passe par le champ de cases de la DLL, qui lit `ItemInUse` du héros, si T0 prouve qu'il peut dire « bloqué si
+  pas du sable » et « plus bas est un mur » avec le pied que donne le moteur (pied + `StepHeight`) ; sinon c'est un manque du moteur, consigné,
+  et un arrêt.
 - **D-H2-7** — La boucle de la sortie est une fonction dédiée sur les entités du monde, avec les filtres du binaire et `HitAnimByte`.
 - **D-H2-8** — Les exemples « état non porté » de `PlayerManagerTests` et de h0a (a6) prennent un autre état non porté (recompté au HEAD).
 
@@ -10360,14 +10370,15 @@ l'invulnérabilité se teste à la passe de coups) ; le moteur.
   boucle) ; le pilote.
 - ⏳ **T2 — Phase B, tests de monde rouges avant** (le vrai contrôleur) : le plongeon (72 ticks, son 15) ; la marche et la ruée (vitesses, avec et
   sans bottes) ; l'arrêt au bord du sable (F1), devant une marche descendante (F2) et montante (F3) ; la sortie (72 ticks, puis l'attente,
-  l'objet libéré au tick suivant) ; le refus (Rond sur l'herbe, pendant la ruée, quand une entité recouvre la boîte : le son 3) ; le verrou du
+  l'objet libéré au tick suivant) ; **après la sortie, Alundra marche du sable sur l'herbe sans être arrêtée** ; **après un changement de carte
+  sous le sable, aucun confinement** ; le refus (Rond sur l'herbe, pendant la ruée, quand une entité recouvre la boîte : le son 3) ; le verrou du
   contrôle qui remonte Alundra sans l'animation de sortie ; l'eau profonde ; l'invulnérabilité et la traversée d'une entité ; puis le
   câblage (les entrées de table, les cinq états, la règle de terrain) ; verts. Les exemples « état non porté » réécrits (D-H2-8).
 - ⏳ **T3 — Préréglages, suites, mutants, ADR** : les préréglages de T0 (e) et leurs tables ; la suite entière en Release (copie neutralisée) puis
   en Debug en dernier, zéro échec, partitions disjointes ; les traces de la 389 ; `cmp` ; `check_names.py --rules` ; au moins 12 mutants réels,
   tous tués (la pente 3 en 2 ; l'état < 2 en ≤ 2 ; la sortie qui teste la pente ; un filtre de la boucle retiré ; `AnimFlags` au lieu de
   `HitAnimByte` ; le recouvrement symétrique ; le pilote qui n'annule pas en l'air ; la règle de terrain attachée à l'état au lieu de l'objet ;
-  « plus bas » accepté ; la ruée sans le front ; la vitesse sans la division par deux ; le son 3 oublié) ; un ADR neuf ; O-H-1 fermé.
+  « plus bas » accepté ; la règle levée seulement à l'annulation (tué par le test « après la sortie, sur l'herbe ») ; la ruée sans le front ; la vitesse sans la division par deux ; le son 3 oublié) ; un ADR neuf ; O-H-1 fermé.
 - ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.** Les sorties de T0 (c) identiques ; les tests de T1 et T2 rouges avant leur phase et verts après (nommés) ; la suite en Release et
@@ -10375,7 +10386,8 @@ en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (f), chacun ré
 diff. **Recette de l'auteur** (non bloquante) : sur `cape-m402` (ou la sauvegarde `cape-de-sable.sav`) : plonger, marcher, ruer, viser le bord
 (l'arrêt), sortir, Rond sur l'herbe (le son 3), Start refusé sous le sable, les bottes de sable (la vitesse pleine).
 
-**Arrêts.** Un prérequis non rempli ; la règle de terrain non exprimable par le champ de la DLL (un manque du moteur, consigné) ; un scénario de
+**Arrêts.** Un prérequis non rempli ; un besoin de toucher au moteur, dont la règle de terrain non exprimable par le champ de la DLL et la
+traversée d'entité que le balayage du contrôleur refuserait malgré la porte `0x80` (le manque consigné, l'arrêt) ; un scénario de
 l'oracle qui diverge au-delà d'une épingle de tick ; un test hors de la liste prédite bouge ; un test qui boucle.
 
 **Budget.** Un `executor` par phase ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
