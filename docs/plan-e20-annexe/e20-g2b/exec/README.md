@@ -187,3 +187,56 @@ Release with the neutralised copy, then Debug last without it; `--blame-hang-tim
 ### Proof of removal (real, by script: the line deleted, Release build with the neutralised copy, the 141 tests of the registry, the break and the liftable objects, the line restored; `git diff` empty after)
 
 Without `LiftableAi.RegisterBreak(registry)` in `CreateForProduction`: 19 red of 141: the 6 P1, the P2, the 8 rows of P3, and the four pins (which count the keys). The plan says "exactly (p1) and (p2)"; the P3 rows (they assert the key is registered, which is what makes their zero a measure) and the four pins (they count the key) are red too, by construction: deviation of the plan's sentence, not of a behaviour. The 37 tests of phase A stay green (their hook registers the key itself). The removal of the `~0x30` mask line is T4's mutant (done in T1: killed).
+
+## T4 - ADR, mutants, final suites (the two fresh verifiers are launched by the main session)
+
+The plan asks for an ADR "of g1a (amended) or a new one": ADR-0089 is amended (section "Amendment (E20.g2b, 2026-10-24): the break"), as g2a did; no number taken (the last taken one on any branch is 0089, listing of `git branch -a` by `ls-tree`). The index `docs/decisions/README.md` is unchanged (an amendment adds no line).
+
+### Real mutants at the final HEAD (script `g2b-t4/mut.py` of the session scratchpad: apply the bytes, build Release with the neutralised copy, run the filter `LiftableBreak` + the four registry pins, restore the bytes; `git diff` empty after every batch, "RESTORED True")
+
+20 mutants, 20 killed (the 18 of T1 re-run against the final code and its production tests, plus two):
+
+| # | Mutant | Red |
+|---|---|---|
+| 0 | `~0x30` to `~0x31` (bit 0; not equivalent, a vector with the bit 0 reads it) | 1 |
+| 1 | `\| 0x40` forgotten | 1 |
+| 2 | `~0x30` forgotten | 11 |
+| 3 | `+0xAC` ignored (the animation 2 alone destroys) | 45 |
+| 4 | `+0xAC != 0` instead of `== 1` | 1 |
+| 5 | validated animation read instead of the asked one | 3 |
+| 6 | `+0x184 & 4` forgotten | 1 |
+| 7 | `+0x184 & 8` | 1 |
+| 8 | `+0x184` any bit | 1 |
+| 9 | destruction with the effect 6 | 30 |
+| 10 | animation 3 asked instead of 2 | 49 |
+| 11 | the destruction falls through to the writes | 1 |
+| 12 | `\|\|` to `&&` between the two lines | 48 |
+| 13 | type 373 left out of the ten | 4 |
+| 14 | a type outside the ten added (298) | 4 |
+| 15 | key registered in the code 3 (E, 2 forgotten) | 47 |
+| 16 | key registered in the slot C | 47 |
+| 17 | registered for the types of C23 only | 6 |
+| 18 | the line of the flags write removed altogether | 11 |
+| 19 | `RegisterBreak` removed from `CreateForProduction` (registry file) | 30 |
+
+The proof of removal of T3 (the registration: 19 red of 141) and the one of the mask line (mutant 18: the third line of E2 and the chronology tests red) are the plan's two proofs.
+
+### Final suites
+
+Release with the neutralised copy (`-p:CustomAfterMicrosoftCommonTargets=.../skipcopy.targets`), then Debug last without it; `--blame-hang-timeout 60s`; `part.sh` partitions (3 = exact negation of 1 and 2).
+
+| partition | tests | failures Release | failures Debug |
+|---|---|---|---|
+| 1 | 1 298 | 0 | 0 |
+| 2 | 2 878 | 0 | 0 |
+| 3 | 1 798 | 0 | 0 |
+| sum | 5 974 | 0 | 0 |
+
+5 974 = 5 966 tests + the 8 that run in both partitions 1 and 2. `--list-tests` (Release): 5 913 names at the start HEAD, 5 966 now, **none missing**, 53 added: 7 `LiftableBreakTests`, 30 `LiftableBreakWorldTests`, 16 `LiftableBreakProductionTests`.
+
+- Existing tests moved: the four registry pins, bodies rewritten by derivation, names unchanged: `NativeSpriteRegistryTests.ProductionRunner_...`, `WaveSwordLifeTests.V3_...`, `ChargedArrowAiTests.C2_...`, `LiftableAiRegistrationTests.R1_...`. Predicted list of T0: exactly these four (the plan names two, T0 found two more); measured by `git diff --name-only 5d63c6d8..HEAD -- Alundra.Tests`: those four files plus the five new ones, nothing else. `DestroyEntityBreakEffectTests` (the loot test, `:205` in the plan) did not move.
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal after the last Debug build.
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 existing warning, `TextBoxGpu.cs`).
+- Engine (`CasaEngineMonogame` gitlink), converter, data and `alundra-datas-analyser`: no diff since `5d63c6d8` (`git diff --name-only 5d63c6d8 HEAD` lists only `Alundra/`, `Alundra.Tests/` and `docs/`).
+- The four `docs/hero-trace-389-*.txt` rewritten by the suites (line endings): `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, then restored by `git checkout`, never indexed.
+- The plan's "five traces" acceptance: the hero traces are among the suite's tests (green); no trace file changed content.
