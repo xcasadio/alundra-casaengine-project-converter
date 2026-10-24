@@ -79,3 +79,47 @@ Anything outside this table that moves is a stop.
 ## Start counts
 
 `dotnet test --list-tests` at the start HEAD (Release): 5 810 tests. Partitions as g1a (`results.md` of `e20-g1a/exec`): by test namespace, disjoint.
+
+## T1 (phase A) - measured
+
+Start HEAD of T1: `f9652340` (the T0 docs commit). Files: `Alundra/Hero/CarryRules.cs` (`ThrowCarried`, `ThrowGroundState`, `ThrowAirState`), `Alundra/Hero/PlayerManager.cs` (`SpawnDirections` and `NoAttackVramFlag` from `private` to `internal`, nothing else),
+`Alundra.Tests/Hero/CarryRulesThrowTests.cs` (19 cases: (t1) and (t2)). `MovePlayer`, `CarryGroupTick` (the Square branch is still the named stub of g1a), `TickMotion`, `WorldProxy`, the registry: untouched, so phase A changes no behaviour.
+
+### Red before, green after
+
+The skeleton (`ThrowCarried` throwing `NotImplementedException` at its first line, same signature): the 19 cases give **18 red, 1 green** (the green one only pins the two state constants, which the skeleton already carries). On the code: **19 green**.
+
+| Test | Cases | What it pins |
+|---|---|---|
+| `T1_TheObjectIsPlacedAtTheHeroXAndY_AndAtHisZPlus0x200000_RawToTheUnit_...` | 1 | X, Y, Z + 0x200000 raw to the unit, the object elsewhere before (21 px east, 5 px south, 10 px up) |
+| `T1_TheObjectTakesTheDirectionWordOfTheTable_...TheFourIndicesTwoByTwo` | 4 | table 0, 0x10, 8, 0x18, each next to the other index of its pair |
+| `T1_TheCodeOfTheThrowAndTheStateOfTheHero_...TheFourCombinations` | 4 | `+0x24` 1 / 2 on the ground, 2 / 3 in the air, states 9 and 0x0A |
+| `T1_TheStatesAreTheBinarys_9OnTheGroundAndTenInTheAir` | 1 | constants |
+| `T1_TheThrowTouchesNeitherTheLinks...` | 1 | links, flags, marker, offset, counter untouched, next to the code written |
+| `T1_TheGroundPropertyOf0x20ForbidsTheThrow_...` | 5 | 0x2000 and 0x6000 write nothing; 0, 0x4000, 0x1FFF throw |
+| `T1_NothingInTheHands_...`, `T1_AnObjectOfTheHandsWithoutAProxy_...` | 2 | nothing to throw, each next to a throw |
+| `T2_TheDirectionOfTheObjectIsTheOneOfTheTickBefore_...` | 1 | `BoxDirection` against `AnimationDirection` and the pad's `TargetDirection`, both ways |
+
+### Real mutations of the code of `ThrowCarried` (script `g2a-mut.py` in the session scratchpad: apply, rebuild, run the 19 tests, restore the bytes; the file is byte-identical afterwards)
+
+18 mutants, 18 killed: skeleton (18 red); table index permuted (5); end-of-frame `AnimationDirection` read (5); pad direction word as index (5); Z without the head height (1); Z with half of it (1); X not written (1); Y not written (1); guard inverted (18); guard 0x4000
+applied to the throw (1); guard dropped (2); ground codes swapped (5); air codes swapped (2); ground state 10 (5); air state 9 (2); link cleared (1); flags cleared (1); the hero's direction word written (1); an object without a proxy counted as thrown (1).
+(A first run of the script replaced the first occurrence of the X, Y and Z lines, which is in mode 2 of `UpdateCarried`, not in `ThrowCarried`: four survivors that were not mutants of the function; the script now cuts at the function, and the scene of the tests puts the object away from the
+throw's destination on all three axes. All killed on the second run.)
+
+### Suites
+
+Release with the neutralised copy, then Debug last; `--blame-hang-timeout 60s`; the three disjoint partitions by test namespace of g1a (1 = Arcs, Ai, Audio, Cameras, Cells, Combat, Dialogues; 2 = Entities, Events, ExportGuards, Hero, Items; 3 = the negation of the twelve).
+
+| partition | tests | failures Release | failures Debug |
+|---|---|---|---|
+| 1 | 1 242 | 0 | 0 |
+| 2 | 2 785 | 0 | 0 |
+| 3 | 1 802 | 0 | 0 |
+| total | 5 829 (= 5 810 at the start + 19, equal to `--list-tests`) | 0 | 0 |
+
+- Existing tests moved: **none**. `--list-tests` before (5 810 names) and after (5 829): none of the 5 810 is missing, the 19 added are the new ones. Predicted list for T1: empty; measured: empty. (The W12 and the Square rows of C6 of the predicted list are for phase B.)
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 warning, existing: `TextBoxGpu.cs`).
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal after the last Debug build.
+- The four `docs/hero-trace-389-*.txt` files were rewritten by the suites (line endings); `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, then restored by `git checkout`, never indexed.
+- The engine, the converter and the data are untouched.

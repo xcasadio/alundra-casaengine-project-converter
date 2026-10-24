@@ -64,6 +64,12 @@ internal static class CarryRules
     /// <summary>The state 0x30 (animation 48): in the air on the spot with an object.</summary>
     internal const uint AirStillState = 0x30;
 
+    /// <summary>The state 0x09 (animation 9): the throw on the ground; chained by its sheet to the idle state 0.</summary>
+    internal const uint ThrowGroundState = 0x09;
+
+    /// <summary>The state 0x0A (animation 10): the throw in the air; chained by its sheet to the fall (animation 45).</summary>
+    internal const uint ThrowAirState = 0x0A;
+
     /// <summary>Three raw (16.16) quantities: the gaps of a position, the offset of an object from his carrier.</summary>
     internal readonly record struct Triple(int X, int Y, int Z);
 
@@ -244,4 +250,38 @@ internal static class CarryRules
     /// </summary>
     internal static uint LiftAnimation(bool wasOnHead, bool ground)
         => wasOnHead ? (ground ? CarryStillState : AirStillState) : (ground ? LiftGroundState : LiftAirState);
+
+    /// <summary>
+    /// E20.g2a (docs/plan-e20-heros.md section 1.24.2, phase A, D-G-10): the throw of the Square in the carrying group (<c>0x8003237C-0x80032404</c>), as a function of the hero and of what the group read: <paramref name="ground"/> (the hero's
+    /// <c>IsOnGround</c>, <c>+0x144</c>) and <paramref name="directionHeld"/> (a direction held on the pad). Returns false and writes nothing when nothing is in the hands (an engine entity without a proxy counts as nothing) or when the ground
+    /// forbids the throw (<c>CombinedVramFlagsOR &amp; 0x2000</c>, <see cref="PlayerManager.NoAttackVramFlag"/>: the binary ends the tick there). Otherwise it writes, in the binary's order, the direction word of the object (<c>+0x8C</c>) from the
+    /// table <c>0x80023644</c> indexed by the hero's direction of the PREVIOUS tick (<see cref="EntityScriptProxy.BoxDirection"/>, <c>+0x98</c>: never the pad of this tick nor the end-of-frame <see cref="EntityScriptProxy.AnimationDirection"/>,
+    /// D-F3-2, probe P-G-2), its position (the hero's X and Y, his Z plus <see cref="HeadHeight"/>), then on the ground the hero's state <see cref="ThrowGroundState"/> and the code <c>+0x24</c> of the object 1 (no direction held) or 2, in the air
+    /// <see cref="ThrowAirState"/> and 2 or 3. The links, the flags, the marker, the offset and the counter are not touched: the program C23 of the object turns the code into a projectile at its own tick (<see cref="Alundra.Ai.Objects.LiftableAi"/>),
+    /// and there is no way to put the object down: the Square always throws.
+    /// </summary>
+    internal static bool ThrowCarried(EntityScriptProxy hero, bool ground, bool directionHeld)
+    {
+        if (hero.CarriedEntity?.GameplayProxy is not EntityScriptProxy item || (hero.CombinedVramFlagsOR & PlayerManager.NoAttackVramFlag) != 0)
+        {
+            return false;
+        }
+
+        item.TargetDirection = (uint)PlayerManager.SpawnDirections[Math.Clamp(hero.BoxDirection, 0, PlayerManager.SpawnDirections.Length - 1)];
+        item.PosX = hero.PosX;
+        item.PosY = hero.PosY;
+        item.PosZ = unchecked(hero.PosZ + HeadHeight);
+        if (ground)
+        {
+            hero.TargetAnimationId = ThrowGroundState;
+            item.Flags2 = directionHeld ? 2 : 1;
+        }
+        else
+        {
+            hero.TargetAnimationId = ThrowAirState;
+            item.Flags2 = directionHeld ? 3 : 2;
+        }
+
+        return true;
+    }
 }

@@ -955,7 +955,7 @@ public static class PlayerManager
     private static int PlayerTryAction(EntityScriptProxy player, in PadState pad) => 0;
 
     /// <summary>The bit of <see cref="EntityScriptProxy.CombinedVramFlagsOR"/> (a ground property of 0x20 under a corner of the footprint) on which the Square does not strike (<c>0x8002EB24</c>).</summary>
-    private const uint NoAttackVramFlag = 0x2000;
+    internal const uint NoAttackVramFlag = 0x2000;
 
     /// <summary>The "no animation" answer of a weapon record: a press only plays the sound 3 (<c>0x8002ED30</c>).</summary>
     private const int NoAttackSoundId = 3;
@@ -1294,7 +1294,7 @@ public static class PlayerManager
     internal static System.Collections.Generic.List<WeaponSpawnCall>? WeaponSpawnCallsForTests;
 
     /// <summary>The table <c>0x80023644</c>, indexed by the hero's direction of the sprite at the tick of the shot (<see cref="EntityScriptProxy.BoxDirection"/>, never the end-of-frame <see cref="EntityScriptProxy.AnimationDirection"/>, D-F3-2; the order of <see cref="AnimationTables.DirectionNames"/>).</summary>
-    private static readonly int[] SpawnDirections = { 0, 0x10, 8, 0x18 };
+    internal static readonly int[] SpawnDirections = { 0, 0x10, 8, 0x18 };
 
     /// <summary>
     /// E20.g1a (docs/plan-e20-heros.md section 1.24.1, D-G-2, D-G-12, D-G-13): the single seam that puts <paramref name="item"/> in the hands of <paramref name="hero"/> - the core of <c>TryLift</c> (<c>0x8002EE0C-0x8002EE1C</c>), which the seeds and the bomb
