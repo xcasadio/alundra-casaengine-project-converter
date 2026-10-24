@@ -95,3 +95,33 @@ The four `docs/hero-trace-389-*.txt` were rewritten by the suites (line endings)
 2. `bin/` of this annex is not tracked (`.gitignore` line 21).
 3. The comment of `WorldProxy.cs` named by the plan no longer exists (D5b); the scope of T1 loses that file.
 4. The filter overlap of `part.sh` (8 tests counted twice), see (d).
+
+## T2 - arcs and whole suite (measured)
+
+Start HEAD of T2: `d23804cf` (T1). Partitions disjoint by full test namespace (`FullyQualifiedName~Alundra.Tests.<ns>.`, as g5c; 1 = `Arcs Ai Audio Cameras Cells Combat Dialogues`, 2 = `Entities Events ExportGuards Hero Items`, 3 = the exact negation of both; no test counted twice). Release with the neutralised copy (`skipcopy.targets`) on build and test, then Debug last without it; `--blame-hang-timeout 60s`.
+
+| partition | tests Release | failures | tests Debug | failures |
+|---|---|---|---|---|
+| 1 | 1 313 | 0 | 1 313 | 0 |
+| 2 | 2 879 | 0 | 2 879 | 0 |
+| 3 | 1 823 | 0 | 1 823 | 0 |
+| sum | 6 015 | 0 | 6 015 | 0 |
+
+6 015 = 5 994 (T0) - 2 (removed or renamed) + 23 (added). The Release and Debug name lists are identical.
+
+### Arcs
+- Guarded by `ArcsWithoutEntityContact`, all passed (Release and Debug): `ShipArcTests.A1c_...`, `ShipCorridorArcTests.A5_...` and `A5r_...`, `InoaAwakeningArcTests.A8_...`, `VisionAndCoastArcTests.A9_...`, `InoaDayOneArcTests.A10_...`.
+- Arcs of T0 (c)/(d), all passed unchanged (no rewrite needed): `InoaDayOneArcTests.A11_...`, `Day3SceneArcTests.A14_...` and `A18_...`, `MurutaHallArcTests.H115_...`, `BeannoideGrateArcTests.G116_...`, `EntityContactArcTests.TH4_...` (13 arrivals).
+
+### Existing tests that moved, against the predicted list (T0 (d): exactly one, `TRLift`, red)
+Compared by name, the g5c final trx (5 994 passed, the T0 base) against the T2 Release and Debug trx (6 015 passed): **2 names disappear, 23 appear**.
+- `MovementObstacleProbeTests.TRLift_ACrateOnThePathDoesNotBlock_AnIronBallWallDoes` -> rewritten by derivation as `TRLift_ACrateOnThePathBlocksLikeAnIronBallWall_AndTheTwoStopFlush` (the predicted one).
+- `MovementObstacleProbeTests.TR1_SkippedCandidateFlags_LeaveTheSoulevablesOutOfTheSearch` -> removed with the API it tests (planned by the plan; green with the line alone, as T0 (d) said).
+- New: `CrateSolidityMap392Tests` S1 to S3, S6 (20 cases, theory rows included), `MovementObstacleProbeTests.TRCarried_...` and `TRNpc_...`.
+- TH4 (line removed) and the `DialogueOpcodesProductionTests` mirror (aligned): same names, still green. No other existing test moved. Prediction and measure are equal (2 touched, limit 10).
+
+### Other checks
+- `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0 after the suites (the four `docs/hero-trace-389-*.txt` only rewritten in line endings): traces unchanged; restored by `git checkout --`, never indexed.
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal (Debug built last).
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding, 1 existing warning (`TextBoxGpu.cs`).
+- Engine, converter, data, `alundra-datas-analyser`: no diff since `d23804cf`.
