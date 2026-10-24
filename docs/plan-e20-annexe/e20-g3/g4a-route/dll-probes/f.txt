@@ -1,0 +1,21 @@
+== F window k=2 y=295.0: x=650.0..700.0 step 0.5 (1 = lands on rec5 and ends past the column): 11111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000000000
+   from the face x=657.0: first failure at x=690.0 ; landing ticks after the Cross {18}
+== F window k=2 y=296.0: x=650.0..700.0 step 0.5 (1 = lands on rec5 and ends past the column): 11111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000000000
+   from the face x=657.0: first failure at x=690.0 ; landing ticks after the Cross {18}
+== F window k=2 y=297.0: x=650.0..700.0 step 0.5 (1 = lands on rec5 and ends past the column): 11111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000000000
+   from the face x=657.0: first failure at x=690.0 ; landing ticks after the Cross {18}
+   polls predicted = actual (2121) ; rolls total 0
+== F window k=3 y=295.0: x=650.0..700.0 step 0.5 (1 = lands on rec5 and ends past the column): 11111111111111111111111111111111111111111111111111111111111111111111111111111010100000000000000000000
+   from the face x=657.0: first failure at x=688.5 ; landing ticks after the Cross {18}
+== F window k=3 y=296.0: x=650.0..700.0 step 0.5 (1 = lands on rec5 and ends past the column): 11111111111111111111111111111111111111111111111111111111111111111111111111110101010000000000000000000
+   from the face x=657.0: first failure at x=688.0 ; landing ticks after the Cross {18}
+== F window k=3 y=297.0: x=650.0..700.0 step 0.5 (1 = lands on rec5 and ends past the column): 11111111111111111111111111111111111111111111111111111111111111111111111111111010100000000000000000000
+   from the face x=657.0: first failure at x=688.5 ; landing ticks after the Cross {18}
+   polls predicted = actual (2273) ; rolls total 0
+== F window k=1 y=295.0: x=650.0..700.0 step 0.5 (1 = lands on rec5 and ends past the column): 11111111111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000
+   from the face x=657.0: first failure at x=693.0 ; landing ticks after the Cross {18}
+== F window k=1 y=296.0: x=650.0..700.0 step 0.5 (1 = lands on rec5 and ends past the column): 11111111111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000
+   from the face x=657.0: first failure at x=693.0 ; landing ticks after the Cross {18}
+== F window k=1 y=297.0: x=650.0..700.0 step 0.5 (1 = lands on rec5 and ends past the column): 11111111111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000
+   from the face x=657.0: first failure at x=693.0 ; landing ticks after the Cross {18}
+   polls predicted = actual (2121) ; rolls total 0

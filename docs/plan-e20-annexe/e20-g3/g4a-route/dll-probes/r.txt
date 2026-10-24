@@ -1,0 +1,152 @@
+== R route a3 YD=320 k=3: images 67, final frame 135, tick 404, arrival=False, rolls 0, slides total 0, final (657.0000, 323.2500, z 64.00), phase after_attempt
+  image 28 (frame 96, tick 288): down -> left at (775.1250, 322.4375, z 64.00)
+  ATTEMPT (y outside [295, 297]) at image 111 tick 333: x=687.3750 y=323.2500 z=64.00
+  image 43 (frame 111, tick 333): left -> after_attempt at (687.3750, 323.2500, z 64.00)
+  END of the a3 observation at x=657.0000 y=323.2500 z=64.00
+   polls predicted = actual (12)
+== R route a3 YD=300 k=1: images 169, final frame 373, tick 372, arrival=False, rolls 0, slides total 0, final (657.0000, 301.7188, z 64.00), phase after_attempt
+  image 56 (frame 260, tick 260): down -> left at (775.1250, 300.9062, z 64.00)
+  ATTEMPT (y outside [295, 297]) at image 301 tick 301: x=681.2812 y=301.7188 z=64.00
+  image 97 (frame 301, tick 301): left -> after_attempt at (681.2812, 301.7188, z 64.00)
+  END of the a3 observation at x=657.0000 y=301.7188 z=64.00
+   polls predicted = actual (10)
+== R route a1 YD=288 k=2: images 57, final frame 159, tick 317, arrival=False, rolls 0, slides total 9, final (670.6562, 295.2500, z 64.00), phase left
+  image 27 (frame 129, tick 258): down -> left at (775.1250, 289.9375, z 64.00)
+  READY (a1 ends) at image 159 tick 318: x=670.6562 y=295.2500 z=64.00
+  SLIDE tick 291 slides 0->1 at (706.0000, 291.2500, z 64.00) phase left
+  SLIDE tick 292 slides 1->2 at (706.0000, 291.7500, z 64.00) phase left
+  SLIDE tick 293 slides 2->3 at (706.0000, 292.2500, z 64.00) phase left
+  SLIDE tick 294 slides 3->4 at (706.0000, 292.7500, z 64.00) phase left
+  SLIDE tick 295 slides 4->5 at (706.0000, 293.2500, z 64.00) phase left
+  SLIDE tick 296 slides 5->6 at (706.0000, 293.7500, z 64.00) phase left
+  SLIDE tick 297 slides 6->7 at (706.0000, 294.2500, z 64.00) phase left
+  SLIDE tick 298 slides 7->8 at (706.0000, 294.7500, z 64.00) phase left
+  SLIDE tick 299 slides 8->9 at (706.0000, 295.2500, z 64.00) phase left
+   polls predicted = actual (7)
+== R route a1 YD=288 k=3: images 43, final frame 111, tick 332, arrival=False, rolls 0, slides total 12, final (663.3438, 295.1250, z 64.00), phase left
+  image 19 (frame 87, tick 261): down -> left at (775.1250, 288.3125, z 64.00)
+  READY (a1 ends) at image 111 tick 333: x=663.3438 y=295.1250 z=64.00
+  SLIDE tick 296 slides 0->1 at (706.0000, 289.6250, z 64.00) phase left
+  SLIDE tick 297 slides 1->2 at (706.0000, 290.1250, z 64.00) phase left
+  SLIDE tick 298 slides 2->3 at (706.0000, 290.6250, z 64.00) phase left
+  SLIDE tick 299 slides 3->4 at (706.0000, 291.1250, z 64.00) phase left
+  SLIDE tick 300 slides 4->5 at (706.0000, 291.6250, z 64.00) phase left
+  SLIDE tick 303 slides 5->6 at (706.0000, 292.1250, z 64.00) phase left
+  SLIDE tick 304 slides 6->7 at (706.0000, 292.6250, z 64.00) phase left
+  SLIDE tick 305 slides 7->8 at (706.0000, 293.1250, z 64.00) phase left
+  SLIDE tick 306 slides 8->9 at (706.0000, 293.6250, z 64.00) phase left
+  SLIDE tick 307 slides 9->10 at (706.0000, 294.1250, z 64.00) phase left
+  SLIDE tick 308 slides 10->11 at (706.0000, 294.6250, z 64.00) phase left
+  SLIDE tick 309 slides 11->12 at (706.0000, 295.1250, z 64.00) phase left
+   polls predicted = actual (8)
+== R route a3 YD=300 k=2: images 93, final frame 195, tick 389, arrival=False, rolls 0, slides total 0, final (657.0000, 303.7500, z 64.00), phase after_attempt
+  image 31 (frame 133, tick 266): down -> left at (775.1250, 302.9375, z 64.00)
+  ATTEMPT (y outside [295, 297]) at image 159 tick 318: x=667.8750 y=303.7500 z=64.00
+  image 57 (frame 159, tick 318): left -> after_attempt at (667.8750, 303.7500, z 64.00)
+  END of the a3 observation at x=657.0000 y=303.7500 z=64.00
+   polls predicted = actual (11)
+== R route a3 YD=300 k=3: images 62, final frame 130, tick 389, arrival=False, rolls 0, slides total 0, final (657.0000, 303.7500, z 64.00), phase after_attempt
+  image 23 (frame 91, tick 273): down -> left at (775.1250, 302.9375, z 64.00)
+  ATTEMPT (y outside [295, 297]) at image 106 tick 318: x=687.3750 y=303.7500 z=64.00
+  image 38 (frame 106, tick 318): left -> after_attempt at (687.3750, 303.7500, z 64.00)
+  END of the a3 observation at x=657.0000 y=303.7500 z=64.00
+   polls predicted = actual (11)
+== R route a3 YD=320 k=2: images 101, final frame 203, tick 405, arrival=False, rolls 0, slides total 0, final (657.0000, 323.2500, z 64.00), phase after_attempt
+  image 38 (frame 140, tick 280): down -> left at (775.1250, 322.4375, z 64.00)
+  ATTEMPT (y outside [295, 297]) at image 167 tick 334: x=663.0000 y=323.2500 z=64.00
+  image 65 (frame 167, tick 334): left -> after_attempt at (663.0000, 323.2500, z 64.00)
+  END of the a3 observation at x=657.0000 y=323.2500 z=64.00
+   polls predicted = actual (12)
+== R route a3 YD=304 k=2: images 93, final frame 195, tick 389, arrival=False, rolls 0, slides total 0, final (657.0000, 307.0000, z 64.00), phase after_attempt
+  image 32 (frame 134, tick 268): down -> left at (775.1250, 306.1875, z 64.00)
+  ATTEMPT (y outside [295, 297]) at image 159 tick 318: x=672.7500 y=307.0000 z=64.00
+  image 57 (frame 159, tick 318): left -> after_attempt at (672.7500, 307.0000, z 64.00)
+  END of the a3 observation at x=657.0000 y=307.0000 z=64.00
+   polls predicted = actual (11)
+== R route a1 YD=288 k=1: images 113, final frame 317, tick 316, arrival=False, rolls 0, slides total 10, final (657.0000, 295.3438, z 64.00), phase left
+  image 48 (frame 252, tick 252): down -> left at (775.1250, 289.1250, z 64.00)
+  READY (a1 ends) at image 317 tick 317: x=657.0000 y=295.3438 z=64.00
+  SLIDE tick 283 slides 0->1 at (706.0000, 290.8438, z 64.00) phase left
+  SLIDE tick 284 slides 1->2 at (706.0000, 291.3438, z 64.00) phase left
+  SLIDE tick 285 slides 2->3 at (706.0000, 291.8438, z 64.00) phase left
+  SLIDE tick 286 slides 3->4 at (706.0000, 292.3438, z 64.00) phase left
+  SLIDE tick 287 slides 4->5 at (706.0000, 292.8438, z 64.00) phase left
+  SLIDE tick 288 slides 5->6 at (706.0000, 293.3438, z 64.00) phase left
+  SLIDE tick 289 slides 6->7 at (706.0000, 293.8438, z 64.00) phase left
+  SLIDE tick 290 slides 7->8 at (706.0000, 294.3438, z 64.00) phase left
+  SLIDE tick 291 slides 8->9 at (706.0000, 294.8438, z 64.00) phase left
+  SLIDE tick 292 slides 9->10 at (706.0000, 295.3438, z 64.00) phase left
+   polls predicted = actual (7)
+== R route a2 YD=288 k=1: images 222, final frame 427, tick 426, arrival=True, rolls 0, slides total 10, final (538.1953, 376.0000, z 64.00), phase down2
+  image 48 (frame 252, tick 252): down -> left at (775.1250, 289.1250, z 64.00)
+  JUMP at image 317 tick 317: x=657.0000 y=295.3438 z=64.00
+  image 113 (frame 317, tick 317): left -> after_jump at (657.0000, 295.3438, z 64.00)
+  image 142 (frame 346, tick 346): after_jump -> south at (598.4414, 295.3438, z 66.00)
+  image 175 (frame 379, tick 379): south -> west at (597.0000, 344.0000, z 64.00)
+  image 201 (frame 405, tick 405): west -> down2 at (539.4141, 344.0000, z 64.00)
+  SLIDE tick 283 slides 0->1 at (706.0000, 290.8438, z 64.00) phase left
+  SLIDE tick 284 slides 1->2 at (706.0000, 291.3438, z 64.00) phase left
+  SLIDE tick 285 slides 2->3 at (706.0000, 291.8438, z 64.00) phase left
+  SLIDE tick 286 slides 3->4 at (706.0000, 292.3438, z 64.00) phase left
+  SLIDE tick 287 slides 4->5 at (706.0000, 292.8438, z 64.00) phase left
+  SLIDE tick 288 slides 5->6 at (706.0000, 293.3438, z 64.00) phase left
+  SLIDE tick 289 slides 6->7 at (706.0000, 293.8438, z 64.00) phase left
+  SLIDE tick 290 slides 7->8 at (706.0000, 294.3438, z 64.00) phase left
+  SLIDE tick 291 slides 8->9 at (706.0000, 294.8438, z 64.00) phase left
+  SLIDE tick 292 slides 9->10 at (706.0000, 295.3438, z 64.00) phase left
+   polls predicted = actual (13)
+== R route a3 YD=304 k=1: images 169, final frame 373, tick 372, arrival=False, rolls 0, slides total 0, final (657.0000, 304.9688, z 64.00), phase after_attempt
+  image 58 (frame 262, tick 262): down -> left at (775.1250, 304.1562, z 64.00)
+  ATTEMPT (y outside [295, 297]) at image 301 tick 301: x=686.1562 y=304.9688 z=64.00
+  image 97 (frame 301, tick 301): left -> after_attempt at (686.1562, 304.9688, z 64.00)
+  END of the a3 observation at x=657.0000 y=304.9688 z=64.00
+   polls predicted = actual (10)
+== R route a3 YD=304 k=3: images 67, final frame 135, tick 404, arrival=False, rolls 0, slides total 0, final (657.0000, 308.6250, z 64.00), phase after_attempt
+  image 24 (frame 92, tick 276): down -> left at (775.1250, 307.8125, z 64.00)
+  ATTEMPT (y outside [295, 297]) at image 111 tick 333: x=665.4375 y=308.6250 z=64.00
+  image 43 (frame 111, tick 333): left -> after_attempt at (665.4375, 308.6250, z 64.00)
+  END of the a3 observation at x=657.0000 y=308.6250 z=64.00
+   polls predicted = actual (12)
+== R route a3 YD=320 k=1: images 185, final frame 389, tick 388, arrival=False, rolls 0, slides total 0, final (657.0000, 321.6250, z 64.00), phase after_attempt
+  image 69 (frame 273, tick 273): down -> left at (775.1250, 320.8125, z 64.00)
+  ATTEMPT (y outside [295, 297]) at image 317 tick 317: x=673.9688 y=321.6250 z=64.00
+  image 113 (frame 317, tick 317): left -> after_attempt at (673.9688, 321.6250, z 64.00)
+  END of the a3 observation at x=657.0000 y=321.6250 z=64.00
+   polls predicted = actual (11)
+== R route a2 YD=288 k=2: images 118, final frame 221, tick 441, arrival=True, rolls 0, slides total 9, final (538.5000, 376.0000, z 64.00), phase down2
+  image 27 (frame 129, tick 258): down -> left at (775.1250, 289.9375, z 64.00)
+  JUMP at image 159 tick 318: x=670.6562 y=295.2500 z=64.00
+  image 57 (frame 159, tick 318): left -> after_jump at (670.6562, 295.2500, z 64.00)
+  image 75 (frame 177, tick 354): after_jump -> south at (597.4375, 295.2500, z 64.00)
+  image 93 (frame 195, tick 390): south -> west at (597.0000, 344.0000, z 64.00)
+  image 107 (frame 209, tick 418): west -> down2 at (539.7188, 344.0000, z 64.00)
+  SLIDE tick 291 slides 0->1 at (706.0000, 291.2500, z 64.00) phase left
+  SLIDE tick 292 slides 1->2 at (706.0000, 291.7500, z 64.00) phase left
+  SLIDE tick 293 slides 2->3 at (706.0000, 292.2500, z 64.00) phase left
+  SLIDE tick 294 slides 3->4 at (706.0000, 292.7500, z 64.00) phase left
+  SLIDE tick 295 slides 4->5 at (706.0000, 293.2500, z 64.00) phase left
+  SLIDE tick 296 slides 5->6 at (706.0000, 293.7500, z 64.00) phase left
+  SLIDE tick 297 slides 6->7 at (706.0000, 294.2500, z 64.00) phase left
+  SLIDE tick 298 slides 7->8 at (706.0000, 294.7500, z 64.00) phase left
+  SLIDE tick 299 slides 8->9 at (706.0000, 295.2500, z 64.00) phase left
+   polls predicted = actual (14)
+== R route a2 YD=288 k=3: images 86, final frame 155, tick 464, arrival=True, rolls 0, slides total 12, final (538.5000, 376.0000, z 64.00), phase down2
+  image 19 (frame 87, tick 261): down -> left at (775.1250, 288.3125, z 64.00)
+  JUMP at image 111 tick 333: x=663.3438 y=295.1250 z=64.00
+  image 43 (frame 111, tick 333): left -> after_jump at (663.3438, 295.1250, z 64.00)
+  image 55 (frame 123, tick 369): after_jump -> south at (597.0000, 295.1250, z 64.00)
+  image 68 (frame 136, tick 408): south -> west at (597.0000, 344.0000, z 64.00)
+  image 78 (frame 146, tick 438): west -> down2 at (539.7188, 344.0000, z 64.00)
+  SLIDE tick 296 slides 0->1 at (706.0000, 289.6250, z 64.00) phase left
+  SLIDE tick 297 slides 1->2 at (706.0000, 290.1250, z 64.00) phase left
+  SLIDE tick 298 slides 2->3 at (706.0000, 290.6250, z 64.00) phase left
+  SLIDE tick 299 slides 3->4 at (706.0000, 291.1250, z 64.00) phase left
+  SLIDE tick 300 slides 4->5 at (706.0000, 291.6250, z 64.00) phase left
+  SLIDE tick 303 slides 5->6 at (706.0000, 292.1250, z 64.00) phase left
+  SLIDE tick 304 slides 6->7 at (706.0000, 292.6250, z 64.00) phase left
+  SLIDE tick 305 slides 7->8 at (706.0000, 293.1250, z 64.00) phase left
+  SLIDE tick 306 slides 8->9 at (706.0000, 293.6250, z 64.00) phase left
+  SLIDE tick 307 slides 9->10 at (706.0000, 294.1250, z 64.00) phase left
+  SLIDE tick 308 slides 10->11 at (706.0000, 294.6250, z 64.00) phase left
+  SLIDE tick 309 slides 11->12 at (706.0000, 295.1250, z 64.00) phase left
+   polls predicted = actual (16)

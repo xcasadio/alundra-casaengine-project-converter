@@ -1,0 +1,5 @@
+(d) the mouth of the corridor of the portal: binary (out/g4a_mouth_binary.txt) against the DLL (dll-probes/m.txt), start (x0, 344, z 64), Down held, x0 = 534.0 .. 541.5 by 0.0625
+k=1 : 121 starts ; (steps, x, tick) equal to the binary for 121 ; SlideCount == steps for 121
+k=2 : 121 starts ; (steps, x, tick) equal to the binary for 121 ; SlideCount == steps for 121
+k=3 : 121 starts ; (steps, x, tick) equal to the binary for 121 ; SlideCount == steps for 121
+free window of the mouth (binary, steps 0): x0 in [538.0000 ; 541.0000] (49 starts)

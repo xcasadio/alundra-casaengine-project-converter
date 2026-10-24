@@ -1,0 +1,5 @@
+(e) PosY at the first tick x <= 690, hero started at (720, y0), Left held (the pilot lets go in a poll image), y0 = 286.0000 .. 295.0000 by 0.0625 (145 starts)
+binary = critic/out/w3_door.txt ; law = 295 + ((y0 - 295) mod 0.5) ; slides law = (PosY - y0) / 0.5
+k=1 : 145 starts ; PosY equal to the binary for 145 of 145 ; equal to the law for 145 ; slides = (PosY - y0)/0.5 for 145 ; slides min 0 max 18
+k=2 : 145 starts ; PosY equal to the binary for 145 of 145 ; equal to the law for 145 ; slides = (PosY - y0)/0.5 for 145 ; slides min 0 max 18
+k=3 : 145 starts ; PosY equal to the binary for 145 of 145 ; equal to the law for 145 ; slides = (PosY - y0)/0.5 for 145 ; slides min 0 max 18

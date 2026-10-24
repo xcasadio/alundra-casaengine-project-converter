@@ -1,0 +1,16 @@
+(d) slides of the arcs designed in T0 (dll-probes/r.txt): total, calage slides (phase left, x = 706), law 295 + ((y0 - 295) mod 0.5), other slides
+  a1 YD=288 k=1 : total 10 ; calage 10 slides from y0=290.3438 to PosY=295.3438, law 295.3438 -> EQUAL, count (PosY-y0)/0.5 = 10 -> EQUAL ; other slides 0
+  a1 YD=288 k=2 : total 9 ; calage 9 slides from y0=290.7500 to PosY=295.2500, law 295.2500 -> EQUAL, count (PosY-y0)/0.5 = 9 -> EQUAL ; other slides 0
+  a1 YD=288 k=3 : total 12 ; calage 12 slides from y0=289.1250 to PosY=295.1250, law 295.1250 -> EQUAL, count (PosY-y0)/0.5 = 12 -> EQUAL ; other slides 0
+  a2 YD=288 k=1 : total 10 ; calage 10 slides from y0=290.3438 to PosY=295.3438, law 295.3438 -> EQUAL, count (PosY-y0)/0.5 = 10 -> EQUAL ; other slides 0
+  a2 YD=288 k=2 : total 9 ; calage 9 slides from y0=290.7500 to PosY=295.2500, law 295.2500 -> EQUAL, count (PosY-y0)/0.5 = 9 -> EQUAL ; other slides 0
+  a2 YD=288 k=3 : total 12 ; calage 12 slides from y0=289.1250 to PosY=295.1250, law 295.1250 -> EQUAL, count (PosY-y0)/0.5 = 12 -> EQUAL ; other slides 0
+  a3 YD=300 k=1 : total 0 ; no calage ; other slides 0
+  a3 YD=300 k=2 : total 0 ; no calage ; other slides 0
+  a3 YD=300 k=3 : total 0 ; no calage ; other slides 0
+  a3 YD=304 k=1 : total 0 ; no calage ; other slides 0
+  a3 YD=304 k=2 : total 0 ; no calage ; other slides 0
+  a3 YD=304 k=3 : total 0 ; no calage ; other slides 0
+  a3 YD=320 k=1 : total 0 ; no calage ; other slides 0
+  a3 YD=320 k=2 : total 0 ; no calage ; other slides 0
+  a3 YD=320 k=3 : total 0 ; no calage ; other slides 0

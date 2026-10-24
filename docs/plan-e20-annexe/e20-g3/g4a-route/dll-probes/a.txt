@@ -1,0 +1,51 @@
+== A cadence k=1: frames run 349, ticks per image distinct = [1], total ticks 349, roll=False
+  0x11@104 image 204 tick 204
+  0x2F@107 image 220 tick 220 result 0
+  0x2F@107 image 236 tick 236 result 0
+  0x2F@107 image 252 tick 252 result 0
+  0x2F@107 image 268 tick 268 result 0
+  0x2F@107 image 284 tick 284 result 0
+  0x2F@107 image 300 tick 300 result 0
+  0x2F@107 image 316 tick 316 result 0
+  0x2F@107 image 332 tick 332 result 0
+  0x2F@107 image 348 tick 348 result 0
+  0x37@105 image 204 tick 204
+  0x37@105 image 205 tick 205
+  0x37@105 image 206 tick 206
+  0x37@105 image 207 tick 207
+  0x37@105 image 208 tick 208
+  0x37@105 image 209 tick 209
+== A cadence k=2: frames run 175, ticks per image distinct = [2], total ticks 350, roll=False
+  0x11@104 image 102 tick 204
+  0x2F@107 image 110 tick 220 result 0
+  0x2F@107 image 118 tick 236 result 0
+  0x2F@107 image 126 tick 252 result 0
+  0x2F@107 image 134 tick 268 result 0
+  0x2F@107 image 142 tick 284 result 0
+  0x2F@107 image 150 tick 300 result 0
+  0x2F@107 image 158 tick 316 result 0
+  0x2F@107 image 166 tick 332 result 0
+  0x2F@107 image 174 tick 348 result 0
+  0x37@105 image 102 tick 204
+  0x37@105 image 102 tick 205
+  0x37@105 image 103 tick 206
+  0x37@105 image 103 tick 207
+  0x37@105 image 104 tick 208
+  0x37@105 image 104 tick 209
+== A cadence k=3: frames run 117, ticks per image distinct = [3], total ticks 351, roll=False
+  0x11@104 image 68 tick 204
+  0x2F@107 image 73 tick 220 result 0
+  0x2F@107 image 78 tick 236 result 0
+  0x2F@107 image 84 tick 252 result 0
+  0x2F@107 image 89 tick 268 result 0
+  0x2F@107 image 94 tick 284 result 0
+  0x2F@107 image 100 tick 300 result 0
+  0x2F@107 image 105 tick 316 result 0
+  0x2F@107 image 110 tick 332 result 0
+  0x2F@107 image 116 tick 348 result 0
+  0x37@105 image 68 tick 204
+  0x37@105 image 68 tick 205
+  0x37@105 image 68 tick 206
+  0x37@105 image 69 tick 207
+  0x37@105 image 69 tick 208
+  0x37@105 image 69 tick 209

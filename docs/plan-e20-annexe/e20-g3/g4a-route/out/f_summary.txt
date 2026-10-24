@@ -1,0 +1,12 @@
+(f) window of the jump under the pilot rule: success bits per (k, y), x = 650.0 .. 700.0 by 0.5; the face of the crates is x = 657.0 (index 14)
+  k=1 y=295.0 : all 1 from 657.0 up to 692.5, first failure at x=693.0 ; successes from 657.0: 72 of 87
+  k=1 y=296.0 : all 1 from 657.0 up to 692.5, first failure at x=693.0 ; successes from 657.0: 72 of 87
+  k=1 y=297.0 : all 1 from 657.0 up to 692.5, first failure at x=693.0 ; successes from 657.0: 72 of 87
+  k=2 y=295.0 : all 1 from 657.0 up to 689.5, first failure at x=690.0 ; successes from 657.0: 66 of 87
+  k=2 y=296.0 : all 1 from 657.0 up to 689.5, first failure at x=690.0 ; successes from 657.0: 66 of 87
+  k=2 y=297.0 : all 1 from 657.0 up to 689.5, first failure at x=690.0 ; successes from 657.0: 66 of 87
+  k=3 y=295.0 : all 1 from 657.0 up to 688.0, first failure at x=688.5 ; successes from 657.0: 65 of 87
+  k=3 y=296.0 : all 1 from 657.0 up to 687.5, first failure at x=688.0 ; successes from 657.0: 65 of 87
+  k=3 y=297.0 : all 1 from 657.0 up to 688.0, first failure at x=688.5 ; successes from 657.0: 65 of 87
+  intersection of the 9 cases, contiguous from the face: x in [657.0 ; 687.5]
+  binary (w1_window, a3_jumpx): lands on rec5 from the east for hero x between 657.000 and 694.406 (Left held); included: True

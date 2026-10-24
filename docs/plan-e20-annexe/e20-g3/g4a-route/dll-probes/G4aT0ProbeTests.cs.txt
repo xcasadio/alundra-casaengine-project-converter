@@ -1,0 +1,422 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Xunit;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Session;
+using Alundra.Transitions;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>E20.g4a T0 scratch probes (never committed): cadence of B1 (a).</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G4aT0ProbeTests : IDisposable
+{
+    private const int B = ScriptHelper.ProgramBMap;
+
+    public G4aT0ProbeTests()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private static readonly string OutPath = Environment.GetEnvironmentVariable("G4A_OUT") ?? Path.Combine(Path.GetTempPath(), "g4a.txt");
+
+    private static void Out(string line) => File.AppendAllText(OutPath, line + "\n", new UTF8Encoding(false));
+
+    private static ArcSpec Spec(string name) => new(
+        name, "The Klark", "Ship Klark (night, inner, break)-392", new[] { 1641 }, 29, 13, 4, 6000, RealController: true, Prefabs: true);
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void A_Cadence(int k)
+    {
+        using var arc = new ArcRun(Spec("g4a-cadence-" + k));
+        var tick = -1;
+        arc.Proxy.TickTraceForTests = pass => { if (pass == "pad") { tick++; } };
+        var events = new List<string>();
+        var polls = 0;
+        var roll = false;
+        arc.OnInstruction = t =>
+        {
+            if (t.Slot != B) { return; }
+            if (t.Pc == 104 && t.Opcode == 0x11) { events.Add($"0x11@104 image {t.Frame} tick {tick}"); }
+            if (t.Pc == 107 && t.Opcode == 0x2F) { polls++; events.Add($"0x2F@107 image {t.Frame} tick {tick} result {arc.Hero.EventProgramState.Result}"); }
+            if (t.Pc == 105 && t.Opcode == 0x37) { events.Add($"0x37@105 image {t.Frame} tick {tick}"); }
+            if (t.Pc == 118 && t.Opcode == 0x10) { roll = true; events.Add($"ROLL 0x10@118 image {t.Frame} tick {tick}"); }
+        };
+        var ticksOfFrame = new List<int>();
+        var elapsed = k / 50f;
+        while (polls < 9 && !roll && arc.Frame < 6000)
+        {
+            var before = tick;
+            arc.OneFrame(elapsed);
+            ticksOfFrame.Add(tick - before);
+        }
+
+        Out($"== A cadence k={k}: frames run {arc.Frame}, ticks per image distinct = [{string.Join(",", ticksOfFrame.Distinct())}], total ticks {tick + 1}, roll={roll}");
+        foreach (var e in events.Where(e => !e.StartsWith("0x37")))
+        {
+            Out("  " + e);
+        }
+        // the wait 0x37 [15]: first one after each poll
+        var waits = events.Where(e => e.StartsWith("0x37")).Take(6).ToList();
+        foreach (var e in waits) { Out("  " + e); }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------------------
+    // The rig: an arc of the real map 392 stepped in images of K ticks, with the pilot's release rule.
+    // ---------------------------------------------------------------------------------------------------------------------------------
+    private sealed class Rig
+    {
+        public readonly ArcRun Arc;
+        public readonly int K;
+        public int Anchor = -1;
+        public int Tick = -1;
+        public readonly List<int> ActualPolls = new();
+        public int Rolls;
+        public Action<int>? AfterTick;
+        private readonly float _elapsed;
+
+        public Rig(int k, string name)
+        {
+            K = k;
+            _elapsed = k / 50f;
+            Arc = new ArcRun(Spec(name) with { FrameLimit = 1_000_000 });
+            Arc.Proxy.TickTraceForTests = pass =>
+            {
+                if (pass == "pad") { Tick++; }
+                else if (pass == "inventory") { AfterTick?.Invoke(Tick); }
+            };
+            Arc.OnInstruction = t =>
+            {
+                if (t.Slot != B) { return; }
+                if (t.Pc == 104 && t.Opcode == 0x11 && Anchor < 0) { Anchor = t.Frame; }
+                if (t.Pc == 107 && t.Opcode == 0x2F) { ActualPolls.Add(t.Frame); }
+                if (t.Pc == 118 && t.Opcode == 0x10) { Rolls++; }
+            };
+            while (Anchor < 0) { Arc.OneFrame(_elapsed); }
+        }
+
+        /// <summary>The images of the poll of B1: the anchor + floor(16 m / K), m >= 1 (the anchor 0x11 @104 runs at the tick 204, the start of an image for K = 1, 2, 3).</summary>
+        public bool IsPoll(int image)
+        {
+            if (image <= Anchor) { return false; }
+            for (var m = 1; ; m++)
+            {
+                var p = Anchor + 16 * m / K;
+                if (p == image) { return true; }
+                if (p > image) { return false; }
+            }
+        }
+
+        public bool PreviousWasPoll => IsPoll(Arc.Frame - 1);
+
+        /// <summary>One image of the pilot: the directions are let go in a poll image.</summary>
+        public void Step(uint dirs, bool cross = false)
+        {
+            if (IsPoll(Arc.Frame)) { dirs = 0; cross = false; }
+            Arc.HoldDirections(dirs);
+            if (cross) { Arc.Press(PadState.Cross, _elapsed); } else { Arc.OneFrame(_elapsed); }
+        }
+
+        public void ToAfterPoll()
+        {
+            do { Step(0); } while (!PreviousWasPoll);
+        }
+
+        public double X => Arc.Hero.PosX / 65536.0;
+        public double Y => Arc.Hero.PosY / 65536.0;
+        public double Z => Arc.Hero.PosZ / 65536.0;
+
+        public void Place(double x, double y, int z)
+        {
+            Arc.PlaceHero((int)Math.Floor(x), (int)Math.Floor(y), z);
+            Arc.Hero.PosX = (int)Math.Round(x * 65536.0);
+            Arc.Hero.PosY = (int)Math.Round(y * 65536.0);
+            Arc.Hero.PushLogicalPositionToRoot();
+            var root = new Microsoft.Xna.Framework.Vector3((float)x, (float)y, z);
+            Arc.HeroEntity.RootComponent!.LocalTransform.Position = root;
+            Arc.Hero.Controller!.Teleport(root);
+        }
+
+        public string PollCheck()
+        {
+            var predicted = Enumerable.Range(Anchor + 1, Math.Max(0, Arc.Frame - Anchor)).Where(IsPoll).ToList();
+            var ok = predicted.Take(ActualPolls.Count).SequenceEqual(ActualPolls) && ActualPolls.All(IsPoll);
+            return ok ? $"polls predicted = actual ({ActualPolls.Count})" : $"POLL MISMATCH actual [{string.Join(",", ActualPolls)}] vs predicted [{string.Join(",", predicted)}]";
+        }
+
+        public void Close()
+        {
+            try { Arc.Dispose(); } catch (Xunit.Sdk.XunitException) { /* the slide guard of Dispose: a probe measures the count */ }
+        }
+    }
+
+    // ---- (f) the X window of the jump under the pilot's rule ---------------------------------------------------------------------------
+
+    private readonly record struct Jump(bool Landed, int LandTick, double FinalX, double FinalZ, int Rolls);
+
+    private static Jump JumpFrom(Rig r, double x, double y)
+    {
+        r.ToAfterPoll();
+        r.Place(x, y, 64);
+        var landTick = -1;
+        var t0 = r.Tick;
+        r.AfterTick = tick =>
+        {
+            if (landTick < 0 && Math.Abs(r.Z - 80.0) < 1e-6 && r.Arc.Hero.IsOnGround != 0) { landTick = tick - t0; }
+        };
+        var rolls0 = r.Rolls;
+        r.Step(PadState.Left, cross: true);
+        while (r.Tick - t0 < 110) { r.Step(PadState.Left); }
+        r.AfterTick = null;
+        return new Jump(landTick >= 0, landTick, r.X, r.Z, r.Rolls - rolls0);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void F_Window(int k)
+    {
+        var r = new Rig(k, "g4a-f-" + k);
+        try
+        {
+            foreach (var y in new[] { 295.0, 296.0, 297.0 })
+            {
+                var bits = new StringBuilder();
+                var landTicks = new HashSet<int>();
+                double? firstFail = null;
+                var maxX = double.NaN;
+                for (var x = 650.0; x <= 700.0; x += 0.5)
+                {
+                    var j = JumpFrom(r, x, y);
+                    var ok = j.Landed && j.FinalX <= 615.0;
+                    bits.Append(ok ? '1' : '0');
+                    if (ok) { landTicks.Add(j.LandTick); }
+                    if (x >= 657.0 && !ok && firstFail is null) { firstFail = x; }
+                    if (j.Rolls != 0) { Out($"   ROLL at x={x}"); }
+                }
+
+                Out($"== F window k={k} y={y:F1}: x=650.0..700.0 step 0.5 (1 = lands on rec5 and ends past the column): {bits}");
+                Out($"   from the face x=657.0: first failure at x={(firstFail is { } f ? f.ToString("F1") : "none")} ; landing ticks after the Cross {{{string.Join(",", landTicks.OrderBy(t => t))}}}");
+            }
+
+            Out($"   {r.PollCheck()} ; rolls total {r.Rolls}");
+        }
+        finally { r.Close(); }
+    }
+
+    // ---- F0: control, the jump with Left held through the flight (no release) --------------------------------------------------------
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void F0_Control(int k)
+    {
+        var r = new Rig(k, "g4a-f0-" + k);
+        try
+        {
+            var bits = new StringBuilder();
+            double? firstFail = null;
+            for (var x = 650.0; x <= 700.0; x += 0.5)
+            {
+                r.ToAfterPoll();
+                r.Place(x, 296.0, 64);
+                var landed = false;
+                var t0 = r.Tick;
+                r.AfterTick = tick => { if (Math.Abs(r.Z - 80.0) < 1e-6 && r.Arc.Hero.IsOnGround != 0) { landed = true; } };
+                r.Arc.HoldDirections(PadState.Left);
+                r.Arc.Press(PadState.Cross, k / 50f);
+                while (r.Tick - t0 < 22 && !landed) { r.Arc.OneFrame(k / 50f); }
+                r.AfterTick = null;
+                r.Arc.ReleaseDirections();
+                bits.Append(landed ? '1' : '0');
+                if (x >= 657.0 && !landed && firstFail is null) { firstFail = x; }
+            }
+
+            Out($"== F0 control (Left held through the flight, no release) k={k} y=296.0: {bits} ; from 657.0 first failure at {(firstFail is { } f ? f.ToString("F1") : "none")}");
+        }
+        finally { r.Close(); }
+    }
+
+    // ---- (e) + (d) the wall north of the door: PosY at the first tick x <= 690 against w3_door.txt, and the slides -------------------------------
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void E_Calage(int k)
+    {
+        var r = new Rig(k, "g4a-e-" + k);
+        try
+        {
+            for (var n = 0; n <= 144; n++)
+            {
+                var y0 = 286.0 + n * 0.0625;
+                r.ToAfterPoll();
+                r.Place(720.0, y0, 64);
+                var slides0 = r.Arc.TotalSlideCount;
+                double? yFirst = null;
+                var slidesAtFirst = -1;
+                var tickFirst = -1;
+                var t0 = r.Tick;
+                r.AfterTick = tick =>
+                {
+                    if (yFirst is null && r.X <= 690.0) { yFirst = r.Y; slidesAtFirst = r.Arc.TotalSlideCount - slides0; tickFirst = tick - t0; }
+                };
+                while (yFirst is null && r.Tick - t0 < 120) { r.Step(PadState.Left); }
+                r.AfterTick = null;
+                Out($"E k={k} y0={y0:F4} -> y={(yFirst is { } yy ? yy.ToString("F7") : "none")} slides={slidesAtFirst} tick={tickFirst}");
+            }
+
+            Out($"   {r.PollCheck()} ; rolls {r.Rolls}");
+        }
+        finally { r.Close(); }
+    }
+
+    // ---- the route: the pilot of the plan, from the end of B1's walk to the portal --------------------------------------------------------
+
+    [Theory]
+    [InlineData(1, "a2", 288.0)]
+    [InlineData(2, "a2", 288.0)]
+    [InlineData(3, "a2", 288.0)]
+    [InlineData(1, "a1", 288.0)]
+    [InlineData(2, "a1", 288.0)]
+    [InlineData(3, "a1", 288.0)]
+    [InlineData(1, "a3", 304.0)]
+    [InlineData(2, "a3", 304.0)]
+    [InlineData(3, "a3", 304.0)]
+    [InlineData(1, "a3", 320.0)]
+    [InlineData(2, "a3", 320.0)]
+    [InlineData(3, "a3", 320.0)]
+    [InlineData(1, "a3", 300.0)]
+    [InlineData(2, "a3", 300.0)]
+    [InlineData(3, "a3", 300.0)]
+    public void R_Route(int k, string mode, double YD)
+    {
+        const double XLo = 657.0, XHi = 687.5;
+        var r = new Rig(k, "g4a-r-" + k);
+        try
+        {
+            var phase = "down";
+            var log = new List<string>();
+            var jumped = false;
+            var slideEvents = new List<string>();
+            var lastSlides = 0;
+            var images = 0;
+            var attemptTick = int.MaxValue / 2;
+            r.AfterTick = tick =>
+            {
+                var sl = r.Arc.TotalSlideCount;
+                if (sl != lastSlides) { slideEvents.Add($"tick {tick} slides {lastSlides}->{sl} at ({r.X:F4}, {r.Y:F4}, z {r.Z:F2}) phase {phase}"); lastSlides = sl; }
+            };
+            void Go(string to) { log.Add($"  image {images} (frame {r.Arc.Frame}, tick {r.Tick + 1}): {phase} -> {to} at ({r.X:F4}, {r.Y:F4}, z {r.Z:F2})"); phase = to; }
+            while (!WarpDirector.Instance.HasPendingArrival && images < 900 && r.Rolls == 0)
+            {
+                images++;
+                var hold = 0u;
+                var cross = false;
+                var x = r.X; var y = r.Y;
+                // the transitions are decided from the state read before the image; the image holds the direction of the phase it ends in.
+                if (phase == "south" && y >= 343.5) { Go("west"); }
+                if (phase == "west" && x <= 541.0) { Go("down2"); }
+                if (phase == "after_jump" && x <= 600) { Go("south"); }
+                if (phase == "down" && y >= YD) { Go("left"); }
+                if (phase == "left")
+                {
+                    hold = PadState.Left;
+                    var opportunity = !jumped && r.PreviousWasPoll && r.Arc.Hero.IsOnGround != 0 && x >= XLo && x <= XHi;
+                    if (opportunity && mode == "a1" && y >= 295.0 && y <= 297.0)
+                    {
+                        log.Add($"  READY (a1 ends) at image {r.Arc.Frame} tick {r.Tick + 1}: x={x:F4} y={y:F4} z={r.Z:F2}");
+                        break;
+                    }
+                    if (opportunity && mode == "a3")
+                    {
+                        cross = true; jumped = true;
+                        log.Add($"  ATTEMPT (y outside [295, 297]) at image {r.Arc.Frame} tick {r.Tick + 1}: x={x:F4} y={y:F4} z={r.Z:F2}");
+                        attemptTick = r.Tick + 1;
+                        Go("after_attempt");
+                    }
+                    else if (opportunity && y >= 295.0 && y <= 297.0)
+                    {
+                        cross = true; jumped = true;
+                        log.Add($"  JUMP at image {r.Arc.Frame} tick {r.Tick + 1}: x={x:F4} y={y:F4} z={r.Z:F2}");
+                        Go("after_jump");
+                    }
+                    else if (!jumped && x < XLo) { log.Add($"  MISSED at x={x:F4}"); break; }
+                }
+                else if (phase == "after_attempt") { hold = PadState.Left; if (r.Tick - attemptTick > 70) { log.Add($"  END of the a3 observation at x={x:F4} y={y:F4} z={r.Z:F2}"); break; } }
+                else if (phase == "after_jump") { hold = PadState.Left; }
+                else if (phase == "down") { hold = PadState.Down; }
+                else if (phase == "south") { hold = PadState.Down; }
+                else if (phase == "west") { hold = PadState.Left; }
+                else if (phase == "down2") { hold = PadState.Down; }
+                r.Step(hold, cross);
+            }
+
+            Out($"== R route {mode} YD={YD} k={k}: images {images}, final frame {r.Arc.Frame}, tick {r.Tick}, arrival={WarpDirector.Instance.HasPendingArrival}, rolls {r.Rolls}, slides total {r.Arc.TotalSlideCount}, final ({r.X:F4}, {r.Y:F4}, z {r.Z:F2}), phase {phase}");
+            foreach (var l in log) { Out(l); }
+            foreach (var l in slideEvents) { Out("  SLIDE " + l); }
+            Out($"   {r.PollCheck()}");
+        }
+        finally { r.Close(); }
+    }
+
+    // ---- (d) the alignment at the mouth of the corridor of the portal -------------------------------------------------------------------
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void M_Mouth(int k)
+    {
+        var r = new Rig(k, "g4a-m-" + k);
+        try
+        {
+            for (var n = 0; n < 121; n++)
+            {
+                var x0 = 534.0 + n * 0.0625;
+                r.ToAfterPoll();
+                r.Place(x0, 344.0, 64);
+                var slides0 = r.Arc.TotalSlideCount;
+                var px = x0;
+                var steps = 0;
+                double? xFirst = null;
+                var tickFirst = -1;
+                var slidesFirst = -1;
+                var t0 = r.Tick;
+                r.AfterTick = tick =>
+                {
+                    if (xFirst is not null) { return; }
+                    if (r.Y != 344.0) { xFirst = r.X; tickFirst = tick - t0; slidesFirst = r.Arc.TotalSlideCount - slides0; return; }
+                    if (r.X != px) { steps++; }
+                    px = r.X;
+                };
+                while (xFirst is null && r.Tick - t0 < 14) { r.Step(PadState.Down); }
+                r.AfterTick = null;
+                Out($"M k={k} x0={x0:F4} -> steps {steps}, x {(xFirst is { } xf ? xf.ToString("F4") : "none")}, tick {tickFirst}, slides {slidesFirst}");
+            }
+        }
+        finally { r.Close(); }
+    }
+}
