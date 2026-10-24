@@ -220,3 +220,86 @@ Suite in three disjoint partitions by test namespace (as T1 and T3), `--blame-ha
 ### Left for T5
 
 The ADR (next free number to recount over the branches), the mutants of the DLL code, the two fresh verifiers, and the commun T0 owed (`docs/plan-e20-annexe/e20-g/`).
+
+## T5 - ADR, mutants of the DLL code, suites (the two fresh verifiers are launched by the main session)
+
+Start HEAD `203b2632` (T4). Files: `docs/decisions/0089-the-object-in-the-hands-follows-the-hero-by-a-carried-branch-and-c23-is-registered-for-the-seven-liftable-types.md` and its row in `docs/decisions/README.md`;
+`Alundra.Tests/Hero/CarryFollowAndGestureTests.cs` (9 cases, written because of the mutants below); the script and the raw results of the mutants in `exec/t5/`. No production file is touched by T5.
+
+### ADR
+
+ADR-0089. Recount over every branch (`git branch -a`, `git ls-tree --name-only <branch> docs/decisions/` for each, the worktrees' branches included): the last number taken anywhere is 0088 (E19.d2c2 D5b); 0089 is free.
+
+### Mutants of the DLL code: 33 real mutations, 32 killed, 1 survivor outside the plan list (explained)
+
+Method (`exec/t5/mut5.py`, results `exec/t5/mutants-final.txt`, the first pass `exec/t5/mutants-pass1.txt`): each mutation replaces one exact text of one production file (the count of the text must be 1), `Alundra.Tests` is rebuilt in Release with the neutralised copy, the 179 tests of the
+carrying classes are run (`CarryGroupTests`, `CarryGuardTests`, `CarryLockSwimAndStatesTests`, `CarryRulesModesTests`, `CarryRulesStepTests`, `CarryTopsAndPlatformTests`, `CarryWalkAndJumpTests`, `CarryWorldTests`, `CarryFollowAndGestureTests`, `PutInHandsTests`, `LiftableAiTests`,
+`LiftableAiRegistrationTests`, `LiftableAiMap392Tests`, `DestroyEntityCarrierTests`, `CarriedSortKeyTests`, `NativeSpriteRegistryTests`, `EntityDestructionTests`), the file is restored by the script from its bytes. `git diff` over `Alundra/` is empty after the run (checked). A mutant is killed when at least one test is red.
+
+The 20 mutants of the plan's list (`docs/plan-e20-heros.md` 1.24.1, T5), all killed (red counts; the full names of the red tests are in the results file):
+
+| # | Plan item | Mutant | Red | Killed by (first) |
+|---|---|---|---|---|
+| M01 | `<` for `<=` at the equality of mode 0 | `horizontal <= error` | 10 | `CarryRulesStepTests` (equality), `CarryRulesModesTests` C1, (w2) |
+| M02 | step of 1 px changed | `FreeStep` 2 px | 13 | C1 traces, (w2) |
+| M03 | threshold `0x1FFFF` changed | `DestroyLimit` `0x20000` | 7 | C2 threshold cases, `CanDestroyLocked` |
+| M04 | the 5 of the counter | 4 | 4 | C2 under five calls, (w7) |
+| M05 | counter not reset | mode 0 without the reset | 9 | C1 nothing carried / traces |
+| M06 | mode 1 -> mode 0 forgotten for `AttackCount` 0 | rule dropped | 5 | C2 sheet without attack |
+| M07b | destruction with two arguments | `(world as WorldProxy)?.DestroyEntity(item, -1)` in mode 1 | 9 | C2 threshold, C3, (w7) (see the survivor below) |
+| M08 | offset read on the triplet instead of the positions | `Difference` reads the offset words | 20 | C1 |
+| M09 | mode 2 without the -1 | `Flags2 = 0` | 6 | C3 |
+| M10 | mode 2 clears `CarriedEntity` | added | 2 | C3 |
+| M11 | follow without the copy of the heights | lines removed | 3 | `F1_...` (new, see below) |
+| M12 | follow keeps the forces | the eight zeroings removed | 3 | `F1_...` (new) |
+| M13 | `XCollisionEntity` not cleared | line removed | 3 | `F1_...` (new) |
+| M14 | carried object left in `Collidables` | `PlatformEntity == null` gate removed from `EntitySupport.IsEligibleSubject` | 18 | (w1), (w4), (w5), (w11) |
+| M15 | clearing of the carrier forgotten, two-argument overload | call removed | 2 | (w9) positive and no-identity cases |
+| M16 | clearing forgotten, single-argument overload | call removed | 2 | (w9) |
+| M17 | clearing with a test of identity | `ReferenceEquals(carrier.CarriedEntity, entity.LogicContextEntity)` | 2 | (w9) `TheClearing_HasNoTestOfIdentity_...` (both overloads) |
+| M18 | states `0x06` and `0x2E` swapped | | 10 | C6, (w4) |
+| M19 | marker not posed | `PutInHands` | 12 | C5, (w2), (w4), (w7), (w8) |
+| M20 | `RidingEntity` not cleared | `PutInHands` | 1 | C5 |
+
+Twelve more, beyond the list (the six branchings and the registration, one by one, and some inner parts): M21 sort key not raised (1 red, (w10)); M22 mode 1 not called in the locked branch (3, (w7)); M23 body of `UpdatePlayerCarriedEntity` removed (9); M24 lift gestures branch removed (3,
+`F2_...` new); M25 carrying group branch removed (27); M26 heavy test "any kind bit" (27); M27 follow branch removed (39); M28 follow without the Z offset (36); M29 follow without the push to the root (30); M30 C23 not registered (6: (r1), (r2), the pin); M31 C23 keeps the carrier's link (9);
+M32 C23 keeps the riding relation (4).
+
+First pass, before the tests of T5 (32 mutants, M07b not yet written): 27 killed, five survivors: M07 (below) and four holes, M11, M12, M13 and M24 (the follow's reset of the forces, the contact entity and the heights; the wiring of the lift gestures). They were true holes of T2 (every object of the world tests was lifted at rest, standing on the hero's own heights, and the
+gesture never ended before its chain). `CarryFollowAndGestureTests` closes them, each case green on the code and red on its mutant (`mutants-final.txt`): `F1_TheFollow_ZeroesTheForces_ClearsTheContactEntity_AndTakesTheHeightsOfTheCarrier_...` (1, 2, 3 ticks per frame: the crate is lifted with forces, a contact entity, `ForceAdjusted`/`CollidedWithEntityZ`/`IsOnGround`
+reversed and floor/terrain heights different from the hero's; from the lift tick on and for 6 ticks the forces are 0, the contact entity is none, the flags are 1/1/0 and the heights are the hero's; the hero's heights are checked different from the preset ones, so the test can fail), `F2_TheLiftGestureOnTheGround_PassesByTheFallStateWhenTheObjectIsLost_AndStaysWhileItIsHeld_...`
+(the gesture 0x05 keeps 0x05 while the object is held, and the object lost passes by 0x2D, the fall state; the binary's rule `0x800322F0`), `F3_TheLiftGestureInTheAir_StaysWhileTheHeroFalls_AndBecomesTheStandOnTheGround` (lift in the air at 20 px: 0x0B while falling, 0x0C on the ground; green with and without M24, because the stand on landing is also reached
+by the animation clock: it pins the observable behaviour, it does not kill M24).
+
+The survivor: **M07**, not in the plan's list and not a mutant of the code of the slice. It rewrites the existing single-argument `WorldProxy.DestroyEntity(entity)` (E19) to call the two-argument overload (`DestroyEntity(entity, -1)`, which emits the break effect of the sprite header). No test has a
+`WorldProxy` with a sprite whose header holds a break effect and a stage that records the emission for the single-argument path: the "no effect, no loot" property of that overload is existing behaviour, tested by no test of the repository, and the g1a claim (mode 1 destroys with no effect) rests on the interface method being the single-argument one, which M07b kills
+(the montage's double is not a `WorldProxy`, so a two-argument call destroys nothing and (w7), C2 and C3 go red). Flagged for the verifiers, not fixed here (a test of E19's overload is out of the perimeter).
+
+### Suites
+
+Release with the neutralised copy (`-p:CustomAfterMicrosoftCommonTargets=.../skipcopy.targets` on build and test), then Debug built last without it; `--blame-hang-timeout 60s`; disjoint partitions by test namespace as T1, T3 and T4 (1 = Arcs, Ai, Audio, Cameras, Cells, Combat, Dialogues; 2 = Entities, Events,
+ExportGuards, Hero, Items; 3 = the negation of the twelve); the three of one configuration cover the whole project.
+
+| partition | tests | failures Release | failures Debug |
+|---|---|---|---|
+| 1 | 1 242 | 0 | 0 |
+| 2 | 2 766 | 0 | 0 |
+| 3 | 1 802 | 0 | 0 |
+| total | 5 810 (= 5 801 at the end of T4 + the 9 of `CarryFollowAndGestureTests`; = `--list-tests`) | 0 | 0 |
+
+- `--list-tests` against the list at the start HEAD `b62726ff` (5 662 names): none of the 5 662 is missing or renamed; 148 added = 68 (T1) + 53 (T2) + 18 (T4) + 9 (T5).
+- **Existing tests moved, measured: three, against the predicted list of `README.md`.** Predicted: the two pins of the registry (phase C), the three tests that "read the keys of their own class" (expected green), and the witnesses whose comments the slice corrects. Measured: `NativeSpriteRegistryTests.ProductionRunner_RegistryHoldsTheHandlersOf...`, `WaveSwordLifeTests.V3_...` and
+  `ChargedArrowAiTests.C2_TheProductionRegistry_HoldsTheKeyForTheType7...` rewritten by derivation (`+ LiftableAi.Keys.Count`; C2 is a third pin of the registry that the plan did not know, it was in the predicted list as "own-class, expected green"); the doc comments of `TerrainHeightTests` and `LogicalZStepTests` corrected; test support
+  (`ContactHost` unsealed with an opt-in `DrivesTicks`, `JumpHeroRig` optional `hostFactory`, `JumpNpcRig` eight rows of `HeroAttackClock`) with no change for the existing montages. Everything else of the predicted list stayed green and untouched (`PillarAiRegistrationTests`, `ArrowAiTests.E5_`, the oracle tests of the Beannoid and the Muruta,
+  `LadderClimbTests`, `EntityDestructionTests.TR2_`, `LootRollWorldTests.Rolls.M3_`, `EntitySearchServiceTests`, the arcs): 3 moved against 5 predicted names (plus the comment-only witnesses), none outside the list, far below the stop of 10.
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal after the last Debug build.
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 warning, existing: `TextBoxGpu.cs`).
+- The four `docs/hero-trace-389-*.txt` were rewritten by the suites (line endings); `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0 after the Release and after the Debug suites, then restored by `git checkout`, never indexed.
+- Since `b62726ff`: no diff of `RunHeroVerticalTick` or `SnapHeroAtApex`; `git diff b62726ff..HEAD` touches only `Alundra/`, `Alundra.Tests/` and `docs/`; the engine pointer is `92d8e847` at both (the author's local change to `CasaEngine.Launcher/Program.cs` in the submodule, and the converter, the analyser and
+  `data-extracted/` are untouched); `alundra-project/` has no diff (the DLL is deposited by the Debug build only).
+
+### Owed to the slice, not done by T5
+
+- The commun T0 (`docs/plan-e20-annexe/e20-g/`: oracle copy and manifest, `c4_climb_lift`, the 16 one-word mutants of the binary, the DLL probes P-G-1 to P-G-5): not on the branch since T1; the acceptance line "Oracle: manifeste identique ; 16 mutants" stays open.
+- The two fresh verifiers (one on the pins: predicted list against measured list, above).
+- The plan (`docs/plan-e20-heros.md`) is updated by the main session.
