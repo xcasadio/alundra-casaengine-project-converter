@@ -1,0 +1,38 @@
+diff --git a/Alundra/Hero/PlayerManager.cs b/Alundra/Hero/PlayerManager.cs
+index 8409829a..afa24b53 100644
+--- a/Alundra/Hero/PlayerManager.cs
++++ b/Alundra/Hero/PlayerManager.cs
+@@ -472,7 +472,10 @@ public static class PlayerManager
+             // the original has no separate "stop climbing" reset because a Jump entry starts its own fresh
+             // vertical impulse; this port instead just needs to stop feeding the ladder's per-tick vertical
+             // step to Tick, see ScriptedMotion.TickPlayer's own doc).
+-            if (buttonsHold != 0 && dir != 0 && dir != 0x10)
++            if (TryUseItem(player, in pad) == 0 || PlayerTryAction(player, in pad) != 0)
++            {
++            }
++            else if (buttonsHold != 0 && dir != 0 && dir != 0x10)
+             {
+                 player.TargetAnimationId = IdleAnimationId;
+                 player.ForceZ = 0;
+@@ -952,13 +955,19 @@ public static class PlayerManager
+     internal static int? TryUseItemResultForTests;
+ 
+     /// <summary>E20.a A4 stub of <c>PlayerTryAction</c> (<c>0x8002EEAC</c>): 0 means "no action, carry on" (<c>0x8002EFC8</c>: nothing carried and nothing to lift). Lifting, carrying and throwing are E20.g.</summary>
+-    private static int PlayerTryAction(EntityScriptProxy player, in PadState pad) => 0;
++    private static int PlayerTryAction(EntityScriptProxy player, in PadState pad)
++    {
++        var host = player.ScriptHost;
++        var entities = (host as IEntityWorldContext)?.SpawnedEntities ?? System.Array.Empty<EntityScriptProxy>();
++        var owns = host != null && GetNumberOfItem(host.GameState, 0x3B) != 0;
++        return PlayerTryActionCore(player, in pad, entities, owns, WiredLiftableTypes);
++    }
+ 
+     /// <summary>
+     /// E20.g1b phase A (docs/plan-e20-heros.md section 1.24.4): the sprite types whose lift is wired to <see cref="TryLift"/>, one type after the other (the model of <see cref="ProductionWiredWeaponTypes"/>, D-G-8). Empty in production until the
+     /// activation (phase B, T3): the stub <see cref="PlayerTryAction"/> still answers 0 and nothing reads this set in production.
+     /// </summary>
+-    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredLiftableTypes = new System.Collections.Generic.HashSet<int>();
++    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredLiftableTypes = new System.Collections.Generic.HashSet<int> { 234, 291, 292, 294, 297, 304, 438 };
+ 
+     /// <summary>E20.g1b test seam, per thread: when set, replaces <see cref="ProductionWiredLiftableTypes"/>.</summary>
+     [ThreadStatic]

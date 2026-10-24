@@ -168,3 +168,46 @@ consigned by D-E20-77 (the contact is set one tick earlier in the DLL; a Square 
 ### Consequence for the plan
 T0 (b2) holds: no stop remains. The expected values are not changed. T2 to T4 may start; every `CarryRig` test of the lifting (m1, m7 and the others) must run on the idle at the byte 1, i.e. the line is to be put in `CarryRig.Build` (the one line of
 `walk-release-disc/report-main.md` section 5, 0 existing test moved according to that reading, to be re-measured when it is done) - not done here (no code commit in T0b).
+
+## T2 - the world tests (m1) to (m8), RED before T3 (2026-10-24): DONE
+
+Plan: section 1.24.4 "E20.g1b", task T2. Start HEAD `86d421b5`. Branch of the parent `chantier/theme1-porter-plateforme`. Production unchanged except the preset `porter-m72` (`Alundra/SaveGames/TestSaves.cs`): the stub `PlayerTryAction` still answers 0 and `ProductionWiredLiftableTypes` is still empty.
+
+### What was written (every expected value is the binary's, from the oracle files named in each class comment, never the DLL's)
+| File | Tests | Content |
+|---|---|---|
+| `Alundra.Tests/Hero/CarryRig.cs` | 0 | ONE line in `Build`: the idle of the real sheet at the acceleration byte 1 (`walk-release-disc/report-main.md` section 5). **0 existing test moved.** |
+| `Alundra.Tests/Hero/LiftWorldTests.cs` | 39 | (m1) the 9 lines A, B, C, D, D2, E, E2, F, G of `c3` x 1, 2, 3 ticks per frame = 27; the contact at t5 and the release keeping it one tick (B) x 3; (m7) the air, Square at t6, t7, t8 (3); (m4) the object on the head (1); (m5) the object of the family C4 gives the sword next to the crate that lifts (1); (m6) the person talks, the crate lifts (1); (m8) the climb state at z 6 and 14 with the contact lifts (2), without the contact lifts nothing (1). |
+| `Alundra.Tests/Arcs/LiftArcTests.cs` | 3 | (g1) the release of the walk on the real sheet (x moves 20.71875 in 9 ticks, 21.9375 at the release tick, `ForceX` 1.21875, then 0); (m3) the very heavy stone (map 11, record 27, sprite 234, genre 3) lifted with the object `0x3B`, the sword without it. |
+| `Alundra.Tests/Arcs/LiftMap72ArcTests.cs` | 2 | (m2) the arc of the recipe from the start of `porter-m72`; (m5) the barrel of the map 72 (C4, outside the set) gives the sword, then the jar of the same scene lifts. |
+| `Alundra.Tests/Physics/CrateSolidityMap392Tests.cs` | 1 | (g2) `OG33_FromTheTopOfRec5_TheDllSetsTheContactOfRec10OneTickBeforeTheBinary_PinnedNotFollowed`: the DLL's rows (tick 2: y 297.0 and contact rec10), the binary's value beside them (t38: no contact; t39: rec10), the reference to O-G3-3 / D-E20-77 in the comment. |
+| `Alundra/SaveGames/TestSaves.cs`, `Alundra.Tests/SaveGames/TestSavesTests.cs`, `docs/test-saves.md` | +4 | the preset `porter-m72` (map 72, tile (10, 12), level 3, the new game's kit, no flag); the list of names (15), the 3 theories of `EveryPresetName` gain a row, a Fact for the preset; `TheThirteenPresets_...` renamed `TheFifteenPresets_...` (derived from the list). |
+
+### Red before T3, green after (the witnesses are green in both states)
+The reference implementation of T3 used to prove that the tests can go green is `t2/t3-reference.patch` (applied to a working copy, NEVER committed; it is not the activation: the climb call and the world access are crude). With it every test below is green. Without it (the committed state):
+- RED (25): `LiftWorldTests.M1_...` for the lines A, B, C, D2, E2 (a lift expected) x 3 cadences = 15; `M4_...`; `M5_...`; `M6_...`; `M7_...` for the Square at t6 and t7; `M8_...Lifts` at 6 and 14 px; `LiftArcTests.M3_...IsLifted...3B`; `LiftMap72ArcTests.M2_...` and `M5_...` (they fail at the first lift: the contact, the Square and the sword before it are green).
+- GREEN, the witnesses of the sword and of the stub: `M1_...` for the lines D, E, F, G (x 3); `M1_TheHeroReachesTheCrate...` x 3; `M7_...` for the Square at t8; `M8_...WithoutTheContact...`; `LiftArcTests.G1_...` and `M3_...Without...3B` (the sword, animation 16); `OG33_...`; the preset tests.
+
+### Suite (Release, `skipcopy.targets`, partitions disjoint by full namespace with the final dot, `--blame-hang-timeout 60s`), committed state
+- Partition 1 (Arcs Ai Audio Cameras Cells Combat Dialogues): 1327 tests, 3 failures (M2, M5 of the map 72, M3 with the object).
+- Partition 2 (Entities Events ExportGuards Hero Items): 2955 tests, 22 failures (all in `LiftWorldTests`).
+- Partition 3 (the exact negation of the two): 1836 tests, 0 failure.
+- Total 6118 (6068 of T1 + 50 new); 25 failures, all named above; every other test, the witnesses (the arcs of the levers 115, 116, 117 and 44, A5, A5r, the arcs of g4a, the chain) included, is green.
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding.
+- Count note: the new tests identified are 49 (39 + 3 + 2 + 1 + 4); the 50th of the difference with T1 (6118 against 6068) is not attributed (the three partitions of T1 gave 1322 + 2916 + 1830).
+
+### Existing tests moved, against the predicted list of T0 (c)
+Predicted: `TestSavesTests` (the list of names, the 3 theories of `EveryPresetName` one row more, a Fact for the preset, the rename of `TheThirteenPresets_...`). Actual: exactly those, and no other: aligning `CarryRig` moved no test (the files that mix the Square and a liftable are green). `CrateSolidityMap392Tests.cs` only gained the new Fact (g2).
+
+### Findings of the recipe arc on the map 72 (read before the recipe of the author, and before T4)
+1. **The arc plays on the real world, with one teleport.** From the start of the preset (tile (10, 12), level 3 = (252, 200, 48)), on foot: the jar of the record 37 (204, 200) is flush at x = 225.0, the Square lifts it, the gesture of 36 ticks ends in the carrying stand 12, the walk west carries it to the barrel of the record 1 (flush at x = 201.0), Cross + Left lands on the barrel top (z 64, `RidingEntity` the barrel).
+2. **The platform cannot be boarded on foot from the west bank, by the data and by the probe.** The platform (record 2, (576, 240), z 64, top 72) shuttles 96 px east and 96 px west, for ever, 1.5 px per tick (128 ticks per cycle, at its west end x = 576 at the ticks 0, 128, 256...). Its west end touches the peninsula (cells 17 to 22 of row 16 and 21, 22 of row 15, height 5 = z 80), but every way up to it from the bank (z 48), the lagoon floor (z 16, walkable; the platform floats 48 px over it) or the east bank is a rise of 32 px, and the jump rises 27.5 px (`t2/out/explore-peninsula-from-bank.txt`: stopped at x = 397.0, the apex z 75.5 against the 80 of the cell). A reachability over the cells with a rise limit of one height unit (16 px) stays in the west area; with two units (32 px) the peninsula, the east bank and the north plateau join. So the recipe step "(4) get on the platform" is **not feasible on foot from `porter-m72`** with the DLL as it is: the arc puts the hero on the peninsula (540, 248) with the jar over his head (the one teleport; the bench of the arc puts the carried object with him), waits for the platform at its west end, walks east onto it (it lands on the top at z 72, `RidingEntity` the platform) and rides: the hero and the jar follow the platform to the pixel. Whether the original lets one reach the peninsula some other way (stairs of the slope bytes, a sequence of the map events) is NOT established here: it is a question for the plan (the recipe of the author, step 4) and for a reading of the map, not something this task decides.
+3. The jar thrown from the platform (Square in the carrying stand): the hero takes the throw state 9, the jar flies east, lands on the lagoon floor (x about 709, z 16) and breaks (status 4 then 0, 20 to 60 frames after the throw).
+4. An `Arrival` is required for a map 72 arc: the entities spawn from the zone that contains the tile of the hero at the load; with the tile of the `ArcSpec` only (the new game's tile at the load) the barrel, the platform and the jars 37 and 38 are not even created. The arc starts from the preset's tile as a portal arrival, which is what the game does with the save.
+
+### Differences from the plan text
+- (m2) includes the teleport above (finding 2); everything else of the recipe is played on foot.
+- (m3) is played on the map 11 (the Debug zone, record 27 at (996, 808, z 16), flat ground around), one of the four maps the plan allows (3, 4, 7, 11).
+- (m6) uses the contact word as the one poke of the scene (as the oracle `c4_climb_lift` does for the climb): the contact of a person cannot be produced by the pad in the bench; the talk is read from the latch of the interaction (`GameState.InteractLatchEntity`) because the programs pass of the same tick releases `ActiveCollisionEntity`.
+- (m8): the bench has no ladder; the hero is put in the climb state (0x0E) with his feet off the ground (z 6 and 14 px over a floor at 0, `IsOnGround` 0) and the contact poked at the Square tick, as the oracle's rows A and C do. The row B ("same Square without the contact") is asserted as "nothing lifted" only: the climb itself cannot go on without ladder cells.
+- `t2/probes/Map72ExploreProbe.cs.txt` (a temporary exploration test driven by a pad script) and `explore-recipe-script.txt` are kept for the record; they are not tests.

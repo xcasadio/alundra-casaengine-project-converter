@@ -1,0 +1,170 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Hero;
+using Alundra.Session;
+using Alundra.Transitions;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>TEMPORARY exploration probe (never committed): plays a pad script on the map 72 and prints the hero each frame.</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class Map72ExploreProbe : IDisposable
+{
+    public Map72ExploreProbe()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private static uint Parse(string tokens)
+    {
+        uint m = 0;
+        foreach (var t in tokens.Split('+', StringSplitOptions.RemoveEmptyEntries))
+        {
+            m |= t.Trim().ToLowerInvariant() switch
+            {
+                "l" => PadState.Left,
+                "r" => PadState.Right,
+                "u" => PadState.Up,
+                "d" => PadState.Down,
+                "x" => PadState.Cross,
+                "sq" => PadState.Square,
+                "tr" => PadState.Triangle,
+                "ci" => PadState.Circle,
+                "-" => 0u,
+                _ => throw new ArgumentException(t),
+            };
+        }
+
+        return m;
+    }
+
+    [Fact]
+    public void Explore()
+    {
+        var scriptPath = Environment.GetEnvironmentVariable("M72_SCRIPT");
+        if (scriptPath == null)
+        {
+            return;
+        }
+
+        var outPath = Environment.GetEnvironmentVariable("M72_OUT") ?? Path.Combine(Path.GetTempPath(), "m72.txt");
+        var start = (Environment.GetEnvironmentVariable("M72_START") ?? "252,200,3").Split(',').Select(int.Parse).ToArray();
+        var sb = new StringBuilder();
+        var spec = new ArcSpec("g1b-explore", "Coastal Cave", "Coastal Cave-72", Array.Empty<int>(), 0, 0, 0, 100000, RealController: true, Prefabs: true,
+            Arrival: new ArcArrival(start[0] << 16, start[1] << 16, start[2] << 20, GameState.ResetAnimationId, 0));
+        using var arc = new ArcRun(spec);
+        foreach (var e in arc.Entities)
+        {
+            sb.AppendLine($"# entity ref={e.EntityRefId} type={e.SpriteType} pos=({e.PosX / 65536.0:F1},{e.PosY / 65536.0:F1},{e.PosZ / 65536.0:F0}) flags={e.Flags:X} status={(int)e.Status} name={e.OwnerEntity?.Name}");
+        }
+
+        var platform = arc.EntityByRecord(2) ?? arc.Hero;
+        var jar37 = arc.EntityByRecord(37) ?? arc.Hero;
+        string Row(string tag)
+        {
+            var h = arc.Hero;
+            return $"f{arc.Frame,5} {tag,-10} x={h.PosX / 65536.0,9:F4} y={h.PosY / 65536.0,9:F4} z={h.PosZ / 65536.0,7:F2} anim={h.TargetAnimationId,2} ground={h.IsOnGround} fx={h.ForceX / 65536.0,7:F3} fy={h.ForceY / 65536.0,7:F3} " +
+                $"coll={(h.XCollisionEntity == null ? "-" : h.XCollisionEntity.EntityRefId.ToString())} carried={(h.CarriedEntity != null ? "Y" : "-")} ride={(h.RidingEntity?.GameplayProxy is EntityScriptProxy r ? r.EntityRefId.ToString() : "-")} " +
+                $"plat=({platform!.PosX / 65536.0:F1},{platform.PosZ / 65536.0:F0}) jar37=({jar37!.PosX / 65536.0:F1},{jar37.PosY / 65536.0:F1},{jar37.PosZ / 65536.0:F0},st{(int)jar37.Status})";
+        }
+
+        sb.AppendLine(Row("start"));
+        foreach (var raw in File.ReadAllLines(scriptPath))
+        {
+            var line = raw.Trim();
+            if (line.Length == 0 || line.StartsWith('#'))
+            {
+                continue;
+            }
+
+            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts[0] == "tpc")
+            {
+                arc.PlaceHero(int.Parse(parts[1]), int.Parse(parts[2]), int.Parse(parts[3]));
+                arc.Hero.RelativeWarpOffsetX = 0;
+                arc.Hero.RelativeWarpOffsetY = 0;
+                arc.Hero.RelativeWarpOffsetZ = 32 << 16;
+                if (arc.Hero.CarriedEntity?.GameplayProxy is EntityScriptProxy carriedItem)
+                {
+                    carriedItem.PosX = arc.Hero.PosX;
+                    carriedItem.PosY = arc.Hero.PosY;
+                    carriedItem.PosZ = arc.Hero.PosZ + (32 << 16);
+                    carriedItem.PushLogicalPositionToRoot();
+                }
+                sb.AppendLine("# " + line);
+                sb.AppendLine(Row("tpc"));
+                continue;
+            }
+
+            if (parts[0] == "wp")
+            {
+                var max = double.Parse(parts[1], CultureInfo.InvariantCulture);
+                var n = 0;
+                while (platform!.PosX / 65536.0 > max && n++ < 600)
+                {
+                    arc.HoldDirections(0);
+                    arc.OneFrame();
+                }
+
+                sb.AppendLine("# " + line);
+                sb.AppendLine(Row("wp"));
+                continue;
+            }
+
+            if (parts[0] == "tp")
+            {
+                arc.PlaceHero(int.Parse(parts[1]), int.Parse(parts[2]), int.Parse(parts[3]));
+                sb.AppendLine("# " + line);
+                sb.AppendLine(Row("tp"));
+                continue;
+            }
+
+            var dirs = Parse(parts[0]) & (PadState.Up | PadState.Down | PadState.Left | PadState.Right);
+            var btn = Parse(parts[0]) & ~(PadState.Up | PadState.Down | PadState.Left | PadState.Right);
+            var count = int.Parse(parts[1], CultureInfo.InvariantCulture);
+            var every = parts.Length > 2 ? int.Parse(parts[2], CultureInfo.InvariantCulture) : 1;
+            sb.AppendLine("# " + line);
+            for (var i = 0; i < count; i++)
+            {
+                arc.HoldDirections(dirs);
+                if (btn != 0)
+                {
+                    arc.Press(btn);
+                }
+                else
+                {
+                    arc.OneFrame();
+                }
+
+                if (i % every == 0 || i == count - 1)
+                {
+                    sb.AppendLine(Row(parts[0]));
+                }
+            }
+        }
+
+        foreach (var e in arc.Entities)
+        {
+            sb.AppendLine($"# END entity ref={e.EntityRefId} type={e.SpriteType} pos=({e.PosX / 65536.0:F1},{e.PosY / 65536.0:F1},{e.PosZ / 65536.0:F0}) flags={e.Flags:X} status={(int)e.Status} name={e.OwnerEntity?.Name}");
+        }
+
+        File.WriteAllText(outPath, sb.ToString());
+    }
+}
