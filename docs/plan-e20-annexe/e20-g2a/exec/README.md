@@ -123,3 +123,44 @@ Release with the neutralised copy, then Debug last; `--blame-hang-timeout 60s`; 
 - `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal after the last Debug build.
 - The four `docs/hero-trace-389-*.txt` files were rewritten by the suites (line endings); `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, then restored by `git checkout`, never indexed.
 - The engine, the converter and the data are untouched.
+
+## T2 (world tests v1 to v9) - written before the branch, red on the named stub
+
+Start HEAD of T2: `9545acd4` (T1). Files: `Alundra.Tests/Hero/CarryThrowWorldTests.cs` (84 cases), and the bench of the tests (`Alundra.Tests/` only, all additions opt-in with a default that keeps every earlier test as it was):
+`Support/JumpNpcRig.cs` (`HeroAttackClock.Table`: the two states of the throw, `0x09` ground and `0x0A` air, 19 ticks in the four directions from the exported `bankalundra_0_anim9_*` and `anim10_*`, sound 26, acceleration 0 and 15, chains 9 to 0 and 10 to 45 (`0x2D`)),
+`Support/HeroWorldFixture.cs` + `Support/JumpHeroRig.cs` + `Hero/CarryRig.cs` (`kineticBody` / `kineticHero`: the hero's body is the Kinetic ghost of the real prefab, `Alundra.entity` `"physics_type": "Kinetic"`), `Support/ContactWorld.cs` + `Hero/CarryRig.cs` (`bodySize` / `bodyCenter` / `prefabBody`: the 21 x 15 x 16 box at (0.5, 0.5, 8) of the real crate prefab `Caisse en bois generique.entity`).
+
+### Bench facts found (the second one corrects the T0 note)
+
+- The T0 note said a crate thrown from the hero's position cannot move in the bench because "its ghost body meets the hero's". Measured: the 18 x 12 x 32 body of `ContactWorld.AddEntity` is a Kinetic ghost the sweep does not meet (a ghost `AddObject` at the same place does not block it); what blocks is the
+  HERO'S body, which `HeroWorldFixture.BuildHeroPawn` builds as a SOLID box (default physics type) while the real prefab's is Kinetic. A crate at the hero's X and Y is refused at any height up to 100 px (the probe at z 100 moves, at z 40 does not), the program choice then takes E (`Deactivated`)
+  and the object never moves again. So the montage of the throw asks for the real prefab's body (no `Controller = null`, which would also remove the gravity of the object and the cell field: `RunLogicalZPreXyStep` needs a controller). Nothing else was changed in the DLL, the engine or the data.
+- The crate of the oracle (sprite 36) has a body 21 x 15 x 16 at (0.5, 0.5, 8) and a logical box (-10, -7, 0) 21 x 15 x 16 (`sprite-records.json`, the entity file): with it the cell wall stops the object at X = 133.0, as the oracle (the bench's default 18-wide ghost would stop it at 135).
+- The gravity of the object needs `MapGravityRaw` 128 and `MapZViscosityRaw` 4096 (set on the crate by the scene) and the animation sets 0 (speed 0), 1 (256), 3 (128), 4 (384) with the impulse 1024 (the sheets of the export, as the T0 probes); then the Z series is the plan's, to the half pixel.
+
+### What the 13 tests (84 cases) pin (all at 1, 2 and 3 ticks per frame; T = tick of the front of the Square)
+
+| Test | Cases | Pins (values of the plan table / the oracle `g4`, `g4b`, `g6`) |
+|---|---|---|
+| `V1_...WithoutADirection_FliesAt1Point5PixelsATick...` | 3 | stand 12 and the object linked at T-1; at T hero 9 and carries nothing, object unlinked, animation 3, `+0x24` 0, flags `0x332374`; X 110.5 + 1.5 k to 143.5 at T+22; Z 36, 39.5 ... 0 (T to T+22); hero 9 for T..T+18, 0 at T+19 |
+| `V2_...WithADirectionHeld_FliesAt3PixelsATick...` | 3 | animation 1 (not 3), X 112 + 3 k to 178 at T+22, next to the throw without a direction (1.5) |
+| `V3_...InTheAir_...` | 6 (with / without a direction) | hero at 27.5 at T-1, object from 59.5, animation 1 / 4, 3.0 / 4.5 per tick, the oracle's 13 height samples (67.0 at T+1 ... 1.0 at T+25), landing at T+26 (not T+25), hero 10 from T to T+10 and 0 at T+11 |
+| `V4_...TowardsTheGaze...` | 24 (4 gazes x held / not) | direction word 0x18 / 0x10 / 8 / 0 of the PREVIOUS tick, speeds east and west 1.5 and 3.0, north and south 1.0 and 2.0, Z arc |
+| `V4_TurningAndThrowingOnTheSameTick...` | 3 | Up, Left or Down pressed with the Square: the object goes east (old gaze), at 3.0 |
+| `V5_...0x2000_ForbidsTheThrow...` | 3 | ground property `0x20`: nothing, the state 12 and the links stay, next to the free ground that throws |
+| `V5_...0x4000_ForbidsTheJump...` | 3 | ground property `0x40`: the Square throws (X 110.5, Z 36, X 143.5 at T+22), the Cross does not jump, next to the free ground where it does |
+| `V6_...OnTheGround...`, `V6_...InTheAir...` | 3 + 3 | the Square (twice) during the gesture `0x05` (36 ticks) or `0x0B`: nothing is thrown, the state and the links stay; in `0x0C` it throws |
+| `V7_...FromTheTickOfTheThrow...` | 6 | at T the validated animation is still 0, the asked one is 3 / 1, and X already moved by 1.5 / 3.0 (the rule of the speed key on the marker) |
+| `V8_...AgainstAWall...` | 6 | the cell wall (column 6): X < 133 before the contact (T+7 held, T+15 not), X = 133.0 after, the Z arc unchanged, nothing destroyed |
+| `V8_...OntoAStep...` | 9 | steps of 16, 32, 48 px: the object ends on the top (Z 16, 32, 48, on the ground), never leaves it, past x = 144, nothing destroyed |
+| `V9_...GoesThroughAnotherCrate...` | 12 | a second crate at x = 160, 172, 178, 184 (collidable, probe on): the flight is the free flight (178.0 at T+22), no support, the target keeps its place and status |
+
+### Red before the branch
+
+The branch of the Square was left as g1a made it (the named stub). Run (Release, the neutralised copy) of `CarryThrowWorldTests`: **84 failures, 0 pass** - every case is red for the stub (the hero stays in the state 12 with the object linked: `Expected: Tuple (9, False, False)` for the throws, `T+0: x 109, z 32` for the flights, `Expected: Tuple (8, 1)` for the gazes).
+
+### Findings of the slice (not stops: no value of the plan is contradicted; both are outside the plan's table)
+
+- **F1 - the object takes the whole pixel of the hero's position.** `CarryRules.ThrowCarried` writes the hero's raw X and Y into the object, but the object's ROOT (the engine's position, which the mover steps from and the logical position is pulled back from) is the whole-pixel `ResolveLogicalPosition` the follow of the hands wrote. A hero stopped on a fraction of a pixel
+  (after a walk: 68.78125) throws an object whose first step starts from 68.0 (observed T+0 x 66.5 instead of 67.28125, on the three tick rates). The oracle keeps the fraction (the binary copies `+0x114` whole). Invisible in the plan's values (the hero at 109.0); the scene of (v4) therefore sets the hero on a whole pixel before the throw. A fix would write the root by a displacement (no teleport) in `ThrowCarried`, a change of g1a's follow rather than of this slice: flagged, not made.
+- **F2 - without E2 (g2b) the landed object keeps gliding.** The arrival is E2's (animation 2, speed 0 at T+23); until g2b the force of the flight is never cleared, so on the ground the object slides on at 1.5 / 3.0 px a tick (status `Deactivated` from T+23, nothing destroyed) until a wall or the edge of the map. "Reste" of the plan is read as "is not destroyed, keeps its height": (v8) asserts that, and the wall X = 133.

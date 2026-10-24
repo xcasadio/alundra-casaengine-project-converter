@@ -73,9 +73,9 @@ internal static class HeroWorldFixture
     /// <summary>Hand-built hero pawn per the plan's own Acceptation 3 recipe (see class doc). Added to
     /// <paramref name="world"/> (queued - the caller's first <see cref="World.Update"/> registers it with
     /// CharacterMotionSystem, which always runs before this same frame's GameplayProxy.Update - see
-    /// EntityScriptProxy.Update's own E3.d doc).</summary>
+    /// EntityScriptProxy.Update's own E3.d doc). <paramref name="kineticBody"/> (E20.g2a T2, default false: every earlier test keeps its solid body) gives the body the physics type of the real prefab, Kinetic.</summary>
     internal static (Entity Entity, EntityScriptProxy Proxy) BuildHeroPawn(
-        World world, CharacterControllerSettings settings, Vector3 startPosition, IScriptHost scriptHost)
+        World world, CharacterControllerSettings settings, Vector3 startPosition, IScriptHost scriptHost, bool kineticBody = false)
     {
         var root = new TransformComponent();
         root.LocalTransform.Position = startPosition;
@@ -86,6 +86,11 @@ internal static class HeroWorldFixture
         projection.AddChildComponent(sprite);
 
         var collisionComponent = new CollisionComponent();
+        if (kineticBody)
+        {
+            collisionComponent.PhysicsDefinition.PhysicsType = PhysicsType.Kinetic; // the body of the real prefab (Alundra.entity, "physics_type": "Kinetic"): a ghost that the sweep of another entity does not meet.
+        }
+
         collisionComponent.Fixtures.Add(new ColliderFixture
         {
             Shape = new Box { Size = new Vector3(21f, 15f, 32f) },

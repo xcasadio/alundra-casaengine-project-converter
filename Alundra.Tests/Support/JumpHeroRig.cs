@@ -98,7 +98,8 @@ internal sealed class JumpHeroRig
         bool gravityFlag = true,
         bool freePad = false,
         bool attackClock = false,
-        Func<uint, HeroController, ContactHost>? hostFactory = null)
+        Func<uint, HeroController, ContactHost>? hostFactory = null,
+        bool kineticBody = false)
     {
         var pad = new HeroPad();
         var controller = new HeroController { PadStateProviderForTests = () => freePad ? pad.State : default };
@@ -115,7 +116,7 @@ internal sealed class JumpHeroRig
             settings.GroundSnapDistance = groundSnapDistance;
         }
 
-        var (entity, hero) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(x, y, z), host);
+        var (entity, hero) = HeroWorldFixture.BuildHeroPawn(world, settings, new Vector3(x, y, z), host, kineticBody);
         EntitySpawnFactory.SetEntityDimensions(hero, HeroOffsetX, HeroOffsetY, 0, HeroSizeX, HeroSizeY, 32);
         hero.MapGravity = MapGravity;
         hero.MapMaxFallSpeed = MapMaxFallSpeed;

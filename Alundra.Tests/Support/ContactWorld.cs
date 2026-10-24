@@ -55,12 +55,13 @@ internal static class ContactWorld
     /// A collidable entity with a controller, at the logical position (<paramref name="xPixels"/>, <paramref name="yPixels"/>,
     /// <paramref name="zPixels"/>) - the proxy fields and the root written to the same whole pixels - with the box of the original
     /// (offset, size) given. Added to the world and to <paramref name="host"/> (not yet integrated: call <see cref="Integrate"/> once all
-    /// the entities are there).
+    /// the entities are there). <paramref name="bodySize"/> and <paramref name="bodyCenter"/> (E20.g2a T2) replace the 18 x 12 x 32 ghost body by another one, e.g. the real crate prefab's.
     /// </summary>
     public static EntityScriptProxy AddEntity(
         World world, ContactHost host, string name, int xPixels, int yPixels, int zPixels,
         int offsetX, int offsetY, int offsetZ, int sizeX, int sizeY, int sizeZ,
-        bool isPlayer = false, bool collidable = true, EntityStatus status = EntityStatus.Normal, bool withController = true)
+        bool isPlayer = false, bool collidable = true, EntityStatus status = EntityStatus.Normal, bool withController = true,
+        Vector3? bodySize = null, Vector3? bodyCenter = null)
     {
         var root = new TransformComponent();
         root.LocalTransform.Position = new Vector3(xPixels, yPixels, zPixels);
@@ -68,8 +69,8 @@ internal static class ContactWorld
         collision.PhysicsDefinition.PhysicsType = PhysicsType.Kinetic; // a kinematic ghost body, as the entities of the game: invisible to the rigid sweep.
         collision.Fixtures.Add(new ColliderFixture
         {
-            Shape = new Box { Size = new Vector3(18f, 12f, 32f) },
-            LocalPosition = new Vector3(0f, 0f, 16f),
+            Shape = new Box { Size = bodySize ?? new Vector3(18f, 12f, 32f) },
+            LocalPosition = bodyCenter ?? new Vector3(0f, 0f, 16f),
             LocalRotation = Quaternion.Identity,
         });
         root.AddChildComponent(collision);

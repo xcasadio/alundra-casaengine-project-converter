@@ -163,7 +163,8 @@ internal sealed class CarryRig
 
     /// <summary>
     /// The montage: the hero at (<paramref name="heroX"/>, <paramref name="heroY"/>) px with a free pad (or the pad locked by <c>ControlLocked</c>), the animation sets of the carrying; <paramref name="hold"/> gives the pad word of each tick (the number of the tick
-    /// being played, from 1); <paramref name="configure"/> adds the entities of the scene to the world before the hero (as <see cref="JumpHeroRig.Build"/>).
+    /// being played, from 1); <paramref name="configure"/> adds the entities of the scene to the world before the hero (as <see cref="JumpHeroRig.Build"/>). <paramref name="kineticHero"/> (E20.g2a T2): the hero's body is the Kinetic ghost of the real prefab, so
+    /// that an object thrown from his very position is not stopped by it (the solid body of the bench would refuse its first step).
     /// </summary>
     public static CarryRig Build(
         int ticksPerFrame,
@@ -173,7 +174,8 @@ internal sealed class CarryRig
         float heroX = 109f,
         float heroY = 100f,
         float heroZ = 0f,
-        bool freePad = true)
+        bool freePad = true,
+        bool kineticHero = false)
     {
         CarryHost? host = null;
         var rig = JumpHeroRig.Build(
@@ -184,7 +186,8 @@ internal sealed class CarryRig
             z: heroZ,
             freePad: freePad,
             attackClock: true,
-            hostFactory: (flags, controller) => host = new CarryHost(flags, controller));
+            hostFactory: (flags, controller) => host = new CarryHost(flags, controller),
+            kineticBody: kineticHero);
         var carry = new CarryRig(rig, host!, ticksPerFrame, hold ?? (_ => 0u));
         rig.Hero.TargetDirection = 24; // east, as the oracle.
         rig.Hero.LogicContextEntity = rig.HeroEntity; // what the world sets on every entity: the link of an object in the hands is the logic entity of the hero.
@@ -195,9 +198,11 @@ internal sealed class CarryRig
     /// Adds a crate whose box starts <paramref name="x"/>, <paramref name="y"/> (the logical position, whole pixels) at height <paramref name="z"/> px, the box of the original <paramref name="sizeX"/> x <paramref name="sizeY"/> x <paramref name="sizeZ"/> around the
     /// position; the flags of the export, a sheet of balance with <paramref name="attackCount"/> attacks and its logic entity set. Added after the hero (the hero is the first of the physics list, as in the world).
     /// </summary>
-    public EntityScriptProxy AddCrate(int x, int y, int z = 0, int sizeX = 24, int sizeY = 16, int sizeZ = 16, int offsetX = -12, int offsetY = -8, int attackCount = 1, string name = "crate")
+    public EntityScriptProxy AddCrate(int x, int y, int z = 0, int sizeX = 24, int sizeY = 16, int sizeZ = 16, int offsetX = -12, int offsetY = -8, int attackCount = 1, string name = "crate", bool prefabBody = false)
     {
-        var crate = ContactWorld.AddEntity(Rig.World, Host, name, x, y, z, offsetX, offsetY, 0, sizeX, sizeY, sizeZ);
+        // prefabBody (E20.g2a T2): the Kinetic ghost of the real crate prefab (Caisse en bois generique.entity: a box 21 x 15 x 16 at (0.5, 0.5, 8)), whose footprint the cell field reads (a wall stops the object at 133, as the hero).
+        var crate = ContactWorld.AddEntity(Rig.World, Host, name, x, y, z, offsetX, offsetY, 0, sizeX, sizeY, sizeZ,
+            bodySize: prefabBody ? new Microsoft.Xna.Framework.Vector3(21f, 15f, 16f) : null, bodyCenter: prefabBody ? new Microsoft.Xna.Framework.Vector3(0.5f, 0.5f, 8f) : null);
         crate.LogicContextEntity = crate.OwnerEntity!;
         crate.Flags = CrateFlags;
         crate.BalanceRecord = CarryBench.Sheet(attackCount);

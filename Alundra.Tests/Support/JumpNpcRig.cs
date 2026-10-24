@@ -243,6 +243,8 @@ internal static class HeroAttackClock
         // (60 ticks, loops), the jump on the spot 0x2E (impulse 1280, sound 10, 1 tick, then 0x30), the air in walk 0x2F (speed 208, 28 ticks, loops) and the air on the spot 0x30 (28 ticks, loops); the acceleration of the sets 5 to 7 and 46 to 48 is 0 (the walk with an object starts at full speed).
         new(0x05, 0, 0, 44, 0x0C, 36), new(0x06, 208, 0, 10, 0x2F, 1, Impulse: 1280), new(0x07, 208, 0, 0, -1, 30), new(0x0B, 0, 15, 44, 0x30, 28), new(0x0C, 0, 1, 0, -1, 60),
         new(0x2E, 0, 0, 10, 0x30, 1, Impulse: 1280), new(0x2F, 208, 0, 0, -1, 28), new(0x30, 0, 0, 0, -1, 28),
+        // E20.g2a T2: the two states of the throw (the hero record of the export and the exported animations, 19 ticks in the four directions): 0x09 on the ground (sound 26, then Idle) and 0x0A in the air (sound 26, acceleration 15, then the fall 0x2D).
+        new(0x09, 0, 0, 26, 0, 19), new(0x0A, 0, 15, 26, 0x2D, 19),
     };
 
     private static Animation2d Make(int id, string direction, float seconds, AnimationType type)
