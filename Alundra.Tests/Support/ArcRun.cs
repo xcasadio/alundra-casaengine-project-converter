@@ -315,6 +315,11 @@ internal sealed class ArcRun : IDisposable
         // one name per cadence (1, 2, 3 ticks per image); the arc a3 has no calage (absent: 0).
         ["A5j-a1-k1"] = 10, ["A5j-a1-k2"] = 9, ["A5j-a1-k3"] = 12,
         ["A5j-a2-k1"] = 10, ["A5j-a2-k2"] = 9, ["A5j-a2-k3"] = 12,
+        // E20.g4b T1 (docs/plan-e20-annexe/e20-g3/g4b-route/README.md (d)): the lift route (b1) makes the calage of g4a plus the mouth of the corridor (1, 4, 0 second steps at k = 1, 2, 3); (b5) and (b6) lift against the
+        // north wall of the door (1, 1, 5 second steps against the east face of the crates); (b2), (b3), (b4) and the gap QG3c do not slide (absent: 0).
+        ["A5l-b1-k1"] = 11, ["A5l-b1-k2"] = 13, ["A5l-b1-k3"] = 12,
+        ["A5l-b5-k1"] = 1, ["A5l-b5-k2"] = 1, ["A5l-b5-k3"] = 5,
+        ["A5l-b6-k1"] = 1, ["A5l-b6-k2"] = 1, ["A5l-b6-k3"] = 5,
     };
     // E20.a (D-E20-11): A14 makes 2 second steps (the hero walks one tick earlier against the map programs: a second corner contact, measured, a0-mesure.md) and A18 none (a map event
     // spawns an entity at frame 278 that the lists, now refreshed before the physics of the tick, already count as an obstacle: no second step along the wall).
