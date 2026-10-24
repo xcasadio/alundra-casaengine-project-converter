@@ -7192,7 +7192,7 @@ cartes et sa table, un arrêt par type non couvert ; le point 4 du bloc aligné)
 - **Verifiers frais** : **CONFIRMED** tous deux.
 - **D-E20-39 tenue** : rien ne met un objet dans les mains en production avant g3 et g1b.
 
-#### 1.24.4 E20.g1b — Soulever (l'activation) ⚠️ (réécrite le 2026-10-18 après E20.g3 ; révision 2, **READY** à la relecture de clôture ; le texte du 2026-10-15 est remplacé ; **T0 fait le 2026-10-24 : arrêt sur deux écarts de contact** ; T1 (phase A) faite ; **l'auteur a tranché le 2026-10-24 (D-E20-71, D-E20-77 ; D-E20-69 caduque, erratum)** : T2 à T4 reprennent tout de suite, après un rejeu de la sonde de T0 (b) sur un montage aligné sur la vraie fiche ; O-G3-3 épinglé par un test nommé)
+#### 1.24.4 E20.g1b — Soulever (l'activation) ✅ (réécrite le 2026-10-18 après E20.g3 ; révision 2, **READY** à la relecture de clôture ; le texte du 2026-10-15 est remplacé ; **T0 fait le 2026-10-24 : arrêt sur deux écarts de contact** ; T1 (phase A) faite ; **l'auteur a tranché le 2026-10-24 (D-E20-71, D-E20-77 ; D-E20-69 caduque, erratum)** : T2 à T4 reprennent tout de suite, après un rejeu de la sonde de T0 (b) sur un montage aligné sur la vraie fiche ; O-G3-3 épinglé par un test nommé ; **faite et CONFIRMED le 2026-10-24** par deux verifiers frais ; ADR-0089 amendé)
 
 **Relecture (2026-10-18).** REVISE, trois blocages corrigés (FIX, révision 1) : la mesure du contact en l'air n'était pas exécutable en T0 (le
 bouchon rend 0) : T0 (b) est une sonde jetable qui relève le contact par tick, en l'air (g15 a), contact en t5 **et** t6) et au sol (c3, lignes
@@ -7259,7 +7259,7 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
 
 ##### Tâches
 
-- ⚠️ **T0** (aucun commit de code) : (a) **la carte de la recette** (Q-G1A-5) : une carte avec un soulevable câblé, un dessus de 16 px et
+- ✅ **T0** (aucun commit de code) : (a) **la carte de la recette** (Q-G1A-5) : une carte avec un soulevable câblé, un dessus de 16 px et
   une plateforme qui se déplace **d'elle-même** à l'horizontale, libre à l'arrivée ; les candidates viennent des recensements de
   `e20-g1a/work/` (`census_platforms.py`, `census_maps2.py`) ; le mouvement propre de la plateforme se prouve en **décodant les programmes**
   de la carte (les décodeurs de `docs/plan-e20-annexe/e20-g3/dll/decode_events.py` et `critic-complet/c5_dump_prog.py`) : une boucle de
@@ -7285,7 +7285,7 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
   porté → 1 et `0x0C`/`0x30` ; contact et front → retour direct de `TryLift` (même 0, sans passer par la boucle) ; contact sans front →
   boucle ; boucle sans bouton : objet sur la tête soulevé, accolé à `RidingEntity` autre ; statut 4 ou `+0x20` non nul ignoré ; héros sans
   `LogicContextEntity` : rien (piège « nul égale nul »), accolé au héros qui en a un.
-- ⏳ **T2 — Tests de monde, rouges avant T3** (le vrai contrôleur, après g3) : (m1) la chronologie du tableau (un champ synthétique avec un
+- ✅ **T2 — Tests de monde, rouges avant T3** (le vrai contrôleur, après g3) : (m1) la chronologie du tableau (un champ synthétique avec un
   soulevable de l'ensemble) ; (m2) l'arc de la recette sur la carte de T0 (a) (préréglage `porter-m<N>`) : soulever, marcher, sauter sur un
   dessus de 16 px, monter sur la plateforme mouvante, lancer, briser ; (m3) le genre 3 sur la carte 3, 4, 7 ou 11, avec et sans `0x3B` ; (m4)
   l'objet sur la tête ; (m5) hors de l'ensemble (la torche de la 86, la bombe de la 362 : genre 1 mais non câblés) : Carré donne l'épée,
@@ -7294,8 +7294,8 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
   `0x800321D4`-`0x800321E4` : `TryUseItem`, puis `PlayerTryAction`, dont un retour non nul termine le tick) : Carré au contact d'un soulevable
   câblé pendant l'escalade soulève (`anim_t` 5 ou 11, selon le scénario `c4_climb_lift`), accolé à l'escalade sans contact. Témoins (verts
   avant et après) : les arcs de leviers (115, 116, 117, 44), A5, A5r, les arcs de g4a et la chaîne.
-- ⏳ **T3 — Phase B** : les trois lignes. Verts.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : genre 2 ou 3 sans `0x3B` ; `0x3B` inversé ; masque de
+- ✅ **T3 — Phase B** : les trois lignes. Verts.
+- ✅ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : genre 2 ou 3 sans `0x3B` ; `0x3B` inversé ; masque de
   Carré ; boucle avec bouton ; `+0x12C` ignoré ; statut 2 ou 3 élargi ; retour de `TryLift` du contact perdu ; ensemble câblé étendu à un
   type non enregistré ; contact du tick courant au lieu du précédent ; garde « nul égale nul » retirée ; priorité de l'interaction inversée ;
   appel de l'état d'escalade oublié.
@@ -7350,6 +7350,34 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
   bouchon) ; la phase A ne change aucun comportement.
 
 ---
+
+**Résultats (2026-10-24).** Exécution en mode AUTO, HEAD de départ `5eccf614`. Mesures : `docs/plan-e20-annexe/e20-g1b/README.md` (T0, T1,
+T0b, T2, T3, T4).
+- **Commits.** `1e74146a` (T0, l'arrêt) ; `6fce52a8`, `af05ff2d`, `7176f056` (T1, phase A) ; `86d421b5` (T0b : la sonde rejouée sur le montage
+  aligné, les lignes B, D et D2 égales à l'oracle, 27 comparaisons sur 27) ; `c795bcbf`, `42cd834a` (T2 : 49 tests, 25 rouges avant T3, le
+  préréglage `porter-m72`, le garde-fou (g1) du lâcher sur la vraie fiche, l'épingle (g2) d'O-G3-3) ; `e151f997` (T3 : l'activation),
+  `e715cb02` (la correction de (m8)), `97ef36a3` ; `6f04b02b` (T4 : 24 mutants, l'ADR-0089 amendé).
+- **Ce qui se voit en jeu.** Carré contre une caisse ou une jarre la soulève (l'épée au tick de l'affleurement, le soulèvement un tick plus
+  tard ; après un lâcher de la direction, au tick suivant, comme l'original) ; en l'air sur le contact, Carré à t6 ou t7 soulève, à t8 donne
+  l'épée ; un objet posé sur la tête se soulève sans bouton ; la pierre très lourde (genre 3) demande le gant `0x3B` ; un objet hors de
+  l'ensemble câblé (le tonneau, la torche) donne l'épée ; l'escalade soulève au contact ; la priorité de l'interaction est inchangée, et un
+  objet à la fois soulevable et à interaction est soulevé d'abord, comme le binaire. L'ensemble câblé de production : les 7 types C23
+  (234, 291, 292, 294, 297, 304, 438).
+- **Tests.** `Alundra.Tests` : 6 031 au départ, 6 118 à la fin, zéro échec en Release (copie neutralisée) et en Debug ; `cmp` égal. Tests
+  existants déplacés : la liste prédite de T0 (c) (`TestSavesTests` : la liste des noms, trois théories, un Fact neuf, `TheThirteenPresets_…`
+  renommé `TheFifteenPresets_…`), aucun par l'alignement du montage `CarryRig` (l'attente à l'octet d'accélération 1). Preuves de retrait :
+  l'ensemble vide rend rouges les 25 lignes de T2 plus l'épingle de l'ensemble et le M6 de T4 ; le bouchon remis, les mêmes sans l'épingle ;
+  les appels de l'escalade retirés, exactement les deux lignes de (m8).
+- **Mutants.** 24 réels, tous tués. Celui qui fait passer l'interaction avant le soulèvement survivait d'abord : un test neuf le tue
+  (`M6_AnObjectThatIsBothLiftableAndInteractive_IsLiftedFirst_…`), sans changement de production.
+- **Écarts acceptés.** (m8), écrit en T2 sur un banc sans échelle, ne testait pas l'escalade (le héros passait par l'état de saut) : T3 l'a
+  corrigé (l'état d'escalade posé juste avant Carré). Le témoin (m5) utilise le tonneau (C4) de la 72 et un objet de type 290 au lieu de la
+  torche de la 86 et de la bombe de la 362 (même mécanisme ; un verifier a sondé la torche, type 393 : l'épée) ; g2c2 le remplacera.
+- **La recette sur la 72** : la plateforme ne s'atteint pas à pied depuis `porter-m72` (une montée de 32 px, le saut monte de 27,5 px) ;
+  l'arc (m2) pose Alundra sur la presqu'île (un seul téléport), le reste est joué à pied. D-E20-79 : un second préréglage sur la presqu'île,
+  ajouté juste après (avec g4b).
+- **O-G3-3** épinglé par `CrateSolidityMap392Tests.OG33_…_PinnedNotFollowed` (D-E20-77) ; une tranche du moteur le corrigera.
+- **Verifiers frais** : **CONFIRMED** tous deux.
 
 #### 1.24.5 E20.g2c — C4 (les objets transportables) et les torches : g2c1 et g2c2 (esquisses ; T0 de lecture seule fait le 2026-10-22) ⏳ (2026-10-22 : les objets C4 et les objets des plaques entrent dans le périmètre, D-E20-46)
 
