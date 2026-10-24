@@ -1,0 +1,55 @@
+== B6 k=1: lifted at image 217, carry stand reached at tick 253 (frame 254), carried 5
+   the poll image is 268 (tick 268); Left held in it (the rule 2 broken on purpose) and in the following images
+   tick 268 (roll+0): hero (657.0000, 295.0000, z 64.00) anim 12 carried 5 rec5.z 96.00
+   tick 269 (roll+1): hero (657.0000, 295.0000, z 64.00) anim 12 carried 5 rec5.z 96.00
+   tick 270 (roll+2): hero (657.0000, 295.0000, z 64.00) anim 12 carried 5 rec5.z 96.00
+   tick 271 (roll+3): hero (657.0000, 295.0000, z 64.00) anim 12 carried 5 rec5.z 96.00
+   tick 272 (roll+4): hero (657.0000, 295.0000, z 64.00) anim 12 carried 5 rec5.z 96.00
+   tick 273 (roll+5): hero (654.5625, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 274 (roll+6): hero (652.1250, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 275 (roll+7): hero (649.6875, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 276 (roll+8): hero (647.2500, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 277 (roll+9): hero (644.8125, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 278 (roll+10): hero (642.3750, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 279 (roll+11): hero (639.9375, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 280 (roll+12): hero (637.5000, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   end: hero (635.0625, 295.0000, z 64.00) anim 7 carried 5 rolls 1 at ticks [268], slides 1, rec5 status Normal
+  SLIDE tick 216 slides 0->1 at (657.0000, 295.0000, z 64.00) phase b6 contact at the end of the previous tick: none
+== B6 k=3: lifted at image 75, carry stand reached at tick 263 (frame 88), carried 5
+   the poll image is 89 (tick 267); Left held in it (the rule 2 broken on purpose) and in the following images
+   tick 268 (roll+0): hero (653.6294, 296.5012, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 269 (roll+1): hero (652.6963, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 270 (roll+2): hero (651.7632, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 271 (roll+3): hero (650.8301, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 272 (roll+4): hero (649.8970, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 273 (roll+5): hero (647.4595, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 274 (roll+6): hero (645.0220, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 275 (roll+7): hero (642.5845, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 276 (roll+8): hero (640.1470, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 277 (roll+9): hero (637.7095, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 278 (roll+10): hero (635.2720, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 279 (roll+11): hero (632.8345, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 280 (roll+12): hero (630.3970, 297.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   end: hero (627.9595, 297.0000, z 64.00) anim 7 carried 5 rolls 1 at ticks [268], slides 5, rec5 status Normal
+  SLIDE tick 218 slides 0->1 at (657.0000, 295.0000, z 64.00) phase b6 contact at the end of the previous tick: none
+  SLIDE tick 219 slides 1->2 at (657.0000, 295.0000, z 64.00) phase b6 contact at the end of the previous tick: rec5
+  SLIDE tick 222 slides 2->3 at (657.0000, 295.0000, z 64.00) phase b6 contact at the end of the previous tick: none
+  SLIDE tick 223 slides 3->4 at (657.0000, 295.0000, z 64.00) phase b6 contact at the end of the previous tick: rec5
+  SLIDE tick 224 slides 4->5 at (657.0000, 295.0000, z 64.00) phase b6 contact at the end of the previous tick: rec5
+== B6 k=2: lifted at image 109, carry stand reached at tick 255 (frame 128), carried 5
+   the poll image is 134 (tick 268); Left held in it (the rule 2 broken on purpose) and in the following images
+   tick 268 (roll+0): hero (657.0000, 295.0000, z 64.00) anim 12 carried 5 rec5.z 96.00
+   tick 269 (roll+1): hero (657.0000, 295.0000, z 64.00) anim 12 carried 5 rec5.z 96.00
+   tick 270 (roll+2): hero (657.0000, 295.0000, z 64.00) anim 12 carried 5 rec5.z 96.00
+   tick 271 (roll+3): hero (657.0000, 295.0000, z 64.00) anim 12 carried 5 rec5.z 96.00
+   tick 272 (roll+4): hero (657.0000, 295.0000, z 64.00) anim 12 carried 5 rec5.z 96.00
+   tick 273 (roll+5): hero (654.5625, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 274 (roll+6): hero (652.1250, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 275 (roll+7): hero (649.6875, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 276 (roll+8): hero (647.2500, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 277 (roll+9): hero (644.8125, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 278 (roll+10): hero (642.3750, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 279 (roll+11): hero (639.9375, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   tick 280 (roll+12): hero (637.5000, 295.0000, z 64.00) anim 7 carried 5 rec5.z 96.00
+   end: hero (635.0625, 295.0000, z 64.00) anim 7 carried 5 rolls 1 at ticks [268], slides 1, rec5 status Normal
+  SLIDE tick 217 slides 0->1 at (657.0000, 295.0000, z 64.00) phase b6 contact at the end of the previous tick: none

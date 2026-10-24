@@ -1,0 +1,600 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Session;
+using Alundra.Transitions;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>E20.g4b T0 scratch probes (never committed).</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G4bT0ProbeTests : IDisposable
+{
+    private const int B = ScriptHelper.ProgramBMap;
+
+    public G4bT0ProbeTests()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private static readonly string OutPath = Environment.GetEnvironmentVariable("G4B_OUT") ?? Path.Combine(Path.GetTempPath(), "g4b.txt");
+
+    private static void Out(string line) => File.AppendAllText(OutPath, line + "\n", new UTF8Encoding(false));
+
+    private static ArcSpec Spec(string name) => new(
+        name, "The Klark", "Ship Klark (night, inner, break)-392", new[] { 1641 }, 29, 13, 4, 1_000_000, RealController: true, Prefabs: true);
+
+    private sealed class Rig
+    {
+        public readonly ArcRun Arc;
+        public readonly int K;
+        public int Anchor = -1;
+        public int Tick = -1;
+        public readonly List<int> ActualPolls = new();
+        public int Rolls;
+        public readonly List<int> RollTicks = new();
+        public Action<int>? AfterTick;
+        private readonly float _elapsed;
+
+        public Rig(int k, string name)
+        {
+            K = k;
+            _elapsed = k / 50f;
+            Arc = new ArcRun(Spec(name));
+            Arc.Proxy.TickTraceForTests = pass =>
+            {
+                if (pass == "pad") { Tick++; }
+                else if (pass == "inventory") { AfterTick?.Invoke(Tick); }
+            };
+            Arc.OnInstruction = t =>
+            {
+                if (t.Slot != B) { return; }
+                if (t.Pc == 104 && t.Opcode == 0x11 && Anchor < 0) { Anchor = t.Frame; }
+                if (t.Pc == 107 && t.Opcode == 0x2F) { ActualPolls.Add(t.Frame); }
+                if (t.Pc == 118 && t.Opcode == 0x10) { Rolls++; RollTicks.Add(Tick); }
+            };
+            while (Anchor < 0) { Arc.OneFrame(_elapsed); }
+            for (var n = 0; n < 12; n++) { _recs[n] = Arc.EntityByRecord(n)!; }
+        }
+
+        private readonly EntityScriptProxy[] _recs = new EntityScriptProxy[12];
+
+        public bool IsPoll(int image)
+        {
+            if (image <= Anchor) { return false; }
+            for (var m = 1; ; m++)
+            {
+                var p = Anchor + 16 * m / K;
+                if (p == image) { return true; }
+                if (p > image) { return false; }
+            }
+        }
+
+        public uint LastDirs; public bool LastImagePoll;
+
+        public bool InPoll => IsPoll(Arc.Frame);
+
+        public bool PreviousWasPoll => IsPoll(Arc.Frame - 1);
+
+        /// <summary>One image of the pilot: in a poll image the directions and the buttons are let go (returns false then).</summary>
+        public bool Step(uint dirs, uint buttons = 0, bool obey = true)
+        {
+            var poll = obey && IsPoll(Arc.Frame);
+            if (poll) { dirs = 0; buttons = 0; }
+            LastDirs = dirs; LastImagePoll = poll;
+            Arc.HoldDirections(dirs);
+            if (buttons != 0) { Arc.Press(buttons, _elapsed); } else { Arc.OneFrame(_elapsed); }
+            return !poll;
+        }
+
+        public void ToAfterPoll()
+        {
+            do { Step(0); } while (!PreviousWasPoll);
+        }
+
+        public double X => Arc.Hero.PosX / 65536.0;
+        public double Y => Arc.Hero.PosY / 65536.0;
+        public double Z => Arc.Hero.PosZ / 65536.0;
+        public bool OnGround => Arc.Hero.IsOnGround != 0;
+
+        public void Place(double x, double y, int z)
+        {
+            Arc.PlaceHero((int)Math.Floor(x), (int)Math.Floor(y), z);
+            Arc.Hero.PosX = (int)Math.Round(x * 65536.0);
+            Arc.Hero.PosY = (int)Math.Round(y * 65536.0);
+            Arc.Hero.PushLogicalPositionToRoot();
+            var root = new Microsoft.Xna.Framework.Vector3((float)x, (float)y, z);
+            Arc.HeroEntity.RootComponent!.LocalTransform.Position = root;
+            Arc.Hero.Controller!.Teleport(root);
+        }
+
+        public EntityScriptProxy Rec(int record) => _recs[record];
+
+        public bool Touches(int record) => ReferenceEquals(Arc.Hero.XCollisionEntity, Rec(record));
+
+        public int? Carried()
+        {
+            var c = Arc.Hero.CarriedEntity;
+            if (c == null) { return null; }
+            for (var r = 0; r < 12; r++)
+            {
+                if (ReferenceEquals(c, _recs[r].LogicContextEntity)) { return r; }
+            }
+            return -1;
+        }
+
+        public string PollCheck()
+        {
+            var predicted = Enumerable.Range(Anchor + 1, Math.Max(0, Arc.Frame - Anchor)).Where(IsPoll).ToList();
+            var ok = predicted.Take(ActualPolls.Count).SequenceEqual(ActualPolls) && ActualPolls.All(IsPoll);
+            return ok ? $"polls predicted = actual ({ActualPolls.Count})" : $"POLL MISMATCH actual [{string.Join(",", ActualPolls)}] vs predicted [{string.Join(",", predicted)}]";
+        }
+
+        public void Close()
+        {
+            try { Arc.Dispose(); } catch (Xunit.Sdk.XunitException) { /* the slide guard of Dispose: a probe measures the count */ }
+        }
+    }
+
+    private static string Fmt(Rig r) => $"({r.X:F4}, {r.Y:F4}, z {r.Z:F2})";
+
+    // ---- the geometry of the 12 records ---------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void G_Records()
+    {
+        var r = new Rig(1, "g4b-g");
+        try
+        {
+            for (var i = 0; i < 12; i++)
+            {
+                var e = r.Arc.EntityByRecord(i);
+                Out(e == null ? $"rec{i}: none" : $"rec{i}: x={e.PosX / 65536.0:F2} y={e.PosY / 65536.0:F2} z={e.PosZ / 65536.0:F2} type={e.SpriteType} status={e.Status}");
+            }
+        }
+        finally { r.Close(); }
+    }
+
+    // ---- (c) the fall of rec10 per tick after the lift of rec6, from the start of (b2) -------------------------------------------------
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void C_FallOfRec10(int k)
+    {
+        var r = new Rig(k, "g4b-c-" + k);
+        try
+        {
+                        r.Place(670.0, 316.0, 64);
+            var t0 = r.Tick;
+            var series = new List<(int Tick, double Z10, int? Carried, double Z6, double HeroX)>();
+            var liftTick = -1;
+            r.AfterTick = tick =>
+            {
+                var c = r.Carried();
+                if (liftTick < 0 && c == 6) { liftTick = tick; }
+                series.Add((tick, r.Rec(10).PosZ / 65536.0, c, r.Rec(6).PosZ / 65536.0, r.X));
+            };
+            var pressedAt = -1;
+            var pressedImage = -1;
+            var guard = 0;
+            while (pressedAt < 0 && guard++ < 400)
+            {
+                var touching = r.Touches(6);
+                var tickBefore = r.Tick + 1;
+                if (touching && !r.InPoll)
+                {
+                    pressedAt = tickBefore; pressedImage = r.Arc.Frame;
+                    r.Step(PadState.Left, PadState.Square);
+                }
+                else { r.Step(PadState.Left); }
+            }
+
+            for (var i = 0; i < 40; i++) { r.Step(PadState.Left); }
+            r.AfterTick = null;
+            Out($"== C fall of rec10 k={k}: pose at tick {t0} ; Square image {pressedImage} (first tick {pressedAt}, {pressedAt - t0} ticks after the pose) ; carried rec6 first seen at the end of tick {liftTick}");
+            var lines = series.Where(s => s.Tick >= liftTick - 1 && s.Tick <= liftTick + 10).Select(s => $"   tick {s.Tick} (L{(s.Tick - liftTick >= 0 ? "+" : "")}{s.Tick - liftTick}) rec10.z={s.Z10:F4} rec6.z={s.Z6:F4} carried={s.Carried} heroX={s.HeroX:F4}");
+            foreach (var l in lines) { Out(l); }
+            Out("   series from L-1: " + string.Join(" ; ", series.Where(s => s.Tick >= liftTick - 1 && s.Tick <= liftTick + 9).Select(s => s.Z10.ToString("0.####", CultureInfo.InvariantCulture))));
+            Out($"   slides {r.Arc.TotalSlideCount} rolls {r.Rolls} {r.PollCheck()}");
+        }
+        finally { r.Close(); }
+    }
+
+    // ---- the arcs -----------------------------------------------------------------------------------------------------------------------
+
+    private sealed class Log
+    {
+        public readonly List<string> Lines = new();
+        public void Add(Rig r, string s) => Lines.Add($"  image {r.Arc.Frame} tick {r.Tick + 1}: {s} at {Fmt(r)}");
+    }
+
+    private static void SlideWatch(Rig r, List<string> events, Func<string> phase)
+    {
+        var last = 0;
+        var prevContact = "none";
+        r.AfterTick = tick =>
+        {
+            var sl = r.Arc.TotalSlideCount;
+            if (sl != last) { events.Add($"tick {tick} slides {last}->{sl} at {Fmt(r)} phase {phase()} contact at the end of the previous tick: {prevContact}"); last = sl; }
+            var c = r.Arc.Hero.XCollisionEntity;
+            prevContact = c == null ? "none" : "rec" + Enumerable.Range(0, 12).FirstOrDefault(n => ReferenceEquals(c, r.Rec(n)), -1);
+        };
+    }
+
+    /// <summary>(b1) the lift route: down, left, lift rec5, carry, throw, then as the jump route.</summary>
+    [Theory]
+    [InlineData(1, 615.0)]
+    [InlineData(2, 615.0)]
+    [InlineData(3, 615.0)]
+    public void B1_Route(int k, double throwX)
+    {
+        var r = new Rig(k, "g4b-b1-" + k);
+        try
+        {
+            var phase = "down";
+            var log = new Log();
+            var slideEvents = new List<string>();
+            SlideWatch(r, slideEvents, () => phase);
+            var liftTick = -1; var thrownTick = -1; var destroyedTick = -1; var carryStandTick = -1; var liftImage = -1; var throwImage = -1;
+            var prevAfter = r.AfterTick;
+            r.AfterTick = tick =>
+            {
+                prevAfter?.Invoke(tick);
+                var c = r.Carried();
+                if (liftTick < 0 && c == 5) { liftTick = tick; }
+                if (carryStandTick < 0 && c == 5 && r.Arc.Hero.TargetAnimationId == 12) { carryStandTick = tick; }
+                if (thrownTick < 0 && throwImage >= 0 && c == null) { thrownTick = tick; }
+                if (destroyedTick < 0 && throwImage >= 0 && r.Rec(5).Status == EntityStatus.Destroyed) { destroyedTick = tick; }
+            };
+            var images = 0;
+            while (!WarpDirector.Instance.HasPendingArrival && images < 1500 && (r.Rolls == 0))
+            {
+                images++;
+                var x = r.X; var y = r.Y;
+                void Go(string to) { log.Add(r, $"{phase} -> {to}"); phase = to; }
+                if (phase == "down" && y >= 288.0) { Go("left"); }
+                if (phase == "south" && y >= 343.5) { Go("west"); }
+                if (phase == "west" && x <= 541.0) { Go("down2"); }
+                if (phase == "after_throw" && x <= 600.0) { Go("south"); }
+                var hold = 0u; uint btn = 0;
+                switch (phase)
+                {
+                    case "down" or "south" or "down2": hold = PadState.Down; break;
+                    case "west" or "after_throw": hold = PadState.Left; break;
+                    case "left":
+                        hold = PadState.Left;
+                        if (r.Touches(5) && !r.InPoll) { btn = PadState.Square; liftImage = r.Arc.Frame; log.Add(r, "Square (lift) pressed, contact rec5"); Go("gesture"); }
+                        break;
+                    case "gesture":
+                        hold = PadState.Left;
+                        if (r.Carried() == 5 && r.Arc.Hero.TargetAnimationId == 12) { Go("carry"); goto case "carry"; }
+                        break;
+                    case "carry":
+                        hold = PadState.Left;
+                        if (x <= throwX && !r.InPoll) { btn = PadState.Square; throwImage = r.Arc.Frame; log.Add(r, "Square (throw) pressed"); Go("after_throw"); }
+                        break;
+                }
+
+                r.Step(hold, btn);
+            }
+
+            Out($"== B1 lift route k={k} throwX={throwX}: images {images}, frame {r.Arc.Frame}, tick {r.Tick}, arrival={WarpDirector.Instance.HasPendingArrival}, rolls {r.Rolls}, slides {r.Arc.TotalSlideCount}, final {Fmt(r)}, phase {phase}");
+            Out($"   lift: Square image {liftImage}, carried at the end of tick {liftTick}, carry stand at tick {carryStandTick} ; throw image {throwImage}, hands free at tick {thrownTick}, rec5 destroyed at tick {destroyedTick}");
+            foreach (var l in log.Lines) { Out(l); }
+            foreach (var l in slideEvents) { Out("  SLIDE " + l); }
+            Out($"   {r.PollCheck()} ; departure map {(WarpDirector.Instance.HasPendingArrival ? WarpDirector.Instance.ArrivalRecordForTests.MapIndex : 0u)}");
+        }
+        finally { r.Close(); }
+    }
+
+    /// <summary>(b2) from (670, 316, 64): Left to the contact rec6, Square; reports the lift and the fall of rec10 and the slides.</summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void B2_Start(int k)
+    {
+        var r = new Rig(k, "g4b-b2-" + k);
+        try
+        {
+                        r.Place(670.0, 316.0, 64);
+            var slideEvents = new List<string>();
+            SlideWatch(r, slideEvents, () => "b2");
+            var prev = r.AfterTick;
+            var liftTick = -1;
+            var z10 = new List<(int, double)>();
+            r.AfterTick = tick =>
+            {
+                prev?.Invoke(tick);
+                if (liftTick < 0 && r.Carried() == 6) { liftTick = tick; }
+                z10.Add((tick, r.Rec(10).PosZ / 65536.0));
+            };
+            var sqImage = -1; var contactSeenAt = -1;
+            for (var i = 0; i < 400 && sqImage < 0; i++)
+            {
+                if (r.Touches(6) && contactSeenAt < 0) { contactSeenAt = r.Arc.Frame; }
+                if (r.Touches(6) && !r.InPoll) { sqImage = r.Arc.Frame; r.Step(PadState.Left, PadState.Square); }
+                else { r.Step(PadState.Left); }
+            }
+            var guardB2 = 0;
+            while (r.Arc.Hero.TargetAnimationId != 12 && guardB2++ < 100) { r.Step(0); }
+            r.AfterTick = null;
+            Out($"== B2 k={k}: contact first seen at the start of image {contactSeenAt}, Square image {sqImage}, rec6 carried at the end of tick {liftTick}, carried now {r.Carried()}, hero {Fmt(r)}, anim {r.Arc.Hero.TargetAnimationId}, rec10 z {r.Rec(10).PosZ / 65536.0:F4}, slides {r.Arc.TotalSlideCount}, rolls {r.Rolls}");
+            Out("   rec10 z from L-1: " + string.Join(" ; ", z10.Where(s => s.Item1 >= liftTick - 1 && s.Item1 <= liftTick + 9).Select(s => s.Item2.ToString("0.####", CultureInfo.InvariantCulture))));
+            foreach (var l in slideEvents) { Out("  SLIDE " + l); }
+        }
+        finally { r.Close(); }
+    }
+
+    /// <summary>(b3) from (636, 296, 80): Down to the contact rec10, Square.</summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void B3_Start(int k)
+    {
+        var r = new Rig(k, "g4b-b3-" + k);
+        try
+        {
+                        r.Place(636.0, 296.0, 80);
+            var slideEvents = new List<string>();
+            SlideWatch(r, slideEvents, () => "b3");
+            var sqImage = -1; var contactSeenAt = -1; var supportFirst = ""; var yAtSquare = 0.0;
+            for (var i = 0; i < 400 && sqImage < 0; i++)
+            {
+                if (i == 1) { supportFirst = $"riding {(r.Arc.Hero.RidingEntity == null ? "none" : "something")} ground {r.Arc.Hero.IsOnGround}"; }
+                if (r.Touches(10) && contactSeenAt < 0) { contactSeenAt = r.Arc.Frame; }
+                if (r.Touches(10) && !r.InPoll) { sqImage = r.Arc.Frame; yAtSquare = r.Y; r.Step(PadState.Down, PadState.Square); }
+                else { r.Step(PadState.Down); }
+            }
+            var carriedAfter = r.Carried();
+            var guardB3 = 0;
+            while (r.Arc.Hero.TargetAnimationId != 12 && guardB3++ < 100) { r.Step(0); }
+            Out($"== B3 k={k}: contact first seen at the start of image {contactSeenAt}, Square image {sqImage} (y {yAtSquare:F4}, {supportFirst}), carried right after {carriedAfter}, hero {Fmt(r)}, carried at the end {r.Carried()}, anim {r.Arc.Hero.TargetAnimationId}, slides {r.Arc.TotalSlideCount}, rolls {r.Rolls}");
+            foreach (var l in slideEvents) { Out("  SLIDE " + l); }
+        }
+        finally { r.Close(); }
+    }
+
+    /// <summary>(b4) from (720, 298, 64): Left held, Cross at the first non-poll image whose first tick (since the pose) is &gt;= tj, Square in the air at the first non-poll image start where the contact is rec10.</summary>
+    [Theory]
+    [InlineData(1, 12)]
+    [InlineData(2, 12)]
+    [InlineData(3, 12)]
+    [InlineData(1, 19)]
+    [InlineData(2, 19)]
+    [InlineData(3, 19)]
+    public void B4_Start(int k, int tj)
+    {
+        var r = new Rig(k, "g4b-b4-" + k + "-" + tj);
+        try
+        {
+            r.Place(720.0, 298.0, 64);
+            var t0 = r.Tick;
+            var slideEvents = new List<string>();
+            SlideWatch(r, slideEvents, () => "b4");
+            var crossed = false; var crossFirstTick = -1; var crossImage = -1;
+            var sqImage = -1; var sqFirstTick = -1; var zAtSquare = 0.0;
+            for (var i = 0; i < 200 && sqImage < 0; i++)
+            {
+                var firstTick = r.Tick + 1 - t0;
+                uint btn = 0;
+                var poll = r.InPoll;
+                if (!crossed && !poll && firstTick >= tj)
+                {
+                    btn = PadState.Cross; crossed = true; crossFirstTick = firstTick; crossImage = r.Arc.Frame;
+                }
+                else if (crossed && !poll && !r.OnGround && r.Touches(10))
+                {
+                    btn = PadState.Square; sqImage = r.Arc.Frame; sqFirstTick = firstTick; zAtSquare = r.Z;
+                }
+
+                r.Step(PadState.Left, btn);
+            }
+
+            var carriedAfter = r.Carried();
+            var tickAfter = r.Tick - t0;
+            var guardB4 = 0;
+            while (r.Arc.Hero.TargetAnimationId != 12 && guardB4++ < 100) { r.Step(0); }
+            Out($"== B4 k={k} tj>={tj}: Cross image {crossImage} (first tick {crossFirstTick}), Square image {sqImage} (first tick {sqFirstTick}, z {zAtSquare:F2}), carried right after {carriedAfter} (end tick {tickAfter}), hero {Fmt(r)} carried at the end {r.Carried()}, slides {r.Arc.TotalSlideCount}, rolls {r.Rolls}");
+            foreach (var l in slideEvents) { Out("  SLIDE " + l); }
+        }
+        finally { r.Close(); }
+    }
+
+    /// <summary>(b4) sweep: Cross at the first tick of the image c since the pose, Square gate at the start of an image (non-poll, in the air, contact), y = 298.</summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void B4_Sweep(int k)
+    {
+        for (var c = 2; c <= 24; c++)
+        {
+            var r = new Rig(k, "g4b-b4s-" + k + "-" + c);
+            try
+            {
+                                r.Place(720.0, 298.0, 64);
+                var t0 = r.Tick;
+                var crossed = false; var crossFirst = -1; var sqFirst = -1; var contactRec = -1; var zSq = 0.0; var pollsSkipped = 0;
+                var airContacts = new List<string>();
+                var prev = r.AfterTick;
+                r.AfterTick = tick =>
+                {
+                    if (!r.OnGround && r.Arc.Hero.XCollisionEntity != null)
+                    {
+                        var rr = Enumerable.Range(0, 12).FirstOrDefault(n => ReferenceEquals(r.Arc.Hero.XCollisionEntity, r.Rec(n)), -1);
+                        airContacts.Add($"{tick - t0}:rec{rr}@z{r.Z:F1}");
+                    }
+                };
+                var image = 0;
+                for (var i = 0; i < 40 && sqFirst < 0; i++)
+                {
+                    image++;
+                    var firstTick = r.Tick + 1 - t0;
+                    uint btn = 0;
+                    var poll = r.InPoll;
+                    if (!crossed && image >= c)
+                    {
+                        if (poll) { pollsSkipped++; }
+                        else { btn = PadState.Cross; crossed = true; crossFirst = firstTick; }
+                    }
+                    else if (crossed && !poll && !r.OnGround && r.Touches(10))
+                    {
+                        contactRec = 10;
+                        btn = PadState.Square; sqFirst = firstTick; zSq = r.Z;
+                    }
+
+                    r.Step(PadState.Left, btn);
+                }
+
+                var carried = r.Carried();
+                for (var i = 0; i < 40; i++) { r.Step(PadState.Left); }
+                r.AfterTick = null;
+                Out($"B4S k={k} Cross image {c}: polls skipped {pollsSkipped}, Cross first tick {crossFirst}, Square first tick {sqFirst} (contact rec{contactRec}, z {zSq:F2}), carried {carried} ; air contacts (tick since pose: rec @ z) [{string.Join(" ", airContacts.Take(8))}]");
+            }
+            finally { r.Close(); }
+        }
+    }
+
+    /// <summary>(b4) trace: Cross at the image c, Square (when the gate says so), per-tick state.</summary>
+    [Theory]
+    [InlineData(2, 9)]
+    [InlineData(2, 10)]
+    [InlineData(1, 16)]
+    public void B4_Trace(int k, int c)
+    {
+        var r = new Rig(k, "g4b-b4t-" + k + "-" + c);
+        try
+        {
+                        r.Place(720.0, 298.0, 64);
+            var t0 = r.Tick;
+            var lines = new List<string>();
+            r.AfterTick = tick =>
+            {
+                var rr = Enumerable.Range(0, 12).FirstOrDefault(n => ReferenceEquals(r.Arc.Hero.XCollisionEntity, r.Rec(n)), -1);
+                lines.Add($"   tick {tick - t0}: hero {Fmt(r)} anim {r.Arc.Hero.TargetAnimationId} ground {r.Arc.Hero.IsOnGround} xcoll rec{rr} carried {r.Carried()} poll-image {r.InPoll}");
+            };
+            var crossed = false; var sq = false; var image = 0;
+            for (var i = 0; i < 24; i++)
+            {
+                image++;
+                uint btn = 0;
+                var poll = r.InPoll;
+                var firstTick = r.Tick + 1 - t0;
+                if (!crossed && image >= c && !poll) { btn = PadState.Cross; crossed = true; lines.Add($"  [image {image} first tick {firstTick}: Cross]"); }
+                else if (crossed && !sq && !poll && !r.OnGround && r.Arc.Hero.XCollisionEntity != null) { btn = PadState.Square; sq = true; lines.Add($"  [image {image} first tick {firstTick}: Square, z {r.Z:F2}, ground {r.Arc.Hero.IsOnGround}]"); }
+                r.Step(PadState.Left, btn);
+            }
+            r.AfterTick = null;
+            Out($"== B4 trace k={k} Cross image {c}");
+            foreach (var l in lines) { Out(l); }
+        }
+        finally { r.Close(); }
+    }
+
+    /// <summary>(b5) from (657, 312, 64): Up to the contact rec5 at y = 295.0, Square.</summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void B5_Start(int k)
+    {
+        var r = new Rig(k, "g4b-b5-" + k);
+        try
+        {
+                        r.Place(657.0, 312.0, 64);
+            var slideEvents = new List<string>();
+            SlideWatch(r, slideEvents, () => "b5");
+            var tickLines = new List<string>();
+            var prevHook = r.AfterTick;
+            r.AfterTick = tick =>
+            {
+                prevHook?.Invoke(tick);
+                var c = r.Arc.Hero.XCollisionEntity;
+                tickLines.Add($"   tick {tick}: pad-held-in-this-image {(r.LastDirs == PadState.Up ? "Up" : r.LastDirs == 0 ? "none" : r.LastDirs.ToString())} poll-image {r.LastImagePoll} hero ({r.X:F4}, {r.Y:F4}) xcoll {(c == null ? "none" : "rec" + Enumerable.Range(0, 12).FirstOrDefault(n => ReferenceEquals(c, r.Rec(n)), -1))} slides {r.Arc.TotalSlideCount}");
+            };
+            var sqImage = -1; var contactSeenAt = -1; var yAtSquare = 0.0;
+            for (var i = 0; i < 400 && sqImage < 0; i++)
+            {
+                if (r.Touches(5) && contactSeenAt < 0) { contactSeenAt = r.Arc.Frame; }
+                if (r.Touches(5) && !r.InPoll) { sqImage = r.Arc.Frame; yAtSquare = r.Y; r.Step(PadState.Up, PadState.Square); }
+                else { r.Step(PadState.Up); }
+            }
+            var carriedAfter = r.Carried();
+            var guardB5 = 0;
+            while (r.Arc.Hero.TargetAnimationId != 12 && guardB5++ < 100) { r.Step(0); }
+            foreach (var l in tickLines.Where(l => int.Parse(l.Split(':')[0].Replace("   tick ", "")) >= 205 && int.Parse(l.Split(':')[0].Replace("   tick ", "")) <= 232)) { Out(l); }
+            Out($"== B5 k={k}: contact first seen at the start of image {contactSeenAt}, Square image {sqImage} (y {yAtSquare:F4}), carried right after {carriedAfter}, hero {Fmt(r)}, carried at the end {r.Carried()}, anim {r.Arc.Hero.TargetAnimationId}, slides {r.Arc.TotalSlideCount}, rolls {r.Rolls}");
+            foreach (var l in slideEvents) { Out("  SLIDE " + l); }
+        }
+        finally { r.Close(); }
+    }
+
+    /// <summary>(b6) the roll while carrying: lift rec5 as (b5), then at the first poll image after the carry stand hold Left through the poll (the pilot breaks its own rule 2 on purpose) and watch the hands for 12 ticks after the roll.</summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void B6_Roll(int k)
+    {
+        var r = new Rig(k, "g4b-b6-" + k);
+        try
+        {
+            r.Place(657.0, 312.0, 64);
+            var slideEvents = new List<string>();
+            SlideWatch(r, slideEvents, () => "b6");
+            var sqImage = -1;
+            for (var i = 0; i < 400 && sqImage < 0; i++)
+            {
+                if (r.Touches(5) && !r.InPoll) { sqImage = r.Arc.Frame; r.Step(PadState.Up, PadState.Square); }
+                else { r.Step(PadState.Up); }
+            }
+
+            var guard = 0;
+            while (r.Arc.Hero.TargetAnimationId != 12 && guard++ < 200) { r.Step(0); }
+            var standTick = r.Tick;
+            Out($"== B6 k={k}: lifted at image {sqImage}, carry stand reached at tick {standTick} (frame {r.Arc.Frame}), carried {r.Carried()}");
+            var rows = new List<string>();
+            var prevAfter = r.AfterTick;
+            var rollTick = -1;
+            r.AfterTick = tick =>
+            {
+                prevAfter?.Invoke(tick);
+                if (rollTick < 0 && r.Rolls > 0) { rollTick = tick; }
+                if (rollTick >= 0 && tick <= rollTick + 12) { rows.Add($"tick {tick} (roll+{tick - rollTick}): hero {Fmt(r)} anim {r.Arc.Hero.TargetAnimationId} carried {r.Carried()} rec5.z {r.Rec(5).PosZ / 65536.0:F2}"); }
+            };
+            guard = 0;
+            while (!r.InPoll && guard++ < 200) { r.Step(0); }
+            Out($"   the poll image is {r.Arc.Frame} (tick {r.Tick + 1}); Left held in it (the rule 2 broken on purpose) and in the following images");
+            r.Step(PadState.Left, 0, obey: false);
+            guard = 0;
+            while ((rollTick < 0 || r.Tick <= rollTick + 12) && guard++ < 100) { r.Step(PadState.Left); }
+            r.AfterTick = prevAfter;
+            foreach (var l in rows) { Out("   " + l); }
+            Out($"   end: hero {Fmt(r)} anim {r.Arc.Hero.TargetAnimationId} carried {r.Carried()} rolls {r.Rolls} at ticks [{string.Join(",", r.RollTicks)}], slides {r.Arc.TotalSlideCount}, rec5 status {r.Rec(5).Status}");
+            foreach (var l in slideEvents) { Out("  SLIDE " + l); }
+        }
+        finally { r.Close(); }
+    }
+}

@@ -1,0 +1,6 @@
+== B4 k=2 tj>=12: Cross image 109 (first tick 13), Square image -1 (first tick -1, z 0.00), carried right after  (end tick 400), hero (657.0000, 298.0000, z 64.00) carried at the end , slides 0, rolls 0
+== B4 k=1 tj>=19: Cross image 223 (first tick 19), Square image 233 (first tick 29, z 91.50), carried right after 10 (end tick 29), hero (637.4790, 298.0000, z 80.00) carried at the end 10, slides 0, rolls 0
+== B4 k=3 tj>=19: Cross image 75 (first tick 19), Square image 80 (first tick 34, z 86.50), carried right after 10 (end tick 36), hero (648.9614, 298.0000, z 80.00) carried at the end 10, slides 0, rolls 0
+== B4 k=2 tj>=19: Cross image 112 (first tick 19), Square image 120 (first tick 35, z 84.00), carried right after 10 (end tick 36), hero (651.2581, 298.0000, z 80.00) carried at the end 10, slides 0, rolls 0
+== B4 k=1 tj>=12: Cross image 216 (first tick 12), Square image 233 (first tick 29, z 81.00), carried right after 10 (end tick 29), hero (657.0000, 298.0000, z 64.00) carried at the end 10, slides 0, rolls 0
+== B4 k=3 tj>=12: Cross image 74 (first tick 16), Square image -1 (first tick -1, z 0.00), carried right after  (end tick 600), hero (657.0000, 298.0000, z 64.00) carried at the end , slides 0, rolls 0

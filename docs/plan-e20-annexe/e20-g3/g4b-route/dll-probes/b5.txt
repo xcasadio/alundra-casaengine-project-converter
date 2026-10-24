@@ -1,0 +1,91 @@
+   tick 207: pad-held-in-this-image Up poll-image False hero (657.0000, 311.1875) xcoll none slides 0
+   tick 208: pad-held-in-this-image Up poll-image False hero (657.0000, 309.5625) xcoll none slides 0
+   tick 209: pad-held-in-this-image Up poll-image False hero (657.0000, 307.9375) xcoll none slides 0
+   tick 210: pad-held-in-this-image Up poll-image False hero (657.0000, 306.3125) xcoll none slides 0
+   tick 211: pad-held-in-this-image Up poll-image False hero (657.0000, 304.6875) xcoll none slides 0
+   tick 212: pad-held-in-this-image Up poll-image False hero (657.0000, 303.0625) xcoll none slides 0
+   tick 213: pad-held-in-this-image Up poll-image False hero (657.0000, 301.4375) xcoll none slides 0
+   tick 214: pad-held-in-this-image Up poll-image False hero (657.0000, 299.8125) xcoll none slides 0
+   tick 215: pad-held-in-this-image Up poll-image False hero (657.0000, 298.1875) xcoll none slides 0
+   tick 216: pad-held-in-this-image Up poll-image False hero (657.0000, 296.5625) xcoll none slides 0
+   tick 217: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll none slides 0
+   tick 218: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll rec5 slides 1
+   tick 219: pad-held-in-this-image none poll-image True hero (657.0000, 295.0000) xcoll rec5 slides 2
+   tick 220: pad-held-in-this-image none poll-image True hero (657.0000, 295.0000) xcoll none slides 2
+   tick 221: pad-held-in-this-image none poll-image True hero (657.0000, 295.0000) xcoll none slides 2
+   tick 222: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll rec5 slides 3
+   tick 223: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll rec5 slides 4
+   tick 224: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll rec5 slides 5
+   tick 225: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll none slides 5
+   tick 226: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll none slides 5
+   tick 227: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll none slides 5
+   tick 228: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 5
+   tick 229: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 5
+   tick 230: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 5
+   tick 231: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 5
+   tick 232: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 5
+== B5 k=3: contact first seen at the start of image 73, Square image 75 (y 295.0000), carried right after 5, hero (657.0000, 295.0000, z 64.00), carried at the end 5, anim 12, slides 5, rolls 0
+  SLIDE tick 218 slides 0->1 at (657.0000, 295.0000, z 64.00) phase b5 contact at the end of the previous tick: none
+  SLIDE tick 219 slides 1->2 at (657.0000, 295.0000, z 64.00) phase b5 contact at the end of the previous tick: rec5
+  SLIDE tick 222 slides 2->3 at (657.0000, 295.0000, z 64.00) phase b5 contact at the end of the previous tick: none
+  SLIDE tick 223 slides 3->4 at (657.0000, 295.0000, z 64.00) phase b5 contact at the end of the previous tick: rec5
+  SLIDE tick 224 slides 4->5 at (657.0000, 295.0000, z 64.00) phase b5 contact at the end of the previous tick: rec5
+   tick 206: pad-held-in-this-image Up poll-image False hero (657.0000, 311.1875) xcoll none slides 0
+   tick 207: pad-held-in-this-image Up poll-image False hero (657.0000, 309.5625) xcoll none slides 0
+   tick 208: pad-held-in-this-image Up poll-image False hero (657.0000, 307.9375) xcoll none slides 0
+   tick 209: pad-held-in-this-image Up poll-image False hero (657.0000, 306.3125) xcoll none slides 0
+   tick 210: pad-held-in-this-image Up poll-image False hero (657.0000, 304.6875) xcoll none slides 0
+   tick 211: pad-held-in-this-image Up poll-image False hero (657.0000, 303.0625) xcoll none slides 0
+   tick 212: pad-held-in-this-image Up poll-image False hero (657.0000, 301.4375) xcoll none slides 0
+   tick 213: pad-held-in-this-image Up poll-image False hero (657.0000, 299.8125) xcoll none slides 0
+   tick 214: pad-held-in-this-image Up poll-image False hero (657.0000, 298.1875) xcoll none slides 0
+   tick 215: pad-held-in-this-image Up poll-image False hero (657.0000, 296.5625) xcoll none slides 0
+   tick 216: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll none slides 0
+   tick 217: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll rec5 slides 1
+   tick 218: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 219: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 220: pad-held-in-this-image none poll-image True hero (657.0000, 295.0000) xcoll none slides 1
+   tick 221: pad-held-in-this-image none poll-image True hero (657.0000, 295.0000) xcoll none slides 1
+   tick 222: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 223: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 224: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 225: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 226: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 227: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 228: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 229: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 230: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 231: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 232: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+== B5 k=2: contact first seen at the start of image 109, Square image 109 (y 295.0000), carried right after 5, hero (657.0000, 295.0000, z 64.00), carried at the end 5, anim 12, slides 1, rolls 0
+  SLIDE tick 217 slides 0->1 at (657.0000, 295.0000, z 64.00) phase b5 contact at the end of the previous tick: none
+   tick 205: pad-held-in-this-image Up poll-image False hero (657.0000, 311.1875) xcoll none slides 0
+   tick 206: pad-held-in-this-image Up poll-image False hero (657.0000, 309.5625) xcoll none slides 0
+   tick 207: pad-held-in-this-image Up poll-image False hero (657.0000, 307.9375) xcoll none slides 0
+   tick 208: pad-held-in-this-image Up poll-image False hero (657.0000, 306.3125) xcoll none slides 0
+   tick 209: pad-held-in-this-image Up poll-image False hero (657.0000, 304.6875) xcoll none slides 0
+   tick 210: pad-held-in-this-image Up poll-image False hero (657.0000, 303.0625) xcoll none slides 0
+   tick 211: pad-held-in-this-image Up poll-image False hero (657.0000, 301.4375) xcoll none slides 0
+   tick 212: pad-held-in-this-image Up poll-image False hero (657.0000, 299.8125) xcoll none slides 0
+   tick 213: pad-held-in-this-image Up poll-image False hero (657.0000, 298.1875) xcoll none slides 0
+   tick 214: pad-held-in-this-image Up poll-image False hero (657.0000, 296.5625) xcoll none slides 0
+   tick 215: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll none slides 0
+   tick 216: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll rec5 slides 1
+   tick 217: pad-held-in-this-image Up poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 218: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 219: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 220: pad-held-in-this-image none poll-image True hero (657.0000, 295.0000) xcoll none slides 1
+   tick 221: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 222: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 223: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 224: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 225: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 226: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 227: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 228: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 229: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 230: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 231: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+   tick 232: pad-held-in-this-image none poll-image False hero (657.0000, 295.0000) xcoll none slides 1
+== B5 k=1: contact first seen at the start of image 217, Square image 217 (y 295.0000), carried right after 5, hero (657.0000, 295.0000, z 64.00), carried at the end 5, anim 12, slides 1, rolls 0
+  SLIDE tick 216 slides 0->1 at (657.0000, 295.0000, z 64.00) phase b5 contact at the end of the previous tick: none

@@ -1,0 +1,72 @@
+== B1 lift route k=3 throwX=615: images 105, frame 174, tick 521, arrival=True, rolls 0, slides 12, final (538.5000, 376.0000, z 64.00), phase down2
+   lift: Square image 113, carried at the end of tick 339, carry stand at tick 375 ; throw image 133, hands free at tick 399, rec5 destroyed at tick 424
+  image 87 tick 261: down -> left at (775.1250, 288.3125, z 64.00)
+  image 113 tick 339: Square (lift) pressed, contact rec5 at (657.0000, 295.1250, z 64.00)
+  image 113 tick 339: left -> gesture at (657.0000, 295.1250, z 64.00)
+  image 127 tick 381: gesture -> carry at (650.9062, 295.1250, z 64.00)
+  image 133 tick 399: Square (throw) pressed at (613.1250, 295.1250, z 64.00)
+  image 133 tick 399: carry -> after_throw at (613.1250, 295.1250, z 64.00)
+  image 142 tick 426: after_throw -> south at (597.2812, 295.1250, z 64.00)
+  image 156 tick 468: south -> west at (597.0000, 344.0000, z 64.00)
+  image 166 tick 498: west -> down2 at (539.7188, 344.0000, z 64.00)
+  SLIDE tick 296 slides 0->1 at (706.0000, 289.6250, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 297 slides 1->2 at (706.0000, 290.1250, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 298 slides 2->3 at (706.0000, 290.6250, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 299 slides 3->4 at (706.0000, 291.1250, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 300 slides 4->5 at (706.0000, 291.6250, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 303 slides 5->6 at (706.0000, 292.1250, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 304 slides 6->7 at (706.0000, 292.6250, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 305 slides 7->8 at (706.0000, 293.1250, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 306 slides 8->9 at (706.0000, 293.6250, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 307 slides 9->10 at (706.0000, 294.1250, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 308 slides 10->11 at (706.0000, 294.6250, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 309 slides 11->12 at (706.0000, 295.1250, z 64.00) phase left contact at the end of the previous tick: none
+   polls predicted = actual (19) ; departure map 391
+== B1 lift route k=1 throwX=615: images 273, frame 478, tick 477, arrival=True, rolls 0, slides 11, final (538.6406, 376.0000, z 64.00), phase down2
+   lift: Square image 314, carried at the end of tick 314, carry stand at tick 350 ; throw image 369, hands free at tick 369, rec5 destroyed at tick 393
+  image 252 tick 252: down -> left at (775.1250, 289.1250, z 64.00)
+  image 314 tick 314: Square (lift) pressed, contact rec5 at (657.0000, 295.3438, z 64.00)
+  image 314 tick 314: left -> gesture at (657.0000, 295.3438, z 64.00)
+  image 351 tick 351: gesture -> carry at (657.0000, 295.3438, z 64.00)
+  image 369 tick 369: Square (throw) pressed at (614.3438, 295.3438, z 64.00)
+  image 369 tick 369: carry -> after_throw at (614.3438, 295.3438, z 64.00)
+  image 396 tick 396: after_throw -> south at (598.5000, 295.3438, z 64.00)
+  image 428 tick 428: south -> west at (597.0000, 343.6875, z 64.00)
+  image 454 tick 454: west -> down2 at (539.1094, 344.0000, z 64.00)
+  SLIDE tick 283 slides 0->1 at (706.0000, 290.8438, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 284 slides 1->2 at (706.0000, 291.3438, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 285 slides 2->3 at (706.0000, 291.8438, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 286 slides 3->4 at (706.0000, 292.3438, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 287 slides 4->5 at (706.0000, 292.8438, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 288 slides 5->6 at (706.0000, 293.3438, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 289 slides 6->7 at (706.0000, 293.8438, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 290 slides 7->8 at (706.0000, 294.3438, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 291 slides 8->9 at (706.0000, 294.8438, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 292 slides 9->10 at (706.0000, 295.3438, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 455 slides 10->11 at (538.6406, 344.0000, z 64.00) phase down2 contact at the end of the previous tick: none
+   polls predicted = actual (17) ; departure map 391
+== B1 lift route k=2 throwX=615: images 149, frame 252, tick 503, arrival=True, rolls 0, slides 13, final (538.1250, 376.0000, z 64.00), phase down2
+   lift: Square image 163, carried at the end of tick 326, carry stand at tick 362 ; throw image 192, hands free at tick 384, rec5 destroyed at tick 408
+  image 129 tick 258: down -> left at (775.1250, 289.9375, z 64.00)
+  image 163 tick 326: Square (lift) pressed, contact rec5 at (657.0000, 295.2500, z 64.00)
+  image 163 tick 326: left -> gesture at (657.0000, 295.2500, z 64.00)
+  image 183 tick 366: gesture -> carry at (653.3438, 295.2500, z 64.00)
+  image 192 tick 384: Square (throw) pressed at (613.1250, 295.2500, z 64.00)
+  image 192 tick 384: carry -> after_throw at (613.1250, 295.2500, z 64.00)
+  image 205 tick 410: after_throw -> south at (599.7188, 295.2500, z 64.00)
+  image 223 tick 446: south -> west at (598.5000, 344.0000, z 64.00)
+  image 237 tick 474: west -> down2 at (536.3438, 344.0000, z 64.00)
+  SLIDE tick 291 slides 0->1 at (706.0000, 291.2500, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 292 slides 1->2 at (706.0000, 291.7500, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 293 slides 2->3 at (706.0000, 292.2500, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 294 slides 3->4 at (706.0000, 292.7500, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 295 slides 4->5 at (706.0000, 293.2500, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 296 slides 5->6 at (706.0000, 293.7500, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 297 slides 6->7 at (706.0000, 294.2500, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 298 slides 7->8 at (706.0000, 294.7500, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 299 slides 8->9 at (706.0000, 295.2500, z 64.00) phase left contact at the end of the previous tick: none
+  SLIDE tick 475 slides 9->10 at (535.8750, 344.0000, z 64.00) phase down2 contact at the end of the previous tick: none
+  SLIDE tick 476 slides 10->11 at (536.6250, 344.0000, z 64.00) phase down2 contact at the end of the previous tick: none
+  SLIDE tick 478 slides 11->12 at (537.3750, 344.0000, z 64.00) phase down2 contact at the end of the previous tick: none
+  SLIDE tick 479 slides 12->13 at (538.1250, 344.0000, z 64.00) phase down2 contact at the end of the previous tick: none
+   polls predicted = actual (18) ; departure map 391

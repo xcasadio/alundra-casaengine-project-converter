@@ -1,0 +1,12 @@
+rec0: x=612.00 y=184.00 z=64.00 type=292 status=Normal
+rec1: x=636.00 y=184.00 z=64.00 type=292 status=Normal
+rec2: x=612.00 y=184.00 z=80.00 type=292 status=Normal
+rec3: x=636.00 y=184.00 z=80.00 type=292 status=Normal
+rec4: x=636.00 y=280.00 z=64.00 type=292 status=Normal
+rec5: x=636.00 y=296.00 z=64.00 type=292 status=Normal
+rec6: x=636.00 y=312.00 z=64.00 type=292 status=Normal
+rec7: x=636.00 y=328.00 z=64.00 type=292 status=Normal
+rec8: x=636.00 y=280.00 z=80.00 type=292 status=Normal
+rec9: x=576.00 y=288.00 z=64.00 type=292 status=Normal
+rec10: x=636.00 y=312.00 z=80.00 type=292 status=Normal
+rec11: x=636.00 y=328.00 z=80.00 type=292 status=Normal

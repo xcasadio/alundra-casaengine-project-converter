@@ -1,0 +1,6 @@
+== B2 k=3: contact first seen at the start of image 71, Square image 71, rec6 carried at the end of tick 213, carried now 6, hero (657.0000, 316.0000, z 64.00), anim 12, rec10 z 64.0000, slides 0, rolls 0
+   rec10 z from L-1: 80 ; 80 ; 78.5 ; 77 ; 75 ; 72.5 ; 69.5 ; 66 ; 64 ; 64 ; 64
+== B2 k=2: contact first seen at the start of image 106, Square image 106, rec6 carried at the end of tick 212, carried now 6, hero (657.0000, 316.0000, z 64.00), anim 12, rec10 z 64.0000, slides 0, rolls 0
+   rec10 z from L-1: 80 ; 80 ; 78.5 ; 77 ; 75 ; 72.5 ; 69.5 ; 66 ; 64 ; 64 ; 64
+== B2 k=1: contact first seen at the start of image 211, Square image 211, rec6 carried at the end of tick 211, carried now 6, hero (657.0000, 316.0000, z 64.00), anim 12, rec10 z 64.0000, slides 0, rolls 0
+   rec10 z from L-1: 80 ; 80 ; 78.5 ; 77 ; 75 ; 72.5 ; 69.5 ; 66 ; 64 ; 64 ; 64
