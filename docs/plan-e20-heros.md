@@ -1350,11 +1350,16 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.b.
 
-#### 1.4.1 E20.b2 — L'Épée légendaire (objet 8) et l'opcode `0xC2` ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2 ; D-E20-45 ; à relire par un `plan-verifier` frais)
+#### 1.4.1 E20.b2 — L'Épée légendaire (objet 8) et l'opcode `0xC2` ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-45 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
 
 **Provenance.** Lecture seule du 2026-10-24 (`report-main.md` partie B et le critique frais `critic-main.md`, CONFIRMÉ avec des ajouts repris ici,
 dans le scratchpad de la session principale `scratchpad/t2-proj/`, à verser par T0 à `docs/plan-e20-annexe/e20-b2-disc/`). D-E20-45 disait l'objet
 8 « porté » : vrai pour le coup et les dégâts (par les données), faux pour l'obtention.
+
+**Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé deux blocages, corrigés (FIX) : (1) « rouges avant T2 » pour tous les
+cas de `0xC2` et de l'arc ne pouvait pas tenir, l'un d'eux passant déjà selon la valeur périmée de `Result` que T0 mesure : les tests unitaires
+préchargent `Result` à la valeur opposée (rouges quelle que soit la mesure), et l'arc a un cas rouge et une garde selon T0 (c) ; (2) le ramassage de
+l'enregistrement 31 n'avait de suite que pour un résultat de la sonde : chaque résultat a la sienne.
 
 **Prérequis.** Le thème 1 fusionné, la branche du thème 2. Aucun prérequis de code d'E20 ; `0xC2` relève des opcodes (E19), porté ici parce qu'il
 ne sert que cette scène. L'obtention en partie normale exige E18 (la reprise après la mort et son compteur), hors tranche.
@@ -1408,27 +1413,35 @@ précisée).
   `docs/plan-e20-annexe/e20-b2-disc/` ; (b) les inventaires « legend » et « legend_holy » ajoutés aux clés de l'oracle c1b (K1, K2), rejoués
   depuis une copie ; (c) sondes de la DLL (jetables, versées en `.txt`) : la valeur de `Result` à pc 1508 et 1510 de `B[10]` au HEAD, la scène
   jouée avec le compteur à 19 et à 20 ; le ramassage de l'enregistrement 31 de la carte 7 : peut-on le toucher et le ramasser, dans la DLL, et au
-  binaire si l'oracle le permet ; (d) la liste prédite des tests déplacés (aucun attendu).
+  binaire si l'oracle le permet. **Suite selon le résultat** : (c1) ramassable ni dans la DLL ni au binaire : l'arc de T3 ajoute une garde « au
+  compteur 19, toucher l'enregistrement 31 ne donne pas l'objet 8 » ; (c2) ramassable au binaire : arrêt et question à l'auteur (une voie de
+  l'original qui contourne `0xC2`) ; (c3) ramassable dans la DLL, pas au binaire : arrêt et question (un écart de la DLL dont la cause sort de la
+  tranche : le ramassage, E20.e0c) ; (c4) le binaire n'est pas mesurable : l'écart possible se consigne (O-B2-1), le comportement de la DLL
+  s'épingle par un test nommé d'après lui, et le but se lit « l'obtention par la scène » ; (d) la liste prédite des tests déplacés (aucun attendu).
 - ⏳ **T1 — Tests de sélection, d'équipement et de dégâts** (des gardes vertes si le code est déjà juste, nommées, chacune tuée par un mutant
   de T3 ; rouges d'abord s'il y a un écart) : possédant {1, 4, 8}, le créneau 1 rend 8 ; {1, 8} rend 8 ; l'enregistrement d'équipement [1] = l'objet
   8 et `[(6, 50)]` ; K2 « legend » (49 et la mort) ; un Beannoïde réel touché par l'objet 8 (51) et par l'épée de base (2) ; l'air `0x14` aussi ;
   un appui tenu avec l'objet 8 ne compte pas de charge et ne fait ni aura ni vague.
-- ⏳ **T2 — `0xC2`, tests d'abord** (rouges avant) : `0xC2 [20]` avec le compteur à 19, 20, 21 (`Result` 0, 1, 1) ; un octet de paramètre ; puis
-  le `case` ; le champ `DeathRetryCount` des préréglages et les deux préréglages avec leurs tables.
+- ⏳ **T2 — `0xC2`, tests d'abord** : `0xC2 [20]` avec le compteur à 19, 20, 21, `Result` **préchargé à la valeur opposée** à l'attendu (1 pour 19,
+  0 pour 20 et 21), donc rouges avant le `case` quelle que soit la valeur périmée mesurée en T0 (c) ; attendus `Result` 0, 1, 1 ; un octet de
+  paramètre (le pc avance de 2) ; puis le `case` ; le champ `DeathRetryCount` des préréglages et les deux préréglages avec leurs tables.
 - ⏳ **T3 — L'arc de la carte 7 et les mutants** : depuis `legende-m7`, face au nord sous le bloc : avec le compteur à 20, la scène donne l'objet 8
-  une fois, pose le drapeau 1787 et ne se rejoue pas ; à 19, rien n'est donné et la scène se rejoue (rouge avant T2) ; la suite entière en Release
+  une fois, pose le drapeau 1787 et ne se rejoue pas ; à 19, rien n'est donné et la scène se rejoue. **Rouge avant T2, le cas opposé à la valeur
+  de `Result` que T0 (c) a mesurée à pc 1510** (si elle vaut 0, le cas 20 ; si 1, le cas 19) ; l'autre cas est une garde nommée, verte avant et
+  après, tuée par le mutant « `Result` non écrit » ; l'arc cite la mesure de T0 (c). Puis l'enregistrement 31 selon T0 (c) (ci-dessous) ; la suite entière en Release
   (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ; `cmp` ; `check_names.py --rules` ; au moins 8 mutants réels,
   tous tués (le seuil `>=` en `>` ; deux octets de paramètre ; `Result` non écrit ; le rang de l'objet 8 à 3 ; la fiche 38 ignorée ; le bit
   d'équipement ignoré ; l'enregistrement 11 chargeable ; le drapeau 1787 posé au refus).
 - ⏳ **T4 — ADR, verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
-**Acceptation.** Les sorties de T0 (b) égales au modèle de l'oracle ; T2 et l'arc de T3 rouges avant et verts après ; les gardes de T1 vertes et
-chacune tuée par un mutant ; la suite en Release et en Debug, zéro échec ; aucun test existant déplacé hors de la liste de T0 (d). **Recette de
+**Acceptation.** Les sorties de T0 (b) égales au modèle de l'oracle ; les trois tests de T2 rouges avant le `case` et verts après ; dans l'arc de
+T3, le cas opposé à la mesure de T0 (c) rouge avant et vert après, l'autre une garde verte tuée par un mutant nommé ; l'enregistrement 31 selon
+T0 (c1) à (c4) ; les gardes de T1 vertes et chacune tuée par un mutant ; la suite en Release et en Debug, zéro échec ; aucun test existant déplacé hors de la liste de T0 (d). **Recette de
 l'auteur** (non bloquante) : `legende-m14` (frapper un Beannoïde : le coup de l'épée de base, 51 de dégâts, pas de charge) ; `legende-m7`
 (marcher vers le nord sous un bloc, lire la scène, recevoir l'épée).
 
 **Arrêts.** Un besoin de toucher au moteur ; un doute sur l'octet que lit `0xC2` (la copie de la sauvegarde) ; un test hors de la liste prédite
-bouge ; T0 (c) établit que l'enregistrement 31 se ramasse dans l'original (une question à l'auteur).
+bouge ; T0 (c2) ou (c3) (une question à l'auteur).
 
 **Budget.** Un `executor` pour T0 à T3 ; deux tentatives. Un `plan-verifier` avant ; deux verifiers frais après.
 
