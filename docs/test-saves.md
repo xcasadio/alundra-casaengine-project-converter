@@ -155,8 +155,8 @@ For the lifting of jars, crates and stones (docs/plan-e20-heros.md section 1.24.
 
 The arrival tile is on the west bank (48 px high). A save does not carry the direction (always south): walk west into the jar 48 px away (the "Cruche generique" of the record 37) and press the Square: Alundra lifts it over her head (36 images), then carries it.
 Carry it west and jump (Cross + Left) onto the barrel behind it, a top of 16 px (the barrel itself is not liftable: the Square against it swings the sword). Throw the jar with the Square: it flies and breaks.
-The platform "Plateforme flottante (grande)" shuttles 96 px east and west by itself over the lagoon, at 64 px (its top is at 72); the 80 px peninsula that touches its west end is not reachable on foot from the bank (it is 32 px up), so riding it with a jar
-is shown by the arc of the tests, not by this save.
+The platform "Plateforme flottante (grande)" shuttles 96 px east and west by itself over the lagoon, at 64 px (its top is at 72); the 80 px peninsula that touches its west end is not reachable on foot from the bank (it is 32 px up): riding it with a jar is shown by the
+arc of the tests; to ride it in the game, start from the preset below.
 
 For the platform step alone, the preset `porter-plateforme-m72` starts on the peninsula (D-E20-79).
 

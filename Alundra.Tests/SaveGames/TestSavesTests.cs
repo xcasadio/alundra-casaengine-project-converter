@@ -105,7 +105,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheFifteenPresets_AreListed_InTheOrderOfTheTable()
+    public void TheSixteenPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
