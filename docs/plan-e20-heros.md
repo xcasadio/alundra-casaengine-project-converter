@@ -8788,7 +8788,7 @@ Exécution en mode AUTO, HEAD de départ `6fa6bf81`. Mesures : `docs/plan-e20-an
   épingles) : **CONFIRMED** tous deux.
 - **Recette de l'auteur, à faire** : `pickup-m11`, prendre un objet-clé : la musique se coupe net, puis repart du début.
 
-#### 1.26.2 E20.e0d — Le coffre au trésor et la Graine magique ⏳ (détaillée le 2026-10-25 ; thème 2 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
+#### 1.26.2 E20.e0d — Le coffre au trésor et la Graine magique ⏳ (détaillée le 2026-10-25 ; thème 2 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `43a47432` ; rapport `report-main.md` et critique frais `critic-main.md`, CONFIRMÉ, dans le
 scratchpad de la session principale `scratchpad/t2-chest/`, à verser par T0 à `docs/plan-e20-annexe/e20-e0d-disc/` avec les scripts et les
@@ -8800,6 +8800,13 @@ objet-clé repartait « à la fermeture du message » ; le binaire la relance à
 (D-E0D-2 réécrite, (c3) fixe les ticks, un mutant de plus) ; (2) D-E0D-4 et D-E0D-5 demandaient des changements hors du périmètre et sans test :
 les fichiers sont nommés et chacune a son test ; (3) l'acceptation comptait rouges avant leur phase deux tests qui sont des gardes par nature
 ((a2), (c2)) : ils sont classés avec (b7), chacun tué par un mutant nommé.
+
+**Révision 2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé que le chemin
+d'un objet-clé était coupé entre deux phases : la phase B portait F255 en entier (dont `+0x288` et `LoadBgm(0)`) et la boîte du message en
+mode 1 avec le masque 4 (la fermeture par script seule), mais l'état 1 de C255 (le masque 3 et `StopAllSound`, la seule libération) était en
+phase C : après la phase B seule, ou la phase C retirée, un coffre à objet-clé laissait la boîte ouverte, le monde bloqué et la musique coupée.
+**Tout le chemin de l'objet-clé passe en phase B** (le test (b10)) ; la phase C ne garde que le corps de la Graine et `0x82` ; le retour arrière
+nomme l'état laissé par chaque retrait.
 
 **Prérequis.** Le thème 1 fusionné dans `main` et la branche du thème 2 créée depuis `main` ; E20.e0c et E20.e0c2 (faites : `PickupAi`, A255 et
 C255 des objets, `GiveItem`, la fanfare B) ; E20.g1b (faite : `PlayerTryAction` rend 0 pour un coffre, genre 0, et la priorité de l'interaction
@@ -8856,7 +8863,10 @@ qui ouvre la porte de la 115, et le coffre de la 115 qui ouvre un passage, ne s'
   le masquage de l'objet tenu en Loaded.
 
 **Décisions de la session** (défauts réversibles, comme l'original ; ceux qui se voient en jeu sont posés à l'auteur, §2, Q-E0D-*).
-- **D-E0D-1** — Une tranche en trois phases (A l'affichage, B l'ouverture ordinaire, C la Graine, les objets-clés et `0x82`).
+- **D-E0D-1** — Une tranche en trois phases : A l'affichage ; B l'ouverture entière, objets ordinaires **et objets-clés** (F255, les branches
+  « coffre » d'A255 et de C255 avec leurs états 0, 1 et 2, la fanfare par les coutures d'e0c2, `CanTake`, `ApplyItem`) ; C le corps de la Graine
+  (partagé par ses trois entrées) et `0x82` pour `0x50`. Après la phase B, un coffre qui contient la Graine s'ouvre, sa fanfare joue et sa boîte
+  se ferme ; `ApplyItem(0x50)` appelle encore le bouchon de la Graine (les PM ne montent pas) jusqu'à la phase C.
 - **D-E0D-2** (Q-E0D-1) — La fanfare d'un coffre suit l'ordre du binaire et le bouchon de la fanfare B d'e0c2 (D-E20-65, D-E0C2-1) :
   `LoadBgm(0)` coupe la musique au tick de F255 ; la piste CD 11 reste le bouchon journalisé quand A255 libère l'objet (l'animation 1 du
   coffre) ; à l'état 1 de C255, après l'ouverture du message, dès que `CdBusy` est faux (toujours faux avec le bouchon : le tick qui suit
@@ -8917,12 +8927,13 @@ CD (E19.sm7) ; le moteur.
   la 115 ouvre le passage (`0x9F`) ; (b7) témoins : un coffre scripté inchangé, Carré contre une caisse soulève toujours ; (b8) pendant
   l'ouverture, un ennemi bloqué reste dessiné et son image d'animation n'avance pas (D-E0D-4 ; rouge avant si T0 mesure l'écart, témoin vert
   sinon) ; (b9) l'objet né n'est pas dessiné pendant les 61 ticks de l'animation du coffre, puis l'est (D-E0D-5 ; rouge avant si T0 mesure
-  l'écart, témoin vert sinon) ; puis le code de la phase B.
+  l'écart, témoin vert sinon) ; (b10) un coffre à objet-clé (une arme de la carte 0, ou un vase) : la musique coupée au tick de F255, le bouchon
+  de la piste 11 au tick où A255 libère l'objet, le masque 3 et `StopAllSound` au tick qui suit l'ouverture du message, la boîte encore
+  ouverte, puis la boîte fermée par le joueur, l'objet donné, le drapeau posé, `Unblock` (le monde débloqué) — les ticks épinglés par
+  dérivation de `chest_sequence.out` et des mesures de T0 (D-E0D-2) ; puis le code de la phase B.
 - ⏳ **T3 — Phase C, tests d'abord** (rouges avant) : (c1) la Graine par ses trois entrées (le coffre, le ramassage, `0x82`) : la table de
   `seed_oracle.out` (MpMax et Mp avant et après), 12 effets en animation 2, 8 tirages, son `0x36` ; (c2) le vase de vie inchangé (animation 0) ;
-  (c3) un objet-clé d'un coffre : la musique coupée au tick de F255, le bouchon de la piste 11 au tick où A255 libère l'objet, le masque 3 et
-  `StopAllSound` au tick qui suit l'ouverture du message, la boîte encore ouverte (les ticks épinglés par dérivation de `chest_sequence.out` et
-  des mesures de T0, D-E0D-2) ; (c4) les quatre préréglages
+  (c3) le coffre de la Graine de bout en bout (la fanfare de la phase B, puis les PM qui montent par le corps de la phase C) ; (c4) les quatre préréglages
   et leurs tables ; puis le code. La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
   les traces de la 389 ; `cmp` ; `check_names.py --rules` ; le moteur, le convertisseur et les données sans diff.
 - ⏳ **T4 — Mutants, ADR.** Au moins 15 mutants réels, tous tués (les quatre gardes de F255 une à une ; `+0x88 != 0` ignoré ; `CanTake` sans
@@ -8934,7 +8945,7 @@ CD (E19.sm7) ; le moteur.
   renvois « E14 » du §1.26 corrigés.
 - ⏳ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
-**Acceptation.** Les sorties de T0 (c) identiques ; (a1), (b1) à (b6), (c1), (c3) et (c4) rouges avant leur phase et verts après (nommés) ; (b8)
+**Acceptation.** Les sorties de T0 (c) identiques ; (a1), (b1) à (b6), (b10), (c1), (c3) et (c4) rouges avant leur phase et verts après (nommés) ; (b8)
 et (b9) rouges avant si T0 a mesuré l'écart, verts avant et après sinon ; les gardes (a2), (c2) et (b7) vertes avant et après, chacune tuée
 par un mutant nommé de T4 ; la
 suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (f), chacun réécrit par dérivation ; le moteur, le convertisseur et
@@ -8946,8 +8957,10 @@ bougent ; un besoin de toucher au moteur ; un test qui boucle.
 
 **Budget.** Un `executor` par phase (T0, T1 et T2, T3, T4) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
 
-**Retour arrière.** La phase C se retire seule (la Graine redevient un bouchon) ; puis la phase B (la clé `(F, 255)` retirée : le coffre ne
-s'ouvre plus) ; puis la phase A (A255 hors du type 30).
+**Retour arrière.** La phase C se retire seule : les coffres s'ouvrent et se referment tous (objets-clés compris), la Graine redevient un
+bouchon (ses PM ne montent pas) et `0x82` redevient dégradé pour `0x50`. Puis la phase B : la clé `(F, 255)` et les branches « coffre » retirées,
+Carré contre un coffre ne fait plus rien (l'état d'aujourd'hui), aucune boîte n'est ouverte. Puis la phase A : A255 hors du type 30 (les coffres
+vides redessinés fermés).
 
 ### 1.27a E20.eR — Le nom de l'octet 9 de l'en-tête de carte : `TileCutEffectId` ✅ (détaillée le 2026-10-22 ; révision 1 READY le 2026-10-22 ; **faite et CONFIRMED le 2026-10-22** par deux verifiers frais ; prérequis d'E20.e ; D-E20-60, ADR-0079)
 
