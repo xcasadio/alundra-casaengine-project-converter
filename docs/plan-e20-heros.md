@@ -8788,7 +8788,7 @@ Exécution en mode AUTO, HEAD de départ `6fa6bf81`. Mesures : `docs/plan-e20-an
   épingles) : **CONFIRMED** tous deux.
 - **Recette de l'auteur, à faire** : `pickup-m11`, prendre un objet-clé : la musique se coupe net, puis repart du début.
 
-#### 1.26.2 E20.e0d — Le coffre au trésor et la Graine magique ⏳ (détaillée le 2026-10-25 ; thème 2 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
+#### 1.26.2 E20.e0d — Le coffre au trésor et la Graine magique ⏳ (détaillée le 2026-10-25 ; thème 2 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `43a47432` ; rapport `report-main.md` et critique frais `critic-main.md`, CONFIRMÉ, dans le
 scratchpad de la session principale `scratchpad/t2-chest/`, à verser par T0 à `docs/plan-e20-annexe/e20-e0d-disc/` avec les scripts et les
