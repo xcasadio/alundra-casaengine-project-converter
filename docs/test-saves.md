@@ -158,6 +158,15 @@ Carry it west and jump (Cross + Left) onto the barrel behind it, a top of 16 px 
 The platform "Plateforme flottante (grande)" shuttles 96 px east and west by itself over the lagoon, at 64 px (its top is at 72); the 80 px peninsula that touches its west end is not reachable on foot from the bank (it is 32 px up), so riding it with a jar
 is shown by the arc of the tests, not by this save.
 
+For the platform step alone, the preset `porter-plateforme-m72` starts on the peninsula (D-E20-79).
+
+| Preset | Map, tile, z | Owned | Equipped |
+|---|---|---|---|
+| `porter-plateforme-m72` | 72 (Coastal Cave), (22, 15), 5 | the kit's items 1, 17, 25 | the basic sword |
+
+The arrival tile is on the 80 px peninsula, next to the west end of the platform. Wait for the platform to come back to that end and walk east onto it: Alundra rides it (its top is at 72), and the platform takes her east and west with it.
+The other steps of the recipe (jar, barrel) start from `porter-m72`.
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;

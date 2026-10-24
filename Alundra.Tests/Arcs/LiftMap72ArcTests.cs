@@ -49,9 +49,9 @@ public sealed class LiftMap72ArcTests : IDisposable
     }
 
     /// <summary>The start of the preset <c>porter-m72</c> (tile (10, 12), level 3), as a portal arrival: the map spawns the entities whose zone contains the tile of the hero at the load, as the game loading the save.</summary>
-    private static ArcSpec Spec(string name)
+    private static ArcSpec Spec(string name, string presetName = "porter-m72")
     {
-        Assert.True(TestSaves.TryFind("porter-m72", out var preset), "the preset porter-m72 exists");
+        Assert.True(TestSaves.TryFind(presetName, out var preset), $"the preset {presetName} exists");
         var p = preset!;
         Assert.Equal(72, p.MapId);
         return new ArcSpec(
@@ -177,6 +177,45 @@ public sealed class LiftMap72ArcTests : IDisposable
             item.PosZ = arc.Hero.PosZ + (32 << 16);
             item.PushLogicalPositionToRoot();
         }
+    }
+
+    // ---- (m9) D-E20-79: the platform step from the preset of the peninsula --------------------------------------------------------------------------------------
+
+    [Fact]
+    public void M9_FromThePeninsulaPreset_TheHeroWaitsForThePlatformAtItsWestEndAndWalksOntoIt()
+    {
+        using var arc = new ArcRun(Spec("g1b-m9", "porter-plateforme-m72"));
+        var hero = arc.Hero;
+        var platform = arc.EntityByRecord(2)!;
+
+        // The start of the preset: the peninsula (80 px high), at the pixel where the arc (m2) teleports, a portal arrival like the game loading the save.
+        Assert.Equal(540.0, X(hero), 3);
+        Assert.Equal(248.0, Y(hero), 3);
+        Assert.Equal(PeninsulaZ, Z(hero), 3);
+        Assert.Equal(1, hero.IsOnGround);
+        Assert.Null(hero.RidingEntity);
+
+        // Wait for the platform to be at the west end of its shuttle, then walk east onto it: the platform becomes the support of the hero, at its top (72).
+        Until(arc, 0, () => X(platform) <= 578.0, 400, "the platform comes back to the west end of its shuttle");
+        Until(arc, PadState.Right, () => arc.Hero.IsOnGround != 0 && ReferenceEquals(arc.Hero.RidingEntity, platform.LogicContextEntity), 80, "the hero walks onto the platform");
+        Assert.Equal(PlatformTopZ, Z(hero), 3);
+
+        // The platform takes her with it, to the pixel.
+        for (var settle = 0; settle < 12; settle++)
+        {
+            arc.OneFrame();
+        }
+
+        var platformX0 = X(platform);
+        var relative = X(hero) - platformX0;
+        for (var i = 0; i < 24; i++)
+        {
+            arc.OneFrame();
+            Assert.Equal(relative, X(hero) - X(platform), 3);
+            Assert.True(ReferenceEquals(hero.RidingEntity, platform.LogicContextEntity), $"frame {arc.Frame}: still on the platform");
+        }
+
+        Assert.True(Math.Abs(X(platform) - platformX0) > 20.0, "the platform moved by itself");
     }
 
     // ---- (m5) the barrel gives the sword, the jar of the same scene lifts ----------------------------------------------------------------------------------------

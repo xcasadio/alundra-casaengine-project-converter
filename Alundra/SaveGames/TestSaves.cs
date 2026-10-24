@@ -159,6 +159,10 @@ public static class TestSaves
         // and throw it with the Square: it breaks. The platform "Plateforme flottante (grande)" (record 2) shuttles 96 px east and west by itself over the lagoon at 64 px (top 72); the peninsula of 80 px that touches its west end is not reachable on foot from the bank
         // (32 px up), so the ride of the platform is a recipe of the arc and not of the save.
         new Preset("porter-m72", "test-porter-m72", 72, 10, 12, 3, [], [], [], []),
+
+        // E20.g4b D-E20-79 (docs/plan-e20-heros.md section 1.0): the platform step of the recipe of the lifting, on the map 72. Tile (22, 15), level 5 (the peninsula, 80 px high: pixel (540, 248), the cells of the columns 17 to 22 of the row 16 and 21, 22 of the row 15),
+        // next to the west end of the platform "Plateforme flottante (grande)" (record 2), which the bank preset cannot reach on foot (a climb of 32 px, the jump rises 27.5 px). Wait for the platform to come back to its west end and walk east onto it. The other steps of the recipe start from porter-m72.
+        new Preset("porter-plateforme-m72", "test-porter-plateforme-m72", 72, 22, 15, 5, [], [], [], []),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>
