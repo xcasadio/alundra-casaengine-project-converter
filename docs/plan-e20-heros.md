@@ -7660,7 +7660,7 @@ préréglage `c4-m22`, et `c4-m70` pour les troncs) avec ses tables de test et `
 convertisseur.
 
 **Tâches.**
-- ⏳ **T0 — Prérequis, rejeu, sondes** (commit de docs). (a) Les prérequis (g1b et g4b closes au plan, l'arbre propre) ; (b) verser à
+- ✅ **T0 — Prérequis, rejeu, sondes** (fait le 2026-10-25, `59a0b420` ; l'arrêt de P5 levé, voir « Résultat de T0 ») (commit de docs). (a) Les prérequis (g1b et g4b closes au plan, l'arbre propre) ; (b) verser à
   `docs/plan-e20-annexe/e20-g2c1-disc/` les rapports, scripts et sorties des deux lectures (`scratchpad/g2c1-disc/` et
   `scratchpad/shop-disc/`, dans le scratchpad de la session principale), avec un `SHA1SUMS.txt` ; (c) rejouer depuis une copie `c4_full.py` (goldens, SHA-256 égal), `q8_p1.py`, `q3_corners.py`, `q8_p4.py`, `q8_p5.py`,
   `q9_swaps.py` et `shop_replay.py` (scénarios B, D, G, H), sorties identiques ; (d) relire au HEAD de départ l'ensemble câblé de g1b, les
@@ -7692,6 +7692,30 @@ convertisseur.
   autre ; la pente 4 en 1 ; l'animation 5 en 4 ; le test `+0x80 == 2` retiré ; `| 0x10` en `| 0x30` ; C23 qui prend la politique de C4 ;
   `FeedsGroundSlope` pour toute entité ; un type câblé sans `(C, 4)`.
 - ⏳ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+
+**Résultat de T0 (2026-10-25, `59a0b420`, `docs/plan-e20-annexe/e20-g2c1/results.md`) : un arrêt, levé par la session principale.**
+- Les lectures sont versées (`docs/plan-e20-annexe/e20-g2c1-disc/`, `g2c1/` et `shop/`) ; tous les rejeux sont identiques (`c4_full.py`, goldens
+  `59167009…`, `q8_p1`, `q8_p4`, `q8_p5`, `q9_swaps`, `q3_corners`, `shop_replay` b, d, g, h).
+- Les sondes de la DLL, avec un C4 jetable : P1 (le mur en colonne 5 : 42 lignes, colonne 6 : 75 lignes), P2 (la glissade, 35 ticks × 4 objets), l'eau
+  (tonneau, pierre et objet détruits à T+23, le tronc à l'animation 5), P3 (la pierre contre le Beannoïde : `HitCounter` à T+21, statut 3 à T+22,
+  drapeaux `0x3323E4` → `0x3323C4`, case libre à T+25), P4 (l'atterrissage sur la plaque à T+20, le support à T+21, la pile de deux) : **égales au binaire**.
+- **L'arrêt : P5** (les troncs posés sur l'eau) : l'animation 5 au tick 1 dans l'oracle, au tick 2 dans la DLL. **Disposition** : le binaire fait passer
+  une entité chargée (statut 1) au statut 2 en lui faisant jouer son programme A au premier tick (la phase de choix, `0x80038754` : `$a1 = 0`, le
+  créneau A ; `+0x10 = 2`), comme la DLL (`EntityScriptProxy.PickEventTrigger`, « Loaded -> Normal (slot A) ») ; C ne tourne qu'à partir du tick
+  suivant. L'oracle de la lecture posait l'entité directement au statut 2 : son « tick 1 » est le tick 2 du jeu. L'écart vient du montage, pas de la
+  DLL : (m7) se lit « l'animation 5 et la pente 4 à la première exécution de C4 (le tick 2 du chargement) », sans changement de code.
+- **Non mesuré en T0** : la touche du tonneau, du tronc et de l'objet contre le Beannoïde (aucune page de carte ne les a ensemble : T0 a utilisé des
+  cibles de leur propre page, mêmes transitions de drapeaux ; l'objet ne touche rien) ; le tonneau sur une plaque (la page de la 22 n'a pas de sprite
+  108). (m5) et (m6) prennent ces montages : une cible de la page de l'objet, et un objet de la carte 27 pour la plaque.
+- **(f) le chemin de l'achat** : tous les opcodes du programme B[2] de la 258 et des articles ont leur `case` au HEAD ; `0x61`, `0xB2` et `0xB9` manquent
+  hors du chemin de l'achat.
+- **(g) le tonneau de la 113 rec 11 sous C64** : au binaire, il se soulève au tick 11, et au lancer `+0x24 = 2` n'est jamais consommé par C64 : il reste
+  dans les mains pour toujours (Alundra en pose de port 12). C'est le comportement de l'original (O-G2C1-1) ; la DLL fera de même tant que C64 n'est pas
+  porté.
+- **(h) la liste prédite** (un câblage temporaire, annulé) : 7 tests existants, sous la limite de 10 : `NativeSpriteRegistryTests.ProductionRunner_…`,
+  `LiftableAiRegistrationTests.R1`, `ChargedArrowAiTests.C2`, `WaveSwordLifeTests.V3`, `LiftMap72ArcTests.M5`,
+  `LiftPureTests.TheProductionSet_IsTheSevenTypesOfC23…`, `LiftWorldTests.M5`.
 
 **Acceptation.** Les sorties de T0 (c) identiques ; P1 à P5 égales au binaire ; (l1) à (l3) rouges sur le squelette et verts après ; (m1) à
 (m7), (m9) et (m10) rouges avant la phase B (nommés) et verts après ; (m8) et (m11) verts avant et après ; (a1) rouge avant la phase C ; la suite en Release et en Debug, zéro échec ; les tests
