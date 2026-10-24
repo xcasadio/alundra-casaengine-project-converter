@@ -1350,7 +1350,7 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.b.
 
-#### 1.4.1 E20.b2 — L'Épée légendaire (objet 8) et l'opcode `0xC2` ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-45 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
+#### 1.4.1 E20.b2 — L'Épée légendaire (objet 8) et l'opcode `0xC2` ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-45 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
 
 **Provenance.** Lecture seule du 2026-10-24 (`report-main.md` partie B et le critique frais `critic-main.md`, CONFIRMÉ avec des ajouts repris ici,
 dans le scratchpad de la session principale `scratchpad/t2-proj/`, à verser par T0 à `docs/plan-e20-annexe/e20-b2-disc/`). D-E20-45 disait l'objet
@@ -1360,6 +1360,10 @@ dans le scratchpad de la session principale `scratchpad/t2-proj/`, à verser par
 cas de `0xC2` et de l'arc ne pouvait pas tenir, l'un d'eux passant déjà selon la valeur périmée de `Result` que T0 mesure : les tests unitaires
 préchargent `Result` à la valeur opposée (rouges quelle que soit la mesure), et l'arc a un cas rouge et une garde selon T0 (c) ; (2) le ramassage de
 l'enregistrement 31 n'avait de suite que pour un résultat de la sonde : chaque résultat a la sienne.
+
+**Révision 2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé que la garde de
+l'arc ne pouvait pas être tuée par le mutant « `Result` non écrit » (il reproduit le HEAD, où la garde passe déjà) : la garde a maintenant le mutant
+qui la casse selon la mesure de T0 (c) ; « `Result` non écrit » tue le cas rouge de l'arc et les trois tests de T2.
 
 **Prérequis.** Le thème 1 fusionné, la branche du thème 2. Aucun prérequis de code d'E20 ; `0xC2` relève des opcodes (E19), porté ici parce qu'il
 ne sert que cette scène. L'obtention en partie normale exige E18 (la reprise après la mort et son compteur), hors tranche.
@@ -1428,14 +1432,17 @@ précisée).
 - ⏳ **T3 — L'arc de la carte 7 et les mutants** : depuis `legende-m7`, face au nord sous le bloc : avec le compteur à 20, la scène donne l'objet 8
   une fois, pose le drapeau 1787 et ne se rejoue pas ; à 19, rien n'est donné et la scène se rejoue. **Rouge avant T2, le cas opposé à la valeur
   de `Result` que T0 (c) a mesurée à pc 1510** (si elle vaut 0, le cas 20 ; si 1, le cas 19) ; l'autre cas est une garde nommée, verte avant et
-  après, tuée par le mutant « `Result` non écrit » ; l'arc cite la mesure de T0 (c). Puis l'enregistrement 31 selon T0 (c) (ci-dessous) ; la suite entière en Release
+  après, tuée par le mutant que la mesure désigne : si `Result` mesuré vaut 1 (la garde est le cas 20), « le seuil `>=` en `>` » ; s'il vaut 0
+  (la garde est le cas 19, la scène doit se rejouer), « le drapeau 1787 posé au refus » ; le mutant « `Result` non écrit » tue le cas rouge et
+  les trois tests de T2 ; l'arc cite la mesure de T0 (c). Puis l'enregistrement 31 selon T0 (c) (ci-dessous) ; la suite entière en Release
   (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ; `cmp` ; `check_names.py --rules` ; au moins 8 mutants réels,
   tous tués (le seuil `>=` en `>` ; deux octets de paramètre ; `Result` non écrit ; le rang de l'objet 8 à 3 ; la fiche 38 ignorée ; le bit
   d'équipement ignoré ; l'enregistrement 11 chargeable ; le drapeau 1787 posé au refus).
 - ⏳ **T4 — ADR, verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.** Les sorties de T0 (b) égales au modèle de l'oracle ; les trois tests de T2 rouges avant le `case` et verts après ; dans l'arc de
-T3, le cas opposé à la mesure de T0 (c) rouge avant et vert après, l'autre une garde verte tuée par un mutant nommé ; l'enregistrement 31 selon
+T3, le cas opposé à la mesure de T0 (c) rouge avant et vert après, l'autre une garde verte tuée par le mutant que la mesure désigne (`>=` en `>`
+si 1, le drapeau 1787 posé au refus si 0) ; l'enregistrement 31 selon
 T0 (c1) à (c4) ; les gardes de T1 vertes et chacune tuée par un mutant ; la suite en Release et en Debug, zéro échec ; aucun test existant déplacé hors de la liste de T0 (d). **Recette de
 l'auteur** (non bloquante) : `legende-m14` (frapper un Beannoïde : le coup de l'épée de base, 51 de dégâts, pas de charge) ; `legende-m7`
 (marcher vers le nord sous un bloc, lire la scène, recevoir l'épée).
