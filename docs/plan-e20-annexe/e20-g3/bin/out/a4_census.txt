@@ -1,0 +1,284 @@
+records 395 ; Collidable(0x80) 239 ; not collidable 156
+records with at least one animation set whose Acceleration byte has 0x80 (no entity collision during that animation): 14
+
+-- by (ClassA bit0, ClassB bit3, Collidable bit7) over the 395 records --
+  ClassA=0 ClassB=0 Collidable=0 : 69 records
+  ClassA=0 ClassB=0 Collidable=1 : 211 records
+  ClassA=0 ClassB=1 Collidable=0 : 5 records
+  ClassA=0 ClassB=1 Collidable=1 : 1 records
+  ClassA=1 ClassB=0 Collidable=0 : 82 records
+  ClassA=1 ClassB=0 Collidable=1 : 27 records
+
+-- the 17 liftable records (CanPickup kind != 0) --
+  kind 1 Bloc de glace transportable                    MoreFlags=0xC4 Collidable=True Gravity=True C=23 E=2 size=(21, 15, 16) animsets=5 with0x80=0 with0x40=0
+  kind 1 Bombe                                          MoreFlags=0x4E Collidable=False Gravity=True C=62 E=12 size=(21, 15, 16) animsets=3 with0x80=0 with0x40=2
+  kind 1 Caisse en bois générique                       MoreFlags=0xE4 Collidable=True Gravity=True C=23 E=2 size=(21, 15, 16) animsets=5 with0x80=0 with0x40=0
+  kind 1 Cruche générique                               MoreFlags=0xE4 Collidable=True Gravity=True C=23 E=2 size=(21, 15, 16) animsets=5 with0x80=0 with0x40=0
+  kind 1 Cruche n°2                                     MoreFlags=0xE4 Collidable=True Gravity=True C=23 E=2 size=(21, 15, 16) animsets=5 with0x80=0 with0x40=0
+  kind 1 Haricots de Jack                               MoreFlags=0x80 Collidable=True Gravity=True C=73 E=21 size=(21, 15, 16) animsets=3 with0x80=0 with0x40=3
+  kind 1 Herbe transportable                            MoreFlags=0xE4 Collidable=True Gravity=True C=23 E=2 size=(21, 15, 16) animsets=5 with0x80=0 with0x40=0
+  kind 1 Objet eau (transportable)                      MoreFlags=0x84 Collidable=True Gravity=True C=4 E=0 size=(20, 12, 14) animsets=5 with0x80=0 with0x40=0
+  kind 1 Objet lune (transportable)                     MoreFlags=0x84 Collidable=True Gravity=True C=4 E=0 size=(20, 12, 14) animsets=5 with0x80=0 with0x40=0
+  kind 1 Objet soleil (transportable)                   MoreFlags=0x84 Collidable=True Gravity=True C=4 E=0 size=(20, 12, 14) animsets=5 with0x80=0 with0x40=0
+  kind 1 Objet étoile (transportable)                   MoreFlags=0x84 Collidable=True Gravity=True C=4 E=0 size=(20, 12, 14) animsets=5 with0x80=0 with0x40=0
+  kind 1 Pierre générique                               MoreFlags=0xE4 Collidable=True Gravity=True C=4 E=2 size=(21, 15, 16) animsets=5 with0x80=0 with0x40=0
+  kind 1 Rocher tortue non ennemi                       MoreFlags=0xE4 Collidable=True Gravity=True C=23 E=2 size=(21, 15, 16) animsets=5 with0x80=0 with0x40=0
+  kind 1 Tonneau générique                              MoreFlags=0xE4 Collidable=True Gravity=True C=4 E=2 size=(21, 15, 16) animsets=5 with0x80=0 with0x40=0
+  kind 1 Torche                                         MoreFlags=0xE2 Collidable=True Gravity=True C=70 E=20 size=(21, 15, 15) animsets=5 with0x80=0 with0x40=0
+  kind 1 Tronc (transportable), petite boule de fer     MoreFlags=0xE4 Collidable=True Gravity=True C=4 E=2 size=(21, 15, 16) animsets=8 with0x80=0 with0x40=0
+  kind 3 Pierre très lourde                             MoreFlags=0xE4 Collidable=True Gravity=True C=23 E=2 size=(46, 34, 34) animsets=5 with0x80=0 with0x40=0
+
+-- records that are NOT liftable, ClassA (monster side) --
+  109 records ClassA ; Collidable 27 ; not collidable 82
+    COLLIDABLE monster-side Interrupteur (allumage)                      MoreFlags=0x81 Acc0x80 sets=0
+    COLLIDABLE monster-side Interrupteur (bascule)                       MoreFlags=0x81 Acc0x80 sets=0
+    COLLIDABLE monster-side Tourelle à 4 directions                      MoreFlags=0x81 Acc0x80 sets=0
+    COLLIDABLE monster-side Mur à boule de fer (222) – boule de fer      MoreFlags=0xC1 Acc0x80 sets=0
+    COLLIDABLE monster-side Mur à boule de fer (221)                     MoreFlags=0xC1 Acc0x80 sets=0
+    COLLIDABLE monster-side Mur à boule de fer (112) – axe               MoreFlags=0xC1 Acc0x80 sets=0
+    COLLIDABLE monster-side Mur à boule de fer (111)                     MoreFlags=0xC1 Acc0x80 sets=0
+    COLLIDABLE monster-side Interrupteur tricolore                       MoreFlags=0x81 Acc0x80 sets=0
+    COLLIDABLE monster-side Pilier détruisible (UD■_LR●)                 MoreFlags=0xC1 Acc0x80 sets=0
+    COLLIDABLE monster-side Colonne de glace                             MoreFlags=0x81 Acc0x80 sets=0
+    COLLIDABLE monster-side Interrupteur de lampe                        MoreFlags=0x81 Acc0x80 sets=0
+    COLLIDABLE monster-side Chaîne .0 traversable _1 détruite _2 attente MoreFlags=0x81 Acc0x80 sets=0
+    COLLIDABLE monster-side Armure cassable                              MoreFlags=0x81 Acc0x80 sets=0
+    COLLIDABLE monster-side Interrupteur à ballon                        MoreFlags=0x81 Acc0x80 sets=0
+    COLLIDABLE monster-side ◆Ronan divin corrompu                        MoreFlags=0x83 Acc0x80 sets=0
+    COLLIDABLE monster-side ◆Nirude (avec corps)                         MoreFlags=0x87 Acc0x80 sets=0
+    COLLIDABLE monster-side ◆Chute de rochers de Nilude (222)            MoreFlags=0x83 Acc0x80 sets=0
+    COLLIDABLE monster-side ◆Chute de rochers de Nilude (112)            MoreFlags=0x83 Acc0x80 sets=0
+    COLLIDABLE monster-side ◆Chute de rochers de Nilude (111)            MoreFlags=0x83 Acc0x80 sets=0
+    COLLIDABLE monster-side Mur à boule de fer (2×2×1) permanent         MoreFlags=0xC1 Acc0x80 sets=0
+    COLLIDABLE monster-side Mur à boule de fer (2×2×2) permanent         MoreFlags=0xC1 Acc0x80 sets=0
+    COLLIDABLE monster-side Ronces enflammées 222                        MoreFlags=0xC3 Acc0x80 sets=0
+    COLLIDABLE monster-side Ronces enflammées 112                        MoreFlags=0xC3 Acc0x80 sets=0
+    COLLIDABLE monster-side Couvercle de tige-bombe (horizontal)         MoreFlags=0xC1 Acc0x80 sets=0
+    COLLIDABLE monster-side Couvercle de tige-bombe (dessus)             MoreFlags=0xC1 Acc0x80 sets=0
+    COLLIDABLE monster-side Couvercle de tige-bombe (vertical)           MoreFlags=0xA1 Acc0x80 sets=0
+    COLLIDABLE monster-side Racine destructible à la bombe               MoreFlags=0x81 Acc0x80 sets=0
+
+-- records ClassB or neither class bits (player side / NPCs / objects), Collidable --
+  269 records ; Collidable 196 ; not collidable 73
+  names of Collidable ones:
+    Alundra                                            MoreFlags=0x8C
+    Beaumont (chef du village)                         MoreFlags=0x80
+    Bergus (frère aîné)                                MoreFlags=0x80
+    Bloc transparent (1×1×2)                           MoreFlags=0x80
+    Bloc transparent (8×2×1)                           MoreFlags=0x80
+    Bloc transparent (gigantesque)                     MoreFlags=0x80
+    Bloc transparent (minuscule)                       MoreFlags=0x80
+    Bloc à pousser_attaquer                            MoreFlags=0x80
+    Bois flottant .01 sur l’eau _ .23 en l’air         MoreFlags=0xE2
+    Bonaire & pierre (YM03)                            MoreFlags=0x80
+    Bonaire (homme endormi à jamais)                   MoreFlags=0x80
+    Bonaire mort                                       MoreFlags=0x80
+    Boîte bicolore rouge_bleu                          MoreFlags=0x80
+    Bulle .0-1-2 support _3-4 non support              MoreFlags=0xC0
+    Cephas (gardien de cimetière)                      MoreFlags=0x80
+    Cercueil                                           MoreFlags=0x80
+    Champignon non ennemi                              MoreFlags=0x80
+    Chariot de chargement                              MoreFlags=0x80
+    Chariot de mine                                    MoreFlags=0x80
+    Coffre au trésor                                   MoreFlags=0x80
+    Coffre d’Anzes                                     MoreFlags=0x80
+    Déclencheur clé invisible (standard)               MoreFlags=0x80
+    Déclencheur clé invisible (très petit)             MoreFlags=0x80
+    Elene (femme à personnalités multiples)            MoreFlags=0x80
+    Fein (femme du gros)                               MoreFlags=0x80
+    Giles (homme religieux)                            MoreFlags=0x80
+    Goutte d’eau                                       MoreFlags=0x80
+    Grand visage (Aida)                                MoreFlags=0x80
+    Grille de fer (grande)                             MoreFlags=0x80
+    Grille de fer (petite)                             MoreFlags=0x80
+    Gros bloc transparent (6×10)                       MoreFlags=0x80
+    Gustav (ivrogne)                                   MoreFlags=0x80
+    Homme effondré                                     MoreFlags=0x80
+    I01_Épée de base                                   MoreFlags=0x80
+    I02_Lame d’acier                                   MoreFlags=0x80
+    I03_Destructeur de démons                          MoreFlags=0x80
+    I04_Épée sacrée Elnard                             MoreFlags=0x80
+    I05_Arc du chasseur                                MoreFlags=0x80
+    I06_Arc de William                                 MoreFlags=0x80
+    I07_Bâton magique                                  MoreFlags=0x80
+    I08_Objet 008                                      MoreFlags=0x80
+    I09_Lancer de chaîne                               MoreFlags=0x80
+    I10_Le Broyeur                                     MoreFlags=0x80
+    I11_Objet 011                                      MoreFlags=0x80
+    I12_Objet 012                                      MoreFlags=0x80
+    I13_Objet 013                                      MoreFlags=0x80
+    I14_Bâton des glaces flottantes                    MoreFlags=0x80
+    I15_Objet 015                                      MoreFlags=0x80
+    I16_Bâton de feu                                   MoreFlags=0x80
+    I17_Veste en tissu                                 MoreFlags=0x80
+    I18_Veste en cuir                                  MoreFlags=0x80
+    I19_Veste en acier                                 MoreFlags=0x80
+    I20_Veste en argent                                MoreFlags=0x80
+    I21_Objet 021                                      MoreFlags=0x80
+    I22_Objet 022                                      MoreFlags=0x80
+    I23_Objet 023                                      MoreFlags=0x80
+    I24_Objet 024                                      MoreFlags=0x80
+    I25_Bottes normales                                MoreFlags=0x80
+    I26_Bottes longues                                 MoreFlags=0x80
+    I27_Bottes de triton                               MoreFlags=0x80
+    I28_Bottes magiques                                MoreFlags=0x80
+    I29_Objet 029                                      MoreFlags=0x80
+    I30_Objet 030                                      MoreFlags=0x80
+    I31_Haricots de Jack                               MoreFlags=0x80
+    I32_Cape de sable                                  MoreFlags=0x80
+    I33_Armure brisée                                  MoreFlags=0x80
+    I34_Objet 034                                      MoreFlags=0x80
+    I35_Bombe explosive                                MoreFlags=0x80
+    I36_Herbe médicinale                               MoreFlags=0x80
+    I37_Potion L                                       MoreFlags=0x80
+    I38_Extrait magique                                MoreFlags=0x80
+    I39_Breuvage de soin                               MoreFlags=0x80
+    I40_Cape aquatique                                 MoreFlags=0x80
+    I41_Potion S                                       MoreFlags=0x80
+    I43_Tome de la Terre (haut)                        MoreFlags=0x80
+    I44_Tome de la Terre (bas)                         MoreFlags=0x80
+    I45_Tome du démon d’eau (haut)                     MoreFlags=0x80
+    I46_Tome du démon d’eau (bas)                      MoreFlags=0x80
+    I47_Tome du dragon de feu (haut)                   MoreFlags=0x80
+    I48_Tome du dragon de feu (bas)                    MoreFlags=0x80
+    I49_Tome du dieu du vent (haut)                    MoreFlags=0x80
+    I50_Tome du dieu du vent (bas)                     MoreFlags=0x80
+    I51_Anneau d’orc                                   MoreFlags=0x80
+    I52_Anneau d’ogre                                  MoreFlags=0x80
+    I53_Bracelet d’armure d’acier                      MoreFlags=0x80
+    I54_Bracelet d’armure d’argent                     MoreFlags=0x80
+    I55_Anneau de régénération                         MoreFlags=0x80
+    I56_Anneau de guérison                             MoreFlags=0x80
+    I57_Billet d’entrée                                MoreFlags=0x80
+    I58_Objet 058                                      MoreFlags=0x80
+    I59_Gant de puissance                              MoreFlags=0x80
+    I60_Clé de l’ascenseur                             MoreFlags=0x80
+    I61_Clé                                            MoreFlags=0x80
+    I62_Emblème du sang de pigeon                      MoreFlags=0x80
+    I63_Emblème azur                                   MoreFlags=0x80
+    I64_Emblème de topaze                              MoreFlags=0x80
+    I65_Emblème brun                                   MoreFlags=0x80
+    I66_Emblème écarlate                               MoreFlags=0x80
+    I67_Emblème vert sombre                            MoreFlags=0x80
+    I68_Emblème d’argent                               MoreFlags=0x80
+    I69_1 Gilda                                        MoreFlags=0x80
+    I70_5 Gildas                                       MoreFlags=0x80
+    I71_10 Gildas                                      MoreFlags=0x80
+    I72_30 Gildas                                      MoreFlags=0x80
+    I73__ Vieille clé                                  MoreFlags=0x80
+    I74_Bouquet de fleurs                              MoreFlags=0x80
+    I75_Clé d’Anzes                                    MoreFlags=0x80
+    I76_Testament d’Anzes                              MoreFlags=0x80
+    I77_Orbe du grand arbre                            MoreFlags=0x80
+    I78_Pierre de Zolist                               MoreFlags=0x80
+    I79_Bec en or                                      MoreFlags=0x80
+    I80_Graine magique                                 MoreFlags=0x80
+    I81_Petit cristal                                  MoreFlags=0x80
+    I82_Grand cristal                                  MoreFlags=0x80
+    I83_Récipient de vie                               MoreFlags=0x80
+    I84_Petit cœur                                     MoreFlags=0x80
+    I85_Cœur moyen                                     MoreFlags=0x80
+    I86_Grand cœur                                     MoreFlags=0x80
+    I87__ Cadeau de remerciement                       MoreFlags=0x80
+    I88_Livre d’Elna                                   MoreFlags=0x80
+    I89_Objet 089                                      MoreFlags=0x80
+    Interrupteur (monter) inutilisable                 MoreFlags=0x80
+    Interrupteur (piétiner) ← à utiliser !             MoreFlags=0x80
+    Interrupteur poussoir                              MoreFlags=0x80
+    Jaylen (mineur)                                    MoreFlags=0x80
+    Jess (armurier)                                    MoreFlags=0x80
+    Jeune Meia                                         MoreFlags=0x80
+    Kisha (petite sœur)                                MoreFlags=0x80
+    Klein (rêve uniquement)                            MoreFlags=0x80
+    Kline (somnambule)                                 MoreFlags=0x80
+    Kohei                                              MoreFlags=0x80
+    Livre                                              MoreFlags=0x80
+    Lurvy                                              MoreFlags=0x80
+    Lutas (gros bonhomme)                              MoreFlags=0x80
+    Lyman (mineur)                                     MoreFlags=0x80
+    L’Homme en robe                                    MoreFlags=0x80
+    Marin-passager-mouette-146                         MoreFlags=0x80
+    Marin-passager-mouette-161                         MoreFlags=0x80
+    Maître des clés                                    MoreFlags=0x80
+    Meade (père des jumeaux)                           MoreFlags=0x80
+    Meia                                               MoreFlags=0x80
+    Meia (pour YM08)                                   MoreFlags=0x80
+    Mini-Nilude (D12)                                  MoreFlags=0x80
+    Moteur à ondes                                     MoreFlags=0x80
+    Myra (vieille femme)                               MoreFlags=0x80
+    Myra morte                                         MoreFlags=0x80
+    Mère du médium                                     MoreFlags=0x80
+    Médium ligoté                                      MoreFlags=0x80
+    Nadia (femme insomniaque)                          MoreFlags=0x80
+    Naomi (épouse courageuse)                          MoreFlags=0x80
+    Nava (vieil homme du cap)                          MoreFlags=0x80
+    Nestus (frère cadet)                               MoreFlags=0x80
+    Olen (mineur)                                      MoreFlags=0x80
+    Panneau générique                                  MoreFlags=0x80
+    Phineas (père)                                     MoreFlags=0x80
+    Pierre (destructible à la boule de fer) 1          MoreFlags=0xC0
+    Pierre (destructible à la boule de fer) 2          MoreFlags=0xC0
+    Pilier poussable (PRG)                             MoreFlags=0x80
+    Plaque à motif                                     MoreFlags=0xC0
+    Plateforme flottante (grande)                      MoreFlags=0xC0
+    Plateforme flottante (petite)                      MoreFlags=0xC0
+    Plateforme flottante fragile (grande)              MoreFlags=0x80
+    Plateforme flottante fragile (petite)              MoreFlags=0x80
+    Plateforme mobile toutes directions                MoreFlags=0x80
+    Porte (grande)                                     MoreFlags=0x80
+    Porte (petite)                                     MoreFlags=0x80
+    Porte Muruta                                       MoreFlags=0x80
+    Porte rotative 45°                                 MoreFlags=0x80
+    Pot magique (boïng)                                MoreFlags=0x80
+    Rampe de saut                                      MoreFlags=0x80
+    Rocher roulant (grand)                             MoreFlags=0x80
+    Rocher roulant (petit)                             MoreFlags=0x80
+    Ronan (prêtre)                                     MoreFlags=0x80
+    Rumi (mère des jumeaux)                            MoreFlags=0x80
+    Sara (femme du rêve)                               MoreFlags=0x80
+    SaveBook (Ne pas toucher !)                        MoreFlags=0x80
+    Septimus (chercheur)                               MoreFlags=0x80
+    Sierra (mère)                                      MoreFlags=0x80
+    Statue de pierre                                   MoreFlags=0x80
+    Statue de roi, serviteur et déesse                 MoreFlags=0x80
+    Statue divine de Melzas                            MoreFlags=0x80
+    Statue d’homme-lézard transformé                   MoreFlags=0x80
+    Statue poussable (événement)                       MoreFlags=0x80
+    Sybill (aux yeux rouges)                           MoreFlags=0x80
+    Talis (fils)                                       MoreFlags=0x80
+    Thyea (épouse)                                     MoreFlags=0x80
+    Tombe                                              MoreFlags=0x80
+    Trappe d’escalier (grande)                         MoreFlags=0x80
+    Trappe d’escalier (petite)                         MoreFlags=0x80
+    Wendell (grand-père)                               MoreFlags=0x80
+    YM08 barrière u=eau d=feu l=sable r=glace          MoreFlags=0xC0
+    Yuri (marchand d’objets)                           MoreFlags=0x80
+    Yustel (vieille voyante)                           MoreFlags=0x80
+    Zane (mineur)                                      MoreFlags=0x80
+    asiba (plateforme)                                 MoreFlags=0x80
+    pont en bois                                       MoreFlags=0x80
+
+-- records whose animation sets carry 0x80 --
+  Porte (petite)                                     MoreFlags=0x80 sets with 0x80: 1 of 2
+  Porte (grande)                                     MoreFlags=0x80 sets with 0x80: 1 of 2
+  Grille de fer (petite)                             MoreFlags=0x80 sets with 0x80: 1 of 5
+  Grille de fer (grande)                             MoreFlags=0x80 sets with 0x80: 1 of 5
+  Boîte bicolore rouge_bleu                          MoreFlags=0x80 sets with 0x80: 1 of 4
+  Alundra                                            MoreFlags=0x8C sets with 0x80: 6 of 94
+  Magie de feu Niv.1                                 MoreFlags=0x44 sets with 0x80: 1 of 1
+  Magie de feu Niv.2                                 MoreFlags=0x44 sets with 0x80: 1 of 1
+  Épée d’onde Niv.1                                  MoreFlags=0x5C sets with 0x80: 1 of 2
+  Épée d’onde Niv.2                                  MoreFlags=0x5C sets with 0x80: 1 of 2
+  Épée d’onde Niv.3                                  MoreFlags=0x5C sets with 0x80: 1 of 2
+  I71_10 Gildas                                      MoreFlags=0x80 sets with 0x80: 1 of 2
+  bank_alundra_154                                   MoreFlags=0x44 sets with 0x80: 1 of 1
+  Nuage de sable                                     MoreFlags=0x40 sets with 0x80: 4 of 4
+
+-- placements, enabled records of 483 maps (data-extracted) --
+  total 8088
+  Collidable      ClassA   : 614
+  Collidable      noClass  : 4771
+  not collidable  ClassA   : 1746
+  not collidable  ClassB   : 42
+  not collidable  noClass  : 915
+  liftable placements by (kind, collidable at header level): {(1, 'Collidable'): 2244}

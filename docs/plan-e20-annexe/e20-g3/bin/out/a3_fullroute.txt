@@ -1,0 +1,22 @@
+== JUMP route
+  tick  15 : phase right      -> down        hero x= 752.91 y= 216.00 z= 64.00
+  tick  63 : phase down       -> left        hero x= 754.12 y= 293.19 z= 64.00
+  tick  90 : phase left       -> after_jump  hero x= 691.97 y= 295.62 z= 64.00
+  tick 130 : phase after_jump -> south       hero x= 597.77 y= 295.62 z= 66.00
+  tick 162 : phase south      -> west        hero x= 597.00 y= 344.00 z= 64.00
+  tick 187 : phase west       -> down2       hero x= 540.94 y= 344.00 z= 64.00
+  tick 210 : phase down2      -> done        hero x= 538.00 y= 376.00 z= 64.00
+  end (tick 400): hero x=538.00 y=376.00 z=64.00 cell=(22, 23) ; portal cell (22, 23) ; exit window x in [538, 541], y in [375, 376] (plan-e19-opcodes.md:2142-2151)
+  first tick with the hero in cell (22, 23): 203
+== LIFT route
+  tick  15 : phase right      -> down        hero x= 752.91 y= 216.00 z= 64.00
+  tick  63 : phase down       -> left        hero x= 754.12 y= 293.19 z= 64.00
+  tick 105 : phase left       -> gesture     hero x= 657.00 y= 295.62 z= 64.00
+  tick 142 : phase gesture    -> carry       hero x= 657.00 y= 295.62 z= 64.00
+  tick 166 : phase carry      -> thrown      hero x= 598.50 y= 295.62 z= 64.00
+  tick 178 : phase thrown     -> south       hero x= 598.50 y= 295.62 z= 64.00
+  tick 216 : phase south      -> west        hero x= 598.50 y= 343.56 z= 64.00
+  tick 242 : phase west       -> down2       hero x= 540.00 y= 344.00 z= 64.00
+  tick 266 : phase down2      -> done        hero x= 538.31 y= 376.00 z= 64.00
+  end (tick 400): hero x=538.31 y=376.00 z=64.00 cell=(22, 23) ; portal cell (22, 23) ; exit window x in [538, 541], y in [375, 376] (plan-e19-opcodes.md:2142-2151)
+  first tick with the hero in cell (22, 23): 259

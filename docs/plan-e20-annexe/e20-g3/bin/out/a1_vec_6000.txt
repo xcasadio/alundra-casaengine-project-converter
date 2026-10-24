@@ -1,0 +1,7 @@
+vectors 6000 totals {'lists': 6000, 'find': 39657, 'groundz': 39657, 'down': 39657, 'up': 39657} mismatches {'lists': 0, 'find': 0, 'groundz': 0, 'down': 0, 'up': 0} first {}
+find subject-gate / result counts (model): {'hero_transition': 991, 'not_collidable_flag': 4641, 'anim_flag_0x80': 6106, 'carried_+0x28': 2355, 'candidate_overlap': 8245, 'no_overlap': 17319}
+lists 0x800384F4-0x8003862C                             79/79 instructions executed
+FindEntityCollisionCandidate 0x80036F34-0x800370BC      99/99 instructions executed
+GetCollisionOnZ 0x80037F28-0x80038060                   79/79 instructions executed
+CheckEntityCollisionDown 0x80036BFC-0x80036D8C          101/101 instructions executed
+CheckEntityCollisionUp 0x80036D94-0x80036F2C            103/103 instructions executed

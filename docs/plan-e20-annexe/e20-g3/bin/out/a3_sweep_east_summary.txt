@@ -1,0 +1,20 @@
+EAST -> WEST running jump onto rec5; start (720, 296) with PosY poked to y; Cross at tick tj in 8..26 (19 jump timings per y).  Columns: y ; timings that land on rec5 ; timings that end blocked
+ 294.500 : lands on rec5 for 14 of 19 timings 13..26
+ 294.750 : lands on rec5 for 14 of 19 timings 13..26
+ 295.000 : lands on rec5 for 15 of 19 timings 12..26
+ 295.250 : lands on rec5 for 15 of 19 timings 12..26
+ 295.500 : lands on rec5 for 15 of 19 timings 12..26
+ 295.750 : lands on rec5 for 15 of 19 timings 12..26
+ 296.000 : lands on rec5 for 15 of 19 timings 12..26
+ 296.250 : lands on rec5 for 15 of 19 timings 12..26
+ 296.500 : lands on rec5 for 15 of 19 timings 12..26
+ 296.750 : lands on rec5 for 15 of 19 timings 12..26
+ 297.000 : lands on rec5 for 15 of 19 timings 12..26
+ 297.250 : lands on rec5 for  0 of 19 timings 
+ 297.500 : lands on rec5 for  0 of 19 timings 
+ 297.750 : lands on rec5 for  0 of 19 timings 
+ 298.000 : lands on rec5 for  0 of 19 timings 
+ 298.250 : lands on rec5 for  0 of 19 timings 
+ 298.500 : lands on rec5 for  0 of 19 timings 
+ 298.750 : lands on rec5 for  0 of 19 timings 
+ 299.000 : lands on rec5 for  0 of 19 timings 

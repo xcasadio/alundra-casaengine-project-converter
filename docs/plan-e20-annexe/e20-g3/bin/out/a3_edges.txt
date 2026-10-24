@@ -1,0 +1,28 @@
+east  PosY=19333117 (= 294.9999542 px = edge -3 units) : success for 5 of 7 jump ticks [13, 14, 15, 16, 17] ; PosY at tick 21 = 19365885
+east  PosY=19333118 (= 294.9999695 px = edge -2 units) : success for 5 of 7 jump ticks [13, 14, 15, 16, 17] ; PosY at tick 21 = 19365886
+east  PosY=19333119 (= 294.9999847 px = edge -1 units) : success for 5 of 7 jump ticks [13, 14, 15, 16, 17] ; PosY at tick 21 = 19365887
+east  PosY=19333120 (= 295.0000000 px = edge +0 units) : success for 6 of 7 jump ticks [12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19333120
+east  PosY=19333121 (= 295.0000153 px = edge +1 units) : success for 6 of 7 jump ticks [12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19333121
+east  PosY=19333122 (= 295.0000305 px = edge +2 units) : success for 6 of 7 jump ticks [12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19333122
+east  PosY=19333123 (= 295.0000458 px = edge +3 units) : success for 6 of 7 jump ticks [12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19333123
+east  PosY=19464189 (= 296.9999542 px = edge -3 units) : success for 6 of 7 jump ticks [12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19464189
+east  PosY=19464190 (= 296.9999695 px = edge -2 units) : success for 6 of 7 jump ticks [12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19464190
+east  PosY=19464191 (= 296.9999847 px = edge -1 units) : success for 6 of 7 jump ticks [12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19464191
+east  PosY=19464192 (= 297.0000000 px = edge +0 units) : success for 6 of 7 jump ticks [12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19464192
+east  PosY=19464193 (= 297.0000153 px = edge +1 units) : success for 0 of 7 jump ticks [] ; PosY at tick 21 = 19464193
+east  PosY=19464194 (= 297.0000305 px = edge +2 units) : success for 0 of 7 jump ticks [] ; PosY at tick 21 = 19464194
+east  PosY=19464195 (= 297.0000458 px = edge +3 units) : success for 0 of 7 jump ticks [] ; PosY at tick 21 = 19464195
+west  PosY=19333117 (= 294.9999542 px = edge -3 units) : success for 0 of 7 jump ticks [] ; PosY at tick 21 = 19333117
+west  PosY=19333118 (= 294.9999695 px = edge -2 units) : success for 0 of 7 jump ticks [] ; PosY at tick 21 = 19333118
+west  PosY=19333119 (= 294.9999847 px = edge -1 units) : success for 0 of 7 jump ticks [] ; PosY at tick 21 = 19333119
+west  PosY=19333120 (= 295.0000000 px = edge +0 units) : success for 7 of 7 jump ticks [11, 12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19333120
+west  PosY=19333121 (= 295.0000153 px = edge +1 units) : success for 7 of 7 jump ticks [11, 12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19333121
+west  PosY=19333122 (= 295.0000305 px = edge +2 units) : success for 7 of 7 jump ticks [11, 12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19333122
+west  PosY=19333123 (= 295.0000458 px = edge +3 units) : success for 7 of 7 jump ticks [11, 12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19333123
+west  PosY=19464189 (= 296.9999542 px = edge -3 units) : success for 7 of 7 jump ticks [11, 12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19464189
+west  PosY=19464190 (= 296.9999695 px = edge -2 units) : success for 7 of 7 jump ticks [11, 12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19464190
+west  PosY=19464191 (= 296.9999847 px = edge -1 units) : success for 7 of 7 jump ticks [11, 12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19464191
+west  PosY=19464192 (= 297.0000000 px = edge +0 units) : success for 7 of 7 jump ticks [11, 12, 13, 14, 15, 16, 17] ; PosY at tick 21 = 19464192
+west  PosY=19464193 (= 297.0000153 px = edge +1 units) : success for 0 of 7 jump ticks [] ; PosY at tick 21 = 19464193
+west  PosY=19464194 (= 297.0000305 px = edge +2 units) : success for 0 of 7 jump ticks [] ; PosY at tick 21 = 19464194
+west  PosY=19464195 (= 297.0000458 px = edge +3 units) : success for 0 of 7 jump ticks [] ; PosY at tick 21 = 19464195

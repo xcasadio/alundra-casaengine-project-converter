@@ -1,0 +1,8 @@
+Legend: per tick, C = hero.+0x130 is rec5, - = 0 ; * = hero carries (+0x2C != 0).  hero walks west from x=720 at y=296; rec5 east face at x=647, contact at hero x=657.
+1) push then release at tick 34: t24:- t25:- t26:- t27:C t28:C t29:C t30:C t31:C t32:C t33:C t34:C t35:- t36:- t37:- t38:- t39:- t40:-
+2) Square edge at tick 27, the tick whose PHYSICS first blocks the hero (MovePlayer of tick 27 runs before that physics and reads the contact of tick 26 = none): t24:- t25:- t26:- t27:C t28:- t29:- t30:- t31:- t32:- ; hero state t27..t32: [16, 16, 16, 16, 16, 16]  (16 = sword swing: no lift)
+3) Square edge at tick 28 (reads the contact written by the physics of tick 27): t26:- t27:C t28:-* t29:-* t30:-* t31:-* t32:-* t33:-* t34:-* ; hero state t28..t33: [5, 5, 5, 5, 5, 5]  (5 = lift gesture)
+4) push, release for 3 ticks, then Square alone at tick 37: t33:C t34:C t35:- t36:- t37:- t38:- t39:- t40:- ; hero state after: [0, 16, 16, 16, 16, 16, 16]  (state 16 = sword swing: no lift)
+5) push, release for 3 ticks, then LEFT+Square together at tick 37 (the contact of tick 36 is 0): t33:C t34:C t35:- t36:- t37:- t38:- t39:- t40:- ; hero state after: [0, 16, 16, 16, 16, 16, 16]
+6) the contact keeps being re-written every tick while the hero pushes (ticks 27..33 all C): t27:C t28:C t29:C t30:C t31:C t32:C t33:C
+7) LEFT+UP pressed from y=312 (the north wall of the doorway ends the Y motion at 295, the crate blocks X): t30:x=694.5,y=295.0,- t32:x=694.5,y=295.0,- t34:x=694.5,y=295.0,- t36:x=694.5,y=295.0,- t38:x=694.5,y=295.0,- t40:x=694.5,y=295.0,- t42:x=694.5,y=295.0,- t44:x=694.5,y=295.0,- t46:x=694.5,y=295.0,- t48:x=694.5,y=295.0,- t50:x=694.5,y=295.0,-

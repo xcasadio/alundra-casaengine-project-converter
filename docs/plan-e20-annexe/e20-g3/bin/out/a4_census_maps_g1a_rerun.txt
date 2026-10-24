@@ -1,0 +1,12 @@
+placements per prefab (enabled records):
+  Caisse en bois générique                          1910 placements on 207 maps   balance(kind, idx, AttackCount, powers, MaxHp)=None
+  Pierre générique                                   103 placements on  50 maps   balance(kind, idx, AttackCount, powers, MaxHp)=None
+  Torche                                              57 placements on  10 maps   balance(kind, idx, AttackCount, powers, MaxHp)=None
+  Tronc (transportable), petite boule de fer          56 placements on   6 maps   balance(kind, idx, AttackCount, powers, MaxHp)=None
+  Cruche n°2                                          42 placements on  20 maps   balance(kind, idx, AttackCount, powers, MaxHp)=None
+  Objet soleil (transportable)                        32 placements on   4 maps   balance(kind, idx, AttackCount, powers, MaxHp)=None
+  Rocher tortue non ennemi                            21 placements on   6 maps   balance(kind, idx, AttackCount, powers, MaxHp)=None
+  Bloc de glace transportable                         15 placements on   5 maps   balance(kind, idx, AttackCount, powers, MaxHp)=None
+  Herbe transportable                                  8 placements on   3 maps   balance(kind, idx, AttackCount, powers, MaxHp)=None
+total placements 2244 on 237 maps
+unmatched signatures {}

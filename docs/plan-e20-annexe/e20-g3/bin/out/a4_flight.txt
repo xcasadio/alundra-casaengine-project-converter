@@ -1,0 +1,32 @@
+== C23 crate (map_392 s36)
+  t 11 x= 130.00 z=  0.00 status=2 anim=0 t24=0 +0x28=0x80127d30 flags=3323E4 in collidable list=False
+  t 12 x= 130.00 z=  1.00 status=2 anim=0 t24=0 +0x28=0x80127d30 flags=3323E4 in collidable list=False
+  t 60 x= 109.00 z= 32.00 status=2 anim=0 t24=0 +0x28=0x80127d30 flags=3323E4 in collidable list=False
+  t 61 x= 112.00 z= 36.00 status=2 anim=1 t24=0 +0x28=0 flags=332374 in collidable list=False
+  t 62 x= 115.00 z= 39.50 status=2 anim=1 t24=0 +0x28=0 flags=332374 in collidable list=False
+  t 66 x= 127.00 z= 48.50 status=2 anim=1 t24=0 +0x28=0 flags=332374 in collidable list=False
+  t 70 x= 139.00 z= 49.50 status=2 anim=1 t24=0 +0x28=0 flags=332374 in collidable list=False
+  t 76 x= 157.00 z= 36.00 status=2 anim=1 t24=0 +0x28=0 flags=332374 in collidable list=False
+  t 82 x= 175.00 z=  4.50 status=2 anim=1 t24=0 +0x28=0 flags=332374 in collidable list=False
+  t 83 x= 178.00 z=  0.00 status=2 anim=1 t24=0 +0x28=0 flags=332374 in collidable list=False
+  t 84 x= 178.00 z=  0.00 status=3 anim=2 t24=0 +0x28=0 flags=332344 in collidable list=False
+  t 85 x= 178.00 z=  0.00 status=3 anim=2 t24=0 +0x28=0 flags=332344 in collidable list=False
+  t 86 x= 178.00 z=  0.00 status=4 anim=2 t24=0 +0x28=0 flags=332344 in collidable list=False
+  t 87 x=   0.00 z=  0.00 status=0 anim=0 t24=0 +0x28=0 flags=0 in collidable list=False
+  t 90 x=   0.00 z=  0.00 status=0 anim=0 t24=0 +0x28=0 flags=0 in collidable list=False
+== C4 stone (map_22 s34)
+  t 11 x= 130.00 z=  0.00 status=2 anim=0 t24=0 +0x28=0x80127d30 flags=3323E4 in collidable list=False
+  t 12 x= 130.00 z=  1.00 status=2 anim=0 t24=0 +0x28=0x80127d30 flags=3323E4 in collidable list=False
+  t 60 x= 109.00 z= 32.00 status=2 anim=0 t24=0 +0x28=0x80127d30 flags=3323E4 in collidable list=False
+  t 61 x= 112.00 z= 36.00 status=2 anim=1 t24=0 +0x28=0 flags=3323E4 in collidable list=True
+  t 62 x= 115.00 z= 39.50 status=2 anim=1 t24=0 +0x28=0 flags=3323E4 in collidable list=True
+  t 66 x= 127.00 z= 48.50 status=2 anim=1 t24=0 +0x28=0 flags=3323E4 in collidable list=True
+  t 70 x= 139.00 z= 49.50 status=2 anim=1 t24=0 +0x28=0 flags=3323E4 in collidable list=True
+  t 76 x= 157.00 z= 36.00 status=2 anim=1 t24=0 +0x28=0 flags=3323E4 in collidable list=True
+  t 82 x= 175.00 z=  4.50 status=2 anim=1 t24=0 +0x28=0 flags=3323E4 in collidable list=True
+  t 83 x= 178.00 z=  0.00 status=2 anim=1 t24=0 +0x28=0 flags=3323E4 in collidable list=True
+  t 84 x= 178.00 z=  0.00 status=2 anim=0 t24=0 +0x28=0 flags=3323E4 in collidable list=True
+  t 85 x= 178.00 z=  0.00 status=2 anim=0 t24=0 +0x28=0 flags=3323E4 in collidable list=True
+  t 86 x= 178.00 z=  0.00 status=2 anim=0 t24=0 +0x28=0 flags=3323E4 in collidable list=True
+  t 87 x= 178.00 z=  0.00 status=2 anim=0 t24=0 +0x28=0 flags=3323E4 in collidable list=True
+  t 90 x= 178.00 z=  0.00 status=2 anim=0 t24=0 +0x28=0 flags=3323E4 in collidable list=True

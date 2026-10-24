@@ -1,0 +1,4 @@
+from y=295.0: contact = rec5 (first at tick 27, hero stops at x=657.000 y=295.000)
+from y=311.0: contact = rec6 (first at tick 27, hero stops at x=657.000 y=311.000)
+from y=327.0: contact = rec7 (first at tick 27, hero stops at x=657.000 y=327.000)
+last y tested = 328.5

@@ -1,0 +1,6 @@
+tick of the first blocked step (contact) : 27
+Square edge (lift) : tick 28 -> hero.+0x2C = rec5 at tick 28, gesture state 5
+hero leaves the gesture (state 12) at tick 64 (36 ticks of gesture)
+Square edge (throw) at tick 65 : the crate leaves the hands in that tick, at (654.0, 296.0, 100.0), hero state 9
+crate lands/starts breaking (anim 2) at tick 88 at x=588.0, slot freed at tick 91
+hero x <= 615 (past the column's west face) at tick 102 ; x <= 562 at tick 124 ; contact during the walk: []

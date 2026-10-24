@@ -7169,6 +7169,13 @@ relecture de clôture.
 `requiredCandidateFlags`), la phase B de remplissage et ses compteurs-témoins k1 à k4, et O-G-1 : le seul contact est celui que g3 rend
 possible, `XCollisionEntity` (`Alundra/Entities/EntityScriptProxy.cs:2424-2431`), que le binaire appelle `+0x130`.
 
+**Héritage de g3 (2026-10-24, g3 faite, ADR-0091).** (1) O-G3-3 : vu du dessus d'une caisse, la DLL pose le contact de la caisse voisine du
+haut au tick même où le pas est raccourci, le binaire un tick plus tard ; T0 (b) mesure aussi ce cas (le héros sur rec5 de la 392, vers
+rec10, `CrateSolidityMap392Tests` S2), et un Carré au tick de l'arrivée qui soulèverait dans la DLL et donnerait l'épée dans le binaire
+est un arrêt (question à l'auteur), pas une valeur à suivre. (2) Les classes de test ont perdu le préfixe « Alundra » (restructuration R*) :
+`AlundraTestSavesTests` se lit `TestSavesTests`, à relocaliser par contenu. (3) Le contact du sol (P-G3-1 à P-G3-3) est épinglé par
+`CrateSolidityMap392Tests` (x = 657,000 et 615,000, contact rec5 au 12e tick, 78 départs sur 79 affleurants).
+
 **Prérequis.** g1a, g2a, g2b, **g3** (et g4a, dans la même fusion : Q-G3-b) ; par eux f4, f5, f6a ; le T0 commun ; la fin du chantier de
 restructuration et la garde des fichiers neufs (Q-R-7).
 
@@ -8863,7 +8870,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
 - **Recette de l'auteur, à faire** : la sauvegarde `herbe-m14` (carte 14, tuile (31, 43, 1), Steel Edge) ; couper un buisson à l'épée,
   puis avec la vague : le buisson disparaît, l'éclat, parfois un objet, les sons. Les pas et la poussière restent à E20.e2.
 
-### 1.28 E20.g3 — Les soulevables redeviennent solides ⏳ (détaillée le 2026-10-18, **READY** à la première relecture ; exécutable après g1a, g2a, g2b et la fin du chantier de restructuration)
+### 1.28 E20.g3 — Les soulevables redeviennent solides ✅ (détaillée le 2026-10-18, **READY** à la première relecture ; exécutable après g1a, g2a, g2b et la fin du chantier de restructuration ; **faite et CONFIRMED le 2026-10-24** par deux verifiers frais ; ADR-0091)
 
 **Provenance.** Découverte en lecture seule de la nuit du 17 au 18 octobre (`docs/plan-e20-annexe/e20-g3/`) : une lecture du binaire (`bin/`),
 une lecture de la DLL et des tests (`dll/`), puis trois critiques indépendantes, une re-dérivation du binaire (`critic/`), une réconciliation
@@ -8947,7 +8954,7 @@ des données.
 d'un tick (O-G3-1, O-G3-2) ; C4, C70, C73 (g2c) ; la chute de la caisse du dessus d'une pile (Q-G3-c, avec g4b).
 
 **Tâches.**
-- ⏳ **T0 — Annexe, oracle, sondes** (aucun commit de code) : (a) les scripts de `bin/` et `critic/` rejoués depuis une copie (avec la copie
+- ✅ **T0 — Annexe, oracle, sondes** (aucun commit de code) : (a) les scripts de `bin/` et `critic/` rejoués depuis une copie (avec la copie
   de `e20-g1a/work/` en `g1a/`), sorties identiques à leurs manifestes ; (b) **sondes de la DLL sur une copie de travail où seule la ligne 51
   change, jamais commitée** (une mesure, comme les preuves de retrait), avec les 12 enregistrements de la 392 : P-G3-1 l'arrêt du héros à
   x = 657,000 (face est) et 615,000 (face ouest) en y = 296, le contact rec5 ; P-G3-2 le contact d'une pile vue du sol (la caisse du bas) et
@@ -8957,16 +8964,16 @@ d'un tick (O-G3-1, O-G3-2) ; C4, C70, C73 (g2c) ; la chute de la caisse du dessu
   contre `bin/out/a1_scen*` ; P-G3-6 la poussée en diagonale (l'écart Q-G3-d, mesuré) ; P-G3-7 la suite entière : la liste des tests rouges
   avec la seule ligne changée, comparée à la liste prédite ci-dessus ; (c) les arcs « à mesurer » relancés sur la même copie (A10, A11,
   A14, A18, H115) ; (d) la liste prédite finale des tests qui bougeront.
-- ⏳ **T1 — Le code** (tests d'abord, rouges avant la ligne) : (s1) une caisse arrête le héros (valeurs de P-G3-1), accolée au mur à boule de
+- ✅ **T1 — Le code** (tests d'abord, rouges avant la ligne) : (s1) une caisse arrête le héros (valeurs de P-G3-1), accolée au mur à boule de
   fer (inchangé) : remplace `TRLift` ; (s2) le contact d'une pile, du sol et du dessus (P-G3-2) ; (s3) le cas affleurant (P-G3-3) ; (s4) un
   PNJ collisionnable arrêté, un Beannoïde qui passe (P-G3-5) ; (s5) une caisse portée (posée par `PutInHands`) et une caisse lancée (`0x80`
   effacé) ne bloquent pas, accolées à la caisse posée qui bloque ; (s6) la sortie d'un chevauchement : égale au binaire, ou l'écart mesuré en
   P-G3-4 épinglé par un test nommé d'après lui (arrêt si l'écart dépasse un pas). Puis la ligne 51, le paramètre retiré et ses trois usages
   réécrits (TR1 supprimé avec l'API qu'il teste, la ligne `:485` de TH4 supprimée, le miroir de `AlundraDialogueOpcodesProductionTests`
   aligné sur la sonde), les textes corrigés.
-- ⏳ **T2 — Arcs** : la suite entière ; les arcs gardés par `ArcsWithoutEntityContact` (A1c, A5, A5r, A8, A9, A10) restent verts ; les arcs
+- ✅ **T2 — Arcs** : la suite entière ; les arcs gardés par `ArcsWithoutEntityContact` (A1c, A5, A5r, A8, A9, A10) restent verts ; les arcs
   de T0 (c) verts ou réécrits par dérivation (liste de T0 (d)) ; les traces de la 389 inchangées (aucun soulevable).
-- ⏳ **T3 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles). Mutants, au moins 10, tous tués : masque gardé
+- ✅ **T3 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles). Mutants, au moins 10, tous tués : masque gardé
   pour le genre 1 seul ; genre 3 écarté ; caisse portée gardée dans la liste ; caisse lancée gardée ; contact non nul sur un pas affleurant
   accepté ; contact le plus proche au lieu du premier de la liste ; glissement permis après un contact d'entité ; terrain testé avant
   l'entité ; un PNJ collisionnable qui traverse ; le Beannoïde arrêté.
@@ -8989,6 +8996,34 @@ après g3, et sera réécrite avant son exécution. Faits à y reprendre : le so
 (un Carré le tick de l'affleurement donne l'épée ; 0 sur 79 contre 78 sur 79 un tick plus tard, `critic/out/w4_contact.txt`) ; il est possible
 **depuis les états de saut** (`0x80031E98`, vers l'état `0x0B` : à z ≥ 80 c'est la caisse du haut qui se soulève, `critic/out/w5_airlift.txt`) ;
 une entité dont `+0x12C` désigne le héros se soulève sans bouton (`0x8002EE18`-`0x8002EE34`, la boucle des supports).
+
+**Résultats (2026-10-24).** Exécution en mode AUTO, HEAD de départ `73c05530`. Mesures : `docs/plan-e20-annexe/e20-g3/exec/README.md`.
+- **Commits.** `f83bb97d` (T0 : scripts de `bin/` et `critic/` rejoués à l'identique, sondes P-G3-1 à P-G3-6 sur une copie où seule la ligne
+  change, jamais commitée ; un seul test rouge, `TRLift`, le prédit) ; `9f5db15b` (T1, tests (s1) à (s6) rouges avant la ligne, dont
+  `CrateSolidityMap392Tests` sur la vraie carte 392 et ses 12 caisses) ; `d23804cf` (T1 : la sonde ne saute plus aucun drapeau, le paramètre
+  `skippedCandidateFlags` retiré) ; `4f1ad619` (T2) ; `5f371e9c` (T3 : 12 mutants, ADR-0091).
+- **Les sondes, au binaire.** P-G3-1 : Alundra s'arrête à x = 657,000 (face est) et 615,000 (face ouest) en y = 296, contact rec5 ; P-G3-2 :
+  du sol, la caisse du bas de chaque voie (rec5, rec6, rec7), du dessus de rec5, rec10 à la limite y = 297,0 ; P-G3-3 : 78 départs sur 79
+  ont le contact au tick d'arrêt, un un tick plus tard, comme le binaire ; P-G3-4 : la sortie d'un chevauchement égale au millième ; P-G3-5 :
+  le marcheur collisionnable s'arrête affleurant, le non collisionnable traverse ; P-G3-6 : l'écart connu de la poussée en diagonale, mesuré
+  (Q-G3-d). Les arcs A10, A11, A14, A18, H115, G116, A5, A5r, les 13 arrivées de TH4 et l'arc du levier de la 115 : verts sans réécriture.
+- **Tests.** `Alundra.Tests` : 5 994 au départ, 6 018 à la fin, zéro échec en Release (copie neutralisée) et en Debug. Tests existants
+  déplacés : `TRLift` (le rouge prédit, réécrit par dérivation : la caisse arrête le marcheur à 140 − 10 − 10 = 120, comme le mur à boule de
+  fer) et `TR1_SkippedCandidateFlags_…` (supprimé avec l'API) ; la ligne redondante de TH4 et le miroir de `DialogueOpcodesProductionTests`
+  alignés ; aucun arc ne bouge ; les traces de la 389 inchangées.
+- **Mutants.** 12 réels, tous tués (les 10 du plan et deux de plus : l'affleurant compté comme chevauchement, l'axe Z ignoré). Le genre 3
+  écarté survivait d'abord : aucun test n'avait d'en-tête de genre 3 ; la théorie `TRKinds_…` (genres 1, 2 et 3) le tue. M05 et M08 sont
+  écrits côté DLL, leurs vrais sites étant dans le moteur, qui n'est pas touché.
+- **Écart consigné (O-G3-3, ADR-0091 ; disposition de la session principale : DEFER à g1b).** Vu du dessus de rec5, la DLL pose le contact
+  rec10 au tick même où le pas est raccourci, le binaire un tick plus tard (le rejeu R7 de `critic/`). L'identité et la limite sont égales ; le
+  test (s2) les épingle sans le tick. L'écart ne compte que pour un Carré pressé au tick exact de l'arrivée, sur une caisse, contre la caisse
+  voisine du haut : c'est le soulèvement, donc g1b, dont le T0 (b) le mesure (voir §1.24.4, « Héritage de g3 »). La règle d'arrêt « une sonde
+  contredit le binaire hors des écarts consignés » ne s'applique pas : l'écart est consigné et sans effet visible avant g1b.
+- **Le commentaire de `WorldProxy.cs`** (« recomputes the carrier once per frame ») n'existe plus depuis D5b : rien à corriger.
+- **L'annexe `e20-g3/bin/`** n'était pas suivie : la règle `[Bb]in/` du `.gitignore` (ligne 21) l'écartait. Ajoutée au dépôt avec la
+  clôture (68 fichiers, scripts et sorties, 638 Ko). Le même défaut touche d'autres annexes (O-ANX-1, §2).
+- **Verifiers frais** : **CONFIRMED** tous deux (l'un a rejoué la suite entière, 6 018 tests, et six mutations ; l'autre les épingles).
+- **Recette de l'auteur** : après la fusion avec g1b (Q-G3-b) ; jusque-là, une caisse arrête Alundra et ne se soulève pas.
 
 ### 1.29 E20.g4 — La barricade de la carte 392 : g4a (le saut) et g4b (soulever et lancer) ⏳ (g4a et g4b détaillées le 2026-10-18, READY)
 
@@ -10765,6 +10800,7 @@ les trois entrées `0x31`.
 | Q-G4-a | (2026-10-18) Sur le navire (392), l'original laisse passer la barricade de caisses de deux façons : sauter sur la seule caisse basse (en se calant contre le haut de la porte), ou la soulever et la lancer. (A, défaut retenu) les deux, couvertes par deux arcs et la recette, sans code propre à la 392 ; (B) une seule **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | O-G3-1 | (2026-10-18) Une entité détruite reste un obstacle jusqu'à la fin de la physique de son tick dans le binaire ; la DLL la retire tout de suite (le filtre `FlagToDestroy`, D-E19-29, dont la prémisse est réfutée) : un tick, toutes les entités | une tranche à part |
 | O-G3-2 | (2026-10-18) L'octet d'animation (`+0xB4`) est lu par la liste avant l'horloge et par la porte du sujet après dans le binaire ; la DLL lit `AnimFlags`, écrit en fin d'image (un tick ou plus) ; l'équivalent exact existe (`HitAnimByte`) | une tranche à part |
+| O-ANX-1 | (2026-10-24, relevé par g3) La règle `[Bb]in/` du `.gitignore` (ligne 21, pour les sorties de construction) écarte aussi les dossiers `bin/` des annexes : `e20-f4f6/bin` (273 fichiers), `e20-f4f6/critic/bin` (180), `e20-h3/bin` (143), `e20-h4b/bin` (81), `plan-e19-pad-age-annexe/o77/bin` (9) ne sont pas dans le dépôt, alors que les plans les citent comme preuves ; celui de g3 a été ajouté à sa clôture. Proposition : une exception `!docs/**/[Bb]in/` au `.gitignore` et l'ajout des cinq dossiers (14 Mo environ), par un commit de docs | l'auteur ; non bloquant |
 | Q-H4-1 | (2026-10-17) Les pistes XA lancées par les sorts : les jouer (décodage du `.bin`, O-E19-36) ou un bouchon journalisé comme `0xB9` ? **Réponse de l'auteur (2026-10-22)** : « les jouer » : les pistes XA seront jouées, converties en WAV par le convertisseur (O-E19-36, ADR-0076, D-E20-53) ; le bouchon journalisé de h4a devient provisoire, jusqu'à E19.sm7. | Tranché le 2026-10-22 (D-E20-53) |
 | Q-H4-2 | (2026-10-17) Défauts avérés de l'original (la règle : un bug avéré se corrige) : le dernier emplacement utilisé n'est jamais visé par les sorts ; la première frappe du vent 1 est perdue (7 frappes au lieu de 8) ; le guidage de C63 tourne dans le sens numérique et non par le plus court ; le tri de la requête est instable. Corriger lesquels ? **Réponse de l'auteur (2026-10-22)** : « corrige le tri » : le tri de la requête est corrigé (stable). Les trois autres défauts de la liste sont tranchés par leurs questions détaillées : la borne du dernier emplacement corrigée (Q-H4B-2), la première frappe du vent 1 corrigée (Q-H4E1-1, B), le tour des boules du feu 1 reproduit (Q-H4D2-1, B) ; D-E20-54. **Lecture du tri contestée le 2026-10-22** (critique) : voir Q-H4-2b. **3e tour (Q-H4-2b, B)** : « le tri » = le tri dès deux cibles (Q-H4B-3) ; l'instabilité n'est pas corrigée (D-E20-62). | Tranché le 2026-10-22 (D-E20-54) |
 | Q-H4-2b | (2026-10-22) Ta réponse « corrige le tri » (Q-H4-2) a deux lectures. (A) Le tri devient **stable** : quand deux ennemis sont exactement à la même distance, l'orbe, la tornade ou la boule vise celui de l'emplacement le plus bas ; aujourd'hui l'original prend celui que son algorithme laisse devant, toujours le même dans la même situation, mais sans règle simple. Effet visible : presque aucun, l'égalité exacte des distances est rare. Coût : h4b1, prête, est à réviser (son tri, un réglage de plus, un mutant retourné), et les clés de h4d2 et h4e1 qui dépendent de l'ordre des égalités. (B) « Le tri » voulait dire le tri dès deux cibles (Q-H4B-3, déjà corrigé) : rien d'autre ne change, h4b1 reste prête. Recommandé : (B), puisque rien ne se voit **Réponse de l'auteur (2026-10-22, 3e tour)** : « B » : le tri dès deux cibles ; le tri du binaire est gardé, h4b1 reste prête (D-E20-62). | Tranché le 2026-10-22 (D-E20-62) |

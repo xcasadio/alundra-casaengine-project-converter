@@ -1,0 +1,7 @@
+overlap  0.5 px (hero x=656.5): RIGHT x12 -> x by tick [657.719, 660.156, 662.594, 665.031, 667.469, 669.906, '...', 684.531] ; contact at tick 1: 0x0
+overlap  1.0 px (hero x=656.0): RIGHT x12 -> x by tick [657.219, 659.656, 662.094, 664.531, 666.969, 669.406, '...', 684.031] ; contact at tick 1: 0x0
+overlap  1.2 px (hero x=655.8): RIGHT x12 -> x by tick [657.019, 659.456, 661.894, 664.331, 666.769, 669.206, '...', 683.831] ; contact at tick 1: 0x0
+overlap  1.3 px (hero x=655.7): RIGHT x12 -> x by tick [655.7, 658.137, 660.575, 663.012, 665.45, 667.887, '...', 682.512] ; contact at tick 1: 0x80127fc4
+overlap  2.0 px (hero x=655.0): RIGHT x12 -> x by tick [655.0, 657.438, 659.875, 662.312, 664.75, 667.188, '...', 681.812] ; contact at tick 1: 0x80127fc4
+overlap  5.0 px (hero x=652.0): RIGHT x12 -> x by tick [652.0, 652.0, 652.0, 652.0, 652.0, 652.0, '...', 652.0] ; contact at tick 1: 0x80127fc4
+overlap 10.0 px (hero x=647.0): RIGHT x12 -> x by tick [647.0, 647.0, 647.0, 647.0, 647.0, 647.0, '...', 647.0] ; contact at tick 1: 0x80127fc4

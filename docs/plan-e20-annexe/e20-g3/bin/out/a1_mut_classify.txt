@@ -1,0 +1,12 @@
+mutants 526 killed 438 survivors 88 (N=300 vectors per mutant)
+equivalent-copy                                  39
+slt/sltu                                         25
+residual                                         2
+stack-frame                                      20
+move->zero (value dead or equal in vectors)      2
+--- residual:
+  80037FF0 imm-1        addiu $a3, $a3, 1                  -> addiu $a3, $a3, 0
+  80036D00 imm-1        addiu $t3, $t3, 1                  -> addiu $t3, $t3, 0
+--- move->zero:
+  80036C2C move $t7, $t6                      -> move $t7, $zero
+  80036DD0 move $t8, $t7                      -> move $t8, $zero

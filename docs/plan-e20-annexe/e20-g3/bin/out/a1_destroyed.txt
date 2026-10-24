@@ -1,0 +1,4 @@
+before: status=2 flags=3323E4 list=[0, 1]
+after DestroyEntity: status=4 flags=3323E4
+lists pass right after (same tick, physics would run now): list=[0, 1]   <- the destroyed crate (slot 1) is still a member
+after the next tick's slot pass 0x80038634 + lists pass: status=0 flags=0 list=[0]
