@@ -5,7 +5,7 @@ Plan: `docs/plan-e20-heros.md` section 1.24.1 and the block "Revision au HEAD (2
 
 ## T1 (phase A) - state at the start, read at the start HEAD before any code
 
-### The commun T0 is not on the branch
+### The commun T0 (written on 2026-10-24, see `results.md`, resumption): it was not on the branch when T1 started
 
 `docs/plan-e20-annexe/e20-g/` (the commun T0 of 1.24.0: oracle copied with its checksums, the fourth scenario `c4_climb_lift`, the 16 mutants of one word, the DLL probes P-G-1 to P-G-5, the
 recount of the predicted list, the census of the maps of the recipe) does not exist, and no commit mentions it. T1 does not need it (its values are the vectors of the plan table "Valeurs attendues" and

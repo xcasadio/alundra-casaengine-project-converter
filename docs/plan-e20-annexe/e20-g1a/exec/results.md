@@ -303,3 +303,16 @@ ExportGuards, Hero, Items; 3 = the negation of the twelve); the three of one con
 - The commun T0 (`docs/plan-e20-annexe/e20-g/`: oracle copy and manifest, `c4_climb_lift`, the 16 one-word mutants of the binary, the DLL probes P-G-1 to P-G-5): not on the branch since T1; the acceptance line "Oracle: manifeste identique ; 16 mutants" stays open.
 - The two fresh verifiers (one on the pins: predicted list against measured list, above).
 - The plan (`docs/plan-e20-heros.md`) is updated by the main session.
+
+## Resumption 2026-10-24: finding F1 of the verifier (the commun T0 missing)
+
+Cause: T0 (section 1.24.0) was never written; T1 flagged it and T5 left the acceptance line "Oracle: manifeste identique ; 16 mutants" open. Fix (commit of `docs/plan-e20-annexe/e20-g/`, docs only, no code, no test, no change of the DLL):
+
+- `e20-g/oracle/`: the oracle tools copied byte for byte (`cmp` against `e20-g1a/work/orc` and `critic-scenarios`: no difference, `e20-g/SHA1SUMS.txt`), plus `run_json.py`, `run_t0.py`, `run_mut.py`, `mut_t0.py` and two scenarios, `c4_climb_lift.py` and `c5_status4.py`.
+- Two complete runs of the 23 scenarios in two fresh copies: `out/manifest.txt` (60 text outputs, 24 JSON files) identical (`cmp`); the old outputs of g1..g18 and c1..c3 are reproduced byte for byte.
+- `c4_climb_lift`: prediction (lifted, `anim_t` 5 or 11) holds: 11 in the climb, 5 on the ground; no lift without the contact; the contact word is the scenario's only poke (the climb never produces a contact by itself).
+- Mutants: 20 one-word mutants of the binary, 20 killed, none to argue (`e20-g/oracle/mut_result.txt`); M06 is killed by `c5_status4` (the whole-tick scenarios cannot reach a status-4 entity standing on the hero).
+- Probes of the DLL, run on the end state `b0a39aa9` with temporary tests, removed: P-G-1 holds (animation 0 and 2 of the crate have no box, 1 has 11 ticks with a box, 3 and 4 have 2), P-G-4 holds (`crate.PosZ - hero.PosZ` = 0x200000 exactly before, at and after the release, 1, 2 and 3 ticks per frame; the stop of g1a is not triggered), P-G-5 holds
+  (riding at the tick after the landing). P-G-2 and P-G-3 are g2a's and stay in its T0.
+- Acceptance line "Oracle: manifeste identique ; 16 mutants tués ou prouvés équivalents (T0 commun)": now met. Details in `docs/plan-e20-annexe/e20-g/README.md`.
+- A1 (the plan not updated) is the main session's. A2 (the one-argument `DestroyEntity` creates no loot or effect, mutant M07 of the verifier survives) is E19 behaviour, outside the slice; flagged.
