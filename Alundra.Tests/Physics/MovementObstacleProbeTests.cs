@@ -8,6 +8,7 @@ using Xunit;
 using World = CasaEngine.Framework.Scene.World.World;
 using Alundra.Entities;
 using Alundra.Entities.Spawning;
+using Alundra.Hero;
 using Alundra.Physics;
 using Alundra.Tests.Support;
 
@@ -17,7 +18,7 @@ namespace Alundra.Tests.Physics;
 /// E19.d2b B3 (docs/plan-e19-opcodes.md §1.2h.2, D-E19-27, D-E19-28, D-E19-34, ADR-0022): the movement obstacle probe of the DLL, which
 /// the character controller of the engine consults in its field stage (ADR-0047 of the engine). The rule is that of the binary's
 /// <c>FindEntityCollisionCandidate</c> (<c>0x80036FE0</c>), semi-open: a flush contact does not block, one unit less does. T-R1 is the rule
-/// alone on real dimensions; T-R3, T-R4, T-R-ID, T-R-LIFT, T-REG-Z and T-R9 drive real controllers in a real world, the positions written
+/// alone on real dimensions; T-R3, T-R4, T-R-ID, T-R-LIFT (and, since E20.g3, the NPC and the carried crate), T-REG-Z and T-R9 drive real controllers in a real world, the positions written
 /// on the logical fields (whole pixels where a teleport truncates them).
 /// </summary>
 public sealed class MovementObstacleProbeTests
@@ -333,15 +334,15 @@ public sealed class MovementObstacleProbeTests
         Assert.Same(wall2, mover2.XCollisionEntity);
     }
 
-    // ---- T-R-LIFT: soulevables are not obstacles, iron-ball walls are (D-E19-28, D-E19-34) -------------------------
+    // ---- T-R-LIFT: the soulevables are obstacles like every other collidable (E20.g3, D-E20-39; the iron-ball walls always were, D-E19-34) -------------------------
 
     [Fact]
-    public void TRLift_ACrateOnThePathDoesNotBlock_AnIronBallWallDoes()
+    public void TRLift_ACrateOnThePathBlocksLikeAnIronBallWall_AndTheTwoStopFlush()
     {
         var rig = NewRig();
         var walker = rig.Add("Walker", 100, 100);
-        var crate = rig.Add("Crate", 140, 100, extraFlags: 0x200u); // Flags & 0x600: soulevable.
-        var ironWall = rig.Add("Wall", 100, 200); // collidable, no pickup bits: the wall of D-E19-34, solid until E14.
+        var crate = rig.Add("Crate", 140, 100, extraFlags: 0x200u); // Flags & 0x600: soulevable, collidable like the others.
+        var ironWall = rig.Add("Wall", 100, 200); // collidable, no pickup bits: the wall of D-E19-34.
         var walker2 = rig.Add("Walker2", 60, 200);
         rig.Integrate();
 
@@ -350,18 +351,97 @@ public sealed class MovementObstacleProbeTests
             walker.MoveControllerAndPullPosition(3f, 0f);
         }
 
-        Assert.Equal(160f, ContactWorld.Root(walker).X); // through the crate: 100 + 20 * 3.
-        Assert.Null(ObstacleOf(walker));
+        // 140 - 10 (the offset of the box) - 10 (half of the walker's width): flush with the crate's left edge, as the wall below (100 - 20 = 80).
+        var ulp = MathF.BitIncrement(120f) - 120f;
+        Assert.InRange(ContactWorld.Root(walker).X, 120f - ulp, 120f + ulp);
+        Assert.Same(crate.OwnerEntity, ObstacleOf(walker));
+        Assert.Same(crate, walker.XCollisionEntity);
 
         for (var tick = 0; tick < 20; tick++)
         {
             walker2.MoveControllerAndPullPosition(3f, 0f);
         }
 
-        var ulp = MathF.BitIncrement(80f) - 80f;
+        ulp = MathF.BitIncrement(80f) - 80f;
         Assert.InRange(ContactWorld.Root(walker2).X, 80f - ulp, 80f + ulp); // 100 - 10 - 10: flush with the wall's left edge.
         Assert.Same(ironWall.OwnerEntity, ObstacleOf(walker2));
-        Assert.NotNull(crate);
+    }
+
+    /// <summary>The crate of the original (flags <c>0x3323E4</c>: collidable, pickup kind 1), 21 x 15, without controller (its position is not pulled back from a float root).</summary>
+    private static EntityScriptProxy AddOriginalCrate(Rig rig, string name, int x, int y)
+    {
+        var crate = rig.Add(name, x, y, sizeX: 21, sizeY: 15, controller: false);
+        crate.Flags = 0x3323E4u;
+        return crate;
+    }
+
+    private static void WalkEast(EntityScriptProxy walker, int ticks)
+    {
+        for (var tick = 0; tick < ticks; tick++)
+        {
+            walker.MoveControllerAndPullPosition(3f, 0f);
+        }
+    }
+
+    // ---- (s4) E20.g3, P-G3-5: a collidable NPC is stopped by a crate, a non-collidable one (a Beannoid, header 0x67) crosses it --------------------------------------
+
+    [Fact]
+    public void TRNpc_ACollidableVillagerIsStoppedByACrate_ANonCollidableOneCrossesIt()
+    {
+        var rig = NewRig();
+        var crate = AddOriginalCrate(rig, "Crate", 140, 100);
+        var villager = rig.Add("Villager", 60, 100, sizeX: 20, sizeY: 14);
+        var beannoid = ContactWorld.AddEntity(rig.World, rig.Host, "Beannoid", 60, 200, 48, -10, -7, 0, 20, 14, 32, collidable: false);
+        AddOriginalCrate(rig, "Crate2", 140, 200);
+        rig.Integrate();
+
+        WalkEast(villager, 40);
+        WalkEast(beannoid, 40);
+
+        // The crate box starts at 140 - 10 = 130: the villager (box 20 wide) stops flush at 120 (P-G3-5: the binary's scenario of bin/out/a1_scen*), the crate is the contact.
+        var ulp = MathF.BitIncrement(120f) - 120f;
+        Assert.InRange(ContactWorld.Root(villager).X, 120f - ulp, 120f + ulp);
+        Assert.Same(crate, villager.XCollisionEntity);
+        Assert.Equal(60f + 40 * 3f, ContactWorld.Root(beannoid).X); // 180: through the crate, 40 ticks of 3 px.
+        Assert.Null(beannoid.XCollisionEntity);
+    }
+
+    // ---- (s5) E20.g3: a crate in the hands (PutInHands) and a crate thrown (0x80 cleared by the release of C23) block nothing, next to a crate on the ground that does -----------------------
+
+    [Fact]
+    public void TRCarried_ACrateInTheHandsAndAThrownCrateBlockNothing_TheCrateOnTheGroundNextToThemDoes()
+    {
+        var rig = NewRig();
+        var carrier = rig.Add("Carrier", 300, 400);
+        var onTheGround = AddOriginalCrate(rig, "OnTheGround", 140, 100);
+        var carried = AddOriginalCrate(rig, "Carried", 140, 200);
+        var thrown = AddOriginalCrate(rig, "Thrown", 140, 300);
+        var walkerOnTheGround = rig.Add("WalkerOnTheGround", 60, 100, sizeX: 20, sizeY: 14);
+        var walkerCarried = rig.Add("WalkerCarried", 60, 200, sizeX: 20, sizeY: 14);
+        var walkerThrown = rig.Add("WalkerThrown", 60, 300, sizeX: 20, sizeY: 14);
+        rig.Integrate();
+        Assert.Contains(carried, rig.Host.Collidables);
+
+        carrier.LogicContextEntity = carrier.OwnerEntity!; // what the world sets on every entity: the link of an object in the hands is the logic entity of the carrier.
+        carried.LogicContextEntity = carried.OwnerEntity!;
+        PlayerManager.PutInHands(carrier, carried); // PlatformEntity (+0x28) now designates the carrier: the object leaves the list (EntitySupport.IsEligibleSubject).
+        thrown.Flags &= ~EntityFlags.Collidable; // what the release of C23 does to a crate that is thrown (the binary clears 0x80).
+        rig.Integrate();
+        Assert.DoesNotContain(carried, rig.Host.Collidables);
+        Assert.DoesNotContain(thrown, rig.Host.Collidables);
+        Assert.Contains(onTheGround, rig.Host.Collidables);
+
+        WalkEast(walkerOnTheGround, 40);
+        WalkEast(walkerCarried, 40);
+        WalkEast(walkerThrown, 40);
+
+        var ulp = MathF.BitIncrement(120f) - 120f;
+        Assert.InRange(ContactWorld.Root(walkerOnTheGround).X, 120f - ulp, 120f + ulp);
+        Assert.Same(onTheGround, walkerOnTheGround.XCollisionEntity);
+        Assert.Equal(180f, ContactWorld.Root(walkerCarried).X);
+        Assert.Null(walkerCarried.XCollisionEntity);
+        Assert.Equal(180f, ContactWorld.Root(walkerThrown).X);
+        Assert.Null(walkerThrown.XCollisionEntity);
     }
 
     // ---- T-REG-Z in a world: a supported mover walks over a platform with the one unit of margin ----------------------
