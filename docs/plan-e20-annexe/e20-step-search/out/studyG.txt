@@ -1,0 +1,22 @@
+class | ret | FA | count (of 12000 vectors)
+A  no force (both words 0)                                                                                     | ret==0 | FA=0 | 344
+B  full step accepted at the first attempt                                                                     | ret==0 | FA=0 | 5700
+C  halving search, >= 1 sub-step accepted (loop ends on exhaustion or on an accepted halving)                  | ret!=0 | FA=0 | 372
+C  halving search, >= 1 sub-step accepted (loop ends on exhaustion or on an accepted halving)                  | ret==0 | FA=0 | 44
+C  halving search, >= 1 sub-step accepted (loop ends on exhaustion or on an accepted halving) [slide restart happened] | ret==0 | FA=0 | 7
+D  no sub-step accepted: NoObstacleSlide                                                                       | ret!=0 | FA=1 | 1
+D  no sub-step accepted: NoObstacleSlide                                                                       | ret==0 | FA=1 | 809
+D  no sub-step accepted: NoObstacleSlide, dir>=0x20                                                            | ret==0 | FA=1 | 107
+D  no sub-step accepted: NoObstacleSlide, s4!=0 at the end                                                     | ret!=0 | FA=1 | 458
+D  no sub-step accepted: NoObstacleSlide, s4!=0 at the end                                                     | ret==0 | FA=1 | 26
+D  no sub-step accepted: NoObstacleSlide, s4!=0 at the end, dir>=0x20                                          | ret!=0 | FA=1 | 17
+D  no sub-step accepted: NoObstacleSlide, s4!=0 at the end, dir>=0x20                                          | ret==0 | FA=1 | 2
+D  no sub-step accepted: after 1 slide restart(s)                                                              | ret==0 | FA=1 | 564
+D  no sub-step accepted: dir>=0x20                                                                             | ret==0 | FA=1 | 274
+D  no sub-step accepted: s4!=0 at the end                                                                      | ret!=0 | FA=1 | 1734
+D  no sub-step accepted: s4!=0 at the end                                                                      | ret==0 | FA=1 | 42
+D  no sub-step accepted: s4!=0 at the end, after 1 slide restart(s)                                            | ret==0 | FA=1 | 1
+D  no sub-step accepted: s4!=0 at the end, dir>=0x20                                                           | ret!=0 | FA=1 | 33
+D  no sub-step accepted: s4!=0 at the end, dir>=0x20                                                           | ret==0 | FA=1 | 5
+D  no sub-step accepted: slide table says ForceAdjusted                                                        | ret==0 | FA=0 | 68
+D  no sub-step accepted: slide table says ForceAdjusted                                                        | ret==0 | FA=1 | 1392

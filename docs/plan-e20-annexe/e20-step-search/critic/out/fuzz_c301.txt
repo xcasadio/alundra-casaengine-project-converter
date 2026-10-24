@@ -1,0 +1,6 @@
+vectors 1500 mismatching 0 {'vectors': 1500, 'attempts': 10314, 'hero': 538, 'fa_set': 505, 'ret_nonzero': 62, 'multi_attempt': 675}
+coverage ComputeXY 0x80037730         449 / 449 instructions
+coverage FindCandidate 0x80036F34     100 / 100 instructions
+coverage GroundHeight 0x800370C4      163 / 168 instructions
+coverage WallOther 0x800373E4         41 / 41 instructions
+coverage WallHero 0x80037488          86 / 86 instructions

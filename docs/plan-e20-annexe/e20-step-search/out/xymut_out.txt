@@ -1,0 +1,15 @@
+baseline (no mutation) mismatching vectors: generic 0, focused 0
+return the s4 of the LAST attempt instead of the s4 saved at the top of it       generic   21 / 1200   focused    0 / 1200   KILLED
+halving of -1 not special-cased (accept path)                                    generic    4 / 1200   focused    0 / 1200   KILLED
+ground branch also writes s4 when the snapped Z is clear                         generic    0 / 1200   focused   22 / 1200   KILLED
+ground branch: s4 reset to 0 when the snapped Z is clear                         generic    0 / 1200   focused   22 / 1200   KILLED
+ground tolerance symmetric 0x30000                                               generic    8 / 1200   focused    0 / 1200   KILLED
+ForceAdjusted also when sub-steps were accepted                                  generic    5 / 1200   focused   36 / 1200   KILLED
+slide allowed twice                                                              generic   94 / 1200   focused    4 / 1200   KILLED
+accepted first attempt keeps halving                                             generic  309 / 1200   focused  716 / 1200   KILLED
+hero wall: lock timer rule dropped                                               generic   31 / 1200   focused    0 / 1200   KILLED
+candidate: carried-entity exemption dropped                                      generic    6 / 1200   focused    0 / 1200   KILLED
+NoObstacleSlide ignored                                                          generic   27 / 1200   focused    1 / 1200   KILLED
+failed attempt does not restore Z                                                generic   22 / 1200   focused   12 / 1200   KILLED
+diagonal loop continues when ONE half is non-zero                                generic   22 / 1200   focused    0 / 1200   KILLED
+stale-s4: s4 not kept across attempts (reset to 0 at each attempt top)           generic    0 / 1200   focused   22 / 1200   KILLED

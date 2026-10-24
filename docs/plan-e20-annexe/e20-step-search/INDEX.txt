@@ -1,0 +1,24 @@
+step-search-disc : index (tout est sous C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/step-search-disc/)
+
+Lancer : python -I <script>   (chaque script ajoute son dossier et, si besoin, site-packages de l'utilisateur à sys.path ; capstone et numpy y sont)
+
+work/bdis.py          desassemblage capstone d'une plage de ALUN_CD.EXE (France)           : python -I bdis.py 80037730 80037E34
+work/mips.py          interprete MIPS-I (copie de h2tools/mips.py de l'annexe d5b), memoire = image du EXE + ecritures
+work/xymodel.py       MODELE a la main de ComputeXYPosition 0x80037730 + 0x80036F34 + 0x800370C4 + 0x800373E4 + 0x80037488 + table de glissement 0x80023734
+work/xyfuzz.py        rejeu du modele contre le VRAI code (interprete) sur vecteurs aleatoires : retour v0 + les 0x294 octets de chaque entite + couverture d'instructions
+                      python -I xyfuzz.py N SEED [focus] [-v]    (focus = generateur centre sur la branche "marche au sol" et les caisses)
+work/xymut.py         14 mutants du modele : tous tues par le rejeu (out/xymut_out.txt)
+work/spotcheck.py     rejoue les scenarios des etudes A/B/F tick par tick sur le vrai code (9120 ticks, 0 ecart)
+work/xyscen.py        aides de scenario (monde, mur de cellules, caisse, tick)
+work/studyA.py        mur de cellules : deficit de la recherche, tick d'atteinte du contact, tick de ForceAdjusted, modele float32 du moteur   -> out/studyA.txt
+work/studyA2.py       idem par direction (est/ouest/sud/nord)                                                                           -> out/studyA2.txt
+work/studyB.py        contact (+0x130) contre une caisse : modes air / appui / sol                                                      -> out/studyB.txt
+work/studyD.py        motif du drapeau "en retard" (D-F4-9) par distance restante                                                       -> out/studyD.txt
+work/studyE.py        les 12 departs de ArrowLifeTests.E7 / ChargedArrowLifeTests.C7 predits par le modele (12/12)                      -> out/studyE.txt
+work/studyF.py        O-E20-24 : tir a bout portant, table de l'oracle (t2-proj/pb_sweep_east.txt) predite par le modele (10/10)       -> out/studyF.txt
+work/studyG.py        classes de sortie (contact, ForceAdjusted) sur 12 000 vecteurs                                                    -> out/studyG.txt
+work/attempts.py      nombre de tentatives de la boucle selon la force                                                                  -> out/attempts.txt
+work/enclosing.py     nom de la methode de test englobant fichier:ligne (lecture seule)
+work/pylist.ps1       liste des processus python (outil de la session)
+lst/*.txt             listings du binaire : computexy_full.txt, find_candidate_80036f34.txt, groundheight_800370c4.txt, wall_800373e4.txt, wall_80037488.txt
+out/fuzz_seed11..14.txt, out/fuzz_focus_seed41..44.txt  sorties des rejeux (0 ecart partout)

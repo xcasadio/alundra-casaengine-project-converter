@@ -1,0 +1,14 @@
+x0   arrival(test)  flag S+k (model)  late (model)  late (keys)  agree
+96        42              43             0            0  yes
+97        42              43             0            0  yes
+98        42              44             1            1  yes
+99        42              43             0            0  yes
+100        41              42             0            0  yes
+101        41              43             1            1  yes
+102        41              42             0            0  yes
+103        41              42             0            0  yes
+104        41              43             1            1  yes
+105        41              42             0            0  yes
+106        40              41             0            0  yes
+107        40              42             1            1  yes
+agreement with the frozen oracle keys: 12 / 12

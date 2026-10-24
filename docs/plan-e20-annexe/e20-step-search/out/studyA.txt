@@ -1,0 +1,51 @@
+STUDY A - binary halving search vs a cell wall (exact contact at PosX = 109.0 = 7143424 raw)
+D = distance from the start to the exact contact (raw units); tick 1 is the first tick whose step is shortened (D < force).
+
+force 159744 raw = 2.4375 px (hero walk) ; 1039 starts
+  binary: deficit (D - S) at tick 1, raw units: 0:852, 1:105, 2:54, 3:28  ... max 3
+  binary: tick at which PosX == exact contact (0 = not within 5 ticks): 1:852, 2:187
+  binary: first tick with ForceAdjusted (0 = none in 5): 2:852, 3:187
+  engine model (float32 bisection, 24 it.): deficit FMAX - x after tick 1, raw: 0:1039
+
+force 79872 raw = 1.21875 px ; 1039 starts
+  binary: deficit (D - S) at tick 1, raw units: 0:852, 1:107, 2:53, 3:27  ... max 3
+  binary: tick at which PosX == exact contact (0 = not within 5 ticks): 1:852, 2:187
+  binary: first tick with ForceAdjusted (0 = none in 5): 2:852, 3:187
+  engine model (float32 bisection, 24 it.): deficit FMAX - x after tick 1, raw: 0:1039
+
+force 196608 raw = 3 px (arrow) ; 1039 starts
+  binary: deficit (D - S) at tick 1, raw units: 0:692, 1:347  ... max 1
+  binary: tick at which PosX == exact contact (0 = not within 5 ticks): 1:692, 2:347
+  binary: first tick with ForceAdjusted (0 = none in 5): 2:692, 3:347
+  engine model (float32 bisection, 24 it.): deficit FMAX - x after tick 1, raw: 0:1039
+
+force 393216 raw = 6 px (charged arrow / fire) ; 1039 starts
+  binary: deficit (D - S) at tick 1, raw units: 0:692, 1:347  ... max 1
+  binary: tick at which PosX == exact contact (0 = not within 5 ticks): 1:692, 2:347
+  binary: first tick with ForceAdjusted (0 = none in 5): 2:692, 3:347
+  engine model (float32 bisection, 24 it.): deficit FMAX - x after tick 1, raw: 0:1039
+
+force 106496 raw = 1.625 px ; 1045 starts
+  binary: deficit (D - S) at tick 1, raw units: 0:643, 1:321, 2:81  ... max 2
+  binary: tick at which PosX == exact contact (0 = not within 5 ticks): 1:643, 2:321, 3:81
+  binary: first tick with ForceAdjusted (0 = none in 5): 2:643, 3:321, 4:81
+  engine model (float32 bisection, 24 it.): deficit FMAX - x after tick 1, raw: 0:1045
+
+force 53248 raw = 0.8125 px ; 1045 starts
+  binary: deficit (D - S) at tick 1, raw units: 0:643, 1:321, 2:81  ... max 2
+  binary: tick at which PosX == exact contact (0 = not within 5 ticks): 1:643, 2:321, 3:81
+  binary: first tick with ForceAdjusted (0 = none in 5): 2:643, 3:321, 4:81
+  engine model (float32 bisection, 24 it.): deficit FMAX - x after tick 1, raw: 0:1045
+
+force 56473 raw = 0.8617 px (diagonal comp.) ; 1049 starts
+  binary: deficit (D - S) at tick 1, raw units: 0:609, 1:306, 2:75, 3:37, 4:18, 5:2, 6:1, 8:1  ... max 8
+  binary: tick at which PosX == exact contact (0 = not within 5 ticks): 1:609, 2:362, 3:78
+  binary: first tick with ForceAdjusted (0 = none in 5): 2:609, 3:362, 4:78
+  engine model (float32 bisection, 24 it.): deficit FMAX - x after tick 1, raw: 0:1049
+
+force 37652 raw = 0.5745 px (diagonal comp.) ; 1058 starts
+  binary: deficit (D - S) at tick 1, raw units: 0:923, 1:116, 2:12, 3:6, 5:1  ... max 5
+  binary: tick at which PosX == exact contact (0 = not within 5 ticks): 1:923, 2:135
+  binary: first tick with ForceAdjusted (0 = none in 5): 2:923, 3:135
+  engine model (float32 bisection, 24 it.): deficit FMAX - x after tick 1, raw: 0:1058
+

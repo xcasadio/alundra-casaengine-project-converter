@@ -1,0 +1,35 @@
+force 6 px per tick, wall exact contact at PosX = 349 px
+  D(px)  arrival tick (PosX==contact)  first FA tick  FA - arrival
+      0                            1              1             0   
+      1                            1              2             1   
+      2                            2              3             1   
+      3                            1              2             1   
+      4                            1              2             1   
+      5                            2              3             1   
+      6                            1              2             1   
+      7                            2              3             1   
+      8                            3              4             1   
+      9                            2              3             1   
+     10                            2              3             1   
+     11                            3              4             1   
+     12                            2              3             1   
+     13                            3              4             1   
+     14                            4              5             1   
+     15                            3              4             1   
+     16                            3              4             1   
+     17                            4              5             1   
+     18                            3              4             1   
+
+force 3 px per tick, wall exact contact at PosX = 349 px
+  D(px)  arrival tick (PosX==contact)  first FA tick  FA - arrival
+      0                            1              1             0   
+      1                            1              2             1   
+      2                            2              3             1   
+      3                            1              2             1   
+      4                            2              3             1   
+      5                            3              4             1   
+      6                            2              3             1   
+      7                            3              4             1   
+      8                            4              5             1   
+      9                            3              4             1   
+

@@ -1,0 +1,23 @@
+STUDY B - contact (+0x130) of the halving search against a crate; exact contact at PosX = 7798784 raw (119.0000 px)
+'ret' = value stored at +0x130 (the crate address when non-zero). D = raw distance from the start to the exact contact.
+
+force 2.4375 px  mode air      starts 1038 : P(ret!=0) tick1 0.408  tick2 0.922  tick3 1.000  tick4 1.000 ; first FA tick: 2:852, 3:186
+force 2.4375 px  mode support  starts 1038 : P(ret!=0) tick1 0.408  tick2 0.922  tick3 1.000  tick4 1.000 ; first FA tick: 2:852, 3:186
+force 2.4375 px  mode ground   starts 1038 : P(ret!=0) tick1 1.000  tick2 1.000  tick3 1.000  tick4 1.000 ; first FA tick: 2:852, 3:186
+
+force 3 px       mode air      starts 1038 : P(ret!=0) tick1 0.501  tick2 1.000  tick3 1.000  tick4 1.000 ; first FA tick: 2:692, 3:346
+force 3 px       mode support  starts 1038 : P(ret!=0) tick1 0.501  tick2 1.000  tick3 1.000  tick4 1.000 ; first FA tick: 2:692, 3:346
+force 3 px       mode ground   starts 1038 : P(ret!=0) tick1 1.000  tick2 1.000  tick3 1.000  tick4 1.000 ; first FA tick: 2:692, 3:346
+
+force 6 px       mode air      starts 1038 : P(ret!=0) tick1 0.340  tick2 1.000  tick3 1.000  tick4 1.000 ; first FA tick: 2:692, 3:346
+force 6 px       mode support  starts 1038 : P(ret!=0) tick1 0.340  tick2 1.000  tick3 1.000  tick4 1.000 ; first FA tick: 2:692, 3:346
+force 6 px       mode ground   starts 1038 : P(ret!=0) tick1 1.000  tick2 1.000  tick3 1.000  tick4 1.000 ; first FA tick: 2:692, 3:346
+
+force 1.21875 px mode air      starts 1038 : P(ret!=0) tick1 0.410  tick2 0.924  tick3 1.000  tick4 1.000 ; first FA tick: 2:852, 3:186
+force 1.21875 px mode support  starts 1038 : P(ret!=0) tick1 0.410  tick2 0.924  tick3 1.000  tick4 1.000 ; first FA tick: 2:852, 3:186
+force 1.21875 px mode ground   starts 1038 : P(ret!=0) tick1 1.000  tick2 1.000  tick3 1.000  tick4 1.000 ; first FA tick: 2:852, 3:186
+
+force 1.625 px   mode air      starts 1044 : P(ret!=0) tick1 0.462  tick2 1.000  tick3 1.000  tick4 1.000 ; first FA tick: 2:643, 3:321, 4:80
+force 1.625 px   mode support  starts 1044 : P(ret!=0) tick1 0.462  tick2 1.000  tick3 1.000  tick4 1.000 ; first FA tick: 2:643, 3:321, 4:80
+force 1.625 px   mode ground   starts 1044 : P(ret!=0) tick1 1.000  tick2 1.000  tick3 1.000  tick4 1.000 ; first FA tick: 2:643, 3:321, 4:80
+

@@ -1,0 +1,16 @@
+east  force 159744 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:845, 1:104, 2:53, 3:26 ; max 3
+east  force 196608 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:685, 1:343 ; max 1
+east  force 393216 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:685, 1:343 ; max 1
+east  force  56473 raw: starts 1038 ; deficit D - S (raw units) histogram: 0:603, 1:303, 2:74, 3:37, 4:18, 5:2, 6:1 ; max 6
+west  force 159744 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:1028 ; max 0
+west  force 196608 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:1028 ; max 0
+west  force 393216 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:1028 ; max 0
+west  force  56473 raw: starts 1038 ; deficit D - S (raw units) histogram: 0:1038 ; max 0
+south force 159744 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:845, 1:104, 2:53, 3:26 ; max 3
+south force 196608 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:685, 1:343 ; max 1
+south force 393216 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:685, 1:343 ; max 1
+south force  56473 raw: starts 1038 ; deficit D - S (raw units) histogram: 0:603, 1:303, 2:74, 3:37, 4:18, 5:2, 6:1 ; max 6
+north force 159744 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:1028 ; max 0
+north force 196608 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:1028 ; max 0
+north force 393216 raw: starts 1028 ; deficit D - S (raw units) histogram: 0:1028 ; max 0
+north force  56473 raw: starts 1038 ; deficit D - S (raw units) histogram: 0:1038 ; max 0
