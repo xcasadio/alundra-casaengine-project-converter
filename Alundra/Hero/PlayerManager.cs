@@ -41,6 +41,8 @@ namespace Alundra.Hero;
 /// and <c>CheckEntityInteraction</c> in the binary's order, then the common tail: <c>PlayerTryAttack</c> (E20.b), the jump of the Cross, <c>buttonsHold != 0 -&gt; Moving</c> else <c>Idle</c>.
 /// <c>TryUseItem</c> and <c>PlayerTryAction</c> are named stubs (E20.h and E20.g: the use of an item and lifting/carrying are not ported yet).</description></item>
 /// <item><description>The attack groups, binary <c>0x80031E18</c> and <c>0x80031DF8</c> (E20.b): a swing in progress only keeps its side of the ground (see <see cref="MovePlayer"/>).</description></item>
+/// <item><description>The object in the hands (E20.g1a), binary <c>0x800322F0</c>, <c>0x800322B4</c> and <c>0x8003232C</c>: the two lift gestures (0x05, 0x0B: <see cref="LiftGestureTick"/>) and the carrying group (0x06, 0x07, 0x0C, 0x2E, 0x2F, 0x30:
+/// <see cref="CarryGroupTick"/>); the throw is a named stub (E20.g2a), and nothing but <see cref="PutInHands"/> puts an object in the hands yet (the trigger is E20.g1b).</description></item>
 /// <item><description>The run (E20.d1), binary <c>0x80031F54</c>, <c>0x80031FF4</c>, <c>0x80032118</c> and <c>0x80032558</c>: the preparation (0x29, entered from the common tail by a held Triangle), the run (0x03), the
 /// slide that ends it (0x2A) and the bounce (0x3E, and 0x1C which shares its handler); the tackle (0x04) is of the ground attack group.</description></item>
 /// <item><description>The swim (E20.i), binary <c>0x8003260C</c>: on deep water (slope 4) <see cref="SwimTick"/> replaces everything between the pad and the end of the tick: the 80-entry table <c>0x80022E7C</c> in six kinds of handler (<see cref="SwimTable"/>), the floating (0x1D), the swimming (0x0F), the burst on the edge of the Triangle, the Cross or the Square (0x28), the end of the hurt in water (0x3A, 0x3B, entered by E20.c2b); the exits to the land are cases of the state chain. NOT ported: the wall of the deep water without the swim boots (O-E19-22), the currents (O-E20-16), the splash, the wake and the ripple (E20.e).</description></item>
@@ -72,7 +74,7 @@ namespace Alundra.Hero;
 /// of the current animation. <see cref="EntityScriptProxy.Slope_18c"/> itself has been alimented
 /// since E1 (<see cref="EntityScriptProxy.UpdateGroundSlope"/>) from the real map 389 cell data
 /// every frame, reading 6 on the four ladder cells - see that method's own doc.</description></item>
-/// <item><description><c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (named stub: carrying is E20.g; <c>UpdatePlayerWeaponEffect</c> is ported by E20.f1a and E20.f1b, the aura included);
+/// <item><description><c>UpdatePlayerCarriedEntity</c> - PlayerManager.cs:355-357 (E20.g1a: the three modes of <see cref="CarryRules"/>; <c>UpdatePlayerWeaponEffect</c> is ported by E20.f1a and E20.f1b, the aura included);
 /// <c>UpdateWeaponStepProgression</c> is ported without its projectile spawn (E20.b B4, the spawn is a named stub, E20.e0/E20.f).</description></item>
 /// <item><description>Every <c>TargetAnimationId</c> case other than Idle/Moving/LoadingMap/Climbing/
 /// ClimbStill, the jump states, the attack groups and the run - the charged attacks, pickup/carry/throw, sand, spell cast,
@@ -327,9 +329,9 @@ public static class PlayerManager
             return;
         }
 
-        // PlayerManager.cs:38-57 (locked branch): CreatePlayerAnimationEffects(1) (E20.f2: the skeleton, binary 0x80031BDC; its stubs do nothing yet), UpdatePlayerCarriedEntity(1),
+        // PlayerManager.cs:38-57 (locked branch): CreatePlayerAnimationEffects(1) (E20.f2: the skeleton, binary 0x80031BDC; its stubs do nothing yet), UpdatePlayerCarriedEntity(1) (E20.g1a: ported, below),
         // AnimateWarpEffect, and the ForcedSequence facing resolution are ALL no-ops on a fresh New Game -
-        // nothing ported yet drives carried entities, warp effects, or forced-sequence facing - so the rest of
+        // nothing ported yet drives warp effects, or forced-sequence facing (an object in the hands is only reached through PutInHands) - so the rest of
         // this branch is a deliberate no-op: the player simply does not move or change animation while
         // g_playerControlFlags carries any of ControlLocked/MessageBox/ForcedSequence.
         if (!DebugIgnoreControlLock && (state.PlayerControlFlags & GameState.PlayerControlBits.InputBlockedMask) != 0)
@@ -340,6 +342,9 @@ public static class PlayerManager
             // charge or a shot pending when a lock begins fires nothing at the unlock. The aura's handle is left as it is: the binary does not touch it here (a stale handle is recreated or released by the aura code with its generation number, E20.f1b).
             player.WeaponChargeTimer = 0;
             player.WeaponRecordPointer = 0;
+
+            // E20.g1a T3 (W2, D-G-4), binary 0x80031BF4: UpdatePlayerCarriedEntity(1) comes right after the two clears and before the item cancel (0x800350C0, E20.h0's stub) and END: an object in the hands is drawn in and destroyed.
+            UpdatePlayerCarriedEntity(player, 1);
             EndOfMovePlayer(player, in pad, state, host); // E20.c2a T1: the locked branch also reaches END (0x80031C0C-0x80031C28 lead to 0x80032914): the life vessel of a locked script is mirrored at once.
             return;
         }
@@ -617,6 +622,16 @@ public static class PlayerManager
             TryUseItem(player, in pad);
         }
 
+        // E20.g1a T3 (W4, D-G-5): the object in the hands. The two lift gestures (0x05, 0x0B: binary 0x800322F0, 0x800322B4) and the carrying group (0x06, 0x07, 0x0C, 0x2E, 0x2F, 0x30: 0x8003232C), reached through the jump table 0x80022D3C.
+        else if (player.TargetAnimationId is CarryRules.LiftGroundState or CarryRules.LiftAirState)
+        {
+            LiftGestureTick(player, in pad);
+        }
+        else if (CarryRules.IsCarryGroupState(player.TargetAnimationId))
+        {
+            CarryGroupTick(player, in pad, buttonsHold, dir);
+        }
+
         // PlayerManager.cs:385-943 (every other TargetAnimationId case) - NOT PORTED; an entity whose
         // TargetAnimationId is none of the values ported above keeps it unchanged.
 
@@ -648,7 +663,7 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.i T2: the swim, the branch of the slope 4 (<c>0x8003260C</c>) in the binary's order. The charge counter (<c>0x80126FFC</c>) and the pending-shot pointer (<c>0x80127110</c>) are zeroed, carrying is told
-    /// <c>UpdatePlayerCarriedEntity(2)</c> (a named stub, E20.g), then the state decides, through the table <c>0x80022E7C</c> (<see cref="SwimTable"/>), which of the six handlers runs. The branch never reaches the
+    /// <c>UpdatePlayerCarriedEntity(2)</c> (E20.g1a: mode 2 lets the object in the hands go with the code -1), then the state decides, through the table <c>0x80022E7C</c> (<see cref="SwimTable"/>), which of the six handlers runs. The branch never reaches the
     /// weapon effects, the weapon steps, <c>PlayerTryAttack</c> or <c>PlayerTryAction</c>; the caller ends the tick. It reads no boots level: the wall of the deep water (O-E19-22) and the currents (O-E20-16) are not ported,
     /// so a hero without the swim boots swims where the original stops him; the splash, the wake and the ripple of the dive (the shadow pass <c>0x80038E84</c> and <c>CreatePlayerAnimationEffects</c>) are E20.e's.
     /// </summary>
@@ -1301,9 +1316,62 @@ public static class PlayerManager
         item.HasLogicalZ = true;
     }
 
-    /// <summary>E20.a A4 stub of <c>UpdatePlayerCarriedEntity</c> (<c>0x8002F884</c>, called with 0 at <c>0x80031D78</c> and, E20.i, with 2 by the swim branch): nothing is carried yet (E20.g).</summary>
+    /// <summary>
+    /// E20.g1a T3 (W1, D-G-4): <c>UpdatePlayerCarriedEntity</c> (<c>0x8002F884</c>), called with 0 at <c>0x80031D78</c> (every free tick), with 1 by the locked branch (<c>0x80031BF4</c>) and with 2 by the swim branch (<c>0x8003261C</c>, E20.i). The
+    /// rules are <see cref="CarryRules.UpdateCarried"/>; the single-argument destruction of mode 1 is the one of the world the hero belongs to (<c>player.ScriptHost</c>, as <see cref="CheckEntityInteraction"/> reaches it), none for a host that is not a world.
+    /// The sites of the wound (<c>0x80031C64</c>, E20.c2b), the exit square (<c>0x80032778</c>) and the death (<c>0x800327AC</c>, E18) stay named stubs at their place: nothing in the DLL reaches them yet.
+    /// </summary>
     private static void UpdatePlayerCarriedEntity(EntityScriptProxy player, int mode)
+        => CarryRules.UpdateCarried(player, mode, player.ScriptHost as IEntityWorldContext);
+
+    /// <summary>
+    /// E20.g1a T3 (W4, D-G-5): the two lift gestures, states <see cref="CarryRules.LiftGroundState"/> (<c>0x800322F0</c>) and <see cref="CarryRules.LiftAirState"/> (<c>0x800322B4</c>). <c>TryUseItem</c> first (0 ends the tick); they do NOT write the
+    /// direction (the carrying group does); then <see cref="CarryRules.LiftGestureNext"/> decides from the object in the hands and the ground. The gesture leaves its animation by the Chain of its sheet (5 to 12, 11 to 48).
+    /// </summary>
+    private static void LiftGestureTick(EntityScriptProxy player, in PadState pad)
     {
+        if (TryUseItem(player, in pad) == 0)
+        {
+            return;
+        }
+
+        if (CarryRules.LiftGestureNext(player.TargetAnimationId, player.CarriedEntity != null, !IsHeroInTheAir(player)) is { } next)
+        {
+            player.TargetAnimationId = next;
+        }
+    }
+
+    /// <summary>
+    /// E20.g1a T3 (W4, D-G-5): the carrying group, states 0x06, 0x07, 0x0C, 0x2E, 0x2F and 0x30 (<c>0x8003232C</c>), in the binary's order: the direction of the pad is written (<c>+0x8C</c>, in the delay slot of <c>TryUseItem</c>, even when the item driver ends
+    /// the tick), <c>TryUseItem</c> (0 ends the tick), then <see cref="CarryRules.CarryGroup"/> decides the next state from the object in the hands (its kind: the heavy one, <see cref="EntityFlags.PickupKindMask"/> all set, keeps the plain state), the ground,
+    /// the direction held, the edges of the Square and the Cross, and the two ground properties that forbid the throw (<see cref="NoAttackVramFlag"/>) and the jump (<see cref="NoJumpVramFlag"/>). The throw itself is a NAMED STUB at its place (E20.g2a replaces it):
+    /// a Square that throws changes nothing. The jump is driven by the sheets of the animations 6 and 46 (the impulse is taken by the animation clock, as for the jumps without an object).
+    /// </summary>
+    private static void CarryGroupTick(EntityScriptProxy player, in PadState pad, uint buttonsHold, uint dir)
+    {
+        player.TargetDirection = dir;
+        if (TryUseItem(player, in pad) == 0)
+        {
+            return;
+        }
+
+        var item = player.CarriedEntity?.GameplayProxy as EntityScriptProxy;
+        var input = new CarryRules.CarryInput(
+            HasObject: player.CarriedEntity != null,
+            Heavy: item != null && (item.Flags & EntityFlags.PickupKindMask) == EntityFlags.PickupKindMask,
+            Ground: !IsHeroInTheAir(player),
+            DirectionHeld: buttonsHold != 0,
+            SquareEdge: (pad.ButtonsJustPressed & PadState.Square) != 0,
+            CrossEdge: (pad.ButtonsJustPressed & PadState.Cross) != 0,
+            NoThrow: (player.CombinedVramFlagsOR & NoAttackVramFlag) != 0,
+            NoJump: (player.CombinedVramFlagsOR & NoJumpVramFlag) != 0);
+        var step = CarryRules.CarryGroup(in input);
+        if (step.NextState is { } next)
+        {
+            player.TargetAnimationId = next;
+        }
+
+        // step.Throw: the throw of the object (E20.g2a). Named stub: nothing happens yet, the state stays.
     }
 
     /// <summary>

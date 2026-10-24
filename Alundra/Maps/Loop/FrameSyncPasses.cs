@@ -470,7 +470,16 @@ internal static class FrameSyncPasses
                 continue;
             }
 
-            WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY, ResolveIdsv(proxy));
+            // E20.g1a T3 (W6): an object in the hands of the hero is drawn at least as its carrier (EntityDepthKey.RaiseToCarrier); the bucket of the raised value is the carrier's (its IDSV is already in the key).
+            var idsv = ResolveIdsv(proxy);
+            if (proxy.PlatformEntity != null)
+            {
+                var value = EntityDepthKey.RaiseToCarrier(proxy, unchecked(proxy.PosY + (idsv << 16)));
+                WallPlacementOverlay.ApplyEntitySortKey(depthSortable, value, 0);
+                continue;
+            }
+
+            WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY, idsv);
         }
     }
 

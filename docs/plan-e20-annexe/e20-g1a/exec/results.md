@@ -133,3 +133,59 @@ Run: the eight production files T3 touches checked out at `f13637d8`, `Alundra.T
 
 Green on the stubs (6 cases): (w6) `CarryGuardTests.W6_TheLadderIsRefusedToAHeroWhoCarriesAnObject_...` and (w12) `W12_TheSquareWithAnObjectInTheHands_ChangesNothing_...` (the two guards, green from T1 as the plan says); (w9)
 `ACarrierWithoutAProxy_IsLeftAlone_WithoutAnException` (2) and `AnObjectNobodyCarries_LeavesTheLinkOfAHeroWhoCarriesAnotherOne` (2), the "without effect" cases of (w9), each next to a red positive case above.
+
+## T3 - phase B, the six branchings
+
+Commit of the code of T3: see `git log` (message `feat(e20-g1a): T3 ...`). Inert in production: nothing but `PlayerManager.PutInHands` (no production caller before E20.g1b) puts an object in the hands, so no existing path sees a carried object.
+
+### What was wired
+
+| Branching | Where | What |
+|---|---|---|
+| (W1) the body of `UpdatePlayerCarriedEntity` | `PlayerManager.UpdatePlayerCarriedEntity` (called with 0 at `0x80031D78`, with 2 by `SwimTick`) | `CarryRules.UpdateCarried(player, mode, player.ScriptHost as IEntityWorldContext)`; a bare `Entity` in `CarriedEntity` (the ladder test) is left alone, no exception |
+| (W2) the mode 1 in the locked branch | `PlayerManager.MovePlayer`, locked branch | `UpdatePlayerCarriedEntity(player, 1)` right after the two clears (charge timer, pending-spawn pointer) and before `EndOfMovePlayer` (the item cancel `0x800350C0` stays h0's stub) |
+| (W3) the follow | `EntityScriptProxy.TickMotion` (+ `FollowCarrier`) | first branch of the non-hero motion: an active entity whose `PlatformEntity` has a proxy has no kinematic step and no support; forces 0 (`ForceX/Y/Z`, `TargetForceX/Y`, `FinalForceX/Y/Z`), `ForceAdjusted` 1, `CollidedWithEntityZ` 1, `XCollisionEntity` none, `IsOnGround` 0, floor and terrain heights copied from the carrier, position = carrier + the carrier's offset words, `ModdedPos*` recomputed, then `PushLogicalPositionToRoot` (D-G-3) |
+| (W4) the states | `PlayerManager.MovePlayer` chain (+ `LiftGestureTick`, `CarryGroupTick`) | 0x05 and 0x0B: `TryUseItem` then `CarryRules.LiftGestureNext` (no direction write); 0x06, 0x07, 0x0C, 0x2E, 0x2F, 0x30: the direction is written, `TryUseItem`, then `CarryRules.CarryGroup` (heavy = the carried proxy's `Flags & PickupKindMask` all set; throw = the named stub of g2a; `NoThrow`/`NoJump` = `CombinedVramFlagsOR & 0x2000` / `& 0x4000`) |
+| (W5) the carrier's clearing | `WorldProxy.DestroyEntity` (both overloads, `ClearCarrierOf`) | `PlatformEntity` has a proxy: its `CarriedEntity` is cleared, no test of identity; the object keeps its own `PlatformEntity` |
+| (W6) the sort key | `FrameSyncPasses.RunWallInterleaveSortKeyPass` (+ `EntityDepthKey.RaiseToCarrier`) | a collidable entity (flag `0x80`, animation flag `0x80` clear) in the hands of another takes the carrier's key when its own depth value is below it (signed), as `0x8003981C-0x80039858`; any other entity keeps `PosY + (IDSV << 16)` |
+
+Local decisions: `FollowCarrier` does not call `EnsureMovedThisPass` (D-G-3: "le héros passe avant dans le tick, pas de récursion de porteur"; the hero is first in the list of the world and of the montage); a `PlatformEntity` without a proxy (the bare entities of the oracle
+montages of E14, `new Entity { Name = "platform" }`) is no carrier the binary could follow: the entity moves as any other (the Beannoid and Muruta oracle tests stay green, see below). The T0 clause "a carried object at (0, 0, 32) is not brought down to the ground by `ClampToGround`"
+holds: `PushLogicalPositionToRoot` raises a position under its ground and never lowers one, and (w1) and (w4) pin the crate at +32 px over the hero on 40 ticks and over a jump of 27.5 px, its root equal to `ResolveLogicalPosition` of its logical position at every tick. No stop.
+
+Comments that g1a made false, corrected: `EntityScriptProxy.HasLogicalZ` (also posed by `PutInHands`), `EntitySupport` class doc (`PlatformEntity` is assigned since g1a), `ScriptedMotion.ClampStepToMapEdge`/`RunOneKinematicTick` doc (a record entity put in the hands is marked), `EntityPickupKind` (kinds 2 and 3 both need the
+power glove, item 0x3B; kind 3 is the heavy one that keeps the stand), the stub clause (6) of `WorldProxy.DestroyEntity`, `PlayerManager` (class doc, locked branch comment, `SwimTick` doc), `TerrainHeightTests` (the platform inheritance paragraph), `LogicalZStepTests` (the marker). The docs of the registry
+(`NativeSpriteRegistry`, `EventProgramRunner.NativeSprites`) are about the production keys: they become false at T4 (phase C), not before. `EntitySupport.cs:36-37` and `:68-70` stay to g3, as the plan says.
+
+### Measured
+
+- The 53 new cases: **53 green** (47 were red on the T1 production, 6 green). `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 warning, existing).
+- Suite, Release with the neutralised copy, then Debug built last, `--blame-hang-timeout 60s`, the same three partitions as T1 (by test namespace, disjoint): 
+
+| partition | tests | failures Release | failures Debug |
+|---|---|---|---|
+| 1 (Arcs, Ai, Audio, Cameras, Cells, Combat, Dialogues) | 1 224 | 0 | 0 |
+| 2 (Entities, Events, ExportGuards, Hero, Items) | 2 757 | 0 | 0 |
+| 3 (the rest) | 1 802 | 0 | 0 |
+| total | 5 783 (= 5 730 at the end of T1 + 53) | 0 | 0 |
+
+- **Existing tests moved: none.** The predicted list of `README.md` for phase B, all expected green and all green: `BeannoideOracleTests`/`MurutaOracleTests` (`RunE1Call`, a carrier without a proxy in `DestroyEntity` and in the motion), `LadderClimbTests.CaseSixGate_CarryingEntity_DoesNotEnterClimbing` (a bare `Entity` in
+  `CarriedEntity`), `EntityDestructionTests.TR2_...`, `LootRollWorldTests.Rolls.M3_...`, `EntitySearchServiceTests` (functions 4 and 11), `NpcCharacterControllerMoverTests.EntitySearchService_Searches5And6_...`, `EntityCollisionTests`, `MovementObstacleProbeTests`, `TerrainHeightTests`,
+  `LogicalZStepTests`, `MapEdgeWorldTests`, the arcs. No test name removed or renamed (the only edits to existing test files are two doc comments).
+- The four `docs/hero-trace-389-*.txt` files were rewritten by the suites (line endings); `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0 after the Release and after the Debug suites, restored by `git checkout`, never indexed. No diff of `RunHeroVerticalTick` or `SnapHeroAtApex`;
+  the engine, the converter and the data are untouched. `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal after the last Debug build.
+- **Proof of retreat** (real mutations applied by script to the T3 code, `Alundra.Tests` rebuilt, the 53 cases run, the bytes restored; `git diff` unchanged after): removing the follow (W3) turns red exactly (w1), (w2), (w3), (w4), (w5), (w7); the two state branches (W4): (w3), (w4), (w5) (the wall and the
+  top tests; the platform test needs only the follow), (w11); the body of (W1): (w2), (w7), (w8); the mode 2 branch of `CarryRules.UpdateCarried` alone: (w8); the call of mode 1 in the locked branch (W2): (w7); the clearing in both `DestroyEntity` (W5): (w9); the raise of the sort key (W6): (w10). These are the
+  sets of the plan's acceptance line, case for case (a first draft of (w8) that walked into the water, and drafts of (w3) to (w11) that lifted from 21 px, also reddened (w3) to (w5) or (w8) under (W1), (W3) or (W4): reshaped, see T2).
+
+### Deviations from the plan text, none changes a decision
+
+- (w5), the top of the object: the DLL's free hero lands at T+17 and rides from T+18 (UH-10); the plan's table counts 19 in the oracle's convention. The test pins the DLL's value and the equality with the free hero (T to T+20); beyond T+20 the carried hero, who walks without a ramp, is no longer at the
+  same place as the free one.
+- The scenes of (w3), (w4), (w5), (w7), (w8), (w11) start with the object on the head (D-G-2: the carrying stand at once), not with a lift from 21 px: that is what makes the plan's retreat sets true. The lift series is (w2)'s, and (w2) also pins the Chain of the gesture at L+36.
+- The plan's T0 common (`docs/plan-e20-annexe/e20-g/`: oracle copy, the 16 one-word mutants, the probes P-G-1 to P-G-5) is still not on the branch (see T1). The probes P-G-2 to P-G-5 concern g2a; nothing of T2 or T3 reads them.
+- `ContactHost` lost its `sealed` (test support) and `JumpHeroRig.Build` gained an optional `hostFactory`; both are opt-in and change no other montage.
+
+### Left for the next tasks
+
+T4 (phase C): `CreateForProduction` registers (C, 23) for the seven types; the pins of the registry (`NativeSpriteRegistryTests`, `WaveSwordLifeTests`) move there by derivation; (r1) and (r2). T5: the ADR, the mutants of the DLL code (the list of 18), the two fresh verifiers, and the plan's commun T0 owed.

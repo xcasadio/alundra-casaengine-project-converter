@@ -630,7 +630,7 @@ internal static class ScriptedMotion
     /// scope as before this extraction: no riding-platform force feed (<c>PreviousAdjustedForceX/Y</c> stay 0), and the
     /// <c>ApplyEntityForces</c> NegModX/Y/ScreenClipX/Y clamp of the step is ported only for an entity marked
     /// <see cref="EntityScriptProxy.HasLogicalZ"/> (E20.e0k3, <see cref="ClampStepToMapEdge"/>); the hero and the entities born
-    /// from a record keep their unbounded step (O-E19-17, D-E19-25).
+    /// from a record keep their unbounded step (O-E19-17, D-E19-25) - until E20.g1a marks one that is put in the hands of the hero (<see cref="PlayerManager.PutInHands"/>), which takes the clamp once let go.
     /// </summary>
     private static void RunOneKinematicTick(EntityScriptProxy entity, uint animSetAnimationId)
     {

@@ -8,8 +8,8 @@ namespace Alundra.Physics;
 /// <summary>
 /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): the entity-vs-entity Z SUPPORT clamp - NOT
 /// <see cref="EntityScriptProxy.PlatformEntity"/> (the "carried/thrown" relation, sites
-/// <c>PlayerManager.cs:1117/:2027/:2224</c>, <c>FunctionTypeC.cs</c> - out of scope, never assigned by
-/// this runtime) - the generic "standing on" relation the original tracks as
+/// <c>PlayerManager.cs:1117/:2027/:2224</c>, <c>FunctionTypeC.cs</c> - assigned since E20.g1a, by <see cref="PlayerManager.PutInHands"/> and cleared by the release of C23 and by the destructions, and followed
+/// by <see cref="EntityScriptProxy.FollowCarrier"/>) - the generic "standing on" relation the original tracks as
 /// <see cref="EntityScriptProxy.RidingEntity"/>, fed by a per-frame, NO-LATCH re-evaluation of
 /// <c>CheckEntityCollisionDown</c>'s own entity-candidate branch (PhysicsEngine.cs:171-230 detection,
 /// <c>:123-139</c> consumption). Shared between <see cref="EntityScriptProxy.EvaluateEntitySupport"/>

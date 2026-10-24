@@ -1498,8 +1498,8 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
 
     /// <summary>
     /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, D-E0K-1, ADR-0069): the entity keeps its Z in the logic tick (the "logical Z"), as the hero does in the air state: <see cref="PosZ"/> belongs to the
-    /// tick, the root only follows it, nothing pulls it back from the root. Posed by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> ONLY, in the marker block of ADR-0065 (the last write of
-    /// the creation); never by the creations from a record, never for the hero, never cloned. It is neither <c>EntityRefId == -1</c> (the adopted hero and the recycled entities have it too) nor
+    /// tick, the root only follows it, nothing pulls it back from the root. Posed by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/> in the marker block of ADR-0065 (the last write of
+    /// the creation) and, since E20.g1a, by <see cref="PlayerManager.PutInHands"/> (an object put in the hands of the hero keeps its Z by the tick; D-G-13: never removed afterwards); not by the creations from a record, never for the hero, never cloned. It is neither <c>EntityRefId == -1</c> (the adopted hero and the recycled entities have it too) nor
     /// <see cref="JoinsBirthTick"/> (which the script opcodes pose on the entities from a record since E20.e0a4; this one stays for the interface). Read by the logic tick (<see cref="ScriptedMotion"/>, W1), by the support block and the root pull (W2, W3), by <see cref="PushLogicalPositionToRoot"/> and by the thaw (W4).
     /// </summary>
     internal bool HasLogicalZ;
@@ -1805,6 +1805,14 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
             return;
         }
 
+        // E20.g1a T3 (W3, D-G-3, binary 0x80037E34): an entity in the hands of another (its PlatformEntity, the +0x28 of the binary, is the carrier) has no motion of its own: no kinematic step, no support. It is placed
+        // at the carrier plus the carrier's offset (FollowCarrier). A link to an entity that has no proxy (a bare entity of a test montage) is no carrier the binary could follow: the entity moves as any other.
+        if (Status.IsActive() && PlatformEntity?.GameplayProxy is EntityScriptProxy carrier)
+        {
+            FollowCarrier(carrier);
+            return;
+        }
+
         // E4.e: unconditional, not gated on Controller != null - the original applies UpdateEntityPhysics to every entity in g_activeEntities; RunOneKinematicTick's own
         // Controller-null branch is production-safe (every body-carrying entity keeps a real CharacterControllerComponent, E4.a).
         if (Status.IsActive())
@@ -1820,6 +1828,38 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         }
 
         EvaluateEntitySupport(ScriptHost!.Collidables);
+    }
+
+    /// <summary>
+    /// E20.g1a T3 (W3, D-G-3): the tick of an entity carried by <paramref name="carrier"/> - the carried branch of <c>MoveEntity</c> (<c>0x80037E34</c>) and the zeroing of its forces (<c>0x80036A84</c>). The hero is first in the physics list, so it has moved
+    /// already (the binary recurses on a carrier that has not; a carrier that moves later in the list is not a case of the game). In the binary's order: the forces go to 0; the flags of the contacts are set (<see cref="ForceAdjusted"/> and
+    /// <see cref="CollidedWithEntityZ"/> to 1, <see cref="XCollisionEntity"/> to none, the entity is not on the ground); the floor and the terrain heights are the carrier's; the position is the carrier's plus the offset the carrier holds
+    /// (<see cref="RelativeWarpOffsetX"/> and the other two, written by <see cref="CarryRules"/>), with the modded position recomputed; and the root follows at once, at a whole pixel (<see cref="PushLogicalPositionToRoot"/>: the sub-pixel
+    /// gap with the floating root of the hero is the one the binary has when it draws at whole pixels).
+    /// </summary>
+    private void FollowCarrier(EntityScriptProxy carrier)
+    {
+        ForceX = 0;
+        ForceY = 0;
+        ForceZ = 0;
+        TargetForceX = 0;
+        TargetForceY = 0;
+        FinalForceX = 0;
+        FinalForceY = 0;
+        FinalForceZ = 0;
+        ForceAdjusted = 1;
+        CollidedWithEntityZ = 1;
+        XCollisionEntity = null;
+        IsOnGround = 0;
+        FloorHeight = carrier.FloorHeight;
+        TerrainHeight = carrier.TerrainHeight;
+        PosX = unchecked(carrier.PosX + carrier.RelativeWarpOffsetX);
+        PosY = unchecked(carrier.PosY + carrier.RelativeWarpOffsetY);
+        PosZ = unchecked(carrier.PosZ + carrier.RelativeWarpOffsetZ);
+        ModdedPosX = unchecked(PosX + ModX);
+        ModdedPosY = unchecked(PosY + ModY);
+        ModdedPosZ = unchecked(PosZ + ModZ);
+        PushLogicalPositionToRoot();
     }
 
     /// <summary>

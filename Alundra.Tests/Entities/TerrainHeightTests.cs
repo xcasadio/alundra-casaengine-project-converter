@@ -31,11 +31,11 @@ namespace Alundra.Tests.Entities;
 /// see <see cref="WorldProxyUpdateCharacterizationTests"/>'s own documented limitation), so its
 /// spawn-time write is verified by code inspection only, same as every other of its fields.
 ///
-/// Platform inheritance (<c>PlatformEntity</c>, MoveEntity 0x80037E88-0x80037E90) has no test here:
-/// <see cref="EntityScriptProxy.PlatformEntity"/> is never assigned anywhere in this runtime (only
-/// ever compared against null - see <see cref="EntitySupport"/>'s own class doc, "out of scope, never
-/// assigned by this runtime") - there is no live platform relation to inherit TerrainHeight from, so T3.2
-/// leaves this sub-case unimplemented (reported, not invented).
+/// Platform inheritance (<c>PlatformEntity</c>, MoveEntity 0x80037E88-0x80037E90) has no test here: when T3.2 was written
+/// <see cref="EntityScriptProxy.PlatformEntity"/> was never assigned anywhere in this runtime (only
+/// ever compared against null), so there was no live platform relation to inherit TerrainHeight from and T3.2
+/// left this sub-case unimplemented (reported, not invented). E20.g1a assigns it (an object in the hands of the hero, <see cref="PlayerManager.PutInHands"/>) and the
+/// copy of the floor and terrain heights of the carrier is <see cref="EntityScriptProxy"/>'s <c>FollowCarrier</c>, tested by <c>CarryWorldTests</c>.
 /// </summary>
 public class TerrainHeightTests
 {

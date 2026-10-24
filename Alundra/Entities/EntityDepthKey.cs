@@ -25,4 +25,19 @@ internal static class EntityDepthKey
     /// <summary>The key of <paramref name="proxy"/>: its <c>PosY</c>, the IDSV of the sprite it shows (<see cref="FrameSyncPasses.ResolveIdsv"/>) and its <c>PosZ + 1</c>.</summary>
     internal static uint Compute(EntityScriptProxy proxy)
         => Compute(proxy.PosY, FrameSyncPasses.ResolveIdsv(proxy), unchecked(proxy.PosZ + 1));
+
+    /// <summary>
+    /// E20.g1a T3 (W6, binary <c>0x8003981C-0x80039858</c>, the sort driver <c>0x800397AC</c>): an entity in the hands of another that is collidable (<see cref="EntityFlags.Collidable"/> set, the animation flag <c>0x80</c> clear) is sorted at least as its
+    /// carrier: when its depth value <paramref name="depthSortValue"/> (<c>PosY + (IDSV &lt;&lt; 16)</c>) is below the carrier's key (<see cref="Compute(EntityScriptProxy)"/>, signed comparison), the carrier's key replaces it. Any other entity keeps its value.
+    /// </summary>
+    internal static int RaiseToCarrier(EntityScriptProxy proxy, int depthSortValue)
+    {
+        if ((proxy.Flags & EntityFlags.Collidable) == 0 || (proxy.AnimFlags & 0x80) != 0 || proxy.PlatformEntity?.GameplayProxy is not EntityScriptProxy carrier)
+        {
+            return depthSortValue;
+        }
+
+        var carrierKey = unchecked((int)Compute(carrier));
+        return depthSortValue < carrierKey ? carrierKey : depthSortValue;
+    }
 }

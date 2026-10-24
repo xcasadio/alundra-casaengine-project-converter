@@ -3336,8 +3336,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// attached to the entity (<c>+0x1B8</c>, <c>0x8003A5D0</c>) - NAMED STUB, E20.e (the passes of the active effects are empty in the DLL and it has no member for the pointer); (5) the break effect: <paramref name="effectId"/> -1 reads the
     /// byte <c>+0x1E</c> of the sprite header (<see cref="EntityScriptProxy.BreakEffect"/>, <c>0x8003A5E0-0x8003A5E8</c>), and when the effect is not 0, <c>0x8003BE74(0, fx, 0, e ; 1, 0, 0, 0)</c> creates it
     /// (<see cref="NativeEffects.CreateBreakEffect"/>) - queued on the effect stage with the tick and the rank of the source in progress, on a FROZEN snapshot of the entity
-    /// (<see cref="FrozenEffectAnchor"/>, taken after the status was written) because the stage applies its queue at the end of the frame; (6) the clearing of the carrier <c>[+0x28] + 0x2C = 0</c> (<c>0x8003A62C</c>) -
-    /// NAMED STUB, E20.g. Does not remove the entity itself: the recycling comes later in the tick (<see cref="RecycleDestroyedEntities"/>, E19.r R3). A full reservoir creates no effect and the destruction goes on all the same.
+    /// (<see cref="FrozenEffectAnchor"/>, taken after the status was written) because the stage applies its queue at the end of the frame; (6) the clearing of the carrier <c>[+0x28] + 0x2C = 0</c> (<c>0x8003A62C</c>, E20.g1a W5: <see cref="ClearCarrierOf"/>). Does not remove the entity itself: the recycling comes later in the tick (<see cref="RecycleDestroyedEntities"/>, E19.r R3). A full reservoir creates no effect and the destruction goes on all the same.
     /// </summary>
     internal void DestroyEntity(EntityScriptProxy entity, int effectId)
     {
@@ -3354,8 +3353,22 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             _effectStage.Emit(reservoir => NativeEffects.CreateBreakEffect(reservoir, fx, anchor));
         }
 
-        // (6) clearing of the carrier (the entity this one rests on): E20.g.
+        // (6) clearing of the carrier (the entity that holds this one in its hands): E20.g1a W5.
+        ClearCarrierOf(entity);
         Logs.WriteDebug($"WorldProxy: entity[{entity.EntityRefId}] -> FlagToDestroy (effectId={effectId}, break effect {fx}).");
+    }
+
+    /// <summary>
+    /// E20.g1a T3 (W5, D-G-11): the last act of the destructions of the binary (<c>0x8003A62C</c>, <c>0x8003A74C</c>, <c>0x8003A7A4</c>): when the entity is held by another (its <see cref="EntityScriptProxy.PlatformEntity"/>, <c>+0x28</c>, is not
+    /// null), the carrier's <see cref="EntityScriptProxy.CarriedEntity"/> (<c>+0x2C</c>) is cleared. NO test of identity: the binary clears whatever the carrier holds. A carrier without a proxy (a bare entity of a test montage) has nothing to clear.
+    /// The destroyed entity's own <see cref="EntityScriptProxy.PlatformEntity"/> is left as it is (the binary does not touch it).
+    /// </summary>
+    private static void ClearCarrierOf(EntityScriptProxy entity)
+    {
+        if (entity.PlatformEntity?.GameplayProxy is EntityScriptProxy carrier)
+        {
+            carrier.CarriedEntity = null;
+        }
     }
 
     /// <summary>
@@ -3363,15 +3376,16 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// every search-driven destroy opcode (0x2E Script_46_02E) calls once per match, distinct from the
     /// two-argument overload above (which the pick-phase status machine uses, and which also spawns
     /// break-effect contents). Same scope note as the two-argument overload: the entity leaves the CasaEngine world
-    /// at the recycling pass (<see cref="RecycleDestroyedEntities"/>), not here, and this does not port <c>ActiveEffect</c>/<c>PlatformEntity.CarriedEntity</c> cleanup. Clears
+    /// at the recycling pass (<see cref="RecycleDestroyedEntities"/>), not here, and this does not port <c>ActiveEffect</c> cleanup. Clears
     /// <see cref="EntityScriptProxy.EventTrigger"/> like the original, so a same-frame re-scan
     /// (<see cref="RunPendingEventTriggers"/>) does not also try to run whatever program slot this entity
-    /// had queued before being destroyed.
+    /// had queued before being destroyed. E20.g1a W5: it also clears the carrier (<see cref="ClearCarrierOf"/>, <c>0x8003A74C</c>).
     /// </summary>
     internal void DestroyEntity(EntityScriptProxy entity)
     {
         entity.Status = EntityStatus.FlagToDestroy;
         entity.EventTrigger = ScriptHelper.ProgramUnknown;
+        ClearCarrierOf(entity);
         Logs.WriteDebug($"WorldProxy: entity[{entity.EntityRefId}] -> FlagToDestroy (search-destroyed).");
     }
 

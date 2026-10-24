@@ -20,7 +20,7 @@ namespace Alundra.Tests.Entities;
 /// E20.e0k2 (docs/plan-e20-heros.md section 1.18.2, T1, phase A): the logical Z of an entity born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>. Nothing in the tick calls the step yet (phase B wires it): these tests
 /// call the two functions BY HAND on a real entity of a real world (<see cref="ArcRun"/>, map 14, the real prefabs and controllers), with the head-of-tick clears the tick would do, against the oracle of
 /// <c>docs/plan-e20-annexe/e20-e0k/oracle/out</c> read by key (never copied), in the DLL's frame (the oracle minus one raw unit, ADR-0026). Each case without effect is set next to a positive case in the same assertion.
-/// (a) the marker <see cref="EntityScriptProxy.HasLogicalZ"/> is posed by the interface and by it alone; (b) the step: the ball (<c>arrows-ball-fire</c>), the arrow (Z constant, <c>IsOnGround</c> with and without the
+/// (a) the marker <see cref="EntityScriptProxy.HasLogicalZ"/> is posed by the interface (and, since E20.g1a, by <c>PlayerManager.PutInHands</c>) and by nothing else; (b) the step: the ball (<c>arrows-ball-fire</c>), the arrow (Z constant, <c>IsOnGround</c> with and without the
 /// unit), the impulse of 1 024 (<c>crate-flat-state1</c>), the exact graze, the ceiling, the magnet of 3 px, the stop marker 0x8000, the sentinel and the root that follows.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
