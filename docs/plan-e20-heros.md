@@ -6884,7 +6884,7 @@ toujours vrai.
 **Enveloppe** (affine les lignes 11 et 12, qui restent READY) : h3 exige E20.g1 et E20.g2 en entier, donc g1b, et vient après g3 (la
 proposition de D-G-1 « h3 n'exige que g1a et g2a » n'est pas appliquée) ; g3 après g1a, g2a, g2b ; g1b après g3.
 
-#### 1.24.0 T0 commun à g1a, g2a, g2b, g1b et g2c
+#### 1.24.0 T0 commun à g1a, g2a, g2b, g1b et g2c (fait le 2026-10-24 par la reprise de g1a, `9797b2fd`, `docs/plan-e20-annexe/e20-g/` ; P-G-2 et P-G-3 restent au T0 de g2a)
 
 - ⏳ **T0 — Prédiction et oracle** (commit de docs, avant tout code), `docs/plan-e20-annexe/e20-g/`.
   - `oracle/` : les outils du relevé binaire copiés octet pour octet avec leurs sommes de contrôle (`gl.py`, `ana.py`, `k0lib.py`, `exe.py`, le dossier `oracle/` de la machine, `g1_lift.py` à `g18_c4_stone.py`, `run_all.py`) et les trois scénarios du critique (`c1_equality.py`, `c2_platform.py`, `c3_contact.py`), plus un quatrième à écrire, `c4_climb_lift` (Carré en état d'escalade, au contact d'un soulevable ; prédiction : soulevé, `anim_t` 5 ou 11) ; sorties en texte **et** en JSON (le JSON s'ajoute aux scripts sans changer un scénario ; clés = les noms de `HFIELDS` et de `CFIELDS`) ; deux exécutions complètes donnent un manifeste identique.
@@ -6895,7 +6895,7 @@ proposition de D-G-1 « h3 n'exige que g1a et g2a » n'est pas appliquée) ; g3 
 
 ---
 
-#### 1.24.1 E20.g1a — Porter ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi ; **READY** à la seconde relecture)
+#### 1.24.1 E20.g1a — Porter ✅ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi ; **READY** à la seconde relecture ; **faite le 2026-10-24**, CONFIRMED après une reprise ; ADR-0089)
 
 **Relecture (2026-10-18).** REVISE, deux blocages corrigés (FIX) : (1) E20.f6a précède g1 dans l'enveloppe ; une fois faite, la caisse
 relâchée dans l'eau profonde (drapeaux `0x3323E4`, dont `0x100000`, `DestroyOnSlidingSlope`, `Alundra/Entities/EntityFlags.cs:163` ; marquée
@@ -6937,7 +6937,7 @@ production (T4) : le test l'inscrit lui-même seulement si la clé est absente.
 
 ##### Tâches
 
-- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile, puis le code). Chaque cas « sans effet » est accolé à un cas positif dans la même assertion.
+- ✅ **T1 — Phase A** (tests d'abord, rouges sur un squelette qui compile, puis le code). Chaque cas « sans effet » est accolé à un cas positif dans la même assertion.
   - (c1) mode 0 direct : les sept cas de `c1_equality` (21, 0, 11) → (20, 0, 12) ; 21 px − 1 unité → X inchangé, Z 12 ; 21 px + 1 → X − 1 ; (0, −21, 11) → Y −20 ; (5, 0, 37) → (4, 0, 36) ; 5 px − 1 → X inchangé ; (0, 0, 32) inchangé ; les anciens décalages du héros sont ignorés, le compteur est remis à 0 ; la trace de (21, 0, 0) à (0, 0, 32) en 32 appels, X au 12e ;
   - (c2) mode 1 direct : compteur de 0 à 4 → + 1 sans écriture, accolé au compteur 5 qui écrit ; (0x1FFFF, 0, 0), (0, 0x1FFFF, 0x1FFFF) et (−0x1FFFF)×3 → destruction à un argument (compteur gardé, décalages du héros non réécrits), accolés à (0x20000, 0, 0), (0, 0, 0x20000) et (−0x20000, 0, 0) → avance de 2 px vers 0 ; `AttackCount` 0 se comporte comme le mode 0, accolé à `AttackCount` 1 ;
   - (c3) mode 2 direct : `t24` −1, direction du héros, position héros + (0, 0, 32 px), `CarriedEntity` gardé, compteur 0 ; rien de porté : aucun effet, accolé ;
@@ -6945,7 +6945,7 @@ production (T4) : le test l'inscrit lui-même seulement si la clé est absente.
   - (c5) `PutInHands` : champs, triplet brut, marqueur, `RidingEntity` vidé ; les quatre animations cibles (sol et air, objet sur la tête ou non), accolées deux à deux ;
   - (c6) le groupe de portage, table pure : (état, objet nul ou présent ou lourd, sol ou air, direction ou non, Carré, Croix, gardes `0x2000` et `0x4000`) → état suivant, chaque ligne accolée à sa ligne inverse ; états `0x05` et `0x0B` de même.
   Verts à la fin de T1.
-- ⏳ **T2 — Tests de monde**, écrits après T1, **rouges avant T3** (sauf (w6)), chacun à 1, 2 et 3 ticks par image (bancs `JumpHeroRig` et `ContactWorld`, l'objet mis par `PutInHands` à la géométrie de l'oracle) :
+- ✅ **T2 — Tests de monde**, écrits après T1, **rouges avant T3** (sauf (w6)), chacun à 1, 2 et 3 ticks par image (bancs `JumpHeroRig` et `ContactWorld`, l'objet mis par `PutInHands` à la géométrie de l'oracle) :
   - (w1) suivi : position = héros + triplet à chaque tick, forces nulles, `adj` et `collz` à 1, `xcoll` nul, hors de `Collidables` ; (w2) la trace du soulèvement du tableau, tick par tick ; (w3) marche et marches de 16, 32 et 48 px : vitesse et blocage égaux à la même scène sans objet (accolés) ; (w4) saut sur place et en marche : séries du tableau, caisse = héros + 32 ; (w5) dessus d'un objet de 16 px (modèle UH10) et plateforme mouvante (modèle UH14, un tick de phase documenté ; **note du 2026-10-22,
   D-D5B-9 du plan d'E19** : D5b passe avant g1a et réépingle UH-14 en phase 0 ; si D5b est fusionnée au HEAD de départ de g1a, (w5)
   s'épingle en phase 0, sans tick de retard, avec la valeur d'UH-14 de ce HEAD) : `support` et l'objet qui suit, accolés à l'objet de 32 px que l'on n'atteint pas ;
@@ -6956,9 +6956,9 @@ production (T4) : le test l'inscrit lui-même seulement si la clé est absente.
     **seulement si la clé (C, 23) est absente** (`NativeSprites.TryGet` faux), par le `IDisposable` que rend `Register`
     (`Alundra/Ai/NativeSpriteRegistry.cs:54`, `:84`), libéré à la fin du test ; avant T4 c'est cette inscription qui sert, après T4 la clé de
     production ; (w8) est vert après T3 et après T4, et la preuve de retrait de l'enregistrement reste (r1) et (r2).
-- ⏳ **T3 — Phase B** (commit de code B) : les six branchements. Verts.
-- ⏳ **T4 — Phase C** : l'enregistrement. Tests de production, **rouges avant la ligne** : (r1) registre : (C, 23) pour les 7 types, pas pour les autres, épingle par dérivation ; (r2) une carte entière de caisses au repos (la 392) garde tous ses champs pendant 100 ticks, accolée à une caisse portée qui les change.
-- ⏳ **T5 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 18, tous tués : `<` pour `<=` à l'égalité du mode 0 ; pas de 1 px changé ; seuil `0x1FFFF` changé ; le 5 du compteur changé ; compteur non remis à 0 ; mode 1 → mode 0 oublié pour `AttackCount` 0 ; destruction à deux arguments ; décalage lu sur le triplet au lieu des positions ; mode 2 sans `−1` ; mode 2 qui efface `CarriedEntity` ; suivi sans copie des hauteurs ; suivi qui garde les forces ; `XCollisionEntity` non annulé ; objet porté laissé dans `Collidables` ; effacement du porteur oublié (chacune des deux surcharges) ; effacement avec test d'identité ; états `0x06` et `0x2E` permutés ; marqueur non posé ; `RidingEntity` non vidé.
+- ✅ **T3 — Phase B** (commit de code B) : les six branchements. Verts.
+- ✅ **T4 — Phase C** : l'enregistrement. Tests de production, **rouges avant la ligne** : (r1) registre : (C, 23) pour les 7 types, pas pour les autres, épingle par dérivation ; (r2) une carte entière de caisses au repos (la 392) garde tous ses champs pendant 100 ticks, accolée à une caisse portée qui les change.
+- ✅ **T5 — ADR, plan, verifiers frais** (deux, l'un après l'autre, dont un sur les épingles : liste prédite contre liste mesurée). Mutants du code de la DLL, au moins 18, tous tués : `<` pour `<=` à l'égalité du mode 0 ; pas de 1 px changé ; seuil `0x1FFFF` changé ; le 5 du compteur changé ; compteur non remis à 0 ; mode 1 → mode 0 oublié pour `AttackCount` 0 ; destruction à deux arguments ; décalage lu sur le triplet au lieu des positions ; mode 2 sans `−1` ; mode 2 qui efface `CarriedEntity` ; suivi sans copie des hauteurs ; suivi qui garde les forces ; `XCollisionEntity` non annulé ; objet porté laissé dans `Collidables` ; effacement du porteur oublié (chacune des deux surcharges) ; effacement avec test d'identité ; états `0x06` et `0x2E` permutés ; marqueur non posé ; `RidingEntity` non vidé.
 
 ##### Acceptation
 
@@ -6973,6 +6973,31 @@ production (T4) : le test l'inscrit lui-même seulement si la clé est absente.
 - **Retour arrière** : la phase C se retire seule (l'enregistrement) ; la phase B se retire seule (les six branchements) ; la phase A ne change aucun comportement.
 
 ---
+
+Decisions: see ADR-0089.
+
+**Résultats (2026-10-24).** Exécution en mode AUTO, HEAD de départ `b62726ff`. Mesures : `docs/plan-e20-annexe/e20-g1a/exec/`
+(`README.md`, `results.md`, `t5/`) ; T0 commun : `docs/plan-e20-annexe/e20-g/`.
+- **Commits.** `24e379d4` (état de départ, liste prédite) ; `f13637d8` (phase A : `Alundra/Hero/CarryRules.cs`, `Alundra/Ai/Objects/LiftableAi.cs`,
+  `PutInHands` sans appelant de production, le champ `CarryLockCounter`) ; `c0cff856` (T2, tests de monde) ; `b0a627f2` (phase B : les six
+  branchements) ; `203b2632` (phase C : `(C, 23)` inscrit pour les 7 types 234, 291, 292, 294, 297, 304, 438) ; `b0a39aa9` (T5, ADR-0089) ;
+  reprise : `9797b2fd` (le T0 commun, absent jusque-là) et `d2d296bf` (résultats).
+- **Le T0 commun** (§1.24.0, écrit par la reprise) : l'oracle copié octet pour octet, deux exécutions de ses 24 scénarios à manifeste identique
+  (60 sorties texte, 24 JSON), `c4_climb_lift` (soulevé, `anim_t` 11 pendant l'escalade, 5 au sol, rien sans contact) ; 20 mutants d'un mot du
+  binaire, tous tués (M06 par le scénario neuf `c5_status4`) ; les sondes P-G-1, P-G-4 (`crate.PosZ - hero.PosZ` vaut `0x200000` exactement : pas
+  d'arrêt) et P-G-5 tiennent. P-G-2 et P-G-3 relèvent du T0 de g2a.
+- **Tests.** Phase A : 68 tests, tous rouges sur le squelette. T2 : 53 cas, 47 rouges avant T3 (les 6 verts sont les cas « sans effet »).
+  Phase C : 18 cas, et retirer la ligne rend rouges exactement (r1), (r2) et les trois épingles du registre. (w5) est épinglé en phase 0, à la
+  valeur d'UH-14 de ce HEAD (D5b faite). `Alundra.Tests` : 5 662 au départ, 5 810 à la fin, zéro échec en Release (copie neutralisée) et en
+  Debug ; `cmp` de la DLL identique. 33 mutants du code de la DLL : 32 tués ; M07 (la destruction à un argument de `WorldProxy` routée vers celle
+  à deux arguments) survit : aucun test ne vérifie que la destruction à un argument ne lâche ni butin ni effet, un comportement d'E19 hors de
+  la tranche (P4, reporté).
+- **Tests existants déplacés** : les trois épingles du registre (`NativeSpriteRegistryTests`, `WaveSwordLifeTests.V3`, `ChargedArrowAiTests.C2`,
+  la dernière prédite verte à tort : c'est une troisième épingle), réécrites par dérivation.
+- **D-E20-39 tenue** : `PutInHands` n'a aucun appelant de production ; `PlayerTryAction` reste un bouchon : rien ne met un objet dans les mains
+  en jeu avant g3 et g1b.
+- **Verifiers frais.** Le premier : REFUTED sur la seule ligne « Oracle » (le T0 commun absent), tout le reste confirmé. Après la reprise, un
+  troisième : **CONFIRMED** (l'oracle rejoué deux fois, les 20 mutants, trois mutations du code).
 
 #### 1.24.2 E20.g2a — Lancer ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi ; **READY** à la relecture de clôture)
 
