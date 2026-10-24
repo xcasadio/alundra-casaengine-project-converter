@@ -188,7 +188,8 @@ ADR-0058) :
     avec elle : **proposé**, la poussée entre aussi dans E20.i2 et h4b2 disparaît (Q-H4-3, en attente de l'accord de l'auteur).
     **Accepté au 2e tour (D-E20-61).**
   - **D-E20-44** (O-E20-17) — Les échelles fonctionnent : rien ne change, le correctif préparé hors du dépôt n'est pas appliqué.
-  - **D-E20-45** (O-E20-18) — L'objet 008 (arme de rang 4 du créneau 1) est porté ; sa tranche reste à placer avec les armes.
+  - **D-E20-45** (O-E20-18) — L'objet 008 (arme de rang 4 du créneau 1) est porté ; sa tranche reste à placer avec les armes. **Précisé le 2026-10-25** : porté pour la
+    sélection, le coup et les dégâts (par les données), pas pour l'obtention (`0xC2`) ; la tranche est E20.b2 (§1.4.1).
   - **D-E20-46** (O-E20-21 ; Q-sm-5 du plan d'E19) — Les blocs poussables de la famille C4 (pierres, tonneaux, blocs, et les objets des
     plaques : sprites 107, 111, 112, 113, 34, 37, 117) font partie du portage ; E20.g2c (§1.24.5) les porte, avec les énigmes à plaques
     des cartes 27, 29, 30, 113 et 400 (E19.sm1 y ferme les prédicats `0x60`/`0x61`).
@@ -1348,6 +1349,90 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
   toucher au moteur.
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.b.
+
+#### 1.4.1 E20.b2 — L'Épée légendaire (objet 8) et l'opcode `0xC2` ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2 ; D-E20-45 ; à relire par un `plan-verifier` frais)
+
+**Provenance.** Lecture seule du 2026-10-24 (`report-main.md` partie B et le critique frais `critic-main.md`, CONFIRMÉ avec des ajouts repris ici,
+dans le scratchpad de la session principale `scratchpad/t2-proj/`, à verser par T0 à `docs/plan-e20-annexe/e20-b2-disc/`). D-E20-45 disait l'objet
+8 « porté » : vrai pour le coup et les dégâts (par les données), faux pour l'obtention.
+
+**Prérequis.** Le thème 1 fusionné, la branche du thème 2. Aucun prérequis de code d'E20 ; `0xC2` relève des opcodes (E19), porté ici parce qu'il
+ne sert que cette scène. L'obtention en partie normale exige E18 (la reprise après la mort et son compteur), hors tranche.
+
+**But.** Comme l'original : l'objet 8, « Épée légendaire », que le Roi Neige donne sur la carte 7 à qui a repris la partie après la mort 20 fois ou
+plus, devient l'arme du créneau 1 dès qu'il est possédé (rang 4) : le coup de l'épée de base (sans charge, sans aura, sans vague) avec 51 de dégâts
+contre une cible à réponse ×1,0. Aujourd'hui : la sélection, le coup et les dégâts sont portés par les données mais sans aucun test ; l'opcode
+`0xC2` n'est pas porté (le `If true goto` qui le suit lit un `Result` laissé par une instruction précédente).
+
+**Faits** (FAIT, MESURÉ).
+- **La sélection** (`0x8004E18C`, désassemblé à la main, CONFIRMÉ) : le premier objet possédé du créneau est candidat ; si le drapeau du créneau
+  vaut 1, un objet suivant le remplace seulement si son rang est strictement supérieur. Créneau 1 : objets 1, 2, 3, 4, 8, rangs 0 à 4. La DLL le
+  porte (`PlayerManager.GetItemIdFromSlotId`). Le menu d'équipement choisit un créneau, jamais un objet.
+- **Le coup** : l'enregistrement 11 est l'enregistrement 0 octet pour octet (sol `0x10`, air `0x14`, non chargeable) ; les traces d'oracle
+  `AT9g-item08` et `AT9a-item08` sont déjà dans `HeroAttackTests`.
+- **Les dégâts** (rejoués sur l'oracle c1b, un modèle indépendant égal) : la fiche d'équipement 38 a une attaque de puissance 50 ; elle s'ajoute à
+  **toute** attaque du héros qui porte le bit d'équipement (lignes 17, 21, 25 à 28, 56, 64 à 76 de la fiche du héros, dont certaines à 100, soit
+  150 avec l'objet 8) ; contre un Beannoïde à réponse `0x10` : l'épée de base 2, Elnard 16, l'objet 8 51 (PV 100 → 49, PV 9 → mort). La défense
+  du héros ne change pas. Dans la DLL, `Damage` et `EnemyHelpers.HitReaction` (Beannoïde D1, Muruta D9) l'appliquent déjà.
+- **L'opcode `0xC2`** (`0x80041D34`, un octet de paramètre) : `Result = (octet[0x801EBA3E] >= paramètre)`, l'octet étant `g_saveData + 0x756`, le
+  compteur des reprises après la mort (incrémenté et plafonné en `0x800315C0`/`0x800315D4`, remis à 0 en `0x80031860`). La DLL a
+  `GameState.DeathRetryCount`, que rien n'incrémente avant E18 ; `0xC2` n'a pas de `case` (repli par la taille, `Result` inchangé). `Result` est
+  un registre persistant, jamais remis à zéro par `InitializeEventData` : la valeur que lit le saut de pc 1510 n'est pas mesurée (la DLL
+  pourrait donner l'épée par erreur aujourd'hui).
+- **La scène** (carte 7, `B[10]`) : `0xC2 [20]` à pc 1508, `0x03` (si vrai, saut vers 1571) ; la branche du don : le dialogue 130, `0x82 [8]` à pc
+  1623, le dialogue 131, `Flag on [251, 6]` (le drapeau 1787) ; la branche du refus (le dialogue 129) saute le drapeau et se rejoue. Le
+  déclencheur : `F[7]` de deux « Blocs transparents » (enregistrements 28 et 29, type 25, cases (50, 32) et (52, 32)), seulement si Alundra regarde
+  au nord, pose `[0, 128]`, qui lance `B[10]`.
+- **Les autres sources** : un ramassage de l'objet 8 posé sur la carte 11 (enregistrement 24, case (54, 54), hauteur 20) ; le coffre de la carte
+  0 ; et l'enregistrement 31 de la carte 7, un ramassage vivant que `0x8A [31]` fait naître deux fois dans `B[10]` (pc 1411, 1483) puis que
+  `0x2E [31]` détruit dans les deux branches (pc 1539, 1600) : qu'Alundra puisse le toucher et le ramasser n'est pas établi (une voie qui
+  contournerait `0xC2`).
+
+**Décisions de la session** (défauts, comme l'original ; §2, Q-B2-*).
+- **D-B2-1** (Q-B2-1) — La condition de l'original telle quelle : 20 reprises ou plus.
+- **D-B2-2** (Q-B2-2) — `0xC2` se porte maintenant, avec un champ `DeathRetryCount` dans les préréglages ; l'obtention en partie normale attend E18.
+- **D-B2-3** (Q-B2-3) — Deux préréglages : `legende-m14` (l'arène des Beannoïdes, le kit et l'objet 8) et `legende-m7` (la carte 7, sous un des
+  deux blocs, le compteur à 20, le drapeau 1787 éteint ; Alundra doit marcher vers le nord, une sauvegarde ne portant pas la direction).
+- **D-B2-4** — La perte de la charge et de la vague quand l'objet 8 est possédé, même avec Elnard, comme l'original.
+- **D-B2-5** — Les objets des cartes de développement (11, 0) restent tels quels.
+
+**Périmètre.** `Alundra/Events/EventProgramRunner.cs` (`case 0xC2`) ; `Alundra/SaveGames/TestSaves.cs` (le champ `DeathRetryCount` d'un
+préréglage, les deux préréglages) et ses tables, `docs/test-saves.md` ; les tests (`ItemInventoryTests`, `DamageTests`, un arc de la carte 7) ;
+l'oracle c1b (les inventaires « legend ») dans l'annexe `docs/plan-e20-annexe/e20-b2/` ; un ADR neuf si T4 le juge utile ; ce plan (D-E20-45
+précisée).
+
+**Hors périmètre.** E18 (la mort du héros, la reprise, le compteur) ; `0xB9` (le CD) ; le coffre (E20.e0d) ; le moteur.
+
+**Tâches.**
+- ⏳ **T0 — Versement, oracle, sondes** (commit de docs). (a) Verser la lecture (`scratchpad/t2-proj/`, partie B, sans les copies d'annexes) à
+  `docs/plan-e20-annexe/e20-b2-disc/` ; (b) les inventaires « legend » et « legend_holy » ajoutés aux clés de l'oracle c1b (K1, K2), rejoués
+  depuis une copie ; (c) sondes de la DLL (jetables, versées en `.txt`) : la valeur de `Result` à pc 1508 et 1510 de `B[10]` au HEAD, la scène
+  jouée avec le compteur à 19 et à 20 ; le ramassage de l'enregistrement 31 de la carte 7 : peut-on le toucher et le ramasser, dans la DLL, et au
+  binaire si l'oracle le permet ; (d) la liste prédite des tests déplacés (aucun attendu).
+- ⏳ **T1 — Tests de sélection, d'équipement et de dégâts** (des gardes vertes si le code est déjà juste, nommées, chacune tuée par un mutant
+  de T3 ; rouges d'abord s'il y a un écart) : possédant {1, 4, 8}, le créneau 1 rend 8 ; {1, 8} rend 8 ; l'enregistrement d'équipement [1] = l'objet
+  8 et `[(6, 50)]` ; K2 « legend » (49 et la mort) ; un Beannoïde réel touché par l'objet 8 (51) et par l'épée de base (2) ; l'air `0x14` aussi ;
+  un appui tenu avec l'objet 8 ne compte pas de charge et ne fait ni aura ni vague.
+- ⏳ **T2 — `0xC2`, tests d'abord** (rouges avant) : `0xC2 [20]` avec le compteur à 19, 20, 21 (`Result` 0, 1, 1) ; un octet de paramètre ; puis
+  le `case` ; le champ `DeathRetryCount` des préréglages et les deux préréglages avec leurs tables.
+- ⏳ **T3 — L'arc de la carte 7 et les mutants** : depuis `legende-m7`, face au nord sous le bloc : avec le compteur à 20, la scène donne l'objet 8
+  une fois, pose le drapeau 1787 et ne se rejoue pas ; à 19, rien n'est donné et la scène se rejoue (rouge avant T2) ; la suite entière en Release
+  (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ; `cmp` ; `check_names.py --rules` ; au moins 8 mutants réels,
+  tous tués (le seuil `>=` en `>` ; deux octets de paramètre ; `Result` non écrit ; le rang de l'objet 8 à 3 ; la fiche 38 ignorée ; le bit
+  d'équipement ignoré ; l'enregistrement 11 chargeable ; le drapeau 1787 posé au refus).
+- ⏳ **T4 — ADR, verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (b) égales au modèle de l'oracle ; T2 et l'arc de T3 rouges avant et verts après ; les gardes de T1 vertes et
+chacune tuée par un mutant ; la suite en Release et en Debug, zéro échec ; aucun test existant déplacé hors de la liste de T0 (d). **Recette de
+l'auteur** (non bloquante) : `legende-m14` (frapper un Beannoïde : le coup de l'épée de base, 51 de dégâts, pas de charge) ; `legende-m7`
+(marcher vers le nord sous un bloc, lire la scène, recevoir l'épée).
+
+**Arrêts.** Un besoin de toucher au moteur ; un doute sur l'octet que lit `0xC2` (la copie de la sauvegarde) ; un test hors de la liste prédite
+bouge ; T0 (c) établit que l'enregistrement 31 se ramasse dans l'original (une question à l'auteur).
+
+**Budget.** Un `executor` pour T0 à T3 ; deux tentatives. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** `git revert` du `case 0xC2` (la scène redevient celle d'aujourd'hui) ; les tests de T1 ne changent aucun comportement.
 
 ### 1.5 E20.c1a — La passe de coups 🧪 (faite et CONFIRMED le 2026-10-09, `7c1b0b3`, `42d2e15` ; reste la recette en jeu de l'auteur)
 
@@ -11506,6 +11591,9 @@ les trois entrées `0x31`.
 | Q-E0D-4 | (2026-10-25, E20.e0d) L'objet n'apparaît qu'une fois le couvercle ouvert (61 images invisibles), puis monte. Comme l'original ? Défaut : oui (D-E0D-5) | l'auteur ; non bloquant |
 | Q-E0D-5 | (2026-10-25, E20.e0d) 20 coffres sont vides dans les données ; l'original les dessine ouverts (le portage les dessine fermés aujourd'hui). Faire comme l'original ? Défaut : oui (D-E0D-7) | l'auteur ; non bloquant |
 | Q-E0D-6 | (2026-10-25, E20.e0d) Quatre sauvegardes de test pour essayer les coffres : la carte 15 (la Graine magique, l'argent, des herbes), la carte 11 (un vase sans drapeau, réouvrable), la carte 0 (les armes de la carte de test), la carte 117 (la clé qui ouvre la porte de la 115). Défaut : les quatre (D-E0D-11) | l'auteur ; non bloquant |
+| Q-B2-1 | (2026-10-25, E20.b2, à l'auteur en termes de jeu) Dans l'original, le Roi Neige (carte 7) ne donne l'Épée légendaire qu'à un joueur qui a repris la partie après la mort 20 fois ou plus ; possédée, elle devient le coup par défaut, sans charge ni vague, avec 51 de dégâts (2 à 16 pour les autres épées). Porter cette condition et cet effet tels quels ? Défaut : oui (D-B2-1, D-B2-4) | l'auteur ; non bloquant |
+| Q-B2-2 | (2026-10-25, E20.b2) Porter maintenant l'instruction de script qui fait ce test (`0xC2`), même si la reprise après la mort (E18) n'est pas faite : l'épée ne s'obtiendrait alors qu'avec une sauvegarde de test ou sur la carte de debug 11. Défaut : oui (D-B2-2) | l'auteur ; non bloquant |
+| Q-B2-3 | (2026-10-25, E20.b2) Deux sauvegardes de test : l'arène des Beannoïdes avec l'épée, et la carte 7 sous un des blocs du Roi Neige avec le compteur à 20. Défaut : oui (D-B2-3) | l'auteur ; non bloquant |
 | Q-H2-1 | (2026-10-25, E20.h2, à l'auteur en termes de jeu) Sous le sable, l'original ne laisse Alundra avancer que sur du sable à son niveau : le bord du sable, une marche (vers le haut ou vers le bas) ou une case qui n'est pas du sable l'arrête ; elle ne ressort qu'avec Rond. (A, défaut) comme l'original ; (B) la laisser sortir du sable en marchant | l'auteur ; non bloquant |
 | Q-H2-4 | (2026-10-25, E20.h2) Le sable des cartes 403 à 405 et 19 a des courants ; ils ne font pas encore dériver Alundra (E20.i2). (A, défaut) la cape sans les courants, ils viennent avec E20.i2 ; (B) faire E20.i2 d'abord | l'auteur ; non bloquant |
 | Q-H2-5 | (2026-10-25, E20.h2) Si un dialogue ou une scène commence pendant qu'Alundra est sous le sable, l'original la fait remonter d'un coup, sans l'animation de sortie. Comme l'original ? Défaut : oui (D-H2-5) | l'auteur ; non bloquant |
