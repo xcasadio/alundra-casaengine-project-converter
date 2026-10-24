@@ -260,6 +260,13 @@ ADR-0058) :
     (§1.26.1), le fait.
   - **D-E20-66** (« 4 comme l'original ») — Le message de ramassage reste « <nom> gagné! », sans espace avant « ! », comme l'ETC du
     binaire (fait par e0c).
+- **Réponses de l'auteur du 2026-10-24** (questions posées en termes de jeu, en mode AUTO) :
+  - **D-E20-67** (Q-G5-A1, « corriges ») — Le raclement de pierre s'arrête quand le mouvement finit, comme l'original : l'opcode `0xBE`
+    et la fin de C76 appellent `StopSoundEffect` (`0x80049634`), là où la DLL rejouait le son (une erreur de la décompilation). E20.g5c le
+    porte (§1.24.6).
+  - **D-E20-68** (Q-G5-A2, « garder ») — Le héros qui touche un objet à événement s'arrête net et ne repart qu'en relâchant puis
+    ré-enfonçant la direction, comme l'original (le programme F remet à zéro quatre mots du héros, `0x80042150`). Rien ne change ; g5d
+    l'épingle (D-G5D-3).
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
@@ -7357,8 +7364,8 @@ de l'annexe : FAIT, MESURÉ (machine MIPS ou vraie DLL dans une copie), PROTOTYP
   Ordre retenu : juste après E20.e0c2.
 - **g5b, les opcodes `0x72`, `0xA9` et `0xAA`** : détaillée ci-dessous (révision 0, lecture au binaire du 2026-10-23), prélevée sur
   E19.sm3 et E19.sm4 du thème 3, qui les portaient déjà avec leurs preuves (D-G5B-1). Elle débloque aussi les blocs Mini-Nilude.
-- **g5c, l'arrêt du son** (`0xBE` = `StopSoundEffect`, `ISoundPlayer.StopSfx`, l'arrêt de C76) : esquisse, **en attente de la réponse de
-  l'auteur à A1** (§2, Q-G5-A1). Son T0 établit si le moteur sait arrêter un bruitage précis ; sinon le manque se consigne au rapport des
+- **g5c, l'arrêt du son** (`0xBE` = `StopSoundEffect`, `ISoundPlayer.StopSfx`, l'arrêt de C76) : esquisse ; l'auteur a répondu « corriger »
+  le 2026-10-24 (D-E20-67), la lecture au binaire est lancée pour la détailler. Son T0 établit si le moteur sait arrêter un bruitage précis ; sinon le manque se consigne au rapport des
   manques du moteur, sans contournement.
 - **g5d, les objets scriptés** : détaillée ci-dessous (révision 1) ; des arcs pour la statue (cartes 2 et 352) et le bloc de la 23 (les blocs
   glissants de la carte 40 sont prouvés par g5b, T3, ARC-40), un test statique « aucun opcode sauté dans les programmes des quatre familles », l'épingle du gel du héros après un programme F
@@ -10544,8 +10551,8 @@ les trois entrées `0x31`.
 | O-E20-22 | (2026-10-16) Le nettoyage de `PlatformEntity.CarriedEntity` au recyclage d'une entité n'est pas porté (`AlundraWorldProxy.cs:3290`, commentaire) : sans effet tant que rien ne porte, à reprendre dans g1a | E20.g1a |
 | O-E20-23 | (2026-10-23, E20.e0c T0 (i)) Au tick où un objet-clé posé bloque les entités (`Block(soi)`), une entité de rang supérieur au bloqueur ne joue pas son programme dans la DLL (choix puis exécution entité par entité), alors que le binaire la laisse jouer (il choisit tous les programmes avant d'en exécuter un, `0x8003871C-0x80038728`) : un tick d'écart, non épinglé | à placer (l'ordre choix / exécution de la passe des programmes) ; P3, sans effet visible connu |
 | O-E20-24 | (2026-10-23, E20.f5) Une flèche tirée avec le héros à 12 px d'un mur : l'oracle borne le pas de naissance (x = 109), la DLL pose la flèche à 111, dans le mur, où elle ne bouge plus. Le défaut est le bornage du premier pas d'une entité marquée dans le déplaceur (e0a3b, e0k), pas E17. Scénario `arrow3_point_blank`, non testé | à placer (le déplaceur des entités marquées) ; P2, visible en jeu (flèche figée contre un mur) |
-| Q-G5-A1 | (2026-10-23, E20.g5, posée à l'auteur en termes de jeu) Le raclement de pierre des statues, blocs, boutons et piliers : l'original l'arrête quand le mouvement finit (l'opcode `0xBE` et la fin de C76 appellent `StopSoundEffect`) ; la DLL le rejoue (une erreur de la décompilation). Le corriger (g5c) touche 119 cartes, dont 12 passages de l'histoire, et change des tests audio ; sinon le défaut reste. Défaut de la session : corriger (le binaire tranche) | l'auteur |
-| Q-G5-A2 | (2026-10-23, E20.g5, posée à l'auteur en termes de jeu) Après avoir touché un objet à événement (statue, bloc, bouton), le héros s'arrête net et ne repart que si l'on relâche puis ré-enfonce la direction : c'est le comportement mesuré de l'original, pour toute interaction par contact (le programme F remet à zéro quatre mots du héros, `0x80042150`). Le garder (défaut de la session) ou le corriger, ce qui change toutes les interactions par contact | l'auteur |
+| Q-G5-A1 | (2026-10-23, E20.g5, posée à l'auteur en termes de jeu) Le raclement de pierre des statues, blocs, boutons et piliers : l'original l'arrête quand le mouvement finit (l'opcode `0xBE` et la fin de C76 appellent `StopSoundEffect`) ; la DLL le rejoue (une erreur de la décompilation). Le corriger (g5c) touche 119 cartes, dont 12 passages de l'histoire, et change des tests audio ; sinon le défaut reste. Défaut de la session : corriger (le binaire tranche) **Réponse de l'auteur (2026-10-24)** : « corriges » (D-E20-67 ; E20.g5c). | Tranché le 2026-10-24 (D-E20-67) |
+| Q-G5-A2 | (2026-10-23, E20.g5, posée à l'auteur en termes de jeu) Après avoir touché un objet à événement (statue, bloc, bouton), le héros s'arrête net et ne repart que si l'on relâche puis ré-enfonce la direction : c'est le comportement mesuré de l'original, pour toute interaction par contact (le programme F remet à zéro quatre mots du héros, `0x80042150`). Le garder (défaut de la session) ou le corriger, ce qui change toutes les interactions par contact **Réponse de l'auteur (2026-10-24)** : « garder » (D-E20-68). | Tranché le 2026-10-24 (D-E20-68) |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
 | Q-G1A-3 | (2026-10-17) Un objet lancé ne blesse, avant E14.b, que les cibles dont le gestionnaire D est porté (Beannoïde, Muruta) : confirmer **Réponse de l'auteur (2026-10-22)** : « oui » : confirmé. | Tranché le 2026-10-22 |
