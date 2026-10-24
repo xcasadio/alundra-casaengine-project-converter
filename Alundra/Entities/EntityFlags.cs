@@ -97,7 +97,7 @@ public static class EntityFlags
 
     /// <summary>
     /// Bit 8 - the entity is simulated on the Z axis: gravity is applied, <c>ForceZ</c> is reset on
-    /// landing, and the tile/VRAM sampling of <c>UpdateEntityTiles</c> only runs when the bit is clear.
+    /// landing, and the tile/VRAM sampling of <c>UpdateEntityTiles</c> runs when the bit is SET (the binary samples when it is set, 0x80038364; E20.g2c1 corrected the inverted wording).
     /// Set by script opcode 0x16 ("high gravity"), cleared by 0x17 ("low gravity").
     /// </summary>
     public const uint Gravity = 0x00000100;

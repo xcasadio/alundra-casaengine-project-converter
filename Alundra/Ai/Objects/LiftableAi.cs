@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Maps;
@@ -48,7 +49,7 @@ internal static class LiftableAi
     internal const int BreakCode = 2;
 
     /// <summary>
-    /// The sprite types whose header holds E2 in the export (docs/plan-e20-annexe/e20-g1a/report.md, "Types a enregistrer"): the seven types of C23 (<see cref="SpriteTypes"/>) plus the stone (index 34, type 290), the barrel (index 37, type 293) and the trunk
+    /// The sprite types whose header holds E2 in the export (docs/plan-e20-annexe/e20-g1a/report.md, "Types a enregistrer"): the seven types of C23 (<see cref="SpriteTypes"/>) plus the barrel (index 34, type 290), the stone (index 37, type 293) and the trunk
     /// (index 117, type 373) of the family C4. Guarded against the export by the tests.
     /// </summary>
     internal static readonly IReadOnlyList<int> BreakSpriteTypes = new[] { 234, 290, 291, 292, 293, 294, 297, 304, 373, 438 };
@@ -143,16 +144,37 @@ internal static class LiftableAi
 
     private const uint BounceDirectionStep = 0x10;
 
+    /// <summary>The type of the ice blocks (the sprite 48 of the map page): C23 in the header, and C4 once the script of the map (<c>0x41 [C, 4]</c>) changes it.</summary>
+    private const int IceBlockType = 304;
+
+    /// <summary>
+    /// The eleven global-page types of the shop articles (docs/plan-e20-heros.md section 1.24.5, D-G2C1-9, Q-SHOP): the script of the shop maps (134, 163, 258, 298, 398) changes their native C to 4 (<c>0x41 [2, 4]</c>), so that the article lifted from the shelf and thrown on the
+    /// counter is released. Their header has no C4: the key is registered for them, the entity reads its live code.
+    /// </summary>
+    internal static readonly IReadOnlyList<int> ShopArticleTypes = new[] { 48, 50, 66, 67, 68, 69, 71, 81, 83, 85, 113 };
+
+    /// <summary>
+    /// D-G2C1-1: the trunk is the only type whose ground slope (<see cref="EntityScriptProxy.Slope_18c"/>, the water under its four corners) is fed even when the map placed it (without the marker of the entities born during play): C4 reads it to float the trunk, and the eight trunks the
+    /// maps 70 and 73 place on the water float from the first run of C4, as the original's.
+    /// </summary>
+    internal static bool FeedsGroundSlope(int spriteType) => spriteType == TrunkType;
+
+    /// <summary>Registers C4 for the types of <see cref="C4ProductionTypes"/>, as <see cref="NativeSpriteRegistry.CreateForProduction"/> does.</summary>
+    internal static IDisposable RegisterC4Production(NativeSpriteRegistry registry) => RegisterC4(registry, C4ProductionTypes);
+
     /// <summary>The program code of C4 in slot C (<c>0x80066984</c>): the barrel, the stone, the trunk and the four objects of the plates.</summary>
     internal const int C4Code = 4;
 
     /// <summary>The sprite types whose header holds C4 in the export (docs/plan-e20-annexe/e20-g2c/disc/report.md, section 1): 290 barrel, 293 stone, 363 to 369 the objects, 373 the trunk.</summary>
     internal static readonly IReadOnlyList<int> C4SpriteTypes = new[] { 290, 293, 363, 367, 368, 369, 373 };
 
+    /// <summary>The 19 types the key <c>(C, 4)</c> is registered for in production: the seven of <see cref="C4SpriteTypes"/>, the ice block and the eleven shop articles (D-G2C1-9).</summary>
+    internal static readonly IReadOnlyList<int> C4ProductionTypes = C4SpriteTypes.Concat(new[] { IceBlockType }).Concat(ShopArticleTypes).ToArray();
+
     /// <summary>The keys <see cref="RegisterC4"/> registers, for the pins of the production registry.</summary>
     internal static readonly IReadOnlyList<(int Slot, int Code)> C4Keys = new[] { (ScriptHelper.ProgramCTick, C4Code) };
 
-    /// <summary>Registers C4 for the types given (phase A: nothing in production calls it).</summary>
+    /// <summary>Registers C4 for the types given.</summary>
     internal static IDisposable RegisterC4(NativeSpriteRegistry registry, IEnumerable<int> types)
         => registry.Register(ScriptHelper.ProgramCTick, C4Code, types, (entity, context, state) => C4Tick(entity, context));
 

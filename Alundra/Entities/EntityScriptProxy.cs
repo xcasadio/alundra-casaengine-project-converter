@@ -1820,8 +1820,9 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
             ScriptedMotion.TickScriptedNpc(this);
 
             // E20.f6a (D-F6-2, Q-K1 option A): the tile attributes of the binary's physics pass (0x80038064, the end of 0x80038364) for an entity born during play (the marker of the interface) that has the gravity: the same
-            // code as the hero's, after the step of the tick, in the statuses 2 and 3 only (the physics list of the binary). It feeds Slope_18c, which the pick phase reads (DestroyOnSlidingSlope). An entity placed by the map keeps 0 (E19.h2).
-            if (HasLogicalZ)
+            // code as the hero's, after the step of the tick, in the statuses 2 and 3 only (the physics list of the binary). It feeds Slope_18c, which the pick phase reads (DestroyOnSlidingSlope). An entity placed by the map keeps 0 (E19.h2),
+            // except the trunk (E20.g2c1, D-G2C1-1: LiftableAi.FeedsGroundSlope): C4 reads the slope of its water to make it float, and the eight trunks the maps 70 and 73 place on the water float as the original's.
+            if (HasLogicalZ || Alundra.Ai.Objects.LiftableAi.FeedsGroundSlope(SpriteType))
             {
                 UpdateGroundSlope();
             }

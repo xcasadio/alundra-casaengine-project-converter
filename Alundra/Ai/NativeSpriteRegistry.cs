@@ -45,6 +45,7 @@ internal sealed class NativeSpriteRegistry
         PillarAi.Register(registry);
         LiftableAi.Register(registry);
         LiftableAi.RegisterBreak(registry);
+        LiftableAi.RegisterC4Production(registry);
         return registry;
     }
 
