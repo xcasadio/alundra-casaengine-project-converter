@@ -6999,7 +6999,7 @@ Decisions: see ADR-0089.
 - **Verifiers frais.** Le premier : REFUTED sur la seule ligne « Oracle » (le T0 commun absent), tout le reste confirmé. Après la reprise, un
   troisième : **CONFIRMED** (l'oracle rejoué deux fois, les 20 mutants, trois mutations du code).
 
-#### 1.24.2 E20.g2a — Lancer ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi ; **READY** à la relecture de clôture)
+#### 1.24.2 E20.g2a — Lancer ✅ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi ; **READY** à la relecture de clôture ; **faite et CONFIRMED le 2026-10-24** par deux verifiers frais ; ADR-0089 amendé)
 
 **Relecture (2026-10-18).** REVISE, cinq blocages corrigés (FIX) : la règle de vitesse est nommée (l'extension au marqueur `HasLogicalZ`,
 après f5) et P-G-3 devient une prédiction à une valeur ; f5 est un prérequis ferme, Q-G1A-4 aligné ; `CarryRules.cs` et les chemins du HEAD
@@ -7044,10 +7044,10 @@ avec la ligne, 110,5 ; une autre valeur est un arrêt.
 
 ##### Tâches
 
-- ⏳ **T1 — Phase A** (tests d'abord, puis le code). (t1) `ThrowCarried` direct : position, direction aux quatre indices (accolées deux à deux), `t24` ∈ {1, 2} au sol et {2, 3} en l'air, animations `0x09` et `0x0A`, garde `0x2000` (rien, accolée) ; (t2) le regard du tick précédent contre le regard de fin de tick.
-- ⏳ **T2 — Tests de monde**, **rouges avant T3**, à 1, 2 et 3 ticks par image : (v1) vol au sol, sans direction ; (v2) en marche ; (v3) en l'air ; (v4) les quatre directions et les vitesses nord et sud ; (v5) les gardes `0x2000` et `0x4000` ; (v6) le geste ; (v7) le tick du lancer : X + 1,5 dès T (règle de vitesse) ; (v8) mur et marches de 16, 32 et 48 px : l'objet s'arrête au mur à X = 133, se pose sur la marche, **reste** (E2 absent) ; (v9) l'objet lancé traverse une autre caisse. Chaque cas « sans effet » est accolé à un cas positif.
-- ⏳ **T3 — Phase B** : la branche. Verts.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : indice de la table permuté ; `+0x98` lu à la place de `+0x8C` ; regard de fin de tick ; `t24` permutés ; Z sans `0x200000` ; garde `0x2000` inversée ; `0x4000` appliquée au lancer ; geste non protégé ; héros `0x09` et `0x0A` permutés ; vitesse lue sur `CurrentAnimationId` (la ligne de couverture de D-F5-5).
+- ✅ **T1 — Phase A** (tests d'abord, puis le code). (t1) `ThrowCarried` direct : position, direction aux quatre indices (accolées deux à deux), `t24` ∈ {1, 2} au sol et {2, 3} en l'air, animations `0x09` et `0x0A`, garde `0x2000` (rien, accolée) ; (t2) le regard du tick précédent contre le regard de fin de tick.
+- ✅ **T2 — Tests de monde**, **rouges avant T3**, à 1, 2 et 3 ticks par image : (v1) vol au sol, sans direction ; (v2) en marche ; (v3) en l'air ; (v4) les quatre directions et les vitesses nord et sud ; (v5) les gardes `0x2000` et `0x4000` ; (v6) le geste ; (v7) le tick du lancer : X + 1,5 dès T (règle de vitesse) ; (v8) mur et marches de 16, 32 et 48 px : l'objet s'arrête au mur à X = 133, se pose sur la marche, **reste** (E2 absent) ; (v9) l'objet lancé traverse une autre caisse. Chaque cas « sans effet » est accolé à un cas positif.
+- ✅ **T3 — Phase B** : la branche. Verts.
+- ✅ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : indice de la table permuté ; `+0x98` lu à la place de `+0x8C` ; regard de fin de tick ; `t24` permutés ; Z sans `0x200000` ; garde `0x2000` inversée ; `0x4000` appliquée au lancer ; geste non protégé ; héros `0x09` et `0x0A` permutés ; vitesse lue sur `CurrentAnimationId` (la ligne de couverture de D-F5-5).
 
 ##### Acceptation
 
@@ -7056,6 +7056,28 @@ avec la ligne, 110,5 ; une autre valeur est un arrêt.
 - **Arrêts** : une sonde contredit sa prédiction (P-G-2 ; la prédiction de la règle de vitesse) ; X au tick T diffère de 1,5 ; un test hors de la liste prédite bouge ; un besoin de changer le moteur. **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après. **Retour arrière** : la phase B se retire seule.
 
 ---
+
+**Résultats (2026-10-24).** Exécution en mode AUTO, HEAD de départ `44ce16c8`. Mesures : `docs/plan-e20-annexe/e20-g2a/exec/README.md`.
+- **Commits.** `f9652340` (le T0 propre à g2a : P-G-2 et P-G-3) ; `9545acd4` (phase A : `CarryRules.ThrowCarried`, pure) ; `71b84a08` (T2) ;
+  `94f53813` (phase B : la branche de Carré dans `CarryGroupTick` à la place du bouchon) ; `c66d5af1` (T4, l'ADR-0089 amendé).
+- **T0.** P-G-2 tient : `BoxDirection` au tick du lancer est la direction du tick précédent. P-G-3 tient : avec la clause `HasLogicalZ` de la règle
+  de vitesse (déjà présente dans `ScriptedMotion.KeyAnimationOf` depuis f5), l'objet lancé est à 110,5 au tick du lancer, 109,0 sans ; aucune
+  ligne n'est à écrire dans `ScriptedMotion.cs`.
+- **Tests.** Phase A : 19 cas, 18 rouges sur le squelette. T2 : 84 cas de monde (v1 à v9), tous rouges avant la branche et verts après, aux
+  valeurs de l'oracle (au sol, 143,5 à T+22 sans direction et 178 avec ; en l'air, arrivée à T+26 ; mur à 133,0 ; marches de 16, 32, 48 px ; la
+  seconde caisse traversée ; le héros en état 9 puis 0 à T+19, en l'air 10 puis 0 à T+11). Retirer la branche rend rouges exactement ces 84
+  cas. `Alundra.Tests` : 5 810 au départ, 5 913 à la fin, zéro échec en Release (copie neutralisée) et en Debug ; `cmp` de la DLL identique ;
+  aucun test existant déplacé. 17 mutants réels, tous tués.
+- **Verifiers frais** : **CONFIRMED** tous deux.
+- **Écarts, dispositions.**
+  - F1 : l'objet lancé part du pixel entier d'Alundra, car le moteur tronque la racine dans le suivi des mains (un héros à 68,78 lance de
+    68,0). C'est l'écart sous le pixel déjà accepté (O-G-7) ; la scène de (v4) cale le héros sur un pixel entier.
+  - F2 : sans E2, l'objet posé continue de glisser jusqu'à un mur ; E2 (g2b) efface sa force à T+23.
+  - Retirer la clause de la règle de vitesse rend rouges (v1) à (v4), (v7) et un cas de (v8), la marche de 48 px à 3 ticks par image : la règle
+    fait poser l'objet sur la marche, sans elle il tombe. La formulation « exactement » de la preuve de retrait était trop étroite.
+  - Le banc des tests de monde construit le héros avec un corps cinématique, comme le vrai prefab (paramètre optionnel `kineticBody`, faux par
+    défaut), et `HeroAttackClock.Table` reçoit les états 9 et 10 du lancer.
+- **D-E20-39 tenue** : rien ne met un objet dans les mains en production avant g3 et g1b.
 
 #### 1.24.3 E20.g2b — Briser ⏳ (révision du 2026-10-18 : le bloc « Révision au HEAD » et les corrections ci-dessous font foi ; **READY** à la relecture de clôture)
 
