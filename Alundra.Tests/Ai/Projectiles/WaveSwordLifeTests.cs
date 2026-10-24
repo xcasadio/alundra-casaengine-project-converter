@@ -182,7 +182,7 @@ public sealed class WaveSwordLifeTests : IDisposable
         var types = WaveSwordAi.SpriteTypes;
 
         Assert.Equal(
-            (3 + 3 + 1 + PickupAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count, true, true, true, false, 0),
+            (3 + 3 + 1 + PickupAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count, true, true, true, false, 0),
             (registry.Count,
              types.All(t => registry.TryGet(ScriptHelper.ProgramCTick, 61, t, out _)),
              headers.All(h => h.ProgramTick == 61 && h.ProgramDeactivate == 10),

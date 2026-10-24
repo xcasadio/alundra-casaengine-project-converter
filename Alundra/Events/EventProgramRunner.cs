@@ -47,7 +47,7 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
     /// <summary>E14.a0 (D-E14-1): the registry of the native sprite handlers by (slot, code) and sprite type. In production it holds the
     /// Beannoid's A1, C1 and D1 for the type 335 (E14.a1b, <see cref="BeannoideAi"/>), the Muruta's A0, C10 and D9 for the type 347 (E14.a1c, <see cref="MurutaAi"/>), the C61 of the sword wave (E20.f3c, <see cref="WaveSwordAi"/>),
-    /// the A255 and C255 of the pickup objects (E20.e0c, <see cref="PickupAi"/>) and the C94 of the charged arrow (E20.f4, <see cref="ChargedArrowAi"/>), the E17 of the normal arrows (E20.f5, <see cref="ArrowAi"/>), the C76 of the pushable pillar (E20.g5a, <see cref="PillarAi"/>) and the C23 of the liftable objects (E20.g1a, <see cref="LiftableAi"/>). Consulted after
+    /// the A255 and C255 of the pickup objects (E20.e0c, <see cref="PickupAi"/>) and the C94 of the charged arrow (E20.f4, <see cref="ChargedArrowAi"/>), the E17 of the normal arrows (E20.f5, <see cref="ArrowAi"/>), the C76 of the pushable pillar (E20.g5a, <see cref="PillarAi"/>) the C23 of the liftable objects (E20.g1a, <see cref="LiftableAi"/>) and the E2 of the breakable objects (E20.g2b, <see cref="LiftableAi.RegisterBreak"/>). Consulted after
     /// the save book and E0/E1, which stay outside it.</summary>
     internal NativeSpriteRegistry NativeSprites { get; } = NativeSpriteRegistry.CreateForProduction();
 
