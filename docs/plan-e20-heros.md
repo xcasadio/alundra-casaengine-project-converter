@@ -10279,7 +10279,7 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : rendre les cinq entrées à leurs bouchons ; la phase A reste inerte.
 
-#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⏳ (détaillée le 2026-10-25 ; thème 2 ; ferme O-H-1 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
+#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⚠️ (détaillée le 2026-10-25 ; thème 2 ; ferme O-H-1 ; révisions 0 et 1 relues : REVISE ; révision 2 relue à la clôture : REVISE ; **en pause de relecture** : la révision 3 ci-dessous corrige les deux blocages de la clôture mais n'est pas relue ; une nouvelle relecture ne s'ouvre que sur décision de l'auteur, Q-H2-P)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `86d421b5` ; `report-main.md` et le critique frais `critic-main.md`, CONFIRMÉ avec des
 corrections reprises ici, dans le scratchpad de la session principale `scratchpad/t2-cape/`, à verser par T0 à
@@ -10296,6 +10296,13 @@ mise dans le champ de cases commun à tout le monde (un seul champ par carte, é
 savoir quelle entité le demande), aurait confiné au sable tous les PNJ et ennemis de la carte pendant qu'Alundra est sous le sable, alors que le
 binaire ne l'applique qu'au test de murs du héros (`0x80037488`). D-H2-6 la réserve au héros par un bit de son seul masque, recalculé à chaque
 tick ; un test de monde et un mutant le gardent.
+
+**Révision 3 (2026-10-25, non relue : la tranche est en pause).** La relecture de clôture de la révision 2 (REVISE) a relevé deux blocages :
+(1) `ResyncControllerFromFlags` commence par `ApplyGravitySettingsToController`, qui met toujours `Settings.Gravity` et `MaxFallSpeed` à 0 (le
+réglage des PNJ dont la DLL mène le mouvement vertical) ; appelé chaque tick sur le héros, dont le moteur mène la chute (`MapGravity`,
+`MapMaxFallSpeed`, sauvés et rendus par l'état d'escalade), il l'empêcherait de tomber ; (2) aucun appel par tick de cette resynchronisation
+n'existe pour le héros (elle n'est appelée que par les opcodes de drapeaux et `ArrowAi`). Correction : D-H2-6 nomme un chemin propre au héros,
+qui n'écrit que le masque, et son site dans le tick ; un test et un mutant gardent la gravité du héros.
 
 **Prérequis.** E20.h0a faite (le cadre de l'usage d'un objet : `ItemInUse`, le compteur, la table de départ, de pilote et d'annulation, la
 garde du menu Start, la branche verrouillée) ; même branche du thème 2. La tranche ne dépend ni de g1a ni de g1b (la cape ne porte rien), ni
@@ -10345,10 +10352,13 @@ avec la cape ne fait rien.
 - **D-H2-3** — L'ordre : après E20.e0d de préférence (le coffre de la 402) ; les tests et la recette passent par des préréglages.
 - **D-H2-4** (Q-H2-4) — Le sable à courant (cartes 403 à 405 et 19) ne dérive pas avant E20.i2 : hors tranche.
 - **D-H2-5** (Q-H2-5) — Un verrou du contrôle (un dialogue, une scène) remonte Alundra sans l'animation de sortie, comme l'original.
-- **D-H2-6** — La règle de terrain ne vaut **que pour le héros** et se lit **à chaque tick** dans `ItemInUse == 0x20` (comme le binaire lit
-  `[0x80127164]` dans le seul test de murs du héros) : un bit « cape » du masque de marche **du contrôleur du héros seul**, recalculé à chaque
-  tick depuis `ItemInUse` par la resynchronisation du masque (`EntityScriptProxy`, `ResyncControllerFromFlags`, qui réécrit le masque depuis
-  `Flags` : le bit y est ajouté pour le héros, jamais pour une autre entité), si bien qu'il tombe sur tous les chemins de libération (la sortie
+- **D-H2-6** (révision 3) — La règle de terrain ne vaut **que pour le héros** et se lit **à chaque tick** dans `ItemInUse == 0x20` (comme le
+  binaire lit `[0x80127164]` dans le seul test de murs du héros) : un bit « cape » du masque de marche **du contrôleur du héros seul**, écrit par
+  une fonction neuve d'`Alundra/Hero/` qui ne touche que `Controller.Settings.WalkabilityMask` (le bit posé si `ItemInUse == 0x20`, retiré
+  sinon ; jamais la gravité ni la vitesse de chute), appelée dans le tick du héros (`PlayerManager`) juste après l'enveloppe de l'objet en cours
+  (l'équivalent de `0x8003634C`, qui peut libérer l'objet) et avant la passe du contrôleur du moteur ; `ResyncControllerFromFlags`, quand un
+  opcode de drapeaux (`0x16`/`0x17`, `0x62`/`0x63`) vise le héros, garde le bit tant que `ItemInUse == 0x20` (et T0 vérifie ce qu'elle fait
+  aujourd'hui de la gravité du héros : un écart préexistant se consigne, O-H2-1). Le bit tombe donc sur tous les chemins de libération (la sortie
   normale, quand l'enveloppe libère l'objet ; l'annulation par un verrou ; `Skip` ; la reconstruction du héros au chargement d'une carte) ; le
   champ de cases de la DLL l'interprète (« bloqué si pas du sable », « plus bas est un mur », avec le pied que donne le moteur, pied +
   `StepHeight`). T0 prouve les trois points : le bit survit à la resynchronisation et n'atteint que le héros, le champ l'interprète, les autres
@@ -10357,7 +10367,8 @@ avec la cape ne fait rien.
 - **D-H2-8** — Les exemples « état non porté » de `PlayerManagerTests` et de h0a (a6) prennent un autre état non porté (recompté au HEAD).
 
 **Périmètre.** `Alundra/Hero/` (le départ à deux branches, la boucle de la sortie, les entrées de table de h0a pour `0x20`, les cinq états dans
-`MovePlayer`) ; le champ de cases de la DLL (`Alundra/Cells/` ou `Alundra/Physics/`, la règle de terrain) ; `Alundra/SaveGames/TestSaves.cs` et
+`MovePlayer`, la fonction du bit « cape » et son appel dans le tick du héros) ; `Alundra/Entities/EntityScriptProxy.cs` (`ResyncControllerFromFlags`
+qui garde le bit) ; le champ de cases de la DLL (`Alundra/Cells/` ou `Alundra/Physics/`, la règle de terrain) ; `Alundra/SaveGames/TestSaves.cs` et
 ses tables, `docs/test-saves.md` ; les tests ; l'annexe `docs/plan-e20-annexe/e20-h2/` ; un ADR neuf ; ce plan (O-H-1 fermé).
 
 **Hors périmètre.** La poussière du pas (E20.e2) et l'ombre (aucun rendu) ; les courants (E20.i2) ; la blessure du héros (E20.c2b :
@@ -10377,7 +10388,9 @@ l'invulnérabilité se teste à la passe de coups) ; le moteur.
 - ⏳ **T1 — Phase A, tests d'abord** (rouges avant, puis verts ; aucun changement de production) : le départ (la grille pente 0 à 7 × états 0, 1, 2,
   `0x2B`) ; la sortie (les 12 lignes d'état et de force ; la pente non testée) ; la boucle (les bornes de X, Y, Z ; les filtres ; les bornes de
   boucle) ; le pilote.
-- ⏳ **T2 — Phase B, tests de monde rouges avant** (le vrai contrôleur) : le plongeon (72 ticks, son 15) ; la marche et la ruée (vitesses, avec et
+- ⏳ **T2 — Phase B, tests de monde rouges avant** (le vrai contrôleur) : la gravité et la vitesse de chute du héros (`Settings.Gravity`,
+  `MaxFallSpeed`) inchangées après plusieurs ticks sous le sable et après la sortie, au sol et juste après une escalade (vert avant et après,
+  une garde) ; le bit retiré au tick qui suit la libération de l'objet ; le plongeon (72 ticks, son 15) ; la marche et la ruée (vitesses, avec et
   sans bottes) ; l'arrêt au bord du sable (F1), devant une marche descendante (F2) et montante (F3) ; la sortie (72 ticks, puis l'attente,
   l'objet libéré au tick suivant) ; **après la sortie, Alundra marche du sable sur l'herbe sans être arrêtée** ; **après un changement de carte
   sous le sable, aucun confinement** ; **pendant qu'Alundra est sous le sable, un PNJ (ou un ennemi) qui a un contrôleur, sur le même sable,
@@ -10390,7 +10403,7 @@ l'invulnérabilité se teste à la passe de coups) ; le moteur.
   tous tués (la pente 3 en 2 ; l'état < 2 en ≤ 2 ; la sortie qui teste la pente ; un filtre de la boucle retiré ; `AnimFlags` au lieu de
   `HitAnimByte` ; le recouvrement symétrique ; le pilote qui n'annule pas en l'air ; la règle de terrain attachée à l'état au lieu de l'objet ;
   « plus bas » accepté ; la règle levée seulement à l'annulation (tué par le test « après la sortie, sur l'herbe ») ; la règle appliquée à toute entité (tué par le test
-  du PNJ sur le même sable) ; la ruée sans le front ; la vitesse sans la division par deux ; le son 3 oublié) ; un ADR neuf ; O-H-1 fermé.
+  du PNJ sur le même sable) ; le recalcul par `ResyncControllerFromFlags` qui met à zéro la gravité du héros (tué par la garde de la gravité) ; la ruée sans le front ; la vitesse sans la division par deux ; le son 3 oublié) ; un ADR neuf ; O-H-1 fermé.
 - ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.** Les sorties de T0 (c) identiques ; les tests de T1 et T2 rouges avant leur phase et verts après (nommés) ; la suite en Release et
@@ -11496,6 +11509,8 @@ les trois entrées `0x31`.
 | Q-H2-1 | (2026-10-25, E20.h2, à l'auteur en termes de jeu) Sous le sable, l'original ne laisse Alundra avancer que sur du sable à son niveau : le bord du sable, une marche (vers le haut ou vers le bas) ou une case qui n'est pas du sable l'arrête ; elle ne ressort qu'avec Rond. (A, défaut) comme l'original ; (B) la laisser sortir du sable en marchant | l'auteur ; non bloquant |
 | Q-H2-4 | (2026-10-25, E20.h2) Le sable des cartes 403 à 405 et 19 a des courants ; ils ne font pas encore dériver Alundra (E20.i2). (A, défaut) la cape sans les courants, ils viennent avec E20.i2 ; (B) faire E20.i2 d'abord | l'auteur ; non bloquant |
 | Q-H2-5 | (2026-10-25, E20.h2) Si un dialogue ou une scène commence pendant qu'Alundra est sous le sable, l'original la fait remonter d'un coup, sans l'animation de sortie. Comme l'original ? Défaut : oui (D-H2-5) | l'auteur ; non bloquant |
+| Q-H2-P | (2026-10-25, E20.h2, à l'auteur) La tranche de la cape de sable a eu trois relectures REVISE (la dernière, de clôture, a trouvé que le recalcul du masque proposé aurait mis la gravité d'Alundra à zéro) ; la règle du dépôt arrête là les relectures automatiques. Une révision 3 est écrite au plan. Ouvrir une nouvelle relecture (une époque neuve) au début du thème 2, après h0a ? Défaut proposé : oui | l'auteur ; non bloquant (après h0a) |
+| O-H2-1 | (2026-10-25, relevé par la clôture de h2) `ResyncControllerFromFlags` commence par `ApplyGravitySettingsToController`, qui met la gravité et la vitesse de chute à 0 : quand un opcode de drapeaux (`0x16`/`0x17`, `0x62`/`0x63`) vise le héros, sa chute serait coupée ; à vérifier au T0 de h2 (un écart préexistant, hors cape) | E20.h2 T0 |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
 | Q-G1A-3 | (2026-10-17) Un objet lancé ne blesse, avant E14.b, que les cibles dont le gestionnaire D est porté (Beannoïde, Muruta) : confirmer **Réponse de l'auteur (2026-10-22)** : « oui » : confirmé. | Tranché le 2026-10-22 |
