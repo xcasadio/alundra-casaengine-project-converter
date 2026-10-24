@@ -459,8 +459,7 @@ public static class PlayerManager
             }
         }
         // Climbing(0x0E)/ClimbStill(0x35) case, PlayerManager.cs:675-731 (docs/plan-echelles-chiffrage.md
-        // É4). TryUseItem/PlayerTryAction (:677) NOT PORTED (no item/interaction system, same scope
-        // restriction as every other unported call in this class) - proceeds straight to the body.
+        // É4). TryUseItem/PlayerTryAction (:677) are called first below (E20.g1b phase B), then the body.
         else if (player.TargetAnimationId == ClimbingAnimationId || player.TargetAnimationId == ClimbStillAnimationId)
         {
             // PlayerManager.cs:679-684: any held direction OTHER than up/down (i.e. a genuinely LATERAL
@@ -472,7 +471,11 @@ public static class PlayerManager
             // the original has no separate "stop climbing" reset because a Jump entry starts its own fresh
             // vertical impulse; this port instead just needs to stop feeding the ladder's per-tick vertical
             // step to Tick, see ScriptedMotion.TickPlayer's own doc).
-            if (buttonsHold != 0 && dir != 0 && dir != 0x10)
+            // E20.g1b phase B, binary 0x800321D4-0x800321E4: TryUseItem (0 ends the tick), then PlayerTryAction (non-zero ends it: a lift during the climb).
+            if (TryUseItem(player, in pad) == 0 || PlayerTryAction(player, in pad) != 0)
+            {
+            }
+            else if (buttonsHold != 0 && dir != 0 && dir != 0x10)
             {
                 player.TargetAnimationId = IdleAnimationId;
                 player.ForceZ = 0;
@@ -951,14 +954,20 @@ public static class PlayerManager
     [ThreadStatic]
     internal static int? TryUseItemResultForTests;
 
-    /// <summary>E20.a A4 stub of <c>PlayerTryAction</c> (<c>0x8002EEAC</c>): 0 means "no action, carry on" (<c>0x8002EFC8</c>: nothing carried and nothing to lift). Lifting, carrying and throwing are E20.g.</summary>
-    private static int PlayerTryAction(EntityScriptProxy player, in PadState pad) => 0;
+    /// <summary>E20.g1b phase B: <c>PlayerTryAction</c> (<c>0x8002EEAC</c>) over the world of the hero: the spawned entities, and the object <c>0x3B</c> for the genres 2 and 3. 0 means "no action, carry on".</summary>
+    private static int PlayerTryAction(EntityScriptProxy player, in PadState pad)
+    {
+        var host = player.ScriptHost;
+        var entities = (host as IEntityWorldContext)?.SpawnedEntities ?? System.Array.Empty<EntityScriptProxy>();
+        var owns = host != null && GetNumberOfItem(host.GameState, 0x3B) != 0;
+        return PlayerTryActionCore(player, in pad, entities, owns, WiredLiftableTypes);
+    }
 
     /// <summary>
-    /// E20.g1b phase A (docs/plan-e20-heros.md section 1.24.4): the sprite types whose lift is wired to <see cref="TryLift"/>, one type after the other (the model of <see cref="ProductionWiredWeaponTypes"/>, D-G-8). Empty in production until the
-    /// activation (phase B, T3): the stub <see cref="PlayerTryAction"/> still answers 0 and nothing reads this set in production.
+    /// E20.g1b phase A (docs/plan-e20-heros.md section 1.24.4): the sprite types whose lift is wired to <see cref="TryLift"/>, one type after the other (the model of <see cref="ProductionWiredWeaponTypes"/>, D-G-8). Phase B (T3), the activation: the seven
+    /// types of C23 (<see cref="Alundra.Ai.Objects.LiftableAi.SpriteTypes"/>); <see cref="PlayerTryAction"/> reads it.
     /// </summary>
-    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredLiftableTypes = new System.Collections.Generic.HashSet<int>();
+    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredLiftableTypes = new System.Collections.Generic.HashSet<int>(Alundra.Ai.Objects.LiftableAi.SpriteTypes);
 
     /// <summary>E20.g1b test seam, per thread: when set, replaces <see cref="ProductionWiredLiftableTypes"/>.</summary>
     [ThreadStatic]

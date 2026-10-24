@@ -1,3 +1,4 @@
+using System.Linq;
 #nullable enable
 using System.Collections.Generic;
 using Xunit;
@@ -132,9 +133,10 @@ public sealed class LiftPureTests
     }
 
     [Fact]
-    public void TheProductionSet_IsEmpty_AndTheTestSeamReplacesIt()
+    public void TheProductionSet_IsTheSevenTypesOfC23_AndTheTestSeamReplacesIt()
     {
-        Assert.Empty(PlayerManager.ProductionWiredLiftableTypes);
+        // E20.g1b phase B: the activation wires the seven types of C23 (binary: the sprites whose header holds C23), no more.
+        Assert.Equal(new[] { 234, 291, 292, 294, 297, 304, 438 }, PlayerManager.ProductionWiredLiftableTypes.OrderBy(t => t));
         Assert.Same(PlayerManager.ProductionWiredLiftableTypes, PlayerManager.WiredLiftableTypes);
         try
         {
