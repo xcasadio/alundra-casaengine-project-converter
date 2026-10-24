@@ -299,6 +299,12 @@ ADR-0058) :
     ajoute seulement, sans boisson, et le coffre natif (F255 `0x8007FC88`) refuse l'objet dès `CanTake` (`0x80033D34`) : l'objet monte,
     « Tu transportes trop de choses pour garder X. », rien n'est donné, le drapeau du coffre n'est pas posé. La DLL est déjà fidèle sur `0x82`.
     D-E20-51 est **caduque sous réserve de l'auteur** (Q-H1-3 lui est reposée au rapport du matin) : h1 ne touche pas l'interpréteur.
+- **Réponses de l'auteur du 2026-10-24, quatrième tour** (« prend les choix par défaut ») :
+  - **D-E20-78** (Q-H1-3 rouverte, A) — Comme l'original : un soin donné par `0x82` s'ajoute au sac sans être bu, et un coffre refuse l'objet
+    quand le sac est plein ; rien ne change dans la DLL. D-E20-51 est caduque ; h1 ne touche pas l'interpréteur.
+  - **D-E20-79** (la recette de g1b, étape 4, A) — La plateforme de la carte 72 ne s'atteint pas à pied depuis `porter-m72` (une montée de
+    32 px, le saut monte de 27,5 px) : un second préréglage fait partir Alundra sur la presqu'île, à côté de la plateforme, pour cette seule
+    étape ; les autres étapes restent à pied depuis `porter-m72`.
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
@@ -11202,7 +11208,7 @@ les trois entrées `0x31`.
 | O-H-6 | (2026-10-18) Le héros touché au même tick qu'un soin : la passe de coups `0x80039300` est la dernière de `0x8003B388`, après les entités : le soin précède les dégâts (INFÉRENCE, critique d'h1 C-11) ; à mesurer avec E20.c2b | E20.c2b |
 | Q-H1-1 | (2026-10-18) Un préréglage de recette pour les soins ? Aujourd'hui les sauvegardes d'armes ont 4/4 de magie, aucun objet du Rond et pas de Breuvage : on ne peut rien essayer des potions. (A, défaut) un préréglage `heal-m14` : carte 14, vie 3/10, magie 1/4, l'Herbe équipée, les cinq objets dans le sac, on change d'objet par le menu (deux tests déplacés) ; (B) cinq préréglages, un par objet ; (C) aucun, la console des sauvegardes de test **Réponse de l'auteur (2026-10-22)** : le défaut (A) : le préréglage `heal-m14`. | Tranché le 2026-10-22 |
 | Q-H1-2 | (2026-10-18) Tenir Start + Select 2 secondes consomme un Breuvage de soin s'il y en a un et tue Alundra (« abandonner ») dans l'original. (A, défaut) avec le game over d'E18 ; rien ne change en jeu d'ici là (le geste ne fait rien aujourd'hui) ; (B) une tranche h0b avant E18 : Alundra mourrait (0 cœur) sans écran de fin **Réponse de l'auteur (2026-10-22)** : « On oublie cette possibilité. Ça devait être utilisé pour des tests » : le geste n'est pas porté, ni en E18 ni ailleurs (D-E20-50) ; O-H-3 est fermé. | Tranché le 2026-10-22 (D-E20-50) |
-| Q-H1-3 | (2026-10-18) Un soin ramassé quand le sac est plein se boit sur place dans l'original (une Herbe ramassée avec 9 Herbes rend des cœurs). (A, défaut) avec le ramassage d'E20.e0c (rien de visible tant que le butin n'est pas porté) ; (B) dans h1 pour le coffre (`0x82`), en touchant l'interpréteur hors du cadre de h1 **Réponse de l'auteur (2026-10-22)** : « B » : h1 porte le soin bu sur place pour le coffre (`0x82`), en touchant l'interpréteur ; h1 est à réviser (D-E20-51). **Erratum (2026-10-24)** : la prémisse de (B) est fausse : `0x82` ajoute seulement et le coffre refuse l'objet sac plein (voir §1.0, D-E20-51) ; la question est reposée à l'auteur. | **Rouverte le 2026-10-24** (erratum de D-E20-51), l'auteur |
+| Q-H1-3 | (2026-10-18) Un soin ramassé quand le sac est plein se boit sur place dans l'original (une Herbe ramassée avec 9 Herbes rend des cœurs). (A, défaut) avec le ramassage d'E20.e0c (rien de visible tant que le butin n'est pas porté) ; (B) dans h1 pour le coffre (`0x82`), en touchant l'interpréteur hors du cadre de h1 **Réponse de l'auteur (2026-10-22)** : « B » : h1 porte le soin bu sur place pour le coffre (`0x82`), en touchant l'interpréteur ; h1 est à réviser (D-E20-51). **Erratum (2026-10-24)** : la prémisse de (B) est fausse : `0x82` ajoute seulement et le coffre refuse l'objet sac plein (voir §1.0, D-E20-51) ; la question est reposée à l'auteur. **Réponse de l'auteur (2026-10-24, après l'erratum)** : « prend les choix par défaut » : comme l'original, rien ne change (D-E20-78). | Tranché le 2026-10-24 (D-E20-78) |
 
 ## 3. Hors périmètre
 
