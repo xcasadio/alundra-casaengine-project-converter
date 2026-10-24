@@ -7240,7 +7240,9 @@ soulevé au premier `MovePlayer` sans bouton, 12 ; les décalages de `TryLift` (
   (m1) et (m7) après T3 ; **un contact qui diffère dans ces ticks, en l'air ou au sol, est un arrêt** ; les valeurs attendues ne changent jamais
   pour suivre la DLL ; (c) la liste prédite : la liste des préréglages (`AlundraTestSavesTests`, ses deux tables), dérivée de l'état des
   autres préréglages ajoutés avant (E20.e `herbe-m14`, E20.g4a `barricade-m392`).
-- ⏳ **T1 — Phase A** (tests d'abord, puis le code). (l1) `TryLift` direct : genres 0, 1, 2, 3 × `0x3B` (huit cas), retour, appel de
+- ✅ **T1 — Phase A** (faite le 2026-10-24 : `6fce52a8` les 37 tests de `Alundra.Tests/Hero/LiftPureTests.cs`, 23 rouges sur le squelette ; `af05ff2d` `TryLift` et
+  `PlayerTryActionCore`, l'ensemble câblé de production vide ; `7176f056` ; 6 068 tests, zéro échec en Release ; la production inchangée)
+  (tests d'abord, puis le code). (l1) `TryLift` direct : genres 0, 1, 2, 3 × `0x3B` (huit cas), retour, appel de
   `PutInHands`, animation cible ; type hors de l'ensemble câblé → 0, accolé au même objet dans l'ensemble ; (l2) `PlayerTryAction` direct :
   porté → 1 et `0x0C`/`0x30` ; contact et front → retour direct de `TryLift` (même 0, sans passer par la boucle) ; contact sans front →
   boucle ; boucle sans bouton : objet sur la tête soulevé, accolé à `RidingEntity` autre ; statut 4 ou `+0x20` non nul ignoré ; héros sans
