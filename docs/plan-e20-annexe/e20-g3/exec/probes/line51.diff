@@ -1,0 +1,6 @@
+--- a/Alundra/Physics/MovementObstacleProbe.cs
++++ b/Alundra/Physics/MovementObstacleProbe.cs
+@@ -49,2 +49,2 @@
+         var found = EntityCollision.FindEntityCollisionCandidate(
+-            proxy, candidateX, candidateY, proxy.PosZ, _host.Collidables, EntityFlags.PickupKindMask);
++            proxy, candidateX, candidateY, proxy.PosZ, _host.Collidables);

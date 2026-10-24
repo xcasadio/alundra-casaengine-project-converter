@@ -1,0 +1,190 @@
+== P-G3-6 A: start (664, 314), LEFT+UP x14 (binary: stops at (657.0000, 309.3333) at tick 5 and stays, adj=1, xcoll=rec5)
+t01 x=663.1383 y=313.4255 z=64.000 adj=0 xcoll=- anim=1
+t02 x=661.4149 y=312.2766 z=64.000 adj=0 xcoll=- anim=1
+t03 x=659.6915 y=311.1277 z=64.000 adj=0 xcoll=- anim=1
+t04 x=657.9681 y=309.9788 z=64.000 adj=0 xcoll=- anim=1
+t05 x=656.2448 y=308.8298 z=64.000 adj=0 xcoll=- anim=1
+t06 x=654.5214 y=307.6809 z=64.000 adj=0 xcoll=- anim=1
+t07 x=652.7980 y=306.5320 z=64.000 adj=0 xcoll=- anim=1
+t08 x=651.0746 y=305.3831 z=64.000 adj=0 xcoll=- anim=1
+t09 x=649.3512 y=304.2341 z=64.000 adj=0 xcoll=- anim=1
+t10 x=647.6278 y=303.0852 z=64.000 adj=0 xcoll=- anim=1
+t11 x=645.9044 y=301.9363 z=64.000 adj=0 xcoll=- anim=1
+t12 x=644.1810 y=300.7874 z=64.000 adj=0 xcoll=- anim=1
+t13 x=642.4576 y=299.6384 z=64.000 adj=0 xcoll=- anim=1
+t14 x=640.7343 y=298.4895 z=64.000 adj=0 xcoll=- anim=1
+== P-G3-6 B: start (664, 300), LEFT+DOWN x14 (binary: stays at (657, 304.6666))
+t01 x=663.1383 y=300.5745 z=64.000 adj=0 xcoll=- anim=1
+t02 x=661.4149 y=301.7234 z=64.000 adj=0 xcoll=- anim=1
+t03 x=659.6915 y=302.8723 z=64.000 adj=0 xcoll=- anim=1
+t04 x=657.9681 y=304.0212 z=64.000 adj=0 xcoll=- anim=1
+t05 x=656.2448 y=305.1702 z=64.000 adj=0 xcoll=- anim=1
+t06 x=654.5214 y=306.3191 z=64.000 adj=0 xcoll=- anim=1
+t07 x=652.7980 y=307.4680 z=64.000 adj=0 xcoll=- anim=1
+t08 x=651.0746 y=308.6169 z=64.000 adj=0 xcoll=- anim=1
+t09 x=649.3512 y=309.7659 z=64.000 adj=0 xcoll=- anim=1
+t10 x=647.6278 y=310.9148 z=64.000 adj=0 xcoll=- anim=1
+t11 x=645.9044 y=312.0637 z=64.000 adj=0 xcoll=- anim=1
+t12 x=644.1810 y=313.2126 z=64.000 adj=0 xcoll=- anim=1
+t13 x=642.4576 y=314.3616 z=64.000 adj=0 xcoll=- anim=1
+t14 x=640.7343 y=315.5105 z=64.000 adj=0 xcoll=- anim=1
+== P-G3-6 C: start (700, 312), LEFT+UP x14 (binary a2 case 7: from y=312 the north wall ends Y at 295, the crate blocks X: stuck at the threshold)
+t01 x=699.1383 y=311.4255 z=64.000 adj=0 xcoll=- anim=1
+t02 x=697.4149 y=310.2766 z=64.000 adj=0 xcoll=- anim=1
+t03 x=695.6915 y=309.1277 z=64.000 adj=0 xcoll=- anim=1
+t04 x=693.9681 y=307.9788 z=64.000 adj=0 xcoll=- anim=1
+t05 x=692.2448 y=306.8298 z=64.000 adj=0 xcoll=- anim=1
+t06 x=690.5214 y=305.6809 z=64.000 adj=0 xcoll=- anim=1
+t07 x=688.7980 y=304.5320 z=64.000 adj=0 xcoll=- anim=1
+t08 x=687.0746 y=303.3831 z=64.000 adj=0 xcoll=- anim=1
+t09 x=685.3512 y=302.2341 z=64.000 adj=0 xcoll=- anim=1
+t10 x=683.6278 y=301.0852 z=64.000 adj=0 xcoll=- anim=1
+t11 x=681.9044 y=299.9363 z=64.000 adj=0 xcoll=- anim=1
+t12 x=680.1810 y=298.7874 z=64.000 adj=0 xcoll=- anim=1
+t13 x=678.4576 y=297.6384 z=64.000 adj=0 xcoll=- anim=1
+t14 x=676.7343 y=296.4895 z=64.000 adj=0 xcoll=- anim=1
+== P-G3-2 ground lane y=296: LEFT x14 -> first contact tick 0 -; final x=651.0938 y=296.0000 z=64.000 contact=-
+== P-G3-2 ground lane y=311: LEFT x14 -> first contact tick 0 -; final x=651.0938 y=311.0000 z=64.000 contact=-
+== P-G3-2 ground lane y=312: LEFT x14 -> first contact tick 0 -; final x=651.0938 y=312.0000 z=64.000 contact=-
+== P-G3-2 ground lane y=327: LEFT x14 -> first contact tick 0 -; final x=651.0938 y=327.0000 z=64.000 contact=-
+== P-G3-2 ground lane y=328: LEFT x14 -> first contact tick 0 -; final x=651.0938 y=328.0000 z=64.000 contact=-
+== P-G3-2 from the top of rec5: hero placed (636, 296, 80) idle 3 frames, then DOWN x10 (binary R7: y limited to 297.0, contact rec10)
+t01 x=636.0000 y=296.8125 z=80.000 adj=0 xcoll=- anim=1
+t02 x=636.0000 y=298.4375 z=80.000 adj=0 xcoll=- anim=1
+t03 x=636.0000 y=300.0625 z=80.000 adj=0 xcoll=- anim=1
+t04 x=636.0000 y=301.6875 z=80.000 adj=0 xcoll=- anim=1
+t05 x=636.0000 y=303.3125 z=80.000 adj=0 xcoll=- anim=1
+t06 x=636.0000 y=304.9375 z=80.000 adj=0 xcoll=- anim=1
+t07 x=636.0000 y=306.5625 z=80.000 adj=0 xcoll=- anim=1
+t08 x=636.0000 y=308.1875 z=80.000 adj=0 xcoll=- anim=1
+t09 x=636.0000 y=309.8125 z=80.000 adj=0 xcoll=- anim=1
+t10 x=636.0000 y=311.4375 z=80.000 adj=0 xcoll=- anim=1
+== P-G3-3 sweep: x0 = 684 + k/32 for k = 0..78 (one step period of 2.4375), y = 296, LEFT x14; per start: first tick where x == 657.0 (flush), first tick with a contact, contact at the flush tick
+x0= 684.00000 ; flush tick 12 (x=655.96875) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.4062/-,12:655.9688/-,13:653.5312/-,14:651.0938/-
+x0= 684.03125 ; flush tick 12 (x=656.00000) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.4375/-,12:656.0000/-,13:653.5625/-,14:651.1250/-
+x0= 684.06250 ; flush tick 12 (x=656.03125) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.4688/-,12:656.0312/-,13:653.5938/-,14:651.1562/-
+x0= 684.09375 ; flush tick 12 (x=656.06250) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.5000/-,12:656.0625/-,13:653.6250/-,14:651.1875/-
+x0= 684.12500 ; flush tick 12 (x=656.09375) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.5312/-,12:656.0938/-,13:653.6562/-,14:651.2188/-
+x0= 684.15625 ; flush tick 12 (x=656.12500) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.5625/-,12:656.1250/-,13:653.6875/-,14:651.2500/-
+x0= 684.18750 ; flush tick 12 (x=656.15625) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.5938/-,12:656.1562/-,13:653.7188/-,14:651.2812/-
+x0= 684.21875 ; flush tick 12 (x=656.18750) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.6250/-,12:656.1875/-,13:653.7500/-,14:651.3125/-
+x0= 684.25000 ; flush tick 12 (x=656.21875) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.6562/-,12:656.2188/-,13:653.7812/-,14:651.3438/-
+x0= 684.28125 ; flush tick 12 (x=656.25000) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.6875/-,12:656.2500/-,13:653.8125/-,14:651.3750/-
+x0= 684.31250 ; flush tick 12 (x=656.28125) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.7188/-,12:656.2812/-,13:653.8438/-,14:651.4062/-
+x0= 684.34375 ; flush tick 12 (x=656.31250) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.7500/-,12:656.3125/-,13:653.8750/-,14:651.4375/-
+x0= 684.37500 ; flush tick 12 (x=656.34375) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.7812/-,12:656.3438/-,13:653.9062/-,14:651.4688/-
+x0= 684.40625 ; flush tick 12 (x=656.37500) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.8125/-,12:656.3750/-,13:653.9375/-,14:651.5000/-
+x0= 684.43750 ; flush tick 12 (x=656.40625) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.8438/-,12:656.4062/-,13:653.9688/-,14:651.5312/-
+x0= 684.46875 ; flush tick 12 (x=656.43750) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.8750/-,12:656.4375/-,13:654.0000/-,14:651.5625/-
+x0= 684.50000 ; flush tick 12 (x=656.46875) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.9062/-,12:656.4688/-,13:654.0312/-,14:651.5938/-
+x0= 684.53125 ; flush tick 12 (x=656.50000) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.9375/-,12:656.5000/-,13:654.0625/-,14:651.6250/-
+x0= 684.56250 ; flush tick 12 (x=656.53125) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:658.9688/-,12:656.5312/-,13:654.0938/-,14:651.6562/-
+x0= 684.59375 ; flush tick 12 (x=656.56250) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.0000/-,12:656.5625/-,13:654.1250/-,14:651.6875/-
+x0= 684.62500 ; flush tick 12 (x=656.59375) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.0312/-,12:656.5938/-,13:654.1562/-,14:651.7188/-
+x0= 684.65625 ; flush tick 12 (x=656.62500) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.0625/-,12:656.6250/-,13:654.1875/-,14:651.7500/-
+x0= 684.68750 ; flush tick 12 (x=656.65625) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.0938/-,12:656.6562/-,13:654.2188/-,14:651.7812/-
+x0= 684.71875 ; flush tick 12 (x=656.68750) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.1250/-,12:656.6875/-,13:654.2500/-,14:651.8125/-
+x0= 684.75000 ; flush tick 12 (x=656.71875) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.1562/-,12:656.7188/-,13:654.2812/-,14:651.8438/-
+x0= 684.78125 ; flush tick 12 (x=656.75000) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.1875/-,12:656.7500/-,13:654.3125/-,14:651.8750/-
+x0= 684.81250 ; flush tick 12 (x=656.78125) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.2188/-,12:656.7812/-,13:654.3438/-,14:651.9062/-
+x0= 684.84375 ; flush tick 12 (x=656.81250) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.2500/-,12:656.8125/-,13:654.3750/-,14:651.9375/-
+x0= 684.87500 ; flush tick 12 (x=656.84375) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.2812/-,12:656.8438/-,13:654.4062/-,14:651.9688/-
+x0= 684.90625 ; flush tick 12 (x=656.87500) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.3125/-,12:656.8750/-,13:654.4375/-,14:652.0000/-
+x0= 684.93750 ; flush tick 12 (x=656.90625) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.3438/-,12:656.9062/-,13:654.4688/-,14:652.0312/-
+x0= 684.96875 ; flush tick 12 (x=656.93750) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.3750/-,12:656.9375/-,13:654.5000/-,14:652.0625/-
+x0= 685.00000 ; flush tick 12 (x=656.96875) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.4062/-,12:656.9688/-,13:654.5312/-,14:652.0938/-
+x0= 685.03125 ; flush tick 12 (x=657.00000) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 11:659.4375/-,12:657.0000/-,13:654.5625/-,14:652.1250/-
+x0= 685.06250 ; flush tick 13 (x=654.59375) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.0312/-,13:654.5938/-,14:652.1562/-
+x0= 685.09375 ; flush tick 13 (x=654.62500) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.0625/-,13:654.6250/-,14:652.1875/-
+x0= 685.12500 ; flush tick 13 (x=654.65625) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.0938/-,13:654.6562/-,14:652.2188/-
+x0= 685.15625 ; flush tick 13 (x=654.68750) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.1250/-,13:654.6875/-,14:652.2500/-
+x0= 685.18750 ; flush tick 13 (x=654.71875) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.1562/-,13:654.7188/-,14:652.2812/-
+x0= 685.21875 ; flush tick 13 (x=654.75000) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.1875/-,13:654.7500/-,14:652.3125/-
+x0= 685.25000 ; flush tick 13 (x=654.78125) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.2188/-,13:654.7812/-,14:652.3438/-
+x0= 685.28125 ; flush tick 13 (x=654.81250) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.2500/-,13:654.8125/-,14:652.3750/-
+x0= 685.31250 ; flush tick 13 (x=654.84375) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.2812/-,13:654.8438/-,14:652.4062/-
+x0= 685.34375 ; flush tick 13 (x=654.87500) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.3125/-,13:654.8750/-,14:652.4375/-
+x0= 685.37500 ; flush tick 13 (x=654.90625) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.3438/-,13:654.9062/-,14:652.4688/-
+x0= 685.40625 ; flush tick 13 (x=654.93750) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.3750/-,13:654.9375/-,14:652.5000/-
+x0= 685.43750 ; flush tick 13 (x=654.96875) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.4062/-,13:654.9688/-,14:652.5312/-
+x0= 685.46875 ; flush tick 13 (x=655.00000) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.4375/-,13:655.0000/-,14:652.5625/-
+x0= 685.50000 ; flush tick 13 (x=655.03125) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.4688/-,13:655.0312/-,14:652.5938/-
+x0= 685.53125 ; flush tick 13 (x=655.06250) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.5000/-,13:655.0625/-,14:652.6250/-
+x0= 685.56250 ; flush tick 13 (x=655.09375) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.5312/-,13:655.0938/-,14:652.6562/-
+x0= 685.59375 ; flush tick 13 (x=655.12500) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.5625/-,13:655.1250/-,14:652.6875/-
+x0= 685.62500 ; flush tick 13 (x=655.15625) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.5938/-,13:655.1562/-,14:652.7188/-
+x0= 685.65625 ; flush tick 13 (x=655.18750) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.6250/-,13:655.1875/-,14:652.7500/-
+x0= 685.68750 ; flush tick 13 (x=655.21875) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.6562/-,13:655.2188/-,14:652.7812/-
+x0= 685.71875 ; flush tick 13 (x=655.25000) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.6875/-,13:655.2500/-,14:652.8125/-
+x0= 685.75000 ; flush tick 13 (x=655.28125) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.7188/-,13:655.2812/-,14:652.8438/-
+x0= 685.78125 ; flush tick 13 (x=655.31250) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.7500/-,13:655.3125/-,14:652.8750/-
+x0= 685.81250 ; flush tick 13 (x=655.34375) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.7812/-,13:655.3438/-,14:652.9062/-
+x0= 685.84375 ; flush tick 13 (x=655.37500) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.8125/-,13:655.3750/-,14:652.9375/-
+x0= 685.87500 ; flush tick 13 (x=655.40625) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.8438/-,13:655.4062/-,14:652.9688/-
+x0= 685.90625 ; flush tick 13 (x=655.43750) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.8750/-,13:655.4375/-,14:653.0000/-
+x0= 685.93750 ; flush tick 13 (x=655.46875) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.9062/-,13:655.4688/-,14:653.0312/-
+x0= 685.96875 ; flush tick 13 (x=655.50000) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.9375/-,13:655.5000/-,14:653.0625/-
+x0= 686.00000 ; flush tick 13 (x=655.53125) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:657.9688/-,13:655.5312/-,14:653.0938/-
+x0= 686.03125 ; flush tick 13 (x=655.56250) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.0000/-,13:655.5625/-,14:653.1250/-
+x0= 686.06250 ; flush tick 13 (x=655.59375) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.0312/-,13:655.5938/-,14:653.1562/-
+x0= 686.09375 ; flush tick 13 (x=655.62500) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.0625/-,13:655.6250/-,14:653.1875/-
+x0= 686.12500 ; flush tick 13 (x=655.65625) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.0938/-,13:655.6562/-,14:653.2188/-
+x0= 686.15625 ; flush tick 13 (x=655.68750) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.1250/-,13:655.6875/-,14:653.2500/-
+x0= 686.18750 ; flush tick 13 (x=655.71875) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.1562/-,13:655.7188/-,14:653.2812/-
+x0= 686.21875 ; flush tick 13 (x=655.75000) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.1875/-,13:655.7500/-,14:653.3125/-
+x0= 686.25000 ; flush tick 13 (x=655.78125) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.2188/-,13:655.7812/-,14:653.3438/-
+x0= 686.28125 ; flush tick 13 (x=655.81250) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.2500/-,13:655.8125/-,14:653.3750/-
+x0= 686.31250 ; flush tick 13 (x=655.84375) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.2812/-,13:655.8438/-,14:653.4062/-
+x0= 686.34375 ; flush tick 13 (x=655.87500) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.3125/-,13:655.8750/-,14:653.4375/-
+x0= 686.37500 ; flush tick 13 (x=655.90625) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.3438/-,13:655.9062/-,14:653.4688/-
+x0= 686.40625 ; flush tick 13 (x=655.93750) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.3750/-,13:655.9375/-,14:653.5000/-
+x0= 686.43750 ; flush tick 13 (x=655.96875) ; first contact tick 0 rec0 ; contact at the flush tick: - ; ticks 12:658.4062/-,13:655.9688/-,14:653.5312/-
+summary: contact first set on the flush tick 0, one tick later 0, other 79 (of 79)
+== P-G3-3 Square (binary: Square on the flush tick -> sword, anim 16; one tick later -> lift, anim 5; the lift is g1b, not wired in the DLL: PlayerTryAction returns 0)
+x0=680.00000 flush tick 10; Square at tick 10: anim by tick 10:16,11:16,12:16,13:16
+x0=680.00000 flush tick 10; Square at tick 11: anim by tick 11:16,12:16,13:16,14:16
+x0=680.53125 flush tick 11; Square at tick 11: anim by tick 11:16,12:16,13:16,14:16
+x0=680.53125 flush tick 11; Square at tick 12: anim by tick 12:16,13:16,14:16
+x0=681.03125 flush tick 11; Square at tick 11: anim by tick 11:16,12:16,13:16,14:16
+x0=681.03125 flush tick 11; Square at tick 12: anim by tick 12:16,13:16,14:16
+x0=681.56250 flush tick 11; Square at tick 11: anim by tick 11:16,12:16,13:16,14:16
+x0=681.56250 flush tick 11; Square at tick 12: anim by tick 12:16,13:16,14:16
+x0=682.43750 flush tick 11; Square at tick 11: anim by tick 11:16,12:16,13:16,14:16
+x0=682.43750 flush tick 11; Square at tick 12: anim by tick 12:16,13:16,14:16
+== P-G3-5 villager (collidable) walking east 3 px/tick for 40 ticks toward a crate (box x 130..151): root x=180.0000, PosX=180.0000, contact=none  (flush = 120)
+== P-G3-5 Beannoid (not collidable) same walk toward a crate: root x=180.0000, PosX=180.0000, contact=none  (180 = crosses)
+overlap  0.5 px (hero x=656.5): RIGHT x12 -> x by tick [657.719, 660.156, 662.594, 665.031, 667.469, 669.906, ..., 684.531] ; contact at tick 1: -
+overlap  1.0 px (hero x=656.0): RIGHT x12 -> x by tick [657.219, 659.656, 662.094, 664.531, 666.969, 669.406, ..., 684.031] ; contact at tick 1: -
+overlap  1.2 px (hero x=655.8): RIGHT x12 -> x by tick [657.019, 659.456, 661.894, 664.331, 666.769, 669.206, ..., 683.831] ; contact at tick 1: -
+overlap  1.3 px (hero x=655.7): RIGHT x12 -> x by tick [656.919, 659.356, 661.794, 664.231, 666.669, 669.106, ..., 683.731] ; contact at tick 1: -
+overlap  2.0 px (hero x=655.0): RIGHT x12 -> x by tick [656.219, 658.656, 661.094, 663.531, 665.969, 668.406, ..., 683.031] ; contact at tick 1: -
+overlap  5.0 px (hero x=652.0): RIGHT x12 -> x by tick [653.219, 655.656, 658.094, 660.531, 662.969, 665.406, ..., 680.031] ; contact at tick 1: -
+overlap 10.0 px (hero x=647.0): RIGHT x12 -> x by tick [648.219, 650.656, 653.094, 655.531, 657.969, 660.406, ..., 675.031] ; contact at tick 1: -
+== P-G3-1 east: hero placed (684, 296, 64), LEFT x14 (binary: stops at x = 657.000, contact rec5 on the flush tick)
+t01 x=682.7812 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t02 x=680.3438 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t03 x=677.9062 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t04 x=675.4688 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t05 x=673.0312 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t06 x=670.5938 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t07 x=668.1562 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t08 x=665.7188 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t09 x=663.2812 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t10 x=660.8438 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t11 x=658.4062 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t12 x=655.9688 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t13 x=653.5312 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t14 x=651.0938 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+== P-G3-1 west: hero placed (600, 296, 64), RIGHT x12 (binary: stops at x = 615.000)
+t01 x=601.2188 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t02 x=603.6562 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t03 x=606.0938 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t04 x=608.5312 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t05 x=610.9688 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t06 x=613.4062 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t07 x=615.8438 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t08 x=618.2812 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t09 x=620.7188 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t10 x=623.1562 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t11 x=625.5938 y=296.0000 z=64.000 adj=0 xcoll=- anim=1
+t12 x=628.0312 y=296.0000 z=64.000 adj=0 xcoll=- anim=1

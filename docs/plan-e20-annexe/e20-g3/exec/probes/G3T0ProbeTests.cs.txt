@@ -1,0 +1,304 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Microsoft.Xna.Framework;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Physics;
+using Alundra.Session;
+using Alundra.Transitions;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>
+/// E20.g3 T0 (docs/plan-e20-annexe/e20-g3/exec/): the DLL probes P-G3-1 to P-G3-6, a MEASUREMENT (never committed as a test, never an assertion on the value): they write their lines to the file named by the environment
+/// variable G3T0_OUT. Run on a working copy where the only change is the line of <c>MovementObstacleProbe.cs</c> that passes <c>EntityFlags.PickupKindMask</c>.
+/// The world is the real map 392 (the 12 crates, the real prefabs, the real hero); B1 of the map is a clock that polls the pad every 16 frames from the frame 220 (a held direction with the hero on the ground
+/// rolls him), so every walk is a window of at most 14 ticks that starts the frame after a poll and ends before the next one.
+/// </summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G3T0ProbeTests : IDisposable
+{
+    private const int B = ScriptHelper.ProgramBMap;
+    private const int FirstWindow = 221;
+
+    public G3T0ProbeTests()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private static readonly string OutPath = Environment.GetEnvironmentVariable("G3T0_OUT") ?? Path.Combine(Path.GetTempPath(), "g3t0.txt");
+
+    private static void Out(string line)
+    {
+        File.AppendAllText(OutPath, line + "\n", new UTF8Encoding(false));
+    }
+
+    private static ArcSpec Spec(string name) => new(
+        name, "The Klark", "Ship Klark (night, inner, break)-392", new[] { 1641 }, 29, 13, 4, 6000, RealController: true, Prefabs: true);
+
+    private static ArcRun Open(string name)
+    {
+        var arc = new ArcRun(Spec(name));
+        arc.RunUntil(() => arc.Has(B, 104, 0x11), "B1 executes 0x11 @104 (the hero takes the hand)");
+        Assert.Equal(205, arc.Frame);
+        while (arc.Frame < FirstWindow)
+        {
+            arc.OneFrame();
+        }
+
+        return arc;
+    }
+
+    /// <summary>Lets the hero rest (nothing held) until the frame after the next poll of B1.</summary>
+    private static void ToNextWindow(ArcRun arc)
+    {
+        arc.ReleaseDirections();
+        arc.OneFrame(); // at least one frame idle
+        while ((arc.Frame - FirstWindow) % 16 != 0)
+        {
+            arc.OneFrame();
+        }
+    }
+
+    private readonly record struct Row(int Tick, double X, double Y, double Z, int Adj, int Contact, uint Anim, int XRaw, int YRaw);
+
+    private static Row Sample(ArcRun arc, int tick)
+    {
+        var h = arc.Hero;
+        return new Row(tick, h.PosX / 65536.0, h.PosY / 65536.0, h.PosZ / 65536.0, h.ForceAdjusted, h.XCollisionEntity?.EntityRefId ?? -1, h.TargetAnimationId, h.PosX, h.PosY);
+    }
+
+    private static string Fmt(Row r) =>
+        $"t{r.Tick:D2} x={r.X:F4} y={r.Y:F4} z={r.Z:F3} adj={r.Adj} xcoll={(r.Contact < 0 ? "-" : "rec" + r.Contact)} anim={r.Anim}";
+
+    /// <summary>A window: the hero placed at (x, y, z) idle, then <paramref name="ticks"/> ticks with <paramref name="dirs"/> held.</summary>
+    private static List<Row> Walk(ArcRun arc, double x, double y, int z, uint dirs, int ticks, int settleFrames = 0, Func<int, uint>? pressAt = null)
+    {
+        ToNextWindow(arc);
+        var start = arc.Frame;
+        // PlaceHero takes whole pixels; the fractional part is written on the raw fields.
+        arc.PlaceHero((int)Math.Floor(x), (int)Math.Floor(y), z);
+        arc.Hero.PosX = (int)Math.Round(x * 65536.0);
+        arc.Hero.PosY = (int)Math.Round(y * 65536.0);
+        arc.Hero.PushLogicalPositionToRoot();
+        if (x != Math.Floor(x) || y != Math.Floor(y))
+        {
+            // the teleport of the root truncates to whole pixels: the fractional position is written on the root itself.
+            var root = new Vector3((float)x, (float)y, z);
+            arc.HeroEntity.RootComponent!.LocalTransform.Position = root;
+            arc.Hero.Controller!.Teleport(root);
+        }
+
+        for (var i = 0; i < settleFrames; i++)
+        {
+            arc.OneFrame();
+        }
+
+        var rows = new List<Row>();
+        arc.HoldDirections(dirs);
+        for (var t = 1; t <= ticks; t++)
+        {
+            Assert.True(arc.Frame - start < 15, "the window reaches the poll of B1");
+            var press = pressAt?.Invoke(t) ?? 0u;
+            if (press != 0)
+            {
+                arc.Press(press);
+            }
+            else
+            {
+                arc.OneFrame();
+            }
+
+            rows.Add(Sample(arc, t));
+        }
+
+        arc.ReleaseDirections();
+        return rows;
+    }
+
+    private static string Contact(int id) => id < 0 ? "-" : "rec" + id;
+
+    // ---- P-G3-1: the stop of the hero at the east face (657.000) and the west face (615.000) of rec5, y = 296 --------------------------
+
+    [Fact]
+    public void P1_TheHeroStopsAtTheFaceOfRec5_EastAndWest()
+    {
+        using var arc = Open("g3t0-p1");
+        Out("== P-G3-1 east: hero placed (684, 296, 64), LEFT x14 (binary: stops at x = 657.000, contact rec5 on the flush tick)");
+        foreach (var r in Walk(arc, 684, 296, 64, PadState.Left, 14))
+        {
+            Out(Fmt(r));
+        }
+
+        Out("== P-G3-1 west: hero placed (600, 296, 64), RIGHT x12 (binary: stops at x = 615.000)");
+        foreach (var r in Walk(arc, 600, 296, 64, PadState.Right, 12))
+        {
+            Out(Fmt(r));
+        }
+    }
+
+    // ---- P-G3-2: the contact of a pile seen from the ground (the lower crate) and from the top of rec5 (rec10) ---------------------------
+
+    [Fact]
+    public void P2_TheContactOfAPile_FromTheGroundAndFromTheTopOfRec5()
+    {
+        using var arc = Open("g3t0-p2");
+        foreach (var y in new[] { 296.0, 311.0, 312.0, 327.0, 328.0 })
+        {
+            var rows = Walk(arc, 684, y, 64, PadState.Left, 14);
+            var first = rows.FirstOrDefault(r => r.Contact >= 0);
+            var last = rows[^1];
+            Out($"== P-G3-2 ground lane y={y}: LEFT x14 -> first contact tick {(first.Contact >= 0 ? first.Tick.ToString() : "none")} {Contact(first.Contact == 0 && first.Tick == 0 ? -1 : first.Contact)}; final x={last.X:F4} y={last.Y:F4} z={last.Z:F3} contact={Contact(last.Contact)}");
+        }
+
+        Out("== P-G3-2 from the top of rec5: hero placed (636, 296, 80) idle 3 frames, then DOWN x10 (binary R7: y limited to 297.0, contact rec10)");
+        foreach (var r in Walk(arc, 636, 296, 80, PadState.Down, 10, settleFrames: 3))
+        {
+            Out(Fmt(r));
+        }
+    }
+
+    // ---- P-G3-3: the flush case (full step accepted, ends exactly flush: contact 0) -----------------------------------------------------
+
+    [Fact]
+    public void P3_TheFlushTick_ContactOnTheTickThatShortensTheStep_NoneWhenTheFullStepIsAccepted()
+    {
+        using var arc = Open("g3t0-p3");
+        Out("== P-G3-3 sweep: x0 = 684 + k/32 for k = 0..78 (one step period of 2.4375), y = 296, LEFT x14; per start: first tick where x == 657.0 (flush), first tick with a contact, contact at the flush tick");
+        var flushContactSame = 0;
+        var flushContactLater = 0;
+        var other = 0;
+        var lines = new List<string>();
+        for (var k = 0; k <= 78; k++)
+        {
+            var x0 = 684 + k / 32.0;
+            var rows = Walk(arc, x0, 296, 64, PadState.Left, 14);
+            var flushRow = rows.FirstOrDefault(r => r.XRaw <= 657 * 65536);
+            var contactRow = rows.FirstOrDefault(r => r.Contact >= 0);
+            var flush = flushRow.Tick == 0 ? 0 : flushRow.Tick;
+            var contact = contactRow.Tick == 0 ? 0 : contactRow.Tick;
+            if (flush != 0 && flush == contact)
+            {
+                flushContactSame++;
+            }
+            else if (flush != 0 && contact == flush + 1)
+            {
+                flushContactLater++;
+            }
+            else
+            {
+                other++;
+            }
+
+            lines.Add($"x0={x0,10:F5} ; flush tick {flush} (x={flushRow.X:F5}) ; first contact tick {contact} {Contact(contactRow.Contact)} ; contact at the flush tick: {Contact(flushRow.Contact)} ; ticks {string.Join(',', rows.Skip(Math.Max(0, flush - 2)).Take(4).Select(r => $"{r.Tick}:{r.X:F4}/{Contact(r.Contact)}"))}");
+        }
+
+        foreach (var l in lines)
+        {
+            Out(l);
+        }
+
+        Out($"summary: contact first set on the flush tick {flushContactSame}, one tick later {flushContactLater}, other {other} (of 79)");
+
+        Out("== P-G3-3 Square (binary: Square on the flush tick -> sword, anim 16; one tick later -> lift, anim 5; the lift is g1b, not wired in the DLL: PlayerTryAction returns 0)");
+        foreach (var k in new[] { 0, 17, 33, 50, 78 })
+        {
+            var x0 = 680 + k / 32.0;
+            ToNextWindow(arc);
+            ToNextWindow(arc); // the swing of the sword of the previous run is over
+            var probe = Walk(arc, x0, 296, 64, PadState.Left, 14);
+            var flush = probe.First(r => r.XRaw <= 657 * 65536).Tick;
+            foreach (var offset in new[] { 0, 1 })
+            {
+                ToNextWindow(arc);
+                ToNextWindow(arc);
+                var rows = Walk(arc, x0, 296, 64, PadState.Left, Math.Min(14, flush + offset + 3), pressAt: t => t == flush + offset ? PadState.Square : 0u);
+                Out($"x0={x0:F5} flush tick {flush}; Square at tick {flush + offset}: anim by tick {string.Join(",", rows.Skip(flush + offset - 1).Take(4).Select(r => r.Tick + ":" + r.Anim))}");
+            }
+        }
+    }
+
+    // ---- P-G3-4: leaving an overlap (d px inside the face; hero x = 657 - d, RIGHT held, away from the crate) -------------------------------
+
+    [Fact]
+    public void P4_LeavingAnOverlap()
+    {
+        using var arc = Open("g3t0-p4");
+        foreach (var d in new[] { 0.5, 1.0, 1.2, 1.3, 2.0, 5.0, 10.0 })
+        {
+            var rows = Walk(arc, 657 - d, 296, 64, PadState.Right, 12);
+            Out($"overlap {d,4:F1} px (hero x={657 - d:F1}): RIGHT x12 -> x by tick [{string.Join(", ", rows.Take(6).Select(r => r.X.ToString("F3")))}, ..., {rows[^1].X:F3}] ; contact at tick 1: {Contact(rows[0].Contact)}");
+        }
+    }
+
+    // ---- P-G3-6: the push in diagonal (the gap of D-E19-58, measured) --------------------------------------------------------------------
+
+    [Fact]
+    public void P6_ThePushInDiagonal()
+    {
+        using var arc = Open("g3t0-p6");
+        Out("== P-G3-6 A: start (664, 314), LEFT+UP x14 (binary: stops at (657.0000, 309.3333) at tick 5 and stays, adj=1, xcoll=rec5)");
+        foreach (var r in Walk(arc, 664, 314, 64, PadState.Left | PadState.Up, 14))
+        {
+            Out(Fmt(r));
+        }
+
+        Out("== P-G3-6 B: start (664, 300), LEFT+DOWN x14 (binary: stays at (657, 304.6666))");
+        foreach (var r in Walk(arc, 664, 300, 64, PadState.Left | PadState.Down, 14))
+        {
+            Out(Fmt(r));
+        }
+
+        Out("== P-G3-6 C: start (700, 312), LEFT+UP x14 (binary a2 case 7: from y=312 the north wall ends Y at 295, the crate blocks X: stuck at the threshold)");
+        foreach (var r in Walk(arc, 700, 312, 64, PadState.Left | PadState.Up, 14))
+        {
+            Out(Fmt(r));
+        }
+    }
+
+    // ---- P-G3-5: a collidable walker stopped by a crate, a Beannoid (not collidable) that crosses it --------------------------------------------
+
+    [Fact]
+    public void P5_ACollidableWalkerIsStoppedByACrate_ANonCollidableOneCrossesIt()
+    {
+        var host = new ContactHost();
+        var probe = new MovementObstacleProbe(host);
+        var world = ContactWorld.BuildWorld(new FlatGroundField { GroundZ = 48f }, probe);
+        // The crate of the original (21 x 15 x 16, flags 0x3323E4 = collidable + pickup kind 1), two walkers (20 x 14 x 32): the collidable one (header 0xE7-like) and the Beannoid (header 0x67: no 0x80).
+        var crate = ContactWorld.AddEntity(world, host, "Crate", 140, 100, 48, -10, -7, 0, 21, 15, 16, withController: false);
+        crate.Flags = 0x3323E4u;
+        var villager = ContactWorld.AddEntity(world, host, "Villager", 60, 100, 48, -10, -7, 0, 20, 14, 32);
+        var beannoid = ContactWorld.AddEntity(world, host, "Beannoid", 60, 200, 48, -10, -7, 0, 20, 14, 32, collidable: false);
+        var crate2 = ContactWorld.AddEntity(world, host, "Crate2", 140, 200, 48, -10, -7, 0, 21, 15, 16, withController: false);
+        crate2.Flags = 0x3323E4u;
+        host.Rebuild();
+        ContactWorld.Integrate(world, host);
+
+        for (var tick = 0; tick < 40; tick++)
+        {
+            villager.MoveControllerAndPullPosition(3f, 0f);
+            beannoid.MoveControllerAndPullPosition(3f, 0f);
+        }
+
+        Out($"== P-G3-5 villager (collidable) walking east 3 px/tick for 40 ticks toward a crate (box x 130..151): root x={ContactWorld.Root(villager).X:F4}, PosX={villager.PosX / 65536.0:F4}, contact={(villager.XCollisionEntity == crate ? "crate" : villager.XCollisionEntity == null ? "none" : "other")}  (flush = 120)");
+        Out($"== P-G3-5 Beannoid (not collidable) same walk toward a crate: root x={ContactWorld.Root(beannoid).X:F4}, PosX={beannoid.PosX / 65536.0:F4}, contact={(beannoid.XCollisionEntity == null ? "none" : "something")}  (180 = crosses)");
+        Assert.NotNull(crate2);
+    }
+}
