@@ -336,13 +336,15 @@ public sealed class LiftWorldTests : IDisposable
         // c4_climb_lift rows A and C: the hero in the climb state (0x0E) with his feet off the ground, UP held, the contact poked at the tick of the Square: lifted, anim_t 14 -> 11. TryUseItem then PlayerTryAction at 0x800321D4-0x800321E4.
         var rig = Scene(1, Script((2, UP), (1, UP | SQ), (6, UP)));
         var hero = rig.Hero;
+        rig.Run(2);
+        // The bench has no ladder: the two UP ticks would leave the climb state (the hero falls to the air state), so the state is put AFTER them, right before the tick of the Square, and the test pins that
+        // the climb branch of MovePlayer is the one that calls TryUseItem then PlayerTryAction (retiring those calls leaves the hero in the climb state and lifts nothing).
         hero.PosZ = heightPx << 16;
         hero.PushLogicalPositionToRoot(); // the controller too is off the ground
         hero.TargetAnimationId = PlayerManager.ClimbingAnimationId;
         hero.CurrentAnimationId = PlayerManager.ClimbingAnimationId;
         hero.TargetDirection = 0x10;
         hero.Flags &= ~EntityFlags.Gravity;
-        rig.Run(2);
         hero.XCollisionEntity = rig.Crate;
         hero.IsOnGround = 0; // the feet are off the ground in the oracle (z 6 and 14 px over a floor at 0)
         rig.Run(1);
@@ -357,12 +359,15 @@ public sealed class LiftWorldTests : IDisposable
         // c4_climb_lift row B: the same Square without the contact word: nothing is lifted.
         var rig = Scene(1, Script((2, UP), (1, UP | SQ), (6, UP)));
         var hero = rig.Hero;
+        rig.Run(2);
         hero.PosZ = 6 << 16;
+        hero.PushLogicalPositionToRoot();
         hero.TargetAnimationId = PlayerManager.ClimbingAnimationId;
         hero.CurrentAnimationId = PlayerManager.ClimbingAnimationId;
         hero.TargetDirection = 0x10;
         hero.Flags &= ~EntityFlags.Gravity;
-        rig.Run(3);
+        hero.IsOnGround = 0;
+        rig.Run(1);
 
         Assert.False(Carries(rig));
         Assert.Null(hero.CarriedEntity);
