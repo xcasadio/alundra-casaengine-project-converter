@@ -968,14 +968,69 @@ public static class PlayerManager
     internal static System.Collections.Generic.IReadOnlySet<int> WiredLiftableTypes => WiredLiftableTypesForTests ?? ProductionWiredLiftableTypes;
 
     /// <summary>
-    /// E20.g1b phase A: <c>TryLift</c> (<c>0x8002EDBC</c>) as a pure function over an explicit context. Placeholder of the red tests.
+    /// E20.g1b phase A (docs/plan-e20-heros.md section 1.24.4, D-G-6): <c>TryLift</c> (<c>0x8002EDBC</c>) as a pure function over an explicit context. The genre of <paramref name="contact"/> is the 2 bits of its flags at the shift 9
+    /// (<see cref="EntityFlags.GetPickupKind"/>): 0 refuses, 1 lifts, 2 and 3 lift only when the hero owns the object <c>0x3B</c> (<paramref name="ownsPowerGlove"/>, the sense of the binary). No test of distance, gaze, status, size or Z. A type outside
+    /// <paramref name="wiredTypes"/> gives 0 like the genre 0 (D-G-8). A lift is <see cref="PutInHands"/> and the answer 1.
     /// </summary>
-    internal static int TryLift(EntityScriptProxy hero, EntityScriptProxy contact, bool ownsPowerGlove, System.Collections.Generic.IReadOnlySet<int> wiredTypes) => 0;
+    internal static int TryLift(EntityScriptProxy hero, EntityScriptProxy contact, bool ownsPowerGlove, System.Collections.Generic.IReadOnlySet<int> wiredTypes)
+    {
+        var kind = EntityFlags.GetPickupKind(contact.Flags);
+        if (kind == EntityPickupKind.NotLiftable || !wiredTypes.Contains(contact.SpriteType))
+        {
+            return 0;
+        }
+
+        if ((int)kind >= 2 && !ownsPowerGlove)
+        {
+            return 0;
+        }
+
+        PutInHands(hero, contact);
+        return 1;
+    }
 
     /// <summary>
-    /// E20.g1b phase A: <c>PlayerTryAction</c> (<c>0x8002EEAC</c>) as a pure function over an explicit context. Placeholder of the red tests.
+    /// E20.g1b phase A: <c>PlayerTryAction</c> (<c>0x8002EEAC</c>) as a pure function over an explicit context. Carrying: the carrying state (<see cref="CarryRules.CarryStillState"/> on the ground, <see cref="CarryRules.AirStillState"/> in the air) and 1.
+    /// Otherwise a contact (<see cref="EntityScriptProxy.XCollisionEntity"/>, the one of the previous tick) with a front of the Square returns the answer of <see cref="TryLift"/> directly, even 0. Otherwise the loop over <paramref name="entities"/>, with no
+    /// button: an entity of status 2 or 3, not blocked (<see cref="EntityScriptProxy.BlockedByEntity"/>, <c>+0x20</c>), that rides the hero (<see cref="EntityScriptProxy.RidingEntity"/>, <c>+0x12C</c>), is lifted; the first non-zero answer wins. A hero without
+    /// a logic entity lifts nothing in the loop (an entity that rides nothing is not an entity that rides this hero).
     /// </summary>
-    internal static int PlayerTryActionCore(EntityScriptProxy hero, in PadState pad, System.Collections.Generic.IReadOnlyList<EntityScriptProxy> entities, bool ownsPowerGlove, System.Collections.Generic.IReadOnlySet<int> wiredTypes) => 0;
+    internal static int PlayerTryActionCore(EntityScriptProxy hero, in PadState pad, System.Collections.Generic.IReadOnlyList<EntityScriptProxy> entities, bool ownsPowerGlove, System.Collections.Generic.IReadOnlySet<int> wiredTypes)
+    {
+        if (hero.CarriedEntity != null)
+        {
+            hero.TargetAnimationId = IsHeroInTheAir(hero) ? CarryRules.AirStillState : CarryRules.CarryStillState;
+            return 1;
+        }
+
+        if (hero.XCollisionEntity is { } contact && (pad.ButtonsJustPressed & PadState.Square) != 0)
+        {
+            return TryLift(hero, contact, ownsPowerGlove, wiredTypes);
+        }
+
+        var self = hero.LogicContextEntity;
+        if (self == null)
+        {
+            return 0;
+        }
+
+        foreach (var entity in entities)
+        {
+            if (entity.Status is not (EntityStatus.Normal or EntityStatus.Deactivated)
+                || entity.BlockedByEntity != null
+                || !ReferenceEquals(entity.RidingEntity, self))
+            {
+                continue;
+            }
+
+            if (TryLift(hero, entity, ownsPowerGlove, wiredTypes) != 0)
+            {
+                return 1;
+            }
+        }
+
+        return 0;
+    }
 
     /// <summary>The bit of <see cref="EntityScriptProxy.CombinedVramFlagsOR"/> (a ground property of 0x20 under a corner of the footprint) on which the Square does not strike (<c>0x8002EB24</c>).</summary>
     internal const uint NoAttackVramFlag = 0x2000;
