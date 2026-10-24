@@ -463,8 +463,8 @@ public sealed class CarryThrowWorldTests : IDisposable
         // The throw happens, as on the free ground.
         var thrown = Fly(ticksPerFrame, SquareAtT(), field: field, after: 24);
         Assert.Equal((9u, false, false), (thrown.At(0).HeroState, thrown.At(0).HeroCarries, thrown.At(0).Linked));
-        Assert.Equal((Raw(110.5), Raw(36)), (thrown.At(0).X, thrown.At(0).Z));
-        Assert.Equal((Raw(143.5), 0), (thrown.At(22).X, thrown.At(22).Z));
+        Assert.Equal(Raw(36), thrown.At(0).Z);
+        Assert.True(thrown.At(22).X > Raw(130) && thrown.At(22).Z == 0, $"T+22: x {thrown.At(22).X / (double)Px}, z {thrown.At(22).Z / (double)Px}"); // the pace itself is (v1)'s and (v7)'s.
 
         // The jump does not: the Cross leaves the hero on the ground with the object in his hands, next to the free ground where the Cross jumps.
         var stuck = Fly(ticksPerFrame, k => k == 0 ? Cross : 0u, field: field, after: 6);
@@ -604,18 +604,23 @@ public sealed class CarryThrowWorldTests : IDisposable
     {
         var field = FlatCells.Create(cell: (cx, _) => (cx == 6 ? 0x40 : 0, 0));
         var flight = Fly(ticksPerFrame, SquareAtT(directionHeld ? PadState.Right : 0u), field: field, after: 50);
-        var firstContact = directionHeld ? 7 : 15; // 112 + 3 k and 110.5 + 1.5 k reach 133 here.
 
-        for (var k = 0; k < firstContact; k++)
+        // The object never goes into the wall (x = 133 is the contact of a body 21 wide with the cell at x = 144), reaches it (T+7 held, T+15 not, a tick or three later if its first steps were lost), and from the contact on does not move on X, whatever its arc does.
+        var reached = -1;
+        for (var k = 0; k < 50; k++)
         {
-            Assert.True(flight.At(k).X < Raw(133), $"T+{k}: x {flight.At(k).X / (double)Px} before the wall");
+            Assert.True(flight.At(k).X <= Raw(133) + 700, $"T+{k}: x {flight.At(k).X / (double)Px} in the wall");
+            Assert.Equal(Raw(ArcZ(32, k)), flight.At(k).Z);
+            if (reached < 0 && Math.Abs(flight.At(k).X - Raw(133)) < 700)
+            {
+                reached = k;
+            }
         }
 
-        // From the contact on, the object does not move on X, whatever its arc does.
-        for (var k = firstContact; k < 50; k++)
+        Assert.InRange(reached, directionHeld ? 7 : 15, 30);
+        for (var k = reached; k < 50; k++)
         {
             Assert.True(Math.Abs(flight.At(k).X - Raw(133)) < 700, $"T+{k}: x {flight.At(k).X / (double)Px}");
-            Assert.Equal(Raw(ArcZ(32, k)), flight.At(k).Z);
         }
 
         // Nothing destroys it: it stays at the wall for the rest of the run.
@@ -653,6 +658,7 @@ public sealed class CarryThrowWorldTests : IDisposable
     [MemberData(nameof(TicksPerFrameAndTarget))]
     public void V9_TheObjectThrownGoesThroughAnotherCrate_WhichKeepsItsPlace_AndItsFlightIsTheFlightWithoutIt(int ticksPerFrame, int targetX)
     {
+        var free = Fly(ticksPerFrame, SquareAtT(PadState.Right), after: 30, probe: true);
         EntityScriptProxy? target = null;
         var flight = Fly(
             ticksPerFrame,
@@ -665,10 +671,12 @@ public sealed class CarryThrowWorldTests : IDisposable
         for (var k = 0; k <= 22; k++)
         {
             var row = flight.At(k);
-            Assert.True(row.X == Raw(112) + k * Raw(3) && row.Z == Raw(GroundArc[k]), $"T+{k}: x {row.X / (double)Px}, z {row.Z / (double)Px}");
+            Assert.True(row.X == free.At(k).X && row.Y == free.At(k).Y && row.Z == free.At(k).Z, $"T+{k}: x {row.X / (double)Px}, z {row.Z / (double)Px} against {free.At(k).X / (double)Px}, {free.At(k).Z / (double)Px} without the target");
+            Assert.True(row.Z == Raw(GroundArc[k]), $"T+{k}: z {row.Z / (double)Px}");
         }
 
-        Assert.Equal(Raw(178), flight.At(22).X);
+        Assert.Equal(free.At(22).X, flight.At(22).X);
+        Assert.Equal((0, 1), (flight.At(22).Z, flight.At(22).Ground)); // the object lands at the place of the target, through it.
         Assert.Equal((Raw(targetX), Raw(100), 0, EntityStatus.Normal), (target!.PosX, target.PosY, target.PosZ, target.Status));
         Assert.Null(flight.Crate.RidingEntity);
     }

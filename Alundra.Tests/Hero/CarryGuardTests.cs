@@ -9,7 +9,7 @@ namespace Alundra.Tests.Hero;
 
 /// <summary>
 /// E20.g1a T2 (docs/plan-e20-heros.md section 1.24.1): the two guards that are GREEN from the start of the slice and must stay so through the branchings of T3. (w6) The ladder is refused to a hero who carries an object (the fifth conjunct of the gate of the case 6,
-/// <c>0x80031D54</c>), next to the hero who carries nothing and enters; (w12) the Square with an object in the hands changes nothing - the throw is a named stub at its place in the carrying group until E20.g2a replaces it - next to the hero who carries nothing and
+/// <c>0x80031D54</c>), next to the hero who carries nothing and enters; (w12) the Square with an object in the hands, in the lift gesture the object has just put the hero in (the state 5), changes nothing - the throw is the branch of the carrying group (E20.g2a, tested by CarryThrowWorldTests), which the gesture is not part of - next to the hero who carries nothing and
 /// swings his weapon on the same press.
 /// </summary>
 public sealed class CarryGuardTests

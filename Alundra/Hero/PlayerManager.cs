@@ -42,7 +42,7 @@ namespace Alundra.Hero;
 /// <c>TryUseItem</c> and <c>PlayerTryAction</c> are named stubs (E20.h and E20.g: the use of an item and lifting/carrying are not ported yet).</description></item>
 /// <item><description>The attack groups, binary <c>0x80031E18</c> and <c>0x80031DF8</c> (E20.b): a swing in progress only keeps its side of the ground (see <see cref="MovePlayer"/>).</description></item>
 /// <item><description>The object in the hands (E20.g1a), binary <c>0x800322F0</c>, <c>0x800322B4</c> and <c>0x8003232C</c>: the two lift gestures (0x05, 0x0B: <see cref="LiftGestureTick"/>) and the carrying group (0x06, 0x07, 0x0C, 0x2E, 0x2F, 0x30:
-/// <see cref="CarryGroupTick"/>); the throw is a named stub (E20.g2a), and nothing but <see cref="PutInHands"/> puts an object in the hands yet (the trigger is E20.g1b).</description></item>
+/// <see cref="CarryGroupTick"/>); the Square throws (E20.g2a, <see cref="CarryRules.ThrowCarried"/>), and nothing but <see cref="PutInHands"/> puts an object in the hands yet (the trigger is E20.g1b).</description></item>
 /// <item><description>The run (E20.d1), binary <c>0x80031F54</c>, <c>0x80031FF4</c>, <c>0x80032118</c> and <c>0x80032558</c>: the preparation (0x29, entered from the common tail by a held Triangle), the run (0x03), the
 /// slide that ends it (0x2A) and the bounce (0x3E, and 0x1C which shares its handler); the tackle (0x04) is of the ground attack group.</description></item>
 /// <item><description>The swim (E20.i), binary <c>0x8003260C</c>: on deep water (slope 4) <see cref="SwimTick"/> replaces everything between the pad and the end of the tick: the 80-entry table <c>0x80022E7C</c> in six kinds of handler (<see cref="SwimTable"/>), the floating (0x1D), the swimming (0x0F), the burst on the edge of the Triangle, the Cross or the Square (0x28), the end of the hurt in water (0x3A, 0x3B, entered by E20.c2b); the exits to the land are cases of the state chain. NOT ported: the wall of the deep water without the swim boots (O-E19-22), the currents (O-E20-16), the splash, the wake and the ripple (E20.e).</description></item>
@@ -1344,8 +1344,8 @@ public static class PlayerManager
     /// <summary>
     /// E20.g1a T3 (W4, D-G-5): the carrying group, states 0x06, 0x07, 0x0C, 0x2E, 0x2F and 0x30 (<c>0x8003232C</c>), in the binary's order: the direction of the pad is written (<c>+0x8C</c>, in the delay slot of <c>TryUseItem</c>, even when the item driver ends
     /// the tick), <c>TryUseItem</c> (0 ends the tick), then <see cref="CarryRules.CarryGroup"/> decides the next state from the object in the hands (its kind: the heavy one, <see cref="EntityFlags.PickupKindMask"/> all set, keeps the plain state), the ground,
-    /// the direction held, the edges of the Square and the Cross, and the two ground properties that forbid the throw (<see cref="NoAttackVramFlag"/>) and the jump (<see cref="NoJumpVramFlag"/>). The throw itself is a NAMED STUB at its place (E20.g2a replaces it):
-    /// a Square that throws changes nothing. The jump is driven by the sheets of the animations 6 and 46 (the impulse is taken by the animation clock, as for the jumps without an object).
+    /// the direction held, the edges of the Square and the Cross, and the two ground properties that forbid the throw (<see cref="NoAttackVramFlag"/>) and the jump (<see cref="NoJumpVramFlag"/>). The throw (E20.g2a T3, phase B) is <see cref="CarryRules.ThrowCarried"/>:
+    /// the object takes the hero's position and the direction word of his previous tick, the hero the state 9 or 0x0A. The jump is driven by the sheets of the animations 6 and 46 (the impulse is taken by the animation clock, as for the jumps without an object).
     /// </summary>
     private static void CarryGroupTick(EntityScriptProxy player, in PadState pad, uint buttonsHold, uint dir)
     {
@@ -1371,7 +1371,11 @@ public static class PlayerManager
             player.TargetAnimationId = next;
         }
 
-        // step.Throw: the throw of the object (E20.g2a). Named stub: nothing happens yet, the state stays.
+        if (step.Throw)
+        {
+            // E20.g2a T3 (phase B): the Square throws (CarryRules.ThrowCarried writes the object and the hero's state 9 or 0x0A).
+            CarryRules.ThrowCarried(player, input.Ground, input.DirectionHeld);
+        }
     }
 
     /// <summary>

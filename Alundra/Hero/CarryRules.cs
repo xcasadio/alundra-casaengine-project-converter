@@ -79,7 +79,7 @@ internal static class CarryRules
     /// </summary>
     internal readonly record struct CarryInput(bool HasObject, bool Heavy, bool Ground, bool DirectionHeld, bool SquareEdge, bool CrossEdge, bool NoThrow, bool NoJump);
 
-    /// <summary>The result of the group: the next state (null: the state stays) and whether the Square throws (the branch g2a fills; a named stub in g1a).</summary>
+    /// <summary>The result of the group: the next state (null: the state stays) and whether the Square throws (the branch of the carrying group that calls <see cref="ThrowCarried"/>, E20.g2a).</summary>
     internal readonly record struct CarryStep(uint? NextState, bool Throw);
 
     /// <summary>

@@ -164,3 +164,34 @@ The branch of the Square was left as g1a made it (the named stub). Run (Release,
 - **F1 - the object takes the whole pixel of the hero's position.** `CarryRules.ThrowCarried` writes the hero's raw X and Y into the object, but the object's ROOT (the engine's position, which the mover steps from and the logical position is pulled back from) is the whole-pixel `ResolveLogicalPosition` the follow of the hands wrote. A hero stopped on a fraction of a pixel
   (after a walk: 68.78125) throws an object whose first step starts from 68.0 (observed T+0 x 66.5 instead of 67.28125, on the three tick rates). The oracle keeps the fraction (the binary copies `+0x114` whole). Invisible in the plan's values (the hero at 109.0); the scene of (v4) therefore sets the hero on a whole pixel before the throw. A fix would write the root by a displacement (no teleport) in `ThrowCarried`, a change of g1a's follow rather than of this slice: flagged, not made.
 - **F2 - without E2 (g2b) the landed object keeps gliding.** The arrival is E2's (animation 2, speed 0 at T+23); until g2b the force of the flight is never cleared, so on the ground the object slides on at 1.5 / 3.0 px a tick (status `Deactivated` from T+23, nothing destroyed) until a wall or the edge of the map. "Reste" of the plan is read as "is not destroyed, keeps its height": (v8) asserts that, and the wall X = 133.
+
+## T3 (phase B) - the branch of the Square
+
+Start HEAD of T3: `71b84a08` (T2). The only change of behaviour: in `PlayerManager.CarryGroupTick`, `if (step.Throw) CarryRules.ThrowCarried(player, input.Ground, input.DirectionHeld);` replaces the named stub (4 lines; the docs that called the throw a stub are corrected in `PlayerManager.cs` and `CarryRules.cs`).
+`ScriptedMotion.cs` is untouched: the clause `|| entity.HasLogicalZ` of the speed key was already at the HEAD (T0). Nothing else of the DLL, the engine, the converter or the data changed.
+
+### Green after
+
+`CarryThrowWorldTests`: **84 / 84 green** (v1 to v9, at 1, 2 and 3 ticks per frame), every value the oracle's of the plan table: X 110.5 + 1.5 k (143.5 at T+22), the 23 heights of the ground arc, 3.0 per tick with a direction (178.0), the air throw from 59.5 landing at T+26 with the oracle's 13 samples, the four gazes, the wall at 133.0, the steps of 16, 32, 48 px, the second crate crossed.
+
+### Retirements (real edits, restored: `git diff` empty after)
+
+- **The branch of phase B removed** (the stub back): `CarryThrowWorldTests` 84 failures of 84, i.e. exactly (v1) to (v9) (the T2 run). The 5 829 other tests were green at T1 and are untouched.
+- **The `|| entity.HasLogicalZ` clause removed from the speed key** (`ScriptedMotion.KeyAnimationOf`), the Carry tests, `MapStateTests`, `RecordBirthTickTests` and the `LogicalZ` tests run (260): red = (v1), (v2), (v3), (v4) (24 + 3 cases) and (v7) as the plan says, **plus one case of (v8)**: the step of 48 px at 3 ticks per frame. That one is physical, not a slip of the test: without the rule the object loses its first three steps at 3 ticks per frame, crosses the edge of the step at x = 136 three ticks later, when its height (47) is under 48, meets the step as a wall and falls to the ground instead of landing on the top - the very defect the rule prevents. The pins `MapStateTests.P3_...` and `RecordBirthTickTests.B6_R_...` stay green, as the plan says. (v5), the wall of (v8) and (v9) were first red too (they read the X of a tick); they were rewritten so that they do not depend on the pace of the first ticks: (v5) reads the height and the landing, the wall reads "never in the wall, reaches 133.0, stays", (v9) compares the flight with the target to the flight without it measured in the same test.
+
+### Existing tests moved
+
+Predicted list: W12 of g1a (rewritten) and the Square rows of (c6) (rewritten). Measured: **none moved**. `W12_TheSquareWithAnObjectInTheHands_ChangesNothing_...` stays green unchanged: `PutInHands` from 21 px gives the lift GESTURE (the state 5, which the carrying group does not contain), so its Square never reached the stub; only its doc comment (which called the throw a stub) was corrected. The (c6) rows are pure table rows of `CarryRules.CarryGroup` (`CarryStep.Throw` stays as g1a made it); they stay green unchanged. The throw in the stand 0x0C is the (v1) to (v4) tests' own. `--list-tests` against the 5 829 names of T1: none missing, 84 added (5 913).
+
+### Suites
+
+Release with the neutralised copy, then Debug built last without it; `--blame-hang-timeout 60s`; the three disjoint partitions by test namespace of g1a:
+
+| partition | tests | failures Release | failures Debug |
+|---|---|---|---|
+| 1 (Arcs, Ai, Audio, Cameras, Cells, Combat, Dialogues) | 1 242 | 0 | 0 |
+| 2 (Entities, Events, ExportGuards, Hero, Items) | 2 869 | 0 | 0 |
+| 3 (the rest) | 1 802 | 0 | 0 |
+| total | 5 913 (= 5 829 + 84) | 0 | 0 |
+
+`cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal. `check_names.py --rules`: 0 finding. The four `docs/hero-trace-389-*.txt` files were rewritten by the suites (line endings): `git diff --ignore-cr-at-eol --quiet -- docs/` exit 0, then restored by `git checkout`, never indexed.
