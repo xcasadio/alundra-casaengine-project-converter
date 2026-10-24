@@ -7650,7 +7650,7 @@ frais après.
   à regarder à part.
 - **Recette de l'auteur, à faire** : `234-torla.sav` (carte 426), le bouton de droite par le nord.
 
-##### E20.g5c — L'arrêt du son : `StopSoundEffect` (opcodes `0xBE`, `0x75`, et la fin de C76) ⏳ (détaillée le 2026-10-24 ; D-E20-67 ; révision 0 relue : REVISE ; révision 1 du 2026-10-24, à relire par un `plan-verifier` frais)
+##### E20.g5c — L'arrêt du son : `StopSoundEffect` (opcodes `0xBE`, `0x75`, et la fin de C76) ⏳ (détaillée le 2026-10-24 ; D-E20-67 ; révision 0 relue : REVISE ; révision 1 du 2026-10-24, **READY** à la deuxième relecture, `plan-verifier` frais ; exécutable après E20.g2b)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `b36a78a7`, le code du son inchangé jusqu'à `1a98ef5d` ; annexe
 `docs/plan-e20-annexe/e20-g5/g5c-disc/`, `report.md`), après la réponse de l'auteur D-E20-67.
