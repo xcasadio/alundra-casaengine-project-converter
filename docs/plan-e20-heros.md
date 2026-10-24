@@ -10228,7 +10228,21 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2` ; **à réviser** : D-E20-50, D-E20-51)
+#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2` ; révision 3 du 2026-10-25 (D-E20-50, D-E20-78, e0c faite) : nouvelle époque, une seule relecture de clôture)
+
+**Révision 3 (2026-10-25).** Trois faits ont changé depuis la relecture de clôture du 2026-10-18 :
+- **D-E20-78** (Q-H1-3 rouverte, l'erratum de D-E20-51) : un soin donné par `0x82` s'ajoute au sac sans être bu, et un coffre refuse l'objet sac
+  plein ; h1 **ne touche pas l'interpréteur** et ne porte aucun soin « reçu d'un coffre ».
+- **D-E20-50** : Start + Select n'est porté ni en E18 ni ailleurs ; D-H1-6 est corrigée en ce sens.
+- **E20.e0c est faite** : elle a écrit les corps des soins dans `Alundra/Hero/HeroHeals.cs` (D-E0C-10 : `Herb`, `LargePotion`,
+  `SmallPotion`, `MagicDrop`, `LargeCrystal`, `Brew`, les cœurs, et leurs créateurs d'effets), avec les PV écrits sur l'entité sans repli
+  (D-H1-2). h1 **ne crée pas** `HeroHeals.cs` : T0 relit au HEAD de départ ce que ce fichier offre déjà (les noms, les corps, `Half(5)` pour
+  l'eau 1), le compare aux vecteurs de h1 ; h1 n'ajoute que ce qui manque (`InstantItems.cs`, les cinq départs, et un corps manquant s'il y en
+  a un). Les tests (v1) d'un corps qui existe déjà sont des **gardes** vertes avant et après, chacune tuée par un mutant nommé de T3 ; ceux
+  d'un corps neuf restent rouges avant ; un corps existant qui contredit un vecteur est un arrêt (il faut revenir au plan d'e0c).
+- **Les noms de fichiers** ont changé avec la restructuration R* : `AlundraTestSavesTests` est `Alundra.Tests/SaveGames/TestSavesTests.cs`
+  (le Fact de liste se renomme d'après le compte réel, recompté en T0), `AlundraArcSupport.cs` est `Alundra.Tests/Support/ArcRun.cs`,
+  `AlundraItemAndMoneyOpcodesTests` a perdu son préfixe ; T0 relocalise chaque site par son contenu.
 
 **Prérequis.** h0a (la table de départ, les mots de l'objet, la couture `ItemStartForTests`, le refus par le son 3) ; E20.c2a ✅ (les PV de
 l'entité du héros et leur miroir) ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H1-1, Q-H1-2 et Q-H1-3. Ni g1a, ni g2a, ni f4 à
@@ -10283,7 +10297,7 @@ propre interpréteur et son propre modèle, aucun P0 ni P1).
 - **D-H1-3** — Les effets mis en file (`Emit`, la position et Z = `PosZ + 1` lus tout de suite), comme la rafale de la charge ; les tirages au
   moment où la scène applique l'opération : l'écart d'ADR-0048, accepté, invisible sauf si une touche tire dans le même tick.
 - **D-H1-4** — Aucun calage du HUD. **D-H1-5** — Le soin sur place du ramassage revient à E20.e0c (Q-H1-3 ; O-H-5). **D-H1-6** — Start + Select
-  revient à E18 (Q-H1-2).
+  n'est pas porté, ni en E18 ni ailleurs (D-E20-50, révision 3).
 - **D-H1-7** — Les vecteurs se rejouent par l'adaptateur adresses → membres de `disc/report.md` §3.g ; une adresse sans membre arrête la
   tranche (règle de D-H4B1-3) ; **sont classés « binaire seul » et sautés par leur drapeau** (critique C-1) : les 15 vecteurs qui font varier la
   taille de la table d'inventaire `[0x8017638C]` (Herbe 72 à 74, Potion L 72 à 74, Extrait 44 à 46, Breuvage 186 à 188, Potion S 72 à 74 : la DLL a
