@@ -287,6 +287,89 @@ public static class NativeEffects
         }
     }
 
+    /// <summary>The global effect of the fire balls (<c>0x8007A8D4</c>, <c>0x8007EF50</c>: the sprite types 11 and 12), bank 0, effect 17.</summary>
+    public const int FireBallEffect = 0x11;
+
+    /// <summary>The global effect of the ice balls (the sprite types 10, 13, 14 and 15), bank 0, effect 18.</summary>
+    public const int IceBallEffect = 0x12;
+
+    /// <summary>The number of effects of the explosion of a ball (<c>0x8007EF84-0x8007F0BC</c>: the loop of E9 counts to 5).</summary>
+    public const int BallExplosionCount = 5;
+
+    /// <summary>The offset of Z (8 pixels) the fire effects of C60 and of the puffs of E9 have over the ball; the ice has none, the explosion has none for either.</summary>
+    public const int FireBallZOffset = 0x80000;
+
+    /// <summary>
+    /// E20.f6b (D-F6-3, D-F6-4): the trail of C60 (<c>0x8007A8A0</c>): one global effect of the animation 0, <see cref="FireBallEffect"/> or <see cref="IceBallEffect"/>, at the ball's (<paramref name="x"/>, <paramref name="y"/>, <paramref name="z"/> + <see cref="FireBallZOffset"/> for the fire only),
+    /// <paramref name="z"/> being the position of the ball at the end of the previous tick in the binary's frame of Z (<c>PosZ + 1</c>, ADR-0026), and, ONLY IF it was created, the speed opposite to the forces of the ball (the three axes). No number is drawn and no sound is played; a full reservoir creates nothing.
+    /// The slot is handed to <see cref="CreatedForTests"/>.
+    /// </summary>
+    public static EffectSlot? CreateBallTrail(EffectReservoir reservoir, bool fire, int x, int y, int z, int forceX, int forceY, int forceZ)
+    {
+        unchecked
+        {
+            var slot = reservoir.Create(false, fire ? FireBallEffect : IceBallEffect, 0, x, y, z + (fire ? FireBallZOffset : 0));
+            if (slot != null)
+            {
+                slot.ForceX = -forceX;
+                slot.ForceY = -forceY;
+                slot.ForceZ = -forceZ;
+                CreatedForTests?.Invoke(slot);
+            }
+
+            return slot;
+        }
+    }
+
+    /// <summary>
+    /// E20.f6b (D-F6-3): the five effects of the explosion of a ball (E9, the first call, <c>0x8007EF84-0x8007F0BC</c>): five global effects of the animation 0 at the ball's (<paramref name="x"/>, <paramref name="y"/>, <paramref name="z"/>), the Z of the ball with no offset (binary's frame: <c>PosZ + 1</c>). For
+    /// each one that was CREATED, two numbers <c>r1</c>, <c>r2</c> are drawn from <see cref="GameRandom"/>, in this order, and give its horizontal speed: <c>hi(r1 * 0x60001) - 0x30000</c> and <c>hi(r2 * 0x40001) - 0x20000</c> (unsigned products: [-3, 3) and [-2, 2) pixels), no vertical speed. A full reservoir
+    /// creates fewer effects and draws fewer numbers (none for an effect that was not created). Each slot is handed to <see cref="CreatedForTests"/> once its speed is written.
+    /// </summary>
+    public static void CreateBallExplosion(EffectReservoir reservoir, bool fire, int x, int y, int z)
+    {
+        unchecked
+        {
+            for (var i = 0; i < BallExplosionCount; i++)
+            {
+                var slot = reservoir.Create(false, fire ? FireBallEffect : IceBallEffect, 0, x, y, z);
+                if (slot == null)
+                {
+                    continue;
+                }
+
+                var r1 = (uint)GameRandom.Next();
+                var r2 = (uint)GameRandom.Next();
+                slot.ForceX = (int)(((ulong)r1 * 0x60001) >> 32) - 0x30000;
+                slot.ForceY = (int)(((ulong)r2 * 0x40001) >> 32) - 0x20000;
+                CreatedForTests?.Invoke(slot);
+            }
+        }
+    }
+
+    /// <summary>
+    /// E20.f6b (D-F6-3): the puff of E9 (every 8 ticks of the life of the ball, <c>0x8007F11C-0x8007F214</c>): one global effect of the animation 0 at (<paramref name="x"/>, <paramref name="y"/>, <paramref name="z"/> + <see cref="FireBallZOffset"/> for the fire only), <paramref name="z"/> in the binary's frame of Z.
+    /// ONLY IF it was created, two numbers are drawn: <c>hi(r1 * 0x30001) - 0x18000</c> and <c>hi(r2 * 0x20001) - 0x10000</c> (unsigned products: [-1.5, 1.5) and [-1, 1) pixels), and the vertical speed is 0x20000 (2 pixels). A full reservoir creates nothing and draws nothing.
+    /// </summary>
+    public static EffectSlot? CreateBallPuff(EffectReservoir reservoir, bool fire, int x, int y, int z)
+    {
+        unchecked
+        {
+            var slot = reservoir.Create(false, fire ? FireBallEffect : IceBallEffect, 0, x, y, z + (fire ? FireBallZOffset : 0));
+            if (slot != null)
+            {
+                var r1 = (uint)GameRandom.Next();
+                var r2 = (uint)GameRandom.Next();
+                slot.ForceX = (int)(((ulong)r1 * 0x30001) >> 32) - 0x18000;
+                slot.ForceY = (int)(((ulong)r2 * 0x20001) >> 32) - 0x10000;
+                slot.ForceZ = 0x20000;
+                CreatedForTests?.Invoke(slot);
+            }
+
+            return slot;
+        }
+    }
+
     /// <summary>The global effect of a hit: the spark (<c>0x8003BDD8(0, 9, 0, x, y, z)</c>, bank 0, effect 9).</summary>
     private const int HitSparkEffect = 9;
 
