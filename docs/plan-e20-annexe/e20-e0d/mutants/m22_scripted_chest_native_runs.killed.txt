@@ -1,0 +1,2 @@
+Échoué Alundra.Tests.Ai.NativeSpriteRegistryTests.ScriptProgramOnTheSlot_IsNeverANativeHandler
+Échoué Alundra.Tests.Ai.Objects.ChestAiBlockWorldTests.B7_AChestWhoseRecordHasAScriptAtF_IsLeftToTheScript_TheNativeF255IsNotRun

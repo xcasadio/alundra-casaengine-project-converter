@@ -1,0 +1,86 @@
+import subprocess, sys, os, re, json
+REPO = 'D:/development/repo/alundra-casaengine-project-converter'
+SK = 'C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/e20e0a3b-exec/skipcopy.targets'
+OUT = os.path.dirname(os.path.abspath(__file__))
+FILTER = '|'.join('FullyQualifiedName~' + n for n in [
+    'Alundra.Tests.Ai.Objects.ChestAi', 'ChestExportGuardTests', 'Items.MagicSeedTests', 'Items.ItemEffectsTests',
+    'ItemAndMoneyOpcodesTests', 'Alundra.Tests.Ai.Objects.PickupAi', 'SaveGames.TestSavesTests', 'Ai.NativeSpriteRegistryTests',
+    'Arcs.LiftArcTests', 'Arcs.LiftMap72ArcTests', 'Hero.LiftWorldTests'])
+
+A = 'Alundra/Ai/Objects/ChestAi.cs'
+P = 'Alundra/Ai/Objects/PickupAi.cs'
+I = 'Alundra/Items/ItemEffects.cs'
+G = 'Alundra/Maps/Loop/GameplayFreeze.cs'
+E = 'Alundra/Events/EventProgramRunner.cs'
+T = 'Alundra.Tests/ExportGuards/ChestExportGuardTests.cs'
+
+# name -> list of (file, old, new)
+MUTANTS = {
+ 'm01_guard_controlflags': [(A, 'state.PlayerControlFlags != 0 || WarpDirector', 'WarpDirector')],
+ 'm02_guard_transition': [(A, 'WarpDirector.Instance.IsTransitionInProgress || ', '')],
+ 'm03_guard_carried': [(A, 'world.PlayerEntity?.CarriedEntity != null || ', '')],
+ 'm04_guard_dialogue': [(A, 'world.PlayerEntity?.CarriedEntity != null || PickupAi.DialogueIsOpen(world))', 'world.PlayerEntity?.CarriedEntity != null)')],
+ 'm05_open_test_ignored': [(A, 'contents == 0 || chest.TargetAnimationId != 0', 'contents == 0')],
+ 'm06_cantake_nocap': [(I, '< tables.DropStockCap[item]', '< 255')],
+ 'm07_fullbag_gives_anyway': [(P, 'if (take)', 'if (true)')],
+ 'm08_flag_at_fullbag': [(P, 'chest.TargetAnimationId = 0;', 'chest.TargetAnimationId = 0; SetGameFlag(state, unchecked((uint)chest.ContentsGameFlag));')],
+ 'm09_applyitem_givesitem_rule': [(P, 'ItemEffects.ApplyItem(world, state, hero, item);', 'ItemEffects.GiveItem(world, state, hero, item);')],
+ 'm10a_object_visible_loaded': [(P, 'owner.IsVisible = open;', 'owner.IsVisible = true;')],
+ 'm10b_object_visible_at_birth': [(A, 'drawn.IsVisible = false;', 'drawn.IsVisible = true;')],
+ 'm11_countdown_63': [(A, 'RiseTicks = 0x40;', 'RiseTicks = 0x3F;')],
+ 'm12_sound_byte5': [(P, 'PlaySfx(tables.DropSoundSfxIndex[item]);', 'PlaySfx(tables.DropSoundSfxIndex[item] + 1);')],
+ 'm13_seed_nocap': [(I, 'var raised = PlayerManager.SetPlayerMpMax(state, (short)(state.PlayerStats.MpMax + 1));', 'var raised = (state.PlayerStats.MpMax = (short)(state.PlayerStats.MpMax + 1));')],
+ 'm14_seed_mp_not_filled': [(I, 'PlayerManager.SetPlayerMp(state, (short)raised);', '')],
+ 'm15_seed_animation_0': [(I, 'MagicSeedAnimation = 2;', 'MagicSeedAnimation = 0;')],
+ 'm16_a255_draws_full_chest_open': [(A, 'if (chest.ContentsItemId == 0)', 'if (chest.ContentsItemId == 0 || true)')],
+ 'm17_flag_temp_bank': [(P, 'SetGameFlag(state, unchecked((uint)(chest?.ContentsGameFlag ?? 0)));', 'SetGameFlag(state, unchecked((uint)(chest?.ContentsGameFlag ?? 0)) | 0x8000u);')],
+ 'm18_stopallsound_at_close': [(P, 'FanfareEnd(world);\n                return;\n            case ChestObjectStateGive:', 'return;\n            case ChestObjectStateGive:'),
+ (P, 'world.Unblock(chest ?? entity);', 'FanfareEnd(world); world.Unblock(chest ?? entity);')],
+ 'm19_blocked_entities_animate': [(G, 'worldFrozen || proxy.BlockedByEntity != null', 'worldFrozen')],
+ 'm20_guard_403_natives': [(T, '(404, 16)', '(403, 16)')],
+ 'm21_vessel_animation_2': [(I, 'NativeEffects.CreateLifeVesselEffects(reservoir, x, y, z));', 'NativeEffects.CreateLifeVesselEffects(reservoir, x, y, z, 2));')],
+ 'm00_baseline': [],
+ 'm22_scripted_chest_native_runs': [(E, '(entity.ProgramIndexes[nativeSlot] & 0x7f) == 0)\n        {\n            var nativeCode', 'true)\n        {\n            var nativeCode')],
+}
+
+def run(cmd):
+    return subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=False)
+
+def apply(edits):
+    for f, old, new in edits:
+        p = os.path.join(REPO, f)
+        b = open(p, 'rb').read().decode('utf-8')
+        if '\r\n' in b:
+            old = old.replace('\r\n', '\n').replace('\n', '\r\n')
+            new = new.replace('\r\n', '\n').replace('\n', '\r\n')
+        n = b.count(old)
+        if n != 1:
+            raise SystemExit('anchor count %d for %s in %s' % (n, old[:50], f))
+        open(p, 'wb').write(b.replace(old, new, 1).encode('utf-8'))
+
+def revert(edits):
+    for f in sorted({e[0] for e in edits}):
+        run(['git', 'checkout', '--', f])
+
+def main(names):
+    for name in names:
+        edits = MUTANTS[name]
+        apply(edits)
+        diff = run(['git', 'diff', '--stat', '--', 'Alundra', 'Alundra.Tests']).stdout
+        r = run(['dotnet', 'test', 'Alundra.Tests', '-c', 'Release', '-p:CustomAfterMicrosoftCommonTargets=' + SK, '--filter', FILTER, '--blame-hang-timeout', '60s'])
+        full = r.stdout + r.stderr
+        open(os.path.join(OUT, name + '.full'), 'w', encoding='utf-8').write(full)
+        revert(edits)
+        clean = run(['git', 'diff', '--quiet', '--', 'Alundra', 'Alundra.Tests']).returncode == 0
+        red = sorted(set(re.sub(r' \[[0-9 a-z]*\]$', '', l.strip()) for l in full.splitlines() if re.match(r'^\s*(Échoué|Failed) ', l)))
+        buildfail = 'error CS' in full
+        tail = [l for l in full.splitlines() if re.search(r'(Total|Réussi|Passed|Échec|Failed)\s*:', l) or 'Total' in l][-4:]
+        open(os.path.join(OUT, name + '.red'), 'w', encoding='utf-8').write('\n'.join(red))
+        print('%s: rc=%d buildfail=%s killed=%s nred=%d clean=%s' % (name, r.returncode, buildfail, len(red) > 0, len(red), clean))
+        for l in red[:6]:
+            print('   ', l)
+        print('   ', tail)
+        sys.stdout.flush()
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
