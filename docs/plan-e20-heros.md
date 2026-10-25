@@ -5551,7 +5551,7 @@ commit de docs `6c8ad55` de la session principale (garde du plan oubliée, rien 
 
 Détaillée seulement si l'auteur répond à Q-K2 par l'option B. Contenu : un port entier de la boucle d'affinage de `0x80037730` (pas entier en unités brutes, halvings, `moved_ok`, `NoObstacleSlide`), sans entité (les projectiles ne sont pas sujets), pour les entités marquées, en remplacement du mover du moteur. T0 : le modèle du fuzz (20 000 cas, 0 écart) comme oracle de la fonction ; acceptation : les 12 départs de l'oracle (drapeau aux ticks 43 et 44 exacts), aucun écart sur le fuzz. Phases A (fonction pure) et B (branchement). Prérequis : e0k2, e0k3.
 
-#### 1.18.5 E20.e0k5 — Le premier pas d'une entité née en jeu, borné par la recherche par moitiés du binaire (O-E20-24) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
+#### 1.18.5 E20.e0k5 — Le premier pas d'une entité née en jeu, borné par la recherche par moitiés du binaire (O-E20-24) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
 
 **Provenance.** Deux lectures seules du 2026-10-24, chacune recoupée par un critique frais : la partie A de `scratchpad/t2-proj/` (O-E20-24) et
 `docs/plan-e20-annexe/e20-step-search/` (la recherche du pas, déjà versée : le modèle `work/xymodel.py`, rejoué contre le vrai code sur 55 000
@@ -5561,6 +5561,10 @@ vecteurs, 0 écart, 449/449 instructions). T0 verse la partie A de `t2-proj/` à
 position 106 à la clé `arrow3_near105` (le héros y est à 105) et aucun cas non collé n'avait de bornage partiel : chaque couple suit la position
 de sa clé, et des cas bornés sont ajoutés ; (2) les côtés nord, sud et ouest reposaient sur un montage non recoupé : ils sortent de
 l'acceptation (O-E0K5-1).
+
+**Révision 2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé que les clés de
+la flèche chargée n'étaient produites par aucun script à un chemin que lit son chargeur : chaque clé de T2 nomme maintenant son script, son chemin de
+sortie et l'appel `Load(...)` qui la lit.
 
 **Prérequis.** E20.e0k3 et E20.f5 (faites) ; la branche du thème 2. **Préférence d'ordre** : avant le branchement de production d'E20.f6b (les
 boules de feu et de glace), pour ne pas livrer f6b avec l'écart.
@@ -5606,7 +5610,12 @@ l'intégration, le drapeau) ; les tests ; l'annexe `docs/plan-e20-annexe/e20-e0k
 **Tâches.**
 - ⏳ **T0 — Versement, oracle, sondes** (commit de docs). (a) Verser la partie A de `scratchpad/t2-proj/` (rapports, scripts, `out/keys/` avec leurs
   manifestes) à `docs/plan-e20-annexe/e20-e0k5-disc/` ; produire les variantes `_pf` des clés générées (`f5/oracle/run_f5.py`, lues par
-  `ArrowOracle.Load(..., stepByImage: true)`), et la clé neuve `arrow3_x107` (et sa variante `_pf`) par le même script, avec son manifeste ; (b) rejouer `run_pointblank.py`, `pb_keys.py` et `work/xymodel.py` / `xyfuzz.py` depuis des copies,
+  `ArrowOracle.Load(..., stepByImage: true)`), et la clé neuve `arrow3_x107` (et sa variante `_pf`) par le même script, avec son manifeste. **Les
+  chemins** : les clés des flèches normales (`arrow3_flush`, `arrow3_point_blank`, `arrow3_near105`, `arrow3_x107` et leurs `_pf`) par
+  `docs/plan-e20-annexe/e20-f4f6/f5/oracle/run_f5.py`, écrites dans `e20-f4f6/f5/oracle/out/json/{nom}.json` et `{nom}_pf.json`, lues par
+  `ArrowOracle.Load("{nom}", stepByImage: true)` ; les clés de la flèche chargée (`charged7_flush_pf`, `charged7_near105_pf`) par
+  `e20-f4f6/f4/oracle/run_charged_pf.py`, écrites dans `e20-f4f6/f4/oracle/out/json/charged7_{nom}_pf.json`, lues par
+  `ChargedArrowOracle.Load("flush" | "near105", stepByImage: true)` ; les manifestes des deux dossiers (`manifest.py`) mis à jour ; (b) rejouer `run_pointblank.py`, `pb_keys.py` et `work/xymodel.py` / `xyfuzz.py` depuis des copies,
   sorties identiques ; (c) une sonde de la DLL (jetable, versée en `.txt`) : `PA2` avec une cellule de mur à 3 px (le trou du moteur) ; la flèche à
   `heroX` 106, 107, 108, 109 contre la colonne 5 ; (d) la liste prédite des tests déplacés (`ArrowLifeTests` E7, `ChargedArrowLifeTests` C7, dont
   les murs sont loin : attendus inchangés ; `BirthTickProbePaTests.PA2` reste vrai), mesurée par un câblage temporaire annulé. Arrêts : une sonde qui
@@ -5617,7 +5626,8 @@ l'intégration, le drapeau) ; les tests ; l'annexe `docs/plan-e20-annexe/e20-e0k
   position du héros du scénario de sa clé dans `pb_keys.py`, ou de la clé que T0 génère) : `ArrowRun` à 109 contre `arrow3_flush_pf` (collé : 0 px
   parcouru, le drapeau à S) ; à 108 contre `arrow3_point_blank_pf` (le pas libre 111 borné à 109) ; à 107 contre une clé `arrow3_x107` que T0
   génère (le pas 110 borné à 109, l'unité brute `7143423` de la boucle par moitiés) ; `ChargedArrowRun` à 105 contre `charged7_near105_pf` (le pas
-  libre de 6 px à 111 borné à 109) et à 109 contre `charged7_flush` (la destruction à S+1) ; de S à S+19 ; en témoin vert avant et après :
+  libre de 6 px à 111 borné à 109) et à 109 contre `charged7_flush_pf` (la destruction à S+1, l'effet 8), tous deux par
+  `ChargedArrowOracle.Load(..., stepByImage: true)` ; de S à S+19 ; en témoin vert avant et après :
   `ArrowRun` à 105 contre `arrow3_near105_pf` (le pas libre à 108, aucun bornage) ; puis la ligne de la phase B ; verts. La suite
   entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ; les traces de la 389 ; `cmp` ;
   `check_names.py --rules` ; le moteur sans diff.
@@ -8614,7 +8624,7 @@ Conséquence de D-E20-39 : aucun chemin de production ne met un objet dans les m
 haricots) : g1a et g2a sont inertes en jeu et se valident par des tests et des valeurs de référence tirées du binaire. Questions
 Q-G1A-1 à Q-G1A-6 (§2).
 
-#### 1.24.7 E20.g1c — L'ombre du contact du binaire (O-G3-3) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
+#### 1.24.7 E20.g1c — L'ombre du contact du binaire (O-G3-3) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
 
 **Provenance.** `docs/plan-e20-annexe/e20-step-search/` (la lecture et son critique : W4 et l'option D, `critic/work/crit_shadow.py`) ;
 `docs/plan-e20-annexe/e20-g1b/walk-release-disc/` (W4 : la cause d'O-G3-3) ; `docs/plan-e20-annexe/e20-g1b/t0b/` (la mesure d'O-G3-3 dans la DLL) ;
@@ -8625,6 +8635,10 @@ l'épingle `CrateSolidityMap392Tests.OG33_…_PinnedNotFollowed`. D-E20-80 rempl
 une seule fois par tick, après `SlideAlongWall` ; (2) la porte « hors de la branche sol » n'avait pas de définition exécutable : la copie est
 entière (sa propre branche sol comprise), sans porte ; (3) les entrées du test de murs du héros n'étaient pas identifiées dans la DLL : T0 les
 recense une par une, avec un arrêt pour une entrée absente.
+
+**Révision 2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé que le périmètre
+nommait encore l'ancien point d'écriture et l'ancienne porte : il nomme maintenant `ScriptedMotion.cs` et `RunOneKinematicTick`, et
+`EntityScriptProxy.cs` reste inchangé.
 
 **Prérequis.** E20.g1b faite ; la branche du thème 2. Aucun lien avec e0k5 (deux fonctions pures distinctes, la même recherche du binaire).
 
@@ -8661,8 +8675,9 @@ l'original, au lieu de soulever la caisse voisine.
   consigné par un test nommé.
 - **D-G1C-3** — Les autres entités gardent leur contact (les PNJ, les objets poussés) : hors de la tranche.
 
-**Périmètre.** `Alundra/Physics/` (la fonction pure) ; `Alundra/Entities/EntityScriptProxy.cs` (`MoveControllerAndPullPosition` : l'ombre pour le
-héros hors de la branche sol) ; les tests (dont l'épingle `OG33_…_PinnedNotFollowed`, réécrite par dérivation sur la valeur du binaire) ; l'annexe
+**Périmètre.** `Alundra/Physics/` (la fonction pure) ; `Alundra/Physics/ScriptedMotion.cs` (`RunOneKinematicTick` : la position et la force du
+héros retenues avant le premier `Move`, puis l'ombre écrite une fois après `SlideAlongWall`, pour le héros seul, sans porte ; le second `Move`
+du glissement ne la lance pas) ; `Alundra/Entities/EntityScriptProxy.cs` reste inchangé ; les tests (dont l'épingle `OG33_…_PinnedNotFollowed`, réécrite par dérivation sur la valeur du binaire) ; l'annexe
 `docs/plan-e20-annexe/e20-g1c/` ; un ADR neuf ; ce plan (O-G3-3 fermé).
 
 **Hors périmètre.** Le moteur ; `ForceAdjusted` et la position ; les entités autres que le héros.
