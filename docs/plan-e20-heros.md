@@ -11230,9 +11230,16 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
 
 ---
 
-#### 1.30.3 E20.h3b — La bombe dans les mains : le départ, C62, le pilote et l'annulation ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`1314242`, un P2 : une tolérance d'un tick dans ses arrêts), corrigé (révision 3) ; relecture **en pause**, Q-H3B-R ; prérequis E20.c2b ajouté le 2026-10-22, D-E20-52)
+#### 1.30.3 E20.h3b — La bombe dans les mains : le départ, C62, le pilote et l'annulation ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`1314242`, un P2 : une tolérance d'un tick dans ses arrêts), corrigé (révision 3) ; relecture en pause, Q-H3B-R ; prérequis E20.c2b ajouté le 2026-10-22, D-E20-52 ; **révision 4 du 2026-10-25** : E20.c2b faite, D-H-7 caduque, nouvelle époque, à relire par un `plan-verifier` frais)
 
-**Prérequis.** h0a, h3a ; g1a (le lien de portage, `PutInHands`, les modes 0, 1 et 2, les états de portage) et g2a (le Carré qui lance) ; f5 (la
+**Révision 4 (2026-10-25, nouvelle époque).** La pause attendait E20.c2b (Q-H3B-R : « elle attend aussi E20.c2b », D-E20-52) : c2b est faite
+(§1.12.1, ADR-0096) et D-H-7 est caduque (D-C2B-11). La lecture du 2026-10-25 (`scratchpad/t2-next/a362-h3a/` et sa critique, versées par
+le T0 de l'arc A362 à `docs/plan-e20-annexe/e20-a362-disc/`) a rejoué l'oracle de h3 sans réglage : aucune clé de h3b ne dépend de D-H-7 ;
+deux clés neuves entrent : le lancer vers le bas qui blesse Alundra resté sur place (Q-H3B-1, défaut A, comme l'original ; marges corrigées
+par la critique) et la blessure pendant qu'il porte une bombe (la bombe lâchée par le mode 2 ne se brise pas : C62 règle son lâcher, à la
+différence des caisses de D-C2B-13) ; (w8) compare maintenant aussi la blessure du héros.
+
+**Prérequis.** A362 (§1.30.1a, qui verse les clés de la lecture du 2026-10-25), h0a, h3a ; g1a (le lien de portage, `PutInHands`, les modes 0, 1 et 2, les états de portage) et g2a (le Carré qui lance) ; f5 (la
 clé de vitesse d'une entité marquée, D-F5-5) et f6a (la pente d'une entité marquée : la bombe lancée dans l'eau profonde meurt avec l'effet 6) ;
 la fin du chantier et Q-R-7 ; **E20.c2b** (ajouté le 2026-10-22, D-E20-52 : la blessure du héros dans sa propre explosion, avant que h3b
 soit ouverte au joueur).
@@ -11258,7 +11265,12 @@ plan, l'index des ADR et un ADR.
   point 3), et, là où le héros est dans une zone d'explosion, telles quelles avec le héros blessable (D-H-7 caduque ; `bomb_timeline` à T+260 compris) ; **la clé de (w8)** (révision 2) : une
   copie de `critic/run/scen_hurt_circle.py` sans réglage (D-H-7 caduque ; la lecture du 2026-10-25 l'a produite : `k_w8_explode_in_hands.txt`), la seconde bombe née dans la boîte active de la première, prolongée jusqu'à la fin de
   l'animation d'explosion de la seconde (le lien et l'objet en cours tenus jusque-là, puis effacés par `DestroyEntity(E, −1)`), versée
-  `docs/plan-e20-annexe/e20-h3b/explode_in_hands.txt` ; (c) **la politique des étincelles** (critique A5) : deux tirages seulement si l'effet est obtenu ; la sonde de la DLL dit quand
+  `docs/plan-e20-annexe/e20-h3b/explode_in_hands.txt` ; (b2) (révision 4) deux clés neuves de `e20-a362-disc/` (dossier `out/` de la
+  lecture), rejouées depuis une copie : `k_throw_explode.txt` (la bombe lancée vers le bas se pose à +23,50 px, sa zone de 32 px de profondeur
+  recouvre le corps du héros resté sur place d'un demi-pixel : il est blessé, PV 10 → 5, `0x31` ; vers l'est, le nord et l'ouest il passe à
+  côté, les seuils de la critique : est touché à 34,75 px ou moins, nord à 22,0, sud à 23,5, ouest indemne dès 34,0) et
+  `bomb_hurt_while_carrying_bomb.txt` (le héros blessé au tick 264 en portant la bombe 2, lâchée au tick suivant en animation 2, qui part sur
+  35 px sans se briser) ; (c) **la politique des étincelles** (critique A5) : deux tirages seulement si l'effet est obtenu ; la sonde de la DLL dit quand
   `EffectStage` rend un effet (réservoir plein compris) et l'écrit au README ; (d) la liste prédite : `AlundraLogicalZWorldTests` Z4 et Z7 (une bombe
   née par l'interface dont la fusée vaut 0 : avec C62 inscrit, elle passe en statut 3 au premier tick et explose), réécrits par dérivation ou
   avec une autre entité à gravité (le choix écrit au README, la valeur de Z de l'oracle gardée) ; les épingles du registre (+1 clé) ; recomptée ;
@@ -11283,8 +11295,11 @@ plan, l'index des ADR et un ADR.
   son 24) ; (w4) le rebond au mur et l'atterrissage au pied d'un mur ; (w5) le verrou du contrôle pendant le portage : fumée 12 au tick suivant,
   aucune explosion ; (w6a) l'eau profonde, portée : fumée 12 ; (w6b) lancée dans l'eau profonde : l'effet 6 à l'atterrissage ; (w7) Rond pendant un coup d'épée : la bombe naît
   et le coup est interrompu (critique R1) ; (w8) l'explosion dans les mains (critique A4), contre `explode_in_hands.txt` : les statuts, animations et cases des deux bombes, le lien de portage,
-  l'objet en cours, l'état et la position du héros, de la naissance de la seconde bombe à la fin de son animation d'explosion (révision 2) ; (w9) le
-  menu Start refusé du départ à T+243, ouvert après.
+  l'objet en cours, l'état et la position du héros, de la naissance de la seconde bombe à la fin de son animation d'explosion (révision 2), et
+  (révision 4) la blessure du héros au tick 261 (PV 5, `0x31`, le recul coupé par Rond au 262, x = 103), la seconde explosion sans blessure
+  (`DamagedTickCounter` non nul) ; (w9) le menu Start refusé du départ à T+243, ouvert après ; (w10) (révision 4) le lancer vers le bas contre
+  `k_throw_explode.txt` : Alundra resté sur place est blessé par sa propre bombe ; accolé, le lancer vers l'est (indemne) ; (w11) (révision 4)
+  la blessure en portant une bombe contre `bomb_hurt_while_carrying_bomb.txt` : la bombe lâchée, non brisée, sa trajectoire.
 - ⏳ **T3 — Phase B** : les entrées `0x23` et l'inscription. Verts.
 - ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 16, tous tués : limite à 4 ; une bombe détruite non comptée ; fusée à 239 ;
   étincelles à 64 ; étincelles sans la condition « effet obtenu » ; un seul tirage par étincelle ; garde `+0x20` au lieu de `+0x24` (D1) ; fumée 12
@@ -11294,10 +11309,11 @@ plan, l'index des ADR et un ADR.
 ##### Acceptation
 
 - **Oracle** : vecteurs et clés rejoués à l'identique.
-- **DLL** : (c1) à (c4) verts ; (w1) à (w9) rouges avant T3, verts après ; suite en Release et en Debug, zéro échec ; tests déplacés ⊂ liste
+- **DLL** : (c1) à (c4) verts ; (w1) à (w11) rouges avant T3, verts après ; suite en Release et en Debug, zéro échec ; tests déplacés ⊂ liste
   prédite ; `cmp` ; traces inchangées ; moteur, convertisseur et données sans diff.
-- **Preuve de retrait** (révision 1) : retirer les entrées `0x23` rend rouges exactement (w1) à (w9) ; retirer l'inscription de (C, 62) rend rouges
-  exactement (w1), (w2) (la case de la première bombe ne se libère plus), (w3), (w4), (w6b), (w8) et (w9) (l'objet reste en cours) ; (w5), (w6a) et
+- **Preuve de retrait** (révision 1) : retirer les entrées `0x23` rend rouges exactement (w1) à (w11) ; retirer l'inscription de (C, 62) rend rouges
+  exactement (w1), (w2) (la case de la première bombe ne se libère plus), (w3), (w4), (w6b), (w8), (w9) (l'objet reste en cours), (w10) et (w11)
+  (révision 4 : sans C62 la bombe ne vole ni n'explose) ; (w5), (w6a) et
   (w7) passent par le départ, le pilote et l'annulation de `0x23`, pas par C62.
 - **Recette de l'auteur** (non bloquante) : un préréglage de recette qui équipe la bombe (à nommer en T0 avec `TestSaves.cs`) : Rond, la bombe
   levée, marcher, sauter, la lancer, elle explose ; trois bombes au plus.
@@ -11305,7 +11321,7 @@ plan, l'index des ADR et un ADR.
 ##### Arrêts, budget, retour arrière
 
 - **Arrêts** : un test hors de la liste prédite bouge ; la politique des étincelles ne peut pas être rendue fidèle sans toucher au moteur ; une
-  valeur de (w1) ou de (w8) diffère de sa clé, d'un tick ou plus (aucune tolérance, comme h3a ; révision 3) ; g1a ou g2a ne sont pas faites.
+  valeur de (w1), de (w8), de (w10) ou de (w11) diffère de sa clé, d'un tick ou plus (aucune tolérance, comme h3a ; révisions 3 et 4) ; g1a ou g2a ne sont pas faites.
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : retirer les entrées `0x23` (Rond revient au bouchon silencieux) ; la phase A reste inerte.
 
