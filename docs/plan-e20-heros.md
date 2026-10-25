@@ -10695,7 +10695,7 @@ trou de la table, un autre objet en cours) ; un objet dont le départ n'est pas 
 
 ---
 
-#### 1.30.1a E20.A362 — L'arc du couvercle de la 362 face à la bombe d'Olen ⏳ (détaillée le 2026-10-25 ; thème 2, avant h3a ; ligne 9b de l'enveloppe ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais ; défauts de Q-A362-1 et Q-A362-2 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
+#### 1.30.1a E20.A362 — L'arc du couvercle de la 362 face à la bombe d'Olen ⏳ (détaillée le 2026-10-25 ; thème 2, avant h3a ; ligne 9b de l'enveloppe ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture ; défauts de Q-A362-1 et Q-A362-2 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
 
 **Provenance.** Lecture seule du 2026-10-25 (HEAD `8174c0cb`, code de production identique jusqu'à `5e67722d`) : rapport et critique frais
 (`scratchpad/t2-next/a362-h3a/report-main.md`, `scratchpad/t2-next/a362-h3a-critic/report-main.md`, scripts, sorties et copies de
@@ -10708,6 +10708,12 @@ mutation `TypeNibbles[3]` ne fait pas tomber le contact (a7) (la table ne sert q
 mutation de la passe de coups tue (a7) ; (3) le témoin du coup d'épée ne fixait ni la position du héros ni la preuve que l'épée atteint le
 couvercle : il passe dans un banc à part, la géométrie dérivée, un témoin positif accolé ; (4) le préréglage n'avait pas de test de
 contenu : il en a un.
+
+**Révision 2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé (1) des
+rouges prédits incomplets (l'épingle du couvercle tombe aussi sous les mutations qui empêchent `0x19`) et sans portée écrite : chaque
+mutation donne maintenant l'ensemble de ses rouges, sur une portée écrite ; (2) un positif de (n2) qui ne prouvait pas le recouvrement du
+couvercle (le corps d'un Beannoïde n'est pas le sien) : le négatif prouve lui-même le recouvrement, par ce que la passe de coups écrit
+sur une cible immune.
 
 **Prérequis.** Aucun prérequis de code : la DLL du HEAD exécute toute la scène (les 48 opcodes de la 362 ont un `case`). Ordre : après E20.c2b
 (D-E20-83), avant E20.h3a (§1.30, Q-H3-6) ; elle partage avec b2 et c2b `Alundra/SaveGames/TestSaves.cs` et `docs/test-saves.md` (le
@@ -10772,19 +10778,26 @@ deux manques que h3a comble, épinglés par des tests nommés que h3a réécrira
   là, ni son `0xE6` ni effet 11 ; la bombe en statut 3 après la fin de son animation) ; (a10) B[4] : `0x8E` à H+3, `0x8F` à H+64, les quatre
   naissances ; (a11) le héros intact (`TouchingEntity` nul, PV inchangés) ; témoins : (n1) sans G248, pas d'enregistrement 5 (le dialogue
   131 et la boucle) ; (n2) dans un banc à part (le couvercle, sprite global 243, posé seul ; le héros à la position et au regard de T0 (d2)),
-  un coup d'épée ne pose pas son `TouchingEntity` (réponse `0x80` au type 1), accolé à son positif : la même géométrie avec une cible à
-  réponse `0x10` au type 1 (un Beannoïde) à la place du couvercle, touchée (si l'épée ne recouvre pas la zone, le positif est rouge). Puis
+  un coup d'épée : le `TouchingEntity` du couvercle reste nul (réponse `0x80` au type 1) **et**, au même tick, la passe de coups écrit ce
+  qu'elle écrit pour une cible immune touchée : `FrameCollisionTickCounter` 25 sur le couvercle, `HitCounter` de l'attaquant à 1, trois
+  étincelles (si l'épée ne recouvre pas le corps du couvercle, ces valeurs restent nulles et le test est rouge ; s'il pose
+  `TouchingEntity`, il est rouge aussi). Puis
   le préréglage `olen-m362`, sa ligne de liste et son test de contenu : la nouvelle partie, la carte 362, la case de T0 (e), le drapeau G248
   seul (rouge si G248 est retiré ou si la case est celle de B[6]). La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `cmp` ;
   `check_names.py --rules`.
-- ⏳ **T2 — Verifier frais** (la session principale), avec quatre mutations jetables du HEAD, chacune avec ses rouges prédits exactement :
-  `TypeNibbles[3]` de 4 à 5 (`0x87` ne reconnaît plus l'attribut 4 : (a8) et (a10) rouges, (a7) vert) ; le `case 0x19` de
-  `EventProgramRunner` neutralisé ((a8) et (a9) rouges, le statut 3 manque ; (a10) vert, T6 posé avant) ; `IsInlineDeactivateCode(19)`
-  vrai ((a9) rouge, le couvercle détruit sans son) ; la passe de coups qui saute les cibles de la classe A ((a7), (a8) et (a10) rouges).
+- ⏳ **T2 — Verifier frais** (la session principale), avec quatre mutations jetables du HEAD. **Portée des prédictions** : les tests du
+  fichier de l'arc et le test de contenu du préréglage (les autres fichiers de la suite ne sont pas comptés : `TypeNibbles` et la passe
+  de coups servent ailleurs). Rouges prédits, exactement : `TypeNibbles[3]` de 4 à 5 (`0x87` ne reconnaît plus l'attribut 4, `0x19`
+  n'est jamais atteint) : (a8), l'épingle du couvercle de (a9) et (a10) ; verts : (a1) à (a7), l'épingle de la bombe, (a11), (n1), (n2), le
+  préréglage ; le `case 0x19` de `EventProgramRunner` neutralisé : (a8) et l'épingle du couvercle (le statut 3 manque) ; verts : le reste,
+  dont (a10) (T6 posé avant `0x19`) ; `IsInlineDeactivateCode(19)` vrai (le couvercle détruit sans son au premier passage du créneau E) :
+  l'épingle du couvercle ; verts : le reste ; la passe de coups qui saute les cibles de la classe A (le couvercle est de classe A) : (a7),
+  (a8), l'épingle du couvercle, (a10) et (n2) (le couvercle n'est plus touché par l'épée) ; verts : le reste, dont l'épingle de la bombe et
+  (a11).
 
 **Acceptation.** Les sorties de T0 (b) identiques ; dans `git log`, le commit de T0a (la table (d)) précède celui de la fumée et tout
-lancement de la scène ; (a1) à (a11) égaux à la table écrite d'avance ; (n1), (n2) et son positif, et le test de contenu du préréglage verts ;
-les quatre mutations tuées, leurs rouges égaux aux prédictions ; la suite en Release et en Debug, zéro échec ; aucun test hors de la liste de T0 (f) déplacé. **Recette de l'auteur**
+lancement de la scène ; (a1) à (a11) égaux à la table écrite d'avance ; (n1), (n2) (le recouvrement prouvé par le compteur 25, le `HitCounter` et les étincelles) et le test de contenu du
+préréglage verts ; les quatre mutations tuées, leurs rouges égaux aux prédictions sur la portée écrite en T2 ; la suite en Release et en Debug, zéro échec ; aucun test hors de la liste de T0 (f) déplacé. **Recette de l'auteur**
 (non bloquante) : `olen-m362` : parler à Olen, voir la bombe exploser contre le couvercle, qui reste en place (h3a le fera disparaître), puis
 les Muruta sortir.
 
