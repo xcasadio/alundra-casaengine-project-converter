@@ -1,0 +1,14 @@
+01_and_instead_of_or_in_the_pick_phase | 8 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P3b_ASingleCornerOnTheHoleOrTheExit_IsEnough_TheOrOfTheCorners(index: 0, ground: "corner")
+01b_and_instead_of_or_in_the_word | 8 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P3b_ASingleCornerOnTheHoleOrTheExit_IsEnough_TheOrOfTheCorners(index: 0, ground: "corner")
+02_mask_0004_only | 7 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P2_TheBarrelThrownOnAnExitFloor_DisappearsAtT23_WithTheEffect10
+03_no_gravity_gate | 1 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P9_AMarkedEntityWithoutTheGravity_OnAHoleCell_StaysAlive_ItsWordsStayZero
+04_hook_for_every_entity_inner | 1 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P5_AnEntityPlacedByTheMap_OnAHoleCell_StaysAlive_ItsWordsStayZero(index: 6)
+04b_hook_for_every_entity_outer_and_inner | 2 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P5_AnEntityPlacedByTheMap_OnAHoleCell_StaysAlive_ItsWordsStayZero(index: 0)
+05_call_before_the_step | 18 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P1_TheBarrelThrownOnAHole_DisappearsAtT23_WithTheEffect10_AndTheSlotIsFreeAtT24
+06_break_effect_lost_effect_id_0 | 17 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P1_TheBarrelThrownOnAHole_DisappearsAtT23_WithTheEffect10_AndTheSlotIsFreeAtT24
+06b_break_effect_lost_in_the_world | 43 red | first: Alundra.Tests.Ai.Objects.LiftableBreakProductionTests.P1_ACrateThrownByTheHero_BreaksInProduction_AtT23_WithTheEffect10(ticksPerFrame: 1)
+07_and_word_as_or | 8 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P3b_ASingleCornerOnTheHoleOrTheExit_IsEnough_TheOrOfTheCorners(index: 0, ground: "corner")
+08_three_corners | 1 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P10_EachCornerOfTheBoxReadsItsOwnCell_AHoleUnderOneCornerIsEnough(corner: 3)
+09_hook_removed | 18 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P1_TheBarrelThrownOnAHole_DisappearsAtT23_WithTheEffect10_AndTheSlotIsFreeAtT24
+10_mask_8000_only | 11 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P1_TheBarrelThrownOnAHole_DisappearsAtT23_WithTheEffect10_AndTheSlotIsFreeAtT24
+11_hook_only_when_normal | 1 red | first: Alundra.Tests.Ai.Objects.PitFallWorldTests.P11_AMarkedEntityInTheStatus3_OnAHoleCell_HasItsWordsFed

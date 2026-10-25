@@ -117,3 +117,36 @@ Against T0 (6 301): +22 new tests in p1 (`Alundra.Tests.Ai.`), -1 in p3 (the scr
 ## The change
 
 `Alundra/Entities/EntityScriptProxy.cs`: in the hook of f6a of `Update`, after `UpdateGroundSlope();`, `if (HasLogicalZ) { UpdateVramFlags(); }` (the trunk of `FeedsGroundSlope` gets the slope only). Docs corrected: the RESTRICTION paragraph of `UpdateVramFlags` and D-T-12 of `docs/plan-transitions-carte.md` (amendment). Mutants and ADR are T3.
+
+---
+
+# T3 (mutants, ADR), 2026-10-25
+
+Mutants: `t3/mut.py` (real edits of the working tree, asserted to match once, undone by `git checkout -- Alundra/`), `t3/run.sh` (Release, neutralised copy, filter "narrow" = `Alundra.Tests.Ai.Objects`, `Hero.Lift`, `Arcs.Lift`, `Arcs.BarrelLift`, `TestSavesTests`, `NativeSpriteRegistryTests`: 691 tests, 2 min 47 s), table `t3/mutants-table.txt`, red lists in `t3/out/`. `git diff` on `Alundra/` empty after each.
+
+| mutant | red | killed by (first) |
+|---|---|---|
+| 01 the AND instead of the OR in the pick phase | 8 | P3b (single corner) |
+| 01b the AND instead of the OR in the word | 8 | P3b |
+| 02 the mask `0x8004` reduced to `0x0004` | 7 | P2 (exit floor) |
+| 03 the hook without the gravity gate (`UpdateVramFlags`) | 1 | **P9** (new) |
+| 04 the hook for every entity (inner `if (HasLogicalZ)` removed) | 1 | **P5 on the trunk** (new) |
+| 04b the same, outer gate removed too | 2 | P5 (barrel, trunk) |
+| 05 the call before the step instead of after | 18 | P1 |
+| 06 the break effect lost (`DestroyEntity(this, 0)` in the pick phase) | 17 | P1 |
+| 06b the break effect lost (`-1` gives 0 in `WorldProxy`) | 43 | `LiftableBreakProductionTests.P1`, P1 |
+| 07 the AND word written as the OR | 8 | P3b |
+| 08 the OR of three corners (the corner x2,y2 missing) | 1 | **P10** corner 3 (new) |
+| 09 the hook removed | 18 | P1 |
+| 10 the mask `0x8004` reduced to `0x8000` | 11 | P1 (hole) |
+| 11 the hook only for the status Normal | 1 | **P11** (new) |
+
+Thirteen mutants, all killed (the six of the plan: 01/01b, 02, 03, 04, 05, 06/06b). A first version of 06 (`host.DestroyEntity(this)`) did not compile (`IScriptHost` has the two-argument form only): replaced by effect id 0, not counted. Five mutants first survived (03, 04, 08, 11 and the first 06 that did not build): none is equivalent, so each forced a test, written before the rerun (they stay green on the real code):
+- **P9**: a marked entity without the gravity flag, at rest on a hole cell, keeps the words at 0 and stays alive (kills 03).
+- **P5** is now a theory over the barrel and the trunk (`FeedsGroundSlope`): the placed trunk keeps the words at 0 (kills 04).
+- **P10**: four cases, a marked barrel at rest astride four cells (24 px wide, 16 px high, found by probe: the box is 21 x 15 px), a hole under ONE cell, one per corner: OR 4, AND 0 and the barrel dies (kills 08, which no thrown case could reach, the corner x2,y2 being on the full side in the partial cases).
+- **P11**: a marked barrel in the status 3 on a hole cell has its words fed (the physics list holds the statuses 2 and 3) (kills 11).
+The mutants 01 to 02, 04b to 07, 09, 10 ran before P9 to P11 existed; the new tests do not touch them.
+
+Tests: `PitFallWorldTests` 22 -> 29 cases (+1 P5 trunk, +1 P9, +4 P10, +1 P11), 29 green in Release and in Debug. Suite with the new tests, Release neutralised copy, `--blame-hang-timeout 60s`, partitions by whole namespace (partition 3 the exact negation): p1 1 515 passed (6 min 8 s), p2 2 956 (3 min 58 s), p3 1 858 (54 s): **6 329 tests, 0 failed** (6 322 + 7). `t3/out/{base.p1,base.p2,base.p3}.summary`. Debug build last (the DLL deposited, `cmp` identical to `alundra-project/Alundra.dll`), `PitFallWorldTests` 29 green in Debug.
+`check_names.py --rules`: 0 finding (1 pre-existing warning). The traces of the 389 only had their line ends rewritten, restored. ADR: **ADR-0093** (new, index updated; number recounted on all branches, no ADR above 0092 anywhere).

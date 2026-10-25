@@ -183,10 +183,13 @@ public sealed class PitFallWorldTests : IDisposable
     // (p5) D-T-12 kept: an entity placed by the map (a record, never marked) on a hole cell stays alive and its words stay zero.
     // -----------------------------------------------------------------------------------------
 
-    [Fact]
-    public void P5_AnEntityPlacedByTheMap_OnAHoleCell_StaysAlive_ItsWordsStayZero()
+    // The barrel (0) and the trunk (6): the trunk is the one placed entity that the slope of the ground feeds (FeedsGroundSlope), and its words stay 0 all the same.
+    [Theory]
+    [InlineData(0)]
+    [InlineData(6)]
+    public void P5_AnEntityPlacedByTheMap_OnAHoleCell_StaysAlive_ItsWordsStayZero(int index)
     {
-        var o = C4WorldTests.Seven[0];
+        var o = C4WorldTests.Seven[index];
         using var run = new C4Run(o.Name, o.Zone, o.World, 0, cell: HoleGround.Cell, recordId: o.Record, extraTypes: new[] { o.Type }, carry: false, contents: 0);
         Assert.False(run.Crate.HasLogicalZ);
         run.Crate.PosX = 178 << 16;
@@ -204,6 +207,91 @@ public sealed class PitFallWorldTests : IDisposable
         }
 
         Assert.Equal(178, At(run, 39).X >> 16);
+    }
+
+    // (p9, T3) a marked entity WITHOUT the gravity (an arrow, a bolt) keeps the words at 0 above a hole: the gravity gate of UpdateVramFlags (the binary's physics pass writes the words for the entities that have the gravity only).
+    [Fact]
+    public void P9_AMarkedEntityWithoutTheGravity_OnAHoleCell_StaysAlive_ItsWordsStayZero()
+    {
+        var o = C4WorldTests.Seven[0];
+        using var run = new C4Run(o.Name, o.Zone, o.World, 0, cell: HoleGround.Cell, recordId: o.Record, extraTypes: new[] { o.Type }, carry: false, contents: 0);
+        run.Crate.HasLogicalZ = true;
+        run.Crate.Flags &= ~EntityFlags.Gravity;
+        run.Crate.PosX = 178 << 16;
+        run.Crate.PosY = 100 << 16;
+        run.Crate.PosZ = 0;
+        run.Crate.PushLogicalPositionToRoot();
+
+        var words = new Dictionary<int, (uint Or, uint And)>();
+        run.Go(1, 48, _ => 0u, tick => words[tick - 1] = (run.Crate.CombinedVramFlagsOR, run.Crate.CombinedVramFlagsAND));
+        for (var k = 0; k <= 39; k++)
+        {
+            var t = At(run, k);
+            Assert.True(t.Present && t.Status == EntityStatus.Normal, $"T+{k}: {t}");
+            Assert.True(words[k + 1] == (0u, 0u), $"T+{k}: {words[k + 1]}");
+        }
+    }
+
+    // (p10, T3) each of the four corners of the box reads its own cell: a marked barrel at rest astride the corner of four cells (the cells are 24 px wide and 16 px high; the box 2 x 2 cells), a hole under ONE cell only; the OR has the bit 4 whichever corner it is, the AND stays 0, and the barrel dies.
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void P10_EachCornerOfTheBoxReadsItsOwnCell_AHoleUnderOneCornerIsEnough(int corner)
+    {
+        var o = C4WorldTests.Seven[0];
+        int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+        int px = 0, py = 0;
+
+        void Place(C4Run r)
+        {
+            r.Crate.HasLogicalZ = true;
+            px = (192 << 16) - (r.Crate.Width >> 1) - r.Crate.ModX;
+            py = (128 << 16) - (r.Crate.Height >> 1) - r.Crate.ModY;
+            r.Crate.PosX = px;
+            r.Crate.PosY = py;
+            r.Crate.PosZ = 0;
+            r.Crate.PushLogicalPositionToRoot();
+            x1 = (r.Crate.PosX + r.Crate.ModX) >> 16;
+            x2 = (r.Crate.PosX + r.Crate.ModX + r.Crate.Width) >> 16;
+            y1 = (r.Crate.PosY + r.Crate.ModY) >> 16;
+            y2 = (r.Crate.PosY + r.Crate.ModY + r.Crate.Height) >> 16;
+        }
+
+        using (var probe = new C4Run(o.Name, o.Zone, o.World, 0, cell: null, recordId: o.Record, extraTypes: new[] { o.Type }, carry: false, contents: 0))
+        {
+            Place(probe);
+        }
+
+        Assert.True(x1 / 24 != x2 / 24 && y1 / 16 != y2 / 16, $"the box must straddle four cells: x {x1}..{x2}, y {y1}..{y2}");
+        var cx = (corner & 1) == 0 ? x1 / 24 : x2 / 24;
+        var cy = (corner & 2) == 0 ? y1 / 16 : y2 / 16;
+        using var run = new C4Run(o.Name, o.Zone, o.World, 0, cell: (x, y) => x == cx && y == cy ? new CutBench.Cell(0x04, 0) : new CutBench.Cell(0, 0), recordId: o.Record, extraTypes: new[] { o.Type }, carry: false, contents: 0);
+        Place(run);
+
+        var words = new Dictionary<int, (uint Or, uint And)>();
+        run.Go(1, 8, _ => 0u, tick => words[tick - 1] = (run.Crate.CombinedVramFlagsOR, run.Crate.CombinedVramFlagsAND));
+        Assert.Equal((Hole, 0u), words[1]);
+        Assert.False(At(run, 6).Present, $"corner {corner}: the barrel on one hole cell disappears: {At(run, 6)}");
+    }
+
+    // (p11, T3) the words are fed in the status 3 too (the physics list of the binary holds the statuses 2 and 3): a marked barrel in the status Deactivated, at rest on a hole cell, has the words (4, 4) after the first tick.
+    [Fact]
+    public void P11_AMarkedEntityInTheStatus3_OnAHoleCell_HasItsWordsFed()
+    {
+        var o = C4WorldTests.Seven[0];
+        using var run = new C4Run(o.Name, o.Zone, o.World, 0, cell: HoleGround.Cell, recordId: o.Record, extraTypes: new[] { o.Type }, carry: false, contents: 0);
+        run.Crate.HasLogicalZ = true;
+        run.Crate.Status = EntityStatus.Deactivated;
+        run.Crate.PosX = 178 << 16;
+        run.Crate.PosY = 100 << 16;
+        run.Crate.PosZ = 0;
+        run.Crate.PushLogicalPositionToRoot();
+
+        var words = new Dictionary<int, (uint Or, uint And)>();
+        run.Go(1, 4, _ => 0u, tick => words[tick - 1] = (run.Crate.CombinedVramFlagsOR, run.Crate.CombinedVramFlagsAND));
+        Assert.True((Hole, Hole) == words[1] || (Hole, Hole) == words[2], $"{string.Join(";", words.Select(w => w.Key + ":" + w.Value))} {At(run, 1)}");
     }
 
     // -----------------------------------------------------------------------------------------

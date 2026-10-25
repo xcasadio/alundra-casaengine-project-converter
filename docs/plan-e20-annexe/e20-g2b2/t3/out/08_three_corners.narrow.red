@@ -1,0 +1,1 @@
+  Échoué Alundra.Tests.Ai.Objects.PitFallWorldTests.P10_EachCornerOfTheBoxReadsItsOwnCell_AHoleUnderOneCornerIsEnough(corner: 3)
