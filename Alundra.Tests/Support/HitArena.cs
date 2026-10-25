@@ -23,6 +23,7 @@ internal sealed class HitArena : IDisposable
     private readonly List<(int X, int Y, int Z)> _tickSparks = new();
     private readonly List<(int Slot, int Letter)> _tickHandlers = new();
     private int _tick;
+    private EventProgramRunner? _realRunner;
     private bool _recording;
 
     public ArcRun Arc { get; }
@@ -55,10 +56,11 @@ internal sealed class HitArena : IDisposable
         try
         {
             Arc.Proxy.HitSparksForTests = (x, y, z) => _tickSparks.Add((x, y, z));
-            // E14.a0 (D-E14-5): the oracle's arena keeps the Beannoids as its stubs (counted no-ops): the registry of the native handlers is off.
+            // E14.a0 (D-E14-5): the oracle's arena keeps the Beannoids as its stubs (counted no-ops): the registry of the native handlers is off. E20.b2 T1: EnableNativeHandlers turns it on once the arena is set, so that the hit handler D1 of a real Beannoid runs and takes the life.
             if (Arc.Proxy.EventProgramRunner is EventProgramRunner realRunner)
             {
                 realRunner.NativeHandlersEnabled = false;
+                _realRunner = realRunner;
             }
 
             Arc.Proxy.EventProgramRunner = new RecordingRunner(Arc.Proxy.EventProgramRunner, this);
@@ -111,6 +113,9 @@ internal sealed class HitArena : IDisposable
             throw;
         }
     }
+
+    /// <summary>E20.b2 T1: turns the native handlers of the world's runner on (the arena starts with them off, as the oracle's stubs): the Beannoid then reacts to a hit with its handler D1 and loses the life the damage function gives.</summary>
+    public void EnableNativeHandlers() => _realRunner!.NativeHandlersEnabled = true;
 
     public void Dispose() => Arc.Dispose();
 

@@ -301,4 +301,62 @@ public class ItemInventoryTests
         Assert.Equal(ItemTablesFixture.SwordIconAssetId, weapon);
         Assert.Equal(ItemTablesFixture.Item17IconAssetId, accessory);
     }
+
+    // -------------------------------------------------------------------------------------------------
+    // E20.b2 T1 (docs/plan-e20-heros.md section 1.4.1): the Legendary Sword (item 8, rank 4 of the slot 1 whose items 1, 2, 3, 4 and 8 have the ranks 0 to 4).
+    // -------------------------------------------------------------------------------------------------
+
+    /// <summary>The item tables of the exported project (all the items, the item 8 included): the fixture above holds only the items of the new game and the sword chain 1 to 4.</summary>
+    private static ItemTables ExportedTables() => ItemTables.GetOrCreate(Alundra.Tests.Support.ProjectRootFinder.Find());
+
+    [Fact]
+    public void GetItemIdFromSlotId_OwningTheItems1_4_And8_GivesTheLegendarySword()
+    {
+        var tables = ExportedTables();
+        var state = new GameState();
+        state.NumberOfItems[1 * 2 + 1] = 1;
+        state.NumberOfItems[4 * 2 + 1] = 1;
+        state.NumberOfItems[8 * 2 + 1] = 1;
+
+        Assert.Equal(8u, PlayerManager.GetItemIdFromSlotId(state, tables, 1));
+    }
+
+    [Fact]
+    public void GetItemIdFromSlotId_OwningTheItems1And8_GivesTheLegendarySword_AndTheItem8AloneToo()
+    {
+        var tables = ExportedTables();
+        var state = new GameState();
+        state.NumberOfItems[1 * 2 + 1] = 1;
+        state.NumberOfItems[8 * 2 + 1] = 1;
+        Assert.Equal(8u, PlayerManager.GetItemIdFromSlotId(state, tables, 1));
+
+        var alone = new GameState();
+        alone.NumberOfItems[8 * 2 + 1] = 1;
+        Assert.Equal(8u, PlayerManager.GetItemIdFromSlotId(alone, tables, 1));
+    }
+
+    [Fact]
+    public void GetItemIdFromSlotId_TheLegendarySword_BeatsEverySwordOfTheSlot()
+    {
+        var tables = ExportedTables();
+        var state = new GameState();
+        foreach (var item in new[] { 1, 2, 3, 4, 8 })
+        {
+            state.NumberOfItems[item * 2 + 1] = 1;
+        }
+
+        Assert.Equal(8u, PlayerManager.GetItemIdFromSlotId(state, tables, 1));
+    }
+
+    [Fact]
+    public void TheEquippedSlot1_OfAHeroWhoOwnsTheItem8_ResolvesToTheItem8()
+    {
+        var tables = ExportedTables();
+        var state = NewGameState(tables);
+        state.NumberOfItems[8 * 2 + 1] = 1;
+
+        PlayerManager.SetPlayerWeaponId(state, tables, 1);
+
+        Assert.Equal(8u, PlayerManager.GetItemIdFromCurrentWeapon(state, tables));
+    }
 }

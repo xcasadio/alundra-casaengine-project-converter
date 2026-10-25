@@ -415,4 +415,105 @@ public sealed class DamageTests
         Assert.False(Damage.ComputeNewHp(attributeZero, SheetWithResponse(16), null, 0));
         Assert.Equal(7, attributeZero.Hp);
     }
+
+    // -----------------------------------------------------------------------------------------
+    // E20.b2 T1 (docs/plan-e20-heros.md section 1.4.1): the Legendary Sword (item 8) against the oracle keys K1 and K2 of the inventories 'legend' (the kit and the item 8) and 'legend_holy' (the kit, Elnard and the item 8),
+    // run by the real code of ALUN_CD.EXE (France) in docs/plan-e20-annexe/e20-b2/ (legend_keys.py, T0 (b)): the files K1-legend.json and K2-legend.json have the shape of the c1b ones.
+    // -----------------------------------------------------------------------------------------
+
+    private static JsonElement LoadB2(string name)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "docs", "plan-e20-annexe", "e20-b2", name);
+            if (File.Exists(candidate))
+            {
+                using var document = JsonDocument.Parse(File.ReadAllText(candidate));
+                return document.RootElement.Clone();
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new FileNotFoundException($"no 'docs/plan-e20-annexe/e20-b2/{name}' found above '{AppContext.BaseDirectory}': this test needs the E20.b2 oracle keys");
+    }
+
+    public static IEnumerable<object[]> LegendInventoryNames() => new[] { "legend", "legend_holy" }.Select(name => new object[] { name });
+
+    [Theory]
+    [MemberData(nameof(LegendInventoryNames))]
+    public void B2_K1_TheEquipmentRecordsOfTheLegendaryInventories_EqualTheBinary_AtTheFirstTickAndTheSecond(string name)
+    {
+        var inventory = LoadB2("K1-legend.json").GetProperty(name);
+        var state = StateOf(inventory.GetProperty("pre"));
+        var records = new EquipmentRecords();
+
+        PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
+        AssertRecordsEqual(inventory.GetProperty("records"), records, name + " (first tick)");
+
+        PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
+        var secondWords = inventory.GetProperty("second").GetProperty("record_words").EnumerateArray().Select(w => w[1].GetInt32()).ToArray();
+        for (var slot = 0; slot < EquipmentRecords.Count; slot++)
+        {
+            Assert.Equal(secondWords[slot] == 0 ? 0 : secondWords[slot] - 0x1E, records.ItemIdOf(slot));
+        }
+    }
+
+    /// <summary>The values of the plan, written by hand: the equipment record 1 of a hero that owns the item 8 is the item 8 (the sheet 38) and its one attack is the attribute 6 with the power 50, whatever else the weapon slot holds.</summary>
+    [Theory]
+    [MemberData(nameof(LegendInventoryNames))]
+    public void B2_TheEquipmentRecord1_OfAHeroWhoOwnsTheItem8_IsTheItem8_WithTheAttack6Power50(string name)
+    {
+        var state = StateOf(LoadB2("K1-legend.json").GetProperty(name).GetProperty("pre"));
+        var records = new EquipmentRecords();
+
+        PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
+
+        Assert.Equal(8u, PlayerManager.GetItemIdFromCurrentWeapon(state, ItemTables()));
+        Assert.Equal(8, records.ItemIdOf(EquipmentRecords.Weapon));
+        Assert.Equal(new[] { (6, 50) }, records[EquipmentRecords.Weapon]!.Attacks.Select(a => (a.Attribute, a.Power)).ToArray());
+        Assert.Equal(17, records.ItemIdOf(EquipmentRecords.Armour)); // the kit's armour, unchanged.
+    }
+
+    [Theory]
+    [MemberData(nameof(LegendInventoryNames))]
+    public void B2_K2_TheLifeAfterEveryLineOfTheOracle_WithTheLegendarySword_IsTheBinarys(string name)
+    {
+        var inventory = LoadB2("K2-legend.json").GetProperty(name);
+        var lines = 0;
+        foreach (var section in new[] { "HERO", "NH", "HT" })
+        {
+            foreach (var entry in inventory.GetProperty(section).EnumerateArray())
+            {
+                AssertLine(name, section, entry[1], entry[0].GetString() ?? string.Empty);
+                lines++;
+            }
+        }
+
+        Assert.Equal(14 + 5 + 3, lines);
+    }
+
+    /// <summary>The key values of the item 8: the natural hit on a Beannoid of 100 life leaves 49 (51 lost), on a Beannoid of 9 life it is dead; the swing is the basic sword's (0x10, the attack 129 power 1).</summary>
+    [Theory]
+    [MemberData(nameof(LegendInventoryNames))]
+    public void B2_K2_TheNaturalHit_OfTheLegendarySword_OnAGroundedBeannoid_Takes51_AndKillsTheNineLifeOne(string name)
+    {
+        var meta = LoadB2("K2-legend.json").GetProperty(name).GetProperty("meta");
+        var state = StateOf(LoadB2("K1-legend.json").GetProperty(name).GetProperty("pre"));
+        var records = new EquipmentRecords();
+        PlayerManager.FillEquipmentRecords(state, ItemTables(), BalanceTables(), 0, records);
+
+        var weaponRecord = WeaponTables.RecordIndexOfItem(PlayerManager.GetItemIdFromCurrentWeapon(state, ItemTables()));
+        var animation = WeaponTables.RecordByte(WeaponTables.AnimationAddress(weaponRecord, false));
+        Assert.Equal(meta.GetProperty("hero_anim").GetInt32(), (int)animation);
+        Assert.Equal(0x10, animation);
+        var attack = BalanceTables().Select(0, 0)!.AttackForAnimation(animation)!;
+        Assert.Equal(meta.GetProperty("atk_attr").GetInt32(), attack.Attribute);
+        Assert.Equal(meta.GetProperty("atk_power").GetInt32(), attack.Power);
+
+        var beannoid = BalanceTables().Select(335, 0)!;
+        Assert.Equal(49, Damage.ResolveBalanceTarget(attack, beannoid, 100, records, animation));
+        Assert.Equal(0, Damage.ResolveBalanceTarget(attack, beannoid, 9, records, animation));
+    }
 }

@@ -86,3 +86,29 @@ presets list in no other test. No other test is expected to move.
 |---|---|---|---|
 | `legende-m14` | 14 | (8, 6, 0) | `WeaponPreset("legende-m14", 14, 8, 6, 0, 1, 8)`: the kit and the object 8, slot 1 |
 | `legende-m7` | 7 | (25, 17, 7) or (26, 17, 7) | under the block 28 (25, 16) or 29 (26, 16); walk north (Up) into it; `DeathRetryCount` 20; the flag 1787 off |
+
+## T1 (2026-10-25): selection, equipment and damage tests (all green guards, no gap found)
+
+The code was already right: every T1 test is a guard, green before any change to `Alundra/` (no file of the DLL touched). Each guard is to be killed by a mutant of T3.
+
+| test (file) | what it pins | value |
+|---|---|---|
+| `ItemInventoryTests.GetItemIdFromSlotId_OwningTheItems1_4_And8_GivesTheLegendarySword` (Items) | slot 1 with {1, 4, 8} | 8 |
+| `ItemInventoryTests.GetItemIdFromSlotId_OwningTheItems1And8_GivesTheLegendarySword_AndTheItem8AloneToo` | {1, 8} and {8} | 8, 8 |
+| `ItemInventoryTests.GetItemIdFromSlotId_TheLegendarySword_BeatsEverySwordOfTheSlot` | {1, 2, 3, 4, 8} | 8 (rank 4) |
+| `ItemInventoryTests.TheEquippedSlot1_OfAHeroWhoOwnsTheItem8_ResolvesToTheItem8` | new game + item 8, `SetPlayerWeaponId(1)` | 8 |
+| `DamageTests.B2_K1_TheEquipmentRecordsOfTheLegendaryInventories_EqualTheBinary_...` (x2: `legend`, `legend_holy`) | the three records and the second tick against `K1-legend.json` | equal |
+| `DamageTests.B2_TheEquipmentRecord1_OfAHeroWhoOwnsTheItem8_IsTheItem8_WithTheAttack6Power50` (x2) | record [1] = item 8, `[(6, 50)]`, armour 17 | by hand |
+| `DamageTests.B2_K2_TheLifeAfterEveryLineOfTheOracle_WithTheLegendarySword_IsTheBinarys` (x2) | 22 lines of `K2-legend.json` per inventory | equal |
+| `DamageTests.B2_K2_TheNaturalHit_OfTheLegendarySword_OnAGroundedBeannoid_Takes51_AndKillsTheNineLifeOne` (x2) | swing 0x10, attack (129, 1); 100 -> 49, 9 -> 0 | 49, 0 |
+| `LegendarySwordArenaTests.TheLegendarySword_OnTheGround_...TakesFiftyOneLifeFromARealBeannoid` (Hero) | real Beannoid of map 14, native D1, life 100 | 49, record 11, contact animation 0x10 |
+| `LegendarySwordArenaTests.TheBasicSword_OnTheGround_TakesTwoLifeFromARealBeannoid` | same, item 1 | 98, record 0, 0x10 |
+| `LegendarySwordArenaTests.TheLegendarySword_InTheAir_SwingsThe0x14_AndTakesFiftyOneLifeFromARealBeannoid` | jump at tick 1, Square at tick 17 (contact at tick 20, hero 5 px up) | 49, 0x14 |
+| `LegendarySwordArenaTests.TheBasicSword_InTheAir_SwingsThe0x14_AndTakesTwoLifeFromARealBeannoid` | same, item 1 | 98, 0x14 |
+| `LegendarySwordArenaTests.AHeldSquare_WithTheLegendarySword_CountsNoCharge_MakesNoAuraAndNoWave` | Square held 90 ticks then released, 140 ticks | charge counter 0, 0 auras, 0 charge effects, no wave |
+| `LegendarySwordArenaTests.AHeldSquare_WithTheSteelEdge_...TheControlOfTheLegendaryHold` | the same run with item 2 | counter 60, aura, >= 16 effects, wave: the observables do see a charge |
+
+Notes. (1) `ItemTablesFixture.LoadReal()` is a reduced table (items 0 to 4, 17 and 25 only): the new selection tests use the exported tables (`ItemTables.GetOrCreate(ProjectRootFinder.Find())`) as `DamageTests` does. (2) `HitArena` gained
+`EnableNativeHandlers()` (the arena keeps the Beannoids as the oracle's stubs, native handlers off, until a test turns them on after the setup: with them on from the construction the Beannoid walks and the arena's
+"animation 0" assertion fails). (3) The hit by the legendary sword on the real Beannoid: contact at tick 5 (ground), life 100 at the tick of the contact, 49 at the next tick; the second contact is blocked by the 25 ticks of delay.
+(4) The exploration of the air swing: the hero rising never touches a Beannoid on the ground (the box is too high: z 20 to 27 px); coming down (Square at tick 17) the contact is at tick 20 whatever the distance 24 to 40 px.
