@@ -8194,13 +8194,19 @@ un besoin de toucher au moteur ou à la phase de choix.
 - **Verifiers frais** : **CONFIRMED** tous deux.
 - **Recette de l'auteur** (non bloquante) : lancer un tonneau dans un trou ; lancer une caisse dans un trou.
 
-##### E20.g2c2 — Les torches (C70, E20) et les ronces (D34) ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2, après f6b (D-E20-64) ; à relire par un `plan-verifier` frais ; défauts de Q-G2C2-1 à Q-G2C2-6 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
+##### E20.g2c2 — Les torches (C70, E20) et les ronces (D34) ⏳ (détaillée le 2026-10-25 ; thème 2, après f6b (D-E20-64) ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais ; défauts de Q-G2C2-1 à Q-G2C2-6 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
 
 **Provenance.** Lecture seule du 2026-10-25 (HEAD `8174c0cb` puis `6df3f265`, code de `Alundra/Ai`, `Alundra/Entities`, `Alundra/Combat`
 inchangé) : rapport et critique frais (`scratchpad/t2-next/g2c2/report-main.md`, `scratchpad/t2-next/g2c2-critic/report-main.md`, scripts,
 rejeux et sorties), à verser par T0 à `docs/plan-e20-annexe/e20-g2c2-disc/`, sur le T0 de g2c du 2026-10-22 (`e20-g2c/disc/`). Le critique
 confirme les faits porteurs, corrige les états de C71 et la parenté d'E20 avec E2, et ajoute trois chemins de production (le contact, la pluie
 de torches de la 92, le piège de `TickCarried`).
+
+**Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé trois blocages, corrigés (FIX) : (1) (w7) et (w9) étaient classés
+témoins « verts avant et après » alors qu'ils exigent la flamme d'E20 (et le lâcher de C70) : ils sont rouges avant la phase B ; seul (w8)
+reste un témoin ; (2) le mutant « 393 câblé sans sa clé » était attribué à une garde des données qui ne peut pas le voir : un test du
+registre de production (r1) le tue ; (3) le compte de (w8) mêlait les cartes 441 et 442 : 44 torches natives sur les cartes 86 à 94, le
+compte et la liste exacts venant du recensement de T0.
 
 **Erratum de D-E20-64 (2026-10-25).** Sa prémisse (« la flamme de type 12 dont les gestionnaires sont ceux de f6b ») est fausse pour la
 torche : E20 efface les six codes natifs de la flamme juste après sa naissance (rejoué : sans l'effacement, elle émettrait l'effet 17 tous
@@ -8285,28 +8291,30 @@ boule de feu (f6b) ; le moteur.
   table partagée, posée, portée sans code) ; (a2) E20 contre ses vecteurs (les deux branches, la flamme : type 12, codes à zéro, animation 3,
   drapeaux ; le contact d'une goutte : pas de flamme ; la table pleine : la torche détruite) ; (a3) D34 contre ses vecteurs (attribut 6 :
   animation 1, `| 0x46`, `& ~0x80` ; un autre attribut : rien) ; (a4) le `switch` de `TickCarried` : la politique C70 n'est pas prise pour C4 ;
-  (a5) les gardes des données (D-G2C2-8) ; puis le code de la phase A.
+  (a5) les gardes des données (D-G2C2-8) ; puis le code de la phase A. (r1) (phase B, rouge avant les inscriptions) le registre de
+  production : `CreateForProduction` porte `(C, 70)` et `(E, 20)` pour exactement {393} et `(D, 34)` pour exactement {238, 239}, et chaque
+  type de `ProductionWiredLiftableTypes` a sa clé C au registre (le modèle de `C4RegistrationTests`).
 - ⏳ **T2 — Phase B et C, tests de monde rouges avant** (le vrai contrôleur) : (w1) un lancer en marche et à l'arrêt : la chronologie T+22,
   T+23, T+26, T+27, la flamme à sa position, 39 ticks, aux trois cadences pour ce qui ne dépend pas des tirages ; (w2) le contact : la torche
   lancée contre une cible s'allume à coup + 1 et la flamme naît à coup + 4, puis retouche la cible 25 ticks plus tard ; (w3) un interrupteur
   de la 92 allumé par la torche (la vraie passe de coups, `0x87 [128, 6]`) ; (w4) une ronce touchée par la flamme brûle, ne bloque plus,
   disparaît ; touchée par l'épée, rien ; (w5) la pluie du levier de la 92 : quatre flammes au sol ; (w6) la flamme sur Alundra : la blessure de
-  c2b (`0x31`, PV) ; témoins verts avant et après : (w7) en eau profonde, la flamme est détruite (`DestroyOnSlidingSlope`), au-dessus d'un trou la torche
-  disparaît sans flamme (g2b2) ; (w8) au repos, les 48 torches natives des cartes 86 à 94 restent inertes 6 ticks ; (w9) la flamme née reste
-  muette quand `(C, 60)` de f6b est inscrite ; puis les
+  c2b (`0x31`, PV) ; (w7) en eau profonde, la flamme est détruite (`DestroyOnSlidingSlope`), au-dessus d'un trou la torche lancée disparaît
+  sans flamme (g2b2) ; (w9) la flamme née reste muette quand `(C, 60)` de f6b est inscrite ; un témoin vert avant et après : (w8) au repos,
+  les 44 torches natives des cartes 86 à 94 (le compte et la liste du recensement de T0) restent inertes 6 ticks ; puis les
   inscriptions (phase B) et 393 dans l'ensemble câblé (phase C) ; le préréglage.
 - ⏳ **T3 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
   `cmp` ; `check_names.py --rules` ; au moins 14 mutants réels, chacun tué par le test qu'il nomme : `| 0x34` en `| 0x30` ((a1)) ; C70 pris
   pour C4 ((a4)) ; l'effacement des codes retiré ((a2), (w9)) ; cinq codes effacés au lieu de six ((a2)) ; l'animation 3 de la flamme en 1
   ((a2), (w1)) ; `& ~0x10` oublié ((a2)) ; `| 2` oublié ((a2)) ; le test `+0xAC == 1` ôté ((a2), (w1)) ; `+0x274` ignoré ((a2)) ; le type de
   contact 391 changé ((a2)) ; D34 : attribut 6 en 5 ((a3), (w4)) ; `| 0x46` en `| 0x42` ((a3)) ; `& ~0x80` oublié ((a3), (w4)) ; 393 câblé
-  sans sa clé ((a5)) ; E20 qui écrit `Flags = 2` au lieu de `(Flags & ~0x10) | 2` ((a2), le témoin (w7) en eau profonde) ; C70 qui agit sur
+  sans sa clé ((r1)) ; E20 qui écrit `Flags = 2` au lieu de `(Flags & ~0x10) | 2` ((a2), le témoin (w7) en eau profonde) ; C70 qui agit sur
   une torche posée (sans porteur) ((a1), le témoin (w8)) ; un ADR neuf (numéro libre recompté).
 - ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
-**Acceptation.** Les sorties de T0 (c) identiques ; (a1) à (a5) rouges avant la phase A et verts après ; (w1) à (w6) rouges avant les
-phases B et C et verts après ; les témoins (w7), (w8) et (w9) verts avant et après, chacun tué par son mutant nommé de T3 (`Flags = 2`, C70 sur
-une torche posée, l'effacement retiré) ; les mutants de T3 tous tués par le test qu'ils nomment ; la
+**Acceptation.** Les sorties de T0 (c) identiques ; (a1) à (a5) rouges avant la phase A et verts après ; (r1) rouge avant les inscriptions et vert après ; (w1) à (w7) et (w9) rouges avant
+les phases B et C et verts après ((w7) et (w9) tués aussi par leurs mutants nommés de T3, `Flags = 2` et l'effacement retiré) ; le témoin (w8)
+vert avant et après, tué par le mutant « C70 sur une torche posée » ; les mutants de T3 tous tués par le test qu'ils nomment ; la
 suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (f), chacun réécrit par dérivation ; le moteur, le convertisseur
 et les données sans diff. **Recette de l'auteur** (non bloquante) : `torche-m92` (lancer une torche sur un interrupteur, puis le levier et sa
 pluie de flammes) ; `160-magyscar.sav` (brûler les ronces de la carte 86). Les ennemis de Magyscar restent ceux d'E14.b.
