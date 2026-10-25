@@ -1,0 +1,4 @@
+f255_oracle: identical (2b019219e8dd)
+seed_oracle: identical (8f5ae6901ab2)
+chest_sequence: identical (1bbfe629c538)
+chest_anim_oracle: identical (bba0665132a7)

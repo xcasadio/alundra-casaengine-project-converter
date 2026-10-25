@@ -1,0 +1,48 @@
+item  name                 byte4(600-tick rule) byte5(sound; 0 = key object: fanfare) byte6 byte7(max stock)  chests(outside map 0)
+  1 0x01 Poignard             0   0  129  1   x1
+  2 0x02 Epée                 0   0    1  1   x2
+  3 0x03 Epée infernale       0   0    1  1   x1
+  4 0x04 Epée sacrée          0   0    1  1   x2
+  6 0x06 Arc en saule         0   0    1  1   x1
+ 14 0x0e Bâton de glace       0   0    1  1   x1
+ 16 0x10 Bâton de feu         0   0    1  1   x1
+ 19 0x13 Armure ancienne      0   0    2  1   x1
+ 26 0x1a Bottes longues       0   0    0  1   x1
+ 27 0x1b Bottes triton        0   0    0  1   x1
+ 28 0x1c Bottes magiques      0   0    0  1   x1
+ 32 0x20 Cape de sable        0   0    0  1   x1
+ 36 0x24 Herbes               1  52    0  9   x108
+ 37 0x25 Elixir de force      1  52    0  1   x14
+ 38 0x26 Elixir de magie      1  52    0  1   x9
+ 39 0x27 Essence magique      1  52    0  1   x17
+ 41 0x29 Fortifiant           1  52    0  1   x26
+ 43 0x2b Rouleau terre        0   0    0  1   x1
+ 44 0x2c Livre de terre       0   0    0  1   x2
+ 45 0x2d Rouleau d'eau        0   0    0  1   x1
+ 46 0x2e Livre d'eau          0   0    0  1   x1
+ 47 0x2f Rouleau de feu       0   0    0  1   x2
+ 48 0x30 Livre de feu         0   0    0  1   x1
+ 49 0x31 Rouleau de vent      0   0    0  1   x1
+ 50 0x32 Livre de vent        0   0    0  1   x1
+ 54 0x36 Charme de Nava       0   0    3  1   x1
+ 57 0x39 Passe secret         0   0    0  1   x1
+ 60 0x3c Clef élévateur       0   0    0  1   x1
+ 61 0x3d Clef                 0  52    0  9   x47
+ 62 0x3e Armoirie Rubis       0   0    0  1   x1
+ 63 0x3f Armoirie Saphir      0   0    0  1   x2
+ 64 0x40 Armoirie Topaze      0   0    0  1   x2
+ 65 0x41 Armoirie Agathe      0   0    0  1   x1
+ 66 0x42 Armoirie Grenat      0   0    0  1   x1
+ 67 0x43 Armoi. Emeraude      0   0    0  1   x1
+ 69 0x45 1 florin             1  53    0  0   x2
+ 71 0x47 10 florins           1  53    0  0   x6
+ 72 0x48 30 florins           1  53    0  0   x39
+ 73 0x49 Clef Vanne           0   0    0  1   x1
+ 79 0x4f Faucon doré          0  52    0  0   x54
+ 80 0x50 Graine magique       0   0    0  0   x4
+ 83 0x53 Vaisseau de vie      0   0    0  0   x38
+
+key objects (byte5 == 0) among ALL table rows 1..0x61: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34, 35, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 62, 63, 64, 65, 66, 67, 68, 73, 74, 75, 76, 77, 78, 80, 83, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97]
+rows with sound 52: [33, 36, 37, 38, 39, 41, 61, 79, 84, 85, 86, 87]
+rows with sound 53: [69, 70, 71, 72]
+rows with sound 54: [81, 82]

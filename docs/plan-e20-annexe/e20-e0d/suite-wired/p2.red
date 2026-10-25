@@ -1,0 +1,1 @@
+  Échoué Alundra.Tests.Items.ItemEffectsTests.TheObjects0x50_IsANamedStub_ThatChangesNothing_WhileAnotherObjectOfTheSameRangeIsGiven [< 1 ms]

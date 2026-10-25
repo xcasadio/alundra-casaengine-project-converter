@@ -1,0 +1,26 @@
+before: IsTransitionInProgress False IsWarpDelayRunning True HasPendingArrival False IsDepartureArmed False
+after BeginDepartureFromChangeMapOpcode: IsTransitionInProgress True IsWarpDelayRunning True HasPendingArrival True armed True pendingPath Maps\Overworld\Overworld 3,1-14\Overworld 3,1-14.world
+  tick 1: IsTransitionInProgress True IsWarpDelayRunning True armed True
+  tick 2: IsTransitionInProgress True IsWarpDelayRunning True armed True
+  tick 3: IsTransitionInProgress True IsWarpDelayRunning True armed True
+  tick 4: IsTransitionInProgress True IsWarpDelayRunning True armed True
+  tick 5: IsTransitionInProgress True IsWarpDelayRunning True armed True
+  tick 6: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 7: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 8: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 9: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 10: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 11: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 12: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 13: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 14: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 15: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 16: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 17: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 18: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 19: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 20: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 21: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 22: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 23: IsTransitionInProgress True IsWarpDelayRunning False armed True
+  tick 24: IsTransitionInProgress True IsWarpDelayRunning False armed True

@@ -1,0 +1,3 @@
+arrival tile (35, 41, 5) -> hero tile (35, 41, 5) pos (852, 664, 80) ground 1 dir 0; chest rec4 tile (35, 42, 5) contents 80 flag 1741; chests in the world 9
+after 40 ticks holding Down: hero tile (35, 41, 5) pos (852, 664, 80)
+after Square: ActiveCollisionEntity null; chest status Normal target 0; dialogue open False

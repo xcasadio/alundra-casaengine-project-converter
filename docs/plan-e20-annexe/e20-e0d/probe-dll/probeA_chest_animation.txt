@@ -1,0 +1,10 @@
+chests of the Debug zone (type 30): rec30 dir0 stNormal T0 C0, rec37 dir0 stNormal T0 C0
+chest rec37 before: Target 0 Current 0 dir 0 flags 8180 contents 36 flag 2000 status Normal
+sprite: 12 animations
+tick 0: Target set to 2 by the probe
+  tick 1: Target 2 Current 2 dir 0 logicalTick 0 sounds [51]
+  tick 60: Target 2 Current 2 dir 0 logicalTick 59 sounds []
+  tick 61: Target 2 Current 2 dir 0 logicalTick 60 sounds []
+  tick 62: Target 1 Current 1 dir 0 logicalTick 0 sounds []
+  tick 63: Target 1 Current 1 dir 0 logicalTick 1 sounds []
+  tick 100: Target 1 Current 1 dir 0 logicalTick 3 sounds []

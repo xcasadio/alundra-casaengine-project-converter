@@ -1,0 +1,254 @@
+diff --git a/Alundra/Ai/Objects/PickupAi.cs b/Alundra/Ai/Objects/PickupAi.cs
+index fb6556e4..254fe6be 100644
+--- a/Alundra/Ai/Objects/PickupAi.cs
++++ b/Alundra/Ai/Objects/PickupAi.cs
+@@ -62,8 +62,9 @@ internal static class PickupAi
+     /// <summary>Registers A255 and C255 for <see cref="SpriteTypes"/>.</summary>
+     internal static void Register(NativeSpriteRegistry registry)
+     {
+-        registry.Register(ScriptHelper.ProgramALoad, Code, SpriteTypes, (entity, context, state) => Load(entity));
++        registry.Register(ScriptHelper.ProgramALoad, Code, SpriteTypes.Append(30).ToArray(), (entity, context, state) => { if (entity.SpriteType == 30) { TempChestLoad(entity); } else { Load(entity); } });
+         registry.Register(ScriptHelper.ProgramCTick, Code, SpriteTypes, Tick);
++        registry.Register(ScriptHelper.ProgramFInteract, Code, new[] { 30 }, TempChestInteract);
+     }
+ 
+     /// <summary>
+@@ -73,6 +74,12 @@ internal static class PickupAi
+     /// </summary>
+     internal static void Load(EntityScriptProxy entity)
+     {
++        if (ReadWord274(entity) == 2)
++        {
++            TempObjectLoad(entity);
++            return;
++        }
++
+         if (ReadWord274(entity) != KindPlaced)
+         {
+             return;
+@@ -115,6 +122,12 @@ internal static class PickupAi
+     /// </summary>
+     internal static void Tick(EntityScriptProxy entity, IEntityWorldContext world, GameState state)
+     {
++        if (ReadWord274(entity) == 2)
++        {
++            TempObjectTick(entity, world, state);
++            return;
++        }
++
+         if (ReadWord274(entity) is not (KindPlaced or KindDropped))
+         {
+             return;
+@@ -294,4 +307,176 @@ internal static class PickupAi
+         entity.AIValues[index] = unchecked((short)(value & 0xFFFF));
+         entity.AIValues[index + 1] = unchecked((short)(value >> 16));
+     }
++
++    // ===================================================== TEMPORARY WIRING OF E20.e0d T0 (f): NEVER COMMITTED =====================================================
++    private static EntityScriptProxy? ChestOf(EntityScriptProxy o) => o.ParentEntity?.GameplayProxy as EntityScriptProxy;
++
++    private static void TempChestLoad(EntityScriptProxy chest)
++    {
++        if (chest.ContentsItemId == 0)
++        {
++            chest.TargetAnimationId = 1;
++        }
++    }
++
++    private static void TempOpenEtc(IEntityWorldContext world, int index)
++    {
++        if (Alundra.Dialogues.EtcStringTable.TryResolveText(index, out var text))
++        {
++            world.DialogueDirector?.OpenComposed(text, 0);
++        }
++    }
++
++    private static int TempCap(int item) => item switch { 0x24 => 9, 0x25 or 0x26 or 0x27 or 0x29 => 1, _ => 0 };
++
++    private static bool TempCanTake(GameState state, int item)
++        => item != 0 && (TempCap(item) == 0 || Alundra.Hero.PlayerManager.GetNumberOfItem(state, item) < TempCap(item));
++
++    private static void TempChestInteract(EntityScriptProxy chest, IEntityWorldContext world, GameState state)
++    {
++        if (state.PlayerControlFlags != 0 || DialogueIsOpen(world) || Alundra.Transitions.WarpDirector.Instance.IsTransitionInProgress)
++        {
++            return;
++        }
++
++        var contents = (int)chest.ContentsItemId;
++        if (contents == 0 || chest.TargetAnimationId != 0)
++        {
++            TempOpenEtc(world, 0x48);
++            return;
++        }
++
++        chest.TargetAnimationId = 2;
++        var o = world.SpawnEntityBySpriteIndex(chest, false, contents + 0x1E, chest.PosX, chest.PosY, unchecked(chest.PosZ + 0x100000), 0);
++        if (o == null)
++        {
++            TempOpenEtc(world, 0x49);
++            return;
++        }
++
++        world.Block(chest);
++        o.ForceZ = 0x8000;
++        o.DelayOrAngleOrEntityId = 0x40;
++        o.Flags &= ~(EntityFlags.Collidable | EntityFlags.Gravity);
++        o.BlockedByEntity = null;
++        WriteWord274(o, 2);
++        o.ItemState = 0;
++        var take = TempCanTake(state, contents);
++        WriteWord284(o, take ? 1u : 0u);
++        var key = take && world.ItemTables is { } t && (uint)contents < ItemTables.DropRecordCount && t.DropSoundSfxIndex[contents] == 0;
++        o.AIValues[4] = (short)(key ? 1 : 0);
++        if (key)
++        {
++            world.BgmFadeDirector?.LoadBgm(0);
++        }
++    }
++
++    private static void TempObjectLoad(EntityScriptProxy o)
++    {
++        var chest = ChestOf(o);
++        var visible = chest == null || chest.TargetAnimationId == 1;
++        if (!visible)
++        {
++            o.Status = EntityStatus.Loaded;
++        }
++
++        if (o.OwnerEntity is { } e)
++        {
++            e.IsVisible = visible;
++        }
++
++        if (visible && o.AIValues[4] != 0)
++        {
++            FanfareStubCallsForTests?.Add("start");
++        }
++    }
++
++    private static void TempObjectTick(EntityScriptProxy o, IEntityWorldContext world, GameState state)
++    {
++        var chest = ChestOf(o);
++        if (o.DelayOrAngleOrEntityId > 0)
++        {
++            o.DelayOrAngleOrEntityId--;
++            if (o.DelayOrAngleOrEntityId == 0)
++            {
++                o.ForceZ = 0;
++            }
++
++            return;
++        }
++
++        var item = o.SpriteType - 0x1E;
++        var take = ReadWord284(o) != 0;
++        var key = o.AIValues[4] != 0;
++        switch (o.ItemState)
++        {
++            case 0:
++                if (DialogueIsOpen(world))
++                {
++                    return;
++                }
++
++                if (take)
++                {
++                    var message = ItemEffects.ComposePickupMessage(item, 0, 1);
++                    if (key)
++                    {
++                        o.ItemState += 1;
++                        OpenMessage(world, message, KeyMessageMode);
++                        world.DialogueDirector?.SetCloseMask(ScriptCloseOnlyMask);
++                    }
++                    else
++                    {
++                        world.SoundPlayer?.PlaySfx(world.ItemTables!.DropSoundSfxIndex[item]);
++                        OpenMessage(world, message, KeyMessageMode);
++                        o.ItemState += 2;
++                    }
++                }
++                else
++                {
++                    Alundra.Dialogues.EtcStringTable.TryResolveText(0x4E, out var a);
++                    Alundra.Dialogues.EtcStringTable.TryResolveItemName(CasaEngine.Engine.Environment.EngineEnvironment.ProjectPath, item, out var name);
++                    Alundra.Dialogues.EtcStringTable.TryResolveText(0x4F, out var b);
++                    OpenMessage(world, a + name + b, KeyMessageMode);
++                    o.ItemState += 2;
++                }
++
++                return;
++            case 1:
++                o.ItemState += 1;
++                world.DialogueDirector?.SetCloseMask(DefaultCloseMask);
++                FanfareEnd(world);
++                return;
++            case 2:
++                if (DialogueIsOpen(world))
++                {
++                    return;
++                }
++
++                if (take)
++                {
++                    if (world.PlayerEntity is { } hero)
++                    {
++                        ItemEffects.GiveItem(world, state, hero, item);
++                    }
++
++                    if (chest != null)
++                    {
++                        SetGameFlag(state, (uint)chest.ContentsGameFlag);
++                    }
++                }
++                else if (chest != null)
++                {
++                    chest.TargetAnimationId = 0;
++                }
++
++                if (chest != null)
++                {
++                    world.Unblock(chest);
++                }
++
++                world.DestroyEntity(o);
++                return;
++        }
++    }
+ }
+diff --git a/Alundra/Items/ItemEffects.cs b/Alundra/Items/ItemEffects.cs
+index 0b8fceff..1b1e1082 100644
+--- a/Alundra/Items/ItemEffects.cs
++++ b/Alundra/Items/ItemEffects.cs
+@@ -98,7 +98,10 @@ internal static class ItemEffects
+                 state.AddFlag(BeakFlag, 1u << (int)(BeakFlag & 31));
+                 break;
+             case 0x50:
+-                break; // NAMED STUB: 0x8003382C, not read (nothing places or drops the object).
++                state.PlayerStats.MpMax = (short)Math.Min(state.PlayerStats.MpMax + 1, 4);
++                state.PlayerStats.Mp = state.PlayerStats.MpMax;
++                world.SoundPlayer?.PlaySfx(0x36);
++                break; // TEMPORARY seed body.
+             case 0x51:
+                 HeroHeals.MagicDrop(world, state, hero);
+                 break;
+diff --git a/Alundra/Maps/WorldProxy.cs b/Alundra/Maps/WorldProxy.cs
+index 81b9347b..00d63d01 100644
+--- a/Alundra/Maps/WorldProxy.cs
++++ b/Alundra/Maps/WorldProxy.cs
+@@ -3676,6 +3676,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
+             if (!ReferenceEquals(proxy, self) && proxy.Status.IsActive() && proxy.BlockedByEntity == null)
+             {
+                 proxy.BlockedByEntity = blocker;
++                if (proxy.AnimatedSprite is { } tempSprite) { tempSprite.IsPlaybackPaused = true; }
+             }
+         }
+     }
+@@ -3693,6 +3694,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
+             if (ReferenceEquals(proxy.BlockedByEntity, blocker))
+             {
+                 proxy.BlockedByEntity = null;
++                if (proxy.AnimatedSprite is { } tempSprite) { tempSprite.IsPlaybackPaused = false; }
+             }
+         }
+     }

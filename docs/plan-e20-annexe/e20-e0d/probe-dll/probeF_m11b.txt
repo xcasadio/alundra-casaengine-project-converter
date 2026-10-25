@@ -1,0 +1,8 @@
+Debug zone-11: 2 chests (type 30)
+    rec30: tile (7, 24, 13) contents 83 flag 0
+    rec37: tile (17, 35, 10) contents 36 flag 2000
+chest rec30: pixel (180, 392, 208) tile (7, 24, 13) contents 83 flag 0 size 1572863x1048575x1048575
+  north tile (7, 23, z 208): after 12 ticks hero tile (7, 23, 13) pos (180, 376, 208) ground 1 status Normal
+  south tile (7, 25, z 208): after 12 ticks hero tile (7, 25, 13) pos (180, 408, 208) ground 1 status Normal
+  west tile (6, 24, z 208): after 12 ticks hero tile (6, 24, 13) pos (156, 392, 208) ground 1 status Normal
+  east tile (8, 24, z 208): after 12 ticks hero tile (8, 24, 13) pos (204, 392, 208) ground 1 status Normal

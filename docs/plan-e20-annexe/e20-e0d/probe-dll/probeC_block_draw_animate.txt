@@ -1,0 +1,59 @@
+animated active entities of the map 14: 23: rec0 type335 stNormal blocked=False visible=True anim T2/C2 pos(132,424,80) sprite time 0.180 logical 9 paused False; rec1 type335 stNormal blocked=False visible=True anim T2/C2 pos(540,552,48) sprite time 0.180 logical 9 paused False; rec2 type335 stNormal blocked=False visible=True anim T2/C2 pos(660,456,80) sprite time 0.180 logical 9 paused False; rec3 type335 stNormal blocked=False visible=True anim T2/C2 pos(684,744,16) sprite time 0.180 logical 9 paused False; rec4 type335 stNormal blocked=False visible=True anim T2/C2 pos(156,504,80) sprite time 0.180 logical 9 paused False; rec5 type335 stNormal blocked=False visible=True anim T2/C2 pos(180,840,64) sprite time 0.180 logical 9 paused False; rec6 type335 stNormal blocked=False visible=True anim T2/C2 pos(324,488,80) sprite time 0.180 logical 9 paused False; rec7 type455 stNormal blocked=False visible=True anim T0/C0 pos(684,760,76) sprite time 0.180 logical 9 paused False
+before Block (10 ticks later):
+  rec0 type335 stNormal blocked=False visible=True anim T2/C2 pos(132,424,80) sprite time 0.380 logical 19 paused False
+  rec1 type335 stNormal blocked=False visible=True anim T2/C2 pos(540,552,48) sprite time 0.380 logical 19 paused False
+  rec2 type335 stNormal blocked=False visible=True anim T2/C2 pos(660,456,80) sprite time 0.380 logical 19 paused False
+  rec3 type335 stNormal blocked=False visible=True anim T2/C2 pos(684,744,16) sprite time 0.380 logical 19 paused False
+Block(drop) called; hero blocked=True
+ tick 1 after Block:
+    rec0 type335 stNormal blocked=True visible=True anim T2/C2 pos(132,424,80) sprite time 0.400 logical 19 paused False
+    rec1 type335 stNormal blocked=True visible=True anim T2/C2 pos(540,552,48) sprite time 0.400 logical 19 paused False
+    rec2 type335 stNormal blocked=True visible=True anim T2/C2 pos(660,456,80) sprite time 0.400 logical 19 paused False
+    rec3 type335 stNormal blocked=True visible=True anim T2/C2 pos(684,744,16) sprite time 0.400 logical 19 paused False
+    hero rec-1 type0 stNormal blocked=True visible=True anim T0/C0 pos(212,96,0) sprite time 0.400 logical 19 paused False
+ tick 2 after Block:
+    rec0 type335 stNormal blocked=True visible=True anim T2/C2 pos(132,424,80) sprite time 0.420 logical 19 paused False
+    rec1 type335 stNormal blocked=True visible=True anim T2/C2 pos(540,552,48) sprite time 0.420 logical 19 paused False
+    rec2 type335 stNormal blocked=True visible=True anim T2/C2 pos(660,456,80) sprite time 0.420 logical 19 paused False
+    rec3 type335 stNormal blocked=True visible=True anim T2/C2 pos(684,744,16) sprite time 0.420 logical 19 paused False
+    hero rec-1 type0 stNormal blocked=True visible=True anim T0/C0 pos(212,96,0) sprite time 0.420 logical 19 paused False
+ tick 3 after Block:
+    rec0 type335 stNormal blocked=True visible=True anim T2/C2 pos(132,424,80) sprite time 0.440 logical 19 paused False
+    rec1 type335 stNormal blocked=True visible=True anim T2/C2 pos(540,552,48) sprite time 0.440 logical 19 paused False
+    rec2 type335 stNormal blocked=True visible=True anim T2/C2 pos(660,456,80) sprite time 0.440 logical 19 paused False
+    rec3 type335 stNormal blocked=True visible=True anim T2/C2 pos(684,744,16) sprite time 0.440 logical 19 paused False
+    hero rec-1 type0 stNormal blocked=True visible=True anim T0/C0 pos(212,96,0) sprite time 0.440 logical 19 paused False
+ tick 10 after Block:
+    rec0 type335 stNormal blocked=True visible=True anim T2/C2 pos(132,424,80) sprite time 0.580 logical 19 paused False
+    rec1 type335 stNormal blocked=True visible=True anim T2/C2 pos(540,552,48) sprite time 0.580 logical 19 paused False
+    rec2 type335 stNormal blocked=True visible=True anim T2/C2 pos(660,456,80) sprite time 0.580 logical 19 paused False
+    rec3 type335 stNormal blocked=True visible=True anim T2/C2 pos(684,744,16) sprite time 0.580 logical 19 paused False
+    hero rec-1 type0 stNormal blocked=True visible=True anim T0/C0 pos(212,96,0) sprite time 0.580 logical 19 paused False
+ tick 20 after Block:
+    rec0 type335 stNormal blocked=True visible=True anim T2/C2 pos(132,424,80) sprite time 0.780 logical 19 paused False
+    rec1 type335 stNormal blocked=True visible=True anim T2/C2 pos(540,552,48) sprite time 0.780 logical 19 paused False
+    rec2 type335 stNormal blocked=True visible=True anim T2/C2 pos(660,456,80) sprite time 0.780 logical 19 paused False
+    rec3 type335 stNormal blocked=True visible=True anim T2/C2 pos(684,744,16) sprite time 0.780 logical 19 paused False
+    hero rec-1 type0 stNormal blocked=True visible=True anim T0/C0 pos(212,96,0) sprite time 0.780 logical 19 paused False
+ tick 40 after Block:
+    rec0 type335 stNormal blocked=True visible=True anim T2/C2 pos(132,424,80) sprite time 0.380 logical 19 paused False
+    rec1 type335 stNormal blocked=True visible=True anim T2/C2 pos(540,552,48) sprite time 0.380 logical 19 paused False
+    rec2 type335 stNormal blocked=True visible=True anim T2/C2 pos(660,456,80) sprite time 0.380 logical 19 paused False
+    rec3 type335 stNormal blocked=True visible=True anim T2/C2 pos(684,744,16) sprite time 0.380 logical 19 paused False
+    hero rec-1 type0 stNormal blocked=True visible=True anim T0/C0 pos(212,96,0) sprite time 0.100 logical 19 paused False
+Unblock(drop) called
+ tick 1 after Unblock:
+    rec0 type335 stNormal blocked=False visible=True anim T2/C2 pos(132,424,80) sprite time 0.400 logical 20 paused False
+    rec1 type335 stNormal blocked=False visible=True anim T2/C2 pos(540,552,48) sprite time 0.400 logical 20 paused False
+    rec2 type335 stNormal blocked=False visible=True anim T2/C2 pos(660,456,80) sprite time 0.400 logical 20 paused False
+    rec3 type335 stNormal blocked=False visible=True anim T2/C2 pos(684,744,16) sprite time 0.400 logical 20 paused False
+ tick 2 after Unblock:
+    rec0 type335 stNormal blocked=False visible=True anim T2/C2 pos(132,424,80) sprite time 0.420 logical 21 paused False
+    rec1 type335 stNormal blocked=False visible=True anim T2/C2 pos(540,552,48) sprite time 0.420 logical 21 paused False
+    rec2 type335 stNormal blocked=False visible=True anim T2/C2 pos(660,456,80) sprite time 0.420 logical 21 paused False
+    rec3 type335 stNormal blocked=False visible=True anim T2/C2 pos(684,744,16) sprite time 0.420 logical 21 paused False
+ tick 3 after Unblock:
+    rec0 type335 stNormal blocked=False visible=True anim T2/C2 pos(132,424,80) sprite time 0.440 logical 22 paused False
+    rec1 type335 stNormal blocked=False visible=True anim T2/C2 pos(540,552,48) sprite time 0.440 logical 22 paused False
+    rec2 type335 stNormal blocked=False visible=True anim T2/C2 pos(660,456,80) sprite time 0.440 logical 22 paused False
+    rec3 type335 stNormal blocked=False visible=True anim T2/C2 pos(684,744,16) sprite time 0.440 logical 22 paused False

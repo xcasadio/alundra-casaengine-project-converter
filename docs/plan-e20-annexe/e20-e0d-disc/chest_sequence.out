@@ -1,0 +1,101 @@
+====================================================================================================
+CASE 1: herb (0x24), 3 in stock: ordinary object (sound 52), room in the bag
+  t=   0 --- F255 runs (the hero is against the chest and the Square edge is seen)
+  t=   0 SpawnWarpEntity parent=0x801284ec page=0 type=66 (item 36) X=0x220000 Y=0x330000 Z=0x540000 (chest Z + 16 px)
+  t=   0 Block (all active entities, hero included, except the chest) 0x801284ec
+  t=   0 chest +0x88 = 2 | object: Block-by 0 kind 2 delay 64 rise force 0x8000 canTake(+0x284) 1 fanfare(+0x288) 0 flags 0x8000
+  t=  62 chest animation 2 ends, chain to 1: chest +0x88 = 1
+  t=  62 A255 lets the object go to Normal (chest is open)
+  t= 127 SOUND 52
+  t= 127 OPEN message 'Herbes gagné!' mode 1
+  t= 158 box closed by the player
+  t= 158 ApplyItem(hero, item=36)
+  t= 158 SetGameFlag(chest flag = 1234)
+  t= 158 Unblock 0x801284ec (the entities blocked by the chest are released)
+  t= 158 DestroyLight 0x80129464 (the object)
+  object dead at tick 158 | chest +0x88 at the end = 1
+====================================================================================================
+CASE 2: herb (0x24), 9 in stock (the maximum): the bag is full
+  t=   0 --- F255 runs (the hero is against the chest and the Square edge is seen)
+  t=   0 SpawnWarpEntity parent=0x801284ec page=0 type=66 (item 36) X=0x220000 Y=0x330000 Z=0x540000 (chest Z + 16 px)
+  t=   0 Block (all active entities, hero included, except the chest) 0x801284ec
+  t=   0 chest +0x88 = 2 | object: Block-by 0 kind 2 delay 64 rise force 0x8000 canTake(+0x284) 0 fanfare(+0x288) 0 flags 0x8000
+  t=  62 chest animation 2 ends, chain to 1: chest +0x88 = 1
+  t=  62 A255 lets the object go to Normal (chest is open)
+  t= 127 OPEN message 'Tu transportes trop de choses pour\ngarder Herbes.' mode 1
+  t= 158 box closed by the player
+  t= 158 Unblock 0x801284ec (the entities blocked by the chest are released)
+  t= 158 DestroyLight 0x80129464 (the object)
+  object dead at tick 158 | chest +0x88 at the end = 0
+====================================================================================================
+CASE 3: magic seed (0x50): key object (table byte 5 = 0): fanfare, music stopped, mask 4
+  t=   0 --- F255 runs (the hero is against the chest and the Square edge is seen)
+  t=   0 SpawnWarpEntity parent=0x801284ec page=0 type=110 (item 80) X=0x220000 Y=0x330000 Z=0x540000 (chest Z + 16 px)
+  t=   0 Block (all active entities, hero included, except the chest) 0x801284ec
+  t=   0 LoadBgm 0 (0 = stop the music)
+  t=   0 chest +0x88 = 2 | object: Block-by 0 kind 2 delay 64 rise force 0x8000 canTake(+0x284) 1 fanfare(+0x288) 1 flags 0x8000
+  t=  62 chest animation 2 ends, chain to 1: chest +0x88 = 1
+  t=  62 CD play track 11
+  t=  62 A255 lets the object go to Normal (chest is open)
+  t= 127 OPEN message 'Graine magique gagné!' mode 1
+  t= 127 SET close mask 4
+  t= 212 SET close mask 3
+  t= 212 StopAllSound (BGM restarts)
+  t= 243 box closed by the player
+  t= 243 ApplyItem(hero, item=80)
+  t= 243 SetGameFlag(chest flag = 1234)
+  t= 243 Unblock 0x801284ec (the entities blocked by the chest are released)
+  t= 243 DestroyLight 0x80129464 (the object)
+  object dead at tick 243 | chest +0x88 at the end = 1
+====================================================================================================
+CASE 4: 30 florins (0x48): sound 53
+  t=   0 --- F255 runs (the hero is against the chest and the Square edge is seen)
+  t=   0 SpawnWarpEntity parent=0x801284ec page=0 type=102 (item 72) X=0x220000 Y=0x330000 Z=0x540000 (chest Z + 16 px)
+  t=   0 Block (all active entities, hero included, except the chest) 0x801284ec
+  t=   0 chest +0x88 = 2 | object: Block-by 0 kind 2 delay 64 rise force 0x8000 canTake(+0x284) 1 fanfare(+0x288) 0 flags 0x8000
+  t=  62 chest animation 2 ends, chain to 1: chest +0x88 = 1
+  t=  62 A255 lets the object go to Normal (chest is open)
+  t= 127 SOUND 53
+  t= 127 OPEN message '30 florins gagné!' mode 1
+  t= 158 box closed by the player
+  t= 158 ApplyItem(hero, item=72)
+  t= 158 SetGameFlag(chest flag = 1234)
+  t= 158 Unblock 0x801284ec (the entities blocked by the chest are released)
+  t= 158 DestroyLight 0x80129464 (the object)
+  object dead at tick 158 | chest +0x88 at the end = 1
+====================================================================================================
+CASE 5: key (0x3D), 0 in stock: byte 5 = 52, NOT a key object despite the name
+  t=   0 --- F255 runs (the hero is against the chest and the Square edge is seen)
+  t=   0 SpawnWarpEntity parent=0x801284ec page=0 type=91 (item 61) X=0x220000 Y=0x330000 Z=0x540000 (chest Z + 16 px)
+  t=   0 Block (all active entities, hero included, except the chest) 0x801284ec
+  t=   0 chest +0x88 = 2 | object: Block-by 0 kind 2 delay 64 rise force 0x8000 canTake(+0x284) 1 fanfare(+0x288) 0 flags 0x8000
+  t=  62 chest animation 2 ends, chain to 1: chest +0x88 = 1
+  t=  62 A255 lets the object go to Normal (chest is open)
+  t= 127 SOUND 52
+  t= 127 OPEN message 'Clef gagné!' mode 1
+  t= 158 box closed by the player
+  t= 158 ApplyItem(hero, item=61)
+  t= 158 SetGameFlag(chest flag = 1234)
+  t= 158 Unblock 0x801284ec (the entities blocked by the chest are released)
+  t= 158 DestroyLight 0x80129464 (the object)
+  object dead at tick 158 | chest +0x88 at the end = 1
+====================================================================================================
+CASE 6: Steel Edge (0x02): key object, fanfare
+  t=   0 --- F255 runs (the hero is against the chest and the Square edge is seen)
+  t=   0 SpawnWarpEntity parent=0x801284ec page=0 type=32 (item 2) X=0x220000 Y=0x330000 Z=0x540000 (chest Z + 16 px)
+  t=   0 Block (all active entities, hero included, except the chest) 0x801284ec
+  t=   0 LoadBgm 0 (0 = stop the music)
+  t=   0 chest +0x88 = 2 | object: Block-by 0 kind 2 delay 64 rise force 0x8000 canTake(+0x284) 1 fanfare(+0x288) 1 flags 0x8000
+  t=  62 chest animation 2 ends, chain to 1: chest +0x88 = 1
+  t=  62 CD play track 11
+  t=  62 A255 lets the object go to Normal (chest is open)
+  t= 127 OPEN message 'Epée gagné!' mode 1
+  t= 127 SET close mask 4
+  t= 212 SET close mask 3
+  t= 212 StopAllSound (BGM restarts)
+  t= 243 box closed by the player
+  t= 243 ApplyItem(hero, item=2)
+  t= 243 SetGameFlag(chest flag = 1234)
+  t= 243 Unblock 0x801284ec (the entities blocked by the chest are released)
+  t= 243 DestroyLight 0x80129464 (the object)
+  object dead at tick 243 | chest +0x88 at the end = 1

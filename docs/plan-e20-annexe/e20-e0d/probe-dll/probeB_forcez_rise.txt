@@ -1,0 +1,11 @@
+object: flags 230000 ForceZ 8000 PosZ 1F00001 ground 0 status Loaded state 0 blocked False
+  tick 1: PosZ 1F08001 (delta 8000) ForceZ 8000 ground 0 status Normal
+  tick 2: PosZ 1F10001 (delta 10000) ForceZ 8000 ground 0 status Normal
+  tick 3: PosZ 1F18001 (delta 18000) ForceZ 8000 ground 0 status Normal
+  tick 4: PosZ 1F20001 (delta 20000) ForceZ 8000 ground 0 status Normal
+  tick 16: PosZ 1F80001 (delta 80000) ForceZ 8000 ground 0 status Normal
+  tick 32: PosZ 2000001 (delta 100000) ForceZ 8000 ground 0 status Normal
+  tick 63: PosZ 20F8001 (delta 1F8000) ForceZ 8000 ground 0 status Normal
+  tick 64: PosZ 2100001 (delta 200000) ForceZ 8000 ground 0 status Normal
+  tick 65: PosZ 2108001 (delta 208000) ForceZ 8000 ground 0 status Normal
+  tick 70: PosZ 2130001 (delta 230000) ForceZ 8000 ground 0 status Normal

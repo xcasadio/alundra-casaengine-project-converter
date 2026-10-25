@@ -1,0 +1,64 @@
+== ApplyItem(0x50) on the real code: (Mp, MpMax) before -> after
+  MpMax 0 Mp 0 -> Mp 1 MpMax 1 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 1 Mp 0 -> Mp 2 MpMax 2 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 1 Mp 1 -> Mp 2 MpMax 2 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 2 Mp 0 -> Mp 3 MpMax 3 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 2 Mp 1 -> Mp 3 MpMax 3 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 2 Mp 2 -> Mp 3 MpMax 3 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 3 Mp 0 -> Mp 4 MpMax 4 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 3 Mp 1 -> Mp 4 MpMax 4 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 3 Mp 3 -> Mp 4 MpMax 4 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 4 Mp 0 -> Mp 4 MpMax 4 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 4 Mp 2 -> Mp 4 MpMax 4 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 4 Mp 4 -> Mp 4 MpMax 4 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 5 Mp 0 -> Mp 4 MpMax 4 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 5 Mp 2 -> Mp 4 MpMax 4 | sounds ['0x36'] | effects 12 | generator steps 8
+  MpMax 5 Mp 5 -> Mp 4 MpMax 4 | sounds ['0x36'] | effects 12 | generator steps 8
+
+== journal of ApplyItem(0x50) from (Mp 0, MpMax 0), hero at (0x100000, 0x200000, 0x300000), generator 0xB017C93D
+   ('sound', 54)
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+   ('fx', 'ptr', 'parent=0', 'id=14', 'anim=2', 'X=0x100000', 'Y=0x200000', 'Z=0x400000')
+  effect structs after the call (fields +0x3C +0x40 +0x54 +0x58 +0x5C, signed):
+   fx00 [0, 4194304, 0, -262144, 0]
+   fx01 [-4448256, 2965504, 278016, -185344, 0]
+   fx02 [-6291456, 0, 393216, 0, 0]
+   fx03 [-4448256, -2965504, 278016, 185344, 0]
+   fx04 [0, -4194304, 0, 262144, 0]
+   fx05 [4448256, -2965504, -278016, 185344, 0]
+   fx06 [6291456, 0, -393216, 0, 0]
+   fx07 [4448256, 2965504, -278016, -185344, 0]
+   fx08 [0, 0, -37946, 55378, 262144]
+   fx09 [0, 0, 51203, 6754, 262144]
+   fx10 [0, 0, -56837, -72413, 262144]
+   fx11 [0, 0, -51174, 53567, 262144]
+
+== the other ApplyItem cases (what the chest gives)
+  item 0x24 -> [('additem', 36)] fx 0 Mp/MpMax 1 3
+  item 0x25 -> [('additem', 37)] fx 0 Mp/MpMax 1 3
+  item 0x27 -> [('additem', 39)] fx 0 Mp/MpMax 1 3
+  item 0x29 -> [('additem', 41)] fx 0 Mp/MpMax 1 3
+  item 0x3d -> [('additem', 61)] fx 0 Mp/MpMax 1 3
+  item 0x45 -> [('addmoney', 1)] fx 0 Mp/MpMax 1 3
+  item 0x46 -> [('addmoney', 5)] fx 0 Mp/MpMax 1 3
+  item 0x47 -> [('addmoney', 10)] fx 0 Mp/MpMax 1 3
+  item 0x48 -> [('addmoney', 30)] fx 0 Mp/MpMax 1 3
+  item 0x4f -> [('falcon', 1)] fx 0 Mp/MpMax 1 3
+  item 0x51 -> [('body_0x800335AC',)] fx 0 Mp/MpMax 1 3
+  item 0x52 -> [('body_0x800336F0',)] fx 0 Mp/MpMax 1 3
+  item 0x53 -> [('body_0x800333AC',)] fx 0 Mp/MpMax 1 3
+  item 0x54 -> [('body_0x80032E2C',)] fx 0 Mp/MpMax 1 3
+  item 0x55 -> [('body_0x80032EEC',)] fx 0 Mp/MpMax 1 3
+  item 0x56 -> [('body_0x80032F84',)] fx 0 Mp/MpMax 1 3
+  item 0x02 -> [('additem', 2)] fx 0 Mp/MpMax 1 3
+  item 0x2c -> [('additem', 44)] fx 0 Mp/MpMax 1 3

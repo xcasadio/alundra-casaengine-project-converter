@@ -1,0 +1,3 @@
+Tarn's Manor-115: 0 chests (type 30)
+entities: 3; with record 10: ; types: 0x1,292x2
+no chest with record 10

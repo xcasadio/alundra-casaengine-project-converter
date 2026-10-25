@@ -1,0 +1,16 @@
+rise speed             diffs=386 KILLED
+delay 64               diffs=386 KILLED
+chest state 2          diffs=530 KILLED
+empty text             diffs=408 KILLED
+spawn failure text     diffs=144 KILLED
+Z + 16px               diffs=530 KILLED
+flag mask              diffs=266 KILLED
+fanfare guard          diffs=122 KILLED
+byte5 test             diffs=48 KILLED
+already-open test      diffs=374 KILLED
+dialog bit             diffs=491 KILLED
+unblock the item       diffs=386 KILLED
+chest pointer          diffs=386 KILLED
+block call             diffs=386 KILLED
+cantake <              diffs=14 KILLED
+mutants killed 15 / 15

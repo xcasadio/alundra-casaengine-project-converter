@@ -1,0 +1,58 @@
+records with SpriteTableIndex==30: 569
+by page/enabled: Counter({('G', 1): 518, ('M', 1): 51})
+global page, enabled: 518  of which map 0: 98
+chests outside map 0: 420  on 170 maps
+with Contents != 0: 400  on 158 maps; empty (Contents 0): 20
+chests with a non-zero event-program index A..F (scripted record): 54
+ per slot: {'A': 16, 'B': 0, 'C': 54, 'D': 0, 'E': 1, 'F': 16}
+with Contents and flag(_10)==0 (no persistence): 4 [(11, 30, 83), (161, 6, 3), (362, 10, 79), (398, 14, 19)]
+flag in the temporary bank (bit15): 0
+flag invalid (>=0x800): 0
+distinct flags: 367  flags shared by several chests: 29 {1389: 2, 1399: 2, 1398: 2, 1345: 2, 1752: 2, 1221: 2, 1725: 2, 1296: 2, 1387: 2, 1726: 2, 1727: 2, 1728: 2, 1395: 2, 1729: 2, 1730: 2, 1064: 2, 923: 2, 924: 2, 741: 2, 742: 2, 743: 2, 763: 2, 1308: 2, 1357: 2, 772: 2, 773: 2, 775: 2, 1680: 2, 1679: 2}
+contents >= 0x62 (random table) among chests: 0
+empty chests with a flag: 0
+Contents histogram (item: count):
+    1 0x01 Poignard             1
+    2 0x02 Epée                 2
+    3 0x03 Epée infernale       1
+    4 0x04 Epée sacrée          2
+    6 0x06 Arc en saule         1
+   14 0x0e Bâton de glace       1
+   16 0x10 Bâton de feu         1
+   19 0x13 Armure ancienne      1
+   26 0x1a Bottes longues       1
+   27 0x1b Bottes triton        1
+   28 0x1c Bottes magiques      1
+   32 0x20 Cape de sable        1
+   36 0x24 Herbes             108
+   37 0x25 Elixir de force     14
+   38 0x26 Elixir de magie      9
+   39 0x27 Essence magique     17
+   41 0x29 Fortifiant          26
+   43 0x2b Rouleau terre        1
+   44 0x2c Livre de terre       2
+   45 0x2d Rouleau d'eau        1
+   46 0x2e Livre d'eau          1
+   47 0x2f Rouleau de feu       2
+   48 0x30 Livre de feu         1
+   49 0x31 Rouleau de vent      1
+   50 0x32 Livre de vent        1
+   54 0x36 Charme de Nava       1
+   57 0x39 Passe secret         1
+   60 0x3c Clef élévateur       1
+   61 0x3d Clef                47
+   62 0x3e Armoirie Rubis       1
+   63 0x3f Armoirie Saphir      2
+   64 0x40 Armoirie Topaze      2
+   65 0x41 Armoirie Agathe      1
+   66 0x42 Armoirie Grenat      1
+   67 0x43 Armoi. Emeraude      1
+   69 0x45 1 florin             2
+   71 0x47 10 florins           6
+   72 0x48 30 florins          39
+   73 0x49 Clef Vanne           1
+   79 0x4f Faucon doré         54
+   80 0x50 Graine magique       4
+   83 0x53 Vaisseau de vie     38
+dirb histogram: Counter({64: 353, 0: 67})
+flag range min/max among chests with flag: 185 2000

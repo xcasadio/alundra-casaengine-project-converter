@@ -1,0 +1,18 @@
+header: {'MoreFlags': 128, 'CanPickup': 129, 'FlagsPortraitShadowType': 0, 'ProgramLoad': 255, 'ProgramTick': 0, 'ProgramTouch': 0, 'ProgramDeactivate': 0, 'ProgramInteract': 255, 'OffsetX': -12, 'OffsetY': -8, 'OffsetZ': 0, 'SizeX': 24, 'SizeY': 16, 'SizeZ': 16, 'BreakEffect': 0, 'Contents': 0}
+flags = 0x8180
+anim sets: 3
+AnimSet 0 Sfx 0 Flags 0 Accel/AnimFlags 64 Speed 0 IsZForceApplied 0
+   dir 0 frames 1 sum(Delay&0x7F) = 5  last frame delay raw 133 (&0x7F=5)  tail: IsTransition True Delay 1 TransformIndexLow 0 CollisionOffset -1
+   dir 1 frames 1 sum(Delay&0x7F) = 5  last frame delay raw 133 (&0x7F=5)  tail: IsTransition True Delay 1 TransformIndexLow 0 CollisionOffset -1
+   dir 2 frames 1 sum(Delay&0x7F) = 5  last frame delay raw 133 (&0x7F=5)  tail: IsTransition True Delay 1 TransformIndexLow 0 CollisionOffset -1
+   dir 3 frames 1 sum(Delay&0x7F) = 5  last frame delay raw 133 (&0x7F=5)  tail: IsTransition True Delay 1 TransformIndexLow 0 CollisionOffset -1
+AnimSet 1 Sfx 0 Flags 0 Accel/AnimFlags 64 Speed 0 IsZForceApplied 0
+   dir 0 frames 1 sum(Delay&0x7F) = 5  last frame delay raw 133 (&0x7F=5)  tail: IsTransition True Delay 1 TransformIndexLow 0 CollisionOffset -1
+   dir 1 frames 1 sum(Delay&0x7F) = 5  last frame delay raw 133 (&0x7F=5)  tail: IsTransition True Delay 1 TransformIndexLow 0 CollisionOffset -1
+   dir 2 frames 1 sum(Delay&0x7F) = 5  last frame delay raw 133 (&0x7F=5)  tail: IsTransition True Delay 1 TransformIndexLow 0 CollisionOffset -1
+   dir 3 frames 1 sum(Delay&0x7F) = 5  last frame delay raw 133 (&0x7F=5)  tail: IsTransition True Delay 1 TransformIndexLow 0 CollisionOffset -1
+AnimSet 2 Sfx 51 Flags 0 Accel/AnimFlags 64 Speed 0 IsZForceApplied 0
+   dir 0 frames 23 sum(Delay&0x7F) = 61  last frame delay raw 131 (&0x7F=3)  tail: IsTransition True Delay 0 TransformIndexLow 1 CollisionOffset -1
+   dir 1 frames 23 sum(Delay&0x7F) = 61  last frame delay raw 131 (&0x7F=3)  tail: IsTransition True Delay 0 TransformIndexLow 0 CollisionOffset -1
+   dir 2 frames 23 sum(Delay&0x7F) = 61  last frame delay raw 131 (&0x7F=3)  tail: IsTransition True Delay 0 TransformIndexLow 0 CollisionOffset -1
+   dir 3 frames 23 sum(Delay&0x7F) = 81  last frame delay raw 151 (&0x7F=23)  tail: IsTransition True Delay 0 TransformIndexLow 0 CollisionOffset -1

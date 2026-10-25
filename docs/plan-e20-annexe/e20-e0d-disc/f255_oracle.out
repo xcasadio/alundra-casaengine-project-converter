@@ -1,0 +1,7 @@
+F255 vectors 12000 diffs 0
+coverage 102 / 102 []
+  outcome ('guard', 0, ()) 9308
+  outcome ('run', 1, ('open',)) 1053
+  outcome ('run', 3, ('spawn', 'block', 'bgm')) 606
+  outcome ('run', 2, ('spawn', 'block')) 601
+  outcome ('run', 2, ('spawn', 'open')) 432

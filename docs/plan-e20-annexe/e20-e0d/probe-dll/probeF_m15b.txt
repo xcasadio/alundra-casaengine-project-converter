@@ -1,0 +1,15 @@
+Overworld 3,2-15: 9 chests (type 30)
+    rec4: tile (35, 42, 5) contents 80 flag 1741
+    rec5: tile (13, 16, 9) contents 72 flag 1743
+    rec11: tile (5, 44, 9) contents 79 flag 1721
+    rec18: tile (14, 16, 9) contents 72 flag 1744
+    rec19: tile (15, 16, 9) contents 72 flag 1745
+    rec20: tile (16, 16, 9) contents 72 flag 1746
+    rec21: tile (4, 51, 4) contents 36 flag 1747
+    rec22: tile (2, 51, 4) contents 36 flag 1748
+    rec23: tile (5, 53, 4) contents 36 flag 1749
+chest rec21: pixel (96, 816, 64) tile (4, 51, 4) contents 36 flag 1747 size 1572863x1048575x1048575
+  north tile (4, 50, z 64): after 12 ticks hero tile (4, 50, 4) pos (108, 808, 64) ground 1 status Normal
+  south tile (4, 52, z 64): after 12 ticks hero tile (4, 52, 4) pos (108, 840, 64) ground 1 status Normal
+  west tile (3, 51, z 64): after 12 ticks hero tile (3, 51, 4) pos (84, 824, 64) ground 1 status Normal
+  east tile (5, 51, z 64): after 12 ticks hero tile (5, 51, 8) pos (132, 824, 128) ground 1 status Normal

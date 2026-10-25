@@ -1,0 +1,10 @@
+object spawned: status Loaded visible True animated True
+  tick 1: status Loaded visible True sprite time 0.000 logical 0 PosZ 1F00001 ForceZ 8000 gravity False
+  tick 2: status Loaded visible True sprite time 0.000 logical 0 PosZ 1F00001 ForceZ 8000 gravity False
+  tick 3: status Loaded visible True sprite time 0.000 logical 0 PosZ 1F00001 ForceZ 8000 gravity False
+  tick 4: status Loaded visible True sprite time 0.000 logical 0 PosZ 1F00001 ForceZ 8000 gravity False
+  tick 5: status Loaded visible True sprite time 0.000 logical 0 PosZ 1F00001 ForceZ 8000 gravity False
+  tick 6: status Loaded visible True sprite time 0.000 logical 0 PosZ 1F00001 ForceZ 8000 gravity False
+  tick 7: status Loaded visible True sprite time 0.000 logical 0 PosZ 1F00001 ForceZ 8000 gravity False
+  tick 8: status Loaded visible True sprite time 0.000 logical 0 PosZ 1F00001 ForceZ 8000 gravity False
+  control (Normal): status Normal visible True

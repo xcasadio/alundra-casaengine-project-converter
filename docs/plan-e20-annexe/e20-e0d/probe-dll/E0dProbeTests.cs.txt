@@ -1,0 +1,340 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Xunit;
+using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
+using Alundra.Ai.Objects;
+using Alundra.Entities;
+using Alundra.Dialogues;
+using Alundra.Maps;
+using Alundra.Session;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+using Alundra.Transitions;
+
+namespace Alundra.Tests.ScratchE0d;
+
+/// <summary>E20.e0d T0 (d) and (e) scratch probes, NEVER committed (a copy is paid into docs/plan-e20-annexe/e20-e0d/probe-dll/ as .txt). Output directory: the environment variable E0D_OUT.</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class E0dProbeTests : IDisposable
+{
+    public E0dProbeTests()
+    {
+        System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
+    }
+
+    private static void Write(string name, StringBuilder text)
+    {
+        var dir = Environment.GetEnvironmentVariable("E0D_OUT");
+        if (string.IsNullOrEmpty(dir))
+        {
+            return;
+        }
+
+        Directory.CreateDirectory(dir);
+        File.WriteAllText(Path.Combine(dir, name), text.ToString());
+    }
+
+    private static PickupDropRun DebugZone(string name) => new(name, "Debug zone", "Debug zone-11", 54, 30, -1, -1, clearTheWorld: false);
+
+    // (d1) sound 51 and the chain 2 -> 1 in 61 ticks on a real chest.
+    [Fact]
+    public void ProbeA_ChestAnimation()
+    {
+        var sb = new StringBuilder();
+        using var run = DebugZone("pA");
+        var chests = run.Arc.Entities.Where(e => e.SpriteType == 30).ToList();
+        sb.AppendLine($"chests of the Debug zone (type 30): {string.Join(", ", chests.Select(c => $"rec{c.EntityRefId} dir{c.AnimationDirection} st{c.Status} T{c.TargetAnimationId} C{c.CurrentAnimationId}"))}");
+        var chest = chests.First(c => c.EntityRefId == 37);
+        sb.AppendLine($"chest rec37 before: Target {chest.TargetAnimationId} Current {chest.CurrentAnimationId} dir {chest.AnimationDirection} flags {chest.Flags:X} contents {chest.ContentsItemId} flag {chest.ContentsGameFlag} status {chest.Status}");
+        sb.AppendLine("sprite: " + (chest.AnimatedSprite == null ? "none" : $"{chest.AnimatedSprite.Animations.Count} animations"));
+
+        var soundsBefore = run.Sounds.Requests.Count;
+        var tick = 0;
+        var lastT = chest.TargetAnimationId;
+        var lastC = chest.CurrentAnimationId;
+        var seenSounds = soundsBefore;
+        chest.TargetAnimationId = 2;
+        sb.AppendLine("tick 0: Target set to 2 by the probe");
+        for (tick = 1; tick <= 100; tick++)
+        {
+            run.Arc.OneFrame(PickupDropRun.OneTick);
+            var changed = chest.TargetAnimationId != lastT || chest.CurrentAnimationId != lastC;
+            var newSounds = run.Sounds.Requests.Skip(seenSounds).ToList();
+            if (changed || newSounds.Count != 0 || tick is 1 or 60 or 61 or 62 or 63 or 100)
+            {
+                sb.AppendLine($"  tick {tick}: Target {chest.TargetAnimationId} Current {chest.CurrentAnimationId} dir {chest.AnimationDirection} logicalTick {(chest.AnimatedSprite?.LogicalTick)} sounds [{string.Join(",", newSounds)}]");
+            }
+
+            seenSounds = run.Sounds.Requests.Count;
+            lastT = chest.TargetAnimationId;
+            lastC = chest.CurrentAnimationId;
+        }
+
+        Write("probeA_chest_animation.txt", sb);
+    }
+
+    // (d2) an entity without gravity that rises by its ForceZ per tick.
+    [Fact]
+    public void ProbeB_ForceZRise()
+    {
+        var sb = new StringBuilder();
+        using var run = DebugZone("pB");
+        var drop = run.DropAt(0x24, run.Hero.PosX >> 16, (run.Hero.PosY >> 16) + 40);
+        PickupAi.WriteWord274(drop, 2); // inert: the handlers return at once for the chest kind
+        drop.Flags &= ~(EntityFlags.Collidable | EntityFlags.Gravity);
+        drop.ForceZ = 0x8000;
+        drop.DelayOrAngleOrEntityId = 0;
+        sb.AppendLine($"object: flags {drop.Flags:X} ForceZ {drop.ForceZ:X} PosZ {drop.PosZ:X} ground {drop.IsOnGround} status {drop.Status} state {drop.ItemState} blocked {drop.BlockedByEntity != null}");
+        var startZ = drop.PosZ;
+        for (var tick = 1; tick <= 70; tick++)
+        {
+            run.Arc.OneFrame(PickupDropRun.OneTick);
+            if (tick <= 4 || tick is 16 or 32 or 63 or 64 or 65 or 70)
+            {
+                sb.AppendLine($"  tick {tick}: PosZ {drop.PosZ:X} (delta {drop.PosZ - startZ:X}) ForceZ {drop.ForceZ:X} ground {drop.IsOnGround} status {drop.Status}");
+            }
+        }
+
+        Write("probeB_forcez_rise.txt", sb);
+    }
+
+    private static string Snap(EntityScriptProxy e)
+    {
+        var sprite = e.AnimatedSprite;
+        var visible = ArcRun.EntityOf(e)?.IsVisible;
+        return $"rec{e.EntityRefId} type{e.SpriteType} st{e.Status} blocked={(e.BlockedByEntity != null)} visible={visible} anim T{e.TargetAnimationId}/C{e.CurrentAnimationId} pos({e.PosX >> 16},{e.PosY >> 16},{e.PosZ >> 16}) "
+            + (sprite == null ? "nosprite" : $"sprite time {sprite.CurrentAnimationTimeSeconds:F3} logical {sprite.LogicalTick} paused {sprite.IsPlaybackPaused}");
+    }
+
+    // (d3) what the DLL draws and animates during a Block (D-E0D-4): the arena of the map 14 (Beannoids), a drop as the blocker.
+    [Fact]
+    public void ProbeC_BlockDrawAndAnimate()
+    {
+        var sb = new StringBuilder();
+        using var run = PickupDropRun.OnMap14("pC", clearTheWorld: false);
+        var animated = run.Arc.Entities.Where(e => !ReferenceEquals(e, run.Hero) && e.AnimatedSprite != null && e.Status.IsActive()).ToList();
+        sb.AppendLine($"animated active entities of the map 14: {animated.Count}: {string.Join("; ", animated.Take(8).Select(Snap))}");
+        var drop = run.DropAt(0x24, run.Hero.PosX >> 16, (run.Hero.PosY >> 16) + 40);
+        PickupAi.WriteWord274(drop, 2);
+        drop.Flags &= ~(EntityFlags.Collidable | EntityFlags.Gravity);
+        for (var i = 0; i < 10; i++)
+        {
+            run.Arc.OneFrame(PickupDropRun.OneTick);
+        }
+
+        var watched = animated.Where(e => e.Status.IsActive()).Take(4).ToList();
+        sb.AppendLine("before Block (10 ticks later):");
+        foreach (var e in watched) { sb.AppendLine("  " + Snap(e)); }
+        run.Context.Block(drop);
+        sb.AppendLine("Block(drop) called; hero blocked=" + (run.Hero.BlockedByEntity != null));
+        for (var tick = 1; tick <= 40; tick++)
+        {
+            run.Arc.OneFrame(PickupDropRun.OneTick);
+            if (tick is 1 or 2 or 3 or 10 or 20 or 40)
+            {
+                sb.AppendLine($" tick {tick} after Block:");
+                foreach (var e in watched) { sb.AppendLine("    " + Snap(e)); }
+                sb.AppendLine("    hero " + Snap(run.Hero));
+            }
+        }
+
+        run.Context.Unblock(drop);
+        sb.AppendLine("Unblock(drop) called");
+        for (var tick = 1; tick <= 3; tick++)
+        {
+            run.Arc.OneFrame(PickupDropRun.OneTick);
+            sb.AppendLine($" tick {tick} after Unblock:");
+            foreach (var e in watched) { sb.AppendLine("    " + Snap(e)); }
+        }
+
+        Write("probeC_block_draw_animate.txt", sb);
+    }
+
+    // (d4) is an object held in Loaded drawn? The status is put back to Loaded at the head of every tick, as A255 of the object does (+0x10 = 1).
+    [Fact]
+    public void ProbeD_LoadedObjectDrawn()
+    {
+        var sb = new StringBuilder();
+        using var run = DebugZone("pD");
+        var drop = run.DropAt(0x24, run.Hero.PosX >> 16, (run.Hero.PosY >> 16) + 40);
+        PickupAi.WriteWord274(drop, 2);
+        drop.Flags &= ~(EntityFlags.Collidable | EntityFlags.Gravity);
+        drop.ForceZ = 0x8000;
+        var e = ArcRun.EntityOf(drop);
+        sb.AppendLine($"object spawned: status {drop.Status} visible {e?.IsVisible} animated {(drop.AnimatedSprite != null)}");
+        var passes = new List<string>();
+        run.OnPass = pass =>
+        {
+            if (pass == "counters")
+            {
+                // after the programs of the tick: A255 of the object (+0x10 = 1) holds it in Loaded, as the probe does here.
+                drop.Status = EntityStatus.Loaded;
+            }
+        };
+        for (var tick = 1; tick <= 8; tick++)
+        {
+            run.Arc.OneFrame(PickupDropRun.OneTick);
+            sb.AppendLine($"  tick {tick}: status {drop.Status} visible {e?.IsVisible} sprite time {drop.AnimatedSprite?.CurrentAnimationTimeSeconds:F3} logical {drop.AnimatedSprite?.LogicalTick} PosZ {drop.PosZ:X} ForceZ {drop.ForceZ:X} gravity {(drop.Flags & EntityFlags.Gravity) != 0}");
+        }
+
+        // The same with the status left alone, for the contrast.
+        run.OnPass = null;
+        drop.Status = EntityStatus.Normal;
+        run.Arc.OneFrame(PickupDropRun.OneTick);
+        sb.AppendLine($"  control (Normal): status {drop.Status} visible {e?.IsVisible}");
+        Write("probeD_loaded_drawn.txt", sb);
+    }
+
+    // (d5) the equivalent in the DLL of [0x800DC4C4] (a map change request in progress).
+    [Fact]
+    public void ProbeE_MapChangeRequest()
+    {
+        var sb = new StringBuilder();
+        using var run = DebugZone("pE");
+        var warp = WarpDirector.Instance;
+        sb.AppendLine($"before: IsTransitionInProgress {warp.IsTransitionInProgress} IsWarpDelayRunning {warp.IsWarpDelayRunning} HasPendingArrival {warp.HasPendingArrival} IsDepartureArmed {warp.IsDepartureArmedForTests}");
+        try
+        {
+            warp.AttachToWorld(new CasaEngine.Framework.Application.GameManager(null), soundPlayer: null, ProjectRootFinder.Find());
+            warp.BeginDepartureFromChangeMapOpcode(desiredMapIndex: 14, posX: 100, posY: 100, posZ: 0, effectId: 0, sfxId: 0, run.Hero, GameState.Instance);
+            sb.AppendLine($"after BeginDepartureFromChangeMapOpcode: IsTransitionInProgress {warp.IsTransitionInProgress} IsWarpDelayRunning {warp.IsWarpDelayRunning} HasPendingArrival {warp.HasPendingArrival} armed {warp.IsDepartureArmedForTests} pendingPath {warp.PendingWorldPathForTests}");
+            for (var tick = 1; tick <= 24; tick++)
+            {
+                run.Arc.OneFrame(PickupDropRun.OneTick);
+                sb.AppendLine($"  tick {tick}: IsTransitionInProgress {warp.IsTransitionInProgress} IsWarpDelayRunning {warp.IsWarpDelayRunning} armed {warp.IsDepartureArmedForTests}");
+            }
+        }
+        catch (Exception ex)
+        {
+            sb.AppendLine("EXCEPTION " + ex.GetType().Name + ": " + ex.Message);
+        }
+
+        Write("probeE_map_change_request.txt", sb);
+    }
+
+    // (e) the cells of the presets: for each target chest, the chest's tile, and the tile north of it where the hero rests.
+    public static IEnumerable<object[]> Targets() => new[]
+    {
+        new object[] { "m15", "Overworld", "Overworld 3,2-15", 4 },
+        new object[] { "m15b", "Overworld", "Overworld 3,2-15", 21 },
+        new object[] { "m11", "Debug zone", "Debug zone-11", 37 },
+        new object[] { "m11b", "Debug zone", "Debug zone-11", 30 },
+        new object[] { "m0", "Test Map", "Test Map-0", 2 },
+        new object[] { "m117", "Tarn's Manor", "Tarn's Manor (unused broken)-117", 19 },
+        new object[] { "m115", "Tarn's Manor", "Tarn's Manor-115", 10 },
+        new object[] { "m115b", "Tarn's Manor", "Tarn's Manor-115", 11 },
+    };
+
+    [Theory]
+    [MemberData(nameof(Targets))]
+    public void ProbeF_PresetCells(string label, string zone, string world, int record)
+    {
+        var sb = new StringBuilder();
+        using var run = new PickupDropRun("pF" + label, zone, world, label.StartsWith("m115") ? (record == 10 ? 39 : 43) : 1, label.StartsWith("m115") ? (record == 10 ? 10 : 46) : 1, -1, -1, clearTheWorld: false);
+        var chests = run.Arc.Entities.Where(e => e.SpriteType == 30).ToList();
+        sb.AppendLine($"{world}: {chests.Count} chests (type 30)");
+        foreach (var c in chests.OrderBy(c => c.EntityRefId))
+        {
+            sb.AppendLine($"    rec{c.EntityRefId}: tile ({c.TileX}, {c.TileY}, {c.TileZ}) contents {c.ContentsItemId} flag {c.ContentsGameFlag}");
+        }
+        var chest = chests.FirstOrDefault(c => c.EntityRefId == record);
+        if (chest == null)
+        {
+            sb.AppendLine($"entities: {run.Arc.Entities.Count}; with record {record}: {string.Join("; ", run.Arc.Entities.Where(e => e.EntityRefId == record).Select(e => $"type {e.SpriteType} status {e.Status} contents {e.ContentsItemId}"))}; types: {string.Join(",", run.Arc.Entities.GroupBy(e => e.SpriteType).Select(g => g.Key + "x" + g.Count()))}");
+            sb.AppendLine($"no chest with record {record}");
+            Write($"probeF_{label}.txt", sb);
+            return;
+        }
+
+        var px = chest.PosX >> 16;
+        var py = chest.PosY >> 16;
+        var pz = chest.PosZ >> 16;
+        sb.AppendLine($"chest rec{record}: pixel ({px}, {py}, {pz}) tile ({chest.TileX}, {chest.TileY}, {chest.TileZ}) contents {chest.ContentsItemId} flag {chest.ContentsGameFlag} size {chest.Width}x{chest.Height}x{chest.Depth}");
+        foreach (var (dx, dy, name) in new[] { (0, -1, "north"), (0, 1, "south"), (-1, 0, "west"), (1, 0, "east") })
+        {
+            var tx = chest.TileX + dx;
+            var ty = chest.TileY + dy;
+            run.Arc.PlaceHero(tx * 24 + 12, ty * 16 + 8, pz);
+            for (var i = 0; i < 12; i++)
+            {
+                run.Arc.OneFrame(PickupDropRun.OneTick);
+            }
+
+            var h = run.Hero;
+            sb.AppendLine($"  {name} tile ({tx}, {ty}, z {pz}): after 12 ticks hero tile ({h.TileX}, {h.TileY}, {h.TileZ}) pos ({h.PosX >> 16}, {h.PosY >> 16}, {h.PosZ >> 16}) ground {h.IsOnGround} status {h.Status}");
+        }
+
+        Write($"probeF_{label}.txt", sb);
+    }
+
+    // (e) the map 115 spawns its records by the arrival tile (the spawn zones): the two chests of the chain by an arrival next to each.
+    [Theory]
+    [InlineData(10, 39, 10, 0)]
+    [InlineData(11, 43, 46, 1)]
+    public void ProbeG_Map115Chests(int record, int tileX, int tileY, int tileZ)
+    {
+        var sb = new StringBuilder();
+        using var arc = new ArcRun(Alundra.Tests.Arcs.LeverArcs.Spec("pG" + record, "Tarn's Manor", "Tarn's Manor-115", Array.Empty<int>(), tileX * 24 + 12, tileY * 16 + 8, tileZ, 0, 5000));
+        for (var i = 0; i < 12; i++)
+        {
+            arc.OneFrame(0.02f);
+        }
+
+        var chests = arc.Entities.Where(e => e.SpriteType == 30).ToList();
+        sb.AppendLine($"arrival tile ({tileX}, {tileY}, {tileZ}): entities {arc.Entities.Count}, chests {string.Join("; ", chests.Select(c => $"rec{c.EntityRefId} tile ({c.TileX}, {c.TileY}, {c.TileZ}) contents {c.ContentsItemId} flag {c.ContentsGameFlag}"))}");
+        sb.AppendLine($"hero tile ({arc.Hero.TileX}, {arc.Hero.TileY}, {arc.Hero.TileZ}) ground {arc.Hero.IsOnGround}");
+        Write($"probeG_m115_rec{record}.txt", sb);
+    }
+
+    // (e) the four preset arrivals through the production arrival (the spawn zones apply): the chest is there, the hero stands, walks down into it and presses Square.
+    [Theory]
+    [InlineData("m15", "Overworld", "Overworld 3,2-15", 35, 41, 5, 4)]
+    [InlineData("m11-vase", "Debug zone", "Debug zone-11", 7, 23, 13, 30)]
+    [InlineData("m11-herbs", "Debug zone", "Debug zone-11", 17, 34, 10, 37)]
+    [InlineData("m0", "Test Map", "Test Map-0", 13, 2, 0, 2)]
+    [InlineData("m117", "Tarn's Manor", "Tarn's Manor (unused broken)-117", 42, 40, 2, 19)]
+    [InlineData("m115-vase", "Tarn's Manor", "Tarn's Manor-115", 39, 8, 0, 10)]
+    public void ProbeH_PresetArrivals(string label, string zone, string world, int tileX, int tileY, int tileZ, int record)
+    {
+        var sb = new StringBuilder();
+        using var arc = new ArcRun(Alundra.Tests.Arcs.LeverArcs.Spec("pH" + label, zone, world, Array.Empty<int>(), tileX * 24 + 12, tileY * 16 + 8, tileZ, 0, 5000));
+        for (var i = 0; i < 12; i++)
+        {
+            arc.OneFrame(0.02f);
+        }
+
+        var chest = arc.Entities.FirstOrDefault(e => e.SpriteType == 30 && e.EntityRefId == record);
+        sb.AppendLine($"arrival tile ({tileX}, {tileY}, {tileZ}) -> hero tile ({arc.Hero.TileX}, {arc.Hero.TileY}, {arc.Hero.TileZ}) pos ({arc.Hero.PosX >> 16}, {arc.Hero.PosY >> 16}, {arc.Hero.PosZ >> 16}) ground {arc.Hero.IsOnGround} dir {arc.Hero.AnimationDirection}; chest rec{record} {(chest == null ? "ABSENT" : $"tile ({chest.TileX}, {chest.TileY}, {chest.TileZ}) contents {chest.ContentsItemId} flag {chest.ContentsGameFlag}")}; chests in the world {arc.Entities.Count(e => e.SpriteType == 30)}");
+        arc.HoldDirections(Alundra.Hero.PadState.Down);
+        for (var i = 0; i < 40; i++)
+        {
+            arc.OneFrame(0.02f);
+        }
+
+        arc.ReleaseDirections();
+        sb.AppendLine($"after 40 ticks holding Down: hero tile ({arc.Hero.TileX}, {arc.Hero.TileY}, {arc.Hero.TileZ}) pos ({arc.Hero.PosX >> 16}, {arc.Hero.PosY >> 16}, {arc.Hero.PosZ >> 16})");
+        arc.Press(Alundra.Hero.PadState.Square);
+        for (var i = 0; i < 3; i++)
+        {
+            arc.OneFrame(0.02f);
+        }
+
+        sb.AppendLine($"after Square: ActiveCollisionEntity {(arc.Proxy.ActiveCollisionEntity == null ? "null" : "rec" + arc.Proxy.ActiveCollisionEntity.EntityRefId + " type " + arc.Proxy.ActiveCollisionEntity.SpriteType)}; chest status {chest?.Status} target {chest?.TargetAnimationId}; dialogue open {DialogueDirector.Instance.IsOpen}");
+        Write($"probeH_{label}.txt", sb);
+    }
+}

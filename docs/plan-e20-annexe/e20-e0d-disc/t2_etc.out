@@ -1,0 +1,107 @@
+ETC strings used by the chest handlers (real index = position-1, anchored on 0x45=' gagné!')
+0x45 ' gagné!' offset 3664
+0x46 '\\N Zugyadodoon (XA)' offset 3673
+0x47 'Tu transportes trop de choses pour\\Ngarder ' offset 3693
+0x48 "Tu as regardé dans le coffre dans\\Nl'espoir de trouver un objet oublié,\\Nmais malheureusement, il reste vide." offset 3737
+0x49 "(Erreur système)\\NL'élément refuse obstinément d'apparaître.\\NLa mémoire est-elle saturée?" offset 3849
+0x4a 'OUI' offset 3947
+0x4b 'NON' offset 3951
+0x4c None offset 3955
+0x4d ' gagné!' offset 3956
+0x4e 'Tu transportes trop de choses pour\\Ngarder ' offset 3965
+0x4f '.' offset 4009
+0x50 None offset 4011
+0x51 None offset 4012
+--- item names ETC 0x200+item
+0 0x0 None
+1 0x1 'Poignard'
+2 0x2 'Epée'
+3 0x3 'Epée infernale'
+4 0x4 'Epée sacrée'
+5 0x5 'Arc de chasse'
+6 0x6 'Arc en saule '
+7 0x7 'Bâton magique'
+8 0x8 'Epée légendaire'
+9 0x9 'Fléau de fer'
+10 0xa "Fléau d'acier"
+11 0xb None
+12 0xc None
+13 0xd None
+14 0xe 'Bâton de glace'
+15 0xf None
+16 0x10 'Bâton de feu'
+17 0x11 'Armure en tissu'
+18 0x12 'Armure en cuir'
+19 0x13 'Armure ancienne'
+20 0x14 "Armure d'argent"
+21 0x15 None
+22 0x16 None
+23 0x17 None
+24 0x18 None
+25 0x19 'Bottes courtes'
+26 0x1a 'Bottes longues'
+27 0x1b 'Bottes triton'
+28 0x1c 'Bottes magiques'
+29 0x1d None
+30 0x1e None
+31 0x1f 'Haricot'
+32 0x20 'Cape de sable'
+33 0x21 'Armure brisée'
+34 0x22 None
+35 0x23 'Bombe'
+36 0x24 'Herbes'
+37 0x25 'Elixir de force'
+38 0x26 'Elixir de magie'
+39 0x27 'Essence magique'
+40 0x28 "Cape d'eau"
+41 0x29 'Fortifiant'
+42 0x2a None
+43 0x2b 'Rouleau terre'
+44 0x2c 'Livre de terre'
+45 0x2d "Rouleau d'eau"
+46 0x2e "Livre d'eau"
+47 0x2f 'Rouleau de feu'
+48 0x30 'Livre de feu'
+49 0x31 'Rouleau de vent'
+50 0x32 'Livre de vent'
+51 0x33 "Anneau d'Olga"
+52 0x34 "Anneau d'Oak"
+53 0x35 'Super bracelet'
+54 0x36 'Charme de Nava'
+55 0x37 'Super anneau'
+56 0x38 'Tonique'
+57 0x39 'Passe secret '
+58 0x3a None
+59 0x3b 'Gant magique'
+60 0x3c 'Clef élévateur'
+61 0x3d 'Clef'
+62 0x3e 'Armoirie Rubis'
+63 0x3f 'Armoirie Saphir'
+64 0x40 'Armoirie Topaze'
+65 0x41 'Armoirie Agathe'
+66 0x42 'Armoirie Grenat'
+67 0x43 'Armoi. Emeraude'
+68 0x44 'Armoi. Diamant'
+69 0x45 '1 florin'
+70 0x46 '5 florins'
+71 0x47 '10 florins'
+72 0x48 '30 florins'
+73 0x49 'Clef Vanne'
+74 0x4a 'Bouquet'
+75 0x4b 'Petite clef'
+76 0x4c 'Lettre de Jess'
+77 0x4d 'Joyau'
+78 0x4e 'Pierre Zolist'
+79 0x4f 'Faucon doré'
+80 0x50 'Graine magique'
+81 0x51 'Petit cristal'
+82 0x52 'Grand cristal'
+83 0x53 'Vaisseau de vie'
+84 0x54 'Rosée de vie'
+85 0x55 'Goutte de vie'
+86 0x56 'Eau de vie'
+87 0x57 'Livre des Runes'
+88 0x58 "Livre d'Elna"
+89 0x59 'Clef bizarre'
+90 0x5a None
+91 0x5b None

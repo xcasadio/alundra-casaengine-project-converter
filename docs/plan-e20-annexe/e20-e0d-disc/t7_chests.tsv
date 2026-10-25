@@ -1,0 +1,570 @@
+map	area	idx	x	y	h	dirb	contents	item	flag	flagbank	A	B	C	D	E	F	en	page
+0	Test Map/Test Map-0	0	6	6	0	0	0		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	1	16	6	0	0	1	Poignard	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	2	26	6	0	64	2	Epée	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	3	36	6	0	64	3	Epée infernale	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	4	46	6	0	0	4	Epée sacrée	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	5	56	6	0	64	5	Arc de chasse	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	6	66	6	0	0	6	Arc en saule 	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	7	76	6	0	0	7	Bâton magique	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	8	86	6	0	0	8	Epée légendaire	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	9	96	6	0	64	9	Fléau de fer	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	10	6	12	0	0	10	Fléau d'acier	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	11	16	12	0	0	11		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	12	26	12	0	0	12		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	13	36	12	0	0	13		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	14	46	12	0	0	14	Bâton de glace	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	15	56	12	0	0	15		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	16	66	12	0	0	16	Bâton de feu	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	17	76	12	0	0	17	Armure en tissu	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	18	86	12	0	64	18	Armure en cuir	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	19	96	12	0	64	19	Armure ancienne	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	20	6	18	0	0	20	Armure d'argent	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	21	16	18	0	0	21		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	22	26	18	0	0	22		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	23	36	18	0	0	23		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	24	46	18	0	0	24		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	25	56	18	0	0	25	Bottes courtes	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	26	66	18	0	64	26	Bottes longues	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	27	76	18	0	64	27	Bottes triton	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	28	86	18	0	0	28	Bottes magiques	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	29	96	18	0	0	29		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	30	6	24	0	0	30		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	31	16	24	0	0	31	Haricot	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	32	26	24	0	0	32	Cape de sable	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	33	36	24	0	64	33	Armure brisée	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	34	46	24	0	0	34		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	35	56	24	0	0	35	Bombe	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	36	66	24	0	0	36	Herbes	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	37	76	24	0	0	37	Elixir de force	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	38	86	24	0	0	38	Elixir de magie	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	39	96	24	0	0	39	Essence magique	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	40	6	30	0	64	40	Cape d'eau	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	41	16	30	0	0	41	Fortifiant	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	42	26	30	0	0	42		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	43	36	30	0	0	43	Rouleau terre	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	44	46	30	0	0	44	Livre de terre	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	45	56	30	0	0	45	Rouleau d'eau	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	46	66	30	0	0	46	Livre d'eau	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	47	76	30	0	0	47	Rouleau de feu	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	48	86	30	0	0	48	Livre de feu	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	49	96	30	0	0	49	Rouleau de vent	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	50	6	36	0	0	50	Livre de vent	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	51	16	36	0	64	51	Anneau d'Olga	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	52	26	36	0	64	52	Anneau d'Oak	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	53	36	36	0	64	53	Super bracelet	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	54	46	36	0	64	54	Charme de Nava	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	55	56	36	0	64	55	Super anneau	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	56	66	36	0	64	56	Tonique	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	57	76	36	0	0	57	Passe secret 	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	58	86	36	0	0	58		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	59	96	36	0	0	59	Gant magique	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	60	6	42	0	64	60	Clef élévateur	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	61	16	42	0	64	61	Clef	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	62	26	42	0	64	62	Armoirie Rubis	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	63	36	42	0	64	63	Armoirie Saphir	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	64	46	42	0	64	64	Armoirie Topaze	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	65	56	42	0	64	65	Armoirie Agathe	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	66	66	42	0	64	66	Armoirie Grenat	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	67	76	42	0	64	67	Armoi. Emeraude	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	68	86	42	0	64	68	Armoi. Diamant	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	69	96	42	0	0	69	1 florin	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	70	6	48	0	0	70	5 florins	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	71	16	48	0	0	71	10 florins	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	72	26	48	0	0	72	30 florins	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	73	36	48	0	64	73	Clef Vanne	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	74	46	48	0	64	74	Bouquet	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	75	56	48	0	64	75	Petite clef	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	76	66	48	0	64	76	Lettre de Jess	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	77	76	48	0	64	77	Joyau	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	78	86	48	0	64	78	Pierre Zolist	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	79	96	48	0	0	79	Faucon doré	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	80	6	54	0	0	80	Graine magique	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	81	16	54	0	0	81	Petit cristal	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	82	26	54	0	0	82	Grand cristal	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	83	36	54	0	0	83	Vaisseau de vie	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	84	46	54	0	0	84	Rosée de vie	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	85	56	54	0	0	85	Goutte de vie	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	86	66	54	0	0	86	Eau de vie	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	87	76	54	0	0	87	Livre des Runes	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	88	86	54	0	64	88	Livre d'Elna	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	89	96	54	0	0	89	Clef bizarre	0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	90	6	60	0	0	90		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	91	16	60	0	0	91		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	92	26	60	0	0	92		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	93	36	60	0	0	93		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	94	46	60	0	0	94		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	95	56	60	0	0	95		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	96	66	60	0	0	96		0	-	0	0	0	0	0	0	1	G
+0	Test Map/Test Map-0	97	76	60	0	0	97		0	-	0	0	0	0	0	0	1	G
+1	Overworld/Overworld 0,0-1	20	100	36	28	64	79	Faucon doré	1355	P	0	0	0	0	0	0	1	G
+1	Overworld/Overworld 0,0-1	21	4	56	20	64	83	Vaisseau de vie	1305	P	0	0	0	0	0	0	1	G
+2	Overworld/Overworld 0,1-2	2	50	108	4	64	36	Herbes	887	P	0	0	0	0	0	0	1	G
+2	Overworld/Overworld 0,1-2	3	44	116	4	64	41	Fortifiant	888	P	0	0	0	0	0	0	1	G
+2	Overworld/Overworld 0,1-2	10	70	62	10	64	83	Vaisseau de vie	600	P	0	0	0	0	0	0	1	G
+2	Overworld/Overworld 0,1-2	17	52	66	22	0	6	Arc en saule 	611	P	0	0	0	0	0	0	1	G
+2	Overworld/Overworld 0,1-2	35	80	38	28	64	79	Faucon doré	1767	P	0	0	0	0	0	0	1	G
+3	Overworld/Overworld 0,2-3	1	96	74	10	64	36	Herbes	1775	P	0	0	0	0	0	0	1	G
+3	Overworld/Overworld 0,2-3	8	8	34	22	64	39	Essence magique	1794	P	0	0	0	0	0	0	1	G
+3	Overworld/Overworld 0,2-3	9	28	50	10	64	79	Faucon doré	1774	P	0	0	0	0	0	0	1	G
+3	Overworld/Overworld 0,2-3	11	78	48	14	64	46	Livre d'eau	1769	P	0	0	0	0	0	0	1	G
+3	Overworld/Overworld 0,2-3	13	58	50	6	64	79	Faucon doré	1388	P	0	0	0	0	0	0	1	G
+3	Overworld/Overworld 0,2-3	17	64	24	6	64	72	30 florins	1791	P	0	0	0	0	0	0	1	G
+3	Overworld/Overworld 0,2-3	18	66	24	6	64	37	Elixir de force	1792	P	0	0	0	0	0	0	1	G
+3	Overworld/Overworld 0,2-3	19	68	24	6	64	72	30 florins	1793	P	0	0	0	0	0	0	1	G
+4	Overworld/Overworld 0,3-4	21	50	58	14	64	37	Elixir de force	1768	P	0	0	0	0	0	0	1	G
+5	Overworld/Overworld 1,0-5	14	31	37	8	64	79	Faucon doré	1389	P	0	0	0	0	0	0	1	G
+6	Overworld/Overworld 1,1-6	30	28	62	34	64	36	Herbes	1760	P	0	0	0	0	0	0	1	G
+6	Overworld/Overworld 1,1-6	32	28	68	22	64	79	Faucon doré	1390	P	0	0	0	0	0	0	1	G
+6	Overworld/Overworld 1,1-6	37	52	84	4	64	41	Fortifiant	1761	P	0	0	0	0	0	0	1	G
+7	Overworld/Overworld 1,2-7	9	45	105	8	64	80	Graine magique	1349	P	0	0	0	0	0	0	1	G
+7	Overworld/Overworld 1,2-7	10	100	14	6	64	83	Vaisseau de vie	1348	P	0	0	0	0	0	0	1	G
+8	Overworld/Overworld 1,3-8	3	13	84	12	64	79	Faucon doré	1392	P	0	0	0	0	0	0	1	G
+8	Overworld/Overworld 1,3-8	13	62	78	2	64	79	Faucon doré	1764	P	0	0	0	0	0	0	1	G
+8	Overworld/Overworld 1,3-8	18	64	24	12	64	79	Faucon doré	1391	P	0	0	0	0	0	0	1	G
+9	Overworld/Overworld 2,0-9	0	58	105	10	64	83	Vaisseau de vie	1347	P	0	0	0	0	0	0	1	G
+9	Overworld/Overworld 2,0-9	21	96	109	10	64	79	Faucon doré	1740	P	0	0	0	0	0	0	1	G
+9	Overworld/Overworld 2,0-9	24	33	64	10	64	71	10 florins	1756	P	0	0	0	0	0	0	1	G
+9	Overworld/Overworld 2,0-9	25	36	64	10	64	71	10 florins	1757	P	0	0	0	0	0	0	1	G
+9	Overworld/Overworld 2,0-9	26	84	68	12	64	72	30 florins	1758	P	0	0	0	0	0	0	1	G
+9	Overworld/Overworld 2,0-9	27	5	78	8	64	36	Herbes	1759	P	0	0	0	0	0	0	1	G
+10	Overworld/Overworld 2,1-10	7	74	90	2	128	0		0	-	0	0	129	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	9	74	90	2	128	0		0	-	0	0	130	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	10	74	90	2	128	0		0	-	0	0	131	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	11	74	90	2	128	0		0	-	0	0	132	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	12	74	90	2	128	0		0	-	0	0	133	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	13	74	90	2	128	0		0	-	0	0	134	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	16	78	90	2	130	0		0	-	0	0	150	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	24	82	86	2	128	0		0	-	0	0	137	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	25	82	88	2	128	0		0	-	0	0	138	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	26	84	86	2	128	0		0	-	0	0	139	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	27	84	88	2	128	0		0	-	0	0	140	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	28	82	84	2	128	0		0	-	0	0	141	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	29	84	84	2	128	0		0	-	0	0	142	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	30	82	90	2	128	0		0	-	0	0	143	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	31	84	90	2	128	0		0	-	0	0	144	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	55	64	14	0	129	0		0	-	0	0	163	0	0	0	1	M
+10	Overworld/Overworld 2,1-10	66	64	20	0	129	0		0	-	0	0	171	0	0	0	1	M
+10	Overworld/Overworld 2,1-10	84	82	92	2	128	0		0	-	0	0	187	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	108	74	82	2	128	0		0	-	0	0	204	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	111	84	92	2	128	0		0	-	0	0	205	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	112	86	84	2	128	0		0	-	0	0	206	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	113	86	86	2	128	0		0	-	0	0	207	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	114	86	88	2	128	0		0	-	0	0	208	0	0	129	1	M
+10	Overworld/Overworld 2,1-10	115	86	90	2	128	0		0	-	0	0	209	0	0	129	1	M
+11	Debug zone/Debug zone-11	30	14	48	26	64	83	Vaisseau de vie	0	-	0	0	0	0	0	0	1	G
+11	Debug zone/Debug zone-11	37	34	70	20	64	36	Herbes	2000	P	0	0	0	0	0	0	1	G
+12	Overworld/Overworld 2,3-12	3	88	80	12	64	79	Faucon doré	1399	P	0	0	0	0	0	0	1	G
+12	Overworld/Overworld 2,3-12	5	93	97	6	64	79	Faucon doré	1398	P	0	0	0	0	0	0	1	G
+12	Overworld/Overworld 2,3-12	6	67	111	6	64	83	Vaisseau de vie	1345	P	0	0	0	0	0	0	1	G
+12	Overworld/Overworld 2,3-12	20	13	78	6	64	38	Elixir de magie	1750	P	0	0	0	0	0	0	1	G
+12	Overworld/Overworld 2,3-12	21	95	62	12	64	37	Elixir de force	1751	P	0	0	0	0	0	0	1	G
+12	Overworld/Overworld 2,3-12	22	38	44	12	64	72	30 florins	1752	P	0	0	0	0	0	0	1	G
+13	Overworld/Overworld 3,0-13	18	50	84	18	64	37	Elixir de force	1753	P	0	0	0	0	0	0	1	G
+13	Overworld/Overworld 3,0-13	25	44	22	16	64	36	Herbes	1754	P	0	0	0	0	0	0	1	G
+13	Overworld/Overworld 3,0-13	26	47	22	16	64	41	Fortifiant	1755	P	0	0	0	0	0	0	1	G
+14	Overworld/Overworld 3,1-14	13	41	39	16	64	36	Herbes	1720	P	0	0	0	0	0	0	1	G
+14	Overworld/Overworld 3,1-14	19	76	86	12	64	83	Vaisseau de vie	1665	P	0	0	0	0	0	0	1	G
+14	Overworld/Overworld 3,1-14	20	93	97	2	64	79	Faucon doré	1351	P	0	0	0	0	0	0	1	G
+15	Overworld/Overworld 3,2-15	4	70	83	10	64	80	Graine magique	1741	P	0	0	0	0	0	0	1	G
+15	Overworld/Overworld 3,2-15	5	26	31	10	64	72	30 florins	1743	P	0	0	0	0	0	0	1	G
+15	Overworld/Overworld 3,2-15	11	10	88	18	64	79	Faucon doré	1721	P	0	0	0	0	0	0	1	G
+15	Overworld/Overworld 3,2-15	18	28	31	10	64	72	30 florins	1744	P	0	0	0	0	0	0	1	G
+15	Overworld/Overworld 3,2-15	19	30	31	10	64	72	30 florins	1745	P	0	0	0	0	0	0	1	G
+15	Overworld/Overworld 3,2-15	20	32	31	10	64	72	30 florins	1746	P	0	0	0	0	0	0	1	G
+15	Overworld/Overworld 3,2-15	21	7	101	8	64	36	Herbes	1747	P	0	0	0	0	0	0	1	G
+15	Overworld/Overworld 3,2-15	22	3	101	8	64	36	Herbes	1748	P	0	0	0	0	0	0	1	G
+15	Overworld/Overworld 3,2-15	23	9	105	8	64	36	Herbes	1749	P	0	0	0	0	0	0	1	G
+16	Overworld/Overworld 3,3-16	6	58	84	4	64	79	Faucon doré	1394	P	0	0	0	0	0	0	1	G
+16	Overworld/Overworld 3,3-16	17	31	69	6	64	72	30 florins	1722	P	0	0	0	0	0	0	1	G
+16	Overworld/Overworld 3,3-16	18	89	65	6	64	41	Fortifiant	1723	P	0	0	0	0	0	0	1	G
+16	Overworld/Overworld 3,3-16	19	16	16	8	64	36	Herbes	1724	P	0	0	0	0	0	0	1	G
+16	Overworld/Overworld 3,3-16	20	9	19	14	64	83	Vaisseau de vie	1742	P	0	0	0	0	0	0	1	G
+17	Overworld/Overworld 4,0-17	1	8	40	0	0	4	Epée sacrée	1221	P	0	0	0	0	0	0	1	G
+17	Overworld/Overworld 4,0-17	3	83	99	24	64	41	Fortifiant	1725	P	0	0	0	0	0	0	1	G
+17	Overworld/Overworld 4,0-17	27	64	92	46	0	64	Armoirie Topaze	1296	P	0	0	0	0	0	0	1	G
+17	Overworld/Overworld 4,0-17	33	85	65	56	64	79	Faucon doré	1387	P	0	0	0	0	0	0	1	G
+17	Overworld/Overworld 4,0-17	36	11	83	44	64	44	Livre de terre	1726	P	0	0	0	0	0	0	1	G
+17	Overworld/Overworld 4,0-17	37	6	92	18	64	72	30 florins	1727	P	0	0	0	0	0	0	1	G
+17	Overworld/Overworld 4,0-17	38	9	92	18	64	72	30 florins	1728	P	0	0	0	0	0	0	1	G
+18	Overworld/Overworld 4,1-18	1	63	25	16	64	79	Faucon doré	1395	P	0	0	0	0	0	0	1	G
+18	Overworld/Overworld 4,1-18	4	55	109	8	64	37	Elixir de force	1729	P	0	0	0	0	0	0	1	G
+18	Overworld/Overworld 4,1-18	5	96	48	12	64	72	30 florins	1730	P	0	0	0	0	0	0	1	G
+19	Overworld/Overworld 4,2-19	5	95	30	4	64	36	Herbes	1541	P	0	0	0	0	0	0	1	G
+19	Overworld/Overworld 4,2-19	13	9	67	6	64	72	30 florins	1731	P	0	0	0	0	0	0	1	G
+19	Overworld/Overworld 4,2-19	16	7	106	4	64	83	Vaisseau de vie	1312	P	0	0	0	0	0	0	1	G
+19	Overworld/Overworld 4,2-19	25	71	48	6	64	79	Faucon doré	1396	P	0	0	0	0	0	0	1	G
+20	Overworld/Overworld 4,3-20	0	4	84	56	64	79	Faucon doré	1397	P	0	0	0	0	0	0	1	G
+20	Overworld/Overworld 4,3-20	3	7	97	30	64	41	Fortifiant	1732	P	0	0	0	0	0	0	1	G
+20	Overworld/Overworld 4,3-20	4	87	93	24	64	72	30 florins	1733	P	0	0	0	0	0	0	1	G
+20	Overworld/Overworld 4,3-20	8	29	81	40	64	39	Essence magique	1734	P	0	0	0	0	0	0	1	G
+20	Overworld/Overworld 4,3-20	9	35	68	50	64	38	Elixir de magie	1735	P	0	0	0	0	0	0	1	G
+20	Overworld/Overworld 4,3-20	10	72	68	50	64	72	30 florins	1736	P	0	0	0	0	0	0	1	G
+20	Overworld/Overworld 4,3-20	11	74	68	50	64	72	30 florins	1737	P	0	0	0	0	0	0	1	G
+20	Overworld/Overworld 4,3-20	12	76	68	50	64	72	30 florins	1738	P	0	0	0	0	0	0	1	G
+20	Overworld/Overworld 4,3-20	13	78	76	30	64	36	Herbes	1739	P	0	0	0	0	0	0	1	G
+21	Lars' Crypt/Lars' Crypt-21	0	78	100	8	64	36	Herbes	630	P	0	0	0	0	0	0	1	G
+21	Lars' Crypt/Lars' Crypt-21	6	86	100	8	64	36	Herbes	631	P	0	0	0	0	0	0	1	G
+22	Lars' Crypt/Lars' Crypt-22	4	56	52	4	64	36	Herbes	633	P	0	0	0	0	0	0	1	G
+22	Lars' Crypt/Lars' Crypt-22	22	83	57	4	64	36	Herbes	632	P	0	0	0	0	0	0	1	G
+23	Lars' Crypt/Lars' Crypt-23	8	42	62	6	64	61	Clef	623	P	0	0	0	0	0	0	1	G
+24	Lars' Crypt/Lars' Crypt-24	20	22	110	4	64	41	Fortifiant	634	P	0	0	0	0	0	0	1	G
+24	Lars' Crypt/Lars' Crypt-24	27	58	60	4	64	79	Faucon doré	635	P	0	0	0	0	0	0	1	G
+25	Lars' Crypt/Lars' Crypt-25	1	74	36	36	0	80	Graine magique	626	P	0	0	130	0	0	0	1	G
+25	Lars' Crypt/Lars' Crypt-25	2	74	40	36	0	43	Rouleau terre	628	P	0	0	130	0	0	0	1	G
+25	Lars' Crypt/Lars' Crypt-25	3	74	44	36	0	83	Vaisseau de vie	627	P	0	0	130	0	0	0	1	G
+25	Lars' Crypt/Lars' Crypt-25	4	60	39	36	0	62	Armoirie Rubis	1192	P	0	0	130	0	0	0	1	G
+26	Ancient Shrine/Ancient Shrine-26	31	7	59	2	64	36	Herbes	652	P	0	0	0	0	0	0	1	G
+26	Ancient Shrine/Ancient Shrine-26	32	78	66	2	64	36	Herbes	653	P	0	0	0	0	0	0	1	G
+30	Ancient Shrine/Ancient Shrine-30	27	15	93	20	0	61	Clef	643	P	0	0	156	0	0	0	1	G
+30	Ancient Shrine/Ancient Shrine-30	39	61	64	24	0	26	Bottes longues	651	P	0	0	132	0	0	0	1	G
+30	Ancient Shrine/Ancient Shrine-30	43	58	64	24	0	2	Epée	1210	P	0	0	132	0	0	0	1	G
+30	Ancient Shrine/Ancient Shrine-30	44	64	64	24	0	83	Vaisseau de vie	1300	P	0	0	132	0	0	0	1	G
+31	Ancient Shrine/Ancient Shrine-31	14	25	56	28	64	79	Faucon doré	1352	P	0	0	0	0	0	0	1	G
+32	Ancient Shrine/Ancient Shrine-32	19	28	104	2	64	36	Herbes	644	P	0	0	0	0	0	0	1	G
+36	Nirude’s Lair/Nirude’s Lair-36	0	22	20	10	64	0		0	-	129	0	129	0	0	129	1	G
+37	Nirude’s Lair/Nirude’s Lair-37	16	8	80	4	0	0		0	-	129	0	131	0	0	130	1	G
+38	Nirude’s Lair/Nirude’s Lair-38	2	52	28	2	64	0		0	-	130	0	131	0	0	129	1	G
+39	Nirude’s Lair/Nirude’s Lair-39	3	38	14	2	64	0		0	-	129	0	131	0	0	129	1	G
+40	Nirude’s Lair/Nirude’s Lair-40	8	92	90	2	0	0		0	-	129	0	134	0	0	133	1	G
+41	Surferboy Nightmare/Surferboy Nightmare (outer)-41	23	54	82	2	64	61	Clef	683	P	0	0	0	0	0	0	1	G
+42	Surferboy Nightmare/Surferboy Nightmare (inner)-42	14	59	67	12	0	61	Clef	695	P	0	0	142	0	0	0	1	G
+42	Surferboy Nightmare/Surferboy Nightmare (inner)-42	17	97	81	32	64	61	Clef	693	P	0	0	0	0	0	0	1	G
+42	Surferboy Nightmare/Surferboy Nightmare (inner)-42	19	40	12	2	64	79	Faucon doré	1356	P	0	0	0	0	0	0	1	G
+42	Surferboy Nightmare/Surferboy Nightmare (inner)-42	20	87	38	18	64	83	Vaisseau de vie	1307	P	0	0	0	0	0	0	1	G
+44	Wendels Nightmare/Wendels Nightmare-44	13	56	73	16	64	36	Herbes	1631	P	0	0	0	0	0	0	1	G
+44	Wendels Nightmare/Wendels Nightmare-44	14	67	50	16	64	79	Faucon doré	1632	P	0	0	0	0	0	0	1	G
+48	Elenes Nightmare/Elenes Nightmare-48	6	11	69	12	64	61	Clef	1090	P	0	0	0	0	0	0	1	G
+48	Elenes Nightmare/Elenes Nightmare-48	7	27	69	12	64	36	Herbes	1091	P	0	0	0	0	0	0	1	G
+48	Elenes Nightmare/Elenes Nightmare-48	14	51	89	12	64	61	Clef	1092	P	0	0	0	0	0	0	1	G
+48	Elenes Nightmare/Elenes Nightmare-48	15	59	89	12	64	36	Herbes	1093	P	0	0	0	0	0	0	1	G
+48	Elenes Nightmare/Elenes Nightmare-48	30	86	82	20	64	36	Herbes	1094	P	0	0	158	0	0	0	1	G
+48	Elenes Nightmare/Elenes Nightmare-48	31	92	82	20	64	61	Clef	1095	P	0	0	158	0	0	0	1	G
+50	Elenes Nightmare/Elenes Nightmare-50	27	6	44	6	64	83	Vaisseau de vie	1310	P	0	0	0	0	0	0	1	G
+51	Elenes Nightmare/Elenes Nightmare-51	4	54	22	10	64	36	Herbes	1155	P	0	0	0	0	0	0	1	G
+51	Elenes Nightmare/Elenes Nightmare-51	5	56	22	10	64	72	30 florins	1156	P	0	0	0	0	0	0	1	G
+52	Elenes Nightmare/Elenes Nightmare-52	25	47	85	12	64	36	Herbes	1080	P	0	0	0	0	0	0	1	G
+52	Elenes Nightmare/Elenes Nightmare-52	26	63	85	12	64	36	Herbes	1081	P	0	0	0	0	0	0	1	G
+53	Elenes Nightmare/Elenes Nightmare-53	1	14	22	18	64	61	Clef	1051	P	0	0	0	0	0	0	1	G
+53	Elenes Nightmare/Elenes Nightmare-53	9	36	98	6	64	36	Herbes	1054	P	0	0	0	0	0	0	1	G
+53	Elenes Nightmare/Elenes Nightmare-53	10	44	98	6	64	36	Herbes	1055	P	0	0	0	0	0	0	1	G
+53	Elenes Nightmare/Elenes Nightmare-53	11	78	86	6	64	36	Herbes	1056	P	0	0	0	0	0	0	1	G
+53	Elenes Nightmare/Elenes Nightmare-53	12	7	79	6	64	79	Faucon doré	1359	P	0	0	0	0	0	0	1	G
+53	Elenes Nightmare/Elenes Nightmare-53	19	62	54	16	64	61	Clef	1059	P	0	0	0	0	0	0	1	G
+54	Elenes Nightmare/Elenes Nightmare-54	9	46	104	14	64	37	Elixir de force	1065	P	0	0	0	0	0	0	1	G
+54	Elenes Nightmare/Elenes Nightmare-54	21	74	6	6	0	36	Herbes	1064	P	0	0	0	0	0	0	1	G
+54	Elenes Nightmare/Elenes Nightmare-54	22	76	6	6	0	36	Herbes	1064	P	0	0	0	0	0	0	1	G
+54	Elenes Nightmare/Elenes Nightmare-54	23	78	38	10	64	36	Herbes	1069	P	0	0	0	0	0	0	1	G
+54	Elenes Nightmare/Elenes Nightmare-54	24	90	36	10	64	36	Herbes	1070	P	0	0	0	0	0	0	1	G
+55	Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-55	6	61	103	6	64	0		0	-	129	0	134	0	0	129	1	G
+55	Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-55	12	82	82	8	64	0		0	-	130	0	140	0	0	130	1	G
+56	Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-56	20	88	14	10	64	0		0	-	129	0	151	0	0	129	1	G
+57	Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-57	0	12	54	10	64	0		0	-	129	0	129	0	0	129	1	G
+57	Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-57	4	48	18	8	64	0		0	-	130	0	133	0	0	130	1	G
+58	Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-58	7	72	104	6	64	0		0	-	129	0	135	0	0	132	1	G
+60	Torla Buggy_ with bar music and random texts/Torla Buggy_ with bar music and random texts (early version of Torla)-60	11	80	20	14	64	0		0	-	129	0	140	0	0	129	1	G
+61	Coal Mine/Coal Mine (First Entrance)-61	25	67	66	6	64	36	Herbes	675	P	0	0	0	0	0	0	1	G
+61	Coal Mine/Coal Mine (First Entrance)-61	26	75	66	6	64	72	30 florins	676	P	0	0	0	0	0	0	1	G
+61	Coal Mine/Coal Mine (First Entrance)-61	27	83	66	6	64	36	Herbes	677	P	0	0	0	0	0	0	1	G
+61	Coal Mine/Coal Mine (First Entrance)-61	28	91	66	6	64	72	30 florins	678	P	0	0	0	0	0	0	1	G
+62	Coal Mine/Coal Mine-62	6	10	24	16	64	36	Herbes	791	P	0	0	0	0	0	0	1	G
+62	Coal Mine/Coal Mine-62	7	4	32	8	64	36	Herbes	792	P	0	0	0	0	0	0	1	G
+62	Coal Mine/Coal Mine-62	8	37	28	12	0	36	Herbes	793	P	0	0	0	0	0	0	1	G
+63	Coal Mine/Coal Mine-63	0	22	56	2	64	61	Clef	185	P	0	0	0	0	0	0	1	G
+63	Coal Mine/Coal Mine-63	23	48	66	6	64	79	Faucon doré	722	P	0	0	0	0	0	0	1	G
+64	Coal Mine/Coal Mine (unused)-64	0	26	90	6	64	36	Herbes	723	P	0	0	0	0	0	0	1	G
+64	Coal Mine/Coal Mine (unused)-64	14	48	44	8	64	36	Herbes	724	P	0	0	0	0	0	0	1	G
+64	Coal Mine/Coal Mine (unused)-64	15	56	46	8	64	71	10 florins	725	P	0	0	0	0	0	0	1	G
+64	Coal Mine/Coal Mine (unused)-64	16	52	76	8	64	71	10 florins	726	P	0	0	0	0	0	0	1	G
+67	Coal Mine/Coal Mine-67	16	36	90	8	64	36	Herbes	735	P	0	0	0	0	0	0	1	G
+68	Coal Mine/Coal Mine (unused_)-68	18	74	96	10	64	36	Herbes	786	P	0	0	0	0	0	0	1	G
+69	Coastal Cave/Coastal Cave-69	24	16	90	8	64	36	Herbes	662	P	0	0	0	0	0	0	1	G
+69	Coastal Cave/Coastal Cave-69	37	83	62	16	64	36	Herbes	271	P	0	0	0	0	0	0	1	G
+70	Coastal Cave/Coastal Cave-70	7	80	50	8	64	61	Clef	273	P	0	0	0	0	0	0	1	G
+70	Coastal Cave/Coastal Cave-70	13	82	104	8	0	36	Herbes	300	P	0	0	0	0	0	0	1	G
+70	Coastal Cave/Coastal Cave-70	46	74	34	4	64	36	Herbes	303	P	0	0	0	0	0	0	1	G
+71	Coastal Cave/Coastal Cave-71	10	82	14	4	64	79	Faucon doré	307	P	0	0	0	0	0	0	1	G
+72	Coastal Cave/Coastal Cave-72	9	87	63	5	64	61	Clef	301	P	0	0	0	0	0	0	1	G
+72	Coastal Cave/Coastal Cave-72	49	89	69	6	64	72	30 florins	1573	P	0	0	0	0	0	0	1	G
+73	Coastal Cave/Coastal Cave-73	13	52	84	4	64	61	Clef	304	P	0	0	0	0	0	0	1	G
+73	Coastal Cave/Coastal Cave-73	35	85	64	4	64	39	Essence magique	663	P	0	0	0	0	0	0	1	G
+74	Coastal Cave/Coastal Cave-74	19	86	14	12	64	27	Bottes triton	279	P	0	0	0	0	0	0	1	G
+74	Coastal Cave/Coastal Cave-74	21	8	68	14	64	37	Elixir de force	309	P	0	0	0	0	0	0	1	G
+74	Coastal Cave/Coastal Cave-74	29	8	52	12	64	83	Vaisseau de vie	664	P	0	0	0	0	0	0	1	G
+75	Coastal Cave/Coastal Cave-75	9	28	50	4	64	36	Herbes	666	P	0	0	0	0	0	0	1	G
+75	Coastal Cave/Coastal Cave-75	86	78	76	2	64	36	Herbes	306	P	0	0	0	0	0	0	1	G
+76	Coastal Cave/Coastal Cave (Boss)-76	4	34	52	2	0	45	Rouleau d'eau	278	P	0	0	133	0	0	0	1	G
+76	Coastal Cave/Coastal Cave (Boss)-76	7	40	52	2	0	36	Herbes	1697	P	0	0	133	0	0	0	1	G
+77	Underground Watercourse/Underground Watercourse-77	0	43	113	2	64	1	Poignard	910	P	0	0	228	0	0	0	1	G
+77	Underground Watercourse/Underground Watercourse-77	1	5	105	2	64	36	Herbes	911	P	0	0	0	0	0	0	1	G
+77	Underground Watercourse/Underground Watercourse-77	2	48	60	2	64	83	Vaisseau de vie	912	P	0	0	0	0	0	0	1	G
+77	Underground Watercourse/Underground Watercourse-77	3	60	22	2	64	36	Herbes	913	P	0	0	0	0	0	0	1	G
+78	Underground Watercourse/Underground Watercourse-78	0	41	94	6	64	79	Faucon doré	918	P	0	0	0	0	0	0	1	G
+79	Underground Watercourse/Underground Watercourse-79	0	45	98	6	64	39	Essence magique	923	P	0	0	0	0	0	0	1	G
+79	Underground Watercourse/Underground Watercourse-79	4	11	98	6	64	39	Essence magique	923	P	0	0	0	0	0	0	1	G
+79	Underground Watercourse/Underground Watercourse-79	6	20	10	4	64	36	Herbes	924	P	0	0	0	0	0	0	1	G
+79	Underground Watercourse/Underground Watercourse-79	7	62	10	4	64	36	Herbes	924	P	0	0	135	0	0	0	1	G
+80	Lizardman's Lair/Lizardman's Lair-80	0	22	96	0	64	41	Fortifiant	741	P	0	0	0	0	0	0	1	G
+80	Lizardman's Lair/Lizardman's Lair-80	1	13	60	6	64	36	Herbes	742	P	0	0	0	0	0	0	1	G
+80	Lizardman's Lair/Lizardman's Lair-80	2	87	32	0	64	41	Fortifiant	743	P	0	0	0	0	0	0	1	G
+80	Lizardman's Lair/Lizardman's Lair-80	25	97	62	8	64	36	Herbes	747	P	0	0	0	0	0	0	1	G
+80	Lizardman's Lair/Lizardman's Lair-80	26	89	113	6	64	61	Clef	748	P	0	0	0	0	0	0	1	G
+80	Lizardman's Lair/Lizardman's Lair-80	53	22	96	0	64	41	Fortifiant	741	P	0	0	0	0	0	0	1	G
+80	Lizardman's Lair/Lizardman's Lair-80	54	13	60	6	64	36	Herbes	742	P	0	0	0	0	0	0	1	G
+80	Lizardman's Lair/Lizardman's Lair-80	55	87	32	0	64	41	Fortifiant	743	P	0	0	0	0	0	0	1	G
+83	Lizardman's Lair/Lizardman's Lair-83	11	54	12	2	64	41	Fortifiant	763	P	0	0	0	0	0	0	1	G
+83	Lizardman's Lair/Lizardman's Lair-83	23	68	56	2	64	83	Vaisseau de vie	1308	P	0	0	0	0	0	0	1	G
+83	Lizardman's Lair/Lizardman's Lair-83	76	15	32	4	64	79	Faucon doré	1357	P	0	0	0	0	0	0	1	G
+84	Lizardman's Lair/Lizardman's Lair-84	13	14	22	4	64	63	Armoirie Saphir	772	P	0	0	0	0	0	0	1	G
+84	Lizardman's Lair/Lizardman's Lair-84	14	18	24	4	64	47	Rouleau de feu	773	P	0	0	0	0	0	0	1	G
+84	Lizardman's Lair/Lizardman's Lair-84	46	91	92	24	0	61	Clef	775	P	0	0	0	0	0	0	1	G
+85	Lizardman's Lair/Lizardman's Lair-85	20	27	20	2	64	36	Herbes	778	P	0	0	0	0	0	0	1	G
+86	Magyscar/Magyscar-86	8	100	38	24	64	61	Clef	833	P	0	0	0	0	0	0	1	G
+87	Magyscar/Magyscar-87	0	2	86	8	64	83	Vaisseau de vie	834	P	0	0	0	0	0	0	1	G
+87	Magyscar/Magyscar-87	7	6	24	14	64	79	Faucon doré	835	P	0	0	0	0	0	0	1	G
+88	Magyscar/Magyscar-88	0	42	14	4	64	72	30 florins	836	P	0	0	0	0	0	0	1	G
+88	Magyscar/Magyscar-88	1	4	30	4	64	72	30 florins	837	P	0	0	0	0	0	0	1	G
+88	Magyscar/Magyscar-88	2	12	100	8	64	36	Herbes	884	P	0	0	0	0	0	0	1	G
+88	Magyscar/Magyscar-88	28	64	22	6	64	61	Clef	840	P	0	0	0	0	0	0	1	G
+88	Magyscar/Magyscar-88	45	41	58	4	64	41	Fortifiant	1578	P	0	0	0	0	0	0	1	G
+89	Magyscar/Magyscar-89	26	2	112	8	64	61	Clef	842	P	0	0	0	0	0	0	1	G
+89	Magyscar/Magyscar-89	29	84	98	16	64	41	Fortifiant	843	P	0	0	0	0	0	0	1	G
+89	Magyscar/Magyscar-89	42	81	20	4	64	72	30 florins	1579	P	0	0	0	0	0	0	1	G
+89	Magyscar/Magyscar-89	49	78	86	26	64	38	Elixir de magie	1592	P	0	0	0	0	0	0	1	G
+90	Magyscar/Magyscar-90	23	77	18	8	64	72	30 florins	1577	P	0	0	0	0	0	0	1	G
+91	Magyscar/Magyscar-91	0	13	20	8	64	61	Clef	851	P	0	0	0	0	0	0	1	G
+93	Magyscar/Magyscar-93	30	2	46	2	64	38	Elixir de magie	857	P	0	0	0	0	0	0	1	G
+93	Magyscar/Magyscar-93	31	16	32	2	64	39	Essence magique	858	P	0	0	0	0	0	0	1	G
+93	Magyscar/Magyscar-93	32	9	16	2	64	37	Elixir de force	859	P	0	0	0	0	0	0	1	G
+94	Magyscar/Magyscar (Boss _ Uma)-94	2	86	30	2	64	61	Clef	880	P	0	0	0	0	0	0	1	G
+95	Unused Nightmare/Unused Nightmare-95	2	12	96	4	0	36	Herbes	881	P	0	0	131	0	0	0	1	G
+95	Unused Nightmare/Unused Nightmare-95	3	18	96	4	0	49	Rouleau de vent	882	P	0	0	131	0	0	0	1	G
+101	Giles Nightmare/Giles Nightmare-101	15	58	58	6	64	36	Herbes	555	P	0	0	0	0	0	0	1	G
+101	Giles Nightmare/Giles Nightmare-101	16	71	58	6	64	36	Herbes	556	P	0	0	0	0	0	0	1	G
+102	Giles Nightmare/Giles Nightmare-102	31	56	112	8	64	36	Herbes	581	P	0	0	0	0	0	0	1	G
+102	Giles Nightmare/Giles Nightmare-102	32	22	112	8	64	36	Herbes	582	P	0	0	0	0	0	0	1	G
+103	Giles Nightmare/Giles Nightmare-103	8	18	42	6	64	79	Faucon doré	535	P	0	0	0	0	0	0	1	G
+103	Giles Nightmare/Giles Nightmare-103	12	10	100	4	64	36	Herbes	536	P	0	0	0	0	0	0	1	G
+103	Giles Nightmare/Giles Nightmare-103	13	10	114	4	64	36	Herbes	537	P	0	0	0	0	0	0	1	G
+104	Giles Nightmare/Giles Nightmare-104	2	12	102	9	64	83	Vaisseau de vie	539	P	0	0	0	0	0	0	1	G
+104	Giles Nightmare/Giles Nightmare-104	20	52	22	0	64	39	Essence magique	586	P	0	0	0	0	0	0	1	G
+106	Giles Nightmare/Giles Nightmare-106	28	95	97	2	0	72	30 florins	1595	P	0	0	0	0	0	0	1	G
+107	Giles Nightmare/Giles Nightmare-107	3	70	28	2	64	36	Herbes	585	P	0	0	0	0	0	0	1	G
+109	Nestus' Dream/Nestus' Dream-109	7	69	34	2	64	79	Faucon doré	1766	P	0	0	0	0	0	0	1	G
+109	Nestus' Dream/Nestus' Dream-109	8	85	34	2	64	83	Vaisseau de vie	1765	P	0	0	0	0	0	0	1	G
+110	Nestus' Dream/Nestus' Dream-110	35	86	96	8	0	61	Clef	1630	P	0	0	0	0	0	0	1	G
+115	Tarn's Manor/Tarn's Manor-115	10	78	18	0	64	83	Vaisseau de vie	659	P	0	0	0	0	0	0	1	G
+115	Tarn's Manor/Tarn's Manor-115	11	86	92	2	64	36	Herbes	658	P	0	0	0	0	0	0	1	G
+115	Tarn's Manor/Tarn's Manor-115	21	41	21	22	0	41	Fortifiant	261	P	0	0	150	0	0	0	1	G
+116	Tarn's Manor/Tarn's Manor-116	16	75	70	12	64	36	Herbes	657	P	0	0	0	0	0	0	1	G
+116	Tarn's Manor/Tarn's Manor-116	32	47	73	4	64	79	Faucon doré	655	P	0	0	0	0	0	0	1	G
+116	Tarn's Manor/Tarn's Manor-116	37	39	72	4	64	36	Herbes	656	P	0	0	0	0	0	0	1	G
+117	Tarn's Manor/Tarn's Manor (unused broken)-117	1	48	84	8	64	36	Herbes	660	P	0	0	0	0	0	0	1	G
+117	Tarn's Manor/Tarn's Manor (unused broken)-117	19	84	82	4	64	61	Clef	260	P	0	0	0	0	0	0	1	G
+117	Tarn's Manor/Tarn's Manor (unused broken)-117	30	8	12	0	64	36	Herbes	1193	P	0	0	0	0	0	0	1	G
+117	Tarn's Manor/Tarn's Manor (unused broken)-117	31	14	12	0	64	72	30 florins	1194	P	0	0	0	0	0	0	1	G
+125	Kline's Nightmare/Kline's Nightmare-125	19	69	94	6	64	83	Vaisseau de vie	811	P	0	0	0	0	0	0	1	G
+126	Kline's Nightmare/Kline's Nightmare-126	11	19	78	18	64	79	Faucon doré	816	P	0	0	0	0	0	0	1	G
+126	Kline's Nightmare/Kline's Nightmare-126	37	74	52	2	64	61	Clef	817	P	0	0	0	0	0	0	1	G
+127	Kline's Nightmare/Kline's Nightmare-127	3	26	100	6	64	36	Herbes	818	P	0	0	0	0	0	0	1	G
+127	Kline's Nightmare/Kline's Nightmare-127	4	30	72	40	64	41	Fortifiant	819	P	0	0	0	0	0	0	1	G
+128	Inoa/Inoa (inner)-128	4	96	44	4	64	61	Clef	812	P	0	0	0	0	0	0	1	G
+128	Inoa/Inoa (inner)-128	9	21	107	10	64	61	Clef	813	P	0	0	0	0	0	0	1	G
+136	Church/Church-136	14	21	13	2	0	0		0	-	131	0	141	0	130	131	1	G
+137	Church/Church (basement, Holy sword)-137	15	10	12	2	64	83	Vaisseau de vie	1311	P	0	0	0	0	0	0	1	G
+139	Cave/Cave (Fire manor)-139	9	38	18	16	0	37	Elixir de force	1777	P	0	0	141	0	0	0	1	G
+139	Cave/Cave (Fire manor)-139	22	72	72	4	64	38	Elixir de magie	1776	P	0	0	0	0	0	0	1	G
+140	Cave/Cave-140	18	81	28	24	0	16	Bâton de feu	1543	P	0	0	146	0	0	0	1	G
+141	Cave/Cave-141	17	56	26	16	64	71	10 florins	1670	P	0	0	0	0	0	0	1	G
+141	Cave/Cave-141	18	26	68	16	64	39	Essence magique	1671	P	0	0	0	0	0	0	1	G
+142	Kohei Tanaka House _ Olen_ house/Kohei Tanaka House _ Olen_ house (music house)-142	11	76	92	4	0	36	Herbes	1687	P	0	0	140	0	0	0	1	G
+142	Kohei Tanaka House _ Olen_ house/Kohei Tanaka House _ Olen_ house (music house)-142	12	31	26	8	64	72	30 florins	1688	P	0	0	0	0	0	0	1	G
+143	Nava/Coast house (nava's cave entrance)-143	3	12	18	2	64	79	Faucon doré	1695	P	0	0	0	0	0	0	1	G
+144	Magyscar Entrance/Magyscar Entrance-144	43	20	28	8	64	79	Faucon doré	1456	P	0	0	0	0	0	0	1	G
+144	Magyscar Entrance/Magyscar Entrance-144	49	14	4	2	128	0		0	-	0	0	152	0	0	130	1	M
+145	Cave/Cave-145	10	89	92	2	64	36	Herbes	1677	P	0	0	0	0	0	0	1	G
+145	Cave/Cave-145	11	89	72	12	64	79	Faucon doré	1678	P	0	0	0	0	0	0	1	G
+146	Murgg Tree/Murgg Tree Houses-146	0	68	20	4	64	72	30 florins	1672	P	0	0	0	0	0	0	1	G
+146	Murgg Tree/Murgg Tree Houses-146	1	72	28	4	64	79	Faucon doré	1673	P	0	0	0	0	0	0	1	G
+146	Murgg Tree/Murgg Tree Houses-146	3	14	16	4	64	36	Herbes	1674	P	0	0	0	0	0	0	1	G
+146	Murgg Tree/Murgg Tree Houses-146	4	14	24	4	0	39	Essence magique	1675	P	0	0	133	0	0	0	1	G
+148	Murgg Tree/Murgg Tree (inner)-148	8	56	98	6	64	36	Herbes	391	P	0	0	0	0	0	0	1	G
+148	Murgg Tree/Murgg Tree (inner)-148	20	32	100	10	64	36	Herbes	405	P	0	0	0	0	0	0	1	G
+148	Murgg Tree/Murgg Tree (inner)-148	39	21	36	14	64	69	1 florin	1596	P	0	0	0	0	0	0	1	G
+149	Murgg Tree/Murgg Tree (inner)-149	20	43	34	14	64	39	Essence magique	1597	P	0	0	0	0	0	0	1	G
+149	Murgg Tree/Murgg Tree (inner)-149	23	74	20	24	0	41	Fortifiant	398	P	0	0	0	0	0	0	1	G
+149	Murgg Tree/Murgg Tree (inner)-149	27	72	20	10	64	36	Herbes	1598	P	0	0	0	0	0	0	1	G
+150	Murgg Tree/Murgg Tree (inner)-150	6	24	36	10	64	41	Fortifiant	492	P	0	0	0	0	0	0	1	G
+150	Murgg Tree/Murgg Tree (inner)-150	20	65	85	10	64	72	30 florins	407	P	0	0	0	0	0	0	1	G
+150	Murgg Tree/Murgg Tree (inner)-150	21	56	102	10	64	69	1 florin	408	P	0	0	0	0	0	0	1	G
+150	Murgg Tree/Murgg Tree (inner)-150	22	74	102	10	64	83	Vaisseau de vie	409	P	0	0	0	0	0	0	1	G
+150	Murgg Tree/Murgg Tree (inner)-150	23	38	66	10	64	36	Herbes	460	P	0	0	0	0	0	0	1	G
+150	Murgg Tree/Murgg Tree (inner)-150	24	43	24	10	64	61	Clef	493	P	0	0	0	0	0	0	1	G
+150	Murgg Tree/Murgg Tree (inner)-150	29	19	28	10	64	71	10 florins	1600	P	0	0	0	0	0	0	1	G
+150	Murgg Tree/Murgg Tree (inner)-150	30	24	28	10	64	36	Herbes	1601	P	0	0	0	0	0	0	1	G
+150	Murgg Tree/Murgg Tree (inner)-150	31	14	36	10	64	36	Herbes	1602	P	0	0	0	0	0	0	1	G
+151	Murgg Tree/Murgg Tree (inner)-151	12	59	30	14	64	72	30 florins	404	P	0	0	0	0	0	0	1	G
+151	Murgg Tree/Murgg Tree (inner)-151	13	75	30	14	64	36	Herbes	403	P	0	0	0	0	0	0	1	G
+152	Murgg Tree/Murgg Tree (Boss)-152	26	76	24	10	64	72	30 florins	1604	P	0	0	0	0	0	0	1	G
+153	Murgg Tree/Murgg Tree (inner)-153	2	34	32	24	0	65	Armoirie Agathe	494	P	0	0	0	0	0	0	1	G
+153	Murgg Tree/Murgg Tree (inner)-153	3	40	32	24	0	66	Armoirie Grenat	496	P	0	0	0	0	0	0	1	G
+154	Murgg Tree/Murgg Tree (inner)-154	5	74	16	20	0	60	Clef élévateur	464	P	0	0	134	0	0	0	1	G
+154	Murgg Tree/Murgg Tree (inner)-154	14	24	28	6	64	0		0	-	143	0	143	0	0	143	1	G
+155	Murgg Tree/Murgg Tree (elevator)-155	0	17	104	2	64	39	Essence magique	1606	P	0	0	0	0	0	0	1	G
+155	Murgg Tree/Murgg Tree (elevator)-155	1	7	22	2	64	72	30 florins	1607	P	0	0	0	0	0	0	1	G
+155	Murgg Tree/Murgg Tree (elevator)-155	2	31	12	2	64	41	Fortifiant	1608	P	0	0	0	0	0	0	1	G
+155	Murgg Tree/Murgg Tree (elevator)-155	3	47	12	2	64	36	Herbes	1609	P	0	0	0	0	0	0	1	G
+158	Fairy cave/Fairy cave-158	1	2	116	0	0	2	Epée	930	P	0	0	129	0	0	0	1	G
+159	Fairy cave/Fairy cave (underwater)-159	14	41	73	20	64	36	Herbes	950	P	0	0	0	0	0	0	1	G
+160	Fairy cave/Fairy cave (underwater)-160	2	60	48	32	64	36	Herbes	954	P	0	0	0	0	0	0	1	G
+160	Fairy cave/Fairy cave (underwater)-160	3	60	86	16	64	36	Herbes	955	P	0	0	0	0	0	0	1	G
+160	Fairy cave/Fairy cave (underwater)-160	4	66	108	16	64	36	Herbes	956	P	0	0	0	0	0	0	1	G
+160	Fairy cave/Fairy cave (underwater)-160	21	20	104	8	64	83	Vaisseau de vie	957	P	0	0	0	0	0	0	1	G
+160	Fairy cave/Fairy cave (underwater)-160	22	9	109	8	0	61	Clef	958	P	0	0	0	0	0	0	1	G
+160	Fairy cave/Fairy cave (underwater)-160	23	6	96	8	64	36	Herbes	959	P	0	0	0	0	0	0	1	G
+161	Fairy cave/Fairy cave (Stenia)-161	6	19	53	24	0	3	Epée infernale	0	-	0	0	134	0	0	0	1	G
+303	Olen, Cephas house/Olen, Cephas house-303	0	54	22	6	128	0		0	-	0	0	129	0	0	129	1	M
+303	Olen, Cephas house/Olen, Cephas house-303	1	24	18	2	64	79	Faucon doré	1350	P	0	0	0	0	0	0	1	G
+303	Olen, Cephas house/Olen, Cephas house-303	3	46	24	6	128	0		0	-	0	0	131	0	0	129	1	M
+303	Olen, Cephas house/Olen, Cephas house-303	10	86	28	2	0	54	Charme de Nava	1713	P	0	0	139	0	0	0	1	G
+304	Ice manor/Ice manor-304	0	59	80	10	64	14	Bâton de glace	1208	P	0	0	0	0	0	0	1	G
+311	Well/Well (+Lurvy house unused_)-311	0	94	102	4	64	37	Elixir de force	1680	P	0	0	0	0	0	0	1	G
+311	Well/Well (+Lurvy house unused_)-311	2	88	90	30	64	79	Faucon doré	1679	P	0	0	0	0	0	0	1	G
+325	Arena Wilda/Arena Wilda (Boss)-325	1	8	18	0	0	67	Armoi. Emeraude	1698	P	0	0	129	0	0	0	1	G
+325	Arena Wilda/Arena Wilda (Boss)-325	2	10	18	0	0	0		0	-	0	0	0	0	0	0	1	G
+325	Arena Wilda/Arena Wilda (Boss)-325	3	12	18	0	0	0		0	-	0	0	0	0	0	0	1	G
+325	Arena Wilda/Arena Wilda (Boss)-325	4	14	18	0	0	0		0	-	0	0	0	0	0	0	1	G
+325	Arena Wilda/Arena Wilda (Boss)-325	5	16	18	0	0	0		0	-	0	0	0	0	0	0	1	G
+329	Coal Mine/Coal Mine (Elevator & Zazan & Murgg)-329	13	45	92	6	0	83	Vaisseau de vie	782	P	0	0	142	0	0	0	1	G
+329	Coal Mine/Coal Mine (Elevator & Zazan & Murgg)-329	14	41	37	12	64	36	Herbes	789	P	0	0	0	0	0	0	1	G
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	7	74	90	2	128	0		0	-	0	0	129	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	9	74	90	2	128	0		0	-	0	0	130	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	10	74	90	2	128	0		0	-	0	0	131	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	11	74	90	2	128	0		0	-	0	0	132	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	12	74	90	2	128	0		0	-	0	0	133	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	13	74	90	2	128	0		0	-	0	0	134	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	16	78	90	2	130	0		0	-	0	0	150	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	24	82	86	2	128	0		0	-	0	0	137	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	25	82	88	2	128	0		0	-	0	0	138	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	26	84	86	2	128	0		0	-	0	0	139	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	27	84	88	2	128	0		0	-	0	0	140	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	28	82	84	2	128	0		0	-	0	0	141	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	29	84	84	2	128	0		0	-	0	0	142	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	30	82	90	2	128	0		0	-	0	0	143	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	31	84	90	2	128	0		0	-	0	0	144	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	55	64	14	0	129	0		0	-	0	0	163	0	0	0	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	66	64	20	0	129	0		0	-	0	0	171	0	0	0	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	84	82	92	2	128	0		0	-	0	0	187	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	108	74	82	2	128	0		0	-	0	0	204	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	111	84	92	2	128	0		0	-	0	0	205	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	112	86	84	2	128	0		0	-	0	0	206	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	113	86	86	2	128	0		0	-	0	0	207	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	114	86	88	2	128	0		0	-	0	0	208	0	0	129	1	M
+331	Church _ Graveyard/Church _ Graveyard (probably for events)-331	115	86	90	2	128	0		0	-	0	0	209	0	0	129	1	M
+332	Inoa/Inoa (inner)-332	2	66	36	4	64	57	Passe secret 	1664	P	0	0	0	0	0	0	1	G
+338	Lake Shrine/Lake Shrine (inner)-338	3	76	30	2	0	83	Vaisseau de vie	1029	P	0	0	132	0	0	0	1	G
+339	Lake Shrine/Lake Shrine (inner)-339	10	56	62	20	64	36	Herbes	1032	P	0	0	0	0	0	0	1	G
+339	Lake Shrine/Lake Shrine (inner)-339	21	26	14	8	64	41	Fortifiant	1034	P	0	0	0	0	0	0	1	G
+340	Lake Shrine/Lake Shrine (inner)-340	8	11	27	6	64	39	Essence magique	1035	P	0	0	0	0	0	0	1	G
+340	Lake Shrine/Lake Shrine (inner)-340	13	58	40	4	64	61	Clef	1130	P	0	0	0	0	0	0	1	G
+340	Lake Shrine/Lake Shrine (inner)-340	14	68	106	4	64	61	Clef	1133	P	0	0	0	0	0	0	1	G
+341	Lake Shrine/Lake Shrine (inner)-341	6	14	86	0	0	36	Herbes	1038	P	0	0	0	0	0	0	1	G
+341	Lake Shrine/Lake Shrine (inner)-341	19	6	14	8	64	36	Herbes	1041	P	0	0	0	0	0	0	1	G
+343	Lake Shrine/Lake Shrine (inner)-343	12	74	8	0	0	61	Clef	1043	P	0	0	141	0	0	0	1	G
+343	Lake Shrine/Lake Shrine (inner)-343	16	58	68	8	64	61	Clef	1045	P	0	0	0	0	0	0	1	G
+344	Lake Shrine/Lake Shrine (inner)-344	6	14	24	2	0	61	Clef	1113	P	0	0	135	0	0	0	1	G
+344	Lake Shrine/Lake Shrine (inner)-344	20	92	76	11	64	39	Essence magique	1134	P	0	0	0	0	0	0	1	G
+344	Lake Shrine/Lake Shrine (inner)-344	30	90	38	8	0	36	Herbes	1149	P	0	0	159	0	0	0	1	G
+344	Lake Shrine/Lake Shrine (inner)-344	41	60	78	13	64	38	Elixir de magie	1180	P	0	0	0	0	0	0	1	G
+345	Lake Shrine/Lake Shrine (inner)-345	22	2	18	8	64	41	Fortifiant	1122	P	0	0	0	0	0	0	1	G
+351	Lake Shrine/Lake Shrine (inner)-351	7	18	28	4	64	41	Fortifiant	980	P	0	0	0	0	0	0	1	G
+351	Lake Shrine/Lake Shrine (inner)-351	18	53	90	10	0	61	Clef	982	P	0	0	147	0	0	0	1	G
+352	Lake Shrine/Lake Shrine (inner)-352	30	96	14	6	64	36	Herbes	1013	P	0	0	0	0	0	0	1	G
+352	Lake Shrine/Lake Shrine (inner)-352	31	6	14	6	64	36	Herbes	1014	P	0	0	0	0	0	0	1	G
+353	Lake Shrine/Lake Shrine (inner)-353	8	87	66	12	64	61	Clef	988	P	0	0	137	0	0	0	1	G
+353	Lake Shrine/Lake Shrine (inner)-353	11	42	64	4	64	36	Herbes	989	P	0	0	0	0	0	0	1	G
+353	Lake Shrine/Lake Shrine (inner)-353	12	48	64	4	64	61	Clef	990	P	0	0	0	0	0	0	1	G
+353	Lake Shrine/Lake Shrine (inner)-353	24	4	14	4	64	61	Clef	995	P	0	0	0	0	0	0	1	G
+355	Lake Shrine/Lake Shrine (roof)-355	1	62	96	22	64	39	Essence magique	1131	P	0	0	0	0	0	0	1	G
+356	Lake Shrine/Lake Shrine (roof)-356	0	42	92	22	64	38	Elixir de magie	1132	P	0	0	0	0	0	0	1	G
+356	Lake Shrine/Lake Shrine (roof)-356	1	88	92	76	64	61	Clef	1137	P	0	0	0	0	0	0	1	G
+362	Coal Mine _ Olen's Dream/Coal Mine _ Olen's Dream-362	10	8	4	2	0	79	Faucon doré	0	-	0	0	0	0	0	0	1	G
+363	Coal Mine _ Olen's Dream/Coal Mine _ Olen's Dream-363	2	56	14	4	0	0		0	-	129	0	130	0	0	130	1	G
+363	Coal Mine _ Olen's Dream/Coal Mine _ Olen's Dream-363	3	62	16	4	0	0		0	-	130	0	131	0	0	131	1	G
+380	Deep Cave with Mimics/Deep Cave with Mimics-380	0	69	107	4	64	83	Vaisseau de vie	1681	P	0	0	0	0	0	0	1	G
+380	Deep Cave with Mimics/Deep Cave with Mimics-380	1	82	107	4	64	38	Elixir de magie	1682	P	0	0	0	0	0	0	1	G
+380	Deep Cave with Mimics/Deep Cave with Mimics-380	2	48	98	10	64	79	Faucon doré	1683	P	0	0	0	0	0	0	1	G
+380	Deep Cave with Mimics/Deep Cave with Mimics-380	3	90	98	10	64	36	Herbes	1684	P	0	0	0	0	0	0	1	G
+382	Murgg Caves/Murgg Caves-382	14	25	12	8	64	36	Herbes	592	P	0	0	0	0	0	0	1	G
+382	Murgg Caves/Murgg Caves-382	36	63	12	4	64	37	Elixir de force	597	P	0	0	0	0	0	0	1	G
+382	Murgg Caves/Murgg Caves-382	37	60	16	4	64	36	Herbes	598	P	0	0	0	0	0	0	1	G
+382	Murgg Caves/Murgg Caves-382	38	66	16	4	64	72	30 florins	599	P	0	0	0	0	0	0	1	G
+383	Murgg Caves/Murgg Caves-383	9	86	38	4	0	36	Herbes	613	P	0	0	0	0	0	0	1	G
+395	Water Mill/Water Mill (inner)-395	5	10	22	4	64	72	30 florins	1691	P	0	0	0	0	0	0	1	G
+395	Water Mill/Water Mill (inner)-395	6	15	22	4	64	79	Faucon doré	1692	P	0	0	0	0	0	0	1	G
+395	Water Mill/Water Mill (inner)-395	7	20	22	4	64	41	Fortifiant	1693	P	0	0	0	0	0	0	1	G
+396	Sluice, Berue, Cave/Sluice, Berue, Cave-396	0	16	24	18	64	83	Vaisseau de vie	1420	P	0	0	0	0	0	0	1	G
+396	Sluice, Berue, Cave/Sluice, Berue, Cave-396	1	16	32	18	64	73	Clef Vanne	1421	P	0	0	0	0	0	0	1	G
+398	Lurvy House, Well/Lurvy House, Well-398	12	88	90	30	64	79	Faucon doré	1679	P	0	0	0	0	0	0	1	G
+398	Lurvy House, Well/Lurvy House, Well-398	13	94	102	4	64	37	Elixir de force	1680	P	0	0	0	0	0	0	1	G
+398	Lurvy House, Well/Lurvy House, Well-398	14	92	8	0	64	19	Armure ancienne	0	-	0	0	0	0	0	0	1	G
+399	Murgg Tree/Murgg Golem (Boss)-399	2	24	74	4	64	39	Essence magique	609	P	0	0	0	0	0	0	1	G
+402	Desert/Desert Cave (sand Cape)-402	0	18	57	6	64	32	Cape de sable	667	P	0	0	0	0	0	0	1	G
+404	Desert Mini Puzle to Shrine/Desert Mini Puzle to Shrine-404	2	20	28	4	0	39	Essence magique	711	P	0	0	0	0	0	0	1	G
+407	Coast/Coast-407	3	88	80	12	64	79	Faucon doré	1399	P	0	0	0	0	0	0	1	G
+407	Coast/Coast-407	4	67	111	6	64	83	Vaisseau de vie	1345	P	0	0	0	0	0	0	1	G
+407	Coast/Coast-407	5	93	97	6	64	79	Faucon doré	1398	P	0	0	0	0	0	0	1	G
+407	Coast/Coast-407	6	94	62	12	64	38	Elixir de magie	1346	P	0	0	0	0	0	0	1	G
+407	Coast/Coast-407	7	12	78	6	64	41	Fortifiant	1344	P	0	0	0	0	0	0	1	G
+407	Coast/Coast-407	10	38	44	12	64	72	30 florins	1752	P	0	0	0	0	0	0	1	G
+408	Lizardman's Lair/Lizardman's Lair-408	33	93	20	6	64	36	Herbes	754	P	0	0	0	0	0	0	1	G
+410	Lizardman's Lair/Lizardman's Lair-410	11	54	12	2	64	41	Fortifiant	763	P	0	0	0	0	0	0	1	G
+410	Lizardman's Lair/Lizardman's Lair-410	23	68	56	2	64	83	Vaisseau de vie	1308	P	0	0	0	0	0	0	1	G
+410	Lizardman's Lair/Lizardman's Lair-410	76	15	32	4	64	79	Faucon doré	1357	P	0	0	0	0	0	0	1	G
+411	Lizardman's Lair/Lizardman's Lair (Boss)-411	13	14	22	4	64	63	Armoirie Saphir	772	P	0	0	0	0	0	0	1	G
+411	Lizardman's Lair/Lizardman's Lair (Boss)-411	14	18	24	4	64	47	Rouleau de feu	773	P	0	0	0	0	0	0	1	G
+411	Lizardman's Lair/Lizardman's Lair (Boss)-411	46	91	92	24	0	61	Clef	775	P	0	0	0	0	0	0	1	G
+421	Nirude/Nirude (inner)-421	25	60	24	22	0	36	Herbes	1292	P	0	0	153	0	0	0	1	G
+421	Nirude/Nirude (inner)-421	26	76	24	28	0	83	Vaisseau de vie	1309	P	0	0	153	0	0	0	1	G
+421	Nirude/Nirude (inner)-421	27	12	96	8	64	37	Elixir de force	1526	P	0	0	0	0	0	0	1	G
+422	Nirude/Nirude (inner)-422	0	46	110	4	64	36	Herbes	1261	P	0	0	0	0	0	0	1	G
+422	Nirude/Nirude (inner)-422	20	65	56	2	0	61	Clef	1288	P	0	0	148	0	0	0	1	G
+424	Nirude/Nirude (inner)-424	1	68	92	12	64	61	Clef	1240	P	0	0	0	0	0	0	1	G
+424	Nirude/Nirude (inner)-424	2	72	92	12	64	36	Herbes	1241	P	0	0	0	0	0	0	1	G
+424	Nirude/Nirude (inner)-424	7	60	54	2	64	36	Herbes	1244	P	0	0	0	0	0	0	1	G
+425	Nirude/Nirude (inner)-425	2	38	22	4	64	79	Faucon doré	1358	P	0	0	0	0	0	0	1	G
+426	Nirude/Nirude (inner)-426	39	88	64	2	0	61	Clef	1272	P	0	0	167	0	0	0	1	G
+429	Nava/Nava''s Entrance Caves-429	28	22	74	3	0	79	Faucon doré	973	P	0	0	0	0	0	0	1	G
+430	Nava/Nava''s Entrance Caves-430	23	80	16	2	64	36	Herbes	974	P	0	0	0	0	0	0	1	G
+431	Nava/Nava''s Island-431	0	70	56	26	64	83	Vaisseau de vie	1306	P	0	0	0	0	0	0	1	G
+431	Nava/Nava''s Island-431	2	30	66	6	64	50	Livre de vent	1771	P	0	0	0	0	0	0	1	G
+433	Lake Shrine/Lake Shrine-433	0	96	62	8	64	61	Clef	1141	P	0	0	0	0	0	0	1	G
+434	Lake Shrine/Lake Shrine (garden)-434	2	74	72	8	64	61	Clef	1138	P	0	0	0	0	0	0	1	G
+434	Lake Shrine/Lake Shrine (garden)-434	3	66	54	8	64	61	Clef	1139	P	0	0	0	0	0	0	1	G
+434	Lake Shrine/Lake Shrine (garden)-434	4	24	54	8	64	61	Clef	1140	P	0	0	0	0	0	0	1	G
+434	Lake Shrine/Lake Shrine (garden)-434	8	45	22	14	64	79	Faucon doré	1772	P	0	0	0	0	0	0	1	G
+434	Lake Shrine/Lake Shrine (garden)-434	9	57	22	14	64	80	Graine magique	1773	P	0	0	0	0	0	0	1	G
+439	Nirude/Nirude (outer, Event, water cape)-439	1	8	40	0	0	4	Epée sacrée	1221	P	0	0	0	0	0	0	1	G
+439	Nirude/Nirude (outer, Event, water cape)-439	3	83	99	24	64	41	Fortifiant	1725	P	0	0	0	0	0	0	1	G
+439	Nirude/Nirude (outer, Event, water cape)-439	27	64	92	46	0	64	Armoirie Topaze	1296	P	0	0	0	0	0	0	1	G
+439	Nirude/Nirude (outer, Event, water cape)-439	33	85	65	56	64	79	Faucon doré	1387	P	0	0	0	0	0	0	1	G
+439	Nirude/Nirude (outer, Event, water cape)-439	36	11	83	44	64	44	Livre de terre	1726	P	0	0	0	0	0	0	1	G
+439	Nirude/Nirude (outer, Event, water cape)-439	37	6	92	18	64	72	30 florins	1727	P	0	0	0	0	0	0	1	G
+439	Nirude/Nirude (outer, Event, water cape)-439	38	9	92	18	64	72	30 florins	1728	P	0	0	0	0	0	0	1	G
+440	Meia Dream/Meia Dream-440	8	84	112	2	64	79	Faucon doré	1386	P	0	0	0	0	0	0	1	G
+440	Meia Dream/Meia Dream-440	10	14	80	6	64	83	Vaisseau de vie	1798	P	0	0	0	0	0	0	1	G
+442	Meia Dream/Meia Dream-442	31	81	58	22	64	83	Vaisseau de vie	1343	P	0	0	0	0	0	0	1	G
+443	Torla/Torla (inner)-443	12	89	96	2	64	83	Vaisseau de vie	1463	P	0	0	0	0	0	0	1	G
+443	Torla/Torla (inner)-443	26	6	14	4	64	36	Herbes	1464	P	0	0	0	0	0	0	1	G
+444	Torla/Torla (inner)-444	36	60	30	18	64	39	Essence magique	1529	P	0	0	0	0	0	0	1	G
+445	Torla/Torla (inner)-445	10	30	16	8	64	61	Clef	1480	P	0	0	0	0	0	0	1	G
+445	Torla/Torla (inner)-445	11	44	16	8	64	28	Bottes magiques	1481	P	0	0	0	0	0	0	1	G
+447	Torla/Torla (inner)-447	32	79	64	8	64	79	Faucon doré	1500	P	0	0	0	0	0	0	1	G
+448	Torla/Torla (inner)-448	45	90	91	4	64	48	Livre de feu	1770	P	0	0	0	0	0	0	1	G
+450	Desert/Desert-450	1	63	25	16	64	79	Faucon doré	1395	P	0	0	0	0	0	0	1	G
+450	Desert/Desert-450	4	55	109	8	64	37	Elixir de force	1729	P	0	0	0	0	0	0	1	G
+450	Desert/Desert-450	5	96	48	12	64	72	30 florins	1730	P	0	0	0	0	0	0	1	G
+472	Pub/Pub (Ring)-472	2	12	102	4	0	83	Vaisseau de vie	1569	P	0	0	0	0	0	0	1	G
+473	Pub/Pub (Shooting)-473	3	52	78	2	0	83	Vaisseau de vie	1557	P	0	0	0	0	0	0	1	G
+474	Pub/Pub (Roulette)-474	5	90	74	2	0	83	Vaisseau de vie	1563	P	0	0	0	0	0	0	1	G
+479	Overworld 0,0 with Lake Shrine Entrance/Overworld 0,0 with Lake Shrine Entrance-479	14	31	37	8	64	79	Faucon doré	1389	P	0	0	0	0	0	0	1	G

@@ -1,0 +1,38 @@
+Test Map-0: 32 chests (type 30)
+    rec2: tile (13, 3, 0) contents 2 flag 0
+    rec3: tile (18, 3, 0) contents 3 flag 0
+    rec5: tile (28, 3, 0) contents 5 flag 0
+    rec9: tile (48, 3, 0) contents 9 flag 0
+    rec18: tile (43, 6, 0) contents 18 flag 0
+    rec19: tile (48, 6, 0) contents 19 flag 0
+    rec26: tile (33, 9, 0) contents 26 flag 0
+    rec27: tile (38, 9, 0) contents 27 flag 0
+    rec33: tile (18, 12, 0) contents 33 flag 0
+    rec40: tile (3, 15, 0) contents 40 flag 0
+    rec51: tile (8, 18, 0) contents 51 flag 0
+    rec52: tile (13, 18, 0) contents 52 flag 0
+    rec53: tile (18, 18, 0) contents 53 flag 0
+    rec54: tile (23, 18, 0) contents 54 flag 0
+    rec55: tile (28, 18, 0) contents 55 flag 0
+    rec56: tile (33, 18, 0) contents 56 flag 0
+    rec60: tile (3, 21, 0) contents 60 flag 0
+    rec61: tile (8, 21, 0) contents 61 flag 0
+    rec62: tile (13, 21, 0) contents 62 flag 0
+    rec63: tile (18, 21, 0) contents 63 flag 0
+    rec64: tile (23, 21, 0) contents 64 flag 0
+    rec65: tile (28, 21, 0) contents 65 flag 0
+    rec66: tile (33, 21, 0) contents 66 flag 0
+    rec67: tile (38, 21, 0) contents 67 flag 0
+    rec68: tile (43, 21, 0) contents 68 flag 0
+    rec73: tile (18, 24, 0) contents 73 flag 0
+    rec74: tile (23, 24, 0) contents 74 flag 0
+    rec75: tile (28, 24, 0) contents 75 flag 0
+    rec76: tile (33, 24, 0) contents 76 flag 0
+    rec77: tile (38, 24, 0) contents 77 flag 0
+    rec78: tile (43, 24, 0) contents 78 flag 0
+    rec88: tile (43, 27, 0) contents 88 flag 0
+chest rec2: pixel (324, 56, 0) tile (13, 3, 0) contents 2 flag 0 size 1572863x1048575x1048575
+  north tile (13, 2, z 0): after 12 ticks hero tile (13, 2, 0) pos (324, 40, 0) ground 1 status Normal
+  south tile (13, 4, z 0): after 12 ticks hero tile (13, 4, 0) pos (324, 72, 0) ground 1 status Normal
+  west tile (12, 3, z 0): after 12 ticks hero tile (12, 3, 0) pos (300, 56, 0) ground 1 status Normal
+  east tile (14, 3, z 0): after 12 ticks hero tile (14, 3, 0) pos (348, 56, 0) ground 1 status Normal

@@ -1,0 +1,2 @@
+arrival tile (39, 10, 0): entities 4, chests rec10 tile (39, 9, 0) contents 83 flag 659
+hero tile (39, 10, 0) ground 1

@@ -1,0 +1,48 @@
+1	map 77	Poignard	(43,113,h2)	flag 910	dir 64	C 228
+2	map 158	Epée	(2,116,h0)	flag 930	dir 0	C 129
+2	map 30	Epée	(58,64,h24)	flag 1210	dir 0	C 132
+3	map 161	Epée infernale	(19,53,h24)	flag 0	dir 0	C 134
+4	map 17	Epée sacrée	(8,40,h0)	flag 1221	dir 0	C 0
+4	map 439	Epée sacrée	(8,40,h0)	flag 1221	dir 0	C 0
+6	map 2	Arc en saule 	(52,66,h22)	flag 611	dir 0	C 0
+14	map 304	Bâton de glace	(59,80,h10)	flag 1208	dir 64	C 0
+16	map 140	Bâton de feu	(81,28,h24)	flag 1543	dir 0	C 146
+19	map 398	Armure ancienne	(92,8,h0)	flag 0	dir 64	C 0
+26	map 30	Bottes longues	(61,64,h24)	flag 651	dir 0	C 132
+27	map 74	Bottes triton	(86,14,h12)	flag 279	dir 64	C 0
+28	map 445	Bottes magiques	(44,16,h8)	flag 1481	dir 64	C 0
+32	map 402	Cape de sable	(18,57,h6)	flag 667	dir 64	C 0
+43	map 25	Rouleau terre	(74,40,h36)	flag 628	dir 0	C 130
+44	map 17	Livre de terre	(11,83,h44)	flag 1726	dir 64	C 0
+44	map 439	Livre de terre	(11,83,h44)	flag 1726	dir 64	C 0
+45	map 76	Rouleau d'eau	(34,52,h2)	flag 278	dir 0	C 133
+46	map 3	Livre d'eau	(78,48,h14)	flag 1769	dir 64	C 0
+47	map 411	Rouleau de feu	(18,24,h4)	flag 773	dir 64	C 0
+47	map 84	Rouleau de feu	(18,24,h4)	flag 773	dir 64	C 0
+48	map 448	Livre de feu	(90,91,h4)	flag 1770	dir 64	C 0
+49	map 95	Rouleau de vent	(18,96,h4)	flag 882	dir 0	C 131
+50	map 431	Livre de vent	(30,66,h6)	flag 1771	dir 64	C 0
+54	map 303	Charme de Nava	(86,28,h2)	flag 1713	dir 0	C 139
+57	map 332	Passe secret 	(66,36,h4)	flag 1664	dir 64	C 0
+60	map 154	Clef élévateur	(74,16,h20)	flag 464	dir 0	C 134
+62	map 25	Armoirie Rubis	(60,39,h36)	flag 1192	dir 0	C 130
+63	map 411	Armoirie Saphir	(14,22,h4)	flag 772	dir 64	C 0
+63	map 84	Armoirie Saphir	(14,22,h4)	flag 772	dir 64	C 0
+64	map 17	Armoirie Topaze	(64,92,h46)	flag 1296	dir 0	C 0
+64	map 439	Armoirie Topaze	(64,92,h46)	flag 1296	dir 0	C 0
+65	map 153	Armoirie Agathe	(34,32,h24)	flag 494	dir 0	C 0
+66	map 153	Armoirie Grenat	(40,32,h24)	flag 496	dir 0	C 0
+67	map 325	Armoi. Emeraude	(8,18,h0)	flag 1698	dir 0	C 129
+69	map 148	1 florin	(21,36,h14)	flag 1596	dir 64	C 0
+69	map 150	1 florin	(56,102,h10)	flag 408	dir 64	C 0
+71	map 141	10 florins	(56,26,h16)	flag 1670	dir 64	C 0
+71	map 150	10 florins	(19,28,h10)	flag 1600	dir 64	C 0
+71	map 64	10 florins	(52,76,h8)	flag 726	dir 64	C 0
+71	map 64	10 florins	(56,46,h8)	flag 725	dir 64	C 0
+71	map 9	10 florins	(33,64,h10)	flag 1756	dir 64	C 0
+71	map 9	10 florins	(36,64,h10)	flag 1757	dir 64	C 0
+73	map 396	Clef Vanne	(16,32,h18)	flag 1421	dir 64	C 0
+80	map 15	Graine magique	(70,83,h10)	flag 1741	dir 64	C 0
+80	map 25	Graine magique	(74,36,h36)	flag 626	dir 0	C 130
+80	map 434	Graine magique	(57,22,h14)	flag 1773	dir 64	C 0
+80	map 7	Graine magique	(45,105,h8)	flag 1349	dir 64	C 0

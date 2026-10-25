@@ -1,0 +1,7 @@
+Tarn's Manor (unused broken)-117: 1 chests (type 30)
+    rec19: tile (42, 41, 2) contents 61 flag 260
+chest rec19: pixel (1020, 664, 32) tile (42, 41, 2) contents 61 flag 260 size 1572863x1048575x1048575
+  north tile (42, 40, z 32): after 12 ticks hero tile (42, 40, 2) pos (1020, 648, 32) ground 1 status Normal
+  south tile (42, 42, z 32): after 12 ticks hero tile (42, 42, 2) pos (1020, 680, 32) ground 1 status Normal
+  west tile (41, 41, z 32): after 12 ticks hero tile (41, 41, 2) pos (996, 664, 32) ground 1 status Normal
+  east tile (43, 41, z 32): after 12 ticks hero tile (43, 41, 2) pos (1044, 664, 32) ground 1 status Normal

@@ -1,0 +1,15 @@
+instructions: vessel 127 seed 127
+  +0x004 vessel: move   $v1, $a0                       | seed: addiu  $a0, $zero, 1                 
+  +0x008 vessel: addiu  $a0, $zero, 0x31               | seed: sw     $ra, 0x34($sp)                
+  +0x00c vessel: sw     $ra, 0x34($sp)                 | seed: sw     $s4, 0x30($sp)                
+  +0x010 vessel: sw     $s4, 0x30($sp)                 | seed: sw     $s3, 0x2c($sp)                
+  +0x014 vessel: sw     $s3, 0x2c($sp)                 | seed: sw     $s2, 0x28($sp)                
+  +0x018 vessel: sw     $s2, 0x28($sp)                 | seed: sw     $s1, 0x24($sp)                
+  +0x01c vessel: sw     $s1, 0x24($sp)                 | seed: jal    0x8004de4c                    
+  +0x024 vessel: lw     $v0, 0x18($v1)                 | seed: jal    0x8004dddc                    
+  +0x02c vessel: addiu  $v0, $v0, 1                    | seed: jal    0x8004debc                    
+  +0x030 vessel: sw     $v0, 0x18($v1)                 | seed: move   $a0, $v0                      
+  +0x038 vessel: sw     $v0, 0x14($v1)                 | seed: addiu  $a0, $zero, 0x36              
+  +0x064 vessel: move   $a2, $a0                       | seed: addiu  $a2, $zero, 2                 
+  +0x110 vessel: move   $a2, $a0                       | seed: addiu  $a2, $zero, 2                 
+differing instructions 13 of 127
