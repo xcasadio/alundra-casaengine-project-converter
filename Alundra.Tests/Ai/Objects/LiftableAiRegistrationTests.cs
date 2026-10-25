@@ -72,9 +72,10 @@ public sealed class LiftableAiRegistrationTests
         LiftableAi.Register(sum);
         LiftableAi.RegisterBreak(sum);
         LiftableAi.RegisterC4Production(sum); // E20.g2c1
+        BallAi.Register(sum); // E20.f6b
 
         Assert.Equal(sum.Count, production.Count);
-        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count, production.Count);
+        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count + BallAi.Keys.Count, production.Count);
     }
 
     [Fact]

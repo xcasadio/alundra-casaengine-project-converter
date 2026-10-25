@@ -1,0 +1,5 @@
+Ai.Projectiles.BallFlamesTests.M1_TheFlamesAreWhereTheKeyHasThem_AfterTheProgramA_AtEveryFrame_StatusNormalFlags0x132104AndNoForce                     pass=2 fail=0
+Ai.Projectiles.BallFlamesTests.M1_TheThreeFlamesOfTheMap309EmitTheEffect17EveryFourTicks_AtTheirPlace8PixelsAboveTheBinarysZ_WithANilSpeed_AsTheKeyDoes pass=3 fail=0
+Ai.Projectiles.BallFlamesTests.M1_WithoutNativeHandlersTheSameWorldEmitsNothing_AndTheFlamesStillGetTheirProgramA_NextToTheWorldThatEmits              pass=1 fail=0
+Ai.Projectiles.BallFlamesTests.M2_TheFlamesTouchNoEntityAndDoNothingButEmit_NoExplosionNoDestructionNoOtherEffect                                      pass=3 fail=0
+Ai.Projectiles.BallFlamesTests.M3_TheProductionRegistryHoldsC60AndE9_ForTheSixBallTypesAlone_AndItsCountIsTheSumOfTheCountsOfTheClassesPlusTwoKeys     pass=1 fail=0

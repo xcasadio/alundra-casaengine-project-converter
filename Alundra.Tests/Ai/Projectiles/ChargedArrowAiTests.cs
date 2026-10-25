@@ -232,11 +232,12 @@ public sealed class ChargedArrowAiTests : IDisposable
         LiftableAi.Register(sum); // E20.g1a
         LiftableAi.RegisterBreak(sum); // E20.g2b
         LiftableAi.RegisterC4Production(sum); // E20.g2c1
+        BallAi.Register(sum); // E20.f6b
 
         Assert.True(production.TryGet(ScriptHelper.ProgramCTick, 94, 7, out _));
         Assert.False(production.TryGet(ScriptHelper.ProgramCTick, 94, 3, out _));
         Assert.Equal(sum.Count, production.Count);
-        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count, production.Count);
+        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count + BallAi.Keys.Count, production.Count);
     }
 
     [Fact]

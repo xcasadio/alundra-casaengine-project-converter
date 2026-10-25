@@ -26,13 +26,13 @@ internal delegate void NativeSpriteHandler(EntityScriptProxy entity, IEntityWorl
 /// ported yet, so a handler runs only for the types listed (the save book's <see cref="SaveBook.TryMatch"/> is
 /// the one precedent). <see cref="EventProgramRunner.RunSpriteEvent"/> consults it after the save book and
 /// E0/E1 (both stay outside the registry); an absent key or a type not listed is a counted no-op with one debug trace
-/// per key. In production it holds the handlers of the Beannoid (E14.a1b) with E14.a1c, of the Muruta, with E20.f3c, the C61 of the sword wave, with E20.e0c, the A255 and C255 of the pickup objects, with E20.e0d, the F255 of the chest, with E20.f4, the C94 of the charged arrow, with E20.f5, the E17 of the normal arrows with E20.g5a, the C76 of the pushable pillar with E20.g1a, the C23 of the seven liftable object types and, with E20.g2b, the E2 of the ten breakable object types (<see cref="CreateForProduction"/>).
+/// per key. In production it holds the handlers of the Beannoid (E14.a1b) with E14.a1c, of the Muruta, with E20.f3c, the C61 of the sword wave, with E20.e0c, the A255 and C255 of the pickup objects, with E20.e0d, the F255 of the chest, with E20.f4, the C94 of the charged arrow, with E20.f5, the E17 of the normal arrows with E20.g5a, the C76 of the pushable pillar with E20.g1a, the C23 of the seven liftable object types and, with E20.g2b, the E2 of the ten breakable object types and, with E20.f6b, the C60 and E9 of the six ball types (<see cref="CreateForProduction"/>).
 /// </summary>
 internal sealed class NativeSpriteRegistry
 {
     private readonly Dictionary<(int Slot, int Code), Entry> _entries = new();
 
-    /// <summary>The registry of a production runner: the Beannoid's A1, C1 and D1 (<see cref="BeannoideAi"/>, E14.a1b) the Muruta's A0, C10 and D9 (<see cref="MurutaAi"/>, E14.a1c) the C61 of the sword wave (<see cref="WaveSwordAi"/>, E20.f3c) and the A255 and C255 of the pickup objects (<see cref="PickupAi"/>, E20.e0c) and the F255 of the chest (<see cref="ChestAi"/>, E20.e0d) and the C94 of the charged arrow (<see cref="ChargedArrowAi"/>, E20.f4) and the E17 of the normal arrows (<see cref="ArrowAi"/>, E20.f5) and the C76 of the pushable pillar (<see cref="PillarAi"/>, E20.g5a) and the C23 of the liftable objects (<see cref="LiftableAi"/>, E20.g1a) and the E2 of the breakable objects (<see cref="LiftableAi.RegisterBreak"/>, E20.g2b).</summary>
+    /// <summary>The registry of a production runner: the Beannoid's A1, C1 and D1 (<see cref="BeannoideAi"/>, E14.a1b) the Muruta's A0, C10 and D9 (<see cref="MurutaAi"/>, E14.a1c) the C61 of the sword wave (<see cref="WaveSwordAi"/>, E20.f3c) and the A255 and C255 of the pickup objects (<see cref="PickupAi"/>, E20.e0c) and the F255 of the chest (<see cref="ChestAi"/>, E20.e0d) and the C94 of the charged arrow (<see cref="ChargedArrowAi"/>, E20.f4) and the E17 of the normal arrows (<see cref="ArrowAi"/>, E20.f5) and the C76 of the pushable pillar (<see cref="PillarAi"/>, E20.g5a) and the C23 of the liftable objects (<see cref="LiftableAi"/>, E20.g1a) and the E2 of the breakable objects (<see cref="LiftableAi.RegisterBreak"/>, E20.g2b) and the C60 and E9 of the fire and ice balls (<see cref="BallAi"/>, E20.f6b).</summary>
     internal static NativeSpriteRegistry CreateForProduction()
     {
         var registry = new NativeSpriteRegistry();
@@ -47,6 +47,7 @@ internal sealed class NativeSpriteRegistry
         LiftableAi.Register(registry);
         LiftableAi.RegisterBreak(registry);
         LiftableAi.RegisterC4Production(registry);
+        BallAi.Register(registry);
         return registry;
     }
 

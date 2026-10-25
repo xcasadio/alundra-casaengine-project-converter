@@ -1,0 +1,9 @@
+Ai.NativeSpriteRegistryTests.ProductionRunner_RegistryHoldsTheHandlersOfTheBeannoidTheMurutaTheSwordWaveAndThePickupObjects_AndTheSwitchIsOn           pass=0 fail=1
+Ai.Objects.LiftableAiRegistrationTests.R1_TheKeyIsInTheSlotCOnly_AndTheCountOfTheProductionRegistryIsTheSumOfTheCountsOfTheClasses                     pass=0 fail=1
+Ai.Projectiles.BallFlamesTests.M1_TheFlamesAreWhereTheKeyHasThem_AfterTheProgramA_AtEveryFrame_StatusNormalFlags0x132104AndNoForce                     pass=0 fail=2
+Ai.Projectiles.BallFlamesTests.M1_TheThreeFlamesOfTheMap309EmitTheEffect17EveryFourTicks_AtTheirPlace8PixelsAboveTheBinarysZ_WithANilSpeed_AsTheKeyDoes pass=0 fail=3
+Ai.Projectiles.BallFlamesTests.M1_WithoutNativeHandlersTheSameWorldEmitsNothing_AndTheFlamesStillGetTheirProgramA_NextToTheWorldThatEmits              pass=0 fail=1
+Ai.Projectiles.BallFlamesTests.M2_TheFlamesTouchNoEntityAndDoNothingButEmit_NoExplosionNoDestructionNoOtherEffect                                      pass=0 fail=3
+Ai.Projectiles.BallFlamesTests.M3_TheProductionRegistryHoldsC60AndE9_ForTheSixBallTypesAlone_AndItsCountIsTheSumOfTheCountsOfTheClassesPlusTwoKeys     pass=0 fail=1
+Ai.Projectiles.ChargedArrowAiTests.C2_TheProductionRegistry_HoldsTheKeyForTheType7_AndItsCountIsTheSumOfTheCountsOfTheClasses                          pass=0 fail=1
+Ai.Projectiles.WaveSwordLifeTests.V3_TheProductionRegistryHoldsTheKeysOfItsClasses_TheWaveTypesHaveC61AndE10InLineAndNoOtherProgram_TheInvariantHoldsForThem pass=0 fail=1
