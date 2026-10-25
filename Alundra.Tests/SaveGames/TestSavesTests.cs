@@ -93,7 +93,10 @@ public sealed class TestSavesTests : IDisposable
     private const string C4Map22PresetName = "c4-m22";
     private const string C4Map70PresetName = "c4-m70";
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName];
+    // E20.e0d T3 (docs/plan-e20-heros.md section 1.26.2, D-E0D-11): the four chest presets, the last of the table. The cells are the T0 (e) cells of docs/plan-e20-annexe/e20-e0d/results.md: the arrival tile is the tile north of the chest.
+    private static readonly string[] ChestPresetNames = ["coffre-m15", "coffre-m11", "coffre-m0", "coffre-m117"];
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames];
 
     public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName]);
 
@@ -109,7 +112,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheEighteenPresets_AreListed_InTheOrderOfTheTable()
+    public void TheTwentyTwoPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -491,6 +494,28 @@ public sealed class TestSavesTests : IDisposable
         // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), nothing else.
         var expectedCounts = new int[256];
         expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    [Theory]
+    [InlineData("coffre-m15", 15, 35, 41, 5, 7)]
+    [InlineData("coffre-m11", 11, 7, 23, 13, 0)]
+    [InlineData("coffre-m0", 0, 13, 2, 0, 0)]
+    [InlineData("coffre-m117", 117, 42, 40, 2, 0)]
+    public void TheChestPresets_ArriveOnTheTileNorthOfTheirChest_WithTheLifeAndMagicToSeeTheSeed_NoFlag_AndTheHerbsOfTheBagFullRecipe(string name, int map, int tileX, int tileY, int tileZ, int herbs)
+    {
+        var rules = RealRules();
+        var save = Build(name);
+
+        Assert.Equal((map, tileX, tileY, tileZ), (save.InitialMapId, save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.Equal((4, 10, 1, 2), (save.Hp, save.HpMax, save.Mp, save.MpMax)); // the magic maximum below 4: the seed adds one and fills it.
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word));              // no chest is open: the flags of the chests are all down.
+
+        // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), and the herbs (item 0x24, raw index 73) of the preset that walks to the "too many things" message: 7, so that the second herb chest of the map 15 fills the bag and the third refuses.
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        expectedCounts[73] = herbs;
         Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
         Assert.True(save.TryValidate(rules, out var error), error);
     }

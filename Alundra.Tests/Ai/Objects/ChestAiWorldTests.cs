@@ -348,6 +348,50 @@ public sealed class ChestAiWorldTests : IDisposable
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // (c3) the chest of the magic seed (the map 15, phase C): the fanfare of phase B, then the magic that rises by the body of the seed.
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    [Fact]
+    public void C3_TheSeedChestOfTheMap15_PlaysTheFanfareOfAKeyObject_ThenTheBoxClosedByThePlayerRaisesTheMagicMaximum_FillsTheMagic_PlaysTheSound0x36_AndMakesTheEffectsOfTheAnimation2()
+    {
+        using var run = Arrive("c3", "Overworld", "Overworld 3,2-15", 35, 41, 5);
+        GameState.Instance.PlayerStats.MpMax = 1;
+        GameState.Instance.PlayerStats.Mp = 0;
+        var opening = Mount(run, 4, 0x50 + 0x1E);
+        Assert.Equal((0x50u, 1741), (opening.Chest.ContentsItemId, opening.Chest.ContentsGameFlag));
+        PushAgainstTheChest(run);
+        var sounds = run.Sounds.Requests.Count;
+
+        opening.PressAndFollow(250);
+
+        // The fanfare of a key object, as in B10 (the seed is one of the 78 key objects of the chests): the music cut at F255, the track 11 at the release, the mask 4 at the message, the mask 3 and StopAllSound one tick later, the box still open.
+        var released = opening.FirstTickWhere(m => m.ChestCurrent == 1);
+        var message = opening.FirstTickWhere(m => m.BoxOpen);
+        Assert.Equal((Pinned.Released, Pinned.Message), (released, message));
+        Assert.Equal(new[] { "stop", "track11" }, opening.At(message).Journal.ToArray());
+        Assert.Equal(4, opening.At(message).CloseMask);
+        Assert.Equal(message + 1, opening.FirstTickWhere(m => m.Journal.Contains("end")));
+        Assert.Contains("gagné!", opening.At(message).Text);
+
+        // Nothing is given while the box is open.
+        Assert.Equal((0, 1), ((int)GameState.Instance.PlayerStats.Mp, (int)GameState.Instance.PlayerStats.MpMax));
+        Assert.False(Raised(1741));
+        Assert.DoesNotContain(0x36, run.Sounds.Requests.Skip(sounds).ToArray());
+
+        CloseTheBoxAsThePlayerDoes(run);
+        run.Run(2, 1);
+
+        Assert.Equal((2, 2), ((int)GameState.Instance.PlayerStats.Mp, (int)GameState.Instance.PlayerStats.MpMax)); // the body of the seed: MpMax + 1, Mp filled.
+        Assert.Contains(0x36, run.Sounds.Requests.Skip(sounds).ToArray());
+        Assert.True(Raised(1741));
+        Assert.Null(run.Hero.BlockedByEntity);
+        Assert.Null(opening.Object);
+        Assert.Equal(1u, opening.Chest.TargetAnimationId);
+        var effects = run.Arc.Proxy.EffectStage!.Reservoir.ActiveSlots.Where(s => s.TargetEffect == 14 && !s.TargetMapTable && s.TargetAnimation == 2).ToList();
+        Assert.Equal(12, effects.Count);                                                                           // 8 rings and 4 sparks of the animation 2.
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // (b6) the chain of the story: the key of the map 117, the vase of the map 115.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
