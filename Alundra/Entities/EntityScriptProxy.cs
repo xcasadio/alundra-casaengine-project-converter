@@ -438,6 +438,15 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// none. <c>UpdateWeaponStepProgression</c> clears it at the tick after the press unless the record spawns a projectile. Hero only.</summary>
     internal uint WeaponRecordPointer;
 
+    /// <summary>E20.h0a (D-H-1): the item in use, the binary's <c>[0x80127164]</c> (0: none; otherwise the item the Circle started, <c>0x1F</c> to <c>0x32</c>). Set by <see cref="Alundra.Hero.PlayerManager"/> when the start of an item answers 0, freed by the item driver or by the cancellation. A new hero (every map) has none, as <c>0x8003295C</c>. Hero only.</summary>
+    internal uint ItemInUse;
+
+    /// <summary>E20.h0a (D-H-1): the ticks since the item in use started, the binary's <c>[0x8012715C]</c>: 0 at the start, +1 after each call of the item's driver, saturated at <c>0x7FFFFFFF</c>. Hero only.</summary>
+    internal int ItemUseCounter;
+
+    /// <summary>E20.h0a (D-H-1): the phase of the item in use, the binary's <c>[0x80127160]</c>: 0 at the start; written by the drivers of the items. Hero only.</summary>
+    internal int ItemUsePhase;
+
     /// <summary>E20.b B2: the tick counter that goes with <see cref="WeaponRecordPointer"/>, the binary's <c>0x80127114</c> (reset by the press, counted up to the delay of the record). Hero only.</summary>
     internal int WeaponStepCounter;
 

@@ -1030,6 +1030,22 @@ public static class PlayerManager
     [ThreadStatic]
     internal static int? TryUseItemResultForTests;
 
+    /// <summary>E20.h0a (D-H-4) test seam, per thread: the start of an item (the binary's per-item start of <c>0x8003499C</c>) for the test: told the hero and the item, answers 0 to put the item in use, non-zero to leave it out (an instant item). Null in production: the table of the starts.</summary>
+    [ThreadStatic]
+    internal static Func<EntityScriptProxy, uint, int>? ItemStartForTests;
+
+    /// <summary>E20.h0a (D-H-4) test seam, per thread: the driver of the item in use (the binary's per-item driver of <c>0x8003634C</c>): 0 "still in use", non-zero "finished" (the item is freed at that tick). Null in production.</summary>
+    [ThreadStatic]
+    internal static Func<EntityScriptProxy, uint, int>? ItemDriverForTests;
+
+    /// <summary>E20.h0a (D-H-4) test seam, per thread: the cancellation of the item in use (the binary's per-item cancellation of <c>0x800350C0</c>); it still sees the item in use, which is freed right after. Null in production.</summary>
+    [ThreadStatic]
+    internal static Action<EntityScriptProxy, uint>? ItemCancelForTests;
+
+    /// <summary>E20.h0a (D-H-3) test seam, per thread: when not null, the calls of the named stubs (the starts, drivers and cancellations of the items another slice carries) are added as "start 0x23", "driver 0x23" or "cancel 0x23".</summary>
+    [ThreadStatic]
+    internal static System.Collections.Generic.List<string>? ItemStubCallsForTests;
+
     /// <summary>E20.g1b phase B: <c>PlayerTryAction</c> (<c>0x8002EEAC</c>) over the world of the hero: the spawned entities, and the object <c>0x3B</c> for the genres 2 and 3. 0 means "no action, carry on".</summary>
     private static int PlayerTryAction(EntityScriptProxy player, in PadState pad)
     {

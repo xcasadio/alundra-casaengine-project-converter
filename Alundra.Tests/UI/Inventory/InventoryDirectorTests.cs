@@ -253,6 +253,26 @@ public sealed class InventoryDirectorTests : IDisposable
         Assert.False(director.IsActive);
     }
 
+    /// <summary>E20.h0a (fact 10, binary <c>0x8002BC90</c>): the menu is refused while an item is in use (<c>[0x80127164] != 0</c>); the same press opens it once the item is freed.</summary>
+    [Fact]
+    public void Trigger_Refused_WhileAnItemIsInUse_OpensOnceItIsFreed()
+    {
+        var state = NewState();
+        var director = NewDirector(state);
+        var player = new EntityScriptProxy { ItemInUse = 0x2B };
+
+        state.TickPad.Update(PadState.Start);
+        director.Tick(player);
+        Assert.False(director.IsActive);
+
+        player.ItemInUse = 0;
+        state.TickPad.Update(0);
+        director.Tick(player);
+        state.TickPad.Update(PadState.Start);
+        director.Tick(player);
+        Assert.True(director.IsActive);
+    }
+
     /// <summary>Plan E13.d SI12 (D-E13D-36): after a map entry the trigger refuses for 0.2 s of logic time - the
     /// first 9 ticks, as the executable does with its 10 frames decremented before the test (0x8002bc58) - and
     /// opens on the 10th.</summary>
