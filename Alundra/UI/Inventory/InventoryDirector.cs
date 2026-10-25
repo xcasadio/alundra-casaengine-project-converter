@@ -25,10 +25,9 @@ namespace Alundra.UI.Inventory;
 /// need to draw is exposed as plain, read-only properties.
 ///
 /// <para><b>The trigger</b> - ported from <c>GameEngine.cs:1567-1576</c>, checked once per logic tick
-/// while the inventory is idle. One of its six guards has no equivalent in this port and is
-/// TREATED AS ALWAYS ZERO (never blocks the trigger), declared where it is tested below:
-/// <c>g_warpLockTimer</c> (an item-use/magic-sequence lock, <c>PlayerManager.cs:1929-4013</c> - no such
-/// system is ported here at all). <c>g_globalTransitionState</c> (the memory-card/save-menu state machine,
+/// while the inventory is idle. <c>g_warpLockTimer</c> (the item-use lock, <c>PlayerManager.cs:1929-4013</c>)
+/// is ported since E20.h0a as <see cref="EntityScriptProxy.ItemInUse"/>: no opening while an item is in use
+/// (binary <c>0x8002BC90</c>). <c>g_globalTransitionState</c> (the memory-card/save-menu state machine,
 /// <c>UI/MemoryCardManager.cs</c>) is ported since E16.e as <see cref="SaveScreenDirector.IsActive"/>.
 /// The map-entry delay <c>g_warpDelayFrames</c> is ported since E13.d SI12, as a duration
 /// (<see cref="WarpDirector.IsWarpDelayRunning"/>). One guard has no line in the original: no opening
@@ -416,10 +415,13 @@ public sealed class InventoryDirector
             return false;
         }
 
-        // GameEngine.cs:1570 - StaticVariables.g_warpLockTimer == 0. NO PORT EQUIVALENT: g_warpLockTimer
-        // is PlayerManager's own item-use/magic-sequence lock (Gameplay/PlayerManager.cs:1929-4013, e.g.
-        // ":800/900/1994/2409" - a state machine for chained item animations), and no such system exists
-        // in this DLL at all. Declared absent, treated as always 0 (never blocks).
+        // GameEngine.cs:1570 - StaticVariables.g_warpLockTimer == 0. g_warpLockTimer is PlayerManager's own item-use
+        // lock: E20.h0a ports it as EntityScriptProxy.ItemInUse (binary 0x8002BC90, [0x80127164] != 0). The menu is
+        // refused while an item is in use (the water tomes last up to 394 ticks); the press is not consumed.
+        if (player != null && player.ItemInUse != 0)
+        {
+            return false;
+        }
 
         // GameEngine.cs:1572 - (StaticVariables.g_padState1.ButtonsJustPressed & PadState.OpenInventory) != 0.
         // NOT ByInterval - a straight edge, read from the per-tick pad D1 built (TickPad), never

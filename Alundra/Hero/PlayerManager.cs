@@ -39,7 +39,7 @@ namespace Alundra.Hero;
 /// entity's current <c>TargetDirection</c>.</description></item>
 /// <item><description>Idle(0x00)/Moving(0x01) case, PlayerManager.cs:363-383 (binary <c>0x80031E38</c>): <c>TargetDirection = dir</c>, then (E20.a A4) <c>TryUseItem</c>, <c>PlayerTryAction</c>
 /// and <c>CheckEntityInteraction</c> in the binary's order, then the common tail: <c>PlayerTryAttack</c> (E20.b), the jump of the Cross, <c>buttonsHold != 0 -&gt; Moving</c> else <c>Idle</c>.
-/// <c>TryUseItem</c> and <c>PlayerTryAction</c> are named stubs (E20.h and E20.g: the use of an item and lifting/carrying are not ported yet).</description></item>
+/// <c>TryUseItem</c> is the frame of the use of an item since E20.h0a (the items themselves come with their own slices); <c>PlayerTryAction</c> is E20.g's.</description></item>
 /// <item><description>The attack groups, binary <c>0x80031E18</c> and <c>0x80031DF8</c> (E20.b): a swing in progress only keeps its side of the ground (see <see cref="MovePlayer"/>).</description></item>
 /// <item><description>The object in the hands (E20.g1a), binary <c>0x800322F0</c>, <c>0x800322B4</c> and <c>0x8003232C</c>: the two lift gestures (0x05, 0x0B: <see cref="LiftGestureTick"/>) and the carrying group (0x06, 0x07, 0x0C, 0x2E, 0x2F, 0x30:
 /// <see cref="CarryGroupTick"/>); the Square throws (E20.g2a, <see cref="CarryRules.ThrowCarried"/>), and nothing but <see cref="PutInHands"/> puts an object in the hands yet (the trigger is E20.g1b).</description></item>
@@ -353,10 +353,13 @@ public static class PlayerManager
             player.WeaponChargeTimer = 0;
             player.WeaponRecordPointer = 0;
 
-            // E20.g1a T3 (W2, D-G-4), binary 0x80031BF4: UpdatePlayerCarriedEntity(1) comes right after the two clears and before the item cancel (0x800350C0, E20.h0's stub) and END: an object in the hands is drawn in and destroyed.
+            // E20.g1a T3 (W2, D-G-4), binary 0x80031BF4: UpdatePlayerCarriedEntity(1) comes right after the two clears and before the item cancel (0x800350C0, E20.h0a, just below) and END: an object in the hands is drawn in and destroyed.
             UpdatePlayerCarriedEntity(player, 1);
 
-            // E20.c2b D-C2B-5, binary 0x80031C0C-0x80031C28 (after the item cancel 0x800350C0, E20.h0's stub): only the whole word 0x20 (a forced sequence alone: nothing but the bit) lets the entry through, and then it writes nothing
+            // E20.h0a (D-H-5), binary 0x80031BFC: the item cancel 0x800350C0 comes right after UpdatePlayerCarriedEntity(1) and before the entry of the damage (0x80031C0C): the item in use is cancelled, then freed.
+            CancelItemMode(player);
+
+            // E20.c2b D-C2B-5, binary 0x80031C0C-0x80031C28 (after the item cancel 0x800350C0, E20.h0a): only the whole word 0x20 (a forced sequence alone: nothing but the bit) lets the entry through, and then it writes nothing
             // but the invulnerability (+0x1CC = 0x78): no state, no direction, no recoil. The entry is still called, so that its life loss is taken. A hit under any other lock (0x24, 0x30, 0x10, 0x04, 0xA0) is lost.
             if (state.PlayerControlFlags == GameState.PlayerControlBits.ForcedSequence && EnterInjury(player, host) != HeroInjury.NoInjury)
             {
@@ -381,7 +384,7 @@ public static class PlayerManager
             return;
         }
 
-        // E20.a A4 (D-E20-14): the second call of the item driver, once per normal tick before the pad is read (binary 0x80031CC4). Stub until h0a (E20.h0).
+        // E20.a A4 (D-E20-14): the second call of the item driver, once per normal tick before the pad is read (binary 0x80031CC4). E20.h0a: the driver of the item in use.
         UpdateItemUseDriver(player);
 
         // PlayerManager.cs:61-353 (CheckAndExecuteWarp's warp-facing branch, HP==0 death branch,
@@ -451,7 +454,7 @@ public static class PlayerManager
             }
         }
         // PlayerManager.cs:361-383 (Idle/Moving case) - E12.d ports CheckEntityInteraction into it
-        // (TryUseItem and PlayerTryAction are named stubs, PlayerTryAttack is the common tail's, E20.b): res==2 (button
+        // (TryUseItem is the frame of E20.h0a and PlayerTryAction a stub, PlayerTryAttack is the common tail's, E20.b): res==2 (button
         // interact) forces Idle and ends the case; res==1 (auto-touch interact) ends it WITHOUT
         // updating the animation this tick; res==0 falls through to the normal animation update -
         // exactly the original's `if (iVar2 != 0) { if (iVar2 != 2) break; ... Idle ... }` shape.
@@ -628,7 +631,7 @@ public static class PlayerManager
             BounceTick(player, in pad);
         }
 
-        // E20.c2b D-C2B-6, binary 0x80032680 (the jump table 0x80022D3C, state 0x31): the hurt state of the land does nothing but TryUseItem (the stub returns 1 until h0a); the tick then ends. The 4 ticks of the state and the chain to
+        // E20.c2b D-C2B-6, binary 0x80032680 (the jump table 0x80022D3C, state 0x31): the hurt state of the land does nothing but TryUseItem (E20.h0a: a front of the Circle there tries the item); the tick then ends. The 4 ticks of the state and the chain to
         // 0x1C come from the animation, the recoil from the physics along +0x8C.
         else if (player.TargetAnimationId == HurtAnimationId)
         {
@@ -667,6 +670,13 @@ public static class PlayerManager
         else if (CarryRules.IsCarryGroupState(player.TargetAnimationId))
         {
             CarryGroupTick(player, in pad, buttonsHold, dir);
+        }
+
+        // E20.h0a (D-H-5, fact 3), binary 0x80032758: the states the jump table 0x80022D3C sends to the default handler cancel the item in use. They are the 15 states of the swim table's Skip group and every state from 0x50: a
+        // test of that table, never a final else (which would also catch 21 states that have a handler of their own and are not ported yet).
+        else if (SwimHandlerOf(player.TargetAnimationId) == SwimHandler.Skip)
+        {
+            CancelItemMode(player);
         }
 
         // PlayerManager.cs:385-943 (every other TargetAnimationId case) - NOT PORTED; an entity whose
@@ -818,9 +828,28 @@ public static class PlayerManager
         }
     }
 
-    /// <summary>E20.i T1 stub of <c>0x800350C0</c>, the cancellation of the item mode the swim table's skip group performs (E20.h0): no item mode exists yet.</summary>
+    /// <summary>
+    /// E20.h0a (D-H-5): the cancellation of the item in use, <c>0x800350C0</c>: the cancellation of the item runs while it is still in use, then the item is freed. Without an item in use nothing happens. Its sites: the locked branch
+    /// (<c>0x80031BFC</c>), the default of the states without handler (<c>0x80032758</c>: the main chain and the swim table's Skip group); the exit cell (<c>0x80032770</c>, no cell attribute is ever written) and the death (E18) are not ported.
+    /// </summary>
     private static void CancelItemMode(EntityScriptProxy player)
     {
+        var item = player.ItemInUse;
+        if (item == 0)
+        {
+            return;
+        }
+
+        if (ItemCancelForTests is { } cancel)
+        {
+            cancel(player, item);
+        }
+        else
+        {
+            ItemCancelStub(item);
+        }
+
+        player.ItemInUse = 0;
     }
 
     /// <summary>E20.d1 T2: <c>g_dashDirections[nibble]</c> (<c>0x80022CAC</c>), the direction a single cardinal bit gives, -1 for anything else.</summary>
@@ -1009,13 +1038,94 @@ public static class PlayerManager
         player.TargetAnimationId = IsHeroInTheAir(player) ? MovingAnimationId : IdleAnimationId;
     }
 
-    /// <summary>E20.a A4 stub of <c>TryUseItem</c> (<c>0x8002ED64</c>): non-zero means "carry on this tick". The binary returns 1 whenever the Circle button has no rising edge
-    /// (<c>0x8002EDA8</c>); a stub returning 0 would end the tick and kill every attack, jump and run (critique C10). The use of an item (the Circle) is E20.h.</summary>
+    /// <summary>
+    /// E20.h0a: <c>TryUseItem</c> (<c>0x8002ED64</c>); non-zero means "carry on this tick". Without a rising edge of the Circle (<c>[0x80126F2A] &amp; 0x20</c>) it answers 1 at once (<c>0x8002EDA8</c>; a 0 would end the tick and kill every attack,
+    /// jump and run, critique C10). With an edge and any bit of the control word (<c>[0x800DC4B8] != 0</c>, not only 0x34) it plays the sound 3 and answers 1. Otherwise it answers what the start of the item
+    /// (<see cref="StartItem"/>) answers: 0 ends the tick (the item is in use). The state of the game is read through the host of the hero (D-H-2); a hero without a host answers 1 with no sound.
+    /// </summary>
     private static int TryUseItem(EntityScriptProxy player, in PadState pad)
     {
         TryUseItemCallCountForTests++;
-        return TryUseItemResultForTests ?? 1;
+        if (TryUseItemResultForTests is { } forced)
+        {
+            return forced;
+        }
+
+        if ((pad.ButtonsJustPressed & PadState.Circle) == 0 || player.ScriptHost is not { } host)
+        {
+            return 1;
+        }
+
+        if (host.GameState.PlayerControlFlags != 0)
+        {
+            host.SoundPlayer?.PlaySfx(ItemRefusalSoundId);
+            return 1;
+        }
+
+        return StartItem(player, host);
     }
+
+    /// <summary>The sound of every refusal of the use of an item, the binary's <c>0x8003499C</c> and <c>0x8002ED64</c> (the same as <see cref="NoAttackSoundId"/>'s).</summary>
+    private const int ItemRefusalSoundId = 3;
+
+    /// <summary>The first item <c>0x8003499C</c> can start (<c>s0 - 0x1F &lt; 0x14</c>).</summary>
+    private const uint FirstUsableItem = 0x1F;
+
+    private const uint UsableItemCount = 0x14;
+
+    /// <summary>The bound of the first refusal of the start (<c>s0 &gt;= 0x62</c> unsigned: the no-item answer -1 included).</summary>
+    private const uint ItemRefusalBound = 0x62;
+
+    /// <summary>
+    /// E20.h0a, the start <c>0x8003499C</c>: the item of the Circle is promoted by <see cref="SetItemIdFromCurrentItemId"/> (<c>0x8004E0F8</c>, -1 without tables or without the item); a refusal (sound 3, answer 1) when it is
+    /// <c>&gt;= 0x62</c>, when another item is in use, outside <c>0x1F</c> to <c>0x32</c> or in a hole of the table <c>0x8002339C</c> (<c>0x21</c>, <c>0x22</c>, <c>0x28</c>, <c>0x2A</c>). The same item in use is no refusal: its start runs again.
+    /// Then the start of the item: an answer of 0 puts it in use with the counter and the phase at 0.
+    /// </summary>
+    private static int StartItem(EntityScriptProxy player, IScriptHost host)
+    {
+        var item = host.ItemTables is { } tables ? SetItemIdFromCurrentItemId(host.GameState, tables) : NoItem;
+        if (item >= ItemRefusalBound
+            || (player.ItemInUse != 0 && player.ItemInUse != item)
+            || item - FirstUsableItem >= UsableItemCount
+            || IsHoleOfTheItemTable(item))
+        {
+            host.SoundPlayer?.PlaySfx(ItemRefusalSoundId);
+            return 1;
+        }
+
+        var answer = ItemStartForTests is { } start ? start(player, item) : ItemStartStub(item);
+        if (answer == 0)
+        {
+            player.ItemInUse = item;
+            player.ItemUseCounter = 0;
+            player.ItemUsePhase = 0;
+        }
+
+        return answer;
+    }
+
+    /// <summary>The four items of <c>0x1F</c>-<c>0x32</c> whose entry of the table <c>0x8002339C</c> is the refusal: <c>0x21</c>, <c>0x22</c>, <c>0x28</c>, <c>0x2A</c>.</summary>
+    private static bool IsHoleOfTheItemTable(uint item) => item is 0x21 or 0x22 or 0x28 or 0x2A;
+
+    /// <summary>
+    /// E20.h0a (D-H-3): the start of an item that another slice carries (h1 the healings <c>0x24</c> to <c>0x27</c> and <c>0x29</c>, h3 the bomb <c>0x23</c> and the seeds <c>0x1F</c>, h2 the cape <c>0x20</c>, h4 the tomes <c>0x2B</c> to <c>0x32</c>):
+    /// a named stub that answers 1 with no sound, like a start whose birth fails (<c>0x80034290</c>). Each slice replaces its entry.
+    /// </summary>
+    private static int ItemStartStub(uint item)
+    {
+        ItemStubCallsForTests?.Add($"start 0x{item:X2}");
+        return 1;
+    }
+
+    /// <summary>E20.h0a (D-H-3): the driver of an item that another slice carries: answers 1 ("finished", as the binary's drivers of the other items). Unreachable while every start is a stub.</summary>
+    private static int ItemDriverStub(uint item)
+    {
+        ItemStubCallsForTests?.Add($"driver 0x{item:X2}");
+        return 1;
+    }
+
+    /// <summary>E20.h0a (D-H-3): the cancellation of an item that another slice carries: nothing.</summary>
+    private static void ItemCancelStub(uint item) => ItemStubCallsForTests?.Add($"cancel 0x{item:X2}");
 
     /// <summary>E20.c2b test seam, per thread: the number of calls of the stub of <see cref="TryUseItem"/> (the state 0x31 calls it once a tick, <see cref="HurtAnimationId"/>).</summary>
     [ThreadStatic]
@@ -1775,11 +1885,31 @@ public static class PlayerManager
         }
     }
 
-    /// <summary>E20.a A4 stub (D-E20-14) of the item-in-use driver <c>0x8003634C</c> at its second site (<c>0x80031CC4</c>, every normal tick): the binary returns 1 without doing anything
-    /// when no item is in use. Ported in E20.c2.</summary>
+    /// <summary>
+    /// E20.h0a: the item-in-use driver <c>0x8003634C</c>, called at the tick of an injury (<c>0x80031C6C</c>, before the state is written) and once per free tick before the pad is read (<c>0x80031CC4</c>). With no item in use it does
+    /// nothing. Otherwise the driver of the item runs (0: still in use; non-zero: finished); the counter is incremented AFTER it (saturated at <c>0x7FFFFFFF</c>, so the driver sees 0 at its first call, the tick after the start); the
+    /// item is freed at the tick its driver answers non-zero.
+    /// </summary>
     private static void UpdateItemUseDriver(EntityScriptProxy player)
     {
         ItemUseDriverHookForTests?.Invoke(player);
+
+        var item = player.ItemInUse;
+        if (item == 0)
+        {
+            return;
+        }
+
+        var answer = ItemDriverForTests is { } driver ? driver(player, item) : ItemDriverStub(item);
+        if (player.ItemUseCounter < int.MaxValue)
+        {
+            player.ItemUseCounter++;
+        }
+
+        if (answer != 0)
+        {
+            player.ItemInUse = 0;
+        }
     }
 
     /// <summary>
