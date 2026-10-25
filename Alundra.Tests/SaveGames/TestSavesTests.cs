@@ -100,7 +100,10 @@ public sealed class TestSavesTests : IDisposable
     private const string LegendM14PresetName = "legende-m14";
     private const string LegendM7PresetName = "legende-m7";
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName];
+    // E20.c2b T4 (docs/plan-e20-heros.md section 1.12.1, D-C2B-12): the two presets of the hurt hero, the last of the table. `blessure-m15`: the orcs of the map 15, tile (7, 33, 7), three tiles from each of the two orcs of the records at the tiles (7, 30) and (7, 36); `blessure-m14`: the Beannoids arena, tile (5, 29, 5), three tiles from the Beannoid of the record 0 at the tile (5, 26). The cells are the T0 (e) cells of docs/plan-e20-annexe/e20-c2b/results.md.
+    private static readonly string[] HurtPresetNames = ["blessure-m15", "blessure-m14"];
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName, .. HurtPresetNames];
 
     public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName, LegendM14PresetName]);
 
@@ -116,7 +119,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheTwentyFourPresets_AreListed_InTheOrderOfTheTable()
+    public void TheTwentySixPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -521,6 +524,26 @@ public sealed class TestSavesTests : IDisposable
         var expectedCounts = new int[256];
         expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
         expectedCounts[73] = herbs;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    [Theory]
+    [InlineData("blessure-m15", 15, 7, 33, 7)]
+    [InlineData("blessure-m14", 14, 5, 29, 5)]
+    public void TheHurtPresets_ArriveThreeTilesFromTheEnemies_WithFullLife_TheFourArmours_TheBraceletTheCharmAndTheBootsOfLevel3_NoFlag(string name, int map, int tileX, int tileY, int tileZ)
+    {
+        var rules = RealRules();
+        var save = Build(name);
+
+        Assert.Equal((map, tileX, tileY, tileZ), (save.InitialMapId, save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word));
+        Assert.Equal(((short)10, (short)10, (short)1), (save.Hp, save.HpMax, save.WeaponId)); // life 10 of 10: a hit must show (the new game's 10/10), the basic sword in hand.
+
+        // The new game's counters (items 1, 17 = the cloth armour and 25: raw indices 3, 35, 51), and by hand (2 * item + 1): the armours 0x12, 0x13, 0x14 (37, 39, 41), the boots of level 3 0x1C (57), the bracelet 0x35 (107) and the Charm of Nava 0x36 (109).
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        expectedCounts[37] = expectedCounts[39] = expectedCounts[41] = expectedCounts[57] = expectedCounts[107] = expectedCounts[109] = 1;
         Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
         Assert.True(save.TryValidate(rules, out var error), error);
     }
