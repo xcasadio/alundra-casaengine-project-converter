@@ -1,0 +1,2 @@
+control kit: K1 equals frozen K1.json: True; K2 equals frozen K2.json: True
+control holy: K1 equals frozen K1.json: True; K2 equals frozen K2.json: True

@@ -1,0 +1,12 @@
+target: item 8 = pickup sprite type 38
+(a) 0x82 give  : [(7, ['B[10]'], 1623)]
+(b) 0x83 test  : []
+(b) 0x84 use   : []
+(c) 0x8A/0x8B spawning a record of sprite 38:
+    (7, ['B[10]'], 1411, '0x8a', 31, 1)
+    (7, ['B[10]'], 1483, '0x8a', 31, 1)
+(d) records placed with SpriteTableIndex 38 (map, index, IsEnabled, x, y, height):
+    (7, 31, 1, 4, 8, 0)
+    (11, 24, 1, 54, 54, 20)
+(e) chests with Contents == 8: [(0, 8, 1, 86, 6)]
+(f) non-chest records with Contents == 8 (loot on death): []

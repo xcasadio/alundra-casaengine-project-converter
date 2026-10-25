@@ -1,0 +1,114 @@
+== K1 legend: EXTRA t2: item 8 (Objet 008) owned and equipped (slot 1, rank 4), kit otherwise
+   before the call: stats WeaponId 1 ItemId 0; GetItemIdFromCurrentWeapon (0x8004E030) = 8; owned counts {1: 1, 8: 1, 17: 1, 25: 1}
+   after  the call: stats WeaponId 1 ItemId 0 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 8; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x80144597 (blob + 1951), item word 47 (= item 17 + 0x1E); level 255 size 15 MaxHp 0; responses 10 10 10 10 10 10 10 10 10 10 10; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x8014450E (blob + 1814), item word 38 (= item 8 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(6, 50)]
+   record [2] at 0x80146E10: pointer 0x00000000 (null), item word 0
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 10 10 10 10 10 10 10 10 10 10 10; AttackCount [14] = 0
+      +000: FF 0F 00 10 10 10 10 10 10 10 10 10 10 10 00 FF
+      +016: 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF 0F
+      +032: 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F 00
+      +048: 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 0; record words [(2148812183, 47), (2148812046, 38), (0, 0)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+== K2 legend (EXTRA t2: item 8 (Objet 008) owned and equipped (slot 1, rank 4), kit otherwise)
+   HERO state (tick 5, real hit pass): hero animation 0x10, CurrentAttack 0x80144229 = attr 0x81 power 1, latch 0x80146DF8 = 16, T.TouchingEntity = slot 0, hero HitCounter 2; equipment [0] item 17 [], [1] item 8 [(6, 50)], [2] null
+   natural record, response 0x10                                  attack attr 0x81 power 1   response 0x10  latch 16  hp   9 ->   0 (damage   9) returns 1   model 0   EQUAL
+   natural record, response 0x10                                  attack attr 0x81 power 1   response 0x10  latch 16  hp 100 ->  49 (damage  51) returns 0   model 49  EQUAL
+   copy of the record with response[nibble 1] = 0x00              attack attr 0x81 power 1   response 0x00  latch 16  hp   9 ->   8 (damage   1) returns 0   model 8   EQUAL
+   copy of the record with response[nibble 1] = 0x00              attack attr 0x81 power 1   response 0x00  latch 16  hp 100 ->  99 (damage   1) returns 0   model 99  EQUAL
+   copy of the record with response[nibble 1] = 0x40              attack attr 0x81 power 1   response 0x40  latch 16  hp   9 ->   0 (damage   9) returns 1   model 0   EQUAL
+   copy of the record with response[nibble 1] = 0x40              attack attr 0x81 power 1   response 0x40  latch 16  hp 100 ->   0 (damage 100) returns 1   model 0   EQUAL
+   copy of the record with response[nibble 1] = 0x80              attack attr 0x81 power 1   response 0x80  latch 16  hp   9 ->   9 (damage   0) returns 0   model 9   EQUAL
+   copy of the record with response[nibble 1] = 0x80              attack attr 0x81 power 1   response 0x80  latch 16  hp 100 -> 100 (damage   0) returns 0   model 100 EQUAL
+   copy of the record with response[nibble 1] = 0xC0              attack attr 0x81 power 1   response 0xC0  latch 16  hp   9 ->   9 (damage   0) returns 0   model 9   EQUAL
+   copy of the record with response[nibble 1] = 0xC0              attack attr 0x81 power 1   response 0xC0  latch 16  hp 100 -> 100 (damage   0) returns 0   model 100 EQUAL
+   attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)      attack attr 0x01 power 1   response 0x10  latch 16  hp 100 ->  99 (damage   1) returns 0   model 99  EQUAL
+   attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)         attack attr 0x01 power 1   response 0x10  latch 16  hp 100 ->  99 (damage   1) returns 0   model 99  EQUAL
+   attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)        attack attr 0x01 power 16  response 0x10  latch 16  hp 100 ->  84 (damage  16) returns 0   model 84  EQUAL
+   attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40 attack attr 0x84 power 2   response 0x40  latch 16  hp 100 ->   0 (damage 100) returns 1   model 0   EQUAL
+   A10 state: the real state above IS the A10 state (hero CurrentAttack 0x80144229 = his Attacks[0x11], attr 0x81 power 1; latch 16)
+   NH state (tick 1, real hit pass, hero idle): V.TouchingEntity = slot 3 (A), A attack 0x80145B94 attr 0x01 power 1, A.HitCounter 1, hero animation 0, latch 0; equipment [0] item 17 [], [1] item 8 [(6, 50)], [2] null
+   A's own attack (attr 0x01: no equipment bit)                   attack attr 0x01 power 1   response 0x10  latch 0   hp 100 ->  99 (damage   1) returns 0   model 99  EQUAL
+   A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is attack attr 0x81 power 1   response 0x10  latch 0   hp 100 ->  49 (damage  51) returns 0   model 49  EQUAL
+   A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging) attack attr 0x81 power 1   response 0x10  latch 16  hp 100 ->  49 (damage  51) returns 0   model 49  EQUAL
+   A attack := synthetic attr 0x81 power 16, latch := 0x10        attack attr 0x81 power 16  response 0x10  latch 16  hp 100 ->  34 (damage  66) returns 0   model 34  EQUAL
+   A attack := synthetic attr 0x81 power 1, equipment records ALL nulled attack attr 0x81 power 1   response 0x10  latch 0   hp 100 ->  99 (damage   1) returns 0   model 99  EQUAL
+   HT (hero as target, sheet 0x80127008 = [3] 0x10, A touches the hero; HP 200)
+   A's own attack (attr 0x01 power 1)                             attack attr 0x01 power 1   response 0x10  latch 0   hp 200 -> 199 (damage   1) returns 0   model 199 EQUAL
+   A attack := synthetic attr 0x01 power 16                       attack attr 0x01 power 16  response 0x10  latch 0   hp 200 -> 184 (damage  16) returns 0   model 184 EQUAL
+   A attack := synthetic attr 0x81 power 16 (equipment term, latch as is) attack attr 0x81 power 16  response 0x10  latch 0   hp 200 -> 134 (damage  66) returns 0   model 134 EQUAL
+   => OK
+legend K2 ok = True
+== K1 legend_holy: EXTRA t2: Elnard (4) and item 8 owned, slot 1, kit otherwise
+   before the call: stats WeaponId 1 ItemId 0; GetItemIdFromCurrentWeapon (0x8004E030) = 8; owned counts {1: 1, 4: 1, 8: 1, 17: 1, 25: 1}
+   after  the call: stats WeaponId 1 ItemId 0 (0x8004E0F8 rewrites ItemId with the best item of its slot); equipped weapon item 8; v0 = 0x800DC058
+   record [0] at 0x80146E00: pointer 0x80144597 (blob + 1951), item word 47 (= item 17 + 0x1E); level 255 size 15 MaxHp 0; responses 10 10 10 10 10 10 10 10 10 10 10; AttackCount 0 []
+   record [1] at 0x80146E08: pointer 0x8014450E (blob + 1814), item word 38 (= item 8 + 0x1E); level 255 size 17 MaxHp 0; responses 40 40 40 40 40 40 40 40 40 40 40; AttackCount 1 [(6, 50)]
+   record [2] at 0x80146E10: pointer 0x00000000 (null), item word 0
+   hero sheet 0x80127008 (255 bytes), base = record [0]; header FF 0F 00; responses [3..13] = 10 10 10 10 10 10 10 10 10 10 10; AttackCount [14] = 0
+      +000: FF 0F 00 10 10 10 10 10 10 10 10 10 10 10 00 FF
+      +016: 0F 00 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 00 FF 0F
+      +032: 00 08 08 08 08 08 08 08 08 08 08 08 00 FF 0F 00
+      +048: 04 04 04 04 04 04 04 04 04 04 04 00 FF 0F 00 40
+      +064: 40 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40
+      +080: 40 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40
+      +096: 40 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40
+      +112: 40 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40
+      +128: 40 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40
+      +144: 40 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40
+      +160: 40 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40
+      +176: 40 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40
+      +192: 40 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40
+      +208: 40 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40
+      +224: 00 FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+      +240: FF 0F 00 40 40 40 40 40 40 40 40 40 40 40 00
+   boots level [0x80127000] = 0; regeneration counters [0x80126FE8..] = [0, 0, 0]
+   second call: stats.ItemId is now 0; record words [(2148812183, 47), (2148812046, 38), (0, 0)] (SAME as the first call); equal to the model (which applies the ItemId rewrite): EQUAL
+   model (kmodel.py, independent): records EQUAL, sheet EQUAL, boots EQUAL, equipped weapon EQUAL; unwritten-byte reads: none  =>  OK
+== K2 legend_holy (EXTRA t2: Elnard (4) and item 8 owned, slot 1, kit otherwise)
+   HERO state (tick 5, real hit pass): hero animation 0x10, CurrentAttack 0x80144229 = attr 0x81 power 1, latch 0x80146DF8 = 16, T.TouchingEntity = slot 0, hero HitCounter 2; equipment [0] item 17 [], [1] item 8 [(6, 50)], [2] null
+   natural record, response 0x10                                  attack attr 0x81 power 1   response 0x10  latch 16  hp   9 ->   0 (damage   9) returns 1   model 0   EQUAL
+   natural record, response 0x10                                  attack attr 0x81 power 1   response 0x10  latch 16  hp 100 ->  49 (damage  51) returns 0   model 49  EQUAL
+   copy of the record with response[nibble 1] = 0x00              attack attr 0x81 power 1   response 0x00  latch 16  hp   9 ->   8 (damage   1) returns 0   model 8   EQUAL
+   copy of the record with response[nibble 1] = 0x00              attack attr 0x81 power 1   response 0x00  latch 16  hp 100 ->  99 (damage   1) returns 0   model 99  EQUAL
+   copy of the record with response[nibble 1] = 0x40              attack attr 0x81 power 1   response 0x40  latch 16  hp   9 ->   0 (damage   9) returns 1   model 0   EQUAL
+   copy of the record with response[nibble 1] = 0x40              attack attr 0x81 power 1   response 0x40  latch 16  hp 100 ->   0 (damage 100) returns 1   model 0   EQUAL
+   copy of the record with response[nibble 1] = 0x80              attack attr 0x81 power 1   response 0x80  latch 16  hp   9 ->   9 (damage   0) returns 0   model 9   EQUAL
+   copy of the record with response[nibble 1] = 0x80              attack attr 0x81 power 1   response 0x80  latch 16  hp 100 -> 100 (damage   0) returns 0   model 100 EQUAL
+   copy of the record with response[nibble 1] = 0xC0              attack attr 0x81 power 1   response 0xC0  latch 16  hp   9 ->   9 (damage   0) returns 0   model 9   EQUAL
+   copy of the record with response[nibble 1] = 0xC0              attack attr 0x81 power 1   response 0xC0  latch 16  hp 100 -> 100 (damage   0) returns 0   model 100 EQUAL
+   attack WITHOUT bit 0x80 (synthetic attr 0x01, same power)      attack attr 0x01 power 1   response 0x10  latch 16  hp 100 ->  99 (damage   1) returns 0   model 99  EQUAL
+   attack WITHOUT bit 0x80 (synthetic attr 0x01, power 1)         attack attr 0x01 power 1   response 0x10  latch 16  hp 100 ->  99 (damage   1) returns 0   model 99  EQUAL
+   attack WITHOUT bit 0x80 (synthetic attr 0x01, power 16)        attack attr 0x01 power 16  response 0x10  latch 16  hp 100 ->  84 (damage  16) returns 0   model 84  EQUAL
+   attack nibble 4 (synthetic attr 0x84, power 2): response[4] = 0x40 attack attr 0x84 power 2   response 0x40  latch 16  hp 100 ->   0 (damage 100) returns 1   model 0   EQUAL
+   A10 state: the real state above IS the A10 state (hero CurrentAttack 0x80144229 = his Attacks[0x11], attr 0x81 power 1; latch 16)
+   NH state (tick 1, real hit pass, hero idle): V.TouchingEntity = slot 3 (A), A attack 0x80145B94 attr 0x01 power 1, A.HitCounter 1, hero animation 0, latch 0; equipment [0] item 17 [], [1] item 8 [(6, 50)], [2] null
+   A's own attack (attr 0x01: no equipment bit)                   attack attr 0x01 power 1   response 0x10  latch 0   hp 100 ->  99 (damage   1) returns 0   model 99  EQUAL
+   A attack := synthetic attr 0x81 power 1 (equipment bit), latch as is attack attr 0x81 power 1   response 0x10  latch 0   hp 100 ->  49 (damage  51) returns 0   model 49  EQUAL
+   A attack := synthetic attr 0x81 power 1, latch := 0x10 (hero swinging) attack attr 0x81 power 1   response 0x10  latch 16  hp 100 ->  49 (damage  51) returns 0   model 49  EQUAL
+   A attack := synthetic attr 0x81 power 16, latch := 0x10        attack attr 0x81 power 16  response 0x10  latch 16  hp 100 ->  34 (damage  66) returns 0   model 34  EQUAL
+   A attack := synthetic attr 0x81 power 1, equipment records ALL nulled attack attr 0x81 power 1   response 0x10  latch 0   hp 100 ->  99 (damage   1) returns 0   model 99  EQUAL
+   HT (hero as target, sheet 0x80127008 = [3] 0x10, A touches the hero; HP 200)
+   A's own attack (attr 0x01 power 1)                             attack attr 0x01 power 1   response 0x10  latch 0   hp 200 -> 199 (damage   1) returns 0   model 199 EQUAL
+   A attack := synthetic attr 0x01 power 16                       attack attr 0x01 power 16  response 0x10  latch 0   hp 200 -> 184 (damage  16) returns 0   model 184 EQUAL
+   A attack := synthetic attr 0x81 power 16 (equipment term, latch as is) attack attr 0x81 power 16  response 0x10  latch 0   hp 200 -> 134 (damage  66) returns 0   model 134 EQUAL
+   => OK
+legend_holy K2 ok = True
+
+real	0m1.709s
+user	0m0.000s
+sys	0m0.015s

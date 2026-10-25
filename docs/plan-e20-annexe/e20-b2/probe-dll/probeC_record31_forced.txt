@@ -1,0 +1,12 @@
+rec31 at load: not spawned
+SpawnEntityByRecordId(31): rec31 type38 stLoaded flags 200180 tile(2,4,0) pos(60,72,0) prog[0,0,133,0,0,0] spriteProg[255,0,255,0,0,0] state 0
+hero pos(132,88,96); after 3 frames:
+  rec31 type38 stNormal flags 200000 tile(2,4,0) pos(60,72,0) prog[0,0,133,0,0,0] spriteProg[255,0,255,0,0,0] state 0 collidable False
+  frame +1: rec31 type38 stNormal flags 200000 tile(5,5,6) pos(134,89,96) prog[0,0,133,0,0,0] spriteProg[255,0,255,0,0,0] state 0 item8 0 dialogue False touching False
+  frame +2: rec31 type38 stNormal flags 200000 tile(5,5,6) pos(134,89,96) prog[0,0,133,0,0,0] spriteProg[255,0,255,0,0,0] state 0 item8 0 dialogue False touching False
+  frame +3: rec31 type38 stNormal flags 200000 tile(5,5,6) pos(134,89,96) prog[0,0,133,0,0,0] spriteProg[255,0,255,0,0,0] state 0 item8 0 dialogue False touching False
+  frame +4: rec31 type38 stNormal flags 200000 tile(5,5,6) pos(134,89,96) prog[0,0,133,0,0,0] spriteProg[255,0,255,0,0,0] state 0 item8 0 dialogue False touching False
+  frame +30: rec31 type38 stNormal flags 200000 tile(5,5,6) pos(134,89,96) prog[0,0,133,0,0,0] spriteProg[255,0,255,0,0,0] state 0 item8 0 dialogue False touching False
+  frame +60: rec31 type38 stNormal flags 200000 tile(5,5,6) pos(134,89,96) prog[0,0,133,0,0,0] spriteProg[255,0,255,0,0,0] state 0 item8 0 dialogue False touching False
+  frame +90: rec31 type38 stNormal flags 200000 tile(5,5,6) pos(134,89,96) prog[0,0,133,0,0,0] spriteProg[255,0,255,0,0,0] state 0 item8 0 dialogue False touching False
+item8 after the contact: 0; status Normal; flags 200000

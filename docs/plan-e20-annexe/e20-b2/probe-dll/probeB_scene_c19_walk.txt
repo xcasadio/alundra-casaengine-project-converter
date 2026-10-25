@@ -1,0 +1,29 @@
+== counter 19, arrival south (0), then Up held 12 frames
+after Up x12: active collision entity none; contact False
+hero before: pos(612,279,112) dir 10 anim 0 ground 1; item8 0; flag1787 False; counter 19
+round 1: pressed at frame 13, scene end at 1235, now frame 1275; item8 0; flag1787 False; flag7 False; locked False; dialogue open False
+   B[10] pcs run since the press: 1286x114 1288x1 1289x1 1292x1 1294x122 1296x1 1299x147 1302x1 1305x1 1307x1 1310x1 1317x5 1319x1 1326x7 1328x1 1331x1 1338x12 1340x1 1347x12 1349x1 1356x17 1358x1 1360x1 1361x109 1364x1 1367x1 1369x1 1372x1 1379x5 1381x1 1388x7 1390x1 1393x1 1400x10 1402x1 1409x12 1411x1 1419x1 1426x12 1428x1 1435x17 1437x1 1439x276 1440x1 1441x1 1444x1 1451x5 1453x1 1460x7 1462x1 1465x1 1472x10 1474x1 1481x12 1483x1 1491x1 1498x12 1500x1 1507x1 1508x1 1510x1 1513x1 1516x254 1517x17 1519x1 1526x5 1528x1 1535x7 1537x1 1539x1 1541x1 1544x1 1551x12 1553x1 1560x12 1562x1 1563x1 1566x1 1567x1 1656x1 1657x1 1658x1 1659x1 1660x1 1661x1 1662x1 1663x41
+   F-slot records since the press: 
+round 2: pressed at frame 1275, scene end at -1, now frame 1915; item8 0; flag1787 False; flag7 False; locked False; dialogue open False
+   B[10] pcs run since the press: 1663x640
+   F-slot records since the press: 
+Result changes inside B[10] (1268..1663):
+  frame 0 pc 1268 op 36 kind Implemented: Result -2147483648 -> 0
+  frame 1205 pc 1539 op 2E kind Implemented: Result 0 -> 1
+key pcs of B[10] as they ran:
+  frame 0 pc 1268 op 36 kind Implemented Result 0 (state #20786488)
+  frame 581 pc 1411 op 8A kind Implemented Result 0 (state #20786488)
+  frame 914 pc 1483 op 8A kind Implemented Result 0 (state #20786488)
+  frame 925 pc 1507 op 00 kind Break Result 0 (state #20786488)
+  frame 926 pc 1508 op C2 kind UnknownSkipped Result 0 (state #20786488)
+  frame 926 pc 1510 op 03 kind Implemented Result 0 (state #20786488)
+  frame 926 pc 1513 op 0D kind Implemented Result 0 (state #20786488)
+  frame 1205 pc 1539 op 2E kind Implemented Result 1 (state #20786488)
+  frame 1227 pc 1562 op 11 kind Implemented Result 1 (state #20786488)
+  frame 1234 pc 1663 op FF kind End Result 1 (state #20786488)
+  frame 1235 pc 1663 op FF kind End Result 1 (state #20786488)
+copies of the record 31:
+  frame 582: copy of rec31 appeared: rec31 type38 stNormal flags 200100 tile(26,18,11) pos(624,300,175) prog[0,0,133,0,0,0] spriteProg[255,0,255,0,0,0] state 0 dist to hero (12,21,63) locked True item8 0
+  frame 915: copy of rec31 appeared: rec31 type38 stNormal flags 200100 tile(26,18,11) pos(624,300,175) prog[0,0,133,0,0,0] spriteProg[255,0,255,0,0,0] state 0 dist to hero (12,21,63) locked True item8 0
+rec31 present at the end: False; hero pos(612,279,112)
+skipped or exceeded: 0xC2@1508

@@ -1,0 +1,291 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Xunit;
+using Alundra.Cells;
+using Alundra.Dialogues;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Session;
+using Alundra.Tests.Arcs;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+using Alundra.Transitions;
+
+namespace Alundra.Tests.ScratchB2;
+
+/// <summary>E20.b2 T0 (c) scratch probes, NEVER committed (a copy is paid into docs/plan-e20-annexe/e20-b2/probe-dll/ as .txt). Output directory: the environment variable B2_OUT.</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class B2ProbeTests : IDisposable
+{
+    public B2ProbeTests()
+    {
+        System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+        DialogueDirector.Instance.ResetForTests();
+    }
+
+    private static void Write(string name, StringBuilder text)
+    {
+        var dir = Environment.GetEnvironmentVariable("B2_OUT");
+        if (string.IsNullOrEmpty(dir))
+        {
+            return;
+        }
+
+        Directory.CreateDirectory(dir);
+        File.WriteAllText(Path.Combine(dir, name), text.ToString());
+    }
+
+    private const string Zone = "Overworld";
+    private const string World7 = "Overworld 1,2-7";
+
+    private static ArcRun Map7(string name, int tileX, int tileY, int level, uint direction, int frameLimit = 8000) =>
+        new(LeverArcs.Spec(name, Zone, World7, Array.Empty<int>(), tileX * 24 + 12, tileY * 16 + 8, level, direction, frameLimit));
+
+    private static string Ent(EntityScriptProxy e) =>
+        $"rec{e.EntityRefId} type{e.SpriteType} st{e.Status} flags {e.Flags:X} tile({e.TileX},{e.TileY},{e.TileZ}) pos({e.PosX >> 16},{e.PosY >> 16},{e.PosZ >> 16}) prog[{string.Join(",", e.ProgramIndexes)}] spriteProg[{string.Join(",", e.SpriteProgramIndexes)}] state {e.ItemState}";
+
+    [Fact]
+    public void ProbeA_Layout()
+    {
+        var sb = new StringBuilder();
+        using var arc = Map7("pA", 25, 17, 0, 16);
+        arc.OneFrame();
+        var store = LeverArcs.Store(arc);
+        sb.AppendLine("cells (x,y): height / walkability / ground property");
+        for (var y = 13; y <= 19; y++)
+        {
+            sb.AppendLine("  y=" + y + ": " + string.Join(" ", Enumerable.Range(22, 7).Select(x => $"[{x}] {store.GetHeight(x, y)}/{store.GetWalkability(x, y):X}/{store.GetGroundProperty(x, y)}")));
+        }
+
+        sb.AppendLine($"hero: pos({arc.Hero.PosX >> 16},{arc.Hero.PosY >> 16},{arc.Hero.PosZ >> 16}) tile({arc.Hero.TileX},{arc.Hero.TileY},{arc.Hero.TileZ}) ground {arc.Hero.IsOnGround} dir {arc.Hero.TargetDirection:X} anim {arc.Hero.TargetAnimationId}");
+        foreach (var rec in new[] { 28, 29, 31 })
+        {
+            var e = arc.EntityByRecord(rec);
+            sb.AppendLine(rec + ": " + (e == null ? "NOT SPAWNED" : Ent(e)));
+        }
+
+        sb.AppendLine("entities: " + string.Join("; ", arc.Entities.Select(e => $"rec{e.EntityRefId}/t{e.SpriteType}")));
+        Write("probeA_layout.txt", sb);
+    }
+
+    private static int Item8() => Alundra.Hero.PlayerManager.GetNumberOfItem(GameState.Instance, 8);
+
+    private static readonly int[] KeyPcs = { 1268, 1411, 1483, 1507, 1508, 1510, 1513, 1539, 1562, 1571, 1600, 1623, 1634, 1651, 1654, 1663 };
+
+    /// <summary>The scene of the Snow King from (25,17,7): the counter, the way the hero faces (arrival 16 = north, or 0 = south then Up held), what the trace says.</summary>
+    private static StringBuilder Scene(int count, bool arriveNorth, int presses)
+    {
+        var sb = new StringBuilder();
+        using var arc = Map7("pB" + count, 25, 17, 7, arriveNorth ? 16u : 0u);
+        GameState.Instance.DeathRetryCount = (byte)count;
+        sb.AppendLine($"== counter {count}, arrival {(arriveNorth ? "north (16)" : "south (0)")}, then Up held 12 frames");
+        var prev = arc.Runner.TraceSink;
+        var lastResult = int.MinValue;
+        var changes = new List<string>();
+        var keyHits = new List<string>();
+        var copyInfo = new List<string>();
+        var copySeen = new HashSet<EntityScriptProxy>();
+        arc.Runner.TraceSink = r =>
+        {
+            prev!(r);
+            if (r.ProgramSlot == ScriptHelper.ProgramBMap && r.CodeIndex >= 1268 && r.CodeIndex <= 1663)
+            {
+                if (r.State.Result != lastResult)
+                {
+                    changes.Add($"frame {arc.Frame} pc {r.CodeIndex} op {r.Opcode:X2} kind {r.Kind}: Result {lastResult} -> {r.State.Result}");
+                    lastResult = r.State.Result;
+                }
+
+                if (Array.IndexOf(KeyPcs, r.CodeIndex) >= 0 && (r.CodeIndex != 1268 || keyHits.Count == 0) && r.CodeIndex != 1663 || r.CodeIndex == 1663 && keyHits.Count(k => k.Contains("pc 1663")) < 2)
+                {
+                    keyHits.Add($"frame {arc.Frame} pc {r.CodeIndex} op {r.Opcode:X2} kind {r.Kind} Result {r.State.Result} (state #{System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(r.State)})");
+                }
+            }
+        };
+        arc.OnFrame = () =>
+        {
+            foreach (var e in arc.Entities.Where(x => x.EntityRefId == 31 && copySeen.Add(x)).ToList())
+            {
+                copyInfo.Add($"frame {arc.Frame}: copy of rec31 appeared: {Ent(e)} dist to hero ({(e.PosX - arc.Hero.PosX) >> 16},{(e.PosY - arc.Hero.PosY) >> 16},{(e.PosZ - arc.Hero.PosZ) >> 16}) locked {LeverArcs.Locked()} item8 {Item8()}");
+            }
+        };
+        arc.OneFrame();
+        arc.HoldDirections(PadState.Up);
+        for (var i = 0; i < 12; i++)
+        {
+            arc.OneFrame();
+        }
+
+        arc.ReleaseDirections();
+        sb.AppendLine($"after Up x12: active collision entity {(arc.Proxy.ActiveCollisionEntity is { } ace ? "rec" + ace.EntityRefId : "none")}; contact {(arc.Hero.TouchingEntity != null)}");
+
+        sb.AppendLine($"hero before: pos({arc.Hero.PosX >> 16},{arc.Hero.PosY >> 16},{arc.Hero.PosZ >> 16}) dir {arc.Hero.TargetDirection:X} anim {arc.Hero.TargetAnimationId} ground {arc.Hero.IsOnGround}; item8 {Item8()}; flag1787 {ArcChecks.IsSet(1787)}; counter {GameState.Instance.DeathRetryCount}");
+        for (var round = 0; round < presses; round++)
+        {
+            var startFrame = arc.Frame;
+            var startTrace = arc.Trace.Count;
+            arc.Press(PadState.Square);
+            var endedFrame = -1;
+            try
+            {
+                arc.RunUntilPressingTheButtonOnEveryDialogueFrame(() =>
+                {
+                    if (round == 0)
+                    {
+                        if (arc.Trace.Skip(startTrace).Any(t => t.Slot == ScriptHelper.ProgramBMap && t.Pc >= 1654 && t.Pc <= 1663 && t.Opcode == 0xFF))
+                        {
+                            endedFrame = arc.Frame;
+                            return true;
+                        }
+                    }
+                    else if (arc.Frame - startFrame >= 600)
+                    {
+                        return true;
+                    }
+
+                    return arc.Frame - startFrame > 3500;
+                }, "scene end");
+            }
+            catch (Exception ex)
+            {
+                sb.AppendLine("  STUCK: " + ex.Message);
+            }
+
+            for (var i = 0; i < 40; i++)
+            {
+                arc.OneFrame();
+            }
+
+            var distinct = arc.Trace.Skip(startTrace).Where(t => t.Slot == ScriptHelper.ProgramBMap && t.Pc >= 1268 && t.Pc <= 1663).GroupBy(t => t.Pc).OrderBy(g => g.Key).Select(g => $"{g.Key}x{g.Count()}");
+            var fSlot = arc.Trace.Skip(startTrace).Where(t => t.Slot == ScriptHelper.ProgramFInteract).Select(t => $"F@{t.Pc}/{t.Opcode:X2}@f{t.Frame}").Take(12);
+            sb.AppendLine($"round {round + 1}: pressed at frame {startFrame}, scene end at {endedFrame}, now frame {arc.Frame}; item8 {Item8()}; flag1787 {ArcChecks.IsSet(1787)}; flag7 {ArcChecks.IsSet(7)}; locked {LeverArcs.Locked()}; dialogue open {DialogueDirector.Instance.IsOpen}");
+            sb.AppendLine($"   B[10] pcs run since the press: {string.Join(" ", distinct)}");
+            sb.AppendLine($"   F-slot records since the press: {string.Join(" ", fSlot)}");
+        }
+
+        sb.AppendLine("Result changes inside B[10] (1268..1663):");
+        foreach (var c in changes)
+        {
+            sb.AppendLine("  " + c);
+        }
+
+        sb.AppendLine("key pcs of B[10] as they ran:");
+        foreach (var h in keyHits)
+        {
+            sb.AppendLine("  " + h);
+        }
+
+        sb.AppendLine("copies of the record 31:");
+        foreach (var c in copyInfo)
+        {
+            sb.AppendLine("  " + c);
+        }
+
+        sb.AppendLine($"rec31 present at the end: {arc.EntityByRecord(31) != null}; hero pos({arc.Hero.PosX >> 16},{arc.Hero.PosY >> 16},{arc.Hero.PosZ >> 16})");
+        sb.AppendLine($"skipped or exceeded: {string.Join("; ", arc.SkippedOrExceeded.Select(t => $"0x{t.Opcode:X2}@{t.Pc}").Distinct().Take(40))}");
+        return sb;
+    }
+
+    [Theory]
+    [InlineData(19, true)]
+    [InlineData(20, true)]
+    [InlineData(21, true)]
+    [InlineData(0, true)]
+    [InlineData(19, false)]
+    [InlineData(20, false)]
+    public void ProbeB_Scene(int count, bool north)
+    {
+        var sb = Scene(count, north, 2);
+        Write($"probeB_scene_c{count}_{(north ? "north" : "walk")}.txt", sb);
+    }
+
+    // (c) the record 31 forced into the world: touchable and pickable?
+    [Fact]
+    public void ProbeC_Record31_ForcedAndTouched()
+    {
+        var sb = new StringBuilder();
+        using var arc = Map7("pC", 5, 5, 0, 0);
+        arc.OneFrame();
+        sb.AppendLine($"rec31 at load: {(arc.EntityByRecord(31) == null ? "not spawned" : Ent(arc.EntityByRecord(31)!))}");
+        var ctx = (Alundra.Maps.IEntityWorldContext)arc.Proxy;
+        var e = ctx.SpawnEntityByRecordId(arc.Hero, 31);
+        sb.AppendLine("SpawnEntityByRecordId(31): " + (e == null ? "null" : Ent(e)));
+        if (e != null)
+        {
+            e.Flags &= ~EntityFlags.Gravity;
+            sb.AppendLine($"hero pos({arc.Hero.PosX >> 16},{arc.Hero.PosY >> 16},{arc.Hero.PosZ >> 16}); after 3 frames:");
+            for (var i = 0; i < 3; i++)
+            {
+                arc.OneFrame();
+            }
+
+            sb.AppendLine("  " + Ent(e) + $" collidable {(e.Flags & EntityFlags.Collidable) != 0}");
+            e.PosX = arc.Hero.PosX + arc.Hero.ModX - e.ModX;
+            e.PosY = arc.Hero.PosY + arc.Hero.ModY - e.ModY;
+            e.PosZ = arc.Hero.PosZ + arc.Hero.ModZ - e.ModZ;
+            e.TileX = (e.PosX >> 16) / 24;
+            e.TileY = (e.PosY >> 16) / 16;
+            e.TileZ = e.PosZ >> 20;
+            e.PushLogicalPositionToRoot();
+            for (var i = 0; i < 90; i++)
+            {
+                arc.OneFrame();
+                if (i < 4 || i % 30 == 29)
+                {
+                    sb.AppendLine($"  frame +{i + 1}: {Ent(e)} item8 {Item8()} dialogue {DialogueDirector.Instance.IsOpen} touching {(e.TouchingEntity != null)}");
+                }
+            }
+
+            sb.AppendLine($"item8 after the contact: {Item8()}; status {e.Status}; flags {e.Flags:X}");
+        }
+
+        Write("probeC_record31_forced.txt", sb);
+    }
+
+    // (c) how the scene starts: walking up into the block, or the Square?
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void ProbeD_Trigger(bool holdUp)
+    {
+        var sb = new StringBuilder();
+        using var arc = Map7("pD", 25, 17, 7, 16);
+        arc.OneFrame();
+        if (holdUp)
+        {
+            arc.HoldDirections(PadState.Up);
+        }
+
+        for (var i = 0; i < 20; i++)
+        {
+            if (!holdUp && i == 10)
+            {
+                arc.Press(PadState.Square);
+            }
+            else
+            {
+                arc.OneFrame();
+            }
+
+            var f = arc.Trace.Where(t => t.Slot == ScriptHelper.ProgramFInteract).Select(t => $"F@{t.Pc}/{t.Opcode:X2}@f{t.Frame}");
+            var b = arc.Trace.Where(t => t.Slot == ScriptHelper.ProgramBMap && t.Pc >= 1268 && t.Pc <= 1663 && t.Pc != 1268).Select(t => t.Pc).Distinct().Take(3);
+            sb.AppendLine($"frame {arc.Frame}: hero y {arc.Hero.PosY >> 16}.{(arc.Hero.PosY >> 8) & 255:X2} dir {arc.Hero.TargetDirection:X} contact {(arc.Hero.TouchingEntity != null)} ace {(arc.Proxy.ActiveCollisionEntity is { } ace ? "rec" + ace.EntityRefId : "none")} F[{string.Join(" ", f)}] B10-beyond-1268[{string.Join(" ", b)}]");
+        }
+
+        Write($"probeD_trigger_{(holdUp ? "holdUp" : "pressSquareOnly")}.txt", sb);
+    }
+}
