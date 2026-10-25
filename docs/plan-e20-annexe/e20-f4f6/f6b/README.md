@@ -23,3 +23,4 @@ The annex above (`../bin`, `../critic`, `../dll`, `../tests`, `../state-3c923cf`
 - `t2/` (phase B, T2 and T3): `results.md`, `red-before-T3.txt`, `green-after-T3.txt`, `removal-proof.txt`.
 - `t4/` (phase C, T4): `results.md`, `red-before-T4.txt`, `green-after-T4.txt`, `removal-A-set.txt`, `removal-B-oldS5.txt`, `removal-C-f6a-call.txt`, `suite-release/` and `suite-debug/` (red lists and summaries of the partitions).
 - `SHA1SUMS.txt`: SHA-1 of every file of this folder but `oracle/out` (the manifest covers it).
+- `t5/` (T5): `results.md`, `mutate_f6b_t5.py` (24 real mutants), `mutants-out.txt`.

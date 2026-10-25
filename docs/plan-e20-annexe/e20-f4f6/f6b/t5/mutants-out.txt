@@ -1,0 +1,124 @@
+T5-03 slope 1 forgotten                                                  KILLED stage=FAST red=2
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B1_TheSlopes1And4_DestroyTheBallWithTheEffect6_NoDrawNoEffect_TheOtherSlopesExplode
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_AtASlope1Or4_AtAMultipleOf8_TheDestructionIsFollowedByThePuffOfTheSameTick_AtAnotherTickTheDestructionIsAlone_TheSlope2
+      git diff empty after: True
+T5-04 slope 4 forgotten in branch A (later calls only)                   KILLED stage=FAST red=2
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_AtASlope1Or4_AtAMultipleOf8_TheDestructionIsFollowedByThePuffOfTheSameTick_AtAnotherTickTheDestructionIsAlone_TheSlope2
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_WhenTheAnimationHasEnded_TheBallIsDestroyedWithTheBreakEffectOfItsHeader_NoPuff_EvenAtAMultipleOf8_TheSlope4MakesTwoDes
+      git diff empty after: True
+T5-05 destruction with another effect (5)                                KILLED stage=FAST red=3
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B1_TheSlopes1And4_DestroyTheBallWithTheEffect6_NoDrawNoEffect_TheOtherSlopesExplode
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_AtASlope1Or4_AtAMultipleOf8_TheDestructionIsFollowedByThePuffOfTheSameTick_AtAnotherTickTheDestructionIsAlone_TheSlope2
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_WhenTheAnimationHasEnded_TheBallIsDestroyedWithTheBreakEffectOfItsHeader_NoPuff_EvenAtAMultipleOf8_TheSlope4MakesTwoDes
+      git diff empty after: True
+T5-07 fire Z offset applied to the ice (trail)                           KILLED stage=FAST red=18
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+      git diff empty after: True
+T5-08 fire Z offset applied to the ice (puff)                            KILLED stage=FAST red=8
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_APuffEvery8Ticks_TwoDraws_TheFireAtZPlus0x80000_TheIceWithNoOffset_AtTheOtherCountersNothingIsMadeAndNothingDrawn(type:
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_APuffEvery8Ticks_TwoDraws_TheFireAtZPlus0x80000_TheIceWithNoOffset_AtTheOtherCountersNothingIsMadeAndNothingDrawn(type:
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_TheFirstPuff_EqualsTheKeyOfTheMachine_TheEffectAndItsTwoDraws(name: "ice14_flat", type: 14, charged: False) [< 1 ms]
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_TheFirstPuff_EqualsTheKeyOfTheMachine_TheEffectAndItsTwoDraws(name: "ice15_flat", type: 15, charged: True)
+      git diff empty after: True
+T5-09 trail speed not opposed (X)                                        KILLED stage=FAST red=16
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+      git diff empty after: True
+T5-10 trail speed not opposed (Z)                                        KILLED stage=FAST red=16
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+      git diff empty after: True
+T5-11 effect 17 for the ice (trail)                                      KILLED stage=FAST red=18
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+      git diff empty after: True
+T5-12 effect 17 for the ice (explosion)                                  KILLED stage=FAST red=8
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B1_TheFirstCallOfE9_OnTheFlatGround_MakesFiveEffectsAtTheZOfTheBall_TenDrawsInOrder_AndPosesTheAnimationAndTheFlags(type: 
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B1_TheFirstCallOfE9_OnTheFlatGround_MakesFiveEffectsAtTheZOfTheBall_TenDrawsInOrder_AndPosesTheAnimationAndTheFlags(type: 
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B1_TheFiveEffectsAndTheTenDraws_EqualTheKeyOfTheMachine(name: "ice14_flat", type: 14, charged: False) [< 1 ms]
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B1_TheFiveEffectsAndTheTenDraws_EqualTheKeyOfTheMachine(name: "ice15_flat", type: 15, charged: True)
+      git diff empty after: True
+T5-13 draws made at the call, outside the application of the queue       KILLED stage=FAST red=1
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B4_TheDrawsAreMadeWhenTheStageAppliesItsQueue_NotWhenTheHandlerRuns_AndTheyEqualALocalStepOfTheGenerator
+      git diff empty after: True
+T5-14 key C60 forgotten                                                  KILLED stage=FAST red=23
+       Échoué Alundra.Tests.Ai.NativeSpriteRegistryTests.ProductionRunner_RegistryHoldsTheHandlersOfTheBeannoidTheMurutaTheSwordWaveAndThePickupObjects_AndTheSwitchIsOn [< 1 ms]
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B7_Register_AddsTheKeysC60AndE9_ForTheTypes10To15Only_AndTheDisposableTakesThemOff [< 1 ms]
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B7_TheHandlersOfTheKeys_RunThroughTheRunner_TheTrailAtTheCounter4AndTheExplosion_AnotherTypeRunsNeither
+       Échoué Alundra.Tests.Ai.Projectiles.BallFlamesTests.M1_TheFlamesAreWhereTheKeyHasThem_AfterTheProgramA_AtEveryFrame_StatusNormalFlags0x132104AndNoForce(ticksPerFrame: 1)
+      git diff empty after: True
+T5-15 key E9 forgotten                                                   KILLED stage=FAST red=14
+       Échoué Alundra.Tests.Ai.NativeSpriteRegistryTests.ProductionRunner_RegistryHoldsTheHandlersOfTheBeannoidTheMurutaTheSwordWaveAndThePickupObjects_AndTheSwitchIsOn [< 1 ms]
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B7_Register_AddsTheKeysC60AndE9_ForTheTypes10To15Only_AndTheDisposableTakesThemOff [< 1 ms]
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B7_TheHandlersOfTheKeys_RunThroughTheRunner_TheTrailAtTheCounter4AndTheExplosion_AnotherTypeRunsNeither
+       Échoué Alundra.Tests.Ai.Projectiles.BallFlamesTests.M3_TheProductionRegistryHoldsC60AndE9_ForTheSixBallTypesAlone_AndItsCountIsTheSumOfTheCountsOfTheClassesPlusTwoKeys [<
+      git diff empty after: True
+T5-16 type 10 wired in production                                        KILLED stage=FAST red=2
+       Échoué Alundra.Tests.Ai.Projectiles.BallProductionTests.P4_TheProductionSetEqualsTheNonZeroTypeBytesOfTheWeaponSheets_AndTheProductionRegistryHandlesEveryCodeOfThem
+       Échoué Alundra.Tests.Hero.WeaponSpawnSeamTests.S5_TheProductionSetPassesTheInvariant_TheArrowFailsOnE17InARegistryWithoutIt_AndPassesInTheProductionRegistry
+      git diff empty after: True
+T5-17 type 13 wired in production                                        KILLED stage=FAST red=2
+       Échoué Alundra.Tests.Ai.Projectiles.BallProductionTests.P4_TheProductionSetEqualsTheNonZeroTypeBytesOfTheWeaponSheets_AndTheProductionRegistryHandlesEveryCodeOfThem
+       Échoué Alundra.Tests.Hero.WeaponSpawnSeamTests.S5_TheProductionSetPassesTheInvariant_TheArrowFailsOnE17InARegistryWithoutIt_AndPassesInTheProductionRegistry
+      git diff empty after: True
+T5-18 set without 3 (the sword)                                          KILLED stage=FAST red=2
+       Échoué Alundra.Tests.Ai.Projectiles.BallProductionTests.P4_TheProductionSetEqualsTheNonZeroTypeBytesOfTheWeaponSheets_AndTheProductionRegistryHandlesEveryCodeOfThem
+       Échoué Alundra.Tests.Hero.WeaponSpawnSeamTests.S5_TheProductionSetPassesTheInvariant_TheArrowFailsOnE17InARegistryWithoutIt_AndPassesInTheProductionRegistry
+      git diff empty after: True
+T5-19 set without 15 (charged ice)                                       KILLED stage=FAST red=5
+       Échoué Alundra.Tests.Ai.Projectiles.BallProductionTests.P1_TheRodBirthsTheBallAtTheTickOfTheCalendar_DaughterOfTheHeroAtTheLowestFreeSlot_ItsLifeEqualsTheKey_IfAndOnlyIfT
+       Échoué Alundra.Tests.Ai.Projectiles.BallProductionTests.P1_TheRodBirthsTheBallAtTheTickOfTheCalendar_DaughterOfTheHeroAtTheLowestFreeSlot_ItsLifeEqualsTheKey_IfAndOnlyIfT
+       Échoué Alundra.Tests.Ai.Projectiles.BallProductionTests.P3_WithNoFreeSlotTheShotOfTheBallCreatesNothingAndClearsThePointer_WithExactlyOneFreeSlotItCreatesOneBall(item: 14
+       Échoué Alundra.Tests.Ai.Projectiles.BallProductionTests.P4_TheProductionSetEqualsTheNonZeroTypeBytesOfTheWeaponSheets_AndTheProductionRegistryHandlesEveryCodeOfThem
+      git diff empty after: True
+T5-20 ball advances at the speed of the current animation (D-F5-5)       KILLED stage=FAST red=8
+       Échoué Alundra.Tests.Ai.Projectiles.BallProductionTests.P1_TheRodBirthsTheBallAtTheTickOfTheCalendar_DaughterOfTheHeroAtTheLowestFreeSlot_ItsLifeEqualsTheKey_IfAndOnlyIfT
+       Échoué Alundra.Tests.Ai.Projectiles.BallProductionTests.P1_TheRodBirthsTheBallAtTheTickOfTheCalendar_DaughterOfTheHeroAtTheLowestFreeSlot_ItsLifeEqualsTheKey_IfAndOnlyIfT
+       Échoué Alundra.Tests.Ai.Projectiles.BallProductionTests.P1_TheRodBirthsTheBallAtTheTickOfTheCalendar_DaughterOfTheHeroAtTheLowestFreeSlot_ItsLifeEqualsTheKey_IfAndOnlyIfT
+       Échoué Alundra.Tests.Ai.Projectiles.BallProductionTests.P1_TheRodBirthsTheBallAtTheTickOfTheCalendar_DaughterOfTheHeroAtTheLowestFreeSlot_ItsLifeEqualsTheKey_IfAndOnlyIfT
+      git diff empty after: True
+T5-21 slope fed to every entity                                          KILLED stage=FAST red=1
+       Échoué Alundra.Tests.Entities.MarkedEntityGroundSlopeTests.S2_AnEntityBornByTheRecordsOfTheMapWithTheGravity_KeepsZeroOnTheSameWater_WhereAMarkedBallReadsFour
+      git diff empty after: True
+T5-01 explosion: five effects -> four                                    KILLED stage=FAST red=21
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B1_TheFirstCallOfE9_OnTheFlatGround_MakesFiveEffectsAtTheZOfTheBall_TenDrawsInOrder_AndPosesTheAnimationAndTheFlags(type: 
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B1_TheFirstCallOfE9_OnTheFlatGround_MakesFiveEffectsAtTheZOfTheBall_TenDrawsInOrder_AndPosesTheAnimationAndTheFlags(type: 
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B1_TheFirstCallOfE9_OnTheFlatGround_MakesFiveEffectsAtTheZOfTheBall_TenDrawsInOrder_AndPosesTheAnimationAndTheFlags(type: 
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B1_TheFirstCallOfE9_OnTheFlatGround_MakesFiveEffectsAtTheZOfTheBall_TenDrawsInOrder_AndPosesTheAnimationAndTheFlags(type: 
+      git diff empty after: True
+T5-02 puff period 8 -> 4                                                 KILLED stage=FAST red=12
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_APuffEvery8Ticks_TwoDraws_TheFireAtZPlus0x80000_TheIceWithNoOffset_AtTheOtherCountersNothingIsMadeAndNothingDrawn(type:
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_APuffEvery8Ticks_TwoDraws_TheFireAtZPlus0x80000_TheIceWithNoOffset_AtTheOtherCountersNothingIsMadeAndNothingDrawn(type:
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_APuffEvery8Ticks_TwoDraws_TheFireAtZPlus0x80000_TheIceWithNoOffset_AtTheOtherCountersNothingIsMadeAndNothingDrawn(type:
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_APuffEvery8Ticks_TwoDraws_TheFireAtZPlus0x80000_TheIceWithNoOffset_AtTheOtherCountersNothingIsMadeAndNothingDrawn(type:
+      git diff empty after: True
+T5-22 trail period 4 -> 8                                                KILLED stage=FAST red=36
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_AFullReservoir_CreatesNoTrail_AFreeSlotCreatesOne
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+      git diff empty after: True
+T5-23 trail Z without the +1 of the binary frame                         KILLED stage=FAST red=18
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B3_TheTrailAppearsAtTheCounters4And8_TheEffectOfTheTypeAtTheEndOfTickPositionWithTheOppositeForces_AtTheOtherCountersNoneD
+      git diff empty after: True
+T5-24 later branch returns after the destruction on the water            KILLED stage=FAST red=2
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_AtASlope1Or4_AtAMultipleOf8_TheDestructionIsFollowedByThePuffOfTheSameTick_AtAnotherTickTheDestructionIsAlone_TheSlope2
+       Échoué Alundra.Tests.Ai.Projectiles.BallAiTests.B2_WhenTheAnimationHasEnded_TheBallIsDestroyedWithTheBreakEffectOfItsHeader_NoPuff_EvenAtAMultipleOf8_TheSlope4MakesTwoDes
+      git diff empty after: True
+T5-06 puff before the destruction                                        KILLED stage=FULL red=3
+       Échoué Alundra.Tests.Ai.Projectiles.BallLifeTests.B5_BranchA_OnAPuffTick_TheBallIsDestroyedWithTheEffect6ThenThePuffOfTheSameTickIsMade_InThisOrder(name: "fire11_branchA_
+       Échoué Alundra.Tests.Ai.Projectiles.BallLifeTests.B5_BranchA_OnAPuffTick_TheBallIsDestroyedWithTheEffect6ThenThePuffOfTheSameTickIsMade_InThisOrder(name: "fire11_branchA_
+       Échoué Alundra.Tests.Ai.Projectiles.BallLifeTests.B5_BranchA_OnAPuffTick_TheBallIsDestroyedWithTheEffect6ThenThePuffOfTheSameTickIsMade_InThisOrder(name: "ice14_branchA_w
+      git diff empty after: True

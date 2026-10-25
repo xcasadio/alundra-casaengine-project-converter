@@ -55,3 +55,6 @@ da39a3ee5e6b4b0d3255bfef95601890afd80709 *./t4/suite-release/R.p2.red
 da39a3ee5e6b4b0d3255bfef95601890afd80709 *./t4/suite-release/R.p3.red
 df7aa228f9cbb21c8fcb5cf1814a4bbb7ccb848a *./t4/suite-release/R.p3.summary
 f0374d0e4437e28bd938711da7354b20b7f58a44 *./t4/suite-release/R.p2.summary
+45c1ae260f28408a7d25a80bdefb738f584b5d23 *./t5/mutants-out.txt
+bb17e0c8e06114da2e00551381beba48ae1cefee *./t5/mutate_f6b_t5.py
+2fd54ad9a820e189f62bc5725599bf850bfb6288 *./t5/results.md
