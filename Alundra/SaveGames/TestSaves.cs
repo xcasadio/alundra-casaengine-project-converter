@@ -98,6 +98,12 @@ public static class TestSaves
             [], [], [], Loadout(extraItems),
             Weapon: weaponSlot, Hp: 4, HpMax: 10, Mp: 4, MpMax: 4);
 
+    /// <summary>A hurt-hero test save (E20.c2b T4): life 10 of 10 and the basic sword of the new game's kit, the armours, the boots of level 3, the bracelet and the charm on top.</summary>
+    private static Preset BlessurePreset(string name, int mapId, int tileX, int tileY, int tileZ)
+        => new(
+            name, "test-" + name, mapId, tileX, tileY, tileZ,
+            [], [], [], [(CounterIndex(0x12), 1), (CounterIndex(0x13), 1), (CounterIndex(0x14), 1), (CounterIndex(0x1C), 1), (CounterIndex(0x35), 1), (CounterIndex(0x36), 1)]);
+
     /// <summary>
     /// The presets, values written in advance (docs/plan-e19-opcodes.md, S1). Flags: G203 = word 6 bit 11, G204 =
     /// word 6 bit 12, G1651 to G1655 = word 51 bits 19 to 23, G1660 = word 51 bit 28. Tables, from the original's
@@ -188,6 +194,13 @@ public static class TestSaves
         // the counter is only ever set by this preset).
         WeaponPreset("legende-m14", 14, 8, 6, 0, 1, 8),
         new Preset("legende-m7", "test-legende-m7", 7, 25, 17, 7, [], [], [], [], DeathRetryCount: 20),
+
+        // E20.c2b T4 (docs/plan-e20-heros.md section 1.12.1, D-C2B-12): the hurt hero, on the new game's kit (the basic sword, the cloth armour, life 10/10) with the armours 0x12, 0x13 and 0x14, the boots of level 3 (0x1C), the bracelet (0x35) and the Charm of Nava (0x36) in the bag.
+        // `blessure-m15`: the Overworld 3,2 (map 15), tile (7, 33, 7), the ground at height 14: the two orcs (sprite 85, records at the tiles (7, 30) and (7, 36)) stand three tiles (48 px) north and south of the arrival; walk to one and let it hit you. `blessure-m14`: the
+        // Beannoids arena (map 14), tile (5, 29, 5): the Beannoid of the record 0 stands three tiles north at the tile (5, 26); the cells (5, 27 to 29) are walkable at the same height. Neither map has a hazard cell, which the boots of level 3 would spare anyway. The
+        // game wears the best armour owned (FillEquipmentRecords), the silver one here, so the blow of an orc costs 1 heart; the 4, 3, 2 hearts of the lower armours need a bag without the higher ones (to settle with the author, results.md).
+        BlessurePreset("blessure-m15", 15, 7, 33, 7),
+        BlessurePreset("blessure-m14", 14, 5, 29, 5),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>

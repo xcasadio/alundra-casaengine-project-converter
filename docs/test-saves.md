@@ -208,6 +208,18 @@ the map 7, only to a player who resumed after a death 20 times or more.
 transparent block of the record 28 (tile (25, 16)); a save cannot carry the direction, so walk north into the block. The Snow King speaks (dialogue 130), gives the Legendary Sword and sets the flag 1787 (the scene does not replay afterwards). With a count below 20 (edit the preset)
 the refusal dialogue 129 is shown and nothing is given.
 
+### Hurt hero presets (E20.c2b)
+
+For the hurt hero (docs/plan-e20-heros.md section 1.12.1): at the contact of an enemy Alundra loses the hearts of the blow (at least 1, less with the armour), is thrown back about 33 pixels, turns his back to the enemy, is invulnerable and blinks for 120 ticks, and keeps playing at 0 heart (the death is E18).
+
+| Preset | Map, tile, z | Owned | Equipped | Life |
+|---|---|---|---|---|
+| `blessure-m15` | 15 (Overworld 3,2), (7, 33), 7 | the kit's items, the armours 0x12, 0x13, 0x14, the boots of level 3 (0x1C), the bracelet (0x35) and the Charm of Nava (0x36) | the basic sword | 10/10 |
+| `blessure-m14` | 14 (Beannoids arena), (5, 29), 5 | the same | the basic sword | 10/10 |
+
+`blessure-m15`: the two orcs of the map stand three tiles (48 px) north and south of the arrival; walk to one and let it hit you. `blessure-m14`: the Beannoid of the record 0 stands three tiles north. The game wears the best armour owned (the silver one here), so an orc's blow costs 1 heart; the lower
+armours (4, 3, 2 hearts) are not testable from these bags. Select the Charm of Nava as the Circle item to be spared the fire. The hazard cells (maps 0 and 36) hurt every 120 ticks the hero who has not the boots of level 3: build a save without the item 0x1C to walk onto them (the map 0, tiles (4, 53) and (10, 53)).
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;
