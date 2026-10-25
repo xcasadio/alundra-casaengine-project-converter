@@ -109,3 +109,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0093 | A thrown object falls in the hole or the exit floor it lands on: the hook of the ground slope also feeds the tile words of the marked entities | Accepted | 2026-10-25 |
 | ADR-0094 | The treasure chest opens through the native F255 with the object it gives birth to, and the magic seed is one body with three entries | Accepted | 2026-10-25 |
 | ADR-0095 | The opcode 0xC2 reads the death-retry counter, and a test-save preset may set it | Accepted | 2026-10-25 |
+| ADR-0096 | The hero is hurt by an entry, a hurt block and the state 0x31, and every active entity blinks from its invulnerability counter | Accepted | 2026-10-25 |
