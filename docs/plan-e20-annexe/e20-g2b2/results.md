@@ -75,3 +75,45 @@ The whole suite with the line, Release with the neutralised copy (`-p:CustomAfte
 
 `census_c.py`, `census_c.txt`; `replay/` (`replay_b.py`, `replay_b.txt`, `probe_cells.py`, `q3_pit_replay.txt`); `probe-dll/` (`G2b2ProbeTests.cs.txt`, `hook-temp.diff.txt`, `cmp.py`, the four outputs); `suite/` (the three summaries); `SHA1SUMS.txt`.
 To replay `replay/*.py`: put `docs/plan-e20-annexe/e20-g2c1-disc/g2c1/` copied as `g2c1/` next to a copy of `docs/plan-e20-annexe/e20-g1a/work/` named `work/` and the scripts beside `g2c1/` (the scripts add `g2c1/` to the path; `c4_scen.py` reads `g2c1/work/orc`, so `work/` must also be reachable as `g2c1/work`), then `python -B -X utf8 replay_b.py [object ...]` (about 3 min). The scripts read the binary `ALUN_CD.EXE` (France) and `data-extracted/`.
+
+---
+
+# T1 and T2 (tests first, then the line), 2026-10-25
+
+Tests: `Alundra.Tests/Ai/Objects/PitFallWorldTests.cs` (22 cases, 8 test methods + theories), committed first (`a8ee1413`), then the line. Expected ticks are the T0 rows (D-G2B2-4): the objects of C4 and the crate/jar each for their own replay rows.
+
+## Red before the line, green after (named)
+
+| test | red before the line, on | green after |
+|---|---|---|
+| `P1_TheBarrelThrownOnAHole_...` | T+23: status Normal (not FlagToDestroy), word 0 instead of 4 | yes |
+| `P2_TheBarrelThrownOnAnExitFloor_...` | same, word 0 instead of `0x8000` | yes |
+| `P3_TheStoneTheStarAndTheTrunk...(1, 2, 6)` | same on the stone, the star, the trunk | yes |
+| `P3b_ASingleCornerOn...(0/2, corner/cornerexit)` | same; AND 0, OR 4 / `0x8000` expected (the replay makes them disappear at T+23: so red) | yes |
+| `P6_TheCrateThrown...(hole, exit, corner, cornerexit)` | T+23: status Deactivated, Target 2, E2Calls 1 (E2 at T+23, destroyed at T+25 by g2b) instead of FlagToDestroy at T+23 with E2 never called | yes |
+| `P6_TheJarThrown...(4 grounds)` | same | yes |
+| `P8_TheCrateOnAHole_HasTheFourCorners...` | words (0,0) instead of (4,4) at T+22 | yes |
+
+Green before AND after (witnesses): `P4_TheSameBarrelThrownOnAFullCell_...`, `P5_AnEntityPlacedByTheMap_OnAHoleCell_...` (a map record, `HasLogicalZ` false, placed on the hole at x = 178: alive 40 ticks, words 0), `P7_...FollowTheChronologyOfG2b(crate, jar)`.
+Counts: before the line 18 red / 4 green of the 22; after 22 green.
+
+## Suites with the line (partition by whole namespace, partition 3 the exact negation, filters of `e20-g2c1/t4/run.sh`; `--blame-hang-timeout 60s`)
+
+| config | p1 (Arcs. Ai. Audio. Cameras. Cells. Combat. Dialogues.) | p2 (Entities. Events. ExportGuards. Hero. Items.) | p3 (negation) | total |
+|---|---|---|---|---|
+| Release, neutralised copy | 1 508 passed (6 min 2 s) | 2 956 (4 min) | 1 858 (51 s) | 6 322, 0 failed |
+| Debug (last) | 1 508 (6 min 14 s) | 2 956 (4 min 2 s) | 1 858 (51 s) | 6 322, 0 failed |
+
+Against T0 (6 301): +22 new tests in p1 (`Alundra.Tests.Ai.`), -1 in p3 (the scratch probe `G2b2ProbeTests` of T0 (d) is not part of the tree). 6 301 + 22 - 1 = 6 322. The summaries are in `suite2/`.
+**Tests moved: none** (the list of T0 (d) was empty, and no existing test turned red in any partition: `suite2/*.red` empty). Subset of the T0 list: yes (empty).
+
+## Other checks
+
+- Traces `docs/hero-trace-389-*.txt`: `git diff --ignore-cr-at-eol --quiet` on the four files: unchanged (only line ends rewritten by the suites); restored by `git checkout --`.
+- `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: identical (the Debug build deposited it).
+- `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 pre-existing warning, `TextBoxGpu.cs`).
+- The engine (`CasaEngineMonogame`), the converter (`alundra-datas-analyser`) and `data-extracted`: no diff between `16b5659b` and HEAD.
+
+## The change
+
+`Alundra/Entities/EntityScriptProxy.cs`: in the hook of f6a of `Update`, after `UpdateGroundSlope();`, `if (HasLogicalZ) { UpdateVramFlags(); }` (the trunk of `FeedsGroundSlope` gets the slope only). Docs corrected: the RESTRICTION paragraph of `UpdateVramFlags` and D-T-12 of `docs/plan-transitions-carte.md` (amendment). Mutants and ADR are T3.

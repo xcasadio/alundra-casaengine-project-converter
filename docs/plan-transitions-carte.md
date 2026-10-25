@@ -441,6 +441,7 @@ oracle : l'avance de boîte n'est pas appelée depuis le site gardé dans le mon
   alimenter `CombinedVramFlagsOR` pour toutes les entités réveillerait la transition
   `DestroyOnVramFlags` (§1.6.a) et détruirait des PNJ posés sur des tuiles de portail. Le
   comportement des PNJ doit rester **strictement inchangé**, et l'acceptation de T3 doit le prouver.
+  *Amendement E20.g2b2 (D-G2B2-1, D-E20-74, 2026-10-25) :* la sonde sert aussi aux entités **marquées** (`HasLogicalZ` : objets mis dans les mains et entités nées en jeu), au crochet de E20.f6a de `EntityScriptProxy.Update`, après la pente : c'est la règle du binaire (la phase de choix détruit l'entité qui porte `0x200000` quand le OU des coins a `0x8004`), et un objet lancé tombe ainsi dans un trou. Les entités posées par la carte ne sont jamais marquées : pour elles la restriction reste entière.
 - **D-T-13 [R2] — Disposition champ par champ d'`AlundraGameState`.** La liste est exhaustive ;
   aucune autre donnée d'instance n'existe sur ce type.
 

@@ -1825,6 +1825,12 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
             if (HasLogicalZ || Alundra.Ai.Objects.LiftableAi.FeedsGroundSlope(SpriteType))
             {
                 UpdateGroundSlope();
+                // E20.g2b2 (D-G2B2-1, D-E20-74): and the words of the four corners, for the marked entities only (the binary's physics pass writes +0x180 and +0x184 for every entity; the pick phase destroys the one that carries 0x200000 on 0x8004):
+                // a thrown object falls in the hole or the exit floor it lands on. The entities placed by the map are never marked and keep 0 (D-T-12); the trunk of FeedsGroundSlope gets the slope only.
+                if (HasLogicalZ)
+                {
+                    UpdateVramFlags();
+                }
             }
         }
 
@@ -2259,15 +2265,14 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// <c>tempFlags[0]&amp;tempFlags[1]&amp;tempFlags[2]&amp;tempFlags[3]</c>
     /// (<c>PhysicsEngine.cs:1764-1765</c>).
     ///
-    /// RESTRICTION (D-T-12, PLAYER ONLY - same rationale, same single call site convention, and same
-    /// documentation shape as <see cref="UpdateGroundSlope"/>'s own restriction paragraph, which this one
-    /// intentionally mirrors almost verbatim): <see cref="CombinedVramFlagsOR"/> already has a LIVE
+    /// RESTRICTION (D-T-12, kept for the entities placed by the map; E20.g2b2, D-G2B2-1, widened to the marked entities): <see cref="CombinedVramFlagsOR"/> already has a LIVE
     /// consumer for every entity, not just the player - the <c>DestroyOnVramFlags</c> transition tested
     /// with mask <c>0x8004</c> a few lines below in <see cref="Update"/> (exactly the hole/portal-floor
-    /// bits this method writes). Alimenting this field for NPCs too would start destroying NPCs standing
-    /// on portal tiles, a behaviour change T3's own acceptance proves does NOT happen (D-T-12). Every
-    /// NPC's <see cref="CombinedVramFlagsOR"/>/<see cref="CombinedVramFlagsAND"/> therefore stay the C#
-    /// default 0 - see the single call site in <see cref="Update"/>'s <c>IsPlayer</c> branch.
+    /// bits this method writes). Alimenting this field for the NPCs placed by the map would start destroying NPCs standing
+    /// on portal tiles, a behaviour change T3's own acceptance proves does NOT happen (D-T-12). So the field is fed for the player (<see cref="IsPlayer"/> branch of <see cref="Update"/>)
+    /// and, since E20.g2b2, for the entities marked <see cref="HasLogicalZ"/> (the objects put in the hands and the entities born in play: a thrown barrel, stone, trunk, star, crate or jar
+    /// that lands on a hole or an exit floor is destroyed one tick later, as the binary's pick phase does at <c>0x800387AC</c>); the call sites are the player branch and the hook of f6a in <see cref="Update"/>,
+    /// after <see cref="UpdateGroundSlope"/>. Every other entity's <see cref="CombinedVramFlagsOR"/>/<see cref="CombinedVramFlagsAND"/> stay the C# default 0.
     ///
     /// Same no-op gates as <see cref="UpdateGroundSlope"/> (no <see cref="EntityFlags.Gravity"/>, no
     /// installed <see cref="CellsCollisionField"/>) - see that method's own doc for why.
