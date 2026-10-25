@@ -1,0 +1,5 @@
+# mutation B-old-S5
+# file Alundra.Tests/Hero/WeaponSpawnSeamTests.cs
+# filter FullyQualifiedName~WeaponSpawnSeamTests
+Échoué Alundra.Tests.Hero.WeaponSpawnSeamTests.S5_TheProductionSetPassesTheInvariant_TheArrowFailsOnE17InARegistryWithoutIt_AndPassesInTheProductionRegistry
+Échoué!  - échec :     1, réussite :     6, ignorée(s) :     0, total :     7, durée : 10 s - Alundra.Tests.dll (net9.0)

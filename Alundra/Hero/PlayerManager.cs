@@ -1375,7 +1375,7 @@ public static class PlayerManager
     }
 
     /// <summary>E20.b B4 seam of the spawn call <c>0x80039F58</c> of <c>UpdateWeaponStepProgression</c> (<c>0x8002F818</c>): the projectile of a bow or a wand, at the hero's X and Y, at his Z plus the
-    /// height <c>ptr[3]</c> of the record. Counted and journaled for the tests; since E20.f3a it calls the apparition of an entity by sprite index for the types of <see cref="WiredWeaponTypes"/> (the types 27 to 29, the three waves of the sword, since E20.f3c; the type 7, the charged arrow, since E20.f4; the types 3 and 4, the normal arrows, since E20.f5; the types 11, 12, 14 and 15, the balls, come with E20.f6). The direction is the one of the tick (<see cref="EntityScriptProxy.BoxDirection"/>), read before the tick writes anything, as the binary reads <c>+0x98</c>.</summary>
+    /// height <c>ptr[3]</c> of the record. Counted and journaled for the tests; since E20.f3a it calls the apparition of an entity by sprite index for the types of <see cref="WiredWeaponTypes"/> (the types 27 to 29, the three waves of the sword, since E20.f3c; the type 7, the charged arrow, since E20.f4; the types 3 and 4, the normal arrows, since E20.f5; the types 11, 12, 14 and 15, the fire and ice balls, since E20.f6b). The direction is the one of the tick (<see cref="EntityScriptProxy.BoxDirection"/>), read before the tick writes anything, as the binary reads <c>+0x98</c>.</summary>
     internal static void SpawnWeaponProjectile(EntityScriptProxy player, uint recordPointer, IScriptHost? host)
     {
         WeaponSpawnCallCountForTests++;
@@ -1385,7 +1385,7 @@ public static class PlayerManager
         WeaponSpawnCallsForTests?.Add(call);
 
         // E20.e0a3b: the place of the call of the binary (0x8002F818, inside MovePlayer) where the real shot calls the interface of the sprite index. E20.f3a (D-F3-3): the test hook, when posed, REPLACES the production call (never
-        // two apparitions); otherwise a type of the wired set is born through the interface when the host is a world. Only the types of the production set are born in production (the types 27, 28 and 29, the three waves of the sword, since E20.f3c, the type 7, the charged arrow of William, since E20.f4, and the types 3 and 4, the normal arrows, since E20.f5; E20.f6 adds the types 11, 12, 14 and 15, one type after the other). The return is ignored, as the
+        // two apparitions); otherwise a type of the wired set is born through the interface when the host is a world. Only the types of the production set are born in production (the types 27, 28 and 29, the three waves of the sword, since E20.f3c, the type 7, the charged arrow of William, since E20.f4, the types 3 and 4, the normal arrows, since E20.f5, and the types 11, 12, 14 and 15, the fire and ice balls, since E20.f6b). The return is ignored, as the
         // binary does (0x8002F818 drops it): a full table of slots loses the shot silently and the caller clears the pointer all the same.
         if (WeaponSpawnBirthHookForTests is { } hook)
         {
@@ -1401,9 +1401,9 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.f3a (docs/plan-e20-heros.md section 1.19.1, D-F3-3): the sprite types of the global page whose shot is wired to <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, one type after the other and never before its
-    /// handlers exist (the invariant of <see cref="UnhandledWeaponSpriteCodes"/>, D-F3-4). {27, 28, 29} since E20.f3c (the wave of the sword, C61 and E10), 7 since E20.f4 (the charged arrow of William, C94 and E1), {3, 4} since E20.f5 (the normal arrows, E17); E20.f6 wires the others, one type after the other.
+    /// handlers exist (the invariant of <see cref="UnhandledWeaponSpriteCodes"/>, D-F3-4). {27, 28, 29} since E20.f3c (the wave of the sword, C61 and E10), 7 since E20.f4 (the charged arrow of William, C94 and E1), {3, 4} since E20.f5 (the normal arrows, E17), {11, 12, 14, 15} since E20.f6b (the fire and ice balls, C60 and E9); the types 10 and 13 have no weapon sheet.
     /// </summary>
-    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredWeaponTypes = new System.Collections.Generic.HashSet<int> { 3, 4, 7, 27, 28, 29 };
+    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredWeaponTypes = new System.Collections.Generic.HashSet<int> { 3, 4, 7, 11, 12, 14, 15, 27, 28, 29 };
 
     /// <summary>E20.f3a test seam, per thread: when set, replaces <see cref="ProductionWiredWeaponTypes"/> (a test wires a type, or none, to prove the seam).</summary>
     [ThreadStatic]
