@@ -1367,7 +1367,7 @@ apparition des tirs (E20.e0, E20.f) ; herbe coupée (E20.e) ; le second appelant
 - **Budget** : un `executor`, au plus deux tentatives au même niveau ; un verifier frais ; au plus cinq passes de correction.
 - **Retour arrière** : `git revert` des commits d'E20.b.
 
-#### 1.4.1 E20.b2 — L'Épée légendaire (objet 8) et l'opcode `0xC2` ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-45 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
+#### 1.4.1 E20.b2 — L'Épée légendaire (objet 8) et l'opcode `0xC2` ✅ (détaillée le 2026-10-25 ; thème 2 ; D-E20-45 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; **faite et CONFIRMED le 2026-10-25**, `a871ccb5` à `9b37bc9a`, ADR-0095 ; recette de l'auteur à faire)
 
 **Provenance.** Lecture seule du 2026-10-24 (`report-main.md` partie B et le critique frais `critic-main.md`, CONFIRMÉ avec des ajouts repris ici,
 dans le scratchpad de la session principale `scratchpad/t2-proj/`, à verser par T0 à `docs/plan-e20-annexe/e20-b2-disc/`). D-E20-45 disait l'objet
@@ -1421,6 +1421,14 @@ contre une cible à réponse ×1,0. Aujourd'hui : la sélection, le coup et les 
   deux blocs, le compteur à 20, le drapeau 1787 éteint ; Alundra doit marcher vers le nord, une sauvegarde ne portant pas la direction).
 - **D-B2-4** — La perte de la charge et de la vague quand l'objet 8 est possédé, même avec Elnard, comme l'original.
 - **D-B2-5** — Les objets des cartes de développement (11, 0) restent tels quels.
+- **D-B2-7** (2026-10-25, résultat de T0, corrections de faits) — (1) les `XPos`/`YPos`/`Height` des enregistrements sont en demi-cases : les
+  blocs 28 et 29 sont aux cases (25, 16) et (26, 16), niveau 7 (le plan disait (50, 32) et (52, 32)), l'arrivée de `legende-m7` en (25, 17, 7),
+  l'enregistrement 31 en (2, 4, 0) ; (2) la scène part quand Alundra **marche** vers le nord contre le bloc (F[7] au tick 3 de l'appui sur
+  Haut), sans Carré ; face au nord sans marcher, rien ; (3) « la scène se rejoue » ne s'observe pas dans une même visite (`B[10]` reste sur
+  son `End`, rien n'efface le drapeau `[0, 128]`) : la garde au compteur 19 observe ce qui la fait rejouer à l'entrée suivante sur la carte (le
+  drapeau 1787 éteint, l'objet 8 à 0, le dialogue 129 joué, la branche du don non jouée) ; (4) l'enregistrement 31 est l'issue (c1) : au
+  binaire, son index C non nul (133) lance le script de carte, pas le gestionnaire natif du ramassage ; la garde « au compteur 19, toucher
+  l'enregistrement 31 ne donne pas l'objet 8 » est prouvée par cette lecture (aucun mutant de la DLL ne la tue seule).
 - **D-B2-6** (2026-10-25, leçon de D-E0D-12) — La liste prédite de T0 (d) comprend le test de liste des préréglages
   (`Alundra.Tests/SaveGames/TestSavesTests.cs`, `The…Presets_AreListed_InTheOrderOfTheTable`), changé mécaniquement par l'ajout de
   `legende-m14` et `legende-m7` (son attendu gagne ces deux noms, son nom suit le compte) ; aucun autre test attendu.
@@ -1433,7 +1441,9 @@ précisée).
 **Hors périmètre.** E18 (la mort du héros, la reprise, le compteur) ; `0xB9` (le CD) ; le coffre (E20.e0d) ; le moteur.
 
 **Tâches.**
-- ⏳ **T0 — Versement, oracle, sondes** (commit de docs). (a) Verser la lecture (`scratchpad/t2-proj/`, partie B, sans les copies d'annexes) à
+- ✅ **T0 — Versement, oracle, sondes** (commit de docs ; fait le 2026-10-25, `a871ccb5` : clés K1 et K2 « legend » égales au modèle, 51 de
+  dégâts ; `Result` mesuré 0 à pc 1510 au HEAD, donc le cas rouge de T3 est le compteur 20 et la garde le compteur 19 ; enregistrement 31 :
+  (c1) ; corrections de faits D-B2-7). (a) Verser la lecture (`scratchpad/t2-proj/`, partie B, sans les copies d'annexes) à
   `docs/plan-e20-annexe/e20-b2-disc/` ; (b) les inventaires « legend » et « legend_holy » ajoutés aux clés de l'oracle c1b (K1, K2), rejoués
   depuis une copie ; (c) sondes de la DLL (jetables, versées en `.txt`) : la valeur de `Result` à pc 1508 et 1510 de `B[10]` au HEAD, la scène
   jouée avec le compteur à 19 et à 20 ; le ramassage de l'enregistrement 31 de la carte 7 : peut-on le toucher et le ramasser, dans la DLL, et au
@@ -1443,14 +1453,19 @@ précisée).
   tranche : le ramassage, E20.e0c) ; (c4) le binaire n'est pas mesurable : l'écart possible se consigne (O-B2-1), le comportement de la DLL
   s'épingle par un test nommé d'après lui, et le but se lit « l'obtention par la scène » ; (d) la liste prédite des tests déplacés (le test de
   liste des préréglages seul, D-B2-6).
-- ⏳ **T1 — Tests de sélection, d'équipement et de dégâts** (des gardes vertes si le code est déjà juste, nommées, chacune tuée par un mutant
+- ✅ **T1 — Tests de sélection, d'équipement et de dégâts** (fait le 2026-10-25, `741d423b` : toutes des gardes vertes, le code était juste ;
+  Beannoïde réel de la 14 : objet 8 100 → 49 au sol et en l'air, épée de base 100 → 98 ; `HitArena` gagne `EnableNativeHandlers()`) (des gardes vertes si le code est déjà juste, nommées, chacune tuée par un mutant
   de T3 ; rouges d'abord s'il y a un écart) : possédant {1, 4, 8}, le créneau 1 rend 8 ; {1, 8} rend 8 ; l'enregistrement d'équipement [1] = l'objet
   8 et `[(6, 50)]` ; K2 « legend » (49 et la mort) ; un Beannoïde réel touché par l'objet 8 (51) et par l'épée de base (2) ; l'air `0x14` aussi ;
   un appui tenu avec l'objet 8 ne compte pas de charge et ne fait ni aura ni vague.
-- ⏳ **T2 — `0xC2`, tests d'abord** : `0xC2 [20]` avec le compteur à 19, 20, 21, `Result` **préchargé à la valeur opposée** à l'attendu (1 pour 19,
+- ✅ **T2 — `0xC2`, tests d'abord** (fait le 2026-10-25, `5e67722d`, `6df3f265` : trois tests rouges avant le `case`, la comparaison non
+  signée lue au binaire ; `legende-m14` (14, (8, 6, 0)) et `legende-m7` (7, (25, 17, 7), compteur 20) ; le test de liste des préréglages
+  dérivé, le seul déplacé, comme prédit) : `0xC2 [20]` avec le compteur à 19, 20, 21, `Result` **préchargé à la valeur opposée** à l'attendu (1 pour 19,
   0 pour 20 et 21), donc rouges avant le `case` quelle que soit la valeur périmée mesurée en T0 (c) ; attendus `Result` 0, 1, 1 ; un octet de
   paramètre (le pc avance de 2) ; puis le `case` ; le champ `DeathRetryCount` des préréglages et les deux préréglages avec leurs tables.
-- ⏳ **T3 — L'arc de la carte 7 et les mutants** : depuis `legende-m7`, face au nord sous le bloc : avec le compteur à 20, la scène donne l'objet 8
+- ✅ **T3 — L'arc de la carte 7 et les mutants** (fait le 2026-10-25, `9b37bc9a` : le compteur 20 rouge avant T2 (rejoué sur le code d'avant)
+  et vert après, la garde 19 tuée par « le drapeau 1787 posé au refus » ; 12 mutants réels tous tués ; Release et Debug 6 471 verts, `cmp`
+  égal) : depuis `legende-m7`, face au nord sous le bloc : avec le compteur à 20, la scène donne l'objet 8
   une fois, pose le drapeau 1787 et ne se rejoue pas ; à 19, rien n'est donné et la scène se rejoue. **Rouge avant T2, le cas opposé à la valeur
   de `Result` que T0 (c) a mesurée à pc 1510** (si elle vaut 0, le cas 20 ; si 1, le cas 19) ; l'autre cas est une garde nommée, verte avant et
   après, tuée par le mutant que la mesure désigne : si `Result` mesuré vaut 1 (la garde est le cas 20), « le seuil `>=` en `>` » ; s'il vaut 0
@@ -1459,7 +1474,8 @@ précisée).
   (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ; `cmp` ; `check_names.py --rules` ; au moins 8 mutants réels,
   tous tués (le seuil `>=` en `>` ; deux octets de paramètre ; `Result` non écrit ; le rang de l'objet 8 à 3 ; la fiche 38 ignorée ; le bit
   d'équipement ignoré ; l'enregistrement 11 chargeable ; le drapeau 1787 posé au refus).
-- ⏳ **T4 — ADR, verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T4 — ADR, verifiers frais** (la session principale) : un sur la tranche, un sur les épingles. **Fait** le 2026-10-25 (`wf_c2bb103d-788`) :
+  les deux CONFIRMED (la suite rejouée, six mutations de plus tuées ; la liste prédite égale à la liste mesurée) ; ADR-0095 (`21ed09ad`).
 
 **Acceptation.** Les sorties de T0 (b) égales au modèle de l'oracle ; les trois tests de T2 rouges avant le `case` et verts après ; dans l'arc de
 T3, le cas opposé à la mesure de T0 (c) rouge avant et vert après, l'autre une garde verte tuée par le mutant que la mesure désigne (`>=` en `>`
