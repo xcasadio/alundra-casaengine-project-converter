@@ -110,3 +110,43 @@ Release, copy neutralised (`skipcopy.targets`), `--blame-hang-timeout 60s`, the 
 4. (b3) the carried object and the pending shot: the facts of `C-carried` are asserted on `CarryRig` (the code -1, the old facing, the link kept; with the program of the object: released) rather than compared column by column to `C-carried.json`; the pending-shot pointer is poked (its reset is not observable in the oracle, T0). The charge is the real `A5-charge`.
 5. `A5-charge-nocontact` (the control) is compared to tick 79 only: the pad of a multi-tick frame is the one of its first tick, so the release of the button at tick 80 would be seen a tick late at 2 and 3 ticks per frame, which has nothing to do with the hurt.
 6. The animation table of the hero montage (`HeroAttackClock.Table`) gains `0x31` and `0x1C` (the lengths of the oracle) for the shore trace.
+
+# T3 and T4 (2026-10-25, HEAD of start of the passage `596b77b6`)
+
+## T3 - the blink (`Alundra/Maps/Loop/FrameSyncPasses.cs`: `MarkBlink`, `PublishBlink`; `Alundra/Maps/WorldProxy.cs`: the lists pass and `PublishEntityFrame`; tests `Alundra.Tests/Maps/WorldProxyBlinkTests.cs`)
+
+- Code (`e9f1f787`): the lists pass (`RefreshUpdateProxiesAndCollidables`, run every tick after the counters pass, also with the gate closed) records on each proxy `BlinkHides` = active status (2 or 3) and `(DamagedTickCounter & 3) == 3`; `PublishEntityFrame` then, over every entity with a proxy (not only those that took part in the frame), calls `PublishBlink` after the animation sync: it hides a visible entity marked, remembering `HiddenByBlink`, and shows again only an entity it hid itself and that is still active. What another writer hid (a chest's object held Loaded, `FlagToDestroy` by `SyncAnimation`) is never shown. The mark of the LAST tick is the one published (the binary draws the list of its last tick). Two members of `EntityScriptProxy` (`BlinkHides`, `HiddenByBlink`); no change to the engine.
+- Tests first (`56960695`, blink stubbed): **7 of 14 cases red** (`t3/before-code.txt`): `K1` x 3 cadences (A1: the hero's `IsVisible` at the last tick of each frame against the `visible` column of the oracle, 30 hidden ticks of 120 from the hurt tick 18), `K2` x 3 (a dropped Gildas, 600 ticks of life: from the mark tick M, hidden when `(t - M) % 4 == 0`, 30 hidden at 1 tick per frame; at 2 ticks per frame the frames are shifted by one tick after the drop so that a frame ends on a hidden tick), `K3_TheBlinkHidesAnActiveEntity_AndShowsItAgain...`. The 7 green ones are the witnesses (`K3_AnObjectHeldLoadedByAChest...`, `K3_AFlaggedEntity...`, `K3_AnEntityWithNoCounterToHideIt...` x 5). All 14 green after the code. One witness was added after the code (`K3_AnActiveEntityHiddenByAnotherWriter_IsNeverShownByTheBlink`, 15 of 15), see the mutants.
+- Mutants run on the witnesses (real, by script, file restored by git; **not** the T5 list): restore without the `IsActive` test: 1 case fails (`K3_AFlaggedEntity...`); restore without the `HiddenByBlink` test: survived the first 14 cases (the `IsActive` guard covers the Loaded object), killed by the witness added afterwards (`K3_AnActiveEntityHiddenByAnotherWriter...`); `(& 3) != 3`: 12 of 14 fail (the "no counter" witness among them); `(& 3) == 0`: 10 of 14 fail.
+- No test moved by the blink (as T0 (d) predicted): the suites below are green.
+
+## T4 - the hazard cells and the presets
+
+- (h1) `Alundra.Tests/Hero/HeroHazardCellTests.cs` (`161dc27b`): the hero arrives by a portal record on the real cells (map 36 tile (12, 44, 1) cost 1; map 0 tiles (4, 53, 0) cost 2 and (10, 53, 0) cost 3, from T0 (e)), 300 ticks at one tick per frame. The hurts fall at T, T + 120, T + 240 (T = tick 2), the life goes 10 - cost x n (floor 0), the state is `0x31`, the facing is `(facing + 16) & 31` for the four facings, the recoil of the hero hurt at rest is the A1 sum (2 168 832 raw eastward), the armours 0x12, 0x13, 0x14 (silver worn) change nothing (10 -> 7 -> 4 on the cost-3 cell), the boots 0x19 (level 0), 0x1A (1) and 0x1B (2) are hurt (3 hurts, 10 -> 4 on the cost-2 cell) and the boots 0x1C (level 3) are spared (300 ticks: life 10, `+0x1CC` 0, never the animation 0x31). 12 cases. **Green as soon as written**: the cell branch was wired in T2 (deviation 1 of T2). Four real mutants of `HeroInjury.Enter` fail it: `SparingBootsLevel = 2` (1 case: the level-2 boots), cost `<< 1` instead of `>> 7` (7 cases), no `+0x1CC` test (7 cases), facing not turned (7 cases).
+- (h2) `blessure-m15` (map 15, tile (7, 33, 7)) and `blessure-m14` (map 14, tile (5, 29, 5)), `Alundra/SaveGames/TestSaves.cs` (`fc58a69b`, test change `161dc27b`): the new game's kit (life 10/10, the basic sword, the cloth armour, items 1, 17, 25), plus the armours 0x12, 0x13, 0x14, the boots 0x1C, the bracelet 0x35 and the charm 0x36 in the bag, no flag, no Circle item; `docs/test-saves.md` gets the recipe. Test change: the list test is renamed `TheTwentySixPresets_AreListed_InTheOrderOfTheTable` (26 names) and the content case `TheHurtPresets_...` (2 cases) is written by hand (raw counters 37, 39, 41, 57, 107, 109). **10 cases red before the presets** (`t4/before-code.txt`: the list test, the content test x 2, and the cases derived from the name list: `TwoConstructions_AreEqual_ByteForByte` x 2, `TheSlotOfAPreset_IsTestDash...` x 2, `ABuiltPreset_IsAcceptedByTheRealRules` x 2, `TheOtherPresets_LeaveTheDeathCounterAtZero`), all green after (158 cases of `TestSaves*`).
+- The cells chosen by T0 (e) are used as T0 gave them (the orcs and the Beannoid positions are not re-measured here: the preset tests check the arrival tile and the bag).
+
+### Moved tests against the prediction of T0 (d)
+
+None outside the prediction. T3 moves no test (T0 (d): 0 for the blink). T4's red cases are the ones **derived from the preset list** (`TestSavesTests`: the list test, renamed, and the cases whose data is the list of names), which T0 (d) predicted mechanically ("the presets list test changes by `blessure-m15` and `blessure-m14`"; the derived cases are its siblings). No case outside `TestSavesTests` is red in the six runs.
+
+### Suite (the six runs, `t4/suite-summary.txt`)
+
+Release (copy neutralised by `skipcopy.targets`), then Debug last, `--blame-hang-timeout 60s`, the partitions of `inventory/run.sh`. That script carries `--no-build`: the first Debug run, made on a stale test assembly (1 557 cases in p1), was thrown away and redone after `dotnet build -c Debug`.
+
+| partition | Release | Debug |
+|---|---|---|
+| p1 | 1 668 green | 1 668 green |
+| p2 | 3 085 green | 3 085 green |
+| p3 | 1 912 green | 1 912 green |
+| total | **6 665, 0 failure** | **6 665, 0 failure** |
+
+(6 628 at the end of T2; +14 `WorldProxyBlinkTests`, +12 `HeroHazardCellTests`, +2 `blessure-*` content cases, +9 cases derived from the list. The 15th blink case was added after the runs and ran green with its class: 15 of 15, so 6 666 in all.) The suites rewrote the EOL of the four `docs/hero-trace-389-*.txt` (`git diff --ignore-cr-at-eol` empty), restored by `git checkout`. `cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: identical (the Debug build deployed it). `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 warning, a nested type of `TextBoxGpu`, not ours). The engine, the converter and the data have no diff of ours (the pointers of the submodules are unchanged; the author's own modifications inside them, `CasaEngine.Launcher/Program.cs` and `MGUI` in the engine and an untracked `AlundraTools/log.txt` in the analyser, are not touched).
+
+### Deviations from the plan, T3 and T4
+
+1. (h1) cannot be red before: the cells are wired since T2 (T2 deviation 1). The tests are shown to bite by four real mutants (above).
+2. `blessure-*`: the game wears the best armour owned (`FillEquipmentRecords`, the loop from the highest item), so with the four armours in the bag an orc costs 1 heart and the recipe's "4, 3, 2, 1 hearts according to the armour" of the plan cannot be walked from these bags. The presets follow D-C2B-12 to the letter (the four armours in the bag); to settle with the author (a bag per armour under test, or one preset per armour).
+3. The K2 case at two ticks per frame shifts its frames by one tick after the drop (the mark falls an odd number of ticks after the drop, so no even frame would otherwise end on a hidden tick and the case would be green without the blink).
+4. `PublishBlink` runs for every entity with a proxy, not only for those marked `TookPartInFrame` (a dropped object or a target of `0x86` may not take part in the frame).
+5. Not done here: T5 (the 16 mutants, the ADR) and T6.

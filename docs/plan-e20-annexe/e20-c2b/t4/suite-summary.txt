@@ -1,0 +1,6 @@
+Release p1: Réussi!  - échec :     0, réussite :  1668, ignorée(s) :     0, total :  1668, durée : 7 m 1 s ; red lines: 0
+Release p2: Réussi!  - échec :     0, réussite :  3085, ignorée(s) :     0, total :  3085, durée : 5 m 4 s ; red lines: 0
+Release p3: Réussi!  - échec :     0, réussite :  1912, ignorée(s) :     0, total :  1912, durée : 59 s ; red lines: 0
+Debug p1: Réussi!  - échec :     0, réussite :  1668, ignorée(s) :     0, total :  1668, durée : 6 m 52 s ; red lines: 0
+Debug p2: Réussi!  - échec :     0, réussite :  3085, ignorée(s) :     0, total :  3085, durée : 5 m 10 s ; red lines: 0
+Debug p3: Réussi!  - échec :     0, réussite :  1912, ignorée(s) :     0, total :  1912, durée : 59 s ; red lines: 0

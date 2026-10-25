@@ -1,4 +1,4 @@
-e2984849da68d37eb92cbdc60f3734c033e71258 *README.md
+ad449ac7fb6cbf39d41d55e1a23e47e1a10c4b67 *README.md
 b6b8755e4d2e2a194766a664bcd16affac23ecde *inventory/blinkonly-p1.log
 e200c61fdd4bc1958e0f7a022009fd7abc1258d5 *inventory/blinkonly-p2.log
 4c6547f40fedb0f7d82d017d9cec76fd52a4fb2e *inventory/run.sh
@@ -30,4 +30,10 @@ cd421de4f392b2c885b831b4671f5e53acf54b74 *replay/run_c2.log
 8ae0aa46fae47c28a83569ca0560f4d6f544a6fc *replay/w7-copy-md5.txt
 8ae0aa46fae47c28a83569ca0560f4d6f544a6fc *replay/w7-repo-md5.txt
 9638f7f6ff27fa865c2770e5fd2fba1508ca473e *replay/w7.log
-2c8fd4172df60c203a64535f856f108ad7a0f1dc *results.md
+e4151f4a17180e8f3aaaf32f5d25d9b47e73d8d7 *results.md
+4101d849583c10ef90e45cdd5c85426d854f63bf *t1/before-stub.txt
+272212b9687c2d5e1def64a3699c7d78fcd321c4 *t1/t2-before-code.txt
+488381f1736e011ae83c07bd1f93f9f96e89d45f *t2/moved-observed-after-wiring.red
+89b8d1598c40dfadcc6d947de71e4e063ff0536e *t3/before-code.txt
+74c60426cf00a96e7ef989575ba34aea2fa8be4f *t4/before-code.txt
+a6cc4f19070346c8cba1928e9b2d32cd029f923e *t4/suite-summary.txt
