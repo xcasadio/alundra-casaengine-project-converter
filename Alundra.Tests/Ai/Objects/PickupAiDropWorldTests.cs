@@ -405,13 +405,13 @@ public sealed class PickupAiDropWorldTests : IDisposable
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // (w7) a chest (+0x274 == 2) is a named stub: C255 and A255 are registered for its type and do nothing; the same object made "dropped" is taken. (The placed object, +0x274 == 0, was a stub in phase B: since phase D it is taken, PickupAiPlacedTests and PickupAiPlacedWorldTests.)
+    // (w7) the object of a chest (+0x274 == 2) is not a dropped one (E20.e0d: its own branch of C255, the countdown of the rise; A255 and C255 do nothing else for it); the same object made "dropped" is taken. (The placed object, +0x274 == 0, was a stub in phase B: since phase D it is taken, PickupAiPlacedTests and PickupAiPlacedWorldTests.)
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     [Theory]
     [InlineData(2u, 1)]
     [InlineData(2u, 3)]
-    public void W7_AChest_DoesNothing_WhileTheSameObjectMadeDroppedIsTaken(uint kind, int ticksPerFrame)
+    public void W7_TheObjectOfAChest_OnlyCountsDownItsRise_WhileTheSameObjectMadeDroppedIsTaken(uint kind, int ticksPerFrame)
     {
         using var run = new PickupDropRun($"w7-{kind}-{ticksPerFrame}", "Debug zone", "Debug zone-11", 54, 30, -1, -1, clearTheWorld: false);
         var item = run.Arc.EntityByRecord(22);
@@ -419,6 +419,7 @@ public sealed class PickupAiDropWorldTests : IDisposable
         Assert.Equal((71, 0, 255), (item!.SpriteType, item.ProgramIndexes[ScriptHelper.ProgramCTick] & 0x7f, item.SpriteProgramIndexes[ScriptHelper.ProgramCTick])); // the Small Potion of the Debug zone: native C255.
         Assert.Equal(0u, PickupAi.ReadWord274(item));
         PickupAi.WriteWord274(item, kind);
+        item.DelayOrAngleOrEntityId = 100; // E20.e0d: the countdown of the 64 ticks of the rise of a chest's object, long enough not to end in the 8 ticks below.
         item.Flags &= ~EntityFlags.Gravity;
         Put(run.Hero, item.PosX + item.ModX - run.Hero.ModX, item.PosY + item.ModY - run.Hero.ModY, item.PosZ + item.ModZ - run.Hero.ModZ);
         var money = GameState.Instance.PlayerStats.Money;
@@ -427,8 +428,8 @@ public sealed class PickupAiDropWorldTests : IDisposable
 
         run.Run(8, ticksPerFrame);
 
-        Assert.True(run.Runs(ScriptHelper.ProgramCTick) > 0, "C255 reached the stub");
-        Assert.Equal(before, (item.ItemState, PickupAi.ReadWord284(item), item.DelayOrAngleOrEntityId, item.Status, run.Sounds.Requests.Count));
+        Assert.True(run.Runs(ScriptHelper.ProgramCTick) > 0, "C255 reached the branch of the chest");
+        Assert.Equal((before.Item1, before.Item2, 100 - 8, before.Item4, before.Item5), (item.ItemState, PickupAi.ReadWord284(item), item.DelayOrAngleOrEntityId, item.Status, run.Sounds.Requests.Count)); // one tick of countdown per tick, nothing else (it was: nothing at all).
         Assert.Equal((money, potions), (GameState.Instance.PlayerStats.Money, PlayerManager.GetNumberOfItem(GameState.Instance, 0x29)));
 
         // The same object, made a dropped one that waits for the contact: taken (the Small Potion enters the inventory, or is drunk when the inventory is full).

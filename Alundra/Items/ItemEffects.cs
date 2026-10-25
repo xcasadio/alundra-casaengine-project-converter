@@ -29,6 +29,10 @@ namespace Alundra.Items;
 internal static class ItemEffects
 {
     private const int GainedEtcIndex = 0x45;
+    private const int ChestPrefixEtcIndex = 0x4C;
+    private const int ChestGainedEtcIndex = 0x4D;
+    private const int ChestTooManyEtcIndex = 0x4E;
+    private const int ChestFullStopEtcIndex = 0x4F;
     private const int FalconTempCap = 50;
     private const uint BeakFlag = 1450;
 
@@ -81,6 +85,48 @@ internal static class ItemEffects
                 }
 
                 break;
+            default:
+                ApplyItem(world, state, hero, item);
+                break;
+        }
+
+        return tables != null && (uint)item < ItemTables.DropRecordCount && tables.DropField1[item] != 0 ? 0 : 1;
+    }
+
+    /// <summary>
+    /// E20.e0d (docs/plan-e20-heros.md section 1.26.2): <c>CanTake</c> (<c>0x80033D34</c>), what F255 of the chest asks before the object rises: the object 0 can not be taken; the herb <c>0x24</c>, the large potion <c>0x25</c>, the magic extract <c>0x26</c>, the brew <c>0x27</c> and
+    /// the small potion <c>0x29</c> can while the stock is below the cap of the table of the objects (<see cref="ItemTables.DropStockCap"/>: 9, 1, 1, 1, 1); every other object can, with no test of the stock.
+    /// </summary>
+    public static bool CanTake(GameState state, ItemTables? tables, int item)
+    {
+        if (item == 0)
+        {
+            return false;
+        }
+
+        if (item is 0x24 or 0x25 or 0x26 or 0x27 or 0x29)
+        {
+            return tables != null && PlayerManager.GetNumberOfItem(state, item) < tables.DropStockCap[item];
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// E20.e0d: <c>ApplyItem</c> (<c>0x80033DBC</c>, one caller: C255 of the object of a chest, <c>0x8007C358</c>): the table <c>0x8002308C</c> - the money <c>0x45</c> to <c>0x48</c>, the beak <c>0x4F</c>, the objects <c>0x50</c> to <c>0x53</c> (the seed, the two crystals, the life vessel), the hearts
+    /// <c>0x54</c> to <c>0x56</c> - and every other object added to the inventory by <see cref="PlayerManager.AddOneItemIfUnlocked"/>. It differs from <see cref="GiveItem"/> in one thing: it has no rule "the inventory first" for the five stacked objects - a chest never hands over what
+    /// <see cref="CanTake"/> refused, so the herb is added and never drunk. <see cref="GiveItem"/> shares this body for all the other objects.
+    /// </summary>
+    public static void ApplyItem(IEntityWorldContext world, GameState state, EntityScriptProxy hero, int item)
+    {
+        if (item == 0)
+        {
+            return;
+        }
+
+        var tables = world.ItemTables;
+        switch (item)
+        {
             case 0x45:
                 PlayerManager.AddMoney(state, 1);
                 break;
@@ -98,7 +144,7 @@ internal static class ItemEffects
                 state.AddFlag(BeakFlag, 1u << (int)(BeakFlag & 31));
                 break;
             case 0x50:
-                break; // NAMED STUB: 0x8003382C, not read (nothing places or drops the object).
+                break; // NAMED STUB until E20.e0d phase C: 0x8003382C.
             case 0x51:
                 HeroHeals.MagicDrop(world, state, hero);
                 break;
@@ -125,8 +171,26 @@ internal static class ItemEffects
 
                 break;
         }
+    }
 
-        return tables != null && (uint)item < ItemTables.DropRecordCount && tables.DropField1[item] != 0 ? 0 : 1;
+    /// <summary>
+    /// E20.e0d (D-E0D-6): the text of the box a chest opens (<c>0x8007C210-0x8007C31C</c>), in the binary's order. An object the bag can take: ETC <c>0x4C</c> (empty), the name of the object (ETC <c>0x200 + item</c>) and ETC <c>0x4D</c> ("gained!"); an object it can not take:
+    /// ETC <c>0x4E</c> ("Too many things to carry, to keep"), the name and ETC <c>0x4F</c> (the full stop). The strings of the resource keep the space that follows "gained" no more than the space that follows "to keep" - the Yarn compiler drops the one at the edge of a line (T0 (h) of
+    /// E20.e0c) - so each is put back between the two parts. Empty when the ETC asset is not loaded (degraded: no message).
+    /// </summary>
+    public static string ComposeChestMessage(int item, bool canTake)
+    {
+        if (!EtcStringTable.TryResolveItemName(EngineEnvironment.ProjectPath, item, out var name))
+        {
+            return string.Empty;
+        }
+
+        if (canTake)
+        {
+            return EtcStringTable.TryResolveText(ChestPrefixEtcIndex, out var prefix) && EtcStringTable.TryResolveText(ChestGainedEtcIndex, out var gained) ? prefix + name + " " + gained : string.Empty;
+        }
+
+        return EtcStringTable.TryResolveText(ChestTooManyEtcIndex, out var tooMany) && EtcStringTable.TryResolveText(ChestFullStopEtcIndex, out var fullStop) ? tooMany.TrimEnd(' ') + " " + name + fullStop : string.Empty;
     }
 
     /// <summary>

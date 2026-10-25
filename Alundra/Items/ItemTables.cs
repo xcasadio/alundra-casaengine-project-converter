@@ -56,16 +56,18 @@ public sealed class ItemTables
 
     // The republished drop record holds four bytes (Field1, SoundSfxIndex, Field3, Field4): the octets 4 to 7 of the
     // row of the binary's object table. Field1 (column 0) and SoundSfxIndex (column 1) are read since E20.e0c (the
-    // drop and the pickup of the objects); Field3 (column 2) since the New Game's unlock loop.
+    // drop and the pickup of the objects); Field3 (column 2) since the New Game's unlock loop; Field4 (column 3, the stock cap) since E20.e0d (the chest).
     private const int DropColumnCount = 4;
     private const int DropField1Column = 0;
     private const int DropSoundColumn = 1;
     private const int DropField3Column = 2;
+    private const int DropStockCapColumn = 3;
 
     private readonly ushort[] _itemsProperties = new ushort[ItemRowCount * ItemColumnCount];
     private readonly byte[] _dropField1 = new byte[DropRecordCount];
     private readonly byte[] _dropSoundSfxIndex = new byte[DropRecordCount];
     private readonly byte[] _dropField3 = new byte[DropRecordCount];
+    private readonly byte[] _dropStockCap = new byte[DropRecordCount];
     private readonly Dictionary<int, Guid> _iconAssetIdByItemId = new();
     private Guid? _inventoryPortraitAssetId;
 
@@ -100,6 +102,9 @@ public sealed class ItemTables
                     case DropField3Column:
                         _dropField3[row] = (byte)value;
                         break;
+                    case DropStockCapColumn:
+                        _dropStockCap[row] = (byte)value;
+                        break;
                 }
             },
             () =>
@@ -107,6 +112,7 @@ public sealed class ItemTables
                 Array.Clear(_dropField1);
                 Array.Clear(_dropSoundSfxIndex);
                 Array.Clear(_dropField3);
+                Array.Clear(_dropStockCap);
             });
 
         LoadIconIndex(Path.Combine(dataPath, IconIndexFileName));
@@ -167,6 +173,12 @@ public sealed class ItemTables
     /// pickup then freezes the world and plays the fanfare). Zero where degraded.
     /// </summary>
     public IReadOnlyList<byte> DropSoundSfxIndex => _dropSoundSfxIndex;
+
+    /// <summary>
+    /// E20.e0d (docs/plan-e20-heros.md section 1.26.2, D-E0D-8): column 3 of <c>g_itemDropProperties</c> - the octet 7 of the row of the object table: the maximum count of the stacked objects that <c>CanTake</c> (<c>0x80033D34</c>) compares the stock with, for
+    /// the herb <c>0x24</c> (9), the large potion <c>0x25</c>, the magic extract <c>0x26</c>, the brew <c>0x27</c> and the small potion <c>0x29</c> (1 each); other rows hold values that no code reads. Zero where degraded.
+    /// </summary>
+    public IReadOnlyList<byte> DropStockCap => _dropStockCap;
 
     /// <summary><c>g_itemDropProperties[itemId].Field3</c> for items 0..97: its high bit unlocks the item at
     /// the start of a New Game, its low seven bits mean something else to the game. Zero where degraded.</summary>

@@ -517,11 +517,11 @@ public sealed class PickupAiPlacedTests : IDisposable
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // (p8) the chest: no key (F, 255), A255 and C255 not registered for the type 30, the branch +0x274 == 2 is a named stub.
+    // (p8) the chest: no key (F, 255) in the pickup's registrations (it is ChestAi's), A255 registered for the type 30 (E20.e0d), C255 not; the branch +0x274 == 2 is the chest's object (its countdown).
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     [Fact]
-    public void P8_TheChest_HasNoHandlerInTheRegistry_AndTheBranchOfTheChestInC255IsANamedStubAtEveryState()
+    public void P8_TheChestKeysAreChestAis_ThePickupRegistersA255ForTheChestButNoC255_AndTheBranchOfTheChestInC255CountsItsRiseDownAtEveryState()
     {
         var registry = new NativeSpriteRegistry();
         PickupAi.Register(registry);
@@ -541,7 +541,7 @@ public sealed class PickupAiPlacedTests : IDisposable
 
             PickupAi.Tick(entity, host, state);
 
-            Assert.Equal((itemState, 5, 0, 0, 0, 0), (entity.ItemState, entity.DelayOrAngleOrEntityId, sounds.Requests.Count, dialogue.Opens.Count, host.Destroyed.Count, (int)state.PlayerStats.Money));
+            Assert.Equal((itemState, 4, 0, 0, 0, 0), (entity.ItemState, entity.DelayOrAngleOrEntityId, sounds.Requests.Count, dialogue.Opens.Count, host.Destroyed.Count, (int)state.PlayerStats.Money)); // the countdown of the rise: one tick (it was: nothing at all, the stub).
         }
     }
 }

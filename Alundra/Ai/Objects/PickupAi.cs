@@ -13,12 +13,13 @@ namespace Alundra.Ai.Objects;
 /// E20.e0c (docs/plan-e20-heros.md section 1.26): the native handlers of the pickup object - C255 (<c>0x8007C174</c>) and A255 (<c>0x80061BD4</c>) of the binary, phases B and D - and, since T1, the 32-bit words they keep on the
 /// entity. The proxy holds those words in pieces (<c>+0x274</c> on the four bytes of <see cref="EntityScriptProxy.Bytes"/>, <c>+0x280</c> and <c>+0x284</c> on four halfwords of <see cref="EntityScriptProxy.AIValues"/>), and its
 /// own file is not changed (D-E20-55, D-E0C-13: the 32-bit accessors are the pickup object's alone; the tomes and E14 make theirs). The words are little-endian, as the binary stores them: <c>+0x274</c> is 0 for an object placed on a
-/// map, 1 for a dropped one and 2 for the chest (not ported); <c>+0x280</c> is the game flag the pickup raises (the container's flag, or -1 for a placed object); <c>+0x284</c> is the speed of the bounce.
+/// map, 1 for a dropped one and 2 for the object a chest gives birth to (E20.e0d, <see cref="ChestAi"/>); <c>+0x280</c> is the game flag the pickup raises (the container's flag, or -1 for a placed object); <c>+0x284</c> is the speed of the bounce.
 /// <para>Phase B (T2): the registry holds A255 and C255 for the 87 sprite types 31 to 118 but the 72 (the object is <c>type - 0x1E</c>). C255 runs the branch of the DROPPED object (<c>+0x274 == 1</c>): the bounce on the ground, the countdown of
 /// the life (600 ticks, the mark of the last 120 at 120), the wait for the end of the rise, the contact with the hero, <c>GiveItem</c>, the flag, the sound and the light destruction.</para>
 /// <para>Phase D (T4): the PLACED object (<c>+0x274 == 0</c>, an object put on a map whose record has no script of its own at the slot): A255 clears <c>Collidable</c> and writes its words at the load; C255 takes it on contact with the hero - the message
 /// "name gained!" (always, for a placed object), the sound, the effect, then either the state 3 (an ordinary object, message in mode 0) or the state 2 (a KEY object, byte 5 of the table zero: <c>Block</c> of the world, the fanfare, message in mode 1 closable
-/// by script only), and finally <c>Unblock</c> and the light destruction once the box has closed. The chest (<c>+0x274 == 2</c>, E14) and the placed object that holds a flag (D-E0C-3) are NAMED STUBS; the fanfare is a journaled stub (D-E0C-7).</para>
+/// by script only), and finally <c>Unblock</c> and the light destruction once the box has closed. The placed object that holds a flag (D-E0C-3) is a NAMED STUB; the fanfare is a journaled stub (D-E0C-7).</para>
+/// <para>E20.e0d: the object a chest gives birth to (<c>+0x274 == 2</c>): A255 holds it Loaded - and hidden - until the chest is open; C255 counts its rise down (64 ticks), opens the message in mode 1, and gives the item when the box closes (<see cref="ChestObjectTick"/>).</para>
 /// </summary>
 internal static class PickupAi
 {
@@ -51,6 +52,13 @@ internal static class PickupAi
     /// <summary>The value of <c>+0x274</c> of an object placed on a map.</summary>
     internal const uint KindPlaced = 0;
 
+    /// <summary>The value of <c>+0x274</c> of the object that a chest gives birth to (E20.e0d).</summary>
+    internal const uint KindChest = 2;
+
+    private const int ChestObjectStateMessage = 0;
+    private const int ChestObjectStateFanfare = 1;
+    private const int ChestObjectStateGive = 2;
+
     /// <summary>The control mode of the message of an ordinary object (the entities stop under it) and of a key object (the hero is held, the world goes on).</summary>
     private const int OrdinaryMessageMode = 0;
     private const int KeyMessageMode = 1;
@@ -79,12 +87,18 @@ internal static class PickupAi
     }
 
     /// <summary>
-    /// A255 (<c>0x80061BD4</c>). A dropped object (<c>+0x274 == 1</c>) returns at once; the chest (<c>+0x274 == 2</c>, E14) is a NAMED STUB (D-E0C-2). A PLACED object (<c>+0x274 == 0</c>, <c>0x80061C60-0x80061D00</c>): <c>+0x6C &amp;= ~0x80</c> first
+    /// A255 (<c>0x80061BD4</c>). A dropped object (<c>+0x274 == 1</c>) returns at once; the object of a chest (<c>+0x274 == 2</c>) is held Loaded until the chest is open (E20.e0d, <see cref="ChestObjectLoad"/>). A PLACED object (<c>+0x274 == 0</c>, <c>0x80061C60-0x80061D00</c>): <c>+0x6C &amp;= ~0x80</c> first
     /// (it is no longer a support: the hero crosses it and takes it), then, when it holds a flag (<c>+0x40</c>, which the binary tests against the flag bank and may destroy the object for), a NAMED STUB (D-E0C-3: none of the 152 placed objects has one) that
     /// writes nothing more; otherwise the state <c>+0x27C = 0</c>, <c>+0x280 = -1</c>, <c>+0x284 = 0</c> and the life <c>+0x278 = +0x40</c> (0: no rule).
     /// </summary>
     internal static void Load(EntityScriptProxy entity)
     {
+        if (ReadWord274(entity) == KindChest)
+        {
+            ChestObjectLoad(entity);
+            return;
+        }
+
         if (ReadWord274(entity) != KindPlaced)
         {
             return;
@@ -123,10 +137,16 @@ internal static class PickupAi
     }
 
     /// <summary>
-    /// C255 (<c>0x8007C174</c>), one tick of the branch <c>+0x274 != 2</c> of the binary: a dropped or a placed object. The chest (<c>+0x274 == 2</c>) is a named stub: nothing.
+    /// C255 (<c>0x8007C174</c>), one tick of the branch <c>+0x274 != 2</c> of the binary: a dropped or a placed object. The object of a chest (<c>+0x274 == 2</c>) is <see cref="ChestObjectTick"/> (E20.e0d).
     /// </summary>
     internal static void Tick(EntityScriptProxy entity, IEntityWorldContext world, GameState state)
     {
+        if (ReadWord274(entity) == KindChest)
+        {
+            ChestObjectTick(entity, world, state);
+            return;
+        }
+
         if (ReadWord274(entity) is not (KindPlaced or KindDropped))
         {
             return;
@@ -242,8 +262,128 @@ internal static class PickupAi
         world.DialogueDirector?.SetCloseMask(ScriptCloseOnlyMask);
     }
 
+    // ===================================================== E20.e0d: the object of a chest (+0x274 == 2) =====================================================
+
+    /// <summary>The chest an object was born from: <c>+0x280</c> of the binary, a pointer; here the parent the birth set (D-E0D-9).</summary>
+    private static EntityScriptProxy? ChestOf(EntityScriptProxy entity) => entity.ParentEntity?.GameplayProxy as EntityScriptProxy;
+
+    /// <summary>
+    /// A255 on the object of a chest (<c>0x80061C18-0x80061C58</c>): while the chest is not at the animation 1 (<c>chest + 0x88 != 1</c>: it is still opening) the object is held Loaded (<c>+0x10 = 1</c>: neither simulated nor drawn; the lists of the
+    /// visible and of the active entities of the binary take the statuses 2 and 3 only - the DLL hides it by its entity, D-E0D-5); at the call that finds it open, a key object (<c>+0x288</c>) plays the track 11 of the CD - a journaled STUB until E19.sm7 - and the object,
+    /// left in the status the pick gave it, goes on to be simulated and drawn. A chest the parent does not lead to (a degraded host) counts as open.
+    /// </summary>
+    private static void ChestObjectLoad(EntityScriptProxy entity)
+    {
+        var open = ChestOf(entity) is not { } chest || chest.TargetAnimationId == ChestAi.OpenAnimation;
+        if (!open)
+        {
+            entity.Status = EntityStatus.Loaded;
+        }
+
+        if (entity.OwnerEntity is { } owner)
+        {
+            owner.IsVisible = open;
+        }
+
+        if (open && ReadWord288(entity) != 0)
+        {
+            FanfareStubCallsForTests?.Add("track11");
+        }
+    }
+
+    /// <summary>
+    /// C255, the branch <c>+0x274 == 2</c> (<c>0x8007C1A8-0x8007C394</c>): the countdown <c>+0x278</c> (64 ticks of the rise, one a tick, nothing else); then <c>+0x27C</c>. The state 0: the rise stops (<c>+0xB8 = 0</c>), nothing more while a dialogue is open, otherwise the message in
+    /// MODE 1 (the hero held, the world blocked by the chest): an object the bag can take (<c>+0x284</c>) says "name gained!" - with the sound of the byte 5 of the table and the state 2 for an ordinary object, with the mask 4 (the box closed by the script only) and the state 1 for a
+    /// key object (<c>+0x288</c>) - one the bag can not take says "too many things to keep name." and goes to the state 2. The state 1 (a key object): the CD is never busy (a stub), so the mask 3 and <c>StopAllSound</c> come at once - the music restarts from the top, the box still open.
+    /// The state 2, the box closed: <c>ApplyItem</c> and the game flag of the chest (+0x40), or, when the bag could not take it, the chest closed again (<c>+0x88 = 0</c>, it will open again, no flag); then <c>Unblock(chest)</c> and the light destruction of the object.
+    /// </summary>
+    private static void ChestObjectTick(EntityScriptProxy entity, IEntityWorldContext world, GameState state)
+    {
+        if (entity.DelayOrAngleOrEntityId != 0)
+        {
+            entity.DelayOrAngleOrEntityId--;
+            return;
+        }
+
+        var chest = ChestOf(entity);
+        var item = entity.SpriteType - 0x1E;
+        var take = ReadWord284(entity) != 0;
+        var key = ReadWord288(entity) != 0;
+        switch (entity.ItemState)
+        {
+            case ChestObjectStateMessage:
+                entity.ForceZ = 0;
+                if (DialogueIsOpen(world))
+                {
+                    return;
+                }
+
+                if (!take)
+                {
+                    entity.ItemState += 2;
+                    OpenMessage(world, ItemEffects.ComposeChestMessage(item, false), KeyMessageMode);
+                    return;
+                }
+
+                if (key)
+                {
+                    entity.ItemState += 1;
+                    OpenMessage(world, ItemEffects.ComposeChestMessage(item, true), KeyMessageMode);
+                    world.DialogueDirector?.SetCloseMask(ScriptCloseOnlyMask);
+                    return;
+                }
+
+                entity.ItemState += 2;
+                if (world.ItemTables is { } tables && (uint)item < ItemTables.DropRecordCount)
+                {
+                    world.SoundPlayer?.PlaySfx(tables.DropSoundSfxIndex[item]);
+                }
+
+                OpenMessage(world, ItemEffects.ComposeChestMessage(item, true), KeyMessageMode);
+                return;
+            case ChestObjectStateFanfare:
+                if (FanfareIsBusy())
+                {
+                    return;
+                }
+
+                entity.ItemState += 1;
+                world.DialogueDirector?.SetCloseMask(DefaultCloseMask);
+                FanfareEnd(world);
+                return;
+            case ChestObjectStateGive:
+                if (DialogueIsOpen(world))
+                {
+                    return;
+                }
+
+                if (take)
+                {
+                    if (world.PlayerEntity is { } hero)
+                    {
+                        ItemEffects.ApplyItem(world, state, hero, item);
+                    }
+
+                    SetGameFlag(state, unchecked((uint)(chest?.ContentsGameFlag ?? 0)));
+                }
+                else if (chest != null)
+                {
+                    chest.TargetAnimationId = 0;
+                }
+
+                world.Unblock(chest ?? entity);
+                world.DestroyEntity(entity);
+                return;
+        }
+    }
+
+    /// <summary><c>+0x288</c>: <see cref="EntityScriptProxy.AIValues"/> 4 (low half) and 5 (high half): not zero for a key object whose pickup freezes the world and plays the fanfare.</summary>
+    internal static uint ReadWord288(EntityScriptProxy entity) => ReadWord(entity, 4);
+
+    internal static void WriteWord288(EntityScriptProxy entity, uint value) => WriteWord(entity, 4, value);
+
     /// <summary><c>0x800450F0</c> on the text buffer: opens the box on the composed text, unless the buffer is empty (a dropped object).</summary>
-    private static void OpenMessage(IEntityWorldContext world, string message, int controlMode)
+    internal static void OpenMessage(IEntityWorldContext world, string message, int controlMode)
     {
         if (message.Length != 0)
         {
@@ -252,7 +392,7 @@ internal static class PickupAi
     }
 
     /// <summary><c>0x80045004</c>: a dialogue box is open (or waits for a choice).</summary>
-    private static bool DialogueIsOpen(IEntityWorldContext world) => world.DialogueDirector is { } director && (director.IsOpen || director.IsAwaitingChoice);
+    internal static bool DialogueIsOpen(IEntityWorldContext world) => world.DialogueDirector is { } director && (director.IsOpen || director.IsAwaitingChoice);
 
     /// <summary>The overlap of the boxes of the object and of the hero on the three axes, as the binary tests it: the positions are the ones the end of the previous tick left (<see cref="EntityScriptProxy.ModdedPosX"/>), the sizes are the boxes'.</summary>
     private static bool Overlaps(EntityScriptProxy entity, EntityScriptProxy hero)

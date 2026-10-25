@@ -63,6 +63,13 @@ internal static class GameplayFreeze
         internal bool? AnimationWasPaused { get; set; }
     }
 
+    /// <summary>
+    /// E20.e0d (D-E0D-4): whether <paramref name="proxy"/> is frozen this frame: the whole world is (<paramref name="worldFrozen"/>, an open menu or box) or the entity is BLOCKED (<see cref="EntityScriptProxy.BlockedByEntity"/>, <c>Block</c> of the binary,
+    /// <c>0x8003AD30</c>). The binary takes a blocked entity out of the list of the active ones: its programs, its physics and its animation stop; the list of the visible ones does not test it, so it stays drawn, on the image it had. Frozen here the same way: the controller
+    /// stops and the playback of the sprite is paused (still drawn), and both are given back at the <c>Unblock</c>.
+    /// </summary>
+    internal static bool IsFrozen(EntityScriptProxy proxy, bool worldFrozen) => worldFrozen || proxy.BlockedByEntity != null;
+
     /// <summary>Freezes or thaws <paramref name="proxy"/> when <paramref name="gameplayBlocked"/> changed
     /// since the last call; does nothing otherwise.</summary>
     internal static void Apply(EntityScriptProxy proxy, bool gameplayBlocked)

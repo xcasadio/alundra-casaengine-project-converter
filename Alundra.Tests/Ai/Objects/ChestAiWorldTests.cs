@@ -20,7 +20,7 @@ namespace Alundra.Tests.Ai.Objects;
 /// E20.e0d T2 (docs/plan-e20-heros.md section 1.26.2, phase B, tests (b3) to (b6), (b9) and (b10) in the REAL world): the hero comes in by a production arrival next to a chest of the exported maps, pushes against it, presses Square on the real controller, and the whole
 /// opening is followed tick by tick - the animation 2 and the sound 51, the object that is held Loaded (and not drawn) for the 61 ticks of the animation, the rise and the countdown of 64 ticks, the message in mode 1, the sound of the table, the box closed by the player,
 /// <c>ApplyItem</c>, the flag, <c>Unblock</c>. The ticks are counted from the tick of F255 (the binary's tick 0): the binary has the chest open at 62 and the message at 127 (<c>chest_sequence.out</c>); the DLL's order of the passes moves a count by one
-/// (docs/plan-e20-heros.md: "à ±1 selon l'ordre des passes de la DLL"), so each count is bounded by the binary's value and the DLL's own count is pinned (see <see cref="Pinned"/>).
+/// (docs/plan-e20-heros.md: "à ±1 selon l'ordre des passes de la DLL"); measured by T2, the DLL gives the binary's own counts (see <see cref="Pinned"/>): the object is let go at 62, the message opens at 127.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class ChestAiWorldTests : IDisposable
@@ -46,27 +46,32 @@ public sealed class ChestAiWorldTests : IDisposable
         DialogueDirector.Instance.ResetForTests();
     }
 
-    /// <summary>The ticks the DLL takes, counted from the tick of F255 (0): the animation 2 of the chest ends on the tick <see cref="ChestOpen"/>, the message opens <see cref="MessageAfterOpen"/> ticks later (the binary: 62 and 65).</summary>
+    /// <summary>
+    /// The ticks of the DLL, counted from the tick of F255 (0), measured by T2 (docs/plan-e20-annexe/e20-e0d/results.md) and equal to the binary's (<c>chest_sequence.out</c>: A255 lets the object go at 62, the message opens at 127, 65 ticks later): the chain of
+    /// the animation 2 is seen in <c>Target</c> at 61 (the clock ends the animation on the 61st tick), the sprite shows the animation 1 and A255 releases the object at 62, the message opens 65 ticks after.
+    /// </summary>
     private static class Pinned
     {
-        public const int ChestOpen = 61;
-        public const int MessageAfterOpen = 65;
+        public const int Chained = 61;
+        public const int Released = 62;
+        public const int MessageAfterRelease = 65;
+        public const int Message = 127;
     }
 
     private static PickupDropRun Arrive(string name, string zone, string world, int tileX, int tileY, int tileZ, int[]? flags = null)
         => new(name, zone, world, 0, 0, -1, -1, clearTheWorld: false, flags, new ArcArrival((tileX * 24 + 12) << 16, (tileY * 16 + 8) << 16, tileZ << 20, GameState.ResetAnimationId, 0));
 
     /// <summary>The hero pushes south against the chest that stands on the tile under him (a save cannot carry the direction: it is always south), then lets go of the pad: the contact is made.</summary>
-    private static void PushAgainstTheChest(PickupDropRun run)
+    private static void PushAgainstTheChest(PickupDropRun run, uint direction = PadState.Down)
     {
         run.Run(6, 1);
-        run.Arc.HoldDirections(PadState.Down);
+        run.Arc.HoldDirections(direction);
         run.Run(8, 1);
         run.Arc.ReleaseDirections();
         run.Run(2, 1);
     }
 
-    private sealed record Moment(int Tick, uint ChestTarget, uint ChestCurrent, bool ObjectExists, EntityStatus ObjectStatus, bool ObjectVisible, bool BoxOpen, string? Text, int CloseMask, int SoundCount, int HeroBlocked, int ObjectBlocked, IReadOnlyList<string> Journal);
+    private sealed record Moment(int Tick, uint ChestTarget, uint ChestCurrent, bool ObjectExists, EntityStatus ObjectStatus, bool ObjectVisible, bool BoxOpen, string? Text, int CloseMask, int SoundCount, int HeroBlocked, int ObjectBlocked, IReadOnlyList<string> Journal, int ObjectZ);
 
     private sealed class Opening
     {
@@ -95,7 +100,7 @@ public sealed class ChestAiWorldTests : IDisposable
             var director = DialogueDirector.Instance;
             return new Moment(tick - FirstTick, Chest.TargetAnimationId, Chest.CurrentAnimationId, obj != null, obj?.Status ?? EntityStatus.Destroyed, obj != null && (ArcRun.EntityOf(obj)?.IsVisible ?? false),
                 director.IsOpen, director.IsOpen ? director.CurrentLineForTests?.Text : null, director.CloseMaskForTests, Run.Sounds.Requests.Count,
-                Run.Hero.BlockedByEntity == null ? 0 : 1, obj?.BlockedByEntity == null ? 0 : 1, PickupAi.FanfareStubCallsForTests!.ToList());
+                Run.Hero.BlockedByEntity == null ? 0 : 1, obj?.BlockedByEntity == null ? 0 : 1, PickupAi.FanfareStubCallsForTests!.ToList(), obj?.PosZ ?? 0);
         }
 
         /// <summary>Presses Square on the frame that follows (the tick 0 is the tick of F255) and follows <paramref name="ticks"/> ticks, one moment per tick.</summary>
@@ -155,27 +160,35 @@ public sealed class ChestAiWorldTests : IDisposable
         Assert.Contains(51, run.Sounds.Requests.Skip(sounds).Take(opening.At(1).SoundCount - sounds).ToArray()); // the sound 51 comes with the animation, at the tick of the birth or the next.
         Assert.Equal((2u, 0x24 + 0x1E), (PickupAi.ReadWord274(opening.Object!), opening.Object!.SpriteType));
 
-        // The chest open: the animation 2 lasts 61 ticks (chest_anim_oracle.out), then the chain to 1.
-        var open = opening.FirstTickWhere(m => m.ChestTarget == 1);
-        Assert.InRange(open, 61, 62);
-        Assert.Equal(Pinned.ChestOpen, open);
+        // The chest open: the animation 2 lasts 61 ticks (chest_anim_oracle.out), then the chain to 1; the sprite shows the animation 1 one tick later, and A255 lets the object go (the binary: tick 62).
+        var chained = opening.FirstTickWhere(m => m.ChestTarget == 1);
+        var released = opening.FirstTickWhere(m => m.ChestCurrent == 1);
+        Assert.InRange(released, 61, 62);
+        Assert.Equal((Pinned.Chained, Pinned.Released), (chained, released));
 
         // The object waits Loaded, and is not drawn, as long as the chest is not open (b9); then it is promoted and drawn (b9).
-        foreach (var moment in opening.Moments.Where(m => m.Tick < open))
+        foreach (var moment in opening.Moments.Where(m => m.Tick < released))
         {
             Assert.True(moment.ObjectExists && moment.ObjectStatus == EntityStatus.Loaded && !moment.ObjectVisible, $"tick {moment.Tick}: held Loaded and hidden ({moment.ObjectStatus}, visible {moment.ObjectVisible})");
         }
 
-        foreach (var moment in opening.Moments.Where(m => m.Tick > open && m.ObjectExists))
+        foreach (var moment in opening.Moments.Where(m => m.Tick >= released && m.ObjectExists))
         {
             Assert.True(moment.ObjectStatus == EntityStatus.Normal && moment.ObjectVisible, $"tick {moment.Tick}: promoted and drawn ({moment.ObjectStatus}, visible {moment.ObjectVisible})");
         }
 
-        // The message: 64 ticks of countdown and the tick of the state 0 after the chest is open (the binary: 62 -> 127).
+        // The message: 64 ticks of countdown and the tick of the state 0 after the object is let go (the binary: 62 -> 127).
         var message = opening.FirstTickWhere(m => m.BoxOpen);
         Assert.InRange(message, 126, 128);
-        Assert.InRange(message - open, 64, 66);
-        Assert.Equal(open + Pinned.MessageAfterOpen, message);
+        Assert.Equal(Pinned.Message, message);
+        Assert.Equal(released + Pinned.MessageAfterRelease, message);
+
+        // The rise: none while the object is held Loaded; 0x8000 a tick from the tick it is let go to the tick before the message - the tick of the release and the 64 ticks of the countdown, 65 integrations (the 32.5 pixels of ForceZ; the binary's own integration of
+        // the first tick is an inference of the reading, report 1.4: pinned as measured) - then it stops where the state 0 stopped it.
+        var z = opening.Moments.ToDictionary(m => m.Tick, m => m.ObjectZ);
+        Assert.Equal(z[1], z[released - 1]);                                         // Loaded: not simulated.
+        Assert.Equal((64 + 1) * 0x8000, z[message - 1] - z[released - 1]);
+        Assert.Equal(z[message - 1], z[message + 5]);                                // the rise has stopped.
         var atMessage = opening.At(message);
         Assert.Equal("Herbes gagné!", atMessage.Text);
         Assert.Equal(3, atMessage.CloseMask);                                    // an ordinary object: the player closes the box.
@@ -286,7 +299,7 @@ public sealed class ChestAiWorldTests : IDisposable
         Assert.Contains("reste vide", DialogueDirector.Instance.CurrentLineForTests!.Text); // ETC 0x48.
         Assert.Equal(GameState.PlayerControlBits.MenuOpen, GameState.Instance.PlayerControlFlags & (GameState.PlayerControlBits.MessageBox | GameState.PlayerControlBits.MenuOpen)); // mode 0.
         Assert.Equal(herbs, GameState.Instance.NumberOfItems[0x24 * 2 + 1]);
-        Assert.DoesNotContain(loaded.Arc.Entities, e => e.SpriteType == 0x24 + 0x1E);  // no object.
+        Assert.DoesNotContain(loaded.Arc.Entities, e => e.SpriteType == 0x24 + 0x1E && ReferenceEquals(e.ParentEntity, chest.LogicContextEntity));  // no object was born from the chest.
         Assert.Null(loaded.Hero.BlockedByEntity);
     }
 
@@ -305,16 +318,16 @@ public sealed class ChestAiWorldTests : IDisposable
 
         opening.PressAndFollow(250);
 
-        var open = opening.FirstTickWhere(m => m.ChestTarget == 1);
+        var released = opening.FirstTickWhere(m => m.ChestCurrent == 1);
         var message = opening.FirstTickWhere(m => m.BoxOpen);
 
-        // The journal of the stubs: the music cut at the tick of F255, the track 11 when A255 lets the object go, StopAllSound at the tick that follows the opening of the message.
+        // The journal of the stubs: the music cut at the tick of F255, the track 11 when A255 lets the object go (the binary: 62), StopAllSound at the tick that follows the opening of the message.
         Assert.Equal(new[] { "stop" }, opening.At(0).Journal.ToArray());
-        Assert.DoesNotContain("track11", opening.At(open - 1).Journal);
+        Assert.DoesNotContain("track11", opening.At(released - 1).Journal);
         var trackTick = opening.FirstTickWhere(m => m.Journal.Contains("track11"));
-        Assert.InRange(trackTick, open, open + 1);
+        Assert.Equal((Pinned.Released, released), (trackTick, released));
         Assert.Equal(new[] { "stop", "track11" }, opening.At(message).Journal.ToArray());
-        Assert.Equal(open + Pinned.MessageAfterOpen, message);
+        Assert.Equal(released + Pinned.MessageAfterRelease, message);
 
         Assert.Contains("gagné!", opening.At(message).Text);
         Assert.Equal(4, opening.At(message).CloseMask);                        // the box is closed by the script only ...
@@ -363,12 +376,12 @@ public sealed class ChestAiWorldTests : IDisposable
     [Fact]
     public void B6_TheVaseChestOfTheMap115_OpensThePassage_TheScriptThatGuardsTheChestPlaysTheSound223()
     {
-        using var run = Arrive("b6b", "Tarn's Manor", "Tarn's Manor-115", 39, 8, 0);
+        using var run = Arrive("b6b", "Tarn's Manor", "Tarn's Manor-115", 39, 10, 0); // the tile south of the chest: the arrival north of it puts the hero one tile aside (T0 (d) 7).
         var chest = run.Arc.EntityByRecord(10)!;
         Assert.Equal((0x53u, 659), (chest.ContentsItemId, chest.ContentsGameFlag));
         var opening = new Opening(run, chest, 0x53 + 0x1E);
         var hpMax = GameState.Instance.PlayerStats.HpMax;
-        PushAgainstTheChest(run);
+        PushAgainstTheChest(run, PadState.Up);
         run.Run(10, 1);
         Assert.DoesNotContain(223, run.Sounds.Requests);
 

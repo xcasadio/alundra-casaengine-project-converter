@@ -141,6 +141,7 @@ public sealed class ChestAiInteractVectorTests : IDisposable
             }
 
             rig.Run();
+            WarpDirector.Instance.ResetForTests(); // the request of the guard "menu" must not outlive its row.
 
             var spawnCalls = rig.Host.Spawns;
             var expectedSpawn = row.Calls.Any(c => c.StartsWith("spawn", StringComparison.Ordinal));

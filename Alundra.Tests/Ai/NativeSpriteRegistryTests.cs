@@ -55,10 +55,14 @@ public sealed class NativeSpriteRegistryTests : IDisposable
 
         // E14.a1b: A1, C1 and D1 of the Beannoid (335); E14.a1c: A0, C10 and D9 of the Muruta (347); E20.f3c (D-F3-6): (C, 61) of the sword wave (27 to 29); E20.e0c: A255 and C255 of the pickup objects (31 to 118 but 72), the keys
         // being read from PickupAi so that the pin follows the handlers it counts.
-        Assert.Equal(6 + 1 + PickupAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count, runner.NativeSprites.Count); // E20.f4: and the (C, 94) of the charged arrow; E20.f5: and the (E, 17) of the normal arrows; E20.g5a: and the (C, 76) of the pillar; E20.g1a: and the (C, 23) of the liftable objects; E20.g2b: and the (E, 2) of the ten breakable types; E20.g2c1: and the (C, 4) of the 19 types of C4.
+        Assert.Equal(6 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count, runner.NativeSprites.Count); // E20.e0d: and the (F, 255) of the chest; E20.f4: and the (C, 94) of the charged arrow; E20.f5: and the (E, 17) of the normal arrows; E20.g5a: and the (C, 76) of the pillar; E20.g1a: and the (C, 23) of the liftable objects; E20.g2b: and the (E, 2) of the ten breakable types; E20.g2c1: and the (C, 4) of the 19 types of C4.
         Assert.Equal(2, PickupAi.Keys.Count);
         Assert.All(PickupAi.Keys, key => Assert.All(PickupAi.SpriteTypes, type => Assert.True(runner.NativeSprites.TryGet(key.Slot, key.Code, type, out _), $"key {key} type {type}")));
-        Assert.False(runner.NativeSprites.TryGet(ScriptHelper.ProgramCTick, PickupAi.Code, 30, out _)); // the chest (type 30) has no handler: it stays a named stub (D-E0C-2).
+        Assert.False(runner.NativeSprites.TryGet(ScriptHelper.ProgramCTick, PickupAi.Code, 30, out _)); // the chest (type 30) has no C255 (its own programs are A255, shared with the pickup objects, and F255).
+        Assert.True(runner.NativeSprites.TryGet(ScriptHelper.ProgramALoad, PickupAi.Code, 30, out _));  // E20.e0d: A255 draws the chest open when it holds nothing,
+        Assert.Equal(new[] { (ScriptHelper.ProgramFInteract, PickupAi.Code) }, ChestAi.Keys.ToArray());
+        Assert.True(runner.NativeSprites.TryGet(ScriptHelper.ProgramFInteract, PickupAi.Code, ChestAi.SpriteType, out _)); // and F255 opens it,
+        Assert.All(Enumerable.Range(0, 400).Where(type => type != ChestAi.SpriteType), type => Assert.False(runner.NativeSprites.TryGet(ScriptHelper.ProgramFInteract, PickupAi.Code, type, out _), $"no (F, 255) for the type {type}")); // for the chest alone.
         Assert.False(runner.NativeSprites.TryGet(ScriptHelper.ProgramCTick, PickupAi.Code, 72, out _));
         Assert.True(runner.NativeHandlersEnabled);
         Assert.True(runner.NativeSprites.TryGet(ScriptHelper.ProgramALoad, 1, TypeA, out _));

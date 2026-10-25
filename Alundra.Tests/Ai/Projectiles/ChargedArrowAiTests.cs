@@ -225,6 +225,7 @@ public sealed class ChargedArrowAiTests : IDisposable
         MurutaAi.Register(sum);
         WaveSwordAi.Register(sum);
         PickupAi.Register(sum);
+        ChestAi.Register(sum); // E20.e0d
         ChargedArrowAi.Register(sum);
         ArrowAi.Register(sum); // E20.f5
         PillarAi.Register(sum); // E20.g5a
@@ -235,7 +236,7 @@ public sealed class ChargedArrowAiTests : IDisposable
         Assert.True(production.TryGet(ScriptHelper.ProgramCTick, 94, 7, out _));
         Assert.False(production.TryGet(ScriptHelper.ProgramCTick, 94, 3, out _));
         Assert.Equal(sum.Count, production.Count);
-        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count, production.Count);
+        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count, production.Count);
     }
 
     [Fact]

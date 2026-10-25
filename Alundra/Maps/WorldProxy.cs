@@ -2812,7 +2812,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         {
             if (spawnedEntity.GameplayProxy is EntityScriptProxy spawnedProxy)
             {
-                GameplayFreeze.Apply(spawnedProxy, worldFrozen);
+                GameplayFreeze.Apply(spawnedProxy, GameplayFreeze.IsFrozen(spawnedProxy, worldFrozen));
             }
         }
 
@@ -3662,7 +3662,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>
     /// E20.e0c (docs/plan-e20-heros.md section 1.26, D-E0C-6): <c>Block(self)</c> of the binary (<c>0x8003AD30</c>): the identity of <paramref name="self"/> (its entity, else its logic context) goes to
     /// <see cref="EntityScriptProxy.BlockedByEntity"/> of every entity of the world - the hero first, then the others in the order of the slots - whose status is Normal or Deactivated and that is not blocked yet, except
-    /// <paramref name="self"/>. The field is read by the choice of the programs, the hit pass and the hero; the animation clock and the physics of <c>RunEntityBlock</c> do not read it yet (phase D).
+    /// <paramref name="self"/>. The field is read by the choice of the programs, the hit pass and the hero; since E20.e0d (D-E0D-4) the end of the frame also freezes the controller and pauses the playback of the sprite of every blocked entity, which stays drawn (<see cref="GameplayFreeze.IsFrozen"/>); the animation clock and the physics of <c>RunEntityBlock</c> do not read it yet (phase D).
     /// </summary>
     internal void Block(EntityScriptProxy self)
     {
