@@ -87,6 +87,11 @@ public sealed class WorldProxyBlinkTests : IDisposable
     {
         using var run = PickupDropRun.OnMap14("blink-drop-" + ticksPerFrame);
         var drop = run.DropAt(Gildas, 284, 96);
+        if (ticksPerFrame == 2)
+        {
+            run.Run(1, 1); // the mark falls an odd number of ticks after the drop: shift the frames by one tick so that a frame of two ticks ends on a hidden tick of the period.
+        }
+
         var shown = drop.OwnerEntity ?? throw new InvalidOperationException("the drop has no entity");
         var frames = new List<(int Tick, bool Visible)>();
         bool Alive() => run.Context.SpawnedEntities.Contains(drop) && drop.Status < EntityStatus.FlagToDestroy;

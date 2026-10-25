@@ -563,13 +563,39 @@ internal static class FrameSyncPasses
     internal static string AnimationNameSuffix(uint animationId, int animationDirection)
         => "_anim" + animationId.ToString(CultureInfo.InvariantCulture) + "_" + AnimationTables.DirectionNames[animationDirection];
 
-    /// <summary>E20.c2b T3 (D-C2B-7): the lists pass records, for the entity, whether the draw list of the tick leaves it out. Stub of the tests-first commit.</summary>
+    /// <summary>
+    /// E20.c2b T3 (D-C2B-7): the lists pass (<c>0x800384F4</c>, once per tick after the counters pass) records whether the draw list of the tick leaves the entity out: the binary's list of the visible entities
+    /// (<c>0x800385D0-0x800385F4</c>) takes an entity of status 2 or 3 only if <c>(+0x1CC &amp; 3) != 3</c>. A rule for every entity with a <c>+0x1CC</c>: the hero hurt, an object dropped for its last 120 ticks, the targets of <c>0x86</c>.
+    /// </summary>
     internal static void MarkBlink(EntityScriptProxy proxy)
-    {
-    }
+        => proxy.BlinkHides = proxy.Status.IsActive() && (proxy.DamagedTickCounter & 3) == 3;
 
-    /// <summary>E20.c2b T3 (D-C2B-7): publishes the blink of the last tick of the frame to the engine. Stub of the tests-first commit.</summary>
+    /// <summary>
+    /// E20.c2b T3 (D-C2B-7): publishes to the engine the draw list of the LAST tick of the frame, as the binary draws the list of its last tick. The blink hides only what is visible and shows again only what it hid itself, and
+    /// only while the entity is active: what another writer hid (an object a chest holds Loaded, <c>ChestAi</c>/<c>PickupAi</c>; an entity flagged for destruction, <see cref="SyncAnimation"/>) stays hidden.
+    /// </summary>
     internal static void PublishBlink(Entity entity, EntityScriptProxy proxy)
     {
+        if (proxy.BlinkHides)
+        {
+            if (entity.IsVisible)
+            {
+                entity.IsVisible = false;
+                proxy.HiddenByBlink = true;
+            }
+
+            return;
+        }
+
+        if (!proxy.HiddenByBlink)
+        {
+            return;
+        }
+
+        proxy.HiddenByBlink = false;
+        if (proxy.Status.IsActive())
+        {
+            entity.IsVisible = true;
+        }
     }
 }

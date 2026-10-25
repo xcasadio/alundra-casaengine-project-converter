@@ -3172,6 +3172,15 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             proxy.TookPartInFrame = false;
             proxy.SyncAnimationDue = false;
         }
+
+        // E20.c2b T3 (D-C2B-7): the blink of the last tick's draw list, for every entity with a proxy (the hero, a dropped object, a target of 0x86), after the animation sync that may hide a flagged one.
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is EntityScriptProxy proxy)
+            {
+                FrameSyncPasses.PublishBlink(entity, proxy);
+            }
+        }
     }
 
     /// <summary>
@@ -3812,6 +3821,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             if (entity.GameplayProxy is EntityScriptProxy proxy)
             {
                 _updateProxies.Add(proxy);
+                FrameSyncPasses.MarkBlink(proxy); // E20.c2b T3 (D-C2B-7): the draw list of this tick, published after the last tick of the frame.
             }
         }
 
