@@ -669,6 +669,17 @@ internal static class ScriptedMotion
             edgeAdjusted = clamp.Adjusted;
         }
 
+        // E20.e0k5 (D-E0K5-2): an entity born in the game is not yet in the world of the engine (World.AddEntity queues it until the head of the next World.Update) and the mover then adds the step without any test; the step is bounded here by the halving
+        // search of the binary (ComputeXYPosition 0x80037730, HalvingStepSearch) on the field of the host, at every tick it runs unintegrated. ForceAdjusted (+0x13C) is raised when no sub-step is accepted. Once integrated, the mover of the engine decides (D-E19-58, D-E20-38).
+        var noStepAccepted = false;
+        if (entity.Controller != null && entity.HasLogicalZ && entity.SelfEntity?.World == null && (entity.FinalForceX != 0 || entity.FinalForceY != 0))
+        {
+            var bounded = HalvingStepSearch.Search(entity.FinalForceX, entity.FinalForceY, (entity.TargetDirection & 7) == 0, (dx, dy) => BlockedCorners(entity, dx, dy) != 0);
+            entity.FinalForceX = bounded.X;
+            entity.FinalForceY = bounded.Y;
+            noStepAccepted = !bounded.Accepted;
+        }
+
         var startX = entity.PosX;
         var startY = entity.PosY;
 
@@ -688,7 +699,7 @@ internal static class ScriptedMotion
         }
 
         // E20.e0k3: the flag of the clamp is raised AFTER SlideAlongWall, which rewrites ForceAdjusted (0 on an axis that progressed); the binary raises +0x13C in the same tick as the clamp.
-        if (edgeAdjusted)
+        if (edgeAdjusted || noStepAccepted)
         {
             entity.ForceAdjusted = 1;
         }

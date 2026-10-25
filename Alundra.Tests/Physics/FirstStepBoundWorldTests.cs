@@ -54,17 +54,18 @@ public sealed class FirstStepBoundWorldTests
     [InlineData(3)]
     public void Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(int ticksPerFrame) => AssertArrowLines(108, "arrow3_point_blank", ticksPerFrame);
 
-    [Theory]
-    [InlineData(2)]
-    [InlineData(3)]
-    public void Arrow_AtHeroX107_TheStep110IsBoundedBelow109ByOneRawUnit_TheHalvingNotTheLargestFreePosition(int ticksPerFrame) => AssertArrowLines(107, "arrow3_x107", ticksPerFrame);
+    /// <summary>Three ticks per frame: S, S+1 and S+2 are all unintegrated, so the whole life S to S+19 equals the key.</summary>
+    [Fact]
+    public void Arrow_AtHeroX107_ThreeTicksPerFrame_TheStep110IsBoundedBelow109ByOneRawUnit_TheHalvingNotTheLargestFreePosition() => AssertArrowLines(107, "arrow3_x107", 3);
 
     /// <summary>
-    /// At one tick per frame only the birth tick S is unintegrated; the position at S is the halving's (7143423, 109 minus one raw unit). The ticks after it belong to the mover of the engine: the known one-tick flag gap of D-E20-38 (the flag at S+1 where the key has S+2)
-    /// is outside this slice (D-E0K5-2: after the integration nothing changes), so the key is compared at S only.
+    /// At one and two ticks per frame S+1 is already integrated and the mover of the engine decides: it raises the wall flag at S+1 where the binary's halving raises it at S+2 (the one-tick flag gap of D-E20-38, "one start in three", kept by D-E0K5-2:
+    /// after the integration nothing changes; measured by the T0 probe at one tick, by T2 at two). The position of the birth tick S, the unit 7143423, is the halving's: the key is compared at S only.
     /// </summary>
-    [Fact]
-    public void Arrow_AtHeroX107_OneTickPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit() => AssertArrowLines(107, "arrow3_x107", 1, count: 1);
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(int ticksPerFrame) => AssertArrowLines(107, "arrow3_x107", ticksPerFrame, count: 1);
 
     /// <summary>The witness, green before and after the wiring: at one and two ticks per frame the second step (S+1) is already integrated (or reaches nothing the wall refuses), so nothing is bounded.</summary>
     [Theory]
