@@ -1,0 +1,104 @@
+== fire11_flat rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_flat rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_flat rate 3: born 12 (key 12); lines differing from the key: 0
+== ice14_flat rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== ice14_flat rate 2: born 12 (key 12); lines differing from the key: 0
+== ice14_flat rate 3: born 12 (key 12); lines differing from the key: 0
+== fire12_flat rate 1: born 107 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 2  [t=93 dll 1 key 3] [t=95 dll 3 key 1]; break6 seen at frame end 
+== ice15_flat rate 1: born 107 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 2  [t=93 dll 1 key 3] [t=95 dll 3 key 1]; break6 seen at frame end 
+== fire11_wall_col6 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_wall_col6 rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_wall_col6 rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_wall_col8 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_wall_col8 rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_wall_col8 rate 3: born 12 (key 12); lines differing from the key: 0
+== ice14_wall_col6 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== ice14_wall_col6 rate 2: born 12 (key 12); lines differing from the key: 0
+== ice14_wall_col6 rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_step16_col6 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_step16_col6 rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_step16_col6 rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_step16_col7 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_step16_col7 rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_step16_col7 rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_step32_col6 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_step32_col6 rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_step32_col6 rate 3: born 12 (key 12); lines differing from the key: 0
+== ice14_step16_col6 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== ice14_step16_col6 rate 2: born 12 (key 12); lines differing from the key: 0
+== ice14_step16_col6 rate 3: born 12 (key 12); lines differing from the key: 0
+== ice14_step32_col6 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== ice14_step32_col6 rate 2: born 12 (key 12); lines differing from the key: 0
+== ice14_step32_col6 rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_gp8_deepwater rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 23
+== fire11_gp8_deepwater rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_gp8_deepwater rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_gp2_slope1 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 23
+== fire11_gp2_slope1 rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_gp2_slope1 rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_gp4_slope2 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_gp4_slope2 rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_gp4_slope2 rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_gp6_slope3 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_gp6_slope3 rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_gp6_slope3 rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_mixed_footprint_water rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_mixed_footprint_water rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_mixed_footprint_water rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_water_both_cols rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 23
+== fire11_water_both_cols rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_water_both_cols rate 3: born 12 (key 12); lines differing from the key: 0
+== ice14_gp8_deepwater rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 23
+== ice14_gp8_deepwater rate 2: born 12 (key 12); lines differing from the key: 0
+== ice14_gp8_deepwater rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_wall_then_water rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 23
+== fire11_wall_then_water rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_wall_then_water rate 3: born 12 (key 12); lines differing from the key: 0
+== ice14_wall_then_water rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 23
+== ice14_wall_then_water rate 2: born 12 (key 12); lines differing from the key: 0
+== ice14_wall_then_water rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_point_blank rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_point_blank rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_point_blank rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_flush rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_flush rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_flush rate 3: born 12 (key 12); lines differing from the key: 0
+== ice14_flush rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== ice14_flush rate 2: born 12 (key 12); lines differing from the key: 0
+== ice14_flush rate 3: born 12 (key 12); lines differing from the key: 0
+== fire12_flush rate 1: born 107 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 2  [t=93 dll 1 key 3] [t=95 dll 3 key 1]; break6 seen at frame end 
+== ice15_flush rate 1: born 107 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 2  [t=93 dll 1 key 3] [t=95 dll 3 key 1]; break6 seen at frame end 
+== fire11_near105 rate 1: born 12 (key 12); lines differing from the key: 0
+   generator steps per tick differing from draws+1: 0 ; break6 seen at frame end 
+== fire11_near105 rate 2: born 12 (key 12); lines differing from the key: 0
+== fire11_near105 rate 3: born 12 (key 12); lines differing from the key: 0
+== fire11_x107 rate 1: born 12 (key 12); lines differing from the key: 1 first: t=14(S+2) dll[st=3 x=7143424 z=1900545 slope=0 grounded=0] key[st=2 x=7143424 z=1900545 slope=0 grounded=0]
+   generator steps per tick differing from draws+1: 2  [t=14 dll 11 key 1] [t=15 dll 1 key 11]; break6 seen at frame end 
+== fire11_x107 rate 2: born 12 (key 12); lines differing from the key: 1 first: t=14(S+2) dll[st=3 x=7143424 z=1900545 slope=0 grounded=0] key[st=2 x=7143424 z=1900545 slope=0 grounded=0]
+== fire11_x107 rate 3: born 12 (key 12); lines differing from the key: 1 first: t=14(S+2) dll[st=3 x=7143424 z=1900545 slope=0 grounded=0] key[st=2 x=7143424 z=1900545 slope=0 grounded=0]

@@ -1,0 +1,79 @@
+diff --git a/Alundra.Tests/Ai/Projectiles/BallOracle.cs b/Alundra.Tests/Ai/Projectiles/BallOracle.cs
+index b0cda20a..7bf893d3 100644
+--- a/Alundra.Tests/Ai/Projectiles/BallOracle.cs
++++ b/Alundra.Tests/Ai/Projectiles/BallOracle.cs
+@@ -54,7 +54,7 @@ internal sealed class BallOracle
+     /// <summary>The key <paramref name="name"/> (<c>fire11_gp8_deepwater</c>, ...): the key of E20.f6a (<c>f6a/oracle/out/json</c>) when the name is one of its new scenarios, otherwise the frozen one (<c>bin/out/json</c>).</summary>
+     internal static BallOracle Load(string name)
+     {
+-        var path = TryAnnex($"f6a/oracle/out/json/{name}.json") ?? TryAnnex($"bin/out/json/{name}.json")
++        var path = TryAnnex($"f6b/oracle/out/json/{name}.json") ?? TryAnnex($"f6a/oracle/out/json/{name}.json") ?? TryAnnex($"bin/out/json/{name}.json")
+             ?? throw new InvalidOperationException($"no key '{name}' found above '{AppContext.BaseDirectory}'");
+         using var document = JsonDocument.Parse(File.ReadAllText(path));
+         var rows = document.RootElement.EnumerateArray().Select(r => r.Clone()).ToList();
+diff --git a/Alundra.Tests/Ai/Projectiles/BallRun.cs b/Alundra.Tests/Ai/Projectiles/BallRun.cs
+index e9e28809..0e12e647 100644
+--- a/Alundra.Tests/Ai/Projectiles/BallRun.cs
++++ b/Alundra.Tests/Ai/Projectiles/BallRun.cs
+@@ -36,6 +36,7 @@ internal sealed class BallRun : IDisposable
+ 
+     /// <summary>The sprite type of the ball this run shoots: 11 for the fire rod, 14 for the ice rod.</summary>
+     internal readonly int BallType;
++    internal readonly int NormalType;
+ 
+     /// <summary>The ball once seen (the proxy stays valid after the entity is recycled), and the tick of its birth.</summary>
+     internal EntityScriptProxy? Born;
+@@ -80,11 +81,12 @@ internal sealed class BallRun : IDisposable
+     /// <param name="cell">The cells of the scenario, or null for a dry flat field.</param>
+     /// <param name="targets">The pixels of the Beannoids of the map kept as targets (records 0 to n - 1), as for <see cref="HitArena"/>.</param>
+     /// <param name="pad">The pad word of the frame that starts at a tick (default: Square at the tick 1).</param>
+-    internal BallRun(string name, int item, Func<int, int, CutBench.Cell>? cell, IReadOnlyList<int[]>? targets = null, Func<int, uint>? pad = null)
++    internal BallRun(string name, int item, Func<int, int, CutBench.Cell>? cell, IReadOnlyList<int[]>? targets = null, Func<int, uint>? pad = null, int heroX = 100, bool charged = false)
+     {
+         _pad = pad ?? (tick => tick == 1 ? Square : 0u);
+-        BallType = item == 16 ? 11 : 14;
+-        Arena = new HitArena("f6a-" + name, 100, 100, targets?.ToList() ?? new List<int[]>(), 24, 0);
++        NormalType = item == 16 ? 11 : 14;
++        BallType = charged ? (item == 16 ? 12 : 15) : NormalType;
++        Arena = new HitArena("f6a-" + name, heroX, 100, targets?.ToList() ?? new List<int[]>(), 24, 0);
+         try
+         {
+             Bench = SyntheticField.Install(Arena.Arc, cell);
+@@ -126,10 +128,10 @@ internal sealed class BallRun : IDisposable
+     internal void Go(int ticksPerFrame, int lastTick)
+     {
+         _frameSize = ticksPerFrame;
+-        PlayerManager.WiredWeaponTypesForTests = new HashSet<int> { BallType };
++        PlayerManager.WiredWeaponTypesForTests = new HashSet<int> { BallType, NormalType };
+         PlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
+         {
+-            if (call.Type == BallType)
++            if (call.Type == BallType || call.Type == NormalType)
+             {
+                 ((IEntityWorldContext)Arena.Arc.Proxy).SpawnEntityBySpriteIndex(hero, false, call.Type, call.X, call.Y, call.Z, call.Direction);
+             }
+diff --git a/Alundra/Ai/NativeSpriteRegistry.cs b/Alundra/Ai/NativeSpriteRegistry.cs
+index 082a231b..24fd30ae 100644
+--- a/Alundra/Ai/NativeSpriteRegistry.cs
++++ b/Alundra/Ai/NativeSpriteRegistry.cs
+@@ -47,6 +47,7 @@ internal sealed class NativeSpriteRegistry
+         LiftableAi.Register(registry);
+         LiftableAi.RegisterBreak(registry);
+         LiftableAi.RegisterC4Production(registry);
++        BallAi.Register(registry);
+         return registry;
+     }
+ 
+diff --git a/Alundra/Hero/PlayerManager.cs b/Alundra/Hero/PlayerManager.cs
+index 8352d759..ea1d6a78 100644
+--- a/Alundra/Hero/PlayerManager.cs
++++ b/Alundra/Hero/PlayerManager.cs
+@@ -1403,7 +1403,7 @@ public static class PlayerManager
+     /// E20.f3a (docs/plan-e20-heros.md section 1.19.1, D-F3-3): the sprite types of the global page whose shot is wired to <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, one type after the other and never before its
+     /// handlers exist (the invariant of <see cref="UnhandledWeaponSpriteCodes"/>, D-F3-4). {27, 28, 29} since E20.f3c (the wave of the sword, C61 and E10), 7 since E20.f4 (the charged arrow of William, C94 and E1), {3, 4} since E20.f5 (the normal arrows, E17); E20.f6 wires the others, one type after the other.
+     /// </summary>
+-    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredWeaponTypes = new System.Collections.Generic.HashSet<int> { 3, 4, 7, 27, 28, 29 };
++    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredWeaponTypes = new System.Collections.Generic.HashSet<int> { 3, 4, 7, 11, 12, 14, 15, 27, 28, 29 };
+ 
+     /// <summary>E20.f3a test seam, per thread: when set, replaces <see cref="ProductionWiredWeaponTypes"/> (a test wires a type, or none, to prove the seam).</summary>
+     [ThreadStatic]

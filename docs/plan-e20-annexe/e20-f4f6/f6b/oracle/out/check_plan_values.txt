@@ -1,0 +1,55 @@
+OK   fire11_flat: birth tick S                                                                        got 12 want 12
+OK   fire11_flat: status 2 from S to S+10                                                             got [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] want [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+OK   fire11_flat: status 3 from S+11 to S+47                                                          got [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3] want [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+OK   fire11_flat: status 4 at S+48, absent at S+49                                                    got (4, None) want (4, None)
+OK   fire11_flat: px 106 at S, +6 per tick, 166 at S+10 and after                                     got [106, 112, 166, 166, 166] want [106, 112, 166, 166, 166]
+OK   fire11_flat: DLL Z (binary - 1 unit) S..S+10                                                     got [31.5, 30.5, 29.0, 27.0, 24.5, 21.5, 18.0, 14.0, 9.5, 4.5, 0.0] want [31.5, 30.5, 29, 27, 24.5, 21.5, 18, 14, 9.5, 4.5, 0]
+OK   fire11_flat: fx 393216 then 0 from S+11                                                          got [393216, 393216, 0] want [393216, 393216, 0]
+OK   fire11_flat: fz -32768*(k+1) for k = 0..9 then 0 at S+10                                         got [-32768, -65536, -327680, 0, 0] want [-32768, -65536, -327680, 0, 0]
+OK   fire11_flat: coll_140 and ground_144 are 1 at S+10                                               got (1, 1) want (1, 1)
+OK   fire11_flat: box 30x20x15 in flight, 30x20x31 at hbz 0 from S+11                                 got [(30, 20, 15), (30, 20, 15), (30, 20, 31)] want [(30, 20, 15), (30, 20, 15), (30, 20, 31)]
+OK   fire11_flat: atk_attr 134, atk_pow 4, flags 0x132154 then 0x132144                               got (134, 4, '0x132154', '0x132144') want (134, 4, '0x132154', '0x132144')
+OK   fire11_flat: reset_AC 1 at S+47                                                                  got 1 want 1
+OK   fire11_flat: trail effects 17 at S+4 and S+8 only before the explosion                           got [4, 8] want [4, 8]
+OK   fire11_flat: trail S+4 (124,100,35) v(-6,0,2); S+8 (148,100,22) v(-6,0,4)                        got ['fx(id=17,dir=0,x=124.000,y=100.000,z=35.000,v=(-6.0000,0.0000,2.0000))', 'fx(id=17,dir=0,x=148.000,y=100.000,z=22.000,v=(-6.0000,0.0000,4.0000))'] want ['fx(id=17,dir=0,x=124.000,y=100.000,z=35.000,v=(-6.0000,0.0000,2.0000))', 'fx(id=17,dir=0,x=148.000,y=100.000,z=22.000,v=(-6.0000,0.0000,4.0000))']
+OK   fire11_flat: explosion at S+11: 10 draws, five effects 17 at (166,100,0), sound 39               got (10, 5, True) want (10, 5, True)
+OK   fire11_flat: puffs (2 draws) at S+16, +24, +32, +40                                              got [16, 24, 32, 40] want [16, 24, 32, 40]
+OK   fire11_flat: puff effect 17 at Z 8 (0 + 0x80000) at (166, 100)                                   got fx(id=17,dir=0,x=166.000,y=100.000,z=8.000 want fx(id=17,dir=0,x=166.000,y=100.000,z=8.000
+OK   fire11_flat: the puff vz is 2 at all four puffs                                                  got [True, True, True, True] want [True, True, True, True]
+OK   fire11_flat: no puff at the death tick S+48 (no effect, no draw)                                 got (0, []) want (0, [])
+OK   ice14_flat: birth tick S                                                                         got 12 want 12
+OK   ice14_flat: status 2 from S to S+10                                                              got [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] want [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+OK   ice14_flat: status 3 from S+11 to S+43                                                           got [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3] want [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+OK   ice14_flat: status 4 at S+44, absent at S+45                                                     got (4, None) want (4, None)
+OK   ice14_flat: x = 103 at S, 109 at S+1, 163 at S+10                                                got [103, 109, 163] want [103, 109, 163]
+OK   ice14_flat: effect 18 trail (121,100,27) at S+4 and (145,100,14) at S+8, no Z offset             got ('fx(id=18,dir=0,x=121.000,y=100.000,z=27.000', 'fx(id=18,dir=0,x=145.000,y=100.000,z=14.000') want ('fx(id=18,dir=0,x=121.000,y=100.000,z=27.000', 'fx(id=18,dir=0,x=145.000,y=100.000,z=14.000')
+OK   ice14_flat: sound 38 at the explosion S+11                                                       got True want True
+OK   ice14_flat: reset_AC 1 at S+43                                                                   got 1 want 1
+OK   fire12_flat: statuses 2 (S..S+10), 3 (S+11..S+47), 4 at S+48, absent at S+49                     got (True, True, 4, None) want (True, True, 4, None)
+OK   fire12_flat: S = R + 11 = 107 (R = 96), atk_pow 12, sound 41 at S+11                             got (12, True) want (12, True)
+OK   fire12_flat: explosion box 36x24x31                                                              got [36, 24, 31] want [36, 24, 31]
+OK   ice15_flat: statuses 2 (S..S+10), 3 (S+11..S+67), 4 at S+68, absent at S+69                      got (True, True, 4, None) want (True, True, 4, None)
+OK   ice15_flat: S = R + 11 = 107 (R = 96), atk_pow 12, sound 40 at S+11                              got (12, True) want (12, True)
+OK   ice15_flat: explosion box 36x24x31                                                               got [36, 24, 31] want [36, 24, 31]
+OK   ice15_flat: puffs until S+64                                                                     got 64 want 64
+OK   ice15_flat: reset_AC 1 at S+67                                                                   got 1 want 1
+OK   fire11_wall_col6: the wall flag (adj_13C) at S+6, explosion (10 draws) at S+7 with the five effects at Z 18 (the ball Z before the physics of the tick), landing S+10 got (6, 10, ['18.000'], 1) want (6, 10, ['18.000'], 1)
+OK   fire11_wall_col6: the next puff comes at S+8 (the counter 8 is a multiple of 8), 2 draws, Z 22   got (2, ['22.000']) want (2, ['22.000'])
+OK   fire11_step16_col6: lands on the step at S+7, explosion S+8, death S+45, free S+46               got (1, 10, 4, None) want (1, 10, 4, None)
+OK   ice14_step16_col6: death S+41, free S+42                                                         got (4, None) want (4, None)
+OK   fire11_step32_col6: like the wall: flag at S+6, explosion S+7, landing S+10                      got (1, 10, 1) want (1, 10, 1)
+OK   fire11_gp8_deepwater: dies at S+11 by the pick phase / E9 (attach(6)), free at S+12, no draw     got (4, None, 0, 1, True) want (4, None, 0, 1, True)
+OK   ice14_gp8_deepwater: dies at S+11 by the pick phase / E9 (attach(6)), free at S+12, no draw      got (4, None, 0, 1, True) want (4, None, 0, 1, True)
+OK   fire11_gp2_slope1: dies at S+11 by the pick phase / E9 (attach(6)), free at S+12, no draw        got (4, None, 0, 1, True) want (4, None, 0, 1, True)
+OK   fire11_gp4_slope2: normal explosion (status 3, 10 draws, sound 39) at S+11                       got (3, 10, True) want (3, 10, True)
+OK   fire11_gp6_slope3: normal explosion (status 3, 10 draws, sound 39) at S+11                       got (3, 10, True) want (3, 10, True)
+OK   fire11_mixed_footprint_water: normal explosion (status 3, 10 draws, sound 39) at S+11            got (3, 10, True) want (3, 10, True)
+OK   fire11_wall_then_water: explosion at S+7, then destroyed at S+11 by the branch A (attach 6)      got (10, 4, True) want (10, 4, True)
+OK   fire11_vs_target: the target is touched in flight at S+8: attach(4) before the sparks, 9 draws, the ball goes on got (8, 'attach(id=4', 9) want (8, 'attach(id=4', 9)
+OK   ice14_vs_target: touched at S+9: attach(5)                                                       got (9, 'attach(id=5') want (9, 'attach(id=5')
+OK   flames309: effect 17 every 4 ticks from tick 5, three per emission, (x,y,Z 40) v 0               got ([5, 9, 13, 17, 21], ['(0.0000,0.0000,0.0000))'], 3, ['936.000,y=664.000', '948.000,y=672.000', '960.000,y=664.000']) want ([5, 9, 13, 17, 21], ['(0.0000,0.0000,0.0000))'], 3, ['936.000,y=664.000', '948.000,y=672.000', '960.000,y=664.000'])
+OK   flames309: z of the effects 40, no draw, the flames stay at status 2 with flags 0x132104         got ({'40.000'}, 0, {'0x132104'}, {2}) want ({'40.000'}, 0, {'0x132104'}, {2})
+OK   flames309_real: effect 17 every 4 ticks from tick 5, three per emission, (x,y,Z 40) v 0          got ([5, 9, 13, 17, 21], ['(0.0000,0.0000,0.0000))'], 3, ['936.000,y=664.000', '948.000,y=672.000', '960.000,y=664.000']) want ([5, 9, 13, 17, 21], ['(0.0000,0.0000,0.0000))'], 3, ['936.000,y=664.000', '948.000,y=672.000', '960.000,y=664.000'])
+OK   flames309_real: z of the effects 40, no draw, the flames stay at status 2 with flags 0x132104    got ({'40.000'}, 0, {'0x132104'}, {2}) want ({'40.000'}, 0, {'0x132104'}, {2})
+OK   flames309_without_A_program (the control): the ball explodes on the ground                       got True want True
+54 of 54 assertions OK

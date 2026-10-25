@@ -1,0 +1,3 @@
+rules: 223 DLL files, 540 test files, 799 top-level types, 435 nested types
+[avertissement] Alundra.Tests/UI/Shared/TextBoxGpu.cs:266: the nested type Session has the name of a namespace segment (it only masks it inside its own class)
+0 finding(s), 1 warning(s)

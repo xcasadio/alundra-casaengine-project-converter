@@ -1,0 +1,149 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Ai.Projectiles;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Session;
+using Alundra.Tests.Support;
+using Alundra.Maps;
+
+namespace Alundra.Tests.Ai.Projectiles;
+
+/// <summary>E20.f6b T0 probes (throwaway, removed before the commit): P-F6-1 and P-F6-2 (the map 309 and its flames), P-F6-3 (the position of the explosion at 1, 2 and 3 ticks per image), the wall scenarios and the point-blank balls at the HEAD with the temporary C60 and E9.</summary>
+public class ZzF6bT0Probes
+{
+    private const string Dir = @"C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\f6b-exec\";
+
+    private static Func<int, int, CutBench.Cell> Flat() => (c, r) => default;
+    private static Func<int, int, CutBench.Cell> Wall(int column) => (c, r) => c == column ? new CutBench.Cell(0x40, 0) : default;
+    private static Func<int, int, CutBench.Cell> Step(int firstColumn, int height) => (c, r) => c >= firstColumn && c <= 9 ? new CutBench.Cell(0, height) : default;
+    private static Func<int, int, CutBench.Cell> Water(int first, int last, int gp) => BallRun.Columns(first, last, gp);
+
+    [Fact]
+    public void ProbeBalls()
+    {
+        var log = new List<string>();
+        var scenarios = new (string Key, int Item, Func<int, int, CutBench.Cell> Cells, bool Charged, int HeroX)[]
+        {
+            ("fire11_flat", 16, Flat(), false, 100), ("ice14_flat", 14, Flat(), false, 100), ("fire12_flat", 16, Flat(), true, 100), ("ice15_flat", 14, Flat(), true, 100),
+            ("fire11_wall_col6", 16, Wall(6), false, 100), ("fire11_wall_col8", 16, Wall(8), false, 100), ("ice14_wall_col6", 14, Wall(6), false, 100),
+            ("fire11_step16_col6", 16, Step(6, 1), false, 100), ("fire11_step16_col7", 16, Step(7, 1), false, 100), ("fire11_step32_col6", 16, Step(6, 2), false, 100),
+            ("ice14_step16_col6", 14, Step(6, 1), false, 100), ("ice14_step32_col6", 14, Step(6, 2), false, 100),
+            ("fire11_gp8_deepwater", 16, Water(5, 9, 0x08), false, 100), ("fire11_gp2_slope1", 16, Water(5, 9, 0x02), false, 100), ("fire11_gp4_slope2", 16, Water(5, 9, 0x04), false, 100),
+            ("fire11_gp6_slope3", 16, Water(5, 9, 0x06), false, 100), ("fire11_mixed_footprint_water", 16, Water(7, 9, 0x08), false, 100), ("fire11_water_both_cols", 16, Water(6, 9, 0x08), false, 100),
+            ("ice14_gp8_deepwater", 14, Water(5, 9, 0x08), false, 100),
+            ("fire11_wall_then_water", 16, (c, r) => c == 5 ? new CutBench.Cell(0, 0, null, 0x08) : c == 6 ? new CutBench.Cell(0x40, 0) : default, false, 100),
+            ("ice14_wall_then_water", 14, (c, r) => c == 5 ? new CutBench.Cell(0, 0, null, 0x08) : c == 6 ? new CutBench.Cell(0x40, 0) : default, false, 100),
+            ("fire11_point_blank", 16, Wall(5), false, 108), ("fire11_flush", 16, Wall(5), false, 109), ("ice14_flush", 14, Wall(5), false, 109),
+            ("fire12_flush", 16, Wall(5), true, 109), ("ice15_flush", 14, Wall(5), true, 109), ("fire11_near105", 16, Wall(5), false, 105), ("fire11_x107", 16, Wall(5), false, 107),
+        };
+        foreach (var (key, item, cells, charged, heroX) in scenarios)
+        {
+            foreach (var rate in charged ? new[] { 1 } : new[] { 1, 2, 3 })
+            {
+                var pf = TryPf(key);
+                var oracle = BallOracle.Load(key);
+                Func<int, uint>? pad = charged ? (t => t <= 95 ? PadState.Square : 0u) : null;
+                using var run = new BallRun(key, item, cells, null, pad, heroX, charged);
+                var types = new HashSet<int> { run.BallType, run.NormalType };
+                EventProgramRunner.NativeSpriteTypeFilterForTests = types;
+                try
+                {
+                    var last = oracle.Ticks / rate * rate;
+                    run.Go(rate, last);
+                }
+                finally
+                {
+                    EventProgramRunner.NativeSpriteTypeFilterForTests = null;
+                }
+
+                var bad = new List<string>();
+                var from = charged ? run.BirthTick : oracle.FirstTick;
+                for (var t = from; t <= oracle.Ticks / rate * rate; t++)
+                {
+                    var d = run.Line(t);
+                    var k = oracle.Line(t);
+                    if (d != k)
+                    {
+                        bad.Add($"t={t}(S+{t - from}) dll[{d}] key[{k}]");
+                    }
+                }
+
+                log.Add($"== {key} rate {rate}: born {run.BirthTick} (key {oracle.FirstTick}); lines differing from the key: {bad.Count}" + (bad.Count > 0 ? " first: " + string.Join(" | ", bad.Take(3)) : ""));
+                if (rate == 1)
+                {
+                    // the steps of the generator: one per tick plus the draws of the tick
+                    var mism = 0;
+                    var firstMis = "";
+                    for (var t = 1; t <= oracle.Ticks; t++)
+                    {
+                        if (!run.StepsDuring.TryGetValue(t, out var steps))
+                        {
+                            continue;
+                        }
+
+                        var want = oracle.Draws(t) + 1;
+                        if (steps != want)
+                        {
+                            mism++;
+                            firstMis += $" [t={t} dll {steps} key {want}]";
+                        }
+                    }
+
+                    log.Add($"   generator steps per tick differing from draws+1: {mism} {firstMis}; break6 seen at frame end {string.Join(",", run.SlopeBreakSeenAtFrameEnd)}");
+                }
+            }
+        }
+
+        File.WriteAllLines(Dir + "f6b-probes-balls.txt", log);
+    }
+
+    private static string? TryPf(string key) => null;
+
+    [Fact]
+    public void ProbeFlames()
+    {
+        var log = new List<string>();
+        var spec = new ArcSpec("f6b-309", "Meia Dream", "Meia Dream (flashback)-309", Array.Empty<int>(), 38, 47, 0, 2000, RealController: true, Prefabs: true,
+            Arrival: new ArcArrival((38 * 24 + 12) << 16, (47 * 16 + 8) << 16, 0, GameState.ResetAnimationId, 0));
+        using var arc = new ArcRun(spec);
+        var flames = arc.Entities.Where(e => e.SpriteType == 12).ToList();
+        log.Add($"the world of the map 309 is built; entities {arc.Entities.Count}; hero tile arrival ok; flames (type 12): {flames.Count}");
+        foreach (var f in flames)
+        {
+            log.Add($"  flame at ({f.PosX >> 16},{f.PosY >> 16}) z={f.PosZ >> 16}.{f.PosZ & 0xFFFF:X4} status={f.Status} flags=0x{f.Flags:X} anim={f.TargetAnimationId} programs={string.Join(",", f.ProgramIndexes)} sprite={string.Join(",", f.SpriteProgramIndexes)}");
+        }
+
+        BallAi.ProbeLog.Clear();
+        for (var frame = 1; frame <= 24; frame++)
+        {
+            arc.OneFrame();
+            if (frame == 5)
+            {
+                foreach (var slot in arc.Proxy.EffectStage!.Reservoir.ActiveSlots.Where(s => s.TargetEffect == 17))
+                {
+                    log.Add($"  effect 17 on the stage after frame 5: x={slot.X >> 16} y={slot.Y >> 16} z={slot.Z} (={slot.Z / 65536.0}) forces=({slot.ForceX},{slot.ForceY},{slot.ForceZ}) animation={slot.TargetAnimation}");
+                }
+            }
+
+            var stage = arc.Proxy.EffectStage;
+            var effects17 = stage?.Reservoir.ActiveSlots.Count(s => s.TargetEffect == 17) ?? -1;
+            var line = $"frame {frame}: effects17 on stage {effects17};";
+            foreach (var f in flames)
+            {
+                line += $" [st={f.Status} fc={f.FrameCounter} z={f.PosZ} fz={f.ForceZ} fx={f.ForceX} fy={f.ForceY} anim={f.TargetAnimationId} flags=0x{f.Flags:X} ground={f.IsOnGround} slope={f.Slope_18c} adj={f.ForceAdjusted}]";
+            }
+
+            log.Add(line);
+        }
+
+        log.Add("C60 calls (first 12):");
+        log.AddRange(BallAi.ProbeLog.Take(12));
+        File.WriteAllLines(Dir + "f6b-probes-flames.txt", log);
+    }
+}

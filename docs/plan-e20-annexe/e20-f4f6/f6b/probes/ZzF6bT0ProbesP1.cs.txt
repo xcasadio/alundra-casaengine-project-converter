@@ -1,0 +1,72 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Hero;
+using Alundra.Maps;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Ai.Projectiles;
+
+/// <summary>E20.f6b T0 probe (throwaway): the baguettes in the arena of the charge (real map 14, the production seam), uncharged and charged: the type born, its tick, its slot against the lowest free slot.</summary>
+public class ZzF6bT0ProbesP1
+{
+    private const string Out = @"C:\Users\casad\AppData\Local\Temp\claude\D--development-repo-alundra-casaengine-project-converter\b00d1a72-420d-4acc-ab34-0c25fbdad3a1\scratchpad\f6b-exec\f6b-probes-p1.txt";
+
+    [Theory]
+    [InlineData(16, false, 1, 0)]
+    [InlineData(16, false, 2, 0)]
+    [InlineData(16, false, 3, 0)]
+    [InlineData(14, false, 1, 0)]
+    [InlineData(16, true, 1, 90)]
+    [InlineData(14, true, 1, 90)]
+    [InlineData(16, true, 1, 95)]
+    [InlineData(14, true, 1, 95)]
+    [InlineData(16, true, 3, 95)]
+    [InlineData(14, true, 3, 95)]
+    [InlineData(16, true, 1, 92)]
+    [InlineData(16, true, 1, 93)]
+    public void Probe(int item, bool charged, int rate, int lastHold = 95)
+    {
+        using var arena = new HitArena("f6b-p1", 212, 96, new List<int[]>(), 24, 0);
+        arena.Arc.Give(item);
+        for (var slot = 1; slot <= 6; slot++)
+        {
+            arena.Arc.Equip(slot);
+            if (PlayerManager.GetItemIdFromCurrentWeapon(Alundra.Tests.Support.ArcRun.State, ((Alundra.Maps.IScriptHost)arena.Arc.Proxy).ItemTables!) == (uint)item)
+            {
+                break;
+            }
+        }
+
+        var types = new HashSet<int> { 11, 12, 14, 15 };
+        var log = new List<string>();
+        var lowestBefore = -1;
+        arena.AfterTick = tick =>
+        {
+            foreach (var ball in arena.Arc.Entities.Where(e => types.Contains(e.SpriteType) && ReferenceEquals(e.ParentEntity, arena.Arc.HeroEntity)).ToList())
+            {
+                if (seen.Add(ball))
+                {
+                    log.Add($"born tick {tick} type {ball.SpriteType} flags 0x{ball.Flags:X} x={ball.PosX >> 16} z={ball.PosZ} lowestFreeSlotBefore {lowestBefore}");
+                }
+            }
+
+            if (false) { log.Add($"  t={tick} hero anim={arena.Hero.TargetAnimationId} charge={arena.Hero.WeaponChargeTimer} status={arena.Hero.Status} hp={arena.Hero.Hp} x={arena.Hero.PosX >> 16}"); }
+            lowestBefore = Enumerable.Range(0, EntitySlotTable.SlotCount).FirstOrDefault(i => !arena.Arc.Proxy.SlotTable.IsHeld(i), -1);
+        };
+        arena.Begin();
+        for (var tick = 1; tick <= 140; tick += rate)
+        {
+            var pad = charged ? (tick <= lastHold ? PadState.Square : 0u) : (tick == 1 ? PadState.Square : 0u);
+            arena.Frame(pad, rate);
+        }
+
+        File.AppendAllLines(Out, new[] { $"== item {item} charged {charged} rate {rate} last held tick {lastHold}" }.Concat(log));
+    }
+
+    private readonly HashSet<EntityScriptProxy> seen = new();
+}

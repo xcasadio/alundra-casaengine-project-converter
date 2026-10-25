@@ -1,0 +1,71 @@
+# ice15_flush_pf (ball spawn tick S=107)  charged ice ball, hero flush against the wall
+# columns: status anim_t dir_t cnt1c px py pz fx fy fz adj_13C coll_140 ground_144 terr_138 slope_18C reset_AC hitc touch_slot c1d0 flags6C atk_attr atk_pow box1d4 hbx hbz bw bd bh
+# px,py,pz,hbx,hby,hbz in pixels; bw,bd,bh box size in pixels; fx,fy,fz = ForceX/Y/Z raw 16.16 (65536 = 1 px/tick); flags6C hex
+t001 slot1 absent
+t001   >> snd(37)
+t012 (S-95) slot1 status=2 anim_t=0 dir_t=24 cnt1c=1 px=109.0000 py=100.0000 pz=31.5000 fx=196608 fy=0 fz=-32768 adj_13C=1 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132154 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=31.5000 bw=30 bd=20 bh=15
+t012   >> snd(0)
+t013 (S-94) slot1 status=3 anim_t=1 dir_t=24 cnt1c=2 px=109.0000 py=100.0000 pz=30.5000 fx=0 fy=0 fz=-65536 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=30.5000 bw=30 bd=20 bh=31
+t013   >> RNG+10 ; fx(id=18,dir=0,x=109.000,y=100.000,z=31.500,v=(2.5664,-1.1472,0.0000)) ; fx(id=18,dir=0,x=109.000,y=100.000,z=31.500,v=(1.0026,-1.8587,0.0000)) ; fx(id=18,dir=0,x=109.000,y=100.000,z=31.500,v=(1.6500,-0.4911,0.0000)) ; fx(id=18,dir=0,x=109.000,y=100.000,z=31.500,v=(1.9017,0.5356,0.0000)) ; fx(id=18,dir=0,x=109.000,y=100.000,z=31.500,v=(0.8049,-1.7572,0.0000)) ; snd(38)
+t014 (S-93) slot1 status=3 anim_t=1 dir_t=24 cnt1c=3 px=109.0000 py=100.0000 pz=29.0000 fx=0 fy=0 fz=-98304 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=29.0000 bw=30 bd=20 bh=31
+t015 (S-92) slot1 status=3 anim_t=1 dir_t=24 cnt1c=4 px=109.0000 py=100.0000 pz=27.0000 fx=0 fy=0 fz=-131072 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=27.0000 bw=30 bd=20 bh=31
+t016 (S-91) slot1 status=3 anim_t=1 dir_t=24 cnt1c=5 px=109.0000 py=100.0000 pz=24.5000 fx=0 fy=0 fz=-163840 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=24.5000 bw=30 bd=20 bh=31
+t017 (S-90) slot1 status=3 anim_t=1 dir_t=24 cnt1c=6 px=109.0000 py=100.0000 pz=21.5000 fx=0 fy=0 fz=-196608 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=21.5000 bw=30 bd=20 bh=31
+t018 (S-89) slot1 status=3 anim_t=1 dir_t=24 cnt1c=7 px=109.0000 py=100.0000 pz=18.0000 fx=0 fy=0 fz=-229376 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=18.0000 bw=30 bd=20 bh=31
+t019 (S-88) slot1 status=3 anim_t=1 dir_t=24 cnt1c=8 px=109.0000 py=100.0000 pz=14.0000 fx=0 fy=0 fz=-262144 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=14.0000 bw=30 bd=20 bh=31
+t020 (S-87) slot1 status=3 anim_t=1 dir_t=24 cnt1c=9 px=109.0000 py=100.0000 pz=9.5000 fx=0 fy=0 fz=-294912 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=9.5000 bw=30 bd=20 bh=31
+t020   >> RNG+2 ; fx(id=18,dir=0,x=109.000,y=100.000,z=14.000,v=(-0.7551,-0.1622,2.0000))
+t021 (S-86) slot1 status=3 anim_t=1 dir_t=24 cnt1c=10 px=109.0000 py=100.0000 pz=4.5000 fx=0 fy=0 fz=-327680 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=4.5000 bw=30 bd=20 bh=31
+t022 (S-85) slot1 status=3 anim_t=1 dir_t=24 cnt1c=11 px=109.0000 py=100.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=0.0000 bw=30 bd=20 bh=31
+      ... 5 ticks uniform (previous step repeated)
+t028 (S-79) slot1 status=3 anim_t=1 dir_t=24 cnt1c=17 px=109.0000 py=100.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=0.0000 bw=30 bd=20 bh=31
+t028   >> RNG+2 ; fx(id=18,dir=0,x=109.000,y=100.000,z=0.000,v=(-1.2255,-0.6280,2.0000))
+      ... 3 ticks uniform (previous step repeated)
+t032 (S-75) slot1 status=3 anim_t=1 dir_t=24 cnt1c=21 px=109.0000 py=100.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=0.0000 bw=30 bd=20 bh=31
+t032   >> snd(0)
+      ... 3 ticks uniform (previous step repeated)
+t036 (S-71) slot1 status=3 anim_t=1 dir_t=24 cnt1c=25 px=109.0000 py=100.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=0.0000 bw=30 bd=20 bh=31
+t036   >> RNG+2 ; fx(id=18,dir=0,x=109.000,y=100.000,z=0.000,v=(1.3410,0.4283,2.0000))
+      ... 6 ticks uniform (previous step repeated)
+t043 (S-64) slot1 status=3 anim_t=1 dir_t=24 cnt1c=32 px=109.0000 py=100.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=0.0000 bw=30 bd=20 bh=31
+t043   >> attach(id=3,target=slot0,mode=1)
+t044 (S-63) slot1 status=3 anim_t=1 dir_t=24 cnt1c=33 px=109.0000 py=100.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=0.0000 bw=30 bd=20 bh=31
+t044   >> RNG+2 ; fx(id=18,dir=0,x=109.000,y=100.000,z=0.000,v=(0.9070,0.2527,2.0000))
+t045 (S-62) slot1 status=3 anim_t=1 dir_t=24 cnt1c=34 px=109.0000 py=100.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=1 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=0.0000 bw=30 bd=20 bh=31
+t045   >> snd(42)
+t046 (S-61) slot1 status=4 anim_t=1 dir_t=24 cnt1c=35 px=109.0000 py=100.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=1 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=4 box1d4=1 hbx=94.0000 hbz=0.0000 bw=30 bd=20 bh=31
+t047 slot1 absent
+t049   >> snd(42)
+t053   >> snd(42)
+t057   >> snd(42)
+t061   >> snd(42)
+t065   >> snd(42)
+t069   >> snd(42)
+t073   >> snd(42)
+t077   >> snd(42)
+t081   >> snd(42)
+t085   >> snd(42)
+t089   >> snd(42)
+t093   >> RNG+2 ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(-2.4368,1.9088,0.0000)) ; snd(428)
+t096   >> fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(5.2500,0.0000,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(4.8535,1.3398,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(3.7119,2.4746,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(2.0098,3.2334,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(0.0000,3.5000,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(-2.0098,3.2334,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(-3.7119,2.4746,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(-4.8535,1.3398,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(-5.2500,0.0000,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(-4.8535,-1.3398,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(-3.7119,-2.4746,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(-2.0098,-3.2334,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(0.0000,-3.5000,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(2.0098,-3.2334,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(3.7119,-2.4746,0.0000)) ; fx(id=16,dir=0,x=109.000,y=100.000,z=16.000,v=(4.8535,-1.3398,0.0000)) ; snd(43) ; snd(37)
+t107 (S+0) slot1 status=2 anim_t=0 dir_t=24 cnt1c=1 px=109.0000 py=100.0000 pz=31.5000 fx=196608 fy=0 fz=-32768 adj_13C=1 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132154 atk_attr=135 atk_pow=12 box1d4=1 hbx=94.0000 hbz=31.5000 bw=30 bd=20 bh=15
+t107   >> snd(0)
+t108 (S+1) slot1 status=3 anim_t=1 dir_t=24 cnt1c=2 px=109.0000 py=100.0000 pz=30.5000 fx=0 fy=0 fz=-65536 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=30.5000 bw=36 bd=24 bh=31
+t108   >> RNG+10 ; fx(id=18,dir=0,x=109.000,y=100.000,z=31.500,v=(1.6090,-1.4294,0.0000)) ; fx(id=18,dir=0,x=109.000,y=100.000,z=31.500,v=(-2.6217,-1.2675,0.0000)) ; fx(id=18,dir=0,x=109.000,y=100.000,z=31.500,v=(-2.0921,-0.4317,0.0000)) ; fx(id=18,dir=0,x=109.000,y=100.000,z=31.500,v=(-1.3173,1.4984,0.0000)) ; fx(id=18,dir=0,x=109.000,y=100.000,z=31.500,v=(0.5483,1.3347,0.0000)) ; snd(40)
+t109 (S+2) slot1 status=3 anim_t=1 dir_t=24 cnt1c=3 px=109.0000 py=100.0000 pz=29.0000 fx=0 fy=0 fz=-98304 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=29.0000 bw=36 bd=24 bh=31
+t110 (S+3) slot1 status=3 anim_t=1 dir_t=24 cnt1c=4 px=109.0000 py=100.0000 pz=27.0000 fx=0 fy=0 fz=-131072 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=27.0000 bw=36 bd=24 bh=31
+t111 (S+4) slot1 status=3 anim_t=1 dir_t=24 cnt1c=5 px=109.0000 py=100.0000 pz=24.5000 fx=0 fy=0 fz=-163840 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=24.5000 bw=36 bd=24 bh=31
+t112 (S+5) slot1 status=3 anim_t=1 dir_t=24 cnt1c=6 px=109.0000 py=100.0000 pz=21.5000 fx=0 fy=0 fz=-196608 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=21.5000 bw=36 bd=24 bh=31
+t113 (S+6) slot1 status=3 anim_t=1 dir_t=24 cnt1c=7 px=109.0000 py=100.0000 pz=18.0000 fx=0 fy=0 fz=-229376 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=18.0000 bw=36 bd=24 bh=31
+t114 (S+7) slot1 status=3 anim_t=1 dir_t=24 cnt1c=8 px=109.0000 py=100.0000 pz=14.0000 fx=0 fy=0 fz=-262144 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=14.0000 bw=36 bd=24 bh=31
+t115 (S+8) slot1 status=3 anim_t=1 dir_t=24 cnt1c=9 px=109.0000 py=100.0000 pz=9.5000 fx=0 fy=0 fz=-294912 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=9.5000 bw=36 bd=24 bh=31
+t115   >> RNG+2 ; fx(id=18,dir=0,x=109.000,y=100.000,z=14.000,v=(-1.4302,-0.4464,2.0000))
+t116 (S+9) slot1 status=3 anim_t=1 dir_t=24 cnt1c=10 px=109.0000 py=100.0000 pz=4.5000 fx=0 fy=0 fz=-327680 adj_13C=0 coll_140=0 ground_144=0 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=4.5000 bw=36 bd=24 bh=31
+t117 (S+10) slot1 status=3 anim_t=1 dir_t=24 cnt1c=11 px=109.0000 py=100.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=0.0000 bw=36 bd=24 bh=31
+      ... 5 ticks uniform (previous step repeated)
+t123 (S+16) slot1 status=3 anim_t=1 dir_t=24 cnt1c=17 px=109.0000 py=100.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=0.0000 bw=36 bd=24 bh=31
+t123   >> RNG+2 ; fx(id=18,dir=0,x=109.000,y=100.000,z=0.000,v=(0.9260,0.1208,2.0000))
+      ... 3 ticks uniform (previous step repeated)
+t127 (S+20) slot1 status=3 anim_t=1 dir_t=24 cnt1c=21 px=109.0000 py=100.0000 pz=0.0000 fx=0 fy=0 fz=0 adj_13C=0 coll_140=1 ground_144=1 terr_138=0 slope_18C=0 reset_AC=0 hitc=0 touch_slot=None c1d0=0 flags6C=132144 atk_attr=135 atk_pow=12 box1d4=1 hbx=91.0000 hbz=0.0000 bw=36 bd=24 bh=31
+t127   >> snd(0)
+      ... 3 ticks uniform (previous step repeated)

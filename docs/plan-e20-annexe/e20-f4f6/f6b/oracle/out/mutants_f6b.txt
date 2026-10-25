@@ -1,0 +1,31 @@
+C60-1    trail period andi 3 -> 7 (0x8007A8B8)                                                                                    fire flat            KILLED
+C60-2    ice trail effect id 0x12 -> 0x11 (0x8007A8D8)                                                                            ice flat             KILLED
+C60-3    fire Z offset sll 19 -> 18 (0x8007A8E4)                                                                                  fire flat            KILLED
+C60-4    trail vz negu -> move (0x8007A93C)                                                                                       fire flat            KILLED
+C60-5    trail vx negu -> move (0x8007A91C)                                                                                       fire flat            KILLED
+C60-6    trail vy negu -> move (0x8007A92C), ball shot north                                                                      fire north           KILLED
+C60-7    fire/ice selection sltiu 2 -> 1 (0x8007A8D0): the type 12 takes the ice effect                                           fire charged flat    KILLED
+C60-8    ice also gets the Z offset: sll v1,v1,19 -> lui v1,8 (0x8007A8E4)                                                        ice flat             KILLED
+E9-1     explosion effect count slti 5 -> 4 (0x8007F1F0)                                                                          fire flat            KILLED
+E9-2     puff period andi 7 -> 3 (0x8007EFD0)                                                                                     fire flat            KILLED
+E9-3     branch-A puff Z offset sll 19 -> 18 (0x8007F00C)                                                                         fire flat            KILLED
+E9-4     branch-B slope-1 test removed (0x8007F0F8 beq -> nop)                                                                    fire on slope 1      KILLED
+E9-5a    branch-B slope-4 test -> always destroy (0x8007F100 bne -> nop)                                                          fire flat            KILLED
+E9-5b    branch-B slope-4 test -> never destroy (0x8007F100 bne -> b): the pick phase takes the slope 4 first (equivalence: see below) fire on slope 4      SURVIVED
+E9-6     branch-B destroy effect 6 -> 5 (0x8007F110)                                                                              fire on slope 1      KILLED
+E9-7     explosion vx scale lui 6 -> 5 (0x8007F180)                                                                               fire flat            KILLED
+E9-8     end-of-animation test +0xAC -> never destroy (0x8007EFB0 bne -> b)                                                       fire flat            KILLED
+E9-9     branch-B flags ori 0x40 -> 0 (0x8007F208): 0x40 is already set by the header (equivalence: see below)                    fire flat            SURVIVED
+E9-10    branch-B +0x88 = 1 not written (0x8007F200 sw -> nop)                                                                    fire flat            KILLED
+E9-11    branch-A destroy effect 6 -> 5 (0x8007EFA4)                                                                              branchA slope 4      KILLED
+E9-12    branch-A slope-1 test removed (0x8007EF8C beq -> nop)                                                                    branchA slope 1      KILLED
+E9-13    branch-A slope-4 test -> never destroy (0x8007EF94 bne -> b)                                                             branchA slope 4      KILLED
+E9-14    explosion vy scale lui 4 -> 3 (0x8007F18C)                                                                               fire flat            KILLED
+E9-15    puff vx scale lui 3 -> 2 (0x8007F058)                                                                                    fire flat            KILLED
+E9-16    puff vz 2 -> 1 (0x8007F084 lui 2 -> 1)                                                                                   fire flat            KILLED
+E9-17    ice puff also gets the Z offset: sll v1,v1,19 -> lui v1,8 (0x8007F00C)                                                   ice flat             KILLED
+E9-18    branch-A: the call of DestroyEntity(e, 6) for the slopes removed (0x8007EFA0 jal -> nop)                                 branchA slope 4      KILLED
+SPAWN-1  +1 of the creation Z removed (0x80039EA4 addiu 1 -> 0)                                                                   fire flat            KILLED
+
+E9-5b equivalence: injection of +0x18C = 4 after each tick from S to S+13 on 4 scenarios (56 runs, 56 destroyed by the injection within 2 ticks) -> EQUIVALENT
+E9-9 equivalence: 6/6 reachable scenarios give the control key; with 0x40 cleared by the harness before the first call the mutant DIFFERS (the write is the only thing that sets 0x40 back: the mutant is killable only on an unreachable state) -> EQUIVALENT on every reachable state

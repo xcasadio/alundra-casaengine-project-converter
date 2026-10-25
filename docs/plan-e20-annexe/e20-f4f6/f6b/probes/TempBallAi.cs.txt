@@ -1,0 +1,136 @@
+#nullable enable
+using System.Collections.Generic;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Maps;
+using Alundra.Rendering.Effects;
+using Alundra.Rng;
+
+namespace Alundra.Ai.Projectiles;
+
+/// <summary>TEMPORARY (E20.f6b T0 measurement wiring, never committed): C60 and E9 of the fire and ice balls.</summary>
+internal static class BallAi
+{
+    internal static readonly int[] SpriteTypes = { 10, 11, 12, 13, 14, 15 };
+    internal const int TickCode = 60;
+    internal const int DeactivateCode = 9;
+
+    internal static void Register(NativeSpriteRegistry registry)
+    {
+        registry.Register(ScriptHelper.ProgramCTick, TickCode, SpriteTypes, (entity, context, state) => Trail(entity));
+        registry.Register(ScriptHelper.ProgramEDeactivate, DeactivateCode, SpriteTypes, (entity, context, state) => Explode(entity));
+    }
+
+    internal static readonly List<string> ProbeLog = new();
+
+    private static bool IsFire(EntityScriptProxy e) => (uint)(e.SpriteType - 11) < 2u;
+
+    internal static void Trail(EntityScriptProxy entity)
+    {
+        if ((entity.FrameCounter & 3) != 0 || entity.ScriptHost is not IEntityWorldContext world)
+        {
+            return;
+        }
+
+        var fire = IsFire(entity);
+        var id = fire ? 0x11 : 0x12;
+        lock (ProbeLog)
+        {
+            ProbeLog.Add($"C60 type={entity.SpriteType} fc={entity.FrameCounter} status={entity.Status} posX={entity.PosX >> 16} posY={entity.PosY >> 16} posZ={entity.PosZ} forceX={entity.ForceX} forceY={entity.ForceY} forceZ={entity.ForceZ} adj={entity.ForceAdjusted} ground={entity.IsOnGround}");
+        }
+
+        var (x, y, z) = (entity.PosX, entity.PosY, unchecked(entity.PosZ + 1 + (fire ? 0x80000 : 0)));
+        var (fx, fy, fz) = (entity.ForceX, entity.ForceY, entity.ForceZ);
+        world.EffectStage?.Emit(reservoir =>
+        {
+            var slot = reservoir.Create(false, id, 0, x, y, z);
+            if (slot != null)
+            {
+                unchecked
+                {
+                    slot.ForceX = -fx;
+                    slot.ForceY = -fy;
+                    slot.ForceZ = -fz;
+                }
+            }
+        });
+    }
+
+    internal static void Explode(EntityScriptProxy entity)
+    {
+        var slope = entity.Slope_18c;
+        var fire = IsFire(entity);
+        var id = fire ? 0x11 : 0x12;
+        if (entity.ScriptHost is not IEntityWorldContext world)
+        {
+            return;
+        }
+
+        var z = unchecked(entity.PosZ + 1);
+        if (entity.TargetAnimationId != 1)
+        {
+            if (slope == 1 || slope == 4)
+            {
+                entity.ScriptHost?.DestroyEntity(entity, 6);
+                return;
+            }
+
+            var (x, y) = (entity.PosX, entity.PosY);
+            for (var i = 0; i < 5; i++)
+            {
+                world.EffectStage?.Emit(reservoir =>
+                {
+                    var slot = reservoir.Create(false, id, 0, x, y, z);
+                    if (slot != null)
+                    {
+                        unchecked
+                        {
+                            var r1 = (uint)GameRandom.Next();
+                            var r2 = (uint)GameRandom.Next();
+                            slot.ForceX = (int)(((ulong)r1 * 0x60001) >> 32) - 0x30000;
+                            slot.ForceY = (int)(((ulong)r2 * 0x40001) >> 32) - 0x20000;
+                        }
+                    }
+                });
+            }
+
+            entity.TargetAnimationId = 1;
+            entity.Flags = (entity.Flags | 0x40u) & ~0x30u;
+            entity.ResyncControllerFromFlags();
+            return;
+        }
+
+        if (slope == 1 || slope == 4)
+        {
+            entity.ScriptHost?.DestroyEntity(entity, 6);
+        }
+
+        if (entity.ForceResetAnimationFlag == 1)
+        {
+            entity.ScriptHost?.DestroyEntity(entity, -1);
+            return;
+        }
+
+        if ((entity.FrameCounter & 7) != 0)
+        {
+            return;
+        }
+
+        var (px, py, pz) = (entity.PosX, entity.PosY, unchecked(z + (fire ? 0x80000 : 0)));
+        world.EffectStage?.Emit(reservoir =>
+        {
+            var slot = reservoir.Create(false, id, 0, px, py, pz);
+            if (slot != null)
+            {
+                unchecked
+                {
+                    var r1 = (uint)GameRandom.Next();
+                    var r2 = (uint)GameRandom.Next();
+                    slot.ForceX = (int)(((ulong)r1 * 0x30001) >> 32) - 0x18000;
+                    slot.ForceY = (int)(((ulong)r2 * 0x20001) >> 32) - 0x10000;
+                    slot.ForceZ = 0x20000;
+                }
+            }
+        });
+    }
+}
