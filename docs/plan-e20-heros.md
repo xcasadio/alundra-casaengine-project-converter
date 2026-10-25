@@ -11721,7 +11721,7 @@ PM, la piste XA, les états `0x32` à `0x34`, la garde (h4a) ; E3 pour le type 2
 
 ---
 
-#### 1.31.4 E20.h4c2 — La terre 2 : le pilote `0x800354D0`, E13, l'annulation et le coup de caméra ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95` ; **révision 3 du 2026-10-25** : D-E20-56 (Q-H4C2-3, B) et E20.c2b avant h4 (D-E20-83), nouvelle époque ; relue : REVISE ; révision 3.1 du 2026-10-25, à relire par un `plan-verifier` frais ; défauts de Q-H4C2-5 et Q-H4C2-6 pris par la règle de l'auteur, D-E20-83)
+#### 1.31.4 E20.h4c2 — La terre 2 : le pilote `0x800354D0`, E13, l'annulation et le coup de caméra ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95` ; **révision 3 du 2026-10-25** : D-E20-56 (Q-H4C2-3, B) et E20.c2b avant h4 (D-E20-83), nouvelle époque ; révisions 3 et 3.1 relues : REVISE ; révision 3.2 du 2026-10-25 après disposition, une seule relecture de clôture ; défauts de Q-H4C2-5 et Q-H4C2-6 pris par la règle de l'auteur, D-E20-83)
 
 **Révision 3 (2026-10-25, nouvelle époque).** La réponse de l'auteur à Q-H4C2-3 (B : le rocher arrêté en l'air attend le sol, D-E20-56) et
 l'ordre de D-E20-83 (E20.c2b avant h0a, donc avant h4) changent trois choses (lecture seule du 2026-10-25, `scratchpad/t2-next/h4-rev/` et sa critique `scratchpad/t2-next/h4-rev-critic/`, à verser
@@ -11735,6 +11735,13 @@ d'interruption se compare après T (l'animation cible du héros `hero_ta` et son
 ne portent du héros que `hero_ta` (ni X, ni Y, ni Z) : (w4) et R-EL-6 ne comparent pour h4c2 que `hero_ta` et le son 23 ; (2) la tolérance
 de position se mesurait sur la DLL elle-même : elle est bornée d'avance par T0 à partir de la clé et de la loi du glissement, un arrêt la
 garde, et la mesure côté DLL passe en T1, une fois E13 écrit.
+
+**Révision 3.2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 3.1 a relevé trois
+blocages, corrigés : (1) le journal des sons de l'interruption T = 170 n'était pas dans la clé versée (le JSON n'a pas de sons) : il est
+versé à part, au manifeste ; (2) la borne de position n'était pas calculable telle qu'écrite (le pas « au tick du contact » vaut 0 dans la
+clé) : elle est écrite en valeurs fixes, relues dans les clés, pour chaque rocher et chaque clé ; (3) la sonde (s9) dépendait du code de T1 :
+elle devient (s9a), la seule chose que la garde suppose de la DLL (`IsOnGround` d'un rocher du type 17 tenu en l'air), mesurable sans code
+de la tranche ; le comportement (statut, son 45, coup au sol + 1) est porté par (e6), (w2) et (w8) en T1.
 
 **Prérequis.** h0a, h4a ; f5 (D-F5-5) ; f6a pour le seul témoin de (w6) ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H4B-4,
 Q-H4C2-1 (porter le coup) et Q-H4C2-2 (`(E, 13)` pour le seul type 17) ; la réponse de l'auteur à Q-H4C2-3 (B : le rocher arrêté en l'air
@@ -11798,7 +11805,9 @@ une interruption fait retomber au sol les rochers en vol.
   `entity.Status = EntityStatus.Normal`). L'écart est écrit dans le commentaire d'E13 et dans l'ADR ; il ne vaut que pour le type 17 (E3, la
   terre 1 et les boules du feu 1 gardent l'original : Q-H4C2-6, A).
 - **D-H4C2-4** (révision 3) — Les clés de l'écart : `cast_2c_pf_rockfix`, `cast_2c_pf_plateau_hb16_rockfix`, `cast_2c_pf_plateau_hb17_rockfix`
-  et `cancel_2c_pf_t170_rockfix` (cette dernière tirée de `cancel_t170_FIX.json`, versée et mise au manifeste par T0 (a)), dérivées du
+  et `cancel_2c_pf_t170_rockfix` (cette dernière tirée de `cancel_t170_FIX.json`, avec son journal des sons
+  `cancel_2c_pf_t170_rockfix_sounds.txt` tiré de `cancel_t170_FIX.txt` : au tick 170, le son 23 puis deux sons 45 ; révision 3.2), versées
+  et mises au manifeste par T0 (a2), dérivées du
   binaire modifié en mémoire, deux exécutions au manifeste identique, marquées « indicatives, non fidèles à l'octet » dans le `README` de
   l'annexe ; les clés d'origine restent l'oracle de l'original.
 - **D-H4C2-2** — Le coup : un membre par défaut de `IEntityWorldContext` (`SetCameraKick(int scrollY)`), implémenté par `WorldProxy` : une liste par
@@ -11823,18 +11832,27 @@ le manifeste, un `README`).
   `MANIFEST.md5`) et celles de la critique (`e20-h4c2/critic/keys/` : `cast_2c_pf_mid_x600y480.json`, `cast_2c_pf_plateau_hb16.json`, `_hb17.json`,
   les sons de l'annulation `cancel_2c_pf_t100_sounds.txt` et `_t60_sounds.txt`), les 609 cas `disc/keys/driver_2c_cases.json`, et les vecteurs de h4b
   (`vec_e13`, `vec_camera`, `vec_sway`, `c9_replay.py` repointé vers l'annexe) : sorties identiques ; (a2) (révision 3) verser la lecture du
-  2026-10-25 (les deux dossiers) et les quatre clés « corrigées » de D-H4C2-4 à `docs/plan-e20-annexe/e20-h4c2/rockfix/`, rejouées deux fois
+  2026-10-25 (les deux dossiers) et les quatre clés « corrigées » de D-H4C2-4 et le journal des sons de T = 170 à
+  `docs/plan-e20-annexe/e20-h4c2/rockfix/`, rejoués deux fois
   au même manifeste, avec la preuve que `cast_2c_pf_mid_x600y480` et les interruptions T = 60 et T = 100 sont identiques avec et sans le patch ; (b) la table de correspondance des octets lus
   par les vecteurs d'E13 et de la caméra vers les membres de la DLL (règle de D-H4B1-3) ; (c) **sondes** (un arrêt si l'une diffère) : (s1) le
   générateur, héros au repos (point 3 du §1.20) ; (s2) la naissance du pilote : Z de la DLL, x et y de la clé, `ComputeTerrainHeight()` du nouveau-né
   0 sur le plat, et la hauteur de case des plateaux (octet × 16 px : 16 → 256 px, 17 → 272 px) ; (s3) une naissance hors de la grille (x < 0) : pas
   d'exception, x = 10, `ForceAdjusted` ; (s4) `ForceResetAnimationFlag` du sprite 17, 46 ticks après l'animation 1, à 1, 2 et 3 ticks par image ;
   (s5) les sons 55 et 45 ; (s6) l'attaque (8, 64) et la boîte ; (s7) rien n'écrit la pente du type 17 ; (s8) les tirages du générateur par touche ;
-  (révision 3) (s9) un rocher dont le pas est borné en l'air n'a ni statut 3 vu à la fin d'un tick, ni son 45, ni coup avant le sol, puis
-  statut 3 et coup au tick du sol + 1 ; (s10a) (sans code) **la borne de position**, calculée avant tout code : pour le rocher 8, le pas de l'axe libre au tick du
-  contact (lu dans la clé `cast_2c_pf_plateau_hb16_rockfix`) fois le nombre de ticks entre le contact et le sol (la loi de la branche oblique
-  de `ScriptedMotion.SlideAlongWall` : l'axe libre avance de tout son pas) ; pour le rocher de bord, 0 (le rognage par axe de
-  `ClampStepToMapEdge` égale le binaire) ; les deux bornes écrites dans l'annexe, R-EL-5 étendue à la position avec elles ; (s11) E20.c2b présente : un `0x31` posé passe par le `case 0x31`, la garde de h4a l'annule, le son 23 du héros est joué ;
+  (révision 3.2) (s9a) sans code de la tranche, un rocher du type 17 (sans `Gravity`, `HasLogicalZ`) né par la couture de naissance du test
+  à la position, au Z et au `ForceZ` (−8 px par tick) des rochers 11 et 8 des clés : son `IsOnGround` vaut 0 sur ses ticks en l'air, tenu
+  par le bord ou le mur (rocher 11 : ticks 163 à 193 ; rocher 8 : ticks 141 à 145) et 1 au tick du sol (rocher 11 : 194 ; rocher 8 : 146) ;
+  (s10a) (sans code) **les bornes de position**, en valeurs fixes relues dans les clés (révision 3.2) : rocher 8 (`cast_2c_pf_plateau_hb16_rockfix`
+  et `_hb17_rockfix`, identiques sur ce rocher) : pas de vol libre 102 240 en x et 45 440 en y par tick (ticks 138 à 140), premier pas
+  coupé au tick 141 (53 472 et 23 764, la division conjointe du binaire), arrêt de 142 à 146 (sol au 146, x 10 289 152, y 4 719 956) ; la
+  DLL fait avancer l'axe libre de tout son pas (la branche oblique de `ScriptedMotion.SlideAlongWall`), l'axe libre n'est pas lu dans la
+  clé : la borne prend le plus grand des deux pas, 102 240, sur la fenêtre des ticks 141 à 146 comptés, plus un tick de R-EL-5, soit 7 ×
+  102 240 = **715 680 unités brutes (environ 10,9 px) sur chaque axe** autour de la position finale de la clé ; rocher 11, le rocher de
+  bord (`cast_2c_pf_rockfix`, `_hb16_rockfix`, `_hb17_rockfix`) : x constant à 655 360, y qui glisse de 80 320 par tick, sol au 194 à
+  y 9 204 160 ; le rognage par axe de `ClampStepToMapEdge` égale le binaire : **borne 0 sur chaque axe** ; ces bornes valent dans les trois
+  clés où ces rochers rencontrent le même obstacle, la moitié « octet 17 » de (w8) comprise ; écrites dans l'annexe, R-EL-5 étendue à la
+  position avec elles ; (s11) E20.c2b présente : un `0x31` posé passe par le `case 0x31`, la garde de h4a l'annule, le son 23 du héros est joué ;
   (s12) la case de la carte 14 sous le héros à (100, 100) n'est pas dangereuse (la carte 14 n'en a aucune) ;
   (d) la liste prédite : les deux épingles ; recomptée.
 - ⏳ **T1 — Phase A** (tests d'abord ; R-EL-4, les trois coutures) : (t1) la table contre l'exécutable ; (t2) le pilote contre les cas de
@@ -11859,12 +11877,14 @@ le manifeste, un `README`).
   accolé à un rocher intérieur ; (w3) la chronologie relative d'un rocher intérieur
   à 2 et 3 ticks par image ; (w3b) (révision 3) celle du rocher de bord à 2 et 3 ticks par image (le rognage par tick et l'ordre de
   D-E20-38) ; (w4) les interruptions `cancel_2c_pf_t100`, `_t60` et `cancel_2c_pf_t170_rockfix` (révision 3 : le rocher de bord en l'air annulé, un son 45
-  de plus), avec un son 45 par rocher annulé et les coups de la clé ; après T, l'animation cible du héros (`hero_ta`) et son son 23 comparés (R-EL-6 révisée ; les clés n'ont pas de position du héros) ;
+  de plus), avec un son 45 par rocher annulé et les coups de la clé (les sons lus dans `critic/keys/cancel_2c_pf_t{60,100}_sounds.txt` et,
+  pour T = 170, `rockfix/cancel_2c_pf_t170_rockfix_sounds.txt`) ; après T, l'animation cible du héros (`hero_ta`) et son son 23 comparés (R-EL-6 révisée ; les clés n'ont pas de position du héros) ;
   (w6) une bande d'eau profonde : les rochers du type 17 vivent, accolé à une entité marquée à gravité qui y meurt (f6a) ; les interruptions de (w4)
   et de la garde (t6), (c1) passent par `ItemCancelForTests` = `EarthTome2Ai.Cancel` (R-EL-4) et se posent par R-EL-6 ; (w8) les plateaux : octet 16,
   les rochers nés sur le plateau gardés ; octet 17, détruits sur place (son 55, pas de son 45, pas de coup, les tirages faits) ; le rocher 8 qui bute
   contre le mur du plateau en l'air, contre `cast_2c_pf_plateau_hb16_rockfix` (révision 3 : pas de coup au 143, statut 3 et coup au 147,
-  statut 4 au 194 ; la position finale dans la borne de (s10a)), et l'octet 17 contre `cast_2c_pf_plateau_hb17_rockfix` ; (s10b) (révision
+  statut 4 au 194 ; la position finale dans la borne de (s10a), 715 680 sur chaque axe), et l'octet 17 contre
+  `cast_2c_pf_plateau_hb17_rockfix` (les mêmes bornes : 715 680 pour le rocher 8, 0 pour le rocher 11) ; (s10b) (révision
   3.1, une fois E13 écrit) la position finale du rocher 8 et du rocher de bord dans la DLL, mesurée et versée, comparée aux bornes de
   (s10a) ; (w5) en dernier, non bloquant, derrière (s8) : les touches contre des blocs 25 posés ClassA sur le champ
   plat (`targets_2c_pf_inv0`).
@@ -11902,8 +11922,8 @@ le manifeste, un `README`).
 - **Arrêts** : une clé refaite diffère entre deux exécutions ; une sonde diffère ; (w1) diffère d'un tick ou d'une unité (aucune tolérance) ; un test
   hors de la liste prédite bouge ; un octet lu par un vecteur n'a pas de membre ; un besoin de toucher au moteur ; un nom refusé ; f5, h0a ou h4a non
   faites ; une réponse de l'auteur autre que le défaut à Q-H4B-4, Q-H4C2-1 ou Q-H4C2-2, autre que B à Q-H4C2-3, autre que le défaut à Q-H4C2-5 ou
-  Q-H4C2-6 (révisions 1 et 3) ; une sonde (s9), (s11) ou (s12) contredite ; (révision 3.1) une position mesurée en (s10b) hors de sa borne
-  de (s10a) (le rocher 8 au-delà du pas libre fois les ticks restants, le rocher de bord à plus de 0 du binaire).
+  Q-H4C2-6 (révisions 1 et 3) ; une sonde (s9a), (s11) ou (s12) contredite ; (révisions 3.1 et 3.2) une position mesurée en (s10b) hors de sa
+  borne de (s10a) (le rocher 8 à plus de 715 680 unités brutes de la clé sur un axe, le rocher de bord à plus de 0).
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B (l'appel et les entrées) ; la phase A : le fichier, le membre de contexte, la liste par tick et le paramètre
   optionnel.
