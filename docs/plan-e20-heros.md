@@ -6072,7 +6072,7 @@ commit de docs `6c8ad55` de la session principale (garde du plan oubliée, rien 
 
 Détaillée seulement si l'auteur répond à Q-K2 par l'option B. Contenu : un port entier de la boucle d'affinage de `0x80037730` (pas entier en unités brutes, halvings, `moved_ok`, `NoObstacleSlide`), sans entité (les projectiles ne sont pas sujets), pour les entités marquées, en remplacement du mover du moteur. T0 : le modèle du fuzz (20 000 cas, 0 écart) comme oracle de la fonction ; acceptation : les 12 départs de l'oracle (drapeau aux ticks 43 et 44 exacts), aucun écart sur le fuzz. Phases A (fonction pure) et B (branchement). Prérequis : e0k2, e0k3.
 
-#### 1.18.5 E20.e0k5 — Le premier pas d'une entité née en jeu, borné par la recherche par moitiés du binaire (O-E20-24) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
+#### 1.18.5 E20.e0k5 — Le premier pas d'une entité née en jeu, borné par la recherche par moitiés du binaire (O-E20-24) ✅ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
 
 **Provenance.** Deux lectures seules du 2026-10-24, chacune recoupée par un critique frais : la partie A de `scratchpad/t2-proj/` (O-E20-24) et
 `docs/plan-e20-annexe/e20-step-search/` (la recherche du pas, déjà versée : le modèle `work/xymodel.py`, rejoué contre le vrai code sur 55 000
@@ -6129,7 +6129,8 @@ l'intégration, le drapeau) ; les tests ; l'annexe `docs/plan-e20-annexe/e20-e0k
 **Hors périmètre.** Le moteur ; la recherche du pas après l'intégration (D-E20-80 garde le reste des écarts) ; f6b.
 
 **Tâches.**
-- ⏳ **T0 — Versement, oracle, sondes** (commit de docs). (a) Verser la partie A de `scratchpad/t2-proj/` (rapports, scripts, `out/keys/` avec leurs
+- ✅ **T0 — Versement, oracle, sondes** (commit de docs ; fait le 2026-10-25, `84ed62c1` : clés neuves produites par `run_f5.py` et
+  `run_charged_pf.py`, manifestes complétés ; le trou du moteur confirmé par la sonde PA2 ; liste prédite vide). (a) Verser la partie A de `scratchpad/t2-proj/` (rapports, scripts, `out/keys/` avec leurs
   manifestes) à `docs/plan-e20-annexe/e20-e0k5-disc/` ; produire les variantes `_pf` des clés générées (`f5/oracle/run_f5.py`, lues par
   `ArrowOracle.Load(..., stepByImage: true)`), et la clé neuve `arrow3_x107` (et sa variante `_pf`) par le même script, avec son manifeste. **Les
   chemins** : les clés des flèches normales (`arrow3_flush`, `arrow3_point_blank`, `arrow3_near105`, `arrow3_x107` et leurs `_pf`) par
@@ -6141,9 +6142,11 @@ l'intégration, le drapeau) ; les tests ; l'annexe `docs/plan-e20-annexe/e20-e0k
   `heroX` 106, 107, 108, 109 contre la colonne 5 ; (d) la liste prédite des tests déplacés (`ArrowLifeTests` E7, `ChargedArrowLifeTests` C7, dont
   les murs sont loin : attendus inchangés ; `BirthTickProbePaTests.PA2` reste vrai), mesurée par un câblage temporaire annulé. Arrêts : une sonde qui
   contredit un fait ; plus de 10 tests existants déplacés.
-- ⏳ **T1 — Phase A, tests d'abord** (rouges sur un squelette) : la fonction pure contre le modèle `xymodel.py` (un fuzz d'au moins 20 000 cas, 0
+- ✅ **T1 — Phase A, tests d'abord** (fait le 2026-10-25, `36b07c02`, `3a1a7023` : `Alundra/Physics/HalvingStepSearch.cs`, 20 000 cas du
+  modèle, 0 écart ; 28 rouges sur le squelette) (rouges sur un squelette) : la fonction pure contre le modèle `xymodel.py` (un fuzz d'au moins 20 000 cas, 0
   écart) et contre les 10 cellules de la table de la lecture (dont `7143423` pour x0 = 107 et 104) ; puis le corps ; aucun changement de production.
-- ⏳ **T2 — Phase B, tests de monde rouges avant** (le vrai contrôleur, aux trois cadences, le mur en `Column(5)`, côté est ; chaque `heroX` est la
+- ✅ **T2 — Phase B, tests de monde rouges avant** (fait le 2026-10-25, `a47489be`, `8bfcd5e5` : 16 cas sur 18 rouges avant, 18 verts après ;
+  écarts D-E0K5-4) (le vrai contrôleur, aux trois cadences, le mur en `Column(5)`, côté est ; chaque `heroX` est la
   position du héros du scénario de sa clé dans `pb_keys.py`, ou de la clé que T0 génère) : `ArrowRun` à 109 contre `arrow3_flush_pf` (collé : 0 px
   parcouru, le drapeau à S) ; à 108 contre `arrow3_point_blank_pf` (le pas libre 111 borné à 109) ; à 107 contre une clé `arrow3_x107` que T0
   génère (le pas 110 borné à 109, l'unité brute `7143423` de la boucle par moitiés) ; `ChargedArrowRun` à 105 contre `charged7_near105_pf` (le pas
@@ -6152,10 +6155,17 @@ l'intégration, le drapeau) ; les tests ; l'annexe `docs/plan-e20-annexe/e20-e0k
   `ArrowRun` à 105 contre `arrow3_near105_pf` (le pas libre à 108, aucun bornage) ; puis la ligne de la phase B ; verts. La suite
   entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ; les traces de la 389 ; `cmp` ;
   `check_names.py --rules` ; le moteur sans diff.
-- ⏳ **T3 — Mutants, ADR** : au moins 8 mutants réels, tous tués (la plus grande position libre au lieu de la boucle par moitiés ; la boucle sur un
+- ✅ **T3 — Mutants, ADR** (fait le 2026-10-25, `f6b1ae4d`, `fec37933`, `aa3ae9d5` : 11 mutants réels tous tués, deux survivants du premier
+  passage tués par deux tests ajoutés ; ADR-0097 ; `engine-gaps.md`, D-E0K5-3) : au moins 8 mutants réels, tous tués (la plus grande position libre au lieu de la boucle par moitiés ; la boucle sur un
   seul axe ; le drapeau non levé ; le drapeau levé à S+1 ; le bornage aussi après l'intégration ; le test de murs sans `0x40` ; le coin à `>`
   au lieu de `>=` ; le pas de la naissance laissé libre) ; un ADR neuf ; `engine-gaps.md` ; O-E20-24 fermé.
-- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles. **Fait** le 2026-10-25 (`wf_e8455348-27d`) :
+  les deux CONFIRMED (6 719 verts, un fuzz indépendant de 40 000 cas à 0 écart, la liste mesurée vide comme prédite).
+- **D-E0K5-4** (2026-10-25, écarts acceptés de T2) — (1) `arrow3_x107` n'est comparée de S à S+19 qu'à 3 ticks par image ; à 1 et 2 ticks par
+  image, S+1 est déjà intégré, le déplaceur du moteur lève le drapeau du mur à S+1 où le binaire le lève à S+2 (l'écart d'un tick de
+  D-E20-38, gardé par D-E0K5-2) : la clé y est comparée à S seulement (la position 7 143 423 de la recherche par moitiés), et un test nommé
+  épingle l'écart ; (2) le témoin à 105 n'est vert avant et après qu'à 1 et 2 ticks par image ; à 3, le pas de S+1 encore non intégré finissait
+  à 111 dans le mur : c'est un test rouge puis vert (borné à 109).
 
 **Acceptation.** Les sorties de T0 (b) identiques ; T1 et T2 rouges avant et verts après (le témoin à 105 vert avant et après) ; le côté est
 seulement (O-E0K5-1 pour les autres) ; la suite en Release et en Debug, zéro échec ; les tests
