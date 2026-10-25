@@ -10771,7 +10771,7 @@ un test hors de la liste prédite qui bouge.
 
 **Retour arrière.** Retirer le fichier de l'arc et le préréglage ; rien d'autre ne change.
 
-#### 1.30.2 E20.h3a — La bombe sans les mains : D30, E12 et le couvercle `(E, 19)` ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `1314242` ; **révision 3 du 2026-10-25** (D-E20-83 : E20.c2b avant elle, D-H-7 caduque), nouvelle époque, à relire par un `plan-verifier` frais)
+#### 1.30.2 E20.h3a — La bombe sans les mains : D30, E12 et le couvercle `(E, 19)` ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `1314242` ; **révision 3 du 2026-10-25** (D-E20-83 : E20.c2b avant elle, D-H-7 caduque), nouvelle époque, **READY** à la première relecture, `plan-verifier` frais)
 
 **Révision 3 (2026-10-25, nouvelle époque).** D-E20-83 place E20.c2b (la blessure du héros) avant h3a et D-H-7 est caduque (faux, mesuré).
 La lecture du 2026-10-25 (`scratchpad/t2-next/a362-h3a/` et sa critique, à verser par T0 (a) de l'arc A362) a rejoué l'oracle de h3 : les
