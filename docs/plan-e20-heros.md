@@ -11601,8 +11601,9 @@ découverte d'h4e1, RÉFUTÉE par sa critique (§1.31.7).
 - **R-EL-6 — Une interruption** (révision 2 du 2026-10-25, après D-E20-83) se pose comme dans le banc des clés
   (`e20-h4/work/oracle/interrupt_check.py`) : `TargetAnimationId = 0x31` posé sur le héros avant l'image du tick T ; la garde de h4a l'annule
   au tick T ; l'objet, sa phase, son compteur, les entités du sort et leurs sons se comparent. E20.c2b étant faite avant h4 (D-E20-83), la
-  DLL a l'état `0x31` sur terre, son recul et la chaîne vers `0x1C` : **dans ce banc au poke, les colonnes du héros après T (animation, X, Y,
-  Z) et son son 23 se comparent à la clé là où la tranche le dit** (h4c2, h4d2) ; une tranche qui ne les compare pas (h4d1, h4e1) reste
+  DLL a l'état `0x31` sur terre, son recul et la chaîne vers `0x1C` : **dans ce banc au poke, les colonnes du héros après T que la clé porte
+  et son son 23 se comparent là où la tranche le dit** (h4d2 : l'animation, X, Y, Z ; h4c2 : l'animation cible `hero_ta`, ses clés
+  d'interruption n'ayant pas de position du héros) ; une tranche qui ne les compare pas (h4d1, h4e1) reste
   conforme ; ni les PV, ni `DamagedTickCounter`, ni le clignotement ne se comparent (le banc n'entre pas par le bloc de blessure). Une
   blessure réelle n'équivaut au poke que pour la garde : le bloc de blessure appelle le pilote avant de ranger `0x31` (`0x80031C6C` avant
   `0x80031C84`), la garde ne voit `0x31` qu'au tick suivant, mais l'animation, le recul et le son 23 partent au tick même de la blessure ; un
@@ -11720,15 +11721,20 @@ PM, la piste XA, les états `0x32` à `0x34`, la garde (h4a) ; E3 pour le type 2
 
 ---
 
-#### 1.31.4 E20.h4c2 — La terre 2 : le pilote `0x800354D0`, E13, l'annulation et le coup de caméra ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95` ; **révision 3 du 2026-10-25** : D-E20-56 (Q-H4C2-3, B) et E20.c2b avant h4 (D-E20-83), nouvelle époque, à relire par un `plan-verifier` frais ; défauts de Q-H4C2-5 et Q-H4C2-6 pris par la règle de l'auteur, D-E20-83)
+#### 1.31.4 E20.h4c2 — La terre 2 : le pilote `0x800354D0`, E13, l'annulation et le coup de caméra ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95` ; **révision 3 du 2026-10-25** : D-E20-56 (Q-H4C2-3, B) et E20.c2b avant h4 (D-E20-83), nouvelle époque ; relue : REVISE ; révision 3.1 du 2026-10-25, à relire par un `plan-verifier` frais ; défauts de Q-H4C2-5 et Q-H4C2-6 pris par la règle de l'auteur, D-E20-83)
 
 **Révision 3 (2026-10-25, nouvelle époque).** La réponse de l'auteur à Q-H4C2-3 (B : le rocher arrêté en l'air attend le sol, D-E20-56) et
 l'ordre de D-E20-83 (E20.c2b avant h0a, donc avant h4) changent trois choses (lecture seule du 2026-10-25, `scratchpad/t2-next/h4-rev/` et sa critique `scratchpad/t2-next/h4-rev-critic/`, à verser
 par T0 (a)) : (1) E13 ne joue plus son impact (animation 1, son 45, coup de caméra) tant que le rocher n'est pas au sol : un écart au binaire,
 consigné (D-H4C2-3) ; (2) les clés du rocher de bord de carte et du rocher du plateau d'octet 16 ou 17 sont remplacées par des clés
 « corrigées », dérivées du binaire modifié en mémoire (INFÉRENCE, non fidèles à l'octet) ; les clés d'origine restent l'oracle de
-l'original et l'épingle d'(e1) ; (3) R-EL-6 est reprise : le héros blessé existe dans la DLL, ses colonnes après T se comparent au banc au
-poke.
+l'original et l'épingle d'(e1) ; (3) R-EL-6 est reprise : le héros blessé existe dans la DLL ; pour h4c2, ce que portent les clés
+d'interruption se compare après T (l'animation cible du héros `hero_ta` et son son 23).
+
+**Révision 3.1 (2026-10-25).** La relecture de la révision 3 (REVISE) a relevé deux blocages, corrigés (FIX) : (1) les clés d'interruption
+ne portent du héros que `hero_ta` (ni X, ni Y, ni Z) : (w4) et R-EL-6 ne comparent pour h4c2 que `hero_ta` et le son 23 ; (2) la tolérance
+de position se mesurait sur la DLL elle-même : elle est bornée d'avance par T0 à partir de la clé et de la loi du glissement, un arrêt la
+garde, et la mesure côté DLL passe en T1, une fois E13 écrit.
 
 **Prérequis.** h0a, h4a ; f5 (D-F5-5) ; f6a pour le seul témoin de (w6) ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H4B-4,
 Q-H4C2-1 (porter le coup) et Q-H4C2-2 (`(E, 13)` pour le seul type 17) ; la réponse de l'auteur à Q-H4C2-3 (B : le rocher arrêté en l'air
@@ -11825,9 +11831,10 @@ le manifeste, un `README`).
   d'exception, x = 10, `ForceAdjusted` ; (s4) `ForceResetAnimationFlag` du sprite 17, 46 ticks après l'animation 1, à 1, 2 et 3 ticks par image ;
   (s5) les sons 55 et 45 ; (s6) l'attaque (8, 64) et la boîte ; (s7) rien n'écrit la pente du type 17 ; (s8) les tirages du générateur par touche ;
   (révision 3) (s9) un rocher dont le pas est borné en l'air n'a ni statut 3 vu à la fin d'un tick, ni son 45, ni coup avant le sol, puis
-  statut 3 et coup au tick du sol + 1 ; (s10) la position finale du rocher de bord et du rocher 8 : le glissement oblique de la DLL après le
-  contact (la division conjointe en diagonale gardée par D-E20-80) est mesuré et consigné, R-EL-5 étendue à la position avec la tolérance
-  mesurée ; (s11) E20.c2b présente : un `0x31` posé passe par le `case 0x31`, la garde de h4a l'annule, le son 23 du héros est joué ;
+  statut 3 et coup au tick du sol + 1 ; (s10a) (sans code) **la borne de position**, calculée avant tout code : pour le rocher 8, le pas de l'axe libre au tick du
+  contact (lu dans la clé `cast_2c_pf_plateau_hb16_rockfix`) fois le nombre de ticks entre le contact et le sol (la loi de la branche oblique
+  de `ScriptedMotion.SlideAlongWall` : l'axe libre avance de tout son pas) ; pour le rocher de bord, 0 (le rognage par axe de
+  `ClampStepToMapEdge` égale le binaire) ; les deux bornes écrites dans l'annexe, R-EL-5 étendue à la position avec elles ; (s11) E20.c2b présente : un `0x31` posé passe par le `case 0x31`, la garde de h4a l'annule, le son 23 du héros est joué ;
   (s12) la case de la carte 14 sous le héros à (100, 100) n'est pas dangereuse (la carte 14 n'en a aucune) ;
   (d) la liste prédite : les deux épingles ; recomptée.
 - ⏳ **T1 — Phase A** (tests d'abord ; R-EL-4, les trois coutures) : (t1) la table contre l'exécutable ; (t2) le pilote contre les cas de
@@ -11852,12 +11859,14 @@ le manifeste, un `README`).
   accolé à un rocher intérieur ; (w3) la chronologie relative d'un rocher intérieur
   à 2 et 3 ticks par image ; (w3b) (révision 3) celle du rocher de bord à 2 et 3 ticks par image (le rognage par tick et l'ordre de
   D-E20-38) ; (w4) les interruptions `cancel_2c_pf_t100`, `_t60` et `cancel_2c_pf_t170_rockfix` (révision 3 : le rocher de bord en l'air annulé, un son 45
-  de plus), avec un son 45 par rocher annulé et les coups de la clé ; le héros après T et son son 23 comparés (R-EL-6 révisée) ;
+  de plus), avec un son 45 par rocher annulé et les coups de la clé ; après T, l'animation cible du héros (`hero_ta`) et son son 23 comparés (R-EL-6 révisée ; les clés n'ont pas de position du héros) ;
   (w6) une bande d'eau profonde : les rochers du type 17 vivent, accolé à une entité marquée à gravité qui y meurt (f6a) ; les interruptions de (w4)
   et de la garde (t6), (c1) passent par `ItemCancelForTests` = `EarthTome2Ai.Cancel` (R-EL-4) et se posent par R-EL-6 ; (w8) les plateaux : octet 16,
   les rochers nés sur le plateau gardés ; octet 17, détruits sur place (son 55, pas de son 45, pas de coup, les tirages faits) ; le rocher 8 qui bute
   contre le mur du plateau en l'air, contre `cast_2c_pf_plateau_hb16_rockfix` (révision 3 : pas de coup au 143, statut 3 et coup au 147,
-  statut 4 au 194 ; R-EL-5 sur la position, (s10)), et l'octet 17 contre `cast_2c_pf_plateau_hb17_rockfix` ; (w5) en dernier, non bloquant, derrière (s8) : les touches contre des blocs 25 posés ClassA sur le champ
+  statut 4 au 194 ; la position finale dans la borne de (s10a)), et l'octet 17 contre `cast_2c_pf_plateau_hb17_rockfix` ; (s10b) (révision
+  3.1, une fois E13 écrit) la position finale du rocher 8 et du rocher de bord dans la DLL, mesurée et versée, comparée aux bornes de
+  (s10a) ; (w5) en dernier, non bloquant, derrière (s8) : les touches contre des blocs 25 posés ClassA sur le champ
   plat (`targets_2c_pf_inv0`).
 - ⏳ **T2 — Phase B et tests de production, rouges avant** : (p1) Rond avec le tome 44 : la clé de (w1) par le chemin de production ; (p2) la table des
   cases pleine : aucune entité, l'objet libéré au tick 309 ; (p3) l'invariant `UnhandledWeaponSpriteCodes({17}, …)` ; (p4) Rond avec le tome 44,
@@ -11893,7 +11902,8 @@ le manifeste, un `README`).
 - **Arrêts** : une clé refaite diffère entre deux exécutions ; une sonde diffère ; (w1) diffère d'un tick ou d'une unité (aucune tolérance) ; un test
   hors de la liste prédite bouge ; un octet lu par un vecteur n'a pas de membre ; un besoin de toucher au moteur ; un nom refusé ; f5, h0a ou h4a non
   faites ; une réponse de l'auteur autre que le défaut à Q-H4B-4, Q-H4C2-1 ou Q-H4C2-2, autre que B à Q-H4C2-3, autre que le défaut à Q-H4C2-5 ou
-  Q-H4C2-6 (révisions 1 et 3) ; une sonde (s9) à (s12) contredite.
+  Q-H4C2-6 (révisions 1 et 3) ; une sonde (s9), (s11) ou (s12) contredite ; (révision 3.1) une position mesurée en (s10b) hors de sa borne
+  de (s10a) (le rocher 8 au-delà du pas libre fois les ticks restants, le rocher de bord à plus de 0 du binaire).
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B (l'appel et les entrées) ; la phase A : le fichier, le membre de contexte, la liste par tick et le paramètre
   optionnel.
