@@ -45,7 +45,7 @@ namespace Alundra.Hero;
 /// <see cref="CarryGroupTick"/>); the Square throws (E20.g2a, <see cref="CarryRules.ThrowCarried"/>), and nothing but <see cref="PutInHands"/> puts an object in the hands yet (the trigger is E20.g1b).</description></item>
 /// <item><description>The run (E20.d1), binary <c>0x80031F54</c>, <c>0x80031FF4</c>, <c>0x80032118</c> and <c>0x80032558</c>: the preparation (0x29, entered from the common tail by a held Triangle), the run (0x03), the
 /// slide that ends it (0x2A) and the bounce (0x3E, and 0x1C which shares its handler); the tackle (0x04) is of the ground attack group.</description></item>
-/// <item><description>The swim (E20.i), binary <c>0x8003260C</c>: on deep water (slope 4) <see cref="SwimTick"/> replaces everything between the pad and the end of the tick: the 80-entry table <c>0x80022E7C</c> in six kinds of handler (<see cref="SwimTable"/>), the floating (0x1D), the swimming (0x0F), the burst on the edge of the Triangle, the Cross or the Square (0x28), the end of the hurt in water (0x3A, 0x3B, entered by E20.c2b); the exits to the land are cases of the state chain. NOT ported: the wall of the deep water without the swim boots (O-E19-22), the currents (O-E20-16), the splash, the wake and the ripple (E20.e).</description></item>
+/// <item><description>The swim (E20.i), binary <c>0x8003260C</c>: on deep water (slope 4) <see cref="SwimTick"/> replaces everything between the pad and the end of the tick: the 80-entry table <c>0x80022E7C</c> in six kinds of handler (<see cref="SwimTable"/>), the floating (0x1D), the swimming (0x0F), the burst on the edge of the Triangle, the Cross or the Square (0x28), the end of the hurt in water (0x3A, 0x3B, entered by the hurt block, E20.c2b); the exits to the land are cases of the state chain. NOT ported: the wall of the deep water without the swim boots (O-E19-22), the currents (O-E20-16), the splash, the wake and the ripple (E20.e).</description></item>
 /// <item><description>LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922): on the ground the
 /// case ends and the hero stays LoadingMap - its exit is then the animation Chain bridge
 /// (<c>WorldProxy.OnAnimationFinished</c>, 2026-08-23 "Correctif fins d'animation" - anim 54's trailing
@@ -126,10 +126,10 @@ public static class PlayerManager
     /// <summary>PlayerAnimation 0x3E (E20.d1 T1): the bounce against an obstacle at run speed; it shares its tick with <see cref="HurtBounceAnimationId"/> (<c>0x80032558</c>).</summary>
     internal const uint SprintBounceAnimationId = 0x3E;
 
-    /// <summary>PlayerAnimation 0x1C (E20.d1 T1): the recoil after a hit (reached from the hurt state 0x31, E20.c2b); the jump table <c>0x80022D3C</c> sends it to the handler of <see cref="SprintBounceAnimationId"/>.</summary>
+    /// <summary>PlayerAnimation 0x1C (E20.d1 T1): the recoil after a hit (reached from the hurt state 0x31, <see cref="HurtAnimationId"/>); the jump table <c>0x80022D3C</c> sends it to the handler of <see cref="SprintBounceAnimationId"/>.</summary>
     internal const uint HurtBounceAnimationId = 0x1C;
 
-    /// <summary>PlayerAnimation 0x31 (E20.c2b): the hurt state on the land (4 ticks, speed 256, sound 23, chained to <see cref="HurtBounceAnimationId"/>); its tick is <c>0x80032680</c> (<c>TryUseItem</c> only).</summary>
+    /// <summary>PlayerAnimation 0x31 (E20.c2b): the hurt state on the land, entered by the hurt block of <see cref="MovePlayer"/> (4 ticks, speed 256, sound 23, chained to <see cref="HurtBounceAnimationId"/>); its tick is <c>0x80032680</c> (<c>TryUseItem</c> only).</summary>
     internal const uint HurtAnimationId = 0x31;
 
     /// <summary>The invulnerability the hurt block writes to <c>+0x1CC</c> (<see cref="EntityScriptProxy.DamagedTickCounter"/>, E20.c2b): 120 ticks, 119 on the tick of the hurt after the counters pass; also the value the locked branch writes at the word <c>0x20</c>.</summary>
@@ -147,7 +147,7 @@ public static class PlayerManager
     /// <summary>PlayerAnimation 0x28 (E20.i T1): the burst of the swim, a "dive" that stays on the surface (speed 176, 42 ticks, sound 21, then 0x1D); the Triangle, Cross or Square edge starts it.</summary>
     internal const uint DiveAnimationId = 0x28;
 
-    /// <summary>PlayerAnimation 0x3A (E20.i T1): the hurt state in deep water (4 ticks, sound 23, then 0x3B); entered by the hurt block of E20.c2b, which writes 0x3A instead of 0x31 on slope 4.</summary>
+    /// <summary>PlayerAnimation 0x3A (E20.i T1): the hurt state in deep water (4 ticks, sound 23, then 0x3B); entered by the hurt block (<see cref="HurtBlock"/>), which writes 0x3A instead of 0x31 on slope 4.</summary>
     internal const uint SwimHurtAnimationId = 0x3A;
 
     /// <summary>PlayerAnimation 0x3B (E20.i T1): the end of the hurt in deep water (8 ticks, held until the animation sets <c>+0xAC</c>), left by the handler <c>0x800326FC</c>.</summary>
@@ -189,7 +189,7 @@ public static class PlayerManager
             table[id] = SwimHandler.Skip;
         }
 
-        table[0x1C] = table[0x31] = table[0x3E] = SwimHandler.FlipThenFloat;
+        table[0x1C] = table[HurtAnimationId] = table[0x3E] = SwimHandler.FlipThenFloat;
         table[0x28] = table[0x3A] = SwimHandler.ItemOnly;
         table[0x0F] = table[0x1D] = SwimHandler.Steer;
         table[0x3B] = SwimHandler.HurtEnd;
@@ -299,6 +299,10 @@ public static class PlayerManager
         // E20.d1 T1: the facing the binary has at the head of this tick (read by the cone of the run), computed before the tick writes anything.
         var tickFacing = TickFacing(player);
 
+        // E20.c2b D-C2B-4, binary 0x80031B98: the slope the hurt block chooses its state by (0x3A on 4, else 0x31) is read HERE, before CheckAndExecuteWarp: the slope of the previous tick's physics, which this tick's
+        // writers (the warp, the entry) do not touch. UpdateGroundSlope of the physics pass is the only writer of Slope_18c, so reading it later would give the same value; the order is kept as the binary has it.
+        var slopeAtHead = player.Slope_18c;
+
         // E12.d: `host` is REQUIRED at every call site (no default) - null means "no world" and skips
         // CheckEntityInteraction below, a documented degraded mode the ~19 direct movement-only test
         // callers opt into EXPLICITLY with `host: null` (never silently by omission - the
@@ -351,6 +355,14 @@ public static class PlayerManager
 
             // E20.g1a T3 (W2, D-G-4), binary 0x80031BF4: UpdatePlayerCarriedEntity(1) comes right after the two clears and before the item cancel (0x800350C0, E20.h0's stub) and END: an object in the hands is drawn in and destroyed.
             UpdatePlayerCarriedEntity(player, 1);
+
+            // E20.c2b D-C2B-5, binary 0x80031C0C-0x80031C28 (after the item cancel 0x800350C0, E20.h0's stub): only the whole word 0x20 (a forced sequence alone: nothing but the bit) lets the entry through, and then it writes nothing
+            // but the invulnerability (+0x1CC = 0x78): no state, no direction, no recoil. The entry is still called, so that its life loss is taken. A hit under any other lock (0x24, 0x30, 0x10, 0x04, 0xA0) is lost.
+            if (state.PlayerControlFlags == GameState.PlayerControlBits.ForcedSequence && EnterInjury(player, host) != HeroInjury.NoInjury)
+            {
+                player.DamagedTickCounter = HurtInvulnerabilityTicks;
+            }
+
             EndOfMovePlayer(player, in pad, state, host); // E20.c2a T1: the locked branch also reaches END (0x80031C0C-0x80031C28 lead to 0x80032914): the life vessel of a locked script is mirrored at once.
             return;
         }
@@ -360,7 +372,16 @@ public static class PlayerManager
         player.Flags |= EntityFlags.Gravity;
         PlayerAnimationEffects.Create(player, PlayerAnimationEffects.FreeMode);
 
-        // E20.a A4 (D-E20-14): the second call of the item driver, once per normal tick before the pad is read (binary 0x80031CC4). Stub until E20.c2.
+        // E20.c2b D-C2B-4, binary 0x80031C44 (the entry) and 0x80031C58-0x80031C9C (the hurt block): any answer but -1, a toucher or a hazard cell, replaces everything below (attack, jump, ladder: F10 of the discovery) and ends the tick
+        // without the test of the death (0x80031CA8, E18).
+        var injuryDirection = EnterInjury(player, host);
+        if (injuryDirection != HeroInjury.NoInjury)
+        {
+            HurtBlock(player, in pad, state, host, slopeAtHead, (uint)injuryDirection);
+            return;
+        }
+
+        // E20.a A4 (D-E20-14): the second call of the item driver, once per normal tick before the pad is read (binary 0x80031CC4). Stub until h0a (E20.h0).
         UpdateItemUseDriver(player);
 
         // PlayerManager.cs:61-353 (CheckAndExecuteWarp's warp-facing branch, HP==0 death branch,
@@ -607,6 +628,13 @@ public static class PlayerManager
             BounceTick(player, in pad);
         }
 
+        // E20.c2b D-C2B-6, binary 0x80032680 (the jump table 0x80022D3C, state 0x31): the hurt state of the land does nothing but TryUseItem (the stub returns 1 until h0a); the tick then ends. The 4 ticks of the state and the chain to
+        // 0x1C come from the animation, the recoil from the physics along +0x8C.
+        else if (player.TargetAnimationId == HurtAnimationId)
+        {
+            TryUseItem(player, in pad);
+        }
+
         // E20.b B3, binary 0x80031E18 (the ground attack group) and 0x80031DF8 (the air attack group), reached through the jump table 0x80022D3C: the states of an attack in progress do nothing but keep
         // the swing on the right side of the ground. Neither reads the pad, writes the direction or calls PlayerTryAttack (the swing ends by the animation Chain, E19.c2); both then call TryUseItem,
         // whose result is ignored, and end.
@@ -645,6 +673,36 @@ public static class PlayerManager
         // TargetAnimationId is none of the values ported above keeps it unchanged.
 
         // PlayerManager.cs:947-950, binary 0x80032914 (END: UpdateItemEffectState, then SetPlayerHpMax/SetPlayerHp), shared with the two early exits above.
+        EndOfMovePlayer(player, in pad, state, host);
+    }
+
+    /// <summary>
+    /// E20.c2b: the entry of the hero's damage (<c>0x80031A68</c>, <see cref="HeroInjury.Enter"/>) with what the binary reads in globals: the sheet <c>0x80127008</c> and the equipment records of the world
+    /// (<see cref="IScriptHost.EquipmentRecords"/>), the frozen animation of the hero <c>0x80146DF8</c> (<see cref="IEntityWorldContext.HeroAnimationLatch"/>) and the boots level <c>[0x80127000]</c>, the value the previous tick's
+    /// <c>UpdateItemEffectState</c> left. A host that is not a world has none of them: no sheet (the life is kept, D-C2B-9), a latch of 0, no boots.
+    /// </summary>
+    private static int EnterInjury(EntityScriptProxy player, IScriptHost? host)
+    {
+        var records = host?.EquipmentRecords;
+        var latch = (host as IEntityWorldContext)?.HeroAnimationLatch ?? 0u;
+        return HeroInjury.Enter(player, records?.HeroSheet, records, latch, records?.BootsLevel ?? 0);
+    }
+
+    /// <summary>
+    /// E20.c2b T2, the hurt block (<c>0x80031C58-0x80031C9C</c>, shared by the two branches of the binary but the locked one, which does not reach it): the charge counter (<c>0x80126FFC</c>) and the pending-shot pointer
+    /// (<c>0x80127110</c>) are zeroed, an object in the hands is let go (<see cref="UpdatePlayerCarriedEntity"/> with 2, which reads <c>+0x8C</c> BEFORE it is rewritten below: the object takes the old facing), the item driver
+    /// runs (<c>0x8003634C</c>, the named stub <see cref="UpdateItemUseDriver"/>), then the state (<see cref="SwimHurtAnimationId"/> when the slope retained at the head of the tick is deep water, else
+    /// <see cref="HurtAnimationId"/>), the facing <paramref name="direction"/> the entry returned and the invulnerability. The tick then ends at once: no pad, no state, no test of the death (E18).
+    /// </summary>
+    private static void HurtBlock(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host, int slopeAtHead, uint direction)
+    {
+        player.WeaponChargeTimer = 0;
+        player.WeaponRecordPointer = 0;
+        UpdatePlayerCarriedEntity(player, 2);
+        UpdateItemUseDriver(player);
+        player.TargetAnimationId = slopeAtHead == DeepWaterSlope ? SwimHurtAnimationId : HurtAnimationId;
+        player.TargetDirection = direction;
+        player.DamagedTickCounter = HurtInvulnerabilityTicks;
         EndOfMovePlayer(player, in pad, state, host);
     }
 
@@ -743,7 +801,7 @@ public static class PlayerManager
 
     /// <summary>
     /// E20.i T2: the end of the hurt in deep water, state 0x3B (<c>0x800326FC</c>). <c>TryUseItem</c> at 0 turns the direction (+ 0x10) and ends the tick; otherwise the hero stays in 0x3B until the animation sets
-    /// <c>+0xAC</c> (<see cref="EntityScriptProxy.ForceResetAnimationFlag"/>, the hold of its last frame), then floats (0x1D) and turns back (+ 0x10). Nothing enters 0x3A or 0x3B yet: the hurt block of E20.c2b does.
+    /// <c>+0xAC</c> (<see cref="EntityScriptProxy.ForceResetAnimationFlag"/>, the hold of its last frame), then floats (0x1D) and turns back (+ 0x10). The hurt block (<see cref="HurtBlock"/>) enters 0x3A.
     /// </summary>
     private static void SwimHurtEndTick(EntityScriptProxy player, in PadState pad)
     {
@@ -959,7 +1017,7 @@ public static class PlayerManager
         return TryUseItemResultForTests ?? 1;
     }
 
-    /// <summary>E20.c2b test seam, per thread: the number of calls of the stub of <see cref="TryUseItem"/> (the state 0x31 calls it once a tick).</summary>
+    /// <summary>E20.c2b test seam, per thread: the number of calls of the stub of <see cref="TryUseItem"/> (the state 0x31 calls it once a tick, <see cref="HurtAnimationId"/>).</summary>
     [ThreadStatic]
     internal static int TryUseItemCallCountForTests;
 
@@ -1426,7 +1484,7 @@ public static class PlayerManager
     /// <summary>
     /// E20.g1a T3 (W1, D-G-4): <c>UpdatePlayerCarriedEntity</c> (<c>0x8002F884</c>), called with 0 at <c>0x80031D78</c> (every free tick), with 1 by the locked branch (<c>0x80031BF4</c>) and with 2 by the swim branch (<c>0x8003261C</c>, E20.i). The
     /// rules are <see cref="CarryRules.UpdateCarried"/>; the single-argument destruction of mode 1 is the one of the world the hero belongs to (<c>player.ScriptHost</c>, as <see cref="CheckEntityInteraction"/> reaches it), none for a host that is not a world.
-    /// The sites of the wound (<c>0x80031C64</c>, E20.c2b), the exit square (<c>0x80032778</c>) and the death (<c>0x800327AC</c>, E18) stay named stubs at their place: nothing in the DLL reaches them yet.
+    /// The wound (<c>0x80031C64</c>, <see cref="HurtBlock"/>, E20.c2b) calls it with 2; the exit square (<c>0x80032778</c>) and the death (<c>0x800327AC</c>, E18) stay named stubs at their place: nothing in the DLL reaches them yet.
     /// </summary>
     private static void UpdatePlayerCarriedEntity(EntityScriptProxy player, int mode)
         => CarryRules.UpdateCarried(player, mode, player.ScriptHost as IEntityWorldContext);

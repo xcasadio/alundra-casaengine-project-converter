@@ -1,4 +1,4 @@
-2659dc0db91f7cde21160108981c2bc3d675c16a *README.md
+e2984849da68d37eb92cbdc60f3734c033e71258 *README.md
 b6b8755e4d2e2a194766a664bcd16affac23ecde *inventory/blinkonly-p1.log
 e200c61fdd4bc1958e0f7a022009fd7abc1258d5 *inventory/blinkonly-p2.log
 4c6547f40fedb0f7d82d017d9cec76fd52a4fb2e *inventory/run.sh
@@ -30,4 +30,4 @@ cd421de4f392b2c885b831b4671f5e53acf54b74 *replay/run_c2.log
 8ae0aa46fae47c28a83569ca0560f4d6f544a6fc *replay/w7-copy-md5.txt
 8ae0aa46fae47c28a83569ca0560f4d6f544a6fc *replay/w7-repo-md5.txt
 9638f7f6ff27fa865c2770e5fd2fba1508ca473e *replay/w7.log
-fa47984fcfea89c265cfe22aee9cf84d8bf48c97 *results.md
+2c8fd4172df60c203a64535f856f108ad7a0f1dc *results.md
