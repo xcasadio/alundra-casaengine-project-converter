@@ -102,6 +102,24 @@ internal static class AnnexFiles
         throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/e20-g2c/disc/{relative}' found above '{AppContext.BaseDirectory}'.");
     }
 
+    /// <summary>E20.e0d T2: a file of the annex <c>docs/plan-e20-annexe/e20-e0d-disc/</c> (the 244 vectors of F255 and the outputs of the oracles of the chest that the discovery of 2026-10-24 made from the real code of the binary), found above the test binaries.</summary>
+    public static string ChestAnnex(string relative)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "docs/plan-e20-annexe/e20-e0d-disc", relative);
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/e20-e0d-disc/{relative}' found above '{AppContext.BaseDirectory}'.");
+    }
+
     /// <summary>The parsed vector file; the caller disposes it.</summary>
     public static JsonDocument ReadVector(string name) => JsonDocument.Parse(File.ReadAllText(Vector(name)));
 }

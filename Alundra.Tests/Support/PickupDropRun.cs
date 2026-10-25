@@ -55,10 +55,10 @@ internal sealed class PickupDropRun : IDisposable
     /// <summary>Told at the head of each pass of the tick with the pass name, for the tests that act at an exact pass.</summary>
     public Action<string>? OnPass { get; set; }
 
-    /// <summary>The world of <paramref name="world"/> in <paramref name="zone"/>, the hero carried to the pixel (<paramref name="heroX"/>, <paramref name="heroY"/>) on the ground (left where the map puts it when <paramref name="heroX"/> is negative), every other entity removed. <paramref name="flags"/> (E20.e0d): game flags raised before the map is entered.</summary>
-    public PickupDropRun(string name, string zone, string world, int heroTileX, int heroTileY, int heroX, int heroY, bool clearTheWorld = true, int[]? flags = null)
+    /// <summary>The world of <paramref name="world"/> in <paramref name="zone"/>, the hero carried to the pixel (<paramref name="heroX"/>, <paramref name="heroY"/>) on the ground (left where the map puts it when <paramref name="heroX"/> is negative), every other entity removed. <paramref name="flags"/> (E20.e0d): game flags raised before the map is entered; <paramref name="arrival"/>: the hero comes in by a portal arrival, as in production (the spawn zones apply and <paramref name="heroTileX"/>, <paramref name="heroTileY"/> are unused).</summary>
+    public PickupDropRun(string name, string zone, string world, int heroTileX, int heroTileY, int heroX, int heroY, bool clearTheWorld = true, int[]? flags = null, ArcArrival? arrival = null)
     {
-        Arc = new ArcRun(new ArcSpec("E20e0c-" + name, zone, world, flags ?? Array.Empty<int>(), heroTileX, heroTileY, 0, 20000, RealController: true, Prefabs: true));
+        Arc = new ArcRun(new ArcSpec("E20e0c-" + name, zone, world, flags ?? Array.Empty<int>(), heroTileX, heroTileY, 0, 20000, RealController: true, Prefabs: true, Arrival: arrival));
         try
         {
             typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Arc.Proxy, Sounds);
