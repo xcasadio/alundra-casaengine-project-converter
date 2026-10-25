@@ -163,6 +163,14 @@ public static class TestSaves
         // E20.g4b D-E20-79 (docs/plan-e20-heros.md section 1.0): the platform step of the recipe of the lifting, on the map 72. Tile (22, 15), level 5 (the peninsula, 80 px high: pixel (540, 248), the cells of the columns 17 to 22 of the row 16 and 21, 22 of the row 15),
         // next to the west end of the platform "Plateforme flottante (grande)" (record 2), which the bank preset cannot reach on foot (a climb of 32 px, the jump rises 27.5 px). Wait for the platform to come back to its west end and walk east onto it. The other steps of the recipe start from porter-m72.
         new Preset("porter-plateforme-m72", "test-porter-plateforme-m72", 72, 22, 15, 5, [], [], [], []),
+
+        // E20.g2c1 T3 (docs/plan-e20-heros.md section 1.24.5, D-G2C1-9): the transportable objects of the family C4. `c4-m22`: Lars' Crypt (map 22), tile (25, 20), level 3 (the arrival of the author's save 66-crypte-de-lars.sav), on the new game's kit, no flag:
+        // the two barrels of the map are the records 21 at (888, 464) and 33 at (1104, 240); lift one with the Square, carry it, throw it against an enemy (it breaks) or against a wall in its rise (it rebounds).
+        new Preset("c4-m22", "test-c4-m22", 22, 25, 20, 3, [], [], [], []),
+
+        // `c4-m70`: the Coastal Cave (map 70), tile (33, 29), level 3 (48 px, the bank), on the new game's kit, no flag: the trunk of the record 8 stands 24 px to the north-west at (780, 456), out of the water, and the five trunks of the records 9 to 12 and 21 float
+        // on the water to the north (they float from the load: the animation 5, the slope 4). Lift the trunk of the record 8, throw it into the water: it floats.
+        new Preset("c4-m70", "test-c4-m70", 70, 33, 29, 3, [], [], [], []),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>

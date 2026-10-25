@@ -34,8 +34,11 @@ public sealed class LiftWorldTests : IDisposable
     /// <summary>A sprite type of the production set (the seven types C23: 234, 291, 292, 294, 297, 304, 438), the Pierre generique of the original's crate family (291).</summary>
     private const int WiredType = 291;
 
-    /// <summary>A sprite type of the family C4 (Pierre et tonneau, 290): genre 1 like a crate, but outside the set: the sword, never a lift.</summary>
-    private const int UnwiredType = 290;
+    /// <summary>
+    /// A sprite type outside the production set (the torch, 393, whose C is (C, 70) and which g2c2 wires later): genre 1 like a crate, but outside the set: the sword, never a lift. E20.g2c1 phase C wired the barrel (290) with the other
+    /// types of C4, so the witness was derived on the torch, a type that stays outside.
+    /// </summary>
+    private const int UnwiredType = 393;
 
     private const uint LiftOnTheGround = 5;
     private const uint LiftInTheAir = 11;
@@ -284,7 +287,7 @@ public sealed class LiftWorldTests : IDisposable
     [Fact]
     public void M5_AnObjectOutsideTheSet_GivesTheSword_NextToTheCrateOfTheSameSceneThatLifts()
     {
-        // The same pad (RIGHT x5, then RIGHT+SQUARE at t6: the line E2): the object of the family C4 (genre 1 like a crate, not wired) gets the sword, the crate of the set lifts.
+        // The same pad (RIGHT x5, then RIGHT+SQUARE at t6: the line E2): the object outside the set (the torch, genre 1 like a crate, not wired) gets the sword, the crate of the set lifts.
         var pad = Script((5, R), (1, R | SQ), (10, R));
 
         var outside = Scene(1, pad, UnwiredType);

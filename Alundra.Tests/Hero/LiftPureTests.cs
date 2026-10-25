@@ -133,10 +133,11 @@ public sealed class LiftPureTests
     }
 
     [Fact]
-    public void TheProductionSet_IsTheSevenTypesOfC23_AndTheTestSeamReplacesIt()
+    public void TheProductionSet_IsTheTwentyFiveTypesOfC23C4AndTheShopArticles_AndTheTestSeamReplacesIt()
     {
-        // E20.g1b phase B: the activation wires the seven types of C23 (binary: the sprites whose header holds C23), no more.
-        Assert.Equal(new[] { 234, 291, 292, 294, 297, 304, 438 }, PlayerManager.ProductionWiredLiftableTypes.OrderBy(t => t));
+        // E20.g1b phase B: the activation wires the seven types of C23 (binary: the sprites whose header holds C23); E20.g2c1 phase C (D-G2C1-9) adds the 18 types of C4 and the shop articles that C23 does not hold (the 304 is in both): 25 types, no more.
+        // The list is written by hand: the barrel 290, the stone 293, the objects 363, 367, 368, 369, the trunk 373, then the shop articles 48, 50, 66, 67, 68, 69, 71, 81, 83, 85, 113.
+        Assert.Equal(new[] { 48, 50, 66, 67, 68, 69, 71, 81, 83, 85, 113, 234, 290, 291, 292, 293, 294, 297, 304, 363, 367, 368, 369, 373, 438 }, PlayerManager.ProductionWiredLiftableTypes.OrderBy(t => t));
         Assert.Same(PlayerManager.ProductionWiredLiftableTypes, PlayerManager.WiredLiftableTypes);
         try
         {

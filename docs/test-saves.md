@@ -167,6 +167,18 @@ For the platform step alone, the preset `porter-plateforme-m72` starts on the pe
 The arrival tile is on the 80 px peninsula, next to the west end of the platform. Wait for the platform to come back to that end and walk east onto it: Alundra rides it (its top is at 72), and the platform takes her east and west with it.
 The other steps of the recipe (jar, barrel) start from `porter-m72`.
 
+### Transportable objects presets (E20.g2c1)
+
+For the barrels, stones, trunks and objects of the family C4 (docs/plan-e20-heros.md section 1.24.5): they lift, carry and throw like a jar since the phase C. The new game's kit, no flag.
+
+| Preset | Map, tile, z | Owned | Equipped |
+|---|---|---|---|
+| `c4-m22` | 22 (Lars' Crypt), (25, 20), 3 | the kit's items 1, 17, 25 | the basic sword |
+| `c4-m70` | 70 (Coastal Cave), (33, 29), 3 | the kit's items 1, 17, 25 | the basic sword |
+
+`c4-m22` is the arrival of the author's save `66-crypte-de-lars.sav`. The two barrels of the map stand at (888, 464) and (1104, 240) pixels: lift one with the Square, carry it, throw it against an enemy (it breaks) or against a wall during its rise (it rebounds).
+`c4-m70` arrives on the bank, next to the trunk of the record 8 (780, 456), out of the water: lift it and throw it into the water, it floats. The five trunks of the records 9 to 12 and 21 already float on the water to the north from the load.
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;

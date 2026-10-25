@@ -35,6 +35,9 @@ public sealed class LiftMap72ArcTests : IDisposable
     private const int JarType = 291;
     private const int BarrelType = 290;
 
+    /// <summary>E20.g2c1 phase C wired the barrel (290) with the types of C4: the witness (m5) derives the barrel of the record 1 on the torch (393, g2c2), a type that stays outside the set.</summary>
+    private const int TorchType = 393;
+
     public LiftMap72ArcTests()
     {
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
@@ -218,10 +221,10 @@ public sealed class LiftMap72ArcTests : IDisposable
         Assert.True(Math.Abs(X(platform) - platformX0) > 20.0, "the platform moved by itself");
     }
 
-    // ---- (m5) the barrel gives the sword, the jar of the same scene lifts ----------------------------------------------------------------------------------------
+    // ---- (m5) an object outside the set gives the sword, the jar of the same scene lifts ----------------------------------------------------------------------------------------
 
     [Fact]
-    public void M5_TheBarrelOfTheFamilyC4_GivesTheSword_TheJarOfTheSameSceneLifts()
+    public void M5_AnObjectOutsideTheSet_GivesTheSword_TheJarOfTheSameSceneLifts()
     {
         using var arc = new ArcRun(Spec("g1b-m5"));
         arc.Give(1);
@@ -229,7 +232,10 @@ public sealed class LiftMap72ArcTests : IDisposable
         var hero = arc.Hero;
         var jar = arc.EntityByRecord(37)!;
         var barrel = arc.EntityByRecord(1)!;
-        Assert.Equal(1, (int)EntityFlags.GetPickupKind(barrel.Flags)); // the barrel is genre 1 like a jar: only the set tells them apart.
+
+        // Derived on a type that stays outside the set: the barrel of the record 1 (genre 1, a top of 16 px) takes the sprite type of the torch.
+        barrel.SpriteType = TorchType;
+        Assert.Equal(1, (int)EntityFlags.GetPickupKind(barrel.Flags)); // the object is genre 1 like a jar: only the set tells them apart.
         Assert.NotEqual(JarType, barrel.SpriteType);
 
         // Down 24 px, west under the jar and the barrel, then north into the barrel from the south.

@@ -89,7 +89,11 @@ public sealed class TestSavesTests : IDisposable
     // E20.g4b D-E20-79: the platform step of the same recipe, from the peninsula of the map 72 (docs/plan-e20-heros.md section 1.0), the last of the table.
     private const string LiftPlatformPresetName = "porter-plateforme-m72";
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName];
+    // E20.g2c1 T3: the two presets of the transportable objects of the family C4 (docs/plan-e20-heros.md section 1.24.5, D-G2C1-9), the last of the table.
+    private const string C4Map22PresetName = "c4-m22";
+    private const string C4Map70PresetName = "c4-m70";
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName];
 
     public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName]);
 
@@ -105,7 +109,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheSixteenPresets_AreListed_InTheOrderOfTheTable()
+    public void TheEighteenPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -482,6 +486,28 @@ public sealed class TestSavesTests : IDisposable
         // Map 72 (Coastal Cave), tile (10, 12), level 3 (the bank, 48 px): the jar of the record 37 is 48 px to the west, the barrel of the record 1 behind it (docs/plan-e20-annexe/e20-g1b/README.md, T0 (a)).
         Assert.Equal(72, save.InitialMapId);
         Assert.Equal((10, 12, 3), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word));
+
+        // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), nothing else.
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    [Fact]
+    public void TheC4Map22Preset_IsTheNewGameInLarsCrypt_WithNoFlag() => AssertC4Preset(C4Map22PresetName, 22, 25, 20, 3);
+
+    [Fact]
+    public void TheC4Map70Preset_IsTheNewGameOnTheBankOfTheCoastalCave_WithNoFlag() => AssertC4Preset(C4Map70PresetName, 70, 33, 29, 3);
+
+    private static void AssertC4Preset(string name, int map, int tileX, int tileY, int tileZ)
+    {
+        var rules = RealRules();
+        var save = Build(name);
+
+        // Map 22 (Lars' Crypt): the arrival of the author's save 66-crypte-de-lars.sav; map 70 (Coastal Cave): the bank next to the trunk of the record 8 (docs/plan-e20-annexe/e20-g2c1/results.md, T3).
+        Assert.Equal((map, tileX, tileY, tileZ), (save.InitialMapId, save.CameraTileX, save.CameraTileY, save.CameraTileZ));
         Assert.All(save.GameFlags, word => Assert.Equal(0u, word));
 
         // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), nothing else.
