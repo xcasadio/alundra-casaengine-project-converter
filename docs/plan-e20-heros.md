@@ -255,6 +255,8 @@ ADR-0058) :
     pousser/attaquer » (9) et l'« Interrupteur poussoir ». Une tranche neuve, **E20.g5** (§1.24.6), les porte, après une lecture seule.
   - **D-E20-64** (« 2 oui ») — Les torches (E20.g2c2) viennent après E20.f6b, qui porte la flamme de type 12 : elles passent au thème 2
     (les attaques du joueur).
+    **Erratum (2026-10-25)** : la flamme de la torche n'utilise pas les gestionnaires de f6b (E20 efface ses six codes natifs) ;
+    l'ordre « après f6b » reste le choix de l'auteur (Q-G2C2-3), sans dépendance de code (§1.24.5, E20.g2c2).
   - **D-E20-65** (Q-E0C-9, « 3 B ») — Tant que les pistes XA ne sont pas jouées (E19.sm7), ramasser un objet-clé posé coupe la musique
     net, puis la relance du début un instant après, comme les deux appels du binaire (`0x80049B7C(0)` au ramassage, `StopAllSound`
     `0x80049AF4` à l'état 2, quand `CdBusy()` est faux). Cela remplace le défaut A d'e0c (D-E0C-7) ; une tranche de suite, **E20.e0c2**
@@ -7134,7 +7136,7 @@ Autres clés : `*_wall_col6`, `*_step16_col6`, `*_step32_col6`, `fire11_gp{8,2,4
 | O-F5-1 | Quels ennemis posent `+0x1CC` avant E17 (la flèche les traverse) | E14 |
 | O-F6-1 | Sens de la pente 1 (la boule s'éteint ; le héros n'a pas de cas) | à placer ; aucun effet de comportement connu |
 | O-F6-2 | Le réservoir de 128 effets plein : branche décodée, seulement testée en direct | écart accepté |
-| O-F6-3 | La Torche E20 (cartes 86 à 94, 441, 442) copie le type 12 et efface ses six codes natifs | E14 |
+| O-F6-3 | La Torche E20 (cartes 86 à 94, 441, 442) copie le type 12 et efface ses six codes natifs | E20.g2c2 (§1.24.5, 2026-10-25 ; « E14 » à l'origine) |
 | O-F6-4 | Les flammes posées par enregistrement gardent l'ancienne règle de chute (Q-K1 A) : la force verticale au moment de C60 peut différer de 0 | E19.h2 |
 
 **Corrections induites** (faites par la session principale à l'insertion, 2026-10-15, sauf (2) : les tests d'f3a déjà commités (S5, premier
@@ -8191,6 +8193,131 @@ un besoin de toucher au moteur ou à la phase de choix.
   quatre, le statut 3) : chacun a donné un test (P9, P5 sur le tronc, P10, P11). Un verifier en a rejoué cinq de plus, tous tués.
 - **Verifiers frais** : **CONFIRMED** tous deux.
 - **Recette de l'auteur** (non bloquante) : lancer un tonneau dans un trou ; lancer une caisse dans un trou.
+
+##### E20.g2c2 — Les torches (C70, E20) et les ronces (D34) ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2, après f6b (D-E20-64) ; à relire par un `plan-verifier` frais ; défauts de Q-G2C2-1 à Q-G2C2-6 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
+
+**Provenance.** Lecture seule du 2026-10-25 (HEAD `8174c0cb` puis `6df3f265`, code de `Alundra/Ai`, `Alundra/Entities`, `Alundra/Combat`
+inchangé) : rapport et critique frais (`scratchpad/t2-next/g2c2/report-main.md`, `scratchpad/t2-next/g2c2-critic/report-main.md`, scripts,
+rejeux et sorties), à verser par T0 à `docs/plan-e20-annexe/e20-g2c2-disc/`, sur le T0 de g2c du 2026-10-22 (`e20-g2c/disc/`). Le critique
+confirme les faits porteurs, corrige les états de C71 et la parenté d'E20 avec E2, et ajoute trois chemins de production (le contact, la pluie
+de torches de la 92, le piège de `TickCarried`).
+
+**Erratum de D-E20-64 (2026-10-25).** Sa prémisse (« la flamme de type 12 dont les gestionnaires sont ceux de f6b ») est fausse pour la
+torche : E20 efface les six codes natifs de la flamme juste après sa naissance (rejoué : sans l'effacement, elle émettrait l'effet 17 tous
+les 4 ticks et exploserait à t125). L'ordre « après f6b » reste le choix de l'auteur (Q-G2C2-3, défaut : le garder) ; il rend actif le
+témoin « la flamme reste muette quand `(C, 60)` est inscrite ». O-F6-3 passe à cette tranche.
+
+**Prérequis.** E20.g1b et E20.g2c1 (le soulèvement, `TickCarried` et sa politique de lâcher, l'ensemble câblé) ; E20.c2b (la flamme et la
+plaque de la torche blessent Alundra, D-E20-83) ; E20.f6b (l'ordre, D-E20-64). La tranche touche `Alundra/SaveGames/TestSaves.cs` comme b2,
+c2b et A362 : jamais en même temps qu'elles.
+
+**But.** Comme l'original : Alundra soulève une torche (Magyscar, cartes 86 à 94 ; Meia Dream, 441 et 442 : 57 torches), la lance ; à
+l'atterrissage, ou au premier contact avec quelque chose (une cible, même immune), elle se consume (animation 2, son 142) et laisse une nappe de
+feu (le type 12 sans ses codes natifs, animation 3, 39 ticks, attaque de feu) ; le feu allume les 16 interrupteurs de la carte 92 et fait
+flamber les ronces (types globaux 238 et 239 : 161 ronces sur 24 cartes), qui cessent de bloquer puis disparaissent ; le levier de la 92 lâche
+quatre torches qui s'enflamment en touchant le sol. Aujourd'hui une torche est un objet que rien ne soulève et les ronces sont des obstacles
+indestructibles.
+
+**Faits** (FAIT, MESURÉ ; rapport F1 à F20, critique §1 à §4).
+- **La torche** : type 393 (sprite de carte 137), C70 et E20 (aucun autre type ne les porte), drapeaux `0x3323E2`, genre 1, corps 21×15×15,
+  effet de bris 10 ; fiche : PV 10, réponses 16, une attaque (attribut 6, puissance 1) ; `DeactivateOnHit` (0x20) : tout coup de sa propre
+  attaque l'éteint. 48 naissent au chargement, 9 par script (dont la 92, rec 68, recréée en 4 points par C[15] avec `0x8A`, puis
+  `0x62 [98, 68, 16, 0]` qui leur pose `DeactivateOnImpact`).
+- **C70** (`0x8007B7B0`, 33 mots) : jumeau de C23 avec la table `0x800281DC` (mots 0 à 3 = 0, 3, 1, 4) et `| 0x34` au lieu de `| 0x30` :
+  `(f | 0x34) & ~0x80` ; posée, rien ; portée sans code, animation 0.
+- **E20** (`0x8007F6C8`, 65 mots), à chaque tick du statut 3 : si l'animation 2 est finie (`+0x88 == 2`, `+0xAC == 1`) : si `+0x274 == 0`,
+  la flamme naît par `SpawnWarpEntity(self, page 0, type 12, X, Y, Z, direction)`, ses six codes effacés, animation 3,
+  `Flags = (Flags & ~0x10) | 2` ; puis `DestroyEntity(self, −1)` ; sinon : animation 2, `Flags = (Flags | 0x40) & ~0x30`, et si le contact
+  `+0x130` est une goutte (type 391) : `+0x274 = 1` (pas de flamme). E2 a en plus la clause `CombinedVramFlagsAND & 4` ; E20 ne l'a pas.
+- **Les chronologies** (rejouées) : lancer au tick T : atterrissage T+22, statut 3 et son 142 T+23, flamme née T+26, torche libérée et son 41
+  T+27 ; flamme de t87 à t125 ; au contact : coup à t79, statut 3 à t80, flamme à t83 (coup + 4), la flamme retouche la même cible 25 ticks
+  plus tard ; la pluie de la 92 (bit 0x10 posé en l'air) : atterrissage t15, flamme t19 ; la torche portée 100 ticks ou lancée ne touche
+  jamais le héros (`p_selfhit`).
+- **D34** (`0x8007E8AC`, 17 mots), types 238 et 239 : si l'attaque du toucheur a l'attribut 6 : animation 1, `Flags = (Flags | 0x46) & ~0x80` ;
+  leurs fiches ne répondent (16) qu'à l'attribut 6 ; la ronce qui brûle attaque en attribut 6 avec HitsClassA (la propagation est portée par
+  les données) ; E0 la détruit à la fin de l'animation (effet de bris 8, `Contents` 255 : peut-être un butin, à sonder). Une torche posée
+  (HitsClassB seul) ne touche pas les ronces ; la torche lancée (HitsClassA) oui.
+- **La carte 92** : 16 « Interrupteur (allumage) » testés par `0x87 [128, 6]` (le seul feu testé sur une carte à torches) ; c'est la torche
+  elle-même (attribut 6) qui les allume, avant toute flamme.
+- **La DLL au HEAD** : ni `(C, 70)`, ni `(E, 20)`, ni `(D, 34)` ; 393 hors de `ProductionWiredLiftableTypes` (25 types) ;
+  `LiftableAi.TickCarried(entity, ReleaseFlagsPolicy)` avec `{C23, C4}`, dont la branche C4 est le `_ =>` du `switch` (piège : une valeur
+  neuve sans cas y tomberait en silence) ; `SpawnEntityBySpriteIndex` (Z dans le repère de la DLL, D-E0A-1 ; null si la table est pleine) ;
+  l'effacement des codes prend effet (`RunSpriteEvent` les lit en direct ; E 0 traité en ligne) ; f6b non commencée.
+- **Les gouttes** (type 391, A19 et C71, 56 sur 6 cartes, dont la 158 sans torche) : une goutte qui tombe sur une torche, ou sur Alundra qui
+  la porte, l'éteint ; au HEAD elles pendent immobiles. Hors de cette tranche (D-G2C2-6).
+
+**Décisions de la session** (défauts, comme l'original ; §2, Q-G2C2-*).
+- **D-G2C2-1** — Un `Alundra/Ai/Objects/TorchAi.cs` neuf (sur le modèle de `PillarAi` et `ChestAi`) : `(C, 70)` et `(E, 20)` pour {393} ;
+  C70 par `TickCarried` avec une politique `ReleaseFlagsPolicy.C70` (`| 0x34`, `& ~0x80`), le `switch` restructuré avec un cas explicite par
+  politique (plus de `_ =>` qui vaut C4) ; E20 selon le pseudo-code, la flamme née par `SpawnEntityBySpriteIndex` au Z de la DLL.
+- **D-G2C2-2** — Table pleine : `SpawnEntityBySpriteIndex` rend null, la torche est quand même détruite (le binaire écrit par un pointeur
+  nul) ; écart documenté au site.
+- **D-G2C2-3** (Q-G2C2-1, défaut A) — Les ronces dans cette tranche : un `Alundra/Ai/Objects/BrambleAi.cs` neuf, `(D, 34)` pour {238, 239}.
+- **D-G2C2-4** (Q-G2C2-5 et Q-G2C2-6, défauts comme l'original) — La torche s'allume au premier contact (`DeactivateOnHit`) et à
+  l'atterrissage quand `DeactivateOnImpact` est posé ; la pluie du levier de la 92 s'enflamme au sol. T0 vérifie que les entités nées par
+  `0x8A` prennent `DeactivateOnImpact` par leur contact au sol (« jamais marquées », D-T-12) ; sinon c'est un arrêt (une question).
+- **D-G2C2-5** — L'ensemble câblé gagne 393 (`PlayerManager.ProductionWiredLiftableTypes` ; un type n'est jamais câblé sans sa clé) ; les
+  témoins « type genre 1 non câblé » (`LiftWorldTests`, `LiftMap72ArcTests`) passent à la bombe (global 2).
+- **D-G2C2-6** (Q-G2C2-2, défaut A) — Les gouttes (A19, C71, la restauration de `+0x54`, la carte 158) sont une tranche à part, **E20.g2c3**,
+  après g2c2 (ligne d'enveloppe) ; d'ici là les torches ne s'éteignent pas sous une goutte (écart documenté).
+- **D-G2C2-7** (Q-G2C2-4, défaut A) — Un préréglage `torche-m92` (la carte 92 : 16 interrupteurs, 16 torches, 13 ronces) ; la sauvegarde
+  `tools/Saves/160-magyscar.sav` (carte 86) pour les ronces ; le test de liste des préréglages change mécaniquement (D-E0D-12).
+- **D-G2C2-8** — Des gardes des données : les types dont l'en-tête porte C70 ou E20 sont {393}, D34 {238, 239}, A19 et C71 {391}.
+
+**Périmètre.** `Alundra/Ai/Objects/` (`TorchAi.cs` et `BrambleAi.cs` neufs ; `LiftableAi.cs` : la politique C70 et le `switch`) ;
+`Alundra/Ai/NativeSpriteRegistry.cs` (deux appels d'inscription et la doc) ; `Alundra/Hero/PlayerManager.cs` (l'ensemble câblé) ;
+`Alundra/SaveGames/TestSaves.cs`, `docs/test-saves.md` ; les tests ; l'annexe `docs/plan-e20-annexe/e20-g2c2/` ; un ADR neuf ; ce plan (D-E20-64,
+O-F6-3, la ligne de g2c3).
+
+**Hors périmètre.** Les gouttes (g2c3) ; les ennemis de Magyscar (insectes C7/D6, boules de fer E18/C66/C67, fourneaux C28/D5 : E14.b) ; la
+boule de feu (f6b) ; le moteur.
+
+**Tâches.**
+- ⏳ **T0 — Versement, oracle, sondes, liste prédite** (commit de docs). (a) Les prérequis ; (b) verser les deux dossiers de la lecture à
+  `docs/plan-e20-annexe/e20-g2c2-disc/` (README, `SHA1SUMS.txt`) ; (c) rejouer depuis une copie `s8_torch`, `f1_flame`, `p_hitswitch`,
+  `p_rain`, `p_selfhit`, sorties identiques ; produire sur la machine au moins 25 vecteurs de C70, d'E20 et de D34 (tous les mots lus et
+  écrits), versés ; (d) les sondes jetables de la DLL (versées en `.txt`) : une entité née par `0x8A` à `DeactivateOnImpact` posé par `0x62`
+  passe-t-elle en statut 3 au sol (D-G2C2-4) ; la position de la torche portée contre la plaque d'attaque (le héros jamais touché) ; le butin
+  d'une ronce détruite (`Contents` 255) ; l'état du héros quand une torche portée est détruite (`ClearCarrierOf`) ; (e) la case de
+  `torche-m92` ; (f) la liste prédite, mesurée par un câblage temporaire : les quatre sommes du registre, `LiftPureTests` (la liste de 25),
+  `LiftWorldTests` et `LiftMap72ArcTests` (les témoins à 393), le test de liste des préréglages ; plus de 10 tests est un arrêt.
+- ⏳ **T1 — Phase A, tests d'abord** (rouges avant ; registre neuf, rien d'inscrit en production) : (a1) C70 contre ses vecteurs (`| 0x34`, la
+  table partagée, posée, portée sans code) ; (a2) E20 contre ses vecteurs (les deux branches, la flamme : type 12, codes à zéro, animation 3,
+  drapeaux ; le contact d'une goutte : pas de flamme ; la table pleine : la torche détruite) ; (a3) D34 contre ses vecteurs (attribut 6 :
+  animation 1, `| 0x46`, `& ~0x80` ; un autre attribut : rien) ; (a4) le `switch` de `TickCarried` : la politique C70 n'est pas prise pour C4 ;
+  (a5) les gardes des données (D-G2C2-8) ; puis le code de la phase A.
+- ⏳ **T2 — Phase B et C, tests de monde rouges avant** (le vrai contrôleur) : (w1) un lancer en marche et à l'arrêt : la chronologie T+22,
+  T+23, T+26, T+27, la flamme à sa position, 39 ticks, aux trois cadences pour ce qui ne dépend pas des tirages ; (w2) le contact : la torche
+  lancée contre une cible s'allume à coup + 1 et la flamme naît à coup + 4, puis retouche la cible 25 ticks plus tard ; (w3) un interrupteur
+  de la 92 allumé par la torche (la vraie passe de coups, `0x87 [128, 6]`) ; (w4) une ronce touchée par la flamme brûle, ne bloque plus,
+  disparaît ; touchée par l'épée, rien ; (w5) la pluie du levier de la 92 : quatre flammes au sol ; (w6) la flamme sur Alundra : la blessure de
+  c2b (`0x31`, PV) ; témoins verts avant et après : (w7) en eau profonde, la flamme est détruite (`DestroyOnSlidingSlope`), au-dessus d'un trou la torche
+  disparaît sans flamme (g2b2) ; (w8) au repos, les 48 torches natives des cartes 86 à 94 restent inertes 6 ticks ; (w9) la flamme née reste
+  muette quand `(C, 60)` de f6b est inscrite ; puis les
+  inscriptions (phase B) et 393 dans l'ensemble câblé (phase C) ; le préréglage.
+- ⏳ **T3 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
+  `cmp` ; `check_names.py --rules` ; au moins 14 mutants réels, chacun tué par le test qu'il nomme : `| 0x34` en `| 0x30` ((a1)) ; C70 pris
+  pour C4 ((a4)) ; l'effacement des codes retiré ((a2), (w9)) ; cinq codes effacés au lieu de six ((a2)) ; l'animation 3 de la flamme en 1
+  ((a2), (w1)) ; `& ~0x10` oublié ((a2)) ; `| 2` oublié ((a2)) ; le test `+0xAC == 1` ôté ((a2), (w1)) ; `+0x274` ignoré ((a2)) ; le type de
+  contact 391 changé ((a2)) ; D34 : attribut 6 en 5 ((a3), (w4)) ; `| 0x46` en `| 0x42` ((a3)) ; `& ~0x80` oublié ((a3), (w4)) ; 393 câblé
+  sans sa clé ((a5)) ; E20 qui écrit `Flags = 2` au lieu de `(Flags & ~0x10) | 2` ((a2), le témoin (w7) en eau profonde) ; C70 qui agit sur
+  une torche posée (sans porteur) ((a1), le témoin (w8)) ; un ADR neuf (numéro libre recompté).
+- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (c) identiques ; (a1) à (a5) rouges avant la phase A et verts après ; (w1) à (w6) rouges avant les
+phases B et C et verts après ; les témoins (w7), (w8) et (w9) verts avant et après, chacun tué par son mutant nommé de T3 (`Flags = 2`, C70 sur
+une torche posée, l'effacement retiré) ; les mutants de T3 tous tués par le test qu'ils nomment ; la
+suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (f), chacun réécrit par dérivation ; le moteur, le convertisseur
+et les données sans diff. **Recette de l'auteur** (non bloquante) : `torche-m92` (lancer une torche sur un interrupteur, puis le levier et sa
+pluie de flammes) ; `160-magyscar.sav` (brûler les ronces de la carte 86). Les ennemis de Magyscar restent ceux d'E14.b.
+
+**Arrêts.** Un prérequis non rempli ; une sonde qui contredit un fait (dont D-G2C2-4) ; un test hors de la liste prédite qui bouge ; plus de 10
+tests déplacés ; un besoin de toucher au moteur ; un test qui boucle.
+
+**Budget.** Un `executor` par tâche (T0, T1, T2, T3) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** La phase C se retire seule (393 hors de l'ensemble câblé : la torche ne se soulève plus) ; puis la phase B (les clés
+retirées : les ronces redeviennent indestructibles, une torche posée par un script reste inerte) ; la phase A est inerte.
 
 #### 1.24.6 E20.g5 — Les vrais objets à pousser : g5a (piliers), g5b (les opcodes des boutons), g5c (l'arrêt du son), g5d (les objets scriptés) ✅ (2026-10-23, D-E20-63 ; g5a **faite et CONFIRMED le 2026-10-23** (ADR-0086) ; g5b, g5c, g5d **faites et CONFIRMED le 2026-10-24** (g5c : ADR-0090))
 
@@ -12291,6 +12418,13 @@ les trois entrées `0x31`.
 | Q-A362-1 | (2026-10-25, E20.A362, en termes de jeu) Quand la bombe d'Olen explose dans son rêve (carte 362), le couvercle de la tige-bombe doit éclater avec un bruit, puis les 4 Muruta sortent ; aujourd'hui le couvercle reste en place, les Muruta sortent quand même et la bombe reste là, invisible. (A, défaut, comme le plan) l'arc A362 n'est qu'un test, le correctif vient avec la bombe (h3a) ; (B) livrer le correctif dans A362 (A362 n'est plus un arc sans code, h3a perd son premier test). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-A362-1) |
 | Q-A362-2 | (2026-10-25, E20.A362) La bombe d'Olen n'apparaît qu'après un détour par la carte 363, qui pose un drapeau ; sans lui, Olen répète sa première conversation. (A, défaut) une sauvegarde de test `olen-m362` devant Olen, le drapeau posé ; (B) rien (Change map et le drapeau à la main). **Défaut pris** par la même règle | défaut A (D-A362-2) |
 | Q-H3B-1 | (2026-10-25, E20.h3b, lecture du 2026-10-25) Si Alundra lance sa bombe vers le bas et reste sur place, l'explosion l'atteint d'un demi-pixel : il perd 5 cœurs sur 10 sans armure ; vers la gauche, la droite et le haut, il passe tout juste à côté. (A, défaut, comme l'original) garder ; (B) l'éviter (s'écarter du binaire). **Défaut pris** par la même règle ; à porter au plan de h3b quand elle sortira de pause | défaut A |
+| Q-G2C2-1 | (2026-10-25, E20.g2c2, en termes de jeu) Dans l'original, une torche lancée et sa flamme (plus tard la baguette de feu) font flamber les ronces, qui cessent de bloquer puis disparaissent ; aujourd'hui 161 ronces sur 24 cartes sont des obstacles indestructibles. (A, défaut) les ronces dans g2c2 ; (B) inertes jusqu'à une tranche des dangers (la torche n'allumerait que les interrupteurs de la 92). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C2-3) |
+| Q-G2C2-2 | (2026-10-25, E20.g2c2) Dans l'original, 56 gouttes tombent du plafond en cycle (cartes 87, 88, 90, 92, 94, 158) et une goutte sur une torche (ou sur Alundra qui la porte) l'éteint ; aujourd'hui elles pendent immobiles. (A, défaut) les porter, dans une tranche à part E20.g2c3 après g2c2 ; (B) les laisser immobiles (les torches ne s'éteignent jamais). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C2-6, E20.g2c3) |
+| Q-G2C2-3 | (2026-10-25, E20.g2c2) La flamme de la torche n'utilise pas les boules de feu : rien de visible ne change si les torches viennent avant les bâtons. (A, défaut) garder l'ordre de D-E20-64 (après f6b, qui rend actif le témoin « la flamme reste muette ») ; (B) avant f6b. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A |
+| Q-G2C2-4 | (2026-10-25, E20.g2c2) Pour essayer : la sauvegarde 160 (carte 86, des ronces) et une sauvegarde de test `torche-m92` (la carte 92 : 16 interrupteurs d'allumage, 16 torches, un levier). (A, défaut) les deux ; (B) la 160 seule. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C2-7) |
+| Q-G2C2-5 | (2026-10-25, E20.g2c2) Le levier de la salle 92 lâche quatre torches qui s'enflamment en touchant le sol (un piège de flammes). (A, défaut, comme l'original) garder ; (B) qu'elles restent posées. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C2-4) |
+| Q-G2C2-6 | (2026-10-25, E20.g2c2) Une torche lancée s'allume dès qu'elle touche quelque chose (interrupteur, ronce, ennemi), même sans dégât, et sa flamme naît sur place. (A, défaut, comme l'original) garder ; (B) qu'elle roule jusqu'au sol (les énigmes changent). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C2-4) |
+| O-G2C3-1 | (2026-10-25, E20.g2c2, D-G2C2-6) E20.g2c3 — les gouttes d'eau (type 391, A19 `0x800619D0`, C71 `0x8007B834`, 89 mots, la restauration de `+0x54` = l'index du programme C scripté, `+0x275`, `+0x282`, `+0x11C` + 160 px) : 56 gouttes sur 6 cartes (dont la 158, sans torche) ; une goutte éteint la torche portée ou posée (E20 sans flamme) ; sondes de la posture du héros quand sa torche est détruite. Lecture faite (`docs/plan-e20-annexe/e20-g2c2-disc/` après le T0 de g2c2) ; à détailler après g2c2 | à détailler (thème 2, après g2c2) |
 | O-G4B-1 | (2026-10-24, E20.g4b) À 3 ticks par image seulement : rec5 se brise 25 ticks après le lancer (24 aux autres cadences et au binaire) ; en (b6), Alundra n'est pas immobilisé 5 ticks par le roulis ; deux glissements de (b5) et (b6) (ticks 223 et 224) tombent avec un contact rec5 déjà tenu. Épinglés tels que mesurés dans `ShipBarricadeArcTests`, cause non établie (l'ordre des passes à plusieurs ticks par image ?) | plus tard (une lecture de la cadence à 3 ticks par image) |
 | Q-STEP | (2026-10-24, lecture seule `docs/plan-e20-annexe/e20-step-search/`, CONFIRMÉE par un critique frais ; à l'auteur en termes de jeu) Le binaire cherche la longueur de chaque pas par moitiés successives, sur X et Y à la fois (`ComputeXYPosition` `0x80037730`) ; le moteur avance jusqu'au contact exact, axe par axe, en flottants. Ce qui se voit : (1) une flèche tirée à bout portant contre un mur reste plantée dans le mur au lieu de rebondir tout de suite (O-E20-24, le seul écart visible à l'œil) ; (2) debout sur une caisse ou en l'air, un Carré au tick exact de l'arrivée soulève la caisse voisine au lieu de donner l'épée (O-G3-3) ; (3) une flèche ou un objet qui touche un mur à l'est ou au sud déclenche son rebond un tick plus tard dans l'original, une fois sur trois environ (`ForceAdjusted`) ; (4) en poussant en diagonale contre une caisse, l'original s'arrête net, le portage glisse le long (Q-G3-d, gardé par l'auteur le 2026-10-22). Options : (A) porter la recherche du binaire en entier, dans un déplaceur de la DLL en entiers bruts (le moteur ne peut pas être exact : sa position est en float32 ; il faut aussi une API moteur de pose exacte, avec son plan et son ADR), par étapes (les projectiles et objets lancés, puis le héros) ; cela renverse D-E19-58, D-E20-38, Q-H4C1-5 et Q-G3-d, que l'auteur avait gardés ; plusieurs tranches, des arcs réécrits par dérivation ; (B) le minimum visible : corriger O-E20-24 seul (le premier pas d'un projectile, porté avec la boucle par moitiés), et une « ombre » du contact du binaire pour O-G3-3 (une copie pure de la recherche qui ne fait qu'écrire le contact) ; le reste des écarts (3) et (4) gardé ; (C) ne rien changer : O-E20-24 et O-G3-3 restent consignés. Défaut de la session : (B), qui ne renverse aucune réponse de l'auteur **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : le défaut (B) (D-E20-80). | Tranché le 2026-10-25 (D-E20-80) |
 | O-ANX-1 | (2026-10-24, relevé par g3) La règle `[Bb]in/` du `.gitignore` (ligne 21, pour les sorties de construction) écarte aussi les dossiers `bin/` des annexes : `e20-f4f6/bin` (273 fichiers), `e20-f4f6/critic/bin` (180), `e20-h3/bin` (143), `e20-h4b/bin` (81), `plan-e19-pad-age-annexe/o77/bin` (9) ne sont pas dans le dépôt, alors que les plans les citent comme preuves ; celui de g3 a été ajouté à sa clôture. Proposition : une exception `!docs/**/[Bb]in/` au `.gitignore` et l'ajout des cinq dossiers (14 Mo environ), par un commit de docs **Réponse de l'auteur (2026-10-24)** : « prendre toutes les réponses par défaut » : la proposition (D-E20-76). | Tranché le 2026-10-24 (D-E20-76) |
