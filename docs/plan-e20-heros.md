@@ -3601,10 +3601,18 @@ d'histoire qui bouge ; un besoin de toucher au moteur ; un test qui boucle.
 **Retour arrière.** Retirer l'appel de la fonction du tick du héros (le bit n'est plus jamais posé : Alundra nage partout, l'état
 d'aujourd'hui) ; puis le pseudo-bit et la lecture de `BlockedCorners`.
 
-#### 1.14.3 E20.i2b — La fonction des forces : la table de glissement, le décalage `SlideEffectId` et la poussée (O-E19-31, Q-H4-3) ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2, avant h4e2 et h4f1 ; à relire par un `plan-verifier` frais)
+#### 1.14.3 E20.i2b — La fonction des forces : la table de glissement, le décalage `SlideEffectId` et la poussée (O-E19-31, Q-H4-3) ⏳ (détaillée le 2026-10-25 ; thème 2, après i2a, avant h4e2 et h4f1 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
 
-**Prérequis.** Aucun prérequis de code (indépendante d'i2a). Avant h4e2 et h4f1 (D-E20-61). Si un préréglage s'ajoute, jamais en même temps
-qu'une autre tranche qui touche `TestSaves.cs`.
+**Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé cinq blocages, corrigés (FIX) : (1) (f1) comparait une fonction
+sans serrage à des vecteurs pris après le serrage (163 sur 200) et ne disait pas d'où vient la force F des vecteurs de la passe : (f1) ne
+garde que les 37 vecteurs sans serrage, la source de chaque mot est nommée, les vecteurs de la passe sortent de la tranche ; (2) trois mutants
+étaient équivalents (`sh` non signé, `sh` sans `& 31`, `SlideEffectId` lu non signé) : ils sont déclarés équivalents et remplacés par des
+mutants tuables ; (3) (w3) ne fixait pas l'ordre du passager et du porteur : il est écrit ; (4) le cas de l'entité portée de (w2) est vert
+avant le code : il devient un témoin ; (5) i2a et i2b partagent des fichiers : l'ordre est fixé, i2a puis i2b.
+
+**Prérequis.** E20.i2a faite (révision 1 : elles partagent `ScriptedMotion.cs`, `EntityScriptProxy.cs`, `WorldProxy.cs`, le dossier de
+versement `e20-i2-disc/`, que verse i2a, et le test de liste des préréglages). Avant h4e2 et h4f1 (D-E20-61). Jamais en même temps qu'une
+autre tranche qui touche `TestSaves.cs`.
 
 **But.** Comme l'original : sur les cartes 159 et 160 (`SlideEffectId` = 1, les seules), tout ce qui est intégré par la physique (Alundra, les
 ennemis, les objets lancés, les projectiles, les plateformes) avance deux fois moins vite à l'horizontale ; une poussée écrite dans
@@ -3656,31 +3664,40 @@ est en place pour les courants (i2c), inerte tant que `+0x188` vaut 0.
 (h4e2, h4f1) ; le moteur.
 
 **Tâches.**
-- ⏳ **T0 — Versement, oracle, inventaire** (commit de docs). (a) Verser la lecture si i2a ne l'a pas fait ; (b) les 32 mots des tables relus dans
-  l'exécutable, versés ; rejouer depuis des copies `docs/plan-e20-annexe/e20-h4b/bin/vec/vec_push_800366FC.json` (200 vecteurs ; 16 indices,
-  15 décalages sur 32 : le chemin `srav` est unique, critique K7), `vec_physpass_80036828.json` (40 vecteurs) et `tables.json` ; (c) une clé neuve
+- ⏳ **T0 — Oracle, inventaire** (commit de docs ; la lecture est versée par i2a). (b) les 32 mots des tables relus dans l'exécutable, versés ;
+  rejouer depuis des copies `docs/plan-e20-annexe/e20-h4b/bin/vec/vec_push_800366FC.json` (200 vecteurs) et `tables.json` ; la liste versée des
+  **37 vecteurs sans serrage** (ceux dont l'écriture de `+0x13C` ne vaut pas 1 : ids 12, 14, 15, 22, 27, 29, 30, 33, 37, 41, 44, 45, 48, 49,
+  51, 56, 58, 60, 66, 71, 78, 85, 101, 102, 126, 127, 135, 140, 154, 167, 171, 174, 176, 180, 186, 192, 194) avec, pour chaque mutant de T2,
+  les vecteurs nommés qui le tuent ; les 163 vecteurs serrés relèvent du serrage à la carte (i2d) et les 40 de `vec_physpass_80036828.json`
+  mêlent l'incrément de la force et la passe : ni les uns ni les autres ne sont rejoués par i2b ; (c) une clé neuve
   sur le harnais d'`e20-d` (fichier neuf) : Alundra qui marche et une entité lancée sur la carte 159 (`SlideEffectId` 1, la gravité 3 et la
   viscosité 256 de la carte), les positions par tick, au manifeste, deux exécutions ; (d) le recensement de `SlideEffectId` (159 et 160 seules) ;
   (e) l'inventaire par exécution (un câblage temporaire, la suite entière, versé en `.txt`) : la liste prédite (attendue : le test de liste des
   préréglages et, peut-être, aucun autre ; à surveiller : `HeroObjectTopsTests.cs:494-512`, les tests de dépôt sur la 159 qui posent la gravité à
   la main) ; (f) la case du préréglage.
-- ⏳ **T1 — Tests d'abord** (rouges avant) : (f1) la fonction pure contre les 200 vecteurs de poussée et les 40 de la passe (sorties `+0xDC/+0xE0`,
-  la poussée remise à zéro) ; (f2) les tables contre l'exécutable, mot à mot ; (f3) `sh` signé `& 31` : 1 divise par deux, la poussée non décalée
+- ⏳ **T1 — Tests d'abord** (rouges avant) : (f1) la fonction pure contre les 37 vecteurs sans serrage de T0 (b), chaque mot
+  tiré du vecteur : F = les mots lus `+0xC4/+0xC8`, la poussée `+0xCC/+0xD0`, l'indice `+0x188 & 0xF`, `sh` = `shift_byte & 31`, la table lue
+  dans `0x80028B94`/`0x80028BD4` ; attendus : les mots écrits `+0xDC/+0xE0` et `+0xCC/+0xD0` remis à 0 ; (f2) les tables contre l'exécutable, mot à mot ; (f3) `sh` signé `& 31` : 1 divise par deux, la poussée non décalée
   (vecteurs nommés) ; (w1) sur la carte 159, contre la clé de T0 (c) : la marche d'Alundra à 79 872 par tick pour `ForceX` 159 744 ; l'entité
-  lancée ralentie de même ; (w2) une poussée de 131 072 posée sur le héros avant un tick : +2 px à ce tick, 0 au suivant ; sur une entité portée :
-  ni consommée ni remise à zéro ; (w3) un passager d'un porteur poussé suit la force ajustée (`PeekAdjustedForce`) ; témoin vert avant et après :
+  lancée ralentie de même ; (w2) une poussée de 131 072 posée sur le héros avant un tick : +2 px à ce tick, 0 au suivant ; (w3) un passager d'un porteur poussé,
+  le passager à un emplacement plus bas que le porteur (il passe avant lui dans la passe, la branche de `PeekAdjustedForce` qui calcule),
+  suit la force ajustée du porteur ; témoins verts avant et après : (w2b) une entité portée garde sa poussée (ni consommée ni remise à
+  zéro), tuée par le mutant « la poussée consommée par une entité portée » ; témoin vert avant et après :
   (w4) sur une carte à `SlideEffectId` 0 et sans poussée, `adj = F` partout (les arcs de la chaîne inchangés), tué par le mutant « décalage de 1
   partout » ; puis le code ; le préréglage et son test de contenu.
 - ⏳ **T2 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
-  `cmp` ; `check_names.py --rules` ; au moins 12 mutants réels, chacun tué par le test qu'il nomme : la poussée décalée ((f1), (f3)) ; `sh` sans
-  `& 31` ((f1), un vecteur à décalage ≥ 32 si les vecteurs en ont, sinon (f3) nommé) ; `sh` non signé ((f3)) ; la poussée non remise à zéro ((w2),
-  (f1)) ; la poussée consommée par une entité portée ((w2)) ; l'indice de table pris sur 3 bits ((f1)) ; X et Y des tables échangés ((f2)) ; la
-  table ajoutée après le décalage ((f1)) ; `PeekAdjustedForce` sans la fonction ((w3)) ; `SlideEffectId` lu non signé ((f3)) ; le mot de carte non
-  rangé à l'adoption ((w1)) ; un décalage de 1 partout (le témoin (w4)) ; un ADR neuf (numéro libre recompté).
+  `cmp` ; `check_names.py --rules` ; au moins 11 mutants réels, chacun tué par le test qu'il nomme (les vecteurs nommés par T0 (b)) : la poussée
+  décalée ((f1), (f3)) ; la poussée non remise à zéro ((f1), (w2)) ; la poussée consommée par une entité portée (le témoin (w2b)) ; l'indice de
+  table pris sur 3 bits ((f1) : 19 des 37 vecteurs ont un indice ≥ 8) ; X et Y des tables échangés ((f2), (f1)) ; la table ajoutée après le
+  décalage ((f1)) ; le décalage arithmétique remplacé par un décalage logique ((f1) : 18 vecteurs ont une force négative et un décalage non
+  nul) ; les poussées X et Y échangées ((f1) : 33 vecteurs ont deux poussées différentes) ; `PeekAdjustedForce` sans la fonction ((w3)) ; le mot
+  de carte non rangé à l'adoption ((w1)) ; un décalage de 1 partout (le témoin (w4)) ; **équivalents déclarés** (révision 1) : `sh` lu non
+  signé et `SlideEffectId` lu non signé (les 5 bits bas d'un octet sont les mêmes signé ou non), `sh` sans `& 31` (le décalage d'un `int` en
+  C# masque déjà le compte par 31) ; un ADR neuf (numéro libre recompté).
 - ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
-**Acceptation.** Les sorties de T0 (b) et (c) identiques sur deux exécutions ; (f1) à (f3), (w1) à (w3) rouges avant et verts après ; (w4) vert
-avant et après, tué par son mutant ; les mutants tous tués par le test qu'ils nomment ; la suite en Release et en Debug, zéro échec ; les tests
+**Acceptation.** Les sorties de T0 (b) et (c) identiques sur deux exécutions ; (f1) à (f3), (w1) à (w3) rouges avant et verts après ; (w2b) et
+(w4) verts avant et après, chacun tué par son mutant ; les mutants tous tués par le test qu'ils nomment ; la suite en Release et en Debug, zéro échec ; les tests
 déplacés ⊂ la liste de T0 (e), chacun réécrit par dérivation ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non
 bloquante) : `glissement-m159` (Alundra avance deux fois moins vite).
 
