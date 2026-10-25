@@ -3536,14 +3536,19 @@ D-H2-6) ; i2b, la fonction des forces (§1.14.3), indépendante d'i2a, avant h4e
 (§1.14.4, esquisse), après i2b, E20.c2b et E20.h0a (elle touche la même zone de `PlayerManager.cs`). i2d (le serrage à la carte pour le héros et
 les entités placées, O-E19-17) reste hors de ces tranches (Q-I2-5, défaut A, D-E19-25).
 
-#### 1.14.2 E20.i2a — Le mur d'eau profonde sans bottes de nage (O-E19-22) ⏳ (détaillée le 2026-10-25 ; thème 2, avant i2b ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
+#### 1.14.2 E20.i2a — Le mur d'eau profonde sans bottes de nage (O-E19-22) ⏳ (détaillée le 2026-10-25 ; thème 2, avant i2b ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
 
 **Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé deux blocages, corrigés (FIX) : (1) les traces vers l'est
 rejoignent l'écart connu du mur est (O-E19-42 : la DLL s'arrête au contact, le binaire une unité avant, le rebond un tick plus tôt) et la
 diagonale celui du glissement : une liste fermée de tolérances, valeurs comprises, est écrite et T0 l'applique trace par trace ; (2) trois
 mutants n'avaient pas de tueur démontré : chacun a son test, un doublon est remplacé, le témoin d'entité est ajouté.
 
-**Prérequis.** E20.i (la nage) et E20.c2a (le niveau des bottes `EquipmentRecords.BootsLevel`) : faites. Aucun prérequis de code d'i2b ou d'i2c.
+**Révision 2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé que la
+source du niveau des bottes (`EquipmentRecords.BootsLevel`) n'existe pas dans le montage des tests (`RunMontage` ne pose aucun
+`EquipmentRecords`, que rien ne lit en production) : le niveau vient de `PlayerManager.BootsLevelOf(GameState)`, la source que la physique
+de la DLL lit déjà, et T0 (c) prouve que les tests avec bottes restent verts.
+
+**Prérequis.** E20.i (la nage) et E20.c2a (le niveau des bottes) : faites. Aucun prérequis de code d'i2b ou d'i2c.
 La tranche touche `Alundra/SaveGames/TestSaves.cs` comme b2, c2b, A362 et g2c2 : jamais en même temps qu'elles.
 
 **But.** Comme l'original : sans bottes de nage (objet `0x1B` ou `0x1C` ; avec `0x1A`, le niveau 1, aussi), Alundra s'arrête au bord de l'eau
@@ -3571,7 +3576,9 @@ Aujourd'hui elle nage partout, écart épinglé par `HeroSwimArenaTests.WithoutT
 - **D-I2A-1** — Un pseudo-bit du masque (au-delà de 16 bits ; nom et valeur choisis par T0, `check_names.py`) que `CellsCollisionField`
   interprète : un coin est bloqué quand ce bit est dans le masque et que `(tileFlags & 0xE00) == 0x800`.
 - **D-I2A-2** — Une fonction par tick du héros (dans son tick, avant le déplacement) écrit ce bit dans `Controller.Settings.WalkabilityMask`
-  selon `EquipmentRecords.BootsLevel < 2` (la valeur tenue à la fin du tick précédent, comme le binaire) ; elle **n'appelle jamais**
+  selon `PlayerManager.BootsLevelOf(GameState) < 2` (révision 2 : la source que lit déjà `ScriptedMotion`, calculée à la demande depuis
+  l'inventaire, présente dans le montage comme en jeu ; le binaire lit la valeur mise en cache à la fin du tick précédent : l'écart d'un
+  tick ne joue qu'au tick où les bottes changent, ce que seul le menu fait, le monde arrêté ; écart consigné au site) ; elle **n'appelle jamais**
   `ResyncControllerFromFlags` ; `ResyncControllerFromFlags` et l'adoption gardent le bit. La même fonction portera le bit de la cape de h2
   (D-H2-6) : la première des deux tranches la crée, l'autre l'étend (le texte de h2 est à ajuster à sa relecture).
 - **D-I2A-3** — `BlockedCorners` lit le masque vivant du contrôleur (sans quoi le glissement le long du bord de l'eau se trompe, W5-L0-wall-diag).
@@ -3599,7 +3606,9 @@ montage reçoit le bit par la fonction de production, pas à la main) ; les test
   critique : `CarryLockSwimAndStatesTests.SwimScene`, les arcs de la 416 et de la 14, les 40 fichiers qui parlent d'eau ou de `Slope_18c`) :
   c'est la liste prédite, avec le test d'écart qui s'inverse et le test de liste des préréglages ; avec le même câblage temporaire,
   **l'écart de chacune des 15 traces à la DLL**, versé, et pour chaque trace le sous-ensemble de la liste fermée des tolérances (D-I2A-6)
-  qu'elle emploie, écrit dans l'annexe avant T1 ; (d) le nom et la valeur du pseudo-bit ; (e) la case du préréglage. Arrêt : un test d'une chaîne d'histoire (389 à 392, 179, intro) qui bouge ; plus de 10 tests déplacés.
+  qu'elle emploie, écrit dans l'annexe avant T1 ; (révision 2) la preuve, par le même câblage, que les tests avec bottes restent verts
+  (les inventaires `b1b` et `b1c` du montage, les traces W1 et W2 en L2 et L3, `R9-deepwater-boots2`, `R9-allwater-start-T-R`) et que seules
+  les traces L0 et L1 bougent ; (d) le nom et la valeur du pseudo-bit ; (e) la case du préréglage. Arrêt : un test d'une chaîne d'histoire (389 à 392, 179, intro) qui bouge ; plus de 10 tests déplacés.
 - ⏳ **T1 — Tests d'abord** (rouges avant) : (c1) `CellsCollisionField` : le pseudo-bit bloque `0xE00 == 0x800` et seulement lui (pas `0xC00`,
   l'échelle), sans condition de hauteur ; (r1) les 15 traces rejouées sur le montage (le masque posé par la fonction de production) aux colonnes
   du harnais, avec les seules tolérances que T0 (c) écrit pour chacune (D-I2A-6) : R9 (x = 325,00 au tick 84, `ForceAdjusted` au 86, `0x3E` au 87), W1 L0 et L1 (L1 : l'objet `0x1A`, niveau 1, bloque aussi), W2
