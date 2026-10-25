@@ -9355,7 +9355,7 @@ Exécution en mode AUTO, HEAD de départ `6fa6bf81`. Mesures : `docs/plan-e20-an
   épingles) : **CONFIRMED** tous deux.
 - **Recette de l'auteur, à faire** : `pickup-m11`, prendre un objet-clé : la musique se coupe net, puis repart du début.
 
-#### 1.26.2 E20.e0d — Le coffre au trésor et la Graine magique ⏳ (détaillée le 2026-10-25 ; thème 2 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
+#### 1.26.2 E20.e0d — Le coffre au trésor et la Graine magique ✅ (détaillée le 2026-10-25 ; thème 2 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; **faite et CONFIRMED le 2026-10-25**, `98cd7a36` à `791c6596`, ADR-0094 ; recette de l'auteur à faire)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `43a47432` ; rapport `report-main.md` et critique frais `critic-main.md`, CONFIRMÉ, dans le
 scratchpad de la session principale `scratchpad/t2-chest/`, à verser par T0 à `docs/plan-e20-annexe/e20-e0d-disc/` avec les scripts et les
@@ -9458,6 +9458,12 @@ qui ouvre la porte de la 115, et le coffre de la 115 qui ouvre un passage, ne s'
   `BlockedByEntity = null` après `Block`, comme le binaire (`o+0x20 = 0`) ; le Z de la naissance est dans le repère du binaire (ADR-0026).
 - **D-E0D-10** — La Graine est un corps partagé avec le vase de vie (`NativeEffects` paramétré par l'animation : 0 le vase, 2 la graine) ; ses
   trois entrées l'appellent ; `0x82` cesse d'être dégradé pour `0x50`.
+- **D-E0D-12** (2026-10-25, disposition de la session principale sur le constat P2 du verifier des épingles) — La liste prédite de
+  T0 (f) est amendée d'un test : `TestSavesTests.TheEighteenPresets_AreListed_InTheOrderOfTheTable`, devenu
+  `TheTwentyTwoPresets_AreListed_InTheOrderOfTheTable`, dont l'attendu gagne les quatre noms de D-E0D-11 et rien d'autre (un
+  changement mécanique de l'ajout des préréglages, comme D-E0C-14 pour e0c ; aucun comportement d'un préréglage existant ne change).
+  Compte mesuré : 9 méthodes (6 en T2, 2 en T3, celle-ci), 10 cas ; `PickupAiPlacedTests.P1`, prédite, n'a pas bougé. L'arrêt « plus de
+  10 tests » n'est pas atteint.
 - **D-E0D-11** (Q-E0D-6) — Quatre préréglages de recette : `coffre-m15` (la carte 15 : la graine, l'argent, des herbes, un Faucon ; MpMax
   entre 0 et 3 pour voir la graine), `coffre-m11` (la carte 11 : le vase sans drapeau, les herbes au drapeau 2000), `coffre-m0` (la carte 0 :
   les armes), `coffre-m117` (la clé de la 117) ; les cases dérivées en T0.
@@ -9522,14 +9528,22 @@ CD (E19.sm7) ; le moteur.
   sans diff. **Écart** : la Graine par `0x82` crée ses effets au Z du binaire (`PosZ + 1`), comme par `GiveItem` et `ApplyItem` (un seul corps) ;
   le vase de vie par `0x82` (`EventProgramRunner.UseLifeVessel`, E19.g G3d) les crée encore au `PosZ` brut, une unité plus bas que par
   `GiveItem` : écart préexistant, hors périmètre, O-E0D-1.
-- ⏳ **T4 — Mutants, ADR.** Au moins 15 mutants réels, tous tués (les quatre gardes de F255 une à une ; `+0x88 != 0` ignoré ; `CanTake` sans
+- ✅ **T4 — Mutants, ADR.** Au moins 15 mutants réels, tous tués (les quatre gardes de F255 une à une ; `+0x88 != 0` ignoré ; `CanTake` sans
   plafond ; le sac plein qui donne quand même ; le drapeau posé au sac plein ; `ApplyItem` avec la règle de `GiveItem` ; l'objet visible pendant
   les 61 ticks ; le décompte de 64 en 63 ; le son de l'octet 5 en un autre ; la Graine sans plafond ; Mp non rempli ; l'animation 0 pour la
   graine ; A255 du type 30 qui dessine ouvert un coffre plein ; le drapeau en banque temporaire ; `StopAllSound` déplacé à la fermeture de la
   boîte ; l'objet dessiné pendant les 61 ticks ; les entités bloquées qui s'animent ; une garde des données qui compte 403 natifs au lieu de
   404, qui tue (a2) ; le vase de vie en animation 2, qui tue (c2)) ; un ADR neuf (numéro libre recompté) ; les
-  renvois « E14 » du §1.26 corrigés.
-- ⏳ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+  renvois « E14 » du §1.26 corrigés. **Fait** le 2026-10-25 (`48cdc5a2`, `f97ad45a`, `ffc505b1` ; `e20-e0d/t4.md`, `mutants/`) : 23
+  mutants réels, tous tués ; un survivant au premier passage (m09 : C255 qui appelle `GiveItem` au lieu d'`ApplyItem`, les tests ne
+  donnant que des herbes sous le plafond), tué par un test ajouté (`ChestAiObjectTests.B3_ApplyItem_HasNoInventoryFirstRule_…`) ;
+  ADR-0094 ; les renvois « E14 » corrigés par la session principale (`e9e8c58a`).
+- ✅ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles. **Fait** le 2026-10-25 (`wf_a2f5bba1-855`) :
+  le verifier de la tranche CONFIRMED (suite Release 6 429 verts, rejeux de T0 (c) identiques octet pour octet, six mutations à lui
+  tuées, D-E0D-4 et D-E0D-5 fidèles au binaire) ; celui des épingles REFUTED sur un seul point P2 (le test de liste des préréglages
+  hors de la liste de T0 (f)), consigné par la reprise (`791c6596`) puis tranché par D-E0D-12 ; le verifier frais d'après la reprise
+  CONFIRMED (6 429 verts, trois mutations de plus tuées) ; restent deux avis P3/P4 sans effet (l'icône de T4, faite ici ; l'unité du
+  compte dans `t3.md`, précisée par D-E0D-12).
 
 **Acceptation.** Les sorties de T0 (c) identiques ; (a1), (b1) à (b6), (b10), (c1), (c3) et (c4) rouges avant leur phase et verts après (nommés) ; (b8)
 et (b9) rouges avant si T0 a mesuré l'écart, verts avant et après sinon ; les gardes (a2), (c2) et (b7) vertes avant et après, chacune tuée
