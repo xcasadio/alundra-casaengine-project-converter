@@ -35,3 +35,4 @@ d546e28c3ae38e529a581ca3aacb1db680ae8546 *./suite-wired/p2.summary
 da39a3ee5e6b4b0d3255bfef95601890afd80709 *./suite-wired/p3.red
 6340ddef9e0d3c60d44381d96ec99660e566266b *./suite-wired/p3.summary
 e52d82faa316ef4238cce67e95e955cda72fe4e4 *./suite-wired/run.sh
+799e98a68ac7cd9f75730b688cd2fe9359cb36d2 *./t1-t2.md
