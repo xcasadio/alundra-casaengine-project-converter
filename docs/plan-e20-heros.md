@@ -11230,7 +11230,7 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
 
 ---
 
-#### 1.30.3 E20.h3b — La bombe dans les mains : le départ, C62, le pilote et l'annulation ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`1314242`, un P2 : une tolérance d'un tick dans ses arrêts), corrigé (révision 3) ; relecture en pause, Q-H3B-R ; prérequis E20.c2b ajouté le 2026-10-22, D-E20-52 ; **révision 4 du 2026-10-25** : E20.c2b faite, D-H-7 caduque, nouvelle époque ; relue : REVISE ; révision 4.1 du 2026-10-25, à relire par un `plan-verifier` frais)
+#### 1.30.3 E20.h3b — La bombe dans les mains : le départ, C62, le pilote et l'annulation ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`1314242`, un P2 : une tolérance d'un tick dans ses arrêts), corrigé (révision 3) ; relecture en pause, Q-H3B-R ; prérequis E20.c2b ajouté le 2026-10-22, D-E20-52 ; **révision 4 du 2026-10-25** : E20.c2b faite, D-H-7 caduque, nouvelle époque ; relue : REVISE ; révision 4.1 du 2026-10-25, **READY** à la deuxième relecture, `plan-verifier` frais)
 
 **Révision 4 (2026-10-25, nouvelle époque).** La pause attendait E20.c2b (Q-H3B-R : « elle attend aussi E20.c2b », D-E20-52) : c2b est faite
 (§1.12.1, ADR-0096) et D-H-7 est caduque (D-C2B-11). La lecture du 2026-10-25 (`scratchpad/t2-next/a362-h3a/` et sa critique, versées par
