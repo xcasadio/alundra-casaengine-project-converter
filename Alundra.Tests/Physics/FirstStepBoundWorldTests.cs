@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Alundra.Physics;
 using Alundra.Tests.Ai.Projectiles;
 using Alundra.Tests.Audio;
 using Alundra.Tests.Support;
@@ -88,4 +89,42 @@ public sealed class FirstStepBoundWorldTests
     [InlineData(2)]
     [InlineData(3)]
     public void ChargedArrow_FlushAtHeroX109_IsDestroyedAtSPlus1_WithTheEffect8(int ticksPerFrame) => AssertChargedLines(109, "flush", ticksPerFrame);
+
+    /// <summary>
+    /// E20.e0k5 T3 (a mutant that survived T2: the bound applied after the integration too). The first tick that runs INTEGRATED, S+1 at one and two ticks per frame, is decided by the mover of the engine, not by the halving search: at x0 = 107 it moves the arrow by the last raw unit (7143424) and raises the wall flag at S+1,
+    /// where the binary's halving raises it at S+2 (the one-tick flag gap of D-E20-38, kept by D-E0K5-2). The line of the key at S+1, with the flag raised, is the line of the arrow at S+1. A bound that also ran after the integration would accept that unit by the halving and leave the flag down (the key's line as it is).
+    /// </summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheFirstIntegratedTick_IsDecidedByTheMover_TheFlagIsRaisedAtSPlus1_NotAtSPlus2(int ticksPerFrame)
+    {
+        var key = ArrowOracle.Load("arrow3_x107", stepByImage: true);
+        using var run = new ArrowRun($"e0k5-gap-{ticksPerFrame}", 5, Column(5), heroX: 107);
+        run.Go(ticksPerFrame, 40);
+        var keyLine = key.Line(key.FirstTick + 1);
+        Assert.Contains("adj=0", keyLine);
+        Assert.Equal(keyLine.Replace("adj=0", "adj=1"), run.Line(run.BirthTick + 1));
+    }
+
+    /// <summary>
+    /// E20.e0k5 T3 (a mutant that survived T2: the corner height test with <c>&gt;=</c>). The wall test of the first step refuses a corner whose ground is HIGHER than the foot plus the step height, not one that is exactly as high: a cell of ground 16 (height 1) at a foot of exactly 16 (raw 1048576) and a step height of 0
+    /// is free (no corner blocked), at one raw unit lower all four corners are blocked (ground 16 above a foot of 16 minus 1/65536).
+    /// </summary>
+    [Fact]
+    public void BlockedCorners_AGroundExactlyAsHighAsTheFootIsFree_OneRawUnitHigherIsABlockedCorner()
+    {
+        using var run = new ArrowRun("e0k5-corners", 5, (c, r) => new CutBench.Cell(0, 1), heroX: 100);
+        run.Go(1, 12);
+        var arrow = run.Born;
+        Assert.NotNull(arrow);
+        Assert.NotNull(arrow!.Controller);
+        arrow.Controller!.Settings.StepHeight = 0f;
+        arrow.PosX = 120 << 16;
+        arrow.PosY = 100 << 16;
+        arrow.PosZ = 16 << 16;
+        Assert.Equal(0, ScriptedMotion.BlockedCorners(arrow, 0, 0));
+        arrow.PosZ = (16 << 16) - 1;
+        Assert.Equal(15, ScriptedMotion.BlockedCorners(arrow, 0, 0));
+    }
 }

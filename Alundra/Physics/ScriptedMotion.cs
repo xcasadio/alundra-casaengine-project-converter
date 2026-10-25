@@ -980,7 +980,7 @@ internal static class ScriptedMotion
     /// The blocked corners (bit i of the result: corner [i], with [0] = (x1, y1), [1] = (x2, y1), [2] = (x1, y2), [3] = (x2, y2), as <c>ComputeEntityGroundHeight</c> <c>0x800370C4</c>
     /// takes them) of the box of <paramref name="entity"/> at its position moved by (<paramref name="advanceX"/>, <paramref name="advanceY"/>) 16.16 units; none without a cell field.
     /// </summary>
-    private static int BlockedCorners(EntityScriptProxy entity, int advanceX, int advanceY)
+    internal static int BlockedCorners(EntityScriptProxy entity, int advanceX, int advanceY)
     {
         if (entity.ReadCollisionField() is not CellsCollisionField field || entity.Controller == null)
         {
