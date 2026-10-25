@@ -8829,7 +8829,7 @@ Le coffre (`+0x274 == 2`) reste inerte.
   `0x800336F0` Grand cristal (PM = PMmax, 8 anneaux d'animation 2), `0x800335AC` (+1 PM, 4 étincelles) pour `0x26` et `0x51`, `0x800333AC` vase de vie.
   « L'inventaire d'abord » (`0x80033EC8`) précède `0x24`, `0x25`, `0x26`, `0x27`, `0x29`. Le retour est `octet 4 == 0`.
 - Coffre : l'objet à `+0x274 == 2` ne naît que par F255 (`0x8007FC88`), seul créneau F à 255, porté par le type 30 seul (A255 : 88 types dont le 30 ; C255 : 87 types, 31 à 118
-  sauf 72). Le coffre est une tranche à part (F255, E14).
+  sauf 72). Le coffre est une tranche à part (F255, E20.e0d, §1.26.2 ; la révision d'origine disait « E14 », qu'aucun plan d'E14 ne porte).
 
 **Faits des données (projet exporté, que lit la DLL, recoupé avec `data-extracted/`).** 152 objets posés sur 53 types (global, types 31 à 118 sauf 72), tous à `_10 = 0` et
 `Contents = 0` ; 52 à apparition automatique, 100 forcés. Octet 5 de la table : 101 objets-clés, 40 au son 52, 9 au 53, 2 au 54. Au créneau C, 59 ont un code
@@ -8902,7 +8902,7 @@ soin), `Alundra/Ai/Objects/PickupAi.cs` (C255, A255 et les accès 32 bits propre
 `Alundra/Maps/WorldProxy.cs` (`Block`, `Unblock`, horloge, physique, rafraîchissement de `ModdedPos`, `DestroyEntity`), `Alundra/Ai/NativeSpriteRegistry.cs` (deux clés) ; les tests (dont une garde
 de données dans `Alundra.Tests/ExportGuards/`) ; l'annexe ; un ADR (0082 à revérifier). Les noms passent `check_names.py --rules`.
 
-**Hors périmètre.** Le coffre (F255, `ApplyItem`, `+0x274 == 2`, A255 du type 30 : E14) ; la récursion E11 (E14.b) ; les pistes XA et leur lecture (E19.sm7) ; le clignotement rendu (E20.c2b) ;
+**Hors périmètre.** Le coffre (F255, `ApplyItem`, `+0x274 == 2`, A255 du type 30 : E20.e0d, §1.26.2 ; « E14 » à l'origine) ; la récursion E11 (E14.b) ; les pistes XA et leur lecture (E19.sm7) ; le clignotement rendu (E20.c2b) ;
 la destruction des objets par la VRAM (O-E0K-2) ; la coupe d'herbe (E20.e) ; l'opcode `0x82` (O-E19-39 ; h1 pour le soin sur place du coffre) ; les 93 objets posés à script de carte ;
 la branche d'A255 à drapeau ; `Alundra/Entities/EntityScriptProxy.cs` (D-E20-55, D-E0C-13) ; le moteur, le convertisseur et les données.
 
@@ -9280,7 +9280,7 @@ plan (dont les renvois « E14 » du §1.26 corrigés).
 CD (E19.sm7) ; le moteur.
 
 **Tâches.**
-- ⏳ **T0 — Prérequis, versement, rejeu, sondes** (commit de docs). (a) Les prérequis ; (b) verser la lecture (`scratchpad/t2-chest/`, sans les
+- ✅ **T0 — Prérequis, versement, rejeu, sondes** (commit de docs ; fait le 2026-10-25, `98cd7a36`). (a) Les prérequis ; (b) verser la lecture (`scratchpad/t2-chest/`, sans les
   copies d'annexes et les `__pycache__`) à `docs/plan-e20-annexe/e20-e0d-disc/` et l'inventaire (`scratchpad/theme2-disc/`) à
   `docs/plan-e20-annexe/e20-theme2/`, avec un README et un `SHA1SUMS.txt` ; (c) rejouer depuis une copie `f255_oracle.py`, `seed_oracle.py`,
   `chest_sequence.py`, `chest_anim_oracle.py`, sorties identiques ; (d) sondes de la DLL (tests jetables, jamais commités, versés en `.txt`) :
@@ -9289,10 +9289,15 @@ CD (E19.sm7) ; le moteur.
   `[0x800DC4C4]` (la demande de changement de carte) ; (e) les cases des préréglages ; (f) la liste prédite des tests déplacés (les épingles
   du registre, `PickupAiDropWorldTests` w7, `PickupAiPlacedTests` P1 et P8, `ItemEffectsTests` de la graine), mesurée par un câblage temporaire.
   Arrêt : une sonde qui contredit un fait ci-dessus ; un besoin du moteur ; plus de 10 tests existants déplacés.
-- ⏳ **T1 — Phase A, tests d'abord** (rouges avant) : (a1) A255 sur le type 30 : un coffre à contenu 0 est dessiné ouvert, un coffre plein
+  **Résultat** (`docs/plan-e20-annexe/e20-e0d/results.md`) : rejeux identiques ; les sondes confirment le son 51 et le chaînage en 61 ticks,
+  la montée par `ForceZ` ; un `Block` laisse les sprites dessinés **mais leur animation avance** (écart de D-E0D-4, (b8) rouge avant) ;
+  l'objet tenu en Loaded **est dessiné** (écart de D-E0D-5, (b9) rouge avant) ; `[0x800DC4C4]` ≈ `WarpDirector.Instance.IsTransitionInProgress` ;
+  la carte 115 demande l'arrivée pour faire naître le coffre ; les cases : `coffre-m15` (15, (35, 41, 5)), `coffre-m11` ((7, 23, 13) et
+  (17, 34, 10)), `coffre-m0` (0, (13, 2, 0)), `coffre-m117` (117, (42, 40, 2)) ; liste prédite : 9 méthodes, 10 cas.
+- ✅ **T1 — Phase A, tests d'abord** (rouges avant) : (a1) A255 sur le type 30 : un coffre à contenu 0 est dessiné ouvert, un coffre plein
   fermé ; (a2) la garde des données (420, 404, 16, 4, aucun drapeau en banque temporaire, aucun ≥ 2048, aucun code de contenu ≥ `0x62`) ; puis
-  le code de la phase A.
-- ⏳ **T2 — Phase B, tests d'abord** (rouges avant) : (b1) F255 contre les 244 vecteurs ; (b2) `CanTake` (table complète) ; (b3) la chronologie
+  le code de la phase A. **Fait** le 2026-10-25 (`6b95eaaf`, `763fdc3b`) : (a1) rouge avant, vert après ; (a2) verte avant et après.
+- ✅ **T2 — Phase B, tests d'abord** (rouges avant) : (b1) F255 contre les 244 vecteurs ; (b2) `CanTake` (table complète) ; (b3) la chronologie
   d'un coffre d'Herbes sur le vrai contrôleur (Carré au contact, l'animation 2 et le son 51, l'objet Loaded 61 ticks puis qui monte 64 ticks, le
   message « Herbes gagné! » et le son 52, la fermeture, `ApplyItem`, le drapeau, `Unblock`), les ticks épinglés par dérivation des rejeux et des
   mesures de T0 ; (b4) le sac plein : le message, rien de donné, le coffre refermé et qui se rouvre ; (b5) un coffre ouvert puis rechargé
@@ -9303,12 +9308,26 @@ CD (E19.sm7) ; le moteur.
   l'écart, témoin vert sinon) ; (b10) un coffre à objet-clé (une arme de la carte 0, ou un vase) : la musique coupée au tick de F255, le bouchon
   de la piste 11 au tick où A255 libère l'objet, le masque 3 et `StopAllSound` au tick qui suit l'ouverture du message, la boîte encore
   ouverte, puis la boîte fermée par le joueur, l'objet donné, le drapeau posé, `Unblock` (le monde débloqué) — les ticks épinglés par
-  dérivation de `chest_sequence.out` et des mesures de T0 (D-E0D-2) ; puis le code de la phase B.
-- ⏳ **T3 — Phase C, tests d'abord** (rouges avant) : (c1) la Graine par ses trois entrées (le coffre, le ramassage, `0x82`) : la table de
+  dérivation de `chest_sequence.out` et des mesures de T0 (D-E0D-2) ; puis le code de la phase B. **Fait** le 2026-10-25 (`151b7af6`,
+  `ccf7db85`, `463e26c7` ; `e20-e0d/t1-t2.md`) : 23 tests rouges avant sur 29, tous verts après ; la DLL égale le binaire aux ticks (l'objet
+  relâché au tick 62, le message au tick 127 ; pour un objet-clé le masque 4 à 127 puis le masque 3 et `StopAllSound` à 128, la boîte encore
+  ouverte) ; 7 tests existants déplacés, tous dans la liste de T0 (f). **Écarts** : le gel de D-E0D-4 s'applique par `GameplayFreeze.IsFrozen`
+  avec un appel dans `Alundra/Maps/WorldProxy.cs` (`Block`/`Unblock`), fichier hors du périmètre nommé, seul site du gel (le héros gelé aussi,
+  comme au binaire) ; D-E0D-5 s'applique dans A255 de l'objet (`PickupAi.ChestObjectLoad`) et à la naissance, pas dans `FrameSyncPasses.cs`
+  (une règle générale « un Loaded n'est pas dessiné » serait plus large et sans test) ; (b6) prouve ce que lisent les scripts (la clé en sac,
+  le drapeau 260, l'entité détruite en 117, le drapeau 659 et le son 223 en 115), la consommation de la clé par la porte de la 115
+  (`0x84 [61]`) n'est pas pilotée ; (b7) la caisse : les tests de levage de g1b, restés verts, servent de témoin.
+- ✅ **T3 — Phase C, tests d'abord** (rouges avant) : (c1) la Graine par ses trois entrées (le coffre, le ramassage, `0x82`) : la table de
   `seed_oracle.out` (MpMax et Mp avant et après), 12 effets en animation 2, 8 tirages, son `0x36` ; (c2) le vase de vie inchangé (animation 0) ;
   (c3) le coffre de la Graine de bout en bout (la fanfare de la phase B, puis les PM qui montent par le corps de la phase C) ; (c4) les quatre préréglages
   et leurs tables ; puis le code. La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
-  les traces de la 389 ; `cmp` ; `check_names.py --rules` ; le moteur, le convertisseur et les données sans diff.
+  les traces de la 389 ; `cmp` ; `check_names.py --rules` ; le moteur, le convertisseur et les données sans diff. **Fait** le 2026-10-25
+  (`e1214a1e`, `a080a6bc` ; `e20-e0d/t3.md`) : (c1) 45 cas et 2 tests, (c3) et (c4) rouges avant, verts après ; (c2) verte avant et après ;
+  suite en Release 6 428 tests, 0 échec ; en Debug, en dernier, 6 428 tests, 0 échec (p1 et p3 passées par la session principale après une panne de Bash de l'executor) ; `cmp` de la DLL identique ; 2 tests existants déplacés, dans la liste de T0 (f) (9 au
+  total sur les 10 cas prédits ; `PickupAiPlacedTests.P1` est resté vert) ; `check_names.py --rules` vert ; moteur, analyseur et données
+  sans diff. **Écart** : la Graine par `0x82` crée ses effets au Z du binaire (`PosZ + 1`), comme par `GiveItem` et `ApplyItem` (un seul corps) ;
+  le vase de vie par `0x82` (`EventProgramRunner.UseLifeVessel`, E19.g G3d) les crée encore au `PosZ` brut, une unité plus bas que par
+  `GiveItem` : écart préexistant, hors périmètre, O-E0D-1.
 - ⏳ **T4 — Mutants, ADR.** Au moins 15 mutants réels, tous tués (les quatre gardes de F255 une à une ; `+0x88 != 0` ignoré ; `CanTake` sans
   plafond ; le sac plein qui donne quand même ; le drapeau posé au sac plein ; `ApplyItem` avec la règle de `GiveItem` ; l'objet visible pendant
   les 61 ticks ; le décompte de 64 en 63 ; le son de l'octet 5 en un autre ; la Graine sans plafond ; Mp non rempli ; l'animation 0 pour la
@@ -11944,6 +11963,7 @@ les trois entrées `0x31`.
 | O-G3-2 | (2026-10-18) L'octet d'animation (`+0xB4`) est lu par la liste avant l'horloge et par la porte du sujet après dans le binaire ; la DLL lit `AnimFlags`, écrit en fin d'image (un tick ou plus) ; l'équivalent exact existe (`HitAnimByte`) | une tranche à part |
 | O-G3-3 | (2026-10-24, g3 puis g1b T0) Debout sur le dessus d'une caisse (ou en l'air), en marchant contre une caisse voisine plus haute, la DLL pose le contact `XCollisionEntity` au tick où le pas est raccourci ; le binaire, hors de la branche « marche au sol » de `ComputeXYPosition` (`0x80037730`, `0x80037834`-`0x80037884`), rend le candidat de l'avant-dernière tentative de sa recherche binaire du pas, ce qui dépend de la phase sous-pixel (`walk-release-disc/critic-main.md`, W4). Un Carré au tick exact de l'arrivée soulèverait la caisse voisine là où l'original donne l'épée. D-E20-77 : g1b l'épingle par un test nommé ; une tranche du moteur à part émulera la queue de la recherche du pas (un plan et un ADR du moteur) | une ombre du contact dans la DLL (D-E20-80, remplace D-E20-77) |
 | O-E0K5-1 | (2026-10-25, E20.e0k5) Les côtés nord, sud et ouest du tir à bout portant (`t2-proj/out/pb_dirs.txt`) reposent sur un montage d'oracle non recoupé (le premier montage ouest était dégénéré) ; e0k5 ne prouve que le côté est. Les rejouer et en tirer des clés avec manifestes, plus tard | à placer (une lecture de l'oracle) |
+| O-E0D-1 | (2026-10-25, E20.e0d T3) Le vase de vie donné par l'opcode `0x82` (`EventProgramRunner.UseLifeVessel`, E19.g G3d) crée ses 12 effets au `PosZ` brut du héros, alors que le même vase par `GiveItem` ou `ApplyItem`, et la Graine par ses trois entrées, les créent au Z du binaire (`PosZ + 1`, ADR-0026) ; le binaire appelle le même corps `0x800333AC` depuis les deux chemins. Écart préexistant d'une unité brute (invisible en jeu), épinglé par les tests de G3d. Défaut : aligner `UseLifeVessel` sur `PosZ + 1` dans une tranche à venir, après relecture du binaire | à placer (P3, défaut : aligner sur le binaire) |
 | O-G4B-1 | (2026-10-24, E20.g4b) À 3 ticks par image seulement : rec5 se brise 25 ticks après le lancer (24 aux autres cadences et au binaire) ; en (b6), Alundra n'est pas immobilisé 5 ticks par le roulis ; deux glissements de (b5) et (b6) (ticks 223 et 224) tombent avec un contact rec5 déjà tenu. Épinglés tels que mesurés dans `ShipBarricadeArcTests`, cause non établie (l'ordre des passes à plusieurs ticks par image ?) | plus tard (une lecture de la cadence à 3 ticks par image) |
 | Q-STEP | (2026-10-24, lecture seule `docs/plan-e20-annexe/e20-step-search/`, CONFIRMÉE par un critique frais ; à l'auteur en termes de jeu) Le binaire cherche la longueur de chaque pas par moitiés successives, sur X et Y à la fois (`ComputeXYPosition` `0x80037730`) ; le moteur avance jusqu'au contact exact, axe par axe, en flottants. Ce qui se voit : (1) une flèche tirée à bout portant contre un mur reste plantée dans le mur au lieu de rebondir tout de suite (O-E20-24, le seul écart visible à l'œil) ; (2) debout sur une caisse ou en l'air, un Carré au tick exact de l'arrivée soulève la caisse voisine au lieu de donner l'épée (O-G3-3) ; (3) une flèche ou un objet qui touche un mur à l'est ou au sud déclenche son rebond un tick plus tard dans l'original, une fois sur trois environ (`ForceAdjusted`) ; (4) en poussant en diagonale contre une caisse, l'original s'arrête net, le portage glisse le long (Q-G3-d, gardé par l'auteur le 2026-10-22). Options : (A) porter la recherche du binaire en entier, dans un déplaceur de la DLL en entiers bruts (le moteur ne peut pas être exact : sa position est en float32 ; il faut aussi une API moteur de pose exacte, avec son plan et son ADR), par étapes (les projectiles et objets lancés, puis le héros) ; cela renverse D-E19-58, D-E20-38, Q-H4C1-5 et Q-G3-d, que l'auteur avait gardés ; plusieurs tranches, des arcs réécrits par dérivation ; (B) le minimum visible : corriger O-E20-24 seul (le premier pas d'un projectile, porté avec la boucle par moitiés), et une « ombre » du contact du binaire pour O-G3-3 (une copie pure de la recherche qui ne fait qu'écrire le contact) ; le reste des écarts (3) et (4) gardé ; (C) ne rien changer : O-E20-24 et O-G3-3 restent consignés. Défaut de la session : (B), qui ne renverse aucune réponse de l'auteur **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : le défaut (B) (D-E20-80). | Tranché le 2026-10-25 (D-E20-80) |
 | O-ANX-1 | (2026-10-24, relevé par g3) La règle `[Bb]in/` du `.gitignore` (ligne 21, pour les sorties de construction) écarte aussi les dossiers `bin/` des annexes : `e20-f4f6/bin` (273 fichiers), `e20-f4f6/critic/bin` (180), `e20-h3/bin` (143), `e20-h4b/bin` (81), `plan-e19-pad-age-annexe/o77/bin` (9) ne sont pas dans le dépôt, alors que les plans les citent comme preuves ; celui de g3 a été ajouté à sa clôture. Proposition : une exception `!docs/**/[Bb]in/` au `.gitignore` et l'ajout des cinq dossiers (14 Mo environ), par un commit de docs **Réponse de l'auteur (2026-10-24)** : « prendre toutes les réponses par défaut » : la proposition (D-E20-76). | Tranché le 2026-10-24 (D-E20-76) |
