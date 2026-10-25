@@ -87,3 +87,18 @@ documented deviation, or extend the scope to the binary loop after the integrati
 ## Files
 
 `E0k5T0ProbeTests.cs.txt` (the throwaway probe source), `probes-dll-before.txt`, `probes-dll-wired.txt`, `temp-wiring.diff.txt`, `suite-wired/`.
+
+# E20.e0k5 T1: phase A, the pure halving search (2026-10-25)
+
+Files: `Alundra/Physics/HalvingStepSearch.cs` (`Search(forceX, forceY, cardinal, isBlockedAt)`), `Alundra/Physics/HalvingStepResult.cs` (the secondary type of the names guard moved to its own file),
+`Alundra.Tests/Physics/HalvingStepSearchTests.cs`, vectors in `step-vectors/` (`gen_vectors.py` seed 2025, `gen_named.py`, `halving-vectors.tsv.gz`, `named-cases.tsv`; both generators import `e20-step-search/work/xymodel.py` and rerun to the same bytes).
+No production caller yet (the wiring is T2): no behaviour change.
+
+- **The model's vectors.** 20 000 random cases from the generator of the real-code replay (`xyfuzz.gen_world`, non-hero subject, `0x2000` NoObstacleSlide, `0x100` cleared, no collidable) plus a wall world for half of them
+  (a column or a row of `0x40/0x41/0x1040` cells placed so that the halving converges, the step often reaching a few pixels into the wall): 12 588 with a sub-step accepted (5 729 partial), 6 555 refused, 857 zero vectors;
+  176 943 queries (120 924 refused, 56 019 free). Each case records the queries of the model in order; the test makes the pure function answer from them: an unrecorded query, another order, another count or another result fails the case.
+- **The wall test and the field.** The pure function takes the wall test as a predicate (the offset from the start, raw units); it does not contain the cell test of `0x800373E4`. The wall test of the DLL is the existing `ScriptedMotion.BlockedCorners` (wired as the predicate in T2, which is where its fidelity to `0x800373E4` is exercised through the oracle keys). Plan deviation noted in the report.
+- **Named cells.** The 10 cells of the reading (3 px: x0 = 105 to 109; 6 px: x0 = 104, 105, 107, 108, 109) against a wall that refuses above 109 pixels (7143424): 7143423 for (107, 3 px), (104, 6 px), (107, 6 px) = 3 of 10; the rule 'largest free position' differs by one raw unit on exactly those 3 (a test).
+- **Red before, green after.** Skeleton (`default`): 28 failed, 4 passed (`east_zero`, `Halving_Flush_NothingAccepted`, `Halving_ZeroVector_MakesNoQueryAndAcceptsNothing`, `Fuzz_File_HasPartialRefusedZeroAndFullCases`: the file-shape test and the witnesses that the skeleton's `default` also satisfies). Body: 32 of 32 green; `Alundra.Tests.Physics` namespace: 140 of 140.
+- **Throwaway mutants (real, by script, reverted, `git diff` equal to the committed body):** `-1` halved by plain `sra` (the loop never ends: killed by the hang), cardinal test inverted (17 failed), the whole first step not returned at once (9 failed), the accepted sub-steps not accumulated (14 failed). The 8 mutants of the plan are T3.
+- `check_names.py --rules`: 0 finding. Engine and `alundra-project/`: untouched.
