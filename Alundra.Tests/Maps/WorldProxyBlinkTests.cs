@@ -153,6 +153,18 @@ public sealed class WorldProxyBlinkTests : IDisposable
     }
 
     [Fact]
+    public void K3_AnActiveEntityHiddenByAnotherWriter_IsNeverShownByTheBlink()
+    {
+        var (entity, proxy) = Bare(EntityStatus.Normal, visible: false); // hidden by something else than the blink (it never hid it).
+        foreach (var counter in new[] { 7, 6, 3, 2, 0 })
+        {
+            proxy.DamagedTickCounter = counter;
+            ListsAndPublish(entity, proxy);
+            Assert.False(entity.IsVisible, $"counter {counter}: the blink shows only what it hid itself");
+        }
+    }
+
+    [Fact]
     public void K3_AFlaggedEntity_StaysHidden_WhenTheBlinkLetsGo()
     {
         var (entity, proxy) = Bare(EntityStatus.FlagToDestroy, visible: false); // FrameSyncPasses.SyncAnimation hid it; the blink had hidden it before the flag.
