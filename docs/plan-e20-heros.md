@@ -11230,7 +11230,7 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
 
 ---
 
-#### 1.30.3 E20.h3b — La bombe dans les mains : le départ, C62, le pilote et l'annulation ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`1314242`, un P2 : une tolérance d'un tick dans ses arrêts), corrigé (révision 3) ; relecture en pause, Q-H3B-R ; prérequis E20.c2b ajouté le 2026-10-22, D-E20-52 ; **révision 4 du 2026-10-25** : E20.c2b faite, D-H-7 caduque, nouvelle époque, à relire par un `plan-verifier` frais)
+#### 1.30.3 E20.h3b — La bombe dans les mains : le départ, C62, le pilote et l'annulation ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`1314242`, un P2 : une tolérance d'un tick dans ses arrêts), corrigé (révision 3) ; relecture en pause, Q-H3B-R ; prérequis E20.c2b ajouté le 2026-10-22, D-E20-52 ; **révision 4 du 2026-10-25** : E20.c2b faite, D-H-7 caduque, nouvelle époque ; relue : REVISE ; révision 4.1 du 2026-10-25, à relire par un `plan-verifier` frais)
 
 **Révision 4 (2026-10-25, nouvelle époque).** La pause attendait E20.c2b (Q-H3B-R : « elle attend aussi E20.c2b », D-E20-52) : c2b est faite
 (§1.12.1, ADR-0096) et D-H-7 est caduque (D-C2B-11). La lecture du 2026-10-25 (`scratchpad/t2-next/a362-h3a/` et sa critique, versées par
@@ -11269,8 +11269,10 @@ plan, l'index des ADR et un ADR.
   lecture), rejouées depuis une copie : `k_throw_explode.txt` (la bombe lancée vers le bas se pose à +23,50 px, sa zone de 32 px de profondeur
   recouvre le corps du héros resté sur place d'un demi-pixel : il est blessé, PV 10 → 5, `0x31` ; vers l'est, le nord et l'ouest il passe à
   côté, les seuils de la critique : est touché à 34,75 px ou moins, nord à 22,0, sud à 23,5, ouest indemne dès 34,0) et
-  `bomb_hurt_while_carrying_bomb.txt` (le héros blessé au tick 264 en portant la bombe 2, lâchée au tick suivant en animation 2, qui part sur
-  35 px sans se briser) ; (c) **la politique des étincelles** (critique A5) : deux tirages seulement si l'effet est obtenu ; la sonde de la DLL dit quand
+  (révision 4.1) une clé d'annexe déjà versée, `docs/plan-e20-annexe/e20-h3/bin/results/scenarios/bomb_hurt_while_carrying_bomb.txt`,
+  rejouée depuis une copie de `e20-h3/bin/run/sc_hurt.py` (argument par défaut 222) : au tick 264, le héros portant la bombe 2 est blessé (PV
+  10 → 5, `0x31`) et la bombe lâchée **au même tick** en animation 2, le lien effacé ; l'objet en cours libéré au tick 265 ; la bombe se
+  pose au tick 286 et repose à 35,2 px à l'est au tick 287 (animation 0), non brisée ; sa fusée continue, statut 3 au tick 332 ; (c) **la politique des étincelles** (critique A5) : deux tirages seulement si l'effet est obtenu ; la sonde de la DLL dit quand
   `EffectStage` rend un effet (réservoir plein compris) et l'écrit au README ; (d) la liste prédite : `AlundraLogicalZWorldTests` Z4 et Z7 (une bombe
   née par l'interface dont la fusée vaut 0 : avec C62 inscrit, elle passe en statut 3 au premier tick et explose), réécrits par dérivation ou
   avec une autre entité à gravité (le choix écrit au README, la valeur de Z de l'oracle gardée) ; les épingles du registre (+1 clé) ; recomptée ;
@@ -11298,8 +11300,9 @@ plan, l'index des ADR et un ADR.
   l'objet en cours, l'état et la position du héros, de la naissance de la seconde bombe à la fin de son animation d'explosion (révision 2), et
   (révision 4) la blessure du héros au tick 261 (PV 5, `0x31`, le recul coupé par Rond au 262, x = 103), la seconde explosion sans blessure
   (`DamagedTickCounter` non nul) ; (w9) le menu Start refusé du départ à T+243, ouvert après ; (w10) (révision 4) le lancer vers le bas contre
-  `k_throw_explode.txt` : Alundra resté sur place est blessé par sa propre bombe ; accolé, le lancer vers l'est (indemne) ; (w11) (révision 4)
-  la blessure en portant une bombe contre `bomb_hurt_while_carrying_bomb.txt` : la bombe lâchée, non brisée, sa trajectoire.
+  `k_throw_explode.txt` : Alundra resté sur place est blessé par sa propre bombe ; accolé, le lancer vers l'est (indemne) ; (w11) (révisions 4 et 4.1)
+  la blessure en portant une bombe contre `bomb_hurt_while_carrying_bomb.txt` (la blessure et le lâcher au tick 264, l'objet libéré au 265, le repos
+  au 287, le statut 3 au 332) : la bombe lâchée, non brisée, sa trajectoire.
 - ⏳ **T3 — Phase B** : les entrées `0x23` et l'inscription. Verts.
 - ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 16, tous tués : limite à 4 ; une bombe détruite non comptée ; fusée à 239 ;
   étincelles à 64 ; étincelles sans la condition « effet obtenu » ; un seul tirage par étincelle ; garde `+0x20` au lieu de `+0x24` (D1) ; fumée 12
