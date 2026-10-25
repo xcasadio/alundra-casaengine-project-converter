@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Alundra.Tests.Ai.Projectiles;
 
@@ -51,10 +52,32 @@ internal sealed class BallOracle
         return null;
     }
 
-    /// <summary>The key <paramref name="name"/> (<c>fire11_gp8_deepwater</c>, ...): the key of E20.f6a (<c>f6a/oracle/out/json</c>) when the name is one of its new scenarios, otherwise the frozen one (<c>bin/out/json</c>).</summary>
-    internal static BallOracle Load(string name)
+    private static readonly Regex FxPattern = new(@"^fx\(id=(?<id>\d+),dir=(?<dir>-?\d+),x=(?<x>-?[\d.]+),y=(?<y>-?[\d.]+),z=(?<z>-?[\d.]+),v=\((?<vx>-?[\d.]+),(?<vy>-?[\d.]+),(?<vz>-?[\d.]+)\)\)$", RegexOptions.CultureInvariant);
+
+    /// <summary>One effect of the oracle with the numbers as the oracle prints them (pixels with 3 decimals, speeds with 4).</summary>
+    internal sealed record Effect(int Tick, int Id, int Direction, string X, string Y, string Z, string Vx, string Vy, string Vz)
     {
-        var path = TryAnnex($"f6a/oracle/out/json/{name}.json") ?? TryAnnex($"bin/out/json/{name}.json")
+        /// <summary>The line the tests compare, with the tick given (the tick of the oracle, or the tick of the end of the frame).</summary>
+        internal string Line(int tick) => $"t{tick} id={Id} dir={Direction} x={X} y={Y} z={Z} v=({Vx},{Vy},{Vz})";
+
+        /// <summary>The line without the speed (the position only).</summary>
+        internal string PositionLine(int tick) => $"t{tick} id={Id} dir={Direction} x={X} y={Y} z={Z}";
+    }
+
+    /// <summary>The key <paramref name="name"/> (<c>fire11_gp8_deepwater</c>, ...): the key of E20.f6b (<c>f6b/oracle/out/json</c>) when the name is one of its new scenarios, the key of E20.f6a (<c>f6a/oracle/out/json</c>) when it is one of its scenarios, otherwise the frozen one (<c>bin/out/json</c>).</summary>
+    internal static BallOracle Load(string name) => Load(name, 10, 15);
+
+    /// <summary>
+    /// The key <paramref name="name"/> with the step of the generator that ends every tick of the binary (<c>f6b/oracle/out/json/{name}_pf.json</c>, "Revision au HEAD" point 3): the keys whose generator the tests follow. The plan reads them at ONE tick per frame.
+    /// </summary>
+    internal static BallOracle LoadStepByImage(string name) => Load(name + "_pf", 10, 15);
+
+    /// <summary>The key of a charged ball (<paramref name="name"/> is <c>fire12_flat</c>, ...): the ball of the key is the charged one (the type 12 or 15), not the normal ball of the start of the hold (type 11 or 14) that the same key holds from the tick 12.</summary>
+    internal static BallOracle LoadCharged(string name, bool stepByImage = true) => Load(stepByImage ? name + "_pf" : name, 12, 15, onlyChargedTypes: true);
+
+    private static BallOracle Load(string name, int firstType, int lastType, bool onlyChargedTypes = false)
+    {
+        var path = TryAnnex($"f6b/oracle/out/json/{name}.json") ?? TryAnnex($"f6a/oracle/out/json/{name}.json") ?? TryAnnex($"bin/out/json/{name}.json")
             ?? throw new InvalidOperationException($"no key '{name}' found above '{AppContext.BaseDirectory}'");
         using var document = JsonDocument.Parse(File.ReadAllText(path));
         var rows = document.RootElement.EnumerateArray().Select(r => r.Clone()).ToList();
@@ -62,7 +85,8 @@ internal sealed class BallOracle
         {
             foreach (var slot in row.GetProperty("slots").EnumerateObject())
             {
-                if (slot.Value.GetProperty("type68").GetInt32() is >= 10 and <= 15)
+                var type = slot.Value.GetProperty("type68").GetInt32();
+                if (type >= firstType && type <= lastType && (!onlyChargedTypes || type is 12 or 15))
                 {
                     return new BallOracle(rows, slot.Name, row.GetProperty("tick").GetInt32());
                 }
@@ -104,4 +128,49 @@ internal sealed class BallOracle
     /// <summary>The last tick at which the ball is in the table; it is absent from the next one.</summary>
     internal int LastTickPresent()
         => Enumerable.Range(FirstTick, Ticks - FirstTick + 1).Where(t => Ball(t) is not null).DefaultIfEmpty(-1).Max();
+
+    /// <summary>The generator word at the head of the tick (<c>rng0</c>).</summary>
+    internal uint Rng0(int tick) => Row(tick).GetProperty("rng0").GetUInt32();
+
+    /// <summary>The raw texts of the effects of the tick, in the order the machine created them (<c>fx(...)</c> and <c>attach(...)</c>).</summary>
+    internal IReadOnlyList<string> EffectTexts(int tick) => Row(tick).GetProperty("effects").EnumerateArray().Select(e => e.GetString()!).ToList();
+
+    /// <summary>The effects <c>fx(id=...)</c> of the key with the identifier <paramref name="id"/>, in order, with the tick of the oracle.</summary>
+    internal IReadOnlyList<Effect> Effects(int id)
+    {
+        var list = new List<Effect>();
+        foreach (var row in _rows)
+        {
+            var tick = row.GetProperty("tick").GetInt32();
+            foreach (var text in row.GetProperty("effects").EnumerateArray().Select(e => e.GetString()!))
+            {
+                var m = FxPattern.Match(text);
+                if (m.Success && int.Parse(m.Groups["id"].Value, CultureInfo.InvariantCulture) == id)
+                {
+                    list.Add(new Effect(tick, id, int.Parse(m.Groups["dir"].Value, CultureInfo.InvariantCulture), m.Groups["x"].Value, m.Groups["y"].Value, m.Groups["z"].Value, m.Groups["vx"].Value, m.Groups["vy"].Value, m.Groups["vz"].Value));
+                }
+            }
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// The sounds of the key (<c>snd(N)</c> of the journal) from the tick <paramref name="from"/> to <paramref name="to"/>, in order, WITHOUT the identifier 0 (no sound: the machine journals a <c>snd(0)</c> at some absolute ticks of every key whatever the ball does).
+    /// </summary>
+    internal IReadOnlyList<(int Tick, int Sfx)> Sounds(int from, int to)
+        => _rows.Where(r => r.GetProperty("tick").GetInt32() >= from && r.GetProperty("tick").GetInt32() <= to)
+            .SelectMany(r => r.GetProperty("journal").EnumerateArray().Select(j => (Tick: r.GetProperty("tick").GetInt32(), Text: j.GetString()!)))
+            .Where(j => j.Text.StartsWith("snd(", StringComparison.Ordinal) && j.Text != "snd(0)")
+            .Select(j => (j.Tick, int.Parse(j.Text[4..^1], CultureInfo.InvariantCulture))).ToList();
+
+    /// <summary>The generator word after the draws of the tick and before the step that ends it (<c>rng1</c>).</summary>
+    internal uint Rng1(int tick) => Row(tick).GetProperty("rng1").GetUInt32();
+
+    /// <summary>The raw value of the column <paramref name="key"/> of the ball at <paramref name="tick"/> (the key's units: the binary's raw Z).</summary>
+    internal int Raw(int tick, string key) => Value(tick, key);
+
+    /// <summary>The frame box of the ball at <paramref name="tick"/> as <see cref="BallRun"/> prints it: "WxDxH hbz=Z" in pixels (the raw sizes of the key are the size minus one raw unit).</summary>
+    internal string BoxLine(int tick)
+        => string.Create(CultureInfo.InvariantCulture, $"{(Value(tick, "bw") + 1) >> 16}x{(Value(tick, "bd") + 1) >> 16}x{(Value(tick, "bh") + 1) >> 16} hbz={Value(tick, "hbz") >> 16}");
 }
