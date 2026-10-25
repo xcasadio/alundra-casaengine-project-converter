@@ -5551,7 +5551,7 @@ commit de docs `6c8ad55` de la session principale (garde du plan oubliée, rien 
 
 Détaillée seulement si l'auteur répond à Q-K2 par l'option B. Contenu : un port entier de la boucle d'affinage de `0x80037730` (pas entier en unités brutes, halvings, `moved_ok`, `NoObstacleSlide`), sans entité (les projectiles ne sont pas sujets), pour les entités marquées, en remplacement du mover du moteur. T0 : le modèle du fuzz (20 000 cas, 0 écart) comme oracle de la fonction ; acceptation : les 12 départs de l'oracle (drapeau aux ticks 43 et 44 exacts), aucun écart sur le fuzz. Phases A (fonction pure) et B (branchement). Prérequis : e0k2, e0k3.
 
-#### 1.18.5 E20.e0k5 — Le premier pas d'une entité née en jeu, borné par la recherche par moitiés du binaire (O-E20-24) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
+#### 1.18.5 E20.e0k5 — Le premier pas d'une entité née en jeu, borné par la recherche par moitiés du binaire (O-E20-24) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
 
 **Provenance.** Deux lectures seules du 2026-10-24, chacune recoupée par un critique frais : la partie A de `scratchpad/t2-proj/` (O-E20-24) et
 `docs/plan-e20-annexe/e20-step-search/` (la recherche du pas, déjà versée : le modèle `work/xymodel.py`, rejoué contre le vrai code sur 55 000
@@ -8624,7 +8624,7 @@ Conséquence de D-E20-39 : aucun chemin de production ne met un objet dans les m
 haricots) : g1a et g2a sont inertes en jeu et se valident par des tests et des valeurs de référence tirées du binaire. Questions
 Q-G1A-1 à Q-G1A-6 (§2).
 
-#### 1.24.7 E20.g1c — L'ombre du contact du binaire (O-G3-3) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
+#### 1.24.7 E20.g1c — L'ombre du contact du binaire (O-G3-3) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
 
 **Provenance.** `docs/plan-e20-annexe/e20-step-search/` (la lecture et son critique : W4 et l'option D, `critic/work/crit_shadow.py`) ;
 `docs/plan-e20-annexe/e20-g1b/walk-release-disc/` (W4 : la cause d'O-G3-3) ; `docs/plan-e20-annexe/e20-g1b/t0b/` (la mesure d'O-G3-3 dans la DLL) ;
