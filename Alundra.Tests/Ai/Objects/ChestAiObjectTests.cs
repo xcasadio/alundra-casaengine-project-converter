@@ -205,6 +205,21 @@ public sealed class ChestAiObjectTests : IDisposable
     }
 
     [Fact]
+    public void B3_ApplyItem_HasNoInventoryFirstRule_AHerbWhoseStockIsAtItsCapIsNeitherAddedNorDrunk()
+    {
+        var rig = new Rig(Herbs, take: true, key: false); // T4 mutant m09: C255 calling GiveItem (the rule "the inventory first", a refused herb is drunk) instead of ApplyItem.
+        rig.Chest.TargetAnimationId = 1;
+        rig.State.NumberOfItems[Herbs * 2 + 1] = 9;
+        rig.Ticks(66);
+        rig.Dialogue.IsOpen = false;
+
+        rig.Tick();
+
+        Assert.Equal(9, PlayerManager.GetNumberOfItem(rig.State, Herbs)); // AddOneItemIfUnlocked refuses a tenth herb,
+        Assert.Equal(5, rig.Hero.Hp);                                     // and ApplyItem drinks nothing: the hero is not healed.
+    }
+
+    [Fact]
     public void B3_ApplyItem_GivesThe30Florins_ToTheMoneyOfTheHero()
     {
         var rig = new Rig(Gildas30, take: true, key: false);
