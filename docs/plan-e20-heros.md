@@ -2731,7 +2731,7 @@ le pilote d'objet (E20.h) ; la mort (E18).
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.c2a.
 
-#### 1.12.1 E20.c2b — La blessure du héros : l'entrée `0x80031A68`, le bloc de blessure, l'état `0x31` et le clignotement ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2 ; à relire par un `plan-verifier` frais ; défauts des questions Q-C2B-1 à Q-C2B-6 pris en attendant la réponse de l'auteur)
+#### 1.12.1 E20.c2b — La blessure du héros : l'entrée `0x80031A68`, le bloc de blessure, l'état `0x31` et le clignotement ⏳ (détaillée le 2026-10-25 ; thème 2 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais ; défauts des questions Q-C2B-1 à Q-C2B-6 pris en attendant la réponse de l'auteur)
 
 **Provenance.** Lecture seule du 2026-10-25 (HEAD `e9e8c58a`, code de production inchangé jusqu'à `ffc505b1`) : trois rapports (binaire,
 DLL, plans) et un critique frais qui confirme chaque fait porteur et en corrige trois (`scratchpad/c2b-disc/{binary,dll,plan,critic}/`,
@@ -2739,7 +2739,16 @@ DLL, plans) et un critique frais qui confirme chaque fait porteur et en corrige 
 `docs/plan-e20-annexe/e20-c2/check.md` §c (2026-10-09), dont cinq morceaux sont faits depuis (c2a : PV, épilogue, fiche, bottes ; E20.i :
 `0x3A`/`0x3B` ; E20.d1 : `0x1C`/`0x3E` ; g1a : le mode 2 de `UpdatePlayerCarriedEntity`). Ligne d'enveloppe : « E20.c2 » (§0).
 
-**Prérequis.** E20.c2-0 (l'oracle, §1.11), E20.c2a (§1.12), E20.i, E20.d1, E14.a et E20.g1a : faits et CONFIRMED. E20.h0a n'est pas
+**Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé trois blocages, corrigés (FIX) : (1) les prérequis ne
+nommaient ni e0d ni b2, qui partagent les fichiers et les montages de c2b : elles sont prérequises, vérifiées par T0 (a), et
+l'inventaire de T0 (d) se prend sur le HEAD qui les contient ; (2) l'inventaire de T0 (d) ne câblait pas le clignotement, qui change
+`IsVisible` des objets lâchés et des cibles de `0x86` : il le câble aussi et classe les tests par cause ; (3) des témoins n'avaient pas
+de mutant possible : chaque témoin a son mutant nommé, les arcs de la chaîne sont des témoins de non-régression sans mutant.
+
+**Prérequis.** E20.c2-0 (l'oracle, §1.11), E20.c2a (§1.12), E20.i, E20.d1, E14.a et E20.g1a : faits et CONFIRMED. **E20.e0d (§1.26.2)
+et E20.b2 (§1.4.1) faites, CONFIRMED et présentes sur la branche** (D-C2B-1) : elles touchent les mêmes fichiers et montages
+(`Alundra/SaveGames/TestSaves.cs`, `docs/test-saves.md`, la visibilité des objets de `ChestAi` et `PickupAi`, l'arène de la carte 14 et
+le préréglage `legende-m14` de b2) ; c2b ne s'exécute jamais en même temps qu'elles. E20.h0a n'est pas
 requise : le pilote d'objet reste le bouchon nommé `UpdateItemUseDriver` (D-E20-19). La tranche ne touche pas le moteur.
 
 **But.** Comme l'original : au contact d'un ennemi (ou dans une explosion, plus tard), Alundra perd des PV selon l'attaque et son armure
@@ -2838,13 +2847,15 @@ plan (dont la ligne d'enveloppe « E20.c2 », l'en-tête de h3a et D-H-7).
 (moteur, ADR-0078) ; les bombes, explosions et toucheurs d'E14.b (ils blesseront par la même entrée quand ils existeront) ; le moteur.
 
 **Tâches.**
-- ⏳ **T0 — Versement, prérequis, inventaire par exécution** (commit de docs). (a) Les prérequis ; (b) verser `scratchpad/c2b-disc/` à
+- ⏳ **T0 — Versement, prérequis, inventaire par exécution** (commit de docs). (a) Les prérequis, dont e0d et b2 CONFIRMED et présentes
+  au HEAD de départ (son SHA noté dans l'annexe) ; (b) verser `scratchpad/c2b-disc/` à
   `docs/plan-e20-annexe/e20-c2b-disc/` (sans copies d'annexes ni `__pycache__`), avec README et `SHA1SUMS.txt` ; (c) rejouer depuis une
   copie l'oracle c2 pour A1, A2, B1, B2, C1, D1, E1 et `W7-hurt-shore`, sorties identiques ; compléter dans des fichiers neufs A3 (le
   charme, réponse `0x80`), A5 (la blessure en plein coup d'épée, en marche, à l'apogée d'un saut, à l'atterrissage) et la blessure avec
-  un objet porté ; (d) **l'inventaire par exécution** : un câblage temporaire (jamais commité, versé en `.txt`) de l'entrée et du bloc,
-  la suite entière en Release, la liste nommée des tests qui bougent et pourquoi (`TouchingEntity` et PV du héros journalisés) : c'est la
-  liste prédite ; (e) les cases des préréglages et la case dangereuse de la vraie carte ; (f) le nom et le dossier du fichier neuf
+  un objet porté ; (d) **l'inventaire par exécution**, sur le HEAD de (a) : un câblage temporaire (jamais commité, versé en `.txt`) de
+  l'entrée, du bloc, des cases dangereuses **et du clignotement de D-C2B-7**, la suite entière en Release, la liste nommée des tests qui
+  bougent, **classée par cause** (blessure, case dangereuse, clignotement), `TouchingEntity`, les PV du héros et `IsVisible` des entités à
+  `DamagedTickCounter` non nul journalisés : c'est la liste prédite, à laquelle renvoient l'acceptation et les arrêts de T1 à T4 ; (e) les cases des préréglages et la case dangereuse de la vraie carte ; (f) le nom et le dossier du fichier neuf
   (`tools/dll-structure/`). Arrêt : un fait ci-dessus contredit ; un besoin du moteur ; une chaîne d'histoire (389 à 392, 179, intro) qui
   bouge.
 - ⏳ **T1 — L'entrée, tests d'abord** (rouges avant) : (e1) la fonction pure contre A1, A2 (dégâts 4, 3, 2, 1, 1, 3 selon l'armure), A4,
@@ -2872,11 +2883,15 @@ plan (dont la ligne d'enveloppe « E20.c2 », l'en-tête de h3a et D-H-7).
   l'armure appliquée aux cases ; la pente lue après le portail ; `0x31` au lieu de `0x3A` en eau profonde ; `+0x1CC = 0x77` ; le mode 0
   au lieu du mode 2 ; la charge non remise à zéro ; le chemin `0x20` qui pose l'état ; `0x34` qui laisse passer le coup ; le test de
   mort au tick de la blessure ; le clignotement sur `& 3 == 0` ; le clignotement publié au premier tick de l'image ; le clignotement qui
-  rend visible un objet Loaded ; `case 0x31` absent quand `TryUseItem` rend 0 (sonde de test) ; un ADR neuf (numéro libre recompté).
+  rend visible un objet Loaded (tue le témoin Loaded de (k3)) ; le clignotement qui rend visible une entité `FlagToDestroy` (tue le témoin
+  `FlagToDestroy` de (k3)) ; le clignotement qui cache quand `(DamagedTickCounter & 3) != 3` (tue le témoin « sans compteur » de (k3)) ;
+  l'entrée qui rend 0 au lieu de −1 sans toucheur ni bits `0x180` (tue le témoin des montages sans passe de coups de (b8)) ; `case 0x31`
+  absent quand `TryUseItem` rend 0 (sonde de test) ; un ADR neuf (numéro libre recompté).
 - ⏳ **T6 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.** Les sorties de T0 (c) identiques ; (e1) à (e4), (b1) à (b7), (k1), (k2), (h1) et (h2) rouges avant et verts après
-(nommés) ; les témoins (b8) et (k3) verts avant et après, chacun tué par un mutant nommé de T5 ; le recul total −2 168 832 brut ; la suite
+(nommés) ; les témoins verts avant et après : le témoin des montages de (b8) et les trois témoins de (k3), chacun tué par son mutant
+nommé de T5 ; les arcs de la chaîne de (b8), témoins de **non-régression sans mutant** (aucun ennemi n'y atteint le héros) ; le recul total −2 168 832 brut ; la suite
 en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (d), chacun réécrit par dérivation ; les arcs de la chaîne
 inchangés ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non bloquante) : `blessure-m14` ou une
 sauvegarde d'armes sur la carte 14 (au contact d'un Beannoïde : un cœur perdu, le recul, le clignotement, à 0 cœur Alundra continue) ;
