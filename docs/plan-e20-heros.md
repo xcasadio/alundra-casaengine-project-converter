@@ -10695,7 +10695,7 @@ trou de la table, un autre objet en cours) ; un objet dont le départ n'est pas 
 
 ---
 
-#### 1.30.1a E20.A362 — L'arc du couvercle de la 362 face à la bombe d'Olen ⏳ (détaillée le 2026-10-25 ; thème 2, avant h3a ; ligne 9b de l'enveloppe ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture ; défauts de Q-A362-1 et Q-A362-2 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
+#### 1.30.1a E20.A362 — L'arc du couvercle de la 362 face à la bombe d'Olen ⏳ (détaillée le 2026-10-25 ; thème 2, avant h3a ; ligne 9b de l'enveloppe ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; défauts de Q-A362-1 et Q-A362-2 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
 
 **Provenance.** Lecture seule du 2026-10-25 (HEAD `8174c0cb`, code de production identique jusqu'à `5e67722d`) : rapport et critique frais
 (`scratchpad/t2-next/a362-h3a/report-main.md`, `scratchpad/t2-next/a362-h3a-critic/report-main.md`, scripts, sorties et copies de
