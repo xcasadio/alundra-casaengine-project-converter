@@ -1,0 +1,31 @@
+Échoué Alundra.Tests.Combat.DamageTests.B2_K1_TheEquipmentRecordsOfTheLegendaryInventories_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "legend")
+Échoué Alundra.Tests.Combat.DamageTests.B2_K1_TheEquipmentRecordsOfTheLegendaryInventories_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "legend_holy")
+Échoué Alundra.Tests.Combat.DamageTests.B2_K2_TheNaturalHit_OfTheLegendarySword_OnAGroundedBeannoid_Takes51_AndKillsTheNineLifeOne(name: "legend")
+Échoué Alundra.Tests.Combat.DamageTests.B2_K2_TheNaturalHit_OfTheLegendarySword_OnAGroundedBeannoid_Takes51_AndKillsTheNineLifeOne(name: "legend_holy")
+Échoué Alundra.Tests.Combat.DamageTests.B2_TheEquipmentRecord1_OfAHeroWhoOwnsTheItem8_IsTheItem8_WithTheAttack6Power50(name: "legend")
+Échoué Alundra.Tests.Combat.DamageTests.B2_TheEquipmentRecord1_OfAHeroWhoOwnsTheItem8_IsTheItem8_WithTheAttack6Power50(name: "legend_holy")
+Échoué Alundra.Tests.Combat.DamageTests.K1_TheThreeRecordsOfEachInventory_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "all")
+Échoué Alundra.Tests.Combat.DamageTests.K1_TheThreeRecordsOfEachInventory_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "bracelet")
+Échoué Alundra.Tests.Combat.DamageTests.K1_TheThreeRecordsOfEachInventory_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "charm")
+Échoué Alundra.Tests.Combat.DamageTests.K1_TheThreeRecordsOfEachInventory_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "holy")
+Échoué Alundra.Tests.Combat.DamageTests.K1_TheThreeRecordsOfEachInventory_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "kit")
+Échoué Alundra.Tests.Combat.DamageTests.K1_TheThreeRecordsOfEachInventory_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "leather")
+Échoué Alundra.Tests.Combat.DamageTests.K1_TheThreeRecordsOfEachInventory_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "noweapon")
+Échoué Alundra.Tests.Combat.DamageTests.K1_TheThreeRecordsOfEachInventory_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "ring")
+Échoué Alundra.Tests.Combat.DamageTests.K1_TheThreeRecordsOfEachInventory_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "rings2")
+Échoué Alundra.Tests.Combat.DamageTests.K1_TheThreeRecordsOfEachInventory_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "steel")
+Échoué Alundra.Tests.Combat.DamageTests.K1_TheThreeRecordsOfEachInventory_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "tonic")
+Échoué Alundra.Tests.Combat.DamageTests.K2_SelectEquipment_HasNoRemapping_ElseEveryItemWouldBecomeTheEntry0x1E
+Échoué Alundra.Tests.Combat.DamageTests.K2_SelectEquipment_WalksTheChainUpToTheThreshold_LikeTheSpriteLookup
+Échoué Alundra.Tests.Combat.DamageTests.K2_TheNaturalHit_OnAGroundedBeannoid_WithTheSwingStateOfEachWeapon(name: "all", hpAfter100: 81, hpAfter9: 0)
+Échoué Alundra.Tests.Combat.DamageTests.K2_TheNaturalHit_OnAGroundedBeannoid_WithTheSwingStateOfEachWeapon(name: "holy", hpAfter100: 84, hpAfter9: 0)
+Échoué Alundra.Tests.Combat.DamageTests.K2_TheNaturalHit_OnAGroundedBeannoid_WithTheSwingStateOfEachWeapon(name: "kit", hpAfter100: 98, hpAfter9: 7)
+Échoué Alundra.Tests.Combat.DamageTests.K2_TheNaturalHit_OnAGroundedBeannoid_WithTheSwingStateOfEachWeapon(name: "leather", hpAfter100: 98, hpAfter9: 7)
+Échoué Alundra.Tests.Combat.DamageTests.K2_TheNaturalHit_OnAGroundedBeannoid_WithTheSwingStateOfEachWeapon(name: "noweapon", hpAfter100: 99, hpAfter9: 8)
+Échoué Alundra.Tests.Combat.DamageTests.K2_TheNaturalHit_OnAGroundedBeannoid_WithTheSwingStateOfEachWeapon(name: "ring", hpAfter100: 95, hpAfter9: 4)
+Échoué Alundra.Tests.Combat.DamageTests.K2_TheRecordsAreFilledByTheHeroTick_FromTheHost_AndLeftAloneWithoutTables
+Échoué Alundra.Tests.Hero.LegendarySwordArenaTests.TheBasicSword_InTheAir_SwingsThe0x14_AndTakesTwoLifeFromARealBeannoid
+Échoué Alundra.Tests.Hero.LegendarySwordArenaTests.TheBasicSword_OnTheGround_TakesTwoLifeFromARealBeannoid
+Échoué Alundra.Tests.Hero.LegendarySwordArenaTests.TheLegendarySword_InTheAir_SwingsThe0x14_AndTakesFiftyOneLifeFromARealBeannoid
+Échoué Alundra.Tests.Hero.LegendarySwordArenaTests.TheLegendarySword_OnTheGround_SwingsTheBasicSwordsSwing_AndTakesFiftyOneLifeFromARealBeannoid
+Échoué!  - échec :    30, réussite :   213, ignorée(s) :     0, total :   243, durée : 7 s - Alundra.Tests.dll (net9.0)

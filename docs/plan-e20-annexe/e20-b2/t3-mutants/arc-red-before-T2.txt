@@ -1,0 +1,5 @@
+Arc LegendarySwordSnowKingArcTests run on Alundra/Events/EventProgramRunner.cs as of 6df3f265~1 (before the case 0xC2), file restored after (git diff -- Alundra empty), Release, neutralised copy:
+  Echoue  WithTheCounterAt20_TheSceneGivesTheLegendarySwordOnce_SetsTheFlag1787_AndDoesNotReplay   (Assert.Equal Expected: 1, Actual: 0: the item 8 count)
+  Reussi  WithTheCounterAt19_TheSceneRefuses_GivesNothing_AndLeavesTheFlag1787Off                  (guard)
+  Reussi  WithTheCounterAt19_ACopyOfTheRecord31OnTheHero_IsNotPickedUp_NotInTheDllAndNotInTheBinary (guard)
+After (the code of 6df3f265): 3 passed, 0 failed.

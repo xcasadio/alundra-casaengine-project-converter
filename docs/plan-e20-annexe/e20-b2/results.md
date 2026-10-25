@@ -132,3 +132,40 @@ Presets (tests in `TestSavesTests`, red before: unknown preset): the list test `
 Code: `case 0xC2` in `Alundra/Events/EventProgramRunner.cs`; `TestSaves.Preset.DeathRetryCount` (`int?`, 0 to 255 else refused, applied to `GameState.DeathRetryCount` before the capture); `WeaponPreset("legende-m14", 14, 8, 6, 0, 1, 8)` and `new Preset("legende-m7", ..., 7, 25, 17, 7, ..., DeathRetryCount: 20)` (cells of T0); `docs/test-saves.md` (the optional field and a "Legendary Sword presets" table).
 
 Measures: focused run (opcode, presets, save-game tests, event runner tests): 698 passed, 0 failed. Full Release suite (neutralised copy, `--blame-hang-timeout 60s`, one run in 11 min 31 s): 6468 passed, 0 failed, 0 skipped. The Debug suite is left to T3 (last). `check_names.py --rules`: 0 findings. Moved tests against the T0 (d) list: only the presets list test (renamed); no other existing test changed behaviour. `git diff --ignore-cr-at-eol` of `docs/hero-trace-389-*.txt` empty (restored).
+
+## T3 (2026-10-25): the arc of the map 7, the record 31, the mutants, the suites
+
+New file `Alundra.Tests/Arcs/LegendarySwordSnowKingArcTests.cs` (3 tests, from the start of the preset `legende-m7`, real map 7, real controller, real programs; the hero walks north into the block, the dialogues are advanced by the dialogue button; the scene ends at the `End` of B[10] pc 1663). It cites the measure of T0 (c) 3: `Result` at pc 1510 is 0 at the HEAD before T2.
+
+| test | before T2 (`arc-red-before-T2.txt`, arc replayed on the file of `6df3f265~1`, restored after) | after T2 | role |
+|---|---|---|---|
+| `WithTheCounterAt20_TheSceneGivesTheLegendarySwordOnce_SetsTheFlag1787_AndDoesNotReplay` | RED (item 8 count 0, expected 1) | green | the case opposite to the measured `Result` (0): killed by M1 (`>=` to `>`), M2, M3, M11, M12 |
+| `WithTheCounterAt19_TheSceneRefuses_GivesNothing_AndLeavesTheFlag1787Off` | green | green | the guard, killed by M8 (the flag 1787 set at the refusal) |
+| `WithTheCounterAt19_ACopyOfTheRecord31OnTheHero_IsNotPickedUp_NotInTheDllAndNotInTheBinary` | green | green | T0 (c1) guard: the copy of the record 31 forced into the world and put on the hero, 90 frames: item 8 count 0, no dialogue, no `0x82` |
+
+Deviation from the wording of the plan (already noted by T0 (c) 4): "at 19 the scene replays" cannot be observed in one visit (B[10] stays on its `End`, nothing clears the flag `[0, 128]`); the guard observes what makes the scene replay at the next entry into the map, the flag 1787 left off, plus the item 8 count 0, the dialogue 129 shown (pc 1513 ran) and the gift branch (pc 1571, `0x82` at pc 1623) not run. The gift case also checks the item count stays 1 and a single `0x82` over 640 more frames.
+
+### Mutants (real, applied by `t3-mutants/mutate.py`, file restored by `git checkout` after each, `git diff` empty after each; Release, neutralised copy; filter: the opcode, arc, inventory, damage, legendary-arena and presets classes, 243 tests)
+
+| mutant | edit | killed by (reds, see `t3-mutants/<name>.red`) |
+|---|---|---|
+| M1 threshold `>=` to `>` | `EventProgramRunner` case 0xC2 | KILLED (3): counter-20 arc, `Opcode0xC2_Param20_...At20_...`, `Opcode0xC2_ComparesTwoUnsignedBytes` |
+| M2 two parameter bytes | case returns 3 | KILLED (6), among them `Opcode0xC2_TakesOneParameterByte_ThePcAdvancesByTwo` |
+| M3 `Result` not written | assignment dropped | KILLED (5): the three counter tests of T2, the arc 20 and others |
+| M4 rank of the item 8 at 3 | `PlayerManager.GetItemIdFromSlotId` | KILLED (5): `GetItemIdFromSlotId_OwningTheItems1_4_And8_...`, `..._TheLegendarySword_BeatsEverySwordOfTheSlot`, the K1/K2 of the legend inventories |
+| M5 sheet 38 ignored | `BalanceTables.SelectEquipment` reads the sheet of the item 1 | KILLED (30) |
+| M6 equipment bit ignored | `Damage.ResolveBalanceTarget` | KILLED (27) |
+| M7 record 11 chargeable | `PlayerManager.UpdatePlayerWeaponEffect` | KILLED (1): `AHeldSquare_WithTheLegendarySword_CountsNoCharge_MakesNoAuraAndNoWave` |
+| M8 flag 1787 set at the refusal | in case 0xC2, `AddFlag(1787)` when `Result` is 0 | KILLED (1): the counter-19 arc guard |
+| M9 item 8 never selected | `GetItemIdFromSlotId` skips index 8 | KILLED (13): the selection, equipment and arena tests |
+| M10 air swing uses the ground record | `PlayerTryAttack` reads the ground animation | KILLED (2): the two air-swing arena tests (item 8 and item 1) |
+| M11 signed compare in `0xC2` | `(sbyte)` on both bytes | KILLED (1): `Opcode0xC2_ComparesTwoUnsignedBytes` |
+| M12 record 31 dispatch runs the sprite handler | `RunPickedEvent` masks the program index to 0 | KILLED (2) but by the two scene tests (the map script of every entity stops running), NOT by the record 31 guard, which stays green: the forced copy is not collidable, so the sprite handler gives nothing either. The record 31 guard therefore has no mutant of its own; its proof is the T0 (c) 5 reading (binary `0x800388FC-0x8003893C`: the index 133 & 0x7F = 5 goes to the map script C[5], never to the sprite handler C255). |
+
+Every guard of T1 is killed by at least one mutant (the selection guards by M4/M9, the equipment record and K1/K2 guards by M5/M6/M9, the ground and air arena guards by M5/M6/M10, the held-Square guard by M7). The control `AHeldSquare_WithTheSteelEdge_...TheControlOfTheLegendaryHold` is not a guard of the item 8 (it shows the observables do see a charge) and no mutant targets it.
+
+### Suites
+
+Release (neutralised copy, `--blame-hang-timeout 60s`, partitions of `docs/plan-e20-annexe/e20-e0d/suite-wired/run.sh` with `ScratchE0d` removed from the p3 exclusions, copy in `t3-mutants/run-suite.sh`): p1 1557, p2 3024, p3 1890 passed, 0 failed (6471 = the 6468 of T2 + the 3 arc tests). Debug (last, copies `Alundra.dll` into `alundra-project/`): p1 1557, p2 3024, p3 1890, 0 failed. Summaries `t3-mutants/release-p*.summary`, `debug-p*.summary`.
+`cmp Alundra/bin/Debug/net9.0-windows/Alundra.dll alundra-project/Alundra.dll`: equal. `python -B tools/dll-structure/check_names.py --rules`: 0 findings (the 1 warning is `Alundra.Tests/UI/Shared/TextBoxGpu.cs`, older). `git diff --ignore-cr-at-eol -- docs/`: empty before the restore of the four `hero-trace-389-*.txt` (restored by `git checkout`, never indexed).
+Moved tests against the T0 (d) list: none beyond the presets list test (T2). No ADR written in T3 (T4 is the main session's; the next free number is 0095: the highest on all 38 branches is 0094).

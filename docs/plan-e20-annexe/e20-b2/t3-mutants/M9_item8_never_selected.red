@@ -1,0 +1,14 @@
+Échoué Alundra.Tests.Combat.DamageTests.B2_K1_TheEquipmentRecordsOfTheLegendaryInventories_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "legend")
+Échoué Alundra.Tests.Combat.DamageTests.B2_K1_TheEquipmentRecordsOfTheLegendaryInventories_EqualTheBinary_AtTheFirstTickAndTheSecond(name: "legend_holy")
+Échoué Alundra.Tests.Combat.DamageTests.B2_K2_TheNaturalHit_OfTheLegendarySword_OnAGroundedBeannoid_Takes51_AndKillsTheNineLifeOne(name: "legend")
+Échoué Alundra.Tests.Combat.DamageTests.B2_K2_TheNaturalHit_OfTheLegendarySword_OnAGroundedBeannoid_Takes51_AndKillsTheNineLifeOne(name: "legend_holy")
+Échoué Alundra.Tests.Combat.DamageTests.B2_TheEquipmentRecord1_OfAHeroWhoOwnsTheItem8_IsTheItem8_WithTheAttack6Power50(name: "legend")
+Échoué Alundra.Tests.Combat.DamageTests.B2_TheEquipmentRecord1_OfAHeroWhoOwnsTheItem8_IsTheItem8_WithTheAttack6Power50(name: "legend_holy")
+Échoué Alundra.Tests.Hero.LegendarySwordArenaTests.TheLegendarySword_InTheAir_SwingsThe0x14_AndTakesFiftyOneLifeFromARealBeannoid
+Échoué Alundra.Tests.Hero.LegendarySwordArenaTests.TheLegendarySword_OnTheGround_SwingsTheBasicSwordsSwing_AndTakesFiftyOneLifeFromARealBeannoid
+Échoué Alundra.Tests.Items.ItemInventoryTests.GetItemIdFromSlotId_OwningTheItems1And8_GivesTheLegendarySword_AndTheItem8AloneToo
+Échoué Alundra.Tests.Items.ItemInventoryTests.GetItemIdFromSlotId_OwningTheItems1_4_And8_GivesTheLegendarySword
+Échoué Alundra.Tests.Items.ItemInventoryTests.GetItemIdFromSlotId_TheLegendarySword_BeatsEverySwordOfTheSlot
+Échoué Alundra.Tests.Items.ItemInventoryTests.TheEquippedSlot1_OfAHeroWhoOwnsTheItem8_ResolvesToTheItem8
+Échoué Alundra.Tests.SaveGames.TestSavesTests.AWeaponPreset_ReloadedByTheLoadPath_GivesTheChosenWeapon_TheLifeTheMagicAndTheObjects(name: "legende-m14")
+Échoué!  - échec :    13, réussite :   230, ignorée(s) :     0, total :   243, durée : 8 s - Alundra.Tests.dll (net9.0)
