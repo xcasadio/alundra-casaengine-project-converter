@@ -96,9 +96,13 @@ public sealed class TestSavesTests : IDisposable
     // E20.e0d T3 (docs/plan-e20-heros.md section 1.26.2, D-E0D-11): the four chest presets, the last of the table. The cells are the T0 (e) cells of docs/plan-e20-annexe/e20-e0d/results.md: the arrival tile is the tile north of the chest.
     private static readonly string[] ChestPresetNames = ["coffre-m15", "coffre-m11", "coffre-m0", "coffre-m117"];
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames];
+    // E20.b2 T2 (docs/plan-e20-heros.md section 1.4.1, D-B2-3, D-B2-6): the two presets of the Legendary Sword (the item 8), the last of the table. `legende-m14`: the Beannoids arena with the sword in hand; `legende-m7`: the map 7 under a block of the Snow King, the death counter at 20.
+    private const string LegendM14PresetName = "legende-m14";
+    private const string LegendM7PresetName = "legende-m7";
 
-    public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName]);
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName];
+
+    public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName, LegendM14PresetName]);
 
     public static TheoryData<string> EveryPresetName => new(AllPresetNames);
 
@@ -112,7 +116,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheTwentyTwoPresets_AreListed_InTheOrderOfTheTable()
+    public void TheTwentyFourPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -415,6 +419,7 @@ public sealed class TestSavesTests : IDisposable
         new("fire-m303", 303, 38, 11, 1, 5, ArsenalAWeapons, 16),
         new("arrow-m16", 16, 34, 31, 3, 2, ArsenalAWeapons, 5),
         new(GrassPresetName, 14, 31, 43, 1, 1, [(5, 1)], 2), // E20.e: the Steel Edge (item 2) at the bushes of the map 14, tile (31, 43, 1).
+        new(LegendM14PresetName, 14, 8, 6, 0, 1, [(17, 1)], 8), // E20.b2: the Legendary Sword (item 8, raw index 17) on top of the kit, in the Beannoids arena; rank 4 over the kit's item 1.
     ];
 
     private static WeaponExpected Row(string name) => WeaponRows.Single(r => r.Name == name);
@@ -741,5 +746,51 @@ public sealed class TestSavesTests : IDisposable
 
         Assert.Equal(1, state.NumberOfItems[3]);
         Assert.Equal(10, state.PlayerStats.HpMax);
+    }
+
+    // ---- E20.b2 T2: the presets of the Legendary Sword (docs/plan-e20-heros.md section 1.4.1, D-B2-3; cells: docs/plan-e20-annexe/e20-b2/results.md, "Cells for the presets") -------------
+
+    /// <summary>
+    /// `legende-m7`: the Overworld 1,2-7, tile (25, 17), level 7 (pixel (612, 280, 112), straight south of the transparent block of the record 28 at the tile (25, 16)), on the new game's kit with the death counter at 20 and the flag 1787
+    /// (the Snow King's gift, word 55 bit 27) down; the item 8 is not owned: the scene gives it. Walk north into the block.
+    /// </summary>
+    [Fact]
+    public void TheLegendM7Preset_IsTheNewGameUnderABlockOfTheSnowKing_WithTheDeathCounterAt20_NoFlag_AndNoItem8()
+    {
+        var rules = RealRules();
+        var save = Build(LegendM7PresetName);
+
+        Assert.Equal(7, save.InitialMapId);
+        Assert.Equal((25, 17, 7), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.Equal((byte)20, save.DeathRetryCount);
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word)); // the flag 1787 and every other flag down.
+
+        // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), nothing else: the Legendary Sword (raw index 17) is not owned.
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.Equal(((short)10, (short)10, (short)0, (short)0, (short)0, (short)1), (save.Hp, save.HpMax, save.Mp, save.MpMax, save.Money, save.WeaponId));
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    [Fact]
+    public void TheLegendM7Preset_ReloadedByTheLoadPath_PutsTheDeathCounterAt20_AndTheBasicSwordInHand()
+    {
+        var rules = RealRules();
+        var reloaded = new GameState();
+
+        Build(LegendM7PresetName).ApplyTo(reloaded);
+
+        Assert.Equal((byte)20, reloaded.DeathRetryCount);
+        Assert.Equal(1u, PlayerManager.GetItemIdFromCurrentWeapon(reloaded, rules.ItemTables));
+    }
+
+    [Fact]
+    public void TheOtherPresets_LeaveTheDeathCounterAtZero()
+    {
+        foreach (var name in AllPresetNames.Where(n => n != LegendM7PresetName))
+        {
+            Assert.Equal((byte)0, Build(name).DeathRetryCount);
+        }
     }
 }
