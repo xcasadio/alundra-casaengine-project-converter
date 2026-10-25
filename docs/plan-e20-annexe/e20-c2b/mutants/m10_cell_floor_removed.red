@@ -1,0 +1,3 @@
+Échoué Alundra.Tests.Combat.HeroInjuryTests.E1_TheCellBranch_CostsOneTwoOrThree_UnlessTheBootsAreOfLevel3_WithTheFloorAt0AndTheArmourIgnored(name: "H-floor-0-180")
+Échoué Alundra.Tests.Combat.HeroInjuryTests.E1_TheCellBranch_CostsOneTwoOrThree_UnlessTheBootsAreOfLevel3_WithTheFloorAt0AndTheArmourIgnored(name: "H-floor-1-180") [< 1 ms]
+Échoué Alundra.Tests.Combat.HeroInjuryTests.E1_TheCellBranch_CostsOneTwoOrThree_UnlessTheBootsAreOfLevel3_WithTheFloorAt0AndTheArmourIgnored(name: "H-floor-2-180") [< 1 ms]

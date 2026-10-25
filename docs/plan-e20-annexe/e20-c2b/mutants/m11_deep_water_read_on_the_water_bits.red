@@ -1,0 +1,1 @@
+Échoué Alundra.Tests.Hero.HeroSwimTests.W7_AHurtOnTheShore_HalfInTheWater_Is0x31OfTheLand_BecauseTheSlopeRetainedIs0_NotTheHurtOfTheWater

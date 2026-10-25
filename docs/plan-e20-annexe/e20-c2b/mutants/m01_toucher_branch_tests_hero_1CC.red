@@ -1,0 +1,4 @@
+Échoué Alundra.Tests.Combat.HeroInjuryTests.E1_TheToucherBranch_LosesTheLifeOfTheSheetAndReturnsTheDirection_AsTheBinaryDoes(name: "T-both") [< 1 ms]
+Échoué Alundra.Tests.Combat.HeroInjuryTests.E1_TheToucherBranch_LosesTheLifeOfTheSheetAndReturnsTheDirection_AsTheBinaryDoes(name: "T-hero1CC-01")
+Échoué Alundra.Tests.Combat.HeroInjuryTests.E1_TheToucherBranch_LosesTheLifeOfTheSheetAndReturnsTheDirection_AsTheBinaryDoes(name: "T-hero1CC-77") [< 1 ms]
+Échoué Alundra.Tests.Combat.HeroInjuryTests.E1_TheToucherBranch_LosesTheLifeOfTheSheetAndReturnsTheDirection_AsTheBinaryDoes(name: "T-hero1CC-78") [< 1 ms]

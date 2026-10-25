@@ -1,0 +1,2 @@
+Échoué Alundra.Tests.Combat.HeroInjuryTests.E1_TheBearingAwayFromTheToucher_IsTheDirectionReturned_At14PixelsAndAtOne(name: "B-same-0-0")
+Échoué Alundra.Tests.Combat.HeroInjuryTests.E3_ATouchOnTheSamePoint_BearsDirection24 [< 1 ms]

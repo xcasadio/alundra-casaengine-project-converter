@@ -1,0 +1,3 @@
+Échoué Alundra.Tests.Hero.HeroHurtTests.B4_TheControlWord_OnlyTheWholeWord0x20ReachesTheEntry_WithoutAStateNorARecoil_AnyOtherLockLosesTheHit(name: "D1-24")
+Échoué Alundra.Tests.Hero.HeroHurtTests.B4_TheControlWord_OnlyTheWholeWord0x20ReachesTheEntry_WithoutAStateNorARecoil_AnyOtherLockLosesTheHit(name: "D1-30")
+Échoué Alundra.Tests.Hero.HeroHurtTests.B4_TheControlWord_OnlyTheWholeWord0x20ReachesTheEntry_WithoutAStateNorARecoil_AnyOtherLockLosesTheHit(name: "D1-A0")

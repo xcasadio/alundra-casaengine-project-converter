@@ -1,0 +1,10 @@
+Échoué Alundra.Tests.Maps.WorldProxyBlinkTests.K1_TheHeroOfA1_IsHiddenAsTheOraclesDrawListHidesHim_AtTheLastTickOfEachFrame(ticksPerFrame: 1)
+Échoué Alundra.Tests.Maps.WorldProxyBlinkTests.K1_TheHeroOfA1_IsHiddenAsTheOraclesDrawListHidesHim_AtTheLastTickOfEachFrame(ticksPerFrame: 2)
+Échoué Alundra.Tests.Maps.WorldProxyBlinkTests.K1_TheHeroOfA1_IsHiddenAsTheOraclesDrawListHidesHim_AtTheLastTickOfEachFrame(ticksPerFrame: 3)
+Échoué Alundra.Tests.Maps.WorldProxyBlinkTests.K2_ADroppedObject_BlinksItsLast120Ticks_HiddenOneTickInFour_FromTheTickOfTheMark(ticksPerFrame: 1)
+Échoué Alundra.Tests.Maps.WorldProxyBlinkTests.K2_ADroppedObject_BlinksItsLast120Ticks_HiddenOneTickInFour_FromTheTickOfTheMark(ticksPerFrame: 2)
+Échoué Alundra.Tests.Maps.WorldProxyBlinkTests.K2_ADroppedObject_BlinksItsLast120Ticks_HiddenOneTickInFour_FromTheTickOfTheMark(ticksPerFrame: 3)
+Échoué Alundra.Tests.Maps.WorldProxyBlinkTests.K3_AnEntityWithNoCounterToHideIt_StaysVisible(counter: 0) [< 1 ms]
+Échoué Alundra.Tests.Maps.WorldProxyBlinkTests.K3_AnEntityWithNoCounterToHideIt_StaysVisible(counter: 116) [< 1 ms]
+Échoué Alundra.Tests.Maps.WorldProxyBlinkTests.K3_AnEntityWithNoCounterToHideIt_StaysVisible(counter: 120) [< 1 ms]
+Échoué Alundra.Tests.Maps.WorldProxyBlinkTests.K3_TheBlinkHidesAnActiveEntity_AndShowsItAgainWhenTheCounterLeavesTheCase [< 1 ms]

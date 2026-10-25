@@ -1,0 +1,3 @@
+Échoué Alundra.Tests.Hero.HeroHurtCarryTests.B3_TheChargeCounterAndThePendingShotPointer_AreZeroedByTheHurtTick(ticksPerFrame: 1) [< 1 ms]
+Échoué Alundra.Tests.Hero.HeroHurtCarryTests.B3_TheChargeCounterAndThePendingShotPointer_AreZeroedByTheHurtTick(ticksPerFrame: 2)
+Échoué Alundra.Tests.Hero.HeroHurtCarryTests.B3_TheChargeCounterAndThePendingShotPointer_AreZeroedByTheHurtTick(ticksPerFrame: 3)

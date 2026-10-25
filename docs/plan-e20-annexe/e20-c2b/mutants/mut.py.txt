@@ -1,0 +1,92 @@
+import subprocess, sys, os, re
+REPO = 'D:/development/repo/alundra-casaengine-project-converter'
+SK = 'C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/e20e0a3b-exec/skipcopy.targets'
+OUT = REPO + '/docs/plan-e20-annexe/e20-c2b/mutants'
+FILTER = '|'.join('FullyQualifiedName~' + n for n in [
+    'Alundra.Tests.Combat.HeroInjuryTests', 'Alundra.Tests.Hero.HeroHurt', 'Alundra.Tests.Hero.HeroSwimTests',
+    'Alundra.Tests.Hero.HeroHazardCellTests', 'Alundra.Tests.Hero.HeroRunArenaTests', 'Alundra.Tests.Maps.WorldProxyBlinkTests',
+    'Alundra.Tests.Combat.HitPassTests'])
+
+HI = 'Alundra/Combat/HeroInjury.cs'
+PM = 'Alundra/Hero/PlayerManager.cs'
+FS = 'Alundra/Maps/Loop/FrameSyncPasses.cs'
+ES = 'Alundra/Entities/EntityScriptProxy.cs'
+
+MUTANTS = {
+ 'm00_baseline': [],
+ # --- the entry (HeroInjury.Enter)
+ 'm01_toucher_branch_tests_hero_1CC': [(HI, 'if (hero.TouchingEntity != null)\r\n        {\r\n            Damage', 'if (hero.TouchingEntity != null && hero.DamagedTickCounter == 0)\r\n        {\r\n            Damage')],
+ 'm01b_toucher_branch_tests_toucher_1CC': [(HI, 'if (hero.TouchingEntity != null)\r\n        {\r\n            Damage', 'if (hero.TouchingEntity != null && (hero.TouchingEntity.GameplayProxy as EntityScriptProxy)?.DamagedTickCounter == 0)\r\n        {\r\n            Damage')],
+ 'm02_computenewhp_result_used': [(HI, '            Damage.ComputeNewHp(hero, sheet, equipment, animationLatch);\r\n', '            if (Damage.ComputeNewHp(hero, sheet, equipment, animationLatch))\r\n            {\r\n                return NoInjury;\r\n            }\r\n')],
+ 'm03_direction_inverted': [(HI, 'GetDirectionToTarget(unchecked(hero.PosX - toucher.PosX), unchecked(hero.PosY - toucher.PosY))', 'GetDirectionToTarget(unchecked(toucher.PosX - hero.PosX), unchecked(toucher.PosY - hero.PosY))')],
+ 'm04_same_point_gives_0': [(HI, 'return (int)ScriptHelper.GetDirectionToTarget(unchecked(hero.PosX - toucher.PosX)', 'if (hero.PosX == toucher.PosX && hero.PosY == toucher.PosY) { return 0; }\r\n                return (int)ScriptHelper.GetDirectionToTarget(unchecked(hero.PosX - toucher.PosX)')],
+ 'm05_cost_table_of_the_decompilation_256': [(HI, 'var cost = (int)((hero.CombinedVramFlagsOR & CellCostBits) >> 7);', 'var cost = (int)((hero.CombinedVramFlagsOR & CellCostBits) << 1);')],
+ 'm06_boots_below_2': [(HI, 'SparingBootsLevel = 3;', 'SparingBootsLevel = 2;')],
+ 'm07_armour_applied_to_the_cells': [(HI, 'hero.Hp = Math.Max(0, hero.Hp - cost);', 'hero.Hp = Damage.ResolveBalanceTarget(new BalanceAttack(0x02, cost), sheet, hero.Hp, equipment, animationLatch);')],
+ 'm08_entry_returns_0_when_nothing': [(HI, 'if (cost == 0)\r\n        {\r\n            return NoInjury;', 'if (cost == 0)\r\n        {\r\n            return 0;')],
+ 'm09_cell_facing_not_turned': [(HI, 'return (int)((hero.TargetDirection + 0x10) & 0x1F);', 'return (int)(hero.TargetDirection & 0x1F);')],
+ 'm10_cell_floor_removed': [(HI, 'hero.Hp = Math.Max(0, hero.Hp - cost);', 'hero.Hp = hero.Hp - cost;')],
+ # --- the hurt block and the states (PlayerManager)
+ 'm11_deep_water_read_on_the_water_bits': [(PM, 'player.TargetAnimationId = slopeAtHead == DeepWaterSlope ? SwimHurtAnimationId : HurtAnimationId;', 'player.TargetAnimationId = (player.CombinedVramFlagsOR & 0x800u) != 0 ? SwimHurtAnimationId : HurtAnimationId;')],
+ 'm12_0x31_in_deep_water': [(PM, 'player.TargetAnimationId = slopeAtHead == DeepWaterSlope ? SwimHurtAnimationId : HurtAnimationId;', 'player.TargetAnimationId = HurtAnimationId;')],
+ 'm13_invulnerability_0x77': [(PM, 'internal const int HurtInvulnerabilityTicks = 0x78;', 'internal const int HurtInvulnerabilityTicks = 0x77;')],
+ 'm14_carried_mode_0': [(PM, 'UpdatePlayerCarriedEntity(player, 2);\r\n        UpdateItemUseDriver(player);', 'UpdatePlayerCarriedEntity(player, 0);\r\n        UpdateItemUseDriver(player);')],
+ 'm15_charge_not_zeroed': [(PM, 'private static void HurtBlock(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host, int slopeAtHead, uint direction)\r\n    {\r\n        player.WeaponChargeTimer = 0;', 'private static void HurtBlock(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host, int slopeAtHead, uint direction)\r\n    {')],
+ 'm15b_pending_shot_not_zeroed': [(PM, 'player.WeaponRecordPointer = 0;\r\n        UpdatePlayerCarriedEntity(player, 2);\r\n        UpdateItemUseDriver(player);', 'UpdatePlayerCarriedEntity(player, 2);\r\n        UpdateItemUseDriver(player);')],
+ 'm16_locked_0x20_path_sets_the_state': [(PM, 'player.DamagedTickCounter = HurtInvulnerabilityTicks;\r\n            }\r\n\r\n            EndOfMovePlayer', 'player.DamagedTickCounter = HurtInvulnerabilityTicks;\r\n                player.TargetAnimationId = HurtAnimationId;\r\n            }\r\n\r\n            EndOfMovePlayer')],
+ 'm17_locked_0x34_lets_the_hit_through': [(PM, 'if (state.PlayerControlFlags == GameState.PlayerControlBits.ForcedSequence && EnterInjury', 'if ((state.PlayerControlFlags & GameState.PlayerControlBits.ForcedSequence) != 0 && EnterInjury')],
+ 'm18_hurt_tick_without_endofmoveplayer': [(PM, 'player.DamagedTickCounter = HurtInvulnerabilityTicks;\r\n        EndOfMovePlayer(player, in pad, state, host);\r\n    }', 'player.DamagedTickCounter = HurtInvulnerabilityTicks;\r\n    }')],
+ 'm19_case_0x31_absent': [(PM, 'else if (player.TargetAnimationId == HurtAnimationId)\r\n        {\r\n            TryUseItem(player, in pad);\r\n        }', 'else if (player.TargetAnimationId == HurtAnimationId)\r\n        {\r\n        }')],
+ 'm20_item_driver_after_the_state': [(PM, 'UpdateItemUseDriver(player);\r\n        player.TargetAnimationId = slopeAtHead == DeepWaterSlope ? SwimHurtAnimationId : HurtAnimationId;', 'player.TargetAnimationId = slopeAtHead == DeepWaterSlope ? SwimHurtAnimationId : HurtAnimationId;\r\n        UpdateItemUseDriver(player);')],
+ # --- the blink (FrameSyncPasses, WorldProxy)
+ 'm21_blink_on_and3_eq_0': [(FS, '(proxy.DamagedTickCounter & 3) == 3;', '(proxy.DamagedTickCounter & 3) == 0;')],
+ 'm22_blink_published_at_the_first_tick': [
+    (ES, 'internal bool BlinkHides;', 'internal bool BlinkHides;\r\n    internal bool BlinkFrameMarked;'),
+    (FS, '    internal static void MarkBlink(EntityScriptProxy proxy)\r\n        => proxy.BlinkHides = ', '    internal static void MarkBlink(EntityScriptProxy proxy)\r\n        => proxy.BlinkHides = proxy.BlinkFrameMarked ? proxy.BlinkHides : (proxy.BlinkFrameMarked = true) && '),
+    (FS, 'internal static void PublishBlink(Entity entity, EntityScriptProxy proxy)\r\n    {\r\n', 'internal static void PublishBlink(Entity entity, EntityScriptProxy proxy)\r\n    {\r\n        proxy.BlinkFrameMarked = false;\r\n')],
+ 'm23_blink_shows_a_loaded_object': [(FS, '        if (!proxy.HiddenByBlink)\r\n        {\r\n            return;\r\n        }\r\n\r\n        proxy.HiddenByBlink = false;\r\n        if (proxy.Status.IsActive())\r\n        {\r\n            entity.IsVisible = true;\r\n        }', '        proxy.HiddenByBlink = false;\r\n        entity.IsVisible = true;')],
+ 'm24_blink_shows_a_flagged_entity': [(FS, '        proxy.HiddenByBlink = false;\r\n        if (proxy.Status.IsActive())\r\n        {\r\n            entity.IsVisible = true;\r\n        }', '        proxy.HiddenByBlink = false;\r\n        entity.IsVisible = true;')],
+ 'm25_blink_hides_when_and3_ne_3': [(FS, '(proxy.DamagedTickCounter & 3) == 3;', '(proxy.DamagedTickCounter & 3) != 3;')],
+ 'm26_blink_shows_what_another_writer_hid': [(FS, '        if (!proxy.HiddenByBlink)\r\n        {\r\n            return;\r\n        }\r\n\r\n        proxy.HiddenByBlink = false;', '        proxy.HiddenByBlink = false;')],
+ # --- the equivalent (rule of the equivalents)
+ 'e01_slope_read_after_the_portal': [(PM, 'HurtBlock(player, in pad, state, host, slopeAtHead, (uint)injuryDirection);', 'HurtBlock(player, in pad, state, host, player.Slope_18c, (uint)injuryDirection);')],
+}
+
+def run(cmd):
+    return subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, encoding='utf-8', errors='replace', shell=False)
+
+def apply(edits):
+    for f, old, new in edits:
+        p = os.path.join(REPO, f)
+        b = open(p, 'rb').read().decode('utf-8')
+        n = b.count(old)
+        if n != 1:
+            raise SystemExit('anchor count %d for %r in %s' % (n, old[:60], f))
+        open(p, 'wb').write(b.replace(old, new, 1).encode('utf-8'))
+
+def revert(edits):
+    for f in sorted({e[0] for e in edits}):
+        run(['git', 'checkout', '--', f])
+
+def main(names):
+    for name in names:
+        edits = MUTANTS[name]
+        apply(edits)
+        r = run(['dotnet', 'test', 'Alundra.Tests', '-c', 'Release', '-p:CustomAfterMicrosoftCommonTargets=' + SK, '--filter', FILTER, '--blame-hang-timeout', '60s'])
+        full = r.stdout + r.stderr
+        revert(edits)
+        clean = run(['git', 'diff', '--quiet', '--', 'Alundra', 'Alundra.Tests']).returncode == 0
+        red = sorted(set(re.sub(r' \[[0-9 a-z]*\]$', '', l.strip()) for l in full.splitlines() if re.match(r'^\s*(Échoué|Failed) ', l)))
+        buildfail = 'error CS' in full
+        tail = [l.strip() for l in full.splitlines() if re.search(r'(Total|Réussi|Passed|Échec|Failed|Nombre total)', l) and ':' in l][-4:]
+        open(os.path.join(OUT, name + '.red'), 'w', encoding='utf-8').write('\n'.join(red))
+        if os.environ.get('KEEPFULL'):
+            open(os.path.join(OUT, name + '.full'), 'w', encoding='utf-8').write(full)
+        print('%s: rc=%d buildfail=%s killed=%s nred=%d clean=%s' % (name, r.returncode, buildfail, len(red) > 0, len(red), clean))
+        for l in red[:5]:
+            print('   ', l[:200])
+        print('   ', tail)
+        sys.stdout.flush()
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
