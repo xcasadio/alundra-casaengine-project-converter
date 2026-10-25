@@ -76,6 +76,14 @@ internal sealed class HitArena : IDisposable
                 Targets.Add(proxy);
             }
 
+            // E20.c2b D-C2B-10: the hero is now hurt by a touch, so a hero carried into the body of a target would be hurt (and thrown back) during the settling frames below. The targets attack only once the hero has settled:
+            // their attacks are put back after the reset of the hit state, and the first touch of the scenario is then the oracle's (the hit of tick 1 of the "both" traces, the contact of the series).
+            var attacks = Targets.Select(t => t.CurrentAttack).ToList();
+            foreach (var target in Targets)
+            {
+                target.CurrentAttack = null;
+            }
+
             // The arena: the hero and the Beannoids on the flat free cells of the oracle (tile row 6), on the ground (the DLL's Z is the binary's minus 1: 0).
             Hero.TargetDirection = heroDirection;
             Arc.PlaceHero(heroPixelX, heroPixelY, heroPixelZ);
@@ -102,6 +110,11 @@ internal sealed class HitArena : IDisposable
             foreach (var target in Targets)
             {
                 ResetHitState(target);
+            }
+
+            for (var i = 0; i < Targets.Count; i++)
+            {
+                Targets[i].CurrentAttack = attacks[i];
             }
 
             HeroStartX = Hero.PosX;

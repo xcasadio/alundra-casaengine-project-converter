@@ -19,8 +19,8 @@ namespace Alundra.Tests.Hero;
 /// of the plan are asserted beside each comparison, written before the first run.
 /// <para>
 /// WHAT IS NOT COMPARED, and why (each is an allowance of the plan): the effects 6 and 0x15 (the splash, the wake and the ripple of the dive: the shadow pass <c>0x80038E84</c> and <c>CreatePlayerAnimationEffects</c>, E20.e), the sounds 21
-/// and 6 of a landing in the water (E20.e), the sound 3 of the Circle (the item driver, E20.h); the hurt of the water is entered by an access point of the test (the exit of the hurt block of the binary, which is E20.c2b's:
-/// the traces W7 hurt the hero with a Beannoid the DLL does not have, so their effect 9 is not compared); the wall of the deep water without the swim boots (O-E19-22) and the currents (O-E20-16) are not ported, the traces of
+/// and 6 of a landing in the water (E20.e), the sound 3 of the Circle (the item driver, E20.h); the hurt of the water is entered through the REAL entry of the hero's damage (E20.c2b): the traces W7 hurt the hero with a Beannoid the
+/// montage does not have, so the test poses the toucher the hit pass of the previous tick would have written (<see cref="HurtAccess"/>) and the effect 9 of that touch is not compared; the wall of the deep water without the swim boots (O-E19-22) and the currents (O-E20-16) are not ported, the traces of
 /// boots level 0 and 1 are information; the east wall stops one unit short in the binary (O-E19-42); the clamp at the border of the map (O-E19-17).
 /// </para>
 /// </summary>
@@ -67,18 +67,39 @@ public sealed class HeroSwimTests : IDisposable
 
     private sealed record Allowances(int[]? OnGroundLag = null, Func<int, string, bool>? Ignore = null, int Tolerance = FloatUnits, int ShiftFrom = 0, int Shift = 0, int LastTick = int.MaxValue, bool Hurt = false);
 
-    /// <summary>The access point of the hurt (the exit of the hurt block of the binary, <c>0x80031C74</c>-<c>0x80031C9C</c>, without its entry, which is E20.c2b's): at the tick the oracle's state turns to 0x3A, the state and the direction the oracle
-    /// holds on that tick are posed before <c>MovePlayer</c>.</summary>
+    private const uint Hurt = 0x31;
+
+    /// <summary>The first tick at which the oracle's hero is in the hurt state of the land (0x31) or of the water (0x3A), or 0.</summary>
+    private static int FirstHurtTick(RunOracleTrace trace)
+    {
+        var land = trace.FirstTick("anim_target", Hurt);
+        var water = trace.FirstTick("anim_target", SwimHurt);
+        return land > 0 && water > 0 ? Math.Min(land, water) : Math.Max(land, water);
+    }
+
+    /// <summary>
+    /// The access point of the hurt (E20.c2b): the montage has no hit pass, so at the tick the oracle's state turns to 0x31 or 0x3A the test poses before <c>MovePlayer</c> what the hit pass of the tick before would have written - the hero
+    /// touches the Beannoid of the trace (<c>TouchingEntity</c>, <c>+0x224</c>) - and takes it away at the next tick (the counters pass of the world). The state, the facing and the sound then come from the REAL entry and hurt block of
+    /// <c>MovePlayer</c>: the state by the slope retained at the head of the tick, the facing by the bearing of the hero from the Beannoid.
+    /// </summary>
     private static Action<int> HurtAccess(RunMontage m, RunOracleTrace trace)
     {
-        var tick = trace.FirstTick("anim_target", SwimHurt);
-        Assert.True(tick > 0, $"{trace.Name}: the oracle never hurts the hero in the water");
+        var tick = FirstHurtTick(trace);
+        Assert.True(tick > 0, $"{trace.Name}: the oracle never hurts the hero");
+        var toucher = new CasaEngine.Framework.Scene.Entities.Entity { Name = "toucher", GameplayProxyClassName = typeof(Alundra.Entities.EntityScriptProxy).FullName! };
+        toucher.Initialize();
+        var proxy = (Alundra.Entities.EntityScriptProxy)toucher.GameplayProxy;
+        proxy.PosX = (int)trace.TargetCol(0, "pos_x", tick - 1);
+        proxy.PosY = (int)trace.TargetCol(0, "pos_y", tick - 1);
         return t =>
         {
             if (t == tick)
             {
-                m.Hero.TargetAnimationId = SwimHurt;
-                m.Hero.TargetDirection = (uint)trace.Col("dir_target", tick);
+                m.Hero.TouchingEntity = toucher;
+            }
+            else if (t == tick + 1)
+            {
+                m.Hero.TouchingEntity = null;
             }
         };
     }
@@ -101,7 +122,7 @@ public sealed class HeroSwimTests : IDisposable
         if (allowances.Hurt)
         {
             var inner = ignore;
-            ignore = (tick, field) => field == "effects" || inner?.Invoke(tick, field) == true; // the hit effect of the Beannoid the DLL does not have (E20.c2b)
+            ignore = (tick, field) => field == "effects" || inner?.Invoke(tick, field) == true; // the hit effect of the Beannoid the montage does not have (its hit pass is the world's)
         }
 
         RunMontage.AssertEqualToOracle(montage.CompareRows(
@@ -637,12 +658,32 @@ public sealed class HeroSwimTests : IDisposable
     [InlineData("w7/W7-hurt-dive-s75")]
     public void W7_TheOtherHurts_AreTheOracle_AtTheFirstContact(string name) => Equal(name, new Allowances(Hurt: true, LastTick: FirstHurtEnd(name)));
 
-    /// <summary>The traces with a second contact (the Beannoid keeps touching) are compared until the end of the first hurt: the second entry is E20.c2b's.</summary>
+    /// <summary>The traces with a second contact (the Beannoid keeps touching) are compared until the end of the first hurt: the montage poses the first touch only (the second is the world's hit pass, HeroHurtTests).</summary>
     private static int FirstHurtEnd(string name)
     {
         var trace = RunOracleTrace.Load(name);
-        var hurt = trace.FirstTick("anim_target", SwimHurt);
+        var hurt = FirstHurtTick(trace);
         return Math.Min(trace.Ticks, hurt + 40);
+    }
+
+    /// <summary>
+    /// E20.c2b (b2): the hero hurt on the shore, half in the water. The cells under his box carry the water property (<c>CombinedVramFlagsOR</c> 0x800) but the slope retained at the head of the tick is 0, not 4: the state is the hurt of the
+    /// LAND (0x31, then 0x1C and Idle), not the hurt of the water (0x3A). The one trace that separates the choice by the slope from a choice by the water bit.
+    /// </summary>
+    [Fact]
+    public void W7_AHurtOnTheShore_HalfInTheWater_Is0x31OfTheLand_BecauseTheSlopeRetainedIs0_NotTheHurtOfTheWater()
+    {
+        var m = Equal("w7/W7-hurt-shore", new Allowances(Hurt: true, LastTick: FirstHurtEnd("w7/W7-hurt-shore")));
+
+        Assert.Equal(0, m.Rows[1].Slope);
+        Assert.Equal(0x800L, m.Trace.Col("vram_or", 1) & 0x800); // the oracle: the water bit is under his box at the tick of the hurt (the slope there is 0)...
+        AssertStates(m, Hurt, 2, 5);
+        AssertStates(m, 0x1C, 6, 16);
+        Assert.Equal(Idle, m.Rows[17].AnimTarget);
+        Assert.DoesNotContain(m.Rows, r => r.AnimTarget is SwimHurt or SwimHurtEnd); // ...and the hurt of the water is never entered.
+        Assert.Equal(-196608, m.Rows[2].ForceX);
+        Assert.True(Sounded(m, 2, 23));
+        Assert.Equal(0x08u, m.Rows[2].DirTarget);
     }
 
     // -----------------------------------------------------------------------------------------

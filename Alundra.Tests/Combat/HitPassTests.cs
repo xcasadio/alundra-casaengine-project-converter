@@ -273,26 +273,25 @@ public sealed class HitPassTests
     // -----------------------------------------------------------------------------------------
 
     [Fact]
-    public void H3_TheHeroWalkingIntoABeannoid_IsTouchedAtTick17_TheCountersClearItAtTick18_TheHeroDoesNotLoseLifeYet()
+    public void H3_TheHeroWalkingIntoABeannoid_IsTouchedAtTick17_TheCountersClearItAtTick18_TheHeroIsHurtAtTick18()
     {
         var trace = HitOracleTrace.Load("H3");
         using var arena = Arena(trace, "H3");
         var samples = arena.Run(trace, 1);
 
-        // Ticks 1 to 18, the columns of the pass; at tick 18 the oracle's hero is in the hurt state of MovePlayer (0x31, E20.c2: life 9, recoil, +0x1CC), which c1a does not have: his own columns of that tick
-        // are not compared but for what the pass and the counters write (what he touches, his counter, his cooldown).
-        AssertEqualToOracle(Compare(trace, samples, lastTick: 18, ignore: (tick, entity, field) =>
-            tick == 18 && entity == 0 && field is not ("touching_slot" or "hit_counter" or "c1d0")));
+        // E20.c2b: the whole trace, the hero's own columns of tick 18 included (they were excluded while the DLL had no hurt state): at tick 18 the oracle's hero is in the hurt state of MovePlayer (0x31, life 9, +0x1CC 119).
+        AssertEqualToOracle(Compare(trace, samples));
         Assert.Equal(25, samples[16].Hero.CooldownTicks); // tick 17: the hit is written on the hero...
         Assert.Equal(1, samples[16].Hero.Touching); // ...with the Beannoid as the toucher.
         Assert.Equal(1, samples[16].Targets[0].HitCounter);
         Assert.Equal(-1, samples[17].Hero.Touching); // tick 18: the counters pass has cleared it...
         Assert.Equal(24, samples[17].Hero.CooldownTicks); // ...and counts the cooldown down.
-        Assert.Equal(1u, samples[17].Hero.AnimTarget); // c1a: the hero keeps walking (the hurt state is E20.c2): the oracle has 0x31 here.
-        Assert.Equal(1u, samples[17].Latch);
+        Assert.Equal(0x31u, samples[17].Hero.AnimTarget); // the hero is hurt: the oracle's 0x31 (the walk, 1, until the tick before).
+        Assert.Equal(1u, samples[16].Hero.AnimTarget);
+        Assert.Equal(0x31u, samples[17].Latch);
         Assert.Equal(0x31u, trace.Rows[17].Latch);
-        Assert.Equal(10, samples[17].Hero.Hp);
-        Assert.Equal(0, samples[17].Hero.DamagedTicks);
+        Assert.Equal((10, 9), (samples[16].Hero.Hp, samples[17].Hero.Hp));
+        Assert.Equal((0, 119), (samples[16].Hero.DamagedTicks, samples[17].Hero.DamagedTicks));
     }
 
     [Fact]
@@ -302,40 +301,45 @@ public sealed class HitPassTests
         using var arena = Arena(trace, "H1-both");
         var samples = arena.Run(trace, 1);
 
-        // Ticks 1 and 2. At tick 2 the oracle's hero is in the hurt state (0x31): his animation, life, forces and boxes are the business of E20.c2. c1a expects its own swing there (0x10), and compares what the pass
-        // and the counters write.
-        AssertEqualToOracle(Compare(trace, samples, lastTick: 2, ignore: (tick, entity, field) =>
-            tick == 2 && entity == 0 && field is not ("touching_slot" or "hit_counter" or "c1d0")));
-        Assert.Equal(0x10u, samples[1].Hero.AnimTarget);
-        Assert.Equal(0x10u, samples[1].Latch);
+        // E20.c2b: ticks 1 and 2, the hero's columns of tick 2 included: the body of the Beannoid touches him at tick 1 and the oracle's hero is in the hurt state (0x31) at tick 2, which ends his swing (0x10).
+        AssertEqualToOracle(Compare(trace, samples, lastTick: 2));
+        Assert.Equal(0x10u, samples[0].Hero.AnimTarget);
+        Assert.Equal(0x31u, samples[1].Hero.AnimTarget);
+        Assert.Equal(0x31u, samples[1].Latch);
         Assert.Equal(2, samples[0].Sparks.Count); // two hits on tick 1, three sparks each (six in the oracle's journal).
         Assert.Equal(1, samples[0].Hero.Touching);
         Assert.Equal(0, samples[0].Targets[0].Touching);
         Assert.Equal(1, samples[0].Hero.HitCounter);
         Assert.Equal(1, samples[0].Targets[0].HitCounter);
-        Assert.Equal(10, samples[1].Hero.Hp);
+        Assert.Equal((10, 9), (samples[0].Hero.Hp, samples[1].Hero.Hp));
     }
 
     [Fact]
-    public void WhileTheContactLasts_ABeannoidTouchesTheHero_EveryTwentyFiveTicks_AndHisDamagedCounterStaysAtZero()
+    public void WhileTheContactLasts_ABeannoidTouchesTheHeroOnce_BecauseTheHeroIsHurtAndThrownOutOfReach_AndIsInvulnerableFor120Ticks()
     {
-        // The hero stands still 20 pixels from a Beannoid (the bodies overlap), nothing pressed: the Beannoid hits him at tick 1 and again each time its cooldown is over. c1a writes the touch, the cooldown, the
-        // counter and the sparks; his life and his +0x1CC wait for E20.c2 (the oracle's hero is hurt after the first touch, which breaks the series).
-        using var arena = new HitArena("contact", 232, 96, new List<int[]> { new[] { 252, 96 } });
+        // The hero stands still 20 pixels from a Beannoid (the bodies overlap), nothing pressed: the Beannoid hits him at tick 1 and the hero is hurt at tick 2 (E20.c2b): he loses a life, is thrown back 33 pixels (out of the reach of the
+        // body) and cannot be hit for 120 ticks. The oracle (A1-pad0, 260 ticks) has ONE touch, whose ticks of the series are derived from its cooldown column, not typed. (Before E20.c2b the DLL had no hurt state: the Beannoid
+        // hit him every 25 ticks, at 1, 26, 51 and 76.)
+        var oracle = HurtOracleTrace.Load("A1.json", "A1-pad0");
+        using var arena = new HitArena("contact", oracle.HeroPixelX, oracle.HeroPixelY, oracle.TargetPixels);
         arena.Begin();
         for (var i = 0; i < 80; i++)
         {
             arena.Frame(0, 1);
         }
 
+        var oracleHitTicks = Enumerable.Range(1, 80).Where(t => oracle.Col("c1d0", t) == 25).ToArray();
         var hitTicks = arena.Samples.Where(s => s.Hero.CooldownTicks == 25).Select(s => s.Tick).ToArray();
-        Assert.Equal(new[] { 1, 26, 51, 76 }, hitTicks);
-        Assert.All(arena.Samples.Where(s => s.Hero.CooldownTicks == 25), s => Assert.Equal(1, s.Hero.Touching));
-        Assert.All(arena.Samples.Where(s => s.Hero.CooldownTicks == 25), s => Assert.Equal(1, s.Targets[0].HitCounter));
-        Assert.All(arena.Samples.Where(s => s.Hero.CooldownTicks != 25), s => Assert.Equal(-1, s.Hero.Touching));
-        Assert.All(arena.Samples, s => Assert.Equal(0, s.Hero.DamagedTicks));
-        Assert.All(arena.Samples, s => Assert.Equal(10, s.Hero.Hp));
-        Assert.Equal(4, arena.Samples.Count(s => s.Sparks.Count == 1));
+        Assert.Equal(new[] { 1 }, oracleHitTicks);
+        Assert.Equal(oracleHitTicks, hitTicks);
+        Assert.Equal(1, arena.Samples[0].Hero.Touching);
+        Assert.Equal(1, arena.Samples[0].Targets[0].HitCounter);
+        Assert.All(arena.Samples.Skip(1), s => Assert.Equal(-1, s.Hero.Touching));
+        Assert.Equal(new[] { 0, 119 }, new[] { arena.Samples[0].Hero.DamagedTicks, arena.Samples[1].Hero.DamagedTicks });
+        Assert.Equal(oracle.Col("c1cc", 80), arena.Samples[79].Hero.DamagedTicks); // 41: the countdown of the invulnerability
+        Assert.Equal((10, 9), (arena.Samples[0].Hero.Hp, arena.Samples[1].Hero.Hp));
+        Assert.All(arena.Samples.Skip(1), s => Assert.Equal(9, s.Hero.Hp));
+        Assert.Equal(1, arena.Samples.Count(s => s.Sparks.Count == 1));
     }
 
     // -----------------------------------------------------------------------------------------
@@ -453,12 +457,12 @@ public sealed class HitPassTests
     }
 
     [Fact]
-    public void TheReachBehindTheHero_Beyond9Pixels_IsOnlyContactedByTheLateFrames_BecauseTheHeroIsNotHurtYet()
+    public void TheReachBehindTheHero_Beyond9Pixels_IsNeverContacted_BecauseTheHeroIsHurtAtTick2_WhichEndsHisSwing()
     {
-        // dx -10 (the Beannoid 10 pixels BEHIND the hero): the oracle has no contact at all, because its hero is touched by the Beannoid's body at tick 1 and goes into the hurt state (E20.c2), which ends his swing at
-        // tick 2. c1a has no hurt state: the swing goes on and its frames 12 to 21 (offset -5, 23 pixels wide) reach the Beannoid. The first contact of the oracle's dx -9, tick 1, is unchanged (tested above).
+        // dx -10 (the Beannoid 10 pixels BEHIND the hero): the oracle has no contact at all, because its hero is touched by the Beannoid's body at tick 1 and goes into the hurt state (E20.c2b), which ends his swing at
+        // tick 2 (and throws him back). The swing never reaches the Beannoid: the sweep of the oracle and the DLL agree. (Before E20.c2b the DLL had no hurt state: the swing went on and its frames 12 to 21 reached the Beannoid at tick 12.)
         Assert.Null(ReadXSweep()[-10]);
-        Assert.Equal(12, FirstContactTick(-10, 0));
+        Assert.Null(FirstContactTick(-10, 0));
     }
 
     [Theory]

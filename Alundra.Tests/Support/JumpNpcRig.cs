@@ -245,6 +245,9 @@ internal static class HeroAttackClock
         new(0x2E, 0, 0, 10, 0x30, 1, Impulse: 1280), new(0x2F, 208, 0, 0, -1, 28), new(0x30, 0, 0, 0, -1, 28),
         // E20.g2a T2: the two states of the throw (the hero record of the export and the exported animations, 19 ticks in the four directions): 0x09 on the ground (sound 26, then Idle) and 0x0A in the air (sound 26, acceleration 15, then the fall 0x2D).
         new(0x09, 0, 0, 26, 0, 19), new(0x0A, 0, 15, 26, 0x2D, 19),
+        // E20.c2b T2: the two states of the hurt on the land (the hero record of the export and the oracle A1/W7-hurt-shore, the same length in the four directions): 0x31 (speed 256, byte 64, sound 23, 4 ticks, then 0x1C) and the recoil 0x1C
+        // (acceleration byte 68, 10 ticks, holds its last frame; the state is left by the tick of the bounce, which turns the facing back and gives Idle).
+        new(0x31, 256, 64, 23, 0x1C, 4), new(0x1C, 0, 68, 0, -1, 10, Hold: true),
     };
 
     private static Animation2d Make(int id, string direction, float seconds, AnimationType type)

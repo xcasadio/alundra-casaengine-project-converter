@@ -129,6 +129,12 @@ public static class PlayerManager
     /// <summary>PlayerAnimation 0x1C (E20.d1 T1): the recoil after a hit (reached from the hurt state 0x31, E20.c2b); the jump table <c>0x80022D3C</c> sends it to the handler of <see cref="SprintBounceAnimationId"/>.</summary>
     internal const uint HurtBounceAnimationId = 0x1C;
 
+    /// <summary>PlayerAnimation 0x31 (E20.c2b): the hurt state on the land (4 ticks, speed 256, sound 23, chained to <see cref="HurtBounceAnimationId"/>); its tick is <c>0x80032680</c> (<c>TryUseItem</c> only).</summary>
+    internal const uint HurtAnimationId = 0x31;
+
+    /// <summary>The invulnerability the hurt block writes to <c>+0x1CC</c> (<see cref="EntityScriptProxy.DamagedTickCounter"/>, E20.c2b): 120 ticks, 119 on the tick of the hurt after the counters pass; also the value the locked branch writes at the word <c>0x20</c>.</summary>
+    internal const int HurtInvulnerabilityTicks = 0x78;
+
     /// <summary>The slope value of deep water (<c>Slope_18c</c> 4): <see cref="MovePlayer"/> takes the swim branch there (<c>0x8003260C</c>, E20.i).</summary>
     private const int DeepWaterSlope = 4;
 
@@ -947,7 +953,19 @@ public static class PlayerManager
 
     /// <summary>E20.a A4 stub of <c>TryUseItem</c> (<c>0x8002ED64</c>): non-zero means "carry on this tick". The binary returns 1 whenever the Circle button has no rising edge
     /// (<c>0x8002EDA8</c>); a stub returning 0 would end the tick and kill every attack, jump and run (critique C10). The use of an item (the Circle) is E20.h.</summary>
-    private static int TryUseItem(EntityScriptProxy player, in PadState pad) => TryUseItemResultForTests ?? 1;
+    private static int TryUseItem(EntityScriptProxy player, in PadState pad)
+    {
+        TryUseItemCallCountForTests++;
+        return TryUseItemResultForTests ?? 1;
+    }
+
+    /// <summary>E20.c2b test seam, per thread: the number of calls of the stub of <see cref="TryUseItem"/> (the state 0x31 calls it once a tick).</summary>
+    [ThreadStatic]
+    internal static int TryUseItemCallCountForTests;
+
+    /// <summary>E20.c2b test seam, per thread: told the hero at each call of <see cref="UpdateItemUseDriver"/>, where the binary's driver <c>0x8003634C</c> runs (the hurt block calls it BEFORE it writes the state).</summary>
+    [ThreadStatic]
+    internal static Action<EntityScriptProxy>? ItemUseDriverHookForTests;
 
     /// <summary>E20.d1 T4 test seam, per thread: the answer of the stub of <see cref="TryUseItem"/> (null: 1, "carry on"). The branches of the run that the binary takes when the item driver answers 0 (<c>0x80031F5C</c>,
     /// <c>0x80032120</c>, <c>0x80032560</c>) are unreachable while the stub answers 1; the tests of those branches pose 0 here.</summary>
@@ -1687,6 +1705,7 @@ public static class PlayerManager
     /// when no item is in use. Ported in E20.c2.</summary>
     private static void UpdateItemUseDriver(EntityScriptProxy player)
     {
+        ItemUseDriverHookForTests?.Invoke(player);
     }
 
     /// <summary>

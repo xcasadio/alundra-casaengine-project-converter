@@ -88,6 +88,10 @@ internal sealed class C4Run : IDisposable
         Arc = new ArcRun(spec);
         try
         {
+            // E20.c2b T2: the hero of the bench stands on cells of the real maps, some of which are hazard cells (cost 2: the maps 36 and the others of the objects), where the hero now loses life and is thrown back; the oracle of C4 had a hero who
+            // stood still where he was put. The boots of level 3 (item 0x1C) spare him from the hazard cells exactly as the binary's entry does (HeroInjury.Enter answers -1), so that the tests keep measuring the flight of the object and
+            // their expected values stay the oracle's.
+            Arc.Give(0x1C);
             _heroX = heroX;
             _heroY = heroY;
             Frames(4);

@@ -17,8 +17,8 @@ namespace Alundra.Tests.Hero;
 /// <list type="bullet">
 /// <item><description>map 14 (<see cref="HitArena"/>, the flat free cells of the oracle): the hero runs east at a Beannoid 152 pixels away, with and without the tackle, tick by tick against the run oracle
 /// (G7: <c>R7-run-into-beannoid</c> and the sweep of the press tick <c>g7/tackle/R7-tackle-s30</c> to <c>s62</c>). The real exported animations give the lengths of the preparation (25 ticks) and of the tackle (32), the real
-/// hit pass gives the blow of the tackle at tick 61 (three sparks) and the touch of the body. The traces are compared until the tick BEFORE the hero is hurt: the hurt of the hero (the damage entry <c>0x80031A68</c>, the
-/// states 0x31 and 0x1C) is E20.c2b;</description></item>
+/// hit pass gives the blow of the tackle at tick 61 (three sparks) and the touch of the body. The traces are compared to their LAST tick (E20.c2b T2, b7): the hurt of the hero comes with the damage entry <c>0x80031A68</c> and the
+/// states 0x31 and 0x1C, so the touch of the body (or the blow of the tackle that ends in it) is followed by the hurt, the recoil and the life, column by column;</description></item>
 /// </list>
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
@@ -45,19 +45,14 @@ public sealed class HeroRunArenaTests : IDisposable
 
     public static IEnumerable<object[]> Tackles() => RunOracleTrace.NamesOf("g7/tackle").Select(n => new object[] { n });
 
-    /// <summary>The first tick at which the oracle's hero is hurt (state 0x31), or <c>Ticks + 1</c>.</summary>
-    private static int FirstHurtTick(RunOracleTrace trace)
-    {
-        var hurt = trace.FirstTick("anim_target", 0x31);
-        return hurt < 0 ? trace.Ticks + 1 : hurt;
-    }
-
-    /// <summary>Plays the pad of the trace on the arena of map 14 and returns every difference with the oracle up to the tick before the hero is hurt.</summary>
+    /// <summary>Plays the pad of the trace on the arena of map 14 and returns every difference with the oracle up to the last tick of the trace, the hurt of the hero included.</summary>
     private static (List<string> Diffs, HitArena Arena, int Last) PlayAgainstTheBeannoid(string name)
     {
         var trace = RunOracleTrace.Load(name);
         var arena = new HitArena("run-" + name, HeroPixelX, HeroPixelY, new List<int[]> { new[] { TargetPixelX, HeroPixelY } });
-        var last = FirstHurtTick(trace) - 1;
+        var last = trace.Ticks;
+        var heroAfter = new List<(uint Direction, int ForceX)>();
+        arena.AfterTick = _ => heroAfter.Add((arena.Hero.TargetDirection, arena.Hero.ForceX));
         arena.Begin();
         for (var tick = 1; tick <= last; tick++)
         {
@@ -79,6 +74,10 @@ public sealed class HeroRunArenaTests : IDisposable
             }
 
             Check("hero anim_target", sample.Hero.AnimTarget, trace.Col("anim_target", tick));
+            Check("hero dir_target", heroAfter[tick - 1].Direction, trace.Col("dir_target", tick));
+            Check("hero force_x", heroAfter[tick - 1].ForceX, trace.Col("force_x", tick));
+            Check("hero hp", sample.Hero.Hp, trace.Col("hp", tick));
+            Check("hero c1cc (damaged ticks)", sample.Hero.DamagedTicks, trace.Col("inv_1cc", tick));
             Check("hero pos_x", sample.Hero.PosX - arena.HeroStartX, trace.Col("pos_x", tick) - trace.Col("pos_x", 0));
             Check("hero pos_y", sample.Hero.PosY - arena.HeroStartY, trace.Col("pos_y", tick) - trace.Col("pos_y", 0));
             Check("hero hit_counter", sample.Hero.HitCounter, trace.Col("hit_counter", tick));
@@ -107,30 +106,36 @@ public sealed class HeroRunArenaTests : IDisposable
         using var _ = arena;
 
         RunMontage.AssertEqualToOracle(diffs);
-        Assert.True(last >= 60);
-        // Three sparks at the touch of the bodies (the oracle's tick 60).
+        Assert.Equal(90, last);
+        // Three sparks at the touch of the bodies (the oracle's tick 60); the hero is hurt at 61 (life 10 -> 9, 0x31 for 4 ticks, then the recoil 0x1C).
         Assert.Single(arena.Samples[59].Sparks);
-        AssertStates(arena, 3, 26, last);
+        AssertStates(arena, 3, 26, 60);
+        AssertStates(arena, 0x31, 61, 64);
+        AssertStates(arena, 0x1C, 65, 75);
+        Assert.Equal(10, arena.Samples[59].Hero.Hp);
+        Assert.Equal(9, arena.Samples[60].Hero.Hp);
     }
 
     [Fact]
-    public void G7_TheTackle_OnTheRealWorld_HitsTheBeannoidAtTick61_ThreeSparks_ComparedUntilTheHurt()
+    public void G7_TheTackle_OnTheRealWorld_HitsTheBeannoidAtTick61_ThreeSparks_ThenTheBodyTouchesAt64AndTheHeroIsHurtAt65()
     {
         var (diffs, arena, last) = PlayAgainstTheBeannoid("g7/tackle/R7-tackle-s44");
         using var _ = arena;
 
         RunMontage.AssertEqualToOracle(diffs);
-        Assert.Equal(64, last); // the hero is hurt at 65 (E20.c2b).
+        Assert.Equal(96, last);
         AssertStates(arena, 0x29, 1, 25);
         AssertStates(arena, 3, 26, 43);
         AssertStates(arena, 4, 44, 64);
+        AssertStates(arena, 0x31, 65, 68); // the body touches at 64 and the hero is hurt at 65: the tackle ends, the life falls, the recoil starts.
+        Assert.Equal((10, 9), (arena.Samples[63].Hero.Hp, arena.Samples[64].Hero.Hp));
         Assert.Single(arena.Samples[60].Sparks); // tick 61: the blow of the tackle, three sparks (one hit, three effects).
         Assert.Equal(25, arena.Samples[60].Targets[0].CooldownTicks);
     }
 
     [Theory]
     [MemberData(nameof(Tackles))]
-    public void G7_TheSweepOfThePressTick_OnTheRealWorld_IsTheOracleUntilTheHurt(string name)
+    public void G7_TheSweepOfThePressTick_OnTheRealWorld_IsTheOracle_TheHurtIncluded(string name)
     {
         var (diffs, arena, _) = PlayAgainstTheBeannoid(name);
         using var _ = arena;
