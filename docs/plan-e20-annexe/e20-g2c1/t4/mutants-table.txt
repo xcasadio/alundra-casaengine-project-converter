@@ -1,0 +1,26 @@
+01_forcez_ge0 | 4 red | first: Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsA
+02_lock_not_set | 15 red | first: Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn5_TheObjectBouncesOnce_TheDirectionHalfATurn_TheLoc
+03_direction_step_08 | 15 red | first: Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn5_TheObjectBouncesOnce_TheDirectionHalfATurn_TheLoc
+04_effect_lift_16px | 15 red | first: Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn5_TheObjectBouncesOnce_TheDirectionHalfATurn_TheLoc
+05_mask_1000 | 2 red | first: Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_AnimationIsReset_WhenTheObjectLandsOrIsTouched_AndNoCorner
+06_three_corners | 3 red | first: Alundra.Tests.Physics.CornerTileWordsTests.TheFourCorners_ReadTheirOwnCell_InTheOrderTopLeftTopRightBottomLeft
+07_hitcounter_ignored | 1 red | first: Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_TheSound24_OnTheLandingOrTheTouch_TheLockIsCleared
+08_sound_other | 23 red | first: Alundra.Tests.Ai.Objects.C4WorldTests.M1_TheFlatThrow_TouchesTheGroundAtT22_TheSound24AndTheAnimation0AtT23_Th
+09_slope_1 | 9 red | first: Alundra.Tests.Ai.Objects.C4WorldTests.M4_TheDeepWater_TheBarrelTheStoneAndTheObjectsAreDestroyedAtT23_TheTrunk
+10_float_animation_4 | 10 red | first: Alundra.Tests.Ai.Objects.C4WorldTests.M4_TheDeepWater_TheBarrelTheStoneAndTheObjectsAreDestroyedAtT23_TheTrunk
+11_native_e_test_removed | 4 red | first: Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Carried_Released_TheTableOfTheBinary_TheLinksCleared_TheFlagsOn
+12_death_bits_30 | 2 red | first: Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Carried_Released_TheTableOfTheBinary_TheLinksCleared_TheFlagsOn
+13_c23_takes_c4_policy | 4 red | first: Alundra.Tests.Ai.Objects.LiftableSharedReleaseTests.C23_TheSharedRelease_WritesTheFlagsOfC23_WhateverTheNative
+14_feeds_slope_for_all | 1 red | first: Alundra.Tests.Ai.Objects.C4RegistrationTests.OnlyTheTrunk_FeedsItsGroundSlope
+15_wired_type_without_key | 8 red | first: Alundra.Tests.Ai.Objects.C4RegistrationTests.TheProductionRegistry_HoldsC4ForTheNineteenTypes_AndForNoOther
+16_anymask_nonzero | 2 red | first: Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_AnimationIsReset_WhenTheObjectLandsOrIsTouched_AndNoCorner
+17_trunk_float_exemption_removed | 2 red | first: Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_AnimationIsReset_WhenTheObjectLandsOrIsTouched_AndNoCorner
+18_status3_not_set | 1 red | first: Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_BlockedOnTheGroundOnABand_TheStatus3_AndTheAnimation0
+19_carried_uses_c23_policy | 51 red | first: Alundra.Tests.Ai.Objects.C4WorldTests.M1_TheFlatThrow_TouchesTheGroundAtT22_TheSound24AndTheAnimation0AtT23_Th
+20_lock_not_cleared_on_ground | 1 red | first: Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_TheSound24_OnTheLandingOrTheTouch_TheLockIsCleared
+21_blocked_ground_anim_kept | 9 red | first: Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsA
+22_glide_ignored | 8 red | first: Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimati
+23_trunk_slope_not_resets | 2 red | first: Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_AnimationIsReset_WhenTheObjectLandsOrIsTouched_AndNoCorner
+24_feeds_slope_wrong_type | 6 red | first: Alundra.Tests.Ai.Objects.C4RegistrationTests.OnlyTheTrunk_FeedsItsGroundSlope
+25_effect_9_other | 14 red | first: Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn5_TheObjectBouncesOnce_TheDirectionHalfATurn_TheLoc
+base | 0 red | first: 

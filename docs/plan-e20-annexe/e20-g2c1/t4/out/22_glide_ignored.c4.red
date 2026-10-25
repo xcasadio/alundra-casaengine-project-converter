@@ -1,0 +1,8 @@
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimation0AtT47(index: 0)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimation0AtT47(index: 1)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimation0AtT47(index: 2)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimation0AtT47(index: 3)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimation0AtT47(index: 4)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimation0AtT47(index: 5)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimation0AtT47(index: 6)
+  Échoué Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_TheSound24_OnTheLandingOrTheTouch_TheLockIsCleared

@@ -1,0 +1,3 @@
+  Échoué Alundra.Tests.Physics.CornerTileWordsTests.TheFourCorners_ReadTheirOwnCell_InTheOrderTopLeftTopRightBottomLeftBottomRight [< 1 ms]
+  Échoué Alundra.Tests.Physics.CornerTileWordsTests.TheReaderDoesNotQualifyByHeight_AFlyingEntityReadsTheBandUnderIt_NextToAnEntityOnTheGround [< 1 ms]
+  Échoué Alundra.Tests.Physics.CornerTileWordsTests.TheReaderFollowsTheCurrentPosition_AndTheBandOnlyUnderOneCornerIsEnough

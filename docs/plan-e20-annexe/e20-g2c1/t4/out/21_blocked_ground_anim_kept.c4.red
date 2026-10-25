@@ -1,0 +1,9 @@
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsAndLands(index: 0)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsAndLands(index: 1)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsAndLands(index: 2)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsAndLands(index: 3)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsAndLands(index: 4)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsAndLands(index: 5)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsAndLands(index: 6)
+  Échoué Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_AnimationIsReset_WhenTheObjectLandsOrIsTouched_AndNoCornerIsOnABand
+  Échoué Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_BlockedOnTheGroundOnABand_TheStatus3_AndTheAnimation0

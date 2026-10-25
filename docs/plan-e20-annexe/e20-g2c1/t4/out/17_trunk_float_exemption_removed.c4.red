@@ -1,0 +1,2 @@
+  Échoué Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_AnimationIsReset_WhenTheObjectLandsOrIsTouched_AndNoCornerIsOnABand
+  Échoué Alundra.Tests.Ai.Objects.LiftableC4GoldenTests.Free_Silent_NothingChanges_NextToTheClassesThatChange

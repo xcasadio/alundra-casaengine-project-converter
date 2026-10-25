@@ -102,6 +102,7 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0086 | The pushable pillar is ported from C76 and its stop of the sound is a named stub until g5c | Accepted | 2026-10-23 |
 | ADR-0087 | The ground slope of the entities born by the interface is fed in the active statuses, for the marked entities with gravity only | Accepted | 2026-10-23 |
 | ADR-0088 | The passengers follow their carrier in the order forces then moves, with the XY force of a pile added once per carrier | Accepted | 2026-10-24 |
-| ADR-0089 | The object in the hands follows the hero by a carried branch of the motion, the three modes of UpdatePlayerCarriedEntity are pure rules, and C23 is registered for the seven liftable types | Accepted | 2026-10-24 |
+| ADR-0089 | The object in the hands follows the hero by a carried branch of the motion, the three modes of UpdatePlayerCarriedEntity are pure rules, and C23 is registered for the seven liftable types | Accepted; amended by ADR-0092 | 2026-10-24 |
 | ADR-0090 | The stop of one sound is the binary's StopSoundEffect (opcodes 0xBE and 0x75, the end of C76) and the push sound of the pillar loops | Accepted | 2026-10-24 |
 | ADR-0091 | The soulevables are solid obstacles like every other collidable, and the movement obstacle probe skips no flag | Accepted | 2026-10-24 |
+| ADR-0092 | C4 is the program of the transportable objects of the family C4, the key (C, 4) is registered for 19 types, and the wired set of the lift grows to 25 types | Accepted | 2026-10-25 |

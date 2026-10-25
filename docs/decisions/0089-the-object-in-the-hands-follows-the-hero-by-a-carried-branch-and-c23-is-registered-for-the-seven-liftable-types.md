@@ -1,6 +1,6 @@
 # ADR-0089: The object in the hands follows the hero by a carried branch of the motion, the three modes of UpdatePlayerCarriedEntity are pure rules, and C23 is registered for the seven liftable types
 
-- **Status**: Accepted
+- **Status**: Accepted; the wired set of seven types amended by ADR-0092 (E20.g2c1: 25 types)
 - **Date**: 2026-10-24
 - **Source**: this chantier: `docs/plan-e20-heros.md` section 1.24.1 (E20.g1a, D-G-2, D-G-3, D-G-4, D-G-5, D-G-9, D-G-11, D-G-12, D-G-13, D-G-15, D-G-17) and the block "Revision au HEAD (2026-10-18)"; reading of `ALUN_CD.EXE` (France) in `docs/plan-e20-annexe/e20-g1a/` (`UpdatePlayerCarriedEntity` `0x8002F884`, `StepTowards` `0x8002F854`, the carried branch of `MoveEntity` `0x80037E34`, the zeroing of the forces `0x80036A84`, the carrying group `0x8003232C`, the lift gestures `0x800322F0` and `0x800322B4`, the program C23 `0x8006B848`, the clearing of the carrier at the end of the destructions `0x8003A62C`, `0x8003A74C` and `0x8003A7A4`, the sort driver `0x800397AC`); measured results in `docs/plan-e20-annexe/e20-g1a/exec/results.md`
 

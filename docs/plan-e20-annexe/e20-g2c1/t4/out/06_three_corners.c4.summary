@@ -1,0 +1,3 @@
+Message du collecteur de données 'Blame' : Tous les tests ont fini de s'exécuter. Le fichier de séquence ne sera pas généré.
+
+Échoué!  - échec :     3, réussite :   196, ignorée(s) :     0, total :   199, durée : 1 m 2 s - Alundra.Tests.dll (net9.0)
