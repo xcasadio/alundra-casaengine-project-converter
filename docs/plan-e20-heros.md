@@ -866,7 +866,7 @@ D-R-15) : aucune tranche d'E20 ne commence avant.
 | 7 | E20.f5 (§1.21) | Flèches : E17 (D-E20-25) ; `ResyncControllerFromFlags` quand E17 change les drapeaux (§1.18, N9) | E20.f4 (interrupteur d'arène, témoins négatifs, annexe commune), E20.f3, E20.e0a5, E20.e0k1 à E20.e0k3 |
 | 8 | E20.f6 (§1.22 : f6a, f6b) | Boules de feu et de glace : C60, E9 (D-E20-25) ; f6a : les attributs de tuile des entités marquées à gravité ; les trois enregistrements `0x0C` de la carte 309 (sprite 12) émettent des étincelles dès l'enregistrement de C60 (E9 ne tourne jamais pour eux) | f6a : E20.e0k1, E20.e0k2 ; f6b : f6a, E20.f4, E20.f5 (règle de vitesse D-F5-5), E20.f3 (dont f3b), E20.e0a5, E20.e0b1 (§1.17), E20.e0k1 à E20.e0k3 |
 | 9 | E20.h0, E20.h1 | **h0a détaillée au §1.30.1 (2026-10-18)** ; h1 détaillée au §1.30.5 (2026-10-18). Cadre de l'usage d'un objet (`0x8002ED64`, `0x8003499C`, pilote `0x8003634C`, annulation `0x800350C0`) ; les cinq objets instantanés (soins) | E20.c2a ✅ |
-| 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3. **Revu le 2026-10-18 (§1.30, critique de `e20-h3`)** : à jouer **avant** h3a (le couvercle réagit sans D30 ni E12 ; E12 ne retire que la bombe ; il mesurera le manque `(E, 19)`, porté par h3a) | E20.c1b-1 ✅ |
+| 9b | E20.A362 | Le couvercle de la 362 (enregistrement 0, sprite 243, `D[1]` `0x87 [128,3]`) face à la bombe d'Olen (enregistrement 5, sprite 2, lancée par son script `0x8B [128,5,…]`, explosion animation 1, attaque attribut 4 puissance 5) : arc de test seul, comme E20.c1b-2 ; il tranche si le couvercle réagit déjà (probable depuis E20.c1a et E20.c1b-1) ou ce qui manque ; relancé après E20.h3. **Revu le 2026-10-18 (§1.30, critique de `e20-h3`)** : à jouer **avant** h3a (le couvercle réagit sans D30 ni E12 ; E12 ne retire que la bombe ; il mesurera le manque `(E, 19)`, porté par h3a) ; **détaillée le 2026-10-25 au §1.30.1a** (révision 0, D-A362-1 à D-A362-3) | E20.c1b-1 ✅ |
 | 10 | E20.g1, E20.g2 | Soulever et porter ; lancer et briser (effacement du porteur `+0x2C`, laissé en bouchon par E14.a1b) — avant les graines et la bombe, qui naissent portées ; g1 pose le marqueur du Z logique (§1.18, D-E0K-1) sur l'entité soulevée | E20.e0a1 (§1.16), E20.e0k2 ; E14.a1b ✅ et E20.e0b2 (§1.17) pour g2 |
 | 11 | E20.h3, E20.h4 | **h3a et h3b détaillées au §1.30 (2026-10-18)** ; h3c et h3d reportées (Q-H3-3) ; h3 n'exige que g1a et g2a, pas g1b, g2b ni g3 (h3b exige aussi E20.c2b depuis le 2026-10-22, D-E20-52) ; h4 : découpage au §1.31 (2026-10-18), h4a détaillée, h4b à h4f2 esquissées. Graines et bombe (coupe de l'herbe par la bombe en bouchon nommé jusqu'à E20.e) ; magies par élément | E20.h0 ; E20.g1, E20.g2 ; E20.e0a1 à E20.e0a3 et E20.e0a5 (§1.16), E20.e0k2 et E20.f6a (mort des graines et de la bombe dans l'eau profonde) pour h3 ; E20.e0k1 à E20.e0k3, E20.f6a (types 16, 17, 23) et E20.e0a5 pour h4 |
 | 12 | E20.g3, E20.g4 | Caisses et jarres redeviennent des obstacles ; la barricade de la 392 (D-E20-27) ; ordre interne fixé au détail (g3 dépend aussi de la géométrie de la barricade de g4 et d'un choix de l'auteur, `order-critic.md`) | E20.g1, E20.g2 |
@@ -10471,7 +10471,9 @@ faisant foi : 84 citations, 0 fausse). Le binaire tranche ; la décompilation se
   l'annulation en h3b) et `Alundra/Ai/Props/BombLidAi.cs` (`(E, 19)`), sur le modèle de `WaveSwordAi` (`Register(registry)`) ; noms libres, contrôlés
   par `check_names.py` (la garde des fichiers neufs, Q-R-7). E12 appelle la coupe d'E20.e par `BombAi.CheckAndTriggerTileEffect(entity)`, avec son
   journal par thread `BombAi.StubCallsForTests`, comme C94 (§1.20, bloc, puce « L'appel de C94 à la coupe »).
-- **D-H-7 — Le héros dans une explosion, tant qu'E20.c2b manque** (révision 2). La DLL ne fait pas réagir le héros aux coups (E20.c2b) ; toute clé
+- **D-H-7 — Le héros dans une explosion, tant qu'E20.c2b manque** (révision 2 ; **caduque le 2026-10-25**, D-C2B-11 et D-E20-83 : E20.c2b
+  passe avant h3 ; et le réglage était faux, mesuré sur l'oracle (`scratchpad/t2-next/a362-h3a/`, C1 ; critique C2) : une réponse `0x80`
+  de `0x80127008` n'épargne que les PV, le héros reste touché, passe en `0x31` et recule ; le bon niveau aurait été sa fiche `+0x1C4`). La DLL ne fait pas réagir le héros aux coups (E20.c2b) ; toute clé
   d'oracle de h3 où le héros se trouve dans une zone d'explosion est donc refaite avec le héros **insensible au type 4** : l'octet de réponse au
   type 4 de sa fiche de défense (`0x80127008`, `docs/plan-e20-annexe/e20-h3/critic/check.md`, ligne 4.4) posé à `0x80` dans le banc de l'oracle ;
   la passe de coups ne le touche alors pas, comme la DLL. E20.c2b rejouera ces clés sans ce réglage.
@@ -10558,9 +10560,99 @@ trou de la table, un autre objet en cours) ; un objet dont le départ n'est pas 
 
 ---
 
-#### 1.30.2 E20.h3a — La bombe sans les mains : D30, E12 et le couvercle `(E, 19)` ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `1314242` ; **à réviser** le 2026-10-25 : D-E20-83 place E20.c2b avant elle, D-H-7 est caduque (D-C2B-11), ses clés d'explosion se rejouent avec le héros blessable)
+#### 1.30.1a E20.A362 — L'arc du couvercle de la 362 face à la bombe d'Olen ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2, avant h3a ; ligne 9b de l'enveloppe ; à relire par un `plan-verifier` frais ; défauts de Q-A362-1 et Q-A362-2 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
 
-**Prérequis.** L'arc A362 (ligne 9b, joué avant : sa mesure nomme ce qui manque, `(E, 19)` et le retrait de la bombe par E12 prédits ; T0 (e) lit
+**Provenance.** Lecture seule du 2026-10-25 (HEAD `8174c0cb`, code de production identique jusqu'à `5e67722d`) : rapport et critique frais
+(`scratchpad/t2-next/a362-h3a/report-main.md`, `scratchpad/t2-next/a362-h3a-critic/report-main.md`, scripts, sorties et copies de
+l'oracle de h3), à verser par T0 à `docs/plan-e20-annexe/e20-a362-disc/`. Le critique confirme les faits porteurs et en corrige trois (la
+glissade de la bombe, le tick de `0x8E`, le pc de F[3]) ; ce sont ses valeurs qui sont écrites ici.
+
+**Prérequis.** Aucun prérequis de code : la DLL du HEAD exécute toute la scène (les 48 opcodes de la 362 ont un `case`). Ordre : après E20.c2b
+(D-E20-83), avant E20.h3a (§1.30, Q-H3-6) ; elle partage avec b2 et c2b `Alundra/SaveGames/TestSaves.cs` et `docs/test-saves.md` (le
+préréglage de D-A362-2) et ne s'exécute pas en même temps qu'elles.
+
+**But.** Un arc de test seul, comme E20.c1b-2 : jouer la scène du rêve d'Olen (carte 362) sur le vrai contrôleur et écrire ce que la DLL fait
+aujourd'hui quand la bombe d'Olen explose contre le couvercle de la tige-bombe : le couvercle est touché et son programme D le désactive, les
+quatre Muruta naissent ; mais le couvercle ne disparaît pas (`(E, 19)` manque) et la bombe reste en statut 3, invisible (`(E, 12)` manque) : les
+deux manques que h3a comble, épinglés par des tests nommés que h3a réécrira.
+
+**Faits** (FAIT, MESURÉ ; rapport A1 à A8, B1 à B12 ; critique §1 à §3).
+- **La scène.** Carte 362 (« Coal Mine _ Olen's Dream », hors de la chaîne des 30 cartes, dans `ExemptCombatMaps`). Enregistrements : 0, le
+  couvercle (sprite global 243, (216, 104) z 32, A[1] C[3] D[1], E natif 19, effet de bris 11 ; C[3] le décale une fois de (−4, −4) ;
+  drapeaux `0xA1`, fiche 243 : PV 1, réponse `0x80` à tous les types sauf le 4) ; 4, Olen (C[4], **F[3] à pc 748**) ; 5, la bombe (sprite
+  global 2, C[5] scripté, D30 et E12 natifs ; née par `0x8B`, absente au chargement) ; 6 à 9 les Muruta et 10 le coffre (nés par `0x8A`).
+- **Le déroulé** (`Wait n` = n + 1 ticks) : F[3] pose T2 quand Alundra parle à Olen ; sans le drapeau G248 (posé par la seule carte 363), Olen
+  répète le dialogue 131 ; avec G248 : dialogue 132, T3, B[3] promène le héros de 48 px vers le bas (sans contrôle, `0x10` @514), Olen marche,
+  `0x8B [128,5,…,32,0]` @569 (tick S) fait naître la bombe à sa position, z + 32 px, regard `0x10` ; T4 @582 à S+31 (la bombe passe en
+  animation 2) ; T5 vers S+140 (inférence) ; la bombe passe en animation 1 au tick A (C[5] pc 641), son 46.
+- **La glissade** (critique §2, mesurée sur l'oracle avec les vraies cases de la 362) : l'animation 2 (vitesse 128) n'est jamais remise à 0
+  (pas de C62 : C = 133), la bombe n'est pas Collidable (elle traverse le couvercle) : après un vol d'environ 23 ticks elle glisse à 1 px par
+  tick et s'arrête contre le mur nord vers **(204, 103) z 32**, dans l'empreinte du couvercle ; **le contact (`+0x224` du couvercle, trois
+  étincelles) tombe au premier tick de boîte, H = A + 16** ; toute position de repos entre y 97 et 111 donne ce même tick.
+- **La suite** : à H+1, D[1] (pc 728, 731, 734, 737) pose T6 et le couvercle en statut 3 ; B[4] voit T6 à H+2 et s'arrête au `Break` @171 ;
+  `0x8E` @172 à **H+3** (critique : pas H+2) ; `0x8F` @179 à H+64 ; les naissances @182, 192, 202, 212 à H+125, +156, +187, +218 ; T7 @228
+  rend le contrôle et lâche les Muruta (inférences du critique, à confirmer par T0 avant le premier vrai passage).
+- **La DLL au HEAD** : `(E, 19)`, `(D, 30)`, `(E, 12)` absents du registre de production (`CreateForProduction`, 11 appels) ; aucun test ne
+  charge la 362 ; le héros est loin (plus de 60 px) et sans contrôle pendant l'explosion (un coup y serait perdu, D-C2B-13) ; les Muruta
+  naissent dans le corps du couvercle encore présent (leur marche n'est pas assertée).
+
+**Décisions de la session.**
+- **D-A362-1** (Q-A362-1, défaut A) — L'arc ne change aucun comportement : il écrit l'état d'aujourd'hui, les deux manques épinglés par des
+  tests nommés (`…_TheLidStaysInStatus3_E19Missing`, `…_TheBombStaysInStatus3Invisible_E12Missing`), réécrits par h3a.
+- **D-A362-2** (Q-A362-2, défaut A) — Un préréglage `olen-m362` : la carte 362 devant Olen, G248 posé, pour la recette d'A362 et de h3a ; le
+  test de liste des préréglages change mécaniquement (D-E0D-12).
+- **D-A362-3** — L'arc arrive par `ArcArrival` au pixel (204, 144), niveau 2, regard vers le haut (pas la tuile d'arrivée de la 185, qui
+  déclencherait B[6]) ; G248 posé ; il s'arrête après la quatrième naissance et avant T7 ; chaque tick attendu est écrit dans le test avant
+  l'exécution, dérivé du bytecode et des clés de l'oracle (règle de c1b-2).
+
+**Périmètre.** `Alundra.Tests/Arcs/` (un fichier de test neuf, nom contrôlé par `check_names.py --rules`) ; `Alundra/SaveGames/TestSaves.cs`,
+`docs/test-saves.md`, `Alundra.Tests/SaveGames/TestSavesTests.cs` (D-A362-2) ; l'annexe `docs/plan-e20-annexe/e20-a362/` ; ce plan (la ligne
+9b). Aucun autre fichier de production ; pas d'ADR.
+
+**Hors périmètre.** `(E, 19)`, `(D, 30)`, `(E, 12)` (h3a) ; la marche des Muruta après leur naissance ; le moteur.
+
+**Tâches.**
+- ⏳ **T0 — Versement, fumée, chronologie écrite d'avance** (commit de docs). (a) Verser la lecture (les deux dossiers, sans copies inutiles
+  ni `__pycache__`) à `docs/plan-e20-annexe/e20-a362-disc/` avec README et `SHA1SUMS.txt` ; (b) rejouer depuis une copie les sorties de la
+  critique (`crit_olen_real_*`, `k_w5_lid`), identiques ; (c) une fumée jetable (jamais commitée, versée en `.txt`) : la 362 chargée par
+  `ArcRun` (prefabs, vrai contrôleur), les dialogues 131 à 133 présents, l'arrivée de D-A362-3, la scène jouée jusqu'à T7, ses ticks relevés ;
+  (d) la table des ticks attendus (S, T4, A, H et la suite de B[4]) dérivée du bytecode et de la clé de la critique, écrite dans l'annexe
+  avant l'arc ; un écart entre (c) et (d) est un **arrêt** (un « manque autre », à lire avant h3a) ; (e) la case du préréglage ; (f) la
+  liste prédite (le test de liste des préréglages seul).
+- ⏳ **T1 — L'arc et le préréglage.** L'arc, depuis l'arrivée de D-A362-3, aux trois cadences pour ce qui ne dépend pas des tirages :
+  (a1) le chargement (enregistrements 0 à 4 présents, 5 à 10 absents) ; (a2) le dialogue et T2 par F[3] pc 748 ; (a3) la naissance de la bombe
+  (position, regard `0x10`, animation 0) ; (a4) T4 à S+31 ; (a5) la glissade (y décroît de 1 px par tick, repos vers (204, 103) ± 1, stable
+  jusqu'à A) ; (a6) l'animation 1 et le son 46 à A ; (a7) le contact à H = A + 16 (`TouchingEntity` du couvercle, trois étincelles,
+  `FrameCollisionTickCounter` 25) ; (a8) D[1] à H+1, T6, le couvercle en statut 3 ; (a9) les deux épingles de D-A362-1 (le couvercle encore
+  là, ni son `0xE6` ni effet 11 ; la bombe en statut 3 après la fin de son animation) ; (a10) B[4] : `0x8E` à H+3, `0x8F` à H+64, les quatre
+  naissances ; (a11) le héros intact (`TouchingEntity` nul, PV inchangés) ; témoins : (n1) sans G248, pas d'enregistrement 5 (le dialogue
+  131 et la boucle) ; (n2) un coup d'épée sur le couvercle ne pose pas son `TouchingEntity` (réponse `0x80` au type 1). Puis le préréglage
+  `olen-m362` et sa ligne de liste. La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `cmp` ;
+  `check_names.py --rules`.
+- ⏳ **T2 — Verifier frais** (la session principale), avec trois mutations jetables du HEAD : `TypeNibbles[3]` de 4 à 5 (le couvercle ne
+  réagit plus : (a7) et (a8) tombent) ; le `0x19` de D[1] supprimé ((a8)) ; `IsInlineDeactivateCode(19)` vrai ((a9)).
+
+**Acceptation.** Les sorties de T0 (b) identiques ; la table de T0 (d) écrite avant l'arc et égale à la fumée ; (a1) à (a11), (n1) et (n2) verts ;
+les trois mutations tuées ; la suite en Release et en Debug, zéro échec ; aucun test hors de la liste de T0 (f) déplacé. **Recette de l'auteur**
+(non bloquante) : `olen-m362` : parler à Olen, voir la bombe exploser contre le couvercle, qui reste en place (h3a le fera disparaître), puis
+les Muruta sortir.
+
+**Arrêts.** Un écart entre la fumée et la table écrite d'avance ; un manque autre que `(E, 19)` et `(E, 12)` ; un besoin de code de production ;
+un test hors de la liste prédite qui bouge.
+
+**Budget.** Un `executor` pour T0 et T1 ; deux tentatives ; un `plan-verifier` avant, un verifier frais après.
+
+**Retour arrière.** Retirer le fichier de l'arc et le préréglage ; rien d'autre ne change.
+
+#### 1.30.2 E20.h3a — La bombe sans les mains : D30, E12 et le couvercle `(E, 19)` ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `1314242` ; **révision 3 du 2026-10-25** (D-E20-83 : E20.c2b avant elle, D-H-7 caduque), nouvelle époque, à relire par un `plan-verifier` frais)
+
+**Révision 3 (2026-10-25, nouvelle époque).** D-E20-83 place E20.c2b (la blessure du héros) avant h3a et D-H-7 est caduque (faux, mesuré).
+La lecture du 2026-10-25 (`scratchpad/t2-next/a362-h3a/` et sa critique, à verser par T0 (a) de l'arc A362) a rejoué l'oracle de h3 : les
+chiffres de (w1) ne changent pas avec le héros loin ; (w1) à (w5) placent le héros à plus de 60 px de toute bombe ; une clé neuve (w6)
+met le héros dans la zone (la blessure de c2b) ; le registre a quatre épingles, pas deux ; la bombe d'Olen ne coupe pas l'herbe ; l'arc
+A362 est maintenant détaillé (§1.30.1a) et épingle deux manques que h3a réécrit.
+
+**Prérequis.** E20.c2b (§1.12.1, la blessure du héros, D-E20-83) faite ; l'arc A362 (§1.30.1a, joué avant : sa mesure nomme ce qui manque, `(E, 19)` et le retrait de la bombe par E12 prédits ; T0 (e) lit
 son résultat et son banc) ; E20.e (la coupe, avant f4 dans l'ordre ;
 la forme de l'appel est celle de D-H-6) ; le registre (E14.a0 ✅), la passe de coups (E20.c1a ✅), `DestroyEntity(e, −1)` (E14.a1b ✅) ; la fin du
 chantier et Q-R-7.
@@ -10570,14 +10662,15 @@ l'herbe, fait exploser une bombe voisine, puis disparaît ; un couvercle désact
 
 **Périmètre.** `Alundra/Ai/Items/BombAi.cs`, `Alundra/Ai/Props/BombLidAi.cs` (neufs, D-H-6) ; `Alundra/Ai/NativeSpriteRegistry.cs` (deux appels,
 phase B) ; `Alundra.Tests/` ; l'annexe `docs/plan-e20-annexe/e20-h3a/` ; ce plan, l'index des ADR et un ADR. **Hors périmètre** : C62, le départ,
-le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros à la bombe (E20.c2b).
+le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros à la bombe (portée par E20.c2b ; (w6) l'épingle).
 
 **Partage des phases.**
 - **Phase A** (T1, aucun changement de comportement) : D30, E12, `(E, 19)`, les méthodes `Register` ; les tests purs (b) inscrivent leurs clés dans un
   **registre neuf** ; **les tests de monde (w) n'inscrivent jamais rien** : ils tournent sur le registre de production, donc rouges avant T3
   (révision 1).
 - **Phase B** (T3) : `CreateForProduction` appelle les deux `Register`. Changements visibles : la bombe d'Olen de la 362 disparaît après son
-  explosion et coupe l'herbe ; une bombe dans l'explosion d'une autre explose (seules d'autres bombes et des monstres de carte portent `HitsClassB`,
+  explosion (elle ne coupe pas l'herbe : Olen la met lui-même en animation 1, E12 ne la voit qu'à la fin de cette animation et la
+  détruit sans appeler la coupe ; révision 3) ; une bombe posée coupe l'herbe ((w4)) ; une bombe dans l'explosion d'une autre explose (seules d'autres bombes et des monstres de carte portent `HitsClassB`,
   `e20-h3/critic/check.md` A3 ; révision 1) ; un couvercle désactivé disparaît.
 
 ##### Tâches
@@ -10591,17 +10684,22 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
   `+0x224` l'entité qui touche et son attaque `+0x1C8`) vers les membres de la DLL, versée au README ; (b) **le recensement d'E19** : les sprites
   qui portent `E = 19` sur toutes les pages (sur le modèle de `bin/tools/corpus/scan6.py`) ; l'inscription couvre 241 à 243 ; un autre utilisateur
   est nommé au README et reste hors de la tranche ; (c) les clés d'oracle des tests de monde, chacune avec son script et son fichier (révision 1) :
-  (w1) la chronologie de `critic/run/scen_bomb1.py` (`critic/results/bomb_timeline.txt`), relative au tick du statut 3 (animation 1 à +1, premières
-  boîtes à +17, fin d'animation à +52, statut 4 à +53, case libre à +54) ; (w2) **la zone contre la cible du test** : une copie de
+  (w1) la chronologie d'une bombe **posée, le héros loin** (révision 3 : la clé `k_w1_away.txt` de la lecture du 2026-10-25, versée ; la
+  clé `critic/results/bomb_timeline.txt` blesse le héros à T+260), relative au tick du statut 3 (animation 1 à +1, premières
+  boîtes à +17, fin d'animation à +52, statut 4 à +53, case libre à +54 ; chiffres inchangés) ; (w2) **la zone contre la cible du test** : une copie de
   `critic/run/scen_zone.py` dont la cible est l'enregistrement 335 (le Beannoïde de la carte 14, sa boîte lue dans l'enregistrement de l'oracle) au
   lieu du sprite 253, sur une grille de décalages, clé versée `docs/plan-e20-annexe/e20-h3a/zone_335.txt` (la règle est un recouvrement strict : la
-  borne dépend de la boîte de la cible) ; (w3) la chaîne de `bin/run/sc_misc.py chain` (`bin/results/scenarios/bomb_chain.txt`, la seconde bombe à
-  11 px) ; (w4) **l'herbe, au banc du test** (révision 2) : une copie de `bin/run/sc_misc.py grass` où la bombe naît posée (par la vraie
+  borne dépend de la boîte de la cible) ; (w3) la chaîne en bombes posées à 11 px, le héros loin (révision 3 : `k_w3_chain_away.txt` : la bombe 2 touchée à K+17, en statut 3 à
+  K+18, animation 1 à K+19, libres à K+54 et K+72 ; la clé `bin/results/scenarios/bomb_chain.txt` laissait le héros à 0,74 px de la zone) ; (w4) **l'herbe, au banc du test** (révision 2) : une copie de `bin/run/sc_misc.py grass` où la bombe naît posée (par la vraie
   `SpawnWarpEntity`, sans portage ni C62) au centre de la grille d'herbe du script (25 cases autour d'elle), son statut posé à 3 à un tick nommé, le
   générateur au germe du script à ce tick, le pas par image ajouté (`_pf`, §1.20, bloc, point 3 : le butin de chaque coupe dépend de la valeur tirée) ;
-  clé versée `docs/plan-e20-annexe/e20-h3a/grass_placed_pf.txt`, avec la position de la bombe, les cases d'herbe et le tick du statut 3 ; toutes les
-  clés de (c) suivent D-H-7 ; (d) la liste prédite : les deux épingles du registre (le compte d'avant
-  plus trois clés), **le test d'arc d'A362** (son attendu après h3a : le couvercle disparaît avec l'effet 11 et le son `0xE6`, la bombe est retirée à
+  clé versée `docs/plan-e20-annexe/e20-h3a/grass_placed_pf.txt`, avec la position de la bombe, les cases d'herbe et le tick du statut 3 ; le héros de chaque
+  banc de (w1) à (w5) à plus de 60 px de toute bombe (révision 3) ; **(w6)** (neuve) le héros dans la zone : la clé `k_w1_17east.txt`
+  (une bombe posée à 17 px à l'est d'un héros sans armure : contact à K+17 ; à K+18, PV 10 → 5, `0x31`, son 23, `DamagedTickCounter`
+  119 ; `0x31` jusqu'à K+21, `0x1C` de K+22 à K+32, repos à K+33 ; recul total −33,09375 px vers l'ouest), le héros du banc sans armure
+  ni inventaire, ce que T0 vérifie ; (d) la liste prédite : les **quatre** épingles du registre (révision 3 :
+  `NativeSpriteRegistryTests`, `LiftableAiRegistrationTests.R1`, `ChargedArrowAiTests.C2`, `WaveSwordLifeTests.V3` ; le compte d'avant
+  plus trois clés), **les deux épingles de l'arc d'A362** (D-A362-1 ; leur attendu après h3a : le couvercle disparaît avec l'effet 11 et le son `0xE6`, la bombe est retirée à
   la fin de son explosion ; révision 1), et la mesure de `AlundraLogicalZWorldTests` Z4 et Z7 (`:270-300`, `:394-413`, une bombe née par l'interface
   et lancée : avec D30 et E12 seuls, rien ne la passe en statut 3, neutre attendu) ; recomptée au HEAD de départ ; (e) le résultat d'A362 et son
   banc (la classe de test et l'aide qu'il emploie), nommés au README (révision 1) ; (f) la sonde du générateur du §1.20 (bloc, point 3) sur le banc des
@@ -10618,7 +10716,7 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
   construction de la puce (c8) du §1.20 ; si f4 l'a déjà livrée, h3a la réutilise), la bombe et les cases d'herbe de `grass_placed_pf`, le tick 0
   du test étant le tick du statut 3 de la clé et le générateur posé à l'état de la clé à ce tick : les cases coupées, les effets 2, les sons et les
   tirages de la clé, à un tick par image (révision 2) ; (w5) un couvercle de la 362 (le banc d'A362, T0 (e)), désactivé par son programme D, disparaît avec l'effet 11 et
-  le son `0xE6`.
+  le son `0xE6` ; **(w6)** (révision 3) le héros dans la zone, contre la clé de (w6), à un tick par image.
 - ⏳ **T3 — Phase B** : les deux appels d'inscription. Verts.
 - ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : attribut 6 oublié ; 10 oublié ; 5 ajouté ; statut 2 au lieu de 3 ;
   drapeau `0x40` oublié ; `0x30` non effacé ; coupe appelée une fois seulement ; destruction à l'animation 0 ; trou ignoré ; (E, 19) sans son ; (E, 19)
@@ -10627,11 +10725,12 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
 ##### Acceptation
 
 - **Oracle** : vecteurs et clés rejoués à l'identique.
-- **DLL** : (b1) à (b4) verts en T1 ; (w1) à (w5) rouges avant T3, verts après ; suite en Release et en Debug, zéro échec ; tests déplacés ⊂ liste
+- **DLL** : (b1) à (b4) verts en T1 ; (w1) à (w6) rouges avant T3, verts après ; suite en Release et en Debug, zéro échec ; tests déplacés ⊂ liste
   prédite ; `cmp` ; traces inchangées ; moteur, convertisseur et données sans diff.
-- **Preuve de retrait** : retirer les deux appels d'inscription rend rouges exactement (w1) à (w5), les deux épingles du registre et le test d'arc
-  d'A362 (son attendu réécrit en T3).
-- **Recette de l'auteur** (non bloquante) : la carte 362 (par `Change map`) : la bombe d'Olen explose, le couvercle disparaît, la bombe aussi.
+- **Preuve de retrait** : retirer les deux appels d'inscription rend rouges exactement (w1) à (w6), les quatre épingles du registre et les deux
+  épingles de l'arc d'A362 (leur attendu réécrit en T3).
+- **Recette de l'auteur** (non bloquante) : `olen-m362` (D-A362-2 ; sans le drapeau G248, Olen répète son premier dialogue) : la bombe d'Olen
+  explose, le couvercle disparaît, la bombe aussi.
 
 ##### Arrêts, budget, retour arrière
 
@@ -10668,8 +10767,8 @@ plan, l'index des ADR et un ADR.
   C62 (`goldens_critic.json`) rejoués ; (b) les clés de monde de la critique rejouées (`critic/results/` : `bomb_timeline.txt`, `bomb_limit3.txt`,
   `throw_dirs.txt`, `water.txt`, `hurt_circle.txt` ; de la lecture : `bin/results/scenarios/bomb_wall.txt`, `bomb_wall2.txt`, `bomb_locked.txt`,
   `bomb_air_throw.txt`), refaites avec le pas par image là où la valeur d'un tirage compte (les vitesses des étincelles ; règle du §1.20, bloc,
-  point 3), et selon D-H-7 là où le héros est dans une zone d'explosion (`bomb_timeline` à T+260 compris) ; **la clé de (w8)** (révision 2) : une
-  copie de `critic/run/scen_hurt_circle.py` selon D-H-7, la seconde bombe née dans la boîte active de la première, prolongée jusqu'à la fin de
+  point 3), et, là où le héros est dans une zone d'explosion, telles quelles avec le héros blessable (D-H-7 caduque ; `bomb_timeline` à T+260 compris) ; **la clé de (w8)** (révision 2) : une
+  copie de `critic/run/scen_hurt_circle.py` sans réglage (D-H-7 caduque ; la lecture du 2026-10-25 l'a produite : `k_w8_explode_in_hands.txt`), la seconde bombe née dans la boîte active de la première, prolongée jusqu'à la fin de
   l'animation d'explosion de la seconde (le lien et l'objet en cours tenus jusque-là, puis effacés par `DestroyEntity(E, −1)`), versée
   `docs/plan-e20-annexe/e20-h3b/explode_in_hands.txt` ; (c) **la politique des étincelles** (critique A5) : deux tirages seulement si l'effet est obtenu ; la sonde de la DLL dit quand
   `EffectStage` rend un effet (réservoir plein compris) et l'écrit au README ; (d) la liste prédite : `AlundraLogicalZWorldTests` Z4 et Z7 (une bombe
@@ -12189,6 +12288,9 @@ les trois entrées `0x31`.
 | Q-C2B-4 | (2026-10-25, E20.c2b) Les recettes en attente où des ennemis touchent Alundra (le hall de la 115, la grille de la 116, la nage de la 14) changent de visage avec la blessure : Alundra y perdra des cœurs. (A, défaut) les faire après c2b, d'un coup ; (B) les faire avant, puis refaire celles qui bougent **Réponse de l'auteur (2026-10-25)** : « Pour les questions prend les choix par défaut » : le défaut (D-E20-83). | Tranché le 2026-10-25 (D-E20-83) |
 | Q-C2B-5 | (2026-10-25, E20.c2b) Des bizarreries de l'original à garder ? (a) pendant un dialogue ou une scène, un ennemi qui touche Alundra ne lui fait rien (étincelles seulement) ; (b) touché en l'air, une image de pose de marche avant la chute (invisible à l'œil) ; (c) à 0 cœur le jeu continue (déjà tranché, D-E20-20 ; le rechargement d'une sauvegarde à 0 cœur relève d'E18) ; (d) un objet porté tombe et se brise. Défaut : tout garder, comme l'original **Réponse de l'auteur (2026-10-25)** : « Pour les questions prend les choix par défaut » : le défaut (D-E20-83). | Tranché le 2026-10-25 (D-E20-83) |
 | Q-C2B-6 | (2026-10-25, E20.c2b) La case de sortie (escaliers et sorties dans le sol, O-H-2) : l'original y arrête et détruit l'objet porté avant d'enclencher la sortie ; la DLL ne la détecte pas. (A, défaut) hors de la blessure, à placer plus tard ; (B) avec la blessure **Réponse de l'auteur (2026-10-25)** : « Pour les questions prend les choix par défaut » : le défaut (D-E20-83). | Tranché le 2026-10-25 (D-E20-83) |
+| Q-A362-1 | (2026-10-25, E20.A362, en termes de jeu) Quand la bombe d'Olen explose dans son rêve (carte 362), le couvercle de la tige-bombe doit éclater avec un bruit, puis les 4 Muruta sortent ; aujourd'hui le couvercle reste en place, les Muruta sortent quand même et la bombe reste là, invisible. (A, défaut, comme le plan) l'arc A362 n'est qu'un test, le correctif vient avec la bombe (h3a) ; (B) livrer le correctif dans A362 (A362 n'est plus un arc sans code, h3a perd son premier test). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-A362-1) |
+| Q-A362-2 | (2026-10-25, E20.A362) La bombe d'Olen n'apparaît qu'après un détour par la carte 363, qui pose un drapeau ; sans lui, Olen répète sa première conversation. (A, défaut) une sauvegarde de test `olen-m362` devant Olen, le drapeau posé ; (B) rien (Change map et le drapeau à la main). **Défaut pris** par la même règle | défaut A (D-A362-2) |
+| Q-H3B-1 | (2026-10-25, E20.h3b, lecture du 2026-10-25) Si Alundra lance sa bombe vers le bas et reste sur place, l'explosion l'atteint d'un demi-pixel : il perd 5 cœurs sur 10 sans armure ; vers la gauche, la droite et le haut, il passe tout juste à côté. (A, défaut, comme l'original) garder ; (B) l'éviter (s'écarter du binaire). **Défaut pris** par la même règle ; à porter au plan de h3b quand elle sortira de pause | défaut A |
 | O-G4B-1 | (2026-10-24, E20.g4b) À 3 ticks par image seulement : rec5 se brise 25 ticks après le lancer (24 aux autres cadences et au binaire) ; en (b6), Alundra n'est pas immobilisé 5 ticks par le roulis ; deux glissements de (b5) et (b6) (ticks 223 et 224) tombent avec un contact rec5 déjà tenu. Épinglés tels que mesurés dans `ShipBarricadeArcTests`, cause non établie (l'ordre des passes à plusieurs ticks par image ?) | plus tard (une lecture de la cadence à 3 ticks par image) |
 | Q-STEP | (2026-10-24, lecture seule `docs/plan-e20-annexe/e20-step-search/`, CONFIRMÉE par un critique frais ; à l'auteur en termes de jeu) Le binaire cherche la longueur de chaque pas par moitiés successives, sur X et Y à la fois (`ComputeXYPosition` `0x80037730`) ; le moteur avance jusqu'au contact exact, axe par axe, en flottants. Ce qui se voit : (1) une flèche tirée à bout portant contre un mur reste plantée dans le mur au lieu de rebondir tout de suite (O-E20-24, le seul écart visible à l'œil) ; (2) debout sur une caisse ou en l'air, un Carré au tick exact de l'arrivée soulève la caisse voisine au lieu de donner l'épée (O-G3-3) ; (3) une flèche ou un objet qui touche un mur à l'est ou au sud déclenche son rebond un tick plus tard dans l'original, une fois sur trois environ (`ForceAdjusted`) ; (4) en poussant en diagonale contre une caisse, l'original s'arrête net, le portage glisse le long (Q-G3-d, gardé par l'auteur le 2026-10-22). Options : (A) porter la recherche du binaire en entier, dans un déplaceur de la DLL en entiers bruts (le moteur ne peut pas être exact : sa position est en float32 ; il faut aussi une API moteur de pose exacte, avec son plan et son ADR), par étapes (les projectiles et objets lancés, puis le héros) ; cela renverse D-E19-58, D-E20-38, Q-H4C1-5 et Q-G3-d, que l'auteur avait gardés ; plusieurs tranches, des arcs réécrits par dérivation ; (B) le minimum visible : corriger O-E20-24 seul (le premier pas d'un projectile, porté avec la boucle par moitiés), et une « ombre » du contact du binaire pour O-G3-3 (une copie pure de la recherche qui ne fait qu'écrire le contact) ; le reste des écarts (3) et (4) gardé ; (C) ne rien changer : O-E20-24 et O-G3-3 restent consignés. Défaut de la session : (B), qui ne renverse aucune réponse de l'auteur **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : le défaut (B) (D-E20-80). | Tranché le 2026-10-25 (D-E20-80) |
 | O-ANX-1 | (2026-10-24, relevé par g3) La règle `[Bb]in/` du `.gitignore` (ligne 21, pour les sorties de construction) écarte aussi les dossiers `bin/` des annexes : `e20-f4f6/bin` (273 fichiers), `e20-f4f6/critic/bin` (180), `e20-h3/bin` (143), `e20-h4b/bin` (81), `plan-e19-pad-age-annexe/o77/bin` (9) ne sont pas dans le dépôt, alors que les plans les citent comme preuves ; celui de g3 a été ajouté à sa clôture. Proposition : une exception `!docs/**/[Bb]in/` au `.gitignore` et l'ajout des cinq dossiers (14 Mo environ), par un commit de docs **Réponse de l'auteur (2026-10-24)** : « prendre toutes les réponses par défaut » : la proposition (D-E20-76). | Tranché le 2026-10-24 (D-E20-76) |
