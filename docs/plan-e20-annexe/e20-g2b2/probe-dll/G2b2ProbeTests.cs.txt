@@ -1,0 +1,101 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Xunit;
+using Alundra.Ai.Objects;
+using Alundra.Entities;
+using Alundra.Hero;
+using Alundra.Session;
+using Alundra.Tests.Ai.Objects;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+using Alundra.Transitions;
+
+namespace Alundra.Tests.ScratchG2b2;
+
+/// <summary>G2B2 T0 (d) scratch probe, NEVER committed: the chronology by tick of the DLL, for the objects of the binary replay, to compare with docs/plan-e20-annexe/e20-g2b2/replay_b.txt.</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G2b2ProbeTests : IDisposable
+{
+    public G2b2ProbeTests()
+    {
+        System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private static readonly (string Name, int Type, string Zone, string World, int Record, int Index)[] Objs =
+    {
+        ("barrel22r21", 290, "Lars' Crypt", "Lars' Crypt-22", 21, -1),
+        ("star27r5", 363, "Ancient Shrine", "Ancient Shrine-27", 5, -1),
+        ("stone24r24", 293, "Lars' Crypt", "Lars' Crypt-24", 24, -1),
+        ("trunk70r8", 373, "Coastal Cave", "Coastal Cave-70", 8, -1),
+        ("crate36", 292, "Coal Mine", "Coal Mine-67", -1, 36),
+        ("jar41", 297, "Coastal Cave", "Coastal Cave-70", -1, 41),
+    };
+
+    private static readonly Dictionary<string, Func<int, int, CutBench.Cell>?> Cases = new()
+    {
+        ["hole"] = (cx, _) => cx >= 6 && cx <= 9 ? new CutBench.Cell(0x04, 0) : new CutBench.Cell(0, 0),
+        ["exit"] = (cx, _) => cx >= 6 && cx <= 9 ? new CutBench.Cell(0, 0, null, 0x80) : new CutBench.Cell(0, 0),
+        ["full"] = null,
+        ["corner"] = (cx, cy) => cx == 7 && cy == 5 ? new CutBench.Cell(0x04, 0) : new CutBench.Cell(0, 0),
+        ["bandc8"] = (cx, _) => cx >= 6 && cx <= 9 ? (cx == 8 ? new CutBench.Cell(0x41, 0, null, 0x10) : new CutBench.Cell(0x01, 0, null, 0x10)) : new CutBench.Cell(0, 0),
+        ["bandc9"] = (cx, _) => cx >= 6 && cx <= 9 ? (cx == 9 ? new CutBench.Cell(0x41, 0, null, 0x10) : new CutBench.Cell(0x01, 0, null, 0x10)) : new CutBench.Cell(0, 0),
+        ["cornerexit"] = (cx, cy) => cx == 7 && cy == 5 ? new CutBench.Cell(0, 0, null, 0x80) : new CutBench.Cell(0, 0),
+    };
+
+    [Fact]
+    public void Probe()
+    {
+        var path = Environment.GetEnvironmentVariable("G2B2_OUT");
+        if (string.IsNullOrEmpty(path))
+        {
+            return;
+        }
+
+        var sb = new System.Text.StringBuilder();
+        foreach (var tpf in new[] { 1 })
+        {
+            foreach (var o in Objs)
+            {
+                foreach (var kv in Cases)
+                {
+                    sb.AppendLine($"== {o.Name} type {o.Type} {kv.Key} tpf={tpf}");
+                    try
+                    {
+                        var extra = new[] { o.Type };
+                        using var run = o.Record >= 0
+                            ? new C4Run(o.Name, o.Zone, o.World, 0, cell: kv.Value, recordId: o.Record, extraTypes: extra, contents: 0)
+                            : new C4Run(o.Name, o.Zone, o.World, o.Index, cell: kv.Value, extraTypes: extra, contents: 0);
+                        var orand = new Dictionary<int, (uint Or, uint And, int Slope)>();
+                        run.Go(tpf, 48, tick => tick == 1 ? (PadState.Square | PadState.Right) : 0u, tick => orand[tick - 1] = (run.Crate.CombinedVramFlagsOR, run.Crate.CombinedVramFlagsAND, run.Crate.Slope_18c));
+                        for (var k = 18; k <= 40; k++)
+                        {
+                            if (!run.Ticks.TryGetValue(k + 1, out var t)) { continue; }
+                            orand.TryGetValue(k + 1, out var oa);
+                            sb.AppendLine($"  K={k} present={t.Present} st={t.Status} target={t.Target} flags={t.Flags:X} ground={t.OnGround} z={t.Z / 65536.0:0.0} x={t.X / 65536.0:0.0} E2={t.E2Calls} or={oa.Or:X} and={oa.And:X} slope={t.Slope}");
+                        }
+
+                        sb.AppendLine("  effects: " + string.Join(",", run.AnchoredEffects.Select(e => $"(tick {e.Tick} id {e.Effect})")));
+                        sb.AppendLine("  sounds: " + string.Join(",", run.Heard.Played.Select(p => $"(tick {p.Tick} sfx {p.Sfx})")));
+                    }
+                    catch (Exception ex)
+                    {
+                        sb.AppendLine("  EXCEPTION " + ex.GetType().Name + ": " + ex.Message.Split('\n')[0]);
+                    }
+                }
+            }
+        }
+
+        File.WriteAllText(path, sb.ToString());
+    }
+}

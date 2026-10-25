@@ -1,0 +1,15 @@
+diff --git a/Alundra/Entities/EntityScriptProxy.cs b/Alundra/Entities/EntityScriptProxy.cs
+index db0dc3b2..bf952ec1 100644
+--- a/Alundra/Entities/EntityScriptProxy.cs
++++ b/Alundra/Entities/EntityScriptProxy.cs
+@@ -1825,6 +1825,10 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
+             if (HasLogicalZ || Alundra.Ai.Objects.LiftableAi.FeedsGroundSlope(SpriteType))
+             {
+                 UpdateGroundSlope();
++                if (HasLogicalZ)
++                {
++                    UpdateVramFlags();
++                }
+             }
+         }
+ 

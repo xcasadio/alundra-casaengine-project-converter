@@ -1,0 +1,275 @@
+tonneau34  hole       dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 dir_t:0>24 | t83 or180:0>4 p184:0>4 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:3323E4>0 or180:4>0 p184:4>0 dir_t:24>0
+  t81 st=2 anim=1 flags=3323E4 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=3323E4 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=3323E4 or180=4 and184=4 z=0.0
+  t84 st=4 anim=1 flags=3323E4 or180=4 and184=4 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+tonneau34  exit       dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 dir_t:0>24 | t83 or180:0>32768 p184:0>8000 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:3323E4>0 or180:32768>0 p184:8000>0 dir_t:24>0
+  t81 st=2 anim=1 flags=3323E4 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=3323E4 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=3323E4 or180=8000 and184=8000 z=0.0
+  t84 st=4 anim=1 flags=3323E4 or180=8000 and184=8000 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+tonneau34  full       dead tNone fx [] snd [(61, 'snd(26)'), (84, 'snd(24)')] final (2, 0, 178.0)
+    changes: t61 anim_t:0>1 dir_t:0>24 | t84 anim_t:1>0
+  t81 st=2 anim=1 flags=3323E4 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=3323E4 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=3323E4 or180=0 and184=0 z=0.0
+  t84 st=2 anim=0 flags=3323E4 or180=0 and184=0 z=0.0
+  t85 st=2 anim=0 flags=3323E4 or180=0 and184=0 z=0.0
+  t86 st=2 anim=0 flags=3323E4 or180=0 and184=0 z=0.0
+  t87 st=2 anim=0 flags=3323E4 or180=0 and184=0 z=0.0
+  t88 st=2 anim=0 flags=3323E4 or180=0 and184=0 z=0.0
+  t89 st=2 anim=0 flags=3323E4 or180=0 and184=0 z=0.0
+tonneau34  corner     dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 dir_t:0>24 | t83 or180:0>4 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:3323E4>0 or180:4>0 dir_t:24>0
+  t81 st=2 anim=1 flags=3323E4 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=3323E4 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=3323E4 or180=4 and184=0 z=0.0
+  t84 st=4 anim=1 flags=3323E4 or180=4 and184=0 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+tonneau34  cornerexit dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 dir_t:0>24 | t83 or180:0>32768 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:3323E4>0 or180:32768>0 dir_t:24>0
+  t81 st=2 anim=1 flags=3323E4 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=3323E4 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=3323E4 or180=8000 and184=0 z=0.0
+  t84 st=4 anim=1 flags=3323E4 or180=8000 and184=0 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+etoile107  hole       dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 dir_t:0>24 | t83 or180:0>4 p184:0>4 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332384>0 or180:4>0 p184:4>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332384 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332384 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332384 or180=4 and184=4 z=0.0
+  t84 st=4 anim=1 flags=332384 or180=4 and184=4 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+etoile107  exit       dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 dir_t:0>24 | t83 or180:0>32768 p184:0>8000 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332384>0 or180:32768>0 p184:8000>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332384 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332384 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332384 or180=8000 and184=8000 z=0.0
+  t84 st=4 anim=1 flags=332384 or180=8000 and184=8000 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+etoile107  full       dead tNone fx [] snd [(61, 'snd(26)'), (84, 'snd(24)')] final (2, 0, 178.0)
+    changes: t61 anim_t:0>1 dir_t:0>24 | t84 anim_t:1>0
+  t81 st=2 anim=1 flags=332384 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332384 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332384 or180=0 and184=0 z=0.0
+  t84 st=2 anim=0 flags=332384 or180=0 and184=0 z=0.0
+  t85 st=2 anim=0 flags=332384 or180=0 and184=0 z=0.0
+  t86 st=2 anim=0 flags=332384 or180=0 and184=0 z=0.0
+  t87 st=2 anim=0 flags=332384 or180=0 and184=0 z=0.0
+  t88 st=2 anim=0 flags=332384 or180=0 and184=0 z=0.0
+  t89 st=2 anim=0 flags=332384 or180=0 and184=0 z=0.0
+etoile107  corner     dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 dir_t:0>24 | t83 or180:0>4 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332384>0 or180:4>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332384 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332384 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332384 or180=4 and184=0 z=0.0
+  t84 st=4 anim=1 flags=332384 or180=4 and184=0 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+etoile107  cornerexit dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 dir_t:0>24 | t83 or180:0>32768 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332384>0 or180:32768>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332384 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332384 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332384 or180=8000 and184=0 z=0.0
+  t84 st=4 anim=1 flags=332384 or180=8000 and184=0 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+caisse36   hole       dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:3323E4>332374 dir_t:0>24 | t83 or180:0>4 p184:0>4 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332374>0 or180:4>0 p184:4>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332374 or180=4 and184=4 z=0.0
+  t84 st=4 anim=1 flags=332374 or180=4 and184=4 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+caisse36   exit       dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:3323E4>332374 dir_t:0>24 | t83 or180:0>32768 p184:0>8000 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332374>0 or180:32768>0 p184:8000>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332374 or180=8000 and184=8000 z=0.0
+  t84 st=4 anim=1 flags=332374 or180=8000 and184=8000 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+caisse36   full       dead t87 fx [(86, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)'), (84, 'snd(27)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:3323E4>332374 dir_t:0>24 | t84 status:2>3 anim_t:1>2 flags6C:332374>332344 | t86 status:3>4 | t87 status:4>0 anim_t:2>0 flags6C:332344>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332374 or180=0 and184=0 z=0.0
+  t84 st=3 anim=2 flags=332344 or180=0 and184=0 z=0.0
+  t85 st=3 anim=2 flags=332344 or180=0 and184=0 z=0.0
+  t86 st=4 anim=2 flags=332344 or180=0 and184=0 z=0.0 fxattach(id=10,target=slot 1)
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+caisse36   corner     dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:3323E4>332374 dir_t:0>24 | t83 or180:0>4 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332374>0 or180:4>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332374 or180=4 and184=0 z=0.0
+  t84 st=4 anim=1 flags=332374 or180=4 and184=0 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+caisse36   cornerexit dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:3323E4>332374 dir_t:0>24 | t83 or180:0>32768 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332374>0 or180:32768>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332374 or180=8000 and184=0 z=0.0
+  t84 st=4 anim=1 flags=332374 or180=8000 and184=0 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+jarre41    hole       dead t85 fx [(84, 'fxattach(id=2,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:2323E4>232374 dir_t:0>24 | t83 or180:0>4 p184:0>4 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:232374>0 or180:4>0 p184:4>0 dir_t:24>0
+  t81 st=2 anim=1 flags=232374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=232374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=232374 or180=4 and184=4 z=0.0
+  t84 st=4 anim=1 flags=232374 or180=4 and184=4 z=0.0 fxattach(id=2,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+jarre41    exit       dead t85 fx [(84, 'fxattach(id=2,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:2323E4>232374 dir_t:0>24 | t83 or180:0>32768 p184:0>8000 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:232374>0 or180:32768>0 p184:8000>0 dir_t:24>0
+  t81 st=2 anim=1 flags=232374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=232374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=232374 or180=8000 and184=8000 z=0.0
+  t84 st=4 anim=1 flags=232374 or180=8000 and184=8000 z=0.0 fxattach(id=2,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+jarre41    full       dead t87 fx [(86, 'fxattach(id=2,target=slot 1)')] snd [(61, 'snd(26)'), (84, 'snd(31)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:2323E4>232374 dir_t:0>24 | t84 status:2>3 anim_t:1>2 flags6C:232374>232344 | t86 status:3>4 | t87 status:4>0 anim_t:2>0 flags6C:232344>0 dir_t:24>0
+  t81 st=2 anim=1 flags=232374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=232374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=232374 or180=0 and184=0 z=0.0
+  t84 st=3 anim=2 flags=232344 or180=0 and184=0 z=0.0
+  t85 st=3 anim=2 flags=232344 or180=0 and184=0 z=0.0
+  t86 st=4 anim=2 flags=232344 or180=0 and184=0 z=0.0 fxattach(id=2,target=slot 1)
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+jarre41    corner     dead t85 fx [(84, 'fxattach(id=2,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:2323E4>232374 dir_t:0>24 | t83 or180:0>4 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:232374>0 or180:4>0 dir_t:24>0
+  t81 st=2 anim=1 flags=232374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=232374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=232374 or180=4 and184=0 z=0.0
+  t84 st=4 anim=1 flags=232374 or180=4 and184=0 z=0.0 fxattach(id=2,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+jarre41    cornerexit dead t85 fx [(84, 'fxattach(id=2,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:2323E4>232374 dir_t:0>24 | t83 or180:0>32768 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:232374>0 or180:32768>0 dir_t:24>0
+  t81 st=2 anim=1 flags=232374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=232374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=232374 or180=8000 and184=0 z=0.0
+  t84 st=4 anim=1 flags=232374 or180=8000 and184=0 z=0.0 fxattach(id=2,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+caisse35   hole       dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:3323E4>332374 dir_t:0>24 | t83 or180:0>4 p184:0>4 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332374>0 or180:4>0 p184:4>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332374 or180=4 and184=4 z=0.0
+  t84 st=4 anim=1 flags=332374 or180=4 and184=4 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+caisse35   exit       dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:3323E4>332374 dir_t:0>24 | t83 or180:0>32768 p184:0>8000 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332374>0 or180:32768>0 p184:8000>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332374 or180=8000 and184=8000 z=0.0
+  t84 st=4 anim=1 flags=332374 or180=8000 and184=8000 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+caisse35   full       dead t87 fx [(86, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)'), (84, 'snd(27)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:3323E4>332374 dir_t:0>24 | t84 status:2>3 anim_t:1>2 flags6C:332374>332344 | t86 status:3>4 | t87 status:4>0 anim_t:2>0 flags6C:332344>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332374 or180=0 and184=0 z=0.0
+  t84 st=3 anim=2 flags=332344 or180=0 and184=0 z=0.0
+  t85 st=3 anim=2 flags=332344 or180=0 and184=0 z=0.0
+  t86 st=4 anim=2 flags=332344 or180=0 and184=0 z=0.0 fxattach(id=10,target=slot 1)
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+caisse35   corner     dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:3323E4>332374 dir_t:0>24 | t83 or180:0>4 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332374>0 or180:4>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332374 or180=4 and184=0 z=0.0
+  t84 st=4 anim=1 flags=332374 or180=4 and184=0 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+caisse35   cornerexit dead t85 fx [(84, 'fxattach(id=10,target=slot 1)')] snd [(61, 'snd(26)')] final (0, 0, 0.0)
+    changes: t61 anim_t:0>1 flags6C:3323E4>332374 dir_t:0>24 | t83 or180:0>32768 | t84 status:2>4 | t85 status:4>0 anim_t:1>0 flags6C:332374>0 or180:32768>0 dir_t:24>0
+  t81 st=2 anim=1 flags=332374 or180=0 and184=0 z=11.0
+  t82 st=2 anim=1 flags=332374 or180=0 and184=0 z=4.5
+  t83 st=2 anim=1 flags=332374 or180=8000 and184=0 z=0.0
+  t84 st=4 anim=1 flags=332374 or180=8000 and184=0 z=0.0 fxattach(id=10,target=slot 1)
+  t85 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t86 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t87 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t88 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0
+  t89 st=0 anim=0 flags=0 or180=0 and184=0 z=0.0

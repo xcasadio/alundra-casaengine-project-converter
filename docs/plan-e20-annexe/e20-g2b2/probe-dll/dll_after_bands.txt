@@ -1,0 +1,1092 @@
+== barrel22r21 type 290 hole tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=24 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=25 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=26 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=27 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=28 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=29 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=30 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=31 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=32 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=33 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=34 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=35 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=36 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=37 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=38 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=39 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=40 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== barrel22r21 type 290 exit tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=24 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=25 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=26 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=27 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=28 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=29 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=30 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=31 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=32 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=33 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=34 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=35 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=36 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=37 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=38 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=39 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=40 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== barrel22r21 type 290 full tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=23 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=24 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=25 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=26 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=27 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=28 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=29 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=30 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=31 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=32 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=33 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=34 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=35 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=36 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=37 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=38 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=39 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=40 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  effects: 
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24)
+== barrel22r21 type 290 corner tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== barrel22r21 type 290 bandc8 tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=24 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=25 present=True st=Deactivated target=0 flags=3323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=26 present=True st=Deactivated target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=1 or=1001 and=1001 slope=0
+  K=27 present=True st=Deactivated target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=2 or=1001 and=1001 slope=0
+  K=28 present=True st=FlagToDestroy target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=29 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=30 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=31 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=32 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=33 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=34 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=35 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=36 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  effects: (tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24),(tick 25 sfx 24),(tick 27 sfx 27)
+== barrel22r21 type 290 bandc9 tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=24 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=184.0 E2=0 or=1001 and=1001 slope=0
+  K=25 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=187.0 E2=0 or=1001 and=1001 slope=0
+  K=26 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=190.0 E2=0 or=1001 and=1001 slope=0
+  K=27 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=193.0 E2=0 or=1001 and=1001 slope=0
+  K=28 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=196.0 E2=0 or=1001 and=1001 slope=0
+  K=29 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=199.0 E2=0 or=1001 and=1001 slope=0
+  K=30 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=202.0 E2=0 or=1001 and=1001 slope=0
+  K=31 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=205.0 E2=0 or=1001 and=1001 slope=0
+  K=32 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=205.0 E2=0 or=1001 and=1001 slope=0
+  K=33 present=True st=Deactivated target=0 flags=3323E4 ground=1 z=0.0 x=205.0 E2=0 or=1001 and=1001 slope=0
+  K=34 present=True st=Deactivated target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=1 or=1001 and=1001 slope=0
+  K=35 present=True st=Deactivated target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=2 or=1001 and=1001 slope=0
+  K=36 present=True st=FlagToDestroy target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  effects: (tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24),(tick 25 sfx 24),(tick 26 sfx 24),(tick 27 sfx 24),(tick 28 sfx 24),(tick 29 sfx 24),(tick 30 sfx 24),(tick 31 sfx 24),(tick 32 sfx 24),(tick 33 sfx 24),(tick 35 sfx 27)
+== barrel22r21 type 290 cornerexit tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== star27r5 type 363 hole tpf=1
+  K=18 present=True st=Normal target=1 flags=332384 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332384 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332384 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332384 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=24 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=25 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=26 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=27 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=28 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=29 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=30 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=31 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=32 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=33 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=34 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=35 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=36 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=37 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=38 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=39 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=40 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== star27r5 type 363 exit tpf=1
+  K=18 present=True st=Normal target=1 flags=332384 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332384 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332384 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332384 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=24 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=25 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=26 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=27 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=28 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=29 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=30 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=31 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=32 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=33 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=34 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=35 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=36 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=37 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=38 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=39 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=40 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== star27r5 type 363 full tpf=1
+  K=18 present=True st=Normal target=1 flags=332384 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332384 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332384 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332384 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=23 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=24 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=25 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=26 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=27 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=28 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=29 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=30 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=31 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=32 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=33 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=34 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=35 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=36 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=37 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=38 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=39 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=40 present=True st=Normal target=0 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  effects: 
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24)
+== star27r5 type 363 corner tpf=1
+  K=18 present=True st=Normal target=1 flags=332384 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332384 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332384 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332384 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== star27r5 type 363 bandc8 tpf=1
+  K=18 present=True st=Normal target=1 flags=332384 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332384 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332384 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332384 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=24 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=25 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=26 present=True st=Deactivated target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=27 present=True st=FlagToDestroy target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=28 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=29 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=30 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=31 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=32 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=33 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=34 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=35 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=36 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=182.0 E2=0 or=1001 and=1001 slope=0
+  effects: (tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24),(tick 25 sfx 24),(tick 26 sfx 24)
+== star27r5 type 363 bandc9 tpf=1
+  K=18 present=True st=Normal target=1 flags=332384 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332384 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332384 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332384 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=24 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=184.0 E2=0 or=1001 and=1001 slope=0
+  K=25 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=187.0 E2=0 or=1001 and=1001 slope=0
+  K=26 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=190.0 E2=0 or=1001 and=1001 slope=0
+  K=27 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=193.0 E2=0 or=1001 and=1001 slope=0
+  K=28 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=196.0 E2=0 or=1001 and=1001 slope=0
+  K=29 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=199.0 E2=0 or=1001 and=1001 slope=0
+  K=30 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=202.0 E2=0 or=1001 and=1001 slope=0
+  K=31 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=205.0 E2=0 or=1001 and=1001 slope=0
+  K=32 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=206.0 E2=0 or=1001 and=1001 slope=0
+  K=33 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=206.0 E2=0 or=1001 and=1001 slope=0
+  K=34 present=True st=Deactivated target=0 flags=332384 ground=1 z=0.0 x=206.0 E2=0 or=1001 and=1001 slope=0
+  K=35 present=True st=FlagToDestroy target=0 flags=332384 ground=1 z=0.0 x=206.0 E2=0 or=1001 and=1001 slope=0
+  K=36 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=206.0 E2=0 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=206.0 E2=0 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=206.0 E2=0 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=206.0 E2=0 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=0 flags=332384 ground=1 z=0.0 x=206.0 E2=0 or=1001 and=1001 slope=0
+  effects: (tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24),(tick 25 sfx 24),(tick 26 sfx 24),(tick 27 sfx 24),(tick 28 sfx 24),(tick 29 sfx 24),(tick 30 sfx 24),(tick 31 sfx 24),(tick 32 sfx 24),(tick 33 sfx 24),(tick 34 sfx 24)
+== star27r5 type 363 cornerexit tpf=1
+  K=18 present=True st=Normal target=1 flags=332384 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332384 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332384 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332384 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=332384 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== stone24r24 type 293 hole tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=24 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=25 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=26 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=27 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=28 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=29 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=30 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=31 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=32 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=33 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=34 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=35 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=36 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=37 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=38 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=39 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=40 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== stone24r24 type 293 exit tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=24 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=25 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=26 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=27 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=28 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=29 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=30 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=31 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=32 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=33 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=34 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=35 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=36 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=37 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=38 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=39 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=40 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== stone24r24 type 293 full tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=23 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=24 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=25 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=26 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=27 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=28 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=29 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=30 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=31 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=32 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=33 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=34 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=35 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=36 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=37 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=38 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=39 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=40 present=True st=Normal target=0 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  effects: 
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24)
+== stone24r24 type 293 corner tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== stone24r24 type 293 bandc8 tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=24 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=25 present=True st=Deactivated target=0 flags=3323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=26 present=True st=Deactivated target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=1 or=1001 and=1001 slope=0
+  K=27 present=True st=Deactivated target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=2 or=1001 and=1001 slope=0
+  K=28 present=True st=FlagToDestroy target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=29 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=30 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=31 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=32 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=33 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=34 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=35 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=36 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  effects: (tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24),(tick 25 sfx 24),(tick 27 sfx 27)
+== stone24r24 type 293 bandc9 tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=24 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=184.0 E2=0 or=1001 and=1001 slope=0
+  K=25 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=187.0 E2=0 or=1001 and=1001 slope=0
+  K=26 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=190.0 E2=0 or=1001 and=1001 slope=0
+  K=27 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=193.0 E2=0 or=1001 and=1001 slope=0
+  K=28 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=196.0 E2=0 or=1001 and=1001 slope=0
+  K=29 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=199.0 E2=0 or=1001 and=1001 slope=0
+  K=30 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=202.0 E2=0 or=1001 and=1001 slope=0
+  K=31 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=205.0 E2=0 or=1001 and=1001 slope=0
+  K=32 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=205.0 E2=0 or=1001 and=1001 slope=0
+  K=33 present=True st=Deactivated target=0 flags=3323E4 ground=1 z=0.0 x=205.0 E2=0 or=1001 and=1001 slope=0
+  K=34 present=True st=Deactivated target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=1 or=1001 and=1001 slope=0
+  K=35 present=True st=Deactivated target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=2 or=1001 and=1001 slope=0
+  K=36 present=True st=FlagToDestroy target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=2 flags=3323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  effects: (tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24),(tick 25 sfx 24),(tick 26 sfx 24),(tick 27 sfx 24),(tick 28 sfx 24),(tick 29 sfx 24),(tick 30 sfx 24),(tick 31 sfx 24),(tick 32 sfx 24),(tick 33 sfx 24),(tick 35 sfx 27)
+== stone24r24 type 293 cornerexit tpf=1
+  K=18 present=True st=Normal target=1 flags=3323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=3323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=3323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=3323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=3323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== trunk70r8 type 373 hole tpf=1
+  K=18 present=True st=Normal target=1 flags=2323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=2323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=2323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=2323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=24 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=25 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=26 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=27 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=28 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=29 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=30 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=31 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=32 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=33 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=34 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=35 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=36 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=37 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=38 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=39 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=40 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== trunk70r8 type 373 exit tpf=1
+  K=18 present=True st=Normal target=1 flags=2323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=2323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=2323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=2323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=24 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=25 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=26 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=27 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=28 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=29 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=30 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=31 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=32 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=33 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=34 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=35 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=36 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=37 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=38 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=39 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=40 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== trunk70r8 type 373 full tpf=1
+  K=18 present=True st=Normal target=1 flags=2323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=2323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=2323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=2323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=23 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=24 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=25 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=26 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=27 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=28 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=29 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=30 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=31 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=32 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=33 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=34 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=35 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=36 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=37 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=38 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=39 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=40 present=True st=Normal target=0 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  effects: 
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24)
+== trunk70r8 type 373 corner tpf=1
+  K=18 present=True st=Normal target=1 flags=2323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=2323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=2323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=2323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== trunk70r8 type 373 bandc8 tpf=1
+  K=18 present=True st=Normal target=1 flags=2323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=2323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=2323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=2323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=24 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=25 present=True st=Deactivated target=0 flags=2323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=26 present=True st=Deactivated target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=1 or=1001 and=1001 slope=0
+  K=27 present=True st=Deactivated target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=2 or=1001 and=1001 slope=0
+  K=28 present=True st=FlagToDestroy target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=29 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=30 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=31 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=32 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=33 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=34 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=35 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=36 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=181.0 E2=3 or=1001 and=1001 slope=0
+  effects: (tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24),(tick 25 sfx 24),(tick 27 sfx 27)
+== trunk70r8 type 373 bandc9 tpf=1
+  K=18 present=True st=Normal target=1 flags=2323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=2323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=2323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=2323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=181.0 E2=0 or=1001 and=1001 slope=0
+  K=24 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=184.0 E2=0 or=1001 and=1001 slope=0
+  K=25 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=187.0 E2=0 or=1001 and=1001 slope=0
+  K=26 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=190.0 E2=0 or=1001 and=1001 slope=0
+  K=27 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=193.0 E2=0 or=1001 and=1001 slope=0
+  K=28 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=196.0 E2=0 or=1001 and=1001 slope=0
+  K=29 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=199.0 E2=0 or=1001 and=1001 slope=0
+  K=30 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=202.0 E2=0 or=1001 and=1001 slope=0
+  K=31 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=205.0 E2=0 or=1001 and=1001 slope=0
+  K=32 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=205.0 E2=0 or=1001 and=1001 slope=0
+  K=33 present=True st=Deactivated target=0 flags=2323E4 ground=1 z=0.0 x=205.0 E2=0 or=1001 and=1001 slope=0
+  K=34 present=True st=Deactivated target=2 flags=2323C4 ground=1 z=0.0 x=205.0 E2=1 or=1001 and=1001 slope=0
+  K=35 present=True st=Deactivated target=2 flags=2323C4 ground=1 z=0.0 x=205.0 E2=2 or=1001 and=1001 slope=0
+  K=36 present=True st=FlagToDestroy target=2 flags=2323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=2 flags=2323C4 ground=1 z=0.0 x=205.0 E2=3 or=1001 and=1001 slope=0
+  effects: (tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 24),(tick 25 sfx 24),(tick 26 sfx 24),(tick 27 sfx 24),(tick 28 sfx 24),(tick 29 sfx 24),(tick 30 sfx 24),(tick 31 sfx 24),(tick 32 sfx 24),(tick 33 sfx 24),(tick 35 sfx 27)
+== trunk70r8 type 373 cornerexit tpf=1
+  K=18 present=True st=Normal target=1 flags=2323E4 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=2323E4 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=2323E4 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=2323E4 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=2323E4 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== crate36 type 292 hole tpf=1
+  K=18 present=True st=Normal target=1 flags=332374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=24 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=25 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=26 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=27 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=28 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=29 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=30 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=31 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=32 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=33 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=34 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=35 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=36 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=37 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=38 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=39 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=40 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== crate36 type 292 exit tpf=1
+  K=18 present=True st=Normal target=1 flags=332374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=24 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=25 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=26 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=27 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=28 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=29 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=30 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=31 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=32 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=33 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=34 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=35 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=36 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=37 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=38 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=39 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=40 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== crate36 type 292 full tpf=1
+  K=18 present=True st=Normal target=1 flags=332374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=23 present=True st=Deactivated target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=1 or=0 and=0 slope=0
+  K=24 present=True st=Deactivated target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=2 or=0 and=0 slope=0
+  K=25 present=True st=FlagToDestroy target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=26 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=27 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=28 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=29 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=30 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=31 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=32 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=33 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=34 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=35 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=36 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=37 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=38 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=39 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=40 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  effects: (tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 27)
+== crate36 type 292 corner tpf=1
+  K=18 present=True st=Normal target=1 flags=332374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== crate36 type 292 bandc8 tpf=1
+  K=18 present=True st=Normal target=1 flags=332374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Deactivated target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=1 or=1001 and=1001 slope=0
+  K=24 present=True st=Deactivated target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=2 or=1001 and=1001 slope=0
+  K=25 present=True st=FlagToDestroy target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=26 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=27 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=28 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=29 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=30 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=31 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=32 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=33 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=34 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=35 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=36 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  effects: (tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 27)
+== crate36 type 292 bandc9 tpf=1
+  K=18 present=True st=Normal target=1 flags=332374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Deactivated target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=1 or=1001 and=1001 slope=0
+  K=24 present=True st=Deactivated target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=2 or=1001 and=1001 slope=0
+  K=25 present=True st=FlagToDestroy target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=26 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=27 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=28 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=29 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=30 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=31 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=32 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=33 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=34 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=35 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=36 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=2 flags=332344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  effects: (tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 27)
+== crate36 type 292 cornerexit tpf=1
+  K=18 present=True st=Normal target=1 flags=332374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=332374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=332374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=332374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=332374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  effects: (tick 24 id 10),(tick 25 id 10),(tick 26 id 10),(tick 27 id 10),(tick 28 id 10),(tick 29 id 10),(tick 30 id 10),(tick 31 id 10),(tick 32 id 10),(tick 33 id 10),(tick 34 id 10),(tick 35 id 10),(tick 36 id 10),(tick 37 id 10),(tick 38 id 10),(tick 39 id 10),(tick 40 id 10),(tick 41 id 10),(tick 42 id 10),(tick 43 id 10),(tick 44 id 10),(tick 45 id 10),(tick 46 id 10),(tick 47 id 10),(tick 48 id 10)
+  sounds: (tick 1 sfx 26)
+== jar41 type 297 hole tpf=1
+  K=18 present=True st=Normal target=1 flags=232374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=232374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=232374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=232374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=24 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=25 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=26 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=27 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=28 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=29 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=30 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=31 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=32 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=33 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=34 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=35 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=36 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=37 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=38 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=39 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  K=40 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=4 slope=0
+  effects: (tick 24 id 2),(tick 25 id 2),(tick 26 id 2),(tick 27 id 2),(tick 28 id 2),(tick 29 id 2),(tick 30 id 2),(tick 31 id 2),(tick 32 id 2),(tick 33 id 2),(tick 34 id 2),(tick 35 id 2),(tick 36 id 2),(tick 37 id 2),(tick 38 id 2),(tick 39 id 2),(tick 40 id 2),(tick 41 id 2),(tick 42 id 2),(tick 43 id 2),(tick 44 id 2),(tick 45 id 2),(tick 46 id 2),(tick 47 id 2),(tick 48 id 2)
+  sounds: (tick 1 sfx 26)
+== jar41 type 297 exit tpf=1
+  K=18 present=True st=Normal target=1 flags=232374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=232374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=232374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=232374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=24 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=25 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=26 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=27 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=28 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=29 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=30 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=31 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=32 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=33 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=34 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=35 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=36 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=37 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=38 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=39 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  K=40 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=8000 slope=0
+  effects: (tick 24 id 2),(tick 25 id 2),(tick 26 id 2),(tick 27 id 2),(tick 28 id 2),(tick 29 id 2),(tick 30 id 2),(tick 31 id 2),(tick 32 id 2),(tick 33 id 2),(tick 34 id 2),(tick 35 id 2),(tick 36 id 2),(tick 37 id 2),(tick 38 id 2),(tick 39 id 2),(tick 40 id 2),(tick 41 id 2),(tick 42 id 2),(tick 43 id 2),(tick 44 id 2),(tick 45 id 2),(tick 46 id 2),(tick 47 id 2),(tick 48 id 2)
+  sounds: (tick 1 sfx 26)
+== jar41 type 297 full tpf=1
+  K=18 present=True st=Normal target=1 flags=232374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=232374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=232374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=232374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=0 and=0 slope=0
+  K=23 present=True st=Deactivated target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=1 or=0 and=0 slope=0
+  K=24 present=True st=Deactivated target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=2 or=0 and=0 slope=0
+  K=25 present=True st=FlagToDestroy target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=26 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=27 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=28 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=29 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=30 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=31 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=32 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=33 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=34 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=35 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=36 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=37 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=38 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=39 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  K=40 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=0 and=0 slope=0
+  effects: (tick 26 id 2),(tick 27 id 2),(tick 28 id 2),(tick 29 id 2),(tick 30 id 2),(tick 31 id 2),(tick 32 id 2),(tick 33 id 2),(tick 34 id 2),(tick 35 id 2),(tick 36 id 2),(tick 37 id 2),(tick 38 id 2),(tick 39 id 2),(tick 40 id 2),(tick 41 id 2),(tick 42 id 2),(tick 43 id 2),(tick 44 id 2),(tick 45 id 2),(tick 46 id 2),(tick 47 id 2),(tick 48 id 2)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 31)
+== jar41 type 297 corner tpf=1
+  K=18 present=True st=Normal target=1 flags=232374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=232374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=232374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=232374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=4 and=0 slope=0
+  effects: (tick 24 id 2),(tick 25 id 2),(tick 26 id 2),(tick 27 id 2),(tick 28 id 2),(tick 29 id 2),(tick 30 id 2),(tick 31 id 2),(tick 32 id 2),(tick 33 id 2),(tick 34 id 2),(tick 35 id 2),(tick 36 id 2),(tick 37 id 2),(tick 38 id 2),(tick 39 id 2),(tick 40 id 2),(tick 41 id 2),(tick 42 id 2),(tick 43 id 2),(tick 44 id 2),(tick 45 id 2),(tick 46 id 2),(tick 47 id 2),(tick 48 id 2)
+  sounds: (tick 1 sfx 26)
+== jar41 type 297 bandc8 tpf=1
+  K=18 present=True st=Normal target=1 flags=232374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=232374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=232374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=232374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Deactivated target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=1 or=1001 and=1001 slope=0
+  K=24 present=True st=Deactivated target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=2 or=1001 and=1001 slope=0
+  K=25 present=True st=FlagToDestroy target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=26 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=27 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=28 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=29 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=30 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=31 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=32 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=33 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=34 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=35 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=36 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  effects: (tick 26 id 2),(tick 27 id 2),(tick 28 id 2),(tick 29 id 2),(tick 30 id 2),(tick 31 id 2),(tick 32 id 2),(tick 33 id 2),(tick 34 id 2),(tick 35 id 2),(tick 36 id 2),(tick 37 id 2),(tick 38 id 2),(tick 39 id 2),(tick 40 id 2),(tick 41 id 2),(tick 42 id 2),(tick 43 id 2),(tick 44 id 2),(tick 45 id 2),(tick 46 id 2),(tick 47 id 2),(tick 48 id 2)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 31)
+== jar41 type 297 bandc9 tpf=1
+  K=18 present=True st=Normal target=1 flags=232374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=232374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=232374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=232374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=1001 and=1001 slope=0
+  K=23 present=True st=Deactivated target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=1 or=1001 and=1001 slope=0
+  K=24 present=True st=Deactivated target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=2 or=1001 and=1001 slope=0
+  K=25 present=True st=FlagToDestroy target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=26 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=27 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=28 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=29 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=30 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=31 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=32 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=33 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=34 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=35 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=36 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=37 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=38 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=39 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  K=40 present=False st=Destroyed target=2 flags=232344 ground=1 z=0.0 x=178.0 E2=3 or=1001 and=1001 slope=0
+  effects: (tick 26 id 2),(tick 27 id 2),(tick 28 id 2),(tick 29 id 2),(tick 30 id 2),(tick 31 id 2),(tick 32 id 2),(tick 33 id 2),(tick 34 id 2),(tick 35 id 2),(tick 36 id 2),(tick 37 id 2),(tick 38 id 2),(tick 39 id 2),(tick 40 id 2),(tick 41 id 2),(tick 42 id 2),(tick 43 id 2),(tick 44 id 2),(tick 45 id 2),(tick 46 id 2),(tick 47 id 2),(tick 48 id 2)
+  sounds: (tick 1 sfx 26),(tick 24 sfx 31)
+== jar41 type 297 cornerexit tpf=1
+  K=18 present=True st=Normal target=1 flags=232374 ground=0 z=22.5 x=166.0 E2=0 or=0 and=0 slope=0
+  K=19 present=True st=Normal target=1 flags=232374 ground=0 z=17.0 x=169.0 E2=0 or=0 and=0 slope=0
+  K=20 present=True st=Normal target=1 flags=232374 ground=0 z=11.0 x=172.0 E2=0 or=0 and=0 slope=0
+  K=21 present=True st=Normal target=1 flags=232374 ground=0 z=4.5 x=175.0 E2=0 or=0 and=0 slope=0
+  K=22 present=True st=Normal target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=23 present=True st=FlagToDestroy target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=24 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=25 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=26 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=27 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=28 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=29 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=30 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=31 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=32 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=33 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=34 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=35 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=36 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=37 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=38 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=39 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  K=40 present=False st=Destroyed target=1 flags=232374 ground=1 z=0.0 x=178.0 E2=0 or=8000 and=0 slope=0
+  effects: (tick 24 id 2),(tick 25 id 2),(tick 26 id 2),(tick 27 id 2),(tick 28 id 2),(tick 29 id 2),(tick 30 id 2),(tick 31 id 2),(tick 32 id 2),(tick 33 id 2),(tick 34 id 2),(tick 35 id 2),(tick 36 id 2),(tick 37 id 2),(tick 38 id 2),(tick 39 id 2),(tick 40 id 2),(tick 41 id 2),(tick 42 id 2),(tick 43 id 2),(tick 44 id 2),(tick 45 id 2),(tick 46 id 2),(tick 47 id 2),(tick 48 id 2)
+  sounds: (tick 1 sfx 26)
