@@ -1,0 +1,144 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
+using Xunit;
+using Xunit.Abstractions;
+using CasaEngine.Framework.Scene.Entities.Components;
+using Alundra.Entities;
+using Alundra.Maps;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Ai.Projectiles;
+
+// E20.e0k5 T0 probes (throwaway: written, run, versioned as .txt in docs/plan-e20-annexe/e20-e0k5/, then removed).
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class E0k5T0ProbeTests
+{
+    private readonly ITestOutputHelper _output;
+
+    public E0k5T0ProbeTests(ITestOutputHelper output) => _output = output;
+
+    private void Say(string line) => _output.WriteLine("PROBE: " + line);
+
+    private static Func<int, int, CutBench.Cell> Column(int column) => (c, r) => c == column ? new CutBench.Cell(0x40, 0) : default;
+
+    [Fact]
+    public void PA2Wall_MoveBeforeTheIntegration_AddsTheDisplacementThroughAWallCellAt3Px()
+    {
+        using var run = new ArrowRun("t0-pa2wall", 5, Column(5));
+        var proxy = ((IEntityWorldContext)run.Arena.Arc.Proxy).SpawnEntityBySpriteIndex(run.Arena.Hero, false, 3, 106 << 16, 100 << 16, 0, 0x18)!;
+        var entity = ArcRun.EntityOf(proxy)!;
+        var controller = entity.GetComponent<CharacterControllerComponent>()!;
+        var start = entity.RootComponent!.Position;
+        Say($"PA2wall spawned at x=106: world={(entity.World == null ? "null" : "set")} root={start} box right edge = x + 11 = 117, the wall (column 5) starts at x = 120: a gap of 3 px");
+        var requested = new Vector3(5f, 0f, 0f);
+        var actual = controller.Move(requested);
+        var moved = entity.RootComponent.Position - start;
+        Say($"PA2wall before the integration: Move({requested}) returned {actual}; root moved by {moved}");
+        Assert.Equal(requested, actual);
+        Assert.Equal(requested, moved);
+
+        // The same entity once integrated (one engine frame; the arrow's own script also runs): where is it, and what does the same Move return now.
+        run.Arena.Arc.OneFrame();
+        Say($"PA2wall after one frame: world={(entity.World == null ? "null" : "set")} root={entity.RootComponent.Position} proxy PosX={proxy.PosX / 65536.0}");
+        var before = entity.RootComponent.Position;
+        var after = controller.Move(requested);
+        Say($"PA2wall after the integration: Move({requested}) returned {after}; root moved by {entity.RootComponent.Position - before} (the field is read now: the step is bounded by the wall)");
+    }
+
+    [Theory]
+    [InlineData(106, 1)]
+    [InlineData(107, 1)]
+    [InlineData(108, 1)]
+    [InlineData(109, 1)]
+    [InlineData(108, 2)]
+    [InlineData(109, 2)]
+    [InlineData(108, 3)]
+    [InlineData(109, 3)]
+    public void ArrowAgainstColumn5_FromHeroX(int heroX, int ticksPerFrame)
+    {
+        using var run = new ArrowRun($"t0-x{heroX}-{ticksPerFrame}", 5, Column(5), heroX: heroX);
+        run.Go(ticksPerFrame, 40);
+        var s = run.BirthTick;
+        Say($"hero x={heroX}, {ticksPerFrame} tick(s) per frame: S={s}");
+        int? flag = null, three = null;
+        for (var k = 0; k <= 22; k++)
+        {
+            if (!run.Ticks.TryGetValue(s + k, out var t))
+            {
+                Say($"  S+{k}: absent");
+                continue;
+            }
+
+            if (flag is null && t.Adjusted != 0) flag = k;
+            if (three is null && t.Status == EntityStatus.Deactivated) three = k;
+            Say($"  S+{k}: st={(int)t.Status} x={t.X} ({t.X / 65536.0:0.######}) fx={t.ForceX} adj={t.Adjusted} anim={t.Animation} dir={t.Direction}");
+        }
+
+        Say($"  summary: xS={run.Ticks[s].X} ({run.Ticks[s].X / 65536.0:0.######}) firstFlag=S+{flag} firstStatus3=S+{three}");
+    }
+
+    // The forecast of T2: the lines of the DLL against the key, S to S+19, first differing offsets.
+    [Theory]
+    [InlineData(109, "arrow3_flush", 1)]
+    [InlineData(108, "arrow3_point_blank", 1)]
+    [InlineData(107, "arrow3_x107", 1)]
+    [InlineData(105, "arrow3_near105", 1)]
+    [InlineData(109, "arrow3_flush", 2)]
+    [InlineData(109, "arrow3_flush", 3)]
+    [InlineData(108, "arrow3_point_blank", 3)]
+    [InlineData(107, "arrow3_x107", 3)]
+    public void ArrowLinesAgainstTheKey(int heroX, string name, int ticksPerFrame)
+    {
+        var key = ArrowOracle.Load(name, stepByImage: true);
+        using var run = new ArrowRun($"t0-cmp-{name}-{ticksPerFrame}", 5, Column(5), heroX: heroX);
+        run.Go(ticksPerFrame, 40);
+        var diffs = new List<string>();
+        for (var k = 0; k <= 19; k++)
+        {
+            var e = key.Line(key.FirstTick + k);
+            var a = run.Line(run.BirthTick + k);
+            if (e != a)
+            {
+                diffs.Add($"S+{k}: key [{e}] dll [{a}]");
+            }
+        }
+
+        Say($"CMP {name} hero {heroX} {ticksPerFrame}/frame: S={run.BirthTick} key.FirstTick={key.FirstTick} differing offsets={diffs.Count} of 20");
+        foreach (var d in diffs.Take(3))
+        {
+            Say("  " + d);
+        }
+    }
+
+    [Theory]
+    [InlineData(105, "near105", 1)]
+    [InlineData(109, "flush", 1)]
+    [InlineData(105, "near105", 3)]
+    [InlineData(109, "flush", 3)]
+    public void ChargedLinesAgainstTheKey(int heroX, string name, int ticksPerFrame)
+    {
+        var key = ChargedArrowOracle.Load(name, stepByImage: true);
+        using var run = new ChargedArrowRun($"t0-ch-{name}-{ticksPerFrame}", Column(5), heroX);
+        run.Go(ticksPerFrame, 150);
+        var diffs = new List<string>();
+        for (var k = 0; k <= 19; k++)
+        {
+            var e = key.Line(ChargedArrowOracle.Birth + k);
+            var a = run.Lines.TryGetValue(run.BirthTick + k, out var l) ? l : "absent";
+            if (e != a)
+            {
+                diffs.Add($"S+{k}: key [{e}] dll [{a}]");
+            }
+        }
+
+        Say($"CMPC charged {name} hero {heroX} {ticksPerFrame}/frame: S={run.BirthTick} differing offsets={diffs.Count} of 20");
+        foreach (var d in diffs.Take(3))
+        {
+            Say("  " + d);
+        }
+    }
+}

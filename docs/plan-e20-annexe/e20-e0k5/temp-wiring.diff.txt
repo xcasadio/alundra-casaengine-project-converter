@@ -1,0 +1,40 @@
+--- Alundra/Physics/ScriptedMotion.cs	2026-10-25 15:36:59.539860100 +0100
++++ ScriptedMotion.cs (temporary wiring)	2026-10-25 15:36:59.487097600 +0100
+@@ -669,6 +669,28 @@
+             edgeAdjusted = clamp.Adjusted;
+         }
+ 
++        // TEMP-E0K5-T0 (throwaway wiring, reverted)
++        var tempNoStep = false;
++        if (entity.Controller != null && entity.HasLogicalZ && entity.SelfEntity?.World == null && (entity.FinalForceX != 0 || entity.FinalForceY != 0))
++        {
++            var s2 = entity.FinalForceX; var s1 = entity.FinalForceY; var accX = 0; var accY = 0; var accepted = false; var s5 = 0; var sp24 = (entity.TargetDirection & 7) == 0;
++            while (true)
++            {
++                if (BlockedCorners(entity, accX + s2, accY + s1) == 0)
++                {
++                    accX += s2; accY += s1; accepted = true;
++                    if (s5 == 0) break;
++                    s2 = s2 == -1 ? 0 : s2 >> 1; s1 = s1 == -1 ? 0 : s1 >> 1;
++                    if (sp24 ? (s2 == 0 && s1 == 0) : (s2 == 0 || s1 == 0)) break;
++                    s5++; continue;
++                }
++                s2 = s2 == -1 ? 0 : s2 >> 1; s1 = s1 == -1 ? 0 : s1 >> 1;
++                if (sp24 ? (s2 != 0 || s1 != 0) : (s2 != 0 && s1 != 0)) { s5++; continue; }
++                break;
++            }
++            entity.FinalForceX = accX; entity.FinalForceY = accY; tempNoStep = !accepted;
++        }
++
+         var startX = entity.PosX;
+         var startY = entity.PosY;
+ 
+@@ -688,7 +710,7 @@
+         }
+ 
+         // E20.e0k3: the flag of the clamp is raised AFTER SlideAlongWall, which rewrites ForceAdjusted (0 on an axis that progressed); the binary raises +0x13C in the same tick as the clamp.
+-        if (edgeAdjusted)
++        if (edgeAdjusted || tempNoStep)
+         {
+             entity.ForceAdjusted = 1;
+         }

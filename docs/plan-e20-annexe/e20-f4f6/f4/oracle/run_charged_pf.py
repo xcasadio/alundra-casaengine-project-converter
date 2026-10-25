@@ -73,6 +73,9 @@ SCENARIOS = {
     'charged7_grass_pf': lambda: run_charged.charged('charged7_grass_pf', 135, (1,), cells=grass_cells, title='[pf] charged arrow east over a strip of cuttable cells (walkability 0x02) cols 5..12 rows 5..6', first=100),
     'charged7_map_edge_pf': lambda: run_charged.charged('charged7_map_edge_pf', 135, (1,), hero_px=(1150, 100), title='[pf] charged arrow east from x=1150 to the map edge', first=100),
     'charged7_vs_target_pf': lambda: run_charged.charged('charged7_vs_target_pf', 190, (2, 1), targets=[(24, 12, 0)], cells=fw.wall_col(15), title='[pf] charged arrow vs the REAL Beannoid at x=300,y=104 then wall col 15; slot 1 = target'),
+    # E20.e0k5 T0: the hero flush against the wall (x=109) and at 105 (the 6 px step to 111 is bounded to 109), wall column 5 (keys of the reading of 2026-10-24, t2-proj/pb_keys.py)
+    'charged7_flush_pf': lambda: run_charged.charged('charged7_flush_pf', 140, (1,), cells=fw.wall_col(5), hero_px=(109, 100), title='[pf] charged arrow, hero flush against the wall (x=109, wall column 5)', first=100),
+    'charged7_near105_pf': lambda: run_charged.charged('charged7_near105_pf', 140, (1,), cells=fw.wall_col(5), hero_px=(105, 100), title='[pf] charged arrow, hero at 105 (6 px step to 111: bounded to 109)', first=100),
 }
 
 

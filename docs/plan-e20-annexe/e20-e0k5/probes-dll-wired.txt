@@ -1,0 +1,219 @@
+PROBE: CMP arrow3_flush hero 109 2/frame: S=10 key.FirstTick=10 differing offsets=0 of 20
+PROBE: CMP arrow3_flush hero 109 1/frame: S=10 key.FirstTick=10 differing offsets=0 of 20
+PROBE: CMP arrow3_point_blank hero 108 1/frame: S=10 key.FirstTick=10 differing offsets=0 of 20
+PROBE: CMP arrow3_x107 hero 107 1/frame: S=10 key.FirstTick=10 differing offsets=19 of 20
+PROBE:   S+1: key [st=2 x=7143424 y=6553600 z=1048577 fx=393216 fy=0 fz=0 adj=0 dir=24 anim=0 flags=0x12074 reset=0] dll [st=2 x=7143424 y=6553600 z=1048577 fx=393216 fy=0 fz=0 adj=1 dir=24 anim=0 flags=0x12074 reset=0]
+PROBE:   S+2: key [st=2 x=7143424 y=6553600 z=1048577 fx=393216 fy=0 fz=0 adj=1 dir=24 anim=0 flags=0x12074 reset=0] dll [st=3 x=7020544 y=6553600 z=1310721 fx=-122880 fy=0 fz=262144 adj=0 dir=8 anim=1 flags=0x12144 reset=0]
+PROBE:   S+3: key [st=3 x=7020544 y=6553600 z=1310721 fx=-122880 fy=0 fz=262144 adj=0 dir=8 anim=1 flags=0x12144 reset=0] dll [st=3 x=6897664 y=6553600 z=1540097 fx=-122880 fy=0 fz=229376 adj=0 dir=8 anim=1 flags=0x12144 reset=0]
+PROBE: CMP arrow3_point_blank hero 108 3/frame: S=10 key.FirstTick=10 differing offsets=0 of 20
+PROBE: CMP arrow3_flush hero 109 3/frame: S=10 key.FirstTick=10 differing offsets=0 of 20
+PROBE: CMP arrow3_x107 hero 107 3/frame: S=10 key.FirstTick=10 differing offsets=0 of 20
+PROBE: CMP arrow3_near105 hero 105 1/frame: S=10 key.FirstTick=10 differing offsets=0 of 20
+PROBE: PA2wall spawned at x=106: world=null root={X:106 Y:100 Z:0} box right edge = x + 11 = 117, the wall (column 5) starts at x = 120: a gap of 3 px
+PROBE: PA2wall before the integration: Move({X:5 Y:0 Z:0}) returned {X:5 Y:0 Z:0}; root moved by {X:5 Y:0 Z:0}
+PROBE: PA2wall after one frame: world=set root={X:111 Y:100 Z:1,5258789E-05} proxy PosX=111
+PROBE: PA2wall after the integration: Move({X:5 Y:0 Z:0}) returned {X:0 Y:0 Z:0}; root moved by {X:0 Y:0 Z:0} (the field is read now: the step is bounded by the wall)
+PROBE: hero x=108, 3 tick(s) per frame: S=10
+PROBE:   S+0: st=2 x=7143424 (109) fx=196608 adj=0 anim=0 dir=24
+PROBE:   S+1: st=2 x=7143424 (109) fx=393216 adj=1 anim=0 dir=24
+PROBE:   S+2: st=3 x=7020544 (107,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+3: st=3 x=6897664 (105,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+4: st=3 x=6774784 (103,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+5: st=3 x=6651904 (101,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+6: st=3 x=6529024 (99,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+7: st=3 x=6406144 (97,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+8: st=3 x=6283264 (95,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+9: st=3 x=6160384 (94) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+10: st=3 x=6037504 (92,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+11: st=3 x=5914624 (90,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+12: st=3 x=5791744 (88,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+13: st=3 x=5668864 (86,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+14: st=3 x=5545984 (84,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+15: st=3 x=5423104 (82,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+16: st=3 x=5300224 (80,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+17: st=3 x=5177344 (79) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+18: st=3 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+19: st=4 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+20: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+21: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+22: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   summary: xS=7143424 (109) firstFlag=S+1 firstStatus3=S+2
+PROBE: hero x=109, 3 tick(s) per frame: S=10
+PROBE:   S+0: st=2 x=7143424 (109) fx=196608 adj=1 anim=0 dir=24
+PROBE:   S+1: st=3 x=7020544 (107,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+2: st=3 x=6897664 (105,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+3: st=3 x=6774784 (103,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+4: st=3 x=6651904 (101,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+5: st=3 x=6529024 (99,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+6: st=3 x=6406144 (97,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+7: st=3 x=6283264 (95,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+8: st=3 x=6160384 (94) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+9: st=3 x=6037504 (92,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+10: st=3 x=5914624 (90,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+11: st=3 x=5791744 (88,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+12: st=3 x=5668864 (86,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+13: st=3 x=5545984 (84,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+14: st=3 x=5423104 (82,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+15: st=3 x=5300224 (80,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+16: st=3 x=5177344 (79) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+17: st=3 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+18: st=4 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+19: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+20: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+21: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+22: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   summary: xS=7143424 (109) firstFlag=S+0 firstStatus3=S+1
+PROBE: hero x=107, 1 tick(s) per frame: S=10
+PROBE:   S+0: st=2 x=7143423 (108,999985) fx=196608 adj=0 anim=0 dir=24
+PROBE:   S+1: st=2 x=7143424 (109) fx=393216 adj=1 anim=0 dir=24
+PROBE:   S+2: st=3 x=7020544 (107,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+3: st=3 x=6897664 (105,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+4: st=3 x=6774784 (103,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+5: st=3 x=6651904 (101,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+6: st=3 x=6529024 (99,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+7: st=3 x=6406144 (97,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+8: st=3 x=6283264 (95,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+9: st=3 x=6160384 (94) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+10: st=3 x=6037504 (92,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+11: st=3 x=5914624 (90,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+12: st=3 x=5791744 (88,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+13: st=3 x=5668864 (86,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+14: st=3 x=5545984 (84,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+15: st=3 x=5423104 (82,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+16: st=3 x=5300224 (80,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+17: st=3 x=5177344 (79) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+18: st=3 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+19: st=4 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+20: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+21: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+22: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   summary: xS=7143423 (108,999985) firstFlag=S+1 firstStatus3=S+2
+PROBE: hero x=108, 1 tick(s) per frame: S=10
+PROBE:   S+0: st=2 x=7143424 (109) fx=196608 adj=0 anim=0 dir=24
+PROBE:   S+1: st=2 x=7143424 (109) fx=393216 adj=1 anim=0 dir=24
+PROBE:   S+2: st=3 x=7020544 (107,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+3: st=3 x=6897664 (105,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+4: st=3 x=6774784 (103,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+5: st=3 x=6651904 (101,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+6: st=3 x=6529024 (99,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+7: st=3 x=6406144 (97,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+8: st=3 x=6283264 (95,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+9: st=3 x=6160384 (94) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+10: st=3 x=6037504 (92,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+11: st=3 x=5914624 (90,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+12: st=3 x=5791744 (88,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+13: st=3 x=5668864 (86,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+14: st=3 x=5545984 (84,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+15: st=3 x=5423104 (82,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+16: st=3 x=5300224 (80,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+17: st=3 x=5177344 (79) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+18: st=3 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+19: st=4 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+20: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+21: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+22: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   summary: xS=7143424 (109) firstFlag=S+1 firstStatus3=S+2
+PROBE: hero x=109, 2 tick(s) per frame: S=10
+PROBE:   S+0: st=2 x=7143424 (109) fx=196608 adj=1 anim=0 dir=24
+PROBE:   S+1: st=3 x=7020544 (107,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+2: st=3 x=6897664 (105,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+3: st=3 x=6774784 (103,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+4: st=3 x=6651904 (101,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+5: st=3 x=6529024 (99,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+6: st=3 x=6406144 (97,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+7: st=3 x=6283264 (95,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+8: st=3 x=6160384 (94) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+9: st=3 x=6037504 (92,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+10: st=3 x=5914624 (90,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+11: st=3 x=5791744 (88,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+12: st=3 x=5668864 (86,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+13: st=3 x=5545984 (84,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+14: st=3 x=5423104 (82,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+15: st=3 x=5300224 (80,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+16: st=3 x=5177344 (79) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+17: st=3 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+18: st=4 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+19: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+20: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+21: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+22: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   summary: xS=7143424 (109) firstFlag=S+0 firstStatus3=S+1
+PROBE: hero x=108, 2 tick(s) per frame: S=10
+PROBE:   S+0: st=2 x=7143424 (109) fx=196608 adj=0 anim=0 dir=24
+PROBE:   S+1: st=2 x=7143424 (109) fx=393216 adj=1 anim=0 dir=24
+PROBE:   S+2: st=3 x=7020544 (107,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+3: st=3 x=6897664 (105,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+4: st=3 x=6774784 (103,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+5: st=3 x=6651904 (101,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+6: st=3 x=6529024 (99,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+7: st=3 x=6406144 (97,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+8: st=3 x=6283264 (95,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+9: st=3 x=6160384 (94) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+10: st=3 x=6037504 (92,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+11: st=3 x=5914624 (90,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+12: st=3 x=5791744 (88,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+13: st=3 x=5668864 (86,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+14: st=3 x=5545984 (84,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+15: st=3 x=5423104 (82,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+16: st=3 x=5300224 (80,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+17: st=3 x=5177344 (79) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+18: st=3 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+19: st=4 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+20: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+21: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+22: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   summary: xS=7143424 (109) firstFlag=S+1 firstStatus3=S+2
+PROBE: hero x=109, 1 tick(s) per frame: S=10
+PROBE:   S+0: st=2 x=7143424 (109) fx=196608 adj=1 anim=0 dir=24
+PROBE:   S+1: st=3 x=7020544 (107,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+2: st=3 x=6897664 (105,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+3: st=3 x=6774784 (103,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+4: st=3 x=6651904 (101,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+5: st=3 x=6529024 (99,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+6: st=3 x=6406144 (97,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+7: st=3 x=6283264 (95,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+8: st=3 x=6160384 (94) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+9: st=3 x=6037504 (92,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+10: st=3 x=5914624 (90,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+11: st=3 x=5791744 (88,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+12: st=3 x=5668864 (86,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+13: st=3 x=5545984 (84,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+14: st=3 x=5423104 (82,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+15: st=3 x=5300224 (80,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+16: st=3 x=5177344 (79) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+17: st=3 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+18: st=4 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+19: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+20: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+21: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+22: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   summary: xS=7143424 (109) firstFlag=S+0 firstStatus3=S+1
+PROBE: hero x=106, 1 tick(s) per frame: S=10
+PROBE:   S+0: st=2 x=7143424 (109) fx=196608 adj=0 anim=0 dir=24
+PROBE:   S+1: st=2 x=7143424 (109) fx=393216 adj=1 anim=0 dir=24
+PROBE:   S+2: st=3 x=7020544 (107,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+3: st=3 x=6897664 (105,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+4: st=3 x=6774784 (103,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+5: st=3 x=6651904 (101,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+6: st=3 x=6529024 (99,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+7: st=3 x=6406144 (97,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+8: st=3 x=6283264 (95,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+9: st=3 x=6160384 (94) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+10: st=3 x=6037504 (92,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+11: st=3 x=5914624 (90,25) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+12: st=3 x=5791744 (88,375) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+13: st=3 x=5668864 (86,5) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+14: st=3 x=5545984 (84,625) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+15: st=3 x=5423104 (82,75) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+16: st=3 x=5300224 (80,875) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+17: st=3 x=5177344 (79) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+18: st=3 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+19: st=4 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+20: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+21: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   S+22: st=0 x=5054464 (77,125) fx=-122880 adj=0 anim=1 dir=8
+PROBE:   summary: xS=7143424 (109) firstFlag=S+1 firstStatus3=S+2
+PROBE: CMPC charged flush hero 109 3/frame: S=106 differing offsets=0 of 20
+PROBE: CMPC charged near105 hero 105 3/frame: S=106 differing offsets=0 of 20
+PROBE: CMPC charged flush hero 109 1/frame: S=105 differing offsets=0 of 20
+PROBE: CMPC charged near105 hero 105 1/frame: S=105 differing offsets=0 of 20

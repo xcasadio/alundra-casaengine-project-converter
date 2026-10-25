@@ -38,6 +38,8 @@ f68710929e349f2b26db44d56efe78db7d0b3cae  bin/out/traces/arrow4_east_wall.txt
 b215f920505434e9281e64b918036489a9a52845  f5/oracle/out/json/arrow3_air_east.json
 e0cb2cb4deed3d88be17401a83f9bc2530dc1273  f5/oracle/out/json/arrow3_air_east_pf.json
 d53f958eb63a74709fcfc25212fe7392071f0828  f5/oracle/out/json/arrow3_east_wall_pf.json
+ad28381ba96c70581f0bdce796513cb19adfa0c2  f5/oracle/out/json/arrow3_flush.json
+902d1e0e68868ace930c44634a490e0aa0d355ee  f5/oracle/out/json/arrow3_flush_pf.json
 747a8b205476b27934fb68d29bee42db6240ae30  f5/oracle/out/json/arrow3_free_east_pf.json
 8fad8877c0d0e8d8e7374c0997ecb3d4336066a9  f5/oracle/out/json/arrow3_free_north_pf.json
 9736fb27d8574548ec158c0eadbc6dd08691d911  f5/oracle/out/json/arrow3_free_south_pf.json
@@ -45,6 +47,8 @@ d53f958eb63a74709fcfc25212fe7392071f0828  f5/oracle/out/json/arrow3_east_wall_pf
 56f0f35b9fa9a24c628a8fe3bef07feaa09ff6f5  f5/oracle/out/json/arrow3_map_edge_pf.json
 802129245cf33c9f67d04930ea5562205651b146  f5/oracle/out/json/arrow3_map_edge_south.json
 17b6fa4e5bd9333134588652dad0a9d9894ed500  f5/oracle/out/json/arrow3_map_edge_south_pf.json
+a5b036af5fac0a5e2c506359e0957615100ade88  f5/oracle/out/json/arrow3_near105.json
+46e7d01bf3c4ecc824ea5b3bdc1571397d84dae7  f5/oracle/out/json/arrow3_near105_pf.json
 9f19ddc0e134eac60a96436038c686d963790012  f5/oracle/out/json/arrow3_point_blank_pf.json
 afbd81973d2295595622ef27659d0452199b39a7  f5/oracle/out/json/arrow3_target_1AD_pf.json
 275b2c96c1218de83c2bf606ca439be012e72985  f5/oracle/out/json/arrow3_target_dead_same_dispatch.json
@@ -64,6 +68,8 @@ d5d3eb771674da1096e9b1a3c6a204065ad44876  f5/oracle/out/json/arrow3_target_sprit
 56a8304fada081f34bc507e47ed6048e09252a47  f5/oracle/out/json/arrow3_wall_north_pf.json
 9676724d965ed46aaa1c2095699168548b934922  f5/oracle/out/json/arrow3_wall_south_pf.json
 216b1754ad62a3246bd86078d81d67b211ab8331  f5/oracle/out/json/arrow3_wall_west_pf.json
+30522e06319415ecfeaf0dea5d48d26bd8e042f8  f5/oracle/out/json/arrow3_x107.json
+d30b600427bcbb346234019b2a75271bf242fd64  f5/oracle/out/json/arrow3_x107_pf.json
 3633c752462c896eebafc719344736794f563610  f5/oracle/out/json/arrow3_zreach_16.json
 f1a1c54549ae7ad8398f69754460106d5519d854  f5/oracle/out/json/arrow3_zreach_16_pf.json
 2dba4f3f346e2926afcd0d970e09be996545177f  f5/oracle/out/json/arrow3_zreach_17.json
@@ -77,6 +83,8 @@ dc76c0f6c4eddce6ae99ca3a72cc2f85fc4894c1  f5/oracle/out/mutants_f5.txt
 047f1d860b603e2ccd3e5cbfd6a5a27de6d3e962  f5/oracle/out/traces/arrow3_air_east.txt
 eaa8e7815351f20f793848331f23bea70b9f51c9  f5/oracle/out/traces/arrow3_air_east_pf.txt
 aab4250f51c90d664e64986c9a3d349d6d830c2d  f5/oracle/out/traces/arrow3_east_wall_pf.txt
+f6a888222fd0563b109f28dd496fd2b421866825  f5/oracle/out/traces/arrow3_flush.txt
+399415fc401be3da64da839a35e82f35f2520d94  f5/oracle/out/traces/arrow3_flush_pf.txt
 58b53a56b9c02ae43df36db4915af6ab51d24b86  f5/oracle/out/traces/arrow3_free_east_pf.txt
 59b49d97a35df980cf95198c956616006e42ed96  f5/oracle/out/traces/arrow3_free_north_pf.txt
 05872c7afe3caf11728f9500e03fdf619162ab53  f5/oracle/out/traces/arrow3_free_south_pf.txt
@@ -84,6 +92,8 @@ aab4250f51c90d664e64986c9a3d349d6d830c2d  f5/oracle/out/traces/arrow3_east_wall_
 304fd8aaaab1ed6e411ae08eb2ed19fd9ec09d69  f5/oracle/out/traces/arrow3_map_edge_pf.txt
 2b164511dd673b60afe5e9d302e86cbe63bf5054  f5/oracle/out/traces/arrow3_map_edge_south.txt
 68a3f5e4bdb43c79079404605d14f7c0cf37f517  f5/oracle/out/traces/arrow3_map_edge_south_pf.txt
+2c49b50006cb238fc74c0aa70a5ed5277d9452ee  f5/oracle/out/traces/arrow3_near105.txt
+683830225f8a1641fc9f35f25f72a5acc129018a  f5/oracle/out/traces/arrow3_near105_pf.txt
 4af436926dc47d9dc4b25c405eeb0c4f6ec72953  f5/oracle/out/traces/arrow3_point_blank_pf.txt
 b354e39444d5ba7abd5358bc914cb522359ea9a4  f5/oracle/out/traces/arrow3_target_1AD_pf.txt
 df91f2ac03216766e9c8b6208d3d14daa4c20551  f5/oracle/out/traces/arrow3_target_dead_same_dispatch.txt
@@ -103,6 +113,8 @@ cf2d61f13c34df2b1d05e970f97901e0a01d866c  f5/oracle/out/traces/arrow3_two_target
 eaa2cc9834c22675e760fe9f717a7cf99933ac1f  f5/oracle/out/traces/arrow3_wall_north_pf.txt
 725dc15e4bbce0c42c885d941f6d533a1c6927e9  f5/oracle/out/traces/arrow3_wall_south_pf.txt
 b7d8721071157af5a75bf8915ac967a3164d3566  f5/oracle/out/traces/arrow3_wall_west_pf.txt
+d4e96604edcba450735b9cf644e502b46a6dbd33  f5/oracle/out/traces/arrow3_x107.txt
+47117f722e4c093d0ed7ad027c3125302013cb46  f5/oracle/out/traces/arrow3_x107_pf.txt
 0c4a923f8292227363cc3d71762888e68ae716b7  f5/oracle/out/traces/arrow3_zreach_16.txt
 80f6ca391a31da305357c5d2b63001d2bf2da9fa  f5/oracle/out/traces/arrow3_zreach_16_pf.txt
 4fde22a76ab086392aed2750ab7634d79458602c  f5/oracle/out/traces/arrow3_zreach_17.txt

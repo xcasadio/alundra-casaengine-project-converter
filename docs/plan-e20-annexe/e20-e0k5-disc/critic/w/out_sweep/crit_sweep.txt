@@ -1,0 +1,84 @@
+== hunter arrow (type 3) wall col 5
+  x0=104 S=10 fxS=196608 xS_raw=7012352 adj@3 st3@4
+  x0=106 S=10 fxS=196608 xS_raw=7143424 adj@1 st3@2
+  x0=107 S=10 fxS=196608 xS_raw=7143423 adj@2 st3@3
+  x0=108 S=10 fxS=196608 xS_raw=7143424 adj@1 st3@2
+  x0=109 S=10 fxS=196608 xS_raw=7143424 adj@0 st3@1
+== William normal arrow (type 4) wall col 5
+  x0=104 S=10 fxS=196608 xS_raw=7012352 adj@3 st3@4
+  x0=106 S=10 fxS=196608 xS_raw=7143424 adj@1 st3@2
+  x0=107 S=10 fxS=196608 xS_raw=7143423 adj@2 st3@3
+  x0=108 S=10 fxS=196608 xS_raw=7143424 adj@1 st3@2
+  x0=109 S=10 fxS=196608 xS_raw=7143424 adj@0 st3@1
+== William charged arrow (type 7) wall col 5
+  x0=104 S=105 fxS=393216 xS_raw=7143423 adj@2 st3@None
+  x0=106 S=105 fxS=393216 xS_raw=7143424 adj@1 st3@None
+  x0=107 S=105 fxS=393216 xS_raw=7143423 adj@2 st3@None
+  x0=108 S=105 fxS=393216 xS_raw=7143424 adj@1 st3@None
+  x0=109 S=105 fxS=393216 xS_raw=7143424 adj@0 st3@None
+== fire ball normal (type 11) wall col 5
+  x0=104 S=12 fxS=393216 xS_raw=7143423 adj@2 st3@3
+  x0=106 S=12 fxS=393216 xS_raw=7143424 adj@1 st3@2
+  x0=107 S=12 fxS=393216 xS_raw=7143423 adj@2 st3@3
+  x0=108 S=12 fxS=393216 xS_raw=7143424 adj@1 st3@2
+  x0=109 S=12 fxS=393216 xS_raw=7143424 adj@0 st3@1
+== fire ball charged (type 12) wall col 5
+  x0=104 S=107 fxS=393216 xS_raw=7143423 adj@2 st3@3
+  x0=106 S=107 fxS=393216 xS_raw=7143424 adj@1 st3@2
+  x0=107 S=107 fxS=393216 xS_raw=7143423 adj@2 st3@3
+  x0=108 S=107 fxS=393216 xS_raw=7143424 adj@1 st3@2
+  x0=109 S=107 fxS=393216 xS_raw=7143424 adj@0 st3@1
+== ice ball normal (type 14) wall col 5
+  x0=104 S=12 fxS=196608 xS_raw=7012352 adj@3 st3@4
+  x0=106 S=12 fxS=196608 xS_raw=7143424 adj@1 st3@2
+  x0=107 S=12 fxS=196608 xS_raw=7143423 adj@2 st3@3
+  x0=108 S=12 fxS=196608 xS_raw=7143424 adj@1 st3@2
+  x0=109 S=12 fxS=196608 xS_raw=7143424 adj@0 st3@1
+== ice ball charged (type 15) wall col 5
+  x0=104 S=107 fxS=196608 xS_raw=7012352 adj@3 st3@4
+  x0=106 S=107 fxS=196608 xS_raw=7143424 adj@1 st3@2
+  x0=107 S=107 fxS=196608 xS_raw=7143423 adj@2 st3@3
+  x0=108 S=107 fxS=196608 xS_raw=7143424 adj@1 st3@2
+  x0=109 S=107 fxS=196608 xS_raw=7143424 adj@0 st3@1
+== hunter arrow (type 3) wall col 6
+  x0=128 S=10 fxS=196608 xS_raw=8585216 adj@3 st3@4
+  x0=130 S=10 fxS=196608 xS_raw=8716288 adj@1 st3@2
+  x0=131 S=10 fxS=196608 xS_raw=8716287 adj@2 st3@3
+  x0=132 S=10 fxS=196608 xS_raw=8716288 adj@1 st3@2
+  x0=133 S=10 fxS=196608 xS_raw=8716288 adj@0 st3@1
+== William normal arrow (type 4) wall col 6
+  x0=128 S=10 fxS=196608 xS_raw=8585216 adj@3 st3@4
+  x0=130 S=10 fxS=196608 xS_raw=8716288 adj@1 st3@2
+  x0=131 S=10 fxS=196608 xS_raw=8716287 adj@2 st3@3
+  x0=132 S=10 fxS=196608 xS_raw=8716288 adj@1 st3@2
+  x0=133 S=10 fxS=196608 xS_raw=8716288 adj@0 st3@1
+== William charged arrow (type 7) wall col 6
+  x0=128 S=105 fxS=393216 xS_raw=8716287 adj@2 st3@None
+  x0=130 S=105 fxS=393216 xS_raw=8716288 adj@1 st3@None
+  x0=131 S=105 fxS=393216 xS_raw=8716287 adj@2 st3@None
+  x0=132 S=105 fxS=393216 xS_raw=8716288 adj@1 st3@None
+  x0=133 S=105 fxS=393216 xS_raw=8716288 adj@0 st3@None
+== fire ball normal (type 11) wall col 6
+  x0=128 S=12 fxS=393216 xS_raw=8716287 adj@2 st3@3
+  x0=130 S=12 fxS=393216 xS_raw=8716288 adj@1 st3@2
+  x0=131 S=12 fxS=393216 xS_raw=8716287 adj@2 st3@3
+  x0=132 S=12 fxS=393216 xS_raw=8716288 adj@1 st3@2
+  x0=133 S=12 fxS=393216 xS_raw=8716288 adj@0 st3@1
+== fire ball charged (type 12) wall col 6
+  x0=128 S=107 fxS=393216 xS_raw=8716287 adj@2 st3@3
+  x0=130 S=107 fxS=393216 xS_raw=8716288 adj@1 st3@2
+  x0=131 S=107 fxS=393216 xS_raw=8716287 adj@2 st3@3
+  x0=132 S=107 fxS=393216 xS_raw=8716288 adj@1 st3@2
+  x0=133 S=107 fxS=393216 xS_raw=8716288 adj@0 st3@1
+== ice ball normal (type 14) wall col 6
+  x0=128 S=12 fxS=196608 xS_raw=8585216 adj@3 st3@4
+  x0=130 S=12 fxS=196608 xS_raw=8716288 adj@1 st3@2
+  x0=131 S=12 fxS=196608 xS_raw=8716287 adj@2 st3@3
+  x0=132 S=12 fxS=196608 xS_raw=8716288 adj@1 st3@2
+  x0=133 S=12 fxS=196608 xS_raw=8716288 adj@0 st3@1
+== ice ball charged (type 15) wall col 6
+  x0=128 S=107 fxS=196608 xS_raw=8585216 adj@3 st3@4
+  x0=130 S=107 fxS=196608 xS_raw=8716288 adj@1 st3@2
+  x0=131 S=107 fxS=196608 xS_raw=8716287 adj@2 st3@3
+  x0=132 S=107 fxS=196608 xS_raw=8716288 adj@1 st3@2
+  x0=133 S=107 fxS=196608 xS_raw=8716288 adj@0 st3@1

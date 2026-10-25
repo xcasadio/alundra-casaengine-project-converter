@@ -216,6 +216,26 @@ def arrow3_map_edge_south():
                 title='Hunter bow south from y=900 on the open field to the south edge of the map (the north, west and east edges are the frozen keys)')
 
 
+# ---- E20.e0k5 T0: the arrow shot with the hero flush against (or near) a wall (column 5, x >= 120): the binary bounds the first step to the wall face (the halving search of 0x80037730) ----------------
+# the keys of the reading of 2026-10-24 (t2-proj/pb_keys.py, docs/plan-e20-annexe/e20-e0k5-disc/), now written here in both forms (plain and `_pf`), read by ArrowOracle.Load("<name>", stepByImage: true)
+@sc
+def arrow3_flush():
+    return play('arrow3_flush', target_spec(5, 50, hero_px=(109, 100), cells=fw.wall_col(5), targets=[]), (1,),
+                title='Hunter arrow, hero flush against the wall (x=109, wall column 5): the step is bounded to 0 px at the tick of birth')
+
+
+@sc
+def arrow3_near105():
+    return play('arrow3_near105', target_spec(5, 50, hero_px=(105, 100), cells=fw.wall_col(5), targets=[]), (1,),
+                title='Hunter arrow, hero at 105 (the 3 px step ends at 108, inside the window): no bounding, the witness')
+
+
+@sc
+def arrow3_x107():
+    return play('arrow3_x107', target_spec(5, 50, hero_px=(107, 100), cells=fw.wall_col(5), targets=[]), (1,),
+                title='Hunter arrow, hero at 107 (the 3 px step to 110 is bounded to 109 by the halving: 7143423, one raw unit under 109)')
+
+
 # ---- the frozen keys, replayed with the step by image (suffix _pf) ------------------------------------------------------------------------------------------------------------------------
 def replay_frozen():
     """the 17 frozen keys again, with the step by image: same scenario definitions as ../../bin/run_arrows.py, run_arrows_extra.py and run_pointblank.py (not copied: their functions are called with fw.run replaced)."""

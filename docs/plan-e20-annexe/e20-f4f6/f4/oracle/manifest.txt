@@ -129,12 +129,16 @@ d541544e95e94ac3fb1b56534122a6522a05c334  bin/out/traces/ice14_wall_then_water.t
 59932976ca775325e08bd6de8878afe10173a0fc  bin/out/traces/ice15_flat.txt
 7634766aeef8c5cb77b33dce8c65d15021633917  bin/out/xcheck.txt
 8950d314000c7da091d87643d4a42f210aeb2974  f4/oracle/out/json/charged7_east_wall_pf.json
+fedfe3bbb298d75ce5f8286a80cac6319f3f0c12  f4/oracle/out/json/charged7_flush_pf.json
 2482d1558aaeb5920140a184a92faaf31fcf03f3  f4/oracle/out/json/charged7_grass_pf.json
 d0262e3bd402184b5358bc9df01d65413dd0043d  f4/oracle/out/json/charged7_map_edge_pf.json
+988cbd8d69bdb87de5a4a70c71447c1e12373e04  f4/oracle/out/json/charged7_near105_pf.json
 dd1208069b579de5fae5f7a7d84e41b3f602ecfd  f4/oracle/out/json/charged7_vs_target_pf.json
 49d6a1f5eca05cea7b70c9640fa82276a66d9fbb  f4/oracle/out/mutants_f4.json
 c384b9ed8cc686d5f7907afb445b26c20a381839  f4/oracle/out/mutants_f4.txt
 2c6360c59dbee0424c3a3215d2ab88d5e3052128  f4/oracle/out/traces/charged7_east_wall_pf.txt
+4ff6f40684eb7e6ecc740e9714c3095ba79be3af  f4/oracle/out/traces/charged7_flush_pf.txt
 7faa6c94bd5f2607bd6e2b0aa7f99391c9f45486  f4/oracle/out/traces/charged7_grass_pf.txt
 bd2de1069f7a92bfd3cae4bbabfda863d2581eec  f4/oracle/out/traces/charged7_map_edge_pf.txt
+a6b5116a73c1a691cea92695a419949581924323  f4/oracle/out/traces/charged7_near105_pf.txt
 568907847e8594329828dbc412a53c74974404e9  f4/oracle/out/traces/charged7_vs_target_pf.txt

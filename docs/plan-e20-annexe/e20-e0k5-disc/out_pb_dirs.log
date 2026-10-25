@@ -1,0 +1,76 @@
+== side east: hero walking east stops at (109.000, 100.000)
+  hunter arrow (3)             back=0 hero=(109,100): end of S = (109.000, 100.000) force=(3.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  hunter arrow (3)             back=2 hero=(107,100): end of S = (109.000, 100.000) force=(3.00, 0.00)  ForceAdjusted at S+2, status 3 at S+3
+  hunter arrow (3)             back=4 hero=(105,100): end of S = (108.000, 100.000) force=(3.00, 0.00)  ForceAdjusted at S+2, status 3 at S+3
+  hunter arrow (3)             back=6 hero=(103,100): end of S = (106.000, 100.000) force=(3.00, 0.00)  ForceAdjusted at S+2, status 3 at S+3
+  William charged arrow (7)    back=0 hero=(109,100): end of S = (109.000, 100.000) force=(6.00, 0.00)  ForceAdjusted at S+0, status 3 at S+None
+  William charged arrow (7)    back=2 hero=(107,100): end of S = (109.000, 100.000) force=(6.00, 0.00)  ForceAdjusted at S+2, status 3 at S+None
+  William charged arrow (7)    back=4 hero=(105,100): end of S = (109.000, 100.000) force=(6.00, 0.00)  ForceAdjusted at S+1, status 3 at S+None
+  William charged arrow (7)    back=6 hero=(103,100): end of S = (109.000, 100.000) force=(6.00, 0.00)  ForceAdjusted at S+1, status 3 at S+None
+  fire ball normal (11)        back=0 hero=(109,100): end of S = (109.000, 100.000) force=(6.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  fire ball normal (11)        back=2 hero=(107,100): end of S = (109.000, 100.000) force=(6.00, 0.00)  ForceAdjusted at S+2, status 3 at S+3
+  fire ball normal (11)        back=4 hero=(105,100): end of S = (109.000, 100.000) force=(6.00, 0.00)  ForceAdjusted at S+1, status 3 at S+2
+  fire ball normal (11)        back=6 hero=(103,100): end of S = (109.000, 100.000) force=(6.00, 0.00)  ForceAdjusted at S+1, status 3 at S+2
+  ice ball normal (14)         back=0 hero=(109,100): end of S = (109.000, 100.000) force=(3.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  ice ball normal (14)         back=2 hero=(107,100): end of S = (109.000, 100.000) force=(3.00, 0.00)  ForceAdjusted at S+2, status 3 at S+3
+  ice ball normal (14)         back=4 hero=(105,100): end of S = (108.000, 100.000) force=(3.00, 0.00)  ForceAdjusted at S+2, status 3 at S+3
+  ice ball normal (14)         back=6 hero=(103,100): end of S = (106.000, 100.000) force=(3.00, 0.00)  ForceAdjusted at S+2, status 3 at S+3
+
+== side west: hero walking west stops at (100.000, 100.000)
+  hunter arrow (3)             back=0 hero=(100,100): end of S = (100.000, 100.000) force=(-3.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  hunter arrow (3)             back=2 hero=(102,100): end of S = (102.000, 100.000) force=(-3.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  hunter arrow (3)             back=4 hero=(104,100): end of S = (104.000, 100.000) force=(-3.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  hunter arrow (3)             back=6 hero=(106,100): end of S = (106.000, 100.000) force=(-3.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  William charged arrow (7)    back=0 hero=(100,100): end of S = (100.000, 100.000) force=(-6.00, 0.00)  ForceAdjusted at S+0, status 3 at S+None
+  William charged arrow (7)    back=2 hero=(102,100): end of S = (102.000, 100.000) force=(-6.00, 0.00)  ForceAdjusted at S+0, status 3 at S+None
+  William charged arrow (7)    back=4 hero=(104,100): end of S = (104.000, 100.000) force=(-6.00, 0.00)  ForceAdjusted at S+0, status 3 at S+None
+  William charged arrow (7)    back=6 hero=(106,100): end of S = (106.000, 100.000) force=(-6.00, 0.00)  ForceAdjusted at S+0, status 3 at S+None
+  fire ball normal (11)        back=0 hero=(100,100): end of S = (100.000, 100.000) force=(-6.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  fire ball normal (11)        back=2 hero=(102,100): end of S = (102.000, 100.000) force=(-6.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  fire ball normal (11)        back=4 hero=(104,100): end of S = (104.000, 100.000) force=(-6.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  fire ball normal (11)        back=6 hero=(106,100): end of S = (106.000, 100.000) force=(-6.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  ice ball normal (14)         back=0 hero=(100,100): end of S = (100.000, 100.000) force=(-3.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  ice ball normal (14)         back=2 hero=(102,100): end of S = (102.000, 100.000) force=(-3.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  ice ball normal (14)         back=4 hero=(104,100): end of S = (104.000, 100.000) force=(-3.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+  ice ball normal (14)         back=6 hero=(106,100): end of S = (106.000, 100.000) force=(-3.00, 0.00)  ForceAdjusted at S+0, status 3 at S+1
+
+== side north: hero walking north stops at (100.000, 71.000)
+  hunter arrow (3)             back=0 hero=(100,71): end of S = (100.000, 71.000) force=(0.00, -2.00)  ForceAdjusted at S+0, status 3 at S+1
+  hunter arrow (3)             back=2 hero=(100,73): end of S = (100.000, 71.000) force=(0.00, -2.00)  ForceAdjusted at S+1, status 3 at S+2
+  hunter arrow (3)             back=4 hero=(100,75): end of S = (100.000, 73.000) force=(0.00, -2.00)  ForceAdjusted at S+2, status 3 at S+3
+  hunter arrow (3)             back=6 hero=(100,77): end of S = (100.000, 75.000) force=(0.00, -2.00)  ForceAdjusted at S+2, status 3 at S+3
+  William charged arrow (7)    back=0 hero=(100,71): end of S = (100.000, 71.000) force=(0.00, -4.00)  ForceAdjusted at S+0, status 3 at S+None
+  William charged arrow (7)    back=2 hero=(100,73): end of S = (100.000, 71.000) force=(0.00, -4.00)  ForceAdjusted at S+1, status 3 at S+None
+  William charged arrow (7)    back=4 hero=(100,75): end of S = (100.000, 71.000) force=(0.00, -4.00)  ForceAdjusted at S+1, status 3 at S+None
+  William charged arrow (7)    back=6 hero=(100,77): end of S = (100.000, 73.000) force=(0.00, -4.00)  ForceAdjusted at S+2, status 3 at S+None
+  fire ball normal (11)        back=0 hero=(100,71): end of S = (100.000, 71.000) force=(0.00, -4.00)  ForceAdjusted at S+0, status 3 at S+1
+  fire ball normal (11)        back=2 hero=(100,73): end of S = (100.000, 71.000) force=(0.00, -4.00)  ForceAdjusted at S+1, status 3 at S+2
+  fire ball normal (11)        back=4 hero=(100,75): end of S = (100.000, 71.000) force=(0.00, -4.00)  ForceAdjusted at S+1, status 3 at S+2
+  fire ball normal (11)        back=6 hero=(100,77): end of S = (100.000, 73.000) force=(0.00, -4.00)  ForceAdjusted at S+2, status 3 at S+3
+  ice ball normal (14)         back=0 hero=(100,71): end of S = (100.000, 71.000) force=(0.00, -2.00)  ForceAdjusted at S+0, status 3 at S+1
+  ice ball normal (14)         back=2 hero=(100,73): end of S = (100.000, 71.000) force=(0.00, -2.00)  ForceAdjusted at S+1, status 3 at S+2
+  ice ball normal (14)         back=4 hero=(100,75): end of S = (100.000, 73.000) force=(0.00, -2.00)  ForceAdjusted at S+2, status 3 at S+3
+  ice ball normal (14)         back=6 hero=(100,77): end of S = (100.000, 75.000) force=(0.00, -2.00)  ForceAdjusted at S+2, status 3 at S+3
+
+== side south: hero walking south stops at (100.000, 120.000)
+  hunter arrow (3)             back=0 hero=(100,120): end of S = (100.000, 120.000) force=(0.00, 2.00)  ForceAdjusted at S+0, status 3 at S+1
+  hunter arrow (3)             back=2 hero=(100,118): end of S = (100.000, 120.000) force=(0.00, 2.00)  ForceAdjusted at S+1, status 3 at S+2
+  hunter arrow (3)             back=4 hero=(100,116): end of S = (100.000, 118.000) force=(0.00, 2.00)  ForceAdjusted at S+2, status 3 at S+3
+  hunter arrow (3)             back=6 hero=(100,114): end of S = (100.000, 116.000) force=(0.00, 2.00)  ForceAdjusted at S+2, status 3 at S+3
+  William charged arrow (7)    back=0 hero=(100,120): end of S = (100.000, 120.000) force=(0.00, 4.00)  ForceAdjusted at S+0, status 3 at S+None
+  William charged arrow (7)    back=2 hero=(100,118): end of S = (100.000, 120.000) force=(0.00, 4.00)  ForceAdjusted at S+1, status 3 at S+None
+  William charged arrow (7)    back=4 hero=(100,116): end of S = (100.000, 120.000) force=(0.00, 4.00)  ForceAdjusted at S+1, status 3 at S+None
+  William charged arrow (7)    back=6 hero=(100,114): end of S = (100.000, 118.000) force=(0.00, 4.00)  ForceAdjusted at S+2, status 3 at S+None
+  fire ball normal (11)        back=0 hero=(100,120): end of S = (100.000, 120.000) force=(0.00, 4.00)  ForceAdjusted at S+0, status 3 at S+1
+  fire ball normal (11)        back=2 hero=(100,118): end of S = (100.000, 120.000) force=(0.00, 4.00)  ForceAdjusted at S+1, status 3 at S+2
+  fire ball normal (11)        back=4 hero=(100,116): end of S = (100.000, 120.000) force=(0.00, 4.00)  ForceAdjusted at S+1, status 3 at S+2
+  fire ball normal (11)        back=6 hero=(100,114): end of S = (100.000, 118.000) force=(0.00, 4.00)  ForceAdjusted at S+2, status 3 at S+3
+  ice ball normal (14)         back=0 hero=(100,120): end of S = (100.000, 120.000) force=(0.00, 2.00)  ForceAdjusted at S+0, status 3 at S+1
+  ice ball normal (14)         back=2 hero=(100,118): end of S = (100.000, 120.000) force=(0.00, 2.00)  ForceAdjusted at S+1, status 3 at S+2
+  ice ball normal (14)         back=4 hero=(100,116): end of S = (100.000, 118.000) force=(0.00, 2.00)  ForceAdjusted at S+2, status 3 at S+3
+  ice ball normal (14)         back=6 hero=(100,114): end of S = (100.000, 116.000) force=(0.00, 2.00)  ForceAdjusted at S+2, status 3 at S+3
+
+
+real	1m7.499s
+user	0m0.030s
+sys	0m0.000s
