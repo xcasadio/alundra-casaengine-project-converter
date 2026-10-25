@@ -23,6 +23,7 @@ namespace Alundra.Tests.Ai.Projectiles;
 /// E20.f6b T1 (phase A): with <c>handlers</c> the native handlers of the balls (<see cref="BallAi"/>, C60 and E9) run: the run registers them in the registry of the runner when it does not hold them yet (a second registration of a key throws, so the same run is valid before and after the registration
 /// in production, <see cref="BallHook"/>), turns the arena switch of D-F4-7 on for the sprite types of the run, and records the effects the stage creates, the sounds, the box of the ball and the hits. A rod held to the tick 95 and released at 96 (<c>charged</c>, the pad of the oracle, given by the test) shoots the charged ball
 /// (the type 12 or 15); the normal ball of the start of the hold (the type 11 or 14) is born at P + 11 = 12 all the same, as in the oracle.
+/// E20.f6b T4 (phase C): with <c>production</c> the shot goes through the PRODUCTION path (no birth hook and no test set of wired types: <see cref="PlayerManager.ProductionWiredWeaponTypes"/> alone decides), as <see cref="ArrowRun"/> does; <c>freeSlotsAtBirth</c> fills the table of slots just before the tick of the birth.
 /// </summary>
 internal sealed class BallRun : IDisposable
 {
@@ -40,6 +41,10 @@ internal sealed class BallRun : IDisposable
     private readonly uint _seed;
     private readonly IDisposable? _hook;
     private readonly HashSet<EffectSlot> _attachedSeen = new();
+    private readonly bool _production;
+    private readonly int? _freeSlotsAtBirth;
+    private readonly int _fillTick;
+    private const int FillerType = 5;
 
     internal readonly HitArena Arena;
     internal readonly CutBench Bench;
@@ -59,6 +64,14 @@ internal sealed class BallRun : IDisposable
 
     /// <summary>The state of the ball at the end of each tick (the proxy stays valid after the recycling); absent while it is not in the world.</summary>
     internal readonly Dictionary<int, BallTick> Ticks = new();
+
+    /// <summary>Production path only: the calls of the spawn seam of the shot, the sprite types of the entities the hero fathered, the held slots just before the birth tick (once filled), the lowest free slot just before the birth, the slot of the ball and the pointer of the shot record of the hero after each tick.</summary>
+    internal readonly List<PlayerManager.WeaponSpawnCall> SpawnCalls = new();
+    internal readonly HashSet<int> TypesFatheredByTheHero = new();
+    internal int HeldBeforeBirthTick = -1;
+    internal int LowestFreeSlotBeforeBirth = -1;
+    internal int BirthSlot = -1;
+    internal readonly Dictionary<int, uint> PointerAfter = new();
 
     /// <summary>The ticks (the end of the frame that holds them) at which an effect <see cref="SlopeBreakEffect"/> attached to an entity is seen on the stage for the first time.</summary>
     internal readonly List<int> SlopeBreakSeenAtFrameEnd = new();
@@ -138,8 +151,13 @@ internal sealed class BallRun : IDisposable
     /// <param name="charged">The ball of the run is the charged one (12 or 15); the pad is the test's (Square to the tick 95, released at 96).</param>
     /// <param name="handlers">E20.f6b: the native handlers C60 and E9 run for the types of the run (see the class).</param>
     /// <param name="seed">The word of the generator at the head of the tick 1 (the oracle's 0x12345678; the keys with a target hold the word two steps on, the target having drawn twice before the first tick: the key's <c>Rng0(1)</c>).</param>
-    internal BallRun(string name, int item, Func<int, int, CutBench.Cell>? cell, IReadOnlyList<int[]>? targets = null, Func<int, uint>? pad = null, int heroX = 100, bool charged = false, bool handlers = false, uint seed = Seed)
+    /// <param name="production">E20.f6b T4: the ball is born through the production path only (see the class).</param>
+    /// <param name="freeSlotsAtBirth">Production only: the entity table is filled with fillers just before the tick of the birth of the ball, down to that number of free slots.</param>
+    internal BallRun(string name, int item, Func<int, int, CutBench.Cell>? cell, IReadOnlyList<int[]>? targets = null, Func<int, uint>? pad = null, int heroX = 100, bool charged = false, bool handlers = false, uint seed = Seed, bool production = false, int? freeSlotsAtBirth = null)
     {
+        _production = production;
+        _freeSlotsAtBirth = freeSlotsAtBirth;
+        _fillTick = charged ? 107 : BallOracle.Birth;
         _seed = seed;
         _pad = pad ?? (tick => tick == 1 ? Square : 0u);
         _handlers = handlers;
@@ -196,14 +214,22 @@ internal sealed class BallRun : IDisposable
     internal void Go(int ticksPerFrame, int lastTick)
     {
         _frameSize = ticksPerFrame;
-        PlayerManager.WiredWeaponTypesForTests = new HashSet<int> { BallType, NormalType };
-        PlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
+        if (_production)
         {
-            if (call.Type == BallType || call.Type == NormalType)
+            PlayerManager.WeaponSpawnCallsForTests = SpawnCalls;
+        }
+        else
+        {
+            PlayerManager.WiredWeaponTypesForTests = new HashSet<int> { BallType, NormalType };
+            PlayerManager.WeaponSpawnBirthHookForTests = (hero, call) =>
             {
-                ((IEntityWorldContext)Arena.Arc.Proxy).SpawnEntityBySpriteIndex(hero, false, call.Type, call.X, call.Y, call.Z, call.Direction);
-            }
-        };
+                if (call.Type == BallType || call.Type == NormalType)
+                {
+                    ((IEntityWorldContext)Arena.Arc.Proxy).SpawnEntityBySpriteIndex(hero, false, call.Type, call.X, call.Y, call.Z, call.Direction);
+                }
+            };
+        }
+
         if (_handlers)
         {
             EventProgramRunner.NativeSpriteTypeFilterForTests = new HashSet<int> { BallType, NormalType };
@@ -230,7 +256,25 @@ internal sealed class BallRun : IDisposable
                 _frameStartState = unchecked((uint)GameRandom.RandomSeed);
             }
 
+            if (_freeSlotsAtBirth is { } free && tick == _fillTick)
+            {
+                var world = (IEntityWorldContext)Arena.Arc.Proxy;
+                while (EntitySlotTable.SlotCount - Arena.Arc.Proxy.SlotTable.HeldCount > free)
+                {
+                    if (world.SpawnEntityBySpriteIndex(Arena.Hero, false, FillerType, 100 << 16, 100 << 16, 0, 0x10) is null)
+                    {
+                        throw new InvalidOperationException("the filler was not born");
+                    }
+                }
+
+                HeldBeforeBirthTick = Arena.Arc.Proxy.SlotTable.HeldCount;
+            }
+
             BeforeEachTick?.Invoke(tick);
+            if (_production && Born is null)
+            {
+                LowestFreeSlotBeforeBirth = Enumerable.Range(0, EntitySlotTable.SlotCount).FirstOrDefault(i => !Arena.Arc.Proxy.SlotTable.IsHeld(i), -1);
+            }
         };
         Arena.AfterTick = tick =>
         {
@@ -241,7 +285,18 @@ internal sealed class BallRun : IDisposable
                 if (Born is not null)
                 {
                     BirthTick = tick;
+                    BirthSlot = Born.Slot;
                 }
+            }
+
+            if (_production)
+            {
+                foreach (var fathered in Arena.Arc.Entities.Where(e => ReferenceEquals(e.ParentEntity, Arena.Arc.HeroEntity)))
+                {
+                    TypesFatheredByTheHero.Add(fathered.SpriteType);
+                }
+
+                PointerAfter[tick] = Arena.Hero.WeaponRecordPointer;
             }
 
             if (Born is { } b)
@@ -326,6 +381,7 @@ internal sealed class BallRun : IDisposable
     {
         PlayerManager.WeaponSpawnBirthHookForTests = null;
         PlayerManager.WiredWeaponTypesForTests = null;
+        PlayerManager.WeaponSpawnCallsForTests = null;
         if (_handlers)
         {
             EventProgramRunner.NativeSpriteTypeFilterForTests = null;
