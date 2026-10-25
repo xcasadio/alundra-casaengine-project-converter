@@ -107,3 +107,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0091 | The soulevables are solid obstacles like every other collidable, and the movement obstacle probe skips no flag | Accepted | 2026-10-24 |
 | ADR-0092 | C4 is the program of the transportable objects of the family C4, the key (C, 4) is registered for 19 types, and the wired set of the lift grows to 25 types | Accepted | 2026-10-25 |
 | ADR-0093 | A thrown object falls in the hole or the exit floor it lands on: the hook of the ground slope also feeds the tile words of the marked entities | Accepted | 2026-10-25 |
+| ADR-0094 | The treasure chest opens through the native F255 with the object it gives birth to, and the magic seed is one body with three entries | Accepted | 2026-10-25 |
