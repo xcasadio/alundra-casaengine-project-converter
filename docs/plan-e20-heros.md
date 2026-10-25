@@ -8194,7 +8194,7 @@ un besoin de toucher au moteur ou à la phase de choix.
 - **Verifiers frais** : **CONFIRMED** tous deux.
 - **Recette de l'auteur** (non bloquante) : lancer un tonneau dans un trou ; lancer une caisse dans un trou.
 
-##### E20.g2c2 — Les torches (C70, E20) et les ronces (D34) ⏳ (détaillée le 2026-10-25 ; thème 2, après f6b (D-E20-64) ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture ; défauts de Q-G2C2-1 à Q-G2C2-6 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
+##### E20.g2c2 — Les torches (C70, E20) et les ronces (D34) ⏳ (détaillée le 2026-10-25 ; thème 2, après f6b (D-E20-64) ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; défauts de Q-G2C2-1 à Q-G2C2-6 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
 
 **Provenance.** Lecture seule du 2026-10-25 (HEAD `8174c0cb` puis `6df3f265`, code de `Alundra/Ai`, `Alundra/Entities`, `Alundra/Combat`
 inchangé) : rapport et critique frais (`scratchpad/t2-next/g2c2/report-main.md`, `scratchpad/t2-next/g2c2-critic/report-main.md`, scripts,
