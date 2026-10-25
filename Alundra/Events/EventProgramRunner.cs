@@ -674,6 +674,12 @@ public sealed class EventProgramRunner : IEventProgramRunner
                 _gameState.PlayerControlFlags &= ~GameState.PlayerControlBits.ForcedWeapon;
                 return 1;
 
+            case 0xC2: // Check the death-retry counter - Script_194_0C2 @ 0x80041D34 (E20.b2 T2, docs/plan-e20-heros.md section 1.4.1, D-B2-2), PER THE BINARY: Result = (byte [0x801EBA3E] >= the operand byte v1) ? 1 : 0, the two
+                       // bytes loaded with lbu (unsigned), written whatever the previous Result. The byte is g_saveData + 0x756, the count of resumptions after a death (GameState.DeathRetryCount; nothing
+                       // increments it before E18). The only user is the Snow King's scene (map 7, B[10] @1508, 0xC2 [20] then 0x03). Size 2.
+                state.Result = _gameState.DeathRetryCount >= v[1] ? 1 : 0;
+                return 2;
+
             case 0x16: // High gravity - Script_22_016
                 entity.Flags |= EntityFlags.Gravity;
                 entity.ResyncControllerFromFlags();

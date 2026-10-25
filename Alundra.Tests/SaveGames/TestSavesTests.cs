@@ -793,4 +793,31 @@ public sealed class TestSavesTests : IDisposable
             Assert.Equal((byte)0, Build(name).DeathRetryCount);
         }
     }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(256)]
+    public void ADeathRetryCountOutsideItsByte_IsRefusedByCheckPreset_NotWrapped(int count)
+    {
+        var preset = new TestSaves.Preset("custom", "test-custom", 14, 8, 6, 0, [], [], [], [], DeathRetryCount: count);
+
+        Assert.False(TestSaves.TryBuild(preset, RealRules(), out var save, out var error));
+
+        Assert.Null(save);
+        Assert.Contains("preset 'custom'", error);
+        Assert.Contains("deathRetryCount ", error);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(255)]
+    public void ADeathRetryCountAtTheEdgesOfItsByte_IsAccepted_AndReachesTheSave(int count)
+    {
+        var preset = new TestSaves.Preset("custom", "test-custom", 14, 8, 6, 0, [], [], [], [], DeathRetryCount: count);
+
+        Assert.True(TestSaves.TryBuild(preset, RealRules(), out var save, out var error), error);
+
+        Assert.Equal((byte)count, save!.DeathRetryCount);
+    }
 }

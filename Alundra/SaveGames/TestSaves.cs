@@ -35,12 +35,12 @@ public static class TestSaves
     private const uint FirstUnsavedFlag = SaveGame.GameFlagWordCount * 32;
 
     /// <summary>
-    /// One test save: where the hero arrives and what differs from a new game. The seven last fields are optional (E20.f0 T3, docs/plan-e20-heros.md section 1.8): a
+    /// One test save: where the hero arrives and what differs from a new game. The eight last fields are optional (E20.f0 T3, docs/plan-e20-heros.md section 1.8; E20.b2 T2 for the last): a
     /// <c>null</c> keeps the new game's value, otherwise the value goes through the DLL's own setter after the new-game kit and the item counters
     /// (<see cref="PlayerManager.SetPlayerHpMax"/>, <see cref="PlayerManager.SetPlayerHp"/>, <see cref="PlayerManager.SetPlayerMpMax"/>,
     /// <see cref="PlayerManager.SetPlayerMp"/>, <see cref="PlayerManager.SetMoney"/>, <see cref="PlayerManager.SetPlayerWeaponId"/>,
-    /// <see cref="PlayerManager.SetCurrentItemId"/>), and <see cref="CheckPreset"/> refuses a value outside the save's domains instead of letting a setter clamp it.
-    /// <c>Weapon</c> is the equipped weapon SLOT (-1 or 1 to 6), <c>Item</c> the Circle item.
+    /// <see cref="PlayerManager.SetCurrentItemId"/>; the death-retry counter is a plain byte of the state, <see cref="GameState.DeathRetryCount"/>, read by the script opcode 0xC2), and <see cref="CheckPreset"/> refuses a value
+    /// outside the save's domains instead of letting a setter clamp it. <c>Weapon</c> is the equipped weapon SLOT (-1 or 1 to 6), <c>Item</c> the Circle item, <c>DeathRetryCount</c> the count of resumptions after a death (0 to 255).
     /// </summary>
     public sealed record Preset(
         string Name,
@@ -59,7 +59,8 @@ public static class TestSaves
         int? HpMax = null,
         int? Mp = null,
         int? MpMax = null,
-        int? Money = null);
+        int? Money = null,
+        int? DeathRetryCount = null);
 
     /// <summary>The raw <c>NumberOfItems</c> index of an item's counter: <c>2 * item + 1</c>.</summary>
     private static int CounterIndex(int item) => 2 * item + 1;
@@ -180,6 +181,13 @@ public static class TestSaves
         new Preset("coffre-m11", "test-coffre-m11", 11, 7, 23, 13, [], [], [], [], Weapon: 1, Hp: 4, HpMax: 10, Mp: 1, MpMax: 2),
         new Preset("coffre-m0", "test-coffre-m0", 0, 13, 2, 0, [], [], [], [], Weapon: 1, Hp: 4, HpMax: 10, Mp: 1, MpMax: 2),
         new Preset("coffre-m117", "test-coffre-m117", 117, 42, 40, 2, [], [], [], [], Weapon: 1, Hp: 4, HpMax: 10, Mp: 1, MpMax: 2),
+
+        // E20.b2 T2 (docs/plan-e20-heros.md section 1.4.1, D-B2-3): the Legendary Sword (item 8, 51 damage on a Beannoid, no charge, no aura, no wave). `legende-m14`: the Beannoids arena (map 14), tile (8, 6, 0), the weapon loadout and the item 8 (rank 4
+        // over the kit's sword): strike a Beannoid. `legende-m7`: the Overworld 1,2-7, tile (25, 17, 7), straight south of the transparent block of the record 28 (tile (25, 16)), on the new game's kit with the death-retry counter at 20 and no flag: a save
+        // cannot carry the direction, so walk north into the block; the Snow King's scene (B[10], 0xC2 [20]) gives the item 8 and sets the flag 1787. The original gives it only to a player who resumed after a death 20 times or more (E18 is not ported:
+        // the counter is only ever set by this preset).
+        WeaponPreset("legende-m14", 14, 8, 6, 0, 1, 8),
+        new Preset("legende-m7", "test-legende-m7", 7, 25, 17, 7, [], [], [], [], DeathRetryCount: 20),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>
@@ -274,6 +282,11 @@ public static class TestSaves
             PlayerManager.SetMoney(state, (short)money);
         }
 
+        if (preset.DeathRetryCount is { } deathRetryCount)
+        {
+            state.DeathRetryCount = (byte)deathRetryCount;
+        }
+
         if (preset.Weapon is { } weapon)
         {
             PlayerManager.SetPlayerWeaponId(state, rules.ItemTables, weapon);
@@ -366,6 +379,11 @@ public static class TestSaves
         if (preset.Money is { } money && (money < 0 || money > SaveGame.MaxMoney))
         {
             return Format($"preset '{preset.Name}': money {money} is outside 0..{SaveGame.MaxMoney}");
+        }
+
+        if (preset.DeathRetryCount is { } deathRetryCount && (deathRetryCount < 0 || deathRetryCount > byte.MaxValue))
+        {
+            return Format($"preset '{preset.Name}': deathRetryCount {deathRetryCount} is outside 0..{byte.MaxValue}");
         }
 
         if (preset.Weapon is { } weapon && weapon != -1 && (weapon < 1 || weapon > SaveGame.MaxWeaponId))

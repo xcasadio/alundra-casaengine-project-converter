@@ -45,9 +45,10 @@ Each preset is the new game (HP 10/10, MP 0/0, no gold, weapon 1, items 1, 17 an
 what is listed. The slot is fixed, `test-<preset>`.
 
 A preset may also set the equipped weapon SLOT (`Weapon`: -1 or 1 to 6), the Circle item (`Item`), life (`Hp`, `HpMax`), magic
-(`Mp`, `MpMax`) and gold (`Money`). They are optional (a missing one keeps the new game's value), applied after the new-game kit and
+(`Mp`, `MpMax`), gold (`Money`) and the count of resumptions after a death (`DeathRetryCount`, E20.b2). They are optional (a missing one keeps the new game's value), applied after the new-game kit and
 the item counters through the DLL's own setters, and refused outside the save's domains (HP max 0 to 50, HP 0 to its max, MP max 0 to
-4, MP 0 to its max, gold 0 to 9999, weapon -1 or 1 to 6, item 0 to 98): they are never clamped silently.
+4, MP 0 to its max, gold 0 to 9999, weapon -1 or 1 to 6, item 0 to 98, death-retry count 0 to 255): they are never clamped silently. The death-retry
+count is the byte `g_saveData + 0x756` that the script opcode `0xC2` compares; the game never increments it before E18 (the resumption after a death), so a preset is the only way to set it.
 
 ### Story presets
 
@@ -192,6 +193,20 @@ For the treasure chests and the magic seed (docs/plan-e20-heros.md section 1.26.
 
 `coffre-m15`: open the seed (the magic maximum goes from 2 to 3 and the magic is filled; the box closes, the sound and the sparks come); the same map has three chests of herbs (records 21 to 23, at (4, 51), (2, 51) and (5, 53)): with 7 herbs, the second fills the bag to 9 and the third answers
 "Too many things to carry" (nothing is given and the chest closes again, it opens again once there is room). `coffre-m117`: take the Key, then the door of the map 115 (Tarn's Manor) can be opened with it.
+
+### Legendary Sword presets (E20.b2)
+
+For the Legendary Sword (item 8, docs/plan-e20-heros.md section 1.4.1): it is the sword of the slot 1 of the highest rank (4), swings like the basic sword, with no charge, no aura and no wave, and takes 51 life from a Beannoid (the basic sword 2). The original gives it, on
+the map 7, only to a player who resumed after a death 20 times or more.
+
+| Preset | Map, tile, z | Owned | Equipped | Death-retry count |
+|---|---|---|---|---|
+| `legende-m14` | 14 (Beannoids arena), (8, 6), 0 | the weapon loadout (bomb, herbs, elixirs, fortifier, scrolls), the kit's items and the item 8 | the slot 1, which resolves to the item 8 | 0 |
+| `legende-m7` | 7 (Overworld 1,2-7), (25, 17), 7 | the kit's items 1, 17, 25 only | the basic sword | 20 |
+
+`legende-m14`: life 4/10, magic 4/4; strike a Beannoid: the swing of the basic sword, the Beannoid loses 51 life (a Beannoid of the map has 9: it dies at once), and holding the Square does not charge. `legende-m7`: the hero stands on the ground at pixel (612, 280), straight south of the
+transparent block of the record 28 (tile (25, 16)); a save cannot carry the direction, so walk north into the block. The Snow King speaks (dialogue 130), gives the Legendary Sword and sets the flag 1787 (the scene does not replay afterwards). With a count below 20 (edit the preset)
+the refusal dialogue 129 is shown and nothing is given.
 
 ## What a save cannot carry
 

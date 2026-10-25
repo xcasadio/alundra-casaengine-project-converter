@@ -112,3 +112,23 @@ Notes. (1) `ItemTablesFixture.LoadReal()` is a reduced table (items 0 to 4, 17 a
 `EnableNativeHandlers()` (the arena keeps the Beannoids as the oracle's stubs, native handlers off, until a test turns them on after the setup: with them on from the construction the Beannoid walks and the arena's
 "animation 0" assertion fails). (3) The hit by the legendary sword on the real Beannoid: contact at tick 5 (ground), life 100 at the tick of the contact, 49 at the next tick; the second contact is blocked by the 25 ticks of delay.
 (4) The exploration of the air swing: the hero rising never touches a Beannoid on the ground (the box is too high: z 20 to 27 px); coming down (Square at tick 17) the contact is at tick 20 whatever the distance 24 to 40 px.
+
+## T2 (2026-10-25): the opcode 0xC2, the field DeathRetryCount and the two presets
+
+Binary (`dis_picked.py 80041D34 34`, capstone on `ALUN_CD.EXE` France): `lbu` of the parameter byte, `lbu` of `0x801EBA3E`, `slt counter, parameter`, `bnez` to the store of 0, else the store of 1 in `Result` (`+0x2C`): `Result = counter >= parameter`, both unsigned. Size 2.
+
+Tests first (commit `5e67722d`), red before the code, in `Alundra.Tests/Events/DeathRetryCountOpcodeTests.cs` (the program `0xC2 [20]`, `0x1A 9`, `Result` preloaded to the value opposite to the expected one):
+
+| test | red before | green after |
+|---|---|---|
+| `Opcode0xC2_Param20_WithTheCounterAt19_AnswersZero_OverAStaleOne` (preload 1, expects 0) | red | green |
+| `Opcode0xC2_Param20_WithTheCounterAt20_AnswersOne_OverAStaleZero` (preload 0, expects 1) | red | green |
+| `Opcode0xC2_Param20_WithTheCounterAt21_AnswersOne_OverAStaleZero` (preload 0, expects 1) | red | green |
+| `Opcode0xC2_ComparesTwoUnsignedBytes` (200 vs 20 -> 1; 200 vs 255 -> 0; 255 vs 255 -> 1; 0 vs 0 -> 1) | red | green |
+| `Opcode0xC2_TakesOneParameterByte_ThePcAdvancesByTwo` (the `0x1A 9` that follows ran) | GREEN (guard: the size-table fallback already advances by 2), to be killed by the mutant "two parameter bytes" | green |
+
+Presets (tests in `TestSavesTests`, red before: unknown preset): the list test `TheTwentyTwoPresets_AreListed_InTheOrderOfTheTable` became `TheTwentyFourPresets_AreListed_InTheOrderOfTheTable` (D-B2-6, the only moved test); the theories over `EveryPresetName` and `WeaponNames` gained the cases `legende-m14` (both) and `legende-m7` (the `EveryPresetName` ones); new tests `TheLegendM7Preset_...` (3), `TheOtherPresets_LeaveTheDeathCounterAtZero`, and (code commit) `ADeathRetryCountOutsideItsByte_IsRefusedByCheckPreset_NotWrapped` (-1, 256) and `ADeathRetryCountAtTheEdgesOfItsByte_IsAccepted_AndReachesTheSave` (0, 1, 255).
+
+Code: `case 0xC2` in `Alundra/Events/EventProgramRunner.cs`; `TestSaves.Preset.DeathRetryCount` (`int?`, 0 to 255 else refused, applied to `GameState.DeathRetryCount` before the capture); `WeaponPreset("legende-m14", 14, 8, 6, 0, 1, 8)` and `new Preset("legende-m7", ..., 7, 25, 17, 7, ..., DeathRetryCount: 20)` (cells of T0); `docs/test-saves.md` (the optional field and a "Legendary Sword presets" table).
+
+Measures: focused run (opcode, presets, save-game tests, event runner tests): 698 passed, 0 failed. Full Release suite (neutralised copy, `--blame-hang-timeout 60s`, one run in 11 min 31 s): 6468 passed, 0 failed, 0 skipped. The Debug suite is left to T3 (last). `check_names.py --rules`: 0 findings. Moved tests against the T0 (d) list: only the presets list test (renamed); no other existing test changed behaviour. `git diff --ignore-cr-at-eol` of `docs/hero-trace-389-*.txt` empty (restored).
