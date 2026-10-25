@@ -5551,6 +5551,83 @@ commit de docs `6c8ad55` de la session principale (garde du plan oubliée, rien 
 
 Détaillée seulement si l'auteur répond à Q-K2 par l'option B. Contenu : un port entier de la boucle d'affinage de `0x80037730` (pas entier en unités brutes, halvings, `moved_ok`, `NoObstacleSlide`), sans entité (les projectiles ne sont pas sujets), pour les entités marquées, en remplacement du mover du moteur. T0 : le modèle du fuzz (20 000 cas, 0 écart) comme oracle de la fonction ; acceptation : les 12 départs de l'oracle (drapeau aux ticks 43 et 44 exacts), aucun écart sur le fuzz. Phases A (fonction pure) et B (branchement). Prérequis : e0k2, e0k3.
 
+#### 1.18.5 E20.e0k5 — Le premier pas d'une entité née en jeu, borné par la recherche par moitiés du binaire (O-E20-24) ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2 ; D-E20-80 ; à relire par un `plan-verifier` frais)
+
+**Provenance.** Deux lectures seules du 2026-10-24, chacune recoupée par un critique frais : la partie A de `scratchpad/t2-proj/` (O-E20-24) et
+`docs/plan-e20-annexe/e20-step-search/` (la recherche du pas, déjà versée : le modèle `work/xymodel.py`, rejoué contre le vrai code sur 55 000
+vecteurs, 0 écart, 449/449 instructions). T0 verse la partie A de `t2-proj/` à `docs/plan-e20-annexe/e20-e0k5-disc/`. D-E20-80 (Q-STEP, B).
+
+**Prérequis.** E20.e0k3 et E20.f5 (faites) ; la branche du thème 2. **Préférence d'ordre** : avant le branchement de production d'E20.f6b (les
+boules de feu et de glace), pour ne pas livrer f6b avec l'écart.
+
+**But.** Comme l'original : une flèche (du chasseur, de William, chargée) ou une boule (de feu, de glace, après f6b) tirée à bout portant contre un
+mur s'arrête à la face du mur à son tick de naissance et rebondit (ou éclate) au tick du binaire. Aujourd'hui elle naît quelques pixels dans le
+mur, y reste figée environ 17 ticks puis disparaît sans rebond (la flèche chargée éclate un tick plus tard, dans le mur).
+
+**Faits** (FAIT, MESURÉ).
+- **La cause** (CONFIRMÉE par le critique) : une entité née en jeu est mise en file par `World.AddEntity` du moteur et n'est intégrée qu'en tête du
+  `World.Update` suivant ; la DLL la fait tourner dès son tick de naissance (`CollectTickEntities`, `JoinsBirthTick && entity.World == null`) et aux
+  ticks suivants de la même image ; tant que `World` est nul, `CharacterControllerComponent.MoveWithCollisions` ajoute le déplacement sans aucun
+  test (`TryResolveCollisionDependencies` rend faux) : un manque du moteur, à consigner (D-E20-35 refuse l'intégration immédiate). Le rognage de
+  bord (`ClampStepToMapEdge`) est une fonction pure de la DLL et marche déjà avant l'intégration ; `ReadCollisionField` rend déjà le champ de
+  l'hôte à une entité qui `JoinsBirthTick`.
+- **Le binaire** n'a aucune règle propre au premier pas : la même recherche par moitiés que partout (`ComputeXYPosition` `0x80037730` : le vecteur
+  entier essayé, puis divisé par deux sur X et Y à la fois, `sra 1` ; un pas accepté repart de la nouvelle position avec la moitié du reste ; un
+  pas entier accepté termine) ; le test de murs des non-héros (`0x800373E4` : un coin bloque si `mot & (0x40 | 0x01 si ClassB | 0x1000 si ClassA)`
+  ou si sa hauteur est ≥ `ModZ`) ; `ForceAdjusted` (`+0x13C`) n'est levé que si **aucun** sous-pas n'est accepté, et les projectiles ont
+  `NoObstacleSlide` (`0x2000`) : pas de glissement. La règle « la plus grande position libre » se trompe d'une unité brute sur 3 cellules sur 10
+  (x0 = 107 au pas de 3 px, x0 = 104 et 107 au pas de 6 px donnent `7143423`, 109 − 1 unité brute) : il faut la boucle par moitiés.
+- **Les clés de l'oracle** : gelées, `arrow3_point_blank` (et `_pf`), `fire11_point_blank` ; générées par la lecture (`out/keys/`) :
+  `arrow3_flush`, `arrow4_flush`, `arrow3_near105`, `charged7_flush`, `charged7_near105`, `fire11_flush`, `fire12_flush`, `ice14_flush`,
+  `ice15_flush` ; le héros collé au mur s'arrête à x = 109,000 (le cas courant). Au binaire, collé : la flèche reste à 109, le drapeau au tick S,
+  le statut 3 (le rebond, 1,875 px par tick pendant 16 ticks) à S+1 ; la flèche chargée détruite à S+1 avec l'effet 8.
+- **Le piège du drapeau** (le critique) : si le bornage écrit `FinalForceX = 0`, `SlideAlongWall` sort avant de lever `ForceAdjusted` (son test
+  `agrees` est faux) ; le drapeau doit se lever explicitement quand aucun sous-pas n'est accepté (comme `edgeAdjusted`).
+- **L'étendue** : les types 3, 4 et 7 sont câblés en production ; 11, 12, 14, 15 le seront par f6b ; la vague de l'épée ne bouge pas.
+
+**Décisions de la session.**
+- **D-E0K5-1** — Une fonction pure neuve d'`Alundra/Physics/` : la recherche par moitiés du binaire (sans entité candidate : les projectiles ne sont
+  pas sujets), sur le champ de l'hôte, avec le test de murs `0x800373E4`, en unités brutes ; elle rend la position finale et « un sous-pas accepté ».
+- **D-E0K5-2** — Elle ne sert **que** tant que l'entité n'est pas intégrée au monde (`Controller != null && Owner?.World == null && HasLogicalZ`), à
+  tous ses ticks non intégrés d'une image (Q-O24-3, défaut) ; le pas borné est passé à `Move` (qui l'ajoute tel quel) ; `ForceAdjusted` se lève
+  explicitement si aucun sous-pas n'est accepté. Après l'intégration, rien ne change (le déplaceur du moteur ; D-E19-58, D-E20-38 gardés).
+- **D-E0K5-3** — Le manque du moteur (« `Move` avant l'intégration ne teste rien ») se consigne dans `docs/plan-e20-annexe/e20-e0k5/engine-gaps.md`.
+
+**Périmètre.** `Alundra/Physics/` (la fonction pure) ; `Alundra/Physics/ScriptedMotion.cs` (`RunOneKinematicTick` : l'appel avant le `Move` d'avant
+l'intégration, le drapeau) ; les tests ; l'annexe `docs/plan-e20-annexe/e20-e0k5/` ; un ADR neuf ; ce plan (O-E20-24 fermé).
+
+**Hors périmètre.** Le moteur ; la recherche du pas après l'intégration (D-E20-80 garde le reste des écarts) ; f6b.
+
+**Tâches.**
+- ⏳ **T0 — Versement, oracle, sondes** (commit de docs). (a) Verser la partie A de `scratchpad/t2-proj/` (rapports, scripts, `out/keys/` avec leurs
+  manifestes) à `docs/plan-e20-annexe/e20-e0k5-disc/` ; produire les variantes `_pf` des clés générées (`f5/oracle/run_f5.py`, lues par
+  `ArrowOracle.Load(..., stepByImage: true)`) ; (b) rejouer `run_pointblank.py`, `pb_keys.py` et `work/xymodel.py` / `xyfuzz.py` depuis des copies,
+  sorties identiques ; (c) une sonde de la DLL (jetable, versée en `.txt`) : `PA2` avec une cellule de mur à 3 px (le trou du moteur) ; la flèche à
+  `heroX` 106, 107, 108, 109 contre la colonne 5 ; (d) la liste prédite des tests déplacés (`ArrowLifeTests` E7, `ChargedArrowLifeTests` C7, dont
+  les murs sont loin : attendus inchangés ; `BirthTickProbePaTests.PA2` reste vrai), mesurée par un câblage temporaire annulé. Arrêts : une sonde qui
+  contredit un fait ; plus de 10 tests existants déplacés.
+- ⏳ **T1 — Phase A, tests d'abord** (rouges sur un squelette) : la fonction pure contre le modèle `xymodel.py` (un fuzz d'au moins 20 000 cas, 0
+  écart) et contre les 10 cellules de la table de la lecture (dont `7143423` pour x0 = 107 et 104) ; puis le corps ; aucun changement de production.
+- ⏳ **T2 — Phase B, tests de monde rouges avant** (le vrai contrôleur, aux trois cadences) : `ArrowRun` à `heroX` 109 (la clé principale), 108 et
+  106, `Column(5)`, contre `arrow3_flush_pf`, `arrow3_point_blank_pf` et `arrow3_near105_pf`, de S à S+19 ; `ChargedArrowRun` contre
+  `charged7_flush` (la destruction à S+1) ; les quatre côtés (nord, sud, ouest, `pb_dirs.txt`) ; puis la ligne de la phase B ; verts. La suite
+  entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ; les traces de la 389 ; `cmp` ;
+  `check_names.py --rules` ; le moteur sans diff.
+- ⏳ **T3 — Mutants, ADR** : au moins 8 mutants réels, tous tués (la plus grande position libre au lieu de la boucle par moitiés ; la boucle sur un
+  seul axe ; le drapeau non levé ; le drapeau levé à S+1 ; le bornage aussi après l'intégration ; le test de murs sans `0x40` ; le coin à `>`
+  au lieu de `>=` ; le pas de la naissance laissé libre) ; un ADR neuf ; `engine-gaps.md` ; O-E20-24 fermé.
+- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (b) identiques ; T1 et T2 rouges avant et verts après ; la suite en Release et en Debug, zéro échec ; les tests
+déplacés ⊂ la liste de T0 (d) ; le moteur sans diff. **Recette de l'auteur** (non bloquante) : collé à un mur, tirer à l'arc du chasseur (la flèche
+rebondit tout de suite) et à l'arc de William chargé (la flèche éclate sur la face du mur).
+
+**Arrêts.** Un besoin de toucher au moteur ; une sonde qui contredit un fait ; un test hors de la liste prédite bouge ; un test qui boucle.
+
+**Budget.** Un `executor` par phase ; deux tentatives. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** La phase B se retire seule (le pas de la naissance redevient libre) ; la phase A ne change aucun comportement.
+
 ---
 
 **Points ouverts ajoutés.**
@@ -8527,6 +8604,75 @@ haricots), pas pour un objet lancé ; la marche avec un objet démarre **sans ra
 Conséquence de D-E20-39 : aucun chemin de production ne met un objet dans les mains avant g3 et g1b (ni avant h3 pour la bombe et les
 haricots) : g1a et g2a sont inertes en jeu et se valident par des tests et des valeurs de référence tirées du binaire. Questions
 Q-G1A-1 à Q-G1A-6 (§2).
+
+#### 1.24.7 E20.g1c — L'ombre du contact du binaire (O-G3-3) ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2 ; D-E20-80 ; à relire par un `plan-verifier` frais)
+
+**Provenance.** `docs/plan-e20-annexe/e20-step-search/` (la lecture et son critique : W4 et l'option D, `critic/work/crit_shadow.py`) ;
+`docs/plan-e20-annexe/e20-g1b/walk-release-disc/` (W4 : la cause d'O-G3-3) ; `docs/plan-e20-annexe/e20-g1b/t0b/` (la mesure d'O-G3-3 dans la DLL) ;
+l'épingle `CrateSolidityMap392Tests.OG33_…_PinnedNotFollowed`. D-E20-80 remplace D-E20-77 : l'ombre vit dans la DLL.
+
+**Prérequis.** E20.g1b faite ; la branche du thème 2. Aucun lien avec e0k5 (deux fonctions pures distinctes, la même recherche du binaire).
+
+**But.** Comme l'original : debout sur le dessus d'une caisse (ou en l'air), en marchant contre une caisse voisine plus haute, le contact
+(`XCollisionEntity`, que lit `PlayerTryAction`) apparaît au tick du binaire : un Carré au tick exact de l'arrivée donne l'épée, comme
+l'original, au lieu de soulever la caisse voisine.
+
+**Faits** (FAIT, MESURÉ).
+- **Le binaire** (`ComputeXYPosition`, rejoué ; le critique de `step-search` a corrigé la lecture) : hors de la branche « marche au sol »
+  (`0x80037834`-`0x80037884` : la gravité, `ForceZ == 0` et le sol à moins de 3 px), chaque tentative écrit `s4 = FindEntityCollisionCandidate(...)` ;
+  la valeur rendue (rangée en `+0x130`) est `s4` tel qu'il était en tête de la **dernière** tentative, soit le verdict de l'avant-dernière ; la
+  boucle est une recherche par moitiés : le contact au tick où le pas est raccourci dépend de la phase sous-pixel (sur la rec5 de la 392, nul à t38,
+  rec10 à t39). Dans la branche sol, `s4` n'est pas écrit quand la tentative est libre : le contact égale celui de la DLL (0 % d'écart).
+- **La DLL** : `XCollisionEntity = H2Obstacle ?? H1Obstacle` à chaque pas (`EntityScriptProxy.MoveControllerAndPullPosition`) : le premier candidat
+  qui a bloqué, au tick même du raccourcissement.
+- **L'ombre** (option D du critique, mesurée par `crit_shadow.py` sur le modèle) : recalculer le `+0x130` du binaire par une copie pure de la
+  recherche, depuis la position d'avant le pas, et l'écrire dans `XCollisionEntity` ; le désaccord du contact au tick 1 en appui passe de 59 %
+  (2,4375 px), 50 % (3 px), 66 % (6 px) à 0 % ; il en reste 7,8 % au tick 2 au pas de marche (les positions divergent du déficit, l'écart du pas
+  que D-E20-80 garde). Elle ne change ni `ForceAdjusted` ni la position.
+- **Les lecteurs de `XCollisionEntity`** : `PlayerTryAction` (le soulèvement), les interactions (`CheckEntityInteraction`), l'opcode `0xA9`, les
+  recherches d'entités 7 et 8, `PillarAi` (le compteur de poussée) ; T0 dit lesquels lisent le contact du héros hors de la branche sol (le pilier et
+  les boutons se poussent au sol : inchangés).
+
+**Décisions de la session.**
+- **D-G1C-1** — L'ombre ne vaut que **pour le héros** et **hors de la branche « marche au sol »** (la branche sol égale déjà le binaire) : une
+  fonction pure neuve d'`Alundra/Physics/`, la recherche par moitiés avec les candidats d'entités de la liste des collidables et le test de murs du
+  héros (`0x80037488`), depuis la position d'avant le pas ; son verdict remplace `XCollisionEntity` du héros à la fin du pas.
+- **D-G1C-2** — L'écart restant (7,8 % au tick 2, quand la position diverge du déficit) est gardé avec le reste des écarts du pas (D-E20-80) et
+  consigné par un test nommé.
+- **D-G1C-3** — Les autres entités gardent leur contact (les PNJ, les objets poussés) : hors de la tranche.
+
+**Périmètre.** `Alundra/Physics/` (la fonction pure) ; `Alundra/Entities/EntityScriptProxy.cs` (`MoveControllerAndPullPosition` : l'ombre pour le
+héros hors de la branche sol) ; les tests (dont l'épingle `OG33_…_PinnedNotFollowed`, réécrite par dérivation sur la valeur du binaire) ; l'annexe
+`docs/plan-e20-annexe/e20-g1c/` ; un ADR neuf ; ce plan (O-G3-3 fermé).
+
+**Hors périmètre.** Le moteur ; `ForceAdjusted` et la position ; les entités autres que le héros.
+
+**Tâches.**
+- ⏳ **T0 — Oracle, sondes, liste prédite** (commit de docs). (a) Rejouer `crit_shadow.py`, `xymodel.py` et la route R7 (`e20-g3/bin/a3_routes.py`,
+  `e20-g1b/t0/og33_square.py`) depuis des copies, sorties identiques ; (b) les lecteurs de `XCollisionEntity` du héros hors de la branche sol (le
+  code au HEAD) ; (c) une sonde de la DLL (jetable) : l'ombre câblée temporairement, la route R7 et un saut contre une caisse (g1b (b1) : le contact
+  en l'air égalait déjà l'oracle ; il doit rester égal) ; (d) la liste prédite des tests déplacés, mesurée par ce câblage temporaire, annulé ensuite
+  (attendu : l'épingle O-G3-3 ; les arcs de g4b (b3) et de g1b (m7) à surveiller). Arrêts : le contact en l'air (g1b (b1)) cesse d'égaler
+  l'oracle ; plus de 10 tests existants déplacés ; un besoin du moteur.
+- ⏳ **T1 — Phase A, tests d'abord** : la fonction pure contre le modèle (un fuzz d'au moins 20 000 cas, 0 écart sur le verdict rendu) ; puis le corps.
+- ⏳ **T2 — Phase B** : l'épingle O-G3-3 réécrite sur la valeur du binaire (rouge avant : la DLL pose le contact un tick trop tôt) ; un Carré au tick
+  de l'arrivée sur la rec5 donne l'épée, un tick plus tard soulève rec10 (rouge avant) ; le soulèvement en l'air (g1b (m7)) et au sol (g1b (m1))
+  inchangés ; l'écart restant épinglé par un test nommé (D-G1C-2) ; puis la ligne ; la suite entière en Release (copie neutralisée) puis en Debug en
+  dernier, zéro échec, partitions disjointes ; les traces de la 389 ; `cmp` ; `check_names.py --rules` ; le moteur sans diff.
+- ⏳ **T3 — Mutants, ADR** : au moins 8 mutants réels, tous tués (l'ombre aussi dans la branche sol ; le verdict de la dernière tentative au lieu de
+  l'avant-dernière ; l'ombre pour toute entité ; la position d'après le pas ; le test de murs des non-héros pour le héros ; un seul axe ; l'ombre
+  qui écrit aussi `ForceAdjusted` ; l'ombre retirée) ; un ADR neuf ; O-G3-3 fermé.
+- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (a) identiques ; T1 et T2 rouges avant et verts après ; le contact en l'air et au sol inchangé ; la suite en Release
+et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (d) ; le moteur sans diff.
+
+**Arrêts.** Le contact en l'air ou au sol cesse d'égaler l'oracle ; un test hors de la liste prédite bouge ; un besoin de toucher au moteur ; un test qui
+boucle.
+
+**Budget.** Un `executor` par phase ; deux tentatives. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** La phase B se retire seule (le contact redevient celui du moteur) ; la phase A ne change aucun comportement.
 
 ### 1.25 État des lieux des attaques et du portage (2026-10-16, lecture seule)
 
