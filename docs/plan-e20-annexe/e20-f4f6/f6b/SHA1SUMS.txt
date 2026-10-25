@@ -1,4 +1,4 @@
-7bcd7cf497cdab65771464fc5d648c1c4eb8d1b2 *./README.md
+11b89e18e0324593e278303b569e4ed9f41f3833 *./README.md
 e745adb47340d5f47fd504e61fbd7b211acb05cf *./oracle/check_plan_values.py
 822582dc6efb56dac93824ce5fb1be41c372e8c2 *./oracle/manifest.py
 abcc72529c89bc72f89e7c2c2f7572108c5ddd6a *./oracle/manifest.txt
@@ -31,3 +31,5 @@ eb524b8048f88b51f8235e25e6a61bb4fb7c0430 *./suite-wired/suiteC-C.p3.summary
 579bda9ecdd8b2623d3d29ffb42c9e4e65d7950e *./t1/red-on-skeleton.txt
 8175185d930370aa88955d4f29dcf683eedfc02b *./t1/mutate_f6b_t1.py
 affbc73bf69a51a7787592f1f157d2e3b9be69c0 *./t1/summarize_trx.py
+45d1d75384936864ec635c448cbba55213f92226 *./t2/results.md
+18cab2da5ca8aa90306f40e600fe980495c545fa *./t2/red-before-T3.txt

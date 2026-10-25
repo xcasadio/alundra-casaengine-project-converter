@@ -20,4 +20,5 @@ The annex above (`../bin`, `../critic`, `../dll`, `../tests`, `../state-3c923cf`
   (the throwaway edits of the tracked files), their outputs (`probes-balls-out.txt`, `probes-flames-out.txt`, `probes-p1-out.txt`) and `check-names-proposed.txt` (`check_names.py --rules` with the proposed files added).
 - `suite-wired/`: the red lists and summaries of the three partitions of the suite with the wiring of phase B (`suiteB-*`) and of phase C (`suiteC-*`), and `runpart.sh` (the one of `../../e20-e0k5/suite-wired/`).
 - `t1/` (phase A, T1): `results.md`, `red-on-skeleton.txt`, `mutate_f6b_t1.py`, `summarize_trx.py`.
+- `t2/` (phase B, T2 and T3): `results.md`, `red-before-T3.txt`, `green-after-T3.txt`.
 - `SHA1SUMS.txt`: SHA-1 of every file of this folder but `oracle/out` (the manifest covers it).
