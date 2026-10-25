@@ -528,7 +528,7 @@ public sealed class PickupAiPlacedTests : IDisposable
 
         Assert.Equal(2, registry.Count);
         Assert.All(Enumerable.Range(0, 400), type => Assert.False(registry.TryGet(ScriptHelper.ProgramFInteract, PickupAi.Code, type, out _), $"no (F, 255) for the type {type}"));
-        Assert.False(registry.TryGet(ScriptHelper.ProgramALoad, PickupAi.Code, 30, out _));
+        Assert.True(registry.TryGet(ScriptHelper.ProgramALoad, PickupAi.Code, 30, out _));  // E20.e0d phase A: A255 is registered for the chest (it draws it open when it holds nothing), the pickup's own C255 is not.
         Assert.False(registry.TryGet(ScriptHelper.ProgramCTick, PickupAi.Code, 30, out _));
         Assert.True(registry.TryGet(ScriptHelper.ProgramALoad, PickupAi.Code, 31, out _)); // the control: a placed type has both.
 

@@ -28,7 +28,7 @@ internal static class PickupAi
     /// <summary>The value of <c>+0x274</c> of a dropped object.</summary>
     internal const uint KindDropped = 1;
 
-    /// <summary>The sprite types of the objects of the global page that carry C255: 31 to 118 but 72 (87 types). The object is <c>type - 0x1E</c>. A255 is registered for the same 87 (the chest, type 30, is not: D-E0C-2).</summary>
+    /// <summary>The sprite types of the objects of the global page that carry C255: 31 to 118 but 72 (87 types). The object is <c>type - 0x1E</c>. A255 is registered for these 87 and for the chest, type 30 (E20.e0d, <see cref="ChestAi"/>; it was not before: D-E0C-2).</summary>
     internal static readonly int[] SpriteTypes = Enumerable.Range(31, 118 - 31 + 1).Where(type => type != 72).ToArray();
 
     /// <summary>The (slot, code) keys this class registers: A255 and C255.</summary>
@@ -62,8 +62,20 @@ internal static class PickupAi
     /// <summary>Registers A255 and C255 for <see cref="SpriteTypes"/>.</summary>
     internal static void Register(NativeSpriteRegistry registry)
     {
-        registry.Register(ScriptHelper.ProgramALoad, Code, SpriteTypes, (entity, context, state) => Load(entity));
+        registry.Register(ScriptHelper.ProgramALoad, Code, SpriteTypes.Append(ChestAi.SpriteType).ToArray(), (entity, context, state) => LoadOfAnyType(entity));
         registry.Register(ScriptHelper.ProgramCTick, Code, SpriteTypes, Tick);
+    }
+
+    /// <summary>A255 is one function for 88 types (<c>0x80061BD4</c>): the chest (type <c>0x1E</c>, E20.e0d: <see cref="ChestAi.Load"/>) or a pickup object (<see cref="Load"/>).</summary>
+    private static void LoadOfAnyType(EntityScriptProxy entity)
+    {
+        if (entity.SpriteType == ChestAi.SpriteType)
+        {
+            ChestAi.Load(entity);
+            return;
+        }
+
+        Load(entity);
     }
 
     /// <summary>
