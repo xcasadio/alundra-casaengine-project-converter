@@ -1419,6 +1419,9 @@ contre une cible à réponse ×1,0. Aujourd'hui : la sélection, le coup et les 
   deux blocs, le compteur à 20, le drapeau 1787 éteint ; Alundra doit marcher vers le nord, une sauvegarde ne portant pas la direction).
 - **D-B2-4** — La perte de la charge et de la vague quand l'objet 8 est possédé, même avec Elnard, comme l'original.
 - **D-B2-5** — Les objets des cartes de développement (11, 0) restent tels quels.
+- **D-B2-6** (2026-10-25, leçon de D-E0D-12) — La liste prédite de T0 (d) comprend le test de liste des préréglages
+  (`Alundra.Tests/SaveGames/TestSavesTests.cs`, `The…Presets_AreListed_InTheOrderOfTheTable`), changé mécaniquement par l'ajout de
+  `legende-m14` et `legende-m7` (son attendu gagne ces deux noms, son nom suit le compte) ; aucun autre test attendu.
 
 **Périmètre.** `Alundra/Events/EventProgramRunner.cs` (`case 0xC2`) ; `Alundra/SaveGames/TestSaves.cs` (le champ `DeathRetryCount` d'un
 préréglage, les deux préréglages) et ses tables, `docs/test-saves.md` ; les tests (`ItemInventoryTests`, `DamageTests`, un arc de la carte 7) ;
@@ -1432,11 +1435,12 @@ précisée).
   `docs/plan-e20-annexe/e20-b2-disc/` ; (b) les inventaires « legend » et « legend_holy » ajoutés aux clés de l'oracle c1b (K1, K2), rejoués
   depuis une copie ; (c) sondes de la DLL (jetables, versées en `.txt`) : la valeur de `Result` à pc 1508 et 1510 de `B[10]` au HEAD, la scène
   jouée avec le compteur à 19 et à 20 ; le ramassage de l'enregistrement 31 de la carte 7 : peut-on le toucher et le ramasser, dans la DLL, et au
-  binaire si l'oracle le permet. **Suite selon le résultat** : (c1) ramassable ni dans la DLL ni au binaire : l'arc de T3 ajoute une garde « au
+  binaire si l'oracle le permet (la scène se lit avant tout code). **Suite selon le résultat** : (c1) ramassable ni dans la DLL ni au binaire : l'arc de T3 ajoute une garde « au
   compteur 19, toucher l'enregistrement 31 ne donne pas l'objet 8 » ; (c2) ramassable au binaire : arrêt et question à l'auteur (une voie de
   l'original qui contourne `0xC2`) ; (c3) ramassable dans la DLL, pas au binaire : arrêt et question (un écart de la DLL dont la cause sort de la
   tranche : le ramassage, E20.e0c) ; (c4) le binaire n'est pas mesurable : l'écart possible se consigne (O-B2-1), le comportement de la DLL
-  s'épingle par un test nommé d'après lui, et le but se lit « l'obtention par la scène » ; (d) la liste prédite des tests déplacés (aucun attendu).
+  s'épingle par un test nommé d'après lui, et le but se lit « l'obtention par la scène » ; (d) la liste prédite des tests déplacés (le test de
+  liste des préréglages seul, D-B2-6).
 - ⏳ **T1 — Tests de sélection, d'équipement et de dégâts** (des gardes vertes si le code est déjà juste, nommées, chacune tuée par un mutant
   de T3 ; rouges d'abord s'il y a un écart) : possédant {1, 4, 8}, le créneau 1 rend 8 ; {1, 8} rend 8 ; l'enregistrement d'équipement [1] = l'objet
   8 et `[(6, 50)]` ; K2 « legend » (49 et la mort) ; un Beannoïde réel touché par l'objet 8 (51) et par l'épée de base (2) ; l'air `0x14` aussi ;
@@ -2868,7 +2872,9 @@ plan (dont la ligne d'enveloppe « E20.c2 », l'en-tête de h3a et D-H-7).
   un objet porté ; (d) **l'inventaire par exécution**, sur le HEAD de (a) : un câblage temporaire (jamais commité, versé en `.txt`) de
   l'entrée, du bloc, des cases dangereuses **et du clignotement de D-C2B-7**, la suite entière en Release, la liste nommée des tests qui
   bougent, **classée par cause** (blessure, case dangereuse, clignotement), `TouchingEntity`, les PV du héros et `IsVisible` des entités à
-  `DamagedTickCounter` non nul journalisés : c'est la liste prédite, à laquelle renvoient l'acceptation et les arrêts de T1 à T4 ; (e) les cases des préréglages et la case dangereuse de la vraie carte ; (f) le nom et le dossier du fichier neuf
+  `DamagedTickCounter` non nul journalisés : c'est la liste prédite, à laquelle renvoient l'acceptation et les arrêts de T1 à T4 ; elle
+  comprend aussi le test de liste des préréglages (`TestSavesTests.The…Presets_AreListed_InTheOrderOfTheTable`), changé mécaniquement
+  par `blessure-m15` et `blessure-m14` (D-E0D-12) ; (e) les cases des préréglages et la case dangereuse de la vraie carte ; (f) le nom et le dossier du fichier neuf
   (`tools/dll-structure/`). Arrêt : un fait ci-dessus contredit ; un besoin du moteur ; une chaîne d'histoire (389 à 392, 179, intro) qui
   bouge.
 - ⏳ **T1 — L'entrée, tests d'abord** (rouges avant) : (e1) la fonction pure contre A1, A2 (dégâts 4, 3, 2, 1, 1, 3 selon l'armure), A4,
