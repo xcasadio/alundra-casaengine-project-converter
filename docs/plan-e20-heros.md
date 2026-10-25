@@ -3640,7 +3640,7 @@ d'histoire qui bouge ; un besoin de toucher au moteur ; un test qui boucle.
 **Retour arrière.** Retirer l'appel de la fonction du tick du héros (le bit n'est plus jamais posé : Alundra nage partout, l'état
 d'aujourd'hui) ; puis le pseudo-bit et la lecture de `BlockedCorners`.
 
-#### 1.14.3 E20.i2b — La fonction des forces : la table de glissement, le décalage `SlideEffectId` et la poussée (O-E19-31, Q-H4-3) ⏳ (détaillée le 2026-10-25 ; thème 2, après i2a, avant h4e2 et h4f1 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
+#### 1.14.3 E20.i2b — La fonction des forces : la table de glissement, le décalage `SlideEffectId` et la poussée (O-E19-31, Q-H4-3) ⏳ (détaillée le 2026-10-25 ; thème 2, après i2a, avant h4e2 et h4f1 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture)
 
 **Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé cinq blocages, corrigés (FIX) : (1) (f1) comparait une fonction
 sans serrage à des vecteurs pris après le serrage (163 sur 200) et ne disait pas d'où vient la force F des vecteurs de la passe : (f1) ne
@@ -3648,6 +3648,12 @@ garde que les 37 vecteurs sans serrage, la source de chaque mot est nommée, les
 étaient équivalents (`sh` non signé, `sh` sans `& 31`, `SlideEffectId` lu non signé) : ils sont déclarés équivalents et remplacés par des
 mutants tuables ; (3) (w3) ne fixait pas l'ordre du passager et du porteur : il est écrit ; (4) le cas de l'entité portée de (w2) est vert
 avant le code : il devient un témoin ; (5) i2a et i2b partagent des fichiers : l'ordre est fixé, i2a puis i2b.
+
+**Révision 2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé trois
+blocages, corrigés : (1) une entité portée n'atteint jamais `RunOneKinematicTick` (`TickMotion` la renvoie par `FollowCarrier`) : la garde
+est retirée, le témoin (w2b) et son mutant visent `FollowCarrier` ; (2) la lecture du mot de carte n'était prouvée par aucun test qui passe
+par les deux sites : (w1) charge la vraie 159 par le monde, un mutant par site ; (3) (w1) n'avait ni colonnes ni règle d'écart : elles sont
+écrites, la comparaison est exacte et un écart est un arrêt.
 
 **Prérequis.** E20.i2a faite (révision 1 : elles partagent `ScriptedMotion.cs`, `EntityScriptProxy.cs`, `WorldProxy.cs`, le dossier de
 versement `e20-i2-disc/`, que verse i2a, et le test de liste des préréglages). Avant h4e2 et h4f1 (D-E20-61). Jamais en même temps qu'une
@@ -3676,20 +3682,22 @@ est en place pour les courants (i2c), inerte tant que `+0x188` vaut 0.
   (`EntityScriptProxy.cs:346-347`) est le `+0xCC/+0xD0`, sans consommateur (les oracles de Beannoïde et de Muruta y posent un marqueur
   `0x5A5A5A5A` et vérifient qu'il reste inchangé, sans passe physique) ; les mots de carte `Gravity` et `ZViscosity` lus par
   `ResolveMapGravitySettings` (`Alundra/Entities/Spawning/EntitySpawnFactory.cs:888-895`, rangés `:707`, `WorldProxy.cs:2254-2266`) ;
-  `SlideEffectId` exporté (propriété `"1"` sur la 159) mais non lu.
+  `SlideEffectId` exporté (propriété `"1"` sur la 159) mais non lu ; une entité portée par un porteur qui a un proxy ne passe jamais par
+  `RunOneKinematicTick` : `TickMotion` la renvoie par `FollowCarrier` (`EntityScriptProxy.cs:1808-1814`), qui met ses forces à 0 et ne touche
+  pas `PreviousAdjustedForceX/Y` (`:1847-1870`) ; un lien vers une entité sans proxy n'est pas un porteur (révision 2).
 
 **Décisions.**
 - **D-I2B-1** — Une fonction pure neuve d'`Alundra/Physics/` (nom contrôlé par `check_names.py`) : `adj = ((F + tab[idx]) >> (sh & 31)) + push`,
   sans serrage (critique K9 : le serrage reste `ClampStepToMapEdge`, à sa place ; l'écart d'ordre est consigné au site) ; elle rend aussi « la
   poussée consommée ».
 - **D-I2B-2** — Les tables X et Y : les 32 mots relus dans l'exécutable par T0, vérifiés mot à mot par un test (comme la table de nage d'E20.i).
-- **D-I2B-3** — `RunOneKinematicTick` l'appelle avant l'ajout du porteur et écrit `AdjustedForceX/Y` ; la poussée (`PreviousAdjustedForceX/Y`)
-  est consommée et remise à zéro pour le héros et toute entité non portée ; une entité portée (`PlatformEntity` non nul) garde ses forces à 0 et
-  sa poussée intacte.
+- **D-I2B-3** (révision 2) — `RunOneKinematicTick` l'appelle avant l'ajout du porteur et écrit `AdjustedForceX/Y` ; la poussée
+  (`PreviousAdjustedForceX/Y`) est consommée et remise à zéro pour toute entité qui y passe (le héros, les entités non portées) ; le cas porté
+  reste celui de `TickMotion`/`FollowCarrier` (forces à 0, poussée intacte, comme le binaire) : aucune garde dans `RunOneKinematicTick`.
 - **D-I2B-4** — `PeekAdjustedForce` applique la même fonction sans rien écrire (un passager lit la force d'un porteur qui dérive ou qui est
   poussé).
 - **D-I2B-5** — `SlideEffectId` (octet signé de l'en-tête de carte) est lu aux deux sites des mots de carte et rangé par entité, comme `Gravity`
-  et `ZViscosity`.
+  et `ZViscosity` : l'adoption (`WorldProxy.cs:2254-2266`, le héros) et la naissance (`EntitySpawnFactory.cs:707`, les entités nées).
 - **D-I2B-6** — L'indice de table vient de `TileAttributes & 0xF`, qui reste 0 jusqu'à i2c : la table est inerte.
 - **D-I2B-7** (Q-I2-6, défaut A) — Un préréglage `glissement-m159` (la carte 159 ; la case dérivée en T0) pour voir le ralentissement ; le test de
   liste des préréglages change mécaniquement (D-E0D-12).
@@ -3710,27 +3718,31 @@ est en place pour les courants (i2c), inerte tant que `+0x188` vaut 0.
   les vecteurs nommés qui le tuent ; les 163 vecteurs serrés relèvent du serrage à la carte (i2d) et les 40 de `vec_physpass_80036828.json`
   mêlent l'incrément de la force et la passe : ni les uns ni les autres ne sont rejoués par i2b ; (c) une clé neuve
   sur le harnais d'`e20-d` (fichier neuf) : Alundra qui marche et une entité lancée sur la carte 159 (`SlideEffectId` 1, la gravité 3 et la
-  viscosité 256 de la carte), les positions par tick, au manifeste, deux exécutions ; (d) le recensement de `SlideEffectId` (159 et 160 seules) ;
+  viscosité 256 de la carte), par tick `AdjustedForceX/Y` et X/Y (le héros sur sa marche ; l'entité lancée jusqu'au tick qui précède
+  son atterrissage, ni Z ni sol comparés), au manifeste, deux exécutions ; (d) le recensement de `SlideEffectId` (159 et 160 seules) ;
   (e) l'inventaire par exécution (un câblage temporaire, la suite entière, versé en `.txt`) : la liste prédite (attendue : le test de liste des
   préréglages et, peut-être, aucun autre ; à surveiller : `HeroObjectTopsTests.cs:494-512`, les tests de dépôt sur la 159 qui posent la gravité à
   la main) ; (f) la case du préréglage.
 - ⏳ **T1 — Tests d'abord** (rouges avant) : (f1) la fonction pure contre les 37 vecteurs sans serrage de T0 (b), chaque mot
   tiré du vecteur : F = les mots lus `+0xC4/+0xC8`, la poussée `+0xCC/+0xD0`, l'indice `+0x188 & 0xF`, `sh` = `shift_byte & 31`, la table lue
   dans `0x80028B94`/`0x80028BD4` ; attendus : les mots écrits `+0xDC/+0xE0` et `+0xCC/+0xD0` remis à 0 ; (f2) les tables contre l'exécutable, mot à mot ; (f3) `sh` signé `& 31` : 1 divise par deux, la poussée non décalée
-  (vecteurs nommés) ; (w1) sur la carte 159, contre la clé de T0 (c) : la marche d'Alundra à 79 872 par tick pour `ForceX` 159 744 ; l'entité
-  lancée ralentie de même ; (w2) une poussée de 131 072 posée sur le héros avant un tick : +2 px à ce tick, 0 au suivant ; (w3) un passager d'un porteur poussé,
+  (vecteurs nommés) ; (w1) (révision 2) la vraie carte 159 chargée par le monde (le précédent : `PickupAiDropWorldTests`), Alundra adopté par `WorldProxy`
+  et l'entité lancée née par `EntitySpawnFactory`, contre la clé de T0 (c) sur ses seules colonnes (`AdjustedForceX/Y` et X/Y par tick, le
+  héros sur sa marche, l'entité jusqu'au tick qui précède son atterrissage), **comparaison exacte** : la marche d'Alundra à 79 872 par tick
+  pour `ForceX` 159 744, l'entité lancée ralentie de même ; (w2) une poussée de 131 072 posée sur le héros avant un tick : +2 px à ce tick, 0 au suivant ; (w3) un passager d'un porteur poussé,
   le passager à un emplacement plus bas que le porteur (il passe avant lui dans la passe, la branche de `PeekAdjustedForce` qui calcule),
-  suit la force ajustée du porteur ; témoins verts avant et après : (w2b) une entité portée garde sa poussée (ni consommée ni remise à
-  zéro), tuée par le mutant « la poussée consommée par une entité portée » ; témoin vert avant et après :
+  suit la force ajustée du porteur ; témoins verts avant et après : (w2b) une entité portée par un porteur qui a un proxy, passée par `TickMotion`
+  (`FollowCarrier`), garde sa poussée (ni consommée ni remise à zéro), tuée par le mutant « `FollowCarrier` remet la poussée à zéro » ; témoin vert avant et après :
   (w4) sur une carte à `SlideEffectId` 0 et sans poussée, `adj = F` partout (les arcs de la chaîne inchangés), tué par le mutant « décalage de 1
   partout » ; puis le code ; le préréglage et son test de contenu.
 - ⏳ **T2 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
   `cmp` ; `check_names.py --rules` ; au moins 11 mutants réels, chacun tué par le test qu'il nomme (les vecteurs nommés par T0 (b)) : la poussée
-  décalée ((f1), (f3)) ; la poussée non remise à zéro ((f1), (w2)) ; la poussée consommée par une entité portée (le témoin (w2b)) ; l'indice de
+  décalée ((f1), (f3)) ; la poussée non remise à zéro ((f1), (w2)) ; `FollowCarrier` qui remet la poussée à zéro (le témoin (w2b)) ; l'indice de
   table pris sur 3 bits ((f1) : 19 des 37 vecteurs ont un indice ≥ 8) ; X et Y des tables échangés ((f2), (f1)) ; la table ajoutée après le
   décalage ((f1)) ; le décalage arithmétique remplacé par un décalage logique ((f1) : 18 vecteurs ont une force négative et un décalage non
   nul) ; les poussées X et Y échangées ((f1) : 33 vecteurs ont deux poussées différentes) ; `PeekAdjustedForce` sans la fonction ((w3)) ; le mot
-  de carte non rangé à l'adoption ((w1)) ; un décalage de 1 partout (le témoin (w4)) ; **équivalents déclarés** (révision 1) : `sh` lu non
+  de carte non rangé à l'adoption ((w1), le héros) ; le mot de carte non rangé à la naissance par `EntitySpawnFactory` ((w1), l'entité
+  lancée) ; un décalage de 1 partout (le témoin (w4)) ; **équivalents déclarés** (révision 1) : `sh` lu non
   signé et `SlideEffectId` lu non signé (les 5 bits bas d'un octet sont les mêmes signé ou non), `sh` sans `& 31` (le décalage d'un `int` en
   C# masque déjà le compte par 31) ; un ADR neuf (numéro libre recompté).
 - ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
@@ -3740,7 +3752,8 @@ est en place pour les courants (i2c), inerte tant que `+0x188` vaut 0.
 déplacés ⊂ la liste de T0 (e), chacun réécrit par dérivation ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non
 bloquante) : `glissement-m159` (Alundra avance deux fois moins vite).
 
-**Arrêts.** Un vecteur qui diffère ; une clé de T0 (c) qui diffère d'une exécution à l'autre ; un test hors de la liste prédite qui bouge ; un arc
+**Arrêts.** Un vecteur qui diffère ; une clé de T0 (c) qui diffère d'une exécution à l'autre ; (révision 2) un écart de (w1) à la clé de T0 (c)
+sur ses colonnes (aucune tolérance) ; un test hors de la liste prédite qui bouge ; un arc
 de la chaîne qui bouge ; un besoin de toucher au moteur ; un test qui boucle.
 
 **Budget.** Un `executor` par tâche (T0, T1, T2) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
