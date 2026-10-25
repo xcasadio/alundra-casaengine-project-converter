@@ -12034,7 +12034,7 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B (l'entrée et l'appel) ; la phase A : le fichier, l'inscription, l'API du tampon, le créateur, le champ.
 
-#### 1.31.6 E20.h4d2 — Le feu 1 : le pilote `0x80035A84`, la colonne, C63, E3 pour le type 23 et l'annulation `0x80034D2C` ⏳ (détaillée le 2026-10-18 ; **READY** à la première relecture, `b20eb8c` ; **révision 2 du 2026-10-25** : D-E20-55 et D-E20-57, R-EL-6 révisée, nouvelle époque ; relue : REVISE ; révision 2.1 du 2026-10-25, à relire par un `plan-verifier` frais)
+#### 1.31.6 E20.h4d2 — Le feu 1 : le pilote `0x80035A84`, la colonne, C63, E3 pour le type 23 et l'annulation `0x80034D2C` ⏳ (détaillée le 2026-10-18 ; **READY** à la première relecture, `b20eb8c` ; **révision 2 du 2026-10-25** : D-E20-55 et D-E20-57, R-EL-6 révisée, nouvelle époque ; relue : REVISE ; révision 2.1 du 2026-10-25, **READY** à la deuxième relecture, `plan-verifier` frais)
 
 **Révision 2 (2026-10-25, nouvelle époque).** Deux réponses de l'auteur du 2026-10-22 changent la tranche (lecture seule du 2026-10-25,
 `scratchpad/t2-next/h4-rev/` et sa critique, à verser par T0 (a)) : (1) Q-H4D2-1, B (D-E20-57) : la boule tourne comme l'original, boucles
