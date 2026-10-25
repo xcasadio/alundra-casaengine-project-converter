@@ -1,0 +1,4 @@
+   at InvokeStub_FirstStepBoundWorldTests.Arrow_Witness_AtHeroX105_TheFreeStepTo108IsNotBounded(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Échoué!  - échec :    14, réussite :    39, ignorée(s) :     0, total :    53, durée : 14 s - Alundra.Tests.dll (net9.0)

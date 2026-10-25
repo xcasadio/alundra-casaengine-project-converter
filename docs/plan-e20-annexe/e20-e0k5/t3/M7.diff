@@ -1,0 +1,13 @@
+diff --git a/Alundra/Physics/ScriptedMotion.cs b/Alundra/Physics/ScriptedMotion.cs
+index 02042ee7..9f2852f6 100644
+--- a/Alundra/Physics/ScriptedMotion.cs
++++ b/Alundra/Physics/ScriptedMotion.cs
+@@ -997,7 +997,7 @@ internal static class ScriptedMotion
+         for (var i = 0; i < 4; i++)
+         {
+             var point = new Vector3(xs[i & 1], ys[i >> 1], 0f);
+-            if (!field.TrySampleGround(point, float.MaxValue, mask, out var sample) || !sample.IsWalkable || sample.GroundHeight > reach)
++            if (!field.TrySampleGround(point, float.MaxValue, mask, out var sample) || !sample.IsWalkable || sample.GroundHeight >= reach)
+             {
+                 blocked |= 1 << i;
+             }

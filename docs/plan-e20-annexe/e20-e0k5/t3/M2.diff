@@ -1,0 +1,13 @@
+diff --git a/Alundra/Physics/HalvingStepSearch.cs b/Alundra/Physics/HalvingStepSearch.cs
+index 7aa7f3cd..6aa9ac3e 100644
+--- a/Alundra/Physics/HalvingStepSearch.cs
++++ b/Alundra/Physics/HalvingStepSearch.cs
+@@ -17,7 +17,7 @@ public static class HalvingStepSearch
+     public static HalvingStepResult Search(int forceX, int forceY, bool cardinal, Func<int, int, bool> isBlockedAt)
+     {
+         var stepX = forceX;
+-        var stepY = forceY;
++        var stepY = 0;
+         if (stepX == 0 && stepY == 0)
+         {
+             return new HalvingStepResult(0, 0, false);

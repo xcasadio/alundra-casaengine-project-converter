@@ -1,0 +1,251 @@
+  Identification des projets à restaurer...
+  Tous les projets sont à jour pour la restauration.
+  MGUI.Rendering.Abstractions -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\MGUI\MGUI.Rendering.Abstractions\bin\Release\net9.0\MGUI.Rendering.Abstractions.dll
+  CasaEngine.Compiler -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\CasaEngine.Compiler\bin\Release\net9.0\CasaEngine.Compiler.dll
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Shared/Content/Icons/ScrollMarker.png
+  MGUI.Shared -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\MGUI\MGUI.Shared\bin\Release\net9.0\MGUI.Shared.dll
+  MGUI.MonoGame.Integration -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\MGUI\MGUI.MonoGame.Integration\bin\Release\net9.0\MGUI.MonoGame.Integration.dll
+  MGUI.FontStashSharp -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\MGUI\MGUI.FontStashSharp\bin\Release\net9.0\MGUI.FontStashSharp.dll
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/10_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/10_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/10_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/11_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/11_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/11_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/12_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/12_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/12_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/13_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/13_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/13_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/14_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/14_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/14_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/16_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/16_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/16_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/18_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/18_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/18_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/20_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/20_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/20_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/24_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/24_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/24_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/36_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/36_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/36_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/48_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/48_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/48_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/72_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/72_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/72_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/8_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/8_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/8_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/9_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/9_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/9_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/AngryMeteor_MilitaryIconsSet.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/CheckMark_64x64.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/maximize-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/maximize-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/minimize-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/minimize-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-bottom-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-bottom-dashed-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-bottom-dashed-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-bottom-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-center-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-center-dashed-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-center-dashed-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-center-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-left-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-left-dashed-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-left-dashed-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-left-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-right-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-right-dashed-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-right-dashed-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-right-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-top-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-top-dashed-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-top-dashed-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-top-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/pin-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/pin-off-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/pin-off-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/pin-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/x-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/x-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/ttf/arial.ttf
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/ttf/arialbd.ttf
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/ttf/arialbi.ttf
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/ttf/ariali.ttf
+  MGUI.Core -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\MGUI\MGUI.Core\bin\Release\net9.0-windows\MGUI.Core.dll
+  CasaEngine -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\CasaEngine\bin\Release\net9.0-windows\CasaEngine.dll
+D:\development\repo\alundra-casaengine-project-converter\Alundra\Dialogues\Yarn\YarnVariableStorage.cs(61,17): warning CS8767: La nullabilité des types référence dans le type du paramètre 'result' de 'bool YarnVariableStorage.TryGetValue<T>(string variableName, out T? result)' ne correspond pas au membre implémenté implicitement 'bool IVariableAccess.TryGetValue<T>(string variableName, out T? result)' (probablement en raison des attributs de nullabilité). [D:\development\repo\alundra-casaengine-project-converter\Alundra\Alundra.csproj]
+D:\development\repo\alundra-casaengine-project-converter\Alundra\Maps\WorldProxy.cs(1099,37): warning CS8602: Déréférencement d'une éventuelle référence null. [D:\development\repo\alundra-casaengine-project-converter\Alundra\Alundra.csproj]
+  Alundra -> D:\development\repo\alundra-casaengine-project-converter\Alundra\bin\Release\net9.0-windows\Alundra.dll
+  Alundra.Tests -> D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\bin\Release\net9.0-windows\Alundra.Tests.dll
+Série de tests pour D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\bin\Release\net9.0-windows\Alundra.Tests.dll (.NETCoreApp,Version=v9.0)
+Au total, 1 fichiers de test ont correspondu au modèle spécifié.
+[xUnit.net 00:00:07.47]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX105_ThreeTicksPerFrame_TheSecondStepStillUnintegratedIsBoundedTo109 [FAIL]
+[xUnit.net 00:00:08.10]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheFirstIntegratedTick_IsDecidedByTheMover_TheFlagIsRaisedAtSPlus1_NotAtSPlus2(ticksPerFrame: 2) [FAIL]
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX105_ThreeTicksPerFrame_TheSecondStepStillUnintegratedIsBoundedTo109 [648 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                                   ↓ (pos 115)
+Expected: ···"eset=0\n  1: st=2 x=7143424 y=6553600 z=10"···
+Actual:   ···"eset=0\n  1: st=2 x=7077888 y=6553600 z=10"···
+                                   ↑ (pos 115)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertArrowLines(Int32 heroX, String name, Int32 ticksPerFrame, Int32 count) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 33
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX105_ThreeTicksPerFrame_TheSecondStepStillUnintegratedIsBoundedTo109() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 79
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheFirstIntegratedTick_IsDecidedByTheMover_TheFlagIsRaisedAtSPlus1_NotAtSPlus2(ticksPerFrame: 2) [620 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+              ↓ (pos 3)
+Expected: "st=2 x=7143424 y=6553600 z=1048577 fx=393"···
+Actual:   "st=3 x=6889472 y=6553600 z=1310721 fx=-12"···
+              ↑ (pos 3)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheFirstIntegratedTick_IsDecidedByTheMover_TheFlagIsRaisedAtSPlus1_NotAtSPlus2(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 107
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:08.79]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheFirstIntegratedTick_IsDecidedByTheMover_TheFlagIsRaisedAtSPlus1_NotAtSPlus2(ticksPerFrame: 1) [FAIL]
+[xUnit.net 00:00:09.40]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(ticksPerFrame: 1) [FAIL]
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheFirstIntegratedTick_IsDecidedByTheMover_TheFlagIsRaisedAtSPlus1_NotAtSPlus2(ticksPerFrame: 1) [691 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+              ↓ (pos 3)
+Expected: "st=2 x=7143424 y=6553600 z=1048577 fx=393"···
+Actual:   "st=3 x=6889472 y=6553600 z=1310721 fx=-12"···
+              ↑ (pos 3)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheFirstIntegratedTick_IsDecidedByTheMover_TheFlagIsRaisedAtSPlus1_NotAtSPlus2(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 107
+   at InvokeStub_FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheFirstIntegratedTick_IsDecidedByTheMover_TheFlagIsRaisedAtSPlus1_NotAtSPlus2(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(ticksPerFrame: 1) [605 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                        ↓ (pos 13)
+Expected: "  0: st=2 x=7143424 y=6553600 z=1048577 f"···
+Actual:   "  0: st=2 x=7077888 y=6553600 z=1048577 f"···
+                        ↑ (pos 13)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertArrowLines(Int32 heroX, String name, Int32 ticksPerFrame, Int32 count) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 33
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 56
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:10.02]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(ticksPerFrame: 3) [FAIL]
+[xUnit.net 00:00:10.51]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(ticksPerFrame: 2) [FAIL]
+[xUnit.net 00:00:11.12]     Alundra.Tests.Physics.FirstStepBoundWorldTests.ChargedArrow_AtHeroX105_TheFreeStepOf6PxTo111IsBoundedTo109(ticksPerFrame: 3) [FAIL]
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(ticksPerFrame: 3) [619 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                        ↓ (pos 13)
+Expected: "  0: st=2 x=7143424 y=6553600 z=1048577 f"···
+Actual:   "  0: st=2 x=7077888 y=6553600 z=1048577 f"···
+                        ↑ (pos 13)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertArrowLines(Int32 heroX, String name, Int32 ticksPerFrame, Int32 count) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 33
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 56
+   at InvokeStub_FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(ticksPerFrame: 2) [490 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                        ↓ (pos 13)
+Expected: "  0: st=2 x=7143424 y=6553600 z=1048577 f"···
+Actual:   "  0: st=2 x=7077888 y=6553600 z=1048577 f"···
+                        ↑ (pos 13)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertArrowLines(Int32 heroX, String name, Int32 ticksPerFrame, Int32 count) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 33
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 56
+   at InvokeStub_FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.ChargedArrow_AtHeroX105_TheFreeStepOf6PxTo111IsBoundedTo109(ticksPerFrame: 3) [601 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                       ↓ (pos 12)
+Expected: "  0: st=2 x=7143424 y=6553600 zpx=8 fx=39"···
+Actual:   "  0: st=2 x=6881280 y=6553600 zpx=8 fx=39"···
+                       ↑ (pos 12)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertChargedLines(Int32 heroX, String name, Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 43
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.ChargedArrow_AtHeroX105_TheFreeStepOf6PxTo111IsBoundedTo109(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 85
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:11.68]     Alundra.Tests.Physics.FirstStepBoundWorldTests.ChargedArrow_AtHeroX105_TheFreeStepOf6PxTo111IsBoundedTo109(ticksPerFrame: 2) [FAIL]
+[xUnit.net 00:00:12.29]     Alundra.Tests.Physics.FirstStepBoundWorldTests.ChargedArrow_AtHeroX105_TheFreeStepOf6PxTo111IsBoundedTo109(ticksPerFrame: 1) [FAIL]
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.ChargedArrow_AtHeroX105_TheFreeStepOf6PxTo111IsBoundedTo109(ticksPerFrame: 2) [564 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                       ↓ (pos 12)
+Expected: "  0: st=2 x=7143424 y=6553600 zpx=8 fx=39"···
+Actual:   "  0: st=2 x=6881280 y=6553600 zpx=8 fx=39"···
+                       ↑ (pos 12)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertChargedLines(Int32 heroX, String name, Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 43
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.ChargedArrow_AtHeroX105_TheFreeStepOf6PxTo111IsBoundedTo109(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 85
+   at InvokeStub_FirstStepBoundWorldTests.ChargedArrow_AtHeroX105_TheFreeStepOf6PxTo111IsBoundedTo109(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.ChargedArrow_AtHeroX105_TheFreeStepOf6PxTo111IsBoundedTo109(ticksPerFrame: 1) [603 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                       ↓ (pos 12)
+Expected: "  0: st=2 x=7143424 y=6553600 zpx=8 fx=39"···
+Actual:   "  0: st=2 x=6881280 y=6553600 zpx=8 fx=39"···
+                       ↑ (pos 12)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertChargedLines(Int32 heroX, String name, Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 43
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.ChargedArrow_AtHeroX105_TheFreeStepOf6PxTo111IsBoundedTo109(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 85
+   at InvokeStub_FirstStepBoundWorldTests.ChargedArrow_AtHeroX105_TheFreeStepOf6PxTo111IsBoundedTo109(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:12.94]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(ticksPerFrame: 1) [FAIL]
+[xUnit.net 00:00:13.54]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(ticksPerFrame: 2) [FAIL]
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(ticksPerFrame: 1) [650 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                        ↓ (pos 13)
+Expected: "  0: st=2 x=7143423 y=6553600 z=1048577 f"···
+Actual:   "  0: st=2 x=7012352 y=6553600 z=1048577 f"···
+                        ↑ (pos 13)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertArrowLines(Int32 heroX, String name, Int32 ticksPerFrame, Int32 count) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 33
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 69
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(ticksPerFrame: 2) [599 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                        ↓ (pos 13)
+Expected: "  0: st=2 x=7143423 y=6553600 z=1048577 f"···
+Actual:   "  0: st=2 x=7012352 y=6553600 z=1048577 f"···
+                        ↑ (pos 13)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertArrowLines(Int32 heroX, String name, Int32 ticksPerFrame, Int32 count) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 33
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 69
+   at InvokeStub_FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:15.14]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_ThreeTicksPerFrame_TheStep110IsBoundedBelow109ByOneRawUnit_TheHalvingNotTheLargestFreePosition [FAIL]
+Message du collecteur de données 'Blame' : Tous les tests ont fini de s'exécuter. Le fichier de séquence ne sera pas généré.
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_ThreeTicksPerFrame_TheStep110IsBoundedBelow109ByOneRawUnit_TheHalvingNotTheLargestFreePosition [576 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                        ↓ (pos 13)
+Expected: "  0: st=2 x=7143423 y=6553600 z=1048577 f"···
+Actual:   "  0: st=2 x=7012352 y=6553600 z=1048577 f"···
+                        ↑ (pos 13)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertArrowLines(Int32 heroX, String name, Int32 ticksPerFrame, Int32 count) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 33
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_ThreeTicksPerFrame_TheStep110IsBoundedBelow109ByOneRawUnit_TheHalvingNotTheLargestFreePosition() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 60
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Échoué!  - échec :    12, réussite :    41, ignorée(s) :     0, total :    53, durée : 14 s - Alundra.Tests.dll (net9.0)

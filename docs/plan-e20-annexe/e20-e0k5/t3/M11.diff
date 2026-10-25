@@ -1,0 +1,16 @@
+diff --git a/Alundra/Physics/HalvingStepSearch.cs b/Alundra/Physics/HalvingStepSearch.cs
+index 7aa7f3cd..4979f18f 100644
+--- a/Alundra/Physics/HalvingStepSearch.cs
++++ b/Alundra/Physics/HalvingStepSearch.cs
+@@ -32,11 +32,6 @@ public static class HalvingStepSearch
+             if (!isBlockedAt(acceptedX + stepX, acceptedY + stepY))
+             {
+                 accepted = true;
+-                if (attempt == 0)
+-                {
+-                    return new HalvingStepResult(stepX, stepY, true);
+-                }
+-
+                 acceptedX += stepX;
+                 acceptedY += stepY;
+             }

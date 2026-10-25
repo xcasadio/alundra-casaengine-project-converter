@@ -1,0 +1,3 @@
+# E20.e0k5: gap of the engine (D-E0K5-3)
+
+- **`Move` before the integration tests nothing.** An entity added with `World.AddEntity` is queued until the head of the next `World.Update`; until then the kinematic controller `Move` returns the requested step unchanged (T0 probe: `Move((5,0,0))` returns `(5,0,0)` with a wall cell at 3 px, and `(0,0,0)` after one engine frame). The DLL works around it in `ScriptedMotion.RunOneKinematicTick` (halving search of the binary, ADR-0097). A fix belongs to the engine (test the field at the add, or integrate immediately); not done here (the engine is out of scope).

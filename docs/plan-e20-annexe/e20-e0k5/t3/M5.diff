@@ -1,0 +1,13 @@
+diff --git a/Alundra/Physics/ScriptedMotion.cs b/Alundra/Physics/ScriptedMotion.cs
+index 02042ee7..7123a52b 100644
+--- a/Alundra/Physics/ScriptedMotion.cs
++++ b/Alundra/Physics/ScriptedMotion.cs
+@@ -672,7 +672,7 @@ internal static class ScriptedMotion
+         // E20.e0k5 (D-E0K5-2): an entity born in the game is not yet in the world of the engine (World.AddEntity queues it until the head of the next World.Update) and the mover then adds the step without any test; the step is bounded here by the halving
+         // search of the binary (ComputeXYPosition 0x80037730, HalvingStepSearch) on the field of the host, at every tick it runs unintegrated. ForceAdjusted (+0x13C) is raised when no sub-step is accepted. Once integrated, the mover of the engine decides (D-E19-58, D-E20-38).
+         var noStepAccepted = false;
+-        if (entity.Controller != null && entity.HasLogicalZ && entity.SelfEntity?.World == null && (entity.FinalForceX != 0 || entity.FinalForceY != 0))
++        if (entity.Controller != null && entity.HasLogicalZ && (entity.FinalForceX != 0 || entity.FinalForceY != 0))
+         {
+             var bounded = HalvingStepSearch.Search(entity.FinalForceX, entity.FinalForceY, (entity.TargetDirection & 7) == 0, (dx, dy) => BlockedCorners(entity, dx, dy) != 0);
+             entity.FinalForceX = bounded.X;

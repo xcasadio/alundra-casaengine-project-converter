@@ -1,0 +1,384 @@
+  Identification des projets à restaurer...
+  Tous les projets sont à jour pour la restauration.
+  MGUI.Rendering.Abstractions -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\MGUI\MGUI.Rendering.Abstractions\bin\Release\net9.0\MGUI.Rendering.Abstractions.dll
+  CasaEngine.Compiler -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\CasaEngine.Compiler\bin\Release\net9.0\CasaEngine.Compiler.dll
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Shared/Content/Icons/ScrollMarker.png
+  MGUI.Shared -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\MGUI\MGUI.Shared\bin\Release\net9.0\MGUI.Shared.dll
+  MGUI.MonoGame.Integration -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\MGUI\MGUI.MonoGame.Integration\bin\Release\net9.0\MGUI.MonoGame.Integration.dll
+  MGUI.FontStashSharp -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\MGUI\MGUI.FontStashSharp\bin\Release\net9.0\MGUI.FontStashSharp.dll
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/10_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/10_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/10_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/11_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/11_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/11_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/12_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/12_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/12_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/13_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/13_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/13_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/14_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/14_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/14_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/16_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/16_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/16_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/18_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/18_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/18_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/20_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/20_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/20_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/24_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/24_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/24_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/36_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/36_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/36_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/48_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/48_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/48_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/72_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/72_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/72_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/8_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/8_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/8_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/9_Bold.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/9_Italic.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/Arial/9_Normal.spritefont
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/AngryMeteor_MilitaryIconsSet.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/CheckMark_64x64.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/maximize-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/maximize-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/minimize-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/minimize-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-bottom-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-bottom-dashed-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-bottom-dashed-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-bottom-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-center-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-center-dashed-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-center-dashed-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-center-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-left-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-left-dashed-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-left-dashed-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-left-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-right-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-right-dashed-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-right-dashed-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-right-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-top-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-top-dashed-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-top-dashed-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/panel-top-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/pin-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/pin-off-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/pin-off-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/pin-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/x-black.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Icons/docking/x-white.png
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/ttf/arial.ttf
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/ttf/arialbd.ttf
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/ttf/arialbi.ttf
+  Skipping D:/development/repo/alundra-casaengine-project-converter/CasaEngineMonogame/MGUI/MGUI.Core/Content/Fonts/ttf/ariali.ttf
+  MGUI.Core -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\MGUI\MGUI.Core\bin\Release\net9.0-windows\MGUI.Core.dll
+  CasaEngine -> D:\development\repo\alundra-casaengine-project-converter\CasaEngineMonogame\CasaEngine\bin\Release\net9.0-windows\CasaEngine.dll
+D:\development\repo\alundra-casaengine-project-converter\Alundra\Dialogues\Yarn\YarnVariableStorage.cs(61,17): warning CS8767: La nullabilité des types référence dans le type du paramètre 'result' de 'bool YarnVariableStorage.TryGetValue<T>(string variableName, out T? result)' ne correspond pas au membre implémenté implicitement 'bool IVariableAccess.TryGetValue<T>(string variableName, out T? result)' (probablement en raison des attributs de nullabilité). [D:\development\repo\alundra-casaengine-project-converter\Alundra\Alundra.csproj]
+D:\development\repo\alundra-casaengine-project-converter\Alundra\Maps\WorldProxy.cs(1099,37): warning CS8602: Déréférencement d'une éventuelle référence null. [D:\development\repo\alundra-casaengine-project-converter\Alundra\Alundra.csproj]
+  Alundra -> D:\development\repo\alundra-casaengine-project-converter\Alundra\bin\Release\net9.0-windows\Alundra.dll
+  Alundra.Tests -> D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\bin\Release\net9.0-windows\Alundra.Tests.dll
+Série de tests pour D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\bin\Release\net9.0-windows\Alundra.Tests.dll (.NETCoreApp,Version=v9.0)
+Au total, 1 fichiers de test ont correspondu au modèle spécifié.
+[xUnit.net 00:00:13.29]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(ticksPerFrame: 1) [FAIL]
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(ticksPerFrame: 1) [639 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                             ↓ (pos 18)
+Expected: "  0: st=2 x=7143423 y=6553600 z=1048577 f"···
+Actual:   "  0: st=2 x=7143424 y=6553600 z=1048577 f"···
+                             ↑ (pos 18)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertArrowLines(Int32 heroX, String name, Int32 ticksPerFrame, Int32 count) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 33
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 69
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:13.99]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(ticksPerFrame: 2) [FAIL]
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(ticksPerFrame: 2) [689 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                             ↓ (pos 18)
+Expected: "  0: st=2 x=7143423 y=6553600 z=1048577 f"···
+Actual:   "  0: st=2 x=7143424 y=6553600 z=1048577 f"···
+                             ↑ (pos 18)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertArrowLines(Int32 heroX, String name, Int32 ticksPerFrame, Int32 count) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 33
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(Int32 ticksPerFrame) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 69
+   at InvokeStub_FirstStepBoundWorldTests.Arrow_AtHeroX107_OneAndTwoTicksPerFrame_TheBirthTickIsBoundedBelow109ByOneRawUnit(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:15.72]     Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_ThreeTicksPerFrame_TheStep110IsBoundedBelow109ByOneRawUnit_TheHalvingNotTheLargestFreePosition [FAIL]
+[xUnit.net 00:00:16.24]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "south_2px_y116") [FAIL]
+[xUnit.net 00:00:16.24]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_6px_x105") [FAIL]
+[xUnit.net 00:00:16.25]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3unit_halves") [FAIL]
+  Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_ThreeTicksPerFrame_TheStep110IsBoundedBelow109ByOneRawUnit_TheHalvingNotTheLargestFreePosition [607 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Strings differ
+                             ↓ (pos 18)
+Expected: "  0: st=2 x=7143423 y=6553600 z=1048577 f"···
+Actual:   "  0: st=2 x=7143424 y=6553600 z=1048577 f"···
+                             ↑ (pos 18)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.FirstStepBoundWorldTests.AssertArrowLines(Int32 heroX, String name, Int32 ticksPerFrame, Int32 count) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 33
+   at Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX107_ThreeTicksPerFrame_TheStep110IsBoundedBelow109ByOneRawUnit_TheHalvingNotTheLargestFreePosition() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\FirstStepBoundWorldTests.cs:line 60
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "south_2px_y116") [1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (0,65536) but the model tried (0,131072)"
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_6px_x105") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (196608,0) but the model tried (393216,0"···
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3unit_halves") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (2,0) but the model tried (3,0)"
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:16.25]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "diag_se_x107") [FAIL]
+[xUnit.net 00:00:16.25]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x106") [FAIL]
+[xUnit.net 00:00:16.25]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x108") [FAIL]
+[xUnit.net 00:00:16.25]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x109") [FAIL]
+[xUnit.net 00:00:16.25]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_6px_x107") [FAIL]
+[xUnit.net 00:00:16.26]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_6px_x108") [FAIL]
+[xUnit.net 00:00:16.26]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "west_3px_free") [FAIL]
+[xUnit.net 00:00:16.26]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_6px_x104") [FAIL]
+[xUnit.net 00:00:16.26]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_free_3px_x100") [FAIL]
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "diag_se_x107") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (131072,131072) but the model tried (262"···
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x106") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (98304,0) but the model tried (196608,0)"
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x108") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (98304,0) but the model tried (196608,0)"
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x109") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (98304,0) but the model tried (196608,0)"
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_6px_x107") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (196608,0) but the model tried (393216,0"···
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_6px_x108") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (196608,0) but the model tried (393216,0"···
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "west_3px_free") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (-98304,0) but the model tried (-196608,"···
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_6px_x104") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (196608,0) but the model tried (393216,0"···
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_free_3px_x100") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (98304,0) but the model tried (196608,0)"
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:16.26]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "south_2px_y115") [FAIL]
+[xUnit.net 00:00:16.26]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_6px_x109") [FAIL]
+[xUnit.net 00:00:16.26]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "diag_ne_x109") [FAIL]
+[xUnit.net 00:00:16.26]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x105") [FAIL]
+[xUnit.net 00:00:16.27]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "south_2px_y114") [FAIL]
+[xUnit.net 00:00:16.27]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x107") [FAIL]
+[xUnit.net 00:00:16.27]     Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "south_2px_y117") [FAIL]
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "south_2px_y115") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (0,65536) but the model tried (0,131072)"
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_6px_x109") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (196608,0) but the model tried (393216,0"···
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "diag_ne_x109") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (163840,-163840) but the model tried (32"···
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x105") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (98304,0) but the model tried (196608,0)"
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "south_2px_y114") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (0,65536) but the model tried (0,131072)"
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x107") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (98304,0) but the model tried (196608,0)"
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "south_2px_y117") [< 1 ms]
+  Message d'erreur :
+   Assert.Null() Failure: Value is not null
+Expected: null
+Actual:   "query #0: (0,65536) but the model tried (0,131072)"
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 202
+   at InvokeStub_HalvingStepSearchTests.NamedCase_AgainstTheModel(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:16.27]     Alundra.Tests.Physics.HalvingStepSearchTests.Halving_StopsOneRawUnitBeforeTheWall_NotOnIt(startPixel: 107, stepPixels: 6) [FAIL]
+[xUnit.net 00:00:16.27]     Alundra.Tests.Physics.HalvingStepSearchTests.Halving_StopsOneRawUnitBeforeTheWall_NotOnIt(startPixel: 107, stepPixels: 3) [FAIL]
+[xUnit.net 00:00:16.27]     Alundra.Tests.Physics.HalvingStepSearchTests.Halving_StopsOneRawUnitBeforeTheWall_NotOnIt(startPixel: 104, stepPixels: 6) [FAIL]
+[xUnit.net 00:00:16.27]     Alundra.Tests.Physics.HalvingStepSearchTests.Halving_TheLargestFreePositionRuleIsWrongInThreeOfTenCells [FAIL]
+[xUnit.net 00:00:16.33]     Alundra.Tests.Physics.HalvingStepSearchTests.Fuzz_AgainstTheModel_ZeroGap [FAIL]
+[xUnit.net 00:00:16.37]     Alundra.Tests.Physics.HalvingStepSearchTests.Halving_FreeStep_IsTheWholeStepInOneQuery [FAIL]
+Message du collecteur de données 'Blame' : Tous les tests ont fini de s'exécuter. Le fichier de séquence ne sera pas généré.
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.Halving_StopsOneRawUnitBeforeTheWall_NotOnIt(startPixel: 107, stepPixels: 6) [< 1 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Values differ
+Expected: 7143423
+Actual:   7143424
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.Halving_StopsOneRawUnitBeforeTheWall_NotOnIt(Int32 startPixel, Int32 stepPixels) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 217
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.Halving_StopsOneRawUnitBeforeTheWall_NotOnIt(startPixel: 107, stepPixels: 3) [< 1 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Values differ
+Expected: 7143423
+Actual:   7143424
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.Halving_StopsOneRawUnitBeforeTheWall_NotOnIt(Int32 startPixel, Int32 stepPixels) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 217
+   at InvokeStub_HalvingStepSearchTests.Halving_StopsOneRawUnitBeforeTheWall_NotOnIt(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.Halving_StopsOneRawUnitBeforeTheWall_NotOnIt(startPixel: 104, stepPixels: 6) [< 1 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Values differ
+Expected: 7143423
+Actual:   7143424
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.Halving_StopsOneRawUnitBeforeTheWall_NotOnIt(Int32 startPixel, Int32 stepPixels) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 217
+   at InvokeStub_HalvingStepSearchTests.Halving_StopsOneRawUnitBeforeTheWall_NotOnIt(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.Halving_TheLargestFreePositionRuleIsWrongInThreeOfTenCells [< 1 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Values differ
+Expected: 3
+Actual:   0
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.Halving_TheLargestFreePositionRuleIsWrongInThreeOfTenCells() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 251
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.Fuzz_AgainstTheModel_ZeroGap [55 ms]
+  Message d'erreur :
+   18882 gaps against the model out of 20000 (first ones): fuzz#0 (force 159744,2 cardinal False): query #0: (79872,1) but the model tried (159744,2) | fuzz#1 (force 3029,4096 cardinal True): query #0: (1514,2048) but the model tried (3029,4096) | fuzz#2 (force 534353,0 cardinal True): query #0: (267177,0) but the model tried (534353,0) | fuzz#3 (force 34,0 cardinal False): query #0: (17,0) but the model tried (34,0) | fuzz#4 (force 174763,-15828 cardinal True): query #0: (87382,-7914) but the model tried (174763,-15828) | fuzz#5 (force -32768,0 cardinal False): query #0: (-16384,0) but the model tried (-32768,0) | fuzz#6 (force 1507328,-4096 cardinal True): query #0: (753664,-2048) but the model tried (1507328,-4096) | fuzz#7 (force 262144,65535 cardinal True): query #0: (131072,32767) but the model tried (262144,65535) | fuzz#8 (force 7,-3 cardinal True): query #0: (4,-1) but the model tried (7,-3) | fuzz#9 (force -80000,49152 cardinal False): query #0: (-40000,24576) but the model tried (-80000,49152)
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.Fuzz_AgainstTheModel_ZeroGap() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 143
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Physics.HalvingStepSearchTests.Halving_FreeStep_IsTheWholeStepInOneQuery [< 1 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Values differ
+Expected: 1
+Actual:   18
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.HalvingStepSearchTests.Halving_FreeStep_IsTheWholeStepInOneQuery() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\HalvingStepSearchTests.cs:line 229
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Échoué!  - échec :    28, réussite :    25, ignorée(s) :     0, total :    53, durée : 15 s - Alundra.Tests.dll (net9.0)

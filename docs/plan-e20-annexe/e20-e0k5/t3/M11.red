@@ -1,0 +1,14 @@
+Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_AtHeroX105_ThreeTicksPerFrame_TheSecondStepStillUnintegratedIsBoundedTo109
+Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_FlushAgainstTheWall_AtHeroX109_TravelsNothing_TheFlagAtS_TheBounceAtSPlus1(ticksPerFrame: 3)
+Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_PointBlank_AtHeroX108_TheFreeStep111IsBoundedTo109(ticksPerFrame: 3)
+Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_Witness_AtHeroX105_TheFreeStepTo108IsNotBounded(ticksPerFrame: 1)
+Échoué Alundra.Tests.Physics.FirstStepBoundWorldTests.Arrow_Witness_AtHeroX105_TheFreeStepTo108IsNotBounded(ticksPerFrame: 2)
+Échoué Alundra.Tests.Physics.HalvingStepSearchTests.Fuzz_AgainstTheModel_ZeroGap
+Échoué Alundra.Tests.Physics.HalvingStepSearchTests.Halving_FreeStep_IsTheWholeStepInOneQuery
+Échoué Alundra.Tests.Physics.HalvingStepSearchTests.Halving_TheLargestFreePositionRuleIsWrongInThreeOfTenCells
+Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x105")
+Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_3px_x106")
+Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "east_free_3px_x100")
+Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "south_2px_y114")
+Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "south_2px_y115")
+Échoué Alundra.Tests.Physics.HalvingStepSearchTests.NamedCase_AgainstTheModel(name: "west_3px_free")

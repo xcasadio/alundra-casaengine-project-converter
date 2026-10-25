@@ -1,0 +1,13 @@
+diff --git a/Alundra/Physics/ScriptedMotion.cs b/Alundra/Physics/ScriptedMotion.cs
+index 02042ee7..09d63aa8 100644
+--- a/Alundra/Physics/ScriptedMotion.cs
++++ b/Alundra/Physics/ScriptedMotion.cs
+@@ -991,7 +991,7 @@ internal static class ScriptedMotion
+         var top = entity.PosY + advanceY + entity.ModY;
+         var xs = new[] { left >> 16, (left + entity.Width) >> 16 };
+         var ys = new[] { top >> 16, (top + entity.Height) >> 16 };
+-        var mask = CellsCollisionField.WalkabilityMaskFor(entity.Flags);
++        var mask = CellsCollisionField.WalkabilityMaskFor(entity.Flags) & ~0x40u;
+         var reach = entity.PosZ / 65536f + entity.Controller.Settings.StepHeight;
+         var blocked = 0;
+         for (var i = 0; i < 4; i++)

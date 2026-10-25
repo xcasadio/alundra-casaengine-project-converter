@@ -1,0 +1,53 @@
+diff --git a/Alundra/Physics/HalvingStepSearch.cs b/Alundra/Physics/HalvingStepSearch.cs
+index 7aa7f3cd..d2e92a42 100644
+--- a/Alundra/Physics/HalvingStepSearch.cs
++++ b/Alundra/Physics/HalvingStepSearch.cs
+@@ -16,41 +16,15 @@ public static class HalvingStepSearch
+ {
+     public static HalvingStepResult Search(int forceX, int forceY, bool cardinal, Func<int, int, bool> isBlockedAt)
+     {
+-        var stepX = forceX;
+-        var stepY = forceY;
+-        if (stepX == 0 && stepY == 0)
++        if (forceX == 0 && forceY == 0) { return new HalvingStepResult(0, 0, false); }
++        long m = Math.Max(Math.Abs((long)forceX), Math.Abs((long)forceY));
++        long lo = 0, hi = m;
++        while (lo < hi)
+         {
+-            return new HalvingStepResult(0, 0, false);
+-        }
+-
+-        var acceptedX = 0;
+-        var acceptedY = 0;
+-        var accepted = false;
+-        var attempt = 0;
+-        while (true)
+-        {
+-            if (!isBlockedAt(acceptedX + stepX, acceptedY + stepY))
+-            {
+-                accepted = true;
+-                if (attempt == 0)
+-                {
+-                    return new HalvingStepResult(stepX, stepY, true);
+-                }
+-
+-                acceptedX += stepX;
+-                acceptedY += stepY;
+-            }
+-
+-            stepX = Half(stepX);
+-            stepY = Half(stepY);
+-            var goOn = cardinal ? stepX != 0 || stepY != 0 : stepX != 0 && stepY != 0;
+-            if (!goOn)
+-            {
+-                return new HalvingStepResult(acceptedX, acceptedY, accepted);
+-            }
+-
+-            attempt++;
++            var mid = (lo + hi + 1) / 2;
++            if (isBlockedAt((int)((long)forceX * mid / m), (int)((long)forceY * mid / m))) { hi = mid - 1; } else { lo = mid; }
+         }
++        return new HalvingStepResult((int)((long)forceX * lo / m), (int)((long)forceY * lo / m), lo > 0);
+     }
+ 
+     private static int Half(int value) => value == -1 ? 0 : value >> 1;

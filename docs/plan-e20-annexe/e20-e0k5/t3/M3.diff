@@ -1,0 +1,13 @@
+diff --git a/Alundra/Physics/ScriptedMotion.cs b/Alundra/Physics/ScriptedMotion.cs
+index 02042ee7..c19977ca 100644
+--- a/Alundra/Physics/ScriptedMotion.cs
++++ b/Alundra/Physics/ScriptedMotion.cs
+@@ -677,7 +677,7 @@ internal static class ScriptedMotion
+             var bounded = HalvingStepSearch.Search(entity.FinalForceX, entity.FinalForceY, (entity.TargetDirection & 7) == 0, (dx, dy) => BlockedCorners(entity, dx, dy) != 0);
+             entity.FinalForceX = bounded.X;
+             entity.FinalForceY = bounded.Y;
+-            noStepAccepted = !bounded.Accepted;
++            noStepAccepted = false;
+         }
+ 
+         var startX = entity.PosX;
