@@ -693,7 +693,7 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.g | Porter, poser, lancer (`PlayerTryAction`, `UpdatePlayerCarriedEntity`) ; caisses et jarres redeviennent des obstacles (fin de l'écart D-E19-28/D-E19-46) ; barricade de la 392 (O-E20-5) | oracle ; arcs | Soulever et lancer une caisse ; la 392 |
 | E20.h | Objets du Rond (`TryUseItem`) : graines, bombes (gestionnaire E12), magie, potions ; le couvercle de la 362 | oracle ; arcs | La 362 |
 | E20.i | Nage (D-E20-16) : branche de pente 4 (`0x8003260C`), états `0x0F`, `0x1D`, `0x28`, `0x3A` et `0x3B`, plongée au front de bouton | oracle ; arcs | Nager et plonger en eau profonde (la 416 en a) |
-| E20.i2 | (D-E20-31, D-E20-43, D-E20-61) Le bloc du binaire autour de la passe des forces : le mur d'eau profonde sans bottes (O-E19-22), les courants et la table de glissement `+0x188` (O-E20-16), l'octet de carte `SlideEffectId` (O-E19-31), la poussée `+0xCC/+0xD0` des orbes et de la tornade (Q-H4-3) | oracle (traces `*-L0`, `*-L1`, `R9-deepwater-noboots`) ; arcs | Sans bottes, la mer de la 416 arrête Alundra ; la cascade de la 416 le fait dériver ; sur les cartes 159 et 160 il avance deux fois moins vite |
+| E20.i2 | (D-E20-31, D-E20-43, D-E20-61) Le bloc du binaire autour de la passe des forces : le mur d'eau profonde sans bottes (O-E19-22), les courants et la table de glissement `+0x188` (O-E20-16), l'octet de carte `SlideEffectId` (O-E19-31), la poussée `+0xCC/+0xD0` des orbes et de la tornade (Q-H4-3) ; **découpée le 2026-10-25 au §1.14.1** : i2a (le mur, §1.14.2) et i2b (les forces, §1.14.3) détaillées, i2c (les courants et la case verrouillée, §1.14.4) esquissée | oracle (traces `*-L0`, `*-L1`, `R9-deepwater-noboots`) ; arcs | Sans bottes, la mer de la 416 arrête Alundra ; la cascade de la 416 le fait dériver ; sur les cartes 159 et 160 il avance deux fois moins vite |
 
 - **Ordre** (d'origine ; pour les tranches qui restent après E20.c1b-2, il est **remplacé** par la révision du 2026-10-10 ci-dessous,
   seule à faire foi) : E20.0 → E20.a → E20.b → E20.c1a → E20.c1b-1 → E20.c1b-2 → E20.c2 → E20.d → E20.e0 → E20.e → E20.f → E20.g → E20.h → E20.i.
@@ -3496,6 +3496,223 @@ trio non sauté, groupe `0x80032758` réécrit en `0x1D`, une entrée de la tabl
 - **Q-I1** (non bloquante) : les courants (`+0x188`, 16 cartes, dont la cascade de la 416) : E20.i2 avec le mur, ou plus tard ?
 
 ---
+
+#### 1.14.1 E20.i2 — Le bloc autour de la passe des forces : i2a, i2b, i2c (découpage du 2026-10-25 ; défauts de Q-I2-1 à Q-I2-6 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
+
+**Provenance.** Lecture seule du 2026-10-25 (HEAD `8174c0cb`, `Alundra/` inchangé jusqu'à `5e67722d`) : rapport et critique frais
+(`scratchpad/t2-next/i2/report-main.md`, `scratchpad/t2-next/i2-critic/report-main.md`, scripts, sondes rejouées sur le vrai code et sorties),
+à verser par le T0 de la première des trois tranches à `docs/plan-e20-annexe/e20-i2-disc/`. La ligne d'enveloppe « E20.i2 » (§0) en est la
+source. Le critique ne réfute aucun fait porteur ; il corrige des recensements (la cascade de la 416, les entités posées sur courants), le
+vocabulaire de Q-I2-4 et une contradiction interne d'i2b (K9) ; ce sont ses valeurs qui sont écrites ici.
+
+**Faits communs** (FAIT, MESURÉ).
+- Quatre morceaux indépendants du binaire : le mur d'eau profonde (le test de coins propre au héros, `0x80037488`, hors de la passe des
+  forces) ; la fonction `0x800366FC` (la table de glissement, le décalage `SlideEffectId`, la poussée `+0xCC/+0xD0`, le serrage à la carte) ;
+  le calcul de `+0x188` (courants et case verrouillée, `0x80038064`, pour toute entité de la liste physique, à la naissance aussi) ; la branche
+  `+0x188 & 0x80` de `MovePlayer` (`0x80032768`, la « case de sortie » d'O-H-2).
+- Trois sens de « pente » à ne pas confondre (critique K4) : l'octet Slope de case (genre bits 0-1, portes `0x04`/`0x08`, direction `0x30`,
+  courant `0x40`, verrou `0x80`) ; `Slope_18c` = `+0x18C` (pente 4 = eau profonde) ; le genre de pente dans le calcul de hauteur du sol.
+- Aucun changement du convertisseur ni du moteur : l'octet Slope des cases, la propriété `SlideEffectId` et le champ de cases sont exportés.
+- Seule la poussée (i2b) bloque h4e2 et h4f1 (D-E20-61).
+
+**Découpage** (Q-I2-1, défaut A). i2a, le mur (§1.14.2), indépendante, avant la relecture de h2 (la cape partage sa fonction de masque,
+D-H2-6) ; i2b, la fonction des forces (§1.14.3), indépendante d'i2a, avant h4e2 et h4f1 ; i2c, les courants et la case verrouillée
+(§1.14.4, esquisse), après i2b, E20.c2b et E20.h0a (elle touche la même zone de `PlayerManager.cs`). i2d (le serrage à la carte pour le héros et
+les entités placées, O-E19-17) reste hors de ces tranches (Q-I2-5, défaut A, D-E19-25).
+
+#### 1.14.2 E20.i2a — Le mur d'eau profonde sans bottes de nage (O-E19-22) ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2 ; à relire par un `plan-verifier` frais)
+
+**Prérequis.** E20.i (la nage) et E20.c2a (le niveau des bottes `EquipmentRecords.BootsLevel`) : faites. Aucun prérequis de code d'i2b ou d'i2c.
+La tranche touche `Alundra/SaveGames/TestSaves.cs` comme b2, c2b, A362 et g2c2 : jamais en même temps qu'elles.
+
+**But.** Comme l'original : sans bottes de nage (objet `0x1B` ou `0x1C` ; avec `0x1A`, le niveau 1, aussi), Alundra s'arrête au bord de l'eau
+profonde au lieu d'y entrer à la nage ; déjà dans l'eau sans elles, elle ne peut plus bouger (Q-I2-2, défaut A, comme l'original).
+Aujourd'hui elle nage partout, écart épinglé par `HeroSwimArenaTests.WithoutTheBoots_TheHeroSwimsToo_AnAcceptedDeviation_O_E19_22`.
+
+**Faits.**
+- **Le test de coins du héros** (`0x80037488`, choisi par le déplaceur en `0x80037764`, `0x800373E4` pour les autres ; appel indirect) : un coin
+  est bloqué si `[0x80127000] < 2` (le niveau des bottes) et `(demi-mot de case & 0xE00) == 0x800`, **sans condition de hauteur**
+  (`0x80037504`, `0x80037558-0x80037560`) ; le test des autres entités n'a aucun test d'eau. Le court-circuit `0x80037490-0x800374AC`
+  (`[0x800DC058] < 0` et le bit 31 de `[0x800DC05C]`) n'est pas porté, pour les murs ordinaires comme pour l'eau.
+- **Les traces** (dans le dépôt, aujourd'hui « information », non rejouées) : `docs/plan-e20-annexe/e20-d/oracle/out/g9/R9-deepwater-noboots`
+  (x = 325,00 au tick 84, `ForceAdjusted` au 86, rebond `0x3E` au 87) et dans `out-swim/` : W1 marche, course, saut, chute en L0 et L1 (8),
+  W2-L0/L1-inside-R (dans l'eau dès le départ : position figée à 624,00, `ForceAdjusted` dès le tick 5, `ForceX` qui monte de 6 912 par
+  tick), W5-L0/L1-wall-walk, W5-L0-wall-diag, W10-shallow-to-deep-L0 : 15 traces.
+- **La DLL au HEAD** : le masque de marche du contrôleur du héros (`WalkabilityMaskFor(Flags)`, `CellsCollisionField.cs:147`) posé à
+  l'adoption (`WorldProxy.cs:2271`) et refait par `ResyncControllerFromFlags` (`EntityScriptProxy.cs:675-684`), qui commence par
+  `ApplyGravitySettingsToController` (gravité et chute remises à 0 : piège déjà relevé par h2, O-H2-1) ; le champ teste
+  `(walkability | gp << 8) & masque == 0` ; `BlockedCorners` (`ScriptedMotion.cs:983`) reconstruit le masque depuis `Flags`, pas depuis le
+  contrôleur ; `RunMontage.cs:63` (tests) pose le masque à la main ; le moteur ne lit que `IsWalkable` (`CharacterControllerComponent.cs:1346`).
+  Une égalité sur `0xE00` ne s'exprime pas par un bit du masque : d'où un pseudo-bit au-delà de 16 bits que le champ interprète (le piège de
+  l'échelle, `0xC00 & 0x800 != 0`, évité par l'égalité).
+
+**Décisions.**
+- **D-I2A-1** — Un pseudo-bit du masque (au-delà de 16 bits ; nom et valeur choisis par T0, `check_names.py`) que `CellsCollisionField`
+  interprète : un coin est bloqué quand ce bit est dans le masque et que `(tileFlags & 0xE00) == 0x800`.
+- **D-I2A-2** — Une fonction par tick du héros (dans son tick, avant le déplacement) écrit ce bit dans `Controller.Settings.WalkabilityMask`
+  selon `EquipmentRecords.BootsLevel < 2` (la valeur tenue à la fin du tick précédent, comme le binaire) ; elle **n'appelle jamais**
+  `ResyncControllerFromFlags` ; `ResyncControllerFromFlags` et l'adoption gardent le bit. La même fonction portera le bit de la cape de h2
+  (D-H2-6) : la première des deux tranches la crée, l'autre l'étend (le texte de h2 est à ajuster à sa relecture).
+- **D-I2A-3** — `BlockedCorners` lit le masque vivant du contrôleur (sans quoi le glissement le long du bord de l'eau se trompe, W5-L0-wall-diag).
+- **D-I2A-4** (Q-I2-2, défaut A) — Alundra déjà dans l'eau sans bottes est coincée, comme l'original.
+- **D-I2A-5** (Q-I2-6, défaut A) — Un préréglage `mur-m14` : `swim-m14` sans bottes (la berge de l'étang de la 14, case (40, 48, 1), eau profonde
+  dès la rangée 49) ; le test de liste des préréglages change mécaniquement (D-E0D-12).
+
+**Périmètre.** `Alundra/Physics/CellsCollisionField.cs`, `Alundra/Physics/ScriptedMotion.cs` (`BlockedCorners`), `Alundra/Hero/PlayerManager.cs`
+(l'appel dans le tick du héros, la doc `:48`, `:670`), `Alundra/Entities/EntityScriptProxy.cs` (`ResyncControllerFromFlags`),
+`Alundra/Maps/WorldProxy.cs` (l'adoption) ; `Alundra/SaveGames/TestSaves.cs`, `docs/test-saves.md` ; `Alundra.Tests/Support/RunMontage.cs` (le
+montage reçoit le bit par la fonction de production, pas à la main) ; les tests ; l'annexe `docs/plan-e20-annexe/e20-i2a/` ; un ADR ; ce plan.
+
+**Hors périmètre.** i2b, i2c ; la cape (h2) ; le court-circuit `0x80037490` ; le moteur.
+
+**Tâches.**
+- ⏳ **T0 — Versement, rejeux, inventaire par exécution** (commit de docs). (a) Verser la lecture (`scratchpad/t2-next/i2/` et sa critique) à
+  `docs/plan-e20-annexe/e20-i2-disc/` (README, `SHA1SUMS.txt`) ; (b) rejouer depuis une copie du harnais d'`e20-d` les 15 traces du mur et les
+  sondes de la lecture, identiques ; (c) l'inventaire par exécution : un câblage temporaire (jamais commité, versé en `.txt`) du mur, la suite
+  entière en Release, la liste nommée des tests qui bougent et pourquoi (le héros sans bottes posé sur ou près de l'eau profonde ; candidats de la
+  critique : `CarryLockSwimAndStatesTests.SwimScene`, les arcs de la 416 et de la 14, les 40 fichiers qui parlent d'eau ou de `Slope_18c`) :
+  c'est la liste prédite, avec le test d'écart qui s'inverse et le test de liste des préréglages ; (d) le nom et la valeur du pseudo-bit ;
+  (e) la case du préréglage. Arrêt : un test d'une chaîne d'histoire (389 à 392, 179, intro) qui bouge ; plus de 10 tests déplacés.
+- ⏳ **T1 — Tests d'abord** (rouges avant) : (c1) `CellsCollisionField` : le pseudo-bit bloque `0xE00 == 0x800` et seulement lui (pas `0xC00`,
+  l'échelle), sans condition de hauteur ; (r1) les 15 traces rejouées sur le montage (le masque posé par la fonction de production) aux colonnes
+  du harnais : R9 (x = 325,00 au tick 84, `ForceAdjusted` au 86, `0x3E` au 87), W1 L0 et L1 (L1 : l'objet `0x1A`, niveau 1, bloque aussi), W2
+  (figé à 624,00), W5 (le glissement le long du bord, dont la diagonale), W10 ; (r2) avec les bottes de niveau 2 : la nage d'E20.i inchangée
+  (témoin vert avant et après, tué par le mutant « `BootsLevel < 3` ») ; (r3) un opcode de drapeaux qui vise le héros (`ResyncControllerFromFlags`)
+  garde le bit ; (r4) l'adoption après un portail garde le bit ; (r5) le test d'écart `WithoutTheBoots_TheHeroSwimsToo_…` inversé (le héros
+  s'arrête au bord) ; puis le code ; le préréglage `mur-m14` et son test de contenu.
+- ⏳ **T2 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
+  `cmp` ; `check_names.py --rules` ; au moins 10 mutants réels, chacun tué par le test qu'il nomme : `BootsLevel < 3` ((r2)) ; `BootsLevel <= 2`
+  ((r2)) ; `& 0xE00 == 0x800` en `& 0x800 != 0` ((c1), l'échelle) ; une condition de hauteur ajoutée ((c1), (r1) R9) ; le bit écrit seulement à
+  l'adoption ((r1) W2, (r3)) ; `ResyncControllerFromFlags` qui efface le bit ((r3)) ; l'adoption qui l'efface ((r4)) ; `BlockedCorners` sur
+  `Flags` ((r1) W5-L0-wall-diag) ; la fonction qui appelle `ResyncControllerFromFlags` (la gravité remise à 0 : (r1) la chute W1) ; le mur
+  appliqué aussi aux autres entités ((c1), un témoin d'entité) ; un ADR neuf (numéro libre recompté).
+- ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (b) identiques ; (c1), (r1), (r3), (r4) et (r5) rouges avant et verts après ; (r2) vert avant et après, tué
+par son mutant ; les mutants tous tués par le test qu'ils nomment ; la suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste
+de T0 (c), chacun réécrit par dérivation ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non bloquante) :
+`mur-m14` (marcher vers l'étang : Alundra s'arrête au bord) ; `swim-m14` (avec les bottes : elle nage).
+
+**Arrêts.** Un prérequis non rempli ; une trace rejouée qui diffère ; un test hors de la liste prédite qui bouge ; un test d'une chaîne
+d'histoire qui bouge ; un besoin de toucher au moteur ; un test qui boucle.
+
+**Budget.** Un `executor` par tâche (T0, T1, T2) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** Retirer l'appel de la fonction du tick du héros (le bit n'est plus jamais posé : Alundra nage partout, l'état
+d'aujourd'hui) ; puis le pseudo-bit et la lecture de `BlockedCorners`.
+
+#### 1.14.3 E20.i2b — La fonction des forces : la table de glissement, le décalage `SlideEffectId` et la poussée (O-E19-31, Q-H4-3) ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2, avant h4e2 et h4f1 ; à relire par un `plan-verifier` frais)
+
+**Prérequis.** Aucun prérequis de code (indépendante d'i2a). Avant h4e2 et h4f1 (D-E20-61). Si un préréglage s'ajoute, jamais en même temps
+qu'une autre tranche qui touche `TestSaves.cs`.
+
+**But.** Comme l'original : sur les cartes 159 et 160 (`SlideEffectId` = 1, les seules), tout ce qui est intégré par la physique (Alundra, les
+ennemis, les objets lancés, les projectiles, les plateformes) avance deux fois moins vite à l'horizontale ; une poussée écrite dans
+`+0xCC/+0xD0` (les orbes et la tornade des tomes h4e2 et h4f1) s'ajoute une fois au tick suivant puis se remet à zéro ; la table de glissement
+est en place pour les courants (i2c), inerte tant que `+0x188` vaut 0.
+
+**Faits.**
+- **`0x800366FC`** (un seul site d'appel, `0x80036B9C`) : `adj = ((F + tab[idx]) >> sh) + push`, `idx = (+0x188) & 0xF` ; tables X
+  `0x80028B94` et Y `0x80028BD4` (16 mots chacune ; indices 1, 2, 4, 8 : Y −40 960, Y +40 960, X −61 440, X +61 440 ; indices combinés, dont X
+  ∓983 040 aux indices 7 et 11) ; `sh` = l'octet signé `[[0x800E4334] + 8]` (`SlideEffectId`, lu nulle part ailleurs : 21 lectures de
+  `[0x800E4334]` et une écriture, critique A4) pris avec `& 31` (`srav`) ; **la poussée n'est pas décalée** (la décompilation se trompe dès
+  que `sh != 0`) ; elle est lue puis remise à zéro ; le serrage à la carte (`+0x108/+0x10C ; +0xFC/+0x100`, strict, lève `+0x13C`) ; sorties
+  `+0xDC/+0xE0`.
+- **`0x80036828`** : le héros prend sa branche puis `0x80036B9C` ; une entité portée par une autre (`+0x28 != 0`, `PlatformEntity` dans la DLL) a
+  ses forces à 0 et sa poussée n'est ni consommée ni remise à zéro.
+- **Mesuré** (sondes de la lecture, rejouées par le critique) : avec `SlideEffectId` = 1, la marche passe de `ForceX` 159 744 à `adj` 79 872 et
+  la dérive est divisée par deux ; la poussée écrite avant le tick N est consommée dans la passe des forces du **même** tick N (les
+  gestionnaires précèdent la passe ; critique M3, corrigé) : 131 072 donne +2 px, puis 0.
+- **La DLL au HEAD** : `RunOneKinematicTick` (`ScriptedMotion.cs:635-705`) pose `AdjustedForceX = ForceX` (l. 643) ; le serrage
+  `ClampStepToMapEdge` (l. 666) ne tourne que pour `HasLogicalZ`, après l'ajout des porteurs (le binaire serre avant ; écart minime, gardé :
+  le déplacer bougerait les tests d'e0k3) ; `PeekAdjustedForce` (l. 782) appelle `PlanForce` seul ; `PreviousAdjustedForceX/Y`
+  (`EntityScriptProxy.cs:346-347`) est le `+0xCC/+0xD0`, sans consommateur (les oracles de Beannoïde et de Muruta y posent un marqueur
+  `0x5A5A5A5A` et vérifient qu'il reste inchangé, sans passe physique) ; les mots de carte `Gravity` et `ZViscosity` lus par
+  `ResolveMapGravitySettings` (`Alundra/Entities/Spawning/EntitySpawnFactory.cs:888-895`, rangés `:707`, `WorldProxy.cs:2254-2266`) ;
+  `SlideEffectId` exporté (propriété `"1"` sur la 159) mais non lu.
+
+**Décisions.**
+- **D-I2B-1** — Une fonction pure neuve d'`Alundra/Physics/` (nom contrôlé par `check_names.py`) : `adj = ((F + tab[idx]) >> (sh & 31)) + push`,
+  sans serrage (critique K9 : le serrage reste `ClampStepToMapEdge`, à sa place ; l'écart d'ordre est consigné au site) ; elle rend aussi « la
+  poussée consommée ».
+- **D-I2B-2** — Les tables X et Y : les 32 mots relus dans l'exécutable par T0, vérifiés mot à mot par un test (comme la table de nage d'E20.i).
+- **D-I2B-3** — `RunOneKinematicTick` l'appelle avant l'ajout du porteur et écrit `AdjustedForceX/Y` ; la poussée (`PreviousAdjustedForceX/Y`)
+  est consommée et remise à zéro pour le héros et toute entité non portée ; une entité portée (`PlatformEntity` non nul) garde ses forces à 0 et
+  sa poussée intacte.
+- **D-I2B-4** — `PeekAdjustedForce` applique la même fonction sans rien écrire (un passager lit la force d'un porteur qui dérive ou qui est
+  poussé).
+- **D-I2B-5** — `SlideEffectId` (octet signé de l'en-tête de carte) est lu aux deux sites des mots de carte et rangé par entité, comme `Gravity`
+  et `ZViscosity`.
+- **D-I2B-6** — L'indice de table vient de `TileAttributes & 0xF`, qui reste 0 jusqu'à i2c : la table est inerte.
+- **D-I2B-7** (Q-I2-6, défaut A) — Un préréglage `glissement-m159` (la carte 159 ; la case dérivée en T0) pour voir le ralentissement ; le test de
+  liste des préréglages change mécaniquement (D-E0D-12).
+
+**Périmètre.** `Alundra/Physics/` (la fonction pure et ses tables, neuves) ; `Alundra/Physics/ScriptedMotion.cs` (`RunOneKinematicTick`,
+`PeekAdjustedForce`, le commentaire `:630`) ; `Alundra/Entities/Spawning/EntitySpawnFactory.cs` et `Alundra/Maps/WorldProxy.cs` (le mot de carte) ;
+`Alundra/Entities/EntityScriptProxy.cs` (le champ du décalage) ; `Alundra/SaveGames/TestSaves.cs`, `docs/test-saves.md` ; les tests ; l'annexe
+`docs/plan-e20-annexe/e20-i2b/` ; un ADR ; ce plan.
+
+**Hors périmètre.** La sonde de `+0x188` et les courants (i2c) ; le serrage pour toutes les entités (i2d, Q-I2-5) ; les orbes et la tornade
+(h4e2, h4f1) ; le moteur.
+
+**Tâches.**
+- ⏳ **T0 — Versement, oracle, inventaire** (commit de docs). (a) Verser la lecture si i2a ne l'a pas fait ; (b) les 32 mots des tables relus dans
+  l'exécutable, versés ; rejouer depuis des copies `docs/plan-e20-annexe/e20-h4b/bin/vec/vec_push_800366FC.json` (200 vecteurs ; 16 indices,
+  15 décalages sur 32 : le chemin `srav` est unique, critique K7), `vec_physpass_80036828.json` (40 vecteurs) et `tables.json` ; (c) une clé neuve
+  sur le harnais d'`e20-d` (fichier neuf) : Alundra qui marche et une entité lancée sur la carte 159 (`SlideEffectId` 1, la gravité 3 et la
+  viscosité 256 de la carte), les positions par tick, au manifeste, deux exécutions ; (d) le recensement de `SlideEffectId` (159 et 160 seules) ;
+  (e) l'inventaire par exécution (un câblage temporaire, la suite entière, versé en `.txt`) : la liste prédite (attendue : le test de liste des
+  préréglages et, peut-être, aucun autre ; à surveiller : `HeroObjectTopsTests.cs:494-512`, les tests de dépôt sur la 159 qui posent la gravité à
+  la main) ; (f) la case du préréglage.
+- ⏳ **T1 — Tests d'abord** (rouges avant) : (f1) la fonction pure contre les 200 vecteurs de poussée et les 40 de la passe (sorties `+0xDC/+0xE0`,
+  la poussée remise à zéro) ; (f2) les tables contre l'exécutable, mot à mot ; (f3) `sh` signé `& 31` : 1 divise par deux, la poussée non décalée
+  (vecteurs nommés) ; (w1) sur la carte 159, contre la clé de T0 (c) : la marche d'Alundra à 79 872 par tick pour `ForceX` 159 744 ; l'entité
+  lancée ralentie de même ; (w2) une poussée de 131 072 posée sur le héros avant un tick : +2 px à ce tick, 0 au suivant ; sur une entité portée :
+  ni consommée ni remise à zéro ; (w3) un passager d'un porteur poussé suit la force ajustée (`PeekAdjustedForce`) ; témoin vert avant et après :
+  (w4) sur une carte à `SlideEffectId` 0 et sans poussée, `adj = F` partout (les arcs de la chaîne inchangés), tué par le mutant « décalage de 1
+  partout » ; puis le code ; le préréglage et son test de contenu.
+- ⏳ **T2 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
+  `cmp` ; `check_names.py --rules` ; au moins 12 mutants réels, chacun tué par le test qu'il nomme : la poussée décalée ((f1), (f3)) ; `sh` sans
+  `& 31` ((f1), un vecteur à décalage ≥ 32 si les vecteurs en ont, sinon (f3) nommé) ; `sh` non signé ((f3)) ; la poussée non remise à zéro ((w2),
+  (f1)) ; la poussée consommée par une entité portée ((w2)) ; l'indice de table pris sur 3 bits ((f1)) ; X et Y des tables échangés ((f2)) ; la
+  table ajoutée après le décalage ((f1)) ; `PeekAdjustedForce` sans la fonction ((w3)) ; `SlideEffectId` lu non signé ((f3)) ; le mot de carte non
+  rangé à l'adoption ((w1)) ; un décalage de 1 partout (le témoin (w4)) ; un ADR neuf (numéro libre recompté).
+- ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (b) et (c) identiques sur deux exécutions ; (f1) à (f3), (w1) à (w3) rouges avant et verts après ; (w4) vert
+avant et après, tué par son mutant ; les mutants tous tués par le test qu'ils nomment ; la suite en Release et en Debug, zéro échec ; les tests
+déplacés ⊂ la liste de T0 (e), chacun réécrit par dérivation ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non
+bloquante) : `glissement-m159` (Alundra avance deux fois moins vite).
+
+**Arrêts.** Un vecteur qui diffère ; une clé de T0 (c) qui diffère d'une exécution à l'autre ; un test hors de la liste prédite qui bouge ; un arc
+de la chaîne qui bouge ; un besoin de toucher au moteur ; un test qui boucle.
+
+**Budget.** Un `executor` par tâche (T0, T1, T2) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** Retirer l'appel de `RunOneKinematicTick` (`adj = F`, l'état d'aujourd'hui) et de `PeekAdjustedForce` ; puis le mot de carte.
+
+#### 1.14.4 E20.i2c — Les courants et la case verrouillée (O-E20-16, O-H-2) ⏳ (esquisse du 2026-10-25 ; après i2b, E20.c2b et E20.h0a ; à détailler)
+
+- **La sonde** `UpdateTileAttributes` (`0x80038064`) : la case de l'origine `(PosX, PosY)` (pas les coins ; colonne bornée 0 à `0x33`, rangée
+  `PosY >> 20` bornée 0 à `0x3B`), le test de niveau dans la convention de la DLL (hauteur brute contre `PosZ + ModZ`, sans le `+1` du binaire),
+  les portes `0x04` (au niveau) et `0x08` (d'un autre niveau), la direction (bits 4-5 de l'octet Slope), le bit de verrou `0x80` ; sans gravité,
+  `0xC00000` et `0x80000` ensemble ; appelée aussi à la naissance (dérive dès le tick 1) ; un accesseur `SampleRawSlope` dans `CellsCollisionField`.
+  Elle n'écrit que `TileAttributes` et ne réutilise ni `UpdateGroundSlope` ni `UpdateVramFlags` (la garde
+  `MarkedEntityGroundSlopeTests.S2_…KeepsZero…` reste verte).
+- **Qui dérive** (Q-I2-3, défaut A, comme l'original) : toutes les entités actives ; 10 cartes et 63 entités posées sont sur une case de courant
+  (19, 77 (18), 79, 100, 116, 127 (22), 289, 324, 403, 404 ; 56 dérivent au sol, 7 seulement en l'air) ; 44 cartes ont des cases de courant (5 539
+  cases : 3 772 à sec, 1 767 sur eau profonde).
+- **La case verrouillée** (Q-I2-4, défaut A, avec les courants) : la branche `0x80032768` de `MovePlayer` après le bloc de blessure et le test des
+  PV, avant le pilote : la charge à 0, l'annulation `0x800350C0` (le bouchon `CancelItemMode` tant qu'h0a n'est pas faite, d'où l'ordre),
+  `UpdatePlayerCarriedEntity(1)` (l'objet porté tiré vers Alundra puis détruit, s'il a des attaques ; critique K3), puis `0x1D` en eau
+  profonde, Idle au sol, `0x2D` en l'air, la fin du tick ; cases : la cascade de la 416 (rangées 36, 39, 41), le tapis de la 125 (217 cases), une
+  case des 7 cartes d'Inoa en (5, 32), une en (5, 12) dans la 151.
+- **L'oracle** : un groupe neuf de scénarios du harnais (les sondes `s5` à `s9` de la lecture en donnent déjà les valeurs) et les vraies cases
+  de la 416 (la cascade : 8 rangées × 2 colonnes, portes `0x04` sur toutes, `0x08` sur 36, 37 et 39 à 42 ; critique K1), de la 10 (rampes
+  `0x67` et `0x76`), de la 19 (sable), des 403 à 405 (`0x08` seul : pas de dérive au sol) et de la 125.
+- **Les préréglages** (Q-I2-6, A) : `cascade-m416` (les bottes `0x1B`, la berge vers (13, 34) à vérifier en jeu, hauteur 5 contre 4).
+- **Liens** : le préréglage de la cape (h2) sur la 19 est sur une case de courant ; à déplacer en (44, 40, 2) (critique K6) ; la case de sortie
+  (O-H-2) est cette branche.
 
 ### 1.15 E20.e0x — `BankKey` et indices valides par carte dans l'export ✅ (détaillée le 2026-10-10 ; faite et CONFIRMED le 2026-10-15, `3e136c1` à `aad4fe8`, ADR-0062)
 
@@ -12602,6 +12819,12 @@ les trois entrées `0x31`.
 | O-G2C3-1 | (2026-10-25, E20.g2c2, D-G2C2-6) E20.g2c3 — les gouttes d'eau (type 391, A19 `0x800619D0`, C71 `0x8007B834`, 89 mots, la restauration de `+0x54` = l'index du programme C scripté, `+0x275`, `+0x282`, `+0x11C` + 160 px) : 56 gouttes sur 6 cartes (dont la 158, sans torche) ; une goutte éteint la torche portée ou posée (E20 sans flamme) ; sondes de la posture du héros quand sa torche est détruite. Lecture faite (`docs/plan-e20-annexe/e20-g2c2-disc/` après le T0 de g2c2) ; à détailler après g2c2 | à détailler (thème 2, après g2c2) |
 | Q-H4C2-5 | (2026-10-25, E20.h4c2 révision 3, en termes de jeu) Après D-E20-56, quand un rocher de la terre 2 touche un mur ou le bord de la carte pendant sa chute, il ne joue plus bruit et secousse en l'air. Que fait-il d'ici le sol ? (A, défaut) il continue de pousser contre le mur et glisse le long du bord, puis s'écrase au sol : dans la scène témoin du bord il se pose 39 px plus loin, en oblique contre un mur l'écart avec l'original peut aller de quelques pixels à plusieurs dizaines ; ce n'est pas la position de l'original (qui s'arrête net), mais c'est la seule qu'une clé mesurée appuie ; (B) il s'arrête là où il a touché et tombe droit, comme l'original (une règle de plus propre au rocher, un test et une clé en plus, sans oracle mesuré). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A |
 | Q-H4C2-6 | (2026-10-25, E20.h4c2 révision 3) Même règle pour les rochers de la terre 1 et les boules du feu 1, qui éclatent aussi en l'air contre un mur dans l'original (même code E3) ? (A, défaut, comme l'original et comme la réponse à Q-H4C2-3) seule la terre 2 change ; (B) la terre 1 aussi (h4c1, prête, rouverte ; E3 sert 22 sprites, la règle serait par type) ; (C) les boules aussi (elles n'éclateraient plus au mur). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A |
+| Q-I2-1 | (2026-10-25, E20.i2, en termes de jeu) Faire E20.i2 en trois morceaux ? Après le 1er : sans bottes de nage, Alundra s'arrête au bord de l'eau profonde, y compris la mer de la 416 dès la nouvelle partie. Après le 2e : rien ne change à l'écran, sauf sur les cartes 159 et 160 où Alundra, les ennemis, les objets lancés et les projectiles avancent deux fois moins vite à l'horizontale. Après le 3e : les rivières et tapis roulants déplacent Alundra, et les cases verrouillées lui retirent la main. (A, défaut) mur, forces, puis courants et case verrouillée après la blessure ; (B) un seul bloc après c2b. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (§1.14.1) |
+| Q-I2-2 | (2026-10-25, E20.i2a) Dans l'original, Alundra déjà dans l'eau profonde sans bottes de nage (objet 0x1B ou 0x1C) ne peut plus du tout bouger ; 76 arrivées de portails sur 3 316 tombent sur de l'eau profonde (normales avec les bottes). (A, défaut) coincée, comme l'original ; (B) elle nage tant qu'elle y est déjà (un écart documenté, utile aux sauvegardes de test). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-I2A-4) |
+| Q-I2-3 | (2026-10-25, E20.i2c) Dans l'original, les ennemis, les objets et les caisses posés sur un courant dérivent comme Alundra ; 10 cartes et 63 entités posées sont sur une case de courant (56 dérivent au sol, 7 seulement en l'air). (A, défaut) tous, comme l'original ; (B) Alundra et les entités nées en jeu seulement (un écart documenté). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (i2c) |
+| Q-I2-4 | (2026-10-25, E20.i2c) Sur les cases verrouillées (trois rangées de la cascade de la 416, le tapis de la 125, une case des 7 cartes d'Inoa, une dans la 151), Alundra ne se commande plus (ni marche, ni saut, ni attaque, ni plongée, ni objet du Rond) et l'objet qu'elle porte est aspiré puis détruit. (A, défaut) avec les courants ; (B) plus tard (O-H-2 ; le tronçon verrouillé de la cascade se nagerait alors à contre-courant). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (i2c) |
+| Q-I2-5 | (2026-10-25, E20.i2) Aujourd'hui Alundra et les ennemis peuvent sortir des cartes, ce que l'original interdit (O-E19-17). (A, défaut, D-E19-25) hors d'i2 ; (B) le fermer dans la même fonction (un changement visible à tous les bords de carte, beaucoup de tests déplacés). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A |
+| Q-I2-6 | (2026-10-25, E20.i2) Des sauvegardes de test : `mur-m14` (sans bottes, la berge de l'étang de la 14), `glissement-m159` (la carte 159), `cascade-m416` (les bottes 0x1B, la berge de la cascade, à vérifier en jeu). (A, défaut) les trois, chacune avec sa tranche ; (B) la recette par la nouvelle partie seulement. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-I2A-5, D-I2B-7, i2c) |
 | O-G4B-1 | (2026-10-24, E20.g4b) À 3 ticks par image seulement : rec5 se brise 25 ticks après le lancer (24 aux autres cadences et au binaire) ; en (b6), Alundra n'est pas immobilisé 5 ticks par le roulis ; deux glissements de (b5) et (b6) (ticks 223 et 224) tombent avec un contact rec5 déjà tenu. Épinglés tels que mesurés dans `ShipBarricadeArcTests`, cause non établie (l'ordre des passes à plusieurs ticks par image ?) | plus tard (une lecture de la cadence à 3 ticks par image) |
 | Q-STEP | (2026-10-24, lecture seule `docs/plan-e20-annexe/e20-step-search/`, CONFIRMÉE par un critique frais ; à l'auteur en termes de jeu) Le binaire cherche la longueur de chaque pas par moitiés successives, sur X et Y à la fois (`ComputeXYPosition` `0x80037730`) ; le moteur avance jusqu'au contact exact, axe par axe, en flottants. Ce qui se voit : (1) une flèche tirée à bout portant contre un mur reste plantée dans le mur au lieu de rebondir tout de suite (O-E20-24, le seul écart visible à l'œil) ; (2) debout sur une caisse ou en l'air, un Carré au tick exact de l'arrivée soulève la caisse voisine au lieu de donner l'épée (O-G3-3) ; (3) une flèche ou un objet qui touche un mur à l'est ou au sud déclenche son rebond un tick plus tard dans l'original, une fois sur trois environ (`ForceAdjusted`) ; (4) en poussant en diagonale contre une caisse, l'original s'arrête net, le portage glisse le long (Q-G3-d, gardé par l'auteur le 2026-10-22). Options : (A) porter la recherche du binaire en entier, dans un déplaceur de la DLL en entiers bruts (le moteur ne peut pas être exact : sa position est en float32 ; il faut aussi une API moteur de pose exacte, avec son plan et son ADR), par étapes (les projectiles et objets lancés, puis le héros) ; cela renverse D-E19-58, D-E20-38, Q-H4C1-5 et Q-G3-d, que l'auteur avait gardés ; plusieurs tranches, des arcs réécrits par dérivation ; (B) le minimum visible : corriger O-E20-24 seul (le premier pas d'un projectile, porté avec la boucle par moitiés), et une « ombre » du contact du binaire pour O-G3-3 (une copie pure de la recherche qui ne fait qu'écrire le contact) ; le reste des écarts (3) et (4) gardé ; (C) ne rien changer : O-E20-24 et O-G3-3 restent consignés. Défaut de la session : (B), qui ne renverse aucune réponse de l'auteur **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : le défaut (B) (D-E20-80). | Tranché le 2026-10-25 (D-E20-80) |
 | O-ANX-1 | (2026-10-24, relevé par g3) La règle `[Bb]in/` du `.gitignore` (ligne 21, pour les sorties de construction) écarte aussi les dossiers `bin/` des annexes : `e20-f4f6/bin` (273 fichiers), `e20-f4f6/critic/bin` (180), `e20-h3/bin` (143), `e20-h4b/bin` (81), `plan-e19-pad-age-annexe/o77/bin` (9) ne sont pas dans le dépôt, alors que les plans les citent comme preuves ; celui de g3 a été ajouté à sa clôture. Proposition : une exception `!docs/**/[Bb]in/` au `.gitignore` et l'ajout des cinq dossiers (14 Mo environ), par un commit de docs **Réponse de l'auteur (2026-10-24)** : « prendre toutes les réponses par défaut » : la proposition (D-E20-76). | Tranché le 2026-10-24 (D-E20-76) |
