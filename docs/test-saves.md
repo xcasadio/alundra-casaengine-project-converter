@@ -179,6 +179,20 @@ For the barrels, stones, trunks and objects of the family C4 (docs/plan-e20-hero
 `c4-m22` is the arrival of the author's save `66-crypte-de-lars.sav`. The two barrels of the map stand at (888, 464) and (1104, 240) pixels: lift one with the Square, carry it, throw it against an enemy (it breaks) or against a wall during its rise (it rebounds).
 `c4-m70` arrives on the bank, next to the trunk of the record 8 (780, 456), out of the water: lift it and throw it into the water, it floats. The five trunks of the records 9 to 12 and 21 already float on the water to the north from the load.
 
+### Chest presets (E20.e0d)
+
+For the treasure chests and the magic seed (docs/plan-e20-heros.md section 1.26.2). The new game's kit (the basic sword), life 4/10, magic 1/2, no flag (every chest is closed). The hero arrives on the tile north of the chest and faces south: push against the chest, then press the Square.
+
+| Preset | Map, tile, z | The chest in front | Owned besides the kit |
+|---|---|---|---|
+| `coffre-m15` | 15 (Overworld 3,2), (35, 41), 5 | the magic seed (flag 1741) at (35, 42, 5) | 7 herbs |
+| `coffre-m11` | 11 (Debug zone), (7, 23), 13 | the life vessel, no flag (it fills itself again at every entry) | none |
+| `coffre-m0` | 0 (Test Map), (13, 2), 0 | the Epee, no flag (a key object: the fanfare) | none |
+| `coffre-m117` | 117 (Tarn's Manor, unused), (42, 40), 2 | the Key (flag 260) | none |
+
+`coffre-m15`: open the seed (the magic maximum goes from 2 to 3 and the magic is filled; the box closes, the sound and the sparks come); the same map has three chests of herbs (records 21 to 23, at (4, 51), (2, 51) and (5, 53)): with 7 herbs, the second fills the bag to 9 and the third answers
+"Too many things to carry" (nothing is given and the chest closes again, it opens again once there is room). `coffre-m117`: take the Key, then the door of the map 115 (Tarn's Manor) can be opened with it.
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;

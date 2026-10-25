@@ -364,14 +364,14 @@ public sealed class ItemEffectsTests : IDisposable
     }
 
     [Fact]
-    public void TheObjects0x50_IsANamedStub_ThatChangesNothing_WhileAnotherObjectOfTheSameRangeIsGiven()
+    public void TheObject0x50_IsTheMagicSeed_ItRaisesTheMagicAndGivesNoItem_WhileAnotherObjectOfTheSameRangeIsGivenToTheInventory()
     {
-        // 0x8003382C is not read (no placed object and no loot reaches it): the stub answers like the binary's tail and writes nothing.
+        // E20.e0d phase C: 0x8003382C is the magic seed (the table and the effects are MagicSeedTests'): the maximum of magic + 1, the magic filled, the answer 1 (the column 0 of the table), no item in the inventory, the life untouched.
         var host = new PickupHost { Tables = Tables, Sound = new RecordingSoundPlayer() };
         var state = new GameState();
         var hero = new EntityScriptProxy { Hp = 3, HpMax = 10 };
         Assert.Equal(1, ItemEffects.GiveItem(host, state, hero, 0x50));
-        Assert.True((hero.Hp, state.PlayerStats.Money, state.PlayerStats.Mp, state.NumberOfItems[0x50 * 2 + 1]) == (3, 0, 0, 0));
+        Assert.True((hero.Hp, state.PlayerStats.Money, state.PlayerStats.Mp, state.PlayerStats.MpMax, state.NumberOfItems[0x50 * 2 + 1]) == (3, 0, 1, 1, 0));
 
         Assert.Equal(1, ItemEffects.GiveItem(host, state, hero, 0x4E));
         Assert.Equal(1, state.NumberOfItems[0x4E * 2 + 1]);

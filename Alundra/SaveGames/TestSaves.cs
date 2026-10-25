@@ -171,6 +171,15 @@ public static class TestSaves
         // `c4-m70`: the Coastal Cave (map 70), tile (33, 29), level 3 (48 px, the bank), on the new game's kit, no flag: the trunk of the record 8 stands 24 px to the north-west at (780, 456), out of the water, and the five trunks of the records 9 to 12 and 21 float
         // on the water to the north (they float from the load: the animation 5, the slope 4). Lift the trunk of the record 8, throw it into the water: it floats.
         new Preset("c4-m70", "test-c4-m70", 70, 33, 29, 3, [], [], [], []),
+
+        // E20.e0d T3 (docs/plan-e20-heros.md section 1.26.2, D-E0D-11): the chests. The hero arrives on the tile north of a chest (a save cannot carry the direction, always south: the chest is straight ahead); push against it and press the Square. On the new game's kit with HP 4/10 and
+        // MP 1/2 so that the seed (+1 to the magic maximum, up to 4) and the hearts show; no flag, every chest closed. `coffre-m15`: the Overworld 3,2 (map 15), tile (35, 41, 5), the magic seed (flag 1741) at (35, 42, 5); the same map has three chests of herbs (records 21 to 23) and the
+        // preset carries 7 herbs (the bag holds 9): the second one fills the bag and the third answers "too many things to carry" (the chest closes again). `coffre-m11`: the Debug zone, tile (7, 23, 13), the life vessel with no flag (it fills itself at every entry). `coffre-m0`: the test map,
+        // tile (13, 2, 0), the Epee (a key object: the fanfare). `coffre-m117`: Tarn's Manor (unused, broken), tile (42, 40, 2), the Key (flag 260) that the door of the map 115 consumes.
+        new Preset("coffre-m15", "test-coffre-m15", 15, 35, 41, 5, [], [], [], [(CounterIndex(0x24), 7)], Weapon: 1, Hp: 4, HpMax: 10, Mp: 1, MpMax: 2),
+        new Preset("coffre-m11", "test-coffre-m11", 11, 7, 23, 13, [], [], [], [], Weapon: 1, Hp: 4, HpMax: 10, Mp: 1, MpMax: 2),
+        new Preset("coffre-m0", "test-coffre-m0", 0, 13, 2, 0, [], [], [], [], Weapon: 1, Hp: 4, HpMax: 10, Mp: 1, MpMax: 2),
+        new Preset("coffre-m117", "test-coffre-m117", 117, 42, 40, 2, [], [], [], [], Weapon: 1, Hp: 4, HpMax: 10, Mp: 1, MpMax: 2),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>

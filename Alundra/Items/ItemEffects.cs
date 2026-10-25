@@ -20,7 +20,7 @@ namespace Alundra.Items;
 /// <item><description>the money <c>0x45</c> to <c>0x48</c> (1, 5, 10, 30 gildas, capped at 9999), the beak <c>0x4F</c> (+1 on the counter that the text command folds into the falcon keys, capped at 50, and the flag 1450), the small
 /// crystal <c>0x51</c> (the magic drop), the large crystal <c>0x52</c>, the life vessel <c>0x53</c> (the maximum of life + 1 with no cap, the life filled, the sound <c>0x31</c> and the effects of
 /// <see cref="NativeEffects.CreateLifeVesselEffects"/>), the three hearts <c>0x54</c> to <c>0x56</c>;</description></item>
-/// <item><description>the object <c>0x50</c> (<c>0x8003382C</c>) is a NAMED STUB: no placed object and no loot reaches it, its body is not read, it changes nothing;</description></item>
+/// <item><description>the magic seed <c>0x50</c> (<c>0x8003382C</c>, E20.e0d phase C, <see cref="MagicSeed"/>): the maximum of magic + 1 up to 4, the magic filled, the sound <c>0x36</c> and the effects of the vessel in the animation 2; its three entries (this one, <see cref="ApplyItem"/> and the opcode <c>0x82</c>) share the one body;</description></item>
 /// <item><description>every other object is added to the inventory by <see cref="PlayerManager.AddOneItemIfUnlocked"/>.</description></item>
 /// </list>
 /// The answer is 1 exactly when the column 0 of the table of the objects is zero (<c>0x800340D8-0x800340EC</c>): the objects that vanish (hearts, money, herb, potions, crystals) answer 0. The effects go to the queue of the effect
@@ -35,6 +35,7 @@ internal static class ItemEffects
     private const int ChestFullStopEtcIndex = 0x4F;
     private const int FalconTempCap = 50;
     private const uint BeakFlag = 1450;
+    private const int MagicSeedAnimation = 2;
 
     /// <summary>
     /// <c>0x80033F00</c>: hands <paramref name="item"/> to the hero and answers 1 or 0 (see the class). <paramref name="hero"/> is the entity that carries the life; the magic, the money and the inventory are the
@@ -144,7 +145,8 @@ internal static class ItemEffects
                 state.AddFlag(BeakFlag, 1u << (int)(BeakFlag & 31));
                 break;
             case 0x50:
-                break; // NAMED STUB until E20.e0d phase C: 0x8003382C.
+                MagicSeed(world, state, hero);
+                break;
             case 0x51:
                 HeroHeals.MagicDrop(world, state, hero);
                 break;
@@ -224,6 +226,23 @@ internal static class ItemEffects
         var before = PlayerManager.GetNumberOfItem(state, item);
         PlayerManager.AddOneItemIfUnlocked(state, tables, item);
         return before < PlayerManager.GetNumberOfItem(state, item);
+    }
+
+    /// <summary>
+    /// E20.e0d (D-E0D-10): the magic seed (<c>0x8003382C</c>), the twin of the life vessel in the binary's order: the maximum of magic + 1 (<see cref="PlayerManager.SetPlayerMpMax"/> caps it at 4), the magic filled to it, the sound <c>0x36</c> at once, then the
+    /// effects on the queue (the position of the hero captured now, with the binary's Z) - the same eight rings and four sparks as the vessel, in the ANIMATION 2. Shared by <see cref="GiveItem"/>, <see cref="ApplyItem"/> and the sub-case <c>0x50</c> of the opcode <c>0x82</c>
+    /// (<c>0x80034108</c>); without a stage or a hero the effects are skipped (the magic and the sound are still done).
+    /// </summary>
+    internal static void MagicSeed(IEntityWorldContext world, GameState state, EntityScriptProxy? hero)
+    {
+        var raised = PlayerManager.SetPlayerMpMax(state, (short)(state.PlayerStats.MpMax + 1));
+        PlayerManager.SetPlayerMp(state, (short)raised);
+        world.SoundPlayer?.PlaySfx(NativeEffects.MagicSeedSfx);
+        if (hero != null && world.EffectStage is { } stage)
+        {
+            var (x, y, z) = (hero.PosX, hero.PosY, unchecked(hero.PosZ + 1));
+            stage.Emit(reservoir => NativeEffects.CreateLifeVesselEffects(reservoir, x, y, z, MagicSeedAnimation));
+        }
     }
 
     /// <summary>The life vessel (<c>0x800333AC</c>) in the binary's order: the life, the sound at once, then the effects on the queue (the position of the hero captured now, with the binary's Z).</summary>

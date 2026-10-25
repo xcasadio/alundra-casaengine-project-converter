@@ -291,7 +291,6 @@ public sealed class ItemAndMoneyOpcodesTests
     }
 
     [Theory]
-    [InlineData(0x50)]
     [InlineData(0x51)]
     [InlineData(0x52)]
     [InlineData(0x54)]

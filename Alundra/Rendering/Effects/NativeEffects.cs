@@ -14,6 +14,9 @@ public static class NativeEffects
     /// <summary>The sound effect of the life vessel (<c>PlaySoundEffect(0x31)</c>, <c>0x800333AC</c>).</summary>
     public const int LifeVesselSfx = 0x31;
 
+    /// <summary>The sound effect of the magic seed (<c>PlaySoundEffect(0x36)</c>, <c>0x8003382C</c>).</summary>
+    public const int MagicSeedSfx = 0x36;
+
     /// <summary>The global effect of the vessel (bank 0, sprite 14, animation 0): 18 frames, 27 ticks, ends with <c>Destroy</c>.</summary>
     private const int LifeVesselEffect = 14;
 
@@ -26,9 +29,10 @@ public static class NativeEffects
     /// The effects of <c>IncreaseHpMaxAndCreateEffect</c> (<c>0x800333AC</c>) after its life and its sound: eight ring effects, then four sparks, all of the global effect 14 at the hero
     /// (<paramref name="heroX"/>, <paramref name="heroY"/>, <paramref name="heroZ"/>, 16.16) with z + 0x100000. A created ring slot is moved 16 pixels out on the ellipse and pulled back by its forces
     /// (it converges to the hero on the 16th update); a created spark draws two numbers from <see cref="GameRandom"/> for its horizontal forces and rises with a z force of 0x40000. A full reservoir
-    /// creates fewer slots and draws fewer numbers (no number for a slot that was not created). Everything wraps in 32 bits.
+    /// creates fewer slots and draws fewer numbers (no number for a slot that was not created). Everything wraps in 32 bits. E20.e0d (D-E0D-10): the body is shared with the magic seed (<c>0x8003382C</c>, the twin of the vessel but for 13 instructions),
+    /// which differs here by the animation only: <paramref name="animation"/> is 0 for the vessel, 2 for the seed.
     /// </summary>
-    public static void CreateLifeVesselEffects(EffectReservoir reservoir, int heroX, int heroY, int heroZ)
+    public static void CreateLifeVesselEffects(EffectReservoir reservoir, int heroX, int heroY, int heroZ, int animation = 0)
     {
         unchecked
         {
@@ -36,7 +40,7 @@ public static class NativeEffects
 
             for (var j = 0; j < RingOffsetX.Length; j++)
             {
-                var ring = reservoir.Create(false, LifeVesselEffect, 0, heroX, heroY, z);
+                var ring = reservoir.Create(false, LifeVesselEffect, animation, heroX, heroY, z);
                 if (ring != null)
                 {
                     ring.X += RingOffsetX[j] << 13;
@@ -49,7 +53,7 @@ public static class NativeEffects
 
             for (var k = 0; k < 4; k++)
             {
-                var spark = reservoir.Create(false, LifeVesselEffect, 0, heroX, heroY, z);
+                var spark = reservoir.Create(false, LifeVesselEffect, animation, heroX, heroY, z);
                 if (spark != null)
                 {
                     var r1 = (uint)GameRandom.Next();

@@ -3136,8 +3136,9 @@ public sealed class EventProgramRunner : IEventProgramRunner
 
     /// <summary>
     /// HandleMapTriggerCommand (0x80034108) behind opcode 0x82. Id 0 gives nothing; 0x45-0x48 add 1, 5, 10 and 30 gold; 0x4F raises
-    /// FalconTemp by one up to 50 and sets G1450; 0x53 is the life vessel (<see cref="UseLifeVessel"/>, E19.g G3d); the other
-    /// 0x50-0x56 are the hero's magic and life functions (degraded: answers "given", writes nothing - O-E19-39); every other id
+    /// FalconTemp by one up to 50 and sets G1450; 0x53 is the life vessel (<see cref="UseLifeVessel"/>, E19.g G3d); 0x50 is the magic seed
+    /// (<see cref="Alundra.Items.ItemEffects.MagicSeed"/>, E20.e0d: the one body of its three entries); the other
+    /// 0x51, 0x52 and 0x54-0x56 are the hero's magic and life functions (degraded: answers "given", writes nothing - O-E19-39); every other id
     /// gives one item unless the maximum is reached, the answer being
     /// <c>count before &lt; AddOneItemIfUnlocked(id)</c>. Without item tables that last branch is degraded (answers 0).
     /// </summary>
@@ -3167,7 +3168,11 @@ public sealed class EventProgramRunner : IEventProgramRunner
                 UseLifeVessel();
                 return true;
 
-            case >= 0x50 and <= 0x56:
+            case 0x50:
+                Alundra.Items.ItemEffects.MagicSeed(_worldContext, _gameState, _worldContext.PlayerEntity);
+                return true;
+
+            case >= 0x51 and <= 0x56:
                 LogDegradedOpcodeOnce(0x82, "HandleMapTriggerCommand", "hero life, magic and effects");
                 return true;
         }
