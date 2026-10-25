@@ -11938,7 +11938,7 @@ PM, la piste XA, les états `0x32` à `0x34`, la garde (h4a) ; E3 pour le type 2
 
 ---
 
-#### 1.31.4 E20.h4c2 — La terre 2 : le pilote `0x800354D0`, E13, l'annulation et le coup de caméra ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95` ; **révision 3 du 2026-10-25** : D-E20-56 (Q-H4C2-3, B) et E20.c2b avant h4 (D-E20-83), nouvelle époque ; révisions 3 et 3.1 relues : REVISE ; révision 3.2 du 2026-10-25 après disposition, une seule relecture de clôture ; défauts de Q-H4C2-5 et Q-H4C2-6 pris par la règle de l'auteur, D-E20-83)
+#### 1.31.4 E20.h4c2 — La terre 2 : le pilote `0x800354D0`, E13, l'annulation et le coup de caméra ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95` ; **révision 3 du 2026-10-25** : D-E20-56 (Q-H4C2-3, B) et E20.c2b avant h4 (D-E20-83), nouvelle époque ; révisions 3 et 3.1 relues : REVISE ; révision 3.2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; défauts de Q-H4C2-5 et Q-H4C2-6 pris par la règle de l'auteur, D-E20-83)
 
 **Révision 3 (2026-10-25, nouvelle époque).** La réponse de l'auteur à Q-H4C2-3 (B : le rocher arrêté en l'air attend le sol, D-E20-56) et
 l'ordre de D-E20-83 (E20.c2b avant h0a, donc avant h4) changent trois choses (lecture seule du 2026-10-25, `scratchpad/t2-next/h4-rev/` et sa critique `scratchpad/t2-next/h4-rev-critic/`, à verser
