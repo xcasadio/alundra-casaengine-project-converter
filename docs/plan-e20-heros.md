@@ -10687,12 +10687,19 @@ trou de la table, un autre objet en cours) ; un objet dont le départ n'est pas 
 
 ---
 
-#### 1.30.1a E20.A362 — L'arc du couvercle de la 362 face à la bombe d'Olen ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2, avant h3a ; ligne 9b de l'enveloppe ; à relire par un `plan-verifier` frais ; défauts de Q-A362-1 et Q-A362-2 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
+#### 1.30.1a E20.A362 — L'arc du couvercle de la 362 face à la bombe d'Olen ⏳ (détaillée le 2026-10-25 ; thème 2, avant h3a ; ligne 9b de l'enveloppe ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais ; défauts de Q-A362-1 et Q-A362-2 pris par la règle de l'auteur du 2026-10-25, D-E20-83)
 
 **Provenance.** Lecture seule du 2026-10-25 (HEAD `8174c0cb`, code de production identique jusqu'à `5e67722d`) : rapport et critique frais
 (`scratchpad/t2-next/a362-h3a/report-main.md`, `scratchpad/t2-next/a362-h3a-critic/report-main.md`, scripts, sorties et copies de
 l'oracle de h3), à verser par T0 à `docs/plan-e20-annexe/e20-a362-disc/`. Le critique confirme les faits porteurs et en corrige trois (la
 glissade de la bombe, le tick de `0x8E`, le pc de F[3]) ; ce sont ses valeurs qui sont écrites ici.
+
+**Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé quatre blocages, corrigés (FIX) : (1) la fumée relevait les
+ticks de la scène avant que la table des attendus soit écrite : la table est commitée d'abord, la fumée ne relève plus de tick ; (2) la
+mutation `TypeNibbles[3]` ne fait pas tomber le contact (a7) (la table ne sert que `0x87` et `0x95`) : sa prédiction est corrigée et une
+mutation de la passe de coups tue (a7) ; (3) le témoin du coup d'épée ne fixait ni la position du héros ni la preuve que l'épée atteint le
+couvercle : il passe dans un banc à part, la géométrie dérivée, un témoin positif accolé ; (4) le préréglage n'avait pas de test de
+contenu : il en a un.
 
 **Prérequis.** Aucun prérequis de code : la DLL du HEAD exécute toute la scène (les 48 opcodes de la 362 ont un `case`). Ordre : après E20.c2b
 (D-E20-83), avant E20.h3a (§1.30, Q-H3-6) ; elle partage avec b2 et c2b `Alundra/SaveGames/TestSaves.cs` et `docs/test-saves.md` (le
@@ -10739,13 +10746,16 @@ deux manques que h3a comble, épinglés par des tests nommés que h3a réécrira
 **Hors périmètre.** `(E, 19)`, `(D, 30)`, `(E, 12)` (h3a) ; la marche des Muruta après leur naissance ; le moteur.
 
 **Tâches.**
-- ⏳ **T0 — Versement, fumée, chronologie écrite d'avance** (commit de docs). (a) Verser la lecture (les deux dossiers, sans copies inutiles
-  ni `__pycache__`) à `docs/plan-e20-annexe/e20-a362-disc/` avec README et `SHA1SUMS.txt` ; (b) rejouer depuis une copie les sorties de la
-  critique (`crit_olen_real_*`, `k_w5_lid`), identiques ; (c) une fumée jetable (jamais commitée, versée en `.txt`) : la 362 chargée par
-  `ArcRun` (prefabs, vrai contrôleur), les dialogues 131 à 133 présents, l'arrivée de D-A362-3, la scène jouée jusqu'à T7, ses ticks relevés ;
-  (d) la table des ticks attendus (S, T4, A, H et la suite de B[4]) dérivée du bytecode et de la clé de la critique, écrite dans l'annexe
-  avant l'arc ; un écart entre (c) et (d) est un **arrêt** (un « manque autre », à lire avant h3a) ; (e) la case du préréglage ; (f) la
-  liste prédite (le test de liste des préréglages seul).
+- ⏳ **T0 — Versement, chronologie écrite d'avance, fumée** (deux commits de docs, dans cet ordre). **T0a** (premier commit, avant toute
+  exécution de la scène dans la DLL) : (a) verser la lecture (les deux dossiers, sans copies inutiles ni `__pycache__`) à
+  `docs/plan-e20-annexe/e20-a362-disc/` avec README et `SHA1SUMS.txt` ; (b) rejouer depuis une copie les sorties de la critique
+  (`crit_olen_real_*`, `k_w5_lid`), identiques ; (d) la table des ticks attendus (S, T4, A, H et la suite de B[4], la position de repos de la
+  bombe) dérivée du seul bytecode (`Wait n` = n + 1) et de la clé de la critique, écrite dans l'annexe ; (d2) la géométrie du témoin (n2) :
+  une position et un regard du héros d'où la boîte de l'épée de base recouvre le corps du couvercle (x 189 à 237, y 100 à 108, z 32 à 76,
+  après le décalage de C[3]), dérivés des boîtes de l'épée ; (e) la case du préréglage (hors de la tuile (10, 16) niveau 2 de B[6]) ;
+  (f) la liste prédite (le test de liste des préréglages seul). **T0b** (second commit) : (c) une fumée jetable (jamais commitée, versée en
+  `.txt`) qui ne relève **aucun tick de la scène** : la 362 chargée par `ArcRun` (prefabs, vrai contrôleur), les dialogues 131 à 133
+  présents, l'arrivée de D-A362-3 et quelques images, sans parler à Olen.
 - ⏳ **T1 — L'arc et le préréglage.** L'arc, depuis l'arrivée de D-A362-3, aux trois cadences pour ce qui ne dépend pas des tirages :
   (a1) le chargement (enregistrements 0 à 4 présents, 5 à 10 absents) ; (a2) le dialogue et T2 par F[3] pc 748 ; (a3) la naissance de la bombe
   (position, regard `0x10`, animation 0) ; (a4) T4 à S+31 ; (a5) la glissade (y décroît de 1 px par tick, repos vers (204, 103) ± 1, stable
@@ -10753,18 +10763,24 @@ deux manques que h3a comble, épinglés par des tests nommés que h3a réécrira
   `FrameCollisionTickCounter` 25) ; (a8) D[1] à H+1, T6, le couvercle en statut 3 ; (a9) les deux épingles de D-A362-1 (le couvercle encore
   là, ni son `0xE6` ni effet 11 ; la bombe en statut 3 après la fin de son animation) ; (a10) B[4] : `0x8E` à H+3, `0x8F` à H+64, les quatre
   naissances ; (a11) le héros intact (`TouchingEntity` nul, PV inchangés) ; témoins : (n1) sans G248, pas d'enregistrement 5 (le dialogue
-  131 et la boucle) ; (n2) un coup d'épée sur le couvercle ne pose pas son `TouchingEntity` (réponse `0x80` au type 1). Puis le préréglage
-  `olen-m362` et sa ligne de liste. La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `cmp` ;
+  131 et la boucle) ; (n2) dans un banc à part (le couvercle, sprite global 243, posé seul ; le héros à la position et au regard de T0 (d2)),
+  un coup d'épée ne pose pas son `TouchingEntity` (réponse `0x80` au type 1), accolé à son positif : la même géométrie avec une cible à
+  réponse `0x10` au type 1 (un Beannoïde) à la place du couvercle, touchée (si l'épée ne recouvre pas la zone, le positif est rouge). Puis
+  le préréglage `olen-m362`, sa ligne de liste et son test de contenu : la nouvelle partie, la carte 362, la case de T0 (e), le drapeau G248
+  seul (rouge si G248 est retiré ou si la case est celle de B[6]). La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec ; `cmp` ;
   `check_names.py --rules`.
-- ⏳ **T2 — Verifier frais** (la session principale), avec trois mutations jetables du HEAD : `TypeNibbles[3]` de 4 à 5 (le couvercle ne
-  réagit plus : (a7) et (a8) tombent) ; le `0x19` de D[1] supprimé ((a8)) ; `IsInlineDeactivateCode(19)` vrai ((a9)).
+- ⏳ **T2 — Verifier frais** (la session principale), avec quatre mutations jetables du HEAD, chacune avec ses rouges prédits exactement :
+  `TypeNibbles[3]` de 4 à 5 (`0x87` ne reconnaît plus l'attribut 4 : (a8) et (a10) rouges, (a7) vert) ; le `case 0x19` de
+  `EventProgramRunner` neutralisé ((a8) et (a9) rouges, le statut 3 manque ; (a10) vert, T6 posé avant) ; `IsInlineDeactivateCode(19)`
+  vrai ((a9) rouge, le couvercle détruit sans son) ; la passe de coups qui saute les cibles de la classe A ((a7), (a8) et (a10) rouges).
 
-**Acceptation.** Les sorties de T0 (b) identiques ; la table de T0 (d) écrite avant l'arc et égale à la fumée ; (a1) à (a11), (n1) et (n2) verts ;
-les trois mutations tuées ; la suite en Release et en Debug, zéro échec ; aucun test hors de la liste de T0 (f) déplacé. **Recette de l'auteur**
+**Acceptation.** Les sorties de T0 (b) identiques ; dans `git log`, le commit de T0a (la table (d)) précède celui de la fumée et tout
+lancement de la scène ; (a1) à (a11) égaux à la table écrite d'avance ; (n1), (n2) et son positif, et le test de contenu du préréglage verts ;
+les quatre mutations tuées, leurs rouges égaux aux prédictions ; la suite en Release et en Debug, zéro échec ; aucun test hors de la liste de T0 (f) déplacé. **Recette de l'auteur**
 (non bloquante) : `olen-m362` : parler à Olen, voir la bombe exploser contre le couvercle, qui reste en place (h3a le fera disparaître), puis
 les Muruta sortir.
 
-**Arrêts.** Un écart entre la fumée et la table écrite d'avance ; un manque autre que `(E, 19)` et `(E, 12)` ; un besoin de code de production ;
+**Arrêts.** Un écart entre l'arc et la table écrite d'avance ; un manque autre que `(E, 19)` et `(E, 12)` ; un besoin de code de production ;
 un test hors de la liste prédite qui bouge.
 
 **Budget.** Un `executor` pour T0 et T1 ; deux tentatives ; un `plan-verifier` avant, un verifier frais après.
