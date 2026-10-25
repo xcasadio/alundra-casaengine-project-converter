@@ -1,0 +1,46 @@
+A2 kit       12/12: tick-level oracle HP after the hurt 8, direct call 8  equal
+A2 kit        5/12: tick-level oracle HP after the hurt 1, direct call 1  equal
+A2 kit        3/ 3: tick-level oracle HP after the hurt 0, direct call 0  equal
+A2 leather   12/12: tick-level oracle HP after the hurt 9, direct call 9  equal
+A2 leather    5/12: tick-level oracle HP after the hurt 2, direct call 2  equal
+A2 leather    3/ 3: tick-level oracle HP after the hurt 0, direct call 0  equal
+A2 ancient   12/12: tick-level oracle HP after the hurt 10, direct call 10  equal
+A2 ancient    5/12: tick-level oracle HP after the hurt 3, direct call 3  equal
+A2 ancient    3/ 3: tick-level oracle HP after the hurt 1, direct call 1  equal
+A2 silver    12/12: tick-level oracle HP after the hurt 11, direct call 11  equal
+A2 silver     5/12: tick-level oracle HP after the hurt 4, direct call 4  equal
+A2 silver     3/ 3: tick-level oracle HP after the hurt 2, direct call 2  equal
+A2 noarmour  12/12: tick-level oracle HP after the hurt 11, direct call 11  equal
+A2 noarmour   5/12: tick-level oracle HP after the hurt 4, direct call 4  equal
+A2 noarmour   3/ 3: tick-level oracle HP after the hurt 2, direct call 2  equal
+A2 bracelet  12/12: tick-level oracle HP after the hurt 9, direct call 9  equal
+A2 bracelet   5/12: tick-level oracle HP after the hurt 2, direct call 2  equal
+A2 bracelet   3/ 3: tick-level oracle HP after the hurt 0, direct call 0  equal
+A4 E  : tick-level oracle +0x8C after the hurt 24, direct call return 24  equal
+A4 W  : tick-level oracle +0x8C after the hurt 8, direct call return 8  equal
+A4 S  : tick-level oracle +0x8C after the hurt 0, direct call return 0  equal
+A4 N  : tick-level oracle +0x8C after the hurt 16, direct call return 16  equal
+A4 SE : tick-level oracle +0x8C after the hurt 27, direct call return 27  equal
+A4 SW : tick-level oracle +0x8C after the hurt 5, direct call return 5  equal
+A4 NE : tick-level oracle +0x8C after the hurt 21, direct call return 21  equal
+A4 NW : tick-level oracle +0x8C after the hurt 11, direct call return 11  equal
+A4 ENE: tick-level oracle +0x8C after the hurt 23, direct call return 23  equal
+A4 WSW: tick-level oracle +0x8C after the hurt 7, direct call return 7  equal
+A4 SSE: tick-level oracle +0x8C after the hurt 31, direct call return 31  equal
+A4 NNW: tick-level oracle +0x8C after the hurt 15, direct call return 15  equal
+B1 word 0x080 kit: tick-level oracle first loss 1, direct call 1 (return 8)  equal
+B1 word 0x080 b1a: tick-level oracle first loss 1, direct call 1 (return 8)  equal
+B1 word 0x080 b1b: tick-level oracle first loss 1, direct call 1 (return 8)  equal
+B1 word 0x080 b1c: tick-level oracle first loss 0, direct call 0 (return -1)  equal
+B1 word 0x100 kit: tick-level oracle first loss 2, direct call 2 (return 8)  equal
+B1 word 0x100 b1a: tick-level oracle first loss 2, direct call 2 (return 8)  equal
+B1 word 0x100 b1b: tick-level oracle first loss 2, direct call 2 (return 8)  equal
+B1 word 0x100 b1c: tick-level oracle first loss 0, direct call 0 (return -1)  equal
+B1 word 0x180 kit: tick-level oracle first loss 3, direct call 3 (return 8)  equal
+B1 word 0x180 b1a: tick-level oracle first loss 3, direct call 3 (return 8)  equal
+B1 word 0x180 b1b: tick-level oracle first loss 3, direct call 3 (return 8)  equal
+B1 word 0x180 b1c: tick-level oracle first loss 0, direct call 0 (return -1)  equal
+B2 B2-hp2-cost3: tick-level oracle first life after a hurt [0], direct call 0  equal
+B2 B2-hp1-cost1: tick-level oracle first life after a hurt [0], direct call 0  equal
+B2 B2-hp3-cost3: tick-level oracle first life after a hurt [0], direct call 0  equal
+VERDICT: every direct vector equals the tick-level oracle of E20.c2

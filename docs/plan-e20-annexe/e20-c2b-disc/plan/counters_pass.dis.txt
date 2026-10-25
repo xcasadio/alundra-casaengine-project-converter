@@ -1,0 +1,26 @@
+80038998 27bdffd8 addiu $sp, $sp, -0x28
+8003899c afb10014 sw $s1, 0x14($sp)
+800389a0 00008821 move $s1, $zero
+800389a4 3c038012 lui $v1, 0x8012
+800389a8 3c028013 lui $v0, 0x8013
+800389ac 8c424360 lw $v0, 0x4360($v0)
+800389b0 24637d30 addiu $v1, $v1, 0x7d30
+800389b4 afbf0020 sw $ra, 0x20($sp)
+800389b8 afb3001c sw $s3, 0x1c($sp)
+800389bc afb20018 sw $s2, 0x18($sp)
+800389c0 04400016 bltz $v0, 0x80038a1c
+800389c4 afb00010 sw $s0, 0x10($sp)
+800389c8 00402821 move $a1, $v0
+800389cc 246301d0 addiu $v1, $v1, 0x1d0
+800389d0 8c62fe4c lw $v0, -0x1b4($v1)
+800389d4 8c64fffc lw $a0, -4($v1)
+800389d8 ac600054 sw $zero, 0x54($v1)
+800389dc ac60ff5c sw $zero, -0xa4($v1)
+800389e0 ac600050 sw $zero, 0x50($v1)
+800389e4 24420001 addiu $v0, $v0, 1
+800389e8 10800003 beqz $a0, 0x800389f8
+800389ec ac62fe4c sw $v0, -0x1b4($v1)
+800389f0 2482ffff addiu $v0, $a0, -1
+800389f4 ac62fffc sw $v0, -4($v1)
+800389f8 8c620000 lw $v0, ($v1)
+-----

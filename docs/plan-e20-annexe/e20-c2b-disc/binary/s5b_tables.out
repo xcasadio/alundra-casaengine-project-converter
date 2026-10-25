@@ -1,0 +1,35 @@
+general state table 0x80022D3C, index = state (0..0x4F):
+   state 1c -> 80032558
+   state 1d -> 80031dd0
+   state 1e -> 80032758
+   state 31 -> 80032680
+   state 39 -> 80031dd0
+   state 3a -> 80031db4
+   state 3b -> 80031db4
+   state 3c -> 80031dd0
+   state 3e -> 80032558
+   state 4e -> 80031dd0
+   state 4f -> 80031dd0
+slope-4 state table 0x80022E7C (index = state, maybe):
+   state 1c -> 80032658
+   state 1d -> 80032690
+   state 31 -> 80032658
+   state 39 -> 80032674
+   state 3a -> 80032680
+   state 3b -> 800326fc
+   state 3c -> 80032674
+   state 3e -> 80032658
+   state 4e -> 80032674
+   state 4f -> 80032674
+death table 0x80022FBC (index = state - 0x1c):
+   state 1c -> 80032898
+   state 1d -> 800328f8
+   state 31 -> 80032870
+   state 39 -> 80032870
+   state 3a -> 80032884
+   state 3b -> 800328cc
+   state 3c -> 80032884
+   state 3e -> 800328f8
+   state 4e -> 800327f0
+   state 4f -> 800327f0
+pad dir table 0x80022C6C [0..15]: ['0xffffffff', '0x10', '0x18', '0x14', '0x0', '0xffffffff', '0x1c', '0xffffffff', '0x8', '0xc', '0xffffffff', '0xffffffff', '0x4', '0xffffffff', '0xffffffff', '0xffffffff']

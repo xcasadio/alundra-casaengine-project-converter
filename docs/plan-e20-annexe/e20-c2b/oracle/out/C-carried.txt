@@ -1,0 +1,185 @@
+# C-carried: the hurt with a carried object (E20.c2b T0 (c), new scenarios; the real code of ALUN_CD.EXE (France) in the MIPS emulator; sound, effects, spawn and the targets' programs are the journalled stubs of c1world)
+# per-tick values are the state AFTER the passes of that tick; tick 0 = start state; no expected value here: see the plan and the tests
+
+### C-carried: the hero carries a second target (object) on his head (harness writes of the PutInHands core, state 0x0C), touched by the Beannoid at tick 1 (20 px at rest), 40 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 40, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: t2 10->9
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 10->9 | none
+hero anim_target (+0x88) changes: t2 0xC->0x31, t6 0x31->0x1C, t17 0x1C->0x0, t18 0x0->0xC
+hero dir_target (+0x8C) changes: t2 24->8, t17 8->24
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2,6,10,14,18,22,26,30,34,38
+sounds (tick, id): [(1, 0), (2, 23), (2, 0), (6, 0), (17, 0), (18, 0)]
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 198.90625; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0xC	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0xC	24	0xC	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	3	10	10	0	0/0/0	0	0x0	sound(0) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x0	0x31	8	0x31	229	96	-196608	1	-	119	24	2	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	sound(23) | sound(0)
+3	0x0000	0x0	0x31	8	0x31	226	96	-196608	1	-	118	23	3	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+6	0x0000	0x0	0x1C	8	0x1C	217.18750	96	-184320	1	-	115	20	6	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	sound(0)
+7	0x0000	0x0	0x1C	8	0x1C	214.56250	96	-172032	1	-	114	19	7	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+10	0x0000	0x0	0x1C	8	0x1C	207.81250	96	-135168	1	-	111	16	10	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+11	0x0000	0x0	0x1C	8	0x1C	205.93750	96	-122880	1	-	110	15	11	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+14	0x0000	0x0	0x1C	8	0x1C	201.43750	96	-86016	1	-	107	12	14	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+15	0x0000	0x0	0x1C	8	0x1C	200.31250	96	-73728	1	-	106	11	15	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+17	0x0000	0x0	0x0	24	0x0	198.90625	96	-30720	1	-	104	9	17	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	sound(0)
+18	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	103	8	18	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	sound(0)
+19	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	102	7	19	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+22	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	99	4	22	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+23	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	98	3	23	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+26	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	95	0	26	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+27	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	94	0	27	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+30	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	91	0	30	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+31	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	90	0	31	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+34	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	87	0	34	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+35	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	86	0	35	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+38	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	83	0	38	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+39	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	82	0	39	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+40	0x0000	0x0	0xC	24	0xC	198.90625	96	0	1	-	81	0	40	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+
+   + touched at ticks 1; hurt entries at 2; HP [9]; stats HP [9]
+   + hero state timeline (anim_target): t1:C t2:31 t6:1C t17:0 t18:C
+   + hero charge counter [0x80126FFC] / pending-shot pointer [0x80127110]: ticks with charge != 0: none; wptr changes: none
+   + hero +0x2C (carried) at the end 0x80128258; draw-list absence (blink) at 2,6,10,14,18,22,26,30,...(10 ranges)
+   + carried object (state BEFORE tick t, t = 1.. ; the fields of the object slot, the hero +0x2C and the counter [0x80098F28]):
+     before t1: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=15204352 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t3: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=15007744 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t4: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14811136 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t5: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14614528 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t6: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14417920 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t7: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14233600 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t8: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14061568 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t9: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13901824 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t10: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13754368 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t11: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13619200 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t12: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13496320 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t13: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13385728 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t14: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13287424 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t15: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13201408 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t16: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13127680 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t17: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13066240 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t18: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13035520 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+
+### C-carried-walk: as C-carried with Right held from tick 1 from 60 px west (the hurt comes at tick 18 while walking with the object), 60 ticks
+# hero start px (192, 96), pad {}, after-last 0x2000, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 18
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 17
+hero HP (+0x14) changes: t18 10->9
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t18 10->9 | none
+hero anim_target (+0x88) changes: t1 0xC->0x7, t18 0x7->0x31, t22 0x31->0x1C, t33 0x1C->0x0, t34 0x0->0xC, t35 0xC->0x7
+hero dir_target (+0x8C) changes: t18 24->8, t33 8->24
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 18,22,26,30,34,38,42,46,50,54,58
+sounds (tick, id): [(1, 0), (17, 0), (18, 23), (18, 0), (22, 0), (33, 0), (34, 0), (35, 0)]
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 192, end 263.71875; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0xC	24	0x0	192	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x2000	0x0	0x7	24	0x7	194.43750	96	159744	1	-	0	0	1	10	10	0x0	0	0	1	3	10	10	0	0/0/0	0	0x0	sound(0)
+2	0x2000	0x0	0x7	24	0x7	196.87500	96	159744	1	-	0	0	2	10	10	0x0	0	0	1	3	10	10	0	0/0/0	0	0x0	-
+17	0x2000	0x0	0x7	24	0x7	233.43750	96	159744	1	slot1	0	25	17	10	10	0x0	0	0	1	3	10	10	0	0/0/0	0	0x0	sound(0) | effect(id=9, cx=243.21873, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=243.21873, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=243.21873, cy=95.49998, cz=6.50000 px)
+18	0x2000	0x0	0x31	8	0x31	230.43750	96	-196608	1	-	119	24	18	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	sound(23) | sound(0)
+19	0x2000	0x0	0x31	8	0x31	227.43750	96	-196608	1	-	118	23	19	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+22	0x2000	0x0	0x1C	8	0x1C	218.62500	96	-184320	1	-	115	20	22	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	sound(0)
+23	0x2000	0x0	0x1C	8	0x1C	216	96	-172032	1	-	114	19	23	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+26	0x2000	0x0	0x1C	8	0x1C	209.25000	96	-135168	1	-	111	16	26	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+27	0x2000	0x0	0x1C	8	0x1C	207.37500	96	-122880	1	-	110	15	27	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+30	0x2000	0x0	0x1C	8	0x1C	202.87500	96	-86016	1	-	107	12	30	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+31	0x2000	0x0	0x1C	8	0x1C	201.75000	96	-73728	1	-	106	11	31	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+33	0x2000	0x0	0x0	24	0x0	200.34375	96	-30720	1	-	104	9	33	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	sound(0)
+34	0x2000	0x0	0xC	24	0xC	200.34375	96	0	1	-	103	8	34	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	sound(0)
+35	0x2000	0x0	0x7	24	0x7	202.78125	96	159744	1	-	102	7	35	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	sound(0)
+36	0x2000	0x0	0x7	24	0x7	205.21875	96	159744	1	-	101	6	36	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+38	0x2000	0x0	0x7	24	0x7	210.09375	96	159744	1	-	99	4	38	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+39	0x2000	0x0	0x7	24	0x7	212.53125	96	159744	1	-	98	3	39	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+42	0x2000	0x0	0x7	24	0x7	219.84375	96	159744	1	-	95	0	42	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+43	0x2000	0x0	0x7	24	0x7	222.28125	96	159744	1	-	94	0	43	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+46	0x2000	0x0	0x7	24	0x7	229.59375	96	159744	1	-	91	0	46	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+47	0x2000	0x0	0x7	24	0x7	232.03125	96	159744	1	-	90	0	47	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+49	0x2000	0x0	0x7	24	0x7	236.90625	96	159744	1	-	88	0	49	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	sound(0)
+50	0x2000	0x0	0x7	24	0x7	239.34375	96	159744	1	-	87	0	50	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+51	0x2000	0x0	0x7	24	0x7	241.78125	96	159744	1	-	86	0	51	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+54	0x2000	0x0	0x7	24	0x7	249.09375	96	159744	1	-	83	0	54	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+55	0x2000	0x0	0x7	24	0x7	251.53125	96	159744	1	-	82	0	55	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+58	0x2000	0x0	0x7	24	0x7	258.84375	96	159744	1	-	79	0	58	9	10	0x0	0	0	0	2	9	10	0	0/0/0	0	0x0	-
+59	0x2000	0x0	0x7	24	0x7	261.28125	96	159744	1	-	78	0	59	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+60	0x2000	0x0	0x7	24	0x7	263.71875	96	159744	1	-	77	0	60	9	10	0x0	0	0	1	3	9	10	0	0/0/0	0	0x0	-
+
+   + touched at ticks 17; hurt entries at 18; HP [9]; stats HP [9]
+   + hero state timeline (anim_target): t1:7 t18:31 t22:1C t33:0 t34:C t35:7
+   + hero charge counter [0x80126FFC] / pending-shot pointer [0x80127110]: ticks with charge != 0: none; wptr changes: none
+   + hero +0x2C (carried) at the end 0x80128258; draw-list absence (blink) at 18,22,26,30,34,38,42,46,...(11 ranges)
+   + carried object (state BEFORE tick t, t = 1.. ; the fields of the object slot, the hero +0x2C and the counter [0x80098F28]):
+     before t1: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=12582912 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t2: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=12742656 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t3: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=12902400 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t4: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=13062144 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t5: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=13221888 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t6: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=13381632 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t7: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=13541376 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t8: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=13701120 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t9: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=13860864 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t10: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=14020608 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t11: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=14180352 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t12: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=14340096 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t13: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=14499840 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t14: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=14659584 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t15: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=14819328 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t16: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=14979072 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t17: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=15138816 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t18: hero+0x2C=0x80128258 counter=0 obj status=2 f24=0 f28=-2146271952 anim88=0 dir8C=0 x114=15298560 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t19: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=15101952 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t20: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14905344 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t21: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14708736 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t22: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14512128 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t23: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14327808 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t24: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14155776 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t25: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13996032 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t26: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13848576 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t27: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13713408 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t28: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13590528 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t29: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13479936 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t30: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13381632 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t31: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13295616 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t32: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13221888 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t33: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13160448 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t34: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13129728 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t36: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13289472 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t37: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13449216 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t38: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13608960 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t39: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13768704 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t40: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=13928448 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t41: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14088192 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t42: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14247936 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t43: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14407680 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t44: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14567424 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t45: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14727168 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t46: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=14886912 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t47: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=15046656 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t48: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=15206400 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t49: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=15366144 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t50: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=15525888 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t51: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=15685632 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t52: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=15845376 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t53: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=16005120 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t54: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=16164864 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t55: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=16324608 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t56: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=16484352 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t57: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=16644096 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t58: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=16803840 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t59: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=16963584 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+     before t60: hero+0x2C=0x80128258 counter=0 obj status=2 f24=-1 f28=-2146271952 anim88=0 dir8C=24 x114=17123328 y118=6291456 z11C=2097153 f30=0 f34=0 f38=2097152
+

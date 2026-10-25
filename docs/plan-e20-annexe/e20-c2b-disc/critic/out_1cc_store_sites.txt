@@ -1,0 +1,153 @@
+== 8002bc2c
+  8002bc14 jal 0x8004e5c4
+  8002bc18 addiu $a0, $zero, 0x27
+  8002bc1c move $a0, $zero
+  8002bc20 lui $v0, 0x800b
+  8002bc24 sw $zero, -0x7910($s1)
+  8002bc28 sw $zero, 0x14($s2)
+  8002bc2c sw $s0, 0x1cc($s2)
+  8002bc30 jal 0x8004dd30
+== 8004002c
+  80040014 sll $v1, $a0, 2
+  80040018 addu $v1, $v1, $v0
+  8004001c lw $v0, ($v1)
+  80040020 addiu $v1, $v1, -4
+  80040024 addiu $a0, $a0, -1
+  80040028 bgtz $a0, 0x8004001c
+  8004002c sw $s0, 0x1cc($v0)
+  80040030 addiu $v0, $zero, 4
+== 80061ea0
+  80061e88 addiu $v1, $zero, 2
+  80061e8c sw $v1, 4($v0)
+  80061e90 j 0x80061ea4
+  80061e94 sw $v1, 8($v0)
+  80061e98 addiu $v0, $zero, 0x5a
+  80061e9c sw $zero, 0x88($s0)
+  80061ea0 sw $v0, 0x1cc($s0)
+  80061ea4 lw $ra, 0x24($sp)
+== 80065df8
+  80065de0 nop 
+  80065de4 beqz $v0, 0x80065df4
+  80065de8 addiu $v0, $zero, 3
+  80065dec j 0x80065eac
+  80065df0 sw $v0, 0x88($s0)
+  80065df4 addiu $v0, $zero, 0x5a
+  80065df8 sw $v0, 0x1cc($s0)
+  80065dfc addiu $v0, $zero, 0x28
+== 8006eb7c
+  8006eb64 sw $v1, 0x88($s0)
+  8006eb68 ori $v0, $v0, 0x40
+  8006eb6c j 0x8006eb88
+  8006eb70 sw $v0, 0x6c($s0)
+  8006eb74 addiu $v0, $zero, 0x5a
+  8006eb78 sw $zero, 0x88($s0)
+  8006eb7c sw $v0, 0x1cc($s0)
+  8006eb80 sb $zero, 0x275($s0)
+== 80070554
+  8007053c addiu $v1, $zero, -4
+  80070540 sw $zero, 0x88($s0)
+  80070544 and $v0, $v0, $v1
+  80070548 j 0x80070584
+  8007054c sw $v0, 0x6c($s0)
+  80070550 addiu $v0, $zero, 0x5a
+  80070554 sw $v0, 0x1cc($s0)
+  80070558 addiu $v0, $zero, 0x1e
+== 80070bec
+  80070bd4 and $v0, $v0, $v1
+  80070bd8 j 0x80070c28
+  80070bdc sw $v0, 0x6c($s1)
+  80070be0 lbu $v1, 0x276($s1)
+  80070be4 addiu $v0, $zero, 0x5a
+  80070be8 sw $zero, 0x88($s1)
+  80070bec sw $v0, 0x1cc($s1)
+  80070bf0 bnez $v1, 0x80070c28
+== 80071b30
+  80071b18 lui $v0, 0x800e
+  80071b1c j 0x80071bd0
+  80071b20 sw $zero, 0x4338($v0)
+  80071b24 lw $a0, 0x18($s1)
+  80071b28 addiu $v0, $zero, 0x5a
+  80071b2c bgez $a0, 0x80071b38
+  80071b30 sw $v0, 0x1cc($s1)
+  80071b34 addiu $a0, $a0, 3
+== 80072504
+  800724ec sw $zero, 0x88($s3)
+  800724f0 j 0x80072508
+  800724f4 sw $zero, 0xb8($s3)
+  800724f8 addiu $v0, $zero, 6
+  800724fc sw $v0, 0x88($s3)
+  80072500 addiu $v0, $zero, 0x5a
+  80072504 sw $v0, 0x1cc($s3)
+  80072508 lw $ra, 0x54($sp)
+== 80073570
+  80073558 sh $v0, 0x282($s6)
+  8007355c addiu $v0, $zero, 0x1e
+  80073560 sh $v0, 0x28a($s0)
+  80073564 j 0x80073608
+  80073568 sh $v0, 0x28a($s6)
+  8007356c addiu $v0, $zero, 0x5a
+  80073570 sw $v0, 0x1cc($s0)
+  80073574 sw $v0, 0x1cc($s6)
+== 80074824
+  8007480c addiu $a0, $a0, 0x294
+  80074810 j 0x800748a4
+  80074814 nop 
+  80074818 addiu $a2, $zero, 2
+  8007481c lbu $v1, 0x275($s4)
+  80074820 addiu $v0, $zero, 0x5a
+  80074824 sw $v0, 0x1cc($s4)
+  80074828 addiu $v0, $zero, 6
+== 80074d98
+  80074d80 bne $v1, $v0, 0x80074dac
+  80074d84 nop 
+  80074d88 lw $v0, 0x144($a0)
+  80074d8c nop 
+  80074d90 beqz $v0, 0x80074dac
+  80074d94 addiu $v0, $zero, 0x78
+  80074d98 sw $v0, 0x1cc($a0)
+  80074d9c addiu $v0, $zero, -0x21
+== 80076d60
+  80076d48 sw $zero, 0xb8($s1)
+  80076d4c lbu $v0, 0x274($s1)
+  80076d50 addiu $v1, $zero, 0x5a
+  80076d54 addiu $v0, $v0, -1
+  80076d58 sltiu $v0, $v0, 2
+  80076d5c beqz $v0, 0x80076d74
+  80076d60 sw $v1, 0x1cc($s1)
+  80076d64 addiu $v0, $zero, 0x28
+== 80077a64
+  80077a4c addiu $v0, $zero, 4
+  80077a50 sb $v0, 0x274($s3)
+  80077a54 sb $zero, 0x275($s3)
+  80077a58 sh $zero, 0x28a($s3)
+  80077a5c addiu $v0, $zero, 0x5a
+  80077a60 j 0x80078a28
+  80077a64 sw $v0, 0x1cc($s3)
+  80077a68 lbu $v1, 0x274($s3)
+== 8007991c
+  80079904 lui $v1, 0x8019
+  80079908 j 0x80079914
+  8007990c addiu $v0, $zero, 1
+  80079910 addiu $v0, $zero, 2
+  80079914 sw $v0, 0x1248($v1)
+  80079918 addiu $v0, $zero, 0x5a
+  8007991c sw $v0, 0x1cc($s3)
+  80079920 addiu $v0, $zero, 0x14
+== 8007c428
+  8007c410 addiu $v1, $v1, -1
+  8007c414 beqz $v1, 0x8007c740
+  8007c418 sw $v1, 0x278($s1)
+  8007c41c addiu $v0, $zero, 0x78
+  8007c420 bne $v1, $v0, 0x8007c42c
+  8007c424 nop 
+  8007c428 sw $v1, 0x1cc($s1)
+  8007c42c lw $v1, 0x27c($s1)
+== 8007d964
+  8007d94c addiu $v0, $zero, 0x1f
+  8007d950 addu $v1, $t3, $v1
+  8007d954 multu $v1, $v0
+  8007d958 sw $zero, 0x88($s0)
+  8007d95c sw $zero, 0x88($a2)
+  8007d960 addiu $v0, $zero, 0x5a
+  8007d964 sw $v0, 0x1cc($s0)
+  8007d968 sw $v0, 0x1cc($a2)

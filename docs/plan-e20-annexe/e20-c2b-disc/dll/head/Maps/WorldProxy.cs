@@ -1,0 +1,3963 @@
+﻿#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using CasaEngine.Core.Logging;
+using CasaEngine.Engine.Environment;
+using CasaEngine.Engine.Physics;
+using CasaEngine.Framework.AI.Navigation;
+using CasaEngine.Framework.Application;
+using CasaEngine.Framework.Assets;
+using CasaEngine.Framework.Application.Components;
+using CasaEngine.Framework.Assets.Animations;
+using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.Audio;
+using CasaEngine.Framework.Dialogue.Assets;
+using CasaEngine.Framework.Dialogue.Presentation;
+using CasaEngine.Framework.Physics;
+using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
+using CasaEngine.Framework.Scene.World;
+using CasaEngine.Framework.UI;
+using CasaEngine.Framework.Scripting;
+using Microsoft.Xna.Framework;
+using Alundra.Maps;
+using Alundra.Maps.Loop;
+using Alundra.Session;
+using Alundra.Entities;
+using Alundra.Entities.Spawning;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Combat;
+using Alundra.Items;
+using Alundra.Rng;
+using Alundra.Physics;
+using Alundra.Cells;
+using Alundra.Cameras;
+using Alundra.Rendering.Backdrops;
+using Alundra.Rendering.Effects;
+using Alundra.Audio;
+using Alundra.Transitions;
+using Alundra.Dialogues;
+using Alundra.UI.Choice;
+using Alundra.UI.Hud;
+using Alundra.UI.Inventory;
+using Alundra.UI.Messages;
+using Alundra.UI.Saving;
+using Alundra.UI.Shared;
+using Alundra.UI.Speech;
+using Alundra.UI.SubInventory;
+using Alundra.SaveGames;
+using Alundra.Probes;
+
+namespace Alundra.Maps;
+
+/// <summary>
+/// World script every converted .world declares as its "script_class_name" (see
+/// <c>WorldWriter.WorldScriptClassName</c>). On world load, read the map's tilemap "Entities"
+/// object layer (see <c>AlundraDataExtractor.TiledMapExporter</c>) and spawn one game entity per
+/// record. Each record carries a <c>PrefabAssetId</c> custom property (see
+/// <c>AlundraDataExtractor.TiledMapExporter</c>/<c>EntityBankPrefabWriter</c>) linking it to the
+/// per-bank prefab (<c>Entities/{Name}/{Name}.entity</c>); the normal path clones that prefab so
+/// the spawned entity carries the bank's sprite/collision components. When the link is missing,
+/// cannot be loaded, or the record has none, a bare entity is created instead (logged fallback).
+/// Either way, the resulting entity carries an <see cref="EntityScriptProxy"/> filled by
+/// <see cref="EntityRecordMapper"/>, whose logical position fields (<c>PosX</c>/<c>PosY</c>/<c>PosZ</c>)
+/// this proxy then converts into the spawned entity's <c>RootComponent.LocalTransform.Position</c> - now
+/// the entity's LOGICAL pose (E3.a, docs/plan-e3-collisions.md decision E3-1), not a render pose - via
+/// <see cref="EntitySpawnFactory.ResolveLogicalPosition"/> - see <see cref="EntitySpawnFactory.CreateEntityFromPrefab"/>. A
+/// <c>RenderProjectionComponent</c> child of that root (<c>SpriteWriter.WriteEntityPrefab</c>) derives
+/// the render pose from it every update.
+///
+/// This proxy also retains every entity it spawned and drives their status machine each frame (see
+/// <see cref="Update"/>), a faithful port of the two-phase pass of
+/// <c>EntityManager.UpdateEntitiesEvents</c> @ 0x800386D0: the original manager-level pass, not a
+/// per-entity one, which is why the driver lives here rather than on
+/// <see cref="EntityScriptProxy"/> (whose own <c>Update</c> stays a no-op by design - see its
+/// doc comment). Actual event-program execution goes through the <see cref="IEventProgramRunner"/> seam
+/// (<see cref="EventProgramRunner"/>); the bytecode interpreter itself is a later chantier. Transform
+/// re-derivation when the logical position changes at runtime is still a follow-up task.
+/// </summary>
+public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
+{
+    // EntityRecordMapper's own tile constants (StaticVariables.MapTileWidth/Height) - duplicated here
+    // (rather than made public there) since only the player spawn (this class) and that pure mapper need
+    // them; see EntityRecordMapper's own class doc for the same constants' derivation.
+    private const int TileWidth = 24;
+    private const int TileHeight = 16;
+
+    /// <summary>Catalog name of the hero bank prefab (<c>Entities/Alundra/Alundra.entity</c>) - see
+    /// <see cref="SpawnPlayerEntity"/>'s own doc.</summary>
+    private const string HeroAssetName = "Alundra";
+
+    /// <summary>Key of the custom property linking an "Entities" record to its bank prefab asset.</summary>
+    private const string PrefabAssetIdPropertyKey = "PrefabAssetId";
+
+    /// <summary>Name of the entity carrying the map's <see cref="TileMapComponent"/> (see WorldWriter).</summary>
+    private const string TileMapEntityName = "tileMap";
+
+    private const string EntitiesLayerName = "Entities";
+    private const string PortalsLayerName = "Portals";
+    private const string MapEventsLayerName = "MapEvents";
+
+    /// <summary>
+    /// Name of the debug-only environment variable that gates whether the right stick may drive
+    /// <see cref="CameraDirector.UpdateDebugCameraPan"/>'s DEBUG offset (and its R3/right-stick-click reset) at all.
+    /// ENABLED BY DEFAULT - user decision, 2026-08-24 - deliberately the opposite convention of
+    /// <see cref="PlayerManager.DebugIgnoreControlLockEnvVar"/> ("never active by default"):
+    /// that flag bypasses a real gameplay gate, so it must be opted into explicitly, whereas this one
+    /// only gates an always-optional debug convenience layered on top of whatever the camera is already
+    /// doing (see <see cref="_debugCameraBase"/>) - leaving it on by default costs nothing and saves
+    /// developers from re-enabling it every session. Set to exactly "0" or "false" (case-insensitive) to
+    /// disable; any other value, or leaving it unset, keeps it enabled.
+    /// </summary>
+    internal const string DebugCameraPanEnabledEnvVar = "ALUNDRA_DEBUG_CAMERA_ENABLED";
+
+    /// <summary>Real-world value of <see cref="DebugCameraPanEnabledEnvVar"/> - the environment variable
+    /// read exactly once (static readonly, evaluated on this type's first use) and logged exactly once
+    /// when it evaluates disabled - see that field's own doc.</summary>
+    private static readonly bool DebugCameraPanEnabledFromEnvironment = ReadDebugCameraPanEnabledFromEnvironment();
+
+    /// <summary>Test-only seam over <see cref="DebugCameraPanEnabledFromEnvironment"/> - same rationale as
+    /// <see cref="PlayerManager"/>'s own <c>_debugIgnoreControlLockOverrideForTests</c> seam: a
+    /// shared xunit host cannot guarantee this type's static field has not already been forced to
+    /// initialize before a test sets the real environment variable. Never read or written by production
+    /// code paths.</summary>
+    private static bool? _debugCameraPanEnabledOverrideForTests;
+
+    /// <summary>Internal (widened from private, S2's base extraction rule) so
+    /// <see cref="CameraDirector.UpdateDebugCameraPan"/> can read it after the camera wiring moved
+    /// out of this class.</summary>
+    internal static bool DebugCameraPanEnabled
+        => _debugCameraPanEnabledOverrideForTests ?? DebugCameraPanEnabledFromEnvironment;
+
+    /// <summary>Test-only read of <see cref="DebugCameraPanEnabled"/> - that property itself is private
+    /// (production code only reads it from inside <see cref="CameraDirector.UpdateDebugCameraPan"/>), so tests exercise
+    /// the flag's resolution through this seam instead.</summary>
+    internal static bool DebugCameraPanEnabledForTests => DebugCameraPanEnabled;
+
+    private static bool ReadDebugCameraPanEnabledFromEnvironment()
+    {
+        var raw = Environment.GetEnvironmentVariable(DebugCameraPanEnabledEnvVar);
+        var disabled = raw == "0" || string.Equals(raw, "false", StringComparison.OrdinalIgnoreCase);
+
+        if (disabled)
+        {
+            Logs.WriteWarning(
+                $"WorldProxy: {DebugCameraPanEnabledEnvVar}={raw} - debug camera pan stick input "
+                + "disabled (default is enabled).");
+        }
+
+        return !disabled;
+    }
+
+    /// <summary>Test-only seam - see <see cref="_debugCameraPanEnabledOverrideForTests"/>'s own doc. Pass
+    /// null to restore the real environment-variable-derived value.</summary>
+    internal static void SetDebugCameraPanEnabledOverrideForTests(bool? value)
+        => _debugCameraPanEnabledOverrideForTests = value;
+
+    /// <summary>
+    /// Entities spawned by this proxy in <see cref="InitializeWithWorld"/> (both the prefab-clone and
+    /// bare-fallback paths) and by the apparitions, in the ORDER OF THEIR SLOTS (E20.e0a2, ADR-0064: the hero's slot 0, then 1 to 63; an entry without a slot stays where it is) - <see cref="Update"/> drives their status
+    /// machine in this same order, mirroring the original manager's single flat entity-slot array.
+    /// </summary>
+    private readonly List<Entity> _spawnedEntities = new();
+
+    /// <summary>
+    /// E20.e0a2 (ADR-0064): the slots of this world's entities, one table per instance (a map has its own proxy, so a new map starts empty, slot 0 held for the hero).
+    /// </summary>
+    private readonly EntitySlotTable _slots = SlotTableFactoryForTests?.Invoke() ?? new();
+
+    /// <summary>Test seam, inert in production (null): called with the path ("load", "record", "sprite-index") and the entity right after its addition to the world and to the list, to make the error path of the creation reachable.</summary>
+    internal static Action<string, Entity>? CreationFaultHookForTests;
+
+    /// <summary>Test seam, inert in production (null): builds the slot table of a NEW proxy, so a test can start a world with slots already held (the full-table refusal at the map load).</summary>
+    internal static Func<EntitySlotTable>? SlotTableFactoryForTests;
+
+    /// <summary>The table of the slots, for the tests.</summary>
+    internal EntitySlotTable SlotTable => _slots;
+
+    /// <summary>The highest slot of the entries of <see cref="_spawnedEntities"/> that have one (-1 when none does).</summary>
+    private int HighestLiveSlot()
+    {
+        var highest = -1;
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is EntityScriptProxy { Slot: var slot } && slot > highest)
+            {
+                highest = slot;
+            }
+        }
+
+        return highest;
+    }
+
+    /// <summary>
+    /// E20.e0a2 (ADR-0064): the slot just taken for <paramref name="proxy"/> becomes the entity's own, or is given back at once when the entity has no <see cref="EntityScriptProxy"/> (a bare entity cannot be recycled, so it
+    /// would hold the slot for ever). Returns the slot the entity holds (-1 for none).
+    /// </summary>
+    private int HoldSlot(EntityScriptProxy? proxy, int slot)
+    {
+        if (proxy == null)
+        {
+            _slots.Release(slot);
+            return -1;
+        }
+
+        proxy.Slot = slot;
+        return slot;
+    }
+
+    /// <summary>
+    /// E20.e0a2 (ADR-0064): puts <paramref name="entity"/> in <see cref="_spawnedEntities"/> in the order of the slots, as the passes of the binary walk its flat array: right before the first entry whose slot is HIGHER
+    /// than <paramref name="slot"/>; the entries without a slot (-1: the test montages that fill the list by reflection) are skipped by the comparison and stay where they are; with none higher (or no slot), at the end.
+    /// </summary>
+    private void InsertBySlot(Entity entity, int slot)
+    {
+        ReportSlot(slot);
+        if (slot >= 0)
+        {
+            for (var i = 0; i < _spawnedEntities.Count; i++)
+            {
+                if (_spawnedEntities[i].GameplayProxy is EntityScriptProxy { Slot: var other } && other > slot)
+                {
+                    _spawnedEntities.Insert(i, entity);
+                    return;
+                }
+            }
+        }
+
+        _spawnedEntities.Add(entity);
+    }
+
+    /// <summary>
+    /// E20.e0a2 (ADR-0064, carried from E20.e0a1): the contract "null, nothing added" holds on the error path too. An exception after the addition (the sound of the creation, the push to the root) takes the entity out of
+    /// <see cref="_spawnedEntities"/>, hands it back to the engine (<see cref="World.RemoveEntity"/>, which flags it for removal at the next update) when it had been queued, and gives its slot back.
+    /// </summary>
+    private void AbortCreation(Entity? entity, bool added, int slot)
+    {
+        if (entity != null)
+        {
+            _spawnedEntities.Remove(entity);
+            if (added)
+            {
+                _world?.RemoveEntity(entity);
+            }
+
+            if (entity.GameplayProxy is EntityScriptProxy proxy)
+            {
+                proxy.Slot = -1;
+            }
+        }
+
+        _slots.Release(slot);
+    }
+
+    private void ReportSlot(int slot)
+    {
+        if (!SlotShadow.Active)
+        {
+            return;
+        }
+
+        var maxLive = HighestLiveSlot();
+        var world = _world?.Name;
+        if (slot < 0)
+        {
+            SlotShadow.Report(SlotShadow.Overflow, world, slot, maxLive);
+            return;
+        }
+
+        if (slot < maxLive)
+        {
+            SlotShadow.Report(SlotShadow.OutOfOrder, world, slot, maxLive);
+        }
+
+        SlotShadow.Report(SlotShadow.Seen, world, slot, maxLive);
+    }
+
+    /// <summary>
+    /// Every "Entities" record of this world's own tilemap layer, keyed by its <c>Index</c> custom
+    /// property - i.e. the same id <see cref="EntityScriptProxy.EntityRefId"/> is filled from
+    /// (<see cref="EntityRecordMapper"/>) and the id the dynamic-spawn opcode 0x2D
+    /// (<c>GameEngine.SpawnEntity</c>'s <c>entityId</c> parameter) looks records up by
+    /// (<c>GameEngine.GetEntityRecord</c>, GameEngine.cs:2125-2144). Populated once in
+    /// <see cref="InitializeWithWorld"/> from every record of the layer, including ones
+    /// <see cref="EntitySpawnFactory.ShouldSpawnRecord"/> would reject for the map-load pass - 0x2D applies its own,
+    /// looser gate (<c>notCheckSpawnZone = 1</c>, see <see cref="SpawnEntityByRecordId"/>) so a record
+    /// this world did not spawn at load time can still become spawnable later.
+    /// </summary>
+    private readonly Dictionary<int, TileMapObjectData> _entityRecordsByIndex = new();
+
+    /// <summary>E19.f2a F2-R1: the square button (held, rising edge) of each logic tick of the current frame, recorded by the pad pass of <see cref="Update"/>.</summary>
+    private readonly List<(bool Held, bool Pressed)> _squareOfTick = new();
+
+    /// <summary>E19.f2a F2-R1: the square button of the last tick of the previous frame: what the box pass of tick 0 reads.</summary>
+    private (bool Held, bool Pressed) _squareOfLastTick;
+
+    /// <summary>E19.f3a F3A-R3: the pad words the choice box reads (just pressed, by interval) of each logic tick of the current frame, recorded by the pad pass of <see cref="Update"/>. D-E19-99: the save screen reads the same words, of the tick before.</summary>
+    private readonly List<(uint Pressed, uint Interval)> _choicePadOfTick = new();
+
+    /// <summary>E19.f3a F3A-R3: the pad words of the last tick of the previous frame: what the choice pass and (D-E19-99) the save screen read at tick 0.</summary>
+    private (uint Pressed, uint Interval) _choicePadOfLastTick;
+
+    /// <summary>
+    /// Per-frame working list for <see cref="Update"/>: cleared and refilled from
+    /// <see cref="_spawnedEntities"/> every frame instead of allocating a temporary list in the hot
+    /// path. Kept as a re-read of each entity's <c>GameplayProxy</c> (rather than a list frozen at
+    /// spawn) so <see cref="_spawnedEntities"/> stays the single source of truth.
+    /// </summary>
+    private readonly List<EntityScriptProxy> _updateProxies = new();
+
+    /// <summary>
+    /// E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): this frame's collidable-entity snapshot
+    /// (<see cref="EntitySupport.BuildCollidables"/>), rebuilt from <see cref="_updateProxies"/> every time
+    /// that list is refreshed (<see cref="RefreshUpdateProxiesAndCollidables"/>) - same no-per-frame-
+    /// allocation shape as <see cref="_updateProxies"/> itself. Exposed as <see cref="IScriptHost.Collidables"/>.
+    /// </summary>
+    private readonly List<EntityScriptProxy> _collidables = new();
+
+    /// <summary>
+    /// Seam over actual event-program execution (see <see cref="IEventProgramRunner"/>); defaults to a
+    /// silent no-op since the bytecode interpreter does not exist yet. Internal, not injected through
+    /// the constructor: <c>ElementFactory</c> constructs gameplay proxies parameterless, so tests swap
+    /// this field directly instead.
+    /// </summary>
+    internal IEventProgramRunner EventProgramRunner = new NoOpEventProgramRunner();
+
+    /// <summary>
+    /// Backing store for <see cref="EventProgramRunner"/> when it is a real <see cref="Events.EventProgramRunner"/>
+    /// (see <see cref="InitializeWithWorld"/>) - kept as its own field (rather than only living inside the
+    /// runner's constructor call) so <see cref="Update"/> can read <see cref="GameState.PlayerControlFlags"/>
+    /// for <see cref="RunMapEventsPass"/>'s own gate, mirroring how the original reads the SAME global
+    /// (<c>g_playerControlFlags</c>) from both <c>RunMapEvents</c> and the opcode handlers alike.
+    ///
+    /// D-T-3 (docs/plan-transitions-carte.md, slice T1): this is no longer a field initializer - it is
+    /// this SESSION's own carrier (<see cref="GameState.Instance"/>), same shape as
+    /// <see cref="DialogueDirector"/>/<see cref="BgmPlayer.Instance"/>/<see cref="ScreenFadeDirector.Instance"/>
+    /// below - so game flags, control flags, the last pad snapshot and the interact latch's own numeric
+    /// fields all survive a map change instead of being lost with the old, per-world instance (§1.4.c).
+    /// <see cref="GameState.InstallForMapEntry"/> applies this session's own map-entry disposition
+    /// (D-T-13), called from <see cref="InitializeWithWorld"/>.
+    /// </summary>
+    internal GameState GameState => GameState.Instance;
+
+    /// <summary>
+    /// The New Game hero entity, spawned once in <see cref="InitializeWithWorld"/> BEFORE every "Entities"
+    /// record (its tile gates their own spawn-zone check, exactly like the original -
+    /// <see cref="ShouldSpawnRecord(TileMapObjectData,bool,int,int,out string)"/>). Minimal V1 port of
+    /// <c>ResetEntityState</c> (GameEngine.cs:648-670, called from <c>InitializeEntitySlots</c> BEFORE its
+    /// own record-spawn loop, GameEngine.cs:626-643) - see <see cref="SpawnPlayerEntity"/>'s own doc for
+    /// exactly what is and is not ported. Null when this world has no hero asset in the catalog, no prefab
+    /// loader, or the loader fails (logged, degraded - same shape as every other spawn failure in this
+    /// class); in that case no MapEvents run either (they always execute against the player,
+    /// <see cref="RunMapEventsPass"/> requires a non-null player).
+    /// </summary>
+    /// Setter widened to <c>internal</c> (C1, docs/plan-camera-ordre-frame.md §4): the map-event
+    /// characterization test needs to seed this directly - <see cref="AdoptPlayerPawn"/> is not
+    /// headless-reachable (it needs a live <see cref="HeroController"/>), same precedent as
+    /// <see cref="InstallCellAndOverlaySystems"/> being carved out of <see cref="InitializeWithWorld"/>.
+    internal EntityScriptProxy? PlayerEntity { get; set; }
+
+    /// <summary>
+    /// This world's MapEvents (port of <c>InitializeMapEvents</c>, GameEngine.cs:476-583): one entry per
+    /// "MapEvents" object-layer record whose <c>EventCodesBIndex</c> is non-zero, in record order, each
+    /// always executing against <see cref="PlayerEntity"/> - see <see cref="RunMapEventsPass"/>'s own doc.
+    /// Empty (not null) when this world has no "MapEvents" layer, or no <see cref="PlayerEntity"/> to run
+    /// them against.
+    /// </summary>
+    private readonly List<MapEvent> _mapEvents = new();
+
+    /// <summary>
+    /// T3 (docs/plan-transitions-carte.md §1.1/§3): this world's own parsed "Portals" object-layer
+    /// records (see <see cref="BuildPortals"/>), in slot order - the exact list
+    /// <see cref="PortalScanner.FindPortalAtTile"/> scans (§1.2.b: first-match-wins is order-
+    /// sensitive, so this MUST stay in record order, never re-sorted). Empty (not null) when this world
+    /// has no "Portals" layer. Exposed as <see cref="IScriptHost.Portals"/>.
+    /// </summary>
+    private readonly List<PortalRecord> _portals = new();
+
+    private bool _loggedNoHeroHeader;
+
+    /// <summary>E3.d: logged once when the hero's engine-spawned pawn carries no
+    /// <see cref="CharacterControllerComponent"/> (older/regenerated non-hero prefab reused as the
+    /// default pawn, or an export that predates E3.d's converter change) - the player then keeps E2's
+    /// controller-free movement, exactly as before this chantier.</summary>
+    private bool _loggedNoHeroController;
+
+    /// <summary>E2: this world's own <see cref="HeroController"/>, resolved once in
+    /// <see cref="InitializeWithWorld"/> (<c>World.PlayerControllers</c> is already populated by then -
+    /// see <see cref="AdoptPlayerPawn"/>'s own doc). Null when no such controller exists (no
+    /// <c>.gameMode</c>/PlayerStartupSettings wired for this world, or its <c>player_controller_class</c>
+    /// resolved to something other than <see cref="HeroController"/>) - logged once.</summary>
+    private HeroController? _playerController;
+    private bool _loggedNoPlayerController;
+
+    /// <summary>
+    /// Seam over <c>Data/sprite-records.json</c> lookups (see <see cref="Alundra.Entities.SpriteRecordCatalog"/>'s
+    /// class doc), read once and reused for every record this proxy spawns. Internal, not injected
+    /// through the constructor - same reasoning as <see cref="EventProgramRunner"/>: <c>ElementFactory</c>
+    /// constructs gameplay proxies parameterless, so tests swap this field directly.
+    ///
+    /// D-T-14 (docs/plan-transitions-carte.md, slice T1): resolved through <see cref="Alundra.Entities.SpriteRecordCatalog.GetOrCreate"/>'s
+    /// session-scoped cache (keyed by <see cref="EngineEnvironment.ProjectPath"/>) rather than always
+    /// constructing a fresh catalog - two consecutive worlds over the same project now read
+    /// <c>Data/sprite-records.json</c> only once.
+    /// </summary>
+    internal ISpriteRecordCatalog SpriteRecordCatalog = Alundra.Entities.SpriteRecordCatalog.GetOrCreate(EngineEnvironment.ProjectPath);
+
+    /// <summary>
+    /// E20.e0a1 (ADR-0063): the valid indices of the map page of each map (<c>Data/map-sprite-indices.json</c>), read at the FIRST call of <see cref="SpawnEntityBySpriteIndex"/> and never at the load of a world (no
+    /// existing world sees the warning of a missing file). Internal so a test swaps it.
+    /// </summary>
+    internal MapSpriteIndices? MapSpriteIndices;
+
+    /// <summary>
+    /// E13.c S3 (docs/plan-e13c-icones-hud.md): the three item tables the converter republishes under
+    /// <c>Data/</c> - see <see cref="Items.ItemTables"/>'s own doc. Resolved through the same kind of
+    /// session cache as <see cref="SpriteRecordCatalog"/> above, for the same reason: two consecutive worlds
+    /// over one project read the files once. Internal and assignable so tests swap in fixture tables, the
+    /// same seam <see cref="SpriteRecordCatalog"/> offers.
+    /// </summary>
+    internal ItemTables ItemTables = ItemTables.GetOrCreate(EngineEnvironment.ProjectPath);
+
+    ItemTables? IEntityWorldContext.ItemTables => ItemTables;
+
+    /// <summary>E20.b B1: the same tables for the hero's <c>MovePlayer</c>, which resolves the equipped weapon from them.</summary>
+    ItemTables? IScriptHost.ItemTables => ItemTables;
+
+    /// <summary>
+    /// E20.c1a C1 (docs/plan-e20-heros.md section 1.5): the 512 balance entries (<c>Data/balance.json</c>), loaded once per project like <see cref="ItemTables"/>. Internal and assignable so tests swap in their own.
+    /// An entity gets its record from them at its creation (<see cref="EntityScriptProxy.InitializeBalance"/>), at the threshold <see cref="BalanceThreshold"/> of the map.
+    /// </summary>
+    internal BalanceTables BalanceTables = BalanceTables.GetOrCreate(EngineEnvironment.ProjectPath);
+
+    /// <summary>E20.c1a C1: the balance threshold of the loaded map (its property <c>D</c>, <see cref="BalanceTables.ResolveThreshold"/>), read once when the entities are created.</summary>
+    internal int BalanceThreshold;
+
+    BalanceTables? IScriptHost.BalanceTables => BalanceTables;
+
+    int IScriptHost.BalanceThreshold => BalanceThreshold;
+
+    /// <summary>E20.e (S-E6): the effect the cut of the grass creates, the property <c>TileCutEffectId</c> of the map (<see cref="TileEffect.ResolveCutEffectIndex"/>), read once at the map load; 2 when it is missing.</summary>
+    internal int TileCutEffectIndex = TileEffect.DefaultCutEffectIndex;
+
+    int IScriptHost.TileCutEffectIndex => TileCutEffectIndex;
+
+    /// <summary>
+    /// E20.c1b K2 (docs/plan-e20-heros.md section 1.6): the three equipment records (<c>0x80146E00-0x80146E14</c>), one set per world. The hero's tick fills them (<see cref="PlayerManager"/>, <c>UpdateItemEffectState</c>
+    /// steps 2 to 5); they are emptied when the map is loaded (<c>InitializeItems</c> <c>0x80044520</c>), here with the threshold.
+    /// </summary>
+    internal EquipmentRecords EquipmentRecords = new();
+
+    EquipmentRecords? IScriptHost.EquipmentRecords => EquipmentRecords;
+
+    EquipmentRecords? IEntityWorldContext.EquipmentRecords => EquipmentRecords;
+
+    /// <summary>
+    /// Port of the original global <c>g_activeCollisionEntity</c>: the entity currently involved in the
+    /// active collision pair, used by the pick phase to decide whether a touch downgrades all the way
+    /// to an interact (slot F). Null in V1 (no collision system driving it yet); settable internally for
+    /// tests.
+    /// </summary>
+    internal EntityScriptProxy? ActiveCollisionEntity;
+
+    /// <summary>
+    /// DEBUG ONLY (see <see cref="CameraMath.DebugCameraPanSpeedPixelsPerSecond"/>). Cached so <see cref="Update"/>,
+    /// which gets no <see cref="World"/> parameter, can still read the gamepad and reach the camera entity
+    /// looked up in <see cref="InitializeWithWorld"/>.
+    /// </summary>
+    private World? _world;
+
+    /// <summary>E12.a wiring fix (user-reported: no dialogue box ever appeared in game): true once the
+    /// dialogue presenter has been built over a live UI view - set by <see cref="InstallDialogueSystems"/>
+    /// when a view already exists at install time (pre-wired hosts, the wiring test's montage), or by
+    /// <see cref="TryWireDialoguePresenterOnce"/>'s per-frame retry otherwise. Per-proxy on purpose
+    /// (trap 9: Clone copies nothing, and a NEW world must re-wire its own view) - the director itself
+    /// stays session-scoped.</summary>
+    private bool _dialoguePresenterWired;
+
+    // The presenter this world built, disposed when the world ends: its screen holds the project's dialogue markup.
+    private DialoguePresenter? _dialoguePresenter;
+
+    /// <summary>E15.c T5 (docs/plan-e15-yarn.md, contract item 1): this world's own <c>dialogue_{mapId}</c>
+    /// Yarn asset, held through the catalog and the game's asset manager (ADR-0037, same hold/give-back
+    /// shape as the inventory screen's own font3) and given back in <see cref="OnEndPlay"/>. Null when this
+    /// world's map has no dialogue asset, or when there is no game to resolve one through.</summary>
+    private AssetHandle<DialogueAsset>? _mapDialogueAssetHandle;
+
+    /// <summary>E15.c T5: the shared <c>dialogue_shared</c> (<c>map_alundra</c>) Yarn asset, held once per
+    /// project the same way.</summary>
+    private AssetHandle<DialogueAsset>? _sharedDialogueAssetHandle;
+
+    /// <summary>E13 C2 (docs/plan-e13-hud.md): true once <see cref="HudScreen"/> has been built and
+    /// pushed onto a live UI view - same "retry every frame until the post-bootstrap view exists" shape as
+    /// <see cref="_dialoguePresenterWired"/>/<see cref="TryWireDialoguePresenterOnce"/>, for the identical
+    /// reason (<see cref="InstallDialogueSystems"/>'s own doc: the ViewManager is empty by construction at
+    /// <see cref="InitializeWithWorld"/> time, every world load). Per-proxy, not session-scoped: a new
+    /// world needs its own screen pushed onto its own (new) view - <see cref="HudDirector"/> itself
+    /// stays the session-scoped one, this flag only gates the VIEW wiring.</summary>
+    private bool _hudScreenWired;
+
+    /// <summary>E13 C3 (docs/plan-e13-hud.md, D-E13-8): the presenter that pushes
+    /// <see cref="HudDirector"/>'s own per-tick state into whichever <see cref="IHudView"/> is
+    /// currently wired - null until <see cref="TryWireHudScreenOnce"/> succeeds (production), or until a
+    /// test attaches one directly via <see cref="AttachHudPresenterForTests"/> (the screen itself is not
+    /// constructible headless, same reason <see cref="DialoguePresenter"/>'s own tests double
+    /// <see cref="IUIViewRuntime"/> instead of a real <c>ScreenStack</c>). Per-proxy, same lifetime as
+    /// <see cref="_hudScreenWired"/> - a new world's screen gets a new presenter over the SAME session-scoped
+    /// <see cref="HudDirector.Instance"/>.</summary>
+    private HudPresenter? _hudPresenter;
+
+    /// <summary>E13.d D5 (docs/plan-e13d-inventaire.md): same "per-proxy retry gate" shape as
+    /// <see cref="_hudScreenWired"/> - guards <see cref="TryWireInventoryScreenOnce"/>'s own view lookup,
+    /// never the session-scoped <see cref="InventoryDirector"/> itself.</summary>
+    private bool _inventoryScreenWired;
+
+    /// <summary>E13.d D5: the presenter that pushes/removes <see cref="InventoryScreen"/> and pushes
+    /// its per-tick <see cref="InventoryDisplayModel"/> - null until <see cref="TryWireInventoryScreenOnce"/>
+    /// succeeds (production), or until a test attaches one via <see cref="AttachInventoryPresenterForTests"/>.</summary>
+    private InventoryPresenter? _inventoryPresenter;
+
+    /// <summary>D5.f (engine ADR-0036): the inventory screen this proxy built. It holds font3 from its
+    /// construction, and <see cref="OnEndPlay"/> disposes it so the hold is given back when this world ends;
+    /// the font then stays pending until the next world's screen takes it again.</summary>
+    private InventoryScreen? _inventoryScreen;
+
+    /// <summary>E13.d SI4 (docs/plan-e13d-sous-inventaire.md): same "per-proxy retry gate" shape as
+    /// <see cref="_inventoryScreenWired"/> - guards <see cref="TryWireSubInventoryScreenOnce"/>'s own view
+    /// lookup, never the session-scoped <see cref="SubInventoryDirector"/> itself.</summary>
+    private bool _subInventoryScreenWired;
+
+    /// <summary>E13.d SI4: the presenter that pushes/removes <see cref="SubInventoryScreen"/> and pushes
+    /// its per-tick <see cref="SubInventoryDisplayModel"/> - null until <see cref="TryWireSubInventoryScreenOnce"/>
+    /// succeeds (production), or until a test attaches one via <see cref="AttachSubInventoryPresenterForTests"/>.</summary>
+    private SubInventoryPresenter? _subInventoryPresenter;
+
+    /// <summary>E13.d SI4 (engine ADR-0036): the sub-inventory screen this proxy built. It holds font3 from
+    /// its construction, and <see cref="OnEndPlay"/> disposes it the same way <see cref="_inventoryScreen"/>
+    /// does.</summary>
+    private SubInventoryScreen? _subInventoryScreen;
+
+    /// <summary>E16.e T4 (docs/plan-e16-etat-partie.md, L5): the per-proxy retry gate of
+    /// <see cref="TryWireSaveScreenOnce"/>, the shape of <see cref="_subInventoryScreenWired"/>.</summary>
+    private bool _saveScreenWired;
+
+    /// <summary>E16.e T4: the presenter that pushes/removes <see cref="SaveScreen"/> and writes its view
+    /// model - null until <see cref="TryWireSaveScreenOnce"/> succeeds, or a test attaches one
+    /// (<see cref="AttachSaveScreenPresenterForTests"/>).</summary>
+    private SaveScreenPresenter? _saveScreenPresenter;
+
+    /// <summary>E16.e T4: the save screen this proxy built; it holds font3, and <see cref="OnEndPlay"/> disposes
+    /// it the same way <see cref="_subInventoryScreen"/> does.</summary>
+    private SaveScreen? _saveScreen;
+
+    /// <summary>E19.f2b1c F2B1C-R4: the per-proxy retry gate of <see cref="TryWireTextBoxScreenOnce"/>, the shape of <see cref="_saveScreenWired"/>.</summary>
+    private bool _textBoxScreenWired;
+
+    /// <summary>E19.f2b1c F2B1C-R4: the presenter that pushes/removes <see cref="TextBoxScreen"/> and writes its view model after each pass of the dialogue
+    /// box - null until <see cref="TryWireTextBoxScreenOnce"/> succeeds, or a test attaches one (<see cref="AttachTextBoxPresenterForTests"/>).</summary>
+    private TextBoxPresenter? _textBoxPresenter;
+
+    /// <summary>E19.f2b1c F2B1C-R4: the text box screen this proxy built; it holds font3, and <see cref="OnEndPlay"/> disposes it like <see cref="_saveScreen"/>.</summary>
+    private TextBoxScreen? _textBoxScreen;
+
+    /// <summary>E19.f3b F3B-R3: the per-proxy retry gate of <see cref="TryWireChoiceScreenOnce"/>, the shape of <see cref="_textBoxScreenWired"/>.</summary>
+    private bool _choiceScreenWired;
+
+    /// <summary>E19.f3b F3B-R3: the presenter that pushes/removes <see cref="ChoiceScreen"/> and writes its view model after each pass of the choice box - null until
+    /// <see cref="TryWireChoiceScreenOnce"/> succeeds, or a test attaches one (<see cref="AttachChoicePresenterForTests"/>).</summary>
+    private ChoicePresenter? _choicePresenter;
+
+    /// <summary>E19.f3b F3B-R3: the choice screen this proxy built; it holds font3, and <see cref="OnEndPlay"/> disposes it like <see cref="_textBoxScreen"/>.</summary>
+    private ChoiceScreen? _choiceScreen;
+
+    /// <summary>Engine ADR-0037: the HUD screen this proxy built. It holds its glyph and icon sprites, and
+    /// <see cref="OnEndPlay"/> disposes it so they are given back when this world ends.</summary>
+    private HudScreen? _hudScreen;
+
+    /// <summary>
+    /// This world's own <see cref="TileMapData"/> (resolved once in <see cref="InitializeWithWorld"/>,
+    /// same instance <see cref="CellsCollisionField"/>/<see cref="AdoptPlayerPawn"/> already read) -
+    /// cached so every NPC spawn (<see cref="EntitySpawnFactory.CreateEntityFromRecord"/> -&gt; <see cref="EntitySpawnFactory.CreateEntityFromPrefab"/>/
+    /// <see cref="EntitySpawnFactory.CreateBareEntityFromRecord"/> -&gt; <see cref="EntitySpawnFactory.ApplySpawnInitialization"/>, both the
+    /// map-load loop below and the dynamic-spawn opcode 0x2D's own <see cref="SpawnEntityByRecordId"/>)
+    /// can resolve THIS map's own Gravity/ZViscosity (E4.b, docs/plan-e4-deplacement-scripte.md "Spawn")
+    /// without re-threading a <see cref="TileMapData"/> parameter through every caller of this world's own
+    /// per-frame passes. Null before <see cref="InitializeWithWorld"/> runs, or when this world has no
+    /// loaded tilemap (see that method's own early-return) - every reader already treats a missing map
+    /// gracefully (see <see cref="EntityScriptProxy.ApplyGravitySettingsToController"/>'s own
+    /// no-controller no-op).
+    /// </summary>
+    private TileMapData? _tileMapData;
+
+    /// <summary>
+    /// Camera instance wiring (S2, docs/plan-update-caracterisation.md) - built in this FIELD
+    /// INITIALIZER, never lazily and never handed a back-reference to this proxy (trap 9: <see cref="Clone"/>
+    /// returns a bare <c>new WorldProxy()</c> and copies nothing, which stays safe only while every
+    /// collaborator is constructed exactly this way). Internal (rather than private) purely so
+    /// WorldProxyUpdateCharacterizationTests' <c>SeedDebugCameraOffset</c> helper can reach this
+    /// instance directly - the private-&gt;internal widening the plan's base extraction rule already
+    /// permits - instead of adding a second reflection hop.
+    /// </summary>
+    internal readonly CameraDirector _cameraDirector = new();
+
+    /// <summary>
+    /// E5.a: port of <c>g_entityFollowedByCamera</c> (GameEngine.cs) - see
+    /// <see cref="IEntityWorldContext.EntityFollowedByCamera"/>'s own doc. Initialized to the hero at
+    /// pawn adoption (port of <c>GameEngine.cs:644</c>, <see cref="AdoptPlayerPawn"/>), then only ever
+    /// written by opcodes 0x67/0x68/0x69 (<see cref="Events.EventProgramRunner"/>).
+    /// </summary>
+    public EntityScriptProxy? EntityFollowedByCamera { get; set; }
+
+    /// <summary>E5.a: <see cref="IEntityWorldContext.SetForcedCameraLookAt"/> - port of opcode 0x69
+    /// (Script_105_069). Public (rather than explicit-interface) since nothing about it needs hiding from
+    /// this proxy's own surface, unlike <see cref="PlayerEntity"/>'s internal setter above. Clears
+    /// <see cref="EntityFollowedByCamera"/> (which stays on this proxy) and DELEGATES the look-at pixel
+    /// coordinates themselves to <see cref="CameraDirector.SetForcedLookAt"/> (S2,
+    /// docs/plan-update-caracterisation.md) - see that collaborator's own doc on why this delegation is
+    /// not the banned "facade".</summary>
+    public void SetForcedCameraLookAt(int x, int y, int z)
+    {
+        EntityFollowedByCamera = null;
+        _cameraDirector.SetForcedLookAt(x, y, z);
+    }
+
+    /// <summary>
+    /// True once <see cref="InitializeWithWorld"/> successfully parsed and applied this world's
+    /// <see cref="WallPlacementOverlay"/> (see <see cref="WallPlacementOverlay.CustomPropertyKey"/>).
+    /// Gates the per-entity <see cref="WallPlacementOverlay.ApplyEntitySortKey"/> call in
+    /// <see cref="FrameSyncPasses.RunAnimationSyncPass"/>'s caller (<see cref="Update"/>): with no wall placements loaded
+    /// there is nothing to interleave against, so entities keep whatever
+    /// <see cref="DepthSortable2DComponent"/> defaults their prefab already carries.
+    /// </summary>
+    private bool _wallPlacementOverlayApplied;
+
+    /// <summary>
+    /// This world's <see cref="CellsCollisionField"/>, built once in
+    /// <see cref="InitializeWithWorld"/> from the loaded <see cref="TileMapData"/>'s "AlundraCells"
+    /// custom property and installed as <c>World.CollisionField</c> (also exposed here for tests -
+    /// null in degraded mode, see <see cref="CellsRecords.TryParse"/>).
+    /// </summary>
+    public CellsCollisionField? CollisionField { get; private set; }
+
+    /// <summary>
+    /// This world's navigation grid (E4.d, docs/plan-e4-deplacement-scripte.md decision E4-2), built once
+    /// in <see cref="InitializeWithWorld"/> right after <see cref="CollisionField"/> from the SAME
+    /// <see cref="TileMapData"/> - see <see cref="TryBuildNavigationGrid"/>'s own doc. Null in degraded
+    /// mode (missing navigation layer or tileset-resolution failure) - satisfies
+    /// <see cref="IEntityWorldContext.NavigationGrid"/> implicitly (this class already implements that
+    /// interface).
+    /// </summary>
+    public NavigationGrid2D? NavigationGrid { get; internal set; }
+
+    /// <summary>
+    /// This world's cell-mutation seam (E7.a, docs/plan-e7-mutation-tuiles.md) - a real
+    /// <see cref="CellStore"/> built from the SAME parsed <see cref="CellsRecords"/>
+    /// <see cref="CollisionField"/> aliases its own arrays from (<see cref="InstallCellAndOverlaySystems"/>),
+    /// satisfying <see cref="IEntityWorldContext.CellMutator"/>. Null in degraded mode (missing/malformed
+    /// "AlundraCells" property, or a tile_id/wall_tiles_offset column length mismatch) - the interpreter's
+    /// own null-mutator fallback then applies (skip by size, <c>Degraded</c> trace kind).
+    /// </summary>
+    public ICellMutator? CellMutator { get; private set; }
+
+    /// <summary>
+    /// This world's sound-effect playback seam (E11.a, docs/plan-e11-audio.md) - a real
+    /// <see cref="Audio.SoundPlayer"/> over <c>world.Game.AudioSystemComponent.Service</c>, installed by
+    /// <see cref="InstallAudioSystems"/>. Null without a <c>Game</c> (e.g. a world built without one in a
+    /// test) - the interpreter's own null-player fallback then applies (skip by size, <c>Degraded</c>
+    /// trace kind), same shape as <see cref="CellMutator"/> above.
+    /// </summary>
+    public ISoundPlayer? SoundPlayer { get; private set; }
+
+    /// <summary>
+    /// This session's background-music playback seam (docs/plan-e11c-musique.md, slice C1) - the
+    /// session-scoped <see cref="BgmPlayer.Instance"/> (D-C-6, see that class's own doc), NOT
+    /// a per-world instance like <see cref="SoundPlayer"/> above. Null without a <c>Game</c> (same
+    /// degraded shape as <see cref="SoundPlayer"/>), installed by <see cref="InstallAudioSystems"/>.
+    /// </summary>
+    public IMusicPlayer? MusicPlayer { get; private set; }
+
+    /// <summary>
+    /// This session's master BGM fade-machine seam (B2, docs/plan-e11b-opcodes-audio.md, D-B-5) - the
+    /// SESSION-scoped <see cref="BgmFadeDirector.Instance"/> (see that class's own doc), NOT a
+    /// per-world instance. Always non-null (unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>):
+    /// attaching to a null <see cref="CasaEngine.Framework.Audio.AudioService"/>/<see cref="SoundPlayer"/>
+    /// is itself a tolerated, degraded state - <see cref="InstallAudioSystems"/> attaches it
+    /// unconditionally, same shape as <see cref="ScreenFadeDirector"/>.
+    /// </summary>
+    public IBgmFadeDirector BgmFadeDirector => Audio.BgmFadeDirector.Instance;
+
+    /// <summary>
+    /// This session's screen fade/tint seam (E10.b, docs/plan-e10-fondu.md, D-E10-6) - the SESSION-scoped
+    /// <see cref="ScreenFadeDirector.Instance"/> (see that class's own doc), NOT a per-world
+    /// instance. Always non-null (unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>): attaching
+    /// to a <c>null</c> engine service is itself a tolerated, tested state (T2) - the singleton is
+    /// installed by <see cref="InstallScreenFadeSystems"/> regardless of whether this world has a
+    /// <c>Game</c>.
+    /// </summary>
+    public IScreenFadeDirector ScreenFadeDirector => Transitions.ScreenFadeDirector.Instance;
+
+    /// <summary>
+    /// This session's camera sway (E19.k1, docs/plan-e19-opcodes.md section 1.2k) - the SESSION-scoped
+    /// <see cref="CameraSway.Instance"/>, NOT a per-world instance. Always non-null.
+    /// </summary>
+    public CameraSway CameraSway => CameraSway.Instance;
+
+    /// <summary>E19.g G3b (docs/plan-e19-opcodes.md, section 1.2o.6, G3B-R2): this world's effect stage, on which the opcodes <c>0x90</c> to <c>0x94</c> and <c>0xA0</c> to <c>0xA3</c> queue their operation.</summary>
+    public EffectStage? EffectStage => _effectStage;
+
+    /// <summary>
+    /// Opcode 0xA4's background layer mask (E19.k2, docs/plan-e19-opcodes.md section 1.2k.2): forwarded to this world's
+    /// backdrop stage, which switches the layers of the attached engine services on or off by identifier.
+    /// </summary>
+    public bool SetBackgroundLayerMask(int mask) => _backdropStage.SetLayerMask(mask);
+
+    /// <summary>
+    /// This session's dialogue-flow seam (E12.a, docs/plan-e12-dialogues.md) - the SESSION-scoped
+    /// <see cref="DialogueDirector.Instance"/> (D-C-6/D-E10-6 lesson, see that class's own doc),
+    /// NOT a per-world instance. Always non-null: unlike <see cref="SoundPlayer"/>/<see cref="MusicPlayer"/>,
+    /// attaching with a null presenter (no active UI view for this world) is itself a tolerated, tested
+    /// state - <see cref="IDialogueDirector.HasPresenter"/> is what actually gates real vs degraded
+    /// dispatch (see that member's own doc). Installed by <see cref="InstallDialogueSystems"/>.
+    /// </summary>
+    public IDialogueDirector DialogueDirector => Dialogues.DialogueDirector.Instance;
+
+    /// <summary>E16.e L4: this world's name (<see cref="IEntityWorldContext.WorldName"/>), read at use time - the
+    /// save book's state 5 captures the map from its "-{id}" suffix.</summary>
+    public string? WorldName => _world?.Name;
+
+    /// <summary>
+    /// Seam over <c>Sounds/sfx-manifest.json</c> lookups (see <see cref="Alundra.Audio.SfxBank"/>'s
+    /// class doc), read once and reused by <see cref="SoundPlayer"/> for every sfx it resolves. Internal,
+    /// not injected through the constructor - same reasoning as <see cref="SpriteRecordCatalog"/> above.
+    ///
+    /// D-T-14 (docs/plan-transitions-carte.md, slice T1): resolved through <see cref="SfxBank.GetOrCreate"/>'s
+    /// session-scoped cache (keyed by <see cref="EngineEnvironment.ProjectPath"/>) - same rationale as
+    /// <see cref="SpriteRecordCatalog"/> above, so the sfx manifest is read only once for two consecutive
+    /// worlds over the same project.
+    /// </summary>
+    internal SfxBank SoundBank = SfxBank.GetOrCreate(EngineEnvironment.ProjectPath);
+
+    /// <summary>
+    /// E7.b (docs/plan-e7-mutation-tuiles.md): the visual + navigation applier subscribed to
+    /// <see cref="CellMutator"/>'s (as an <see cref="CellStore"/>) own
+    /// <see cref="CellStore.CellsMutated"/> event - see <see cref="Cells.CellVisualSync"/>'s own
+    /// class doc. Null when <see cref="CellMutator"/> is (no cell store installed - nothing to make
+    /// visible), or when the wall/floor placement overlay itself was never applied.
+    /// </summary>
+    private CellVisualSync? _cellVisualSync;
+
+    /// <summary>Test-only accessor (E7.b, docs/plan-e7-mutation-tuiles.md, acceptance items 1-8): lets a
+    /// test drive <see cref="CellVisualSync.FlushPendingOverlayReconstruction"/> and read
+    /// <see cref="CellVisualSync.ReconstructionCount"/> after mutating through <see cref="CellMutator"/>,
+    /// without exposing either on the public surface.</summary>
+    internal CellVisualSync? CellVisualSync => _cellVisualSync;
+
+    /// <summary>
+    /// Rendering instance wiring (S3, docs/plan-update-caracterisation.md) - built in this FIELD
+    /// INITIALIZER, never lazily and never handed a back-reference to this proxy (trap 9: <see cref="Clone"/>
+    /// returns a bare <c>new WorldProxy()</c> and copies nothing, which stays safe only while every
+    /// collaborator is constructed exactly this way).
+    /// </summary>
+    internal readonly BackdropStage _backdropStage = new();
+
+    /// <summary>E19.g G3a (docs/plan-e19-opcodes.md, section 1.2o.6): the effect reservoir of this world - bank, load-time spawn and per-tick loop. Built in this field initializer like
+    /// <see cref="_backdropStage"/> (trap 9 above).</summary>
+    internal readonly EffectStage _effectStage = new();
+
+    /// <summary>E19.g G3a (G3A-R6): for each logic tick of the frame, the gate of the effects <c>PlayerControlFlags &amp; 0x48</c> read in the loop of the map events of that tick, after its events (the
+    /// <c>continue</c> paths included); read by <see cref="EffectStage.RunFrame"/>.</summary>
+    private readonly List<bool> _effectFrozenOfTick = new();
+
+    private bool EffectGateOfThisTick() => (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0;
+
+    /// <summary>The gate of the map events, the entities and the pending triggers: <c>PlayerControlFlags &amp; GameplayBlockedMask</c>, or a warp transition in progress (T4, D-T-6).</summary>
+    private bool GameplayGateNow() => (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0
+        || WarpDirector.Instance.IsTransitionInProgress;
+
+    /// <summary>Test-only seam (E19.u, docs/plan-e19-u-annexe/): the effect gate of each logic tick of the last <see cref="Update"/> (see <see cref="_effectFrozenOfTick"/>).</summary>
+    internal IReadOnlyList<bool> EffectFrozenOfTickForTests => _effectFrozenOfTick;
+
+    private bool _pendingTriggersGate;
+
+    /// <summary>Test-only seam (E19.u, docs/plan-e19-u-annexe/): the gate the pending event triggers read in the last <see cref="Update"/> (true = frozen).</summary>
+    internal bool PendingTriggersGateForTests => _pendingTriggersGate;
+
+    /// <summary>Bug fix (see <see cref="LogicClock"/>'s own class doc for the full diagnosis): this
+    /// world's ONE shared 50 Hz logic clock - every spawned entity's own <see cref="EntityScriptProxy.Update"/>
+    /// and this proxy's own <see cref="Update"/> read <see cref="LogicTicksThisFrame"/> off this SAME
+    /// instance, so they always agree on how many logic ticks happened this rendered frame.</summary>
+    private readonly LogicClock _logicClock = new();
+
+    /// <summary>
+    /// Bug fix (docs/plan-camera-premiere-frame.md §3, point 1): on a free time-step engine faster than
+    /// 50 Hz, the very first rendered frame can carry ZERO raw logic ticks (the accumulator has not yet
+    /// reached <see cref="ScriptedMotion.FixedTickSeconds"/>) - so neither the map-events loop nor
+    /// the camera's armed first-frame snap (<see cref="CameraDirector.ArmFirstFrameSnap"/>) ever
+    /// runs before that frame's own camera resolve, and the one snap is spent on the player's raw spawn
+    /// pose instead of wherever the intro's own opening script retargets the camera one instruction
+    /// later.
+    ///
+    /// Guarantees at least ONE tick on this world's very first frame - applied INSIDE
+    /// <see cref="LogicTicksThisFrame"/> itself (every caller, entity or proxy, already funnels through
+    /// it), not as a flag <see cref="Update"/> alone consumes: <see cref="LogicClock"/>'s own memo
+    /// caches the RAW count on the FIRST call of the frame and every later call this same frame is a pure
+    /// cache read (<see cref="LogicClock.TicksThisFrame"/>), and the engine updates every entity
+    /// BEFORE this world's own <see cref="Update"/> - so a floor consumed only by the first caller would
+    /// hand a tick to whichever entity happens to call first and leave every later caller (every other
+    /// entity, and this proxy's own read) at the RAW, un-floored count, permanently splitting the world's
+    /// tick count from the entities' - exactly the desync <see cref="LogicClock"/>'s own class doc
+    /// gives as the reason to share ONE clock in the first place. So this flag is instead STICKY across
+    /// the whole open frame - applied on EVERY call while <see langword="true"/> - and cleared exactly
+    /// once, at the frame-close site right next to <see cref="_logicClock"/>'s own <c>CloseFrame()</c>
+    /// call in <see cref="Update"/>. <see cref="LogicClock"/> itself is untouched (plan §2: both
+    /// golden trace harnesses build their own instance of it and pin exact tick counts against it).
+    /// </summary>
+    private bool _firstFrameStillOpen = true;
+
+    /// <summary>E20.a A2 (D-E20-12): this proxy runs the logic ticks of its entities, in the binary's order (<see cref="RunEntityBlock"/>); see <see cref="IScriptHost.DrivesEntityTicks"/>.</summary>
+    /// <remarks>
+    /// True for a world attached to a game (production, and the montages that give the world a <c>Game</c> and update the entities then this proxy, as <c>World.Update</c> does, World.cs:533-584).
+    /// False for a bare <c>World</c> with no game (a montage that builds the proxies by hand, in any order): that world has no driver, so its entities keep their own loop of ticks
+    /// (<c>EntityScriptProxy.RunSelfDrivenTicks</c>) and this proxy keeps the lists and the pending-trigger re-scan once per frame, after them, as before E20.a.
+    /// </remarks>
+    public bool DrivesEntityTicks => _world?.Game != null;
+
+    /// <summary>E19.d2c2 D5b (D-D5B-1): the number of the physics pass in progress, incremented once per tick before the physics loop of <see cref="RunEntityBlock"/> (see <see cref="IScriptHost.PhysicsPassId"/>).</summary>
+    public int PhysicsPassId { get; private set; }
+
+    /// <summary>E20.e0a3b test seam: told every time an entity reads the collision field of this host by the fallback of <see cref="IScriptHost.CollisionField"/> (an entity that joins the tick of its birth, before the engine integrated it).</summary>
+    internal Action? CollisionFieldFallbackReadForTests;
+
+    /// <summary>E20.e0a3b (D-E0A-5): the collision field an entity born by the interface of the sprite index reads before the engine integrated it (see <see cref="IScriptHost.CollisionField"/>). Explicit: <see cref="CollisionField"/> has another type.</summary>
+    ICollisionField? IScriptHost.CollisionField
+    {
+        get
+        {
+            CollisionFieldFallbackReadForTests?.Invoke();
+            return CollisionField;
+        }
+    }
+
+    /// <summary>E20.e0a5 test seam: told every time an entity asks this host for the animation data of its prefab before the engine integrated it (<see cref="IScriptHost.ResolveAnimationData"/>).</summary>
+    internal Action? ResolveAnimationDataForTests;
+
+    /// <summary>
+    /// E20.e0a5 (D-E0A5-3): the animation data of the prefab of an entity that is not integrated yet, found by the name of its animations among the asset ids of its sprite. The handles taken on the way are given back at once: the
+    /// manager keeps the instance pending until the engine's own hold on it (the integration of the sprite) takes it again, the same instance. Null without a game (no asset manager) or when nothing matches.
+    /// </summary>
+    Animation2dData? IScriptHost.ResolveAnimationData(IReadOnlyList<Guid> animationAssetIds, uint animationId, int direction)
+    {
+        ResolveAnimationDataForTests?.Invoke();
+        var manager = _world?.Game?.AssetContentManager;
+        if (manager == null || direction < 0 || direction >= AnimationTables.DirectionNames.Length)
+        {
+            return null;
+        }
+
+        var suffix = FrameSyncPasses.AnimationNameSuffix(animationId, direction);
+        foreach (var id in animationAssetIds)
+        {
+            using var handle = manager.Acquire<Animation2dData>(id);
+            if (handle.Asset.Name.EndsWith(suffix, StringComparison.Ordinal))
+            {
+                return handle.Asset;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>See <see cref="IScriptHost.LogicTicksThisFrame"/>'s own doc; the sticky first-frame
+    /// floor is documented on <see cref="_firstFrameStillOpen"/> itself.</summary>
+    public int LogicTicksThisFrame(float elapsedTime)
+    {
+        var ticks = _logicClock.TicksThisFrame(elapsedTime);
+        return _firstFrameStillOpen ? Math.Max(ticks, 1) : ticks;
+    }
+
+    public override void InitializeWithWorld(World world)
+    {
+        _world = world;
+
+        // E19.k1 (docs/plan-e19-opcodes.md section 1.2k): the binary's map load (0x8002CD54) only returns the
+        // camera sway Flag to 0 (the first step then clears Limit, Speed and Offset; Reach persists). At the
+        // head, before every early return below, so a world without a tile map clears it too.
+        CameraSway.Instance.OnMapLoad();
+
+        // E5.a (decision E5-2): port of GraphicManager.cs's own g_isCameraScrolling = 1 at map load - the
+        // next UpdateCameraFollow call snaps straight to that frame's look-at instead of scrolling in from
+        // the engine's default camera Target. Requalified to the camera director (S2's extended proof
+        // rule delta (b)) since that flag moved there.
+        _cameraDirector.ArmFirstFrameSnap();
+
+        // The engine enables its physics debug wireframes by default (PhysicsDebugViewRendererComponent
+        // .DisplayPhysics = true), which draws every kinetic body box - one white rectangle per spawned
+        // entity with a body - over the game. Off for normal play; the Back button toggles it back on
+        // (see UpdateDebugCameraPan) to inspect collision boxes while flying the debug camera.
+        if (world.Game?.PhysicsDebugViewRendererComponent != null)
+        {
+            world.Game.PhysicsDebugViewRendererComponent.DisplayPhysics = false;
+        }
+
+        // Loads this world's own event-code document (see MapEventProgramLoader's class doc on path
+        // resolution) and wires the real slot-A interpreter over it; null document means "not found /
+        // failed to parse" and EventProgramRunner degrades to a counted no-op for slot A too, the
+        // same shape as SpriteRecordCatalog's own degraded mode.
+        var eventProgramDocument = MapEventProgramLoader.Load(EngineEnvironment.ProjectPath, world.Name);
+        var eventProgramRunner = new EventProgramRunner(eventProgramDocument, GameState, this);
+        InstallDialogueAssets(world, eventProgramRunner);
+        EventProgramRunner = eventProgramRunner;
+
+        // E15.c T6 (docs/plan-e15-yarn.md, contract item 5): load the ETC dialogue asset once per game
+        // (idempotent across world reloads, same shape as HeroController's own
+        // EnsureInputMappingsRegistered) - OUI/NON and the inventory's item names/descriptions read it
+        // through EtcStringTable for the rest of the session.
+        EtcStringTable.EnsureLoaded(world.Game?.AssetContentManager);
+
+        // Scrolling background layers (see BackdropStage's class doc) - same degraded-mode shape as
+        // the event-program document above: a world with no companion file (most of them - Scroll
+        // Parameters.Infos.Enabled was false) simply renders nothing extra.
+        // S3 (docs/plan-update-caracterisation.md): _backdropRenderer now lives on _backdropStage
+        // (requalified field access, extended proof rule delta (b), same shape as S2's
+        // _cameraDirector.ArmFirstFrameSnap()) - this Load call needs a live GraphicsDevice, so it stays
+        // here rather than moving into the stage's own members.
+        // E9.b (docs/plan-e9b-backdrops-moteur.md, D-E9b-2): attach the engine-side mechanism BEFORE
+        // Load, same acquisition shape as InstallScreenFadeSystems - Load itself emits the one warning
+        // when the service is null but world.Game is not (§4 arrêt in production).
+        _backdropStage.AttachService(world.Game?.ScrollingLayerComponent?.Service);
+
+        // E19.g G3c (docs/plan-e19-opcodes.md, G3C-R5, ADR-0049): the engine-side effect quad service, attached BEFORE the effect stage's Load below (which pushes the sheets); a null service
+        // (headless montages, no Game) makes the stage's push a no-op.
+        _effectStage.AttachService(world.Game?.EffectQuadComponent?.Service);
+
+        // D-E9d: the sibling cellular mechanism - same attach-before-Load shape. E19.m2 (D-E19-66, ADR-0032):
+        // this world's FallRespawn cells (if any) draw from the C library rand() of the original
+        // (LibcRandom, a stream of its own - not the game's GameRandom) - wired here,
+        // unconditionally, so it is never left unwired by the time a FallRespawn cell's Advance() needs it.
+        var cellularComponent = world.Game?.CellularLayerComponent;
+        _backdropStage.AttachCellularService(cellularComponent?.Service);
+        if (cellularComponent != null)
+        {
+            cellularComponent.RandomSource = () => (uint)LibcRandom.Next();
+        }
+
+        _backdropStage.Load(world, EngineEnvironment.ProjectPath);
+
+        // E19.g G3a (docs/plan-e19-opcodes.md section 1.2o.6, G3A-R1): the effect companions of this world (the map's and the global one), a fresh reservoir. No companion: no effect.
+        _effectStage.Load(world.Name, EngineEnvironment.ProjectPath);
+
+        var tileMapEntity = world.Entities.FirstOrDefault(entity => entity.Name == TileMapEntityName);
+        if (tileMapEntity == null)
+        {
+            Logs.WriteWarning($"WorldProxy: no '{TileMapEntityName}' entity found in world '{world.Name}'; no entity spawned.");
+
+            // E16.d K8/SD9: a load pending on this departure can never be applied here - drop it now, so it is
+            // not applied later at some other arrival.
+            SaveGameDirector.Instance.AbandonPendingLoad($"world '{world.Name}' has no '{TileMapEntityName}' entity");
+            return;
+        }
+
+        var tileMapComponent = tileMapEntity.GetComponent<TileMapComponent>();
+        var tileMapData = tileMapComponent?.TileMapData;
+        if (tileMapData == null)
+        {
+            Logs.WriteWarning($"WorldProxy: entity '{TileMapEntityName}' has no loaded TileMapData in world '{world.Name}'; no entity spawned.");
+            SaveGameDirector.Instance.AbandonPendingLoad($"world '{world.Name}' has no loaded tile map"); // E16.d SD9.
+            return;
+        }
+
+        _tileMapData = tileMapData;
+        BalanceThreshold = BalanceTables.ResolveThreshold(tileMapData); // E20.c1a C1: the threshold of the balance chain, before any entity is created.
+        TileCutEffectIndex = TileEffect.ResolveCutEffectIndex(tileMapData); // E20.e S-E6: the byte 9 of the header, read once.
+        EquipmentRecords.Clear(); // E20.c1b K2: 0x80044520 zeroes the three equipment pointers at every map load.
+
+        // D-T-3 (docs/plan-transitions-carte.md, slice T1): the session carrier's own map-entry
+        // disposition (D-T-13) is applied HERE, at the very START of this installation block - strictly
+        // before InstallDialogueSystems below goes on to clean up PlayerControlFlags' own MessageBox/
+        // MenuOpen bits.
+        GameState.InstallForMapEntry();
+
+        // E16.d K8 (docs/plan-e16-etat-partie.md, G5): a load carried by this arrival is applied HERE - after
+        // the map entry's own disposition, during this installation and so BEFORE this world's first tick,
+        // where the entities' load programs and the map events are the first readers of the loaded flags and
+        // stats. The installs below only re-attach state, and AdoptPlayerPawn places the hero from the warp
+        // arrival the load departed with. No-op without a pending load.
+        SaveGameDirector.Instance.ApplyPendingLoad(
+            GameState,
+            world.Name != null && BackdropLoader.TryParseMapIndex(world.Name, out var arrivalMapId) ? arrivalMapId : null);
+
+        // D-T-13's own point 4: ActiveCollisionEntity does not live on GameState (no such field
+        // there) - its real owner is THIS proxy (:239), so its map-entry reset lives here instead.
+        // Inert by construction today: this proxy is fully reconstructed per world, so the field is
+        // already null at this point - kept as an explicit statement (not a silent assumption) so a
+        // future session-scoped proxy inherits a working reset instead of a quiet gap. See
+        // AdoptPlayerPawn's own doc for the matching correction of its previously stale comment.
+        ActiveCollisionEntity = null;
+
+        InstallCellAndOverlaySystems(world, tileMapComponent!, tileMapData);
+        InstallAudioSystems(world);
+        InstallWarpSystems(world);
+        InstallScreenFadeSystems(world);
+        InstallDialogueSystems(world);
+        InstallSaveScreenSystems();
+        InstallHudSystems();
+        InstallInventorySystems();
+
+        var entitiesLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == EntitiesLayerName);
+        var portalsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == PortalsLayerName);
+        var mapEventsLayer = tileMapData.ObjectLayers.FirstOrDefault(layer => layer.Name == MapEventsLayerName);
+
+        Logs.WriteInfo(
+            $"WorldProxy: world '{world.Name}' object layers - "
+            + $"{EntitiesLayerName}={entitiesLayer?.Objects.Count ?? 0}, "
+            + $"{PortalsLayerName}={portalsLayer?.Objects.Count ?? 0}, "
+            + $"{MapEventsLayerName}={mapEventsLayer?.Objects.Count ?? 0}.");
+
+        // E2: register the "AlundraButtons" input mappings once per game (idempotent across world
+        // reloads - see HeroController.EnsureInputMappingsRegistered's own doc), before any
+        // entity's first Update ever reads them.
+        HeroController.EnsureInputMappingsRegistered(world.Game);
+
+        // E2: the engine itself already spawned and possessed the hero pawn (World.LoadContent ->
+        // InitializePlayerControllers, strictly before this GameplayProxy's own InitializeWithWorld runs -
+        // see AdoptPlayerPawn's own doc) - adopt it and apply the New Game logical state (port of
+        // ResetEntityState/InitializeEntitySlots' own spawn order, GameEngine.cs:626-643: the player exists
+        // BEFORE any record is spawned - the spawn-zone gate below reads its tile) instead of spawning a
+        // second, separate hero entity ourselves.
+        AdoptPlayerPawn(world, tileMapData);
+
+        // E19.g G3a (G3A-R5): the tile of the hero right after its creation, the one the load-time spawn of the effects reads at the first Update (the binary creates the hero and
+        // writes its tile before the map-entry spawn 0x8003C1A4; the scripts and the physics of the hero rewrite the tile from the tick 0, as the entity pass below does for its zone test).
+        if (PlayerEntity != null)
+        {
+            _effectStage.CaptureHeroTile(PlayerEntity.TileX, PlayerEntity.TileY);
+        }
+
+        // MapEvents (port of InitializeMapEvents, GameEngine.cs:476-583) - always against PlayerEntity;
+        // empty when there is none (see PlayerEntity's own doc).
+        BuildMapEvents(mapEventsLayer);
+
+        // T3 (docs/plan-transitions-carte.md §1.1/§3): parse "Portals" - previously read only for its
+        // object count (§1.4.a). No PlayerEntity dependency (unlike BuildMapEvents above), so this could
+        // run earlier too, but sits here to stay next to its own sibling record-driven layer.
+        BuildPortals(portalsLayer);
+
+        if (entitiesLayer == null)
+        {
+            return;
+        }
+
+        var skippedCount = 0;
+
+        foreach (var record in entitiesLayer.Objects)
+        {
+            // Indexed for the whole world's lifetime regardless of whether this record spawns right now
+            // (see _entityRecordsByIndex's own doc) - 0x2D's looser gate can still spawn it later.
+            if (EntitySpawnFactory.TryGetRecordInt(record, "Index", out var recordIndex))
+            {
+                _entityRecordsByIndex[recordIndex] = record;
+            }
+
+            bool shouldSpawn;
+            string skipReason;
+            if (PlayerEntity != null)
+            {
+                shouldSpawn = EntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: false, PlayerEntity.TileX, PlayerEntity.TileY, out skipReason);
+            }
+            else
+            {
+                shouldSpawn = EntitySpawnFactory.ShouldSpawnRecord(record, out skipReason);
+            }
+
+            if (!shouldSpawn)
+            {
+                skippedCount++;
+                Logs.WriteDebug($"WorldProxy: record '{record.Name}' not spawned ({skipReason}).");
+                continue;
+            }
+
+            // E20.e0a2 (ADR-0064): the lowest free slot, taken first (the binary's FindFreeEntitySlot 0x80039AD0 comes before the creation); a full table skips this record, as a refused apparition.
+            var slot = _slots.Allocate();
+            if (slot < 0)
+            {
+                skippedCount++;
+                ReportSlot(-1);
+                Logs.WriteWarning(
+                    $"WorldProxy: record '{record.Name}' not spawned in world '{world.Name}': the table of the {EntitySlotTable.SlotCount} entity slots is full; skipping.");
+                continue;
+            }
+
+            Entity? entity = null;
+            var added = false;
+            try
+            {
+                // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
+                entity = EntitySpawnFactory.CreateEntityFromRecord(
+                    record, guid => world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
+                    tileMapData: _tileMapData, collisionField: CollisionField);
+                var spawnedProxy = entity.GameplayProxy as EntityScriptProxy;
+                if (spawnedProxy != null)
+                {
+                    spawnedProxy.ScriptHost = this;
+                    spawnedProxy.InitializeBalance(BalanceTables, BalanceThreshold); // E20.c1a C1.
+                }
+
+                world.AddEntity(entity);
+                added = true;
+                slot = HoldSlot(spawnedProxy, slot);
+                InsertBySlot(entity, slot);
+                CreationFaultHookForTests?.Invoke("load", entity);
+                RequestAppearanceSound(spawnedProxy); // E19.t T-R2: the sound of the animation of the appearance, in the group of this (new) map.
+
+                // E4.b ("Spawn" item, docs/plan-e4-deplacement-scripte.md): ground-clamp + root push for a
+                // controller-driven NPC, after CreateEntityFromPrefab's own spawn-time root write (which had to
+                // run off the un-clamped PosZ). In production the ground clamp does nothing here (O-E19-6,
+                // docs/plan-e19-opcodes.md): World.AddEntity only QUEUES the entity and Entity.World is set at the next
+                // integration, so Entity.World is still null when this runs; ClampToGround and TerrainHeight both
+                // return at once, and only the root push itself happens. A no-op without a Controller
+                // (PushLogicalPositionToRoot's own gate), same as every other entity today.
+                spawnedProxy?.PushLogicalPositionToRoot();
+
+                // E19.h1b1 (D-E19-59, H1b1-R3, closes O-E19-15): no spawn-time support evaluation any more (E4.f used to run one, without
+                // reach). The spawn writes whole pixels now (binary - 1), which rest exactly on the root as a float, so the normal support
+                // of the first tick finds the platform under a rider. The intro harness keeps its own call.
+
+                RollLootAtCreation(spawnedProxy, hasRecord: true, RecordContentsByte(record)); // E20.e0b2 (D-E0B-6): the last statement of the creation.
+            }
+            // R0 (ADR-0075): a script type name that does not resolve is a fault of the data, not of this creation: give the slot back, then let it stop the load with its message (file, key, value, assembly, hint); every other fault below keeps the log and the skip.
+            catch (ScriptTypeResolutionException)
+            {
+                AbortCreation(entity, added, slot);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                AbortCreation(entity, added, slot);
+                Logs.WriteWarning(
+                    $"WorldProxy: failed to spawn entity for record '{record.Name}' in world '{world.Name}'; "
+                    + $"skipping. {ex.Message}");
+            }
+        }
+
+        // E4.f: seed _updateProxies/_collidables from the fully-spawned load-time entity set BEFORE the
+        // engine's own first Update cycle ever runs - see RefreshUpdateProxiesAndCollidables's own doc for
+        // why this second call (beyond the per-frame one in Update) matters.
+        RefreshUpdateProxiesAndCollidables();
+
+        if (skippedCount > 0)
+        {
+            Logs.WriteInfo(
+                $"WorldProxy: world '{world.Name}' - {skippedCount} of {entitiesLayer.Objects.Count} "
+                + "Entities records not spawned (see ShouldSpawnRecord).");
+        }
+    }
+
+    /// <summary>
+    /// Converts an entity's logical spawn position (<see cref="EntityScriptProxy.PosX"/> /
+    /// <see cref="EntityScriptProxy.PosY"/> / <see cref="EntityScriptProxy.PosZ"/>, 16.16
+    /// fixed-point Alundra pixels - see <see cref="EntityRecordMapper"/>) into the LOGICAL pose written
+    /// onto the entity root's <c>LocalTransform.Position</c> (E3.a, docs/plan-e3-collisions.md decision
+    /// E3-1) - consistently with <c>WorldWriter.ResolveTileCentreSpawn</c> (the converter's own
+    /// tile-to-logical-pose conversion, used for the PlayerStart):
+    /// <list type="bullet">
+    /// <item><description><c>X = pixelX</c> (no conversion - CasaEngine's X already matches Alundra's).</description></item>
+    /// <item><description><c>Y = pixelY</c>: Alundra's own down-positive depth, NOT flipped here - the
+    /// flip from depth to a Y-up render position is now the render policy's job
+    /// (<c>SimulationSpacePolicy.DeriveRenderPosition</c> under the world's TopDownElevation policy),
+    /// applied every frame by the <c>RenderProjectionComponent</c> child a prefab's root now carries
+    /// (<c>SpriteWriter.WriteEntityPrefab</c>), not baked into this snapshot.</description></item>
+    /// <item><description><c>Z = elevationPixels</c> (<c>PosZ &gt;&gt; 16</c>): Alundra's elevation, kept
+    /// on the logical Z axis rather than folded into Y - again the render policy's job to translate into
+    /// a screen offset.</description></item>
+    /// </list>
+    /// This is a spawn-time snapshot of a logical position that can change at runtime (movement, event
+    /// programs); every caller that writes it onto the root MUST also re-run the entity's
+    /// <c>RenderProjectionComponent.UpdateProjection()</c> in the same frame so the sprite renders the
+    /// new pose immediately rather than one frame late (component update order:
+    /// <c>RootComponent.Update</c>, hence the projection, runs before <c>GameplayProxy.Update</c> -
+    /// Entity.cs:473-504) - see <see cref="FrameSyncPasses.SyncTransform"/>.
+    /// </summary>
+    /// <summary>
+    /// E7.b (docs/plan-e7-mutation-tuiles.md, "Testabilité du câblage", plan fact 17): the block that used
+    /// to live inline in <see cref="InitializeWithWorld"/> - collision field, cell store/
+    /// <see cref="CellMutator"/>, navigation grid, and the wall/floor placement overlay - extracted into
+    /// its own INTERNAL method so a test can drive it directly against a hand-built <c>World</c> +
+    /// <see cref="TileMapComponent"/> (no live <c>CasaEngineGame</c>/asset catalog required - the only
+    /// piece that needs one, <see cref="TryBuildNavigationGrid"/>, already degrades to null without one).
+    /// <see cref="InitializeWithWorld"/> is now a thin caller; acceptance tests (docs/plan-e7-mutation-tuiles.md,
+    /// slice E7.b) call this method directly - the SAME production path, not a hand-rolled store.
+    ///
+    /// Builds <see cref="Cells.CellVisualSync"/> and subscribes it to the freshly-built
+    /// <see cref="CellStore"/>'s own <see cref="CellStore.CellsMutated"/> event - THIS
+    /// subscription line is what makes 0x54/0x55/0x85 visible/routable at runtime (acceptance item 1's own
+    /// mutation: deleting it must fail that test). Skipped entirely when no cell store could be built (no
+    /// "AlundraCells" property, or a tile_id/wall_tiles_offset length mismatch) - degraded mode, same as
+    /// E7.a's own no-mutator fallback.
+    /// </summary>
+    internal void InstallCellAndOverlaySystems(World world, TileMapComponent tileMapComponent, TileMapData tileMapData)
+    {
+        // E3.b: build this world's ground/walkability field from the same TileMapData and install it on
+        // World.CollisionField - World.Clear() resets the slot to null (World.cs), so every load
+        // re-installs it here. Tolerant by design, like the wall/floor placement overlays right below:
+        // a missing/malformed "AlundraCells" property (or a cell_count that does not match MapSize)
+        // just leaves World.CollisionField null (degraded mode, single warning already logged by
+        // CellsCollisionField.TryCreate) - E3.c's mover then has no field to sample.
+        //
+        // E7.a/E7.b: the 4-out overload also hands back the parsed CellsRecords, so the cell store
+        // built right below aliases the SAME int[] instances this field reads - a mutation is instantly
+        // visible to both.
+        CellsRecords? cellRecords = null;
+        if (CellsCollisionField.TryCreate(tileMapData, world.Name, out var collisionField, out cellRecords))
+        {
+            CollisionField = collisionField;
+            world.CollisionField = collisionField;
+        }
+        else
+        {
+            CollisionField = null;
+        }
+
+        // E19.d2b B3 (D-E19-27): the movement obstacle probe, next to the field and for the same reason - World.Clear() resets the slot to
+        // null, so every load re-installs it. The controller's field stage consults it for every non-zero horizontal step.
+        world.MovementObstacleProbe = new MovementObstacleProbe(this);
+
+        // E4.d (docs/plan-e4-deplacement-scripte.md, decision E4-2): navigation grid, built from the same
+        // TileMapData right after the collision field above - see TryBuildNavigationGrid's own doc.
+        NavigationGrid = TryBuildNavigationGrid(world, tileMapData);
+
+        // E7.a: the cell-mutation store, built from the SAME parsed records the collision field above
+        // aliases its arrays from - see CellStore's own class doc. Degraded (null CellMutator) on
+        // a tile_id/wall_tiles_offset length mismatch, or when the collision field itself never parsed.
+        CellMutator = null;
+        CellStore? cellStore = null;
+        if (cellRecords != null
+            && CellStore.TryCreate(cellRecords, tileMapData.MapSize.Width, tileMapData.MapSize.Height, world.Name, out cellStore))
+        {
+            CellMutator = cellStore;
+        }
+
+        // Wall/sprite depth interleave (Slice B): strip every baked wall tile the converter recorded
+        // out of the flat "Render_*" layers and resubmit it through the tile map's runtime sorted
+        // overlay, so it draws ordered against Y-sorted entity sprites instead of always flat. Tolerant
+        // by design - see WallPlacementOverlay.TryParse's doc comment - so a world with no (or a
+        // malformed) "AlundraWallPlacements" property still spawns its entities normally, just without
+        // the interleave.
+        WallPlacementRecords? wallPlacements = null;
+        IReadOnlyList<int> submittedWallIndices = Array.Empty<int>();
+        if (WallPlacementOverlay.TryParse(tileMapData.CustomProperties, world.Name, out wallPlacements))
+        {
+            submittedWallIndices = WallPlacementOverlay.Apply(tileMapComponent, wallPlacements, world.Name);
+            _wallPlacementOverlayApplied = true;
+        }
+
+        // Same interleave for elevated (Height > 0) floor tiles, through the same runtime sorted
+        // overlay - see WallPlacementOverlay.ComputeFloorSortKey's doc for why a floor's own row bias
+        // (slot 0..5, no +7) already orders it correctly against both walls and Y-sorted entities.
+        // Independently tolerant, like the wall property above: a world with no (or malformed)
+        // "AlundraFloorPlacements" property still spawns normally, just without this interleave.
+        FloorPlacementRecords? floorPlacements = null;
+        IReadOnlyList<int> submittedFloorIndices = Array.Empty<int>();
+        if (WallPlacementOverlay.TryParseFloor(tileMapData.CustomProperties, world.Name, out floorPlacements))
+        {
+            submittedFloorIndices = WallPlacementOverlay.ApplyFloor(tileMapComponent, floorPlacements, world.Name);
+        }
+
+        // E7.b: the visual + navigation applier - see CellVisualSync's own class doc. Seeded from
+        // exactly what was resubmitted above (submittedWallIndices/submittedFloorIndices), never from the
+        // documents themselves (plan fact 13). The navigation grid accessor reads THIS property live
+        // (`() => NavigationGrid`), not a captured snapshot, so a test injecting a synthetic grid after
+        // this call still gets it picked up by navigation sync.
+        _cellVisualSync = null;
+        if (cellStore != null)
+        {
+            _cellVisualSync = CellVisualSync.Create(
+                tileMapComponent, cellStore, tileMapData.MapSize.Width, tileMapData.MapSize.Height, world.Name,
+                tileMapComponent.TileSetData,
+                wallPlacements, submittedWallIndices,
+                floorPlacements, submittedFloorIndices,
+                () => NavigationGrid);
+
+            cellStore.CellsMutated += _cellVisualSync.OnCellsMutated;
+        }
+    }
+
+    /// <summary>
+    /// E11.a (docs/plan-e11-audio.md, D-E11-1/D-E11-2): installs <see cref="SoundPlayer"/> - a real
+    /// <see cref="Audio.SoundPlayer"/> over <c>world.Game.AudioSystemComponent.Service</c> (the same
+    /// engine-owned <see cref="AudioService"/> every other production audio call site resolves off of,
+    /// e.g. <c>CutsceneActionCoroutineFactory.GetAudioService</c>/<c>SoundEmitterComponent</c>'s own
+    /// <c>world?.Game?.AudioSystemComponent?.Service</c>). Extracted as its own INTERNAL method
+    /// (same precedent as <see cref="InstallCellAndOverlaySystems"/>) so a test can drive it directly.
+    /// Left null without a <c>Game</c> (a world built without one) - the interpreter's own null-player
+    /// fallback then applies, same degraded shape every other missing-system seam in this DLL already
+    /// has.
+    /// </summary>
+    internal void InstallAudioSystems(World world)
+    {
+        SoundPlayer = null;
+        MusicPlayer = null;
+
+        var audioService = world.Game?.AudioSystemComponent?.Service;
+        if (audioService != null)
+        {
+            // B3 (docs/plan-e11b-opcodes-audio.md, D-B-7): this world's own VAB group id, read off
+            // Maps/sound-group-index.json for this world's own map id - the same "trailing -{mapId} of
+            // World.Name" parse TriggerMapEntryMusic uses below. No entry (degraded table, or a world
+            // that is not a converted Alundra map) leaves the group null - SoundPlayer's own
+            // pre-B3 shape (D-E11-6).
+            int? soundGroup = null;
+            if (BackdropLoader.TryParseMapIndex(world.Name, out var soundGroupMapId))
+            {
+                var soundGroupTable = SoundGroupIndexTable.GetOrCreate(EngineEnvironment.ProjectPath);
+                if (soundGroupTable.TryGetGroup(soundGroupMapId, out var resolvedGroup))
+                {
+                    soundGroup = resolvedGroup;
+                }
+            }
+
+            // D-C-5: owner: world, so World.Clear's own StopVoicesOwnedBy(world) actually stops these
+            // voices (fact 1.7's fix - see SoundPlayer's own constructor doc).
+            SoundPlayer = new SoundPlayer(audioService, SoundBank, world, soundGroup);
+
+            // D-C-6: BgmPlayer.Instance is SESSION-scoped, never rebuilt here - only
+            // re-pointed at this world's own AudioService/project path. See that class's own doc for
+            // why (the guard state would be vacuous by construction in a per-world instance).
+            BgmPlayer.Instance.AttachToWorld(audioService, EngineEnvironment.ProjectPath);
+            MusicPlayer = BgmPlayer.Instance;
+        }
+
+        // B2 (docs/plan-e11b-opcodes-audio.md, D-B-5): re-points the session-scoped master fade machine
+        // at this world's own AudioService/SoundPlayer - called UNCONDITIONALLY (even with audioService
+        // null), same "AttachToWorld tolerates null, never touches its own state" contract as
+        // BgmPlayer.AttachToWorld/ScreenFadeDirector.AttachToWorld above.
+        Audio.BgmFadeDirector.Instance.AttachToWorld(audioService, SoundPlayer);
+
+        // The map-entry music TRIGGER lives HERE rather than at a second call site in
+        // InitializeWithWorld, and that placement is the point: an outcome-verifier of slice C1 showed
+        // that deleting a separate `TriggerMapEntryMusic(world);` line left all 637 tests green - the
+        // whole slice would have gone inert in the real game with a fully green suite. This method is
+        // already driven end-to-end by WorldProxyAudioInstallationTests on the real install
+        // path, so folding the trigger into it puts the last wiring link under test instead of leaving
+        // it to the in-game check alone. This call only loads the destination track and arms
+        // ResetSoundFlag (B7); the voice itself starts at the end of the entry's first frame close, when
+        // that flag is consumed (B9/B10) - and a script's own 0xA6 within that same frame can still
+        // cancel it before it starts.
+        TriggerMapEntryMusic(world);
+    }
+
+    /// <summary>
+    /// T4 (docs/plan-transitions-carte.md §3, D-T-2): installs the warp-departure seam - re-points the
+    /// SESSION-scoped <see cref="WarpDirector.Instance"/> at this world's own
+    /// <c>world.Game.GameManager</c> (the <c>SetWorldToLoad</c> seam, §1.1.e/§1.3.e) and
+    /// <see cref="SoundPlayer"/> (the departure sfx channel, §1.2.d), THEN applies D-T-15's own map-entry
+    /// disposition. Called AFTER <see cref="InstallAudioSystems"/> (so <see cref="SoundPlayer"/> is
+    /// already populated) and BEFORE <see cref="AdoptPlayerPawn"/> (T5's own reader of the arrival record
+    /// this install deliberately leaves untouched, D-T-15) - same "extracted internal method, one call
+    /// site" precedent as <see cref="InstallScreenFadeSystems"/>/<see cref="InstallAudioSystems"/>.
+    /// </summary>
+    internal void InstallWarpSystems(World world)
+    {
+        WarpDirector.Instance.AttachToWorld(world.Game?.GameManager, SoundPlayer, EngineEnvironment.ProjectPath);
+        WarpDirector.Instance.InstallForMapEntry();
+    }
+
+    /// <summary>
+    /// E10.b (docs/plan-e10-fondu.md, D-E10-7): installs the screen fade/tint seam - re-points the
+    /// SESSION-scoped <see cref="ScreenFadeDirector.Instance"/> at this world's own
+    /// <see cref="CasaEngine.Framework.Rendering.ScreenEffects.ScreenEffectService"/>
+    /// (<c>world.Game?.ScreenEffectComponent?.Service</c> - null without a <c>Game</c>, tolerated, T2),
+    /// THEN arms effect 0 for this map entry (<see cref="ScreenFadeDirector.InstallForMapEntry"/>).
+    /// Called from <see cref="InitializeWithWorld"/> - the ONLY call site (D-E10-7's own M16 lesson: no
+    /// separate, independently deletable call site) - and extracted as its own INTERNAL method, same
+    /// precedent as <see cref="InstallAudioSystems"/>, so a test can drive it directly against a world
+    /// with no <c>Game</c> (T2) or against two successive worlds sharing the same session (T7).
+    ///
+    /// <b>Pushes nothing to the service</b> (see <see cref="ScreenFadeDirector.InstallForMapEntry"/>'s
+    /// own doc) - the first push happens from <see cref="Update"/>, after that same frame's
+    /// <see cref="ScreenFadeDirector.Advance"/> call.
+    ///
+    /// <b>T5 (§1.4.g, D-T-7)</b>: this is the injection point for the arrival's own transition effect id,
+    /// PEEKED (not consumed - <see cref="WarpDirector.PendingArrivalEffectId"/>'s own doc) off the
+    /// SESSION-scoped <see cref="WarpDirector.Instance"/> - <see cref="InstallWarpSystems"/> has
+    /// already run by this call site (:548 vs :549), so its own <c>InstallForMapEntry</c> has not touched
+    /// the record (D-T-15: conserved). D-T-7 ramène tout id non nul à l'effet 0: the fade machine armed
+    /// just above is unconditionally effect 0 regardless of what is logged here - only the log is new.
+    /// </summary>
+    internal void InstallScreenFadeSystems(World world)
+    {
+        Transitions.ScreenFadeDirector.Instance.AttachToWorld(world.Game?.ScreenEffectComponent?.Service);
+        Transitions.ScreenFadeDirector.Instance.InstallForMapEntry();
+
+        var arrivalEffectId = WarpDirector.Instance.PendingArrivalEffectId;
+        if (arrivalEffectId != 0)
+        {
+            Logs.WriteInfo(
+                $"WorldProxy: world '{world.Name}' arrival transition effect id {arrivalEffectId} "
+                + "transported by the departing portal, reduced to effect 0 (D-T-7).");
+        }
+    }
+
+    /// <summary>
+    /// E13 C1 (docs/plan-e13-hud.md): re-points the SESSION-scoped <see cref="HudDirector.Instance"/>
+    /// at this world's own <see cref="GameState"/>, then runs its map-entry hook, which arms the jauge's
+    /// appearance when the persistent latch (flag 1662) is set (E19.r R1: the port of the main loop's map-entry
+    /// block, 0x8002c3d0) - same "AttachToWorld re-points, InstallForMapEntry is the separate map-entry call"
+    /// shape as every other session-scoped director in this DLL. No presenter, no UI view lookup: this director has no
+    /// view seam at all (see its own class doc).
+    /// </summary>
+    internal void InstallHudSystems()
+    {
+        HudDirector.Instance.AttachToWorld(GameState);
+        HudDirector.Instance.InstallForMapEntry();
+
+        // Eager attempt for hosts that pre-wire a view before install (same "serves the wiring test's
+        // montage, real game retries in Update" shape as InstallDialogueSystems's own eager lookup) -
+        // the real game's own view is created strictly AFTER this method returns (proven boot order,
+        // InstallDialogueSystems's own doc), so TryWireHudScreenOnce's per-frame retry in Update is what
+        // actually wires it there.
+        TryWireHudScreenOnce();
+    }
+
+    /// <summary>
+    /// E16.e L5/SE3 (docs/plan-e16-etat-partie.md): re-points the SESSION-scoped
+    /// <see cref="SaveScreenDirector.Instance"/> at this world's <see cref="GameState"/> and
+    /// <see cref="SoundPlayer"/>, then runs its map entry - which ends, without writing, a save flow a world change
+    /// cut. Called from <see cref="InitializeWithWorld"/> right AFTER <see cref="InstallDialogueSystems"/>: the
+    /// dialogue director's own map entry has already dropped its box and choice and rebuilt its runner.
+    /// </summary>
+    internal void InstallSaveScreenSystems()
+    {
+        SaveScreenDirector.Instance.AttachToWorld(GameState, SoundPlayer);
+        SaveScreenDirector.Instance.InstallForMapEntry();
+    }
+
+    /// <summary>
+    /// E13.d D4 (docs/plan-e13d-inventaire.md): re-points the SESSION-scoped
+    /// <see cref="InventoryDirector.Instance"/> at this world's own <see cref="GameState"/>,
+    /// <see cref="ItemTables"/> and <see cref="SoundPlayer"/> - same "AttachToWorld re-points, no
+    /// separate map-entry reset" shape as <see cref="HudDirector"/> (this director has no
+    /// map-entry state either: <see cref="GameState.PlayerControlFlags"/>/<c>MenuOpen</c> already
+    /// survives a map change like every other <see cref="Session.GameState"/> field, and the inventory
+    /// itself is never open across a map transition: MenuOpen, cleared only with the closing slide's end, blocks
+    /// the portal test and freezes the event programs, so no warp starts while it is open, and the trigger
+    /// refuses while
+    /// <see cref="WarpDirector.IsTransitionInProgress"/> - the warp poses no control-flag bit, SD5,
+    /// D-E13D-38).
+    /// </summary>
+    internal void InstallInventorySystems()
+    {
+        InventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
+
+        // E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-20): same "re-point without touching state"
+        // shape, right next to the main inventory's own director - the two are session singletons like it.
+        SubInventoryDirector.Instance.AttachToWorld(GameState, ItemTables, SoundPlayer);
+    }
+
+    /// <summary>
+    /// E15.c T5 (docs/plan-e15-yarn.md, contract item 1): holds this world's own <c>dialogue_{mapId}</c>
+    /// Yarn asset (by name, through <c>AssetCatalog</c> and the game's asset manager - the same route
+    /// <see cref="HeroController.EnsureInputMappingsRegistered"/> already uses for a catalogued
+    /// asset) and the shared <c>dialogue_shared</c> asset, and hands both to <paramref name="runner"/>.
+    /// Supersedes the old <c>AlundraDialogueStringsLoader</c> (removed in E15.d) for opcodes 0x0D/0x5C.
+    /// A no-op (both stay null) when this world has no <see cref="World.Game"/> or asset manager yet -
+    /// the same degraded shape <see cref="MapEventProgramLoader"/> already had.
+    /// </summary>
+    private void InstallDialogueAssets(World world, EventProgramRunner runner)
+    {
+        var assetContentManager = world.Game?.AssetContentManager;
+        if (assetContentManager == null)
+        {
+            return;
+        }
+
+        if (BackdropLoader.TryParseMapIndex(world.Name, out var mapId))
+        {
+            _mapDialogueAssetHandle = AcquireDialogueAsset(assetContentManager, $"dialogue_{mapId}");
+            runner.MapDialogueAsset = _mapDialogueAssetHandle?.Asset;
+        }
+
+        _sharedDialogueAssetHandle = AcquireDialogueAsset(assetContentManager, "dialogue_shared");
+        runner.SharedDialogueAsset = _sharedDialogueAssetHandle?.Asset;
+    }
+
+    /// <summary>Acquires the catalogued dialogue asset named <paramref name="catalogName"/>, or null (logged
+    /// once per call site's own caller, same tolerant shape as every other missing/failing catalogued asset
+    /// in this DLL) when it is not in the catalog or fails to load.</summary>
+    private static AssetHandle<DialogueAsset>? AcquireDialogueAsset(AssetContentManager assetContentManager, string catalogName)
+    {
+        var assetInfo = AssetCatalog.Get(catalogName);
+        if (assetInfo == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return assetContentManager.Acquire<DialogueAsset>(assetInfo.Id);
+        }
+        catch (Exception ex)
+        {
+            Logs.WriteWarning(
+                $"WorldProxy: dialogue asset '{catalogName}' ({assetInfo.Id}) failed to load "
+                + $"({ex.GetType().Name}: {ex.Message}); its dialogues degrade to an empty box.");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// E12.a (docs/plan-e12-dialogues.md, item ③bis/④): installs the dialogue-flow seam - re-points the
+    /// SESSION-scoped <see cref="DialogueDirector.Instance"/> at an <see cref="DialoguePresenter"/>
+    /// wired to this world's own ACTIVE UI view (<c>world.Game.GameManager.ViewManager.GetActiveUIView()</c>
+    /// - the SAME route the engine's own <c>UIOverlayDemo</c> uses), THEN resets this map entry's dialogue
+    /// state (<see cref="DialogueDirector.InstallForMapEntry"/>). No active UI view (no <c>Game</c>,
+    /// or the active render view has none) -&gt; the presenter stays null, same tolerated degraded shape as
+    /// every other missing-system seam in this DLL (<see cref="IDialogueDirector.HasPresenter"/> is
+    /// what <see cref="EventProgramRunner.Dispatch"/> actually tests). Called from
+    /// <see cref="InitializeWithWorld"/> - the ONLY call site (M16 lesson, same precedent as
+    /// <see cref="InstallScreenFadeSystems"/>/<see cref="InstallAudioSystems"/>) - and extracted as its own
+    /// INTERNAL method so a test can drive it directly against a world with no <c>Game</c>.
+    /// </summary>
+    internal void InstallDialogueSystems(World world)
+    {
+        // IN A REAL GAME RUN THIS LOOKUP ALWAYS RETURNS NULL - user-reported in-game failure, root
+        // cause proven in the engine boot order (GameManager.UpdateWorld, GameManager.cs:93-108):
+        // (1) ViewManager.Clear() -> (2) World.LoadContent - WHICH RUNS InitializeWithWorld AND THIS
+        // METHOD - -> (3) RuntimeViewBootstrapper.BootstrapViews creates the Default view and its MGUI
+        // UIView -> (5) BeginPlay. So the install phase sits inside the window where the ViewManager is
+        // empty by construction, on EVERY world load. The backdrop clear color hit the same window
+        // (BackdropStage.cs:60-66) and so do the engine's own game scripts (RPGDemo wires UI in
+        // OnBeginPlay, never at load). The eager attempt below still serves hosts that pre-wire a view
+        // before install (the wiring test's montage); the real game is wired by
+        // TryWireDialoguePresenterOnce's per-frame retry in Update.
+        var uiView = world.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var presenter = uiView != null
+            ? new DialoguePresenter(uiView, world.Game?.UIFonts, world.Game?.AssetContentManager)
+            : null;
+        _dialoguePresenter?.Dispose();
+        _dialoguePresenter = presenter;
+        _dialoguePresenterWired = presenter != null;
+
+        Dialogues.DialogueDirector.Instance.AttachToWorld(presenter, GameState, SoundPlayer);
+        Dialogues.DialogueDirector.Instance.InstallForMapEntry();
+
+        // E19.f4b (F4B-R4): the portrait of a speaker flies from and to its head point, which needs the scroll of the camera in the original's pixels, read at the opening and at the return
+        // (the same conversion as the inventory portrait's head point, UpdateInventoryPortraitHeadPoint). Kept by every later AttachToWorld; the director never reaches the world itself.
+        Dialogues.DialogueDirector.Instance.ScrollSource = () => CameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
+    }
+
+    /// <summary>
+    /// The real game's dialogue-presenter wiring: retry-until-success, once per frame from the head of
+    /// <see cref="Update"/>, because the UI view this needs is created strictly AFTER
+    /// <see cref="InitializeWithWorld"/> ran (see <see cref="InstallDialogueSystems"/>'s own doc for the
+    /// proven boot order). Copies the ONE proven lazy-lookup shape in this DLL - the clear-color retry
+    /// (<c>BackdropStage.ApplyOriginalBackgroundClearColorOnce</c>, guard set ONLY inside the
+    /// success branch) - and deliberately NOT <c>ResolveDebugCameraOnce</c>'s one-shot-at-first-try
+    /// shape, whose first-frame miss is permanent (the exact trap here, since the view's availability
+    /// frame is bootstrap-dependent). On success this RE-POINTS the session director via
+    /// <see cref="DialogueDirector.AttachToWorld"/> - which by contract touches no open/mask/
+    /// page/choice state - and never calls <see cref="DialogueDirector.InstallForMapEntry"/>
+    /// again (the map-entry reset already ran at install; nothing can have opened meanwhile, every
+    /// dialogue opcode degrades while <c>HasPresenter</c> is false).
+    /// </summary>
+    private void TryWireDialoguePresenterOnce()
+    {
+        if (_dialoguePresenterWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        if (uiView == null)
+        {
+            return; // retry next frame - the view appears once BootstrapViews has run.
+        }
+
+        _dialoguePresenter?.Dispose();
+        _dialoguePresenter = new DialoguePresenter(uiView, _world?.Game?.UIFonts, _world?.Game?.AssetContentManager);
+        Dialogues.DialogueDirector.Instance.AttachToWorld(_dialoguePresenter, GameState, SoundPlayer);
+        _dialoguePresenterWired = true;
+        Logs.WriteInfo("WorldProxy: dialogue presenter wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>
+    /// E13 C2's own version of <see cref="TryWireDialoguePresenterOnce"/>: retry-until-success, once per
+    /// frame, because the UI view <see cref="HudScreen"/> is pushed onto is created strictly AFTER
+    /// <see cref="InitializeWithWorld"/> ran (same proven boot order, <see cref="InstallDialogueSystems"/>'s
+    /// own doc). Requires BOTH a live UI view AND <c>World.Game.AssetContentManager</c> (the screen loads
+    /// its 24 sprites the moment it is initialized, <see cref="HudScreen.OnInitialize"/>) - a
+    /// headless test world with no <c>Game</c> degrades to never wiring, the same tolerated shape as every
+    /// other missing-system seam in this DLL. The screen is NON-modal (D-E13-1/mission item 1) and pushed
+    /// once, never removed: it draws nothing itself while <see cref="HudDirector.IsDrawn"/> is false
+    /// (<see cref="HudComposer"/>'s own "IsDrawn faux -&gt; liste vide"), so there is no open/close
+    /// state to unwind here the way <see cref="DialoguePresenter"/> unwinds its own push/remove.
+    /// </summary>
+    private void TryWireHudScreenOnce()
+    {
+        if (_hudScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        if (uiView == null || assetContentManager == null)
+        {
+            return; // retry next frame - same reason TryWireDialoguePresenterOnce retries.
+        }
+
+        var hudScreen = new HudScreen(HudDirector.Instance, assetContentManager);
+        _hudScreen = hudScreen;
+        uiView.PushScreen(hudScreen);
+
+        // E13 C3 (D-E13-8): attached in the SAME call as the push, strictly BEFORE this same Update's own
+        // hudTick loop runs (Update(float)'s own call order: TryWireHudScreenOnce, then the tick loop) - so
+        // the presenter's first Tick() this frame already has a live view to push into, matching
+        // HudScreen.OnInitialize's own "production call order" doc.
+        _hudPresenter = new HudPresenter(
+            HudDirector.Instance, hudScreen.ViewModel, ResolveHudEquipmentIcons);
+        _hudScreenWired = true;
+        Logs.WriteInfo("WorldProxy: HUD screen wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="HudPresenter"/> over the SAME session-scoped
+    /// <see cref="HudDirector.Instance"/> this proxy's own production wiring
+    /// (<see cref="TryWireHudScreenOnce"/>) would use, but against any <see cref="IHudView"/> -
+    /// typically a recording test double, since a real <see cref="HudScreen"/> is not constructible
+    /// headless (see <see cref="_hudPresenter"/>'s own doc). Lets a test drive <see cref="Update(float)"/>'s
+    /// real per-tick loop and observe that it keeps pushing into the view regardless of a modal dialogue,
+    /// without needing a live graphics stack - same shape as <see cref="InstallDialogueSystems"/> being
+    /// exposed internal for the identical reason.</summary>
+    internal void AttachHudPresenterForTests(IHudView view)
+    {
+        _hudPresenter = new HudPresenter(HudDirector.Instance, view);
+    }
+
+    /// <summary>
+    /// E13.d D5's own version of <see cref="TryWireHudScreenOnce"/>: retry-until-success, once per frame,
+    /// same reason (the UI view is created strictly AFTER <see cref="InitializeWithWorld"/> ran). Unlike
+    /// the HUD's screen, <see cref="InventoryScreen"/> is NOT pushed here: it is modal
+    /// (<see cref="IUIScreen.IsModal"/>) and stays down until the director actually draws it, so the
+    /// presenter itself owns push/remove (dialogue precedent, <see cref="InventoryPresenter"/>'s
+    /// own class doc) - this method only constructs the presenter once a live view and asset content
+    /// manager exist.
+    /// </summary>
+    private void TryWireInventoryScreenOnce()
+    {
+        if (_inventoryScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
+        {
+            return; // retry next frame - same reason TryWireHudScreenOnce retries.
+        }
+
+        var inventoryScreen = new InventoryScreen(assetContentManager, fonts);
+        _inventoryScreen = inventoryScreen;
+        _inventoryPresenter = new InventoryPresenter(
+            InventoryDirector.Instance, GameState, ItemTables, inventoryScreen.ViewModel, inventoryScreen, uiView);
+        _inventoryScreenWired = true;
+        Logs.WriteInfo("WorldProxy: inventory screen wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="InventoryPresenter"/> over the SAME
+    /// session-scoped <see cref="InventoryDirector.Instance"/> this proxy's own production wiring
+    /// (<see cref="TryWireInventoryScreenOnce"/>) would use, but against any <see cref="InventoryViewModel"/>/
+    /// <see cref="IUIScreen"/>/<see cref="IUIViewRuntime"/> - typically recording test doubles, since a real
+    /// <see cref="InventoryScreen"/>'s window is not buildable headless. Lets a test drive
+    /// <see cref="Update(float)"/>'s real per-tick loop and observe push/remove/render timing without a live
+    /// graphics stack - same shape as <see cref="AttachHudPresenterForTests"/>.</summary>
+    internal void AttachInventoryPresenterForTests(InventoryViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _inventoryPresenter = new InventoryPresenter(
+            InventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
+    }
+
+    /// <summary>
+    /// E13.d SI4's own version of <see cref="TryWireInventoryScreenOnce"/> - same retry-until-success shape,
+    /// same reason. <see cref="SubInventoryScreen"/> is modal too, and stays down until its own
+    /// director actually draws it (D-E13D-26): this method only constructs the presenter once a live view
+    /// and asset content manager exist.
+    /// </summary>
+    private void TryWireSubInventoryScreenOnce()
+    {
+        if (_subInventoryScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
+        {
+            return; // retry next frame - same reason TryWireInventoryScreenOnce retries.
+        }
+
+        var subInventoryScreen = new SubInventoryScreen(assetContentManager, fonts);
+        _subInventoryScreen = subInventoryScreen;
+        _subInventoryPresenter = new SubInventoryPresenter(
+            SubInventoryDirector.Instance, GameState, ItemTables, subInventoryScreen.ViewModel, subInventoryScreen, uiView);
+        _subInventoryScreenWired = true;
+        Logs.WriteInfo("WorldProxy: sub-inventory screen wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="SubInventoryPresenter"/> over the SAME
+    /// session-scoped <see cref="SubInventoryDirector.Instance"/> this proxy's own production wiring
+    /// (<see cref="TryWireSubInventoryScreenOnce"/>) would use, but against any
+    /// <see cref="SubInventoryViewModel"/>/<see cref="IUIScreen"/>/<see cref="IUIViewRuntime"/> -
+    /// same shape as <see cref="AttachInventoryPresenterForTests"/>.</summary>
+    internal void AttachSubInventoryPresenterForTests(SubInventoryViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _subInventoryPresenter = new SubInventoryPresenter(
+            SubInventoryDirector.Instance, GameState, ItemTables, viewModel, screen, uiView);
+    }
+
+    /// <summary>
+    /// E16.e T4 (docs/plan-e16-etat-partie.md, L5): <see cref="TryWireSubInventoryScreenOnce"/>'s shape for the save
+    /// screen - retry-until-success, once per frame, since the UI view appears after <see cref="InitializeWithWorld"/>.
+    /// The screen is modal and stays down until its director is active: this only builds the presenter.
+    /// </summary>
+    private void TryWireSaveScreenOnce()
+    {
+        if (_saveScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
+        {
+            return; // retry next frame.
+        }
+
+        var saveScreen = new SaveScreen(assetContentManager, fonts);
+        _saveScreen = saveScreen;
+        _saveScreenPresenter = new SaveScreenPresenter(SaveScreenDirector.Instance, saveScreen.ViewModel, saveScreen, uiView);
+        _saveScreenWired = true;
+        Logs.WriteInfo("WorldProxy: save screen wired to the active UI view (post-bootstrap retry).");
+    }
+
+    /// <summary>
+    /// E19.f2b1c F2B1C-R4 (docs/plan-e19-opcodes.md): <see cref="TryWireSaveScreenOnce"/>'s shape for the text box screen - retry-until-success, once per frame, since
+    /// the UI view appears after <see cref="InitializeWithWorld"/>. The screen is pushed by its presenter at the first drawn pass of the box. Unlike the save screen's, a
+    /// failure to build it (the export has no text box screen or no font3) is logged once and ends the retries: the box machine runs without a view, the way the
+    /// engine's dialogue presenter degrades (<see cref="DialoguePresenter"/>).
+    /// </summary>
+    internal void TryWireTextBoxScreenOnce()
+    {
+        if (_textBoxScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
+        {
+            return; // retry next frame.
+        }
+
+        _textBoxScreenWired = true;
+        try
+        {
+            var textBoxScreen = new TextBoxScreen(assetContentManager, fonts);
+            _textBoxScreen = textBoxScreen;
+            _textBoxPresenter = new TextBoxPresenter(Dialogues.DialogueDirector.Instance, textBoxScreen.ViewModel, textBoxScreen, uiView);
+            Logs.WriteInfo("WorldProxy: text box screen wired to the active UI view (post-bootstrap retry).");
+        }
+        catch (Exception ex)
+        {
+            Logs.WriteError($"WorldProxy: the text box screen could not be built, the dialogue box will not be drawn: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// E19.f3b F3B-R3 (docs/plan-e19-opcodes.md): <see cref="TryWireTextBoxScreenOnce"/>'s shape for the choice screen, called right after it - retry-until-success, once per frame,
+    /// since the UI view appears after <see cref="InitializeWithWorld"/>. The screen is pushed by its presenter at the first drawn pass of the choice box, after the text box's.
+    /// A failure to build it (the export has no choice screen or no font3) is logged once and ends the retries: the choice machine runs without a view.
+    /// </summary>
+    internal void TryWireChoiceScreenOnce()
+    {
+        if (_choiceScreenWired)
+        {
+            return;
+        }
+
+        var uiView = _world?.Game?.GameManager?.ViewManager?.GetActiveUIView();
+        var assetContentManager = _world?.Game?.AssetContentManager;
+        var fonts = _world?.Game?.UIFonts;
+        if (uiView == null || assetContentManager == null || fonts == null)
+        {
+            return; // retry next frame.
+        }
+
+        _choiceScreenWired = true;
+        try
+        {
+            var choiceScreen = new ChoiceScreen(assetContentManager, fonts);
+            _choiceScreen = choiceScreen;
+            _choicePresenter = new ChoicePresenter(Dialogues.DialogueDirector.Instance, choiceScreen.ViewModel, choiceScreen, uiView);
+            Logs.WriteInfo("WorldProxy: choice screen wired to the active UI view (post-bootstrap retry).");
+        }
+        catch (Exception ex)
+        {
+            Logs.WriteError($"WorldProxy: the choice screen could not be built, the choice box will not be drawn: {ex.Message}");
+        }
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="ChoicePresenter"/> over the session's <see cref="DialogueDirector.Instance"/>, against any view model, screen and
+    /// UI view - the shape of <see cref="AttachTextBoxPresenterForTests"/>.</summary>
+    internal void AttachChoicePresenterForTests(ChoiceViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _choicePresenter = new ChoicePresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
+    }
+
+    /// <summary>Test-only seam: the choice screen this proxy holds (built by <see cref="TryWireChoiceScreenOnce"/> or attached by a test), null once <see cref="OnEndPlay"/> gave it back.</summary>
+    internal ChoiceScreen? ChoiceScreenForTests => _choiceScreen;
+
+    /// <summary>Test-only seam: the choice screen <see cref="OnEndPlay"/> disposes, as <see cref="TryWireChoiceScreenOnce"/> would have built it (which needs a live game).</summary>
+    internal void AttachChoiceScreenForTests(ChoiceScreen screen)
+    {
+        _choiceScreen = screen;
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="SaveScreenPresenter"/> over the session's
+    /// <see cref="SaveScreenDirector.Instance"/>, against any view model, screen and UI view - the shape of
+    /// <see cref="AttachSubInventoryPresenterForTests"/>.</summary>
+    internal void AttachSaveScreenPresenterForTests(SaveScreenViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _saveScreenPresenter = new SaveScreenPresenter(SaveScreenDirector.Instance, viewModel, screen, uiView);
+    }
+
+    /// <summary>Test-only seam: attaches an <see cref="TextBoxPresenter"/> over the session's <see cref="DialogueDirector.Instance"/>, against any view
+    /// model, screen and UI view - the shape of <see cref="AttachSaveScreenPresenterForTests"/>.</summary>
+    internal void AttachTextBoxPresenterForTests(TextBoxViewModel viewModel, IUIScreen screen, IUIViewRuntime? uiView = null)
+    {
+        _textBoxPresenter = new TextBoxPresenter(Dialogues.DialogueDirector.Instance, viewModel, screen, uiView);
+    }
+
+    /// <summary>Test-only seam: the text box screen this proxy holds (built by <see cref="TryWireTextBoxScreenOnce"/> or attached by a test), null once <see cref="OnEndPlay"/> gave it back.</summary>
+    internal TextBoxScreen? TextBoxScreenForTests => _textBoxScreen;
+
+    /// <summary>Test-only seam: the text box screen <see cref="OnEndPlay"/> disposes, as <see cref="TryWireTextBoxScreenOnce"/> would have built it (which needs a live
+    /// game).</summary>
+    internal void AttachTextBoxScreenForTests(TextBoxScreen screen)
+    {
+        _textBoxScreen = screen;
+    }
+
+    /// <summary>docs/plan-portrait-inventaire.md PI8: refreshes <see cref="InventoryPortrait"/>'s head point
+    /// for this tick, before the inventory directors, from the player's 16.16 position and the original's
+    /// <c>g_cameraScrollingX/Y</c>, obtained through <see cref="CameraMath.ToOriginalScrollSpace"/> (the one
+    /// sanctioned conversion, same fallback to <see cref="Vector3.Zero"/> as the backdrop stage when no camera is
+    /// resolved). Integer arithmetic only: nothing allocated per tick.</summary>
+    private void UpdateInventoryPortraitHeadPoint()
+    {
+        var player = PlayerEntity;
+        if (player == null)
+        {
+            return;
+        }
+
+        var scroll = CameraMath.ToOriginalScrollSpace(_cameraDirector.ResolvedCamera?.Target ?? Vector3.Zero);
+        var head = InventoryPortrait.ComputeHeadPoint(player.PosX, player.PosY, player.PosZ, scroll.X, scroll.Y);
+        InventoryPortrait.Instance.SetHeadPoint(head.X, head.Y);
+    }
+
+    /// <summary>E13.c S3: the equipment source handed to the production presenter - the port of the two
+    /// lookups <c>HudManager.DisplayHudWeaponAndItem</c> makes every frame, over this proxy's own session
+    /// state and item tables (<see cref="PlayerManager.ResolveHudEquipmentIcons"/>).</summary>
+    private (Guid? Weapon, Guid? Accessory) ResolveHudEquipmentIcons()
+    {
+        return PlayerManager.ResolveHudEquipmentIcons(GameState, ItemTables);
+    }
+
+    /// <summary>
+    /// docs/plan-e11c-musique.md, slice C1, item 4 (B9/B10, docs/plan-bgm-demarrage-binaire.md): the
+    /// equivalent of the original's own <c>LoadMapSounds</c> map-entry call (fact 1.4: the second-to-last
+    /// instruction of the map-entry block, right before the first <c>Update</c>) - this world's own map
+    /// id, read the same way <see cref="BackdropLoader"/>/<see cref="MapEventProgramLoader"/> already do
+    /// (trailing "-{mapId}" of <see cref="World.Name"/>), a no-op when the name carries none (not a
+    /// converted Alundra map world) or when <see cref="MusicPlayer"/> was never installed (no
+    /// <c>Game</c> - degraded, same shape as every other missing-system seam in this DLL). This call
+    /// only LOADS the destination track and arms <c>ResetSoundFlag</c> (B7) - it never starts a voice by
+    /// itself; the voice starts at the end of the entry's first frame close, when that flag is consumed
+    /// (B9/B10, this class' own <see cref="Update"/>). Internal so a test can drive it directly (same
+    /// precedent as <see cref="InstallAudioSystems"/>/<see cref="InstallCellAndOverlaySystems"/>).
+    /// </summary>
+    private void TriggerMapEntryMusic(World world)
+    {
+        if (MusicPlayer == null)
+        {
+            return;
+        }
+
+        if (!BackdropLoader.TryParseMapIndex(world.Name, out var mapId))
+        {
+            return;
+        }
+
+        MusicPlayer.PlayMapMusic(mapId);
+    }
+
+    /// <summary>
+    /// This map's own Gravity/ZViscosity (<c>TileMapData.CustomProperties</c>, written by
+    /// <c>CellMetadataWriter.ConvertMap</c>), converted to the units
+    /// <see cref="CharacterControllerSettings.Gravity"/>/<see cref="CharacterControllerSettings.MaxFallSpeed"/>
+    /// expect - E3.d's own formula (<c>AdoptPlayerPawn</c>'s original override block): <c>mapGravity*256/
+    /// 65536*2500</c> / <c>mapZViscosity*256/65536*50</c> (1250/800 on map 389). Shared by
+    /// <see cref="AdoptPlayerPawn"/> (hero, unconditional) and <see cref="EntitySpawnFactory.ApplySpawnInitialization"/> (NPC,
+    /// gated on the Gravity flag bit via <see cref="EntityScriptProxy.ApplyGravitySettingsToController"/>)
+    /// so the formula itself lives in exactly one place. Float arithmetic throughout: an integer
+    /// <c>128*256/65536</c> truncates to 0 before the final <c>*2500</c> ever runs.
+    /// </summary>
+    /// <summary>
+    /// E4.d (docs/plan-e4-deplacement-scripte.md, decision E4-2): builds this world's navigation grid
+    /// from the SAME <paramref name="tileMapData"/> <see cref="InitializeWithWorld"/>'s collision field
+    /// just read, right after it. Tilesets are resolved in <c>tile_set_asset_ids</c> order - the exact
+    /// same order/lookup <c>TileMapComponent.LoadTileSets</c> uses at runtime
+    /// (CasaEngineMonogame/CasaEngine/Framework/Scene/Entities/Components/TileMapComponent.cs:819-850:
+    /// index <see cref="TileMapData.TileSetDataAssetIds"/> by position, <c>Load&lt;TileSetData&gt;</c>
+    /// each through the world's own <c>AssetContentManager</c>) - required so the navigation layer's own
+    /// per-tile <c>tileSourceIndex</c> lines up with <paramref name="tileSets"/>' own indices exactly the
+    /// way <see cref="NavigationGrid2D.TryCreateFromTileMap"/> expects
+    /// (<c>tileSets[tileSourceIndex]</c>). <c>cellSize</c> is always 1f: the DLL consumes the grid purely
+    /// in "cell space" and does its own px&lt;-&gt;cell conversion (24x16 - see
+    /// <see cref="Events.EventProgramRunner"/>'s own 0x1E walk-detour helpers), since the engine's
+    /// <see cref="CasaEngine.Framework.AI.Navigation.CharacterControllerNavigationDriverComponent"/> is
+    /// deliberately NOT used in E4 (its <c>(X, -Z)</c> intent axis is hard-coded, E4-2). Degraded mode -
+    /// null, one warning - on a missing navigation layer (an older/regenerated export that predates E4.a)
+    /// or any tileset-resolution failure (missing asset id, catalog miss), the same tolerant shape as
+    /// <see cref="CellsCollisionField.TryCreate"/> right above this method's own call site.
+    /// </summary>
+    internal static NavigationGrid2D? TryBuildNavigationGrid(World world, TileMapData tileMapData)
+    {
+        return TryBuildNavigationGrid(world.Name, world.Game.AssetContentManager, tileMapData);
+    }
+
+    /// <summary>Engine ADR-0037: the tilesets are held only while the grid is built - the grid copies what it
+    /// needs (<c>NavigationGrid2D.TryCreateFromTileMap</c>) - and given back right after; the map's own
+    /// <c>TileMapComponent</c> holds them for as long as the map lives.</summary>
+    internal static NavigationGrid2D? TryBuildNavigationGrid(string worldName, AssetContentManager assetContentManager, TileMapData tileMapData)
+    {
+        var tileSetHolds = new List<AssetHandle<TileSetData>>(tileMapData.TileSetDataAssetIds.Count);
+        try
+        {
+            var tileSets = new List<TileSetData>(tileMapData.TileSetDataAssetIds.Count);
+            try
+            {
+                foreach (var assetId in tileMapData.TileSetDataAssetIds)
+                {
+                    var hold = assetContentManager.Acquire<TileSetData>(assetId);
+                    tileSetHolds.Add(hold);
+                    tileSets.Add(hold.Asset);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logs.WriteWarning(
+                    $"WorldProxy: world '{worldName}' - failed to resolve its tilesets for "
+                    + $"navigation grid construction ({ex.Message}); navigation disabled (degraded mode).");
+                return null;
+            }
+
+            if (NavigationGrid2D.TryCreateFromTileMap(tileMapData, tileSets, cellSize: 1f, out var grid))
+            {
+                return grid;
+            }
+        }
+        finally
+        {
+            foreach (var hold in tileSetHolds)
+            {
+                hold.Dispose();
+            }
+        }
+
+        Logs.WriteWarning(
+            $"WorldProxy: world '{worldName}' has no navigation layer ('{NavigationGrid2D.NavigationRoleProperty}' "
+            + $"= '{NavigationGrid2D.NavigationRoleGrid}'); navigation disabled (degraded mode).");
+        return null;
+    }
+
+    /// <summary>
+    /// The hero's share of <c>EntityManager.InitializeEntity</c> (0x80039D04) that needs its sprite header - the
+    /// block <see cref="AdoptPlayerPawn"/> runs once the hero prefab's header resolves, kept in one method so a
+    /// test can pin it without a loaded asset catalog (E16.e SE6).
+    /// </summary>
+    internal static void ApplyHeroSpriteHeader(EntityScriptProxy proxy, SpriteRecordHeader header)
+    {
+        proxy.Flags = (uint)(header.MoreFlags | (header.CanPickup << 8) | (header.FlagsPortraitShadowType << 16));
+        // E16.e L1/SE6 (docs/plan-e16-etat-partie.md): ResetEntityState (0x80031974, GameEngine.cs:650-652)
+        // initializes the hero with sprite table index 0, not a map sprite.
+        proxy.SpriteType = 0;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramALoad] = header.ProgramLoad;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramBMap] = 0;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramCTick] = header.ProgramTick;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramDTouch] = header.ProgramTouch;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] = header.ProgramDeactivate;
+        proxy.SpriteProgramIndexes[ScriptHelper.ProgramFInteract] = header.ProgramInteract;
+        proxy.IdsvByAnimDirection = EntitySpawnFactory.BuildIdsvByAnimDirection(header.IdsvAnimDirs);
+        proxy.AnimationEndByAnimDirection = EntitySpawnFactory.BuildAnimationEndByAnimDirection(header.IdsvAnimDirs);
+        proxy.AnimSetsByAnim = header.AnimSets;
+        // E4.f (docs/plan-e4-deplacement-scripte.md, decision E4-4): the hero's own logical
+        // Mod*/Width/Height/Depth, same port (SetEntityDimensions, EntityManager.cs:160-199) every
+        // record-spawned NPC already gets from ApplySpawnInitialization - needed so the hero counts as
+        // a valid EntitySupport candidate/target (e.g. a future entity standing on the hero, or the
+        // hero itself queried by EntitySearchService) with real dimensions instead of all-zero ones.
+        EntitySpawnFactory.SetEntityDimensions(proxy, header.OffsetX, header.OffsetY, header.OffsetZ, header.SizeX, header.SizeY, header.SizeZ);
+    }
+
+    /// <summary>
+    /// E20.c2a T1: the life of a hero created from the player's stats, in the binary's order (<c>GetPlayerHpMax</c> then <c>GetPlayerHp</c>, <c>0x800319F8-0x80031A08</c>), which also marks it as carrying its life
+    /// (<see cref="EntityScriptProxy.LifePulledFromStats"/>). Called by <see cref="AdoptPlayerPawn"/> right after <c>InitializeBalance</c>; the headless arc montage, whose sprite header (and so the balance
+    /// record) comes after the adoption, calls it again after its own <c>InitializeBalance</c>, in the same order as the game.
+    /// </summary>
+    internal void PullHeroLifeFromStats(EntityScriptProxy hero)
+    {
+        hero.HpMax = GameState.PlayerStats.HpMax;
+        hero.Hp = GameState.PlayerStats.Hp;
+        hero.LifePulledFromStats = true;
+    }
+
+    /// <summary>
+    /// E2 replacement for the old <c>SpawnPlayerEntity</c> (which used to clone a SECOND hero prefab
+    /// itself): the ENGINE now spawns the hero pawn and possesses it with an <see cref="HeroController"/>
+    /// (<c>World.LoadContent</c> -&gt; <c>InitializePlayerControllers</c>, CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:221-252/282-297,
+    /// strictly before <c>CreateGameplayProxy</c>/<c>InitializeWithWorld</c> run - so by the time this
+    /// method runs, the pawn is already in <c>world.Entities</c>, already <c>Initialize</c>/
+    /// <c>InitializeWithWorld</c>'d, and already positioned at the map's <c>PlayerStart</c> component by
+    /// <c>CreateLocalPlayerController</c>, World.cs:350-367). This method only ADOPTS that pawn (finds its
+    /// controller via <c>world.PlayerControllers</c>, World.cs:76) and applies the New Game LOGICAL state -
+    /// same fields the old <c>SpawnPlayerEntity</c> set, a V1 port of <c>ResetEntityState</c>
+    /// (GameEngine.cs:648-670), called BEFORE any "Entities" record is spawned (their own spawn-zone gate
+    /// reads the player's tile): spawn position (New Game tile (33,59), tile-centre 16.16 fixed-point -
+    /// GameInitializer.cs's New Game branch via <see cref="Session.GameState"/>'s own New Game constants),
+    /// <c>TargetAnimationId</c>/<c>TargetDirection</c> = <see cref="GameState.ResetAnimationId"/>/
+    /// <see cref="GameState.ResetDirectionId"/> (54/"LoadingMap", 0/down), <c>Status = Normal</c>
+    /// (NOT <c>Loaded</c> - GameEngine.cs:661: the hero has no Load program, unlike every record-spawned
+    /// entity), <c>Flags</c>/<c>SpriteProgramIndexes</c>/<c>AnimSetsByAnim</c> from the hero's own
+    /// sprite-records.json header when the catalog has one for it.
+    ///
+    /// Deviation note: the engine already positioned the pawn's transform at the <c>PlayerStart</c>
+    /// component (logical pose (804, 952, 0) on map 389, equal to <c>ResolveLogicalPosition</c> of this same
+    /// New Game tile) - this method's own <see cref="EntitySpawnFactory.ResolveLogicalPosition"/> call below OVERWRITES that
+    /// with the logical position instead, which is harmless (same result) but makes explicit that
+    /// <c>EntityScriptProxy</c>'s logical PosX/PosY/PosZ, not the engine's PlayerStart transform, is
+    /// the field this proxy's own <see cref="FrameSyncPasses.SyncTransform"/> re-derives from every frame going forward
+    /// (decision D2's "logical state wins" rule).
+    ///
+    /// Deliberately NOT ported (still out of E2's own scope - a real <c>InitializeGameState</c>/full
+    /// <c>PlayerManager</c>): (E20.c2a T1 ported <c>Hp</c>/<c>HpMax</c>, <see cref="PullHeroLifeFromStats"/>),
+    /// <c>g_activeCollisionEntity = null</c> (this world's own <see cref="ActiveCollisionEntity"/> is now
+    /// reset explicitly, in <see cref="InitializeWithWorld"/>'s own installation block - D-T-13 point 4,
+    /// docs/plan-transitions-carte.md, slice T1; inert today only because this proxy is fully
+    /// reconstructed per world, not because nothing resets it), <c>g_currentWeaponFlags</c>/weapon item
+    /// id, the warp timer/effect resets
+    /// (<c>g_playerWarpTimer</c>, <c>g_isWarpDisabled</c>, <c>g_playerWarpEffect</c>,
+    /// <c>g_playerEffectTransitionCooldown</c>, <c>ResetWarpLockTimer</c>) - none of these have any
+    /// observable effect on E2's own ported <see cref="PlayerManager.MovePlayer"/> subset. No
+    /// camera-follow yet (E5).
+    ///
+    /// <b>T5 (docs/plan-transitions-carte.md §3 T5, D-T-4)</b>: the New Game constants quoted above are
+    /// now only the FALLBACK. When <see cref="WarpDirector.Instance"/> holds a pending arrival -
+    /// this world is the destination of a warp, not a fresh New Game/Continue load - the position,
+    /// animation id and direction id below come from <see cref="WarpDirector.ConsumeArrivalRecord"/>
+    /// instead, which ALSO clears <see cref="WarpDirector.HasPendingArrival"/> ([R9]: the record is
+    /// session-scoped and would otherwise still read as "pending" on the NEXT map entry, warp or not).
+    /// <see cref="EntityScriptProxy.ClampToGround"/> still runs unconditionally either way - an
+    /// arrival's <c>PosZ</c> is the portal's own <c>ZLevel &lt;&lt; 20</c> (frequently 0, §1.2.c), not yet
+    /// the destination cell's real ground height, exactly like the New Game constants above were never
+    /// ground-clamped by the original either (both are raw authored/computed values, §1.4.e).
+    /// </summary>
+    private void AdoptPlayerPawn(World world, TileMapData tileMapData)
+    {
+        var playerController = world.PlayerControllers.OfType<HeroController>().FirstOrDefault();
+        _playerController = playerController;
+
+        if (playerController?.Pawn == null)
+        {
+            if (!_loggedNoPlayerController)
+            {
+                _loggedNoPlayerController = true;
+                Logs.WriteWarning(
+                    $"WorldProxy: no {nameof(HeroController)} possessing a pawn in world "
+                    + $"'{world.Name}' (missing/misconfigured player_startup_settings_asset_id, "
+                    + "player_controller_class, or default_pawn_asset_id); no player entity adopted, no "
+                    + "fallback spawn.");
+            }
+
+            return;
+        }
+
+        var entity = playerController.Pawn;
+
+        if (entity.GameplayProxy is not EntityScriptProxy proxy)
+        {
+            Logs.WriteWarning(
+                $"WorldProxy: the engine-spawned pawn in world '{world.Name}' did not produce an "
+                + $"{nameof(EntityScriptProxy)} (GameplayProxyClassName on the pawn prefab); no "
+                + "player entity adopted.");
+            return;
+        }
+
+        proxy.IsPlayer = true;
+        proxy.ScriptHost = this;
+        proxy.LogicContextEntity = entity;
+        proxy.ParentEntity = null;
+        proxy.Status = EntityStatus.Normal;
+        proxy.EntityRefId = -1; // not an "Entities" layer record - no slot to index by.
+        proxy.EventTrigger = ScriptHelper.ProgramUnknown; // hygiene only - IsPlayer already excludes it from RunPendingEventTriggers regardless of value.
+
+        // E3.d ("DLL - adoption", docs/plan-e3-collisions.md): resolved once here, before the New Game
+        // pose write below, so EntityScriptProxy.ClampToGround (called right after that write)
+        // and every later per-frame root/controller routing (EntityScriptProxy.Update,
+        // PlayerManager.Tick, EntityScriptProxy.PushLogicalPositionToRoot) all see the
+        // same cached reference. Null on a hero prefab that predates/skips E3.d's converter change -
+        // every controller-aware site already falls back to E2's controller-free behaviour on null.
+        proxy.Controller = entity.GetComponent<CharacterControllerComponent>();
+
+        // T5 (D-T-4, [R9]): consume the warp director's pending arrival record, if this map entry is the
+        // destination of a warp - clears WarpDirector.HasPendingArrival on the way out, so a LATER,
+        // non-warp map entry never reads this same stale record (see WarpDirector.ConsumeArrivalRecord's
+        // own doc). Null falls back to the New Game constants exactly as before this slice.
+        var arrivalRecord = WarpDirector.Instance.ConsumeArrivalRecord();
+
+        // E13.c S3 (docs/plan-e13c-icones-hud.md): "no pending arrival" is the New Game - the only other
+        // source of a map entry is a warp, and a warp always leaves a non-null record - so this is where the
+        // original's own New Game inventory runs: item counters, the unlock loop, the weapon set to the
+        // sword's slot (GameInitializer.cs:395-411). Not gated on any debug switch: it is the game's own
+        // state. Latched once per session as a belt and braces (see NewGameInventoryInitialized's own doc).
+        if (arrivalRecord == null && !GameState.NewGameInventoryInitialized)
+        {
+            GameState.NewGameInventoryInitialized = true;
+            PlayerManager.InitializeNewGameInventory(GameState, ItemTables);
+        }
+
+        proxy.PosX = arrivalRecord?.PosX ?? (GameState.CameraTileX * TileWidth + TileWidth / 2) << 16;
+        proxy.PosY = arrivalRecord?.PosY ?? (GameState.CameraTileY * TileHeight + TileHeight / 2) << 16;
+        proxy.PosZ = arrivalRecord?.PosZ ?? 0;
+        // E3.d: raises PosZ onto the actual cell height under the spawn tile before anything else reads it
+        // - port of EntityManager.cs:127-136's own spawn-time ground clamp (see
+        // EntityScriptProxy.ClampToGround's own doc). A no-op without a controller/collision
+        // field/Box fixture, so PosZ simply stays at whatever was written above, exactly like before E3.d.
+        // T5 (§1.1.f): on a warp arrival this is the step that turns the portal's own ZLevel<<20 (often 0)
+        // into the destination cell's real ground height - ClampToGround only ever RAISES PosZ (§1.4.e),
+        // so it is compatible with either source of the pre-clamp value above.
+        proxy.ClampToGround();
+        // PhysicsEngine.cs:1698-1700, same formula EntityRecordMapper seeds every record's own tile from.
+        proxy.TileX = (proxy.PosX >> 16) / TileWidth;
+        proxy.TileY = (proxy.PosY >> 16) / TileHeight;
+        proxy.TileZ = proxy.PosZ >> 20;
+
+        proxy.TargetAnimationId = arrivalRecord?.AnimationId ?? GameState.ResetAnimationId;
+        proxy.TargetDirection = arrivalRecord?.DirectionId ?? GameState.ResetDirectionId;
+        // EntityManager.cs:85-88 - bit-complemented so the very first per-frame animation sync always fires.
+        proxy.CurrentAnimationId = ~proxy.TargetAnimationId;
+        proxy.CurrentDirection = ~proxy.TargetDirection;
+
+        // E19.d2c1 R2: every arrival of the hero (the default 0x36, a F9 load, a 0x53 that copies the current animation) is the first switch of
+        // InitializeEntity in the binary: the animation of the arrival never gives its Z impulse.
+        proxy.SpawnAnimationActive = true;
+        proxy.SpawnAnimationId = proxy.TargetAnimationId;
+
+        // Documented stub for PlayerManager's LoadingMap(0x36) case (binary 0x800325E8: on the ground the
+        // hero stays LoadingMap, in the air it gets 0x2D - E19.v, O-E19-32): it only covers a read before this
+        // frame's own EntityScriptProxy.Update, which pulls the real Controller.IsGrounded every frame once
+        // the controller exists (E3.d, see its own doc). Measured on a real arrival 432 px above the ground
+        // (LoadingMapAirArrivalTests): the pull comes first, so 0x2D is set from the frame 1. On the
+        // ground the LoadingMap -> Idle exit is the animation Chain bridge (anim 54 -> 0, see
+        // WorldProxy.OnAnimationFinished), matching the original's own trailing-control-frame-driven
+        // animation switch.
+        proxy.IsOnGround = 1;
+
+        // E19.d2c1 R6: a new pawn starts outside the air state the logic tick holds (a state of the former pawn never follows it). E19.d2c2 S6: the engine
+        // values the state captured (its StepHeight above all, 0 in the air) go back to the controller first.
+        if (proxy.HeroAirborne && proxy.Controller != null)
+        {
+            ScriptedMotion.RestoreAirborneEngineValues(proxy, proxy.Controller);
+        }
+
+        proxy.HeadPullGroundTrusted = false;
+        proxy.HeadPullFlushOnEntity = false;
+        proxy.HeroAirborne = false;
+        proxy.HeroFlyMarked = false;
+        proxy.ZHeldByTick = false;
+
+        var assetInfo = AssetCatalog.Get(HeroAssetName);
+        if (assetInfo != null && SpriteRecordCatalog != null && SpriteRecordCatalog.TryGet(assetInfo.Id, out var header))
+        {
+            ApplyHeroSpriteHeader(proxy, header);
+        }
+        else if (!_loggedNoHeroHeader)
+        {
+            _loggedNoHeroHeader = true;
+            Logs.WriteDebug(
+                $"WorldProxy: no sprite-records.json header found for the hero prefab in world "
+                + $"'{world.Name}'; Flags/SpriteProgramIndexes/AnimSetsByAnim left at their defaults.");
+        }
+
+        // E20.c1a C1: InitializeEntity's balance part for the hero (0x80039E30-0x80039E4C): record 0 of the table (sprite index 0) at the threshold of the map, Hp and HpMax from it, and the first switch's
+        // attack and animation byte. After the header (the animation sets and the sprite index are only known from there).
+        proxy.InitializeBalance(BalanceTables, BalanceThreshold);
+
+        // E20.c2a T1 (docs/plan-e20-heros.md section 1.12): the life of the hero comes from the player's stats, right after InitializeEntity, as the binary's creation of the hero does
+        // (0x800319EC, then GetPlayerHpMax -> +0x18 at 0x800319F8 and GetPlayerHp -> +0x14 at 0x80031A00-0x80031A08). It must follow InitializeBalance, which sets 10/10 from the balance record: without
+        // the pull the mirror at the end of MovePlayer would put the stats back to 10/10 at the first tick of every map, every load and every Continue. A load (ApplyPendingLoad) ran before this adoption.
+        PullHeroLifeFromStats(proxy);
+
+        // E20.c2a T2: the boots level and the hero's defence sheet (steps 1 to 6 of UpdateItemEffectState) are computed at the adoption too. The binary's sheet (0x80127008) is a global that the map load does
+        // not touch, so a hit before the first END reads the previous map's sheet, never an empty one. The side effects of the fill are undone: the rewrite of the equipped accessory (0x8004E0F8) belongs to the
+        // first tick (the equipment records of the first tick use the OLD id, K1 rings2), and the records themselves are emptied again as the map load (0x80044520) leaves them.
+        var equippedAccessory = GameState.PlayerStats.ItemId;
+        PlayerManager.RefreshEquipmentAndSheet(proxy, GameState, this);
+        GameState.PlayerStats.ItemId = equippedAccessory;
+        EquipmentRecords.Clear();
+
+        // E19.t T-R2 (D-E19-57, D-E19-61): the arrival is an appearance, so the sound of its animation is asked here, with the world's player (the group of
+        // the new map). After the header above: the hero's animation sets are only known from there. The first switch of the animation is exempt (R2).
+        RequestAppearanceSound(proxy);
+
+        // E16.a (D-E16-30, docs/plan-e16-etat-partie.md, T3.1): the hero's own spawn-time TerrainHeight
+        // (+0x138) write - port of InitializeEntity (0x80039D04, EntityManager.cs:127-128), which the
+        // original runs for EVERY entity, player slot 0 included, right after its position/footprint are
+        // set and BEFORE any script (the loading program in particular) can ever run on it. Placed here,
+        // AFTER the position (ClampToGround above) and footprint (Mod*/Width/Height, just set above) are
+        // both final, and BEFORE this proxy is added to _spawnedEntities/reachable by any script below -
+        // AdoptPlayerPawn's own equivalent of the map-load spawn loop's
+        // `EvaluateEntitySupport(..., immediateAtSpawn: true)` call (WorldProxy.cs, map-load/dynamic
+        // spawn paths above), which the hero does not go through (it never calls EvaluateEntitySupport at
+        // all - E2 drives it through PlayerManager instead).
+        proxy.TerrainHeight = proxy.ComputeTerrainHeight();
+
+        // E3.d ("DLL - adoption", docs/plan-e3-collisions.md): overrides the converter-exported
+        // Gravity/MaxFallSpeed/WalkabilityMask - the only three CharacterControllerSettings the
+        // converter cannot bake in, since they depend on this MAP's own properties and this ENTITY's
+        // own Flags, not on the hero prefab alone. Deliberately placed AFTER the Flags assignment
+        // above: WalkabilityMaskFor(proxy.Flags) needs the real header flags, not the pre-adoption
+        // default 0 (which would derive a masks-nothing-blocks mask regardless of the hero's real
+        // ClassA/ClassB bits). Float arithmetic throughout (mapGravity/mapZViscosity are ints - an
+        // integer 128*256/65536 truncates to 0 before the final *2500 ever runs).
+        if (proxy.Controller != null)
+        {
+            var (mapGravity, mapMaxFallSpeed, mapGravityRaw, mapZViscosityRaw) = EntitySpawnFactory.ResolveMapGravitySettings(tileMapData);
+            // E4 (docs/plan-echelles-chiffrage.md É4): stash the resolved values on the proxy itself, not
+            // just on the live Controller.Settings below - PlayerManager's own climbing state
+            // machine needs a RESERVE to restore the hero's engine-driven gravity to once a climb ends
+            // (Controller.Settings.Gravity/MaxFallSpeed are zeroed WHILE climbing, see MovePlayer's own
+            // Climbing/ClimbStill case). Before this fix, proxy.MapGravity/MapMaxFallSpeed were left at
+            // their C# defaults (0f) for the hero - only ApplySpawnInitialization's own NPC path populated
+            // them (see that method's own doc) - so "restore" would have restored to zero gravity forever,
+            // exactly the gap docs/plan-echelles-chiffrage.md §7 risk 3 flags.
+            proxy.MapGravity = mapGravity;
+            proxy.MapMaxFallSpeed = mapMaxFallSpeed;
+            proxy.MapGravityRaw = mapGravityRaw;
+            proxy.MapZViscosityRaw = mapZViscosityRaw;
+
+            var settings = proxy.Controller.Settings;
+            settings.Gravity = mapGravity;
+            settings.MaxFallSpeed = mapMaxFallSpeed;
+            settings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(proxy.Flags);
+        }
+        else if (!_loggedNoHeroController)
+        {
+            _loggedNoHeroController = true;
+            Logs.WriteWarning(
+                $"WorldProxy: hero prefab in world '{world.Name}' has no "
+                + $"{nameof(CharacterControllerComponent)}; falling back to E2's controller-free player "
+                + "movement (no gravity, no field collision).");
+        }
+
+        EntitySpawnFactory.SubscribeAnimationEndBridge(entity);
+
+        // Overwrites the engine's own PlayerStart-derived transform - see this method's own doc
+        // ("Deviation note") for why that is intentional, not redundant.
+        if (entity.RootComponent != null)
+        {
+            entity.RootComponent.LocalTransform.Position = EntitySpawnFactory.ResolveLogicalPosition(proxy.PosX, proxy.PosY, proxy.PosZ);
+
+            // The pawn is already in world.Entities by the time this method runs (see this method's
+            // own doc), so - unlike CreateEntityFromPrefab's spawn-time call - this re-projection is
+            // not a no-op: without it the sprite would keep showing the engine's PlayerStart-derived
+            // render pose for one extra frame instead of the New Game logical pose just written above.
+            proxy.RenderProjection = entity.GetComponent<RenderProjectionComponent>();
+
+            // E5.b (docs/plan-e5-camera.md): the hero is controller-driven exactly like a scripted NPC
+            // (ApplySpawnInitialization's own E5.b block) and keeps the same float remainder every
+            // frame, so it needs the same integer render snap. Set before the re-projection below so
+            // the very first draw already snaps.
+            if (proxy.RenderProjection != null)
+            {
+                proxy.RenderProjection.SnapToPixel = true;
+            }
+
+            proxy.RenderProjection?.UpdateProjection();
+        }
+
+        // The pawn is already in world.Entities (the engine added it) but not yet in this proxy's own
+        // _spawnedEntities - add it so the per-entity animation/transform sync passes (SyncAnimation/
+        // SyncTransform) see it every frame, exactly like the old SpawnPlayerEntity used to.
+        proxy.Slot = 0; // E20.e0a2: the hero holds slot 0 (held by the table from its construction).
+        _slots.HoldHeroSlot();
+        InsertBySlot(entity, 0);
+        PlayerEntity = proxy;
+
+        // E5.a: port of GameEngine.cs:644 (InitializeEntitySlots' trailing
+        // "g_entityFollowedByCamera = StaticVariables.PlayerEntity") - the camera follows the hero by
+        // default until an event program retargets it (opcode 0x67) or forces a look-at (0x69).
+        EntityFollowedByCamera = proxy;
+    }
+
+    /// <summary>
+    /// Port of <c>InitializeMapEvents</c> (GameEngine.cs:476-583), restricted to the record-driven half
+    /// (the fixed 0x40-slot pre-clear loop is a PSX-specific fixed-array reset with no equivalent need
+    /// here - <see cref="_mapEvents"/> is just built fresh every world load). One <see cref="MapEvent"/>
+    /// per "MapEvents" object-layer record whose <c>EventCodesBIndex</c> custom property is non-zero, in
+    /// record order, each with <see cref="MapEvent.Entity"/> = <see cref="PlayerEntity"/> and a
+    /// fresh <see cref="EventProgramState"/> - exactly like the original's <c>Entity = PlayerEntity</c>,
+    /// <c>EventData = new EventProgramState()</c>. Left empty when there is no "MapEvents" layer, or no
+    /// <see cref="PlayerEntity"/> to run them against (<see cref="RunMapEventsPass"/> always executes
+    /// against the player; a null player has nothing to drive them with).
+    /// </summary>
+    /// Widened to <c>internal</c> (C1, docs/plan-camera-ordre-frame.md §4), same reason/precedent as
+    /// <see cref="PlayerEntity"/>'s own setter above: lets the map-event characterization test build
+    /// <see cref="_mapEvents"/> directly off a synthetic layer, since <see cref="InitializeWithWorld"/>'s
+    /// own call site is unreachable without a live world/tilemap.
+    internal void BuildMapEvents(TileMapObjectLayerData? mapEventsLayer)
+    {
+        if (mapEventsLayer == null || PlayerEntity == null)
+        {
+            return;
+        }
+
+        foreach (var record in mapEventsLayer.Objects)
+        {
+            EntitySpawnFactory.TryGetRecordInt(record, "EventCodesBIndex", out var programBMap);
+            if (programBMap == 0)
+            {
+                continue;
+            }
+
+            EntitySpawnFactory.TryGetRecordInt(record, "Index", out var id);
+            EntitySpawnFactory.TryGetRecordInt(record, "X1", out var x1);
+            EntitySpawnFactory.TryGetRecordInt(record, "Y1", out var y1);
+            EntitySpawnFactory.TryGetRecordInt(record, "X2", out var x2);
+            EntitySpawnFactory.TryGetRecordInt(record, "Y2", out var y2);
+
+            _mapEvents.Add(new MapEvent
+            {
+                Id = id,
+                X1 = x1,
+                Y1 = y1,
+                X2 = x2,
+                Y2 = y2,
+                ProgramBMap = programBMap,
+                OriginalProgramBMap = programBMap,
+                Entity = PlayerEntity,
+            });
+        }
+    }
+
+    /// <summary>
+    /// T3 (docs/plan-transitions-carte.md §1.1/§3): parses the "Portals" object-layer into
+    /// <see cref="_portals"/>, one <see cref="PortalRecord"/> per object, in record order (§1.2.b
+    /// needs slot order preserved for its first-match-wins scan). Reads the 9 raw fields plus
+    /// <c>Index</c> - ALL exported as STRING custom properties (§1.1.b) - never the object's own
+    /// x/y/width/height rectangle. Left empty when there is no "Portals" layer - previously this layer
+    /// was read at init and only counted into a log line (§1.4.a); this is the first consumer that
+    /// actually parses it.
+    /// </summary>
+    internal void BuildPortals(TileMapObjectLayerData? portalsLayer)
+    {
+        // Rebuilt, never appended to: T4/T5 bring world reloads, and a second pass over a proxy that
+        // already holds records would duplicate every portal - and first-match-wins (§1.2.b) makes the
+        // scan order-sensitive, so duplicates are not merely wasteful.
+        _portals.Clear();
+
+        if (portalsLayer == null)
+        {
+            return;
+        }
+
+        foreach (var record in portalsLayer.Objects)
+        {
+            EntitySpawnFactory.TryGetRecordInt(record, "Index", out var index);
+            EntitySpawnFactory.TryGetRecordInt(record, "X1", out var x1);
+            EntitySpawnFactory.TryGetRecordInt(record, "Y1", out var y1);
+            EntitySpawnFactory.TryGetRecordInt(record, "X2", out var x2);
+            EntitySpawnFactory.TryGetRecordInt(record, "Y2", out var y2);
+            EntitySpawnFactory.TryGetRecordInt(record, "DestMapId", out var destMapId);
+            EntitySpawnFactory.TryGetRecordInt(record, "DestTileX", out var destTileX);
+            EntitySpawnFactory.TryGetRecordInt(record, "DestTileY", out var destTileY);
+            EntitySpawnFactory.TryGetRecordInt(record, "ZLevel", out var zLevel);
+            EntitySpawnFactory.TryGetRecordInt(record, "Flags", out var flags);
+
+            _portals.Add(new PortalRecord
+            {
+                Index = index,
+                X1 = x1,
+                Y1 = y1,
+                X2 = x2,
+                Y2 = y2,
+                DestMapId = destMapId,
+                DestTileX = destTileX,
+                DestTileY = destTileY,
+                ZLevel = zLevel,
+                Flags = flags,
+            });
+        }
+    }
+
+    /// <summary>
+    /// World-level half of the frame (decision D2/D3, docs/plan-conversion-totale.md §2): every spawned
+    /// entity now picks/runs/syncs itself in its OWN <see cref="EntityScriptProxy.Update"/>, driven
+    /// by the ENGINE's own entity update loop - which always runs BEFORE this world's own
+    /// <see cref="Update"/> (<c>World.Update</c>, CasaEngineMonogame/CasaEngine/Framework/Scene/World/World.cs:443-491).
+    /// So by the time this method runs, every entity has already had its own pick/run/sync this frame; this
+    /// only covers what the ORIGINAL still runs at the manager/world level: MapEvents
+    /// (<see cref="RunMapEventsPass"/>, port of <c>RunMapEvents</c>) and the do/while catch-up re-scan
+    /// (<see cref="RunPendingEventTriggers"/>, port of <c>UpdateEntitiesEvents</c>'s phase-2 loop, decision
+    /// D3) for any entity another entity's script triggered DURING this same frame's entity pass.
+    /// <c>RunEntityEventsPass</c> et al are removed - see <see cref="EntityScriptProxy.Update"/>'s
+    /// own doc for the accepted ordering deviation this implies.
+    /// </summary>
+    public override void Update(float elapsedTime)
+    {
+        // E16.c C8 (docs/plan-e16-etat-partie.md, D-E16-23): the game-time counter, once per frame and
+        // before anything else. Ungated, like the original's end-of-frame increment (0x80042798), which
+        // counts every displayed frame - dialogues, menus and transitions included (§2, Q3). Counted on
+        // this frame's elapsed real time, not on logic ticks (F9).
+        GameState.AdvanceGameTime(elapsedTime);
+
+        // E16.d K3 (docs/plan-e16-etat-partie.md, D-E16-11, D-E16-33): the save-game recipe keys, once per
+        // RENDERED frame (the engine's keyboard advances once per frame, G9), right after the game time and
+        // BEFORE gameplayBlocked is computed below (SD3): a load armed by F9 posts the warp gate at once, so
+        // this frame's "dedans" passes (map events, scripted 0x53) are already frozen and cannot overwrite the
+        // load's departure or open a box. A no-op, reading no key, unless Alundra.dll is compiled in Debug.
+        SaveGameDirector.Instance.UpdateRecipeKeys(_world?.Game?.InputComponent?.KeyboardManager, GameState, _world?.Name, PlayerEntity);
+
+        // Bug fix (LogicClock's own class doc): this world's ONE shared logic clock. Reads the SAME
+        // cached value every spawned entity's own Update already advanced/read this frame (this proxy's
+        // own Update always runs LAST - World.cs:443-491) - or, for a world with no entities at all (the
+        // `if` further down never ran a single EntityScriptProxy.Update this frame), becomes the
+        // clock's own first caller this frame, so the clock still advances every frame regardless of
+        // entity count.
+        //
+        // E5.c (docs/plan-e5-camera.md §2 ter): read here, at the very head of the frame, rather than
+        // further down where it used to live - UpdateCameraFollow below now needs it. Moving the read
+        // earlier is side-effect-free: it is a memo read (LogicClock._frameComputed), nothing
+        // between this line and the old site touches the clock, and both CloseFrame() calls still run
+        // after it.
+        var ticksThisFrame = LogicTicksThisFrame(elapsedTime);
+
+        // E19.g G3a (G3A-R5): the effects that appear at load, once, at the first Update of this proxy and before its tick loop (and so before any operation queued by the scripts of the
+        // entities of the first frame is applied), for the tile the hero had when it was created.
+        _effectStage.SpawnLoadEffects();
+
+        // T2 (docs/plan-transitions-carte.md §1.5/§3, D-T-6): port of EntityManager.cs:377's
+        // "g_playerControlFlags & GameplayBlockedMask" gate over UpdateEntities, read once and reused by
+        // every "dedans" pass below (RunMapEventsPass, RunPendingEventTriggers) - the exhaustive table in
+        // §1.5 keeps the "dehors" passes (map-event coalescing, RefreshUpdateProxiesAndCollidables, the
+        // wall interleave and the camera/backdrop/fade/dialogue blocks further down) unconditional; the contact of
+        // the dialogue now comes from the movement obstacle probe inside the frozen entity update (E19.d2b).
+        //
+        // T4 (D-T-6): OR'd with WarpDirector's own gel gate - the "third mechanism" (§1.5) that
+        // freezes the SAME "dedans" passes, at this SAME site, without ever posing a control-flag bit
+        // (the original's own AdvanceWarpTransitionFrame short-circuits its whole entity pipeline
+        // instead of testing a flag at all - see that class' own doc).
+        var gameplayBlocked = (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0
+            || WarpDirector.Instance.IsTransitionInProgress;
+
+        // E13.d D1 (docs/plan-e13d-inventaire.md, D-E13D-9): the pad the inventory reads, advanced once
+        // per LOGIC tick from this frame's sampled hold state. The original refreshes g_padState1 at the
+        // head of every 50 Hz frame, before anything reads it (GameEngine.cs:1518), so the pad pass is
+        // the FIRST thing of each tick of the loop of the passes below (E19.u U-R1, ADR-0050). "Dehors":
+        // the original never gates its pad update (PadManager.UpdatePads runs from the main loop), so
+        // neither does this. LastPadState was sampled THIS frame by the player's own
+        // EntityScriptProxy.Update, which runs before this proxy (World.cs:443-491). A consumer of
+        // TickPad's edges must read them inside that same loop, in the tick that advanced them: after the
+        // loop, a two-tick frame would have overwritten the first tick's edge. The consumers are the
+        // inventory block at the END of each tick (E19.u U-R2, below) and the recordings of the next
+        // paragraph.
+        // E19.f2a F2-R1 (docs/plan-e19-opcodes.md section 1.2j.3): the pad pass records the square button of EACH tick (hold and rising edge): the
+        // pass of the dialogue box, in the same loop, reads the square of the tick BEFORE, as the binary's box reads the pad
+        // sampled during the previous frame.
+        _squareOfTick.Clear();
+        _choicePadOfTick.Clear();
+
+        // E12.a wiring fix: must run BEFORE the map-events pass below - a scripted dialogue opened
+        // on this very frame has to find a live presenter (see the method's own doc).
+        TryWireDialoguePresenterOnce();
+        TryWireHudScreenOnce();
+        TryWireInventoryScreenOnce();
+        TryWireSubInventoryScreenOnce();
+        TryWireSaveScreenOnce();
+        TryWireTextBoxScreenOnce();
+        TryWireChoiceScreenOnce();
+
+        // C1 (docs/plan-camera-ordre-frame.md §3): map-events run FIRST, before the camera block - a
+        // faithful port of the original's own frame order (GameEngine.cs:1638-1664/1743-1753:
+        // RunMapEvents() -> UpdateEntities(), whose own look-at update is the LAST thing it does), not
+        // camera-then-map-events (the previous, unmotivated order - see the plan's §1.2/1.3 for the
+        // symptom this produced: the camera saw a scripted teleport/retarget one frame late, most
+        // visibly at map load, where it showed up as a startup camera snap-then-correct).
+        //
+        // T2 (§1.5's own table row): "dedans" - RunMapEventsPass ports RunMapEvents, itself gated by the
+        // SAME mask in the original (GameEngine.cs:1667-1671). This outer check covers the call site
+        // independently of RunMapEventsPass's own internal guard (below, near :1466) - a MenuOpen dialogue
+        // box must freeze this pass even if that internal guard's own shape ever changes.
+        // E19.f2a F2-R1 (docs/plan-e19-opcodes.md section 1.2j.3, ADR-0029): ONE loop of the logic ticks that always runs, the game blocked or not. At each
+        // tick k it does, in the order of the binary's frame (RenderScene, whose callback dispatcher 0x80048054 runs the dialogue box, then Update(0)):
+        // (0) the pad pass (E19.u U-R1: the sample of the tick, first, as the binary's pad sampler opens Update(0)); (1) the pass of the dialogue box, on the square button of the tick k-1 (the last tick of the previous frame for k = 0); (2) the gate read again
+        // (GameplayBlockedMask, the transition of a warp), since the box may have been released or opened by this very pass; (3) when the hero exists and
+        // the gate is open, the map events then the recycling (R3); (4) E19.u U-R2 (ADR-0050): the INVENTORY BLOCK, at the end of the tick, whether the hero exists and the gate is open or not
+        // (the binary's trigger sits after UpdateWorld, 0x8002BC6C, and the inventory's slots 4 and 6 are in the RenderScene that follows). Frame-counted map-event chronology (GameEngine.RunMapEvents originally ran once per the
+        // fixed 50 Hz frame). A frame of several ticks interleaves the box and the map events tick by tick (B0 M0 B1 M1), like the binary. The scripts of the
+        // entities already ran this frame, before this proxy (see this method's own doc): the origin table of F2-R1 follows from that order.
+        _effectFrozenOfTick.Clear();
+        // E19.u U-R3: the gate the pending event triggers read (RunPendingEventTriggers, below) is the one left by the map events of the LAST tick, before that tick's inventory block (the binary's UpdateEntities
+        // runs before the trigger): read again at the end of each tick, before the block. With no tick this frame it is the gate as it stands.
+        var pendingTriggersGate = GameplayGateNow();
+        var drivesEntityTicks = DrivesEntityTicks; // E20.a A2/A3 (docs/plan-e20-heros.md section 1.3).
+        for (var tick = 0; tick < ticksThisFrame; tick++)
+        {
+            TickTraceForTests?.Invoke("pad");
+            GameState.TickPad.Update(GameState.LastPadState.ButtonsHold);
+            _squareOfTick.Add(((GameState.TickPad.ButtonsHold & PadState.Square) != 0, (GameState.TickPad.ButtonsJustPressed & PadState.Square) != 0));
+            _choicePadOfTick.Add((GameState.TickPad.ButtonsJustPressed, GameState.TickPad.ButtonsJustPressedByInterval));
+
+            _effectStage.BeginSource(tick, 0); // E19.g G3b (G3B-R3): the effect operations the map events of this tick emit are marked with it (rank 0).
+            var (squareHeld, squarePressed) = tick == 0 ? _squareOfLastTick : _squareOfTick[tick - 1];
+            // E19.f3a F3A-R3: the pass of the director also runs the choice box (slot 3, right after the text box's), on the pad words of the tick before, like the Square.
+            var (choicePressed, choiceInterval) = tick == 0 ? _choicePadOfLastTick : _choicePadOfTick[tick - 1];
+            TickTraceForTests?.Invoke("box");
+            Dialogues.DialogueDirector.Instance.Pass(squareHeld, squarePressed, choicePressed, choiceInterval);
+
+            // E19.f2b1c F2B1C-R4: the text box screen reads what the pass just drew, before the gate is read and before the map-events pass below (the pass runs whether the
+            // hero exists and the gate is open or not), and once per pass: a frame of several ticks draws only its last pass, but each pass is applied in order.
+            _textBoxPresenter?.Tick();
+
+            // E19.f3b F3B-R3: the choice screen reads what the same pass drew for the choice box (the pass runs it last), right after the text box's presenter: when both become drawn
+            // in one tick the text box is pushed first, and the choice above it.
+            _choicePresenter?.Tick();
+
+            // E19.f3c F3C-R1 (D-E19-93, docs/plan-e19-opcodes.md): the save screen - its state machine then its transition's render, as UpdateMemoryCardProcess
+            // then UpdateUserInterface in the original's RenderScene (GraphicManager.cs:62-63) - runs AFTER the pass of the dialogue box and its choice box, as the
+            // binary's slot 10 (the file menu) after its slot 3 (the choice) in the dispatcher's ascending order: the answer written by a close pass is read in
+            // the same tick. F3C-R2: it gets the pad words recorded per tick (E19.u: TickPad itself is advanced at the head of the tick, the same value for the pass of the tick, but the pass reads the recordings); D-E19-99: those of the tick BEFORE (the last tick of the
+            // previous frame at tick 0), the tuple the pass above reads: the memory-card process and the slots 0, 3 and 10 all run in RenderScene, before the pad sampler of the frame's Update(0).
+            // The gate below is read after it, so the MenuOpen it posts freezes the map events of the same tick. Never open together with an inventory: the inventory's trigger refuses while it is
+            // active (J9). Its presenter reads the state the director just reached (E16.e T4, L5).
+            var (screenPressed, screenInterval) = tick == 0 ? _choicePadOfLastTick : _choicePadOfTick[tick - 1];
+            SaveScreenDirector.Instance.Tick(screenPressed, screenInterval);
+            _saveScreenPresenter?.Tick();
+
+            if (PlayerEntity != null && !GameplayGateNow())
+            {
+                // E19.c2 (docs/plan-e19-opcodes.md §1.2f): the passes after the first of a catch-up frame stand for ticks whose
+                // UpdateAnimation (0x80038B6C) already switched the animations a previous pass asked for, clearing their Hold flag:
+                // clear it here too, so a 0x1C does not count the same Hold end again. A no-op at 0 or 1 tick per frame.
+                if (tick > 0)
+                {
+                    FrameSyncPasses.ClearHoldFlagsOfPendingSwitches(_spawnedEntities);
+                }
+
+                TickTraceForTests?.Invoke("mapEvents");
+                RunMapEventsPass(PlayerEntity, _mapEvents, EventProgramRunner, GameState.PlayerControlFlags);
+
+                // E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): the recycling of the destroyed entities, right after each pass of the map
+                // events, as the binary's UpdateEntities (0x8003B3A0) opens with UpdateDestroyedEntities (0x80038634) after RunMapEvents.
+                RecycleDestroyedEntities();
+            }
+
+            _effectFrozenOfTick.Add(EffectGateOfThisTick()); // E19.g G3a (G3A-R6): the gate of the tick, read after the map events of the tick (also when they did not run).
+            pendingTriggersGate = GameplayGateNow(); // E19.u U-R3: before the inventory block of this tick.
+
+            // E20.a A3 (D-E20-11, D-E20-12): the ENTITY BLOCK of the tick (UpdateEntities, 0x8003B388), right after the map events and the recycling (0x8003C67C then 0x80038634) and before the
+            // inventory block (the Update(k) trigger sits after UpdateWorld). The gate it reads is the one the map events just left (0x8003B394).
+            if (drivesEntityTicks)
+            {
+                RunEntityBlock(tick, pendingTriggersGate);
+            }
+
+            // E19.u U-R2 (docs/plan-e19-opcodes.md section 1.2y, D-E19-103, ADR-0050): the INVENTORY BLOCK, at the end of the tick, after the dialogue pass, the save screen and the map events of the same tick,
+            // every tick (no early exit skips it). It is the binary's Update(k) trigger (0x8002BC6C-0x8002BD00, after UpdateWorld) followed by RenderScene(k+1)'s inventory slots 4 and 6, the post-process and the
+            // portrait: the tick k of the port is Update(k) plus RenderScene(k+1) for the inventory (InventoryDirector's class doc). A box released or a map event run by this very tick is therefore seen by the
+            // trigger, and the map events freeze one tick later than the trigger's opening, like the binary.
+            TickTraceForTests?.Invoke("inventory");
+            UpdateInventoryPortraitHeadPoint();
+            InventoryDirector.Instance.Tick(PlayerEntity);
+
+            // E13.d SI3 (docs/plan-e13d-sous-inventaire.md, D-E13D-21/22): the sub-inventory director's own
+            // Tick(), then the post-process, run right after - the port's equivalent of the original's own
+            // Update-then-render split (plan §1.2): the main inventory's trigger is the "Update" half, the two
+            // directors' per-frame work and InventoryPostProcess.Run the "render" half, the post-process
+            // AFTER both directors for THIS tick, as the original runs it after all thirteen of its callbacks
+            // (GraphicManager.cs:1677-1706 - its own post-process runs after its own callback-table loop).
+            SubInventoryDirector.Instance.Tick();
+            InventoryPostProcess.Instance.Run();
+
+            // docs/plan-portrait-inventaire.md P4/PI8: the portrait steps once per tick HERE, after both
+            // directors' per-frame work and the post-process and before the presenters - the original's own
+            // DisplayUserInterface (0x8002be64) runs right after the callbacks and the post-process
+            // (0x80048054 at 0x8002be5c) inside RenderScene. A start or a return made in this tick's render
+            // half therefore steps in this same tick, and the trigger's opening (this tick's Update half)
+            // too, which is the original's next render.
+            InventoryPortrait.Instance.Step();
+
+            // E13.d D5 (docs/plan-e13d-inventaire.md): the presenter, right after the director's own
+            // Tick() for this SAME tick (a consumer of the director's own per-tick state must run inside
+            // the tick that produced it). Null until a view is wired (TryWireInventoryScreenOnce production
+            // path, or AttachInventoryPresenterForTests in tests).
+            _inventoryPresenter?.Tick();
+
+            // E13.d SI4: the sub-inventory's own presenter, right after the main's, same tick - the two
+            // screens are never pushed together (D-E13D-26), so their push/remove order here never matters,
+            // but running both inside the loop keeps every presenter reading this SAME tick's director state.
+            _subInventoryPresenter?.Tick();
+        }
+
+        _effectStage.EndSource();
+
+        if (ticksThisFrame > 0)
+        {
+            _squareOfLastTick = _squareOfTick[ticksThisFrame - 1];
+            _choicePadOfLastTick = _choicePadOfTick[ticksThisFrame - 1];
+        }
+
+        // E20.a A4: a frame without logic tick has no UpdateWorld in the binary, so no entity block at all: no MovePlayer, no probes, no lists. The hero is only published below.
+
+        // E20.a A2: the publication of the frame. The engine updated the entities BEFORE this proxy (World.cs:533-584), and the ticks ran here, so SyncAnimation (the target-resolution half of
+        // UpdateAnimation, "dedans": only for an entity whose gate was open as the frame opened) and SyncTransform (a render-position publish, unconditional) show the state after the LAST tick
+        // of this frame. D-E19-13 is kept: the animation a program asked for is applied to the sprite here, at the end of the frame.
+        if (drivesEntityTicks)
+        {
+            PublishEntityFrame();
+        }
+
+        // The triggers in waiting read the gate as the loop left it: the box passes above may have opened or released one. E19.u U-R3: that is the gate after the map events of the LAST tick, read before
+        // that tick's inventory block (the binary's UpdateEntities runs before the trigger), not the gate at the end of the loop.
+        gameplayBlocked = pendingTriggersGate;
+        _pendingTriggersGate = gameplayBlocked;
+
+        // E7.b (docs/plan-e7-mutation-tuiles.md, "coalescer par frame"): applies at most one overlay
+        // reconstruction for however many 0x54/0x55/0x85 opcodes the loop above just dispatched (a map's
+        // four-hatch entry alone fires four separate CopyCellRectangle calls) - a no-op when nothing
+        // actually changed the overlay's contents (CellVisualSync.ReconstructionCount stays put).
+        // Invariant (plan §3, point 1): stays immediately after the map-events pass, unmoved by C1.
+        _cellVisualSync?.FlushPendingOverlayReconstruction();
+
+        if (_spawnedEntities.Count != 0)
+        {
+            // E20.a A3: with a driven world the lists (UpdateEntityLists, "dehors", EntityManager.cs:391) and the catch-up re-scan of the pending event triggers (decision D3, the
+            // do/while of UpdateEntitiesEvents, EntityManager.cs:874-921) are in the entity block of each tick (RunEntityBlock), where the binary has them. A world with no driver (see DrivesEntityTicks) keeps the shape it had: its entities ran their own ticks before this proxy, so the lists
+            // and the re-scan come once here.
+            if (!drivesEntityTicks)
+            {
+                // T2 (§1.5's own table row): "dehors" - port of UpdateEntityLists (EntityManager.cs:391), unconditionally of the gate.
+                RefreshUpdateProxiesAndCollidables();
+
+                // Decision D3's own catch-up rescan, frame-counted like RunMapEventsPass; T2 (§1.5): "dedans", frozen behind the same gate as the pass above.
+                if (!gameplayBlocked)
+                {
+                    for (var tick = 0; tick < ticksThisFrame; tick++)
+                    {
+                        _effectStage.BeginSource(tick, 2); // E19.g G3b (G3B-R3): the pending triggers come after the entities (rank 2).
+                        RunPendingEventTriggers(_updateProxies, EventProgramRunner);
+                    }
+
+                    _effectStage.EndSource();
+                }
+            }
+
+            // Wall/sprite depth interleave (Slice B) - see WallPlacementOverlay's class doc. Gated on the
+            // overlay actually having been populated: with no wall placements loaded (missing/malformed
+            // property) there is nothing to interleave against, so entities are left at whatever
+            // DepthSortable2DComponent defaults their prefab already carries instead of paying a per-frame
+            // field write for nothing.
+            if (_wallPlacementOverlayApplied)
+            {
+                FrameSyncPasses.RunWallInterleaveSortKeyPass(_spawnedEntities);
+            }
+        }
+
+        // E19.g G3a (G3A-R6, docs/plan-e19-opcodes.md section 1.2o.6): the effects, one pass per logic tick, after the map events and the pending triggers and before the camera block
+        // (the binary: map events, entities, effects, then the draw, 0x8002E058). Its own loop: the map-events loop above stops early without a hero or on a blocked tick. No tick during a
+        // warp departure (the transition loop never calls the tick), like the backdrops (E19.m4, ADR-0034); a tick frozen by PlayerControlFlags & 0x48 updates nothing but keeps its slots.
+        // The operations queued by the scripts are applied in it, tick by tick (and at the end of the frame, whatever the ticks).
+        // E20.e0b1 (D-E0B-1, D-E0B-2): the binary's frame function ends with one step of the shared random stream (0x8002BD0C-0x8002BD34): the callback is called once per tick, after the update of the
+        // reservoir, frozen tick or not, and not at all during a warp departure (0 tick).
+        _effectStage.RunFrame(WarpDirector.Instance.IsTransitionInProgress ? 0 : ticksThisFrame, _effectFrozenOfTick, AdvanceRandomPerTick);
+
+        // E5.a: resolve the camera once, then run the scripted follow BEFORE the debug pan - see
+        // UpdateCameraFollow's own doc on why this order lets the pan's base-adoption mechanism pick up
+        // the follow's write the SAME frame instead of one frame late. Both run unconditionally (like the
+        // debug pan already did) so the camera still follows/can be panned even for a world with no
+        // entities. Invariant (plan §3, point 3): this internal order - resolve -> follow -> pan - is
+        // untouched by C1.
+        //
+        // E5.c: the follow is driven by the LOGIC TICK COUNT, not by elapsed time - see
+        // UpdateCameraFollow's own doc on the cadence beat that per-frame smoothing caused. The debug pan
+        // stays per rendered frame (it samples the stick).
+        // S2 (docs/plan-update-caracterisation.md): the camera wiring itself now lives on
+        // _cameraDirector; the map bounds and _world are read here at USE TIME and passed in per frame
+        // (extended proof rule delta (a)) - _tileMapData is only assigned in InitializeWithWorld AFTER
+        // two early returns, so capturing it any earlier would hold null forever and silently drop the
+        // map-bounds clamp (trap 2).
+        //
+        // C1: the whole camera block moves here, AFTER the map-events pass and the pending-event/wall
+        // passes above (plan §3: not merely after map-events - the original's own look-at update is the
+        // LAST thing UpdateEntities does, after its own catch-up re-scan too) - so EntityFollowedByCamera/
+        // the look-at position both reflect whatever this SAME frame's scripts (0x64/0x65/0x67/0x69, from
+        // either pass) just wrote, exactly like the original.
+        _cameraDirector.ResolveDebugCameraOnce(_world);
+        _cameraDirector.UpdateCameraFollow(
+            ticksThisFrame,
+            EntityFollowedByCamera,
+            _tileMapData != null ? _tileMapData.MapSize.Width * TileWidth : null,
+            _tileMapData != null ? _tileMapData.MapSize.Height * TileHeight : null);
+        _cameraDirector.UpdateDebugCameraPan(elapsedTime, _world);
+
+        // Rendering-only passes - per rendered frame, same reasoning. C1: moved down with the camera
+        // block (plan §3) - UpdateAndDrawBackdrop reads the just-resolved camera, so it must stay right
+        // after it.
+        // S3 (docs/plan-update-caracterisation.md): the rendering wiring itself now lives on
+        // _backdropStage; _world is read here at USE TIME and passed in per frame (extended proof rule
+        // delta (a)), and the resolved camera is passed in rather than re-looked-up (delta (a), the one
+        // named for S3) since it is _cameraDirector's own state.
+        // E9.b (D-E9b-2): PushFrame replaces UpdateAndDrawBackdrop at this same site - same position in
+        // frame order (right after the camera resolve, before the fade push below), still outside the gameplay
+        // freeze gate (a dialogue or the inventory does not stop the backdrops: the binary's RenderScene keeps
+        // running under them): it depends on neither world.Game nor HasContent.
+        // E19.m4 (docs/plan-e19-opcodes.md section 1.2s.5, M4-R1, D-E19-67, ADR-0034): the frame is always pushed (camera
+        // target and scroll), but with 0 ticks while a warp departure is in progress, from the arming frame to the end
+        // of the fade: the binary's transition loop (0x8002C490-0x8002C4C0) never calls RenderScene, the only road to the
+        // backdrop driver, so nothing of the backdrops advances there. Same predicate as the camera sway gate.
+        _backdropStage.ApplyOriginalBackgroundClearColorOnce(_world);
+        _backdropStage.PushFrame(
+            WarpDirector.Instance.IsTransitionInProgress ? 0 : ticksThisFrame,
+            _cameraDirector.ResolvedCamera);
+
+        // E19.g G3c (G3C-R5): the effect quads, pushed at EVERY rendered frame right after the backdrops, outside every gate: a tick frozen by PlayerControlFlags & 0x48 or a warp departure (0 tick)
+        // updates nothing but the slots are still drawn. The engine submits them from its own component's Update, after this one.
+        _effectStage.PushFrame(_cameraDirector.ResolvedCamera);
+
+        // E10.b (docs/plan-e10-fondu.md, §1.6/D-E10-8): the fade pass - positioned here purely for
+        // frame-order consistency with the camera/backdrop block above, NOT because it depends on
+        // either: it advances its own two 16.16 machines by LOGIC TICKS (ticksThisFrame, same cadence as
+        // UpdateCameraFollow - never by rendered frame, §1.6) and then pushes colour/blend/active to the
+        // engine's ScreenEffectService - no camera read, no backdrop read. "Advance, then push" - never
+        // the reverse (§1.5: pushing before Advance would submit a stale, or even the just-armed 255,
+        // value one frame early).
+        Transitions.ScreenFadeDirector.Instance.Advance(ticksThisFrame);
+        Transitions.ScreenFadeDirector.Instance.PushToAttachedService();
+
+        // B2 (docs/plan-e11b-opcodes-audio.md, D-B-5): the master BGM fade machine - same tick-driven
+        // discipline as the screen fade above (LOGIC ticks, never rendered frames), no separate "push"
+        // step (it writes the engine's own Master bus volume directly, once per tick it actually steps).
+        Audio.BgmFadeDirector.Instance.Advance(ticksThisFrame);
+
+        // T4 (docs/plan-transitions-carte.md §3): the departure sequence itself is a "dehors" pass too
+        // (this class' own gel gate must keep running WHILE it holds other passes frozen) - placed right
+        // after the fade's own Advance so it observes THIS tick's just-updated IsSettled, never a
+        // frame-stale one (see WarpDirector.Advance's own doc).
+        WarpDirector.Instance.Advance(ticksThisFrame);
+
+        // E19.f2a F2-R1: the dialogue box's pass no longer lives here: it runs inside the loop of the logic ticks above, BEFORE the map events of each tick
+        // (the binary's RenderScene runs the box before Update(0)), whether the game is blocked or not (E12.a F1: the box must advance, close and release
+        // by itself, independently of any script, or a MenuOpen box would freeze the map events for good).
+
+        // E13 C1 (docs/plan-e13-hud.md, D-E13-8): the HUD director's own tick, right next to the
+        // dialogue pass above and for the exact same reason - it must keep rolling/rattraping while a
+        // modal dialogue box freezes the screens below it (see HudDirector's own class doc). One
+        // Tick() per LOGIC tick, never per rendered frame - D-E13-8, the tick logique owns all of the
+        // HUD's time.
+        for (var hudTick = 0; hudTick < ticksThisFrame; hudTick++)
+        {
+            HudDirector.Instance.Tick();
+
+            // E13 C3 (D-E13-8): the presenter, PER LOGIC TICK, right next to the director's own Tick()
+            // above and never gated behind any screen-stack Update - HudScreen's own Update is now
+            // empty (see its own doc) precisely so a modal dialogue's screen-stack freeze cannot reach the
+            // jauge through it. Null until a view is wired (TryWireHudScreenOnce production path, or
+            // AttachHudPresenterForTests in tests) - same tolerated degraded shape as every other
+            // missing-system seam in this DLL.
+            _hudPresenter?.Tick();
+        }
+
+        // E12.d (D-E12D-2) had a pass here: the player's overlap probe, once per logic tick, feeding XCollisionEntity (detection only, D-E12D-1). E19.d2b B4
+        // (D-E19-27, D-E19-29) removed it: entities now block movement, and the contact of the dialogue is the entity that shortened or cancelled the step,
+        // written by EntityScriptProxy.MoveControllerAndPullPosition from the blocking report of the controller (the binary's +0x130). The freeze of
+        // the old pass (GameplayBlockedMask, D-E12D-5) is kept by construction: no step is taken, so the contact keeps its value.
+
+        // E13.d D2 (docs/plan-e13d-inventaire.md, D-E13D-15): the freeze the T2 gate cannot reach - the
+        // engine's own gravity integration and sprite animation, frozen for every spawned entity while
+        // GameplayBlockedMask is posed and given back when it is lifted. Here, at the very end of the frame,
+        // because the engine updates controllers and sprites BEFORE the gameplay proxies and MenuOpen
+        // changes during them: the next engine update already sees the new state. See
+        // GameplayFreeze's own doc.
+        var worldFrozen = (GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0;
+        foreach (var spawnedEntity in _spawnedEntities)
+        {
+            if (spawnedEntity.GameplayProxy is EntityScriptProxy spawnedProxy)
+            {
+                GameplayFreeze.Apply(spawnedProxy, GameplayFreeze.IsFrozen(spawnedProxy, worldFrozen));
+            }
+        }
+
+        // Closes this frame's logic-clock memo (see LogicClock's own class doc) - this proxy's own
+        // Update always runs last (World.cs:443-491), so the next frame's first caller (an entity's own
+        // Update, or this proxy again for a zero-entity world) recomputes fresh. C1 (plan §3): the old
+        // two-call-site shape (an early return for zero entities, this same call for the rest) collapses
+        // to this ONE call on every path now that the camera/render block runs unconditionally instead of
+        // early-returning before it - invariant (plan §3, point 2): CloseFrame runs exactly once.
+        _logicClock.CloseFrame();
+
+        // B9/P3 (docs/plan-bgm-demarrage-binaire.md, T2.1): consumes MusicPlayer's own ResetSoundFlag -
+        // the port of HandleMapSoundStreaming's own "if (g_resetSoundFlag) StopAllSound(); flag = 0"
+        // (B9), run right BEFORE FlushFrameSounds below, exactly once per rendered frame. This is the
+        // ONLY site that starts the music voice a map entry's own PlayMapMusic armed (B7) - a positive
+        // 0xA7 load does NOT arm this flag, it CLEARS it (P8, B13's own second branch: "chargée sans
+        // être jouée", no voice starts from that path at all) - see BgmPlayer's own class doc.
+        // T4.2 (docs/plan-bgm-demarrage-binaire.md, S2): extracted to ConsumeMusicResetSoundFlagOnFrameClose
+        // so Alundra.Tests' own frame-close helper (MusicPlayerTests.SimulateFrameClose) drives this
+        // SAME code instead of a copy of it - the singleton-driven tests pass BgmPlayer.Instance/
+        // BgmFadeDirector.Instance directly (no WorldProxy in scope there).
+        ConsumeMusicResetSoundFlagOnFrameClose(MusicPlayer, BgmFadeDirector);
+
+        // B1 (docs/plan-e11b-opcodes-audio.md, D-B-4): flushes SoundPlayer's own per-frame anti-duplicate
+        // table (fact 5) - right next to CloseFrame, exactly once per RENDERED frame, AFTER every
+        // dispatch pass this frame ran (RunMapEventsPass/RunPendingEventTriggers above) - the port of the
+        // original's own FinalizeAudioBuffers, called once per its own 50 Hz frame after all dispatch.
+        // NOT at the head of a dispatch pass (a killed mutation, D-B-4's own cadence tests): that would
+        // let a same-tick, two-pass duplicate (map-events then the D3 catch-up rescan) through.
+        SoundPlayer?.FlushFrameSounds();
+
+        // F2 (docs/plan-bgm-demarrage-binaire.md): evaluates whatever warp departure
+        // BgmPlayer.HandleWarpDeparture recorded this frame - AFTER the reset-flag block above
+        // (which already consumed ResetSoundFlag, B9) and after FlushFrameSounds, mirroring the binary's
+        // own main-loop ordering (the frame function that consumes g_resetSoundFlag runs to completion
+        // BEFORE HandleMapSoundEffects, the departure's music half, ever runs). Cast, not an interface
+        // member: only the real BgmPlayer.Instance is ever installed here (AttachToWorld), and
+        // the opcode-runner's own fakes never reach this proxy-level site.
+        (MusicPlayer as BgmPlayer)?.EvaluatePendingWarpDeparture();
+
+        // docs/plan-camera-premiere-frame.md §3, point 1: clears the sticky first-frame tick floor
+        // exactly once, right next to CloseFrame - see _firstFrameStillOpen's own doc. Idempotent past
+        // the very first frame (already false), so this unconditional write is safe on every later call.
+        _firstFrameStillOpen = false;
+    }
+
+    /// <summary>The entities the entity block of the current tick drives (<see cref="CollectTickEntities"/>): the hero first, then the others in the order of <see cref="_spawnedEntities"/>.</summary>
+    private readonly List<EntityScriptProxy> _tickEntities = new();
+
+    /// <summary>The proxies the pending-trigger re-scan of the current tick walks (rebuilt just before it, so an entity a script spawned this very tick is in it).</summary>
+    private readonly List<EntityScriptProxy> _pendingScan = new();
+
+    /// <summary>
+    /// E20.a A3 (docs/plan-e20-heros.md section 1.3): the membership of the entity block. The engine integrates a spawned entity at the head of the NEXT frame
+    /// (<c>World.AddEntity</c> only queues, <see cref="EntityScriptProxy.Update"/> then records <see cref="EntityScriptProxy.TookPartInFrame"/>), so an entity that appears during a
+    /// frame has its first tick in the next one; an entity recycled (<see cref="RecycleDestroyedEntities"/>) leaves <see cref="_spawnedEntities"/> and no longer ticks. The order is the one of the slots:
+    /// the hero first (slot 0, <c>MovePlayer</c> first in <c>0x800386D0</c>), then <see cref="_spawnedEntities"/> in the order of the slots (E20.e0a2; the "first attacker" of the hit pass of E20.c1 depends on it).
+    /// </summary>
+    private void CollectTickEntities()
+    {
+        _tickEntities.Clear();
+        var hero = PlayerEntity;
+        if (hero is { TookPartInFrame: true })
+        {
+            _tickEntities.Add(hero);
+        }
+
+        foreach (var entity in _spawnedEntities)
+        {
+            // E20.e0a3b (D-E0A-5): an entity born by the interface of the sprite index, not yet integrated by the engine, is in the block of the tick that sees it (in the order of its slot): the one
+            // of MovePlayer, which re-collects, or the next one of the same frame. An entity of the map load never carries the marker; one made from a record by a script opcode (0x2D, 0x8A, 0x8B) does since E20.e0a4; one integrated by the engine is a TookPartInFrame entity as before.
+            if (entity.GameplayProxy is EntityScriptProxy proxy
+                && !ReferenceEquals(proxy, hero)
+                && (proxy.TookPartInFrame || (proxy.JoinsBirthTick && entity.World == null)))
+            {
+                _tickEntities.Add(proxy);
+            }
+        }
+    }
+
+    /// <summary>E20.e0a3b: the number of entities <see cref="SpawnEntityBySpriteIndex"/> made since the head of the entity block of the current tick (reset there); non-zero right after <c>MovePlayer</c> means that a newborn must join the tick.</summary>
+    private int _birthSpawnsThisTick;
+
+    /// <summary>
+    /// E20.a A3 (docs/plan-e20-heros.md section 1.3, D-E20-11, D-E20-12): the entity block of ONE logic tick, in the order of the binary's <c>UpdateEntities</c> (<c>0x8003B388</c>):
+    /// when the gate (<c>g_playerControlFlags &amp; 0x48</c>, or a warp in progress) is closed (<paramref name="gateClosed"/>), only the lists (<c>0x8003B408</c>); otherwise
+    /// <list type="number">
+    /// <item><description>the hero's <c>MovePlayer</c> (first call of <c>0x800386D0</c>, <c>0x800386EC</c>), on the pad of the tick;</description></item>
+    /// <item><description>the programs of the entities in slot order (<c>0x800386D0</c>, phase 1 then 2), then the re-scan of the pending triggers (the do/while of that same pass,
+    /// <see cref="RunPendingEventTriggers"/>);</description></item>
+    /// <item><description>the counters pass (<c>0x80038998</c>, <see cref="RunCountersPass"/>, empty until A5);</description></item>
+    /// <item><description>the lists (<c>0x800384F4</c>, <see cref="RefreshUpdateProxiesAndCollidables"/>);</description></item>
+    /// <item><description>the animation clock of every entity (<c>0x80038E18</c>);</description></item>
+    /// <item><description>the physics of every entity (<c>0x80038364</c>: the hero's tick and probes, the scripted movement and support of the others);</description></item>
+    /// <item><description>the hit-pass hook (<c>0x80039300</c>, <see cref="RunHitPassHook"/>, empty until E20.c1).</description></item>
+    /// </list>
+    /// An entity's own state is not published here: <see cref="PublishEntityFrame"/> does it once, after the last tick of the frame (D-E19-13 kept).
+    /// </summary>
+    private void RunEntityBlock(int tick, bool gateClosed)
+    {
+        if (gateClosed)
+        {
+            TickTraceForTests?.Invoke("lists");
+            if (_spawnedEntities.Count != 0)
+            {
+                RefreshUpdateProxiesAndCollidables();
+            }
+
+            return;
+        }
+
+        CollectTickEntities();
+        _birthSpawnsThisTick = 0;
+        _effectStage.BeginSource(tick, 1); // E19.g G3b (G3B-R3): the effect operations of the entities of this tick carry its tick (rank 1), the pending triggers rank 2.
+
+        // E20.a A4 (D-E20-2): MovePlayer once per tick, first of the block (0x800386EC), on the pad of the tick (TickPad, with the release edge).
+        var hero = PlayerEntity;
+        TickTraceForTests?.Invoke("movePlayer");
+        if (hero is { TookPartInFrame: true })
+        {
+            hero.MovePlayerOnTickPad(PadState.FromTickPad(GameState.TickPad, in GameState.LastPadState));
+        }
+
+        // E20.e0a3b (D-E0A-5, D-E20-34): an entity MovePlayer made (a shot, an item) is born in the pass of the hero, which comes first, and runs in this very tick: its program, the lists, the clock and the physics.
+        // One born later in the tick (the programs of the other entities) is in the next tick's block (or, in a frame of several ticks, in the next tick of this frame), as the oracle's BT-H rows.
+        if (_birthSpawnsThisTick != 0)
+        {
+            CollectTickEntities();
+            _birthSpawnsThisTick = 0;
+        }
+
+        TickTraceForTests?.Invoke("programs");
+        for (var i = 0; i < _tickEntities.Count; i++)
+        {
+            _tickEntities[i].TickPrograms();
+        }
+
+        // The re-scan of the binary's pass: an entity whose trigger another script set during this tick runs at once. Over a list rebuilt now, so a spawn of this very tick is in it.
+        TickTraceForTests?.Invoke("pending");
+        _effectStage.BeginSource(tick, 2);
+        _pendingScan.Clear();
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is EntityScriptProxy proxy)
+            {
+                _pendingScan.Add(proxy);
+            }
+        }
+
+        RunPendingEventTriggers(_pendingScan, EventProgramRunner);
+        _effectStage.BeginSource(tick, 1);
+
+        TickTraceForTests?.Invoke("counters");
+        RunCountersPass();
+
+        TickTraceForTests?.Invoke("lists");
+        if (_spawnedEntities.Count != 0)
+        {
+            RefreshUpdateProxiesAndCollidables();
+        }
+
+        BuildHitList();
+
+        TickTraceForTests?.Invoke("clock");
+        for (var i = 0; i < _tickEntities.Count; i++)
+        {
+            // E20.e0c (D-E0C-6): an entity that another one blocked (+0x20) is out of the active list the binary's clock walks (T0 (i)).
+            if (_tickEntities[i].BlockedByEntity == null)
+            {
+                _tickEntities[i].TickAnimationClock();
+            }
+        }
+
+        // E20.e0c (T0 (d)): the binary rewrites the position the contacts read (+0x1D8/+0x1DC/+0x1E0 = Pos + Mod) at the head of 0x80038364, for the active entities that nothing blocks, after the clock and BEFORE the move
+        // (0x800383C0-0x800383E0): the pickup of a dropped object reads the positions of the end of the previous tick, the hero's included.
+        for (var i = 0; i < _tickEntities.Count; i++)
+        {
+            var entity = _tickEntities[i];
+            if (entity.Status.IsActive() && entity.BlockedByEntity == null)
+            {
+                entity.ModdedPosX = entity.PosX + entity.ModX;
+                entity.ModdedPosY = entity.PosY + entity.ModY;
+                entity.ModdedPosZ = entity.PosZ + entity.ModZ;
+            }
+        }
+
+        TickTraceForTests?.Invoke("physics");
+        PhysicsPassId++;
+        for (var i = 0; i < _tickEntities.Count; i++)
+        {
+            // E20.e0c (D-E0C-6): the physics walks the same active list, so a blocked entity - the hero in the air included - stands still until it is unblocked.
+            if (_tickEntities[i].BlockedByEntity == null)
+            {
+                _tickEntities[i].TickPhysicsOnce();
+            }
+        }
+
+        // E19.d2c2 D5b M3 (D-D5B-5): the end pass of the binary (0x80038064, after every move of the pass): the ground flag is read once every entity, the carriers included, has moved.
+        for (var i = 0; i < _tickEntities.Count; i++)
+        {
+            if (_tickEntities[i].BlockedByEntity == null)
+            {
+                _tickEntities[i].EndPhysicsTick();
+            }
+        }
+
+        TickTraceForTests?.Invoke("activeEffects");
+        RunActiveEffectsPass();
+
+        TickTraceForTests?.Invoke("hit");
+        RunHitPassHook();
+        _effectStage.EndSource();
+    }
+
+    /// <summary>
+    /// E20.a A5 (D-E20-13): the counters pass of the binary (<c>0x80038998</c>, once per tick after the programs, over the slots 0 to the highest, hero included, NO status filter):
+    /// <c>+0x1C</c> + 1 (<see cref="EntityScriptProxy.FrameCounter"/>), <c>+0x1CC</c> and <c>+0x1D0</c> (<see cref="EntityScriptProxy.DamagedTickCounter"/>,
+    /// <see cref="EntityScriptProxy.FrameCollisionTickCounter"/>) decremented when non-zero, <c>+0x224</c> (<see cref="EntityScriptProxy.TouchingEntity"/>) and
+    /// <c>+0x220</c> (<see cref="EntityScriptProxy.HitCounter"/>) cleared. <c>+0x12C</c> (<c>RidingEntity</c>, <c>0x800389DC</c>) is cleared too (D5b M4, D-D5B-6): the carrier is recomputed
+    /// right after, at the lists step (<see cref="RefreshUpdateProxiesAndCollidables"/>), and the hero's at the head of its own tick.
+    /// Readers of these fields in the DLL (inventory of E20.a): <c>HitCounter</c> by opcodes 0x47/0x48 and by the pick of the Deactivate slot (<c>DeactivateOnHit</c>);
+    /// <c>TouchingEntity</c> by the pick (slot D instead of C) and by the opcode 0x87; <c>DamagedTickCounter</c> is written by the opcode 0x86 (E20.c1b) and read by the hit pass, <c>HitCounter</c> is read by 0x71 too.
+    /// Writers: the hit pass (E20.c1a: <c>TouchingEntity</c>, <c>FrameCollisionTickCounter</c>, <c>HitCounter</c>) and 0x86.
+    /// </summary>
+    private void RunCountersPass()
+    {
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is not EntityScriptProxy proxy)
+            {
+                continue;
+            }
+
+            proxy.FrameCounter++;
+            if (proxy.DamagedTickCounter != 0)
+            {
+                proxy.DamagedTickCounter--;
+            }
+
+            if (proxy.FrameCollisionTickCounter != 0)
+            {
+                proxy.FrameCollisionTickCounter--;
+            }
+
+            proxy.TouchingEntity = null;
+            proxy.HitCounter = 0;
+            proxy.RidingEntity = null;
+        }
+    }
+
+    /// <summary>
+    /// E20.c1a C3: the slot of the binary's <c>0x80038E84</c>, which runs between the physics and the hit pass (the effects attached to the entities). Empty on purpose: it belongs to E20.e. The DLL keeps its reserve of effects
+    /// per frame (<see cref="EffectStage.RunFrame"/>), and nothing in the hit pass reads what that pass writes. The random generator's advance (<c>0x8002BD14</c>) is not in this pass either: it is the per-tick
+    /// callback of <see cref="EffectStage.RunFrame"/> (E20.e0b1, <see cref="AdvanceRandomPerTick"/>).
+    /// </summary>
+    private void RunActiveEffectsPass()
+    {
+    }
+
+    /// <summary>E20.e0b1: the per-tick advance of the shared random stream, a static delegate (no allocation per tick) handed to <see cref="EffectStage.RunFrame"/>.</summary>
+    private static readonly Action AdvanceRandomPerTick = GameRandom.AdvanceFrame;
+
+    /// <summary>The list of the hit pass (<c>0x800384F4</c>, <c>0x80127B28</c>), rebuilt at the lists step of each tick.</summary>
+    private readonly List<EntityScriptProxy> _hitList = new();
+
+    /// <summary>E20.c1a C3: the hit pass of the binary (<c>UpdateBalanceRecords</c>), with the latch of the hero's animation (<c>0x80146DF8</c>) it keeps for the damage calculation of E20.c1b.</summary>
+    private readonly HitPass _hitPass = new();
+
+    /// <summary>The binary's <c>0x80146DF8</c>: <c>+0x88</c> of the hero, latched at the head of every hit pass, after the animation clock of the tick (E20.c1a C3; read one tick later by the damage calculation, E20.c1b).</summary>
+    internal uint HeroAnimationLatch => _hitPass.HeroAnimationLatch;
+
+    uint IEntityWorldContext.HeroAnimationLatch => HeroAnimationLatch;
+
+    /// <summary>E20.c1a test-only seam: told the centre (16.16, the DLL's Z convention) of the overlap of each hit the pass writes, before the three sparks are queued.</summary>
+    internal Action<int, int, int>? HitSparksForTests;
+
+    private Action<int, int, int>? _emitHitSparks;
+
+    /// <summary>
+    /// E20.c1a C3: the list of <c>0x800384F4</c>, as the lists step of a tick builds it: the entities of the slots (the hero first, then <c>_spawnedEntities</c>, in the order of the slots) whose status is Normal
+    /// or Deactivated and whose <c>BlockedByEntity</c> (<c>+0x20</c>) is null. It is NOT <see cref="_tickEntities"/> (built before the programs, so with the statuses of before them) and not the engine's update list.
+    /// The pass sees the statuses as they were when the list was built, as the binary's does.
+    /// </summary>
+    private void BuildHitList()
+    {
+        _hitList.Clear();
+        var hero = PlayerEntity;
+        if (hero != null && hero.Status.IsActive() && hero.BlockedByEntity == null)
+        {
+            _hitList.Add(hero);
+        }
+
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is EntityScriptProxy proxy
+                && !ReferenceEquals(proxy, hero)
+                && proxy.Status.IsActive()
+                && proxy.BlockedByEntity == null)
+            {
+                _hitList.Add(proxy);
+            }
+        }
+    }
+
+    /// <summary>E20.c1a C4: the three sparks (effect 9) of a hit, at the centre of the overlap, queued on the effect stage of the tick that wrote the hit (rank 1, the entities).</summary>
+    private void EmitHitSparks(int centreX, int centreY, int centreZ)
+    {
+        HitSparksForTests?.Invoke(centreX, centreY, centreZ);
+        _effectStage.Emit(reservoir => NativeEffects.CreateHitSparks(reservoir, centreX, centreY, centreZ));
+    }
+
+    private Action<EntityScriptProxy, int>? _attachHitEffect;
+
+    /// <summary>
+    /// E20.f3b (D-F3-9): the effect 4 or 5 of a hit that is not immune (<c>0x800395E8-0x80039668</c>), queued on the effect stage at rank 1 of the tick like the sparks, as an effect attached (mode 1) to the live target. No number is drawn.
+    /// Documented gap: in a frame of several ticks the creation happens at the end of the frame; the effect follows its target afterwards, which has no visible consequence.
+    /// </summary>
+    private void AttachHitEffect(EntityScriptProxy target, int effect)
+        => _effectStage.Emit(reservoir => NativeEffects.CreateHitAttachedEffect(reservoir, effect, target));
+
+    /// <summary>E20.a A3 hook, E20.c1a C3: the hit pass of the binary (<c>0x80039300</c>, last of the entity block), over the list built at the lists step.</summary>
+    private void RunHitPassHook()
+    {
+        HitPassHookForTests?.Invoke();
+        _emitHitSparks ??= EmitHitSparks; // one delegate for the life of the world: the tick allocates nothing.
+        _attachHitEffect ??= AttachHitEffect;
+        _hitPass.Run(_hitList, PlayerEntity, _emitHitSparks, _attachHitEffect);
+    }
+
+    /// <summary>E20.a A8 test-only seam: runs at the hit-pass hook of each tick (where E20.c1 plugs the pass in), so a test can write what that pass writes (a <c>TouchingEntity</c>).</summary>
+    internal Action? HitPassHookForTests;
+
+    /// <summary>E20.a A8 test-only seam: told the name of each pass of the tick as it starts, in the order the binary runs them (pad, box, mapEvents, movePlayer, programs, pending,
+    /// counters, lists, clock, physics, activeEffects, hit, inventory); a closed gate gives pad, box, lists, inventory.</summary>
+    internal Action<string>? TickTraceForTests;
+
+    /// <summary>
+    /// E20.a A2: the publication of the frame, after the last tick: for each entity the engine updated this frame, <see cref="FrameSyncPasses.SyncAnimation"/> (only if its gate was open as
+    /// the frame opened, T2 "dedans") then <see cref="FrameSyncPasses.SyncTransform"/> (unconditional). It used to run in <see cref="EntityScriptProxy.Update"/>, before the ticks of the
+    /// frame, which now belong to this proxy. Clears the per-frame records of the entities.
+    /// </summary>
+    private void PublishEntityFrame()
+    {
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is not EntityScriptProxy { TookPartInFrame: true } proxy)
+            {
+                continue;
+            }
+
+            if (proxy.SyncAnimationDue)
+            {
+                FrameSyncPasses.SyncAnimation(entity);
+            }
+
+            FrameSyncPasses.SyncTransform(entity);
+            proxy.TookPartInFrame = false;
+            proxy.SyncAnimationDue = false;
+        }
+    }
+
+    /// <summary>
+    /// T4.2 (docs/plan-bgm-demarrage-binaire.md, S2): the frame-close reset-flag block this class' own
+    /// <see cref="Update"/> runs right before <c>SoundPlayer.FlushFrameSounds</c> (B9/P3) - extracted so
+    /// <c>Alundra.Tests</c>' own frame-close test helper can drive this EXACT production code instead of
+    /// a hand-copied version of it. Static and allocation-free (no closure, straight parameter reads and
+    /// two virtual calls), so a test can call it directly with the session singletons
+    /// (<see cref="BgmPlayer.Instance"/>/<see cref="BgmFadeDirector.Instance"/>) with no
+    /// <see cref="WorldProxy"/> in scope, exactly like <see cref="Update"/> calls it with this
+    /// instance's own <see cref="MusicPlayer"/>/<see cref="BgmFadeDirector"/>.
+    /// </summary>
+    internal static void ConsumeMusicResetSoundFlagOnFrameClose(IMusicPlayer? musicPlayer, IBgmFadeDirector bgmFadeDirector)
+    {
+        if (musicPlayer is { ResetSoundFlag: true } activeMusicPlayer)
+        {
+            bgmFadeDirector.StopAllSound();
+            activeMusicPlayer.ClearResetSoundFlag();
+        }
+    }
+
+    /// <summary>
+    /// Port of <c>RunMapEvents</c> (GameEngine.cs:1667-1718, 0x8003c67c). Always executes against
+    /// <paramref name="player"/> - every MapEvent's own logic entity starts as the player
+    /// (<see cref="BuildMapEvents"/>) and is retargeted by opcodes 0x42/0x43 (E19.a; 0x66 does not touch it - see
+    /// <see cref="EntityScriptProxy.LogicEntity"/>), which <see cref="Events.EventProgramRunner"/> reads
+    /// before every instruction.
+    /// </summary>
+    internal static void RunMapEventsPass(
+        EntityScriptProxy player, IReadOnlyList<MapEvent> mapEvents, IEventProgramRunner runner,
+        uint playerControlFlags)
+    {
+        if ((playerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0)
+        {
+            return;
+        }
+
+        for (var i = 0; i < mapEvents.Count; i++)
+        {
+            var mapEvent = mapEvents[i];
+
+            if ((mapEvent.ProgramBMap & 0x7F) == 0)
+            {
+                continue;
+            }
+
+            if (player.TileX < mapEvent.X1 || player.TileX > mapEvent.X2
+                || player.TileY < mapEvent.Y1 || player.TileY > mapEvent.Y2)
+            {
+                // Out-of-zone re-arm, every tick (binary 0x8003C7F0-0x8003C804, E19.j; the decompilation's
+                // GameEngine.cs:1690-1697 writes the logic entity instead, which the binary does not): the SLOT's
+                // program goes back to "not started" (entry 0, pc 0, Result 0), its logic entity back to the hero and
+                // its program byte back to the record's own. No entity is written. The other state fields stay.
+                mapEvent.EventData.Sp = 0;
+                mapEvent.EventData.Codes = null;
+                mapEvent.EventData.CodeIndex = 0;
+                mapEvent.EventData.Result = 0;
+                mapEvent.Entity = player;
+                mapEvent.ProgramBMap = mapEvent.OriginalProgramBMap;
+                continue;
+            }
+
+            player.ProgramIndexes[ScriptHelper.ProgramBMap] = mapEvent.ProgramBMap;
+            player.MapEventProgramId = mapEvent.ProgramBMap;
+            // GameEngine.cs:1702: the decompilation indexes the FIXED g_mapEvents[0x40] array by record
+            // position (InitializeMapEvents sets g_mapEvents[i].Id = i for every slot, occupied or not),
+            // so "i" there is the record's own slot index. The binary does compact its slot table (0x8003C5F4-
+            // 0x8003C608), with no effect on the data (no record has a zero program byte: 1714 of 1714 checked).
+            // mapEvents here is compacted too (only records with EventCodesBIndex != 0 are kept - see
+            // BuildMapEvents), so the loop's own "i" is the compacted list position, NOT the record index;
+            // mapEvent.Id carries the real record index instead.
+            player.EventTrigger = mapEvent.Id;
+            player.LogicEntity = mapEvent.Entity ?? player;
+            player.EventProgramState.CopyFrom(mapEvent.EventData);
+
+            runner.RunScript(player, ScriptHelper.ProgramBMap);
+
+            mapEvent.EventData.CopyFrom(player.EventProgramState);
+            mapEvent.Entity = player.LogicEntity;
+            mapEvent.ProgramBMap = player.ProgramIndexes[ScriptHelper.ProgramBMap];
+        }
+    }
+
+    /// <summary>
+    /// Decision D3 (docs/plan-conversion-totale.md §2): port of the do/while re-scan half of
+    /// <c>EntityManager.UpdateEntitiesEvents</c> (EntityManager.cs:874-921), applied here to whatever
+    /// <see cref="EntityScriptProxy.EventTrigger"/> another entity's OWN <c>Update</c> set on it
+    /// earlier THIS SAME FRAME (<see cref="EntityScriptProxy.PickEventTrigger"/> having already run
+    /// for every entity, since the engine updates entities before this world - see this class's own
+    /// <see cref="Update"/> doc). The player is excluded, same as the original's own loop starting at
+    /// index 1 - its own trigger (set by <see cref="RunMapEventsPass"/>) is consumed directly by that
+    /// method's own <c>RunScript</c> call, never by this re-scan.
+    /// </summary>
+    internal static void RunPendingEventTriggers(IReadOnlyList<EntityScriptProxy> entities, IEventProgramRunner runner)
+    {
+        bool keepGoing;
+
+        do
+        {
+            keepGoing = false;
+
+            // Indexed for, not foreach: an IReadOnlyList<T>-typed foreach goes through the interface's
+            // own IEnumerator<T> (a boxed enumerator on every call, unlike List<T>'s own struct
+            // enumerator) - this pass now runs every frame, so that allocation is no longer free to skip.
+            for (var i = 0; i < entities.Count; i++)
+            {
+                var entity = entities[i];
+
+                if (entity.IsPlayer || entity.EventTrigger == ScriptHelper.ProgramUnknown)
+                {
+                    continue;
+                }
+
+                entity.RunPickedEvent(runner);
+                keepGoing = true;
+            }
+        } while (keepGoing);
+    }
+
+    /// <summary>
+    /// E19.r R3 (docs/plan-e19-opcodes.md section 1.2p, D-E19-45, ADR-0024): port of <c>UpdateDestroyedEntities</c> (<c>0x80038634</c>), the first call of
+    /// <c>UpdateEntities</c> (<c>0x8003B3A0</c>). The binary covers every slot in the state <see cref="EntityStatus.FlagToDestroy"/> with its template
+    /// (<c>0x80134368</c>: state 0, <c>+0x48</c> = -1, written in <c>0x8003B21C</c>); the port puts each such proxy back to the same values
+    /// (<see cref="EntityStatus.Destroyed"/>, <see cref="EntityScriptProxy.EntityRefId"/> = -1), takes it out of <see cref="_spawnedEntities"/> (so out
+    /// of the update lists and the collidables rebuilt after) and hands its entity back to the engine (<see cref="World.RemoveEntity"/>, which releases what
+    /// its components hold at the next engine update). A search by raw id (<c>0x2C</c>, <c>0x2E</c>...) does not test the state of the candidate: a corpse
+    /// stays found until this pass. Nothing else is cleared: a reference kept on a recycled slot sees a slot in the state 0, as in the binary. The hero is never
+    /// recycled. The gate is read here, after the map events (<c>0x8003B38C</c> reads <c>g_playerControlFlags</c> at the head of <c>UpdateEntities</c>): a
+    /// program that destroys an entity and opens a box in the same tick holds the recycling back until the box closes. Without a world (test montages) the
+    /// proxy only leaves the lists.
+    /// </summary>
+    internal void RecycleDestroyedEntities()
+    {
+        if ((GameState.PlayerControlFlags & GameState.PlayerControlBits.GameplayBlockedMask) != 0)
+        {
+            return;
+        }
+
+        for (var i = _spawnedEntities.Count - 1; i >= 0; i--)
+        {
+            var entity = _spawnedEntities[i];
+            if (entity.GameplayProxy is not EntityScriptProxy { Status: EntityStatus.FlagToDestroy } proxy
+                || ReferenceEquals(proxy, PlayerEntity))
+            {
+                continue;
+            }
+
+            proxy.Status = EntityStatus.Destroyed;
+            proxy.EntityRefId = -1;
+            _spawnedEntities.RemoveAt(i);
+            _slots.Release(proxy.Slot); // E20.e0a2: the slot is free again from the pass that recycles it.
+            proxy.Slot = -1;
+            _world?.RemoveEntity(entity);
+            Logs.WriteDebug("WorldProxy: destroyed entity recycled.");
+        }
+    }
+
+    /// <summary>
+    /// E14.a1b (D-E14-9, ADR-0060): port of <c>GameEngine.DestroyEntity(Entity, int)</c> @ 0x8003A59C for ALL its callers (E0/E1, the pick phase's slope destruction <paramref name="effectId"/> 6 and VRAM-flag destruction -1), in the
+    /// order of the binary: (1) the loot <c>0x80032B90</c> (E20.e0c, phase C: <see cref="LootDrop.SpawnContents"/>, the object the creation drew for this entity appears first, while the entity still has its status and its letter; a content of 0, the veto of the magic and a full table of entities drop nothing); (2) the status 4 (<c>0x8003A5BC</c>), which the pick phase naturally skips from now on;
+    /// (3) the branch delay <c>+0x228 = -1</c> (<c>0x8003A5CC</c>, <see cref="EntityScriptProxy.EventTrigger"/>, so a same-frame re-scan does not run what the entity had queued); (4) the release of the active effect
+    /// attached to the entity (<c>+0x1B8</c>, <c>0x8003A5D0</c>) - NAMED STUB, E20.e (the passes of the active effects are empty in the DLL and it has no member for the pointer); (5) the break effect: <paramref name="effectId"/> -1 reads the
+    /// byte <c>+0x1E</c> of the sprite header (<see cref="EntityScriptProxy.BreakEffect"/>, <c>0x8003A5E0-0x8003A5E8</c>), and when the effect is not 0, <c>0x8003BE74(0, fx, 0, e ; 1, 0, 0, 0)</c> creates it
+    /// (<see cref="NativeEffects.CreateBreakEffect"/>) - queued on the effect stage with the tick and the rank of the source in progress, on a FROZEN snapshot of the entity
+    /// (<see cref="FrozenEffectAnchor"/>, taken after the status was written) because the stage applies its queue at the end of the frame; (6) the clearing of the carrier <c>[+0x28] + 0x2C = 0</c> (<c>0x8003A62C</c>, E20.g1a W5: <see cref="ClearCarrierOf"/>). Does not remove the entity itself: the recycling comes later in the tick (<see cref="RecycleDestroyedEntities"/>, E19.r R3). A full reservoir creates no effect and the destruction goes on all the same.
+    /// </summary>
+    internal void DestroyEntity(EntityScriptProxy entity, int effectId)
+    {
+        // (1) loot: E20.e0c, the first act (0x8003A59C calls 0x80032B90 before it writes the status 4); the single-argument overload below is the light destruction and drops nothing.
+        LootDrop.SpawnContents(this, GameState, entity);
+        entity.Status = EntityStatus.FlagToDestroy;
+        entity.EventTrigger = ScriptHelper.ProgramUnknown;
+
+        // (4) release of the attached active effect (+0x1B8): E20.e.
+        var fx = effectId == -1 ? entity.BreakEffect : effectId;
+        if (fx != 0)
+        {
+            var anchor = FrozenEffectAnchor.Of(entity);
+            _effectStage.Emit(reservoir => NativeEffects.CreateBreakEffect(reservoir, fx, anchor));
+        }
+
+        // (6) clearing of the carrier (the entity that holds this one in its hands): E20.g1a W5.
+        ClearCarrierOf(entity);
+        Logs.WriteDebug($"WorldProxy: entity[{entity.EntityRefId}] -> FlagToDestroy (effectId={effectId}, break effect {fx}).");
+    }
+
+    /// <summary>
+    /// E20.g1a T3 (W5, D-G-11): the last act of the destructions of the binary (<c>0x8003A62C</c>, <c>0x8003A74C</c>, <c>0x8003A7A4</c>): when the entity is held by another (its <see cref="EntityScriptProxy.PlatformEntity"/>, <c>+0x28</c>, is not
+    /// null), the carrier's <see cref="EntityScriptProxy.CarriedEntity"/> (<c>+0x2C</c>) is cleared. NO test of identity: the binary clears whatever the carrier holds. A carrier without a proxy (a bare entity of a test montage) has nothing to clear.
+    /// The destroyed entity's own <see cref="EntityScriptProxy.PlatformEntity"/> is left as it is (the binary does not touch it).
+    /// </summary>
+    private static void ClearCarrierOf(EntityScriptProxy entity)
+    {
+        if (entity.PlatformEntity?.GameplayProxy is EntityScriptProxy carrier)
+        {
+            carrier.CarriedEntity = null;
+        }
+    }
+
+    /// <summary>
+    /// V1 port of the single-argument <c>GameEngine.DestroyEntity(Entity)</c> @ 0x8003A774 - the overload
+    /// every search-driven destroy opcode (0x2E Script_46_02E) calls once per match, distinct from the
+    /// two-argument overload above (which the pick-phase status machine uses, and which also spawns
+    /// break-effect contents). Same scope note as the two-argument overload: the entity leaves the CasaEngine world
+    /// at the recycling pass (<see cref="RecycleDestroyedEntities"/>), not here, and this does not port <c>ActiveEffect</c> cleanup. Clears
+    /// <see cref="EntityScriptProxy.EventTrigger"/> like the original, so a same-frame re-scan
+    /// (<see cref="RunPendingEventTriggers"/>) does not also try to run whatever program slot this entity
+    /// had queued before being destroyed. E20.g1a W5: it also clears the carrier (<see cref="ClearCarrierOf"/>, <c>0x8003A74C</c>).
+    /// </summary>
+    internal void DestroyEntity(EntityScriptProxy entity)
+    {
+        entity.Status = EntityStatus.FlagToDestroy;
+        entity.EventTrigger = ScriptHelper.ProgramUnknown;
+        ClearCarrierOf(entity);
+        Logs.WriteDebug($"WorldProxy: entity[{entity.EntityRefId}] -> FlagToDestroy (search-destroyed).");
+    }
+
+    /// <summary>
+    /// E19.t T-R2 (D-E19-57): asks the world's sound player for the sound of <paramref name="spawned"/>'s animation of appearance (animation 0 for a record, the
+    /// arrival animation for the hero), as <c>InitializeEntity</c> does when it makes its first switch (<c>Current = ~Target</c>, <c>0x80039DAC</c>). The DLL's
+    /// first switch is exempt (R2, <see cref="EntityScriptProxy.SpawnAnimationActive"/>), so this is the only request of the appearance. Nothing when
+    /// the entity has no appearance animation, no sound or the world no player.
+    /// </summary>
+    private void RequestAppearanceSound(EntityScriptProxy? spawned)
+    {
+        if (spawned == null || !spawned.SpawnAnimationActive)
+        {
+            return;
+        }
+
+        var sound = spawned.AnimationSoundOf(spawned.SpawnAnimationId);
+        if (sound > 0)
+        {
+            SoundPlayer?.PlaySfx(sound);
+        }
+    }
+
+    /// <summary>
+    /// Backs opcodes 0x2D (Script_45_02D), 0x8A and 0x8B via <see cref="IEntityWorldContext"/>. Faithful port of
+    /// <c>GameEngine.SpawnEntity(parent, entityId, notCheckSpawnZone)</c> (GameEngine.cs:679-758)
+    /// restricted to <c>notCheckSpawnZone = 1</c>, the only value the opcode ever passes - so only the
+    /// <c>IsEnabled</c> gate applies (see <see cref="ShouldSpawnRecord(TileMapObjectData,bool,out string)"/>'s
+    /// own doc); the record lookup (<c>GameEngine.GetEntityRecord</c>) is <see cref="_entityRecordsByIndex"/>.
+    /// Shares the exact same build path as the map-load spawn loop in <see cref="InitializeWithWorld"/>
+    /// (<see cref="EntitySpawnFactory.CreateEntityFromRecord"/> -&gt; <see cref="EntitySpawnFactory.ApplyRecord"/> -&gt;
+    /// <see cref="EntitySpawnFactory.ApplySpawnInitialization"/>), with <paramref name="logicEntity"/>'s own backing entity
+    /// passed down as the new entity's <c>ParentEntity</c> - exactly like <c>EntityManager.InitializeEntity</c>
+    /// does for its <c>parentEntity</c> argument. The spawned entity joins <see cref="_spawnedEntities"/>
+    /// immediately, so it is visible to any further search this same script call issues. E20.e0a4: the three opcodes pose
+    /// <see cref="EntityScriptProxy.JoinsBirthTick"/> on it as the last write of the apparition, so it takes part in the tick that sees it born: the tick of the map events that made it,
+    /// the next tick when it was made by the program of another entity (the tick block is collected before the programs run). It enters as <see cref="EntityStatus.Loaded"/>, so its own Load
+    /// program runs in its first tick, same as every map-load spawn; the engine integrates it at the head of the next frame.
+    /// Unlike the original (a single global, size-limited entity-slot table with recycling), this always
+    /// allocates a brand new CasaEngine <see cref="Entity"/>, which takes the lowest free slot of the table of 64 (E20.e0a2: a full table refuses, the opcode finds no entity); a recycled entity gives its slot back.
+    /// </summary>
+    internal EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId)
+    {
+        if (_world == null)
+        {
+            Logs.WriteWarning("WorldProxy: SpawnEntityByRecordId called before InitializeWithWorld; ignored.");
+            return null;
+        }
+
+        if (!_entityRecordsByIndex.TryGetValue(entityRecordId, out var record))
+        {
+            Logs.WriteDebug(
+                $"WorldProxy: SpawnEntityByRecordId({entityRecordId}) - no such entity record "
+                + "(GameEngine.GetEntityRecord would return null); spawn skipped.");
+            return null;
+        }
+
+        if (!EntitySpawnFactory.ShouldSpawnRecord(record, notCheckSpawnZone: true, out var skipReason))
+        {
+            Logs.WriteDebug(
+                $"WorldProxy: SpawnEntityByRecordId({entityRecordId}) - record '{record.Name}' "
+                + $"not spawned ({skipReason}).");
+            return null;
+        }
+
+        // E20.e0a2 (ADR-0064): the lowest free slot, after the record lookup and before the creation, as the binary's record path (0x8003A1B8); a full table refuses this apparition.
+        var slot = _slots.Allocate();
+        if (slot < 0)
+        {
+            ReportSlot(-1);
+            Logs.WriteWarning(
+                $"WorldProxy: SpawnEntityByRecordId({entityRecordId}) refused: the table of the {EntitySlotTable.SlotCount} entity slots is full; nothing spawned.");
+            return null;
+        }
+
+        Entity? entity = null;
+        var added = false;
+        try
+        {
+            // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
+            entity = EntitySpawnFactory.CreateEntityFromRecord(
+                record, guid => _world.Game.AssetContentManager.LoadCopy<Entity>(guid), SpriteRecordCatalog,
+                parentEntity: logicEntity.LogicContextEntity, tileMapData: _tileMapData, collisionField: CollisionField);
+            var spawnedProxy = entity.GameplayProxy as EntityScriptProxy;
+            if (spawnedProxy != null)
+            {
+                spawnedProxy.ScriptHost = this;
+
+                // E20.e0a4 phase A (D-E0A4-1, D-E0A4-2, D-E0A4-4), HERE and not in the core the map load shares (the load, the hero and the gull are not in the slice, D-E20-36), and BEFORE the balance sheet (whose first evaluation
+                // of the box is the first switch of the cursor): the creation by script has made the first switch of the animation 0 (InitializeEntity, 0x80039EA8), exactly as the one by the interface
+                // (EntitySpawnFactory.CreateEntityFromSpriteIndex, E20.e0a5 and E20.e0a3b): the first clock tick counts and the box exists before the engine integrated the entity; and the byte 0xD of the animation set of
+                // the animation 0 is in AnimFlags from the creation, as the switch loads it.
+                spawnedProxy.SwitchedAtCreation = true;
+                spawnedProxy.AnimFlags = spawnedProxy.AnimSetsByAnim != null && spawnedProxy.AnimSetsByAnim.TryGetValue((int)spawnedProxy.TargetAnimationId, out var firstAnimationSet) ? firstAnimationSet.Acceleration : 0;
+                spawnedProxy.InitializeBalance(BalanceTables, BalanceThreshold); // E20.c1a C1.
+            }
+
+            _world.AddEntity(entity);
+            added = true;
+            slot = HoldSlot(spawnedProxy, slot);
+            InsertBySlot(entity, slot);
+            CreationFaultHookForTests?.Invoke("record", entity);
+            RequestAppearanceSound(spawnedProxy); // E19.t T-R2: at the tick of the opcode (0x2D, 0x8A, 0x8B).
+            // E4.b: same ground-clamp + root push as the map-load spawn loop above - see that call site's
+            // own doc for why this must happen AFTER AddEntity.
+            spawnedProxy?.PushLogicalPositionToRoot();
+            // E19.h1b1: no spawn-time support evaluation here either - see the map-load spawn loop above.
+            RollLootAtCreation(spawnedProxy, hasRecord: true, RecordContentsByte(record)); // E20.e0b2 (D-E0B-6): the last statement of the creation.
+            return spawnedProxy;
+        }
+        // R0 (ADR-0075): a script type name that does not resolve is a fault of the data, not of this creation: give the slot back, then let it stop the load with its message (file, key, value, assembly, hint); every other fault below keeps the log and the skip.
+        catch (ScriptTypeResolutionException)
+        {
+            AbortCreation(entity, added, slot);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            AbortCreation(entity, added, slot);
+            Logs.WriteWarning(
+                $"WorldProxy: SpawnEntityByRecordId({entityRecordId}) failed to spawn; skipping. "
+                + $"{ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>The low byte of the <c>Contents</c> of an entity record (the binary reads the byte <c>+0x12</c> of the record), 0 when the record carries none.</summary>
+    private static int RecordContentsByte(TileMapObjectData record)
+        => EntitySpawnFactory.TryGetRecordInt(record, "Contents", out var contents) ? contents & 0xFF : 0;
+
+    /// <summary>
+    /// E20.e0b2 (D-E0B-4, D-E0B-6, docs/plan-e20-heros.md section 1.17.2): the loot roll of a creation (<c>0x80032A40</c>, the last action of <c>InitializeEntity</c>), called ONCE per creation as the last statement of the <c>try</c> of each of the
+    /// three creation sites, so that a creation that aborted never rolls. <paramref name="hasRecord"/> is whether an entity record made the entity (the map load and <c>0x2D</c>, <c>0x8A</c>, <c>0x8B</c>: yes; the interface: no).
+    /// PHASE B (this commit): the helper writes <see cref="EntityScriptProxy.ContentsItemId"/> and <see cref="EntityScriptProxy.ContentsGameFlag"/> and advances the REAL stream by the same roll (<see cref="GameRandom.Next"/>,
+    /// which the measuring sink sees as real draws, so that its virtual word follows: V = R). The header code comes from <see cref="EntityScriptProxy.HeaderContents"/>, the record code and flag from the record and the proxy. Nothing falls here (E20.e0c).
+    /// </summary>
+    private void RollLootAtCreation(EntityScriptProxy? proxy, bool hasRecord, int recordCode)
+    {
+        if (proxy == null)
+        {
+            return;
+        }
+
+        var result = LootRoll.Roll(hasRecord, proxy.ContentsGameFlag, recordCode, proxy.HeaderContents, GameState, static () => (uint)GameRandom.Next());
+        proxy.ContentsItemId = result.ItemId;
+        proxy.ContentsGameFlag = result.GameFlag;
+    }
+
+    /// <summary>
+    /// E20.e0a1 (docs/plan-e20-heros.md section 1.16.1, ADR-0063): <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, the apparition of <c>SpawnWarpEntity</c> (<c>0x80039F58</c>) without a record. In the order of the
+    /// binary: the page lookup (<c>0x80039B28</c>: an index outside 0 to 255, or one the table of the page does not hold, is refused before anything is touched), then the creation of
+    /// <see cref="EntitySpawnFactory.CreateEntityFromSpriteIndex"/> with the Z of the caller plus the raw unit of the binary (D-E0A-1, here and nowhere else), then what the record path does after its factory: the script
+    /// host, the balance sheet, the addition to the world and to <see cref="_spawnedEntities"/> at the place of its slot (E20.e0a2), the sound of the animation 0, the push to the root. The prefab is read fresh for every call
+    /// (engine ADR-0037). The entity ticks from the frame after its creation, as every spawn does until E20.e0a3.
+    /// </summary>
+    internal EntityScriptProxy? SpawnEntityBySpriteIndex(EntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction)
+    {
+        var page = isMapPage ? "map" : "global";
+
+        EntityScriptProxy? Refuse(string reason)
+        {
+            Logs.WriteWarning($"WorldProxy: SpawnEntityBySpriteIndex({page} page, index {index}) refused: {reason}; nothing spawned.");
+            return null;
+        }
+
+        if (_world == null)
+        {
+            return Refuse("called before InitializeWithWorld");
+        }
+
+        if (index < 0 || index > 255)
+        {
+            return Refuse("the index is outside 0 to 255");
+        }
+
+        if (isMapPage)
+        {
+            if (_world.Name == null || !BackdropLoader.TryParseMapIndex(_world.Name, out var mapIndex))
+            {
+                return Refuse($"the world '{_world.Name}' has no map number");
+            }
+
+            MapSpriteIndices ??= MapSpriteIndices.GetOrCreate(EngineEnvironment.ProjectPath);
+            if (!MapSpriteIndices.IsValid(mapIndex, index))
+            {
+                return Refuse($"the table of map {mapIndex} does not hold this number");
+            }
+        }
+
+        if (!SpriteRecordCatalog.TryGetPrefab(isMapPage, index, out var prefabAssetId) || !SpriteRecordCatalog.TryGet(prefabAssetId, out var header))
+        {
+            return Refuse("the catalog has no sprite record for this bank key");
+        }
+
+        // E20.e0a2 (ADR-0064): the lowest free slot, after the page lookup and before the creation (0x80039AD0 follows 0x80039B28 in the binary); a full table refuses with the null of D-E0A-2.
+        var slot = _slots.Allocate();
+        if (slot < 0)
+        {
+            ReportSlot(-1);
+            return Refuse($"the table of the {EntitySlotTable.SlotCount} entity slots is full");
+        }
+
+        Entity? entity = null;
+        var added = false;
+        try
+        {
+            // Engine ADR-0037: an entity asset is a template, read fresh for every spawn.
+            var prefab = _world.Game.AssetContentManager.LoadCopy<Entity>(prefabAssetId);
+            if (prefab == null)
+            {
+                _slots.Release(slot);
+                return Refuse($"the prefab {prefabAssetId} could not be read");
+            }
+
+            // D-E0A-1: the Z of a DLL entity is the binary's minus one raw unit (ADR-0026); the binary's argument has it, and the creation subtracts ModZ from the binary's argument.
+            entity = EntitySpawnFactory.CreateEntityFromSpriteIndex(
+                prefab, header, isMapPage, index, parent?.LogicContextEntity, x, y, unchecked(z + 1), direction, CollisionField, _tileMapData);
+            var spawnedProxy = entity.GameplayProxy as EntityScriptProxy;
+            if (spawnedProxy != null)
+            {
+                spawnedProxy.ScriptHost = this;
+                spawnedProxy.InitializeBalance(BalanceTables, BalanceThreshold); // E20.c1a C1.
+            }
+
+            _world.AddEntity(entity);
+            added = true;
+            slot = HoldSlot(spawnedProxy, slot);
+            InsertBySlot(entity, slot);
+            CreationFaultHookForTests?.Invoke("sprite-index", entity);
+            RequestAppearanceSound(spawnedProxy); // E19.t T-R2: at the tick of the call.
+            spawnedProxy?.PushLogicalPositionToRoot();
+
+            // E20.e0b2 (D-E0B-6): the loot roll comes right before the marker block below (which cannot fail and stays the last write of the creation, ADR-0065); a creation that aborted never reaches it.
+            RollLootAtCreation(spawnedProxy, hasRecord: false, 0);
+
+            // E20.e0a3b (D-E0A-5, ADR-0065): the marker is posed LAST, after the push to the root, so that nothing of the creation reads the collision field of the host by the fallback (the one relief of the creation is the
+            // core's, as 0x80039EF0). From here the entity takes part in the tick that sees it born, when this is the tick of MovePlayer (RunEntityBlock re-collects).
+            if (spawnedProxy != null)
+            {
+                spawnedProxy.JoinsBirthTick = true;
+                spawnedProxy.HasLogicalZ = true; // E20.e0k2 (D-E0K-1): the logical Z marker, in the same block.
+                _birthSpawnsThisTick++;
+            }
+
+            return spawnedProxy;
+        }
+        // R0 (ADR-0075): a script type name that does not resolve is a fault of the data, not of this creation: give the slot back, then let it stop the load with its message (file, key, value, assembly, hint); every other fault below keeps the log and the skip.
+        catch (ScriptTypeResolutionException)
+        {
+            AbortCreation(entity, added, slot);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            AbortCreation(entity, added, slot);
+            return Refuse($"the creation failed ({ex.Message})");
+        }
+    }
+
+    // IEntityWorldContext - see that interface's own doc. Explicit implementation keeps these reachable
+    // through the interpreter seam without adding public surface to this proxy.
+    IReadOnlyList<EntityScriptProxy> IEntityWorldContext.SpawnedEntities => GetSpawnedEntityProxies();
+
+    EntityScriptProxy? IEntityWorldContext.PlayerEntity => PlayerEntity;
+
+    EntityScriptProxy? IEntityWorldContext.SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId)
+        => SpawnEntityByRecordId(logicEntity, entityRecordId);
+
+    EntityScriptProxy? IEntityWorldContext.SpawnEntityBySpriteIndex(EntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction)
+        => SpawnEntityBySpriteIndex(parent, isMapPage, index, x, y, z, direction);
+
+    void IEntityWorldContext.DestroyEntity(EntityScriptProxy entity) => DestroyEntity(entity);
+
+    /// <summary>
+    /// E20.e0c (docs/plan-e20-heros.md section 1.26, D-E0C-6): <c>Block(self)</c> of the binary (<c>0x8003AD30</c>): the identity of <paramref name="self"/> (its entity, else its logic context) goes to
+    /// <see cref="EntityScriptProxy.BlockedByEntity"/> of every entity of the world - the hero first, then the others in the order of the slots - whose status is Normal or Deactivated and that is not blocked yet, except
+    /// <paramref name="self"/>. The field is read by the choice of the programs, the hit pass and the hero; since E20.e0d (D-E0D-4) the end of the frame also freezes the controller and pauses the playback of the sprite of every blocked entity, which stays drawn (<see cref="GameplayFreeze.IsFrozen"/>); the animation clock and the physics of <c>RunEntityBlock</c> do not read it yet (phase D).
+    /// </summary>
+    internal void Block(EntityScriptProxy self)
+    {
+        if (BlockerOf(self) is not { } blocker)
+        {
+            return;
+        }
+
+        foreach (var proxy in EntitiesForBlocking())
+        {
+            if (!ReferenceEquals(proxy, self) && proxy.Status.IsActive() && proxy.BlockedByEntity == null)
+            {
+                proxy.BlockedByEntity = blocker;
+            }
+        }
+    }
+
+    /// <summary>E20.e0c: <c>Unblock(self)</c> (<c>0x8003ADAC</c>): clears the blocker of every entity that <paramref name="self"/> blocked (whatever its status); one that nobody blocked, or that something else blocked, is left alone.</summary>
+    internal void Unblock(EntityScriptProxy self)
+    {
+        if (BlockerOf(self) is not { } blocker)
+        {
+            return;
+        }
+
+        foreach (var proxy in EntitiesForBlocking())
+        {
+            if (ReferenceEquals(proxy.BlockedByEntity, blocker))
+            {
+                proxy.BlockedByEntity = null;
+            }
+        }
+    }
+
+    /// <summary>The identity that <see cref="Block"/> and <see cref="Unblock"/> store: the entity of the proxy, else its logic context (a bare proxy of a test); null for a proxy with neither (nothing to block with).</summary>
+    private static CasaEngine.Framework.Scene.Entities.Entity? BlockerOf(EntityScriptProxy self) => self.OwnerEntity ?? self.LogicContextEntity;
+
+    /// <summary>The hero first, then the entities of the slots (the hero only once).</summary>
+    private IEnumerable<EntityScriptProxy> EntitiesForBlocking()
+    {
+        var hero = PlayerEntity;
+        if (hero != null)
+        {
+            yield return hero;
+        }
+
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is EntityScriptProxy proxy && !ReferenceEquals(proxy, hero))
+            {
+                yield return proxy;
+            }
+        }
+    }
+
+    void IEntityWorldContext.Block(EntityScriptProxy self) => Block(self);
+
+    void IEntityWorldContext.Unblock(EntityScriptProxy self) => Unblock(self);
+
+
+    // IScriptHost - see that interface's own doc. Explicit implementation, same reasoning as
+    // IEntityWorldContext above.
+    IEventProgramRunner IScriptHost.Runner => EventProgramRunner;
+
+    EntityScriptProxy? IScriptHost.ActiveCollisionEntity
+    {
+        get => ActiveCollisionEntity;
+        set => ActiveCollisionEntity = value;
+    }
+
+    void IScriptHost.DestroyEntity(EntityScriptProxy entity, int effectId) => DestroyEntity(entity, effectId);
+
+    GameState IScriptHost.GameState => GameState;
+
+    HeroController? IScriptHost.PlayerController => _playerController;
+
+    IReadOnlyList<EntityScriptProxy> IScriptHost.Collidables => _collidables;
+
+    // T3 (docs/plan-transitions-carte.md §3): production always exposes the real parsed list - the
+    // interface's own default (empty) only covers hosts from OTHER slices/tests that never override it.
+    IReadOnlyList<PortalRecord> IScriptHost.Portals => _portals;
+
+    /// <summary>E19.t: the sound player the changes of animation reach through the host seam (the world's own, <see cref="SoundPlayer"/>).</summary>
+    ISoundPlayer? IScriptHost.SoundPlayer => SoundPlayer;
+
+    // T4 (docs/plan-transitions-carte.md §3): the override T3's own comment (formerly here) named in
+    // advance - PlayerManager.MovePlayer calls this from INSIDE PlayerEntity's own Update, so
+    // WarpDirector.IsTransitionInProgress is already true before this SAME frame's
+    // WorldProxy.Update reads its own gel gate (see WarpDirector.BeginDeparture's own doc).
+    void IScriptHost.OnPortalTriggerDetected(PortalRecord portal, uint arrivalDirectionId)
+    {
+        if (PlayerEntity == null)
+        {
+            // Cannot happen on the production call path (MovePlayer's own caller is always PlayerEntity
+            // itself), but this interface member has no non-null guarantee of its own - degrade the same
+            // way every other "should never happen without a player" site in this class does.
+            Logs.WriteWarning("WorldProxy: OnPortalTriggerDetected fired with no PlayerEntity adopted; departure ignored.");
+            return;
+        }
+
+        WarpDirector.Instance.BeginDeparture(portal, arrivalDirectionId, PlayerEntity, GameState);
+    }
+
+    /// <summary>
+    /// Snapshot of <see cref="_spawnedEntities"/>'s own <see cref="EntityScriptProxy"/> proxies, in
+    /// the same order (the order of the slots) - built fresh on every call (not cached) so an entity dynamically spawned
+    /// by 0x2D earlier in the same script call is visible to a search issued later in that call, exactly
+    /// like the original's live <c>g_entitySlots</c> array (see <see cref="EntitySearchService"/>'s class
+    /// doc). Not a per-frame hot path (only entity-manipulation opcodes call it), so the allocation here
+    /// is fine - contrast with <see cref="_updateProxies"/>, the actual per-frame working list.
+    /// </summary>
+    private List<EntityScriptProxy> GetSpawnedEntityProxies()
+    {
+        var proxies = new List<EntityScriptProxy>(_spawnedEntities.Count);
+
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is EntityScriptProxy proxy)
+            {
+                proxies.Add(proxy);
+            }
+        }
+
+        return proxies;
+    }
+
+    /// <summary>
+    /// Rebuilds <see cref="_updateProxies"/> from <see cref="_spawnedEntities"/> and, from that,
+    /// <see cref="_collidables"/> (E4.f) - the per-frame hot-path pair, both reused list instances (no
+    /// allocation). Called once per frame from <see cref="Update"/>, and once more right after the
+    /// map-load spawn loop in <see cref="InitializeWithWorld"/> completes, so <see cref="_collidables"/>
+    /// already reflects every load-time-spawned entity BEFORE the engine's very first
+    /// <c>CharacterMotionSystem.UpdateControllers</c>/entity-<c>Update</c> pass ever runs - without that
+    /// second call, frame 1's <see cref="EntityScriptProxy.EvaluateEntitySupport"/> would see an
+    /// empty <see cref="_collidables"/> and wrongly restore gravity on every supported entity for one
+    /// frame (the exact "creux de première frame" decision E4-4 forbids) before <see cref="Update"/> ever
+    /// gets to populate it. <see cref="_updateProxies"/>/<see cref="_collidables"/> are otherwise always
+    /// exactly one frame stale relative to entities spawned or moved THIS frame (the same latency
+    /// <see cref="_updateProxies"/> already had before E4.f) - harmless for map 389's intro, whose
+    /// platform entities never move.
+    /// </summary>
+    private void RefreshUpdateProxiesAndCollidables()
+    {
+        _updateProxies.Clear();
+        foreach (var entity in _spawnedEntities)
+        {
+            if (entity.GameplayProxy is EntityScriptProxy proxy)
+            {
+                _updateProxies.Add(proxy);
+            }
+        }
+
+        EntitySupport.BuildCollidables(_updateProxies, _collidables);
+        EntitySupport.UpdateRidingEntities(_collidables);
+    }
+
+    /// <summary>
+    /// E4.f spawn-time support snapshot: a freshly-built (allocating - spawn is not a per-frame hot path,
+    /// same policy as <see cref="GetSpawnedEntityProxies"/>) collidables list off whatever is in
+    /// <see cref="_spawnedEntities"/> AT THIS EXACT MOMENT, for
+    /// <see cref="EntityScriptProxy.EvaluateEntitySupport"/>'s own one-shot call right after a
+    /// record spawns (see the map-load spawn loop in <see cref="InitializeWithWorld"/> and
+    /// <see cref="SpawnEntityByRecordId"/>). Map 389's platform records (0-5) spawn before their riders in
+    /// record order (verified against the real export - see docs/plan-e4-deplacement-scripte.md E4.f's own
+    /// "Pourquoi" note), so by the time a rider's own spawn reaches this call every platform it could land
+    /// on is already present.
+    /// </summary>
+    private List<EntityScriptProxy> BuildCollidablesSnapshot()
+    {
+        var collidables = new List<EntityScriptProxy>();
+        EntitySupport.BuildCollidables(GetSpawnedEntityProxies(), collidables);
+        return collidables;
+    }
+
+    public override void Draw()
+    {
+        //Nothing to do at world level yet.
+    }
+
+    public override void OnHit(Collision collision)
+    {
+        //The world proxy does not participate in collisions.
+    }
+
+    public override void OnHitEnded(Collision collision)
+    {
+        //The world proxy does not participate in collisions.
+    }
+
+    public override void OnBeginPlay(World world)
+    {
+        //Entity creation happens in InitializeWithWorld so the engine integrates the entities
+        //(InternalAddEntities) before BeginPlay is dispatched to them.
+    }
+
+    public override void OnEndPlay(World world)
+    {
+        // D5.f: the inventory screen gives font3 back as its world ends (World.Clear calls this). The engine
+        // keeps the font pending, so the next world's screen takes the same instance again, unreloaded.
+        _inventoryScreen?.Dispose();
+        _inventoryScreen = null;
+
+        // E13.d SI4: the sub-inventory screen gives font3 back the same way.
+        _subInventoryScreen?.Dispose();
+        _subInventoryScreen = null;
+
+        // E16.e T4: the save screen gives font3 back the same way.
+        _saveScreen?.Dispose();
+        _saveScreen = null;
+
+        // E19.f2b1c F2B1C-R4: so does the text box screen.
+        _textBoxScreen?.Dispose();
+        _textBoxScreen = null;
+        _textBoxPresenter = null;
+
+        // E19.f3b F3B-R3: and the choice screen.
+        _choiceScreen?.Dispose();
+        _choiceScreen = null;
+        _choicePresenter = null;
+
+        // Engine ADR-0037: the HUD screen gives back its sprites the same way.
+        _hudScreen?.Dispose();
+        _hudScreen = null;
+
+        // Bound screens slice B4: the dialogue screen gives back the project's dialogue markup.
+        _dialoguePresenter?.Dispose();
+        _dialoguePresenter = null;
+
+        // E15.c T5 (contract item 1): give the map's and the shared Yarn dialogue assets back.
+        _mapDialogueAssetHandle?.Dispose();
+        _mapDialogueAssetHandle = null;
+        _sharedDialogueAssetHandle?.Dispose();
+        _sharedDialogueAssetHandle = null;
+    }
+
+    /// <summary>Test-only seam: the inventory screen <see cref="OnEndPlay"/> disposes, as
+    /// <see cref="TryWireInventoryScreenOnce"/> would have built it (which needs a live game).</summary>
+    internal void AttachInventoryScreenForTests(InventoryScreen screen)
+    {
+        _inventoryScreen = screen;
+    }
+
+    /// <summary>Test-only seam: the sub-inventory screen <see cref="OnEndPlay"/> disposes, as
+    /// <see cref="TryWireSubInventoryScreenOnce"/> would have built it (which needs a live game).</summary>
+    internal void AttachSubInventoryScreenForTests(SubInventoryScreen screen)
+    {
+        _subInventoryScreen = screen;
+    }
+
+    /// <summary>Test-only seam: the HUD screen <see cref="OnEndPlay"/> disposes, as
+    /// <see cref="TryWireHudScreenOnce"/> would have built it (which needs a live game).</summary>
+    internal void AttachHudScreenForTests(HudScreen screen)
+    {
+        _hudScreen = screen;
+    }
+
+    /// <summary>Test-only seam: the dialogue presenter <see cref="OnEndPlay"/> disposes, as
+    /// <see cref="TryWireDialoguePresenterOnce"/> would have built it (which needs a live game).</summary>
+    internal void AttachDialoguePresenterForTests(DialoguePresenter presenter)
+    {
+        _dialoguePresenter = presenter;
+    }
+
+    public override IGameplayProxy Clone()
+    {
+        //Still returns a fresh instance: the spawned-entity list is runtime state rebuilt by
+        //InitializeWithWorld (each world instance spawns and owns its own entities), not something a
+        //clone should share or carry over.
+        return new WorldProxy();
+    }
+}
+
+/// <summary>
+/// One <c>MapEvent</c> slot (GameEngine.cs's <c>MapEvent</c> struct) - see
+/// <see cref="WorldProxy.BuildMapEvents"/>/<see cref="WorldProxy.RunMapEventsPass"/> for how
+/// this is built and driven. A plain mutable class (not a struct): <see cref="RunMapEventsPass"/> mutates
+/// <see cref="Entity"/>/<see cref="ProgramBMap"/> in place across frames, exactly like the original's own
+/// persistent array slot.
+/// </summary>
+internal sealed class MapEvent
+{
+    public int Id;
+    public int X1, Y1, X2, Y2;
+    public int ProgramBMap;
+
+    /// <summary>The record's own program byte (+8 of the slot, written once at map load). The program byte the
+    /// interpreter keeps in <see cref="ProgramBMap"/> changes while the program runs (its high bit is the "started"
+    /// mark); out of zone the binary puts this original byte back. Required, so that a missing one cannot turn the
+    /// out-of-zone reset into a permanent disable.</summary>
+    public required int OriginalProgramBMap;
+
+    /// <summary>The map-event's own current "logic entity" (initially the player - see
+    /// <see cref="WorldProxy.BuildMapEvents"/>; retargeted by opcodes 0x42/0x43, E19.a, and kept from
+    /// one frame to the next).</summary>
+    public EntityScriptProxy? Entity;
+
+    public readonly EventProgramState EventData = new();
+}

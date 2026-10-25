@@ -1,0 +1,4 @@
+exec(open('bx.py').read().split("if __name__")[0])
+base=0x80022D3C
+for st in (0x00,0x01,0x1C,0x31,0x3A,0x3B,0x3E):
+    print(hex(st), hex(u32(base+4*st)))

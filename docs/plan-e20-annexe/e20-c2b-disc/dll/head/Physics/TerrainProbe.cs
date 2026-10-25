@@ -1,0 +1,125 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using CasaEngine.Core.Logging;
+using CasaEngine.Engine.Geometry;
+using CasaEngine.Engine.Physics;
+using CasaEngine.Framework.AI.Navigation;
+using CasaEngine.Framework.Physics;
+using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
+using CasaEngine.Framework.Scene.World;
+using CasaEngine.Framework.Scripting;
+using Microsoft.Xna.Framework;
+using Alundra.Entities;
+
+namespace Alundra.Physics;
+
+/// <summary>
+/// Owns the four static per-corner terrain samplers formerly on <see cref="EntityScriptProxy"/>:
+/// <c>SampleTerrainHeightCorner</c>, <c>ProbeSlopeCorner</c>, <c>SampleRawTileHeightCorner</c> and
+/// <c>SampleGroundCorner</c>. Pure `static`, stateless, moved by slice R4 of
+/// docs/plan-decoupage-proxies.md - a behaviour-preserving relocation only, see that plan's §3 for the
+/// exact delta rule (call qualification and the private-to-internal widening this move used on all
+/// four methods, per §1 constraint 4). The instance terrain methods that call these
+/// (<c>ComputeTerrainHeight</c>, <c>UpdateGroundSlope</c>, <c>GetTileHeightAtOffset</c>) stay on
+/// <see cref="EntityScriptProxy"/>, per R-1: they read <c>Owner</c> (`protected` on
+/// `GameplayProxy`) and form a call cycle with the controller bridge, which is out of scope for this
+/// plan.
+/// </summary>
+internal static class TerrainProbe
+{
+    internal static void SampleTerrainHeightCorner(ICollisionField field, int px, int py, ref int best)
+    {
+        if (field.TrySampleGround(new Vector3(px, py, 0f), float.MaxValue, out var sample) && sample.HasGround)
+        {
+            var height = (int)Math.Round((double)sample.GroundHeight * 65536.0);
+            if (height > best)
+            {
+                best = height;
+            }
+        }
+    }
+
+    internal static void ProbeSlopeCorner(
+        CellsCollisionField field, int px, int py, int moddedPosZ, ref uint bestFlagMask)
+    {
+        var position = new Vector3(px, py, 0f);
+        if (field.TrySampleGround(position, float.MaxValue, out var sample) && sample.HasGround)
+        {
+            var height = (int)Math.Round((double)sample.GroundHeight * 65536.0);
+            if (height == moddedPosZ)
+            {
+                var groundProperty = field.SampleGroundProperty(position);
+                var masked = ((uint)groundProperty << 8) & 0xe00u;
+                if (masked < bestFlagMask)
+                {
+                    bestFlagMask = masked;
+                }
+
+                return;
+            }
+        }
+
+        bestFlagMask = 0;
+    }
+
+    /// <summary>
+    /// T3 (docs/plan-transitions-carte.md D-T-10/§1.6): per-corner half of
+    /// <see cref="EntityScriptProxy.UpdateVramFlags"/> - port of the SAME qualification
+    /// <see cref="ProbeSlopeCorner"/> already uses (<c>PhysicsEngine.cs:1740-1768</c>'s gravity-branch
+    /// corner loop computes <see cref="EntityScriptProxy.Slope_18c"/> and
+    /// <see cref="EntityScriptProxy.CombinedVramFlagsOR"/>/<see cref="EntityScriptProxy.CombinedVramFlagsAND"/>
+    /// from the exact same four corners and the exact same per-corner qualification test in one pass -
+    /// see <see cref="EntityScriptProxy.UpdateVramFlags"/>'s own doc for why this port keeps them as
+    /// two separate probes instead of one combined method).
+    ///
+    /// A qualifying corner contributes the FULL reconstituted <c>MapTile.Flags</c>
+    /// (<c>walkability | (groundProperty &lt;&lt; 8)</c>, <c>CellsCollisionField.cs:295</c>) - NOT
+    /// the masked 0xe00 value <see cref="ProbeSlopeCorner"/> captures - since the caller needs the raw
+    /// 0x4 (hole)/0x8000 (portal floor) bits, which live outside that mask. A disqualified corner
+    /// contributes 0, exactly like <see cref="ProbeSlopeCorner"/>'s own <c>tempFlags[i] = 0</c> branch
+    /// (<c>PhysicsEngine.cs:1763</c>) - the caller ORs/ANDs the four contributions itself, since OR/AND
+    /// (unlike <see cref="ProbeSlopeCorner"/>'s running MIN) need all four values gathered first.
+    /// </summary>
+    internal static void ProbeVramFlagsCorner(CellsCollisionField field, int px, int py, int moddedPosZ, out uint tileFlags)
+    {
+        var position = new Vector3(px, py, 0f);
+        if (field.TrySampleGround(position, float.MaxValue, out var sample) && sample.HasGround)
+        {
+            var height = (int)Math.Round((double)sample.GroundHeight * 65536.0);
+            if (height == moddedPosZ)
+            {
+                var walkability = field.SampleRawWalkability(position);
+                var groundProperty = field.SampleGroundProperty(position);
+                tileFlags = (uint)(walkability | (groundProperty << 8));
+                return;
+            }
+        }
+
+        tileFlags = 0;
+    }
+
+    internal static void SampleRawTileHeightCorner(CellsCollisionField field, int px, int py, ref int best)
+    {
+        var height = field.SampleRawCellHeight(new Vector3(px, py, 0f));
+        if (height > best)
+        {
+            best = height;
+        }
+    }
+
+    internal static void SampleGroundCorner(ICollisionField field, float x, float y, ref bool hasGround, ref float groundMax)
+    {
+        if (!field.TrySampleGround(new Vector3(x, y, 0f), float.MaxValue, out var sample) || !sample.HasGround)
+        {
+            return;
+        }
+
+        if (!hasGround || sample.GroundHeight > groundMax)
+        {
+            groundMax = sample.GroundHeight;
+            hasGround = true;
+        }
+    }
+}

@@ -1,0 +1,326 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text.Json;
+using CasaEngine.Core.Logging;
+using CasaEngine.Engine.Physics;
+using CasaEngine.Framework.Assets.TileMap;
+using Microsoft.Xna.Framework;
+using Alundra.Maps;
+using Alundra.Entities;
+using Alundra.Cells;
+
+namespace Alundra.Physics;
+
+/// <summary>
+/// <see cref="ICollisionField"/> over one map's <see cref="CellsRecords"/>, in the LOGICAL
+/// space E3.a established (X east, Y depth, Z elevation - <c>up = Vector3.UnitZ</c>). Built once per
+/// world by <see cref="WorldProxy.InitializeWithWorld"/> from the loaded
+/// <see cref="TileMapData"/> and installed as <c>World.CollisionField</c>.
+///
+/// Every rule below is a port of the FIRST-CORNER branch of
+/// <c>PhysicsEngine.ComputeEntityGroundHeight</c> @ 0x800370c4 (PhysicsEngine.cs:956-1073) - the
+/// original samples all 4 corners of an entity's footprint and takes the highest, accumulating
+/// <c>slopesHit</c> so a later corner of a multi-cell sloped footprint gets +16 instead of
+/// re-deriving its own slope formula (PhysicsEngine.cs:1021-1024, :1037-1040, :1053-1056); this field
+/// samples a single point and never applies that +16 bump - E3.c's mover takes the max of 4 corner
+/// samples instead, which reproduces the "highest corner wins" outcome but not the exact per-corner
+/// value on a sloped multi-cell footprint. Documented deviation, not reproduced here.
+///
+/// Further documented deviations from the generic <see cref="ICollisionField"/> contract (all carried
+/// over from the original, which never treats "no ground" as a real state - see
+/// <c>PhysicsEngine.GetCollisionFlags</c>/<c>GetCollisionFlagsWithPlayer</c>, which decide walkability
+/// from <see cref="GroundSample.IsWalkable"/> and a separate height compare, never from "ground
+/// missing"):
+/// <list type="bullet">
+/// <item><description><see cref="GroundSample.HasGround"/> is always true, even for a position outside
+/// the grid (clamped to the nearest edge cell, PhysicsEngine.cs:979-989) - a point off the map still
+/// has ground.</description></item>
+/// <item><description><see cref="GroundSample.GroundHeight"/> is returned even when it is above the
+/// sampled position; the original's mover decides on top of it
+/// (<c>IsOnGround = FloorHeight &gt;= PosZ</c>, landing by clamp, walking blocked past 3px) - deferred
+/// to E3.c.</description></item>
+/// <item><description><c>maxDropDistance</c> is ignored - the original has no fall-distance
+/// limit.</description></item>
+/// </list>
+/// </summary>
+public sealed class CellsCollisionField : ICollisionField
+{
+    /// <summary>
+    /// Base walkability mask used by the mask-less <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/>
+    /// overload - <c>PhysicsEngine.GetCollisionFlags</c>' own default before ClassA/ClassB are folded in
+    /// (PhysicsEngine.cs:1139).
+    /// </summary>
+    public const uint BaseWalkabilityMask = 0x40;
+
+    // StaticVariables.MapTileWidth/MapTileHeight (StaticVariables.cs:57-58).
+    private const int CellWidthPx = 24;
+    private const int CellHeightPx = 16;
+
+    private readonly int _width;
+    private readonly int _height;
+    private readonly int[] _walkability;
+    private readonly int[] _groundProperty;
+    private readonly int[] _slope;
+    private readonly int[] _cellHeight;
+    private readonly string?[] _surfaceTagCache = new string?[256];
+
+    private CellsCollisionField(int width, int height, CellsRecords records)
+    {
+        _width = width;
+        _height = height;
+        _walkability = records.Walkability;
+        _groundProperty = records.GroundProperty;
+        _slope = records.Slope;
+        _cellHeight = records.Height;
+
+        // Precompute every one of the 256 possible SurfaceTag strings once, here, so TrySampleGround
+        // never allocates. E7.a (docs/plan-e7-mutation-tuiles.md): pre-filled for every value, not just
+        // the ones present at load time - a live mutation (0x54/0x55/0x85, via CellStore, which
+        // aliases these SAME arrays) can introduce a GroundProperty byte this map's export never used;
+        // before this change such a value would have missed the cache and fallen back to "" (documented
+        // micro-deviation, harmless in practice since the string is only a debug-facing SurfaceTag, but
+        // no longer needed now that filling all 256 costs nothing extra).
+        for (var groundProperty = 0; groundProperty < _surfaceTagCache.Length; groundProperty++)
+        {
+            _surfaceTagCache[groundProperty] = groundProperty.ToString(CultureInfo.InvariantCulture);
+        }
+    }
+
+    /// <summary>
+    /// Parses <paramref name="tileMapData"/>'s "AlundraCells" custom property and, when it is present,
+    /// well formed, and its cell_count matches <paramref name="tileMapData"/>'s own
+    /// <see cref="TileMapData.MapSize"/> (52x60 / 3120 cells on map 389), returns the field. Any
+    /// failure - parse or size mismatch - logs a single warning and returns false: degraded mode, no
+    /// field installed for that world.
+    /// </summary>
+    public static bool TryCreate(TileMapData tileMapData, string worldName, out CellsCollisionField? field)
+        => TryCreate(tileMapData, worldName, out field, out _);
+
+    /// <summary>
+    /// Same as <see cref="TryCreate(TileMapData, string, out CellsCollisionField?)"/>, but also
+    /// hands back the parsed <paramref name="records"/> - E7.a (docs/plan-e7-mutation-tuiles.md,
+    /// slice E7.a "share one parsed instance"): a caller that also wants an <see cref="CellStore"/>
+    /// for the SAME world builds it from these exact <paramref name="records"/> instead of re-parsing the
+    /// "AlundraCells" custom property a second time, so both the field's aliased arrays and the store's
+    /// mutations operate on the SAME <c>int[]</c> instances (element mutation instantly visible to
+    /// <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/>/<see cref="SampleGroundProperty"/>/
+    /// <see cref="SampleRawCellHeight"/> - no separate parse, no copy).
+    /// </summary>
+    public static bool TryCreate(
+        TileMapData tileMapData, string worldName, out CellsCollisionField? field, out CellsRecords? records)
+    {
+        field = null;
+        records = null;
+
+        if (!CellsRecords.TryParse(tileMapData.CustomProperties, worldName, out var parsedRecords))
+        {
+            return false;
+        }
+
+        var width = tileMapData.MapSize.Width;
+        var height = tileMapData.MapSize.Height;
+        var expectedCellCount = width * height;
+
+        if (parsedRecords.CellCount != expectedCellCount || parsedRecords.Walkability.Length != expectedCellCount)
+        {
+            Logs.WriteWarning(
+                $"CellsCollisionField: world '{worldName}' - AlundraCells cell_count "
+                + $"({parsedRecords.CellCount}) does not match TileMapData.MapSize ({width}x{height}="
+                + $"{expectedCellCount}); collision field not installed (degraded mode).");
+            return false;
+        }
+
+        field = new CellsCollisionField(width, height, parsedRecords);
+        records = parsedRecords;
+        return true;
+    }
+
+    /// <summary>
+    /// <c>0x40 | (ClassB ? 0x01 : 0) | (ClassA ? 0x1000 : 0)</c> - port of the per-entity mask built at
+    /// the top of <c>PhysicsEngine.GetCollisionFlagsWithPlayer</c> (PhysicsEngine.cs:1085-1099) and
+    /// <c>PhysicsEngine.GetCollisionFlags</c> (PhysicsEngine.cs:1139-1149): both start from 0x40, widen
+    /// to 0x41 when the entity carries <see cref="EntityFlags.ClassB"/> (bit 3, 0x8), and OR in 0x1000
+    /// when it carries <see cref="EntityFlags.ClassA"/> (bit 0, 0x1).
+    /// </summary>
+    public static uint WalkabilityMaskFor(uint entityFlags)
+    {
+        var mask = BaseWalkabilityMask;
+
+        if ((entityFlags & EntityFlags.ClassB) != 0)
+        {
+            mask |= 0x01;
+        }
+
+        if ((entityFlags & EntityFlags.ClassA) != 0)
+        {
+            mask |= 0x1000;
+        }
+
+        return mask;
+    }
+
+    public bool TrySampleGround(in Vector3 worldPosition, float maxDropDistance, out GroundSample sample)
+        => TrySampleGround(worldPosition, maxDropDistance, BaseWalkabilityMask, out sample);
+
+    public bool TrySampleGround(in Vector3 worldPosition, float maxDropDistance, uint walkabilityMask, out GroundSample sample)
+    {
+        var x = (int)MathF.Floor(worldPosition.X);
+        var y = (int)MathF.Floor(worldPosition.Y);
+
+        // cell = (x / 24, y / 16), clamped to [0, width-1] x [0, height-1] - PhysicsEngine.cs:979-989.
+        // A point outside the grid therefore has ground (documented deviation, see class doc).
+        var cellX = Math.Clamp(x / CellWidthPx, 0, _width - 1);
+        var cellY = Math.Clamp(y / CellHeightPx, 0, _height - 1);
+        var cellIndex = cellY * _width + cellX;
+
+        var cellHeight = _cellHeight[cellIndex];
+        var groundHeight = ComputeGroundHeight(_slope[cellIndex] & 0x3, cellHeight, x, y);
+
+        var walkability = (uint)_walkability[cellIndex];
+        var groundProperty = _groundProperty[cellIndex];
+        var tileFlags = walkability | ((uint)groundProperty << 8);
+        var isWalkable = (tileFlags & walkabilityMask) == 0;
+        var surfaceTag = _surfaceTagCache[groundProperty & 0xFF];
+
+        sample = new GroundSample(groundHeight, Vector3.UnitZ, isWalkable, surfaceTag ?? string.Empty);
+        return true;
+    }
+
+    /// <summary>
+    /// Raw per-cell <c>GroundProperty</c> (E1, docs/plan-echelles-chiffrage.md É1) - additive numeric
+    /// accessor next to <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/>, which already
+    /// reads this exact same <c>_groundProperty[cellIndex]</c> internally but, until now, only exposed it
+    /// through <see cref="GroundSample.SurfaceTag"/>'s string form (<c>_surfaceTagCache</c>). Needed
+    /// because <c>PhysicsEngine.UpdateTileAttributes</c>'s <c>Slope_18c</c> four-corner rule
+    /// (PhysicsEngine.cs:1706-1826, ported in <see cref="EntityScriptProxy.UpdateGroundSlope"/>)
+    /// reads <c>GroundProperty</c> bits directly, not a surface-tag string. Same clamp-to-nearest-cell
+    /// convention as <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/> (never fails -
+    /// see that method's own doc on the out-of-grid deviation); does not touch any existing member.
+    /// </summary>
+    public int SampleGroundProperty(in Vector3 worldPosition)
+    {
+        var x = (int)MathF.Floor(worldPosition.X);
+        var y = (int)MathF.Floor(worldPosition.Y);
+
+        var cellX = Math.Clamp(x / CellWidthPx, 0, _width - 1);
+        var cellY = Math.Clamp(y / CellHeightPx, 0, _height - 1);
+        var cellIndex = cellY * _width + cellX;
+
+        return _groundProperty[cellIndex];
+    }
+
+    /// <summary>
+    /// Raw per-cell <c>Walkability</c> (E7.a, docs/plan-e7-mutation-tuiles.md) - additive numeric
+    /// accessor next to <see cref="SampleGroundProperty"/>, exposing this exact same
+    /// <c>_walkability[cellIndex]</c> instead of only its mask-combined form through
+    /// <see cref="TrySampleGround(in Vector3, float, uint, out GroundSample)"/>'s <c>IsWalkable</c>.
+    /// Needed so a test can assert the EXACT bit pattern <see cref="CellStore.SetCellBits"/>/
+    /// <see cref="CellStore.ClearCellBits"/> left behind (0x54/0x55), the same way
+    /// <see cref="SampleGroundProperty"/> already lets a test assert GroundProperty exactly rather than
+    /// only through a walkability-mask side effect. Same clamp-to-nearest-cell convention as
+    /// <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/> (never fails); does not touch
+    /// any existing member.
+    /// </summary>
+    public int SampleRawWalkability(in Vector3 worldPosition)
+    {
+        var x = (int)MathF.Floor(worldPosition.X);
+        var y = (int)MathF.Floor(worldPosition.Y);
+
+        var cellX = Math.Clamp(x / CellWidthPx, 0, _width - 1);
+        var cellY = Math.Clamp(y / CellHeightPx, 0, _height - 1);
+        var cellIndex = cellY * _width + cellX;
+
+        return _walkability[cellIndex];
+    }
+
+    /// <summary>
+    /// Raw per-cell <c>Height</c> (E3, docs/plan-echelles-chiffrage.md É3) - additive numeric accessor
+    /// next to <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/>, exposing this exact
+    /// same <c>_cellHeight[cellIndex]</c> BEFORE <see cref="ComputeGroundHeight"/>'s per-slope
+    /// interpolation is applied (cell units - 1 unit = 16 px; NOT the interpolated pixel height
+    /// <see cref="GroundSample.GroundHeight"/> returns). Needed because
+    /// <c>EntityGameplayManager.GetTileHeightAtOffset</c> (EntityGameplayManager.cs:277-345) reads
+    /// <c>tile.Height</c> directly and never interpolates by slope - unlike
+    /// <c>PhysicsEngine.ComputeEntityGroundHeight</c> (PhysicsEngine.cs:1007-1061, the function
+    /// <see cref="ComputeGroundHeight"/> actually ports), which is a DIFFERENT original function that
+    /// happens to read the same per-cell table. Same clamp-to-nearest-cell convention as
+    /// <see cref="TrySampleGround(in Vector3, float, out GroundSample)"/> (never fails - see that
+    /// method's own doc on the out-of-grid deviation); does not touch any existing member.
+    /// </summary>
+    public int SampleRawCellHeight(in Vector3 worldPosition)
+    {
+        var x = (int)MathF.Floor(worldPosition.X);
+        var y = (int)MathF.Floor(worldPosition.Y);
+
+        var cellX = Math.Clamp(x / CellWidthPx, 0, _width - 1);
+        var cellY = Math.Clamp(y / CellHeightPx, 0, _height - 1);
+        var cellIndex = cellY * _width + cellX;
+
+        return _cellHeight[cellIndex];
+    }
+
+    /// <summary>
+    /// E20.f2: one cell by the binary's own indexing (the flail bounce, <c>0x800305E0-0x80030624</c>): the cell is at <c>[0x800DD86C] + 0x604 + row * 416 + column * 8</c>, a grid of 52 columns of 8
+    /// bytes, addressed by the caller's already clamped <paramref name="column"/> (0 to <c>0x33</c>) and <paramref name="row"/> (0 to <c>0x3B</c>) - NOT by a world position, and NOT clamped to the map. Every map of the
+    /// export is 52 x 60 (<see cref="MapSizeReader"/>, F3), so the field's <c>row * width + column</c> is the binary's own cell; the arrays are the ones <see cref="CellStore"/> mutates, so a live
+    /// mutation (0x54, 0x55, 0x85) is seen here. <paramref name="heightUnits"/> is the cell's height byte (<c>lbu 3(cell)</c>, units of 16 px) and <paramref name="walkability"/> its walkability byte (the low
+    /// byte of <c>lhu (cell)</c>, whose bit <c>0x40</c> the flail tests). Returns false, with zeros, when the cell is outside this field (a test field narrower than 52 x 60): the binary has a cell there that
+    /// the field does not hold.
+    /// </summary>
+    public bool TryReadBinaryCell(int column, int row, out int heightUnits, out int walkability)
+    {
+        if ((uint)column >= (uint)_width || (uint)row >= (uint)_height)
+        {
+            heightUnits = 0;
+            walkability = 0;
+            return false;
+        }
+
+        var cellIndex = row * _width + column;
+        heightUnits = _cellHeight[cellIndex] & 0xFF;
+        walkability = _walkability[cellIndex] & 0xFF;
+        return true;
+    }
+
+    /// <summary>
+    /// Height (px) of one point, ported from the single-corner body of the
+    /// <c>switch (tile.Slope &amp; 0x3)</c> in <c>ComputeEntityGroundHeight</c>
+    /// (PhysicsEngine.cs:1009-1061), without the <c>slopesHit</c> multi-corner +16 bump (see class
+    /// doc).
+    /// </summary>
+    private static float ComputeGroundHeight(int slopeKind, int cellHeight, int x, int y)
+    {
+        switch (slopeKind)
+        {
+            case 1: // Stairs up/down - PhysicsEngine.cs:1014-1019.
+            {
+                var yMod = Mod(y, CellHeightPx);
+                return (cellHeight - 1) * CellHeightPx + CellHeightPx - yMod;
+            }
+
+            case 2: // Ladder entering / stair side down - PhysicsEngine.cs:1030-1035.
+            {
+                var xIndex = Mod(23 - Mod(x, CellWidthPx), CellWidthPx);
+                return (cellHeight - 1) * CellHeightPx + AnimationTables.HeightsTable_800236d4[xIndex];
+            }
+
+            case 3: // Ladder exiting - PhysicsEngine.cs:1046-1051.
+            {
+                var xIndex = Mod(x, CellWidthPx);
+                return (cellHeight - 1) * CellHeightPx + AnimationTables.HeightsTable_800236d4[xIndex];
+            }
+
+            default: // Normal tile - PhysicsEngine.cs:1011-1012 (slopeKind == 0).
+                return cellHeight * CellHeightPx;
+        }
+    }
+
+    /// <summary>Positive modulo (C#'s <c>%</c> keeps the dividend's sign; the table indices below never do).</summary>
+    private static int Mod(int value, int modulus)
+    {
+        var m = value % modulus;
+        return m < 0 ? m + modulus : m;
+    }
+}

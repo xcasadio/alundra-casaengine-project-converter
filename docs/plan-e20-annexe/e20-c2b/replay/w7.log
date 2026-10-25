@@ -1,0 +1,52 @@
+== W7 hurt in the water (information for E20.c2b; the entry 0x80031A68 is the real code).  The Beannoid of map 14 (inert) is at (252,96) = target spec (20,11,0) ==
+hurt at rest idle : anim 0-1:1D 2-5:3A 6-14:3B 15-80:1D | hurt tick 2 | dir 0-1:18 2-14:08 15-80:18 | F(x) from hurt [-196608, -196608, -196608, -196608, -184320, -172032] | pos x 232.0 -> 196.84 | hp 0-1:0A 2-80:09
+hurt at rest idle3: anim 0-1:1D 2-5:3A 6-14:3B 15-60:1D | hurt tick 2 | dir 0-1:18 2-14:08 15-60:18 | F(x) from hurt [-196608, -196608, -196608, -196608, -184320, -172032] | pos x 232.0 -> 196.84 | hp 0-1:0A 2-60:09
+   t1   1D>1D dir 18/18 f3 F(0,0,0) pos(232.00,96.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[9, 9, 9]
+   t2   3A>3A dir 08/08 f2 F(-196608,0,0) pos(229.00,96.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[23] fx[]
+   t3   3A>3A dir 08/08 f2 F(-196608,0,0) pos(226.00,96.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t4   3A>3A dir 08/08 f2 F(-196608,0,0) pos(223.00,96.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+hurt while swimming Right: anim 0-2:1D 3-58:0F 59-62:3A 63-71:3B 72:1D 73-100:0F | hurt tick 59
+   t57  0F>0F dir 18/18 f3 F(110592,0,0) pos(230.16,96.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+   t58  0F>0F dir 18/18 f3 F(110592,0,0) pos(231.84,96.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[9, 9, 9]
+   t59  3A>3A dir 08/08 f2 F(-196608,0,0) pos(228.84,96.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[23] fx[]
+   t60  3A>3A dir 08/08 f2 F(-196608,0,0) pos(225.84,96.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+   t61  3A>3A dir 08/08 f2 F(-196608,0,0) pos(222.84,96.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+   t62  3A>3A dir 08/08 f2 F(-196608,0,0) pos(219.84,96.00,0.00) g1 adj0 sl4 b0=1 ch0 snd[] fx[]
+   t63  3B>3B dir 08/08 f2 F(-184320,0,0) pos(217.03,96.00,0.00) g1 adj0 sl4 b0=2 ch0 snd[0] fx[]
+   t64  3B>3B dir 08/08 f2 F(-172032,0,0) pos(214.41,96.00,0.00) g1 adj0 sl4 b0=2 ch0 snd[] fx[]
+   t65  3B>3B dir 08/08 f2 F(-159744,0,0) pos(211.97,96.00,0.00) g1 adj0 sl4 b0=2 ch0 snd[] fx[]
+  pad Right still held through 0x3A/0x3B: F(x) from the hurt [-196608, -196608, -184320, -159744, -135168, -110592, -86016, -63648, -40416, -17184]; dir_target 0-58:18 59-71:08 72-100:18
+  dive at 35: dive starts 35, hurt tick 79, state just before the hurt 0F | anim 0-2:1D 3-34:0F 35-76:28 77:1D 78:0F 79-82:3A 83-91:3B 92:1D 93-110:0F
+  dive at 45: dive starts 45, hurt tick 81, state just before the hurt 28 | anim 0-2:1D 3-44:0F 45-80:28 81-84:3A 85-93:3B 94:1D 95-110:0F
+  dive at 55: dive starts 55, hurt tick 83, state just before the hurt 28 | anim 0-2:1D 3-54:0F 55-82:28 83-86:3A 87-95:3B 96:1D 97-110:0F
+  dive at 60: dive starts 60, hurt tick 84, state just before the hurt 28 | anim 0-2:1D 3-59:0F 60-83:28 84-87:3A 88-96:3B 97:1D 98-110:0F
+  dive at 65: dive starts 65, hurt tick 84, state just before the hurt 28 | anim 0-2:1D 3-64:0F 65-83:28 84-87:3A 88-96:3B 97:1D 98-110:0F
+  dive at 70: dive starts 70, hurt tick 85, state just before the hurt 28 | anim 0-2:1D 3-69:0F 70-84:28 85-88:3A 89-97:3B 98:1D 99-110:0F
+  dive at 75: dive starts 75, hurt tick 86, state just before the hurt 28 | anim 0-2:1D 3-74:0F 75-85:28 86-89:3A 90-98:3B 99:1D 100-110:0F
+hurt at the shore (slope 0-60:00): anim 0-1:00 2-5:31 6-16:1C 17-60:00 | slope 0-60:00
+hurt then knocked out of the water (start x 352): anim 0-1:1D 2-4:3A 5-60:00 | slope 0-3:04 4-60:00 | dir_target 0-1:18 2-4:08 5-60:18 | F(x) from the hurt [-196608, -196608, -196608, -98304, 0, 0, 0, 0] | x end 341.50
+   t1   1D>1D dir 18/18 f3 F(0,0,0) pos(352.00,96.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[9, 9, 9]
+   t2   3A>3A dir 08/08 f2 F(-196608,0,0) pos(349.00,96.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[23] fx[]
+   t3   3A>3A dir 08/08 f2 F(-196608,0,0) pos(346.00,96.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t4   3A>3A dir 08/08 f2 F(-196608,0,0) pos(343.00,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+   t5   00>00 dir 18/18 f3 F(-98304,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[0] fx[]
+   t6   00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+   t7   00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+   t8   00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+   t9   00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+   t10  00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+hurt then knocked out of the water (start x 346): anim 0-1:1D 2:3A 3-60:00 | slope 0-1:04 2-60:00 | dir_target 0-1:18 2:08 3-60:18 | F(x) from the hurt [-196608, -98304, 0, 0, 0, 0, 0, 0] | x end 341.50
+   t1   1D>1D dir 18/18 f3 F(0,0,0) pos(346.00,96.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[9, 9, 9]
+   t2   3A>3A dir 08/08 f2 F(-196608,0,0) pos(343.00,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[23] fx[]
+   t3   00>00 dir 18/18 f3 F(-98304,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[0] fx[]
+   t4   00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+   t5   00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+   t6   00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+   t7   00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+   t8   00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+   t9   00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+   t10  00>00 dir 18/18 f3 F(0,0,0) pos(341.50,96.00,0.00) g1 adj0 sl0 b0=0 ch0 snd[] fx[]
+contact kept: hp 0-1:0A 2-121:09 122-241:08 242-300:07 | anim 0-1:1D 2-5:3A 6-14:3B 15-121:1D 122-125:3A 126-134:3B 135-241:1D 242-245:3A 246-254:3B 255-300:1D
+  T pressed during the hurt: anim 0-1:1D 2-5:3A 6-14:3B 15-19:1D 20-60:28
+  X pressed during the hurt: anim 0-1:1D 2-5:3A 6-14:3B 15-19:1D 20-60:28
+

@@ -1,0 +1,22 @@
+== reads of hero+0x88 (0x7db8)
+  8002f510 in 8002f49c(+74) ; consts near: [(10, ('slti', 60))]
+  8002fb18 in 8002f88c(+28c) ; consts near: [(10, ('slti', 72))]
+  800301d8 in 8002fb1c(+6bc) ; consts near: [(3, ('slti', 74))]
+  80030434 in 8002fb1c(+918) ; consts near: [(3, ('slti', 23))]
+  80030dcc in 800307e8(+5e4) ; consts near: []
+  80031d84 in 80031b50(+234) ; consts near: [(2, ('slti', 80))]
+  80032628 in 80031b50(+ad8) ; consts near: [(2, ('slti', 80))]
+  800354a0 in 80035320(+180) ; consts near: []
+  8003574c in 800354d0(+27c) ; consts near: []
+  80035c3c in 80035a84(+1b8) ; consts near: []
+  80035e8c in 80035c64(+228) ; consts near: []
+  800361d4 in 80035eb0(+324) ; consts near: []
+  80036324 in 80036218(+10c) ; consts near: []
+  80039314 in 80039300(+14) ; consts near: []
+== reads of hero+0x1CC (0x7efc)
+== reads of hero+0x1D0 (0x7f00)
+== reads of hero+0x224 (0x7f54)
+  800667f8 in 800665a0(+258) ; consts near: []
+  80066e58 in 80066bf8(+260) ; consts near: []
+  8006f8b8 in 8006eb9c(+d1c) ; consts near: []
+  8007d2b0 in 8007c770(+b40) ; consts near: []

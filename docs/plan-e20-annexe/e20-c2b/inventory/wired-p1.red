@@ -1,0 +1,28 @@
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M1_TheFlatThrow_TouchesTheGroundAtT22_TheSound24AndTheAnimation0AtT23_TheFlagsUnchanged(index: 2, moving: False)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M1_TheFlatThrow_TouchesTheGroundAtT22_TheSound24AndTheAnimation0AtT23_TheFlagsUnchanged(index: 2, moving: True)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M1_TheFlatThrow_TouchesTheGroundAtT22_TheSound24AndTheAnimation0AtT23_TheFlagsUnchanged(index: 3, moving: False)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M1_TheFlatThrow_TouchesTheGroundAtT22_TheSound24AndTheAnimation0AtT23_TheFlagsUnchanged(index: 3, moving: True)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M1_TheFlatThrow_TouchesTheGroundAtT22_TheSound24AndTheAnimation0AtT23_TheFlagsUnchanged(index: 4, moving: False)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M1_TheFlatThrow_TouchesTheGroundAtT22_TheSound24AndTheAnimation0AtT23_TheFlagsUnchanged(index: 4, moving: True)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M1_TheFlatThrow_TouchesTheGroundAtT22_TheSound24AndTheAnimation0AtT23_TheFlagsUnchanged(index: 5, moving: False)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M1_TheFlatThrow_TouchesTheGroundAtT22_TheSound24AndTheAnimation0AtT23_TheFlagsUnchanged(index: 5, moving: True)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsAndLands(index: 2)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsAndLands(index: 3)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsAndLands(index: 4)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M2_TheWallInTheColumn6_NoRebound_TheObjectStopsAgainstTheWall_ThenFallsAndLands(index: 5)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimation0AtT47(index: 2)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimation0AtT47(index: 3)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimation0AtT47(index: 4)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M3_TheBandOf0x1001_TheObjectGlidesThreePixelsPerTick_UntilT46_TheAnimation0AtT47(index: 5)
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M6_TheObjectOnThePlate_LandsAtT20_TheSupportAtT21_StaysThere
+  Échoué Alundra.Tests.Ai.Objects.C4WorldTests.M6_TheSecondObjectThrownOntoTheFirst_LandsOnItAtXZ163And30_TheFirstKeepsThePlate
+  Échoué Alundra.Tests.Ai.Objects.PitFallWorldTests.P3_TheStoneTheStarAndTheTrunkThrownOnAHole_DisappearAtT23_WithTheEffect10(index: 2)
+  Échoué Alundra.Tests.Ai.Objects.PitFallWorldTests.P3b_ASingleCornerOnTheHoleOrTheExit_IsEnough_TheOrOfTheCorners(index: 2, ground: "corner")
+  Échoué Alundra.Tests.Ai.Objects.PitFallWorldTests.P3b_ASingleCornerOnTheHoleOrTheExit_IsEnough_TheOrOfTheCorners(index: 2, ground: "cornerexit")
+  Échoué Alundra.Tests.Combat.HitPassTests.H1both_TheSwingAndTheBodyOfABeannoid20PixelsAway_HitEachOtherAtTick1_SixSparks
+  Échoué Alundra.Tests.Combat.HitPassTests.H3_TheHeroWalkingIntoABeannoid_IsTouchedAtTick17_TheCountersClearItAtTick18_TheHeroDoesNotLoseLifeYet
+  Échoué Alundra.Tests.Combat.HitPassTests.TheReachBehindTheHero_Beyond9Pixels_IsOnlyContactedByTheLateFrames_BecauseTheHeroIsNotHurtYet
+  Échoué Alundra.Tests.Combat.HitPassTests.TheReachInX_AtDyZero_IsTheOracleOne_FromMinus9To59Pixels(dx: -8)
+  Échoué Alundra.Tests.Combat.HitPassTests.TheReachInX_AtDyZero_IsTheOracleOne_FromMinus9To59Pixels(dx: -9)
+  Échoué Alundra.Tests.Combat.HitPassTests.TheReachInX_AtDyZero_IsTheOracleOne_FromMinus9To59Pixels(dx: 20)
+  Échoué Alundra.Tests.Combat.HitPassTests.WhileTheContactLasts_ABeannoidTouchesTheHero_EveryTwentyFiveTicks_AndHisDamagedCounterStaysAtZero

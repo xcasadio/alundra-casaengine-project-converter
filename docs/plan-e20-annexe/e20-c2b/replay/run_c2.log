@@ -1,0 +1,39 @@
+[   0.0s] 1. D1 gate (S-A, S-B)
+[  36.4s]    D1: PASS, files equal to c1b: 19, different: []
+[  36.4s] 3. scenarios on emu.py: 16 scenarios, 105 runs, 7979 ticks
+[  41.2s]    A1   2 runs  460 ticks
+[  52.9s]    A2  20 runs  800 ticks
+[  56.2s]    A4  12 runs   96 ticks
+[  67.6s]    A6   7 runs 1052 ticks
+[  81.6s]    B1  12 runs 1500 ticks
+[  84.0s]    B2   3 runs  240 ticks
+[  93.3s]    D1  16 runs  930 ticks
+[  96.4s]    E1   3 runs  300 ticks  (informational)
+[  97.8s]    E2   5 runs   50 ticks
+[  98.7s]    E3   4 runs   12 ticks
+[ 103.0s]    F1   1 runs  450 ticks
+[ 107.3s]    F2   1 runs  450 ticks
+[ 112.2s]    F4   2 runs  500 ticks
+[ 120.2s]    F5   2 runs  900 ticks
+[ 123.0s]    G   13 runs   39 ticks
+[ 125.3s]    C1   2 runs  200 ticks  (informational)
+[ 125.3s] 2. H3 of E20.c1 and A1
+[ 125.9s]    H3 re-run equal; A1 vs H3 equal (4005 values), tick 18 equal
+[ 125.9s]    model: 1412 rule checks, 0 differences
+[ 125.9s] 4. second interpreter (mips.py via interp2.py) on every run
+[ 228.3s]    diff2: identical
+[ 228.3s] 5. mutation tests
+[ 269.3s]    mutations: PASS
+[ 269.3s]    coverage complete, load delay PASS
+== verdicts
+   PASS  D1 gate: S-A and S-B, 216 values each, 0 differences (tools/run_all.py of the copied base, exit code 0)
+   PASS  D1 gate: the 19 files of out/d1 equal E20.c1b's out/d1 byte for byte (differences: none)
+   PASS  H3 re-run with the copied tools equals e20-c1/oracle/out/H3.json (rows equal, start state equal, ComputeNewHp experiments equal)
+   PASS  A1 rows 1..45 equal H3 of E20.c1 on every common column (4005 values); the tick-18 row equals H3's
+   PASS  independent model equals the oracle on every rule of every run (1412 rule checks over 105 runs, 0 differences)
+   PASS  two interpreters (emu.py, mips.py) agree on every run (rows, slots after every tick, journal, RNG), 105 runs / 7979 ticks
+   PASS  mutation tests: every mutation caught (predicate written beforehand + independent model disagrees), every control as expected (14 mutations, 1 patch control, 1 dispatcher check)
+   PASS  coverage: every instruction of 0x80031A68, of the regeneration block 0x80030C20-0x80030D40 and of the END epilogue executed (one documented unreachable instruction, 0x80030D20)
+   PASS  load-delay hazard check over every executed instruction
+manifest: 60 files, IDENTICAL to the manifest of the previous run
+total 269.5 s; exit code 0

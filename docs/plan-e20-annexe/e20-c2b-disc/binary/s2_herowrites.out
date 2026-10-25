@@ -1,0 +1,40 @@
+== (a) absolute-address stores to hero fields ==
+8003267c sw TargetAnim in 80031b50(+b2c)
+80034514 sw TargetAnim in 80034328(+1ec)
+8003548c sw TargetAnim in 80035320(+16c)
+80035738 sw TargetAnim in 800354d0(+268)
+800359e4 sw TargetAnim in 80035790(+254)
+80035e78 sw TargetAnim in 80035c64(+214)
+800361c0 sw TargetAnim in 80035eb0(+310)
+80036310 sw TargetAnim in 80036218(+f8)
+8007fc78 sw TargetAnim in 8007fb58(+120)
+== (b) functions materialising &hero (0x80127D30) and stores through that register ==
+func 8002baec: &hero at ['8002bb7c'] ; [(2147662888, 'sw', 'Hp'), (2147662892, 'sw', 'Invuln')]
+func 8002edbc: &hero at ['8002ee08', '8002ee54'] ; [(2147675660, 'sw', 'Carried2C'), (2147675724, 'sw', 'TargetAnim')]
+func 8002eeac: &hero at ['8002eeb4', '8002ef40'] ; [(2147675900, 'sw', 'TargetAnim')]
+func 8002fb1c: &hero at ['8002fb70', '8002fbec', '8002fdc4', '8002fdcc', '8002fe28', '8002fe74', '8002fef8', '8002ff54', '8002ffe8', '800300a8', '80030228', '800302bc', '800303e0', '80030488'] ; [(2147681472, 'sw', 'TargetAnim'), (2147681496, 'sw', 'TargetAnim')]
+func 800307e8: &hero at ['80030c3c', '80030d08'] ; [(2147683624, 'sw', 'Hp')]
+func 80031974: &hero at ['800319c8'] ; [(2147686916, 'sw', 'HpMax'), (2147686920, 'sw', 'Hp')]
+func 80031a68: &hero at ['80031a74'] ; [(2147687208, 'sw', 'Hp')]
+func 80031b50: &hero at ['80031b94', '80031c8c', '80031d30', '80031db8', '80031dd4', '80031dfc', '80031e1c', '80031e3c', '80031eb8', '80031f84', '80032004', '80032138', '80032218', '800322c4', '80032300', '80032330', '800324bc', '8003253c', '80032568', '800325cc', '800325ec', '8003265c', '80032694', '80032710', '800327f4', '800328b0', '800328dc', '8003291c'] ; [(2147687468, 'sw', 'Invuln'), (2147687556, 'sw', 'TargetAnim'), (2147687572, 'sw', 'TargetDir'), (2147687580, 'sw', 'Invuln'), (2147687780, 'sw', 'TargetAnim'), (2147687884, 'sw', 'TargetDir'), (2147687916, 'sw', 'TargetAnim'), (2147687924, 'sw', 'TargetAnim'), (2147687956, 'sw', 'TargetAnim'), (2147687988, 'sw', 'TargetAnim'), (2147688004, 'sw', 'TargetDir'), (2147688064, 'sw', 'TargetAnim'), (2147688196, 'sw', 'TargetAnim'), (2147688208, 'sw', 'TargetAnim'), (2147688232, 'sw', 'TargetAnim'), (2147688256, 'sw', 'TargetAnim'), (2147688272, 'sw', 'TargetAnim'), (2147688340, 'sw', 'TargetDir'), (2147688352, 'sw', 'TargetAnim'), (2147688424, 'sw', 'TargetDir'), (2147688432, 'sw', 'TargetAnim'), (2147688536, 'sw', 'TargetAnim'), (2147688552, 'sw', 'TargetDir'), (2147688572, 'sw', 'TargetAnim'), (2147688684, 'sw', 'TargetAnim'), (2147688788, 'sw', 'TargetAnim'), (2147688888, 'sw', 'TargetDir'), (2147688896, 'sw', 'TargetAnim'), (2147688996, 'sw', 'TargetDir'), (2147689004, 'sw', 'TargetAnim'), (2147689056, 'sw', 'TargetAnim'), (2147689108, 'sw', 'TargetAnim'), (2147689196, 'sw', 'TargetAnim'), (2147689256, 'sw', 'TargetAnim'), (2147689272, 'sw', 'TargetDir'), (2147689364, 'sw', 'TargetDir'), (2147689428, 'sw', 'TargetAnim'), (2147689452, 'sw', 'TargetAnim'), (2147689524, 'sw', 'TargetAnim'), (2147689584, 'sw', 'TargetAnim'), (2147689596, 'sw', 'TargetAnim'), (2147689612, 'sw', 'TargetAnim'), (2147689624, 'sw', 'TargetAnim'), (2147689640, 'sw', 'TargetAnim'), (2147689652, 'sw', 'TargetAnim'), (2147689668, 'sw', 'TargetDir'), (2147689724, 'sw', 'TargetAnim'), (2147689740, 'sw', 'TargetAnim'), (2147689752, 'sw', 'TargetAnim'), (2147689812, 'sw', 'TargetAnim'), (2147689872, 'sw', 'TargetDir'), (2147689880, 'sw', 'TargetAnim'), (2147689888, 'sw', 'TargetAnim'), (2147689956, 'sw', 'TargetAnim'), (2147689992, 'sw', 'TargetAnim'), (2147690096, 'sw', 'TargetDir'), (2147690140, 'sw', 'TargetDir'), (2147690184, 'sw', 'TargetAnim'), (2147690216, 'sw', 'TargetAnim'), (2147690232, 'sw', 'TargetAnim'), (2147690280, 'sw', 'TargetDir'), (2147690308, 'sw', 'TargetAnim'), (2147690324, 'sw', 'TargetDir'), (2147690400, 'sw', 'TargetAnim'), (2147690548, 'sw', 'TargetAnim'), (2147690696, 'sw', 'TargetAnim'), (2147690740, 'sw', 'TargetAnim')]
+func 80034224: &hero at ['80034230', '800342bc'] ; [(2147697304, 'sw', 'Carried2C'), (2147697332, 'sw', 'TargetAnim')]
+func 80034328: &hero at ['80034338', '80034370'] ; [(2147697504, 'sw', 'TargetAnim')]
+func 8003453c: &hero at ['80034544', '800345b8', '8003461c'] ; [(2147698168, 'sw', 'Carried2C'), (2147698196, 'sw', 'TargetAnim')]
+func 800348e0: &hero at ['800348f0'] ; [(2147699060, 'sw', 'TargetAnim')]
+func 80034acc: &hero at ['80034ad4'] ; [(2147699472, 'sw', 'Carried2C')]
+func 80034b54: &hero at ['80034b5c'] ; [(2147699608, 'sw', 'Carried2C')]
+func 8003e464: &hero at ['8003e4b8', '8003e55c', '8003e650', '8003e74c', '8003e80c'] ; [(2147738792, 'sw', 'TargetDir')]
+func 80041a74: &hero at ['80041b10', '80041c04'] ; [(2147753004, 'sw', 'HpMax')]
+func 80041d6c: &hero at ['80041d74'] ; [(2147753348, 'sw', 'Hp')]
+func 80061eb8: &hero at ['800621b8', '800621fc', '800624d0', '8006257c', '800625d0', '80062624', '80062678', '80062920', '80062954', '80062990'] ; [(2147885524, 'sw', 'TargetAnim'), (2147885720, 'sw', 'TargetAnim'), (2147885804, 'sw', 'TargetAnim'), (2147885816, 'sw', 'TargetDir'), (2147885876, 'sw', 'TargetAnim'), (2147886904, 'sw', 'TargetAnim'), (2147887456, 'sw', 'TargetAnim'), (2147887460, 'sw', 'TargetDir')]
+func 8006790c: &hero at ['80067b6c'] ; [(2147908924, 'sw', 'TargetAnim')]
+func 8006b510: &hero at ['8006b6b4'] ; [(2147924128, 'sw', 'Carried2C')]
+func 8006fc7c: &hero at ['8006fcb8', '8006fce4', '800700cc', '800701ec', '800703b4', '800704ac'] ; [(2147941596, 'sw', 'TargetAnim'), (2147941640, 'sw', 'TargetAnim')]
+func 80071bfc: &hero at ['80071f18', '8007201c', '80072118', '800721c4', '800723b8'] ; [(2147949704, 'sw', 'TargetAnim')]
+func 80073d04: &hero at ['80074100', '800746e8', '8007490c'] ; [(2147961136, 'sw', 'TargetAnim')]
+func 80074d00: &hero at ['80074d58', '8007510c', '80075330'] ; [(2147962220, 'sw', 'TargetAnim'), (2147962228, 'sw', 'TargetDir'), (2147962264, 'sw', 'Invuln'), (2147962276, 'sw', 'TargetAnim'), (2147963756, 'sw', 'TargetAnim'), (2147963796, 'sw', 'TargetDir'), (2147963800, 'sw', 'TargetAnim'), (2147963888, 'sw', 'TargetAnim'), (2147963916, 'sw', 'TargetAnim'), (2147963932, 'sw', 'TargetDir'), (2147964212, 'sw', 'TargetAnim')]
+func 80075a3c: &hero at ['80075b30', '800762bc', '800765f4', '80076678'] ; [(2147970288, 'sw', 'TargetAnim')]
+func 8007773c: &hero at ['80077884', '800789b0'] ; [(2147973412, 'sw', 'TargetAnim'), (2147973472, 'sw', 'TargetAnim'), (2147975740, 'sw', 'TargetAnim')]
+func 80079b1c: &hero at ['8007a07c', '8007a2a4'] ; [(2147984076, 'sw', 'TargetDir')]
+func 8007b6ec: &hero at ['8007b724', '8007b904'] ; [(2147989492, 'sw', 'TargetAnim'), (2147989512, 'sw', 'Carried2C'), (2147989544, 'sw', 'TargetAnim')]
+func 8007c174: &hero at ['8007c354', '8007c498', '8007c4d0', '8007c4ec', '8007c524', '8007c540', '8007c578', '8007c594'] ; [(2147992452, 'sw', 'TargetAnim')]

@@ -1,0 +1,143 @@
+diff --git a/Alundra/Hero/PlayerManager.cs b/Alundra/Hero/PlayerManager.cs
+index 0973f151..d7ba0a26 100644
+--- a/Alundra/Hero/PlayerManager.cs
++++ b/Alundra/Hero/PlayerManager.cs
+@@ -292,6 +292,7 @@ public static class PlayerManager
+ 
+         // E20.d1 T1: the facing the binary has at the head of this tick (read by the cone of the run), computed before the tick writes anything.
+         var tickFacing = TickFacing(player);
++        var tmpSlopeAtHead = player.Slope_18c; // TEMP c2b inventory
+ 
+         // E12.d: `host` is REQUIRED at every call site (no default) - null means "no world" and skips
+         // CheckEntityInteraction below, a documented degraded mode the ~19 direct movement-only test
+@@ -345,6 +346,7 @@ public static class PlayerManager
+ 
+             // E20.g1a T3 (W2, D-G-4), binary 0x80031BF4: UpdatePlayerCarriedEntity(1) comes right after the two clears and before the item cancel (0x800350C0, E20.h0's stub) and END: an object in the hands is drawn in and destroyed.
+             UpdatePlayerCarriedEntity(player, 1);
++            if (state.PlayerControlFlags == 0x20 && TmpHurt.Entry(player, host) != -1) { player.DamagedTickCounter = 0x78; } // TEMP c2b inventory
+             EndOfMovePlayer(player, in pad, state, host); // E20.c2a T1: the locked branch also reaches END (0x80031C0C-0x80031C28 lead to 0x80032914): the life vessel of a locked script is mirrored at once.
+             return;
+         }
+@@ -353,6 +355,21 @@ public static class PlayerManager
+         // (0x80031C44, E20.c2) and the second call of the item driver (0x80031CC4): the flail bounce is real, the steps, the landing, the grass cut and the low-life alarm are named stubs.
+         player.Flags |= EntityFlags.Gravity;
+         PlayerAnimationEffects.Create(player, PlayerAnimationEffects.FreeMode);
++        { // TEMP c2b inventory: the damage entry and the hurt block
++            var tmpDir = TmpHurt.Entry(player, host);
++            if (tmpDir >= 0)
++            {
++                player.WeaponChargeTimer = 0;
++                player.WeaponRecordPointer = 0;
++                UpdatePlayerCarriedEntity(player, 2);
++                UpdateItemUseDriver(player);
++                player.TargetAnimationId = tmpSlopeAtHead == DeepWaterSlope ? SwimHurtAnimationId : 0x31u;
++                player.TargetDirection = (uint)tmpDir;
++                player.DamagedTickCounter = 0x78;
++                EndOfMovePlayer(player, in pad, state, host);
++                return;
++            }
++        }
+ 
+         // E20.a A4 (D-E20-14): the second call of the item driver, once per normal tick before the pad is read (binary 0x80031CC4). Stub until E20.c2.
+         UpdateItemUseDriver(player);
+@@ -649,6 +666,65 @@ public static class PlayerManager
+     /// <see cref="WorldProxy.AdoptPlayerPawn"/>): the bare heroes of the unit tests keep the default life of 0, which would otherwise be written over the stats the test set up. This guard is the one
+     /// documented deviation of the epilogue.
+     /// </summary>
++    internal static class TmpHurt
++    {
++        internal static string? CurrentTest()
++        {
++            foreach (var f in new System.Diagnostics.StackTrace().GetFrames())
++            {
++                var m = f.GetMethod();
++                if (m?.DeclaringType?.Assembly.GetName().Name == "Alundra.Tests" && m.DeclaringType.FullName?.Contains("Support") != true)
++                {
++                    var t = m.DeclaringType; while (t.DeclaringType != null) { t = t.DeclaringType; }
++                    return t.FullName + "." + m.Name;
++                }
++            }
++            return null;
++        }
++
++        internal static readonly object Gate = new();
++        internal static void Log(string line)
++        {
++            var path = Environment.GetEnvironmentVariable("C2B_LOG");
++            if (path == null) { return; }
++            lock (Gate) { System.IO.File.AppendAllText(path, line + Environment.NewLine); }
++        }
++
++        internal static int Entry(EntityScriptProxy hero, IScriptHost? host)
++        {
++            var records = host?.EquipmentRecords;
++            if (hero.TouchingEntity != null)
++            {
++                var latch = (host as IEntityWorldContext)?.HeroAnimationLatch ?? 0;
++                var before = hero.Hp;
++                Damage.ComputeNewHp(hero, records?.HeroSheet, records, latch);
++                uint d = 24;
++                if (hero.TouchingEntity.GameplayProxy is EntityScriptProxy t)
++                {
++                    d = ScriptHelper.GetDirectionToTarget(unchecked(hero.PosX - t.PosX), unchecked(hero.PosY - t.PosY));
++                }
++                Log($"HURT toucher test={CurrentTest()} hp={before}->{hero.Hp} touching={hero.TouchingEntity.GameplayProxy?.GetType().Name} dir={d}");
++                return (int)d;
++            }
++
++            if (hero.DamagedTickCounter == 0 && (records?.BootsLevel ?? 0) < 3)
++            {
++                var n = (int)((hero.CombinedVramFlagsOR & 0x180) >> 7);
++                if (n != 0)
++                {
++                    var before = hero.Hp;
++                    var cost = n; // table {0,1,2,3}
++                    hero.Hp = cost < hero.Hp ? hero.Hp - cost : 0;
++                    var d = (int)((hero.TargetDirection + 0x10) & 0x1F);
++                    Log($"HURT cell test={CurrentTest()} hp={before}->{hero.Hp} n={n} dir={d}");
++                    return d;
++                }
++            }
++
++            return -1;
++        }
++    }
++
+     internal static void EndOfMovePlayer(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host)
+     {
+         UpdateItemEffectState(player, in pad, state, host);
+diff --git a/Alundra/Maps/WorldProxy.cs b/Alundra/Maps/WorldProxy.cs
+index 88723f96..a338971d 100644
+--- a/Alundra/Maps/WorldProxy.cs
++++ b/Alundra/Maps/WorldProxy.cs
+@@ -3154,6 +3154,22 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
+     /// the frame opened, T2 "dedans") then <see cref="FrameSyncPasses.SyncTransform"/> (unconditional). It used to run in <see cref="EntityScriptProxy.Update"/>, before the ticks of the
+     /// frame, which now belong to this proxy. Clears the per-frame records of the entities.
+     /// </summary>
++    private readonly HashSet<Entity> _tmpBlinkHidden = new(); // TEMP c2b inventory
++
++    private void TmpBlink(Entity entity, EntityScriptProxy proxy)
++    {
++        if (entity.IsVisible && (proxy.DamagedTickCounter & 3) == 3 && proxy.Status is not EntityStatus.FlagToDestroy)
++        {
++            entity.IsVisible = false;
++            _tmpBlinkHidden.Add(entity);
++            PlayerManager.TmpHurt.Log($"BLINK hide test={PlayerManager.TmpHurt.CurrentTest()} entity={proxy.GetType().Name} counter={proxy.DamagedTickCounter}");
++        }
++        else if (!entity.IsVisible && _tmpBlinkHidden.Remove(entity) && (proxy.DamagedTickCounter & 3) != 3)
++        {
++            entity.IsVisible = true;
++        }
++    }
++
+     private void PublishEntityFrame()
+     {
+         foreach (var entity in _spawnedEntities)
+@@ -3168,6 +3184,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
+                 FrameSyncPasses.SyncAnimation(entity);
+             }
+ 
++            TmpBlink(entity, proxy);
+             FrameSyncPasses.SyncTransform(entity);
+             proxy.TookPartInFrame = false;
+             proxy.SyncAnimationDue = false;

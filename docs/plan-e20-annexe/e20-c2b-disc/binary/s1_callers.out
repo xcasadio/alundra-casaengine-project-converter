@@ -1,0 +1,74 @@
+target 80031a68
+   jal at 80031c14 in 80031b50(+c4)
+   jal at 80031c44 in 80031b50(+f4)
+   data words == target: []
+   lui/addiu materialisations: []
+target 80031b50
+   jal at 800386ec in 800386d0(+1c)
+   data words == target: []
+   lui/addiu materialisations: []
+target 8003a374
+   jal at 80031a90 in 80031a68(+28)
+   jal at 8007d9b0 in 8007d9a4(+c)
+   jal at 8007db04 in 8007da08(+fc)
+   jal at 8007db88 in 8007db38(+50)
+   jal at 8007dca4 in 8007dbe0(+c4)
+   jal at 8007dce4 in 8007dcd8(+c)
+   jal at 8007dd48 in 8007dd3c(+c)
+   jal at 8007ddac in 8007dda0(+c)
+   jal at 8007de10 in 8007de04(+c)
+   jal at 8007de74 in 8007de68(+c)
+   jal at 8007def4 in 8007dee8(+c)
+   jal at 8007e040 in 8007df4c(+f4)
+   jal at 8007e080 in 8007e074(+c)
+   jal at 8007e0e4 in 8007e0d8(+c)
+   jal at 8007e160 in 8007e140(+20)
+   jal at 8007e1d0 in 8007e1c4(+c)
+   jal at 8007e234 in 8007e228(+c)
+   jal at 8007e2ac in 8007e2a0(+c)
+   jal at 8007e360 in 8007e304(+5c)
+   jal at 8007e3c0 in 8007e304(+bc)
+   jal at 8007e4c4 in 8007e424(+a0)
+   jal at 8007e50c in 8007e424(+e8)
+   jal at 8007e568 in 8007e548(+20)
+   jal at 8007e5bc in 8007e5b0(+c)
+   jal at 8007e634 in 8007e628(+c)
+   jal at 8007e6d4 in 8007e694(+40)
+   jal at 8007e724 in 8007e704(+20)
+   jal at 8007e760 in 8007e754(+c)
+   jal at 8007e910 in 8007e8f0(+20)
+   jal at 8007e9b8 in 8007e9ac(+c)
+   jal at 8007e9f4 in 8007e9e8(+c)
+   jal at 8007ea3c in 8007ea24(+18)
+   jal at 8007eaa4 in 8007ea84(+20)
+   jal at 8007eb28 in 8007eb1c(+c)
+   jal at 8007eb78 in 8007eb58(+20)
+   jal at 8007ebc0 in 8007eba8(+18)
+   jal at 8007eca8 in 8007ec9c(+c)
+   data words == target: []
+   lui/addiu materialisations: []
+target 8003634c
+   jal at 80031c6c in 80031b50(+11c)
+   jal at 80031cc4 in 80031b50(+174)
+   data words == target: []
+   lui/addiu materialisations: []
+target 8002f884
+   jal at 80031bf4 in 80031b50(+a4)
+   jal at 80031c64 in 80031b50(+114)
+   jal at 80031d78 in 80031b50(+228)
+   jal at 8003261c in 80031b50(+acc)
+   jal at 80032778 in 80031b50(+c28)
+   jal at 800327ac in 80031b50(+c5c)
+   data words == target: []
+   lui/addiu materialisations: []
+target 800350c0
+   jal at 80031bfc in 80031b50(+ac)
+   jal at 80032758 in 80031b50(+c08)
+   jal at 80032770 in 80031b50(+c20)
+   jal at 800327b4 in 80031b50(+c64)
+   jal at 800351e8 in 800351b8(+30)
+   jal at 80035244 in 80035204(+40)
+   jal at 800352a8 in 80035260(+48)
+   jal at 80035304 in 800352c4(+40)
+   data words == target: []
+   lui/addiu materialisations: []

@@ -1,0 +1,5 @@
+ProgramLoad has 255: 0 records; 89: [] ; 48: []
+ProgramTick has 255: 0 records; 89: [(471, 208)] ; 48: [(99, 220), (123, 220), (449, 220)]
+ProgramTouch has 255: 0 records; 89: [] ; 48: []
+ProgramDeactivate has 255: 0 records; 89: [] ; 48: []
+ProgramInteract has 255: 0 records; 89: [] ; 48: []

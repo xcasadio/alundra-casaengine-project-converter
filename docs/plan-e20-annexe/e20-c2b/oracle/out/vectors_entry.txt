@@ -1,0 +1,422 @@
+# vectors of the damage entry 0x80031A68 (E20.c2b T0 (c)), 105 vectors, all computed by calling the real code of ALUN_CD.EXE (France) in the MIPS emulator; one call, no tick
+
+## T-orc-kit-12-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory kit, stats 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-kit-5-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory kit, stats 5/12
+inputs : inventory kit, stats 5/12, hero HP 5, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 5 -> 1, hero words changed [('0x14', '0x00000005', '0x00000001')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-kit-3-3: toucher = Orc of map 15 (attribute 0x02, power 4), inventory kit, stats 3/3
+inputs : inventory kit, stats 3/3, hero HP 3, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 3 -> 0, hero words changed [('0x14', '0x00000003', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-kit-1-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory kit, stats 1/12
+inputs : inventory kit, stats 1/12, hero HP 1, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 1 -> 0, hero words changed [('0x14', '0x00000001', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-leather-12-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory leather, stats 12/12
+inputs : inventory leather, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C
+outputs: return 8, hero HP 12 -> 9, hero words changed [('0x14', '0x0000000C', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-leather-5-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory leather, stats 5/12
+inputs : inventory leather, stats 5/12, hero HP 5, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C
+outputs: return 8, hero HP 5 -> 2, hero words changed [('0x14', '0x00000005', '0x00000002')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-leather-3-3: toucher = Orc of map 15 (attribute 0x02, power 4), inventory leather, stats 3/3
+inputs : inventory leather, stats 3/3, hero HP 3, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C
+outputs: return 8, hero HP 3 -> 0, hero words changed [('0x14', '0x00000003', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-leather-1-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory leather, stats 1/12
+inputs : inventory leather, stats 1/12, hero HP 1, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C
+outputs: return 8, hero HP 1 -> 0, hero words changed [('0x14', '0x00000001', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-ancient-12-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory ancient, stats 12/12
+inputs : inventory ancient, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 08 08 08 08 08 08 08 08 08 08 08
+outputs: return 8, hero HP 12 -> 10, hero words changed [('0x14', '0x0000000C', '0x0000000A')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-ancient-5-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory ancient, stats 5/12
+inputs : inventory ancient, stats 5/12, hero HP 5, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 08 08 08 08 08 08 08 08 08 08 08
+outputs: return 8, hero HP 5 -> 3, hero words changed [('0x14', '0x00000005', '0x00000003')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-ancient-3-3: toucher = Orc of map 15 (attribute 0x02, power 4), inventory ancient, stats 3/3
+inputs : inventory ancient, stats 3/3, hero HP 3, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 08 08 08 08 08 08 08 08 08 08 08
+outputs: return 8, hero HP 3 -> 1, hero words changed [('0x14', '0x00000003', '0x00000001')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-ancient-1-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory ancient, stats 1/12
+inputs : inventory ancient, stats 1/12, hero HP 1, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 08 08 08 08 08 08 08 08 08 08 08
+outputs: return 8, hero HP 1 -> 0, hero words changed [('0x14', '0x00000001', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-silver-12-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory silver, stats 12/12
+inputs : inventory silver, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 04 04 04 04 04 04 04 04 04 04 04
+outputs: return 8, hero HP 12 -> 11, hero words changed [('0x14', '0x0000000C', '0x0000000B')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-silver-5-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory silver, stats 5/12
+inputs : inventory silver, stats 5/12, hero HP 5, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 04 04 04 04 04 04 04 04 04 04 04
+outputs: return 8, hero HP 5 -> 4, hero words changed [('0x14', '0x00000005', '0x00000004')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-silver-3-3: toucher = Orc of map 15 (attribute 0x02, power 4), inventory silver, stats 3/3
+inputs : inventory silver, stats 3/3, hero HP 3, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 04 04 04 04 04 04 04 04 04 04 04
+outputs: return 8, hero HP 3 -> 2, hero words changed [('0x14', '0x00000003', '0x00000002')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-silver-1-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory silver, stats 1/12
+inputs : inventory silver, stats 1/12, hero HP 1, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 04 04 04 04 04 04 04 04 04 04 04
+outputs: return 8, hero HP 1 -> 0, hero words changed [('0x14', '0x00000001', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-noarmour-12-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory noarmour, stats 12/12
+inputs : inventory noarmour, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 00 00 00 00 00 00 00 00 00 00 00
+outputs: return 8, hero HP 12 -> 11, hero words changed [('0x14', '0x0000000C', '0x0000000B')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-noarmour-5-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory noarmour, stats 5/12
+inputs : inventory noarmour, stats 5/12, hero HP 5, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 00 00 00 00 00 00 00 00 00 00 00
+outputs: return 8, hero HP 5 -> 4, hero words changed [('0x14', '0x00000005', '0x00000004')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-noarmour-3-3: toucher = Orc of map 15 (attribute 0x02, power 4), inventory noarmour, stats 3/3
+inputs : inventory noarmour, stats 3/3, hero HP 3, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 00 00 00 00 00 00 00 00 00 00 00
+outputs: return 8, hero HP 3 -> 2, hero words changed [('0x14', '0x00000003', '0x00000002')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-noarmour-1-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory noarmour, stats 1/12
+inputs : inventory noarmour, stats 1/12, hero HP 1, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 00 00 00 00 00 00 00 00 00 00 00
+outputs: return 8, hero HP 1 -> 0, hero words changed [('0x14', '0x00000001', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-bracelet-12-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory bracelet, stats 12/12
+inputs : inventory bracelet, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F
+outputs: return 8, hero HP 12 -> 9, hero words changed [('0x14', '0x0000000C', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-bracelet-5-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory bracelet, stats 5/12
+inputs : inventory bracelet, stats 5/12, hero HP 5, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F
+outputs: return 8, hero HP 5 -> 2, hero words changed [('0x14', '0x00000005', '0x00000002')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-bracelet-3-3: toucher = Orc of map 15 (attribute 0x02, power 4), inventory bracelet, stats 3/3
+inputs : inventory bracelet, stats 3/3, hero HP 3, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F
+outputs: return 8, hero HP 3 -> 0, hero words changed [('0x14', '0x00000003', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-orc-bracelet-1-12: toucher = Orc of map 15 (attribute 0x02, power 4), inventory bracelet, stats 1/12
+inputs : inventory bracelet, stats 1/12, hero HP 1, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F
+outputs: return 8, hero HP 1 -> 0, hero words changed [('0x14', '0x00000001', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-syn-kit: toucher = Beannoid whose CurrentAttack is the synthetic pair (0x02, 4), inventory kit, stats 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher beannoid attack (2, 4) bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-syn-leather: toucher = Beannoid whose CurrentAttack is the synthetic pair (0x02, 4), inventory leather, stats 12/12
+inputs : inventory leather, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher beannoid attack (2, 4) bearing None toucher+0x1CC 0, sheet r1..r11 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C
+outputs: return 8, hero HP 12 -> 9, hero words changed [('0x14', '0x0000000C', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-beannoid-real: toucher = the real Beannoid of map 14 (its CurrentAttack as left by the spawner), kit, 10/10
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher beannoid attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 9, hero words changed [('0x14', '0x0000000A', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-toucher1CC-01: toucher with +0x1CC = 0x1 (its own invulnerability counter), hero normal, Orc attack, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 1, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-toucher1CC-40: toucher with +0x1CC = 0x40 (its own invulnerability counter), hero normal, Orc attack, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 64, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-toucher1CC-77: toucher with +0x1CC = 0x77 (its own invulnerability counter), hero normal, Orc attack, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 119, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-toucher1CC-78: toucher with +0x1CC = 0x78 (its own invulnerability counter), hero normal, Orc attack, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 120, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-hero1CC-01: HERO +0x1CC = 0x1 with a toucher set: the branch does not test it, Orc attack, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 1, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-hero1CC-77: HERO +0x1CC = 0x77 with a toucher set: the branch does not test it, Orc attack, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 119, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-hero1CC-78: HERO +0x1CC = 0x78 with a toucher set: the branch does not test it, Orc attack, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 120, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-hero1D0: HERO +0x1D0 = 25 with a toucher set (not tested), Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 25, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-both: toucher +0x1CC = 0x78 AND hero +0x1CC = 0x78 AND hero +0x1D0 = 25, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 120, +0x1D0 25, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 120, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-boots3: boots level 3 with a toucher (boots are not tested in this branch), Orc, kit
+inputs : inventory b1c, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 3, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-bits180: hero +0x180 = 0x180 (cell bits) with a toucher set: the toucher branch wins (no cell cost), Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-charm-resp80: Charm of Nava worn (response index 6 = 0x80), toucher attack attribute 0x06 power 4, stats 10/10: the direction is returned, the life is unchanged
+inputs : inventory charm, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher beannoid attack (6, 4) bearing None toucher+0x1CC 0, sheet r1..r11 0F 0F 0F 0F 0F 80 0F 0F 0F 0F 0F
+outputs: return 8, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-nocharm-attr6: same attack (0x06, 4), kit (no charm): damage as an ordinary attribute
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher beannoid attack (6, 4) bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 6, hero words changed [('0x14', '0x0000000A', '0x00000006')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-resp-C0: sheet byte of nibble 2 poked to 0xC0 (harness write of data), Orc attack (0x02, 4): unchanged life, direction returned
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 C0 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 12, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-resp-40: sheet byte of nibble 2 poked to 0x40 (harness write of data), Orc attack (0x02, 4): life 0, direction returned
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 40 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 0, hero words changed [('0x14', '0x0000000C', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-resp-80: sheet byte of nibble 2 poked to 0x80 (harness write of data), Orc attack (0x02, 4): unchanged life, direction returned
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 80 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 12, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-attr0: toucher attack attribute 0 (power 4): the life is unchanged, direction returned
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher beannoid attack (0, 4) bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## T-lethal-1hp: stats 1/10 hit by the Orc: life 0, the return is the direction (not -1)
+inputs : inventory kit, stats 1/10, hero HP 1, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing None toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 1 -> 0, hero words changed [('0x14', '0x00000001', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-E: bearing hero - toucher = (14, 0) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (14, 0) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 24, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-W: bearing hero - toucher = (-14, 0) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (-14, 0) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-S: bearing hero - toucher = (0, 10) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (0, 10) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 0, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-N: bearing hero - toucher = (0, -10) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (0, -10) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 16, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-SE: bearing hero - toucher = (10, 8) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (10, 8) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 27, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-SW: bearing hero - toucher = (-10, 8) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (-10, 8) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 5, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-NE: bearing hero - toucher = (10, -8) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (10, -8) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 21, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-NW: bearing hero - toucher = (-10, -8) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (-10, -8) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 11, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-ENE: bearing hero - toucher = (16, -3) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (16, -3) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 23, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-WSW: bearing hero - toucher = (-16, 3) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (-16, 3) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 7, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-SSE: bearing hero - toucher = (3, 12) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (3, 12) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 31, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-NNW: bearing hero - toucher = (-3, -12) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (-3, -12) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 15, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-E1: bearing hero - toucher = (1, 0) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (1, 0) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 24, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-W1: bearing hero - toucher = (-1, 0) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (-1, 0) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-S1: bearing hero - toucher = (0, 1) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (0, 1) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 0, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-N1: bearing hero - toucher = (0, -1) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (0, -1) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 16, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-SE1: bearing hero - toucher = (1, 1) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (1, 1) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 28, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-NW1: bearing hero - toucher = (-1, -1) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (-1, -1) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 12, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## B-same-0-0: bearing hero - toucher = (0, 0) px, Orc, kit 12/12
+inputs : inventory kit, stats 12/12, hero HP 12, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher orc attack None bearing (0, 0) toucher+0x1CC 0, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 24, hero HP 12 -> 8, hero words changed [('0x14', '0x0000000C', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-080-kit: no toucher, hero +0x180 = 0x80, inventory kit (boots level 0), stats 10/10, +0x8C = 24
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 9, hero words changed [('0x14', '0x0000000A', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-080-b1a: no toucher, hero +0x180 = 0x80, inventory b1a (boots level 1), stats 10/10, +0x8C = 24
+inputs : inventory b1a, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 24, boots 1, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 9, hero words changed [('0x14', '0x0000000A', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-080-b1b: no toucher, hero +0x180 = 0x80, inventory b1b (boots level 2), stats 10/10, +0x8C = 24
+inputs : inventory b1b, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 24, boots 2, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 9, hero words changed [('0x14', '0x0000000A', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-080-b1c: no toucher, hero +0x180 = 0x80, inventory b1c (boots level 3), stats 10/10, +0x8C = 24
+inputs : inventory b1c, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 24, boots 3, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return -1, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-100-kit: no toucher, hero +0x180 = 0x100, inventory kit (boots level 0), stats 10/10, +0x8C = 24
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x100, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 8, hero words changed [('0x14', '0x0000000A', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-100-b1a: no toucher, hero +0x180 = 0x100, inventory b1a (boots level 1), stats 10/10, +0x8C = 24
+inputs : inventory b1a, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x100, +0x8C 24, boots 1, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 8, hero words changed [('0x14', '0x0000000A', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-100-b1b: no toucher, hero +0x180 = 0x100, inventory b1b (boots level 2), stats 10/10, +0x8C = 24
+inputs : inventory b1b, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x100, +0x8C 24, boots 2, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 8, hero words changed [('0x14', '0x0000000A', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-100-b1c: no toucher, hero +0x180 = 0x100, inventory b1c (boots level 3), stats 10/10, +0x8C = 24
+inputs : inventory b1c, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x100, +0x8C 24, boots 3, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return -1, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-180-kit: no toucher, hero +0x180 = 0x180, inventory kit (boots level 0), stats 10/10, +0x8C = 24
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 7, hero words changed [('0x14', '0x0000000A', '0x00000007')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-180-b1a: no toucher, hero +0x180 = 0x180, inventory b1a (boots level 1), stats 10/10, +0x8C = 24
+inputs : inventory b1a, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 1, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 7, hero words changed [('0x14', '0x0000000A', '0x00000007')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-180-b1b: no toucher, hero +0x180 = 0x180, inventory b1b (boots level 2), stats 10/10, +0x8C = 24
+inputs : inventory b1b, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 2, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 7, hero words changed [('0x14', '0x0000000A', '0x00000007')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-180-b1c: no toucher, hero +0x180 = 0x180, inventory b1c (boots level 3), stats 10/10, +0x8C = 24
+inputs : inventory b1c, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 3, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return -1, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-armour-kit: no toucher, cell cost 3 (0x180), inventory kit: the armour is ignored, stats 10/10
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 7, hero words changed [('0x14', '0x0000000A', '0x00000007')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-armour-leather: no toucher, cell cost 3 (0x180), inventory leather: the armour is ignored, stats 10/10
+inputs : inventory leather, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C 0C
+outputs: return 8, hero HP 10 -> 7, hero words changed [('0x14', '0x0000000A', '0x00000007')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-armour-ancient: no toucher, cell cost 3 (0x180), inventory ancient: the armour is ignored, stats 10/10
+inputs : inventory ancient, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 08 08 08 08 08 08 08 08 08 08 08
+outputs: return 8, hero HP 10 -> 7, hero words changed [('0x14', '0x0000000A', '0x00000007')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-armour-silver: no toucher, cell cost 3 (0x180), inventory silver: the armour is ignored, stats 10/10
+inputs : inventory silver, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 04 04 04 04 04 04 04 04 04 04 04
+outputs: return 8, hero HP 10 -> 7, hero words changed [('0x14', '0x0000000A', '0x00000007')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-armour-noarmour: no toucher, cell cost 3 (0x180), inventory noarmour: the armour is ignored, stats 10/10
+inputs : inventory noarmour, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 00 00 00 00 00 00 00 00 00 00 00
+outputs: return 8, hero HP 10 -> 7, hero words changed [('0x14', '0x0000000A', '0x00000007')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-armour-bracelet: no toucher, cell cost 3 (0x180), inventory bracelet: the armour is ignored, stats 10/10
+inputs : inventory bracelet, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F 0F
+outputs: return 8, hero HP 10 -> 7, hero words changed [('0x14', '0x0000000A', '0x00000007')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-armour-charm: no toucher, cell cost 3 (0x180), inventory charm: the armour is ignored, stats 10/10
+inputs : inventory charm, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 0F 0F 0F 0F 0F 80 0F 0F 0F 0F 0F
+outputs: return 8, hero HP 10 -> 7, hero words changed [('0x14', '0x0000000A', '0x00000007')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-boots2-silver-080: no toucher, cell 0x80, boots level 2 AND silver armour: blessed (boots < 3), the armour is ignored
+inputs : inventory b1b-silver, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 24, boots 2, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 04 04 04 04 04 04 04 04 04 04 04
+outputs: return 8, hero HP 10 -> 9, hero words changed [('0x14', '0x0000000A', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-boots3-silver-080: no toucher, cell 0x80, boots level 3 AND silver armour: spared
+inputs : inventory b1c-silver, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 24, boots 3, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 04 04 04 04 04 04 04 04 04 04 04
+outputs: return -1, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-boots2-silver-180: no toucher, cell 0x180, boots level 2 AND silver armour: blessed (boots < 3), the armour is ignored
+inputs : inventory b1b-silver, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 2, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 04 04 04 04 04 04 04 04 04 04 04
+outputs: return 8, hero HP 10 -> 7, hero words changed [('0x14', '0x0000000A', '0x00000007')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-boots3-silver-180: no toucher, cell 0x180, boots level 3 AND silver armour: spared
+inputs : inventory b1c-silver, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 3, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 04 04 04 04 04 04 04 04 04 04 04
+outputs: return -1, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-floor-2-180: no toucher, cell 0x180, stats 2/10: the floor is 0 (signed)
+inputs : inventory kit, stats 2/10, hero HP 2, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 2 -> 0, hero words changed [('0x14', '0x00000002', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-floor-1-080: no toucher, cell 0x80, stats 1/10: the floor is 0 (signed)
+inputs : inventory kit, stats 1/10, hero HP 1, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 1 -> 0, hero words changed [('0x14', '0x00000001', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-floor-3-180: no toucher, cell 0x180, stats 3/10: the floor is 0 (signed)
+inputs : inventory kit, stats 3/10, hero HP 3, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 3 -> 0, hero words changed [('0x14', '0x00000003', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-floor-0-180: no toucher, cell 0x180, stats 0/10: the floor is 0 (signed)
+inputs : inventory kit, stats 0/10, hero HP 0, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 0 -> 0, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-floor-1-180: no toucher, cell 0x180, stats 1/10: the floor is 0 (signed)
+inputs : inventory kit, stats 1/10, hero HP 1, hero +0x1CC 0, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 1 -> 0, hero words changed [('0x14', '0x00000001', '0x00000000')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-dir-0: no toucher, cell 0x80, +0x8C = 0: the return is (+0x8C + 0x10) & 0x1F
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 0, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 16, hero HP 10 -> 9, hero words changed [('0x14', '0x0000000A', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-dir-5: no toucher, cell 0x80, +0x8C = 5: the return is (+0x8C + 0x10) & 0x1F
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 5, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 21, hero HP 10 -> 9, hero words changed [('0x14', '0x0000000A', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-dir-8: no toucher, cell 0x80, +0x8C = 8: the return is (+0x8C + 0x10) & 0x1F
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 8, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 24, hero HP 10 -> 9, hero words changed [('0x14', '0x0000000A', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-dir-16: no toucher, cell 0x80, +0x8C = 16: the return is (+0x8C + 0x10) & 0x1F
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 16, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 0, hero HP 10 -> 9, hero words changed [('0x14', '0x0000000A', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-dir-24: no toucher, cell 0x80, +0x8C = 24: the return is (+0x8C + 0x10) & 0x1F
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 9, hero words changed [('0x14', '0x0000000A', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-dir-31: no toucher, cell 0x80, +0x8C = 31: the return is (+0x8C + 0x10) & 0x1F
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x80, +0x8C 31, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 15, hero HP 10 -> 9, hero words changed [('0x14', '0x0000000A', '0x00000009')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-hero1CC-01: no toucher, cell 0x180, hero +0x1CC = 0x1: -1, nothing written
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 1, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return -1, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-hero1CC-77: no toucher, cell 0x180, hero +0x1CC = 0x77: -1, nothing written
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 119, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return -1, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## H-hero1CC-78: no toucher, cell 0x180, hero +0x1CC = 0x78: -1, nothing written
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 120, +0x1D0 0, +0x180 0x180, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return -1, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## N-nothing: no toucher, hero +0x180 = 0: -1, nothing written
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x0, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return -1, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## N-other-bits: no toucher, hero +0x180 = 0x7F | 0x800 (no 0x180 bit): -1, nothing written
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x87F, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return -1, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## N-bit80-only-water: no toucher, hero +0x180 = 0x800 (deep water, no hazard bits): -1
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x800, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return -1, hero HP 10 -> 10, hero words changed none, toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+
+## N-bit100-set: no toucher, hero +0x180 = 0x100 (n = 2): cost 2
+inputs : inventory kit, stats 10/10, hero HP 10, hero +0x1CC 0, +0x1D0 0, +0x180 0x100, +0x8C 24, boots 0, toucher None attack None bearing None toucher+0x1CC None, sheet r1..r11 10 10 10 10 10 10 10 10 10 10 10
+outputs: return 8, hero HP 10 -> 8, hero words changed [('0x14', '0x0000000A', '0x00000008')], toucher words changed none, stats bytes changed none, sheet changed False, journal none, unwritten reads none
+

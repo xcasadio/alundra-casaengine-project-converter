@@ -1,0 +1,5 @@
+exe size 700416 0xab000
+hdr b'PS-X EXE' ['0x8008b538', '0x0', '0x80020000', '0xaa800', '0x0', '0x0', '0x0', '0x0']
+jal word 0c00c69a j word 0800c69a
+JAL at 80031c14 (file off 12414)
+JAL at 80031c44 (file off 12444)

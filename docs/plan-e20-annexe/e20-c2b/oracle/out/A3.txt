@@ -1,0 +1,180 @@
+# A3: the Charm of Nava (response 0x80) (E20.c2b T0 (c), new scenarios; the real code of ALUN_CD.EXE (France) in the MIPS emulator; sound, effects, spawn and the targets' programs are the journalled stubs of c1world)
+# per-tick values are the state AFTER the passes of that tick; tick 0 = start state; no expected value here: see the plan and the tests
+
+### A3-charm: Charm of Nava worn (inv charm, response index 6 = 0x80), the Beannoid's CurrentAttack := (attribute 0x06, power 4) 20 px east of the resting hero, stats 10/10, 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory charm, stats HP/HpMax set 10/10 -> entity 10/10, events {}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: none
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: none | none
+hero anim_target (+0x88) changes: t2 0x0->0x31, t6 0x31->0x1C, t17 0x1C->0x0
+hero dir_target (+0x8C) changes: t2 24->8, t17 8->24
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2,6,10,14,18,22,26,30,34,38,42,46,...(15 ranges)
+sounds (tick, id): [(2, 23), (6, 0), (17, 0)]
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 0F 0F 0F 0F 0F 80 0F 0F 0F 0F 0F
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 198.90625; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect_on_target(id=4, target=slot 0) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x0	0x31	8	0x31	229	96	-196608	1	-	119	24	2	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	sound(23)
+3	0x0000	0x0	0x31	8	0x31	226	96	-196608	1	-	118	23	3	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+6	0x0000	0x0	0x1C	8	0x1C	217.18750	96	-184320	1	-	115	20	6	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	sound(0)
+7	0x0000	0x0	0x1C	8	0x1C	214.56250	96	-172032	1	-	114	19	7	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+10	0x0000	0x0	0x1C	8	0x1C	207.81250	96	-135168	1	-	111	16	10	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+11	0x0000	0x0	0x1C	8	0x1C	205.93750	96	-122880	1	-	110	15	11	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+14	0x0000	0x0	0x1C	8	0x1C	201.43750	96	-86016	1	-	107	12	14	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+15	0x0000	0x0	0x1C	8	0x1C	200.31250	96	-73728	1	-	106	11	15	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+17	0x0000	0x0	0x0	24	0x0	198.90625	96	-30720	1	-	104	9	17	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	sound(0)
+18	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	103	8	18	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+19	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	102	7	19	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+22	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	99	4	22	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+23	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	98	3	23	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+26	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	95	0	26	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+27	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	94	0	27	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+30	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	91	0	30	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+31	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	90	0	31	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+34	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	87	0	34	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+35	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	86	0	35	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+38	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	83	0	38	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+39	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	82	0	39	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+42	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	79	0	42	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+43	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	78	0	43	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+46	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	75	0	46	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+47	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	74	0	47	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+50	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	71	0	50	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+51	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	70	0	51	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+54	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	67	0	54	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+55	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	66	0	55	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+58	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	63	0	58	10	10	0x0	0	0	0	1	10	10	0	0/0/0	0	0x0	-
+59	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	62	0	59	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+60	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	61	0	60	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	-
+
+   + touched at ticks 1; hurt entries at 2; HP []; stats HP []
+   + hero state timeline (anim_target): t1:0 t2:31 t6:1C t17:0
+   + hero charge counter [0x80126FFC] / pending-shot pointer [0x80127110]: ticks with charge != 0: none; wptr changes: none
+   + hero +0x2C (carried) at the end 0x0; draw-list absence (blink) at 2,6,10,14,18,22,26,30,...(15 ranges)
+
+### A3-nocharm: control: kit (no charm), the same synthetic attack (0x06, 4): an ordinary attribute, damage
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory kit, stats HP/HpMax set 10/10 -> entity 10/10, events {}, flags_every_tick None, cell word none, target kind Beannoid of map 14
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: t2 10->6
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 10->6 | none
+hero anim_target (+0x88) changes: t2 0x0->0x31, t6 0x31->0x1C, t17 0x1C->0x0
+hero dir_target (+0x8C) changes: t2 24->8, t17 8->24
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2,6,10,14,18,22,26,30,34,38,42,46,...(15 ranges)
+sounds (tick, id): [(2, 23), (6, 0), (17, 0)]
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 10 10 10 10 10 10 10 10 10 10 10
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 198.90625; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	10	10	0x0	0	0	0	0	10	10	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	232	96	0	1	slot1	0	25	1	10	10	0x0	0	0	1	2	10	10	0	0/0/0	0	0x0	effect_on_target(id=4, target=slot 0) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px) | effect(id=9, cx=242.49998, cy=95.49998, cz=6.50000 px)
+2	0x0000	0x0	0x31	8	0x31	229	96	-196608	1	-	119	24	2	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	sound(23)
+3	0x0000	0x0	0x31	8	0x31	226	96	-196608	1	-	118	23	3	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+6	0x0000	0x0	0x1C	8	0x1C	217.18750	96	-184320	1	-	115	20	6	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	sound(0)
+7	0x0000	0x0	0x1C	8	0x1C	214.56250	96	-172032	1	-	114	19	7	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+10	0x0000	0x0	0x1C	8	0x1C	207.81250	96	-135168	1	-	111	16	10	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+11	0x0000	0x0	0x1C	8	0x1C	205.93750	96	-122880	1	-	110	15	11	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+14	0x0000	0x0	0x1C	8	0x1C	201.43750	96	-86016	1	-	107	12	14	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+15	0x0000	0x0	0x1C	8	0x1C	200.31250	96	-73728	1	-	106	11	15	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+17	0x0000	0x0	0x0	24	0x0	198.90625	96	-30720	1	-	104	9	17	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	sound(0)
+18	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	103	8	18	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+19	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	102	7	19	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+22	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	99	4	22	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+23	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	98	3	23	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+26	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	95	0	26	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+27	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	94	0	27	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+30	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	91	0	30	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+31	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	90	0	31	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+34	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	87	0	34	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+35	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	86	0	35	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+38	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	83	0	38	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+39	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	82	0	39	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+42	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	79	0	42	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+43	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	78	0	43	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+46	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	75	0	46	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+47	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	74	0	47	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+50	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	71	0	50	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+51	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	70	0	51	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+54	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	67	0	54	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+55	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	66	0	55	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+58	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	63	0	58	6	10	0x0	0	0	0	1	6	10	0	0/0/0	0	0x0	-
+59	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	62	0	59	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+60	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	61	0	60	6	10	0x0	0	0	1	2	6	10	0	0/0/0	0	0x0	-
+
+   + touched at ticks 1; hurt entries at 2; HP [6]; stats HP [6]
+   + hero state timeline (anim_target): t1:0 t2:31 t6:1C t17:0
+   + hero charge counter [0x80126FFC] / pending-shot pointer [0x80127110]: ticks with charge != 0: none; wptr changes: none
+   + hero +0x2C (carried) at the end 0x0; draw-list absence (blink) at 2,6,10,14,18,22,26,30,...(15 ranges)
+
+### A3-charm-orc: charm worn, the real Orc of map 15 (attribute 0x02: response 0x0F, not 0x80), 60 ticks
+# hero start px (232, 96), pad {}, after-last 0x0, ticks 60, inventory charm, stats HP/HpMax set 12/12 -> entity 12/12, events {}, flags_every_tick None, cell word none, target kind real sprite 85 of map 15 (Orc), balance record index 341 (attack 0: attribute 0x02, power 4)
+hurt entries (+0x1CC rises) at ticks: 2
+hero touched by the hit pass (TouchingEntity set after the tick) at ticks: 1
+hero HP (+0x14) changes: t2 12->9
+hero HpMax (+0x18) changes: none
+stats HP / HpMax changes: t2 12->9 | none
+hero anim_target (+0x88) changes: t2 0x0->0x31, t6 0x31->0x1C, t17 0x1C->0x0
+hero dir_target (+0x8C) changes: t2 24->8, t17 8->24
+hero +0x1CC at the first hurt tick(s): [119]
+hero not in the draw list (blink) at ticks: 2,6,10,14,18,22,26,30,34,38,42,46,...(15 ranges)
+sounds (tick, id): [(2, 23), (6, 0), (17, 0)]
+control flags [0x800DC4B8] changes: none; boots level 0
+sheet responses 1..11 (bytes 3..13 of 0x80127008): 0F 0F 0F 0F 0F 80 0F 0F 0F 0F 0F
+regeneration counters: max [0, 0, 0], resets (tick, from): []
+hero position x (px): start 232, end 198.90625; slope_18c at the end 0; VramOR at the end 0x0
+unwritten-byte reads during the run: none
+-- hero rows (tick 0, 1, the last, and every tick where something other than the +0x1CC countdown or the regeneration counters moved)
+tick	hold	ctl	anim88	dir8C	anim90	pos_x	pos_y	force_x	ground	touching	c1CC	c1D0	cnt1C	hp14	hpmax18	vramOR	slope18C	animEnd_AC	visible	vis_count	stats_hp	stats_max	boots	regen012	charge	wptr	journal
+0	0x0000	0x0	0x0	24	0x0	232	96	0	1	-	0	0	0	12	12	0x0	0	0	0	0	12	12	0	0/0/0	0	0x0	-
+1	0x0000	0x0	0x0	24	0x0	232	96	0	1	slot1	0	25	1	12	12	0x0	0	0	1	2	12	12	0	0/0/0	0	0x0	effect(id=9, cx=241.99998, cy=96.49998, cz=16 px) | effect(id=9, cx=241.99998, cy=96.49998, cz=16 px) | effect(id=9, cx=241.99998, cy=96.49998, cz=16 px)
+2	0x0000	0x0	0x31	8	0x31	229	96	-196608	1	-	119	24	2	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	sound(23)
+3	0x0000	0x0	0x31	8	0x31	226	96	-196608	1	-	118	23	3	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+6	0x0000	0x0	0x1C	8	0x1C	217.18750	96	-184320	1	-	115	20	6	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	sound(0)
+7	0x0000	0x0	0x1C	8	0x1C	214.56250	96	-172032	1	-	114	19	7	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+10	0x0000	0x0	0x1C	8	0x1C	207.81250	96	-135168	1	-	111	16	10	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+11	0x0000	0x0	0x1C	8	0x1C	205.93750	96	-122880	1	-	110	15	11	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+14	0x0000	0x0	0x1C	8	0x1C	201.43750	96	-86016	1	-	107	12	14	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+15	0x0000	0x0	0x1C	8	0x1C	200.31250	96	-73728	1	-	106	11	15	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+17	0x0000	0x0	0x0	24	0x0	198.90625	96	-30720	1	-	104	9	17	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	sound(0)
+18	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	103	8	18	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+19	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	102	7	19	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+22	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	99	4	22	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+23	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	98	3	23	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+26	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	95	0	26	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+27	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	94	0	27	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+30	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	91	0	30	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+31	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	90	0	31	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+34	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	87	0	34	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+35	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	86	0	35	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+38	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	83	0	38	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+39	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	82	0	39	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+42	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	79	0	42	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+43	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	78	0	43	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+46	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	75	0	46	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+47	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	74	0	47	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+50	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	71	0	50	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+51	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	70	0	51	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+54	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	67	0	54	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+55	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	66	0	55	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+58	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	63	0	58	9	12	0x0	0	0	0	1	9	12	0	0/0/0	0	0x0	-
+59	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	62	0	59	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+60	0x0000	0x0	0x0	24	0x0	198.90625	96	0	1	-	61	0	60	9	12	0x0	0	0	1	2	9	12	0	0/0/0	0	0x0	-
+
+   + touched at ticks 1; hurt entries at 2; HP [9]; stats HP [9]
+   + hero state timeline (anim_target): t1:0 t2:31 t6:1C t17:0
+   + hero charge counter [0x80126FFC] / pending-shot pointer [0x80127110]: ticks with charge != 0: none; wptr changes: none
+   + hero +0x2C (carried) at the end 0x0; draw-list absence (blink) at 2,6,10,14,18,22,26,30,...(15 ranges)
+

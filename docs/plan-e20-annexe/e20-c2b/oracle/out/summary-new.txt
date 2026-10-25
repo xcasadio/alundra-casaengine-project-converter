@@ -1,0 +1,23 @@
+A3-charm               touched 1              hurt 2            HP []             timeline t1:0 t2:31 t6:1C t17:0
+A3-nocharm             touched 1              hurt 2            HP [6]            timeline t1:0 t2:31 t6:1C t17:0
+A3-charm-orc           touched 1              hurt 2            HP [9]            timeline t1:0 t2:31 t6:1C t17:0
+A5-walk                touched 17             hurt 18           HP [9]            timeline t1:1 t18:31 t22:1C t33:0 t34:1
+A5-walk-released       touched 17             hurt 18           HP [9]            timeline t1:1 t18:31 t22:1C t33:0
+A5-swing-t2            touched 2              hurt 3            HP [9]            timeline t1:10 t3:31 t7:1C t18:0
+A5-swing-t8            touched 8              hurt 9            HP [9]            timeline t1:10 t9:31 t13:1C t24:0
+A5-swing-t14           touched 14             hurt 15           HP [9]            timeline t1:10 t15:31 t19:1C t30:0
+A5-swing-t21           touched 21             hurt 22           HP [9]            timeline t1:10 t22:31 t26:1C t37:0
+A5-swing-t22           touched 22             hurt 23           HP [9]            timeline t1:10 t22:0 t23:31 t27:1C t38:0
+A5-rise-t2             touched 2              hurt 3            HP [9]            timeline t1:2B t2:2D t3:31 t7:1C t18:1 t19:2D t22:0
+A5-air-t10             touched 19             hurt 20           HP [9]            timeline t1:2B t2:2D t20:31 t24:1C t35:0
+A5-apex-h8             touched 10             hurt 11           HP [9]            timeline t1:2B t2:2D t11:31 t15:1C t26:0
+A5-land-t19            touched 19             hurt 20           HP [9]            timeline t1:2B t2:2D t20:31 t24:1C t35:0
+A5-land-t20            touched 20             hurt 21           HP [9]            timeline t1:2B t2:2D t21:31 t25:1C t36:0
+A5-land-t21            touched 21             hurt 22           HP [9]            timeline t1:2B t2:2D t22:31 t26:1C t37:0
+A5-land-t22            touched 22             hurt 23           HP [9]            timeline t1:2B t2:2D t22:0 t23:31 t27:1C t38:0
+A5-charge              touched 70             hurt 71           HP [9]            timeline t1:49 t22:0 t71:31 t75:1C t86:0
+A5-charge-wptr         touched 70             hurt 71           HP [9]            timeline t1:49 t22:0 t71:31 t75:1C t86:0
+A5-charge-wptr-nocontact touched none           hurt none         HP []             timeline t1:49 t22:0
+A5-charge-nocontact    touched none           hurt none         HP []             timeline t1:49 t22:0
+C-carried              touched 1              hurt 2            HP [9]            timeline t1:C t2:31 t6:1C t17:0 t18:C
+C-carried-walk         touched 17             hurt 18           HP [9]            timeline t1:7 t18:31 t22:1C t33:0 t34:C t35:7
