@@ -7381,7 +7381,7 @@ Exécution en mode AUTO, HEAD de départ `e295875a`. Mesures : `docs/plan-e20-an
   plat, S+7 sur la marche), sauf la mort dans l'eau profonde (S+11) et la case libre (S+12), comparées ; `CutBench.Cell` reçoit un champ
   optionnel `GroundProperty`.
 
-#### 1.22.2 E20.f6b — C60, E9, les flammes de la 309 et le branchement ⏳
+#### 1.22.2 E20.f6b — C60, E9, les flammes de la 309 et le branchement ✅ (**faite et CONFIRMED le 2026-10-25**, `0ab808e7` à `573a25c1`, ADR-0098 ; recette de l'auteur à faire)
 
 **Prérequis.** f6a, **E20.f4 et E20.f5** (ordre ferme de la révision 9 : D-F4-7, D-F4-8, l'annexe, la règle de vitesse D-F5-5), E20.f3 (dont f3b), E20.e0b1 ✅, E20.e0k1 à e0k3. **À relire à l'exécution** : le point de création des effets, l'interrupteur d'arène (D-F4-7), la règle de vitesse (D-F5-5).
 
@@ -7419,10 +7419,13 @@ Autres clés : `*_wall_col6`, `*_step16_col6`, `*_step32_col6`, `fire11_gp{8,2,4
 
 ##### Tâches
 
-- ⏳ **T0 — Prédiction et oracle** (commit de docs). Annexe commune. Scénarios de f6 : les trente des relevés plus `fire11_branchA_water_on_puff_tick` (injection de `+0x18C` à S+15), les flammes de la 309 avec le vrai
+- ✅ **T0 — Prédiction et oracle** (commit de docs ; fait le 2026-10-25, `0ab808e7` : l'oracle rejoué identique, 54 valeurs du tableau sur 54,
+  27 mutants de l'oracle dont 2 équivalents prouvés ; un arrêt sur le R de (p1), levé par la correction `744f7aab` ; le fichier
+  `Alundra/Ai/Projectiles/BallAi.cs`). Annexe commune. Scénarios de f6 : les trente des relevés plus `fire11_branchA_water_on_puff_tick` (injection de `+0x18C` à S+15), les flammes de la 309 avec le vrai
   interpréteur d'octets si possible. Au moins 14 mutants : C60-1 à C60-4, E9-1 à E9-10 (E9-5b et E9-9 prouvés équivalents), `+1` du Z de création. Sondes de la DLL : (P-F6-1) force verticale d'une flamme posée
   au moment de C60 ; (P-F6-2) la 309 se construit-elle dans `ArcRun` (arrivée en tuile (38, 47), depuis les cartes 306 et 441) ; (P-F6-3) position de l'explosion à 1, 2, 3 ticks par image avant la règle de vitesse.
-- ⏳ **T1 — Phase A** (tests d'abord, rouges sur un squelette). Chaque « sans effet » est accolé à un positif :
+- ✅ **T1 — Phase A** (tests d'abord, rouges sur un squelette ; fait le 2026-10-25, `87183e78`, `1dbc17b7` : 177 tests neufs, 171 cas rouges sur
+  le squelette, tous verts après ; `BallAi.Register` rend un `IDisposable` ; l'écart accepté `fire11_x107` d'e0k5 épinglé). Chaque « sans effet » est accolé à un positif :
   - (b1) E9 direct, branche B : 10 tirages dans l'ordre, les cinq effets au Z de la boule ; pente 1 ou 4 : `DestroyEntity(e, 6)`, aucun tirage, accolée à la pente 2 ; réservoir plein : aucun tirage ni écriture ;
   - (b2) E9 branche A : bouffée tous les 8 ticks (2 tirages, décalage de Z du feu seulement), pente 1 ou 4 à un tick multiple de 8 : destruction puis bouffée ; `+0xAC == 1` : destruction sans bouffée ;
   - (b3) C60 direct : traînée tous les 4 ticks, feu 17 et glace 18, vitesse −F, Z + `0x80000` pour le feu seulement ; (b4) les tirages égalent un pas local (D-E0B-8) ;
@@ -7430,13 +7433,18 @@ Autres clés : `*_wall_col6`, `*_step16_col6`, `*_step32_col6`, `fire11_gp{8,2,4
   - (b6) touches : feu `attach(4)`, glace `attach(5)`, avant les étincelles, 9 tirages, la boule ne s'arrête pas ; seconde touche à S+33 / S+34 ;
   - (b7) la table du registre : `Register` ajoute les clés (C, 60) et (E, 9) pour 10 à 15.
   Puis le code de la phase A. Verts à la fin de T1.
-- ⏳ **T2 — Tests des flammes de la 309, rouges avant T3.** (m1) trois entités du type 12, `Flags` 0x132104, qui émettent l'effet 17 à (x, y, Z du binaire + 8 px) tous les 4 ticks de `FrameCounter`, vitesse lue
+- ✅ **T2 — Tests des flammes de la 309, rouges avant T3** (fait le 2026-10-25, `85018641` : 10 cas sur le monde réel de la 309, rouges avant
+  T3, verts après). (m1) trois entités du type 12, `Flags` 0x132104, qui émettent l'effet 17 à (x, y, Z du binaire + 8 px) tous les 4 ticks de `FrameCounter`, vitesse lue
   (P-F6-1), sans tirage ; accolées au témoin « sans C60 » (aucune émission) ; (m2) elles ne touchent aucune entité ; (m3) l'épingle du registre par dérivation (+2 clés).
-- ⏳ **T3 — Phase B** : l'appel d'enregistrement. Verts.
-- ⏳ **T4 — Phase C et tests de production**, crochet nul, **rouges avant l'ensemble** : (p1) la baguette de feu et celle de glace, non chargées et chargées (au calendrier de l'oracle : R = 96, la naissance chargée au tick 107 à
+- ✅ **T3 — Phase B** : l'appel d'enregistrement. Verts. (Fait le 2026-10-25, `0d4f9308` : les 4 épingles du registre réécrites par dérivation,
+  comme prédit.)
+- ✅ **T4 — Phase C et tests de production** (fait le 2026-10-25, `8799b838`, `38cda53b` : 15 cas rouges avant l'ensemble, verts après ;
+  `ProductionWiredWeaponTypes` = {3, 4, 7, 11, 12, 14, 15, 27, 28, 29} ; `WeaponSpawnSeamTests.S5` réécrit, comme prédit ; Release et
+  Debug 6 921 verts, `cmp` égal), crochet nul, **rouges avant l'ensemble** : (p1) la baguette de feu et celle de glace, non chargées et chargées (au calendrier de l'oracle : R = 96, la naissance chargée au tick 107 à
   1 tick par image, 108 à 3 ; correction du 2026-10-25) : une entité du bon type à la plus basse case libre ; (p2) le commutateur de feu de la carte 303 (`fire-m303`) : la boule touche, le programme D s'exécute, le drapeau est posé et la classe A effacée (opcode `0x87 [128, 6]` répond oui) ;
   (p3) table pleine ; (p4) la fermeture : l'ensemble de production égale les octets de type non nuls des fiches d'arme. Puis la ligne de l'ensemble.
-- ⏳ **T5 — ADR, plan, verifiers frais** (deux). Mutants du code de la DLL, au moins 16, tous tués : 5 effets → 4 ; période 8 ; test de pente 1 oublié ; pente 4 oubliée dans la branche A ; destruction avec un autre effet ; bouffée
+- ✅ **T5 — ADR, plan, verifiers frais** (deux ; fait le 2026-10-25, `36eda93f`, `573a25c1`, `wf_d53a62b3-b2c` : 24 mutants réels tous
+  tués ; ADR-0098 ; les deux verifiers CONFIRMED). Mutants du code de la DLL, au moins 16, tous tués : 5 effets → 4 ; période 8 ; test de pente 1 oublié ; pente 4 oubliée dans la branche A ; destruction avec un autre effet ; bouffée
   avant la destruction ; décalage de Z du feu appliqué à la glace ; vitesse non opposée ; effet 17 pour la glace ; tirage hors de l'application ; clé C60 oubliée ; clé E9 oubliée ; type 10 ou 13 câblé ; ensemble avec 3 ; boule
   qui avance à la vitesse de l'animation courante (D-F5-5) ; alimentation de la pente à toutes les entités.
 
