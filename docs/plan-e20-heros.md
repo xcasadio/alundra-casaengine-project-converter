@@ -12034,7 +12034,7 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B (l'entrée et l'appel) ; la phase A : le fichier, l'inscription, l'API du tampon, le créateur, le champ.
 
-#### 1.31.6 E20.h4d2 — Le feu 1 : le pilote `0x80035A84`, la colonne, C63, E3 pour le type 23 et l'annulation `0x80034D2C` ⏳ (détaillée le 2026-10-18 ; **READY** à la première relecture, `b20eb8c` ; **révision 2 du 2026-10-25** : D-E20-55 et D-E20-57, R-EL-6 révisée, nouvelle époque, à relire par un `plan-verifier` frais)
+#### 1.31.6 E20.h4d2 — Le feu 1 : le pilote `0x80035A84`, la colonne, C63, E3 pour le type 23 et l'annulation `0x80034D2C` ⏳ (détaillée le 2026-10-18 ; **READY** à la première relecture, `b20eb8c` ; **révision 2 du 2026-10-25** : D-E20-55 et D-E20-57, R-EL-6 révisée, nouvelle époque ; relue : REVISE ; révision 2.1 du 2026-10-25, à relire par un `plan-verifier` frais)
 
 **Révision 2 (2026-10-25, nouvelle époque).** Deux réponses de l'auteur du 2026-10-22 changent la tranche (lecture seule du 2026-10-25,
 `scratchpad/t2-next/h4-rev/` et sa critique, à verser par T0 (a)) : (1) Q-H4D2-1, B (D-E20-57) : la boule tourne comme l'original, boucles
@@ -12042,6 +12042,11 @@ comprises ; plus de réglage `ShortestTurn`, plus de loi corrigée, plus de clé
 `SortThreshold` 2) se compare à `_pf` ou à `_qfix` ; (2) Q-H4B-5 (D-E20-55) : les accès 32 bits sont propres aux tomes, `EntityScriptProxy` ne
 reçoit aucun accesseur. R-EL-6 révisée (E20.c2b avant h4, D-E20-83) : les colonnes du héros après T se comparent au banc au poke. Deux erreurs
 de texte corrigées en passant (le fait « Le sprite 23 », les prérequis).
+
+**Révision 2.1 (2026-10-25).** La relecture de la révision 2 (REVISE) a relevé un mutant équivalent tel qu'écrit (« un `& 31` ajouté à la
+comparaison » : les différences des deux branches restent dans 0..31) : sa forme exacte change le choix de la branche (la différence
+modulaire) et (k2) nomme sa sortie ; en passant, le fait du sprite 23 ne se contredit plus, la liste prédite cite les noms de fichiers du
+HEAD et le script `qfix_make_keys.py` est versé avec la mise à jour du `SHA1SUMS` de l'annexe.
 
 **Prérequis.** h0a et h4a (les coutures, la fonction de départ des tomes, les états, la garde) ; h4b1 (`TargetQuery.Find` et ses réglages) ; h4c1
 (E3, `EarthTome1Ai`, son inscription), **donc par transitivité f4, f5 et f6a** (critique d'h4d2 §5, point 3 ; f5 sert aussi directement : au tick
@@ -12086,7 +12091,7 @@ ses propres listings, aucun réfuté ; les 30 clés refaites confirmées sur deu
 - **Le sprite 23 (la boule)** : drapeaux `0x102074` (`DestroyOnSlidingSlope` **sans** `Gravity` : l'eau profonde ne la détruit pas, la clé sur l'eau
   égale la clé plate) ; animation 0 (vitesse 256, accélération 68, `Loop`), animation 1 (vitesse 0, accélération 4, `Hold`, 10 ticks) ; boîte
   23 × 15 × 15 ; fiche 23 : type 10, puissance 32. Atterrissage au tick L, statut 3 et E3 à L+1, `+0xAC` à L+11, statut 4 à L+12 ; un mur ou un bord :
-  statut 3 en l'air. **C'est la première entité sans `Gravity` qui tombe et atterrit** : dans la DLL elle passe par `RunLogicalZPreXyStep` avec
+  statut 3 en l'air. **C'est une entité sans `Gravity` qui tombe et atterrit (comme le type 17 de h4c2)** : dans la DLL elle passe par `RunLogicalZPreXyStep` avec
   `gravity = false` (atterrissage strict, `StepHeight` 0), un chemin que les rochers de h4c1 (à gravité) n'exercent pas ; h4c2 l'exerce déjà avec le type 17 (`0x132014`, sans `Gravity`) (révision 2) ; le relief change la vie
   de 5 à 6 boules sur 11 (critique §5, point 2).
 - **Le calendrier** (`fire1_cast_pf`, S = 34) : la colonne (case 1) et la boule 1 (case 2) au statut 2 à la fin du tick 34 ; onze boules aux ticks
@@ -12150,7 +12155,8 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
 
 ##### Tâches
 
-- ⏳ **T0 — Annexe, oracle, sondes, liste prédite** (aucun code) : (a) rejouer depuis des copies `e20-h4d2/disc/h4o/fire1_make_keys.py` (deux
+- ⏳ **T0 — Annexe, oracle, sondes, liste prédite** (aucun code) : (a) verser d'abord (révision 2.1) `qfix_make_keys.py` et ses sorties (`scratchpad/t2-next/h4-rev/h4d2/h4o/`, `out_qfix/` et son
+  manifeste) à `e20-h4d2/disc/h4o/`, avec la mise à jour du `SHA1SUMS.txt` de l'annexe ; rejouer depuis des copies `e20-h4d2/disc/h4o/fire1_make_keys.py` (deux
   exécutions, le manifeste des 30 clés identique), `vec_fire1.py` (deux exécutions, les quatre MD5 identiques, 0 écart des modèles, les couvertures de
   `disc/report.md` §3.4), `vec_selftest.py` (36 mutants tués), `probe_count.py` (494 appels, 0 écart), `h4_vec_drivers.py` et `h4_vec_handlers.py`
   d'`e20-h4` (0 écart) et `e20-h4d2/critic/scripts/make_relief_keys.py` (les trois clés de relief aux MD5 de la critique §5), et (révision 2) `qfix_make_keys.py` de la lecture
@@ -12173,7 +12179,9 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
   libre) ; P13, la requête de la DLL en mode binaire, avec le compte de D-H4D2-5, rend les listes de `probe_count.py` ; **P14** (critique §6), le
   relief : sur les trois clés de relief, les boules atterrissent sur le plateau à z = 16 ou 32 px et hors du plateau à z = 0, aux ticks des clés ;
   **P15** (critique §7), `ScriptHelper.GetDirectionToTarget` égale `0x8002E814` sur des différences brutes 16.16 de tout signe (la grille `kind:
-  "turn"` et les mondes de `vec_c63`) ; (d) la liste prédite : les deux épingles du registre (`AlundraNativeSpriteRegistryTests.cs:55`,
+  "turn"` et les mondes de `vec_c63`) ; (d) la liste prédite (révision 2.1 : les noms de fichiers sont ceux du HEAD, `Alundra.Tests/Ai/NativeSpriteRegistryTests.cs`,
+  `Alundra.Tests/Ai/Projectiles/WaveSwordLifeTests.cs` vers la ligne 185, `Alundra.Tests/Entities/SpawnBySpriteIndexInterfaceTests.cs`,
+  `SpawnBySpriteIndexCoreTests.cs`, `BirthBoxTests.cs` ; les noms anciens qui suivent valent pour ceux-là) : les deux épingles du registre (`AlundraNativeSpriteRegistryTests.cs:55`,
   `AlundraWaveSwordLifeTests.cs:181-183` : +1 pour `(C, 63)`, réécrites par dérivation, bloc du §1.24, point 4) et (e2) de h4c1 (« `(E, 3)` pour le
   type 16 seul » devient « pour `{16, 23}` ») ; le mutant de h4c1 « E3 inscrit pour `{16, 23}` » devient l'état de production ; les tests des boucles
   v1 qui font naître les types 20 et 23 sans tick (`AlundraSpawnBySpriteIndexInterfaceTests.cs` B2, `AlundraBirthBoxTests.cs` B2,
@@ -12185,7 +12193,8 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
   `vec_e3_8007EDA0.json` (288, dont `0x102074`) en un seul test ; (e2) les inscriptions sur un registre neuf : `(E, 3)` → `{16, 23}` (pas 17, 24,
   150), `(C, 63)` → `{23}` seul, `(E, 1)` absent ; (k1) C63 en mode binaire contre `vec_c63_8007AC60.json` (3 524) en un seul test, par la surcharge à
   compte, les tableaux de sortie de la requête ignorés, dont les 1 433 vecteurs que la loi corrigée aurait changés ; (k2) le tour sur la grille
-  32 × 32 : le long côté pour les 240 paires d'écart numérique > 16, `& 31` jamais appliqué, les cas nommés 31 → 0 et 0 → 31 (huit pas), un
+  32 × 32 : le long côté pour les 240 paires d'écart numérique > 16, les cas nommés `cur` 31, `d` 0 → 27 (et non 0 : pas de bouclage) et
+  `cur` 0, `d` 31 → 4 (et non 31), puis 31 → 0 et 0 → 31 en huit pas, un
   écart de 3 (saut à la cible) et de 4 (un pas) ; (k3) retiré (révision 2, D-E20-57) ; (k4) les valeurs de production des deux réglages
   (`InclusiveBound` vrai, `SortThreshold` 2) ;
   (k5) un `BallTick` sur une boule dont l'octet d'attaque vaut `0x8A`, la requête espionnée : le type 10 et le masque `ClassA` (le cas « sans
@@ -12214,7 +12223,8 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
 - ⏳ **T3 — ADR, plan, deux verifiers frais** (l'un sur les clés et leur initialisation). Mutants, au moins 30, tous tués sauf les équivalents déclarés :
   les 36 des modèles de la découverte portés sur le C# (`disc/report.md` §5, T3 : pilote, annulation, E3, C63) ; les 18 de la critique
   (`critic/results/extra_mutants_vs_vectors.txt`) ; et `(E, 3)` encore `{16}` ; E3 élargi à 24 ; `(C, 63)` inscrit pour 17 ; le tour par le plus court (la
-  correction refusée ; tué par (k2), (w2) `tgt_one`, (w3)) ; un `& 31` ajouté à la comparaison (le bouclage ; tué par (k2) 31 → 0) ; le compte fixé à 63 en mode binaire ; la requête appelée malgré une cible ; la cible
+  correction refusée ; tué par (k2), (w2) `tgt_one`, (w3)) ; le bouclage : dans la branche `d < cur`, le test `((d − cur) & 31) < 4` au lieu de `cur − d < 4`, et dans la branche `d > cur`, le
+  test `((cur − d) & 31) < 4` au lieu de `d − cur < 4` (tué par (k2) : `cur` 31, `d` 0, le binaire écrit 27, le mutant 0 ; `cur` 0, `d` 31, le binaire 4, le mutant 31) ; le compte fixé à 63 en mode binaire ; la requête appelée malgré une cible ; la cible
   mémorisée par `Slot` seul (tué par `vanish75` puis le recyclage) ; `ItemSpawnedEntity` testé par `Slot < 0` seul ; l'annulation qui touche aussi les
   entités de carte ; la mort de la colonne lue un tick trop tôt ; la naissance de la boule avant la garde ; C63 au tick de naissance. Équivalents
   déclarés (critique §4) : la colonne détruite avant la création de l'effet (l'effet prend des coordonnées) ; le seuil du tour `<= 4` ou `< 5`.
