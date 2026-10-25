@@ -2731,7 +2731,7 @@ le pilote d'objet (E20.h) ; la mort (E18).
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.c2a.
 
-#### 1.12.1 E20.c2b — La blessure du héros : l'entrée `0x80031A68`, le bloc de blessure, l'état `0x31` et le clignotement ⏳ (détaillée le 2026-10-25 ; thème 2 ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais ; défauts des questions Q-C2B-1 à Q-C2B-6 pris en attendant la réponse de l'auteur)
+#### 1.12.1 E20.c2b — La blessure du héros : l'entrée `0x80031A68`, le bloc de blessure, l'état `0x31` et le clignotement ⏳ (détaillée le 2026-10-25 ; thème 2 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture ; défauts des questions Q-C2B-1 à Q-C2B-6 pris en attendant la réponse de l'auteur)
 
 **Provenance.** Lecture seule du 2026-10-25 (HEAD `e9e8c58a`, code de production inchangé jusqu'à `ffc505b1`) : trois rapports (binaire,
 DLL, plans) et un critique frais qui confirme chaque fait porteur et en corrige trois (`scratchpad/c2b-disc/{binary,dll,plan,critic}/`,
@@ -2744,6 +2744,12 @@ nommaient ni e0d ni b2, qui partagent les fichiers et les montages de c2b : elle
 l'inventaire de T0 (d) se prend sur le HEAD qui les contient ; (2) l'inventaire de T0 (d) ne câblait pas le clignotement, qui change
 `IsVisible` des objets lâchés et des cibles de `0x86` : il le câble aussi et classe les tests par cause ; (3) des témoins n'avaient pas
 de mutant possible : chaque témoin a son mutant nommé, les arcs de la chaîne sont des témoins de non-régression sans mutant.
+
+**Révision 2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé un
+mutant équivalent (« la pente lue après le portail » : rien n'écrit la pente entre sa lecture et le bloc) : il sort de la liste par une
+règle des équivalents écrite, remplacé par un mutant que `W7-hurt-shore` tue ; chaque mutant de T5 nomme le test qui le tue ; un
+mutant sans effet possible dans la DLL (« le test de mort au tick de la blessure » : la mort n'est pas portée) est remplacé par la sortie
+sans `EndOfMovePlayer` ; T0 (c) fournit les vecteurs de la fonction pure qu'exigent ces mutants.
 
 **Prérequis.** E20.c2-0 (l'oracle, §1.11), E20.c2a (§1.12), E20.i, E20.d1, E14.a et E20.g1a : faits et CONFIRMED. **E20.e0d (§1.26.2)
 et E20.b2 (§1.4.1) faites, CONFIRMED et présentes sur la branche** (D-C2B-1) : elles touchent les mêmes fichiers et montages
@@ -2850,7 +2856,9 @@ plan (dont la ligne d'enveloppe « E20.c2 », l'en-tête de h3a et D-H-7).
 - ⏳ **T0 — Versement, prérequis, inventaire par exécution** (commit de docs). (a) Les prérequis, dont e0d et b2 CONFIRMED et présentes
   au HEAD de départ (son SHA noté dans l'annexe) ; (b) verser `scratchpad/c2b-disc/` à
   `docs/plan-e20-annexe/e20-c2b-disc/` (sans copies d'annexes ni `__pycache__`), avec README et `SHA1SUMS.txt` ; (c) rejouer depuis une
-  copie l'oracle c2 pour A1, A2, B1, B2, C1, D1, E1 et `W7-hurt-shore`, sorties identiques ; compléter dans des fichiers neufs A3 (le
+  copie l'oracle c2 pour A1, A2, B1, B2, C1, D1, E1 et `W7-hurt-shore`, sorties identiques ; tirer, par l'émulation du code du binaire,
+  les vecteurs de la fonction pure qu'exigent (e1) à (e3) (dont un toucheur avec `+0x1CC` non nul, (0, 0), des bottes de niveau 2 et 3
+  sur une case, l'armure portée sur une case) ; compléter dans des fichiers neufs A3 (le
   charme, réponse `0x80`), A5 (la blessure en plein coup d'épée, en marche, à l'apogée d'un saut, à l'atterrissage) et la blessure avec
   un objet porté ; (d) **l'inventaire par exécution**, sur le HEAD de (a) : un câblage temporaire (jamais commité, versé en `.txt`) de
   l'entrée, du bloc, des cases dangereuses **et du clignotement de D-C2B-7**, la suite entière en Release, la liste nommée des tests qui
@@ -2875,23 +2883,32 @@ plan (dont la ligne d'enveloppe « E20.c2 », l'en-tête de h3a et D-H-7).
   (k3) témoins : un objet de coffre Loaded reste caché, une entité `FlagToDestroy` reste cachée, une entité sans compteur reste visible ;
   puis le code.
 - ⏳ **T4 — Les cases dangereuses et les préréglages, tests d'abord** : (h1) la vraie carte de T0 : coût, toutes les 120 ticks, le dos au
-  regard, l'armure ignorée, les bottes de niveau 3 ; (h2) `blessure-m15` (et `blessure-m14`) : carte, case, PV 10/10, sac ; puis le code.
+  regard, l'armure ignorée, les bottes de niveau 2 (blessé) et 3 (épargné) ; (h2) `blessure-m15` (et `blessure-m14`) : carte, case, PV 10/10, sac ; puis le code.
   La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ; les traces de la 389 ;
   `cmp` ; `check_names.py --rules` ; le moteur, le convertisseur et les données sans diff.
-- ⏳ **T5 — Mutants, ADR.** Au moins 16 mutants réels, tous tués : la branche toucheur qui teste `+0x1CC` ; le retour de `ComputeNewHp`
-  utilisé ; la direction inversée (toucheur − héros) ; (0, 0) → 0 ; la table des coûts de la décompilation (256) ; les bottes `< 2` ;
-  l'armure appliquée aux cases ; la pente lue après le portail ; `0x31` au lieu de `0x3A` en eau profonde ; `+0x1CC = 0x77` ; le mode 0
-  au lieu du mode 2 ; la charge non remise à zéro ; le chemin `0x20` qui pose l'état ; `0x34` qui laisse passer le coup ; le test de
-  mort au tick de la blessure ; le clignotement sur `& 3 == 0` ; le clignotement publié au premier tick de l'image ; le clignotement qui
-  rend visible un objet Loaded (tue le témoin Loaded de (k3)) ; le clignotement qui rend visible une entité `FlagToDestroy` (tue le témoin
-  `FlagToDestroy` de (k3)) ; le clignotement qui cache quand `(DamagedTickCounter & 3) != 3` (tue le témoin « sans compteur » de (k3)) ;
-  l'entrée qui rend 0 au lieu de −1 sans toucheur ni bits `0x180` (tue le témoin des montages sans passe de coups de (b8)) ; `case 0x31`
-  absent quand `TryUseItem` rend 0 (sonde de test) ; un ADR neuf (numéro libre recompté).
+- ⏳ **T5 — Mutants, ADR.** Au moins 16 mutants réels, tous tués, chacun par le test nommé entre parenthèses : la branche toucheur
+  qui teste `+0x1CC` ((e1), le vecteur toucheur à `+0x1CC` non nul) ; le retour de `ComputeNewHp` utilisé (l'entrée rend −1 quand les PV
+  tombent à 0 : (b6)) ; la direction inversée, toucheur − héros ((e1), (b1)) ; (0, 0) → 0 ((e3)) ; la table des coûts de la décompilation,
+  256 ((e1), (h1)) ; les bottes `< 2` ((h1), les bottes de niveau 2) ; l'armure appliquée aux cases ((h1)) ; le choix de `0x3A` lu sur
+  l'eau (`CombinedVramFlagsOR & 0x800`) au lieu de la pente 4 ((b2) `W7-hurt-shore` : à moitié dans l'eau sur la pente 0, `0x31`
+  attendu) ; `0x31` au lieu de `0x3A` en eau profonde ((b2) C1) ; `+0x1CC = 0x77` ((b1), 119 au tick T ; (k1)) ; le mode 0 au lieu du
+  mode 2 ((b3), l'objet porté) ; la charge non remise à zéro ((b3)) ; le chemin `0x20` qui pose l'état ((b4)) ; `0x34` qui laisse passer
+  le coup ((b4)) ; le tick de la blessure qui sort sans `EndOfMovePlayer` ((b1), les PV des stats au tick T) ; le clignotement sur
+  `& 3 == 0` ((k1)) ; le clignotement publié au premier tick de l'image ((k1), à 2 et 3 ticks par image) ; le clignotement qui rend
+  visible un objet Loaded (le témoin Loaded de (k3)) ; le clignotement qui rend visible une entité `FlagToDestroy` (le témoin
+  `FlagToDestroy` de (k3)) ; le clignotement qui cache quand `(DamagedTickCounter & 3) != 3` (le témoin « sans compteur » de (k3)) ;
+  l'entrée qui rend 0 au lieu de −1 sans toucheur ni bits `0x180` (le témoin des montages sans passe de coups de (b8)) ; `case 0x31`
+  absent ((b5), qui observe l'appel de `TryUseItem` pendant `0x31`) ; un ADR neuf (numéro libre recompté). **Règle des
+  équivalents** : un mutant qu'aucune exécution ne peut distinguer est écrit avec sa raison et sort de « tous tués » ; « la pente lue
+  après le portail » en est un (aucun écrivain de `Slope_18c`, le `+0x18C`, entre la lecture et le bloc, au binaire, critique A9, comme
+  dans la DLL, où seul `UpdateGroundSlope` de la passe physique l'écrit) : la lecture en tête de D-C2B-4 reste une règle de fidélité,
+  sans mutant.
 - ⏳ **T6 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.** Les sorties de T0 (c) identiques ; (e1) à (e4), (b1) à (b7), (k1), (k2), (h1) et (h2) rouges avant et verts après
 (nommés) ; les témoins verts avant et après : le témoin des montages de (b8) et les trois témoins de (k3), chacun tué par son mutant
-nommé de T5 ; les arcs de la chaîne de (b8), témoins de **non-régression sans mutant** (aucun ennemi n'y atteint le héros) ; le recul total −2 168 832 brut ; la suite
+nommé de T5 ; les arcs de la chaîne de (b8), témoins de **non-régression sans mutant** (aucun ennemi n'y atteint le héros) ; les mutants
+de T5 tous tués, chacun par le test qu'il nomme, sauf les équivalents écrits avec leur raison (règle de T5) ; le recul total −2 168 832 brut ; la suite
 en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (d), chacun réécrit par dérivation ; les arcs de la chaîne
 inchangés ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non bloquante) : `blessure-m14` ou une
 sauvegarde d'armes sur la carte 14 (au contact d'un Beannoïde : un cœur perdu, le recul, le clignotement, à 0 cœur Alundra continue) ;
