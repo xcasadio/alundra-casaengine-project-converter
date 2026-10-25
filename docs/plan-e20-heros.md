@@ -7551,7 +7551,7 @@ rejoué sur le vrai code ; ce qui n'est qu'inférence est dit.
 - **Q-G2C-9** : les sondes de la DLL au T0 de g2c1 : P1 `ForceAdjusted` d'un objet lancé contre un mur ; P2 les mots des quatre coins
   au bord d'une bande `0x1001` ; P3 `HitCounter` à T+21 ; P4 le `RidingEntity` d'un objet posé sur une plaque.
 
-##### E20.g2c1 — C4 : les objets transportables (tonneau, pierre, tronc, objets des plaques, et les objets qui passent à C4 en jeu) ⏳ (détaillée le 2026-10-24 ; révision 0 relue : REVISE ; révision 1 du 2026-10-24, **READY** à la deuxième relecture, `plan-verifier` frais ; révision 2 du 2026-10-24 (g2b2 passe après elle), **READY** à la relecture de clôture, `plan-verifier` frais ; exécutable après E20.g1b et E20.g4b)
+##### E20.g2c1 — C4 : les objets transportables (tonneau, pierre, tronc, objets des plaques, et les objets qui passent à C4 en jeu) ✅ (détaillée le 2026-10-24 ; révision 0 relue : REVISE ; révision 1 du 2026-10-24, **READY** à la deuxième relecture, `plan-verifier` frais ; révision 2 du 2026-10-24 (g2b2 passe après elle), **READY** à la relecture de clôture, `plan-verifier` frais ; exécutable après E20.g1b et E20.g4b ; **faite et CONFIRMED le 2026-10-25** par deux verifiers frais ; ADR-0092)
 
 **Provenance.** Le T0 de lecture seule du 2026-10-22 (`docs/plan-e20-annexe/e20-g2c/disc/`, `report.md`), puis deux lectures du
 2026-10-24 au HEAD `73c05530` (C4 et ses questions : `report-main.md`, `critic-main.md` ; les boutiques : `shop-disc/report-main.md`,
@@ -7670,11 +7670,11 @@ convertisseur.
   programme B[2] et de ceux des articles, et ceux qui manquent au runner ; (g) le tonneau de la 113 rec 11 soulevé au binaire (C64) ; (h) la
   liste prédite des tests déplacés, mesurée par un câblage temporaire annulé ensuite. Arrêt : une sonde qui diffère du binaire à un tick
   listé ; un besoin de toucher au moteur ; plus de 10 tests existants déplacés.
-- ⏳ **T1 — Phase A, tests d'abord** (rouges sur un squelette qui compile, `C4Tick` vide) : (l1) `C4Tick` contre les 1 244 goldens, par classe
+- ✅ **T1 — Phase A, tests d'abord** (rouges sur un squelette qui compile, `C4Tick` vide) : (l1) `C4Tick` contre les 1 244 goldens, par classe
   (porté, libre sans effet, son, effet 9, statut 3), chaque « sans effet » accolé à un positif ; (l2) le lâcher partagé : C23 inchangé (ses
   épingles), C4 sans drapeaux aux codes 1 à 3, `(f | 0x10) & ~0x80` au code -1 avec `+0x80 == 2` seulement ; (l3) le lecteur des coins sur un
   champ synthétique (une bande `0x1001`, un mur `0x1041`). Puis le corps ; verts. Aucun changement de comportement en production.
-- ⏳ **T2 — Phase B, tests de monde rouges avant la ligne** (le vrai contrôleur, `PutInHands` pour mettre l'objet dans les mains) :
+- ✅ **T2 — Phase B, tests de monde rouges avant la ligne** (le vrai contrôleur, `PutInHands` pour mettre l'objet dans les mains) :
   (m1) le lancer à plat des 7 types (la chronologie du binaire : contact au sol à T+22, son 24 et animation 0 à T+23, drapeaux inchangés) ;
   (m2) le rebond (P1), accolé au mur en colonne 6 sans rebond ; (m3) la glissade (P2) ; (m4) l'eau de nage : tonneau et objets disparaissent, le
   tronc flotte ; (m5) la touche (P3) : tonneau, pierre, tronc tuent et se brisent, l'objet étoile ne touche pas ; (m6) la plaque et la pile
@@ -7684,14 +7684,14 @@ convertisseur.
   après** : au repos, les placements natifs des 7 types C4 (C natif au chargement, 135 d'après la lecture du 2026-10-22), moins les 8 troncs
   flottants de (m7), restent inertes 6 ticks sur leurs vraies cases (le compte exact et la liste par T0 ; aucune torche). Puis la ligne de la phase B : `(C, 4)` enregistré pour les 19 types, le lecteur des coins,
   l'effet et le son, `FeedsGroundSlope` ; verts.
-- ⏳ **T3 — Phase C, l'activation** : l'ensemble câblé gagne les 18 types (D-G2C1-9) ; (a1) Carré contre un tonneau de la 22 le soulève,
+- ✅ **T3 — Phase C, l'activation** : l'ensemble câblé gagne les 18 types (D-G2C1-9) ; (a1) Carré contre un tonneau de la 22 le soulève,
   rouge avant ; (a2) le préréglage `c4-m22` ; la suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions
   disjointes ; les traces de la 389 ; `cmp` ; `check_names.py --rules` ; le moteur, le convertisseur et les données sans diff.
-- ⏳ **T4 — Mutants, ADR.** Au moins 14 mutants réels, tous tués : `ForceZ > 0` en `>= 0` ; le verrou non posé ; la direction `+0x10` en
+- ✅ **T4 — Mutants, ADR.** Au moins 14 mutants réels, tous tués : `ForceZ > 0` en `>= 0` ; le verrou non posé ; la direction `+0x10` en
   `+0x08` ; le Z de l'effet 8 px en 16 ; le masque `0x1001` en `0x1000` ; une boucle sur 3 coins ; `HitCounter` ignoré ; le son `0x18` en un
   autre ; la pente 4 en 1 ; l'animation 5 en 4 ; le test `+0x80 == 2` retiré ; `| 0x10` en `| 0x30` ; C23 qui prend la politique de C4 ;
   `FeedsGroundSlope` pour toute entité ; un type câblé sans `(C, 4)`.
-- ⏳ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T5 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 
 **Résultat de T0 (2026-10-25, `59a0b420`, `docs/plan-e20-annexe/e20-g2c1/results.md`) : un arrêt, levé par la session principale.**
@@ -7730,6 +7730,35 @@ tests existants bougent ; un test qui boucle ; un besoin de toucher au moteur.
 
 **Retour arrière.** La phase C se retire seule (les 18 types hors de l'ensemble câblé : rien ne se soulève de plus) ; puis la phase B (la clé
 `(C, 4)` retirée : les objets redeviennent inertes) ; la phase A ne change aucun comportement.
+
+**Résultats (2026-10-25).** Exécution en mode AUTO, HEAD de départ `09499204`. Mesures : `docs/plan-e20-annexe/e20-g2c1/` (`results.md`,
+`t2-results.md`, `t3-results.md`, `t4-results.md`).
+- **Commits.** `59a0b420` (T0) ; `cb716f61`, `60edf13f` (T1, phase A : `C4Tick`, le lâcher partagé `TickCarried` avec une politique de drapeaux par
+  gestionnaire, le lecteur des coins `Alundra/Physics/CornerTileWords.cs`) ; `fb6b885d`, `35860939` (T2, phase B : `(C, 4)` pour les 19 types,
+  `FeedsGroundSlope` pour le 373) ; `f0899624` (T3, phase C : l'ensemble câblé à 25 types, les préréglages `c4-m22` et `c4-m70`, l'arc
+  `BarrelLiftMap22ArcTests.A1`) ; `5e00073d` (T4 : 25 mutants, ADR-0092, l'ADR-0089 amendé).
+- **Ce qui se voit en jeu.** Le tonneau, la pierre, le tronc et les quatre objets des plaques se soulèvent (Carré contre un tonneau de la 22),
+  se portent, se lancent : contact au sol à T+22, son 24 et animation 0 à T+23, drapeaux inchangés (ils restent collisionnables) ; le rebond contre
+  un mur pendant la montée (direction 24 → 8, l'effet 9) ; la glissade sur une bande `0x1001` (3 px par tick, arrêt à x = 250) ; dans l'eau de nage,
+  le tonneau, la pierre et les objets disparaissent, le tronc flotte ; tonneau, pierre et tronc touchent et se brisent, l'objet étoile ne touche
+  rien ; les troncs posés sur l'eau des cartes 70 et 73 flottent à la première exécution de C4 ; le bloc de glace permuté de la 103 se relâche ;
+  l'herbe jetée sur le comptoir de la 258 ouvre le dialogue du prix (jetée trop court, rien).
+- **Tests.** `Alundra.Tests` : 6 144 au départ, 6 300 à la fin, zéro échec en Release (copie neutralisée) et en Debug ; `cmp` égal ;
+  `check_names.py --rules` sans constat. Tests existants déplacés : exactement les 7 de T0 (h), réécrits par dérivation (les épingles du registre par
+  `+ LiftableAi.C4Keys.Count` ; les témoins (m5) de g1b passés de 290 à la torche 393 ; la liste des 25 types écrite à la main), et les tables des
+  préréglages.
+- **Mutants.** 25 réels, tous tués (les 14 du plan, « un type câblé sans `(C, 4)` », et dix de plus) ; un verifier en a rejoué huit autres, tous tués.
+- **Écarts acceptés.** (1) (m11) compte 117 placements natifs, pas 135 : la passe de chargement ne crée que les enregistrements dont la direction a le
+  bit `0x40` ; les 18 autres naissent par script. (2) Les codes de lâcher 4, 5 et −2 (118 vecteurs des goldens) : le binaire lit des mots après sa
+  table et libère avec une animation absurde ; la DLL ne libère pas, comme C23, car le héros n'écrit que 1, 2, 3 et −1 ; épinglé à part
+  (`Carried_ACodeOutsideTheTable`). (3) (m6) : le Z d'un objet posé sur une plaque ou un autre objet est une unité brute au-dessus de celui du binaire
+  (ADR-0026, le repère de la DLL) ; la comparaison arrondit au millième de pixel. (4) (m10) s'arrête au dialogue du prix ; le paiement (`0x9A`,
+  `0x82`, `0x99`) n'est pas exercé. (5) (m5) ne vérifie pas la mort de la cible : la touche, l'étincelle, `HitCounter` et la casse sont épinglés ; un
+  verifier a sondé que la pierre tue le Beannoïde (9 → 0) quand ses programmes natifs tournent ; les cibles de la page du tonneau et du tronc gardent
+  1 PV (leurs programmes, pas C4) : la recette de l'auteur le montrera.
+- **Verifiers frais** : **CONFIRMED** tous deux.
+- **Recette de l'auteur** (non bloquante) : `66-crypte-de-lars.sav` ou `c4-m22` (soulever un tonneau, le lancer contre un ennemi) ; `c4-m70` (les
+  troncs flottent) ; la boutique d'Inoa (soulever une herbe, la jeter sur le comptoir : le prix s'annonce).
 
 ##### E20.g2b2 — Les objets lancés tombent dans les trous (O-G-2) ⏳ (détaillée le 2026-10-24 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-24 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; exécutable après E20.g2c1)
 
