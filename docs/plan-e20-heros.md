@@ -2731,7 +2731,7 @@ le pilote d'objet (E20.h) ; la mort (E18).
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.c2a.
 
-#### 1.12.1 E20.c2b — La blessure du héros : l'entrée `0x80031A68`, le bloc de blessure, l'état `0x31` et le clignotement ⏳ (détaillée le 2026-10-25 ; thème 2 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, une seule relecture de clôture ; défauts des questions Q-C2B-1 à Q-C2B-6 pris en attendant la réponse de l'auteur)
+#### 1.12.1 E20.c2b — La blessure du héros : l'entrée `0x80031A68`, le bloc de blessure, l'état `0x31` et le clignotement ⏳ (détaillée le 2026-10-25 ; thème 2 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; défauts des questions Q-C2B-1 à Q-C2B-6 pris en attendant la réponse de l'auteur)
 
 **Provenance.** Lecture seule du 2026-10-25 (HEAD `e9e8c58a`, code de production inchangé jusqu'à `ffc505b1`) : trois rapports (binaire,
 DLL, plans) et un critique frais qui confirme chaque fait porteur et en corrige trois (`scratchpad/c2b-disc/{binary,dll,plan,critic}/`,
