@@ -7760,7 +7760,7 @@ tests existants bougent ; un test qui boucle ; un besoin de toucher au moteur.
 - **Recette de l'auteur** (non bloquante) : `66-crypte-de-lars.sav` ou `c4-m22` (soulever un tonneau, le lancer contre un ennemi) ; `c4-m70` (les
   troncs flottent) ; la boutique d'Inoa (soulever une herbe, la jeter sur le comptoir : le prix s'annonce).
 
-##### E20.g2b2 — Les objets lancés tombent dans les trous (O-G-2) ⏳ (détaillée le 2026-10-24 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-24 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; exécutable après E20.g2c1)
+##### E20.g2b2 — Les objets lancés tombent dans les trous (O-G-2) ✅ (détaillée le 2026-10-24 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-24 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; exécutable après E20.g2c1 ; **faite et CONFIRMED le 2026-10-25** par deux verifiers frais ; ADR-0093)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `73c05530` ; rapports `report-main.md` §3 et `critic-main.md` Q3 et Manque 3, versés à
 `docs/plan-e20-annexe/e20-g2c1-disc/` par le T0 de g2c1, avec les scripts et les sorties). O-G-2 n'avait pas de propriétaire : ni f6a ni g2b ne
@@ -7827,7 +7827,7 @@ T0), au lieu de passer par E2.
 **Hors périmètre.** Les entités posées par la carte (D-T-12 gardée) ; les PNJ ; le moteur ; l'export.
 
 **Tâches.**
-- ⏳ **T0 — Rejeu, recensement, sondes** (commit de docs). (a) Vérifier que l'annexe `docs/plan-e20-annexe/e20-g2c1-disc/` (versée par g2c1)
+- ✅ **T0 — Rejeu, recensement, sondes** (commit de docs). (a) Vérifier que l'annexe `docs/plan-e20-annexe/e20-g2c1-disc/` (versée par g2c1)
   porte `q3_pit.py` et ses sorties ; le rejouer depuis une copie, sortie identique. (b) **Les rejeux au binaire** (le harnais de `q3_pit.py`) :
   le tonneau (290) et l'objet étoile (363) **en coin partiel** (un seul coin de la boîte d'arrivée sur le trou, les trois autres sur le plein) ;
   la caisse (291) et une jarre, mises dans les mains puis lancées, sur une case de trou (`wk 0x04`), sur une case de sortie (`gp 0x80`), sur une
@@ -7837,18 +7837,18 @@ T0), au lieu de passer par E2.
   les objets de `q3_pit.py` et de (b), mis dans les mains par `PutInHands` et lancés sur les mêmes cases, la chronologie relevée par tick contre
   les rejeux ; la suite entière : la liste des tests qui bougent. Arrêt si un test bouge pour une entité jamais mise dans les mains
   (D-G2B2-2), ou si une chronologie de la DLL diffère du rejeu.
-- ⏳ **T1 — Tests d'abord** (tics des rejeux) : (p1) le tonneau lancé sur un trou disparaît à T+23 avec l'effet 10, rouge avant la ligne (il
+- ✅ **T1 — Tests d'abord** (tics des rejeux) : (p1) le tonneau lancé sur un trou disparaît à T+23 avec l'effet 10, rouge avant la ligne (il
   y restait posé) ; (p2) le même sur une case de sortie, rouge avant ; (p3) le tronc et l'objet étoile sur un trou, rouges avant ; (p3b) le
   tonneau en coin partiel, selon le rejeu, rouge avant si le rejeu le fait disparaître ; (p4) accolé : le même tonneau lancé sur une case
   pleine reste posé (vert avant et après) ; (p5) une entité posée par la carte sur une case de trou reste en vie (D-T-12, vert avant et
   après) ; (p6) la caisse lancée sur un trou : le chemin et le tic du rejeu de T0 (b) (la phase de choix et son statut 4, contre E2 à T+23 et
   le statut 4 à T+25 avant la ligne) : rouge avant sur le champ et le tic qui diffèrent, nommés d'après le rejeu ; (p7) accolée : la caisse
   lancée sur une case pleine suit la chronologie de g2b (E2 à T+23, statut 4 à T+25, effet 10), verte avant et après ; (p8) D-G2B2-3 selon T0.
-- ⏳ **T2 — La ligne**, les docs corrigées ; verts. La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec,
+- ✅ **T2 — La ligne**, les docs corrigées ; verts. La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec,
   partitions disjointes ; les traces de la 389 inchangées ; `cmp` ; `check_names.py --rules`.
-- ⏳ **T3 — Mutants, ADR** : au moins 6 mutants réels, tous tués (le ET au lieu du OU ; le masque `0x8004` réduit à `0x0004` ; le crochet sans
+- ✅ **T3 — Mutants, ADR** : au moins 6 mutants réels, tous tués (le ET au lieu du OU ; le masque `0x8004` réduit à `0x0004` ; le crochet sans
   la porte de la gravité ; le crochet pour toute entité au lieu des marquées ; l'appel avant le pas au lieu d'après ; l'effet de casse perdu).
-- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.** (p1), (p2), (p3), (p6), et (p3b) si le rejeu y fait disparaître l'objet, rouges avant la ligne et verts après ; (p4), (p5) et
 (p7) verts avant et après ; les tics des tests égaux aux rejeux ; les tests déplacés ⊂ la liste de T0 (d), chacun réécrit par dérivation ; la
@@ -7862,6 +7862,24 @@ un besoin de toucher au moteur ou à la phase de choix.
 
 **Retour arrière.** `git revert` de la ligne : un tonneau lancé reste posé sur un trou ; une caisse s'y brise par E2, comme sur le sol.
 
+**Résultats (2026-10-25).** Exécution en mode AUTO, HEAD de départ `16b5659b`. Mesures : `docs/plan-e20-annexe/e20-g2b2/results.md`.
+- **Commits.** `d04c4136` (T0 : les rejeux au binaire, le recensement, la ligne sondée sur une copie : aucun test existant ne bouge) ; `a8ee1413` (T1,
+  `PitFallWorldTests`, rouges) ; `590af5d8` (T2 : la ligne du crochet de f6a, la doc de `UpdateVramFlags` et de D-T-12) ; `76bbbe3d` (T3 : 13 mutants,
+  ADR-0093).
+- **Au binaire** (rejoué) : le tonneau, la pierre, le tronc et l'objet étoile lancés sur un trou, une sortie ou un coin partiel : le mot écrit à T+22,
+  le statut 2 → 4 à T+23 sans passer par 3, l'effet 10, la case libre à T+24, aucun son ; la caisse et la jarre sur un trou ou une sortie : le même tic,
+  la phase de choix les détruit avant E2 (effet 10 ou 2) ; sur un sol plein, la chronologie de g2b (E2 à T+23, statut 4 à T+25). D-G2B2-3 : avec les
+  quatre coins à 4, la phase de choix tue la caisse avant E2 : la branche `AND & 4` d'E2 n'est pas atteinte par un objet lancé, au binaire non plus.
+- **Le recensement** : 106 types ont la gravité et `0x200000` (16 de page de carte, la liste du plan ; 90 de la page globale : le sprite 234, le sprite 1
+  et 88 objets ramassables) ; les 25 types câblés en font partie ; parmi les entités nées en jeu, la ligne ne peut détruire que les butins
+  (`LootDrop`).
+- **La DLL** : égale aux rejeux sur tous les cas, aux trois cadences ; une entité posée par la carte sur un trou reste en vie (D-T-12 gardée).
+- **Tests.** `Alundra.Tests` : 6 300 au départ, 6 329 à la fin, zéro échec en Release (copie neutralisée) et en Debug ; `cmp` égal ;
+  `check_names.py --rules` sans constat. **Aucun test existant déplacé** (la liste prédite était vide).
+- **Mutants.** 13 réels, tous tués ; quatre survivaient d'abord (la porte de la gravité, le crochet pour toute entité, trois coins au lieu de
+  quatre, le statut 3) : chacun a donné un test (P9, P5 sur le tronc, P10, P11). Un verifier en a rejoué cinq de plus, tous tués.
+- **Verifiers frais** : **CONFIRMED** tous deux.
+- **Recette de l'auteur** (non bloquante) : lancer un tonneau dans un trou ; lancer une caisse dans un trou.
 
 #### 1.24.6 E20.g5 — Les vrais objets à pousser : g5a (piliers), g5b (les opcodes des boutons), g5c (l'arrêt du son), g5d (les objets scriptés) ✅ (2026-10-23, D-E20-63 ; g5a **faite et CONFIRMED le 2026-10-23** (ADR-0086) ; g5b, g5c, g5d **faites et CONFIRMED le 2026-10-24** (g5c : ADR-0090))
 
@@ -8471,7 +8489,7 @@ besoin de toucher `Alundra/`.
 | # | Question | Tranchée par |
 |---|---|---|
 | O-G-1 | Soulever en traversant la caisse (le héros n'est pas collé au bord) tant que les caisses ne sont pas solides | E20.g3 (retire la sonde) ; Q-G1 |
-| O-G-2 | `+0x180`, `+0x184`, `DestroyOnVramFlags` des entités marquées : mort au-dessus d'une fosse ou d'un attribut de tuile pendant le vol ; E2 lit `+0x184 & 4` | le T0 d'f6a (O-E0K-2), à défaut g2b (lecture seule, rien ne le nourrit) |
+| O-G-2 | `+0x180`, `+0x184`, `DestroyOnVramFlags` des entités marquées : mort au-dessus d'une fosse ou d'un attribut de tuile pendant le vol ; E2 lit `+0x184 & 4` **Fermé le 2026-10-25** par E20.g2b2 (ADR-0093) : la mort a lieu à l'atterrissage, par la phase de choix (le OU des coins), pas « pendant le vol » ni par E2. | Fermé le 2026-10-25 (E20.g2b2) |
 | O-G-3 | Un objet brisé ne lâche rien (cœurs, argent) | E20.e0c (le bouchon de `DestroyEntity`, D-E14-3) |
 | O-G-4 | Sites du mode 2 et du mode 1 : blessure `0x80031C64`, case de sortie `0x80032778`, mort `0x800327AC` | E20.c2b, E18 |
 | O-G-5 | Plateformes qui montent et descendent : le héros ne tient pas dessus (D5b) ; l'objet suivrait | E19 (D5b, en pause) ; Q-G2 |
