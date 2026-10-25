@@ -6795,6 +6795,12 @@ restructuration est pure. La découverte du 2026-10-15, qui ne vivait que dans l
   (S = R + 11, `bin/run_balls.py:2`) ; la non chargée à P + 11, P l'appui de l'arène mesuré en T0 et écrit au README. **Sonde T0** : un tir chargé de
   chaque baguette dans l'arène fait naître le type 12 ou 15 au tick 102 ; sinon arrêt. « R = 96 » ne vaut que pour les tests de monde sur le champ
   synthétique, au calendrier de l'oracle.
+- **Le R de (p1), correction du 2026-10-25** (T0 de f6b, `0ab808e7`, `docs/plan-e20-annexe/e20-f4f6/f6b/probes/probes-p1-out.txt` ; remplace
+  la puce précédente) : la sonde a contredit le tick 102 : au relâchement de l'arène (tick 91), le compteur de charge vaut 58 et n'atteint 60
+  qu'au tick 92 ; relâché à 91, aucun tir chargé ne naît (jusqu'au tick 140). (p1) suit donc **le calendrier de l'oracle** : Carré tenu
+  jusqu'au tick 95, relâché au tick 96 (R = 96) : la boule chargée naît au tick **107** à 1 tick par image et au tick **108** à 3 ticks par image
+  (le relâchement se lit à la frontière d'image), pour le feu comme pour la glace ; sans décalage d'arène pour les baguettes ; la non chargée
+  naît à P + 11 = 12.
 - **(b7) sur un registre neuf** (révision 2 ; remplace « sur le registre du runner de test » de la puce « La phase B déplace aussi des tests existants ») : (b7) appelle `BallAi.Register` sur
   un `new NativeSpriteRegistry()` (un test pur, la règle du bloc du §1.24, point 4) : il reste vert avant et après T3 (le registre de production, qui
   tient (C, 60) et (E, 9) après T3, refuserait une seconde inscription, `Alundra/Ai/NativeSpriteRegistry.cs:60-63`).
@@ -7427,8 +7433,8 @@ Autres clés : `*_wall_col6`, `*_step16_col6`, `*_step32_col6`, `fire11_gp{8,2,4
 - ⏳ **T2 — Tests des flammes de la 309, rouges avant T3.** (m1) trois entités du type 12, `Flags` 0x132104, qui émettent l'effet 17 à (x, y, Z du binaire + 8 px) tous les 4 ticks de `FrameCounter`, vitesse lue
   (P-F6-1), sans tirage ; accolées au témoin « sans C60 » (aucune émission) ; (m2) elles ne touchent aucune entité ; (m3) l'épingle du registre par dérivation (+2 clés).
 - ⏳ **T3 — Phase B** : l'appel d'enregistrement. Verts.
-- ⏳ **T4 — Phase C et tests de production**, crochet nul, **rouges avant l'ensemble** : (p1) la baguette de feu et celle de glace, non chargées et chargées (R = 101 de l'arène) : une entité du bon type à la plus basse case libre,
-  au tick R+11 ; (p2) le commutateur de feu de la carte 303 (`fire-m303`) : la boule touche, le programme D s'exécute, le drapeau est posé et la classe A effacée (opcode `0x87 [128, 6]` répond oui) ;
+- ⏳ **T4 — Phase C et tests de production**, crochet nul, **rouges avant l'ensemble** : (p1) la baguette de feu et celle de glace, non chargées et chargées (au calendrier de l'oracle : R = 96, la naissance chargée au tick 107 à
+  1 tick par image, 108 à 3 ; correction du 2026-10-25) : une entité du bon type à la plus basse case libre ; (p2) le commutateur de feu de la carte 303 (`fire-m303`) : la boule touche, le programme D s'exécute, le drapeau est posé et la classe A effacée (opcode `0x87 [128, 6]` répond oui) ;
   (p3) table pleine ; (p4) la fermeture : l'ensemble de production égale les octets de type non nuls des fiches d'arme. Puis la ligne de l'ensemble.
 - ⏳ **T5 — ADR, plan, verifiers frais** (deux). Mutants du code de la DLL, au moins 16, tous tués : 5 effets → 4 ; période 8 ; test de pente 1 oublié ; pente 4 oubliée dans la branche A ; destruction avec un autre effet ; bouffée
   avant la destruction ; décalage de Z du feu appliqué à la glace ; vitesse non opposée ; effet 17 pour la glace ; tirage hors de l'application ; clé C60 oubliée ; clé E9 oubliée ; type 10 ou 13 câblé ; ensemble avec 3 ; boule
