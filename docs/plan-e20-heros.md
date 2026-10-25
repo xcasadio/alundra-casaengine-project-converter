@@ -3520,7 +3520,12 @@ D-H2-6) ; i2b, la fonction des forces (§1.14.3), indépendante d'i2a, avant h4e
 (§1.14.4, esquisse), après i2b, E20.c2b et E20.h0a (elle touche la même zone de `PlayerManager.cs`). i2d (le serrage à la carte pour le héros et
 les entités placées, O-E19-17) reste hors de ces tranches (Q-I2-5, défaut A, D-E19-25).
 
-#### 1.14.2 E20.i2a — Le mur d'eau profonde sans bottes de nage (O-E19-22) ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2 ; à relire par un `plan-verifier` frais)
+#### 1.14.2 E20.i2a — Le mur d'eau profonde sans bottes de nage (O-E19-22) ⏳ (détaillée le 2026-10-25 ; thème 2, avant i2b ; révision 0 relue : REVISE ; révision 1 du 2026-10-25, à relire par un `plan-verifier` frais)
+
+**Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé deux blocages, corrigés (FIX) : (1) les traces vers l'est
+rejoignent l'écart connu du mur est (O-E19-42 : la DLL s'arrête au contact, le binaire une unité avant, le rebond un tick plus tôt) et la
+diagonale celui du glissement : une liste fermée de tolérances, valeurs comprises, est écrite et T0 l'applique trace par trace ; (2) trois
+mutants n'avaient pas de tueur démontré : chacun a son test, un doublon est remplacé, le témoin d'entité est ajouté.
 
 **Prérequis.** E20.i (la nage) et E20.c2a (le niveau des bottes `EquipmentRecords.BootsLevel`) : faites. Aucun prérequis de code d'i2b ou d'i2c.
 La tranche touche `Alundra/SaveGames/TestSaves.cs` comme b2, c2b, A362 et g2c2 : jamais en même temps qu'elles.
@@ -3555,6 +3560,11 @@ Aujourd'hui elle nage partout, écart épinglé par `HeroSwimArenaTests.WithoutT
   (D-H2-6) : la première des deux tranches la crée, l'autre l'étend (le texte de h2 est à ajuster à sa relecture).
 - **D-I2A-3** — `BlockedCorners` lit le masque vivant du contrôleur (sans quoi le glissement le long du bord de l'eau se trompe, W5-L0-wall-diag).
 - **D-I2A-4** (Q-I2-2, défaut A) — Alundra déjà dans l'eau sans bottes est coincée, comme l'original.
+- **D-I2A-6** (révision 1) — **La liste fermée des tolérances** de la comparaison des 15 traces à la DLL, rien d'autre : (t1) le mur est,
+  O-E19-42 (le précédent `HeroRunTests` R5-wall-E) : le rebond ou le `ForceAdjusted` décalé d'un tick au plus, la position à 1 unité brute ;
+  (t2) la diagonale (W5-L0-wall-diag ; le précédent `HeroSwimTests` W5-wall-UR) : la composante Y à 7 424 unités brutes au plus ; (t3) le
+  contact au sol un tick plus tard (O-E20-12) ; (t4) les sons non comparés. Une trace n'emploie que le sous-ensemble que T0 (c) écrit pour
+  elle ; tout autre écart, ou une valeur au-delà, est un arrêt.
 - **D-I2A-5** (Q-I2-6, défaut A) — Un préréglage `mur-m14` : `swim-m14` sans bottes (la berge de l'étang de la 14, case (40, 48, 1), eau profonde
   dès la rangée 49) ; le test de liste des préréglages change mécaniquement (D-E0D-12).
 
@@ -3571,29 +3581,33 @@ montage reçoit le bit par la fonction de production, pas à la main) ; les test
   sondes de la lecture, identiques ; (c) l'inventaire par exécution : un câblage temporaire (jamais commité, versé en `.txt`) du mur, la suite
   entière en Release, la liste nommée des tests qui bougent et pourquoi (le héros sans bottes posé sur ou près de l'eau profonde ; candidats de la
   critique : `CarryLockSwimAndStatesTests.SwimScene`, les arcs de la 416 et de la 14, les 40 fichiers qui parlent d'eau ou de `Slope_18c`) :
-  c'est la liste prédite, avec le test d'écart qui s'inverse et le test de liste des préréglages ; (d) le nom et la valeur du pseudo-bit ;
-  (e) la case du préréglage. Arrêt : un test d'une chaîne d'histoire (389 à 392, 179, intro) qui bouge ; plus de 10 tests déplacés.
+  c'est la liste prédite, avec le test d'écart qui s'inverse et le test de liste des préréglages ; avec le même câblage temporaire,
+  **l'écart de chacune des 15 traces à la DLL**, versé, et pour chaque trace le sous-ensemble de la liste fermée des tolérances (D-I2A-6)
+  qu'elle emploie, écrit dans l'annexe avant T1 ; (d) le nom et la valeur du pseudo-bit ; (e) la case du préréglage. Arrêt : un test d'une chaîne d'histoire (389 à 392, 179, intro) qui bouge ; plus de 10 tests déplacés.
 - ⏳ **T1 — Tests d'abord** (rouges avant) : (c1) `CellsCollisionField` : le pseudo-bit bloque `0xE00 == 0x800` et seulement lui (pas `0xC00`,
   l'échelle), sans condition de hauteur ; (r1) les 15 traces rejouées sur le montage (le masque posé par la fonction de production) aux colonnes
-  du harnais : R9 (x = 325,00 au tick 84, `ForceAdjusted` au 86, `0x3E` au 87), W1 L0 et L1 (L1 : l'objet `0x1A`, niveau 1, bloque aussi), W2
+  du harnais, avec les seules tolérances que T0 (c) écrit pour chacune (D-I2A-6) : R9 (x = 325,00 au tick 84, `ForceAdjusted` au 86, `0x3E` au 87), W1 L0 et L1 (L1 : l'objet `0x1A`, niveau 1, bloque aussi), W2
   (figé à 624,00), W5 (le glissement le long du bord, dont la diagonale), W10 ; (r2) avec les bottes de niveau 2 : la nage d'E20.i inchangée
   (témoin vert avant et après, tué par le mutant « `BootsLevel < 3` ») ; (r3) un opcode de drapeaux qui vise le héros (`ResyncControllerFromFlags`)
   garde le bit ; (r4) l'adoption après un portail garde le bit ; (r5) le test d'écart `WithoutTheBoots_TheHeroSwimsToo_…` inversé (le héros
-  s'arrête au bord) ; puis le code ; le préréglage `mur-m14` et son test de contenu.
+  s'arrête au bord) ; (r6) (révision 1) la fonction du tick laisse `Controller.Settings.Gravity` et `MaxFallSpeed` du héros inchangés
+  (assertion directe, avant et après un tick où le bit change) ; témoin vert avant et après : (r7) une entité qui n'est pas le héros, posée sur
+  une case `0xE00 == 0x800` sans bottes, n'est pas bloquée ; puis le code ; le préréglage `mur-m14` et son test de contenu.
 - ⏳ **T2 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
-  `cmp` ; `check_names.py --rules` ; au moins 10 mutants réels, chacun tué par le test qu'il nomme : `BootsLevel < 3` ((r2)) ; `BootsLevel <= 2`
-  ((r2)) ; `& 0xE00 == 0x800` en `& 0x800 != 0` ((c1), l'échelle) ; une condition de hauteur ajoutée ((c1), (r1) R9) ; le bit écrit seulement à
+  `cmp` ; `check_names.py --rules` ; au moins 10 mutants réels, chacun tué par le test qu'il nomme : `BootsLevel < 3` ((r2)) ; `BootsLevel < 1`
+  ((r1), les traces L1 : l'objet `0x1A` bloque) ; `& 0xE00 == 0x800` en `& 0x800 != 0` ((c1), l'échelle) ; une condition de hauteur ajoutée ((c1), (r1) R9) ; le bit écrit seulement à
   l'adoption ((r1) W2, (r3)) ; `ResyncControllerFromFlags` qui efface le bit ((r3)) ; l'adoption qui l'efface ((r4)) ; `BlockedCorners` sur
-  `Flags` ((r1) W5-L0-wall-diag) ; la fonction qui appelle `ResyncControllerFromFlags` (la gravité remise à 0 : (r1) la chute W1) ; le mur
-  appliqué aussi aux autres entités ((c1), un témoin d'entité) ; un ADR neuf (numéro libre recompté).
+  `Flags` ((r1) W5-L0-wall-diag) ; la fonction qui appelle `ResyncControllerFromFlags` ((r6) : la gravité et la chute du contrôleur remises à 0) ;
+  le mur appliqué aussi aux autres entités (le témoin (r7)) ; un ADR neuf (numéro libre recompté).
 - ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
-**Acceptation.** Les sorties de T0 (b) identiques ; (c1), (r1), (r3), (r4) et (r5) rouges avant et verts après ; (r2) vert avant et après, tué
-par son mutant ; les mutants tous tués par le test qu'ils nomment ; la suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste
+**Acceptation.** Les sorties de T0 (b) identiques ; (c1), (r1) (avec les tolérances écrites par T0 (c) pour chaque trace, D-I2A-6), (r3), (r4),
+(r5) et (r6) rouges avant et verts après ; (r2) et (r7) verts avant et après, chacun tué par son mutant ; les mutants tous tués par le test qu'ils nomment ; la suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste
 de T0 (c), chacun réécrit par dérivation ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non bloquante) :
 `mur-m14` (marcher vers l'étang : Alundra s'arrête au bord) ; `swim-m14` (avec les bottes : elle nage).
 
-**Arrêts.** Un prérequis non rempli ; une trace rejouée qui diffère ; un test hors de la liste prédite qui bouge ; un test d'une chaîne
+**Arrêts.** Un prérequis non rempli ; une trace rejouée par le harnais qui diffère de son fichier (T0 (b)) ; un écart d'une trace à la DLL
+hors des tolérances que T0 (c) lui a écrites (T1, D-I2A-6) ; un test hors de la liste prédite qui bouge ; un test d'une chaîne
 d'histoire qui bouge ; un besoin de toucher au moteur ; un test qui boucle.
 
 **Budget.** Un `executor` par tâche (T0, T1, T2) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
