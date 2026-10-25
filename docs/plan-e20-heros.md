@@ -2758,7 +2758,7 @@ le pilote d'objet (E20.h) ; la mort (E18).
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.c2a.
 
-#### 1.12.1 E20.c2b — La blessure du héros : l'entrée `0x80031A68`, le bloc de blessure, l'état `0x31` et le clignotement ⏳ (détaillée le 2026-10-25 ; thème 2 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; défauts des questions Q-C2B-1 à Q-C2B-6 pris en attendant la réponse de l'auteur)
+#### 1.12.1 E20.c2b — La blessure du héros : l'entrée `0x80031A68`, le bloc de blessure, l'état `0x31` et le clignotement ✅ (détaillée le 2026-10-25 ; thème 2 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; défauts des questions Q-C2B-1 à Q-C2B-6 pris en attendant la réponse de l'auteur ; **faite et CONFIRMED le 2026-10-25**, `2f82b6e6` à `2d1afff1`, ADR-0096 ; recette de l'auteur à faire)
 
 **Provenance.** Lecture seule du 2026-10-25 (HEAD `e9e8c58a`, code de production inchangé jusqu'à `ffc505b1`) : trois rapports (binaire,
 DLL, plans) et un critique frais qui confirme chaque fait porteur et en corrige trois (`scratchpad/c2b-disc/{binary,dll,plan,critic}/`,
@@ -2869,6 +2869,15 @@ A1 à A17, B1 à B11, C1 à C6).
 - **D-C2B-13** (Q-C2B-5, défaut « comme l'original ») — Gardés : un coup reçu pendant un dialogue ou une scène est perdu (étincelles
   seulement) ; touché en l'air, une image de pose de marche avant la chute ; à 0 cœur le jeu continue ; l'objet porté tombe et se brise.
 - **D-C2B-14** (Q-C2B-6, défaut A) — La case de sortie (O-H-2) reste hors de c2b.
+- **D-C2B-15** (2026-10-25, résultats de T0 à T5, écarts acceptés) — (1) l'inventaire de T0 (d) a mesuré 29 cas déplacés (8 par la blessure :
+  `HitPassTests` H1both, H3, la portée, `WhileTheContactLasts`, `StoredHitBoxTests` ; 21 par les cases dangereuses : `C4WorldTests` M1, M2,
+  M3, M6 et `PitFallWorldTests` P3, P3b, dont le héros de `C4Run` se tient sur des cases de coût 2 des vraies cartes ; 0 par le clignotement),
+  plus le test de liste des préréglages : c'est la liste prédite, et rien n'a bougé hors d'elle ; (2) (h1) était vert dès son écriture (la
+  branche des cases est venue en T2 avec l'entrée, une seule fonction) : quatre mutants de la branche le prouvent mordant ; le retrait de T4
+  seule ne vaut plus à la lettre (les cases se retirent avec l'entrée) ; (3) avec les quatre armures au sac, le jeu porte la meilleure : un
+  coup d'orque coûte 1 cœur dans `blessure-m15`, la recette « 4, 3, 2, 1 » demande un sac par armure (Q-C2B-7) ; (4) (k2) à 2 ticks par
+  image : la marque de l'objet lâché est décalée d'un tick (sinon aucune image ne finirait sur un tick caché) ; (5) `PublishBlink` tourne pour
+  toute entité qui a un proxy ; (6) l'objet porté à la blessure : son `+0x24 = -1` et son `+0x8C` écrits (oracle neuf de T0).
 
 **Périmètre.** `Alundra/Combat/` (l'entrée, un fichier neuf) ; `Alundra/Hero/PlayerManager.cs` (la pente retenue, le bloc, le chemin
 `== 0x20`, `case 0x31`, la constante `0x31`, les commentaires périmés `:64-67`, `:740`, `:1411`) ; `Alundra/Maps/WorldProxy.cs` (la passe
@@ -2880,7 +2889,9 @@ plan (dont la ligne d'enveloppe « E20.c2 », l'en-tête de h3a et D-H-7).
 (moteur, ADR-0078) ; les bombes, explosions et toucheurs d'E14.b (ils blesseront par la même entrée quand ils existeront) ; le moteur.
 
 **Tâches.**
-- ⏳ **T0 — Versement, prérequis, inventaire par exécution** (commit de docs). (a) Les prérequis, dont e0d et b2 CONFIRMED et présentes
+- ✅ **T0 — Versement, prérequis, inventaire par exécution** (commit de docs ; fait le 2026-10-25, `2f82b6e6` : l'oracle c2 rejoué identique,
+  105 vecteurs de l'entrée tirés du binaire, A3, A5 et l'objet porté, l'inventaire de D-C2B-15 (1), les cases : `blessure-m15` (15, (7, 33, 7)),
+  `blessure-m14` (14, (5, 29, 5)), case dangereuse réelle (36, (12, 44, 1)), coûts 2 et 3 sur la carte 0). (a) Les prérequis, dont e0d et b2 CONFIRMED et présentes
   au HEAD de départ (son SHA noté dans l'annexe) ; (b) verser `scratchpad/c2b-disc/` à
   `docs/plan-e20-annexe/e20-c2b-disc/` (sans copies d'annexes ni `__pycache__`), avec README et `SHA1SUMS.txt` ; (c) rejouer depuis une
   copie l'oracle c2 pour A1, A2, B1, B2, C1, D1, E1 et `W7-hurt-shore`, sorties identiques ; tirer, par l'émulation du code du binaire,
@@ -2895,10 +2906,12 @@ plan (dont la ligne d'enveloppe « E20.c2 », l'en-tête de h3a et D-H-7).
   par `blessure-m15` et `blessure-m14` (D-E0D-12) ; (e) les cases des préréglages et la case dangereuse de la vraie carte ; (f) le nom et le dossier du fichier neuf
   (`tools/dll-structure/`). Arrêt : un fait ci-dessus contredit ; un besoin du moteur ; une chaîne d'histoire (389 à 392, 179, intro) qui
   bouge.
-- ⏳ **T1 — L'entrée, tests d'abord** (rouges avant) : (e1) la fonction pure contre A1, A2 (dégâts 4, 3, 2, 1, 1, 3 selon l'armure), A4,
+- ✅ **T1 — L'entrée, tests d'abord** (fait le 2026-10-25, `119c2e90`, `8466dc90` : `Alundra/Combat/HeroInjury.cs` ; 99 cas rouges sur 111
+  avec l'entrée bouchonnée, tous verts après) (rouges avant) : (e1) la fonction pure contre A1, A2 (dégâts 4, 3, 2, 1, 1, 3 selon l'armure), A4,
   B1, B2 (coûts 1, 2, 3, plancher 0, bottes de niveau 3) et D1 ; (e2) une réponse `0x80` : direction rendue, PV inchangés ; (e3) (0, 0) →
   24 ; (e4) hôte nul, sans toucheur ni bits : −1, rien d'écrit ; puis le code de l'entrée.
-- ⏳ **T2 — Le bloc et les états, tests d'abord** (rouges avant ; le vrai contrôleur, aux trois cadences) : (b1) A1 de bout en bout dans
+- ✅ **T2 — Le bloc et les états, tests d'abord** (fait le 2026-10-25, `81b019d7`, `596b77b6` : A1 et A1-pad0, A4, A5, D1, E1 et les 15 W7
+  égaux à l'oracle tick par tick aux trois cadences, recul −2 168 832 ; 74 cas rouges avant, verts après) (rouges avant ; le vrai contrôleur, aux trois cadences) : (b1) A1 de bout en bout dans
   `HitArena` (contact au tick 17, blessure au 18, PV 10 → 9, `0x31` 4 ticks, `0x1C` 11, Idle à T+15 le regard retourné, forces tick par
   tick et recul total −2 168 832, `DamagedTickCounter` 119 au tick T, son 23) ; (b2) `W7-hurt-shore` : `0x31` sur la pente 0 à moitié dans
   l'eau, et C1 : `0x3A` en eau profonde (la pente d'avant le portail) ; (b3) l'objet porté lâché et brisé ; la charge et l'arme remises
@@ -2907,15 +2920,18 @@ plan (dont la ligne d'enveloppe « E20.c2 », l'en-tête de h3a et D-H-7).
   garde la main, pas de mort ; (b7) les G7 d'E20.d comparés jusqu'au bout de leurs traces (blessure comprise) ; (b8) témoins verts : les
   montages sans passe de coups, les arcs de la chaîne ; puis le code (le montage `HitArena` d'abord, D-C2B-10) ; les tests déplacés
   réécrits par dérivation.
-- ⏳ **T3 — Le clignotement, tests d'abord** (rouges avant) : (k1) A1 : la colonne `visible` de l'oracle au dernier tick de chaque image,
+- ✅ **T3 — Le clignotement, tests d'abord** (fait le 2026-10-25, `56960695`, `e9f1f787`, `f43aa78f` : 7 cas sur 14 rouges avant ; un témoin
+  ajouté, « une entité cachée par un autre écrivain n'est jamais montrée par le clignotement ») (rouges avant) : (k1) A1 : la colonne `visible` de l'oracle au dernier tick de chaque image,
   aux trois cadences (30 ticks cachés sur 120 à 1 tick par image, dès T) ; (k2) un objet lâché clignote ses 120 derniers ticks (Q-E0C-3) ;
   (k3) témoins : un objet de coffre Loaded reste caché, une entité `FlagToDestroy` reste cachée, une entité sans compteur reste visible ;
   puis le code.
-- ⏳ **T4 — Les cases dangereuses et les préréglages, tests d'abord** : (h1) la vraie carte de T0 : coût, toutes les 120 ticks, le dos au
+- ✅ **T4 — Les cases dangereuses et les préréglages, tests d'abord** (fait le 2026-10-25, `161dc27b`, `fc58a69b`, `67bcdbcc` ; écarts
+  D-C2B-15 (2) et (3) ; Release et Debug 6 666 verts, `cmp` égal) : (h1) la vraie carte de T0 : coût, toutes les 120 ticks, le dos au
   regard, l'armure ignorée, les bottes de niveau 2 (blessé) et 3 (épargné) ; (h2) `blessure-m15` (et `blessure-m14`) : carte, case, PV 10/10, sac ; puis le code.
   La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ; les traces de la 389 ;
   `cmp` ; `check_names.py --rules` ; le moteur, le convertisseur et les données sans diff.
-- ⏳ **T5 — Mutants, ADR.** Au moins 16 mutants réels, tous tués, chacun par le test nommé entre parenthèses : la branche toucheur
+- ✅ **T5 — Mutants, ADR.** (fait le 2026-10-25, `c58cce17`, `2d1afff1` : 28 mutants réels tous tués par le test qu'ils nomment, l'équivalent
+  déclaré avec sa raison ; ADR-0096) Au moins 16 mutants réels, tous tués, chacun par le test nommé entre parenthèses : la branche toucheur
   qui teste `+0x1CC` ((e1), le vecteur toucheur à `+0x1CC` non nul) ; le retour de `ComputeNewHp` utilisé (l'entrée rend −1 quand les PV
   tombent à 0 : (b6)) ; la direction inversée, toucheur − héros ((e1), (b1)) ; (0, 0) → 0 ((e3)) ; la table des coûts de la décompilation,
   256 ((e1), (h1)) ; les bottes `< 2` ((h1), les bottes de niveau 2) ; l'armure appliquée aux cases ((h1)) ; le choix de `0x3A` lu sur
@@ -2932,7 +2948,8 @@ plan (dont la ligne d'enveloppe « E20.c2 », l'en-tête de h3a et D-H-7).
   après le portail » en est un (aucun écrivain de `Slope_18c`, le `+0x18C`, entre la lecture et le bloc, au binaire, critique A9, comme
   dans la DLL, où seul `UpdateGroundSlope` de la passe physique l'écrit) : la lecture en tête de D-C2B-4 reste une règle de fidélité,
   sans mutant.
-- ⏳ **T6 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T6 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles. **Fait** le 2026-10-25 (`wf_abd0c64f-f4b`) :
+  les deux CONFIRMED (la suite rejouée, 6 666 verts ; A1 relu dans l'oracle ; la liste prédite égale à la mesurée).
 
 **Acceptation.** Les sorties de T0 (c) identiques ; (e1) à (e4), (b1) à (b7), (k1), (k2), (h1) et (h2) rouges avant et verts après
 (nommés) ; les témoins verts avant et après : le témoin des montages de (b8) et les trois témoins de (k3), chacun tué par son mutant
@@ -12887,6 +12904,7 @@ les trois entrées `0x31`.
 | Q-C2B-4 | (2026-10-25, E20.c2b) Les recettes en attente où des ennemis touchent Alundra (le hall de la 115, la grille de la 116, la nage de la 14) changent de visage avec la blessure : Alundra y perdra des cœurs. (A, défaut) les faire après c2b, d'un coup ; (B) les faire avant, puis refaire celles qui bougent **Réponse de l'auteur (2026-10-25)** : « Pour les questions prend les choix par défaut » : le défaut (D-E20-83). | Tranché le 2026-10-25 (D-E20-83) |
 | Q-C2B-5 | (2026-10-25, E20.c2b) Des bizarreries de l'original à garder ? (a) pendant un dialogue ou une scène, un ennemi qui touche Alundra ne lui fait rien (étincelles seulement) ; (b) touché en l'air, une image de pose de marche avant la chute (invisible à l'œil) ; (c) à 0 cœur le jeu continue (déjà tranché, D-E20-20 ; le rechargement d'une sauvegarde à 0 cœur relève d'E18) ; (d) un objet porté tombe et se brise. Défaut : tout garder, comme l'original **Réponse de l'auteur (2026-10-25)** : « Pour les questions prend les choix par défaut » : le défaut (D-E20-83). | Tranché le 2026-10-25 (D-E20-83) |
 | Q-C2B-6 | (2026-10-25, E20.c2b) La case de sortie (escaliers et sorties dans le sol, O-H-2) : l'original y arrête et détruit l'objet porté avant d'enclencher la sortie ; la DLL ne la détecte pas. (A, défaut) hors de la blessure, à placer plus tard ; (B) avec la blessure **Réponse de l'auteur (2026-10-25)** : « Pour les questions prend les choix par défaut » : le défaut (D-E20-83). | Tranché le 2026-10-25 (D-E20-83) |
+| Q-C2B-7 | (2026-10-25, E20.c2b, en termes de jeu) La sauvegarde de test `blessure-m15` met les quatre armures au sac, mais le jeu porte toujours la meilleure : un coup d'orque y coûte 1 cœur, on ne voit pas 4, 3, 2, 1 selon l'armure. (A, défaut proposé) quatre sauvegardes, une par armure (`blessure-m15-tissu`, `-cuir`, `-ancienne`, `-argent`), chacune avec la seule armure de son nom ; (B) laisser ainsi et changer d'armure dans le menu (on retire alors l'armure du sac, ce qui n'est pas possible) ; (C) s'en passer. **Défaut pris** par la règle de l'auteur du 2026-10-25 (D-E20-83) : à faire dans une petite tranche à part, après confirmation | défaut A, à confirmer |
 | Q-A362-1 | (2026-10-25, E20.A362, en termes de jeu) Quand la bombe d'Olen explose dans son rêve (carte 362), le couvercle de la tige-bombe doit éclater avec un bruit, puis les 4 Muruta sortent ; aujourd'hui le couvercle reste en place, les Muruta sortent quand même et la bombe reste là, invisible. (A, défaut, comme le plan) l'arc A362 n'est qu'un test, le correctif vient avec la bombe (h3a) ; (B) livrer le correctif dans A362 (A362 n'est plus un arc sans code, h3a perd son premier test). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-A362-1) |
 | Q-A362-2 | (2026-10-25, E20.A362) La bombe d'Olen n'apparaît qu'après un détour par la carte 363, qui pose un drapeau ; sans lui, Olen répète sa première conversation. (A, défaut) une sauvegarde de test `olen-m362` devant Olen, le drapeau posé ; (B) rien (Change map et le drapeau à la main). **Défaut pris** par la même règle | défaut A (D-A362-2) |
 | Q-H3B-1 | (2026-10-25, E20.h3b, lecture du 2026-10-25) Si Alundra lance sa bombe vers le bas et reste sur place, l'explosion l'atteint d'un demi-pixel : il perd 5 cœurs sur 10 sans armure ; vers la gauche, la droite et le haut, il passe tout juste à côté. (A, défaut, comme l'original) garder ; (B) l'éviter (s'écarter du binaire). **Défaut pris** par la même règle ; à porter au plan de h3b quand elle sortira de pause | défaut A |
