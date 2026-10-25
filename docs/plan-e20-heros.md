@@ -676,7 +676,7 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.c1b-1 (§1.6) | Dégâts, équipement et opcodes : `ComputeNewHp` et `ResolveBalanceTarget` (fonctions pures), les trois fiches d'équipement (la partie d'`UpdateItemEffectState` dont dépendent les dégâts) et leur effacement au chargement de carte, `HitBox` tenue à chaque tick, `0x71`, `0x86`, `0x87`, `0x95` ; ferme la régression de c1a (programmes D qui décident sur un `Result` périmé faute de `0x87`) | oracle K1 à K3 (`e20-c1b/oracle/`) ; cas de D2 sur les PV ; `0x87` et `0x95` dans de vrais programmes D | Sur la 14, l'entité qui n'accepte que la bombe ne réagit plus à l'épée |
 | E20.c1b-2 (§1.7) | Les réactions scriptées : leviers de la 115 nord-ouest et de la 116, bascule et levier 22 de la 117, leviers de la 44, par des arcs qui partent d'une arrivée dans la zone du levier (sans oracle du binaire : attentes tirées des programmes) ; le P3 reporté de c1b-1 ; le couvercle de la 362 attend la bombe (E20.h) | arcs | Les leviers réagissent au coup d'épée, quand on peut les atteindre (après le hall de la 115) |
 | *E14.a* (autre étape) | Muruta et Beannoïde (D-E20-4), planifiée après E20.c1 | plan d'E14 | Le hall de la 115 |
-| E20.c2 | Le héros touché : entrée `0x80031A68` (toucheur et cases dangereuses), `0x31`/`0x3A`, invulnérabilité `0x78` et clignotement, PV vers `PlayerStats` et le HUD, `UpdateItemEffectState` (table de défense, bottes, régénération) et le pilote `0x8003634C` en vrai (D-E20-14), chemin `controlFlags == 0x20`, pas de mort (D-E20-5) | oracle de `0x80031A68` ; arcs | Les cœurs baissent au contact, le héros clignote, il ne meurt pas |
+| E20.c2 | Le héros touché : entrée `0x80031A68` (toucheur et cases dangereuses), `0x31`/`0x3A`, invulnérabilité `0x78` et clignotement, PV vers `PlayerStats` et le HUD, `UpdateItemEffectState` (table de défense, bottes, régénération) et le pilote `0x8003634C` en vrai (D-E20-14), chemin `controlFlags == 0x20`, pas de mort (D-E20-5) ; **E20.c2b détaillée le 2026-10-25 au §1.12.1** (révision 0 ; D-C2B-1 à D-C2B-14) | oracle de `0x80031A68` ; arcs | Les cœurs baissent au contact, le héros clignote, il ne meurt pas |
 | E20.d | Course : les cinq états, entrée et sorties, cône, reprise, rebond, charge `0x04` (ses coups viennent d'E20.c1), escalade prioritaire, arrondi du stick (D-E20-8) ; le test épinglé « Triangle seul donne Idle » s'inverse | oracle de `MovePlayer` ; arcs | Courir, s'arrêter, reprendre, foncer, buter contre un mur, sauter d'un rebord ; sur l'eau profonde, le héros nage (E20.i, 2026-10-10 : le garde d'E20.d1 a disparu) |
 | E20.e0 | Apparition d'entités et butin (D-E20-17 ; **E20.e0c faite le 2026-10-23**, §1.26) : `SpawnWarpEntity` (`0x80039F58`, 102 appelants) par indice de sprite global, tirage du butin à l'apparition (`0x80032A40`), lâcher à la mort (`0x80032B90`) avec son veto, objet ramassable (gestionnaire C255), avance du générateur pseudo-aléatoire une fois par tick après la mise à jour du monde (`0x8002BD14`) | oracle ; arcs | Rien de visible seul ; recette avec E20.e |
 | E20.eR | (2026-10-22, D-E20-60 ; détaillée au §1.27a ; **faite et CONFIRMED le 2026-10-22**, analyseur `d687972`, parent `ce7e1ac7`) Renommage de `BalanceLevel` (l'octet 9 de l'en-tête de carte) en `TileCutEffectId` à la source : l'exporteur Tiled de l'analyseur et sa doc, la ré-extraction des cartes, la copie `data-extracted/`, le convertisseur et l'export | export complet, preuve par manifeste | aucune (rien ne change en jeu) |
@@ -2730,6 +2730,168 @@ le pilote d'objet (E20.h) ; la mort (E18).
   l'oracle sans raison du binaire ; un besoin de changer le moteur.
 - **Budget** : un `executor`, deux tentatives au plus ; un verifier frais ; cinq passes de correction au plus.
 - **Retour arrière** : `git revert` des commits d'E20.c2a.
+
+#### 1.12.1 E20.c2b — La blessure du héros : l'entrée `0x80031A68`, le bloc de blessure, l'état `0x31` et le clignotement ⏳ (détaillée le 2026-10-25, révision 0 ; thème 2 ; à relire par un `plan-verifier` frais ; défauts des questions Q-C2B-1 à Q-C2B-6 pris en attendant la réponse de l'auteur)
+
+**Provenance.** Lecture seule du 2026-10-25 (HEAD `e9e8c58a`, code de production inchangé jusqu'à `ffc505b1`) : trois rapports (binaire,
+DLL, plans) et un critique frais qui confirme chaque fait porteur et en corrige trois (`scratchpad/c2b-disc/{binary,dll,plan,critic}/`,
+`report-main.md`, scripts et sorties), à verser par T0 à `docs/plan-e20-annexe/e20-c2b-disc/`. Base : la spécification de
+`docs/plan-e20-annexe/e20-c2/check.md` §c (2026-10-09), dont cinq morceaux sont faits depuis (c2a : PV, épilogue, fiche, bottes ; E20.i :
+`0x3A`/`0x3B` ; E20.d1 : `0x1C`/`0x3E` ; g1a : le mode 2 de `UpdatePlayerCarriedEntity`). Ligne d'enveloppe : « E20.c2 » (§0).
+
+**Prérequis.** E20.c2-0 (l'oracle, §1.11), E20.c2a (§1.12), E20.i, E20.d1, E14.a et E20.g1a : faits et CONFIRMED. E20.h0a n'est pas
+requise : le pilote d'objet reste le bouchon nommé `UpdateItemUseDriver` (D-E20-19). La tranche ne touche pas le moteur.
+
+**But.** Comme l'original : au contact d'un ennemi (ou dans une explosion, plus tard), Alundra perd des PV selon l'attaque et son armure
+(au moins 1), passe en `0x31` 4 ticks puis `0x1C` 11 ticks en reculant d'environ 33 px dans la direction qui l'éloigne du toucheur, son
+23 ; il lâche l'objet porté (qui se brise), sa charge et son arme en attente sont remises à zéro ; il revient à l'arrêt au 15e tick, le
+regard retourné vers l'ennemi ; il est invulnérable 120 ticks et clignote (caché un tick sur quatre, 30 sur 120, dès le tick de la
+blessure). Sur une case dangereuse, il perd 1, 2 ou 3 PV toutes les 120 ticks sans que l'armure compte, sauf avec les bottes de
+niveau 3. À 0 PV il garde la main (D-E20-5, D-E20-20). Aujourd'hui il voit les étincelles mais ne perd rien et ne recule pas.
+
+**Faits** (FAIT, MESURÉ ; `c2b-disc/binary/report-main.md` F1 à F35, `dll/report-main.md` D1 à D33 et T1 à T16, `critic/report-main.md`
+A1 à A17, B1 à B11, C1 à C6).
+- **L'entrée** (`0x80031A68`, 58 instructions, aucun paramètre : le héros `0x80127D30`) a deux appelants, tous deux dans `MovePlayer`
+  (`0x80031C14` branche verrouillée, `0x80031C44` branche libre ; balayage de l'image entière). Branche **toucheur** (`+0x224 != 0`) :
+  `ComputeNewHp(héros)` (retour jeté ; une réponse `0x80`/`0xC0` blesse sans ôter de PV, `0x40` met les PV à 0), puis
+  `GetDirection(héros − toucheur)` (0 bas, 8 gauche, 16 haut, 24 droite ; (0, 0) donne 24) ; elle ne teste ni `+0x1CC`, ni `+0x1D0`, ni
+  les bottes, ni l'état : la protection vient de la passe de coups (qui saute une cible à `+0x1D0`, `+0x1CC` ou `AnimFlags & 0x40` non
+  nuls). Branche **case dangereuse** : `+0x1CC == 0`, bottes `< 3`, `n = (+0x180 & 0x180) >> 7 != 0`, coût `{0, 1, 2, 3}[n]`
+  (`0x80028B8C` ; la décompilation donne 0, 256, 512, 768 : le binaire tranche), plancher 0 signé, armure ignorée, retour
+  `(+0x8C + 0x10) & 0x1F`. `-1` = rien.
+- **`MovePlayer` autour de l'entrée** : la pente `+0x18C` est lue **avant** `CheckAndExecuteWarp` (`0x80031B98`) ; `+0x20 != 0` : fin
+  sans entrée ; branche verrouillée (`ctl & 0x34`) : entrée seulement si le mot vaut exactement `0x20`, et alors seul `+0x1CC = 0x78` ;
+  branche libre : `Flags |= 0x100`, `0x8002FB14(0)`, l'entrée.
+- **Le bloc de blessure** (`0x80031C58-0x80031C9C`, partagé par les deux branches ; `0x80031C64` est son `jal 0x8002F884` en mode 2, pas un
+  site distinct) : charge `[0x80126FFC] = 0`, arme `[0x80127110] = 0`, `UpdatePlayerCarriedEntity(2)`, pilote `0x8003634C` (avant l'état),
+  `+0x88 = (pente == 4) ? 0x3A : 0x31`, `+0x8C = d`, `+0x1CC = 0x78`, puis la fin (`0x80032914`) sans test de mort ; pas d'annulation
+  `0x800350C0`. Le test `PV == 0` (`0x80031CA8`, vers la mort `0x800327A4`) n'est atteint qu'aux ticks suivants (E18, non porté).
+- **Les états** : `0x31` → `0x80032680` (`TryUseItem` puis fin ; la fin vient de la chaîne d'animation) ; `0x1C`/`0x3E` → `0x80032558`
+  (fait par E20.d1) ; `0x3A`/`0x3B` (fait par E20.i). Animations du héros (octet `0xD` = `AnimFlags`, que le JSON nomme
+  `Acceleration`) : `0x31` vitesse 256, `0x40`, son 23, 4 ticks, chaîne vers `0x1C` (vitesse 0, `0x44`, 10 ticks, tenue).
+- **Le recul** n'est pas posé par l'entrée : la physique applique la vitesse de `0x31` le long de `+0x8C`, puis `0x1C` la fait décroître.
+  Au sol, frappé de face à l'arrêt : force X −196 608 de T à T+3, puis −184 320 décroissant de 12 288 jusqu'à −61 440 (T+14), −30 720 à
+  T+15, puis 0 ; **somme −2 168 832 brut = −33,09375 px** (oracle A1, `docs/plan-e20-annexe/e20-c2/oracle/out/A1.json` ; `c2-binary.md`
+  §2.3 omettait T+15, corrigé par le critique C1).
+- **L'invulnérabilité et le clignotement** : `+0x1CC = 0x78`, décrémenté par la passe des compteurs (vaut 119 au tick T) ; la liste de
+  dessin (`0x800385D0-0x800385F4`) ne prend une entité de statut 2 ou 3 que si `(+0x1CC & 3) != 3` : règle **générique** (toute entité à
+  `+0x1CC`, objets lâchés et cibles de `0x86` compris, D-E20-21), cachée aux ticks T, T+4, …, T+116 ; l'ombre suit le même test
+  (`0x80038EEC`, critique C3).
+- **Le son et le HUD** : le son 23 vient de l'animation (déjà joué par la DLL au changement d'animation) ; le HUD baisse les cœurs sans
+  son ; l'alarme des PV bas (c2a) sonne.
+- **La DLL au HEAD** : rien du chemin de blessure (ni entrée, ni bloc, ni `case 0x31` sur terre, ni chemin `== 0x20`) ; le héros est déjà
+  cible de la passe de coups (`TouchingEntity`, `FrameCollisionTickCounter = 0x19`, étincelles) ; `Damage.ComputeNewHp` est pure et
+  fidèle ; `EntityScriptProxy.DamagedTickCounter` est le `+0x1CC` (décompté, jamais écrit pour le héros) ; aucun clignotement dans la DLL
+  ni dans le moteur, qui honore `Entity.IsVisible` ; trois écrivains d'`IsVisible` (`FrameSyncPasses.cs` pour `FlagToDestroy`,
+  `ChestAi.cs` et `PickupAi.cs` pour un objet Loaded) ; aucune ombre dans la DLL (ADR-0078, tranche moteur à venir) ;
+  `CombinedVramFlagsOR` du héros vivant (les bits `0x180`), sans lecteur ; `HeroSheet` nul seulement dans un montage sans tables.
+- **Les tests du HEAD qui contournent la blessure** (critique, T1 à T16) : `Combat/HitPassTests.cs` (H3, H1both,
+  `WhileTheContactLasts…`, `TheReachBehindTheHero…`, lignes du balayage de portée dans le corps), `Hero/HeroRunArenaTests.cs` (les trois
+  G7 coupés à `FirstHurtTick`), `Support/HitArena.cs` (6 images de réglage avant `ResetHitState` : un héros posé dans un Beannoïde sera
+  blessé), `StoredHitBoxTests` ; à mesurer par exécution : les arcs d'E14.a (Beannoïdes, Muruta), les leviers, la boule de fer de la 127,
+  les `ArcRun` sur des cartes à cases dangereuses (444, 36).
+
+**Décisions de la session** (défauts réversibles, comme l'original ; les questions de jeu sont au §2, Q-C2B-*).
+- **D-C2B-1** (Q-C2B-1, défaut A) — c2b passe tout de suite dans le thème 2, après e0d et b2, avant e0k5, f6b, h0a, g1c, h1, h2 et
+  h3a : les tranches suivantes se mesurent avec un héros qui réagit ; D-H-7 (h3a) devient caduque, ses clés se rejouent sans le réglage
+  (D-C2B-11).
+- **D-C2B-2** (Q-C2B-2, défaut A) — Les cases dangereuses sont dans c2b (même fonction), avec un test sur une vraie carte (une des 36 ;
+  T0 choisit la case).
+- **D-C2B-3** — L'entrée est une fonction pure neuve d'`Alundra/Combat/` (nommée par T0 selon `tools/dll-structure/`), sans état : elle
+  reçoit le héros et rend la direction ou −1, écrit les PV ; la branche toucheur appelle `Damage.ComputeNewHp` avec `HeroSheet`, la
+  direction par `ScriptHelper.GetDirectionToTarget` (T0 vérifie (0, 0) → 24) ; un hôte nul et l'absence de toucheur et de bits `0x180`
+  rendent −1 sans rien écrire (les 32 appels directs de `MovePlayer` des tests).
+- **D-C2B-4** — Le bloc de blessure va dans `Hero/PlayerManager.cs` entre `PlayerAnimationEffects.Create(FreeMode)` et
+  `UpdateItemUseDriver`, dans l'ordre du binaire ; la pente du choix `0x3A`/`0x31` est `Slope_18c` retenue **en tête** de `MovePlayer`,
+  avant le portail ; le tick de la blessure finit par `EndOfMovePlayer` (les PV miroités le même tick) ; le pilote reste le bouchon nommé
+  (h0a), appelé à sa place.
+- **D-C2B-5** — Le chemin verrouillé `== 0x20` (le mot entier) est porté : l'entrée, puis `DamagedTickCounter = 0x78` seul ; atteint
+  seulement par un test (aucun producteur de `ForcedSequence` en production). L'annulation `0x800350C0` de la branche verrouillée reste à
+  h0a (son bouchon `CancelItemMode`).
+- **D-C2B-6** — `case 0x31` sur terre : `TryUseItem` puis la fin, comme `0x80032680` (le bouchon rend 1 jusqu'à h0a).
+- **D-C2B-7** — Le clignotement est générique : à la passe des listes de la DLL, pour chaque entité active non `FlagToDestroy`, « cachée
+  par le clignotement » = `(DamagedTickCounter & 3) == 3` après la passe des compteurs ; `PublishEntityFrame` publie l'état du **dernier
+  tick de l'image**, comme le binaire dessine la liste de son dernier tick ; le clignotement ne rend visible que ce qu'il a lui-même caché
+  (les objets Loaded de `ChestAi` et `PickupAi`, et `FlagToDestroy`, intacts). L'ombre n'existe pas encore dans la DLL : la règle de
+  l'ombre est consignée pour la tranche moteur d'ADR-0078 (un manque se consigne).
+- **D-C2B-8** — Les PV à 0 : pas de mort (D-E20-5, D-E20-20) ; le test `PV == 0` de `0x80031CA8` reste un site nommé non porté (E18).
+- **D-C2B-9** — `HeroSheet` nul (montage sans tables) : la vie reste inchangée comme `Damage.ResolveBalanceTarget` le fait déjà ;
+  écart documenté (le binaire ôterait 1 PV), invisible en production (fiche posée à l'adoption).
+- **D-C2B-10** — Les montages de tests qui posent le héros dans le corps d'un ennemi pendant leurs images de réglage
+  (`HitArena`) attendent que le héros soit posé avant d'activer les attaques des cibles ; chaque test déplacé est réécrit par dérivation
+  de l'oracle c2 (A1, H1-both, A1-pad0) ou des traces g7 d'E20.d, jamais par recopie de la sortie.
+- **D-C2B-11** — D-H-7 (h3a) est caduque : le critique a montré qu'une réponse `0x80` de `0x80127008` n'ôte que la perte de PV (la passe
+  lit l'immunité sur `+0x1C4`), le héros reste blessé ; h3a passe « à réviser » (ses clés d'explosion rejouées avec le héros blessable).
+- **D-C2B-12** (Q-C2B-3, défaut A) — Un préréglage de recette `blessure-m15` : 10/10 PV, les quatre armures, le bracelet, le charme et
+  les bottes de niveau 3 au sac, près des orques de la carte 15 (T0 dérive la case) ; plus `blessure-m14` au besoin (les Beannoïdes).
+- **D-C2B-13** (Q-C2B-5, défaut « comme l'original ») — Gardés : un coup reçu pendant un dialogue ou une scène est perdu (étincelles
+  seulement) ; touché en l'air, une image de pose de marche avant la chute ; à 0 cœur le jeu continue ; l'objet porté tombe et se brise.
+- **D-C2B-14** (Q-C2B-6, défaut A) — La case de sortie (O-H-2) reste hors de c2b.
+
+**Périmètre.** `Alundra/Combat/` (l'entrée, un fichier neuf) ; `Alundra/Hero/PlayerManager.cs` (la pente retenue, le bloc, le chemin
+`== 0x20`, `case 0x31`, la constante `0x31`, les commentaires périmés `:64-67`, `:740`, `:1411`) ; `Alundra/Maps/WorldProxy.cs` (la passe
+des listes et `PublishEntityFrame`, D-C2B-7) ; `Alundra/Combat/Damage.cs` (le commentaire périmé) ; `Alundra/SaveGames/TestSaves.cs` et
+`docs/test-saves.md` ; `Alundra.Tests/Support/HitArena.cs` et les tests ; l'annexe `docs/plan-e20-annexe/e20-c2b/` ; un ADR neuf ; ce
+plan (dont la ligne d'enveloppe « E20.c2 », l'en-tête de h3a et D-H-7).
+
+**Hors périmètre.** La mort et le rechargement à 0 PV (E18) ; la case de sortie (O-H-2) ; le pilote réel et l'annulation (h0a) ; l'ombre
+(moteur, ADR-0078) ; les bombes, explosions et toucheurs d'E14.b (ils blesseront par la même entrée quand ils existeront) ; le moteur.
+
+**Tâches.**
+- ⏳ **T0 — Versement, prérequis, inventaire par exécution** (commit de docs). (a) Les prérequis ; (b) verser `scratchpad/c2b-disc/` à
+  `docs/plan-e20-annexe/e20-c2b-disc/` (sans copies d'annexes ni `__pycache__`), avec README et `SHA1SUMS.txt` ; (c) rejouer depuis une
+  copie l'oracle c2 pour A1, A2, B1, B2, C1, D1, E1 et `W7-hurt-shore`, sorties identiques ; compléter dans des fichiers neufs A3 (le
+  charme, réponse `0x80`), A5 (la blessure en plein coup d'épée, en marche, à l'apogée d'un saut, à l'atterrissage) et la blessure avec
+  un objet porté ; (d) **l'inventaire par exécution** : un câblage temporaire (jamais commité, versé en `.txt`) de l'entrée et du bloc,
+  la suite entière en Release, la liste nommée des tests qui bougent et pourquoi (`TouchingEntity` et PV du héros journalisés) : c'est la
+  liste prédite ; (e) les cases des préréglages et la case dangereuse de la vraie carte ; (f) le nom et le dossier du fichier neuf
+  (`tools/dll-structure/`). Arrêt : un fait ci-dessus contredit ; un besoin du moteur ; une chaîne d'histoire (389 à 392, 179, intro) qui
+  bouge.
+- ⏳ **T1 — L'entrée, tests d'abord** (rouges avant) : (e1) la fonction pure contre A1, A2 (dégâts 4, 3, 2, 1, 1, 3 selon l'armure), A4,
+  B1, B2 (coûts 1, 2, 3, plancher 0, bottes de niveau 3) et D1 ; (e2) une réponse `0x80` : direction rendue, PV inchangés ; (e3) (0, 0) →
+  24 ; (e4) hôte nul, sans toucheur ni bits : −1, rien d'écrit ; puis le code de l'entrée.
+- ⏳ **T2 — Le bloc et les états, tests d'abord** (rouges avant ; le vrai contrôleur, aux trois cadences) : (b1) A1 de bout en bout dans
+  `HitArena` (contact au tick 17, blessure au 18, PV 10 → 9, `0x31` 4 ticks, `0x1C` 11, Idle à T+15 le regard retourné, forces tick par
+  tick et recul total −2 168 832, `DamagedTickCounter` 119 au tick T, son 23) ; (b2) `W7-hurt-shore` : `0x31` sur la pente 0 à moitié dans
+  l'eau, et C1 : `0x3A` en eau profonde (la pente d'avant le portail) ; (b3) l'objet porté lâché et brisé ; la charge et l'arme remises
+  à zéro (A5) ; (b4) le chemin `== 0x20` (le mot posé par le test : `DamagedTickCounter = 0x78`, ni état ni recul) et `0x34` sans `0x20` :
+  le coup perdu ; (b5) le pilote nommé appelé à sa place, `case 0x31` qui appelle `TryUseItem` ; (b6) un héros à 1 PV touché : 0 PV, il
+  garde la main, pas de mort ; (b7) les G7 d'E20.d comparés jusqu'au bout de leurs traces (blessure comprise) ; (b8) témoins verts : les
+  montages sans passe de coups, les arcs de la chaîne ; puis le code (le montage `HitArena` d'abord, D-C2B-10) ; les tests déplacés
+  réécrits par dérivation.
+- ⏳ **T3 — Le clignotement, tests d'abord** (rouges avant) : (k1) A1 : la colonne `visible` de l'oracle au dernier tick de chaque image,
+  aux trois cadences (30 ticks cachés sur 120 à 1 tick par image, dès T) ; (k2) un objet lâché clignote ses 120 derniers ticks (Q-E0C-3) ;
+  (k3) témoins : un objet de coffre Loaded reste caché, une entité `FlagToDestroy` reste cachée, une entité sans compteur reste visible ;
+  puis le code.
+- ⏳ **T4 — Les cases dangereuses et les préréglages, tests d'abord** : (h1) la vraie carte de T0 : coût, toutes les 120 ticks, le dos au
+  regard, l'armure ignorée, les bottes de niveau 3 ; (h2) `blessure-m15` (et `blessure-m14`) : carte, case, PV 10/10, sac ; puis le code.
+  La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ; les traces de la 389 ;
+  `cmp` ; `check_names.py --rules` ; le moteur, le convertisseur et les données sans diff.
+- ⏳ **T5 — Mutants, ADR.** Au moins 16 mutants réels, tous tués : la branche toucheur qui teste `+0x1CC` ; le retour de `ComputeNewHp`
+  utilisé ; la direction inversée (toucheur − héros) ; (0, 0) → 0 ; la table des coûts de la décompilation (256) ; les bottes `< 2` ;
+  l'armure appliquée aux cases ; la pente lue après le portail ; `0x31` au lieu de `0x3A` en eau profonde ; `+0x1CC = 0x77` ; le mode 0
+  au lieu du mode 2 ; la charge non remise à zéro ; le chemin `0x20` qui pose l'état ; `0x34` qui laisse passer le coup ; le test de
+  mort au tick de la blessure ; le clignotement sur `& 3 == 0` ; le clignotement publié au premier tick de l'image ; le clignotement qui
+  rend visible un objet Loaded ; `case 0x31` absent quand `TryUseItem` rend 0 (sonde de test) ; un ADR neuf (numéro libre recompté).
+- ⏳ **T6 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (c) identiques ; (e1) à (e4), (b1) à (b7), (k1), (k2), (h1) et (h2) rouges avant et verts après
+(nommés) ; les témoins (b8) et (k3) verts avant et après, chacun tué par un mutant nommé de T5 ; le recul total −2 168 832 brut ; la suite
+en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (d), chacun réécrit par dérivation ; les arcs de la chaîne
+inchangés ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non bloquante) : `blessure-m14` ou une
+sauvegarde d'armes sur la carte 14 (au contact d'un Beannoïde : un cœur perdu, le recul, le clignotement, à 0 cœur Alundra continue) ;
+`blessure-m15` (les orques : 4, 3, 2, 1 cœurs selon l'armure, le charme contre le feu). La jauge s'ouvre par F1 (D-E13-12).
+
+**Arrêts.** Un prérequis non rempli ; une sonde qui contredit un fait ; la force ou la position du recul différente de l'oracle (un
+problème de physique, pas de c2b) ; un arc de la chaîne qui change de trajectoire ; un test hors de la liste de T0 (d) qui bouge ; un
+besoin de toucher au moteur ; un test qui boucle.
+
+**Budget.** Un `executor` par tâche (T0, T1-T2, T3-T4, T5) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais
+après.
+
+**Retour arrière.** T4 se retire seule (les cases redeviennent inoffensives, les préréglages partent) ; puis T3 (plus de clignotement,
+le héros invulnérable 120 ticks mais toujours dessiné) ; puis T2 et T1 ensemble (l'entrée et le bloc retirés : le héros ne perd plus rien,
+l'état d'aujourd'hui), les tests et `HitArena` revenus à leur forme.
 
 ### 1.13 E20.d — La course : E20.d1 🧪 (faite et CONFIRMED le 2026-10-10, `af42753` à `0b1d3f3` ; reste la recette de l'auteur), E20.d2 ⏳ (E20.d2a faite, 🧪 recette de l'auteur ; E20.d2b attend la mesure du stick, Q-D1)
 
@@ -11964,6 +12126,12 @@ les trois entrées `0x31`.
 | O-G3-3 | (2026-10-24, g3 puis g1b T0) Debout sur le dessus d'une caisse (ou en l'air), en marchant contre une caisse voisine plus haute, la DLL pose le contact `XCollisionEntity` au tick où le pas est raccourci ; le binaire, hors de la branche « marche au sol » de `ComputeXYPosition` (`0x80037730`, `0x80037834`-`0x80037884`), rend le candidat de l'avant-dernière tentative de sa recherche binaire du pas, ce qui dépend de la phase sous-pixel (`walk-release-disc/critic-main.md`, W4). Un Carré au tick exact de l'arrivée soulèverait la caisse voisine là où l'original donne l'épée. D-E20-77 : g1b l'épingle par un test nommé ; une tranche du moteur à part émulera la queue de la recherche du pas (un plan et un ADR du moteur) | une ombre du contact dans la DLL (D-E20-80, remplace D-E20-77) |
 | O-E0K5-1 | (2026-10-25, E20.e0k5) Les côtés nord, sud et ouest du tir à bout portant (`t2-proj/out/pb_dirs.txt`) reposent sur un montage d'oracle non recoupé (le premier montage ouest était dégénéré) ; e0k5 ne prouve que le côté est. Les rejouer et en tirer des clés avec manifestes, plus tard | à placer (une lecture de l'oracle) |
 | O-E0D-1 | (2026-10-25, E20.e0d T3) Le vase de vie donné par l'opcode `0x82` (`EventProgramRunner.UseLifeVessel`, E19.g G3d) crée ses 12 effets au `PosZ` brut du héros, alors que le même vase par `GiveItem` ou `ApplyItem`, et la Graine par ses trois entrées, les créent au Z du binaire (`PosZ + 1`, ADR-0026) ; le binaire appelle le même corps `0x800333AC` depuis les deux chemins. Écart préexistant d'une unité brute (invisible en jeu), épinglé par les tests de G3d. Défaut : aligner `UseLifeVessel` sur `PosZ + 1` dans une tranche à venir, après relecture du binaire | à placer (P3, défaut : aligner sur le binaire) |
+| Q-C2B-1 | (2026-10-25, E20.c2b, à l'auteur en termes de jeu) Aujourd'hui, au contact d'un Beannoïde ou d'un orque, Alundra voit des étincelles mais ne perd aucun cœur et ne recule pas. Quand porter la blessure ? (A, défaut) tout de suite dans le thème 2, après le coffre et l'Épée légendaire, avant les bâtons, le Rond, les soins et la bombe : la bombe et les ennemis se testent avec un héros qui réagit (le réglage « héros insensible » de D-H-7 tombe) ; coût : les sauvegardes d'armes à 4 cœurs sur la carte 14 deviennent dangereuses (jusqu'à 0 cœur, sans mort) ; (B) juste avant la bombe dans les mains (h3b) : la bombe posée (h3a) se livre d'abord avec un héros insensible, puis ses mesures sont refaites | à l'auteur (défaut A, D-C2B-1) |
+| Q-C2B-2 | (2026-10-25, E20.c2b) Dans l'original, certaines cases coûtent 1, 2 ou 3 cœurs toutes les 2,4 s tant qu'Alundra reste dessus, l'armure n'y change rien, les bottes de niveau 3 en protègent ; 36 cartes en ont (surtout 52 à 60 et 443 à 448), aucune de l'histoire jouée aujourd'hui. (A, défaut, comme l'original) les porter avec la blessure (même fonction, un test sur une vraie carte en plus) ; (B) plus tard avec les bottes et le mur d'eau (E20.i2) : d'ici là ces cases sont inoffensives | à l'auteur (défaut A, D-C2B-2) |
+| Q-C2B-3 | (2026-10-25, E20.c2b) Une sauvegarde de test pour voir la défense : 10/10 cœurs près des orques de la carte 15, avec les quatre armures (un coup d'orque coûte alors 4, 3, 2 ou 1 cœur), le bracelet, le charme (le feu fait reculer sans coûter de cœur) et les bottes de niveau 3 au sac. (A, défaut) l'ajouter (`blessure-m15`, et `blessure-m14` près des Beannoïdes) ; (B) s'en passer (la défense n'est testée que par les oracles) | à l'auteur (défaut A, D-C2B-12) |
+| Q-C2B-4 | (2026-10-25, E20.c2b) Les recettes en attente où des ennemis touchent Alundra (le hall de la 115, la grille de la 116, la nage de la 14) changent de visage avec la blessure : Alundra y perdra des cœurs. (A, défaut) les faire après c2b, d'un coup ; (B) les faire avant, puis refaire celles qui bougent | à l'auteur (défaut A) |
+| Q-C2B-5 | (2026-10-25, E20.c2b) Des bizarreries de l'original à garder ? (a) pendant un dialogue ou une scène, un ennemi qui touche Alundra ne lui fait rien (étincelles seulement) ; (b) touché en l'air, une image de pose de marche avant la chute (invisible à l'œil) ; (c) à 0 cœur le jeu continue (déjà tranché, D-E20-20 ; le rechargement d'une sauvegarde à 0 cœur relève d'E18) ; (d) un objet porté tombe et se brise. Défaut : tout garder, comme l'original | à l'auteur (défaut : garder, D-C2B-13) |
+| Q-C2B-6 | (2026-10-25, E20.c2b) La case de sortie (escaliers et sorties dans le sol, O-H-2) : l'original y arrête et détruit l'objet porté avant d'enclencher la sortie ; la DLL ne la détecte pas. (A, défaut) hors de la blessure, à placer plus tard ; (B) avec la blessure | à l'auteur (défaut A, D-C2B-14) |
 | O-G4B-1 | (2026-10-24, E20.g4b) À 3 ticks par image seulement : rec5 se brise 25 ticks après le lancer (24 aux autres cadences et au binaire) ; en (b6), Alundra n'est pas immobilisé 5 ticks par le roulis ; deux glissements de (b5) et (b6) (ticks 223 et 224) tombent avec un contact rec5 déjà tenu. Épinglés tels que mesurés dans `ShipBarricadeArcTests`, cause non établie (l'ordre des passes à plusieurs ticks par image ?) | plus tard (une lecture de la cadence à 3 ticks par image) |
 | Q-STEP | (2026-10-24, lecture seule `docs/plan-e20-annexe/e20-step-search/`, CONFIRMÉE par un critique frais ; à l'auteur en termes de jeu) Le binaire cherche la longueur de chaque pas par moitiés successives, sur X et Y à la fois (`ComputeXYPosition` `0x80037730`) ; le moteur avance jusqu'au contact exact, axe par axe, en flottants. Ce qui se voit : (1) une flèche tirée à bout portant contre un mur reste plantée dans le mur au lieu de rebondir tout de suite (O-E20-24, le seul écart visible à l'œil) ; (2) debout sur une caisse ou en l'air, un Carré au tick exact de l'arrivée soulève la caisse voisine au lieu de donner l'épée (O-G3-3) ; (3) une flèche ou un objet qui touche un mur à l'est ou au sud déclenche son rebond un tick plus tard dans l'original, une fois sur trois environ (`ForceAdjusted`) ; (4) en poussant en diagonale contre une caisse, l'original s'arrête net, le portage glisse le long (Q-G3-d, gardé par l'auteur le 2026-10-22). Options : (A) porter la recherche du binaire en entier, dans un déplaceur de la DLL en entiers bruts (le moteur ne peut pas être exact : sa position est en float32 ; il faut aussi une API moteur de pose exacte, avec son plan et son ADR), par étapes (les projectiles et objets lancés, puis le héros) ; cela renverse D-E19-58, D-E20-38, Q-H4C1-5 et Q-G3-d, que l'auteur avait gardés ; plusieurs tranches, des arcs réécrits par dérivation ; (B) le minimum visible : corriger O-E20-24 seul (le premier pas d'un projectile, porté avec la boucle par moitiés), et une « ombre » du contact du binaire pour O-G3-3 (une copie pure de la recherche qui ne fait qu'écrire le contact) ; le reste des écarts (3) et (4) gardé ; (C) ne rien changer : O-E20-24 et O-G3-3 restent consignés. Défaut de la session : (B), qui ne renverse aucune réponse de l'auteur **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : le défaut (B) (D-E20-80). | Tranché le 2026-10-25 (D-E20-80) |
 | O-ANX-1 | (2026-10-24, relevé par g3) La règle `[Bb]in/` du `.gitignore` (ligne 21, pour les sorties de construction) écarte aussi les dossiers `bin/` des annexes : `e20-f4f6/bin` (273 fichiers), `e20-f4f6/critic/bin` (180), `e20-h3/bin` (143), `e20-h4b/bin` (81), `plan-e19-pad-age-annexe/o77/bin` (9) ne sont pas dans le dépôt, alors que les plans les citent comme preuves ; celui de g3 a été ajouté à sa clôture. Proposition : une exception `!docs/**/[Bb]in/` au `.gitignore` et l'ajout des cinq dossiers (14 Mo environ), par un commit de docs **Réponse de l'auteur (2026-10-24)** : « prendre toutes les réponses par défaut » : la proposition (D-E20-76). | Tranché le 2026-10-24 (D-E20-76) |
