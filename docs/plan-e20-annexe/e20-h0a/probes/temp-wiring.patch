@@ -1,0 +1,38 @@
+diff --git a/Alundra/Hero/PlayerManager.cs b/Alundra/Hero/PlayerManager.cs
+index 4171c716..56a881c3 100644
+--- a/Alundra/Hero/PlayerManager.cs
++++ b/Alundra/Hero/PlayerManager.cs
+@@ -1014,7 +1014,32 @@ public static class PlayerManager
+     private static int TryUseItem(EntityScriptProxy player, in PadState pad)
+     {
+         TryUseItemCallCountForTests++;
+-        return TryUseItemResultForTests ?? 1;
++        if (TryUseItemResultForTests is { } forced)
++        {
++            return forced;
++        }
++        // TEMPORARY h0a T0 wiring (never committed): the refusals of 0x8002ED64 / 0x8003499C, the silent stub for the rest.
++        if ((pad.ButtonsJustPressed & PadState.Circle) == 0)
++        {
++            return 1;
++        }
++        var host = player.ScriptHost;
++        if (host == null)
++        {
++            return 1;
++        }
++        if (host.GameState.PlayerControlFlags != 0)
++        {
++            host.SoundPlayer?.PlaySfx(3);
++            return 1;
++        }
++        var tables = host.ItemTables;
++        uint s0 = tables == null ? NoItem : SetItemIdFromCurrentItemId(host.GameState, tables);
++        if (s0 >= 0x62 || s0 - 0x1F >= 0x14 || s0 is 0x21 or 0x22 or 0x28 or 0x2A)
++        {
++            host.SoundPlayer?.PlaySfx(3);
++        }
++        return 1;
+     }
+ 
+     /// <summary>E20.c2b test seam, per thread: the number of calls of the stub of <see cref="TryUseItem"/> (the state 0x31 calls it once a tick, <see cref="HurtAnimationId"/>).</summary>
