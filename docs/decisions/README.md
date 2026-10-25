@@ -111,3 +111,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0095 | The opcode 0xC2 reads the death-retry counter, and a test-save preset may set it | Accepted | 2026-10-25 |
 | ADR-0096 | The hero is hurt by an entry, a hurt block and the state 0x31, and every active entity blinks from its invulnerability counter | Accepted | 2026-10-25 |
 | ADR-0097 | The first step of an entity born in the game is bounded by the halving search of the binary | Accepted | 2026-10-25 |
+| ADR-0098 | The fire and ice balls run C60 and E9 as native handlers, the keys are registered in production, and the wired set of the shot grows to the types 11, 12, 14 and 15 | Accepted | 2026-10-25 |
