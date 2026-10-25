@@ -1488,6 +1488,15 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     internal bool TookPartInFrame;
 
     /// <summary>
+    /// E20.c2b T3 (D-C2B-7): the blink of the draw list, as the lists pass of the last tick computed it (<see cref="FrameSyncPasses.MarkBlink"/>): the entity is active and <c>(+0x1CC &amp; 3) == 3</c>, so the binary's
+    /// list of the visible entities (<c>0x800385D0-0x800385F4</c>) leaves it out. <see cref="FrameSyncPasses.PublishBlink"/> shows it to the engine at the end of the frame.
+    /// </summary>
+    internal bool BlinkHides;
+
+    /// <summary>E20.c2b T3: the blink hid the entity (it was visible), so only the blink may show it again; an entity hidden by anything else (a chest's object born Loaded, a flagged entity) is never made visible by it.</summary>
+    internal bool HiddenByBlink;
+
+    /// <summary>
     /// E20.e0a3b (docs/plan-e20-heros.md section 1.16.3b, D-E0A-5, D-E0A-8, ADR-0065) and E20.e0a4 (section 1.16.4, D-E0A4-3): the entity was born by <see cref="IEntityWorldContext.SpawnEntityBySpriteIndex"/>, or from a record by
     /// one of the script opcodes <c>0x2D</c>, <c>0x8A</c> and <c>0x8B</c>, and so takes part in the tick that sees it born, before the engine integrates it (<see cref="WorldProxy"/> collects it, the host's collision
     /// field stands in for the world's one that does not exist yet, the generic kinematics keys its animation set on the target while the animation is not validated). Posed LAST: at the very end of the interface, after

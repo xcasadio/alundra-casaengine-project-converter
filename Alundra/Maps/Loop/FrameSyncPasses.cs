@@ -562,4 +562,14 @@ internal static class FrameSyncPasses
     /// <summary>The end of the name of the animation <paramref name="animationId"/> in the row <paramref name="animationDirection"/> (<c>_anim{n}_{down|up|left|right}</c>, the converter's naming scheme); the direction must be a valid row.</summary>
     internal static string AnimationNameSuffix(uint animationId, int animationDirection)
         => "_anim" + animationId.ToString(CultureInfo.InvariantCulture) + "_" + AnimationTables.DirectionNames[animationDirection];
+
+    /// <summary>E20.c2b T3 (D-C2B-7): the lists pass records, for the entity, whether the draw list of the tick leaves it out. Stub of the tests-first commit.</summary>
+    internal static void MarkBlink(EntityScriptProxy proxy)
+    {
+    }
+
+    /// <summary>E20.c2b T3 (D-C2B-7): publishes the blink of the last tick of the frame to the engine. Stub of the tests-first commit.</summary>
+    internal static void PublishBlink(Entity entity, EntityScriptProxy proxy)
+    {
+    }
 }
