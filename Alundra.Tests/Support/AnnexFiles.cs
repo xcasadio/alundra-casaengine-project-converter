@@ -158,4 +158,22 @@ internal static class AnnexFiles
 
     /// <summary>The parsed vector file; the caller disposes it.</summary>
     public static JsonDocument ReadVector(string name) => JsonDocument.Parse(File.ReadAllText(Vector(name)));
+
+    /// <summary>E20.g2c3 T1: a file of the annex <c>docs/plan-e20-annexe/</c> (the goldens of A19 and C71 in <c>e20-g2c3-disc/g2c3/replay/</c>, the four vectors of the state 2 in <c>e20-g2c3/vectors/</c>), found above the test binaries.</summary>
+    public static string WaterDropAnnex(string relative)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "docs/plan-e20-annexe", relative);
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/{relative}' found above '{AppContext.BaseDirectory}'.");
+    }
 }
