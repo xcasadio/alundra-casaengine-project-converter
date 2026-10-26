@@ -138,6 +138,24 @@ internal static class AnnexFiles
         throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/{relative}' found above '{AppContext.BaseDirectory}'.");
     }
 
+    /// <summary>E20.g2c2 T1: a file of the annex <c>docs/plan-e20-annexe/e20-g2c2/</c> (the 90 vectors of C70, E20 and D34 that T0 made from the real code of the binary, <c>vectors/goldens_g2c2.json</c>), found above the test binaries.</summary>
+    public static string TorchAnnex(string relative)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "docs/plan-e20-annexe/e20-g2c2", relative);
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/e20-g2c2/{relative}' found above '{AppContext.BaseDirectory}'.");
+    }
+
     /// <summary>The parsed vector file; the caller disposes it.</summary>
     public static JsonDocument ReadVector(string name) => JsonDocument.Parse(File.ReadAllText(Vector(name)));
 }

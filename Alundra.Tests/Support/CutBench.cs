@@ -177,11 +177,27 @@ internal sealed class CutBench
 
         public EntityScriptProxy? SpawnEntityByRecordId(EntityScriptProxy logicEntity, int entityRecordId) => null;
 
+        /// <summary>E20.g2c2 T1: every call of <c>SpawnEntityBySpriteIndex</c> with ALL its arguments, in order, the refused ones (<see cref="TableIsFull"/>) included.</summary>
+        public List<(EntityScriptProxy? Parent, bool IsMapPage, int Index, int X, int Y, int Z, int Direction)> SpawnCalls { get; } = new();
+
+        /// <summary>E20.g2c2 T1: when true the table of entities is full, as the original's: the birth is refused and returns null (nothing is recorded in <see cref="Spawns"/>, <see cref="Journal"/> or <see cref="Born"/>).</summary>
+        public bool TableIsFull { get; set; }
+
+        /// <summary>E20.g2c2 T1: the birth seam of a test, called with the entity just born (before it is returned): it gives the born entity the words the real machine found in its slot.</summary>
+        public Action<EntityScriptProxy>? OnBirth { get; set; }
+
         public EntityScriptProxy? SpawnEntityBySpriteIndex(EntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction)
         {
+            SpawnCalls.Add((parent, isMapPage, index, x, y, z, direction));
+            if (TableIsFull)
+            {
+                return null;
+            }
+
             Spawns.Add((index, x, y, z));
             Journal.Add("spawn(" + index + ")");
             var born = new EntityScriptProxy { Flags = 0xFFFFFFFF, SpriteType = index };
+            OnBirth?.Invoke(born);
             Born.Add(born);
             return born;
         }
