@@ -324,7 +324,9 @@ public sealed class OlenBombLidArcTests
                 }
             }
 
-            if (flag248 ? h >= 0 && rig.Tick >= h + 248 : rig.Tick >= rig.Line.PressTick + 330)
+            // Without a contact the scene still ends at A + 16 + 248 (H is A + 16 by the table), so that the tests that do not need the contact stay independent of it.
+            var end = h >= 0 ? h : rig.Line.A >= 0 ? rig.Line.A + 16 : -1;
+            if (flag248 ? end >= 0 && rig.Tick >= end + 248 : rig.Tick >= rig.Line.PressTick + 330)
             {
                 break;
             }
