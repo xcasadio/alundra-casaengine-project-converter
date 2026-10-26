@@ -340,6 +340,15 @@ ADR-0058) :
     par le réservoir d'effets de la DLL) ; les autres questions des découvertes (transitions, musique, ombres :
     `scratchpad/t3-disc2/`, à verser en annexe sur la branche du thème 3) prennent le défaut « comme l'original » par la règle de
     D-E20-83 ; ces réponses se versent au plan du thème 3.
+  - **D-E20-86** (2026-10-26, réponses de l'auteur, « Continue mais dis moi si tu as des questions ») — Pour le thème 3 : (1) l'effet 4 des
+    transitions (les rêves) se reproduit à l'œil, sans référence d'image du vrai jeu : les carreaux qui rétrécissent et le fondu additif lus
+    au binaire, validés en jeu par l'auteur ; (2) les ombres et l'eau comme l'original : les anneaux dans l'eau peu profonde, pas d'ombre en
+    eau profonde, et les objets et ennemis posés par la carte qui tombent dans l'eau profonde disparaissent (444 placements, les
+    personnages à gravité) : D-E20-37 est levée sur ce point ; (3) E19.h2 entre dans le thème 3 : toutes les entités posées par la carte
+    suivent la règle de chute du binaire (D-E20-37 prend fin avec elle ; l'écart de D-G2C2-9 et le cortège du chapitre 18 sur la carte 10
+    s'y referment), les épingles réécrites d'un coup sur une liste mesurée ; (4) le bord de la carte comme l'original (O-E19-17, Q-I2-5) :
+    toutes les entités bornées au bord, après un recensement en lecture seule des tests qui bougent ; ces réponses se versent au plan du
+    thème 3.
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
