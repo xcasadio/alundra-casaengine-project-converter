@@ -255,6 +255,19 @@ For the drops of water (docs/plan-e20-heros.md section 1.24.5, "E20.g2c3"): the 
 
 The hero stands on the cell x 912 to 935, y 160 to 175 (walkable, level 5). A save does not carry the direction (always south). Stay at the back of the room: about 13.5 seconds (674 ticks at 50 Hz) after the arrival four drops of water are born above the four torches of the top row (tiles (31, 10), (33, 10), (35, 10), (37, 10)) and fall; the torches go out without leaving a flame (the sound 142 and a small break effect). Going out of the zone (tiles x 26 to 42, y 8 to 28) before makes no drop. To see a drop fall on Alundra: lift a torch (Square against it) before the drops arrive and stand under one: the torch goes out in his hands in a fraction of a second and disappears, he stays standing, unhurt; without a torch only the splash is heard. Every drop of the game cycles the same way: it waits, falls in 24 ticks, splashes (sound 145) for 21 ticks and goes back up 160 pixels to start again; in the Fairy cave (map 158) the drops fall only while Alundra is in their zone.
 
+### Bomb preset (E20.h3b)
+
+For the bomb in the hands (docs/plan-e20-heros.md section 1.30.3, "E20.h3b"): the weapon loadout (the bomb, item 35, among its items) on the cell of `herbe-m14`, with the bomb on the Circle and the basic sword (life 10/10, no flag).
+
+| Preset | Map, tile, z | Flag | Owned | Equipped |
+|---|---|---|---|---|
+| `bombe-m14` | 14 (Beannoides arena), (31, 43), 1 | none | the kit, the weapon loadout (the bomb 35, the herbs, the elixirs, four scrolls) | the basic sword, the bomb on the Circle |
+
+A save does not carry the direction (always south). Press the Circle: the bomb is born in the hands (sound 44) and Alundra lifts it; walk and jump with it, then throw it with the Square (34.5 pixels east or west, 23 north or south, in an arc of 22 ticks
+with the sound 24 at the landing); the fuse is 241 ticks, then the bomb explodes (sound 46) and cuts the bushes of its box (the 16 bushes of the cells 26 to 29, rows 40 to 44, are a few cells to the west: walk west first). A bomb held when the fuse ends explodes in
+the hands and hurts Alundra (10 to 5 hearts); thrown to the south and left standing it lands half a pixel inside the zone of its own explosion and hurts him too (Q-H3B-1, as the original). At most three bombs are in the world at once: a fourth start is refused with the
+sound 3 until the first bomb has left. A bomb carried into deep water, or held when the control is locked, goes out in smoke.
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;

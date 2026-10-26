@@ -112,6 +112,8 @@ internal sealed class BombRun : IDisposable
             {
                 var bomb = ((IEntityWorldContext)Arena.Arc.Proxy).SpawnEntityBySpriteIndex(Arena.Hero, false, 2, x << 16, y << 16, 0, 0)
                     ?? throw new InvalidOperationException("the bomb was not born");
+                // E20.h3b: C62 is registered in production; a bomb born by the interface has the fuse 0 and would explode at its first tick, so the fuse is kept high as the oracle's scripts do (the harness owns the status).
+                Alundra.Ai.Items.BombAi.SetFuse(bomb, 240);
                 _bombs.Add(bomb);
                 Ticks.Add(new Dictionary<int, BombTick>());
             }

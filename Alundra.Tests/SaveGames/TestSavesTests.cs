@@ -112,10 +112,13 @@ public sealed class TestSavesTests : IDisposable
     // E20.g2c3 T2 (docs/plan-e20-heros.md section 1.24.5, D-G2C3-6): the preset of the arrival from the map 91 into the map 92, the last of the table. `gouttes-m92`: the map 92, tile (38, 10, 5), the new game's kit and no flag. The cell is the T0 (f) cell of docs/plan-e20-annexe/e20-g2c3/results.md.
     private const string DropsPresetName = "gouttes-m92";
 
+    // E20.h3b T3 (docs/plan-e20-heros.md section 1.30.3): the recipe of the bomb in the hands, the last of the table. `bombe-m14`: the map 14, tile (31, 43, 1) (the cell of `herbe-m14`), the weapon loadout (the bomb 35 among its items), the bomb on the Circle, the basic sword, life 10 of 10.
+    private const string BombPresetName = "bombe-m14";
+
     // E20.c2c T1 (docs/plan-e20-heros.md section 1.12.2, D-C2C-1): the four armour presets, on the cell of `blessure-m15`, listed after the two presets of the hurt hero.
     private static readonly string[] ArmourPresetNames = ["blessure-m15-tissu", "blessure-m15-cuir", "blessure-m15-ancienne", "blessure-m15-argent"];
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName, .. HurtPresetNames, .. ArmourPresetNames, OlenPresetName, TorchPresetName, DropsPresetName];
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName, .. HurtPresetNames, .. ArmourPresetNames, OlenPresetName, TorchPresetName, DropsPresetName, BombPresetName];
 
     public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName, LegendM14PresetName]);
 
@@ -131,7 +134,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheThirtyThreePresets_AreListed_InTheOrderOfTheTable()
+    public void TheThirtyFourPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -646,6 +649,24 @@ public sealed class TestSavesTests : IDisposable
         expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
         Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
         Assert.Equal(((short)10, (short)10), (save.Hp, save.HpMax));
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    [Fact]
+    public void TheBombPreset_IsTheWeaponLoadoutOnTheCellOfTheGrassPreset_WithTheBombOnTheCircle_AndNoFlag()
+    {
+        var rules = RealRules();
+        var save = Build(BombPresetName);
+
+        // Map 14 (the Beannoids arena), tile (31, 43), level 1: the cell of `herbe-m14`, already validated in game.
+        Assert.Equal(14, save.InitialMapId);
+        Assert.Equal((31, 43, 1), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.Equal((31, 43, 1), (TestSaves.Presets.Single(p => p.Name == GrassPresetName).TileX, TestSaves.Presets.Single(p => p.Name == GrassPresetName).TileY, TestSaves.Presets.Single(p => p.Name == GrassPresetName).TileZ));
+
+        // No flag; the bomb (item 35, raw index 71) owned and equipped on the Circle; the weapon slot 1 with the basic sword; life 10 of 10.
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word));
+        Assert.Equal(1, (int)save.NumberOfItems[71]);
+        Assert.Equal(((short)10, (short)10, (short)1, (short)35), (save.Hp, save.HpMax, save.WeaponId, save.ItemId));
         Assert.True(save.TryValidate(rules, out var error), error);
     }
 

@@ -1859,8 +1859,8 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// E20.g1a T3 (W3, D-G-3): the tick of an entity carried by <paramref name="carrier"/> - the carried branch of <c>MoveEntity</c> (<c>0x80037E34</c>) and the zeroing of its forces (<c>0x80036A84</c>). The hero is first in the physics list, so it has moved
     /// already (the binary recurses on a carrier that has not; a carrier that moves later in the list is not a case of the game). In the binary's order: the forces go to 0; the flags of the contacts are set (<see cref="ForceAdjusted"/> and
     /// <see cref="CollidedWithEntityZ"/> to 1, <see cref="XCollisionEntity"/> to none, the entity is not on the ground); the floor and the terrain heights are the carrier's; the position is the carrier's plus the offset the carrier holds
-    /// (<see cref="RelativeWarpOffsetX"/> and the other two, written by <see cref="CarryRules"/>), with the modded position recomputed; and the root follows at once, at a whole pixel (<see cref="PushLogicalPositionToRoot"/>: the sub-pixel
-    /// gap with the floating root of the hero is the one the binary has when it draws at whole pixels).
+    /// (<see cref="RelativeWarpOffsetX"/> and the other two, written by <see cref="CarryRules"/>), with the modded position recomputed; and the root follows at once (<see cref="PushLogicalPositionToRoot"/> with the sub-pixel kept since E20.h3b: the binary's position keeps the fraction of the carrier's and the head pull of the next tick gives it back;
+    /// the whole-pixel root lost it, which the bomb's keys, tick by tick, do not allow).
     /// </summary>
     private void FollowCarrier(EntityScriptProxy carrier)
     {
@@ -1884,7 +1884,7 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         ModdedPosX = unchecked(PosX + ModX);
         ModdedPosY = unchecked(PosY + ModY);
         ModdedPosZ = unchecked(PosZ + ModZ);
-        PushLogicalPositionToRoot();
+        PushLogicalPositionToRoot(keepSubPixel: true);
     }
 
     /// <summary>
@@ -2617,9 +2617,11 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// immediately, re-projects the sprite the same frame, and calls
     /// <see cref="CharacterControllerComponent.Teleport"/> so its velocity/collision state resets onto
     /// the new pose, exactly like a scripted jump resets the original's own force/ground state
-    /// (<c>EntityManager.cs:127-136</c>).
+    /// (<c>EntityManager.cs:127-136</c>). With <paramref name="keepSubPixel"/> (E20.h3b: the entity carried by the hero, <see cref="FollowCarrier"/>, and the bomb at its birth) the root X and Y keep the
+    /// fraction of the logical position instead of the whole pixel, so that the head-of-tick pull of the root gives the logical position back and a carried object keeps the hero's sub-pixel (the binary's
+    /// position is the carrier's plus the offset, fraction included) and leaves his hands, thrown, from it.
     /// </summary>
-    internal void PushLogicalPositionToRoot()
+    internal void PushLogicalPositionToRoot(bool keepSubPixel = false)
     {
         if (Controller == null || Owner?.RootComponent == null)
         {
@@ -2629,6 +2631,11 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         ClampToGround();
 
         var root = EntitySpawnFactory.ResolveLogicalPosition(PosX, PosY, PosZ);
+        if (keepSubPixel)
+        {
+            root = new Vector3(PosX / 65536f, PosY / 65536f, root.Z);
+        }
+
         Owner.RootComponent.LocalTransform.Position = root;
         RenderProjection?.UpdateProjection();
         Controller.Teleport(root);

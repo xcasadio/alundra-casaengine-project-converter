@@ -19,8 +19,8 @@ namespace Alundra.Tests.Ai.Items;
 
 /// <summary>
 /// E20.h3b T2 (docs/plan-e20-heros.md section 1.30.3, the tests of the world (w1) to (w11)): the bomb in the hands of the REAL hero, on the bench <see cref="BombHandsRun"/> (the real world of map 14 emptied of its entities, the
-/// field of each scenario, the bomb given and equipped on the Circle, the Circle pressed by <see cref="ArcRun"/>). They run on the REGISTRY OF PRODUCTION and the TABLES OF PRODUCTION and register NOTHING: they are red as long as the
-/// entry <c>0x23</c> of the tables of h0a is the silent stub (Circle starts nothing, the stub answers 1 with no sound) and as long as (C, 62) is not in <see cref="NativeSpriteRegistry.CreateForProduction"/> (T3, the phase B).
+/// field of each scenario, the bomb given and equipped on the Circle, the Circle pressed by <see cref="ArcRun"/>). They run on the REGISTRY OF PRODUCTION and the TABLES OF PRODUCTION and register NOTHING: they were red until the
+/// entry <c>0x23</c> of the tables of h0a became the bomb's (before T3 the silent stub: Circle started nothing) and (C, 62) joined <see cref="NativeSpriteRegistry.CreateForProduction"/> (T3, the phase B), and they stand as the proof that removing either turns them red.
 /// Every expected value is the oracle's, typed from its key or read from the file of the key under <c>docs/plan-e20-annexe/</c> (the wording of each test says which): the keys were made by the real code of <c>ALUN_CD.EXE</c> (France)
 /// in the MIPS machine, replayed identically in the T0 of this slice (<c>docs/plan-e20-annexe/e20-h3b/README.md</c>). The tick of a key is the tick of the test (the Circle of the key's first tick is the first tick of the run), with
 /// NO tolerance of one tick on (w1), (w8), (w10) and (w11). The Z of the entities is the DLL's (the binary's minus 1, ADR-0026) where the key prints the binary's: the keys print the bomb's Z at rest as 0.0 and in the hands as 32.0,
@@ -753,7 +753,8 @@ public sealed class BombHandsWorldTests : IDisposable
         d.Eq("t287 the bomb is not broken", Normal, run.BombAt(1, 287).Status);
         d.Eq("t331 the bomb is in the status 2", Normal, run.BombAt(1, 331).Status);
         d.Eq("t332 the fuse is over: status 3", Deactivated, run.BombAt(1, 332).Status);
-        d.Seq("the sounds 23 and 24", new[] { (264, 23), (287, 24) }, run.AllSounds().Where(s => s.Sfx is 23 or 24));
+        // (The stored key prints the journal after the tick 240 only; the oracle replayed with the whole journal plays the sound 24 at 73 too, the landing of the first bomb thrown at 50.)
+        d.Seq("the sounds 23 and 24", new[] { (73, 24), (264, 23), (287, 24) }, run.AllSounds().Where(s => s.Sfx is 23 or 24));
         d.None();
     }
 }

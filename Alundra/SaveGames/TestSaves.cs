@@ -228,6 +228,12 @@ public static class TestSaves
         // docs/plan-e20-annexe/e20-g2c3/results.md): the only arrival from the 91 that holds the four torches of the top row (the records 43 to 46) and the zone of the program B[1], which makes four drops of water fall on them after 603 ticks. A save cannot carry the direction:
         // stay at the back of the room about 13.5 seconds (674 ticks) and the four drops put the four torches out without a flame; lift a torch (Square against it) and stand under a drop: it goes out in the hands of Alundra, who stays standing, unhurt.
         new Preset("gouttes-m92", "test-gouttes-m92", 92, 38, 10, 5, [], [], [], []),
+
+        // E20.h3b T3 (docs/plan-e20-heros.md section 1.30.3): the bomb in the hands. Map 14 (the Beannoids arena), tile (31, 43), level 1: the cell of `herbe-m14`, already validated in game (flat, walkable; the 16 bushes of the cells 26 to 29, rows 40 to 44, are a few
+        // cells to the west, the row 42 is a wall to the east). The weapon loadout (the bomb, item 35, among the items) with the bomb on the Circle (item 35) and the basic sword; life 10 of 10, since the explosion hurts (5 hearts). A save cannot carry the direction (always
+        // south): press the Circle (the bomb is born in the hands, the fuse runs 241 ticks), walk, jump with it, throw it with the Square (34.5 px east or west, 23 px north or south; walk west first to cut the bushes). Stand off the throw: facing south the
+        // bomb lands half a pixel inside the zone of its own explosion and hurts you (Q-H3B-1, as the original). At most three bombs are in the world at once.
+        new Preset("bombe-m14", "test-bombe-m14", 14, 31, 43, 1, [], [], [], Loadout(), Weapon: 1, Item: 35),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>

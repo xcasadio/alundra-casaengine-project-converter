@@ -41,20 +41,29 @@ internal static class BombAi
     internal static List<EntityScriptProxy>? StubCallsForTests;
 
     /// <summary>The keys this class registers (the pin of the registry follows them).</summary>
-    internal static readonly IReadOnlyList<(int Slot, int Code)> Keys = new[] { (ScriptHelper.ProgramDTouch, TouchCode), (ScriptHelper.ProgramEDeactivate, DeactivateCode) };
+    internal static readonly IReadOnlyList<(int Slot, int Code)> Keys = new[] { (ScriptHelper.ProgramCTick, TickCode), (ScriptHelper.ProgramDTouch, TouchCode), (ScriptHelper.ProgramEDeactivate, DeactivateCode) };
 
-    /// <summary>Registers D30 and E12 for the type 2 only; the disposable takes the two keys off (for the tests that register them themselves on a registry of their own).</summary>
+    /// <summary>Registers C62 (E20.h3b), D30 and E12 for the type 2 only; the disposable takes the two keys off (for the tests that register them themselves on a registry of their own).</summary>
     internal static IDisposable Register(NativeSpriteRegistry registry)
     {
-        var touch = registry.Register(ScriptHelper.ProgramDTouch, TouchCode, SpriteTypes, (entity, context, state) => Touch(entity));
+        var tick = registry.Register(ScriptHelper.ProgramCTick, TickCode, SpriteTypes, (entity, context, state) => Tick(entity, context));
         try
         {
-            var deactivate = registry.Register(ScriptHelper.ProgramEDeactivate, DeactivateCode, SpriteTypes, (entity, context, state) => Deactivate(entity));
-            return new Registrations(touch, deactivate);
+            var touch = registry.Register(ScriptHelper.ProgramDTouch, TouchCode, SpriteTypes, (entity, context, state) => Touch(entity));
+            try
+            {
+                var deactivate = registry.Register(ScriptHelper.ProgramEDeactivate, DeactivateCode, SpriteTypes, (entity, context, state) => Deactivate(entity));
+                return new Registrations(tick, touch, deactivate);
+            }
+            catch
+            {
+                touch.Dispose();
+                throw;
+            }
         }
         catch
         {
-            touch.Dispose();
+            tick.Dispose();
             throw;
         }
     }
@@ -192,8 +201,12 @@ internal static class BombAi
             return 1;
         }
 
+        // The bomb does NOT take part in the tick of its birth (the oracle's key: status 1 at the tick of the Circle, 2 at the next, the fuse counting from the third), unlike the entities of the other births of the interface (E20.e0a3b, the marker posed last by the creation).
+        bomb.JoinsBirthTick = false;
         SetFuse(bomb, StartFuse);
         PlayerManager.PutInHands(hero, bomb);
+        // The bomb is at the hero's sub-pixel position (the key prints 206.09 for a hero at 206.09); the root of the creation is at a whole pixel and the first tick of the bomb pulls it back before the carrying takes over, so the root keeps the fraction.
+        bomb.PushLogicalPositionToRoot(keepSubPixel: true);
         return 0;
     }
 
@@ -365,17 +378,20 @@ internal static class BombAi
 
     private sealed class Registrations : IDisposable
     {
+        private readonly IDisposable _tick;
         private readonly IDisposable _touch;
         private readonly IDisposable _deactivate;
 
-        public Registrations(IDisposable touch, IDisposable deactivate)
+        public Registrations(IDisposable tick, IDisposable touch, IDisposable deactivate)
         {
+            _tick = tick;
             _touch = touch;
             _deactivate = deactivate;
         }
 
         public void Dispose()
         {
+            _tick.Dispose();
             _touch.Dispose();
             _deactivate.Dispose();
         }

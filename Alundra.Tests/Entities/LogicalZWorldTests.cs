@@ -292,6 +292,7 @@ public sealed class LogicalZWorldTests
         // impulse is 1 024 and whose speed is 128 (1.5 px per tick, the crate's state 1): the impulse is taken by the animation, at the first tick, as the game takes it. Over a step the series of Z does not depend on
         // the horizontal speed as long as the entity is above the step when it reaches it and stays over it (the step columns run to the edge of the field).
         var bomb = Born(arc, false, Bomb, 100, OracleInit(root, "pz") - 2);
+        Alundra.Ai.Items.BombAi.SetFuse(bomb, 240); // E20.h3b: C62 is registered; a bomb born by the interface has the fuse 0 and would explode at once.
         bomb.TargetAnimationId = 2;
         var z = new List<int>();
         var ground = 0;
@@ -399,6 +400,7 @@ public sealed class LogicalZWorldTests
         using var arc = Arc("z7");
         Install(arc, Flat());
         var bomb = Born(arc, false, Bomb, 100, 32 << 16);
+        Alundra.Ai.Items.BombAi.SetFuse(bomb, 240); // E20.h3b: C62 is registered; the fuse is kept high (a bomb born by the interface has the fuse 0).
         var arrow = Born(arc, false, Arrow, 100, 0);
         var prefabValue = bomb.Controller!.Settings.StepHeight;
         Assert.True(prefabValue > 0f);

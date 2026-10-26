@@ -302,14 +302,16 @@ public sealed class BombAiTests : IDisposable
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     [Fact]
-    public void B4_TheBombRegistersD30AndE12_ForTheType2Alone_NoOtherKeyAndNoOtherType()
+    public void B4_TheBombRegistersC62D30AndE12_ForTheType2Alone_NoOtherKeyAndNoOtherType()
     {
         var registry = new NativeSpriteRegistry();
 
         using var registration = BombAi.Register(registry);
 
-        Assert.Equal(2, registry.Count);
-        Assert.Equal(new[] { (ScriptHelper.ProgramDTouch, 30), (ScriptHelper.ProgramEDeactivate, 12) }, BombAi.Keys);
+        Assert.Equal(3, registry.Count);
+        Assert.Equal(new[] { (ScriptHelper.ProgramCTick, 62), (ScriptHelper.ProgramDTouch, 30), (ScriptHelper.ProgramEDeactivate, 12) }, BombAi.Keys);
+        Assert.True(registry.TryGet(ScriptHelper.ProgramCTick, 62, 2, out var tick));
+        Assert.NotNull(tick);
         Assert.True(registry.TryGet(ScriptHelper.ProgramDTouch, 30, 2, out var touch));
         Assert.NotNull(touch);
         Assert.True(registry.TryGet(ScriptHelper.ProgramEDeactivate, 12, 2, out var deactivate));
@@ -317,6 +319,7 @@ public sealed class BombAiTests : IDisposable
 
         foreach (var type in new[] { 0, 1, 3, 4, 241, 243, 258 })
         {
+            Assert.False(registry.TryGet(ScriptHelper.ProgramCTick, 62, type, out _), $"(C, 62) must not be registered for the type {type}");
             Assert.False(registry.TryGet(ScriptHelper.ProgramDTouch, 30, type, out _), $"(D, 30) must not be registered for the type {type}");
             Assert.False(registry.TryGet(ScriptHelper.ProgramEDeactivate, 12, type, out _), $"(E, 12) must not be registered for the type {type}");
         }
@@ -327,6 +330,9 @@ public sealed class BombAiTests : IDisposable
         Assert.False(registry.TryGet(ScriptHelper.ProgramCTick, 30, 2, out _));
         Assert.False(registry.TryGet(ScriptHelper.ProgramCTick, 12, 2, out _));
         Assert.False(registry.TryGet(ScriptHelper.ProgramEDeactivate, 19, 2, out _));
+        Assert.False(registry.TryGet(ScriptHelper.ProgramCTick, 61, 2, out _));
+        Assert.False(registry.TryGet(ScriptHelper.ProgramDTouch, 62, 2, out _));
+        Assert.False(registry.TryGet(ScriptHelper.ProgramEDeactivate, 62, 2, out _));
     }
 
     [Fact]
@@ -360,8 +366,8 @@ public sealed class BombAiTests : IDisposable
         using var bomb = BombAi.Register(registry);
         using var lid = Alundra.Ai.Props.BombLidAi.Register(registry);
 
-        Assert.Equal(3, registry.Count);
+        Assert.Equal(4, registry.Count);
         Assert.Throws<InvalidOperationException>(() => BombAi.Register(registry));
-        Assert.Equal(3, registry.Count); // the failed registration leaves nothing behind (D30 was registered, then taken off).
+        Assert.Equal(4, registry.Count); // the failed registration leaves nothing behind (C62 is the first key: it is already taken).
     }
 }

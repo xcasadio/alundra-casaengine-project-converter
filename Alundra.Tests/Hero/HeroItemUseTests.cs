@@ -28,6 +28,7 @@ public sealed class HeroItemUseTests : IDisposable
     private const uint Idle = 0;
     private const uint Moving = 1;
     private const uint Bomb = 0x23;
+    private const uint Cape = 0x20;
     private const uint Seeds = 0x1F;
     private const int RefusalSound = 3;
 
@@ -311,12 +312,13 @@ public sealed class HeroItemUseTests : IDisposable
     [Fact]
     public void A4_TheStubOfAnItemAnotherSliceCarries_StartsNothing_PlaysNoSound_AndJournalsTheCall_TheSeamedStartDoesPutTheItemInUse()
     {
-        var rig = NewRig();
+        // E20.h3b: the bomb 0x23 is no stub any more (its entries are BombAi's); the cape 0x20 (h2) is still one.
+        var rig = NewRig(item: (int)Cape);
         var journal = new List<string>();
         PlayerManager.ItemStubCallsForTests = journal;
 
         Front(rig, Right);
-        Assert.Equal(new[] { "start 0x23" }, journal);
+        Assert.Equal(new[] { "start 0x20" }, journal);
         Assert.Equal(0u, rig.Hero.ItemInUse);
         Assert.Empty(rig.Sounds.Requests);
         Assert.Equal(Moving, rig.Hero.TargetAnimationId);
@@ -324,8 +326,8 @@ public sealed class HeroItemUseTests : IDisposable
         Seams(rig);
         rig.Hero.TargetAnimationId = Idle;
         Front(rig, Right);
-        Assert.Equal(Bomb, rig.Hero.ItemInUse);
-        Assert.Equal(new[] { "start 0x23" }, journal); // the seam replaced the stub.
+        Assert.Equal(Cape, rig.Hero.ItemInUse);
+        Assert.Equal(new[] { "start 0x20" }, journal); // the seam replaced the stub.
     }
 
     // -----------------------------------------------------------------------------------------

@@ -6,6 +6,7 @@ using Alundra.Session;
 using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Ai;
+using Alundra.Ai.Items;
 using Alundra.Combat;
 using Alundra.Items;
 using Alundra.Physics;
@@ -844,6 +845,10 @@ public static class PlayerManager
         {
             cancel(player, item);
         }
+        else if (item == BombItem)
+        {
+            BombAi.Cancel(player);
+        }
         else
         {
             ItemCancelStub(item);
@@ -1076,6 +1081,9 @@ public static class PlayerManager
     /// <summary>The bound of the first refusal of the start (<c>s0 &gt;= 0x62</c> unsigned: the no-item answer -1 included).</summary>
     private const uint ItemRefusalBound = 0x62;
 
+    /// <summary>E20.h3b (phase B): the bomb, the item <c>0x23</c>; its start, driver and cancellation are <see cref="Alundra.Ai.Items.BombAi"/>'s entries of the tables of h0a (the other items stay named stubs).</summary>
+    private const uint BombItem = 0x23;
+
     /// <summary>
     /// E20.h0a, the start <c>0x8003499C</c>: the item of the Circle is promoted by <see cref="SetItemIdFromCurrentItemId"/> (<c>0x8004E0F8</c>, -1 without tables or without the item); a refusal (sound 3, answer 1) when it is
     /// <c>&gt;= 0x62</c>, when another item is in use, outside <c>0x1F</c> to <c>0x32</c> or in a hole of the table <c>0x8002339C</c> (<c>0x21</c>, <c>0x22</c>, <c>0x28</c>, <c>0x2A</c>). The same item in use is no refusal: its start runs again.
@@ -1093,7 +1101,7 @@ public static class PlayerManager
             return 1;
         }
 
-        var answer = ItemStartForTests is { } start ? start(player, item) : ItemStartStub(item);
+        var answer = ItemStartForTests is { } start ? start(player, item) : item == BombItem ? BombAi.Start(player) : ItemStartStub(item);
         if (answer == 0)
         {
             player.ItemInUse = item;
@@ -1900,7 +1908,7 @@ public static class PlayerManager
             return;
         }
 
-        var answer = ItemDriverForTests is { } driver ? driver(player, item) : ItemDriverStub(item);
+        var answer = ItemDriverForTests is { } driver ? driver(player, item) : item == BombItem ? BombAi.Drive(player) : ItemDriverStub(item);
         if (player.ItemUseCounter < int.MaxValue)
         {
             player.ItemUseCounter++;
