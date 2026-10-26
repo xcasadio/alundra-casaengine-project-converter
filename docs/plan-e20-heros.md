@@ -8675,7 +8675,7 @@ tests déplacés ; un besoin de toucher au moteur ; un test qui boucle.
 **Retour arrière.** La phase C se retire seule (393 hors de l'ensemble câblé : la torche ne se soulève plus) ; puis la phase B (les clés
 retirées : les ronces redeviennent indestructibles, une torche posée par un script reste inerte) ; la phase A est inerte.
 
-##### E20.g2c3 — Les gouttes d'eau (A19, C71) ⏳ (détaillée le 2026-10-26 ; thème 2, après g2c2 (D-G2C2-6) ; ferme O-G2C3-1 ; défauts de Q-G2C3-1 à Q-G2C3-7 pris par la règle de l'auteur du 2026-10-25, D-E20-83 ; révision 0 relue : REVISE ; révision 1 du 2026-10-26)
+##### E20.g2c3 — Les gouttes d'eau (A19, C71) ⏳ (détaillée le 2026-10-26 ; thème 2, après g2c2 (D-G2C2-6) ; ferme O-G2C3-1 ; défauts de Q-G2C3-1 à Q-G2C3-7 pris par la règle de l'auteur du 2026-10-25, D-E20-83 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-26 après disposition)
 
 **Provenance.** Lecture seule du 2026-10-26 (HEAD `22ddf0be` puis `0d3e7e14`, `Alundra/` et `Alundra.Tests/` inchangés entre les deux) :
 rapport et critique frais (`scratchpad/t2-next/g2c3/`, `scratchpad/t2-next/g2c3-critic/`, scripts, rejeux et sorties ; les deux rapports
@@ -8691,6 +8691,14 @@ corrigés (FIX) : (1) « l'état 2 qui ignore `CollidedWithEntityZ` » : sur la 
 (2) la remontée de 161 px et (3) `Collidable` non remis ne changent ni la période ni le son : (w1) asserte à chaque restauration `PosZ`,
 `ForceZ` et `Flags` ; (4) « l'avance de l'état 3 posée seulement avec une torche » ne change rien de ce que (w4) observait : (w4) asserte
 l'état de la goutte et le tick de sa restauration.
+
+**Révision 2 (2026-10-26, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé un fait
+faux, repris de la critique sans source : le préfab de la goutte **a** un contrôleur (vérifié : `CharacterControllerComponent`, profil
+`Pawn`, `control_mode` `Script`, `alundra-project/Entities/Goutte d’eau/Goutte d’eau.entity`, attaché à la naissance par
+`EntitySpawnFactory.cs:756`) ; la chute de la DLL passe donc par le chemin du contrôleur, pas par `StepVerticalWithoutController`. Le fait
+des données est corrigé ; D-G2C3-1 dit comment la remontée atteint la racine (`PushLogicalPositionToRoot()`) et comment les drapeaux passent
+au contrôleur (`ResyncControllerFromFlags()`) ; S-D2, S-D3, S-D6 et S-D8 sondent le chemin du contrôleur ; les ticks de T0 (d) sont des
+prédictions du binaire, que les sondes confirment ou dont elles écrivent l'écart (D-G2C3-8) ; (w1) asserte la racine et un mutant la garde.
 
 **Prérequis.** E20.g2c2 faite : la torche (`TorchAi`, le type 393), `(E, 20)` inscrit en production pour {393} (sans lui, une torche forcée en
 statut 3 par une goutte resterait figée : une vraie dépendance de code), la marque « sans flamme » d'E20 (`+0x274`, `Bytes[0]`), 393 dans
@@ -8723,7 +8731,8 @@ salle ; à la 158, les 14 gouttes ne tombent que quand Alundra est dans leur zon
 - **Le cycle natif** (rejoué, sol plat, la goutte posée à + 160 px ; R est le tick de la restauration) : R+1 état 0 vers 1 (compteur 40) ;
   R+41 état 2 (animation 1, Gravity) ; R+65 l'atterrissage ; R+66 le gestionnaire de l'état 2 voit l'atterrissage : animation 2, son 145,
   état 3 ; R+67 le gestionnaire de l'état 3 : état 4, `Collidable` retiré, le test de la torche (le journal de ce tick montre déjà l'état 4) ;
-  R+87 `+0xAC` ; R+88 la restauration : **période 88**. La chute de 160 px dure 24 ticks (22 sur la tête du héros, 23 sur une torche posée) ;
+  R+87 `+0xAC` ; R+88 la restauration : **période 88** (au binaire ; la DLL, par le chemin du contrôleur, est sondée par T0, D-G2C3-8 ; révision 2). La chute de 160 px dure
+  24 ticks (22 sur la tête du héros, 23 sur une torche posée) ;
   l'animation 2 est un `Hold` de 7 images de 3 ticks (21 ticks, 0,42 s à 50 Hz) ; gravité 128 et viscosité 4096 sur les 7 cartes. Après
   l'état 3 la goutte garde Gravity sans `Collidable` : elle traverse le héros, finit sa chute au sol, et la remontée part **de ce Z**.
 - **Les scripts** : 55 programmes C scriptés plus 1 gabarit natif (la 92, enregistrement 15) = 56 : 33 attentes simples `37 [N] ; 40 [2,0]`
@@ -8752,8 +8761,11 @@ salle ; à la 158, les 14 gouttes ne tombent que quand Alundra est dans leur zon
   porté), indépendant de g2c3 (Q-G2C3-6).
 - **Les données** : le sprite de carte 135 est le type 391 (`0x187`) : drapeaux `0x032080` (Collidable, non soulevable), corps 4×3×8,
   `BreakEffect` 0 ; fiche : PV 0, onze réponses à 128, aucune attaque, aucun bit de classe de coup ; animations 0 et 1 d'une image, la 2 en
-  `Hold` avec le son 145 ; le préfab `Goutte d’eau.entity` n'a pas de contrôleur (la chute passe par `StepVerticalWithoutController`, les
-  règles du binaire, l'atterrissage strict).
+  `Hold` avec le son 145 ; le préfab `Goutte d’eau.entity` porte un `CharacterControllerComponent` (profil `Pawn`,
+  `control_mode` `Script`), que la naissance attache (`EntitySpawnFactory.cs:756`) : la chute de la DLL passe par le chemin du contrôleur
+  (le pas vertical de la DLL poussé par le contrôleur, sa gravité tenue à 0 par `ApplyGravitySettingsToController`) ; un écrit direct de
+  `PosZ` n'atteint la racine qu'après `PushLogicalPositionToRoot()` (`EntityScriptProxy.cs`, qui recale au sol puis appelle `Teleport`) ;
+  un changement de `Flags` passe au contrôleur par `ResyncControllerFromFlags()` (la gravité et le masque de marche) ; révision 2.
 - **Le recensement** : gouttes 87 : 6, 88 : 13, 90 : 7, 92 : 9 (8 et le gabarit), 94 : 7, 158 : 14 ; torches des mêmes cartes 8, 3, 4, 16, 8,
   0 ; aucune sauvegarde de `tools/Saves/` ni aucun préréglage n'arrive dans une carte de gouttes ; en jeu, elles naissent aux entrées
   normales (86 vers 87 en tuile (41, 47), 91 vers 92, et les cartes 159 à 161 vers la 158).
@@ -8771,7 +8783,11 @@ salle ; à la 158, les 14 gouttes ne tombent que quand Alundra est dans leur zon
   cible ») ; un `Tick` qui lit et écrit la proxy, prend l'appui par `RidingEntity`, reconnaît le héros comme `PlayerManager`, lit son objet
   porté et compare son type à celui de la torche de g2c2 (le membre que `TorchAi` expose, relu au HEAD par T0 ; à défaut, une constante 393
   nommée dans `WaterDropAi` et vérifiée par la garde des données) ; l'extinction : statut 3 et `Bytes[0] = 1` (la marque qu'E20 lit), sans
-  condition sur le statut de la cible, comme le binaire.
+  condition sur le statut de la cible, comme le binaire. **Le chemin du contrôleur** (révision 2) : chaque changement de `Flags` (Gravity,
+  `Collidable`) est suivi de `ResyncControllerFromFlags()`, une assurance comme dans `ArrowAi` et `BallAi` ; la remontée de 160 px de l'état 4
+  écrit `PosZ` puis appelle `PushLogicalPositionToRoot()` (la racine, la projection et le `Teleport` du contrôleur : le site partagé d'un
+  écrit scripté de la position) ; si une sonde de T0 montre que le contrôleur ne suit pas (la racine, ou le profil `Pawn` qui retient la
+  goutte sur le héros après l'état 3), c'est un manque du moteur : consigné, jamais contourné, un arrêt.
 - **D-G2C3-2** — Le store `[0x8013DA20] = 1` de l'état 4 n'est pas porté (mort au binaire) ; un commentaire au site le dit.
 - **D-G2C3-3** — À l'état 3, l'avance et le retrait de `Collidable` précèdent le test de la torche et ne dépendent pas de lui.
 - **D-G2C3-4** (Q-G2C3-1, Q-G2C3-4, défauts A) — Toutes les gouttes : les quatre de B[1] à la 92 et les 14 de la 158 comprises.
@@ -8801,15 +8817,19 @@ ne blesse pas) ; le moteur, le convertisseur et les données.
   `docs/plan-e20-annexe/e20-g2c3-disc/` (README, `SHA1SUMS.txt`, sans `__pycache__`) ; (c) rejouer depuis une copie `replay/c71_full.py` (6 000
   vecteurs, 0 écart, le SHA-256 des dorés identique), `s1_drop_cycle.py` (natif et N = 30), `s2_drop_on_torch.py` (`carry`, `nocarry`,
   `posed`) et `s3_hit_window.py`, sorties identiques ; les vecteurs de (a1) comptent au moins un cas `CollidedWithEntityZ = 1` avec
-  `IsOnGround = 0` et un cas inverse, pris aux dorés ou produits sur la machine par `c71_full.py` et versés (révision 1) ; (d) la table des ticks attendus du binaire, écrite avant toute exécution dans la DLL :
+  `IsOnGround = 0` et un cas inverse, pris aux dorés ou produits sur la machine par `c71_full.py` et versés (révision 1) ; (d) la table des ticks attendus du binaire, écrite avant toute exécution dans la DLL (des prédictions du binaire, que les sondes du chemin
+  du contrôleur confirment ou dont elles écrivent l'écart par D-G2C3-8 ; révision 2) :
   le cycle natif sur trois cycles, la période de chaque famille de programmes (N + 90, 1 + 88, N + 91), les trois contacts, les 603 ticks de
   B[1] ; (e) les sondes jetables de la DLL (versées en `.txt`), chacune avec sa prédiction écrite avant : S-D1, A19 au premier passage d'une
-  goutte née par `0x8A` (`Bytes[1] = 0`) et d'une goutte posée scriptée (`Bytes[1]` = son index) ; S-D2, le cycle natif dans la DLL (le tick de
-  chaque état, les 21 ticks de l'animation 2, le son 145) ; S-D3, `IsOnGround` et `CollidedWithEntityZ` à la chute et à l'atterrissage, et
+  goutte née par `0x8A` (`Bytes[1] = 0`) et d'une goutte posée scriptée (`Bytes[1]` = son index) ; S-D2, le cycle natif dans la DLL, par le chemin du contrôleur (le tick de
+  chaque état, les 21 ticks de l'animation 2, le son 145) ; S-D3, par le même chemin, `IsOnGround` et `CollidedWithEntityZ` à la chute et à l'atterrissage, et
   le tick où le `RidingEntity` **de la goutte** devient le héros (dans la pose qui porte une torche, dont l'animation peut porter
   `NoEntityCollision`) ou la torche posée ; S-D4, l'état et les PV du héros un tick après la destruction de sa torche portée ; S-D5, une torche
-  posée touchée (les ticks de F12, sans flamme) ; S-D6, `PosZ += 160 px` sur la goutte sans contrôleur (la racine suit au même tick) ;
-  S-D7, le script repart de son premier opcode après la restauration ; S-D8, la goutte traverse le héros après l'état 3 ; une sonde qui
+  posée touchée (les ticks de F12, sans flamme) ; S-D6, la remontée `PosZ += 160 px` puis `PushLogicalPositionToRoot()` : la racine, la projection et le
+  contrôleur suivent au même tick, sans recalage au sol (révision 2) ;
+  S-D7, le script repart de son premier opcode après la restauration ; S-D8, après l'état 3 (`Collidable` retiré, `ResyncControllerFromFlags()`), la goutte traverse le héros :
+  `EntitySupport` ne la voit plus et le profil `Pawn` de son contrôleur ne la retient pas sur lui (sinon un manque du moteur, consigné, un
+  arrêt ; révision 2) ; une sonde qui
   contredit un fait est un arrêt, un écart d'un tick suit D-G2C3-8 ; (f) la case du préréglage (D-G2C3-6) ; (g) la liste prédite, mesurée par un
   câblage temporaire annulé ensuite : les sommes de clés du registre de production (au HEAD de 2026-10-26 : `NativeSpriteRegistryTests`,
   `LiftableAiRegistrationTests`, `ChargedArrowAiTests`, `WaveSwordLifeTests`, `BallFlamesTests`, recomptées après g2c2), les tests de g2c2
@@ -8825,7 +8845,7 @@ ne blesse pas) ; le moteur, le convertisseur et les données.
 - ⏳ **T2 — Phase B, tests de monde rouges avant** (le vrai contrôleur ; aux trois cadences pour ce qui ne dépend pas des tirages ; chaque tick
   attendu repris de la table de T0 (d) et des écarts écrits par D-G2C3-8) : (w1) une goutte native de la 92 (née par le `0x8A` de B[1] ou, par la
   couture de naissance des tests, depuis l'enregistrement 15) : trois cycles (période, son 145, animation 2, et à chaque restauration `PosZ`, `ForceZ` et `Flags` :
-  Gravity retiré, `Collidable` remis ; révision 1) ; (w2) une goutte scriptée à
+  Gravity retiré, `Collidable` remis, et la position de la racine égale à la position logique ; révisions 1 et 2) ; (w2) une goutte scriptée à
   attente simple : la période N + 90, `ProgramIndexes[2]` restauré, le script repris à son premier opcode ; (w3) Alundra porte une torche sous
   une goutte : la torche éteinte (statut 3, son 142, effet 10, détruite), aucune entité de type 12, Alundra debout les mains vides, PV
   inchangés ; (w4) Alundra sans torche : le son 145 seul, ni état ni PV changés ; la goutte passe l'état 3 puis l'état 4 et se restaure au tick de la
@@ -8838,13 +8858,14 @@ ne blesse pas) ; le moteur, le convertisseur et les données.
   (w10) après l'état 3, la goutte traverse le héros, finit sa chute au sol et remonte de 160 px depuis ce Z ; puis l'inscription (phase B) ; le
   préréglage si D-G2C3-6 le crée.
 - ⏳ **T3 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
-  `cmp` ; `check_names.py --rules` ; au moins 19 mutants réels, chacun tué par le test qu'il nomme : l'attente 40 en 39 et en 41 ((a1), (w1)) ;
+  `cmp` ; `check_names.py --rules` ; au moins 20 mutants réels, chacun tué par le test qu'il nomme : l'attente 40 en 39 et en 41 ((a1), (w1)) ;
   l'état 2 qui ignore `CollidedWithEntityZ` ((a1), par son vecteur `CollidedWithEntityZ = 1`, `IsOnGround = 0` ; sur la tête du héros et sur
   une torche posée les deux drapeaux montent au même tick, les tests de monde ne le voient pas ; révision 1) ; l'état 3 qui garde `Collidable` ((a3), (w10)) ; l'avance de l'état 3 posée seulement
   avec une torche ((a3), (w4) : l'état et la restauration de la goutte) ; le type de la torche changé ((a3), (w3)) ; l'appui du héros pris sans lire son objet porté ((a3), (w3)) ; le
   test « objet porté nul » retiré ((a3), (w4)) ; l'extinction sans `Bytes[0] = 1` ((a3), (w3) : une flamme naît) ; l'extinction sans le
   statut 3 ((a3), (w3)) ; la remontée de 160 px en 128 et en 161 ((a1), (w1) : `PosZ` à la restauration) ; `ForceZ` non remis à zéro ((a1)) ; Gravity non retiré à la
-  restauration ((a1), (w1) : `Flags` à la restauration) ; `Collidable` non remis ((a1), (w1) : `Flags` à la restauration) ; `ProgramIndexes[2]` non restauré ((a1), (w2)) ; la
+  restauration ((a1), (w1) : `Flags` à la restauration) ; `Collidable` non remis ((a1), (w1) : `Flags` à la restauration) ; `PushLogicalPositionToRoot()` oublié à la
+  restauration ((w1) : la racine ; révision 2) ; `ProgramIndexes[2]` non restauré ((a1), (w2)) ; la
   restauration depuis `Bytes[0]` ((a1), (w2)) ; A19 absent ((a2), (w2)) ; l'état ≥ 5 traité comme l'état 0 ((a1)) ; un ADR neuf (numéro
   libre recompté sur toutes les branches).
 - ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
