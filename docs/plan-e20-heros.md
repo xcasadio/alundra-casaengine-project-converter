@@ -11440,13 +11440,24 @@ un test hors de la liste prédite qui bouge.
 
 **Retour arrière.** Retirer le fichier de l'arc et le préréglage ; rien d'autre ne change.
 
-#### 1.30.2 E20.h3a — La bombe sans les mains : D30, E12 et le couvercle `(E, 19)` ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `1314242` ; **révision 3 du 2026-10-25** (D-E20-83 : E20.c2b avant elle, D-H-7 caduque), nouvelle époque, **READY** à la première relecture, `plan-verifier` frais)
+#### 1.30.2 E20.h3a — La bombe sans les mains : D30, E12 et le couvercle `(E, 19)` ✅ (**faite et CONFIRMED le 2026-10-26**, `d43d8989` à `19c4d507`, ADR-0100 ; recette de l'auteur à faire ; détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `1314242` ; **révision 3 du 2026-10-25** (D-E20-83 : E20.c2b avant elle, D-H-7 caduque), nouvelle époque, **READY** à la première relecture, `plan-verifier` frais)
 
 **Révision 3 (2026-10-25, nouvelle époque).** D-E20-83 place E20.c2b (la blessure du héros) avant h3a et D-H-7 est caduque (faux, mesuré).
 La lecture du 2026-10-25 (`scratchpad/t2-next/a362-h3a/` et sa critique, à verser par T0 (a) de l'arc A362) a rejoué l'oracle de h3 : les
 chiffres de (w1) ne changent pas avec le héros loin ; (w1) à (w5) placent le héros à plus de 60 px de toute bombe ; une clé neuve (w6)
 met le héros dans la zone (la blessure de c2b) ; le registre a quatre épingles, pas deux ; la bombe d'Olen ne coupe pas l'herbe ; l'arc
 A362 est maintenant détaillé (§1.30.1a) et épingle deux manques que h3a réécrit.
+
+**Écarts de l'exécution (2026-10-26, acceptés par la session principale, `docs/plan-e20-annexe/e20-h3a/results.md`).** (1) Le registre
+avait cinq épingles de somme au HEAD de départ, pas quatre (`BallFlamesTests.M3` d'E20.f6b) ; trois d'entre elles (R1, C2, M3) portent une
+seconde somme explicite, corrigée dans le même test. (2) Le héros des clés et du banc garde l'équipement de la nouvelle partie (objets 1, 17
+et 25), pas « sans armure ni inventaire » : c'est avec lui que la clé `k_w1_17east` donne PV 10 → 5, et la DLL rend la même chose. (3) E12 suit
+les vecteurs : la coupe a lieu à chaque appel qui ne détruit pas, jamais à l'appel qui détruit. (4) D30 lit lui-même `Attribute & 0xF`, sans
+exiger de boîte du toucheur (le binaire n'en exige pas). (5) L'animation courante (`+0x90`) n'est pas comparée tick à tick (la DLL la valide en
+fin d'image) ; l'animation cible, la fin d'animation, le statut et la boîte le sont. (6) (w5) est une méthode d'`OlenBombLidArcTests`, dont la
+scène est privée ; le son 84 (objet lâché) est écarté de la comparaison des sons de (w4), comme dans `ChargedArrowLifeTests`. (7) Les deux
+épingles d'A362 sont renommées sans « Missing » (`A9_TheLidIsDestroyedOneTickAfterItsStatus3_WithTheSound230AndTheBreakEffect11`,
+`A9_TheBombIsDestroyedAtTheEndOfItsExplosion_E12`), leurs ticks pris à la clé `k_w5_lid` et à la ligne 20 de `e20-a362/t0a.md`.
 
 **Prérequis.** E20.c2b (§1.12.1, la blessure du héros, D-E20-83) faite ; l'arc A362 (§1.30.1a, joué avant : sa mesure nomme ce qui manque, `(E, 19)` et le retrait de la bombe par E12 prédits ; T0 (e) lit
 son résultat et son banc) ; E20.e (la coupe, avant f4 dans l'ordre ;
@@ -11471,7 +11482,9 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
 
 ##### Tâches
 
-- ⏳ **T0 — Annexe, oracle, recensement** (aucun code) : (a) les vecteurs autonomes de la critique pour D30 et E12
+- ✅ **T0 — Annexe, oracle, recensement** (aucun code ; fait le 2026-10-26, `d43d8989` : les 300 vecteurs de D30 et E12 identiques, 25 vecteurs
+  d'E19 neufs (il ne lit aucun mot : son 230 puis `DestroyEntity(E, −1)`) ; E19 : 76 placements sur 32 cartes, 30 pour les types 241 à 243, les
+  types 314 et 315 hors tranche, aucun sur la chaîne ; les clés (w1) à (w6) ; la sonde du générateur, 0 écart) : (a) les vecteurs autonomes de la critique pour D30 et E12
   (`docs/plan-e20-annexe/e20-h3/critic/results/goldens_critic.json`, 25 par fonction, tous les mots lus) rejoués depuis une copie, sortie identique ;
   **pour E19** (`0x8007F690`), qui n'en a pas (révision 1) : 25 vecteurs produits sur le vrai code par une copie de `critic/run/my_goldens.py` étendue
   à E19 (même méthode : tous les mots lus et écrits, le journal des appels), versés dans `docs/plan-e20-annexe/e20-h3a/goldens_e19.json` et rejoués
@@ -11500,11 +11513,13 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
   et lancée : avec D30 et E12 seuls, rien ne la passe en statut 3, neutre attendu) ; recomptée au HEAD de départ ; (e) le résultat d'A362 et son
   banc (la classe de test et l'aide qu'il emploie), nommés au README (révision 1) ; (f) la sonde du générateur du §1.20 (bloc, point 3) sur le banc des
   tests de monde, sans herbe ni cible, à un tick par image ; un écart est un arrêt (révision 2).
-- ⏳ **T1 — Phase A** (tests d'abord). (b1) D30 contre les vecteurs : attribut 4, 6, 10 → statut 3 ; 1 à 3, 5, 7 à 9, 11 → rien, accolés ; (b2) E12
+- ✅ **T1 — Phase A** (tests d'abord ; fait le 2026-10-26, `4311b7ad`, `a7d76151` : 29 tests, rouges par construction (les espaces de noms
+  n'existaient pas), verts après ; `BombAi.cs` et `BombLidAi.cs` avec `Register` et `Keys`, sur le modèle de `BallAi`). (b1) D30 contre les vecteurs : attribut 4, 6, 10 → statut 3 ; 1 à 3, 5, 7 à 9, 11 → rien, accolés ; (b2) E12
   contre les vecteurs : animation 1 et drapeaux (`| 0x40`, `& ~0x30`) au premier appel, l'appel de la coupe à chaque appel (journal de
   `BombAi.StubCallsForTests`), `DestroyEntity(E, −1)` quand l'animation 1 est finie, et sur un trou ; (b3) `(E, 19)` contre les vecteurs de
   `goldens_e19.json` (T0 (a)) : son `0xE6` puis `DestroyEntity(E, −1)` (effet de bris 11 de l'en-tête) ; (b4) les inscriptions : (D, 30) et (E, 12) pour le type 2 seul, (E, 19) pour 241 à 243.
-- ⏳ **T2 — Tests de monde, rouges avant T3** (banc : `ArcRun` sur le champ synthétique de l'oracle, les entités de la carte retirées comme au §1.20,
+- ✅ **T2 — Tests de monde, rouges avant T3** (fait le 2026-10-26, `a9a6fcde`, `4d98a658` : 51 cas rouges sur le registre de production, les
+  mêmes dans la suite entière ; une inscription jetable les rend tous verts, sans tolérance de tick) (banc : `ArcRun` sur le champ synthétique de l'oracle, les entités de la carte retirées comme au §1.20,
   bloc, point 10 ; natifs allumés ; la bombe née par l'interface, mise en statut 3 par le test au tick 0 de la clé) : (w1) la chronologie de (c) à
   un tick par image, et à 2 et 3 ticks par image pour ce qui ne dépend pas des tirages ; (w2) la zone : une cible 335 placée dans les bornes de la clé
   `zone_335` meurt une fois, une cible juste hors de ces bornes n'est pas touchée, accolées (révision 1) ; (w3) la chaîne : une seconde bombe à 11 px explose au tick de la
@@ -11513,8 +11528,11 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
   du test étant le tick du statut 3 de la clé et le générateur posé à l'état de la clé à ce tick : les cases coupées, les effets 2, les sons et les
   tirages de la clé, à un tick par image (révision 2) ; (w5) un couvercle de la 362 (le banc d'A362, T0 (e)), désactivé par son programme D, disparaît avec l'effet 11 et
   le son `0xE6` ; **(w6)** (révision 3) le héros dans la zone, contre la clé de (w6), à un tick par image.
-- ⏳ **T3 — Phase B** : les deux appels d'inscription. Verts.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : attribut 6 oublié ; 10 oublié ; 5 ajouté ; statut 2 au lieu de 3 ;
+- ✅ **T3 — Phase B** : les deux appels d'inscription. Verts. (Fait le 2026-10-26, `0de16e3e`, `6562434c` : le registre de production passe de
+  18 à 21 clés ; la preuve de retrait rend rouges exactement 62 cas (48 de `BombWorldTests`, 3 de (w5), les 5 sommes, les 6 cas des deux
+  épingles d'A362) ; Release et Debug 7 246 verts.)
+- ✅ **T4 — ADR, plan, verifiers frais** (deux ; fait le 2026-10-26, `19c4d507`, `wf_5e91f0ef-12f` : 18 mutants réels tous tués, dont les 12 du
+  plan ; ADR-0100 ; les deux verifiers CONFIRMED). Mutants, au moins 12, tous tués : attribut 6 oublié ; 10 oublié ; 5 ajouté ; statut 2 au lieu de 3 ;
   drapeau `0x40` oublié ; `0x30` non effacé ; coupe appelée une fois seulement ; destruction à l'animation 0 ; trou ignoré ; (E, 19) sans son ; (E, 19)
   sans effet de bris ; (D, 30) inscrit pour le type 1.
 
@@ -11525,7 +11543,7 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
   prédite ; `cmp` ; traces inchangées ; moteur, convertisseur et données sans diff.
 - **Preuve de retrait** : retirer les deux appels d'inscription rend rouges exactement (w1) à (w6), les quatre épingles du registre et les deux
   épingles de l'arc d'A362 (leur attendu réécrit en T3).
-- **Recette de l'auteur** (non bloquante) : `olen-m362` (D-A362-2 ; sans le drapeau G248, Olen répète son premier dialogue) : la bombe d'Olen
+- **Recette de l'auteur** (non bloquante) : `olen-m362` (D-A362-2 ; sans le drapeau G248, Olen répète son premier dialogue ; monter jusqu'à Olen et lui parler, D-A362-4) : la bombe d'Olen
   explose, le couvercle disparaît, la bombe aussi.
 
 ##### Arrêts, budget, retour arrière
