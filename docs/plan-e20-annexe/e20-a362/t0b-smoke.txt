@@ -1,0 +1,25 @@
+world loaded: Coal Mine _ Olen's Dream-362 (RealController, Prefabs, Arrival (204,144) level 2, direction 16)
+dialogue lines (the map asset), node M362_S003/S004/S005 = dialogues 131/132/133:
+  asset lines: 13; first keys: line:M362_S000_p0, line:M362_S000_p1, line:M362_S000_p2, line:M362_S001_p0
+  M362_S003: 1 line(s) line:M362_S003_p0
+  M362_S004: 3 line(s) line:M362_S004_p0, line:M362_S004_p1, line:M362_S004_p2
+  M362_S005: 1 line(s) line:M362_S005_p0
+after 6 frames (the idle loop of the scene; nothing is read of it):
+  record 0: present sprite 243 pos (212,00, 100,00, 32,00) status Normal
+  record 1: present sprite 26 pos (204,00, 200,00, 32,00) status Normal
+  record 2: present sprite 266 pos (228,00, 200,00, 32,00) status Normal
+  record 3: present sprite 265 pos (420,00, 168,00, 32,00) status Normal
+  record 4: present sprite 264 pos (204,00, 120,00, 32,00) status Normal
+  record 5: absent
+  record 6: absent
+  record 7: absent
+  record 8: absent
+  record 9: absent
+  record 10: absent
+hero: pos (204,00, 144,00, 32,00) tile (8, 9, 2) onGround 1 target direction 16 target animation 0
+errors logged: 3341; warnings logged: 4
+errors other than the unresolved sprites (the filter of ArcChecks.AssertNoUnexpectedError): 0
+  warning: EtcStringTable: could not resolve an ETC text (no 'dialogue_etc' asset in the catalog) - OUI/NON and every item name/description fall back to their own caller's degraded mode.
+  warning: BackdropStage: world 'Coal Mine _ Olen's Dream-362' has a live Game but no ScrollingLayerService was attached (AttachService); scrolling background layers will not render.
+  warning: WorldProxy: world 'Coal Mine _ Olen's Dream-362' - failed to resolve its tilesets for navigation grid construction (IAssetLoader not found for the type CasaEngine.Framework.Assets.TileMap.TileSetData); navigation disabled (degraded mode).
+  warning: WorldProxy: no Camera2dComponent found in world 'Coal Mine _ Olen's Dream-362'; debug camera pan/follow disabled.
