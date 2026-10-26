@@ -9312,7 +9312,7 @@ Conséquence de D-E20-39 : aucun chemin de production ne met un objet dans les m
 haricots) : g1a et g2a sont inertes en jeu et se valident par des tests et des valeurs de référence tirées du binaire. Questions
 Q-G1A-1 à Q-G1A-6 (§2).
 
-#### 1.24.7 E20.g1c — L'ombre du contact du binaire (O-G3-3) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; T0 arrêté à (a0) le 2026-10-26, `09c6be4f` ; **révision 3** du 2026-10-26, la disposition des entrées (D-G1C-4), nouvelle époque)
+#### 1.24.7 E20.g1c — L'ombre du contact du binaire (O-G3-3) ⚠️ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; T0 arrêté à (a0) le 2026-10-26, `09c6be4f` ; **révision 3** du 2026-10-26, la disposition des entrées (D-G1C-4), nouvelle époque, relue à la clôture : REVISE ; ⚠️ **en pause de relecture** : la révision 4 ci-dessous corrige les deux blocages mais n'est pas relue ; une nouvelle relecture sur décision de l'auteur, Q-G1C-P)
 
 **Provenance.** `docs/plan-e20-annexe/e20-step-search/` (la lecture et son critique : W4 et l'option D, `critic/work/crit_shadow.py`) ;
 `docs/plan-e20-annexe/e20-g1b/walk-release-disc/` (W4 : la cause d'O-G3-3) ; `docs/plan-e20-annexe/e20-g1b/t0b/` (la mesure d'O-G3-3 dans la DLL) ;
@@ -9336,6 +9336,13 @@ lecteur) ; la liste des collidables (approchée pour les entités nées ou dépl
 avant la table `0x80127168`). Le T0 a aussi établi que `HalvingStepSearch` (e0k5) ne peut pas porter l'ombre (elle rend la position, pas le
 verdict de l'avant-dernière tentative, et n'a ni branche sol, ni redémarrage du glissement, ni sortie `NoObstacleSlide`) : la fonction pure
 reste neuve, e0k5 n'est pas touchée. D-G1C-4 dispose les cinq entrées ; D-G1C-1 et le périmètre suivent ; le T0 reprend à (c) et (d).
+
+**Révision 4 (2026-10-26, non relue : la tranche est en pause).** La relecture de clôture de la révision 3 a relevé deux blocages : (1) le
+cadre de Z de la copie n'était pas nommé : les hauteurs calculées depuis les octets bruts sont dans le cadre du binaire, le `PosZ` de la DLL est
+une unité brute plus bas (ADR-0026) ; mélangés, une égalité exacte change de sens, précisément pour le héros debout sur une caisse (le cas
+d'O-G3-3) ; (2) la sortie précoce du héros en tête du test d'entités (`0x80036F34`), sur les mêmes globales que celle du test de murs, n'était
+pas disposée. D-G1C-4 (i) nomme maintenant les deux sorties, D-G1C-4 (vi) le cadre et son unique point de conversion ; T1 reçoit le test du
+héros au repos sur le sol à côté d'une caisse, T3 son mutant.
 
 **Prérequis.** E20.g1b faite ; la branche du thème 2. Aucun lien avec e0k5 (deux fonctions pures distinctes, la même recherche du binaire).
 
@@ -9362,7 +9369,7 @@ l'original, au lieu de soulever la caisse voisine.
 **Décisions de la session.**
 - **D-G1C-1** (révision 1) — L'ombre ne vaut que **pour le héros** : une fonction pure neuve d'`Alundra/Physics/`, la copie **entière** de la
   recherche par moitiés (`0x80037730`, sa branche « marche au sol » comprise, comme le modèle `xymodel.py`), avec les candidats d'entités de la
-  liste des collidables (`0x80036F34`), la hauteur du sol (`0x800370C4`, calculée par la copie elle-même, D-G1C-4 (ii)) et le test de murs du
+  liste des collidables (`0x80036F34`, **sans** sa sortie précoce du héros, D-G1C-4 (i) ; révision 4), la hauteur du sol (`0x800370C4`, calculée par la copie elle-même, D-G1C-4 (ii)) et le test de murs du
   héros (`0x80037488`, **sans** sa sortie précoce sur `[0x800DC058]`/`[0x800DC05C]`, D-G1C-4 (i) ; révision 3), depuis la position et la force du héros **d'avant le pas du tick** (retenues avant le premier `Move`) ; son
   verdict (le `+0x130` du binaire) remplace `XCollisionEntity` du héros **une seule fois par tick, après `SlideAlongWall`** dans
   `ScriptedMotion.RunOneKinematicTick` ; `SlideAlongWall` (son test `forbidden`), `ForceAdjusted`, `EntityBlockCount`, la position et le second pas
@@ -9372,8 +9379,9 @@ l'original, au lieu de soulever la caisse voisine.
   consigné par un test nommé.
 - **D-G1C-3** — Les autres entités gardent leur contact (les PNJ, les objets poussés) : hors de la tranche.
 - **D-G1C-4** (révision 3, la disposition de l'arrêt de T0 (a0)) — Les entrées de la copie :
-  (i) **la sortie précoce** du test de murs du héros (`0x80037490-0x800374AC` : `[0x800DC058] < 0` et le bit 31 de `[0x800DC05C]`, un mode
-  « sans collision » posé depuis la manette) n'est pas copiée, comme pour le mur d'eau d'E20.i2a (§1.14.2, « n'est pas porté, pour les murs
+  (i) **les deux sorties précoces** du héros sur `[0x800DC058] < 0` et le bit 31 de `[0x800DC05C]` (un mode « sans collision » posé depuis la
+  manette) : celle du test de murs (`0x80037490-0x800374AC`) et celle de la tête du test d'entités (`0x80036F34`, `xymodel.py:find_candidate` ;
+  révision 4) ; ni l'une ni l'autre n'est copiée, comme pour le mur d'eau d'E20.i2a (§1.14.2, « n'est pas porté, pour les murs
   ordinaires comme pour l'eau ») ; l'oracle la tient à 0 (`docs/plan-e20-annexe/e20-0-rapports/D1-oracle-moveplayer.md`) : un écart écrit ;
   (ii) **la hauteur du sol et les quatre hauteurs de coin** du héros sont calculées par la fonction pure elle-même, depuis les octets bruts des
   cases (l'octet de hauteur par `SampleRawCellHeight`, l'octet de pente par (iii), les mots de case par `SampleRawWalkability` et
@@ -9389,7 +9397,15 @@ l'original, au lieu de soulever la caisse voisine.
   chargement de la carte, le cas d'O-G3-3 ;
   (v) **la colonne d'un pixel `x < 0`** : la copie prend la colonne 0, comme la DLL (`Math.Clamp`) ; le binaire y lit avant la table
   `0x80127168`, une valeur sans source : un écart écrit, épinglé par un test nommé. Pour `x >= 0`, la table égale `min(x / 24, 51)` (le modèle,
-  les oracles MIPS ; son contenu reste une inférence partagée, aucun écrivain trouvé dans l'exécutable).
+  les oracles MIPS ; son contenu reste une inférence partagée, aucun écrivain trouvé dans l'exécutable) ;
+  (vi) **le cadre de Z** (révision 4) : la copie travaille entièrement dans le cadre du binaire. La seule conversion est à l'entrée, quand
+  l'instantané est pris (avant le premier `Move`) : le `PosZ` du héros et celui de chaque collidable reçoivent + 1 unité brute (ADR-0026 : le
+  `PosZ` du binaire est celui de la DLL + 1) ; les positions modifiées se recalculent depuis ces valeurs (`Pos + Mod`) ; les hauteurs de sol et
+  de coin, calculées depuis les octets bruts, sont déjà dans ce cadre, comme la fenêtre de la branche sol (`a2 - ModZ - 1`, `0x30000` ou
+  `0x30003`) et le recalage `PosZ = a2 + 1` ; le test de boîte du test d'entités est la copie de `xymodel.py:find_candidate` appliquée aux
+  valeurs relevées (la copie n'appelle pas `EntityCollision.FindEntityCollisionCandidate` de la DLL) ; la copie ne rend aucune valeur de Z
+  (seulement le verdict, une entité ou rien) : aucune conversion de sortie. Une entité sans contrôleur qui a gardé le + 1 (ADR-0026, 14 sites,
+  aucun sur la carte 392) reçoit un second + 1 : un écart hérité, écrit.
 
 **Périmètre.** `Alundra/Physics/` (la fonction pure) ; `Alundra/Physics/CellsCollisionField.cs` (le lecteur additif de l'octet de pente,
 D-G1C-4 (iii) ; révision 3) ; `Alundra/Physics/ScriptedMotion.cs` (`RunOneKinematicTick` : la position et la force du
@@ -9416,7 +9432,10 @@ du glissement ne la lance pas) ; `Alundra/Entities/EntityScriptProxy.cs` reste i
 - ⏳ **T1 — Phase A, tests d'abord** : la fonction pure contre le modèle (un fuzz d'au moins 20 000 cas, 0 écart sur le verdict rendu ; le
   fuzz tire aussi des cases en pente (`& 3` de 1 à 3), des marches, une empreinte à plusieurs cases en pente (la bosse `slopesHit`), les
   bottes et l'objet en cours `0x20` ; révision 3) ; le lecteur de pente comparé à `CellsRecords` sur une carte réelle (chaque case) ; la colonne 0
-  pour `x < 0` épinglée par un test nommé (D-G1C-4 (v)) ; puis le corps.
+  pour `x < 0` épinglée par un test nommé (D-G1C-4 (v)) ; un test nommé du cadre de Z (D-G1C-4 (vi), révision 4) : le héros au repos sur le
+  sol d'une case plate, à côté d'une caisse (dans le cadre du binaire `PosZ = a2 + 1`, le recalage de la branche sol, donc `PosZ` de la DLL =
+  `a2`) : aucun coin ne bloque et le verdict égale celui du modèle pour le même état dans le cadre du binaire (rouge si la conversion d'entrée
+  manque ou est doublée) ; puis le corps.
 - ⏳ **T2 — Phase B** : l'épingle O-G3-3 réécrite sur la valeur du binaire (rouge avant : la DLL pose le contact un tick trop tôt) ; un Carré au tick
   de l'arrivée sur la rec5 donne l'épée, un tick plus tard soulève rec10 (rouge avant) ; le soulèvement en l'air (g1b (m7)) et au sol (g1b (m1))
   inchangés ; **avec l'ombre, `ForceAdjusted`, `PosX`/`PosY` et le compte de glissements du héros inchangés** sur la route R7 et sur un cas de
@@ -9425,13 +9444,13 @@ du glissement ne la lance pas) ; `Alundra/Entities/EntityScriptProxy.cs` reste i
 - ⏳ **T3 — Mutants, ADR** : au moins 8 mutants réels, tous tués (la branche sol de la copie retirée, tuée par les tests au sol de g1b ; le verdict de la dernière tentative au lieu
   de l'avant-dernière ; l'ombre écrite avant `SlideAlongWall` ; l'ombre lancée aussi au second pas du glissement ; l'ombre pour toute entité ; la position d'après le pas ; le test de murs des non-héros pour le héros ; un seul axe ; l'ombre
   qui écrit aussi `ForceAdjusted` ; l'ombre retirée ; la bosse `slopesHit` retirée ; la hauteur de coin prise à `TrySampleGround` ; le
-  lecteur de pente qui rend 0 ; révision 3) ; un ADR neuf ; O-G3-3 fermé.
+  lecteur de pente qui rend 0 ; révision 3 ; la conversion d'entrée du cadre de Z retirée, tuée par le test du héros au repos ; révision 4) ; un ADR neuf ; O-G3-3 fermé.
 - ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.** Les sorties de T0 (a) identiques ; T1 et T2 rouges avant et verts après ; le contact en l'air et au sol inchangé ; la suite en Release
 et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (d) ; le moteur sans diff.
 
-**Arrêts.** Une entrée du binaire sans source dans la DLL autre que les cinq disposées par D-G1C-4 (révision 3) ; le contact en l'air ou au sol cesse d'égaler l'oracle ; un test hors de la liste
+**Arrêts.** Une entrée du binaire sans source dans la DLL autre que celles disposées par D-G1C-4, (i) (les deux sorties précoces) à (vi) (révisions 3 et 4) ; le contact en l'air ou au sol cesse d'égaler l'oracle ; un test hors de la liste
 prédite bouge ; un besoin de toucher au moteur ; un test qui boucle.
 
 **Budget.** Un `executor` par phase ; deux tentatives. Un `plan-verifier` avant ; deux verifiers frais après.
@@ -12985,6 +13004,7 @@ les trois entrées `0x31`.
 | Q-H2-P2 | (2026-10-26, E20.h2, à l'auteur) La relecture de la cape de sable que tu avais accordée après h0a (D-E20-81) a rendu REVISE : la cape doit partager avec le mur d'eau (i2a) sa fonction de masque, le bit doit tomber au tick même d'un verrou (dialogue, scène) et le glissement le long d'un mur doit voir la règle du sable. La révision 4 corrige les trois points ; elle n'est pas relue. Proposition : relire la révision 4 une fois i2a faite (i2a crée la fonction que la cape étend). Défaut : oui, une relecture après i2a | à l'auteur (défaut : une relecture après i2a) |
 | Q-H1-P | (2026-10-25, E20.h1, à l'auteur) La tranche des cinq soins (Herbe, Potions, Extrait, Breuvage), READY depuis le 2026-10-18, a été révisée pour D-E20-50, D-E20-78 et le code d'e0c ; sa relecture de clôture a rendu REVISE (deux corrections de texte : citer vos réponses, et les vrais noms des corps de soin) ; la règle arrête là. Une révision 4 est écrite. Ouvrir une relecture au début du thème 2 ? Défaut proposé : oui **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : oui (D-E20-81). | Tranché le 2026-10-25 (D-E20-81) |
 | Q-H1-P2 | (2026-10-26, E20.h1, à l'auteur) La relecture des cinq soins que tu avais accordée après h0a (D-E20-81) a rendu REVISE sur deux points de texte : le plan faisait encore réécrire à h1 les effets des soins (les anneaux, les étincelles) alors qu'ils existent depuis le ramassage des soins (e0c), et une preuve de retrait oubliait les tests de ce ramassage. Rien ne change en jeu. La révision 5 corrige les deux points ; elle n'est pas relue. Proposition : une relecture de la révision 5. Défaut : oui, une relecture | à l'auteur (défaut : une relecture) |
+| Q-G1C-P | (2026-10-26, E20.g1c, à l'auteur) L'« ombre du contact » (sur une caisse, un Carré au bon tick donne l'épée au lieu de soulever la caisse voisine, comme l'original) s'est arrêtée à sa première étape : cinq valeurs que lit le binaire manquent à la DLL. La révision 3 les a tranchées ; sa relecture de clôture a rendu REVISE (le repère de hauteur du binaire, une unité au-dessus de celui de la DLL, n'était pas nommé ; une seconde sortie du mode de debug « sans collision » n'était pas tranchée) ; la règle arrête là. La révision 4 corrige les deux points ; elle n'est pas relue. Rien ne change en jeu tant qu'elle n'est pas faite (le Carré sur une caisse soulève la voisine un tick trop tôt). Proposition : une relecture de la révision 4. Défaut : oui, une relecture | à l'auteur (défaut : une relecture) |
 | O-H2-1 | (2026-10-25, relevé par la clôture de h2) `ResyncControllerFromFlags` commence par `ApplyGravitySettingsToController`, qui met la gravité et la vitesse de chute à 0 : quand un opcode de drapeaux (`0x16`/`0x17`, `0x62`/`0x63`) vise le héros, sa chute serait coupée ; à vérifier au T0 de h2 (un écart préexistant, hors cape) | E20.h2 T0 |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
