@@ -216,9 +216,12 @@ For the hurt hero (docs/plan-e20-heros.md section 1.12.1): at the contact of an 
 |---|---|---|---|---|
 | `blessure-m15` | 15 (Overworld 3,2), (7, 33), 7 | the kit's items, the armours 0x12, 0x13, 0x14, the boots of level 3 (0x1C), the bracelet (0x35) and the Charm of Nava (0x36) | the basic sword | 10/10 |
 | `blessure-m14` | 14 (Beannoids arena), (5, 29), 5 | the same | the basic sword | 10/10 |
+| `blessure-m15-tissu` | 15 (Overworld 3,2), (7, 33), 7 | the kit's items (the cloth armour 0x11 is the only armour) | the basic sword | 10/10 |
+| `blessure-m15-cuir` | 15, (7, 33), 7 | the kit's items and the leather armour (0x12) | the basic sword | 10/10 |
+| `blessure-m15-ancienne` | 15, (7, 33), 7 | the kit's items and the ancient armour (0x13) | the basic sword | 10/10 |
+| `blessure-m15-argent` | 15, (7, 33), 7 | the kit's items and the silver armour (0x14) | the basic sword | 10/10 |
 
-`blessure-m15`: the two orcs of the map stand three tiles (48 px) north and south of the arrival; walk to one and let it hit you. `blessure-m14`: the Beannoid of the record 0 stands three tiles north. The game wears the best armour owned (the silver one here), so an orc's blow costs 1 heart; the lower
-armours (4, 3, 2 hearts) are not testable from these bags. Select the Charm of Nava as the Circle item to be spared the fire. The hazard cells (maps 0 and 36) hurt every 120 ticks the hero who has not the boots of level 3: build a save without the item 0x1C to walk onto them (the map 0, tiles (4, 53) and (10, 53)).
+`blessure-m15`: the two orcs of the map stand three tiles (48 px) north and south of the arrival; walk to one and let it hit you. `blessure-m14`: the Beannoid of the record 0 stands three tiles north. The game wears the best armour owned (the silver one here), so an orc's blow costs 1 heart with `blessure-m15`. The four `blessure-m15-*` presets are on the same cell with ONE armour each, no boots, no bracelet and no charm (the bracelet would change the count): walk to an orc and let it hit you, an orc's blow costs 4 hearts with `-tissu`, 3 with `-cuir`, 2 with `-ancienne` and 1 with `-argent`. Select the Charm of Nava as the Circle item to be spared the fire. The hazard cells (maps 0 and 36) hurt every 120 ticks the hero who has not the boots of level 3: build a save without the item 0x1C to walk onto them (the map 0, tiles (4, 53) and (10, 53)).
 
 ### Olen's dream preset (E20.A362)
 

@@ -104,6 +104,12 @@ public static class TestSaves
             name, "test-" + name, mapId, tileX, tileY, tileZ,
             [], [], [], [(CounterIndex(0x12), 1), (CounterIndex(0x13), 1), (CounterIndex(0x14), 1), (CounterIndex(0x1C), 1), (CounterIndex(0x35), 1), (CounterIndex(0x36), 1)]);
 
+    /// <summary>An armour test save (E20.c2c T1, D-C2C-1): the cell of <c>blessure-m15</c>, life 10 of 10, the basic sword and the new game's kit (with the cloth armour 0x11), and at most one armour on top: <paramref name="armourItem"/>, or none for the cloth armour. No boots, no bracelet, no charm.</summary>
+    private static Preset ArmourPreset(string name, int? armourItem)
+        => new(
+            name, "test-" + name, 15, 7, 33, 7,
+            [], [], [], armourItem is { } armour ? [(CounterIndex(armour), 1)] : []);
+
     /// <summary>
     /// The presets, values written in advance (docs/plan-e19-opcodes.md, S1). Flags: G203 = word 6 bit 11, G204 =
     /// word 6 bit 12, G1651 to G1655 = word 51 bits 19 to 23, G1660 = word 51 bit 28. Tables, from the original's
@@ -198,9 +204,15 @@ public static class TestSaves
         // E20.c2b T4 (docs/plan-e20-heros.md section 1.12.1, D-C2B-12): the hurt hero, on the new game's kit (the basic sword, the cloth armour, life 10/10) with the armours 0x12, 0x13 and 0x14, the boots of level 3 (0x1C), the bracelet (0x35) and the Charm of Nava (0x36) in the bag.
         // `blessure-m15`: the Overworld 3,2 (map 15), tile (7, 33, 7), the ground at height 14: the two orcs (sprite 85, records at the tiles (7, 30) and (7, 36)) stand three tiles (48 px) north and south of the arrival; walk to one and let it hit you. `blessure-m14`: the
         // Beannoids arena (map 14), tile (5, 29, 5): the Beannoid of the record 0 stands three tiles north at the tile (5, 26); the cells (5, 27 to 29) are walkable at the same height. Neither map has a hazard cell, which the boots of level 3 would spare anyway. The
-        // game wears the best armour owned (FillEquipmentRecords), the silver one here, so the blow of an orc costs 1 heart; the 4, 3, 2 hearts of the lower armours need a bag without the higher ones (to settle with the author, results.md).
+        // game wears the best armour owned (FillEquipmentRecords), the silver one here, so the blow of an orc costs 1 heart; the 4, 3, 2 hearts of the lower armours are the presets `blessure-m15-tissu`, `-cuir`, `-ancienne` (below).
         BlessurePreset("blessure-m15", 15, 7, 33, 7),
         BlessurePreset("blessure-m14", 14, 5, 29, 5),
+
+        // E20.c2c T1 (docs/plan-e20-heros.md section 1.12.2, D-C2C-1): one armour each, on the cell of `blessure-m15` (the orc blow costs 4, 3, 2, 1 hearts): the cloth armour of the kit (0x11), the leather one (0x12), the ancient one (0x13) and the silver one (0x14); no boots, no bracelet (it would change the count), no charm.
+        ArmourPreset("blessure-m15-tissu", null),
+        ArmourPreset("blessure-m15-cuir", 0x12),
+        ArmourPreset("blessure-m15-ancienne", 0x13),
+        ArmourPreset("blessure-m15-argent", 0x14),
 
         // E20.A362 T1 (docs/plan-e20-heros.md section 1.30.1a, D-A362-2): the scene of Olen's dream (the map 362, Coal Mine). Tile (8, 9), level 2 (the cell x 192 to 215, y 144 to 159, walkable), two tiles below Olen (tile (8, 7)) at the pixel column of the arrival of the arc A362, on the new
         // game's kit, with the flag G248 (set by the map 363; word 7, bit 24) and no other: without it Olen repeats his first conversation. It is not the tile (10, 16) level 2 of the program B[6] (the arrival from the map 185). A save cannot carry the direction: walk up to Olen and press the button;
