@@ -11546,7 +11546,7 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : rendre les cinq entrées à leurs bouchons ; la phase A reste inerte.
 
-#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⚠️ (détaillée le 2026-10-25 ; thème 2 ; ferme O-H-1 ; révisions 0 et 1 relues : REVISE ; révision 2 relue à la clôture : REVISE ; **en pause de relecture** : la révision 3 ci-dessous corrige les deux blocages de la clôture mais n'est pas relue ; une nouvelle relecture ne s'ouvre que sur décision de l'auteur, Q-H2-P)
+#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⚠️ (détaillée le 2026-10-25 ; thème 2 ; ferme O-H-1 ; révisions 0 et 1 relues : REVISE ; révision 2 relue à la clôture : REVISE ; **en pause de relecture** ; la révision 3 relue le 2026-10-26 (la relecture accordée par D-E20-81 après h0a) : REVISE ; **révision 4** écrite, non relue ; une nouvelle relecture après E20.i2a et sur décision de l'auteur, Q-H2-P2)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `86d421b5` ; `report-main.md` et le critique frais `critic-main.md`, CONFIRMÉ avec des
 corrections reprises ici, dans le scratchpad de la session principale `scratchpad/t2-cape/`, à verser par T0 à
@@ -11570,6 +11570,28 @@ réglage des PNJ dont la DLL mène le mouvement vertical) ; appelé chaque tick 
 `MapMaxFallSpeed`, sauvés et rendus par l'état d'escalade), il l'empêcherait de tomber ; (2) aucun appel par tick de cette resynchronisation
 n'existe pour le héros (elle n'est appelée que par les opcodes de drapeaux et `ArrowAi`). Correction : D-H2-6 nomme un chemin propre au héros,
 qui n'écrit que le masque, et son site dans le tick ; un test et un mutant gardent la gravité du héros.
+
+**Révision 4 (2026-10-26, non relue : la tranche reste en pause).** La relecture de la révision 3 (accordée par D-E20-81) a relevé trois
+blocages : (1) l'ordre et la propriété avec E20.i2a : h2 créait une fonction neuve alors que D-I2A-2 la partage (« la première des deux
+tranches la crée, l'autre l'étend ») et que les deux tranches touchent les mêmes fichiers ; (2) le site d'appel « juste après l'enveloppe de
+l'objet » n'est pas atteint par la branche verrouillée ni par `BlockedByEntity` (le bit resterait posé pendant tout un verrou), et un départ ou
+une annulation plus loin dans le tick donnait un bit en retard d'un tick ; (3) le glissement (`ScriptedMotion.BlockedCorners`) recalcule le
+masque depuis `Flags` et échantillonne à Z = 0 : il ne voit ni le bit de la cape ni la règle « plus bas est un mur ». Corrections :
+- **Prérequis** : E20.i2a faite (§1.14.2) ; h2 **étend** la fonction de masque de D-I2A-2 par un second pseudo-bit, à côté de celui de l'eau,
+  sur le même site d'appel ; elle reprend ses garanties (la resynchronisation et l'adoption gardent le bit ; `RunMontage` reçoit le bit par la
+  fonction de production ; la gravité gardée par le test (r6) d'i2a, que h2 complète pour le bit de la cape sans le dupliquer) ; jamais en
+  même temps qu'une tranche qui touche `TestSaves.cs`, `EntityScriptProxy.cs` ou `CellsCollisionField.cs` ; T0 relit au HEAD (après i2a)
+  `ApplyGravitySettingsToController` et O-H2-1.
+- **Le site d'appel** (D-H2-6, révision 4) : la fonction partagée est appelée à la fin commune du tick du héros (`EndOfMovePlayer`, que
+  passent la branche verrouillée, `BlockedByEntity`, le bloc de blessure et la sortie normale), donc après tout changement d'`ItemInUse`
+  du tick et avant la passe du contrôleur du moteur ; si i2a l'a posée ailleurs, h2 la déplace là, les tests d'i2a restant verts ; le bit
+  suit `ItemInUse` **au même tick**.
+- **Le glissement** : `BlockedCorners` lit le masque vivant du contrôleur (D-I2A-3) et applique la condition de niveau de la cape avec le
+  pied du héros au lieu de Z = 0 ; T0 (d) le sonde sur une diagonale (arrêt si la règle n'y est pas exprimable).
+- **Tests et mutants ajoutés** : en T2, un verrou posé sous le sable retire le bit au tick du verrou et un héros déplacé pendant ce verrou n'est
+  pas confiné ; une marche en diagonale contre le bord F1 et contre la marche descendante F2, sous le sable ; en T3, les mutants « appel
+  seulement après l'enveloppe du tick libre » (tué par le test du verrou) et « `BlockedCorners` sans la condition de niveau de la cape » (tué
+  par les tests de diagonale).
 
 **Prérequis.** E20.h0a faite (le cadre de l'usage d'un objet : `ItemInUse`, le compteur, la table de départ, de pilote et d'annulation, la
 garde du menu Start, la branche verrouillée) ; même branche du thème 2. La tranche ne dépend ni de g1a ni de g1b (la cape ne porte rien), ni
@@ -12908,6 +12930,7 @@ les trois entrées `0x31`.
 | Q-H2-4 | (2026-10-25, E20.h2) Le sable des cartes 403 à 405 et 19 a des courants ; ils ne font pas encore dériver Alundra (E20.i2). (A, défaut) la cape sans les courants, ils viennent avec E20.i2 ; (B) faire E20.i2 d'abord **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : le défaut (A) (D-E20-82). | Tranché le 2026-10-25 (D-E20-82) |
 | Q-H2-5 | (2026-10-25, E20.h2) Si un dialogue ou une scène commence pendant qu'Alundra est sous le sable, l'original la fait remonter d'un coup, sans l'animation de sortie. Comme l'original ? Défaut : oui (D-H2-5) **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : le défaut (D-E20-82). | Tranché le 2026-10-25 (D-E20-82) |
 | Q-H2-P | (2026-10-25, E20.h2, à l'auteur) La tranche de la cape de sable a eu trois relectures REVISE (la dernière, de clôture, a trouvé que le recalcul du masque proposé aurait mis la gravité d'Alundra à zéro) ; la règle du dépôt arrête là les relectures automatiques. Une révision 3 est écrite au plan. Ouvrir une nouvelle relecture (une époque neuve) au début du thème 2, après h0a ? Défaut proposé : oui **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : oui (D-E20-81). | Tranché le 2026-10-25 (D-E20-81) |
+| Q-H2-P2 | (2026-10-26, E20.h2, à l'auteur) La relecture de la cape de sable que tu avais accordée après h0a (D-E20-81) a rendu REVISE : la cape doit partager avec le mur d'eau (i2a) sa fonction de masque, le bit doit tomber au tick même d'un verrou (dialogue, scène) et le glissement le long d'un mur doit voir la règle du sable. La révision 4 corrige les trois points ; elle n'est pas relue. Proposition : relire la révision 4 une fois i2a faite (i2a crée la fonction que la cape étend). Défaut : oui, une relecture après i2a | à l'auteur (défaut : une relecture après i2a) |
 | Q-H1-P | (2026-10-25, E20.h1, à l'auteur) La tranche des cinq soins (Herbe, Potions, Extrait, Breuvage), READY depuis le 2026-10-18, a été révisée pour D-E20-50, D-E20-78 et le code d'e0c ; sa relecture de clôture a rendu REVISE (deux corrections de texte : citer vos réponses, et les vrais noms des corps de soin) ; la règle arrête là. Une révision 4 est écrite. Ouvrir une relecture au début du thème 2 ? Défaut proposé : oui **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : oui (D-E20-81). | Tranché le 2026-10-25 (D-E20-81) |
 | O-H2-1 | (2026-10-25, relevé par la clôture de h2) `ResyncControllerFromFlags` commence par `ApplyGravitySettingsToController`, qui met la gravité et la vitesse de chute à 0 : quand un opcode de drapeaux (`0x16`/`0x17`, `0x62`/`0x63`) vise le héros, sa chute serait coupée ; à vérifier au T0 de h2 (un écart préexistant, hors cape) | E20.h2 T0 |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
