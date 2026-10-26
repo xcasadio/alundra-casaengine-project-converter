@@ -112,3 +112,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0096 | The hero is hurt by an entry, a hurt block and the state 0x31, and every active entity blinks from its invulnerability counter | Accepted | 2026-10-25 |
 | ADR-0097 | The first step of an entity born in the game is bounded by the halving search of the binary | Accepted | 2026-10-25 |
 | ADR-0098 | The fire and ice balls run C60 and E9 as native handlers, the keys are registered in production, and the wired set of the shot grows to the types 11, 12, 14 and 15 | Accepted | 2026-10-25 |
+| ADR-0099 | The use of an item has a frame (start table, driver, cancellation, menu guard) and the items themselves are named stubs | Accepted | 2026-10-26 |
