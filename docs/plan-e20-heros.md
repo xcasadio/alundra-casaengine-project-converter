@@ -2980,6 +2980,72 @@ après.
 le héros invulnérable 120 ticks mais toujours dessiné) ; puis T2 et T1 ensemble (l'entrée et le bloc retirés : le héros ne perd plus rien,
 l'état d'aujourd'hui), les tests et `HitArena` revenus à leur forme.
 
+#### 1.12.2 E20.c2c — Quatre sauvegardes de test, une par armure ⏳ (détaillée le 2026-10-26 ; thème 2 ; D-E20-84, réponse de l'auteur à Q-C2B-7 ; à relire)
+
+**Provenance.** La réponse de l'auteur à Q-C2B-7 (D-E20-84 : « Oui, quatre sauvegardes ») ; D-C2B-12 et D-C2B-15 (3) d'E20.c2b ; la lecture de c2
+(`docs/plan-e20-annexe/e20-c2/c2-dll.md` §1.9, `c2-oracle.md` A2 et la ligne 76) et la mesure de la découverte de c2b
+(`docs/plan-e20-annexe/e20-c2b-disc/plan/report-main.md:109`, `:165`) ; le code au HEAD (`Alundra/SaveGames/TestSaves.cs`,
+`PlayerManager`, `Alundra/Combat/Damage.cs`).
+
+**Prérequis.** E20.c2b faite (le préréglage `blessure-m15`, la blessure) ; jamais en même temps qu'une tranche qui touche
+`Alundra/SaveGames/TestSaves.cs` (E20.g2c2, E20.g2c3).
+
+**But.** La recette « un coup d'orque coûte 4, 3, 2 ou 1 cœur selon l'armure » devient jouable : quatre sauvegardes de test près des orques
+de la carte 15, chacune avec une seule armure portée.
+
+**Faits** (FAIT, MESURÉ).
+- **L'armure portée** est l'objet possédé du plus haut numéro dont la catégorie (`ItemTables.DropField3 & 0x7F`) vaut 2, cherché de `0x61`
+  à 0 (`PlayerManager`, l'étape 6 d'`UpdateItemEffectState`, la doc de `EquipmentRecords`) : avec les quatre armures au sac, la DLL porte
+  toujours l'armure d'argent, d'où D-C2B-15 (3).
+- **Les quatre armures** (`c2-dll.md` §1.9, `alundra-project/Data/balance.json`, entrées 47 à 50) : tissu `0x11` (réponses `0x10` ×11, dans
+  l'équipement de départ : objets 1, 17 et 25), cuir `0x12` (`0x0C` ×11), armure ancienne `0x13` (`0x08` ×11), armure d'argent `0x14`
+  (`0x04` ×11).
+- **Le coup d'orque** (carte 15, fiche 341, attribut 2, puissance 4) : `max(1, puissance × réponse >> 4)` donne 4, 3, 2 et 1 cœurs pour le
+  tissu, le cuir, l'ancienne et l'argent ([MESURÉ] par la découverte de c2b sur l'oracle, l'équipement de départ plus l'armure seule ; le
+  bracelet `0x35` (`0x0F`) en donnerait 3).
+- **Le préréglage existant** : `blessure-m15` (carte 15, case (7, 33), niveau 7 ; les armures `0x12`, `0x13`, `0x14`, les bottes `0x1C`, le
+  bracelet `0x35`, le charme `0x36` au sac ; 10/10 PV) est écrit par `TestSaves.BlessurePreset` ; `TestSavesTests` le couvre (la liste, son
+  contenu, les théories `EveryPresetName`).
+
+**Décisions de la session.**
+- **D-C2C-1** — Quatre préréglages neufs à la case de `blessure-m15` (15, (7, 33), 7), 10/10 PV, l'épée de base, l'équipement de départ (dont
+  le tissu `0x11`) et rien d'autre que leur armure : `blessure-m15-tissu` (aucune armure ajoutée), `blessure-m15-cuir` (`0x12`),
+  `blessure-m15-ancienne` (`0x13`), `blessure-m15-argent` (`0x14`) ; ni bottes, ni bracelet, ni charme (le bracelet changerait le compte) ;
+  `blessure-m15` reste tel quel. Les noms d'emplacement `test-<nom>` passent la règle des noms d'emplacement (`[a-z0-9_-]{1,32}`).
+- **D-C2C-2** — La preuve est la vraie règle : pour chaque préréglage construit, la fiche du héros qu'en tire `UpdateItemEffectState` porte
+  l'armure attendue, et `Damage.ResolveBalanceTarget` avec l'attaque de la fiche 341 rend 10 − 4, 10 − 3, 10 − 2 et 10 − 1 ; aucun ennemi n'est
+  joué (les orques de la carte restent ceux d'E14).
+- **D-C2C-3** — `docs/test-saves.md` gagne les quatre lignes et la recette, et retire la phrase « the lower armours (4, 3, 2 hearts) are not
+  testable from these bags ».
+
+**Périmètre.** `Alundra/SaveGames/TestSaves.cs` ; `docs/test-saves.md` ; `Alundra.Tests/SaveGames/TestSavesTests.cs` (et, si besoin, un
+fichier de test neuf du même dossier, nom contrôlé par `check_names.py --rules`) ; ce plan. Aucun autre fichier de production ; pas d'ADR.
+
+**Hors périmètre.** Les orques (E14) ; le choix de l'armure dans le menu ; `blessure-m15` et `blessure-m14`.
+
+**Tâches.**
+- ⏳ **T1 — Tests d'abord, puis les préréglages** : (p1) un test de contenu par préréglage (la carte, la case, les PV, l'épée, le sac : les
+  objets de l'équipement de départ et la seule armure du nom parmi `0x12` à `0x14` ; ni `0x1C`, ni `0x35`, ni `0x36`), rouge avant ; (p2) pour
+  chaque préréglage construit, l'armure portée (l'enregistrement d'armure d'`EquipmentRecords`) et la vie après un coup d'orque par
+  `Damage.ResolveBalanceTarget` (6, 7, 8, 9), rouge avant ; (p3) le test de liste des préréglages (renommé d'après le compte réel, recompté au
+  HEAD de départ) et les lignes des théories `EveryPresetName` qui ne font que croître (D-E0D-12) ; puis les quatre préréglages et
+  `docs/test-saves.md` ; la suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
+  `check_names.py --rules`.
+- ⏳ **T2 — Verifier frais** (la session principale), avec deux mutations jetables : l'armure de cuir `0x12` ajoutée au sac de `blessure-m15-tissu` (rouges
+  attendus : (p1) et (p2) de ce préréglage) ; l'armure ancienne remplacée par l'argent dans `blessure-m15-ancienne` (rouges : (p1) et (p2) de
+  ce préréglage).
+
+**Acceptation.** (p1) et (p2) rouges avant les préréglages, verts après ; seuls le test de liste et les lignes d'`EveryPresetName` bougent
+parmi les tests existants ; la suite en Release et en Debug, zéro échec ; les deux mutations tuées par les rouges prédits. **Recette de
+l'auteur** (non bloquante) : chacun des quatre préréglages, marcher vers un orque et se laisser toucher : 4, 3, 2 puis 1 cœur.
+
+**Arrêts.** Une armure portée autre que celle du nom ; un coût différent de 4, 3, 2, 1 ; un test hors de la liste qui bouge ; un besoin de
+toucher à autre chose que les préréglages.
+
+**Budget.** Un `executor` ; deux tentatives. Un `plan-verifier` avant ; un verifier frais après.
+
+**Retour arrière.** Retirer les quatre préréglages.
+
 ### 1.13 E20.d — La course : E20.d1 🧪 (faite et CONFIRMED le 2026-10-10, `af42753` à `0b1d3f3` ; reste la recette de l'auteur), E20.d2 ⏳ (E20.d2a faite, 🧪 recette de l'auteur ; E20.d2b attend la mesure du stick, Q-D1)
 
 **Révision 1 (2026-10-10).** Relecture d'E20.d1 : **REVISE**, deux points corrigés : le prérequis est E20.c2a CONFIRMED (arrêt
