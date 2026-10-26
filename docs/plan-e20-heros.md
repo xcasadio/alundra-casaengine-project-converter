@@ -2988,7 +2988,7 @@ après.
 le héros invulnérable 120 ticks mais toujours dessiné) ; puis T2 et T1 ensemble (l'entrée et le bloc retirés : le héros ne perd plus rien,
 l'état d'aujourd'hui), les tests et `HitArena` revenus à leur forme.
 
-#### 1.12.2 E20.c2c — Quatre sauvegardes de test, une par armure ⏳ (détaillée le 2026-10-26 ; thème 2 ; D-E20-84, réponse de l'auteur à Q-C2B-7 ; **READY** à la première relecture, `plan-verifier` frais)
+#### 1.12.2 E20.c2c — Quatre sauvegardes de test, une par armure ✅ (**faite et CONFIRMED le 2026-10-26**, `5180f695` à `575b604d`, pas d'ADR ; recette de l'auteur à faire ; détaillée le 2026-10-26 ; thème 2 ; D-E20-84, réponse de l'auteur à Q-C2B-7 ; **READY** à la première relecture, `plan-verifier` frais)
 
 **Provenance.** La réponse de l'auteur à Q-C2B-7 (D-E20-84 : « Oui, quatre sauvegardes ») ; D-C2B-12 et D-C2B-15 (3) d'E20.c2b ; la lecture de c2
 (`docs/plan-e20-annexe/e20-c2/c2-dll.md` §1.9, `c2-oracle.md` A2 et la ligne 76) et la mesure de la découverte de c2b
@@ -3023,6 +3023,12 @@ de la carte 15, chacune avec une seule armure portée.
 - **D-C2C-2** — La preuve est la vraie règle : pour chaque préréglage construit, la fiche du héros qu'en tire `UpdateItemEffectState` porte
   l'armure attendue, et `Damage.ResolveBalanceTarget` avec l'attaque de la fiche 341 rend 10 − 4, 10 − 3, 10 − 2 et 10 − 1 ; aucun ennemi n'est
   joué (les orques de la carte restent ceux d'E14).
+- **D-C2C-4** (2026-10-26, écarts de l'exécution, acceptés) — (1) `TheOtherPresets_LeaveTheDeathCounterAtZero` boucle aussi sur la liste des
+  préréglages : rouge avant, vert après, son corps intact ; il est de la même famille que les lignes d'`EveryPresetName` (des tests qui ne font
+  que croître) et s'ajoute à la liste prédite de toute tranche qui ajoute un préréglage ; (2) les quatre préréglages suivent `blessure-m14`
+  dans la table, par une aide `ArmourPreset(name, armourItem)` ; (3) le bracelet ne compte que choisi comme objet du Rond (l'enregistrement
+  d'accessoire est l'objet en usage s'il est de catégorie 3, `PlayerManager`), possédé seul il ne change pas le coup : le « 3 cœurs » du
+  bracelet suppose qu'il soit choisi ; `docs/test-saves.md` le précise.
 - **D-C2C-3** — `docs/test-saves.md` gagne les quatre lignes et la recette, et retire la phrase « the lower armours (4, 3, 2 hearts) are not
   testable from these bags ».
 
@@ -3032,14 +3038,16 @@ fichier de test neuf du même dossier, nom contrôlé par `check_names.py --rule
 **Hors périmètre.** Les orques (E14) ; le choix de l'armure dans le menu ; `blessure-m15` et `blessure-m14`.
 
 **Tâches.**
-- ⏳ **T1 — Tests d'abord, puis les préréglages** : (p1) un test de contenu par préréglage (la carte, la case, les PV, l'épée, le sac : les
+- ✅ **T1 — Tests d'abord, puis les préréglages** (fait le 2026-10-26, `5180f695`, `de94189e`, `575b604d` : 22 cas rouges avant, 186 verts après ;
+  la liste devient `TheThirtyTwoPresets_…` ; Release et Debug 7 334 verts ; les écarts de D-C2C-4) : (p1) un test de contenu par préréglage (la carte, la case, les PV, l'épée, le sac : les
   objets de l'équipement de départ et la seule armure du nom parmi `0x12` à `0x14` ; ni `0x1C`, ni `0x35`, ni `0x36`), rouge avant ; (p2) pour
   chaque préréglage construit, l'armure portée (l'enregistrement d'armure d'`EquipmentRecords`) et la vie après un coup d'orque par
   `Damage.ResolveBalanceTarget` (6, 7, 8, 9), rouge avant ; (p3) le test de liste des préréglages (renommé d'après le compte réel, recompté au
   HEAD de départ) et les lignes des théories `EveryPresetName` qui ne font que croître (D-E0D-12) ; puis les quatre préréglages et
   `docs/test-saves.md` ; la suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
   `check_names.py --rules`.
-- ⏳ **T2 — Verifier frais** (la session principale), avec deux mutations jetables : l'armure de cuir `0x12` ajoutée au sac de `blessure-m15-tissu` (rouges
+- ✅ **T2 — Verifier frais** (la session principale), avec deux mutations jetables (fait le 2026-10-26, `wf_d593248d-f78` : les deux verifiers
+  CONFIRMED ; les deux mutations du plan donnent exactement les deux rouges prédits, quatre de plus tuées) : l'armure de cuir `0x12` ajoutée au sac de `blessure-m15-tissu` (rouges
   attendus : (p1) et (p2) de ce préréglage) ; l'armure ancienne remplacée par l'argent dans `blessure-m15-ancienne` (rouges : (p1) et (p2) de
   ce préréglage).
 
