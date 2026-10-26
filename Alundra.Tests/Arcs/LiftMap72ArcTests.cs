@@ -35,8 +35,8 @@ public sealed class LiftMap72ArcTests : IDisposable
     private const int JarType = 291;
     private const int BarrelType = 290;
 
-    /// <summary>E20.g2c1 phase C wired the barrel (290) with the types of C4: the witness (m5) derives the barrel of the record 1 on the torch (393, g2c2), a type that stays outside the set.</summary>
-    private const int TorchType = 393;
+    /// <summary>E20.g2c1 phase C wired the barrel (290) with the types of C4, E20.g2c2 phase C the torch (393): the witness (m5) derives the barrel of the record 1 on the bomb (the global sprite 2), a type that stays outside the set.</summary>
+    private const int BombType = 2;
 
     public LiftMap72ArcTests()
     {
@@ -233,8 +233,8 @@ public sealed class LiftMap72ArcTests : IDisposable
         var jar = arc.EntityByRecord(37)!;
         var barrel = arc.EntityByRecord(1)!;
 
-        // Derived on a type that stays outside the set: the barrel of the record 1 (genre 1, a top of 16 px) takes the sprite type of the torch.
-        barrel.SpriteType = TorchType;
+        // Derived on a type that stays outside the set: the barrel of the record 1 (genre 1, a top of 16 px) takes the sprite type of the bomb.
+        barrel.SpriteType = BombType;
         Assert.Equal(1, (int)EntityFlags.GetPickupKind(barrel.Flags)); // the object is genre 1 like a jar: only the set tells them apart.
         Assert.NotEqual(JarType, barrel.SpriteType);
 

@@ -35,10 +35,10 @@ public sealed class LiftWorldTests : IDisposable
     private const int WiredType = 291;
 
     /// <summary>
-    /// A sprite type outside the production set (the torch, 393, whose C is (C, 70) and which g2c2 wires later): genre 1 like a crate, but outside the set: the sword, never a lift. E20.g2c1 phase C wired the barrel (290) with the other
-    /// types of C4, so the witness was derived on the torch, a type that stays outside.
+    /// A sprite type outside the production set (the bomb, the global sprite 2, which no lift wires): genre 1 like a crate, but outside the set: the sword, never a lift. E20.g2c1 phase C wired the barrel (290) with the other
+    /// types of C4, so the witness was derived on the torch (393); E20.g2c2 phase C wired the torch, and the witness is derived on the bomb, a type that stays outside.
     /// </summary>
-    private const int UnwiredType = 393;
+    private const int UnwiredType = 2;
 
     private const uint LiftOnTheGround = 5;
     private const uint LiftInTheAir = 11;
@@ -287,7 +287,7 @@ public sealed class LiftWorldTests : IDisposable
     [Fact]
     public void M5_AnObjectOutsideTheSet_GivesTheSword_NextToTheCrateOfTheSameSceneThatLifts()
     {
-        // The same pad (RIGHT x5, then RIGHT+SQUARE at t6: the line E2): the object outside the set (the torch, genre 1 like a crate, not wired) gets the sword, the crate of the set lifts.
+        // The same pad (RIGHT x5, then RIGHT+SQUARE at t6: the line E2): the object outside the set (the bomb, genre 1 like a crate, not wired) gets the sword, the crate of the set lifts.
         var pad = Script((5, R), (1, R | SQ), (10, R));
 
         var outside = Scene(1, pad, UnwiredType);

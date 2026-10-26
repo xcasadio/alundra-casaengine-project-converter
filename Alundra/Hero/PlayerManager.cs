@@ -1169,9 +1169,9 @@ public static class PlayerManager
     /// E20.g1b phase A (docs/plan-e20-heros.md section 1.24.4): the sprite types whose lift is wired to <see cref="TryLift"/>, one type after the other (the model of <see cref="ProductionWiredWeaponTypes"/>, D-G-8). Phase B (T3), the activation: the seven
     /// types of C23 (<see cref="Alundra.Ai.Objects.LiftableAi.SpriteTypes"/>); <see cref="PlayerTryAction"/> reads it. E20.g2c1 phase C (D-G2C1-9): the set gains the types of C4
     /// (<see cref="Alundra.Ai.Objects.LiftableAi.C4ProductionTypes"/>: the barrel, the stone, the trunk, the four objects of the plates, the ice block (already there by C23) and the eleven shop articles), 18 types added to the seven of C23 (the 304 is in both), 25 in all; a type is never wired without its key
-    /// <c>(C, 4)</c> (the object would stay stuck to the hands), and all of them hold it since the phase B.
+    /// <c>(C, 4)</c> (the object would stay stuck to the hands), and all of them hold it since the phase B. E20.g2c2 phase C (D-G2C2-5): the set gains the torch (<see cref="Alundra.Ai.Objects.TorchAi.SpriteTypes"/>, 393, whose release is <c>(C, 70)</c>, registered by the phase B), 26 types in all.
     /// </summary>
-    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredLiftableTypes = new System.Collections.Generic.HashSet<int>(System.Linq.Enumerable.Concat(Alundra.Ai.Objects.LiftableAi.SpriteTypes, Alundra.Ai.Objects.LiftableAi.C4ProductionTypes));
+    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredLiftableTypes = new System.Collections.Generic.HashSet<int>(System.Linq.Enumerable.Concat(System.Linq.Enumerable.Concat(Alundra.Ai.Objects.LiftableAi.SpriteTypes, Alundra.Ai.Objects.LiftableAi.C4ProductionTypes), Alundra.Ai.Objects.TorchAi.SpriteTypes));
 
     /// <summary>E20.g1b test seam, per thread: when set, replaces <see cref="ProductionWiredLiftableTypes"/>.</summary>
     [ThreadStatic]
