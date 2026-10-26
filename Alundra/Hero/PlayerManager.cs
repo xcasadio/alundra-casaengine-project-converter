@@ -832,7 +832,7 @@ public static class PlayerManager
     /// E20.h0a (D-H-5): the cancellation of the item in use, <c>0x800350C0</c>: the cancellation of the item runs while it is still in use, then the item is freed. Without an item in use nothing happens. Its sites: the locked branch
     /// (<c>0x80031BFC</c>), the default of the states without handler (<c>0x80032758</c>: the main chain and the swim table's Skip group); the exit cell (<c>0x80032770</c>, no cell attribute is ever written) and the death (E18) are not ported.
     /// </summary>
-    private static void CancelItemMode(EntityScriptProxy player)
+    internal static void CancelItemMode(EntityScriptProxy player)
     {
         var item = player.ItemInUse;
         if (item == 0)
