@@ -8675,7 +8675,7 @@ tests déplacés ; un besoin de toucher au moteur ; un test qui boucle.
 **Retour arrière.** La phase C se retire seule (393 hors de l'ensemble câblé : la torche ne se soulève plus) ; puis la phase B (les clés
 retirées : les ronces redeviennent indestructibles, une torche posée par un script reste inerte) ; la phase A est inerte.
 
-##### E20.g2c3 — Les gouttes d'eau (A19, C71) ⏳ (détaillée le 2026-10-26 ; thème 2, après g2c2 (D-G2C2-6) ; ferme O-G2C3-1 ; défauts de Q-G2C3-1 à Q-G2C3-7 pris par la règle de l'auteur du 2026-10-25, D-E20-83 ; à relire)
+##### E20.g2c3 — Les gouttes d'eau (A19, C71) ⏳ (détaillée le 2026-10-26 ; thème 2, après g2c2 (D-G2C2-6) ; ferme O-G2C3-1 ; défauts de Q-G2C3-1 à Q-G2C3-7 pris par la règle de l'auteur du 2026-10-25, D-E20-83 ; révision 0 relue : REVISE ; révision 1 du 2026-10-26)
 
 **Provenance.** Lecture seule du 2026-10-26 (HEAD `22ddf0be` puis `0d3e7e14`, `Alundra/` et `Alundra.Tests/` inchangés entre les deux) :
 rapport et critique frais (`scratchpad/t2-next/g2c3/`, `scratchpad/t2-next/g2c3-critic/`, scripts, rejeux et sorties ; les deux rapports
@@ -8684,6 +8684,13 @@ lecture de g2c2 (F12 de `e20-g2c2-disc/`). Le critique confirme les faits porteu
 606), son déclenchement par zone et sa remise à zéro, la seule arrivée qui fait naître les torches visées, la fin `Hold` et les 21 ticks de
 l'animation 2, la période des programmes à drapeau et de la 158 ; il ajoute le cas oublié de la torche lancée qui bute sur une goutte (le
 second site du type 391 du binaire) et le cumul des gouttes de B[1]. Ce sont ses valeurs qui sont écrites ici.
+
+**Révision 1 (2026-10-26).** La relecture de la révision 0 (REVISE) a relevé quatre mutants que leurs tests de monde ne pouvaient pas voir,
+corrigés (FIX) : (1) « l'état 2 qui ignore `CollidedWithEntityZ` » : sur la tête du héros comme sur une torche posée, `IsOnGround` et
+`CollidedWithEntityZ` montent au même tick (rejoués) : il n'est tué que par (a1), qui gagne un vecteur où les deux drapeaux diffèrent ;
+(2) la remontée de 161 px et (3) `Collidable` non remis ne changent ni la période ni le son : (w1) asserte à chaque restauration `PosZ`,
+`ForceZ` et `Flags` ; (4) « l'avance de l'état 3 posée seulement avec une torche » ne change rien de ce que (w4) observait : (w4) asserte
+l'état de la goutte et le tick de sa restauration.
 
 **Prérequis.** E20.g2c2 faite : la torche (`TorchAi`, le type 393), `(E, 20)` inscrit en production pour {393} (sans lui, une torche forcée en
 statut 3 par une goutte resterait figée : une vraie dépendance de code), la marque « sans flamme » d'E20 (`+0x274`, `Bytes[0]`), 393 dans
@@ -8793,7 +8800,8 @@ ne blesse pas) ; le moteur, le convertisseur et les données.
   torche dans `TorchAi`, la marque d'E20, la garde de D-G2C2-8) ; (b) verser les deux dossiers de la lecture et les deux rapports entiers à
   `docs/plan-e20-annexe/e20-g2c3-disc/` (README, `SHA1SUMS.txt`, sans `__pycache__`) ; (c) rejouer depuis une copie `replay/c71_full.py` (6 000
   vecteurs, 0 écart, le SHA-256 des dorés identique), `s1_drop_cycle.py` (natif et N = 30), `s2_drop_on_torch.py` (`carry`, `nocarry`,
-  `posed`) et `s3_hit_window.py`, sorties identiques ; (d) la table des ticks attendus du binaire, écrite avant toute exécution dans la DLL :
+  `posed`) et `s3_hit_window.py`, sorties identiques ; les vecteurs de (a1) comptent au moins un cas `CollidedWithEntityZ = 1` avec
+  `IsOnGround = 0` et un cas inverse, pris aux dorés ou produits sur la machine par `c71_full.py` et versés (révision 1) ; (d) la table des ticks attendus du binaire, écrite avant toute exécution dans la DLL :
   le cycle natif sur trois cycles, la période de chaque famille de programmes (N + 90, 1 + 88, N + 91), les trois contacts, les 603 ticks de
   B[1] ; (e) les sondes jetables de la DLL (versées en `.txt`), chacune avec sa prédiction écrite avant : S-D1, A19 au premier passage d'une
   goutte née par `0x8A` (`Bytes[1] = 0`) et d'une goutte posée scriptée (`Bytes[1]` = son index) ; S-D2, le cycle natif dans la DLL (le tick de
@@ -8816,10 +8824,12 @@ ne blesse pas) ; le moteur, le convertisseur et les données.
   production porte `(A, 19)` et `(C, 71)` pour exactement {391}, et `(E, 20)` pour {393}.
 - ⏳ **T2 — Phase B, tests de monde rouges avant** (le vrai contrôleur ; aux trois cadences pour ce qui ne dépend pas des tirages ; chaque tick
   attendu repris de la table de T0 (d) et des écarts écrits par D-G2C3-8) : (w1) une goutte native de la 92 (née par le `0x8A` de B[1] ou, par la
-  couture de naissance des tests, depuis l'enregistrement 15) : trois cycles (période, son 145, animation 2) ; (w2) une goutte scriptée à
+  couture de naissance des tests, depuis l'enregistrement 15) : trois cycles (période, son 145, animation 2, et à chaque restauration `PosZ`, `ForceZ` et `Flags` :
+  Gravity retiré, `Collidable` remis ; révision 1) ; (w2) une goutte scriptée à
   attente simple : la période N + 90, `ProgramIndexes[2]` restauré, le script repris à son premier opcode ; (w3) Alundra porte une torche sous
   une goutte : la torche éteinte (statut 3, son 142, effet 10, détruite), aucune entité de type 12, Alundra debout les mains vides, PV
-  inchangés ; (w4) Alundra sans torche : le son 145 seul, ni état ni PV changés ; (w5) une torche posée sous une goutte : éteinte sans flamme ;
+  inchangés ; (w4) Alundra sans torche : le son 145 seul, ni état ni PV changés ; la goutte passe l'état 3 puis l'état 4 et se restaure au tick de la
+  table de T0 (d) (révision 1) ; (w5) une torche posée sous une goutte : éteinte sans flamme ;
   (w6) la fenêtre : une goutte juste dedans et une juste dehors, en x et en y ; (w7) une goutte de la 158 : immobile tant qu'Alundra est hors de
   sa boîte, qui tombe quand il y entre ; (w8) l'arc de la 92 : l'arrivée en (38, 10) depuis la 91 (ou le préréglage), Alundra reste dans la
   zone : quatre gouttes naissent au tick de T0 (d) au-dessus des torches 43 à 46, qui s'éteignent sans flamme ; Alundra qui sort de la zone avant
@@ -8829,11 +8839,12 @@ ne blesse pas) ; le moteur, le convertisseur et les données.
   préréglage si D-G2C3-6 le crée.
 - ⏳ **T3 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
   `cmp` ; `check_names.py --rules` ; au moins 19 mutants réels, chacun tué par le test qu'il nomme : l'attente 40 en 39 et en 41 ((a1), (w1)) ;
-  l'état 2 qui ignore `CollidedWithEntityZ` ((a1), (w3)) ; l'état 3 qui garde `Collidable` ((a3), (w10)) ; l'avance de l'état 3 posée seulement
-  avec une torche ((a3), (w4)) ; le type de la torche changé ((a3), (w3)) ; l'appui du héros pris sans lire son objet porté ((a3), (w3)) ; le
+  l'état 2 qui ignore `CollidedWithEntityZ` ((a1), par son vecteur `CollidedWithEntityZ = 1`, `IsOnGround = 0` ; sur la tête du héros et sur
+  une torche posée les deux drapeaux montent au même tick, les tests de monde ne le voient pas ; révision 1) ; l'état 3 qui garde `Collidable` ((a3), (w10)) ; l'avance de l'état 3 posée seulement
+  avec une torche ((a3), (w4) : l'état et la restauration de la goutte) ; le type de la torche changé ((a3), (w3)) ; l'appui du héros pris sans lire son objet porté ((a3), (w3)) ; le
   test « objet porté nul » retiré ((a3), (w4)) ; l'extinction sans `Bytes[0] = 1` ((a3), (w3) : une flamme naît) ; l'extinction sans le
-  statut 3 ((a3), (w3)) ; la remontée de 160 px en 128 et en 161 ((a1), (w1)) ; `ForceZ` non remis à zéro ((a1)) ; Gravity non retiré à la
-  restauration ((a1), (w1)) ; `Collidable` non remis ((a1), (w1) au troisième cycle) ; `ProgramIndexes[2]` non restauré ((a1), (w2)) ; la
+  statut 3 ((a3), (w3)) ; la remontée de 160 px en 128 et en 161 ((a1), (w1) : `PosZ` à la restauration) ; `ForceZ` non remis à zéro ((a1)) ; Gravity non retiré à la
+  restauration ((a1), (w1) : `Flags` à la restauration) ; `Collidable` non remis ((a1), (w1) : `Flags` à la restauration) ; `ProgramIndexes[2]` non restauré ((a1), (w2)) ; la
   restauration depuis `Bytes[0]` ((a1), (w2)) ; A19 absent ((a2), (w2)) ; l'état ≥ 5 traité comme l'état 0 ((a1)) ; un ADR neuf (numéro
   libre recompté sur toutes les branches).
 - ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
