@@ -1,0 +1,6 @@
+support  F=159744 n=1038  DLL-as-is contact mismatch per tick: 0.592 0.078 0.000 0.000 | with contact-only shadow: 0.000 0.078 0.000 0.000
+support  F=196608 n=1038  DLL-as-is contact mismatch per tick: 0.499 0.000 0.000 0.000 | with contact-only shadow: 0.000 0.000 0.000 0.000
+support  F=393216 n=1038  DLL-as-is contact mismatch per tick: 0.660 0.000 0.000 0.000 | with contact-only shadow: 0.000 0.000 0.000 0.000
+ground   F=159744 n=1038  DLL-as-is contact mismatch per tick: 0.000 0.000 0.000 0.000 | with contact-only shadow: 0.000 0.000 0.000 0.000
+ground   F=196608 n=1038  DLL-as-is contact mismatch per tick: 0.000 0.000 0.000 0.000 | with contact-only shadow: 0.000 0.000 0.000 0.000
+ground   F=393216 n=1038  DLL-as-is contact mismatch per tick: 0.000 0.000 0.000 0.000 | with contact-only shadow: 0.000 0.000 0.000 0.000
