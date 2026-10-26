@@ -113,3 +113,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0097 | The first step of an entity born in the game is bounded by the halving search of the binary | Accepted | 2026-10-25 |
 | ADR-0098 | The fire and ice balls run C60 and E9 as native handlers, the keys are registered in production, and the wired set of the shot grows to the types 11, 12, 14 and 15 | Accepted | 2026-10-25 |
 | ADR-0099 | The use of an item has a frame (start table, driver, cancellation, menu guard) and the items themselves are named stubs | Accepted | 2026-10-26 |
+| ADR-0100 | The bomb explodes and vanishes through D30 and E12, and the lids vanish through E19, all registered in production | Accepted | 2026-10-26 |
