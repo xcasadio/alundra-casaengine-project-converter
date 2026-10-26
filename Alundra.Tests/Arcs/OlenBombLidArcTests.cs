@@ -570,6 +570,32 @@ public sealed class OlenBombLidArcTests
         Assert.All(line.Frames, f => Assert.Equal(0, f.Break11));
     }
 
+    /// <summary>
+    /// E20.h3a T2 (w5), the key <c>k_w5_lid.txt</c> of the reading of 2026-10-25 (the lid put in status 3 at k+0, then at k+1 the status 4 with the sound 230 and the break effect 11, at k+2 the slot free): the lid of the map 362, put in status 3 by its program D[1] at H + 1 (k+0 = H + 1, A8), is destroyed one tick later, at H + 2, with the sound 230 (<c>0xE6</c>)
+    /// and ONE break effect 11 created at that tick, and is out of the world at H + 3. RED while <c>(E, 19)</c> is not registered in the production registry (the A9 pin above says it stays in status 3 with neither the sound nor the effect); green once it is. The registry is the one of production: nothing is registered by the test.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(Cadences))]
+    public void W5_TheLidDeactivatedByItsProgramD_IsDestroyedOneTickLater_WithTheSound230AndTheBreakEffect11_AndLeavesTheWorldAtOnceAfter_TheKey(int k)
+    {
+        var line = Scene(k, true);
+        var h = line.H;
+
+        Assert.Equal(EntityStatus.Deactivated, line.At(h + 1).LidStatus); // k+0 of the key.
+        Assert.True(line.At(h + 2).LidPresent);
+        Assert.Equal(EntityStatus.FlagToDestroy, line.At(h + 2).LidStatus); // k+1: status 4.
+        Assert.False(line.At(h + 3).LidPresent); // k+2: the slot is free.
+        Assert.All(line.Between(h + 3, line.Snaps.Count - 1), x => Assert.False(x.LidPresent));
+
+        // The sound 230 once, at k+1 (H + 2), and the effect 11 once, in the frame that holds that tick (the frame of the arc ends at the tick of the record).
+        Assert.Equal(new[] { h + 2 }, line.Sounds.Where(x => x.Id == 230).Select(x => x.Tick).ToArray());
+        var firstFrameWithTheEffect = line.Frames.FindIndex(f => f.Break11 > 0);
+        Assert.True(firstFrameWithTheEffect >= 0, "no break effect 11 on the stage");
+        var frame = line.Frames[firstFrameWithTheEffect];
+        Assert.InRange(frame.EndTick, h + 2, h + 2 + k - 1);
+        Assert.Equal(1, frame.Break11);
+    }
+
     /// <summary>Row 20 (KEY): the bomb is in status 2 until its animation ends and from A + 53 to the end it is still in the world, in status 3 (its last frame draws nothing, so it is invisible), never destroyed: <c>(E, 12)</c> is not registered (the native one would give the status 4 at A + 52 and a free slot at A + 53). A + 51 and A + 52 are not asserted. E20.h3a rewrites this test.</summary>
     [Theory]
     [MemberData(nameof(Cadences))]
