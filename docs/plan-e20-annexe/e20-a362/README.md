@@ -5,6 +5,8 @@
 - `derive_ticks.py` / `derive_ticks.out.txt`: the ticks derived from the bytecode alone (`Wait n` = n + 1).
 - `sword_geometry.py` / `sword_geometry.out.txt`: the boxes of the basic sword against the body of the lid.
 - `t0b.md` / `t0b-smoke.txt`: T0b, the smoke of the load (a throwaway test, not committed; no tick of the scene read).
+- `bench_geometry.py` / `bench_geometry.out.txt`: T1, the position of the witness (n2) once the ground of the hero is counted (176, 105, 32) and the controls; the centre of the sparks derived from the model before the run.
+- `results.md`: T1, the results and the deviations from the plan; `t1-timeline.txt`: the key ticks and states measured at the three cadences.
 - `replay/`: the five outputs of the critic replayed from a copy (byte for byte identical to `../e20-a362-disc/critic/out/` and `discovery/out/k_w5_lid.txt`).
 - `../e20-a362-disc/`: the reading of 2026-10-25 (README there).
 - `SHA1SUMS.txt`: the sha1 of every file of this folder.

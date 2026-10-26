@@ -1,4 +1,6 @@
-d71fb4efa4d42c75cf5141478641444fe22aedd7 *README.md
+a7d5170eb31551d838a0cde8f99874b18eabff81 *README.md
+8825d049235c62bb17decd17a6121625ebb0166a *bench_geometry.out.txt
+072b4a7d2e386230784f4654ceb51d17c4bec4d0 *bench_geometry.py
 1289531c3f892998e355533290d314f0791416bb *derive_ticks.out.txt
 8ad5b7f7ca621507dbf7b7c893f179fd1d931b7b *derive_ticks.py
 21ce6d24912f2011980d8d773732a23995dc9ae1 *replay/crit_olen_flight_slide_no_C62.txt
@@ -6,8 +8,10 @@ d71fb4efa4d42c75cf5141478641444fe22aedd7 *README.md
 64387a01794b69591c3db9145980adb53c6178aa *replay/crit_olen_real_flat_T5-120.txt
 7afb248d25c4e2935b40e6b503d5efa29f126f53 *replay/crit_olen_real_hover_T4-32_T5-140.txt
 43de29f4a2c311400f67e33af321d998a00a1138 *replay/crit_w5_lid.txt
+2569e8de747924e6d9c69b656ef868f2b42ee945 *results.md
 12d6dfaaad9e972d644abeddbff1a54fc5cc786b *sword_geometry.out.txt
 8f96f2102d15fb934c4ca28d741cdbbe43e1c68d *sword_geometry.py
 f67b1cd51526bcf2a5f373016ce20ead88b5ae3a *t0a.md
 3555a120f41dc66ddb83a2b2e90000c80d67968f *t0b-smoke.txt
 72528627959aaf3b8f877386ba572c3961c96583 *t0b.md
+1aa2127ddfa137442ece9142716bd4bf4a509c57 *t1-timeline.txt

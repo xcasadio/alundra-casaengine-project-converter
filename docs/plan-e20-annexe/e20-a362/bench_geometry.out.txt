@@ -1,0 +1,10 @@
+chosen position of the witness (n2): hero at (176, 105, 32) facing east (TargetDirection 24)
+  ticks 1-4 (offset 0,0,0): OVERLAPS
+  ticks 5-6 (offset 21,-8,0): OVERLAPS
+  ticks 7-8 (offset 22,-16,0): OVERLAPS
+  ticks 9-11 (offset 22,-16,0): OVERLAPS
+  ticks 12-15 (offset -5,-18,0): OVERLAPS
+  ticks 16-21 (offset -5,-18,0): OVERLAPS
+centre of the overlap at the first tick, raw 16.16: (12910591, 6979583, 2588671) = (196.99998, 106.49998, 39.49998) px
+  control same place, facing west    (176, 105, 32) direction 8: frames that overlap: none
+  control 30 px south, facing east   (176, 135, 32) direction 24: frames that overlap: none

@@ -1,0 +1,28 @@
+k=1 press=14 F748=14 @514=16 @536=16 @540=335 @558=398 @562=409 S=440 (S-press=426) @582=471 @628=442 @635=471 @608=580 A=580 (A-S=140) H=596
+Olen at S: (204,137,5,32) bomb at S: (204,137,5,64); y0 137 start m=S+32 rest r=S+66 rest (204,103,32)
+sounds: 440:44 471:26 580:46 739:205 769:205 796:205 820:205
+sparks: (596, 13369343, 6782975, 2457599)  frames9 near H: 594:0/0 595:0/0 596:3/0 597:3/0 598:3/0 599:3/0 600:3/0 601:3/0 602:3/0
+D pcs H+1 728,731,734,737,738 B171=2 B172=3 B179=64 births 125 156 187 218 B222=-1 lastTick=844 (H+248)
+hero at H (204,184,32) hp 10/10; lid status H,H+1: Normal,Deactivated; bomb status A+50..A+54: Normal,Normal,Deactivated,Deactivated,Deactivated; bomb status end Deactivated; lid end Deactivated (212,100,32)
+muruta births xy: (204,104) (216,104) (204,104) (216,104)
+bomb box A+14..A+17: False,False,True,True; lid touching H-1,H,H+1: False,True,False; counters H..H+2: 25,24,23
+T4..T6 first set ticks: T2@14 T3@335 T4@471 T5@580 T6@597; skipped 0; error 
+ Réussi(s) : 3
+k=2 press=22 F748=22 @514=24 @536=24 @540=349 @558=412 @562=423 S=454 (S-press=432) @582=485 @628=456 @635=485 @608=594 A=594 (A-S=140) H=610
+Olen at S: (204,137,5,32) bomb at S: (204,137,5,64); y0 137 start m=S+32 rest r=S+66 rest (204,103,32)
+sounds: 454:44 485:26 594:46 753:205 783:205 810:205 834:205
+sparks: (610, 13369343, 6782975, 2457599)  frames9 near H: 609:0/0 611:3/0 613:3/0 615:3/0
+D pcs H+1 728,731,734,737,738 B171=2 B172=3 B179=64 births 125 156 187 218 B222=859 lastTick=859 (H+249)
+hero at H (204,184,32) hp 10/10; lid status H,H+1: Normal,Deactivated; bomb status A+50..A+54: Normal,Normal,Deactivated,Deactivated,Deactivated; bomb status end Deactivated; lid end Deactivated (212,100,32)
+muruta births xy: (204,104) (216,104) (204,104) (216,104)
+bomb box A+14..A+17: False,False,True,True; lid touching H-1,H,H+1: False,True,False; counters H..H+2: 25,24,23
+T4..T6 first set ticks: T2@22 T3@349 T4@485 T5@594 T6@611; skipped 0; error 
+k=3 press=30 F748=30 @514=32 @536=32 @540=361 @558=426 @562=437 S=468 (S-press=438) @582=499 @628=470 @635=499 @608=609 A=609 (A-S=141) H=625
+Olen at S: (204,137,5,32) bomb at S: (204,137,5,64); y0 137 start m=S+33 rest r=S+67 rest (204,103,32)
+sounds: 468:44 499:26 609:46 768:205 798:205 825:205 849:205
+sparks: (625, 13369343, 6782975, 2457599)  frames9 near H: 623:0/0 626:3/0 629:3/0
+D pcs H+1 728,731,734,737,738 B171=2 B172=3 B179=64 births 125 156 187 218 B222=874 lastTick=875 (H+250)
+hero at H (204,184,32) hp 10/10; lid status H,H+1: Normal,Deactivated; bomb status A+50..A+54: Normal,Normal,Deactivated,Deactivated,Deactivated; bomb status end Deactivated; lid end Deactivated (212,100,32)
+muruta births xy: (204,104) (216,104) (204,104) (216,104)
+bomb box A+14..A+17: False,False,True,True; lid touching H-1,H,H+1: False,True,False; counters H..H+2: 25,24,23
+T4..T6 first set ticks: T2@30 T3@361 T4@499 T5@609 T6@626; skipped 0; error 
