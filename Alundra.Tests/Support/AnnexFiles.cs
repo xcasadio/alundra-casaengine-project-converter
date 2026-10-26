@@ -120,6 +120,24 @@ internal static class AnnexFiles
         throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/e20-e0d-disc/{relative}' found above '{AppContext.BaseDirectory}'.");
     }
 
+    /// <summary>E20.h3a T1: a file under <c>docs/plan-e20-annexe/</c> given by its path from that folder (the goldens of D30 and E12 of the critic of h3, <c>e20-h3/critic/results/goldens_critic.json</c>, and those of E19, <c>e20-h3a/goldens_e19.json</c>), found above the test binaries.</summary>
+    public static string BombAnnex(string relative)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "docs/plan-e20-annexe", relative);
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/{relative}' found above '{AppContext.BaseDirectory}'.");
+    }
+
     /// <summary>The parsed vector file; the caller disposes it.</summary>
     public static JsonDocument ReadVector(string name) => JsonDocument.Parse(File.ReadAllText(Vector(name)));
 }
