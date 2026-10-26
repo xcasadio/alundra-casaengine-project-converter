@@ -11695,7 +11695,7 @@ le pilote, l'annulation (h3b) ; D32 (la racine, Q-H3-7) ; la réaction du héros
 
 ---
 
-#### 1.30.3 E20.h3b — La bombe dans les mains : le départ, C62, le pilote et l'annulation ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`1314242`, un P2 : une tolérance d'un tick dans ses arrêts), corrigé (révision 3) ; relecture en pause, Q-H3B-R ; prérequis E20.c2b ajouté le 2026-10-22, D-E20-52 ; **révision 4 du 2026-10-25** : E20.c2b faite, D-H-7 caduque, nouvelle époque ; relue : REVISE ; révision 4.1 du 2026-10-25, **READY** à la deuxième relecture, `plan-verifier` frais)
+#### 1.30.3 E20.h3b — La bombe dans les mains : le départ, C62, le pilote et l'annulation ✅ (**faite et CONFIRMED le 2026-10-26**, `f266940b` à `49a69ac2`, ADR-0103 ; recette de l'auteur à faire ; détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`1314242`, un P2 : une tolérance d'un tick dans ses arrêts), corrigé (révision 3) ; relecture en pause, Q-H3B-R ; prérequis E20.c2b ajouté le 2026-10-22, D-E20-52 ; **révision 4 du 2026-10-25** : E20.c2b faite, D-H-7 caduque, nouvelle époque ; relue : REVISE ; révision 4.1 du 2026-10-25, **READY** à la deuxième relecture, `plan-verifier` frais)
 
 **Révision 4 (2026-10-25, nouvelle époque).** La pause attendait E20.c2b (Q-H3B-R : « elle attend aussi E20.c2b », D-E20-52) : c2b est faite
 (§1.12.1, ADR-0096) et D-H-7 est caduque (D-C2B-11). La lecture du 2026-10-25 (`scratchpad/t2-next/a362-h3a/` et sa critique, versées par
@@ -11703,6 +11703,20 @@ le T0 de l'arc A362 à `docs/plan-e20-annexe/e20-a362-disc/`) a rejoué l'oracle
 deux clés neuves entrent : le lancer vers le bas qui blesse Alundra resté sur place (Q-H3B-1, défaut A, comme l'original ; marges corrigées
 par la critique) et la blessure pendant qu'il porte une bombe (la bombe lâchée par le mode 2 ne se brise pas : C62 règle son lâcher, à la
 différence des caisses de D-C2B-13) ; (w8) compare maintenant aussi la blessure du héros.
+
+**Écarts de l'exécution (2026-10-26, acceptés par la session principale, `docs/plan-e20-annexe/e20-h3b/`).** (1) Deux causes que la liste de T3
+ne nommait pas, levées dans la DLL : la bombe née par `MovePlayer` jouait son tick de naissance (toute la chronologie de (w1) un tick tôt) :
+`BombAi.Start` pose `JoinsBirthTick = false` pour la bombe seule ; la bombe portée et lancée était au pixel entier du héros (206,0 au lieu de
+206,09375), ce qui faussait (w3) et (w10) (le lancer vers l'est blessait le héros) : `PushLogicalPositionToRoot` gagne un paramètre optionnel
+`keepSubPixel`, que `FollowCarrier` passe : **tout objet porté** (caisses, tonneaux, torches) garde maintenant la fraction de pixel du héros,
+comme le binaire, hors du périmètre écrit (`EntityScriptProxy.cs`) ; aucun autre test ni clé n'a bougé ; à confirmer en jeu par la recette.
+(2) Les étincelles naissent par `EffectStage.CreateNow` (deux tirages seulement si une case est rendue, la politique de T0 (c)), la fumée
+par `Emit`. (3) (C, 62) entre dans `BombAi.Keys` : les cinq sommes du registre suivent sans édition (27 clés). (4) Le banc `BombRun` d'h3a
+pose la mèche après la naissance ; `LogicalZWorldTests` Z4 et Z7 posent la mèche haute ; `HeroItemUseTests.A4_` prend la cape `0x20` pour
+bouchon ; (w11) gagne le son 24 au tick 73, rejoué sur l'oracle avec le journal entier (la clé versée ne l'imprimait qu'après le tick 240).
+(5) Le mutant « `+0x274` posé avant la naissance » n'a pas de forme directe (la mèche est un champ de la bombe) : remplacé par ses voisins
+(la mèche écrite sur le héros, à 239, la naissance nulle avec son, la bombe qui joue son tick de naissance), tous tués ; deux mutants
+équivalents prouvés et remplacés. (6) Le préréglage de recette est `bombe-m14` (la carte 14, (31, 43, 1), la bombe sur le Rond).
 
 **Prérequis.** A362 (§1.30.1a, qui verse les clés de la lecture du 2026-10-25), h0a, h3a ; g1a (le lien de portage, `PutInHands`, les modes 0, 1 et 2, les états de portage) et g2a (le Carré qui lance) ; f5 (la
 clé de vitesse d'une entité marquée, D-F5-5) et f6a (la pente d'une entité marquée : la bombe lancée dans l'eau profonde meurt avec l'effet 6) ;
@@ -11723,7 +11737,7 @@ plan, l'index des ADR et un ADR.
 
 ##### Tâches
 
-- ⏳ **T0 — Annexe, oracle, liste prédite** : (a) les vecteurs autonomes de la critique pour le départ de la bombe, son pilote, son annulation et
+- ✅ **T0 — Annexe, oracle, liste prédite** (fait le 2026-10-26, `f266940b`) : (a) les vecteurs autonomes de la critique pour le départ de la bombe, son pilote, son annulation et
   C62 (`goldens_critic.json`) rejoués ; (b) les clés de monde de la critique rejouées (`critic/results/` : `bomb_timeline.txt`, `bomb_limit3.txt`,
   `throw_dirs.txt`, `water.txt`, `hurt_circle.txt` ; de la lecture : `bin/results/scenarios/bomb_wall.txt`, `bomb_wall2.txt`, `bomb_locked.txt`,
   `bomb_air_throw.txt`), refaites avec le pas par image là où la valeur d'un tirage compte (les vitesses des étincelles ; règle du §1.20, bloc,
@@ -11747,7 +11761,7 @@ plan, l'index des ADR et un ADR.
   (f) **les sons des effets** (Q-H3-8 ; révision 1) : l'oracle ne journalise que les sons appelés par le code (`0x800490FC`) et la création des
   effets, sans exécuter leurs programmes ; les effets exportés n'ont aucun son (`effects-global.json`) : les tests de monde comparent les sons du
   code seuls ; Q-H3-8 reste ouverte (propriétaire : le portage de l'interpréteur d'effets, hors E20.h).
-- ⏳ **T1 — Phase A** (tests d'abord). (c1) le départ : les refus (porte déjà, pente 4, objet en cours, trois entités de type 2 en jeu, tout
+- ✅ **T1 — Phase A** (tests d'abord ; fait le 2026-10-26, `c23400be`, `578aed1f` : 54 tests rouges avant, verts après). (c1) le départ : les refus (porte déjà, pente 4, objet en cours, trois entités de type 2 en jeu, tout
   statut, une bombe détruite comptant jusqu'au recyclage de sa case), chacun avec le son 3 et accolé au départ qui réussit ; une naissance nulle
   (table pleine) rend 1 sans son ; `+0x274 = 0xF0` après la naissance ; le lien (le héros porte la bombe, la bombe a le héros pour porteur),
   l'animation de levée 5 au sol, `0x0B` en l'air ; (c2) le pilote : rend 1 sans bombe portée ou si l'objet porté n'est plus de type 2, 0 sinon,
@@ -11755,7 +11769,8 @@ plan, l'index des ADR et un ADR.
   à la position de la bombe, `DestroyEntity` à un argument ; (c4) C62 contre les vecteurs : trou, fusée, fin de fusée (statut 3, lien effacé), les
   sept étincelles (effet 9, Z + `0x80000`, deux tirages si l'effet est obtenu), portée (animation 0), lâchée (animation 2, lien effacé), le rebond
   unique sur un mur en l'air, l'explosion sur place au pied d'un mur de classe B, le son `0x18` à l'atterrissage.
-- ⏳ **T2 — Tests de monde, rouges avant T3** (banc d'`ArcRun` sur le champ de chaque scénario, les entités de la carte retirées, la bombe dans
+- ✅ **T2 — Tests de monde, rouges avant T3** (fait le 2026-10-26, `c51504fb` : 26 cas rouges, des écarts à la clé et non des exceptions ;
+  banc d'`ArcRun` sur le champ de chaque scénario, les entités de la carte retirées, la bombe dans
   l'inventaire et comme objet du Rond par `Give(35)` et `SetItem(35)` (`Alundra.Tests/AlundraArcSupport.cs:151-171`), Rond par `Press`
   (`:454-459`)) : (w1) la chronologie de `bomb_timeline`, comparée tick par tick (révision 3) (naissance, levée, sept étincelles, statut 3 à T+242, explosion, case libre à T+296) ;
   (w2) le quatrième départ refusé tant que la première case n'est pas libre ; (w3) les lancers aux quatre directions (portée, arc de 22 ticks,
@@ -11768,8 +11783,10 @@ plan, l'index des ADR et un ADR.
   `k_throw_explode.txt` : Alundra resté sur place est blessé par sa propre bombe ; accolé, le lancer vers l'est (indemne) ; (w11) (révisions 4 et 4.1)
   la blessure en portant une bombe contre `bomb_hurt_while_carrying_bomb.txt` (la blessure et le lâcher au tick 264, l'objet libéré au 265, le repos
   au 287, le statut 3 au 332) : la bombe lâchée, non brisée, sa trajectoire.
-- ⏳ **T3 — Phase B** : les entrées `0x23` et l'inscription. Verts.
-- ⏳ **T4 — ADR, plan, verifiers frais** (deux). Mutants, au moins 16, tous tués : limite à 4 ; une bombe détruite non comptée ; fusée à 239 ;
+- ✅ **T3 — Phase B** : les entrées `0x23` et l'inscription. Verts. (Fait le 2026-10-26, `161ac276` : les 26 cas verts sans tolérance de clé ; la
+  preuve de retrait exacte pour les deux retraits ; Release et Debug 7 489 verts ; les écarts ci-dessus.)
+- ✅ **T4 — ADR, plan, verifiers frais** (deux ; fait le 2026-10-26, `49a69ac2`, `wf_e7dad4b7-665` : 34 exécutions de mutants, tous tués ou
+  équivalents remplacés ; ADR-0103 ; les deux verifiers CONFIRMED). Mutants, au moins 16, tous tués : limite à 4 ; une bombe détruite non comptée ; fusée à 239 ;
   étincelles à 64 ; étincelles sans la condition « effet obtenu » ; un seul tirage par étincelle ; garde `+0x20` au lieu de `+0x24` (D1) ; fumée 12
   remplacée par 6 ; rebond illimité ; explosion au pied de tout mur ; son `0x18` oublié ; lien non effacé à la fin de fusée ; levée 5 en l'air ;
   `+0x274` posé avant la naissance ; naissance nulle avec son ; pilote qui ne libère pas sur un autre type.
@@ -13445,6 +13462,7 @@ les trois entrées `0x31`.
 | O-G2C2-2 | (2026-10-26, E20.g2c2 T2, D-G2C2-10) Les ronces non brûlées (types 238 et 239) blessent Alundra qui les touche, d'après leurs fiches exportées ; l'exécution ne l'a pas comparé au binaire. À vérifier au binaire (la fiche, la passe de coups) : si l'original ne le fait pas, c'est un écart à corriger **Vérifié le 2026-10-26** (`docs/plan-e20-annexe/e20-g2c2/o-g2c2-2-bramble-contact.md`, une critique fraîche CONFIRMÉ) : au binaire aussi, la ronce au repos (animation 0, `Attacks[1]` = attribut 1, puissance 1 ; HitsClassB contre la classe B du héros) blesse Alundra qui la touche, 1 PV toutes les 120 ticks : comme l'original, aucun écart | fermé le 2026-10-26 (comme l'original) |
 | O-G2C3-2 | (2026-10-26, E20.g2c3, D-G2C3-7) Le cumul des gouttes de la 92 : chaque retour d'Alundra dans la zone du fond fait naître quatre gouttes de plus aux mêmes points (B[1] n'a pas de garde ; les gouttes natives ne sont jamais détruites), déjà au HEAD ; la critique en infère qu'après une dizaine de passages la table de 64 entités est pleine et que les flammes ne naissent plus. À mesurer (une sonde) avant toute décision ; un défaut avéré de l'original se corrige, mais le correctif change ce que voit le joueur : une question à l'auteur après la mesure | à mesurer (hors de g2c3) |
 | O-G2C3-3 | (2026-10-26, E20.g2c3 T2, D-G2C3-9) Dans la DLL, une torche lancée n'écrit pas `XCollisionEntity` (le contact du déplacement XY, `+0x130`) pendant son vol : seul le pas scripté du contrôleur l'écrit. Le binaire l'écrit à chaque pas de la recherche (`0x80037730`) ; E20 le lit : une torche lancée qui bute sur une goutte devrait s'éteindre sans flamme (Q-G2C3-7, comme l'original), elle ne le fait jamais dans le portage (cas rare : la torche vole bas, les gouttes sont hautes). Le même manque touche toute entité lancée qui lit son contact. À porter avec le contact du binaire pour les entités nées par l'interface (le chemin d'e0k5 ou une tranche à part) | à placer (P3) |
+| O-H3B-1 | (2026-10-26, E20.h3b, verifier) Une bombe née dans une case recyclée pourrait compter sa mèche un tick plus tard : dans `bomb_limit3.txt`, la bombe partie à 351 montre la mèche 198 à 393, alors que la première montre 199 à 43, 42 ticks après son départ ; la DLL pose toujours `JoinsBirthTick = false`. (w2) s'arrête à 360 et ne le compare pas. À mesurer (prolonger (w2) jusqu'au tick 393) : un artefact de l'oracle, ou un écart à porter | à mesurer (P4) |
 | Q-G2C3-1 | (2026-10-26, E20.g2c3) Dans l'original, si Alundra reste une douzaine de secondes au fond de la salle 92 (la zone des quatre torches de la rangée du haut), quatre gouttes naissent au-dessus de ces torches et les éteignent si le joueur ne les a pas prises. (A, défaut) comme l'original ; (B) ne pas faire naître ces gouttes (le piège disparaît, un écart documenté). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C3-4) |
 | Q-G2C3-2 | (2026-10-26, E20.g2c3) Une goutte tombe sur Alundra qui porte une torche : la torche s'éteint dans ses mains en une fraction de seconde (son d'extinction, petit effet de bris) et disparaît ; Alundra reste debout, les mains vides, sans dégât ni étourdissement. (A, défaut) comme l'original. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C3-5) |
 | Q-G2C3-3 | (2026-10-26, E20.g2c3) Une goutte tombe sur Alundra sans torche : seul le bruit de l'éclaboussure, ni dégât ni recul. (A, défaut) comme l'original. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C3-5) |
